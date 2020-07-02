@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B9D211E66
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 10:24:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3C70211E69
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 10:24:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728820AbgGBIYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 04:24:13 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:59786 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728802AbgGBIYJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 04:24:09 -0400
+        id S1726442AbgGBIYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 04:24:19 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:55488 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728262AbgGBIYN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 04:24:13 -0400
 Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0628NcaD082119;
-        Thu, 2 Jul 2020 03:23:38 -0500
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0628Ni8l042491;
+        Thu, 2 Jul 2020 03:23:44 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1593678218;
-        bh=zm7vsB22cjejSvvY0tRsRTmZ5Goqgh+xoXKUJZr3zYs=;
+        s=ti-com-17Q1; t=1593678224;
+        bh=BfOZr+xGOsPGiy8RO9cNV8MqKJURhNwgLuqcM2C41xI=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=CCPOpSxeBAuME1xDmOTn/JsRonmd8GITXRmGxtdVhklINpBtKg/tofEOdGb8PlIu5
-         l6v+0G7IlmXLuoB6lytDGCZQ/pSLvNgrRf6NPtcQq6V0+r6yOaWxhk9Kg9a1Hw4fuq
-         6imQ0jP4hR/OYKA/bSfI0wrjSrY8XrE1eNRCcN5Y=
-Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0628Nc1r032193
+        b=dB1wF8myW4K6PFl4X6Fp9lnd6sEshzIz4rwrrXqOfcQgLTxCi2rTbf5VGlHypGs3L
+         MCCeL7VqngSsw7+LPl2cWwD9C894EuMxplgAdS2z15O6ZjEJOCaccndOHpgGxjUitt
+         BlcB+FRMEsaTD/M9MBmtJvRhEK9Dqr9XB6/8hxo0=
+Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0628NiT6032240
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 2 Jul 2020 03:23:38 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 2 Jul 2020 03:23:44 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 2 Jul
- 2020 03:23:38 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ 2020 03:23:43 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 2 Jul 2020 03:23:37 -0500
+ Frontend Transport; Thu, 2 Jul 2020 03:23:43 -0500
 Received: from a0393678ub.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628LiYV006145;
-        Thu, 2 Jul 2020 03:23:32 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628LiYW006145;
+        Thu, 2 Jul 2020 03:23:38 -0500
 From:   Kishon Vijay Abraham I <kishon@ti.com>
 To:     Ohad Ben-Cohen <ohad@wizery.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -54,9 +54,9 @@ CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
         <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>
-Subject: [RFC PATCH 19/22] PCI: endpoint: Add EP function driver to provide VHOST interface
-Date:   Thu, 2 Jul 2020 13:51:40 +0530
-Message-ID: <20200702082143.25259-20-kishon@ti.com>
+Subject: [RFC PATCH 20/22] NTB: Add a new NTB client driver to implement VIRTIO functionality
+Date:   Thu, 2 Jul 2020 13:51:41 +0530
+Message-ID: <20200702082143.25259-21-kishon@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200702082143.25259-1-kishon@ti.com>
 References: <20200702082143.25259-1-kishon@ti.com>
@@ -68,148 +68,956 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new endpoint function driver to register VHOST device and
-provide interface for the VHOST driver to access virtqueues
-created by the remote host (using VIRTIO).
+Add a new NTB client driver to implement VIRTIO functionality. When two
+hosts are connected using NTB, one of the hosts should run NTB client
+driver that implements VIRTIO functionality and the other host should
+run NTB client implements VHOST functionality. This interfaces with
+VIRTIO layer so that any virtio client driver can exchange data with
+the remote vhost client driver.
+
+Since each NTB host can only expose fewer contiguous memory range to
+the remote NTB host (number of memory windows supported), reserve
+contiguous memory range using dma_alloc_coherent() and then manage
+this area using gen_pool for providing buffers to the virtio client
+driver. The virtio client driver should only provide this buffer
+region to the remote vhost driver.
 
 Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
 ---
- drivers/pci/endpoint/functions/Kconfig        |   11 +
- drivers/pci/endpoint/functions/Makefile       |    1 +
- .../pci/endpoint/functions/pci-epf-vhost.c    | 1144 +++++++++++++++++
- drivers/vhost/vhost_cfs.c                     |   13 -
- include/linux/vhost.h                         |   14 +
- 5 files changed, 1170 insertions(+), 13 deletions(-)
- create mode 100644 drivers/pci/endpoint/functions/pci-epf-vhost.c
+ drivers/ntb/Kconfig      |   9 +
+ drivers/ntb/Makefile     |   1 +
+ drivers/ntb/ntb_virtio.c | 853 +++++++++++++++++++++++++++++++++++++++
+ drivers/ntb/ntb_virtio.h |  56 +++
+ 4 files changed, 919 insertions(+)
+ create mode 100644 drivers/ntb/ntb_virtio.c
+ create mode 100644 drivers/ntb/ntb_virtio.h
 
-diff --git a/drivers/pci/endpoint/functions/Kconfig b/drivers/pci/endpoint/functions/Kconfig
-index 55ac7bb2d469..21830576e1f4 100644
---- a/drivers/pci/endpoint/functions/Kconfig
-+++ b/drivers/pci/endpoint/functions/Kconfig
-@@ -24,3 +24,14 @@ config PCI_EPF_NTB
- 	   device tree.
+diff --git a/drivers/ntb/Kconfig b/drivers/ntb/Kconfig
+index df16c755b4da..e171b3256f68 100644
+--- a/drivers/ntb/Kconfig
++++ b/drivers/ntb/Kconfig
+@@ -37,4 +37,13 @@ config NTB_TRANSPORT
  
- 	   If in doubt, say "N" to disable Endpoint NTB driver.
-+
-+config PCI_EPF_VHOST
-+	tristate "PCI Endpoint VHOST driver"
-+	depends on PCI_ENDPOINT
+ 	 If unsure, say N.
+ 
++config NTB_VIRTIO
++	tristate "NTB VIRTIO"
 +	help
-+	   Select this configuration option to enable the VHOST driver
-+	   for PCI Endpoint. EPF VHOST driver implements VIRTIO backend
-+	   for EPF and uses the VHOST framework to bind any VHOST driver
-+	   to the VHOST device created by this driver.
++	 The NTB virtio driver sits between the NTB HW driver and the virtio
++	 client driver and lets the virtio client driver to exchange data with
++	 the remote vhost driver over the NTB hardware.
 +
-+	   If in doubt, say "N" to disable Endpoint VHOST driver.
-diff --git a/drivers/pci/endpoint/functions/Makefile b/drivers/pci/endpoint/functions/Makefile
-index 96ab932a537a..39d4f9daf63a 100644
---- a/drivers/pci/endpoint/functions/Makefile
-+++ b/drivers/pci/endpoint/functions/Makefile
-@@ -5,3 +5,4 @@
++	 If unsure, say N.
++
+ endif # NTB
+diff --git a/drivers/ntb/Makefile b/drivers/ntb/Makefile
+index 3a6fa181ff99..d37ab488bcbc 100644
+--- a/drivers/ntb/Makefile
++++ b/drivers/ntb/Makefile
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_NTB) += ntb.o hw/ test/
+ obj-$(CONFIG_NTB_TRANSPORT) += ntb_transport.o
++obj-$(CONFIG_NTB_VIRTIO) += ntb_virtio.o
  
- obj-$(CONFIG_PCI_EPF_TEST)		+= pci-epf-test.o
- obj-$(CONFIG_PCI_EPF_NTB)		+= pci-epf-ntb.o
-+obj-$(CONFIG_PCI_EPF_VHOST)		+= pci-epf-vhost.o
-diff --git a/drivers/pci/endpoint/functions/pci-epf-vhost.c b/drivers/pci/endpoint/functions/pci-epf-vhost.c
+ ntb-y			:= core.o
+ ntb-$(CONFIG_NTB_MSI)	+= msi.o
+diff --git a/drivers/ntb/ntb_virtio.c b/drivers/ntb/ntb_virtio.c
 new file mode 100644
-index 000000000000..d090e5e88575
+index 000000000000..10fbe189ab8b
 --- /dev/null
-+++ b/drivers/pci/endpoint/functions/pci-epf-vhost.c
-@@ -0,0 +1,1144 @@
++++ b/drivers/ntb/ntb_virtio.c
+@@ -0,0 +1,853 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/**
-+ * Endpoint Function Driver to implement VHOST functionality
++ * NTB Client Driver to implement VIRTIO functionality
 + *
 + * Copyright (C) 2020 Texas Instruments
 + * Author: Kishon Vijay Abraham I <kishon@ti.com>
 + */
 +
 +#include <linux/delay.h>
-+#include <linux/io.h>
++#include <linux/dma-mapping.h>
++#include <linux/genalloc.h>
 +#include <linux/module.h>
++#include <linux/ntb.h>
++#include <linux/pci.h>
 +#include <linux/slab.h>
-+#include <linux/vhost.h>
++#include <linux/virtio.h>
++#include <linux/virtio_config.h>
++#include <linux/virtio_pci.h>
++#include <linux/virtio_ring.h>
 +#include <linux/vringh.h>
 +
-+#include <linux/pci-epc.h>
-+#include <linux/pci-epf.h>
++#include "ntb_virtio.h"
 +
-+#include <uapi/linux/virtio_pci.h>
++#define BUFFER_OFFSET		0x20000
 +
-+#define MAX_VQS		8
-+
-+#define VHOST_QUEUE_STATUS_ENABLE	BIT(0)
-+
-+#define VHOST_DEVICE_CONFIG_SIZE	1024
-+#define EPF_VHOST_MAX_INTERRUPTS	(MAX_VQS + 1)
-+
-+static struct workqueue_struct *kpcivhost_workqueue;
-+
-+struct epf_vhost_queue {
-+	struct delayed_work cmd_handler;
-+	struct vhost_virtqueue *vq;
-+	struct epf_vhost *vhost;
-+	phys_addr_t phys_addr;
-+	void __iomem *addr;
-+	unsigned int size;
++struct ntb_virtio_queue {
++	struct delayed_work db_handler;
++	struct virtqueue *vq;
 +};
 +
-+struct epf_vhost {
-+	const struct pci_epc_features *epc_features;
-+	struct epf_vhost_queue vqueue[MAX_VQS];
-+	struct delayed_work cmd_handler;
-+	struct delayed_work cfs_work;
-+	struct epf_vhost_reg *reg;
-+	struct config_group group;
-+	size_t msix_table_offset;
-+	struct vhost_dev vdev;
-+	struct pci_epf *epf;
-+	struct vring vring;
-+	int msix_bar;
++struct ntb_virtio {
++	struct ntb_virtio_queue vqueue[MAX_VQS];
++	struct work_struct link_cleanup;
++	struct delayed_work link_work;
++	struct virtio_device vdev;
++	struct gen_pool *gen_pool;
++	dma_addr_t mw_phys_addr;
++	struct virtqueue **vqs;
++	struct ntb_dev *ndev;
++	struct device *dev;
++	/* mutex to protect sending commands to ntb vhost */
++	struct mutex lock;
++	void *mw_addr;
++	u64 mw_size;
 +};
 +
-+static inline struct epf_vhost *to_epf_vhost_from_ci(struct config_item *item)
++#define to_ntb_virtio(v) container_of((v), struct ntb_virtio, vdev)
++
++/* ntb_virtio_send_command - Send commands to the remote NTB vhost device
++ * @ntb: NTB virtio device that communicates with the remote vhost device
++ * @command: The command that has to be sent to the remote vhost device
++ *
++ * Helper function to send commands to the remote NTB vhost device.
++ */
++static int ntb_virtio_send_command(struct ntb_virtio *ntb, u32 command)
 +{
-+	return container_of(to_config_group(item), struct epf_vhost, group);
++	struct ntb_dev *ndev;
++	ktime_t timeout;
++	bool timedout;
++	int ret = 0;
++	u8 status;
++
++	ndev = ntb->ndev;
++
++	mutex_lock(&ntb->lock);
++	ntb_peer_spad_write(ndev, NTB_DEF_PEER_IDX, VHOST_COMMAND, command);
++	timeout = ktime_add_ms(ktime_get(), COMMAND_TIMEOUT);
++	while (1) {
++		timedout = ktime_after(ktime_get(), timeout);
++		status = ntb_peer_spad_read(ndev, NTB_DEF_PEER_IDX,
++					    VHOST_COMMAND_STATUS);
++		if (status == HOST_CMD_STATUS_ERROR) {
++			ret = -EINVAL;
++			break;
++		}
++
++		if (status == HOST_CMD_STATUS_OKAY)
++			break;
++
++		if (WARN_ON(timedout)) {
++			ret = -ETIMEDOUT;
++			break;
++		}
++
++		usleep_range(5, 10);
++	}
++
++	ntb_peer_spad_write(ndev, NTB_DEF_PEER_IDX, VHOST_COMMAND_STATUS,
++			    HOST_CMD_STATUS_NONE);
++	mutex_unlock(&ntb->lock);
++
++	return ret;
 +}
 +
-+#define to_epf_vhost(v) container_of((v), struct epf_vhost, vdev)
++/* ntb_virtio_get_features - virtio_config_ops to get vhost device features
++ * @vdev: Virtio device that communicates with remove vhost device
++ *
++ * virtio_config_ops to get vhost device features. The remote vhost device
++ * populates the vhost device features in scratchpad register.
++ */
++static u64 ntb_virtio_get_features(struct virtio_device *vdev)
++{
++	struct ntb_virtio *ntb;
++	struct ntb_dev *ndev;
++	u64 val;
 +
-+struct epf_vhost_reg_queue {
-+	u8 cmd;
-+	u8 cmd_status;
-+	u16 status;
-+	u16 num_buffers;
-+	u16 msix_vector;
-+	u64 queue_addr;
-+} __packed;
++	ntb = to_ntb_virtio(vdev);
++	ndev = ntb->ndev;
 +
-+enum queue_cmd {
-+	QUEUE_CMD_NONE,
-+	QUEUE_CMD_ACTIVATE,
-+	QUEUE_CMD_DEACTIVATE,
-+	QUEUE_CMD_NOTIFY,
++	val = ntb_peer_spad_read(ndev, NTB_DEF_PEER_IDX, VHOST_FEATURES_UPPER);
++	val <<= 32;
++	val |= ntb_peer_spad_read(ndev, NTB_DEF_PEER_IDX, VHOST_FEATURES_LOWER);
++
++	return val;
++}
++
++/* ntb_virtio_finalize_features - virtio_config_ops to finalize features with
++ *   remote vhost device
++ * @vdev: Virtio device that communicates with remove vhost device
++ *
++ * Indicate the negotiated features to the remote vhost device by sending
++ * HOST_CMD_FINALIZE_FEATURES command.
++ */
++static int ntb_virtio_finalize_features(struct virtio_device *vdev)
++{
++	struct ntb_virtio *ntb;
++	struct ntb_dev *ndev;
++	struct device *dev;
++	int ret;
++
++	ntb = to_ntb_virtio(vdev);
++	ndev = ntb->ndev;
++	dev = ntb->dev;
++
++	/* Give virtio_ring a chance to accept features. */
++	vring_transport_features(vdev);
++
++	ntb_peer_spad_write(ndev, NTB_DEF_PEER_IDX, VIRTIO_FEATURES_LOWER,
++			    lower_32_bits(vdev->features));
++	ntb_peer_spad_write(ndev, NTB_DEF_PEER_IDX, VIRTIO_FEATURES_UPPER,
++			    upper_32_bits(vdev->features));
++
++	ret = ntb_virtio_send_command(ntb, HOST_CMD_FINALIZE_FEATURES);
++	if (ret) {
++		dev_err(dev, "Failed to set configuration event vector\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++/* ntb_virtio_get_status - virtio_config_ops to get device status
++ * @vdev: Virtio device that communicates with remove vhost device
++ *
++ * virtio_config_ops to get device status. The remote vhost device
++ * populates the vhost device status in scratchpad register.
++ */
++static u8 ntb_virtio_get_status(struct virtio_device *vdev)
++{
++	struct ntb_virtio *ntb;
++	struct ntb_dev *ndev;
++
++	ntb = to_ntb_virtio(vdev);
++	ndev = ntb->ndev;
++
++	return ntb_peer_spad_read(ndev, NTB_DEF_PEER_IDX, VHOST_DEVICE_STATUS);
++}
++
++/* ntb_virtio_set_status - virtio_config_ops to set device status
++ * @vdev: Virtio device that communicates with remove vhost device
++ *
++ * virtio_config_ops to set device status. This function updates the
++ * status in scratchpad register and sends a notification to the vhost
++ * device using HOST_CMD_SET_STATUS command.
++ */
++static void ntb_virtio_set_status(struct virtio_device *vdev, u8 status)
++{
++	struct ntb_virtio *ntb;
++	struct ntb_dev *ndev;
++	struct device *dev;
++	int ret;
++
++	ntb = to_ntb_virtio(vdev);
++	ndev = ntb->ndev;
++	dev = ntb->dev;
++
++	/* We should never be setting status to 0. */
++	if (WARN_ON(!status))
++		return;
++
++	ntb_peer_spad_write(ndev, NTB_DEF_PEER_IDX, VHOST_DEVICE_STATUS,
++			    status);
++
++	ret = ntb_virtio_send_command(ntb, HOST_CMD_SET_STATUS);
++	if (ret)
++		dev_err(dev, "Failed to set device status\n");
++}
++
++/* ntb_virtio_vq_db_work - Handle doorbell event receive for a virtqueue
++ * @work: The work_struct holding the ntb_virtio_vq_db_work() function for every
++ *   created virtqueue
++ *
++ * This function is invoked when the remote vhost driver sends a notification
++ * to the virtqueue. (vhost_virtqueue_kick() on the remote vhost driver). This
++ * function invokes the virtio client driver's virtqueue callback.
++ */
++static void ntb_virtio_vq_db_work(struct work_struct *work)
++{
++	struct ntb_virtio_queue *vqueue;
++	struct virtqueue *vq;
++
++	vqueue = container_of(work, struct ntb_virtio_queue, db_handler.work);
++	vq = vqueue->vq;
++
++	if (!vq->callback)
++		return;
++
++	vq->callback(vq);
++}
++
++/* ntb_virtio_notify - Send notification to the remote vhost virtqueue
++ * @vq: The local virtio virtqueue corresponding to the remote vhost virtqueue
++ *   where the notification has to be sent
++ *
++ * Use NTB doorbell to send notification for the remote vhost virtqueue.
++ */
++bool ntb_virtio_notify(struct virtqueue *vq)
++{
++	struct ntb_virtio *ntb;
++	struct ntb_dev *ndev;
++	struct device *dev;
++	int ret;
++
++	ntb = vq->priv;
++	ndev = ntb->ndev;
++	dev = ntb->dev;
++
++	ret = ntb_peer_db_set(ntb->ndev, vq->index);
++	if (ret) {
++		dev_err(dev, "Failed to notify remote virtqueue\n");
++		return false;
++	}
++
++	return true;
++}
++
++/* ntb_virtio_find_vq - Find a virtio virtqueue and instantiate it
++ * @vdev: Virtio device that communicates with remove vhost device
++ * @index: Index of the vhost virtqueue
++ * @callback: Callback function that has to be associated with the created
++ *   virtqueue
++ *
++ * Create a new virtio virtqueue which will be used by the remote vhost
++ * to access this virtio device.
++ */
++static struct virtqueue *
++ntb_virtio_find_vq(struct virtio_device *vdev, unsigned int index,
++		   void (*callback)(struct virtqueue *vq),
++		   const char *name, bool ctx)
++{
++	struct ntb_virtio_queue *vqueue;
++	resource_size_t xlat_align_size;
++	unsigned int vq_size, offset;
++	resource_size_t xlat_align;
++	struct ntb_virtio *ntb;
++	u16 queue_num_buffers;
++	struct ntb_dev *ndev;
++	struct virtqueue *vq;
++	struct device *dev;
++	void *mw_addr;
++	void *vq_addr;
++	int ret;
++
++	ntb = to_ntb_virtio(vdev);
++	ndev = ntb->ndev;
++	dev = ntb->dev;
++	mw_addr = ntb->mw_addr;
++
++	queue_num_buffers = ntb_peer_spad_read(ndev, NTB_DEF_PEER_IDX,
++					       VHOST_QUEUE_NUM_BUFFERS(index));
++	if (!queue_num_buffers) {
++		dev_err(dev, "Invalid number of buffers\n");
++		return ERR_PTR(-EINVAL);
++	}
++
++	ret = ntb_mw_get_align(ndev, NTB_DEF_PEER_IDX, 0, &xlat_align,
++			       &xlat_align_size, NULL);
++	if (ret) {
++		dev_err(dev, "Failed to get memory window align size\n");
++		return ERR_PTR(ret);
++	}
++
++	/* zero vring */
++	vq_size = vring_size(queue_num_buffers, xlat_align);
++	offset = index * vq_size;
++	if (offset + vq_size >= BUFFER_OFFSET) {
++		dev_err(dev, "Not enough memory for allocating vq\n");
++		return ERR_PTR(-ENOMEM);
++	}
++
++	vq_addr = mw_addr + offset;
++	memset(vq_addr, 0, vq_size);
++
++	/*
++	 * Create the new vq, and tell virtio we're not interested in
++	 * the 'weak' smp barriers, since we're talking with a real device.
++	 */
++	vq = vring_new_virtqueue(index, queue_num_buffers, xlat_align, vdev,
++				 false, ctx, vq_addr, ntb_virtio_notify,
++				 callback, name);
++	if (!vq) {
++		dev_err(dev, "vring_new_virtqueue %s failed\n", name);
++		return ERR_PTR(-ENOMEM);
++	}
++
++	vq->vdev = vdev;
++	vq->priv = ntb;
++
++	vqueue = &ntb->vqueue[index];
++	vqueue->vq = vq;
++
++	INIT_DELAYED_WORK(&vqueue->db_handler, ntb_virtio_vq_db_work);
++
++	return vq;
++}
++
++/* ntb_virtio_find_vqs - Find virtio virtqueues requested by virtio driver and
++ *   instantiate them
++ * @vdev: Virtio device that communicates with remove vhost device
++ * @nvqs: The number of virtqueues to be created
++ * @vqs: Array of pointers to the created vhost virtqueues
++ * @callback: Array of callback function that has to be associated with
++ *   each of the created virtqueues
++ * @names: Names that should be associated with each virtqueue
++ * @ctx: Context flag to find virtqueue
++ * @desc: Interrupt affinity descriptor
++ *
++ * Find virtio virtqueues requested by virtio driver and instantiate them. The
++ * number of buffers supported by the virtqueue is provided by the vhost
++ * device.
++ */
++static int
++ntb_virtio_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
++		    struct virtqueue *vqs[], vq_callback_t *callbacks[],
++		    const char * const names[], const bool *ctx,
++		    struct irq_affinity *desc)
++{
++	struct ntb_virtio *ntb;
++	struct device *dev;
++	int queue_idx = 0;
++	int i;
++
++	ntb = to_ntb_virtio(vdev);
++	dev = ntb->dev;
++
++	for (i = 0; i < nvqs; ++i) {
++		if (!names[i]) {
++			vqs[i] = NULL;
++			continue;
++		}
++
++		vqs[i] = ntb_virtio_find_vq(vdev, queue_idx++, callbacks[i],
++					    names[i], ctx ? ctx[i] : false);
++		if (IS_ERR(vqs[i])) {
++			dev_err(dev, "Failed to find virtqueue\n");
++			return  PTR_ERR(vqs[i]);
++		}
++	}
++
++	return 0;
++}
++
++/* ntb_virtio_del_vqs - Free memory allocated for virtio virtqueues
++ * @vdev: Virtio device that communicates with remove vhost device
++ *
++ * Free memory allocated for virtio virtqueues.
++ */
++void ntb_virtio_del_vqs(struct virtio_device *vdev)
++{
++	struct ntb_virtio_queue *vqueue;
++	struct virtqueue *vq, *tmp;
++	struct ntb_virtio *ntb;
++	struct ntb_dev *ndev;
++	int index;
++
++	ntb = to_ntb_virtio(vdev);
++	ndev = ntb->ndev;
++
++	list_for_each_entry_safe(vq, tmp, &vdev->vqs, list) {
++		index = vq->index;
++		vqueue = &ntb->vqueue[index];
++		cancel_delayed_work_sync(&vqueue->db_handler);
++		vring_del_virtqueue(vq);
++	}
++}
++
++/* ntb_virtio_reset - virtio_config_ops to reset the device
++ * @vdev: Virtio device that communicates with remove vhost device
++ *
++ * virtio_config_ops to reset the device. This sends HOST_CMD_RESET
++ * command to reset the device.
++ */
++static void ntb_virtio_reset(struct virtio_device *vdev)
++{
++	struct ntb_virtio *ntb;
++	struct device *dev;
++	int ret;
++
++	ntb = to_ntb_virtio(vdev);
++	dev = ntb->dev;
++
++	ret = ntb_virtio_send_command(ntb, HOST_CMD_RESET);
++	if (ret)
++		dev_err(dev, "Failed to reset device\n");
++}
++
++/* ntb_virtio_get - Copy the device configuration space data to buffer
++ *   from virtio driver
++ * @vdev: Virtio device that communicates with remove vhost device
++ * @offset: Offset in the device configuration space
++ * @buf: Buffer address from virtio driver where configuration space
++ *   data has to be copied
++ * @len: Length of the data from device configuration space to be copied
++ *
++ * Copy the device configuration space data to buffer from virtio driver.
++ */
++static void ntb_virtio_get(struct virtio_device *vdev, unsigned int offset,
++			   void *buf, unsigned int len)
++{
++	unsigned int cfg_offset;
++	struct ntb_virtio *ntb;
++	struct ntb_dev *ndev;
++	struct device *dev;
++	int i, size;
++
++	ntb = to_ntb_virtio(vdev);
++	ndev = ntb->ndev;
++	dev = ntb->dev;
++
++	size = len / 4;
++	for (i = 0; i < size; i++) {
++		cfg_offset = VHOST_DEVICE_CFG_SPACE + i + offset;
++		*(u32 *)buf = ntb_spad_read(ndev, cfg_offset);
++		buf += 4;
++	}
++}
++
++/* ntb_virtio_set - Copy the device configuration space data from buffer
++ *   provided by virtio driver
++ * @vdev: Virtio device that communicates with remove vhost device
++ * @offset: Offset in the device configuration space
++ * @buf: Buffer address provided by virtio driver which has the configuration
++ *   space data to be copied
++ * @len: Length of the data from device configuration space to be copied
++ *
++ * Copy the device configuration space data from buffer provided by virtio
++ * driver to the device.
++ */
++static void ntb_virtio_set(struct virtio_device *vdev, unsigned int offset,
++			   const void *buf, unsigned int len)
++{
++	struct ntb_virtio *ntb;
++	struct ntb_dev *ndev;
++	struct device *dev;
++	int i, size;
++
++	ntb = to_ntb_virtio(vdev);
++	ndev = ntb->ndev;
++	dev = ntb->dev;
++
++	size = len / 4;
++	for (i = 0; i < size; i++) {
++		ntb_spad_write(ndev, VHOST_DEVICE_CFG_SPACE + i, *(u32 *)buf);
++		buf += 4;
++	}
++}
++
++/* ntb_virtio_alloc_buffer - Allocate buffers from specially reserved memory
++ *   of virtio which can be accessed by both virtio and vhost
++ * @vdev: Virtio device that communicates with remove vhost device
++ * @size: The size of the memory that has to be allocated
++ *
++ * Allocate buffers from specially reserved memory of virtio which can be
++ * accessed by both virtio and vhost.
++ */
++static void *ntb_virtio_alloc_buffer(struct virtio_device *vdev, size_t size)
++{
++	struct ntb_virtio *ntb;
++	struct gen_pool *pool;
++	struct ntb_dev *ndev;
++	struct device *dev;
++	unsigned long addr;
++
++	ntb = to_ntb_virtio(vdev);
++	pool = ntb->gen_pool;
++	ndev = ntb->ndev;
++	dev = ntb->dev;
++
++	addr = gen_pool_alloc(pool, size);
++	if (!addr) {
++		dev_err(dev, "Failed to allocate memory\n");
++		return NULL;
++	}
++
++	return (void *)addr;
++}
++
++/* ntb_virtio_alloc_buffer - Free buffers allocated using
++ *   ntb_virtio_alloc_buffer()
++ * @vdev: Virtio device that communicates with remove vhost device
++ * @addr: Address returned by ntb_virtio_alloc_buffer()
++ * @size: The size of the allocated memory
++ *
++ * Free buffers allocated using ntb_virtio_alloc_buffer().
++ */
++static void ntb_virtio_free_buffer(struct virtio_device *vdev, void *addr,
++				   size_t size)
++{
++	struct ntb_virtio *ntb;
++	struct gen_pool *pool;
++	struct ntb_dev *ndev;
++	struct device *dev;
++
++	ntb = to_ntb_virtio(vdev);
++	pool = ntb->gen_pool;
++	ndev = ntb->ndev;
++	dev = ntb->dev;
++
++	gen_pool_free(pool, (unsigned long)addr, size);
++}
++
++static const struct virtio_config_ops ntb_virtio_config_ops = {
++	.get_features	= ntb_virtio_get_features,
++	.finalize_features = ntb_virtio_finalize_features,
++	.find_vqs	= ntb_virtio_find_vqs,
++	.del_vqs	= ntb_virtio_del_vqs,
++	.reset		= ntb_virtio_reset,
++	.set_status	= ntb_virtio_set_status,
++	.get_status	= ntb_virtio_get_status,
++	.get		= ntb_virtio_get,
++	.set		= ntb_virtio_set,
++	.alloc_buffer	= ntb_virtio_alloc_buffer,
++	.free_buffer	= ntb_virtio_free_buffer,
 +};
 +
-+enum queue_cmd_status {
-+	QUEUE_CMD_STATUS_NONE,
-+	QUEUE_CMD_STATUS_OKAY,
-+	QUEUE_CMD_STATUS_ERROR,
++/* ntb_virtio_release - Callback function to free device
++ * @dev: Device in virtio_device that has to be freed
++ *
++ * Callback function from device core invoked to free the device after
++ * all references have been removed. This frees the allocated memory for
++ * struct ntb_virtio.
++ */
++static void ntb_virtio_release(struct device *dev)
++{
++	struct virtio_device *vdev;
++	struct ntb_virtio *ntb;
++
++	vdev = dev_to_virtio(dev);
++	ntb = to_ntb_virtio(vdev);
++
++	kfree(ntb);
++}
++
++/* ntb_virtio_link_cleanup - Cleanup once link to the remote host is lost
++ * @ntb: NTB virtio device that communicates with remove vhost device
++ *
++ * Performs the cleanup that has to be done once the link to the remote host
++ * is lost or when the NTB virtio driver is removed.
++ */
++static void ntb_virtio_link_cleanup(struct ntb_virtio *ntb)
++{
++	dma_addr_t mw_phys_addr;
++	struct gen_pool *pool;
++	struct ntb_dev *ndev;
++	struct pci_dev *pdev;
++	void *mw_addr;
++	u64 mw_size;
++
++	ndev = ntb->ndev;
++	pool = ntb->gen_pool;
++	pdev = ndev->pdev;
++	mw_size = ntb->mw_size;
++	mw_addr = ntb->mw_addr;
++	mw_phys_addr = ntb->mw_phys_addr;
++
++	ntb_mw_clear_trans(ndev, 0, 0);
++	gen_pool_destroy(pool);
++	dma_free_coherent(&pdev->dev, mw_size, mw_addr, mw_phys_addr);
++}
++
++/* ntb_virtio_link_cleanup_work - Cleanup once link to the remote host is lost
++ * @work: The work_struct holding the ntb_virtio_link_cleanup_work() function
++ *   that is scheduled
++ *
++ * Performs the cleanup that has to be done once the link to the remote host
++ * is lost. This acts as a wrapper to ntb_virtio_link_cleanup() for the cleanup
++ * operation.
++ */
++static void ntb_virtio_link_cleanup_work(struct work_struct *work)
++{
++	struct ntb_virtio *ntb;
++
++	ntb = container_of(work, struct ntb_virtio, link_cleanup);
++	ntb_virtio_link_cleanup(ntb);
++}
++
++/* ntb_virtio_link_work - Initialization once link to the remote host is
++ *   established
++ * @work: The work_struct holding the ntb_virtio_link_work() function that is
++ *   scheduled
++ *
++ * Performs the NTB virtio initialization that has to be done once the link to
++ * the remote host is established. Reads the initialization data written by
++ * vhost driver (to get memory window size accessible by vhost) and reserves
++ * memory for virtqueues and buffers.
++ */
++static void ntb_virtio_link_work(struct work_struct *work)
++{
++	struct virtio_device *vdev;
++	dma_addr_t mw_phys_addr;
++	struct ntb_virtio *ntb;
++	u32 deviceid, vendorid;
++	struct gen_pool *pool;
++	struct ntb_dev *ndev;
++	struct pci_dev *pdev;
++	struct device *dev;
++	void *mw_addr;
++	u64 mw_size;
++	u32 type;
++	int ret;
++
++	ntb = container_of(work, struct ntb_virtio, link_work.work);
++	ndev = ntb->ndev;
++	pdev = ndev->pdev;
++	dev = &ndev->dev;
++
++	type = ntb_spad_read(ndev, VIRTIO_TYPE);
++	if (type != TYPE_VHOST)
++		goto out;
++
++	mw_size = ntb_peer_spad_read(ndev, NTB_DEF_PEER_IDX,
++				     VHOST_MW0_SIZE_UPPER);
++	mw_size <<= 32;
++	mw_size |= ntb_peer_spad_read(ndev, NTB_DEF_PEER_IDX,
++				      VHOST_MW0_SIZE_LOWER);
++	ntb->mw_size = mw_size;
++
++	mw_addr = dma_alloc_coherent(&pdev->dev, mw_size, &mw_phys_addr,
++				     GFP_KERNEL);
++	if (!mw_addr)
++		return;
++
++	pool = gen_pool_create(PAGE_SHIFT, -1);
++	if (!pool) {
++		dev_err(dev, "Failed to create gen pool\n");
++		goto err_gen_pool;
++	}
++
++	ret = gen_pool_add_virt(pool, (unsigned long)mw_addr + BUFFER_OFFSET,
++				mw_phys_addr + BUFFER_OFFSET,
++				mw_size - BUFFER_OFFSET, -1);
++	if (ret) {
++		dev_err(dev, "Failed to add memory to the pool\n");
++		goto err_gen_pool_add_virt;
++	}
++
++	ret = ntb_mw_set_trans(ndev, 0, 0, mw_phys_addr, mw_size);
++	if (ret) {
++		dev_err(dev, "Failed to set memory window translation\n");
++		goto err_gen_pool_add_virt;
++	}
++
++	ntb->mw_phys_addr = mw_phys_addr;
++	ntb->mw_addr = mw_addr;
++	ntb->mw_size = mw_size;
++	ntb->gen_pool = pool;
++
++	ntb_peer_spad_write(ndev, NTB_DEF_PEER_IDX, VIRTIO_MW0_LOWER_ADDR,
++			    lower_32_bits(mw_phys_addr));
++	ntb_peer_spad_write(ndev, NTB_DEF_PEER_IDX, VIRTIO_MW0_UPPER_ADDR,
++			    upper_32_bits(mw_phys_addr));
++
++	ntb_peer_spad_write(ndev, NTB_DEF_PEER_IDX, VIRTIO_TYPE, TYPE_VIRTIO);
++
++	deviceid = ntb_peer_spad_read(ndev, NTB_DEF_PEER_IDX, VHOST_DEVICEID);
++	vendorid = ntb_peer_spad_read(ndev, NTB_DEF_PEER_IDX, VHOST_VENDORID);
++
++	vdev = &ntb->vdev;
++	vdev->id.device = deviceid;
++	vdev->id.vendor = vendorid;
++	vdev->config = &ntb_virtio_config_ops,
++	vdev->dev.parent = dev;
++	vdev->dev.release = ntb_virtio_release;
++
++	ret = register_virtio_device(vdev);
++	if (ret) {
++		dev_err(dev, "failed to register vdev: %d\n", ret);
++		goto err_register_virtio;
++	}
++
++	return;
++
++out:
++	if (ntb_link_is_up(ndev, NULL, NULL) == 1)
++		schedule_delayed_work(&ntb->link_work,
++				      msecs_to_jiffies(NTB_LINK_DOWN_TIMEOUT));
++	return;
++
++err_register_virtio:
++	ntb_mw_clear_trans(ndev, 0, 0);
++
++err_gen_pool_add_virt:
++	gen_pool_destroy(pool);
++
++err_gen_pool:
++	dma_free_coherent(&pdev->dev, mw_size, mw_addr, mw_phys_addr);
++}
++
++/* ntb_vhost_event_callback - Callback to link event interrupt
++ * @data: Private data specific to NTB virtio driver
++ *
++ * Callback function from NTB HW driver whenever both the hosts in the NTB
++ * setup has invoked ntb_link_enable().
++ */
++static void ntb_virtio_event_callback(void *data)
++{
++	struct ntb_virtio *ntb = data;
++
++	if (ntb_link_is_up(ntb->ndev, NULL, NULL) == 1)
++		schedule_delayed_work(&ntb->link_work, 0);
++	else
++		schedule_work(&ntb->link_cleanup);
++}
++
++/* ntb_virtio_vq_db_callback - Callback to doorbell interrupt to handle virtio
++ *   virtqueue work
++ * @data: Private data specific to NTB virtio driver
++ * @vector: Doorbell vector on which interrupt is received
++ *
++ * Callback function from NTB HW driver whenever remote vhost driver has sent
++ * a notification using doorbell. This schedules work corresponding to the
++ * virtqueue for which notification has been received.
++ */
++static void ntb_virtio_vq_db_callback(void *data, int vector)
++{
++	struct ntb_virtio_queue *vqueue;
++	struct ntb_virtio *ntb;
++
++	ntb = data;
++	vqueue = &ntb->vqueue[vector - 1];
++
++	schedule_delayed_work(&vqueue->db_handler, 0);
++}
++
++static const struct ntb_ctx_ops ntb_virtio_ops = {
++	.link_event = ntb_virtio_event_callback,
++	.db_event = ntb_virtio_vq_db_callback,
 +};
 +
-+struct epf_vhost_reg {
-+	u64 host_features;
-+	u64 guest_features;
-+	u16 msix_config;
-+	u16 num_queues;
-+	u8 device_status;
-+	u8 config_generation;
-+	u32 isr;
-+	u8 cmd;
-+	u8 cmd_status;
-+	struct epf_vhost_reg_queue vq[MAX_VQS];
-+} __packed;
++/* ntb_virtio_probe - Initialize struct ntb_virtio when a new NTB device is
++ *   created
++ * @client: struct ntb_client * representing the ntb virtio client driver
++ * @ndev: NTB device created by NTB HW driver
++ *
++ * Probe function to initialize struct ntb_virtio when a new NTB device is
++ * created.
++ */
++static int ntb_virtio_probe(struct ntb_client *self, struct ntb_dev *ndev)
++{
++	struct device *dev = &ndev->dev;
++	struct ntb_virtio *ntb;
++	int ret;
 +
++	ntb = kzalloc(sizeof(*ntb), GFP_KERNEL);
++	if (!ntb)
++		return -ENOMEM;
++
++	ntb->ndev = ndev;
++	ntb->dev = dev;
++
++	mutex_init(&ntb->lock);
++	INIT_DELAYED_WORK(&ntb->link_work, ntb_virtio_link_work);
++	INIT_WORK(&ntb->link_cleanup, ntb_virtio_link_cleanup_work);
++
++	ret = ntb_set_ctx(ndev, ntb, &ntb_virtio_ops);
++	if (ret) {
++		dev_err(dev, "Failed to set NTB virtio context\n");
++		goto err;
++	}
++
++	ntb_link_enable(ndev, NTB_SPEED_AUTO, NTB_WIDTH_AUTO);
++
++	return 0;
++
++err:
++	kfree(ntb);
++
++	return ret;
++}
++
++/* ntb_virtio_free - Free the initializations performed by ntb_virtio_probe()
++ * @client: struct ntb_client * representing the ntb virtio client driver
++ * @ndev: NTB device created by NTB HW driver
++ *
++ * Free the initializations performed by ntb_virtio_probe().
++ */
++void ntb_virtio_free(struct ntb_client *client, struct ntb_dev *ndev)
++{
++	struct virtio_device *vdev;
++	struct ntb_virtio *ntb;
++
++	ntb = ndev->ctx;
++	vdev = &ntb->vdev;
++
++	ntb_virtio_link_cleanup(ntb);
++	cancel_work_sync(&ntb->link_cleanup);
++	cancel_delayed_work_sync(&ntb->link_work);
++	ntb_link_disable(ndev);
++
++	if (device_is_registered(&vdev->dev))
++		unregister_virtio_device(vdev);
++}
++
++static struct ntb_client ntb_virtio_client = {
++	.ops = {
++		.probe = ntb_virtio_probe,
++		.remove = ntb_virtio_free,
++	},
++};
++
++static int __init ntb_virtio_init(void)
++{
++	int ret;
++
++	ret = ntb_register_client(&ntb_virtio_client);
++	if (ret) {
++		pr_err("Failed to register ntb vhost driver --> %d\n", ret);
++		return ret;
++	}
++
++	return 0;
++}
++module_init(ntb_virtio_init);
++
++static void __exit ntb_virtio_exit(void)
++{
++	ntb_unregister_client(&ntb_virtio_client);
++}
++module_exit(ntb_virtio_exit);
++
++MODULE_DESCRIPTION("NTB VIRTIO Driver");
++MODULE_AUTHOR("Kishon Vijay Abraham I <kishon@ti.com>");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/ntb/ntb_virtio.h b/drivers/ntb/ntb_virtio.h
+new file mode 100644
+index 000000000000..bc68ca38f60b
+--- /dev/null
++++ b/drivers/ntb/ntb_virtio.h
+@@ -0,0 +1,56 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/**
++ * NTB VIRTIO/VHOST Header
++ *
++ * Copyright (C) 2020 Texas Instruments
++ * Author: Kishon Vijay Abraham I <kishon@ti.com>
++ */
++
++#ifndef __LINUX_NTB_VIRTIO_H
++#define __LINUX_NTB_VIRTIO_H
++
++#define VIRTIO_TYPE			0
++enum virtio_type {
++	TYPE_VIRTIO = 1,
++	TYPE_VHOST,
++};
++
++#define VHOST_VENDORID			1
++#define VHOST_DEVICEID			2
++#define VHOST_FEATURES_UPPER		3
++#define VHOST_FEATURES_LOWER		4
++#define VIRTIO_FEATURES_UPPER		5
++#define VIRTIO_FEATURES_LOWER		6
++#define VHOST_MW0_SIZE_LOWER		7
++#define VHOST_MW0_SIZE_UPPER		8
++#define VIRTIO_MW0_LOWER_ADDR		9
++#define VIRTIO_MW0_UPPER_ADDR		10
++#define VHOST_DEVICE_STATUS		11
++#define VHOST_CONFIG_GENERATION		12
++
++#define VHOST_COMMAND			13
 +enum host_cmd {
 +	HOST_CMD_NONE,
 +	HOST_CMD_SET_STATUS,
@@ -217,1119 +1025,24 @@ index 000000000000..d090e5e88575
 +	HOST_CMD_RESET,
 +};
 +
++#define VHOST_COMMAND_STATUS		14
 +enum host_cmd_status {
 +	HOST_CMD_STATUS_NONE,
 +	HOST_CMD_STATUS_OKAY,
 +	HOST_CMD_STATUS_ERROR,
 +};
 +
-+static struct pci_epf_header epf_vhost_header = {
-+	.vendorid	= PCI_ANY_ID,
-+	.deviceid	= PCI_ANY_ID,
-+	.baseclass_code	= PCI_CLASS_OTHERS,
-+	.interrupt_pin	= PCI_INTERRUPT_INTA,
-+};
++#define VHOST_QUEUE_BASE		15
++#define VHOST_QUEUE_NUM_BUFFERS(n)	(VHOST_QUEUE_BASE + (n))
 +
-+/* pci_epf_vhost_cmd_handler - Handle commands from remote EPF virtio driver
-+ * @work: The work_struct holding the pci_epf_vhost_cmd_handler() function that
-+ *   is scheduled
-+ *
-+ * Handle commands from the remote EPF virtio driver and sends notification to
-+ * the vhost client driver. The remote EPF virtio driver sends commands when the
-+ * virtio driver status is updated or when the feature negotiation is complete or
-+ * if the virtio driver wants to reset the device.
-+ */
-+static void pci_epf_vhost_cmd_handler(struct work_struct *work)
-+{
-+	struct epf_vhost_reg *reg;
-+	struct epf_vhost *vhost;
-+	struct vhost_dev *vdev;
-+	struct device *dev;
-+	u8 command;
++#define VHOST_DEVICE_CFG_SPACE		23
 +
-+	vhost = container_of(work, struct epf_vhost, cmd_handler.work);
-+	vdev = &vhost->vdev;
-+	dev = &vhost->epf->dev;
-+	reg = vhost->reg;
++#define NTB_LINK_DOWN_TIMEOUT		10	/* 10 milli-sec */
++#define COMMAND_TIMEOUT			1000	/* 1 sec */
 +
-+	command = reg->cmd;
-+	if (!command)
-+		goto reset_handler;
++#define MAX_VQS				8
 +
-+	reg->cmd = 0;
-+
-+	switch (command) {
-+	case HOST_CMD_SET_STATUS:
-+		blocking_notifier_call_chain(&vdev->notifier, NOTIFY_SET_STATUS,
-+					     NULL);
-+		reg->cmd_status = HOST_CMD_STATUS_OKAY;
-+		break;
-+	case HOST_CMD_FINALIZE_FEATURES:
-+		vdev->features = reg->guest_features;
-+		blocking_notifier_call_chain(&vdev->notifier,
-+					     NOTIFY_FINALIZE_FEATURES, 0);
-+		reg->cmd_status = HOST_CMD_STATUS_OKAY;
-+		break;
-+	case HOST_CMD_RESET:
-+		blocking_notifier_call_chain(&vdev->notifier, NOTIFY_RESET, 0);
-+		reg->cmd_status = HOST_CMD_STATUS_OKAY;
-+		break;
-+	default:
-+		dev_err(dev, "UNKNOWN command: %d\n", command);
-+		break;
-+	}
-+
-+reset_handler:
-+	queue_delayed_work(kpcivhost_workqueue, &vhost->cmd_handler,
-+			   msecs_to_jiffies(1));
-+}
-+
-+/* pci_epf_vhost_queue_activate - Map virtqueue local address to remote
-+ *   virtqueue address provided by EPF virtio
-+ * @vqueue: struct epf_vhost_queue holding the local virtqueue address
-+ *
-+ * In order for the local system to access the remote virtqueue, the address
-+ * reserved in local system should be mapped to the remote virtqueue address.
-+ * Map local virtqueue address to remote virtqueue address here.
-+ */
-+static int pci_epf_vhost_queue_activate(struct epf_vhost_queue *vqueue)
-+{
-+	struct epf_vhost_reg_queue *reg_queue;
-+	struct vhost_virtqueue *vq;
-+	struct epf_vhost_reg *reg;
-+	phys_addr_t vq_phys_addr;
-+	struct epf_vhost *vhost;
-+	struct pci_epf *epf;
-+	struct pci_epc *epc;
-+	struct device *dev;
-+	u64 vq_remote_addr;
-+	size_t vq_size;
-+	u8 func_no;
-+	int ret;
-+
-+	vhost = vqueue->vhost;
-+	epf = vhost->epf;
-+	dev = &epf->dev;
-+	epc = epf->epc;
-+	func_no = epf->func_no;
-+
-+	vq = vqueue->vq;
-+	reg = vhost->reg;
-+	reg_queue = &reg->vq[vq->index];
-+	vq_phys_addr = vqueue->phys_addr;
-+	vq_remote_addr = reg_queue->queue_addr;
-+	vq_size = vqueue->size;
-+
-+	ret = pci_epc_map_addr(epc, func_no, vq_phys_addr, vq_remote_addr,
-+			       vq_size);
-+	if (ret) {
-+		dev_err(dev, "Failed to map outbound address\n");
-+		return ret;
-+	}
-+
-+	reg_queue->status |= VHOST_QUEUE_STATUS_ENABLE;
-+
-+	return 0;
-+}
-+
-+/* pci_epf_vhost_queue_deactivate - Unmap virtqueue local address from remote
-+ *   virtqueue address
-+ * @vqueue: struct epf_vhost_queue holding the local virtqueue address
-+ *
-+ * Unmap virtqueue local address from remote virtqueue address.
-+ */
-+static void pci_epf_vhost_queue_deactivate(struct epf_vhost_queue *vqueue)
-+{
-+	struct epf_vhost_reg_queue *reg_queue;
-+	struct vhost_virtqueue *vq;
-+	struct epf_vhost_reg *reg;
-+	phys_addr_t vq_phys_addr;
-+	struct epf_vhost *vhost;
-+	struct pci_epf *epf;
-+	struct pci_epc *epc;
-+	u8 func_no;
-+
-+	vhost = vqueue->vhost;
-+
-+	epf = vhost->epf;
-+	epc = epf->epc;
-+	func_no = epf->func_no;
-+	vq_phys_addr = vqueue->phys_addr;
-+
-+	pci_epc_unmap_addr(epc, func_no, vq_phys_addr);
-+
-+	reg = vhost->reg;
-+	vq = vqueue->vq;
-+	reg_queue = &reg->vq[vq->index];
-+	reg_queue->status &= ~VHOST_QUEUE_STATUS_ENABLE;
-+}
-+
-+/* pci_epf_vhost_queue_cmd_handler - Handle commands from remote EPF virtio
-+ *   driver sent for a particular virtqueue
-+ * @work: The work_struct holding the pci_epf_vhost_queue_cmd_handler()
-+ *   function that is scheduled
-+ *
-+ * Handle commands from the remote EPF virtio driver sent for a particular
-+ * virtqueue to activate/de-activate a virtqueue or to send notification to
-+ * the vhost client driver.
-+ */
-+static void pci_epf_vhost_queue_cmd_handler(struct work_struct *work)
-+{
-+	struct epf_vhost_reg_queue *reg_queue;
-+	struct epf_vhost_queue *vqueue;
-+	struct vhost_virtqueue *vq;
-+	struct epf_vhost_reg *reg;
-+	struct epf_vhost *vhost;
-+	struct device *dev;
-+	u8 command;
-+	int ret;
-+
-+	vqueue = container_of(work, struct epf_vhost_queue, cmd_handler.work);
-+	vhost = vqueue->vhost;
-+	reg = vhost->reg;
-+	vq = vqueue->vq;
-+	reg_queue = &reg->vq[vq->index];
-+	dev = &vhost->epf->dev;
-+
-+	command = reg_queue->cmd;
-+	if (!command)
-+		goto reset_handler;
-+
-+	reg_queue->cmd = 0;
-+	vq = vqueue->vq;
-+
-+	switch (command) {
-+	case QUEUE_CMD_ACTIVATE:
-+		ret = pci_epf_vhost_queue_activate(vqueue);
-+		if (ret)
-+			reg_queue->cmd_status = QUEUE_CMD_STATUS_ERROR;
-+		else
-+			reg_queue->cmd_status = QUEUE_CMD_STATUS_OKAY;
-+		break;
-+	case QUEUE_CMD_DEACTIVATE:
-+		pci_epf_vhost_queue_deactivate(vqueue);
-+		reg_queue->cmd_status = QUEUE_CMD_STATUS_OKAY;
-+		break;
-+	case QUEUE_CMD_NOTIFY:
-+		vhost_virtqueue_callback(vqueue->vq);
-+		reg_queue->cmd_status = QUEUE_CMD_STATUS_OKAY;
-+		break;
-+	default:
-+		dev_err(dev, "UNKNOWN QUEUE command: %d\n", command);
-+		break;
-+}
-+
-+reset_handler:
-+	queue_delayed_work(kpcivhost_workqueue, &vqueue->cmd_handler,
-+			   msecs_to_jiffies(1));
-+}
-+
-+/* pci_epf_vhost_write - Write data to buffer provided by remote virtio driver
-+ * @vdev: Vhost device that communicates with remove virtio device
-+ * @dst: Buffer address present in the memory of the remote system to which
-+ *   data should be written
-+ * @src: Buffer address in the local device provided by the vhost client driver
-+ * @len: Length of the data to be copied from @src to @dst
-+ *
-+ * Write data to buffer provided by remote virtio driver from buffer provided
-+ * by vhost client driver.
-+ */
-+static int pci_epf_vhost_write(struct vhost_dev *vdev, u64 dst, void *src, int len)
-+{
-+	const struct pci_epc_features *epc_features;
-+	struct epf_vhost *vhost;
-+	phys_addr_t phys_addr;
-+	struct pci_epf *epf;
-+	struct pci_epc *epc;
-+	void __iomem *addr;
-+	struct device *dev;
-+	int offset, ret;
-+	u64 dst_addr;
-+	size_t align;
-+	u8 func_no;
-+
-+	vhost = to_epf_vhost(vdev);
-+	epf = vhost->epf;
-+	dev = &epf->dev;
-+	epc = epf->epc;
-+	func_no = epf->func_no;
-+	epc_features = vhost->epc_features;
-+	align = epc_features->align;
-+
-+	offset = dst & (align - 1);
-+	dst_addr = dst & ~(align - 1);
-+
-+	addr = pci_epc_mem_alloc_addr(epc, &phys_addr, len);
-+	if (!addr) {
-+		dev_err(dev, "Failed to allocate outbound address\n");
-+		return -ENOMEM;
-+	}
-+
-+	ret = pci_epc_map_addr(epc, func_no, phys_addr, dst_addr, len);
-+	if (ret) {
-+		dev_err(dev, "Failed to map outbound address\n");
-+		goto ret;
-+	}
-+
-+	memcpy_toio(addr + offset, src, len);
-+
-+	pci_epc_unmap_addr(epc, func_no, phys_addr);
-+
-+ret:
-+	pci_epc_mem_free_addr(epc, phys_addr, addr, len);
-+
-+	return ret;
-+}
-+
-+/* ntb_vhost_read - Read data from buffer provided by remote virtio driver
-+ * @vdev: Vhost device that communicates with remove virtio device
-+ * @dst: Buffer address in the local device provided by the vhost client driver
-+ * @src: Buffer address in the remote device provided by the remote virtio
-+ *   driver
-+ * @len: Length of the data to be copied from @src to @dst
-+ *
-+ * Read data from buffer provided by remote virtio driver to address provided
-+ * by vhost client driver.
-+ */
-+static int pci_epf_vhost_read(struct vhost_dev *vdev, void *dst, u64 src, int len)
-+{
-+	const struct pci_epc_features *epc_features;
-+	struct epf_vhost *vhost;
-+	phys_addr_t phys_addr;
-+	struct pci_epf *epf;
-+	struct pci_epc *epc;
-+	void __iomem *addr;
-+	struct device *dev;
-+	int offset, ret;
-+	u64 src_addr;
-+	size_t align;
-+	u8 func_no;
-+
-+	vhost = to_epf_vhost(vdev);
-+	epf = vhost->epf;
-+	dev = &epf->dev;
-+	epc = epf->epc;
-+	func_no = epf->func_no;
-+	epc_features = vhost->epc_features;
-+	align = epc_features->align;
-+
-+	offset = src & (align - 1);
-+	src_addr = src & ~(align - 1);
-+
-+	addr = pci_epc_mem_alloc_addr(epc, &phys_addr, len);
-+	if (!addr) {
-+		dev_err(dev, "Failed to allocate outbound address\n");
-+		return -ENOMEM;
-+	}
-+
-+	ret = pci_epc_map_addr(epc, func_no, phys_addr, src_addr, len);
-+	if (ret) {
-+		dev_err(dev, "Failed to map outbound address\n");
-+		goto ret;
-+	}
-+
-+	memcpy_fromio(dst, addr + offset, len);
-+
-+	pci_epc_unmap_addr(epc, func_no, phys_addr);
-+
-+ret:
-+	pci_epc_mem_free_addr(epc, phys_addr, addr, len);
-+
-+	return ret;
-+}
-+
-+/* pci_epf_vhost_notify - Send notification to the remote virtqueue
-+ * @vq: The local vhost virtqueue corresponding to the remote virtio virtqueue
-+ *
-+ * Use endpoint core framework to raise MSI-X interrupt to notify the remote
-+ * virtqueue.
-+ */
-+static void  pci_epf_vhost_notify(struct vhost_virtqueue *vq)
-+{
-+	struct epf_vhost_reg_queue *reg_queue;
-+	struct epf_vhost_reg *reg;
-+	struct epf_vhost *vhost;
-+	struct vhost_dev *vdev;
-+	struct pci_epf *epf;
-+	struct pci_epc *epc;
-+	u8 func_no;
-+
-+	vdev = vq->dev;
-+	vhost = to_epf_vhost(vdev);
-+	epf = vhost->epf;
-+	func_no = epf->func_no;
-+	epc = epf->epc;
-+	reg = vhost->reg;
-+	reg_queue = &reg->vq[vq->index];
-+
-+	pci_epc_raise_irq(epc, func_no, PCI_EPC_IRQ_MSIX,
-+			  reg_queue->msix_vector + 1);
-+}
-+
-+/* pci_epf_vhost_del_vqs - Delete all the vqs associated with the vhost device
-+ * @vdev: Vhost device that communicates with remove virtio device
-+ *
-+ * Delete all the vqs associated with the vhost device and free the memory
-+ * address reserved for accessing the remote virtqueue.
-+ */
-+static void pci_epf_vhost_del_vqs(struct vhost_dev *vdev)
-+{
-+	struct epf_vhost_queue *vqueue;
-+	struct vhost_virtqueue *vq;
-+	phys_addr_t vq_phys_addr;
-+	struct epf_vhost *vhost;
-+	void __iomem *vq_addr;
-+	unsigned int vq_size;
-+	struct pci_epf *epf;
-+	struct pci_epc *epc;
-+	int i;
-+
-+	vhost = to_epf_vhost(vdev);
-+	epf = vhost->epf;
-+	epc = epf->epc;
-+
-+	for (i = 0; i < vdev->nvqs; i++) {
-+		vq = vdev->vqs[i];
-+		if (IS_ERR_OR_NULL(vq))
-+			continue;
-+
-+		vqueue = &vhost->vqueue[i];
-+		vq_phys_addr = vqueue->phys_addr;
-+		vq_addr = vqueue->addr;
-+		vq_size = vqueue->size;
-+		pci_epc_mem_free_addr(epc, vq_phys_addr, vq_addr, vq_size);
-+		kfree(vq);
-+	}
-+}
-+
-+/* pci_epf_vhost_create_vq - Create a new vhost virtqueue
-+ * @vdev: Vhost device that communicates with remove virtio device
-+ * @index: Index of the vhost virtqueue
-+ * @num_bufs: The number of buffers that should be supported by the vhost
-+ *   virtqueue (number of descriptors in the vhost virtqueue)
-+ * @callback: Callback function associated with the virtqueue
-+ *
-+ * Create a new vhost virtqueue which can be used by the vhost client driver
-+ * to access the remote virtio. This sets up the local address of the vhost
-+ * virtqueue but shouldn't be accessed until the virtio sets the status to
-+ * VIRTIO_CONFIG_S_DRIVER_OK.
-+ */
-+static struct vhost_virtqueue *
-+pci_epf_vhost_create_vq(struct vhost_dev *vdev, int index,
-+			unsigned int num_bufs,
-+			void (*callback)(struct vhost_virtqueue *))
-+{
-+	struct epf_vhost_reg_queue *reg_queue;
-+	struct epf_vhost_queue *vqueue;
-+	struct epf_vhost_reg *reg;
-+	struct vhost_virtqueue *vq;
-+	phys_addr_t vq_phys_addr;
-+	struct epf_vhost *vhost;
-+	struct vringh *vringh;
-+	void __iomem *vq_addr;
-+	unsigned int vq_size;
-+	struct vring *vring;
-+	struct pci_epf *epf;
-+	struct pci_epc *epc;
-+	struct device *dev;
-+	int ret;
-+
-+	vhost = to_epf_vhost(vdev);
-+	vqueue = &vhost->vqueue[index];
-+	reg = vhost->reg;
-+	reg_queue = &reg->vq[index];
-+	epf = vhost->epf;
-+	epc = epf->epc;
-+	dev = &epf->dev;
-+
-+	vq = kzalloc(sizeof(*vq), GFP_KERNEL);
-+	if (!vq)
-+		return ERR_PTR(-ENOMEM);
-+
-+	vq->dev = vdev;
-+	vq->callback = callback;
-+	vq->num = num_bufs;
-+	vq->index = index;
-+	vq->notify = pci_epf_vhost_notify;
-+	vq->type = VHOST_TYPE_MMIO;
-+
-+	vqueue->vq = vq;
-+	vqueue->vhost = vhost;
-+
-+	vringh = &vq->vringh;
-+	vring = &vringh->vring;
-+	reg_queue->num_buffers = num_bufs;
-+
-+	vq_size = vring_size(num_bufs, VIRTIO_PCI_VRING_ALIGN);
-+	vq_addr = pci_epc_mem_alloc_addr(epc, &vq_phys_addr, vq_size);
-+	if (!vq_addr) {
-+		dev_err(dev, "Failed to allocate virtqueue address\n");
-+		ret = -ENOMEM;
-+		goto err_mem_alloc_addr;
-+	}
-+
-+	vring_init(vring, num_bufs, vq_addr, VIRTIO_PCI_VRING_ALIGN);
-+	ret = vringh_init_mmio(vringh, 0, num_bufs, false, vring->desc,
-+			       vring->avail, vring->used);
-+	if (ret) {
-+		dev_err(dev, "Failed to init vringh\n");
-+		goto err_init_mmio;
-+	}
-+
-+	vqueue->phys_addr = vq_phys_addr;
-+	vqueue->addr = vq_addr;
-+	vqueue->size = vq_size;
-+
-+	INIT_DELAYED_WORK(&vqueue->cmd_handler, pci_epf_vhost_queue_cmd_handler);
-+	queue_work(kpcivhost_workqueue, &vqueue->cmd_handler.work);
-+
-+	return vq;
-+
-+err_init_mmio:
-+	pci_epc_mem_free_addr(epc, vq_phys_addr, vq_addr, vq_size);
-+
-+err_mem_alloc_addr:
-+	kfree(vq);
-+
-+	return ERR_PTR(ret);
-+}
-+
-+/* pci_epf_vhost_create_vqs - Create vhost virtqueues for vhost device
-+ * @vdev: Vhost device that communicates with the remote virtio device
-+ * @nvqs: Number of vhost virtqueues to be created
-+ * @num_bufs: The number of buffers that should be supported by the vhost
-+ *   virtqueue (number of descriptors in the vhost virtqueue)
-+ * @vqs: Pointers to all the created vhost virtqueues
-+ * @callback: Callback function associated with the virtqueue
-+ * @names: Names associated with each virtqueue
-+ *
-+ * Create vhost virtqueues for vhost device. This acts as a wrapper to
-+ * pci_epf_vhost_create_vq() which creates individual vhost virtqueue.
-+ */
-+static int pci_epf_vhost_create_vqs(struct vhost_dev *vdev, unsigned int nvqs,
-+				    unsigned int num_bufs,
-+				    struct vhost_virtqueue *vqs[],
-+				    vhost_vq_callback_t *callbacks[],
-+				    const char * const names[])
-+{
-+	struct epf_vhost *vhost;
-+	struct pci_epf *epf;
-+	struct device *dev;
-+	int ret, i;
-+
-+	vhost = to_epf_vhost(vdev);
-+	epf = vhost->epf;
-+	dev = &epf->dev;
-+
-+	for (i = 0; i < nvqs; i++) {
-+		vqs[i] = pci_epf_vhost_create_vq(vdev, i, num_bufs,
-+						 callbacks[i]);
-+		if (IS_ERR_OR_NULL(vqs[i])) {
-+			ret = PTR_ERR(vqs[i]);
-+			dev_err(dev, "Failed to create virtqueue\n");
-+			goto err;
-+		}
-+	}
-+
-+	vdev->nvqs = nvqs;
-+	vdev->vqs = vqs;
-+
-+	return 0;
-+
-+err:
-+	pci_epf_vhost_del_vqs(vdev);
-+	return ret;
-+}
-+
-+/* pci_epf_vhost_set_features - vhost_config_ops to set vhost device features
-+ * @vdev: Vhost device that communicates with the remote virtio device
-+ * @features: Features supported by the vhost client driver
-+ *
-+ * vhost_config_ops invoked by the vhost client driver to set vhost device
-+ * features.
-+ */
-+static int pci_epf_vhost_set_features(struct vhost_dev *vdev, u64 features)
-+{
-+	struct epf_vhost_reg *reg;
-+	struct epf_vhost *vhost;
-+
-+	vhost = to_epf_vhost(vdev);
-+	reg = vhost->reg;
-+
-+	reg->host_features = features;
-+
-+	return 0;
-+}
-+
-+/* ntb_vhost_set_status - vhost_config_ops to set vhost device status
-+ * @vdev: Vhost device that communicates with the remote virtio device
-+ * @status: Vhost device status configured by vhost client driver
-+ *
-+ * vhost_config_ops invoked by the vhost client driver to set vhost device
-+ * status.
-+ */
-+static int pci_epf_vhost_set_status(struct vhost_dev *vdev, u8 status)
-+{
-+	struct epf_vhost_reg *reg;
-+	struct epf_vhost *vhost;
-+
-+	vhost = to_epf_vhost(vdev);
-+	reg = vhost->reg;
-+
-+	reg->device_status = status;
-+
-+	return 0;
-+}
-+
-+/* ntb_vhost_get_status - vhost_config_ops to get vhost device status
-+ * @vdev: Vhost device that communicates with the remote virtio device
-+ *
-+ * vhost_config_ops invoked by the vhost client driver to get vhost device
-+ * status set by the remote virtio driver.
-+ */
-+static u8 pci_epf_vhost_get_status(struct vhost_dev *vdev)
-+{
-+	struct epf_vhost_reg *reg;
-+	struct epf_vhost *vhost;
-+
-+	vhost = to_epf_vhost(vdev);
-+	reg = vhost->reg;
-+
-+	return reg->device_status;
-+}
-+
-+static const struct vhost_config_ops pci_epf_vhost_ops = {
-+	.create_vqs	= pci_epf_vhost_create_vqs,
-+	.del_vqs	= pci_epf_vhost_del_vqs,
-+	.write		= pci_epf_vhost_write,
-+	.read		= pci_epf_vhost_read,
-+	.set_features	= pci_epf_vhost_set_features,
-+	.set_status	= pci_epf_vhost_set_status,
-+	.get_status	= pci_epf_vhost_get_status,
-+};
-+
-+/* pci_epf_vhost_write_header - Write to PCIe standard configuration space
-+ *   header
-+ * @vhost: EPF vhost containing the vhost device that communicates with the
-+ *   remote virtio device
-+ *
-+ * Invokes endpoint core framework's pci_epc_write_header() to write to the
-+ * standard configuration space header.
-+ */
-+static int pci_epf_vhost_write_header(struct epf_vhost *vhost)
-+{
-+	struct pci_epf_header *header;
-+	struct vhost_dev *vdev;
-+	struct pci_epc *epc;
-+	struct pci_epf *epf;
-+	struct device *dev;
-+	u8 func_no;
-+	int ret;
-+
-+	vdev = &vhost->vdev;
-+	epf = vhost->epf;
-+	dev = &epf->dev;
-+	epc = epf->epc;
-+	func_no = epf->func_no;
-+	header = epf->header;
-+
-+	ret = pci_epc_write_header(epc, func_no, header);
-+	if (ret) {
-+		dev_err(dev, "Configuration header write failed\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+/* pci_epf_vhost_release_dev - Callback function to free device
-+ * @dev: Device in vhost_dev that has to be freed
-+ *
-+ * Callback function from device core invoked to free the device after
-+ * all references have been removed. This frees the allocated memory for
-+ * struct ntb_vhost.
-+ */
-+static void pci_epf_vhost_release_dev(struct device *dev)
-+{
-+	struct epf_vhost *vhost;
-+	struct vhost_dev *vdev;
-+
-+	vdev = to_vhost_dev(dev);
-+	vhost = to_epf_vhost(vdev);
-+
-+	kfree(vhost);
-+}
-+
-+/* pci_epf_vhost_register - Register a vhost device
-+ * @vhost: EPF vhost containing the vhost device that communicates with the
-+ *   remote virtio device
-+ *
-+ * Invoked vhost_register_device() to register a vhost device after populating
-+ * the deviceID and vendorID of the vhost device.
-+ */
-+static int pci_epf_vhost_register(struct epf_vhost *vhost)
-+{
-+	struct vhost_dev *vdev;
-+	struct pci_epf *epf;
-+	struct device *dev;
-+	int ret;
-+
-+	vdev = &vhost->vdev;
-+	epf = vhost->epf;
-+	dev = &epf->dev;
-+
-+	vdev->dev.parent = dev;
-+	vdev->dev.release = pci_epf_vhost_release_dev;
-+	vdev->id.device = vhost->epf->header->subsys_id;
-+	vdev->id.vendor = vhost->epf->header->subsys_vendor_id;
-+	vdev->ops = &pci_epf_vhost_ops;
-+
-+	ret = vhost_register_device(vdev);
-+	if (ret) {
-+		dev_err(dev, "Failed to register vhost device\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+/* pci_epf_vhost_configure_bar - Configure BAR of EPF device
-+ * @vhost: EPF vhost containing the vhost device that communicates with the
-+ *   remote virtio device
-+ *
-+ * Allocate memory for the standard virtio configuration space and map it to
-+ * the first free BAR.
-+ */
-+static int pci_epf_vhost_configure_bar(struct epf_vhost *vhost)
-+{
-+	size_t msix_table_size = 0, pba_size = 0, align, bar_size;
-+	const struct pci_epc_features *epc_features;
-+	struct pci_epf_bar *epf_bar;
-+	struct vhost_dev *vdev;
-+	struct pci_epf *epf;
-+	struct pci_epc *epc;
-+	struct device *dev;
-+	bool msix_capable;
-+	u32 config_size;
-+	int barno, ret;
-+	void *base;
-+	u64 size;
-+
-+	vdev = &vhost->vdev;
-+	epf = vhost->epf;
-+	dev = &epf->dev;
-+	epc = epf->epc;
-+
-+	epc_features = vhost->epc_features;
-+	barno = pci_epc_get_first_free_bar(epc_features);
-+	if (barno < 0) {
-+		dev_err(dev, "Failed to get free BAR\n");
-+		return barno;
-+	}
-+
-+	size = epc_features->bar_fixed_size[barno];
-+	align = epc_features->align;
-+	/* Check if epc_features is populated incorrectly */
-+	if ((!IS_ALIGNED(size, align)))
-+		return -EINVAL;
-+
-+	config_size = sizeof(struct epf_vhost_reg) + VHOST_DEVICE_CONFIG_SIZE;
-+	config_size = ALIGN(config_size, 8);
-+
-+	msix_capable = epc_features->msix_capable;
-+	if (msix_capable) {
-+		msix_table_size = PCI_MSIX_ENTRY_SIZE * epf->msix_interrupts;
-+		vhost->msix_table_offset = config_size;
-+		vhost->msix_bar = barno;
-+		/* Align to QWORD or 8 Bytes */
-+		pba_size = ALIGN(DIV_ROUND_UP(epf->msix_interrupts, 8), 8);
-+	}
-+
-+	bar_size = config_size + msix_table_size + pba_size;
-+
-+	if (!align)
-+		bar_size = roundup_pow_of_two(bar_size);
-+	else
-+		bar_size = ALIGN(bar_size, align);
-+
-+	if (!size)
-+		size = bar_size;
-+	else if (size < bar_size)
-+		return -EINVAL;
-+
-+	base = pci_epf_alloc_space(epf, size, barno, align,
-+				   PRIMARY_INTERFACE);
-+	if (!base) {
-+		dev_err(dev, "Failed to allocate configuration region\n");
-+		return -ENOMEM;
-+	}
-+
-+	epf_bar = &epf->bar[barno];
-+	ret = pci_epc_set_bar(epc, epf->func_no, epf_bar);
-+	if (ret) {
-+		dev_err(dev, "Failed to set BAR: %d\n", barno);
-+		goto err_set_bar;
-+	}
-+
-+	vhost->reg = base;
-+
-+	return 0;
-+
-+err_set_bar:
-+	pci_epf_free_space(epf, base, barno, PRIMARY_INTERFACE);
-+
-+	return ret;
-+}
-+
-+/* pci_epf_vhost_configure_interrupts - Configure MSI/MSI-X capability of EPF
-+ *   device
-+ * @vhost: EPF vhost containing the vhost device that communicates with the
-+ *   remote virtio device
-+ *
-+ * Configure MSI/MSI-X capability of EPF device. This will be used to interrupt
-+ * the vhost virtqueue.
-+ */
-+static int pci_epf_vhost_configure_interrupts(struct epf_vhost *vhost)
-+{
-+	const struct pci_epc_features *epc_features;
-+	struct pci_epf *epf;
-+	struct pci_epc *epc;
-+	struct device *dev;
-+	int ret;
-+
-+	epc_features = vhost->epc_features;
-+	epf = vhost->epf;
-+	dev = &epf->dev;
-+	epc = epf->epc;
-+
-+	if (epc_features->msi_capable) {
-+		ret = pci_epc_set_msi(epc, epf->func_no,
-+				      EPF_VHOST_MAX_INTERRUPTS);
-+		if (ret) {
-+			dev_err(dev, "MSI configuration failed\n");
-+			return ret;
-+		}
-+	}
-+
-+	if (epc_features->msix_capable) {
-+		ret = pci_epc_set_msix(epc, epf->func_no,
-+				       EPF_VHOST_MAX_INTERRUPTS,
-+				       vhost->msix_bar,
-+				       vhost->msix_table_offset);
-+		if (ret) {
-+			dev_err(dev, "MSI-X configuration failed\n");
-+			return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+/* pci_epf_vhost_cfs_link - Link vhost client driver with EPF vhost to get
-+ *   the deviceID and driverID to be writtent to the PCIe config space
-+ * @epf_vhost_item: Config item representing the EPF vhost created by this
-+ *   driver
-+ * @epf: Endpoint function device that is bound to the endpoint controller
-+ *
-+ * This is invoked when the user creates a softlink between the vhost client
-+ * to the EPF vhost. This gets the deviceID and vendorID data from the vhost
-+ * client and copies it to the subys_id and subsys_vendor_id of the EPF
-+ * header. This will be used by the remote virtio to bind a virtio client
-+ * driver.
-+ */
-+static int pci_epf_vhost_cfs_link(struct config_item *epf_vhost_item,
-+				  struct config_item *driver_item)
-+{
-+	struct vhost_driver_item *vdriver_item;
-+	struct epf_vhost *vhost;
-+
-+	vdriver_item = to_vhost_driver_item(driver_item);
-+	vhost = to_epf_vhost_from_ci(epf_vhost_item);
-+
-+	vhost->epf->header->subsys_id = vdriver_item->device;
-+	vhost->epf->header->subsys_vendor_id = vdriver_item->vendor;
-+
-+	return 0;
-+}
-+
-+static struct configfs_item_operations pci_epf_vhost_cfs_ops = {
-+	.allow_link	= pci_epf_vhost_cfs_link,
-+};
-+
-+static const struct config_item_type pci_epf_vhost_cfs_type = {
-+	.ct_item_ops	= &pci_epf_vhost_cfs_ops,
-+	.ct_owner	= THIS_MODULE,
-+};
-+
-+/* pci_epf_vhost_cfs_work - Delayed work function to create configfs directory
-+ *   to perform EPF vhost specific initializations
-+ * @work: The work_struct holding the pci_epf_vhost_cfs_work() function that
-+ *   is scheduled
-+ *
-+ * This is a delayed work function to create configfs directory to perform EPF
-+ * vhost specific initializations. This configfs directory will be a
-+ * sub-directory to the directory created by the user to create pci_epf device.
-+ */
-+static void pci_epf_vhost_cfs_work(struct work_struct *work)
-+{
-+	struct epf_vhost *vhost = container_of(work, struct epf_vhost,
-+					       cfs_work.work);
-+	struct pci_epf *epf = vhost->epf;
-+	struct device *dev = &epf->dev;
-+	struct config_group *group;
-+	struct vhost_dev *vdev;
-+	int ret;
-+
-+	if (!epf->group) {
-+		queue_delayed_work(kpcivhost_workqueue, &vhost->cfs_work,
-+				   msecs_to_jiffies(50));
-+		return;
-+	}
-+
-+	vdev = &vhost->vdev;
-+	group = &vhost->group;
-+	config_group_init_type_name(group, dev_name(dev), &pci_epf_vhost_cfs_type);
-+	ret = configfs_register_group(epf->group, group);
-+	if (ret) {
-+		dev_err(dev, "Failed to register configfs group %s\n", dev_name(dev));
-+		return;
-+	}
-+}
-+
-+/* pci_epf_vhost_probe - Initialize struct epf_vhost when a new EPF device is
-+ *   created
-+ * @epf: Endpoint function device that is bound to this driver
-+ *
-+ * Probe function to initialize struct epf_vhost when a new EPF device is
-+ * created.
-+ */
-+static int pci_epf_vhost_probe(struct pci_epf *epf)
-+{
-+	struct epf_vhost *vhost;
-+
-+	vhost = kzalloc(sizeof(*vhost), GFP_KERNEL);
-+	if (!vhost)
-+		return -ENOMEM;
-+
-+	epf->header = &epf_vhost_header;
-+	vhost->epf = epf;
-+
-+	epf_set_drvdata(epf, vhost);
-+	INIT_DELAYED_WORK(&vhost->cmd_handler, pci_epf_vhost_cmd_handler);
-+	INIT_DELAYED_WORK(&vhost->cfs_work, pci_epf_vhost_cfs_work);
-+	queue_delayed_work(kpcivhost_workqueue, &vhost->cfs_work,
-+			   msecs_to_jiffies(50));
-+
-+	return 0;
-+}
-+
-+/* pci_epf_vhost_remove - Free the initializations performed by
-+ *   pci_epf_vhost_probe()
-+ * @epf: Endpoint function device that is bound to this driver
-+ *
-+ * Free the initializations performed by pci_epf_vhost_probe().
-+ */
-+static int pci_epf_vhost_remove(struct pci_epf *epf)
-+{
-+	struct epf_vhost *vhost;
-+
-+	vhost = epf_get_drvdata(epf);
-+	cancel_delayed_work_sync(&vhost->cfs_work);
-+
-+	return 0;
-+}
-+
-+/* pci_epf_vhost_bind - Bind callback to initialize the PCIe EP controller
-+ * @epf: Endpoint function device that is bound to the endpoint controller
-+ *
-+ * pci_epf_vhost_bind() is invoked when an endpoint controller is bound to
-+ * endpoint function. This function initializes the endpoint controller
-+ * with vhost endpoint function specific data.
-+ */
-+static int pci_epf_vhost_bind(struct pci_epf *epf)
-+{
-+	const struct pci_epc_features *epc_features;
-+	struct epf_vhost *vhost;
-+	struct pci_epc *epc;
-+	struct device *dev;
-+	int ret;
-+
-+	vhost = epf_get_drvdata(epf);
-+	dev = &epf->dev;
-+	epc = epf->epc;
-+
-+	epc_features = pci_epc_get_features(epc, epf->func_no);
-+	if (!epc_features) {
-+		dev_err(dev, "Fail to get EPC features\n");
-+		return -EINVAL;
-+	}
-+	vhost->epc_features = epc_features;
-+
-+	ret = pci_epf_vhost_write_header(vhost);
-+	if (ret) {
-+		dev_err(dev, "Failed to bind VHOST config header\n");
-+		return ret;
-+	}
-+
-+	ret = pci_epf_vhost_configure_bar(vhost);
-+	if (ret) {
-+		dev_err(dev, "Failed to configure BAR\n");
-+		return ret;
-+	}
-+
-+	ret = pci_epf_vhost_configure_interrupts(vhost);
-+	if (ret) {
-+		dev_err(dev, "Failed to configure BAR\n");
-+		return ret;
-+	}
-+
-+	ret = pci_epf_vhost_register(vhost);
-+	if (ret) {
-+		dev_err(dev, "Failed to bind VHOST config header\n");
-+		return ret;
-+	}
-+
-+	queue_work(kpcivhost_workqueue, &vhost->cmd_handler.work);
-+
-+	return ret;
-+}
-+
-+/* pci_epf_vhost_unbind - Inbind callback to cleanup the PCIe EP controller
-+ * @epf: Endpoint function device that is bound to the endpoint controller
-+ *
-+ * pci_epf_vhost_unbind() is invoked when the binding between endpoint
-+ * controller is removed from endpoint function. This will unregister vhost
-+ * device and cancel pending cmd_handler work.
-+ */
-+static void pci_epf_vhost_unbind(struct pci_epf *epf)
-+{
-+	struct epf_vhost *vhost;
-+	struct vhost_dev *vdev;
-+
-+	vhost = epf_get_drvdata(epf);
-+	vdev = &vhost->vdev;
-+
-+	cancel_delayed_work_sync(&vhost->cmd_handler);
-+	if (device_is_registered(&vdev->dev))
-+		vhost_unregister_device(vdev);
-+}
-+
-+static struct pci_epf_ops epf_ops = {
-+	.bind	= pci_epf_vhost_bind,
-+	.unbind	= pci_epf_vhost_unbind,
-+};
-+
-+static const struct pci_epf_device_id pci_epf_vhost_ids[] = {
-+	{
-+		.name = "pci-epf-vhost",
-+	},
-+	{ },
-+};
-+
-+static struct pci_epf_driver epf_vhost_driver = {
-+	.driver.name	= "pci_epf_vhost",
-+	.probe		= pci_epf_vhost_probe,
-+	.remove		= pci_epf_vhost_remove,
-+	.id_table	= pci_epf_vhost_ids,
-+	.ops		= &epf_ops,
-+	.owner		= THIS_MODULE,
-+};
-+
-+static int __init pci_epf_vhost_init(void)
-+{
-+	int ret;
-+
-+	kpcivhost_workqueue = alloc_workqueue("kpcivhost", WQ_MEM_RECLAIM |
-+					      WQ_HIGHPRI, 0);
-+	ret = pci_epf_register_driver(&epf_vhost_driver);
-+	if (ret) {
-+		pr_err("Failed to register pci epf vhost driver --> %d\n", ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+module_init(pci_epf_vhost_init);
-+
-+static void __exit pci_epf_vhost_exit(void)
-+{
-+	pci_epf_unregister_driver(&epf_vhost_driver);
-+}
-+module_exit(pci_epf_vhost_exit);
-+
-+MODULE_DESCRIPTION("PCI EPF VHOST DRIVER");
-+MODULE_AUTHOR("Kishon Vijay Abraham I <kishon@ti.com>");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/vhost/vhost_cfs.c b/drivers/vhost/vhost_cfs.c
-index ae46e71968f1..ab0393289200 100644
---- a/drivers/vhost/vhost_cfs.c
-+++ b/drivers/vhost/vhost_cfs.c
-@@ -18,12 +18,6 @@ static struct config_group *vhost_driver_group;
- /* VHOST device like PCIe EP, NTB etc., */
- static struct config_group *vhost_device_group;
- 
--struct vhost_driver_item {
--	struct config_group group;
--	u32 vendor;
--	u32 device;
--};
--
- struct vhost_driver_group {
- 	struct config_group group;
- };
-@@ -33,13 +27,6 @@ struct vhost_device_item {
- 	struct vhost_dev *vdev;
- };
- 
--static inline
--struct vhost_driver_item *to_vhost_driver_item(struct config_item *item)
--{
--	return container_of(to_config_group(item), struct vhost_driver_item,
--			    group);
--}
--
- static inline
- struct vhost_device_item *to_vhost_device_item(struct config_item *item)
- {
-diff --git a/include/linux/vhost.h b/include/linux/vhost.h
-index be9341ffd266..640650311310 100644
---- a/include/linux/vhost.h
-+++ b/include/linux/vhost.h
-@@ -74,6 +74,7 @@ struct vhost_virtqueue {
- 	struct vhost_dev *dev;
- 	enum vhost_type type;
- 	struct vringh vringh;
-+	int index;
- 	void (*callback)(struct vhost_virtqueue *vq);
- 	void (*notify)(struct vhost_virtqueue *vq);
- 
-@@ -148,6 +149,12 @@ struct vhost_msg_node {
-   struct list_head node;
- };
- 
-+struct vhost_driver_item {
-+	struct config_group group;
-+	u32 vendor;
-+	u32 device;
-+};
-+
- enum vhost_notify_event {
- 	NOTIFY_SET_STATUS,
- 	NOTIFY_FINALIZE_FEATURES,
-@@ -230,6 +237,13 @@ static inline void *vhost_get_drvdata(struct vhost_dev *vdev)
- 	return dev_get_drvdata(&vdev->dev);
- }
- 
-+static inline
-+struct vhost_driver_item *to_vhost_driver_item(struct config_item *item)
-+{
-+	return container_of(to_config_group(item), struct vhost_driver_item,
-+			    group);
-+}
-+
- int vhost_register_driver(struct vhost_driver *driver);
- void vhost_unregister_driver(struct vhost_driver *driver);
- int vhost_register_device(struct vhost_dev *vdev);
++#endif /* __LINUX_NTB_VIRTIO_H */
 -- 
 2.17.1
 
