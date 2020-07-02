@@ -2,256 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3C7F2120A2
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 12:10:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 672242120DD
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 12:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728337AbgGBKKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 06:10:45 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:42460 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727769AbgGBKKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 06:10:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593684642;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tJJoehAPVq0MNpAHqJyOI9O/jCsKkBOYDcH/+KNJTdA=;
-        b=CalPz573pt0oIOsheU1Z617FaFLK4P1RSalVfuCaQqkeW3IvsCxUNUEByY7ofsUB3dtRn1
-        X2+iQaB0lrST5iFw4tIm7SqfwbG+0HgFZ9dPbxuW5cTF7BOxmivIV5ocmrJ+g9U4U71xGJ
-        90gEeb/LuWLSlIM7/6/QHI7GP1q2IVk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-123-Y_nVFT78NCGRdRnvXNiGGQ-1; Thu, 02 Jul 2020 06:10:41 -0400
-X-MC-Unique: Y_nVFT78NCGRdRnvXNiGGQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9B048800C60;
-        Thu,  2 Jul 2020 10:10:38 +0000 (UTC)
-Received: from [10.72.13.163] (ovpn-13-163.pek2.redhat.com [10.72.13.163])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2A90B78120;
-        Thu,  2 Jul 2020 10:10:23 +0000 (UTC)
-Subject: Re: [RFC PATCH 00/22] Enhance VHOST to enable SoC-to-SoC
- communication
-To:     Kishon Vijay Abraham I <kishon@ti.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-ntb@googlegroups.com,
-        linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20200702082143.25259-1-kishon@ti.com>
- <20200702055026-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <603970f5-3289-cd53-82a9-aa62b292c552@redhat.com>
-Date:   Thu, 2 Jul 2020 18:10:22 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728241AbgGBKTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 06:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727769AbgGBKTl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 06:19:41 -0400
+Received: from mail-ua1-x943.google.com (mail-ua1-x943.google.com [IPv6:2607:f8b0:4864:20::943])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD1EBC08C5C1;
+        Thu,  2 Jul 2020 03:19:41 -0700 (PDT)
+Received: by mail-ua1-x943.google.com with SMTP id p6so1677402uaq.12;
+        Thu, 02 Jul 2020 03:19:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4U7pwdobnpXo2+wodK7ksalwXz6Csu9FNbhdoHm2mYM=;
+        b=XMx/fc3xmJqXwVmTNjgMsBz83N0C2Kq3cIcO/pJWjkhn7tOUwBn61bA4t7caSbjr5I
+         dAoMZyZV68ybxMK5Dx8DFoKV3BaQ7/Ot699//UXl4XINrvz9z6/cXIcdLw+KRcorqTWK
+         /APWX4fp1ugr4nQN1i3vMDdfjC4Hz+SFcGfzSNjARGAqMHNjEKTZTHGWnt3yphz2P1Js
+         OeXra52huDYRiUEiIq8vbwl1W4nu9WvZ9dmApJe8I76Dl9I3sQXfCJsfh5DoJBMWchqh
+         v5XwC4e1U66nUFk0IY1mNlZ870ZSYK42CMJsatPe9nEwETUpb8hcTVFFI2TdXIopVPzA
+         NF8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4U7pwdobnpXo2+wodK7ksalwXz6Csu9FNbhdoHm2mYM=;
+        b=YakHpMNDt8curYE/qMvPrbs2JNxTmPgrM5mpg+XwEeGUhVOQy/p+LmZRONnG/k4iSf
+         M5/aPIL7CywmO0d40aU6qYaFuJGasa4yIj5baQ4J/1ZF3c52KAdieNCZzmhArMzB5tjR
+         IzZS2eSctkcooVVWHHB3Q/57+V0IB61wEug/98iTk0soQavHThqHcyuEVX1eQitmDoit
+         B6GQFojFevneOJgKvVe33FN+E/EqWeJpxxglxnOmq48FxuxzZpHuOE1B4xE+GMZZPTLF
+         SlA2zos3NJj9oeYIz+FMEYuPH0UNS8+9PbAKuBt5KhuBCaayjRrqHdu7UqyKJFRB1r+x
+         43ZQ==
+X-Gm-Message-State: AOAM531d0ymwmxwYbEi+Upwgr5Nr9f6e4HLRlnv5LAgWsBfj4vZQ0l6Z
+        EFBpmRRe8mAMhi2qJ2AuAQxFFjMqg1Nv97HZDac=
+X-Google-Smtp-Source: ABdhPJwMf/Kv5n2Q9kIIKesJRBtlUU5WcGzuyUHA2ORibg+smZ2ST2LjLE1roKk1U7HOvOfOfzx5ebAkOEZSoX7OhRQ=
+X-Received: by 2002:ab0:2a46:: with SMTP id p6mr4105124uar.88.1593685180856;
+ Thu, 02 Jul 2020 03:19:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200702055026-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <20200702091810.4999-1-weiyongjun1@huawei.com>
+In-Reply-To: <20200702091810.4999-1-weiyongjun1@huawei.com>
+From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+Date:   Thu, 2 Jul 2020 15:48:01 +0530
+Message-ID: <CAP+cEOM1tExZzxnkdtX9w2ZyPoFTJ+JxQw+q=ErWM1JJJc8w7Q@mail.gmail.com>
+Subject: Re: [PATCH net-next] ksz884x: mark pcidev_suspend() as __maybe_unused
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+Cc:     Hulk Robot <hulkci@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        zhong jiang <zhongjiang@huawei.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/7/2 下午5:51, Michael S. Tsirkin wrote:
-> On Thu, Jul 02, 2020 at 01:51:21PM +0530, Kishon Vijay Abraham I wrote:
->> This series enhances Linux Vhost support to enable SoC-to-SoC
->> communication over MMIO. This series enables rpmsg communication between
->> two SoCs using both PCIe RC<->EP and HOST1-NTB-HOST2
->>
->> 1) Modify vhost to use standard Linux driver model
->> 2) Add support in vring to access virtqueue over MMIO
->> 3) Add vhost client driver for rpmsg
->> 4) Add PCIe RC driver (uses virtio) and PCIe EP driver (uses vhost) for
->>     rpmsg communication between two SoCs connected to each other
->> 5) Add NTB Virtio driver and NTB Vhost driver for rpmsg communication
->>     between two SoCs connected via NTB
->> 6) Add configfs to configure the components
->>
->> UseCase1 :
->>
->>   VHOST RPMSG                     VIRTIO RPMSG
->>        +                               +
->>        |                               |
->>        |                               |
->>        |                               |
->>        |                               |
->> +-----v------+                 +------v-------+
->> |   Linux    |                 |     Linux    |
->> |  Endpoint  |                 | Root Complex |
->> |            <----------------->              |
->> |            |                 |              |
->> |    SOC1    |                 |     SOC2     |
->> +------------+                 +--------------+
->>
->> UseCase 2:
->>
->>       VHOST RPMSG                                      VIRTIO RPMSG
->>            +                                                 +
->>            |                                                 |
->>            |                                                 |
->>            |                                                 |
->>            |                                                 |
->>     +------v------+                                   +------v------+
->>     |             |                                   |             |
->>     |    HOST1    |                                   |    HOST2    |
->>     |             |                                   |             |
->>     +------^------+                                   +------^------+
->>            |                                                 |
->>            |                                                 |
->> +---------------------------------------------------------------------+
->> |  +------v------+                                   +------v------+  |
->> |  |             |                                   |             |  |
->> |  |     EP      |                                   |     EP      |  |
->> |  | CONTROLLER1 |                                   | CONTROLLER2 |  |
->> |  |             <----------------------------------->             |  |
->> |  |             |                                   |             |  |
->> |  |             |                                   |             |  |
->> |  |             |  SoC With Multiple EP Instances   |             |  |
->> |  |             |  (Configured using NTB Function)  |             |  |
->> |  +-------------+                                   +-------------+  |
->> +---------------------------------------------------------------------+
->>
->> Software Layering:
->>
->> The high-level SW layering should look something like below. This series
->> adds support only for RPMSG VHOST, however something similar should be
->> done for net and scsi. With that any vhost device (PCI, NTB, Platform
->> device, user) can use any of the vhost client driver.
->>
->>
->>      +----------------+  +-----------+  +------------+  +----------+
->>      |  RPMSG VHOST   |  | NET VHOST |  | SCSI VHOST |  |    X     |
->>      +-------^--------+  +-----^-----+  +-----^------+  +----^-----+
->>              |                 |              |              |
->>              |                 |              |              |
->>              |                 |              |              |
->> +-----------v-----------------v--------------v--------------v----------+
->> |                            VHOST CORE                                |
->> +--------^---------------^--------------------^------------------^-----+
->>           |               |                    |                  |
->>           |               |                    |                  |
->>           |               |                    |                  |
->> +--------v-------+  +----v------+  +----------v----------+  +----v-----+
->> |  PCI EPF VHOST |  | NTB VHOST |  |PLATFORM DEVICE VHOST|  |    X     |
->> +----------------+  +-----------+  +---------------------+  +----------+
->>
->> This was initially proposed here [1]
->>
->> [1] -> https://lore.kernel.org/r/2cf00ec4-1ed6-f66e-6897-006d1a5b6390@ti.com
+On Thu, Jul 2, 2020 at 2:38 PM Wei Yongjun <weiyongjun1@huawei.com> wrote:
 >
-> I find this very interesting. A huge patchset so will take a bit
-> to review, but I certainly plan to do that. Thanks!
-
-
-Yes, it would be better if there's a git branch for us to have a look.
-
-Btw, I'm not sure I get the big picture, but I vaguely feel some of the 
-work is duplicated with vDPA (e.g the epf transport or vhost bus).
-
-Have you considered to implement these through vDPA?
-
-Thanks
-
-
+> In certain configurations without power management support, gcc report
+> the following warning:
 >
->> Kishon Vijay Abraham I (22):
->>    vhost: Make _feature_ bits a property of vhost device
->>    vhost: Introduce standard Linux driver model in VHOST
->>    vhost: Add ops for the VHOST driver to configure VHOST device
->>    vringh: Add helpers to access vring in MMIO
->>    vhost: Add MMIO helpers for operations on vhost virtqueue
->>    vhost: Introduce configfs entry for configuring VHOST
->>    virtio_pci: Use request_threaded_irq() instead of request_irq()
->>    rpmsg: virtio_rpmsg_bus: Disable receive virtqueue callback when
->>      reading messages
->>    rpmsg: Introduce configfs entry for configuring rpmsg
->>    rpmsg: virtio_rpmsg_bus: Add Address Service Notification support
->>    rpmsg: virtio_rpmsg_bus: Move generic rpmsg structure to
->>      rpmsg_internal.h
->>    virtio: Add ops to allocate and free buffer
->>    rpmsg: virtio_rpmsg_bus: Use virtio_alloc_buffer() and
->>      virtio_free_buffer()
->>    rpmsg: Add VHOST based remote processor messaging bus
->>    samples/rpmsg: Setup delayed work to send message
->>    samples/rpmsg: Wait for address to be bound to rpdev for sending
->>      message
->>    rpmsg.txt: Add Documentation to configure rpmsg using configfs
->>    virtio_pci: Add VIRTIO driver for VHOST on Configurable PCIe Endpoint
->>      device
->>    PCI: endpoint: Add EP function driver to provide VHOST interface
->>    NTB: Add a new NTB client driver to implement VIRTIO functionality
->>    NTB: Add a new NTB client driver to implement VHOST functionality
->>    NTB: Describe the ntb_virtio and ntb_vhost client in the documentation
->>
->>   Documentation/driver-api/ntb.rst              |   11 +
->>   Documentation/rpmsg.txt                       |   56 +
->>   drivers/ntb/Kconfig                           |   18 +
->>   drivers/ntb/Makefile                          |    2 +
->>   drivers/ntb/ntb_vhost.c                       |  776 +++++++++++
->>   drivers/ntb/ntb_virtio.c                      |  853 ++++++++++++
->>   drivers/ntb/ntb_virtio.h                      |   56 +
->>   drivers/pci/endpoint/functions/Kconfig        |   11 +
->>   drivers/pci/endpoint/functions/Makefile       |    1 +
->>   .../pci/endpoint/functions/pci-epf-vhost.c    | 1144 ++++++++++++++++
->>   drivers/rpmsg/Kconfig                         |   10 +
->>   drivers/rpmsg/Makefile                        |    3 +-
->>   drivers/rpmsg/rpmsg_cfs.c                     |  394 ++++++
->>   drivers/rpmsg/rpmsg_core.c                    |    7 +
->>   drivers/rpmsg/rpmsg_internal.h                |  136 ++
->>   drivers/rpmsg/vhost_rpmsg_bus.c               | 1151 +++++++++++++++++
->>   drivers/rpmsg/virtio_rpmsg_bus.c              |  184 ++-
->>   drivers/vhost/Kconfig                         |    1 +
->>   drivers/vhost/Makefile                        |    2 +-
->>   drivers/vhost/net.c                           |   10 +-
->>   drivers/vhost/scsi.c                          |   24 +-
->>   drivers/vhost/test.c                          |   17 +-
->>   drivers/vhost/vdpa.c                          |    2 +-
->>   drivers/vhost/vhost.c                         |  730 ++++++++++-
->>   drivers/vhost/vhost_cfs.c                     |  341 +++++
->>   drivers/vhost/vringh.c                        |  332 +++++
->>   drivers/vhost/vsock.c                         |   20 +-
->>   drivers/virtio/Kconfig                        |    9 +
->>   drivers/virtio/Makefile                       |    1 +
->>   drivers/virtio/virtio_pci_common.c            |   25 +-
->>   drivers/virtio/virtio_pci_epf.c               |  670 ++++++++++
->>   include/linux/mod_devicetable.h               |    6 +
->>   include/linux/rpmsg.h                         |    6 +
->>   {drivers/vhost => include/linux}/vhost.h      |  132 +-
->>   include/linux/virtio.h                        |    3 +
->>   include/linux/virtio_config.h                 |   42 +
->>   include/linux/vringh.h                        |   46 +
->>   samples/rpmsg/rpmsg_client_sample.c           |   32 +-
->>   tools/virtio/virtio_test.c                    |    2 +-
->>   39 files changed, 7083 insertions(+), 183 deletions(-)
->>   create mode 100644 drivers/ntb/ntb_vhost.c
->>   create mode 100644 drivers/ntb/ntb_virtio.c
->>   create mode 100644 drivers/ntb/ntb_virtio.h
->>   create mode 100644 drivers/pci/endpoint/functions/pci-epf-vhost.c
->>   create mode 100644 drivers/rpmsg/rpmsg_cfs.c
->>   create mode 100644 drivers/rpmsg/vhost_rpmsg_bus.c
->>   create mode 100644 drivers/vhost/vhost_cfs.c
->>   create mode 100644 drivers/virtio/virtio_pci_epf.c
->>   rename {drivers/vhost => include/linux}/vhost.h (66%)
->>
->> -- 
->> 2.17.1
->>
-
+> drivers/net/ethernet/micrel/ksz884x.c:7182:12: warning:
+>  'pcidev_suspend' defined but not used [-Wunused-function]
+>  7182 | static int pcidev_suspend(struct device *dev_d)
+>       |            ^~~~~~~~~~~~~~
+>
+> Mark pcidev_suspend() as __maybe_unused to make it clear.
+>
+> Fixes: 64120615d140 ("ksz884x: use generic power management")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> ---
+>  drivers/net/ethernet/micrel/ksz884x.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
+> index 24901342ecc0..2ce7304d3753 100644
+> --- a/drivers/net/ethernet/micrel/ksz884x.c
+> +++ b/drivers/net/ethernet/micrel/ksz884x.c
+> @@ -7179,7 +7179,7 @@ static int __maybe_unused pcidev_resume(struct device *dev_d)
+>         return 0;
+>  }
+>
+> -static int pcidev_suspend(struct device *dev_d)
+> +static int __maybe_unused pcidev_suspend(struct device *dev_d)
+>  {
+>         int i;
+>         struct platform_info *info = dev_get_drvdata(dev_d);
+>
+This is a necessary fix. Thanks !
+--Vaibhav Gupta
