@@ -2,95 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FB9E21293F
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 18:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89FD2212949
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 18:25:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726578AbgGBQXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 12:23:14 -0400
-Received: from smtprelay0229.hostedemail.com ([216.40.44.229]:53202 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726140AbgGBQXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 12:23:13 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 53EF6180A813A;
-        Thu,  2 Jul 2020 16:23:11 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2525:2553:2560:2563:2682:2685:2828:2859:2902:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:5007:6119:6248:6742:7875:9010:9025:9040:10004:10400:11026:11232:11658:11914:12043:12295:12297:12438:12679:12740:12760:12895:13069:13073:13095:13181:13229:13311:13357:13439:13618:14096:14097:14180:14181:14659:14721:14777:21060:21080:21324:21433:21451:21611:21627:21939:30054:30060:30070:30079:30080:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: eggs64_191235726e8a
-X-Filterd-Recvd-Size: 3163
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf06.hostedemail.com (Postfix) with ESMTPA;
-        Thu,  2 Jul 2020 16:23:08 +0000 (UTC)
-Message-ID: <f65392bbd1732eff72d5b24c5ba3ea230ab2a3ae.camel@perches.com>
-Subject: Re: [PATCH v2 08/16] spi: davinci: Remove uninitialized_var() usage
-From:   Joe Perches <joe@perches.com>
-To:     Kees Cook <keescook@chromium.org>, Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-mm@kvack.org,
-        clang-built-linux@googlegroups.com
-Date:   Thu, 02 Jul 2020 09:23:07 -0700
-In-Reply-To: <202007020839.545A571CA4@keescook>
-References: <20200620033007.1444705-1-keescook@chromium.org>
-         <20200620033007.1444705-9-keescook@chromium.org>
-         <20200701203920.GC3776@sirena.org.uk> <202007020819.318824DA@keescook>
-         <20200702152335.GJ4483@sirena.org.uk> <202007020839.545A571CA4@keescook>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1726661AbgGBQY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 12:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726082AbgGBQY6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 12:24:58 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2850C08C5C1
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 09:24:57 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id z17so24616869edr.9
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 09:24:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hiBGL1G5BNNYTkB7ArfahX8fXmCAgmnI8sGRkxHOFeQ=;
+        b=LZ9V/OYXyNlkbgUK7PtCxPsjFbzpIw1DK8dajrQvofA9xuuwG3BBGPZP40po+ueczI
+         e9o/vK5t3B5695uMeI3kX/4/3MzcU50ka7QsU1bdacMYQtvw0qNUOc2F655ucK7AUY1G
+         jlulOe2nVs+3N0+EHcm6Ib0+Dcj6diZSWa5ThyvWrZQaoz0Vn5nwoDMHGoT5dZTdJ0BQ
+         e7IjWKS1prmvAD8FCkzfP02jazBS9Vxi7N1nPVnKx/gGgkFF+TTCFEy0nymKrw3OqxpI
+         dYs1KeOPJzwdwWwIFJNd9viZZ6zhqUhONjPzz05pj+IG98dVY9XuLU7yL4KiMbKPiTss
+         2aGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hiBGL1G5BNNYTkB7ArfahX8fXmCAgmnI8sGRkxHOFeQ=;
+        b=tStz2NhLiMr6dAkOwUue6bsAg9HqCSrmPrmth5o9NrHHy8kmtyPiWYhz/fIEWL2RQJ
+         7WpA3fFAyBkBddhJVmz6ar6/2+APoM43U4c+xJ8eaFhcZuwjAu63CZ/GLriqe4P73Zw1
+         Q50VI+H8a0Fi4nNhccwJnfCfx/TGbdFLV/q9AEt4+LYIOFpAXfBeo4wBI+s3YHElsdC2
+         +WUVblPsKU9Qo9brmsHP2+i5vcU4dEvFUI6ZVYuO77CIGXuCPDS4KUxKMkePfA1E7qTq
+         9X9J6ONcM4L0zez8UVu8m3fjknY05ik9MW3IYS5su5tY6eKokf1xJMaqQhDUdimhQQ+a
+         tHww==
+X-Gm-Message-State: AOAM532N75c5nX8eq/Tn0lEbWWM0Ba7RPnRme0jVnjZ5SDPz8/H5gjeC
+        hIdJK65D+5NxKclsjTCduSn8h5nC0KTWh+f/kwI=
+X-Google-Smtp-Source: ABdhPJz6SofV5o1LNGZk/DZsAQJVGUjtt9UVwQ+/26rgDZNng1YIu8xtQoVnVJ/zrRaxodM7+HTSTq4qnVpWErcUvGM=
+X-Received: by 2002:a50:cdc6:: with SMTP id h6mr35049396edj.111.1593707096541;
+ Thu, 02 Jul 2020 09:24:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <459be87d-0272-9ea9-839a-823b01e354b6@huawei.com>
+ <35480172-c77e-fb67-7559-04576f375ea6@huawei.com> <CAM_iQpXpZd6ZaQyQifWOHSnqgAgdu1qP+fF_Na7rQ_H1vQ6eig@mail.gmail.com>
+ <20200623222137.GA358561@carbon.lan> <b3a5298d-3c4e-ba51-7045-9643c3986054@neo-zeon.de>
+ <CAM_iQpU1ji2x9Pgb6Xs7Kqoh3mmFRN3R9GKf5QoVUv82mZb8hg@mail.gmail.com>
+ <20200627234127.GA36944@carbon.DHCP.thefacebook.com> <CAM_iQpWk4x7U_ci1WTf6BG=E3yYETBUk0yxMNSz6GuWFXfhhJw@mail.gmail.com>
+ <20200630224829.GC37586@carbon.dhcp.thefacebook.com> <CAM_iQpWRsuFE4NRhGncihK8UmPoMv1tEHMM0ufWxVCaP9pdTQg@mail.gmail.com>
+ <20200702160242.GA91667@carbon.dhcp.thefacebook.com>
+In-Reply-To: <20200702160242.GA91667@carbon.dhcp.thefacebook.com>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Thu, 2 Jul 2020 12:24:45 -0400
+Message-ID: <CAMdYzYp_ooh4rsDsWWx1HS_LdgHm+FWxt=3GUA4_aRp88X42eQ@mail.gmail.com>
+Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
+To:     Roman Gushchin <guro@fb.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Cameron Berkenpas <cam@neo-zeon.de>,
+        Zefan Li <lizefan@huawei.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
+        =?UTF-8?Q?Dani=C3=ABl_Sonck?= <dsonck92@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Tejun Heo <tj@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-07-02 at 08:42 -0700, Kees Cook wrote:
-> On Thu, Jul 02, 2020 at 04:23:35PM +0100, Mark Brown wrote:
-> > On Thu, Jul 02, 2020 at 08:21:40AM -0700, Kees Cook wrote:
-> > > On Wed, Jul 01, 2020 at 09:39:20PM +0100, Mark Brown wrote:
-> > > > Please copy maintainers on patches :(
-> > > Hi! Sorry about that; the CC list was giant, so I had opted for using
-> > > subsystem mailing lists where possible.
-> > 
-> > If you're going to err in a direction there I'd err in the direction of
-> > CCing the people not the list - I only saw this since I was looking for
-> > something else, I don't normally see stuff in the mailing list folder.
-> 
-> Yeah, I've gotten conflicting feedback on treewide changes:
-> - please CC me on only the one patch, I don't want to see everything else
-> - please CC me on the whole series, I want the full context for the change
-> 
-> I opted toward "CC me on this series", but then I get stuck when the CC
-> is giant. I think I may switch back to individual CCs for specific
-> patches, and point people to lore if they want greater context. (lore
-> didn't exist before...)
+On Thu, Jul 2, 2020 at 12:03 PM Roman Gushchin <guro@fb.com> wrote:
+>
+> On Wed, Jul 01, 2020 at 09:48:48PM -0700, Cong Wang wrote:
+> > On Tue, Jun 30, 2020 at 3:48 PM Roman Gushchin <guro@fb.com> wrote:
+> > >
+> > > Btw if we want to backport the problem but can't blame a specific commit,
+> > > we can always use something like "Cc: <stable@vger.kernel.org>    [3.1+]".
+> >
+> > Sure, but if we don't know which is the right commit to blame, then how
+> > do we know which stable version should the patch target? :)
+> >
+> > I am open to all options here, including not backporting to stable at all.
+>
+> It seems to be that the issue was there from bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup"),
+> so I'd go with it. Otherwise we can go with 5.4+, as I understand before that it was
+> hard to reproduce it.
+>
+> Thanks!
 
-IMO:
-
-For a patch series that spans multiple subsystems,
-each patch should always CC any specific subsystem
-maintainers..
-
-A good trick would be to use the cover letter
-message-id: and have each individual patch in the
-series reference the cover letter id below the
---- line so any reviewer doesn't have to find the
-in-reply-to: message id and then reference the
-lore link.
-
-Something like:
-
----
-
-For complete series see: https://lore.kernel.org/r/<cover_letter_message_id>
-
-
+Just wanted to let you know, this patch has been running for ~36 hours
+or so without a crash.
+So:
+Tested-by: Peter Geis <pgwipeout@gmail.com>
