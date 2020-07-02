@@ -2,123 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1563212F9A
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 00:39:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 234F5212FA9
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 00:44:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbgGBWjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 18:39:07 -0400
-Received: from mx.aristanetworks.com ([162.210.129.12]:21615 "EHLO
-        smtp.aristanetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726194AbgGBWjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 18:39:06 -0400
-Received: from us180.sjc.aristanetworks.com (us180.sjc.aristanetworks.com [172.25.230.4])
-        by smtp.aristanetworks.com (Postfix) with ESMTP id 6328640186E;
-        Thu,  2 Jul 2020 15:39:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1593729546;
-        bh=ZVKT4xgQY8MAj9CulrPs/cabyZqtX2jpxJZx1/Wsnmo=;
-        h=Date:To:Subject:From:From;
-        b=rl1tlBZHsyj+T4ch+Pt9WXVyWpeqkSHxK4M1AZj+fn+EK+dxJ4VIA916sX9lRBlBO
-         Jv7CzsqJeG5U08MIY3ZbZoyyJY6tZt1Cu0qOwj8x6LtgDQxb8UUpJ3rNzBVjPBIOT1
-         Zc6thvjTasuaEmXKSoGk6/jxsRXunWfCu61wYQzdXAEvSSOIsm2qgQGkjfyNyd3R5h
-         Oo68nc18Vo4qtamsk7AzX/SwPvHQFOtsAYPnjX34/mfJJRNWadUo/oSmz/3AMeankf
-         SNzTsIRfx8eYbPwpHjyaf49BnG1Dh+PwbEByI9NOZEAw36OgqOhSFF+qtIrHdWMp+e
-         40agvPS1SSqvA==
-Received: by us180.sjc.aristanetworks.com (Postfix, from userid 10189)
-        id 42B6C95C0494; Thu,  2 Jul 2020 15:39:06 -0700 (PDT)
-Date:   Thu, 02 Jul 2020 15:39:06 -0700
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, kuba@kernel.org,
-        davem@davemloft.net, jeffrey.t.kirsher@intel.com,
-        fruggeri@arista.com
-Subject: [PATCH v2] igb: reinit_locked() should be called with rtnl_lock
-User-Agent: Heirloom mailx 12.5 7/5/10
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-Id: <20200702223906.42B6C95C0494@us180.sjc.aristanetworks.com>
-From:   fruggeri@arista.com (Francesco Ruggeri)
+        id S1726376AbgGBWog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 18:44:36 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39414 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726017AbgGBWof (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jul 2020 18:44:35 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id EE276ABCE;
+        Thu,  2 Jul 2020 22:44:33 +0000 (UTC)
+Date:   Fri, 3 Jul 2020 08:44:22 +1000
+From:   Aleksa Sarai <asarai@suse.de>
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        netdev@vger.kernel.org,
+        Linux Containers <containers@lists.linux-foundation.org>,
+        linux-kernel@vger.kernel.org,
+        Matt Bennett <matt.bennett@alliedtelesis.co.nz>,
+        zbr@ioremap.net
+Subject: Re: [PATCH 0/5] RFC: connector: Add network namespace awareness
+Message-ID: <20200702224422.rtbzxuock523o4ls@yavin.dot.cyphar.com>
+References: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz>
+ <87h7uqukct.fsf@x220.int.ebiederm.org>
+ <20200702191025.bqxqwsm6kwnhm2p7@wittgenstein>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="7yvvc7bj43wjipa4"
+Content-Disposition: inline
+In-Reply-To: <20200702191025.bqxqwsm6kwnhm2p7@wittgenstein>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We observed two panics involving races with igb_reset_task.
-The first panic is caused by this race condition:
 
-	kworker			reboot -f
+--7yvvc7bj43wjipa4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-	igb_reset_task
-	igb_reinit_locked
-	igb_down
-	napi_synchronize
-				__igb_shutdown
-				igb_clear_interrupt_scheme
-				igb_free_q_vectors
-				igb_free_q_vector
-				adapter->q_vector[v_idx] = NULL;
-	napi_disable
-	Panics trying to access
-	adapter->q_vector[v_idx].napi_state
+On 2020-07-02, Christian Brauner <christian.brauner@ubuntu.com> wrote:
+> On Thu, Jul 02, 2020 at 08:17:38AM -0500, Eric W. Biederman wrote:
+> > Matt Bennett <matt.bennett@alliedtelesis.co.nz> writes:
+> >=20
+> > > Previously the connector functionality could only be used by processe=
+s running in the
+> > > default network namespace. This meant that any process that uses the =
+connector functionality
+> > > could not operate correctly when run inside a container. This is a dr=
+aft patch series that
+> > > attempts to now allow this functionality outside of the default netwo=
+rk namespace.
+> > >
+> > > I see this has been discussed previously [1], but am not sure how my =
+changes relate to all
+> > > of the topics discussed there and/or if there are any unintended side=
+ effects from my draft
+> > > changes.
+> >=20
+> > Is there a piece of software that uses connector that you want to get
+> > working in containers?
+> >=20
+> > I am curious what the motivation is because up until now there has been
+> > nothing very interesting using this functionality.  So it hasn't been
+> > worth anyone's time to make the necessary changes to the code.
+>=20
+> Imho, we should just state once and for all that the proc connector will
+> not be namespaced. This is such a corner-case thing and has been
+> non-namespaced for such a long time without consistent push for it to be
+> namespaced combined with the fact that this needs quite some code to
+> make it work correctly that I fear we end up buying more bugs than we're
+> selling features. And realistically, you and I will end up maintaining
+> this and I feel this is not worth the time(?). Maybe I'm being too
+> pessimistic though.
 
-The second panic (a divide error) is caused by this race:
+It would be nice to have the proc connector be namespaced, because it
+would allow you to have init systems that don't depend on cgroups to
+operate -- and it would allow us to have a subset of FreeBSD's kqueue
+functionality that doesn't exist today under Linux. However, arguably
+pidfds might be a better path forward toward implementing such events
+these days -- and is maybe something we should look into.
 
-kworker		reboot -f	tx packet
+All of that being said, I agree that doing this is going to be
+particularly hairy and likely not worth the effort. In particular, the
+proc connector is:
 
-igb_reset_task
-		__igb_shutdown
-		rtnl_lock()
-		...
-		igb_clear_interrupt_scheme
-		igb_free_q_vectors
-		adapter->num_tx_queues = 0
-		...
-		rtnl_unlock()
-rtnl_lock()
-igb_reinit_locked
-igb_down
-igb_up
-netif_tx_start_all_queues
-				dev_hard_start_xmit
-				igb_xmit_frame
-				igb_tx_queue_mapping
-				Panics on
-				r_idx % adapter->num_tx_queues
+ * Almost entirely unused (and largely unknown) by userspace.
 
-This commit applies to igb_reset_task the same changes that
-were applied to ixgbe in commit 2f90b8657ec9 ("ixgbe: this patch
-adds support for DCB to the kernel and ixgbe driver"),
-commit 8f4c5c9fb87a ("ixgbe: reinit_locked() should be called with
-rtnl_lock") and commit 88adce4ea8f9 ("ixgbe: fix possible race in
-reset subtask").
+ * Fairly fundamentally broken right now (the "security feature" of
+   PROC_CN_MCAST_LISTEN doesn't work because once there is one listener,
+   anyone who opens an cn_proc socket can get all events on the system
+   -- and if the process which opened the socket dies with calling
+   PROC_CN_MCAST_IGNORE then that information is now always streaming).
+   So if we end up supporting this, we'll need to fix those bugs too.
 
-v2: add fix for second race condition above.
+ * Is so deeply intertwined with netlink and thus is so deeply embedded
+   with network namespaces (rather than pid namespaces) meaning that
+   getting it to correctly handle shared-network-namespace cases is
+   going to be a nightmare. I agree with Eric that this patchset looks
+   like it doesn't approach the problem from the right angle (and
+   thinking about how you could fix it makes me a little nervous).
 
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+Not to mention that when I brought this up with the maintainer listed in
+MAINTAINERS a few years ago (soon after I posted [1]), I was told that
+they no longer maintain this code -- so whoever touches it next is the
+new maintainer.
 
----
- drivers/net/ethernet/intel/igb/igb_main.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+In 2017, I wrote that GNU Shepherd uses cn_proc, however I'm pretty sure
+(looking at the code now) that it wasn't true then and isn't true now
+(Shepherd seems to just do basic pidfile liveliness checks). So even the
+niche example I used then doesn't actually use cn_proc.
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 8bb3db2cbd41..6e5861bfb0fa 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -6224,9 +6224,18 @@ static void igb_reset_task(struct work_struct *work)
- 	struct igb_adapter *adapter;
- 	adapter = container_of(work, struct igb_adapter, reset_task);
- 
-+	rtnl_lock();
-+	/* If we're already down or resetting, just bail */
-+	if (test_bit(__IGB_DOWN, &adapter->state) ||
-+	    test_bit(__IGB_RESETTING, &adapter->state)) {
-+		rtnl_unlock();
-+		return;
-+	}
-+
- 	igb_dump(adapter);
- 	netdev_err(adapter->netdev, "Reset adapter\n");
- 	igb_reinit_locked(adapter);
-+	rtnl_unlock();
- }
- 
- /**
+[1]: https://lore.kernel.org/lkml/a2fa1602-2280-c5e8-cac9-b718eaea5d22@suse=
+=2Ede/
+
+--=20
+Aleksa Sarai
+Senior Software Engineer (Containers)
+SUSE Linux GmbH
+<https://www.cyphar.com/>
+
+--7yvvc7bj43wjipa4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEXzbGxhtUYBJKdfWmnhiqJn3bjbQFAl7+Y0MACgkQnhiqJn3b
+jbQK2w//RnV3LBW6JLU3tXpsEaAW5AWmGYwVXGYOJcz8qZ/svfbKtAiHomv/fZzZ
+VKqpeZylQQjWO/QFQbwKqKAzaLKmt0w0Y9DtlPtjmvp53c3JsJkG0swDAbPMOt4V
+N9wqtKeHxGWQ7JaxT79EN2eehE7/HV8aSSg9FFHKRvvxF5XBdesDJbyVRVCLCdPy
+555+HK315dHBCjp4xf/mrn30/Nmb3mMITuv8jKZ3fNUYicdLikK8S9k759u3pWm0
+hGzKuPjiUfJYXhY5rvNnri2oBvGaBAIWjQqZpzFNgpjP3YWEYxPyIcQaJvqrPHit
+XjJI0XEEqiu3ENwqeeL4qPvbDuIzSRj//2JkZzZpP/RF3gVPBkFkKygyMt0/84NB
+cB9N2GXSK3xeWhRLTlwiUAQjyj7VsrAkPcgDGKrkdF6OuG/OLk4csU5K/iWVi4zj
+rUnBu48OAdZA+FD5rl+sNsNXLDM77MS0Zn5y0fOexD9lfKGq6H7lUFvCaN1E1OxQ
+n5wSYfnpElfw87eS7GSOO/24S1s/gS3tY81iJcqGHjXS7CD78D9+alu/mamDnvKL
+PyPMhRnuelFbUjKpWOyr+jKULaUEwszq3H9EcKoYIibbOiqQrAr04w1CN2bJE6yw
+8uNBUom8o89umkBpuM1GO6S4lsKgymaWzG/frRdAHqG1e6EgrvE=
+=vMyH
+-----END PGP SIGNATURE-----
+
+--7yvvc7bj43wjipa4--
