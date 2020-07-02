@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A73C2118D2
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 03:36:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80C322118D5
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 03:36:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729355AbgGBB1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 21:27:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58730 "EHLO mail.kernel.org"
+        id S1729372AbgGBB1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 21:27:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58758 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728403AbgGBB07 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 21:26:59 -0400
+        id S1729347AbgGBB1B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Jul 2020 21:27:01 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1E2CA20874;
-        Thu,  2 Jul 2020 01:26:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5653A20C56;
+        Thu,  2 Jul 2020 01:26:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593653218;
-        bh=ZRRb4awJREa0OKA+5uYMfVnNompYcbeIiEG0iZwwA2o=;
+        s=default; t=1593653220;
+        bh=PeKvIN1kjCHm+SwAwXuvBKYp1u9GRzDXbVJh2Y8Q7CU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AIxaD3gATKE0ZJhHLg8/RN6SKhhKNKpyKTP9M2CEPo6yr2gvfA72r3bYHfzLq3ROH
-         KQS2/7hJzYEWhxz3B14l3XNNJ6KyMW53wt/YZ1v//mxIXFWEi2xdRM51CwNVjaCRu4
-         io1nwpgHCHgDTMg+n0xNZKrlX+MyPyR60UmnN0W8=
+        b=jy6ej8OgPUwk5kvktOTrs0LNBoElS6STMy3XQrt9RsrA8sTiKS9fvr2rosyk+fl56
+         va/OBfUuDuE9eym4hEGf05pWiOUSes8T+K1MBr/g5q6H2nFErJ9h93kFUsW4MyFoN0
+         SpdC1ZeVOJUTNBc+r3OmcWQo2aGjdKzYgTwzFXLg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Christensen <drc@linux.vnet.ibm.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 07/17] tg3: driver sleeps indefinitely when EEH errors exceed eeh_max_freezes
-Date:   Wed,  1 Jul 2020 21:26:39 -0400
-Message-Id: <20200702012649.2701799-7-sashal@kernel.org>
+Cc:     Ciara Loftus <ciara.loftus@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 08/17] ixgbe: protect ring accesses with READ- and WRITE_ONCE
+Date:   Wed,  1 Jul 2020 21:26:40 -0400
+Message-Id: <20200702012649.2701799-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200702012649.2701799-1-sashal@kernel.org>
 References: <20200702012649.2701799-1-sashal@kernel.org>
@@ -44,40 +46,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Christensen <drc@linux.vnet.ibm.com>
+From: Ciara Loftus <ciara.loftus@intel.com>
 
-[ Upstream commit 3a2656a211caf35e56afc9425e6e518fa52f7fbc ]
+[ Upstream commit f140ad9fe2ae16f385f8fe4dc9cf67bb4c51d794 ]
 
-The driver function tg3_io_error_detected() calls napi_disable twice,
-without an intervening napi_enable, when the number of EEH errors exceeds
-eeh_max_freezes, resulting in an indefinite sleep while holding rtnl_lock.
+READ_ONCE should be used when reading rings prior to accessing the
+statistics pointer. Introduce this as well as the corresponding WRITE_ONCE
+usage when allocating and freeing the rings, to ensure protected access.
 
-Add check for pcierr_recovery which skips code already executed for the
-"Frozen" state.
-
-Signed-off-by: David Christensen <drc@linux.vnet.ibm.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/tg3.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  | 12 ++++++------
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 14 +++++++++++---
+ 2 files changed, 17 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-index bc0221eafe5c4..e40d31b405253 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -18179,8 +18179,8 @@ static pci_ers_result_t tg3_io_error_detected(struct pci_dev *pdev,
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+index f1bfae0c41d0c..3cf8b3ea43b08 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+@@ -917,7 +917,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+ 			ring->queue_index = txr_idx;
  
- 	rtnl_lock();
+ 		/* assign ring to adapter */
+-		adapter->tx_ring[txr_idx] = ring;
++		WRITE_ONCE(adapter->tx_ring[txr_idx], ring);
  
--	/* We probably don't have netdev yet */
--	if (!netdev || !netif_running(netdev))
-+	/* Could be second call or maybe we don't have netdev yet */
-+	if (!netdev || tp->pcierr_recovery || !netif_running(netdev))
- 		goto done;
+ 		/* update count and index */
+ 		txr_count--;
+@@ -944,7 +944,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+ 		set_ring_xdp(ring);
  
- 	/* We needn't recover from permanent error */
+ 		/* assign ring to adapter */
+-		adapter->xdp_ring[xdp_idx] = ring;
++		WRITE_ONCE(adapter->xdp_ring[xdp_idx], ring);
+ 
+ 		/* update count and index */
+ 		xdp_count--;
+@@ -991,7 +991,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+ 			ring->queue_index = rxr_idx;
+ 
+ 		/* assign ring to adapter */
+-		adapter->rx_ring[rxr_idx] = ring;
++		WRITE_ONCE(adapter->rx_ring[rxr_idx], ring);
+ 
+ 		/* update count and index */
+ 		rxr_count--;
+@@ -1020,13 +1020,13 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
+ 
+ 	ixgbe_for_each_ring(ring, q_vector->tx) {
+ 		if (ring_is_xdp(ring))
+-			adapter->xdp_ring[ring->queue_index] = NULL;
++			WRITE_ONCE(adapter->xdp_ring[ring->queue_index], NULL);
+ 		else
+-			adapter->tx_ring[ring->queue_index] = NULL;
++			WRITE_ONCE(adapter->tx_ring[ring->queue_index], NULL);
+ 	}
+ 
+ 	ixgbe_for_each_ring(ring, q_vector->rx)
+-		adapter->rx_ring[ring->queue_index] = NULL;
++		WRITE_ONCE(adapter->rx_ring[ring->queue_index], NULL);
+ 
+ 	adapter->q_vector[v_idx] = NULL;
+ 	napi_hash_del(&q_vector->napi);
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 64ee45b6680a0..9c3fa0b555519 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -6842,7 +6842,10 @@ void ixgbe_update_stats(struct ixgbe_adapter *adapter)
+ 	}
+ 
+ 	for (i = 0; i < adapter->num_rx_queues; i++) {
+-		struct ixgbe_ring *rx_ring = adapter->rx_ring[i];
++		struct ixgbe_ring *rx_ring = READ_ONCE(adapter->rx_ring[i]);
++
++		if (!rx_ring)
++			continue;
+ 		non_eop_descs += rx_ring->rx_stats.non_eop_descs;
+ 		alloc_rx_page_failed += rx_ring->rx_stats.alloc_rx_page_failed;
+ 		alloc_rx_buff_failed += rx_ring->rx_stats.alloc_rx_buff_failed;
+@@ -6861,15 +6864,20 @@ void ixgbe_update_stats(struct ixgbe_adapter *adapter)
+ 	packets = 0;
+ 	/* gather some stats to the adapter struct that are per queue */
+ 	for (i = 0; i < adapter->num_tx_queues; i++) {
+-		struct ixgbe_ring *tx_ring = adapter->tx_ring[i];
++		struct ixgbe_ring *tx_ring = READ_ONCE(adapter->tx_ring[i]);
++
++		if (!tx_ring)
++			continue;
+ 		restart_queue += tx_ring->tx_stats.restart_queue;
+ 		tx_busy += tx_ring->tx_stats.tx_busy;
+ 		bytes += tx_ring->stats.bytes;
+ 		packets += tx_ring->stats.packets;
+ 	}
+ 	for (i = 0; i < adapter->num_xdp_queues; i++) {
+-		struct ixgbe_ring *xdp_ring = adapter->xdp_ring[i];
++		struct ixgbe_ring *xdp_ring = READ_ONCE(adapter->xdp_ring[i]);
+ 
++		if (!xdp_ring)
++			continue;
+ 		restart_queue += xdp_ring->tx_stats.restart_queue;
+ 		tx_busy += xdp_ring->tx_stats.tx_busy;
+ 		bytes += xdp_ring->stats.bytes;
 -- 
 2.25.1
 
