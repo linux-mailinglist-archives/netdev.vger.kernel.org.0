@@ -2,327 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 484B4211F8B
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3655C211F8D
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728005AbgGBJOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 05:14:22 -0400
-Received: from mga02.intel.com ([134.134.136.20]:23382 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726042AbgGBJOV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jul 2020 05:14:21 -0400
-IronPort-SDR: 1pM0XYQ8czn6/azOdUo2KdUeB0M5AWbwiUg8fazHGaG0ZyF8/5KtBLnYDkAaj7au1yjdEXGfZU
- 0USz0wvMkX7w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9669"; a="135136498"
-X-IronPort-AV: E=Sophos;i="5.75,303,1589266800"; 
-   d="scan'208";a="135136498"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2020 02:14:21 -0700
-IronPort-SDR: ob2KALT8d+veQd2xjJsrWCqHjkNAnIaBniEu2PpOTlPr2EEQ1sHr6T0lEfZxdPvxxOGzm6mDb4
- DtsqNS8JZUjw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,303,1589266800"; 
-   d="scan'208";a="295840816"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga002.jf.intel.com with ESMTP; 02 Jul 2020 02:14:17 -0700
-Date:   Thu, 2 Jul 2020 11:09:56 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     ilias.apalodimas@linaro.org
-Cc:     Matteo Croce <mcroce@linux.microsoft.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Stefan Chulski <stefanc@marvell.com>,
-        Marcin Wojtas <mw@semihalf.com>, maxime.chevallier@bootlin.com,
-        antoine.tenart@bootlin.com, thomas.petazzoni@bootlin.com
-Subject: Re: [PATCH net-next 3/4] mvpp2: add basic XDP support
-Message-ID: <20200702090956.GA7682@ranger.igk.intel.com>
-References: <20200630180930.87506-1-mcroce@linux.microsoft.com>
- <20200630180930.87506-4-mcroce@linux.microsoft.com>
- <20200702080819.GA499364@apalos.home>
+        id S1728077AbgGBJO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 05:14:58 -0400
+Received: from mail-eopbgr130075.outbound.protection.outlook.com ([40.107.13.75]:51407
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726462AbgGBJO5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jul 2020 05:14:57 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fXd6SBwgLYKDGzS1J9Ba3m6IKba2PbQj48O1to3PdMEKUXn4P9azy1V5VMFfPlm4bqUpwBPtnrnWJuGWS5UASjqrqJLqb2RCkhTPRbgMtPQdFLdmcpEjB6EYaWrrNim+/SSG7/oxNfQqq+CgEYqTHhO3xwM3cJYffX9Cw7dCIVlmHadsBfwTluI+jaqrX9NRZy0kqHzVbJuno7P6VIXHUHZ0QXtxWEx5BCDdAEckTf+fmGvFVMnKSDe3Mw7KOrcFznuOirVpVTP1wXLeoURwOOHrlONbNzqLACDO63DZbyUSEgWM9LRGIXh2PEXRI7/lLbhelDGjOSHwh30S/ioopQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zfjuFTCVUUcoL00bKnSSFPXX9e5fBqPeSCudysLXcOc=;
+ b=O+bzbGYDLUFCUV6GPo8HJRIisqJ/nPSFnHBjjZwSbOuT65HryV1qOCgWkKwNiQ0CjtbQ+oM7eZjxasscOn1gB03panlPEL5SCENxq9C5ehzG8/L1RPi/BdKkoR9Yz66RmGgV30XqC3+C505V1doBzEC6DCaNgft/iFUFcCnho0ibOUMKqCoRrFgjzvMZJYz4DFz+roabvW4MrtfZxE0DjZ1Kioz6K/yBRBT+FnUPl/fjALV89rvMWVbrU06Xi3+7pfllZVS/F+HNez1k+ywt7ML4mOi25jGCgSWQxEKV1csE1Y1ER930ni3toP1kdLpxN34xMLPlm6uy+coEtUwXHA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zfjuFTCVUUcoL00bKnSSFPXX9e5fBqPeSCudysLXcOc=;
+ b=pC8t7jYvJlbv+3EnVS+q3vZDbkKNs6/955dTdCCcqi3w4/h0QXL7kfcgZpJ5DGVWzs4iVisv9fufgi+2hUxMlaHgTBlq3YI/Fpq5kod8POlAhPwaH3yeN3Ts3o4hX4J0PL5hruslMB3uOTSCYEux5dP2i6HsVQZGZ+jFAC9Y62Q=
+Received: from AM0PR0402MB3603.eurprd04.prod.outlook.com
+ (2603:10a6:208:26::22) by AM0PR04MB4098.eurprd04.prod.outlook.com
+ (2603:10a6:208:64::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20; Thu, 2 Jul
+ 2020 09:14:53 +0000
+Received: from AM0PR0402MB3603.eurprd04.prod.outlook.com
+ ([fe80::a8a1:4ee2:ee4e:aeef]) by AM0PR0402MB3603.eurprd04.prod.outlook.com
+ ([fe80::a8a1:4ee2:ee4e:aeef%7]) with mapi id 15.20.3153.024; Thu, 2 Jul 2020
+ 09:14:53 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Kegl Rohit <keglrohit@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [EXT] net: ethernet: freescale: fec: copybreak handling
+ throughput, dma_sync_* optimisations allowed?
+Thread-Topic: [EXT] net: ethernet: freescale: fec: copybreak handling
+ throughput, dma_sync_* optimisations allowed?
+Thread-Index: AQHWT9e4kn3p3ha4AEO+27pzlMnbc6jzmCHwgABPwICAAAq6gA==
+Date:   Thu, 2 Jul 2020 09:14:53 +0000
+Message-ID: <AM0PR0402MB36037EF37780AFFB14C0C5CEFF6D0@AM0PR0402MB3603.eurprd04.prod.outlook.com>
+References: <CAMeyCbjiVXFkzA5ZyJ5b3N4fotWkzKHVp3J=nT1yWs1v8dmRXA@mail.gmail.com>
+ <AM6PR0402MB3607E9BD414FF850D577F76EFF6D0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+ <CAMeyCbicX_8Kc_E5sanUMNtToLpj9BkcV+RR6h2FoNoxxcKJog@mail.gmail.com>
+In-Reply-To: <CAMeyCbicX_8Kc_E5sanUMNtToLpj9BkcV+RR6h2FoNoxxcKJog@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.67]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: cccebb4d-566f-4592-e79a-08d81e686173
+x-ms-traffictypediagnostic: AM0PR04MB4098:
+x-microsoft-antispam-prvs: <AM0PR04MB40986F32D901B7C7C75326B5FF6D0@AM0PR04MB4098.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0452022BE1
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: PX5YPtMXs6DK6RQ0HaJGxE3XOu0LuGBS/sl08KW/MPY8NGfS+TMVFKMr2QtxqkkXYvGYF0iYmh5ykOtk9TIdwf/cWwH2bN7GfnBypYsEuTCTXB9UcOHwX9xoSBmAoEZvuyWoTRFFubZS40gldU7vd91hvMrEV7IaLq5V+uEV+Q03AdhrpgZoYwnDGcOXBk4fsf+NdMyIod2rwPKCrWTrqdSa/PWeFfumEhBl3Tk3OZVVI/Z+Lc0LtJeSFwM9xmZ3pRR9EimW1wueFpnn8Tp9NLQt1wCLd67PZ9rrKMyFwtbUB26f6lD5pKqDXsNuxHkzQ4u/8MOGIydkOxzxvO2bEQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0402MB3603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(136003)(366004)(396003)(39860400002)(186003)(53546011)(66946007)(316002)(76116006)(66556008)(64756008)(4326008)(33656002)(6916009)(478600001)(66446008)(66476007)(8676002)(9686003)(83380400001)(6506007)(26005)(8936002)(55016002)(7696005)(52536014)(2906002)(71200400001)(86362001)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: sTZ+e0RyafAYP/YzXfFUFXK58xlw/wKJs9wGZO4QWKHeD5zym4YzPIcyl9LQ1MfSoDkodaEhzYOI/MrblRImCCbpYktv+fW6PWPJv3RfaVoWsKTd9BAtgpjxw8XLzyW40/fiqojZxKYnLYKiXfhTt0phxPylZDisXKw53uaNKoI55oZFdmXxplhDBsKYz5P06M1cRKGDnzPIrD59W55M9Tk/rtUdrqvFqJ2fSyufQfTxgL6Z2xVoPLOqL4chitbYiCXBoEaVcMg53oNeHlVOtNTNEOCyqEsTwtCs5q7xU+WPKjwSXj8UE6n38oPl/arjwvE4Qrcnw5NMuSurCWWtrxGIpdtCYxt2HYq9DtNQF9MeZfFgH8BPUDA2YYZEstgiBsxD/l3ul6FuCE9ELT8EA5FMxpz4HskbBgIXcHz7Xe8eKZmzSdSFW+LW+dUCqqJDhswKP4MryOGBO9wK8PfqGWc+UQQskTHnq5WeXjn4UK3qXemli3j3dNJ/YnTkR9mL
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200702080819.GA499364@apalos.home>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR0402MB3603.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cccebb4d-566f-4592-e79a-08d81e686173
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2020 09:14:53.1674
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sBbLOLODTgr6rATjJcqY0aAPxMgp5zQ6qFtHE7zdq2hs0jI5gtLAYoVr0UnGNTEQ2ZqTNgWBI4697z/7SeDzIQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4098
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 02, 2020 at 11:08:19AM +0300, ilias.apalodimas@linaro.org wrote:
-> On Tue, Jun 30, 2020 at 08:09:29PM +0200, Matteo Croce wrote:
-> > From: Matteo Croce <mcroce@microsoft.com>
-> > 
-> > Add XDP native support.
-> > By now only XDP_DROP, XDP_PASS and XDP_REDIRECT
-> > verdicts are supported.
-> > 
-> > Co-developed-by: Sven Auhagen <sven.auhagen@voleatech.de>
-> > Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
-> > Signed-off-by: Matteo Croce <mcroce@microsoft.com>
-> > ---
-> 
-> [...]
-> 
-> >  }
-> >  
-> > +static int
-> > +mvpp2_run_xdp(struct mvpp2_port *port, struct mvpp2_rx_queue *rxq,
-> > +	      struct bpf_prog *prog, struct xdp_buff *xdp,
-> > +	      struct page_pool *pp)
-> > +{
-> > +	unsigned int len, sync, err;
-> > +	struct page *page;
-> > +	u32 ret, act;
-> > +
-> > +	len = xdp->data_end - xdp->data_hard_start - MVPP2_SKB_HEADROOM;
-> > +	act = bpf_prog_run_xdp(prog, xdp);
-> > +
-> > +	/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU touch */
-> > +	sync = xdp->data_end - xdp->data_hard_start - MVPP2_SKB_HEADROOM;
-> > +	sync = max(sync, len);
-> > +
-> > +	switch (act) {
-> > +	case XDP_PASS:
-> > +		ret = MVPP2_XDP_PASS;
-> > +		break;
-> > +	case XDP_REDIRECT:
-> > +		err = xdp_do_redirect(port->dev, xdp, prog);
-> > +		if (unlikely(err)) {
-> > +			ret = MVPP2_XDP_DROPPED;
-> > +			page = virt_to_head_page(xdp->data);
-> > +			page_pool_put_page(pp, page, sync, true);
-> > +		} else {
-> > +			ret = MVPP2_XDP_REDIR;
-> > +		}
-> > +		break;
-> > +	default:
-> > +		bpf_warn_invalid_xdp_action(act);
-> > +		fallthrough;
-> > +	case XDP_ABORTED:
-> > +		trace_xdp_exception(port->dev, prog, act);
-> > +		fallthrough;
-> > +	case XDP_DROP:
-> > +		page = virt_to_head_page(xdp->data);
-> > +		page_pool_put_page(pp, page, sync, true);
-> > +		ret = MVPP2_XDP_DROPPED;
-> > +		break;
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> >  /* Main rx processing */
-> >  static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
-> >  		    int rx_todo, struct mvpp2_rx_queue *rxq)
-> >  {
-> >  	struct net_device *dev = port->dev;
-> > +	struct bpf_prog *xdp_prog;
-> > +	struct xdp_buff xdp;
-> >  	int rx_received;
-> >  	int rx_done = 0;
-> > +	u32 xdp_ret = 0;
-> >  	u32 rcvd_pkts = 0;
-> >  	u32 rcvd_bytes = 0;
-> >  
-> > +	rcu_read_lock();
-> > +
-> > +	xdp_prog = READ_ONCE(port->xdp_prog);
-> > +
-> >  	/* Get number of received packets and clamp the to-do */
-> >  	rx_received = mvpp2_rxq_received(port, rxq->id);
-> >  	if (rx_todo > rx_received)
-> > @@ -3060,7 +3115,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
-> >  		dma_addr_t dma_addr;
-> >  		phys_addr_t phys_addr;
-> >  		u32 rx_status;
-> > -		int pool, rx_bytes, err;
-> > +		int pool, rx_bytes, err, ret;
-> >  		void *data;
-> >  
-> >  		rx_done++;
-> > @@ -3096,6 +3151,33 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
-> >  		else
-> >  			frag_size = bm_pool->frag_size;
-> >  
-> > +		if (xdp_prog) {
-> > +			xdp.data_hard_start = data;
-> > +			xdp.data = data + MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM;
-> > +			xdp.data_end = xdp.data + rx_bytes;
-> > +			xdp.frame_sz = PAGE_SIZE;
-> > +
-> > +			if (bm_pool->pkt_size == MVPP2_BM_SHORT_PKT_SIZE)
-> > +				xdp.rxq = &rxq->xdp_rxq_short;
-> > +			else
-> > +				xdp.rxq = &rxq->xdp_rxq_long;
-> > +
-> > +			xdp_set_data_meta_invalid(&xdp);
-> > +
-> > +			ret = mvpp2_run_xdp(port, rxq, xdp_prog, &xdp, pp);
-> > +
-> > +			if (ret) {
-> > +				xdp_ret |= ret;
-> > +				err = mvpp2_rx_refill(port, bm_pool, pp, pool);
-> > +				if (err) {
-> > +					netdev_err(port->dev, "failed to refill BM pools\n");
-> > +					goto err_drop_frame;
-> > +				}
-> > +
-> > +				continue;
-> > +			}
-> > +		}
-> > +
-> >  		skb = build_skb(data, frag_size);
-> >  		if (!skb) {
-> >  			netdev_warn(port->dev, "skb build failed\n");
-> > @@ -3118,7 +3200,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
-> >  		rcvd_pkts++;
-> >  		rcvd_bytes += rx_bytes;
-> >  
-> > -		skb_reserve(skb, MVPP2_MH_SIZE + NET_SKB_PAD);
-> > +		skb_reserve(skb, MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM);
-> >  		skb_put(skb, rx_bytes);
-> >  		skb->protocol = eth_type_trans(skb, dev);
-> >  		mvpp2_rx_csum(port, rx_status, skb);
-> > @@ -3133,6 +3215,8 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
-> >  		mvpp2_bm_pool_put(port, pool, dma_addr, phys_addr);
-> >  	}
-> >  
-> > +	rcu_read_unlock();
-> > +
-> >  	if (rcvd_pkts) {
-> >  		struct mvpp2_pcpu_stats *stats = this_cpu_ptr(port->stats);
-> >  
-> > @@ -3608,6 +3692,8 @@ static void mvpp2_start_dev(struct mvpp2_port *port)
-> >  	}
-> >  
-> >  	netif_tx_start_all_queues(port->dev);
-> > +
-> > +	clear_bit(0, &port->state);
-> >  }
-> >  
-> >  /* Set hw internals when stopping port */
-> > @@ -3615,6 +3701,8 @@ static void mvpp2_stop_dev(struct mvpp2_port *port)
-> >  {
-> >  	int i;
-> >  
-> > +	set_bit(0, &port->state);
-> > +
-> >  	/* Disable interrupts on all threads */
-> >  	mvpp2_interrupts_disable(port);
-> >  
-> > @@ -4021,6 +4109,10 @@ static int mvpp2_change_mtu(struct net_device *dev, int mtu)
-> >  	}
-> >  
-> >  	if (MVPP2_RX_PKT_SIZE(mtu) > MVPP2_BM_LONG_PKT_SIZE) {
-> > +		if (port->xdp_prog) {
-> > +			netdev_err(dev, "Jumbo frames are not supported with XDP\n");
-> 
-> Does it make sense to switch to NL_SET_ERR_MSG_MOD() here, so the user can get
-> an immediate feedback?
-
-ndo_change_mtu does not provide netlink's extack, so that's not possible
-here AFAIK.
-
-> 
-> > +			return -EINVAL;
-> > +		}
-> >  		if (priv->percpu_pools) {
-> >  			netdev_warn(dev, "mtu %d too high, switching to shared buffers", mtu);
-> >  			mvpp2_bm_switch_buffers(priv, false);
-> > @@ -4159,6 +4251,73 @@ static int mvpp2_set_features(struct net_device *dev,
-> >  	return 0;
-> >  }
-> >  
-> > +static int mvpp2_xdp_setup(struct mvpp2_port *port, struct netdev_bpf *bpf)
-> > +{
-> > +	struct bpf_prog *prog = bpf->prog, *old_prog;
-> > +	bool running = netif_running(port->dev);
-> > +	bool reset = !prog != !port->xdp_prog;
-> > +
-> > +	if (port->dev->mtu > ETH_DATA_LEN) {
-> > +		netdev_err(port->dev, "Jumbo frames are not supported by XDP, current MTU %d.\n",
-> > +			   port->dev->mtu);
-> 
-> ditto
-
-Here I agree and for every other netdev_err within mvpp2_xdp_setup().
-
-> 
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	if (!port->priv->percpu_pools) {
-> > +		netdev_err(port->dev, "Per CPU Pools required for XDP");
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	/* device is up and bpf is added/removed, must setup the RX queues */
-> > +	if (running && reset) {
-> > +		mvpp2_stop_dev(port);
-> > +		mvpp2_cleanup_rxqs(port);
-> > +		mvpp2_cleanup_txqs(port);
-> > +	}
-> > +
-> > +	old_prog = xchg(&port->xdp_prog, prog);
-> > +	if (old_prog)
-> > +		bpf_prog_put(old_prog);
-> > +
-> > +	/* bpf is just replaced, RXQ and MTU are already setup */
-> > +	if (!reset)
-> > +		return 0;
-> > +
-> > +	/* device was up, restore the link */
-> > +	if (running) {
-> > +		int ret = mvpp2_setup_rxqs(port);
-> > +
-> > +		if (ret) {
-> > +			netdev_err(port->dev, "mvpp2_setup_rxqs failed\n");
-> > +			return ret;
-> > +		}
-> > +		ret = mvpp2_setup_txqs(port);
-> > +		if (ret) {
-> > +			netdev_err(port->dev, "mvpp2_setup_txqs failed\n");
-> > +			return ret;
-> > +		}
-> > +
-> > +		mvpp2_start_dev(port);
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int mvpp2_xdp(struct net_device *dev, struct netdev_bpf *xdp)
-> > +{
-> > +	struct mvpp2_port *port = netdev_priv(dev);
-> > +
-> > +	switch (xdp->command) {
-> > +	case XDP_SETUP_PROG:
-> > +		return mvpp2_xdp_setup(port, xdp);
-> > +	case XDP_QUERY_PROG:
-> > +		xdp->prog_id = port->xdp_prog ? port->xdp_prog->aux->id : 0;
-> > +		return 0;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> >  /* Ethtool methods */
-> >  
-> >  static int mvpp2_ethtool_nway_reset(struct net_device *dev)
-> > @@ -4509,6 +4668,7 @@ static const struct net_device_ops mvpp2_netdev_ops = {
-> >  	.ndo_vlan_rx_add_vid	= mvpp2_vlan_rx_add_vid,
-> >  	.ndo_vlan_rx_kill_vid	= mvpp2_vlan_rx_kill_vid,
-> >  	.ndo_set_features	= mvpp2_set_features,
-> > +	.ndo_bpf		= mvpp2_xdp,
-> >  };
-> >  
-> >  static const struct ethtool_ops mvpp2_eth_tool_ops = {
-> > -- 
-> > 2.26.2
-> > 
+RnJvbTogS2VnbCBSb2hpdCA8a2VnbHJvaGl0QGdtYWlsLmNvbT4gU2VudDogVGh1cnNkYXksIEp1
+bHkgMiwgMjAyMCAzOjM5IFBNDQo+IE9uIFRodSwgSnVsIDIsIDIwMjAgYXQgNjoxOCBBTSBBbmR5
+IER1YW4gPGZ1Z2FuZy5kdWFuQG54cC5jb20+IHdyb3RlOg0KPiA+IFRoYXQgc2hvdWxkIGVuc3Vy
+ZSB0aGUgd2hvbGUgYXJlYSBpcyBub3QgZGlydHkuDQo+IA0KPiBkbWFfc3luY19zaW5nbGVfZm9y
+X2NwdSgpIGFuZCBkbWFfc3luY19zaW5nbGVfZm9yX2RldmljZSgpIGNhbiBvciBtdXN0IGJlDQo+
+IHVzZWQgaW4gcGFpcnM/DQo+IFNvIGluIHRoaXMgY2FzZSBpdCBpcyByZWFsbHkgbmVjZXNzYXJ5
+IHRvIHN5bmMgYmFjayB0aGUgc2tiIGRhdGEgYnVmZmVyIHZpYQ0KPiBkbWFfc3luY19zaW5nbGVf
+Zm9yX2RldmljZT8gRXZlbiB3aGVuIHRoZSBDUFUgZG9lcyBub3QgY2hhbmdlIGFueSBieXRlcw0K
+PiBpbiB0aGUgc2tiIGRhdGEgYnVmZmVyIC8gcmVhZG9ubHkgbGlrZSBpbiB0aGlzIGNhc2UuDQoN
+Ck5vLCBpZiB0aGUgYnVmZmVyIGlzIG5vdCBtb2RpZmllZCwgZG1hX3N5bmNfc2luZ2xlX2Zvcl9k
+ZXZpY2UoKSBpcyBub3QgbmVjZXNzYXJ5Lg0KDQpGb3Igc29tZSBhcm02NCBjb3JlLCB0aGUgZGNh
+Y2hlIGludmFsaWRhdGUgb24gQTUzIGlzIGZsdXNoICsgaW52YWxpZGF0ZSwgb25jZSB0aGUgYnVm
+ZmVyDQppcyBtb2RpZmllZCwgaXQgd2lsbCBjYXVzZSByZWFkIGJhY2sgd3JvbmcgZGF0YSB3aXRo
+b3V0IGRtYV9zeW5jX3NpbmdsZV9mb3JfZGV2aWNlKCkuIA0KQW5kIHRoZSBkcml2ZXIgYWxzbyBz
+dXBwb3J0IENvbGRmaXJlIHBsYXRmb3JtcywgSSBhbSBub3QgZmFtaWx5IHdpdGggdGhlIGFyY2gu
+DQoNCkZyb20gY3VycmVudCBhbmFseXplIGZvciBhcm0vYXJtNjQsICBJIGFsc28gdGhpbmsgZG1h
+X3N5bmNfc2luZ2xlX2Zvcl9kZXZpY2UoKSBpcyBub3QNCm5lY2Vzc2FyeSBkdWUgdG8gdGhlIGJ1
+ZmZlciBpcyBub3QgbW9kaWZpZWQuDQoNCkFueXdheSwgaXQgc3RpbGwgbmVlZCB0byBnZXQgb3Ro
+ZXIgZXhwZXJ0cyBjb21tZW50LCBhbmQgaXQgbmVlZCB0byBkbyBtYW55IHRlc3QgYW5kIHN0cmVz
+cyB0ZXN0Lg0KDQo+IEFuZCB0aGVyZSBpcyBubyBETUFfQklESVJFQ1RJT05BTCBtYXBwaW5nLg0K
+PiANCj4gSSB0aG91Z2h0IGNvcHlicmVhayBpdCBpcyBub3QgYWJvdXQgdGhlIG5leHQgZnJhbWUg
+c2l6ZS4gSXQgaXMgYWJvdXQgdGhlIGN1cnJlbnQNCj4gZnJhbWUuIEFuZCB0aGUgYWN0dWFsIGxl
+bmd0aCBpcyBrbm93biB2aWEgdGhlIHNpemUgZmllbGQgaW4gdGhlIGZpbmlzaGVkIERNQQ0KPiBk
+ZXNjcmlwdG9yLg0KPiBPciBkbyB5b3UgbWVhbiB0aGF0IHRoZSBuZXh0IHJlY2VpdmVkIGZyYW1l
+IGNvdWxkIGJlIG5vIGNvcHlicmVhayBmcmFtZS4NCj4gMS4gUnggY29weWJyZWFrYWJsZSBmcmFt
+ZSB3aXRoIHNpemVYIDwgY29weWJyZWFrIDIuIGNvcHlicmVhaw0KPiBkbWFfc3luY19zaW5nbGVf
+Zm9yX2NwdShkbWFidWZmZXIsIHNpemVYKSAzLiBjb3B5YnJlYWsgYWxsb2MgbmV3X3NrYiwNCj4g
+bWVtY3B5KG5ld19za2IsIGRtYWJ1ZmZlciwgc2l6ZVgpIDQuIGNvcHlicmVhaw0KPiBkbWFfc3lu
+Y19zaW5nbGVfZm9yX2RldmljZShkbWFidWZmZXIsIHNpemVYKSA1LiBSeCBub24gY29weWJyZWFr
+YWJsZQ0KPiBmcmFtZSB3aXRoIHNpemVZID49IGNvcHlicmVhayA0LiBkbWFfdW5tYXBfc2luZ2xl
+KGRtYWJ1ZmZlciwNCj4gRkVDX0VORVRfUlhfRlJTSVpFIC0gZmVwLT5yeF9hbGlnbikgaXMgY2Fs
+bGVkIGFuZCBjYW4gY2F1c2UgZGF0YSBjb3JydXB0aW9uDQo+IGJlY2F1c2Ugbm90IGFsbCBieXRl
+cyB3ZXJlIG1hcmtlZCBkaXJ0eSBldmVuIGlmIG5vYm9keSBETUEgJiBDUFUgdG91Y2hlZA0KPiB0
+aGVtPw0KDQpObyBDUFUgdG91Y2gsIGl0IHNob3VsZCBiZSBjbGVhbi4NCj4gDQo+ID4gPiBJIGFt
+IG5ldyB0byB0aGUgRE1BIEFQSSBvbiBBUk0uIEFyZSB0aGVzZSBjaGFuZ2VzIHJlZ2FyZGluZyBj
+YWNoZQ0KPiA+ID4gZmx1c2hpbmcsLi4uIGFsbG93ZWQ/IFRoZXNlIHdvdWxkIGluY3JlYXNlIHRo
+ZSBjb3B5YnJlYWsgdGhyb3VnaHB1dA0KPiA+ID4gYnkgcmVkdWNpbmcgQ1BVIGxvYWQuDQo+ID4N
+Cj4gPiBUbyBhdm9pZCBGSUZPIG92ZXJydW4sIGl0IHJlcXVpcmVzIHRvIGVuc3VyZSBQSFkgcGF1
+c2UgZnJhbWUgaXMgZW5hYmxlZC4NCj4gDQo+IEFzIHRoZSBlcnJhdGEgc3RhdGVzIHRoaXMgaXMg
+YWxzbyBub3QgYWx3YXlzIHRydWUsIGJlY2F1c2UgdGhlIGZpcnN0IHhvZmYgY291bGQNCj4gYXJy
+aXZlIHRvbyBsYXRlLiBQYXVzZSBmcmFtZXMvZmxvdyBjb250cm9sIGlzIG5vdCByZWFsbHkgY29t
+bW9uIGFuZCBjb3VsZA0KPiBjYXVzZSB0cm91YmxlcyB3aXRoIG90aGVyIHJhbmRvbSBuZXR3b3Jr
+IGNvbXBvbmVudHMgYWN0aW5nIGRpZmZlcmVudCBvciBub3QNCj4gc3VwcG9ydGluZyBwYXVzZSBm
+cmFtZXMgY29ycmVjdGx5LiBGb3IgZXhhbXBsZSB0aGUgZHJpdmVyIGl0c2VsZiBkb2VzIGVuYWJs
+ZQ0KPiBwYXVzZSBmcmFtZXMgZm9yIEdpZ2FiaXQgYnkgZGVmYXVsdC4gQnV0IHdlIGhhdmUgbm8g
+R2lnYWJpdCBQaHkgc28gbm8NCj4gRkVDX1FVSVJLX0hBU19HQklUIGFuZCB0aGVyZWZvcmUgcGF1
+c2UgZnJhbWVzIGFyZSBub3Qgc3VwcG9ydGVkIGJ5IHRoZQ0KPiBkcml2ZXIgYXMgb2Ygbm93Lg0K
+PiANCj4gDQo+IEl0IGxvb2tzIGxpa2UgY29weWJyZWFrIGlzIGltcGxlbWVudGVkIHNpbWlsYXIg
+dG8gZTEwMDBfbWFpbi5jDQo+IGUxMDAwX2NvcHlicmVhaygpLg0KPiBUaGVyZSBpcyBvbmx5IHRo
+ZSByZWFsL25lZWRlZCBwYWNrZXQgbGVuZ3RoIChsZW5ndGggPQ0KPiBsZTE2X3RvX2NwdShyeF9k
+ZXNjLT5sZW5ndGgpKSBpcyBzeW5jZWQgdmlhIGRtYV9zeW5jX3NpbmdsZV9mb3JfY3B1IGFuZCBu
+bw0KPiBkbWFfc3luY19zaW5nbGVfZm9yX2RldmljZS4NCj4gDQo+IEhlcmUgaXMgYSBkaWZmIHdp
+dGggdGhlIHByZXZpb3VzIGNoYW5nZXMgYXNzdW1pbmcgdGhhdA0KPiBkbWFfc3luY19zaW5nbGVf
+Zm9yX2RldmljZSBtdXN0IGJlIHVzZWQgdG8gYXZvaWQgYW55IGNhY2hlIGZsdXNoIGJhY2tzDQo+
+IGV2ZW4gd2hlbiBubyBkYXRhIHdhcyBjaGFuZ2VkLg0KDQpCZWxvdyBjaGFuZ2Ugc2VlbXMgZmlu
+ZSwgY2FuIHlvdSBjb2xsZWN0IHNvbWUgZGF0YSBiZWZvcmUgeW91IHNlbmQgb3V0DQp0aGUgcGF0
+Y2ggZm9yIHJldmlldy4NCi0gcnVuIGlwZXJmIHN0cmVzcyB0ZXN0IHRvIGVuc3VyZSB0aGUgc3Rh
+YmlsaXR5DQotIGNvbGxlY3QgdGhlIHBlcmZvcm1hbmNlIGltcHJvdmVtZW50IGRhdGEgDQoNClRo
+YW5rcy4NCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUv
+ZmVjX21haW4uYw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNfbWFpbi5j
+DQo+IGluZGV4IDJkMGQzMTNlZS4uNDY0NzgzYzE1IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25l
+dC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhl
+cm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0KPiBAQCAtMTM4Nyw5ICsxMzg3LDkgQEAgc3RhdGlj
+IGJvb2wgZmVjX2VuZXRfY29weWJyZWFrKHN0cnVjdCBuZXRfZGV2aWNlDQo+ICpuZGV2LCBzdHJ1
+Y3Qgc2tfYnVmZiAqKnNrYiwNCj4gICAgICAgICAgICAgICAgIHJldHVybiBmYWxzZTsNCj4gDQo+
+ICAgICAgICAgZG1hX3N5bmNfc2luZ2xlX2Zvcl9jcHUoJmZlcC0+cGRldi0+ZGV2LA0KPiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZlYzMyX3RvX2NwdShiZHAtPmNiZF9idWZhZGRy
+KSwNCj4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBGRUNfRU5FVF9SWF9GUlNJWkUg
+LSBmZXAtPnJ4X2FsaWduLA0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGxlbmd0
+aCwNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBETUFfRlJPTV9ERVZJQ0UpOw0K
+PiAgICAgICAgIGlmICghc3dhcCkNCj4gICAgICAgICAgICAgICAgIG1lbWNweShuZXdfc2tiLT5k
+YXRhLCAoKnNrYiktPmRhdGEsIGxlbmd0aCk7DQo+ICAgICAgICAgZWxzZQ0KPiBAQCAtMTQxMyw4
+ICsxNDEzLDkgQEAgZmVjX2VuZXRfcnhfcXVldWUoc3RydWN0IG5ldF9kZXZpY2UgKm5kZXYsIGlu
+dA0KPiBidWRnZXQsIHUxNiBxdWV1ZV9pZCkNCj4gICAgICAgICB1bnNpZ25lZCBzaG9ydCBzdGF0
+dXM7DQo+ICAgICAgICAgc3RydWN0ICBza19idWZmICpza2JfbmV3ID0gTlVMTDsNCj4gICAgICAg
+ICBzdHJ1Y3QgIHNrX2J1ZmYgKnNrYjsNCj4gICAgICAgICB1c2hvcnQgIHBrdF9sZW47DQo+ICsg
+ICAgICAgdXNob3J0ICBwa3RfbGVuX25vZmNzOw0KPiAgICAgICAgIF9fdTggKmRhdGE7DQo+ICAg
+ICAgICAgaW50ICAgICBwa3RfcmVjZWl2ZWQgPSAwOw0KPiAgICAgICAgIHN0cnVjdCAgYnVmZGVz
+Y19leCAqZWJkcCA9IE5VTEw7DQo+ICAgICAgICAgYm9vbCAgICB2bGFuX3BhY2tldF9yY3ZkID0g
+ZmFsc2U7DQo+IEBAIC0xNDc5LDkgKzE0ODAsMTAgQEAgZmVjX2VuZXRfcnhfcXVldWUoc3RydWN0
+IG5ldF9kZXZpY2UgKm5kZXYsIGludA0KPiBidWRnZXQsIHUxNiBxdWV1ZV9pZCkNCj4gICAgICAg
+ICAgICAgICAgIC8qIFRoZSBwYWNrZXQgbGVuZ3RoIGluY2x1ZGVzIEZDUywgYnV0IHdlIGRvbid0
+IHdhbnQgdG8NCj4gICAgICAgICAgICAgICAgICAqIGluY2x1ZGUgdGhhdCB3aGVuIHBhc3Npbmcg
+dXBzdHJlYW0gYXMgaXQgbWVzc2VzIHVwDQo+ICAgICAgICAgICAgICAgICAgKiBicmlkZ2luZyBh
+cHBsaWNhdGlvbnMuDQo+ICAgICAgICAgICAgICAgICAgKi8NCj4gLSAgICAgICAgICAgICAgIGlz
+X2NvcHlicmVhayA9IGZlY19lbmV0X2NvcHlicmVhayhuZGV2LCAmc2tiLCBiZHAsDQo+IHBrdF9s
+ZW4gLSA0LA0KPiArICAgICAgICAgICAgICAgcGt0X2xlbl9ub2ZjcyA9IHBrdF9sZW4gLSA0Ow0K
+PiArICAgICAgICAgICAgICAgaXNfY29weWJyZWFrID0gZmVjX2VuZXRfY29weWJyZWFrKG5kZXYs
+ICZza2IsIGJkcCwNCj4gcGt0X2xlbl9ub2ZjcywNCj4gICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBuZWVkX3N3YXApOw0KPiAgICAgICAgICAgICAgICAg
+aWYgKCFpc19jb3B5YnJlYWspIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgc2tiX25ldyA9
+IG5ldGRldl9hbGxvY19za2IobmRldiwNCj4gRkVDX0VORVRfUlhfRlJTSVpFKTsNCj4gICAgICAg
+ICAgICAgICAgICAgICAgICAgaWYgKHVubGlrZWx5KCFza2JfbmV3KSkgeyBAQCAtMTU1NCw5ICsx
+NTU2LDkNCj4gQEAgZmVjX2VuZXRfcnhfcXVldWUoc3RydWN0IG5ldF9kZXZpY2UgKm5kZXYsIGlu
+dCBidWRnZXQsIHUxNiBxdWV1ZV9pZCkNCj4gDQo+ICAgICAgICAgICAgICAgICBpZiAoaXNfY29w
+eWJyZWFrKSB7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgIGRtYV9zeW5jX3NpbmdsZV9mb3Jf
+ZGV2aWNlKCZmZXAtPnBkZXYtPmRldiwNCj4gDQo+IGZlYzMyX3RvX2NwdShiZHAtPmNiZF9idWZh
+ZGRyKSwNCj4gLQ0KPiBGRUNfRU5FVF9SWF9GUlNJWkUNCj4gLSBmZXAtPnJ4X2FsaWduLA0KPiAr
+DQo+IHBrdF9sZW5fbm9mY3MsDQo+IA0KPiBETUFfRlJPTV9ERVZJQ0UpOw0KPiAgICAgICAgICAg
+ICAgICAgfSBlbHNlIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgcnhxLT5yeF9za2J1ZmZb
+aW5kZXhdID0gc2tiX25ldzsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgZmVjX2VuZXRfbmV3
+X3J4YmRwKG5kZXYsIGJkcCwgc2tiX25ldyk7DQo=
