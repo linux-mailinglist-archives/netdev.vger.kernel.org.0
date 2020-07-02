@@ -2,143 +2,354 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 853CA212091
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 12:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95F8921209D
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 12:09:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728315AbgGBKFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 06:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727784AbgGBKFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 06:05:05 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCDCC08C5DC
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 03:05:04 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id f139so27213462wmf.5
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 03:05:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=z6rgXj0NTD9PDpQjHsG/IEK9XchmNS0510zhoY6+bRM=;
-        b=V6Kamdd1OVWbDdE4nkgJT9LoSC8s7cK+++UHAukTcyCFI+MUhWZ3kQMfEHurLmC3VX
-         auY7IxlsQm/sVxo6SSZTvWfeWUs4PnVhl5bVVJFk8GOKjTd8kbPCgrKY9dcrq3UHxwEN
-         QxpNaeFbsGDE8QHON37JeMiK5JmBh7K8+j3+o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=z6rgXj0NTD9PDpQjHsG/IEK9XchmNS0510zhoY6+bRM=;
-        b=DajrVxYGert9cMK6YOwp70nxh5pbdXMMRhaDlOgn6uU7SswtHqryHG68MFEyKwlycb
-         mT99J7EyQpRuhVrs3662Y/U5/pxXUQHTtwl+hRh33QdcVcL1qI2w8uDyHifd3luYbaGC
-         S986+Y9FygA6IyISYK9OZytXLrIJJ26RVzU7WZK6J5OGgmCh1+O+JZth8qozKRSrgJq1
-         TAJTHOESiSbi1gc0K0joMmPzs0ZB5mz4AAQWOTvxu16eYIvJ8C2YE39qREssuMu/dCPz
-         8LBNC5IQtAzVUpX11VA90hUxDWehr92HaZqyaeQlANH98TEJWTdvmHahcqf8BLyx/5gy
-         /Qpw==
-X-Gm-Message-State: AOAM533Hpid7CKsCHx6spNUS8HKxtohSvCTVEte8fDzzfiqqRaD6lOwI
-        i+T8NzbiI+pAoGb5bZm4c8YKTA==
-X-Google-Smtp-Source: ABdhPJwSjMqSScQHghRqZI31MUtUpODKi6xYVBUN+0ghQAtB/dtczJkORmCsn4rW41/+AX6Mj89EqA==
-X-Received: by 2002:a1c:4303:: with SMTP id q3mr32097134wma.134.1593684303419;
-        Thu, 02 Jul 2020 03:05:03 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x185sm10508303wmg.41.2020.07.02.03.05.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jul 2020 03:05:02 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 3/3] bridge: Extend br_fill_ifinfo to return
- MPR status
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        roopa@cumulusnetworks.com, davem@davemloft.net, kuba@kernel.org,
-        jiri@mellanox.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        UNGLinuxDriver@microchip.com
-References: <20200702081307.933471-1-horatiu.vultur@microchip.com>
- <20200702081307.933471-4-horatiu.vultur@microchip.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <5c94fb61-a85d-e28f-01b4-52e2e4e0892e@cumulusnetworks.com>
-Date:   Thu, 2 Jul 2020 13:05:01 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728173AbgGBKJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 06:09:14 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46018 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727057AbgGBKJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 06:09:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593684551;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1XoJCHWbAvd1q278HFyZF2XoClrLg3eVaSb7jGnSADY=;
+        b=WO54+Gc83IRNtWC2Z1pWS5HSoM+AKbZ1OKqjXhcRciDHFwAYgYVmQUkiKgK22J4j9NJoLd
+        iFJDLLsyj8nkGq+7MqRBjbfZ5NYMBY5IgOwmqjrkbGq0ZPhSh8sBaolAX7SfxsTAFVkVt2
+        KZQMqlxOAXgrTJINHwKwNpe6L6q9bTQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-179-7U8DlUR5N9uBvnK94CKN0Q-1; Thu, 02 Jul 2020 06:09:07 -0400
+X-MC-Unique: 7U8DlUR5N9uBvnK94CKN0Q-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EB77418FE86C;
+        Thu,  2 Jul 2020 10:09:04 +0000 (UTC)
+Received: from krava (unknown [10.40.195.148])
+        by smtp.corp.redhat.com (Postfix) with SMTP id A8C205DC1E;
+        Thu,  2 Jul 2020 10:09:00 +0000 (UTC)
+Date:   Thu, 2 Jul 2020 12:08:59 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v4 bpf-next 07/14] bpf: Allow nested BTF object to be
+ refferenced by BTF object + offset
+Message-ID: <20200702100859.GC3144378@krava>
+References: <20200625221304.2817194-1-jolsa@kernel.org>
+ <20200625221304.2817194-8-jolsa@kernel.org>
+ <CAEf4BzZA3QqA=f_E8CUASVajxEsThq+Ww2Ax6az82wibx1dgOg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200702081307.933471-4-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZA3QqA=f_E8CUASVajxEsThq+Ww2Ax6az82wibx1dgOg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/07/2020 11:13, Horatiu Vultur wrote:
-> This patch extends the function br_fill_ifinfo to return also the MRP
-> status for each instance on a bridge. It also adds a new filter
-> RTEXT_FILTER_MRP to return the MRP status only when this is set, not to
-> interfer with the vlans. The MRP status is return only on the bridge
-> interfaces.
+On Tue, Jun 30, 2020 at 01:05:52PM -0700, Andrii Nakryiko wrote:
+> On Thu, Jun 25, 2020 at 4:49 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > Adding btf_struct_address function that takes 2 BTF objects
+> > and offset as arguments and checks whether object A is nested
+> > in object B on given offset.
+> >
+> > This function will be used when checking the helper function
+> > PTR_TO_BTF_ID arguments. If the argument has an offset value,
+> > the btf_struct_address will check if the final address is
+> > the expected BTF ID.
+> >
+> > This way we can access nested BTF objects under PTR_TO_BTF_ID
+> > pointer type and pass them to helpers, while they still point
+> > to valid kernel BTF objects.
+> >
+> > Using btf_struct_access to implement new btf_struct_address
+> > function, because it already walks down the given BTF object.
+> >
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  include/linux/bpf.h   |  3 ++
+> >  kernel/bpf/btf.c      | 67 ++++++++++++++++++++++++++++++++++++++-----
+> >  kernel/bpf/verifier.c | 37 +++++++++++++++---------
+> >  3 files changed, 87 insertions(+), 20 deletions(-)
+> >
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 3d2ade703a35..c0fd1f3037dd 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -1300,6 +1300,9 @@ int btf_struct_access(struct bpf_verifier_log *log,
+> >                       const struct btf_type *t, int off, int size,
+> >                       enum bpf_access_type atype,
+> >                       u32 *next_btf_id);
+> > +int btf_struct_address(struct bpf_verifier_log *log,
+> > +                    const struct btf_type *t,
+> > +                    u32 off, u32 id);
+> >  int btf_resolve_helper_id(struct bpf_verifier_log *log,
+> >                           const struct bpf_func_proto *fn, int);
+> >
+> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > index 701a2cb5dfb2..f87e5f1dc64d 100644
+> > --- a/kernel/bpf/btf.c
+> > +++ b/kernel/bpf/btf.c
+> > @@ -3863,10 +3863,22 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+> >         return true;
+> >  }
+> >
+> > -int btf_struct_access(struct bpf_verifier_log *log,
+> > -                     const struct btf_type *t, int off, int size,
+> > -                     enum bpf_access_type atype,
+> > -                     u32 *next_btf_id)
+> > +enum access_op {
+> > +       ACCESS_NEXT,
+> > +       ACCESS_EXPECT,
+> > +};
+> > +
+> > +struct access_data {
+> > +       enum access_op op;
+> > +       union {
+> > +               u32 *next_btf_id;
+> > +               const struct btf_type *exp_type;
+> > +       };
+> > +};
+> > +
+> > +static int struct_access(struct bpf_verifier_log *log,
+> > +                        const struct btf_type *t, int off, int size,
+> > +                        struct access_data *data)
+> >  {
+> >         u32 i, moff, mtrue_end, msize = 0, total_nelems = 0;
+> >         const struct btf_type *mtype, *elem_type = NULL;
+> > @@ -3914,8 +3926,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
+> >                         goto error;
+> >
+> >                 off = (off - moff) % elem_type->size;
+> > -               return btf_struct_access(log, elem_type, off, size, atype,
+> > -                                        next_btf_id);
+> > +               return struct_access(log, elem_type, off, size, data);
 > 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  include/uapi/linux/rtnetlink.h |  1 +
->  net/bridge/br_netlink.c        | 25 ++++++++++++++++++++++++-
->  2 files changed, 25 insertions(+), 1 deletion(-)
+> hm... this should probably be `goto again;` to avoid recursion. This
+> should have been caught in the original patch that added this
+> recursive call.
 > 
+> >
+> >  error:
+> >                 bpf_log(log, "access beyond struct %s at off %u size %u\n",
+> > @@ -4043,9 +4054,21 @@ int btf_struct_access(struct bpf_verifier_log *log,
+> >
+> >                         /* adjust offset we're looking for */
+> >                         off -= moff;
+> > +
+> > +                       /* We are nexting into another struct,
+> > +                        * check if we are crossing expected ID.
+> > +                        */
+> > +                       if (data->op == ACCESS_EXPECT && !off && t == data->exp_type)
+> 
+> before you can do this type check, you need to btf_type_skip_modifiers() first.
+> 
+> > +                               return 0;
+> >                         goto again;
+> >                 }
+> >
+> > +               /* We are interested only in structs for expected ID,
+> > +                * bail out.
+> > +                */
+> > +               if (data->op == ACCESS_EXPECT)
+> > +                       return -EINVAL;
+> > +
+> >                 if (btf_type_is_ptr(mtype)) {
+> >                         const struct btf_type *stype;
+> >                         u32 id;
+> > @@ -4059,7 +4082,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
+> >
+> >                         stype = btf_type_skip_modifiers(btf_vmlinux, mtype->type, &id);
+> >                         if (btf_type_is_struct(stype)) {
+> > -                               *next_btf_id = id;
+> > +                               *data->next_btf_id = id;
+> >                                 return PTR_TO_BTF_ID;
+> >                         }
+> >                 }
+> > @@ -4083,6 +4106,36 @@ int btf_struct_access(struct bpf_verifier_log *log,
+> >         return -EINVAL;
+> >  }
+> >
+> > +int btf_struct_access(struct bpf_verifier_log *log,
+> > +                     const struct btf_type *t, int off, int size,
+> > +                     enum bpf_access_type atype __maybe_unused,
+> > +                     u32 *next_btf_id)
+> > +{
+> > +       struct access_data data = {
+> > +               .op = ACCESS_NEXT,
+> > +               .next_btf_id = next_btf_id,
+> > +       };
+> > +
+> > +       return struct_access(log, t, off, size, &data);
+> > +}
+> > +
+> > +int btf_struct_address(struct bpf_verifier_log *log,
+> > +                      const struct btf_type *t,
+> > +                      u32 off, u32 id)
+> > +{
+> > +       const struct btf_type *type;
+> > +       struct access_data data = {
+> > +               .op = ACCESS_EXPECT,
+> > +       };
+> > +
+> > +       type = btf_type_by_id(btf_vmlinux, id);
+> > +       if (!type)
+> > +               return -EINVAL;
+> > +
+> > +       data.exp_type = type;
+> > +       return struct_access(log, t, off, 1, &data);
+> > +}
+> > +
+> >  int btf_resolve_helper_id(struct bpf_verifier_log *log,
+> >                           const struct bpf_func_proto *fn, int arg)
+> >  {
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 7de98906ddf4..da7351184295 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -3808,6 +3808,7 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+> >         struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
+> >         enum bpf_reg_type expected_type, type = reg->type;
+> >         enum bpf_arg_type arg_type = fn->arg_type[arg];
+> > +       const struct btf_type *btf_type;
+> >         int err = 0;
+> >
+> >         if (arg_type == ARG_DONTCARE)
+> > @@ -3887,24 +3888,34 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+> >                 expected_type = PTR_TO_BTF_ID;
+> >                 if (type != expected_type)
+> >                         goto err_type;
+> > -               if (!fn->check_btf_id) {
+> > -                       if (reg->btf_id != meta->btf_id) {
+> > -                               verbose(env, "Helper has type %s got %s in R%d\n",
+> > +               if (reg->off) {
+> > +                       btf_type = btf_type_by_id(btf_vmlinux, reg->btf_id);
+> > +                       if (btf_struct_address(&env->log, btf_type, reg->off, meta->btf_id)) {
+> > +                               verbose(env, "Helper has type %s got %s in R%d, off %d\n",
+> >                                         kernel_type_name(meta->btf_id),
+> > +                                       kernel_type_name(reg->btf_id), regno, reg->off);
+> > +                               return -EACCES;
+> > +                       }
+> > +               } else {
+> > +                       if (!fn->check_btf_id) {
+> > +                               if (reg->btf_id != meta->btf_id) {
+> > +                                       verbose(env, "Helper has type %s got %s in R%d\n",
+> > +                                               kernel_type_name(meta->btf_id),
+> > +                                               kernel_type_name(reg->btf_id), regno);
+> > +
+> > +                                       return -EACCES;
+> > +                               }
+> > +                       } else if (!fn->check_btf_id(reg->btf_id, arg)) {
+> > +                               verbose(env, "Helper does not support %s in R%d\n",
+> >                                         kernel_type_name(reg->btf_id), regno);
+> >
+> >                                 return -EACCES;
+> >                         }
+> 
+> Ok, I think I'm grasping this a bit more. How about we actually don't
+> have two different cases (btf_struct_access and btf_struct_address),
+> but instead make unified btf_struct_access that will return the
+> earliest field that register points to (so it sort of iterates deeper
+> and deeper with each invocation). So e.g., let's assume we have this
+> type:
+> 
+> 
+> struct A {
+>   struct B {
+>     struct C {
+>       int x;
+>     } c;
+>   } b;
+>   struct D { int y; } d;
+> };
+> 
+> Now consider the extreme case of a BPF helper that expects a pointer
+> to the struct C or D (so uses a custom btf_id check function to say if
+> a passed argument is acceptable or not), ok?
+> 
+> Now you write BPF program as such, r1 has pointer to struct A,
+> originally (so verifier knows btf_id points to struct A):
+> 
+> int prog(struct A *a) {
+>    return fancy_helper(&a->b.c);
+> }
+> 
+> Now, when verifier checks fancy_helper first time, its btf_id check
+> will say "nope". But before giving up, verifier calls
+> btf_struct_access, it goes into struct A field, finds field b with
+> offset 0, it matches register's offset (always zero in this scenario),
+> sees that that field is a struct B, so returns that register now
+> points to struct B. Verifier passed that updated BTF ID to
+> fancy_helper's check, it still says no. Again, don't give up,
+> btf_struct_access again, but now register assumes it starts in struct
+> B. It finds field c of type struct C, so returns successfully. Again,
+> we are checking with fancy_helper's check_btf_id() check, now it
+> succeeds, so we keep register's BTF_ID as struct C and carry on.
+> 
+> Now assume fancy_helper only accepts struct D. So once we pass struct
+> C, it rejects. Again, btf_struct_access() is called, this time find
+> field x, which is int (and thus register is SCALAR now).
+> check_btf_id() rejects it, we call btf_struct_access() again, but this
+> time we can't really go deeper into type int, so we give up at this
+> point and return error.
+> 
+> Now, when register's offset is non-zero, the process is exactly the
+> same, we just need to keep locally adjusted offset, so that when we
+> find inner struct, we start with the offset within that struct, not
+> origin struct A's offset.
+> 
+> It's quite verbose explanation, but hopefully you get the idea. I
+> think implementation shouldn't be too hard, we might need to extend
+> register's state to have this extra local offset to get to the start
+> of a type we believe register points to (something like inner_offset,
+> or something). Then btf_struct_access can take into account both
+> register's off and inner_off to maintain this offset to inner type.
+> 
+> It should nicely work in all cases, not just partially as it is right now. WDYT?
 
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+I think above should work nicely for my case, but we need
+to keep the current btf_struct_access usage, which is to
+check if we point to a pointer type and return the ID it
+points to 
 
-> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-> index 879e64950a0a2..9b814c92de123 100644
-> --- a/include/uapi/linux/rtnetlink.h
-> +++ b/include/uapi/linux/rtnetlink.h
-> @@ -778,6 +778,7 @@ enum {
->  #define RTEXT_FILTER_BRVLAN	(1 << 1)
->  #define RTEXT_FILTER_BRVLAN_COMPRESSED	(1 << 2)
->  #define	RTEXT_FILTER_SKIP_STATS	(1 << 3)
-> +#define RTEXT_FILTER_MRP	(1 << 4)
->  
->  /* End of information exported to user level */
->  
-> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-> index 240e260e3461c..c532fa65c9834 100644
-> --- a/net/bridge/br_netlink.c
-> +++ b/net/bridge/br_netlink.c
-> @@ -453,6 +453,28 @@ static int br_fill_ifinfo(struct sk_buff *skb,
->  		rcu_read_unlock();
->  		if (err)
->  			goto nla_put_failure;
-> +
-> +		nla_nest_end(skb, af);
-> +	}
-> +
-> +	if (filter_mask & RTEXT_FILTER_MRP) {
-> +		struct nlattr *af;
-> +		int err;
-> +
-> +		if (!br_mrp_enabled(br) || port)
-> +			goto done;
-> +
-> +		af = nla_nest_start_noflag(skb, IFLA_AF_SPEC);
-> +		if (!af)
-> +			goto nla_put_failure;
-> +
-> +		rcu_read_lock();
-> +		err = br_mrp_fill_info(skb, br);
-> +		rcu_read_unlock();
-> +
-> +		if (err)
-> +			goto nla_put_failure;
-> +
->  		nla_nest_end(skb, af);
->  	}
->  
-> @@ -516,7 +538,8 @@ int br_getlink(struct sk_buff *skb, u32 pid, u32 seq,
->  	struct net_bridge_port *port = br_port_get_rtnl(dev);
->  
->  	if (!port && !(filter_mask & RTEXT_FILTER_BRVLAN) &&
-> -	    !(filter_mask & RTEXT_FILTER_BRVLAN_COMPRESSED))
-> +	    !(filter_mask & RTEXT_FILTER_BRVLAN_COMPRESSED) &&
-> +	    !(filter_mask & RTEXT_FILTER_MRP))
->  		return 0;
->  
->  	return br_fill_ifinfo(skb, port, pid, seq, RTM_NEWLINK, nlflags,
-> 
+I think it's doable with the functionality you described,
+we'll just check of the returned type is pointer and get
+the ID it points to.. which makes me think we still need
+functions like below (again bad names probably ;-) )
+
+  btf_struct_walk
+    - implements the walk through the type as you described
+      above.. returns the type we point to and we can call
+      it again to resolve the next type at the same offset
+
+  btf_struct_address
+    - calls btf_struct_walk and checks if the returned type ID
+      matches the requested BTF ID of the helper argument if not
+      and the returned type is struct, call btf_struct_walk again
+      to get the next layer and repeat..
+
+  btf_struct_access
+    - calls btf_struct_walk repeatedly until the returned type is
+      a pointer and then it returns the BTF ID it points to
+
+thanks,
+jirka
 
