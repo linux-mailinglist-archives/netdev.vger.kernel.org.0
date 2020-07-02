@@ -2,95 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89FD2212949
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 18:25:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E18F21294C
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 18:25:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbgGBQY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 12:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726082AbgGBQY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 12:24:58 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2850C08C5C1
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 09:24:57 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id z17so24616869edr.9
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 09:24:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hiBGL1G5BNNYTkB7ArfahX8fXmCAgmnI8sGRkxHOFeQ=;
-        b=LZ9V/OYXyNlkbgUK7PtCxPsjFbzpIw1DK8dajrQvofA9xuuwG3BBGPZP40po+ueczI
-         e9o/vK5t3B5695uMeI3kX/4/3MzcU50ka7QsU1bdacMYQtvw0qNUOc2F655ucK7AUY1G
-         jlulOe2nVs+3N0+EHcm6Ib0+Dcj6diZSWa5ThyvWrZQaoz0Vn5nwoDMHGoT5dZTdJ0BQ
-         e7IjWKS1prmvAD8FCkzfP02jazBS9Vxi7N1nPVnKx/gGgkFF+TTCFEy0nymKrw3OqxpI
-         dYs1KeOPJzwdwWwIFJNd9viZZ6zhqUhONjPzz05pj+IG98dVY9XuLU7yL4KiMbKPiTss
-         2aGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hiBGL1G5BNNYTkB7ArfahX8fXmCAgmnI8sGRkxHOFeQ=;
-        b=tStz2NhLiMr6dAkOwUue6bsAg9HqCSrmPrmth5o9NrHHy8kmtyPiWYhz/fIEWL2RQJ
-         7WpA3fFAyBkBddhJVmz6ar6/2+APoM43U4c+xJ8eaFhcZuwjAu63CZ/GLriqe4P73Zw1
-         Q50VI+H8a0Fi4nNhccwJnfCfx/TGbdFLV/q9AEt4+LYIOFpAXfBeo4wBI+s3YHElsdC2
-         +WUVblPsKU9Qo9brmsHP2+i5vcU4dEvFUI6ZVYuO77CIGXuCPDS4KUxKMkePfA1E7qTq
-         9X9J6ONcM4L0zez8UVu8m3fjknY05ik9MW3IYS5su5tY6eKokf1xJMaqQhDUdimhQQ+a
-         tHww==
-X-Gm-Message-State: AOAM532N75c5nX8eq/Tn0lEbWWM0Ba7RPnRme0jVnjZ5SDPz8/H5gjeC
-        hIdJK65D+5NxKclsjTCduSn8h5nC0KTWh+f/kwI=
-X-Google-Smtp-Source: ABdhPJz6SofV5o1LNGZk/DZsAQJVGUjtt9UVwQ+/26rgDZNng1YIu8xtQoVnVJ/zrRaxodM7+HTSTq4qnVpWErcUvGM=
-X-Received: by 2002:a50:cdc6:: with SMTP id h6mr35049396edj.111.1593707096541;
- Thu, 02 Jul 2020 09:24:56 -0700 (PDT)
+        id S1726718AbgGBQZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 12:25:28 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:41104 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726148AbgGBQZ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 12:25:27 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 196EC600D5;
+        Thu,  2 Jul 2020 16:25:27 +0000 (UTC)
+Received: from us4-mdac16-32.ut7.mdlocal (unknown [10.7.66.145])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 16619200AC;
+        Thu,  2 Jul 2020 16:25:27 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.32])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 86E8122006D;
+        Thu,  2 Jul 2020 16:25:26 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 26D3EB40072;
+        Thu,  2 Jul 2020 16:25:26 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 2 Jul 2020
+ 17:25:20 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH v2 net-next 00/16] sfc: prerequisites for EF100 driver, part 3
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+Message-ID: <52336e78-8f45-7401-9827-6c1fea38656d@solarflare.com>
+Date:   Thu, 2 Jul 2020 17:25:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <459be87d-0272-9ea9-839a-823b01e354b6@huawei.com>
- <35480172-c77e-fb67-7559-04576f375ea6@huawei.com> <CAM_iQpXpZd6ZaQyQifWOHSnqgAgdu1qP+fF_Na7rQ_H1vQ6eig@mail.gmail.com>
- <20200623222137.GA358561@carbon.lan> <b3a5298d-3c4e-ba51-7045-9643c3986054@neo-zeon.de>
- <CAM_iQpU1ji2x9Pgb6Xs7Kqoh3mmFRN3R9GKf5QoVUv82mZb8hg@mail.gmail.com>
- <20200627234127.GA36944@carbon.DHCP.thefacebook.com> <CAM_iQpWk4x7U_ci1WTf6BG=E3yYETBUk0yxMNSz6GuWFXfhhJw@mail.gmail.com>
- <20200630224829.GC37586@carbon.dhcp.thefacebook.com> <CAM_iQpWRsuFE4NRhGncihK8UmPoMv1tEHMM0ufWxVCaP9pdTQg@mail.gmail.com>
- <20200702160242.GA91667@carbon.dhcp.thefacebook.com>
-In-Reply-To: <20200702160242.GA91667@carbon.dhcp.thefacebook.com>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Thu, 2 Jul 2020 12:24:45 -0400
-Message-ID: <CAMdYzYp_ooh4rsDsWWx1HS_LdgHm+FWxt=3GUA4_aRp88X42eQ@mail.gmail.com>
-Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
-To:     Roman Gushchin <guro@fb.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Zefan Li <lizefan@huawei.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
-        =?UTF-8?Q?Dani=C3=ABl_Sonck?= <dsonck92@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Tejun Heo <tj@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25516.003
+X-TM-AS-Result: No-3.709200-8.000000-10
+X-TMASE-MatchedRID: QBPDgdBGZW7hp80oBol0K/3HILfxLV/9APiR4btCEeYMrRrnLCZEmngS
+        ql3zhup/bYeFBJB9B7Sr/+Gm/JK2ukohWBZ4QV+620204SCJw/rKIqAq0jIHitKpFIAeH1NQ2jN
+        t44OdemXrKSBTkozzvpNgfsIadgPVG5/z6rCPbAFPs79gcmEg0AEPJrYlsf/6mJBe2bRXwlMfzs
+        75W7+/naTj0eKb2CFznd7tX1ZngZd6bMYbioM9qbsHVDDM5xAPp1Pjcaldww3i7ECA5q90uVGCr
+        86m3bCT9RzkM0/MzhOq3CLfAyeEIxdf33vUT1aFhL9NX2TqmkBn+sA9+u1YLY4iwAQuovtY5iW+
+        +W4offtJ3i5QgwGkJH98Sq1bwEZ2WELDcKwGO252GcWKGZufBeqhuTPUDQDtYy6fApvL8BdLeiW
+        HDwLK1k0OUyMTH7WrhbopPwYOhRO+8LSisOUFN54CIKY/Hg3AtOt1ofVlaoLWRN8STJpl3PoLR4
+        +zsDTtQh+ArmEemWUahG1ZvLXGRjxo//ZOdUXHK7yYWUwyvGVkKWc3v50Y4Ft28IHFiOK92demI
+        rkmwVUSk2X0CuYlVGpmSOgEjo6ILww58Y/C0+V85uoYr0mmWaKdpX90rRoSErdW3Lyhe2TZKwvJ
+        jiAfi8C+ksT6a9fy
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--3.709200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25516.003
+X-MDID: 1593707127-xRvUjSwzy6U5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 12:03 PM Roman Gushchin <guro@fb.com> wrote:
->
-> On Wed, Jul 01, 2020 at 09:48:48PM -0700, Cong Wang wrote:
-> > On Tue, Jun 30, 2020 at 3:48 PM Roman Gushchin <guro@fb.com> wrote:
-> > >
-> > > Btw if we want to backport the problem but can't blame a specific commit,
-> > > we can always use something like "Cc: <stable@vger.kernel.org>    [3.1+]".
-> >
-> > Sure, but if we don't know which is the right commit to blame, then how
-> > do we know which stable version should the patch target? :)
-> >
-> > I am open to all options here, including not backporting to stable at all.
->
-> It seems to be that the issue was there from bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup"),
-> so I'd go with it. Otherwise we can go with 5.4+, as I understand before that it was
-> hard to reproduce it.
->
-> Thanks!
+Continuing on from [1] and [2], this series assembles the last pieces
+ of the common codebase that will be used by the forthcoming EF100
+ driver.
+Patch #1 also adds a minor feature to EF10 (setting MTU on VFs) since
+ EF10 supports the same MCDI extension which that feature will use on
+ EF100.
+Patches #5 & #7, while they should have no externally-visible effect
+ on driver functionality, change how that functionality is implemented
+ and how the driver represents TXQ configuration internally, so are
+ not mere cleanup/refactoring like most of these prerequisites have
+ (from the perspective of the existing sfc driver) been.
 
-Just wanted to let you know, this patch has been running for ~36 hours
-or so without a crash.
-So:
-Tested-by: Peter Geis <pgwipeout@gmail.com>
+Changes in v2:
+* Patch #1: use efx_mcdi_set_mtu() directly, instead of as a fallback,
+  in the mtu_only case (Jakub)
+* Patch #3: fix symbol collision in non-modular builds by renaming
+  interrupt_mode to efx_interrupt_mode (kernel test robot)
+* Patch #6: check for failure of netif_set_real_num_[tr]x_queues (Jakub)
+* Patch #12: cleaner solution for ethtool drvinfo (Jakub, David)
+
+[1]: https://lore.kernel.org/netdev/20200629.173812.1532344417590172093.davem@davemloft.net/T/
+[2]: https://lore.kernel.org/netdev/20200630.130923.402514193016248355.davem@davemloft.net/T/
+
+Edward Cree (16):
+  sfc: support setting MTU even if not privileged to configure MAC fully
+  sfc: remove max_interrupt_mode
+  sfc: move modparam 'interrupt_mode' out of common channel code
+  sfc: move modparam 'rss_cpus' out of common channel code
+  sfc: make tx_queues_per_channel variable at runtime
+  sfc: commonise netif_set_real_num[tr]x_queues calls
+  sfc: assign TXQs without gaps
+  sfc: don't call tx_limit_len if NIC type doesn't have one
+  sfc: factor out efx_mcdi_filter_table_down() from _remove()
+  sfc: commonise efx_fini_dmaq
+  sfc: initialise RSS context ID to 'no RSS context' in
+    efx_init_struct()
+  sfc: get drvinfo driver name from outside the common code
+  sfc_ef100: add EF100 to NIC-revision enumeration
+  sfc_ef100: populate BUFFER_SIZE_BYTES in INIT_RXQ
+  sfc_ef100: NVRAM selftest support code
+  sfc_ef100: helper function to set default RSS table of given size
+
+ drivers/net/ethernet/sfc/ef10.c           | 76 +++++------------------
+ drivers/net/ethernet/sfc/efx.c            | 14 ++---
+ drivers/net/ethernet/sfc/efx_channels.c   | 66 ++++++++++++--------
+ drivers/net/ethernet/sfc/efx_channels.h   |  3 +
+ drivers/net/ethernet/sfc/efx_common.c     | 14 +++--
+ drivers/net/ethernet/sfc/efx_common.h     |  2 +-
+ drivers/net/ethernet/sfc/ethtool.c        |  2 +
+ drivers/net/ethernet/sfc/ethtool_common.c | 11 ++--
+ drivers/net/ethernet/sfc/ethtool_common.h |  2 +
+ drivers/net/ethernet/sfc/farch.c          |  6 +-
+ drivers/net/ethernet/sfc/mcdi.c           | 62 ++++++++++++++++++
+ drivers/net/ethernet/sfc/mcdi.h           |  1 +
+ drivers/net/ethernet/sfc/mcdi_filters.c   | 58 +++++++++++++----
+ drivers/net/ethernet/sfc/mcdi_filters.h   |  3 +
+ drivers/net/ethernet/sfc/mcdi_functions.c | 57 ++++++++++++++---
+ drivers/net/ethernet/sfc/mcdi_functions.h |  1 +
+ drivers/net/ethernet/sfc/net_driver.h     | 44 ++++++-------
+ drivers/net/ethernet/sfc/nic_common.h     |  3 +-
+ drivers/net/ethernet/sfc/selftest.c       | 18 +++---
+ drivers/net/ethernet/sfc/siena.c          |  4 +-
+ drivers/net/ethernet/sfc/tx.c             | 50 +++------------
+ drivers/net/ethernet/sfc/tx_common.c      |  6 +-
+ 22 files changed, 292 insertions(+), 211 deletions(-)
+
