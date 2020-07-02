@@ -2,269 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09B9E21243F
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:11:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38E1F21245C
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:14:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729172AbgGBNLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 09:11:45 -0400
-Received: from mail-eopbgr150084.outbound.protection.outlook.com ([40.107.15.84]:26558
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729147AbgGBNLo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jul 2020 09:11:44 -0400
+        id S1729156AbgGBNOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 09:14:51 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:36606 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728253AbgGBNOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 09:14:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1593695690; x=1625231690;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=D1k8sFFZ6GmcfeJLDNK60SJWjTqLYfivUhKi8BmT+4Q=;
+  b=VnZBwPMsnfhzjBUVX+8TXxlYx0uOSIGOc6ybaUVoKftKrr9clF7ggXVR
+   /f8VY+nPGdpECzLHuH0SByjNQwgMjb0LZUlYdfb0mXDnBP3/C8cs2PuOm
+   iq5/ZQYJm2BH4Zf0hAVdt/tYKiodojsJ+CqxDpOv06B/IUwZLIjVvbtQ8
+   OaauNHyPA7rf5whUeLDgqzluPt+ncA6gM3MEvpJG+1xDG7+z/cxJrats9
+   ylaZU1Ri6mbnMPuBHVj/Hd0TW3dXecl1B/B3aIhQ9rR2Ts2kVFMdCl7Mr
+   91W+B/W1jfL8R9v2iKPGS3pChCpQnua3NrVzWAAhdlrbU28ohRr0UV41m
+   g==;
+IronPort-SDR: anH1E/wTBctIj2IeitnYX1B7+GUthXLHYh4atVCV5HvB85NTqhA+y2Rf54fL7ARIk6fwnqk0Q9
+ bOG1Rajs8+zHuRR9l+Umdny2YNsLcpOMvGDcMDperyJki06gbY+jzIo4vHMgF+PeF2tKFZWtGQ
+ l9D0H3V+96x8RBW07x1hauV7cCWhuqmdKB1/f+9u2kDbeT1MycZMFsRjLYl7SUaPriEdnY5zpg
+ C88LU72B3spxt7ht9KyFeRhtZNWI5+b15IV+Kh6sNLzdInDW7yeU2f9ipRGGXafueDWrJNd2gK
+ Qtw=
+X-IronPort-AV: E=Sophos;i="5.75,304,1589266800"; 
+   d="scan'208";a="82392420"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Jul 2020 06:14:35 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 2 Jul 2020 06:14:35 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3 via Frontend
+ Transport; Thu, 2 Jul 2020 06:14:15 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BpDvjrzcAekH2IAal3Phwq1kpIbS04425dv11HyOakpHvBFIUojEv1lu3RQy5wpdND5JMoBrTNrob+vK8kNlMldG4bRYRmILnStRbDNHBDpmPRXMzwQk4mt+tAzcQQ0mHJEkGaZCDAO+1CEMpf1qIaG2rRLERIBNkV3VkSg2yhEEQEgCfCXSmCo79jXtcgUJeEeb1whcZOXL1vgBA2UM/eurrVYvXk+GAnyNjKNGbG6jBm6lsYEMbFKo7O8ghUc8CN66MfPzfbc7r41xPRVY83immdSVdAM2nmyh40vJ/Ca1gKt5EtEb/bQMC7AegO1UTV6fNkPDfZUhUMBMtsxs0Q==
+ b=ZK9Rx5e3SPAhy1OhigwIGzNMGjTckXC51hnYQHEYY/E/XXnLKzhZYb5z39Wt0rsLCEnXIYpUSNQiVx1tpiFhvKBcor1vbDuAAXk6YWBggxY5qB2aDORnXcpEZk4hX/vbzo6dFNMAlkUwP1oyAybSHYnMuXnXUr+V+njc7W8+y/uAYxftBk1ReJ6VxRxx8VwRJVmt6VB3Z0OuMA39LV4JT/lIV5gCikBGCrMCEgxu5heEK6NzSAAJTDFVNmXs+E2O1eHPavjaHWtJSINF1xUwnzF7FTViDh0mHZQTd8k9bTQ0dCV8YhBsvfjL0vVt66iy+2Os6SoZx0+L//073zkHkw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VmIXNZmcK0uIoKT6xpho4BWc7mk6RQhv2Fmg5s9XMF4=;
- b=eE/62ct8bj3CXtEyaJj2D+vXdEHB4gOKDpDKx5x/w/G03aHGaLrcjaM0h/wYpYFQ7SxNZqd63mAfzMpzu21BhIcmKngbYrfko6jde2nasJkeLfCLF39j1pTl6F5nFZoR8l1YeEd/uWA2679TyzS4qrmKAjO3cykhuQU1Ak+VQI3nUWcDboQAI+cQox5t9c+viT81Fcp1wT3uw00uziAgH3qFQyUNfZP4c8o6JdQx4lvEYB0JDEgg/HaUE2vNIjlgZqFV701zDiK7GRTKA8zDTQsApRNQnsMu2ZWsgLFUCDlOC6BVXw4JcNQ8SXydVAcuvGY5Bcz8TrKQF2CrVwlygg==
+ bh=D1k8sFFZ6GmcfeJLDNK60SJWjTqLYfivUhKi8BmT+4Q=;
+ b=L4KUD3/4xYsjCCIsMhQdN7a8DO+jTmPWEM1GlYUKyeBpSb2N0k97WHNy1OUXhrXpGLKZYMoEy47sNRb3Bzzg/zzB0UkMUd4KCXcFPPJMmgzWamxL3UhzGBfds2oNc0SUGaSYle9KgDGlW0x0NmtIbEMQEtCeZ3BpXwINwylOq8EBczNx5I+stAFp2+jbrdE2fjnMFC+aguRgKvEjG5X9G/atZsrxrZHxoxmpYCl86HbLOhzOq/wzirJItsEc5vE3LYnkImEXCOhZUlDJWkLdxaE/sGrGcgwtWCcMblSZwVzsZXM7dyLcz+wl99vfK/BetH1nH3oauAcWedXSGG9tPA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VmIXNZmcK0uIoKT6xpho4BWc7mk6RQhv2Fmg5s9XMF4=;
- b=rQf+YabeZ+GmGBLoW1p2to8T5W0E3ca0JEQyWYsFfXDfBLvkogR1F9y8B7NT/yqyyAZePPgPLPpbkWTayYCPJj61GQDl3y2v03tMOeXUikAyitYjIGO1V4x7/PCa0Wl5tvgkVtaNTuC8AvNksxhz8CJnCelbR+pGGhb89m/11jQ=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from HE1PR0502MB3834.eurprd05.prod.outlook.com (2603:10a6:7:83::17)
- by HE1PR0502MB3722.eurprd05.prod.outlook.com (2603:10a6:7:85::32) with
+ bh=D1k8sFFZ6GmcfeJLDNK60SJWjTqLYfivUhKi8BmT+4Q=;
+ b=LIyeb9oWayKqIbbSdVWZU3gKCVo43v6uJ2bAlJbJQzZQsZZuMRCuFmkVCORsMsayOs+Tn/sd7LHI18VW07V/8jbtkZQVvS46gNTjWpSenlOUwI3VJRy1WtWkoBVCPl08bNj+Lbk1t9Nl13jWPYtNdv58oVBk7bIag2niOyQev1k=
+Received: from SN6PR11MB3504.namprd11.prod.outlook.com (2603:10b6:805:d0::17)
+ by SN6PR11MB2559.namprd11.prod.outlook.com (2603:10b6:805:57::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.26; Thu, 2 Jul
- 2020 13:11:33 +0000
-Received: from HE1PR0502MB3834.eurprd05.prod.outlook.com
- ([fe80::7c6f:47a:35a4:ffa2]) by HE1PR0502MB3834.eurprd05.prod.outlook.com
- ([fe80::7c6f:47a:35a4:ffa2%5]) with mapi id 15.20.3153.021; Thu, 2 Jul 2020
- 13:11:33 +0000
-From:   Amit Cohen <amitc@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     mkubecek@suse.cz, o.rempel@pengutronix.de, andrew@lunn.ch,
-        f.fainelli@gmail.com, jacob.e.keller@intel.com, mlxsw@mellanox.com,
-        Amit Cohen <amitc@mellanox.com>
-Subject: [PATCH ethtool v2 3/3] netlink: settings: expand linkstate_reply_cb() to support link extended state
-Date:   Thu,  2 Jul 2020 16:11:11 +0300
-Message-Id: <20200702131111.23105-4-amitc@mellanox.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200702131111.23105-1-amitc@mellanox.com>
-References: <20200702131111.23105-1-amitc@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR01CA0117.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:168::22) To HE1PR0502MB3834.eurprd05.prod.outlook.com
- (2603:10a6:7:83::17)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20; Thu, 2 Jul
+ 2020 13:14:33 +0000
+Received: from SN6PR11MB3504.namprd11.prod.outlook.com
+ ([fe80::851c:67fc:a034:9ea0]) by SN6PR11MB3504.namprd11.prod.outlook.com
+ ([fe80::851c:67fc:a034:9ea0%4]) with mapi id 15.20.3153.022; Thu, 2 Jul 2020
+ 13:14:33 +0000
+From:   <Codrin.Ciubotariu@microchip.com>
+To:     <linux@armlinux.org.uk>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <Woojung.Huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: dsa: microchip: split adjust_link() in
+ phylink_mac_link_{up|down}()
+Thread-Topic: [PATCH net-next] net: dsa: microchip: split adjust_link() in
+ phylink_mac_link_{up|down}()
+Thread-Index: AQHWUFbgcw92ywXyck2F/RA2JBTrQqj0E/4AgAAwxYA=
+Date:   Thu, 2 Jul 2020 13:14:33 +0000
+Message-ID: <35da0b9a-e0aa-7459-a6a5-4aa3904f54cc@microchip.com>
+References: <20200702095439.1355119-1-codrin.ciubotariu@microchip.com>
+ <20200702101958.GN1551@shell.armlinux.org.uk>
+In-Reply-To: <20200702101958.GN1551@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none
+ header.from=microchip.com;
+x-originating-ip: [84.232.220.208]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 97ced4c0-0455-4f25-efa5-08d81e89dcc5
+x-ms-traffictypediagnostic: SN6PR11MB2559:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN6PR11MB255940415B32D6D752114DC5E76D0@SN6PR11MB2559.namprd11.prod.outlook.com>
+x-bypassexternaltag: True
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0452022BE1
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: CxTEzegxaC0UJTU7PTfIfrQ2R8NASISybti5GctpeIxZdx89MqfE1O/e4t7qkwxMK54scREMHA+xJAjm/zl8508sYUlbPM35klwbS3ZQp8j2O6M+hnHO3xO8HAWsUPhJDPseMgz3QjzOqo6CU3pGePDgDL20L1TfF+AVq6i7TNDmassFsYz2PLMo+/6wwSDJ6uHtjnYb9TToMHlhBofJ1BWmuoZfiSn8FPVOO8XYI6/hfGM7ht0RxGMQstpiWSOGMcFejcybDSAyGbF29WDobC4nBwISVl7Avd2B7717+CyeQ/CIEQciTvSIq96LlsvMrPOZ1Zhkx3QfDP9Fad2F0NghtjYxPqTgbeEeEN8rbVD2B8kYP708QpjkaDLK/h9Rb5EkN/X306rdVjV0FjrK+Y3g4aIcyPtFWKLXErqu2C+veS4iyHTToeD4+ygFem8VCQsqilqgGU930eaK/x7OUA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3504.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(366004)(376002)(136003)(346002)(39860400002)(6512007)(2616005)(54906003)(316002)(76116006)(186003)(6916009)(26005)(71200400001)(6486002)(5660300002)(8676002)(86362001)(91956017)(478600001)(4326008)(8936002)(83380400001)(66946007)(31696002)(31686004)(66446008)(53546011)(66476007)(64756008)(66556008)(966005)(6506007)(2906002)(36756003)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: GJjj7I2mvLkjU7pz2A8E15Q6SakavtQlwgnA5GG91nYzzpHMAlyv3txIqIsGemTfMGJcKF/83YbKtWkjjUg6kyYANxKp2CpxuohWPRbBID/MD/c0917u/gPIf5G5+1a+fvLTQvAK1iAgmtQTy8Fvd1TQBa4FZCMwZef7+m3eA1GUwMsEY6yPumxzRoEz4uAdTSA35c26Vbk2akyk8L2L27KsC/v63ajDukqJAsCCL2RB8yDVaCsCnZrbX1wRBeLAkNRKIBBZHlNTkD0tBtG3v279ZB4WQUL5nlLKLrSP5oB6e7MN896xjv5pHNq4T79V1KLBPT0xq4TtPrSfv2tmpOejH54kQEt1NT45xrYgYMcCpM7vkUtM1kPyfhSSkfw7ambCoRDqo3ZWXgfcOY6hTh1MAK2DRmeP5nVbR6ALKB0G5IvTbd+jtacGRKSQxELnA7JT289B9iWYTxAIEbAXqFp5S7A0oh6fhsdzYhRgGT+OrJczm1gvQcreev+lGdEl
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <BE730A2AF821F348848CDBDD7AD57770@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by AM0PR01CA0117.eurprd01.prod.exchangelabs.com (2603:10a6:208:168::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20 via Frontend Transport; Thu, 2 Jul 2020 13:11:32 +0000
-X-Mailer: git-send-email 2.20.1
-X-Originating-IP: [37.142.13.130]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 6981799b-60db-4460-636e-08d81e897123
-X-MS-TrafficTypeDiagnostic: HE1PR0502MB3722:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR0502MB3722D9A76B4DBD29528FB68DD76D0@HE1PR0502MB3722.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:576;
-X-Forefront-PRVS: 0452022BE1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: P6DY8Dx6LkZQKnXAGqfsZPAy7eh/g6GwUoFlsl93J5MGSTdikqTP2torEka92Q2GcNxJFtwmlDpRalYTmWlOz4DH7YpJ6GQiilDGqswlD9iPpmeCX7oCGnvREq+XQtFUlVK9YKZnAA/PiZ3V3CnaJBnRe+nKMcAXASlawEcgR6CiEHNXL5Xb/jqtHM/kqlodAHY6suvD2S9NaVIExoGJ1YGUwjK9OIP3xA6jBq2j3JA/sCRv24x/dL5ilrxo6lSJcxkXl9I+V1J6eZb8A0DYSsPgP3XfJ2aaI4NC8KZV92G7+jOmIbtlMJHAcYV1WJEpAT4TTyRkCthgkMnduD490g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0502MB3834.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(346002)(366004)(376002)(396003)(136003)(2616005)(36756003)(478600001)(1076003)(6486002)(107886003)(6506007)(86362001)(83380400001)(6666004)(52116002)(26005)(956004)(4326008)(8936002)(6512007)(8676002)(186003)(316002)(6916009)(66556008)(5660300002)(66946007)(66476007)(16526019)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: y0LqeApKfxJGwH72sYxjulx7tPPgU8gfCahChEYS+RH1F4KyaIPLQJt/AdWQ4pSJCO51794HDMN14ZkGnUgWeKScbv056pOiAQ9DhubcfrBH/Kfz0TZyJoCo/RIXHYDzoxLv1/ujglbIye4edjWDaWQM4eIZ8hOgxb355PbbPMubXg7rnAKrtc0XnYG4M8oeASxcxwYPLSn/Osnk66VCkBlVlv2qaL+YEV/rN1G+9uBDnJQGnuyUibjo6VZfi0qtEfXmu0K+E5G/U+SG1C2ttSKUtDMBAW4N8XsKwx3z0URJ/jRoYbTfZ7X8zMsT7oDhRSvmDrzEAcYyvOpoOY8TuwTHnbMFmp/nA9rfGomQ8vs9YrTLzOV1dCfK20BIeLLqkjfXQ81VerwhawXbDLgbWYP3skC4flJjnygxKu4SzpqHhbgwvyWC2OBjaVubKxXy8Yv+pVfiSyRKYD5VrsObZyxdKIuSdW5NAlBfeAZvyMbOtICWLin/OHwG0q93dzZJ
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6981799b-60db-4460-636e-08d81e897123
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR0502MB3834.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2020 13:11:33.3051
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3504.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97ced4c0-0455-4f25-efa5-08d81e89dcc5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2020 13:14:33.4908
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: o6zOgOOkGhwii5hG1n7sLjIJzr2GisPXJ49xjUm+olgN8i2hshDSYOuof5ez/mQCYTrFpvdPLGsjtknt+0s3pg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0502MB3722
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tI6SeGL9+Kz4kRpi7lNxNoJyoKPTQ6aopOI0o2uXEQRIS4Z55YwU6zxpza9QDtz+D4tGeYxVUGnlw2gHA1I+9F/if9CpN4DGy7qYqDWNwPs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2559
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Print extended state in addition to link state.
-
-In case that extended state is not provided, print state only.
-If extended substate is provided in addition to the extended state,
-print it also.
-
-Signed-off-by: Amit Cohen <amitc@mellanox.com>
----
- netlink/settings.c | 147 ++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 146 insertions(+), 1 deletion(-)
-
-diff --git a/netlink/settings.c b/netlink/settings.c
-index 35ba2f5..2f5875d 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -604,6 +604,149 @@ int linkinfo_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 	return MNL_CB_OK;
- }
- 
-+static const char *get_enum_string(const char *const *string_table, unsigned int n_string_table,
-+				   unsigned int val)
-+{
-+	if (val >= n_string_table || !string_table[val])
-+		return NULL;
-+	else
-+		return string_table[val];
-+}
-+
-+static const char *const names_link_ext_state[] = {
-+	[ETHTOOL_LINK_EXT_STATE_AUTONEG]		= "Autoneg",
-+	[ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE]	= "Link training failure",
-+	[ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH]	= "Logical mismatch",
-+	[ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY]	= "Bad signal integrity",
-+	[ETHTOOL_LINK_EXT_STATE_NO_CABLE]		= "No cable",
-+	[ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE]		= "Cable issue",
-+	[ETHTOOL_LINK_EXT_STATE_EEPROM_ISSUE]		= "EEPROM issue",
-+	[ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE]	= "Calibration failure",
-+	[ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED]	= "Power budget exceeded",
-+	[ETHTOOL_LINK_EXT_STATE_OVERHEAT]		= "Overheat",
-+};
-+
-+static const char *const names_autoneg_link_ext_substate[] = {
-+	[ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_PARTNER_DETECTED]		=
-+		"No partner detected",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_AN_ACK_NOT_RECEIVED]			=
-+		"Ack not received",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_AN_NEXT_PAGE_EXCHANGE_FAILED]	=
-+		"Next page exchange failed",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_PARTNER_DETECTED_FORCE_MODE]	=
-+		"No partner detected during force mode",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_AN_FEC_MISMATCH_DURING_OVERRIDE]	=
-+		"FEC mismatch during override",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_HCD]				=
-+		"No HCD",
-+};
-+
-+static const char *const names_link_training_link_ext_substate[] = {
-+	[ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_FRAME_LOCK_NOT_ACQUIRED]			=
-+		"KR frame lock not acquired",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_INHIBIT_TIMEOUT]				=
-+		"KR link inhibit timeout",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_PARTNER_DID_NOT_SET_RECEIVER_READY]	=
-+		"KR Link partner did not set receiver ready",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_LT_REMOTE_FAULT]					=
-+		"Remote side is not ready yet",
-+};
-+
-+static const char *const names_link_logical_mismatch_link_ext_substate[] = {
-+	[ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_BLOCK_LOCK]	=
-+		"PCS did not acquire block lock",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_AM_LOCK]	=
-+		"PCS did not acquire AM lock",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_GET_ALIGN_STATUS]	=
-+		"PCS did not get align_status",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_LLM_FC_FEC_IS_NOT_LOCKED]		=
-+		"FC FEC is not locked",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_LLM_RS_FEC_IS_NOT_LOCKED]		=
-+		"RS FEC is not locked",
-+};
-+
-+static const char *const names_bad_signal_integrity_link_ext_substate[] = {
-+	[ETHTOOL_LINK_EXT_SUBSTATE_BSI_LARGE_NUMBER_OF_PHYSICAL_ERRORS]	=
-+		"Large number of physical errors",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_BSI_UNSUPPORTED_RATE]		=
-+		"Unsupported rate",
-+};
-+
-+static const char *const names_cable_issue_link_ext_substate[] = {
-+	[ETHTOOL_LINK_EXT_SUBSTATE_CI_UNSUPPORTED_CABLE]	=
-+		"Unsupported cable",
-+	[ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE]	=
-+		"Cable test failure",
-+};
-+
-+static const char *link_ext_substate_get(uint8_t link_ext_state_val, uint8_t link_ext_substate_val)
-+{
-+	switch (link_ext_state_val) {
-+	case ETHTOOL_LINK_EXT_STATE_AUTONEG:
-+		return get_enum_string(names_autoneg_link_ext_substate,
-+				       ARRAY_SIZE(names_autoneg_link_ext_substate),
-+				       link_ext_substate_val);
-+	case ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE:
-+		return get_enum_string(names_link_training_link_ext_substate,
-+				       ARRAY_SIZE(names_link_training_link_ext_substate),
-+				       link_ext_substate_val);
-+	case ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH:
-+		return get_enum_string(names_link_logical_mismatch_link_ext_substate,
-+				       ARRAY_SIZE(names_link_logical_mismatch_link_ext_substate),
-+				       link_ext_substate_val);
-+	case ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY:
-+		return get_enum_string(names_bad_signal_integrity_link_ext_substate,
-+				       ARRAY_SIZE(names_bad_signal_integrity_link_ext_substate),
-+				       link_ext_substate_val);
-+	case ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE:
-+		return get_enum_string(names_cable_issue_link_ext_substate,
-+				       ARRAY_SIZE(names_cable_issue_link_ext_substate),
-+				       link_ext_substate_val);
-+	default:
-+		return NULL;
-+	}
-+}
-+
-+static void linkstate_link_ext_substate_print(const struct nlattr *tb[], struct nl_context *nlctx,
-+					      uint8_t link_ext_state_val)
-+{
-+	uint8_t link_ext_substate_val;
-+	const char *link_ext_substate_str;
-+
-+	if (!tb[ETHTOOL_A_LINKSTATE_EXT_SUBSTATE])
-+		return;
-+
-+	link_ext_substate_val = mnl_attr_get_u8(tb[ETHTOOL_A_LINKSTATE_EXT_SUBSTATE]);
-+
-+	link_ext_substate_str = link_ext_substate_get(link_ext_state_val, link_ext_substate_val);
-+	if (!link_ext_substate_str)
-+		printf(", %u", link_ext_substate_val);
-+	else
-+		printf(", %s", link_ext_substate_str);
-+}
-+
-+static void linkstate_link_ext_state_print(const struct nlattr *tb[], struct nl_context *nlctx)
-+{
-+	uint8_t link_ext_state_val;
-+	const char *link_ext_state_str;
-+
-+	if (!tb[ETHTOOL_A_LINKSTATE_EXT_STATE])
-+		return;
-+
-+	link_ext_state_val = mnl_attr_get_u8(tb[ETHTOOL_A_LINKSTATE_EXT_STATE]);
-+
-+	link_ext_state_str = get_enum_string(names_link_ext_state,
-+					     ARRAY_SIZE(names_link_ext_state),
-+					     link_ext_state_val);
-+	if (!link_ext_state_str)
-+		printf(" (%u", link_ext_state_val);
-+	else
-+		printf(" (%s", link_ext_state_str);
-+
-+	linkstate_link_ext_substate_print(tb, nlctx, link_ext_state_val);
-+	printf(")");
-+}
-+
- int linkstate_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- {
- 	const struct nlattr *tb[ETHTOOL_A_LINKSTATE_MAX + 1] = {};
-@@ -624,7 +767,9 @@ int linkstate_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 		uint8_t val = mnl_attr_get_u8(tb[ETHTOOL_A_LINKSTATE_LINK]);
- 
- 		print_banner(nlctx);
--		printf("\tLink detected: %s\n", val ? "yes" : "no");
-+		printf("\tLink detected: %s", val ? "yes" : "no");
-+		linkstate_link_ext_state_print(tb, nlctx);
-+		printf("\n");
- 	}
- 
- 	if (tb[ETHTOOL_A_LINKSTATE_SQI]) {
--- 
-2.20.1
-
+T24gMDIuMDcuMjAyMCAxMzoxOSwgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IGFkbWluIHdyb3Rl
+Og0KPiBFWFRFUk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVu
+dHMgdW5sZXNzIHlvdSBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUNCj4gDQo+IE9uIFRodSwgSnVs
+IDAyLCAyMDIwIGF0IDEyOjU0OjM5UE0gKzAzMDAsIENvZHJpbiBDaXVib3Rhcml1IHdyb3RlOg0K
+Pj4gVGhlIERTQSBzdWJzeXN0ZW0gbW92ZWQgdG8gcGh5bGluayBhbmQgYWRqdXN0X2xpbmsoKSBi
+ZWNhbWUgZGVwcmVjYXRlZCBpbg0KPj4gdGhlIHByb2Nlc3MuIFRoaXMgcGF0Y2ggcmVtb3ZlcyBh
+ZGp1c3RfbGluayBmcm9tIHRoZSBLU1ogRFNBIHN3aXRjaGVzIGFuZA0KPj4gYWRkcyBwaHlsaW5r
+X21hY19saW5rX3VwKCkgYW5kIHBoeWxpbmtfbWFjX2xpbmtfZG93bigpLg0KPj4NCj4+IFNpZ25l
+ZC1vZmYtYnk6IENvZHJpbiBDaXVib3Rhcml1IDxjb2RyaW4uY2l1Ym90YXJpdUBtaWNyb2NoaXAu
+Y29tPg0KPiANCj4gRm9yIHRoZSBjb2RlIF90cmFuc2Zvcm1hdGlvbl8gdGhhdCB0aGUgcGF0Y2gg
+ZG9lczoNCj4gDQo+IFJldmlld2VkLWJ5OiBSdXNzZWxsIEtpbmcgPHJtaytrZXJuZWxAYXJtbGlu
+dXgub3JnLnVrPg0KPiANCj4gYXMgaXQgaXMgZXF1aXZhbGVudC4gIEhvd2V2ZXIsIGZvciBhIGRl
+ZXBlciByZXZpZXcgb2Ygd2hhdCBpcyBnb2luZw0KPiBvbiBoZXJlLCBJJ3ZlIGEgcXVlc3Rpb246
+DQo+IA0KPiAkIGdyZXAgbGl2ZV9wb3J0cyAqDQo+IGtzejg3OTUuYzogICAgICAgICBkZXYtPmxp
+dmVfcG9ydHMgPSBkZXYtPmhvc3RfbWFzazsNCj4ga3N6ODc5NS5jOiAgICAgICAgICAgICAgICAg
+ZGV2LT5saXZlX3BvcnRzIHw9IEJJVChwb3J0KTsNCj4ga3N6X2NvbW1vbi5oOiAgICAgIHUxNiBs
+aXZlX3BvcnRzOw0KPiBrc3pfY29tbW9uLmM6ICAgICAgICAgICAgICBkZXYtPmxpdmVfcG9ydHMg
+Jj0gfigxIDw8IHBvcnQpOw0KPiBrc3pfY29tbW9uLmM6ICAgICAgICAgICAgICBkZXYtPmxpdmVf
+cG9ydHMgfD0gKDEgPDwgcG9ydCkgJiBkZXYtPm9uX3BvcnRzOw0KPiBrc3pfY29tbW9uLmM6ICAg
+ICAgZGV2LT5saXZlX3BvcnRzICY9IH4oMSA8PCBwb3J0KTsNCj4ga3N6OTQ3Ny5jOiAgICAgICAg
+IGRldi0+bGl2ZV9wb3J0cyA9IGRldi0+aG9zdF9tYXNrOw0KPiBrc3o5NDc3LmM6ICAgICAgICAg
+ICAgICAgICBkZXYtPmxpdmVfcG9ydHMgfD0gKDEgPDwgcG9ydCk7DQo+IA0KPiBUaGVzZSBhcmUg
+dGhlIG9ubHkgcmVmZXJlbmNlcyB0byBkZXYtPmxpdmVfcG9ydHMsIHNvIHRoZSBwdXJwb3NlIG9m
+DQo+IGRldi0+bGl2ZV9wb3J0cyBzZWVtcyB1bmNsZWFyOyBpdCBzZWVtcyBpdCBpcyBvbmx5IHVw
+ZGF0ZWQgYnV0IG5ldmVyDQo+IHJlYWQuICBDYW4gaXQgYmUgcmVtb3ZlZCwgYWxvbmcgd2l0aCB0
+aGUgbG9ja2luZyBpbiB5b3VyIG5ldyBmdW5jdGlvbnM/DQoNClN1cmUsIEknbGwgbWFrZSBhIHBh
+dGNoIHRvIGNsZWFuIHRoaW5ncyB1cC4gSSB3aWxsIHJlc2VuZCB0aGlzIHBhdGNoIGluIA0KYSBz
+ZXJpZXMgdG8gbWFyayB0aGUgZGVwZW5kZW5jeS4NCg0KVGhhbmtzIGFuZCBiZXN0IHJlZ2FyZHMs
+DQpDb2RyaW4NCg0KPiANCj4gVGhhbmtzLg0KPiANCj4gLS0NCj4gUk1LJ3MgUGF0Y2ggc3lzdGVt
+OiBodHRwczovL3d3dy5hcm1saW51eC5vcmcudWsvZGV2ZWxvcGVyL3BhdGNoZXMvDQo+IEZUVFAg
+aXMgaGVyZSEgNDBNYnBzIGRvd24gMTBNYnBzIHVwLiBEZWNlbnQgY29ubmVjdGl2aXR5IGF0IGxh
+c3QhDQo+IA0KDQo=
