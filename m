@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D218211E2C
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 10:22:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A819211E9B
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 10:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728434AbgGBIWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 04:22:46 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:59442 "EHLO
+        id S1728350AbgGBIZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 04:25:28 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:59466 "EHLO
         lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728405AbgGBIWo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 04:22:44 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0628MVLp081794;
-        Thu, 2 Jul 2020 03:22:31 -0500
+        with ESMTP id S1728274AbgGBIWv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 04:22:51 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0628Mawm081816;
+        Thu, 2 Jul 2020 03:22:36 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1593678151;
-        bh=IPYADznch2oF3OT/2Ql57mNeeC/uA2ZY2VCc9l5fLDQ=;
+        s=ti-com-17Q1; t=1593678156;
+        bh=xFcqYzNmQgKuE1+hIXHcn1dlvHlbBiHv2NFJRAR7N1Q=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=jqWlLeQ9s6a2LzJ90q0eTRXI5o1EmG8SozWZzBplGqsuBatOB7Zko1A+JOTHZj22m
-         9DGm7+CujGMVyKRoLMYgkJHUNzoFaqWqAdgztVhdGI1jwaNFR+IxX+ZEnx9G/DHKPQ
-         2PbN+666Ca0qrF+bUCdRBfv2TAG8DeJST3AMvhxw=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0628MV1X030784
+        b=tsLOiQk2xuDiTEuvWhyS7fcI0xjQfuNmWsXd0mOnCnouBoFsnFY3s17NgErsbNi/4
+         PFs2foICGoxb8mg8C12Te8IiISySv2tLVXECFDTbp1UJaw4ofcOKOg0FX5Q7lhU4ir
+         lTvouUvV44mf/mPovGOaHW3TTMRHUq7Eli+vuyjE=
+Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0628MaYH065363
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 2 Jul 2020 03:22:31 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 2 Jul 2020 03:22:36 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 2 Jul
- 2020 03:22:31 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ 2020 03:22:35 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 2 Jul 2020 03:22:31 -0500
+ Frontend Transport; Thu, 2 Jul 2020 03:22:35 -0500
 Received: from a0393678ub.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628LiYJ006145;
-        Thu, 2 Jul 2020 03:22:24 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628LiYK006145;
+        Thu, 2 Jul 2020 03:22:30 -0500
 From:   Kishon Vijay Abraham I <kishon@ti.com>
 To:     Ohad Ben-Cohen <ohad@wizery.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -54,9 +54,9 @@ CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
         <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>
-Subject: [RFC PATCH 07/22] virtio_pci: Use request_threaded_irq() instead of request_irq()
-Date:   Thu, 2 Jul 2020 13:51:28 +0530
-Message-ID: <20200702082143.25259-8-kishon@ti.com>
+Subject: [RFC PATCH 08/22] rpmsg: virtio_rpmsg_bus: Disable receive virtqueue callback when reading messages
+Date:   Thu, 2 Jul 2020 13:51:29 +0530
+Message-ID: <20200702082143.25259-9-kishon@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200702082143.25259-1-kishon@ti.com>
 References: <20200702082143.25259-1-kishon@ti.com>
@@ -68,73 +68,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some of the virtio drivers (like virtio_rpmsg_bus.c) use sleeping
-functions like mutex_*() in the virtqueue callback. Use
-request_threaded_irq() instead of request_irq() in order for
-the virtqueue callbacks to be executed in thread context instead
-of interrupt context.
+Since rpmsg_recv_done() reads messages in a while loop, disable
+callbacks until the while loop exits. This helps to get rid of the
+annoying "uhm, incoming signal, but no used buffer ?" message.
 
 Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
 ---
- drivers/virtio/virtio_pci_common.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ drivers/rpmsg/virtio_rpmsg_bus.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-index 222d630c41fc..60998b4f1f30 100644
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -140,9 +140,9 @@ static int vp_request_msix_vectors(struct virtio_device *vdev, int nvectors,
- 	v = vp_dev->msix_used_vectors;
- 	snprintf(vp_dev->msix_names[v], sizeof *vp_dev->msix_names,
- 		 "%s-config", name);
--	err = request_irq(pci_irq_vector(vp_dev->pci_dev, v),
--			  vp_config_changed, 0, vp_dev->msix_names[v],
--			  vp_dev);
-+	err = request_threaded_irq(pci_irq_vector(vp_dev->pci_dev, v), 0,
-+				   vp_config_changed, 0, vp_dev->msix_names[v],
-+				   vp_dev);
- 	if (err)
- 		goto error;
- 	++vp_dev->msix_used_vectors;
-@@ -159,9 +159,9 @@ static int vp_request_msix_vectors(struct virtio_device *vdev, int nvectors,
- 		v = vp_dev->msix_used_vectors;
- 		snprintf(vp_dev->msix_names[v], sizeof *vp_dev->msix_names,
- 			 "%s-virtqueues", name);
--		err = request_irq(pci_irq_vector(vp_dev->pci_dev, v),
--				  vp_vring_interrupt, 0, vp_dev->msix_names[v],
--				  vp_dev);
-+		err = request_threaded_irq(pci_irq_vector(vp_dev->pci_dev, v),
-+					   0, vp_vring_interrupt, 0,
-+					   vp_dev->msix_names[v], vp_dev);
- 		if (err)
- 			goto error;
- 		++vp_dev->msix_used_vectors;
-@@ -336,10 +336,11 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned nvqs,
- 			 sizeof *vp_dev->msix_names,
- 			 "%s-%s",
- 			 dev_name(&vp_dev->vdev.dev), names[i]);
--		err = request_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec),
--				  vring_interrupt, 0,
--				  vp_dev->msix_names[msix_vec],
--				  vqs[i]);
-+		err = request_threaded_irq(pci_irq_vector(vp_dev->pci_dev,
-+							  msix_vec),
-+					   0, vring_interrupt, 0,
-+					   vp_dev->msix_names[msix_vec],
-+					   vqs[i]);
- 		if (err)
- 			goto error_find;
+diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
+index 376ebbf880d6..2d0d42084ac0 100644
+--- a/drivers/rpmsg/virtio_rpmsg_bus.c
++++ b/drivers/rpmsg/virtio_rpmsg_bus.c
+@@ -777,6 +777,7 @@ static void rpmsg_recv_done(struct virtqueue *rvq)
+ 		return;
  	}
-@@ -361,8 +362,8 @@ static int vp_find_vqs_intx(struct virtio_device *vdev, unsigned nvqs,
- 	if (!vp_dev->vqs)
- 		return -ENOMEM;
  
--	err = request_irq(vp_dev->pci_dev->irq, vp_interrupt, IRQF_SHARED,
--			dev_name(&vdev->dev), vp_dev);
-+	err = request_threaded_irq(vp_dev->pci_dev->irq, 0, vp_interrupt,
-+				   IRQF_SHARED, dev_name(&vdev->dev), vp_dev);
- 	if (err)
- 		goto out_del_vqs;
++	virtqueue_disable_cb(rvq);
+ 	while (msg) {
+ 		err = rpmsg_recv_single(vrp, dev, msg, len);
+ 		if (err)
+@@ -786,6 +787,19 @@ static void rpmsg_recv_done(struct virtqueue *rvq)
+ 
+ 		msg = virtqueue_get_buf(rvq, &len);
+ 	}
++	virtqueue_enable_cb(rvq);
++
++	/*
++	 * Try to read message one more time in case a new message is submitted
++	 * after virtqueue_get_buf() inside the while loop but before enabling
++	 * callbacks
++	 */
++	msg = virtqueue_get_buf(rvq, &len);
++	if (msg) {
++		err = rpmsg_recv_single(vrp, dev, msg, len);
++		if (!err)
++			msgs_received++;
++	}
+ 
+ 	dev_dbg(dev, "Received %u messages\n", msgs_received);
  
 -- 
 2.17.1
