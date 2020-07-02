@@ -2,153 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4739212BB2
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 19:56:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B89E0212BC9
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 20:00:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728050AbgGBRz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 13:55:59 -0400
-Received: from nat-hk.nvidia.com ([203.18.50.4]:23504 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727926AbgGBRz6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jul 2020 13:55:58 -0400
-Received: from hkpgpgate101.nvidia.com (Not Verified[10.18.92.9]) by nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5efe1fab0000>; Fri, 03 Jul 2020 01:55:55 +0800
-Received: from HKMAIL101.nvidia.com ([10.18.16.10])
-  by hkpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 02 Jul 2020 10:55:55 -0700
-X-PGP-Universal: processed;
-        by hkpgpgate101.nvidia.com on Thu, 02 Jul 2020 10:55:55 -0700
-Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 2 Jul
- 2020 17:55:49 +0000
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.105)
- by HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Thu, 2 Jul 2020 17:55:49 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bwlM2DdnrWvjWUNkTQb+nllTVYwytF/GiVwTOCpv+xpmz7TD5hlx7K7byJzjHUBCtPcimnP8n9lq6cjE7bwVwrSQxwhqPjLuZNYMhWKlLpvoT1Jovw+ddNW2Axv9sausgAvsyobxQdZ5/Ndm68pXXRBbP9EhFvfj4loGFOqPiMPcMD1v63zb5DaSiS/P4HwxVqnRfsfAxL3WPbY7jMCk0o734DbR5WSDH4RpV457PenPxBTLecfsd4gnqoYTUTFULprbhIvmm81XzrLTIiuHoHCudZIivGGMpGtTl8FE8ZbPGXjZ5Edo4s+ueHiiuzH8IBNzTMXVJhRtd/G4+0zC7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jLdty6+1PaFhDOHr88QPFMT0duOhgCnqv053BtULfE0=;
- b=hjbWjOoVnUwiSmWfZ9MBzYk6dSK+TE2+YlPQgZyn/UIMUZdgAnKiUaaFTUVDbysVd1l+/BuhUqMHvY7QL9+hylgivU02sT1pHtxWAuJJ/J833cgf3Lk9CVWNVOjirjoHa+m55k+JXxXWKvXY2kEaiF18mXM+cVuSWWmvt4WLfPfodlKsj1aUphGkRwaoixLegnLb78biM6uJumu+9xPRaNH8f60rFIQdq9QdrxLDnqQJ+KWvYwwVpS60ZjZdy63vRt8GyNNRO+uJdEV/cWcqueLSKe+8+bPZL2yYoKz4uxWYHPrOkW4nckil9P5+/KynXxLAwFldPpBdAso5JiHSbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB2601.namprd12.prod.outlook.com (2603:10b6:5:45::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.27; Thu, 2 Jul
- 2020 17:55:47 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1d53:7cb4:c3d7:2b54]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1d53:7cb4:c3d7:2b54%6]) with mapi id 15.20.3153.027; Thu, 2 Jul 2020
- 17:55:47 +0000
-Date:   Thu, 2 Jul 2020 14:55:41 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Feras Daoud <ferasda@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>, <linux-rdma@vger.kernel.org>,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH rdma-next 0/2] Create IPoIB QP with specific QP number
-Message-ID: <20200702175541.GA721759@nvidia.com>
-References: <20200623110105.1225750-1-leon@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200623110105.1225750-1-leon@kernel.org>
-X-ClientProxiedBy: BL0PR01CA0014.prod.exchangelabs.com (2603:10b6:208:71::27)
- To DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+        id S1727984AbgGBSA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 14:00:27 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:30866 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727935AbgGBSA0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 14:00:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593712825;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9RTAPOlUHkOQw9eYA5K/tFkatYM1nQfJUmd/xyhvdU8=;
+        b=RHqeV+9i0N6zcezDs8QZqjL45VcGYQ5A9Q0ytt+p/GFa6I+7QQPoi0ZQ3pIckArWv/ZuJQ
+        gPDQQ1rI3MkVVTBBsH3Sb1/DOKSQONSrs+i8zEbQy/KETeXK8M8v5RsZLQMTKcKXr3VzWi
+        1j4GXkPAUrOZMBqsS8E3JSigOsvMrDc=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-224-2tecgtsWNpaaXRVuCLxCJw-1; Thu, 02 Jul 2020 14:00:23 -0400
+X-MC-Unique: 2tecgtsWNpaaXRVuCLxCJw-1
+Received: by mail-ed1-f69.google.com with SMTP id d3so15788857edq.14
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 11:00:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9RTAPOlUHkOQw9eYA5K/tFkatYM1nQfJUmd/xyhvdU8=;
+        b=in9MZVPuwnVAtS74q+ASlbHtVr2LhscuqykTd7TS3V5Gz9Jxda+7hcXuIpzw5rb+i5
+         5HsK5n3KL77DZ0x78Ts4dvbtgOsjKgjRB3oU/+omvaRysqa2l1jSYcm3glGdXCmfKIZN
+         2x5uk/J8xfpLvaERKkTh5na1uth95VI53zSGcxqUs0sDe4tU05TCw8LaCh+x8BWwgHrd
+         hOcssupizt3i7XHNZQoQh+9/4N04yf41WcgnpsKvtuhG8EjpUfdGZ20w3TwsORNGoEiF
+         XrNXqf+sJYFV7RlwwvET2k1Y/gXD8op0ouPbPUSERi/MgNfKomM93pvsx0SVTXGZMJhV
+         UDJQ==
+X-Gm-Message-State: AOAM530JS0ldlZ7OeThRZWC1+idKixDDFetZOds8NVjP9jSvuvVBQyAP
+        Fu0Afx5gnZZv4u+oS9J6+DdNkc3FFLMThNlxl4bVPlg362UWgBr7YsLsc5UxahvOp1kNBdmi/hR
+        Hd1r5ktguVdgNj1sl
+X-Received: by 2002:a17:906:7c3:: with SMTP id m3mr27739734ejc.30.1593712822204;
+        Thu, 02 Jul 2020 11:00:22 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzoAanT6l1qUnuzAmJ14QQOgQttXkiEZaoXRw3XHTH4UmRAk7NzoBTFrhoAQmSqdLtzxCypVA==
+X-Received: by 2002:a17:906:7c3:: with SMTP id m3mr27739678ejc.30.1593712821894;
+        Thu, 02 Jul 2020 11:00:21 -0700 (PDT)
+Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
+        by smtp.gmail.com with ESMTPSA id qc16sm7399458ejb.33.2020.07.02.11.00.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jul 2020 11:00:21 -0700 (PDT)
+Subject: Re: [PATCH] brcmfmac: expose firmware config files through modinfo
+To:     Matthias Brugger <mbrugger@suse.com>, matthias.bgg@kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Chung-Hsien Hsu <stanley.hsu@cypress.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Double Lo <double.lo@cypress.com>,
+        Frank Kao <frank.kao@cypress.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
+        netdev@vger.kernel.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Saravanan Shanmugham <saravanan.shanmugham@cypress.com>,
+        brcm80211-dev-list@cypress.com, linux-kernel@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Soeren Moch <smoch@web.de>
+References: <20200701153123.25602-1-matthias.bgg@kernel.org>
+ <338e3cff-dfa0-c588-cf53-a160d75af2ee@redhat.com>
+ <1013c7e6-f1fb-af0c-fe59-4d6cd612f959@suse.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <35066b13-9fe2-211d-2ba8-5eb903b46bf7@redhat.com>
+Date:   Thu, 2 Jul 2020 20:00:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (193.47.165.251) by BL0PR01CA0014.prod.exchangelabs.com (2603:10b6:208:71::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20 via Frontend Transport; Thu, 2 Jul 2020 17:55:46 +0000
-Received: from jgg by mlx with local (Exim 4.93)        (envelope-from <jgg@nvidia.com>)        id 1jr3Qz-0031lv-Pl; Thu, 02 Jul 2020 14:55:41 -0300
-X-Originating-IP: [193.47.165.251]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 817d9e7f-0c72-4742-a7c5-08d81eb125fa
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2601:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB2601F508CD9711262EFCA303C26D0@DM6PR12MB2601.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-Forefront-PRVS: 0452022BE1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PZAPD0WCQTrbtHCe1rQcE2nM178cb2AOy+w/1bJo26HFoXCdUenwScGhGRTMId64UkqpzfVTzkuA5Udb7AIjPTItfRQZ1kd0U4KB4CJP4qNOTwCccIP/WYhUODlfrSJQMtRA3rviNvqi6J7gi5iNwcKhAzlMbf7vlDsKlojU6/5TqmncVCwIkyQf1JaU82p614gMAsXgyIl+c1ymgXityoCA0NpMj0dOWOLaht8eTLkxMUmu5FjuRvrqvHRs9K8ldyE73iX5dr6GdLj/7ot8foQMe202ddXIrty0dGzxRx76P6KTrNYsmolA0nYeZbudtfmklA9PeR31ls55nA3nJGAQqousB0NGaV0uc8lGfU2jM4PAnhC9G6+PGNIhCpLE
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(366004)(346002)(39860400002)(396003)(136003)(1076003)(26005)(186003)(66476007)(66556008)(66946007)(54906003)(316002)(36756003)(83380400001)(86362001)(33656002)(4326008)(2906002)(5660300002)(478600001)(6916009)(8936002)(8676002)(9746002)(9786002)(2616005)(426003)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: qRnsV9twRvJ2I36PggS6XCEFQoIJPROx64py9vY7BumIpISWq9iU2AdkhvIW1kGAVaDDgnI0qc6/3fvMeQZaEtuA7vMK8iXBjjH6fE/4a+IkHIK09oJ4QiZsSVbrH7L35rElO85llZJhBh4iiS1XH7itikZUSkTxXS03Am6vXSVyEE2vIfewBVI8MN0utbsu0+WGZkAaxsS+wuhELFJ64AQ9eP4J/Usa/lsDpQi+zl2cRhLxELXoUY7FIz5C7+F8isqc6pRLEpAAEb1DDGdUfgSmV9lx3m1LLYSw+vizsaTrFQMaojCXS/ZTb77EMOBOJFuUJ7npsY6hJqEvecs4dLmGL3A38Z3UzupyQNh2QoUu/oATGGEaolzvRsV3xB57Eh6EV6r6090y5XbPAagyFblhyQI+LNWma5Y72vRZ6YwfEmUUfYYzDMxqo6VwXA4/wRsmrnevEKTRDRGKa5x9ZYLFnVx+m3HuJpaM2634jxVvRGflNYxvCzHx3akXKjG1
-X-MS-Exchange-CrossTenant-Network-Message-Id: 817d9e7f-0c72-4742-a7c5-08d81eb125fa
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2020 17:55:47.0372
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4OQnWA9m1+lZ6QaRKCZTT+cTgmGAG5+iaEEPTphjkXxr+jn5mMbRq3BtmrpAG2pz
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2601
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1593712555; bh=jLdty6+1PaFhDOHr88QPFMT0duOhgCnqv053BtULfE0=;
-        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
-         ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
-         Subject:Message-ID:References:Content-Type:Content-Disposition:
-         In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
-         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
-         X-MS-TrafficTypeDiagnostic:X-Microsoft-Antispam-PRVS:
-         X-MS-Oob-TLC-OOBClassifiers:X-Forefront-PRVS:
-         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
-         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-         X-MS-Exchange-AntiSpam-MessageData:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-         X-MS-Exchange-CrossTenant-FromEntityHeader:
-         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-         X-MS-Exchange-CrossTenant-UserPrincipalName:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=E+NtDibKGuiKcEwTHfxDLnplLb5DZC9UejI1Ry8vgWsz2LaACSguaacOWDk3/8jau
-         l2kFOl9r4k7G1Iaa5OgKgeTKmclC4wg/kae30jetWozAuz58hV7zC/yttLQ+Df18YP
-         uzykDDUarIjwZF+R8SPqX/q/DdqmhqPo7Fh8NM5sjlMudZ4USIPCElqcaBDmlTCftV
-         BbCCkWW67oP3UKl93/8lfj1UOJaOW/uiTEQpvuEA7eEM8AYJE5YjTq602olPp9rI6U
-         LI3IMitNF1fWBXAbHtAbe+wq/Qa+M+KN2GU54NLw51ayhf8lhVYLSohgApkk1SxMkR
-         I3F/UInseo9fA==
+In-Reply-To: <1013c7e6-f1fb-af0c-fe59-4d6cd612f959@suse.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 02:01:03PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
-> 
-> >From Michael,
-> 
-> This series handles IPoIB child interface creation with setting
-> interface's HW address.
-> 
-> In current implementation, lladdr requested by user is ignored and
-> overwritten. Child interface gets the same GID as the parent interface
-> and a QP number which is assigned by the underlying drivers.
-> 
-> In this series we fix this behavior so that user's requested address is
-> assigned to the newly created interface.
-> 
-> As specific QP number request is not supported for all vendors, QP
-> number requested by user will still be overwritten when this is not
-> supported.
-> 
-> Behavior of creation of child interfaces through the sysfs mechanism or
-> without specifying a requested address, stays the same.
-> 
-> Thanks
-> 
-> Michael Guralnik (2):
->   net/mlx5: Enable QP number request when creating IPoIB underlay QP
->   RDMA/ipoib: Handle user-supplied address when creating child
+Hi,
 
-Applied to for-next, thanks
+On 7/1/20 5:46 PM, Matthias Brugger wrote:
+> Hi Hans,
+> 
+> On 01/07/2020 17:38, Hans de Goede wrote:
+>> Hi,
+>>
+>> On 7/1/20 5:31 PM, matthias.bgg@kernel.org wrote:
+>>> From: Matthias Brugger <mbrugger@suse.com>
+>>>
+>>> Apart from a firmware binary the chip needs a config file used by the
+>>> FW. Add the config files to modinfo so that they can be read by
+>>> userspace.
+>>
+>> The configfile firmware filename is dynamically generated, just adding the list
+>> of all currently shipped ones is not really helpful and this is going to get
+>> out of sync with what we actually have in linux-firmware.
+> 
+> I'm aware of this, and I agree.
+> 
+>>
+>> I must honestly say that I'm not a fan of this, I guess you are trying to
+>> get some tool which builds a minimal image, such as an initrd generator
+>> to add these files to the image ?
+>>
+> 
+> Yes exactly.
+> 
+>> I do not immediately have a better idea, but IMHO the solution
+>> this patch proposes is not a good one, so nack from me for this change.
+>>
+> 
+> Another path we could go is add a wildcard string instead, for example:
+> MODULE_FIRMWARE("brcm/brcmfmac43455-sdio.*.txt");
 
-Jason
+I was thinking about the same lines, but I'm afraid some user-space
+utils may blow up if we introduce this, which is why I did not suggest
+it in my previous email.
+
+> AFAIK there is no driver in the kernel that does this. I checked with our dracut
+> developer and right now dracut can't cope with that.
+
+Can't cope as in tries to add "/lib/firmware/brcm/brcmfmac43455-sdio.*.txt"
+and then skips it (as it does for other missing firmware files); or can't
+cope as in blows-up and aborts without leaving a valid initrd behind.
+
+If is the former, that is fine, if it is the latter that is a problem.
+
+> But he will try to
+> implement that in the future.
+> 
+> So my idea was to maintain that list for now and switch to the wildcard approach
+> once we have dracut support that.
+
+So lets assume that the wildcard approach is ok and any initrd tools looking at
+the MODULE_FIRMWARE metadata either accidentally do what we want; or fail
+gracefully.  Then if we temporarily add the long MODULE_FIRMWARE list now, those
+which fail gracefully will start doing the right thing (except they add too
+much firmware), and later on we cannot remove all the non wildcard
+MODULE_FIRMWARE list entries because that will cause a regression.
+
+Because of this I'm not a fan of temporarily fixing this like this. Using wifi
+inside the initrd is very much a cornercase anyways, so I think users can
+use a workaround by dropping an /etc/dracut.conf.d file adding the necessary
+config file for now.
+
+As for the long run, I was thinking that even with regular firmware files
+we are adding too much firmware to host-specific initrds since we add all
+the firmwares listed with MODULE_FIRMWARE, and typically only a few are
+actually necessary.
+
+We could modify the firmware_loader code under drivers/base/firmware_loader
+to keep a list of all files loaded since boot; and export that somewhere
+under /sys, then dracut could use that list in host-only mode and we get
+a smaller initrd. One challenge with this approach though is firmware files
+which are necessary for a new kernel, but not used by the running kernel ...
+I'm afraid I do not have a good answer to that.
+
+Regards,
+
+Hans
+
+
+
+
+
+
+
+>>> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+>>>
+>>> ---
+>>>
+>>>    .../wireless/broadcom/brcm80211/brcmfmac/sdio.c  | 16 ++++++++++++++++
+>>>    1 file changed, 16 insertions(+)
+>>>
+>>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>> index 310d8075f5d7..ba18df6d8d94 100644
+>>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>>> @@ -624,6 +624,22 @@ BRCMF_FW_DEF(4359, "brcmfmac4359-sdio");
+>>>    BRCMF_FW_DEF(4373, "brcmfmac4373-sdio");
+>>>    BRCMF_FW_DEF(43012, "brcmfmac43012-sdio");
+>>>    +/* firmware config files */
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
+>>> "brcm/brcmfmac4330-sdio.Prowise-PT301.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
+>>> "brcm/brcmfmac43340-sdio.meegopad-t08.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
+>>> "brcm/brcmfmac43340-sdio.pov-tab-p1006w-data.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
+>>> "brcm/brcmfmac43362-sdio.cubietech,cubietruck.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
+>>> "brcm/brcmfmac43430a0-sdio.jumper-ezpad-mini3.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430a0-sdio.ONDA-V80
+>>> PLUS.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430-sdio.AP6212.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
+>>> "brcm/brcmfmac43430-sdio.Hampoo-D2D3_Vi8A1.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430-sdio.MUR1DX.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
+>>> "brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43455-sdio.MINIX-NEO
+>>> Z83-4.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
+>>> "brcm/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
+>>> "brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.txt");
+>>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
+>>> "brcm/brcmfmac4356-pcie.gpd-win-pocket.txt");
+>>> +
+>>>    static const struct brcmf_firmware_mapping brcmf_sdio_fwnames[] = {
+>>>        BRCMF_FW_ENTRY(BRCM_CC_43143_CHIP_ID, 0xFFFFFFFF, 43143),
+>>>        BRCMF_FW_ENTRY(BRCM_CC_43241_CHIP_ID, 0x0000001F, 43241B0),
+>>>
+>>
+> 
+
