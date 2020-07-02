@@ -2,100 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 999ED212F7D
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 00:29:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1563212F9A
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 00:39:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726372AbgGBW3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 18:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36976 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726110AbgGBW3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 18:29:42 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1CFC08C5C1;
-        Thu,  2 Jul 2020 15:29:41 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id h22so27101620lji.9;
-        Thu, 02 Jul 2020 15:29:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xxQFr1BqDEffTMIbjj2nr78urbKnKQfjZ+rNpfgSt08=;
-        b=H5Eg11Z9hn0nAlgWO7xYNhfv0JqaLDjFb6T3TNFC4HAhEYM+NAykFGb40mVhLCEyP8
-         89J6eu0fEwy/nisaUDezq6zLhobof7rGWCcDy5p0cCVTOXcIu91LT30adquKyk1RDcpo
-         R5Za4WEURUdOtucQnivvJbaFYfMj1p1AiBdGYkZobOlKsMz4CJb9Ka5vqgX3hio6nEU4
-         LApjtLJ4mIuzgwD1Y67rCWqyTi0T9ViqnT9MwX/X1hWv+OdjGDDvjuKJNvyfqdALZyHz
-         0mSG7VtcmsjqA6JIA87D7xXr4IJ1fsqhQNS3ljpAHMYqKSLCfPIHnHNt2Yc6kXHAekRe
-         UYig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xxQFr1BqDEffTMIbjj2nr78urbKnKQfjZ+rNpfgSt08=;
-        b=CSibwBh/B0WsD7+B82rXM6+1vIXOLEhiI2gh5BrIOX1NRaPN87smcsBiA7oaIaK5KV
-         XeaUkL8flzwozIPN0oyDlz7q79aCFiGEwX8hjqoReYJ4BZEey5mHI7PvTuomkoay5Ahq
-         l6anU8UtU9LWyob9V00++5CfXGDqfX9+Ib/k2ZWFMmBe/AQbQccFuBbCQ1Qtrn9fFqDx
-         cWifNg/TzxJo4ly4oFISCoX5YwhZ48tYvMnEYN8C+gIpTO30YBvxXxyX6BKbH2ZkmAdO
-         LgL01WHbtkfAwH0qiacnm2NHXCE3R+VAMkDw+CsoC6rfsPKmKUN6s8M6Fa06McyKqCHO
-         82lg==
-X-Gm-Message-State: AOAM530smaHNs+5c0HEGujinBLUCOsoMgvL1xaihhLU/Q5gBtXJpbC7w
-        +VtW/QG37zujmIwL5LzEIYFatjCO4eA2nKCQtLU=
-X-Google-Smtp-Source: ABdhPJw63DHFOW+2oJ387eLmT45jEZ5gsdDYBXDveJ+O6iDUw8rDJqoTS4F60kuHr07mYRB3M3UDRSi7vwC3QvZSNpQ=
-X-Received: by 2002:a2e:9e87:: with SMTP id f7mr18422139ljk.44.1593728980418;
- Thu, 02 Jul 2020 15:29:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200702175352.19223-1-TheSven73@gmail.com> <20200702175352.19223-3-TheSven73@gmail.com>
-In-Reply-To: <20200702175352.19223-3-TheSven73@gmail.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Thu, 2 Jul 2020 19:29:29 -0300
-Message-ID: <CAOMZO5DxUeXH8ZYxmKynA7xO3uF6SP_Kt-g=8MPgsF7tqkRvAA@mail.gmail.com>
-Subject: Re: [PATCH v5 3/3] ARM: imx6plus: optionally enable internal routing
- of clk_enet_ref
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Shawn Guo <shawnguo@kernel.org>, Fugang Duan <fugang.duan@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726336AbgGBWjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 18:39:07 -0400
+Received: from mx.aristanetworks.com ([162.210.129.12]:21615 "EHLO
+        smtp.aristanetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726194AbgGBWjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 18:39:06 -0400
+Received: from us180.sjc.aristanetworks.com (us180.sjc.aristanetworks.com [172.25.230.4])
+        by smtp.aristanetworks.com (Postfix) with ESMTP id 6328640186E;
+        Thu,  2 Jul 2020 15:39:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+        s=Arista-A; t=1593729546;
+        bh=ZVKT4xgQY8MAj9CulrPs/cabyZqtX2jpxJZx1/Wsnmo=;
+        h=Date:To:Subject:From:From;
+        b=rl1tlBZHsyj+T4ch+Pt9WXVyWpeqkSHxK4M1AZj+fn+EK+dxJ4VIA916sX9lRBlBO
+         Jv7CzsqJeG5U08MIY3ZbZoyyJY6tZt1Cu0qOwj8x6LtgDQxb8UUpJ3rNzBVjPBIOT1
+         Zc6thvjTasuaEmXKSoGk6/jxsRXunWfCu61wYQzdXAEvSSOIsm2qgQGkjfyNyd3R5h
+         Oo68nc18Vo4qtamsk7AzX/SwPvHQFOtsAYPnjX34/mfJJRNWadUo/oSmz/3AMeankf
+         SNzTsIRfx8eYbPwpHjyaf49BnG1Dh+PwbEByI9NOZEAw36OgqOhSFF+qtIrHdWMp+e
+         40agvPS1SSqvA==
+Received: by us180.sjc.aristanetworks.com (Postfix, from userid 10189)
+        id 42B6C95C0494; Thu,  2 Jul 2020 15:39:06 -0700 (PDT)
+Date:   Thu, 02 Jul 2020 15:39:06 -0700
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, kuba@kernel.org,
+        davem@davemloft.net, jeffrey.t.kirsher@intel.com,
+        fruggeri@arista.com
+Subject: [PATCH v2] igb: reinit_locked() should be called with rtnl_lock
+User-Agent: Heirloom mailx 12.5 7/5/10
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-Id: <20200702223906.42B6C95C0494@us180.sjc.aristanetworks.com>
+From:   fruggeri@arista.com (Francesco Ruggeri)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sven,
+We observed two panics involving races with igb_reset_task.
+The first panic is caused by this race condition:
 
-On Thu, Jul 2, 2020 at 2:53 PM Sven Van Asbroeck <thesven73@gmail.com> wrote:
+	kworker			reboot -f
 
-> +       /*
-> +        * On imx6 plus, enet_ref from ANATOP/CCM can be internally routed to
-> +        * be the PTP clock source, instead of having to be routed through
-> +        * pads.
-> +        */
-> +       if (of_machine_is_compatible("fsl,imx6qp")) {
-> +               clksel = of_property_read_bool(np, "fsl,ptpclk-bypass-pad") ?
-> +                               IMX6Q_GPR5_ENET_TXCLK_SEL_PLL :
-> +                               IMX6Q_GPR5_ENET_TXCLK_SEL_PAD;
-> +               regmap_update_bits(gpr, IOMUXC_GPR5,
-> +                                  IMX6Q_GPR5_ENET_TXCLK_SEL_MASK, clksel);
-> +       }
+	igb_reset_task
+	igb_reinit_locked
+	igb_down
+	napi_synchronize
+				__igb_shutdown
+				igb_clear_interrupt_scheme
+				igb_free_q_vectors
+				igb_free_q_vector
+				adapter->q_vector[v_idx] = NULL;
+	napi_disable
+	Panics trying to access
+	adapter->q_vector[v_idx].napi_state
 
-With the device tree approach, I think that a better place to touch
-GPR5 would be inside the fec driver.
+The second panic (a divide error) is caused by this race:
 
-You can refer to drivers/pci/controller/dwc/pci-imx6.c and follow the
-same approach for accessing the GPR register:
-...
-/* Grab GPR config register range */
-imx6_pcie->iomuxc_gpr =
-syscon_regmap_lookup_by_compatible("fsl,imx6q-iomuxc-gpr")
+kworker		reboot -f	tx packet
 
-For the property name, what about fsl,txclk-from-pll?
+igb_reset_task
+		__igb_shutdown
+		rtnl_lock()
+		...
+		igb_clear_interrupt_scheme
+		igb_free_q_vectors
+		adapter->num_tx_queues = 0
+		...
+		rtnl_unlock()
+rtnl_lock()
+igb_reinit_locked
+igb_down
+igb_up
+netif_tx_start_all_queues
+				dev_hard_start_xmit
+				igb_xmit_frame
+				igb_tx_queue_mapping
+				Panics on
+				r_idx % adapter->num_tx_queues
+
+This commit applies to igb_reset_task the same changes that
+were applied to ixgbe in commit 2f90b8657ec9 ("ixgbe: this patch
+adds support for DCB to the kernel and ixgbe driver"),
+commit 8f4c5c9fb87a ("ixgbe: reinit_locked() should be called with
+rtnl_lock") and commit 88adce4ea8f9 ("ixgbe: fix possible race in
+reset subtask").
+
+v2: add fix for second race condition above.
+
+Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+
+---
+ drivers/net/ethernet/intel/igb/igb_main.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 8bb3db2cbd41..6e5861bfb0fa 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -6224,9 +6224,18 @@ static void igb_reset_task(struct work_struct *work)
+ 	struct igb_adapter *adapter;
+ 	adapter = container_of(work, struct igb_adapter, reset_task);
+ 
++	rtnl_lock();
++	/* If we're already down or resetting, just bail */
++	if (test_bit(__IGB_DOWN, &adapter->state) ||
++	    test_bit(__IGB_RESETTING, &adapter->state)) {
++		rtnl_unlock();
++		return;
++	}
++
+ 	igb_dump(adapter);
+ 	netdev_err(adapter->netdev, "Reset adapter\n");
+ 	igb_reinit_locked(adapter);
++	rtnl_unlock();
+ }
+ 
+ /**
