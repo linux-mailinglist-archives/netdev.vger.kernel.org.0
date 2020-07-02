@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80C322118D5
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 03:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A91E82118FA
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 03:36:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729372AbgGBB1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 21:27:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58758 "EHLO mail.kernel.org"
+        id S1728804AbgGBBaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 21:30:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58792 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729347AbgGBB1B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 21:27:01 -0400
+        id S1728629AbgGBB1C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Jul 2020 21:27:02 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5653A20C56;
-        Thu,  2 Jul 2020 01:26:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BEBE820748;
+        Thu,  2 Jul 2020 01:27:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593653220;
-        bh=PeKvIN1kjCHm+SwAwXuvBKYp1u9GRzDXbVJh2Y8Q7CU=;
+        s=default; t=1593653221;
+        bh=RuIX7iairByS9vmms37vTUc7xISPXnSus2zIBvT/u58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jy6ej8OgPUwk5kvktOTrs0LNBoElS6STMy3XQrt9RsrA8sTiKS9fvr2rosyk+fl56
-         va/OBfUuDuE9eym4hEGf05pWiOUSes8T+K1MBr/g5q6H2nFErJ9h93kFUsW4MyFoN0
-         SpdC1ZeVOJUTNBc+r3OmcWQo2aGjdKzYgTwzFXLg=
+        b=Cfa7G8HfRtNo4Kzebrn9QoK2atCzOLeeUBBQevguTeuxRUQlUFXs2H0UJ1c1vdncI
+         m5On+EFVJLnv4kekrmtNd8NQ1L9HiPVdA0SRoUlXgtS3cjCNRvYNWpR/KgC6tFF06J
+         REQwod93vdwlCFcR5pXD3eQFnj5VjH2TN6zJELAM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ciara Loftus <ciara.loftus@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 08/17] ixgbe: protect ring accesses with READ- and WRITE_ONCE
-Date:   Wed,  1 Jul 2020 21:26:40 -0400
-Message-Id: <20200702012649.2701799-8-sashal@kernel.org>
+Cc:     Tuomas Tynkkynen <tuomas.tynkkynen@iki.fi>,
+        syzbot+29dc7d4ae19b703ff947@syzkaller.appspotmail.com,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 09/17] usbnet: smsc95xx: Fix use-after-free after removal
+Date:   Wed,  1 Jul 2020 21:26:41 -0400
+Message-Id: <20200702012649.2701799-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200702012649.2701799-1-sashal@kernel.org>
 References: <20200702012649.2701799-1-sashal@kernel.org>
@@ -46,110 +45,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ciara Loftus <ciara.loftus@intel.com>
+From: Tuomas Tynkkynen <tuomas.tynkkynen@iki.fi>
 
-[ Upstream commit f140ad9fe2ae16f385f8fe4dc9cf67bb4c51d794 ]
+[ Upstream commit b835a71ef64a61383c414d6bf2896d2c0161deca ]
 
-READ_ONCE should be used when reading rings prior to accessing the
-statistics pointer. Introduce this as well as the corresponding WRITE_ONCE
-usage when allocating and freeing the rings, to ensure protected access.
+Syzbot reports an use-after-free in workqueue context:
 
-Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+BUG: KASAN: use-after-free in mutex_unlock+0x19/0x40 kernel/locking/mutex.c:737
+ mutex_unlock+0x19/0x40 kernel/locking/mutex.c:737
+ __smsc95xx_mdio_read drivers/net/usb/smsc95xx.c:217 [inline]
+ smsc95xx_mdio_read+0x583/0x870 drivers/net/usb/smsc95xx.c:278
+ check_carrier+0xd1/0x2e0 drivers/net/usb/smsc95xx.c:644
+ process_one_work+0x777/0xf90 kernel/workqueue.c:2274
+ worker_thread+0xa8f/0x1430 kernel/workqueue.c:2420
+ kthread+0x2df/0x300 kernel/kthread.c:255
+
+It looks like that smsc95xx_unbind() is freeing the structures that are
+still in use by the concurrently running workqueue callback. Thus switch
+to using cancel_delayed_work_sync() to ensure the work callback really
+is no longer active.
+
+Reported-by: syzbot+29dc7d4ae19b703ff947@syzkaller.appspotmail.com
+Signed-off-by: Tuomas Tynkkynen <tuomas.tynkkynen@iki.fi>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  | 12 ++++++------
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 14 +++++++++++---
- 2 files changed, 17 insertions(+), 9 deletions(-)
+ drivers/net/usb/smsc95xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-index f1bfae0c41d0c..3cf8b3ea43b08 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-@@ -917,7 +917,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
- 			ring->queue_index = txr_idx;
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index fc48da1c702d7..bcb99bee450a5 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -1338,7 +1338,7 @@ static void smsc95xx_unbind(struct usbnet *dev, struct usb_interface *intf)
+ 	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
  
- 		/* assign ring to adapter */
--		adapter->tx_ring[txr_idx] = ring;
-+		WRITE_ONCE(adapter->tx_ring[txr_idx], ring);
- 
- 		/* update count and index */
- 		txr_count--;
-@@ -944,7 +944,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
- 		set_ring_xdp(ring);
- 
- 		/* assign ring to adapter */
--		adapter->xdp_ring[xdp_idx] = ring;
-+		WRITE_ONCE(adapter->xdp_ring[xdp_idx], ring);
- 
- 		/* update count and index */
- 		xdp_count--;
-@@ -991,7 +991,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
- 			ring->queue_index = rxr_idx;
- 
- 		/* assign ring to adapter */
--		adapter->rx_ring[rxr_idx] = ring;
-+		WRITE_ONCE(adapter->rx_ring[rxr_idx], ring);
- 
- 		/* update count and index */
- 		rxr_count--;
-@@ -1020,13 +1020,13 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
- 
- 	ixgbe_for_each_ring(ring, q_vector->tx) {
- 		if (ring_is_xdp(ring))
--			adapter->xdp_ring[ring->queue_index] = NULL;
-+			WRITE_ONCE(adapter->xdp_ring[ring->queue_index], NULL);
- 		else
--			adapter->tx_ring[ring->queue_index] = NULL;
-+			WRITE_ONCE(adapter->tx_ring[ring->queue_index], NULL);
- 	}
- 
- 	ixgbe_for_each_ring(ring, q_vector->rx)
--		adapter->rx_ring[ring->queue_index] = NULL;
-+		WRITE_ONCE(adapter->rx_ring[ring->queue_index], NULL);
- 
- 	adapter->q_vector[v_idx] = NULL;
- 	napi_hash_del(&q_vector->napi);
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 64ee45b6680a0..9c3fa0b555519 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -6842,7 +6842,10 @@ void ixgbe_update_stats(struct ixgbe_adapter *adapter)
- 	}
- 
- 	for (i = 0; i < adapter->num_rx_queues; i++) {
--		struct ixgbe_ring *rx_ring = adapter->rx_ring[i];
-+		struct ixgbe_ring *rx_ring = READ_ONCE(adapter->rx_ring[i]);
-+
-+		if (!rx_ring)
-+			continue;
- 		non_eop_descs += rx_ring->rx_stats.non_eop_descs;
- 		alloc_rx_page_failed += rx_ring->rx_stats.alloc_rx_page_failed;
- 		alloc_rx_buff_failed += rx_ring->rx_stats.alloc_rx_buff_failed;
-@@ -6861,15 +6864,20 @@ void ixgbe_update_stats(struct ixgbe_adapter *adapter)
- 	packets = 0;
- 	/* gather some stats to the adapter struct that are per queue */
- 	for (i = 0; i < adapter->num_tx_queues; i++) {
--		struct ixgbe_ring *tx_ring = adapter->tx_ring[i];
-+		struct ixgbe_ring *tx_ring = READ_ONCE(adapter->tx_ring[i]);
-+
-+		if (!tx_ring)
-+			continue;
- 		restart_queue += tx_ring->tx_stats.restart_queue;
- 		tx_busy += tx_ring->tx_stats.tx_busy;
- 		bytes += tx_ring->stats.bytes;
- 		packets += tx_ring->stats.packets;
- 	}
- 	for (i = 0; i < adapter->num_xdp_queues; i++) {
--		struct ixgbe_ring *xdp_ring = adapter->xdp_ring[i];
-+		struct ixgbe_ring *xdp_ring = READ_ONCE(adapter->xdp_ring[i]);
- 
-+		if (!xdp_ring)
-+			continue;
- 		restart_queue += xdp_ring->tx_stats.restart_queue;
- 		tx_busy += xdp_ring->tx_stats.tx_busy;
- 		bytes += xdp_ring->stats.bytes;
+ 	if (pdata) {
+-		cancel_delayed_work(&pdata->carrier_check);
++		cancel_delayed_work_sync(&pdata->carrier_check);
+ 		netif_dbg(dev, ifdown, dev->net, "free pdata\n");
+ 		kfree(pdata);
+ 		pdata = NULL;
 -- 
 2.25.1
 
