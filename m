@@ -2,240 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CABB212C8D
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 20:53:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE1B2212CC0
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 21:04:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726029AbgGBSxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 14:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725878AbgGBSxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 14:53:06 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8967C08C5C1
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 11:53:05 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id h22so12906335pjf.1
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 11:53:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=URd915rQSgqAfDLKyjrPsB58MLy827wyrlr6KMAyZXQ=;
-        b=a0ZAZ77nVFnJEFPgPGeZrzjaITBubxP0ADvb/MwF0MhpzXwCE+yp4qDcLzkQA23f2m
-         bgAU5LTcmc4ePPfp8beuTEqHTiJThBbUi9HjYv6xm6A9OiAurNdTlyKvV8jBSuiBME6x
-         cDjcqrhDiNv0mcrX499UhJ4rx6NVRbmyiVbfz1LHJmnZWYVH57l/or/p/Cmek1KA8H1I
-         5r++kdYx2B0V7K/UKfvL+XZpuMgDOuef+UE4iBR0k5PlwE1tiOpylaza4lm4s5xhJRKc
-         BdfCJ/60jKTYdstgnPRX4GLiRuJYhoTKMfuO6wA5OotF5ufl0n6eaXzkyerdgkeHQIhr
-         qeWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=URd915rQSgqAfDLKyjrPsB58MLy827wyrlr6KMAyZXQ=;
-        b=n5dqJeA3X7Hz9Z4t2pZendgDqcsQl+BIWZW2zdY97DluOyqeFoCoqSTbwpd24QllPO
-         z9RJkIetEi+rxhYhyAz6ecgboYKFFQjeZjSkVAA25ZnlSatHtiM0V+MTqsXOtt//fQGh
-         0W9eqS8sAF5wAn9SB4mZBMCfkw7kbNyI+yvmrSEksVumrun8yI1tViy8Sp/X8fU5VG7+
-         2LOjVzBPGx6Ne9t594SL79JBCUj9Lhj/2qcVPauOHU9s4CU/tqxZFIMWMmsxiAg3SbmB
-         tY5VD/VpuqJykjWHbaA8HIrdU177xR13r8nnahM3EJl/SlpwINUxDYitiYBCzBLhQOZc
-         3kNg==
-X-Gm-Message-State: AOAM531vcvwnxX9J101yfPn+pNzP1XzXbgflfOoifc6TJ6Hdc2eVgTmb
-        moBa3uo+kNd9trvjTVFd1f1nTrqRzCI=
-X-Google-Smtp-Source: ABdhPJwro06a7fy1o9vIU2yt5G85sDC2JW9B7OBuo1M3uv2K+PqmmkdcOIjQbKCvJKj49N+C7LgMmw==
-X-Received: by 2002:a17:90b:30d0:: with SMTP id hi16mr35759023pjb.65.1593715985169;
-        Thu, 02 Jul 2020 11:53:05 -0700 (PDT)
-Received: from MacBookAir.linux-6brj.site ([2600:1700:727f::e])
-        by smtp.gmail.com with ESMTPSA id i128sm9823341pfe.74.2020.07.02.11.53.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2020 11:53:04 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
-        =?UTF-8?q?Dani=C3=ABl=20Sonck?= <dsonck92@gmail.com>,
-        Zhang Qiang <qiang.zhang@windriver.com>,
-        Thomas Lamprecht <t.lamprecht@proxmox.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Zefan Li <lizefan@huawei.com>, Tejun Heo <tj@kernel.org>,
-        Roman Gushchin <guro@fb.com>
-Subject: [Patch net v2] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
-Date:   Thu,  2 Jul 2020 11:52:56 -0700
-Message-Id: <20200702185256.17917-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S1726171AbgGBTEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 15:04:40 -0400
+Received: from out03.mta.xmission.com ([166.70.13.233]:51372 "EHLO
+        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725878AbgGBTEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 15:04:40 -0400
+Received: from in02.mta.xmission.com ([166.70.13.52])
+        by out03.mta.xmission.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.90_1)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1jr4Vg-0000Na-3K; Thu, 02 Jul 2020 13:04:36 -0600
+Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=x220.xmission.com)
+        by in02.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.87)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1jr4Ve-00069I-03; Thu, 02 Jul 2020 13:04:35 -0600
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     Matt Bennett <matt.bennett@alliedtelesis.co.nz>
+Cc:     netdev@vger.kernel.org, zbr@ioremap.net,
+        linux-kernel@vger.kernel.org,
+        Linux Containers <containers@lists.linux-foundation.org>
+References: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz>
+Date:   Thu, 02 Jul 2020 13:59:59 -0500
+In-Reply-To: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz> (Matt
+        Bennett's message of "Thu, 2 Jul 2020 12:26:30 +1200")
+Message-ID: <87k0zlspxs.fsf@x220.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1jr4Ve-00069I-03;;;mid=<87k0zlspxs.fsf@x220.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1/cThDAnv+o2eEuqq0eobQSsw98Xk5vfJg=
+X-SA-Exim-Connect-IP: 68.227.160.95
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa06.xmission.com
+X-Spam-Level: **
+X-Spam-Status: No, score=2.2 required=8.0 tests=ALL_TRUSTED,BAYES_20,
+        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,XMNoVowels,XMSubLong,
+        XM_B_SpammyTLD autolearn=disabled version=3.4.2
+X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+        * -0.0 BAYES_20 BODY: Bayes spam probability is 5 to 20%
+        *      [score: 0.0556]
+        *  0.7 XMSubLong Long Subject
+        *  1.5 XMNoVowels Alpha-numberic number with no vowels
+        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
+        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
+        *      [sa06 0; Body=1 Fuz1=1 Fuz2=1]
+        *  1.0 XM_B_SpammyTLD Contains uncommon/spammy TLD
+X-Spam-DCC: ; sa06 0; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: **;Matt Bennett <matt.bennett@alliedtelesis.co.nz>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 1652 ms - load_scoreonly_sql: 0.06 (0.0%),
+        signal_user_changed: 11 (0.7%), b_tie_ro: 9 (0.6%), parse: 0.89 (0.1%),
+         extract_message_metadata: 15 (0.9%), get_uri_detail_list: 1.59 (0.1%),
+         tests_pri_-1000: 6 (0.3%), tests_pri_-950: 1.30 (0.1%),
+        tests_pri_-900: 1.08 (0.1%), tests_pri_-90: 72 (4.3%), check_bayes: 70
+        (4.2%), b_tokenize: 6 (0.4%), b_tok_get_all: 8 (0.5%), b_comp_prob:
+        2.3 (0.1%), b_tok_touch_all: 50 (3.0%), b_finish: 0.93 (0.1%),
+        tests_pri_0: 259 (15.7%), check_dkim_signature: 0.55 (0.0%),
+        check_dkim_adsp: 2.4 (0.1%), poll_dns_idle: 1263 (76.4%),
+        tests_pri_10: 2.0 (0.1%), tests_pri_500: 1282 (77.6%), rewrite_mail:
+        0.00 (0.0%)
+Subject: Re: [PATCH 0/5] RFC: connector: Add network namespace awareness
+X-Spam-Flag: No
+X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we clone a socket in sk_clone_lock(), its sk_cgrp_data is
-copied, so the cgroup refcnt must be taken too. And, unlike the
-sk_alloc() path, sock_update_netprioidx() is not called here.
-Therefore, it is safe and necessary to grab the cgroup refcnt
-even when cgroup_sk_alloc is disabled.
+Matt Bennett <matt.bennett@alliedtelesis.co.nz> writes:
 
-sk_clone_lock() is in BH context anyway, the in_interrupt()
-would terminate this function if called there. And for sk_alloc()
-skcd->val is always zero. So it's safe to factor out the code
-to make it more readable.
+> Previously the connector functionality could only be used by processes running in the
+> default network namespace. This meant that any process that uses the connector functionality
+> could not operate correctly when run inside a container. This is a draft patch series that
+> attempts to now allow this functionality outside of the default network namespace.
+>
+> I see this has been discussed previously [1], but am not sure how my changes relate to all
+> of the topics discussed there and/or if there are any unintended side
+> effects from my draft
 
-The global variable 'cgroup_sk_alloc_disabled' is used to determine
-whether to take these reference counts. It is impossible to make
-the reference counting correct unless we save this bit of information
-in skcd->val. So, add a new bit there to record whether the socket
-has already taken the reference counts. This obviously relies on
-kmalloc() to align cgroup pointers to at least 4 bytes,
-ARCH_KMALLOC_MINALIGN is certainly larger than that.
+In a quick skim this patchset does not look like it approaches a correct
+conversion to having code that works in multiple namespaces.
 
-This bug seems to be introduced since the beginning, commit
-d979a39d7242 ("cgroup: duplicate cgroup reference when cloning sockets")
-tried to fix it but not compeletely. It seems not easy to trigger until
-the recent commit 090e28b229af
-("netprio_cgroup: Fix unlimited memory leak of v2 cgroups") was merged.
+I will take the changes to proc_id_connector for example.
+You report the values in the callers current namespaces.
 
-Fixes: bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup")
-Reported-by: Cameron Berkenpas <cam@neo-zeon.de>
-Reported-by: Peter Geis <pgwipeout@gmail.com>
-Reported-by: Lu Fengqi <lufq.fnst@cn.fujitsu.com>
-Reported-by: Daniël Sonck <dsonck92@gmail.com>
-Reported-by: Zhang Qiang <qiang.zhang@windriver.com>
-Tested-by: Cameron Berkenpas <cam@neo-zeon.de>
-Tested-by: Peter Geis <pgwipeout@gmail.com>
-Tested-by: Thomas Lamprecht <t.lamprecht@proxmox.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Zefan Li <lizefan@huawei.com>
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Roman Gushchin <guro@fb.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- include/linux/cgroup-defs.h |  6 ++++--
- include/linux/cgroup.h      |  4 +++-
- kernel/cgroup/cgroup.c      | 31 +++++++++++++++++++------------
- net/core/sock.c             |  2 +-
- 4 files changed, 27 insertions(+), 16 deletions(-)
+Which means an unprivileged user can create a user namespace and get
+connector to report whichever ids they want to users in another
+namespace.  AKA lie.
 
-diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
-index 52661155f85f..4f1cd0edc57d 100644
---- a/include/linux/cgroup-defs.h
-+++ b/include/linux/cgroup-defs.h
-@@ -790,7 +790,8 @@ struct sock_cgroup_data {
- 	union {
- #ifdef __LITTLE_ENDIAN
- 		struct {
--			u8	is_data;
-+			u8	is_data : 1;
-+			u8	no_refcnt : 1;
- 			u8	padding;
- 			u16	prioidx;
- 			u32	classid;
-@@ -800,7 +801,8 @@ struct sock_cgroup_data {
- 			u32	classid;
- 			u16	prioidx;
- 			u8	padding;
--			u8	is_data;
-+			u8	no_refcnt : 1;
-+			u8	is_data : 1;
- 		} __packed;
- #endif
- 		u64		val;
-diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-index 4598e4da6b1b..618838c48313 100644
---- a/include/linux/cgroup.h
-+++ b/include/linux/cgroup.h
-@@ -822,6 +822,7 @@ extern spinlock_t cgroup_sk_update_lock;
- 
- void cgroup_sk_alloc_disable(void);
- void cgroup_sk_alloc(struct sock_cgroup_data *skcd);
-+void cgroup_sk_clone(struct sock_cgroup_data *skcd);
- void cgroup_sk_free(struct sock_cgroup_data *skcd);
- 
- static inline struct cgroup *sock_cgroup_ptr(struct sock_cgroup_data *skcd)
-@@ -835,7 +836,7 @@ static inline struct cgroup *sock_cgroup_ptr(struct sock_cgroup_data *skcd)
- 	 */
- 	v = READ_ONCE(skcd->val);
- 
--	if (v & 1)
-+	if (v & 3)
- 		return &cgrp_dfl_root.cgrp;
- 
- 	return (struct cgroup *)(unsigned long)v ?: &cgrp_dfl_root.cgrp;
-@@ -847,6 +848,7 @@ static inline struct cgroup *sock_cgroup_ptr(struct sock_cgroup_data *skcd)
- #else	/* CONFIG_CGROUP_DATA */
- 
- static inline void cgroup_sk_alloc(struct sock_cgroup_data *skcd) {}
-+static inline void cgroup_sk_clone(struct sock_cgroup_data *skcd) {}
- static inline void cgroup_sk_free(struct sock_cgroup_data *skcd) {}
- 
- #endif	/* CONFIG_CGROUP_DATA */
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index 1ea181a58465..dd247747ec14 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -6439,18 +6439,8 @@ void cgroup_sk_alloc_disable(void)
- 
- void cgroup_sk_alloc(struct sock_cgroup_data *skcd)
- {
--	if (cgroup_sk_alloc_disabled)
--		return;
--
--	/* Socket clone path */
--	if (skcd->val) {
--		/*
--		 * We might be cloning a socket which is left in an empty
--		 * cgroup and the cgroup might have already been rmdir'd.
--		 * Don't use cgroup_get_live().
--		 */
--		cgroup_get(sock_cgroup_ptr(skcd));
--		cgroup_bpf_get(sock_cgroup_ptr(skcd));
-+	if (cgroup_sk_alloc_disabled) {
-+		skcd->no_refcnt = 1;
- 		return;
- 	}
- 
-@@ -6475,10 +6465,27 @@ void cgroup_sk_alloc(struct sock_cgroup_data *skcd)
- 	rcu_read_unlock();
- }
- 
-+void cgroup_sk_clone(struct sock_cgroup_data *skcd)
-+{
-+	if (skcd->val) {
-+		if (skcd->no_refcnt)
-+			return;
-+		/*
-+		 * We might be cloning a socket which is left in an empty
-+		 * cgroup and the cgroup might have already been rmdir'd.
-+		 * Don't use cgroup_get_live().
-+		 */
-+		cgroup_get(sock_cgroup_ptr(skcd));
-+		cgroup_bpf_get(sock_cgroup_ptr(skcd));
-+	}
-+}
-+
- void cgroup_sk_free(struct sock_cgroup_data *skcd)
- {
- 	struct cgroup *cgrp = sock_cgroup_ptr(skcd);
- 
-+	if (skcd->no_refcnt)
-+		return;
- 	cgroup_bpf_put(cgrp);
- 	cgroup_put(cgrp);
- }
-diff --git a/net/core/sock.c b/net/core/sock.c
-index d832c650287c..2e5b7870e5d3 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1926,7 +1926,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
- 		/* sk->sk_memcg will be populated at accept() time */
- 		newsk->sk_memcg = NULL;
- 
--		cgroup_sk_alloc(&newsk->sk_cgrp_data);
-+		cgroup_sk_clone(&newsk->sk_cgrp_data);
- 
- 		rcu_read_lock();
- 		filter = rcu_dereference(sk->sk_filter);
--- 
-2.27.0
+So this appears to make connector completely unreliable.
 
+Eric
+
+
+
+> changes.
+>
+> Thanks.
+>
+> [1] https://marc.info/?l=linux-kernel&m=150806196728365&w=2
+>
+> Matt Bennett (5):
+>   connector: Use task pid helpers
+>   connector: Use 'current_user_ns' function
+>   connector: Ensure callback entry is released
+>   connector: Prepare for supporting multiple namespaces
+>   connector: Create connector per namespace
+>
+>  Documentation/driver-api/connector.rst |   6 +-
+>  drivers/connector/cn_proc.c            | 110 +++++++-------
+>  drivers/connector/cn_queue.c           |   9 +-
+>  drivers/connector/connector.c          | 192 ++++++++++++++++++++-----
+>  drivers/hv/hv_fcopy.c                  |   1 +
+>  drivers/hv/hv_utils_transport.c        |   6 +-
+>  drivers/md/dm-log-userspace-transfer.c |   6 +-
+>  drivers/video/fbdev/uvesafb.c          |   8 +-
+>  drivers/w1/w1_netlink.c                |  19 +--
+>  include/linux/connector.h              |  38 +++--
+>  include/net/net_namespace.h            |   4 +
+>  kernel/exit.c                          |   2 +-
+>  samples/connector/cn_test.c            |   6 +-
+>  13 files changed, 286 insertions(+), 121 deletions(-)
