@@ -2,129 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AF5D21200A
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:35:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30FE921200C
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:36:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728206AbgGBJfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 05:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726475AbgGBJfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 05:35:06 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB95C08C5C1;
-        Thu,  2 Jul 2020 02:35:05 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id 67so8230319pfg.5;
-        Thu, 02 Jul 2020 02:35:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1MSOyhRxeOlZZV64ERgtop/oxnrPChw5nLGPyTva4Vo=;
-        b=TVEnUSpK1abcjZ10U2QydBOOnzNT5Wgz11XhjEaZmJNpQo5VNiuwzY07xp477pR1mb
-         h3WadbpIkM2HrXm8eTkP9nvzYDcoXLRPJLLaw8pFw0Sn9dRdDlU3SiauVqTK3uNg/4cs
-         8uVyrWW3EwKuPNxmCjxlVSzbxVKU+kq8AiqewqwiDuD8+JGVoIArG8tJRFogHNf0v0JL
-         EfWSq+Rt7LshYeYoOmSWcFnz7fqddRiAzR9k+RvQDg0pYRkaDLfHRna+xW7CnZTfihhG
-         lQ/1JIPrPdJX3hBNOxN8gNw3fv6bCnZIv+crKfssoIWD/e2fqTi1zNuE5o0RHcDnE2/l
-         Xu2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1MSOyhRxeOlZZV64ERgtop/oxnrPChw5nLGPyTva4Vo=;
-        b=lSfnlhqPEVlg9uLl5Z+Nq+oPOR9mCLkd5Ns/SckG7eEdp7d3iJZsrmUdzJcWMPy0jb
-         u0AIBJxgMvQP04tEsauGoOkzad/DEKviLPLhQd59r0sb6HO2KXc5ENQ+73cuqlXVawFn
-         ZJUv3NmT8mY/6K9J8ewFdrY0m4F3704jvI0EZxpECoQ7hxvkNcfrkQaAUZn5z8X4YsAG
-         yjGbndgFPrBsVMXusPsbkY8zInpabmlEJcUz2Byh7BOtcLiq9x7Q906cVPCm6XoNPNpM
-         MHIcuah9H/t2JXLK3sP9PHcR2eoUFDcN3wKeMDr+XXBo7RpXf2mKGO0QZ69pMtq0o+WG
-         JWew==
-X-Gm-Message-State: AOAM5301/ni9QIbhamdJO+avjEZci1DBDi0EHbJeMeZvcOaWhS0gNC/W
-        jyBE29TldZK27kSHN/cmwF8XcSGOsRusD9qEmpw=
-X-Google-Smtp-Source: ABdhPJx+aVzkyyxLXExp4j2eKsWyN8fDRmTvCNbRTsS3OPkewUF1d8RWW+Ai+/aGfbaAdni+2CmOVnGZq4Bi2mFIHYc=
-X-Received: by 2002:aa7:8bcb:: with SMTP id s11mr14668987pfd.170.1593682505328;
- Thu, 02 Jul 2020 02:35:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200701061233.31120-1-calvin.johnson@oss.nxp.com>
- <20200701061233.31120-4-calvin.johnson@oss.nxp.com> <VI1PR0402MB387145B3181911668E024264E06D0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
-In-Reply-To: <VI1PR0402MB387145B3181911668E024264E06D0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 2 Jul 2020 12:34:48 +0300
-Message-ID: <CAHp75VeFBOwN92XKJRZfpJn23bY4CGKxQCCn9n_krwxXtAdtLA@mail.gmail.com>
-Subject: Re: [net-next PATCH v2 3/3] net: dpaa2-mac: Add ACPI support for
- DPAA2 MAC driver
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     "Calvin Johnson (OSS)" <calvin.johnson@oss.nxp.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        "linux.cj@gmail.com" <linux.cj@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+        id S1728077AbgGBJgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 05:36:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47094 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726475AbgGBJgF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jul 2020 05:36:05 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7E32A20760;
+        Thu,  2 Jul 2020 09:36:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593682565;
+        bh=M4Ip9Xi6j29k90rtJdYsp/qDfZss+ZwZqpmQqMK9gsQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Hhzbx65hHJto1xxHZkkSVSHj9Std5XFTJhAtcZdTDKbgu+dV0Zr7Gw5Ug5Kjbd1BX
+         opkbChqhXbpJ57eX8tOIE1zGq9ZnejVQQPCDPk9YtWlRq1hvtXY/qjKvmLgyUXQe0y
+         iwO9Dk85vCubCQWxkyMMueQV9k4JeW6OcGJioewc=
+Date:   Thu, 2 Jul 2020 12:36:01 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+Cc:     Hulk Robot <hulkci@huawei.com>, Tariq Toukan <tariqt@mellanox.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next] mlx4: Mark PM functions as __maybe_unused
+Message-ID: <20200702093601.GB4837@unreal>
+References: <20200702091946.5144-1-weiyongjun1@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200702091946.5144-1-weiyongjun1@huawei.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 11:48 AM Ioana Ciornei <ioana.ciornei@nxp.com> wrote:
+On Thu, Jul 02, 2020 at 05:19:46PM +0800, Wei Yongjun wrote:
+> In certain configurations without power management support, the
+> following warnings happen:
 >
-> > Subject: [net-next PATCH v2 3/3] net: dpaa2-mac: Add ACPI support for DPAA2
-> > MAC driver
-> >
-> > Modify dpaa2_mac_connect() to support ACPI along with DT.
-> > Modify dpaa2_mac_get_node() to get the dpmac fwnode from either DT or
-> > ACPI.
-> > Replace of_get_phy_mode with fwnode_get_phy_mode to get phy-mode for a
-> > dpmac_node.
-> > Define and use helper function find_phy_device() to find phy_dev that is later
-> > connected to mac->phylink.
-
-...
-
-> > -     while ((dpmac = of_get_next_child(dpmacs, dpmac)) != NULL) {
-> > -             err = of_property_read_u32(dpmac, "reg", &id);
-> > -             if (err)
-> > -                     continue;
-> > -             if (id == dpmac_id)
-> > -                     break;
-> > +     if (is_of_node(fsl_mc_fwnode)) {
-> > +             dpmacs = device_get_named_child_node(fsl_mc, "dpmacs");
-> > +             if (!dpmacs)
-> > +                     return NULL;
-> > +
-> > +             while ((dpmac = fwnode_get_next_child_node(dpmacs,
-> > dpmac))) {
-> > +                     err = fwnode_property_read_u32(dpmac, "reg", &id);
-> > +                     if (err)
-> > +                             continue;
-> > +                     if (id == dpmac_id)
-> > +                             return dpmac;
-> > +             }
-> > +     } else if (is_acpi_node(fsl_mc_fwnode)) {
-> > +             adev = acpi_find_child_device(ACPI_COMPANION(dev->parent),
-> > +                                           dpmac_id, false);
-> > +             if (adev)
-> > +                     return (&adev->fwnode);
-> >       }
-> > -
-> > -     of_node_put(dpmacs);
-> > -
+> drivers/net/ethernet/mellanox/mlx4/main.c:4388:12:
+>  warning: 'mlx4_resume' defined but not used [-Wunused-function]
+>  4388 | static int mlx4_resume(struct device *dev_d)
+>       |            ^~~~~~~~~~~
+> drivers/net/ethernet/mellanox/mlx4/main.c:4373:12: warning:
+>  'mlx4_suspend' defined but not used [-Wunused-function]
+>  4373 | static int mlx4_suspend(struct device *dev_d)
+>       |            ^~~~~~~~~~~~
 >
-> This of_node_put() on the 'dpmacs'  node still needs to happen for the OF case.
+> Mark these functions as __maybe_unused to make it clear to the
+> compiler that this is going to happen based on the configuration,
+> which is the standard for these types of functions.
+>
+> Fixes: 0e3e206a3e12 ("mlx4: use generic power management")
 
-Actually this also raises the question if ACPI case increases refcount
-or not and it should be fixed accordingly (Note, we have to take
-reference to fwnode before return in ACPI case and drop reference to
-adev).
+I can't find this SHA-1, where did you get it?
+And why doesn't mlx5 need this change?
 
--- 
-With Best Regards,
-Andy Shevchenko
+Fixes: 86a3e5d02c20 ("net/mlx4_core: Add PCI calls for suspend/resume")
+
+Thanks
