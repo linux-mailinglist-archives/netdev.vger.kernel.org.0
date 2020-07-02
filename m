@@ -2,69 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB1642124EE
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:39:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84448212506
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:44:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729386AbgGBNjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 09:39:08 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:39019 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729234AbgGBNjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 09:39:08 -0400
-Received: by mail-io1-f69.google.com with SMTP id r19so17564918iod.6
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 06:39:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=WpKkuPCbjM9qHybSEs/eO4ohp9+DmrsOe+ROlXOZsfw=;
-        b=oik8xp08zQwPEQHypXHuUAQb6KP7jA3zHj26KFqiIik/hb93vRXNSxzxo48eJZ6beq
-         T9SklwMde5QzsfaDZr6kyjGCTHV//vD1cQGHFXIY48Da8TlATfiC9tLjqedKIRXhuDbn
-         iqWeV44BXAYofmbh7d8lk0J8tsuP5F8TsiUDwEy8Xgq7JP18GeldNS2XPI5wAOG0ZBzs
-         jpae/pB6Z1lCqdHEhhX/TGMdKfHgko1ZA55/hfMtF5eAqi/3jL5QxiB7Tz6j8cTDIg0v
-         RAyvydPt9j5QF1Uv0QNe2MUX+mdTmAdOzXJcGb+NVyz/i7blrRbCL0XphKVu3xit0aH5
-         Z8IQ==
-X-Gm-Message-State: AOAM530uWoVY5cwJvCIEjvwyTb+oTTE0UmQbiHc3kQZMARyXhoq8RdAE
-        EWAqoVduYhWaq8C/dTK4x2Ham6TexeIClhMqiyR3lC0kKvMo
-X-Google-Smtp-Source: ABdhPJzabNnQL2nbQZLXYYBaeQiPct0MWGQOc2ZsbarBu3vWY2R3VqBxT6Ux5jgC1ao6rItmynuh00qwZq7qfK301tZVPk00HE/2
-MIME-Version: 1.0
-X-Received: by 2002:a05:6638:e93:: with SMTP id p19mr16903757jas.67.1593697147104;
- Thu, 02 Jul 2020 06:39:07 -0700 (PDT)
-Date:   Thu, 02 Jul 2020 06:39:07 -0700
-In-Reply-To: <000000000000ea237605a8e368a9@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000055323705a9758823@google.com>
-Subject: Re: WARNING in idr_alloc
-From:   syzbot <syzbot+f31428628ef672716ea8@syzkaller.appspotmail.com>
-To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+        id S1729280AbgGBNn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 09:43:58 -0400
+Received: from mga17.intel.com ([192.55.52.151]:30531 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729171AbgGBNn6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jul 2020 09:43:58 -0400
+IronPort-SDR: IiV3Fh8e0B7a3q8W3HiJfXnmOb5cs3W5VujTxxTDYGvCgeRVs6U5Pbsnj7e44dCjsuG8aqpPZQ
+ Ao2MZzGX/JIw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9669"; a="126981688"
+X-IronPort-AV: E=Sophos;i="5.75,304,1589266800"; 
+   d="scan'208";a="126981688"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2020 06:43:58 -0700
+IronPort-SDR: FYy8PrnO8o95aMgWfXOidA6skjO5cXKQDFkEueTR8LmVHlOd15saqQrhA0dVwPdobD/dVmfFAV
+ +qQeo0ZyifhQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,304,1589266800"; 
+   d="scan'208";a="304250978"
+Received: from yuzhang2-mobl.amr.corp.intel.com ([10.251.140.13])
+  by fmsmga004.fm.intel.com with ESMTP; 02 Jul 2020 06:43:57 -0700
+Message-ID: <8b88749c197f07c7c70273614dd6ee8840b2b14d.camel@linux.intel.com>
+Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
+ client
+From:   Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Mark Brown <broonie@kernel.org>,
+        Takashi Iwai <tiwai@suse.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>,
+        lee.jones@linaro.org, Dan J Williams <dan.j.williams@intel.com>
+Date:   Thu, 02 Jul 2020 06:43:57 -0700
+In-Reply-To: <20200701065915.GF2044019@kroah.com>
+References: <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
+         <20200524063519.GB1369260@kroah.com>
+         <fe44419b-924c-b183-b761-78771b7d506d@linux.intel.com>
+         <s5h5zcistpb.wl-tiwai@suse.de> <20200527071733.GB52617@kroah.com>
+         <20200629203317.GM5499@sirena.org.uk> <20200629225959.GF25301@ziepe.ca>
+         <20200630103141.GA5272@sirena.org.uk> <20200630113245.GG25301@ziepe.ca>
+         <936d8b1cbd7a598327e1b247441fa055d7083cb6.camel@linux.intel.com>
+         <20200701065915.GF2044019@kroah.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.1-2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On Wed, 2020-07-01 at 08:59 +0200, Greg KH wrote:
+> On Tue, Jun 30, 2020 at 10:24:04AM -0700, Ranjani Sridharan wrote:
+> > On Tue, 2020-06-30 at 08:32 -0300, Jason Gunthorpe wrote:
+> > > On Tue, Jun 30, 2020 at 11:31:41AM +0100, Mark Brown wrote:
+> > > > On Mon, Jun 29, 2020 at 07:59:59PM -0300, Jason Gunthorpe
+> > > > wrote:
+> > > > > On Mon, Jun 29, 2020 at 09:33:17PM +0100, Mark Brown wrote:
+> > > > > > On Wed, May 27, 2020 at 09:17:33AM +0200, Greg KH wrote:
+> > > > > > > Ok, that's good to hear.  But platform devices should
+> > > > > > > never
+> > > > > > > be showing
+> > > > > > > up as a child of a PCI device.  In the "near future" when
+> > > > > > > we
+> > > > > > > get the
+> > > > > > > virtual bus code merged, we can convert any existing
+> > > > > > > users
+> > > > > > > like this to
+> > > > > > > the new code.
+> > > > > > What are we supposed to do with things like PCI attached
+> > > > > > FPGAs
+> > > > > > and ASICs
+> > > > > > in that case?  They can have host visible devices with
+> > > > > > physical
+> > > > > > resources like MMIO ranges and interrupts without those
+> > > > > > being
+> > > > > > split up
+> > > > > > neatly as PCI subfunctions - the original use case for MFD
+> > > > > > was
+> > > > > > such
+> > > > > > ASICs, there's a few PCI drivers in there now. 
+> > > > > Greg has been pretty clear that MFD shouldn't have been used
+> > > > > on
+> > > > > top of
+> > > > > PCI drivers.
+> > > > 
+> > > > The proposed bus lacks resource handling, an equivalent of
+> > > > platform_get_resource() and friends for example, which would be
+> > > > needed
+> > > > for use with physical devices.  Both that and the name suggest
+> > > > that
+> > > > it's
+> > > > for virtual devices.
+> > > 
+> > > Resource handling is only useful if the HW has a hard distinction
+> > > between it's functional blocks. This scheme is intended for
+> > > devices
+> > > where that doesn't ex"ist. The driver that attaches to the PCI
+> > > device
+> > > and creates the virtual devices is supposed to provide SW
+> > > abstractions
+> > > for the other drivers to sit on.
+> > >  
+> > > I'm not sure why we are calling it virtual bus.
+> > Hi Jason,
+> > 
+> > We're addressing the naming in the next version as well. We've had
+> > several people reject the name virtual bus and we've narrowed in on
+> > "ancillary bus" for the new name suggesting that we have the core
+> > device that is attached to the primary bus and one or more sub-
+> > devices
+> > that are attached to the ancillary bus. Please let us know what you
+> > think of it.
+> 
+> I'm thinking that the primary person who keeps asking you to create
+> this
+> "virtual bus" was not upset about that name, nor consulted, so why
+> are
+> you changing this?  :(
+> 
+> Right now this feels like the old technique of "keep throwing crap at
+> a
+> maintainer until they get so sick of it that they do the work
+> themselves..."
 
-commit e42671084361302141a09284fde9bbc14fdd16bf
-Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Date:   Thu May 7 12:53:06 2020 +0000
+Hi Greg,
 
-    net: qrtr: Do not depend on ARCH_QCOM
+It wasnt our intention to frustrate you with the name change but in the
+last exchange you had specifically asked for signed-off-by's from other
+Intel developers. In that process, one of the recent feedback from some
+of them was about the name being misleading and confusing.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17325ad5100000
-start commit:   7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=14b25ad5100000
-console output: https://syzkaller.appspot.com/x/log.txt?x=10b25ad5100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d195fe572fb15312
-dashboard link: https://syzkaller.appspot.com/bug?extid=f31428628ef672716ea8
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15252c4b100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10159291100000
+If you feel strongly about the keeping name "virtual bus", please let
+us know and we can circle back with them again.
 
-Reported-by: syzbot+f31428628ef672716ea8@syzkaller.appspotmail.com
-Fixes: e42671084361 ("net: qrtr: Do not depend on ARCH_QCOM")
+Thanks,
+Ranjani
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
