@@ -2,243 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1F1B2119B5
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 03:41:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 242082119FA
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 04:11:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728103AbgGBBkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 21:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727801AbgGBBkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 21:40:04 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A18C08C5C1;
-        Wed,  1 Jul 2020 18:40:04 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id e8so12651851pgc.5;
-        Wed, 01 Jul 2020 18:40:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=51AUnoQ4Cnz88Kbm4onJmgeuZ1Abce+MfMXT9uG9jmA=;
-        b=cdxiNcGVhWxXObTtYxl/9RVRQ2+z9RYQSijhVLa1JZ1T4kjecGPK2A1cQNdiOaJF5V
-         UUphxBm1DhSMh/+q436D0wneCmhb4ZGY/8AtJBgV0crtt0Bbn+7cLxfDghh9C8SAM9TM
-         xAUNL/AXuG9S0Jyqb9eSYccokdVEzH3D6S7EYDugGysdxC2uO8aC9YYq4FpzJT3TW5As
-         H6AabWihCZzSPHRzti5n9vNpMikCRJLL1p8UuZlaBzYsFcEK20iAxPrlBx4lvMfmrxIo
-         n48aozcY3t5G6URVn+f83f/qkM7U0QUr/6JcetopLl53kmwhP70Zsg065xmQH+Jj0qIw
-         U8zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=51AUnoQ4Cnz88Kbm4onJmgeuZ1Abce+MfMXT9uG9jmA=;
-        b=tyvAkiG3GZBxViUT6kILruLZLLLxh/2/ORIrxQL2fAHEt9hUXS1OHq0ofBglUDE/2o
-         VLMKQPMBcwbQXmxQZYpdQncDPEx3W37MdnBADL1CxSuputrUcRVOGB8Bn7+Rd4cqFF9X
-         sA1F8ANuUL1mInhOTQRH4TG1NWgbF+qpKNbyz4eMAnC8kgcOnzvBXwdGA9qKt6fP9roV
-         qDKhKN9Kp5gIRUvg8YQCxU3ryTzpmfjlblyTfc7sKLczU6b9ebV+kjnKamXC1W2Srah1
-         x57lFNF6IhhL3h5jPLwTXhXhw9o9Gr25GKw9SLnvPHWstcfrT8vB1tPMQUWXt8VfijKx
-         5O2A==
-X-Gm-Message-State: AOAM531YXV9jZX0hNef5XMr0ZvRRD1lEPLKy52yoDA6+fhhLozERG37M
-        F45B8LK8k9B4pco9VvDoNgE3Hg+B
-X-Google-Smtp-Source: ABdhPJwZmZ4lExn+a3iT4LDtwexery19H+/aAN78rGMg1PNpZwfik+OmGTJnNvcL3/g2XHNGti17iA==
-X-Received: by 2002:a63:ff54:: with SMTP id s20mr23343990pgk.251.1593654004179;
-        Wed, 01 Jul 2020 18:40:04 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id c14sm6976669pfj.82.2020.07.01.18.40.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 01 Jul 2020 18:40:03 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: [PATCH bpf-next] bpf: Add bpf_prog iterator
-Date:   Wed,  1 Jul 2020 18:40:01 -0700
-Message-Id: <20200702014001.37945-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
+        id S1728022AbgGBCLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 22:11:40 -0400
+Received: from smtp21.cstnet.cn ([159.226.251.21]:35216 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727074AbgGBCLj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Jul 2020 22:11:39 -0400
+Received: from localhost (unknown [159.226.5.99])
+        by APP-01 (Coremail) with SMTP id qwCowABHKOnuPv1edTKFAg--.63408S2;
+        Thu, 02 Jul 2020 09:57:02 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        mpe@ellerman.id.au, akpm@linux-foundation.org, wenwen@cs.uga.edu,
+        adobriyan@gmail.com, dan.carpenter@oracle.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>
+Subject: [PATCH] net: cisco : use set_current_state macro
+Date:   Thu,  2 Jul 2020 01:57:01 +0000
+Message-Id: <20200702015701.8606-1-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: qwCowABHKOnuPv1edTKFAg--.63408S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrZrWkCFWkGF1xCr1kWry5XFb_yoWxCrcEka
+        10qF9akryUW3Wj9rsrCF43AryFv3y3X3Z5Za1IqFW5Ca1UZry5JFy5ZFnrJr47WryUCr13
+        ArnrXFyYy3sIvjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb3AFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUtVWrXwAv7VC2z280aVAFwI0_Gr1j6F4UJwAm72CE4IkC6x0Yz7
+        v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF
+        7I0E8cxan2IY04v7MxkIecxEwVAFwVWkMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4
+        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
+        17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
+        IF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq
+        3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCT
+        nIWIevJa73UjIFyTuYvjfUo38nUUUUU
+X-Originating-IP: [159.226.5.99]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCAwEA102YPvBIQABsS
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+Use set_current_state macro instead of current->state = TASK_RUNNING.
 
-It's mostly a copy paste of commit 6086d29def80 ("bpf: Add bpf_map iterator")
-that is use to implement bpf_seq_file opreations to traverse all bpf programs.
-
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
 ---
-No selftests?!
-They're coming as part of "usermode_driver for iterators" set.
-This patch is trivial and independent, so sending it first.
+ drivers/net/wireless/cisco/airo.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- include/linux/bpf.h    |   1 +
- kernel/bpf/Makefile    |   2 +-
- kernel/bpf/prog_iter.c | 102 +++++++++++++++++++++++++++++++++++++++++
- kernel/bpf/syscall.c   |  19 ++++++++
- 4 files changed, 123 insertions(+), 1 deletion(-)
- create mode 100644 kernel/bpf/prog_iter.c
-
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 0cd7f6884c5c..3c659f36591d 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1112,6 +1112,7 @@ int  generic_map_delete_batch(struct bpf_map *map,
- 			      const union bpf_attr *attr,
- 			      union bpf_attr __user *uattr);
- struct bpf_map *bpf_map_get_curr_or_next(u32 *id);
-+struct bpf_prog *bpf_prog_get_curr_or_next(u32 *id);
- 
- extern int sysctl_unprivileged_bpf_disabled;
- 
-diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-index 1131a921e1a6..e6eb9c0402da 100644
---- a/kernel/bpf/Makefile
-+++ b/kernel/bpf/Makefile
-@@ -2,7 +2,7 @@
- obj-y := core.o
- CFLAGS_core.o += $(call cc-disable-warning, override-init)
- 
--obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o
-+obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o prog_iter.o
- obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o
- obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o ringbuf.o
- obj-$(CONFIG_BPF_SYSCALL) += disasm.o
-diff --git a/kernel/bpf/prog_iter.c b/kernel/bpf/prog_iter.c
-new file mode 100644
-index 000000000000..3080abd4d8ad
---- /dev/null
-+++ b/kernel/bpf/prog_iter.c
-@@ -0,0 +1,102 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2020 Facebook */
-+#include <linux/bpf.h>
-+#include <linux/fs.h>
-+#include <linux/filter.h>
-+#include <linux/kernel.h>
-+
-+struct bpf_iter_seq_prog_info {
-+	u32 mid;
-+};
-+
-+static void *bpf_prog_seq_start(struct seq_file *seq, loff_t *pos)
-+{
-+	struct bpf_iter_seq_prog_info *info = seq->private;
-+	struct bpf_prog *prog;
-+
-+	prog = bpf_prog_get_curr_or_next(&info->mid);
-+	if (!prog)
-+		return NULL;
-+
-+	++*pos;
-+	return prog;
-+}
-+
-+static void *bpf_prog_seq_next(struct seq_file *seq, void *v, loff_t *pos)
-+{
-+	struct bpf_iter_seq_prog_info *info = seq->private;
-+	struct bpf_prog *prog;
-+
-+	++*pos;
-+	++info->mid;
-+	bpf_prog_put((struct bpf_prog *)v);
-+	prog = bpf_prog_get_curr_or_next(&info->mid);
-+	if (!prog)
-+		return NULL;
-+
-+	return prog;
-+}
-+
-+struct bpf_iter__bpf_prog {
-+	__bpf_md_ptr(struct bpf_iter_meta *, meta);
-+	__bpf_md_ptr(struct bpf_prog *, prog);
-+};
-+
-+DEFINE_BPF_ITER_FUNC(bpf_prog, struct bpf_iter_meta *meta, struct bpf_prog *prog)
-+
-+static int __bpf_prog_seq_show(struct seq_file *seq, void *v, bool in_stop)
-+{
-+	struct bpf_iter__bpf_prog ctx;
-+	struct bpf_iter_meta meta;
-+	struct bpf_prog *prog;
-+	int ret = 0;
-+
-+	ctx.meta = &meta;
-+	ctx.prog = v;
-+	meta.seq = seq;
-+	prog = bpf_iter_get_info(&meta, in_stop);
-+	if (prog)
-+		ret = bpf_iter_run_prog(prog, &ctx);
-+
-+	return ret;
-+}
-+
-+static int bpf_prog_seq_show(struct seq_file *seq, void *v)
-+{
-+	return __bpf_prog_seq_show(seq, v, false);
-+}
-+
-+static void bpf_prog_seq_stop(struct seq_file *seq, void *v)
-+{
-+	if (!v)
-+		(void)__bpf_prog_seq_show(seq, v, true);
-+	else
-+		bpf_prog_put((struct bpf_prog *)v);
-+}
-+
-+static const struct seq_operations bpf_prog_seq_ops = {
-+	.start	= bpf_prog_seq_start,
-+	.next	= bpf_prog_seq_next,
-+	.stop	= bpf_prog_seq_stop,
-+	.show	= bpf_prog_seq_show,
-+};
-+
-+static const struct bpf_iter_reg bpf_prog_reg_info = {
-+	.target			= "bpf_prog",
-+	.seq_ops		= &bpf_prog_seq_ops,
-+	.init_seq_private	= NULL,
-+	.fini_seq_private	= NULL,
-+	.seq_priv_size		= sizeof(struct bpf_iter_seq_prog_info),
-+	.ctx_arg_info_size	= 1,
-+	.ctx_arg_info		= {
-+		{ offsetof(struct bpf_iter__bpf_prog, prog),
-+		  PTR_TO_BTF_ID_OR_NULL },
-+	},
-+};
-+
-+static int __init bpf_prog_iter_init(void)
-+{
-+	return bpf_iter_reg_target(&bpf_prog_reg_info);
-+}
-+
-+late_initcall(bpf_prog_iter_init);
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 8da159936bab..e236a6c0aea4 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -3035,6 +3035,25 @@ struct bpf_map *bpf_map_get_curr_or_next(u32 *id)
- 	return map;
- }
- 
-+struct bpf_prog *bpf_prog_get_curr_or_next(u32 *id)
-+{
-+	struct bpf_prog *prog;
-+
-+	spin_lock_bh(&prog_idr_lock);
-+again:
-+	prog = idr_get_next(&prog_idr, id);
-+	if (prog) {
-+		prog = bpf_prog_inc_not_zero(prog);
-+		if (IS_ERR(prog)) {
-+			(*id)++;
-+			goto again;
-+		}
-+	}
-+	spin_unlock_bh(&prog_idr_lock);
-+
-+	return prog;
-+}
-+
- #define BPF_PROG_GET_FD_BY_ID_LAST_FIELD prog_id
- 
- struct bpf_prog *bpf_prog_by_id(u32 id)
+diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
+index 827bb6d74815..f0bcb67095f1 100644
+--- a/drivers/net/wireless/cisco/airo.c
++++ b/drivers/net/wireless/cisco/airo.c
+@@ -3113,7 +3113,7 @@ static int airo_thread(void *data) {
+ 				}
+ 				break;
+ 			}
+-			current->state = TASK_RUNNING;
++			__set_current_state(TASK_RUNNING);
+ 			remove_wait_queue(&ai->thr_wait, &wait);
+ 			locked = 1;
+ 		}
 -- 
-2.23.0
+2.17.1
 
