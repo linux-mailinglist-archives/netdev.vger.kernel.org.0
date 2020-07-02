@@ -2,158 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38E1F21245C
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:14:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFA10212479
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:22:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729156AbgGBNOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 09:14:51 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:36606 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728253AbgGBNOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 09:14:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1593695690; x=1625231690;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=D1k8sFFZ6GmcfeJLDNK60SJWjTqLYfivUhKi8BmT+4Q=;
-  b=VnZBwPMsnfhzjBUVX+8TXxlYx0uOSIGOc6ybaUVoKftKrr9clF7ggXVR
-   /f8VY+nPGdpECzLHuH0SByjNQwgMjb0LZUlYdfb0mXDnBP3/C8cs2PuOm
-   iq5/ZQYJm2BH4Zf0hAVdt/tYKiodojsJ+CqxDpOv06B/IUwZLIjVvbtQ8
-   OaauNHyPA7rf5whUeLDgqzluPt+ncA6gM3MEvpJG+1xDG7+z/cxJrats9
-   ylaZU1Ri6mbnMPuBHVj/Hd0TW3dXecl1B/B3aIhQ9rR2Ts2kVFMdCl7Mr
-   91W+B/W1jfL8R9v2iKPGS3pChCpQnua3NrVzWAAhdlrbU28ohRr0UV41m
-   g==;
-IronPort-SDR: anH1E/wTBctIj2IeitnYX1B7+GUthXLHYh4atVCV5HvB85NTqhA+y2Rf54fL7ARIk6fwnqk0Q9
- bOG1Rajs8+zHuRR9l+Umdny2YNsLcpOMvGDcMDperyJki06gbY+jzIo4vHMgF+PeF2tKFZWtGQ
- l9D0H3V+96x8RBW07x1hauV7cCWhuqmdKB1/f+9u2kDbeT1MycZMFsRjLYl7SUaPriEdnY5zpg
- C88LU72B3spxt7ht9KyFeRhtZNWI5+b15IV+Kh6sNLzdInDW7yeU2f9ipRGGXafueDWrJNd2gK
- Qtw=
-X-IronPort-AV: E=Sophos;i="5.75,304,1589266800"; 
-   d="scan'208";a="82392420"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Jul 2020 06:14:35 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 2 Jul 2020 06:14:35 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3 via Frontend
- Transport; Thu, 2 Jul 2020 06:14:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZK9Rx5e3SPAhy1OhigwIGzNMGjTckXC51hnYQHEYY/E/XXnLKzhZYb5z39Wt0rsLCEnXIYpUSNQiVx1tpiFhvKBcor1vbDuAAXk6YWBggxY5qB2aDORnXcpEZk4hX/vbzo6dFNMAlkUwP1oyAybSHYnMuXnXUr+V+njc7W8+y/uAYxftBk1ReJ6VxRxx8VwRJVmt6VB3Z0OuMA39LV4JT/lIV5gCikBGCrMCEgxu5heEK6NzSAAJTDFVNmXs+E2O1eHPavjaHWtJSINF1xUwnzF7FTViDh0mHZQTd8k9bTQ0dCV8YhBsvfjL0vVt66iy+2Os6SoZx0+L//073zkHkw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D1k8sFFZ6GmcfeJLDNK60SJWjTqLYfivUhKi8BmT+4Q=;
- b=L4KUD3/4xYsjCCIsMhQdN7a8DO+jTmPWEM1GlYUKyeBpSb2N0k97WHNy1OUXhrXpGLKZYMoEy47sNRb3Bzzg/zzB0UkMUd4KCXcFPPJMmgzWamxL3UhzGBfds2oNc0SUGaSYle9KgDGlW0x0NmtIbEMQEtCeZ3BpXwINwylOq8EBczNx5I+stAFp2+jbrdE2fjnMFC+aguRgKvEjG5X9G/atZsrxrZHxoxmpYCl86HbLOhzOq/wzirJItsEc5vE3LYnkImEXCOhZUlDJWkLdxaE/sGrGcgwtWCcMblSZwVzsZXM7dyLcz+wl99vfK/BetH1nH3oauAcWedXSGG9tPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D1k8sFFZ6GmcfeJLDNK60SJWjTqLYfivUhKi8BmT+4Q=;
- b=LIyeb9oWayKqIbbSdVWZU3gKCVo43v6uJ2bAlJbJQzZQsZZuMRCuFmkVCORsMsayOs+Tn/sd7LHI18VW07V/8jbtkZQVvS46gNTjWpSenlOUwI3VJRy1WtWkoBVCPl08bNj+Lbk1t9Nl13jWPYtNdv58oVBk7bIag2niOyQev1k=
-Received: from SN6PR11MB3504.namprd11.prod.outlook.com (2603:10b6:805:d0::17)
- by SN6PR11MB2559.namprd11.prod.outlook.com (2603:10b6:805:57::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20; Thu, 2 Jul
- 2020 13:14:33 +0000
-Received: from SN6PR11MB3504.namprd11.prod.outlook.com
- ([fe80::851c:67fc:a034:9ea0]) by SN6PR11MB3504.namprd11.prod.outlook.com
- ([fe80::851c:67fc:a034:9ea0%4]) with mapi id 15.20.3153.022; Thu, 2 Jul 2020
- 13:14:33 +0000
-From:   <Codrin.Ciubotariu@microchip.com>
-To:     <linux@armlinux.org.uk>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <Woojung.Huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: dsa: microchip: split adjust_link() in
- phylink_mac_link_{up|down}()
-Thread-Topic: [PATCH net-next] net: dsa: microchip: split adjust_link() in
- phylink_mac_link_{up|down}()
-Thread-Index: AQHWUFbgcw92ywXyck2F/RA2JBTrQqj0E/4AgAAwxYA=
-Date:   Thu, 2 Jul 2020 13:14:33 +0000
-Message-ID: <35da0b9a-e0aa-7459-a6a5-4aa3904f54cc@microchip.com>
-References: <20200702095439.1355119-1-codrin.ciubotariu@microchip.com>
- <20200702101958.GN1551@shell.armlinux.org.uk>
-In-Reply-To: <20200702101958.GN1551@shell.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-authentication-results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none
- header.from=microchip.com;
-x-originating-ip: [84.232.220.208]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 97ced4c0-0455-4f25-efa5-08d81e89dcc5
-x-ms-traffictypediagnostic: SN6PR11MB2559:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <SN6PR11MB255940415B32D6D752114DC5E76D0@SN6PR11MB2559.namprd11.prod.outlook.com>
-x-bypassexternaltag: True
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0452022BE1
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CxTEzegxaC0UJTU7PTfIfrQ2R8NASISybti5GctpeIxZdx89MqfE1O/e4t7qkwxMK54scREMHA+xJAjm/zl8508sYUlbPM35klwbS3ZQp8j2O6M+hnHO3xO8HAWsUPhJDPseMgz3QjzOqo6CU3pGePDgDL20L1TfF+AVq6i7TNDmassFsYz2PLMo+/6wwSDJ6uHtjnYb9TToMHlhBofJ1BWmuoZfiSn8FPVOO8XYI6/hfGM7ht0RxGMQstpiWSOGMcFejcybDSAyGbF29WDobC4nBwISVl7Avd2B7717+CyeQ/CIEQciTvSIq96LlsvMrPOZ1Zhkx3QfDP9Fad2F0NghtjYxPqTgbeEeEN8rbVD2B8kYP708QpjkaDLK/h9Rb5EkN/X306rdVjV0FjrK+Y3g4aIcyPtFWKLXErqu2C+veS4iyHTToeD4+ygFem8VCQsqilqgGU930eaK/x7OUA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3504.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(366004)(376002)(136003)(346002)(39860400002)(6512007)(2616005)(54906003)(316002)(76116006)(186003)(6916009)(26005)(71200400001)(6486002)(5660300002)(8676002)(86362001)(91956017)(478600001)(4326008)(8936002)(83380400001)(66946007)(31696002)(31686004)(66446008)(53546011)(66476007)(64756008)(66556008)(966005)(6506007)(2906002)(36756003)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: GJjj7I2mvLkjU7pz2A8E15Q6SakavtQlwgnA5GG91nYzzpHMAlyv3txIqIsGemTfMGJcKF/83YbKtWkjjUg6kyYANxKp2CpxuohWPRbBID/MD/c0917u/gPIf5G5+1a+fvLTQvAK1iAgmtQTy8Fvd1TQBa4FZCMwZef7+m3eA1GUwMsEY6yPumxzRoEz4uAdTSA35c26Vbk2akyk8L2L27KsC/v63ajDukqJAsCCL2RB8yDVaCsCnZrbX1wRBeLAkNRKIBBZHlNTkD0tBtG3v279ZB4WQUL5nlLKLrSP5oB6e7MN896xjv5pHNq4T79V1KLBPT0xq4TtPrSfv2tmpOejH54kQEt1NT45xrYgYMcCpM7vkUtM1kPyfhSSkfw7ambCoRDqo3ZWXgfcOY6hTh1MAK2DRmeP5nVbR6ALKB0G5IvTbd+jtacGRKSQxELnA7JT289B9iWYTxAIEbAXqFp5S7A0oh6fhsdzYhRgGT+OrJczm1gvQcreev+lGdEl
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BE730A2AF821F348848CDBDD7AD57770@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1729205AbgGBNWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 09:22:17 -0400
+Received: from out03.mta.xmission.com ([166.70.13.233]:35486 "EHLO
+        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726560AbgGBNWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 09:22:16 -0400
+Received: from in01.mta.xmission.com ([166.70.13.51])
+        by out03.mta.xmission.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.90_1)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1jqzAL-0004mh-WB; Thu, 02 Jul 2020 07:22:14 -0600
+Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=x220.xmission.com)
+        by in01.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.87)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1jqzAK-0002tm-HL; Thu, 02 Jul 2020 07:22:13 -0600
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     Matt Bennett <matt.bennett@alliedtelesis.co.nz>
+Cc:     netdev@vger.kernel.org, zbr@ioremap.net,
+        linux-kernel@vger.kernel.org,
+        Linux Containers <containers@lists.linux-foundation.org>
+References: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz>
+Date:   Thu, 02 Jul 2020 08:17:38 -0500
+In-Reply-To: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz> (Matt
+        Bennett's message of "Thu, 2 Jul 2020 12:26:30 +1200")
+Message-ID: <87h7uqukct.fsf@x220.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3504.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97ced4c0-0455-4f25-efa5-08d81e89dcc5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2020 13:14:33.4908
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tI6SeGL9+Kz4kRpi7lNxNoJyoKPTQ6aopOI0o2uXEQRIS4Z55YwU6zxpza9QDtz+D4tGeYxVUGnlw2gHA1I+9F/if9CpN4DGy7qYqDWNwPs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2559
+Content-Type: text/plain
+X-XM-SPF: eid=1jqzAK-0002tm-HL;;;mid=<87h7uqukct.fsf@x220.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX19v+BspXknwer4bSqp3IVqIJsTE2IxbID4=
+X-SA-Exim-Connect-IP: 68.227.160.95
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa05.xmission.com
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=8.0 tests=ALL_TRUSTED,BAYES_00,
+        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,XMNoVowels,XMSubLong,
+        XM_B_SpammyTLD autolearn=disabled version=3.4.2
+X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+        * -3.0 BAYES_00 BODY: Bayes spam probability is 0 to 1%
+        *      [score: 0.0000]
+        *  1.5 XMNoVowels Alpha-numberic number with no vowels
+        *  0.7 XMSubLong Long Subject
+        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
+        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
+        *      [sa05 0; Body=1 Fuz1=1 Fuz2=1]
+        *  1.0 XM_B_SpammyTLD Contains uncommon/spammy TLD
+X-Spam-DCC: ; sa05 0; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: ;Matt Bennett <matt.bennett@alliedtelesis.co.nz>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 835 ms - load_scoreonly_sql: 0.07 (0.0%),
+        signal_user_changed: 11 (1.4%), b_tie_ro: 10 (1.2%), parse: 1.12
+        (0.1%), extract_message_metadata: 18 (2.1%), get_uri_detail_list: 1.82
+        (0.2%), tests_pri_-1000: 7 (0.8%), tests_pri_-950: 1.38 (0.2%),
+        tests_pri_-900: 1.14 (0.1%), tests_pri_-90: 258 (31.0%), check_bayes:
+        239 (28.6%), b_tokenize: 7 (0.8%), b_tok_get_all: 7 (0.8%),
+        b_comp_prob: 2.5 (0.3%), b_tok_touch_all: 218 (26.1%), b_finish: 1.15
+        (0.1%), tests_pri_0: 437 (52.4%), check_dkim_signature: 1.20 (0.1%),
+        check_dkim_adsp: 4.1 (0.5%), poll_dns_idle: 69 (8.2%), tests_pri_10:
+        2.2 (0.3%), tests_pri_500: 94 (11.2%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH 0/5] RFC: connector: Add network namespace awareness
+X-Spam-Flag: No
+X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMDIuMDcuMjAyMCAxMzoxOSwgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IGFkbWluIHdyb3Rl
-Og0KPiBFWFRFUk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVu
-dHMgdW5sZXNzIHlvdSBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUNCj4gDQo+IE9uIFRodSwgSnVs
-IDAyLCAyMDIwIGF0IDEyOjU0OjM5UE0gKzAzMDAsIENvZHJpbiBDaXVib3Rhcml1IHdyb3RlOg0K
-Pj4gVGhlIERTQSBzdWJzeXN0ZW0gbW92ZWQgdG8gcGh5bGluayBhbmQgYWRqdXN0X2xpbmsoKSBi
-ZWNhbWUgZGVwcmVjYXRlZCBpbg0KPj4gdGhlIHByb2Nlc3MuIFRoaXMgcGF0Y2ggcmVtb3ZlcyBh
-ZGp1c3RfbGluayBmcm9tIHRoZSBLU1ogRFNBIHN3aXRjaGVzIGFuZA0KPj4gYWRkcyBwaHlsaW5r
-X21hY19saW5rX3VwKCkgYW5kIHBoeWxpbmtfbWFjX2xpbmtfZG93bigpLg0KPj4NCj4+IFNpZ25l
-ZC1vZmYtYnk6IENvZHJpbiBDaXVib3Rhcml1IDxjb2RyaW4uY2l1Ym90YXJpdUBtaWNyb2NoaXAu
-Y29tPg0KPiANCj4gRm9yIHRoZSBjb2RlIF90cmFuc2Zvcm1hdGlvbl8gdGhhdCB0aGUgcGF0Y2gg
-ZG9lczoNCj4gDQo+IFJldmlld2VkLWJ5OiBSdXNzZWxsIEtpbmcgPHJtaytrZXJuZWxAYXJtbGlu
-dXgub3JnLnVrPg0KPiANCj4gYXMgaXQgaXMgZXF1aXZhbGVudC4gIEhvd2V2ZXIsIGZvciBhIGRl
-ZXBlciByZXZpZXcgb2Ygd2hhdCBpcyBnb2luZw0KPiBvbiBoZXJlLCBJJ3ZlIGEgcXVlc3Rpb246
-DQo+IA0KPiAkIGdyZXAgbGl2ZV9wb3J0cyAqDQo+IGtzejg3OTUuYzogICAgICAgICBkZXYtPmxp
-dmVfcG9ydHMgPSBkZXYtPmhvc3RfbWFzazsNCj4ga3N6ODc5NS5jOiAgICAgICAgICAgICAgICAg
-ZGV2LT5saXZlX3BvcnRzIHw9IEJJVChwb3J0KTsNCj4ga3N6X2NvbW1vbi5oOiAgICAgIHUxNiBs
-aXZlX3BvcnRzOw0KPiBrc3pfY29tbW9uLmM6ICAgICAgICAgICAgICBkZXYtPmxpdmVfcG9ydHMg
-Jj0gfigxIDw8IHBvcnQpOw0KPiBrc3pfY29tbW9uLmM6ICAgICAgICAgICAgICBkZXYtPmxpdmVf
-cG9ydHMgfD0gKDEgPDwgcG9ydCkgJiBkZXYtPm9uX3BvcnRzOw0KPiBrc3pfY29tbW9uLmM6ICAg
-ICAgZGV2LT5saXZlX3BvcnRzICY9IH4oMSA8PCBwb3J0KTsNCj4ga3N6OTQ3Ny5jOiAgICAgICAg
-IGRldi0+bGl2ZV9wb3J0cyA9IGRldi0+aG9zdF9tYXNrOw0KPiBrc3o5NDc3LmM6ICAgICAgICAg
-ICAgICAgICBkZXYtPmxpdmVfcG9ydHMgfD0gKDEgPDwgcG9ydCk7DQo+IA0KPiBUaGVzZSBhcmUg
-dGhlIG9ubHkgcmVmZXJlbmNlcyB0byBkZXYtPmxpdmVfcG9ydHMsIHNvIHRoZSBwdXJwb3NlIG9m
-DQo+IGRldi0+bGl2ZV9wb3J0cyBzZWVtcyB1bmNsZWFyOyBpdCBzZWVtcyBpdCBpcyBvbmx5IHVw
-ZGF0ZWQgYnV0IG5ldmVyDQo+IHJlYWQuICBDYW4gaXQgYmUgcmVtb3ZlZCwgYWxvbmcgd2l0aCB0
-aGUgbG9ja2luZyBpbiB5b3VyIG5ldyBmdW5jdGlvbnM/DQoNClN1cmUsIEknbGwgbWFrZSBhIHBh
-dGNoIHRvIGNsZWFuIHRoaW5ncyB1cC4gSSB3aWxsIHJlc2VuZCB0aGlzIHBhdGNoIGluIA0KYSBz
-ZXJpZXMgdG8gbWFyayB0aGUgZGVwZW5kZW5jeS4NCg0KVGhhbmtzIGFuZCBiZXN0IHJlZ2FyZHMs
-DQpDb2RyaW4NCg0KPiANCj4gVGhhbmtzLg0KPiANCj4gLS0NCj4gUk1LJ3MgUGF0Y2ggc3lzdGVt
-OiBodHRwczovL3d3dy5hcm1saW51eC5vcmcudWsvZGV2ZWxvcGVyL3BhdGNoZXMvDQo+IEZUVFAg
-aXMgaGVyZSEgNDBNYnBzIGRvd24gMTBNYnBzIHVwLiBEZWNlbnQgY29ubmVjdGl2aXR5IGF0IGxh
-c3QhDQo+IA0KDQo=
+Matt Bennett <matt.bennett@alliedtelesis.co.nz> writes:
+
+> Previously the connector functionality could only be used by processes running in the
+> default network namespace. This meant that any process that uses the connector functionality
+> could not operate correctly when run inside a container. This is a draft patch series that
+> attempts to now allow this functionality outside of the default network namespace.
+>
+> I see this has been discussed previously [1], but am not sure how my changes relate to all
+> of the topics discussed there and/or if there are any unintended side effects from my draft
+> changes.
+
+Is there a piece of software that uses connector that you want to get
+working in containers?
+
+I am curious what the motivation is because up until now there has been
+nothing very interesting using this functionality.  So it hasn't been
+worth anyone's time to make the necessary changes to the code.
+
+Eric
+
+
+> Thanks.
+>
+> [1] https://marc.info/?l=linux-kernel&m=150806196728365&w=2
+>
+> Matt Bennett (5):
+>   connector: Use task pid helpers
+>   connector: Use 'current_user_ns' function
+>   connector: Ensure callback entry is released
+>   connector: Prepare for supporting multiple namespaces
+>   connector: Create connector per namespace
+>
+>  Documentation/driver-api/connector.rst |   6 +-
+>  drivers/connector/cn_proc.c            | 110 +++++++-------
+>  drivers/connector/cn_queue.c           |   9 +-
+>  drivers/connector/connector.c          | 192 ++++++++++++++++++++-----
+>  drivers/hv/hv_fcopy.c                  |   1 +
+>  drivers/hv/hv_utils_transport.c        |   6 +-
+>  drivers/md/dm-log-userspace-transfer.c |   6 +-
+>  drivers/video/fbdev/uvesafb.c          |   8 +-
+>  drivers/w1/w1_netlink.c                |  19 +--
+>  include/linux/connector.h              |  38 +++--
+>  include/net/net_namespace.h            |   4 +
+>  kernel/exit.c                          |   2 +-
+>  samples/connector/cn_test.c            |   6 +-
+>  13 files changed, 286 insertions(+), 121 deletions(-)
