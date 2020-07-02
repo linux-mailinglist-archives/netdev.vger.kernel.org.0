@@ -2,103 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94583212540
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:53:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A2A02125BC
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 16:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729479AbgGBNxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 09:53:47 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:58892 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729051AbgGBNxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 09:53:46 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: andrzej.p)
-        with ESMTPSA id 74A4F2A0785
-Subject: Re: [PATCH v7 00/11] Stop monitoring disabled devices
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        kernel@collabora.com
-References: <20200629122925.21729-1-andrzej.p@collabora.com>
- <aab40d90-3f72-657c-5e14-e53a34c4b420@linaro.org>
- <3d03d1a2-ac06-b69b-93cb-e0203be62c10@collabora.com>
- <47111821-d691-e71d-d740-e4325e290fa4@linaro.org>
- <be9b7ee3-cad0-e462-126d-08de9b226285@collabora.com>
- <4353a939-3f5e-8369-5bc0-ad8162b5ffc7@linaro.org>
- <a531d80f-afd1-2dec-6c77-ed984e97595c@collabora.com>
- <db1ff4e1-cbf8-89b3-5d64-b91a1fd88a41@linaro.org>
- <73942aea-ae79-753c-fe90-d4a99423d548@collabora.com>
- <374dddd9-b600-3a30-d6c3-8cfcefc944d9@linaro.org>
-From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Message-ID: <5a28deb7-f307-8b03-faad-ab05cb8095d1@collabora.com>
-Date:   Thu, 2 Jul 2020 15:53:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1729667AbgGBOKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 10:10:39 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:63904 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729263AbgGBOKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 10:10:38 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 062Dlgpr030670;
+        Thu, 2 Jul 2020 07:10:36 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=mG7Lj/OAXEmbVOmpGLAcPSJm4i2CNoivC+4lVUHnOoo=;
+ b=OYDxeUcaZrlkO/DzcBdzj9vjqP51U6q+SmiqfKmbspPDh4rFRHcvnxr5m35QH64tk92F
+ IddtI2ezoJsJpg9JICk3KwfwedSiMar6Mhry/J21sFiNrV3ci6d9o3ZSx9qEu9DhlZ5+
+ 3T6lG6nlwquiC5Cq30qCeCCYTs+SczwlHbuMvWW36zz+kYLitOf1OaY2h7FaZQg75GZQ
+ Bb/UcWoZhsSlZDAXmHTsOHsvt/2gUAcZw//LXbjppxBlZR4jPfbAgFiuNX2C7INLSjKa
+ RT5+ff55yRTTncfS8TNVKfBnpjSmRpsBjIJ6NFXUXcdb9qyUON13kefdiaaUalJwXrnV Ag== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 31x5mnwj8u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 02 Jul 2020 07:10:36 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 2 Jul
+ 2020 07:10:34 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 2 Jul 2020 07:10:34 -0700
+Received: from sudarshana-rh72.punelab.qlogic.com. (unknown [10.30.45.63])
+        by maili.marvell.com (Postfix) with ESMTP id E5C5C3F703F;
+        Thu,  2 Jul 2020 07:10:32 -0700 (PDT)
+From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
+        <irusskikh@marvell.com>, <mkalderon@marvell.com>
+Subject: [PATCH net-next 0/4] bnx2x: Perform IdleChk dump.
+Date:   Thu, 2 Jul 2020 19:40:25 +0530
+Message-ID: <1593699029-18937-1-git-send-email-skalluru@marvell.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-In-Reply-To: <374dddd9-b600-3a30-d6c3-8cfcefc944d9@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-02_09:2020-07-02,2020-07-02 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+Idlechk test verifies that the chip is in idle state. If there are any
+errors, Idlechk dump would capture the same. This would help in debugging
+the device related issues.
+The patch series adds driver support for dumping IdleChk data during the
+debug dump collection.
+Patch (1) adds register definitions required in this implementation.
+Patch (2) adds database of self test checks (registers and predicates).
+Patch (3) adds the implementation for Idlechk test.
+Patch (4) adds driver changes to invoke Idlechk implementation.
 
-<snip>
 
->>>>>
->>>>> I did reproduce:
->>>>>
->>>>> v5.8-rc3 + series => imx6 hang at boot time
->>>>> v5.8-rc3 => imx6 boots correctly
-> 
-> So finally I succeeded to reproduce it on my imx7 locally. The sensor
-> was failing to initialize for another reason related to the legacy
-> cooling device, this is why it is not appearing on the imx7.
-> 
-> I can now git-bisect :)
-> 
+Sudarsana Reddy Kalluru (4):
+  bnx2x: Add Idlechk related register definitions.
+  bnx2x: Populate database for Idlechk tests.
+  bnx2x: Add support for idlechk tests.
+  bnx2x: Perform Idlechk dump during the debug collection.
 
-That would be very kind of you, thank you!
+ drivers/net/ethernet/broadcom/bnx2x/Makefile       |    2 +-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x.h        |    3 +
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   |    9 +
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h    |   78 +-
+ .../net/ethernet/broadcom/bnx2x/bnx2x_self_test.c  | 3184 ++++++++++++++++++++
+ 5 files changed, 3273 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/ethernet/broadcom/bnx2x/bnx2x_self_test.c
 
-Andrzej
+-- 
+1.8.3.1
+
