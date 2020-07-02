@@ -2,115 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14FE8212032
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:42:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70C96212038
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:44:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728280AbgGBJmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 05:42:39 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:44466 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726555AbgGBJmj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 05:42:39 -0400
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 4892B20B4908;
-        Thu,  2 Jul 2020 02:42:37 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4892B20B4908
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1593682958;
-        bh=yeT/YZEI04dXnABBuQyfYr8dFBGFkuBpRxXtbalM76w=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=iVEP/cK8yHqJpsyxDMO8ZfwOPci1aNNYB2lNs9aXM0g7tBc/CzUiFarfASqlIE090
-         PkUMLNcGk2mtccCo8JMlYKzzxO1O4t4A+yGeYP8TA1WGZYr1sjWf4v3UCABSDo3wzo
-         LFG2zjSzDbgQxIK6NCjiRbAmalBYEFWbM6CziNfo=
-Received: by mail-qv1-f41.google.com with SMTP id dm12so12334814qvb.9;
-        Thu, 02 Jul 2020 02:42:37 -0700 (PDT)
-X-Gm-Message-State: AOAM530jsiKX0HB6+pM5RljyWu/oqgBjefxSeUnVjP3ZamkzbhUB3yye
-        PGZt9BFZzZk9pYH8uX2Sr2vG5uSw8RmXRTQlDXg=
-X-Google-Smtp-Source: ABdhPJzleLEvjXKmUACvkuYWy6CKyhad1vLj/r7ezZendZV2h4CwO3Ilr5pEHllRzgRwvP1cfZmYJ5QD88guKY/H3pA=
-X-Received: by 2002:ad4:4672:: with SMTP id z18mr29940458qvv.104.1593682956992;
- Thu, 02 Jul 2020 02:42:36 -0700 (PDT)
+        id S1728213AbgGBJoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 05:44:05 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:34068 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726805AbgGBJoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 05:44:04 -0400
+Received: by mail-io1-f71.google.com with SMTP id i5so8438081iow.1
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 02:44:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=WAGEeWPrSaptqzW7yLUHgWJcljJ0RDXieWtaFOLwK8I=;
+        b=uJlclNVC9laxbl+DaPbIrWQCcD4s/qm4sazm07p3KZVyAYInmpTNTKMhTCEIPyZamK
+         9GMqTh2K5WksLQOeQorkAVYkotuFG/y7RGlnZmtvynqAswWEdot4KcWf3JcqH37YJuBG
+         ZPmBqDNVrIBSYbHONeDZ7kp+lxhE/yLxOj9y1lZO1CDj6znCQdZlj7EKpEavyiS7/Yzn
+         xrt4KlLwbZpOAD9p/gD/K9m/nzCb6mZ61Du7yMCD90Ra9mz9asrSoDiglTJgMstRHSZ9
+         x9WOdXTw3SClORSQGGOS6pxyv+LTIjNSiiSPjRStwC0SIsiN6vK+6C6Z7ilLxtlyGdHf
+         E1zw==
+X-Gm-Message-State: AOAM531NfJ3bCl0qOw+WM3wE8TU1+Jz5Hf/oFPU6y2h9pRl4bwbcRcww
+        dhPCED56UZkJt8FtEylHpzUg2pwsUsCqraWlvNEcvHt4jj6M
+X-Google-Smtp-Source: ABdhPJwvaUUKgDGCjjnU0hGKeYaZG0U1RMrOv2um1OcV2qBfkIsnEkJXuKSw91FQIuKR1yDl7VlRG1dip2i6bT4m4jmzbSomUx1N
 MIME-Version: 1.0
-References: <20200630180930.87506-1-mcroce@linux.microsoft.com>
- <20200630180930.87506-3-mcroce@linux.microsoft.com> <20200702073104.GA496703@apalos.home>
-In-Reply-To: <20200702073104.GA496703@apalos.home>
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-Date:   Thu, 2 Jul 2020 11:42:01 +0200
-X-Gmail-Original-Message-ID: <CAFnufp09fvsyDxqJB0Hx0ag35h-XHrQt4=022cnBnRH_6iVD5g@mail.gmail.com>
-Message-ID: <CAFnufp09fvsyDxqJB0Hx0ag35h-XHrQt4=022cnBnRH_6iVD5g@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/4] mvpp2: use page_pool allocator
-To:     ilias.apalodimas@linaro.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Sven Auhagen <sven.auhagen@voleatech.de>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Stefan Chulski <stefanc@marvell.com>,
-        Marcin Wojtas <mw@semihalf.com>, maxime.chevallier@bootlin.com,
-        antoine.tenart@bootlin.com, thomas.petazzoni@bootlin.com
+X-Received: by 2002:a02:3c08:: with SMTP id m8mr1134561jaa.107.1593683043766;
+ Thu, 02 Jul 2020 02:44:03 -0700 (PDT)
+Date:   Thu, 02 Jul 2020 02:44:03 -0700
+In-Reply-To: <000000000000add83505a8e38c4c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b559df05a9723fcf@google.com>
+Subject: Re: WARNING: suspicious RCU usage in ctrl_cmd_new_lookup
+From:   syzbot <syzbot+3025b9294f8cb0ede850@syzkaller.appspotmail.com>
+To:     bjorn.andersson@linaro.org, colin.king@canonical.com,
+        dan.carpenter@oracle.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 9:31 AM <ilias.apalodimas@linaro.org> wrote:
->
-> Hi Matteo,
->
-> Thanks for working on this!
->
+syzbot has bisected this bug to:
 
-:)
+commit e42671084361302141a09284fde9bbc14fdd16bf
+Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Date:   Thu May 7 12:53:06 2020 +0000
 
-> On Tue, Jun 30, 2020 at 08:09:28PM +0200, Matteo Croce wrote:
-> > From: Matteo Croce <mcroce@microsoft.com>
-> > -static void *mvpp2_frag_alloc(const struct mvpp2_bm_pool *pool)
-> > +/* Returns a struct page if page_pool is set, otherwise a buffer */
-> > +static void *mvpp2_frag_alloc(const struct mvpp2_bm_pool *pool,
-> > +                           struct page_pool *page_pool)
-> >  {
-> > +     if (page_pool)
-> > +             return page_pool_alloc_pages(page_pool,
-> > +                                          GFP_ATOMIC | __GFP_NOWARN);
->
-> page_pool_dev_alloc_pages() can set these flags for you, instead of explicitly
-> calling them
->
+    net: qrtr: Do not depend on ARCH_QCOM
 
-Ok
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=131c54a7100000
+start commit:   7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=109c54a7100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=171c54a7100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d195fe572fb15312
+dashboard link: https://syzkaller.appspot.com/bug?extid=3025b9294f8cb0ede850
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11802cf9100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144acc03100000
 
-> >
-> > +     if (priv->percpu_pools) {
-> > +             err = xdp_rxq_info_reg(&rxq->xdp_rxq_short, port->dev, rxq->id);
-> > +             if (err < 0)
-> > +                     goto err_free_dma;
-> > +
-> > +             err = xdp_rxq_info_reg(&rxq->xdp_rxq_long, port->dev, rxq->id);
-> > +             if (err < 0)
-> > +                     goto err_unregister_rxq_short;
-> > +
-> > +             /* Every RXQ has a pool for short and another for long packets */
-> > +             err = xdp_rxq_info_reg_mem_model(&rxq->xdp_rxq_short,
-> > +                                              MEM_TYPE_PAGE_POOL,
-> > +                                              priv->page_pool[rxq->logic_rxq]);
-> > +             if (err < 0)
-> > +                     goto err_unregister_rxq_short;
-> > +
-> > +             err = xdp_rxq_info_reg_mem_model(&rxq->xdp_rxq_long,
-> > +                                              MEM_TYPE_PAGE_POOL,
-> > +                                              priv->page_pool[rxq->logic_rxq +
-> > +                                                              port->nrxqs]);
-> > +             if (err < 0)
-> > +                     goto err_unregister_rxq_long;
->
-> Since mvpp2_rxq_init() will return an error shouldn't we unregister the short
-> memory pool as well?
->
+Reported-by: syzbot+3025b9294f8cb0ede850@syzkaller.appspotmail.com
+Fixes: e42671084361 ("net: qrtr: Do not depend on ARCH_QCOM")
 
-Ok, I'll add another label like:
-
-err_unregister_mem_rxq_short:
-        xdp_rxq_info_unreg_mem_model(&rxq->xdp_rxq_short);
-
--- 
-per aspera ad upstream
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
