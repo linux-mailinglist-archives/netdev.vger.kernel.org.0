@@ -2,115 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82FBF21206E
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:57:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A863212072
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:58:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727900AbgGBJ5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 05:57:54 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:41521 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726862AbgGBJ5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 05:57:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593683872;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=f3kfuWYGlC50GXlnOMv1+hQ30xOg3rl9x08/Uls8sYc=;
-        b=MLD1NWq1U3KBlT2A4nqK7J9NLbQ5Kic5VDFzPlbXr10D9fLarO7CYgrt81gfPSzhC1+88g
-        nQmZ/soSfNjP3SXlsfsUrxJWkD9JIr2VoZaYm0dTJY/CoGkG3O2M4RGs8e8J/Ps1q60KHr
-        bJ0G5WxreMHDuVifLzvJxYy1BNRlC4E=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-156-gOMT12j2M0uHzFLoihjT3A-1; Thu, 02 Jul 2020 05:57:50 -0400
-X-MC-Unique: gOMT12j2M0uHzFLoihjT3A-1
-Received: by mail-wm1-f71.google.com with SMTP id g6so21929638wmk.4
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 02:57:49 -0700 (PDT)
+        id S1728213AbgGBJ6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 05:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33484 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726862AbgGBJ6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 05:58:22 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6433CC08C5C1;
+        Thu,  2 Jul 2020 02:58:22 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id k18so13470126ybm.13;
+        Thu, 02 Jul 2020 02:58:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Q4Q8t7uL35sXBBCoF+XW2mk0lJ0GhsK/RQJ/uVmPN1Y=;
+        b=JAQYYi7FuUZDX5GDNMeehGaTB6YVByiX8/Z2IOkFvMFiNU/13MA8qwVNa4ZS36kKr1
+         RlIAznCGEiPOPo8DZukWbd4+/sMY+JXYlUd6PzL042Fxs58UsSSic+UY2WmjHWavgual
+         FS+PaKIHUYiMO8hBurOd4E7FhF/u7iVVhhaGZNqB2NJXbsNDGuyC/Pz5a2mDfODXNVxi
+         oW95lwxOLhJHy5Qovd6scaaUeUNUXWMjaTnEL7dCsHbj6dYBEVpRbvYBvwaKp1nkmli4
+         ahVwEtUfxOTglZvgCEP/GDCALpArd1mxTNH4ez8bLJIkQ/FxRBybe0KTsHiuLRIgUql9
+         vsmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f3kfuWYGlC50GXlnOMv1+hQ30xOg3rl9x08/Uls8sYc=;
-        b=O4KORsPhanTdAJSoorR1cSS0+z3g0dz2+FWa/B+3s9pg+VXiUZ0ZFc3F/8YIeHAdO2
-         ENVZEHJkO3s7GwGmZp2VIA3Vu14HGI5/LRYx4G71une1fEoONivoIxjGy0pVEBld7o2D
-         Y0BQaN4fFS/kMMnnmya8cLOaLqfm8171WMB02aLjQsDT/L+vSmJlxaKc0e+j6ritHaNu
-         ZGfMlv/CDiS1Jgi6SmhZfeoso3XkOLdnQ+XzkpEARez8Gf3/3iALGfmtLVbrKSmEJXZs
-         zgwK/w3rKEmbkEAft7JcNRtIIo+Dfg6ClXHchQoHw6yOOECZdUd8RqP/i5pm0LK+JW3F
-         cHlg==
-X-Gm-Message-State: AOAM5309AYr2cehboXoPVEvuwQgtcA43xr/uYPlJpsa3ztS/mW6FYLmi
-        PTMXwFsYayUFQm3O+mpjYU+Uap2M06dV/jzUIOJB5yyfNodrmdL5q3hHidrJRC51lHKF312CQU3
-        EAmc1dtO7QtIgeqCI
-X-Received: by 2002:a5d:6990:: with SMTP id g16mr22438329wru.131.1593683868908;
-        Thu, 02 Jul 2020 02:57:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyIuBx0g5KUbZxdFPgRpnvrt+J1lGK6D/nDrSxbG9TMyl4amZhM6O1UQIvOhDuZDNvWv5SsHg==
-X-Received: by 2002:a5d:6990:: with SMTP id g16mr22438319wru.131.1593683868709;
-        Thu, 02 Jul 2020 02:57:48 -0700 (PDT)
-Received: from pc-2.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
-        by smtp.gmail.com with ESMTPSA id c2sm10490089wrv.47.2020.07.02.02.57.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2020 02:57:48 -0700 (PDT)
-Date:   Thu, 2 Jul 2020 11:57:46 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] ip link: initial support for bareudp devicesy
-Message-ID: <20200702095746.GA3913@pc-2.home>
-References: <f3401f1acfce2f472abe6f89fe059a5fade148a3.1593630794.git.gnault@redhat.com>
- <20200702091539.GA2793@martin-VirtualBox>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Q4Q8t7uL35sXBBCoF+XW2mk0lJ0GhsK/RQJ/uVmPN1Y=;
+        b=FDEtWbODi2pZIAMoiPo85/MMHFZpabVX0WwU+hu6D0zCsc7W0vpzn99GWdBAYV0Eah
+         h3msGFuRji/yGElYqTXqr2Twhx1myWA7IW94ZNXyDzcDrgIcczmtKothMGn3cW1ZXmmg
+         1QdAdhLYqkmHbKJUfSK7DmvOgk18shXDNcknrkriYWMm6bv1/Avk+i268gfQ4jfqR8V5
+         +1XU5T2tz8SylTJjbwY9CqHcPyyXjMvA5ZyKs74tJk23g+BrZF8SdQceMwt7EVhdkuDB
+         0gW8E8p7dE0Y44c8Bab79oURw6nFN5rXdPtS3WZr67JRc8s/H8JrIY/NmIf4MlLEVl9y
+         v9Bg==
+X-Gm-Message-State: AOAM530mcNORXD9yz7JYvK3fu8v7iMGgEBnSrwCWrvaI/RzvXxrII1xm
+        Rk7uulzwMAuuZ9oYF48ZRzu5suzH5tvFpvYqMQ==
+X-Google-Smtp-Source: ABdhPJz13ndccTnHFXkGvxoOr5/ecUVDsDLiLXqJ4ALKVf9Z+Kto2x87ZHtWCLuLv536HeWa0R4MA4wlwAbUYv2xofQ=
+X-Received: by 2002:a25:c507:: with SMTP id v7mr46475765ybe.306.1593683901579;
+ Thu, 02 Jul 2020 02:58:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200702091539.GA2793@martin-VirtualBox>
+References: <20200702021646.90347-1-danieltimlee@gmail.com>
+ <20200702021646.90347-3-danieltimlee@gmail.com> <CAEf4BzbtsHdRWWu__ri17e8PMRW-RcNc1g3okH8+U9RW=BVdig@mail.gmail.com>
+In-Reply-To: <CAEf4BzbtsHdRWWu__ri17e8PMRW-RcNc1g3okH8+U9RW=BVdig@mail.gmail.com>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Thu, 2 Jul 2020 18:58:01 +0900
+Message-ID: <CAEKGpzhDjReJmmWXdtDct3KiuMzk127FdBbz4eM4jNakcsNxQQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/4] samples: bpf: refactor BPF map in map test
+ with libbpf
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 02, 2020 at 02:45:39PM +0530, Martin Varghese wrote:
-> On Wed, Jul 01, 2020 at 09:45:04PM +0200, Guillaume Nault wrote:
-> > +		} else if (matches(*argv, "ethertype") == 0)  {
-> > +			NEXT_ARG();
-> > +			check_duparg(&attrs, IFLA_BAREUDP_ETHERTYPE,
-> > +				     "ethertype", *argv);
-> > +			if (ll_proto_a2n(&ethertype, *argv))
-> Does this function takes care of mpls proto names ?
-> 
-> The original idea of bareudp is to allow even reserved ethertypes.Hence i think we
-> must take ethertype in hex aswell
+On Thu, Jul 2, 2020 at 1:26 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Jul 1, 2020 at 7:17 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+> >
+> > From commit 646f02ffdd49 ("libbpf: Add BTF-defined map-in-map
+> > support"), a way to define internal map in BTF-defined map has been
+> > added.
+> >
+> > Instead of using previous 'inner_map_idx' definition, the structure to
+> > be used for the inner map can be directly defined using array directive.
+> >
+> >     __array(values, struct inner_map)
+> >
+> > This commit refactors map in map test program with libbpf by explicitly
+> > defining inner map with BTF-defined format.
+> >
+> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> > ---
+> >  samples/bpf/Makefile               |  2 +-
+> >  samples/bpf/test_map_in_map_kern.c | 85 +++++++++++++++---------------
+> >  samples/bpf/test_map_in_map_user.c | 53 +++++++++++++++++--
+> >  3 files changed, 91 insertions(+), 49 deletions(-)
+> >
+>
+> [...]
+>
+> > -       if (load_bpf_file(filename)) {
+> > -               printf("%s", bpf_log_buf);
+> > -               return 1;
+> > +       prog = bpf_object__find_program_by_name(obj, "trace_sys_connect");
+> > +       if (libbpf_get_error(prog)) {
+>
+> still wrong, just `if (!prog)`
+>
 
-ll_proto_a2n() handles both symbolic and numeric ethertypes.
+Oops, my bad.
+Will fix right away.
 
-> > +				invarg("ethertype", *argv);
-> > +		} else if (matches(*argv, "srcportmin") == 0) {
-> > +			NEXT_ARG();
-> > +			check_duparg(&attrs, IFLA_BAREUDP_SRCPORT_MIN,
-> > +				     "srcportmin", *argv);
-> > +			if (get_u16(&srcportmin, *argv, 0))
-> > +				invarg("srcportmin", *argv);
-> > +		} else if (matches(*argv, "multiproto") == 0) {
-> > +			check_duparg(&attrs, IFLA_BAREUDP_MULTIPROTO_MODE,
-> > +				     *argv, *argv);
-> > +			multiproto = true;
-> > +		} else if (matches(*argv, "nomultiproto") == 0) {
-> do we need nomultiproto flag. Is it redundant
+Thanks for your time and effort for the review.
+Daniel.
 
-It allows users to exlicitely disable multiproto without having to rely
-on default values. Also nomultiproto appears in the detailed output, so
-it should be usable as input.
-
-> > +	if (tb[IFLA_BAREUDP_MULTIPROTO_MODE])
-> > +		print_bool(PRINT_ANY, "multiproto", "multiproto ", true);
-> > +	else
-> > +		print_bool(PRINT_ANY, "multiproto", "nomultiproto ", false);
-> Comments from stephen@networkplumber.org on the first version patch is given below
-> 
-> One of the unwritten rules of ip commands is that the show format
-> should match the command line arguments.  In this case extmode is
-> really a presence flag not a boolean. best to print that with
-> json null command.
-
-The detailed output prints either "multiproto" or "nomultiproto". Both
-keywords are accepted as configuration input. I can't see any deviation
-from the unwritten rule here.
-
+> > +               printf("finding a prog in obj file failed\n");
+> > +               goto cleanup;
+> > +       }
+> > +
+>
+> [...]
