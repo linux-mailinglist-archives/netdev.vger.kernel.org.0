@@ -2,263 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE61C212C50
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 20:26:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CABB212C8D
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 20:53:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728015AbgGBS0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 14:26:01 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:17004 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727005AbgGBS0A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 14:26:00 -0400
+        id S1726029AbgGBSxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 14:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725878AbgGBSxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 14:53:06 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8967C08C5C1
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 11:53:05 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id h22so12906335pjf.1
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 11:53:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1593714360; x=1625250360;
-  h=date:from:to:subject:message-id:references:mime-version:
-   in-reply-to;
-  bh=jLJQ9NuVygNNRcAPap0ICuY1A6zLkRPc2aHxxOZMLNc=;
-  b=Bn04Gr3BvCal+J+zvGCbb48FgninblZOYSr/Qt1aYgQ5Nx5T/oQTfegb
-   bK8rj3X+OpNHAPDrR1p7VC0yAegLkvWTtoEO5LIoWb+SMrs0Mxfw0oB5n
-   tC5WGmyGyWE/Xk8fQhhzMauX7TQaiTlzzB8NRtUk/HPDwbOxjovpOsZQ4
-   w=;
-IronPort-SDR: 9K0UaovTj6pXWTvQUqHP8tf1CyImeNnAp5dgeU8Ek2iag7xWzdGj816eXt/y4qO4q0g3EatLKK
- YauVToN5kJOg==
-X-IronPort-AV: E=Sophos;i="5.75,305,1589241600"; 
-   d="scan'208";a="55693820"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1a-16acd5e0.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 02 Jul 2020 18:25:57 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1a-16acd5e0.us-east-1.amazon.com (Postfix) with ESMTPS id 2B3EAA1FEE;
-        Thu,  2 Jul 2020 18:25:49 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 2 Jul 2020 18:25:30 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 2 Jul 2020 18:25:30 +0000
-Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Thu, 2 Jul 2020 18:25:29 +0000
-Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id E9DAC40844; Thu,  2 Jul 2020 18:25:29 +0000 (UTC)
-Date:   Thu, 2 Jul 2020 18:25:29 +0000
-From:   Anchal Agarwal <anchalag@amazon.com>
-To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
-        <jgross@suse.com>, <linux-pm@vger.kernel.org>,
-        <linux-mm@kvack.org>, <kamatam@amazon.com>,
-        <sstabellini@kernel.org>, <konrad.wilk@oracle.com>,
-        <roger.pau@citrix.com>, <axboe@kernel.dk>, <davem@davemloft.net>,
-        <rjw@rjwysocki.net>, <len.brown@intel.com>, <pavel@ucw.cz>,
-        <peterz@infradead.org>, <eduval@amazon.com>, <sblbir@amazon.com>,
-        <anchalag@amazon.com>, <xen-devel@lists.xenproject.org>,
-        <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <dwmw@amazon.co.uk>,
-        <benh@kernel.crashing.org>
-Subject: [PATCH v2 02/11] xenbus: add freeze/thaw/restore callbacks support
-Message-ID: <20200702182529.GA3908@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-References: <cover.1593665947.git.anchalag@amazon.com>
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=URd915rQSgqAfDLKyjrPsB58MLy827wyrlr6KMAyZXQ=;
+        b=a0ZAZ77nVFnJEFPgPGeZrzjaITBubxP0ADvb/MwF0MhpzXwCE+yp4qDcLzkQA23f2m
+         bgAU5LTcmc4ePPfp8beuTEqHTiJThBbUi9HjYv6xm6A9OiAurNdTlyKvV8jBSuiBME6x
+         cDjcqrhDiNv0mcrX499UhJ4rx6NVRbmyiVbfz1LHJmnZWYVH57l/or/p/Cmek1KA8H1I
+         5r++kdYx2B0V7K/UKfvL+XZpuMgDOuef+UE4iBR0k5PlwE1tiOpylaza4lm4s5xhJRKc
+         BdfCJ/60jKTYdstgnPRX4GLiRuJYhoTKMfuO6wA5OotF5ufl0n6eaXzkyerdgkeHQIhr
+         qeWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=URd915rQSgqAfDLKyjrPsB58MLy827wyrlr6KMAyZXQ=;
+        b=n5dqJeA3X7Hz9Z4t2pZendgDqcsQl+BIWZW2zdY97DluOyqeFoCoqSTbwpd24QllPO
+         z9RJkIetEi+rxhYhyAz6ecgboYKFFQjeZjSkVAA25ZnlSatHtiM0V+MTqsXOtt//fQGh
+         0W9eqS8sAF5wAn9SB4mZBMCfkw7kbNyI+yvmrSEksVumrun8yI1tViy8Sp/X8fU5VG7+
+         2LOjVzBPGx6Ne9t594SL79JBCUj9Lhj/2qcVPauOHU9s4CU/tqxZFIMWMmsxiAg3SbmB
+         tY5VD/VpuqJykjWHbaA8HIrdU177xR13r8nnahM3EJl/SlpwINUxDYitiYBCzBLhQOZc
+         3kNg==
+X-Gm-Message-State: AOAM531vcvwnxX9J101yfPn+pNzP1XzXbgflfOoifc6TJ6Hdc2eVgTmb
+        moBa3uo+kNd9trvjTVFd1f1nTrqRzCI=
+X-Google-Smtp-Source: ABdhPJwro06a7fy1o9vIU2yt5G85sDC2JW9B7OBuo1M3uv2K+PqmmkdcOIjQbKCvJKj49N+C7LgMmw==
+X-Received: by 2002:a17:90b:30d0:: with SMTP id hi16mr35759023pjb.65.1593715985169;
+        Thu, 02 Jul 2020 11:53:05 -0700 (PDT)
+Received: from MacBookAir.linux-6brj.site ([2600:1700:727f::e])
+        by smtp.gmail.com with ESMTPSA id i128sm9823341pfe.74.2020.07.02.11.53.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jul 2020 11:53:04 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Cameron Berkenpas <cam@neo-zeon.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
+        =?UTF-8?q?Dani=C3=ABl=20Sonck?= <dsonck92@gmail.com>,
+        Zhang Qiang <qiang.zhang@windriver.com>,
+        Thomas Lamprecht <t.lamprecht@proxmox.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Zefan Li <lizefan@huawei.com>, Tejun Heo <tj@kernel.org>,
+        Roman Gushchin <guro@fb.com>
+Subject: [Patch net v2] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
+Date:   Thu,  2 Jul 2020 11:52:56 -0700
+Message-Id: <20200702185256.17917-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <cover.1593665947.git.anchalag@amazon.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Munehisa Kamata <kamatam@amazon.com>
+When we clone a socket in sk_clone_lock(), its sk_cgrp_data is
+copied, so the cgroup refcnt must be taken too. And, unlike the
+sk_alloc() path, sock_update_netprioidx() is not called here.
+Therefore, it is safe and necessary to grab the cgroup refcnt
+even when cgroup_sk_alloc is disabled.
 
-Since commit b3e96c0c7562 ("xen: use freeze/restore/thaw PM events for
-suspend/resume/chkpt"), xenbus uses PMSG_FREEZE, PMSG_THAW and
-PMSG_RESTORE events for Xen suspend. However, they're actually assigned
-to xenbus_dev_suspend(), xenbus_dev_cancel() and xenbus_dev_resume()
-respectively, and only suspend and resume callbacks are supported at
-driver level. To support PM suspend and PM hibernation, modify the bus
-level PM callbacks to invoke not only device driver's suspend/resume but
-also freeze/thaw/restore.
+sk_clone_lock() is in BH context anyway, the in_interrupt()
+would terminate this function if called there. And for sk_alloc()
+skcd->val is always zero. So it's safe to factor out the code
+to make it more readable.
 
-Note that we'll use freeze/restore callbacks even for PM suspend whereas
-suspend/resume callbacks are normally used in the case, becausae the
-existing xenbus device drivers already have suspend/resume callbacks
-specifically designed for Xen suspend. So we can allow the device
-drivers to keep the existing callbacks wihtout modification.
+The global variable 'cgroup_sk_alloc_disabled' is used to determine
+whether to take these reference counts. It is impossible to make
+the reference counting correct unless we save this bit of information
+in skcd->val. So, add a new bit there to record whether the socket
+has already taken the reference counts. This obviously relies on
+kmalloc() to align cgroup pointers to at least 4 bytes,
+ARCH_KMALLOC_MINALIGN is certainly larger than that.
 
-[Anchal Agarwal: Changelog]:
-RFC v1->v2: Refactored the callbacks code
-    v1->v2: Use dev_warn instead of pr_warn, naming/initialization
-            conventions
-Signed-off-by: Agarwal Anchal <anchalag@amazon.com>
-Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+This bug seems to be introduced since the beginning, commit
+d979a39d7242 ("cgroup: duplicate cgroup reference when cloning sockets")
+tried to fix it but not compeletely. It seems not easy to trigger until
+the recent commit 090e28b229af
+("netprio_cgroup: Fix unlimited memory leak of v2 cgroups") was merged.
+
+Fixes: bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup")
+Reported-by: Cameron Berkenpas <cam@neo-zeon.de>
+Reported-by: Peter Geis <pgwipeout@gmail.com>
+Reported-by: Lu Fengqi <lufq.fnst@cn.fujitsu.com>
+Reported-by: Daniël Sonck <dsonck92@gmail.com>
+Reported-by: Zhang Qiang <qiang.zhang@windriver.com>
+Tested-by: Cameron Berkenpas <cam@neo-zeon.de>
+Tested-by: Peter Geis <pgwipeout@gmail.com>
+Tested-by: Thomas Lamprecht <t.lamprecht@proxmox.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Zefan Li <lizefan@huawei.com>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Roman Gushchin <guro@fb.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 ---
- drivers/xen/xenbus/xenbus_probe.c | 96 ++++++++++++++++++++++++++-----
- include/xen/xenbus.h              |  3 +
- 2 files changed, 84 insertions(+), 15 deletions(-)
+ include/linux/cgroup-defs.h |  6 ++++--
+ include/linux/cgroup.h      |  4 +++-
+ kernel/cgroup/cgroup.c      | 31 +++++++++++++++++++------------
+ net/core/sock.c             |  2 +-
+ 4 files changed, 27 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/xen/xenbus/xenbus_probe.c b/drivers/xen/xenbus/xenbus_probe.c
-index 38725d97d909..715919aacd28 100644
---- a/drivers/xen/xenbus/xenbus_probe.c
-+++ b/drivers/xen/xenbus/xenbus_probe.c
-@@ -50,6 +50,7 @@
- #include <linux/io.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-+#include <linux/suspend.h>
+diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
+index 52661155f85f..4f1cd0edc57d 100644
+--- a/include/linux/cgroup-defs.h
++++ b/include/linux/cgroup-defs.h
+@@ -790,7 +790,8 @@ struct sock_cgroup_data {
+ 	union {
+ #ifdef __LITTLE_ENDIAN
+ 		struct {
+-			u8	is_data;
++			u8	is_data : 1;
++			u8	no_refcnt : 1;
+ 			u8	padding;
+ 			u16	prioidx;
+ 			u32	classid;
+@@ -800,7 +801,8 @@ struct sock_cgroup_data {
+ 			u32	classid;
+ 			u16	prioidx;
+ 			u8	padding;
+-			u8	is_data;
++			u8	no_refcnt : 1;
++			u8	is_data : 1;
+ 		} __packed;
+ #endif
+ 		u64		val;
+diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
+index 4598e4da6b1b..618838c48313 100644
+--- a/include/linux/cgroup.h
++++ b/include/linux/cgroup.h
+@@ -822,6 +822,7 @@ extern spinlock_t cgroup_sk_update_lock;
  
- #include <asm/page.h>
- #include <asm/xen/hypervisor.h>
-@@ -599,16 +600,33 @@ int xenbus_dev_suspend(struct device *dev)
- 	struct xenbus_driver *drv;
- 	struct xenbus_device *xdev
- 		= container_of(dev, struct xenbus_device, dev);
-+	bool xen_suspend = xen_is_xen_suspend();
+ void cgroup_sk_alloc_disable(void);
+ void cgroup_sk_alloc(struct sock_cgroup_data *skcd);
++void cgroup_sk_clone(struct sock_cgroup_data *skcd);
+ void cgroup_sk_free(struct sock_cgroup_data *skcd);
  
- 	DPRINTK("%s", xdev->nodename);
+ static inline struct cgroup *sock_cgroup_ptr(struct sock_cgroup_data *skcd)
+@@ -835,7 +836,7 @@ static inline struct cgroup *sock_cgroup_ptr(struct sock_cgroup_data *skcd)
+ 	 */
+ 	v = READ_ONCE(skcd->val);
  
- 	if (dev->driver == NULL)
- 		return 0;
- 	drv = to_xenbus_driver(dev->driver);
--	if (drv->suspend)
--		err = drv->suspend(xdev);
--	if (err)
--		dev_warn(dev, "suspend failed: %i\n", err);
-+	if (xen_suspend) {
-+		if (drv->suspend)
-+			err = drv->suspend(xdev);
-+	} else {
-+		if (drv->freeze) {
-+			err = drv->freeze(xdev);
-+			if (!err) {
-+				free_otherend_watch(xdev);
-+				free_otherend_details(xdev);
-+				return 0;
-+			}
-+		}
-+	}
-+
-+	if (err) {
-+		dev_warn(&xdev->dev, "%s %s failed: %d\n", xen_suspend ?
-+				"suspend" : "freeze", xdev->nodename, err);
-+		return err;
-+	}
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(xenbus_dev_suspend);
-@@ -619,6 +637,7 @@ int xenbus_dev_resume(struct device *dev)
- 	struct xenbus_driver *drv;
- 	struct xenbus_device *xdev
- 		= container_of(dev, struct xenbus_device, dev);
-+	bool xen_suspend = xen_is_xen_suspend();
+-	if (v & 1)
++	if (v & 3)
+ 		return &cgrp_dfl_root.cgrp;
  
- 	DPRINTK("%s", xdev->nodename);
+ 	return (struct cgroup *)(unsigned long)v ?: &cgrp_dfl_root.cgrp;
+@@ -847,6 +848,7 @@ static inline struct cgroup *sock_cgroup_ptr(struct sock_cgroup_data *skcd)
+ #else	/* CONFIG_CGROUP_DATA */
  
-@@ -627,23 +646,34 @@ int xenbus_dev_resume(struct device *dev)
- 	drv = to_xenbus_driver(dev->driver);
- 	err = talk_to_otherend(xdev);
- 	if (err) {
--		dev_warn(dev, "resume (talk_to_otherend) failed: %i\n", err);
-+		dev_warn(&xdev->dev, "%s (talk_to_otherend) %s failed: %d\n",
-+				xen_suspend ? "resume" : "restore",
-+				xdev->nodename, err);
- 		return err;
- 	}
+ static inline void cgroup_sk_alloc(struct sock_cgroup_data *skcd) {}
++static inline void cgroup_sk_clone(struct sock_cgroup_data *skcd) {}
+ static inline void cgroup_sk_free(struct sock_cgroup_data *skcd) {}
  
--	xdev->state = XenbusStateInitialising;
-+	if (xen_suspend) {
-+		xdev->state = XenbusStateInitialising;
-+		if (drv->resume)
-+			err = drv->resume(xdev);
-+	} else {
-+		if (drv->restore)
-+			err = drv->restore(xdev);
-+	}
+ #endif	/* CONFIG_CGROUP_DATA */
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index 1ea181a58465..dd247747ec14 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -6439,18 +6439,8 @@ void cgroup_sk_alloc_disable(void)
  
--	if (drv->resume) {
--		err = drv->resume(xdev);
--		if (err) {
--			dev_warn(dev, "resume failed: %i\n", err);
--			return err;
--		}
-+	if (err) {
-+		dev_warn(&xdev->dev, "%s %s failed: %d\n",
-+				xen_suspend ? "resume" : "restore",
-+				xdev->nodename, err);
-+		return err;
- 	}
- 
- 	err = watch_otherend(xdev);
- 	if (err) {
--		dev_warn(dev, "resume (watch_otherend) failed: %d\n", err);
-+		dev_warn(&xdev->dev, "%s (watch_otherend) %s failed: %d.\n",
-+				xen_suspend ? "resume" : "restore",
-+				xdev->nodename, err);
-+
- 		return err;
- 	}
- 
-@@ -653,8 +683,44 @@ EXPORT_SYMBOL_GPL(xenbus_dev_resume);
- 
- int xenbus_dev_cancel(struct device *dev)
+ void cgroup_sk_alloc(struct sock_cgroup_data *skcd)
  {
--	/* Do nothing */
--	DPRINTK("cancel");
-+	int err;
-+	struct xenbus_driver *drv;
-+	struct xenbus_device *xendev = to_xenbus_device(dev);
-+	bool xen_suspend = xen_is_xen_suspend();
-+
-+	if (xen_suspend) {
-+		/* Do nothing */
-+		DPRINTK("cancel");
-+		return 0;
-+	}
-+
-+	DPRINTK("%s", xendev->nodename);
-+
-+	if (dev->driver == NULL)
-+		return 0;
-+	drv = to_xenbus_driver(dev->driver);
-+	err = talk_to_otherend(xendev);
-+	if (err) {
-+		dev_warn(&xendev->dev, "thaw (talk_to_otherend) %s failed: %d.\n",
-+			xendev->nodename, err);
-+		return err;
-+	}
-+
-+	if (drv->thaw) {
-+		err = drv->thaw(xendev);
-+		if (err) {
-+			dev_warn(&xendev->dev, "thaw %s failed: %d\n", xendev->nodename, err);
-+			return err;
-+		}
-+	}
-+
-+	err = watch_otherend(xendev);
-+	if (err) {
-+		dev_warn(&xendev->dev, "thaw (watch_otherend) %s failed: %d.\n",
-+			xendev->nodename, err);
-+		return err;
-+	}
-+
- 	return 0;
+-	if (cgroup_sk_alloc_disabled)
+-		return;
+-
+-	/* Socket clone path */
+-	if (skcd->val) {
+-		/*
+-		 * We might be cloning a socket which is left in an empty
+-		 * cgroup and the cgroup might have already been rmdir'd.
+-		 * Don't use cgroup_get_live().
+-		 */
+-		cgroup_get(sock_cgroup_ptr(skcd));
+-		cgroup_bpf_get(sock_cgroup_ptr(skcd));
++	if (cgroup_sk_alloc_disabled) {
++		skcd->no_refcnt = 1;
+ 		return;
+ 	}
+ 
+@@ -6475,10 +6465,27 @@ void cgroup_sk_alloc(struct sock_cgroup_data *skcd)
+ 	rcu_read_unlock();
  }
- EXPORT_SYMBOL_GPL(xenbus_dev_cancel);
-diff --git a/include/xen/xenbus.h b/include/xen/xenbus.h
-index 5a8315e6d8a6..8da964763255 100644
---- a/include/xen/xenbus.h
-+++ b/include/xen/xenbus.h
-@@ -104,6 +104,9 @@ struct xenbus_driver {
- 	int (*remove)(struct xenbus_device *dev);
- 	int (*suspend)(struct xenbus_device *dev);
- 	int (*resume)(struct xenbus_device *dev);
-+	int (*freeze)(struct xenbus_device *dev);
-+	int (*thaw)(struct xenbus_device *dev);
-+	int (*restore)(struct xenbus_device *dev);
- 	int (*uevent)(struct xenbus_device *, struct kobj_uevent_env *);
- 	struct device_driver driver;
- 	int (*read_otherend_details)(struct xenbus_device *dev);
+ 
++void cgroup_sk_clone(struct sock_cgroup_data *skcd)
++{
++	if (skcd->val) {
++		if (skcd->no_refcnt)
++			return;
++		/*
++		 * We might be cloning a socket which is left in an empty
++		 * cgroup and the cgroup might have already been rmdir'd.
++		 * Don't use cgroup_get_live().
++		 */
++		cgroup_get(sock_cgroup_ptr(skcd));
++		cgroup_bpf_get(sock_cgroup_ptr(skcd));
++	}
++}
++
+ void cgroup_sk_free(struct sock_cgroup_data *skcd)
+ {
+ 	struct cgroup *cgrp = sock_cgroup_ptr(skcd);
+ 
++	if (skcd->no_refcnt)
++		return;
+ 	cgroup_bpf_put(cgrp);
+ 	cgroup_put(cgrp);
+ }
+diff --git a/net/core/sock.c b/net/core/sock.c
+index d832c650287c..2e5b7870e5d3 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1926,7 +1926,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+ 		/* sk->sk_memcg will be populated at accept() time */
+ 		newsk->sk_memcg = NULL;
+ 
+-		cgroup_sk_alloc(&newsk->sk_cgrp_data);
++		cgroup_sk_clone(&newsk->sk_cgrp_data);
+ 
+ 		rcu_read_lock();
+ 		filter = rcu_dereference(sk->sk_filter);
 -- 
-2.20.1
+2.27.0
 
