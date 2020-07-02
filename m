@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11285212C25
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 20:22:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 919E9212C23
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 20:22:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728159AbgGBSWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 14:22:34 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:3235 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728128AbgGBSW2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 14:22:28 -0400
+        id S1728143AbgGBSWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 14:22:33 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:16185 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726980AbgGBSW3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 14:22:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1593714148; x=1625250148;
+  t=1593714149; x=1625250149;
   h=date:from:to:subject:message-id:references:mime-version:
    in-reply-to;
-  bh=L0wmgxX+Ovp8pu3YnIUM23eFCfp/nVBG2avgRDi4ITE=;
-  b=AYpFS4qf//QSf1DXaidpas5RaihxjrIv9aA3HVGT/6cvwO7Cqvzf0WDM
-   KHGrE03l3CSOcVCMt8LLo2b3Vkpus5fGJjmvBfHBgHz+vwAYepQyb7wKK
-   ekiYo9ootHWH/4CBY9Zmu8VbRsxEnZTIMeo2Re+BZu00KiSwLR4lpqXNo
-   s=;
-IronPort-SDR: phoIWWm5EGmTpHtUjCgKWFQfuW7oI7r/z0P4Vuu21Tm6bBK93XjGosJHiCJSK1i+PGpOrR2b63
- /Mq6kJcMc4Tg==
+  bh=OCpSQw7b/4F/s9Kck7b/oFt4msmldkjBxvkPzpRtc18=;
+  b=tqqsBMxFTLUVjjRi7LL4fIe8T6OFO7AiuSCUxoXqOAbZGlai2ErSsTgO
+   nR61Bze+tCA8KDWpHqzw5NAHxgmUuA7Q3+fLpghFsRI2XKA4zcp9MbASw
+   AMt10g19LP4Dwbpkz6itQ+yHXcfWauKCG86ASe/JrWPFve9V+NuEK3Hcn
+   w=;
+IronPort-SDR: vkg/Sg8L6s4rdxfrTdTR2arayeY3g64ZdS81u9rg8mgIf0I0him3TpE5PXpud66wIReuCHA0QC
+ aagUD9PVAMEA==
 X-IronPort-AV: E=Sophos;i="5.75,305,1589241600"; 
-   d="scan'208";a="56964556"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-17c49630.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 02 Jul 2020 18:22:26 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1e-17c49630.us-east-1.amazon.com (Postfix) with ESMTPS id C81B2A188E;
-        Thu,  2 Jul 2020 18:22:18 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 2 Jul 2020 18:21:52 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 2 Jul 2020 18:21:52 +0000
+   d="scan'208";a="55693165"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-579b7f5b.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 02 Jul 2020 18:22:29 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2c-579b7f5b.us-west-2.amazon.com (Postfix) with ESMTPS id 1F1CDA18CF;
+        Thu,  2 Jul 2020 18:22:27 +0000 (UTC)
+Received: from EX13D08UEE003.ant.amazon.com (10.43.62.118) by
+ EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 2 Jul 2020 18:22:05 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
+ EX13D08UEE003.ant.amazon.com (10.43.62.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 2 Jul 2020 18:22:05 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Thu, 2 Jul 2020 18:21:52 +0000
+ (172.22.96.68) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Thu, 2 Jul 2020 18:22:05 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 05A9F40844; Thu,  2 Jul 2020 18:21:52 +0000 (UTC)
-Date:   Thu, 2 Jul 2020 18:21:52 +0000
+        id 0A86C40844; Thu,  2 Jul 2020 18:22:05 +0000 (UTC)
+Date:   Thu, 2 Jul 2020 18:22:05 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -55,9 +55,9 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <dwmw@amazon.co.uk>,
         <benh@kernel.crashing.org>
-Subject: [PATCH v2 03/11] x86/xen: Introduce new function to map
- HYPERVISOR_shared_info on Resume
-Message-ID: <3601db44e7c543016ca67327393d9ae37019e408.1593665947.git.anchalag@amazon.com>
+Subject: [PATCH v2 04/11] x86/xen: add system core suspend and resume
+ callbacks
+Message-ID: <20200702182205.GA3531@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 References: <cover.1593665947.git.anchalag@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -69,50 +69,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce a small function which re-uses shared page's PA allocated
-during guest initialization time in reserve_shared_info() and not
-allocate new page during resume flow.
-It also  does the mapping of shared_info_page by calling
-xen_hvm_init_shared_info() to use the function.
+From: Munehisa Kamata <kamatam@amazon.com>
 
-Changelog:
-v1->v2: Remove extra check for shared_info_pfn to be NULL
+Add Xen PVHVM specific system core callbacks for PM
+hibernation support. The callbacks suspend and resume
+Xen primitives like shared_info, pvclock and grant table.
+These syscore_ops are specifically for domU hibernation.
+xen_suspend() calls syscore_suspend() during Xen suspend
+operation however, during xen suspend lock_system_sleep()
+lock is taken and thus system cannot trigger hibernation.
+These system core callbacks will be called only from the
+hibernation context.
 
-Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+[Anchal Agarwal: Changelog]:
+v1->v2: Edit commit message
+        Fixed syscore_suspend() to call gnntab_suspend
+	Removed suspend mode check in syscore_suspend()/
+	syscore_resume()
+Signed-off-by: Agarwal Anchal <anchalag@amazon.com>
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 ---
- arch/x86/xen/enlighten_hvm.c | 6 ++++++
- arch/x86/xen/xen-ops.h       | 1 +
- 2 files changed, 7 insertions(+)
+ arch/x86/xen/enlighten_hvm.c |  1 +
+ arch/x86/xen/suspend.c       | 47 ++++++++++++++++++++++++++++++++++++
+ include/xen/xen-ops.h        |  2 ++
+ 3 files changed, 50 insertions(+)
 
 diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
-index 3e89b0067ff0..d91099928746 100644
+index d91099928746..bd6bf6eb2052 100644
 --- a/arch/x86/xen/enlighten_hvm.c
 +++ b/arch/x86/xen/enlighten_hvm.c
-@@ -28,6 +28,12 @@
+@@ -215,6 +215,7 @@ static void __init xen_hvm_guest_init(void)
+ 	if (xen_feature(XENFEAT_hvm_callback_vector))
+ 		xen_have_vector_callback = 1;
  
- static unsigned long shared_info_pfn;
++	xen_setup_syscore_ops();
+ 	xen_hvm_smp_init();
+ 	WARN_ON(xen_cpuhp_setup(xen_cpu_up_prepare_hvm, xen_cpu_dead_hvm));
+ 	xen_unplug_emulated_devices();
+diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+index 1d83152c761b..e8c924e93fc5 100644
+--- a/arch/x86/xen/suspend.c
++++ b/arch/x86/xen/suspend.c
+@@ -2,17 +2,22 @@
+ #include <linux/types.h>
+ #include <linux/tick.h>
+ #include <linux/percpu-defs.h>
++#include <linux/syscore_ops.h>
++#include <linux/kernel_stat.h>
  
-+void xen_hvm_map_shared_info(void)
+ #include <xen/xen.h>
+ #include <xen/interface/xen.h>
++#include <xen/interface/memory.h>
+ #include <xen/grant_table.h>
+ #include <xen/events.h>
++#include <xen/xen-ops.h>
+ 
+ #include <asm/cpufeatures.h>
+ #include <asm/msr-index.h>
+ #include <asm/xen/hypercall.h>
+ #include <asm/xen/page.h>
+ #include <asm/fixmap.h>
++#include <asm/pvclock.h>
+ 
+ #include "xen-ops.h"
+ #include "mmu.h"
+@@ -82,3 +87,45 @@ void xen_arch_suspend(void)
+ 
+ 	on_each_cpu(xen_vcpu_notify_suspend, NULL, 1);
+ }
++
++static int xen_syscore_suspend(void)
 +{
-+	xen_hvm_init_shared_info();
-+	HYPERVISOR_shared_info = __va(PFN_PHYS(shared_info_pfn));
++	struct xen_remove_from_physmap xrfp;
++	int ret;
++
++	gnttab_suspend();
++
++	xrfp.domid = DOMID_SELF;
++	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
++
++	ret = HYPERVISOR_memory_op(XENMEM_remove_from_physmap, &xrfp);
++	if (!ret)
++		HYPERVISOR_shared_info = &xen_dummy_shared_info;
++
++	return ret;
 +}
 +
- void xen_hvm_init_shared_info(void)
- {
- 	struct xen_add_to_physmap xatp;
-diff --git a/arch/x86/xen/xen-ops.h b/arch/x86/xen/xen-ops.h
-index 53b224fd6177..41e9e9120f2d 100644
---- a/arch/x86/xen/xen-ops.h
-+++ b/arch/x86/xen/xen-ops.h
-@@ -54,6 +54,7 @@ void xen_enable_sysenter(void);
- void xen_enable_syscall(void);
- void xen_vcpu_restore(void);
++static void xen_syscore_resume(void)
++{
++	/* No need to setup vcpu_info as it's already moved off */
++	xen_hvm_map_shared_info();
++
++	pvclock_resume();
++
++	gnttab_resume();
++}
++
++/*
++ * These callbacks will be called with interrupts disabled and when having only
++ * one CPU online.
++ */
++static struct syscore_ops xen_hvm_syscore_ops = {
++	.suspend = xen_syscore_suspend,
++	.resume = xen_syscore_resume
++};
++
++void __init xen_setup_syscore_ops(void)
++{
++	if (xen_hvm_domain())
++		register_syscore_ops(&xen_hvm_syscore_ops);
++}
+diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
+index 2521d6a306cd..9fa8a4082d68 100644
+--- a/include/xen/xen-ops.h
++++ b/include/xen/xen-ops.h
+@@ -41,6 +41,8 @@ u64 xen_steal_clock(int cpu);
+ int xen_setup_shutdown_event(void);
  
-+void xen_hvm_map_shared_info(void);
- void xen_hvm_init_shared_info(void);
- void xen_unplug_emulated_devices(void);
+ bool xen_is_xen_suspend(void);
++void xen_setup_syscore_ops(void);
++
+ extern unsigned long *xen_contiguous_bitmap;
  
+ #if defined(CONFIG_XEN_PV) || defined(CONFIG_ARM) || defined(CONFIG_ARM64)
 -- 
 2.20.1
 
