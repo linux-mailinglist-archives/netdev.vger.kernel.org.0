@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28599211E44
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 10:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B1C7211E49
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 10:23:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728554AbgGBIXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 04:23:12 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:55304 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728550AbgGBIXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 04:23:09 -0400
+        id S1728610AbgGBIXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 04:23:22 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:34564 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728585AbgGBIXP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 04:23:15 -0400
 Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0628MwtA042318;
-        Thu, 2 Jul 2020 03:22:58 -0500
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0628N4OM017422;
+        Thu, 2 Jul 2020 03:23:04 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1593678178;
-        bh=JPB+vJhEmEbr7wwXfNji0ZXjBCp2o1x06a2a2R9o46s=;
+        s=ti-com-17Q1; t=1593678184;
+        bh=33BgNyAskD4tPtltq/G/c+6YM0cxUZYr1ZA8AxsWt2I=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=NTB4WUvWIwRjwR4PEyvNndWbHFmbpB3bHQ/bjfZA4D488oQ/PPwZMpG8QVgVEECfl
-         GirS8Zv5wtU6kWNfh8qRzOwRe3jDX36NKWLH6IAzNFElVyTE8WUhGN+Gh+6mDie4th
-         ehSVLDopPkGuaZZq1dslHla/kif2QjPpAYyNCWHw=
-Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0628Mw7t031199
+        b=vw7QPSUTKuZgj+GGqy+fujjjqAOcGN41ewsIzNJue29GXuL9A+DLJjyd3tqBdh5BH
+         O9/Rfrx1a9YJNcgGMO2Eh2drcJN2jYNr9Sx9EIE9PySCFwDqgs8l0elpxZ+a7oBiSf
+         gqpT9osCNxXgKtOLe7vjZSZii8dZ43XKpUewjFVg=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0628N4t0031613
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 2 Jul 2020 03:22:58 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 2 Jul 2020 03:23:04 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 2 Jul
- 2020 03:22:58 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ 2020 03:23:04 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 2 Jul 2020 03:22:58 -0500
+ Frontend Transport; Thu, 2 Jul 2020 03:23:03 -0500
 Received: from a0393678ub.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628LiYO006145;
-        Thu, 2 Jul 2020 03:22:53 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628LiYP006145;
+        Thu, 2 Jul 2020 03:22:58 -0500
 From:   Kishon Vijay Abraham I <kishon@ti.com>
 To:     Ohad Ben-Cohen <ohad@wizery.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -54,9 +54,9 @@ CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
         <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>
-Subject: [RFC PATCH 12/22] virtio: Add ops to allocate and free buffer
-Date:   Thu, 2 Jul 2020 13:51:33 +0530
-Message-ID: <20200702082143.25259-13-kishon@ti.com>
+Subject: [RFC PATCH 13/22] rpmsg: virtio_rpmsg_bus: Use virtio_alloc_buffer() and virtio_free_buffer()
+Date:   Thu, 2 Jul 2020 13:51:34 +0530
+Message-ID: <20200702082143.25259-14-kishon@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200702082143.25259-1-kishon@ti.com>
 References: <20200702082143.25259-1-kishon@ti.com>
@@ -68,91 +68,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add ops to allocate and free buffer in struct virtio_config_ops.
-Certain vhost devices can have restriction on the range of memory
-it can access on the virtio. The virtio drivers attached to
-such vhost devices reserves memory that can be accessed by
-vhost. This function allocates buffer for such reserved region.
-
-For instance when virtio-vhost is used by two hosts connected to
-NTB, the vhost can access only memory exposed by memory windows
-and the size of the memory window can be limited. Here the NTB
-virtio driver can reserve a small region (few MBs) and provide
-buffer address from this pool whenever requested by virtio client
-driver.
+Use virtio_alloc_buffer() and virtio_free_buffer() to allocate and free
+memory buffer respectively. Only if buffer allocation using
+virtio_alloc_buffer() try using dma_alloc_coherent(). This is required
+for devices like NTB to use rpmsg for communicating with other host.
 
 Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
 ---
- include/linux/virtio_config.h | 42 +++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ drivers/rpmsg/virtio_rpmsg_bus.c | 32 ++++++++++++++++++++++----------
+ 1 file changed, 22 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-index bb4cc4910750..419f733017c2 100644
---- a/include/linux/virtio_config.h
-+++ b/include/linux/virtio_config.h
-@@ -65,6 +65,9 @@ struct irq_affinity;
-  *      the caller can then copy.
-  * @set_vq_affinity: set the affinity for a virtqueue (optional).
-  * @get_vq_affinity: get the affinity for a virtqueue (optional).
-+ * @alloc_buffer: Allocate and provide buffer addresses that can be
-+ *      accessed by both virtio and vhost
-+ * @free_buffer: Free the allocated buffer address
-  */
- typedef void vq_callback_t(struct virtqueue *);
- struct virtio_config_ops {
-@@ -88,6 +91,9 @@ struct virtio_config_ops {
- 			       const struct cpumask *cpu_mask);
- 	const struct cpumask *(*get_vq_affinity)(struct virtio_device *vdev,
- 			int index);
-+	void * (*alloc_buffer)(struct virtio_device *vdev, size_t size);
-+	void (*free_buffer)(struct virtio_device *vdev, void *addr,
-+			    size_t size);
- };
+diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
+index f91143b25af7..2b25a8ae1539 100644
+--- a/drivers/rpmsg/virtio_rpmsg_bus.c
++++ b/drivers/rpmsg/virtio_rpmsg_bus.c
+@@ -882,13 +882,16 @@ static int rpmsg_probe(struct virtio_device *vdev)
  
- /* If driver didn't advertise the feature, it will never appear. */
-@@ -232,6 +238,42 @@ const char *virtio_bus_name(struct virtio_device *vdev)
- 	return vdev->config->bus_name(vdev);
+ 	total_buf_space = vrp->num_bufs * vrp->buf_size;
+ 
+-	/* allocate coherent memory for the buffers */
+-	bufs_va = dma_alloc_coherent(vdev->dev.parent,
+-				     total_buf_space, &vrp->bufs_dma,
+-				     GFP_KERNEL);
++	bufs_va = virtio_alloc_buffer(vdev, total_buf_space);
+ 	if (!bufs_va) {
+-		err = -ENOMEM;
+-		goto vqs_del;
++		/* allocate coherent memory for the buffers */
++		bufs_va = dma_alloc_coherent(vdev->dev.parent,
++					     total_buf_space, &vrp->bufs_dma,
++					     GFP_KERNEL);
++		if (!bufs_va) {
++			err = -ENOMEM;
++			goto vqs_del;
++		}
+ 	}
+ 
+ 	dev_dbg(&vdev->dev, "buffers: va %pK, dma %pad\n",
+@@ -951,8 +954,13 @@ static int rpmsg_probe(struct virtio_device *vdev)
+ 	return 0;
+ 
+ free_coherent:
+-	dma_free_coherent(vdev->dev.parent, total_buf_space,
+-			  bufs_va, vrp->bufs_dma);
++	if (!vrp->bufs_dma) {
++		virtio_free_buffer(vdev, bufs_va, total_buf_space);
++	} else {
++		dma_free_coherent(vdev->dev.parent, total_buf_space,
++				  bufs_va, vrp->bufs_dma);
++	}
++
+ vqs_del:
+ 	vdev->config->del_vqs(vrp->vdev);
+ free_vrp:
+@@ -986,8 +994,12 @@ static void rpmsg_remove(struct virtio_device *vdev)
+ 
+ 	vdev->config->del_vqs(vrp->vdev);
+ 
+-	dma_free_coherent(vdev->dev.parent, total_buf_space,
+-			  vrp->rbufs, vrp->bufs_dma);
++	if (!vrp->bufs_dma) {
++		virtio_free_buffer(vdev, vrp->rbufs, total_buf_space);
++	} else {
++		dma_free_coherent(vdev->dev.parent, total_buf_space,
++				  vrp->rbufs, vrp->bufs_dma);
++	}
+ 
+ 	kfree(vrp);
  }
- 
-+/**
-+ * virtio_alloc_buffer - Allocate buffer from the reserved memory
-+ * @vdev: Virtio device which manages the reserved memory
-+ * @size: Size of the buffer to be allocated
-+ *
-+ * Certain vhost devices can have restriction on the range of memory
-+ * it can access on the virtio. The virtio drivers attached to
-+ * such vhost devices reserves memory that can be accessed by
-+ * vhost. This function allocates buffer for such reserved region.
-+ */
-+static inline void *
-+virtio_alloc_buffer(struct virtio_device *vdev, size_t size)
-+{
-+	if (!vdev->config->alloc_buffer)
-+		return NULL;
-+
-+	return vdev->config->alloc_buffer(vdev, size);
-+}
-+
-+/**
-+ * virtio_free_buffer - Free the allocated buffer
-+ * @vdev: Virtio device which manages the reserved memory
-+ * @addr: Address returned by virtio_alloc_buffer()
-+ * @size: Size of the buffer that has to be freed
-+ *
-+ * Free the allocated buffer address given by virtio_alloc_buffer().
-+ */
-+static inline void
-+virtio_free_buffer(struct virtio_device *vdev, void *addr, size_t size)
-+{
-+	if (!vdev->config->free_buffer)
-+		return;
-+
-+	return vdev->config->free_buffer(vdev, addr, size);
-+}
-+
- /**
-  * virtqueue_set_affinity - setting affinity for a virtqueue
-  * @vq: the virtqueue
 -- 
 2.17.1
 
