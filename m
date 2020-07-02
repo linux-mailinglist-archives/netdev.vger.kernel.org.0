@@ -2,66 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D70F21263D
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 16:26:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E3C6212644
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 16:29:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729761AbgGBO0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 10:26:30 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:50980 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729377AbgGBO03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 10:26:29 -0400
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 02C8920B4905;
-        Thu,  2 Jul 2020 07:26:28 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 02C8920B4905
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1593699989;
-        bh=P3UXhidaXo7NGcfgd6p/wj7UCpxsC138EMom+wcKjTY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=SPhLhUq/ETVh+Bd09Dq2JBtPAOgzxLnXxsAOwOf9qDLe0Fu1/18GhRnx7wovCugvE
-         yAo2Cf2Vftv4+9V+hmlKs9Lryz9LPXiCD1cWW5lTZcfkGtgS4o86jxM5PCGsPR8eXg
-         +9D+XK0uZJc1nmMAt3IMrZiXOByX4Oqhj162JxZI=
-Received: by mail-qt1-f172.google.com with SMTP id j10so21329271qtq.11;
-        Thu, 02 Jul 2020 07:26:28 -0700 (PDT)
-X-Gm-Message-State: AOAM5311xdbmsSxz/joY4HxyaAx9+qYR6rcqSQn9bw0G/sQczCgbg4ZL
-        z97AaCCB6N5GMFim9ytvrnxTdsMIRhxYkEFuiKw=
-X-Google-Smtp-Source: ABdhPJwOUUWGBD2LigZrLWPlWB8g27W/V6HggrhFUPdcrIDn8kQg1yeCIZjJ+h5oLq5UqJIVJ/njeJplu9Uvn4j8pj8=
-X-Received: by 2002:aed:2492:: with SMTP id t18mr32122419qtc.353.1593699987639;
- Thu, 02 Jul 2020 07:26:27 -0700 (PDT)
+        id S1729606AbgGBO3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 10:29:05 -0400
+Received: from mail.efficios.com ([167.114.26.124]:48968 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728651AbgGBO3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 10:29:05 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 378542D6FE7;
+        Thu,  2 Jul 2020 10:29:04 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 16wex3xvqnFK; Thu,  2 Jul 2020 10:29:03 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id DACC32D6FE6;
+        Thu,  2 Jul 2020 10:29:03 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com DACC32D6FE6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1593700143;
+        bh=UzT2Ee3iLDLbSoOdnu33l5Ys12GhSDKJvLSq2vPadho=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=NyEek19B0VrIploDVsjX70UuEI9E/95zHT5Q5KdqIDA3/87aQo8u0X+YJndJA8cvo
+         KuJJxJ6FlEmONYcJCRTP03mJRQXqNo634A36TGOieiXApI+5k0XfbVWvPXZxh97EUC
+         0J/N83qAW7SMj6aylGUtYIax0Uf+2XctzYG1RUB7JVUt7XoOAbkF/WiqYsznN0zmC3
+         m1TX6YdEc0XXq437aO4ym/YIim3y6HcIQ6Acztbw6lK6H6IcZTbMPg9X6R7II1nHFp
+         mJI9y3A9K+OsVRmOTmxjXL4DE6ZASVyNzoBs1LxS3fgiFORA5hwhqQ5g7WRCfoFeVg
+         3PnspnaedLQWg==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id rF8FRh_vHhWo; Thu,  2 Jul 2020 10:29:03 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id CF54B2D6FE5;
+        Thu,  2 Jul 2020 10:29:03 -0400 (EDT)
+Date:   Thu, 2 Jul 2020 10:29:03 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <708841049.20220.1593700143737.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20200702013933.4157053-1-edumazet@google.com>
+References: <20200702013933.4157053-1-edumazet@google.com>
+Subject: Re: [PATCH net] tcp: md5: allow changing MD5 keys in all socket
+ states
 MIME-Version: 1.0
-References: <20200702141244.51295-1-mcroce@linux.microsoft.com>
-In-Reply-To: <20200702141244.51295-1-mcroce@linux.microsoft.com>
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-Date:   Thu, 2 Jul 2020 16:25:51 +0200
-X-Gmail-Original-Message-ID: <CAFnufp23ggXtC5pkT57JQ5Bp9vzLyWbFwe_h3W63J1jh4njZVQ@mail.gmail.com>
-Message-ID: <CAFnufp23ggXtC5pkT57JQ5Bp9vzLyWbFwe_h3W63J1jh4njZVQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 0/5] mvpp2: XDP support
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Stefan Chulski <stefanc@marvell.com>,
-        Marcin Wojtas <mw@semihalf.com>, maxime.chevallier@bootlin.com,
-        antoine.tenart@bootlin.com, thomas.petazzoni@bootlin.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_3945 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3928)
+Thread-Topic: md5: allow changing MD5 keys in all socket states
+Thread-Index: 3pm5iCzB4TPUE3dXL0iOs+CLnAsxmQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 4:12 PM Matteo Croce <mcroce@linux.microsoft.com> wrote:
->
-> From: Matteo Croce <mcroce@microsoft.com>
->
-> From: Matteo Croce <mcroce@microsoft.com>
->
+----- On Jul 1, 2020, at 9:39 PM, Eric Dumazet edumazet@google.com wrote:
 
-DUP! Sorry.
+> This essentially reverts commit 721230326891 ("tcp: md5: reject TCP_MD5SIG
+> or TCP_MD5SIG_EXT on established sockets")
+> 
+> Mathieu reported that many vendors BGP implementations can
+> actually switch TCP MD5 on established flows.
+> 
+> Quoting Mathieu :
+>   Here is a list of a few network vendors along with their behavior
+>   with respect to TCP MD5:
+> 
+>   - Cisco: Allows for password to be changed, but within the hold-down
+>     timer (~180 seconds).
+>   - Juniper: When password is initially set on active connection it will
+>     reset, but after that any subsequent password changes no network
+>     resets.
+>   - Nokia: No notes on if they flap the tcp connection or not.
+>   - Ericsson/RedBack: Allows for 2 password (old/new) to co-exist until
+>     both sides are ok with new passwords.
+>   - Meta-Switch: Expects the password to be set before a connection is
+>     attempted, but no further info on whether they reset the TCP
+>     connection on a change.
+>   - Avaya: Disable the neighbor, then set password, then re-enable.
+>   - Zebos: Would normally allow the change when socket connected.
+> 
+> We can revert my prior change because commit 9424e2e7ad93 ("tcp: md5: fix
+> potential
+> overestimation of TCP option space") removed the leak of 4 kernel bytes to
+> the wire that was the main reason for my patch.
+
+Hi Eric,
+
+This is excellent news! Thanks for looking into it.
+
+As this revert re-enables all ABI scenarios previously supported, I suspect
+this means knowing whether transitions of live TCP sockets from no-md5 to
+enabled-md5 is often used in practice is now irrelevant ?
+
+Thanks,
+
+Mathieu
+
+
+> 
+> While doing my investigations, I found a bug when a MD5 key is changed, leading
+> to these commits that stable teams want to consider before backporting this
+> revert :
+> 
+> Commit 6a2febec338d ("tcp: md5: add missing memory barriers in
+> tcp_md5_do_add()/tcp_md5_hash_key()")
+> Commit e6ced831ef11 ("tcp: md5: refine tcp_md5_do_add()/tcp_md5_hash_key()
+> barriers")
+> 
+> Fixes: 721230326891 "tcp: md5: reject TCP_MD5SIG or TCP_MD5SIG_EXT on
+> established sockets"
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> ---
+> net/ipv4/tcp.c | 5 +----
+> 1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index
+> c33f7c6aff8eea81d374644cd251bd2b96292651..861fbd84c9cf58af4126c80a27925cd6f70f300d
+> 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -3246,10 +3246,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+> #ifdef CONFIG_TCP_MD5SIG
+> 	case TCP_MD5SIG:
+> 	case TCP_MD5SIG_EXT:
+> -		if ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN))
+> -			err = tp->af_specific->md5_parse(sk, optname, optval, optlen);
+> -		else
+> -			err = -EINVAL;
+> +		err = tp->af_specific->md5_parse(sk, optname, optval, optlen);
+> 		break;
+> #endif
+> 	case TCP_USER_TIMEOUT:
+> --
+> 2.27.0.212.ge8ba1cc988-goog
 
 -- 
-per aspera ad upstream
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
