@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E063212437
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:11:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 981FB21243C
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:11:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729127AbgGBNLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 09:11:36 -0400
-Received: from mail-eopbgr70077.outbound.protection.outlook.com ([40.107.7.77]:58262
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        id S1729157AbgGBNLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 09:11:41 -0400
+Received: from mail-eopbgr150084.outbound.protection.outlook.com ([40.107.15.84]:26558
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729062AbgGBNLf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jul 2020 09:11:35 -0400
+        id S1729115AbgGBNLh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jul 2020 09:11:37 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=krO/w/aHSdI9ama8BjrRdUaPOZXn/fFEIzbmrEx8Go9MFeOp7PIV7WKl/Pwe5yJzLjrRvKf/5M0TOEWc052Kw9/NgycQra4JGAtpVPwoLdw1q0QIQIj0kUW/jv9CXW9azvG3yIXiCcWNj1cFALAWy0IIlB5CSmmIbAkVmd1CicMnjeSCMXXMjK5Y6LNx5OvnW8gHWLQFXTcwfJbtJySaJaAjJDzDLdUnpvmBW6/ngbsG9GoUmbbeWJ8HkNbirI8OdnDUxie5htMNak22hOBmanBr8e1k8onYQu4rH4WX/hgZw4w/tXbdF1piv49RKQQv3bPMfL+V69nakpD4YI5TPA==
+ b=EY0Ev9RphluyOxnEO5b+aZCl8nKbj/9nkQTAf/he2OLBgc/qlek6TOcUIy638PUPm/o6SPF4F/NpQ71IKSv6gKjs0BN15a5jD6Xfp2mBoo4TD9mtNh6bTNFl+7DE6NTHjWhd7sk/We0fFyUzvqdIWE9SORXlIjWN9oV3kInoXjf3jymGpTSoXUQzyDBY8Igu/eCajdsxnJfu5wX8xPgoFvVAzsEy3srMSmD23sJG+5aJW/YjjhvaOPD4mmRsu/BIGRcoObfKnFP49/FtX/iosVYaNt6C+dsADTDu89suKrEhurWLfu4B3UnNIkBx3IrOBEwEjk6aFGo9hVacySmabg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Y8LVfeUdzsVA72lefXhhjFFXQSwK51QtLey4rcG7D6Q=;
- b=g1RtQVAk76rq6YfkveoqufDd8cHvliZLdrqOWsWtAOLl3jpTFWjfMOo4wCKfJt0xMIvRXK63VC9Jzra/QbAoBHA7/7Oilc3LiN8vdRIrEbVsHSoqE8hizeeYxwkf3H7CQoJ/I655zFNLbEgSTyGGdyHfzkuLP8anM5s+d4KVfiE21rRt9DmNSOY+FS0bWmFJXXnZaDm/ctvGhWR4GEcCkOcQ+6wWdwhEoYnr/QARpNs8jseT4KihhundYoqS6zQTj09OYK6m+jhB4j39kwbLpTAu9YcQqqAd/JbdXbuxvZELf7U6Tps5I6YCOgXynLtBKjH+nu6wAiBZyGbdIDu2vw==
+ bh=yl1XTgjG4EdbiR1mwjMKs+kKtNFTCmK1raOKUce8PMs=;
+ b=I6FNkj7UWtE1+SflFb1FrSfn46U6sbe7EoS6SAT4v8V3JQSv0ZwyCJtAzSVy+ihwpnyUxP6MahdZwe2x2UaFQi39kV+3fkXq+00V89oVDiIwvBZr9Qx4Njt4CQ38LVmmQaEVFFs4FkZMuUnbIAR6KwMCN04HHDrX6aFBK5F+NJPda+YjpSObC9r6tWaZUhxz2aRHqoEvNJZYdVbQ2x/FSb9/6HP176EdFwQtE4UIG9dxCfdeGiue4G5MhGwiG5VsLSCcjD+EzOeWynMQ0lRVP65U4TmhbZz3FPAyVWI6NLpqUAkeAU/2/TOEt0ySQAqlo46+Wn40dy5hyDdrR3WygQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Y8LVfeUdzsVA72lefXhhjFFXQSwK51QtLey4rcG7D6Q=;
- b=anucjCQybxWetTe7YsZ5otw0m2RNxrV3kEb76k8ryC56A98ec0K7UlTvRvDCCMattL+5IrrLrdh4oiTOaXu8Yr5L0WCNdwaVLw2zH+4YkgZuWNv3qAijpP5UMwlLpN2rXN3tv2nJYWLcDrLN1BqdMtzpPVM2pOsIhHZHYBuafFE=
+ bh=yl1XTgjG4EdbiR1mwjMKs+kKtNFTCmK1raOKUce8PMs=;
+ b=mPrWjShnYflA0PVdbtbF2lcJPs0YPxtVX13VoTulQ0eVClzdIGPilQ7GUyLtA0i925AiO3nObdlbitNqKPvuiW9WqD5ddWF5L2uEA9sLJtgTeX/JObR4DJgBjM3dnVaEvC1x1tUvFldpVe0IMjB8Agr4tOjAhQhwa56KqkzsOP4=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none
  header.from=mellanox.com;
 Received: from HE1PR0502MB3834.eurprd05.prod.outlook.com (2603:10a6:7:83::17)
- by HE1PR05MB3353.eurprd05.prod.outlook.com (2603:10a6:7:2f::15) with
+ by HE1PR0502MB3722.eurprd05.prod.outlook.com (2603:10a6:7:85::32) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20; Thu, 2 Jul
- 2020 13:11:30 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.26; Thu, 2 Jul
+ 2020 13:11:31 +0000
 Received: from HE1PR0502MB3834.eurprd05.prod.outlook.com
  ([fe80::7c6f:47a:35a4:ffa2]) by HE1PR0502MB3834.eurprd05.prod.outlook.com
  ([fe80::7c6f:47a:35a4:ffa2%5]) with mapi id 15.20.3153.021; Thu, 2 Jul 2020
- 13:11:30 +0000
+ 13:11:31 +0000
 From:   Amit Cohen <amitc@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     mkubecek@suse.cz, o.rempel@pengutronix.de, andrew@lunn.ch,
         f.fainelli@gmail.com, jacob.e.keller@intel.com, mlxsw@mellanox.com,
         Amit Cohen <amitc@mellanox.com>
-Subject: [PATCH ethtool v2 1/3] uapi: linux: update kernel UAPI header files
-Date:   Thu,  2 Jul 2020 16:11:09 +0300
-Message-Id: <20200702131111.23105-2-amitc@mellanox.com>
+Subject: [PATCH ethtool v2 2/3] netlink: desc-ethtool.c: Add descriptions of extended state attributes
+Date:   Thu,  2 Jul 2020 16:11:10 +0300
+Message-Id: <20200702131111.23105-3-amitc@mellanox.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200702131111.23105-1-amitc@mellanox.com>
 References: <20200702131111.23105-1-amitc@mellanox.com>
@@ -57,145 +57,59 @@ X-ClientProxiedBy: AM0PR01CA0117.eurprd01.prod.exchangelabs.com
  (2603:10a6:7:83::17)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by AM0PR01CA0117.eurprd01.prod.exchangelabs.com (2603:10a6:208:168::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20 via Frontend Transport; Thu, 2 Jul 2020 13:11:28 +0000
+Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by AM0PR01CA0117.eurprd01.prod.exchangelabs.com (2603:10a6:208:168::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20 via Frontend Transport; Thu, 2 Jul 2020 13:11:30 +0000
 X-Mailer: git-send-email 2.20.1
 X-Originating-IP: [37.142.13.130]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: edf22d3d-2f48-455f-7c35-08d81e896f41
-X-MS-TrafficTypeDiagnostic: HE1PR05MB3353:
+X-MS-Office365-Filtering-Correlation-Id: ab9f34c1-4f02-4710-825f-08d81e897021
+X-MS-TrafficTypeDiagnostic: HE1PR0502MB3722:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB3353BF685B9E57924D37FBD0D76D0@HE1PR05MB3353.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:136;
+X-Microsoft-Antispam-PRVS: <HE1PR0502MB37227270F9FBE34615DC1D8DD76D0@HE1PR0502MB3722.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:184;
 X-Forefront-PRVS: 0452022BE1
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tAEMTTBzuKb3TfM+/X6e/uxLNctFqQqdLdjsrgjGVf5h5gHQ6gcS8pKMsNeE8XkAkkXVWljZ/mVRLWMpYuFSM9gl/1TDX2VDV7sy+B0EH1rIuQU08/z+ojy6IMYnOCvqQswJAjnRCK9PV0mgl6FazVYGseQrLcLAN5OCEvXGDirCCL+6tfdm5mHtEewYBJj2A1aVMf2yltSJH877r1w+SxEN/ihThh6VPz9euIB9yzi1yrdXBTrRFyhQ4EotCqrmqNwioznvpZJ9glcV71KtEMQPcLxD5anYncLCDlSa5XGdlsp8GzCmAwnwDE9KnxUCAZ3z8WM89Xg25W+uNkj9ig==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0502MB3834.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(346002)(396003)(376002)(136003)(52116002)(8936002)(66946007)(5660300002)(6486002)(4326008)(478600001)(2616005)(186003)(316002)(6916009)(66556008)(66476007)(16526019)(107886003)(956004)(1076003)(36756003)(6666004)(83380400001)(26005)(6512007)(8676002)(6506007)(86362001)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: uw7HX8qDydwbul7kXtysuD5MUPcsBgtymr1uJOwQLIt+5I5uapA+SZeHyo75I3+KnZAO0A4WtTO+2XNjRvFZSdYNrVmYfc2JzH6qY846c9Xec4C/SulkRTM+AOTka3MoIcXIlphKlI6qLnIjjszy63uUBn23WgINMdlc9WlguSdksXBlmtl4R68Qzd0RLQBrxeFMG58YHZNnb1gyIPTdHP3yXE2TN918aGV32pyaoQJb5ZPl/++8BUi3FAzk10kR6Iizc0dw5OmPDVTDnbl9403QuxEKvgfHCyK9TnH6R4fKWZt3CsiXQ+Gt3d9ownKa6MgcJfpSSAXwDWtiTljkC0nz/ru/ehkcJaevTuueoHIOVOrnZSQFwaZHDnbb8PV2k+U4U8HOMDV49pr85sOPTf955FTvrxh1nKjevTBaMDm/E3v8Rp9qEJJ+7kF2n1OBo3nw3Vpm7Vq7F5LOM4pMKfqtMv2/wPTzGodSG/oPCoMJexWPxlVhg/RwMcnYSPtJ
+X-Microsoft-Antispam-Message-Info: kcvVhsKXhFtKBdp8qAvt4f1KY8tQNGKv11vEeveGEz+MbDjh1G+ybQX8Vx+DQ/dn1Et5g9bn4tb7yWaEVEinY3sDmqFLV6DRvOMheUYaguyNmkswOTZ3ySc+mL3V+G3j46uHrqyJInWzKw31oXv5vIFm4E/mOIDlxg6TH3/qv4KVqn5TwOysHZ9ifGqYOgm98EYBSKqZcSPH6nLCkEWZbUpaseG4jp23VfpkJND8fO9zpGs4tFL6kOGZWW2lkA1+OmsPONb/WJJi6CFrYOWvVS+dWDk3eO7/CEGxAAzInS4XbZlvJUUMkR24lCT62sHPT28Z3VgWiYSCL1e4wUq6Hw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0502MB3834.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(346002)(366004)(376002)(396003)(136003)(2616005)(4744005)(36756003)(478600001)(1076003)(6486002)(107886003)(6506007)(86362001)(6666004)(52116002)(26005)(956004)(4326008)(8936002)(6512007)(8676002)(186003)(316002)(6916009)(66556008)(5660300002)(66946007)(66476007)(16526019)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: imVL1t46RzDJvTcR1c6MXP01onlULO9lRXhCZH/YCvHQehQok1QTEi0wdMWmYOhpD7s7sAPeRGO2K+Gvn3w21uLgdy7Agtoud/KTGAPrA2eJWa/HSjW+4z3eMdJdRk2X5phctLeLUBiTZrt7q5WRkH0V2YVTxrN7SG1fy0UNHhkcoNnx2rKhBd62bHwXjTkVoL1yFLAYCb6w1PdVEZwa/bKLcITaXD4vCyyN1mDJB6ImzNaAzq276/6ZEn96cNiNCsE6VikGncP0O9pISY/Pb51EbVMkBiXsgdYoV1f62IQVYpKN7oFzMlMIrRJ6nr0LrIr98hEamIKK7OHx+y9RTIrQExYQJRLVCh4sLi/5eVHlp2hObtzFV3ImA5Kgu6l5M8J1Mt4WBU7WjQszpiklRbcKw+Ps0GwWD7fjVSzviTbhvdxylk4/zAbMxtnpsKTcyxd4nurRdnYQ1sac7HsyFpnyV2RB5AKn6Rsc3dxrLcSxZp9rjhU5MJfUGHhGvj2m
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: edf22d3d-2f48-455f-7c35-08d81e896f41
+X-MS-Exchange-CrossTenant-Network-Message-Id: ab9f34c1-4f02-4710-825f-08d81e897021
 X-MS-Exchange-CrossTenant-AuthSource: HE1PR0502MB3834.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2020 13:11:30.0999
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2020 13:11:31.6850
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4a6r32WAiPh3fNrJYLfy7nPWFsidrsC6MwKw9tDto7DrLFo5IPw/DiIBcZuwBZe9A4h9Mr22+X6PNX5ZkDRg5g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3353
+X-MS-Exchange-CrossTenant-UserPrincipalName: RlqvJST+g7RodnITM5EJ8YYwKun1gfAv6XVy+F4IitRyfoLzijYH018GUxlvQEH8vjIG1dHmZhCctjrx17HE1w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0502MB3722
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add copies of kernel UAPI header files needed for link extended state:
-	uapi/linux/ethtool.h
-	uapi/linux/ethtool_netlink.h
-
-The copies are taken from net-next tree,
-commit ecc31c60240b ("ethtool: Add link extended state")
+Add ETHTOOL_A_LINKSTATE_EXT_STATE and ETHTOOL_A_LINKSTATE_EXT_SUBSTATE
+format descriptions.
 
 Signed-off-by: Amit Cohen <amitc@mellanox.com>
 ---
- uapi/linux/ethtool.h         | 70 ++++++++++++++++++++++++++++++++++++
- uapi/linux/ethtool_netlink.h |  2 ++
- 2 files changed, 72 insertions(+)
+ netlink/desc-ethtool.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
-index 6074caa..a1cfbe2 100644
---- a/uapi/linux/ethtool.h
-+++ b/uapi/linux/ethtool.h
-@@ -577,6 +577,76 @@ struct ethtool_pauseparam {
- 	__u32	tx_pause;
+diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
+index 98b898e..bce22e2 100644
+--- a/netlink/desc-ethtool.c
++++ b/netlink/desc-ethtool.c
+@@ -95,6 +95,8 @@ static const struct pretty_nla_desc __linkstate_desc[] = {
+ 	NLATTR_DESC_BOOL(ETHTOOL_A_LINKSTATE_LINK),
+ 	NLATTR_DESC_U32(ETHTOOL_A_LINKSTATE_SQI),
+ 	NLATTR_DESC_U32(ETHTOOL_A_LINKSTATE_SQI_MAX),
++	NLATTR_DESC_U8(ETHTOOL_A_LINKSTATE_EXT_STATE),
++	NLATTR_DESC_U8(ETHTOOL_A_LINKSTATE_EXT_SUBSTATE),
  };
  
-+/**
-+ * enum ethtool_link_ext_state - link extended state
-+ */
-+enum ethtool_link_ext_state {
-+	ETHTOOL_LINK_EXT_STATE_AUTONEG,
-+	ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
-+	ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
-+	ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY,
-+	ETHTOOL_LINK_EXT_STATE_NO_CABLE,
-+	ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE,
-+	ETHTOOL_LINK_EXT_STATE_EEPROM_ISSUE,
-+	ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE,
-+	ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED,
-+	ETHTOOL_LINK_EXT_STATE_OVERHEAT,
-+};
-+
-+/**
-+ * enum ethtool_link_ext_substate_autoneg - more information in addition to
-+ * ETHTOOL_LINK_EXT_STATE_AUTONEG.
-+ */
-+enum ethtool_link_ext_substate_autoneg {
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_PARTNER_DETECTED = 1,
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_ACK_NOT_RECEIVED,
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_NEXT_PAGE_EXCHANGE_FAILED,
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_PARTNER_DETECTED_FORCE_MODE,
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_FEC_MISMATCH_DURING_OVERRIDE,
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_HCD,
-+};
-+
-+/**
-+ * enum ethtool_link_ext_substate_link_training - more information in addition to
-+ * ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE.
-+ */
-+enum ethtool_link_ext_substate_link_training {
-+	ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_FRAME_LOCK_NOT_ACQUIRED = 1,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_INHIBIT_TIMEOUT,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_PARTNER_DID_NOT_SET_RECEIVER_READY,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LT_REMOTE_FAULT,
-+};
-+
-+/**
-+ * enum ethtool_link_ext_substate_logical_mismatch - more information in addition
-+ * to ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH.
-+ */
-+enum ethtool_link_ext_substate_link_logical_mismatch {
-+	ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_BLOCK_LOCK = 1,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_AM_LOCK,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_GET_ALIGN_STATUS,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LLM_FC_FEC_IS_NOT_LOCKED,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LLM_RS_FEC_IS_NOT_LOCKED,
-+};
-+
-+/**
-+ * enum ethtool_link_ext_substate_bad_signal_integrity - more information in
-+ * addition to ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY.
-+ */
-+enum ethtool_link_ext_substate_bad_signal_integrity {
-+	ETHTOOL_LINK_EXT_SUBSTATE_BSI_LARGE_NUMBER_OF_PHYSICAL_ERRORS = 1,
-+	ETHTOOL_LINK_EXT_SUBSTATE_BSI_UNSUPPORTED_RATE,
-+};
-+
-+/**
-+ * enum ethtool_link_ext_substate_cable_issue - more information in
-+ * addition to ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE.
-+ */
-+enum ethtool_link_ext_substate_cable_issue {
-+	ETHTOOL_LINK_EXT_SUBSTATE_CI_UNSUPPORTED_CABLE = 1,
-+	ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE,
-+};
-+
- #define ETH_GSTRING_LEN		32
- 
- /**
-diff --git a/uapi/linux/ethtool_netlink.h b/uapi/linux/ethtool_netlink.h
-index b18e7bc..0922ca6 100644
---- a/uapi/linux/ethtool_netlink.h
-+++ b/uapi/linux/ethtool_netlink.h
-@@ -236,6 +236,8 @@ enum {
- 	ETHTOOL_A_LINKSTATE_LINK,		/* u8 */
- 	ETHTOOL_A_LINKSTATE_SQI,		/* u32 */
- 	ETHTOOL_A_LINKSTATE_SQI_MAX,		/* u32 */
-+	ETHTOOL_A_LINKSTATE_EXT_STATE,		/* u8 */
-+	ETHTOOL_A_LINKSTATE_EXT_SUBSTATE,	/* u8 */
- 
- 	/* add new constants above here */
- 	__ETHTOOL_A_LINKSTATE_CNT,
+ static const struct pretty_nla_desc __debug_desc[] = {
 -- 
 2.20.1
 
