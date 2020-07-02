@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D77CC213011
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 01:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3857213005
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 01:26:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbgGBX1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 19:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
+        id S1726513AbgGBX0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 19:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726687AbgGBX0q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 19:26:46 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52574C08C5DE
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 16:26:45 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id f16so2770771pjt.0
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 16:26:45 -0700 (PDT)
+        with ESMTP id S1726048AbgGBX0n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 19:26:43 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B13C08C5DF
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 16:26:42 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id g17so11894979plq.12
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 16:26:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Ln6rO86x9ZxOiyZZPuxFfPT8Nugldwg64LyJUHiqZT0=;
-        b=YYtApD/6rs1BT/ZzA44IlQCH/zgH3loPHO4nrJjyar1pcWSs1f1U/7EWSBhEGCnNpn
-         8b0/wokfQx35rbyVYIClE0w0NMPrndlLoC+wumiIdrB2Y4ekwvsxyhRYnCbn/1sCRXHP
-         Gx5nfmAXpl7AHzdKNGugYuKJOZHn9lUV3gJ1A=
+        bh=7HijGgI2TvbxAdbkLmn+7FOevHZZvQsb/QB5kNsfRm8=;
+        b=kr+H74z6Y7mZaMt6BLkbJH6jXJe6j/Y78PHuFfeEaqhOFJUMX5pP2Bph8ILRWvLBrS
+         mxeLTfc6KWtp+iboAOsMoRZPipJusoIglLHxeFArstHKAufpjMOJ3ui4CtrajZNAXs8W
+         7hvDURyhFv/VldjQpo/vMbl4cN+Bhkk7rsjzM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Ln6rO86x9ZxOiyZZPuxFfPT8Nugldwg64LyJUHiqZT0=;
-        b=qCpeU0rHiEQ3liRI5xJNDAOR1Ay4AsOy0JADjjav52d8n93/hyq2XRXjQA/6+P5+yS
-         sTLTQFYGQl8XZD3t8p9chq+c1YBwboKcSDnh3rFp7OCNFYY5V7DTRFiFYS8UWj8VSacm
-         ogoGDMmmGgh8RDR3ck+jiIaTvfGkpbdqdmZlMu9Ya/wNDHOHmxSKfOv04EH+jEK96At+
-         Syfd1XhkiAWelfxudsLxFEQdfMUJVvMrs6N9eIQPdApkqszaFOHGLmLRHkjMDpF2Jw6q
-         dN+TZm4t5AwEvcbkRXvHtRxJNkzJH8UeqOmZrAQhVUiNJ9oQts1cToW8S43sLHZrP4iw
-         tMqg==
-X-Gm-Message-State: AOAM5336TnF5+OIKL3PlWhuFVp/Fz2BPjNaXevYfS0dd9HhgCLAJ8Npb
-        pMhO4q+4BF5qgYf+5lVJWmML1A==
-X-Google-Smtp-Source: ABdhPJwfJJ4gw99qjzyTNpCmCsOoWMzyap43GRDeaqgnGHrygOWaZADTDGp6Bqu/EDIf8o0sxOAFGw==
-X-Received: by 2002:a17:902:704a:: with SMTP id h10mr27952959plt.85.1593732404766;
-        Thu, 02 Jul 2020 16:26:44 -0700 (PDT)
+        bh=7HijGgI2TvbxAdbkLmn+7FOevHZZvQsb/QB5kNsfRm8=;
+        b=Gta8ZvtB1yp5vo51Du5jPk9zulXshX3tL67Iqd4g9zXRVaH4suWNc7d1D6lAPn+rO4
+         NK7hkLQ3o8YKEM1DdVpcPG2XZWChycmZst4BJx2eKRCysdXgX+uXgqSbQxwmELBZJw72
+         w5mSl+ztee5Ao4k2inJU+7cUUnYRtaR3DFB7DlDuevAz1H5xB4FIb+1s5Rf4gTsIAueZ
+         V3dvhoYtJi+B3SZ3w4Kw6AsD4UpjNei/HLDvRI+STCeCxMxNB43TP0JcmgzScW4VcEnb
+         ITgM45cLKzW/CaSVK3i8+mhGsMa0ioP3Q8Gt7IUojU6jAJaeIOcR+6rUorC7J5/K3S/k
+         A9pg==
+X-Gm-Message-State: AOAM532gCCf2X1/SV/IQX+Gp9P8+KJRc0KQRBpJLzqVNF4wOzdd5VxA7
+        YipPefxJmQtA9xlYUt5kYhVSPQ==
+X-Google-Smtp-Source: ABdhPJzz8CnYHL225os3PvEw+cnKOtwdUEdHKeI66rSfONm++PTuKjYFyWcIQK9h9E+K5n13kFzU8Q==
+X-Received: by 2002:a17:902:b60c:: with SMTP id b12mr26535944pls.96.1593732402248;
+        Thu, 02 Jul 2020 16:26:42 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id m140sm9987328pfd.195.2020.07.02.16.26.41
+        by smtp.gmail.com with ESMTPSA id y8sm8858534pju.49.2020.07.02.16.26.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 02 Jul 2020 16:26:41 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
@@ -76,9 +76,9 @@ Cc:     Kees Cook <keescook@chromium.org>, stable@vger.kernel.org,
         Thomas Richter <tmricht@linux.ibm.com>,
         Ingo Molnar <mingo@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/5] kallsyms: Refactor kallsyms_show_value() to take cred
-Date:   Thu,  2 Jul 2020 16:26:34 -0700
-Message-Id: <20200702232638.2946421-2-keescook@chromium.org>
+Subject: [PATCH 2/5] module: Refactor section attr into bin attribute
+Date:   Thu,  2 Jul 2020 16:26:35 -0700
+Message-Id: <20200702232638.2946421-3-keescook@chromium.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200702232638.2946421-1-keescook@chromium.org>
 References: <20200702232638.2946421-1-keescook@chromium.org>
@@ -89,147 +89,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to perform future tests against the cred saved during open(),
-switch kallsyms_show_value() to operate on a cred, and have all current
-callers pass current_cred(). This makes it very obvious where callers
-are checking the wrong credential in their "read" contexts. These will
-be fixed in the coming patches.
-
-Additionally switch return value to bool, since it is always used as a
-direct permission check, not a 0-on-success, negative-on-error style
-function return.
+In order to gain access to the open file's f_cred for kallsym visibility
+permission checks, refactor the module section attributes to use the
+bin_attribute instead of attribute interface. Additionally removes the
+redundant "name" struct member.
 
 Cc: stable@vger.kernel.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- include/linux/filter.h   |  2 +-
- include/linux/kallsyms.h |  5 +++--
- kernel/kallsyms.c        | 17 +++++++++++------
- kernel/kprobes.c         |  4 ++--
- kernel/module.c          |  2 +-
- 5 files changed, 18 insertions(+), 12 deletions(-)
+ kernel/module.c | 45 ++++++++++++++++++++++++---------------------
+ 1 file changed, 24 insertions(+), 21 deletions(-)
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 259377723603..55104f6c78e8 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -889,7 +889,7 @@ static inline bool bpf_dump_raw_ok(void)
- 	/* Reconstruction of call-sites is dependent on kallsyms,
- 	 * thus make dump the same restriction.
- 	 */
--	return kallsyms_show_value() == 1;
-+	return kallsyms_show_value(current_cred());
- }
- 
- struct bpf_prog *bpf_patch_insn_single(struct bpf_prog *prog, u32 off,
-diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-index 98338dc6b5d2..481273f0c72d 100644
---- a/include/linux/kallsyms.h
-+++ b/include/linux/kallsyms.h
-@@ -18,6 +18,7 @@
- #define KSYM_SYMBOL_LEN (sizeof("%s+%#lx/%#lx [%s]") + (KSYM_NAME_LEN - 1) + \
- 			 2*(BITS_PER_LONG*3/10) + (MODULE_NAME_LEN - 1) + 1)
- 
-+struct cred;
- struct module;
- 
- static inline int is_kernel_inittext(unsigned long addr)
-@@ -98,7 +99,7 @@ int lookup_symbol_name(unsigned long addr, char *symname);
- int lookup_symbol_attrs(unsigned long addr, unsigned long *size, unsigned long *offset, char *modname, char *name);
- 
- /* How and when do we show kallsyms values? */
--extern int kallsyms_show_value(void);
-+extern bool kallsyms_show_value(const struct cred *cred);
- 
- #else /* !CONFIG_KALLSYMS */
- 
-@@ -158,7 +159,7 @@ static inline int lookup_symbol_attrs(unsigned long addr, unsigned long *size, u
- 	return -ERANGE;
- }
- 
--static inline int kallsyms_show_value(void)
-+static inline bool kallsyms_show_value(const struct cred *cred)
- {
- 	return false;
- }
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index 16c8c605f4b0..bb14e64f62a4 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -644,19 +644,20 @@ static inline int kallsyms_for_perf(void)
-  * Otherwise, require CAP_SYSLOG (assuming kptr_restrict isn't set to
-  * block even that).
-  */
--int kallsyms_show_value(void)
-+bool kallsyms_show_value(const struct cred *cred)
- {
- 	switch (kptr_restrict) {
- 	case 0:
- 		if (kallsyms_for_perf())
--			return 1;
-+			return true;
- 	/* fallthrough */
- 	case 1:
--		if (has_capability_noaudit(current, CAP_SYSLOG))
--			return 1;
-+		if (security_capable(cred, &init_user_ns, CAP_SYSLOG,
-+				     CAP_OPT_NOAUDIT) == 0)
-+			return true;
- 	/* fallthrough */
- 	default:
--		return 0;
-+		return false;
- 	}
- }
- 
-@@ -673,7 +674,11 @@ static int kallsyms_open(struct inode *inode, struct file *file)
- 		return -ENOMEM;
- 	reset_iter(iter, 0);
- 
--	iter->show_value = kallsyms_show_value();
-+	/*
-+	 * Instead of checking this on every s_show() call, cache
-+	 * the result here at open time.
-+	 */
-+	iter->show_value = kallsyms_show_value(file->f_cred);
- 	return 0;
- }
- 
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index 4a904cc56d68..d4de217e4a91 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -2448,7 +2448,7 @@ static void report_probe(struct seq_file *pi, struct kprobe *p,
- 	else
- 		kprobe_type = "k";
- 
--	if (!kallsyms_show_value())
-+	if (!kallsyms_show_value(current_cred()))
- 		addr = NULL;
- 
- 	if (sym)
-@@ -2540,7 +2540,7 @@ static int kprobe_blacklist_seq_show(struct seq_file *m, void *v)
- 	 * If /proc/kallsyms is not showing kernel address, we won't
- 	 * show them here either.
- 	 */
--	if (!kallsyms_show_value())
-+	if (!kallsyms_show_value(current_cred()))
- 		seq_printf(m, "0x%px-0x%px\t%ps\n", NULL, NULL,
- 			   (void *)ent->start_addr);
- 	else
 diff --git a/kernel/module.c b/kernel/module.c
-index e8a198588f26..a5022ae84e50 100644
+index a5022ae84e50..9e2954519259 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -4377,7 +4377,7 @@ static int modules_open(struct inode *inode, struct file *file)
+@@ -1510,8 +1510,7 @@ static inline bool sect_empty(const Elf_Shdr *sect)
+ }
  
- 	if (!err) {
- 		struct seq_file *m = file->private_data;
--		m->private = kallsyms_show_value() ? NULL : (void *)8ul;
-+		m->private = kallsyms_show_value(current_cred()) ? NULL : (void *)8ul;
+ struct module_sect_attr {
+-	struct module_attribute mattr;
+-	char *name;
++	struct bin_attribute battr;
+ 	unsigned long address;
+ };
+ 
+@@ -1521,11 +1520,16 @@ struct module_sect_attrs {
+ 	struct module_sect_attr attrs[];
+ };
+ 
+-static ssize_t module_sect_show(struct module_attribute *mattr,
+-				struct module_kobject *mk, char *buf)
++static ssize_t module_sect_read(struct file *file, struct kobject *kobj,
++				struct bin_attribute *battr,
++				char *buf, loff_t pos, size_t count)
+ {
+ 	struct module_sect_attr *sattr =
+-		container_of(mattr, struct module_sect_attr, mattr);
++		container_of(battr, struct module_sect_attr, battr);
++
++	if (pos != 0)
++		return -EINVAL;
++
+ 	return sprintf(buf, "0x%px\n", kptr_restrict < 2 ?
+ 		       (void *)sattr->address : NULL);
+ }
+@@ -1535,7 +1539,7 @@ static void free_sect_attrs(struct module_sect_attrs *sect_attrs)
+ 	unsigned int section;
+ 
+ 	for (section = 0; section < sect_attrs->nsections; section++)
+-		kfree(sect_attrs->attrs[section].name);
++		kfree(sect_attrs->attrs[section].battr.attr.name);
+ 	kfree(sect_attrs);
+ }
+ 
+@@ -1544,42 +1548,41 @@ static void add_sect_attrs(struct module *mod, const struct load_info *info)
+ 	unsigned int nloaded = 0, i, size[2];
+ 	struct module_sect_attrs *sect_attrs;
+ 	struct module_sect_attr *sattr;
+-	struct attribute **gattr;
++	struct bin_attribute **gattr;
+ 
+ 	/* Count loaded sections and allocate structures */
+ 	for (i = 0; i < info->hdr->e_shnum; i++)
+ 		if (!sect_empty(&info->sechdrs[i]))
+ 			nloaded++;
+ 	size[0] = ALIGN(struct_size(sect_attrs, attrs, nloaded),
+-			sizeof(sect_attrs->grp.attrs[0]));
+-	size[1] = (nloaded + 1) * sizeof(sect_attrs->grp.attrs[0]);
++			sizeof(sect_attrs->grp.bin_attrs[0]));
++	size[1] = (nloaded + 1) * sizeof(sect_attrs->grp.bin_attrs[0]);
+ 	sect_attrs = kzalloc(size[0] + size[1], GFP_KERNEL);
+ 	if (sect_attrs == NULL)
+ 		return;
+ 
+ 	/* Setup section attributes. */
+ 	sect_attrs->grp.name = "sections";
+-	sect_attrs->grp.attrs = (void *)sect_attrs + size[0];
++	sect_attrs->grp.bin_attrs = (void *)sect_attrs + size[0];
+ 
+ 	sect_attrs->nsections = 0;
+ 	sattr = &sect_attrs->attrs[0];
+-	gattr = &sect_attrs->grp.attrs[0];
++	gattr = &sect_attrs->grp.bin_attrs[0];
+ 	for (i = 0; i < info->hdr->e_shnum; i++) {
+ 		Elf_Shdr *sec = &info->sechdrs[i];
+ 		if (sect_empty(sec))
+ 			continue;
++		sysfs_bin_attr_init(&sattr->battr);
+ 		sattr->address = sec->sh_addr;
+-		sattr->name = kstrdup(info->secstrings + sec->sh_name,
+-					GFP_KERNEL);
+-		if (sattr->name == NULL)
++		sattr->battr.attr.name =
++			kstrdup(info->secstrings + sec->sh_name, GFP_KERNEL);
++		if (sattr->battr.attr.name == NULL)
+ 			goto out;
+ 		sect_attrs->nsections++;
+-		sysfs_attr_init(&sattr->mattr.attr);
+-		sattr->mattr.show = module_sect_show;
+-		sattr->mattr.store = NULL;
+-		sattr->mattr.attr.name = sattr->name;
+-		sattr->mattr.attr.mode = S_IRUSR;
+-		*(gattr++) = &(sattr++)->mattr.attr;
++		sattr->battr.read = module_sect_read;
++		sattr->battr.size = 3 /* "0x", "\n" */ + (BITS_PER_LONG / 4);
++		sattr->battr.attr.mode = 0400;
++		*(gattr++) = &(sattr++)->battr;
  	}
+ 	*gattr = NULL;
  
- 	return err;
+@@ -1669,7 +1672,7 @@ static void add_notes_attrs(struct module *mod, const struct load_info *info)
+ 			continue;
+ 		if (info->sechdrs[i].sh_type == SHT_NOTE) {
+ 			sysfs_bin_attr_init(nattr);
+-			nattr->attr.name = mod->sect_attrs->attrs[loaded].name;
++			nattr->attr.name = mod->sect_attrs->attrs[loaded].battr.attr.name;
+ 			nattr->attr.mode = S_IRUGO;
+ 			nattr->size = info->sechdrs[i].sh_size;
+ 			nattr->private = (void *) info->sechdrs[i].sh_addr;
 -- 
 2.25.1
 
