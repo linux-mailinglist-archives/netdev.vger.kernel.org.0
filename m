@@ -2,229 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF607211D24
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 09:38:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23A80211D91
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 09:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728043AbgGBHin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 03:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726630AbgGBHin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 03:38:43 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF949C08C5C1
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 00:38:42 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id k22so11568650oib.0
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 00:38:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gn0vhLgzAW9h7L9L8JymjzU2cfh1kNbx0gKDZNROMq0=;
-        b=LVOkTki3Zrn4ohaIOTkHjzJZXTR1IU2EMDXQBsaHnBSnNLVskDndQ+lBpG6Y5qKa6F
-         8vc9uJYvgA0nSBJwTUY166rQEgpqkrVQVwOe2GpoY6Y4PCKxNBELlsh0xzRCZW9SW/sS
-         0A4Rhoyded3Eefp+VLA9XYQBxPoo5ayykvAue2zH9Rsl3nvvzyOhr1vxF9KLJZgbddGh
-         ZYni+rhj/X5jC+RxMx5nzKweIqXkkgjoUkwREapgNu7uKeERbnBsjccMufI0GKOUhp4K
-         O3JgmkKxN8Yy7+B1UESbVx9MRXpgLvSp/AtkjILKTgBLNhZDarKMMKuWN32ogiayWYqx
-         QBMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gn0vhLgzAW9h7L9L8JymjzU2cfh1kNbx0gKDZNROMq0=;
-        b=Z4DcmCgky32Rxv3IAcC/z71lau9NkR7QNQvyQ13SaP8C7KADBx97+tumQeMxwCbZo/
-         FQFp5xtQHZp8KQETf7cymfqu/lSEe2CKpScG+N74JiPzf2lm/mWZ9A/iZN6Fh9Dok/hc
-         Cfvgnp4pd/hYLQDzXDeJk7A2hJ9JNlGwV/fRu1kNZLokREsLBuFj8M2sb55elVebmN12
-         BusxkMhY9J9By9pyoTQJJ7nMEFBc88FnvMNwpsMNq2cXC8okCkO6Vpbd52sUdEPzLdxV
-         mnSk9tex3Y+wOwixes5Ypt4ts02KDD9xCcp7lTD9xLJewjuJY/bi5x6olwQGXMSjAmrk
-         42Fg==
-X-Gm-Message-State: AOAM532VDR+qNtUzjoOmA3BJRCbodPSNX9gSWJdqJVxkBdaeWkVLg6a5
-        Yq4k1BUF1Tncqae+TX48RCRHW9k+wXPukQk2Ryk=
-X-Google-Smtp-Source: ABdhPJyp0DXFZPVNIkFU3GEbmz0iEJwFqlsofLZlAmPwy35wSWOfQ5lPc7aXsJuyCoC2qGcDqhCtEvvX7jph6RJpo3E=
-X-Received: by 2002:aca:b883:: with SMTP id i125mr23306955oif.65.1593675522174;
- Thu, 02 Jul 2020 00:38:42 -0700 (PDT)
+        id S1727065AbgGBH4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 03:56:08 -0400
+Received: from mail-eopbgr60062.outbound.protection.outlook.com ([40.107.6.62]:39218
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725287AbgGBH4I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jul 2020 03:56:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jhPrHGGKyaep/v2PdJ1lvaQfmS2WfLy3bfVFn49lO9f+oPqbcu3XAh+7SQ+SsyMW5dbBsEXk1IE0UXKwM7C4pIfkrXd/zioNKp4KrDCY7PKnwIdzIiow35Fr90rsMNsMFJJQ5pyMHjaNtDZZagSMq+ulI1aXrQOwk0ox6p988GiaMyNeQiXQGbGgRfyCawlV/1DClEQqDc63vqzzylnQS6xGBTsEpBE8qiYvfvMBpwZ/doHMyKNS0AjxyFWQhvPbxbxK9/h0/55UX80VT79MTeEvTFBAHhy9V0NckmLKDzPB1FTBQamppFUtztNTfHvhEIsculJAh0QrFnJaS1aLfw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WCOmnCHgp/e5ECAh6pt0bKQC/skuaBrE9SjjS/guLqY=;
+ b=S21t+36YDSM783AbeCJ4T0Z2ELriEp3gDB6HjhiHyi/CammwZxMsRytJ7COTK2hFHddkn/Fmt5QbsAhw8trARNwyz2cTlz9vDsFnWknP3SIYx2yKerXCN0KPV4Vu73pPJWmAY+NA6/O/W8o844JCHzHT2UF8zGQzeEZOwaSiBQtivcGJL2Cd13OL/3ZjNsTMoVsxO0xbV/rM4XCNS2MYOUnw4UUNkS6f6g3ZATAAlwbuPQGrQnsbQvCJ9I0kubORITkQhAEdkZLTVw0m6L6Cy5KTcnYzX/RcliGBtEFulKYVDBfRMywozGhhMhJOCfVEBU6BjDikDNtFTjqCfHMc2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WCOmnCHgp/e5ECAh6pt0bKQC/skuaBrE9SjjS/guLqY=;
+ b=JDnlP1xkvojE5bwBceeos5moksKknDkbVNvbj3AN5sRV5x8eVuINrXf/R3HSsvyqqTZw8L0G8LWgQC0QCqxa7Mbi/soCToXZcVepmeJagqNDpdlodopMouq7Ck9+ULVmXDLwyfwFay5Kla1YoYfc0IusAUnPmNAMYmOYOqpVA/Y=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from AM0PR05MB5010.eurprd05.prod.outlook.com (2603:10a6:208:cd::23)
+ by AM0PR05MB5266.eurprd05.prod.outlook.com (2603:10a6:208:eb::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.21; Thu, 2 Jul
+ 2020 07:56:03 +0000
+Received: from AM0PR05MB5010.eurprd05.prod.outlook.com
+ ([fe80::ccb:c612:f276:a182]) by AM0PR05MB5010.eurprd05.prod.outlook.com
+ ([fe80::ccb:c612:f276:a182%6]) with mapi id 15.20.3153.020; Thu, 2 Jul 2020
+ 07:56:03 +0000
+Subject: Re: [PATCH net-next v2 3/9] devlink: Replace devlink_port_attrs_set
+ parameters with a struct
+To:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        michael.chan@broadcom.com, jeffrey.t.kirsher@intel.com,
+        saeedm@mellanox.com, leon@kernel.org, jiri@mellanox.com,
+        snelson@pensando.io, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+References: <20200701143251.456693-1-idosch@idosch.org>
+ <20200701143251.456693-4-idosch@idosch.org>
+ <20200701115126.4ba0915a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Danielle Ratson <danieller@mellanox.com>
+Message-ID: <62bdf15c-a95b-84cc-778f-5cf43da17a78@mellanox.com>
+Date:   Thu, 2 Jul 2020 10:55:58 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
+In-Reply-To: <20200701115126.4ba0915a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-ClientProxiedBy: AM0PR06CA0133.eurprd06.prod.outlook.com
+ (2603:10a6:208:ab::38) To AM0PR05MB5010.eurprd05.prod.outlook.com
+ (2603:10a6:208:cd::23)
 MIME-Version: 1.0
-References: <CAMeyCbjiVXFkzA5ZyJ5b3N4fotWkzKHVp3J=nT1yWs1v8dmRXA@mail.gmail.com>
- <AM6PR0402MB3607E9BD414FF850D577F76EFF6D0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
-In-Reply-To: <AM6PR0402MB3607E9BD414FF850D577F76EFF6D0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
-From:   Kegl Rohit <keglrohit@gmail.com>
-Date:   Thu, 2 Jul 2020 09:38:31 +0200
-Message-ID: <CAMeyCbicX_8Kc_E5sanUMNtToLpj9BkcV+RR6h2FoNoxxcKJog@mail.gmail.com>
-Subject: Re: [EXT] net: ethernet: freescale: fec: copybreak handling
- throughput, dma_sync_* optimisations allowed?
-To:     Andy Duan <fugang.duan@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.14] (185.175.35.247) by AM0PR06CA0133.eurprd06.prod.outlook.com (2603:10a6:208:ab::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.23 via Frontend Transport; Thu, 2 Jul 2020 07:56:01 +0000
+X-Originating-IP: [185.175.35.247]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: d9c1a94e-fd1c-49d2-3c38-08d81e5d5dcd
+X-MS-TrafficTypeDiagnostic: AM0PR05MB5266:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR05MB52660669A60A4A7CE963A701D56D0@AM0PR05MB5266.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1186;
+X-Forefront-PRVS: 0452022BE1
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JMPKPgAQqqLozIw+yszMap/uglZszW4YsTS/Dnb0SSCJ/BXDKmBUbVkDzm3ZASVzjTThoTsH+JzOl1tLEnA9M/Hnby68mIsbmq8uStGwmeb0Q5W5t1U0HQqFrKytOKWhIyWDHJixYaJGltIIhfkfC8j08RBrf50Zt0PK0YErxxsQM7M+pQiDA2HHKsu0aRkzkaApZPWG37cPEMh4AvYxvofbfHnZwDkYNVMOeDWP1sWit/71BqJZqVCOU0OluFXrmuFXM1/8d3BFJ9+hjqrV39qn/gw2r6Y/nOV8kqh28d8OH/fSiY3taNtkQDXlKMit85DMF0zkzq+FkakLN7TB9X4876PAdsm7rO/BQOwj1eVqu/q3QF4n6V6+s9cgcbKl
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB5010.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(366004)(376002)(396003)(39860400002)(136003)(52116002)(186003)(6486002)(53546011)(31696002)(31686004)(36756003)(66476007)(66556008)(86362001)(5660300002)(110136005)(66946007)(956004)(2616005)(16576012)(316002)(7416002)(26005)(16526019)(8676002)(2906002)(4326008)(6666004)(8936002)(478600001)(107886003)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: YLXjttndlszOVpMHX4OxYatR27ZF7Gqd1qtuG4sqvPYyE3cmjGh90g9nzYptZCpQ2brg8BRZUM4NDYGDAniIPvp8EKXHncO5RFDTCJzcACwnzF0n5yB6CW5sNRyQbpoOFzCQmvNO6P/Wm1/GDdde6IcNGl1E3LLjpew+SOYK730l4vxv/+hk6Cel6B8mVFGV4agR0bwEqKnq5TTLSoAFZteVyrrBWRLXZ+WSZkE9z1ojzE3Cj0zgcp6gIDVCZR5lQayrqdYKhu+uP0dbETb0tpnLmyMJUQdzUworNu6h1KChPe0HvqrbpgHAb0bBlDucYZrT95pKyYZv3PeIAZLZZnjF6PYiJtvkD6RV1QTgDleZg76rxSMaHK/sev1w0Mj6UDJfGRLHIF66tzWqmpDUH3x9MRUnODKGRdDeTAnWxY30DFjF3epS/CE5/GN1PMv2b4r9z8drE7X9XM/Uc5s+aEzEeA1JH8zty0WcfKVgbISpGdqpdMsD7PCL9SYshPds
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9c1a94e-fd1c-49d2-3c38-08d81e5d5dcd
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB5010.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2020 07:56:02.8917
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lg5SuJSRN6ZiBDMDXV3fhkg8cXw2GqdbCfB7oo4sY/GWtoPzJ147Tud7/Sc5jBF4AeCl05xSv8k/bF2sHL9bWQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5266
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 6:18 AM Andy Duan <fugang.duan@nxp.com> wrote:
+On 7/1/2020 9:51 PM, Jakub Kicinski wrote:
+> On Wed,  1 Jul 2020 17:32:45 +0300 Ido Schimmel wrote:
+>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+>> index 2bd610fafc58..3af4e7397263 100644
+>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+>> @@ -691,6 +691,9 @@ static void bnxt_dl_params_unregister(struct bnxt *bp)
+>>  
+>>  int bnxt_dl_register(struct bnxt *bp)
+>>  {
+>> +	struct devlink_port_attrs attrs = {};
+>> +	const unsigned char *switch_id;
+>> +	unsigned char switch_id_len;
+>>  	struct devlink *dl;
+>>  	int rc;
+>>  
+>> @@ -719,9 +722,13 @@ int bnxt_dl_register(struct bnxt *bp)
+>>  	if (!BNXT_PF(bp))
+>>  		return 0;
+>>  
+>> -	devlink_port_attrs_set(&bp->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
+>> -			       bp->pf.port_id, false, 0, bp->dsn,
+>> -			       sizeof(bp->dsn));
+>> +	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+>> +	attrs.phys.port_number = bp->pf.port_id;
+>> +	switch_id = bp->dsn;
+>> +	switch_id_len = sizeof(bp->dsn);
+> Why do you create those local variables everywhere?
+
+
+I will change that, thanks.
+
+
 >
-> From: Kegl Rohit <keglrohit@gmail.com> Sent: Thursday, July 2, 2020 2:45 AM
-> > fec_enet_copybreak(u32 length, ...) uses
-> >
-> > dma_sync_single_for_cpu(&fep->pdev->dev,
-> > fec32_to_cpu(bdp->cbd_bufaddr), FEC_ENET_RX_FRSIZE - fep->rx_align,
-> > DMA_FROM_DEVICE); if (!swap)
-> >    memcpy(new_skb->data, (*skb)->data, length);
-> >
-> > to sync the descriptor data buffer and memcpy the data to the new skb
-> > without calling dma_unmap().
-> dma_sync_* is enough, no need to call dma_unmap and dma_map_* that
-> will heavy load.
->
-> > Later in fec_enet_rx_queue() the dma descriptor buffer is synced again in the
-> > opposite direction.
-> >
-> > if (is_copybreak) {
-> >   dma_sync_single_for_device(&fep->pdev->dev,
-> > fec32_to_cpu(bdp->cbd_bufaddr),  FEC_ENET_RX_FRSIZE - fep->rx_align,
-> > DMA_FROM_DEVICE); }
-> >
-> dma_sync_single_for_cpu(DMA_FROM_DEVICE)
->         __dma_inv_area  #invalidate the area
->
-> dma_sync_single_for_device(DMA_FROM_DEVICE)
->         __dma_inv_area  #invalidate the area
->         __dma_clean_area #clean the area
->
-> dma_sync_single_for_cpu() and dma_sync_single_for_device() are used in pairs,
-> there have no problem for usage.
->
-> > Now the two main questions:
-> > 1. Is it necessary to call dma_sync_single_for_cpu for the whole buffer size
-> > (FEC_ENET_RX_FRSIZE - fep->rx_align), wouldn't syncing the real packet
-> > length which is accessed by memcpy be enough?
-> > Like so: dma_sync_single_for_cpu(&fep->pdev->dev,
-> > fec32_to_cpu(bdp->cbd_bufaddr), (u32) length, DMA_FROM_DEVICE);
->
-> In general usage, you don't know the next frame size, and cannot ensure
-> the buffer is dirty or not, so invalidate the whole area for next frame.
->
-> On some arm64 A53, the dcache invalidate on A53 is flush + invalidate,
-> and prefetch may fetch the area, that may causes dirty data flushed back
-> to the dma memory if the area has dirty data.
->
-> > 2. Is dma_sync_single_for_device even necessary? There is no data passed
-> > back to the device because the skb descriptor buffer is not modified and the
-> > fec peripheral does not need any valid data.
-> > The example in
-> > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.
-> > kernel.org%2Fdoc%2FDocumentation%2FDMA-API-HOWTO.txt&amp;data=0
-> > 2%7C01%7Cfugang.duan%40nxp.com%7C7fb56778153a4139214808d81deed
-> > a6d%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C1%7C637292258992
-> > 313637&amp;sdata=4Nv4J7APzmNTv7Dv39tmwpJhFeZ8bNY1eaoAQnx4FdM
-> > %3D&amp;reserved=0
-> > states:
-> >  /* CPU should not write to
-> >   * DMA_FROM_DEVICE-mapped area,
-> >   * so dma_sync_single_for_device() is
-> >   * not needed here. It would be required
-> >   * for DMA_BIDIRECTIONAL mapping if
-> >   * the memory was modified.
-> >  */
-> That should ensure the whole area is not dirty.
-
-dma_sync_single_for_cpu() and dma_sync_single_for_device() can or must
-be used in pairs?
-So in this case it is really necessary to sync back the skb data
-buffer via dma_sync_single_for_device? Even when the CPU does not
-change any bytes in the skb data buffer / readonly like in this case.
-And there is no DMA_BIDIRECTIONAL mapping.
-
-I thought copybreak it is not about the next frame size. It is about
-the current frame. And the actual length is known via the size field
-in the finished DMA descriptor.
-Or do you mean that the next received frame could be no copybreak frame.
-1. Rx copybreakable frame with sizeX < copybreak
-2. copybreak dma_sync_single_for_cpu(dmabuffer, sizeX)
-3. copybreak alloc new_skb, memcpy(new_skb, dmabuffer, sizeX)
-4. copybreak dma_sync_single_for_device(dmabuffer, sizeX)
-5. Rx non copybreakable frame with sizeY >= copybreak
-4. dma_unmap_single(dmabuffer, FEC_ENET_RX_FRSIZE - fep->rx_align) is
-called and can cause data corruption because not all bytes were marked
-dirty even if nobody DMA & CPU touched them?
-
-> > I am new to the DMA API on ARM. Are these changes regarding cache
-> > flushing,... allowed? These would increase the copybreak throughput by
-> > reducing CPU load.
->
-> To avoid FIFO overrun, it requires to ensure PHY pause frame is enabled.
-
-As the errata states this is also not always true, because the first
-xoff could arrive too late. Pause frames/flow control is not really
-common and could cause troubles with other random network components
-acting different or not supporting pause frames correctly. For example
-the driver itself does enable pause frames for Gigabit by default. But
-we have no Gigabit Phy so no FEC_QUIRK_HAS_GBIT and therefore pause
-frames are not supported by the driver as of now.
+>> +	memcpy(attrs.switch_id.id, switch_id, switch_id_len);
+>> +	attrs.switch_id.id_len = switch_id_len;
+>> +	devlink_port_attrs_set(&bp->dl_port, &attrs);
+>>  	rc = devlink_port_register(dl, &bp->dl_port, bp->pf.port_id);
+>>  	if (rc) {
+>>  		netdev_err(bp->dev, "devlink_port_register failed\n");
 
 
-It looks like copybreak is implemented similar to e1000_main.c
-e1000_copybreak().
-There is only the real/needed packet length (length =
-le16_to_cpu(rx_desc->length)) is synced via dma_sync_single_for_cpu
-and no dma_sync_single_for_device.
-
-Here is a diff with the previous changes assuming that
-dma_sync_single_for_device must be used to avoid any cache flush backs
-even when no data was changed.
-
-diff --git a/drivers/net/ethernet/freescale/fec_main.c
-b/drivers/net/ethernet/freescale/fec_main.c
-index 2d0d313ee..464783c15 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -1387,9 +1387,9 @@ static bool fec_enet_copybreak(struct net_device
-*ndev, struct sk_buff **skb,
-                return false;
-
-        dma_sync_single_for_cpu(&fep->pdev->dev,
-                                fec32_to_cpu(bdp->cbd_bufaddr),
--                               FEC_ENET_RX_FRSIZE - fep->rx_align,
-+                               length,
-                                DMA_FROM_DEVICE);
-        if (!swap)
-                memcpy(new_skb->data, (*skb)->data, length);
-        else
-@@ -1413,8 +1413,9 @@ fec_enet_rx_queue(struct net_device *ndev, int
-budget, u16 queue_id)
-        unsigned short status;
-        struct  sk_buff *skb_new = NULL;
-        struct  sk_buff *skb;
-        ushort  pkt_len;
-+       ushort  pkt_len_nofcs;
-        __u8 *data;
-        int     pkt_received = 0;
-        struct  bufdesc_ex *ebdp = NULL;
-        bool    vlan_packet_rcvd = false;
-@@ -1479,9 +1480,10 @@ fec_enet_rx_queue(struct net_device *ndev, int
-budget, u16 queue_id)
-                /* The packet length includes FCS, but we don't want to
-                 * include that when passing upstream as it messes up
-                 * bridging applications.
-                 */
--               is_copybreak = fec_enet_copybreak(ndev, &skb, bdp, pkt_len - 4,
-+               pkt_len_nofcs = pkt_len - 4;
-+               is_copybreak = fec_enet_copybreak(ndev, &skb, bdp,
-pkt_len_nofcs,
-                                                  need_swap);
-                if (!is_copybreak) {
-                        skb_new = netdev_alloc_skb(ndev, FEC_ENET_RX_FRSIZE);
-                        if (unlikely(!skb_new)) {
-@@ -1554,9 +1556,9 @@ fec_enet_rx_queue(struct net_device *ndev, int
-budget, u16 queue_id)
-
-                if (is_copybreak) {
-                        dma_sync_single_for_device(&fep->pdev->dev,
-
-fec32_to_cpu(bdp->cbd_bufaddr),
--                                                  FEC_ENET_RX_FRSIZE
-- fep->rx_align,
-+                                                  pkt_len_nofcs,
-                                                   DMA_FROM_DEVICE);
-                } else {
-                        rxq->rx_skbuff[index] = skb_new;
-                        fec_enet_new_rxbdp(ndev, bdp, skb_new);
