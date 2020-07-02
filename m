@@ -2,81 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DFAA212D04
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 21:19:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E643F212D2C
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 21:35:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726030AbgGBTSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 15:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35794 "EHLO
+        id S1726100AbgGBTfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 15:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725954AbgGBTSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 15:18:50 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36EFC08C5DE
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 12:18:49 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id n5so25010186otj.1
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 12:18:49 -0700 (PDT)
+        with ESMTP id S1725862AbgGBTfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 15:35:17 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CEBC08C5C1
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 12:35:17 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id d27so22213198qtg.4
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 12:35:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
+        d=arista.com; s=googlenew;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jRIEBzGgN4d7YlR7st1P/jWdFL9XQ3Vl0E8DBG5inJM=;
-        b=uptIQwwuu7LLhQ5BebZnRucA4yx79hkX9MsCaNgPXHc+4sW6fYb8Ma0WG/QZ6fYDkL
-         7CdXciQXPoZxefKXg1aZlVZGomC5VgFvYZCCemrYwiAPfqPIaUh79kgKi/RAkg9NRpIv
-         AjNvVa2FLRKmfGQ/C+ofSk4ZhzxoQdi9jDHGlirho0fHOyp+rCJ0YlEl11rhG/0s5zrE
-         QI0PanE9bioGWA7kRhJuQwMURFJnvxBrc6k43Qo+XGhB+BEYvu00QTsAmH7fhkF+ZWxZ
-         XHkhl2rsZQPDiwm67Y1VvB0XPSN50TfH5XsIbY8Us3IK3Vsy6Qv0fkUNBNL1oMFKSuLj
-         zn2w==
+        bh=vMrH7R2vPu3gkZfS+H01Ns/eTvn1XgH9B+3gDwbQS4Q=;
+        b=P9akivtIL9OPr+h9G/Fq5VLuJfJuZFU9rGS5Kge23ZeuGNoA7zxXxtsApOQceAsw6N
+         zYga8mXjNlZK5Mvgsfb2jIlScoppXGu5RrJ7BabzEAKp2/k0ffQlljRgcBnNx9qC5h0R
+         O6EofygNMl6l/Y/YTNgauT/ckyh7h2hTXn/7ydmUbt3BpC45FLu+/6eN9d3Ywp//sb+V
+         PAExWPcfBHhw5fS0k41aMb/xwvvM0qaTW+fsjqhA5ynNn9ftJRVGxBZ3pSo7GYlHaEmO
+         u6+mrBt7xUelVphkgi6lJCm+2qg8x9rWmdTENTwnBzTCnzfoqXMge5J9Vq5JWYibWus2
+         n8FQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jRIEBzGgN4d7YlR7st1P/jWdFL9XQ3Vl0E8DBG5inJM=;
-        b=r+cLMs664+yxcryxmGZJRAHrzuAPt4TB5KlHYsgXaA3IY5QtyVn2s2AApFfcvuNylT
-         tVk6Om3QYSEgmgcSvPPK2VyQd7o6POtLwb2bqQHBZdvsZF1xGqPZncXVFvwumR7sxQq+
-         TiQwJj+T3qyR7yP/amBkVy2pMZWMWQtHpTnqMqV6OV5GZfS8ef2ekDiHozg1efA2BBWS
-         c0YH+I1DA1ftTdE2ntFx83i+2t46mAclix6GQD7KlLhmifGZ+R+WPPdEqC/z1mYaok48
-         ZF+fL8Jj1oVC3oJL5kSQd7rO1QVfvqJcht3qTnLhIY/6T/iEzMJ9EaFg7dyOR5Bsx9Mo
-         LBug==
-X-Gm-Message-State: AOAM533wHOl0c7nukWodeKM9SaMS/horx+oRZA+dQdTfjeyTWEUmtXRI
-        46dIKad8JpOPpCrrx0Cc3yyPHDcaXcOhp4o12gkioA==
-X-Google-Smtp-Source: ABdhPJyE9o5qsn4mmfg/bTi/do0nytBCytI9l2XHtzasMOIfuZopADxFdFg4hQFCUv8pGK/sonqdb5SzWJU+UiPGXwM=
-X-Received: by 2002:a9d:69c9:: with SMTP id v9mr28599024oto.66.1593717529169;
- Thu, 02 Jul 2020 12:18:49 -0700 (PDT)
+        bh=vMrH7R2vPu3gkZfS+H01Ns/eTvn1XgH9B+3gDwbQS4Q=;
+        b=XPFn9YGtkzPdN6GMIt9dipOuoV7BLobpiyUKN6Kg8uXMggkb/UmOfTlG8rLo+EPoIr
+         mVq25F4ScL8RogCgm2PJcYmFZ8JdvSZiXpQhvt8E6r1V9iCDNcj+PqpkkTKcWE3tovUJ
+         nvCswiw0A1jJTQoRyblk7PTz2y9VPlK2jLxiZtbNupoMOqZvG7KrmCKCME+bfKIsdIj5
+         /kDijuAG2+dsdFMxYr8WlfvIaof8rzn6i/qGKoJGSWpo6mp3hN0x4o5lbXL1BAFjCzHO
+         7XaJdcdYOitQS4LwUBvbYp9DW+LnBRvdNSwKZXrWRwNHuOBKedcdTI5cF/qJV6TuOMdv
+         cAZA==
+X-Gm-Message-State: AOAM5303wABaAqpHegt4kLnS9u1NgS8+glWpPTLCMpdTBIeuo/3mHbGu
+        C0bD7H8gtLr51IfLTAV3NeZ5z16g3b4ifxVxz4M1tA==
+X-Google-Smtp-Source: ABdhPJzY/c3o9AVELnYdRdQGQ5SGjtPMLSoJTN+S95yvl3HqiQ5qFGNKsi2igRT/SjswXN+cm3rHq5ojlC52o2axmxA=
+X-Received: by 2002:ac8:7a90:: with SMTP id x16mr32827703qtr.233.1593718516626;
+ Thu, 02 Jul 2020 12:35:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200702103001.233961-1-robert.marko@sartura.hr>
- <20200702103001.233961-5-robert.marko@sartura.hr> <20200702133842.GK730739@lunn.ch>
-In-Reply-To: <20200702133842.GK730739@lunn.ch>
-From:   Robert Marko <robert.marko@sartura.hr>
-Date:   Thu, 2 Jul 2020 21:18:38 +0200
-Message-ID: <CA+HBbNGcV0H4L4gzWOUs8GDkiMEOaGdeVhAbtfcT5-PGmVJjfA@mail.gmail.com>
-Subject: Re: [net-next,PATCH 4/4] dt-bindings: mdio-ipq4019: add clock support
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        robh+dt@kernel.org
+References: <20200629211801.C3D7095C0900@us180.sjc.aristanetworks.com>
+ <20200629171612.49efbdaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CA+HUmGjHQPUh1frfy5E28Om9WTVr0W+UQVDsm99beC_mbTeMog@mail.gmail.com> <61CC2BC414934749BD9F5BF3D5D940449874358A@ORSMSX112.amr.corp.intel.com>
+In-Reply-To: <61CC2BC414934749BD9F5BF3D5D940449874358A@ORSMSX112.amr.corp.intel.com>
+From:   Francesco Ruggeri <fruggeri@arista.com>
+Date:   Thu, 2 Jul 2020 12:35:05 -0700
+Message-ID: <CA+HUmGhfxYY5QiwF8_UYbp0TY-k3u+cTYZDSqV1s=SUFnGCn8g@mail.gmail.com>
+Subject: Re: [PATCH] igb: reinit_locked() should be called with rtnl_lock
+To:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 3:38 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> Do not worry about the other Intel drivers, I have our developers looking at each of our drivers for the locking issue.
 >
-> > +  clock-frequency:
-> > +    default: 100000000
->
-> IEEE 802.3 says the default should be 2.5MHz. Some PHYs will go
-> faster, but 100MHz seems unlikely!
-This MDIO controller has an internal divider, by default its set for
-100MHz clock.
-In IPQ4019 MDIO clock is not controllable but in IPQ6018 etc it's controllable.
-That is the only combination I have currently seen used by Qualcomm.
->
->      Andrew
+> @David Miller - I am picking up this patch
+
+There seems to be a second race, independent from the
+original one, that results in a divide error:
+
+kworker         reboot -f       tx packet
+
+igb_reset_task
+                __igb_shutdown
+                rtnl_lock()
+                ...
+                igb_clear_interrupt_scheme
+                igb_free_q_vectors
+                adapter->num_tx_queues = 0
+                ...
+                rtnl_unlock()
+rtnl_lock()
+igb_reinit_locked
+igb_down
+igb_up
+netif_tx_start_all_queues
+                                dev_hard_start_xmit
+                                igb_xmit_frame
+                                igb_tx_queue_mapping
+                                Panics on
+                                r_idx % adapter->num_tx_queues
+
+Using in igb_reset_task a logic similar to the one in
+ixgbe_reset_subtask (bailing if __IGB_DOWN or __IGB_RESETTING
+is set) seems to avoid the panic.
+That logic was first introduced in ixgbe as part of commit
+2f90b8657ec ('ixgbe: this patch adds support for DCB to the
+kernel and ixgbe driver').
+Both fixes seem to be needed.
