@@ -2,50 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98D4221178E
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 03:06:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90C602117E1
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 03:27:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726853AbgGBBGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 21:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36602 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726637AbgGBBGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 21:06:40 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D952AC08C5C1
-        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 18:06:40 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E32B214E56DC4;
-        Wed,  1 Jul 2020 18:06:39 -0700 (PDT)
-Date:   Wed, 01 Jul 2020 18:06:39 -0700 (PDT)
-Message-Id: <20200701.180639.1585055162486382394.davem@davemloft.net>
-To:     f.fainelli@gmail.com
-Cc:     kuba@kernel.org, andrew@lunn.ch, netdev@vger.kernel.org,
-        hkallweit1@gmail.com, cphealy@gmail.com, mkubecek@suse.cz
-Subject: Re: [PATCH net-next v4 03/10] net: ethtool: netlink: Add support
- for triggering a cable test
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <944f629f-97f1-61a4-e3ab-50219a1cd8a7@gmail.com>
-References: <20200701155621.2b6ea9b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200701.160014.637327748926165441.davem@davemloft.net>
-        <944f629f-97f1-61a4-e3ab-50219a1cd8a7@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 01 Jul 2020 18:06:40 -0700 (PDT)
+        id S1728277AbgGBBXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 21:23:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53746 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728256AbgGBBXR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Jul 2020 21:23:17 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8C73F20748;
+        Thu,  2 Jul 2020 01:23:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593652996;
+        bh=27HmbMVf7TIt+n99FWWFvZ4hX+iwRh6GrUkWrpJrksw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kqC8H64at90Y63t1HhXNqXBMb9XaloiEpwDvQvHowrrQppy3g8GvmrGPnx8eE+oXN
+         I6HGaOGGI1A8rZ0DwfTUHncK9SC64HaVqlsZBaeyQ/vkS2v2GS+U2pB/wRtvG4aqDC
+         CgB1TdFpVzVPPm1rmpOD/5jp9HMFkRi71tZUpapU=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jeremy Kerr <jk@ozlabs.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 17/53] net: usb: ax88179_178a: fix packet alignment padding
+Date:   Wed,  1 Jul 2020 21:21:26 -0400
+Message-Id: <20200702012202.2700645-17-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200702012202.2700645-1-sashal@kernel.org>
+References: <20200702012202.2700645-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
-Date: Wed, 1 Jul 2020 17:26:23 -0700
+From: Jeremy Kerr <jk@ozlabs.org>
 
-> Yes this is annoying, I will have some patches posted tonight that
-> untangle the dependency.
+[ Upstream commit e869e7a17798d85829fa7d4f9bbe1eebd4b2d3f6 ]
 
-Thank you.
+Using a AX88179 device (0b95:1790), I see two bytes of appended data on
+every RX packet. For example, this 48-byte ping, using 0xff as a
+payload byte:
+
+  04:20:22.528472 IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 2447, seq 1, length 64
+	0x0000:  000a cd35 ea50 000a cd35 ea4f 0800 4500
+	0x0010:  0054 c116 4000 4001 f63e c0a8 0101 c0a8
+	0x0020:  0102 0800 b633 098f 0001 87ea cd5e 0000
+	0x0030:  0000 dcf2 0600 0000 0000 ffff ffff ffff
+	0x0040:  ffff ffff ffff ffff ffff ffff ffff ffff
+	0x0050:  ffff ffff ffff ffff ffff ffff ffff ffff
+	0x0060:  ffff 961f
+
+Those last two bytes - 96 1f - aren't part of the original packet.
+
+In the ax88179 RX path, the usbnet rx_fixup function trims a 2-byte
+'alignment pseudo header' from the start of the packet, and sets the
+length from a per-packet field populated by hardware. It looks like that
+length field *includes* the 2-byte header; the current driver assumes
+that it's excluded.
+
+This change trims the 2-byte alignment header after we've set the packet
+length, so the resulting packet length is correct. While we're moving
+the comment around, this also fixes the spelling of 'pseudo'.
+
+Signed-off-by: Jeremy Kerr <jk@ozlabs.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/usb/ax88179_178a.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
+index 93044cf1417a5..1fe4cc28d154d 100644
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1414,10 +1414,10 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 		}
+ 
+ 		if (pkt_cnt == 0) {
+-			/* Skip IP alignment psudo header */
+-			skb_pull(skb, 2);
+ 			skb->len = pkt_len;
+-			skb_set_tail_pointer(skb, pkt_len);
++			/* Skip IP alignment pseudo header */
++			skb_pull(skb, 2);
++			skb_set_tail_pointer(skb, skb->len);
+ 			skb->truesize = pkt_len + sizeof(struct sk_buff);
+ 			ax88179_rx_checksum(skb, pkt_hdr);
+ 			return 1;
+@@ -1426,8 +1426,9 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 		ax_skb = skb_clone(skb, GFP_ATOMIC);
+ 		if (ax_skb) {
+ 			ax_skb->len = pkt_len;
+-			ax_skb->data = skb->data + 2;
+-			skb_set_tail_pointer(ax_skb, pkt_len);
++			/* Skip IP alignment pseudo header */
++			skb_pull(ax_skb, 2);
++			skb_set_tail_pointer(ax_skb, ax_skb->len);
+ 			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
+ 			ax88179_rx_checksum(ax_skb, pkt_hdr);
+ 			usbnet_skb_return(dev, ax_skb);
+-- 
+2.25.1
+
