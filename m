@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87A8D21222E
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 13:25:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BCC4212237
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 13:26:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728734AbgGBLZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 07:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
+        id S1728794AbgGBL0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 07:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728707AbgGBLZn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 07:25:43 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9FEC08C5C1
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 04:25:43 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id t4so10693877iln.1
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 04:25:43 -0700 (PDT)
+        with ESMTP id S1728071AbgGBLZo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 07:25:44 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F0DC08C5C1
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 04:25:44 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id k23so28412891iom.10
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 04:25:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kp2cMksA2bKPwFtLgY/MdRQdPPtTBA5vqesfT2+0hjc=;
-        b=ZpOKoGgZlAuRQs5w7DsHYa62CW16hmQWM1HcZzK51k7rMZJhv1MF74+eKeB3DU2pg1
-         NI63CGILl/2WsASLDtzkHVaA8SZTgeodbnefw5lVLFDFXAgqNbEgoo80GPd4m+e3isKS
-         /jxYBRTrYTVzHBkm+nNNQy0nymA69OgsbmEfoGuN6KhUp/at28+S+Idug6ETvajRv1JI
-         227hCdaggbcuw5getFtTppHvKwaiVfji5Vjm3218MNLEaat/ArxfEgZTWcjgsIEutyhQ
-         MsuH6ki5461HFzUqhcTYzDZ0T4gDlF+Bqxfa6F48UMJVynAO0RLa0v67UJwWL9D5iVDa
-         tj+A==
+        bh=YLxlyC8xC2oohqQ3SQ/sJ9I/B5ThQ+eLGnUYm9WmZtk=;
+        b=TYz0Jvutqptt2OJP3sa1jjDjKiNUvQZ7mxjNSqSwKzJG+Jxedzq1Xa652kPmD4t8Z+
+         7mGzyY9KHnT/c4udkOl6SYTpASBxb+OtMG9CUf1bb8Z1leaRPGxwj5XnS3Dz0E3mXX1n
+         U0U/7CnTyaaAxtohmq/XVwNuvJ8lDszu/kV5JGe4gK9OKTkzPtrpwXpkdhq+6URq60Ce
+         8TyjK1IQT4RornDjJu+2uPttWRudqccVmQRS2J37rFmjPYArXdt6s6GhFApJR/2R8OTh
+         rhWpsJknpKWMP4yQ00+DpLDmoIJUkDe0mVMrQkyDJwUO3Hn1dJBOEnexF5IjJgoWYjD9
+         LUOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kp2cMksA2bKPwFtLgY/MdRQdPPtTBA5vqesfT2+0hjc=;
-        b=A5Cq8wyDELvhBIstYyhj24bvb4tmrzwbket92FHb/81L6K5WKxl2vohfvSlkh0zdid
-         HihiQoQiu9LntBOkhJckruYlI3cmfyZRPgLSCmkGbk1DBwu0OAo1hidmvbUqAtyhnC95
-         lVS0rbzJXqC0OKvP76O2RSbiSiMinu0/32z9dxlC6JN7DGvHQASqdBD29M83fLHpIakd
-         Q+4vh9QAc0DWUDXm0RjOUXNaGqa+SJGF2xzq1al5mKxsYIGnPXnaDmSHQj8qqwdFwH7a
-         H9t3ucQlSizXH4Ee07eDkeVYCMEbmog/vms1N8Ydg/1RXpuGpcLNhOaoQo5F08/pk805
-         qTJQ==
-X-Gm-Message-State: AOAM532+98qHcEe4fRvZkaWeNThdl/QZUVLOE03e5+sIGw6l0c4YWmyl
-        dDFdQVg4OwKRO8Z5kwgrMiKVUA==
-X-Google-Smtp-Source: ABdhPJwEv0HnyP43dQAbI1RSDGyNlCw4/LxYtvhyIKCZJLEssNc1xhU9uEsBvjwtkgqrnjdbjWfRfA==
-X-Received: by 2002:a92:c087:: with SMTP id h7mr11803456ile.279.1593689142638;
-        Thu, 02 Jul 2020 04:25:42 -0700 (PDT)
+        bh=YLxlyC8xC2oohqQ3SQ/sJ9I/B5ThQ+eLGnUYm9WmZtk=;
+        b=DKWHjQmWERAO5WIfMBQksL3h51+R9nLbUFpETMCypVdP4sqzlOE+8ZRO8R0fQCCYrK
+         o8uG8TiSasiU0eh01Vv4BBaXiEcPK9Uiyt+eiadcpYSyIIeIP/3jgS+GUW5EEkHhYnim
+         +zvxxv/3HftCNRZlrwF/ajyHk/WEK1qVgnN/bR3yM19iD+JOqkg2cm3Zk3FHDsVxr7Hj
+         NB3YfMtvER8PrcFNRodRL38z83tJ3Y+TdLP7mfrl1XXDzaf/ch2bY/FzhvgyGFFDelkc
+         RbpRELKZsAePR0gfYkJAZyq4hTWuYieBvo4HQiE8WxKjIMg9inXmtVcXR6NjLX2lrv8z
+         ib4A==
+X-Gm-Message-State: AOAM530lqqjA84j98JP9mOptxQRlwjNNwM6Zg0MNoq86S5rZRI7NuiOv
+        CqvPK5f+9Y9D+2bQQ8UXP3wqCQ==
+X-Google-Smtp-Source: ABdhPJz3TJtKCG/TK1CEIY5pjpNyL6ied9Er7csKDIw0l9vkaorc7+VhMsk4ejyDnpGI+J/OKCDZgA==
+X-Received: by 2002:a02:b0d5:: with SMTP id w21mr21206761jah.27.1593689143741;
+        Thu, 02 Jul 2020 04:25:43 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id c3sm4692842ilj.31.2020.07.02.04.25.41
+        by smtp.gmail.com with ESMTPSA id c3sm4692842ilj.31.2020.07.02.04.25.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2020 04:25:42 -0700 (PDT)
+        Thu, 02 Jul 2020 04:25:43 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/4] net: ipa: move version test inside ipa_endpoint_program_delay()
-Date:   Thu,  2 Jul 2020 06:25:34 -0500
-Message-Id: <20200702112537.347994-2-elder@linaro.org>
+Subject: [PATCH net-next 2/4] net: ipa: always handle suspend workaround
+Date:   Thu,  2 Jul 2020 06:25:35 -0500
+Message-Id: <20200702112537.347994-3-elder@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200702112537.347994-1-elder@linaro.org>
 References: <20200702112537.347994-1-elder@linaro.org>
@@ -65,41 +65,188 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPA version 4.2 has a hardware quirk that affects endpoint delay
-mode, so it isn't used there.  Isolate the test that avoids using
-delay mode for that version inside ipa_endpoint_program_delay(),
-rather than making that check in the caller.
+IPA version 3.5.1 has a hardware quirk that requires special
+handling if an RX endpoint is suspended while aggregation is active.
+This handling is implemented by ipa_endpoint_suspend_aggr().
+
+Have ipa_endpoint_program_suspend() be responsible for calling
+ipa_endpoint_suspend_aggr() if suspend mode is being enabled on
+an endpoint.  If the endpoint does not support aggregation, or if
+aggregation isn't active, this call will continue to have no effect.
+
+Move the definition of ipa_endpoint_suspend_aggr() up in the file so
+its definition precedes the new earlier reference to it.  This
+requires ipa_endpoint_aggr_active() and ipa_endpoint_force_close()
+to be moved as well.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 125 +++++++++++++++++----------------
+ 1 file changed, 63 insertions(+), 62 deletions(-)
 
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index a7b5a6407e8f..7f4bea18bd02 100644
+index 7f4bea18bd02..d6ef5b8647bf 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -318,7 +318,9 @@ ipa_endpoint_program_delay(struct ipa_endpoint *endpoint, bool enable)
- {
- 	/* assert(endpoint->toward_ipa); */
- 
--	(void)ipa_endpoint_init_ctrl(endpoint, enable);
-+	/* Delay mode doesn't work properly for IPA v4.2 */
-+	if (endpoint->ipa->version != IPA_VERSION_4_2)
-+		(void)ipa_endpoint_init_ctrl(endpoint, enable);
+@@ -323,13 +323,73 @@ ipa_endpoint_program_delay(struct ipa_endpoint *endpoint, bool enable)
+ 		(void)ipa_endpoint_init_ctrl(endpoint, enable);
  }
  
- /* Returns previous suspend state (true means it was enabled) */
-@@ -1294,8 +1296,7 @@ static void ipa_endpoint_reset(struct ipa_endpoint *endpoint)
- static void ipa_endpoint_program(struct ipa_endpoint *endpoint)
+-/* Returns previous suspend state (true means it was enabled) */
++static bool ipa_endpoint_aggr_active(struct ipa_endpoint *endpoint)
++{
++	u32 mask = BIT(endpoint->endpoint_id);
++	struct ipa *ipa = endpoint->ipa;
++	u32 offset;
++	u32 val;
++
++	/* assert(mask & ipa->available); */
++	offset = ipa_reg_state_aggr_active_offset(ipa->version);
++	val = ioread32(ipa->reg_virt + offset);
++
++	return !!(val & mask);
++}
++
++static void ipa_endpoint_force_close(struct ipa_endpoint *endpoint)
++{
++	u32 mask = BIT(endpoint->endpoint_id);
++	struct ipa *ipa = endpoint->ipa;
++
++	/* assert(mask & ipa->available); */
++	iowrite32(mask, ipa->reg_virt + IPA_REG_AGGR_FORCE_CLOSE_OFFSET);
++}
++
++/**
++ * ipa_endpoint_suspend_aggr() - Emulate suspend interrupt
++ * @endpoint_id:	Endpoint on which to emulate a suspend
++ *
++ *  Emulate suspend IPA interrupt to unsuspend an endpoint suspended
++ *  with an open aggregation frame.  This is to work around a hardware
++ *  issue in IPA version 3.5.1 where the suspend interrupt will not be
++ *  generated when it should be.
++ */
++static void ipa_endpoint_suspend_aggr(struct ipa_endpoint *endpoint)
++{
++	struct ipa *ipa = endpoint->ipa;
++
++	if (!endpoint->data->aggregation)
++		return;
++
++	/* Nothing to do if the endpoint doesn't have aggregation open */
++	if (!ipa_endpoint_aggr_active(endpoint))
++		return;
++
++	/* Force close aggregation */
++	ipa_endpoint_force_close(endpoint);
++
++	ipa_interrupt_simulate_suspend(ipa->interrupt);
++}
++
++/* Returns previous suspend state (true means suspend was enabled) */
+ static bool
+ ipa_endpoint_program_suspend(struct ipa_endpoint *endpoint, bool enable)
  {
- 	if (endpoint->toward_ipa) {
--		if (endpoint->ipa->version != IPA_VERSION_4_2)
--			ipa_endpoint_program_delay(endpoint, false);
-+		ipa_endpoint_program_delay(endpoint, false);
- 		ipa_endpoint_init_hdr_ext(endpoint);
- 		ipa_endpoint_init_aggr(endpoint);
- 		ipa_endpoint_init_deaggr(endpoint);
++	bool suspended;
++
+ 	/* assert(!endpoint->toward_ipa); */
+ 
+-	return ipa_endpoint_init_ctrl(endpoint, enable);
++	suspended = ipa_endpoint_init_ctrl(endpoint, enable);
++
++	/* A client suspended with an open aggregation frame will not
++	 * generate a SUSPEND IPA interrupt.  If enabling suspend, have
++	 * ipa_endpoint_suspend_aggr() handle this.
++	 */
++	if (enable && !suspended)
++		ipa_endpoint_suspend_aggr(endpoint);
++
++	return suspended;
+ }
+ 
+ /* Enable or disable delay or suspend mode on all modem endpoints */
+@@ -1144,29 +1204,6 @@ void ipa_endpoint_default_route_clear(struct ipa *ipa)
+ 	ipa_endpoint_default_route_set(ipa, 0);
+ }
+ 
+-static bool ipa_endpoint_aggr_active(struct ipa_endpoint *endpoint)
+-{
+-	u32 mask = BIT(endpoint->endpoint_id);
+-	struct ipa *ipa = endpoint->ipa;
+-	u32 offset;
+-	u32 val;
+-
+-	/* assert(mask & ipa->available); */
+-	offset = ipa_reg_state_aggr_active_offset(ipa->version);
+-	val = ioread32(ipa->reg_virt + offset);
+-
+-	return !!(val & mask);
+-}
+-
+-static void ipa_endpoint_force_close(struct ipa_endpoint *endpoint)
+-{
+-	u32 mask = BIT(endpoint->endpoint_id);
+-	struct ipa *ipa = endpoint->ipa;
+-
+-	/* assert(mask & ipa->available); */
+-	iowrite32(mask, ipa->reg_virt + IPA_REG_AGGR_FORCE_CLOSE_OFFSET);
+-}
+-
+ /**
+  * ipa_endpoint_reset_rx_aggr() - Reset RX endpoint with aggregation active
+  * @endpoint:	Endpoint to be reset
+@@ -1366,34 +1403,6 @@ void ipa_endpoint_disable_one(struct ipa_endpoint *endpoint)
+ 			endpoint->endpoint_id);
+ }
+ 
+-/**
+- * ipa_endpoint_suspend_aggr() - Emulate suspend interrupt
+- * @endpoint_id:	Endpoint on which to emulate a suspend
+- *
+- *  Emulate suspend IPA interrupt to unsuspend an endpoint suspended
+- *  with an open aggregation frame.  This is to work around a hardware
+- *  issue in IPA version 3.5.1 where the suspend interrupt will not be
+- *  generated when it should be.
+- */
+-static void ipa_endpoint_suspend_aggr(struct ipa_endpoint *endpoint)
+-{
+-	struct ipa *ipa = endpoint->ipa;
+-
+-	/* assert(ipa->version == IPA_VERSION_3_5_1); */
+-
+-	if (!endpoint->data->aggregation)
+-		return;
+-
+-	/* Nothing to do if the endpoint doesn't have aggregation open */
+-	if (!ipa_endpoint_aggr_active(endpoint))
+-		return;
+-
+-	/* Force close aggregation */
+-	ipa_endpoint_force_close(endpoint);
+-
+-	ipa_interrupt_simulate_suspend(ipa->interrupt);
+-}
+-
+ void ipa_endpoint_suspend_one(struct ipa_endpoint *endpoint)
+ {
+ 	struct device *dev = &endpoint->ipa->pdev->dev;
+@@ -1409,16 +1418,8 @@ void ipa_endpoint_suspend_one(struct ipa_endpoint *endpoint)
+ 
+ 	/* IPA v3.5.1 doesn't use channel stop for suspend */
+ 	stop_channel = endpoint->ipa->version != IPA_VERSION_3_5_1;
+-	if (!endpoint->toward_ipa && !stop_channel) {
+-		/* Due to a hardware bug, a client suspended with an open
+-		 * aggregation frame will not generate a SUSPEND IPA
+-		 * interrupt.  We work around this by force-closing the
+-		 * aggregation frame, then simulating the arrival of such
+-		 * an interrupt.
+-		 */
++	if (!endpoint->toward_ipa && !stop_channel)
+ 		(void)ipa_endpoint_program_suspend(endpoint, true);
+-		ipa_endpoint_suspend_aggr(endpoint);
+-	}
+ 
+ 	ret = gsi_channel_suspend(gsi, endpoint->channel_id, stop_channel);
+ 	if (ret)
 -- 
 2.25.1
 
