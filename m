@@ -2,66 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B816621174A
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 02:39:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD4BA21174B
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 02:42:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727994AbgGBAjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 20:39:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43046 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726388AbgGBAjj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 20:39:39 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C7EBF20748;
-        Thu,  2 Jul 2020 00:39:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593650379;
-        bh=P8fZ7wLIZb9XIEuk9wytaWAOS7o0sAtIG3fEl3xQ+UY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=d1SwKu/dTkBR/3Le9LuFt11WHL0+10LqBBfTLaDxStfwKbGKlemVHGDtBp9sQMrMu
-         z96XjcEW2qbWQe/NO1mvw/vSyWi1vwrbPL/Hn7U4c/0RHMXRQfr+6cuDD/yr/2VHKv
-         PcMBF2v5q2xkfxBpdXcL6Yyg1rFZ28cgx9POVupo=
-Date:   Wed, 1 Jul 2020 17:39:37 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alex Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Heiko Thiery <heiko.thiery@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH RESEND net-next v3 2/3] net: enetc: Initialize SerDes
- for SGMII and USXGMII protocols
-Message-ID: <20200701173937.2fa5b3e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200701213433.9217-3-michael@walle.cc>
-References: <20200701213433.9217-1-michael@walle.cc>
-        <20200701213433.9217-3-michael@walle.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1726877AbgGBAmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 20:42:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32842 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726388AbgGBAmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 20:42:13 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79331C08C5C1
+        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 17:42:13 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A2F4E14E50EBB;
+        Wed,  1 Jul 2020 17:42:12 -0700 (PDT)
+Date:   Wed, 01 Jul 2020 17:42:10 -0700 (PDT)
+Message-Id: <20200701.174210.2302611981694101962.davem@davemloft.net>
+To:     anthony.l.nguyen@intel.com
+Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        jeffrey.t.kirsher@intel.com, anthony.nguyen@intel.com
+Subject: Re: [net-next 00/12][pull request] Intel Wired LAN Driver Updates
+ 2020-07-01
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200701223412.2675606-1-anthony.l.nguyen@intel.com>
+References: <20200701223412.2675606-1-anthony.l.nguyen@intel.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 01 Jul 2020 17:42:12 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  1 Jul 2020 23:34:32 +0200 Michael Walle wrote:
-> ENETC has ethernet MACs capable of SGMII, 2500BaseX and USXGMII. But in
-> order to use these protocols some SerDes configurations need to be
-> performed. The SerDes is configurable via an internal PCS PHY which is
-> connected to an internal MDIO bus at address 0.
-> 
-> This patch basically removes the dependency on bootloader regarding
-> SerDes initialization.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+From: Tony Nguyen <anthony.l.nguyen@intel.com>
+Date: Wed,  1 Jul 2020 15:34:00 -0700
 
-This does not build
+> This series contains updates to all Intel drivers, but a majority of the
+> changes are to the i40e driver.
+> 
+> Jeff converts 'fall through' comments to the 'fallthrough;' keyword for
+> all Intel drivers. Removed unnecessary delay in the ixgbe ethtool
+> diagnostics test.
+> 
+> Arkadiusz implements Total Port Shutdown for i40e. This is the revised
+> patch based on Jakub's feedback from an earlier submission of this
+> patch, where additional code comments and description was needed to
+> describe the functionality.
+> 
+> Wei Yongjun fixes return error code for iavf_init_get_resources().
+> 
+> Magnus optimizes XDP code in i40e; starting with AF_XDP zero-copy
+> transmit completion path. Then by only executing a division when
+> necessary in the napi_poll data path. Move the check for transmit ring
+> full outside the send loop to increase performance.
+> 
+> Ciara add XDP ring statistics to i40e and the ability to dump these
+> statistics and descriptors.
+> 
+> Tony fixes reporting iavf statistics.
+> 
+> Radoslaw adds support for 2.5 and 5 Gbps by implementing the newer ethtool
+> ksettings API in ixgbe.
+> 
+> The following are changes since commit 2b04a66156159592156a97553057e8c36de2ee70:
+>   Merge branch 'cxgb4-add-mirror-action-support-for-TC-MATCHALL'
+> and are available in the git repository at:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 40GbE
 
-../drivers/net/ethernet/freescale/enetc/enetc_pf.c:879:2: error: implicit declaration of function `devm_mdiobus_free`; did you mean `devm_mdiobus_alloc`? [-Werror=implicit-function-declaration]
-  879 |  devm_mdiobus_free(dev, bus);
-      |  ^~~~~~~~~~~~~~~~~
-      |  devm_mdiobus_alloc
+Pulled, thanks Tony.
