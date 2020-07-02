@@ -2,461 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF412211D06
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 09:31:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF607211D24
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 09:38:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728097AbgGBHbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 03:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38950 "EHLO
+        id S1728043AbgGBHin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 03:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbgGBHbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 03:31:09 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8C0EC08C5DC
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 00:31:08 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id h5so26867763wrc.7
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 00:31:08 -0700 (PDT)
+        with ESMTP id S1726630AbgGBHin (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 03:38:43 -0400
+Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF949C08C5C1
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 00:38:42 -0700 (PDT)
+Received: by mail-oi1-x241.google.com with SMTP id k22so11568650oib.0
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 00:38:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TeNO9fvZBv4kp0oe/KUun/TtlQ2KC3o5EXDHauIoTOY=;
-        b=x+EHr3Cg3DlzD0LJJmEIY4F3k9HhgNMafAXT5KX39PMsPJmnc14UFZ9bgosN9aoky5
-         qBYQUXGbSh64n6AguwEpujbGGTRK9o0T2LTllFDViR6MG7X83v3SjRx/WxJHgtJzl4C/
-         ViXhV7Kt8f23Q6XIzrnPwJgQCCYSYaeBjoT8Ck+iVROygtkFTsOvfMwG4/PjIHkS3mae
-         RA/C4XMW5EnrCPbZWiyh2lYxPlilJi1ZbJGxS7T0I+uKunDfaShj9zWfJG6osVDs/+up
-         e7pb5a8IDd9+ySOq4+zjhVqVwpmgcO9ENh2tR16Qx7Lv2XlI4CrzniyuM/EF+nAwVtCs
-         OKEA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Gn0vhLgzAW9h7L9L8JymjzU2cfh1kNbx0gKDZNROMq0=;
+        b=LVOkTki3Zrn4ohaIOTkHjzJZXTR1IU2EMDXQBsaHnBSnNLVskDndQ+lBpG6Y5qKa6F
+         8vc9uJYvgA0nSBJwTUY166rQEgpqkrVQVwOe2GpoY6Y4PCKxNBELlsh0xzRCZW9SW/sS
+         0A4Rhoyded3Eefp+VLA9XYQBxPoo5ayykvAue2zH9Rsl3nvvzyOhr1vxF9KLJZgbddGh
+         ZYni+rhj/X5jC+RxMx5nzKweIqXkkgjoUkwREapgNu7uKeERbnBsjccMufI0GKOUhp4K
+         O3JgmkKxN8Yy7+B1UESbVx9MRXpgLvSp/AtkjILKTgBLNhZDarKMMKuWN32ogiayWYqx
+         QBMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TeNO9fvZBv4kp0oe/KUun/TtlQ2KC3o5EXDHauIoTOY=;
-        b=rnz1NefiNbP6bCyhSpsEOd2t0vlg4mECMAkq0YSaMcq3t1wx0+GwflBxK6+Ww4hOHZ
-         OQdG1jrVZ+log8D+G6/eBto5hHckDJ5oS0mQjvWxBKMuqF5T2kUTzWma6HPOaAmruRxD
-         S2fJ+/pI1Kp6nnHc7302tfydEIzlVy9S2ifakbcB1P2fEKWfIoQapHnziGW82D0bzPr0
-         0q8ZWERcK8UI40rUnYFSpqhNL10qoyZfjEzgJG34/kXAq/BFpHiVcsOYhUuFBe9Ux5mw
-         sbep5ZH6kT0tTs+wzrIzQx6/KixkXousua6gxN+n7VWUarknUeexb/blYLNsSJ4DPcOB
-         XY+g==
-X-Gm-Message-State: AOAM532hmPI3VglUNEx2s+e+YrM4kyGLuSwe2kvcas0lGES/dRjsdslQ
-        L0FedgrpKe3qp2if4qVv/XBSMQ==
-X-Google-Smtp-Source: ABdhPJwbGVQD75dvLJX42ivcJBkDhhpTJYy3DStS2YXIVX1ehCFXTgp374qjs/I2K1Vju+loXr9fog==
-X-Received: by 2002:adf:9148:: with SMTP id j66mr27968405wrj.311.1593675067451;
-        Thu, 02 Jul 2020 00:31:07 -0700 (PDT)
-Received: from apalos.home (athedsl-4423884.home.otenet.gr. [79.130.240.188])
-        by smtp.gmail.com with ESMTPSA id n14sm10252956wro.81.2020.07.02.00.31.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2020 00:31:06 -0700 (PDT)
-Date:   Thu, 2 Jul 2020 10:31:04 +0300
-From:   ilias.apalodimas@linaro.org
-To:     Matteo Croce <mcroce@linux.microsoft.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Sven Auhagen <sven.auhagen@voleatech.de>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Stefan Chulski <stefanc@marvell.com>,
-        Marcin Wojtas <mw@semihalf.com>, maxime.chevallier@bootlin.com,
-        antoine.tenart@bootlin.com, thomas.petazzoni@bootlin.com
-Subject: Re: [PATCH net-next 2/4] mvpp2: use page_pool allocator
-Message-ID: <20200702073104.GA496703@apalos.home>
-References: <20200630180930.87506-1-mcroce@linux.microsoft.com>
- <20200630180930.87506-3-mcroce@linux.microsoft.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Gn0vhLgzAW9h7L9L8JymjzU2cfh1kNbx0gKDZNROMq0=;
+        b=Z4DcmCgky32Rxv3IAcC/z71lau9NkR7QNQvyQ13SaP8C7KADBx97+tumQeMxwCbZo/
+         FQFp5xtQHZp8KQETf7cymfqu/lSEe2CKpScG+N74JiPzf2lm/mWZ9A/iZN6Fh9Dok/hc
+         Cfvgnp4pd/hYLQDzXDeJk7A2hJ9JNlGwV/fRu1kNZLokREsLBuFj8M2sb55elVebmN12
+         BusxkMhY9J9By9pyoTQJJ7nMEFBc88FnvMNwpsMNq2cXC8okCkO6Vpbd52sUdEPzLdxV
+         mnSk9tex3Y+wOwixes5Ypt4ts02KDD9xCcp7lTD9xLJewjuJY/bi5x6olwQGXMSjAmrk
+         42Fg==
+X-Gm-Message-State: AOAM532VDR+qNtUzjoOmA3BJRCbodPSNX9gSWJdqJVxkBdaeWkVLg6a5
+        Yq4k1BUF1Tncqae+TX48RCRHW9k+wXPukQk2Ryk=
+X-Google-Smtp-Source: ABdhPJyp0DXFZPVNIkFU3GEbmz0iEJwFqlsofLZlAmPwy35wSWOfQ5lPc7aXsJuyCoC2qGcDqhCtEvvX7jph6RJpo3E=
+X-Received: by 2002:aca:b883:: with SMTP id i125mr23306955oif.65.1593675522174;
+ Thu, 02 Jul 2020 00:38:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200630180930.87506-3-mcroce@linux.microsoft.com>
+References: <CAMeyCbjiVXFkzA5ZyJ5b3N4fotWkzKHVp3J=nT1yWs1v8dmRXA@mail.gmail.com>
+ <AM6PR0402MB3607E9BD414FF850D577F76EFF6D0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+In-Reply-To: <AM6PR0402MB3607E9BD414FF850D577F76EFF6D0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+From:   Kegl Rohit <keglrohit@gmail.com>
+Date:   Thu, 2 Jul 2020 09:38:31 +0200
+Message-ID: <CAMeyCbicX_8Kc_E5sanUMNtToLpj9BkcV+RR6h2FoNoxxcKJog@mail.gmail.com>
+Subject: Re: [EXT] net: ethernet: freescale: fec: copybreak handling
+ throughput, dma_sync_* optimisations allowed?
+To:     Andy Duan <fugang.duan@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Matteo, 
+On Thu, Jul 2, 2020 at 6:18 AM Andy Duan <fugang.duan@nxp.com> wrote:
+>
+> From: Kegl Rohit <keglrohit@gmail.com> Sent: Thursday, July 2, 2020 2:45 AM
+> > fec_enet_copybreak(u32 length, ...) uses
+> >
+> > dma_sync_single_for_cpu(&fep->pdev->dev,
+> > fec32_to_cpu(bdp->cbd_bufaddr), FEC_ENET_RX_FRSIZE - fep->rx_align,
+> > DMA_FROM_DEVICE); if (!swap)
+> >    memcpy(new_skb->data, (*skb)->data, length);
+> >
+> > to sync the descriptor data buffer and memcpy the data to the new skb
+> > without calling dma_unmap().
+> dma_sync_* is enough, no need to call dma_unmap and dma_map_* that
+> will heavy load.
+>
+> > Later in fec_enet_rx_queue() the dma descriptor buffer is synced again in the
+> > opposite direction.
+> >
+> > if (is_copybreak) {
+> >   dma_sync_single_for_device(&fep->pdev->dev,
+> > fec32_to_cpu(bdp->cbd_bufaddr),  FEC_ENET_RX_FRSIZE - fep->rx_align,
+> > DMA_FROM_DEVICE); }
+> >
+> dma_sync_single_for_cpu(DMA_FROM_DEVICE)
+>         __dma_inv_area  #invalidate the area
+>
+> dma_sync_single_for_device(DMA_FROM_DEVICE)
+>         __dma_inv_area  #invalidate the area
+>         __dma_clean_area #clean the area
+>
+> dma_sync_single_for_cpu() and dma_sync_single_for_device() are used in pairs,
+> there have no problem for usage.
+>
+> > Now the two main questions:
+> > 1. Is it necessary to call dma_sync_single_for_cpu for the whole buffer size
+> > (FEC_ENET_RX_FRSIZE - fep->rx_align), wouldn't syncing the real packet
+> > length which is accessed by memcpy be enough?
+> > Like so: dma_sync_single_for_cpu(&fep->pdev->dev,
+> > fec32_to_cpu(bdp->cbd_bufaddr), (u32) length, DMA_FROM_DEVICE);
+>
+> In general usage, you don't know the next frame size, and cannot ensure
+> the buffer is dirty or not, so invalidate the whole area for next frame.
+>
+> On some arm64 A53, the dcache invalidate on A53 is flush + invalidate,
+> and prefetch may fetch the area, that may causes dirty data flushed back
+> to the dma memory if the area has dirty data.
+>
+> > 2. Is dma_sync_single_for_device even necessary? There is no data passed
+> > back to the device because the skb descriptor buffer is not modified and the
+> > fec peripheral does not need any valid data.
+> > The example in
+> > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.
+> > kernel.org%2Fdoc%2FDocumentation%2FDMA-API-HOWTO.txt&amp;data=0
+> > 2%7C01%7Cfugang.duan%40nxp.com%7C7fb56778153a4139214808d81deed
+> > a6d%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C1%7C637292258992
+> > 313637&amp;sdata=4Nv4J7APzmNTv7Dv39tmwpJhFeZ8bNY1eaoAQnx4FdM
+> > %3D&amp;reserved=0
+> > states:
+> >  /* CPU should not write to
+> >   * DMA_FROM_DEVICE-mapped area,
+> >   * so dma_sync_single_for_device() is
+> >   * not needed here. It would be required
+> >   * for DMA_BIDIRECTIONAL mapping if
+> >   * the memory was modified.
+> >  */
+> That should ensure the whole area is not dirty.
 
-Thanks for working on this!
+dma_sync_single_for_cpu() and dma_sync_single_for_device() can or must
+be used in pairs?
+So in this case it is really necessary to sync back the skb data
+buffer via dma_sync_single_for_device? Even when the CPU does not
+change any bytes in the skb data buffer / readonly like in this case.
+And there is no DMA_BIDIRECTIONAL mapping.
 
-On Tue, Jun 30, 2020 at 08:09:28PM +0200, Matteo Croce wrote:
-> From: Matteo Croce <mcroce@microsoft.com>
-> 
-> Use the page_pool API for memory management. This is a prerequisite for
-> native XDP support.
-> 
-> Tested-by: Sven Auhagen <sven.auhagen@voleatech.de>
-> Signed-off-by: Matteo Croce <mcroce@microsoft.com>
-> ---
->  drivers/net/ethernet/marvell/Kconfig          |   1 +
->  drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |   8 +
->  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 155 +++++++++++++++---
->  3 files changed, 139 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/Kconfig b/drivers/net/ethernet/marvell/Kconfig
-> index cd8ddd1ef6f2..ef4f35ba077d 100644
-> --- a/drivers/net/ethernet/marvell/Kconfig
-> +++ b/drivers/net/ethernet/marvell/Kconfig
-> @@ -87,6 +87,7 @@ config MVPP2
->  	depends on ARCH_MVEBU || COMPILE_TEST
->  	select MVMDIO
->  	select PHYLINK
-> +	select PAGE_POOL
->  	help
->  	  This driver supports the network interface units in the
->  	  Marvell ARMADA 375, 7K and 8K SoCs.
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> index 543a310ec102..4c16c9e9c1e5 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> @@ -15,6 +15,7 @@
->  #include <linux/phy.h>
->  #include <linux/phylink.h>
->  #include <net/flow_offload.h>
-> +#include <net/page_pool.h>
->  
->  /* Fifo Registers */
->  #define MVPP2_RX_DATA_FIFO_SIZE_REG(port)	(0x00 + 4 * (port))
-> @@ -820,6 +821,9 @@ struct mvpp2 {
->  
->  	/* RSS Indirection tables */
->  	struct mvpp2_rss_table *rss_tables[MVPP22_N_RSS_TABLES];
-> +
-> +	/* page_pool allocator */
-> +	struct page_pool *page_pool[MVPP2_PORT_MAX_RXQ];
->  };
->  
->  struct mvpp2_pcpu_stats {
-> @@ -1161,6 +1165,10 @@ struct mvpp2_rx_queue {
->  
->  	/* Port's logic RXQ number to which physical RXQ is mapped */
->  	int logic_rxq;
-> +
-> +	/* XDP memory accounting */
-> +	struct xdp_rxq_info xdp_rxq_short;
-> +	struct xdp_rxq_info xdp_rxq_long;
->  };
->  
->  struct mvpp2_bm_pool {
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> index 027de7291f92..9e2e8fb0a0b8 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -95,6 +95,22 @@ static inline u32 mvpp2_cpu_to_thread(struct mvpp2 *priv, int cpu)
->  	return cpu % priv->nthreads;
->  }
->  
-> +static struct page_pool *
-> +mvpp2_create_page_pool(struct device *dev, int num, int len)
-> +{
-> +	struct page_pool_params pp_params = {
-> +		/* internal DMA mapping in page_pool */
-> +		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
-> +		.pool_size = num,
-> +		.nid = NUMA_NO_NODE,
-> +		.dev = dev,
-> +		.dma_dir = DMA_FROM_DEVICE,
-> +		.max_len = len,
-> +	};
-> +
-> +	return page_pool_create(&pp_params);
-> +}
-> +
->  /* These accessors should be used to access:
->   *
->   * - per-thread registers, where each thread has its own copy of the
-> @@ -327,17 +343,26 @@ static inline int mvpp2_txq_phys(int port, int txq)
->  	return (MVPP2_MAX_TCONT + port) * MVPP2_MAX_TXQ + txq;
->  }
->  
-> -static void *mvpp2_frag_alloc(const struct mvpp2_bm_pool *pool)
-> +/* Returns a struct page if page_pool is set, otherwise a buffer */
-> +static void *mvpp2_frag_alloc(const struct mvpp2_bm_pool *pool,
-> +			      struct page_pool *page_pool)
->  {
-> +	if (page_pool)
-> +		return page_pool_alloc_pages(page_pool,
-> +					     GFP_ATOMIC | __GFP_NOWARN);
+I thought copybreak it is not about the next frame size. It is about
+the current frame. And the actual length is known via the size field
+in the finished DMA descriptor.
+Or do you mean that the next received frame could be no copybreak frame.
+1. Rx copybreakable frame with sizeX < copybreak
+2. copybreak dma_sync_single_for_cpu(dmabuffer, sizeX)
+3. copybreak alloc new_skb, memcpy(new_skb, dmabuffer, sizeX)
+4. copybreak dma_sync_single_for_device(dmabuffer, sizeX)
+5. Rx non copybreakable frame with sizeY >= copybreak
+4. dma_unmap_single(dmabuffer, FEC_ENET_RX_FRSIZE - fep->rx_align) is
+called and can cause data corruption because not all bytes were marked
+dirty even if nobody DMA & CPU touched them?
 
-page_pool_dev_alloc_pages() can set these flags for you, instead of explicitly
-calling them
+> > I am new to the DMA API on ARM. Are these changes regarding cache
+> > flushing,... allowed? These would increase the copybreak throughput by
+> > reducing CPU load.
+>
+> To avoid FIFO overrun, it requires to ensure PHY pause frame is enabled.
 
-> +
->  	if (likely(pool->frag_size <= PAGE_SIZE))
->  		return netdev_alloc_frag(pool->frag_size);
-> -	else
-> -		return kmalloc(pool->frag_size, GFP_ATOMIC);
-> +
-> +	return kmalloc(pool->frag_size, GFP_ATOMIC);
->  }
->  
-> -static void mvpp2_frag_free(const struct mvpp2_bm_pool *pool, void *data)
-> +static void mvpp2_frag_free(const struct mvpp2_bm_pool *pool,
-> +			    struct page_pool *page_pool, void *data)
->  {
-> -	if (likely(pool->frag_size <= PAGE_SIZE))
-> +	if (page_pool)
-> +		page_pool_put_full_page(page_pool, virt_to_head_page(data), false);
-> +	else if (likely(pool->frag_size <= PAGE_SIZE))
->  		skb_free_frag(data);
->  	else
->  		kfree(data);
-> @@ -442,6 +467,7 @@ static void mvpp2_bm_bufs_get_addrs(struct device *dev, struct mvpp2 *priv,
->  static void mvpp2_bm_bufs_free(struct device *dev, struct mvpp2 *priv,
->  			       struct mvpp2_bm_pool *bm_pool, int buf_num)
->  {
-> +	struct page_pool *pp = NULL;
->  	int i;
->  
->  	if (buf_num > bm_pool->buf_num) {
-> @@ -450,6 +476,9 @@ static void mvpp2_bm_bufs_free(struct device *dev, struct mvpp2 *priv,
->  		buf_num = bm_pool->buf_num;
->  	}
->  
-> +	if (priv->percpu_pools)
-> +		pp = priv->page_pool[bm_pool->id];
-> +
->  	for (i = 0; i < buf_num; i++) {
->  		dma_addr_t buf_dma_addr;
->  		phys_addr_t buf_phys_addr;
-> @@ -458,14 +487,15 @@ static void mvpp2_bm_bufs_free(struct device *dev, struct mvpp2 *priv,
->  		mvpp2_bm_bufs_get_addrs(dev, priv, bm_pool,
->  					&buf_dma_addr, &buf_phys_addr);
->  
-> -		dma_unmap_single(dev, buf_dma_addr,
-> -				 bm_pool->buf_size, DMA_FROM_DEVICE);
-> +		if (!pp)
-> +			dma_unmap_single(dev, buf_dma_addr,
-> +					 bm_pool->buf_size, DMA_FROM_DEVICE);
->  
->  		data = (void *)phys_to_virt(buf_phys_addr);
->  		if (!data)
->  			break;
->  
-> -		mvpp2_frag_free(bm_pool, data);
-> +		mvpp2_frag_free(bm_pool, pp, data);
->  	}
->  
->  	/* Update BM driver with number of buffers removed from pool */
-> @@ -496,6 +526,9 @@ static int mvpp2_bm_pool_destroy(struct device *dev, struct mvpp2 *priv,
->  	int buf_num;
->  	u32 val;
->  
-> +	if (priv->percpu_pools)
-> +		page_pool_destroy(priv->page_pool[bm_pool->id]);
-> +
->  	buf_num = mvpp2_check_hw_buf_num(priv, bm_pool);
->  	mvpp2_bm_bufs_free(dev, priv, bm_pool, buf_num);
->  
-> @@ -548,8 +581,20 @@ static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
->  {
->  	int i, err, poolnum = MVPP2_BM_POOLS_NUM;
->  
-> -	if (priv->percpu_pools)
-> +	if (priv->percpu_pools) {
->  		poolnum = mvpp2_get_nrxqs(priv) * 2;
-> +		for (i = 0; i < poolnum; i++) {
-> +			/* the pool in use */
-> +			int pn = i / (poolnum / 2);
-> +
-> +			priv->page_pool[i] =
-> +				mvpp2_create_page_pool(dev,
-> +						       mvpp2_pools[pn].buf_num,
-> +						       mvpp2_pools[pn].pkt_size);
-> +			if (IS_ERR(priv->page_pool[i]))
-> +				return PTR_ERR(priv->page_pool[i]);
-> +		}
-> +	}
->  
->  	dev_info(dev, "using %d %s buffers\n", poolnum,
->  		 priv->percpu_pools ? "per-cpu" : "shared");
-> @@ -632,23 +677,31 @@ static void mvpp2_rxq_short_pool_set(struct mvpp2_port *port,
->  
->  static void *mvpp2_buf_alloc(struct mvpp2_port *port,
->  			     struct mvpp2_bm_pool *bm_pool,
-> +			     struct page_pool *page_pool,
->  			     dma_addr_t *buf_dma_addr,
->  			     phys_addr_t *buf_phys_addr,
->  			     gfp_t gfp_mask)
->  {
->  	dma_addr_t dma_addr;
-> +	struct page *page;
->  	void *data;
->  
-> -	data = mvpp2_frag_alloc(bm_pool);
-> +	data = mvpp2_frag_alloc(bm_pool, page_pool);
->  	if (!data)
->  		return NULL;
->  
-> -	dma_addr = dma_map_single(port->dev->dev.parent, data,
-> -				  MVPP2_RX_BUF_SIZE(bm_pool->pkt_size),
-> -				  DMA_FROM_DEVICE);
-> -	if (unlikely(dma_mapping_error(port->dev->dev.parent, dma_addr))) {
-> -		mvpp2_frag_free(bm_pool, data);
-> -		return NULL;
-> +	if (page_pool) {
-> +		page = (struct page *)data;
-> +		dma_addr = page_pool_get_dma_addr(page);
-> +		data = page_to_virt(page);
-> +	} else {
-> +		dma_addr = dma_map_single(port->dev->dev.parent, data,
-> +					  MVPP2_RX_BUF_SIZE(bm_pool->pkt_size),
-> +					  DMA_FROM_DEVICE);
-> +		if (unlikely(dma_mapping_error(port->dev->dev.parent, dma_addr))) {
-> +			mvpp2_frag_free(bm_pool, NULL, data);
-> +			return NULL;
-> +		}
->  	}
->  	*buf_dma_addr = dma_addr;
->  	*buf_phys_addr = virt_to_phys(data);
-> @@ -706,6 +759,7 @@ static int mvpp2_bm_bufs_add(struct mvpp2_port *port,
->  	int i, buf_size, total_size;
->  	dma_addr_t dma_addr;
->  	phys_addr_t phys_addr;
-> +	struct page_pool *pp = NULL;
->  	void *buf;
->  
->  	if (port->priv->percpu_pools &&
-> @@ -726,8 +780,10 @@ static int mvpp2_bm_bufs_add(struct mvpp2_port *port,
->  		return 0;
->  	}
->  
-> +	if (port->priv->percpu_pools)
-> +		pp = port->priv->page_pool[bm_pool->id];
->  	for (i = 0; i < buf_num; i++) {
-> -		buf = mvpp2_buf_alloc(port, bm_pool, &dma_addr,
-> +		buf = mvpp2_buf_alloc(port, bm_pool, pp, &dma_addr,
->  				      &phys_addr, GFP_KERNEL);
->  		if (!buf)
->  			break;
-> @@ -2374,10 +2430,11 @@ static int mvpp2_aggr_txq_init(struct platform_device *pdev,
->  /* Create a specified Rx queue */
->  static int mvpp2_rxq_init(struct mvpp2_port *port,
->  			  struct mvpp2_rx_queue *rxq)
-> -
->  {
-> +	struct mvpp2 *priv = port->priv;
->  	unsigned int thread;
->  	u32 rxq_dma;
-> +	int err;
->  
->  	rxq->size = port->rx_ring_size;
->  
-> @@ -2415,7 +2472,41 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
->  	/* Add number of descriptors ready for receiving packets */
->  	mvpp2_rxq_status_update(port, rxq->id, 0, rxq->size);
->  
-> +	if (priv->percpu_pools) {
-> +		err = xdp_rxq_info_reg(&rxq->xdp_rxq_short, port->dev, rxq->id);
-> +		if (err < 0)
-> +			goto err_free_dma;
-> +
-> +		err = xdp_rxq_info_reg(&rxq->xdp_rxq_long, port->dev, rxq->id);
-> +		if (err < 0)
-> +			goto err_unregister_rxq_short;
-> +
-> +		/* Every RXQ has a pool for short and another for long packets */
-> +		err = xdp_rxq_info_reg_mem_model(&rxq->xdp_rxq_short,
-> +						 MEM_TYPE_PAGE_POOL,
-> +						 priv->page_pool[rxq->logic_rxq]);
-> +		if (err < 0)
-> +			goto err_unregister_rxq_short;
-> +
-> +		err = xdp_rxq_info_reg_mem_model(&rxq->xdp_rxq_long,
-> +						 MEM_TYPE_PAGE_POOL,
-> +						 priv->page_pool[rxq->logic_rxq +
-> +								 port->nrxqs]);
-> +		if (err < 0)
-> +			goto err_unregister_rxq_long;
+As the errata states this is also not always true, because the first
+xoff could arrive too late. Pause frames/flow control is not really
+common and could cause troubles with other random network components
+acting different or not supporting pause frames correctly. For example
+the driver itself does enable pause frames for Gigabit by default. But
+we have no Gigabit Phy so no FEC_QUIRK_HAS_GBIT and therefore pause
+frames are not supported by the driver as of now.
 
-Since mvpp2_rxq_init() will return an error shouldn't we unregister the short 
-memory pool as well?
 
-> +	}
-> +
->  	return 0;
-> +
-> +err_unregister_rxq_long:
-> +	xdp_rxq_info_unreg(&rxq->xdp_rxq_long);
-> +err_unregister_rxq_short:
-> +	xdp_rxq_info_unreg(&rxq->xdp_rxq_short);
-> +err_free_dma:
-> +	dma_free_coherent(port->dev->dev.parent,
-> +			  rxq->size * MVPP2_DESC_ALIGNED_SIZE,
-> +			  rxq->descs, rxq->descs_dma);
-> +	return err;
->  }
->  
->  /* Push packets received by the RXQ to BM pool */
-> @@ -2449,6 +2540,12 @@ static void mvpp2_rxq_deinit(struct mvpp2_port *port,
->  {
->  	unsigned int thread;
->  
-> +	if (xdp_rxq_info_is_reg(&rxq->xdp_rxq_short))
-> +		xdp_rxq_info_unreg(&rxq->xdp_rxq_short);
-> +
-> +	if (xdp_rxq_info_is_reg(&rxq->xdp_rxq_long))
-> +		xdp_rxq_info_unreg(&rxq->xdp_rxq_long);
-> +
->  	mvpp2_rxq_drop_pkts(port, rxq);
->  
->  	if (rxq->descs)
-> @@ -2890,14 +2987,15 @@ static void mvpp2_rx_csum(struct mvpp2_port *port, u32 status,
->  
->  /* Allocate a new skb and add it to BM pool */
->  static int mvpp2_rx_refill(struct mvpp2_port *port,
-> -			   struct mvpp2_bm_pool *bm_pool, int pool)
-> +			   struct mvpp2_bm_pool *bm_pool,
-> +			   struct page_pool *page_pool, int pool)
->  {
->  	dma_addr_t dma_addr;
->  	phys_addr_t phys_addr;
->  	void *buf;
->  
-> -	buf = mvpp2_buf_alloc(port, bm_pool, &dma_addr, &phys_addr,
-> -			      GFP_ATOMIC);
-> +	buf = mvpp2_buf_alloc(port, bm_pool, page_pool,
-> +			      &dma_addr, &phys_addr, GFP_ATOMIC);
->  	if (!buf)
->  		return -ENOMEM;
->  
-> @@ -2956,6 +3054,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
->  	while (rx_done < rx_todo) {
->  		struct mvpp2_rx_desc *rx_desc = mvpp2_rxq_next_desc_get(rxq);
->  		struct mvpp2_bm_pool *bm_pool;
-> +		struct page_pool *pp = NULL;
->  		struct sk_buff *skb;
->  		unsigned int frag_size;
->  		dma_addr_t dma_addr;
-> @@ -2989,6 +3088,9 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
->  					DMA_FROM_DEVICE);
->  		prefetch(data);
->  
-> +		if (port->priv->percpu_pools)
-> +			pp = port->priv->page_pool[pool];
-> +
->  		if (bm_pool->frag_size > PAGE_SIZE)
->  			frag_size = 0;
->  		else
-> @@ -3000,15 +3102,18 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
->  			goto err_drop_frame;
->  		}
->  
-> -		err = mvpp2_rx_refill(port, bm_pool, pool);
-> +		err = mvpp2_rx_refill(port, bm_pool, pp, pool);
->  		if (err) {
->  			netdev_err(port->dev, "failed to refill BM pools\n");
->  			goto err_drop_frame;
->  		}
->  
-> -		dma_unmap_single_attrs(dev->dev.parent, dma_addr,
-> -				       bm_pool->buf_size, DMA_FROM_DEVICE,
-> -				       DMA_ATTR_SKIP_CPU_SYNC);
-> +		if (pp)
-> +			page_pool_release_page(pp, virt_to_page(data));
-> +		else
-> +			dma_unmap_single_attrs(dev->dev.parent, dma_addr,
-> +					       bm_pool->buf_size, DMA_FROM_DEVICE,
-> +					       DMA_ATTR_SKIP_CPU_SYNC);
->  
->  		rcvd_pkts++;
->  		rcvd_bytes += rx_bytes;
-> -- 
-> 2.26.2
-> 
+It looks like copybreak is implemented similar to e1000_main.c
+e1000_copybreak().
+There is only the real/needed packet length (length =
+le16_to_cpu(rx_desc->length)) is synced via dma_sync_single_for_cpu
+and no dma_sync_single_for_device.
+
+Here is a diff with the previous changes assuming that
+dma_sync_single_for_device must be used to avoid any cache flush backs
+even when no data was changed.
+
+diff --git a/drivers/net/ethernet/freescale/fec_main.c
+b/drivers/net/ethernet/freescale/fec_main.c
+index 2d0d313ee..464783c15 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1387,9 +1387,9 @@ static bool fec_enet_copybreak(struct net_device
+*ndev, struct sk_buff **skb,
+                return false;
+
+        dma_sync_single_for_cpu(&fep->pdev->dev,
+                                fec32_to_cpu(bdp->cbd_bufaddr),
+-                               FEC_ENET_RX_FRSIZE - fep->rx_align,
++                               length,
+                                DMA_FROM_DEVICE);
+        if (!swap)
+                memcpy(new_skb->data, (*skb)->data, length);
+        else
+@@ -1413,8 +1413,9 @@ fec_enet_rx_queue(struct net_device *ndev, int
+budget, u16 queue_id)
+        unsigned short status;
+        struct  sk_buff *skb_new = NULL;
+        struct  sk_buff *skb;
+        ushort  pkt_len;
++       ushort  pkt_len_nofcs;
+        __u8 *data;
+        int     pkt_received = 0;
+        struct  bufdesc_ex *ebdp = NULL;
+        bool    vlan_packet_rcvd = false;
+@@ -1479,9 +1480,10 @@ fec_enet_rx_queue(struct net_device *ndev, int
+budget, u16 queue_id)
+                /* The packet length includes FCS, but we don't want to
+                 * include that when passing upstream as it messes up
+                 * bridging applications.
+                 */
+-               is_copybreak = fec_enet_copybreak(ndev, &skb, bdp, pkt_len - 4,
++               pkt_len_nofcs = pkt_len - 4;
++               is_copybreak = fec_enet_copybreak(ndev, &skb, bdp,
+pkt_len_nofcs,
+                                                  need_swap);
+                if (!is_copybreak) {
+                        skb_new = netdev_alloc_skb(ndev, FEC_ENET_RX_FRSIZE);
+                        if (unlikely(!skb_new)) {
+@@ -1554,9 +1556,9 @@ fec_enet_rx_queue(struct net_device *ndev, int
+budget, u16 queue_id)
+
+                if (is_copybreak) {
+                        dma_sync_single_for_device(&fep->pdev->dev,
+
+fec32_to_cpu(bdp->cbd_bufaddr),
+-                                                  FEC_ENET_RX_FRSIZE
+- fep->rx_align,
++                                                  pkt_len_nofcs,
+                                                   DMA_FROM_DEVICE);
+                } else {
+                        rxq->rx_skbuff[index] = skb_new;
+                        fec_enet_new_rxbdp(ndev, bdp, skb_new);
