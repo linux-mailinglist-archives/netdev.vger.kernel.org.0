@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4271E21214A
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 12:30:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 590F4212150
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 12:30:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728602AbgGBKad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 06:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
+        id S1728642AbgGBKaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 06:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728556AbgGBKaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 06:30:19 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A6CC08C5E2
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 03:30:18 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id h5so27512312wrc.7
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 03:30:18 -0700 (PDT)
+        with ESMTP id S1728527AbgGBKaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 06:30:14 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B34C08C5C1
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 03:30:14 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id f18so27322209wml.3
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 03:30:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sartura-hr.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LlGrsZv5MDXCoixnPWrg/mlv9SQt5SL1loevVSN/VHc=;
-        b=KeFi1ABsxr3fl8GMR0/3qDI8qj0sYAqgYksocmCHaogDsB9OQ3G5HpO6Y6CBVUElHV
-         PvUS3X88SRGYnJImNTB84cxpPTk7lVw9xAogix8X8LJRF8vymzAo+R4PdDRQcyUspUfH
-         WAbhIsS2RcJmQxrnlTbxPcuf1DH88gm3VBZfM6Alq0BSEDO4ZF5QbQxI2d7YOu1iw/lb
-         4tP4BwAHtDWiQfZU/4tcUT3UbOJ1AuWEsYRORfi0MWP79GUWDvgiBrFx7Qfy0Nt1puyb
-         pNV/n9QLoVLRnSFw4AKwnxG+ByqeBDny3S/7QB8o7vPb2VI1az0o+DFpaD1vabdZV6uE
-         20Uw==
+        bh=F0K1et+c7L37Nzbq/fKuHgV+8Ew7PJCWV3QsyfuXTTU=;
+        b=1fEi2WIHdfLE+hyuYKNfHSHHxhxmwxb91xzhRrvmfCTdeDa5qYKDFd2UENYBF9pQRB
+         FHqxUN1/LEafenfotRTqtVXOCQrUV6kzOmKOyYt0kFmG4MMwVz3fbF8N6aki9NTGynNo
+         kavJ2wHVBgr/nEw40vV44jlioejc0AUSdagBCkc5KrDTg1qjOWbQNbz5zbpZ4AuhUaX8
+         Gbadn2mU9a0ECaLFrtFUcF1XPxPqARSGTfQy1Op97lzsyS9xfEXinGJxe6p8WUaKa6CF
+         /UR3cdQIFFSFDpx3RHvmDZ2OyW/1Lq2DIp9pFYxtz4W4tXI/BF5rDNE7iPLGodgZAJ8h
+         E/rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LlGrsZv5MDXCoixnPWrg/mlv9SQt5SL1loevVSN/VHc=;
-        b=L68mEKTMtL3tb5Oqg3Ww8Mk6iYOP6pAAm93/TQO2P/trrcQNj9UCq66ZglWmQayjJZ
-         +D3zF1/rLdDiV9aNN82BQKdGFoaGWqafTE0GObshppWf0jSlJm97e3fgD1Ct5EOevO5J
-         K4bSIld/q4TWzr0PczedB5EES6CMlvGdP/RSt6BCL9L2Ng3MtkkW5OVi9Ij4h+XTaDVY
-         6fQdVsbjHKxuGctVfcl+oHT554UzovJdaOVLMxpn/dzXZ2JsMZjoKjpEFrTbPo2OvXA5
-         FlBxD74eX+VImWo5nEoQyuYNdJhX/D4ehyvMzru+jEkRc1JNYhIVa6pshnNrr3JW/lNJ
-         GI4w==
-X-Gm-Message-State: AOAM530ePCEOpF0cyHMfQ0QPoPZYOHHMG4v7cbS6k/GQ/sLjAXY83fIm
-        l/MCLiRKKg0W+V9AZtXit0ORMA==
-X-Google-Smtp-Source: ABdhPJzrKkA5IL6AI6zOIP68F3NzFvD0431eMMCeA/kAyZb4PVbZ8/a84PbeXlReLLXV8E4fU5mjaQ==
-X-Received: by 2002:a5d:60c7:: with SMTP id x7mr28770641wrt.138.1593685817345;
-        Thu, 02 Jul 2020 03:30:17 -0700 (PDT)
+        bh=F0K1et+c7L37Nzbq/fKuHgV+8Ew7PJCWV3QsyfuXTTU=;
+        b=mH3zxCfyHJjTchPZkD0HE55N3x8aIliXsWn2XgP33XYVEY3pf7bajTQdw3ygjkCLxv
+         MACyEaxmiRDt+Dd+999JUaFtWMtMydM7mSf9fp+W/bfFSUqCqEgIswRk3sW9YKOQHlYw
+         69i7rQHAesrrUfqlC+B2bChJ1C93QdntFx5lt/XqTtWBne/ce5+arH/HxEei8YO/SbJ6
+         0J9MLLl5earyaMpgfP06GqbFZ7lu4krgQMEugJ2P/zNdwgc+aPF0ISuGHmIaxNNvp1K5
+         L1TTxK/GdFLR8NiyxZ6EOJPFrt/ifjGEzQyujlKh7YxFQ/P+/4Wgvwhms4LMjSZmffMr
+         KAMQ==
+X-Gm-Message-State: AOAM531NBlm2WROZAmUe6h0XY3KteWr5Y80VNUUxgAFlzR5iQrpNczSq
+        T2hoED6pWWtb7MrtpRpoK143fw==
+X-Google-Smtp-Source: ABdhPJxpt2WM81j7Hv6WASmS6W6A/F8mIqAkpSUNmRxtPrR70qHkjCCQsBYAX7aF5NGaExVifQrfNw==
+X-Received: by 2002:a1c:c242:: with SMTP id s63mr30819203wmf.146.1593685813052;
+        Thu, 02 Jul 2020 03:30:13 -0700 (PDT)
 Received: from localhost.localdomain (dh207-99-59.xnet.hr. [88.207.99.59])
-        by smtp.googlemail.com with ESMTPSA id 68sm10406912wmz.40.2020.07.02.03.30.16
+        by smtp.googlemail.com with ESMTPSA id 68sm10406912wmz.40.2020.07.02.03.30.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2020 03:30:16 -0700 (PDT)
+        Thu, 02 Jul 2020 03:30:12 -0700 (PDT)
 From:   Robert Marko <robert.marko@sartura.hr>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
@@ -54,9 +54,9 @@ To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         linux-arm-msm@vger.kernel.org, agross@kernel.org,
         bjorn.andersson@linaro.org, robh+dt@kernel.org
 Cc:     Robert Marko <robert.marko@sartura.hr>
-Subject: [net-next,PATCH 4/4] dt-bindings: mdio-ipq4019: add clock support
-Date:   Thu,  2 Jul 2020 12:30:01 +0200
-Message-Id: <20200702103001.233961-5-robert.marko@sartura.hr>
+Subject: [net-next,PATCH 2/4] net: mdio-ipq4019: add clock support
+Date:   Thu,  2 Jul 2020 12:29:59 +0200
+Message-Id: <20200702103001.233961-3-robert.marko@sartura.hr>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200702103001.233961-1-robert.marko@sartura.hr>
 References: <20200702103001.233961-1-robert.marko@sartura.hr>
@@ -67,35 +67,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds the necessary bindings for SoC-s that have a separate MDIO clock.
+Some newer SoC-s have a separate MDIO clock that needs to be enabled.
+So lets add support for handling the clocks to the driver.
 
 Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 ---
- .../devicetree/bindings/net/qcom,ipq4019-mdio.yaml    | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/phy/mdio-ipq4019.c | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml b/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
-index 13555a89975f..06b4eedb4370 100644
---- a/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
-+++ b/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
-@@ -25,6 +25,17 @@ properties:
-   reg:
-     maxItems: 1
+diff --git a/drivers/net/phy/mdio-ipq4019.c b/drivers/net/phy/mdio-ipq4019.c
+index 0e78830c070b..7660bf006da0 100644
+--- a/drivers/net/phy/mdio-ipq4019.c
++++ b/drivers/net/phy/mdio-ipq4019.c
+@@ -9,6 +9,7 @@
+ #include <linux/iopoll.h>
+ #include <linux/of_address.h>
+ #include <linux/of_mdio.h>
++#include <linux/clk.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
  
-+  clocks:
-+    maxItems: 1
+@@ -24,8 +25,12 @@
+ #define IPQ4019_MDIO_TIMEOUT	10000
+ #define IPQ4019_MDIO_SLEEP		10
+ 
++#define QCA_MDIO_CLK_DEFAULT_RATE	100000000
 +
-+  clock-names:
-+    items:
-+      - const: mdio_ahb
-+    maxItems: 1
+ struct ipq4019_mdio_data {
+-	void __iomem	*membase;
++	void __iomem		*membase;
++	struct clk			*mdio_clk;
++	u32					clk_freq;
+ };
+ 
+ static int ipq4019_mdio_wait_busy(struct mii_bus *bus)
+@@ -100,6 +105,7 @@ static int ipq4019_mdio_probe(struct platform_device *pdev)
+ {
+ 	struct ipq4019_mdio_data *priv;
+ 	struct mii_bus *bus;
++	struct device_node *np = pdev->dev.of_node;
+ 	int ret;
+ 
+ 	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
+@@ -112,6 +118,26 @@ static int ipq4019_mdio_probe(struct platform_device *pdev)
+ 	if (IS_ERR(priv->membase))
+ 		return PTR_ERR(priv->membase);
+ 
++	priv->mdio_clk = devm_clk_get_optional(&pdev->dev, "mdio_ahb");
++	if (!IS_ERR(priv->mdio_clk)) {
++		if (of_property_read_u32(np, "clock-frequency", &priv->clk_freq)) {
++			dev_warn(&pdev->dev, "Cannot find MDIO clock frequency, using default!\n");
++			priv->clk_freq = QCA_MDIO_CLK_DEFAULT_RATE;
++		}
 +
-+  clock-frequency:
-+    default: 100000000
++		ret = clk_set_rate(priv->mdio_clk, priv->clk_freq);
++		if (ret) {
++			dev_err(&pdev->dev, "Cannot set MDIO clock rate!\n");
++			return ret;
++		}
 +
- required:
-   - compatible
-   - reg
++		ret = clk_prepare_enable(priv->mdio_clk);
++		if (ret) {
++			dev_err(&pdev->dev, "Cannot enable MDIO clock!\n");
++			return ret;
++		}
++	}
++
+ 	bus->name = "ipq4019_mdio";
+ 	bus->read = ipq4019_mdio_read;
+ 	bus->write = ipq4019_mdio_write;
 -- 
 2.26.2
 
