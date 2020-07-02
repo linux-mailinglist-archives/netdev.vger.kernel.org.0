@@ -2,207 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5550C2123A5
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 14:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B239A2123B2
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 14:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729015AbgGBMqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 08:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728875AbgGBMqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 08:46:45 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A500EC08C5C1
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 05:46:44 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id dp18so29393251ejc.8
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 05:46:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=OZapjkMScVIrstSkX0mIC5olbP3zrciZIMCY+tSnuRw=;
-        b=Ej7YQvLZnSpoGD8JTwx6ejxc/qvpsz07mRAnzXGMx7CjgG4WzN22X7PuYPFetDoSwk
-         acEudpYc6lYUh9/pitVq/f69wSHgZ2V9BOGnEwnS06LA76dd6wJh29n3BkNE63tA6Cb7
-         eG6Gz9L9x/MGFiCE5E303onmECFlHpuUU+0hY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=OZapjkMScVIrstSkX0mIC5olbP3zrciZIMCY+tSnuRw=;
-        b=m9IkFimd/SKbpaS7QPDxDwXeH4OGxLw1CCg4EJhMf1oMWlzflfVpagTspjcirbfy+I
-         vE6NHtS3IheBAE5I+cPUQJuP6gE1MaiOGev5wl7uG9/SAE6FetHfHv2QeWjM1WbAXMUG
-         bYTjE3qFbbHq3l850VakqTFEsf6X4Jvp7X5AIKue0tB5wTWFGa7GNBx/17OgpZxFyxyo
-         auFZVkkp1H7sqVy0hkfK2KmD0y8qSulMcaTP+F3VAOQQh0pqSjtYsA3790lBLdoFxLp2
-         HQMdEasNMNxsrJiFiowqBVZ9DIhTrZ57j6Aj1E1Ok1MtbWox/hAJ716k6SoKP9UVABgC
-         3SLw==
-X-Gm-Message-State: AOAM530T8rPL9tKIS7+CuYgOQkgCoeZY+EsoHpDC3Niw1Y+SJRvlfa8Q
-        SFTqJw3Q2CIK20Z8iZmIDFtTKQ==
-X-Google-Smtp-Source: ABdhPJwLGHkfiTaFLMJ+1fVVeiugmoPZq/QdlhhhsZNoVHE6hnqzhCYAxgQ9JFqulll4LuZARS0JLw==
-X-Received: by 2002:a17:906:57da:: with SMTP id u26mr28312297ejr.157.1593694003341;
-        Thu, 02 Jul 2020 05:46:43 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id n16sm6864449ejo.54.2020.07.02.05.46.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2020 05:46:42 -0700 (PDT)
-References: <20200702092416.11961-1-jakub@cloudflare.com> <20200702092416.11961-5-jakub@cloudflare.com> <CACAyw9-6OCPqg3eoPOPeKYy=kBNVJT8-qbLh6QOo=8aEV6pWjw@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>
-Subject: Re: [PATCH bpf-next v3 04/16] inet: Run SK_LOOKUP BPF program on socket lookup
-In-reply-to: <CACAyw9-6OCPqg3eoPOPeKYy=kBNVJT8-qbLh6QOo=8aEV6pWjw@mail.gmail.com>
-Date:   Thu, 02 Jul 2020 14:46:41 +0200
-Message-ID: <87mu4inky6.fsf@cloudflare.com>
+        id S1729042AbgGBMw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 08:52:29 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:47408 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729000AbgGBMwZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 08:52:25 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 19E1F600AE;
+        Thu,  2 Jul 2020 12:52:24 +0000 (UTC)
+Received: from us4-mdac16-69.ut7.mdlocal (unknown [10.7.64.188])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 167F18009B;
+        Thu,  2 Jul 2020 12:52:24 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.42])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 99C7528005C;
+        Thu,  2 Jul 2020 12:52:23 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2CA76A40075;
+        Thu,  2 Jul 2020 12:52:23 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 2 Jul 2020
+ 13:52:18 +0100
+Subject: Re: [PATCH net-next 01/15] sfc: support setting MTU even if not
+ privileged to configure MAC fully
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>,
+        Matthew Slattery <mslattery@solarflare.com>
+References: <3fa88508-024e-2d33-0629-bf63b558b515@solarflare.com>
+ <db235d46-96b0-ee6d-f09b-774e6fd9a072@solarflare.com>
+ <20200701120311.4821118c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3b76efb6-4b02-a26d-5284-65ab37b79ef5@solarflare.com>
+ <20200701161636.3399d902@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <dcf4cd6d-852e-470c-97d7-9ecac2b01909@solarflare.com>
+Date:   Thu, 2 Jul 2020 13:52:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200701161636.3399d902@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25516.003
+X-TM-AS-Result: No-4.057700-8.000000-10
+X-TMASE-MatchedRID: 6lay9u8oTUPmLzc6AOD8DfHkpkyUphL9+IfriO3cV8S60YSotNAEAaYi
+        WP3aRz188Rp7Tule6dEuwVUIyAnb/6Gnquim0WHzN19PjPJahlJMkOX0UoduucFKi4VGOHQCqzs
+        f3Jwr9ui9MU2jw9S6SLaSYwPCkJzm7a5dyb9gTluqNnzrkU+2mg6Q6jcoR+5pe/eKgB30qtJVds
+        3zwgq4tIWEWUKkKeAkM+kmV2nXHxbxkb6LzfJ2UBSceev8ZtpP1wL0WtLXyRonA7VJKtQPnp62L
+        mVTodVc3pdoV72Pca/TMj+5r/4Bdusc22+Ah2rbsFkCLeeufNsOZNXmvnJaeiNGK7UC7ElM43vG
+        oPn/75lgSb4kd+7HJdjiRir+OioWnBrl0ok/9ei5xbPXEl8dZtPaSXiLjsu7X1Ahz57P/j5qQKt
+        eErN22bedi2bvzW7j+9AI+LLwgRy/WXZS/HqJ2gtuKBGekqUpm+MB6kaZ2g6UZERFFIClNhn6o5
+        k1jkuX/+MqKcWGl8q24ZMYLscAzhXzzNzH1zIZET89uGBnyLVZuv895W/y8i/+4JnpTNYN1tqAj
+        jsYv/iHzGTHoCwyHhlNKSp2rPkW5wiX7RWZGYs2CWDRVNNHuzflzkGcoK72
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--4.057700-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25516.003
+X-MDID: 1593694344-NEnaTZtEcmd5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 02, 2020 at 12:27 PM CEST, Lorenz Bauer wrote:
-> On Thu, 2 Jul 2020 at 10:24, Jakub Sitnicki <jakub@cloudflare.com> wrote:
->>
->> Run a BPF program before looking up a listening socket on the receive path.
->> Program selects a listening socket to yield as result of socket lookup by
->> calling bpf_sk_assign() helper and returning BPF_REDIRECT (7) code.
->>
->> Alternatively, program can also fail the lookup by returning with
->> BPF_DROP (1), or let the lookup continue as usual with BPF_OK (0) on
->> return. Other return values are treated the same as BPF_OK.
->
-> I'd prefer if other values were treated as BPF_DROP, with other semantics
-> unchanged. Otherwise we won't be able to introduce new semantics
-> without potentially breaking user code.
+On 02/07/2020 00:16, Jakub Kicinski wrote:
+> I see. I'm actually asking because of efx_ef10_set_udp_tnl_ports().
+> I'd like to rewrite the UDP tunnel code so that 
+> NETIF_F_RX_UDP_TUNNEL_PORT only appears on the interface if it 
+> _really_ can do the offload. ef10 is the only driver I've seen where 
+> I can't be sure what FW will say.. (other than liquidio, but that's 
+> more of a kernel<->FW proxy than a driver, sigh).
+I suppose it's time for me to describe the gory details ofhow EF10
+ tunnel offloads work, then.  When changing the list of UDP tunnel
+ ports, the MC patches the header-recogniser firmware and reboots
+ the datapath CPUs (packet parsing on EF10 is done on a pair of
+ DPCPUs with specialised instruction set extensions, and it wasn't
+ originally designed with tunnel offloads in mind).  Unfortunately,
+ to synchronise everything afterwards, the MC then has to reboot
+ itself too.
+Needless to say, this is fairly disruptive, especially as it's
+ global across _both_ ports of a two-port NIC (which is what that
+ EIO check in efx_ef10_set_udp_tnl_ports() is about: when you bring
+ up a tunnel device, both netdevs get the ndo callback, the first
+ one offloads the port, causing a reboot, which interrupts the
+ second port's MCDI.  Once the MC comes back up, the second netdev
+ tries again to offload the UDP port, and this time the MC only has
+ to increase a refcount, since the first netdev already added that
+ port, so it can return success without another reboot).
 
-That might be surprising or even risky. If you attach a badly written
-program that say returns a negative value, it will drop all TCP SYNs and
-UDP traffic.
+> Is there anything I can condition on there?
+I _believe_ this is determined by another drv_attach flag,
+ MC_CMD_DRV_ATTACH_EXT_OUT_FLAG_TRUSTED, but again I'm not 100%
+ sure; it might be the PRIMARY flag instead.  I've CCed Matthew
+ Slattery from our firmware team who should be able to answer.
+It also depends on the VXLAN_NVGRE firmware capability, which
+ efx_ef10_set_udp_tnl_ports() already checks.  Note that firmware
+ capabilities can also change on an MC reboot (see the code that
+ handles nic_data->must_check_datapath_caps).
 
->
->>
->> This lets the user match packets with listening sockets freely at the last
->> possible point on the receive path, where we know that packets are destined
->> for local delivery after undergoing policing, filtering, and routing.
->>
->> With BPF code selecting the socket, directing packets destined to an IP
->> range or to a port range to a single socket becomes possible.
->>
->> In case multiple programs are attached, they are run in series in the order
->> in which they were attached. The end result gets determined from return
->> code from each program according to following rules.
->>
->>  1. If any program returned BPF_REDIRECT and selected a valid socket, this
->>     socket will be used as result of the lookup.
->>  2. If more than one program returned BPF_REDIRECT and selected a socket,
->>     last selection takes effect.
->>  3. If any program returned BPF_DROP and none returned BPF_REDIRECT, the
->>     socket lookup will fail with -ECONNREFUSED.
->>  4. If no program returned neither BPF_DROP nor BPF_REDIRECT, socket lookup
->>     continues to htable-based lookup.
->>
->> Suggested-by: Marek Majkowski <marek@cloudflare.com>
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
->>
->> Notes:
->>     v3:
->>     - Use a static_key to minimize the hook overhead when not used. (Alexei)
->>     - Adapt for running an array of attached programs. (Alexei)
->>     - Adapt for optionally skipping reuseport selection. (Martin)
->>
->>  include/linux/bpf.h        | 29 ++++++++++++++++++++++++++++
->>  include/linux/filter.h     | 39 ++++++++++++++++++++++++++++++++++++++
->>  kernel/bpf/net_namespace.c | 32 ++++++++++++++++++++++++++++++-
->>  net/core/filter.c          |  2 ++
->>  net/ipv4/inet_hashtables.c | 31 ++++++++++++++++++++++++++++++
->>  5 files changed, 132 insertions(+), 1 deletion(-)
->>
-
-[...]
-
->> diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
->> index 090166824ca4..a7768feb3ade 100644
->> --- a/kernel/bpf/net_namespace.c
->> +++ b/kernel/bpf/net_namespace.c
->> @@ -25,6 +25,28 @@ struct bpf_netns_link {
->>  /* Protects updates to netns_bpf */
->>  DEFINE_MUTEX(netns_bpf_mutex);
->>
->> +static void netns_bpf_attach_type_disable(enum netns_bpf_attach_type type)
->
-> Nit: maybe netns_bpf_attach_type_dec()? Disable sounds like it happens
-> unconditionally.
-
-attach_type_dec()/_inc() seems a bit cryptic, since it's not the attach
-type we are incrementing/decrementing.
-
-But I was considering _need()/_unneed(), which would follow an existing
-example, if you think that improves things.
-
->
->> +{
->> +       switch (type) {
->> +       case NETNS_BPF_SK_LOOKUP:
->> +               static_branch_dec(&bpf_sk_lookup_enabled);
->> +               break;
->> +       default:
->> +               break;
->> +       }
->> +}
->> +
->> +static void netns_bpf_attach_type_enable(enum netns_bpf_attach_type type)
->> +{
->> +       switch (type) {
->> +       case NETNS_BPF_SK_LOOKUP:
->> +               static_branch_inc(&bpf_sk_lookup_enabled);
->> +               break;
->> +       default:
->> +               break;
->> +       }
->> +}
->> +
->>  /* Must be called with netns_bpf_mutex held. */
->>  static void netns_bpf_run_array_detach(struct net *net,
->>                                        enum netns_bpf_attach_type type)
->> @@ -93,6 +115,9 @@ static void bpf_netns_link_release(struct bpf_link *link)
->>         if (!net)
->>                 goto out_unlock;
->>
->> +       /* Mark attach point as unused */
->> +       netns_bpf_attach_type_disable(type);
->> +
->>         /* Remember link position in case of safe delete */
->>         idx = link_index(net, type, net_link);
->>         list_del(&net_link->node);
->> @@ -416,6 +441,9 @@ static int netns_bpf_link_attach(struct net *net, struct bpf_link *link,
->>                                         lockdep_is_held(&netns_bpf_mutex));
->>         bpf_prog_array_free(run_array);
->>
->> +       /* Mark attach point as used */
->> +       netns_bpf_attach_type_enable(type);
->> +
->>  out_unlock:
->>         mutex_unlock(&netns_bpf_mutex);
->>         return err;
->> @@ -491,8 +519,10 @@ static void __net_exit netns_bpf_pernet_pre_exit(struct net *net)
->>         mutex_lock(&netns_bpf_mutex);
->>         for (type = 0; type < MAX_NETNS_BPF_ATTACH_TYPE; type++) {
->>                 netns_bpf_run_array_detach(net, type);
->> -               list_for_each_entry(net_link, &net->bpf.links[type], node)
->> +               list_for_each_entry(net_link, &net->bpf.links[type], node) {
->>                         net_link->net = NULL; /* auto-detach link */
->> +                       netns_bpf_attach_type_disable(type);
->> +               }
->>                 if (net->bpf.progs[type])
->>                         bpf_prog_put(net->bpf.progs[type]);
->>         }
->> diff --git a/net/core/filter.c b/net/core/filter.c
-
-[...]
+-ed
