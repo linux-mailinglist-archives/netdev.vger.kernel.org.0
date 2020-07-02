@@ -2,100 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5151C2121ED
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 13:15:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0225E212228
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 13:24:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728532AbgGBLP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 07:15:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45312 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726483AbgGBLP0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jul 2020 07:15:26 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 39A572070C;
-        Thu,  2 Jul 2020 11:15:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593688524;
-        bh=T46/s05JJaZY2ZsHB2+vCYi4rc2Z76kKYeyjd9/b608=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gYGVYjx2o+x8wg68Phh08ojPd0/BADKrvWSBawDOYoPfijtZHJ8u0lX3jtYM9Xffv
-         QDVI9AS8f47OCMoW7Q6Z0lofKG1JRc0mHxla4MXRXPpIWec/M02j21S73Ok0S1lDur
-         VZmQf/hsuT3k/qSXB5KFReklPLuh7eO1OGar5s2g=
-Date:   Thu, 2 Jul 2020 12:15:22 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Takashi Iwai <tiwai@suse.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>,
-        lee.jones@linaro.org
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-Message-ID: <20200702111522.GA4483@sirena.org.uk>
-References: <s5h5zcistpb.wl-tiwai@suse.de>
- <20200527071733.GB52617@kroah.com>
- <20200629203317.GM5499@sirena.org.uk>
- <20200629225959.GF25301@ziepe.ca>
- <20200630103141.GA5272@sirena.org.uk>
- <20200630113245.GG25301@ziepe.ca>
- <936d8b1cbd7a598327e1b247441fa055d7083cb6.camel@linux.intel.com>
- <20200630172710.GJ25301@ziepe.ca>
- <20200701095049.GA5988@sirena.org.uk>
- <20200701233250.GP25301@ziepe.ca>
+        id S1728686AbgGBLYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 07:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46770 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728009AbgGBLYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 07:24:34 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FABC08C5C1;
+        Thu,  2 Jul 2020 04:24:34 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id h39so13604647ybj.3;
+        Thu, 02 Jul 2020 04:24:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xfLhyiqMmx1NCC5JE+0HxGjF069HkR8d5YN5c8Btfo4=;
+        b=C35MPbNLIuMq732j0GgyfPbKMsobyWCOwn8hHThTspTJTptBqeAUt6mGaqyIMGR9V2
+         HsSJ261NJD3SHV3RfpzFpUXwPOweaMfL7nq7+hZXfdkcQu5i1D6aetwb6yZHPKG3tdo3
+         tGNZGLjbynfhGbRffIQr+Iqd9yDSt3PHobxRTBIAA+mvt3xPxKv7zi966/lA2kKeWicP
+         jCB2h3PtY5St3xT4z0H/4zNtcNlP65uXYVpjaDWszEkcdn+SxA0d5yeWriRqjat2wSW8
+         b2Niphpig/aYz1+StJenifN6TdoahhJtQtVEr9FPVzfQtIjHWSOt+6F3Sj6DvUNqz7WX
+         a5ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xfLhyiqMmx1NCC5JE+0HxGjF069HkR8d5YN5c8Btfo4=;
+        b=PwkN0hPZGHAOy87xsEw2962ST0JYe4deqXm9S83hXP1emG55WNeZUTG2cuyFuBF3pW
+         ruVVfd1pK9O3yjWOimG+hCaSlvEMM/HdUtlLvCmt3VmomSUoN+0t6K/vTMf0COGGS33u
+         kantBzVApyHsAZPWmSoUdlex+QWWW5DPbonAKbsy9oYCogcGoEByVYrT77hMk5sBElQF
+         A3tDnLrx4/V+IrAQmQGKTCfOzkLi7hoxapntyKEfBexC+sAVi6S/HpT/TfnOJthk+TLs
+         MvNApYDSi/UBH4ktGU09ztv94Y7KqihgKOI9d3xgY2G2A8ET52VhlqalH3xUOyNmtpJ/
+         taqA==
+X-Gm-Message-State: AOAM531xvMtKhZdU5hJ1ho/14L2ouFR6JBjonJo2xT3PR5GACsvnJL6n
+        RfO2bzIPIhGH7YzOJcVBaxl1xzkQnseW+oqc5g==
+X-Google-Smtp-Source: ABdhPJy7uwt23VfDJUKKp8sgkdJXhClQkyVpVNzPbbnm1avKdbGjBHHb/mZU/zqx6ie1Cxq5fXFnmu9TQ3SczWuqZo0=
+X-Received: by 2002:a05:6902:692:: with SMTP id i18mr50181764ybt.164.1593689073502;
+ Thu, 02 Jul 2020 04:24:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gKMricLos+KVdGMg"
-Content-Disposition: inline
-In-Reply-To: <20200701233250.GP25301@ziepe.ca>
-X-Cookie: I'm rated PG-34!!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200702021646.90347-1-danieltimlee@gmail.com>
+ <20200702021646.90347-4-danieltimlee@gmail.com> <CAEf4BzZsx+pkkdjhJt1AHaUy6=B=nqZdpR+TrRrjreNa0GMWug@mail.gmail.com>
+In-Reply-To: <CAEf4BzZsx+pkkdjhJt1AHaUy6=B=nqZdpR+TrRrjreNa0GMWug@mail.gmail.com>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Thu, 2 Jul 2020 20:24:17 +0900
+Message-ID: <CAEKGpzikhnamOsh=qnmYPJ+6Lr2c4arOdqhuACdHTXmwEF1naQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/4] samples: bpf: refactor BPF map performance
+ test with libbpf
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jul 2, 2020 at 1:34 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Jul 1, 2020 at 7:17 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+> >
+> > Previously, in order to set the numa_node attribute at the time of map
+> > creation using "libbpf", it was necessary to call bpf_create_map_node()
+> > directly (bpf_load approach), instead of calling bpf_object_load()
+> > that handles everything on its own, including map creation. And because
+> > of this problem, this sample had problems with refactoring from bpf_load
+> > to libbbpf.
+> >
+> > However, by commit 1bdb6c9a1c43 ("libbpf: Add a bunch of attribute
+> > getters/setters for map definitions"), a helper function which allows
+> > the numa_node attribute to be set in the map prior to calling
+> > bpf_object_load() has been added.
+> >
+> > By using libbpf instead of bpf_load, the inner map definition has
+> > been explicitly declared with BTF-defined format. And for this reason
+> > some logic in fixup_map() was not needed and changed or removed.
+> >
+> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> > ---
+> >  samples/bpf/Makefile             |   2 +-
+> >  samples/bpf/map_perf_test_kern.c | 180 +++++++++++++++----------------
+> >  samples/bpf/map_perf_test_user.c | 130 +++++++++++++++-------
+> >  3 files changed, 181 insertions(+), 131 deletions(-)
+> >
+>
+> [...]
+>
+> > +struct inner_lru {
+> > +       __uint(type, BPF_MAP_TYPE_LRU_HASH);
+> > +       __type(key, u32);
+> > +       __type(value, long);
+> > +       __uint(max_entries, MAX_ENTRIES);
+> > +       __uint(map_flags, BPF_F_NUMA_NODE); /* from _user.c, set numa_node to 0 */
+> > +} inner_lru_hash_map SEC(".maps");
+>
+> you can declaratively set numa_node here with __uint(numa_node, 0),
+> which is actually a default, but for explicitness it's better
+>
 
---gKMricLos+KVdGMg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+It would make _user.c code cleaner, but as you said,
+I'll keep with this implementation.
 
-On Wed, Jul 01, 2020 at 08:32:50PM -0300, Jason Gunthorpe wrote:
-> On Wed, Jul 01, 2020 at 10:50:49AM +0100, Mark Brown wrote:
+> > +
+> > +struct {
+> > +       __uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
+> > +       __uint(max_entries, MAX_NR_CPUS);
+> > +       __uint(key_size, sizeof(u32));
+> > +       __array(values, struct inner_lru); /* use inner_lru as inner map */
+> > +} array_of_lru_hashs SEC(".maps");
+> > +
+>
+> [...]
+>
+> > -static void fixup_map(struct bpf_map_data *map, int idx)
+> > +static void fixup_map(struct bpf_object *obj)
+> >  {
+> > +       struct bpf_map *map;
+> >         int i;
+> >
+> > -       if (!strcmp("inner_lru_hash_map", map->name)) {
+> > -               inner_lru_hash_idx = idx;
+> > -               inner_lru_hash_size = map->def.max_entries;
+> > -       }
+> > +       bpf_object__for_each_map(map, obj) {
+> > +               const char *name = bpf_map__name(map);
+> >
+> > -       if (!strcmp("array_of_lru_hashs", map->name)) {
+>
+> I'm a bit too lazy right now to figure out exact logic here, but just
+> wanted to mention that it is possible to statically set inner map
+> elements for array_of_maps and hash_of_maps. Please check
+> tools/testing/selftests/bpf/progs/test_btf_map_in_map.c and see if you
+> can use this feature to simplify this logic a bit.
+>
 
-> > Another part of this is that there's not a clean cut over between MMIO
-> > and not using any hardware resources at all - for example a device might
-> > be connected over I2C but use resources to distribute interrupts to
-> > subdevices.
+Thanks for the feedback! But I'm not sure I'm following properly.
 
-> How does the subdevice do anything if it only received an interrupt?
+If what you are talking about is specifying the inner_map_idx of
+array_of_lru_hashes, I've changed it by using the __array() directives
+of the BTF-defined MAP.
 
-Via some bus that isn't memory mapped like I2C or SPI.
+Since inner_map_idx logic has been replaced with BTF-defined map
+definition, the only thing left at here fixup_map() is just resizing map size
+with bpf_map__resize.
 
-> That sounds rather more like virtual bus's use case..
+Thanks for your time and effort for the review.
+Daniel
 
-These are very much physical devices often with distinct IPs in distinct
-address ranges and so on, it's just that those addresses happen not to
-be on buses it is sensible to memory map.
-
---gKMricLos+KVdGMg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl79wckACgkQJNaLcl1U
-h9CHqwf9FtZW3uRoi7muHR8kqXkUw0BLi3DH3/wixl7IIJS7enYClmelX0TnUHCW
-KCS2vc3hU1RKNFLComkzWs6rQoY8extTzFMvz56nHSoxzAY8oMDRyqiR1uRJB30l
-FCbvGaZg/m/q0rMpsGG7prF17Kf5e3JzRTPMWR2mTeZARDpkftWeFwAPBeAqD2vv
-YopwSL5iwcxzpxS7S8hhQP3oyLr+MXSgiSbhBt0uIfBtXrpJkuxGWQXOS/JePmUm
-1M7S4XTtVOD0vtdG796x/LZfYQ8edWuKS6p+FfZhRES0y6t8j0OettPiWr+SC85c
-e7AXbLy/51pqnBAJI8bAPjlGWzYiyw==
-=vMGu
------END PGP SIGNATURE-----
-
---gKMricLos+KVdGMg--
+> > -               if (inner_lru_hash_idx == -1) {
+> > -                       printf("inner_lru_hash_map must be defined before array_of_lru_hashs\n");
+> > -                       exit(1);
+> > +               /* Only change the max_entries for the enabled test(s) */
+> > +               for (i = 0; i < NR_TESTS; i++) {
+> > +                       if (!strcmp(test_map_names[i], name) &&
+> > +                           (check_test_flags(i))) {
+> > +                               bpf_map__resize(map, num_map_entries);
+> > +                               continue;
+> > +                       }
+> >                 }
+> > -               map->def.inner_map_idx = inner_lru_hash_idx;
+> > -               array_of_lru_hashs_idx = idx;
+> >         }
+> >
+>
+> [...]
