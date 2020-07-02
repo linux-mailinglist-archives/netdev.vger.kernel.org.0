@@ -2,66 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 018DE212CCD
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 21:10:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DFAA212D04
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 21:19:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726053AbgGBTKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 15:10:36 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:55976 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725994AbgGBTKg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 15:10:36 -0400
-Received: from ip5f5af08c.dynamic.kabel-deutschland.de ([95.90.240.140] helo=wittgenstein)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1jr4bJ-0006To-N4; Thu, 02 Jul 2020 19:10:25 +0000
-Date:   Thu, 2 Jul 2020 21:10:25 +0200
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Matt Bennett <matt.bennett@alliedtelesis.co.nz>,
-        netdev@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>,
-        linux-kernel@vger.kernel.org, zbr@ioremap.net
-Subject: Re: [PATCH 0/5] RFC: connector: Add network namespace awareness
-Message-ID: <20200702191025.bqxqwsm6kwnhm2p7@wittgenstein>
-References: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz>
- <87h7uqukct.fsf@x220.int.ebiederm.org>
+        id S1726030AbgGBTSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 15:18:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725954AbgGBTSu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 15:18:50 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36EFC08C5DE
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 12:18:49 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id n5so25010186otj.1
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 12:18:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jRIEBzGgN4d7YlR7st1P/jWdFL9XQ3Vl0E8DBG5inJM=;
+        b=uptIQwwuu7LLhQ5BebZnRucA4yx79hkX9MsCaNgPXHc+4sW6fYb8Ma0WG/QZ6fYDkL
+         7CdXciQXPoZxefKXg1aZlVZGomC5VgFvYZCCemrYwiAPfqPIaUh79kgKi/RAkg9NRpIv
+         AjNvVa2FLRKmfGQ/C+ofSk4ZhzxoQdi9jDHGlirho0fHOyp+rCJ0YlEl11rhG/0s5zrE
+         QI0PanE9bioGWA7kRhJuQwMURFJnvxBrc6k43Qo+XGhB+BEYvu00QTsAmH7fhkF+ZWxZ
+         XHkhl2rsZQPDiwm67Y1VvB0XPSN50TfH5XsIbY8Us3IK3Vsy6Qv0fkUNBNL1oMFKSuLj
+         zn2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jRIEBzGgN4d7YlR7st1P/jWdFL9XQ3Vl0E8DBG5inJM=;
+        b=r+cLMs664+yxcryxmGZJRAHrzuAPt4TB5KlHYsgXaA3IY5QtyVn2s2AApFfcvuNylT
+         tVk6Om3QYSEgmgcSvPPK2VyQd7o6POtLwb2bqQHBZdvsZF1xGqPZncXVFvwumR7sxQq+
+         TiQwJj+T3qyR7yP/amBkVy2pMZWMWQtHpTnqMqV6OV5GZfS8ef2ekDiHozg1efA2BBWS
+         c0YH+I1DA1ftTdE2ntFx83i+2t46mAclix6GQD7KlLhmifGZ+R+WPPdEqC/z1mYaok48
+         ZF+fL8Jj1oVC3oJL5kSQd7rO1QVfvqJcht3qTnLhIY/6T/iEzMJ9EaFg7dyOR5Bsx9Mo
+         LBug==
+X-Gm-Message-State: AOAM533wHOl0c7nukWodeKM9SaMS/horx+oRZA+dQdTfjeyTWEUmtXRI
+        46dIKad8JpOPpCrrx0Cc3yyPHDcaXcOhp4o12gkioA==
+X-Google-Smtp-Source: ABdhPJyE9o5qsn4mmfg/bTi/do0nytBCytI9l2XHtzasMOIfuZopADxFdFg4hQFCUv8pGK/sonqdb5SzWJU+UiPGXwM=
+X-Received: by 2002:a9d:69c9:: with SMTP id v9mr28599024oto.66.1593717529169;
+ Thu, 02 Jul 2020 12:18:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <87h7uqukct.fsf@x220.int.ebiederm.org>
+References: <20200702103001.233961-1-robert.marko@sartura.hr>
+ <20200702103001.233961-5-robert.marko@sartura.hr> <20200702133842.GK730739@lunn.ch>
+In-Reply-To: <20200702133842.GK730739@lunn.ch>
+From:   Robert Marko <robert.marko@sartura.hr>
+Date:   Thu, 2 Jul 2020 21:18:38 +0200
+Message-ID: <CA+HBbNGcV0H4L4gzWOUs8GDkiMEOaGdeVhAbtfcT5-PGmVJjfA@mail.gmail.com>
+Subject: Re: [net-next,PATCH 4/4] dt-bindings: mdio-ipq4019: add clock support
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        robh+dt@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 02, 2020 at 08:17:38AM -0500, Eric W. Biederman wrote:
-> Matt Bennett <matt.bennett@alliedtelesis.co.nz> writes:
-> 
-> > Previously the connector functionality could only be used by processes running in the
-> > default network namespace. This meant that any process that uses the connector functionality
-> > could not operate correctly when run inside a container. This is a draft patch series that
-> > attempts to now allow this functionality outside of the default network namespace.
-> >
-> > I see this has been discussed previously [1], but am not sure how my changes relate to all
-> > of the topics discussed there and/or if there are any unintended side effects from my draft
-> > changes.
-> 
-> Is there a piece of software that uses connector that you want to get
-> working in containers?
-> 
-> I am curious what the motivation is because up until now there has been
-> nothing very interesting using this functionality.  So it hasn't been
-> worth anyone's time to make the necessary changes to the code.
-
-Imho, we should just state once and for all that the proc connector will
-not be namespaced. This is such a corner-case thing and has been
-non-namespaced for such a long time without consistent push for it to be
-namespaced combined with the fact that this needs quite some code to
-make it work correctly that I fear we end up buying more bugs than we're
-selling features. And realistically, you and I will end up maintaining
-this and I feel this is not worth the time(?). Maybe I'm being too
-pessimistic though.
-
-Christian
+On Thu, Jul 2, 2020 at 3:38 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > +  clock-frequency:
+> > +    default: 100000000
+>
+> IEEE 802.3 says the default should be 2.5MHz. Some PHYs will go
+> faster, but 100MHz seems unlikely!
+This MDIO controller has an internal divider, by default its set for
+100MHz clock.
+In IPQ4019 MDIO clock is not controllable but in IPQ6018 etc it's controllable.
+That is the only combination I have currently seen used by Qualcomm.
+>
+>      Andrew
