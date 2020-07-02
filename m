@@ -2,172 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08528212065
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:54:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82FBF21206E
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:57:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727991AbgGBJyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 05:54:47 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:15418 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726089AbgGBJyq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 05:54:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1593683686; x=1625219686;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9IjoSkf5FlBdrlrUXBybJL2LYBcavielxSsZqZ0vPQ4=;
-  b=AwYAUuX7nB+0wrWNKfg9jmmKH+Mo4bnT9wKMteyR/XOX4bBvvV0Di2CA
-   SIPR2FcqRRpYJQ3lNv9cZRXv7LGwpdatKJIOpjGzIbCAzN6bZZsYrNjXl
-   AY7XPHgr8dHcN6mXpzjxJlTdB1m3Y7bH3NL4nHG3yVd2FI9GAvzXzkZab
-   HSGxrtWUG0s58FVDM6yk4OSMRgtOwtCZlwnnkrnfvPGcLAtzEN0s5po27
-   FUw7LoENbwiLm/CPhlOCEF0mA8geezyLEYFDCPevDL1wNz3J9wlZsxWmD
-   6pBX2iMdAd7ZLMtAHq/XK/UzkTRTTMNalNkuFb4nyoSGOBkm2TZRb41no
-   w==;
-IronPort-SDR: jZxZUAxCPSUboRxagsqrGuCBYm9ScyElZLAYz5WefOGn4rdUAsaqmV7xyZyVeTo8O+EGXPTk9o
- 1ofzar0feEsa1OiBpQ4nP6/h+LoQwxAlfFPEls67/8UBTOg8OCc7nn3B9Yl6MjyqVr6kKOpaeV
- 9qiqReRv6wqLi2ZORdG/DKejPzvm/slgYREVNRIVcIGj3BuORzx30CFNVJRcigv5XrpO6cEFyi
- 0VFC5ixak7h24ZDWdoOfMlCgtqzEw9bpBQPTEJlD1bORhReLMRk8/5IgarsnQHHhJZkU2C2rqI
- VR4=
-X-IronPort-AV: E=Sophos;i="5.75,304,1589266800"; 
-   d="scan'208";a="80480922"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Jul 2020 02:54:45 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 2 Jul 2020 02:54:26 -0700
-Received: from rob-ult-m19940.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Thu, 2 Jul 2020 02:54:41 -0700
-From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux@armlinux.org.uk>,
-        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
-Subject: [PATCH net-next] net: dsa: microchip: split adjust_link() in phylink_mac_link_{up|down}()
-Date:   Thu, 2 Jul 2020 12:54:39 +0300
-Message-ID: <20200702095439.1355119-1-codrin.ciubotariu@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727900AbgGBJ5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 05:57:54 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:41521 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726862AbgGBJ5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 05:57:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593683872;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=f3kfuWYGlC50GXlnOMv1+hQ30xOg3rl9x08/Uls8sYc=;
+        b=MLD1NWq1U3KBlT2A4nqK7J9NLbQ5Kic5VDFzPlbXr10D9fLarO7CYgrt81gfPSzhC1+88g
+        nQmZ/soSfNjP3SXlsfsUrxJWkD9JIr2VoZaYm0dTJY/CoGkG3O2M4RGs8e8J/Ps1q60KHr
+        bJ0G5WxreMHDuVifLzvJxYy1BNRlC4E=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-156-gOMT12j2M0uHzFLoihjT3A-1; Thu, 02 Jul 2020 05:57:50 -0400
+X-MC-Unique: gOMT12j2M0uHzFLoihjT3A-1
+Received: by mail-wm1-f71.google.com with SMTP id g6so21929638wmk.4
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 02:57:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=f3kfuWYGlC50GXlnOMv1+hQ30xOg3rl9x08/Uls8sYc=;
+        b=O4KORsPhanTdAJSoorR1cSS0+z3g0dz2+FWa/B+3s9pg+VXiUZ0ZFc3F/8YIeHAdO2
+         ENVZEHJkO3s7GwGmZp2VIA3Vu14HGI5/LRYx4G71une1fEoONivoIxjGy0pVEBld7o2D
+         Y0BQaN4fFS/kMMnnmya8cLOaLqfm8171WMB02aLjQsDT/L+vSmJlxaKc0e+j6ritHaNu
+         ZGfMlv/CDiS1Jgi6SmhZfeoso3XkOLdnQ+XzkpEARez8Gf3/3iALGfmtLVbrKSmEJXZs
+         zgwK/w3rKEmbkEAft7JcNRtIIo+Dfg6ClXHchQoHw6yOOECZdUd8RqP/i5pm0LK+JW3F
+         cHlg==
+X-Gm-Message-State: AOAM5309AYr2cehboXoPVEvuwQgtcA43xr/uYPlJpsa3ztS/mW6FYLmi
+        PTMXwFsYayUFQm3O+mpjYU+Uap2M06dV/jzUIOJB5yyfNodrmdL5q3hHidrJRC51lHKF312CQU3
+        EAmc1dtO7QtIgeqCI
+X-Received: by 2002:a5d:6990:: with SMTP id g16mr22438329wru.131.1593683868908;
+        Thu, 02 Jul 2020 02:57:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyIuBx0g5KUbZxdFPgRpnvrt+J1lGK6D/nDrSxbG9TMyl4amZhM6O1UQIvOhDuZDNvWv5SsHg==
+X-Received: by 2002:a5d:6990:: with SMTP id g16mr22438319wru.131.1593683868709;
+        Thu, 02 Jul 2020 02:57:48 -0700 (PDT)
+Received: from pc-2.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
+        by smtp.gmail.com with ESMTPSA id c2sm10490089wrv.47.2020.07.02.02.57.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jul 2020 02:57:48 -0700 (PDT)
+Date:   Thu, 2 Jul 2020 11:57:46 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Martin Varghese <martinvarghesenokia@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] ip link: initial support for bareudp devicesy
+Message-ID: <20200702095746.GA3913@pc-2.home>
+References: <f3401f1acfce2f472abe6f89fe059a5fade148a3.1593630794.git.gnault@redhat.com>
+ <20200702091539.GA2793@martin-VirtualBox>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200702091539.GA2793@martin-VirtualBox>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DSA subsystem moved to phylink and adjust_link() became deprecated in
-the process. This patch removes adjust_link from the KSZ DSA switches and
-adds phylink_mac_link_up() and phylink_mac_link_down().
+On Thu, Jul 02, 2020 at 02:45:39PM +0530, Martin Varghese wrote:
+> On Wed, Jul 01, 2020 at 09:45:04PM +0200, Guillaume Nault wrote:
+> > +		} else if (matches(*argv, "ethertype") == 0)  {
+> > +			NEXT_ARG();
+> > +			check_duparg(&attrs, IFLA_BAREUDP_ETHERTYPE,
+> > +				     "ethertype", *argv);
+> > +			if (ll_proto_a2n(&ethertype, *argv))
+> Does this function takes care of mpls proto names ?
+> 
+> The original idea of bareudp is to allow even reserved ethertypes.Hence i think we
+> must take ethertype in hex aswell
 
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795.c    |  3 ++-
- drivers/net/dsa/microchip/ksz9477.c    |  3 ++-
- drivers/net/dsa/microchip/ksz_common.c | 32 ++++++++++++++++----------
- drivers/net/dsa/microchip/ksz_common.h |  7 ++++--
- 4 files changed, 29 insertions(+), 16 deletions(-)
+ll_proto_a2n() handles both symbolic and numeric ethertypes.
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 47d65b77caf7..862306a9db2c 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1111,7 +1111,8 @@ static const struct dsa_switch_ops ksz8795_switch_ops = {
- 	.setup			= ksz8795_setup,
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
--	.adjust_link		= ksz_adjust_link,
-+	.phylink_mac_link_down	= ksz_mac_link_down,
-+	.phylink_mac_link_up	= ksz_mac_link_up,
- 	.port_enable		= ksz_enable_port,
- 	.port_disable		= ksz_disable_port,
- 	.get_strings		= ksz8795_get_strings,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 9a51b8a4de5d..9e4bdd950194 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1399,7 +1399,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.setup			= ksz9477_setup,
- 	.phy_read		= ksz9477_phy_read16,
- 	.phy_write		= ksz9477_phy_write16,
--	.adjust_link		= ksz_adjust_link,
-+	.phylink_mac_link_down	= ksz_mac_link_down,
-+	.phylink_mac_link_up	= ksz_mac_link_up,
- 	.port_enable		= ksz_enable_port,
- 	.port_disable		= ksz_disable_port,
- 	.get_strings		= ksz9477_get_strings,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index fd1d6676ae4f..55ceaf00ece1 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -135,26 +135,34 @@ int ksz_phy_write16(struct dsa_switch *ds, int addr, int reg, u16 val)
- }
- EXPORT_SYMBOL_GPL(ksz_phy_write16);
- 
--void ksz_adjust_link(struct dsa_switch *ds, int port,
--		     struct phy_device *phydev)
-+void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
-+		       phy_interface_t interface)
- {
- 	struct ksz_device *dev = ds->priv;
- 	struct ksz_port *p = &dev->ports[port];
- 
- 	/* Read all MIB counters when the link is going down. */
--	if (!phydev->link) {
--		p->read = true;
--		schedule_delayed_work(&dev->mib_read, 0);
--	}
-+	p->read = true;
-+	schedule_delayed_work(&dev->mib_read, 0);
-+
-+	mutex_lock(&dev->dev_mutex);
-+	dev->live_ports &= ~(1 << port);
-+	mutex_unlock(&dev->dev_mutex);
-+}
-+EXPORT_SYMBOL_GPL(ksz_mac_link_down);
-+
-+void ksz_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
-+		     phy_interface_t interface, struct phy_device *phydev,
-+		     int speed, int duplex, bool tx_pause, bool rx_pause)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	/* Remember which port is connected and active. */
- 	mutex_lock(&dev->dev_mutex);
--	if (!phydev->link)
--		dev->live_ports &= ~(1 << port);
--	else
--		/* Remember which port is connected and active. */
--		dev->live_ports |= (1 << port) & dev->on_ports;
-+	dev->live_ports |= (1 << port) & dev->on_ports;
- 	mutex_unlock(&dev->dev_mutex);
- }
--EXPORT_SYMBOL_GPL(ksz_adjust_link);
-+EXPORT_SYMBOL_GPL(ksz_mac_link_up);
- 
- int ksz_sset_count(struct dsa_switch *ds, int port, int sset)
- {
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index f2c9bb68fd33..c0224dd0cf8a 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -159,8 +159,11 @@ void ksz_init_mib_timer(struct ksz_device *dev);
- 
- int ksz_phy_read16(struct dsa_switch *ds, int addr, int reg);
- int ksz_phy_write16(struct dsa_switch *ds, int addr, int reg, u16 val);
--void ksz_adjust_link(struct dsa_switch *ds, int port,
--		     struct phy_device *phydev);
-+void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
-+		       phy_interface_t interface);
-+void ksz_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
-+		     phy_interface_t interface, struct phy_device *phydev,
-+		     int speed, int duplex, bool tx_pause, bool rx_pause);
- int ksz_sset_count(struct dsa_switch *ds, int port, int sset);
- void ksz_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *buf);
- int ksz_port_bridge_join(struct dsa_switch *ds, int port,
--- 
-2.25.1
+> > +				invarg("ethertype", *argv);
+> > +		} else if (matches(*argv, "srcportmin") == 0) {
+> > +			NEXT_ARG();
+> > +			check_duparg(&attrs, IFLA_BAREUDP_SRCPORT_MIN,
+> > +				     "srcportmin", *argv);
+> > +			if (get_u16(&srcportmin, *argv, 0))
+> > +				invarg("srcportmin", *argv);
+> > +		} else if (matches(*argv, "multiproto") == 0) {
+> > +			check_duparg(&attrs, IFLA_BAREUDP_MULTIPROTO_MODE,
+> > +				     *argv, *argv);
+> > +			multiproto = true;
+> > +		} else if (matches(*argv, "nomultiproto") == 0) {
+> do we need nomultiproto flag. Is it redundant
+
+It allows users to exlicitely disable multiproto without having to rely
+on default values. Also nomultiproto appears in the detailed output, so
+it should be usable as input.
+
+> > +	if (tb[IFLA_BAREUDP_MULTIPROTO_MODE])
+> > +		print_bool(PRINT_ANY, "multiproto", "multiproto ", true);
+> > +	else
+> > +		print_bool(PRINT_ANY, "multiproto", "nomultiproto ", false);
+> Comments from stephen@networkplumber.org on the first version patch is given below
+> 
+> One of the unwritten rules of ip commands is that the show format
+> should match the command line arguments.  In this case extmode is
+> really a presence flag not a boolean. best to print that with
+> json null command.
+
+The detailed output prints either "multiproto" or "nomultiproto". Both
+keywords are accepted as configuration input. I can't see any deviation
+from the unwritten rule here.
 
