@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74106211E1A
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 10:22:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35CBD211EA4
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 10:26:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728329AbgGBIWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 04:22:33 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:55200 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726462AbgGBIWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 04:22:31 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0628MJuo042209;
-        Thu, 2 Jul 2020 03:22:19 -0500
+        id S1728374AbgGBIWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 04:22:40 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:34448 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726462AbgGBIWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 04:22:37 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0628MOtF017106;
+        Thu, 2 Jul 2020 03:22:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1593678139;
-        bh=Uhwq7t9xmJ09dppFbQNiaS41cCziAqDB/ZcJ4oUfEXo=;
+        s=ti-com-17Q1; t=1593678144;
+        bh=iPErWFbFZdjeoHTdwXdeAC7MLZFVAu9f66Iyz/tSVV8=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=UC+AmEhNh3aW86RcPHPX1bzomjjyeb4yGiNuHcVwomWqfxi27c57DQN6LFLaEaB03
-         X1y9lNs64MBrJRQQJ3r2u/Xgaust371pATFRpx89ycYyB/mfdagKqybKoItdeC7BrO
-         K1wC2lsJ6nZLGWKJU+PzA0JtSsehQnRsA7rzMwD8=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0628MJW0065146
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 2 Jul 2020 03:22:19 -0500
-Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+        b=bvbPsKl3Fy2ybJ3UjcuU2C/Nd0bvujeA2Xeo0G9/qvyq7+suLiKN+nx1nFNE9Feq9
+         rpb3JtSG5MuOPWvII6iQgtvTkprIJLsRK2mYRx2ptoaHYus+eDZ30JbL8oYvTafOnv
+         iKPdWRCI5G0IITtNJwocmoHVna/71N5/5E0Z+BRk=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628MOYp086031;
+        Thu, 2 Jul 2020 03:22:24 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 2 Jul
- 2020 03:22:18 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ 2020 03:22:24 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 2 Jul 2020 03:22:18 -0500
+ Frontend Transport; Thu, 2 Jul 2020 03:22:24 -0500
 Received: from a0393678ub.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628LiYH006145;
-        Thu, 2 Jul 2020 03:22:13 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628LiYI006145;
+        Thu, 2 Jul 2020 03:22:19 -0500
 From:   Kishon Vijay Abraham I <kishon@ti.com>
 To:     Ohad Ben-Cohen <ohad@wizery.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -54,9 +53,9 @@ CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
         <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>
-Subject: [RFC PATCH 05/22] vhost: Add MMIO helpers for operations on vhost virtqueue
-Date:   Thu, 2 Jul 2020 13:51:26 +0530
-Message-ID: <20200702082143.25259-6-kishon@ti.com>
+Subject: [RFC PATCH 06/22] vhost: Introduce configfs entry for configuring VHOST
+Date:   Thu, 2 Jul 2020 13:51:27 +0530
+Message-ID: <20200702082143.25259-7-kishon@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200702082143.25259-1-kishon@ti.com>
 References: <20200702082143.25259-1-kishon@ti.com>
@@ -68,387 +67,519 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add helpers for VHOST drivers to read descriptor data from
-vhost_virtqueue for IN transfers or write descriptor data to
-vhost_virtqueue for OUT transfers respectively. Also add
-helpers to enable callback, disable callback and notify remote
-virtio for events on virtqueue.
-
-This adds helpers only for virtqueue in MMIO (helpers for virtqueue
-in kernel space and user space can be added later).
+Create a configfs entry for each entry populated in
+"struct vhost_device_id" in the VHOST driver and create a configfs entry
+for each VHOST device. This is used to link VHOST driver to VHOST device
+(by assigning deviceID and vendorID to the VHOST device) and register
+VHOST device, thereby letting VHOST client driver to be selected in the
+userspace.
 
 Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
 ---
- drivers/vhost/Kconfig |   1 +
- drivers/vhost/vhost.c | 292 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/vhost.h |  22 ++++
- 3 files changed, 315 insertions(+)
+ drivers/vhost/Makefile    |   2 +-
+ drivers/vhost/vhost.c     |  63 +++++++
+ drivers/vhost/vhost_cfs.c | 354 ++++++++++++++++++++++++++++++++++++++
+ include/linux/vhost.h     |  11 ++
+ 4 files changed, 429 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/vhost/vhost_cfs.c
 
-diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-index c4f273793595..77e195a38469 100644
---- a/drivers/vhost/Kconfig
-+++ b/drivers/vhost/Kconfig
-@@ -24,6 +24,7 @@ config VHOST_DPN
+diff --git a/drivers/vhost/Makefile b/drivers/vhost/Makefile
+index f3e1897cce85..6520c820c896 100644
+--- a/drivers/vhost/Makefile
++++ b/drivers/vhost/Makefile
+@@ -13,7 +13,7 @@ obj-$(CONFIG_VHOST_RING) += vringh.o
+ obj-$(CONFIG_VHOST_VDPA) += vhost_vdpa.o
+ vhost_vdpa-y := vdpa.o
  
- config VHOST
- 	tristate
-+	select VHOST_RING
- 	select VHOST_IOTLB
- 	help
- 	  This option is selected by any driver which needs to access
+-obj-$(CONFIG_VHOST)	+= vhost.o
++obj-$(CONFIG_VHOST)	+= vhost.o vhost_cfs.o
+ 
+ obj-$(CONFIG_VHOST_IOTLB) += vhost_iotlb.o
+ vhost_iotlb-y := iotlb.o
 diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index f959abb0b1bb..8a3ad4698393 100644
+index 8a3ad4698393..539619208783 100644
 --- a/drivers/vhost/vhost.c
 +++ b/drivers/vhost/vhost.c
-@@ -2558,6 +2558,298 @@ struct vhost_msg_node *vhost_dequeue_msg(struct vhost_dev *dev,
- }
- EXPORT_SYMBOL_GPL(vhost_dequeue_msg);
- 
-+/**
-+ * vhost_virtqueue_disable_cb_mmio() - Write to used ring in virtio accessed
-+ *   using MMIO to stop notification
-+ * @vq: vhost_virtqueue for which callbacks have to be disabled
-+ *
-+ * Write to used ring in virtio accessed using MMIO to stop sending notification
-+ * to the vhost virtqueue.
-+ */
-+static void vhost_virtqueue_disable_cb_mmio(struct vhost_virtqueue *vq)
-+{
-+	struct vringh *vringh;
-+
-+	vringh = &vq->vringh;
-+	vringh_notify_disable_mmio(vringh);
-+}
-+
-+/**
-+ * vhost_virtqueue_disable_cb() - Write to used ring in virtio to stop
-+ *   notification
-+ * @vq: vhost_virtqueue for which callbacks have to be disabled
-+ *
-+ * Wrapper to write to used ring in virtio to stop sending notification
-+ * to the vhost virtqueue.
-+ */
-+void vhost_virtqueue_disable_cb(struct vhost_virtqueue *vq)
-+{
-+	enum vhost_type type;
-+
-+	type = vq->type;
-+
-+	/* TODO: Add support for other VHOST TYPES */
-+	if (type == VHOST_TYPE_MMIO)
-+		return vhost_virtqueue_disable_cb_mmio(vq);
-+}
-+EXPORT_SYMBOL_GPL(vhost_virtqueue_disable_cb);
-+
-+/**
-+ * vhost_virtqueue_enable_cb_mmio() - Write to used ring in virtio accessed
-+ *   using MMIO to enable notification
-+ * @vq: vhost_virtqueue for which callbacks have to be enabled
-+ *
-+ * Write to used ring in virtio accessed using MMIO to enable notification
-+ * to the vhost virtqueue.
-+ */
-+static bool vhost_virtqueue_enable_cb_mmio(struct vhost_virtqueue *vq)
-+{
-+	struct vringh *vringh;
-+
-+	vringh = &vq->vringh;
-+	return vringh_notify_enable_mmio(vringh);
-+}
-+
-+/**
-+ * vhost_virtqueue_enable_cb() - Write to used ring in virtio to enable
-+ *   notification
-+ * @vq: vhost_virtqueue for which callbacks have to be enabled
-+ *
-+ * Wrapper to write to used ring in virtio to enable notification to the
-+ * vhost virtqueue.
-+ */
-+bool vhost_virtqueue_enable_cb(struct vhost_virtqueue *vq)
-+{
-+	enum vhost_type type;
-+
-+	type = vq->type;
-+
-+	/* TODO: Add support for other VHOST TYPES */
-+	if (type == VHOST_TYPE_MMIO)
-+		return vhost_virtqueue_enable_cb_mmio(vq);
-+
-+	return false;
-+}
-+EXPORT_SYMBOL_GPL(vhost_virtqueue_enable_cb);
-+
-+/**
-+ * vhost_virtqueue_notify() - Send notification to the remote virtqueue
-+ * @vq: vhost_virtqueue that sends the notification
-+ *
-+ * Invokes ->notify() callback to send notification to the remote virtqueue.
-+ */
-+void vhost_virtqueue_notify(struct vhost_virtqueue *vq)
-+{
-+	if (!vq->notify)
-+		return;
-+
-+	vq->notify(vq);
-+}
-+EXPORT_SYMBOL_GPL(vhost_virtqueue_notify);
-+
-+/**
-+ * vhost_virtqueue_kick_mmio() - Check if the remote virtqueue has enabled
-+ *   notification (by reading available ring in virtio accessed using MMIO)
-+ *   before sending notification
-+ * @vq: vhost_virtqueue that sends the notification
-+ *
-+ * Check if the remote virtqueue has enabled notification (by reading available
-+ * ring in virtio accessed using MMIO) and then invoke vhost_virtqueue_notify()
-+ * to send notification to the remote virtqueue.
-+ */
-+static void vhost_virtqueue_kick_mmio(struct vhost_virtqueue *vq)
-+{
-+	if (vringh_need_notify_mmio(&vq->vringh))
-+		vhost_virtqueue_notify(vq);
-+}
-+
-+/**
-+ * vhost_virtqueue_kick() - Check if the remote virtqueue has enabled
-+ *   notification before sending notification
-+ * @vq: vhost_virtqueue that sends the notification
-+ *
-+ * Wrapper to send notification to the remote virtqueue using
-+ * vhost_virtqueue_kick_mmio() that checks if the remote virtqueue has
-+ * enabled notification before sending the notification.
-+ */
-+void vhost_virtqueue_kick(struct vhost_virtqueue *vq)
-+{
-+	enum vhost_type type;
-+
-+	type = vq->type;
-+
-+	/* TODO: Add support for other VHOST TYPES */
-+	if (type == VHOST_TYPE_MMIO)
-+		return vhost_virtqueue_kick_mmio(vq);
-+}
-+EXPORT_SYMBOL_GPL(vhost_virtqueue_kick);
-+
-+/**
-+ * vhost_virtqueue_callback() - Invoke vhost virtqueue callback provided by
-+ *   vhost client driver
-+ * @vq: vhost_virtqueue for which the callback is invoked
-+ *
-+ * Invoked by the driver that creates vhost device when the remote virtio
-+ * driver sends notification to this virtqueue.
-+ */
-+void vhost_virtqueue_callback(struct vhost_virtqueue *vq)
-+{
-+	if (!vq->callback)
-+		return;
-+
-+	vq->callback(vq);
-+}
-+EXPORT_SYMBOL_GPL(vhost_virtqueue_callback);
-+
-+/**
-+ * vhost_virtqueue_get_outbuf_mmio() - Get the output buffer address by reading
-+ *   virtqueue descriptor accessed using MMIO
-+ * @vq: vhost_virtqueue used to access the descriptor
-+ * @head: head index for passing to vhost_virtqueue_put_buf()
-+ * @len: Length of the buffer
-+ *
-+ * Get the output buffer address by reading virtqueue descriptor accessed using
-+ * MMIO.
-+ */
-+static u64 vhost_virtqueue_get_outbuf_mmio(struct vhost_virtqueue *vq,
-+					   u16 *head, int *len)
-+{
-+	struct vringh_mmiov wiov;
-+	struct mmiovec *mmiovec;
-+	struct vringh *vringh;
-+	int desc;
-+
-+	vringh = &vq->vringh;
-+	vringh_mmiov_init(&wiov, NULL, 0);
-+
-+	desc = vringh_getdesc_mmio(vringh, NULL, &wiov, head, GFP_KERNEL);
-+	if (!desc)
-+		return 0;
-+	mmiovec = &wiov.iov[0];
-+
-+	*len = mmiovec->iov_len;
-+	return mmiovec->iov_base;
-+}
-+
-+/**
-+ * vhost_virtqueue_get_outbuf() - Get the output buffer address by reading
-+ *   virtqueue descriptor
-+ * @vq: vhost_virtqueue used to access the descriptor
-+ * @head: head index for passing to vhost_virtqueue_put_buf()
-+ * @len: Length of the buffer
-+ *
-+ * Wrapper to get the output buffer address by reading virtqueue descriptor.
-+ */
-+u64 vhost_virtqueue_get_outbuf(struct vhost_virtqueue *vq, u16 *head, int *len)
-+{
-+	enum vhost_type type;
-+
-+	type = vq->type;
-+
-+	/* TODO: Add support for other VHOST TYPES */
-+	if (type == VHOST_TYPE_MMIO)
-+		return vhost_virtqueue_get_outbuf_mmio(vq, head, len);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(vhost_virtqueue_get_outbuf);
-+
-+/**
-+ * vhost_virtqueue_get_inbuf_mmio() - Get the input buffer address by reading
-+ *   virtqueue descriptor accessed using MMIO
-+ * @vq: vhost_virtqueue used to access the descriptor
-+ * @head: Head index for passing to vhost_virtqueue_put_buf()
-+ * @len: Length of the buffer
-+ *
-+ * Get the input buffer address by reading virtqueue descriptor accessed using
-+ * MMIO.
-+ */
-+static u64 vhost_virtqueue_get_inbuf_mmio(struct vhost_virtqueue *vq,
-+					  u16 *head, int *len)
-+{
-+	struct vringh_mmiov riov;
-+	struct mmiovec *mmiovec;
-+	struct vringh *vringh;
-+	int desc;
-+
-+	vringh = &vq->vringh;
-+	vringh_mmiov_init(&riov, NULL, 0);
-+
-+	desc = vringh_getdesc_mmio(vringh, &riov, NULL, head, GFP_KERNEL);
-+	if (!desc)
-+		return 0;
-+
-+	mmiovec = &riov.iov[0];
-+
-+	*len = mmiovec->iov_len;
-+	return mmiovec->iov_base;
-+}
-+
-+/**
-+ * vhost_virtqueue_get_inbuf() - Get the input buffer address by reading
-+ *   virtqueue descriptor
-+ * @vq: vhost_virtqueue used to access the descriptor
-+ * @head: head index for passing to vhost_virtqueue_put_buf()
-+ * @len: Length of the buffer
-+ *
-+ * Wrapper to get the input buffer address by reading virtqueue descriptor.
-+ */
-+u64 vhost_virtqueue_get_inbuf(struct vhost_virtqueue *vq, u16 *head, int *len)
-+{
-+	enum vhost_type type;
-+
-+	type = vq->type;
-+
-+	/* TODO: Add support for other VHOST TYPES */
-+	if (type == VHOST_TYPE_MMIO)
-+		return vhost_virtqueue_get_inbuf_mmio(vq, head, len);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(vhost_virtqueue_get_inbuf);
-+
-+/**
-+ * vhost_virtqueue_put_buf_mmio() - Publish to the remote virtio (update
-+ * used ring in virtio using MMIO) to indicate the buffer has been processed
-+ * @vq: vhost_virtqueue used to update the used ring
-+ * @head: Head index receive from vhost_virtqueue_get_*()
-+ * @len: Length of the buffer
-+ *
-+ * Publish to the remote virtio (update used ring in virtio using MMIO) to
-+ * indicate the buffer has been processed
-+ */
-+static void vhost_virtqueue_put_buf_mmio(struct vhost_virtqueue *vq,
-+					 u16 head, int len)
-+{
-+	struct vringh *vringh;
-+
-+	vringh = &vq->vringh;
-+
-+	vringh_complete_mmio(vringh, head, len);
-+}
-+
-+/**
-+ * vhost_virtqueue_put_buf() - Publish to the remote virtio to indicate the
-+ *   buffer has been processed
-+ * @vq: vhost_virtqueue used to update the used ring
-+ * @head: Head index receive from vhost_virtqueue_get_*()
-+ * @len: Length of the buffer
-+ *
-+ * Wrapper to publish to the remote virtio to indicate the buffer has been
-+ * processed.
-+ */
-+void vhost_virtqueue_put_buf(struct vhost_virtqueue *vq, u16 head, int len)
-+{
-+	enum vhost_type type;
-+
-+	type = vq->type;
-+
-+	/* TODO: Add support for other VHOST TYPES */
-+	if (type == VHOST_TYPE_MMIO)
-+		return vhost_virtqueue_put_buf_mmio(vq, head, len);
-+}
-+EXPORT_SYMBOL_GPL(vhost_virtqueue_put_buf);
-+
- /**
-  * vhost_create_vqs() - Invoke vhost_config_ops to create virtqueue
-  * @vdev: Vhost device that provides create_vqs() callback to create virtqueue
-diff --git a/include/linux/vhost.h b/include/linux/vhost.h
-index b22a19c66109..8efb9829c1b1 100644
---- a/include/linux/vhost.h
-+++ b/include/linux/vhost.h
-@@ -10,6 +10,7 @@
- #include <linux/uio.h>
- #include <linux/virtio_config.h>
- #include <linux/virtio_ring.h>
-+#include <linux/vringh.h>
- #include <linux/atomic.h>
- #include <linux/vhost_iotlb.h>
- #include <uapi/linux/vhost.h>
-@@ -60,9 +61,20 @@ enum vhost_uaddr_type {
- 	VHOST_NUM_ADDRS = 3,
+@@ -3091,6 +3091,64 @@ static struct bus_type vhost_bus_type = {
+ 	.remove = vhost_dev_remove,
  };
  
-+enum vhost_type {
-+	VHOST_TYPE_UNKNOWN,
-+	VHOST_TYPE_USER,
-+	VHOST_TYPE_KERN,
-+	VHOST_TYPE_MMIO,
++/**
++ * vhost_remove_cfs() - Remove configfs directory for vhost driver
++ * @driver: Vhost driver for which configfs directory has to be removed
++ *
++ * Remove configfs directory for vhost driver.
++ */
++static void vhost_remove_cfs(struct vhost_driver *driver)
++{
++	struct config_group *driver_group, *group;
++	struct config_item *item, *tmp;
++
++	driver_group = driver->group;
++
++	list_for_each_entry_safe(item, tmp, &driver_group->cg_children,
++				 ci_entry) {
++		group = to_config_group(item);
++		vhost_cfs_remove_driver_item(group);
++	}
++
++	vhost_cfs_remove_driver_group(driver_group);
++}
++
++/**
++ * vhost_add_cfs() - Add configfs directory for vhost driver
++ * @driver: Vhost driver for which configfs directory has to be added
++ *
++ * Add configfs directory for vhost driver.
++ */
++static int vhost_add_cfs(struct vhost_driver *driver)
++{
++	struct config_group *driver_group, *group;
++	const struct vhost_device_id *ids;
++	int ret, i;
++
++	driver_group = vhost_cfs_add_driver_group(driver->driver.name);
++	if (IS_ERR(driver_group))
++		return PTR_ERR(driver_group);
++
++	driver->group = driver_group;
++
++	ids = driver->id_table;
++	for (i = 0; ids[i].device; i++) {
++		group = vhost_cfs_add_driver_item(driver_group, ids[i].vendor,
++						  ids[i].device);
++		if (IS_ERR(group)) {
++			ret = PTR_ERR(driver_group);
++			goto err;
++		}
++	}
++
++	return 0;
++
++err:
++	vhost_remove_cfs(driver);
++
++	return ret;
++}
++
+ /**
+  * vhost_register_driver() - Register a vhost driver
+  * @driver: Vhost driver that has to be registered
+@@ -3107,6 +3165,10 @@ int vhost_register_driver(struct vhost_driver *driver)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = vhost_add_cfs(driver);
++	if (ret)
++		return ret;
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(vhost_register_driver);
+@@ -3119,6 +3181,7 @@ EXPORT_SYMBOL_GPL(vhost_register_driver);
+  */
+ void vhost_unregister_driver(struct vhost_driver *driver)
+ {
++	vhost_remove_cfs(driver);
+ 	driver_unregister(&driver->driver);
+ }
+ EXPORT_SYMBOL_GPL(vhost_unregister_driver);
+diff --git a/drivers/vhost/vhost_cfs.c b/drivers/vhost/vhost_cfs.c
+new file mode 100644
+index 000000000000..ae46e71968f1
+--- /dev/null
++++ b/drivers/vhost/vhost_cfs.c
+@@ -0,0 +1,354 @@
++// SPDX-License-Identifier: GPL-2.0
++/**
++ * configfs to configure VHOST
++ *
++ * Copyright (C) 2020 Texas Instruments
++ * Author: Kishon Vijay Abraham I <kishon@ti.com>
++ */
++
++#include <linux/configfs.h>
++#include <linux/device.h>
++#include <linux/module.h>
++#include <linux/vhost.h>
++#include <linux/slab.h>
++
++/* VHOST driver like net, scsi etc., */
++static struct config_group *vhost_driver_group;
++
++/* VHOST device like PCIe EP, NTB etc., */
++static struct config_group *vhost_device_group;
++
++struct vhost_driver_item {
++	struct config_group group;
++	u32 vendor;
++	u32 device;
 +};
 +
- /* The virtqueue structure describes a queue attached to a device. */
- struct vhost_virtqueue {
- 	struct vhost_dev *dev;
-+	enum vhost_type type;
-+	struct vringh vringh;
-+	void (*callback)(struct vhost_virtqueue *vq);
-+	void (*notify)(struct vhost_virtqueue *vq);
- 
- 	/* The actual ring of buffers. */
- 	struct mutex mutex;
-@@ -235,6 +247,16 @@ u8 vhost_get_status(struct vhost_dev *vdev);
- 
- int vhost_register_notifier(struct vhost_dev *vdev, struct notifier_block *nb);
- 
-+u64 vhost_virtqueue_get_outbuf(struct vhost_virtqueue *vq, u16 *head, int *len);
-+u64 vhost_virtqueue_get_inbuf(struct vhost_virtqueue *vq, u16 *head, int *len);
-+void vhost_virtqueue_put_buf(struct vhost_virtqueue *vq, u16 head, int len);
++struct vhost_driver_group {
++	struct config_group group;
++};
 +
-+void vhost_virtqueue_disable_cb(struct vhost_virtqueue *vq);
-+bool vhost_virtqueue_enable_cb(struct vhost_virtqueue *vq);
-+void vhost_virtqueue_notify(struct vhost_virtqueue *vq);
-+void vhost_virtqueue_kick(struct vhost_virtqueue *vq);
-+void vhost_virtqueue_callback(struct vhost_virtqueue *vq);
++struct vhost_device_item {
++	struct config_group group;
++	struct vhost_dev *vdev;
++};
 +
- bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int total_len);
- void vhost_dev_init(struct vhost_dev *, struct vhost_virtqueue **vqs,
- 		    int nvqs, int iov_limit, int weight, int byte_weight,
++static inline
++struct vhost_driver_item *to_vhost_driver_item(struct config_item *item)
++{
++	return container_of(to_config_group(item), struct vhost_driver_item,
++			    group);
++}
++
++static inline
++struct vhost_device_item *to_vhost_device_item(struct config_item *item)
++{
++	return container_of(to_config_group(item), struct vhost_device_item,
++			    group);
++}
++
++/**
++ * vhost_cfs_device_link() - Create softlink of driver directory to device
++ *   directory
++ * @device_item: Represents configfs entry of vhost_dev
++ * @driver_item: Represents configfs of a particular entry of
++ *   vhost_device_id table in vhost driver
++ *
++ * Bind a vhost driver to vhost device in order to assign a particular
++ * device ID and vendor ID
++ */
++static int vhost_cfs_device_link(struct config_item *device_item,
++				 struct config_item *driver_item)
++{
++	struct vhost_driver_item *vdriver_item;
++	struct vhost_device_item *vdevice_item;
++	struct vhost_dev *vdev;
++	int ret;
++
++	vdriver_item = to_vhost_driver_item(driver_item);
++	vdevice_item = to_vhost_device_item(device_item);
++
++	vdev = vdevice_item->vdev;
++	vdev->id.device = vdriver_item->device;
++	vdev->id.vendor = vdriver_item->vendor;
++
++	ret = vhost_register_device(vdev);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++/**
++ * vhost_cfs_device_unlink() - Delete softlink of driver directory from device
++ *   directory
++ * @device_item: Represents configfs entry of vhost_dev
++ * @driver_item: Represents configfs of a particular entry of
++ *   vhost_device_id table in vhost driver
++ *
++ * Un-bind vhost driver from vhost device.
++ */
++static void vhost_cfs_device_unlink(struct config_item *device_item,
++				    struct config_item *driver_item)
++{
++	struct vhost_driver_item *vdriver_item;
++	struct vhost_device_item *vdevice_item;
++	struct vhost_dev *vdev;
++
++	vdriver_item = to_vhost_driver_item(driver_item);
++	vdevice_item = to_vhost_device_item(device_item);
++
++	vdev = vdevice_item->vdev;
++	vhost_unregister_device(vdev);
++}
++
++static struct configfs_item_operations vhost_cfs_device_item_ops = {
++	.allow_link	= vhost_cfs_device_link,
++	.drop_link	= vhost_cfs_device_unlink,
++};
++
++static const struct config_item_type vhost_cfs_device_item_type = {
++	.ct_item_ops	= &vhost_cfs_device_item_ops,
++	.ct_owner	= THIS_MODULE,
++};
++
++/**
++ * vhost_cfs_add_device_item() - Create configfs directory for new vhost_dev
++ * @vdev: vhost device for which configfs directory has to be created
++ *
++ * Create configfs directory for new vhost device. Drivers that create
++ * vhost device can invoke this API if they require the vhost device to
++ * be assigned a device ID and vendorID by the user.
++ */
++struct config_group *vhost_cfs_add_device_item(struct vhost_dev *vdev)
++{
++	struct device *dev = &vdev->dev;
++	struct vhost_device_item *vdevice_item;
++	struct config_group *group;
++	const char *name;
++	int ret;
++
++	vdevice_item = kzalloc(sizeof(*vdevice_item), GFP_KERNEL);
++	if (!vdevice_item)
++		return ERR_PTR(-ENOMEM);
++
++	name = dev_name(dev->parent);
++	group = &vdevice_item->group;
++	config_group_init_type_name(group, name, &vhost_cfs_device_item_type);
++
++	ret = configfs_register_group(vhost_device_group, group);
++	if (ret)
++		return ERR_PTR(ret);
++
++	vdevice_item->vdev = vdev;
++
++	return group;
++}
++EXPORT_SYMBOL(vhost_cfs_add_device_item);
++
++/**
++ * vhost_cfs_remove_device_item() - Remove configfs directory for the vhost_dev
++ * @vdev: vhost device for which configfs directory has to be removed
++ *
++ * Remove configfs directory for the vhost device.
++ */
++void vhost_cfs_remove_device_item(struct config_group *group)
++{
++	struct vhost_device_item *vdevice_item;
++
++	if (!group)
++		return;
++
++	vdevice_item = container_of(group, struct vhost_device_item, group);
++	configfs_unregister_group(&vdevice_item->group);
++	kfree(vdevice_item);
++}
++EXPORT_SYMBOL(vhost_cfs_remove_device_item);
++
++static const struct config_item_type vhost_driver_item_type = {
++	.ct_owner	= THIS_MODULE,
++};
++
++/**
++ * vhost_cfs_add_driver_item() - Add configfs directory for an entry in
++ *   vhost_device_id
++ * @driver_group: configfs directory corresponding to the vhost driver
++ * @vendor: vendor ID populated in vhost_device_id table by vhost driver
++ * @device: device ID populated in vhost_device_id table by vhost driver
++ *
++ * Add configfs directory for each entry in vhost_device_id populated by
++ * vhost driver. Store the device ID and vendor ID in a local data structure
++ * and use it when user links this directory with a vhost device configfs
++ * directory.
++ */
++struct config_group *
++vhost_cfs_add_driver_item(struct config_group *driver_group, u32 vendor,
++			  u32 device)
++{
++	struct vhost_driver_item *vdriver_item;
++	struct config_group *group;
++	char name[20];
++	int ret;
++
++	vdriver_item = kzalloc(sizeof(*vdriver_item), GFP_KERNEL);
++	if (!vdriver_item)
++		return ERR_PTR(-ENOMEM);
++
++	vdriver_item->vendor = vendor;
++	vdriver_item->device = device;
++
++	snprintf(name, sizeof(name), "%08x:%08x", vendor, device);
++	group = &vdriver_item->group;
++
++	config_group_init_type_name(group, name, &vhost_driver_item_type);
++	ret = configfs_register_group(driver_group, group);
++	if (ret)
++		return ERR_PTR(ret);
++
++	return group;
++}
++EXPORT_SYMBOL(vhost_cfs_add_driver_item);
++
++/**
++ * vhost_cfs_remove_driver_item() - Remove configfs directory corresponding
++ *   to an entry in vhost_device_id
++ * @group: Configfs group corresponding to an entry in vhost_device_id
++ *
++ * Remove configfs directory corresponding to an entry in vhost_device_id
++ */
++void vhost_cfs_remove_driver_item(struct config_group *group)
++{
++	struct vhost_driver_item *vdriver_item;
++
++	if (!group)
++		return;
++
++	vdriver_item = container_of(group, struct vhost_driver_item, group);
++	configfs_unregister_group(&vdriver_item->group);
++	kfree(vdriver_item);
++}
++EXPORT_SYMBOL(vhost_cfs_remove_driver_item);
++
++static const struct config_item_type vhost_driver_group_type = {
++	.ct_owner	= THIS_MODULE,
++};
++
++/**
++ * vhost_cfs_add_driver_group() - Add configfs directory for vhost driver
++ * @name: Name of the vhost driver as populated in driver structure
++ *
++ * Add configfs directory for vhost driver.
++ */
++struct config_group *vhost_cfs_add_driver_group(const char *name)
++{
++	struct vhost_driver_group *vdriver_group;
++	struct config_group *group;
++
++	vdriver_group = kzalloc(sizeof(*vdriver_group), GFP_KERNEL);
++	if (!vdriver_group)
++		return ERR_PTR(-ENOMEM);
++
++	group = &vdriver_group->group;
++
++	config_group_init_type_name(group, name, &vhost_driver_group_type);
++	configfs_register_group(vhost_driver_group, group);
++
++	return group;
++}
++EXPORT_SYMBOL(vhost_cfs_add_driver_group);
++
++/**
++ * vhost_cfs_remove_driver_group() - Remove configfs directory for vhost driver
++ * @group: Configfs group corresponding to the vhost driver
++ *
++ * Remove configfs directory for vhost driver.
++ */
++void vhost_cfs_remove_driver_group(struct config_group *group)
++{
++	if (IS_ERR_OR_NULL(group))
++		return;
++
++	configfs_unregister_default_group(group);
++}
++EXPORT_SYMBOL(vhost_cfs_remove_driver_group);
++
++static const struct config_item_type vhost_driver_type = {
++	.ct_owner	= THIS_MODULE,
++};
++
++static const struct config_item_type vhost_device_type = {
++	.ct_owner	= THIS_MODULE,
++};
++
++static const struct config_item_type vhost_type = {
++	.ct_owner	= THIS_MODULE,
++};
++
++static struct configfs_subsystem vhost_cfs_subsys = {
++	.su_group = {
++		.cg_item = {
++			.ci_namebuf = "vhost",
++			.ci_type = &vhost_type,
++		},
++	},
++	.su_mutex = __MUTEX_INITIALIZER(vhost_cfs_subsys.su_mutex),
++};
++
++static int __init vhost_cfs_init(void)
++{
++	int ret;
++	struct config_group *root = &vhost_cfs_subsys.su_group;
++
++	config_group_init(root);
++
++	ret = configfs_register_subsystem(&vhost_cfs_subsys);
++	if (ret) {
++		pr_err("Error %d while registering subsystem %s\n",
++		       ret, root->cg_item.ci_namebuf);
++		goto err;
++	}
++
++	vhost_driver_group =
++		configfs_register_default_group(root, "vhost-client",
++						&vhost_driver_type);
++	if (IS_ERR(vhost_driver_group)) {
++		ret = PTR_ERR(vhost_driver_group);
++		pr_err("Error %d while registering channel group\n",
++		       ret);
++		goto err_vhost_driver_group;
++	}
++
++	vhost_device_group =
++		configfs_register_default_group(root, "vhost-transport",
++						&vhost_device_type);
++	if (IS_ERR(vhost_device_group)) {
++		ret = PTR_ERR(vhost_device_group);
++		pr_err("Error %d while registering virtproc group\n",
++		       ret);
++		goto err_vhost_device_group;
++	}
++
++	return 0;
++
++err_vhost_device_group:
++	configfs_unregister_default_group(vhost_driver_group);
++
++err_vhost_driver_group:
++	configfs_unregister_subsystem(&vhost_cfs_subsys);
++
++err:
++	return ret;
++}
++module_init(vhost_cfs_init);
++
++static void __exit vhost_cfs_exit(void)
++{
++	configfs_unregister_default_group(vhost_device_group);
++	configfs_unregister_default_group(vhost_driver_group);
++	configfs_unregister_subsystem(&vhost_cfs_subsys);
++}
++module_exit(vhost_cfs_exit);
++
++MODULE_DESCRIPTION("PCI VHOST CONFIGFS");
++MODULE_AUTHOR("Kishon Vijay Abraham I <kishon@ti.com>");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/vhost.h b/include/linux/vhost.h
+index 8efb9829c1b1..be9341ffd266 100644
+--- a/include/linux/vhost.h
++++ b/include/linux/vhost.h
+@@ -2,6 +2,7 @@
+ #ifndef _VHOST_H
+ #define _VHOST_H
+ 
++#include <linux/configfs.h>
+ #include <linux/eventfd.h>
+ #include <linux/mm.h>
+ #include <linux/mutex.h>
+@@ -181,6 +182,7 @@ struct vhost_config_ops {
+ struct vhost_driver {
+ 	struct device_driver driver;
+ 	struct vhost_device_id *id_table;
++	struct config_group *group;
+ 	int (*probe)(struct vhost_dev *dev);
+ 	int (*remove)(struct vhost_dev *dev);
+ };
+@@ -233,6 +235,15 @@ void vhost_unregister_driver(struct vhost_driver *driver);
+ int vhost_register_device(struct vhost_dev *vdev);
+ void vhost_unregister_device(struct vhost_dev *vdev);
+ 
++struct config_group *vhost_cfs_add_driver_group(const char *name);
++void vhost_cfs_remove_driver_group(struct config_group *group);
++struct config_group *
++vhost_cfs_add_driver_item(struct config_group *driver_group, u32 vendor,
++			  u32 device);
++void vhost_cfs_remove_driver_item(struct config_group *group);
++struct config_group *vhost_cfs_add_device_item(struct vhost_dev *vdev);
++void vhost_cfs_remove_device_item(struct config_group *group);
++
+ int vhost_create_vqs(struct vhost_dev *vdev, unsigned int nvqs,
+ 		     unsigned int num_bufs, struct vhost_virtqueue *vqs[],
+ 		     vhost_vq_callback_t *callbacks[],
 -- 
 2.17.1
 
