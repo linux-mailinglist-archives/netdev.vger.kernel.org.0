@@ -2,169 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75689212D56
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 21:47:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F358C212D7A
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 21:58:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726144AbgGBTrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 15:47:01 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:40886 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725994AbgGBTrA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 15:47:00 -0400
-Received: by mail-pl1-f195.google.com with SMTP id x11so11697603plo.7;
-        Thu, 02 Jul 2020 12:46:59 -0700 (PDT)
+        id S1726129AbgGBT6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 15:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726003AbgGBT6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 15:58:20 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D536EC08C5C1;
+        Thu,  2 Jul 2020 12:58:19 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id l17so28716654wmj.0;
+        Thu, 02 Jul 2020 12:58:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=wC+zZCNyKVhch9fm+otFty88VRPg/0Jc+M1DZ5xEFf4=;
+        b=gfP+3NH252b3V7MJrH3IOUF/KOnB4tPiudsZzWOw7IOLrLh9hGuWFf+AGDnXQAzEH8
+         RvqJ9xBO29et9XUf9Wmz0/VDVg7y48eBcJ335U/XjAOLE4XqXamZaLqwwTWoKxtRJ+gl
+         9q52aacbZwZcpK2XK7p8NcR6hjjLSj0B/Ytdll6gjwOC/62S9/p8ewg82vDXQKVAI0rW
+         asRFbHU56HcVBZytz+Q15PFANd2iJ7dZBm1qAAUzaFDzHZCMoNCavOKv/t6yZm4mS/x0
+         1JWbUvQro9c+vPq9AwhC0DT1NDy6zuHP+vS53FlSu3ZoqKD9MNnww852aMcm0VoIpujk
+         CtSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OHFXCZoREfl1GMwKik+5lcCUbnGDc+wlkQ8rGpzOHJY=;
-        b=FkPhG6A9U0NVwzmsAT98qHKnNfxcOIO4csmQAuQS+Huj3cN7OUZojfDthIOyqkg+cn
-         tQ8sBz63yiKWxLdjBGol4JEk4K0ZRkCdmiZ2MI79q7UGAb0tP2EmpFKIjA4oTmsTXw7H
-         AAsfYv8dMIkOtjkF/JwzP1d+q3YxNtULohv7BJNvIpYSVSNkNA+XR/Qew2olbDMA44kT
-         eym0Y6ysfnXPbqQO+Qel1NeD3LFrBA4WKNMzuOX+TJnDJmpZJCOkRzqGJVVbKZ9P8I8W
-         L1kl3JsKcrs6mosc7N4ImANeT+hfsloxy+o3CNFDohZIzM3rIUq+UbqReWBL0AjTuNoz
-         yBHA==
-X-Gm-Message-State: AOAM532MQcCPbJ5AwLGsnvWxX7yPB5OzlnQj9L41VQSkrKF73G5VJReq
-        xLS6tEb7x0b9kdpx3fy1F0I=
-X-Google-Smtp-Source: ABdhPJzZRZZnyTT/LL8zshMzqSe4q6iWh/bqF3eI60b4K/yHnYqIox4lLP9gZCWSkU96CYlxNiNA6Q==
-X-Received: by 2002:a17:90a:b38b:: with SMTP id e11mr15548657pjr.120.1593719219005;
-        Thu, 02 Jul 2020 12:46:59 -0700 (PDT)
-Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id n18sm10014912pfd.99.2020.07.02.12.46.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2020 12:46:57 -0700 (PDT)
-Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id 695BF403DC; Thu,  2 Jul 2020 19:46:56 +0000 (UTC)
-Date:   Thu, 2 Jul 2020 19:46:56 +0000
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        David Howells <dhowells@redhat.com>
-Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>, ast@kernel.org,
-        axboe@kernel.dk, bfields@fieldses.org,
-        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
-        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        jarkko.sakkinen@linux.intel.com, jmorris@namei.org,
-        josh@joshtriplett.org, keescook@chromium.org,
-        keyrings@vger.kernel.org, kuba@kernel.org,
-        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
-        philipp.reisner@linbit.com, ravenexp@gmail.com,
-        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
-        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
-        netdev@vger.kernel.org, markward@linux.ibm.com,
-        linux-s390 <linux-s390@vger.kernel.org>
-Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
- seems to break linux bridge on s390x (bisected)
-Message-ID: <20200702194656.GV4332@42.do-not-panic.com>
-References: <4d8fbcea-a892-3453-091f-d57c03f9aa90@de.ibm.com>
- <1263e370-7cee-24d8-b98c-117bf7c90a83@de.ibm.com>
- <20200626025410.GJ4332@42.do-not-panic.com>
- <20200630175704.GO13911@42.do-not-panic.com>
- <b24d8dae-1872-ba2c-acd4-ed46c0781317@de.ibm.com>
- <a6792135-3285-0861-014e-3db85ea251dc@i-love.sakura.ne.jp>
- <20200701135324.GS4332@42.do-not-panic.com>
- <8d714a23-bac4-7631-e5fc-f97c20a46083@i-love.sakura.ne.jp>
- <20200701153859.GT4332@42.do-not-panic.com>
- <e3f3e501-2cb7-b683-4b85-2002b7603244@i-love.sakura.ne.jp>
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wC+zZCNyKVhch9fm+otFty88VRPg/0Jc+M1DZ5xEFf4=;
+        b=hNrpXMZuArYW6vRNhoB9XcqfyJ0x3kHysJsfIVIYhM19W0lpsxGlv8ao5bFCU9O01J
+         Tt+bN21h8/YqU7+oVkuXiK3U3IWnLbXOinAF0JQZ3gD3jKpDA1NnXJQKVQBX/ei2E0PU
+         IcmHzUhv8usQd4gTG2DvIR1fcWKJIYgBLK9toczebWdrNxT/2v+lz/m6vIGqnhiuW7rN
+         QWLeAgpvZTtoKqZO9otjOuSqtRqycfTvepWEgrRCNjZn7U19CpGEKr8zX8E5Z21TOqRc
+         bSq/rWFrE/Em+HUMs4JBqNlgKRh5bhiFC65T1qesLze5GvYzunKSEsqFHsYyz2PbsP7b
+         zVgg==
+X-Gm-Message-State: AOAM5300WnQ54ZaApmDryyWamIZTO3YZVK+/3uRLeLLNCLhuCy1PLAe1
+        99LWt/3v555eZXf3E3bc1a8=
+X-Google-Smtp-Source: ABdhPJyS5o3QkxtoTq28hJhbwfOeQRJTZO9mu/ToqnB5o0vBUapCv4R7pRaM0IUtJw+vYOTlm/ojsg==
+X-Received: by 2002:a7b:c841:: with SMTP id c1mr13922306wml.25.1593719898535;
+        Thu, 02 Jul 2020 12:58:18 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id y77sm1178183wmd.36.2020.07.02.12.58.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jul 2020 12:58:17 -0700 (PDT)
+Subject: Re: [net-next,PATCH 1/4] net: mdio-ipq4019: change defines to upper
+ case
+To:     Robert Marko <robert.marko@sartura.hr>, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org
+References: <20200702103001.233961-1-robert.marko@sartura.hr>
+ <20200702103001.233961-2-robert.marko@sartura.hr>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <52169697-d7e8-6c28-01d4-eb02b92ae552@gmail.com>
+Date:   Thu, 2 Jul 2020 12:58:14 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e3f3e501-2cb7-b683-4b85-2002b7603244@i-love.sakura.ne.jp>
+In-Reply-To: <20200702103001.233961-2-robert.marko@sartura.hr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 02, 2020 at 01:26:53PM +0900, Tetsuo Handa wrote:
-> On 2020/07/02 0:38, Luis Chamberlain wrote:
-> > @@ -156,6 +156,18 @@ static void call_usermodehelper_exec_sync(struct subprocess_info *sub_info)
-> >  		 */
-> >  		if (KWIFEXITED(ret))
-> >  			sub_info->retval = KWEXITSTATUS(ret);
-> > +		/*
-> > +		 * Do we really want to be passing the signal, or do we pass
-> > +		 * a single error code for all cases?
-> > +		 */
-> > +		else if (KWIFSIGNALED(ret))
-> > +			sub_info->retval = KWTERMSIG(ret);
+
+
+On 7/2/2020 3:29 AM, Robert Marko wrote:
+> In the commit adding the IPQ4019 MDIO driver, defines for timeout and sleep partially used lower case.
+> Lets change it to upper case in line with the rest of driver defines.
 > 
-> No, this is bad. Caller of usermode helper is unable to distinguish exit(9)
-> and e.g. SIGKILL'ed by the OOM-killer.
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 
-Right, the question is: do we care?
-
-> Please pass raw exit status value.
-> 
-> I feel that caller of usermode helper should not use exit status value.
-> For example, call_sbin_request_key() is checking
-> 
->   test_bit(KEY_FLAG_USER_CONSTRUCT, &key->flags) || key_validate(key) < 0
-> 
-> condition (if usermode helper was invoked) in order to "ignore any errors from
-> userspace if the key was instantiated".
-
-For those not familiar with this code path, or if you cannot decipher
-the above, the code path in question was:
-
-static int call_sbin_request_key(struct key *authkey, void *aux)                
-{
-	...
-	/* do it */                                                             
-	ret = call_usermodehelper_keys(request_key, argv, envp, keyring,        
-				       UMH_WAIT_PROC);
-	kdebug("usermode -> 0x%x", ret);
-	if (ret >= 0) {
-		/* ret is the exit/wait code */
-		if (test_bit(KEY_FLAG_USER_CONSTRUCT, &key->flags) ||
-		    key_validate(key) < 0)
-		    ret = -ENOKEY;
-		/* ignore any errors from userspace if the key was      
-		 * instantiated */  
-		 ret = 0;
-	}
-	...
-}
-
-And the umh patch "umh: fix processed error when UMH_WAIT_PROC is used"
-changed this to:
-
--       if (ret >= 0) {
-+       if (ret != 0) {
-
-Prior to the patch negative return values from userspace were still
-being captured, and likewise signals, but the error value was not
-raw, not the actual value. After the patch, since we check for ret != 0
-we still upkeep the sanity check for any error, correct the error value,
-but as you noted signals were ignored as I made the wrong assumption
-we would ignore them. The umh sub_info->retval is set after my original
-patch only if KWIFSIGNALED(ret)), and ignored signals, and so that
-would be now capitured with the additional KWIFSIGNALED(ret)) check.
-
-The question still stands:
-
-Do we want to open code all these checks or simply wrap them up in
-the umh. If we do the later, as you note exit(9) and a SIGKILL will
-be the same to the inspector in the kernel. But do we care?
-
-Do we really want umh callers differntiatin between signals and exit values?
-
-The alternative to making a compromise is using generic wrappers for
-things which make sense and letting the callers use those.
-
-  Luis
-
-> > +		/* Same here */
-> > +		else if (KWIFSTOPPED((ret)))
-> > +			sub_info->retval = KWSTOPSIG(ret);
-> > +		/* And are we really sure we want this? */
-> > +		else if (KWIFCONTINUED((ret)))
-> > +			sub_info->retval = 0;
-> >  	}
-> >  
-> >  	/* Restore default kernel sig handler */
-> > 
-> 
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
