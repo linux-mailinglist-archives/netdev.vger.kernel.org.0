@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75A83212BA2
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 19:54:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A6AF212BA5
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 19:54:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727979AbgGBRyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 13:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51048 "EHLO
+        id S1727994AbgGBRyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 13:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726980AbgGBRx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 13:53:58 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B094CC08C5C1;
-        Thu,  2 Jul 2020 10:53:58 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id z63so26420823qkb.8;
-        Thu, 02 Jul 2020 10:53:58 -0700 (PDT)
+        with ESMTP id S1727963AbgGBRyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 13:54:00 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17291C08C5C1;
+        Thu,  2 Jul 2020 10:54:00 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id x62so21933527qtd.3;
+        Thu, 02 Jul 2020 10:54:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=adUOUcaETQkVS7cnauVlN1+FIVTZhn7o3LTKSzYe1bc=;
-        b=ZmldpPGGAUupGOjBWcXeGZIszb+8n3NZchM0xyTr1Z5NPEb76YxCQFLl6o6dZN9GSC
-         TA1jf3ctAaiaoq8ZLPZU/WgKURo0KWp69XwkMuCvIJerC8NgvOfUCbG2HZorgBQcWOHc
-         /KtHoU4JW1J/kVrL7kLtBRV46H3Db9ysJizxf8jjehx3I2uvdmMN1GY1rrtQRc42ARJn
-         h5XtniBloV6rmeqvKUpOIUZOvDRfNZZC6+fHJDCY+/lyZtqPRw2rvSZJ4PAp2RzYggzx
-         o+G7m77jsgBgtsjWQKhRaNw3gxbM2L0s9F/ljFqLgGw550KGzvNBK95YTZ4qrCQP5Mfp
-         RecA==
+        bh=ZKWKuZ/GqJQ2tlXnv5kEi5eyCWfh4Zy6tKRJWrUWoaM=;
+        b=elhYe95RAW43tw1m88MdkH7kBUzi2ZgOftqKEM9l9fBrUR+wpcM6JpeDVnUgXkmEvg
+         MjdNaswFysDTZb5Ogb9Gzi8XJil6h3Qr/G4xFrbeE5rTwc80GepH2raQTAZw5oOdZHHv
+         G+3lA2iAL0MrgKy8XV0CPVbtv8YFw98N7Sm21Aq10wvpAnPWvNuT6hh2VBft0Cw/cl/k
+         lk08LrNF3tDD62jegfVBQXJMWg6FW9Ew1/Zwm7aropH+ZbZtewjo3N/nAZ9MttWG58P9
+         arwAPDh6T+OAQIDjjnaouHW6EfGZ9YSq6TMkYUJBO3+ftnghUXqwTZ0/YOKQv1mhwGIT
+         5KnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=adUOUcaETQkVS7cnauVlN1+FIVTZhn7o3LTKSzYe1bc=;
-        b=cOUDxyPIT+9+YMye3VleycM2DXxhOmHGuk4q3u6l2L8NoraRWLwl3VdM2g3irvzeEy
-         gD6/Fi7bF+++6UM9VXx6i90Ku5k43rK+oA6fdkcLHfGd/7miSyb7nvaXMrXMdy5uSkIQ
-         HJ0GEqKg7k9ZvP4QxhpaPGMR3GF3CaYVbYMsTxtlOts9FQOmU8bWZsYOHoWYyKi8Mb+o
-         BFUFwozZDVv0P2Jnyg64WVVfkt/qy1JnDOy8RoQxvTyaPYCKNmMYhleXCfxjyJmsn3fl
-         +JU/e40h6hoepzZ32fQ4njwiVTS6gsX/37OTv9Bijbxo6ZNc8FUrIw+XVyNsclPAaykh
-         6/3A==
-X-Gm-Message-State: AOAM533uEqV07MgC6bQeUhp6Z4gKvZdM459+SstX4Wo13maROOUXYAIg
-        HHIoEqcr/xQnKXXVNShaers=
-X-Google-Smtp-Source: ABdhPJzIHwAA0Q0Poo8Me3UUZPAvAoi/DLDdPOje48J0iSrJbC+Eib9upIcn4CvPceOSoRL1jothQg==
-X-Received: by 2002:a37:a785:: with SMTP id q127mr30241028qke.334.1593712437648;
-        Thu, 02 Jul 2020 10:53:57 -0700 (PDT)
+        bh=ZKWKuZ/GqJQ2tlXnv5kEi5eyCWfh4Zy6tKRJWrUWoaM=;
+        b=eeISvj9vxfEyYydyv5cX1K7M2HKEIqzOg8mJ5D8on6WE9QxMtRZ92MgAC/cc1I5Tt/
+         6mGvSm/0DDAH1PsFCKbhs4p9iXVvO+xu5iPQDvcLxTyJGBNxNpWtjv2FC1RWYxmQhsBv
+         h5cPaamuJu5tFL523TbhxpiecndXb2OQAhN0a5U8FoBzO7IYlKkGwjhl3drn24UhzKbZ
+         rvv3kB+XBNW75qkePhvLrCQzZixjYXs+LtwrJvaK9HZ72lwrqseJgupB96airZ6sYWhU
+         LBIXwSVxIYwW5STZST3P2PSURT2/g5WtDjMblGAijfdPsqXEyIf4BbgSDuVXQ78mNTUq
+         sabA==
+X-Gm-Message-State: AOAM533NU+Kce8HMcJ0UUX2HwCUjDlU28IhMNDJQe6JBncqS4iZPeZLn
+        4W6QGsfFgwubeL104/WTCFE=
+X-Google-Smtp-Source: ABdhPJxFIU3UKxBx6qN2dHiZNWiq9jLcasvtl0GEwPexqj0BW1YbvA10GOwT5IelBz2Hv/a92nrH0Q==
+X-Received: by 2002:ac8:429b:: with SMTP id o27mr21249400qtl.124.1593712438939;
+        Thu, 02 Jul 2020 10:53:58 -0700 (PDT)
 Received: from localhost.localdomain ([72.53.229.195])
-        by smtp.gmail.com with ESMTPSA id w204sm9149937qka.41.2020.07.02.10.53.56
+        by smtp.gmail.com with ESMTPSA id w204sm9149937qka.41.2020.07.02.10.53.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2020 10:53:57 -0700 (PDT)
+        Thu, 02 Jul 2020 10:53:58 -0700 (PDT)
 From:   Sven Van Asbroeck <thesven73@gmail.com>
 X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
 To:     shawnguo@kernel.org, fugang.duan@nxp.com, robh+dt@kernel.org
@@ -56,9 +56,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 2/3] dt-bindings: fec: add fsl,ptpclk-bypass-pad boolean property
-Date:   Thu,  2 Jul 2020 13:53:51 -0400
-Message-Id: <20200702175352.19223-2-TheSven73@gmail.com>
+Subject: [PATCH v5 3/3] ARM: imx6plus: optionally enable internal routing of clk_enet_ref
+Date:   Thu,  2 Jul 2020 13:53:52 -0400
+Message-Id: <20200702175352.19223-3-TheSven73@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200702175352.19223-1-TheSven73@gmail.com>
 References: <20200702175352.19223-1-TheSven73@gmail.com>
@@ -67,17 +67,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If present, sources the fec's PTP clock straight from
-the enet PLL, instead of having to be routed via a SoC pad.
+On imx6, the ethernet reference clock (clk_enet_ref) can be generated
+by either the imx6, or an external source (e.g. an oscillator or the
+PHY). When generated by the imx6, the clock source (from ANATOP)
+must be routed to the input of clk_enet_ref via two pads on the SoC,
+typically via a dedicated track on the PCB.
 
-This is only possible on certain SoCs, notably the imx6 (quad) plus.
+On an imx6 plus however, there is a new setting which enables this
+clock to be routed internally on the SoC, from its ANATOP clock
+source, straight to clk_enet_ref, without having to go through
+the SoC pads.
 
+Enable internal routing if the fsl,ptpclk-bypass-pad boolean
+property is present in the "fsl,imx6q-fec" devicetree node.
+
+Link: https://lore.kernel.org/lkml/CAOMZO5BYC3DmE_G0XRwRH9vSJiVVvKbtznODyntsAuorF=HoqA@mail.gmail.com/
 Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
 ---
 
 Tree: v5.8-rc3
 
-Patch history: see [PATCH v5 3/3]
+v4 -> v5:
+  - identified that existing imx6q-plus boards could break ethernet if v4
+    patch is applied.
+    reached consensus: prevent breakage by requiring an explicit devicetree
+    property for internal ptp clk routing.
+    Link: https://lore.kernel.org/lkml/CAOMZO5BYC3DmE_G0XRwRH9vSJiVVvKbtznODyntsAuorF=HoqA@mail.gmail.com/
+v3 -> v4:
+  - avoid double-check for IS_ERR(gpr) by including Fabio Estevam's
+    patch.
+v2 -> v3:
+  - remove check for imx6q, which is already implied when
+    of_machine_is_compatible("fsl,imx6qp")
+v1 -> v2:
+  - Fabio Estevam: use of_machine_is_compatible() to determine if we
+    are running on an imx6 plus.
 
 To: Shawn Guo <shawnguo@kernel.org>
 To: Andy Duan <fugang.duan@nxp.com>
@@ -93,23 +117,49 @@ Cc: NXP Linux Team <linux-imx@nxp.com>
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 
- Documentation/devicetree/bindings/net/fsl-fec.txt | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/mach-imx/mach-imx6q.c              | 14 ++++++++++++++
+ include/linux/mfd/syscon/imx6q-iomuxc-gpr.h |  3 +++
+ 2 files changed, 17 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/fsl-fec.txt b/Documentation/devicetree/bindings/net/fsl-fec.txt
-index 9b543789cd52..e34df25a38f6 100644
---- a/Documentation/devicetree/bindings/net/fsl-fec.txt
-+++ b/Documentation/devicetree/bindings/net/fsl-fec.txt
-@@ -39,6 +39,9 @@ Optional properties:
-   tx/rx queues 1 and 2. "int0" will be used for queue 0 and ENET_MII interrupts.
-   For imx6sx, "int0" handles all 3 queues and ENET_MII. "pps" is for the pulse
-   per second interrupt associated with 1588 precision time protocol(PTP).
-+- fsl,ptpclk-bypass-pad: If present, sources the fec's PTP clock straight from
-+  the enet PLL, instead of having to be routed via a SoC pad. This is only
-+  possible on certain SoCs, notably the imx6 (quad) plus.
+diff --git a/arch/arm/mach-imx/mach-imx6q.c b/arch/arm/mach-imx/mach-imx6q.c
+index ae89ad93ca83..ac62994eb7ba 100644
+--- a/arch/arm/mach-imx/mach-imx6q.c
++++ b/arch/arm/mach-imx/mach-imx6q.c
+@@ -204,6 +204,20 @@ static void __init imx6q_1588_init(void)
+ 	regmap_update_bits(gpr, IOMUXC_GPR1, IMX6Q_GPR1_ENET_CLK_SEL_MASK,
+ 			   clksel);
  
- Optional subnodes:
- - mdio : specifies the mdio bus in the FEC, used as a container for phy nodes
++	/*
++	 * On imx6 plus, enet_ref from ANATOP/CCM can be internally routed to
++	 * be the PTP clock source, instead of having to be routed through
++	 * pads.
++	 */
++	if (of_machine_is_compatible("fsl,imx6qp")) {
++		clksel = of_property_read_bool(np, "fsl,ptpclk-bypass-pad") ?
++				IMX6Q_GPR5_ENET_TXCLK_SEL_PLL :
++				IMX6Q_GPR5_ENET_TXCLK_SEL_PAD;
++		regmap_update_bits(gpr, IOMUXC_GPR5,
++				   IMX6Q_GPR5_ENET_TXCLK_SEL_MASK, clksel);
++	}
++
++
+ 	clk_put(enet_ref);
+ put_ptp_clk:
+ 	clk_put(ptp_clk);
+diff --git a/include/linux/mfd/syscon/imx6q-iomuxc-gpr.h b/include/linux/mfd/syscon/imx6q-iomuxc-gpr.h
+index d4b5e527a7a3..58377002427f 100644
+--- a/include/linux/mfd/syscon/imx6q-iomuxc-gpr.h
++++ b/include/linux/mfd/syscon/imx6q-iomuxc-gpr.h
+@@ -240,6 +240,9 @@
+ #define IMX6Q_GPR4_IPU_RD_CACHE_CTL		BIT(0)
+ 
+ #define IMX6Q_GPR5_L2_CLK_STOP			BIT(8)
++#define IMX6Q_GPR5_ENET_TXCLK_SEL_MASK		BIT(9)
++#define IMX6Q_GPR5_ENET_TXCLK_SEL_PAD		0
++#define IMX6Q_GPR5_ENET_TXCLK_SEL_PLL		BIT(9)
+ #define IMX6Q_GPR5_SATA_SW_PD			BIT(10)
+ #define IMX6Q_GPR5_SATA_SW_RST			BIT(11)
+ 
 -- 
 2.17.1
 
