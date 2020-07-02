@@ -2,149 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E3C6212644
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 16:29:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 666C621264E
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 16:31:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729606AbgGBO3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 10:29:05 -0400
-Received: from mail.efficios.com ([167.114.26.124]:48968 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728651AbgGBO3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 10:29:05 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 378542D6FE7;
-        Thu,  2 Jul 2020 10:29:04 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 16wex3xvqnFK; Thu,  2 Jul 2020 10:29:03 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id DACC32D6FE6;
-        Thu,  2 Jul 2020 10:29:03 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com DACC32D6FE6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1593700143;
-        bh=UzT2Ee3iLDLbSoOdnu33l5Ys12GhSDKJvLSq2vPadho=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=NyEek19B0VrIploDVsjX70UuEI9E/95zHT5Q5KdqIDA3/87aQo8u0X+YJndJA8cvo
-         KuJJxJ6FlEmONYcJCRTP03mJRQXqNo634A36TGOieiXApI+5k0XfbVWvPXZxh97EUC
-         0J/N83qAW7SMj6aylGUtYIax0Uf+2XctzYG1RUB7JVUt7XoOAbkF/WiqYsznN0zmC3
-         m1TX6YdEc0XXq437aO4ym/YIim3y6HcIQ6Acztbw6lK6H6IcZTbMPg9X6R7II1nHFp
-         mJI9y3A9K+OsVRmOTmxjXL4DE6ZASVyNzoBs1LxS3fgiFORA5hwhqQ5g7WRCfoFeVg
-         3PnspnaedLQWg==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id rF8FRh_vHhWo; Thu,  2 Jul 2020 10:29:03 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id CF54B2D6FE5;
-        Thu,  2 Jul 2020 10:29:03 -0400 (EDT)
-Date:   Thu, 2 Jul 2020 10:29:03 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <708841049.20220.1593700143737.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20200702013933.4157053-1-edumazet@google.com>
-References: <20200702013933.4157053-1-edumazet@google.com>
-Subject: Re: [PATCH net] tcp: md5: allow changing MD5 keys in all socket
- states
+        id S1729707AbgGBOb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 10:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47804 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728179AbgGBOb0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 10:31:26 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D84CC08C5C1
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 07:31:26 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id t27so19434494ill.9
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 07:31:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=mIq+yjOJ482zhmKlc56t5Rh+ihlaa0bzZExbNbw1pN8=;
+        b=G6pKuLgoRuTT6F6cx/UoqJBfOTmhvRXSYzVsxA5XPG/Y6zNulZo6Pdvw0IVaG3AQtx
+         Wn69VEk2UUvCCLbjl98CAr13GpQJ/RT6RtA39jXyp/JCbDFSAol/s3nmljUabZjaVquS
+         Sg2fihi1OfLflpLSrf7DfmEdnn1kv54R4cvYzKv3BscWUS+ljbjQfGnPJIQF+ht8ezBD
+         /67eFdzMUmKfC141W+k3FutVJiHc471Lcv3LAmqwSl1/230KOTwOA4IsIpl5bhM4kwT7
+         t2ygx4GSP2dbql6r7Ksy+kw9jZ5X6oh/oKBbRnZMOs+jJMb4hrYLoFe2zQ779NN1Xg6Q
+         rrnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=mIq+yjOJ482zhmKlc56t5Rh+ihlaa0bzZExbNbw1pN8=;
+        b=o3C/l+F4inSSAmMBozSKhfaAs1f5VC2X1IoiM/JKg0gIwmYqak4BGCh+lTDJ2acJPo
+         BEVx9zem1PVu97EBRCVp1zLlwHvoyaRgLavAnWnyn2GxuUNJ3mnRFL1yozdAiw8Z0Ft0
+         1xdabjGusLwnTVVPxhxSbbwaqxJ83tomf6HhKzcgEmBiq1OQHMxYiW1X8P6HsIDQURvN
+         x9C23nT4ryzreeSFKkLA6ivQb7NjLSrDxFloonu6DLHyxQId+za+5vUnYV3UE+iqc/Nf
+         TcUWa9IYjR5jVlBUU1Nb6fgZsJihU1Tm/sBUQ5+Eoze7Kx+hSqZCEKGtZ3Rg/ttMsM8n
+         N88g==
+X-Gm-Message-State: AOAM533lGfNWOlhHce/V+ioN4Kke7q5Bg8B21wHtBtkCMxkssPIOr7T/
+        ExoMZl3aolQ6NTCj+8hmyt/7/ASy3Y4+tPWUgt4=
+X-Google-Smtp-Source: ABdhPJwv09NOaSTI+PqVdpm3Gwy0JS+PkBhWapDfRj2cPgFI+dAiQQgxpvA/0SiG8vaqYHdKEcfMtdl7exyY2rhnpbs=
+X-Received: by 2002:a92:d705:: with SMTP id m5mr13318804iln.288.1593700285850;
+ Thu, 02 Jul 2020 07:31:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_3945 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3928)
-Thread-Topic: md5: allow changing MD5 keys in all socket states
-Thread-Index: 3pm5iCzB4TPUE3dXL0iOs+CLnAsxmQ==
+Received: by 2002:a02:7308:0:0:0:0:0 with HTTP; Thu, 2 Jul 2020 07:31:25 -0700 (PDT)
+From:   "Ernest F.Groth" <barristerp744@gmail.com>
+Date:   Thu, 2 Jul 2020 07:31:25 -0700
+Message-ID: <CAOLr2SfmOV+ok3FaBUMo61K_z8sdpM-+QBwAN5wcr2y=+fj3yg@mail.gmail.com>
+Subject: Good day,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On Jul 1, 2020, at 9:39 PM, Eric Dumazet edumazet@google.com wrote:
+Good day,
 
-> This essentially reverts commit 721230326891 ("tcp: md5: reject TCP_MD5SIG
-> or TCP_MD5SIG_EXT on established sockets")
-> 
-> Mathieu reported that many vendors BGP implementations can
-> actually switch TCP MD5 on established flows.
-> 
-> Quoting Mathieu :
->   Here is a list of a few network vendors along with their behavior
->   with respect to TCP MD5:
-> 
->   - Cisco: Allows for password to be changed, but within the hold-down
->     timer (~180 seconds).
->   - Juniper: When password is initially set on active connection it will
->     reset, but after that any subsequent password changes no network
->     resets.
->   - Nokia: No notes on if they flap the tcp connection or not.
->   - Ericsson/RedBack: Allows for 2 password (old/new) to co-exist until
->     both sides are ok with new passwords.
->   - Meta-Switch: Expects the password to be set before a connection is
->     attempted, but no further info on whether they reset the TCP
->     connection on a change.
->   - Avaya: Disable the neighbor, then set password, then re-enable.
->   - Zebos: Would normally allow the change when socket connected.
-> 
-> We can revert my prior change because commit 9424e2e7ad93 ("tcp: md5: fix
-> potential
-> overestimation of TCP option space") removed the leak of 4 kernel bytes to
-> the wire that was the main reason for my patch.
+I am Mr.Ernest Francis Groth from United States of America and a
+lawyer by profession. I want to use this opportunity to inform you
+about my late client whom died in auto accident here in United States
+with his entire family dated 24th of June 2012 and this my client
+deposited the sum of Eighteen  Million, Six Hundred Thousand Dollars
+(18,600,000.00 USD) in Bank in USA and since his demise, none of his
+family members are come to claim his funds and please reply me for
+more details
 
-Hi Eric,
-
-This is excellent news! Thanks for looking into it.
-
-As this revert re-enables all ABI scenarios previously supported, I suspect
-this means knowing whether transitions of live TCP sockets from no-md5 to
-enabled-md5 is often used in practice is now irrelevant ?
-
-Thanks,
-
-Mathieu
-
-
-> 
-> While doing my investigations, I found a bug when a MD5 key is changed, leading
-> to these commits that stable teams want to consider before backporting this
-> revert :
-> 
-> Commit 6a2febec338d ("tcp: md5: add missing memory barriers in
-> tcp_md5_do_add()/tcp_md5_hash_key()")
-> Commit e6ced831ef11 ("tcp: md5: refine tcp_md5_do_add()/tcp_md5_hash_key()
-> barriers")
-> 
-> Fixes: 721230326891 "tcp: md5: reject TCP_MD5SIG or TCP_MD5SIG_EXT on
-> established sockets"
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> ---
-> net/ipv4/tcp.c | 5 +----
-> 1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index
-> c33f7c6aff8eea81d374644cd251bd2b96292651..861fbd84c9cf58af4126c80a27925cd6f70f300d
-> 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -3246,10 +3246,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
-> #ifdef CONFIG_TCP_MD5SIG
-> 	case TCP_MD5SIG:
-> 	case TCP_MD5SIG_EXT:
-> -		if ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN))
-> -			err = tp->af_specific->md5_parse(sk, optname, optval, optlen);
-> -		else
-> -			err = -EINVAL;
-> +		err = tp->af_specific->md5_parse(sk, optname, optval, optlen);
-> 		break;
-> #endif
-> 	case TCP_USER_TIMEOUT:
-> --
-> 2.27.0.212.ge8ba1cc988-goog
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+Ernest Francis Groth
