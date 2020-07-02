@@ -2,83 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE9B4212ED1
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 23:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFACC212ED4
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 23:27:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726106AbgGBV04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 17:26:56 -0400
-Received: from mga06.intel.com ([134.134.136.31]:39244 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725937AbgGBV04 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jul 2020 17:26:56 -0400
-IronPort-SDR: 1q471oQdgbQrDWnZQ4Pw9dutykFxsaGMOFbUaVRBaUwiPID3OCDoSnAvuNcjonqZKMNtSAneDr
- Lp4IP/y/p8Zw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9670"; a="208554509"
-X-IronPort-AV: E=Sophos;i="5.75,305,1589266800"; 
-   d="scan'208";a="208554509"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2020 14:26:55 -0700
-IronPort-SDR: 0MZzjM4DFGHlsFVTM8qf3gqTdlV0ESr39xpt6nVRtN+B59e3c98ZtncYDrKdiDRnsdYnR0Js9q
- xqdhDQmrXq6g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,305,1589266800"; 
-   d="scan'208";a="387449103"
-Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
-  by fmsmga001.fm.intel.com with ESMTP; 02 Jul 2020 14:26:55 -0700
-Received: from orsmsx157.amr.corp.intel.com (10.22.240.23) by
- ORSMSX102.amr.corp.intel.com (10.22.225.129) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 2 Jul 2020 14:26:55 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.199]) by
- ORSMSX157.amr.corp.intel.com ([169.254.9.81]) with mapi id 14.03.0439.000;
- Thu, 2 Jul 2020 14:26:54 -0700
-From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-To:     Francesco Ruggeri <fruggeri@arista.com>
-CC:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: RE: [PATCH] igb: reinit_locked() should be called with rtnl_lock
-Thread-Topic: [PATCH] igb: reinit_locked() should be called with rtnl_lock
-Thread-Index: AQHWTlrL81g79hVuZ0aaoDgUuhrbt6jwv/UAgABMxoCAAOZwIIADNT2A//+SuOCAAHnrAP//nSAg
-Date:   Thu, 2 Jul 2020 21:26:54 +0000
-Message-ID: <61CC2BC414934749BD9F5BF3D5D9404498748DAB@ORSMSX112.amr.corp.intel.com>
-References: <20200629211801.C3D7095C0900@us180.sjc.aristanetworks.com>
- <20200629171612.49efbdaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CA+HUmGjHQPUh1frfy5E28Om9WTVr0W+UQVDsm99beC_mbTeMog@mail.gmail.com>
- <61CC2BC414934749BD9F5BF3D5D940449874358A@ORSMSX112.amr.corp.intel.com>
- <CA+HUmGhfxYY5QiwF8_UYbp0TY-k3u+cTYZDSqV1s=SUFnGCn8g@mail.gmail.com>
- <61CC2BC414934749BD9F5BF3D5D9404498748B57@ORSMSX112.amr.corp.intel.com>
- <CA+HUmGi6D8Ci5fk7vyengJN4qOEH6zz18Kw6B9Us-Kav-78oAg@mail.gmail.com>
-In-Reply-To: <CA+HUmGi6D8Ci5fk7vyengJN4qOEH6zz18Kw6B9Us-Kav-78oAg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.138]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S1726150AbgGBV1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 17:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725937AbgGBV1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 17:27:45 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32832C08C5C1;
+        Thu,  2 Jul 2020 14:27:45 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BEE83128449C8;
+        Thu,  2 Jul 2020 14:27:43 -0700 (PDT)
+Date:   Thu, 02 Jul 2020 14:27:42 -0700 (PDT)
+Message-Id: <20200702.142742.455023767824311035.davem@davemloft.net>
+To:     codrin.ciubotariu@microchip.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        kuba@kernel.org
+Subject: Re: [PATCH net] net: dsa: microchip: set the correct number of
+ ports
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200702094450.1353917-1-codrin.ciubotariu@microchip.com>
+References: <20200702094450.1353917-1-codrin.ciubotariu@microchip.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 02 Jul 2020 14:27:44 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBGcmFuY2VzY28gUnVnZ2VyaSA8
-ZnJ1Z2dlcmlAYXJpc3RhLmNvbT4NCj4gU2VudDogVGh1cnNkYXksIEp1bHkgMiwgMjAyMCAxMzoy
-MA0KPiBUbzogS2lyc2hlciwgSmVmZnJleSBUIDxqZWZmcmV5LnQua2lyc2hlckBpbnRlbC5jb20+
-DQo+IENjOiBOZ3V5ZW4sIEFudGhvbnkgTCA8YW50aG9ueS5sLm5ndXllbkBpbnRlbC5jb20+OyBK
-YWt1YiBLaWNpbnNraQ0KPiA8a3ViYUBrZXJuZWwub3JnPjsgRGF2aWQgTWlsbGVyIDxkYXZlbUBk
-YXZlbWxvZnQubmV0Pjsgb3BlbiBsaXN0IDxsaW51eC0NCj4ga2VybmVsQHZnZXIua2VybmVsLm9y
-Zz47IG5ldGRldiA8bmV0ZGV2QHZnZXIua2VybmVsLm9yZz47IGludGVsLXdpcmVkLQ0KPiBsYW5A
-bGlzdHMub3N1b3NsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIXSBpZ2I6IHJlaW5pdF9sb2Nr
-ZWQoKSBzaG91bGQgYmUgY2FsbGVkIHdpdGggcnRubF9sb2NrDQo+IA0KPiA+DQo+ID4gU28gd2ls
-bCB5b3UgYmUgc2VuZGluZyBhIHYyIG9mIHlvdXIgcGF0Y2ggdG8gaW5jbHVkZSB0aGUgc2Vjb25k
-IGZpeD8NCj4gDQo+IFllcywgSSBhbSB3b3JraW5nIG9uIGl0LiBKdXN0IHRvIGNvbmZpcm0sIHYy
-IHNob3VsZCBpbmNsdWRlIGJvdGggZml4ZXMsIHJpZ2h0Pw0KDQpDb3JyZWN0Lg0KDQo=
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Date: Thu, 2 Jul 2020 12:44:50 +0300
+
+> The number of ports is incorrectly set to the maximum available for a DSA
+> switch. Even if the extra ports are not used, this causes some functions
+> to be called later, like port_disable() and port_stp_state_set(). If the
+> driver doesn't check the port index, it will end up modifying unknown
+> registers.
+> 
+> Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
+> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+
+Applied and queued up for -stable, thanks.
