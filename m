@@ -2,191 +2,365 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3655C211F8D
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:15:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2A70211F97
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:15:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728077AbgGBJO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 05:14:58 -0400
-Received: from mail-eopbgr130075.outbound.protection.outlook.com ([40.107.13.75]:51407
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726462AbgGBJO5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jul 2020 05:14:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fXd6SBwgLYKDGzS1J9Ba3m6IKba2PbQj48O1to3PdMEKUXn4P9azy1V5VMFfPlm4bqUpwBPtnrnWJuGWS5UASjqrqJLqb2RCkhTPRbgMtPQdFLdmcpEjB6EYaWrrNim+/SSG7/oxNfQqq+CgEYqTHhO3xwM3cJYffX9Cw7dCIVlmHadsBfwTluI+jaqrX9NRZy0kqHzVbJuno7P6VIXHUHZ0QXtxWEx5BCDdAEckTf+fmGvFVMnKSDe3Mw7KOrcFznuOirVpVTP1wXLeoURwOOHrlONbNzqLACDO63DZbyUSEgWM9LRGIXh2PEXRI7/lLbhelDGjOSHwh30S/ioopQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zfjuFTCVUUcoL00bKnSSFPXX9e5fBqPeSCudysLXcOc=;
- b=O+bzbGYDLUFCUV6GPo8HJRIisqJ/nPSFnHBjjZwSbOuT65HryV1qOCgWkKwNiQ0CjtbQ+oM7eZjxasscOn1gB03panlPEL5SCENxq9C5ehzG8/L1RPi/BdKkoR9Yz66RmGgV30XqC3+C505V1doBzEC6DCaNgft/iFUFcCnho0ibOUMKqCoRrFgjzvMZJYz4DFz+roabvW4MrtfZxE0DjZ1Kioz6K/yBRBT+FnUPl/fjALV89rvMWVbrU06Xi3+7pfllZVS/F+HNez1k+ywt7ML4mOi25jGCgSWQxEKV1csE1Y1ER930ni3toP1kdLpxN34xMLPlm6uy+coEtUwXHA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zfjuFTCVUUcoL00bKnSSFPXX9e5fBqPeSCudysLXcOc=;
- b=pC8t7jYvJlbv+3EnVS+q3vZDbkKNs6/955dTdCCcqi3w4/h0QXL7kfcgZpJ5DGVWzs4iVisv9fufgi+2hUxMlaHgTBlq3YI/Fpq5kod8POlAhPwaH3yeN3Ts3o4hX4J0PL5hruslMB3uOTSCYEux5dP2i6HsVQZGZ+jFAC9Y62Q=
-Received: from AM0PR0402MB3603.eurprd04.prod.outlook.com
- (2603:10a6:208:26::22) by AM0PR04MB4098.eurprd04.prod.outlook.com
- (2603:10a6:208:64::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20; Thu, 2 Jul
- 2020 09:14:53 +0000
-Received: from AM0PR0402MB3603.eurprd04.prod.outlook.com
- ([fe80::a8a1:4ee2:ee4e:aeef]) by AM0PR0402MB3603.eurprd04.prod.outlook.com
- ([fe80::a8a1:4ee2:ee4e:aeef%7]) with mapi id 15.20.3153.024; Thu, 2 Jul 2020
- 09:14:53 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Kegl Rohit <keglrohit@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] net: ethernet: freescale: fec: copybreak handling
- throughput, dma_sync_* optimisations allowed?
-Thread-Topic: [EXT] net: ethernet: freescale: fec: copybreak handling
- throughput, dma_sync_* optimisations allowed?
-Thread-Index: AQHWT9e4kn3p3ha4AEO+27pzlMnbc6jzmCHwgABPwICAAAq6gA==
-Date:   Thu, 2 Jul 2020 09:14:53 +0000
-Message-ID: <AM0PR0402MB36037EF37780AFFB14C0C5CEFF6D0@AM0PR0402MB3603.eurprd04.prod.outlook.com>
-References: <CAMeyCbjiVXFkzA5ZyJ5b3N4fotWkzKHVp3J=nT1yWs1v8dmRXA@mail.gmail.com>
- <AM6PR0402MB3607E9BD414FF850D577F76EFF6D0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
- <CAMeyCbicX_8Kc_E5sanUMNtToLpj9BkcV+RR6h2FoNoxxcKJog@mail.gmail.com>
-In-Reply-To: <CAMeyCbicX_8Kc_E5sanUMNtToLpj9BkcV+RR6h2FoNoxxcKJog@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.67]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: cccebb4d-566f-4592-e79a-08d81e686173
-x-ms-traffictypediagnostic: AM0PR04MB4098:
-x-microsoft-antispam-prvs: <AM0PR04MB40986F32D901B7C7C75326B5FF6D0@AM0PR04MB4098.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0452022BE1
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: PX5YPtMXs6DK6RQ0HaJGxE3XOu0LuGBS/sl08KW/MPY8NGfS+TMVFKMr2QtxqkkXYvGYF0iYmh5ykOtk9TIdwf/cWwH2bN7GfnBypYsEuTCTXB9UcOHwX9xoSBmAoEZvuyWoTRFFubZS40gldU7vd91hvMrEV7IaLq5V+uEV+Q03AdhrpgZoYwnDGcOXBk4fsf+NdMyIod2rwPKCrWTrqdSa/PWeFfumEhBl3Tk3OZVVI/Z+Lc0LtJeSFwM9xmZ3pRR9EimW1wueFpnn8Tp9NLQt1wCLd67PZ9rrKMyFwtbUB26f6lD5pKqDXsNuxHkzQ4u/8MOGIydkOxzxvO2bEQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0402MB3603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(136003)(366004)(396003)(39860400002)(186003)(53546011)(66946007)(316002)(76116006)(66556008)(64756008)(4326008)(33656002)(6916009)(478600001)(66446008)(66476007)(8676002)(9686003)(83380400001)(6506007)(26005)(8936002)(55016002)(7696005)(52536014)(2906002)(71200400001)(86362001)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: sTZ+e0RyafAYP/YzXfFUFXK58xlw/wKJs9wGZO4QWKHeD5zym4YzPIcyl9LQ1MfSoDkodaEhzYOI/MrblRImCCbpYktv+fW6PWPJv3RfaVoWsKTd9BAtgpjxw8XLzyW40/fiqojZxKYnLYKiXfhTt0phxPylZDisXKw53uaNKoI55oZFdmXxplhDBsKYz5P06M1cRKGDnzPIrD59W55M9Tk/rtUdrqvFqJ2fSyufQfTxgL6Z2xVoPLOqL4chitbYiCXBoEaVcMg53oNeHlVOtNTNEOCyqEsTwtCs5q7xU+WPKjwSXj8UE6n38oPl/arjwvE4Qrcnw5NMuSurCWWtrxGIpdtCYxt2HYq9DtNQF9MeZfFgH8BPUDA2YYZEstgiBsxD/l3ul6FuCE9ELT8EA5FMxpz4HskbBgIXcHz7Xe8eKZmzSdSFW+LW+dUCqqJDhswKP4MryOGBO9wK8PfqGWc+UQQskTHnq5WeXjn4UK3qXemli3j3dNJ/YnTkR9mL
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726805AbgGBJPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 05:15:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726462AbgGBJPo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 05:15:44 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49FE7C08C5DC
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 02:15:44 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id s14so11070352plq.6
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 02:15:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=/CwA0VLSkzMbF/zObpj9o9+wZwXA3AoVGgJSfaOVnOs=;
+        b=f3q82NCh6lp80tov5yOGDcdImg7KsdLNg4S58S2viE8rybNc50E32KKNPX9GjZwyyY
+         wIyftOLip0pKnQT6G/yG4WERtsTGVGddH5CVlrsYkLOCy6QdgR1N6Lfsm6UCe9D+anmD
+         ZhvFNCKwbblzzx+V8xYqAoum3muId5DWfcCjGQnzgmWtKMVEM2uKOWd4r1Aqmnv0Aliz
+         SBdJ3Ljvxn4fiBVupUuk0VgEdgiOPdDMm4fwyEM0CPK1wRuMLo2KfJNxoBgZ/at1ahq1
+         IOfyfkFyxjRyeqmH8PJCjVKKFOcxHLvGo4FXW9C8/ofNTPHA2lSjuiwyA/n68vmaZiUP
+         sX2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/CwA0VLSkzMbF/zObpj9o9+wZwXA3AoVGgJSfaOVnOs=;
+        b=XZpL5hRJbg215i01DNPv8sUAjzptkAvn75b1V3KgMZnr4PJ6PopnBispsw/YHaqRP/
+         QrZ+KOdaUuXS2HGcMMgg4HUkJ1GPjsoXkWFpAeZsmhwT9lMA7ehfmO3N6hfOKEMxJSzn
+         1gT5QNvQdGPaO0JZxUwuwhiHx8ffJR1w5mYb2T1RmL4r/4wH0R0X+3sulNX/Q85YVDt8
+         grHkQ++hA1yqAD5ZrDEH9csVkUIJEXjlJpVsK1bNxAaxWqe9zgMND9uBfJ8tGe2KR3tH
+         AIMKLuBv7iM7TS8zEVA4qReHWLUrnfQ0j+3YmnGKfCaWMh5CDxTKIC5hAQZ7cu1ALsvE
+         9rUw==
+X-Gm-Message-State: AOAM531TEdNS5T+wPprMXojSXTTTydND8BEXK+zrwvD83hAg6j1pytaJ
+        ZnKPg5NEDkKvVzit/KxiR1LWuVop
+X-Google-Smtp-Source: ABdhPJzuKNtXmY8o7cwsNtmS/gVei5cY8OWaHzChJDAb622QTHmzYZ0q3Axpf7GEkUfnkcGnTiXMCw==
+X-Received: by 2002:a17:90a:c003:: with SMTP id p3mr33327867pjt.178.1593681343424;
+        Thu, 02 Jul 2020 02:15:43 -0700 (PDT)
+Received: from martin-VirtualBox ([137.97.148.50])
+        by smtp.gmail.com with ESMTPSA id h9sm6966162pjs.50.2020.07.02.02.15.42
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Thu, 02 Jul 2020 02:15:42 -0700 (PDT)
+Date:   Thu, 2 Jul 2020 14:45:39 +0530
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] ip link: initial support for bareudp devicesy
+Message-ID: <20200702091539.GA2793@martin-VirtualBox>
+References: <f3401f1acfce2f472abe6f89fe059a5fade148a3.1593630794.git.gnault@redhat.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR0402MB3603.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cccebb4d-566f-4592-e79a-08d81e686173
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2020 09:14:53.1674
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sBbLOLODTgr6rATjJcqY0aAPxMgp5zQ6qFtHE7zdq2hs0jI5gtLAYoVr0UnGNTEQ2ZqTNgWBI4697z/7SeDzIQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4098
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f3401f1acfce2f472abe6f89fe059a5fade148a3.1593630794.git.gnault@redhat.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogS2VnbCBSb2hpdCA8a2VnbHJvaGl0QGdtYWlsLmNvbT4gU2VudDogVGh1cnNkYXksIEp1
-bHkgMiwgMjAyMCAzOjM5IFBNDQo+IE9uIFRodSwgSnVsIDIsIDIwMjAgYXQgNjoxOCBBTSBBbmR5
-IER1YW4gPGZ1Z2FuZy5kdWFuQG54cC5jb20+IHdyb3RlOg0KPiA+IFRoYXQgc2hvdWxkIGVuc3Vy
-ZSB0aGUgd2hvbGUgYXJlYSBpcyBub3QgZGlydHkuDQo+IA0KPiBkbWFfc3luY19zaW5nbGVfZm9y
-X2NwdSgpIGFuZCBkbWFfc3luY19zaW5nbGVfZm9yX2RldmljZSgpIGNhbiBvciBtdXN0IGJlDQo+
-IHVzZWQgaW4gcGFpcnM/DQo+IFNvIGluIHRoaXMgY2FzZSBpdCBpcyByZWFsbHkgbmVjZXNzYXJ5
-IHRvIHN5bmMgYmFjayB0aGUgc2tiIGRhdGEgYnVmZmVyIHZpYQ0KPiBkbWFfc3luY19zaW5nbGVf
-Zm9yX2RldmljZT8gRXZlbiB3aGVuIHRoZSBDUFUgZG9lcyBub3QgY2hhbmdlIGFueSBieXRlcw0K
-PiBpbiB0aGUgc2tiIGRhdGEgYnVmZmVyIC8gcmVhZG9ubHkgbGlrZSBpbiB0aGlzIGNhc2UuDQoN
-Ck5vLCBpZiB0aGUgYnVmZmVyIGlzIG5vdCBtb2RpZmllZCwgZG1hX3N5bmNfc2luZ2xlX2Zvcl9k
-ZXZpY2UoKSBpcyBub3QgbmVjZXNzYXJ5Lg0KDQpGb3Igc29tZSBhcm02NCBjb3JlLCB0aGUgZGNh
-Y2hlIGludmFsaWRhdGUgb24gQTUzIGlzIGZsdXNoICsgaW52YWxpZGF0ZSwgb25jZSB0aGUgYnVm
-ZmVyDQppcyBtb2RpZmllZCwgaXQgd2lsbCBjYXVzZSByZWFkIGJhY2sgd3JvbmcgZGF0YSB3aXRo
-b3V0IGRtYV9zeW5jX3NpbmdsZV9mb3JfZGV2aWNlKCkuIA0KQW5kIHRoZSBkcml2ZXIgYWxzbyBz
-dXBwb3J0IENvbGRmaXJlIHBsYXRmb3JtcywgSSBhbSBub3QgZmFtaWx5IHdpdGggdGhlIGFyY2gu
-DQoNCkZyb20gY3VycmVudCBhbmFseXplIGZvciBhcm0vYXJtNjQsICBJIGFsc28gdGhpbmsgZG1h
-X3N5bmNfc2luZ2xlX2Zvcl9kZXZpY2UoKSBpcyBub3QNCm5lY2Vzc2FyeSBkdWUgdG8gdGhlIGJ1
-ZmZlciBpcyBub3QgbW9kaWZpZWQuDQoNCkFueXdheSwgaXQgc3RpbGwgbmVlZCB0byBnZXQgb3Ro
-ZXIgZXhwZXJ0cyBjb21tZW50LCBhbmQgaXQgbmVlZCB0byBkbyBtYW55IHRlc3QgYW5kIHN0cmVz
-cyB0ZXN0Lg0KDQo+IEFuZCB0aGVyZSBpcyBubyBETUFfQklESVJFQ1RJT05BTCBtYXBwaW5nLg0K
-PiANCj4gSSB0aG91Z2h0IGNvcHlicmVhayBpdCBpcyBub3QgYWJvdXQgdGhlIG5leHQgZnJhbWUg
-c2l6ZS4gSXQgaXMgYWJvdXQgdGhlIGN1cnJlbnQNCj4gZnJhbWUuIEFuZCB0aGUgYWN0dWFsIGxl
-bmd0aCBpcyBrbm93biB2aWEgdGhlIHNpemUgZmllbGQgaW4gdGhlIGZpbmlzaGVkIERNQQ0KPiBk
-ZXNjcmlwdG9yLg0KPiBPciBkbyB5b3UgbWVhbiB0aGF0IHRoZSBuZXh0IHJlY2VpdmVkIGZyYW1l
-IGNvdWxkIGJlIG5vIGNvcHlicmVhayBmcmFtZS4NCj4gMS4gUnggY29weWJyZWFrYWJsZSBmcmFt
-ZSB3aXRoIHNpemVYIDwgY29weWJyZWFrIDIuIGNvcHlicmVhaw0KPiBkbWFfc3luY19zaW5nbGVf
-Zm9yX2NwdShkbWFidWZmZXIsIHNpemVYKSAzLiBjb3B5YnJlYWsgYWxsb2MgbmV3X3NrYiwNCj4g
-bWVtY3B5KG5ld19za2IsIGRtYWJ1ZmZlciwgc2l6ZVgpIDQuIGNvcHlicmVhaw0KPiBkbWFfc3lu
-Y19zaW5nbGVfZm9yX2RldmljZShkbWFidWZmZXIsIHNpemVYKSA1LiBSeCBub24gY29weWJyZWFr
-YWJsZQ0KPiBmcmFtZSB3aXRoIHNpemVZID49IGNvcHlicmVhayA0LiBkbWFfdW5tYXBfc2luZ2xl
-KGRtYWJ1ZmZlciwNCj4gRkVDX0VORVRfUlhfRlJTSVpFIC0gZmVwLT5yeF9hbGlnbikgaXMgY2Fs
-bGVkIGFuZCBjYW4gY2F1c2UgZGF0YSBjb3JydXB0aW9uDQo+IGJlY2F1c2Ugbm90IGFsbCBieXRl
-cyB3ZXJlIG1hcmtlZCBkaXJ0eSBldmVuIGlmIG5vYm9keSBETUEgJiBDUFUgdG91Y2hlZA0KPiB0
-aGVtPw0KDQpObyBDUFUgdG91Y2gsIGl0IHNob3VsZCBiZSBjbGVhbi4NCj4gDQo+ID4gPiBJIGFt
-IG5ldyB0byB0aGUgRE1BIEFQSSBvbiBBUk0uIEFyZSB0aGVzZSBjaGFuZ2VzIHJlZ2FyZGluZyBj
-YWNoZQ0KPiA+ID4gZmx1c2hpbmcsLi4uIGFsbG93ZWQ/IFRoZXNlIHdvdWxkIGluY3JlYXNlIHRo
-ZSBjb3B5YnJlYWsgdGhyb3VnaHB1dA0KPiA+ID4gYnkgcmVkdWNpbmcgQ1BVIGxvYWQuDQo+ID4N
-Cj4gPiBUbyBhdm9pZCBGSUZPIG92ZXJydW4sIGl0IHJlcXVpcmVzIHRvIGVuc3VyZSBQSFkgcGF1
-c2UgZnJhbWUgaXMgZW5hYmxlZC4NCj4gDQo+IEFzIHRoZSBlcnJhdGEgc3RhdGVzIHRoaXMgaXMg
-YWxzbyBub3QgYWx3YXlzIHRydWUsIGJlY2F1c2UgdGhlIGZpcnN0IHhvZmYgY291bGQNCj4gYXJy
-aXZlIHRvbyBsYXRlLiBQYXVzZSBmcmFtZXMvZmxvdyBjb250cm9sIGlzIG5vdCByZWFsbHkgY29t
-bW9uIGFuZCBjb3VsZA0KPiBjYXVzZSB0cm91YmxlcyB3aXRoIG90aGVyIHJhbmRvbSBuZXR3b3Jr
-IGNvbXBvbmVudHMgYWN0aW5nIGRpZmZlcmVudCBvciBub3QNCj4gc3VwcG9ydGluZyBwYXVzZSBm
-cmFtZXMgY29ycmVjdGx5LiBGb3IgZXhhbXBsZSB0aGUgZHJpdmVyIGl0c2VsZiBkb2VzIGVuYWJs
-ZQ0KPiBwYXVzZSBmcmFtZXMgZm9yIEdpZ2FiaXQgYnkgZGVmYXVsdC4gQnV0IHdlIGhhdmUgbm8g
-R2lnYWJpdCBQaHkgc28gbm8NCj4gRkVDX1FVSVJLX0hBU19HQklUIGFuZCB0aGVyZWZvcmUgcGF1
-c2UgZnJhbWVzIGFyZSBub3Qgc3VwcG9ydGVkIGJ5IHRoZQ0KPiBkcml2ZXIgYXMgb2Ygbm93Lg0K
-PiANCj4gDQo+IEl0IGxvb2tzIGxpa2UgY29weWJyZWFrIGlzIGltcGxlbWVudGVkIHNpbWlsYXIg
-dG8gZTEwMDBfbWFpbi5jDQo+IGUxMDAwX2NvcHlicmVhaygpLg0KPiBUaGVyZSBpcyBvbmx5IHRo
-ZSByZWFsL25lZWRlZCBwYWNrZXQgbGVuZ3RoIChsZW5ndGggPQ0KPiBsZTE2X3RvX2NwdShyeF9k
-ZXNjLT5sZW5ndGgpKSBpcyBzeW5jZWQgdmlhIGRtYV9zeW5jX3NpbmdsZV9mb3JfY3B1IGFuZCBu
-bw0KPiBkbWFfc3luY19zaW5nbGVfZm9yX2RldmljZS4NCj4gDQo+IEhlcmUgaXMgYSBkaWZmIHdp
-dGggdGhlIHByZXZpb3VzIGNoYW5nZXMgYXNzdW1pbmcgdGhhdA0KPiBkbWFfc3luY19zaW5nbGVf
-Zm9yX2RldmljZSBtdXN0IGJlIHVzZWQgdG8gYXZvaWQgYW55IGNhY2hlIGZsdXNoIGJhY2tzDQo+
-IGV2ZW4gd2hlbiBubyBkYXRhIHdhcyBjaGFuZ2VkLg0KDQpCZWxvdyBjaGFuZ2Ugc2VlbXMgZmlu
-ZSwgY2FuIHlvdSBjb2xsZWN0IHNvbWUgZGF0YSBiZWZvcmUgeW91IHNlbmQgb3V0DQp0aGUgcGF0
-Y2ggZm9yIHJldmlldy4NCi0gcnVuIGlwZXJmIHN0cmVzcyB0ZXN0IHRvIGVuc3VyZSB0aGUgc3Rh
-YmlsaXR5DQotIGNvbGxlY3QgdGhlIHBlcmZvcm1hbmNlIGltcHJvdmVtZW50IGRhdGEgDQoNClRo
-YW5rcy4NCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUv
-ZmVjX21haW4uYw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNfbWFpbi5j
-DQo+IGluZGV4IDJkMGQzMTNlZS4uNDY0NzgzYzE1IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25l
-dC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhl
-cm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0KPiBAQCAtMTM4Nyw5ICsxMzg3LDkgQEAgc3RhdGlj
-IGJvb2wgZmVjX2VuZXRfY29weWJyZWFrKHN0cnVjdCBuZXRfZGV2aWNlDQo+ICpuZGV2LCBzdHJ1
-Y3Qgc2tfYnVmZiAqKnNrYiwNCj4gICAgICAgICAgICAgICAgIHJldHVybiBmYWxzZTsNCj4gDQo+
-ICAgICAgICAgZG1hX3N5bmNfc2luZ2xlX2Zvcl9jcHUoJmZlcC0+cGRldi0+ZGV2LA0KPiAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZlYzMyX3RvX2NwdShiZHAtPmNiZF9idWZhZGRy
-KSwNCj4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBGRUNfRU5FVF9SWF9GUlNJWkUg
-LSBmZXAtPnJ4X2FsaWduLA0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGxlbmd0
-aCwNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBETUFfRlJPTV9ERVZJQ0UpOw0K
-PiAgICAgICAgIGlmICghc3dhcCkNCj4gICAgICAgICAgICAgICAgIG1lbWNweShuZXdfc2tiLT5k
-YXRhLCAoKnNrYiktPmRhdGEsIGxlbmd0aCk7DQo+ICAgICAgICAgZWxzZQ0KPiBAQCAtMTQxMyw4
-ICsxNDEzLDkgQEAgZmVjX2VuZXRfcnhfcXVldWUoc3RydWN0IG5ldF9kZXZpY2UgKm5kZXYsIGlu
-dA0KPiBidWRnZXQsIHUxNiBxdWV1ZV9pZCkNCj4gICAgICAgICB1bnNpZ25lZCBzaG9ydCBzdGF0
-dXM7DQo+ICAgICAgICAgc3RydWN0ICBza19idWZmICpza2JfbmV3ID0gTlVMTDsNCj4gICAgICAg
-ICBzdHJ1Y3QgIHNrX2J1ZmYgKnNrYjsNCj4gICAgICAgICB1c2hvcnQgIHBrdF9sZW47DQo+ICsg
-ICAgICAgdXNob3J0ICBwa3RfbGVuX25vZmNzOw0KPiAgICAgICAgIF9fdTggKmRhdGE7DQo+ICAg
-ICAgICAgaW50ICAgICBwa3RfcmVjZWl2ZWQgPSAwOw0KPiAgICAgICAgIHN0cnVjdCAgYnVmZGVz
-Y19leCAqZWJkcCA9IE5VTEw7DQo+ICAgICAgICAgYm9vbCAgICB2bGFuX3BhY2tldF9yY3ZkID0g
-ZmFsc2U7DQo+IEBAIC0xNDc5LDkgKzE0ODAsMTAgQEAgZmVjX2VuZXRfcnhfcXVldWUoc3RydWN0
-IG5ldF9kZXZpY2UgKm5kZXYsIGludA0KPiBidWRnZXQsIHUxNiBxdWV1ZV9pZCkNCj4gICAgICAg
-ICAgICAgICAgIC8qIFRoZSBwYWNrZXQgbGVuZ3RoIGluY2x1ZGVzIEZDUywgYnV0IHdlIGRvbid0
-IHdhbnQgdG8NCj4gICAgICAgICAgICAgICAgICAqIGluY2x1ZGUgdGhhdCB3aGVuIHBhc3Npbmcg
-dXBzdHJlYW0gYXMgaXQgbWVzc2VzIHVwDQo+ICAgICAgICAgICAgICAgICAgKiBicmlkZ2luZyBh
-cHBsaWNhdGlvbnMuDQo+ICAgICAgICAgICAgICAgICAgKi8NCj4gLSAgICAgICAgICAgICAgIGlz
-X2NvcHlicmVhayA9IGZlY19lbmV0X2NvcHlicmVhayhuZGV2LCAmc2tiLCBiZHAsDQo+IHBrdF9s
-ZW4gLSA0LA0KPiArICAgICAgICAgICAgICAgcGt0X2xlbl9ub2ZjcyA9IHBrdF9sZW4gLSA0Ow0K
-PiArICAgICAgICAgICAgICAgaXNfY29weWJyZWFrID0gZmVjX2VuZXRfY29weWJyZWFrKG5kZXYs
-ICZza2IsIGJkcCwNCj4gcGt0X2xlbl9ub2ZjcywNCj4gICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICBuZWVkX3N3YXApOw0KPiAgICAgICAgICAgICAgICAg
-aWYgKCFpc19jb3B5YnJlYWspIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgc2tiX25ldyA9
-IG5ldGRldl9hbGxvY19za2IobmRldiwNCj4gRkVDX0VORVRfUlhfRlJTSVpFKTsNCj4gICAgICAg
-ICAgICAgICAgICAgICAgICAgaWYgKHVubGlrZWx5KCFza2JfbmV3KSkgeyBAQCAtMTU1NCw5ICsx
-NTU2LDkNCj4gQEAgZmVjX2VuZXRfcnhfcXVldWUoc3RydWN0IG5ldF9kZXZpY2UgKm5kZXYsIGlu
-dCBidWRnZXQsIHUxNiBxdWV1ZV9pZCkNCj4gDQo+ICAgICAgICAgICAgICAgICBpZiAoaXNfY29w
-eWJyZWFrKSB7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgIGRtYV9zeW5jX3NpbmdsZV9mb3Jf
-ZGV2aWNlKCZmZXAtPnBkZXYtPmRldiwNCj4gDQo+IGZlYzMyX3RvX2NwdShiZHAtPmNiZF9idWZh
-ZGRyKSwNCj4gLQ0KPiBGRUNfRU5FVF9SWF9GUlNJWkUNCj4gLSBmZXAtPnJ4X2FsaWduLA0KPiAr
-DQo+IHBrdF9sZW5fbm9mY3MsDQo+IA0KPiBETUFfRlJPTV9ERVZJQ0UpOw0KPiAgICAgICAgICAg
-ICAgICAgfSBlbHNlIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgcnhxLT5yeF9za2J1ZmZb
-aW5kZXhdID0gc2tiX25ldzsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgZmVjX2VuZXRfbmV3
-X3J4YmRwKG5kZXYsIGJkcCwgc2tiX25ldyk7DQo=
+On Wed, Jul 01, 2020 at 09:45:04PM +0200, Guillaume Nault wrote:
+> Bareudp devices provide a generic L3 encapsulation for tunnelling
+> different protocols like MPLS, IP, NSH, etc. inside a UDP tunnel.
+> 
+> This patch is based on original work from Martin Varghese:
+> https://lore.kernel.org/netdev/1570532361-15163-1-git-send-email-martinvarghesenokia@gmail.com/
+> 
+> Examples:
+> 
+>   - ip link add dev bareudp0 type bareudp dstport 6635 ethertype mpls_uc
+> 
+> This creates a bareudp tunnel device which tunnels L3 traffic with
+> ethertype 0x8847 (unicast MPLS traffic). The destination port of the
+> UDP header will be set to 6635. The device will listen on UDP port 6635
+> to receive traffic.
+> 
+>   - ip link add dev bareudp0 type bareudp dstport 6635 ethertype ipv4 multiproto
+> 
+> Same as the MPLS example, but for IPv4. The "multiproto" keyword allows
+> the device to also tunnel IPv6 traffic.
+> 
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> ---
+>  ip/Makefile           |   2 +-
+>  ip/iplink.c           |   2 +-
+>  ip/iplink_bareudp.c   | 150 ++++++++++++++++++++++++++++++++++++++++++
+>  man/man8/ip-link.8.in |  44 +++++++++++++
+>  4 files changed, 196 insertions(+), 2 deletions(-)
+>  create mode 100644 ip/iplink_bareudp.c
+> 
+> diff --git a/ip/Makefile b/ip/Makefile
+> index 8735b8e4..4cad619c 100644
+> --- a/ip/Makefile
+> +++ b/ip/Makefile
+> @@ -11,7 +11,7 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
+>      iplink_bridge.o iplink_bridge_slave.o ipfou.o iplink_ipvlan.o \
+>      iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
+>      ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
+> -    ipnexthop.o ipmptcp.o
+> +    ipnexthop.o ipmptcp.o iplink_bareudp.o
+>  
+>  RTMONOBJ=rtmon.o
+>  
+> diff --git a/ip/iplink.c b/ip/iplink.c
+> index 47f73988..7d4b244d 100644
+> --- a/ip/iplink.c
+> +++ b/ip/iplink.c
+> @@ -124,7 +124,7 @@ void iplink_usage(void)
+>  			"	   bridge | bond | team | ipoib | ip6tnl | ipip | sit | vxlan |\n"
+>  			"	   gre | gretap | erspan | ip6gre | ip6gretap | ip6erspan |\n"
+>  			"	   vti | nlmon | team_slave | bond_slave | bridge_slave |\n"
+> -			"	   ipvlan | ipvtap | geneve | vrf | macsec | netdevsim | rmnet |\n"
+> +			"	   ipvlan | ipvtap | geneve | bareudp | vrf | macsec | netdevsim | rmnet |\n"
+>  			"	   xfrm }\n");
+>  	}
+>  	exit(-1);
+> diff --git a/ip/iplink_bareudp.c b/ip/iplink_bareudp.c
+> new file mode 100644
+> index 00000000..885e1110
+> --- /dev/null
+> +++ b/ip/iplink_bareudp.c
+> @@ -0,0 +1,150 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +
+> +#include <stdio.h>
+> +
+> +#include "libnetlink.h"
+> +#include "linux/if_ether.h"
+> +#include "linux/if_link.h"
+> +#include "linux/netlink.h"
+> +#include "linux/rtnetlink.h"
+> +#include "rt_names.h"
+> +#include "utils.h"
+> +#include "ip_common.h"
+> +#include "json_print.h"
+> +
+> +#define BAREUDP_ATTRSET(attrs, type) (((attrs) & (1L << (type))) != 0)
+> +
+> +static void print_explain(FILE *f)
+> +{
+> +	fprintf(f,
+> +		"Usage: ... bareudp dstport PORT\n"
+> +		"		ethertype PROTO\n"
+> +		"		[ srcportmin PORT ]\n"
+> +		"		[ [no]multiproto ]\n"
+> +		"\n"
+> +		"Where:	PORT       := 0-65535\n"
+> +		"	PROTO      := NUMBER | ip | mpls\n"
+> +		"	SRCPORTMIN := 0-65535\n"
+> +	);
+> +}
+> +
+> +static void explain(void)
+> +{
+> +	print_explain(stderr);
+> +}
+> +
+> +static void check_duparg(__u64 *attrs, int type, const char *key,
+> +			 const char *argv)
+> +{
+> +	if (!BAREUDP_ATTRSET(*attrs, type)) {
+> +		*attrs |= (1L << type);
+> +		return;
+> +	}
+> +	duparg2(key, argv);
+> +}
+> +
+> +static int bareudp_parse_opt(struct link_util *lu, int argc, char **argv,
+> +			     struct nlmsghdr *n)
+> +{
+> +	bool multiproto = false;
+> +	__u16 srcportmin = 0;
+> +	__be16 ethertype = 0;
+> +	__be16 dstport = 0;
+> +	__u64 attrs = 0;
+> +
+> +	while (argc > 0) {
+> +		if (matches(*argv, "dstport") == 0) {
+> +			NEXT_ARG();
+> +			check_duparg(&attrs, IFLA_BAREUDP_PORT, "dstport",
+> +				     *argv);
+> +			if (get_be16(&dstport, *argv, 0))
+> +				invarg("dstport", *argv);
+> +		} else if (matches(*argv, "ethertype") == 0)  {
+> +			NEXT_ARG();
+> +			check_duparg(&attrs, IFLA_BAREUDP_ETHERTYPE,
+> +				     "ethertype", *argv);
+> +			if (ll_proto_a2n(&ethertype, *argv))
+Does this function takes care of mpls proto names ?
+
+The original idea of bareudp is to allow even reserved ethertypes.Hence i think we
+must take ethertype in hex aswell
+> +				invarg("ethertype", *argv);
+> +		} else if (matches(*argv, "srcportmin") == 0) {
+> +			NEXT_ARG();
+> +			check_duparg(&attrs, IFLA_BAREUDP_SRCPORT_MIN,
+> +				     "srcportmin", *argv);
+> +			if (get_u16(&srcportmin, *argv, 0))
+> +				invarg("srcportmin", *argv);
+> +		} else if (matches(*argv, "multiproto") == 0) {
+> +			check_duparg(&attrs, IFLA_BAREUDP_MULTIPROTO_MODE,
+> +				     *argv, *argv);
+> +			multiproto = true;
+> +		} else if (matches(*argv, "nomultiproto") == 0) {
+do we need nomultiproto flag. Is it redundant
+> +			check_duparg(&attrs, IFLA_BAREUDP_MULTIPROTO_MODE,
+> +				     *argv, *argv);
+> +			multiproto = false;
+> +		} else if (matches(*argv, "help") == 0) {
+> +			explain();
+> +			return -1;
+> +		} else {
+> +			fprintf(stderr, "bareudp: unknown command \"%s\"?\n",
+> +				*argv);
+> +			explain();
+> +			return -1;
+> +		}
+> +		argc--, argv++;
+> +	}
+> +
+> +	if (!BAREUDP_ATTRSET(attrs, IFLA_BAREUDP_PORT))
+> +		missarg("dstport");
+> +	if (!BAREUDP_ATTRSET(attrs, IFLA_BAREUDP_ETHERTYPE))
+> +		missarg("ethertype");
+> +
+> +	addattr16(n, 1024, IFLA_BAREUDP_PORT, dstport);
+> +	addattr16(n, 1024, IFLA_BAREUDP_ETHERTYPE, ethertype);
+> +	if (BAREUDP_ATTRSET(attrs, IFLA_BAREUDP_SRCPORT_MIN))
+> +		addattr16(n, 1024, IFLA_BAREUDP_SRCPORT_MIN, srcportmin);
+> +	if (multiproto)
+> +		addattr(n, 1024, IFLA_BAREUDP_MULTIPROTO_MODE);
+> +
+> +	return 0;
+> +}
+> +
+> +static void bareudp_print_opt(struct link_util *lu, FILE *f,
+> +			      struct rtattr *tb[])
+> +{
+> +	if (!tb)
+> +		return;
+> +
+> +	if (tb[IFLA_BAREUDP_PORT])
+> +		print_uint(PRINT_ANY, "dstport", "dstport %u ",
+> +			   rta_getattr_be16(tb[IFLA_BAREUDP_PORT]));
+> +
+> +	if (tb[IFLA_BAREUDP_ETHERTYPE]) {
+> +		struct rtattr *attr = tb[IFLA_BAREUDP_ETHERTYPE];
+> +		SPRINT_BUF(ethertype);
+> +
+> +		print_string(PRINT_ANY, "ethertype", "ethertype %s ",
+> +			     ll_proto_n2a(rta_getattr_u16(attr),
+> +					  ethertype, sizeof(ethertype)));
+> +	}
+> +
+> +	if (tb[IFLA_BAREUDP_SRCPORT_MIN])
+> +		print_uint(PRINT_ANY, "srcportmin", "srcportmin %u ",
+> +			   rta_getattr_u16(tb[IFLA_BAREUDP_SRCPORT_MIN]));
+> +
+> +	if (tb[IFLA_BAREUDP_MULTIPROTO_MODE])
+> +		print_bool(PRINT_ANY, "multiproto", "multiproto ", true);
+> +	else
+> +		print_bool(PRINT_ANY, "multiproto", "nomultiproto ", false);
+Comments from stephen@networkplumber.org on the first version patch is given below
+
+One of the unwritten rules of ip commands is that the show format
+should match the command line arguments.  In this case extmode is
+really a presence flag not a boolean. best to print that with
+json null command.
+
+Thanks
+Martin
+
+> +}
+> +
+> +static void bareudp_print_help(struct link_util *lu, int argc, char **argv,
+> +			       FILE *f)
+> +{
+> +	print_explain(f);
+> +}
+> +
+> +struct link_util bareudp_link_util = {
+> +	.id		= "bareudp",
+> +	.maxattr	= IFLA_BAREUDP_MAX,
+> +	.parse_opt	= bareudp_parse_opt,
+> +	.print_opt	= bareudp_print_opt,
+> +	.print_help	= bareudp_print_help,
+> +};
+> diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+> index e8a25451..c6bd2c53 100644
+> --- a/man/man8/ip-link.8.in
+> +++ b/man/man8/ip-link.8.in
+> @@ -223,6 +223,7 @@ ip-link \- network device configuration
+>  .BR ipvtap " |"
+>  .BR lowpan " |"
+>  .BR geneve " |"
+> +.BR bareudp " |"
+>  .BR vrf " |"
+>  .BR macsec " |"
+>  .BR netdevsim " |"
+> @@ -356,6 +357,9 @@ Link types:
+>  .BR geneve
+>  - GEneric NEtwork Virtualization Encapsulation
+>  .sp
+> +.BR bareudp
+> +- Bare UDP L3 encapsulation support
+> +.sp
+>  .BR macsec
+>  - Interface for IEEE 802.1AE MAC Security (MACsec)
+>  .sp
+> @@ -1293,6 +1297,46 @@ options.
+>  
+>  .in -8
+>  
+> +.TP
+> +Bareudp Type Support
+> +For a link of type
+> +.I Bareudp
+> +the following additional arguments are supported:
+> +
+> +.BI "ip link add " DEVICE
+> +.BI type " bareudp " dstport " PORT " ethertype " ETHERTYPE"
+> +[
+> +.BI srcportmin " SRCPORTMIN "
+> +] [
+> +.RB [ no ] multiproto
+> +]
+> +
+> +.in +8
+> +.sp
+> +.BI dstport " PORT"
+> +- specifies the destination port for the UDP tunnel.
+> +
+> +.sp
+> +.BI ethertype " ETHERTYPE"
+> +- specifies the ethertype of the L3 protocol being tunnelled.
+> +
+> +.sp
+> +.BI srcportmin " SRCPORTMIN"
+> +- selects the lowest value of the UDP tunnel source port range.
+> +
+> +.sp
+> +.RB [ no ] multiproto
+> +- activates support for protocols similar to the one
+> +.RB "specified by " ethertype .
+> +When
+> +.I ETHERTYPE
+> +is "mpls_uc" (that is, unicast MPLS), this allows the tunnel to also handle
+> +multicast MPLS.
+> +When
+> +.I ETHERTYPE
+> +is "ipv4", this allows the tunnel to also handle IPv6. This option is disabled
+> +by default.
+> +
+>  .TP
+>  MACVLAN and MACVTAP Type Support
+>  For a link of type
+> -- 
+> 2.21.3
+> 
