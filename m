@@ -2,89 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D1262130A1
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 02:51:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FA842130AF
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 02:54:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbgGCAvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 20:51:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58820 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726028AbgGCAvL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 20:51:11 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6F8C08C5C1;
-        Thu,  2 Jul 2020 17:51:11 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id 12so18698141oir.4;
-        Thu, 02 Jul 2020 17:51:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cLLLMZUR/6NcDoIAUKZCfeEO4cTwXIXp/IGipSTCgM8=;
-        b=GwQaxRGCbnasx8DWiHFhDlrwzmWBOHcGheJtKYUqjVVyFtfbKusmoontyMuHgAOfaP
-         o4SV+UDvZzHnj+lJN4NppeSVXutG3t51HIceKc4RT9lcnI4udody5Pdk8jPRFfY9htJ8
-         iY5qtSY+20XTzfWAb5w30z7Yq2RdmZAD6otOFQo6rWPri9NZ9CnCZZ7KZ26bgJyzoyoO
-         I+DlI561Wa27wG4kEgWb4CHc7ey71nz/0YdBhp1xhHrbsq4Otlr+RU9ZyCyJDHN7F277
-         NMXH1Z3a6FbofPm8MKnb+5g02JfKfk2X0XLY/fdTR4Yq+zniOu1q/qe6R+YNx8TAHVcp
-         ckWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cLLLMZUR/6NcDoIAUKZCfeEO4cTwXIXp/IGipSTCgM8=;
-        b=X7R5SoBTb/urthC3iAWWFWylIr3iyrvwhpJZ1sO6L71y8KS4ZUZkOo4xytJFi3E/58
-         yQOPbyfcRvD5irorFkaTbgqhA4M4kg51iwM7cRY8GrsXosh7JjfoR2prz6Y3nC9Gczq+
-         NlRiEprVGTe3g0ctnPsOTcdDI4EP53S0DDGG+N7z7dUYcq8/GZFO2AslkVCbhXkU8zj0
-         N6JQOBUCyRhZeVcu/VM2YUfH60PGv1SCN90XBIbs9adtr8f2H+r0IzmBJQmuecV0oHBB
-         a8CG9LzevkxKrhgyy7tgmJL5sd0aaO3G2ZPIjcAwwURaa91tMP9N8yguHW1t747lqLN9
-         aF4g==
-X-Gm-Message-State: AOAM533o4rgntvvuHdyJYcpOaCrRhhMMyjsAr8h7n/LiVfOVrv0iAdny
-        4knX/cF4njX7BN82U+Sc5no4bOQeZTAxcgVHQyU=
-X-Google-Smtp-Source: ABdhPJy61q3Idfrag2OeVEA2neP+3T4xxQKco9bEs1E0DjbYJOa8bO6QRIyg9Ssc31gOmEgKy1boa6OKXkw8U9LJzIk=
-X-Received: by 2002:aca:b205:: with SMTP id b5mr27298242oif.103.1593737470608;
- Thu, 02 Jul 2020 17:51:10 -0700 (PDT)
+        id S1726615AbgGCAyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 20:54:06 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:58398 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726028AbgGCAyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 20:54:06 -0400
+Received: from fsav303.sakura.ne.jp (fsav303.sakura.ne.jp [153.120.85.134])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 0630q3Dc066718;
+        Fri, 3 Jul 2020 09:52:03 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav303.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav303.sakura.ne.jp);
+ Fri, 03 Jul 2020 09:52:03 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav303.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 0630q2Yw066713
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
+        Fri, 3 Jul 2020 09:52:02 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
+ seems to break linux bridge on s390x (bisected)
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>, ast@kernel.org,
+        axboe@kernel.dk, bfields@fieldses.org,
+        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
+        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        jarkko.sakkinen@linux.intel.com, jmorris@namei.org,
+        josh@joshtriplett.org, keescook@chromium.org,
+        keyrings@vger.kernel.org, kuba@kernel.org,
+        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
+        philipp.reisner@linbit.com, ravenexp@gmail.com,
+        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
+        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
+        netdev@vger.kernel.org, markward@linux.ibm.com,
+        linux-s390 <linux-s390@vger.kernel.org>
+References: <4d8fbcea-a892-3453-091f-d57c03f9aa90@de.ibm.com>
+ <1263e370-7cee-24d8-b98c-117bf7c90a83@de.ibm.com>
+ <20200626025410.GJ4332@42.do-not-panic.com>
+ <20200630175704.GO13911@42.do-not-panic.com>
+ <b24d8dae-1872-ba2c-acd4-ed46c0781317@de.ibm.com>
+ <a6792135-3285-0861-014e-3db85ea251dc@i-love.sakura.ne.jp>
+ <20200701135324.GS4332@42.do-not-panic.com>
+ <8d714a23-bac4-7631-e5fc-f97c20a46083@i-love.sakura.ne.jp>
+ <20200701153859.GT4332@42.do-not-panic.com>
+ <e3f3e501-2cb7-b683-4b85-2002b7603244@i-love.sakura.ne.jp>
+ <20200702194656.GV4332@42.do-not-panic.com>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <d8a74a06-de97-54ae-de03-0d955e82f62b@i-love.sakura.ne.jp>
+Date:   Fri, 3 Jul 2020 09:52:01 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20200702175352.19223-1-TheSven73@gmail.com> <20200702175352.19223-3-TheSven73@gmail.com>
- <CAOMZO5DxUeXH8ZYxmKynA7xO3uF6SP_Kt-g=8MPgsF7tqkRvAA@mail.gmail.com>
-In-Reply-To: <CAOMZO5DxUeXH8ZYxmKynA7xO3uF6SP_Kt-g=8MPgsF7tqkRvAA@mail.gmail.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Thu, 2 Jul 2020 20:50:59 -0400
-Message-ID: <CAGngYiUEx98QUAHrzFNWzMr5+oPS4-7Nqq91JzhtzGUG7=kagQ@mail.gmail.com>
-Subject: Re: [PATCH v5 3/3] ARM: imx6plus: optionally enable internal routing
- of clk_enet_ref
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Shawn Guo <shawnguo@kernel.org>, Fugang Duan <fugang.duan@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200702194656.GV4332@42.do-not-panic.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Fabio,
+On 2020/07/03 4:46, Luis Chamberlain wrote:
+> On Thu, Jul 02, 2020 at 01:26:53PM +0900, Tetsuo Handa wrote:
+>> On 2020/07/02 0:38, Luis Chamberlain wrote:
+>>> @@ -156,6 +156,18 @@ static void call_usermodehelper_exec_sync(struct subprocess_info *sub_info)
+>>>  		 */
+>>>  		if (KWIFEXITED(ret))
+>>>  			sub_info->retval = KWEXITSTATUS(ret);
+>>> +		/*
+>>> +		 * Do we really want to be passing the signal, or do we pass
+>>> +		 * a single error code for all cases?
+>>> +		 */
+>>> +		else if (KWIFSIGNALED(ret))
+>>> +			sub_info->retval = KWTERMSIG(ret);
+>>
+>> No, this is bad. Caller of usermode helper is unable to distinguish exit(9)
+>> and e.g. SIGKILL'ed by the OOM-killer.
+> 
+> Right, the question is: do we care?
 
-On Thu, Jul 2, 2020 at 6:29 PM Fabio Estevam <festevam@gmail.com> wrote:
->
-> With the device tree approach, I think that a better place to touch
-> GPR5 would be inside the fec driver.
->
+Yes, we have to care.
 
-Cool idea. I notice that the latest FEC driver (v5.8-rc3) accesses individual
-bits inside the gpr (via fsl,stop-mode). So perhaps I can do the same here,
-and populate that gpr node in imx6qp.dtsi - because it doesn't exist on other
-SoCs.
+> And the umh patch "umh: fix processed error when UMH_WAIT_PROC is used"
+> changed this to:
+> 
+> -       if (ret >= 0) {
+> +       if (ret != 0) {
+> 
+> Prior to the patch negative return values from userspace were still
+> being captured, and likewise signals, but the error value was not
+> raw, not the actual value. After the patch, since we check for ret != 0
+> we still upkeep the sanity check for any error, correct the error value,
+> but as you noted signals were ignored as I made the wrong assumption
+> we would ignore them. The umh sub_info->retval is set after my original
+> patch only if KWIFSIGNALED(ret)), and ignored signals, and so that
+> would be now capitured with the additional KWIFSIGNALED(ret)) check.
 
-> For the property name, what about fsl,txclk-from-pll?
+"call_usermodehelper_keys() == 0" (i.e. usermode helper was successfully
+started and successfully terminated via exit(0)) is different from "there is
+nothing to do". call_sbin_request_key() == 0 case still has to check for
+possibility of -ENOKEY case.
 
-Sounds good. Does anyone have more suggestions?
+> 
+> The question still stands:
+> 
+> Do we want to open code all these checks or simply wrap them up in
+> the umh. If we do the later, as you note exit(9) and a SIGKILL will
+> be the same to the inspector in the kernel. But do we care?
+
+Yes, we do care.
+
+> 
+> Do we really want umh callers differntiatin between signals and exit values?
+
+Yes, we do.
+
+> 
+> The alternative to making a compromise is using generic wrappers for
+> things which make sense and letting the callers use those.
+
+I suggest just introducing KWIFEXITED()/KWEXITSTATUS()/KWIFSIGNALED()/KWTERMSIG()
+macros and fixing the callers, for some callers are not aware of possibility of
+KWIFSIGNALED() case.
+
+For example, conn_try_outdate_peer() in drivers/block/drbd/drbd_nl.c misbehaves if
+drbd_usermode_helper process was terminated by a signal, for the switch() statement
+after returning from conn_helper() is assuming that the return value of conn_helper()
+is a KWEXITSTATUS() value if drbd_usermode_helper process was successfully started.
+If drbd_usermode_helper process was terminated by SIGQUIT (which is 3),
+conn_try_outdate_peer() will by error hit "case P_INCONSISTENT:" (which is 3);
+conn_try_outdate_peer() should hit "default: /* The script is broken ... */"
+unless KWIFEXITED() == true.
+
+Your patch is trying to obnubilate the return code.
+
