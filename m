@@ -2,87 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C1BE21406B
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 22:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E63F821406E
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 22:48:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726645AbgGCUnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 16:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726379AbgGCUnM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 16:43:12 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1812C061794
-        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 13:43:12 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id g13so24734640qtv.8
-        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 13:43:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=k5mGeV2+BvRVDgVyeJWIBIMmrz5adbrBYpjs8tjUxYg=;
-        b=u7w1Ggt3vsXwQmTysqqWk8bbdsZ/ZNRUetPPUYlX8+U56fsf1cLxW29tJakvzeFHQu
-         QeFucnl31ksg5wTiIWw0q8YaJei8RhTca8CxEsY4qCpTaVIiF3J2RmfmZTDmXE13g4LB
-         Ft6dtdpeW0GR/JSRWYaBpmh8df65o4UIx7GH1PjZlGEkRQKvjLQeycPd6o/vuXBd2w5V
-         ry3iRJls9WcmOmg75H5PyOMjrmhnNbaei3r7OS5Oe2B2uo6Lqw7yiusnhYpvd5RTG8g/
-         M98KWWuxvBjqfmDDFiEKc94qJzP5REQq785VVK5AG52e6o8OIgmV5PV7rHeU+COiZx0o
-         xMqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=k5mGeV2+BvRVDgVyeJWIBIMmrz5adbrBYpjs8tjUxYg=;
-        b=OPXohlmbMefQjJ5ITZGvKjTwobNK4x1Js1phM3I7P3wsTKdHXJnJcrdxOEPc/igsri
-         /dhQ0WoZeh4aF2DeQ71Qlrfx825vSUeolNkhtU9P8rPI5JNXghfj6WFpQUom7sBYTqIb
-         OGyxj7iACb2d77ikHi31NkJgJRFrm86Qsx5xCKoWGYwoXtCPeB0vmbh4h3iardmd0SDI
-         qhy6cntCK4l5mnb/g1ffoifly/42yPUT3l+bPQwcgd+0uo1YofZIpAbIcsYr6m9xgWN4
-         E7WlePN91DL+wBSvDXDy1yCX9laiW7Bpd6XQQ9oiywayEicEHfR+EdH1Mh3zNBonQ8p6
-         XBhg==
-X-Gm-Message-State: AOAM533X4SS10a8MhNvF66fC2mBn0yAPyouYvICuXpDZhr7IqweY3Vqm
-        +V3rFu6yqX8d17yZHF77Lc50GT//
-X-Google-Smtp-Source: ABdhPJyRj+JN9epYT4k08NzvwLRQWM7vj1gRWjbenlRqCnAKBKiR5GJ8QP8okcIBs+rB59nHCecIdQ==
-X-Received: by 2002:ac8:1667:: with SMTP id x36mr26630285qtk.344.1593808991248;
-        Fri, 03 Jul 2020 13:43:11 -0700 (PDT)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:f693:9fff:fef4:3e8a])
-        by smtp.gmail.com with ESMTPSA id n2sm11942785qtp.45.2020.07.03.13.43.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jul 2020 13:43:10 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next] ipv6/ping: set skb->mark on icmpv6 sockets
-Date:   Fri,  3 Jul 2020 16:43:08 -0400
-Message-Id: <20200703204308.3372523-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.27.0.212.ge8ba1cc988-goog
+        id S1726789AbgGCUsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 16:48:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41606 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726379AbgGCUsQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jul 2020 16:48:16 -0400
+Received: from localhost (unknown [151.48.138.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B463120885;
+        Fri,  3 Jul 2020 20:48:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593809296;
+        bh=VwL3HsTOc8bmJDO/IUg/niAsa4TOrnwOX5/tHgoTjDY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OYZn+l7/EAiMIXMv1HI5QkaBQrlndDC+1S5vZrRWPxysfj5sUit+0YKG7BeS4RIe1
+         lrc7NkYYALVOdWY1zMffLNVedQVt3VB/om70wgadg/ZvwqgU2PO3Lw6nYhNbuEUT1x
+         UTSPaE/OqC+C4sxPsGoHmmdKfIszDRPFJeqeZRVs=
+Date:   Fri, 3 Jul 2020 22:48:10 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, brouer@redhat.com, toke@redhat.com,
+        lorenzo.bianconi@redhat.com, dsahern@kernel.org,
+        andrii.nakryiko@gmail.com
+Subject: Re: [PATCH v5 bpf-next 5/9] bpf: cpumap: add the possibility to
+ attach an eBPF program to cpumap
+Message-ID: <20200703204810.GB1321275@localhost.localdomain>
+References: <cover.1593521029.git.lorenzo@kernel.org>
+ <a6bb83a429f3b073e97f81ec3935b8ebe89fbd71.1593521030.git.lorenzo@kernel.org>
+ <1f4af1f3-10cf-57ca-4171-11d3bff51c99@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="4bRzO86E/ozDv8r1"
+Content-Disposition: inline
+In-Reply-To: <1f4af1f3-10cf-57ca-4171-11d3bff51c99@iogearbox.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
 
-IPv6 ping sockets route based on fwmark, but do not yet set skb->mark.
-Add this. IPv4 ping sockets also do both.
+--4bRzO86E/ozDv8r1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- net/ipv6/ping.c | 1 +
- 1 file changed, 1 insertion(+)
+> On 6/30/20 2:49 PM, Lorenzo Bianconi wrote:
+> [...]
 
-diff --git a/net/ipv6/ping.c b/net/ipv6/ping.c
-index 98ac32b49d8c..6caa062f68e7 100644
---- a/net/ipv6/ping.c
-+++ b/net/ipv6/ping.c
-@@ -114,6 +114,7 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
- 
- 	ipcm6_init_sk(&ipc6, np);
-+	ipc6.sockc.mark = sk->sk_mark;
- 	fl6.flowlabel = ip6_make_flowinfo(ipc6.tclass, fl6.flowlabel);
- 
- 	dst = ip6_sk_dst_lookup_flow(sk, &fl6, daddr, false);
--- 
-2.27.0.212.ge8ba1cc988-goog
+[...]
 
+> >   	old_rcpu =3D xchg(&cmap->cpu_map[key_cpu], rcpu);
+> >   	if (old_rcpu) {
+> > +		if (old_rcpu->prog)
+> > +			bpf_prog_put(old_rcpu->prog);
+> >   		call_rcu(&old_rcpu->rcu, __cpu_map_entry_free);
+> >   		INIT_WORK(&old_rcpu->kthread_stop_wq, cpu_map_kthread_stop);
+> >   		schedule_work(&old_rcpu->kthread_stop_wq);
+>=20
+> Hm, not quite sure I follow the logic here. Why is the bpf_prog_put() not=
+ placed inside
+> __cpu_map_entry_free(), for example? Wouldn't this at least leave a poten=
+tial small race
+> window of UAF given the rest is still live? If we already piggy-back from=
+ RCU side on
+> rcpu entry, why not having it in __cpu_map_entry_free()?
+
+ack right, thanks for spotting this issue. I guess we can even move
+"bpf_prog_put(rcpu->prog)" in put_cpu_map_entry() so the last consumer
+of bpf_cpu_map_entry will free the attached program. Agree?
+
+Regards,
+Lorenzo
+
+>=20
+> Thanks,
+> Daniel
+
+--4bRzO86E/ozDv8r1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXv+ZhwAKCRA6cBh0uS2t
+rIaPAQDI2dsANFG7ROCWhtnyEh5uM7SznjFrszCsJtv+oRLxNQD5Ad9bZMszE2k3
+kz9N2zbUU24X3g4Lf45oPAZ6v9A+Xgw=
+=/VV4
+-----END PGP SIGNATURE-----
+
+--4bRzO86E/ozDv8r1--
