@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26ABF2134D7
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 09:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CB7C2134D5
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 09:20:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726342AbgGCHUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 03:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33630 "EHLO
+        id S1726323AbgGCHUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 03:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726157AbgGCHUN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 03:20:13 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B579FC08C5C1
-        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 00:20:12 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id s10so31509888wrw.12
-        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 00:20:12 -0700 (PDT)
+        with ESMTP id S1726315AbgGCHUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 03:20:14 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94546C08C5C1
+        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 00:20:14 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id b6so31526143wrs.11
+        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 00:20:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=xpickymCvrcS1VNWl0Vurjl2Zpm2/MrjqJFv7jyj8/o=;
-        b=HLreoTSkJGhOTYA0vXYqth9L35ulf1ptxEQNrfJCGzkrqOCI72COPZtS41YJBJuDLB
-         RRUYbwtxk6ziqWRA72Jsri86jx5lUYXLtGu7krQemaTq8jqolVXHVkJklVwhdmTOCuFs
-         bk0OaZdY7tQZngCsuEhUBKiUYka082dmLHgy0=
+        bh=yOUewmzjVuXtk+kzDwoBFTKtglO7O0DZV2wRvp9/YVg=;
+        b=AOAVaAYViF1KNI00dezqK8pBYVQ+vXFxqSC8jwO0l6Tdq8961v/0ZJGmugDEzy5jM3
+         Spvf/JMja30cUPFpVxW1CehPFOsxTpAMwjtuUqzpVXxx3K69Ln8FqRv3HonWLbBNLODt
+         Hp4RaRImaN4g5TJhs2EHELb83buySoILhlgfM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=xpickymCvrcS1VNWl0Vurjl2Zpm2/MrjqJFv7jyj8/o=;
-        b=b0nHqg5k1hkcQjcQsC04jCUsqlRQPEZyzhBRbXrRJVYstcmVvPsatt1fu6sJzgAoSj
-         Bmk0MdPNyM7brs3obPLiYRI9Atl4KrEKjseVBtWk9mTW/O4UTr/p8cmTHoF+QbcO4EfF
-         Gdiwn5fDu/Ia7uXwxcTTZe8VkRzQ7XTPDQbfIQZyfPJfH2SWrnizCocDTe6JUx16RY+i
-         kuSlpAoXmFy3Fz5eB8i1BIC5XimyMvxS75DP3Z/7HfqgYZKt8A08+PKAXLO4rVLWTFI0
-         Rs0aVppXRCunlpdUeHaePIq6QvN4UQH3W+FCKQSL3lO1i88lpY+OTOD4fxp6Lbe7YZkD
-         OuSA==
-X-Gm-Message-State: AOAM533sQj8jPDpiC3YJOw72abnwvQIRLY29+wtWRVFgJo6LLDgSs7SO
-        ThA83wMixcLnisiKAce7DIPvBw==
-X-Google-Smtp-Source: ABdhPJxsy+NfpLBcI3ghj9jeGFQr1aLbObCGdPUXwYgSpeopsm83PrFE/nPafDGtVT9Pq35eVgvbzw==
-X-Received: by 2002:adf:8091:: with SMTP id 17mr23318903wrl.13.1593760811373;
-        Fri, 03 Jul 2020 00:20:11 -0700 (PDT)
+        bh=yOUewmzjVuXtk+kzDwoBFTKtglO7O0DZV2wRvp9/YVg=;
+        b=Euq2vJ7EgJLKJfU3K2v4rYZ+0H+pihqyTii+fCdmrgdziG/B7J1kQ/TVh/PhKihBEj
+         WaM7GRDgu+tw7B0RR/bdQmpF3xo1n9IhditgROEduZ/W2anJvhzuYlWqk51KyKGKan4Y
+         aWUGbRGQbjHdw0eYrXz1LauJXx5u2wt7ZjU9MQpbbKaTx5oUqNgbHIXqU+wpztGwdbg0
+         H1DODPWRMU7fZZb5RtEQzrVPRD1dK2YtYzr207VenHe5eRMUKPpeDxyiERkOorY/lkr/
+         Cy/QJS89f2td9lBbm3mkJvgMJF74c9gU3LSxpFGN0LK2uw3NIj7qDV40FMMal1CTbgyd
+         cDTA==
+X-Gm-Message-State: AOAM5328udKDoZU5727f3/2x29U/vC3fek982xcGYwyMZkoaR5E1Vjxe
+        F9DjHeiE9O0okY1E2y/MhE2bqnYQ45E=
+X-Google-Smtp-Source: ABdhPJx/I/oTekntckQHDITvTDgjq+Wbk3DJEgO8ZyU+wvSRM+WSsfOObWFnsrr4iJY+LIpmA4WaQQ==
+X-Received: by 2002:a05:6000:1143:: with SMTP id d3mr24466647wrx.235.1593760813182;
+        Fri, 03 Jul 2020 00:20:13 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a22sm12529564wmj.9.2020.07.03.00.20.09
+        by smtp.gmail.com with ESMTPSA id a22sm12529564wmj.9.2020.07.03.00.20.11
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 Jul 2020 00:20:10 -0700 (PDT)
+        Fri, 03 Jul 2020 00:20:12 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next v2 6/8] bnxt_en: Implement ethtool -X to set indirection table.
-Date:   Fri,  3 Jul 2020 03:19:45 -0400
-Message-Id: <1593760787-31695-7-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 7/8] bnxt_en: clean up VLAN feature bit handling
+Date:   Fri,  3 Jul 2020 03:19:46 -0400
+Message-Id: <1593760787-31695-8-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1593760787-31695-1-git-send-email-michael.chan@broadcom.com>
 References: <1593760787-31695-1-git-send-email-michael.chan@broadcom.com>
@@ -57,108 +57,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the new infrastructure in place, we can now support the setting of
-the indirection table from ethtool.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-When changing channels, in a rare case that firmware cannot reserve the
-rings that were promised, the RSS map will revert to default.
+The hardware VLAN offload feature on our NIC does not have separate
+knobs for handling customer and service tags on RX. Either offloading
+of both must be enabled or both must be disabled. Introduce definitions
+for the combined feature set in order to clean up the code and make
+this constraint more clear. Technically these features can be separately
+enabled on TX, however, since the default is to turn both on, the
+combined TX feature set is also introduced for code consistency.
 
-v2: When changing channels, if the RSS table size changes and RSS map
-    is non-default, return error.
-
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  7 ++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 37 +++++++++++++++++++++++
- 2 files changed, 43 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 34 ++++++++++++-------------------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  5 +++++
+ 2 files changed, 18 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 6c90a94..0edb692 100644
+index 0edb692..c7a6a2a 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -6061,6 +6061,10 @@ static int __bnxt_reserve_rings(struct bnxt *bp)
- 		rx = rx_rings << 1;
- 	cp = sh ? max_t(int, tx, rx_rings) : tx + rx_rings;
- 	bp->tx_nr_rings = tx;
-+
-+	/* Reset the RSS indirection if we cannot reserve all the RX rings */
-+	if (rx_rings != bp->rx_nr_rings)
-+		bp->dev->priv_flags &= ~IFF_RXFH_CONFIGURED;
- 	bp->rx_nr_rings = rx_rings;
- 	bp->cp_nr_rings = cp;
+@@ -1614,7 +1614,7 @@ static inline struct sk_buff *bnxt_tpa_end(struct bnxt *bp,
+ 		skb_set_hash(skb, tpa_info->rss_hash, tpa_info->hash_type);
  
-@@ -8265,7 +8269,8 @@ int bnxt_reserve_rings(struct bnxt *bp, bool irq_re_init)
- 			rc = bnxt_init_int_mode(bp);
- 		bnxt_ulp_irq_restart(bp, rc);
+ 	if ((tpa_info->flags2 & RX_CMP_FLAGS2_META_FORMAT_VLAN) &&
+-	    (skb->dev->features & NETIF_F_HW_VLAN_CTAG_RX)) {
++	    (skb->dev->features & BNXT_HW_FEATURE_VLAN_ALL_RX)) {
+ 		u16 vlan_proto = tpa_info->metadata >>
+ 			RX_CMP_FLAGS2_METADATA_TPID_SFT;
+ 		u16 vtag = tpa_info->metadata & RX_CMP_FLAGS2_METADATA_TCI_MASK;
+@@ -1832,7 +1832,7 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 
+ 	if ((rxcmp1->rx_cmp_flags2 &
+ 	     cpu_to_le32(RX_CMP_FLAGS2_META_FORMAT_VLAN)) &&
+-	    (skb->dev->features & NETIF_F_HW_VLAN_CTAG_RX)) {
++	    (skb->dev->features & BNXT_HW_FEATURE_VLAN_ALL_RX)) {
+ 		u32 meta_data = le32_to_cpu(rxcmp1->rx_cmp_meta_data);
+ 		u16 vtag = meta_data & RX_CMP_FLAGS2_METADATA_TCI_MASK;
+ 		u16 vlan_proto = meta_data >> RX_CMP_FLAGS2_METADATA_TPID_SFT;
+@@ -9911,24 +9911,16 @@ static netdev_features_t bnxt_fix_features(struct net_device *dev,
+ 	/* Both CTAG and STAG VLAN accelaration on the RX side have to be
+ 	 * turned on or off together.
+ 	 */
+-	vlan_features = features & (NETIF_F_HW_VLAN_CTAG_RX |
+-				    NETIF_F_HW_VLAN_STAG_RX);
+-	if (vlan_features != (NETIF_F_HW_VLAN_CTAG_RX |
+-			      NETIF_F_HW_VLAN_STAG_RX)) {
+-		if (dev->features & NETIF_F_HW_VLAN_CTAG_RX)
+-			features &= ~(NETIF_F_HW_VLAN_CTAG_RX |
+-				      NETIF_F_HW_VLAN_STAG_RX);
++	vlan_features = features & BNXT_HW_FEATURE_VLAN_ALL_RX;
++	if (vlan_features != BNXT_HW_FEATURE_VLAN_ALL_RX) {
++		if (dev->features & BNXT_HW_FEATURE_VLAN_ALL_RX)
++			features &= ~BNXT_HW_FEATURE_VLAN_ALL_RX;
+ 		else if (vlan_features)
+-			features |= NETIF_F_HW_VLAN_CTAG_RX |
+-				    NETIF_F_HW_VLAN_STAG_RX;
++			features |= BNXT_HW_FEATURE_VLAN_ALL_RX;
  	}
--	bnxt_set_dflt_rss_indir_tbl(bp);
-+	if (!netif_is_rxfh_configured(bp->dev))
-+		bnxt_set_dflt_rss_indir_tbl(bp);
- 
- 	if (rc) {
- 		netdev_err(bp->dev, "ring reservation/IRQ init failure rc: %d\n", rc);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 46f3978..9098818 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -926,6 +926,13 @@ static int bnxt_set_channels(struct net_device *dev,
- 		return rc;
- 	}
- 
-+	if (bnxt_get_nr_rss_ctxs(bp, req_rx_rings) !=
-+	    bnxt_get_nr_rss_ctxs(bp, bp->rx_nr_rings) &&
-+	    (dev->priv_flags & IFF_RXFH_CONFIGURED)) {
-+		netdev_warn(dev, "RSS table size change required, RSS table entries must be default to proceed\n");
-+		return -EINVAL;
-+	}
-+
- 	if (netif_running(dev)) {
- 		if (BNXT_PF(bp)) {
- 			/* TODO CHIMP_FW: Send message to all VF's
-@@ -1315,6 +1322,35 @@ static int bnxt_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
- 	return 0;
+ #ifdef CONFIG_BNXT_SRIOV
+-	if (BNXT_VF(bp)) {
+-		if (bp->vf.vlan) {
+-			features &= ~(NETIF_F_HW_VLAN_CTAG_RX |
+-				      NETIF_F_HW_VLAN_STAG_RX);
+-		}
+-	}
++	if (BNXT_VF(bp) && bp->vf.vlan)
++		features &= ~BNXT_HW_FEATURE_VLAN_ALL_RX;
+ #endif
+ 	return features;
  }
+@@ -9951,7 +9943,7 @@ static int bnxt_set_features(struct net_device *dev, netdev_features_t features)
+ 	if (bp->flags & BNXT_FLAG_NO_AGG_RINGS)
+ 		flags &= ~BNXT_FLAG_TPA;
  
-+static int bnxt_set_rxfh(struct net_device *dev, const u32 *indir,
-+			 const u8 *key, const u8 hfunc)
-+{
-+	struct bnxt *bp = netdev_priv(dev);
-+	int rc = 0;
+-	if (features & NETIF_F_HW_VLAN_CTAG_RX)
++	if (features & BNXT_HW_FEATURE_VLAN_ALL_RX)
+ 		flags |= BNXT_FLAG_STRIP_VLAN;
+ 
+ 	if (features & NETIF_F_NTUPLE)
+@@ -12039,8 +12031,8 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	dev->gso_partial_features = NETIF_F_GSO_UDP_TUNNEL_CSUM |
+ 				    NETIF_F_GSO_GRE_CSUM;
+ 	dev->vlan_features = dev->hw_features | NETIF_F_HIGHDMA;
+-	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_CTAG_TX |
+-			    NETIF_F_HW_VLAN_STAG_RX | NETIF_F_HW_VLAN_STAG_TX;
++	dev->hw_features |= BNXT_HW_FEATURE_VLAN_ALL_RX |
++			    BNXT_HW_FEATURE_VLAN_ALL_TX;
+ 	if (BNXT_SUPPORTS_TPA(bp))
+ 		dev->hw_features |= NETIF_F_GRO_HW;
+ 	dev->features |= dev->hw_features | NETIF_F_HIGHDMA;
+@@ -12096,7 +12088,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	bnxt_fw_init_one_p3(bp);
+ 
+-	if (dev->hw_features & NETIF_F_HW_VLAN_CTAG_RX)
++	if (dev->hw_features & BNXT_HW_FEATURE_VLAN_ALL_RX)
+ 		bp->flags |= BNXT_FLAG_STRIP_VLAN;
+ 
+ 	rc = bnxt_init_int_mode(bp);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 5890913..13c4064 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1906,6 +1906,11 @@ struct bnxt {
+ #define BNXT_PCIE_STATS_OFFSET(counter)			\
+ 	(offsetof(struct pcie_ctx_hw_stats, counter) / 8)
+ 
++#define BNXT_HW_FEATURE_VLAN_ALL_RX				\
++	(NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_STAG_RX)
++#define BNXT_HW_FEATURE_VLAN_ALL_TX				\
++	(NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX)
 +
-+	if (hfunc && hfunc != ETH_RSS_HASH_TOP)
-+		return -EOPNOTSUPP;
-+
-+	if (key)
-+		return -EOPNOTSUPP;
-+
-+	if (indir) {
-+		u32 i, pad, tbl_size = bnxt_get_rxfh_indir_size(dev);
-+
-+		for (i = 0; i < tbl_size; i++)
-+			bp->rss_indir_tbl[i] = indir[i];
-+		pad = bp->rss_indir_tbl_entries - tbl_size;
-+		if (pad)
-+			memset(&bp->rss_indir_tbl[i], 0, pad * sizeof(u16));
-+	}
-+
-+	if (netif_running(bp->dev)) {
-+		bnxt_close_nic(bp, false, false);
-+		rc = bnxt_open_nic(bp, false, false);
-+	}
-+	return rc;
-+}
-+
- static void bnxt_get_drvinfo(struct net_device *dev,
- 			     struct ethtool_drvinfo *info)
- {
-@@ -3621,6 +3657,7 @@ void bnxt_ethtool_free(struct bnxt *bp)
- 	.get_rxfh_indir_size    = bnxt_get_rxfh_indir_size,
- 	.get_rxfh_key_size      = bnxt_get_rxfh_key_size,
- 	.get_rxfh               = bnxt_get_rxfh,
-+	.set_rxfh		= bnxt_set_rxfh,
- 	.flash_device		= bnxt_flash_device,
- 	.get_eeprom_len         = bnxt_get_eeprom_len,
- 	.get_eeprom             = bnxt_get_eeprom,
+ #define I2C_DEV_ADDR_A0				0xa0
+ #define I2C_DEV_ADDR_A2				0xa2
+ #define SFF_DIAG_SUPPORT_OFFSET			0x5c
 -- 
 1.8.3.1
 
