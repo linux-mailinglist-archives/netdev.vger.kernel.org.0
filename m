@@ -2,110 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E56A9213159
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 04:35:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78F902131DB
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 04:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726098AbgGCCfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 22:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725937AbgGCCfv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 22:35:51 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4EAC08C5C1;
-        Thu,  2 Jul 2020 19:35:51 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id gc9so6749465pjb.2;
-        Thu, 02 Jul 2020 19:35:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=356EHQ0cHMEVkYqLfbIWT5ow6CJqCepSrNitIr5l14k=;
-        b=aTur/YM4SNLK77iAZM7noIbulj8Lc9VcwVJKnrKmbfHwy3c17XY4pnNwMaFOxemfFN
-         pq5Y5TVq3MEqBF6pFYBgaWltPQAp6c2Ph2IbsebHuoOMKpvEyIpCkHKMiSxn8ywrxCI0
-         mUgkQJiCuQ9uly7ki3e6WrrzeJFPbqKgYsUpMbz4vaeAMMIpmwG6+mzS6VAEwMUrf8Iq
-         MGP5sBzswGQKq/fA1IbnYzjofjS5O2eo7Ai1pX80w6PxeXCgrxcQANDFI/cFXuvYfa+Q
-         rxVrOXIBIMwYv9cnDYEbYaCYM5yedF4mW/WJZzfpuUbN43161sRfIu1BC2+bglpgiz9c
-         3YXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=356EHQ0cHMEVkYqLfbIWT5ow6CJqCepSrNitIr5l14k=;
-        b=S+HOCtf0+qcRUczlKCE6z9rLHTPDdFL5jTRO57jfNTLITYifx7OXWnniBvk914dE9a
-         Dc7SRs5EpYbsqY6Ir/LCEAsFCrF1LNy2PqkfLlZdFkHq2clvknEfvh1cVxXn1xxH0oYH
-         IcqrUH/DVJEvOE7QZSi91/Z9m2DCXeAS8unX34JYpkOSyGvD4S1z/2PvVIs8eHE4Yt30
-         GaqQ//ZbD3IW43SBmaJ2cbPaoxOyLuYIWm7LCwyaBtoScM92e1JT1Brw++CEf0YvwOh0
-         fjJ5/53lmPQe6MhzJOoEpf1Xc3hcdudshnq6j57bY7lu0I34UP4cGgfeW3d7X89jM50B
-         v6Wg==
-X-Gm-Message-State: AOAM532dzbnCbdiMrPSiX2slWCT5Gi6Px384r/vtGZ1/qRYhPuW/pczU
-        kI+A1AAKC/Buu0yGUqzo5gw=
-X-Google-Smtp-Source: ABdhPJyUCQIUl5sO+6PrVGMPWOQgBcdV3YfS3m0VP1U8UeEf33wmksk2oaqmFZGUJ3H7xH0TU8845Q==
-X-Received: by 2002:a17:90a:ab96:: with SMTP id n22mr5682594pjq.52.1593743750964;
-        Thu, 02 Jul 2020 19:35:50 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4afb])
-        by smtp.gmail.com with ESMTPSA id a5sm2562444pjq.48.2020.07.02.19.35.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2020 19:35:50 -0700 (PDT)
-Date:   Thu, 2 Jul 2020 19:35:47 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 3/3] bpf: Add kernel module with user mode
- driver that populates bpffs.
-Message-ID: <20200703023547.qpu74obn45qvb2k7@ast-mbp.dhcp.thefacebook.com>
-References: <20200702200329.83224-1-alexei.starovoitov@gmail.com>
- <20200702200329.83224-4-alexei.starovoitov@gmail.com>
- <CAHk-=wgP8g-9RdVh_AHHi9=Jpw2Qn=sSL8j9DqhqGyTtG+MWBA@mail.gmail.com>
+        id S1726184AbgGCCpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 22:45:04 -0400
+Received: from mail-db8eur05on2073.outbound.protection.outlook.com ([40.107.20.73]:6099
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726065AbgGCCpE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jul 2020 22:45:04 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UtKQ1+K5stMjudn0xa1oPy7vwonQUoU9qixldhKlGfVO033eP95ta1ikMHKWWd6uXDQQm035JJfZ1LOrh+PzNuLS3v2TIdwUoPllTreQIfoBJJBxyuVwl7lfX0tH7UCuPk08NdlXRV247q/CuHFti+sAM4fH83GOlI44I/gdLrmmezJVAVu0UG1/zF0ts6xF/uDXcXA2oDif8MvereJ76B94KxlR/oL53aJyKs7dqg12Tqrucgo+qVkHp0zH0OrDbNhrzAzFbdo0jWGMIxjDryVMhwDlT3J0SmXFy1lL+cc6phW5/FpPA1fpC8yJxTNcSsvcVPPV4tWjqFG956FspQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pj46Z77rAYGrbng3hxbKwM6y8P+nlwd2ccVnnuEKRaQ=;
+ b=b14PW2FjLWI+idmZlYmzdUjUSfs0FPZAa3JASBeyWjCTl5VtuePIXz6VkfbQaEfsxwfJsZkOxQCwt1kpDsM3u8gPPtX90Pm+1A0/bYME2PG4Sthe7qLOYAAHK8B+EnE2cjbBkAfydimEDo0EvDvLn7szrAmiuroziQT3GJBkDhf8dX2DutUgCFhHIf5paNrj7/KjAgrrkTe7MsuLPftwcN41czsXJGbQXqfJsz8QGY+TBDAuot4vZr/FP5sGh8tOlYuruPc0pOt6PRS5f+ljJKEUbDTfOGhD2WyFCKk4KiDsaxzA9KarmVexW5eL8x/IzQ/ZCpJ80z0rFtN/ciQHSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pj46Z77rAYGrbng3hxbKwM6y8P+nlwd2ccVnnuEKRaQ=;
+ b=gCMzrCYz8Yw7bSKO8GnJYnX6MS8O56iuUwNahGJ1wjzClmth62IlJV/gpxaDGx6gxFKQmUWeoXzFOMWU88Ge0J6olDxHdhzSUyrFa66D8sf1ntASAxjPksvHq76J93+btUff+muwElO0gHZ6JfghrzP2LribbUn90UXA/GlWiEE=
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ (2603:10a6:209:12::18) by AM6PR04MB6599.eurprd04.prod.outlook.com
+ (2603:10a6:20b:fd::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20; Fri, 3 Jul
+ 2020 02:45:00 +0000
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::75d9:c8cb:c564:d17f]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::75d9:c8cb:c564:d17f%5]) with mapi id 15.20.3153.027; Fri, 3 Jul 2020
+ 02:45:00 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [EXT] [PATCH v2 net] net: ethernet: fec: prevent tx starvation
+ under high rx load
+Thread-Topic: [EXT] [PATCH v2 net] net: ethernet: fec: prevent tx starvation
+ under high rx load
+Thread-Index: AQHWULN44AyVysQJHEadhKXpxbm1faj1JULA
+Date:   Fri, 3 Jul 2020 02:45:00 +0000
+Message-ID: <AM6PR0402MB36074BB67E6704F82D2003FBFF6A0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+References: <20200702205737.8283-1-tobias@waldekranz.com>
+In-Reply-To: <20200702205737.8283-1-tobias@waldekranz.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: waldekranz.com; dkim=none (message not signed)
+ header.d=none;waldekranz.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.67]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 8bad59c5-3ca6-4603-0d03-08d81efb14e2
+x-ms-traffictypediagnostic: AM6PR04MB6599:
+x-microsoft-antispam-prvs: <AM6PR04MB6599705C054AAA2CB621B4A9FF6A0@AM6PR04MB6599.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:628;
+x-forefront-prvs: 045315E1EE
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: iUbpJsY+pL228vwqZDAEGFQkrNGFa+h7y5hFGlecEC9hsKGVUHUWYia6a7kAtmeVLOjtg9OsVYEQnC8yqFRVWQYVFscd7qKqb0la3fExHJQ7gbIDmVea2HquV/sBDvSONehxkM1Xck1PX5xYDHcakq/wjtOUtC9J6HbOiPk+a/UxCeUq+Ehaxeu7Y9fvY8cuv0BZnKBEdXmUVfU1245mmSPxbQb7w8QKRg+z7nFLjpii+/Q4Y9CUtaurCPEzsgBVfQNfl+l60N33dVASdwOrmv2y6ers43Jj4U5azFeS2o331Lirud4gl288EbtYZg9yjw+uc8IAeySvNeNxeMvv6w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(136003)(346002)(39860400002)(366004)(396003)(26005)(5660300002)(186003)(76116006)(2906002)(9686003)(83380400001)(66946007)(66556008)(52536014)(110136005)(66446008)(66476007)(4326008)(64756008)(316002)(7696005)(478600001)(6506007)(8936002)(86362001)(71200400001)(55016002)(8676002)(66574015)(33656002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: QAEpdWjIR8RLMc5f329SDsnutKjrTAMIXVWaJgP0p3hG7W6maul21TLHty0vy3AHzg7dI8OnMYWLf5KCixfI6zdpawjRyCfatJktpLDX8ROtbG4c3mhd41qyx988xOVfHUQRsKk+4h2P14z4yrW2A4DkRDW1aURDkpteLvt0RHJWA+2RYA9ukmaBqJUcyLO5lkq2sjVmn4ydTy4g4GY/M8LNwwQUhkM+TkEHAQvLI/vU7CT1QpdVeVuNt+YVCkkBVs4iIsRPge/4gtvrmV/L+g9MN7JstH069vPH/mGD1FNcqQel5g4zkDzCkkzA17mEKkyD3ZSR+tLGWl2xmCBhquk4A0u0K7BSH8piRKf1GI3tW03uLViyGQ9xzIQaj6iEzCdknE2wVOtWHR/uw2TQVZ9zUdDi5EjsKgH0xHKcQn5bodOxfQN+piCEM8g1VeTN1ea9Sas/S1epwxt7rSQrMJvUw7bYqzCId3HR2x8p7psz51Lnv2PngrG4cMcCVZJX
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgP8g-9RdVh_AHHi9=Jpw2Qn=sSL8j9DqhqGyTtG+MWBA@mail.gmail.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3607.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8bad59c5-3ca6-4603-0d03-08d81efb14e2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2020 02:45:00.7779
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CGBC39AZUZrDgKypEjtd2N20iNSdsU6aI/CXY5JeLqvz3v/yonrIG6i3XwqTRYxGDRyQK7XyEEzoaJ+XkL9qKg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6599
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 02, 2020 at 06:05:29PM -0700, Linus Torvalds wrote:
-> On Thu, Jul 2, 2020 at 1:03 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
-> > all BPF programs currently loaded in the system. This information is unstable
-> > and will change from kernel to kernel.
-> 
-> If so, it should probably be in debugfs, not in /sys/fs/
+From: Tobias Waldekranz <tobias@waldekranz.com> Sent: Friday, July 3, 2020 =
+4:58 AM
+> In the ISR, we poll the event register for the queues in need of service =
+and
+> then enter polled mode. After this point, the event register will never b=
+e read
+> again until we exit polled mode.
+>=20
+> In a scenario where a UDP flow is routed back out through the same interf=
+ace,
+> i.e. "router-on-a-stick" we'll typically only see an rx queue event initi=
+ally.
+> Once we start to process the incoming flow we'll be locked polled mode, b=
+ut
+> we'll never clean the tx rings since that event is never caught.
+>=20
+> Eventually the netdev watchdog will trip, causing all buffers to be dropp=
+ed and
+> then the process starts over again.
+>=20
+> Rework the NAPI poll to keep trying to consome the entire budget as long =
+as
+> new events are coming in, making sure to service all rx/tx queues, in pri=
+ority
+> order, on each pass.
+>=20
+> Fixes: 4d494cdc92b3 ("net: fec: change data structure to support
+> multiqueue")
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+>=20
+> v1 -> v2:
+> * Always do a full pass over all rx/tx queues as soon as any event is
+>   received, as suggested by David.
+> * Keep dequeuing packets as long as events keep coming in and we're
+>   under budget.
+>=20
+>  drivers/net/ethernet/freescale/fec.h      |  5 --
+>  drivers/net/ethernet/freescale/fec_main.c | 94 ++++++++---------------
+>  2 files changed, 31 insertions(+), 68 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/freescale/fec.h
+> b/drivers/net/ethernet/freescale/fec.h
+> index a6cdd5b61921..d8d76da51c5e 100644
+> --- a/drivers/net/ethernet/freescale/fec.h
+> +++ b/drivers/net/ethernet/freescale/fec.h
+> @@ -525,11 +525,6 @@ struct fec_enet_private {
+>         unsigned int total_tx_ring_size;
+>         unsigned int total_rx_ring_size;
+>=20
+> -       unsigned long work_tx;
+> -       unsigned long work_rx;
+> -       unsigned long work_ts;
+> -       unsigned long work_mdio;
+> -
+>         struct  platform_device *pdev;
+>=20
+>         int     dev_id;
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c
+> b/drivers/net/ethernet/freescale/fec_main.c
+> index 2d0d313ee7c5..84589d464850 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -75,8 +75,6 @@ static void fec_enet_itr_coal_init(struct net_device
+> *ndev);
+>=20
+>  #define DRIVER_NAME    "fec"
+>=20
+> -#define FEC_ENET_GET_QUQUE(_x) ((_x =3D=3D 0) ? 1 : ((_x =3D=3D 1) ? 2 :=
+ 0))
+> -
+>  /* Pause frame feild and FIFO threshold */
+>  #define FEC_ENET_FCE   (1 << 5)
+>  #define FEC_ENET_RSEM_V        0x84
+> @@ -1248,8 +1246,6 @@ fec_enet_tx_queue(struct net_device *ndev, u16
+> queue_id)
+>=20
+>         fep =3D netdev_priv(ndev);
+>=20
+> -       queue_id =3D FEC_ENET_GET_QUQUE(queue_id);
+> -
+>         txq =3D fep->tx_queue[queue_id];
+>         /* get next bdp of dirty_tx */
+>         nq =3D netdev_get_tx_queue(ndev, queue_id); @@ -1340,17
+> +1336,14 @@ fec_enet_tx_queue(struct net_device *ndev, u16 queue_id)
+>                 writel(0, txq->bd.reg_desc_active);  }
+>=20
+> -static void
+> -fec_enet_tx(struct net_device *ndev)
+> +static void fec_enet_tx(struct net_device *ndev)
+>  {
+>         struct fec_enet_private *fep =3D netdev_priv(ndev);
+> -       u16 queue_id;
+> -       /* First process class A queue, then Class B and Best Effort queu=
+e */
+> -       for_each_set_bit(queue_id, &fep->work_tx,
+> FEC_ENET_MAX_TX_QS) {
+> -               clear_bit(queue_id, &fep->work_tx);
+> -               fec_enet_tx_queue(ndev, queue_id);
+> -       }
+> -       return;
+> +       int i;
+> +
+> +       /* Make sure that AVB queues are processed first. */
+> +       for (i =3D fep->num_rx_queues - 1; i >=3D 0; i--)
 
-/sys/fs/bpf/ is just a historic location where we chose to mount bpffs.
-iirc iproute2 picked that location and systemd followed.
-bpffs itself is not a single mount and not sharing anything with sysfs or debugfs.
-By default it's not mounted anywhere.
-Every instance is independent and can contain only pinned BPF objects:
-progs, maps, links.
-Folks are using bpffs to store BPF objects that need to survive the life time
-of the process that created those objects.
-Another use is to share that BPF object with another process.
-Like firewall service can load bpf prog attach to netdev and pin bpf map
-with firewall rules in some /var/my_firewall/bpf/my_fw_rules.
-Then another process can do map lookup/delete on that map if it can access the path.
-I've seen such use case in production.
-As far as preloading "progs" and "maps" iterators into bpffs the following
-works just as well:
-$ mkdir /aa
-$ mount bpffs /aa -t bpf
-$ ll /aa
-total 4
-drwxrwxrwt  2 root root    0 Jul  2 00:27 .
-drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
--rw-------  1 root root    0 Jul  2 00:27 maps
--rw-------  1 root root    0 Jul  2 00:27 progs
-$ cat /aa/progs
-  id name            pages attached
-  17    dump_bpf_map     1 bpf_iter_bpf_map
-  18   dump_bpf_prog     1 bpf_iter_bpf_prog
+In fact, you already change the queue priority comparing before.
+Before: queue1 (Audio) > queue2 (video) > queue0 (best effort)
+Now: queue2 (video) > queue1 (Audio) > queue0 (best effort)
 
-May be I misunderstood what you meant?
+Other logic seems fine, but you should run stress test to avoid any
+block issue since the driver cover more than 20 imx platforms.
