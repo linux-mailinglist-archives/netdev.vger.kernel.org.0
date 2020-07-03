@@ -2,80 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B6382141FB
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 01:44:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD804214224
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 01:58:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726610AbgGCXon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 19:44:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51082 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726188AbgGCXol (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jul 2020 19:44:41 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DAC3120826;
-        Fri,  3 Jul 2020 23:44:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593819881;
-        bh=ogKugypFrNuL4/kvviId7s2E/IlniHWc42em6EWrtjM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qgPKOJ9tw0xVJOvP7r8dcl+gdhHqGtCNeZYohs+aZ1hOfcyhonFx9hQE428T3lsNg
-         GBC0ncmQWlHE4E5Ust1qUkf/WwGm95f79oIY96iqSxM0GPYnbvTqC4/B3j/WKDZ3Sc
-         Uv9XuO71nqAyQGM201iqYRhO3up3VEjBeLCryE5A=
-Date:   Fri, 3 Jul 2020 16:44:39 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Moshe Shemesh <moshe@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/7] Add devlink-health support for devlink
- ports
-Message-ID: <20200703164439.5872f809@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1593746858-6548-1-git-send-email-moshe@mellanox.com>
-References: <1593746858-6548-1-git-send-email-moshe@mellanox.com>
+        id S1726759AbgGCX6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 19:58:08 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:18236 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726379AbgGCX6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 19:58:05 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 063Nw1WZ026868;
+        Fri, 3 Jul 2020 16:58:01 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0818;
+ bh=bqPoRX4VjkPGoPXE7CWXFKmFFzVZxQZaQqHY37LMe4E=;
+ b=xQ+2yOZ0AAhop9P+IE2lsOW/qjmNzoztOlKA/x5D7nSQJtQWFa+WNFF78lxustHcalxv
+ jLmv5yjcM5CeuhDLMP372aoF/1lzBRT5f0JSJuJViS+MiYUkN6mET7iz60vE/g3zgGRs
+ CPFXRAA9BcMGlKbiagtsuC5W0CfjyMq3nU0OjBRLBCy6CGYoU5Qc/ZKkxdZkjlkhiIH6
+ oNpbtJ+UlnspO+UwOGVF6QU0aW+12VUbj9Vf0caeYYYGDFj5KPSbrWcH7ayJJ3haDnM2
+ DhlthSqFD6LIDIkklIIf3vsSxCTIzUyZ6vzBX7PnxSFs892u3I6d3P2XDQ8flgdLnd+0 ZA== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 321m92wjgr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 03 Jul 2020 16:58:01 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 3 Jul
+ 2020 16:58:01 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 3 Jul
+ 2020 16:58:00 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 3 Jul 2020 16:58:00 -0700
+Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
+        by maili.marvell.com (Postfix) with ESMTP id F1B523F703F;
+        Fri,  3 Jul 2020 16:57:56 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     David Miller <davem@davemloft.net>
+CC:     Alexander Lobakin <alobakin@marvell.com>, <kuba@kernel.org>,
+        <irusskikh@marvell.com>, <michal.kalderon@marvell.com>,
+        <aelior@marvell.com>, <denis.bolotin@marvell.com>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: qed: prevent buffer overflow when collecting debug data
+Date:   Sat, 4 Jul 2020 02:57:04 +0300
+Message-ID: <20200703235704.266-1-alobakin@marvell.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200703.125933.1255981278532631718.davem@davemloft.net>
+References: <20200703.125933.1255981278532631718.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-03_18:2020-07-02,2020-07-03 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  3 Jul 2020 06:27:31 +0300 Moshe Shemesh wrote:
-> Implement support for devlink health reporters on per-port basis. First
-> part in the series prepares common functions parts for health reporter
-> implementation. Second introduces required API to devlink-health and
-> mlx5e ones demonstrate its usage and effectively implement the feature
-> for mlx5 driver.
-> The per-port reporter functionality is achieved by adding a list of
-> devlink_health_reporters to devlink_port struct in a manner similar to
-> existing device infrastructure. This is the only major difference and
-> it makes possible to fully reuse device reporters operations.
-> The effect will be seen in conjunction with iproute2 additions and
-> will affect all devlink health commands. User can distinguish between
-> device and port reporters by looking at a devlink handle. Port reporters
-> have a port index at the end of the address and such addresses can be
-> provided as a parameter in every place where devlink-health accepted it.
-> These can be obtained from devlink port show command.
-> For example:
-> $ devlink health show
-> pci/0000:00:0a.0:
->   reporter fw
->     state healthy error 0 recover 0 auto_dump true
-> pci/0000:00:0a.0/1:
->   reporter tx
->     state healthy error 0 recover 0 grace_period 500 auto_recover true auto_dump true
-> $ devlink health set pci/0000:00:0a.0/1 reporter tx grace_period 1000 \
-> auto_recover false auto_dump false
-> $ devlink health show pci/0000:00:0a.0/1 reporter tx
-> pci/0000:00:0a.0/1:
->   reporter tx
->     state healthy error 0 recover 0 grace_period 1000 auto_recover flase auto_dump false
+From:   David Miller <davem@davemloft.net>
+Date:   Fri, 03 Jul 2020 12:59:33 -0700 (PDT)
 
-What's the motivation, though?
+> From: Alexander Lobakin <alobakin@marvell.com>
+> Date: Fri, 3 Jul 2020 12:02:58 +0300
+> 
+> > When generating debug dump, driver firstly collects all data in binary
+> > form, and then performs per-feature formatting to human-readable if it
+> > is supported.
+> > The size of the new formatted data is often larger than the raw's. This
+> > becomes critical when user requests dump via ethtool (-d/-w), as output
+> > buffer size is strictly determined (by ethtool_ops::get_regs_len() etc),
+> > as it may lead to out-of-bounds writes and memory corruption.
+> > 
+> > To not go past initial lengths, add a flag to return original,
+> > non-formatted debug data, and set it in such cases. Also set data type
+> > in regdump headers, so userland parsers could handle it.
+> > 
+> > Fixes: c965db444629 ("qed: Add support for debug data collection")
+> > Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
+> > Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+> 
+> This is now how ethtool register dumps work.
+> 
+> It does not provide "human readable" versions of register data.  Instead
+> it is supposed to be purely raw data and then userland utilities interpret
+> that data and can make it human readable based upon the driver name and
+> reg dump version.
+> 
+> Please fix your ethtool -d implementation to comply with this.
 
-This patch series achieves nothing that couldn't be previously achieved.
+This is exactly what this patch does: forces driver to dump raw binary
+data. Current mainline version tries to perform formatting before passing
+data up to ethtool infra.
 
-Is there no concern of uAPI breakage with moving the existing health
-reporters in patch 7?
+> Thank you.
+
+Thanks,
+Al
