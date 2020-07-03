@@ -2,180 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFDDB21389E
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 12:26:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D721221388F
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 12:20:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726106AbgGCK00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 06:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725891AbgGCK0Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 06:26:25 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D020C08C5C1
-        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 03:26:25 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id n23so36383269ljh.7
-        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 03:26:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=content-transfer-encoding:cc:subject:from:to:date:message-id
-         :in-reply-to;
-        bh=OuKtOMJmwEvf1zoQfKNKHsaVoKBbF/WASS38YrJXJ3E=;
-        b=cV9YuavzgFDqbaqBLUaNSzNVvtnAnkRnDohecPuo4IufPuxSqrBxS9WKj3j17EldwR
-         AhJWwJ3SBrWKTgL1VdU88pfFfK5KEVV2XCxNWvIKHHs3SF6QR//zIhmw4A31ccdjKl3A
-         yHUUEL7XJRTgTc0pQ8zYo4B846p4BgmIbUMixQbXnm+YbX1HANSSug/omGOp2fu0AfY3
-         kQLgnbrunM924hVClzi1tWfk3YP/sqDCIN1dbO1H7qoUs28IO1CDVbGWkUHLLOYFedmm
-         oEkVUx68gJlvAyY96l5kyspmNkhMWktRM5fS/za2Jr39oCIzDsSYOCGNzMnJ3i7fb94S
-         HIkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:cc:subject:from:to
-         :date:message-id:in-reply-to;
-        bh=OuKtOMJmwEvf1zoQfKNKHsaVoKBbF/WASS38YrJXJ3E=;
-        b=gME2EIafTsCkgckesrlq4YVKHxTjBaXx3oMCPWfSY0ljG10SaREHjHbdRByXkfTIYn
-         fKZSCScQVF5MeEu0kRxP7uJAJOaoej0jntSue/l37pL5dLpZG6e10vFIZqXfFPIpD4Fi
-         y2VDmbxidb6ww3QRB61UCRvHgU67LGR7N84NxuAC5TDRJ0tR1f41OSNQ1CObmZ4xHP74
-         y5fLqAexL/iUDd2gh3ZkKfUZ+Rkl8PPr6jAetCh+GSMhKT6AlG8nL+MQWLnK+XiVq6E6
-         fn8SEaWxxMYsT9ucfsY6FV/GtldFp38UvWcL27O8GHgMLQDjygW3XcEsfEv9Oagbifzp
-         bPwA==
-X-Gm-Message-State: AOAM533hyjx2kbpmVgbA8OjAppuoaCY8HgO6VxQyDPZFhuHI6B5sCZhI
-        9wA/Kc6JEp+T7w7CDn9p4DjGgg==
-X-Google-Smtp-Source: ABdhPJwTmpnQX3Lofn5d+Vod8XsKPdWpjmOcGGX8ucwe3j1z/U/HpIqc4dyJrG4beGHsbl1zMK9cXA==
-X-Received: by 2002:a2e:9eca:: with SMTP id h10mr19678436ljk.273.1593771983077;
-        Fri, 03 Jul 2020 03:26:23 -0700 (PDT)
-Received: from localhost (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id t15sm5134545lft.0.2020.07.03.03.26.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Jul 2020 03:26:22 -0700 (PDT)
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] [PATCH v2 net] net: ethernet: fec: prevent tx starvation
- under high rx load
-From:   "Tobias Waldekranz" <tobias@waldekranz.com>
-To:     "Andy Duan" <fugang.duan@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Date:   Fri, 03 Jul 2020 12:02:04 +0200
-Message-Id: <C3WWHZGE1V5L.54SWH1P5EARO@wkz-x280>
-In-Reply-To: <AM6PR0402MB36075D91D8365FC9DD677F09FF6A0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+        id S1726163AbgGCKUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 06:20:02 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:16381 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725891AbgGCKUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 06:20:02 -0400
+Received: from [192.168.188.14] (unknown [106.75.220.2])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id A726541F2F;
+        Fri,  3 Jul 2020 18:19:56 +0800 (CST)
+Subject: Re: [PATCH net] net/sched: act_mirred: fix fragment the packet after
+ defrag in act_ct
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <10af044d-c51b-9b85-04b9-ea97a3c3ebdb@ucloud.cn>
+ <CAM_iQpWmyAd3UOk+6+J8aYw3_P=ZWhCPpoYNUyFdj4FCPuuLoA@mail.gmail.com>
+ <8b06ac17-e19b-90f3-6dd2-0274a0ee474b@ucloud.cn>
+ <CAM_iQpWWmCASPidrQYO6wCUNkZLR-S+Y9r9XrdyjyPHE-Q9O5g@mail.gmail.com>
+ <012daf78-a18f-3dde-778a-482204c5b6af@ucloud.cn>
+ <a205bada-8879-0dfd-c3ed-53fe9cef6449@ucloud.cn>
+ <CAM_iQpV_1_H_Cb3t4hCCfRXf2Tn2x9sT0vJ5rh6J6iWQ=PNesA@mail.gmail.com>
+ <7aaefcef-5709-04a8-0c54-c8c6066e1e90@ucloud.cn>
+ <20200702173228.GH74252@localhost.localdomain>
+ <CAM_iQpUrRzOi-S+49jMhDQCS0jqOmwObY3ZNa6n9qJGbPTXM-A@mail.gmail.com>
+ <20200703004727.GU2491@localhost.localdomain>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <349bb25a-7651-2664-25bc-3f613297fb5c@ucloud.cn>
+Date:   Fri, 3 Jul 2020 18:19:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20200703004727.GU2491@localhost.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSkJOS0tLS05JT05JS0JZV1koWU
+        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkXMjULOBw6MwsKEzY5DUIeTAJIPjocVlZVSEhOQ00oSVlXWQ
+        kOFx4IWUFZNTQpNjo3JCkuNz5ZV1kWGg8SFR0UWUFZNDBZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Ky46LCo*IT8ZEBRRMjwMMgoC
+        FggaCU5VSlVKTkJITExKTkJNQ0NLVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
+        TlVJSUtVSVlXWQgBWUFOTE9PNwY+
+X-HM-Tid: 0a7314309be52086kuqya726541f2f
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri Jul 3, 2020 at 11:58 AM CEST, Andy Duan wrote:
-> From: Tobias Waldekranz <tobias@waldekranz.com> Sent: Friday, July 3,
-> 2020 3:55 PM
-> > On Fri Jul 3, 2020 at 4:45 AM CEST, Andy Duan wrote:
-> > > In fact, you already change the queue priority comparing before.
-> > > Before: queue1 (Audio) > queue2 (video) > queue0 (best effort)
-> > > Now: queue2 (video) > queue1 (Audio) > queue0 (best effort)
-> >=20
-> > Yes, thank you, I meant to ask about that. I was looking at these defin=
-itions in
-> > fec.h:
-> >=20
-> > #define RCMR_CMP_1              (RCMR_CMP_CFG(0, 0) |
-> > RCMR_CMP_CFG(1, 1) | \
-> >                                 RCMR_CMP_CFG(2, 2) |
-> > RCMR_CMP_CFG(3, 3))
-> > #define RCMR_CMP_2              (RCMR_CMP_CFG(4, 0) |
-> > RCMR_CMP_CFG(5, 1) | \
-> >                                 RCMR_CMP_CFG(6, 2) |
-> > RCMR_CMP_CFG(7, 3))
-> >=20
-> > I read that as PCP 0-3 being mapped to queue 1 and 4-7 to queue 2. That=
- led
-> > me to believe that the order should be 2, 1, 0. Is the driver supposed =
-to
-> > prioritize PCP 0-3 over 4-7, or have I misunderstood completely?
+
+On 7/3/2020 8:47 AM, Marcelo Ricardo Leitner wrote:
+> On Thu, Jul 02, 2020 at 02:39:07PM -0700, Cong Wang wrote:
+>> On Thu, Jul 2, 2020 at 10:32 AM Marcelo Ricardo Leitner
+>> <marcelo.leitner@gmail.com> wrote:
+>>> On Thu, Jul 02, 2020 at 05:36:38PM +0800, wenxu wrote:
+>>>> On 7/2/2020 1:33 AM, Cong Wang wrote:
+>>>>> On Wed, Jul 1, 2020 at 1:21 AM wenxu <wenxu@ucloud.cn> wrote:
+>>>>>> On 7/1/2020 2:21 PM, wenxu wrote:
+>>>>>>> On 7/1/2020 2:12 PM, Cong Wang wrote:
+>>>>>>>> On Tue, Jun 30, 2020 at 11:03 PM wenxu <wenxu@ucloud.cn> wrote:
+>>>>>>>>> Only forward packet case need do fragment again and there is no need do defrag explicit.
+>>>>>>>> Same question: why act_mirred? You have to explain why act_mirred
+>>>>>>>> has the responsibility to do this job.
+>>>>>>> The fragment behavior only depends on the mtu of the device sent in act_mirred. Only in
+>>>>>>>
+>>>>>>> the act_mirred can decides whether do the fragment or not.
+>>>>>> Hi cong,
+>>>>>>
+>>>>>>
+>>>>>> I still think this should be resolved in the act_mirred.  Maybe it is not matter with a "responsibility"
+>>>>>>
+>>>>>> Did you have some other suggestion to solve this problem?
+>>>>> Like I said, why not introduce a new action to handle fragment/defragment?
+>>>>>
+>>>>> With that, you can still pipe it to act_ct and act_mirred to achieve
+>>>>> the same goal.
+>>>> Thanks.  Consider about the act_fagment, There are two problem for this.
+>>>>
+>>>>
+>>>> The frag action will put the ressemble skb to more than one packets. How these packets
+>>>>
+>>>> go through the following tc filter or chain?
+>>> One idea is to listificate it, but I don't see how it can work. For
+>>> example, it can be quite an issue when jumping chains, as the match
+>>> would have to work on the list as well.
+>> Why is this an issue? We already use goto action for use cases like
+>> vlan pop/push. The header can be changed all the time, reclassification
+>> is necessary.
+> Hmm I'm not sure you got what I meant. That's operating on the very
+> same skb... I meant that the pipe would handle a list of skbs (like in
+> netif_receive_skb_list). So when we have a goto action with such skb,
+> it would have to either break this list and reclassify each skb
+> individually, or the classification would have to do it. Either way,
+> it adds more complexity not just to the code but to the user as well
+> and ends up doing more processing (in case of fragments or not) than
+> if it knew how to output such packets properly. Or am I just
+> over-complicating it?
 >
-> The configuration is for RX queues.
-
-The order in which we clean the Tx queues should not matter as there
-is no budget limit in that case. I.e. even in the worst case where all
-three queues are filled with transmitted buffers we will always
-collect all of them in a single NAPI poll, no?. I just put them in the
-same order to be consistent.
-
-
-> If consider PCP 0 is high priority, that does make sense: 2 > 1 > 0.
-
-Sorry, now I'm confused. The PCP->Queue mapping is:
-
-0->1, 1->1, 2->1, 3->1
-4->2, 5->2, 6->2, 7->2
-
-A higher PCP value means higher priority, at least in 802.1Q/p. So the
-order should be 2 > 1 > 0 _not_ because PCP 0 is the highest prio, but
-because PCP 7 is, right?
-
-> >=20
-> > > Other logic seems fine, but you should run stress test to avoid any
-> > > block issue since the driver cover more than 20 imx platforms.
-> >=20
-> > I have run stress tests and I observe that we're dequeuing about as man=
-y
-> > packets from each queue when the incoming line is filled with 1/3 each =
-of
-> > untagged/tagged-pcp0/tagged-pcp7 traffic:
-> >=20
-> > root@envoy:~# ply -c "sleep 2" '
-> > t:net/napi_gro_receive_entry {
-> >     @[data->napi_id, data->queue_mapping] =3D count(); }'
-> > ply: active
-> > ply: deactivating
-> >=20
-> > @:
-> > { 66, 3 }: 165811
-> > { 66, 2 }: 167733
-> > { 66, 1 }: 169470
-> >=20
-> > It seems like this is due to "Receive flushing" not being enabled in th=
-e FEC. If I
-> > manually enable it for queue 0, processing is restricted to only queue =
-1 and 2:
-> >=20
-> > root@envoy:~# devmem 0x30be01f0 32 $((1 << 3)) root@envoy:~# ply -c
-> > "sleep 2" '
-> > t:net/napi_gro_receive_entry {
-> >     @[data->napi_id, data->queue_mapping] =3D count(); }'
-> > ply: active
-> > ply: deactivating
-> >=20
-> > @:
-> > { 66, 2 }: 275055
-> > { 66, 3 }: 275870
-> >=20
-> > Enabling flushing on queue 1, focuses all processing on queue 2:
+> Or, instead of the explicit "frag" action, make act_ct re-fragment it.
+> It would need to, somehow, push multiple skbs down the remaining
+> action pipe. It boils down to the above as well.
 >
-> Please don't enable flush, there have one IC issue.
-> NXP latest errata doc should includes the issue, but the flush issue was
-> fixed at imx8dxl platform.
-> >=20
-> > root@envoy:~# devmem 0x30be01f0 32 $((3 << 3)) root@envoy:~# ply -c
-> > "sleep 2" '
-> > t:net/napi_gro_receive_entry {
-> >     @[data->napi_id, data->queue_mapping] =3D count(); }'
-> > ply: active
-> > ply: deactivating
-> >=20
-> > @:
-> > { 66, 3 }: 545442
-> >=20
-> > Changing the default QoS settings feels like a separate change, but I c=
-an
-> > submit a v3 as a series if you want?
+>>>>
+>>>> When should use the act_fragament the action,  always before the act_mirred?
+>>> Which can be messy if you consider chains like: "mirred, push vlan,
+>>> mirred" or so. "frag, mirred, defrag, push vlan, frag, mirred".
+>> So you mean we should have a giant act_do_everything?
+> Not at all, but
 >
-> I think the version is fine. No need to submit separate change.
-> >=20
-> > I do not have access to a single-queue iMX device, would it be possible=
- for you
-> > to test this change on such a device?
+>> "Do one thing do it well" is exactly the philosophy of designing tc
+>> actions, if you are against this, you are too late in the game.
+> in this case a act_output_it_well could do it. ;-)
+agree, Maybe a act_output_ct action is better?
 >
-> Yes, I will do stress test on imx8 and legacy platform like imx6 with
-> single-queue,
-> try to avoid any block issue.
-> Thank you !
-
-Excellent, thank you!
+> Thanks,
+>   Marcelo
+>
