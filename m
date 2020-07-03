@@ -2,147 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2DEF213917
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 13:06:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47F7D213938
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 13:18:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726357AbgGCLG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 07:06:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726324AbgGCLG1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 07:06:27 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA0DC08C5E0
-        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 04:06:26 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id l2so32171536wmf.0
-        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 04:06:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=y81eMV6HsZOqLL6c1xuYsXbhUNOBcbUsGgBPDyFKgzg=;
-        b=gd8gAO8UDpxTYRl0sZn4kWJeCwGEMBxcVYS4QxJfzZ9Z7a6PS2EkXghtn42SdOPbO9
-         Lv0aIguI9URFJ/NdVQ1LSjkEv7oun7ZZpIEASsCzo8l2k2wXDEUf7hyXbYPXYx8p8c3G
-         iGEQRz/uFuBMMbZYzRrfiGdWDf0d+by8kzqOG1KOREwBu8d0D+nbod0P74qHg14A+48t
-         u4zaZrNkNsOV7fMf/DaBuNPBncf9dRCYdpT6o064KI5hFHbKvFZu3fqCzTIDH1Trt4H0
-         NjHpG4Va/DgI2BFoS3vl6JlgN6rspjHg064IGsxSyMHfasd2FRZXKB68RccVFAC0cJN6
-         pg5g==
+        id S1726352AbgGCLSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 07:18:51 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:58935 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726227AbgGCLSu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 07:18:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593775129;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VnNbDSyZiB0HaDH6CJ+U6VCjcauNgCOYO5OdcxEql90=;
+        b=cisMUDvT519712T5vbiOcVXOWYUHeL50qu/H4hsaIqDLQQTwLu8/OAnJSZgjsHVbjWJ/Dp
+        CCoS90j3aFP1MRWaoafFtv9cLSYS7X3g81Zv0en+UiBC1q7SFQRieGNy5mh6gxYyfIMzij
+        ZwsMcD1xPCnsXzwzwtP3VxIiNR7RAU4=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-269-QGDesds2N7uThacJdwaeaQ-1; Fri, 03 Jul 2020 07:18:47 -0400
+X-MC-Unique: QGDesds2N7uThacJdwaeaQ-1
+Received: by mail-qt1-f197.google.com with SMTP id l14so2200341qtr.2
+        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 04:18:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=y81eMV6HsZOqLL6c1xuYsXbhUNOBcbUsGgBPDyFKgzg=;
-        b=KYHZuuQhrnCcFPEogynlakQYUC/D4L93moH0LEKSo7MW7mnLSmArfS9prKsb2MC7jm
-         ldm+O+JapUmHQrW39Ykpdze7UQaKTNIlbC2ZseYm9SEfhWcuNntAEOjUV//KKDwgKaIc
-         48MJ/mqCRhR2aF9HftfjQKxzl88JbaJY/5FqpEY13Q2r1lBmgW+j0eiX5vbV+0/U6oXL
-         jLTwEOB/aqjNM2VSsPQM7ZSVyRqF+48Kbw7wbiJWQy8QJ70fXFMCuHPUXiq7/iXMt7DH
-         0kcCn77hmBIyE3nurkiuA89aISUK0iMOSa/3VcDy8gRl7otOiIWP60JqmEy5lsxE65c/
-         0Irg==
-X-Gm-Message-State: AOAM530/ZTWqvSoacfQxTelsrs3SNugskRPVSrGtGP433b8EnkzJHJcy
-        tWFDdFdkKn6qzv2X3LvcyJjvjw==
-X-Google-Smtp-Source: ABdhPJx5+hhbJDm2XrJujJyKTYGWkG0fawls1pBeitg1Zd5leR55VAdCRLM6oj6h+HEL1s7BJ19+tw==
-X-Received: by 2002:a1c:e18a:: with SMTP id y132mr35371489wmg.27.1593774385057;
-        Fri, 03 Jul 2020 04:06:25 -0700 (PDT)
-Received: from ?IPv6:2a01:e34:ed2f:f020:7019:4e9b:2970:f860? ([2a01:e34:ed2f:f020:7019:4e9b:2970:f860])
-        by smtp.googlemail.com with ESMTPSA id r12sm13373362wrc.22.2020.07.03.04.06.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Jul 2020 04:06:24 -0700 (PDT)
-Subject: Re: [PATCH 0/3] Fixes for stop monitoring disabled devices series
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        kernel@collabora.com
-References: <20200703104354.19657-1-andrzej.p@collabora.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <fc1bb7f5-2096-a604-8c30-81d34bf5b737@linaro.org>
-Date:   Fri, 3 Jul 2020 13:06:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=VnNbDSyZiB0HaDH6CJ+U6VCjcauNgCOYO5OdcxEql90=;
+        b=dbrkQUX5o/8aGZ5c0Fn5XH8iQ8Zu5nE7MJNdEvUowDdefJyY/Cf04q95a/L93drycY
+         uFjS/OLHAoG+D18jthfqe3jDhc9aFZsLIv4ojovWVtK+Mqhpu3BkLQGhvdWB7vGdTUV7
+         DWzo8ZBiwXgWBk1ZM5HLIKR+q8Kh+fEv9gU32H0hV7aY5c0GCKtHamJRg9MnkboWFyCh
+         eS6khrHR+leeVXm5EF/bsqRxtugwXRGp1RHiwjUnWC0abipRdV0bVw7P+A6NyFA48pIB
+         XsnenP1H/HP1gF0RM4pUYULxKKIeNQgk5k1cGJ10TgsoZxbWLiRnlJadYEt5wRdGcUNb
+         LoQw==
+X-Gm-Message-State: AOAM532KYdASwPmd+tpAy68n2q5MUR8vUDzssCvoqA0MddZ9c5pbciAt
+        mB6vKB3sQGNTnBRHDGJbhGUnJDHoibVwU8hrDoWN1OE9BmsYOK+OsLd3yhqmjz3bjmjVCSGMrzO
+        ekTpgioLWH2C3Ml7D
+X-Received: by 2002:ac8:4297:: with SMTP id o23mr35414869qtl.74.1593775126998;
+        Fri, 03 Jul 2020 04:18:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzR3OmpQC0Xa7GAi77/M9aOuWPvkRLcqu/FU0NnpYuzSBGofEM9/0NVuNOtdx9D3mZmwqWL8g==
+X-Received: by 2002:ac8:4297:: with SMTP id o23mr35414850qtl.74.1593775126794;
+        Fri, 03 Jul 2020 04:18:46 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id q28sm11633046qtk.13.2020.07.03.04.18.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jul 2020 04:18:45 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 0573E1828E4; Fri,  3 Jul 2020 13:18:43 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        torvalds@linux-foundation.org
+Cc:     davem@davemloft.net, daniel@iogearbox.net, ebiederm@xmission.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 0/3] bpf: Populate bpffs with map and prog iterators
+In-Reply-To: <20200702200329.83224-1-alexei.starovoitov@gmail.com>
+References: <20200702200329.83224-1-alexei.starovoitov@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 03 Jul 2020 13:18:43 +0200
+Message-ID: <878sg0etik.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200703104354.19657-1-andrzej.p@collabora.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/07/2020 12:43, Andrzej Pietrasiewicz wrote:
-> This short series contains fixes for "Stop monitoring disabled devices"
-> series https://www.spinics.net/lists/arm-kernel/msg817861.html
-> 
-> Invocation of thermal_zone_device_is_enabled() in acpi/thermal is now
-> redundant, because thermal_zone_device_update() now is capable of
-> handling disabled devices.
-> 
-> In imx's ->get_temp() the lock must not be taken, otherwise a deadlock
-> happens. The decision whether explicitly running a measurement cycle
-> is needed is taken based on driver's local irq_enabled variable.
-> 
-> Finally, thermal_zone_device_is_enabled() is made available to the
-> core only, as there are no driver users of it.
-> 
-> Andrzej Pietrasiewicz (3):
->   acpi: thermal: Don't call thermal_zone_device_is_enabled()
->   thermal: imx: Use driver's local data to decide whether to run a
->     measurement
->   thermal: Make thermal_zone_device_is_enabled() available to core only
-> 
->  drivers/acpi/thermal.c         | 3 ---
->  drivers/thermal/imx_thermal.c  | 7 ++++---
->  drivers/thermal/thermal_core.c | 1 -
->  drivers/thermal/thermal_core.h | 2 ++
->  include/linux/thermal.h        | 5 -----
->  5 files changed, 6 insertions(+), 12 deletions(-)
+> The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
+> maps, load two BPF programs, attach them to BPF iterators, and finally send two
+> bpf_link IDs back to the kernel.
+> The kernel will pin two bpf_links into newly mounted bpffs instance under
+> names "progs" and "maps". These two files become human readable.
+>
+> $ cat /sys/fs/bpf/progs
+>   id name            pages attached
+>   11    dump_bpf_map     1 bpf_iter_bpf_map
+>   12   dump_bpf_prog     1 bpf_iter_bpf_prog
+>   27 test_pkt_access     1
+>   32       test_main     1 test_pkt_access test_pkt_access
+>   33   test_subprog1     1 test_pkt_access_subprog1 test_pkt_access
+>   34   test_subprog2     1 test_pkt_access_subprog2 test_pkt_access
+>   35   test_subprog3     1 test_pkt_access_subprog3 test_pkt_access
+>   36 new_get_skb_len     1 get_skb_len test_pkt_access
+>   37 new_get_skb_ifi     1 get_skb_ifindex test_pkt_access
+>   38 new_get_constan     1 get_constant test_pkt_access
 
-Is this series easily merge-able with the other series?
+Do the iterators respect namespace boundaries? Or will I see all
+programs/maps on the host if I cat the file inside a container?
 
+> Few interesting observations:
+> - though bpffs comes with two human readble files "progs" and "maps" they
+>   can be removed. 'rm -f /sys/fs/bpf/progs' will remove bpf_link and kernel
+>   will automatically unload corresponding BPF progs, maps, BTFs.
 
+Is there any way to get the files back if one does this by mistake
+(other than re-mounting the bpffs)?
 
+-Toke
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
