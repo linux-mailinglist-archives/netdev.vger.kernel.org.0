@@ -2,111 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF9FB213230
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 05:29:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55A4A213238
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 05:30:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726194AbgGCD2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 23:28:22 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:33630 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726152AbgGCD2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 23:28:22 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 3 Jul 2020 06:28:16 +0300
-Received: from dev-l-vrt-136.mtl.labs.mlnx (dev-l-vrt-136.mtl.labs.mlnx [10.234.136.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0633SGM9006803;
-        Fri, 3 Jul 2020 06:28:16 +0300
-Received: from dev-l-vrt-136.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7) with ESMTP id 0633SG5b006669;
-        Fri, 3 Jul 2020 06:28:16 +0300
-Received: (from moshe@localhost)
-        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7/Submit) id 0633SGC2006668;
-        Fri, 3 Jul 2020 06:28:16 +0300
-From:   Moshe Shemesh <moshe@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Vladyslav Tarasiuk <vladyslavt@mellanox.com>
-Subject: [PATCH net-next v2 7/7] net/mlx5e: Move devlink-health rx and tx reporters to devlink port
-Date:   Fri,  3 Jul 2020 06:27:38 +0300
-Message-Id: <1593746858-6548-8-git-send-email-moshe@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1593746858-6548-1-git-send-email-moshe@mellanox.com>
-References: <1593746858-6548-1-git-send-email-moshe@mellanox.com>
+        id S1726121AbgGCDag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 23:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55008 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726033AbgGCDag (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 23:30:36 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C710C08C5C1;
+        Thu,  2 Jul 2020 20:30:36 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id z24so10179193ljn.8;
+        Thu, 02 Jul 2020 20:30:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fMHCiIT2igJGwMje+1cDDRM9eOFHpROEjGTjyJAQ6UA=;
+        b=cUvReugxvHXq0NF/DEFSRH0pIuBN+80rWrWaSAF7RBrmx6Mbd4uL+mrZjbd0Xm9JJK
+         lA5tx3QnaRgImf5ANt03B1zmXajLL+nrRpsl7Nun+p90uzzfOx0RnWw98J9vrYNaxSY6
+         HrXixvE7OL2pbIxsHdBlrv4DIPAl87Ev/o+qoddTCv9LYvmcyQsCbG8a31LbIN4PaWux
+         Ana6knxghyN7RbLSKA+Ne56q7bhtB+lzGwiWde7sbYHVK1dIZIlZfKlVI6wyZpw7OLxJ
+         QzCJaB5Mb0GBTW5CdofhfILZO9i0Z3upiST3DVEBZMK5phveLbBe+KQdBPzK5FE4sU4S
+         14oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fMHCiIT2igJGwMje+1cDDRM9eOFHpROEjGTjyJAQ6UA=;
+        b=qhfTYrI4f8VsZUgOUulAuC/5SND0SEWVNX14bchd0f1O9uQ65BLEvqKcnqYnyh2XdQ
+         wZCapi82kbjxor1sshtCa7au2Hz8y+O0rIllmbz09gVcLadjZcaDv/Ex1PU5r0KLcvU4
+         TRurMO2YHmAa1bdBBu+TL8hKJH2cxZjVCzMev/MVV0awXs7mbxHaVHQB8jfpeILa8QBx
+         j9DF9siqPnQaMANwqgjXItKv8kLDLpWI+p/9LE+Aa7y7zlDWRJOHcA2R0mquxqUvAg64
+         bxiK9vVymYvjcJcGepjpg8tP2lTZC42Vf5NWeQtQE3YqAhaBguBLfNu+fqZe4ztftAHE
+         AYpQ==
+X-Gm-Message-State: AOAM530NwgscnPfRWXqDhH+Nw0iXCZCevjxAzayi0Rwx+rpg21tTF6nQ
+        jJg2YfsMYXxAzUCc+IoVhB5J0xJXdyKGqXL9CLk=
+X-Google-Smtp-Source: ABdhPJwvHXVhM286nvN0jfNw6TZ+YFd2D9K4jSUIJiWaOqcFEKj0X5NIE6+LEvJwNzZX0SI9kMNnV4zB7OhTcSTuTiM=
+X-Received: by 2002:a2e:8ec8:: with SMTP id e8mr8364149ljl.51.1593747034572;
+ Thu, 02 Jul 2020 20:30:34 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200703024537.79971-1-songliubraving@fb.com>
+In-Reply-To: <20200703024537.79971-1-songliubraving@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 2 Jul 2020 20:30:23 -0700
+Message-ID: <CAADnVQK+7MrnvjowvuNzBJFp9i7L8WK_Zi_9y=+dtaRC6BzXAw@mail.gmail.com>
+Subject: Re: [bpf-next] bpf: fix build without CONFIG_STACKTRACE
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladyslav Tarasiuk <vladyslavt@mellanox.com>
+On Thu, Jul 2, 2020 at 7:45 PM Song Liu <songliubraving@fb.com> wrote:
+>
+> Without CONFIG_STACKTRACE stack_trace_save_tsk() is not defined. Let
+> get_callchain_entry_for_task() to always return NULL in such cases.
+>
+> Fixes: fa28dcb82a38 ("bpf: Introduce helper bpf_get_task_stack()")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
 
-Utilize new devlink-health port reporters API to move rx and tx
-reporters from device to port.
-
-Signed-off-by: Vladyslav Tarasiuk <vladyslavt@mellanox.com>
-Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c |  9 +++------
- drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c | 13 ++++---------
- 2 files changed, 7 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-index c209579..35df79d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-@@ -565,13 +565,10 @@ void mlx5e_reporter_icosq_cqe_err(struct mlx5e_icosq *icosq)
- 
- int mlx5e_reporter_rx_create(struct mlx5e_priv *priv)
- {
--	struct devlink *devlink = priv_to_devlink(priv->mdev);
- 	struct devlink_health_reporter *reporter;
- 
--	reporter = devlink_health_reporter_create(devlink,
--						  &mlx5_rx_reporter_ops,
--						  MLX5E_REPORTER_RX_GRACEFUL_PERIOD,
--						  priv);
-+	reporter = devlink_port_health_reporter_create(&priv->dl_port, &mlx5_rx_reporter_ops,
-+						       MLX5E_REPORTER_RX_GRACEFUL_PERIOD, priv);
- 	if (IS_ERR(reporter)) {
- 		netdev_warn(priv->netdev, "Failed to create rx reporter, err = %ld\n",
- 			    PTR_ERR(reporter));
-@@ -586,5 +583,5 @@ void mlx5e_reporter_rx_destroy(struct mlx5e_priv *priv)
- 	if (!priv->rx_reporter)
- 		return;
- 
--	devlink_health_reporter_destroy(priv->rx_reporter);
-+	devlink_port_health_reporter_destroy(priv->rx_reporter);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-index 9805fc0..917aef9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-@@ -409,14 +409,9 @@ int mlx5e_reporter_tx_timeout(struct mlx5e_txqsq *sq)
- int mlx5e_reporter_tx_create(struct mlx5e_priv *priv)
- {
- 	struct devlink_health_reporter *reporter;
--	struct mlx5_core_dev *mdev = priv->mdev;
--	struct devlink *devlink;
--
--	devlink = priv_to_devlink(mdev);
--	reporter =
--		devlink_health_reporter_create(devlink, &mlx5_tx_reporter_ops,
--					       MLX5_REPORTER_TX_GRACEFUL_PERIOD,
--					       priv);
-+
-+	reporter = devlink_port_health_reporter_create(&priv->dl_port, &mlx5_tx_reporter_ops,
-+						       MLX5_REPORTER_TX_GRACEFUL_PERIOD, priv);
- 	if (IS_ERR(reporter)) {
- 		netdev_warn(priv->netdev,
- 			    "Failed to create tx reporter, err = %ld\n",
-@@ -432,5 +427,5 @@ void mlx5e_reporter_tx_destroy(struct mlx5e_priv *priv)
- 	if (!priv->tx_reporter)
- 		return;
- 
--	devlink_health_reporter_destroy(priv->tx_reporter);
-+	devlink_port_health_reporter_destroy(priv->tx_reporter);
- }
--- 
-1.8.3.1
-
+Applied. Thanks
