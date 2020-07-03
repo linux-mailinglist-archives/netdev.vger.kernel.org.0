@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46C74213298
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 06:09:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C239E213299
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 06:09:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726139AbgGCEJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 00:09:32 -0400
+        id S1726145AbgGCEJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 00:09:45 -0400
 Received: from mail-eopbgr80059.outbound.protection.outlook.com ([40.107.8.59]:59118
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725294AbgGCEJb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jul 2020 00:09:31 -0400
+        id S1725960AbgGCEJp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jul 2020 00:09:45 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TuND2T4HjIw2a86FFktHzA4OcC7+UfL+iZ8LRD/ptaZuR8485hsRzM+mDW1ckNrmclNUSbE6vhEceRSAYz9nwqqhyQlZ+E4pMHAAM5vrn1aneJrs0w+KBF4qBvrgb/jV1O4n0W3DdlX3ZALfhyCK9GQ9sXQJ1SdmZsnahkpBinw+xVyiKXDWhVNyrEvjMCluCxqX43M34sPBSCjazp9a/BqUGeV09Wgl232WdmG9+rd9tB5TJ8nseUcHuOHfKpsC8zoUY71DKu8JkrnCDSEbpnSQwxFdQKUtzbXzKnYXxBynt970atgW3nRq5Fv+doBe3vHqgezZokZBA5esb7gyCw==
+ b=YAomLqEhS1t/wxTjA90+JXipW7GA4vbHbu5IEN2pbEIzl6dyMQYrI+1nuVQQY65fXtBEyg0pRLBmGK91EftONvR5wMoXmpNmwKF+yQIk5+6q4sH1Spg6gG7u28dDwqE2TnSXYXkZ6oCuh+e+n2RsHA2fO4f50+dfYCtwhEGxQ1qHVbx3IjngP3IxugrohrxjOpylojPMwL2itDEGLC8jVn1DBhflkyDQyPWeWhdM+FLHS0dzL4FimPiE/phN5pEWqvYZJ0GNOXgqIFW0M2nDhAq/qJmwACDHx0jVrkXRJtRRmVa80txUUtGJ/LNArswNizAWuCJ9XDgJuQ6vVuQspg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oJriQAZqrXirNVjZg2tmSril3yBmZ2DXUDW4kjpJGRI=;
- b=oWZ3dAGYwAkyh9/ndZulLxMpOAzV+9BKBkTdhWYkjBenfQshJv/Id6mP7TGenlC7v30k+XVbljeMNx0BQHPHawStutTLrhTlD3g4yCx7m8shJL+0H1vofRefdU24AGys+jbW7hSm8o02J8fnCrid04loFVWHAO51grocAzsyZOYt/60tz1EIcS7I+ZEAUEifq8RVkJLNjdcc78KACLe22DaZxXQYIKiOq9YkHjK46xDdqpcgGf6DPHqKdw9tqm0PucivsdiJJsSBU/NNENiTU/GsF0GzjKsImFF83gg+Rvf4JKbFkMZ3v+bz8vPK69m1L4CWaOhPJX/V0pG3F9Umsg==
+ bh=PO1cR2KLkCfppH66uYpbdhDIpkuQE1L1Rxkc2+pg5yI=;
+ b=L+w5B8oJZPH0M6fSzaVWzsmFMM8VnK108cJkkNbUWiXCuZ8xBWyGcsaC50ZsZUWZJ5inkdGRkws+3I7cd2xts32Nd4xGtp0chDV0SgXIo+xcGdERiBmnjU4hqL2ZqXG9xotFeNKzSD95JgPlav2SMLqHny62EQs4CNUky7Glay8FIblT9FfCUgYcYpNJfXNAPIuprR4JjXrs7cY6Y0t5rCHRXk+RB6Sa6jLgr3Ee+QjERSOdwRzokgZEHyCdq+y/o8i0J/bjXinnw9pxi3jF+AnWrTbwqQAsfHpO1jQV02MzqjPm7ngDkKLc5E+UVnFwMS8WDJiWUElDmlh1WhCMmQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oJriQAZqrXirNVjZg2tmSril3yBmZ2DXUDW4kjpJGRI=;
- b=JTX1XgwYQoHKHx9SPFGfEKbP3dY6jWIzkZfr3MSgijFZjpnuqN9MGCARrRWyY6zrD6y7DtQHBpkkHP7TmpcROeoQG1yPSkFGMpnS8GEh0d9gpPOYwF361qbl6MH+EK92d14kv/nt1rOhM0Rx3y8aKh5OyB4TVC6yma7AUffC6L0=
+ bh=PO1cR2KLkCfppH66uYpbdhDIpkuQE1L1Rxkc2+pg5yI=;
+ b=Som7qh2p7GYprv4pka+iJeQZrcELTDi86jiVKwgvcMWKW8SQuGI1bEX0qkgZCnmzBZ+NXpWzwYCdZS3N2/2l2zE0DhLnYBKaMO2dSGRGPp291KbeXhbhqiHjB94cXS3VUQsRWJkPvannTajIhyNNHyDVk0nwO62nA+SnnvFmChk=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB5534.eurprd05.prod.outlook.com (2603:10a6:803:9c::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.28; Fri, 3 Jul
- 2020 04:09:16 +0000
+ 2020 04:09:18 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3153.023; Fri, 3 Jul 2020
- 04:09:16 +0000
+ 04:09:18 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Aya Levin <ayal@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 06/12] net/mlx5e: Add helper to get RQ WQE's head
-Date:   Thu,  2 Jul 2020 21:08:26 -0700
-Message-Id: <20200703040832.670860-7-saeedm@mellanox.com>
+Subject: [net-next 07/12] net/mlx5e: Add helper to get the RQ WQE counter
+Date:   Thu,  2 Jul 2020 21:08:27 -0700
+Message-Id: <20200703040832.670860-8-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200703040832.670860-1-saeedm@mellanox.com>
 References: <20200703040832.670860-1-saeedm@mellanox.com>
@@ -55,32 +55,32 @@ X-ClientProxiedBy: BYAPR01CA0065.prod.exchangelabs.com (2603:10b6:a03:94::42)
  To VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR01CA0065.prod.exchangelabs.com (2603:10b6:a03:94::42) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.24 via Frontend Transport; Fri, 3 Jul 2020 04:09:14 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR01CA0065.prod.exchangelabs.com (2603:10b6:a03:94::42) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.24 via Frontend Transport; Fri, 3 Jul 2020 04:09:16 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: f3b14d34-3b02-49cb-91a6-08d81f06d9db
+X-MS-Office365-Filtering-Correlation-Id: 892cf6ed-aba5-48be-2b01-08d81f06daf4
 X-MS-TrafficTypeDiagnostic: VI1PR05MB5534:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB5534818BBA6F2679403BBC15BE6A0@VI1PR05MB5534.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2089;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB55341FB4CE1EDE03FCB3CCECBE6A0@VI1PR05MB5534.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2150;
 X-Forefront-PRVS: 045315E1EE
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: a2EeJPEIUJSzD7FF9hj89TYQv+2HTSraTeeXkV1ZCPr2xzlLwEFSxNpjdwmua+SC8xdC6O1JwZDWGRqeKyQ1cXlm8mNe0xAwvz+GJY2qNVbAPV6uvTOopLfokJhceEu6Ve9S2pBYRZ/fqIBZe5Iv+WLcPnwOnE/3sw2AKZYfOYaGJ07EXhIewkjA9QP7K16PS6bWHQSR2Hgn94ILj8EDWuE9cvg487SHPk8CxLxmvQEa91rdaYpEXsOKtZIJJobEylyAjwxFuxxAVz1SYeN1PictJwN5sI60EXJd13ULglyISnSjpOo63bdvEJy2hWaELQrZ/ivj/eWgf6hdUvgpnIIXRRf9yDvlLY1Go4GPBz1lCSCFvEnabW6sPBZ4jiD0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(366004)(39860400002)(396003)(136003)(376002)(6486002)(107886003)(26005)(16526019)(186003)(2906002)(1076003)(6512007)(83380400001)(86362001)(66556008)(66476007)(36756003)(66946007)(956004)(2616005)(5660300002)(6666004)(478600001)(4326008)(8936002)(6506007)(8676002)(52116002)(110136005)(54906003)(316002)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 5TH8G4a/0hDvjoGx5exF8pbcvZYvcqbR64jppEZKo7Xr/aAm62CzhG2uQ+FLXCL55utlEaYNj1RHtTdZPgC/gJH2M9NmzyquDKm9l2NuEc72lL3/2hRpMDHYee+PLs4ScGDGdT4IPKWmAerKXqXv7GKUKcVdWbxfOFiph2hkf6DRbg1yQxkTPwk0sdpI2y5Fu1Kc18lF0/k4ZMG0JAd66ILAcecZhcWqT+1KQhl11xib+bdfwLC8NOTwBxUT2iy9dppPJCk5ILSyuPmawigz+u2O8McHG6E01jLfWcMIpVq4WfONNsR6ql63hBGQl0SfKB3KLpGB3DNqkwtxAasiGgbsSDgjDfKduzp0Hk0Tt2YehnMSc+UjU0YeMJVsxOEwXn3eEDl8utTmWUDP4FBmJuF5t3whQMwUSpcM/zMNviJYlWYSuoec3y0s6VRgPCXZBZb4NmW64xc+jwk2fR/gG0weY9fmT4YAyzax3hk0oEo=
+X-Microsoft-Antispam-Message-Info: SyEsIa6IuTug09xO26LgOiAuJZvuS96zrwWaUfHkpRlCZbxfPX8ujvEQc/0fWMFP/Gi0EnceWdHVceIAC19GpoCx4FWQWP7NPft/96QX68cmqV4m8HOb07afxDr3ZsPmq7JaWSz4Fpwk+KFg5HGvbYxXFg4xdOKgVLm5phJS0bxdvhgaREJIeNCePV2YvcP4GuxyRQ9xfEKtFto89AJqcc3THZ3ZJw8Od1ywldKcif06WjCegyTZeZ497A4X7jY7nt551LSYkBfqLi3VvCFW7eHw9vhKw0rh8VLfRxsAXxkh4Nae/PaqCM/hhe+3JpVt9+mzq1A1KGCIdMnXUixVaEAB602FBwQUh3dwDyx9y87qdkNAfIxZc4QBCAIeBrskPgrh949+GL7J6moHJOUsSQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(366004)(39860400002)(396003)(136003)(376002)(6486002)(107886003)(26005)(16526019)(186003)(2906002)(1076003)(6512007)(86362001)(66556008)(66476007)(36756003)(66946007)(956004)(2616005)(5660300002)(6666004)(478600001)(4326008)(8936002)(6506007)(8676002)(52116002)(110136005)(54906003)(316002)(54420400002)(15583001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: UkgK+8xemD48b4uEehpzdpfx9xAOUgVQYr+DdzmL7ERkLVPCqXo5Zx58axu0/0w5BuXiq3+gvEarsJSGCO7ZOdBi/H/C2ekzLKtZBni1cXcAvEAhAwOlEyZ9m97bCy9HDLkv7KIXFx6AICqUiVcZxnQpuxyzvcnAXxuN/fJVh5nT0PjPa41xDvpR8GCnde4Oiw65clFw7USpRHoA0CSodR5688DzOLuFqS36wcJysMEOrtseFaOZGVRwxV5Ppv7G7JJIW25+DDvIlSBJTvxyTH0toF1zggElDOs+/wnJWfTxMGviFP1xPg4hw0DhT2iqn2cpzQdPOXt4DFMwEuNC5meTS3kEHiMS1q+Cdnh6KDkEXIFDmj9WP/76eZ3cPoe25gfjGAdiyRkpz5Vj3T0L+C2h/X5uL0EJzHbpDsdEHwSbhMd9rLQIlzc/Lj+xzWnpvJAonsSCzGH0b9oVQz33d24a9zPZ/ZFZlEkaWMM/12A=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3b14d34-3b02-49cb-91a6-08d81f06d9db
+X-MS-Exchange-CrossTenant-Network-Message-Id: 892cf6ed-aba5-48be-2b01-08d81f06daf4
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2020 04:09:16.0134
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2020 04:09:17.8493
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: isX4HL+PWU5IwiNJfeDxzA+7J8mVkskcN487qPi4w9lTg1iNN6tECbdjXptNXKhwpPdbC56jhVqvdzv/o3XPIg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: L8pjLyjKMXhB7c6kPtY0som3FvX/DaAslfpspK3MidxKLnJ36R34wV4S0GOEjPrbtJwFX0ufLPuXCIrgOHOpog==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5534
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -89,62 +89,77 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@mellanox.com>
 
-Add helper which retrieves the RQ WQE's head. Use this helper in RX
-reporter diagnose callback.
+Add a helper which retrieves the RQ's WQE counter. Use this helper in
+the RX reporter diagnose callback.
+
+$ devlink health diagnose pci/0000:00:0b.0 reporter rx
+Common config:
+  RQ:
+     type: 2 stride size: 2048 size: 8
+     CQ:
+      stride size: 64 size: 1024
+RQs:
+   channel ix: 0 rqn: 2113 HW state: 1 SW state: 5 WQE counter: 7 posted WQEs: 7 cc: 7 ICOSQ HW state: 1
+   CQ:
+    cqn: 1032 HW status: 0
+   channel ix: 1 rqn: 2118 HW state: 1 SW state: 5 WQE counter: 7 posted WQEs: 7 cc: 7 ICOSQ HW state: 1
+   CQ:
+    cqn: 1036 HW status: 0
 
 Signed-off-by: Aya Levin <ayal@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/reporter_rx.c   |  5 +----
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h      | 10 ++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/wq.h           |  4 ++++
- 3 files changed, 15 insertions(+), 4 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/reporter_rx.c  |  6 ++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h     | 10 ++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/wq.h          | 11 +++++++++++
+ 3 files changed, 27 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-index bfdf9c185f02..f0e639ef4ec5 100644
+index f0e639ef4ec5..bec804295c52 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-@@ -181,7 +181,6 @@ static int mlx5e_rx_reporter_build_diagnose_output(struct mlx5e_rq *rq,
- 						   struct devlink_fmsg *fmsg)
- {
+@@ -183,6 +183,7 @@ static int mlx5e_rx_reporter_build_diagnose_output(struct mlx5e_rq *rq,
  	struct mlx5e_priv *priv = rq->channel->priv;
--	struct mlx5e_params *params;
  	struct mlx5e_icosq *icosq;
  	u8 icosq_hw_state;
++	u16 wqe_counter;
  	int wqes_sz;
-@@ -189,7 +188,6 @@ static int mlx5e_rx_reporter_build_diagnose_output(struct mlx5e_rq *rq,
+ 	u8 hw_state;
  	u16 wq_head;
- 	int err;
- 
--	params = &priv->channels.params;
- 	icosq = &rq->channel->icosq;
- 	err = mlx5e_query_rq_state(priv->mdev, rq->rqn, &hw_state);
- 	if (err)
-@@ -200,8 +198,7 @@ static int mlx5e_rx_reporter_build_diagnose_output(struct mlx5e_rq *rq,
- 		return err;
+@@ -199,6 +200,7 @@ static int mlx5e_rx_reporter_build_diagnose_output(struct mlx5e_rq *rq,
  
  	wqes_sz = mlx5e_rqwq_get_cur_sz(rq);
--	wq_head = params->rq_wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ ?
--		  rq->mpwqe.wq.head : mlx5_wq_cyc_get_head(&rq->wqe.wq);
-+	wq_head = mlx5e_rqwq_get_head(rq);
+ 	wq_head = mlx5e_rqwq_get_head(rq);
++	wqe_counter = mlx5e_rqwq_get_wqe_counter(rq);
  
  	err = devlink_fmsg_obj_nest_start(fmsg);
  	if (err)
+@@ -220,6 +222,10 @@ static int mlx5e_rx_reporter_build_diagnose_output(struct mlx5e_rq *rq,
+ 	if (err)
+ 		return err;
+ 
++	err = devlink_fmsg_u32_pair_put(fmsg, "WQE counter", wqe_counter);
++	if (err)
++		return err;
++
+ 	err = devlink_fmsg_u32_pair_put(fmsg, "posted WQEs", wqes_sz);
+ 	if (err)
+ 		return err;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-index ed9e0b8a6f9e..d787e8fc2e99 100644
+index d787e8fc2e99..cf425a60cddc 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-@@ -304,6 +304,16 @@ static inline u32 mlx5e_rqwq_get_cur_sz(struct mlx5e_rq *rq)
+@@ -314,6 +314,16 @@ static inline u16 mlx5e_rqwq_get_head(struct mlx5e_rq *rq)
  	}
  }
  
-+static inline u16 mlx5e_rqwq_get_head(struct mlx5e_rq *rq)
++static inline u16 mlx5e_rqwq_get_wqe_counter(struct mlx5e_rq *rq)
 +{
 +	switch (rq->wq_type) {
 +	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
-+		return mlx5_wq_ll_get_head(&rq->mpwqe.wq);
++		return mlx5_wq_ll_get_counter(&rq->mpwqe.wq);
 +	default:
-+		return mlx5_wq_cyc_get_head(&rq->wqe.wq);
++		return mlx5_wq_cyc_get_counter(&rq->wqe.wq);
 +	}
 +}
 +
@@ -152,17 +167,31 @@ index ed9e0b8a6f9e..d787e8fc2e99 100644
  
  struct mlx5e_swp_spec {
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/wq.h b/drivers/net/ethernet/mellanox/mlx5/core/wq.h
-index 4cadc336593f..27dece35df7e 100644
+index 27dece35df7e..e5c4dcd1425e 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/wq.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/wq.h
-@@ -290,4 +290,8 @@ static inline void mlx5_wq_ll_update_db_record(struct mlx5_wq_ll *wq)
- 	*wq->db = cpu_to_be32(wq->wqe_ctr);
+@@ -172,6 +172,11 @@ static inline int mlx5_wq_cyc_cc_bigger(u16 cc1, u16 cc2)
+ 	return !equal && !smaller;
  }
  
-+static inline u16 mlx5_wq_ll_get_head(struct mlx5_wq_ll *wq)
++static inline u16 mlx5_wq_cyc_get_counter(struct mlx5_wq_cyc *wq)
 +{
-+	return wq->head;
++	return wq->wqe_ctr;
 +}
++
+ static inline u32 mlx5_cqwq_get_size(struct mlx5_cqwq *wq)
+ {
+ 	return wq->fbc.sz_m1 + 1;
+@@ -294,4 +299,10 @@ static inline u16 mlx5_wq_ll_get_head(struct mlx5_wq_ll *wq)
+ {
+ 	return wq->head;
+ }
++
++static inline u16 mlx5_wq_ll_get_counter(struct mlx5_wq_ll *wq)
++{
++	return wq->wqe_ctr;
++}
++
  #endif /* __MLX5_WQ_H__ */
 -- 
 2.26.2
