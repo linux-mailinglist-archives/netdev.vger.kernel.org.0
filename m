@@ -2,88 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D8BC2130E0
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 03:17:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE7A21310E
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 03:48:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbgGCBRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 21:17:17 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:6812 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725937AbgGCBRQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jul 2020 21:17:16 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 7CA99D6A1D543C57A24F;
-        Fri,  3 Jul 2020 09:17:15 +0800 (CST)
-Received: from [10.174.178.86] (10.174.178.86) by smtp.huawei.com
- (10.3.19.210) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 3 Jul 2020
- 09:17:10 +0800
-Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
-To:     Roman Gushchin <guro@fb.com>, Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Cameron Berkenpas <cam@neo-zeon.de>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
-        =?UTF-8?Q?Dani=c3=abl_Sonck?= <dsonck92@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Tejun Heo <tj@kernel.org>
-References: <459be87d-0272-9ea9-839a-823b01e354b6@huawei.com>
- <35480172-c77e-fb67-7559-04576f375ea6@huawei.com>
- <CAM_iQpXpZd6ZaQyQifWOHSnqgAgdu1qP+fF_Na7rQ_H1vQ6eig@mail.gmail.com>
- <20200623222137.GA358561@carbon.lan>
- <b3a5298d-3c4e-ba51-7045-9643c3986054@neo-zeon.de>
- <CAM_iQpU1ji2x9Pgb6Xs7Kqoh3mmFRN3R9GKf5QoVUv82mZb8hg@mail.gmail.com>
- <20200627234127.GA36944@carbon.DHCP.thefacebook.com>
- <CAM_iQpWk4x7U_ci1WTf6BG=E3yYETBUk0yxMNSz6GuWFXfhhJw@mail.gmail.com>
- <20200630224829.GC37586@carbon.dhcp.thefacebook.com>
- <CAM_iQpWRsuFE4NRhGncihK8UmPoMv1tEHMM0ufWxVCaP9pdTQg@mail.gmail.com>
- <20200702160242.GA91667@carbon.dhcp.thefacebook.com>
-From:   Zefan Li <lizefan@huawei.com>
-Message-ID: <42baf0f8-627b-0ab8-72fc-12d24667ad0a@huawei.com>
-Date:   Fri, 3 Jul 2020 09:17:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1726575AbgGCBsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 21:48:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55784 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726032AbgGCBr7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jul 2020 21:47:59 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 276AC20A8B;
+        Fri,  3 Jul 2020 01:47:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593740879;
+        bh=LDkRLQ5xEO9aZ+6739gpj69NY4R6YuBsiwYeEKh3x/Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VIkoh2oJ3eARk4mGb8OIBwJIeqhEONX6JCk3kJXG/DnsMG5B0YPscJe9BJDOUlFSo
+         Bp6EpRxKhQifGflI/iRc5zsJ+CZ8ULgQba2ZcBVLRRAkBA/JcifCcuIzQFBOf23eSI
+         O53A3/6V3/IqIceS0Yk7Dl/qlsDA7xZvw3pNp1S0=
+Date:   Thu, 2 Jul 2020 18:47:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Ron Diskin <rondi@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [net 02/11] net/mlx5e: Fix multicast counter not up-to-date in
+ "ip -s"
+Message-ID: <20200702184757.7d3b1216@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200702221923.650779-3-saeedm@mellanox.com>
+References: <20200702221923.650779-1-saeedm@mellanox.com>
+        <20200702221923.650779-3-saeedm@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20200702160242.GA91667@carbon.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="gbk"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.86]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/7/3 0:02, Roman Gushchin wrote:
-> On Wed, Jul 01, 2020 at 09:48:48PM -0700, Cong Wang wrote:
->> On Tue, Jun 30, 2020 at 3:48 PM Roman Gushchin <guro@fb.com> wrote:
->>>
->>> Btw if we want to backport the problem but can't blame a specific commit,
->>> we can always use something like "Cc: <stable@vger.kernel.org>    [3.1+]".
->>
->> Sure, but if we don't know which is the right commit to blame, then how
->> do we know which stable version should the patch target? :)
->>
->> I am open to all options here, including not backporting to stable at all.
+On Thu,  2 Jul 2020 15:19:14 -0700 Saeed Mahameed wrote:
+> From: Ron Diskin <rondi@mellanox.com>
 > 
-> It seems to be that the issue was there from bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup"),
-> so I'd go with it. Otherwise we can go with 5.4+, as I understand before that it was
-> hard to reproduce it.
+> Currently the FW does not generate events for counters other than error
+> counters. Unlike ".get_ethtool_stats", ".ndo_get_stats64" (which ip -s
+> uses) might run in atomic context, while the FW interface is non atomic.
+> Thus, 'ip' is not allowed to issue fw commands, so it will only display
+> cached counters in the driver.
 > 
+> Add a SW counter (mcast_packets) in the driver to count rx multicast
+> packets. The counter also counts broadcast packets, as we consider it a
+> special case of multicast.
+> Use the counter value when calling "ip -s"/"ifconfig".  Display the new
+> counter when calling "ethtool -S", and add a matching counter
+> (mcast_bytes) for completeness.
 
-Actually I think it should be very easy to reproduce the bug.
+What is the problem that is being solved here exactly?
 
-suppose default cgroup and netcls cgroup are mounted in /cgroup/default and
-/cgroup/netcls respectively, and then:
+Device counts mcast wrong / unsuitably?
 
-1. mkdir /cgroup/default/sub1
-2. mkdir /cgroup/default/sub2
-3. attach some tasks into sub1/ and sub2/
-4. attach bpf program to sub1/ and sub2/ # get bpf refcnt for those cgroups
-5. echo 1 > /cgroup/netcls/classid       # this will disable cgroup_sk_alloc
-6. kill all tasks in sub1/ and sub2/
-7. rmdir sub1/ sub2/
-
-The last step will deref bpf for the default root cgroup instead of sub1/
-and sub2/, and should trigger the bug.
-
-FYI I never use bpf, so I might be wrong.
+> Fixes: f62b8bb8f2d3 ("net/mlx5: Extend mlx5_core to support ConnectX-4 Ethernet functionality")
+> Signed-off-by: Ron Diskin <rondi@mellanox.com>
+> Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
