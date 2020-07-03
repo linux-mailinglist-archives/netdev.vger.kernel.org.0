@@ -2,177 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85E5621344B
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 08:38:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C94213452
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 08:39:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbgGCGiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 02:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55534 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725764AbgGCGiy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 02:38:54 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C811FC08C5C1
-        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 23:38:53 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id j18so30817609wmi.3
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 23:38:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eorUmfUDMZcNbxM4Fi+PFLp5IkxH/y0wJ21yqWKUjto=;
-        b=TW3k/K6sgcyOzEJs1rw4KfmOe6mN35kwzPQC2F/IgbreSFQA8LXxI7YB4jg768YPf/
-         qlg1GD44Sj2mlQxBQfGEjhGX+c1yfO9Z2Mc+s3nSyOkzpJAHcbxMv5x83AFf4RMl33Gm
-         yETeAQpLmJArPgsTWZB5qQKZ8Av/jgJcSZrGjUH26ysjAUnp1x07PQ8p12XuVcqaQK5X
-         GMh0+9HUQqJoYLlyJFUBhedpmjHLeeAZnlpCjwpSz8Hl1wDM4IBIpPuTU1aSgw+6hhf5
-         PQOMSuzQnnW914bYoIpCxkKUDZ3G876lD7uO8p49b0PgquhyTREZXOsoMzsDs/Eo5jcO
-         p6mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eorUmfUDMZcNbxM4Fi+PFLp5IkxH/y0wJ21yqWKUjto=;
-        b=RBi9mP7CNFo9ogx20FgXRNhr1PrekT/1iFKnkCjbYpxupdqt7jvmkLLzn6klzEo0EV
-         B9Z46KJ0D6+JsKaFoF8fgxBrwU3IBiAgBJy+UOrcXdq9xJ/34vt8D1hmoyUGnEonEVvW
-         MazTvU4BE1mIzI4a2CbwS/2m2QS+m8KhSXq52MTA+apFs4/yUoYzy8dLviNPtSJN4NJY
-         fX8yVp7BM44rS52WZf+fWArA/qYu9NspsNFTkN2BVBHM/6nW9hY29t1LcoChcTWN9f6f
-         N3o7srDSJy+tYKJ1ywN/mTgq+bHzutzMevQPdE/MpMk+aL7/fbgYVFVtnZePpnjFE4s8
-         CHMA==
-X-Gm-Message-State: AOAM530iPacxPE6PPosXDDpQorWYfCTyacS68xV0X3+rau+gUyUzuc8B
-        EuC9qqebX3t840Ihne78Dn1msA==
-X-Google-Smtp-Source: ABdhPJwx/dU/vear+SglZ3FxU9XUXFqcn8iwzYeLZYSHOLOaUd4iFi5d4+vvIppL6IdFuFPEJc4a0g==
-X-Received: by 2002:a1c:7311:: with SMTP id d17mr24326224wmb.60.1593758332203;
-        Thu, 02 Jul 2020 23:38:52 -0700 (PDT)
-Received: from ?IPv6:2a01:e34:ed2f:f020:7019:4e9b:2970:f860? ([2a01:e34:ed2f:f020:7019:4e9b:2970:f860])
-        by smtp.googlemail.com with ESMTPSA id 65sm13709437wre.6.2020.07.02.23.38.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jul 2020 23:38:51 -0700 (PDT)
-Subject: Re: [PATCH v7 00/11] Stop monitoring disabled devices
-To:     Zhang Rui <rui.zhang@intel.com>,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
+        id S1726364AbgGCGjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 02:39:05 -0400
+Received: from smtp.al2klimov.de ([78.46.175.9]:60148 "EHLO smtp.al2klimov.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726053AbgGCGjE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jul 2020 02:39:04 -0400
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by smtp.al2klimov.de (Postfix) with ESMTPA id CEA5DBC146;
+        Fri,  3 Jul 2020 06:38:53 +0000 (UTC)
+Subject: Re: [PATCH] Replace HTTP links with HTTPS ones: BPF (Safe dynamic
+ programs and tools)
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        kernel@collabora.com
-References: <20200629122925.21729-1-andrzej.p@collabora.com>
- <aab40d90-3f72-657c-5e14-e53a34c4b420@linaro.org>
- <3d03d1a2-ac06-b69b-93cb-e0203be62c10@collabora.com>
- <47111821-d691-e71d-d740-e4325e290fa4@linaro.org>
- <be9b7ee3-cad0-e462-126d-08de9b226285@collabora.com>
- <4353a939-3f5e-8369-5bc0-ad8162b5ffc7@linaro.org>
- <a531d80f-afd1-2dec-6c77-ed984e97595c@collabora.com>
- <db1ff4e1-cbf8-89b3-5d64-b91a1fd88a41@linaro.org>
- <73942aea-ae79-753c-fe90-d4a99423d548@collabora.com>
- <374dddd9-b600-3a30-d6c3-8cfcefc944d9@linaro.org>
- <5a28deb7-f307-8b03-faad-ab05cb8095d1@collabora.com>
- <8aeb4f51-1813-63c1-165b-06640af5968f@linaro.org>
- <685ef627-e377-bbf1-da11-7f7556ca2dd7@collabora.com>
- <d41bf28f-ee91-6946-2334-f11ec81f96fe@linaro.org>
- <44c622dd7de8c7bf143c4435c0edd1b98d09a3d6.camel@intel.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <58265668-fc6d-729a-c126-0c73c2ea853b@linaro.org>
-Date:   Fri, 3 Jul 2020 08:38:48 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>
+References: <20200702200516.13324-1-grandmaster@al2klimov.de>
+ <CAADnVQKaL7cX2oCFLU7MW+CMf4ySbJf3tC3YqajDxgbuPCY-Cg@mail.gmail.com>
+From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Message-ID: <b06e1efb-b2e6-b06b-bf24-1369c42e8ace@al2klimov.de>
+Date:   Fri, 3 Jul 2020 08:38:52 +0200
 MIME-Version: 1.0
-In-Reply-To: <44c622dd7de8c7bf143c4435c0edd1b98d09a3d6.camel@intel.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAADnVQKaL7cX2oCFLU7MW+CMf4ySbJf3tC3YqajDxgbuPCY-Cg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: +
+X-Spam-Level: *
+Authentication-Results: smtp.al2klimov.de;
+        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/07/2020 03:49, Zhang Rui wrote:
-> On Thu, 2020-07-02 at 19:49 +0200, Daniel Lezcano wrote:
 
-[ ... ]
 
->>> So the reason is that ->get_temp() is called while the mutex is
->>> held and
->>> thermal_zone_device_is_enabled() wants to take the same mutex.
+Am 03.07.20 um 00:08 schrieb Alexei Starovoitov:
+> On Thu, Jul 2, 2020 at 1:05 PM Alexander A. Klimov
+> <grandmaster@al2klimov.de> wrote:
 >>
->> Yes, that's correct.
+>> Rationale:
+>> Reduces attack surface on kernel devs opening the links for MITM
+>> as HTTPS traffic is much harder to manipulate.
 >>
->>> Is adding a comment to thermal_zone_device_is_enabled() to never
->>> call
->>> it while the mutex is held and adding another version of it which
->>> does
->>> not take the mutex ok?
+>> Deterministic algorithm:
+>> For each file:
+>>    If not .svg:
+>>      For each line:
+>>        If doesn't contain `\bxmlns\b`:
+>>          For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
+>>            If both the HTTP and HTTPS versions
+>>            return 200 OK and serve the same content:
+>>              Replace HTTP with HTTPS.
 >>
->> The thermal_zone_device_is_enabled() is only used in two places, acpi
->> and this imx driver, and given:
+>> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+>> ---
+>>   Continuing my work started at 93431e0607e5.
 >>
->> 1. as soon as the mutex is released, there is no guarantee the
->> thermal
->> zone won't be changed right after, the lock is pointless, thus the
->> information also.
+>>   If there are any URLs to be removed completely or at least not HTTPSified:
+>>   Just clearly say so and I'll *undo my change*.
+>>   See also https://lkml.org/lkml/2020/6/27/64
 >>
->> 2. from a design point of view, I don't see why a driver should know
->> if
->> a thermal zone is disabled or not
+>>   If there are any valid, but yet not changed URLs:
+>>   See https://lkml.org/lkml/2020/6/26/837
 >>
->> It would make sense to end with this function and do not give the
->> different drivers an opportunity to access this information.
+>>   Documentation/bpf/bpf_devel_QA.rst          | 4 ++--
+>>   Documentation/bpf/index.rst                 | 2 +-
+>>   Documentation/networking/af_xdp.rst         | 2 +-
+>>   Documentation/networking/filter.rst         | 2 +-
+>>   arch/x86/net/bpf_jit_comp.c                 | 2 +-
+>>   include/linux/bpf.h                         | 2 +-
+>>   include/linux/bpf_verifier.h                | 2 +-
+>>   include/uapi/linux/bpf.h                    | 2 +-
+>>   kernel/bpf/arraymap.c                       | 2 +-
+>>   kernel/bpf/core.c                           | 2 +-
+>>   kernel/bpf/disasm.c                         | 2 +-
+>>   kernel/bpf/disasm.h                         | 2 +-
+>>   kernel/bpf/hashtab.c                        | 2 +-
+>>   kernel/bpf/helpers.c                        | 2 +-
+>>   kernel/bpf/syscall.c                        | 2 +-
+>>   kernel/bpf/verifier.c                       | 2 +-
+>>   kernel/trace/bpf_trace.c                    | 2 +-
+>>   lib/test_bpf.c                              | 2 +-
+>>   net/core/filter.c                           | 2 +-
+>>   samples/bpf/lathist_kern.c                  | 2 +-
+>>   samples/bpf/lathist_user.c                  | 2 +-
+>>   samples/bpf/sockex3_kern.c                  | 2 +-
+>>   samples/bpf/tracex1_kern.c                  | 2 +-
+>>   samples/bpf/tracex2_kern.c                  | 2 +-
+>>   samples/bpf/tracex3_kern.c                  | 2 +-
+>>   samples/bpf/tracex3_user.c                  | 2 +-
+>>   samples/bpf/tracex4_kern.c                  | 2 +-
+>>   samples/bpf/tracex4_user.c                  | 2 +-
+>>   samples/bpf/tracex5_kern.c                  | 2 +-
+>>   tools/include/uapi/linux/bpf.h              | 2 +-
+>>   tools/lib/bpf/bpf.c                         | 2 +-
+>>   tools/lib/bpf/bpf.h                         | 2 +-
+>>   tools/testing/selftests/bpf/test_maps.c     | 2 +-
+>>   tools/testing/selftests/bpf/test_verifier.c | 2 +-
+>>   34 files changed, 35 insertions(+), 35 deletions(-)
 > 
-> I agree.
->>
->> Why not add change_mode for the acpi in order to enable or disable
->> the
->> events
+> Nacked-by: Alexei Starovoitov <ast@kernel.org>
 > 
-> thermal_zone_device_is_enabled() is invoked in acpi thermal driver
-> because we only want to do thermal_zone_device_update() when the acpi
-> thermal zone is enabled.
+> Pls don't touch anything bpf related with such changes.
+https://lore.kernel.org/linux-doc/20200526060544.25127-1-grandmaster@al2klimov.de/
+– merged.
+
+https://lore.kernel.org/linux-doc/20200608181649.74883-1-grandmaster@al2klimov.de/
+– applied.
+
+https://lore.kernel.org/linux-doc/20200620075402.22347-1-grandmaster@al2klimov.de/
+– applied.
+
+https://lore.kernel.org/linux-doc/20200621133512.46311-1-grandmaster@al2klimov.de/
+– applied.
+
+https://lore.kernel.org/linux-doc/20200621133552.46371-1-grandmaster@al2klimov.de/
+– applied.
+
+https://lore.kernel.org/linux-doc/20200621133630.46435-1-grandmaster@al2klimov.de/
+– applied.
+
+https://lore.kernel.org/linux-doc/20200627103050.71712-1-grandmaster@al2klimov.de/
+– applied.
+
+https://lore.kernel.org/linux-doc/20200627103125.71828-1-grandmaster@al2klimov.de/
+– reviewed.
+
+https://lore.kernel.org/linux-doc/20200627103151.71942-1-grandmaster@al2klimov.de/
+– reviewed.
+
+This one – no, pls not.
+
+Why exactly not? Are these URLs not being opened at all (What they're 
+doing there then?) or have all who open them the HTTPS everywhere 
+browser addon installed?
+
 > 
-> As thermal_zone_device_update() can handle a disabled thermal zone now,
-> we can just remove the check.
-
-Ah yes, good point!
-
-
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
