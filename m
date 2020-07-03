@@ -2,94 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBDB02132DE
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 06:25:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 433612132E6
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 06:32:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725978AbgGCEZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 00:25:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57064 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725294AbgGCEZO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jul 2020 00:25:14 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 649D72067D;
-        Fri,  3 Jul 2020 04:25:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593750313;
-        bh=iyHe/pIZbRw4Jk11QNz9sdmCGjg9dh9AI7GKzExHdQ4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mvUE4GuWdIQ3ZG59OdAw41ylkoXV9042XGAGRrCuDeXDVumBlBrr+6XqGpjRpbPjr
-         YT6vbXDpzOoE3xytrf2T6cIIeq1LbrHXwPgMsY/SUetvlXY7Lc7LHrqY1Gg/7jnwi2
-         fQvOuj8khqlx0iEI5zOhJ9+fpqTf01jqnxo64hb4=
-Date:   Thu, 2 Jul 2020 21:25:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     Tariq Toukan <tariqt@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ron Diskin <rondi@mellanox.com>
-Subject: Re: [net 02/11] net/mlx5e: Fix multicast counter not up-to-date in
- "ip -s"
-Message-ID: <20200702212511.1fcbbb26@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <3b7c4d436e55787fff3d8d045478dd4c08ba1d19.camel@mellanox.com>
-References: <20200702221923.650779-1-saeedm@mellanox.com>
-        <20200702221923.650779-3-saeedm@mellanox.com>
-        <20200702184757.7d3b1216@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3b7c4d436e55787fff3d8d045478dd4c08ba1d19.camel@mellanox.com>
+        id S1725968AbgGCEcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 00:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725648AbgGCEcP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 00:32:15 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A55C08C5C1;
+        Thu,  2 Jul 2020 21:32:14 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id q8so31211396iow.7;
+        Thu, 02 Jul 2020 21:32:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=ZrqaGeIV7JcQYbYQPx6QK/8ocSgakcVhj4omU7ByHzE=;
+        b=TlyiPcoTjguDZ6RfPOkeLZTg0AXhK+9Q1s6Lc3e3zMSooG9WRBj+gKsr3VXC8KtAir
+         hoO4aV9dhkdVo6YV581s8hng7uxD+bm6I3QeefGKkgmsLl0KlGq/I9Rzd1JqgGpwEVzH
+         lokCJyjqaZxTyS8dxdGfa0ppzsqJHxU/MzEvcLmcrFlHX6tSmgN3S1762FLPForVEqGz
+         wYO2AIQRkbmHe1VmskayaaOm4ZGz1PIe7kVpeL2Si1odOqDWBYuMzgYA8mKDilbYPI5x
+         QwKtNcBoM3g+cpnuVNAsHeTghQcU6M7qriusVYQ+IP3x9yO5BwVtX0KGZ9w3uf3Q3djw
+         U6BA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=ZrqaGeIV7JcQYbYQPx6QK/8ocSgakcVhj4omU7ByHzE=;
+        b=fs2PDW8G2IqnBz6IJGl4KZ8U/lZrdqyS73vFI2CGFAMg3Dl/I7QSKFUnk8Swu4//8K
+         WrshOVahIZZvYnBuwHv8UDloo+dpyqDqpqDTtlTxnF+cDU+PZKLW+LZKtZD44OJPsFWm
+         U3AULAtkElFendwzfatBP+wkxG0atprhmE7obGtGmizGb+aDg5hP9kGKGTZH+G4h3eVJ
+         UxTktD70g0438Mo9qDWBhPeSYam6wHgL8Q8boyUKd4ANuE0GumX6jWfgLRhA/9XGizmw
+         FYge0RqTfiaW0xvA9Un1it27ANaGiHbVaYrSk80bZdmhM4M8kjbOuKDjBTstFGYCn+ul
+         bGEw==
+X-Gm-Message-State: AOAM532tNK4lW9je0cmjzdLaz1CXONKS8g9KYMnSwvgmFPWBdV2pW5PH
+        8YnTOdmmfSa9/Kf44NASlHY=
+X-Google-Smtp-Source: ABdhPJzoyB0aa8z+8JinyotD1ciZshsW1GYEJvA5wUyWnRyGkR7j0Eib5tq8GVRKLwDiywJFRHxsqQ==
+X-Received: by 2002:a05:6638:223:: with SMTP id f3mr37580442jaq.144.1593750734090;
+        Thu, 02 Jul 2020 21:32:14 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id w16sm5712219iom.27.2020.07.02.21.32.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jul 2020 21:32:13 -0700 (PDT)
+Subject: [bpf-next PATCH v2] bpf: fix bpftool without skeleton code enabled
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     yhs@fb.com, andriin@fb.com, ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        john.fastabend@gmail.com
+Date:   Thu, 02 Jul 2020 21:31:59 -0700
+Message-ID: <159375071997.14984.17404504293832961401.stgit@john-XPS-13-9370>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 3 Jul 2020 03:45:45 +0000 Saeed Mahameed wrote:
-> On Thu, 2020-07-02 at 18:47 -0700, Jakub Kicinski wrote:
-> > On Thu,  2 Jul 2020 15:19:14 -0700 Saeed Mahameed wrote:  
-> > > From: Ron Diskin <rondi@mellanox.com>
-> > > 
-> > > Currently the FW does not generate events for counters other than
-> > > error
-> > > counters. Unlike ".get_ethtool_stats", ".ndo_get_stats64" (which ip
-> > > -s
-> > > uses) might run in atomic context, while the FW interface is non
-> > > atomic.
-> > > Thus, 'ip' is not allowed to issue fw commands, so it will only
-> > > display
-> > > cached counters in the driver.
-> > > 
-> > > Add a SW counter (mcast_packets) in the driver to count rx
-> > > multicast
-> > > packets. The counter also counts broadcast packets, as we consider
-> > > it a
-> > > special case of multicast.
-> > > Use the counter value when calling "ip -s"/"ifconfig".  Display the
-> > > new
-> > > counter when calling "ethtool -S", and add a matching counter
-> > > (mcast_bytes) for completeness.  
-> > 
-> > What is the problem that is being solved here exactly?
-> > 
-> > Device counts mcast wrong / unsuitably?
-> >   
-> 
-> To read mcast counter we need to execute FW command which is blocking,
-> we can't block in atomic context .ndo_get_stats64 :( .. we have to
-> count in SW. 
-> 
-> the previous approach wasn't accurate as we read the mcast counter in a
-> background thread triggered by the previous read.. so we were off by
-> the interval between two reads.
+Fix segfault from bpftool by adding emit_obj_refs_plain when skeleton
+code is disabled.
 
-And that's bad enough to cause trouble? What's the worst case time
-delta you're seeing?
+Tested by deleting BUILD_BPF_SKELS in Makefile. We found this doing
+backports for Cilium when a testing image pulled in latest bpf-next
+bpftool, but kept using an older clang-7.
 
-> > > Fixes: f62b8bb8f2d3 ("net/mlx5: Extend mlx5_core to support
-> > > ConnectX-4 Ethernet functionality")
-> > > Signed-off-by: Ron Diskin <rondi@mellanox.com>
-> > > Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
-> > > Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>  
+# ./bpftool prog show
+Error: bpftool built without PID iterator support
+3: cgroup_skb  tag 7be49e3934a125ba  gpl
+        loaded_at 2020-07-01T08:01:29-0700  uid 0
+Segmentation fault
+
+Reported-by: Joe Stringer <joe@wand.net.nz>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+---
+ tools/bpf/bpftool/pids.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/bpf/bpftool/pids.c b/tools/bpf/bpftool/pids.c
+index 2709be4de2b1..7d5416667c85 100644
+--- a/tools/bpf/bpftool/pids.c
++++ b/tools/bpf/bpftool/pids.c
+@@ -19,6 +19,7 @@ int build_obj_refs_table(struct obj_refs_table *table, enum bpf_obj_type type)
+ 	return -ENOTSUP;
+ }
+ void delete_obj_refs_table(struct obj_refs_table *table) {}
++void emit_obj_refs_plain(struct obj_refs_table *table, __u32 id, const char *prefix) {}
+ 
+ #else /* BPFTOOL_WITHOUT_SKELETONS */
+ 
 
