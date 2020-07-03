@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FDF32141F0
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 01:32:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 270242141F2
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 01:32:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726786AbgGCXbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 19:31:23 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:41994 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726734AbgGCXbX (ORCPT
+        id S1726803AbgGCXbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 19:31:24 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:34903 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726760AbgGCXbX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 19:31:23 -0400
-Received: by mail-il1-f198.google.com with SMTP id d3so22902959ilq.9
+Received: by mail-il1-f199.google.com with SMTP id v12so1795604ilg.2
         for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 16:31:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=1FVZSI38k+r7N936rJZJCbZSeRBHiWCkBYP7utlD/mE=;
-        b=TAtM8YItzoCsZAKzfCE2xBFo2S3zbP1wDcA8bRX2iaR500/uxS4m3ccpdBqgu9Wj6L
-         px5i46HRNHfRqGXYTIFc/NQE+hwcDkciYeKyMGY2zlX2iauw3CHDQp/G3FLagOBv/B7e
-         xfyiwaTa1tl/3ffKpLqOYOkHWFGqImrvWK+Vd+1Uincn69OZOp4lgwoGBlB8M+dNc5x8
-         CP7KOw2nnvto2cc2lv42yMc0PZmvYytibiWwifX/j/sa0xKgha8F/znOhIpCoILrnq4U
-         SFsppYeWVRGUs59uRTt0VNlTSJ4IcjACpktbX1AGh2NvnHtoDrj/xEEWs/2u8cRZ6jTE
-         D4/A==
-X-Gm-Message-State: AOAM531ZeVkXn2WW3oNkCer0ulZRfwmrJgd78GnFfloJm/f0M9AmUj99
-        v4LEWVK4D+ZUKL5L0kLXiH+AOF8Zc+EEHxv2Xa/IKzHD78xo
-X-Google-Smtp-Source: ABdhPJzAPIf2FeB+Lv0kxOJprK3Lg+OofkJ1FbJr9zoRaY2DLnWTYsQepJEUCuT6BkTcHOgfYx/FB0n4TprdQf718bQIb+Ud1CtF
+        bh=H0iGMpy4exjQVL4rDbP48TGrJhUE2zdneUofNpOKNJo=;
+        b=k8rH4DDYzuWCNQew3CR/fFpqgVEbj/TmS3NEpQfIrMz00QJbCPf+5Cjjevui1ALYAG
+         wtS0uKUYMnIOqN8hzQTfQLu7emXd53BzRcl7T1K3gnf0xQ5TXlYracCudcGJGJGv5mbe
+         bnhlXXP78PXThrIyEpmCrSnrCn70sIopOnTfHEf4C+udxKf+Yf/I+8AaXBhnyIz3DrAs
+         JwY9MQ+FA7qi1dz++dmrZruTDKEmwHSEmCgQnysATmC+gvyNtlkLR5Ec/QTqTchISwTq
+         Qv01KBlCNJjbf131S7AYK2vqNyI+szyr+dLDuDFoHlaNr01DYpe6gsord5Z6O3sq8kMG
+         3kuQ==
+X-Gm-Message-State: AOAM533+wThtr9DDN+8p1OaNLykl3TR41YMcHre2LQ3+jpeOz/vNUTrE
+        a8evJfuMrAWmik4rgJEcRLEsmwAMfk+6KbNJKBP1Vj4N0N5b
+X-Google-Smtp-Source: ABdhPJwgp0BiqIyuN6PjAHbTrpNVwKpT0IHdyDfLXfIrqnoHWXq5bT1Z3SZQTUTpFNsrg+dyNeHgiiehR2y/e/mITjWfO/hJ7OkG
 MIME-Version: 1.0
-X-Received: by 2002:a92:50f:: with SMTP id q15mr20502891ile.38.1593819082087;
+X-Received: by 2002:a92:c7c3:: with SMTP id g3mr20035625ilk.164.1593819082292;
  Fri, 03 Jul 2020 16:31:22 -0700 (PDT)
 Date:   Fri, 03 Jul 2020 16:31:22 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000039638605a991eca7@google.com>
-Subject: WARNING in rxrpc_recvmsg
-From:   syzbot <syzbot+1a68d5c4e74edea44294@syzkaller.appspotmail.com>
+Message-ID: <0000000000003c861205a991ec2c@google.com>
+Subject: kernel BUG at net/rxrpc/recvmsg.c:LINE!
+From:   syzbot <syzbot+b54969381df354936d96@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, dhowells@redhat.com, kuba@kernel.org,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
@@ -48,42 +48,37 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    cd77006e Merge tag 'hyperv-fixes-signed' of git://git.kern..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=134c490f100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7be693511b29b338
-dashboard link: https://syzkaller.appspot.com/bug?extid=1a68d5c4e74edea44294
+HEAD commit:    aab20039 Add linux-next specific files for 20200701
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=17a00a5b100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=739f6fbf326049f4
+dashboard link: https://syzkaller.appspot.com/bug?extid=b54969381df354936d96
 compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1176e39b100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144c9e6d100000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17ee0fe5100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12ea774b100000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+1a68d5c4e74edea44294@syzkaller.appspotmail.com
+Reported-by: syzbot+b54969381df354936d96@syzkaller.appspotmail.com
 
 ------------[ cut here ]------------
-DEBUG_LOCKS_WARN_ON(lock->magic != lock)
-WARNING: CPU: 0 PID: 11007 at kernel/locking/mutex.c:1415 mutex_trylock+0x220/0x2c0 kernel/locking/mutex.c:1415
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 11007 Comm: syz-executor947 Not tainted 5.8.0-rc3-syzkaller #0
+kernel BUG at net/rxrpc/recvmsg.c:605!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 6856 Comm: syz-executor134 Not tainted 5.8.0-rc3-next-20200701-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:rxrpc_recvmsg+0x18ab/0x1a03 net/rxrpc/recvmsg.c:605
+Code: 89 e7 e8 58 39 6b fa e9 eb fc ff ff e8 4e 39 6b fa e9 33 ef ff ff 48 8b 7c 24 10 e8 3f 39 6b fa e9 dc ee ff ff e8 35 a4 2b fa <0f> 0b 48 8b 7c 24 10 e8 29 39 6b fa e9 76 ee ff ff 48 89 ef e8 0c
+RSP: 0018:ffffc90001637858 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff8880a182c278 RCX: ffffffff874835d7
+RDX: ffff888096f4c000 RSI: ffffffff8748473b RDI: 0000000000000001
+RBP: ffff888096ffe740 R08: 0000000000000000 R09: ffff8880a182c327
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
+R13: ffff8880a182c080 R14: 0000000000000000 R15: ffff8880a182c320
+FS:  00007f23bbcf5700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000006da0f0 CR3: 000000009ec2f000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:231
- __warn.cold+0x20/0x45 kernel/panic.c:600
- report_bug+0x1bd/0x210 lib/bug.c:198
- handle_bug+0x38/0x90 arch/x86/kernel/traps.c:235
- exc_invalid_op+0x13/0x40 arch/x86/kernel/traps.c:255
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:563
-RIP: 0010:mutex_trylock+0x220/0x2c0 kernel/locking/mutex.c:1415
-Code: 08 84 d2 0f 85 99 00 00 00 8b 3d cb 07 c8 02 85 ff 0f 85 6a fe ff ff 48 c7 c6 60 9c 4b 88 48 c7 c7 20 9a 4b 88 e8 82 77 5e f9 <0f> 0b e9 50 fe ff ff ff 74 24 38 48 8d 7b 68 45 31 c9 31 c9 41 b8
-RSP: 0018:ffffc90008757818 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: ffff888093a14378 RCX: 0000000000000000
-RDX: ffff8880924b61c0 RSI: ffffffff815d4f47 RDI: fffff520010eaef5
-RBP: ffff888093a14000 R08: 0000000000000000 R09: ffffffff89bb5ba3
-R10: 000000000000059f R11: 0000000000000001 R12: ffffffff8c90d1a0
-R13: ffff888093a14340 R14: 0000000000000000 R15: ffff888093a14538
- rxrpc_recvmsg+0x695/0x1a03 net/rxrpc/recvmsg.c:593
  sock_recvmsg_nosec net/socket.c:886 [inline]
  sock_recvmsg net/socket.c:904 [inline]
  sock_recvmsg net/socket.c:900 [inline]
@@ -96,16 +91,29 @@ R13: ffff888093a14340 R14: 0000000000000000 R15: ffff888093a14538
  __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2810
  do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x447b79
+RIP: 0033:0x446899
 Code: Bad RIP value.
-RSP: 002b:00007fdf4e75dce8 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
-RAX: ffffffffffffffda RBX: 00000000006dcc48 RCX: 0000000000447b79
-RDX: 0000000000000001 RSI: 0000000020000100 RDI: 0000000000000004
-RBP: 00000000006dcc40 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dcc4c
-R13: 00007ffc658e40ef R14: 00007fdf4e75e9c0 R15: 20c49ba5e353f7cf
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+RSP: 002b:00007f23bbcf4d98 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
+RAX: ffffffffffffffda RBX: 00000000006dbc38 RCX: 0000000000446899
+RDX: 0000000000000001 RSI: 0000000020000100 RDI: 0000000000000003
+RBP: 00000000006dbc30 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dbc3c
+R13: 0000000000000007 R14: 0000000100000110 R15: 0000000000000018
+Modules linked in:
+---[ end trace abf499f6a2f7b5ae ]---
+RIP: 0010:rxrpc_recvmsg+0x18ab/0x1a03 net/rxrpc/recvmsg.c:605
+Code: 89 e7 e8 58 39 6b fa e9 eb fc ff ff e8 4e 39 6b fa e9 33 ef ff ff 48 8b 7c 24 10 e8 3f 39 6b fa e9 dc ee ff ff e8 35 a4 2b fa <0f> 0b 48 8b 7c 24 10 e8 29 39 6b fa e9 76 ee ff ff 48 89 ef e8 0c
+RSP: 0018:ffffc90001637858 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff8880a182c278 RCX: ffffffff874835d7
+RDX: ffff888096f4c000 RSI: ffffffff8748473b RDI: 0000000000000001
+RBP: ffff888096ffe740 R08: 0000000000000000 R09: ffff8880a182c327
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
+R13: ffff8880a182c080 R14: 0000000000000000 R15: ffff8880a182c320
+FS:  00007f23bbcf5700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000006da0f0 CR3: 000000009ec2f000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
 ---
