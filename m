@@ -2,195 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAD10213B85
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 16:10:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A861213B86
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 16:11:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726324AbgGCOKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 10:10:22 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28524 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726035AbgGCOKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 10:10:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593785417;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/ebRijBQATYSDEWCLKpsWiFDOCYjmt1IWcFHzoBixqE=;
-        b=PwnEfosBLio2RBufcCp3J435duoXtVNQ4qZztufStRWSFAn+P8ZRWrBQHFr8MhLVAl29TI
-        UuHUzhx5djwAxwH25CahW2wMTYvBNi/xhgzmWBIua4DNCTki66FN92rDSUeO7EkJNzCpwS
-        j/c+VOUKpL18sO8+7oAzNJhl6CTucA8=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-206-eAvyyTRcOs-FPATbToD2mw-1; Fri, 03 Jul 2020 10:10:13 -0400
-X-MC-Unique: eAvyyTRcOs-FPATbToD2mw-1
-Received: by mail-wm1-f69.google.com with SMTP id e15so35003630wme.8
-        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 07:10:12 -0700 (PDT)
+        id S1726376AbgGCOLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 10:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726035AbgGCOLD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 10:11:03 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729DEC08C5C1
+        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 07:11:03 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id q7so23902241ljm.1
+        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 07:11:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:organization;
+        bh=IYbfdjHjpIB0MZpMz9LAbI31Jl9BdKszNIeScgKue38=;
+        b=pOyF66QFsLCeO4sK7nndPcYACcCXiukHiuHdImpsSKu+dLQHm9uOw7Vvz2wrKw1v7r
+         ngX7vQe97IMqo3lu77LhGqDVS1cnPOQ0gnp6qsJ2K+QN5fJaSGPT0p7Njqwz9FDAXSpB
+         LPWyW9tE/SwngeJyHCB9M/XnmYZVGWdZLVqdAGFcKSVyyjjDkFOP/hDQpSURh+Vg9oXJ
+         ibtsFt6+Kvw9vFFtQZBVqFvmvc4w3eELfqH3tm0ekbnCgaLBQw9666B4HEK7BQwwPWNE
+         zRBabD8s3mSxkbdN+XXHzsKxAQAJx3EvtedgPVHEXuQ5T0eKoAsPboyNnwLORB1BBcdn
+         b1ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/ebRijBQATYSDEWCLKpsWiFDOCYjmt1IWcFHzoBixqE=;
-        b=jHkDTeFUlHxTCTg8UJ6Fd/aol4V7nsO27Q4nYj5lWHUzPsYhWuY+jvPzoSdn8toBjW
-         g2wiLxdNESqI8UhOMt4WJu9xspyRpAGdsyCYsLfI4GG3sDIml1vs/WzZMWV3GNMYe2aj
-         iVnMePSYErDHYZExOqZQMwbQvBg4gbap0UgWePgMXl29uHlbLVrpbQtvarq5NrFsJazK
-         T2x0sxWX47Gio7c4evlCOYMX6XIC+dky58U4wbX9L2T8f+rKoKkn/t9gV6vBO08OdL5e
-         h40G1EEDGOP3q3Lkogd7t72k80G2w1d/8S7WxWPGaVlQ3SQYf++R6xPHpCeJMZesFpea
-         g44w==
-X-Gm-Message-State: AOAM533URdaR6rZNYBujJOwzhIN4p30f7Y1zETaXsy3BEKUd9s6+LosF
-        94lGd9rXZwRCJSu2fNTnAUU62ocN7t96AtDj7Ih1AJcnZgRThtMbd+8UeocWWVtqe0qc9sq+l/f
-        M+1nToy0L+0KTQal0
-X-Received: by 2002:a5d:6987:: with SMTP id g7mr36631629wru.79.1593785411823;
-        Fri, 03 Jul 2020 07:10:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyHX6Bp00bVK6KVzpUCW97N/dOtpfkG/01UM49qTtOjIlbCNVkIjoyz9PaR1xMKn2ZgfcDwug==
-X-Received: by 2002:a5d:6987:: with SMTP id g7mr36631597wru.79.1593785411546;
-        Fri, 03 Jul 2020 07:10:11 -0700 (PDT)
-Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
-        by smtp.gmail.com with ESMTPSA id e8sm14420110wrp.26.2020.07.03.07.10.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Jul 2020 07:10:10 -0700 (PDT)
-Subject: Re: [PATCH] brcmfmac: expose firmware config files through modinfo
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Matthias Brugger <mbrugger@suse.com>, matthias.bgg@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Chung-Hsien Hsu <stanley.hsu@cypress.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Double Lo <double.lo@cypress.com>,
-        Frank Kao <frank.kao@cypress.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
-        netdev@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Saravanan Shanmugham <saravanan.shanmugham@cypress.com>,
-        brcm80211-dev-list@cypress.com, linux-kernel@vger.kernel.org,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Soeren Moch <smoch@web.de>
-References: <20200701153123.25602-1-matthias.bgg@kernel.org>
- <338e3cff-dfa0-c588-cf53-a160d75af2ee@redhat.com>
- <1013c7e6-f1fb-af0c-fe59-4d6cd612f959@suse.com>
- <35066b13-9fe2-211d-2ba8-5eb903b46bf7@redhat.com>
- <ba8c2bfa-3f50-512e-e28c-a47896e5c242@gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <bb56e702-3d4c-a089-0499-de79cb6db879@redhat.com>
-Date:   Fri, 3 Jul 2020 16:10:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-In-Reply-To: <ba8c2bfa-3f50-512e-e28c-a47896e5c242@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:organization;
+        bh=IYbfdjHjpIB0MZpMz9LAbI31Jl9BdKszNIeScgKue38=;
+        b=gbs0MyM2k1EdQ2gZHjSqjyA7P0+8l0BSgTIrzSZGZnYY1VPHkvqLWxbobH7/FqxLTN
+         fuYb+RhssbSCpGSBEZ720rLKaZr+Xd9XilR/Uzb3dwKgPWkI/uX4Xv9rfe2/+jkl46SO
+         m9R7p9YIx97gRvKlHrn+yCT8HeI2+aMaFvfiwss1bvbi+6MCqyhYPKaujlKP/3sIqKrS
+         cdgkiUkRleV/FGXYY7nTIU/a0e+nNh23gUAWToHeuki9dxmgaTaq28wHrsvWG2JR9W/o
+         BG9DLe3p0u4WPinQ+ZeHLBJr6cyYij1VJQ3eKshvCtTFWk4AQ3uuYh32YDXBz8VvXv2Q
+         DEGg==
+X-Gm-Message-State: AOAM5315RsSD1ICbuvk95F8jBpwJHfk7bpleTq11H4Y7L20ZA9zJE9bF
+        cRaEwlz6/ghW2iFrNCHOPELKeA==
+X-Google-Smtp-Source: ABdhPJxhD+ySJ87udsMvERRNuEp76TaCwO1RWBjbdn6mZ2WFBXIDAqOvgNhqlR/tEstaBRym48BzSA==
+X-Received: by 2002:a2e:8216:: with SMTP id w22mr13510587ljg.2.1593785461882;
+        Fri, 03 Jul 2020 07:11:01 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id f22sm4134305ljn.66.2020.07.03.07.11.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jul 2020 07:11:01 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, fugang.duan@nxp.com
+Subject: [PATCH v3 net] net: ethernet: fec: prevent tx starvation under high rx load
+Date:   Fri,  3 Jul 2020 16:10:58 +0200
+Message-Id: <20200703141058.11320-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.17.1
+Organization: Westermo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+In the ISR, we poll the event register for the queues in need of
+service and then enter polled mode. After this point, the event
+register will never be read again until we exit polled mode.
 
-On 7/3/20 4:01 PM, Matthias Brugger wrote:
-> 
-> 
-> On 02/07/2020 20:00, Hans de Goede wrote:
->> Hi,
->>
->> On 7/1/20 5:46 PM, Matthias Brugger wrote:
->>> Hi Hans,
->>>
->>> On 01/07/2020 17:38, Hans de Goede wrote:
->>>> Hi,
->>>>
->>>> On 7/1/20 5:31 PM, matthias.bgg@kernel.org wrote:
->>>>> From: Matthias Brugger <mbrugger@suse.com>
->>>>>
->>>>> Apart from a firmware binary the chip needs a config file used by the
->>>>> FW. Add the config files to modinfo so that they can be read by
->>>>> userspace.
->>>>
->>>> The configfile firmware filename is dynamically generated, just adding the list
->>>> of all currently shipped ones is not really helpful and this is going to get
->>>> out of sync with what we actually have in linux-firmware.
->>>
->>> I'm aware of this, and I agree.
->>>
->>>>
->>>> I must honestly say that I'm not a fan of this, I guess you are trying to
->>>> get some tool which builds a minimal image, such as an initrd generator
->>>> to add these files to the image ?
->>>>
->>>
->>> Yes exactly.
->>>
->>>> I do not immediately have a better idea, but IMHO the solution
->>>> this patch proposes is not a good one, so nack from me for this change.
->>>>
->>>
->>> Another path we could go is add a wildcard string instead, for example:
->>> MODULE_FIRMWARE("brcm/brcmfmac43455-sdio.*.txt");
->>
->> I was thinking about the same lines, but I'm afraid some user-space
->> utils may blow up if we introduce this, which is why I did not suggest
->> it in my previous email.
->>
->>> AFAIK there is no driver in the kernel that does this. I checked with our dracut
->>> developer and right now dracut can't cope with that.
->>
->> Can't cope as in tries to add "/lib/firmware/brcm/brcmfmac43455-sdio.*.txt"
->> and then skips it (as it does for other missing firmware files); or can't
->> cope as in blows-up and aborts without leaving a valid initrd behind.
->>
->> If is the former, that is fine, if it is the latter that is a problem.
->>
->>> But he will try to
->>> implement that in the future.
->>>
->>> So my idea was to maintain that list for now and switch to the wildcard approach
->>> once we have dracut support that.
->>
->> So lets assume that the wildcard approach is ok and any initrd tools looking at
->> the MODULE_FIRMWARE metadata either accidentally do what we want; or fail
->> gracefully.  Then if we temporarily add the long MODULE_FIRMWARE list now, those
->> which fail gracefully will start doing the right thing (except they add too
->> much firmware), and later on we cannot remove all the non wildcard
->> MODULE_FIRMWARE list entries because that will cause a regression.
->>
->> Because of this I'm not a fan of temporarily fixing this like this. Using wifi
->> inside the initrd is very much a cornercase anyways, so I think users can
->> use a workaround by dropping an /etc/dracut.conf.d file adding the necessary
->> config file for now.
->>
->> As for the long run, I was thinking that even with regular firmware files
->> we are adding too much firmware to host-specific initrds since we add all
->> the firmwares listed with MODULE_FIRMWARE, and typically only a few are
->> actually necessary.
->>
->> We could modify the firmware_loader code under drivers/base/firmware_loader
->> to keep a list of all files loaded since boot; and export that somewhere
->> under /sys, then dracut could use that list in host-only mode and we get
->> a smaller initrd. One challenge with this approach though is firmware files
->> which are necessary for a new kernel, but not used by the running kernel ...
->> I'm afraid I do not have a good answer to that.
->>
-> 
-> That would work for creating a new minimal initrd from a working image. But it
-> would not help in bootstrapping an image. My understanding is that for
-> bootstrapping an image we will need to support wildcards in MODULE_FIRMWARE()
-> strings.
+In a scenario where a UDP flow is routed back out through the same
+interface, i.e. "router-on-a-stick" we'll typically only see an rx
+queue event initially. Once we start to process the incoming flow
+we'll be locked polled mode, but we'll never clean the tx rings since
+that event is never caught.
 
-Yes, I agree.
+Eventually the netdev watchdog will trip, causing all buffers to be
+dropped and then the process starts over again.
 
-Regards,
+Rework the NAPI poll to keep trying to consome the entire budget as
+long as new events are coming in, making sure to service all rx/tx
+queues, in priority order, on each pass.
 
-Hans
+Fixes: 4d494cdc92b3 ("net: fec: change data structure to support multiqueue")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
+
+v2 -> v3:
+* Actually iterate over number of tx queues in the tx path, not number
+  of rx queues.
+
+v1 -> v2:
+* Always do a full pass over all rx/tx queues as soon as any event is
+  received, as suggested by David.
+* Keep dequeuing packets as long as events keep coming in and we're
+  under budget.
+
+ drivers/net/ethernet/freescale/fec.h      |  5 --
+ drivers/net/ethernet/freescale/fec_main.c | 94 ++++++++---------------
+ 2 files changed, 31 insertions(+), 68 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index a6cdd5b61921..d8d76da51c5e 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -525,11 +525,6 @@ struct fec_enet_private {
+ 	unsigned int total_tx_ring_size;
+ 	unsigned int total_rx_ring_size;
+ 
+-	unsigned long work_tx;
+-	unsigned long work_rx;
+-	unsigned long work_ts;
+-	unsigned long work_mdio;
+-
+ 	struct	platform_device *pdev;
+ 
+ 	int	dev_id;
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 2d0d313ee7c5..3982285ed020 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -75,8 +75,6 @@ static void fec_enet_itr_coal_init(struct net_device *ndev);
+ 
+ #define DRIVER_NAME	"fec"
+ 
+-#define FEC_ENET_GET_QUQUE(_x) ((_x == 0) ? 1 : ((_x == 1) ? 2 : 0))
+-
+ /* Pause frame feild and FIFO threshold */
+ #define FEC_ENET_FCE	(1 << 5)
+ #define FEC_ENET_RSEM_V	0x84
+@@ -1248,8 +1246,6 @@ fec_enet_tx_queue(struct net_device *ndev, u16 queue_id)
+ 
+ 	fep = netdev_priv(ndev);
+ 
+-	queue_id = FEC_ENET_GET_QUQUE(queue_id);
+-
+ 	txq = fep->tx_queue[queue_id];
+ 	/* get next bdp of dirty_tx */
+ 	nq = netdev_get_tx_queue(ndev, queue_id);
+@@ -1340,17 +1336,14 @@ fec_enet_tx_queue(struct net_device *ndev, u16 queue_id)
+ 		writel(0, txq->bd.reg_desc_active);
+ }
+ 
+-static void
+-fec_enet_tx(struct net_device *ndev)
++static void fec_enet_tx(struct net_device *ndev)
+ {
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+-	u16 queue_id;
+-	/* First process class A queue, then Class B and Best Effort queue */
+-	for_each_set_bit(queue_id, &fep->work_tx, FEC_ENET_MAX_TX_QS) {
+-		clear_bit(queue_id, &fep->work_tx);
+-		fec_enet_tx_queue(ndev, queue_id);
+-	}
+-	return;
++	int i;
++
++	/* Make sure that AVB queues are processed first. */
++	for (i = fep->num_tx_queues - 1; i >= 0; i--)
++		fec_enet_tx_queue(ndev, i);
+ }
+ 
+ static int
+@@ -1426,7 +1419,6 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
+ #ifdef CONFIG_M532x
+ 	flush_cache_all();
+ #endif
+-	queue_id = FEC_ENET_GET_QUQUE(queue_id);
+ 	rxq = fep->rx_queue[queue_id];
+ 
+ 	/* First, grab all of the stats for the incoming packet.
+@@ -1550,6 +1542,7 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
+ 					       htons(ETH_P_8021Q),
+ 					       vlan_tag);
+ 
++		skb_record_rx_queue(skb, queue_id);
+ 		napi_gro_receive(&fep->napi, skb);
+ 
+ 		if (is_copybreak) {
+@@ -1595,48 +1588,30 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
+ 	return pkt_received;
+ }
+ 
+-static int
+-fec_enet_rx(struct net_device *ndev, int budget)
++static int fec_enet_rx(struct net_device *ndev, int budget)
+ {
+-	int     pkt_received = 0;
+-	u16	queue_id;
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
++	int i, done = 0;
+ 
+-	for_each_set_bit(queue_id, &fep->work_rx, FEC_ENET_MAX_RX_QS) {
+-		int ret;
+-
+-		ret = fec_enet_rx_queue(ndev,
+-					budget - pkt_received, queue_id);
++	/* Make sure that AVB queues are processed first. */
++	for (i = fep->num_rx_queues - 1; i >= 0; i--)
++		done += fec_enet_rx_queue(ndev, budget - done, i);
+ 
+-		if (ret < budget - pkt_received)
+-			clear_bit(queue_id, &fep->work_rx);
+-
+-		pkt_received += ret;
+-	}
+-	return pkt_received;
++	return done;
+ }
+ 
+-static bool
+-fec_enet_collect_events(struct fec_enet_private *fep, uint int_events)
++static bool fec_enet_collect_events(struct fec_enet_private *fep)
+ {
+-	if (int_events == 0)
+-		return false;
++	uint int_events;
++
++	int_events = readl(fep->hwp + FEC_IEVENT);
+ 
+-	if (int_events & FEC_ENET_RXF_0)
+-		fep->work_rx |= (1 << 2);
+-	if (int_events & FEC_ENET_RXF_1)
+-		fep->work_rx |= (1 << 0);
+-	if (int_events & FEC_ENET_RXF_2)
+-		fep->work_rx |= (1 << 1);
++	/* Don't clear MDIO events, we poll for those */
++	int_events &= ~FEC_ENET_MII;
+ 
+-	if (int_events & FEC_ENET_TXF_0)
+-		fep->work_tx |= (1 << 2);
+-	if (int_events & FEC_ENET_TXF_1)
+-		fep->work_tx |= (1 << 0);
+-	if (int_events & FEC_ENET_TXF_2)
+-		fep->work_tx |= (1 << 1);
++	writel(int_events, fep->hwp + FEC_IEVENT);
+ 
+-	return true;
++	return int_events != 0;
+ }
+ 
+ static irqreturn_t
+@@ -1644,18 +1619,9 @@ fec_enet_interrupt(int irq, void *dev_id)
+ {
+ 	struct net_device *ndev = dev_id;
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+-	uint int_events;
+ 	irqreturn_t ret = IRQ_NONE;
+ 
+-	int_events = readl(fep->hwp + FEC_IEVENT);
+-
+-	/* Don't clear MDIO events, we poll for those */
+-	int_events &= ~FEC_ENET_MII;
+-
+-	writel(int_events, fep->hwp + FEC_IEVENT);
+-	fec_enet_collect_events(fep, int_events);
+-
+-	if ((fep->work_tx || fep->work_rx) && fep->link) {
++	if (fec_enet_collect_events(fep) && fep->link) {
+ 		ret = IRQ_HANDLED;
+ 
+ 		if (napi_schedule_prep(&fep->napi)) {
+@@ -1672,17 +1638,19 @@ static int fec_enet_rx_napi(struct napi_struct *napi, int budget)
+ {
+ 	struct net_device *ndev = napi->dev;
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+-	int pkts;
++	int done = 0;
+ 
+-	pkts = fec_enet_rx(ndev, budget);
+-
+-	fec_enet_tx(ndev);
++	do {
++		done += fec_enet_rx(ndev, budget - done);
++		fec_enet_tx(ndev);
++	} while ((done < budget) && fec_enet_collect_events(fep));
+ 
+-	if (pkts < budget) {
+-		napi_complete_done(napi, pkts);
++	if (done < budget) {
++		napi_complete_done(napi, done);
+ 		writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
+ 	}
+-	return pkts;
++
++	return done;
+ }
+ 
+ /* ------------------------------------------------------------------------- */
+-- 
+2.17.1
 
