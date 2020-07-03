@@ -2,111 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61E9F2135F1
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 10:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48CA3213729
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 11:03:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbgGCIMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 04:12:23 -0400
-Received: from mx60.baidu.com ([61.135.168.60]:22206 "EHLO
-        tc-sys-mailedm05.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725891AbgGCIMW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 04:12:22 -0400
-Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
-        by tc-sys-mailedm05.tc.baidu.com (Postfix) with ESMTP id 6C9431EBA001
-        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 16:12:06 +0800 (CST)
-From:   Li RongQing <lirongqing@baidu.com>
-To:     netdev@vger.kernel.org
-Subject: [PATCH][RFC] i40e: not flip rx buffer for copy mode xdp
-Date:   Fri,  3 Jul 2020 16:12:06 +0800
-Message-Id: <1593763926-24292-1-git-send-email-lirongqing@baidu.com>
-X-Mailer: git-send-email 1.7.1
+        id S1726184AbgGCJD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 05:03:56 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:39070 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725764AbgGCJDz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 05:03:55 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0638w0L1000510;
+        Fri, 3 Jul 2020 02:03:50 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0818; bh=a9wF/+uUiRveHVijX6qjBA2kDHqt8RJI3osEo4twyUk=;
+ b=p+gagi02dQbAhvZDIeeUFHe9KxHpzMAS+gsJCCawPjrrImKFPnBR9ftOFAeKZRhX+YSc
+ G+ZcRjU+Wi6+WtkOvwn09lkggbQpvedjUbwM9LK0iRO4gsvO9tauJuW1U/Y1z1olbJlW
+ 0FxyijcJqPVIRSqe36GtIFfRCm9gE0XKj0q4/DodhlWC/4sfl6gV33b2912FoP4D9Ju7
+ T5+H5f1VNJf1LVo/45HJ11N1kHt5It+gA5IaAfl/J5Mjt05OtjRVPDO2NR5ytvo6kYkg
+ NOTmF3rpzko/5I2wN2idnOBnIkGy+oZ/EmmOLNcZGIUdI16KE/Zu2V3nEX+Trj3ojwq7 Rg== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 31x5mp1475-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 03 Jul 2020 02:03:50 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 3 Jul
+ 2020 02:03:48 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 3 Jul 2020 02:03:48 -0700
+Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
+        by maili.marvell.com (Postfix) with ESMTP id 8DE283F703F;
+        Fri,  3 Jul 2020 02:03:45 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Alexander Lobakin <alobakin@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        "Ariel Elior" <aelior@marvell.com>,
+        Denis Bolotin <denis.bolotin@marvell.com>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] net: qed: prevent buffer overflow when collecting debug data
+Date:   Fri, 3 Jul 2020 12:02:58 +0300
+Message-ID: <20200703090258.2076-1-alobakin@marvell.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-03_03:2020-07-02,2020-07-03 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-i40e_rx_buffer_flip in copy mode xdp can lead to data corruption,
-like the following flow:
+When generating debug dump, driver firstly collects all data in binary
+form, and then performs per-feature formatting to human-readable if it
+is supported.
+The size of the new formatted data is often larger than the raw's. This
+becomes critical when user requests dump via ethtool (-d/-w), as output
+buffer size is strictly determined (by ethtool_ops::get_regs_len() etc),
+as it may lead to out-of-bounds writes and memory corruption.
 
-   1. first skb is not for xsk, and forwarded to another device
-      or socket queue
-   2. seconds skb is for xsk, copy data to xsk memory, and page
-      of skb->data is released
-   3. rx_buff is reusable since only first skb is in it, but
-      i40e_rx_buffer_flip will make that page_offset is set to
-      first skb data
-   4. then reuse rx buffer, first skb which still is living
-      will be corrupted.
+To not go past initial lengths, add a flag to return original,
+non-formatted debug data, and set it in such cases. Also set data type
+in regdump headers, so userland parsers could handle it.
 
-so add flags in xdp struct, to report xdp's data status
-
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
+Fixes: c965db444629 ("qed: Add support for debug data collection")
+Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
+Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_txrx.c | 5 ++++-
- include/net/xdp.h                           | 3 +++
- net/xdp/xsk.c                               | 4 +++-
- 3 files changed, 10 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed.h       |  2 ++
+ drivers/net/ethernet/qlogic/qed/qed_debug.c | 13 ++++++++++++-
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index b3836092c327..51fa6f86f917 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -2376,6 +2376,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
- 
- 		/* retrieve a buffer from the ring */
- 		if (!skb) {
-+			xdp.flags = 0;
- 			xdp.data = page_address(rx_buffer->page) +
- 				   rx_buffer->page_offset;
- 			xdp.data_meta = xdp.data;
-@@ -2394,7 +2395,9 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
- 
- 			if (xdp_res & (I40E_XDP_TX | I40E_XDP_REDIR)) {
- 				xdp_xmit |= xdp_res;
--				i40e_rx_buffer_flip(rx_ring, rx_buffer, size);
+diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
+index a49743d56b9c..6c2f9ff4a53e 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed.h
++++ b/drivers/net/ethernet/qlogic/qed/qed.h
+@@ -876,6 +876,8 @@ struct qed_dev {
+ 	struct qed_dbg_feature dbg_features[DBG_FEATURE_NUM];
+ 	u8 engine_for_debug;
+ 	bool disable_ilt_dump;
++	bool				dbg_bin_dump;
 +
-+				if (!(xdp.flags & XDP_DATA_RELEASED))
-+					i40e_rx_buffer_flip(rx_ring, rx_buffer, size);
- 			} else {
- 				rx_buffer->pagecnt_bias++;
- 			}
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 609f819ed08b..6241e1efbcc7 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -47,6 +47,8 @@ enum xdp_mem_type {
- #define XDP_XMIT_FLUSH		(1U << 0)	/* doorbell signal consumer */
- #define XDP_XMIT_FLAGS_MASK	XDP_XMIT_FLUSH
+ 	DECLARE_HASHTABLE(connections, 10);
+ 	const struct firmware		*firmware;
  
-+#define XDP_DATA_RELEASED (1U << 1)
-+
- struct xdp_mem_info {
- 	u32 type; /* enum xdp_mem_type, but known size type */
- 	u32 id;
-@@ -73,6 +75,7 @@ struct xdp_buff {
- 	struct xdp_rxq_info *rxq;
- 	struct xdp_txq_info *txq;
- 	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
-+	u32 flags;
- };
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+index 81e8fbe4a05b..cb80863d5a77 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+@@ -7506,6 +7506,12 @@ static enum dbg_status format_feature(struct qed_hwfn *p_hwfn,
+ 	if (p_hwfn->cdev->print_dbg_data)
+ 		qed_dbg_print_feature(text_buf, text_size_bytes);
  
- /* Reserve memory area at end-of data area.
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index b6c0f08bd80d..2c4c5c16660b 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -172,8 +172,10 @@ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len,
- 		xsk_buff_free(xsk_xdp);
- 		return err;
- 	}
--	if (explicit_free)
-+	if (explicit_free) {
- 		xdp_return_buff(xdp);
-+		xdp->flags |= XDP_DATA_RELEASED;
++	/* Just return the original binary buffer if requested */
++	if (p_hwfn->cdev->dbg_bin_dump) {
++		vfree(text_buf);
++		return DBG_STATUS_OK;
 +	}
- 	return 0;
- }
++
+ 	/* Free the old dump_buf and point the dump_buf to the newly allocagted
+ 	 * and formatted text buffer.
+ 	 */
+@@ -7733,7 +7739,9 @@ int qed_dbg_mcp_trace_size(struct qed_dev *cdev)
+ #define REGDUMP_HEADER_SIZE_SHIFT		0
+ #define REGDUMP_HEADER_SIZE_MASK		0xffffff
+ #define REGDUMP_HEADER_FEATURE_SHIFT		24
+-#define REGDUMP_HEADER_FEATURE_MASK		0x3f
++#define REGDUMP_HEADER_FEATURE_MASK		0x1f
++#define REGDUMP_HEADER_BIN_DUMP_SHIFT		29
++#define REGDUMP_HEADER_BIN_DUMP_MASK		0x1
+ #define REGDUMP_HEADER_OMIT_ENGINE_SHIFT	30
+ #define REGDUMP_HEADER_OMIT_ENGINE_MASK		0x1
+ #define REGDUMP_HEADER_ENGINE_SHIFT		31
+@@ -7771,6 +7779,7 @@ static u32 qed_calc_regdump_header(struct qed_dev *cdev,
+ 			  feature, feature_size);
  
+ 	SET_FIELD(res, REGDUMP_HEADER_FEATURE, feature);
++	SET_FIELD(res, REGDUMP_HEADER_BIN_DUMP, 1);
+ 	SET_FIELD(res, REGDUMP_HEADER_OMIT_ENGINE, omit_engine);
+ 	SET_FIELD(res, REGDUMP_HEADER_ENGINE, engine);
+ 
+@@ -7794,6 +7803,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
+ 		omit_engine = 1;
+ 
+ 	mutex_lock(&qed_dbg_lock);
++	cdev->dbg_bin_dump = true;
+ 
+ 	org_engine = qed_get_debug_engine(cdev);
+ 	for (cur_engine = 0; cur_engine < cdev->num_hwfns; cur_engine++) {
+@@ -7993,6 +8003,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
+ 		       QED_NVM_IMAGE_MDUMP, "QED_NVM_IMAGE_MDUMP", rc);
+ 	}
+ 
++	cdev->dbg_bin_dump = false;
+ 	mutex_unlock(&qed_dbg_lock);
+ 
+ 	return 0;
 -- 
-2.16.2
+2.25.1
 
