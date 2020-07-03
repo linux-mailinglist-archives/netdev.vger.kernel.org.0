@@ -2,322 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 305C521381F
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 11:52:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AAF121384C
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 11:58:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726367AbgGCJwI convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 3 Jul 2020 05:52:08 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:34734 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726287AbgGCJwH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 05:52:07 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-194-Tz0clC4DMHm8R-5KXzlMHQ-1; Fri, 03 Jul 2020 05:52:01 -0400
-X-MC-Unique: Tz0clC4DMHm8R-5KXzlMHQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6CBA9800C64;
-        Fri,  3 Jul 2020 09:51:59 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.194.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E58B7275E31;
-        Fri,  3 Jul 2020 09:51:55 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH v5 bpf-next 9/9] selftests/bpf: Add test for resolve_btfids
-Date:   Fri,  3 Jul 2020 11:51:11 +0200
-Message-Id: <20200703095111.3268961-10-jolsa@kernel.org>
-In-Reply-To: <20200703095111.3268961-1-jolsa@kernel.org>
-References: <20200703095111.3268961-1-jolsa@kernel.org>
+        id S1726208AbgGCJ6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 05:58:23 -0400
+Received: from mail-am6eur05on2045.outbound.protection.outlook.com ([40.107.22.45]:21077
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725915AbgGCJ6W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jul 2020 05:58:22 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dpqazHsUpUAqzP/bAS4a7q1cvmY1tu/tAsqao9Ae27goTBPVHDQEUEHfI7ttgaGGY8P/VjT2GabEBfZ6z/4qFtnbYE6Eq3GKkEagVVt8rfDFP1wY0FyeJ5HnvvqqrM2le0y7xsV5OTCK86CEsKOvncsdyhxRM2ObsFGUe7QV+9EFVBFrGiwK/ofd+Bd0yiQw4w6RHTC0KfV3Ikpqvm1l/DZp5afeNJiM7xu8t+g8e0J3fT5K16hU2wQA2snQ+KFCgMSc6T96NWkPjL0R0JxQYMLb2XLtv7Df0te9jxPtpzGPVw/WnDOw6o7uXpqf5Jiwa+jKGXGfSpCh7yg3Rz5QNw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ycvEzgmGAAnL+HQ6C0W2YGaQ7jvCUaWCGkqH3LxNpBo=;
+ b=DbD0/X9UwRyBxtga72LP7sdTbPijQ6MnVzI0ha/l3NOyrpFntJezrATYLcCCvn+CZEolMCC0yNSptZHl8FqAYfpU7Pwp+c+k2OXwkmm/Uv15tD1dsk8G/4fBzUpuYZWo7D2HLn+jLFSg5wN+M/a+ezDrXjc4edrD3q7ZkNmSyo87Gjswi4UlIQycBOdnzGQr4ez1U+AtuYRiSZYtbZRKxzQw/EUpt+0FjZnBkgPOHBQp6b+etdke3AZg4XV8wh/2PXWcW4z77iyDxVsCwh35xuw1ukune0JfachOC2QknvVgoXQv7XNNgSlJKvb7Mn0KgQG9/nAJiXeppXQoTTVDvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ycvEzgmGAAnL+HQ6C0W2YGaQ7jvCUaWCGkqH3LxNpBo=;
+ b=eSNU+9HnjzIb0oMoU8Uy6crDXxWHLd4exXpssiiX7NEBqVuXqraV7lC0MU2xwY+wUGnX38OnpQGgnSwnfWpkFFtJTPsx4c8iwGpvWFbLJdmEwjobNRLYuRkfa9AAfZeIpqBvSb2AaRllXST0dECsQBVg8YXyGx9HgmkLbzeKIyY=
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ (2603:10a6:209:12::18) by AM6PR04MB5800.eurprd04.prod.outlook.com
+ (2603:10a6:20b:a4::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.24; Fri, 3 Jul
+ 2020 09:58:18 +0000
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::75d9:c8cb:c564:d17f]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::75d9:c8cb:c564:d17f%5]) with mapi id 15.20.3153.027; Fri, 3 Jul 2020
+ 09:58:18 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [EXT] [PATCH v2 net] net: ethernet: fec: prevent tx starvation
+ under high rx load
+Thread-Topic: [EXT] [PATCH v2 net] net: ethernet: fec: prevent tx starvation
+ under high rx load
+Thread-Index: AQHWULN44AyVysQJHEadhKXpxbm1faj1JULAgABX8QCAACCEUA==
+Date:   Fri, 3 Jul 2020 09:58:18 +0000
+Message-ID: <AM6PR0402MB36075D91D8365FC9DD677F09FF6A0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+References: <AM6PR0402MB36074BB67E6704F82D2003FBFF6A0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+ <C3WTSYT5IONB.21JUB7GA3HBW0@wkz-x280>
+In-Reply-To: <C3WTSYT5IONB.21JUB7GA3HBW0@wkz-x280>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: waldekranz.com; dkim=none (message not signed)
+ header.d=none;waldekranz.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.67]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: d1520d28-c1b5-4a80-7822-08d81f379c96
+x-ms-traffictypediagnostic: AM6PR04MB5800:
+x-microsoft-antispam-prvs: <AM6PR04MB5800D0631475ED7CC3172DE7FF6A0@AM6PR04MB5800.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 045315E1EE
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RI+96MKmKUrCPXrUy0aSFhEhNNiVUw4lgR4XzU9jYD4KaPR+cl5SIcGCOJA/8tqEN45A7DApBuUbn4XwbM0rquxec2KVeDoc8YSMxLVls7Lo75RyyUKhdYMZZmelY3eylG0rYziwpTxlbSzVJscLhEIjSWNFhVRVcsK7U0Lk7YTJoHygbSevA7QY7KWtSo0aJFrMpAyaIqngNqrcBZAfYnrMDbPSpJ8Q488nCi0CcGWnbtcTcAb/pKTe29DTBcIX/xsfTgZjSWI3mi8mjKWNwc2oI/HgBAKg8Cdo94QdTHAyO/G7g4PgKj6l5LSxPrPTF5R0moaTDjCbsM0hwIAfOA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(136003)(376002)(346002)(366004)(396003)(186003)(26005)(66574015)(83380400001)(6506007)(7696005)(9686003)(55016002)(8936002)(71200400001)(8676002)(2906002)(110136005)(33656002)(4326008)(316002)(86362001)(478600001)(5660300002)(66556008)(52536014)(66476007)(66946007)(76116006)(64756008)(66446008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: PDmkKBzVBQ0hy/9BnAKRU2OnuBB7/ox9/FvIpw0W0NviUzrrJePm8ekXDZ3Lcd4KcUIez7wwROeWx2hBBQnte6bIwKvGOzhspT/ZTE8mEJMD7+ijPrKGKGOz783RpJ+2UtPmGG8cqW7d0d8KloIaWVl5H5R/dQvdNBcmRZAIz93c+W0rgH7JA3//hfzHkagpOGKQ8zSiwINqqitaLS3/rmevcEjQqTUqIELzY54HWXTLVnHSRdMFLekczUVG9spDPOn3NEjOwZX+W15D1k53DPWyDOqsVIVtmS3y2hRqKLnul7zLLAtPkjy2V1oZ9p9OvLG7+zM3eO4dl0Wvj7/2Pnu1y6whQi/Ss+2U6LpZ6UwbhCpNJwAniFNTJAnM0BRJvuF7gPs1dllySPzLk+o0GFxvD733FQHZ/hzM/i4MkcVTUaMQchpBJM6mnwiL7+lrbHcjplM4r84kvCTQq0v1Nj4npwS60Gb4l2KS3l1kQ3o=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3607.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1520d28-c1b5-4a80-7822-08d81f379c96
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2020 09:58:18.3324
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: caX7GX6Sj95rJ9KPs6uNYZkVEsa+SBblxuRUz0tHvNPf2qdMtNaFqtXSlj3rlmAd1oSBKgV746t1yUWyF5Umfw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5800
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding resolve_btfids test under test_progs suite.
-
-It's possible to use btf_ids.h header and its logic in
-user space application, so we can add easy test for it.
-
-The test defines BTF_ID_LIST and checks it gets properly
-resolved.
-
-For this reason the test_progs binary (and other binaries
-that use TRUNNER* macros) is processed with resolve_btfids
-tool, which resolves BTF IDs in .BTF.ids section.
-
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/testing/selftests/bpf/Makefile          |  22 ++-
- .../selftests/bpf/prog_tests/resolve_btfids.c | 170 ++++++++++++++++++
- 2 files changed, 190 insertions(+), 2 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 1f9c696b3edf..b47a685d12bd 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -190,6 +190,16 @@ else
- 	cp "$(VMLINUX_H)" $@
- endif
- 
-+$(SCRATCH_DIR)/resolve_btfids: $(BPFOBJ)				\
-+			       $(TOOLSDIR)/bpf/resolve_btfids/main.c	\
-+			       $(TOOLSDIR)/lib/rbtree.c			\
-+			       $(TOOLSDIR)/lib/zalloc.c			\
-+			       $(TOOLSDIR)/lib/string.c			\
-+			       $(TOOLSDIR)/lib/ctype.c			\
-+			       $(TOOLSDIR)/lib/str_error_r.c
-+	$(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/resolve_btfids	\
-+	OUTPUT=$(SCRATCH_DIR)/ BPFOBJ=$(BPFOBJ)
-+
- # Get Clang's default includes on this system, as opposed to those seen by
- # '-target bpf'. This fixes "missing" files on some architectures/distros,
- # such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
-@@ -333,7 +343,8 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
- 		      $(TRUNNER_BPF_SKELS)				\
- 		      $$(BPFOBJ) | $(TRUNNER_OUTPUT)
- 	$$(call msg,TEST-OBJ,$(TRUNNER_BINARY),$$@)
--	cd $$(@D) && $$(CC) -I. $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
-+	cd $$(@D) && $$(CC) -I. $$(CFLAGS) $(TRUNNER_EXTRA_CFLAGS)	\
-+	-c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
- 
- $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
- 		       %.c						\
-@@ -355,6 +366,7 @@ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
- 			     | $(TRUNNER_BINARY)-extras
- 	$$(call msg,BINARY,,$$@)
- 	$$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
-+	$(TRUNNER_BINARY_EXTRA_CMD)
- 
- endef
- 
-@@ -365,7 +377,10 @@ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c	\
- 			 network_helpers.c testing_helpers.c		\
- 			 flow_dissector_load.h
- TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read				\
--		       $(wildcard progs/btf_dump_test_case_*.c)
-+		       $(wildcard progs/btf_dump_test_case_*.c)		\
-+		       $(SCRATCH_DIR)/resolve_btfids
-+TRUNNER_EXTRA_CFLAGS := -D"BUILD_STR(s)=\#s" -DVMLINUX_BTF="BUILD_STR($(VMLINUX_BTF))"
-+TRUNNER_BINARY_EXTRA_CMD := $(SCRATCH_DIR)/resolve_btfids --btf $(VMLINUX_BTF) test_progs
- TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
- TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS)
- TRUNNER_BPF_LDFLAGS := -mattr=+alu32
-@@ -373,6 +388,7 @@ $(eval $(call DEFINE_TEST_RUNNER,test_progs))
- 
- # Define test_progs-no_alu32 test runner.
- TRUNNER_BPF_BUILD_RULE := CLANG_NOALU32_BPF_BUILD_RULE
-+TRUNNER_BINARY_EXTRA_CMD := $(SCRATCH_DIR)/resolve_btfids --btf $(VMLINUX_BTF) test_progs-no_alu32
- TRUNNER_BPF_LDFLAGS :=
- $(eval $(call DEFINE_TEST_RUNNER,test_progs,no_alu32))
- 
-@@ -392,6 +408,8 @@ TRUNNER_EXTRA_FILES :=
- TRUNNER_BPF_BUILD_RULE := $$(error no BPF objects should be built)
- TRUNNER_BPF_CFLAGS :=
- TRUNNER_BPF_LDFLAGS :=
-+TRUNNER_EXTRA_CFLAGS :=
-+TRUNNER_BINARY_EXTRA_CMD :=
- $(eval $(call DEFINE_TEST_RUNNER,test_maps))
- 
- # Define test_verifier test runner.
-diff --git a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-new file mode 100644
-index 000000000000..6b7b5f736181
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-@@ -0,0 +1,170 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <string.h>
-+#include <stdio.h>
-+#include <sys/stat.h>
-+#include <stdio.h>
-+#include <sys/stat.h>
-+#include <fcntl.h>
-+#include <unistd.h>
-+#include <linux/err.h>
-+#include <stdlib.h>
-+#include <bpf/btf.h>
-+#include <bpf/libbpf.h>
-+#include <linux/btf.h>
-+#include <linux/kernel.h>
-+#include <linux/btf_ids.h>
-+#include "test_progs.h"
-+
-+static int duration;
-+
-+static struct btf *btf__parse_raw(const char *file)
-+{
-+	struct btf *btf;
-+	struct stat st;
-+	__u8 *buf;
-+	FILE *f;
-+
-+	if (stat(file, &st))
-+		return NULL;
-+
-+	f = fopen(file, "rb");
-+	if (!f)
-+		return NULL;
-+
-+	buf = malloc(st.st_size);
-+	if (!buf) {
-+		btf = ERR_PTR(-ENOMEM);
-+		goto exit_close;
-+	}
-+
-+	if ((size_t) st.st_size != fread(buf, 1, st.st_size, f)) {
-+		btf = ERR_PTR(-EINVAL);
-+		goto exit_free;
-+	}
-+
-+	btf = btf__new(buf, st.st_size);
-+
-+exit_free:
-+	free(buf);
-+exit_close:
-+	fclose(f);
-+	return btf;
-+}
-+
-+static bool is_btf_raw(const char *file)
-+{
-+	__u16 magic = 0;
-+	int fd, nb_read;
-+
-+	fd = open(file, O_RDONLY);
-+	if (fd < 0)
-+		return false;
-+
-+	nb_read = read(fd, &magic, sizeof(magic));
-+	close(fd);
-+	return nb_read == sizeof(magic) && magic == BTF_MAGIC;
-+}
-+
-+static struct btf *btf_open(const char *path)
-+{
-+	if (is_btf_raw(path))
-+		return btf__parse_raw(path);
-+	else
-+		return btf__parse_elf(path, NULL);
-+}
-+
-+BTF_ID_LIST(test_list)
-+BTF_ID_UNUSED
-+BTF_ID(typedef, pid_t)
-+BTF_ID(struct,  sk_buff)
-+BTF_ID(union,   thread_union)
-+BTF_ID(func,    memcpy)
-+
-+struct symbol {
-+	const char	*name;
-+	int		 type;
-+	int		 id;
-+};
-+
-+struct symbol test_symbols[] = {
-+	{ "unused",       -1,                0 },
-+	{ "pid_t",        BTF_KIND_TYPEDEF, -1 },
-+	{ "sk_buff",      BTF_KIND_STRUCT,  -1 },
-+	{ "thread_union", BTF_KIND_UNION,   -1 },
-+	{ "memcpy",       BTF_KIND_FUNC,    -1 },
-+};
-+
-+static int
-+__resolve_symbol(struct btf *btf, int type_id)
-+{
-+	const struct btf_type *type;
-+	const char *str;
-+	unsigned int i;
-+
-+	type = btf__type_by_id(btf, type_id);
-+	if (!type) {
-+		PRINT_FAIL("Failed to get type for ID %d\n", type_id);
-+		return -1;
-+	}
-+
-+	for (i = 0; i < ARRAY_SIZE(test_symbols); i++) {
-+		if (test_symbols[i].id != -1)
-+			continue;
-+
-+		if (BTF_INFO_KIND(type->info) != test_symbols[i].type)
-+			continue;
-+
-+		str = btf__name_by_offset(btf, type->name_off);
-+		if (!str) {
-+			PRINT_FAIL("Failed to get name for BTF ID %d\n", type_id);
-+			return -1;
-+		}
-+
-+		if (!strcmp(str, test_symbols[i].name))
-+			test_symbols[i].id = type_id;
-+	}
-+
-+	return 0;
-+}
-+
-+static int resolve_symbols(void)
-+{
-+	const char *path = VMLINUX_BTF;
-+	struct btf *btf;
-+	int type_id;
-+	__u32 nr;
-+
-+	btf = btf_open(path);
-+	if (CHECK(libbpf_get_error(btf), "resolve",
-+		  "Failed to load BTF from %s\n", path))
-+		return -1;
-+
-+	nr = btf__get_nr_types(btf);
-+
-+	for (type_id = 1; type_id <= nr; type_id++) {
-+		if (__resolve_symbol(btf, type_id))
-+			break;
-+	}
-+
-+	btf__free(btf);
-+	return 0;
-+}
-+
-+int test_resolve_btfids(void)
-+{
-+	unsigned int i;
-+	int ret = 0;
-+
-+	if (resolve_symbols())
-+		return -1;
-+
-+	/* Check BTF_ID_LIST(test_list) IDs */
-+	for (i = 0; i < ARRAY_SIZE(test_symbols) && !ret; i++) {
-+		ret = CHECK(test_list[i] != test_symbols[i].id,
-+			    "id_check",
-+			    "wrong ID for %s (%d != %d)\n", test_symbols[i].name,
-+			    test_list[i], test_symbols[i].id);
-+	}
-+
-+	return 0;
-+}
--- 
-2.25.4
-
+RnJvbTogVG9iaWFzIFdhbGRla3JhbnogPHRvYmlhc0B3YWxkZWtyYW56LmNvbT4gU2VudDogRnJp
+ZGF5LCBKdWx5IDMsIDIwMjAgMzo1NSBQTQ0KPiBPbiBGcmkgSnVsIDMsIDIwMjAgYXQgNDo0NSBB
+TSBDRVNULCBBbmR5IER1YW4gd3JvdGU6DQo+ID4gRnJvbTogVG9iaWFzIFdhbGRla3JhbnogPHRv
+Ymlhc0B3YWxkZWtyYW56LmNvbT4gU2VudDogRnJpZGF5LCBKdWx5IDMsDQo+ID4gMjAyMCA0OjU4
+IEFNDQo+ID4gPiBJbiB0aGUgSVNSLCB3ZSBwb2xsIHRoZSBldmVudCByZWdpc3RlciBmb3IgdGhl
+IHF1ZXVlcyBpbiBuZWVkIG9mDQo+ID4gPiBzZXJ2aWNlIGFuZCB0aGVuIGVudGVyIHBvbGxlZCBt
+b2RlLiBBZnRlciB0aGlzIHBvaW50LCB0aGUgZXZlbnQNCj4gPiA+IHJlZ2lzdGVyIHdpbGwgbmV2
+ZXIgYmUgcmVhZCBhZ2FpbiB1bnRpbCB3ZSBleGl0IHBvbGxlZCBtb2RlLg0KPiA+ID4NCj4gPiA+
+IEluIGEgc2NlbmFyaW8gd2hlcmUgYSBVRFAgZmxvdyBpcyByb3V0ZWQgYmFjayBvdXQgdGhyb3Vn
+aCB0aGUgc2FtZQ0KPiA+ID4gaW50ZXJmYWNlLCBpLmUuICJyb3V0ZXItb24tYS1zdGljayIgd2Un
+bGwgdHlwaWNhbGx5IG9ubHkgc2VlIGFuIHJ4IHF1ZXVlIGV2ZW50DQo+IGluaXRpYWxseS4NCj4g
+PiA+IE9uY2Ugd2Ugc3RhcnQgdG8gcHJvY2VzcyB0aGUgaW5jb21pbmcgZmxvdyB3ZSdsbCBiZSBs
+b2NrZWQgcG9sbGVkDQo+ID4gPiBtb2RlLCBidXQgd2UnbGwgbmV2ZXIgY2xlYW4gdGhlIHR4IHJp
+bmdzIHNpbmNlIHRoYXQgZXZlbnQgaXMgbmV2ZXIgY2F1Z2h0Lg0KPiA+ID4NCj4gPiA+IEV2ZW50
+dWFsbHkgdGhlIG5ldGRldiB3YXRjaGRvZyB3aWxsIHRyaXAsIGNhdXNpbmcgYWxsIGJ1ZmZlcnMg
+dG8gYmUNCj4gPiA+IGRyb3BwZWQgYW5kIHRoZW4gdGhlIHByb2Nlc3Mgc3RhcnRzIG92ZXIgYWdh
+aW4uDQo+ID4gPg0KPiA+ID4gUmV3b3JrIHRoZSBOQVBJIHBvbGwgdG8ga2VlcCB0cnlpbmcgdG8g
+Y29uc29tZSB0aGUgZW50aXJlIGJ1ZGdldCBhcw0KPiA+ID4gbG9uZyBhcyBuZXcgZXZlbnRzIGFy
+ZSBjb21pbmcgaW4sIG1ha2luZyBzdXJlIHRvIHNlcnZpY2UgYWxsIHJ4L3R4DQo+ID4gPiBxdWV1
+ZXMsIGluIHByaW9yaXR5IG9yZGVyLCBvbiBlYWNoIHBhc3MuDQo+ID4gPg0KPiA+ID4gRml4ZXM6
+IDRkNDk0Y2RjOTJiMyAoIm5ldDogZmVjOiBjaGFuZ2UgZGF0YSBzdHJ1Y3R1cmUgdG8gc3VwcG9y
+dA0KPiA+ID4gbXVsdGlxdWV1ZSIpDQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBUb2JpYXMgV2FsZGVr
+cmFueiA8dG9iaWFzQHdhbGRla3JhbnouY29tPg0KPiA+ID4gLS0tDQo+ID4gPg0KPiA+ID4gdjEg
+LT4gdjI6DQo+ID4gPiAqIEFsd2F5cyBkbyBhIGZ1bGwgcGFzcyBvdmVyIGFsbCByeC90eCBxdWV1
+ZXMgYXMgc29vbiBhcyBhbnkgZXZlbnQgaXMNCj4gPiA+ICAgcmVjZWl2ZWQsIGFzIHN1Z2dlc3Rl
+ZCBieSBEYXZpZC4NCj4gPiA+ICogS2VlcCBkZXF1ZXVpbmcgcGFja2V0cyBhcyBsb25nIGFzIGV2
+ZW50cyBrZWVwIGNvbWluZyBpbiBhbmQgd2UncmUNCj4gPiA+ICAgdW5kZXIgYnVkZ2V0Lg0KPiA+
+ID4NCj4gPiA+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjLmggICAgICB8ICA1
+IC0tDQo+ID4gPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2ZlY19tYWluLmMgfCA5
+NA0KPiA+ID4gKysrKysrKystLS0tLS0tLS0tLS0tLS0NCj4gPiA+ICAyIGZpbGVzIGNoYW5nZWQs
+IDMxIGluc2VydGlvbnMoKyksIDY4IGRlbGV0aW9ucygtKQ0KPiA+ID4NCj4gPiA+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjLmgNCj4gPiA+IGIvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2ZlYy5oDQo+ID4gPiBpbmRleCBhNmNkZDViNjE5MjEu
+LmQ4ZDc2ZGE1MWM1ZSAxMDA2NDQNCj4gPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2Zy
+ZWVzY2FsZS9mZWMuaA0KPiA+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxl
+L2ZlYy5oDQo+ID4gPiBAQCAtNTI1LDExICs1MjUsNiBAQCBzdHJ1Y3QgZmVjX2VuZXRfcHJpdmF0
+ZSB7DQo+ID4gPiAgICAgICAgIHVuc2lnbmVkIGludCB0b3RhbF90eF9yaW5nX3NpemU7DQo+ID4g
+PiAgICAgICAgIHVuc2lnbmVkIGludCB0b3RhbF9yeF9yaW5nX3NpemU7DQo+ID4gPg0KPiA+ID4g
+LSAgICAgICB1bnNpZ25lZCBsb25nIHdvcmtfdHg7DQo+ID4gPiAtICAgICAgIHVuc2lnbmVkIGxv
+bmcgd29ya19yeDsNCj4gPiA+IC0gICAgICAgdW5zaWduZWQgbG9uZyB3b3JrX3RzOw0KPiA+ID4g
+LSAgICAgICB1bnNpZ25lZCBsb25nIHdvcmtfbWRpbzsNCj4gPiA+IC0NCj4gPiA+ICAgICAgICAg
+c3RydWN0ICBwbGF0Zm9ybV9kZXZpY2UgKnBkZXY7DQo+ID4gPg0KPiA+ID4gICAgICAgICBpbnQg
+ICAgIGRldl9pZDsNCj4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVl
+c2NhbGUvZmVjX21haW4uYw0KPiA+ID4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUv
+ZmVjX21haW4uYw0KPiA+ID4gaW5kZXggMmQwZDMxM2VlN2M1Li44NDU4OWQ0NjQ4NTAgMTAwNjQ0
+DQo+ID4gPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0K
+PiA+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2ZlY19tYWluLmMNCj4g
+PiA+IEBAIC03NSw4ICs3NSw2IEBAIHN0YXRpYyB2b2lkIGZlY19lbmV0X2l0cl9jb2FsX2luaXQo
+c3RydWN0DQo+ID4gPiBuZXRfZGV2aWNlICpuZGV2KTsNCj4gPiA+DQo+ID4gPiAgI2RlZmluZSBE
+UklWRVJfTkFNRSAgICAiZmVjIg0KPiA+ID4NCj4gPiA+IC0jZGVmaW5lIEZFQ19FTkVUX0dFVF9R
+VVFVRShfeCkgKChfeCA9PSAwKSA/IDEgOiAoKF94ID09IDEpID8gMiA6DQo+ID4gPiAwKSkNCj4g
+PiA+IC0NCj4gPiA+ICAvKiBQYXVzZSBmcmFtZSBmZWlsZCBhbmQgRklGTyB0aHJlc2hvbGQgKi8N
+Cj4gPiA+ICAjZGVmaW5lIEZFQ19FTkVUX0ZDRSAgICgxIDw8IDUpDQo+ID4gPiAgI2RlZmluZSBG
+RUNfRU5FVF9SU0VNX1YgICAgICAgIDB4ODQNCj4gPiA+IEBAIC0xMjQ4LDggKzEyNDYsNiBAQCBm
+ZWNfZW5ldF90eF9xdWV1ZShzdHJ1Y3QgbmV0X2RldmljZSAqbmRldiwNCj4gdTE2DQo+ID4gPiBx
+dWV1ZV9pZCkNCj4gPiA+DQo+ID4gPiAgICAgICAgIGZlcCA9IG5ldGRldl9wcml2KG5kZXYpOw0K
+PiA+ID4NCj4gPiA+IC0gICAgICAgcXVldWVfaWQgPSBGRUNfRU5FVF9HRVRfUVVRVUUocXVldWVf
+aWQpOw0KPiA+ID4gLQ0KPiA+ID4gICAgICAgICB0eHEgPSBmZXAtPnR4X3F1ZXVlW3F1ZXVlX2lk
+XTsNCj4gPiA+ICAgICAgICAgLyogZ2V0IG5leHQgYmRwIG9mIGRpcnR5X3R4ICovDQo+ID4gPiAg
+ICAgICAgIG5xID0gbmV0ZGV2X2dldF90eF9xdWV1ZShuZGV2LCBxdWV1ZV9pZCk7IEBAIC0xMzQw
+LDE3DQo+ID4gPiArMTMzNiwxNCBAQCBmZWNfZW5ldF90eF9xdWV1ZShzdHJ1Y3QgbmV0X2Rldmlj
+ZSAqbmRldiwgdTE2DQo+IHF1ZXVlX2lkKQ0KPiA+ID4gICAgICAgICAgICAgICAgIHdyaXRlbCgw
+LCB0eHEtPmJkLnJlZ19kZXNjX2FjdGl2ZSk7ICB9DQo+ID4gPg0KPiA+ID4gLXN0YXRpYyB2b2lk
+DQo+ID4gPiAtZmVjX2VuZXRfdHgoc3RydWN0IG5ldF9kZXZpY2UgKm5kZXYpDQo+ID4gPiArc3Rh
+dGljIHZvaWQgZmVjX2VuZXRfdHgoc3RydWN0IG5ldF9kZXZpY2UgKm5kZXYpDQo+ID4gPiAgew0K
+PiA+ID4gICAgICAgICBzdHJ1Y3QgZmVjX2VuZXRfcHJpdmF0ZSAqZmVwID0gbmV0ZGV2X3ByaXYo
+bmRldik7DQo+ID4gPiAtICAgICAgIHUxNiBxdWV1ZV9pZDsNCj4gPiA+IC0gICAgICAgLyogRmly
+c3QgcHJvY2VzcyBjbGFzcyBBIHF1ZXVlLCB0aGVuIENsYXNzIEIgYW5kIEJlc3QgRWZmb3J0DQo+
+IHF1ZXVlICovDQo+ID4gPiAtICAgICAgIGZvcl9lYWNoX3NldF9iaXQocXVldWVfaWQsICZmZXAt
+PndvcmtfdHgsDQo+ID4gPiBGRUNfRU5FVF9NQVhfVFhfUVMpIHsNCj4gPiA+IC0gICAgICAgICAg
+ICAgICBjbGVhcl9iaXQocXVldWVfaWQsICZmZXAtPndvcmtfdHgpOw0KPiA+ID4gLSAgICAgICAg
+ICAgICAgIGZlY19lbmV0X3R4X3F1ZXVlKG5kZXYsIHF1ZXVlX2lkKTsNCj4gPiA+IC0gICAgICAg
+fQ0KPiA+ID4gLSAgICAgICByZXR1cm47DQo+ID4gPiArICAgICAgIGludCBpOw0KPiA+ID4gKw0K
+PiA+ID4gKyAgICAgICAvKiBNYWtlIHN1cmUgdGhhdCBBVkIgcXVldWVzIGFyZSBwcm9jZXNzZWQg
+Zmlyc3QuICovDQo+ID4gPiArICAgICAgIGZvciAoaSA9IGZlcC0+bnVtX3J4X3F1ZXVlcyAtIDE7
+IGkgPj0gMDsgaS0tKQ0KPiA+DQo+ID4gSW4gZmFjdCwgeW91IGFscmVhZHkgY2hhbmdlIHRoZSBx
+dWV1ZSBwcmlvcml0eSBjb21wYXJpbmcgYmVmb3JlLg0KPiA+IEJlZm9yZTogcXVldWUxIChBdWRp
+bykgPiBxdWV1ZTIgKHZpZGVvKSA+IHF1ZXVlMCAoYmVzdCBlZmZvcnQpDQo+ID4gTm93OiBxdWV1
+ZTIgKHZpZGVvKSA+IHF1ZXVlMSAoQXVkaW8pID4gcXVldWUwIChiZXN0IGVmZm9ydCkNCj4gDQo+
+IFllcywgdGhhbmsgeW91LCBJIG1lYW50IHRvIGFzayBhYm91dCB0aGF0LiBJIHdhcyBsb29raW5n
+IGF0IHRoZXNlIGRlZmluaXRpb25zIGluDQo+IGZlYy5oOg0KPiANCj4gI2RlZmluZSBSQ01SX0NN
+UF8xICAgICAgICAgICAgICAoUkNNUl9DTVBfQ0ZHKDAsIDApIHwNCj4gUkNNUl9DTVBfQ0ZHKDEs
+IDEpIHwgXA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFJDTVJfQ01QX0NGRygy
+LCAyKSB8DQo+IFJDTVJfQ01QX0NGRygzLCAzKSkNCj4gI2RlZmluZSBSQ01SX0NNUF8yICAgICAg
+ICAgICAgICAoUkNNUl9DTVBfQ0ZHKDQsIDApIHwNCj4gUkNNUl9DTVBfQ0ZHKDUsIDEpIHwgXA0K
+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFJDTVJfQ01QX0NGRyg2LCAyKSB8DQo+
+IFJDTVJfQ01QX0NGRyg3LCAzKSkNCj4gDQo+IEkgcmVhZCB0aGF0IGFzIFBDUCAwLTMgYmVpbmcg
+bWFwcGVkIHRvIHF1ZXVlIDEgYW5kIDQtNyB0byBxdWV1ZSAyLiBUaGF0IGxlZA0KPiBtZSB0byBi
+ZWxpZXZlIHRoYXQgdGhlIG9yZGVyIHNob3VsZCBiZSAyLCAxLCAwLiBJcyB0aGUgZHJpdmVyIHN1
+cHBvc2VkIHRvDQo+IHByaW9yaXRpemUgUENQIDAtMyBvdmVyIDQtNywgb3IgaGF2ZSBJIG1pc3Vu
+ZGVyc3Rvb2QgY29tcGxldGVseT8NCg0KVGhlIGNvbmZpZ3VyYXRpb24gaXMgZm9yIFJYIHF1ZXVl
+cy4NCklmIGNvbnNpZGVyIFBDUCAwIGlzIGhpZ2ggcHJpb3JpdHksIHRoYXQgZG9lcyBtYWtlIHNl
+bnNlOiAyID4gMSA+IDAuDQo+IA0KPiA+IE90aGVyIGxvZ2ljIHNlZW1zIGZpbmUsIGJ1dCB5b3Ug
+c2hvdWxkIHJ1biBzdHJlc3MgdGVzdCB0byBhdm9pZCBhbnkNCj4gPiBibG9jayBpc3N1ZSBzaW5j
+ZSB0aGUgZHJpdmVyIGNvdmVyIG1vcmUgdGhhbiAyMCBpbXggcGxhdGZvcm1zLg0KPiANCj4gSSBo
+YXZlIHJ1biBzdHJlc3MgdGVzdHMgYW5kIEkgb2JzZXJ2ZSB0aGF0IHdlJ3JlIGRlcXVldWluZyBh
+Ym91dCBhcyBtYW55DQo+IHBhY2tldHMgZnJvbSBlYWNoIHF1ZXVlIHdoZW4gdGhlIGluY29taW5n
+IGxpbmUgaXMgZmlsbGVkIHdpdGggMS8zIGVhY2ggb2YNCj4gdW50YWdnZWQvdGFnZ2VkLXBjcDAv
+dGFnZ2VkLXBjcDcgdHJhZmZpYzoNCj4gDQo+IHJvb3RAZW52b3k6fiMgcGx5IC1jICJzbGVlcCAy
+IiAnDQo+IHQ6bmV0L25hcGlfZ3JvX3JlY2VpdmVfZW50cnkgew0KPiAgICAgQFtkYXRhLT5uYXBp
+X2lkLCBkYXRhLT5xdWV1ZV9tYXBwaW5nXSA9IGNvdW50KCk7IH0nDQo+IHBseTogYWN0aXZlDQo+
+IHBseTogZGVhY3RpdmF0aW5nDQo+IA0KPiBAOg0KPiB7IDY2LCAzIH06IDE2NTgxMQ0KPiB7IDY2
+LCAyIH06IDE2NzczMw0KPiB7IDY2LCAxIH06IDE2OTQ3MA0KPiANCj4gSXQgc2VlbXMgbGlrZSB0
+aGlzIGlzIGR1ZSB0byAiUmVjZWl2ZSBmbHVzaGluZyIgbm90IGJlaW5nIGVuYWJsZWQgaW4gdGhl
+IEZFQy4gSWYgSQ0KPiBtYW51YWxseSBlbmFibGUgaXQgZm9yIHF1ZXVlIDAsIHByb2Nlc3Npbmcg
+aXMgcmVzdHJpY3RlZCB0byBvbmx5IHF1ZXVlIDEgYW5kIDI6DQo+IA0KPiByb290QGVudm95On4j
+IGRldm1lbSAweDMwYmUwMWYwIDMyICQoKDEgPDwgMykpIHJvb3RAZW52b3k6fiMgcGx5IC1jDQo+
+ICJzbGVlcCAyIiAnDQo+IHQ6bmV0L25hcGlfZ3JvX3JlY2VpdmVfZW50cnkgew0KPiAgICAgQFtk
+YXRhLT5uYXBpX2lkLCBkYXRhLT5xdWV1ZV9tYXBwaW5nXSA9IGNvdW50KCk7IH0nDQo+IHBseTog
+YWN0aXZlDQo+IHBseTogZGVhY3RpdmF0aW5nDQo+IA0KPiBAOg0KPiB7IDY2LCAyIH06IDI3NTA1
+NQ0KPiB7IDY2LCAzIH06IDI3NTg3MA0KPiANCj4gRW5hYmxpbmcgZmx1c2hpbmcgb24gcXVldWUg
+MSwgZm9jdXNlcyBhbGwgcHJvY2Vzc2luZyBvbiBxdWV1ZSAyOg0KDQpQbGVhc2UgZG9uJ3QgZW5h
+YmxlIGZsdXNoLCB0aGVyZSBoYXZlIG9uZSBJQyBpc3N1ZS4NCk5YUCBsYXRlc3QgZXJyYXRhIGRv
+YyBzaG91bGQgaW5jbHVkZXMgdGhlIGlzc3VlLCBidXQgdGhlIGZsdXNoIGlzc3VlIHdhcw0KZml4
+ZWQgYXQgaW14OGR4bCBwbGF0Zm9ybS4NCj4gDQo+IHJvb3RAZW52b3k6fiMgZGV2bWVtIDB4MzBi
+ZTAxZjAgMzIgJCgoMyA8PCAzKSkgcm9vdEBlbnZveTp+IyBwbHkgLWMNCj4gInNsZWVwIDIiICcN
+Cj4gdDpuZXQvbmFwaV9ncm9fcmVjZWl2ZV9lbnRyeSB7DQo+ICAgICBAW2RhdGEtPm5hcGlfaWQs
+IGRhdGEtPnF1ZXVlX21hcHBpbmddID0gY291bnQoKTsgfScNCj4gcGx5OiBhY3RpdmUNCj4gcGx5
+OiBkZWFjdGl2YXRpbmcNCj4gDQo+IEA6DQo+IHsgNjYsIDMgfTogNTQ1NDQyDQo+IA0KPiBDaGFu
+Z2luZyB0aGUgZGVmYXVsdCBRb1Mgc2V0dGluZ3MgZmVlbHMgbGlrZSBhIHNlcGFyYXRlIGNoYW5n
+ZSwgYnV0IEkgY2FuDQo+IHN1Ym1pdCBhIHYzIGFzIGEgc2VyaWVzIGlmIHlvdSB3YW50Pw0KDQpJ
+IHRoaW5rIHRoZSB2ZXJzaW9uIGlzIGZpbmUuICBObyBuZWVkIHRvIHN1Ym1pdCBzZXBhcmF0ZSBj
+aGFuZ2UuDQo+IA0KPiBJIGRvIG5vdCBoYXZlIGFjY2VzcyB0byBhIHNpbmdsZS1xdWV1ZSBpTVgg
+ZGV2aWNlLCB3b3VsZCBpdCBiZSBwb3NzaWJsZSBmb3IgeW91DQo+IHRvIHRlc3QgdGhpcyBjaGFu
+Z2Ugb24gc3VjaCBhIGRldmljZT8NCg0KWWVzLCBJIHdpbGwgZG8gc3RyZXNzIHRlc3Qgb24gaW14
+OCBhbmQgbGVnYWN5IHBsYXRmb3JtIGxpa2UgaW14NiB3aXRoIHNpbmdsZS1xdWV1ZSwNCnRyeSB0
+byBhdm9pZCBhbnkgYmxvY2sgaXNzdWUuDQpUaGFuayB5b3UgIQ0KDQo=
