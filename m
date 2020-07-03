@@ -2,232 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBD16213FAD
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 20:53:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84B91213FD2
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 21:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726318AbgGCSxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 14:53:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55466 "EHLO
+        id S1726514AbgGCTTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 15:19:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726147AbgGCSxL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 14:53:11 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B658C061794
-        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 11:53:10 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id b185so19007877qkg.1
-        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 11:53:10 -0700 (PDT)
+        with ESMTP id S1726236AbgGCTTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 15:19:51 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3A6C061794
+        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 12:19:50 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id e64so28498219iof.12
+        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 12:19:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FHdoMbsVLyly8PIUrDuKAS3JNiwkm095qfU0jAO1Mpk=;
-        b=C55dCCty5JKTqVgqx9EIaGszTG5hiuxmlSHsK2/0b8KoJwdLtveiF+fD9/1X792qtK
-         WDTNP31IUkR24b14B64enErl4jJP0kkXeJoFNoBAvNtnjQOJKQ5dsL5kp8oc8QvuLHjA
-         cLGg219VE/ubjHhDryYX4jko1PSbIFSFNRB136aGrVbJw6uLi+WGLPeZFaS5kvVkkd0C
-         ypQhG64/Af2FN/GWOVVirp0240NrVr3aFfMKZcLdVJaHIKGkYsmkJj9QOHldV85hIHpX
-         /VEKR3IcoR6Vy7jKUjwf7f/WHqhAFi3uDGl1t3HtrW+bBhPV4dhPsnHTcvmC8tONqlBx
-         GbmA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=2pwLCKZCNv25/ycwjdAenhsrMK+b58nPM8d8dSR+7SE=;
+        b=DtdrgqErUK3c5YjV64C8OWLvykRDZ389aTxOkt4cPA5HWPnnaXriMqwZm+6fSYW3EZ
+         tMfobZWhFCjhG9sOKz+XBDT3zo4tUWF3fFpB4KhvmGen6ePaVOWj6ROSf7tVGCeHRFMt
+         LMb2X69plIZImrQ3rJV6/0JYoPhYjhygfdt5THmirUmilFkTjs7483srvU6033PA+TBS
+         s5nw0IIncBmz/oEv2M6EizhWJV3qcybzlZknoL+8TsJzO3cvnDSod4KY5/zONSXBgqk5
+         vBzdv0q1yDpcCM78Kob3gAB4kZq/lhc+SklertUTjo8j/yGsgUPhqyXGD09/O7zxPOBK
+         18aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FHdoMbsVLyly8PIUrDuKAS3JNiwkm095qfU0jAO1Mpk=;
-        b=UuSkjDiGihc+/ShzMA47Kx4/hxmLJ7Ui/q+fGgYuy+SsmlagNRv3S8che7Htp0xZ89
-         JSZZ/wNdc1UpXm32KJnvGOYuwLn4cBEPEGkFGusp28GiZNZmpPGp8izEkjBHo4VVkSs2
-         74qlqvrhAq0EhXJ3IMA/nIOMyF6Lxsof59H0hijg5yp7rvQywTs2Tj6/GmmVP+x4tzBA
-         f1xGAdrbaVJZwJXy+CvxDl8X+fwvaukJbn17Uwv+ijgrsEvZsVKANOxpoa6GJvJbVYLv
-         /i8eZSGzK8bCne2GBi9NJXiRHRZRMnqCpas+TxBk2WC/jzLS5kvtqiTPJ7YiEMXLdYK6
-         E9GQ==
-X-Gm-Message-State: AOAM532UvUemq7HNl2crkzKGLOaEfrupGT/i5c7m6uJPhoKAkYnWRc+F
-        kj6IqZZnCxt1RoA2g0OmRINcQbng
-X-Google-Smtp-Source: ABdhPJzXUe9zLBuq16Yw4V0PIHsFa75MmcsCJhjcnvam7dSYu37GFjcirZ4HMmJzR9mDpiRxXwAB9A==
-X-Received: by 2002:a05:620a:989:: with SMTP id x9mr27748175qkx.66.1593802389088;
-        Fri, 03 Jul 2020 11:53:09 -0700 (PDT)
-Received: from tannerlove.nyc.corp.google.com ([2620:0:1003:316:f693:9fff:feea:df57])
-        by smtp.gmail.com with ESMTPSA id u6sm13130968qtk.9.2020.07.03.11.53.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jul 2020 11:53:08 -0700 (PDT)
-From:   Tanner Love <tannerlove.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, tannerlove <tannerlove@google.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next] selftests/net: add ipv6 test coverage in rxtimestamp test
-Date:   Fri,  3 Jul 2020 14:53:06 -0400
-Message-Id: <20200703185306.2858752-1-tannerlove.kernel@gmail.com>
-X-Mailer: git-send-email 2.27.0.212.ge8ba1cc988-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2pwLCKZCNv25/ycwjdAenhsrMK+b58nPM8d8dSR+7SE=;
+        b=rG8pThTp6bRycdEluBBEsTfm9/XLRWh06PBNBABTPJ3PGpVj9maoUk1sr3Cemg/pVM
+         SmltnoNLwVFeE759pBuAQyYaKnn984CwcmEyfDx83uBSUzF9Z+PjWpvqUe0NgalG2gSn
+         L5ipfejMHmBhKo5rPYQaTnXYglVgp+ZSwvXigEo6LsF4r6DT9Kuzbsb7yFbva8A8mp3R
+         Gv4v4dgoAAWwkaSYVu38c3T9gTjR0V/lg3AeFJgJv2PuHBVQGRbojvfLWIcVO2BMLnDS
+         8Q+VT5yQzNpSIiM8Yo8/aqY/cQOyDbZPndl6evPgdfN4TLkgEdav0iEeZmMa3RBQog9J
+         GgZg==
+X-Gm-Message-State: AOAM532tnknwDG8ckDbtQUM7GbLNNJYFYmJwMmpQH946WYM14QTn8f3s
+        G3PpvcCG5cqBT5sFDo4CRocOkk/MOQuFvr6QsgS8snmNaCk=
+X-Google-Smtp-Source: ABdhPJyFDPIYWvawKCXN60JR2HLAbtjgphufK6rP/A31cYE1M/JyM3hpW6jQFAUhpk18/xzki6rcZ7MULLMjbs5hYw0=
+X-Received: by 2002:a02:1a08:: with SMTP id 8mr39596917jai.124.1593803990094;
+ Fri, 03 Jul 2020 12:19:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200703152239.471624-1-toke@redhat.com>
+In-Reply-To: <20200703152239.471624-1-toke@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 3 Jul 2020 12:19:38 -0700
+Message-ID: <CAM_iQpVbm0DGGjsdtJD0esuyx9Xmjo=3VCg=C5feqDDbFM+6XQ@mail.gmail.com>
+Subject: Re: [PATCH net v2] sched: consistently handle layer3 header accesses
+ in the presence of VLANs
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Cake List <cake@lists.bufferbloat.net>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Ilya Ponetayev <i.ponetaev@ndmsystems.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: tannerlove <tannerlove@google.com>
+On Fri, Jul 3, 2020 at 8:22 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
+> diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
+> index b05e855f1ddd..d0c1cb0d264d 100644
+> --- a/include/linux/if_vlan.h
+> +++ b/include/linux/if_vlan.h
+> @@ -308,6 +308,35 @@ static inline bool eth_type_vlan(__be16 ethertype)
+>         }
+>  }
+>
+> +/* A getter for the SKB protocol field which will handle VLAN tags consi=
+stently
+> + * whether VLAN acceleration is enabled or not.
+> + */
+> +static inline __be16 skb_protocol(const struct sk_buff *skb, bool skip_v=
+lan)
+> +{
+> +       unsigned int offset =3D skb_mac_offset(skb) + sizeof(struct ethhd=
+r);
+> +       __be16 proto =3D skb->protocol;
+> +       struct vlan_hdr vhdr, *vh;
+> +
+> +       if (!skip_vlan)
+> +               /* VLAN acceleration strips the VLAN header from the skb =
+and
+> +                * moves it to skb->vlan_proto
+> +                */
+> +               return skb_vlan_tag_present(skb) ? skb->vlan_proto : prot=
+o;
+> +
+> +       while (eth_type_vlan(proto)) {
+> +               vh =3D skb_header_pointer(skb, offset, sizeof(vhdr), &vhd=
+r);
+> +               if (!vh)
+> +                       break;
+> +
+> +               proto =3D vh->h_vlan_encapsulated_proto;
+> +               offset +=3D sizeof(vhdr);
+> +       }
+> +
+> +       return proto;
+> +}
+> +
+> +
+> +
 
-Add the options --ipv4, --ipv6 to specify running over ipv4 and/or
-ipv6. If neither is specified, then run both.
+Just nit: too many newlines here. Please run checkpatch.pl.
 
-Signed-off-by: Tanner Love <tannerlove@google.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
----
- tools/testing/selftests/net/rxtimestamp.c | 85 ++++++++++++++++-------
- 1 file changed, 59 insertions(+), 26 deletions(-)
 
-diff --git a/tools/testing/selftests/net/rxtimestamp.c b/tools/testing/selftests/net/rxtimestamp.c
-index d4ea86a13e52..c599d371cbbe 100644
---- a/tools/testing/selftests/net/rxtimestamp.c
-+++ b/tools/testing/selftests/net/rxtimestamp.c
-@@ -117,6 +117,8 @@ static struct option long_options[] = {
- 	{ "udp", no_argument, 0, 'u' },
- 	{ "ip", no_argument, 0, 'i' },
- 	{ "strict", no_argument, 0, 'S' },
-+	{ "ipv4", no_argument, 0, '4' },
-+	{ "ipv6", no_argument, 0, '6' },
- 	{ NULL, 0, NULL, 0 },
- };
- 
-@@ -272,37 +274,55 @@ void config_so_flags(int rcv, struct options o)
- 		error(1, errno, "Failed to set SO_TIMESTAMPING");
- }
- 
--bool run_test_case(struct socket_type s, struct test_case t)
-+bool run_test_case(struct socket_type *s, int test_num, char ip_version,
-+		   bool strict)
- {
--	int port = (s.type == SOCK_RAW) ? 0 : next_port++;
-+	union {
-+		struct sockaddr_in6 addr6;
-+		struct sockaddr_in addr4;
-+		struct sockaddr addr_un;
-+	} addr;
- 	int read_size = op_size;
--	struct sockaddr_in addr;
-+	int src, dst, rcv, port;
-+	socklen_t addr_size;
- 	bool failed = false;
--	int src, dst, rcv;
- 
--	src = socket(AF_INET, s.type, s.protocol);
-+	port = (s->type == SOCK_RAW) ? 0 : next_port++;
-+	memset(&addr, 0, sizeof(addr));
-+	if (ip_version == '4') {
-+		addr.addr4.sin_family = AF_INET;
-+		addr.addr4.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-+		addr.addr4.sin_port = htons(port);
-+		addr_size = sizeof(addr.addr4);
-+		if (s->type == SOCK_RAW)
-+			read_size += 20;  /* for IPv4 header */
-+	} else {
-+		addr.addr6.sin6_family = AF_INET6;
-+		addr.addr6.sin6_addr = in6addr_loopback;
-+		addr.addr6.sin6_port = htons(port);
-+		addr_size = sizeof(addr.addr6);
-+	}
-+	printf("Starting testcase %d over ipv%c...\n", test_num, ip_version);
-+	src = socket(addr.addr_un.sa_family, s->type,
-+		     s->protocol);
- 	if (src < 0)
- 		error(1, errno, "Failed to open src socket");
- 
--	dst = socket(AF_INET, s.type, s.protocol);
-+	dst = socket(addr.addr_un.sa_family, s->type,
-+		     s->protocol);
- 	if (dst < 0)
- 		error(1, errno, "Failed to open dst socket");
- 
--	memset(&addr, 0, sizeof(addr));
--	addr.sin_family = AF_INET;
--	addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
--	addr.sin_port = htons(port);
--
--	if (bind(dst, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-+	if (bind(dst, &addr.addr_un, addr_size) < 0)
- 		error(1, errno, "Failed to bind to port %d", port);
- 
--	if (s.type == SOCK_STREAM && (listen(dst, 1) < 0))
-+	if (s->type == SOCK_STREAM && (listen(dst, 1) < 0))
- 		error(1, errno, "Failed to listen");
- 
--	if (connect(src, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-+	if (connect(src, &addr.addr_un, addr_size) < 0)
- 		error(1, errno, "Failed to connect");
- 
--	if (s.type == SOCK_STREAM) {
-+	if (s->type == SOCK_STREAM) {
- 		rcv = accept(dst, NULL, NULL);
- 		if (rcv < 0)
- 			error(1, errno, "Failed to accept");
-@@ -311,17 +331,22 @@ bool run_test_case(struct socket_type s, struct test_case t)
- 		rcv = dst;
- 	}
- 
--	config_so_flags(rcv, t.sockopt);
-+	config_so_flags(rcv, test_cases[test_num].sockopt);
- 	usleep(20000); /* setsockopt for SO_TIMESTAMPING is asynchronous */
- 	do_send(src);
- 
--	if (s.type == SOCK_RAW)
--		read_size += 20;  /* for IP header */
--	failed = do_recv(rcv, read_size, t.expected);
-+	failed = do_recv(rcv, read_size, test_cases[test_num].expected);
- 
- 	close(rcv);
- 	close(src);
- 
-+	if (failed) {
-+		printf("FAILURE in testcase %d over ipv%c ", test_num,
-+		       ip_version);
-+		print_test_case(&test_cases[test_num]);
-+		if (!strict && test_cases[test_num].warn_on_fail)
-+			failed = false;
-+	}
- 	return failed;
- }
- 
-@@ -329,6 +354,8 @@ int main(int argc, char **argv)
- {
- 	bool all_protocols = true;
- 	bool all_tests = true;
-+	bool cfg_ipv4 = false;
-+	bool cfg_ipv6 = false;
- 	bool strict = false;
- 	int arg_index = 0;
- 	int failures = 0;
-@@ -369,6 +396,12 @@ int main(int argc, char **argv)
- 		case 'S':
- 			strict = true;
- 			break;
-+		case '4':
-+			cfg_ipv4 = true;
-+			break;
-+		case '6':
-+			cfg_ipv6 = true;
-+			break;
- 		default:
- 			error(1, 0, "Failed to parse parameters.");
- 		}
-@@ -382,14 +415,14 @@ int main(int argc, char **argv)
- 		for (t = 0; t < ARRAY_SIZE(test_cases); t++) {
- 			if (!all_tests && !test_cases[t].enabled)
- 				continue;
--
--			printf("Starting testcase %d...\n", t);
--			if (run_test_case(socket_types[s], test_cases[t])) {
--				if (strict || !test_cases[t].warn_on_fail)
-+			if (cfg_ipv4 || !cfg_ipv6)
-+				if (run_test_case(&socket_types[s], t, '4',
-+						  strict))
-+					failures++;
-+			if (cfg_ipv6 || !cfg_ipv4)
-+				if (run_test_case(&socket_types[s], t, '6',
-+						  strict))
- 					failures++;
--				printf("FAILURE in test case ");
--				print_test_case(&test_cases[t]);
--			}
- 		}
- 	}
- 	if (!failures)
--- 
-2.27.0.212.ge8ba1cc988-goog
+>  static inline bool vlan_hw_offload_capable(netdev_features_t features,
+>                                            __be16 proto)
+>  {
+> diff --git a/include/net/inet_ecn.h b/include/net/inet_ecn.h
+> index 0f0d1efe06dd..82763ba597f2 100644
+> --- a/include/net/inet_ecn.h
+> +++ b/include/net/inet_ecn.h
+> @@ -4,6 +4,7 @@
+>
+>  #include <linux/ip.h>
+>  #include <linux/skbuff.h>
+> +#include <linux/if_vlan.h>
+>
+>  #include <net/inet_sock.h>
+>  #include <net/dsfield.h>
+> @@ -172,7 +173,7 @@ static inline void ipv6_copy_dscp(unsigned int dscp, =
+struct ipv6hdr *inner)
+>
+>  static inline int INET_ECN_set_ce(struct sk_buff *skb)
+>  {
+> -       switch (skb->protocol) {
+> +       switch (skb_protocol(skb, true)) {
+>         case cpu_to_be16(ETH_P_IP):
+>                 if (skb_network_header(skb) + sizeof(struct iphdr) <=3D
+>                     skb_tail_pointer(skb))
+> @@ -191,7 +192,7 @@ static inline int INET_ECN_set_ce(struct sk_buff *skb=
+)
+>
+>  static inline int INET_ECN_set_ect1(struct sk_buff *skb)
+>  {
+> -       switch (skb->protocol) {
+> +       switch (skb_protocol(skb, true)) {
+>         case cpu_to_be16(ETH_P_IP):
+>                 if (skb_network_header(skb) + sizeof(struct iphdr) <=3D
+>                     skb_tail_pointer(skb))
 
+These two helpers are called by non-net_sched too, are you sure
+your change is correct for them too?
+
+For example, IP6_ECN_decapsulate() uses skb->protocol then calls
+INET_ECN_decapsulate() which calls the above, after your change
+they use skb_protocol(). This looks inconsistent to me.
+
+Thanks.
