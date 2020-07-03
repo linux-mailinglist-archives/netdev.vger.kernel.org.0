@@ -2,97 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E63F821406E
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 22:48:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 019202140BD
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 23:23:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726789AbgGCUsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 16:48:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41606 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726379AbgGCUsQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jul 2020 16:48:16 -0400
-Received: from localhost (unknown [151.48.138.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B463120885;
-        Fri,  3 Jul 2020 20:48:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593809296;
-        bh=VwL3HsTOc8bmJDO/IUg/niAsa4TOrnwOX5/tHgoTjDY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OYZn+l7/EAiMIXMv1HI5QkaBQrlndDC+1S5vZrRWPxysfj5sUit+0YKG7BeS4RIe1
-         lrc7NkYYALVOdWY1zMffLNVedQVt3VB/om70wgadg/ZvwqgU2PO3Lw6nYhNbuEUT1x
-         UTSPaE/OqC+C4sxPsGoHmmdKfIszDRPFJeqeZRVs=
-Date:   Fri, 3 Jul 2020 22:48:10 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, brouer@redhat.com, toke@redhat.com,
-        lorenzo.bianconi@redhat.com, dsahern@kernel.org,
-        andrii.nakryiko@gmail.com
-Subject: Re: [PATCH v5 bpf-next 5/9] bpf: cpumap: add the possibility to
- attach an eBPF program to cpumap
-Message-ID: <20200703204810.GB1321275@localhost.localdomain>
-References: <cover.1593521029.git.lorenzo@kernel.org>
- <a6bb83a429f3b073e97f81ec3935b8ebe89fbd71.1593521030.git.lorenzo@kernel.org>
- <1f4af1f3-10cf-57ca-4171-11d3bff51c99@iogearbox.net>
+        id S1727004AbgGCVWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 17:22:54 -0400
+Received: from www62.your-server.de ([213.133.104.62]:60170 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726488AbgGCVWx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 17:22:53 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jrT8z-0007MC-V1; Fri, 03 Jul 2020 23:22:50 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jrT8z-000KUz-O9; Fri, 03 Jul 2020 23:22:49 +0200
+Subject: Re: [bpf-next PATCH v2] bpf: fix bpftool without skeleton code
+ enabled
+To:     John Fastabend <john.fastabend@gmail.com>, yhs@fb.com,
+        andriin@fb.com, ast@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <159375071997.14984.17404504293832961401.stgit@john-XPS-13-9370>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <613cfcd0-a4e2-d193-6d23-883f27a35a4a@iogearbox.net>
+Date:   Fri, 3 Jul 2020 23:22:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="4bRzO86E/ozDv8r1"
-Content-Disposition: inline
-In-Reply-To: <1f4af1f3-10cf-57ca-4171-11d3bff51c99@iogearbox.net>
+In-Reply-To: <159375071997.14984.17404504293832961401.stgit@john-XPS-13-9370>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25862/Fri Jul  3 15:56:19 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 7/3/20 6:31 AM, John Fastabend wrote:
+> Fix segfault from bpftool by adding emit_obj_refs_plain when skeleton
+> code is disabled.
+> 
+> Tested by deleting BUILD_BPF_SKELS in Makefile. We found this doing
+> backports for Cilium when a testing image pulled in latest bpf-next
+> bpftool, but kept using an older clang-7.
+> 
+> # ./bpftool prog show
+> Error: bpftool built without PID iterator support
+> 3: cgroup_skb  tag 7be49e3934a125ba  gpl
+>          loaded_at 2020-07-01T08:01:29-0700  uid 0
+> Segmentation fault
+> 
+> Reported-by: Joe Stringer <joe@wand.net.nz>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> Acked-by: Yonghong Song <yhs@fb.com>
 
---4bRzO86E/ozDv8r1
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> On 6/30/20 2:49 PM, Lorenzo Bianconi wrote:
-> [...]
-
-[...]
-
-> >   	old_rcpu =3D xchg(&cmap->cpu_map[key_cpu], rcpu);
-> >   	if (old_rcpu) {
-> > +		if (old_rcpu->prog)
-> > +			bpf_prog_put(old_rcpu->prog);
-> >   		call_rcu(&old_rcpu->rcu, __cpu_map_entry_free);
-> >   		INIT_WORK(&old_rcpu->kthread_stop_wq, cpu_map_kthread_stop);
-> >   		schedule_work(&old_rcpu->kthread_stop_wq);
->=20
-> Hm, not quite sure I follow the logic here. Why is the bpf_prog_put() not=
- placed inside
-> __cpu_map_entry_free(), for example? Wouldn't this at least leave a poten=
-tial small race
-> window of UAF given the rest is still live? If we already piggy-back from=
- RCU side on
-> rcpu entry, why not having it in __cpu_map_entry_free()?
-
-ack right, thanks for spotting this issue. I guess we can even move
-"bpf_prog_put(rcpu->prog)" in put_cpu_map_entry() so the last consumer
-of bpf_cpu_map_entry will free the attached program. Agree?
-
-Regards,
-Lorenzo
-
->=20
-> Thanks,
-> Daniel
-
---4bRzO86E/ozDv8r1
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXv+ZhwAKCRA6cBh0uS2t
-rIaPAQDI2dsANFG7ROCWhtnyEh5uM7SznjFrszCsJtv+oRLxNQD5Ad9bZMszE2k3
-kz9N2zbUU24X3g4Lf45oPAZ6v9A+Xgw=
-=/VV4
------END PGP SIGNATURE-----
-
---4bRzO86E/ozDv8r1--
+Applied, thanks!
