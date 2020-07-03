@@ -2,114 +2,778 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7761D213C8A
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 17:29:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 539E8213C8E
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 17:31:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726446AbgGCP3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 11:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726327AbgGCP3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 11:29:46 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B8EC08C5DF
-        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 08:29:45 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id e8so15262408pgc.5
-        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 08:29:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bapVTkxrkDSr2XwVCYXriZF3VIfxdvk4n+A7b5cGRV8=;
-        b=P/DUcKMY9ZUmkYbHM3c/oGDDZoIQHKJ1bfrQLyn46foMQ3J3tT9FLhLkZlc794zPn2
-         Fk++ph/LEEYCK8VFUSiccAnQUOazsmV+qDJ35SCd6PJw06pkAdBmnYn1cpRGt080A3f2
-         DpJGxyvMiM5x7Gu5veUuANfXZIQTJ8OEKzpFQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bapVTkxrkDSr2XwVCYXriZF3VIfxdvk4n+A7b5cGRV8=;
-        b=hHvR3hB/2ubwSe4FtwKSQCZ2sAmVYjtEQbNfVCnDKCZnAV5fJtyumULoukukOdD2ax
-         2QCiz54o5vsY4MTwz/dfgXb9l9+aBFpKSt3RhWoyTgJKHMyrqm6em2gvMVxvAlHKCAzw
-         u6OZ9DJFAWZuTcPgW2OioNx2A2+78i7MMPzVzvtQo6GHpI9UzNrl/I/BjE8AUDG3ok+l
-         aGSDvNh0WGupQ9Kq5OnfoxltrnAeVE6GAbid1/cox5VY8S2upIi8Uy3AR7ymS6spuJ/m
-         msfth9RiUFDbHl8gVX9GWxoD5LBUBGBvdMIiNZL/b6phGDDU/qZohSCNHnKJccYxEb3w
-         Sg1g==
-X-Gm-Message-State: AOAM532ykK8eR4XqtQxQXJ/dbYPf2DK4Oq2PeTOxPWqIQ+5XqV04MSQE
-        vKAJ3PON+iG8rPE5ZgjLSezYsw==
-X-Google-Smtp-Source: ABdhPJxpcD4lKLLEtu0ZoqVhxMNd7PtMV9p8XukBzAD62b4Cw4QOUGh7aR497Xc8ltal1jh5m/p/2A==
-X-Received: by 2002:a62:4e06:: with SMTP id c6mr33569844pfb.296.1593790185191;
-        Fri, 03 Jul 2020 08:29:45 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id y200sm12034670pfb.33.2020.07.03.08.29.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jul 2020 08:29:44 -0700 (PDT)
-Date:   Fri, 3 Jul 2020 08:29:43 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Dominik Czarnota <dominik.czarnota@trailofbits.com>,
-        stable@vger.kernel.org, Jessica Yu <jeyu@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Matteo Croce <mcroce@redhat.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Alexander Lobakin <alobakin@dlink.ru>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Ingo Molnar <mingo@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/5] module: Refactor section attr into bin attribute
-Message-ID: <202007030818.99013B6@keescook>
-References: <20200702232638.2946421-1-keescook@chromium.org>
- <20200702232638.2946421-3-keescook@chromium.org>
- <20200703060207.GA6344@kroah.com>
+        id S1726327AbgGCPa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 11:30:56 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54554 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726111AbgGCPaz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 11:30:55 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7BBF820097;
+        Fri,  3 Jul 2020 15:30:53 +0000 (UTC)
+Received: from us4-mdac16-53.at1.mdlocal (unknown [10.110.48.102])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7A69D800A4;
+        Fri,  3 Jul 2020 15:30:53 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.12])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id BAE7440070;
+        Fri,  3 Jul 2020 15:30:52 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 509874005B;
+        Fri,  3 Jul 2020 15:30:52 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 3 Jul 2020
+ 16:30:47 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 01/15] sfc_ef100: add EF100 register definitions
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+References: <14d4694e-2493-abd3-b76e-09e38a01b588@solarflare.com>
+Message-ID: <cae17995-5181-6eb2-936f-8baae4ebb648@solarflare.com>
+Date:   Fri, 3 Jul 2020 16:30:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200703060207.GA6344@kroah.com>
+In-Reply-To: <14d4694e-2493-abd3-b76e-09e38a01b588@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25518.003
+X-TM-AS-Result: No-13.487500-8.000000-10
+X-TMASE-MatchedRID: ibIEkr8D81tbbYRuf3nrh7sHVDDM5xAP1JP9NndNOkVXiLrvhpKLfDgK
+        6rBjXxyirdoLblq9S5qxpjy1K0tDflE/ARLVFdXa/ccgt/EtX/0KF0jiwuWuOA82uCvKa/W3Z5p
+        Ygzoki0N7RY46/Uxiwt1p4pFXcEknC+l9fIf3S2wiJT2HHpbp5nRcKS2ZVub1SStniYWNNsMzsO
+        6ATgBX86/0hwvPwHIDtViGaZDXrEPu95l67BOTncGNvKPnBgOaMVx/3ZYby7826TIMgH4duqzeS
+        lMw0LFeoFb713FUjMs0+NJuUFRWY0NPtXD6ssez2Hlwa3CYC+SkpLxVvVhtnQJJeLA08YFUCega
+        5Z7JsDHf6XR8OlTOIoiruQNU4W5alSu8OHdCGlzVsW2YGqoUtN9wpeMVQJws4PRrWDwT3Utkt/G
+        y1PnwrXtzkEFLGZ8aWFEIwm1bBcYiTMmg/YMPl6IBnfMCFBiC+eBf9ovw8I3Q8Q3V2m2BEK5HeM
+        hFU69uX855nPSztEhEflmA4/diEynh2L2t5ekA6GyDR2ZB+cb4uWNs3hzvQztHHuh6tnef7TP+a
+        ufk0Fhm4wHhkGR/HobaJDQLk7rTDVDz4Ms+n9govbifIQL7GnvEgoSBmr8BKxYuhKouUmHgatMj
+        TrftO54fD1yGUd1fahuLAaHRybIHnVqdmKDRjsxtC7V8+IIPfo0lncdGFFMhLYs2wGUPsTVCHPJ
+        mvwzP7PcsemzX/zHvJDwF+jHcGh3vsmRts5B5cMsyHQ4uKnmcBOdAujM8iDnZfxjBVQRbozK+rU
+        /88IfTUnxbEiZ301D0TDzRiJlV/Nck001Q47yeAiCmPx4NwLTrdaH1ZWqC1kTfEkyaZdz6C0ePs
+        7A07RQEL0GGu6SDKofJb0b1tBamPFC9D9VA+racD43DBZeCVoGDnnv6/Yc=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--13.487500-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25518.003
+X-MDID: 1593790253-Y2AAGb01PyME
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 03, 2020 at 08:02:07AM +0200, Greg Kroah-Hartman wrote:
-> On Thu, Jul 02, 2020 at 04:26:35PM -0700, Kees Cook wrote:
-> > +		sattr->battr.size = 3 /* "0x", "\n" */ + (BITS_PER_LONG / 4);
-> 
-> They get a correct "size" value now, nice!
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/ef100_regs.h | 693 ++++++++++++++++++++++++++
+ 1 file changed, 693 insertions(+)
+ create mode 100644 drivers/net/ethernet/sfc/ef100_regs.h
 
-Yeah, though I do have some concerns that switching to a bin attribute
-changes the userspace behavior a bit. With seq_file-based "show", we
-get a 4096 size, and seeking isn't possible (lseek to non-0 location
-will fail). With the raw "read", we get the right size, but lseek()
-is allowed (but I've got the "read" handler refuse reads starting from
-non-zero). When I reviewed[1] potential readers (elftutils, systemtap,
-kmod), they all seem to do normal things (fopen/fscanf/fclose), so I'm
-hoping this won't be a problem in practice.
+diff --git a/drivers/net/ethernet/sfc/ef100_regs.h b/drivers/net/ethernet/sfc/ef100_regs.h
+new file mode 100644
+index 000000000000..710bbdb19885
+--- /dev/null
++++ b/drivers/net/ethernet/sfc/ef100_regs.h
+@@ -0,0 +1,693 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/****************************************************************************
++ * Driver for Solarflare network controllers and boards
++ * Copyright 2018 Solarflare Communications Inc.
++ * Copyright 2019-2020 Xilinx Inc.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published
++ * by the Free Software Foundation, incorporated herein by reference.
++ */
++
++#ifndef EFX_EF100_REGS_H
++#define EFX_EF100_REGS_H
++
++/* EF100 hardware architecture definitions have a name prefix following
++ * the format:
++ *
++ *     E<type>_<min-rev><max-rev>_
++ *
++ * The following <type> strings are used:
++ *
++ *             MMIO register  Host memory structure
++ * -------------------------------------------------------------
++ * Address     R
++ * Bitfield    RF             SF
++ * Enumerator  FE             SE
++ *
++ * <min-rev> is the first revision to which the definition applies:
++ *
++ *     G: Riverhead
++ *
++ * If the definition has been changed or removed in later revisions
++ * then <max-rev> is the last revision to which the definition applies;
++ * otherwise it is "Z".
++ */
++
++/**************************************************************************
++ *
++ * EF100 registers and descriptors
++ *
++ **************************************************************************
++ */
++
++/* HW_REV_ID_REG: Hardware revision info register */
++#define	ER_GZ_HW_REV_ID 0x00000000
++
++/* NIC_REV_ID: SoftNIC revision info register */
++#define	ER_GZ_NIC_REV_ID 0x00000004
++
++/* NIC_MAGIC: Signature register that should contain a well-known value */
++#define	ER_GZ_NIC_MAGIC 0x00000008
++#define	ERF_GZ_NIC_MAGIC_LBN 0
++#define	ERF_GZ_NIC_MAGIC_WIDTH 32
++#define	EFE_GZ_NIC_MAGIC_EXPECTED 0xEF100FCB
++
++/* MC_SFT_STATUS: MC soft status */
++#define	ER_GZ_MC_SFT_STATUS 0x00000010
++#define	ER_GZ_MC_SFT_STATUS_STEP 4
++#define	ER_GZ_MC_SFT_STATUS_ROWS 2
++
++/* MC_DB_LWRD_REG: MC doorbell register, low word */
++#define	ER_GZ_MC_DB_LWRD 0x00000020
++
++/* MC_DB_HWRD_REG: MC doorbell register, high word */
++#define	ER_GZ_MC_DB_HWRD 0x00000024
++
++/* EVQ_INT_PRIME: Prime EVQ */
++#define	ER_GZ_EVQ_INT_PRIME 0x00000040
++#define	ERF_GZ_IDX_LBN 16
++#define	ERF_GZ_IDX_WIDTH 16
++#define	ERF_GZ_EVQ_ID_LBN 0
++#define	ERF_GZ_EVQ_ID_WIDTH 16
++
++/* INT_AGG_RING_PRIME: Prime interrupt aggregation ring. */
++#define	ER_GZ_INT_AGG_RING_PRIME 0x00000048
++/* defined as ERF_GZ_IDX_LBN 16; access=WO reset=0x0 */
++/* defined as ERF_GZ_IDX_WIDTH 16 */
++#define	ERF_GZ_RING_ID_LBN 0
++#define	ERF_GZ_RING_ID_WIDTH 16
++
++/* EVQ_TMR: EVQ timer control */
++#define	ER_GZ_EVQ_TMR 0x00000104
++#define	ER_GZ_EVQ_TMR_STEP 65536
++#define	ER_GZ_EVQ_TMR_ROWS 1024
++
++/* EVQ_UNSOL_CREDIT_GRANT_SEQ: Grant credits for unsolicited events. */
++#define	ER_GZ_EVQ_UNSOL_CREDIT_GRANT_SEQ 0x00000108
++#define	ER_GZ_EVQ_UNSOL_CREDIT_GRANT_SEQ_STEP 65536
++#define	ER_GZ_EVQ_UNSOL_CREDIT_GRANT_SEQ_ROWS 1024
++
++/* EVQ_DESC_CREDIT_GRANT_SEQ: Grant credits for descriptor proxy events. */
++#define	ER_GZ_EVQ_DESC_CREDIT_GRANT_SEQ 0x00000110
++#define	ER_GZ_EVQ_DESC_CREDIT_GRANT_SEQ_STEP 65536
++#define	ER_GZ_EVQ_DESC_CREDIT_GRANT_SEQ_ROWS 1024
++
++/* RX_RING_DOORBELL: Ring Rx doorbell. */
++#define	ER_GZ_RX_RING_DOORBELL 0x00000180
++#define	ER_GZ_RX_RING_DOORBELL_STEP 65536
++#define	ER_GZ_RX_RING_DOORBELL_ROWS 1024
++#define	ERF_GZ_RX_RING_PIDX_LBN 16
++#define	ERF_GZ_RX_RING_PIDX_WIDTH 16
++
++/* TX_RING_DOORBELL: Ring Tx doorbell. */
++#define	ER_GZ_TX_RING_DOORBELL 0x00000200
++#define	ER_GZ_TX_RING_DOORBELL_STEP 65536
++#define	ER_GZ_TX_RING_DOORBELL_ROWS 1024
++#define	ERF_GZ_TX_RING_PIDX_LBN 16
++#define	ERF_GZ_TX_RING_PIDX_WIDTH 16
++
++/* TX_DESC_PUSH: Tx ring descriptor push. Reserved for future use. */
++#define	ER_GZ_TX_DESC_PUSH 0x00000210
++#define	ER_GZ_TX_DESC_PUSH_STEP 65536
++#define	ER_GZ_TX_DESC_PUSH_ROWS 1024
++
++/* THE_TIME: NIC hardware time */
++#define	ER_GZ_THE_TIME 0x00000280
++#define	ER_GZ_THE_TIME_STEP 65536
++#define	ER_GZ_THE_TIME_ROWS 1024
++#define	ERF_GZ_THE_TIME_SECS_LBN 32
++#define	ERF_GZ_THE_TIME_SECS_WIDTH 32
++#define	ERF_GZ_THE_TIME_NANOS_LBN 2
++#define	ERF_GZ_THE_TIME_NANOS_WIDTH 30
++#define	ERF_GZ_THE_TIME_CLOCK_IN_SYNC_LBN 1
++#define	ERF_GZ_THE_TIME_CLOCK_IN_SYNC_WIDTH 1
++#define	ERF_GZ_THE_TIME_CLOCK_IS_SET_LBN 0
++#define	ERF_GZ_THE_TIME_CLOCK_IS_SET_WIDTH 1
++
++/* PARAMS_TLV_LEN: Size of design parameters area in bytes */
++#define	ER_GZ_PARAMS_TLV_LEN 0x00000c00
++#define	ER_GZ_PARAMS_TLV_LEN_STEP 65536
++#define	ER_GZ_PARAMS_TLV_LEN_ROWS 1024
++
++/* PARAMS_TLV: Design parameters */
++#define	ER_GZ_PARAMS_TLV 0x00000c04
++#define	ER_GZ_PARAMS_TLV_STEP 65536
++#define	ER_GZ_PARAMS_TLV_ROWS 1024
++
++/* EW_EMBEDDED_EVENT */
++#define	ESF_GZ_EV_256_EVENT_LBN 0
++#define	ESF_GZ_EV_256_EVENT_WIDTH 64
++#define	ESE_GZ_EW_EMBEDDED_EVENT_STRUCT_SIZE 64
++
++/* NMMU_PAGESZ_2M_ADDR */
++#define	ESF_GZ_NMMU_2M_PAGE_SIZE_ID_LBN 59
++#define	ESF_GZ_NMMU_2M_PAGE_SIZE_ID_WIDTH 5
++#define	ESE_GZ_NMMU_PAGE_SIZE_2M 9
++#define	ESF_GZ_NMMU_2M_PAGE_ID_LBN 21
++#define	ESF_GZ_NMMU_2M_PAGE_ID_WIDTH 38
++#define	ESF_GZ_NMMU_2M_PAGE_OFFSET_LBN 0
++#define	ESF_GZ_NMMU_2M_PAGE_OFFSET_WIDTH 21
++#define	ESE_GZ_NMMU_PAGESZ_2M_ADDR_STRUCT_SIZE 64
++
++/* PARAM_TLV */
++#define	ESF_GZ_TLV_VALUE_LBN 16
++#define	ESF_GZ_TLV_VALUE_WIDTH 8
++#define	ESE_GZ_TLV_VALUE_LENMIN 8
++#define	ESE_GZ_TLV_VALUE_LENMAX 2040
++#define	ESF_GZ_TLV_LEN_LBN 8
++#define	ESF_GZ_TLV_LEN_WIDTH 8
++#define	ESF_GZ_TLV_TYPE_LBN 0
++#define	ESF_GZ_TLV_TYPE_WIDTH 8
++#define	ESE_GZ_DP_NMMU_GROUP_SIZE 5
++#define	ESE_GZ_DP_EVQ_UNSOL_CREDIT_SEQ_BITS 4
++#define	ESE_GZ_DP_TX_EV_NUM_DESCS_BITS 3
++#define	ESE_GZ_DP_RX_EV_NUM_PACKETS_BITS 2
++#define	ESE_GZ_DP_PARTIAL_TSTAMP_SUB_NANO_BITS 1
++#define	ESE_GZ_DP_PAD 0
++#define	ESE_GZ_PARAM_TLV_STRUCT_SIZE 24
++
++/* PCI_EXPRESS_XCAP_HDR */
++#define	ESF_GZ_PCI_EXPRESS_XCAP_NEXT_LBN 20
++#define	ESF_GZ_PCI_EXPRESS_XCAP_NEXT_WIDTH 12
++#define	ESF_GZ_PCI_EXPRESS_XCAP_VER_LBN 16
++#define	ESF_GZ_PCI_EXPRESS_XCAP_VER_WIDTH 4
++#define	ESE_GZ_PCI_EXPRESS_XCAP_VER_VSEC 1
++#define	ESF_GZ_PCI_EXPRESS_XCAP_ID_LBN 0
++#define	ESF_GZ_PCI_EXPRESS_XCAP_ID_WIDTH 16
++#define	ESE_GZ_PCI_EXPRESS_XCAP_ID_VNDR 0xb
++#define	ESE_GZ_PCI_EXPRESS_XCAP_HDR_STRUCT_SIZE 32
++
++/* RHEAD_BASE_EVENT */
++#define	ESF_GZ_E_TYPE_LBN 60
++#define	ESF_GZ_E_TYPE_WIDTH 4
++#define	ESE_GZ_EF100_EV_DRIVER 5
++#define	ESE_GZ_EF100_EV_MCDI 4
++#define	ESE_GZ_EF100_EV_CONTROL 3
++#define	ESE_GZ_EF100_EV_TX_TIMESTAMP 2
++#define	ESE_GZ_EF100_EV_TX_COMPLETION 1
++#define	ESE_GZ_EF100_EV_RX_PKTS 0
++#define	ESF_GZ_EV_EVQ_PHASE_LBN 59
++#define	ESF_GZ_EV_EVQ_PHASE_WIDTH 1
++#define	ESE_GZ_RHEAD_BASE_EVENT_STRUCT_SIZE 64
++
++/* RHEAD_EW_EVENT */
++#define	ESF_GZ_EV_256_EV32_PHASE_LBN 255
++#define	ESF_GZ_EV_256_EV32_PHASE_WIDTH 1
++#define	ESF_GZ_EV_256_EV32_TYPE_LBN 251
++#define	ESF_GZ_EV_256_EV32_TYPE_WIDTH 4
++#define	ESE_GZ_EF100_EVEW_VIRTQ_DESC 2
++#define	ESE_GZ_EF100_EVEW_TXQ_DESC 1
++#define	ESE_GZ_EF100_EVEW_64BIT 0
++#define	ESE_GZ_RHEAD_EW_EVENT_STRUCT_SIZE 256
++
++/* RX_DESC */
++#define	ESF_GZ_RX_BUF_ADDR_LBN 0
++#define	ESF_GZ_RX_BUF_ADDR_WIDTH 64
++#define	ESE_GZ_RX_DESC_STRUCT_SIZE 64
++
++/* TXQ_DESC_PROXY_EVENT */
++#define	ESF_GZ_EV_TXQ_DP_VI_ID_LBN 128
++#define	ESF_GZ_EV_TXQ_DP_VI_ID_WIDTH 16
++#define	ESF_GZ_EV_TXQ_DP_TXQ_DESC_LBN 0
++#define	ESF_GZ_EV_TXQ_DP_TXQ_DESC_WIDTH 128
++#define	ESE_GZ_TXQ_DESC_PROXY_EVENT_STRUCT_SIZE 144
++
++/* TX_DESC_TYPE */
++#define	ESF_GZ_TX_DESC_TYPE_LBN 124
++#define	ESF_GZ_TX_DESC_TYPE_WIDTH 4
++#define	ESE_GZ_TX_DESC_TYPE_DESC2CMPT 7
++#define	ESE_GZ_TX_DESC_TYPE_MEM2MEM 4
++#define	ESE_GZ_TX_DESC_TYPE_SEG 3
++#define	ESE_GZ_TX_DESC_TYPE_TSO 2
++#define	ESE_GZ_TX_DESC_TYPE_PREFIX 1
++#define	ESE_GZ_TX_DESC_TYPE_SEND 0
++#define	ESE_GZ_TX_DESC_TYPE_STRUCT_SIZE 128
++
++/* VIRTQ_DESC_PROXY_EVENT */
++#define	ESF_GZ_EV_VQ_DP_AVAIL_ENTRY_LBN 144
++#define	ESF_GZ_EV_VQ_DP_AVAIL_ENTRY_WIDTH 16
++#define	ESF_GZ_EV_VQ_DP_VI_ID_LBN 128
++#define	ESF_GZ_EV_VQ_DP_VI_ID_WIDTH 16
++#define	ESF_GZ_EV_VQ_DP_VIRTQ_DESC_LBN 0
++#define	ESF_GZ_EV_VQ_DP_VIRTQ_DESC_WIDTH 128
++#define	ESE_GZ_VIRTQ_DESC_PROXY_EVENT_STRUCT_SIZE 160
++
++/* XIL_CFGBAR_TBL_ENTRY */
++#define	ESF_GZ_CFGBAR_CONT_CAP_OFF_HI_LBN 96
++#define	ESF_GZ_CFGBAR_CONT_CAP_OFF_HI_WIDTH 32
++#define	ESF_GZ_CFGBAR_CONT_CAP_OFFSET_LBN 68
++#define	ESF_GZ_CFGBAR_CONT_CAP_OFFSET_WIDTH 60
++#define	ESE_GZ_CONT_CAP_OFFSET_BYTES_SHIFT 4
++#define	ESF_GZ_CFGBAR_EF100_FUNC_CTL_WIN_OFF_LBN 67
++#define	ESF_GZ_CFGBAR_EF100_FUNC_CTL_WIN_OFF_WIDTH 29
++#define	ESE_GZ_EF100_FUNC_CTL_WIN_OFF_SHIFT 4
++#define	ESF_GZ_CFGBAR_CONT_CAP_OFF_LO_LBN 68
++#define	ESF_GZ_CFGBAR_CONT_CAP_OFF_LO_WIDTH 28
++#define	ESF_GZ_CFGBAR_CONT_CAP_RSV_LBN 67
++#define	ESF_GZ_CFGBAR_CONT_CAP_RSV_WIDTH 1
++#define	ESF_GZ_CFGBAR_EF100_BAR_LBN 64
++#define	ESF_GZ_CFGBAR_EF100_BAR_WIDTH 3
++#define	ESE_GZ_CFGBAR_EF100_BAR_NUM_INVALID 7
++#define	ESE_GZ_CFGBAR_EF100_BAR_NUM_EXPANSION_ROM 6
++#define	ESF_GZ_CFGBAR_CONT_CAP_BAR_LBN 64
++#define	ESF_GZ_CFGBAR_CONT_CAP_BAR_WIDTH 3
++#define	ESE_GZ_CFGBAR_CONT_CAP_BAR_NUM_INVALID 7
++#define	ESE_GZ_CFGBAR_CONT_CAP_BAR_NUM_EXPANSION_ROM 6
++#define	ESF_GZ_CFGBAR_ENTRY_SIZE_LBN 32
++#define	ESF_GZ_CFGBAR_ENTRY_SIZE_WIDTH 32
++#define	ESE_GZ_CFGBAR_ENTRY_SIZE_EF100 12
++#define	ESE_GZ_CFGBAR_ENTRY_HEADER_SIZE 8
++#define	ESF_GZ_CFGBAR_ENTRY_LAST_LBN 28
++#define	ESF_GZ_CFGBAR_ENTRY_LAST_WIDTH 1
++#define	ESF_GZ_CFGBAR_ENTRY_REV_LBN 20
++#define	ESF_GZ_CFGBAR_ENTRY_REV_WIDTH 8
++#define	ESE_GZ_CFGBAR_ENTRY_REV_EF100 0
++#define	ESF_GZ_CFGBAR_ENTRY_FORMAT_LBN 0
++#define	ESF_GZ_CFGBAR_ENTRY_FORMAT_WIDTH 20
++#define	ESE_GZ_CFGBAR_ENTRY_LAST 0xfffff
++#define	ESE_GZ_CFGBAR_ENTRY_CONT_CAP_ADDR 0xffffe
++#define	ESE_GZ_CFGBAR_ENTRY_EF100 0xef100
++#define	ESE_GZ_XIL_CFGBAR_TBL_ENTRY_STRUCT_SIZE 128
++
++/* XIL_CFGBAR_VSEC */
++#define	ESF_GZ_VSEC_TBL_OFF_HI_LBN 64
++#define	ESF_GZ_VSEC_TBL_OFF_HI_WIDTH 32
++#define	ESE_GZ_VSEC_TBL_OFF_HI_BYTES_SHIFT 32
++#define	ESF_GZ_VSEC_TBL_OFF_LO_LBN 36
++#define	ESF_GZ_VSEC_TBL_OFF_LO_WIDTH 28
++#define	ESE_GZ_VSEC_TBL_OFF_LO_BYTES_SHIFT 4
++#define	ESF_GZ_VSEC_TBL_BAR_LBN 32
++#define	ESF_GZ_VSEC_TBL_BAR_WIDTH 4
++#define	ESE_GZ_VSEC_BAR_NUM_INVALID 7
++#define	ESE_GZ_VSEC_BAR_NUM_EXPANSION_ROM 6
++#define	ESF_GZ_VSEC_LEN_LBN 20
++#define	ESF_GZ_VSEC_LEN_WIDTH 12
++#define	ESE_GZ_VSEC_LEN_HIGH_OFFT 16
++#define	ESE_GZ_VSEC_LEN_MIN 12
++#define	ESF_GZ_VSEC_VER_LBN 16
++#define	ESF_GZ_VSEC_VER_WIDTH 4
++#define	ESE_GZ_VSEC_VER_XIL_CFGBAR 0
++#define	ESF_GZ_VSEC_ID_LBN 0
++#define	ESF_GZ_VSEC_ID_WIDTH 16
++#define	ESE_GZ_XILINX_VSEC_ID 0x20
++#define	ESE_GZ_XIL_CFGBAR_VSEC_STRUCT_SIZE 96
++
++/* rh_egres_hclass */
++#define	ESF_GZ_RX_PREFIX_HCLASS_TUN_OUTER_L4_CSUM_LBN 15
++#define	ESF_GZ_RX_PREFIX_HCLASS_TUN_OUTER_L4_CSUM_WIDTH 1
++#define	ESF_GZ_RX_PREFIX_HCLASS_TUN_OUTER_L3_CLASS_LBN 13
++#define	ESF_GZ_RX_PREFIX_HCLASS_TUN_OUTER_L3_CLASS_WIDTH 2
++#define	ESF_GZ_RX_PREFIX_HCLASS_NT_OR_INNER_L4_CSUM_LBN 12
++#define	ESF_GZ_RX_PREFIX_HCLASS_NT_OR_INNER_L4_CSUM_WIDTH 1
++#define	ESF_GZ_RX_PREFIX_HCLASS_NT_OR_INNER_L4_CLASS_LBN 10
++#define	ESF_GZ_RX_PREFIX_HCLASS_NT_OR_INNER_L4_CLASS_WIDTH 2
++#define	ESF_GZ_RX_PREFIX_HCLASS_NT_OR_INNER_L3_CLASS_LBN 8
++#define	ESF_GZ_RX_PREFIX_HCLASS_NT_OR_INNER_L3_CLASS_WIDTH 2
++#define	ESF_GZ_RX_PREFIX_HCLASS_TUNNEL_CLASS_LBN 5
++#define	ESF_GZ_RX_PREFIX_HCLASS_TUNNEL_CLASS_WIDTH 3
++#define	ESF_GZ_RX_PREFIX_HCLASS_L2_N_VLAN_LBN 3
++#define	ESF_GZ_RX_PREFIX_HCLASS_L2_N_VLAN_WIDTH 2
++#define	ESF_GZ_RX_PREFIX_HCLASS_L2_CLASS_LBN 2
++#define	ESF_GZ_RX_PREFIX_HCLASS_L2_CLASS_WIDTH 1
++#define	ESF_GZ_RX_PREFIX_HCLASS_L2_STATUS_LBN 0
++#define	ESF_GZ_RX_PREFIX_HCLASS_L2_STATUS_WIDTH 2
++#define	ESE_GZ_RH_EGRES_HCLASS_STRUCT_SIZE 16
++
++/* sf_driver */
++#define	ESF_GZ_DRIVER_E_TYPE_LBN 60
++#define	ESF_GZ_DRIVER_E_TYPE_WIDTH 4
++#define	ESF_GZ_DRIVER_PHASE_LBN 59
++#define	ESF_GZ_DRIVER_PHASE_WIDTH 1
++#define	ESF_GZ_DRIVER_DATA_LBN 0
++#define	ESF_GZ_DRIVER_DATA_WIDTH 59
++#define	ESE_GZ_SF_DRIVER_STRUCT_SIZE 64
++
++/* sf_ev_rsvd */
++#define	ESF_GZ_EV_RSVD_TBD_NEXT_LBN 34
++#define	ESF_GZ_EV_RSVD_TBD_NEXT_WIDTH 3
++#define	ESF_GZ_EV_RSVD_EVENT_GEN_FLAGS_LBN 30
++#define	ESF_GZ_EV_RSVD_EVENT_GEN_FLAGS_WIDTH 4
++#define	ESF_GZ_EV_RSVD_SRC_QID_LBN 18
++#define	ESF_GZ_EV_RSVD_SRC_QID_WIDTH 12
++#define	ESF_GZ_EV_RSVD_SEQ_NUM_LBN 2
++#define	ESF_GZ_EV_RSVD_SEQ_NUM_WIDTH 16
++#define	ESF_GZ_EV_RSVD_TBD_LBN 0
++#define	ESF_GZ_EV_RSVD_TBD_WIDTH 2
++#define	ESE_GZ_SF_EV_RSVD_STRUCT_SIZE 37
++
++/* sf_flush_evnt */
++#define	ESF_GZ_EV_FLSH_E_TYPE_LBN 60
++#define	ESF_GZ_EV_FLSH_E_TYPE_WIDTH 4
++#define	ESF_GZ_EV_FLSH_PHASE_LBN 59
++#define	ESF_GZ_EV_FLSH_PHASE_WIDTH 1
++#define	ESF_GZ_EV_FLSH_SUB_TYPE_LBN 53
++#define	ESF_GZ_EV_FLSH_SUB_TYPE_WIDTH 6
++#define	ESF_GZ_EV_FLSH_RSVD_LBN 10
++#define	ESF_GZ_EV_FLSH_RSVD_WIDTH 43
++#define	ESF_GZ_EV_FLSH_LABEL_LBN 4
++#define	ESF_GZ_EV_FLSH_LABEL_WIDTH 6
++#define	ESF_GZ_EV_FLSH_FLUSH_TYPE_LBN 0
++#define	ESF_GZ_EV_FLSH_FLUSH_TYPE_WIDTH 4
++#define	ESE_GZ_SF_FLUSH_EVNT_STRUCT_SIZE 64
++
++/* sf_rx_pkts */
++#define	ESF_GZ_EV_RXPKTS_E_TYPE_LBN 60
++#define	ESF_GZ_EV_RXPKTS_E_TYPE_WIDTH 4
++#define	ESF_GZ_EV_RXPKTS_PHASE_LBN 59
++#define	ESF_GZ_EV_RXPKTS_PHASE_WIDTH 1
++#define	ESF_GZ_EV_RXPKTS_RSVD_LBN 22
++#define	ESF_GZ_EV_RXPKTS_RSVD_WIDTH 37
++#define	ESF_GZ_EV_RXPKTS_Q_LABEL_LBN 16
++#define	ESF_GZ_EV_RXPKTS_Q_LABEL_WIDTH 6
++#define	ESF_GZ_EV_RXPKTS_NUM_PKT_LBN 0
++#define	ESF_GZ_EV_RXPKTS_NUM_PKT_WIDTH 16
++#define	ESE_GZ_SF_RX_PKTS_STRUCT_SIZE 64
++
++/* sf_rx_prefix */
++#define	ESF_GZ_RX_PREFIX_VLAN_STRIP_TCI_LBN 160
++#define	ESF_GZ_RX_PREFIX_VLAN_STRIP_TCI_WIDTH 16
++#define	ESF_GZ_RX_PREFIX_CSUM_FRAME_LBN 144
++#define	ESF_GZ_RX_PREFIX_CSUM_FRAME_WIDTH 16
++#define	ESF_GZ_RX_PREFIX_INGRESS_VPORT_LBN 128
++#define	ESF_GZ_RX_PREFIX_INGRESS_VPORT_WIDTH 16
++#define	ESF_GZ_RX_PREFIX_USER_MARK_LBN 96
++#define	ESF_GZ_RX_PREFIX_USER_MARK_WIDTH 32
++#define	ESF_GZ_RX_PREFIX_RSS_HASH_LBN 64
++#define	ESF_GZ_RX_PREFIX_RSS_HASH_WIDTH 32
++#define	ESF_GZ_RX_PREFIX_PARTIAL_TSTAMP_LBN 32
++#define	ESF_GZ_RX_PREFIX_PARTIAL_TSTAMP_WIDTH 32
++#define	ESF_GZ_RX_PREFIX_CLASS_LBN 16
++#define	ESF_GZ_RX_PREFIX_CLASS_WIDTH 16
++#define	ESF_GZ_RX_PREFIX_USER_FLAG_LBN 15
++#define	ESF_GZ_RX_PREFIX_USER_FLAG_WIDTH 1
++#define	ESF_GZ_RX_PREFIX_RSS_HASH_VALID_LBN 14
++#define	ESF_GZ_RX_PREFIX_RSS_HASH_VALID_WIDTH 1
++#define	ESF_GZ_RX_PREFIX_LENGTH_LBN 0
++#define	ESF_GZ_RX_PREFIX_LENGTH_WIDTH 14
++#define	ESE_GZ_SF_RX_PREFIX_STRUCT_SIZE 176
++
++/* sf_rxtx_generic */
++#define	ESF_GZ_EV_BARRIER_LBN 167
++#define	ESF_GZ_EV_BARRIER_WIDTH 1
++#define	ESF_GZ_EV_RSVD_LBN 130
++#define	ESF_GZ_EV_RSVD_WIDTH 37
++#define	ESF_GZ_EV_DPRXY_LBN 129
++#define	ESF_GZ_EV_DPRXY_WIDTH 1
++#define	ESF_GZ_EV_VIRTIO_LBN 128
++#define	ESF_GZ_EV_VIRTIO_WIDTH 1
++#define	ESF_GZ_EV_COUNT_LBN 0
++#define	ESF_GZ_EV_COUNT_WIDTH 128
++#define	ESE_GZ_SF_RXTX_GENERIC_STRUCT_SIZE 168
++
++/* sf_ts_stamp */
++#define	ESF_GZ_EV_TS_E_TYPE_LBN 60
++#define	ESF_GZ_EV_TS_E_TYPE_WIDTH 4
++#define	ESF_GZ_EV_TS_PHASE_LBN 59
++#define	ESF_GZ_EV_TS_PHASE_WIDTH 1
++#define	ESF_GZ_EV_TS_RSVD_LBN 56
++#define	ESF_GZ_EV_TS_RSVD_WIDTH 3
++#define	ESF_GZ_EV_TS_STATUS_LBN 54
++#define	ESF_GZ_EV_TS_STATUS_WIDTH 2
++#define	ESF_GZ_EV_TS_Q_LABEL_LBN 48
++#define	ESF_GZ_EV_TS_Q_LABEL_WIDTH 6
++#define	ESF_GZ_EV_TS_DESC_ID_LBN 32
++#define	ESF_GZ_EV_TS_DESC_ID_WIDTH 16
++#define	ESF_GZ_EV_TS_PARTIAL_STAMP_LBN 0
++#define	ESF_GZ_EV_TS_PARTIAL_STAMP_WIDTH 32
++#define	ESE_GZ_SF_TS_STAMP_STRUCT_SIZE 64
++
++/* sf_tx_cmplt */
++#define	ESF_GZ_EV_TXCMPL_E_TYPE_LBN 60
++#define	ESF_GZ_EV_TXCMPL_E_TYPE_WIDTH 4
++#define	ESF_GZ_EV_TXCMPL_PHASE_LBN 59
++#define	ESF_GZ_EV_TXCMPL_PHASE_WIDTH 1
++#define	ESF_GZ_EV_TXCMPL_RSVD_LBN 22
++#define	ESF_GZ_EV_TXCMPL_RSVD_WIDTH 37
++#define	ESF_GZ_EV_TXCMPL_Q_LABEL_LBN 16
++#define	ESF_GZ_EV_TXCMPL_Q_LABEL_WIDTH 6
++#define	ESF_GZ_EV_TXCMPL_NUM_DESC_LBN 0
++#define	ESF_GZ_EV_TXCMPL_NUM_DESC_WIDTH 16
++#define	ESE_GZ_SF_TX_CMPLT_STRUCT_SIZE 64
++
++/* sf_tx_desc2cmpt_dsc_fmt */
++#define	ESF_GZ_D2C_TGT_VI_ID_LBN 108
++#define	ESF_GZ_D2C_TGT_VI_ID_WIDTH 16
++#define	ESF_GZ_D2C_CMPT2_LBN 107
++#define	ESF_GZ_D2C_CMPT2_WIDTH 1
++#define	ESF_GZ_D2C_ABS_VI_ID_LBN 106
++#define	ESF_GZ_D2C_ABS_VI_ID_WIDTH 1
++#define	ESF_GZ_D2C_ORDERED_LBN 105
++#define	ESF_GZ_D2C_ORDERED_WIDTH 1
++#define	ESF_GZ_D2C_SKIP_N_LBN 97
++#define	ESF_GZ_D2C_SKIP_N_WIDTH 8
++#define	ESF_GZ_D2C_RSVD_LBN 64
++#define	ESF_GZ_D2C_RSVD_WIDTH 33
++#define	ESF_GZ_D2C_COMPLETION_LBN 0
++#define	ESF_GZ_D2C_COMPLETION_WIDTH 64
++#define	ESE_GZ_SF_TX_DESC2CMPT_DSC_FMT_STRUCT_SIZE 124
++
++/* sf_tx_mem2mem_dsc_fmt */
++#define	ESF_GZ_M2M_ADDR_SPC_EN_LBN 123
++#define	ESF_GZ_M2M_ADDR_SPC_EN_WIDTH 1
++#define	ESF_GZ_M2M_TRANSLATE_ADDR_LBN 122
++#define	ESF_GZ_M2M_TRANSLATE_ADDR_WIDTH 1
++#define	ESF_GZ_M2M_RSVD_LBN 120
++#define	ESF_GZ_M2M_RSVD_WIDTH 2
++#define	ESF_GZ_M2M_ADDR_SPC_LBN 108
++#define	ESF_GZ_M2M_ADDR_SPC_WIDTH 12
++#define	ESF_GZ_M2M_ADDR_SPC_PASID_LBN 86
++#define	ESF_GZ_M2M_ADDR_SPC_PASID_WIDTH 22
++#define	ESF_GZ_M2M_ADDR_SPC_MODE_LBN 84
++#define	ESF_GZ_M2M_ADDR_SPC_MODE_WIDTH 2
++#define	ESF_GZ_M2M_LEN_MINUS_1_LBN 64
++#define	ESF_GZ_M2M_LEN_MINUS_1_WIDTH 20
++#define	ESF_GZ_M2M_ADDR_LBN 0
++#define	ESF_GZ_M2M_ADDR_WIDTH 64
++#define	ESE_GZ_SF_TX_MEM2MEM_DSC_FMT_STRUCT_SIZE 124
++
++/* sf_tx_ovr_dsc_fmt */
++#define	ESF_GZ_TX_PREFIX_MARK_EN_LBN 123
++#define	ESF_GZ_TX_PREFIX_MARK_EN_WIDTH 1
++#define	ESF_GZ_TX_PREFIX_INGRESS_MPORT_EN_LBN 122
++#define	ESF_GZ_TX_PREFIX_INGRESS_MPORT_EN_WIDTH 1
++#define	ESF_GZ_TX_PREFIX_INLINE_CAPSULE_META_LBN 121
++#define	ESF_GZ_TX_PREFIX_INLINE_CAPSULE_META_WIDTH 1
++#define	ESF_GZ_TX_PREFIX_EGRESS_MPORT_EN_LBN 120
++#define	ESF_GZ_TX_PREFIX_EGRESS_MPORT_EN_WIDTH 1
++#define	ESF_GZ_TX_PREFIX_RSRVD_LBN 64
++#define	ESF_GZ_TX_PREFIX_RSRVD_WIDTH 56
++#define	ESF_GZ_TX_PREFIX_EGRESS_MPORT_LBN 48
++#define	ESF_GZ_TX_PREFIX_EGRESS_MPORT_WIDTH 16
++#define	ESF_GZ_TX_PREFIX_INGRESS_MPORT_LBN 32
++#define	ESF_GZ_TX_PREFIX_INGRESS_MPORT_WIDTH 16
++#define	ESF_GZ_TX_PREFIX_MARK_LBN 0
++#define	ESF_GZ_TX_PREFIX_MARK_WIDTH 32
++#define	ESE_GZ_SF_TX_OVR_DSC_FMT_STRUCT_SIZE 124
++
++/* sf_tx_seg_dsc_fmt */
++#define	ESF_GZ_TX_SEG_ADDR_SPC_EN_LBN 123
++#define	ESF_GZ_TX_SEG_ADDR_SPC_EN_WIDTH 1
++#define	ESF_GZ_TX_SEG_TRANSLATE_ADDR_LBN 122
++#define	ESF_GZ_TX_SEG_TRANSLATE_ADDR_WIDTH 1
++#define	ESF_GZ_TX_SEG_RSVD2_LBN 120
++#define	ESF_GZ_TX_SEG_RSVD2_WIDTH 2
++#define	ESF_GZ_TX_SEG_ADDR_SPC_LBN 108
++#define	ESF_GZ_TX_SEG_ADDR_SPC_WIDTH 12
++#define	ESF_GZ_TX_SEG_ADDR_SPC_PASID_LBN 86
++#define	ESF_GZ_TX_SEG_ADDR_SPC_PASID_WIDTH 22
++#define	ESF_GZ_TX_SEG_ADDR_SPC_MODE_LBN 84
++#define	ESF_GZ_TX_SEG_ADDR_SPC_MODE_WIDTH 2
++#define	ESF_GZ_TX_SEG_RSVD_LBN 80
++#define	ESF_GZ_TX_SEG_RSVD_WIDTH 4
++#define	ESF_GZ_TX_SEG_LEN_LBN 64
++#define	ESF_GZ_TX_SEG_LEN_WIDTH 16
++#define	ESF_GZ_TX_SEG_ADDR_LBN 0
++#define	ESF_GZ_TX_SEG_ADDR_WIDTH 64
++#define	ESE_GZ_SF_TX_SEG_DSC_FMT_STRUCT_SIZE 124
++
++/* sf_tx_std_dsc_fmt */
++#define	ESF_GZ_TX_SEND_VLAN_INSERT_TCI_LBN 108
++#define	ESF_GZ_TX_SEND_VLAN_INSERT_TCI_WIDTH 16
++#define	ESF_GZ_TX_SEND_VLAN_INSERT_EN_LBN 107
++#define	ESF_GZ_TX_SEND_VLAN_INSERT_EN_WIDTH 1
++#define	ESF_GZ_TX_SEND_TSTAMP_REQ_LBN 106
++#define	ESF_GZ_TX_SEND_TSTAMP_REQ_WIDTH 1
++#define	ESF_GZ_TX_SEND_CSO_OUTER_L4_LBN 105
++#define	ESF_GZ_TX_SEND_CSO_OUTER_L4_WIDTH 1
++#define	ESF_GZ_TX_SEND_CSO_OUTER_L3_LBN 104
++#define	ESF_GZ_TX_SEND_CSO_OUTER_L3_WIDTH 1
++#define	ESF_GZ_TX_SEND_CSO_INNER_L3_LBN 101
++#define	ESF_GZ_TX_SEND_CSO_INNER_L3_WIDTH 3
++#define	ESF_GZ_TX_SEND_RSVD_LBN 99
++#define	ESF_GZ_TX_SEND_RSVD_WIDTH 2
++#define	ESF_GZ_TX_SEND_CSO_PARTIAL_EN_LBN 97
++#define	ESF_GZ_TX_SEND_CSO_PARTIAL_EN_WIDTH 2
++#define	ESF_GZ_TX_SEND_CSO_PARTIAL_CSUM_W_LBN 92
++#define	ESF_GZ_TX_SEND_CSO_PARTIAL_CSUM_W_WIDTH 5
++#define	ESF_GZ_TX_SEND_CSO_PARTIAL_START_W_LBN 83
++#define	ESF_GZ_TX_SEND_CSO_PARTIAL_START_W_WIDTH 9
++#define	ESF_GZ_TX_SEND_NUM_SEGS_LBN 78
++#define	ESF_GZ_TX_SEND_NUM_SEGS_WIDTH 5
++#define	ESF_GZ_TX_SEND_LEN_LBN 64
++#define	ESF_GZ_TX_SEND_LEN_WIDTH 14
++#define	ESF_GZ_TX_SEND_ADDR_LBN 0
++#define	ESF_GZ_TX_SEND_ADDR_WIDTH 64
++#define	ESE_GZ_SF_TX_STD_DSC_FMT_STRUCT_SIZE 124
++
++/* sf_tx_tso_dsc_fmt */
++#define	ESF_GZ_TX_TSO_VLAN_INSERT_TCI_LBN 108
++#define	ESF_GZ_TX_TSO_VLAN_INSERT_TCI_WIDTH 16
++#define	ESF_GZ_TX_TSO_VLAN_INSERT_EN_LBN 107
++#define	ESF_GZ_TX_TSO_VLAN_INSERT_EN_WIDTH 1
++#define	ESF_GZ_TX_TSO_TSTAMP_REQ_LBN 106
++#define	ESF_GZ_TX_TSO_TSTAMP_REQ_WIDTH 1
++#define	ESF_GZ_TX_TSO_CSO_OUTER_L4_LBN 105
++#define	ESF_GZ_TX_TSO_CSO_OUTER_L4_WIDTH 1
++#define	ESF_GZ_TX_TSO_CSO_OUTER_L3_LBN 104
++#define	ESF_GZ_TX_TSO_CSO_OUTER_L3_WIDTH 1
++#define	ESF_GZ_TX_TSO_CSO_INNER_L3_LBN 101
++#define	ESF_GZ_TX_TSO_CSO_INNER_L3_WIDTH 3
++#define	ESF_GZ_TX_TSO_RSVD_LBN 94
++#define	ESF_GZ_TX_TSO_RSVD_WIDTH 7
++#define	ESF_GZ_TX_TSO_CSO_INNER_L4_LBN 93
++#define	ESF_GZ_TX_TSO_CSO_INNER_L4_WIDTH 1
++#define	ESF_GZ_TX_TSO_INNER_L4_OFF_W_LBN 85
++#define	ESF_GZ_TX_TSO_INNER_L4_OFF_W_WIDTH 8
++#define	ESF_GZ_TX_TSO_INNER_L3_OFF_W_LBN 77
++#define	ESF_GZ_TX_TSO_INNER_L3_OFF_W_WIDTH 8
++#define	ESF_GZ_TX_TSO_OUTER_L4_OFF_W_LBN 69
++#define	ESF_GZ_TX_TSO_OUTER_L4_OFF_W_WIDTH 8
++#define	ESF_GZ_TX_TSO_OUTER_L3_OFF_W_LBN 64
++#define	ESF_GZ_TX_TSO_OUTER_L3_OFF_W_WIDTH 5
++#define	ESF_GZ_TX_TSO_PAYLOAD_LEN_LBN 42
++#define	ESF_GZ_TX_TSO_PAYLOAD_LEN_WIDTH 22
++#define	ESF_GZ_TX_TSO_HDR_LEN_W_LBN 34
++#define	ESF_GZ_TX_TSO_HDR_LEN_W_WIDTH 8
++#define	ESF_GZ_TX_TSO_ED_OUTER_UDP_LEN_LBN 33
++#define	ESF_GZ_TX_TSO_ED_OUTER_UDP_LEN_WIDTH 1
++#define	ESF_GZ_TX_TSO_ED_INNER_IP_LEN_LBN 32
++#define	ESF_GZ_TX_TSO_ED_INNER_IP_LEN_WIDTH 1
++#define	ESF_GZ_TX_TSO_ED_OUTER_IP_LEN_LBN 31
++#define	ESF_GZ_TX_TSO_ED_OUTER_IP_LEN_WIDTH 1
++#define	ESF_GZ_TX_TSO_ED_INNER_IP4_ID_LBN 29
++#define	ESF_GZ_TX_TSO_ED_INNER_IP4_ID_WIDTH 2
++#define	ESF_GZ_TX_TSO_ED_OUTER_IP4_ID_LBN 27
++#define	ESF_GZ_TX_TSO_ED_OUTER_IP4_ID_WIDTH 2
++#define	ESF_GZ_TX_TSO_PAYLOAD_NUM_SEGS_LBN 17
++#define	ESF_GZ_TX_TSO_PAYLOAD_NUM_SEGS_WIDTH 10
++#define	ESF_GZ_TX_TSO_HDR_NUM_SEGS_LBN 14
++#define	ESF_GZ_TX_TSO_HDR_NUM_SEGS_WIDTH 3
++#define	ESF_GZ_TX_TSO_MSS_LBN 0
++#define	ESF_GZ_TX_TSO_MSS_WIDTH 14
++#define	ESE_GZ_SF_TX_TSO_DSC_FMT_STRUCT_SIZE 124
++
++
++/* Enum DESIGN_PARAMS */
++#define	ESE_EF100_DP_GZ_RX_MAX_RUNT 17
++#define	ESE_EF100_DP_GZ_VI_STRIDES 16
++#define	ESE_EF100_DP_GZ_NMMU_PAGE_SIZES 15
++#define	ESE_EF100_DP_GZ_EVQ_TIMER_TICK_NANOS 14
++#define	ESE_EF100_DP_GZ_MEM2MEM_MAX_LEN 13
++#define	ESE_EF100_DP_GZ_COMPAT 12
++#define	ESE_EF100_DP_GZ_TSO_MAX_NUM_FRAMES 11
++#define	ESE_EF100_DP_GZ_TSO_MAX_PAYLOAD_NUM_SEGS 10
++#define	ESE_EF100_DP_GZ_TSO_MAX_PAYLOAD_LEN 9
++#define	ESE_EF100_DP_GZ_TXQ_SIZE_GRANULARITY 8
++#define	ESE_EF100_DP_GZ_RXQ_SIZE_GRANULARITY 7
++#define	ESE_EF100_DP_GZ_TSO_MAX_HDR_NUM_SEGS 6
++#define	ESE_EF100_DP_GZ_TSO_MAX_HDR_LEN 5
++#define	ESE_EF100_DP_GZ_RX_L4_CSUM_PROTOCOLS 4
++#define	ESE_EF100_DP_GZ_NMMU_GROUP_SIZE 3
++#define	ESE_EF100_DP_GZ_EVQ_UNSOL_CREDIT_SEQ_BITS 2
++#define	ESE_EF100_DP_GZ_PARTIAL_TSTAMP_SUB_NANO_BITS 1
++#define	ESE_EF100_DP_GZ_PAD 0
++
++/* Enum DESIGN_PARAM_DEFAULTS */
++#define	ESE_EF100_DP_GZ_TSO_MAX_PAYLOAD_LEN_DEFAULT 0x3fffff
++#define	ESE_EF100_DP_GZ_TSO_MAX_NUM_FRAMES_DEFAULT 8192
++#define	ESE_EF100_DP_GZ_MEM2MEM_MAX_LEN_DEFAULT 8192
++#define	ESE_EF100_DP_GZ_RX_L4_CSUM_PROTOCOLS_DEFAULT 0x1106
++#define	ESE_EF100_DP_GZ_TSO_MAX_PAYLOAD_NUM_SEGS_DEFAULT 0x3ff
++#define	ESE_EF100_DP_GZ_RX_MAX_RUNT_DEFAULT 640
++#define	ESE_EF100_DP_GZ_EVQ_TIMER_TICK_NANOS_DEFAULT 512
++#define	ESE_EF100_DP_GZ_NMMU_PAGE_SIZES_DEFAULT 512
++#define	ESE_EF100_DP_GZ_TSO_MAX_HDR_LEN_DEFAULT 192
++#define	ESE_EF100_DP_GZ_RXQ_SIZE_GRANULARITY_DEFAULT 64
++#define	ESE_EF100_DP_GZ_TXQ_SIZE_GRANULARITY_DEFAULT 64
++#define	ESE_EF100_DP_GZ_NMMU_GROUP_SIZE_DEFAULT 32
++#define	ESE_EF100_DP_GZ_VI_STRIDES_DEFAULT 16
++#define	ESE_EF100_DP_GZ_EVQ_UNSOL_CREDIT_SEQ_BITS_DEFAULT 7
++#define	ESE_EF100_DP_GZ_TSO_MAX_HDR_NUM_SEGS_DEFAULT 4
++#define	ESE_EF100_DP_GZ_PARTIAL_TSTAMP_SUB_NANO_BITS_DEFAULT 2
++#define	ESE_EF100_DP_GZ_COMPAT_DEFAULT 0
++
++/* Enum HOST_IF_CONSTANTS */
++#define	ESE_GZ_FCW_LEN 0x4C
++#define	ESE_GZ_RX_PKT_PREFIX_LEN 22
++
++/* Enum PCI_CONSTANTS */
++#define	ESE_GZ_PCI_BASE_CONFIG_SPACE_SIZE 256
++#define	ESE_GZ_PCI_EXPRESS_XCAP_HDR_SIZE 4
++
++/* Enum RH_HCLASS_L2_CLASS */
++#define	ESE_GZ_RH_HCLASS_L2_CLASS_E2_0123VLAN 1
++#define	ESE_GZ_RH_HCLASS_L2_CLASS_OTHER 0
++
++/* Enum RH_HCLASS_L2_STATUS */
++#define	ESE_GZ_RH_HCLASS_L2_STATUS_RESERVED 3
++#define	ESE_GZ_RH_HCLASS_L2_STATUS_FCS_ERR 2
++#define	ESE_GZ_RH_HCLASS_L2_STATUS_LEN_ERR 1
++#define	ESE_GZ_RH_HCLASS_L2_STATUS_OK 0
++
++/* Enum RH_HCLASS_L3_CLASS */
++#define	ESE_GZ_RH_HCLASS_L3_CLASS_OTHER 3
++#define	ESE_GZ_RH_HCLASS_L3_CLASS_IP6 2
++#define	ESE_GZ_RH_HCLASS_L3_CLASS_IP4BAD 1
++#define	ESE_GZ_RH_HCLASS_L3_CLASS_IP4GOOD 0
++
++/* Enum RH_HCLASS_L4_CLASS */
++#define	ESE_GZ_RH_HCLASS_L4_CLASS_OTHER 3
++#define	ESE_GZ_RH_HCLASS_L4_CLASS_FRAG 2
++#define	ESE_GZ_RH_HCLASS_L4_CLASS_UDP 1
++#define	ESE_GZ_RH_HCLASS_L4_CLASS_TCP 0
++
++/* Enum RH_HCLASS_L4_CSUM */
++#define	ESE_GZ_RH_HCLASS_L4_CSUM_GOOD 1
++#define	ESE_GZ_RH_HCLASS_L4_CSUM_BAD_OR_UNKNOWN 0
++
++/* Enum RH_HCLASS_TUNNEL_CLASS */
++#define	ESE_GZ_RH_HCLASS_TUNNEL_CLASS_RESERVED_7 7
++#define	ESE_GZ_RH_HCLASS_TUNNEL_CLASS_RESERVED_6 6
++#define	ESE_GZ_RH_HCLASS_TUNNEL_CLASS_RESERVED_5 5
++#define	ESE_GZ_RH_HCLASS_TUNNEL_CLASS_RESERVED_4 4
++#define	ESE_GZ_RH_HCLASS_TUNNEL_CLASS_GENEVE 3
++#define	ESE_GZ_RH_HCLASS_TUNNEL_CLASS_NVGRE 2
++#define	ESE_GZ_RH_HCLASS_TUNNEL_CLASS_VXLAN 1
++#define	ESE_GZ_RH_HCLASS_TUNNEL_CLASS_NONE 0
++
++/* Enum TX_DESC_CSO_PARTIAL_EN */
++#define	ESE_GZ_TX_DESC_CSO_PARTIAL_EN_TCP 2
++#define	ESE_GZ_TX_DESC_CSO_PARTIAL_EN_UDP 1
++#define	ESE_GZ_TX_DESC_CSO_PARTIAL_EN_OFF 0
++
++/* Enum TX_DESC_CS_INNER_L3 */
++#define	ESE_GZ_TX_DESC_CS_INNER_L3_GENEVE 3
++#define	ESE_GZ_TX_DESC_CS_INNER_L3_NVGRE 2
++#define	ESE_GZ_TX_DESC_CS_INNER_L3_VXLAN 1
++#define	ESE_GZ_TX_DESC_CS_INNER_L3_OFF 0
++
++/* Enum TX_DESC_IP4_ID */
++#define	ESE_GZ_TX_DESC_IP4_ID_INC_MOD16 2
++#define	ESE_GZ_TX_DESC_IP4_ID_INC_MOD15 1
++#define	ESE_GZ_TX_DESC_IP4_ID_NO_OP 0
++/**************************************************************************/
++
++#define	ESF_GZ_EV_DEBUG_EVENT_GEN_FLAGS_LBN 44
++#define	ESF_GZ_EV_DEBUG_EVENT_GEN_FLAGS_WIDTH 4
++#define	ESF_GZ_EV_DEBUG_SRC_QID_LBN 32
++#define	ESF_GZ_EV_DEBUG_SRC_QID_WIDTH 12
++#define	ESF_GZ_EV_DEBUG_SEQ_NUM_LBN 16
++#define	ESF_GZ_EV_DEBUG_SEQ_NUM_WIDTH 16
++
++#endif /* EFX_EF100_REGS_H */
 
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-Thanks!
-
-[1] https://codesearch.debian.net/search?q=%2Fsys%2Fmodule.*sections&literal=0
-
--- 
-Kees Cook
