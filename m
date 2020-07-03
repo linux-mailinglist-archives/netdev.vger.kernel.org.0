@@ -2,132 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A4AC213CAC
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 17:36:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18846213CD7
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 17:40:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbgGCPge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 11:36:34 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:55282 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726152AbgGCPge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 11:36:34 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8FABD20080;
-        Fri,  3 Jul 2020 15:36:33 +0000 (UTC)
-Received: from us4-mdac16-62.at1.mdlocal (unknown [10.110.50.155])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8D35A8009B;
-        Fri,  3 Jul 2020 15:36:33 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.31])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3114E4006E;
-        Fri,  3 Jul 2020 15:36:33 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EFC23300065;
-        Fri,  3 Jul 2020 15:36:32 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 3 Jul 2020
- 16:36:28 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 15/15] sfc_ef100: implement
- ndo_get_phys_port_{id,name}
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-References: <14d4694e-2493-abd3-b76e-09e38a01b588@solarflare.com>
-Message-ID: <828362ba-e678-9e6b-d564-40ccf369c5d6@solarflare.com>
-Date:   Fri, 3 Jul 2020 16:36:25 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726590AbgGCPkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 11:40:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726152AbgGCPkK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 11:40:10 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21435C061794
+        for <netdev@vger.kernel.org>; Fri,  3 Jul 2020 08:40:10 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id 9so37456826ljv.5
+        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 08:40:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=itQU4C1FHAvFBtRZda2nWjvM8DnF58nCgqWt9pDOHkk=;
+        b=W6A7tx8hK4uj12Z9E9rRa6w9PUUCrWNEFCRaNQeTP31Q5eLUtparViORugcAGtfNu/
+         Tt4XTtnM+TxTuZTYBM0yx9+UWdh6oUH1dKY7Pe3kpB49ZV9Diua74oT3cDjB+dD5952C
+         vNeE7StfPnPl5gkC2KmmQ7iHu9N+WRW+xP0ZtFOuiiuWPlbXZZcuYi7WtJzZGHNrqM4C
+         r3wmAoSd9+TskerVgkAQrHbhLX3z0OMRxU3BYYNG+32AajI9aO9qq7YLHRdNlQ1x5jkb
+         cYeoeB3ZpaifXliN1d7zl4equU8Ulwg0YP+T5MfVs1hGC4urcuFFou78AAznJOj5I5SL
+         qAww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=itQU4C1FHAvFBtRZda2nWjvM8DnF58nCgqWt9pDOHkk=;
+        b=m1v7jz73rJGhD0e1pMdTR+oFK4frXjYGn1It1HiofrnwFnsAmGEHGcO8rF7zx9qz5x
+         oCn2XvfPiPRBR+R/aU3+z9RIXJnMhS0hM+KEl7jFKO0bXgXYMVxr8JjTS0R8mPlTqRDU
+         Hv9lt8AYOE8sieqFR+xVZ9K8BPOduCH8F1H/SKrXYDgqoPSSHAL4BK7ZzXqleXtTrvY4
+         GwFYUZ2QCSurPcQVrEAzPEGGNPW1Za5JwpthfffYDciV/C0UkuO8M0YxdnCejYzYLg65
+         60mGMwikLnC8giTxevsqAF/1yRUhclHOnY/pjViGFQkbQx4mvnzDKzpjLol2vEuuhgqa
+         m5Lw==
+X-Gm-Message-State: AOAM530umTjIzALzjWKi8atZUZeTa4VWD33qDSFdM/ZJEYfXksfWEnyk
+        3Pllg4n+Tfcq1Z92HM+bwcTwAl6SRJM=
+X-Google-Smtp-Source: ABdhPJxDmzvfXpnmxAZw+eeksJqXKQy2m4ZK93GxLqvajF1tuBRbNWl+e7deC/WsNen9oJrwpvhClA==
+X-Received: by 2002:a2e:b5d0:: with SMTP id g16mr19273408ljn.246.1593790808266;
+        Fri, 03 Jul 2020 08:40:08 -0700 (PDT)
+Received: from dau-pc-work.sunlink.ru ([87.244.6.228])
+        by smtp.googlemail.com with ESMTPSA id y24sm4215943ljy.91.2020.07.03.08.40.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jul 2020 08:40:07 -0700 (PDT)
+From:   Anton Danilov <littlesmilingcloud@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Anton Danilov <littlesmilingcloud@gmail.com>
+Subject: [PATCH iproute2 v3] tc: improve the qdisc show command
+Date:   Fri,  3 Jul 2020 18:39:22 +0300
+Message-Id: <20200703153921.9312-1-littlesmilingcloud@gmail.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200618151702.24c33261@hermes.lan>
+References: <20200618151702.24c33261@hermes.lan>
 MIME-Version: 1.0
-In-Reply-To: <14d4694e-2493-abd3-b76e-09e38a01b588@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25518.003
-X-TM-AS-Result: No-2.678400-8.000000-10
-X-TMASE-MatchedRID: MwN0zTUhCXFAEjf8JRFbHLsHVDDM5xAP1JP9NndNOkUGmHr1eMxt2UAc
-        6DyoS2rIj6kCfX0Edc6tL1mMSnuv19J+QjwsijM7HPYwOJi6PLnAqRukGkkpQockQTW2P5j0+NY
-        BZrpe1untp8eQSZp9k2IlxuxNQIAzZSU6HajahM5tawJSSsDgSdxWLypmYlZz+Z4lF/CW5gbfel
-        djYKxB4miAAE3uIJmQxmvfL5pGlen8xKK47P3yZcgVrCfx7T+rSkWlzdsmIx6as/p1ZgI0lKPFj
-        JEFr+olA9Mriq0CDAj1MHKyrhxIFgtuKBGekqUpUfEQFBqv0meV0PlKZqRFl9tBMR61QclvdJKr
-        /G7tmepV5XUm4vE96k3CKjCzsATSX/jOAvQ3c4oHH3gwlkFX+GIpEXd0nZ0v2XYrptJGCDntfQ1
-        SPvnqTJqVXUXjGsjz2F+vBZls4K+yaqc7gc0b5ehxodtyrclRwL6SxPpr1/I=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10-2.678400-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25518.003
-X-MDID: 1593790593-i6Yw4gZvlBTz
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/ef100_netdev.c |  2 ++
- drivers/net/ethernet/sfc/ef100_nic.c    | 21 +++++++++++++++++++++
- 2 files changed, 23 insertions(+)
+Before can be possible show only all qeueue disciplines on an interface.
+There wasn't a way to get the qdisc info by handle or parent, only full
+dump of the disciplines with a following grep/sed usage.
 
-diff --git a/drivers/net/ethernet/sfc/ef100_netdev.c b/drivers/net/ethernet/sfc/ef100_netdev.c
-index 3e4e7241d9a8..66e6c1159c0f 100644
---- a/drivers/net/ethernet/sfc/ef100_netdev.c
-+++ b/drivers/net/ethernet/sfc/ef100_netdev.c
-@@ -214,6 +214,8 @@ static const struct net_device_ops ef100_netdev_ops = {
- 	.ndo_open               = ef100_net_open,
- 	.ndo_stop               = ef100_net_stop,
- 	.ndo_start_xmit         = ef100_hard_start_xmit,
-+	.ndo_get_phys_port_id   = efx_get_phys_port_id,
-+	.ndo_get_phys_port_name = efx_get_phys_port_name,
- };
- 
- /*	Netdev registration
-diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index 7c914b2f71c5..de7c428c63bb 100644
---- a/drivers/net/ethernet/sfc/ef100_nic.c
-+++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -406,6 +406,20 @@ static int ef100_reset(struct efx_nic *efx, enum reset_type reset_type)
- 	return rc;
+Now new and old options work as expected to filter a qdisc by handle or
+parent.
+
+Full syntax of the qdisc show command:
+
+tc qdisc { show | list } [ dev STRING ] [ QDISC_ID ] [ invisible ]
+  QDISC_ID := { root | ingress | handle QHANDLE | parent CLASSID }
+
+This change doesn't require any changes in the kernel.
+
+Signed-off-by: Anton Danilov <littlesmilingcloud@gmail.com>
+---
+v2:
+- Fix the coding style
+v3:
+- Make the parameters checking more simple
+---
+ man/man8/tc.8 |  8 +++--
+ tc/tc_qdisc.c | 91 ++++++++++++++++++++++++++++++++-------------------
+ 2 files changed, 64 insertions(+), 35 deletions(-)
+
+diff --git a/man/man8/tc.8 b/man/man8/tc.8
+index 235216b6..305bc569 100644
+--- a/man/man8/tc.8
++++ b/man/man8/tc.8
+@@ -77,9 +77,13 @@ tc \- show / manipulate traffic control settings
+ .B tc
+ .RI "[ " OPTIONS " ]"
+ .RI "[ " FORMAT " ]"
+-.B qdisc show [ dev
++.B qdisc { show | list } [ dev
+ \fIDEV\fR
+-.B ]
++.B ] [ root | ingress | handle
++\fIQHANDLE\fR
++.B | parent
++\fICLASSID\fR
++.B ] [ invisible ]
+ .P
+ .B tc
+ .RI "[ " OPTIONS " ]"
+diff --git a/tc/tc_qdisc.c b/tc/tc_qdisc.c
+index 181fe2f0..8eb08c34 100644
+--- a/tc/tc_qdisc.c
++++ b/tc/tc_qdisc.c
+@@ -35,11 +35,12 @@ static int usage(void)
+ 		"       [ ingress_block BLOCK_INDEX ] [ egress_block BLOCK_INDEX ]\n"
+ 		"       [ [ QDISC_KIND ] [ help | OPTIONS ] ]\n"
+ 		"\n"
+-		"       tc qdisc show [ dev STRING ] [ ingress | clsact ] [ invisible ]\n"
++		"       tc qdisc { show | list } [ dev STRING ] [ QDISC_ID ] [ invisible ]\n"
+ 		"Where:\n"
+ 		"QDISC_KIND := { [p|b]fifo | tbf | prio | cbq | red | etc. }\n"
+ 		"OPTIONS := ... try tc qdisc add <desired QDISC_KIND> help\n"
+-		"STAB_OPTIONS := ... try tc qdisc add stab help\n");
++		"STAB_OPTIONS := ... try tc qdisc add stab help\n"
++		"QDISC_ID := { root | ingress | handle QHANDLE | parent CLASSID }\n");
+ 	return -1;
  }
  
-+static int efx_ef100_get_phys_port_id(struct efx_nic *efx,
-+				      struct netdev_phys_item_id *ppid)
-+{
-+	struct ef100_nic_data *nic_data = efx->nic_data;
-+
-+	if (!is_valid_ether_addr(nic_data->port_id))
-+		return -EOPNOTSUPP;
-+
-+	ppid->id_len = ETH_ALEN;
-+	memcpy(ppid->id, nic_data->port_id, ppid->id_len);
-+
-+	return 0;
-+}
-+
- static unsigned int ef100_check_caps(const struct efx_nic *efx,
- 				     u8 flag, u32 offset)
+@@ -212,6 +213,8 @@ static int tc_qdisc_modify(int cmd, unsigned int flags, int argc, char **argv)
+ }
+ 
+ static int filter_ifindex;
++static __u32 filter_parent;
++static __u32 filter_handle;
+ 
+ int print_qdisc(struct nlmsghdr *n, void *arg)
  {
-@@ -460,6 +474,8 @@ const struct efx_nic_type ef100_pf_nic_type = {
- 	.rx_remove = efx_mcdi_rx_remove,
- 	.rx_write = ef100_rx_write,
+@@ -235,6 +238,12 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
+ 	if (filter_ifindex && filter_ifindex != t->tcm_ifindex)
+ 		return 0;
  
-+	.get_phys_port_id = efx_ef100_get_phys_port_id,
++	if (filter_handle && filter_handle != t->tcm_handle)
++		return 0;
 +
- 	.reconfigure_mac = ef100_reconfigure_mac,
- 
- 	/* Per-type bar/size configuration not used on ef100. Location of
-@@ -542,6 +558,11 @@ static int ef100_probe_main(struct efx_nic *efx)
- 
- 	efx->max_vis = EF100_MAX_VIS;
- 
-+	rc = efx_mcdi_port_get_number(efx);
-+	if (rc < 0)
-+		goto fail;
-+	efx->port_num = rc;
++	if (filter_parent && filter_parent != t->tcm_parent)
++		return 0;
 +
- 	rc = ef100_phy_probe(efx);
- 	if (rc)
- 		goto fail;
+ 	parse_rtattr_flags(tb, TCA_MAX, TCA_RTA(t), len, NLA_F_NESTED);
+ 
+ 	if (tb[TCA_KIND] == NULL) {
+@@ -344,21 +353,55 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
+ 
+ static int tc_qdisc_list(int argc, char **argv)
+ {
+-	struct tcmsg t = { .tcm_family = AF_UNSPEC };
++	struct {
++		struct nlmsghdr n;
++		struct tcmsg t;
++		char buf[256];
++	} req = {
++		.n.nlmsg_type = RTM_GETQDISC,
++		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct tcmsg)),
++		.t.tcm_family = AF_UNSPEC,
++	};
++
+ 	char d[IFNAMSIZ] = {};
+ 	bool dump_invisible = false;
++	__u32 handle;
+ 
+ 	while (argc > 0) {
+ 		if (strcmp(*argv, "dev") == 0) {
+ 			NEXT_ARG();
+ 			strncpy(d, *argv, sizeof(d)-1);
++		} else if (strcmp(*argv, "root") == 0) {
++			if (filter_parent)
++				invarg("parent is already specified", *argv);
++			else if (filter_handle)
++				invarg("handle is already specified", *argv);
++			filter_parent = TC_H_ROOT;
+ 		} else if (strcmp(*argv, "ingress") == 0 ||
+-			   strcmp(*argv, "clsact") == 0) {
+-			if (t.tcm_parent) {
+-				fprintf(stderr, "Duplicate parent ID\n");
+-				usage();
+-			}
+-			t.tcm_parent = TC_H_INGRESS;
++				strcmp(*argv, "clsact") == 0) {
++			if (filter_parent)
++				invarg("parent is already specified", *argv);
++			else if (filter_handle)
++				invarg("handle is already specified", *argv);
++			filter_parent = TC_H_INGRESS;
++		} else if (matches(*argv, "parent") == 0) {
++			if (filter_parent)
++				invarg("parent is already specified", *argv);
++			else if (filter_handle)
++				invarg("handle is already specified", *argv);
++			NEXT_ARG();
++			if (get_tc_classid(&handle, *argv))
++				invarg("invalid parent ID", *argv);
++			filter_parent = handle;
++		} else if (matches(*argv, "handle") == 0) {
++			if (filter_parent)
++				invarg("parent is already specified", *argv);
++			else if (filter_handle)
++				invarg("handle is already specified", *argv);
++			NEXT_ARG();
++			if (get_qdisc_handle(&handle, *argv))
++				invarg("invalid handle ID", *argv);
++			filter_handle = handle;
+ 		} else if (matches(*argv, "help") == 0) {
+ 			usage();
+ 		} else if (strcmp(*argv, "invisible") == 0) {
+@@ -374,32 +417,18 @@ static int tc_qdisc_list(int argc, char **argv)
+ 	ll_init_map(&rth);
+ 
+ 	if (d[0]) {
+-		t.tcm_ifindex = ll_name_to_index(d);
+-		if (!t.tcm_ifindex)
++		req.t.tcm_ifindex = ll_name_to_index(d);
++		if (!req.t.tcm_ifindex)
+ 			return -nodev(d);
+-		filter_ifindex = t.tcm_ifindex;
++		filter_ifindex = req.t.tcm_ifindex;
+ 	}
+ 
+ 	if (dump_invisible) {
+-		struct {
+-			struct nlmsghdr n;
+-			struct tcmsg t;
+-			char buf[256];
+-		} req = {
+-			.n.nlmsg_type = RTM_GETQDISC,
+-			.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct tcmsg)),
+-		};
+-
+-		req.t.tcm_family = AF_UNSPEC;
+-
+ 		addattr(&req.n, 256, TCA_DUMP_INVISIBLE);
+-		if (rtnl_dump_request_n(&rth, &req.n) < 0) {
+-			perror("Cannot send dump request");
+-			return 1;
+-		}
++	}
+ 
+-	} else if (rtnl_dump_request(&rth, RTM_GETQDISC, &t, sizeof(t)) < 0) {
+-		perror("Cannot send dump request");
++	if (rtnl_dump_request_n(&rth, &req.n) < 0) {
++		perror("Cannot send request");
+ 		return 1;
+ 	}
+ 
+@@ -427,10 +456,6 @@ int do_qdisc(int argc, char **argv)
+ 		return tc_qdisc_modify(RTM_NEWQDISC, NLM_F_REPLACE, argc-1, argv+1);
+ 	if (matches(*argv, "delete") == 0)
+ 		return tc_qdisc_modify(RTM_DELQDISC, 0,  argc-1, argv+1);
+-#if 0
+-	if (matches(*argv, "get") == 0)
+-		return tc_qdisc_get(RTM_GETQDISC, 0,  argc-1, argv+1);
+-#endif
+ 	if (matches(*argv, "list") == 0 || matches(*argv, "show") == 0
+ 	    || matches(*argv, "lst") == 0)
+ 		return tc_qdisc_list(argc-1, argv+1);
+-- 
+2.26.2
+
