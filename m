@@ -2,126 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C58C213BE9
-	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 16:37:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A76EE213BFF
+	for <lists+netdev@lfdr.de>; Fri,  3 Jul 2020 16:45:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726183AbgGCOh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jul 2020 10:37:28 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:54792 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726035AbgGCOh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 10:37:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593787046;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7h3VIBynGAlk+pxIYoEzFod8/JhmRY6WxDm0pv5l3KQ=;
-        b=EW545tgLoW5EFcq1lcjulXTPEkekNqYCSiHao4iEEAL+cuf+5EkuFv3BEY4jC/Ng58yGcs
-        z+Ma8CwWoniFgc4QgVhB95JdXe0F0xU+Mq2oKg+m+X2MwyHx70c0fkVinzVgzdbfYaGeKY
-        7q0Ya9jzobe3DdD2qqKc0U8/70wF+NE=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-350-7hmb0jx8Ms2C537F5oC58w-1; Fri, 03 Jul 2020 10:37:25 -0400
-X-MC-Unique: 7hmb0jx8Ms2C537F5oC58w-1
-Received: by mail-qt1-f197.google.com with SMTP id a52so10655302qtk.22
-        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 07:37:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=7h3VIBynGAlk+pxIYoEzFod8/JhmRY6WxDm0pv5l3KQ=;
-        b=a0tY5qbNaBCrh+vlTRyffDCGZ5d8gF+i/OsnItkVqli0fU3e1YPjvBo49Ouai4Vv33
-         jxMbXcog7Z/w0Q9ls9E/+KR2ytVYhZ9dhNpDRe9e9BYxNHitlzpDC9rVb7z5l7F5P+Ya
-         v8FC4lzTNI1z2I+GgQ8uAoSxKdAqpBgHTBazCQB/0cLvte960P+fIzNLp6CHdyBcC7zW
-         O14Dl+cpfUPtf++Z9A0Pfv6qQ1/BjiQAG7Vt77rXuRLfFI9ZqlduchheaibVKWoyVgI6
-         Q2/U/PfxUsB9HIWiFn8mEY2O22DH4wKLykAOUXu8rZT7QEVrvz3PmLf0qZoHwu2jMd7e
-         bW5w==
-X-Gm-Message-State: AOAM533IJoh8rko+KG8QdQbLcr8ZVvW2/nen8Yy2TDE5/N17sWb6hqrC
-        MQWE6L45vuVVF5dxRTw4u6FSziI/LJ5QCvp1DK5nn2KE4E1HuZ2IjrXDeATqq0AINZPPrPd1kf0
-        4edCbVayvyzXADqIS
-X-Received: by 2002:a37:5b46:: with SMTP id p67mr34023943qkb.346.1593787044529;
-        Fri, 03 Jul 2020 07:37:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy/rfayxSbJbu3yk98ojqDffk/hNVOL8EuEKT5F/T8VpEAS/bHNmrwscdBkv/Nu2oiHHiwkTg==
-X-Received: by 2002:a37:5b46:: with SMTP id p67mr34023909qkb.346.1593787044160;
-        Fri, 03 Jul 2020 07:37:24 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id j52sm12168959qtc.49.2020.07.03.07.37.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jul 2020 07:37:23 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id F03F51828E4; Fri,  3 Jul 2020 16:37:20 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Davide Caratti <dcaratti@redhat.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, cake@lists.bufferbloat.net,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Ilya Ponetayev <i.ponetaev@ndmsystems.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Subject: Re: [PATCH net] sched: consistently handle layer3 header accesses in the presence of VLANs
-In-Reply-To: <4297936b4cc7d6cdcb51ccc10331467f39978795.camel@redhat.com>
-References: <20200703120523.465334-1-toke@redhat.com> <4297936b4cc7d6cdcb51ccc10331467f39978795.camel@redhat.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 03 Jul 2020 16:37:20 +0200
-Message-ID: <873668ekbj.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S1726287AbgGCOp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jul 2020 10:45:28 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:34988 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726039AbgGCOp2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jul 2020 10:45:28 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 063EgWdT010532;
+        Fri, 3 Jul 2020 14:44:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2020-01-29;
+ bh=jAlHI7nujQDcm+MewjBseorEgs8Y6kyiq354ZRlVCiw=;
+ b=bs3NE8v8ixykeBj9AT5ZGqzepRu/JZ6TkFw8fRgAwlAqStI/NVDd/ZWRImHnb8djDx6c
+ nt9r9EOFgtE3g6kc4Q2yX9nQMVdd1FV+nWA/ztJHAk1aBvDr+ziGKqRfnOCm6zhF4kwz
+ OCvu5UlhknguTwCpO9ZDnJ4XHlblbRf/GPng4hsd/Tay0cCWwh+4hcCMFThWbGnUIK0E
+ FkAPjbY5bLEuaQCPQycp0S1S6BVY7E0GIrBztEase6+ryuAdsZWQIC4clh1qh6xYRtKg
+ 4gzSoW2RBb6UehzKcbBTWCpXcpVaQrRHIMXZXEygUyGaSvg3Eqqr6IzTXQ60RqI118Zl qg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 31xx1eawxs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 03 Jul 2020 14:44:43 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 063Egsfw193726;
+        Fri, 3 Jul 2020 14:44:42 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 31xg1cjytw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 03 Jul 2020 14:44:42 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 063Eie7P013218;
+        Fri, 3 Jul 2020 14:44:40 GMT
+Received: from localhost.uk.oracle.com (/10.175.204.239)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 03 Jul 2020 14:44:40 +0000
+From:   Alan Maguire <alan.maguire@oracle.com>
+To:     rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Alan Maguire <alan.maguire@oracle.com>
+Subject: [PATCH bpf-next 0/2] bpf: fix use of trace_printk() in BPF
+Date:   Fri,  3 Jul 2020 15:44:26 +0100
+Message-Id: <1593787468-29931-1-git-send-email-alan.maguire@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9670 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0
+ mlxlogscore=999 suspectscore=0 bulkscore=0 mlxscore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2007030102
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9670 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 clxscore=1011 adultscore=0
+ suspectscore=0 mlxlogscore=999 cotscore=-2147483648 lowpriorityscore=0
+ malwarescore=0 phishscore=0 impostorscore=0 mlxscore=0 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2007030102
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Davide Caratti <dcaratti@redhat.com> writes:
+Steven suggested a way to resolve the appearance of the warning banner
+that appears as a result of using trace_printk() in BPF [1].
+Applying the patch and testing reveals all works as expected; we
+can call bpf_trace_printk() and see the trace messages in
+/sys/kernel/debug/tracing/trace_pipe and no banner message appears.
 
-> hello Toke,
->
-> thanks for answering!
->
-> On Fri, 2020-07-03 at 14:05 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>   while (proto =3D=3D htons(ETH_P_8021Q) || proto =3D=3D htons(ETH_P_802=
-1AD)) {
->
-> maybe this line be shortened, since if_vlan.h has [1]:
->
-> while (eth_type_vlan(proto)) {
->  	...
-> }
+Also add a test prog to verify basic bpf_trace_printk() helper behaviour.
 
-Good point, missed that! Will fix and send a v2.
+Possible future work: ftrace supports trace instances, and one thing
+that strikes me is that we could make use of these in BPF to separate
+BPF program bpf_trace_printk() output from output of other tracing
+activities.
 
-> If I read well, the biggest change from functional point of view is that
-> now qdiscs can set the ECN bit also on non-accelerated VLAN packets and
-> QinQ-tagged packets, if the IP header is the outer-most header after VLAN;
-> and the same applies to almost all net/sched former users of skb->protoco=
-l=20
-> or tc_skb_protocol().
+I was thinking something like a sysctl net.core.bpf_trace_instance,
+defaulting to an empty value signifying we use the root trace
+instance.  This would preserve existing behaviour while giving a
+way to separate BPF tracing output from other tracing output if wanted.
 
-Yup, that's the idea.
+[1]  https://lore.kernel.org/r/20200628194334.6238b933@oasis.local.home
 
-> Question (sorry in advance because it might be a dumb one :) ):
->
-> do you know why cls_flower, act_ct, act_mpls and act_connmark keep reading
-> skb->protocol? is that intentional?
+Alan Maguire (2):
+  bpf: use dedicated bpf_trace_printk event instead of trace_printk()
+  selftests/bpf: add selftests verifying bpf_trace_printk() behaviour
 
-Hmm, no not really. I only checked for calls to tc_skb_protocol(), not
-for direct uses of skb->protocol. Will fix those as well :)
+ kernel/trace/Makefile                              |  2 +
+ kernel/trace/bpf_trace.c                           | 41 +++++++++++--
+ kernel/trace/bpf_trace.h                           | 34 +++++++++++
+ .../selftests/bpf/prog_tests/trace_printk.c        | 71 ++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/trace_printk.c   | 21 +++++++
+ 5 files changed, 165 insertions(+), 4 deletions(-)
+ create mode 100644 kernel/trace/bpf_trace.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_printk.c
+ create mode 100644 tools/testing/selftests/bpf/progs/trace_printk.c
 
-> (for act_mpls that doesn't look intentional, and probably the result is
-> that the BOS bit is not set correctly if someone tries to push/pop a label
-> for a non-accelerated or QinQ packet. But I didn't try it experimentally
-> :) )
-
-Hmm, you're certainly right that the MPLS code should use the helper to
-get consistent use between accelerated/non-accelerated VLAN usage. But I
-don't know enough about MPLS to judge whether it should be skipping the
-VLAN tags or not. Sounds like you're saying the right thing is to skip
-the VLAN tags there as well?
-
-Looking at the others, it looks like act_connmark and act_ct both ought
-to skip VLAN tags, while act_flower should probably keep it, since it
-seems it has a VLAN match type. Or?
-
--Toke
+-- 
+1.8.3.1
 
