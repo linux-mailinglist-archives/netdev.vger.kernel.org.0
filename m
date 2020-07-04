@@ -2,71 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7C2B214869
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 21:31:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C222214870
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 21:41:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727821AbgGDTbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 15:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56318 "EHLO
+        id S1727007AbgGDTlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 15:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726643AbgGDTbS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 15:31:18 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078EEC061794
-        for <netdev@vger.kernel.org>; Sat,  4 Jul 2020 12:31:18 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id rk21so37890555ejb.2
-        for <netdev@vger.kernel.org>; Sat, 04 Jul 2020 12:31:17 -0700 (PDT)
+        with ESMTP id S1726153AbgGDTlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 15:41:19 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAAAC061794;
+        Sat,  4 Jul 2020 12:41:18 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id t4so16681718iln.1;
+        Sat, 04 Jul 2020 12:41:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:from:subject:message-id:date:user-agent:mime-version
-         :content-transfer-encoding:content-language;
-        bh=h03Fbu5XRRjde3ErQJ4FjQpQyaCnXkxBjXNCWkoCe9c=;
-        b=YcAk3ALDpKCPqY/U9k3FY7Jt3sa/SvOybifDkoX7z97aYEMrR/S3rvYSYG5HheF6Ya
-         SNKhDu8R12gwph+rBTlKSD30qTve5FPu86iHGV1Cd86cFOndJPmc+S2Kq1aKVbcs5waw
-         MI5ebu+TCwFtq3kNBGGgKaeRVMVxaw3eHNZtUAqYXMOu/1Zd28Pmr0Lh4CWbl3WQGJ5e
-         oNP5JaGwV3Z8rV9DzYhq9Hz7H1JmgJ++7Jwe+6G0MPru6VVvmQ55BXqYpopAjJpD6JPa
-         o3/CigoaRbofF1qKFncbBuhlvCgyUNdE2utWsi0TzAyVTqDWKP0TCDONZ/syk4ayR0L/
-         wKcw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oaguPC34T7R0o5+DoNQSjRDr1tEmYY+rGX3DoLh4xf8=;
+        b=UqQlaqT7Hr64mfOELSvx1Wr9DuwUyUEsOQFLfZLOzCNJEbzYE+7u+wQFpS+2aYI5XU
+         JBmMm3PyTEmTUd+hQDkw/w393xyUdgyaaQL+rgpTTTvsUuf0XUxvtP6X9iYLY/LaeuuB
+         HI5S3DYdndoix8ToVO30hJjXgLULga2v/wd3m8Syav7o2hfOP9/CAGOOFYBVXhSVIUWr
+         czNTCHLDr2U0Bv0Fk6Tkng8KosYcdMZTaJMcBIgDc1jLRknGgrxddMasIUql60sjBffi
+         tLaUYWSTq0M3wvGsTJ3bf+u5+C76wUmolpkFPwuomPtOQspzOYGxQdCYtbIZw590E++2
+         skwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
-         :mime-version:content-transfer-encoding:content-language;
-        bh=h03Fbu5XRRjde3ErQJ4FjQpQyaCnXkxBjXNCWkoCe9c=;
-        b=K6JkyaOINhTfWsbs+ibQ4qiiGCwmMbpip3FwitzTHk9+1bHiovyEGoWJXmw7Y+ASzz
-         bM7KBGw1E3t400P1WJyVPLEGFofSEMXVKY6BdUvqB/QunEMisjxoUk2wybdN6tugrOfo
-         Jk8unlBcCpL1trJxj020kI+QOem5xfJhajYLR3z28Awhu/D8Nb7T8Zq9Rq17G3P1hv25
-         Dp5XS2wPcHq9RI7jw+DmlIYiLr7RGdzAp0010EHVKusaKtCoK83VIOXMOeO17skMOtHo
-         4zH5pC3oYnLXFA6kx5vnEbIK6A5OYgksUD6nHkuaqX9v2mOBmjK/V7NvbUZe7RTz3Wht
-         9gWw==
-X-Gm-Message-State: AOAM533G3JuMca7ZCxCn7K2Ec+G6QjoBc+2/oR7EUqD1Xe7htmR3H2+o
-        KAutLk+NZASUruCXUlAV//ICNsVtYSs=
-X-Google-Smtp-Source: ABdhPJzVNeWJoV1IWS2E4SL+hzstqYO78HOe91OZ6qo/zhnQoN0TheKRHMpdlgIe6ZsC1KMb3hkOCQ==
-X-Received: by 2002:a17:906:c14f:: with SMTP id dp15mr37432420ejc.454.1593891076426;
-        Sat, 04 Jul 2020 12:31:16 -0700 (PDT)
-Received: from [0.0.0.0] ([185.220.101.140])
-        by smtp.gmail.com with ESMTPSA id y7sm16539054edq.25.2020.07.04.12.31.15
-        for <netdev@vger.kernel.org>
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 Jul 2020 12:31:15 -0700 (PDT)
-To:     netdev@vger.kernel.org
-From:   Vasili Pupkin <diggest@gmail.com>
-Subject: Why ss output is machine friendly by default?
-Message-ID: <6560f9db-03c2-81db-2af4-f88fe7238380@gmail.com>
-Date:   Sat, 4 Jul 2020 22:31:10 +0300
-User-Agent: Mozilla/5.0 (Windows NT 5.2; rv:52.0) Gecko/20100101
- Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oaguPC34T7R0o5+DoNQSjRDr1tEmYY+rGX3DoLh4xf8=;
+        b=bDYgHdcl9S61VqchsKh1nws/+i8FK5SQYaZ6lzIQmc+JmT80bCrNc2Ff+Wtsb2g1S/
+         H9P4nAMtpuM59e82wn6/kkSo3O4lw5SgMu8bsrxX1BuMPie0Ar30Wyz2bFxdbtqcrQXb
+         UX2ezFVxrL9FJmWjdcXha43TjQTOd++P6fQOuLa50js5t4usZnNWuS9bliy7wUUXri7s
+         7IW9p7noCEv1xyhdO7iA0kFxDEBU1obkwHqY3o3Fli5dfbsXzTL8l2y2KYjpcKCdiKH7
+         G68WrWxVkyLefgUc4zda2yF5Scf0f0I9zsYigYsF/L5PKpe1TCtj/dF4poScnqz0WcMp
+         dJiA==
+X-Gm-Message-State: AOAM5326eCKZ1n/YJllvOaQ5HvXR4Yznl7s4z6L0FtIDU2gw34lCwnQV
+        +6dUAD9X0JsnoRf3wyxLrKLrScAUWayZnl4x1gI=
+X-Google-Smtp-Source: ABdhPJxGQ+LYo3TE+w36gxfg8i5q9yhsP7/TsFl8gmY2pnj2YuCnzhl+fTmdgR3HZI5R6GxehmEzDItEiyvIcTdNi8g=
+X-Received: by 2002:a92:5a05:: with SMTP id o5mr17808012ilb.237.1593891678038;
+ Sat, 04 Jul 2020 12:41:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20200703182010.1867-1-bruceshenzk@gmail.com> <CAKgT0Uc0sxRmADBozs3BvK2HFsDAcgzwUKWHyu91npQvyFRM1w@mail.gmail.com>
+ <CAHE_cOvFC4sjVvVuC-7A8Zqw6=uJP5AAUmZOk5sQ=7bD+ePpgA@mail.gmail.com>
+In-Reply-To: <CAHE_cOvFC4sjVvVuC-7A8Zqw6=uJP5AAUmZOk5sQ=7bD+ePpgA@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Sat, 4 Jul 2020 12:41:07 -0700
+Message-ID: <CAKgT0UdFPjD5YEBjVxkgCc65muNnxq54QPt3iBzm60QY46BCTA@mail.gmail.com>
+Subject: Re: [PATCH] net: fm10k: check size from dma region
+To:     Zekun Shen <bruceshenzk@gmail.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The --processes switch of ss program outputs strings containing 
-"users:(("ntpd",pid=1888,fd=19))" and it is too long for the purpose of 
-system administration. netstat program output "1888/ntpd" is more than 
-enough for humans. Long output causes line wraps in terminal and hard to 
-read.
+On Sat, Jul 4, 2020 at 9:37 AM Zekun Shen <bruceshenzk@gmail.com> wrote:
+>
+> On Sat, Jul 04, 2020 at 09:05:48AM -0700, Alexander Duyck wrote:
+> > The upper limitation for the size should be 2K or FM10K_RX_BUFSZ, not
+> > PAGE_SIZE. Otherwise you are still capable of going out of bounds
+> > because the offset is used within the page to push the start of the
+> > region up by 2K.
+> PAGE_SIZE can drop the warning, as the dma allocated size is PAGE_SIZE.
 
+Yes, but the point I was getting at is that if you are just going to
+squelch the warning, but leave the code broken then the warning isn't
+of any use and might as well be discarded. Either you limit the value
+to 2K which is what the hardware is expected to max out at anyway, or
+you just skip the warning and assume hardware will do the right thing.
+I'm not even sure this patch is worth the effort if it is just using
+some dummy value that is still broken and simply squelches the
+warning.
+
+Could you provide more information about how you are encountering the
+error? Is this something you are seeing with an actual fm10k device,
+or is this something found via code review or static analysis?
+
+> > If this is actually fixing the warning it makes me wonder if the code
+> > performing the check is broken itself since we would still be
+> > accessing outside of the accessible DMA range.
+> The unbounded size is only passed to fm10k_add_rx_frag, which expects
+> and checks size to be less than FM10K_RX_HDR_LEN which is 256.
+>
+> In this way, any boundary between 256 and 4K should work. I could address
+> that with a second version.
+
+I was referring to the code in the DMA-API that is generating the
+warning being broken, not the code itself. If you can tell me how you
+are getting to the warning it would be useful.
+
+Anything over FM10K_RX_BUFSZ will break things. I think that is what
+you are missing. The driver splits a single 4K page into 2 pieces and
+then gives half off to the stack and uses the other half for the next
+receive. If you have a value over 2K you are going to be overwritting
+data in another buffer and/or attempting to access memory outside the
+DMA region. Both of which would likely cause significant issues and
+likely panic the system.
