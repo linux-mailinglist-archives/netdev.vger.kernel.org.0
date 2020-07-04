@@ -2,74 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 943F2214912
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 00:53:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F039214924
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 01:30:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728022AbgGDWxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 18:53:06 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49026 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727816AbgGDWxG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 Jul 2020 18:53:06 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id E533AAD11;
-        Sat,  4 Jul 2020 22:53:04 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 74135604BB; Sun,  5 Jul 2020 00:53:04 +0200 (CEST)
-Date:   Sun, 5 Jul 2020 00:53:04 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Govindarajulu Varadarajan <gvaradar@cisco.com>
-Cc:     netdev@vger.kernel.org, edumazet@google.com,
-        linville@tuxdriver.com, govind.varadar@gmail.com
-Subject: Re: [PATCH ethtool 2/2] man: add man page for ETHTOOL_GTUNABLE and
- ETHTOOL_STUNABLE
-Message-ID: <20200704225304.4zlysnijbefkjy7k@lion.mk-sys.cz>
-References: <20200608175255.3353-1-gvaradar@cisco.com>
- <20200608175255.3353-2-gvaradar@cisco.com>
+        id S1728033AbgGDXab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 19:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36582 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727929AbgGDXab (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 19:30:31 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B5EC061794
+        for <netdev@vger.kernel.org>; Sat,  4 Jul 2020 16:30:31 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1jrrc3-0004pK-1j; Sun, 05 Jul 2020 01:30:27 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     <mptcp@lists.01.org>
+Subject: [PATCH net-next 0/3] mptcp: add REUSEADDR/REUSEPORT/V6ONLY setsockopt support
+Date:   Sun,  5 Jul 2020 01:30:14 +0200
+Message-Id: <20200704233017.20831-1-fw@strlen.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200608175255.3353-2-gvaradar@cisco.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 08, 2020 at 10:52:55AM -0700, Govindarajulu Varadarajan wrote:
-> Signed-off-by: Govindarajulu Varadarajan <gvaradar@cisco.com>
-> ---
->  ethtool.8.in | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/ethtool.8.in b/ethtool.8.in
-> index 4c5b6c5..da0564e 100644
-> --- a/ethtool.8.in
-> +++ b/ethtool.8.in
-> @@ -390,6 +390,18 @@ ethtool \- query or control network driver and hardware settings
->  .RB [ fast-link-down ]
->  .RB [ energy-detect-power-down ]
->  .HP
-> +.B ethtool \-b|\-\-get\-tunable
-> +.I devname
-> +.RB [ rx-copybreak ]
-> +.RB [ tx-copybreak ]
-> +.RB [ pfc-prevention-tout ]
-> +.HP
-> +.B ethtool \-B|\-\-set\-tunable
-> +.I devname
-> +.BN rx\-copybreak
-> +.BN tx\-copybreak
-> +.BN pfc\-prevention\-tout
-> +.HP
->  .B ethtool \-\-reset
->  .I devname
->  .BN flags
+restarting an mptcp-patched sshd yields following error:
 
-Please add also detailed description like we have for PHY tunables.
+  sshd: error: Bind to port 22 on 0.0.0.0 failed: Address already in use.
+  sshd: error: setsockopt IPV6_V6ONLY: Operation not supported
+  sshd: error: Bind to port 22 on :: failed: Address already in use.
+  sshd: fatal: Cannot bind any address.
 
-Michal
+This series adds support for the needed setsockopts:
 
-> -- 
-> 2.27.0
-> 
+First patch skips the generic SOL_SOCKET handler for MPTCP:
+in mptcp case, the setsockopt needs to alter the tcp socket, not the mptcp
+parent socket.
+
+Second patch adds minimal SOL_SOCKET support: REUSEPORT and REUSEADDR.
+Rest is still handled by the generic SOL_SOCKET code.
+
+Last patch adds IPV6ONLY support.  This makes ipv6 work for openssh:
+It creates two listening sockets, before this patch, binding the ipv6
+socket will fail because the port is already bound by the ipv4 one.
+
+Florian Westphal (3):
+      net: use mptcp setsockopt function for SOL_SOCKET on mptcp sockets
+      mptcp: add REUSEADDR/REUSEPORT support
+      mptcp: support IPV6_V6ONLY setsockopt
+
+ net/mptcp/protocol.c | 64 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ net/socket.c         | 13 ++++++++++-
+ 2 files changed, 76 insertions(+), 1 deletion(-)
+
