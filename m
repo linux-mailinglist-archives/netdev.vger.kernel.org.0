@@ -2,108 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80A06214486
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 09:51:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D84D3214491
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 10:14:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727802AbgGDHvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 03:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726178AbgGDHvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 03:51:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BAAC061794
-        for <netdev@vger.kernel.org>; Sat,  4 Jul 2020 00:51:47 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1jrcxL-0002mL-Pi; Sat, 04 Jul 2020 09:51:27 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:44c0:f67d:f3f1:540c] (unknown [IPv6:2a03:f580:87bc:d400:44c0:f67d:f3f1:540c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id C0795528C0A;
-        Sat,  4 Jul 2020 07:51:20 +0000 (UTC)
-Subject: Re: [PATCH 3/7] Documentation: networking: can_ucan_protocol: drop
- doubled words
-To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Ralf Baechle <ralf@linux-mips.org>, linux-hams@vger.kernel.org,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org
-References: <20200703224115.29769-1-rdunlap@infradead.org>
- <20200703224115.29769-4-rdunlap@infradead.org>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
- iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
- Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
- Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
- tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
- yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
- BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
- mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
- 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
- Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
- 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
-Message-ID: <d2dd726e-8136-31ea-ba38-8d4bce6d7d87@pengutronix.de>
-Date:   Sat, 4 Jul 2020 09:51:18 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1726306AbgGDIOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 04:14:02 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:47429 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726157AbgGDIOC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 04:14:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1593850442; x=1625386442;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=c/EQMlveVAdrUnezBUihASkgn9u8K6zwnJkGeQjMtS8=;
+  b=GjQeozwunySJ7WbHxDaZlSyAXoPpghrFF2R1UEBnoRnYx/nPaGGmD0K8
+   YqQpajvZ68zVsMh5j6wWOjXs8stDRqao+O4SS3Hct2YS18Exc4sOKIkFe
+   q9IfrhNdKYqdDqSnfJfQcFNImck8C+GWRU6C6jjwL3fOasvb3IceNouOO
+   M=;
+IronPort-SDR: tB8hYZn0X8M6AfjQusThK292fItB+02An80lyp/DtAiaGSyjkXXVY3JF6U12nbiwYgehpVCEs+
+ bX7zhViC300g==
+X-IronPort-AV: E=Sophos;i="5.75,311,1589241600"; 
+   d="scan'208";a="41386409"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 04 Jul 2020 08:14:01 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id 763A7241784;
+        Sat,  4 Jul 2020 08:13:57 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sat, 4 Jul 2020 08:13:55 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.162.85) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sat, 4 Jul 2020 08:13:51 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        <osa-contribution-log@amazon.com>, Julian Anastasov <ja@ssi.bg>
+Subject: [PATCH net-next] inet: Remove an unnecessary arguments of syn_ack_recalc().
+Date:   Sat, 4 Jul 2020 17:11:58 +0900
+Message-ID: <20200704081158.83489-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
 MIME-Version: 1.0
-In-Reply-To: <20200703224115.29769-4-rdunlap@infradead.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.85]
+X-ClientProxiedBy: EX13d09UWA001.ant.amazon.com (10.43.160.247) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/4/20 12:41 AM, Randy Dunlap wrote:
-> Drop the doubled words "the" and "of".
-> 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: linux-doc@vger.kernel.org
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Cc: Wolfgang Grandegger <wg@grandegger.com>
-> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> Cc: linux-can@vger.kernel.org
+Commit 0c3d79bce48034018e840468ac5a642894a521a3 ("tcp: reduce SYN-ACK
+retrans for TCP_DEFER_ACCEPT") introduces syn_ack_recalc() which decides
+if a minisock is held and a SYN+ACK is retransmitted or not.
 
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+If rskq_defer_accept is not zero in syn_ack_recalc(), max_retries always
+has the same value because max_retries is overwritten by rskq_defer_accept
+in reqsk_timer_handler().
 
-regards,
-Marc
+This commit adds two changes below.
+- remove max_retries from the arguments of syn_ack_recalc() and use
+   rskq_defer_accept instead.
+- rename thresh to max_retries for readability.
 
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+CC: Julian Anastasov <ja@ssi.bg>
+---
+ net/ipv4/inet_connection_sock.c | 30 +++++++++++++-----------------
+ 1 file changed, 13 insertions(+), 17 deletions(-)
+
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index afaf582a5aa9..323cdb8ce901 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -648,20 +648,22 @@ struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
+ EXPORT_SYMBOL_GPL(inet_csk_route_child_sock);
+ 
+ /* Decide when to expire the request and when to resend SYN-ACK */
+-static inline void syn_ack_recalc(struct request_sock *req, const int thresh,
+-				  const int max_retries,
++static inline void syn_ack_recalc(struct request_sock *req, const int max_retries,
+ 				  const u8 rskq_defer_accept,
+ 				  int *expire, int *resend)
+ {
+ 	if (!rskq_defer_accept) {
+-		*expire = req->num_timeout >= thresh;
++		*expire = req->num_timeout >= max_retries;
+ 		*resend = 1;
+ 		return;
+ 	}
+-	*expire = req->num_timeout >= thresh &&
+-		  (!inet_rsk(req)->acked || req->num_timeout >= max_retries);
+-	/*
+-	 * Do not resend while waiting for data after ACK,
++	/* If a bare ACK has already been dropped, the client is alive, so
++	 * do not free the request_sock to drop a bare ACK at most
++	 * rskq_defer_accept times and wait for data.
++	 */
++	*expire = req->num_timeout >= max_retries &&
++		  (!inet_rsk(req)->acked || req->num_timeout >= rskq_defer_accept);
++	/* Do not resend while waiting for data after ACK,
+ 	 * start to resend on end of deferring period to give
+ 	 * last chance for data or ACK to create established socket.
+ 	 */
+@@ -720,15 +722,12 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 	struct net *net = sock_net(sk_listener);
+ 	struct inet_connection_sock *icsk = inet_csk(sk_listener);
+ 	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
+-	int qlen, expire = 0, resend = 0;
+-	int max_retries, thresh;
+-	u8 defer_accept;
++	int max_retries, qlen, expire = 0, resend = 0;
+ 
+ 	if (inet_sk_state_load(sk_listener) != TCP_LISTEN)
+ 		goto drop;
+ 
+ 	max_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
+-	thresh = max_retries;
+ 	/* Normally all the openreqs are young and become mature
+ 	 * (i.e. converted to established socket) for first timeout.
+ 	 * If synack was not acknowledged for 1 second, it means
+@@ -750,17 +749,14 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 	if ((qlen << 1) > max(8U, READ_ONCE(sk_listener->sk_max_ack_backlog))) {
+ 		int young = reqsk_queue_len_young(queue) << 1;
+ 
+-		while (thresh > 2) {
++		while (max_retries > 2) {
+ 			if (qlen < young)
+ 				break;
+-			thresh--;
++			max_retries--;
+ 			young <<= 1;
+ 		}
+ 	}
+-	defer_accept = READ_ONCE(queue->rskq_defer_accept);
+-	if (defer_accept)
+-		max_retries = defer_accept;
+-	syn_ack_recalc(req, thresh, max_retries, defer_accept,
++	syn_ack_recalc(req, max_retries, READ_ONCE(queue->rskq_defer_accept),
+ 		       &expire, &resend);
+ 	req->rsk_ops->syn_ack_timeout(req);
+ 	if (!expire &&
 -- 
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+2.17.2 (Apple Git-113)
+
