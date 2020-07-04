@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFCFE214431
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 07:13:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1206321445A
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 08:41:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726741AbgGDFM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 01:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725790AbgGDFM4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 01:12:56 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D78C061794;
-        Fri,  3 Jul 2020 22:12:56 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id m22so5587973pgv.9;
-        Fri, 03 Jul 2020 22:12:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ma2Ml363EHulT5h5Rsiz3nA4SNmBIS3npTE4f6WSazQ=;
-        b=IlJwAbWSaj97IjOeI49oGlMOb3AJFimGQy7xG8Gnoy6Txh4qaAalBv7G3jOcH42HAg
-         4OMJVs0orHOy/aIic4ndhGHozWP8uYj7AqKsKLgLWziwABDqyz0cha7HzHrqbCRhMYwy
-         QRXMBTzzH4OEfTfgs1fW37w3++563Cq5dM8MRzXC9NmuzkVid4oa5nw5ZVIHmSP2QVRp
-         orCY4l8wX6seQhCoaiNqairmmlplus89MZwZfj00g9WNVM2+k//Tj8t3EiyavGfFSXbR
-         ouMhrN9BxChldZ+uH/VEy1trk8XuY3eYWtZtuf/dxtCg5nOdzjSZqNXF34BQ+A1Djqn7
-         9Q5w==
+        id S1727768AbgGDGlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 02:41:17 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:53773 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbgGDGlR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 02:41:17 -0400
+Received: by mail-il1-f200.google.com with SMTP id r4so23475520ilq.20
+        for <netdev@vger.kernel.org>; Fri, 03 Jul 2020 23:41:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ma2Ml363EHulT5h5Rsiz3nA4SNmBIS3npTE4f6WSazQ=;
-        b=nyCkdE48WwJ3zHGwWM1U5hLfawjdDVUka+A3utPZGXzjm79uMHAFb6dUSzme+ECbfB
-         Bnels+hgy3BNwi8ytkwPw2w5giNrvgCGS2BolZo5E1mVMftqT59zIaRQPsovhfCelg6H
-         WMedVz+HO76qJmI+kDSGsu5rAK+/uv+0lNQv+IBmKGTs8mixuM4Dub6KMj5kX8ky3O/E
-         ypXVtyi8smoyitl+DSXoaZVQOmfbc8DPzEspw06H0IvLnwN+z/4y6veeo3EnmVNxc1mn
-         QBUShf1gZUE/IjaYekiz88Huwrfb07l1T/Moi1XKFdH6yT8CwN/4gTYLm772GQoyHSQO
-         JQTQ==
-X-Gm-Message-State: AOAM530Ji4ZP+qDrBGrflQAlkSGTzpywLkP32qWg8XwLjiW92q5cDky0
-        pJURD1FBDZOMA/J9Z7onmn0=
-X-Google-Smtp-Source: ABdhPJwD74/Qzeygpbm4qhFb0DeKTsOlq5OKSgY2QOWxmDbmBR762/4Jumv77jek964gkytmHCmLfQ==
-X-Received: by 2002:a62:fb06:: with SMTP id x6mr36104598pfm.28.1593839576015;
-        Fri, 03 Jul 2020 22:12:56 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:2ca3:c0f1:5ceb:7394])
-        by smtp.gmail.com with ESMTPSA id e28sm13037953pfm.177.2020.07.03.22.12.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jul 2020 22:12:55 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>,
-        Xie He <xie.he.0141@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
-Subject: [PATCH] drivers/net/wan/lapbether: Fixed the value of hard_header_len
-Date:   Fri,  3 Jul 2020 22:12:46 -0700
-Message-Id: <20200704051246.203413-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=dbAGA2EOQ/ON2OekN9vX84E1a2gFJIKvdksnE+aJIXg=;
+        b=tJ8bTNVAhAdV/bUG9Z4huKZBkYMruh59Wuvrhg0h30bT0qIVM+MOEHSa9k3KFq1KkB
+         g51NCCpOoju2oIWNsPZGgfaj8necNusPf88I6+ci0vJlVesQp11yyY0QBCIYj2G6iYMQ
+         W2uV1zGKPwEZkMJmqNq6V3xQ0VercoC7XibWGtctXNmPwFAEdxbYo09IHBDF2CEvbKVd
+         9/IFb1hWbxw7d6eqOSVePCpA70ws/F2OLjNzzWZ+9bb24r0yaaFMEYFq3Vb6as20AW4P
+         J8JxrrWKazJLQHgh62DMIn92CZbpy7URMGn0+s2TEPm71zBB+2xuNqcnFubO8MFRF0vk
+         l6Ag==
+X-Gm-Message-State: AOAM531luMUikZ5j1I1ETaRZsUC9e6TA4T6F/6E/9Y2aMkGm8sO+620s
+        SiV1Kxt7D1Qdhn3YKKTToTQlWFkicdlXflfCM9hr2Wka2nNL
+X-Google-Smtp-Source: ABdhPJwFvjbKbYwlvfSZJcJi+xsZs+I4CZcLu/Jdbz7IYY/TzLenHi+O2ZGUUc6HP06Sr+WSEo2Pu4ZfjcFBLKS/XdlA67SulQ82
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:cecd:: with SMTP id z13mr20924386ilq.76.1593844875910;
+ Fri, 03 Jul 2020 23:41:15 -0700 (PDT)
+Date:   Fri, 03 Jul 2020 23:41:15 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a7e38a05a997edb2@google.com>
+Subject: WARNING in __cfg80211_connect_result
+From:   syzbot <syzbot+cc4c0f394e2611edba66@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When transmitting data from upper layers or from AF_PACKET sockets,
-  this driver will first remove a pseudo header of 1 byte,
-  then the lapb module will prepend the LAPB header of 2 or 3 bytes,
-  then this driver will prepend a length field of 2 bytes,
-  then the underlying Ethernet device will prepend its own header.
+Hello,
 
-So, the header length required should be:
-  -1 + 3 + 2 + "the header length needed by the underlying device".
+syzbot found the following crash on:
 
-This patch fixes kernel panic when this driver is used with AF_PACKET
-SOCK_DGRAM sockets.
+HEAD commit:    23212a70 Merge branch 'mptcp-add-receive-buffer-auto-tuning'
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=155842d5100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=829871134ca5e230
+dashboard link: https://syzkaller.appspot.com/bug?extid=cc4c0f394e2611edba66
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+cc4c0f394e2611edba66@syzkaller.appspotmail.com
+
+ip6_tunnel: syzkaller1 xmit: Local address not yet configured!
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 9155 at net/wireless/sme.c:757 __cfg80211_connect_result+0xf71/0x13a0 net/wireless/sme.c:757
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 9155 Comm: kworker/u4:17 Not tainted 5.8.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: cfg80211 cfg80211_event_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:231
+ __warn.cold+0x20/0x45 kernel/panic.c:600
+ report_bug+0x1bd/0x210 lib/bug.c:198
+ exc_invalid_op+0x24d/0x400 arch/x86/kernel/traps.c:235
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:563
+RIP: 0010:__cfg80211_connect_result+0xf71/0x13a0 net/wireless/sme.c:757
+Code: 89 be ac 02 00 00 48 c7 c7 00 2d 16 89 c6 05 ba ce 34 03 01 e8 35 58 e5 f9 e9 4f f6 ff ff e8 36 ad fe f9 0f 0b e8 2f ad fe f9 <0f> 0b e9 0c f2 ff ff e8 23 ad fe f9 e8 ee 51 71 00 31 ff 89 c3 89
+RSP: 0018:ffffc90001ab7bb8 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff888091d10000 RCX: ffffffff87749792
+RDX: ffff888059f5c4c0 RSI: ffffffff8774a321 RDI: 0000000000000005
+RBP: ffff888040f72618 R08: 0000000000000000 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff888040f72628 R14: ffff888091d10200 R15: ffff888040f72620
+ cfg80211_process_wdev_events+0x2c6/0x5b0 net/wireless/util.c:885
+ cfg80211_process_rdev_events+0x6e/0x100 net/wireless/util.c:926
+ cfg80211_event_work+0x1a/0x20 net/wireless/core.c:320
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+Kernel Offset: disabled
+
+
 ---
- drivers/net/wan/lapbether.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index e30d91a38cfb..3b5ed0928a4c 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -303,7 +303,6 @@ static void lapbeth_setup(struct net_device *dev)
- 	dev->netdev_ops	     = &lapbeth_netdev_ops;
- 	dev->needs_free_netdev = true;
- 	dev->type            = ARPHRD_X25;
--	dev->hard_header_len = 3;
- 	dev->mtu             = 1000;
- 	dev->addr_len        = 0;
- }
-@@ -324,6 +323,8 @@ static int lapbeth_new_device(struct net_device *dev)
- 	if (!ndev)
- 		goto out;
- 
-+	ndev->hard_header_len = -1 + 3 + 2 + dev->hard_header_len;
-+
- 	lapbeth = netdev_priv(ndev);
- 	lapbeth->axdev = ndev;
- 
--- 
-2.25.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
