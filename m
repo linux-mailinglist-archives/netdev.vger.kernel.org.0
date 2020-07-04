@@ -2,544 +2,499 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 211682145EF
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 14:45:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD36214615
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 15:29:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728065AbgGDMpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 08:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50524 "EHLO
+        id S1726777AbgGDN3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 09:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727970AbgGDMpg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 08:45:36 -0400
+        with ESMTP id S1726501AbgGDN3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 09:29:14 -0400
 Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348D2C061794
-        for <netdev@vger.kernel.org>; Sat,  4 Jul 2020 05:45:35 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id dm19so23955829edb.13
-        for <netdev@vger.kernel.org>; Sat, 04 Jul 2020 05:45:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1EE4C061794
+        for <netdev@vger.kernel.org>; Sat,  4 Jul 2020 06:29:13 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id by13so20424697edb.11
+        for <netdev@vger.kernel.org>; Sat, 04 Jul 2020 06:29:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ygg+Y/ghNDoQhcIJtMjBnw5a1zx7dS/ZbzvGzRhDHPk=;
-        b=QC1/IV9HWIjlURydrOPZI8/vY0dHVJ1fl01MYtbTehYiDDst4mz5F+JQfURVTUxSAk
-         H8cT75rfL5MKFLz69ydg1FHE6Pl12v9QS3PaB1r/AgdMTFEzcUd3LRmk5TvdtPpN+H4/
-         dyuYKj3eh5ujGjN02aKhk+0bZUrxcJikhe/x+8zSYb5gj8Q1iPbJQkjpL6aXCWwE+ewh
-         ZUYeUn2Hsdahhr9ddI8x7Y4gfe/Fc0wA+h3d7psSBIi/5PgIW5Iqins++YEGidM9JeNA
-         CrW1+2sQo2cIgbJxRykcgFFg26TYGYflExSgf425pYr4JebURa0t5mZ69/E41lraVPLV
-         SYaw==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8IRJl7J7RNznaeWdhi2pz+TO0Qae9LLFxbo2SwQ1/yU=;
+        b=DaBE+q/L1Uo1nr2/MQ9FMGrkMt1wWeFCJ/xGWg6Yx1uCdS/w6jV3R0edeRdvodxsi1
+         OwyMweBGlVFSlmwMMwouGI2X52/Z0hKqw5YOLeUq4p91LTO/AoMV7XeMWt1BEdrFfctN
+         NQfpbn3W2qy15I7W642OJO6ealc+3h0ESDwWkDNoSupX4sRW1lJSjtCfZU9GNmrJmTce
+         KFIEpZdjyhoDiEhxe0AJdUUN8JBMJq8StzDRPn7eWVK93cF6UxVmR4bDjCKVG3ALC9bC
+         k1FkC5kM1He+dKcOKlr1lXbd9rXQ8ITx5qNTH4H2ALmO0ER3dl699lRh1eWcnGVWOhBO
+         wGGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ygg+Y/ghNDoQhcIJtMjBnw5a1zx7dS/ZbzvGzRhDHPk=;
-        b=Lcyc4zqp/7GYqW/+AQi87KjidTnPIQG7SaH9EnG9TB9n8f3edjuMFf0pb40d61bcH3
-         bJpNi6Ftcv+TABG0eIL0/i7el4ffwPSpixpU6XgvywMWv2dPIk7VmHF7wBpe7TIhjHd3
-         UnTaCA9EOkXqGitGidmDZLwrpWu5WArQyBhMl5OlaRfvGHkqBkjVOL3DrskhTn6bbfvc
-         1oCsR5UpJMNVBYuAWIJDX8LDaNoeEFFj4XTIlXwg/T8whEs5HYdJ8ws4LUMqETLz6gyU
-         1fqCZqHmMpVsCpx9LJWncOS4NN8+AD9UNqLuGbS4D0aWhrfGLE81YnBXN3Y8ir5ux+8v
-         Vsdw==
-X-Gm-Message-State: AOAM530ZvSKWtvVV0E8sm+NmpzwkSSnXsnh3rbWqH6yZo68ktsbdEsof
-        SrUmUJrQxkaDY7tP0hTvyloyHYCp
-X-Google-Smtp-Source: ABdhPJwWG17k25xjzh300HCulodCKMDbqTWOT2uAxy0l3mkwqtBnFmlDzEQVOUgxLJAiS4CGad/TYA==
-X-Received: by 2002:aa7:c991:: with SMTP id c17mr38022260edt.278.1593866733892;
-        Sat, 04 Jul 2020 05:45:33 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id dm1sm12983851ejc.99.2020.07.04.05.45.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jul 2020 05:45:33 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
-        ioana.ciornei@nxp.com, linux@armlinux.org.uk
-Subject: [PATCH v2 net-next 6/6] net: dsa: felix: use resolved link config in mac_link_up()
-Date:   Sat,  4 Jul 2020 15:45:07 +0300
-Message-Id: <20200704124507.3336497-7-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200704124507.3336497-1-olteanv@gmail.com>
-References: <20200704124507.3336497-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8IRJl7J7RNznaeWdhi2pz+TO0Qae9LLFxbo2SwQ1/yU=;
+        b=e+FWTxvRvO8PsTuwR1pwxwdvwPC0ShuhiI5zonIvIO82Fk/6Dcm0hKpOMZJyGbH6D+
+         Y7vFZRlXifqwIxNtDo/80J470xkH2XSBXQSJR/XEBQcyt7FSDrScJXTcC+wu2/cFSrx2
+         2bCoxqTBd2DYl2WY6BXv9sv8Oq60mwZ1vT+ko8Lul4Decg+lwKFYAhVt+aQ04VkE6E/4
+         TDq0TiLFhY7q8Kl4RxVy1+4dkEeFAPs++NZZodHZN0KdhR3gGpPDzVEim0tp2VYj/WTe
+         ItfSNPkHndgXL4KIRkVh2OeYrexP9T4L4q8XvAwFk6S/akJPke1WP7NR3VBV1aTep+RI
+         QjWg==
+X-Gm-Message-State: AOAM533Dhf172q8lUPZ4ce7v6lbKwxbOuV2kIkQp4e77Lj/xQ7tvF7Nd
+        AceAaMaXw4rgoH2dU3809HlTBpb34IPkVrFDnf4T
+X-Google-Smtp-Source: ABdhPJx94SMJzFxdRPe8MFmpQPE6GdQuK/fWkpI5heYGNo1aaq14PzbQzgKLgznv10JgFp8bt4kwdsVe3sCwAuBceac=
+X-Received: by 2002:a05:6402:1d89:: with SMTP id dk9mr34213847edb.31.1593869352317;
+ Sat, 04 Jul 2020 06:29:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1593198710.git.rgb@redhat.com> <e5a1ab6955c565743372b392a93f7d1ac98478a2.1593198710.git.rgb@redhat.com>
+In-Reply-To: <e5a1ab6955c565743372b392a93f7d1ac98478a2.1593198710.git.rgb@redhat.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Sat, 4 Jul 2020 09:29:01 -0400
+Message-ID: <CAHC9VhTcFrPDSmvBBXevo-atCnxy4WK2YQ0WOeg4M1Sfz0qPgA@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V9 02/13] audit: add container id
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, Ondrej Mosnacek <omosnace@redhat.com>,
+        dhowells@redhat.com, simo@redhat.com,
+        Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
+        mpatel@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Sat, Jun 27, 2020 at 9:22 AM Richard Guy Briggs <rgb@redhat.com> wrote:
+>
+> Implement the proc fs write to set the audit container identifier of a
+> process, emitting an AUDIT_CONTAINER_OP record to document the event.
+>
+> This is a write from the container orchestrator task to a proc entry of
+> the form /proc/PID/audit_containerid where PID is the process ID of the
+> newly created task that is to become the first task in a container, or
+> an additional task added to a container.
+>
+> The write expects up to a u64 value (unset: 18446744073709551615).
+>
+> The writer must have capability CAP_AUDIT_CONTROL.
+>
+> This will produce a record such as this:
+>   type=CONTAINER_OP msg=audit(2018-06-06 12:39:29.636:26949) : op=set opid=2209 contid=123456 old-contid=18446744073709551615
+>
+> The "op" field indicates an initial set.  The "opid" field is the
+> object's PID, the process being "contained".  New and old audit
+> container identifier values are given in the "contid" fields.
+>
+> It is not permitted to unset the audit container identifier.
+> A child inherits its parent's audit container identifier.
+>
+> Store the audit container identifier in a refcounted kernel object that
+> is added to the master list of audit container identifiers.  This will
+> allow multiple container orchestrators/engines to work on the same
+> machine without danger of inadvertantly re-using an existing identifier.
+> It will also allow an orchestrator to inject a process into an existing
+> container by checking if the original container owner is the one
+> injecting the task.  A hash table list is used to optimize searches.
+>
+> Please see the github audit kernel issue for the main feature:
+>   https://github.com/linux-audit/audit-kernel/issues/90
+> Please see the github audit userspace issue for supporting additions:
+>   https://github.com/linux-audit/audit-userspace/issues/51
+> Please see the github audit testsuiite issue for the test case:
+>   https://github.com/linux-audit/audit-testsuite/issues/64
+> Please see the github audit wiki for the feature overview:
+>   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
+>
+> Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> Acked-by: Serge Hallyn <serge@hallyn.com>
+> Acked-by: Steve Grubb <sgrubb@redhat.com>
+> Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
+> ---
+>  fs/proc/base.c             |  36 +++++++++++
+>  include/linux/audit.h      |  33 ++++++++++
+>  include/uapi/linux/audit.h |   2 +
+>  kernel/audit.c             | 148 +++++++++++++++++++++++++++++++++++++++++++++
+>  kernel/audit.h             |   8 +++
+>  5 files changed, 227 insertions(+)
+>
+> diff --git a/fs/proc/base.c b/fs/proc/base.c
+> index d86c0afc8a85..6c17ab32e71b 100644
+> --- a/fs/proc/base.c
+> +++ b/fs/proc/base.c
+> @@ -1317,6 +1317,40 @@ static ssize_t proc_sessionid_read(struct file * file, char __user * buf,
+>         .read           = proc_sessionid_read,
+>         .llseek         = generic_file_llseek,
+>  };
+> +
+> +static ssize_t proc_contid_write(struct file *file, const char __user *buf,
+> +                                  size_t count, loff_t *ppos)
+> +{
+> +       struct inode *inode = file_inode(file);
+> +       u64 contid;
+> +       int rv;
+> +       struct task_struct *task = get_proc_task(inode);
+> +
+> +       if (!task)
+> +               return -ESRCH;
+> +       if (*ppos != 0) {
+> +               /* No partial writes. */
+> +               put_task_struct(task);
+> +               return -EINVAL;
+> +       }
+> +
+> +       rv = kstrtou64_from_user(buf, count, 10, &contid);
+> +       if (rv < 0) {
+> +               put_task_struct(task);
+> +               return rv;
+> +       }
+> +
+> +       rv = audit_set_contid(task, contid);
+> +       put_task_struct(task);
+> +       if (rv < 0)
+> +               return rv;
+> +       return count;
+> +}
+> +
+> +static const struct file_operations proc_contid_operations = {
+> +       .write          = proc_contid_write,
+> +       .llseek         = generic_file_llseek,
+> +};
+>  #endif
+>
+>  #ifdef CONFIG_FAULT_INJECTION
+> @@ -3219,6 +3253,7 @@ static int proc_stack_depth(struct seq_file *m, struct pid_namespace *ns,
+>  #ifdef CONFIG_AUDIT
+>         REG("loginuid",   S_IWUSR|S_IRUGO, proc_loginuid_operations),
+>         REG("sessionid",  S_IRUGO, proc_sessionid_operations),
+> +       REG("audit_containerid", S_IWUSR, proc_contid_operations),
+>  #endif
+>  #ifdef CONFIG_FAULT_INJECTION
+>         REG("make-it-fail", S_IRUGO|S_IWUSR, proc_fault_inject_operations),
+> @@ -3558,6 +3593,7 @@ static int proc_tid_comm_permission(struct inode *inode, int mask)
+>  #ifdef CONFIG_AUDIT
+>         REG("loginuid",  S_IWUSR|S_IRUGO, proc_loginuid_operations),
+>         REG("sessionid",  S_IRUGO, proc_sessionid_operations),
+> +       REG("audit_containerid", S_IWUSR, proc_contid_operations),
+>  #endif
+>  #ifdef CONFIG_FAULT_INJECTION
+>         REG("make-it-fail", S_IRUGO|S_IWUSR, proc_fault_inject_operations),
+> diff --git a/include/linux/audit.h b/include/linux/audit.h
+> index c2150415f9df..2800d4f1a2a8 100644
+> --- a/include/linux/audit.h
+> +++ b/include/linux/audit.h
+> @@ -100,9 +100,18 @@ enum audit_nfcfgop {
+>         AUDIT_XT_OP_UNREGISTER,
+>  };
+>
+> +struct audit_contobj {
+> +       struct list_head        list;
+> +       u64                     id;
+> +       struct task_struct      *owner;
+> +       refcount_t              refcount;
+> +       struct rcu_head         rcu;
+> +};
+> +
+>  struct audit_task_info {
+>         kuid_t                  loginuid;
+>         unsigned int            sessionid;
+> +       struct audit_contobj    *cont;
+>  #ifdef CONFIG_AUDITSYSCALL
+>         struct audit_context    *ctx;
+>  #endif
+> @@ -204,6 +213,15 @@ static inline unsigned int audit_get_sessionid(struct task_struct *tsk)
+>         return tsk->audit->sessionid;
+>  }
+>
+> +extern int audit_set_contid(struct task_struct *tsk, u64 contid);
+> +
+> +static inline u64 audit_get_contid(struct task_struct *tsk)
+> +{
+> +       if (!tsk->audit || !tsk->audit->cont)
+> +               return AUDIT_CID_UNSET;
+> +       return tsk->audit->cont->id;
+> +}
+> +
+>  extern u32 audit_enabled;
+>
+>  extern int audit_signal_info(int sig, struct task_struct *t);
+> @@ -268,6 +286,11 @@ static inline unsigned int audit_get_sessionid(struct task_struct *tsk)
+>         return AUDIT_SID_UNSET;
+>  }
+>
+> +static inline u64 audit_get_contid(struct task_struct *tsk)
+> +{
+> +       return AUDIT_CID_UNSET;
+> +}
+> +
+>  #define audit_enabled AUDIT_OFF
+>
+>  static inline int audit_signal_info(int sig, struct task_struct *t)
+> @@ -692,6 +715,16 @@ static inline bool audit_loginuid_set(struct task_struct *tsk)
+>         return uid_valid(audit_get_loginuid(tsk));
+>  }
+>
+> +static inline bool audit_contid_valid(u64 contid)
+> +{
+> +       return contid != AUDIT_CID_UNSET;
+> +}
+> +
+> +static inline bool audit_contid_set(struct task_struct *tsk)
+> +{
+> +       return audit_contid_valid(audit_get_contid(tsk));
+> +}
+> +
+>  static inline void audit_log_string(struct audit_buffer *ab, const char *buf)
+>  {
+>         audit_log_n_string(ab, buf, strlen(buf));
+> diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
+> index 9b6a973f4cc3..859382527210 100644
+> --- a/include/uapi/linux/audit.h
+> +++ b/include/uapi/linux/audit.h
+> @@ -71,6 +71,7 @@
+>  #define AUDIT_TTY_SET          1017    /* Set TTY auditing status */
+>  #define AUDIT_SET_FEATURE      1018    /* Turn an audit feature on or off */
+>  #define AUDIT_GET_FEATURE      1019    /* Get which features are enabled */
+> +#define AUDIT_CONTAINER_OP     1020    /* Define the container id and info */
+>
+>  #define AUDIT_FIRST_USER_MSG   1100    /* Userspace messages mostly uninteresting to kernel */
+>  #define AUDIT_USER_AVC         1107    /* We filter this differently */
+> @@ -491,6 +492,7 @@ struct audit_tty_status {
+>
+>  #define AUDIT_UID_UNSET (unsigned int)-1
+>  #define AUDIT_SID_UNSET ((unsigned int)-1)
+> +#define AUDIT_CID_UNSET ((u64)-1)
+>
+>  /* audit_rule_data supports filter rules with both integer and string
+>   * fields.  It corresponds with AUDIT_ADD_RULE, AUDIT_DEL_RULE and
+> diff --git a/kernel/audit.c b/kernel/audit.c
+> index 5d8147a29291..6d387793f702 100644
+> --- a/kernel/audit.c
+> +++ b/kernel/audit.c
+> @@ -138,6 +138,13 @@ struct auditd_connection {
+>
+>  /* Hash for inode-based rules */
+>  struct list_head audit_inode_hash[AUDIT_INODE_BUCKETS];
+> +/* Hash for contid object lists */
+> +struct list_head audit_contid_hash[AUDIT_CONTID_BUCKETS];
+> +/* Lock all additions and deletions to the contid hash lists, assignment
+> + * of container objects to tasks.  There should be no need for
+> + * interaction with tasklist_lock
+> + */
+> +static DEFINE_SPINLOCK(audit_contobj_list_lock);
+>
+>  static struct kmem_cache *audit_buffer_cache;
+>
+> @@ -212,6 +219,33 @@ void __init audit_task_init(void)
+>                                              0, SLAB_PANIC, NULL);
+>  }
+>
+> +/* rcu_read_lock must be held by caller unless new */
+> +static struct audit_contobj *_audit_contobj_hold(struct audit_contobj *cont)
+> +{
+> +       if (cont)
+> +               refcount_inc(&cont->refcount);
+> +       return cont;
+> +}
+> +
+> +static struct audit_contobj *_audit_contobj_get(struct task_struct *tsk)
+> +{
+> +       if (!tsk->audit)
+> +               return NULL;
+> +       return _audit_contobj_hold(tsk->audit->cont);
+> +}
+> +
+> +/* rcu_read_lock must be held by caller */
+> +static void _audit_contobj_put(struct audit_contobj *cont)
+> +{
+> +       if (!cont)
+> +               return;
+> +       if (refcount_dec_and_test(&cont->refcount)) {
+> +               put_task_struct(cont->owner);
+> +               list_del_rcu(&cont->list);
+> +               kfree_rcu(cont, rcu);
+> +       }
+> +}
+> +
+>  /**
+>   * audit_alloc - allocate an audit info block for a task
+>   * @tsk: task
+> @@ -232,6 +266,9 @@ int audit_alloc(struct task_struct *tsk)
+>         }
+>         info->loginuid = audit_get_loginuid(current);
+>         info->sessionid = audit_get_sessionid(current);
+> +       rcu_read_lock();
+> +       info->cont = _audit_contobj_get(current);
+> +       rcu_read_unlock();
+>         tsk->audit = info;
+>
+>         ret = audit_alloc_syscall(tsk);
+> @@ -246,6 +283,7 @@ int audit_alloc(struct task_struct *tsk)
+>  struct audit_task_info init_struct_audit = {
+>         .loginuid = INVALID_UID,
+>         .sessionid = AUDIT_SID_UNSET,
+> +       .cont = NULL,
+>  #ifdef CONFIG_AUDITSYSCALL
+>         .ctx = NULL,
+>  #endif
+> @@ -262,6 +300,9 @@ void audit_free(struct task_struct *tsk)
+>         struct audit_task_info *info = tsk->audit;
+>
+>         audit_free_syscall(tsk);
+> +       rcu_read_lock();
+> +       _audit_contobj_put(tsk->audit->cont);
+> +       rcu_read_unlock();
+>         /* Freeing the audit_task_info struct must be performed after
+>          * audit_log_exit() due to need for loginuid and sessionid.
+>          */
+> @@ -1709,6 +1750,9 @@ static int __init audit_init(void)
+>         for (i = 0; i < AUDIT_INODE_BUCKETS; i++)
+>                 INIT_LIST_HEAD(&audit_inode_hash[i]);
+>
+> +       for (i = 0; i < AUDIT_CONTID_BUCKETS; i++)
+> +               INIT_LIST_HEAD(&audit_contid_hash[i]);
+> +
+>         mutex_init(&audit_cmd_mutex.lock);
+>         audit_cmd_mutex.owner = NULL;
+>
+> @@ -2410,6 +2454,110 @@ int audit_signal_info(int sig, struct task_struct *t)
+>         return audit_signal_info_syscall(t);
+>  }
+>
+> +/*
+> + * audit_set_contid - set current task's audit contid
+> + * @task: target task
+> + * @contid: contid value
+> + *
+> + * Returns 0 on success, -EPERM on permission failure.
+> + *
+> + * If the original container owner goes away, no task injection is
+> + * possible to an existing container.
+> + *
+> + * Called (set) from fs/proc/base.c::proc_contid_write().
+> + */
+> +int audit_set_contid(struct task_struct *task, u64 contid)
+> +{
+> +       int rc = 0;
+> +       struct audit_buffer *ab;
+> +       struct audit_contobj *oldcont = NULL;
+> +
+> +       task_lock(task);
+> +       /* Can't set if audit disabled */
+> +       if (!task->audit) {
+> +               task_unlock(task);
+> +               return -ENOPROTOOPT;
+> +       }
+> +       read_lock(&tasklist_lock);
+> +       /* Don't allow the contid to be unset */
+> +       if (!audit_contid_valid(contid)) {
+> +               rc = -EINVAL;
+> +               goto unlock;
+> +       }
+> +       /* if we don't have caps, reject */
+> +       if (!capable(CAP_AUDIT_CONTROL)) {
+> +               rc = -EPERM;
+> +               goto unlock;
+> +       }
+> +       /* if task has children or is not single-threaded, deny */
+> +       if (!list_empty(&task->children) ||
+> +           !(thread_group_leader(task) && thread_group_empty(task))) {
+> +               rc = -EBUSY;
+> +               goto unlock;
+> +       }
+> +       /* if contid is already set, deny */
+> +       if (audit_contid_set(task))
+> +               rc = -EEXIST;
+> +unlock:
+> +       read_unlock(&tasklist_lock);
+> +       rcu_read_lock();
+> +       oldcont = _audit_contobj_get(task);
+> +       if (!rc) {
+> +               struct audit_contobj *cont = NULL, *newcont = NULL;
+> +               int h = audit_hash_contid(contid);
+> +
+> +               spin_lock(&audit_contobj_list_lock);
+> +               list_for_each_entry_rcu(cont, &audit_contid_hash[h], list)
+> +                       if (cont->id == contid) {
+> +                               /* task injection to existing container */
+> +                               if (current == cont->owner) {
+> +                                       _audit_contobj_hold(cont);
+> +                                       newcont = cont;
+> +                               } else {
+> +                                       rc = -ENOTUNIQ;
+> +                                       spin_unlock(&audit_contobj_list_lock);
+> +                                       goto conterror;
+> +                               }
+> +                               break;
+> +                       }
+> +               if (!newcont) {
+> +                       newcont = kmalloc(sizeof(*newcont), GFP_ATOMIC);
+> +                       if (newcont) {
+> +                               INIT_LIST_HEAD(&newcont->list);
+> +                               newcont->id = contid;
+> +                               newcont->owner = get_task_struct(current);
+> +                               refcount_set(&newcont->refcount, 1);
+> +                               list_add_rcu(&newcont->list,
+> +                                            &audit_contid_hash[h]);
+> +                       } else {
+> +                               rc = -ENOMEM;
+> +                               spin_unlock(&audit_contobj_list_lock);
+> +                               goto conterror;
+> +                       }
+> +               }
+> +               spin_unlock(&audit_contobj_list_lock);
+> +               task->audit->cont = newcont;
+> +               _audit_contobj_put(oldcont);
+> +       }
+> +conterror:
+> +       task_unlock(task);
+> +
+> +       if (!audit_enabled)
+> +               return rc;
+> +
+> +       ab = audit_log_start(audit_context(), GFP_KERNEL, AUDIT_CONTAINER_OP);
+> +       if (!ab)
+> +               return rc;
+> +
+> +       audit_log_format(ab,
+> +                        "op=set opid=%d contid=%llu old-contid=%llu",
+> +                        task_tgid_nr(task), contid, oldcont ? oldcont->id : -1);
+> +       _audit_contobj_put(oldcont);
+> +       rcu_read_unlock();
+> +       audit_log_end(ab);
+> +       return rc;
+> +}
+> +
+>  /**
+>   * audit_log_end - end one audit record
+>   * @ab: the audit_buffer
+> diff --git a/kernel/audit.h b/kernel/audit.h
+> index 9bee09757068..182fc76ea276 100644
+> --- a/kernel/audit.h
+> +++ b/kernel/audit.h
+> @@ -210,6 +210,14 @@ static inline int audit_hash_ino(u32 ino)
+>         return (ino & (AUDIT_INODE_BUCKETS-1));
+>  }
+>
+> +#define AUDIT_CONTID_BUCKETS   32
+> +extern struct list_head audit_contid_hash[AUDIT_CONTID_BUCKETS];
+> +
+> +static inline int audit_hash_contid(u64 contid)
+> +{
+> +       return (contid & (AUDIT_CONTID_BUCKETS-1));
+> +}
+> +
+>  /* Indicates that audit should log the full pathname. */
+>  #define AUDIT_NAME_FULL -1
+>
+> --
+> 1.8.3.1
+>
 
-PHYLINK now requires that parameters established through
-auto-negotiation be written into the MAC at the time of the
-mac_link_up() callback. In the case of felix, that means taking the port
-out of reset, setting the correct timers for PAUSE frames, and
-enabling/disabling TX flow control.
 
-This patch also splits the inband and noinband configuration of the
-vsc9959 PCS (currently found in a function called "init") into 2
-different functions, which have a nomenclature closer to PHYLINK:
-"config", for inband setup, and "link_up", for noinband (forced) setup.
-This is necessary as a preparation step for giving up control of the PCS
-to PHYLINK, which will be done in further patches.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v2:
-Rebase on top of new patch 1/6.
-
- drivers/net/dsa/ocelot/felix.c         |  76 ++++----
- drivers/net/dsa/ocelot/felix.h         |  10 +-
- drivers/net/dsa/ocelot/felix_vsc9959.c | 257 ++++++++++++++-----------
- 3 files changed, 187 insertions(+), 156 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 57c400a67f16..75652ed99b24 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -233,6 +233,32 @@ static int felix_phylink_mac_pcs_get_state(struct dsa_switch *ds, int port,
- static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
- 				     unsigned int link_an_mode,
- 				     const struct phylink_link_state *state)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+
-+	if (felix->info->pcs_config)
-+		felix->info->pcs_config(ocelot, port, link_an_mode, state);
-+}
-+
-+static void felix_phylink_mac_link_down(struct dsa_switch *ds, int port,
-+					unsigned int link_an_mode,
-+					phy_interface_t interface)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
-+
-+	ocelot_port_writel(ocelot_port, 0, DEV_MAC_ENA_CFG);
-+	ocelot_rmw_rix(ocelot, 0, QSYS_SWITCH_PORT_MODE_PORT_ENA,
-+		       QSYS_SWITCH_PORT_MODE, port);
-+}
-+
-+static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
-+				      unsigned int link_an_mode,
-+				      phy_interface_t interface,
-+				      struct phy_device *phydev,
-+				      int speed, int duplex,
-+				      bool tx_pause, bool rx_pause)
- {
- 	struct ocelot *ocelot = ds->priv;
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
-@@ -250,7 +276,7 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
- 			   DEV_CLOCK_CFG_LINK_SPEED(OCELOT_SPEED_1000),
- 			   DEV_CLOCK_CFG);
- 
--	switch (state->speed) {
-+	switch (speed) {
- 	case SPEED_10:
- 		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(3);
- 		break;
-@@ -261,12 +287,9 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
- 	case SPEED_2500:
- 		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(1);
- 		break;
--	case SPEED_UNKNOWN:
--		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(0);
--		break;
- 	default:
- 		dev_err(ocelot->dev, "Unsupported speed on port %d: %d\n",
--			port, state->speed);
-+			port, speed);
- 		return;
- 	}
- 
-@@ -275,7 +298,7 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
- 	 */
- 	mac_fc_cfg |= SYS_MAC_FC_CFG_RX_FC_ENA;
- 
--	if (state->pause & MLO_PAUSE_TX)
-+	if (tx_pause)
- 		mac_fc_cfg |= SYS_MAC_FC_CFG_TX_FC_ENA |
- 			      SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
- 			      SYS_MAC_FC_CFG_FC_LATENCY_CFG(0x7) |
-@@ -288,37 +311,9 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
- 
- 	ocelot_write_rix(ocelot, 0, ANA_POL_FLOWC, port);
- 
--	if (felix->info->pcs_init)
--		felix->info->pcs_init(ocelot, port, link_an_mode, state);
--
--	if (felix->info->port_sched_speed_set)
--		felix->info->port_sched_speed_set(ocelot, port,
--						  state->speed);
--}
--
--static void felix_phylink_mac_link_down(struct dsa_switch *ds, int port,
--					unsigned int link_an_mode,
--					phy_interface_t interface)
--{
--	struct ocelot *ocelot = ds->priv;
--	struct ocelot_port *ocelot_port = ocelot->ports[port];
--
--	ocelot_port_writel(ocelot_port, 0, DEV_MAC_ENA_CFG);
--	ocelot_rmw_rix(ocelot, 0, QSYS_SWITCH_PORT_MODE_PORT_ENA,
--		       QSYS_SWITCH_PORT_MODE, port);
--}
--
--static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
--				      unsigned int link_an_mode,
--				      phy_interface_t interface,
--				      struct phy_device *phydev,
--				      int speed, int duplex,
--				      bool tx_pause, bool rx_pause)
--{
--	struct ocelot *ocelot = ds->priv;
--	struct ocelot_port *ocelot_port = ocelot->ports[port];
--
--	/* Enable MAC module */
-+	/* Undo the effects of felix_phylink_mac_link_down:
-+	 * enable MAC module
-+	 */
- 	ocelot_port_writel(ocelot_port, DEV_MAC_ENA_CFG_RX_ENA |
- 			   DEV_MAC_ENA_CFG_TX_ENA, DEV_MAC_ENA_CFG);
- 
-@@ -335,6 +330,13 @@ static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
- 			 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
- 			 QSYS_SWITCH_PORT_MODE_PORT_ENA,
- 			 QSYS_SWITCH_PORT_MODE, port);
-+
-+	if (felix->info->pcs_link_up)
-+		felix->info->pcs_link_up(ocelot, port, link_an_mode, interface,
-+					 speed, duplex);
-+
-+	if (felix->info->port_sched_speed_set)
-+		felix->info->port_sched_speed_set(ocelot, port, speed);
- }
- 
- static void felix_port_qos_map_init(struct ocelot *ocelot, int port)
-diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index 4a4cebcf04a7..00137b64132b 100644
---- a/drivers/net/dsa/ocelot/felix.h
-+++ b/drivers/net/dsa/ocelot/felix.h
-@@ -28,9 +28,13 @@ struct felix_info {
- 	int				imdio_pci_bar;
- 	int	(*mdio_bus_alloc)(struct ocelot *ocelot);
- 	void	(*mdio_bus_free)(struct ocelot *ocelot);
--	void	(*pcs_init)(struct ocelot *ocelot, int port,
--			    unsigned int link_an_mode,
--			    const struct phylink_link_state *state);
-+	void	(*pcs_config)(struct ocelot *ocelot, int port,
-+			      unsigned int link_an_mode,
-+			      const struct phylink_link_state *state);
-+	void	(*pcs_link_up)(struct ocelot *ocelot, int port,
-+			       unsigned int link_an_mode,
-+			       phy_interface_t interface,
-+			       int speed, int duplex);
- 	void	(*pcs_link_state)(struct ocelot *ocelot, int port,
- 				  struct phylink_link_state *state);
- 	int	(*prevalidate_phy_mode)(struct ocelot *ocelot, int port,
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 65f83386bad1..19614537b1ba 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -737,124 +737,54 @@ static int vsc9959_reset(struct ocelot *ocelot)
-  * traffic if SGMII AN is enabled but not completed (acknowledged by us), so
-  * setting MLO_AN_INBAND is actually required for those.
-  */
--static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
--				   unsigned int link_an_mode,
--				   const struct phylink_link_state *state)
-+static void vsc9959_pcs_config_sgmii(struct phy_device *pcs,
-+				     unsigned int link_an_mode,
-+				     const struct phylink_link_state *state)
- {
--	if (link_an_mode == MLO_AN_INBAND) {
--		int bmsr, bmcr;
--
--		/* Some PHYs like VSC8234 don't like it when AN restarts on
--		 * their system  side and they restart line side AN too, going
--		 * into an endless link up/down loop.  Don't restart PCS AN if
--		 * link is up already.
--		 * We do check that AN is enabled just in case this is the 1st
--		 * call, PCS detects a carrier but AN is disabled from power on
--		 * or by boot loader.
--		 */
--		bmcr = phy_read(pcs, MII_BMCR);
--		if (bmcr < 0)
--			return;
--
--		bmsr = phy_read(pcs, MII_BMSR);
--		if (bmsr < 0)
--			return;
--
--		if ((bmcr & BMCR_ANENABLE) && (bmsr & BMSR_LSTATUS))
--			return;
--
--		/* SGMII spec requires tx_config_Reg[15:0] to be exactly 0x4001
--		 * for the MAC PCS in order to acknowledge the AN.
--		 */
--		phy_write(pcs, MII_ADVERTISE, ADVERTISE_SGMII |
--					      ADVERTISE_LPACK);
--
--		phy_write(pcs, ENETC_PCS_IF_MODE,
--			  ENETC_PCS_IF_MODE_SGMII_EN |
--			  ENETC_PCS_IF_MODE_USE_SGMII_AN);
--
--		/* Adjust link timer for SGMII */
--		phy_write(pcs, ENETC_PCS_LINK_TIMER1,
--			  ENETC_PCS_LINK_TIMER1_VAL);
--		phy_write(pcs, ENETC_PCS_LINK_TIMER2,
--			  ENETC_PCS_LINK_TIMER2_VAL);
--
--		phy_set_bits(pcs, MII_BMCR, BMCR_ANENABLE);
--	} else {
--		u16 if_mode = ENETC_PCS_IF_MODE_SGMII_EN;
--		int speed;
--
--		switch (state->speed) {
--		case SPEED_1000:
--			speed = ENETC_PCS_SPEED_1000;
--			break;
--		case SPEED_100:
--			speed = ENETC_PCS_SPEED_100;
--			break;
--		case SPEED_10:
--			speed = ENETC_PCS_SPEED_10;
--			break;
--		case SPEED_UNKNOWN:
--			/* Silently don't do anything */
--			return;
--		default:
--			phydev_err(pcs, "Invalid PCS speed %d\n", state->speed);
--			return;
--		}
--
--		if_mode |= ENETC_PCS_IF_MODE_SGMII_SPEED(speed);
--		if (state->duplex == DUPLEX_HALF)
--			if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
--
--		phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
--	}
--}
-+	int bmsr, bmcr;
-+
-+	/* Some PHYs like VSC8234 don't like it when AN restarts on
-+	 * their system  side and they restart line side AN too, going
-+	 * into an endless link up/down loop.  Don't restart PCS AN if
-+	 * link is up already.
-+	 * We do check that AN is enabled just in case this is the 1st
-+	 * call, PCS detects a carrier but AN is disabled from power on
-+	 * or by boot loader.
-+	 */
-+	bmcr = phy_read(pcs, MII_BMCR);
-+	if (bmcr < 0)
-+		return;
- 
--/* 2500Base-X is SerDes protocol 7 on Felix and 6 on ENETC. It is a SerDes lane
-- * clocked at 3.125 GHz which encodes symbols with 8b/10b and does not have
-- * auto-negotiation of any link parameters. Electrically it is compatible with
-- * a single lane of XAUI.
-- * The hardware reference manual wants to call this mode SGMII, but it isn't
-- * really, since the fundamental features of SGMII:
-- * - Downgrading the link speed by duplicating symbols
-- * - Auto-negotiation
-- * are not there.
-- * The speed is configured at 1000 in the IF_MODE and BMCR MDIO registers
-- * because the clock frequency is actually given by a PLL configured in the
-- * Reset Configuration Word (RCW).
-- * Since there is no difference between fixed speed SGMII w/o AN and 802.3z w/o
-- * AN, we call this PHY interface type 2500Base-X. In case a PHY negotiates a
-- * lower link speed on line side, the system-side interface remains fixed at
-- * 2500 Mbps and we do rate adaptation through pause frames.
-- */
--static void vsc9959_pcs_init_2500basex(struct phy_device *pcs,
--				       unsigned int link_an_mode,
--				       const struct phylink_link_state *state)
--{
--	u16 if_mode = ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500) |
--		      ENETC_PCS_IF_MODE_SGMII_EN;
-+	bmsr = phy_read(pcs, MII_BMSR);
-+	if (bmsr < 0)
-+		return;
- 
--	if (link_an_mode == MLO_AN_INBAND) {
--		phydev_err(pcs, "AN not supported on 3.125GHz SerDes lane\n");
-+	if ((bmcr & BMCR_ANENABLE) && (bmsr & BMSR_LSTATUS))
- 		return;
--	}
- 
--	if (state->duplex == DUPLEX_HALF)
--		if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
-+	/* SGMII spec requires tx_config_Reg[15:0] to be exactly 0x4001
-+	 * for the MAC PCS in order to acknowledge the AN.
-+	 */
-+	phy_write(pcs, MII_ADVERTISE, ADVERTISE_SGMII |
-+				      ADVERTISE_LPACK);
- 
--	phy_write(pcs, ENETC_PCS_IF_MODE, if_mode);
--	phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
-+	phy_write(pcs, ENETC_PCS_IF_MODE,
-+		  ENETC_PCS_IF_MODE_SGMII_EN |
-+		  ENETC_PCS_IF_MODE_USE_SGMII_AN);
-+
-+	/* Adjust link timer for SGMII */
-+	phy_write(pcs, ENETC_PCS_LINK_TIMER1,
-+		  ENETC_PCS_LINK_TIMER1_VAL);
-+	phy_write(pcs, ENETC_PCS_LINK_TIMER2,
-+		  ENETC_PCS_LINK_TIMER2_VAL);
-+
-+	phy_set_bits(pcs, MII_BMCR, BMCR_ANENABLE);
- }
- 
--static void vsc9959_pcs_init_usxgmii(struct phy_device *pcs,
--				     unsigned int link_an_mode,
--				     const struct phylink_link_state *state)
-+static void vsc9959_pcs_config_usxgmii(struct phy_device *pcs,
-+				       unsigned int link_an_mode,
-+				       const struct phylink_link_state *state)
- {
--	if (link_an_mode != MLO_AN_INBAND) {
--		phydev_err(pcs, "USXGMII only supports in-band AN for now\n");
--		return;
--	}
--
- 	/* Configure device ability for the USXGMII Replicator */
- 	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_ADVERTISE,
- 		      USXGMII_ADVERTISE_SPEED(USXGMII_SPEED_2500) |
-@@ -864,9 +794,9 @@ static void vsc9959_pcs_init_usxgmii(struct phy_device *pcs,
- 		      USXGMII_ADVERTISE_FDX);
- }
- 
--static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
--			     unsigned int link_an_mode,
--			     const struct phylink_link_state *state)
-+static void vsc9959_pcs_config(struct ocelot *ocelot, int port,
-+			       unsigned int link_an_mode,
-+			       const struct phylink_link_state *state)
- {
- 	struct felix *felix = ocelot_to_felix(ocelot);
- 	struct phy_device *pcs = felix->pcs[port];
-@@ -898,16 +828,110 @@ static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
- 				 pcs->supported);
- 	phy_advertise_supported(pcs);
- 
-+	if (!phylink_autoneg_inband(link_an_mode))
-+		return;
-+
- 	switch (pcs->interface) {
- 	case PHY_INTERFACE_MODE_SGMII:
- 	case PHY_INTERFACE_MODE_QSGMII:
--		vsc9959_pcs_init_sgmii(pcs, link_an_mode, state);
-+		vsc9959_pcs_config_sgmii(pcs, link_an_mode, state);
- 		break;
- 	case PHY_INTERFACE_MODE_2500BASEX:
--		vsc9959_pcs_init_2500basex(pcs, link_an_mode, state);
-+		phydev_err(pcs, "AN not supported on 3.125GHz SerDes lane\n");
- 		break;
- 	case PHY_INTERFACE_MODE_USXGMII:
--		vsc9959_pcs_init_usxgmii(pcs, link_an_mode, state);
-+		vsc9959_pcs_config_usxgmii(pcs, link_an_mode, state);
-+		break;
-+	default:
-+		dev_err(ocelot->dev, "Unsupported link mode %s\n",
-+			phy_modes(pcs->interface));
-+	}
-+}
-+
-+static void vsc9959_pcs_link_up_sgmii(struct phy_device *pcs,
-+				      unsigned int link_an_mode,
-+				      int speed, int duplex)
-+{
-+	u16 if_mode = ENETC_PCS_IF_MODE_SGMII_EN;
-+
-+	switch (speed) {
-+	case SPEED_1000:
-+		if_mode |= ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_1000);
-+		break;
-+	case SPEED_100:
-+		if_mode |= ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_100);
-+		break;
-+	case SPEED_10:
-+		if_mode |= ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_10);
-+		break;
-+	default:
-+		phydev_err(pcs, "Invalid PCS speed %d\n", speed);
-+		return;
-+	}
-+
-+	if (duplex == DUPLEX_HALF)
-+		if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
-+
-+	phy_write(pcs, ENETC_PCS_IF_MODE, if_mode);
-+	phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
-+}
-+
-+/* 2500Base-X is SerDes protocol 7 on Felix and 6 on ENETC. It is a SerDes lane
-+ * clocked at 3.125 GHz which encodes symbols with 8b/10b and does not have
-+ * auto-negotiation of any link parameters. Electrically it is compatible with
-+ * a single lane of XAUI.
-+ * The hardware reference manual wants to call this mode SGMII, but it isn't
-+ * really, since the fundamental features of SGMII:
-+ * - Downgrading the link speed by duplicating symbols
-+ * - Auto-negotiation
-+ * are not there.
-+ * The speed is configured at 1000 in the IF_MODE and BMCR MDIO registers
-+ * because the clock frequency is actually given by a PLL configured in the
-+ * Reset Configuration Word (RCW).
-+ * Since there is no difference between fixed speed SGMII w/o AN and 802.3z w/o
-+ * AN, we call this PHY interface type 2500Base-X. In case a PHY negotiates a
-+ * lower link speed on line side, the system-side interface remains fixed at
-+ * 2500 Mbps and we do rate adaptation through pause frames.
-+ */
-+static void vsc9959_pcs_link_up_2500basex(struct phy_device *pcs,
-+					  unsigned int link_an_mode,
-+					  int speed, int duplex)
-+{
-+	u16 if_mode = ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500) |
-+		      ENETC_PCS_IF_MODE_SGMII_EN;
-+
-+	if (duplex == DUPLEX_HALF)
-+		if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
-+
-+	phy_write(pcs, ENETC_PCS_IF_MODE, if_mode);
-+	phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
-+}
-+
-+static void vsc9959_pcs_link_up(struct ocelot *ocelot, int port,
-+				unsigned int link_an_mode,
-+				phy_interface_t interface,
-+				int speed, int duplex)
-+{
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	struct phy_device *pcs = felix->pcs[port];
-+
-+	if (!pcs)
-+		return;
-+
-+	if (phylink_autoneg_inband(link_an_mode))
-+		return;
-+
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+		vsc9959_pcs_link_up_sgmii(pcs, link_an_mode, speed, duplex);
-+		break;
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		vsc9959_pcs_link_up_2500basex(pcs, link_an_mode, speed,
-+					      duplex);
-+		break;
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		phydev_err(pcs, "USXGMII only supports in-band AN for now\n");
- 		break;
- 	default:
- 		dev_err(ocelot->dev, "Unsupported link mode %s\n",
-@@ -1374,7 +1398,8 @@ struct felix_info felix_info_vsc9959 = {
- 	.imdio_pci_bar		= 0,
- 	.mdio_bus_alloc		= vsc9959_mdio_bus_alloc,
- 	.mdio_bus_free		= vsc9959_mdio_bus_free,
--	.pcs_init		= vsc9959_pcs_init,
-+	.pcs_config		= vsc9959_pcs_config,
-+	.pcs_link_up		= vsc9959_pcs_link_up,
- 	.pcs_link_state		= vsc9959_pcs_link_state,
- 	.prevalidate_phy_mode	= vsc9959_prevalidate_phy_mode,
- 	.port_setup_tc          = vsc9959_port_setup_tc,
 -- 
-2.25.1
-
+paul moore
+www.paul-moore.com
