@@ -2,79 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 357A8214481
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 09:46:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80A06214486
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 09:51:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726958AbgGDHqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 03:46:08 -0400
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:64301 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726253AbgGDHqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 03:46:08 -0400
-Received: from [192.168.1.7] (unknown [116.237.151.97])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 4463F5C160F
-        for <netdev@vger.kernel.org>; Sat,  4 Jul 2020 15:46:05 +0800 (CST)
-Subject: Re: [PATCH net 2/2] net/sched: act_ct: add miss tcf_lastuse_update.
-From:   wenxu <wenxu@ucloud.cn>
-To:     netdev@vger.kernel.org
-References: <1593848528-14234-1-git-send-email-wenxu@ucloud.cn>
-Message-ID: <ef60d714-4a4d-5d94-e897-36689b6e9a95@ucloud.cn>
-Date:   Sat, 4 Jul 2020 15:46:04 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        id S1727802AbgGDHvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 03:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33700 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbgGDHvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 03:51:47 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BAAC061794
+        for <netdev@vger.kernel.org>; Sat,  4 Jul 2020 00:51:47 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1jrcxL-0002mL-Pi; Sat, 04 Jul 2020 09:51:27 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:44c0:f67d:f3f1:540c] (unknown [IPv6:2a03:f580:87bc:d400:44c0:f67d:f3f1:540c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id C0795528C0A;
+        Sat,  4 Jul 2020 07:51:20 +0000 (UTC)
+Subject: Re: [PATCH 3/7] Documentation: networking: can_ucan_protocol: drop
+ doubled words
+To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Cc:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Ralf Baechle <ralf@linux-mips.org>, linux-hams@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org
+References: <20200703224115.29769-1-rdunlap@infradead.org>
+ <20200703224115.29769-4-rdunlap@infradead.org>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
+ iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
+ Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
+ Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
+ tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
+ yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
+ BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
+ mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
+ 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
+ Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
+ 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
+Message-ID: <d2dd726e-8136-31ea-ba38-8d4bce6d7d87@pengutronix.de>
+Date:   Sat, 4 Jul 2020 09:51:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <1593848528-14234-1-git-send-email-wenxu@ucloud.cn>
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVktVTEpOS0tLS0hISExDTUtKWVdZKF
-        lBSUI3V1ktWUFJV1kPCRoVCBIfWUFZHSI1CzgcOTMVKRpDNgw5HRALCTE6HFZWVU5DS0IoSVlXWQ
-        kOFx4IWUFZNTQpNjo3JCkuNz5ZV1kWGg8SFR0UWUFZNDBZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OU06HSo5CD5IKE44GQtREhAU
-        KkxPCVZVSlVKTkJIQ09DTE1OSExJVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
-        SExVSk5KVUJMWVdZCAFZQUlKQ043Bg++
-X-HM-Tid: 0a7318ca1b802087kuqy4463f5c160f
+In-Reply-To: <20200703224115.29769-4-rdunlap@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please drop this one for wrong tags
+On 7/4/20 12:41 AM, Randy Dunlap wrote:
+> Drop the doubled words "the" and "of".
+> 
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: linux-doc@vger.kernel.org
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: Wolfgang Grandegger <wg@grandegger.com>
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> Cc: linux-can@vger.kernel.org
 
-ÔÚ 2020/7/4 15:42, wenxu@ucloud.cn Ð´µÀ:
-> From: wenxu <wenxu@ucloud.cn>
->
-> When tcf_ct_act execute the tcf_lastuse_update should
-> be update or the used stats never update
->
-> filter protocol ip pref 3 flower chain 0
-> filter protocol ip pref 3 flower chain 0 handle 0x1
->   eth_type ipv4
->   dst_ip 1.1.1.1
->   ip_flags frag/firstfrag
->   skip_hw
->   not_in_hw
->  action order 1: ct zone 1 nat pipe
->   index 1 ref 1 bind 1 installed 103 sec used 103 sec
->  Action statistics:
->  Sent 151500 bytes 101 pkt (dropped 0, overlimits 0 requeues 0)
->  backlog 0b 0p requeues 0
->  cookie 4519c04dc64a1a295787aab13b6a50fb
->
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
->  net/sched/act_ct.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> index 2eaabdc..ec0250f 100644
-> --- a/net/sched/act_ct.c
-> +++ b/net/sched/act_ct.c
-> @@ -928,6 +928,8 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
->  	force = p->ct_action & TCA_CT_ACT_FORCE;
->  	tmpl = p->tmpl;
->  
-> +	tcf_lastuse_update(&c->tcf_tm);
-> +
->  	if (clear) {
->  		ct = nf_ct_get(skb, &ctinfo);
->  		if (ct) {
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+
+regards,
+Marc
+
+-- 
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
