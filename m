@@ -2,97 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93740214632
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 15:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E435A21465A
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 16:09:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728052AbgGDNq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 09:46:59 -0400
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:59243 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726643AbgGDNq7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 09:46:59 -0400
-X-Originating-IP: 82.66.179.123
-Received: from localhost (unknown [82.66.179.123])
-        (Authenticated sender: repk@triplefau.lt)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 406D1C0003;
-        Sat,  4 Jul 2020 13:46:54 +0000 (UTC)
-From:   Remi Pommarel <repk@triplefau.lt>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Bob Copeland <me@bobcopeland.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Remi Pommarel <repk@triplefau.lt>
-Subject: [PATCH] mac80211: mesh: Free pending skb when destroying a mpath
-Date:   Sat,  4 Jul 2020 15:54:19 +0200
-Message-Id: <20200704135419.27703-1-repk@triplefau.lt>
-X-Mailer: git-send-email 2.26.2
+        id S1726787AbgGDOIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 10:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726258AbgGDOIy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 10:08:54 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2858EC061794;
+        Sat,  4 Jul 2020 07:08:54 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id w17so27994411oie.6;
+        Sat, 04 Jul 2020 07:08:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sruIXwAXhVbyB5irGxpmieYBkvT+Yh76sngiyp81DSY=;
+        b=bGGfNXswYZe14/cuzAmIfTCOrYwfHvCH4h2te1yO88pI7RbPNA7Czv4reMww8I8SbP
+         s7KT5FPP1bFRY4eFbAuO4gaa8m7yQVpHAYj/lMxb4yc97Az2qudXG0cbkRsYUUD3wZoF
+         VcfO/PuPPWvtKdkXdSKu7vcI1ir7FriWYlg+YA0IYCfpVJH0UvzY1LXnLM1XgzBP40WZ
+         jfTvdG/d7nzvQcNmMNtQZZGcTvo0v8HkU6ccy9hOpu+mYF/Sq7YbmlKkHIMZJk+UZhaH
+         yQZa/f4ADWlFCb+UE+CsDdnFeAWIn9DAei37pKrH6P/kqqxK70mAp9uaEyAIA+AGLOPT
+         fSIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sruIXwAXhVbyB5irGxpmieYBkvT+Yh76sngiyp81DSY=;
+        b=opqxa+FgwjmJqkAq856nfqoAgVdogaV50658Qsj9tBg0TB+7jGuFu9v+OkyHv69dZk
+         Yl7fa90kDXtefzmPwLOGxCspKyhlDFIdxae9Sfc7EgHEBvSuVJBIOkdsMPERd9fxEu1e
+         xaSfILW86HUKQjoDuHFKj4zzKrwnRCZZd+liWB7au2U2kFj7uu7qeKOqd2yNDg8jC5Cp
+         BTpLD8iWlNnrDDIuCbIQ8NaU6MV6yYTy7H6qAf8dBLAmNoKzvaqjsHKr5G02DKwxL4yh
+         wau5HJYUJXEMUyfXi0Q+H7+w+VwuEyFfcU42p7oLRcjxvT8eMCn9ynD7FZTd1KcjuM13
+         pNgA==
+X-Gm-Message-State: AOAM533rNVbfuEN2xltMvguTaJ9NoDKRWn7E0NftZRkdlxboxKr2lIxD
+        65Y9ld4j0NjkJ/g5G1DVZ61oG9fQrBbM0JNNiEA=
+X-Google-Smtp-Source: ABdhPJztoFfvdTLj2yMn1sCGZxmmBOCYmRIuPcHWgshbnsn/EhxPtETALm2xO46URFZ5cicFgCzGhlj5YWM8/IMYuUI=
+X-Received: by 2002:aca:b205:: with SMTP id b5mr32722874oif.103.1593871733367;
+ Sat, 04 Jul 2020 07:08:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200702175352.19223-1-TheSven73@gmail.com> <20200702175352.19223-3-TheSven73@gmail.com>
+ <CAOMZO5DxUeXH8ZYxmKynA7xO3uF6SP_Kt-g=8MPgsF7tqkRvAA@mail.gmail.com>
+In-Reply-To: <CAOMZO5DxUeXH8ZYxmKynA7xO3uF6SP_Kt-g=8MPgsF7tqkRvAA@mail.gmail.com>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Sat, 4 Jul 2020 10:08:42 -0400
+Message-ID: <CAGngYiXGXDqCZeJme026uz5FjU56UojmQFFiJ5_CZ_AywdQiEw@mail.gmail.com>
+Subject: Re: [PATCH v5 3/3] ARM: imx6plus: optionally enable internal routing
+ of clk_enet_ref
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     Shawn Guo <shawnguo@kernel.org>, Fugang Duan <fugang.duan@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A mpath object can hold reference on a list of skb that are waiting for
-mpath resolution to be sent. When destroying a mpath this skb list
-should be cleaned up in order to not leak memory.
+Hi Fabio, Andy,
 
-Fixing that kind of leak:
+On Thu, Jul 2, 2020 at 6:29 PM Fabio Estevam <festevam@gmail.com> wrote:
+>
+> With the device tree approach, I think that a better place to touch
+> GPR5 would be inside the fec driver.
+>
 
-unreferenced object 0xffff0000181c9300 (size 1088):
-  comm "openvpn", pid 1782, jiffies 4295071698 (age 80.416s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 f9 80 36 00 00 00 00 00  ..........6.....
-    02 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
-  backtrace:
-    [<000000004bc6a443>] kmem_cache_alloc+0x1a4/0x2f0
-    [<000000002caaef13>] sk_prot_alloc.isra.39+0x34/0x178
-    [<00000000ceeaa916>] sk_alloc+0x34/0x228
-    [<00000000ca1f1d04>] inet_create+0x198/0x518
-    [<0000000035626b1c>] __sock_create+0x134/0x328
-    [<00000000a12b3a87>] __sys_socket+0xb0/0x158
-    [<00000000ff859f23>] __arm64_sys_socket+0x40/0x58
-    [<00000000263486ec>] el0_svc_handler+0xd0/0x1a0
-    [<0000000005b5157d>] el0_svc+0x8/0xc
-unreferenced object 0xffff000012973a40 (size 216):
-  comm "openvpn", pid 1782, jiffies 4295082137 (age 38.660s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 c0 06 16 00 00 ff ff 00 93 1c 18 00 00 ff ff  ................
-  backtrace:
-    [<000000004bc6a443>] kmem_cache_alloc+0x1a4/0x2f0
-    [<0000000023c8c8f9>] __alloc_skb+0xc0/0x2b8
-    [<000000007ad950bb>] alloc_skb_with_frags+0x60/0x320
-    [<00000000ef90023a>] sock_alloc_send_pskb+0x388/0x3c0
-    [<00000000104fb1a3>] sock_alloc_send_skb+0x1c/0x28
-    [<000000006919d2dd>] __ip_append_data+0xba4/0x11f0
-    [<0000000083477587>] ip_make_skb+0x14c/0x1a8
-    [<0000000024f3d592>] udp_sendmsg+0xaf0/0xcf0
-    [<000000005aabe255>] inet_sendmsg+0x5c/0x80
-    [<000000008651ea08>] __sys_sendto+0x15c/0x218
-    [<000000003505c99b>] __arm64_sys_sendto+0x74/0x90
-    [<00000000263486ec>] el0_svc_handler+0xd0/0x1a0
-    [<0000000005b5157d>] el0_svc+0x8/0xc
+Are we 100% sure this is the best way forward, though?
 
-Fixes: 2bdaf386f99c (mac80211: mesh: move path tables into if_mesh)
-Signed-off-by: Remi Pommarel <repk@triplefau.lt>
----
- net/mac80211/mesh_pathtbl.c | 1 +
- 1 file changed, 1 insertion(+)
+All the FEC driver should care about is the FEC logic block
+inside the SoC. It should not concern itself with the way a SoC
+happens to bring a clock (PTP clock) to the input of the FEC
+logic block - that is purely a SoC implementation detail.
 
-diff --git a/net/mac80211/mesh_pathtbl.c b/net/mac80211/mesh_pathtbl.c
-index 117519bf33d6..aca608ae313f 100644
---- a/net/mac80211/mesh_pathtbl.c
-+++ b/net/mac80211/mesh_pathtbl.c
-@@ -521,6 +521,7 @@ static void mesh_path_free_rcu(struct mesh_table *tbl,
- 	del_timer_sync(&mpath->timer);
- 	atomic_dec(&sdata->u.mesh.mpaths);
- 	atomic_dec(&tbl->entries);
-+	mesh_path_flush_pending(mpath);
- 	kfree_rcu(mpath, rcu);
- }
- 
--- 
-2.26.2
+It makes sense to add fsl,stop-mode (= a GPR bit) to the FEC driver,
+as this bit is a logic input to the FEC block, which the driver needs
+to dynamically flip.
 
+But the PTP clock is different, because it's statically routed by
+the SoC.
+
+Maybe this problem needs a clock routing solution?
+Isn't there an imx6q plus clock mux we're not modelling?
+
+  enet_ref-o------>ext>---pad_clk--| \
+           |                       |M |----fec_ptp_clk
+           o-----------------------|_/
+
+Where M = mux controlled by GPR5[9]
+
+The issue here is that pad_clk is routed externally, so its parent
+could be any internal or external clock. I have no idea how to
+model this in the clock framework.
