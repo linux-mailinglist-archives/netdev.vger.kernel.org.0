@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17DF2214529
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 13:28:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67F8321454C
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 13:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726790AbgGDL2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 07:28:53 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:32643 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726452AbgGDL2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 07:28:52 -0400
+        id S1727840AbgGDLdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 07:33:54 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:35598 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726621AbgGDLdy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 07:33:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593862130;
+        s=mimecast20190719; t=1593862432;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=c1wCfKnVDpe0dEjK4URgb65tlwRZLWw1AKcquMUamB0=;
-        b=f9EpCgzGs5UcHePhiW357+ViIDa6cDXAzUtOMkJKGlxuI25/1pX4eP1CKIccZN55w+EBOC
-        kUrTdFGMqdNQ4q2vMGf/jTwQpd8FlOb7cs22z3mEtfUqySC1UTw1ykO5lviTxFISSBJxoJ
-        1yn4DW6gMBBWoQFAFn5myMjJV51P7C4=
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
- [209.85.215.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-263-RP2uFLCmNT2X5wPayuvymg-1; Sat, 04 Jul 2020 07:28:48 -0400
-X-MC-Unique: RP2uFLCmNT2X5wPayuvymg-1
-Received: by mail-pg1-f200.google.com with SMTP id u16so25241788pgj.17
-        for <netdev@vger.kernel.org>; Sat, 04 Jul 2020 04:28:48 -0700 (PDT)
+        bh=4HB36sjhmx4bYypIIg0QrKY9T+pJQwvtAds11G9bSlA=;
+        b=RksJ4xDNqNKYAh9GVr5BsUiRlT+sBZQV4qOqcWfORf+cvw1XmVRrrMPMPlcj8FrMmOqn0Z
+        FnJOhfXQKAFviqFuns+CLlmgCpIX7Tb842oBIqc5dZpsdbY+BGNYfwNJQLoIv51I0J47f2
+        j+wOUuWQWCe6nFrS2CrAn0PNuC7M/aU=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-59-NEdG-ldeNMG3cFqajSeyLg-1; Sat, 04 Jul 2020 07:33:50 -0400
+X-MC-Unique: NEdG-ldeNMG3cFqajSeyLg-1
+Received: by mail-pg1-f198.google.com with SMTP id e22so25328454pgl.6
+        for <netdev@vger.kernel.org>; Sat, 04 Jul 2020 04:33:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version:content-transfer-encoding;
-        bh=c1wCfKnVDpe0dEjK4URgb65tlwRZLWw1AKcquMUamB0=;
-        b=Emuu4i+N7jryJSSv7rHII+Z2XZRnzwReN/B69dMY5YisaFCTKRLi72TTmw9daLp1EB
-         pe9nM8PK/rh4U3aNHCtBGanneGQfeHUM1OfxXL4w3UZBDwx2gIKqItUaXC0caCkbXtSa
-         jCS1ANbaMtEcZ47vIWwdUikjC8eDwDOV5KXUJPRXUbq5FMDRAHUu9HIAjauUltsCWRRF
-         ARYsh2K5XJ2OLjWGb9BVs9uqeje+79mRkJG+yekyLAOnWf8e/lgfrJBSTbBNqq86cSpY
-         8e4R2meVMDDdUp+s2MEzWPaKKixFIEu0jE8OcJJRbpQrDUXUwWZQtm/RjnNt85fAiwqh
-         5kEg==
-X-Gm-Message-State: AOAM532ioOYw8vMu35I1oi4xr7T7/pqHqhVZCgGZ+N9EWRWxo0XMscWF
-        2yhmAq8qnlRpllWcsqPS1PGoA+uGlOgPD23q02Pn/vEGWLXp6HJTnc/lVgxW+m20MZKC1e5diRq
-        lRDiq4ofmrl/XQ8On
-X-Received: by 2002:a17:90b:b0a:: with SMTP id bf10mr1420553pjb.220.1593862127376;
-        Sat, 04 Jul 2020 04:28:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzz8Mnd3qM4HLLyqY66AiUqb25L+nmbvskZglZl3eBMgbSUyB/rVthDE92BcdVmL9eFJ4UTUQ==
-X-Received: by 2002:a17:90b:b0a:: with SMTP id bf10mr1420530pjb.220.1593862127081;
-        Sat, 04 Jul 2020 04:28:47 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id x22sm14613433pfr.11.2020.07.04.04.28.44
+        bh=4HB36sjhmx4bYypIIg0QrKY9T+pJQwvtAds11G9bSlA=;
+        b=Mso/s58aVZP008iwb4/+bIoZPNtTLHVnXK0gemAUT8FM0/HVmX3c7ip/0kJ/C1kbZ2
+         1MpxPHKuok11sQ04C0Xb3HR6hRORKbh0kDPtCi0gSORU2vuimiL7M5Gqj34xZ4ldRQc6
+         kOX+/xrde0ueGXfuDEHNOh/DEfoZ9wyWkGvQ/wc2SJeU+yDXEJOx1MpPALIzRluOcoM6
+         ySs0HAAJr+/aPfJd/KcryhEvnXdpar5kte6lAvL4tce1BXuQimsY2dsmHGz2OmhL3RrY
+         QMJfgfJJOAi51/GtWN8CW44Mb4hRy02eN5jhFy9u6T24Z482KwM4RquOsjV7NZoqXn5e
+         qIlQ==
+X-Gm-Message-State: AOAM530k9d33g0vzdGem6FJoK9/rM+7TPzDXANGqoB5drmYtf/y5aMwe
+        tB6M7nYLwXQw1wLmT/SPozbILhogsKoHsX+MhR7rZJBvGI1lYP0g0MPywwCp6JTcsXBHzQ5dkAf
+        Y3ryQLZQHpSog3E3J
+X-Received: by 2002:a17:902:a515:: with SMTP id s21mr26753046plq.192.1593862428097;
+        Sat, 04 Jul 2020 04:33:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx0K4ul/+ya1hBFl7f4gxJwUZBehZNesHyGf1bbzBMtCiOpFmsnFFSkDnlXDOVgqHCF/Oj8fA==
+X-Received: by 2002:a17:902:a515:: with SMTP id s21mr26753021plq.192.1593862427886;
+        Sat, 04 Jul 2020 04:33:47 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id np5sm13817593pjb.43.2020.07.04.04.33.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jul 2020 04:28:46 -0700 (PDT)
+        Sat, 04 Jul 2020 04:33:47 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B16721804A8; Sat,  4 Jul 2020 13:28:40 +0200 (CEST)
+        id 4DA2B1804A8; Sat,  4 Jul 2020 13:33:42 +0200 (CEST)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
         cake@lists.bufferbloat.net, Davide Caratti <dcaratti@redhat.com>,
         Jiri Pirko <jiri@resnulli.us>,
@@ -61,14 +61,13 @@ Cc:     davem@davemloft.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Roman Mashak <mrv@mojatatu.com>,
         Lawrence Brakmo <brakmo@fb.com>,
-        Ilya Ponetayev <i.ponetaev@ndmsystems.com>, kafai@fb.com,
-        alexei.starovoitov@gmail.com, edumazet@google.com
+        Ilya Ponetayev <i.ponetaev@ndmsystems.com>
 Subject: Re: [PATCH net v3] sched: consistently handle layer3 header accesses in the presence of VLANs
-In-Reply-To: <003ff65d-fc24-cd25-9e46-95e7ca2aa31f@iogearbox.net>
-References: <20200703202643.12919-1-toke@redhat.com> <003ff65d-fc24-cd25-9e46-95e7ca2aa31f@iogearbox.net>
+In-Reply-To: <ada37763-16cd-7b51-f9ce-41e8d313bf96@gmail.com>
+References: <20200703202643.12919-1-toke@redhat.com> <ada37763-16cd-7b51-f9ce-41e8d313bf96@gmail.com>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 04 Jul 2020 13:28:40 +0200
-Message-ID: <87blkvmsd3.fsf@toke.dk>
+Date:   Sat, 04 Jul 2020 13:33:42 +0200
+Message-ID: <878sfzms4p.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -77,81 +76,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
 
-> On 7/3/20 10:26 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> There are a couple of places in net/sched/ that check skb->protocol and =
-act
->> on the value there. However, in the presence of VLAN tags, the value sto=
-red
->> in skb->protocol can be inconsistent based on whether VLAN acceleration =
-is
->> enabled. The commit quoted in the Fixes tag below fixed the users of
->> skb->protocol to use a helper that will always see the VLAN ethertype.
->>=20
->> However, most of the callers don't actually handle the VLAN ethertype, b=
-ut
->> expect to find the IP header type in the protocol field. This means that
->> things like changing the ECN field, or parsing diffserv values, stops
->> working if there's a VLAN tag, or if there are multiple nested VLAN
->> tags (QinQ).
->>=20
->> To fix this, change the helper to take an argument that indicates whether
->> the caller wants to skip the VLAN tags or not. When skipping VLAN tags, =
-we
->> make sure to skip all of them, so behaviour is consistent even in QinQ
->> mode.
->>=20
->> To make the helper usable from the ECN code, move it to if_vlan.h instead
->> of pkt_sched.h.
->>=20
->> v3:
->> - Remove empty lines
->> - Move vlan variable definitions inside loop in skb_protocol()
->> - Also use skb_protocol() helper in IP{,6}_ECN_decapsulate() and
->>    bpf_skb_ecn_set_ce()
->>=20
->> v2:
->> - Use eth_type_vlan() helper in skb_protocol()
->> - Also fix code that reads skb->protocol directly
->> - Change a couple of 'if/else if' statements to switch constructs to avo=
-id
->>    calling the helper twice
->>=20
->> Reported-by: Ilya Ponetayev <i.ponetaev@ndmsystems.com>
->> Fixes: d8b9605d2697 ("net: sched: fix skb->protocol use in case of accel=
-erated vlan path")
->> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> ---
->>   include/linux/if_vlan.h  | 28 ++++++++++++++++++++++++++++
->>   include/net/inet_ecn.h   | 25 +++++++++++++++++--------
->>   include/net/pkt_sched.h  | 11 -----------
->>   net/core/filter.c        | 10 +++++++---
->>   net/sched/act_connmark.c |  9 ++++++---
->>   net/sched/act_csum.c     |  2 +-
->>   net/sched/act_ct.c       |  9 ++++-----
->>   net/sched/act_ctinfo.c   |  9 ++++++---
->>   net/sched/act_mpls.c     |  2 +-
->>   net/sched/act_skbedit.c  |  2 +-
->>   net/sched/cls_api.c      |  2 +-
->>   net/sched/cls_flow.c     |  8 ++++----
->>   net/sched/cls_flower.c   |  2 +-
->>   net/sched/em_ipset.c     |  2 +-
->>   net/sched/em_ipt.c       |  2 +-
->>   net/sched/em_meta.c      |  2 +-
->>   net/sched/sch_cake.c     |  4 ++--
->>   net/sched/sch_dsmark.c   |  6 +++---
->>   net/sched/sch_teql.c     |  2 +-
->>   19 files changed, 86 insertions(+), 51 deletions(-)
->>=20
->> diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
->> index b05e855f1ddd..427a5b8597c2 100644
->> --- a/include/linux/if_vlan.h
->> +++ b/include/linux/if_vlan.h
->> @@ -308,6 +308,34 @@ static inline bool eth_type_vlan(__be16 ethertype)
->>   	}
->>   }
->>=20=20=20
+> On 2020/07/04 5:26, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> ...
 >> +/* A getter for the SKB protocol field which will handle VLAN tags cons=
 istently
 >> + * whether VLAN acceleration is enabled or not.
@@ -179,31 +107,18 @@ vlan)
 >> +		offset +=3D sizeof(vhdr);
 >> +	}
 >
-> Hm, why is the while loop 'unbounded'? Does it even make sense to have
-> a packet with hundreds of vlan hdrs in there what you'd end up
-> walking? What if an attacker crafts a max sized packet with only
-> vlan_hdr forcing exorbitant looping in fast-path here (e.g. via
-> af_packet)?
+> Why don't you use __vlan_get_protocol() here? It looks quite similar.
+> Is there any problem with using that?
 
-Hmm, I guess you're right that could theoretically happen. But on the
-other hand, a lot of drivers seem to be cheerfully calling
-vlan_get_protocol() on incoming packets, which doesn't have a limit on
-the depth either.
+TBH, I completely missed that helper. It seems to have side effects,
+though (pskb_may_pull()), which is one of the things the original patch
+to sch_cake that initiated all of this was trying to avoid.
 
-I guess I could add a depth limit, but in that case I suppose that
-should also be added to vlan_get_protocol() (or the two should be
-consolidated). WDYT?
+I guess I could just fix that, though, and switch __vlan_get_protocol()
+over to using skb_header_pointer(). Will send a follow-up to do that.
 
-> Did you validate that skb_mac_offset() is always valid for the
-> call-sites you converted? (We have a skb_mac_header_was_set() test to
-> probe for whether skb->mac_header is set to ~0.)
-
-Not extensively; I kinda assumed it would always be valid at those call
-sites, since the callers go on to call ip_hdr() or something similar
-right afterwards.
-
-I guess Toshiaki's suggestion to use vlan_get_protocol() could be a way
-around this, as that seems to deal with skb->mac_len being 0.
+Any opinion on whether it's a good idea to limit the max parse depth
+while I'm at it (see Daniel's reply)?
 
 -Toke
 
