@@ -2,76 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03AD021461E
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 15:30:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF61421462F
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 15:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbgGDNaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 09:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57370 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726807AbgGDNaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 09:30:39 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5FFC061794
-        for <netdev@vger.kernel.org>; Sat,  4 Jul 2020 06:30:38 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id d18so24654772edv.6
-        for <netdev@vger.kernel.org>; Sat, 04 Jul 2020 06:30:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lYXNB8sAYPR03z+7yXMvQjkDEkew3CoGHxaB14N9l3o=;
-        b=c7UsYj0Lh39A+4qQDoIM8UAT0oPZ089C4wY54z+FI+hjKJoHqfZ+OSKJ7pK/eKAzO+
-         T7h9fPkTqD0YYgXGbcszXQVBpQZzfECPoTaiJSGKgFPEOiS0bmZOKBCgcrfKjvEdRMi8
-         ky7eDfhq2RRrihjXm8dQdD6Hedc2JnwUqwscoh1W5k3VqOOPGf5jhlp6vbXB7HwDuuuA
-         l6lArMUWn4qcA6162GFXILJmBuS2liiSETUEkV2qAh7X0km7lbiqZ9omHzHGqNRHaFyc
-         TmsOjTYv2/H0FKRf0bMOTc1qIUhtzUtzAS0OOkKa0/6QnCfPSRLp3MPHy4Nwd0KH+RTE
-         ygpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lYXNB8sAYPR03z+7yXMvQjkDEkew3CoGHxaB14N9l3o=;
-        b=fcwWELK3ynFJWLsQrJ4MwcneZ/whalQFuqrsnoSl/GFzEjaYD1BGTw5zqFdYiCkX3A
-         HT3vlV954a2UmJhmxa/TdGqlPY0BXZJJSZHGvkY6/wQHextp6ofpPuB95vuE7oLNE+A4
-         7noOG5wBfZR7E0pRc4OOKGYsSzGcYIxZ92uKgylJse1ICGWygFK9Iyd7IJGejbxbSK2T
-         gdSATo/DbNSnr/+chVVoc3KIHri/b+t27YlBA0wvZrvE2g6u2ZvF7mnr10RyGV0wGDjI
-         HkRNss8To0dT2IvV3rIiJT4884wTv5BDXj0NSx2eBLlxCnV1chU2TeGxeZcK4cF0apjE
-         hQhw==
-X-Gm-Message-State: AOAM530l9e8HLi+mg6XEO7WwgHFNb4vOSnM9dPcVXMe6xhh5E4dgxwd9
-        mqj1iH93+tv2aPLl1FHB1TGw3U8bEmp9aGvHbLoo
-X-Google-Smtp-Source: ABdhPJxXnEAomjGOTfVoMxiJBSuMBpETmOS+i8zhHtjzsBKGVLhQISOvjpbb5e1kLK73pS32uCKmaU1565rkftQCo+o=
-X-Received: by 2002:aa7:d6cf:: with SMTP id x15mr44774064edr.164.1593869437418;
- Sat, 04 Jul 2020 06:30:37 -0700 (PDT)
+        id S1727944AbgGDNnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 09:43:09 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:60533 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726643AbgGDNnJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 09:43:09 -0400
+X-Originating-IP: 82.66.179.123
+Received: from localhost (unknown [82.66.179.123])
+        (Authenticated sender: repk@triplefau.lt)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id C75CB1BF205;
+        Sat,  4 Jul 2020 13:43:04 +0000 (UTC)
+From:   Remi Pommarel <repk@triplefau.lt>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Javier Cardona <javier@cozybit.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Remi Pommarel <repk@triplefau.lt>
+Subject: [PATCH] mac80211: mesh: Free ie data when leaving mesh
+Date:   Sat,  4 Jul 2020 15:50:07 +0200
+Message-Id: <20200704135007.27292-1-repk@triplefau.lt>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <cover.1593198710.git.rgb@redhat.com> <e5a1ab6955c565743372b392a93f7d1ac98478a2.1593198710.git.rgb@redhat.com>
- <CAHC9VhTcFrPDSmvBBXevo-atCnxy4WK2YQ0WOeg4M1Sfz0qPgA@mail.gmail.com>
-In-Reply-To: <CAHC9VhTcFrPDSmvBBXevo-atCnxy4WK2YQ0WOeg4M1Sfz0qPgA@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Sat, 4 Jul 2020 09:30:26 -0400
-Message-ID: <CAHC9VhTW+pTES3g7gOoCWT3tXG3NsP0KjDLLyBHs_i3HSQMspQ@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V9 02/13] audit: add container id
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, Ondrej Mosnacek <omosnace@redhat.com>,
-        dhowells@redhat.com, simo@redhat.com,
-        Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 4, 2020 at 9:29 AM Paul Moore <paul@paul-moore.com> wrote:
-> On Sat, Jun 27, 2020 at 9:22 AM Richard Guy Briggs <rgb@redhat.com> wrote:
-> >
-> > Implement the proc fs write to set the audit container identifier of a
-> > process, emitting an AUDIT_CONTAINER_OP record to document the event.
+At ieee80211_join_mesh() some ie data could have been allocated (see
+copy_mesh_setup()) and need to be cleaned up when leaving the mesh.
 
-Sorry about the email misfire, you can safely ignore that last empty message.
+This fixes the following kmemleak report:
+
+unreferenced object 0xffff0000116bc600 (size 128):
+  comm "wpa_supplicant", pid 608, jiffies 4294898983 (age 293.484s)
+  hex dump (first 32 bytes):
+    30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00  0...............
+    00 0f ac 08 00 00 00 00 c4 65 40 00 00 00 00 00  .........e@.....
+  backtrace:
+    [<00000000bebe439d>] __kmalloc_track_caller+0x1c0/0x330
+    [<00000000a349dbe1>] kmemdup+0x28/0x50
+    [<0000000075d69baa>] ieee80211_join_mesh+0x6c/0x3b8 [mac80211]
+    [<00000000683bb98b>] __cfg80211_join_mesh+0x1e8/0x4f0 [cfg80211]
+    [<0000000072cb507f>] nl80211_join_mesh+0x520/0x6b8 [cfg80211]
+    [<0000000077e9bcf9>] genl_family_rcv_msg+0x374/0x680
+    [<00000000b1bd936d>] genl_rcv_msg+0x78/0x108
+    [<0000000022c53788>] netlink_rcv_skb+0xb0/0x1c0
+    [<0000000011af8ec9>] genl_rcv+0x34/0x48
+    [<0000000069e41f53>] netlink_unicast+0x268/0x2e8
+    [<00000000a7517316>] netlink_sendmsg+0x320/0x4c0
+    [<0000000069cba205>] ____sys_sendmsg+0x354/0x3a0
+    [<00000000e06bab0f>] ___sys_sendmsg+0xd8/0x120
+    [<0000000037340728>] __sys_sendmsg+0xa4/0xf8
+    [<000000004fed9776>] __arm64_sys_sendmsg+0x44/0x58
+    [<000000001c1e5647>] el0_svc_handler+0xd0/0x1a0
+
+Fixes: c80d545da3f7 (mac80211: Let userspace enable and configure vendor specific path selection.)
+Signed-off-by: Remi Pommarel <repk@triplefau.lt>
+---
+ net/mac80211/cfg.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
+index 9b360544ad6f..1079a07e43e4 100644
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -2166,6 +2166,7 @@ static int ieee80211_leave_mesh(struct wiphy *wiphy, struct net_device *dev)
+ 	ieee80211_stop_mesh(sdata);
+ 	mutex_lock(&sdata->local->mtx);
+ 	ieee80211_vif_release_channel(sdata);
++	kfree(sdata->u.mesh.ie);
+ 	mutex_unlock(&sdata->local->mtx);
+ 
+ 	return 0;
+-- 
+2.26.2
+
