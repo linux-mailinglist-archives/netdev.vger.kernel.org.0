@@ -2,107 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E435A21465A
-	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 16:09:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7302D214660
+	for <lists+netdev@lfdr.de>; Sat,  4 Jul 2020 16:17:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726787AbgGDOIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 10:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
+        id S1726752AbgGDOQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 10:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726258AbgGDOIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 10:08:54 -0400
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2858EC061794;
-        Sat,  4 Jul 2020 07:08:54 -0700 (PDT)
-Received: by mail-oi1-x242.google.com with SMTP id w17so27994411oie.6;
-        Sat, 04 Jul 2020 07:08:54 -0700 (PDT)
+        with ESMTP id S1726488AbgGDOQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 10:16:46 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DCBC061794
+        for <netdev@vger.kernel.org>; Sat,  4 Jul 2020 07:16:45 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id o2so36986768wmh.2
+        for <netdev@vger.kernel.org>; Sat, 04 Jul 2020 07:16:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sruIXwAXhVbyB5irGxpmieYBkvT+Yh76sngiyp81DSY=;
-        b=bGGfNXswYZe14/cuzAmIfTCOrYwfHvCH4h2te1yO88pI7RbPNA7Czv4reMww8I8SbP
-         s7KT5FPP1bFRY4eFbAuO4gaa8m7yQVpHAYj/lMxb4yc97Az2qudXG0cbkRsYUUD3wZoF
-         VcfO/PuPPWvtKdkXdSKu7vcI1ir7FriWYlg+YA0IYCfpVJH0UvzY1LXnLM1XgzBP40WZ
-         jfTvdG/d7nzvQcNmMNtQZZGcTvo0v8HkU6ccy9hOpu+mYF/Sq7YbmlKkHIMZJk+UZhaH
-         yQZa/f4ADWlFCb+UE+CsDdnFeAWIn9DAei37pKrH6P/kqqxK70mAp9uaEyAIA+AGLOPT
-         fSIw==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RyP58M97fR4d4gYrtVZFFIlbkVDeOHjRK6AV21s2HP0=;
+        b=x8YsllirNzVCoMItskHCIy73oxoF9kpRfUgzpjsetHVOIQvNPXuELeOrV2QnKMfI3W
+         YBOTYlBknhAYTfzFZol9WcxQiB3vDoDoHxUTEF5/WNM0LxBIfpRwQHNuoI+rvBqp6CkK
+         Gh/kWuZHcJvzAkQdqRb+o3jtUzzybklNOmNRtRw+Xb7jsiIbqAWm1AY059kmakeAcrAG
+         BpBDFbRbrGv9pTsMMoKk184xqImB/XwFhk2LpjEZB/t9z6VaDIGjX8b7MHJ2wukmsIhm
+         jIHC/PjTq0yPE2GTLluX8qSYutUbKYm76hwfmoXEnac5O89E5eT0Io0Gt6QlMocWpQC3
+         841w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sruIXwAXhVbyB5irGxpmieYBkvT+Yh76sngiyp81DSY=;
-        b=opqxa+FgwjmJqkAq856nfqoAgVdogaV50658Qsj9tBg0TB+7jGuFu9v+OkyHv69dZk
-         Yl7fa90kDXtefzmPwLOGxCspKyhlDFIdxae9Sfc7EgHEBvSuVJBIOkdsMPERd9fxEu1e
-         xaSfILW86HUKQjoDuHFKj4zzKrwnRCZZd+liWB7au2U2kFj7uu7qeKOqd2yNDg8jC5Cp
-         BTpLD8iWlNnrDDIuCbIQ8NaU6MV6yYTy7H6qAf8dBLAmNoKzvaqjsHKr5G02DKwxL4yh
-         wau5HJYUJXEMUyfXi0Q+H7+w+VwuEyFfcU42p7oLRcjxvT8eMCn9ynD7FZTd1KcjuM13
-         pNgA==
-X-Gm-Message-State: AOAM533rNVbfuEN2xltMvguTaJ9NoDKRWn7E0NftZRkdlxboxKr2lIxD
-        65Y9ld4j0NjkJ/g5G1DVZ61oG9fQrBbM0JNNiEA=
-X-Google-Smtp-Source: ABdhPJztoFfvdTLj2yMn1sCGZxmmBOCYmRIuPcHWgshbnsn/EhxPtETALm2xO46URFZ5cicFgCzGhlj5YWM8/IMYuUI=
-X-Received: by 2002:aca:b205:: with SMTP id b5mr32722874oif.103.1593871733367;
- Sat, 04 Jul 2020 07:08:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200702175352.19223-1-TheSven73@gmail.com> <20200702175352.19223-3-TheSven73@gmail.com>
- <CAOMZO5DxUeXH8ZYxmKynA7xO3uF6SP_Kt-g=8MPgsF7tqkRvAA@mail.gmail.com>
-In-Reply-To: <CAOMZO5DxUeXH8ZYxmKynA7xO3uF6SP_Kt-g=8MPgsF7tqkRvAA@mail.gmail.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Sat, 4 Jul 2020 10:08:42 -0400
-Message-ID: <CAGngYiXGXDqCZeJme026uz5FjU56UojmQFFiJ5_CZ_AywdQiEw@mail.gmail.com>
-Subject: Re: [PATCH v5 3/3] ARM: imx6plus: optionally enable internal routing
- of clk_enet_ref
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Shawn Guo <shawnguo@kernel.org>, Fugang Duan <fugang.duan@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RyP58M97fR4d4gYrtVZFFIlbkVDeOHjRK6AV21s2HP0=;
+        b=CY9UnKZJpPmbzOZEdQlybnvRxQl73aIReOHCGbe52PZTMfrJ+hkjGO7FALjamupoAC
+         jKT4JW64BRLQw72f8rIJMj8WHR4ysze4Jg/Ddhr16/eaGDS7zlhZxAwGLPActmClboqM
+         5uLsxrV1Tsv5/Uo/tZVR4uu4FooBtMBtm3ppoyNq+s6eKFX/2d3lr19IMmPP5bDtFc34
+         2qH2cym2s6vKen/nQrUoTTe9duvrn3vOUfTWa4kpS2g1DkTPxuEsZBark6PBYm7Llcbm
+         iTYss23KMDFAqHbHE8soGO/IRs7ZeB7//SbKv7v9hfH34zxMKFHjBFWUUKDUXgnQrJK5
+         YwmQ==
+X-Gm-Message-State: AOAM531qWTYhXLE/ZDFAzG6HJ3B+/wVp1MNBBWR3EMiwuiRe+HDOxxAu
+        2FCBf3r5H68TvjjGk9/IqUEQ5Q==
+X-Google-Smtp-Source: ABdhPJwhiI7UaUGYC7tHurzcdHr+gcKvPCgqPpG6hqhiIlSdKkbNIJziDYhmrizCK6wvyn/lY3G5RA==
+X-Received: by 2002:a05:600c:2209:: with SMTP id z9mr40143484wml.178.1593872204404;
+        Sat, 04 Jul 2020 07:16:44 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id g3sm7522235wrb.59.2020.07.04.07.16.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Jul 2020 07:16:43 -0700 (PDT)
+Date:   Sat, 4 Jul 2020 16:16:42 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 0/7] Add devlink-health support for devlink
+ ports
+Message-ID: <20200704141642.GA4826@nanopsycho.orion>
+References: <1593746858-6548-1-git-send-email-moshe@mellanox.com>
+ <20200703164439.5872f809@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200703164439.5872f809@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Fabio, Andy,
-
-On Thu, Jul 2, 2020 at 6:29 PM Fabio Estevam <festevam@gmail.com> wrote:
+Sat, Jul 04, 2020 at 01:44:39AM CEST, kuba@kernel.org wrote:
+>On Fri,  3 Jul 2020 06:27:31 +0300 Moshe Shemesh wrote:
+>> Implement support for devlink health reporters on per-port basis. First
+>> part in the series prepares common functions parts for health reporter
+>> implementation. Second introduces required API to devlink-health and
+>> mlx5e ones demonstrate its usage and effectively implement the feature
+>> for mlx5 driver.
+>> The per-port reporter functionality is achieved by adding a list of
+>> devlink_health_reporters to devlink_port struct in a manner similar to
+>> existing device infrastructure. This is the only major difference and
+>> it makes possible to fully reuse device reporters operations.
+>> The effect will be seen in conjunction with iproute2 additions and
+>> will affect all devlink health commands. User can distinguish between
+>> device and port reporters by looking at a devlink handle. Port reporters
+>> have a port index at the end of the address and such addresses can be
+>> provided as a parameter in every place where devlink-health accepted it.
+>> These can be obtained from devlink port show command.
+>> For example:
+>> $ devlink health show
+>> pci/0000:00:0a.0:
+>>   reporter fw
+>>     state healthy error 0 recover 0 auto_dump true
+>> pci/0000:00:0a.0/1:
+>>   reporter tx
+>>     state healthy error 0 recover 0 grace_period 500 auto_recover true auto_dump true
+>> $ devlink health set pci/0000:00:0a.0/1 reporter tx grace_period 1000 \
+>> auto_recover false auto_dump false
+>> $ devlink health show pci/0000:00:0a.0/1 reporter tx
+>> pci/0000:00:0a.0/1:
+>>   reporter tx
+>>     state healthy error 0 recover 0 grace_period 1000 auto_recover flase auto_dump false
 >
-> With the device tree approach, I think that a better place to touch
-> GPR5 would be inside the fec driver.
+>What's the motivation, though?
 >
+>This patch series achieves nothing that couldn't be previously achieved.
 
-Are we 100% sure this is the best way forward, though?
+Well, not really. If you have 2 ports, you have 2 set's of tx/rx health
+reporters. Cannot achieve that w/o per-port health reporters.
 
-All the FEC driver should care about is the FEC logic block
-inside the SoC. It should not concern itself with the way a SoC
-happens to bring a clock (PTP clock) to the input of the FEC
-logic block - that is purely a SoC implementation detail.
 
-It makes sense to add fsl,stop-mode (= a GPR bit) to the FEC driver,
-as this bit is a logic input to the FEC block, which the driver needs
-to dynamically flip.
+>
+>Is there no concern of uAPI breakage with moving the existing health
+>reporters in patch 7?
 
-But the PTP clock is different, because it's statically routed by
-the SoC.
-
-Maybe this problem needs a clock routing solution?
-Isn't there an imx6q plus clock mux we're not modelling?
-
-  enet_ref-o------>ext>---pad_clk--| \
-           |                       |M |----fec_ptp_clk
-           o-----------------------|_/
-
-Where M = mux controlled by GPR5[9]
-
-The issue here is that pad_clk is routed externally, so its parent
-could be any internal or external clock. I have no idea how to
-model this in the clock framework.
+No. This is bug by design that we are fixing now. No other way around :/
+This is mlx5 only.
