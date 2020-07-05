@@ -2,395 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6C3F214D25
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 16:33:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B951214D22
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 16:32:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727017AbgGEOdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 10:33:39 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:54037 "EHLO
+        id S1726947AbgGEOb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 10:31:57 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:55379 "EHLO
         m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726923AbgGEOdj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 10:33:39 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 4D10541169;
-        Sun,  5 Jul 2020 22:28:35 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     davem@davemloft.net, pablo@netfilter.org
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: [PATCH net-next 1/3] netfilter: nf_defrag_ipv4: Add nf_ct_frag_gather support
-Date:   Sun,  5 Jul 2020 22:28:30 +0800
-Message-Id: <1593959312-6135-2-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1593959312-6135-1-git-send-email-wenxu@ucloud.cn>
-References: <1593959312-6135-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVQ01DQkJCQk5DS0hDSEhZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkdIjULOBw5FTFQAi9PDD0dATYjNzocVlZVQk5CQyhJWVdZCQ
+        with ESMTP id S1726747AbgGEOb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 10:31:57 -0400
+Received: from [192.168.1.8] (unknown [116.237.151.97])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id DBA0E40F4E;
+        Sun,  5 Jul 2020 22:31:32 +0800 (CST)
+Subject: Re: [PATCH net] net/sched: act_mirred: fix fragment the packet after
+ defrag in act_ct
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <8b06ac17-e19b-90f3-6dd2-0274a0ee474b@ucloud.cn>
+ <CAM_iQpWWmCASPidrQYO6wCUNkZLR-S+Y9r9XrdyjyPHE-Q9O5g@mail.gmail.com>
+ <012daf78-a18f-3dde-778a-482204c5b6af@ucloud.cn>
+ <a205bada-8879-0dfd-c3ed-53fe9cef6449@ucloud.cn>
+ <CAM_iQpV_1_H_Cb3t4hCCfRXf2Tn2x9sT0vJ5rh6J6iWQ=PNesA@mail.gmail.com>
+ <7aaefcef-5709-04a8-0c54-c8c6066e1e90@ucloud.cn>
+ <20200702173228.GH74252@localhost.localdomain>
+ <CAM_iQpUrRzOi-S+49jMhDQCS0jqOmwObY3ZNa6n9qJGbPTXM-A@mail.gmail.com>
+ <20200703004727.GU2491@localhost.localdomain>
+ <349bb25a-7651-2664-25bc-3f613297fb5c@ucloud.cn>
+ <20200703175057.GV2491@localhost.localdomain>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <7b7495bd-7d24-c30a-d0de-72bff6301506@ucloud.cn>
+Date:   Sun, 5 Jul 2020 22:31:33 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20200703175057.GV2491@localhost.localdomain>
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEJKS0tLS0hJT0lPQkhZV1koWU
+        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkXIjULOBw4SEgdIT5OOj0dDh43MjocVlZVQkhDTihJWVdZCQ
         4XHghZQVk1NCk2OjckKS43PllXWRYaDxIVHRRZQVk0MFkG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Kwg6Phw5Qz5RLE1KLz81LTUD
-        KwEKFAhVSlVKTkJIQk5CSEpOT0lIVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUJMQ0s3Bg++
-X-HM-Tid: 0a731f60f7822086kuqy4d10541169
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PS46FQw5Sj5NAk0#AT80LRoX
+        OiIaCyFVSlVKTkJIQk5CT0JISkpNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
+        SExVSk5KVUJMWVdZCAFZQU1KQ0o3Bg++
+X-HM-Tid: 0a731f63ad892086kuqydba0e40f4e
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
 
-Add nf_ct_frag_gather for conntrack defrag and it will
-elide the CB clear when packets are defragmented by
-connection tracking
-
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
- include/net/netfilter/ipv4/nf_defrag_ipv4.h |   2 +
- net/ipv4/netfilter/nf_defrag_ipv4.c         | 314 ++++++++++++++++++++++++++++
- 2 files changed, 316 insertions(+)
-
-diff --git a/include/net/netfilter/ipv4/nf_defrag_ipv4.h b/include/net/netfilter/ipv4/nf_defrag_ipv4.h
-index bcbd724..b3ac92b 100644
---- a/include/net/netfilter/ipv4/nf_defrag_ipv4.h
-+++ b/include/net/netfilter/ipv4/nf_defrag_ipv4.h
-@@ -4,5 +4,7 @@
- 
- struct net;
- int nf_defrag_ipv4_enable(struct net *);
-+int nf_ct_frag_gather(struct net *net, struct sk_buff *skb,
-+		      u32 user, u16 *frag_max_size);
- 
- #endif /* _NF_DEFRAG_IPV4_H */
-diff --git a/net/ipv4/netfilter/nf_defrag_ipv4.c b/net/ipv4/netfilter/nf_defrag_ipv4.c
-index 8115611..a4ac207 100644
---- a/net/ipv4/netfilter/nf_defrag_ipv4.c
-+++ b/net/ipv4/netfilter/nf_defrag_ipv4.c
-@@ -11,6 +11,7 @@
- #include <net/netns/generic.h>
- #include <net/route.h>
- #include <net/ip.h>
-+#include <net/inet_frag.h>
- 
- #include <linux/netfilter_bridge.h>
- #include <linux/netfilter_ipv4.h>
-@@ -22,6 +23,319 @@
- 
- static DEFINE_MUTEX(defrag4_mutex);
- 
-+/* Describe an entry in the "incomplete datagrams" queue. */
-+struct ipq {
-+	struct inet_frag_queue q;
-+
-+	u8		ecn; /* RFC3168 support */
-+	u16		max_df_size; /* largest frag with DF set seen */
-+	int             iif;
-+	unsigned int    rid;
-+	struct inet_peer *peer;
-+};
-+
-+static void ipq_kill(struct ipq *ipq)
-+{
-+	inet_frag_kill(&ipq->q);
-+}
-+
-+static void ipq_put(struct ipq *ipq)
-+{
-+	inet_frag_put(&ipq->q);
-+}
-+
-+static bool nf_ct_frag_coalesce_ok(const struct ipq *qp)
-+{
-+	return qp->q.key.v4.user == IP_DEFRAG_LOCAL_DELIVER;
-+}
-+
-+static u8 nf_ct_frag_ecn(u8 tos)
-+{
-+	return 1 << (tos & INET_ECN_MASK);
-+}
-+
-+static int nf_ct_frag_too_far(struct ipq *qp)
-+{
-+	struct inet_peer *peer = qp->peer;
-+	unsigned int max = qp->q.fqdir->max_dist;
-+	unsigned int start, end;
-+
-+	int rc;
-+
-+	if (!peer || !max)
-+		return 0;
-+
-+	start = qp->rid;
-+	end = atomic_inc_return(&peer->rid);
-+	qp->rid = end;
-+
-+	rc = qp->q.fragments_tail && (end - start) > max;
-+
-+	return rc;
-+}
-+
-+static int nf_ct_frag_reinit(struct ipq *qp)
-+{
-+	unsigned int sum_truesize = 0;
-+
-+	if (!mod_timer(&qp->q.timer, jiffies + qp->q.fqdir->timeout)) {
-+		refcount_inc(&qp->q.refcnt);
-+		return -ETIMEDOUT;
-+	}
-+
-+	sum_truesize = inet_frag_rbtree_purge(&qp->q.rb_fragments);
-+	sub_frag_mem_limit(qp->q.fqdir, sum_truesize);
-+
-+	qp->q.flags = 0;
-+	qp->q.len = 0;
-+	qp->q.meat = 0;
-+	qp->q.rb_fragments = RB_ROOT;
-+	qp->q.fragments_tail = NULL;
-+	qp->q.last_run_head = NULL;
-+	qp->iif = 0;
-+	qp->ecn = 0;
-+
-+	return 0;
-+}
-+
-+static struct ipq *ip_find(struct net *net, struct iphdr *iph,
-+			   u32 user, int vif)
-+{
-+	struct frag_v4_compare_key key = {
-+		.saddr = iph->saddr,
-+		.daddr = iph->daddr,
-+		.user = user,
-+		.vif = vif,
-+		.id = iph->id,
-+		.protocol = iph->protocol,
-+	};
-+	struct inet_frag_queue *q;
-+
-+	q = inet_frag_find(net->ipv4.fqdir, &key);
-+	if (!q)
-+		return NULL;
-+
-+	return container_of(q, struct ipq, q);
-+}
-+
-+static int nf_ct_frag_reasm(struct ipq *qp, struct sk_buff *skb,
-+			    struct sk_buff *prev_tail, struct net_device *dev,
-+			    u16 *frag_max_size)
-+{
-+	struct iphdr *iph;
-+	void *reasm_data;
-+	int len, err;
-+	u8 ecn;
-+
-+	ipq_kill(qp);
-+
-+	ecn = ip_frag_ecn_table[qp->ecn];
-+	if (unlikely(ecn == 0xff)) {
-+		err = -EINVAL;
-+		goto out_fail;
-+	}
-+
-+	/* Make the one we just received the head. */
-+	reasm_data = inet_frag_reasm_prepare(&qp->q, skb, prev_tail);
-+	if (!reasm_data)
-+		goto out_nomem;
-+
-+	len = ip_hdrlen(skb) + qp->q.len;
-+	err = -E2BIG;
-+	if (len > 65535)
-+		goto out_oversize;
-+
-+	inet_frag_reasm_finish(&qp->q, skb, reasm_data,
-+			       nf_ct_frag_coalesce_ok(qp));
-+
-+	skb->dev = dev;
-+	if (frag_max_size)
-+		*frag_max_size = max(qp->max_df_size, qp->q.max_size);
-+
-+	iph = ip_hdr(skb);
-+	iph->tot_len = htons(len);
-+	iph->tos |= ecn;
-+
-+	/* When we set IP_DF on a refragmented skb we must also force a
-+	 * call to ip_fragment to avoid forwarding a DF-skb of size s while
-+	 * original sender only sent fragments of size f (where f < s).
-+	 *
-+	 * We only set DF/IPSKB_FRAG_PMTU if such DF fragment was the largest
-+	 * frag seen to avoid sending tiny DF-fragments in case skb was built
-+	 * from one very small df-fragment and one large non-df frag.
-+	 */
-+	if (qp->max_df_size == qp->q.max_size)
-+		iph->frag_off = htons(IP_DF);
-+	else
-+		iph->frag_off = 0;
-+
-+	ip_send_check(iph);
-+
-+	qp->q.rb_fragments = RB_ROOT;
-+	qp->q.fragments_tail = NULL;
-+	qp->q.last_run_head = NULL;
-+	return 0;
-+
-+out_nomem:
-+	net_dbg_ratelimited("queue_glue: no memory for gluing queue %p\n", qp);
-+	err = -ENOMEM;
-+	goto out_fail;
-+out_oversize:
-+	net_info_ratelimited("Oversized IP packet from %pI4\n", &qp->q.key.v4.saddr);
-+out_fail:
-+	return err;
-+}
-+
-+static int nf_ct_frag_queue(struct ipq *qp, struct sk_buff *skb, u16 *frag_max_size)
-+{
-+	int ihl, end, flags, offset;
-+	struct sk_buff *prev_tail;
-+	struct net_device *dev;
-+	unsigned int fragsize;
-+	int err = -ENOENT;
-+	u8 ecn;
-+
-+	if (qp->q.flags & INET_FRAG_COMPLETE)
-+		goto err;
-+
-+	if (unlikely(nf_ct_frag_too_far(qp))) {
-+		err = nf_ct_frag_reinit(qp);
-+		if (unlikely(err)) {
-+			ipq_kill(qp);
-+			goto err;
-+		}
-+	}
-+
-+	ecn = nf_ct_frag_ecn(ip_hdr(skb)->tos);
-+	offset = ntohs(ip_hdr(skb)->frag_off);
-+	flags = offset & ~IP_OFFSET;
-+	offset &= IP_OFFSET;
-+	offset <<= 3;		/* offset is in 8-byte chunks */
-+	ihl = ip_hdrlen(skb);
-+
-+	/* Determine the position of this fragment. */
-+	end = offset + skb->len - skb_network_offset(skb) - ihl;
-+	err = -EINVAL;
-+
-+	/* Is this the final fragment? */
-+	if ((flags & IP_MF) == 0) {
-+		/* If we already have some bits beyond end
-+		 * or have different end, the segment is corrupted.
-+		 */
-+		if (end < qp->q.len ||
-+		    ((qp->q.flags & INET_FRAG_LAST_IN) && end != qp->q.len))
-+			goto discard_qp;
-+		qp->q.flags |= INET_FRAG_LAST_IN;
-+		qp->q.len = end;
-+	} else {
-+		if (end & 7) {
-+			end &= ~7;
-+			if (skb->ip_summed != CHECKSUM_UNNECESSARY)
-+				skb->ip_summed = CHECKSUM_NONE;
-+		}
-+		if (end > qp->q.len) {
-+			/* Some bits beyond end -> corruption. */
-+			if (qp->q.flags & INET_FRAG_LAST_IN)
-+				goto discard_qp;
-+			qp->q.len = end;
-+		}
-+	}
-+	if (end == offset)
-+		goto discard_qp;
-+
-+	err = -ENOMEM;
-+	if (!pskb_pull(skb, skb_network_offset(skb) + ihl))
-+		goto discard_qp;
-+
-+	err = pskb_trim_rcsum(skb, end - offset);
-+	if (err)
-+		goto discard_qp;
-+
-+	/* Note : skb->rbnode and skb->dev share the same location. */
-+	dev = skb->dev;
-+	/* Makes sure compiler wont do silly aliasing games */
-+	barrier();
-+
-+	prev_tail = qp->q.fragments_tail;
-+	err = inet_frag_queue_insert(&qp->q, skb, offset, end);
-+	if (err)
-+		goto insert_error;
-+
-+	if (dev)
-+		qp->iif = dev->ifindex;
-+
-+	qp->q.stamp = skb->tstamp;
-+	qp->q.meat += skb->len;
-+	qp->ecn |= ecn;
-+	add_frag_mem_limit(qp->q.fqdir, skb->truesize);
-+	if (offset == 0)
-+		qp->q.flags |= INET_FRAG_FIRST_IN;
-+
-+	fragsize = skb->len + ihl;
-+
-+	if (fragsize > qp->q.max_size)
-+		qp->q.max_size = fragsize;
-+
-+	if (ip_hdr(skb)->frag_off & htons(IP_DF) &&
-+	    fragsize > qp->max_df_size)
-+		qp->max_df_size = fragsize;
-+
-+	if (qp->q.flags == (INET_FRAG_FIRST_IN | INET_FRAG_LAST_IN) &&
-+	    qp->q.meat == qp->q.len) {
-+		unsigned long orefdst = skb->_skb_refdst;
-+
-+		skb->_skb_refdst = 0UL;
-+		err = nf_ct_frag_reasm(qp, skb, prev_tail, dev, frag_max_size);
-+		skb->_skb_refdst = orefdst;
-+		if (err)
-+			inet_frag_kill(&qp->q);
-+		return err;
-+	}
-+
-+	skb_dst_drop(skb);
-+	return -EINPROGRESS;
-+
-+insert_error:
-+	if (err == IPFRAG_DUP) {
-+		kfree_skb(skb);
-+		return -EINVAL;
-+	}
-+	err = -EINVAL;
-+discard_qp:
-+	inet_frag_kill(&qp->q);
-+err:
-+	kfree_skb(skb);
-+	return err;
-+}
-+
-+int nf_ct_frag_gather(struct net *net, struct sk_buff *skb,
-+		      u32 user, u16 *frag_max_size)
-+{
-+	struct net_device *dev = skb->dev ? : skb_dst(skb)->dev;
-+	int vif = l3mdev_master_ifindex_rcu(dev);
-+	struct ipq *qp;
-+
-+	skb_orphan(skb);
-+
-+	/* Lookup (or create) queue header */
-+	qp = ip_find(net, ip_hdr(skb), user, vif);
-+	if (qp) {
-+		int ret;
-+
-+		spin_lock(&qp->q.lock);
-+
-+		ret = nf_ct_frag_queue(qp, skb, frag_max_size);
-+
-+		spin_unlock(&qp->q.lock);
-+		ipq_put(qp);
-+		return ret;
-+	}
-+
-+	kfree_skb(skb);
-+	return -ENOMEM;
-+}
-+EXPORT_SYMBOL_GPL(nf_ct_frag_gather);
-+
- static int nf_ct_ipv4_gather_frags(struct net *net, struct sk_buff *skb,
- 				   u_int32_t user)
- {
--- 
-1.8.3.1
-
+ÔÚ 2020/7/4 1:50, Marcelo Ricardo Leitner Ð´µÀ:
+> On Fri, Jul 03, 2020 at 06:19:51PM +0800, wenxu wrote:
+>> On 7/3/2020 8:47 AM, Marcelo Ricardo Leitner wrote:
+>>> On Thu, Jul 02, 2020 at 02:39:07PM -0700, Cong Wang wrote:
+>>>> On Thu, Jul 2, 2020 at 10:32 AM Marcelo Ricardo Leitner
+>>>> <marcelo.leitner@gmail.com> wrote:
+>>>>> On Thu, Jul 02, 2020 at 05:36:38PM +0800, wenxu wrote:
+>>>>>> On 7/2/2020 1:33 AM, Cong Wang wrote:
+>>>>>>> On Wed, Jul 1, 2020 at 1:21 AM wenxu <wenxu@ucloud.cn> wrote:
+>>>>>>>> On 7/1/2020 2:21 PM, wenxu wrote:
+>>>>>>>>> On 7/1/2020 2:12 PM, Cong Wang wrote:
+>>>>>>>>>> On Tue, Jun 30, 2020 at 11:03 PM wenxu <wenxu@ucloud.cn> wrote:
+>>>>>>>>>>> Only forward packet case need do fragment again and there is no need do defrag explicit.
+>>>>>>>>>> Same question: why act_mirred? You have to explain why act_mirred
+>>>>>>>>>> has the responsibility to do this job.
+>>>>>>>>> The fragment behavior only depends on the mtu of the device sent in act_mirred. Only in
+>>>>>>>>>
+>>>>>>>>> the act_mirred can decides whether do the fragment or not.
+>>>>>>>> Hi cong,
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> I still think this should be resolved in the act_mirred.  Maybe it is not matter with a "responsibility"
+>>>>>>>>
+>>>>>>>> Did you have some other suggestion to solve this problem?
+>>>>>>> Like I said, why not introduce a new action to handle fragment/defragment?
+>>>>>>>
+>>>>>>> With that, you can still pipe it to act_ct and act_mirred to achieve
+>>>>>>> the same goal.
+>>>>>> Thanks.  Consider about the act_fagment, There are two problem for this.
+>>>>>>
+>>>>>>
+>>>>>> The frag action will put the ressemble skb to more than one packets. How these packets
+>>>>>>
+>>>>>> go through the following tc filter or chain?
+>>>>> One idea is to listificate it, but I don't see how it can work. For
+>>>>> example, it can be quite an issue when jumping chains, as the match
+>>>>> would have to work on the list as well.
+>>>> Why is this an issue? We already use goto action for use cases like
+>>>> vlan pop/push. The header can be changed all the time, reclassification
+>>>> is necessary.
+>>> Hmm I'm not sure you got what I meant. That's operating on the very
+>>> same skb... I meant that the pipe would handle a list of skbs (like in
+>>> netif_receive_skb_list). So when we have a goto action with such skb,
+>>> it would have to either break this list and reclassify each skb
+>>> individually, or the classification would have to do it. Either way,
+>>> it adds more complexity not just to the code but to the user as well
+>>> and ends up doing more processing (in case of fragments or not) than
+>>> if it knew how to output such packets properly. Or am I just
+>>> over-complicating it?
+>>>
+>>> Or, instead of the explicit "frag" action, make act_ct re-fragment it.
+>>> It would need to, somehow, push multiple skbs down the remaining
+>>> action pipe. It boils down to the above as well.
+>>>
+>>>>>> When should use the act_fragament the action,  always before the act_mirred?
+>>>>> Which can be messy if you consider chains like: "mirred, push vlan,
+>>>>> mirred" or so. "frag, mirred, defrag, push vlan, frag, mirred".
+>>>> So you mean we should have a giant act_do_everything?
+>>> Not at all, but
+>>>
+>>>> "Do one thing do it well" is exactly the philosophy of designing tc
+>>>> actions, if you are against this, you are too late in the game.
+>>> in this case a act_output_it_well could do it. ;-)
+>> agree, Maybe a act_output_ct action is better?
+> Ahm, sorry, that wasn't really my intention here. I meant that I don't
+> see an issue with mirred learning how to fragment it and, with that,
+> do its action "well" (as subjective as the term can be).
+Thanks£¬ I also think It is ok do fragment in the mirred output.
+>
+>>> Thanks,
+>>>   Marcelo
+>>>
