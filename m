@@ -2,91 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 868F8214DB2
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 17:47:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87034214DF0
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 18:17:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727067AbgGEPq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 11:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
+        id S1727112AbgGEQQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 12:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726975AbgGEPq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 11:46:58 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8467C061794
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 08:46:57 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id w27so4214368qtb.7
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 08:46:57 -0700 (PDT)
+        with ESMTP id S1726956AbgGEQQ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 12:16:57 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F3AC061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 09:16:57 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id e22so32423408edq.8
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 09:16:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3Mkaj8dw5Ks6gcilFEI7x07yBjMd5m1ufQzhFKQ3OLU=;
-        b=PLeniAy9KpvyePVwt/Y7UyUPgMudnXNZ+mgVEaVX6qUcouZ98mz3b0PD7SYDQvjGPn
-         mVDHs3+kjnp7rIsdN913jdewb6qWPjh6E+gBpjLld8bvy1KIzQ1pemnGNexRzMr3pULz
-         +OZJkjjbZOiaKnhPJe1WwvxOh1Z1Qrhc7WgDL712cUiyCluM4xA3Hc5Q6UwXZaGROttm
-         L2mH49fENaLhH48w4A5ITZv1Ifb9rc7xP0BvWmUOjVnE0qHBHPo5kschdftgYjqmruF2
-         3ox+Jhq1sHivK4Gjk0SVFmSNBn48q5VcPRDiZlCCuGstge7HWWMrnMzX5kArfDzivPUG
-         ZQSw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bUX/WnNXUWDVHm+m6XYGrdqmfw1d62Sd8NDDECwdtv4=;
+        b=hK79qi33TitEdfHdQgLsgtstQWcXE/07ajR8uPyAQexxzn+xu+v/75oSSg2mG6H5xF
+         bB4yruW/OeMyNV0SZHBjuCQAlV60cfw8xBRi7QNkEcS3Hr+2oc/HT+mS6qNc7sUWxfs7
+         HVzpW4TKA2khmKxHaUYAQinMbKIPQnjalngq7ISunwcETjD4EimFsX9q+MtM/brsouVJ
+         RmKqj0p6glop39wXUzlBAN7dA/2nAY5jIBeApIFTgcg1Et4Y9NX/tQpMMc+dolB7JSHO
+         oBEYqp8o3I4e2hi9aNb8qo/THBE5ZVzVBrQKlaV9RsrpJshNM8yvV1MJ/+f5ya/fIMjj
+         zSdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=3Mkaj8dw5Ks6gcilFEI7x07yBjMd5m1ufQzhFKQ3OLU=;
-        b=W54uCW/JCqnToZeKmssirOAEw8/+JbETMbW8CH/stcs0qsXYcXISFYjqUnZl4gKOMs
-         2YpEIsuB4VfRjtsgGWHgcDFWgNszVB8RXQBIi3UQr99uvjseP0yX8RtlZ2z1wE+ApXiZ
-         0UNY3XOyB90KpyTIZjfXQlOiTPwUno7uCe9EcNBteeb09CVVIXHCigwYX5x9E/0cnq0/
-         I9DrStvqGH121Jc4cBEAzYotHNwOKM9BWX6G2BOygBJuZ25ykkF1UkLwcPDN0U2GHxtE
-         7SxDbGIGEjNLKEwhz145ijSLM+G/Y0h/Ix15A1F1O9Efc6pjcJ8CRsj4aUGYvCIUT4Pg
-         10tQ==
-X-Gm-Message-State: AOAM530zltMQz5nrqfFXNSKqwplCqac8UQ48WmQZYCoQecxi2Eb/UYso
-        m4qWfV92oFuduXmDS2F0q98=
-X-Google-Smtp-Source: ABdhPJx7liLK8bwib3XRpVSeewIcYig7dWP93FQt4I0V5G5MkjTigWrX+pfRJ29oH1gLWDScNNQDvg==
-X-Received: by 2002:ac8:45d1:: with SMTP id e17mr47285391qto.159.1593964016919;
-        Sun, 05 Jul 2020 08:46:56 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:f517:b957:b896:7107? ([2601:282:803:7700:f517:b957:b896:7107])
-        by smtp.googlemail.com with ESMTPSA id x14sm15624960qki.65.2020.07.05.08.46.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Jul 2020 08:46:56 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2 0/4] Support qevents
-To:     Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-References: <cover.1593509090.git.petrm@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <9137c1db-39b2-e739-db93-74990a5a3860@gmail.com>
-Date:   Sun, 5 Jul 2020 09:46:55 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.10.0
+        bh=bUX/WnNXUWDVHm+m6XYGrdqmfw1d62Sd8NDDECwdtv4=;
+        b=jDCzqdfnLYvo9IMqZfQr5zzQ8tFG2GA3iz+k7HGIXyNqR0c8rmwE2WsJhWmUp895E5
+         wMB4ap4EmBvXqDkHgGcr/ZX0yAyZhjXy7ByxHhYyAb+67k3LMiuFL2LMV2S3ZXSXlA13
+         leYQ6rAmBHPHOtdvFo5U3/e0vJpGJPlrKEwehr+e6z2tcncJPVfkNo9EbmjLd69tjCGN
+         RIQjeZA5oObOgFCJkKVgdYzFcmfylEYoLbL2INIerelrWZC4HCS++OnBpBvhUf59j0OR
+         l+bGU0GY6Q/AF3RHrUWrDU9eexxd0H4pBo1Bl73Zw4CXoe6IbIhoqeNbti5+0lVyOT/P
+         V3TQ==
+X-Gm-Message-State: AOAM530oMCESoXOxBfakkUu2K4nHnlDGcuAx6c48EBYUr9KQeRqMBR7d
+        Kzl/RxNqdRcC+njlByLvcwxNoEEN
+X-Google-Smtp-Source: ABdhPJyasdOitk1HIBqKFlFfC4iQ39nmg9pZOnGRqqDQY6do+oRwyyId8bU1ry7clncyqMOiP2cSig==
+X-Received: by 2002:a05:6402:16c7:: with SMTP id r7mr33302866edx.288.1593965815900;
+        Sun, 05 Jul 2020 09:16:55 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id x4sm14406126eju.2.2020.07.05.09.16.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Jul 2020 09:16:55 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
+        ioana.ciornei@nxp.com, linux@armlinux.org.uk
+Subject: [PATCH v3 net-next 0/6] Phylink integration improvements for Felix DSA driver
+Date:   Sun,  5 Jul 2020 19:16:20 +0300
+Message-Id: <20200705161626.3797968-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <cover.1593509090.git.petrm@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/30/20 4:14 AM, Petr Machata wrote:
-> To allow configuring user-defined actions as a result of inner workings of
-> a qdisc, a concept of qevents was recently introduced to the kernel.
-> Qevents are attach points for TC blocks, where filters can be put that are
-> executed as the packet hits well-defined points in the qdisc algorithms.
-> The attached blocks can be shared, in a manner similar to clsact ingress
-> and egress blocks, arbitrary classifiers with arbitrary actions can be put
-> on them, etc.
-> 
-> For example:
-> 
-> # tc qdisc add dev eth0 root handle 1: \
-> 	red limit 500K avpkt 1K qevent early_drop block 10
-> # tc filter add block 10 \
-> 	matchall action mirred egress mirror dev eth1
-> 
-> This patch set introduces the corresponding iproute2 support. Patch #1 adds
-> the new netlink attribute enumerators. Patch #2 adds a set of helpers to
-> implement qevents, and #3 adds a generic documentation to tc.8. Patch #4
-> then adds two new qevents to the RED qdisc: mark and early_drop.
-> 
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-applied to iproute2-next. Thanks
+This is an overhaul of the Felix switch driver's phylink operations.
+
+Patches 1, 3, 4 and 5 are cleanup, patch 2 is adding a new feature and
+and patch 6 is adaptation to the new format of an existing phylink API
+(mac_link_up).
+
+Changes since v2:
+- Replaced "PHYLINK" with "phylink".
+- Rewrote commit message of patch 5/6.
+
+Changes since v1:
+- Now using phy_clear_bits and phy_set_bits instead of plain writes to
+  MII_BMCR. This combines former patches 1/7 and 6/7 into a single new
+  patch 1/6.
+- Updated commit message of patch 5/6.
+
+Vladimir Oltean (6):
+  net: dsa: felix: clarify the intention of writes to MII_BMCR
+  net: dsa: felix: support half-duplex link modes
+  net: dsa: felix: unconditionally configure MAC speed to 1000Mbps
+  net: dsa: felix: set proper pause frame timers based on link speed
+  net: dsa: felix: delete .phylink_mac_an_restart code
+  net: dsa: felix: use resolved link config in mac_link_up()
+
+ drivers/net/dsa/ocelot/felix.c         | 108 +++++----
+ drivers/net/dsa/ocelot/felix.h         |  11 +-
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 298 ++++++++++++-------------
+ include/linux/fsl/enetc_mdio.h         |   1 +
+ 4 files changed, 213 insertions(+), 205 deletions(-)
+
+-- 
+2.25.1
+
