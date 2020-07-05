@@ -2,418 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAAAC214E7D
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 20:25:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 389A6214E73
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 20:21:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbgGESZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 14:25:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47434 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727859AbgGESZg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Jul 2020 14:25:36 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1js9KX-003ip9-9F; Sun, 05 Jul 2020 20:25:33 +0200
-Date:   Sun, 5 Jul 2020 20:25:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>
-Subject: Re: [PATCH ethtool v4 0/6] ethtool(1) cable test support
-Message-ID: <20200705182533.GA886548@lunn.ch>
-References: <20200701010743.730606-1-andrew@lunn.ch>
- <20200705004447.ook7vkzffa5ejb2v@lion.mk-sys.cz>
+        id S1727947AbgGESVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 14:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727893AbgGESVS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 14:21:18 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B90C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 11:21:17 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id f18so39312932wml.3
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 11:21:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jV9ncZE6azdAXTmLrMDQLyc4PQNhXWxYLD8EaTEEWlw=;
+        b=ovEebdzqPlYY3E25O4wVVT1HJiPWHxprjxU7IPw70QicAf2tLwCV1Wtn2pytsFe4i4
+         eH0vbe8Svm5UTFBFnSsSjQUO8cl4qhiKhxYqXReuDxUhRuLD+hyvxaXOC9XDlnNBuLyT
+         OLSBoCNMSxdYtXGFWhriTugMUdpRH2/l6sOFrkGo7X95PonkCo9+jaAh75SzO7r7V1/+
+         fL7DnxsvkE+AYU7F3lDOYK1H8hYp3MSF4eNkmgekbS+h2fm6t1OLbCwQA3zU5Ks7Bzse
+         6oKGkvNsx6bicxzvNXxK5t6ZbFq0KPr/Pf8zAoXp4hNXUW6ibK9qiOPVW/22N1Xh5pDr
+         XuGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jV9ncZE6azdAXTmLrMDQLyc4PQNhXWxYLD8EaTEEWlw=;
+        b=qhJdi4+LURb72x5z+3rMGlaQgu4S/TOFr4Up/vsVIUTBtnQ8fWNcXXjZp0z+aDc+v3
+         qL6wfuV6OH4a6Vtcv7cPmIvB37yIQ8t31K6yx8FzYyHTbW8dKoA5Fe7uNNeetwdksABc
+         QwFro+fFcIR97tzUBbyDqb81w5yUztuypl9F6rLWQrERlsAUepdIYLGEoRTixSsM2c9j
+         1uH9AaKrVU/Am4ll0oBrWXmbU2bwcpmoU7hUiCGvrmVEU5PTBfS+w4xW9SMqQBRufJUN
+         f9COKjBdjcVq/BQZK0mIlspeeLNYZp/J0fRulZPhd+0wJkDe2ad6YqR3ouU/LP9gffUy
+         ijLw==
+X-Gm-Message-State: AOAM532e0voTUSxz0OcGlhHmqqDWLkB+w4e9AuPrRWq2TuVoi2Y0ECiz
+        /5YpriZInxdfrHqef4Zftt6pwJVQUrr6tdB0O3hciOTX
+X-Google-Smtp-Source: ABdhPJyIXTFAMnkVnNMDh+rYOLohn2VJ1fIQvsMy4ghjqIbHCRPVZ0yit4KTept9OCZnG1LpwWqt5ty2IJiZzoNhHiE=
+X-Received: by 2002:a1c:6006:: with SMTP id u6mr44982437wmb.111.1593973276435;
+ Sun, 05 Jul 2020 11:21:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200705004447.ook7vkzffa5ejb2v@lion.mk-sys.cz>
+References: <b660e1514219be1d3723c203c91b0a04974ddac9.1593502515.git.lucien.xin@gmail.com>
+ <202007030446.GiX4Q8Vz%lkp@intel.com>
+In-Reply-To: <202007030446.GiX4Q8Vz%lkp@intel.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 6 Jul 2020 02:30:57 +0800
+Message-ID: <CADvbK_f+B1BK6khX021JTFszKa3LGG+Wjdrz439d7Gsj4BgjBQ@mail.gmail.com>
+Subject: Re: [PATCHv2 ipsec-next 02/10] tunnel4: add cb_handler to struct xfrm_tunnel
+To:     kernel test robot <lkp@intel.com>
+Cc:     network dev <netdev@vger.kernel.org>, kbuild-all@lists.01.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hello Andrew,
-> 
-> could you please test this update of netlink/desc-ethtool.c on top of
-> your series? The userspace messages look as expected but I'm not sure if
-> I have a device with cable test support available to test pretty
-> printing of kernel messages. (And even if I do, I almost certainly won't
-> have physical access to it.)
+On Fri, Jul 3, 2020 at 4:54 AM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi Xin,
+>
+> Thank you for the patch! Yet something to improve:
+>
+> [auto build test ERROR on ipsec-next/master]
+>
+> url:    https://github.com/0day-ci/linux/commits/Xin-Long/xfrm-support-ipip-and-ipv6-tunnels-in-vti-and-xfrmi/20200630-154042
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git master
+> config: h8300-randconfig-r001-20200701 (attached as .config)
+> compiler: h8300-linux-gcc (GCC) 9.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # save the attached .config to linux build tree
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=h8300
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    h8300-linux-ld: net/ipv4/tunnel4.o: in function `tunnel4_init':
+>    net/ipv4/tunnel4.c:242: undefined reference to `xfrm_input_register_afinfo'
+> >> h8300-linux-ld: net/ipv4/tunnel4.c:245: undefined reference to `xfrm_input_unregister_afinfo'
+>    h8300-linux-ld: net/ipv4/tunnel4.c:250: undefined reference to `xfrm_input_unregister_afinfo'
+I will add "#ifdef CONFIG_INET(6)_XFRM_TUNNEL" for this one too.
 
-Tested-by: Andrew Lunn <andrew@lunn.ch>
-
-/home/andrew/ethtool/ethtool --debug 0xff --cable-test-tdr lan2 first 10 last 12  
-...
-sending genetlink packet (56 bytes):
-    msg length 56 ethool ETHTOOL_MSG_CABLE_TEST_TDR_ACT
-    ETHTOOL_MSG_CABLE_TEST_TDR_ACT
-        ETHTOOL_A_CABLE_TEST_TDR_HEADER
-            ETHTOOL_A_HEADER_DEV_NAME = "lan2"
-        ETHTOOL_A_CABLE_TEST_TDR_CFG
-            ETHTOOL_A_CABLE_TEST_TDR_CFG_FIRST = 1000
-            ETHTOOL_A_CABLE_TEST_TDR_CFG_LAST = 1200
-----------------	------------------
-|  0000000056  |	| message length |
-| 00020 | R-A- |	|  type | flags  |
-|  0000000002  |	| sequence number|
-|  0000000000  |	|     port ID    |
-----------------	------------------
-| 1b 01 00 00  |	|  extra header  |
-|00016|N-|00001|	|len |flags| type|
-|00009|--|00002|	|len |flags| type|
-| 6c 61 6e 32  |	|      data      |	 l a n 2
-| 00 00 00 00  |	|      data      |	        
-|00020|N-|00002|	|len |flags| type|
-|00008|--|00001|	|len |flags| type|
-| e8 03 00 00  |	|      data      |	        
-|00008|--|00002|	|len |flags| type|
-| b0 04 00 00  |	|      data      |	        
-----------------	------------------
-received genetlink packet (52 bytes):
-    msg length 52 ethool ETHTOOL_MSG_CABLE_TEST_TDR_NTF
-    ETHTOOL_MSG_CABLE_TEST_TDR_NTF
-        ETHTOOL_A_CABLE_TEST_TDR_NTF_HEADER
-            ETHTOOL_A_HEADER_DEV_INDEX = 7
-            ETHTOOL_A_HEADER_DEV_NAME = "lan2"
-        ETHTOOL_A_CABLE_TEST_TDR_NTF_STATUS = 1
-----------------	------------------
-|  0000000052  |	| message length |
-| 00020 | ---- |	|  type | flags  |
-|  0000000036  |	| sequence number|
-|  0000000000  |	|     port ID    |
-----------------	------------------
-| 1c 01 00 00  |	|  extra header  |
-|00024|N-|00001|	|len |flags| type|
-|00008|--|00001|	|len |flags| type|
-| 07 00 00 00  |	|      data      |	        
-|00009|--|00002|	|len |flags| type|
-| 6c 61 6e 32  |	|      data      |	 l a n 2
-| 00 00 00 00  |	|      data      |	        
-|00005|--|00002|	|len |flags| type|
-| 01 00 00 00  |	|      data      |	        
-----------------	------------------
-Cable test TDR started for device lan2.
-received genetlink packet (36 bytes):
-    msg length 36 error errno=0
-----------------	------------------
-|  0000000036  |	| message length |
-| 00002 | ---- |	|  type | flags  |
-|  0000000002  |	| sequence number|
-|  0000006959  |	|     port ID    |
-----------------	------------------
-| 00 00 00 00  |	|                |
-| 38 00 00 00  |	|                |
-| 14 00 05 00  |	|                |
-| 02 00 00 00  |	|                |
-| 00 00 00 00  |	|                |
-----------------	------------------
-received genetlink packet (336 bytes):
-    msg length 336 ethool ETHTOOL_MSG_CABLE_TEST_TDR_NTF
-    ETHTOOL_MSG_CABLE_TEST_TDR_NTF
-        ETHTOOL_A_CABLE_TEST_TDR_NTF_HEADER
-            ETHTOOL_A_HEADER_DEV_INDEX = 7
-            ETHTOOL_A_HEADER_DEV_NAME = "lan2"
-        ETHTOOL_A_CABLE_TEST_TDR_NTF_STATUS = 2
-        ETHTOOL_A_CABLE_TEST_TDR_NTF_NEST
-            ETHTOOL_A_CABLE_TDR_NEST_PULSE
-                ETHTOOL_A_CABLE_PULSE_mV = 1000
-            ETHTOOL_A_CABLE_TDR_NEST_STEP
-                ETHTOOL_A_CABLE_STEP_FIRST_DISTANCE = 966
-                ETHTOOL_A_CABLE_STEP_LAST_DISTANCE = 1127
-                ETHTOOL_A_CABLE_STEP_STEP_DISTANCE = 80
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 0
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 46
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 1
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 117
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 2
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 85
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 3
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 93
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 0
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 7
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 1
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 15
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 2
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 23
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 3
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 31
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 0
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 148
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 1
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 156
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 2
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 320
-            ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE
-                ETHTOOL_A_CABLE_AMPLITUDE_PAIR = 3
-                ETHTOOL_A_CABLE_AMPLITUDE_mV = 39
-----------------	------------------
-|  0000000336  |	| message length |
-| 00020 | ---- |	|  type | flags  |
-|  0000000035  |	| sequence number|
-|  0000000000  |	|     port ID    |
-----------------	------------------
-| 1c 01 00 00  |	|  extra header  |
-|00024|N-|00001|	|len |flags| type|
-|00008|--|00001|	|len |flags| type|
-| 07 00 00 00  |	|      data      |	        
-|00009|--|00002|	|len |flags| type|
-| 6c 61 6e 32  |	|      data      |	 l a n 2
-| 00 00 00 00  |	|      data      |	        
-|00005|--|00002|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00284|N-|00003|	|len |flags| type|
-|00012|N-|00003|	|len |flags| type|
-|00006|--|00001|	|len |flags| type|
-| e8 03 00 00  |	|      data      |	        
-|00028|N-|00001|	|len |flags| type|
-|00008|--|00001|	|len |flags| type|
-| c6 03 00 00  |	|      data      |	        
-|00008|--|00002|	|len |flags| type|
-| 67 04 00 00  |	|      data      |	 g      
-|00008|--|00003|	|len |flags| type|
-| 50 00 00 00  |	|      data      |	 P      
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 00 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 2e 00 00 00  |	|      data      |	 .      
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 01 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 75 00 00 00  |	|      data      |	 u      
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 55 00 00 00  |	|      data      |	 U      
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 03 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 5d 00 00 00  |	|      data      |	 ]      
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 00 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 07 00 00 00  |	|      data      |	        
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 01 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 0f 00 00 00  |	|      data      |	        
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 17 00 00 00  |	|      data      |	        
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 03 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 1f 00 00 00  |	|      data      |	        
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 00 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 94 00 00 00  |	|      data      |	        
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 01 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 9c 00 00 00  |	|      data      |	        
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 40 01 00 00  |	|      data      |	 @      
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 03 00 00 00  |	|      data      |	        
-|00006|--|00002|	|len |flags| type|
-| 27 00 00 00  |	|      data      |	 '      
-----------------	------------------
-Cable test TDR completed for device lan2.
-TDR Pulse 1000mV
-Step configuration: 9.66-11.27 meters in 0.80m steps
-Pair A Amplitude   46
-Pair B Amplitude  117
-Pair C Amplitude   85
-Pair D Amplitude   93
-Pair A Amplitude    7
-Pair B Amplitude   15
-Pair C Amplitude   23
-Pair D Amplitude   31
-Pair A Amplitude  148
-Pair B Amplitude  156
-Pair C Amplitude  320
-Pair D Amplitude   39
-
-
-/home/andrew/ethtool/ethtool --debug 0xff --cable-test lan2
-...
-sending genetlink packet (36 bytes):
-    msg length 36 ethool ETHTOOL_MSG_CABLE_TEST_ACT
-    ETHTOOL_MSG_CABLE_TEST_ACT
-        ETHTOOL_A_CABLE_TEST_HEADER
-            ETHTOOL_A_HEADER_DEV_NAME = "lan2"
-----------------	------------------
-|  0000000036  |	| message length |
-| 00020 | R-A- |	|  type | flags  |
-|  0000000002  |	| sequence number|
-|  0000000000  |	|     port ID    |
-----------------	------------------
-| 1a 01 00 00  |	|  extra header  |
-|00016|N-|00001|	|len |flags| type|
-|00009|--|00002|	|len |flags| type|
-| 6c 61 6e 32  |	|      data      |	 l a n 2
-| 00 00 00 00  |	|      data      |	        
-----------------	------------------
-received genetlink packet (52 bytes):
-    msg length 52 ethool ETHTOOL_MSG_CABLE_TEST_NTF
-    ETHTOOL_MSG_CABLE_TEST_NTF
-        ETHTOOL_A_CABLE_TEST_NTF_HEADER
-            ETHTOOL_A_HEADER_DEV_INDEX = 7
-            ETHTOOL_A_HEADER_DEV_NAME = "lan2"
-        ETHTOOL_A_CABLE_TEST_NTF_STATUS = 1
-----------------	------------------
-|  0000000052  |	| message length |
-| 00020 | ---- |	|  type | flags  |
-|  0000000034  |	| sequence number|
-|  0000000000  |	|     port ID    |
-----------------	------------------
-| 1b 01 00 00  |	|  extra header  |
-|00024|N-|00001|	|len |flags| type|
-|00008|--|00001|	|len |flags| type|
-| 07 00 00 00  |	|      data      |	        
-|00009|--|00002|	|len |flags| type|
-| 6c 61 6e 32  |	|      data      |	 l a n 2
-| 00 00 00 00  |	|      data      |	        
-|00005|--|00002|	|len |flags| type|
-| 01 00 00 00  |	|      data      |	        
-----------------	------------------
-Cable test started for device lan2.
-received genetlink packet (36 bytes):
-    msg length 36 error errno=0
-----------------	------------------
-|  0000000036  |	| message length |
-| 00002 | ---- |	|  type | flags  |
-|  0000000002  |	| sequence number|
-|  0000006949  |	|     port ID    |
-----------------	------------------
-| 00 00 00 00  |	|                |
-| 24 00 00 00  |	|                |
-| 14 00 05 00  |	|                |
-| 02 00 00 00  |	|                |
-| 00 00 00 00  |	|                |
-----------------	------------------
-received genetlink packet (216 bytes):
-    msg length 216 ethool ETHTOOL_MSG_CABLE_TEST_NTF
-    ETHTOOL_MSG_CABLE_TEST_NTF
-        ETHTOOL_A_CABLE_TEST_NTF_HEADER
-            ETHTOOL_A_HEADER_DEV_INDEX = 7
-            ETHTOOL_A_HEADER_DEV_NAME = "lan2"
-        ETHTOOL_A_CABLE_TEST_NTF_STATUS = 2
-        ETHTOOL_A_CABLE_TEST_NTF_NEST
-            ETHTOOL_A_CABLE_NEST_RESULT
-                ETHTOOL_A_CABLE_RESULT_PAIR = 0
-                ETHTOOL_A_CABLE_RESULT_CODE = 2
-            ETHTOOL_A_CABLE_NEST_RESULT
-                ETHTOOL_A_CABLE_RESULT_PAIR = 1
-                ETHTOOL_A_CABLE_RESULT_CODE = 2
-            ETHTOOL_A_CABLE_NEST_RESULT
-                ETHTOOL_A_CABLE_RESULT_PAIR = 2
-                ETHTOOL_A_CABLE_RESULT_CODE = 2
-            ETHTOOL_A_CABLE_NEST_RESULT
-                ETHTOOL_A_CABLE_RESULT_PAIR = 3
-                ETHTOOL_A_CABLE_RESULT_CODE = 2
-            ETHTOOL_A_CABLE_NEST_FAULT_LENGTH
-                ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR = 0
-                ETHTOOL_A_CABLE_FAULT_LENGTH_CM = 2400
-            ETHTOOL_A_CABLE_NEST_FAULT_LENGTH
-                ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR = 1
-                ETHTOOL_A_CABLE_FAULT_LENGTH_CM = 2480
-            ETHTOOL_A_CABLE_NEST_FAULT_LENGTH
-                ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR = 2
-                ETHTOOL_A_CABLE_FAULT_LENGTH_CM = 2400
-            ETHTOOL_A_CABLE_NEST_FAULT_LENGTH
-                ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR = 3
-                ETHTOOL_A_CABLE_FAULT_LENGTH_CM = 2400
-----------------	------------------
-|  0000000216  |	| message length |
-| 00020 | ---- |	|  type | flags  |
-|  0000000033  |	| sequence number|
-|  0000000000  |	|     port ID    |
-----------------	------------------
-| 1b 01 00 00  |	|  extra header  |
-|00024|N-|00001|	|len |flags| type|
-|00008|--|00001|	|len |flags| type|
-| 07 00 00 00  |	|      data      |	        
-|00009|--|00002|	|len |flags| type|
-| 6c 61 6e 32  |	|      data      |	 l a n 2
-| 00 00 00 00  |	|      data      |	        
-|00005|--|00002|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00164|N-|00003|	|len |flags| type|
-|00020|N-|00001|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 00 00 00 00  |	|      data      |	        
-|00005|--|00002|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00020|N-|00001|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 01 00 00 00  |	|      data      |	        
-|00005|--|00002|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00020|N-|00001|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00005|--|00002|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00020|N-|00001|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 03 00 00 00  |	|      data      |	        
-|00005|--|00002|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 00 00 00 00  |	|      data      |	        
-|00008|--|00002|	|len |flags| type|
-| 60 09 00 00  |	|      data      |	 `      
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 01 00 00 00  |	|      data      |	        
-|00008|--|00002|	|len |flags| type|
-| b0 09 00 00  |	|      data      |	        
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 02 00 00 00  |	|      data      |	        
-|00008|--|00002|	|len |flags| type|
-| 60 09 00 00  |	|      data      |	 `      
-|00020|N-|00002|	|len |flags| type|
-|00005|--|00001|	|len |flags| type|
-| 03 00 00 00  |	|      data      |	        
-|00008|--|00002|	|len |flags| type|
-| 60 09 00 00  |	|      data      |	 `      
-----------------	------------------
-Cable test completed for device lan2.
-Pair A code Open Circuit
-Pair B code Open Circuit
-Pair C code Open Circuit
-Pair D code Open Circuit
-Pair A, fault length: 24.00m
-Pair B, fault length: 24.80m
-Pair C, fault length: 24.00m
-Pair D, fault length: 24.00m
-
-    Andrew
+Thanks.
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
