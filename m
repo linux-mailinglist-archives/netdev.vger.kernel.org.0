@@ -2,68 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45447214DAF
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 17:35:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 868F8214DB2
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 17:47:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727796AbgGEPfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 11:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
+        id S1727067AbgGEPq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 11:46:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726956AbgGEPf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 11:35:29 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB78C061794;
-        Sun,  5 Jul 2020 08:35:29 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id e13so32744380qkg.5;
-        Sun, 05 Jul 2020 08:35:29 -0700 (PDT)
+        with ESMTP id S1726975AbgGEPq6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 11:46:58 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8467C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 08:46:57 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id w27so4214368qtb.7
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 08:46:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SH28tdiDJsXYXRFHInVuUZ9QDGxO5tD7WG8jpUhte4E=;
-        b=FFVRSjoV3hlBBM259Ok+E3rMQceCGcET+Wj2uhalza1ZH93n/A553bBnFqzmGL0z+N
-         eecaKCm3jqqWp22tJ/ctaeg+hLUAAYJRi7wtzy7Q+2v+Ad0kVJBQM9/PJAucrgeHbj7x
-         DC9LZBW6u83mQj0J9uOi0BqsgNql4XHBz7tnqiOd5g9puQ+o/h27Kghc26Tk1kN7nlkh
-         xLKRTaG25Xs/LWeNXsl+5OiEEMB31YUId4z5uffhm9WFAOn2yVJSyajvE+pc2tbU6CmR
-         IFDtKvwBjPPMQ5ukwUnbCBFsTm3U4+MsudLLnB7eS/i8D2bAanpPTbnh7N6Z2nEXqKLi
-         uaPA==
+        bh=3Mkaj8dw5Ks6gcilFEI7x07yBjMd5m1ufQzhFKQ3OLU=;
+        b=PLeniAy9KpvyePVwt/Y7UyUPgMudnXNZ+mgVEaVX6qUcouZ98mz3b0PD7SYDQvjGPn
+         mVDHs3+kjnp7rIsdN913jdewb6qWPjh6E+gBpjLld8bvy1KIzQ1pemnGNexRzMr3pULz
+         +OZJkjjbZOiaKnhPJe1WwvxOh1Z1Qrhc7WgDL712cUiyCluM4xA3Hc5Q6UwXZaGROttm
+         L2mH49fENaLhH48w4A5ITZv1Ifb9rc7xP0BvWmUOjVnE0qHBHPo5kschdftgYjqmruF2
+         3ox+Jhq1sHivK4Gjk0SVFmSNBn48q5VcPRDiZlCCuGstge7HWWMrnMzX5kArfDzivPUG
+         ZQSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=SH28tdiDJsXYXRFHInVuUZ9QDGxO5tD7WG8jpUhte4E=;
-        b=cHfQ6RxAyEjD1lJTIq/Ij0Uv6jXb59xqPNCjv0sjMZE3jv+kUcsdtYrguz1GNBIydZ
-         9moczFHWpynB8VFmR9G+wuPamILU9rT/2TpXytviiCUSZLadmcAEd66tQcR+7ko64Nvy
-         iEv+Y7geUILJXsLcAlFJ7qdZR8DyHLxoQGc9/Xc2jYvlpSjdl/Z31Z8axRb2EyfRz3+i
-         G+8fAGKScSq/4or2UI5sQBIb3zW25nt/59lHjSw6LYiGIQhMgnZB2Cc9rCuAavXfOhV4
-         1GsNv90eNiN7EwlivVF/ac4kRDUbGB3xIupxUEoBa6uYt7SjqRbvFIM75XAdh2o8bswJ
-         AOPw==
-X-Gm-Message-State: AOAM533C7g4FxA9OzCibdcDr/NVuKQjJEGRowCxnfRv5Mdk0nb65Adhc
-        XnE7zlak+M+cytnMO/KEWqRWp1FQ
-X-Google-Smtp-Source: ABdhPJybbAiZ3xkFTj9Py3ia20S8s+H1I2Iv59f/U7esrkNZc/5Vz5ksRkIFeL7XxzOVH5a0ekyBmA==
-X-Received: by 2002:a37:6609:: with SMTP id a9mr43224012qkc.337.1593963328908;
-        Sun, 05 Jul 2020 08:35:28 -0700 (PDT)
+        bh=3Mkaj8dw5Ks6gcilFEI7x07yBjMd5m1ufQzhFKQ3OLU=;
+        b=W54uCW/JCqnToZeKmssirOAEw8/+JbETMbW8CH/stcs0qsXYcXISFYjqUnZl4gKOMs
+         2YpEIsuB4VfRjtsgGWHgcDFWgNszVB8RXQBIi3UQr99uvjseP0yX8RtlZ2z1wE+ApXiZ
+         0UNY3XOyB90KpyTIZjfXQlOiTPwUno7uCe9EcNBteeb09CVVIXHCigwYX5x9E/0cnq0/
+         I9DrStvqGH121Jc4cBEAzYotHNwOKM9BWX6G2BOygBJuZ25ykkF1UkLwcPDN0U2GHxtE
+         7SxDbGIGEjNLKEwhz145ijSLM+G/Y0h/Ix15A1F1O9Efc6pjcJ8CRsj4aUGYvCIUT4Pg
+         10tQ==
+X-Gm-Message-State: AOAM530zltMQz5nrqfFXNSKqwplCqac8UQ48WmQZYCoQecxi2Eb/UYso
+        m4qWfV92oFuduXmDS2F0q98=
+X-Google-Smtp-Source: ABdhPJx7liLK8bwib3XRpVSeewIcYig7dWP93FQt4I0V5G5MkjTigWrX+pfRJ29oH1gLWDScNNQDvg==
+X-Received: by 2002:ac8:45d1:: with SMTP id e17mr47285391qto.159.1593964016919;
+        Sun, 05 Jul 2020 08:46:56 -0700 (PDT)
 Received: from ?IPv6:2601:282:803:7700:f517:b957:b896:7107? ([2601:282:803:7700:f517:b957:b896:7107])
-        by smtp.googlemail.com with ESMTPSA id y67sm13141609qka.101.2020.07.05.08.35.27
+        by smtp.googlemail.com with ESMTPSA id x14sm15624960qki.65.2020.07.05.08.46.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Jul 2020 08:35:28 -0700 (PDT)
-Subject: Re: [v2,iproute2-next 1/2] action police: change the print message
- quotes style
-To:     Po Liu <po.liu@nxp.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, davem@davemloft.net, jhs@mojatatu.com,
-        vlad@buslov.dev, claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
-        alexandru.marginean@nxp.com
-References: <20200628014602.13002-1-po.liu@nxp.com>
- <20200629020420.30412-1-po.liu@nxp.com>
+        Sun, 05 Jul 2020 08:46:56 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2 0/4] Support qevents
+To:     Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>
+References: <cover.1593509090.git.petrm@mellanox.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e2ca479b-7b94-eef8-f226-8d9153066134@gmail.com>
-Date:   Sun, 5 Jul 2020 09:35:26 -0600
+Message-ID: <9137c1db-39b2-e739-db93-74990a5a3860@gmail.com>
+Date:   Sun, 5 Jul 2020 09:46:55 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200629020420.30412-1-po.liu@nxp.com>
+In-Reply-To: <cover.1593509090.git.petrm@mellanox.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,19 +67,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/28/20 8:04 PM, Po Liu wrote:
-> Change the double quotes to single quotes in fprintf message to make it
-> more readable.
+On 6/30/20 4:14 AM, Petr Machata wrote:
+> To allow configuring user-defined actions as a result of inner workings of
+> a qdisc, a concept of qevents was recently introduced to the kernel.
+> Qevents are attach points for TC blocks, where filters can be put that are
+> executed as the packet hits well-defined points in the qdisc algorithms.
+> The attached blocks can be shared, in a manner similar to clsact ingress
+> and egress blocks, arbitrary classifiers with arbitrary actions can be put
+> on them, etc.
 > 
-> Signed-off-by: Po Liu <po.liu@nxp.com>
-> ---
-> v1->v2 changes:
-> - Patch new added
+> For example:
 > 
->  tc/m_police.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+> # tc qdisc add dev eth0 root handle 1: \
+> 	red limit 500K avpkt 1K qevent early_drop block 10
+> # tc filter add block 10 \
+> 	matchall action mirred egress mirror dev eth1
+> 
+> This patch set introduces the corresponding iproute2 support. Patch #1 adds
+> the new netlink attribute enumerators. Patch #2 adds a set of helpers to
+> implement qevents, and #3 adds a generic documentation to tc.8. Patch #4
+> then adds two new qevents to the RED qdisc: mark and early_drop.
 > 
 
-applied both to iproute2-next. Thanks
-
-
+applied to iproute2-next. Thanks
