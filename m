@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AF57214DF5
+	by mail.lfdr.de (Postfix) with ESMTP id F13A1214DF6
 	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 18:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727909AbgGEQRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 12:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49252 "EHLO
+        id S1727919AbgGEQRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 12:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727894AbgGEQRD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 12:17:03 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22650C061794
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 09:17:03 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id d15so32471685edm.10
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 09:17:03 -0700 (PDT)
+        with ESMTP id S1727901AbgGEQRF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 12:17:05 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7DEC061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 09:17:04 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id n26so25927096ejx.0
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 09:17:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/wPdVO0936YgMTAAjgbwi0qPC1JZJY6KSmEgQQuTtZQ=;
-        b=lw+VrFGvRkbItUXjXm3pAZnbQlwuzc0MQDr4ip0C+A6sNmGFrjgqPjIZx5T6Cf7QqK
-         ZF2/4m8Fb35VVyXq/s5lWUEHXQa39jld+C2WHLig9WrkYV8qDmKy5R3ZnSLXuoT1y7VE
-         vQC4zqtR8izEvzT8CC1QwbBgaIuVDuHa+8ikvFToBwL58g2z+ZzICoYiS1OaBYCKbf5i
-         W0mRKCou321MYLqTGRiJG31lBCcpxB6RI8lAOGoo/YBaVzit7aylxIKGlW/vQahu7gW4
-         GrlBCZkDbRZ/YCkiMB2im4bGYgDbJNKUygeYpH4ve77qDLgj6gpTVOYIClqvWOAg6dxp
-         PeHw==
+        bh=yP93XivzJ+u4c7Tzc5hq5xO3onvS/IkQL4nJlnhjOKc=;
+        b=DimOXOUKx+e2JSOSIeOwFHEmH1VV+DzS0k14jZVnmKzapRODyoksF6xt7BBOiqB3ZX
+         OshRtOrsYWpNVcVW9hvWJmNSX6NW1kDfaGj67Ntva/dQV+K6xlux2IolCpLZxqKvy/t0
+         FVLxMgEdJ2/bhQX7O7It6r5QxFIwYS+iaSTRGd7U2Y9xMoqscYvDkqo+oTeaJoYXUVB2
+         +vCkMglQx7Gpm9EwAhMzlGqopaGiNsuCyqmDgjPy5X1ZUDzwnM3KG+FaO2f66JCYYZDG
+         0OzBKPLuLT/FcfEP0XNe26BvOjtRXRXHUSb/AR+1pPn9MmuO/+WwbIfgoqgSSB3CDZAi
+         4uBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/wPdVO0936YgMTAAjgbwi0qPC1JZJY6KSmEgQQuTtZQ=;
-        b=rbFDWC9PndYTh1XkAYDVTfaHde9Bm7WNEfjZsmKAKbt3Nyolz28Y88GDWEFvb8i45D
-         wgozQVugxvVQsMIUo6WFGgRhTfYdnkWovwCcRs85cTzk8zPH7PclaFqTeujugwdT9T0V
-         K4aN33I61nxxlXKKhLpQf5GwTMjEtmGwOTA/EE8/DtRsyGaHWRMunLRbIPvuZbsAGp8o
-         LIUmeas2tvm5uJZeSf1OZAc7glaYtmZEEvDU82WHk/So4AsqpPfuub1fkQfTFlg0/3o7
-         WrBz1XieOm9o6O1LBuokorJtX92Wg//GLkpLCGeeqcGJZNVLxUMP2PKgHd+LwDoT5kmS
-         wNxg==
-X-Gm-Message-State: AOAM531HKGmOgxqnzlSuVqwK9mudvbL/2Lk7BnmPbTmUj07S9I9rLbsJ
-        sbiQyJO6kPSSKX8Ym50cBaA=
-X-Google-Smtp-Source: ABdhPJxdK3dSKzMvFuJeaRpGNjsEeY7xEyYa5rn+LodyFqhcjRl8UpQoshiyt8SzUHGQXnf1tMiLlw==
-X-Received: by 2002:a05:6402:176e:: with SMTP id da14mr36004726edb.262.1593965821881;
-        Sun, 05 Jul 2020 09:17:01 -0700 (PDT)
+        bh=yP93XivzJ+u4c7Tzc5hq5xO3onvS/IkQL4nJlnhjOKc=;
+        b=V8y1o+WR8ihY2oDLzdvE8qkOQtMo9LPnbMIMgeQcNe7P/Zb6hEmuKdT21EBxgdps4R
+         UTwjXiuGMGdr+4b/gOYrXyt+oBZj6mxDSES2oCjk5c3RwN8x4ANRJa3F+SZ8h57PcQ7E
+         5rw3w8FUAQQWCHeH+k6EPwJqLAAOI2QgIpymLcJ2RYZtAJQIGQoQtvao4/cXmYVSHJps
+         D2QhtPpC9L8rqKtCSuOknmOpXXx5dbTLbDNPiNe763ty27gryi0IbmTsHvyC4SUWrNcg
+         j9QhDz2bvTmnuXjILLZTslLw34KURfbJxrZHhnu8I89NoXddHuROWIlLXH/25J12HpHv
+         dcKQ==
+X-Gm-Message-State: AOAM5305Lvj7Tz8b7FX/mSonW2B3Mmj23sY6uCyomxhzCcnfAk43yrzO
+        DN1wYWtinsfYZeTuikv852w=
+X-Google-Smtp-Source: ABdhPJyhyZUat6fYDT1+MK7wbEPB4DTjFQ3ILEXBW1bSDY+YcZdM/rj3Bi0y/JgzJiSoAP+m34Ofog==
+X-Received: by 2002:a17:906:abca:: with SMTP id kq10mr25848410ejb.515.1593965823351;
+        Sun, 05 Jul 2020 09:17:03 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id x4sm14406126eju.2.2020.07.05.09.17.00
+        by smtp.gmail.com with ESMTPSA id x4sm14406126eju.2.2020.07.05.09.17.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2020 09:17:01 -0700 (PDT)
+        Sun, 05 Jul 2020 09:17:02 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
         ioana.ciornei@nxp.com, linux@armlinux.org.uk
-Subject: [PATCH v3 net-next 5/6] net: dsa: felix: delete .phylink_mac_an_restart code
-Date:   Sun,  5 Jul 2020 19:16:25 +0300
-Message-Id: <20200705161626.3797968-6-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 6/6] net: dsa: felix: use resolved link config in mac_link_up()
+Date:   Sun,  5 Jul 2020 19:16:26 +0300
+Message-Id: <20200705161626.3797968-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200705161626.3797968-1-olteanv@gmail.com>
 References: <20200705161626.3797968-1-olteanv@gmail.com>
@@ -67,150 +67,480 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Phylink uses the .mac_an_restart method to offer the user an
-implementation of the "ethtool -r" behavior, when the media-side auto
-negotiation can be restarted by the local MAC PCS. This is the case for
-fiber modes 1000Base-X and 2500Base-X (IEEE clause 37) that don't have
-an Ethernet PHY connected locally, and the media is connected to the MAC
-PCS directly.
+Phylink now requires that parameters established through
+auto-negotiation be written into the MAC at the time of the
+mac_link_up() callback. In the case of felix, that means taking the port
+out of reset, setting the correct timers for PAUSE frames, and
+enabling/disabling TX flow control.
 
-On the other hand, the Cisco SGMII and USXGMII standards also have an
-auto negotiation mechanism based on IEEE 802.3 clause 37 (their
-respective specs require a MAC PCS and a PHY PCS to implement the same
-state machine, which is described in IEEE 802.3 "Auto-Negotiation Figure
-37-6"), so the ability to restart auto-negotiation is intrinsically
-symmetrical (the MAC PCS can do it too).
+This patch also splits the inband and noinband configuration of the
+vsc9959 PCS (currently found in a function called "init") into 2
+different functions, which have a nomenclature closer to phylink:
+"config", for inband setup, and "link_up", for noinband (forced) setup.
 
-However, it appears that not all SGMII/USXGMII PHYs have logic to
-restart the MDI-side auto-negotiation process when they detect a
-transition of the SGMII link from data mode to configuration mode.
-Some do (VSC8234) and some don't (AR8033, MV88E1111). IEEE and/or Cisco
-specification wordings to not help to prove whether propagating the "AN
-restart" event from MII side ("mr_restart_an") to MDI side
-("mr_restart_negotiation") is required behavior - neither of them
-specifies any mandatory interaction between the clause 37 AN state
-machine from Figure 37-6 and the clause 28 AN state machine from Figure
-28-18.
-
-Therefore, even if a certain behavior could be proven as being required,
-real-life SGMII/USXGMII PHYs are inconsistent enough that a clause 37 AN
-restart cannot be used by phylink to reliably trigger a media-side
-renegotiation, when the user requests it via ethtool.
-
-The only remaining use that the .mac_an_restart callback might possibly
-have, given what we know now, is to implement some silicon quirks, but
-so far that has proven to not be necessary.
-
-So remove this code for now, since it never gets called and we don't
-foresee any circumstance in which it might be, either.
+This is necessary as a preparation step for giving up control of the PCS
+to phylink, which will be done in further patch series.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v3:
-Update commit message to remove the lecturing tone, shorten the
-description, acknowledge what phylink is trying to achieve with the
-method and the fact that SGMII/USXGMII cannot achieve that.
+None.
 
 Changes in v2:
-Update commit message to be more clear.
+Rebase on top of new patch 1/6.
 
- drivers/net/dsa/ocelot/felix.c         | 10 -------
- drivers/net/dsa/ocelot/felix.h         |  1 -
- drivers/net/dsa/ocelot/felix_vsc9959.c | 37 --------------------------
- 3 files changed, 48 deletions(-)
+ drivers/net/dsa/ocelot/felix.c         |  76 ++++----
+ drivers/net/dsa/ocelot/felix.h         |  10 +-
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 257 ++++++++++++++-----------
+ 3 files changed, 187 insertions(+), 156 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 4684339012c5..57c400a67f16 100644
+index 57c400a67f16..75652ed99b24 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -296,15 +296,6 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
- 						  state->speed);
- }
+@@ -233,6 +233,32 @@ static int felix_phylink_mac_pcs_get_state(struct dsa_switch *ds, int port,
+ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+ 				     unsigned int link_an_mode,
+ 				     const struct phylink_link_state *state)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct felix *felix = ocelot_to_felix(ocelot);
++
++	if (felix->info->pcs_config)
++		felix->info->pcs_config(ocelot, port, link_an_mode, state);
++}
++
++static void felix_phylink_mac_link_down(struct dsa_switch *ds, int port,
++					unsigned int link_an_mode,
++					phy_interface_t interface)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++
++	ocelot_port_writel(ocelot_port, 0, DEV_MAC_ENA_CFG);
++	ocelot_rmw_rix(ocelot, 0, QSYS_SWITCH_PORT_MODE_PORT_ENA,
++		       QSYS_SWITCH_PORT_MODE, port);
++}
++
++static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
++				      unsigned int link_an_mode,
++				      phy_interface_t interface,
++				      struct phy_device *phydev,
++				      int speed, int duplex,
++				      bool tx_pause, bool rx_pause)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+@@ -250,7 +276,7 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+ 			   DEV_CLOCK_CFG_LINK_SPEED(OCELOT_SPEED_1000),
+ 			   DEV_CLOCK_CFG);
  
--static void felix_phylink_mac_an_restart(struct dsa_switch *ds, int port)
--{
--	struct ocelot *ocelot = ds->priv;
--	struct felix *felix = ocelot_to_felix(ocelot);
+-	switch (state->speed) {
++	switch (speed) {
+ 	case SPEED_10:
+ 		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(3);
+ 		break;
+@@ -261,12 +287,9 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+ 	case SPEED_2500:
+ 		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(1);
+ 		break;
+-	case SPEED_UNKNOWN:
+-		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(0);
+-		break;
+ 	default:
+ 		dev_err(ocelot->dev, "Unsupported speed on port %d: %d\n",
+-			port, state->speed);
++			port, speed);
+ 		return;
+ 	}
+ 
+@@ -275,7 +298,7 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+ 	 */
+ 	mac_fc_cfg |= SYS_MAC_FC_CFG_RX_FC_ENA;
+ 
+-	if (state->pause & MLO_PAUSE_TX)
++	if (tx_pause)
+ 		mac_fc_cfg |= SYS_MAC_FC_CFG_TX_FC_ENA |
+ 			      SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
+ 			      SYS_MAC_FC_CFG_FC_LATENCY_CFG(0x7) |
+@@ -288,37 +311,9 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+ 
+ 	ocelot_write_rix(ocelot, 0, ANA_POL_FLOWC, port);
+ 
+-	if (felix->info->pcs_init)
+-		felix->info->pcs_init(ocelot, port, link_an_mode, state);
 -
--	if (felix->info->pcs_an_restart)
--		felix->info->pcs_an_restart(ocelot, port);
+-	if (felix->info->port_sched_speed_set)
+-		felix->info->port_sched_speed_set(ocelot, port,
+-						  state->speed);
 -}
 -
- static void felix_phylink_mac_link_down(struct dsa_switch *ds, int port,
- 					unsigned int link_an_mode,
- 					phy_interface_t interface)
-@@ -810,7 +801,6 @@ static const struct dsa_switch_ops felix_switch_ops = {
- 	.phylink_validate	= felix_phylink_validate,
- 	.phylink_mac_link_state	= felix_phylink_mac_pcs_get_state,
- 	.phylink_mac_config	= felix_phylink_mac_config,
--	.phylink_mac_an_restart	= felix_phylink_mac_an_restart,
- 	.phylink_mac_link_down	= felix_phylink_mac_link_down,
- 	.phylink_mac_link_up	= felix_phylink_mac_link_up,
- 	.port_enable		= felix_port_enable,
+-static void felix_phylink_mac_link_down(struct dsa_switch *ds, int port,
+-					unsigned int link_an_mode,
+-					phy_interface_t interface)
+-{
+-	struct ocelot *ocelot = ds->priv;
+-	struct ocelot_port *ocelot_port = ocelot->ports[port];
+-
+-	ocelot_port_writel(ocelot_port, 0, DEV_MAC_ENA_CFG);
+-	ocelot_rmw_rix(ocelot, 0, QSYS_SWITCH_PORT_MODE_PORT_ENA,
+-		       QSYS_SWITCH_PORT_MODE, port);
+-}
+-
+-static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
+-				      unsigned int link_an_mode,
+-				      phy_interface_t interface,
+-				      struct phy_device *phydev,
+-				      int speed, int duplex,
+-				      bool tx_pause, bool rx_pause)
+-{
+-	struct ocelot *ocelot = ds->priv;
+-	struct ocelot_port *ocelot_port = ocelot->ports[port];
+-
+-	/* Enable MAC module */
++	/* Undo the effects of felix_phylink_mac_link_down:
++	 * enable MAC module
++	 */
+ 	ocelot_port_writel(ocelot_port, DEV_MAC_ENA_CFG_RX_ENA |
+ 			   DEV_MAC_ENA_CFG_TX_ENA, DEV_MAC_ENA_CFG);
+ 
+@@ -335,6 +330,13 @@ static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
+ 			 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
+ 			 QSYS_SWITCH_PORT_MODE_PORT_ENA,
+ 			 QSYS_SWITCH_PORT_MODE, port);
++
++	if (felix->info->pcs_link_up)
++		felix->info->pcs_link_up(ocelot, port, link_an_mode, interface,
++					 speed, duplex);
++
++	if (felix->info->port_sched_speed_set)
++		felix->info->port_sched_speed_set(ocelot, port, speed);
+ }
+ 
+ static void felix_port_qos_map_init(struct ocelot *ocelot, int port)
 diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index a891736ca006..4a4cebcf04a7 100644
+index 4a4cebcf04a7..00137b64132b 100644
 --- a/drivers/net/dsa/ocelot/felix.h
 +++ b/drivers/net/dsa/ocelot/felix.h
-@@ -31,7 +31,6 @@ struct felix_info {
- 	void	(*pcs_init)(struct ocelot *ocelot, int port,
- 			    unsigned int link_an_mode,
- 			    const struct phylink_link_state *state);
--	void	(*pcs_an_restart)(struct ocelot *ocelot, int port);
+@@ -28,9 +28,13 @@ struct felix_info {
+ 	int				imdio_pci_bar;
+ 	int	(*mdio_bus_alloc)(struct ocelot *ocelot);
+ 	void	(*mdio_bus_free)(struct ocelot *ocelot);
+-	void	(*pcs_init)(struct ocelot *ocelot, int port,
+-			    unsigned int link_an_mode,
+-			    const struct phylink_link_state *state);
++	void	(*pcs_config)(struct ocelot *ocelot, int port,
++			      unsigned int link_an_mode,
++			      const struct phylink_link_state *state);
++	void	(*pcs_link_up)(struct ocelot *ocelot, int port,
++			       unsigned int link_an_mode,
++			       phy_interface_t interface,
++			       int speed, int duplex);
  	void	(*pcs_link_state)(struct ocelot *ocelot, int port,
  				  struct phylink_link_state *state);
  	int	(*prevalidate_phy_mode)(struct ocelot *ocelot, int port,
 diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 94e946b26f90..65f83386bad1 100644
+index 65f83386bad1..19614537b1ba 100644
 --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
 +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -728,42 +728,6 @@ static int vsc9959_reset(struct ocelot *ocelot)
- 	return 0;
- }
- 
--static void vsc9959_pcs_an_restart_sgmii(struct phy_device *pcs)
--{
--	phy_set_bits(pcs, MII_BMCR, BMCR_ANRESTART);
--}
+@@ -737,124 +737,54 @@ static int vsc9959_reset(struct ocelot *ocelot)
+  * traffic if SGMII AN is enabled but not completed (acknowledged by us), so
+  * setting MLO_AN_INBAND is actually required for those.
+  */
+-static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
+-				   unsigned int link_an_mode,
+-				   const struct phylink_link_state *state)
++static void vsc9959_pcs_config_sgmii(struct phy_device *pcs,
++				     unsigned int link_an_mode,
++				     const struct phylink_link_state *state)
+ {
+-	if (link_an_mode == MLO_AN_INBAND) {
+-		int bmsr, bmcr;
 -
--static void vsc9959_pcs_an_restart_usxgmii(struct phy_device *pcs)
--{
--	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_BMCR,
--		      USXGMII_BMCR_RESET |
--		      USXGMII_BMCR_AN_EN |
--		      USXGMII_BMCR_RST_AN);
--}
+-		/* Some PHYs like VSC8234 don't like it when AN restarts on
+-		 * their system  side and they restart line side AN too, going
+-		 * into an endless link up/down loop.  Don't restart PCS AN if
+-		 * link is up already.
+-		 * We do check that AN is enabled just in case this is the 1st
+-		 * call, PCS detects a carrier but AN is disabled from power on
+-		 * or by boot loader.
+-		 */
+-		bmcr = phy_read(pcs, MII_BMCR);
+-		if (bmcr < 0)
+-			return;
 -
--static void vsc9959_pcs_an_restart(struct ocelot *ocelot, int port)
--{
--	struct felix *felix = ocelot_to_felix(ocelot);
--	struct phy_device *pcs = felix->pcs[port];
+-		bmsr = phy_read(pcs, MII_BMSR);
+-		if (bmsr < 0)
+-			return;
 -
--	if (!pcs)
--		return;
+-		if ((bmcr & BMCR_ANENABLE) && (bmsr & BMSR_LSTATUS))
+-			return;
 -
--	switch (pcs->interface) {
--	case PHY_INTERFACE_MODE_SGMII:
--	case PHY_INTERFACE_MODE_QSGMII:
--		vsc9959_pcs_an_restart_sgmii(pcs);
--		break;
--	case PHY_INTERFACE_MODE_USXGMII:
--		vsc9959_pcs_an_restart_usxgmii(pcs);
--		break;
--	default:
--		dev_err(ocelot->dev, "Invalid PCS interface type %s\n",
--			phy_modes(pcs->interface));
--		break;
+-		/* SGMII spec requires tx_config_Reg[15:0] to be exactly 0x4001
+-		 * for the MAC PCS in order to acknowledge the AN.
+-		 */
+-		phy_write(pcs, MII_ADVERTISE, ADVERTISE_SGMII |
+-					      ADVERTISE_LPACK);
+-
+-		phy_write(pcs, ENETC_PCS_IF_MODE,
+-			  ENETC_PCS_IF_MODE_SGMII_EN |
+-			  ENETC_PCS_IF_MODE_USE_SGMII_AN);
+-
+-		/* Adjust link timer for SGMII */
+-		phy_write(pcs, ENETC_PCS_LINK_TIMER1,
+-			  ENETC_PCS_LINK_TIMER1_VAL);
+-		phy_write(pcs, ENETC_PCS_LINK_TIMER2,
+-			  ENETC_PCS_LINK_TIMER2_VAL);
+-
+-		phy_set_bits(pcs, MII_BMCR, BMCR_ANENABLE);
+-	} else {
+-		u16 if_mode = ENETC_PCS_IF_MODE_SGMII_EN;
+-		int speed;
+-
+-		switch (state->speed) {
+-		case SPEED_1000:
+-			speed = ENETC_PCS_SPEED_1000;
+-			break;
+-		case SPEED_100:
+-			speed = ENETC_PCS_SPEED_100;
+-			break;
+-		case SPEED_10:
+-			speed = ENETC_PCS_SPEED_10;
+-			break;
+-		case SPEED_UNKNOWN:
+-			/* Silently don't do anything */
+-			return;
+-		default:
+-			phydev_err(pcs, "Invalid PCS speed %d\n", state->speed);
+-			return;
+-		}
+-
+-		if_mode |= ENETC_PCS_IF_MODE_SGMII_SPEED(speed);
+-		if (state->duplex == DUPLEX_HALF)
+-			if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
+-
+-		phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
 -	}
 -}
++	int bmsr, bmcr;
++
++	/* Some PHYs like VSC8234 don't like it when AN restarts on
++	 * their system  side and they restart line side AN too, going
++	 * into an endless link up/down loop.  Don't restart PCS AN if
++	 * link is up already.
++	 * We do check that AN is enabled just in case this is the 1st
++	 * call, PCS detects a carrier but AN is disabled from power on
++	 * or by boot loader.
++	 */
++	bmcr = phy_read(pcs, MII_BMCR);
++	if (bmcr < 0)
++		return;
+ 
+-/* 2500Base-X is SerDes protocol 7 on Felix and 6 on ENETC. It is a SerDes lane
+- * clocked at 3.125 GHz which encodes symbols with 8b/10b and does not have
+- * auto-negotiation of any link parameters. Electrically it is compatible with
+- * a single lane of XAUI.
+- * The hardware reference manual wants to call this mode SGMII, but it isn't
+- * really, since the fundamental features of SGMII:
+- * - Downgrading the link speed by duplicating symbols
+- * - Auto-negotiation
+- * are not there.
+- * The speed is configured at 1000 in the IF_MODE and BMCR MDIO registers
+- * because the clock frequency is actually given by a PLL configured in the
+- * Reset Configuration Word (RCW).
+- * Since there is no difference between fixed speed SGMII w/o AN and 802.3z w/o
+- * AN, we call this PHY interface type 2500Base-X. In case a PHY negotiates a
+- * lower link speed on line side, the system-side interface remains fixed at
+- * 2500 Mbps and we do rate adaptation through pause frames.
+- */
+-static void vsc9959_pcs_init_2500basex(struct phy_device *pcs,
+-				       unsigned int link_an_mode,
+-				       const struct phylink_link_state *state)
+-{
+-	u16 if_mode = ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500) |
+-		      ENETC_PCS_IF_MODE_SGMII_EN;
++	bmsr = phy_read(pcs, MII_BMSR);
++	if (bmsr < 0)
++		return;
+ 
+-	if (link_an_mode == MLO_AN_INBAND) {
+-		phydev_err(pcs, "AN not supported on 3.125GHz SerDes lane\n");
++	if ((bmcr & BMCR_ANENABLE) && (bmsr & BMSR_LSTATUS))
+ 		return;
+-	}
+ 
+-	if (state->duplex == DUPLEX_HALF)
+-		if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
++	/* SGMII spec requires tx_config_Reg[15:0] to be exactly 0x4001
++	 * for the MAC PCS in order to acknowledge the AN.
++	 */
++	phy_write(pcs, MII_ADVERTISE, ADVERTISE_SGMII |
++				      ADVERTISE_LPACK);
+ 
+-	phy_write(pcs, ENETC_PCS_IF_MODE, if_mode);
+-	phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
++	phy_write(pcs, ENETC_PCS_IF_MODE,
++		  ENETC_PCS_IF_MODE_SGMII_EN |
++		  ENETC_PCS_IF_MODE_USE_SGMII_AN);
++
++	/* Adjust link timer for SGMII */
++	phy_write(pcs, ENETC_PCS_LINK_TIMER1,
++		  ENETC_PCS_LINK_TIMER1_VAL);
++	phy_write(pcs, ENETC_PCS_LINK_TIMER2,
++		  ENETC_PCS_LINK_TIMER2_VAL);
++
++	phy_set_bits(pcs, MII_BMCR, BMCR_ANENABLE);
+ }
+ 
+-static void vsc9959_pcs_init_usxgmii(struct phy_device *pcs,
+-				     unsigned int link_an_mode,
+-				     const struct phylink_link_state *state)
++static void vsc9959_pcs_config_usxgmii(struct phy_device *pcs,
++				       unsigned int link_an_mode,
++				       const struct phylink_link_state *state)
+ {
+-	if (link_an_mode != MLO_AN_INBAND) {
+-		phydev_err(pcs, "USXGMII only supports in-band AN for now\n");
+-		return;
+-	}
 -
- /* We enable SGMII AN only when the PHY has managed = "in-band-status" in the
-  * device tree. If we are in MLO_AN_PHY mode, we program directly state->speed
-  * into the PCS, which is retrieved out-of-band over MDIO. This also has the
-@@ -1411,7 +1375,6 @@ struct felix_info felix_info_vsc9959 = {
+ 	/* Configure device ability for the USXGMII Replicator */
+ 	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_ADVERTISE,
+ 		      USXGMII_ADVERTISE_SPEED(USXGMII_SPEED_2500) |
+@@ -864,9 +794,9 @@ static void vsc9959_pcs_init_usxgmii(struct phy_device *pcs,
+ 		      USXGMII_ADVERTISE_FDX);
+ }
+ 
+-static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
+-			     unsigned int link_an_mode,
+-			     const struct phylink_link_state *state)
++static void vsc9959_pcs_config(struct ocelot *ocelot, int port,
++			       unsigned int link_an_mode,
++			       const struct phylink_link_state *state)
+ {
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+ 	struct phy_device *pcs = felix->pcs[port];
+@@ -898,16 +828,110 @@ static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
+ 				 pcs->supported);
+ 	phy_advertise_supported(pcs);
+ 
++	if (!phylink_autoneg_inband(link_an_mode))
++		return;
++
+ 	switch (pcs->interface) {
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 	case PHY_INTERFACE_MODE_QSGMII:
+-		vsc9959_pcs_init_sgmii(pcs, link_an_mode, state);
++		vsc9959_pcs_config_sgmii(pcs, link_an_mode, state);
+ 		break;
+ 	case PHY_INTERFACE_MODE_2500BASEX:
+-		vsc9959_pcs_init_2500basex(pcs, link_an_mode, state);
++		phydev_err(pcs, "AN not supported on 3.125GHz SerDes lane\n");
+ 		break;
+ 	case PHY_INTERFACE_MODE_USXGMII:
+-		vsc9959_pcs_init_usxgmii(pcs, link_an_mode, state);
++		vsc9959_pcs_config_usxgmii(pcs, link_an_mode, state);
++		break;
++	default:
++		dev_err(ocelot->dev, "Unsupported link mode %s\n",
++			phy_modes(pcs->interface));
++	}
++}
++
++static void vsc9959_pcs_link_up_sgmii(struct phy_device *pcs,
++				      unsigned int link_an_mode,
++				      int speed, int duplex)
++{
++	u16 if_mode = ENETC_PCS_IF_MODE_SGMII_EN;
++
++	switch (speed) {
++	case SPEED_1000:
++		if_mode |= ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_1000);
++		break;
++	case SPEED_100:
++		if_mode |= ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_100);
++		break;
++	case SPEED_10:
++		if_mode |= ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_10);
++		break;
++	default:
++		phydev_err(pcs, "Invalid PCS speed %d\n", speed);
++		return;
++	}
++
++	if (duplex == DUPLEX_HALF)
++		if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
++
++	phy_write(pcs, ENETC_PCS_IF_MODE, if_mode);
++	phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
++}
++
++/* 2500Base-X is SerDes protocol 7 on Felix and 6 on ENETC. It is a SerDes lane
++ * clocked at 3.125 GHz which encodes symbols with 8b/10b and does not have
++ * auto-negotiation of any link parameters. Electrically it is compatible with
++ * a single lane of XAUI.
++ * The hardware reference manual wants to call this mode SGMII, but it isn't
++ * really, since the fundamental features of SGMII:
++ * - Downgrading the link speed by duplicating symbols
++ * - Auto-negotiation
++ * are not there.
++ * The speed is configured at 1000 in the IF_MODE and BMCR MDIO registers
++ * because the clock frequency is actually given by a PLL configured in the
++ * Reset Configuration Word (RCW).
++ * Since there is no difference between fixed speed SGMII w/o AN and 802.3z w/o
++ * AN, we call this PHY interface type 2500Base-X. In case a PHY negotiates a
++ * lower link speed on line side, the system-side interface remains fixed at
++ * 2500 Mbps and we do rate adaptation through pause frames.
++ */
++static void vsc9959_pcs_link_up_2500basex(struct phy_device *pcs,
++					  unsigned int link_an_mode,
++					  int speed, int duplex)
++{
++	u16 if_mode = ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500) |
++		      ENETC_PCS_IF_MODE_SGMII_EN;
++
++	if (duplex == DUPLEX_HALF)
++		if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
++
++	phy_write(pcs, ENETC_PCS_IF_MODE, if_mode);
++	phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
++}
++
++static void vsc9959_pcs_link_up(struct ocelot *ocelot, int port,
++				unsigned int link_an_mode,
++				phy_interface_t interface,
++				int speed, int duplex)
++{
++	struct felix *felix = ocelot_to_felix(ocelot);
++	struct phy_device *pcs = felix->pcs[port];
++
++	if (!pcs)
++		return;
++
++	if (phylink_autoneg_inband(link_an_mode))
++		return;
++
++	switch (interface) {
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++		vsc9959_pcs_link_up_sgmii(pcs, link_an_mode, speed, duplex);
++		break;
++	case PHY_INTERFACE_MODE_2500BASEX:
++		vsc9959_pcs_link_up_2500basex(pcs, link_an_mode, speed,
++					      duplex);
++		break;
++	case PHY_INTERFACE_MODE_USXGMII:
++		phydev_err(pcs, "USXGMII only supports in-band AN for now\n");
+ 		break;
+ 	default:
+ 		dev_err(ocelot->dev, "Unsupported link mode %s\n",
+@@ -1374,7 +1398,8 @@ struct felix_info felix_info_vsc9959 = {
+ 	.imdio_pci_bar		= 0,
  	.mdio_bus_alloc		= vsc9959_mdio_bus_alloc,
  	.mdio_bus_free		= vsc9959_mdio_bus_free,
- 	.pcs_init		= vsc9959_pcs_init,
--	.pcs_an_restart		= vsc9959_pcs_an_restart,
+-	.pcs_init		= vsc9959_pcs_init,
++	.pcs_config		= vsc9959_pcs_config,
++	.pcs_link_up		= vsc9959_pcs_link_up,
  	.pcs_link_state		= vsc9959_pcs_link_state,
  	.prevalidate_phy_mode	= vsc9959_prevalidate_phy_mode,
  	.port_setup_tc          = vsc9959_port_setup_tc,
