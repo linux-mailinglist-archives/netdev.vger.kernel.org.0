@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC4B3215050
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 01:16:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68010215051
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 01:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728157AbgGEXP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 19:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56902 "EHLO
+        id S1728173AbgGEXQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 19:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727970AbgGEXP7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 19:15:59 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939E3C061794
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 16:15:58 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id k15so21554242lfc.4
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 16:15:58 -0700 (PDT)
+        with ESMTP id S1727970AbgGEXQB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 19:16:01 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DC2C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 16:16:00 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id h19so43255884ljg.13
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 16:16:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=QTzuJJGM+CMJa97B/Z/XJpydbjxjjYw8mxhRJ7i5Oyc=;
-        b=WVvZkZri239Thm/GSsjzj1SMJ8VVOSBKPR0G0R7GUdKrsSOrFSObmIDcY5hplMT8pY
-         SCjuHTD2lSQabI3arRpPzrbimpeSWKILhwK7fEOWuIAljUq90/z+1iC0Zd8dJrAyOlaY
-         TUVPH1DMza30xgFz3R5+gXLla0fqQJIat5UxXzFcYM48mgOPLWeioM9mbo7NY+S57pCK
-         O7i3KAjgNIm2oy+EumAloD2LxmTvIJaUy9Mqhb2IfwLKWzxCZPNG5Fhab0MzBQTPCy44
-         iwYYNX2/CWYwkoAAK3TU3FR6TKIPQ5MMOpqPxMJivScjidzZV31oRRa8xrRHSrHwEacu
-         H7EA==
+        bh=9urUuGoORWbCOM0jkz2zh+XTET/vU9d85Qc/lpKrzv0=;
+        b=bVj34Ewr3hMMHRFBbN1An0NJ2uYuqwrTIJWdUYGx/iXXprxElZ6eCdGEYO3jCbVDwN
+         yD3+7m7HdRXjed/v/ix59mxt7xP8YDTM6gPtT7yMJA3pR4RH/jeazq8iGAVOpt3+YcAC
+         gziMSIQM21vdQ/CuItW3U+xhJVQ9WqsjmmI9T0o3fRJhbMZeno9il8iOMcd35Tcm8vEc
+         wvaCzsAr4obbWYu9MHE//xm4Y5QLPTM5apnamzE7KO/y9db7utOMrLQIeZbqSINju3xY
+         9TUqCSSJGLO1CPz6m3QhR9WXd8VgunoChW0ZFnwNq5uvoQFjD9Zgjl93P9uT5N044kEy
+         PY9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=QTzuJJGM+CMJa97B/Z/XJpydbjxjjYw8mxhRJ7i5Oyc=;
-        b=ay8LZB1l2ir/h1zEmqdRIjZKN87QDlw3CcXYkqTbdzUUyapkO1IizZzuIIGh2gQ61I
-         mCawghyqxSU6t63DwSn1vpTPBnHSeixh0Wo5jRwFfgMHa0kS2ay2c9P/utzqJbEJm4mo
-         pdvIBkXBJ5x26kFt8Zk0b1TmuERihLmrkh0tEvhy0U5hUPKiXytyP+rzs3QEfcyAyA4P
-         ELLEuWZiA5Hu21J8Fi6tVyR0fp7Qxjnv29HWsV4peReRFia0DuAuALfYcIGbNwb1MTjf
-         xWPH3bag9Mm2SkMfaLMdSowi2lbRgxEEcpxQCg1AZ+FOOeoMW6/auNCkA+EmiONSjsbn
-         z+zQ==
-X-Gm-Message-State: AOAM530LLJAy/X9IZndf8FMndhEhy8/0q9fvzogwsRAbqmNAFmanzvXu
-        WINK6PL9al4maJX3LSo923TvNw==
-X-Google-Smtp-Source: ABdhPJxT4a/I816uPOWeMn5srLD+ITF1lufexNn39gw5X/nQfnvhlIsTgycgW7zgX8UMyNgiQ1jf4g==
-X-Received: by 2002:ac2:5619:: with SMTP id v25mr28652578lfd.117.1593990957031;
-        Sun, 05 Jul 2020 16:15:57 -0700 (PDT)
+        bh=9urUuGoORWbCOM0jkz2zh+XTET/vU9d85Qc/lpKrzv0=;
+        b=MgEr5hn7ZLzdLGEpeXm9y6aMHIPSIR+9W+hRcqfps2r8HCVlrwQTn/0f42C5nF0fbq
+         +7sYD4lfomQDFPe7aoSboBKyEiUG+17B+BjDVKyXNHdkXYKxznMrol2TJlGGaeXVIvlY
+         1Kq1kpM0SPNpo2xruIm/hPLI1AHaa4y+AHyTJgrwpmu1gOCIU9h1q9oNb7WyNXg5Xm3M
+         j6MyGMo55GBjplNLe5pBWBl0RSGTPHorx8QIXL9m/CcMkhcA/LtFkZiDzWLG6ayKIMjb
+         67G0RQw4YHWraXKjAKU+pTyB6MzD8AIlCKdNX3RVKtgb0UAN/cUMXWlyGKNisI0uKeFs
+         rA9Q==
+X-Gm-Message-State: AOAM531/ymH03nqvbi5AY3XTiaSJSfsVMDQ+eeKP+V7YswkHcPN6zySV
+        aWYCrnOTEnt1ysiiySrI7Gsatg==
+X-Google-Smtp-Source: ABdhPJye0Z7TZt0odpv4XNaqI/Tvil32sdbndYRksj0ytE7bG5QJs3oJPrte9Yk2wm26uGUD2HGfUA==
+X-Received: by 2002:a2e:8597:: with SMTP id b23mr9796197lji.338.1593990959162;
+        Sun, 05 Jul 2020 16:15:59 -0700 (PDT)
 Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id f14sm8439410lfa.35.2020.07.05.16.15.56
+        by smtp.gmail.com with ESMTPSA id f14sm8439410lfa.35.2020.07.05.16.15.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2020 16:15:56 -0700 (PDT)
+        Sun, 05 Jul 2020 16:15:58 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -55,9 +55,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
         DENG Qingfang <dqfext@gmail.com>,
         Mauri Sandberg <sandberg@mailfence.com>
-Subject: [net-next PATCH 1/5 v3] net: dsa: tag_rtl4_a: Implement Realtek 4 byte A tag
-Date:   Mon,  6 Jul 2020 01:15:46 +0200
-Message-Id: <20200705231550.77946-2-linus.walleij@linaro.org>
+Subject: [net-next PATCH 2/5 v3] net: dsa: rtl8366rb: Support the CPU DSA tag
+Date:   Mon,  6 Jul 2020 01:15:47 +0200
+Message-Id: <20200705231550.77946-3-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200705231550.77946-1-linus.walleij@linaro.org>
 References: <20200705231550.77946-1-linus.walleij@linaro.org>
@@ -68,41 +68,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This implements the known parts of the Realtek 4 byte
-tag protocol version 0xA, as found in the RTL8366RB
-DSA switch.
+This activates the support to use the CPU tag to properly
+direct ingress traffic to the right port.
 
-It is designated as protocol version 0xA as a
-different Realtek 4 byte tag format with protocol
-version 0x9 is known to exist in the Realtek RTL8306
-chips.
+Bit 15 in register RTL8368RB_CPU_CTRL_REG can be set to
+1 to disable the insertion of the CPU tag which is what
+the code currently does. The bit 15 define calls this
+setting RTL8368RB_CPU_INSTAG which is confusing since the
+inverse meaning is implied: programmers may think that
+setting this bit to 1 will *enable* inserting the tag
+rather than disabling it, so rename this setting in
+bit 15 to RTL8368RB_CPU_NO_TAG which is more to the
+point.
 
-The tag and switch chip lacks public documentation, so
-the tag format has been reverse-engineered from
-packet dumps. As only ingress traffic has been available
-for analysis an egress tag has not been possible to
-develop (even using educated guesses about bit fields)
-so this is as far as it gets. It is not known if the
-switch even supports egress tagging.
-
-Excessive attempts to figure out the egress tag format
-was made. When nothing else worked, I just tried all bit
-combinations with 0xannp where a is protocol and p is
-port. I looped through all values several times trying
-to get a response from ping, without any positive
-result.
-
-Using just these ingress tags however, the switch
-functionality is vastly improved and the packets find
-their way into the destination port without any
-tricky VLAN configuration. On the D-Link DIR-685 the
-LAN ports now come up and respond to ping without
-any command line configuration so this is a real
-improvement for users.
-
-Egress packets need to be restricted to the proper
-target ports using VLAN, which the RTL8366RB DSA
-switch driver already sets up.
+After this e.g. ping works out-of-the-box with the
+RTL8366RB.
 
 Cc: DENG Qingfang <dqfext@gmail.com>
 Cc: Mauri Sandberg <sandberg@mailfence.com>
@@ -110,205 +90,88 @@ Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v2->v3:
+- Fix up the commit message.
 - Collect Andrew's review tag.
 ChangeLog v1->v2:
-- Drop some netdev_dbg() calls that was just littering.
-- Rebase on v5.8-rc1
+- Update the commit message to explain why we are renaming
+  bit 15 in RTL8368RB_CPU_CTRL_REG.
 ---
- include/net/dsa.h    |   2 +
- net/dsa/Kconfig      |   7 +++
- net/dsa/Makefile     |   1 +
- net/dsa/tag_rtl4_a.c | 131 +++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 141 insertions(+)
- create mode 100644 net/dsa/tag_rtl4_a.c
+ drivers/net/dsa/Kconfig     |  1 +
+ drivers/net/dsa/rtl8366rb.c | 31 ++++++++-----------------------
+ 2 files changed, 9 insertions(+), 23 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 50389772c597..2b37943f09a4 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -44,6 +44,7 @@ struct phylink_link_state;
- #define DSA_TAG_PROTO_KSZ8795_VALUE		14
- #define DSA_TAG_PROTO_OCELOT_VALUE		15
- #define DSA_TAG_PROTO_AR9331_VALUE		16
-+#define DSA_TAG_PROTO_RTL4_A_VALUE		17
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index d0024cb30a7b..468b3c4273c5 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -70,6 +70,7 @@ config NET_DSA_QCA8K
+ config NET_DSA_REALTEK_SMI
+ 	tristate "Realtek SMI Ethernet switch family support"
+ 	depends on NET_DSA
++	select NET_DSA_TAG_RTL4_A
+ 	select FIXED_PHY
+ 	select IRQ_DOMAIN
+ 	select REALTEK_PHY
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index fd1977590cb4..48f1ff746799 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -109,8 +109,8 @@
+ /* CPU port control reg */
+ #define RTL8368RB_CPU_CTRL_REG		0x0061
+ #define RTL8368RB_CPU_PORTS_MSK		0x00FF
+-/* Enables inserting custom tag length/type 0x8899 */
+-#define RTL8368RB_CPU_INSTAG		BIT(15)
++/* Disables inserting custom tag length/type 0x8899 */
++#define RTL8368RB_CPU_NO_TAG		BIT(15)
  
- enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-@@ -63,6 +64,7 @@ enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_KSZ8795		= DSA_TAG_PROTO_KSZ8795_VALUE,
- 	DSA_TAG_PROTO_OCELOT		= DSA_TAG_PROTO_OCELOT_VALUE,
- 	DSA_TAG_PROTO_AR9331		= DSA_TAG_PROTO_AR9331_VALUE,
-+	DSA_TAG_PROTO_RTL4_A		= DSA_TAG_PROTO_RTL4_A_VALUE,
- };
+ #define RTL8366RB_SMAR0			0x0070 /* bits 0..15 */
+ #define RTL8366RB_SMAR1			0x0071 /* bits 16..31 */
+@@ -844,16 +844,14 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
+ 	if (ret)
+ 		return ret;
  
- struct packet_type;
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index d5bc6ac599ef..1f9b9b11008c 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -86,6 +86,13 @@ config NET_DSA_TAG_KSZ
- 	  Say Y if you want to enable support for tagging frames for the
- 	  Microchip 8795/9477/9893 families of switches.
+-	/* Enable CPU port and enable inserting CPU tag
++	/* Enable CPU port with custom DSA tag 8899.
+ 	 *
+-	 * Disabling RTL8368RB_CPU_INSTAG here will change the behaviour
+-	 * of the switch totally and it will start talking Realtek RRCP
+-	 * internally. It is probably possible to experiment with this,
+-	 * but then the kernel needs to understand and handle RRCP first.
++	 * If you set RTL8368RB_CPU_NO_TAG (bit 15) in this registers
++	 * the custom tag is turned off.
+ 	 */
+ 	ret = regmap_update_bits(smi->map, RTL8368RB_CPU_CTRL_REG,
+ 				 0xFFFF,
+-				 RTL8368RB_CPU_INSTAG | BIT(smi->cpu_port));
++				 BIT(smi->cpu_port));
+ 	if (ret)
+ 		return ret;
  
-+config NET_DSA_TAG_RTL4_A
-+	tristate "Tag driver for Realtek 4 byte protocol A tags"
-+	help
-+	  Say Y or M if you want to enable support for tagging frames for the
-+	  Realtek switches with 4 byte protocol A tags, sich as found in
-+	  the Realtek RTL8366RB.
-+
- config NET_DSA_TAG_OCELOT
- 	tristate "Tag driver for Ocelot family of switches"
- 	select PACKING
-diff --git a/net/dsa/Makefile b/net/dsa/Makefile
-index 108486cfdeef..4f47b2025ff5 100644
---- a/net/dsa/Makefile
-+++ b/net/dsa/Makefile
-@@ -11,6 +11,7 @@ obj-$(CONFIG_NET_DSA_TAG_DSA) += tag_dsa.o
- obj-$(CONFIG_NET_DSA_TAG_EDSA) += tag_edsa.o
- obj-$(CONFIG_NET_DSA_TAG_GSWIP) += tag_gswip.o
- obj-$(CONFIG_NET_DSA_TAG_KSZ) += tag_ksz.o
-+obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
- obj-$(CONFIG_NET_DSA_TAG_LAN9303) += tag_lan9303.o
- obj-$(CONFIG_NET_DSA_TAG_MTK) += tag_mtk.o
- obj-$(CONFIG_NET_DSA_TAG_OCELOT) += tag_ocelot.o
-diff --git a/net/dsa/tag_rtl4_a.c b/net/dsa/tag_rtl4_a.c
-new file mode 100644
-index 000000000000..df82249aa1a7
---- /dev/null
-+++ b/net/dsa/tag_rtl4_a.c
-@@ -0,0 +1,131 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Handler for Realtek 4 byte DSA switch tags
-+ * Currently only supports protocol "A" found in RTL8366RB
-+ * Copyright (c) 2020 Linus Walleij <linus.walleij@linaro.org>
-+ *
-+ * This "proprietary tag" header looks like so:
-+ *
-+ * -------------------------------------------------
-+ * | MAC DA | MAC SA | 0x8899 | 2 bytes tag | Type |
-+ * -------------------------------------------------
-+ *
-+ * The 2 bytes tag form a 16 bit big endian word. The exact
-+ * meaning has been guess from packet dumps from ingress
-+ * frames, as no working egress traffic has been available
-+ * we do not know the format of the egress tags or if they
-+ * are even supported.
-+ */
-+
-+#include <linux/etherdevice.h>
-+#include <linux/bits.h>
-+
-+#include "dsa_priv.h"
-+
-+#define RTL4_A_HDR_LEN		4
-+#define RTL4_A_ETHERTYPE	0x8899
-+#define RTL4_A_PROTOCOL_SHIFT	12
-+/*
-+ * 0x1 = Realtek Remote Control protocol (RRCP)
-+ * 0x2/0x3 seems to be used for loopback testing
-+ * 0x9 = RTL8306 DSA protocol
-+ * 0xa = RTL8366RB DSA protocol
-+ */
-+#define RTL4_A_PROTOCOL_RTL8366RB	0xa
-+
-+static struct sk_buff *rtl4a_tag_xmit(struct sk_buff *skb,
-+				      struct net_device *dev)
-+{
-+	/*
-+	 * Just let it pass thru, we don't know if it is possible
-+	 * to tag a frame with the 0x8899 ethertype and direct it
-+	 * to a specific port, all attempts at reverse-engineering have
-+	 * ended up with the frames getting dropped.
-+	 *
-+	 * The VLAN set-up needs to restrict the frames to the right port.
-+	 *
-+	 * If you have documentation on the tagging format for RTL8366RB
-+	 * (tag type A) then please contribute.
-+	 */
-+	return skb;
-+}
-+
-+static struct sk_buff *rtl4a_tag_rcv(struct sk_buff *skb,
-+				     struct net_device *dev,
-+				     struct packet_type *pt)
-+{
-+	u16 protport;
-+	__be16 *p;
-+	u16 etype;
-+	u8 flags;
-+	u8 *tag;
-+	u8 prot;
-+	u8 port;
-+
-+	if (unlikely(!pskb_may_pull(skb, RTL4_A_HDR_LEN)))
-+		return NULL;
-+
-+	/* The RTL4 header has its own custom Ethertype 0x8899 and that
-+	 * starts right at the beginning of the packet, after the src
-+	 * ethernet addr. Apparantly skb->data always points 2 bytes in,
-+	 * behind the Ethertype.
-+	 */
-+	tag = skb->data - 2;
-+	p = (__be16 *)tag;
-+	etype = ntohs(*p);
-+	if (etype != RTL4_A_ETHERTYPE) {
-+		/* Not custom, just pass through */
-+		netdev_dbg(dev, "non-realtek ethertype 0x%04x\n", etype);
-+		return skb;
-+	}
-+	p = (__be16 *)(tag + 2);
-+	protport = ntohs(*p);
-+	/* The 4 upper bits are the protocol */
-+	prot = (protport >> RTL4_A_PROTOCOL_SHIFT) & 0x0f;
-+	if (prot != RTL4_A_PROTOCOL_RTL8366RB) {
-+		netdev_err(dev, "unknown realtek protocol 0x%01x\n", prot);
-+		return NULL;
-+	}
-+	port = protport & 0xff;
-+
-+	/* Remove RTL4 tag and recalculate checksum */
-+	skb_pull_rcsum(skb, RTL4_A_HDR_LEN);
-+
-+	/* Move ethernet DA and SA in front of the data */
-+	memmove(skb->data - ETH_HLEN,
-+		skb->data - ETH_HLEN - RTL4_A_HDR_LEN,
-+		2 * ETH_ALEN);
-+
-+	skb->dev = dsa_master_find_slave(dev, 0, port);
-+	if (!skb->dev) {
-+		netdev_dbg(dev, "could not find slave for port %d\n", port);
-+		return NULL;
-+	}
-+
-+	skb->offload_fwd_mark = 1;
-+
-+	return skb;
-+}
-+
-+static int rtl4a_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
-+				  int *offset)
-+{
-+	*offset = RTL4_A_HDR_LEN;
-+	/* Skip past the tag and fetch the encapsulated Ethertype */
-+	*proto = ((__be16 *)skb->data)[1];
-+
-+	return 0;
-+}
-+
-+static const struct dsa_device_ops rtl4a_netdev_ops = {
-+	.name	= "rtl4a",
-+	.proto	= DSA_TAG_PROTO_RTL4_A,
-+	.xmit	= rtl4a_tag_xmit,
-+	.rcv	= rtl4a_tag_rcv,
-+	.flow_dissect = rtl4a_tag_flow_dissect,
-+	.overhead = RTL4_A_HDR_LEN,
-+};
-+module_dsa_tag_driver(rtl4a_netdev_ops);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_RTL4_A);
+@@ -967,21 +965,8 @@ static enum dsa_tag_protocol rtl8366_get_tag_protocol(struct dsa_switch *ds,
+ 						      int port,
+ 						      enum dsa_tag_protocol mp)
+ {
+-	/* For now, the RTL switches are handled without any custom tags.
+-	 *
+-	 * It is possible to turn on "custom tags" by removing the
+-	 * RTL8368RB_CPU_INSTAG flag when enabling the port but what it
+-	 * does is unfamiliar to DSA: ethernet frames of type 8899, the Realtek
+-	 * Remote Control Protocol (RRCP) start to appear on the CPU port of
+-	 * the device. So this is not the ordinary few extra bytes in the
+-	 * frame. Instead it appears that the switch starts to talk Realtek
+-	 * RRCP internally which means a pretty complex RRCP implementation
+-	 * decoding and responding the RRCP protocol is needed to exploit this.
+-	 *
+-	 * The OpenRRCP project (dormant since 2009) have reverse-egineered
+-	 * parts of the protocol.
+-	 */
+-	return DSA_TAG_PROTO_NONE;
++	/* This switch uses the 4 byte protocol A Realtek DSA tag */
++	return DSA_TAG_PROTO_RTL4_A;
+ }
+ 
+ static void rtl8366rb_adjust_link(struct dsa_switch *ds, int port,
 -- 
 2.26.2
 
