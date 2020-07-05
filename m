@@ -2,27 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2664F214E87
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 20:31:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81C85214E88
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 20:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728057AbgGESbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 14:31:10 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47464 "EHLO vps0.lunn.ch"
+        id S1727966AbgGESbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 14:31:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47486 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727803AbgGESbJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Jul 2020 14:31:09 -0400
+        id S1727875AbgGESbR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Jul 2020 14:31:17 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1js9Pv-003itC-T3; Sun, 05 Jul 2020 20:31:07 +0200
+        id 1js9Q3-003itd-6N; Sun, 05 Jul 2020 20:31:15 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next 1/7] net: phy: at803x: Avoid comparison is always false warning
-Date:   Sun,  5 Jul 2020 20:29:15 +0200
-Message-Id: <20200705182921.887441-2-andrew@lunn.ch>
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandru Ardelean <alexaundru.ardelean@analog.com>
+Subject: [PATCH net-next 2/7] net: phy: Fixup parameters in kerneldoc
+Date:   Sun,  5 Jul 2020 20:29:16 +0200
+Message-Id: <20200705182921.887441-3-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200705182921.887441-1-andrew@lunn.ch>
 References: <20200705182921.887441-1-andrew@lunn.ch>
@@ -33,50 +34,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-By placing the GENMASK value into an unsigned int and then passing it
-to PREF_FIELD, the type is reduces down from ULL. Given the reduced
-size of the type, the range checks in PREP_FAIL() are always true, and
--Wtype-limits then gives a warning.
+Correct the kerneldoc for a few structure and function calls,
+as reported by C=1 W=1.
 
-By skipping the intermediate variable, the warning can be avoided.
-
+Cc: Alexandru Ardelean <alexaundru.ardelean@analog.com>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/at803x.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/phy/adin.c           | 12 ++++++------
+ drivers/net/phy/mdio-boardinfo.c |  3 ++-
+ drivers/net/phy/mdio_device.c    |  2 +-
+ 3 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 97cbe593f0ea..bdd84f6f0214 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -400,7 +400,7 @@ static int at803x_parse_dt(struct phy_device *phydev)
+diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
+index c7eabe4382fb..7471a8b90873 100644
+--- a/drivers/net/phy/adin.c
++++ b/drivers/net/phy/adin.c
+@@ -106,8 +106,8 @@
+ 
+ /**
+  * struct adin_cfg_reg_map - map a config value to aregister value
+- * @cfg		value in device configuration
+- * @reg		value in the register
++ * @cfg:	value in device configuration
++ * @reg:	value in the register
+  */
+ struct adin_cfg_reg_map {
+ 	int cfg;
+@@ -135,9 +135,9 @@ static const struct adin_cfg_reg_map adin_rmii_fifo_depths[] = {
+ 
+ /**
+  * struct adin_clause45_mmd_map - map to convert Clause 45 regs to Clause 22
+- * @devad		device address used in Clause 45 access
+- * @cl45_regnum		register address defined by Clause 45
+- * @adin_regnum		equivalent register address accessible via Clause 22
++ * @devad:		device address used in Clause 45 access
++ * @cl45_regnum:	register address defined by Clause 45
++ * @adin_regnum:	equivalent register address accessible via Clause 22
+  */
+ struct adin_clause45_mmd_map {
+ 	int devad;
+@@ -174,7 +174,7 @@ static const struct adin_hw_stat adin_hw_stats[] = {
+ 
+ /**
+  * struct adin_priv - ADIN PHY driver private data
+- * stats		statistic counters for the PHY
++ * @stats:		statistic counters for the PHY
+  */
+ struct adin_priv {
+ 	u64			stats[ARRAY_SIZE(adin_hw_stats)];
+diff --git a/drivers/net/phy/mdio-boardinfo.c b/drivers/net/phy/mdio-boardinfo.c
+index d9b54c67ef9f..033df435f76c 100644
+--- a/drivers/net/phy/mdio-boardinfo.c
++++ b/drivers/net/phy/mdio-boardinfo.c
+@@ -17,7 +17,8 @@ static DEFINE_MUTEX(mdio_board_lock);
+ /**
+  * mdiobus_setup_mdiodev_from_board_info - create and setup MDIO devices
+  * from pre-collected board specific MDIO information
+- * @mdiodev: MDIO device pointer
++ * @bus: Bus the board_info belongs to
++ * @cb: Callback to create device on bus
+  * Context: can sleep
+  */
+ void mdiobus_setup_mdiodev_from_board_info(struct mii_bus *bus,
+diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
+index c1d345c3cab3..5cb726a2bf1f 100644
+--- a/drivers/net/phy/mdio_device.c
++++ b/drivers/net/phy/mdio_device.c
+@@ -182,7 +182,7 @@ static int mdio_remove(struct device *dev)
+ 
+ /**
+  * mdio_driver_register - register an mdio_driver with the MDIO layer
+- * @new_driver: new mdio_driver to register
++ * @drv: new mdio_driver to register
+  */
+ int mdio_driver_register(struct mdio_driver *drv)
  {
- 	struct device_node *node = phydev->mdio.dev.of_node;
- 	struct at803x_priv *priv = phydev->priv;
--	unsigned int sel, mask;
-+	unsigned int sel;
- 	u32 freq, strength;
- 	int ret;
- 
-@@ -409,7 +409,6 @@ static int at803x_parse_dt(struct phy_device *phydev)
- 
- 	ret = of_property_read_u32(node, "qca,clk-out-frequency", &freq);
- 	if (!ret) {
--		mask = AT803X_CLK_OUT_MASK;
- 		switch (freq) {
- 		case 25000000:
- 			sel = AT803X_CLK_OUT_25MHZ_XTAL;
-@@ -428,8 +427,8 @@ static int at803x_parse_dt(struct phy_device *phydev)
- 			return -EINVAL;
- 		}
- 
--		priv->clk_25m_reg |= FIELD_PREP(mask, sel);
--		priv->clk_25m_mask |= mask;
-+		priv->clk_25m_reg |= FIELD_PREP(AT803X_CLK_OUT_MASK, sel);
-+		priv->clk_25m_mask |= AT803X_CLK_OUT_MASK;
- 
- 		/* Fixup for the AR8030/AR8035. This chip has another mask and
- 		 * doesn't support the DSP reference. Eg. the lowest bit of the
 -- 
 2.27.0.rc2
 
