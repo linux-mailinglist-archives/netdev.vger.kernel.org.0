@@ -2,97 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74CE2214FD5
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 23:14:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29643214FD7
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 23:17:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728565AbgGEVOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 17:14:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38408 "EHLO
+        id S1728310AbgGEVR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 17:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728127AbgGEVOg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 17:14:36 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D97CC061794
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 14:14:36 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id d194so14087737pga.13
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 14:14:36 -0700 (PDT)
+        with ESMTP id S1728127AbgGEVR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 17:17:56 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB49C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 14:17:56 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id lx13so21825763ejb.4
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 14:17:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=urJQg81tHzPyHCgpuThzFwOt36hRFPMTvZf4VMoNUCQ=;
-        b=PK3WavhbIjCu5XCwj0KRbaN5YufP5V0mD3JOai7Pm9tYQzLedQrzdwtoLXp0BMq9wo
-         L4r7WJXdptIoV8kVxbIdfx07szBcceHoEq7BDekNZ3v5nr6WyvzhLvpg/EJfvo4K1Nw7
-         0VHXBr2FWz42ukMCm44PzYp3U1/4sA/uRovqGZrbFO4IDubAUEmjav5PXaYNF7cRN80X
-         v5miXmU9+I9OR8RPCx+2aaoHNKECvCYdQhmLIe3PPNWx1dwCNoc2P/6yq0Z3b2diJkYD
-         Aydl9jXet+hy18Jr69iTyhGk+GiTA2z/SzJYjoYyQS/eQ7BIG6Ch4hvCMkyBpMD4e7Ki
-         JgSw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+KlogzoLpfjPSjxyTIJl8g+wIr07EY8VR27s60YTCnQ=;
+        b=Qk79OiUs2ZqVEmEaNBIVqGe81soNOerwAN/6VZMOGCm6ti4blKtIHzrsLroSG4lZGS
+         74HJbSHc0QdVkY4ioUPFFjHsLl2gmENgXJ3VNRxE2K1NavHfEO6AcziwmrLKiXZCzctn
+         +Kxn2qZomW5NnuY57Knei738eX/dUMQQTiqwGGAN+z93XdinvMa25F+4cxiqNBqFga9+
+         OhFysSlEFMTNxnCScrfa8ZbzXarKi1wDE5io4fUkRLplxNh0M/sVU0DRDhplIEKrghya
+         8ANIZtkxLEaBRVzfi5o4g0FuYOm27caCkgYZ9hWIUAtBeFKMMGhh0eZapbayOi5pP8nX
+         899A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=urJQg81tHzPyHCgpuThzFwOt36hRFPMTvZf4VMoNUCQ=;
-        b=mvJOS9bhbn2JpFy4DFTCF6r/o+KQE5jvd6VFrU1G/ey3M6/TFqtRoe53OCNNYGUAFI
-         dnbmC0szwko00RNT3Emtbv6iPvVOMD5rmwBL7BoIulmvhMWAWCUTNfhaITG3Jh0ubtdZ
-         3RCq8PRXb/3uw/j3FeXeoOT3DTCjZKppmGW3oSuv1Mat4CQOKBxZP5mQpxXmiUsb0Jj2
-         l8NRO/yZJJofHhX3Zwx/G0+cENLwM1eompWBG7wXMl5IrZ6B7e9Xdq1lg/X1+VJcI0++
-         0+KErPuSeqXhMRygX8CCyAu6Zvpw6V+YHF3I+xshf3UmLhkWJHLOV5O7ybgly6+wGNjV
-         janQ==
-X-Gm-Message-State: AOAM530lxuaxxXizqnOXQh3I7bMHgbrjAQ2fBTZcxwrIfEpT796RouFk
-        dB3iUR6/PF3BZwT77yn6gA4=
-X-Google-Smtp-Source: ABdhPJwoNYpAvUGKkqJvFwTQ3MOZ5dV6f+224ANezBefO9vDB/LuLpfMq+CQ2oBlRp66l7aWO0oAHQ==
-X-Received: by 2002:a63:3587:: with SMTP id c129mr38854710pga.322.1593983675896;
-        Sun, 05 Jul 2020 14:14:35 -0700 (PDT)
-Received: from ?IPv6:2001:470:67:5b9:5dec:e971:4cde:a128? ([2001:470:67:5b9:5dec:e971:4cde:a128])
-        by smtp.gmail.com with ESMTPSA id a30sm18102254pfr.87.2020.07.05.14.14.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Jul 2020 14:14:35 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next 6/6] net: dsa: felix: use resolved link config
- in mac_link_up()
-To:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, claudiu.manoil@nxp.com,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+KlogzoLpfjPSjxyTIJl8g+wIr07EY8VR27s60YTCnQ=;
+        b=cTTFdPcAbZvISek7W0EP5vsvJYC2r3YeduBgQZRydbVYWzHKBKtpnXI8jS40HV5PbP
+         tVdNvrZEsTg5z3yvj2FrI8kLbekPRlzTfPT8lg7MIxpWj8vxaIdV0F/OuOZjz9LZEzHR
+         cte4vmLaT9VICnEBSxOykIApbDQ3c54DoNnkaII8KKR2K1FT9NcPNp2vpLznbk9mozri
+         EqX8KIr7Xdl0pbzk6P45z29ppP3jYQOHdheUi8By6ihwsdzLL96H5U423nvDrG9NAhBM
+         nLmELp1ke4No5oIgRLrY/+rnlIN0PWdaQzVT4f+aWO1OZlwghadFuMZcMnJE0OLJgwFt
+         sbGQ==
+X-Gm-Message-State: AOAM5324+3VBR/YbWdveR2rxVQ04H5Y9kdukSfjEHT2d+QBbFhzT9HtK
+        BmwZEUGlQqVMY5jbyarhK+Y=
+X-Google-Smtp-Source: ABdhPJxwzahCCJ1+pMePi6D9LT+PDVVqQGRL/c3gzhbLRsTtiADGAoOQlLsC7whpauUkZ2m0N27TVQ==
+X-Received: by 2002:a17:906:1c4b:: with SMTP id l11mr39811175ejg.307.1593983875026;
+        Sun, 05 Jul 2020 14:17:55 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id bq8sm11645453ejb.103.2020.07.05.14.17.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Jul 2020 14:17:54 -0700 (PDT)
+Date:   Mon, 6 Jul 2020 00:17:52 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, claudiu.manoil@nxp.com,
         alexandru.marginean@nxp.com, ioana.ciornei@nxp.com,
         linux@armlinux.org.uk
+Subject: Re: [PATCH v3 net-next 4/6] net: dsa: felix: set proper pause frame
+ timers based on link speed
+Message-ID: <20200705211752.f2jczckp3rgh5hwh@skbuf>
 References: <20200705161626.3797968-1-olteanv@gmail.com>
- <20200705161626.3797968-7-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <f0b70b3f-f62c-7e9b-5bae-f2a1dafcb4dc@gmail.com>
-Date:   Sun, 5 Jul 2020 14:14:32 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.10.0
+ <20200705161626.3797968-5-olteanv@gmail.com>
+ <3b84975f-5990-b4d7-7c4c-df42459172d2@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200705161626.3797968-7-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3b84975f-5990-b4d7-7c4c-df42459172d2@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Florian,
 
+On Sun, Jul 05, 2020 at 02:09:30PM -0700, Florian Fainelli wrote:
+> 
+> 
+> On 7/5/2020 9:16 AM, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > 
+> > state->speed holds a value of 10, 100, 1000 or 2500, but
+> > SYS_MAC_FC_CFG_FC_LINK_SPEED expects a value in the range 0, 1, 2 or 3.
+> > 
+> > So set the correct speed encoding into this register.
+> > 
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
+> Did you want to provide a Fixes: tag for this change?
+> -- 
+> Florian
 
-On 7/5/2020 9:16 AM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Phylink now requires that parameters established through
-> auto-negotiation be written into the MAC at the time of the
-> mac_link_up() callback. In the case of felix, that means taking the port
-> out of reset, setting the correct timers for PAUSE frames, and
-> enabling/disabling TX flow control.
-> 
-> This patch also splits the inband and noinband configuration of the
-> vsc9959 PCS (currently found in a function called "init") into 2
-> different functions, which have a nomenclature closer to phylink:
-> "config", for inband setup, and "link_up", for noinband (forced) setup.
-> 
-> This is necessary as a preparation step for giving up control of the PCS
-> to phylink, which will be done in further patch series.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+I am not really sure how fine-grained this really is. Some testing with
+dedicated testing equipment was done even with the old values, and I
+don't remember that it raised any eyebrows at the time. I would prefer
+to not use the "Fixes:" tag here, just to be on the safe side.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Thanks,
+-Vladimir
