@@ -2,110 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10F3D214F04
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 21:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7520E214F34
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 22:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728205AbgGETvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 15:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53876 "EHLO
+        id S1728198AbgGEURX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 16:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728192AbgGETvd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 15:51:33 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69290C061794;
-        Sun,  5 Jul 2020 12:51:33 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id j19so10539794pgm.11;
-        Sun, 05 Jul 2020 12:51:33 -0700 (PDT)
+        with ESMTP id S1728128AbgGEURW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 16:17:22 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11847C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 13:17:22 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id h28so32953208edz.0
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 13:17:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1DM6xVZWZJvMpDAjz6LICmJeK1B/WJSbpsotDSZl8bo=;
-        b=SPAw+UuKw/tc6ApBfi4rN3P+pttZynhKwUcVcFYKjqUkKctxLFn2VoCr3QEqTlxy5R
-         djmSMDePYrzvTBaL/umG7PRUYgOxbs4YQ/m6cuXJJaNtYQQR16mIctgtJWtODWsHmraR
-         0+BOXSMK0BcPHEjbXtycUdTyDmdqDnFR1DKlmc35OCN3YoRhkL3/Bq67iC1LLv6A/kHa
-         hJ/GXUO0R6ruDn2rnEBGEnq4AUJQ22b9Kpb9yS8j017V61tVXi1bDChx/dA5yU/1EZjX
-         M8VeCKdMKCOdiv8S7QzUWSUnx05TiL1CXExHk49vefmlzzmDMEwdA4rowrrPRElSyUZ1
-         lloA==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bli7823nzgPd4+zzTvhEWYIQlQOolCEdTUm/wr04xHI=;
+        b=R7tVqK4S06XyeSJoTsJjrNQfFwww4cEHoPm/CtrrugENTDy1vqCVO+sDyMGWTFks1W
+         5RawwMRBiS/INbOjWFg3B9vdk7NUoOnjuO+5/kBRz+Eb+sT5BIBi86j23t13MrcW941E
+         tjh8GC9eV5hPjYuXImtn6v1yDp1zlaW2xJOOU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1DM6xVZWZJvMpDAjz6LICmJeK1B/WJSbpsotDSZl8bo=;
-        b=GUqKUCy6bszKGsl65awK7MVEjK9u4YnNWowyCnhsCaAKXOdbv70VhffXiKLLH0NY9o
-         1d8gZDW3lUIUlTpmeSIpClT/7hqKNUnya19fCtm9JPKvOrOY8tyqXJvt24zlkVuvyb0y
-         dmDUJ4c92tgAwjqB2E6K2JTWvGAskS/uF5o8djnzMI+p9LJ4dIyaKemcL3ZJbvqUYYJ+
-         VpuIjH2oCpqOjbbOZgtMzYJJ46ZcLhZ4+n5BGpc0kHSjfaslXXFFiKN6T29T5SwK4Kvm
-         JgW9ZNFoOH9WxP4NILiy1UjOh5PiPr1v72y4WXq8YZqV/zQQeWRF1VnfJHG3Hd4JP/+w
-         YLFQ==
-X-Gm-Message-State: AOAM533ZhvgVddogdm04NAWznHjU0t1nfAUjTjpUDvvjx1yRSNnw3ajg
-        VsAo6+jEDLelpVkZrNdB7PM=
-X-Google-Smtp-Source: ABdhPJywhEIbbZJi+sfs9qoPVmo6wP+zmVvWXONJnb9edBcUmKAyA7A9x6PsWAfDc8TF7Hc/tKx3Vg==
-X-Received: by 2002:a65:5c08:: with SMTP id u8mr7911082pgr.184.1593978693025;
-        Sun, 05 Jul 2020 12:51:33 -0700 (PDT)
-Received: from anarsoul-thinkpad.lan (216-71-213-236.dyn.novuscom.net. [216.71.213.236])
-        by smtp.gmail.com with ESMTPSA id g9sm16072879pfm.151.2020.07.05.12.51.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2020 12:51:32 -0700 (PDT)
-From:   Vasily Khoruzhick <anarsoul@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        Ondrej Jirman <megous@megous.com>
-Cc:     Vasily Khoruzhick <anarsoul@gmail.com>
-Subject: [PATCH 3/3] arm64: allwinner: a64: enable Bluetooth On Pinebook
-Date:   Sun,  5 Jul 2020 12:51:10 -0700
-Message-Id: <20200705195110.405139-4-anarsoul@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200705195110.405139-1-anarsoul@gmail.com>
-References: <20200705195110.405139-1-anarsoul@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bli7823nzgPd4+zzTvhEWYIQlQOolCEdTUm/wr04xHI=;
+        b=Zg3BG85SeEGz6Chvole+eC/dbhKmqAoqHTujasNe9y1+Ew96p9hTH6p0e3GWTxY56g
+         8s33jm7WKLHGSn/1nUzyXw+nCZfreaIw8ZA01rEaJH4cKRKMlDZ6hb3tQpTEVkpVaGfP
+         uvuzsf2ZPCDji6I9zI7j/lWOiWN0Kuwf+4sV7/sNL2rGCMdVIWpkCdaMF9zq16vN2rp+
+         8pHdCqUGvxalPfGGivToVQY4M/8wMCEnGwHvQedrIvLVCCfBmNGpJHiS1YAql3pYUrfX
+         Wz/jgSaVLeZAOR/LtW/uaWxDbLelpR1sSDeQbst5MzOMwlequNLwdggzwfoZH1QZo5f1
+         Tw4g==
+X-Gm-Message-State: AOAM5305LKZdV7uTsFBa8QDBao6YIzyFwmhGh2ck3ztFWkHat15XSXCc
+        WgKFMWGsqD268hLUIA7GNygBjjCz6Us=
+X-Google-Smtp-Source: ABdhPJxX/QVL0yJdT1+yfNqv7ZI1sOKQwYfP9yOQUzhvPOu+ml/gdluRhub0i8cSysW8y4S48MCJZA==
+X-Received: by 2002:aa7:c50e:: with SMTP id o14mr52530749edq.168.1593980240553;
+        Sun, 05 Jul 2020 13:17:20 -0700 (PDT)
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
+        by smtp.gmail.com with ESMTPSA id sd15sm15197609ejb.66.2020.07.05.13.17.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Jul 2020 13:17:20 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id a6so38683168wrm.4
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 13:17:20 -0700 (PDT)
+X-Received: by 2002:a2e:9b42:: with SMTP id o2mr24759339ljj.102.1593979869955;
+ Sun, 05 Jul 2020 13:11:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200702232638.2946421-1-keescook@chromium.org>
+ <20200702232638.2946421-5-keescook@chromium.org> <CAHk-=wiZi-v8Xgu_B3wV0B4RQYngKyPeONdiXNgrHJFU5jbe1w@mail.gmail.com>
+ <202007030848.265EA58@keescook>
+In-Reply-To: <202007030848.265EA58@keescook>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 5 Jul 2020 13:10:54 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgEkTsNRvEM9W_JiVN6t70SnPuP=-1=LyhLS_BJ25Q4sQ@mail.gmail.com>
+Message-ID: <CAHk-=wgEkTsNRvEM9W_JiVN6t70SnPuP=-1=LyhLS_BJ25Q4sQ@mail.gmail.com>
+Subject: Re: [PATCH 4/5] kprobes: Do not expose probe addresses to non-CAP_SYSLOG
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Dominik Czarnota <dominik.czarnota@trailofbits.com>,
+        stable <stable@vger.kernel.org>, Jessica Yu <jeyu@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Matteo Croce <mcroce@redhat.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pinebook has an RTL8723CS WiFi + BT chip, BT is connected to UART1
-and uses PL5 as device wake GPIO, PL6 as host wake GPIO the I2C
-controlling signals are connected to R_I2C bus.
+On Fri, Jul 3, 2020 at 8:50 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> With 67 kthreads on a booted system, this patch does not immediately
+> blow up...
 
-Enable it in the device tree.
+Did you try making read/write inc/dec that thing too? Or does that
+just blow up with tons of warnings?
 
-Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
----
- .../arm64/boot/dts/allwinner/sun50i-a64-pinebook.dts | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinebook.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinebook.dts
-index 64b1c54f87c0..e63ff271be4e 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinebook.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinebook.dts
-@@ -408,6 +408,18 @@ &uart0 {
- 	status = "okay";
- };
- 
-+&uart1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
-+	status = "okay";
-+
-+	bluetooth {
-+		compatible = "realtek,rtl8723cs-bt";
-+		device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_LOW>; /* PL5 */
-+		host-wake-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
-+	};
-+};
-+
- &usb_otg {
- 	dr_mode = "host";
- };
--- 
-2.27.0
-
+                 Linus
