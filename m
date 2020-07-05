@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2595D214D53
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 17:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B013214D59
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 17:10:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727815AbgGEPJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 11:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
+        id S1727854AbgGEPKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 11:10:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726861AbgGEPJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 11:09:56 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF0CC08C5DE
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 08:09:56 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id a1so39748858ejg.12
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 08:09:56 -0700 (PDT)
+        with ESMTP id S1727074AbgGEPKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 11:10:12 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D35C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 08:10:12 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id o18so35331206eje.7
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 08:10:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=+a+NkZk/z82sUmwa8lAR9nOo6EtZay2vAebfwkhsk6k=;
-        b=UmdjKJ50jJWLthi/DT6Fs4iFmWFWyVC7Y7eZrOOgck5bWy1qD1rM0CMXNWKAJDlHVL
-         MAa2rwS/APF5ZIIu7ChRJtgEZ53i8mPF0SjaJsiJKKGawhM60E/UxhFkn1iaFCLKkDvX
-         ABjq8jVd+aSn/1mm8gcR3scWaSwN1qN6a3STwAf24/t6ZOCeOFxo9U4AkYeDjAYvwVle
-         q6JqxJ/OONYa7eHq//8Oh7lZaQDQjIrW4vcI+eC9CiyArhAChgft2Fyel1fL2i4bo0FM
-         6wrDxMJNUxIz0louWOYU4KpBGZlmriR+9XhHFy+lzf7hU5ECANHSv5nn2SFzJDJ0i7zK
-         Dr2w==
+        bh=eesGq1spu54ggqtQAUupSk7Lp+Mlv7/qhf/cclrycog=;
+        b=buieqKMIOy4fZ525LP8UwP8y3Z9QYIUD4ArYWpl7jDMWv49k1keyEzs1IHVvrKsEYR
+         MzZpE8EX1wqsP6PbbPCr+sU4GzyycbuQyUtydPI/MmBPUIrVm6JjEFzG9ly4PWIi2mN7
+         WmG8Hggbw6tRnUEcudBmseJeJ51lIx9t+kkVuF6Pzyt7eo6BlT/9an5LI8hAiEo6tkap
+         q0Y6UULT9lpVeLIiuQQyu0N2gqKoEK3laR+r+53hmoCWqrpRKcw1BUOLInaINBH4vjvC
+         dRsYhG3QJROH1n2/K5io3pRIsRICSobrWVvQwLQojZGKFrrO/Sb6uvvGY2JQT0YCV/u4
+         +wIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=+a+NkZk/z82sUmwa8lAR9nOo6EtZay2vAebfwkhsk6k=;
-        b=raYCpPdJ/cc2HL7TiEP6qWrSNFbd6cbmXQgbItwfZyc1ool+yV/UH1kwAvY+CeHDd3
-         a0ZaMx2YGuITTyOzzJS3KKSKjntajDMETQIoBt9gf56aWzCkLneXe4dMQlea/JTHE0eZ
-         PSRvEF1zdTf2mvFJgzikvYQSgDPByMvSz3OX+HVHjkPpzdLZ9raYn1Y0dhTwJZjXblvE
-         RYbo6ubic+4HKjrjaQHP6cvbW71uUNB58kVr8wC/UXQ1wngFUGDGaW8nsfEL9P4J+c22
-         u3PDYNEKfZ9TnVclkFU2lq4FdR/uCtzx+v6AqcLuhLPVzh761PRMeYXFUFTM+0hl3xoh
-         /w5g==
-X-Gm-Message-State: AOAM533GcSMV7LmGVfbfyf8uxMsf/Xo5+liOlwENwNjMPXENyMDADbDO
-        N/4ScLLnMsE1AmsJveXP2eaKNI43Fdg70Re4mrj1
-X-Google-Smtp-Source: ABdhPJzoaJJDK0x6hHKY5IxkG2I5cD4JeTPSKb1HFyRKKxTq3fNryDZXuEZTaO6XoOjUl+x6NLfxACNsUd1JYOUwikw=
-X-Received: by 2002:a17:906:7d86:: with SMTP id v6mr38973801ejo.542.1593961794741;
- Sun, 05 Jul 2020 08:09:54 -0700 (PDT)
+        bh=eesGq1spu54ggqtQAUupSk7Lp+Mlv7/qhf/cclrycog=;
+        b=YoT3h1je7wVC+iWKedjSrDihSkVXUQZUUyJfhC015qwDNYN9ow+qr1TopkckoxSpVH
+         9NHGrf0FXKA1eks6OWFatf2t8E2trihhdqCcCgHLUoLAu55xZGpP/j4KJ6orxaVekZkh
+         t8ZWeXYwiFNPUV3W/XAWi1mu+bJDHY8PEk6dDbu2wgVp68LYOl4Sy5A9DOzKHySuBC2d
+         M+3cIdE6o8RU7NadwXofiqY1rKbyzyvYzRkmjlt71Fj3NA7a1Qr0dxwShlVgUEiqCM+G
+         cBzklWVV2JXIl3Gz1pCahNWyhL+mdHM3tPENAb3rA7Fx8Gk422zTvHKxSCy1aE8cYO3+
+         3RIA==
+X-Gm-Message-State: AOAM530eCXqr+qidNRZxUbnBtTiQCNx/KEo4h3ONLMJG6zPfprkKUzG4
+        eiifjBJs3hQ+qSARShiytSoP5mcyw+15iFCDq4TU
+X-Google-Smtp-Source: ABdhPJy1E1Sw8Q5iWjt1KirrkFfpdSSt03aZwQ3uEENdmgYg7qspnLgZBziKDdWK7V2u1s7OqdWElZwK8p9Dttmc30Q=
+X-Received: by 2002:a17:906:4757:: with SMTP id j23mr13638397ejs.431.1593961810932;
+ Sun, 05 Jul 2020 08:10:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1593198710.git.rgb@redhat.com> <6abeb26e64489fc29b00c86b60b501c8b7316424.1593198710.git.rgb@redhat.com>
-In-Reply-To: <6abeb26e64489fc29b00c86b60b501c8b7316424.1593198710.git.rgb@redhat.com>
+References: <cover.1593198710.git.rgb@redhat.com> <e5a1ab6955c565743372b392a93f7d1ac98478a2.1593198710.git.rgb@redhat.com>
+In-Reply-To: <e5a1ab6955c565743372b392a93f7d1ac98478a2.1593198710.git.rgb@redhat.com>
 From:   Paul Moore <paul@paul-moore.com>
-Date:   Sun, 5 Jul 2020 11:09:43 -0400
-Message-ID: <CAHC9VhTx=4879F1MSXg4=Xd1i5rhEtyam6CakQhy=_ZjGtTaMA@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V9 01/13] audit: collect audit task parameters
+Date:   Sun, 5 Jul 2020 11:09:59 -0400
+Message-ID: <CAHC9VhSgcOS79spSuFDMukw2TnLZfBh2p4BWGfoV_CGUS8b77w@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V9 02/13] audit: add container id
 To:     Richard Guy Briggs <rgb@redhat.com>
 Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
         Linux-Audit Mailing List <linux-audit@redhat.com>,
@@ -67,242 +67,318 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 27, 2020 at 9:21 AM Richard Guy Briggs <rgb@redhat.com> wrote:
+On Sat, Jun 27, 2020 at 9:22 AM Richard Guy Briggs <rgb@redhat.com> wrote:
 >
-> The audit-related parameters in struct task_struct should ideally be
-> collected together and accessed through a standard audit API.
+> Implement the proc fs write to set the audit container identifier of a
+> process, emitting an AUDIT_CONTAINER_OP record to document the event.
 >
-> Collect the existing loginuid, sessionid and audit_context together in a
-> new struct audit_task_info called "audit" in struct task_struct.
+> This is a write from the container orchestrator task to a proc entry of
+> the form /proc/PID/audit_containerid where PID is the process ID of the
+> newly created task that is to become the first task in a container, or
+> an additional task added to a container.
 >
-> Use kmem_cache to manage this pool of memory.
-> Un-inline audit_free() to be able to always recover that memory.
+> The write expects up to a u64 value (unset: 18446744073709551615).
 >
-> Please see the upstream github issue
-> https://github.com/linux-audit/audit-kernel/issues/81
+> The writer must have capability CAP_AUDIT_CONTROL.
+>
+> This will produce a record such as this:
+>   type=CONTAINER_OP msg=audit(2018-06-06 12:39:29.636:26949) : op=set opid=2209 contid=123456 old-contid=18446744073709551615
+>
+> The "op" field indicates an initial set.  The "opid" field is the
+> object's PID, the process being "contained".  New and old audit
+> container identifier values are given in the "contid" fields.
+>
+> It is not permitted to unset the audit container identifier.
+> A child inherits its parent's audit container identifier.
+>
+> Store the audit container identifier in a refcounted kernel object that
+> is added to the master list of audit container identifiers.  This will
+> allow multiple container orchestrators/engines to work on the same
+> machine without danger of inadvertantly re-using an existing identifier.
+> It will also allow an orchestrator to inject a process into an existing
+> container by checking if the original container owner is the one
+> injecting the task.  A hash table list is used to optimize searches.
+>
+> Please see the github audit kernel issue for the main feature:
+>   https://github.com/linux-audit/audit-kernel/issues/90
+> Please see the github audit userspace issue for supporting additions:
+>   https://github.com/linux-audit/audit-userspace/issues/51
+> Please see the github audit testsuiite issue for the test case:
+>   https://github.com/linux-audit/audit-testsuite/issues/64
+> Please see the github audit wiki for the feature overview:
+>   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
 >
 > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> Acked-by: Serge Hallyn <serge@hallyn.com>
+> Acked-by: Steve Grubb <sgrubb@redhat.com>
 > Acked-by: Neil Horman <nhorman@tuxdriver.com>
 > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
 > ---
->  include/linux/audit.h | 49 +++++++++++++++++++++++------------
->  include/linux/sched.h |  7 +----
->  init/init_task.c      |  3 +--
->  init/main.c           |  2 ++
->  kernel/audit.c        | 71 +++++++++++++++++++++++++++++++++++++++++++++++++--
->  kernel/audit.h        |  5 ++++
->  kernel/auditsc.c      | 26 ++++++++++---------
->  kernel/fork.c         |  1 -
->  8 files changed, 124 insertions(+), 40 deletions(-)
->
-> diff --git a/include/linux/audit.h b/include/linux/audit.h
-> index 3fcd9ee49734..c2150415f9df 100644
-> --- a/include/linux/audit.h
-> +++ b/include/linux/audit.h
-> @@ -100,6 +100,16 @@ enum audit_nfcfgop {
->         AUDIT_XT_OP_UNREGISTER,
->  };
->
-> +struct audit_task_info {
-> +       kuid_t                  loginuid;
-> +       unsigned int            sessionid;
-> +#ifdef CONFIG_AUDITSYSCALL
-> +       struct audit_context    *ctx;
-> +#endif
-> +};
-> +
-> +extern struct audit_task_info init_struct_audit;
-> +
->  extern int is_audit_feature_set(int which);
->
->  extern int __init audit_register_class(int class, unsigned *list);
+>  fs/proc/base.c             |  36 +++++++++++
+>  include/linux/audit.h      |  33 ++++++++++
+>  include/uapi/linux/audit.h |   2 +
+>  kernel/audit.c             | 148 +++++++++++++++++++++++++++++++++++++++++++++
+>  kernel/audit.h             |   8 +++
+>  5 files changed, 227 insertions(+)
 
 ...
 
-> diff --git a/include/linux/sched.h b/include/linux/sched.h
-> index b62e6aaf28f0..2213ac670386 100644
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -34,7 +34,6 @@
->  #include <linux/kcsan.h>
+> diff --git a/include/linux/audit.h b/include/linux/audit.h
+> index c2150415f9df..2800d4f1a2a8 100644
+> --- a/include/linux/audit.h
+> +++ b/include/linux/audit.h
+> @@ -692,6 +715,16 @@ static inline bool audit_loginuid_set(struct task_struct *tsk)
+>         return uid_valid(audit_get_loginuid(tsk));
+>  }
 >
->  /* task_struct member predeclarations (sorted alphabetically): */
-> -struct audit_context;
->  struct backing_dev_info;
->  struct bio_list;
->  struct blk_plug;
-> @@ -946,11 +945,7 @@ struct task_struct {
->         struct callback_head            *task_works;
->
->  #ifdef CONFIG_AUDIT
-> -#ifdef CONFIG_AUDITSYSCALL
-> -       struct audit_context            *audit_context;
-> -#endif
-> -       kuid_t                          loginuid;
-> -       unsigned int                    sessionid;
-> +       struct audit_task_info          *audit;
->  #endif
->         struct seccomp                  seccomp;
+> +static inline bool audit_contid_valid(u64 contid)
+> +{
+> +       return contid != AUDIT_CID_UNSET;
+> +}
+> +
+> +static inline bool audit_contid_set(struct task_struct *tsk)
+> +{
+> +       return audit_contid_valid(audit_get_contid(tsk));
+> +}
 
-In the early days of this patchset we talked a lot about how to handle
-the task_struct and the changes that would be necessary, ultimately
-deciding that encapsulating all of the audit fields into an
-audit_task_info struct.  However, what is puzzling me a bit at this
-moment is why we are only including audit_task_info in task_info by
-reference *and* making it a build time conditional (via CONFIG_AUDIT).
+This is quasi-nitpicky, but it seems like audit_contid_valid() and
+audit_contid_set() should be moved to kernel/audit.h if possible
+(possibly even kernel/audit.c).  Maybe I'll see something later in the
+patchset, but right now I'm struggling to think of why anyone outside
+of audit would need to call these functions.
 
-If audit is enabled at build time it would seem that we are always
-going to allocate an audit_task_info struct, so I have to wonder why
-we don't simply embed it inside the task_info struct (similar to the
-seccomp struct in the snippet above?  Of course the audit_context
-struct needs to remain as is, I'm talking only about the
-task_info/audit_task_info struct.
-
-Richard, I'm sure you can answer this off the top of your head, but
-I'd have to go digging through the archives to pull out the relevant
-discussions so I figured I would just ask you for a reminder ... ?  I
-imagine it's also possible things have changed a bit since those early
-discussions and the solution we arrived at then no longer makes as
-much sense as it did before.
-
-> diff --git a/init/init_task.c b/init/init_task.c
-> index 15089d15010a..92d34c4b7702 100644
-> --- a/init/init_task.c
-> +++ b/init/init_task.c
-> @@ -130,8 +130,7 @@ struct task_struct init_task
->         .thread_group   = LIST_HEAD_INIT(init_task.thread_group),
->         .thread_node    = LIST_HEAD_INIT(init_signals.thread_head),
->  #ifdef CONFIG_AUDIT
-> -       .loginuid       = INVALID_UID,
-> -       .sessionid      = AUDIT_SID_UNSET,
-> +       .audit          = &init_struct_audit,
->  #endif
->  #ifdef CONFIG_PERF_EVENTS
->         .perf_event_mutex = __MUTEX_INITIALIZER(init_task.perf_event_mutex),
-> diff --git a/init/main.c b/init/main.c
-> index 0ead83e86b5a..349470ad7458 100644
-> --- a/init/main.c
-> +++ b/init/main.c
-> @@ -96,6 +96,7 @@
->  #include <linux/jump_label.h>
->  #include <linux/mem_encrypt.h>
->  #include <linux/kcsan.h>
-> +#include <linux/audit.h>
->
->  #include <asm/io.h>
->  #include <asm/bugs.h>
-> @@ -1028,6 +1029,7 @@ asmlinkage __visible void __init start_kernel(void)
->         nsfs_init();
->         cpuset_init();
->         cgroup_init();
-> +       audit_task_init();
->         taskstats_init_early();
->         delayacct_init();
->
 > diff --git a/kernel/audit.c b/kernel/audit.c
-> index 8c201f414226..5d8147a29291 100644
+> index 5d8147a29291..6d387793f702 100644
 > --- a/kernel/audit.c
 > +++ b/kernel/audit.c
-> @@ -203,6 +203,73 @@ struct audit_reply {
->         struct sk_buff *skb;
->  };
+> @@ -138,6 +138,13 @@ struct auditd_connection {
 >
-> +static struct kmem_cache *audit_task_cache;
-> +
-> +void __init audit_task_init(void)
-> +{
-> +       audit_task_cache = kmem_cache_create("audit_task",
-> +                                            sizeof(struct audit_task_info),
-> +                                            0, SLAB_PANIC, NULL);
-> +}
-> +
-> +/**
-> + * audit_alloc - allocate an audit info block for a task
-> + * @tsk: task
-> + *
-> + * Call audit_alloc_syscall to filter on the task information and
-> + * allocate a per-task audit context if necessary.  This is called from
-> + * copy_process, so no lock is needed.
+>  /* Hash for inode-based rules */
+>  struct list_head audit_inode_hash[AUDIT_INODE_BUCKETS];
+> +/* Hash for contid object lists */
+> +struct list_head audit_contid_hash[AUDIT_CONTID_BUCKETS];
+> +/* Lock all additions and deletions to the contid hash lists, assignment
+> + * of container objects to tasks.  There should be no need for
+> + * interaction with tasklist_lock
 > + */
-> +int audit_alloc(struct task_struct *tsk)
-> +{
-> +       int ret = 0;
-> +       struct audit_task_info *info;
-> +
-> +       info = kmem_cache_alloc(audit_task_cache, GFP_KERNEL);
-> +       if (!info) {
-> +               ret = -ENOMEM;
-> +               goto out;
-> +       }
-> +       info->loginuid = audit_get_loginuid(current);
-> +       info->sessionid = audit_get_sessionid(current);
-> +       tsk->audit = info;
-> +
-> +       ret = audit_alloc_syscall(tsk);
-> +       if (ret) {
-> +               tsk->audit = NULL;
-> +               kmem_cache_free(audit_task_cache, info);
-> +       }
-> +out:
-> +       return ret;
-> +}
-
-This is a big nitpick, and I'm only mentioning this in the case you
-need to respin this patchset: the "out" label is unnecessary in the
-function above.  Simply return the error code, there is no need to
-jump to "out" only to immediately return the error code there and
-nothing more.
-
-> +struct audit_task_info init_struct_audit = {
-> +       .loginuid = INVALID_UID,
-> +       .sessionid = AUDIT_SID_UNSET,
-> +#ifdef CONFIG_AUDITSYSCALL
-> +       .ctx = NULL,
-> +#endif
-> +};
-> +
-> +/**
-> + * audit_free - free per-task audit info
-> + * @tsk: task whose audit info block to free
-> + *
-> + * Called from copy_process and do_exit
-> + */
-> +void audit_free(struct task_struct *tsk)
-> +{
-> +       struct audit_task_info *info = tsk->audit;
-> +
-> +       audit_free_syscall(tsk);
-> +       /* Freeing the audit_task_info struct must be performed after
-> +        * audit_log_exit() due to need for loginuid and sessionid.
-> +        */
-> +       info = tsk->audit;
-> +       tsk->audit = NULL;
-> +       kmem_cache_free(audit_task_cache, info);
-
-Another nitpick, and this one may even become a moot point given the
-question posed above.  However, is there any reason we couldn't get
-rid of "info" and simplify this a bit?
-
-  audit_free_syscall(tsk);
-  kmem_cache_free(audit_task_cache, tsk->audit);
-  tsk->audit = NULL;
-
-> diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-> index 468a23390457..f00c1da587ea 100644
-> --- a/kernel/auditsc.c
-> +++ b/kernel/auditsc.c
-> @@ -1612,7 +1615,6 @@ void __audit_free(struct task_struct *tsk)
->                 if (context->current_state == AUDIT_RECORD_CONTEXT)
->                         audit_log_exit();
->         }
-> -
->         audit_set_context(tsk, NULL);
->         audit_free_context(context);
+> +static DEFINE_SPINLOCK(audit_contobj_list_lock);
+>
+>  static struct kmem_cache *audit_buffer_cache;
+>
+> @@ -212,6 +219,33 @@ void __init audit_task_init(void)
+>                                              0, SLAB_PANIC, NULL);
 >  }
+>
+> +/* rcu_read_lock must be held by caller unless new */
+> +static struct audit_contobj *_audit_contobj_hold(struct audit_contobj *cont)
+> +{
+> +       if (cont)
+> +               refcount_inc(&cont->refcount);
+> +       return cont;
+> +}
+> +
+> +static struct audit_contobj *_audit_contobj_get(struct task_struct *tsk)
+> +{
+> +       if (!tsk->audit)
+> +               return NULL;
+> +       return _audit_contobj_hold(tsk->audit->cont);
+> +}
+> +
+> +/* rcu_read_lock must be held by caller */
+> +static void _audit_contobj_put(struct audit_contobj *cont)
+> +{
+> +       if (!cont)
+> +               return;
+> +       if (refcount_dec_and_test(&cont->refcount)) {
+> +               put_task_struct(cont->owner);
+> +               list_del_rcu(&cont->list);
 
-This nitpick is barely worth the time it is taking me to write this,
-but the whitespace change above isn't strictly necessary.
+You should check your locking; I'm used to seeing exclusive locks
+(e.g. the spinlock) around list adds/removes, it just reads/traversals
+that can be done with just the RCU lock held.
 
+> +               kfree_rcu(cont, rcu);
+> +       }
+> +}
+
+Another nitpick, but it might be nice to have similar arguments to the
+_get() and _put() functions, e.g. struct audit_contobj, but that is
+some serious bikeshedding (basically rename _hold() to _get() and
+rename _hold to audit_task_contid_hold() or similar).
+
+>  /**
+>   * audit_alloc - allocate an audit info block for a task
+>   * @tsk: task
+> @@ -232,6 +266,9 @@ int audit_alloc(struct task_struct *tsk)
+>         }
+>         info->loginuid = audit_get_loginuid(current);
+>         info->sessionid = audit_get_sessionid(current);
+> +       rcu_read_lock();
+> +       info->cont = _audit_contobj_get(current);
+> +       rcu_read_unlock();
+
+The RCU locks aren't strictly necessary here, are they?  In fact I
+suppose we could probably just replace the _get() call with a
+refcount_set(1) just as we do in audit_set_contid(), yes?
+
+>         tsk->audit = info;
+>
+>         ret = audit_alloc_syscall(tsk);
+> @@ -246,6 +283,7 @@ int audit_alloc(struct task_struct *tsk)
+>  struct audit_task_info init_struct_audit = {
+>         .loginuid = INVALID_UID,
+>         .sessionid = AUDIT_SID_UNSET,
+> +       .cont = NULL,
+>  #ifdef CONFIG_AUDITSYSCALL
+>         .ctx = NULL,
+>  #endif
+> @@ -262,6 +300,9 @@ void audit_free(struct task_struct *tsk)
+>         struct audit_task_info *info = tsk->audit;
+>
+>         audit_free_syscall(tsk);
+> +       rcu_read_lock();
+> +       _audit_contobj_put(tsk->audit->cont);
+> +       rcu_read_unlock();
+>         /* Freeing the audit_task_info struct must be performed after
+>          * audit_log_exit() due to need for loginuid and sessionid.
+>          */
+> @@ -1709,6 +1750,9 @@ static int __init audit_init(void)
+>         for (i = 0; i < AUDIT_INODE_BUCKETS; i++)
+>                 INIT_LIST_HEAD(&audit_inode_hash[i]);
+>
+> +       for (i = 0; i < AUDIT_CONTID_BUCKETS; i++)
+> +               INIT_LIST_HEAD(&audit_contid_hash[i]);
+> +
+>         mutex_init(&audit_cmd_mutex.lock);
+>         audit_cmd_mutex.owner = NULL;
+>
+> @@ -2410,6 +2454,110 @@ int audit_signal_info(int sig, struct task_struct *t)
+>         return audit_signal_info_syscall(t);
+>  }
+>
+> +/*
+> + * audit_set_contid - set current task's audit contid
+> + * @task: target task
+> + * @contid: contid value
+> + *
+> + * Returns 0 on success, -EPERM on permission failure.
+> + *
+> + * If the original container owner goes away, no task injection is
+> + * possible to an existing container.
+> + *
+> + * Called (set) from fs/proc/base.c::proc_contid_write().
+> + */
+> +int audit_set_contid(struct task_struct *task, u64 contid)
+> +{
+> +       int rc = 0;
+> +       struct audit_buffer *ab;
+> +       struct audit_contobj *oldcont = NULL;
+> +
+> +       task_lock(task);
+> +       /* Can't set if audit disabled */
+> +       if (!task->audit) {
+> +               task_unlock(task);
+> +               return -ENOPROTOOPT;
+> +       }
+
+See my question/comment in patch 1/13; this check may not be needed or
+it may need to be changed to something other than "!task->audit".
+
+> +       read_lock(&tasklist_lock);
+> +       /* Don't allow the contid to be unset */
+> +       if (!audit_contid_valid(contid)) {
+> +               rc = -EINVAL;
+> +               goto unlock;
+> +       }
+> +       /* if we don't have caps, reject */
+> +       if (!capable(CAP_AUDIT_CONTROL)) {
+> +               rc = -EPERM;
+> +               goto unlock;
+> +       }
+> +       /* if task has children or is not single-threaded, deny */
+> +       if (!list_empty(&task->children) ||
+> +           !(thread_group_leader(task) && thread_group_empty(task))) {
+> +               rc = -EBUSY;
+> +               goto unlock;
+> +       }
+> +       /* if contid is already set, deny */
+> +       if (audit_contid_set(task))
+> +               rc = -EEXIST;
+> +unlock:
+
+Can we move the "unlock" target to the end of the function where it
+just handles the unlocking and returns an error, including the
+AUDIT_CONTAINER_OP record if necessary?  From what I can see we only
+jump to "unlock" in case of error where we are not going to set the
+audit container ID, yet the "unlock" target is placed in a misleading
+location in the middle of the function.  It may be that everything
+works correctly, but I would argue this is a bad practice that
+increases the likelihood of buggy behavior in future code changes.
+
+If you can't find way to arrange the code nicely, just duplicate the
+"tasklist_lock" unlock operation in the error handlers before jumping
+down to the end of the function.  It isn't perfect, but I believe it
+will be a lot less fragile than the current approach.
+
+
+> +       read_unlock(&tasklist_lock);
+> +       rcu_read_lock();
+> +       oldcont = _audit_contobj_get(task);
+> +       if (!rc) {
+> +               struct audit_contobj *cont = NULL, *newcont = NULL;
+> +               int h = audit_hash_contid(contid);
+> +
+> +               spin_lock(&audit_contobj_list_lock);
+> +               list_for_each_entry_rcu(cont, &audit_contid_hash[h], list)
+> +                       if (cont->id == contid) {
+> +                               /* task injection to existing container */
+> +                               if (current == cont->owner) {
+> +                                       _audit_contobj_hold(cont);
+> +                                       newcont = cont;
+> +                               } else {
+> +                                       rc = -ENOTUNIQ;
+> +                                       spin_unlock(&audit_contobj_list_lock);
+> +                                       goto conterror;
+> +                               }
+> +                               break;
+> +                       }
+> +               if (!newcont) {
+> +                       newcont = kmalloc(sizeof(*newcont), GFP_ATOMIC);
+> +                       if (newcont) {
+> +                               INIT_LIST_HEAD(&newcont->list);
+> +                               newcont->id = contid;
+> +                               newcont->owner = get_task_struct(current);
+> +                               refcount_set(&newcont->refcount, 1);
+> +                               list_add_rcu(&newcont->list,
+> +                                            &audit_contid_hash[h]);
+> +                       } else {
+> +                               rc = -ENOMEM;
+> +                               spin_unlock(&audit_contobj_list_lock);
+> +                               goto conterror;
+> +                       }
+> +               }
+> +               spin_unlock(&audit_contobj_list_lock);
+> +               task->audit->cont = newcont;
+> +               _audit_contobj_put(oldcont);
+> +       }
+> +conterror:
+> +       task_unlock(task);
+> +
+> +       if (!audit_enabled)
+> +               return rc;
+> +
+> +       ab = audit_log_start(audit_context(), GFP_KERNEL, AUDIT_CONTAINER_OP);
+> +       if (!ab)
+> +               return rc;
+> +
+> +       audit_log_format(ab,
+> +                        "op=set opid=%d contid=%llu old-contid=%llu",
+> +                        task_tgid_nr(task), contid, oldcont ? oldcont->id : -1);
+> +       _audit_contobj_put(oldcont);
+> +       rcu_read_unlock();
+> +       audit_log_end(ab);
+> +       return rc;
+> +}
 
 --
 paul moore
