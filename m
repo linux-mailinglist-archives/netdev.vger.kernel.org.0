@@ -2,133 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A74D214BA4
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 11:52:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 289D3214BA8
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 11:54:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbgGEJwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 05:52:14 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:36543 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726661AbgGEJwO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 05:52:14 -0400
-Received: by mail-il1-f197.google.com with SMTP id l11so25582398ilc.3
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 02:52:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=0claRtCrm0axoqAPyUKkATGZT88GntWEWTF7k/OLN+4=;
-        b=HWAogsI51xTIAovP/80D5+DsDgJH+6yS0dfe4b/hKXP9mqND2biaxJwN/zufWXY6MQ
-         tsJJN2osJck5ZrQSVRI4FNs3SA4N8Z5czwyuV77MBg8H/ES9y8k/Lvy8QFVLAOxPGdV9
-         ZXqrTzP0nwJtpXNECKi7ZZ6j903e5mfD53Yg9cMc71JnRLeoSUyECfmy4McPORA091G/
-         CPAEfJwekuPYhxI12pg/zIs8bmdYA8VtKX8r8x6DukYFNRqi5Q9uXJa09mgGCgixAIDI
-         ZvzAnEiQ8gKRJavTsIvu9N/qIZSMA8PDHilBpTJl4TLFrhHLA+CYnuNbCGNKGp0P2OdO
-         ATVQ==
-X-Gm-Message-State: AOAM531c0c2QDpWuStGFMzFgX90N+GKlgHt+sbpfQlXhw5DiN5sZBG/8
-        J7pTAILmHXrrf5iN0hzZPt+WY9penBuH7HQZLQ1qmxaN92sp
-X-Google-Smtp-Source: ABdhPJzoWjT0p/GcTKtpZy98ijeOKxUtLaRgFZ8serTUevZpcUdDlmY5v35hteXSCBooqx1soYvLhbmNIz+0PzgJUzGmMna9zQWL
+        id S1726809AbgGEJyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 05:54:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38916 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726558AbgGEJyJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Jul 2020 05:54:09 -0400
+Received: from localhost.localdomain (unknown [151.48.133.17])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9A89B20772;
+        Sun,  5 Jul 2020 09:54:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593942848;
+        bh=81WpLXidD6ONomtmKLZiV+w5eflnNn+ad/wyc69Ml3I=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hJGYIVyKWRgIvH/UIwtrJ6nVo83YjX1FdFeylSLQNF230Erh8Coe2zQUOUOJC6NWl
+         3FsQQnwr3l8HNC8EJBdAQM0/WTx0COBM+qDgmo2Ot/+1RWbqCWxgzmhpyiMu65crSq
+         M4L1Abc/Y6+iWozkbeBXpK+qiElGVi7LpqSoro6M=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, brouer@redhat.com,
+        daniel@iogearbox.net, toke@redhat.com, lorenzo.bianconi@redhat.com,
+        dsahern@kernel.org, andrii.nakryiko@gmail.com
+Subject: [PATCH v6 bpf-next 0/9] introduce support for XDP programs in CPUMAP
+Date:   Sun,  5 Jul 2020 11:53:51 +0200
+Message-Id: <cover.1593941895.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9590:: with SMTP id a16mr4780500ioo.150.1593942733541;
- Sun, 05 Jul 2020 02:52:13 -0700 (PDT)
-Date:   Sun, 05 Jul 2020 02:52:13 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006cd5e905a9aeb60e@google.com>
-Subject: memory leak in qdisc_create_dflt
-From:   syzbot <syzbot+d411cff6ab29cc2c311b@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Similar to what David Ahern proposed in [1] for DEVMAPs, introduce the
+capability to attach and run a XDP program to CPUMAP entries.
+The idea behind this feature is to add the possibility to define on which CPU
+run the eBPF program if the underlying hw does not support RSS.
+I respin patch 1/6 from a previous series sent by David [2].
+The functionality has been tested on Marvell Espressobin, i40e and mlx5.
+Detailed tests results can be found here:
+https://github.com/xdp-project/xdp-project/blob/master/areas/cpumap/cpumap04-map-xdp-prog.org
 
-syzbot found the following crash on:
+Changes since v5:
+- move bpf_prog_put() in put_cpu_map_entry()
+- remove READ_ONCE(rcpu->prog) in cpu_map_bpf_prog_run_xdp
+- rely on bpf_prog_get_type() instead of bpf_prog_get_type_dev() in
+  __cpu_map_load_bpf_program()
 
-HEAD commit:    9ebcfadb Linux 5.8-rc3
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1577525b100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5ee23b9caef4e07a
-dashboard link: https://syzkaller.appspot.com/bug?extid=d411cff6ab29cc2c311b
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e579e3100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1007c45b100000
+Changes since v4:
+- move xdp_clear_return_frame_no_direct inside rcu section
+- update David Ahern's email address
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+d411cff6ab29cc2c311b@syzkaller.appspotmail.com
+Changes since v3:
+- fix typo in commit message
+- fix access to ctx->ingress_ifindex in cpumap bpf selftest
 
-BUG: memory leak
-unreferenced object 0xffff888115aa8c00 (size 512):
-  comm "syz-executor530", pid 6646, jiffies 4294943517 (age 13.870s)
-  hex dump (first 32 bytes):
-    a0 0c be 82 ff ff ff ff f0 0b be 82 ff ff ff ff  ................
-    04 00 00 00 e8 03 00 00 40 c6 72 84 ff ff ff ff  ........@.r.....
-  backtrace:
-    [<00000000ead56edd>] kmalloc_node include/linux/slab.h:578 [inline]
-    [<00000000ead56edd>] kzalloc_node include/linux/slab.h:680 [inline]
-    [<00000000ead56edd>] qdisc_alloc+0x45/0x260 net/sched/sch_generic.c:818
-    [<000000002852d256>] qdisc_create_dflt+0x3d/0x170 net/sched/sch_generic.c:893
-    [<000000002108f663>] atm_tc_init+0x96/0x150 net/sched/sch_atm.c:551
-    [<000000000988e5f0>] qdisc_create+0x1ae/0x670 net/sched/sch_api.c:1246
-    [<00000000c8befd49>] tc_modify_qdisc+0x198/0xb10 net/sched/sch_api.c:1662
-    [<00000000b014fe08>] rtnetlink_rcv_msg+0x17e/0x460 net/core/rtnetlink.c:5460
-    [<00000000da7a0de1>] netlink_rcv_skb+0x5b/0x180 net/netlink/af_netlink.c:2469
-    [<0000000069fa5fbe>] netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
-    [<0000000069fa5fbe>] netlink_unicast+0x2b6/0x3c0 net/netlink/af_netlink.c:1329
-    [<0000000049c303c5>] netlink_sendmsg+0x2ba/0x570 net/netlink/af_netlink.c:1918
-    [<0000000017755dda>] sock_sendmsg_nosec net/socket.c:652 [inline]
-    [<0000000017755dda>] sock_sendmsg+0x4c/0x60 net/socket.c:672
-    [<00000000294b696a>] ____sys_sendmsg+0x118/0x2f0 net/socket.c:2352
-    [<00000000eb7a1f59>] ___sys_sendmsg+0x81/0xc0 net/socket.c:2406
-    [<00000000ba1066c9>] __sys_sendmmsg+0xda/0x230 net/socket.c:2496
-    [<0000000082fdecc3>] __do_sys_sendmmsg net/socket.c:2525 [inline]
-    [<0000000082fdecc3>] __se_sys_sendmmsg net/socket.c:2522 [inline]
-    [<0000000082fdecc3>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2522
-    [<000000009da3552a>] do_syscall_64+0x4c/0xe0 arch/x86/entry/common.c:359
-    [<00000000b46d0fac>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Changes since v2:
+- improved comments
+- fix return value in xdp_convert_buff_to_frame
+- added patch 1/9: "cpumap: use non-locked version __ptr_ring_consume_batched"
+- do not run kmem_cache_alloc_bulk if all frames have been consumed by the XDP
+  program attached to the CPUMAP entry
+- removed bpf_trace_printk in kselftest
 
-BUG: memory leak
-unreferenced object 0xffff888115aa8a00 (size 512):
-  comm "syz-executor530", pid 6647, jiffies 4294944100 (age 8.040s)
-  hex dump (first 32 bytes):
-    a0 0c be 82 ff ff ff ff f0 0b be 82 ff ff ff ff  ................
-    04 00 00 00 e8 03 00 00 40 c6 72 84 ff ff ff ff  ........@.r.....
-  backtrace:
-    [<00000000ead56edd>] kmalloc_node include/linux/slab.h:578 [inline]
-    [<00000000ead56edd>] kzalloc_node include/linux/slab.h:680 [inline]
-    [<00000000ead56edd>] qdisc_alloc+0x45/0x260 net/sched/sch_generic.c:818
-    [<000000002852d256>] qdisc_create_dflt+0x3d/0x170 net/sched/sch_generic.c:893
-    [<000000002108f663>] atm_tc_init+0x96/0x150 net/sched/sch_atm.c:551
-    [<000000000988e5f0>] qdisc_create+0x1ae/0x670 net/sched/sch_api.c:1246
-    [<00000000c8befd49>] tc_modify_qdisc+0x198/0xb10 net/sched/sch_api.c:1662
-    [<00000000b014fe08>] rtnetlink_rcv_msg+0x17e/0x460 net/core/rtnetlink.c:5460
-    [<00000000da7a0de1>] netlink_rcv_skb+0x5b/0x180 net/netlink/af_netlink.c:2469
-    [<0000000069fa5fbe>] netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
-    [<0000000069fa5fbe>] netlink_unicast+0x2b6/0x3c0 net/netlink/af_netlink.c:1329
-    [<0000000049c303c5>] netlink_sendmsg+0x2ba/0x570 net/netlink/af_netlink.c:1918
-    [<0000000017755dda>] sock_sendmsg_nosec net/socket.c:652 [inline]
-    [<0000000017755dda>] sock_sendmsg+0x4c/0x60 net/socket.c:672
-    [<00000000294b696a>] ____sys_sendmsg+0x118/0x2f0 net/socket.c:2352
-    [<00000000eb7a1f59>] ___sys_sendmsg+0x81/0xc0 net/socket.c:2406
-    [<00000000ba1066c9>] __sys_sendmmsg+0xda/0x230 net/socket.c:2496
-    [<0000000082fdecc3>] __do_sys_sendmmsg net/socket.c:2525 [inline]
-    [<0000000082fdecc3>] __se_sys_sendmmsg net/socket.c:2522 [inline]
-    [<0000000082fdecc3>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2522
-    [<000000009da3552a>] do_syscall_64+0x4c/0xe0 arch/x86/entry/common.c:359
-    [<00000000b46d0fac>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Changes since v1:
+- added performance test results
+- added kselftest support
+- fixed memory accounting with page_pool
+- extended xdp_redirect_cpu_user.c to load an external program to perform
+  redirect
+- reported ifindex to attached eBPF program
+- moved bpf_cpumap_val definition to include/uapi/linux/bpf.h
 
+[1] https://patchwork.ozlabs.org/project/netdev/cover/20200529220716.75383-1-dsahern@kernel.org/
+[2] https://patchwork.ozlabs.org/project/netdev/patch/20200513014607.40418-2-dsahern@kernel.org/
 
+David Ahern (1):
+  net: refactor xdp_convert_buff_to_frame
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Jesper Dangaard Brouer (1):
+  cpumap: use non-locked version __ptr_ring_consume_batched
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Lorenzo Bianconi (7):
+  samples/bpf: xdp_redirect_cpu_user: do not update bpf maps in option
+    loop
+  cpumap: formalize map value as a named struct
+  bpf: cpumap: add the possibility to attach an eBPF program to cpumap
+  bpf: cpumap: implement XDP_REDIRECT for eBPF programs attached to map
+    entries
+  libbpf: add SEC name for xdp programs attached to CPUMAP
+  samples/bpf: xdp_redirect_cpu: load a eBPF program on cpumap
+  selftest: add tests for XDP programs in CPUMAP entries
+
+ include/linux/bpf.h                           |   6 +
+ include/net/xdp.h                             |  41 ++--
+ include/trace/events/xdp.h                    |  16 +-
+ include/uapi/linux/bpf.h                      |  14 ++
+ kernel/bpf/cpumap.c                           | 159 ++++++++++---
+ net/core/dev.c                                |   9 +
+ samples/bpf/xdp_redirect_cpu_kern.c           |  25 ++-
+ samples/bpf/xdp_redirect_cpu_user.c           | 209 ++++++++++++++++--
+ tools/include/uapi/linux/bpf.h                |  14 ++
+ tools/lib/bpf/libbpf.c                        |   2 +
+ .../bpf/prog_tests/xdp_cpumap_attach.c        |  70 ++++++
+ .../bpf/progs/test_xdp_with_cpumap_helpers.c  |  36 +++
+ 12 files changed, 529 insertions(+), 72 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
+
+-- 
+2.26.2
+
