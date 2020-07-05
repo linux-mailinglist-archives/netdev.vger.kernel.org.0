@@ -2,28 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81C85214E88
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 20:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 037B0214E89
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 20:31:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727966AbgGESbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 14:31:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47486 "EHLO vps0.lunn.ch"
+        id S1728068AbgGESbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 14:31:18 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47482 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727875AbgGESbR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727803AbgGESbR (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 5 Jul 2020 14:31:17 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1js9Q3-003itd-6N; Sun, 05 Jul 2020 20:31:15 +0200
+        id 1js9Q3-003itf-7Z; Sun, 05 Jul 2020 20:31:15 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandru Ardelean <alexaundru.ardelean@analog.com>
-Subject: [PATCH net-next 2/7] net: phy: Fixup parameters in kerneldoc
-Date:   Sun,  5 Jul 2020 20:29:16 +0200
-Message-Id: <20200705182921.887441-3-andrew@lunn.ch>
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next 3/7] net: phy: Properly define genphy_c45_driver
+Date:   Sun,  5 Jul 2020 20:29:17 +0200
+Message-Id: <20200705182921.887441-4-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200705182921.887441-1-andrew@lunn.ch>
 References: <20200705182921.887441-1-andrew@lunn.ch>
@@ -34,81 +33,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Correct the kerneldoc for a few structure and function calls,
-as reported by C=1 W=1.
+Avoid the W=1 warning that symbol 'genphy_c45_driver' was not
+declared. Should it be static?
 
-Cc: Alexandru Ardelean <alexaundru.ardelean@analog.com>
+Declare it on the phy header file.
+
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/adin.c           | 12 ++++++------
- drivers/net/phy/mdio-boardinfo.c |  3 ++-
- drivers/net/phy/mdio_device.c    |  2 +-
- 3 files changed, 9 insertions(+), 8 deletions(-)
+ drivers/net/phy/phy_device.c | 1 -
+ include/linux/phy.h          | 3 +++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
-index c7eabe4382fb..7471a8b90873 100644
---- a/drivers/net/phy/adin.c
-+++ b/drivers/net/phy/adin.c
-@@ -106,8 +106,8 @@
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 29ef4456ac25..d2e1193b032c 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -226,7 +226,6 @@ static void phy_mdio_device_remove(struct mdio_device *mdiodev)
+ }
  
- /**
-  * struct adin_cfg_reg_map - map a config value to aregister value
-- * @cfg		value in device configuration
-- * @reg		value in the register
-+ * @cfg:	value in device configuration
-+ * @reg:	value in the register
-  */
- struct adin_cfg_reg_map {
- 	int cfg;
-@@ -135,9 +135,9 @@ static const struct adin_cfg_reg_map adin_rmii_fifo_depths[] = {
+ static struct phy_driver genphy_driver;
+-extern struct phy_driver genphy_c45_driver;
  
- /**
-  * struct adin_clause45_mmd_map - map to convert Clause 45 regs to Clause 22
-- * @devad		device address used in Clause 45 access
-- * @cl45_regnum		register address defined by Clause 45
-- * @adin_regnum		equivalent register address accessible via Clause 22
-+ * @devad:		device address used in Clause 45 access
-+ * @cl45_regnum:	register address defined by Clause 45
-+ * @adin_regnum:	equivalent register address accessible via Clause 22
-  */
- struct adin_clause45_mmd_map {
- 	int devad;
-@@ -174,7 +174,7 @@ static const struct adin_hw_stat adin_hw_stats[] = {
+ static LIST_HEAD(phy_fixup_list);
+ static DEFINE_MUTEX(phy_fixup_lock);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 6fb8f302978d..eb3252474b97 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1398,6 +1398,9 @@ int genphy_c45_pma_read_abilities(struct phy_device *phydev);
+ int genphy_c45_read_status(struct phy_device *phydev);
+ int genphy_c45_config_aneg(struct phy_device *phydev);
  
- /**
-  * struct adin_priv - ADIN PHY driver private data
-- * stats		statistic counters for the PHY
-+ * @stats:		statistic counters for the PHY
-  */
- struct adin_priv {
- 	u64			stats[ARRAY_SIZE(adin_hw_stats)];
-diff --git a/drivers/net/phy/mdio-boardinfo.c b/drivers/net/phy/mdio-boardinfo.c
-index d9b54c67ef9f..033df435f76c 100644
---- a/drivers/net/phy/mdio-boardinfo.c
-+++ b/drivers/net/phy/mdio-boardinfo.c
-@@ -17,7 +17,8 @@ static DEFINE_MUTEX(mdio_board_lock);
- /**
-  * mdiobus_setup_mdiodev_from_board_info - create and setup MDIO devices
-  * from pre-collected board specific MDIO information
-- * @mdiodev: MDIO device pointer
-+ * @bus: Bus the board_info belongs to
-+ * @cb: Callback to create device on bus
-  * Context: can sleep
-  */
- void mdiobus_setup_mdiodev_from_board_info(struct mii_bus *bus,
-diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
-index c1d345c3cab3..5cb726a2bf1f 100644
---- a/drivers/net/phy/mdio_device.c
-+++ b/drivers/net/phy/mdio_device.c
-@@ -182,7 +182,7 @@ static int mdio_remove(struct device *dev)
++/* Generic C45 PHY driver */
++extern struct phy_driver genphy_c45_driver;
++
+ /* The gen10g_* functions are the old Clause 45 stub */
+ int gen10g_config_aneg(struct phy_device *phydev);
  
- /**
-  * mdio_driver_register - register an mdio_driver with the MDIO layer
-- * @new_driver: new mdio_driver to register
-+ * @drv: new mdio_driver to register
-  */
- int mdio_driver_register(struct mdio_driver *drv)
- {
 -- 
 2.27.0.rc2
 
