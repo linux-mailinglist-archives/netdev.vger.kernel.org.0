@@ -2,111 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 910CE214E06
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 18:48:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04CDF214E1B
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 19:08:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727867AbgGEQsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 12:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54138 "EHLO
+        id S1727790AbgGERIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 13:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726538AbgGEQsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 12:48:08 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349E0C061794
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 09:48:08 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id o11so38246783wrv.9
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 09:48:08 -0700 (PDT)
+        with ESMTP id S1726956AbgGERIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 13:08:12 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE45FC061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 10:08:12 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id bj10so9193289plb.11
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 10:08:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A2xoqgm4zPrRyWBu8p7ufKqdVMOdcDJT+txa+uZq4Ew=;
-        b=paRCrvSlYxBooHHEuf7UMkIskiW7Xo9p/tF+usmnCp10MP7C9xhbXCrrceowTkWY+U
-         acVk0m+USQPN18lBQ/sT5bzYmE3XwQKxcMkmw1kgIvHHIvym2M/tcbNftvhxyiy4wU66
-         8a3UnjNKpeXedgaEykKrasnOH+tB3DJ8ak3n6kgB0yk5NKjw1g3qqTDM06PVAXvCYIr5
-         sgJPJwetxO0vga2HO+wOS2MXz1iqooRsCXgQzYFmhUvCmIYhmqEJFuE8zvJP3ksc1aJv
-         fz8hgWelSIvTRZ4rKX8OJsX+NpQMVjWlSU59MoHCzEh2KH5r3GE7m6Vnbdd8XvCEBP/z
-         uelA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oDn9WZMjwNZ+w57ysOXwQxn7reYWQNZaBmh+6aRV/Fk=;
+        b=oSSm5IUPtmvM/SwcsR5wOYe0NMcYemsfSCdag5hAN2dCQ4hTiUyBN1K59B49ocYHm8
+         dixCIM3bW6YKiUsMytHsV2I3pMgc3gZGsMrY2Ipcz7+DWX9sPF+W5/m9xjsuPSmKoFA8
+         7nPSSLWvruVY1pq87HUvs17GlHjlobhOj13nGgvcwD6UkUps7ONrz3uR2SfimSBG8iR4
+         fG3oIYMjVWMnCszjQnNLZq4iYM+Y4r9v2C9E+JjzJ5Ax4qy78PbgdDrGc7cHH2clh47E
+         uwcO/9juhv8Bz1JzWTTZtErHN2cwAy4JUU0PHtu/rhpI5/ZMrFrqAugMtuQBpcsurQpr
+         2NQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A2xoqgm4zPrRyWBu8p7ufKqdVMOdcDJT+txa+uZq4Ew=;
-        b=Nu3bAlkGu9/VESf/be9Dkln27NDN3JxL37fy0EtUmODCGp0LSGmUSjFb/1OQopt0pk
-         S++nCMzi96TS17xoyvX6seTRu4gsgw9dWuwc9GWyFKmc1yGrVcRNf/d+UboEOVv8YHaB
-         n7S3qDjuy7+vqC2zp4dSeoJdVHdLZldYRCJmYs4vTP+6Nygar29NJHScZZ6FJDnmBJAL
-         r8WUFtsw2Sa7glJCXh4nnR3ikzcSIBourLydMHSr69tYPBYs9e1nHLRto20nPKsE9z8P
-         MFjTv3k2d6gU7e/BPIBhrpmeAgQ2uYKaXMMfkm+AhSIJj+vFTEJ4+XjjwdMQQGbuI/OQ
-         bghw==
-X-Gm-Message-State: AOAM532HLvU6Xg7f4lkPa86hUTE2WuhK8qJNyZUuAeCkFl6U+fGdvpce
-        gzNNhmBkJcPeCYra0YEhsubBL+u/xHiTHndbxyM=
-X-Google-Smtp-Source: ABdhPJyMY/GB+jEACvxzjzq0JNth+vG7UCC/CeBWEGRqYGoLXYTRoRton6y/7OQVeJ8Cj2X9qrQzI2PeSil9t1l3Q4Y=
-X-Received: by 2002:adf:f5ce:: with SMTP id k14mr42979370wrp.234.1593967687010;
- Sun, 05 Jul 2020 09:48:07 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oDn9WZMjwNZ+w57ysOXwQxn7reYWQNZaBmh+6aRV/Fk=;
+        b=ZXPrddMg04b6jvMaNIcuUYFTuWuLn+c9WrddD7mn9Fg+uxJ9gsui5qJxgLgcsFEQPx
+         l7oazzm260wAhvmwuDJBcski06UwSCip8DwK99m0MVw+hwHt+jB91zNmwl23/81u8hIL
+         ZZje9tgWFwfLUooNPRyOlM2XPXbT7jgJynEUvSRL8zvPj6VRn5skItSxDS9BDQzX9K3D
+         0RYbOOc8E05ara7l8Q3SH7PZaaX80ZvHvgMoHbc6DVbHEMBnIlFQDrDL2OkK46ZuxPB3
+         xX2WbxykT35918d5zWGEiU2P9ryuwflNtxXvpcgED4hXOrCuPb8UTGLMEliuHZTTY+L4
+         C8yQ==
+X-Gm-Message-State: AOAM532ZI/hw3UR2A041cTrZ6erFj+GsuvpONcJ+e1hezTtdcAx3G5zr
+        C3kCmrewzsiiAzC+PgeRtGU=
+X-Google-Smtp-Source: ABdhPJze7NTHhCMGhb7zf49fO6+9bZilCQEXMVxQCVd01putU76BtzrESigS+iUQ2ZGJc2uv0x94+g==
+X-Received: by 2002:a17:902:b413:: with SMTP id x19mr17200839plr.286.1593968891166;
+        Sun, 05 Jul 2020 10:08:11 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id i21sm1279919pfa.18.2020.07.05.10.08.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Jul 2020 10:08:10 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next] inet: Remove an unnecessary argument of
+ syn_ack_recalc().
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Kuniyuki Iwashima <kuni1840@gmail.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        osa-contribution-log@amazon.com, Julian Anastasov <ja@ssi.bg>
+References: <20200704081158.83489-1-kuniyu@amazon.co.jp>
+ <20200704152852.39935-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <cb795577-4759-3ab6-43c9-7a4f9c8d832f@gmail.com>
+Date:   Sun, 5 Jul 2020 10:08:08 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <c13ffdfb739d487a415897b72bf8eee6981830c6.1593502515.git.lucien.xin@gmail.com>
- <202007030758.OQAC7CGY%lkp@intel.com>
-In-Reply-To: <202007030758.OQAC7CGY%lkp@intel.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Mon, 6 Jul 2020 00:57:48 +0800
-Message-ID: <CADvbK_ebOEv-V+GZUtsmmOxsZSK4VKfkD5pHW_9K7ZoK_omFtA@mail.gmail.com>
-Subject: Re: [PATCHv2 ipsec-next 09/10] xfrm: interface: support IP6IP6 and
- IP6IP tunnels processing with .cb_handler
-To:     kernel test robot <lkp@intel.com>
-Cc:     network dev <netdev@vger.kernel.org>, kbuild-all@lists.01.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200704152852.39935-1-kuniyu@amazon.co.jp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 3, 2020 at 7:55 AM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Xin,
->
-> Thank you for the patch! Yet something to improve:
->
-> [auto build test ERROR on ipsec-next/master]
->
-> url:    https://github.com/0day-ci/linux/commits/Xin-Long/xfrm-support-ipip-and-ipv6-tunnels-in-vti-and-xfrmi/20200630-154042
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git master
-> config: x86_64-randconfig-a012-20200701 (attached as .config)
-> compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-> reproduce (this is a W=1 build):
->         # save the attached .config to linux build tree
->         make W=1 ARCH=x86_64
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->    ld: net/xfrm/xfrm_interface.o: in function `xfrmi6_rcv_tunnel':
-> >> net/xfrm/xfrm_interface.c:807: undefined reference to `xfrm6_tunnel_spi_lookup'
-I will add  "#ifdef CONFIG_INET(6)_XFRM_TUNNEL" to fix it in v3.
 
-Thanks.
 
->
-> vim +807 net/xfrm/xfrm_interface.c
->
->    800
->    801  static int xfrmi6_rcv_tunnel(struct sk_buff *skb)
->    802  {
->    803          const xfrm_address_t *saddr;
->    804          __be32 spi;
->    805
->    806          saddr = (const xfrm_address_t *)&ipv6_hdr(skb)->saddr;
->  > 807          spi = xfrm6_tunnel_spi_lookup(dev_net(skb->dev), saddr);
->    808
->    809          return xfrm6_rcv_spi(skb, IPPROTO_IPV6, spi, NULL);
->    810  }
->    811
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+On 7/4/20 8:28 AM, Kuniyuki Iwashima wrote:
+> Commit 0c3d79bce48034018e840468ac5a642894a521a3 ("tcp: reduce SYN-ACK
+> retrans for TCP_DEFER_ACCEPT") introduces syn_ack_recalc() which decides
+> if a minisock is held and a SYN+ACK is retransmitted or not.
+> 
+> If rskq_defer_accept is not zero in syn_ack_recalc(), max_retries always
+> has the same value because max_retries is overwritten by rskq_defer_accept
+> in reqsk_timer_handler().
+> 
+> This commit adds two changes:
+> - remove max_retries from the arguments of syn_ack_recalc() and use
+>    rskq_defer_accept instead.
+> - rename thresh to max_retries for readability.
+> 
+
+Honestly this looks unnecessary code churn to me.
+
+This will make future backports more error prone.
+
+Real question is : why do you want this change in the first place ?
+
