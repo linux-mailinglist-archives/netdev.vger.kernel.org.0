@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BED0214DF2
+	by mail.lfdr.de (Postfix) with ESMTP id F073B214DF3
 	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 18:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727861AbgGEQRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 12:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
+        id S1727883AbgGEQRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 12:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726956AbgGEQQ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 12:16:59 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796E5C061794
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 09:16:59 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id lx13so21206451ejb.4
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 09:16:59 -0700 (PDT)
+        with ESMTP id S1727869AbgGEQRA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 12:17:00 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4A5C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 09:17:00 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id z17so32456238edr.9
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 09:17:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZhHqpIqDfrNOSU+5um3zSzVK23wPGbDAAeDQ/8JEsqM=;
-        b=M6N2xxqNZFPqzL7wkspOj0CNYvvGFOeipkB16U+Ozdm8eHFlZfHg7Jt7inBSnn0hI5
-         to+KwsoxVTvavLwfgBb1Gvt0OWiCExPCLXguXtCadfs1UGnPzsffUG4buogLNXlh350o
-         TRTtYPyULlpTMFSoguuWyklc4Ix9SIB+thgmZkYiKV4xViYe4W8oUbjweMu7d6Qqh6X2
-         ccA84nlF7xep0oFAzEzJeg82z2BIeU0snj3PjYCfW0BajAwPlOBp8YwAO5h3e3EI7rPG
-         mTlYSkZza0fxgZ9hF0Cor2QYy52uyTX2E7mk5z5hvIftD57qZEUl6g9WKvoAKXbEvG3Q
-         eh9g==
+        bh=1O8BKQbsB3cuoPCkpzYQE5EX9RuArBPO6YfLOUOM+Kw=;
+        b=JBfv2NcH3DO8uNrqROGYNltwCZwIfa6TPXOj5K6OESqO1O3GBUWjjI8cKyXj6kBucW
+         +GlE/zD002KFauMhUeoTb+2TZ3cxYyAhQykQRsLq27sNcgLvpJ1edOaXXgF2MmXt6riN
+         lZne1EfLtIQExVaqHgJ+CAIn0yrDcTh6yqkQ+tnlEswsoCT9mwwlo9egrvoHgICrZKI8
+         mJHtfI7rH3NfE27fyNPJeyERgMKAdm2BjzSCgpWCrzITGzwUh1jMkVEtDNjt+9jvlPmh
+         FVQNLW4x2qadJ10P8jpOJ4oFR09w97/UgytwseDQr3w0Rbcl86KNIXQHIHKB0n93CvPS
+         BvmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZhHqpIqDfrNOSU+5um3zSzVK23wPGbDAAeDQ/8JEsqM=;
-        b=PERdqRLBinGcvGa7u+6Q0W0Z8HdG12oSBVj5MIRjR4+3qnsj5teiiFESapOGm5wEJv
-         cn5RH4/B9kxypBjrmlnLOEv8cf0h+uppVbKM8XOh+aYeKUgf2O0RAJ+BzN0cLBXF07nZ
-         91hrMJ+xHJ7bJoG2EvqApqMKdt3KxOz3tepGJ+8U8nbPquUhX3IFX0gPzIHk842giiVH
-         MgmYjGsto6bg0zZef30QVHr8svnpFrPcWvJKFh/Fk5hwoDi39+vzcdtcViZVbiP2Xlew
-         PtEKx9uXBu9/a0ZIrO9jax4A6Ie0XnwNILkHCwDh8p/95J1W8u4ElKtF2uftwlYGF0wi
-         CeeA==
-X-Gm-Message-State: AOAM533OTrQEyhvr3vbk2GVIGVnDOvWwrumb6ScuagBiTQWLt5bGVMAq
-        hwfjYgJEEyXb/ToPhrbw7hoM8sjj
-X-Google-Smtp-Source: ABdhPJxfHnk+2TEV9nr3YCzevhHV0iiuPkSEshtKOrVDS8UL+1i0FZFj2VBiJbtY2DtJO4VmO6hxig==
-X-Received: by 2002:a17:906:5909:: with SMTP id h9mr38059839ejq.501.1593965818181;
-        Sun, 05 Jul 2020 09:16:58 -0700 (PDT)
+        bh=1O8BKQbsB3cuoPCkpzYQE5EX9RuArBPO6YfLOUOM+Kw=;
+        b=YfMk0gHn5Hm9EWpBARSre+C0RIKewFDDy/0h+LxyvyAc2qpetPgQg7tpx5k1qGzvVn
+         ul6/rVvu8Rx//+e2l9AYOBbSPbdafmJWsY7JIfTuaSHsyGsiezHT7HizRRtNPRathWgp
+         ZZZTNStmKsAWtS6JtA7MS5cU3O3tATcZ7e40qOLDCiOktHtej44r1IsJPR/7NVanSKRQ
+         04DK7YmmJLJVqpCTIfVdfdHVQYFLdMl2TWmGxJfy2J11DYCJI9aqJaXuMmFNQyaL6VtV
+         9WV8tjs4OkYJ41JOyXXDRHz+aC+f7PYSsUwMvlUMqVEkJjgdArjdcLQ5afdMrvbEGYQ4
+         Cobg==
+X-Gm-Message-State: AOAM532q9s6yoCJwKk2SDMkPcWEtb4VbYKaoJIKSEpRilPwZYIVLwwfk
+        nJXF+2KAjFGBWgSVn9iac1U=
+X-Google-Smtp-Source: ABdhPJyqZr/tSlp3WsqAvAp449+uFKPRuotBnxe5GyeIj7cv0zmhQX6mpR1021PcPwHFijjNZxaRNw==
+X-Received: by 2002:a50:ba8b:: with SMTP id x11mr52713290ede.201.1593965819352;
+        Sun, 05 Jul 2020 09:16:59 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id x4sm14406126eju.2.2020.07.05.09.16.57
+        by smtp.gmail.com with ESMTPSA id x4sm14406126eju.2.2020.07.05.09.16.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2020 09:16:57 -0700 (PDT)
+        Sun, 05 Jul 2020 09:16:58 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
         ioana.ciornei@nxp.com, linux@armlinux.org.uk
-Subject: [PATCH v3 net-next 2/6] net: dsa: felix: support half-duplex link modes
-Date:   Sun,  5 Jul 2020 19:16:22 +0300
-Message-Id: <20200705161626.3797968-3-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 3/6] net: dsa: felix: unconditionally configure MAC speed to 1000Mbps
+Date:   Sun,  5 Jul 2020 19:16:23 +0300
+Message-Id: <20200705161626.3797968-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200705161626.3797968-1-olteanv@gmail.com>
 References: <20200705161626.3797968-1-olteanv@gmail.com>
@@ -67,39 +67,20 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Ping tested:
+In VSC9959, the PCS is the one who performs rate adaptation (symbol
+duplication) to the speed negotiated by the PHY. The MAC is unaware of
+that and must remain configured for gigabit. If it is configured at
+OCELOT_SPEED_10 or OCELOT_SPEED_100, it'll start transmitting PAUSE
+frames out of control and never recover, _even if_ we then reconfigure
+it at OCELOT_SPEED_1000 afterwards.
 
-  [   11.808455] mscc_felix 0000:00:00.5 swp0: Link is Up - 1Gbps/Full - flow control rx/tx
-  [   11.816497] IPv6: ADDRCONF(NETDEV_CHANGE): swp0: link becomes ready
-
-  [root@LS1028ARDB ~] # ethtool -s swp0 advertise 0x4
-  [   18.844591] mscc_felix 0000:00:00.5 swp0: Link is Down
-  [   22.048337] mscc_felix 0000:00:00.5 swp0: Link is Up - 100Mbps/Half - flow control off
-
-  [root@LS1028ARDB ~] # ip addr add 192.168.1.1/24 dev swp0
-
-  [root@LS1028ARDB ~] # ping 192.168.1.2
-  PING 192.168.1.2 (192.168.1.2): 56 data bytes
-  (...)
-  ^C--- 192.168.1.2 ping statistics ---
-  3 packets transmitted, 3 packets received, 0% packet loss
-  round-trip min/avg/max = 0.383/0.611/1.051 ms
-
-  [root@LS1028ARDB ~] # ethtool -s swp0 advertise 0x10
-  [  355.637747] mscc_felix 0000:00:00.5 swp0: Link is Down
-  [  358.788034] mscc_felix 0000:00:00.5 swp0: Link is Up - 1Gbps/Half - flow control off
-
-  [root@LS1028ARDB ~] # ping 192.168.1.2
-  PING 192.168.1.2 (192.168.1.2): 56 data bytes
-  (...)
-  ^C
-  --- 192.168.1.2 ping statistics ---
-  16 packets transmitted, 16 packets received, 0% packet loss
-  round-trip min/avg/max = 0.301/0.384/1.138 ms
+This patch fixes a bug that luckily did not have any functional impact.
+We were writing 10, 100, 1000 etc into this 2-bit field in
+DEV_CLOCK_CFG, but the hardware expects values in the range 0, 1, 2, 3.
+So all speed values were getting truncated to 0, which is
+OCELOT_SPEED_2500, and which also appears to be fine.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
 Changes in v3:
 None.
@@ -107,112 +88,30 @@ None.
 Changes in v2:
 None.
 
-Note: this patch is still using state->duplex from mac_config(),
-although that will be changed in 6/6.
-
- drivers/net/dsa/ocelot/felix.c         |  4 +++-
- drivers/net/dsa/ocelot/felix_vsc9959.c | 23 +++++++++++++----------
- include/linux/fsl/enetc_mdio.h         |  1 +
- 3 files changed, 17 insertions(+), 11 deletions(-)
+ drivers/net/dsa/ocelot/felix.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 75020af7f7a4..f54648dff0ec 100644
+index f54648dff0ec..4d819cc45bed 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -194,13 +194,15 @@ static void felix_phylink_validate(struct dsa_switch *ds, int port,
- 		return;
- 	}
+@@ -240,9 +240,14 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+ 	u32 mac_fc_cfg;
  
--	/* No half-duplex. */
- 	phylink_set_port_modes(mask);
- 	phylink_set(mask, Autoneg);
- 	phylink_set(mask, Pause);
- 	phylink_set(mask, Asym_Pause);
-+	phylink_set(mask, 10baseT_Half);
- 	phylink_set(mask, 10baseT_Full);
-+	phylink_set(mask, 100baseT_Half);
- 	phylink_set(mask, 100baseT_Full);
-+	phylink_set(mask, 1000baseT_Half);
- 	phylink_set(mask, 1000baseT_Full);
+ 	/* Take port out of reset by clearing the MAC_TX_RST, MAC_RX_RST and
+-	 * PORT_RST bits in CLOCK_CFG
++	 * PORT_RST bits in DEV_CLOCK_CFG. Note that the way this system is
++	 * integrated is that the MAC speed is fixed and it's the PCS who is
++	 * performing the rate adaptation, so we have to write "1000Mbps" into
++	 * the LINK_SPEED field of DEV_CLOCK_CFG (which is also its default
++	 * value).
+ 	 */
+-	ocelot_port_writel(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(state->speed),
++	ocelot_port_writel(ocelot_port,
++			   DEV_CLOCK_CFG_LINK_SPEED(OCELOT_SPEED_1000),
+ 			   DEV_CLOCK_CFG);
  
- 	if (state->interface == PHY_INTERFACE_MODE_INTERNAL ||
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 9f4c8343652f..94e946b26f90 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -817,12 +817,9 @@ static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
- 
- 		phy_set_bits(pcs, MII_BMCR, BMCR_ANENABLE);
- 	} else {
-+		u16 if_mode = ENETC_PCS_IF_MODE_SGMII_EN;
- 		int speed;
- 
--		if (state->duplex == DUPLEX_HALF) {
--			phydev_err(pcs, "Half duplex not supported\n");
--			return;
--		}
- 		switch (state->speed) {
- 		case SPEED_1000:
- 			speed = ENETC_PCS_SPEED_1000;
-@@ -841,9 +838,9 @@ static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
- 			return;
- 		}
- 
--		phy_write(pcs, ENETC_PCS_IF_MODE,
--			  ENETC_PCS_IF_MODE_SGMII_EN |
--			  ENETC_PCS_IF_MODE_SGMII_SPEED(speed));
-+		if_mode |= ENETC_PCS_IF_MODE_SGMII_SPEED(speed);
-+		if (state->duplex == DUPLEX_HALF)
-+			if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
- 
- 		phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
- 	}
-@@ -870,15 +867,18 @@ static void vsc9959_pcs_init_2500basex(struct phy_device *pcs,
- 				       unsigned int link_an_mode,
- 				       const struct phylink_link_state *state)
- {
-+	u16 if_mode = ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500) |
-+		      ENETC_PCS_IF_MODE_SGMII_EN;
-+
- 	if (link_an_mode == MLO_AN_INBAND) {
- 		phydev_err(pcs, "AN not supported on 3.125GHz SerDes lane\n");
- 		return;
- 	}
- 
--	phy_write(pcs, ENETC_PCS_IF_MODE,
--		  ENETC_PCS_IF_MODE_SGMII_EN |
--		  ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500));
-+	if (state->duplex == DUPLEX_HALF)
-+		if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
- 
-+	phy_write(pcs, ENETC_PCS_IF_MODE, if_mode);
- 	phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
- }
- 
-@@ -919,8 +919,11 @@ static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
- 	linkmode_set_bit_array(phy_basic_ports_array,
- 			       ARRAY_SIZE(phy_basic_ports_array),
- 			       pcs->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, pcs->supported);
- 	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, pcs->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, pcs->supported);
- 	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, pcs->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT, pcs->supported);
- 	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, pcs->supported);
- 	if (pcs->interface == PHY_INTERFACE_MODE_2500BASEX ||
- 	    pcs->interface == PHY_INTERFACE_MODE_USXGMII)
-diff --git a/include/linux/fsl/enetc_mdio.h b/include/linux/fsl/enetc_mdio.h
-index 4875dd38af7e..2d9203314865 100644
---- a/include/linux/fsl/enetc_mdio.h
-+++ b/include/linux/fsl/enetc_mdio.h
-@@ -15,6 +15,7 @@
- #define ENETC_PCS_IF_MODE_SGMII_EN		BIT(0)
- #define ENETC_PCS_IF_MODE_USE_SGMII_AN		BIT(1)
- #define ENETC_PCS_IF_MODE_SGMII_SPEED(x)	(((x) << 2) & GENMASK(3, 2))
-+#define ENETC_PCS_IF_MODE_DUPLEX_HALF		BIT(3)
- 
- /* Not a mistake, the SerDes PLL needs to be set at 3.125 GHz by Reset
-  * Configuration Word (RCW, outside Linux control) for 2.5G SGMII mode. The PCS
+ 	/* Flow control. Link speed is only used here to evaluate the time
 -- 
 2.25.1
 
