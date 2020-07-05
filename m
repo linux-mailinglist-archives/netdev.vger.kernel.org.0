@@ -2,27 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73319214E8A
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 20:31:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C9D2214E8C
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 20:31:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728078AbgGESbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 14:31:19 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47492 "EHLO vps0.lunn.ch"
+        id S1728089AbgGESbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 14:31:21 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47494 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727906AbgGESbS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727923AbgGESbS (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 5 Jul 2020 14:31:18 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1js9Q3-003itj-9C; Sun, 05 Jul 2020 20:31:15 +0200
+        id 1js9Q3-003itq-Bg; Sun, 05 Jul 2020 20:31:15 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next 4/7] net: phy: Make  phy_10gbit_fec_features_array static
-Date:   Sun,  5 Jul 2020 20:29:18 +0200
-Message-Id: <20200705182921.887441-5-andrew@lunn.ch>
+        Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: [PATCH net-next 5/7] net: phy: dp83640: Fixup cast to restricted __be16 warning
+Date:   Sun,  5 Jul 2020 20:29:19 +0200
+Message-Id: <20200705182921.887441-6-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200705182921.887441-1-andrew@lunn.ch>
 References: <20200705182921.887441-1-andrew@lunn.ch>
@@ -33,29 +34,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This array is not used outside of phy_device.c, so make it static.
+ntohs() expects to be passed a __be16. Correct the type of the
+variable holding the sequence ID.
 
+Cc: Richard Cochran <richardcochran@gmail.com>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/phy_device.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/phy/dp83640.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index d2e1193b032c..03cada335ace 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -105,10 +105,9 @@ const int phy_10gbit_features_array[1] = {
- };
- EXPORT_SYMBOL_GPL(phy_10gbit_features_array);
+diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
+index ecbd5e0d685c..da31756f5a70 100644
+--- a/drivers/net/phy/dp83640.c
++++ b/drivers/net/phy/dp83640.c
+@@ -803,9 +803,10 @@ static int decode_evnt(struct dp83640_private *dp83640,
  
--const int phy_10gbit_fec_features_array[1] = {
-+static const int phy_10gbit_fec_features_array[1] = {
- 	ETHTOOL_LINK_MODE_10000baseR_FEC_BIT,
- };
--EXPORT_SYMBOL_GPL(phy_10gbit_fec_features_array);
+ static int match(struct sk_buff *skb, unsigned int type, struct rxts *rxts)
+ {
+-	u16 *seqid, hash;
+ 	unsigned int offset = 0;
+ 	u8 *msgtype, *data = skb_mac_header(skb);
++	__be16 *seqid;
++	u16 hash;
  
- __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_10gbit_full_features) __ro_after_init;
- EXPORT_SYMBOL_GPL(phy_10gbit_full_features);
+ 	/* check sequenceID, messageType, 12 bit hash of offset 20-29 */
+ 
+@@ -836,7 +837,7 @@ static int match(struct sk_buff *skb, unsigned int type, struct rxts *rxts)
+ 	if (rxts->msgtype != (*msgtype & 0xf))
+ 		return 0;
+ 
+-	seqid = (u16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
++	seqid = (__be16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
+ 	if (rxts->seqid != ntohs(*seqid))
+ 		return 0;
+ 
 -- 
 2.27.0.rc2
 
