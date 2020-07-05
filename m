@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F567214DF1
+	by mail.lfdr.de (Postfix) with ESMTP id 7BED0214DF2
 	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 18:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727822AbgGEQQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 12:16:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        id S1727861AbgGEQRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 12:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726956AbgGEQQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 12:16:58 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CD2C061794
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 09:16:58 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id d15so32471567edm.10
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 09:16:58 -0700 (PDT)
+        with ESMTP id S1726956AbgGEQQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 12:16:59 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796E5C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 09:16:59 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id lx13so21206451ejb.4
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 09:16:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UQT91UzsRL4+ndcEDa8t2SI2HArH2KSlMIdpJT+MHLE=;
-        b=Aa6QVsP5mvs+iYRXQsFBJVJjt9h+degnxZS+3xurOYKwXoYUMFTRHz4jMqLcK0bmqw
-         cOYzHpaV86/cIZfM9/N3a8B9OZCZqfcy07V8gS/7aan2tsLmxXIbMHjz8zJaeaeNXyo8
-         zzgUic0tTeLNiIHBL4WHmAdmKDNRx+q8+gncz2FPHciDk330vdKbzBH73zaYWTt+lktw
-         1PK3N/GH0XXV55oXtHTTcgvo9xuAGOYS5Q8kjlDBbL3bJCoWESIKPRJn73+Eww5RCZzZ
-         sAa9RVM+a9UXy4XBwuQ5O1AmMqR1Af/IL6nghj+U8HkYBvB/z/29/ycomjP6tW9DAHj4
-         sBOQ==
+        bh=ZhHqpIqDfrNOSU+5um3zSzVK23wPGbDAAeDQ/8JEsqM=;
+        b=M6N2xxqNZFPqzL7wkspOj0CNYvvGFOeipkB16U+Ozdm8eHFlZfHg7Jt7inBSnn0hI5
+         to+KwsoxVTvavLwfgBb1Gvt0OWiCExPCLXguXtCadfs1UGnPzsffUG4buogLNXlh350o
+         TRTtYPyULlpTMFSoguuWyklc4Ix9SIB+thgmZkYiKV4xViYe4W8oUbjweMu7d6Qqh6X2
+         ccA84nlF7xep0oFAzEzJeg82z2BIeU0snj3PjYCfW0BajAwPlOBp8YwAO5h3e3EI7rPG
+         mTlYSkZza0fxgZ9hF0Cor2QYy52uyTX2E7mk5z5hvIftD57qZEUl6g9WKvoAKXbEvG3Q
+         eh9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UQT91UzsRL4+ndcEDa8t2SI2HArH2KSlMIdpJT+MHLE=;
-        b=iKRsqpCG4DaC/Tny3hKY96ZehBYE9jR653Fi5ZI/xfuUXIVSDl00VgAKjDp60T9T9u
-         wlYCfIjPwrWEBtFAW/xtFmqMOdUH53kk8MclbXsfGSW1cl25lgYswTQzhqcCAY/BC2q+
-         6VzHDge6ATQIU8SjLgNPHn34uO/0lnmQfvjasMro+nuHAMyKh4dUDDGhVgpai7HClKYH
-         dzWNKY663STc7nOjIIefAJPMtvD5Y3q0BI7FHkO6VLb6MMS1qkCDepQ/t02coE4jw5LS
-         am85hQ0HjrRU6xyI0QSx6BMG7NnuK6qhk3/XtoQO9os/Cbet0qISiYRiyaQCaXp063Lw
-         rPMA==
-X-Gm-Message-State: AOAM530y+QPC9L+MbKpy/YYV4aqbUpL4sqVDMw2YTdtVK4pHtAPLuXJ1
-        d6ika6vf1o6OtzFx0AgNcQw=
-X-Google-Smtp-Source: ABdhPJw7qWsRTdcadSuV6n5ZpUryUqTABVY4brbWJQhN96IObECT5qd1JqG3aaXNnwFhNrGxdn6F3g==
-X-Received: by 2002:a50:fd12:: with SMTP id i18mr52497549eds.371.1593965817025;
-        Sun, 05 Jul 2020 09:16:57 -0700 (PDT)
+        bh=ZhHqpIqDfrNOSU+5um3zSzVK23wPGbDAAeDQ/8JEsqM=;
+        b=PERdqRLBinGcvGa7u+6Q0W0Z8HdG12oSBVj5MIRjR4+3qnsj5teiiFESapOGm5wEJv
+         cn5RH4/B9kxypBjrmlnLOEv8cf0h+uppVbKM8XOh+aYeKUgf2O0RAJ+BzN0cLBXF07nZ
+         91hrMJ+xHJ7bJoG2EvqApqMKdt3KxOz3tepGJ+8U8nbPquUhX3IFX0gPzIHk842giiVH
+         MgmYjGsto6bg0zZef30QVHr8svnpFrPcWvJKFh/Fk5hwoDi39+vzcdtcViZVbiP2Xlew
+         PtEKx9uXBu9/a0ZIrO9jax4A6Ie0XnwNILkHCwDh8p/95J1W8u4ElKtF2uftwlYGF0wi
+         CeeA==
+X-Gm-Message-State: AOAM533OTrQEyhvr3vbk2GVIGVnDOvWwrumb6ScuagBiTQWLt5bGVMAq
+        hwfjYgJEEyXb/ToPhrbw7hoM8sjj
+X-Google-Smtp-Source: ABdhPJxfHnk+2TEV9nr3YCzevhHV0iiuPkSEshtKOrVDS8UL+1i0FZFj2VBiJbtY2DtJO4VmO6hxig==
+X-Received: by 2002:a17:906:5909:: with SMTP id h9mr38059839ejq.501.1593965818181;
+        Sun, 05 Jul 2020 09:16:58 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id x4sm14406126eju.2.2020.07.05.09.16.55
+        by smtp.gmail.com with ESMTPSA id x4sm14406126eju.2.2020.07.05.09.16.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2020 09:16:56 -0700 (PDT)
+        Sun, 05 Jul 2020 09:16:57 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
         ioana.ciornei@nxp.com, linux@armlinux.org.uk
-Subject: [PATCH v3 net-next 1/6] net: dsa: felix: clarify the intention of writes to MII_BMCR
-Date:   Sun,  5 Jul 2020 19:16:21 +0300
-Message-Id: <20200705161626.3797968-2-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 2/6] net: dsa: felix: support half-duplex link modes
+Date:   Sun,  5 Jul 2020 19:16:22 +0300
+Message-Id: <20200705161626.3797968-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200705161626.3797968-1-olteanv@gmail.com>
 References: <20200705161626.3797968-1-olteanv@gmail.com>
@@ -67,75 +67,152 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The driver appears to write to BMCR_SPEED and BMCR_DUPLEX, fields which
-are read-only, since they are actually configured through the
-vendor-specific IF_MODE (0x14) register.
+Ping tested:
 
-But the reason we're writing back the read-only values of MII_BMCR is to
-alter these writable fields:
+  [   11.808455] mscc_felix 0000:00:00.5 swp0: Link is Up - 1Gbps/Full - flow control rx/tx
+  [   11.816497] IPv6: ADDRCONF(NETDEV_CHANGE): swp0: link becomes ready
 
-BMCR_RESET
-BMCR_LOOPBACK
-BMCR_ANENABLE
-BMCR_PDOWN
-BMCR_ISOLATE
-BMCR_ANRESTART
+  [root@LS1028ARDB ~] # ethtool -s swp0 advertise 0x4
+  [   18.844591] mscc_felix 0000:00:00.5 swp0: Link is Down
+  [   22.048337] mscc_felix 0000:00:00.5 swp0: Link is Up - 100Mbps/Half - flow control off
 
-In particular, the only field which is really relevant to this driver is
-BMCR_ANENABLE. Clarify that intention by spelling it out, using
-phy_set_bits and phy_clear_bits.
+  [root@LS1028ARDB ~] # ip addr add 192.168.1.1/24 dev swp0
 
-The driver also made a few writes to BMCR_RESET and BMCR_ANRESTART which
-are unnecessary and may temporarily disrupt the link to the PHY. Remove
-them.
+  [root@LS1028ARDB ~] # ping 192.168.1.2
+  PING 192.168.1.2 (192.168.1.2): 56 data bytes
+  (...)
+  ^C--- 192.168.1.2 ping statistics ---
+  3 packets transmitted, 3 packets received, 0% packet loss
+  round-trip min/avg/max = 0.383/0.611/1.051 ms
+
+  [root@LS1028ARDB ~] # ethtool -s swp0 advertise 0x10
+  [  355.637747] mscc_felix 0000:00:00.5 swp0: Link is Down
+  [  358.788034] mscc_felix 0000:00:00.5 swp0: Link is Up - 1Gbps/Half - flow control off
+
+  [root@LS1028ARDB ~] # ping 192.168.1.2
+  PING 192.168.1.2 (192.168.1.2): 56 data bytes
+  (...)
+  ^C
+  --- 192.168.1.2 ping statistics ---
+  16 packets transmitted, 16 packets received, 0% packet loss
+  round-trip min/avg/max = 0.301/0.384/1.138 ms
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
 Changes in v3:
 None.
 
 Changes in v2:
-Patch is new.
+None.
 
- drivers/net/dsa/ocelot/felix_vsc9959.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+Note: this patch is still using state->duplex from mac_config(),
+although that will be changed in 6/6.
 
+ drivers/net/dsa/ocelot/felix.c         |  4 +++-
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 23 +++++++++++++----------
+ include/linux/fsl/enetc_mdio.h         |  1 +
+ 3 files changed, 17 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 75020af7f7a4..f54648dff0ec 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -194,13 +194,15 @@ static void felix_phylink_validate(struct dsa_switch *ds, int port,
+ 		return;
+ 	}
+ 
+-	/* No half-duplex. */
+ 	phylink_set_port_modes(mask);
+ 	phylink_set(mask, Autoneg);
+ 	phylink_set(mask, Pause);
+ 	phylink_set(mask, Asym_Pause);
++	phylink_set(mask, 10baseT_Half);
+ 	phylink_set(mask, 10baseT_Full);
++	phylink_set(mask, 100baseT_Half);
+ 	phylink_set(mask, 100baseT_Full);
++	phylink_set(mask, 1000baseT_Half);
+ 	phylink_set(mask, 1000baseT_Full);
+ 
+ 	if (state->interface == PHY_INTERFACE_MODE_INTERNAL ||
 diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 2067776773f7..9f4c8343652f 100644
+index 9f4c8343652f..94e946b26f90 100644
 --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
 +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -815,7 +815,7 @@ static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
- 		phy_write(pcs, ENETC_PCS_LINK_TIMER2,
- 			  ENETC_PCS_LINK_TIMER2_VAL);
+@@ -817,12 +817,9 @@ static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
  
--		phy_write(pcs, MII_BMCR, BMCR_ANRESTART | BMCR_ANENABLE);
-+		phy_set_bits(pcs, MII_BMCR, BMCR_ANENABLE);
+ 		phy_set_bits(pcs, MII_BMCR, BMCR_ANENABLE);
  	} else {
++		u16 if_mode = ENETC_PCS_IF_MODE_SGMII_EN;
  		int speed;
  
-@@ -845,10 +845,7 @@ static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
- 			  ENETC_PCS_IF_MODE_SGMII_EN |
- 			  ENETC_PCS_IF_MODE_SGMII_SPEED(speed));
+-		if (state->duplex == DUPLEX_HALF) {
+-			phydev_err(pcs, "Half duplex not supported\n");
+-			return;
+-		}
+ 		switch (state->speed) {
+ 		case SPEED_1000:
+ 			speed = ENETC_PCS_SPEED_1000;
+@@ -841,9 +838,9 @@ static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
+ 			return;
+ 		}
  
--		/* Yes, not a mistake: speed is given by IF_MODE. */
--		phy_write(pcs, MII_BMCR, BMCR_RESET |
--					 BMCR_SPEED1000 |
--					 BMCR_FULLDPLX);
-+		phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
+-		phy_write(pcs, ENETC_PCS_IF_MODE,
+-			  ENETC_PCS_IF_MODE_SGMII_EN |
+-			  ENETC_PCS_IF_MODE_SGMII_SPEED(speed));
++		if_mode |= ENETC_PCS_IF_MODE_SGMII_SPEED(speed);
++		if (state->duplex == DUPLEX_HALF)
++			if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
+ 
+ 		phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
  	}
+@@ -870,15 +867,18 @@ static void vsc9959_pcs_init_2500basex(struct phy_device *pcs,
+ 				       unsigned int link_an_mode,
+ 				       const struct phylink_link_state *state)
+ {
++	u16 if_mode = ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500) |
++		      ENETC_PCS_IF_MODE_SGMII_EN;
++
+ 	if (link_an_mode == MLO_AN_INBAND) {
+ 		phydev_err(pcs, "AN not supported on 3.125GHz SerDes lane\n");
+ 		return;
+ 	}
+ 
+-	phy_write(pcs, ENETC_PCS_IF_MODE,
+-		  ENETC_PCS_IF_MODE_SGMII_EN |
+-		  ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500));
++	if (state->duplex == DUPLEX_HALF)
++		if_mode |= ENETC_PCS_IF_MODE_DUPLEX_HALF;
+ 
++	phy_write(pcs, ENETC_PCS_IF_MODE, if_mode);
+ 	phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
  }
  
-@@ -882,9 +879,7 @@ static void vsc9959_pcs_init_2500basex(struct phy_device *pcs,
- 		  ENETC_PCS_IF_MODE_SGMII_EN |
- 		  ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500));
+@@ -919,8 +919,11 @@ static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
+ 	linkmode_set_bit_array(phy_basic_ports_array,
+ 			       ARRAY_SIZE(phy_basic_ports_array),
+ 			       pcs->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, pcs->supported);
+ 	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, pcs->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, pcs->supported);
+ 	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, pcs->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT, pcs->supported);
+ 	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, pcs->supported);
+ 	if (pcs->interface == PHY_INTERFACE_MODE_2500BASEX ||
+ 	    pcs->interface == PHY_INTERFACE_MODE_USXGMII)
+diff --git a/include/linux/fsl/enetc_mdio.h b/include/linux/fsl/enetc_mdio.h
+index 4875dd38af7e..2d9203314865 100644
+--- a/include/linux/fsl/enetc_mdio.h
++++ b/include/linux/fsl/enetc_mdio.h
+@@ -15,6 +15,7 @@
+ #define ENETC_PCS_IF_MODE_SGMII_EN		BIT(0)
+ #define ENETC_PCS_IF_MODE_USE_SGMII_AN		BIT(1)
+ #define ENETC_PCS_IF_MODE_SGMII_SPEED(x)	(((x) << 2) & GENMASK(3, 2))
++#define ENETC_PCS_IF_MODE_DUPLEX_HALF		BIT(3)
  
--	phy_write(pcs, MII_BMCR, BMCR_SPEED1000 |
--				 BMCR_FULLDPLX |
--				 BMCR_RESET);
-+	phy_clear_bits(pcs, MII_BMCR, BMCR_ANENABLE);
- }
- 
- static void vsc9959_pcs_init_usxgmii(struct phy_device *pcs,
+ /* Not a mistake, the SerDes PLL needs to be set at 3.125 GHz by Reset
+  * Configuration Word (RCW, outside Linux control) for 2.5G SGMII mode. The PCS
 -- 
 2.25.1
 
