@@ -2,64 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC2CB214D40
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 16:56:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38910214D47
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 17:02:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727062AbgGEO4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 10:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36854 "EHLO
+        id S1726942AbgGEPCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 11:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726861AbgGEO4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 10:56:22 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A5EC061794
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 07:56:22 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id a14so16171719qvq.6
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 07:56:22 -0700 (PDT)
+        with ESMTP id S1726826AbgGEPCp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 11:02:45 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9C1C061794;
+        Sun,  5 Jul 2020 08:02:45 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id b4so32666098qkn.11;
+        Sun, 05 Jul 2020 08:02:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ki/wzrPTKSEKd71oxUksunAOvtvzgpjlmr2JP+xiF/8=;
-        b=XTjpeP21IK0nHSVgxhCagpN0wLL0ZLklYPXAkNf4ZhfnJr+kZIY7jBG0MLY7VQaEEu
-         Sr6DTD8zIFH1dquzI6tei7zkU0EbehA5RAz/2iNl+u9CeNBAI1/Q+zq5ZYyNz0IH8Jdo
-         0lAWG202TEc6womg+LxPYjNA+Ph1Pn//CyENtOJcShCdeRjcFl8Knyxr/oJ8sa40nRzD
-         rKhPes9SWfaq3brhNjYR+o2zsV4a85w+XZP+z7Z2K38QKD5D61b6S506GLlkkq8n6O9j
-         yXJIQXg9SIjSH7YLX3eWCNl6Vr1SwK67QKTusjP9rspxBDBZnc0iVAg3VJhDVLHrM3RL
-         Ew8A==
+        bh=EUv+aKwDqAjedJH2468a1PbmmVjr517j6wGA0T5ZQjg=;
+        b=m6ddHBuhm40RpyQcYhOweQg/xgucx05pLUrqXUr1OOfiwbr7nGBjKJq19bY2V3vALQ
+         px0Wpea/sgkijwWwxIK2ejAD5EChYRpmt3UvR/YqU4vtsIjuZQf5+ol0V716/rFY1R9F
+         ZjAWo4RCoPDAQJEPbVziRl/tz/kppHvpodmYLzxmTZ4xvhBJhHiVruRdbVsM4pcNd+kY
+         diZ1nH9wS/yfPj5JCDY2SCa6fmJLG+D8TFRORHMjr6asS2hZIaKBrLWOEoaGT+0Jve3h
+         /I2htadTYWDjfiGr8U67TIFUXf1cUKPjSVokC28P3An4F8YJdylENmB45f9ZaxB55QCT
+         5oKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ki/wzrPTKSEKd71oxUksunAOvtvzgpjlmr2JP+xiF/8=;
-        b=F0ZwC9o0ZxfiDFtlbKyN3C5aNnKNp70M/uzN+LZwdp5z4V324DZrM4ynKAVeyjPssr
-         XES1HUK9t5a2hmcCyWWHE1zvtWqc4TbT7vQ3FOJlunk7/rW7GkGNVaUGf610P2kYbA5Y
-         W1BxNXsDMnkjs9QmdrIfKfkrTcLJksg6ofPj6ROvU6NZ3aE+CulhljzWHT/xVM/hhtJI
-         ZXZ70X/IkpVZW6IqAnhcSiJQJSbIhj3P8a/sucDEGL+CYiVW55H/7gqpk0EyK13xXYkt
-         xiHa6m9T0qNFXx6ZdWnWdNxggz+oILOtJkXyPxToNU70JFZaOXyoZsI4hHRdrTmJU41M
-         DvFg==
-X-Gm-Message-State: AOAM5336mDOnhDiIDDfgApkGY4s2JnFldIV9ndGmxU2Aj5PGHL1koW4T
-        AeK9RJdC1GjcpHT2S62DgMpCttQf
-X-Google-Smtp-Source: ABdhPJyl6ix8EuRMVip/MnG0CMT7LRy7hvm9xtxhXZCdL6XR/IWD9GhdY0TYsctWn7+QQYm8SNNlkA==
-X-Received: by 2002:a0c:b520:: with SMTP id d32mr43086931qve.6.1593960980908;
-        Sun, 05 Jul 2020 07:56:20 -0700 (PDT)
+        bh=EUv+aKwDqAjedJH2468a1PbmmVjr517j6wGA0T5ZQjg=;
+        b=phM3rRexopU+P23KU9DudP6cM4szvOQRN7FKlAuhNKrODG25v7RWxGJ+MKlfy3qgjh
+         0HfNkSc34PRVIpW9td7k/VWOcG4rghKDXQCjtgKEakuwpB+P/gnKUHXAcUkLX1YYwCIq
+         ZJxTIaLEENv0xxu9njlTqanvgWjGt1+RHbP0gCcPqwTjV0GbxnrtsLkBliz89LN9vKe7
+         ZZlkcv9GBo+yOgmpqw9LwrsRnNkSjHDAnUHeGtLLzvvsUp1JEMTTToDryXwnmiXVZrCc
+         VDz6YwEskdYE3sE4kSgDFp+gaH1NwHpEcZX6qHIwhxL/j71oEbQT69COXLJLSOdYlHfU
+         sOiQ==
+X-Gm-Message-State: AOAM53196LOrjVMuGRDAjEwPD8tsDWCwfPXBybe4Unzn1vMYl5jtXKxb
+        5WVp4Zaqq8CMOgZeuAx4+2FQwwwL
+X-Google-Smtp-Source: ABdhPJwFQKE0BmI2mhhXHWBE51n7hcwcQAGJ8DslL0ENF/DebT63fWlSqoEyjOZTBRFpyXo6zu3f/g==
+X-Received: by 2002:a05:620a:9c7:: with SMTP id y7mr41431308qky.55.1593961364487;
+        Sun, 05 Jul 2020 08:02:44 -0700 (PDT)
 Received: from ?IPv6:2601:282:803:7700:f517:b957:b896:7107? ([2601:282:803:7700:f517:b957:b896:7107])
-        by smtp.googlemail.com with ESMTPSA id y16sm15604474qkb.116.2020.07.05.07.56.19
+        by smtp.googlemail.com with ESMTPSA id b186sm15724942qkd.28.2020.07.05.08.02.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Jul 2020 07:56:20 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 0/4] devlink: Support get,set mac address of
- a port function
-To:     Parav Pandit <parav@mellanox.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, jiri@mellanox.com, dsahern@kernel.org
-References: <20200623104425.2324-1-parav@mellanox.com>
+        Sun, 05 Jul 2020 08:02:43 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v1 1/4] rdma: update uapi headers
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Maor Gottlieb <maorg@mellanox.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+References: <20200624104012.1450880-1-leon@kernel.org>
+ <20200624104012.1450880-2-leon@kernel.org>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0ac7f838-c04b-f753-2d0a-62de6a06cf9b@gmail.com>
-Date:   Sun, 5 Jul 2020 08:56:18 -0600
+Message-ID: <e91ebfe0-87aa-0dc4-7c2c-48004cc761c7@gmail.com>
+Date:   Sun, 5 Jul 2020 09:02:42 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200623104425.2324-1-parav@mellanox.com>
+In-Reply-To: <20200624104012.1450880-2-leon@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -68,44 +72,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/23/20 4:44 AM, Parav Pandit wrote:
-> Currently ip link set dev <pfndev> vf <vf_num> <param> <value> has
-> few below limitations.
-> 
-> 1. Command is limited to set VF parameters only.
-> It cannot set the default MAC address for the PCI PF.
-> 
-> 2. It can be set only on system where PCI SR-IOV is supported.
-> In smartnic based system, eswitch of a NIC resides on a different
-> embedded cpu which has the VF and PF representors for the SR-IOV
-> support on a host system in which this smartnic is plugged-in.
-> 
-> 3. It cannot setup the function attributes of sub-function described
-> in detail in comprehensive RFC [1] and [2].
-> 
-> This series covers the first small part to let user query and set MAC
-> address (hardware address) of a PCI PF/VF which is represented by
-> devlink port.
-> 
-> Patch summary:
-> Patch-1 Sync kernel header
-> Patch-2 Move devlink port code at start to reuse
-> Patch-3 Extends port dump command to query additional port function
-> attribute(s)
-> Patch-4 Enables user to set port function hardware address
-> 
-> [1] https://lore.kernel.org/netdev/20200519092258.GF4655@nanopsycho/
-> [2] https://marc.info/?l=linux-netdev&m=158555928517777&w=2
-> 
-> Parav Pandit (4):
->   Update kernel headers
->   devlink: Move devlink port code at start to reuse
->   devlink: Support querying hardware address of port function
->   devlink: Support setting port function hardware address
-> 
->  devlink/devlink.c            | 378 ++++++++++++++++++++++++-----------
->  include/uapi/linux/devlink.h |  12 ++
->  2 files changed, 269 insertions(+), 121 deletions(-)
-> 
+On 6/24/20 4:40 AM, Leon Romanovsky wrote:
+> diff --git a/rdma/include/uapi/rdma/rdma_netlink.h b/rdma/include/uapi/rdma/rdma_netlink.h
+> index ae5a77a1..fe127b88 100644
+> --- a/rdma/include/uapi/rdma/rdma_netlink.h
+> +++ b/rdma/include/uapi/rdma/rdma_netlink.h
+> @@ -287,6 +287,12 @@ enum rdma_nldev_command {
+>  
+>  	RDMA_NLDEV_CMD_STAT_DEL,
+>  
+> +	RDMA_NLDEV_CMD_RES_QP_GET_RAW, /* can dump */
+> +
+> +	RDMA_NLDEV_CMD_RES_CQ_GET_RAW, /* can dump */
+> +
+> +	RDMA_NLDEV_CMD_RES_MR_GET_RAW, /* can dump */
+> +
+>  	RDMA_NLDEV_NUM_OPS
+>  };
 
-applied to iproute2-next. Thanks
+you are inserting new commands in the middle which breaks existing users
+of this API.
+
