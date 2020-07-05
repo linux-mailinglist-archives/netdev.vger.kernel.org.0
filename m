@@ -2,64 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 643C2214969
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 02:57:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A918521496B
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 02:59:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728102AbgGEA5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jul 2020 20:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
+        id S1728129AbgGEA7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jul 2020 20:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727041AbgGEA5Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 20:57:25 -0400
+        with ESMTP id S1727041AbgGEA7U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jul 2020 20:59:20 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52CDC061794
-        for <netdev@vger.kernel.org>; Sat,  4 Jul 2020 17:57:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57663C061794;
+        Sat,  4 Jul 2020 17:59:20 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1ED68157A9D98;
-        Sat,  4 Jul 2020 17:57:25 -0700 (PDT)
-Date:   Sat, 04 Jul 2020 17:57:24 -0700 (PDT)
-Message-Id: <20200704.175724.1724928333689332249.davem@davemloft.net>
-To:     fw@strlen.de
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org
-Subject: Re: [PATCH net-next 0/3] mptcp: add REUSEADDR/REUSEPORT/V6ONLY
- setsockopt support
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 76F47157A9DA1;
+        Sat,  4 Jul 2020 17:59:19 -0700 (PDT)
+Date:   Sat, 04 Jul 2020 17:59:18 -0700 (PDT)
+Message-Id: <20200704.175918.135881238117884776.davem@davemloft.net>
+To:     codrin.ciubotariu@microchip.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        kuba@kernel.org, linux@armlinux.org.uk, rmk+kernel@armlinux.org.uk
+Subject: Re: [PATCH net-next v2 1/2] net: dsa: microchip: split
+ adjust_link() in phylink_mac_link_{up|down}()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200704233017.20831-1-fw@strlen.de>
-References: <20200704233017.20831-1-fw@strlen.de>
+In-Reply-To: <20200702151724.1483891-1-codrin.ciubotariu@microchip.com>
+References: <20200702151724.1483891-1-codrin.ciubotariu@microchip.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 04 Jul 2020 17:57:25 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 04 Jul 2020 17:59:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
-Date: Sun,  5 Jul 2020 01:30:14 +0200
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Date: Thu, 2 Jul 2020 18:17:23 +0300
 
-> restarting an mptcp-patched sshd yields following error:
+> The DSA subsystem moved to phylink and adjust_link() became deprecated in
+> the process. This patch removes adjust_link from the KSZ DSA switches and
+> adds phylink_mac_link_up() and phylink_mac_link_down().
 > 
->   sshd: error: Bind to port 22 on 0.0.0.0 failed: Address already in use.
->   sshd: error: setsockopt IPV6_V6ONLY: Operation not supported
->   sshd: error: Bind to port 22 on :: failed: Address already in use.
->   sshd: fatal: Cannot bind any address.
-> 
-> This series adds support for the needed setsockopts:
-> 
-> First patch skips the generic SOL_SOCKET handler for MPTCP:
-> in mptcp case, the setsockopt needs to alter the tcp socket, not the mptcp
-> parent socket.
-> 
-> Second patch adds minimal SOL_SOCKET support: REUSEPORT and REUSEADDR.
-> Rest is still handled by the generic SOL_SOCKET code.
-> 
-> Last patch adds IPV6ONLY support.  This makes ipv6 work for openssh:
-> It creates two listening sockets, before this patch, binding the ipv6
-> socket will fail because the port is already bound by the ipv4 one.
+> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+> Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-Series applied, thanks Florian.
+Applied.
