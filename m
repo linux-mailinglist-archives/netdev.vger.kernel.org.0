@@ -2,145 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86A17214E8D
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 20:31:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F25EF214E8E
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 20:33:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728106AbgGESbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 14:31:23 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47510 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727803AbgGESbT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Jul 2020 14:31:19 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1js9Q3-003iuB-HS; Sun, 05 Jul 2020 20:31:15 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Robert Richter <rrichter@marvell.com>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH net-next 7/7] net: phy: mdio-octeon: Cleanup module loading dependencies
-Date:   Sun,  5 Jul 2020 20:29:21 +0200
-Message-Id: <20200705182921.887441-8-andrew@lunn.ch>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200705182921.887441-1-andrew@lunn.ch>
-References: <20200705182921.887441-1-andrew@lunn.ch>
+        id S1727925AbgGESdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 14:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727869AbgGESdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 14:33:17 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF24C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 11:33:16 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id dg28so32714835edb.3
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 11:33:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=H0dBiMlIz57i5a6OQd6NNT0qs7e4FvnqEbY3KZH5hD8=;
+        b=CdFIz0ffcFB5FT8t5IaEhDZyUUp01nVtQqvO1mpda5BxsFn2930XF2Z2oE2exxz4wn
+         l7XKnvQC3uMablm/vg23TOUkkdnchyDUsIDZcmMkE88p5vjGI/eQhYjCk2qARTMEzSB7
+         TGa0jTtLBjq/jNgaLRuSK9wALpCB3Y9hy0Dds=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=H0dBiMlIz57i5a6OQd6NNT0qs7e4FvnqEbY3KZH5hD8=;
+        b=FqsJt3VV1qjoK9jTfNQos6S0sDQAtF89jfFGe2I3ohR4mqbH61ppCc04Wqil1CfPQZ
+         tFwE1UTjNi7h59XMrZL/PnwQ0S9sFuckID0i9/7cPT06thwbvjHXrQONZV1h6phijUR7
+         t/M0shBp1stAGjAaOLzfndTxkjmzeB0Dow9Ei+Jt2Z9X/ur1CoLTZIdomI6z6yOV24Ca
+         z7+iKJZ6CQWEJ7YsxSbRI+EUF/bOP2z7TRAcji8Iwgm9QxYdGKUD/4y1MgYpiE43JEw+
+         igGY8JxiEAwRjg97xz8ABFnfS2m2xxiVQA+aycQEDf2dIQngFndOWKV975AacQaMFgIC
+         MwWg==
+X-Gm-Message-State: AOAM530wy2igYm4sQ4W+WQpfjkGgTfNcp1/9R0Apb9orHhG8OdzuqS8L
+        yaktQS2oH+cYgww1AUUDgbX3KQ==
+X-Google-Smtp-Source: ABdhPJw1YolUJEgQOjHxaMMgrtEFfdKzMndj+fP4DQxRb8lTkT+E4qELkvffnnn/b1BV5qIxiEI5+g==
+X-Received: by 2002:a50:fc88:: with SMTP id f8mr20587991edq.314.1593973995305;
+        Sun, 05 Jul 2020 11:33:15 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id u17sm14476477eje.74.2020.07.05.11.33.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Jul 2020 11:33:14 -0700 (PDT)
+Subject: Re: [PATCH net] bridge: mcast: Fix MLD2 Report IPv6 payload length
+ check
+To:     =?UTF-8?Q?Linus_L=c3=bcssing?= <linus.luessing@c0d3.blue>,
+        netdev@vger.kernel.org
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Martin Weinelt <martin@linuxlounge.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20200705182234.10257-1-linus.luessing@c0d3.blue>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <093beb97-87e8-e112-78ad-b3e4fe230cdb@cumulusnetworks.com>
+Date:   Sun, 5 Jul 2020 21:33:13 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
+In-Reply-To: <20200705182234.10257-1-linus.luessing@c0d3.blue>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To ensure that the octoen MDIO driver has been loaded, the Cavium
-ethernet drivers reference a dummy symbol in the MDIO driver. This
-forces it to be loaded first. And this symbol has not been cleanly
-implemented, resulting in warnings when build W=1 C=1.
+On 05/07/2020 21:22, Linus Lüssing wrote:
+> Commit e57f61858b7c ("net: bridge: mcast: fix stale nsrcs pointer in
+> igmp3/mld2 report handling") introduced a small bug which would potentially
+> lead to accepting an MLD2 Report with a broken IPv6 header payload length
+> field.
+> 
+> The check needs to take into account the 2 bytes for the "Number of
+> Sources" field in the "Multicast Address Record" before reading it.
+> And not the size of a pointer to this field.
+> 
+> Fixes: e57f61858b7c ("net: bridge: mcast: fix stale nsrcs pointer in igmp3/mld2 report handling")
+> Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
+> ---
+>  net/bridge/br_multicast.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-Since device tree is being used, and a phandle points to the PHY on
-the MDIO bus, we can make use of deferred probing. If the PHY fails to
-connect, it should be because the MDIO bus driver has not loaded
-yet. Return -EPROBE_DEFER so it will be tried again later.
+I'd rather be more concerned with it rejecting a valid report due to wrong size. The ptr
+size would always be bigger. :)
 
-Cc: Sunil Goutham <sgoutham@marvell.com>
-Cc: Robert Richter <rrichter@marvell.com>
-Cc: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/ethernet/cavium/octeon/octeon_mgmt.c | 6 +-----
- drivers/net/phy/mdio-octeon.c                    | 6 ------
- drivers/staging/octeon/ethernet-mdio.c           | 2 +-
- drivers/staging/octeon/ethernet-mdio.h           | 2 --
- drivers/staging/octeon/ethernet.c                | 2 --
- 5 files changed, 2 insertions(+), 16 deletions(-)
+Thanks!
+Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 
-diff --git a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
-index cbaa1924afbe..4bf0237ee52e 100644
---- a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
-+++ b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
-@@ -961,7 +961,7 @@ static int octeon_mgmt_init_phy(struct net_device *netdev)
- 				PHY_INTERFACE_MODE_MII);
- 
- 	if (!phydev)
--		return -ENODEV;
-+		return -EPROBE_DEFER;
- 
- 	return 0;
- }
-@@ -1554,12 +1554,8 @@ static struct platform_driver octeon_mgmt_driver = {
- 	.remove		= octeon_mgmt_remove,
- };
- 
--extern void octeon_mdiobus_force_mod_depencency(void);
--
- static int __init octeon_mgmt_mod_init(void)
- {
--	/* Force our mdiobus driver module to be loaded first. */
--	octeon_mdiobus_force_mod_depencency();
- 	return platform_driver_register(&octeon_mgmt_driver);
- }
- 
-diff --git a/drivers/net/phy/mdio-octeon.c b/drivers/net/phy/mdio-octeon.c
-index a2f93948db97..d1e1009d51af 100644
---- a/drivers/net/phy/mdio-octeon.c
-+++ b/drivers/net/phy/mdio-octeon.c
-@@ -108,12 +108,6 @@ static struct platform_driver octeon_mdiobus_driver = {
- 	.remove		= octeon_mdiobus_remove,
- };
- 
--void octeon_mdiobus_force_mod_depencency(void)
--{
--	/* Let ethernet drivers force us to be loaded.  */
--}
--EXPORT_SYMBOL(octeon_mdiobus_force_mod_depencency);
--
- module_platform_driver(octeon_mdiobus_driver);
- 
- MODULE_DESCRIPTION("Cavium OCTEON MDIO bus driver");
-diff --git a/drivers/staging/octeon/ethernet-mdio.c b/drivers/staging/octeon/ethernet-mdio.c
-index c798672d61b2..cfb673a52b25 100644
---- a/drivers/staging/octeon/ethernet-mdio.c
-+++ b/drivers/staging/octeon/ethernet-mdio.c
-@@ -163,7 +163,7 @@ int cvm_oct_phy_setup_device(struct net_device *dev)
- 	of_node_put(phy_node);
- 
- 	if (!phydev)
--		return -ENODEV;
-+		return -EPROBE_DEFER;
- 
- 	priv->last_link = 0;
- 	phy_start(phydev);
-diff --git a/drivers/staging/octeon/ethernet-mdio.h b/drivers/staging/octeon/ethernet-mdio.h
-index e3771d48c49b..7f6716e3fad4 100644
---- a/drivers/staging/octeon/ethernet-mdio.h
-+++ b/drivers/staging/octeon/ethernet-mdio.h
-@@ -22,7 +22,5 @@
- 
- extern const struct ethtool_ops cvm_oct_ethtool_ops;
- 
--void octeon_mdiobus_force_mod_depencency(void);
--
- int cvm_oct_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
- int cvm_oct_phy_setup_device(struct net_device *dev);
-diff --git a/drivers/staging/octeon/ethernet.c b/drivers/staging/octeon/ethernet.c
-index f42c3816ce49..920ab08e4311 100644
---- a/drivers/staging/octeon/ethernet.c
-+++ b/drivers/staging/octeon/ethernet.c
-@@ -689,8 +689,6 @@ static int cvm_oct_probe(struct platform_device *pdev)
- 	mtu_overhead += VLAN_HLEN;
- #endif
- 
--	octeon_mdiobus_force_mod_depencency();
--
- 	pip = pdev->dev.of_node;
- 	if (!pip) {
- 		pr_err("Error: No 'pip' in /aliases\n");
--- 
-2.27.0.rc2
+> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+> index 83490bf73a13..4c4a93abde68 100644
+> --- a/net/bridge/br_multicast.c
+> +++ b/net/bridge/br_multicast.c
+> @@ -1000,21 +1000,21 @@ static int br_ip6_multicast_mld2_report(struct net_bridge *br,
+>  	num = ntohs(icmp6h->icmp6_dataun.un_data16[1]);
+>  	len = skb_transport_offset(skb) + sizeof(*icmp6h);
+>  
+>  	for (i = 0; i < num; i++) {
+>  		__be16 *_nsrcs, __nsrcs;
+>  		u16 nsrcs;
+>  
+>  		nsrcs_offset = len + offsetof(struct mld2_grec, grec_nsrcs);
+>  
+>  		if (skb_transport_offset(skb) + ipv6_transport_len(skb) <
+> -		    nsrcs_offset + sizeof(_nsrcs))
+> +		    nsrcs_offset + sizeof(__nsrcs))
+>  			return -EINVAL;
+>  
+>  		_nsrcs = skb_header_pointer(skb, nsrcs_offset,
+>  					    sizeof(__nsrcs), &__nsrcs);
+>  		if (!_nsrcs)
+>  			return -EINVAL;
+>  
+>  		nsrcs = ntohs(*_nsrcs);
+>  		grec_len = struct_size(grec, grec_src, nsrcs);
+>  
+> 
 
