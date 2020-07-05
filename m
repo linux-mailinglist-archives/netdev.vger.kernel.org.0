@@ -2,125 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B951214D22
-	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 16:32:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0297214D34
+	for <lists+netdev@lfdr.de>; Sun,  5 Jul 2020 16:45:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbgGEOb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 10:31:57 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:55379 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726747AbgGEOb5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 10:31:57 -0400
-Received: from [192.168.1.8] (unknown [116.237.151.97])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id DBA0E40F4E;
-        Sun,  5 Jul 2020 22:31:32 +0800 (CST)
-Subject: Re: [PATCH net] net/sched: act_mirred: fix fragment the packet after
- defrag in act_ct
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <8b06ac17-e19b-90f3-6dd2-0274a0ee474b@ucloud.cn>
- <CAM_iQpWWmCASPidrQYO6wCUNkZLR-S+Y9r9XrdyjyPHE-Q9O5g@mail.gmail.com>
- <012daf78-a18f-3dde-778a-482204c5b6af@ucloud.cn>
- <a205bada-8879-0dfd-c3ed-53fe9cef6449@ucloud.cn>
- <CAM_iQpV_1_H_Cb3t4hCCfRXf2Tn2x9sT0vJ5rh6J6iWQ=PNesA@mail.gmail.com>
- <7aaefcef-5709-04a8-0c54-c8c6066e1e90@ucloud.cn>
- <20200702173228.GH74252@localhost.localdomain>
- <CAM_iQpUrRzOi-S+49jMhDQCS0jqOmwObY3ZNa6n9qJGbPTXM-A@mail.gmail.com>
- <20200703004727.GU2491@localhost.localdomain>
- <349bb25a-7651-2664-25bc-3f613297fb5c@ucloud.cn>
- <20200703175057.GV2491@localhost.localdomain>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <7b7495bd-7d24-c30a-d0de-72bff6301506@ucloud.cn>
-Date:   Sun, 5 Jul 2020 22:31:33 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727083AbgGEOpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 10:45:09 -0400
+Received: from mail-eopbgr130055.outbound.protection.outlook.com ([40.107.13.55]:6116
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726747AbgGEOpI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Jul 2020 10:45:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L0xTMnR3epr5FCs8gHyuYyqqx096EaJ3ulJTlYLlIrVkndUP/ifNB4WFnjBCsYB0bzXOP/7+k9OweY3Kleu+ykGGOzGzsYsxP0KONNH5M2ugwhF6yy3v4ET5eTsn9RwUWvFAYWHlkagjWRjQiFI7jEFG1VpBnsLWDMHswGOuxbpiDtNxRY7o4LIz0L6uqYvG6SO7yNoOpKzzcEiymOsUxWttrr0Vcww3UkmAlt2PocFL4AjZ7NsvJG1BesFUwxsSq2YOKWj0K2mWdCJwGGig0qhMfPhEcLDbLsapFHpIFx/BuRlXp6Urz6dHnHCuCd4PflRl2mp9W8cyNHXBEYbbAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Iz/phFwq43MMxpKtdiuafRnMPxlJQBjtqPOQhYIWbH8=;
+ b=XVpRDwq9hj61EmZCyrZ5bjE40+qW14Lp1x3CS99dvXTSFjQ5ONQi5FFX7S0EdfskyQBSFkMfOv5wXLbu/twFTGEu+GfDxcXfmnM8mDRXRhBnFLwPQHJkb90vP5KPV1GATrgomdKMsycnQVsb/sJIGmApcgmuOBRsmFgs6rtXPK0DuL1O3OP3S5+Z8wj9sdnyxOGWXII6D/qzIsqbnXGr07KMAJi5h6jNevO+F27CqlrcGbAUmkJz/LVIJyUzEVvjtzdSmjXIaVFWCSbRd8rm5Z4Xg9bqQU82zwqY3iLzAC3xh5aVUqx5eFUJbHxe7naUsiJxVxwcSMrLJHrxvJz23g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Iz/phFwq43MMxpKtdiuafRnMPxlJQBjtqPOQhYIWbH8=;
+ b=c8sPHhxFSQNn9tZw0Xt0fTtx2gr7G8e0X6ed+5um3T3nQxyv5Qq4VoKWl2R+QQTc5v+XqmL27lo2C34pt5cLN+UJlO6ueRD/N4rcPTKmXdY97GDdb5VMw78uMqhCqjRpfco0UqDGXdd9htRuxpmdeO0+a/Yxok1bY/tRZ6texEM=
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ (2603:10a6:209:12::18) by AM6PR04MB5062.eurprd04.prod.outlook.com
+ (2603:10a6:20b:11::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20; Sun, 5 Jul
+ 2020 14:45:03 +0000
+Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::75d9:c8cb:c564:d17f]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
+ ([fe80::75d9:c8cb:c564:d17f%5]) with mapi id 15.20.3153.029; Sun, 5 Jul 2020
+ 14:45:03 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Sven Van Asbroeck <thesven73@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>
+CC:     Shawn Guo <shawnguo@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH v5 3/3] ARM: imx6plus: optionally enable
+ internal routing of clk_enet_ref
+Thread-Topic: [EXT] Re: [PATCH v5 3/3] ARM: imx6plus: optionally enable
+ internal routing of clk_enet_ref
+Thread-Index: AQHWUMBIY0/PmQIJzUKZXhlXPuzWDKj3d74AgAGaMEA=
+Date:   Sun, 5 Jul 2020 14:45:02 +0000
+Message-ID: <AM6PR0402MB360781DA3F738C2DF445E821FF680@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+References: <20200702175352.19223-1-TheSven73@gmail.com>
+ <20200702175352.19223-3-TheSven73@gmail.com>
+ <CAOMZO5DxUeXH8ZYxmKynA7xO3uF6SP_Kt-g=8MPgsF7tqkRvAA@mail.gmail.com>
+ <CAGngYiXGXDqCZeJme026uz5FjU56UojmQFFiJ5_CZ_AywdQiEw@mail.gmail.com>
+In-Reply-To: <CAGngYiXGXDqCZeJme026uz5FjU56UojmQFFiJ5_CZ_AywdQiEw@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [101.86.4.40]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 1e7efb26-a777-45bc-8af6-08d820f20034
+x-ms-traffictypediagnostic: AM6PR04MB5062:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR04MB5062530C1E60E87253EF2DD5FF680@AM6PR04MB5062.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 045584D28C
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XtnfNpoz9VfktgUHJ9GraROv+zMM1KcRLRDt0sFYBy5uXqQ7/TexpxALFi7NdMh91sXjilDkbjnD72ydmt+U3kXGQBJPYafCDfIJJ37Nl1qMccX2TVUO7J3rbvDyyGHcA6p9Cdyjex3fHPvbFLN8on8PqApSVXLCwJXiG/w5TzH2s67M3NLx4BbsE4AC03ZE3xtnltGbrXTiRzqmWVBGE91fgWXQo3zTn0fMjWY2SJxQvWjzvcpe9To7vQ87WKhD5spDsDPjTmJ+e8zVhqzZZeebUbMpttrUgHDrXmvqGiHqgT3k0Wa7kcbNhfu9xeZ5hJWJGUwG6zm+C9+lKtsY2FJCOXQoutO1HJAIsOK7Km9htgkejN/xWeRVOTY4zEbS
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39850400004)(136003)(366004)(376002)(346002)(4326008)(54906003)(110136005)(52536014)(2906002)(316002)(66476007)(86362001)(7416002)(66446008)(66556008)(66946007)(71200400001)(76116006)(64756008)(55016002)(33656002)(9686003)(8936002)(5660300002)(186003)(53546011)(6506007)(83380400001)(26005)(8676002)(7696005)(478600001)(32563001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: qfXiU1zxmhxM8+AxyzO+ZSQ6MmgYqkV4fP8Spat8MNAP9AayBtYuyEKtAJgeTsvm0soZd1b2oVgiovb/yUYdSKLcL4kfQgXs1EIyNp4rOvS29r4itwlWwbQR2d5ijfYE8qFxL66JemmtmriVauR+jQ+0joBx1+Y4OhSEhcuwoTxX9eFyjYLC2XQCaAKxge9SOd8Y8CUVm4D5soY0kvMWX/VUPa52cxGMupcW6dJ1L4PMpyEJOoRwvZaU5hiJAdndlqeTIXUoRerxWYFj7FxnX7yCtyjb05bRqGq6V++Vxu9dimLrcwaZ7VeBnHCTZHuiACB/L02Sv7QbF6BS2uwzqjAAjWAFi3SWJinAQWfP1oRpXKEW6QIXOkfoaMMsvSIC0AZZvNUV92UDHKc9a1d+ly4+vR1p8HcBHifPGSkf/UqSG/fedZ8avshSwnbOFAOSkzapdhovCjpqrg253YOIiy+abHc8jD5ZurItOHxExqM=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20200703175057.GV2491@localhost.localdomain>
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEJKS0tLS0hJT0lPQkhZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkXIjULOBw4SEgdIT5OOj0dDh43MjocVlZVQkhDTihJWVdZCQ
-        4XHghZQVk1NCk2OjckKS43PllXWRYaDxIVHRRZQVk0MFkG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PS46FQw5Sj5NAk0#AT80LRoX
-        OiIaCyFVSlVKTkJIQk5CT0JISkpNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
-        SExVSk5KVUJMWVdZCAFZQU1KQ0o3Bg++
-X-HM-Tid: 0a731f63ad892086kuqydba0e40f4e
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3607.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e7efb26-a777-45bc-8af6-08d820f20034
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jul 2020 14:45:02.9833
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yN4j8Dde77IdX8cm/X7P3G+4gHrK3fqKubzSe2ZwptrPcNWdAXcd2Fp8atSKZDuxJMWv2jAAgQf35nPVvvX5Fg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5062
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-ÔÚ 2020/7/4 1:50, Marcelo Ricardo Leitner Ð´µÀ:
-> On Fri, Jul 03, 2020 at 06:19:51PM +0800, wenxu wrote:
->> On 7/3/2020 8:47 AM, Marcelo Ricardo Leitner wrote:
->>> On Thu, Jul 02, 2020 at 02:39:07PM -0700, Cong Wang wrote:
->>>> On Thu, Jul 2, 2020 at 10:32 AM Marcelo Ricardo Leitner
->>>> <marcelo.leitner@gmail.com> wrote:
->>>>> On Thu, Jul 02, 2020 at 05:36:38PM +0800, wenxu wrote:
->>>>>> On 7/2/2020 1:33 AM, Cong Wang wrote:
->>>>>>> On Wed, Jul 1, 2020 at 1:21 AM wenxu <wenxu@ucloud.cn> wrote:
->>>>>>>> On 7/1/2020 2:21 PM, wenxu wrote:
->>>>>>>>> On 7/1/2020 2:12 PM, Cong Wang wrote:
->>>>>>>>>> On Tue, Jun 30, 2020 at 11:03 PM wenxu <wenxu@ucloud.cn> wrote:
->>>>>>>>>>> Only forward packet case need do fragment again and there is no need do defrag explicit.
->>>>>>>>>> Same question: why act_mirred? You have to explain why act_mirred
->>>>>>>>>> has the responsibility to do this job.
->>>>>>>>> The fragment behavior only depends on the mtu of the device sent in act_mirred. Only in
->>>>>>>>>
->>>>>>>>> the act_mirred can decides whether do the fragment or not.
->>>>>>>> Hi cong,
->>>>>>>>
->>>>>>>>
->>>>>>>> I still think this should be resolved in the act_mirred.  Maybe it is not matter with a "responsibility"
->>>>>>>>
->>>>>>>> Did you have some other suggestion to solve this problem?
->>>>>>> Like I said, why not introduce a new action to handle fragment/defragment?
->>>>>>>
->>>>>>> With that, you can still pipe it to act_ct and act_mirred to achieve
->>>>>>> the same goal.
->>>>>> Thanks.  Consider about the act_fagment, There are two problem for this.
->>>>>>
->>>>>>
->>>>>> The frag action will put the ressemble skb to more than one packets. How these packets
->>>>>>
->>>>>> go through the following tc filter or chain?
->>>>> One idea is to listificate it, but I don't see how it can work. For
->>>>> example, it can be quite an issue when jumping chains, as the match
->>>>> would have to work on the list as well.
->>>> Why is this an issue? We already use goto action for use cases like
->>>> vlan pop/push. The header can be changed all the time, reclassification
->>>> is necessary.
->>> Hmm I'm not sure you got what I meant. That's operating on the very
->>> same skb... I meant that the pipe would handle a list of skbs (like in
->>> netif_receive_skb_list). So when we have a goto action with such skb,
->>> it would have to either break this list and reclassify each skb
->>> individually, or the classification would have to do it. Either way,
->>> it adds more complexity not just to the code but to the user as well
->>> and ends up doing more processing (in case of fragments or not) than
->>> if it knew how to output such packets properly. Or am I just
->>> over-complicating it?
->>>
->>> Or, instead of the explicit "frag" action, make act_ct re-fragment it.
->>> It would need to, somehow, push multiple skbs down the remaining
->>> action pipe. It boils down to the above as well.
->>>
->>>>>> When should use the act_fragament the action,  always before the act_mirred?
->>>>> Which can be messy if you consider chains like: "mirred, push vlan,
->>>>> mirred" or so. "frag, mirred, defrag, push vlan, frag, mirred".
->>>> So you mean we should have a giant act_do_everything?
->>> Not at all, but
->>>
->>>> "Do one thing do it well" is exactly the philosophy of designing tc
->>>> actions, if you are against this, you are too late in the game.
->>> in this case a act_output_it_well could do it. ;-)
->> agree, Maybe a act_output_ct action is better?
-> Ahm, sorry, that wasn't really my intention here. I meant that I don't
-> see an issue with mirred learning how to fragment it and, with that,
-> do its action "well" (as subjective as the term can be).
-Thanks£¬ I also think It is ok do fragment in the mirred output.
->
->>> Thanks,
->>>   Marcelo
->>>
+RnJvbTogU3ZlbiBWYW4gQXNicm9lY2sgPHRoZXN2ZW43M0BnbWFpbC5jb20+DQo+IEhpIEZhYmlv
+LCBBbmR5LA0KPiANCj4gT24gVGh1LCBKdWwgMiwgMjAyMCBhdCA2OjI5IFBNIEZhYmlvIEVzdGV2
+YW0gPGZlc3RldmFtQGdtYWlsLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBXaXRoIHRoZSBkZXZpY2Ug
+dHJlZSBhcHByb2FjaCwgSSB0aGluayB0aGF0IGEgYmV0dGVyIHBsYWNlIHRvIHRvdWNoDQo+ID4g
+R1BSNSB3b3VsZCBiZSBpbnNpZGUgdGhlIGZlYyBkcml2ZXIuDQo+ID4NCj4gDQo+IEFyZSB3ZSAx
+MDAlIHN1cmUgdGhpcyBpcyB0aGUgYmVzdCB3YXkgZm9yd2FyZCwgdGhvdWdoPw0KPiANCj4gQWxs
+IHRoZSBGRUMgZHJpdmVyIHNob3VsZCBjYXJlIGFib3V0IGlzIHRoZSBGRUMgbG9naWMgYmxvY2sg
+aW5zaWRlIHRoZSBTb0MuIEl0DQo+IHNob3VsZCBub3QgY29uY2VybiBpdHNlbGYgd2l0aCB0aGUg
+d2F5IGEgU29DIGhhcHBlbnMgdG8gYnJpbmcgYSBjbG9jayAoUFRQDQo+IGNsb2NrKSB0byB0aGUg
+aW5wdXQgb2YgdGhlIEZFQyBsb2dpYyBibG9jayAtIHRoYXQgaXMgcHVyZWx5IGEgU29DIGltcGxl
+bWVudGF0aW9uDQo+IGRldGFpbC4NCg0KSSBhbHNvIGFncmVlIHdpdGggdGhhdCByZWxhdGVzIHRv
+IFNPQyBpbnRlZ3JhdGlvbi4gDQo+IA0KPiBJdCBtYWtlcyBzZW5zZSB0byBhZGQgZnNsLHN0b3At
+bW9kZSAoPSBhIEdQUiBiaXQpIHRvIHRoZSBGRUMgZHJpdmVyLCBhcyB0aGlzIGJpdA0KPiBpcyBh
+IGxvZ2ljIGlucHV0IHRvIHRoZSBGRUMgYmxvY2ssIHdoaWNoIHRoZSBkcml2ZXIgbmVlZHMgdG8g
+ZHluYW1pY2FsbHkgZmxpcC4NCj4gDQo+IEJ1dCB0aGUgUFRQIGNsb2NrIGlzIGRpZmZlcmVudCwg
+YmVjYXVzZSBpdCdzIHN0YXRpY2FsbHkgcm91dGVkIGJ5IHRoZSBTb0MuDQo+IA0KPiBNYXliZSB0
+aGlzIHByb2JsZW0gbmVlZHMgYSBjbG9jayByb3V0aW5nIHNvbHV0aW9uPw0KPiBJc24ndCB0aGVy
+ZSBhbiBpbXg2cSBwbHVzIGNsb2NrIG11eCB3ZSdyZSBub3QgbW9kZWxsaW5nPw0KPiANCj4gICBl
+bmV0X3JlZi1vLS0tLS0tPmV4dD4tLS1wYWRfY2xrLS18IFwNCj4gICAgICAgICAgICB8ICAgICAg
+ICAgICAgICAgICAgICAgICB8TSB8LS0tLWZlY19wdHBfY2xrDQo+ICAgICAgICAgICAgby0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tfF8vDQo+IA0KPiBXaGVyZSBNID0gbXV4IGNvbnRyb2xsZWQgYnkg
+R1BSNVs5XQ0KPiANCj4gVGhlIGlzc3VlIGhlcmUgaXMgdGhhdCBwYWRfY2xrIGlzIHJvdXRlZCBl
+eHRlcm5hbGx5LCBzbyBpdHMgcGFyZW50IGNvdWxkIGJlIGFueQ0KPiBpbnRlcm5hbCBvciBleHRl
+cm5hbCBjbG9jay4gSSBoYXZlIG5vIGlkZWEgaG93IHRvIG1vZGVsIHRoaXMgaW4gdGhlIGNsb2Nr
+DQo+IGZyYW1ld29yay4NCkRvbid0IGNvbnNpZGVyIGl0IGNvbXBsZXgsIEdQUjVbOV0ganVzdCBz
+ZWxlY3QgdGhlIHJnbWlpIGd0eCBzb3VyY2UgZnJvbSBQQUQgb3IgaW50ZXJuYWwNCkxpa2XvvJoN
+CkdQUjVbOV0gaXMgY2xlYXJlZDogUEFEIC0+IE1BQyBndHgNCkdQUjVbOV0gaXMgc2V0OiBQbGxf
+ZW5ldCAtPiBNQUMgZ3R4DQpBcyB5b3Ugc2FpZCwgcmVnaXN0ZXIgb25lIGNsb2NrIG11eCBmb3Ig
+dGhlIHNlbGVjdGlvbiwgYXNzaWduIHRoZSBjbG9jayBwYXJlbnQgYnkgYm9hcmQgZHRzDQpmaWxl
+LCBidXQgbm93IGN1cnJlbnQgY2xvY2sgZHJpdmVyIGRvZXNuJ3Qgc3VwcG9ydCBHUFIgY2xvY2su
+IA0K
