@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17532215419
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 10:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C142921541A
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 10:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728412AbgGFIkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 04:40:21 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:19301 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726001AbgGFIkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 04:40:21 -0400
+        id S1728439AbgGFIkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 04:40:40 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:4623 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726001AbgGFIkj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 04:40:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1594024821; x=1625560821;
+  t=1594024839; x=1625560839;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=AKPFFEQgCy0hH+JLtqP39hy+yM3QSIvE4fTrTirw4/M=;
-  b=nku2HZjo6bvx2JkxkCN8xYfmqOjTx28yTfGGk4koDMqqkjShbTeKiMEo
-   qjrgok4o1antYRSFE0AIJRqLIfhm4BbfR4M1wNoZ6M+J2aAQ6HTQkaWQT
-   3hYKNg+L8NYxAhUr0c53n/uz5wllVHsQKDirQp9FmvtR1CmAFye722G0v
-   mCtq8ARSie+cLdsf4Y63wiEDgnd2DCyDS93ms5sJuFGBZ1Iraj+KcGWgE
-   TuRktsrY4s/8Ye/hN8TqJkIRLBTu3iTlD+odDgNmvrRQfblGHtiYsgzq4
-   dVTV8el2nRPCEyUYCpjy7WQFF+u4p9nS3gZr+rL25UpKd6YPF65R7J0KD
-   Q==;
-IronPort-SDR: BSlPwaXba+DcVolzECQbv2SWvO/kZTHs00XCMTUo9YbPDyFCnIoJmdejmzw3un2sTnlwesXdTz
- JGZMCOkgCugtt3aN9WlXMdUXn9RKM/YnOnh8lFQyqS61DRIJCrdODrFLSaStAg5bo6xagqQgFz
- znWrAxsGGGVi4SNg258i7DaTdRJhzFSUoR43JbKYn4oz78/V//NOalU67MevycxXprI/00gUbn
- 3ak2DFHbUu2cHNZtgV36vofiCzLTbpFiQZb701v24uEGRX695GcdwnFLajiMaWgNP+rGqRJNr0
- ekw=
+  bh=FfbsgHoQA2MGVmKdQEXkE5ueBUq3COrRk73C0HBm2I8=;
+  b=rCE+CHazqJVeABMyJzWnidLQdP2lwgLd34ofqmm42rPb7V70trC5lrgP
+   tsH6yN6GUXfaqo70LpmT0EZAKumJxZZnJBLekwCNeqwaeHoLnuLe52T5L
+   HLNpRfBykvsZf3mozspb9fb5Wn2qeLVKE6GlL1X+LGqBUqlTAnIJ5d5oT
+   uEIUw/9YwzaFxn5DxHSor5R+LUk+zUis7pP5W69umA9skwDXRENgyw6Ra
+   Nn6umvTb28TPteVC/X2W7jylIAXywL7iUe9LCcB++3rmfb5BLizO+SmEv
+   8CNH/WRbKskVWghONPILS+NquMic4FaPdAiKIi8Xw6JROfWNHv7NEN14W
+   A==;
+IronPort-SDR: 4f/GgNqsGzqaJ4mtPsP5G/Pd0JC0/PH6HCNNaOl1wDxzKAmTdwrpgjYl9AqBIZDxU5wA1BFaOv
+ aMRQ/3tNObqWiMO4p5oD8H2gmqjaplHl/NQGf+3TAsdJrXiGOor8gvxlvVowqA+3vlCO5nwH4/
+ 7HaBXPJIhItQG8V/QwvNTiNHbVZHunVPfJ9TE29MEaAT92qP7DUkBReYEjBLbh7OGsZ1TcCw2Q
+ 4G0K4NCctLXyGEmC1j9LuhPpWbpyVc2Z287M1E0w5CYvcN0PpBY7h2FXYDE9VufnOeG91Dvo9Q
+ eoQ=
 X-IronPort-AV: E=Sophos;i="5.75,318,1589266800"; 
-   d="scan'208";a="80780532"
+   d="scan'208";a="86314679"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jul 2020 01:40:20 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jul 2020 01:40:39 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 6 Jul 2020 01:39:55 -0700
+ 15.1.1979.3; Mon, 6 Jul 2020 01:40:39 -0700
 Received: from xasv.mchp-main.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
  (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Mon, 6 Jul 2020 01:39:55 -0700
+ Transport; Mon, 6 Jul 2020 01:40:14 -0700
 From:   Andre Edich <andre.edich@microchip.com>
 To:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
         <steve.glendinning@shawell.net>
 CC:     <Parthiban.Veerasooran@microchip.com>,
         Andre Edich <andre.edich@microchip.com>
-Subject: [PATCH net v2 1/2] smsc95xx: check return value of smsc95xx_reset
-Date:   Mon, 6 Jul 2020 10:39:34 +0200
-Message-ID: <20200706083935.19040-2-andre.edich@microchip.com>
+Subject: [PATCH net v2 2/2] smsc95xx: avoid memory leak in smsc95xx_bind
+Date:   Mon, 6 Jul 2020 10:39:35 +0200
+Message-ID: <20200706083935.19040-3-andre.edich@microchip.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200706083935.19040-1-andre.edich@microchip.com>
 References: <20200706083935.19040-1-andre.edich@microchip.com>
@@ -59,40 +59,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The return value of the function smsc95xx_reset() must be checked
-to avoid returning false success from the function smsc95xx_bind().
+In a case where the ID_REV register read is failed, the memory for a
+private data structure has to be freed before returning error from the
+function smsc95xx_bind.
 
-Fixes: 2f7ca802bdae2 ("net: Add SMSC LAN9500 USB2.0 10/100 ethernet adapter driver")
+Fixes: bbd9f9ee69242 ("smsc95xx: add wol support for more frame types")
 Signed-off-by: Andre Edich <andre.edich@microchip.com>
 Signed-off-by: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
 ---
- drivers/net/usb/smsc95xx.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/usb/smsc95xx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 3cf4dc3433f9..eb404bb74e18 100644
+index eb404bb74e18..bb4ccbda031a 100644
 --- a/drivers/net/usb/smsc95xx.c
 +++ b/drivers/net/usb/smsc95xx.c
-@@ -1287,6 +1287,8 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
- 
- 	/* Init all registers */
- 	ret = smsc95xx_reset(dev);
-+	if (ret)
-+		goto free_pdata;
- 
+@@ -1293,7 +1293,8 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
  	/* detect device revision as different features may be available */
  	ret = smsc95xx_read_reg(dev, ID_REV, &val);
-@@ -1317,6 +1319,10 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
- 	schedule_delayed_work(&pdata->carrier_check, CARRIER_CHECK_DELAY);
- 
- 	return 0;
+ 	if (ret < 0)
+-		return ret;
++		goto free_pdata;
 +
-+free_pdata:
-+	kfree(pdata);
-+	return ret;
- }
- 
- static void smsc95xx_unbind(struct usbnet *dev, struct usb_interface *intf)
+ 	val >>= 16;
+ 	pdata->chip_id = val;
+ 	pdata->mdix_ctrl = get_mdix_status(dev->net);
 -- 
 2.27.0
 
