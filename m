@@ -2,114 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08FD2215093
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 02:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 269C22150FD
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 03:44:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728252AbgGFAp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 20:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42304 "EHLO
+        id S1728664AbgGFBn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 21:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728053AbgGFAp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 20:45:28 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F35C061794;
-        Sun,  5 Jul 2020 17:45:28 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id t11so11408601pfq.11;
-        Sun, 05 Jul 2020 17:45:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4OaY8bZwpJuqmoIiivxLlaUVMaXxlk23RnTZnLFJFaY=;
-        b=kd2w6hJIZW9PFP0lMor0Df7aUbziEFd/nGD0zMJOBuuWd21lAfqEipSBJb29CnzV6O
-         0IrRM13BFz+vsC6/9Zykj4l47i8zCsw6O9fnI24mxY9GAQKldLqnA/sqOBX9zfVTTLoX
-         +1s//whclybYcTOEZL22qwzGJNLYXnxCXcO7MSRysvfNpZj8/sMQRnMVXynCW99vpeo4
-         rid4eAngZ438yS4XzZlqtwOg24OmCqeVkg4rbOuqt8LUpDUEEetfvGlzCocBqDBGzkVH
-         kqSW5OdhEIKTLzddRU25moBgkZwDhh0PSHDyKHRAI9ih5RnuJbWyc2bQ0IC9nQk197dW
-         zqIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4OaY8bZwpJuqmoIiivxLlaUVMaXxlk23RnTZnLFJFaY=;
-        b=O30eYB1WvWYEsAQWTfm3c22ZrThtvLNN0FYg22tDc/jWkrJDz+BYk2bdUn7vIPlUPU
-         Mzxed0xj/YsM00ZeEmP87z+H6y2HSAKllGbHaIZCqI6ioQea9GYH8vu6usMkVQoiL+0d
-         BzxX92HkNRLo41TOWdKNxq9vArGyDGbDqNcR33Lfx5ElojRNI5U3nu8khW1+b9vsLDrd
-         KGicnx4V70fX3J4bwdWqWKBhuEdaBvrLewq5SkKlqUQZuepODRIfwOxh4F1JIfsZ7KQZ
-         DJbmp4Lts7gLd4zfjmhIQhyCL4JRRUorj3NCjHk6/uZZkaSY97NTB1MhTjKfUz3tk39h
-         zUNg==
-X-Gm-Message-State: AOAM530te4NHKJtmDB7ezckAnTvIuutIJaoSiSk4lxWTZ7pHeWepUKhZ
-        rrd09PPE1rtFdS9IYgT8q80=
-X-Google-Smtp-Source: ABdhPJwC2Hju+ZSHzN/fJl4gpu4jFAAKkvYojCNR+ygw0BPcIN7IJo5ZQ3B3US/pm4hPJWClOzW6CQ==
-X-Received: by 2002:aa7:8513:: with SMTP id v19mr34056031pfn.74.1593996327546;
-        Sun, 05 Jul 2020 17:45:27 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:70cf:a866:7e6:bda8])
-        by smtp.gmail.com with ESMTPSA id u26sm17547457pfn.54.2020.07.05.17.45.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2020 17:45:27 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>,
-        Xie He <xie.he.0141@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
-Subject: [PATCH v2] drivers/net/wan/lapbether: Fixed the value of hard_header_len
-Date:   Sun,  5 Jul 2020 17:45:21 -0700
-Message-Id: <20200706004521.78091-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1728430AbgGFBnZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 21:43:25 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB7FC061794;
+        Sun,  5 Jul 2020 18:43:24 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4B0SyH0ln5z9sDX;
+        Mon,  6 Jul 2020 11:43:18 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1593999800;
+        bh=1G1w5foTPLzMSqkizEB3dQQHU9BJDlBNIyWwFvDqBAI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Rzpt9LG7+GqSloMm8kCKK+WEro1KxFTa4K848rXPwc+NR6l0vC2E+xv5nmTErtOf3
+         jCH/UEqf5SsgmbczNWS34KWzyCGqJIAlqae4MUb68fHBbZwm4edHRUe0SIb3piVUBz
+         Wyk3AaTWP7eoO1Fm0vuZQP9wpEnDUDD78bbHYRGSWkmhiNm433p7bylRX5U/4mWaTE
+         IVkBTejGm52v7VvYDlQwexAatfZPy/Pnszz8kIBsq1y0bwuxh3AqmSRJGdxDWuYzvt
+         GgDG6s3hFkRV/iurCq7H3WTy04JlYxr10OgvB1Ayq+hvF8TxxW2oXEhV8j2sUn2Mvw
+         wBbGayX+G+RZA==
+Date:   Mon, 6 Jul 2020 11:43:16 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>
+Subject: Re: linux-next: manual merge of the bpf-next tree with the bpf tree
+Message-ID: <20200706114316.400be49e@canb.auug.org.au>
+In-Reply-To: <20200626100527.4dad8695@canb.auug.org.au>
+References: <20200626100527.4dad8695@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/23I18qynHUoHQ.hO=eYNg5E";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When this driver transmits data,
-  first this driver will remove a pseudo header of 1 byte,
-  then the lapb module will prepend the LAPB header of 2 or 3 bytes,
-  then this driver will prepend a length field of 2 bytes,
-  then the underlying Ethernet device will prepend its own header.
+--Sig_/23I18qynHUoHQ.hO=eYNg5E
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-So, the header length required should be:
-  -1 + 3 + 2 + "the header length needed by the underlying device".
+Hi all,
 
-This patch fixes kernel panic when this driver is used with AF_PACKET
-SOCK_DGRAM sockets.
+On Fri, 26 Jun 2020 10:05:27 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> Today's linux-next merge of the bpf-next tree got a conflict in:
+>=20
+>   tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
+>=20
+> between commits:
+>=20
+>   9c82a63cf370 ("libbpf: Fix CO-RE relocs against .text section")
+>   647b502e3d54 ("selftests/bpf: Refactor some net macros to bpf_tracing_n=
+et.h")
+>=20
+> from the bpf tree and commit:
+>=20
+>   84544f5637ff ("selftests/bpf: Move newer bpf_iter_* type redefining to =
+a new header file")
+>=20
+> from the bpf-next tree.
+>=20
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+>=20
+> diff --cc tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
+> index 75ecf956a2df,cec82a419800..000000000000
+> --- a/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
+> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
+> @@@ -11,21 -7,7 +7,7 @@@
+>  =20
+>   char _license[] SEC("license") =3D "GPL";
+>  =20
+> - #define sk_rmem_alloc	sk_backlog.rmem_alloc
+> - #define sk_refcnt	__sk_common.skc_refcnt
+> -=20
+> - struct bpf_iter_meta {
+> - 	struct seq_file *seq;
+> - 	__u64 session_id;
+> - 	__u64 seq_num;
+> - } __attribute__((preserve_access_index));
+> -=20
+> - struct bpf_iter__netlink {
+> - 	struct bpf_iter_meta *meta;
+> - 	struct netlink_sock *sk;
+> - } __attribute__((preserve_access_index));
+> -=20
+>  -static inline struct inode *SOCK_INODE(struct socket *socket)
+>  +static __attribute__((noinline)) struct inode *SOCK_INODE(struct socket=
+ *socket)
+>   {
+>   	return &container_of(socket, struct socket_alloc, socket)->vfs_inode;
+>   }
 
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
-Change in v2: added a comment in the code
+This is now a conflict between net-next tree and the net tree.
 
- drivers/net/wan/lapbether.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+--=20
+Cheers,
+Stephen Rothwell
 
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index e30d91a38cfb..284832314f31 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -303,7 +303,6 @@ static void lapbeth_setup(struct net_device *dev)
- 	dev->netdev_ops	     = &lapbeth_netdev_ops;
- 	dev->needs_free_netdev = true;
- 	dev->type            = ARPHRD_X25;
--	dev->hard_header_len = 3;
- 	dev->mtu             = 1000;
- 	dev->addr_len        = 0;
- }
-@@ -324,6 +323,14 @@ static int lapbeth_new_device(struct net_device *dev)
- 	if (!ndev)
- 		goto out;
- 
-+	/* When transmitting data:
-+	 * first this driver removes a pseudo header of 1 byte,
-+	 * then the lapb module prepends an LAPB header of at most 3 bytes,
-+	 * then this driver prepends a length field of 2 bytes,
-+	 * then the underlying Ethernet device prepends its own header.
-+	 */
-+	ndev->hard_header_len = -1 + 3 + 2 + dev->hard_header_len;
-+
- 	lapbeth = netdev_priv(ndev);
- 	lapbeth->axdev = ndev;
- 
--- 
-2.25.1
+--Sig_/23I18qynHUoHQ.hO=eYNg5E
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8CgbQACgkQAVBC80lX
+0GwXaAf/WSMHGgauwreog5bZWHBRaI8CKhxEYFjH80ugpyBm2n9o168kfOIjw3u/
+JNFCWFAaSl3eM1ry6r9bl8PShzyHMdEpuYXr1DUTn+6UQvuYXD7JpLR8NAm8Snha
+ik2AOAkPWe4soJ9XbuooNuLDEeozXLgNsIkgBO+1/lHHu5EgGskoPexGaMvLyAlu
+YDsIQ9iv8kcjXXxJiA+wXy4XhTbL3Yl/IYXiWenvWy3lkIDc+7VDV248o5V4vXKb
+sWSQzxz2EDEEq6cdgqHcnQ0HUAk4f4j8u0ppnZ11kjH1UE1qAE4+6MDhOWF+Qi9o
+ht9wzCNyje1AVKE46szGqt6t1A8RSQ==
+=JZE7
+-----END PGP SIGNATURE-----
+
+--Sig_/23I18qynHUoHQ.hO=eYNg5E--
