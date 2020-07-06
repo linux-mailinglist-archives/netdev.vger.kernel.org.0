@@ -2,196 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62F582161F5
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 01:16:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E45A216242
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 01:27:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727059AbgGFXQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 19:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52630 "EHLO
+        id S1726898AbgGFX12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 19:27:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726366AbgGFXQA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 19:16:00 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD40C061755;
-        Mon,  6 Jul 2020 16:15:59 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id u12so30363595qth.12;
-        Mon, 06 Jul 2020 16:15:59 -0700 (PDT)
+        with ESMTP id S1726280AbgGFX11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 19:27:27 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA06C061755;
+        Mon,  6 Jul 2020 16:27:27 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id e13so36548400qkg.5;
+        Mon, 06 Jul 2020 16:27:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=wOe0O3XAXWFs6Fu2z3KEqZYGB4zBSPOsfKkwu0dWssI=;
-        b=udZOtFS3K/Mc+7vtkSwge+SGSJESBgBiEgTO5lwh8LnLbMSDecU2YndlEio6rXe7Tq
-         lPaimqrdFrZQ94+QNbfVS1b50ykBacZKXRFdazvl8sgVnImh8zVh9vF+fpHYEGceU3wH
-         KblNijav9I/udwdMDBObzMTJozyW3W0S4LEd7AKQn7mRWLKrcWREEuFtFGgYRphg2YHW
-         6K4y9Ek+c4SAJcrlX31fdex6k5TiIshcYl3Ow+0zMnICLSzxx0bzqqLlKDOo+EfbwBUn
-         cbqs/HpKYPAstCo6s2jsm2G1zXwVUOD2cPBR+CdMDBhVbKMPNfvpVu0ELhPnZYE1yWbg
-         CzIQ==
+        bh=Nk596EgdTx9bruearQGvPUmGFW9uDd9pIjVlQVe/Js0=;
+        b=dvrjiAUwG+gXKGyCpiUhFHadrl/yilQk2vh22k6+SiiAkO7xbT0yaU/Nh6t0aMX9uN
+         p6tpVpJ+iSoefLzR5m32Vzrd9dnYUBOshZbQ1V0yeuT1w7RAzK92TEdit8XAfuuGLSju
+         O0o6VJrDzXh6SVWjM3vfUpU21277cya4EgxQ3xsJeOTLZCz9LPdNCDVAP2CVuhDBS/Ov
+         zDOStIt3yVREP9KXTDTpdXJ1KKRI2yGF4VbXMQS8m86i8wlmgyXgB7vhf9B99xxcqswy
+         81mE7BHaI5jYzFKjMvxOiwDxHB38/IrCDyoEA+4gZatSUCMq7Bgqkfchq+u/SpKFyJd0
+         0mAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=wOe0O3XAXWFs6Fu2z3KEqZYGB4zBSPOsfKkwu0dWssI=;
-        b=p68voomu8+8PI865oQSUzzP+keq3NCl+NXk/edQgIB42DBzDQsc7WmCun5z225NujN
-         6zP/HM1owsxjCmt7KEOY9dMpmGtwrma+CoDj2bHO+NmIvVlBlLoX+OFziDrV1L1kXp2m
-         srGkLjEJRx9wt3/d+nNL/FQ3GS0o7wFOWfj1eREGGFVQlKRzdw8D21YKCc9ir5blGEaK
-         oH9l91//pG8ThmZW/u8McE6ca5UPB3kOE2BpwLgJNdHNMBbd4GDHbuUQPBCbRHp5F8oD
-         9j72SSNTTNHKTxnB02uxJ+6qyO6bsPfFtWw9fpBpgcMA+UJNTae6QXPv2Hy7asGVwKj8
-         AnfQ==
-X-Gm-Message-State: AOAM532anX8/FXPq1gmUHWV04nCqvIlti9++7b3yQpZ9rVp28AZyX7wN
-        qT0/hadgyHhbG8c0ji1XiI1FraxTs7lEBJAno18=
-X-Google-Smtp-Source: ABdhPJyd3Q7dBqRSozKBPAz/EgPNELHjPw0MF/76hNVuHIUpF1yFSKbo9d/J41v6kb+Yc+hLytBE/LXNw4yACBGWKF4=
-X-Received: by 2002:ac8:19c4:: with SMTP id s4mr47663610qtk.117.1594077359041;
- Mon, 06 Jul 2020 16:15:59 -0700 (PDT)
+        bh=Nk596EgdTx9bruearQGvPUmGFW9uDd9pIjVlQVe/Js0=;
+        b=Vhezmf75RYPgJrLxPQBEfTM8ZwJCZT2ip+brGf/POoIL6isKY9D6NgSPKMlgPf7GK3
+         UZo0/etxVoySLaY+bWtcanucD/hjmY165RolJ+XgG/WPL3uYTTkiVE3UxWp3iSbNOPIw
+         rVywgbJ/SL1YwdkJuXyYOkT0cndpuLlUcNKZn5UXMWP+iVov0zUG9Z/8Zk70PTZFTK4Y
+         YCmxKMsjL2PWATwByhAKRK0gs/IQY1NRyXW7+3KqmKgixPE/6aWPm+F+ociUN3q4nBoA
+         5ggy+Hh8xzIomSAhJLB7lJtkPDxgMvI9m22Vbh0ztWQzzatWHkEMgYFWOVkslwJmAGAA
+         Qb+A==
+X-Gm-Message-State: AOAM530m4F+BH+5mTtH8wzcBYpxund6qdUUtwcXiXIm0GvJBwaAkneCd
+        O8VrbJClQG0g8Uci3S+WeZ6zvokB1ExNwIbJ1uU=
+X-Google-Smtp-Source: ABdhPJxJEep0+I4j2/z3whYbec9TQKWHRMmS9g76q9mHwHSdRx4mkMNNYiFi/36xQ71irGQ+nDGe9KLott3rH1Su8Pc=
+X-Received: by 2002:a37:270e:: with SMTP id n14mr47509015qkn.92.1594078046950;
+ Mon, 06 Jul 2020 16:27:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200625221304.2817194-1-jolsa@kernel.org> <20200625221304.2817194-8-jolsa@kernel.org>
- <CAEf4BzZA3QqA=f_E8CUASVajxEsThq+Ww2Ax6az82wibx1dgOg@mail.gmail.com> <20200702100859.GC3144378@krava>
-In-Reply-To: <20200702100859.GC3144378@krava>
+References: <20200702021646.90347-1-danieltimlee@gmail.com>
+ <20200702021646.90347-4-danieltimlee@gmail.com> <CAEf4BzZsx+pkkdjhJt1AHaUy6=B=nqZdpR+TrRrjreNa0GMWug@mail.gmail.com>
+ <CAEKGpzikhnamOsh=qnmYPJ+6Lr2c4arOdqhuACdHTXmwEF1naQ@mail.gmail.com>
+In-Reply-To: <CAEKGpzikhnamOsh=qnmYPJ+6Lr2c4arOdqhuACdHTXmwEF1naQ@mail.gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Jul 2020 16:15:47 -0700
-Message-ID: <CAEf4BzYR59T5_kjFRSQ4pUxzmA5i02nCt_V5YqY0dXQwMRSjtA@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 07/14] bpf: Allow nested BTF object to be
- refferenced by BTF object + offset
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
+Date:   Mon, 6 Jul 2020 16:27:15 -0700
+Message-ID: <CAEf4BzZS945fhRCCv8gNjJpTAbtCdH3XMChRw7so7F2PPJgJDw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/4] samples: bpf: refactor BPF map performance
+ test with libbpf
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 3:09 AM Jiri Olsa <jolsa@redhat.com> wrote:
+On Thu, Jul 2, 2020 at 4:24 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 >
-> On Tue, Jun 30, 2020 at 01:05:52PM -0700, Andrii Nakryiko wrote:
-> > On Thu, Jun 25, 2020 at 4:49 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> On Thu, Jul 2, 2020 at 1:34 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Wed, Jul 1, 2020 at 7:17 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 > > >
-> > > Adding btf_struct_address function that takes 2 BTF objects
-> > > and offset as arguments and checks whether object A is nested
-> > > in object B on given offset.
+> > > Previously, in order to set the numa_node attribute at the time of map
+> > > creation using "libbpf", it was necessary to call bpf_create_map_node()
+> > > directly (bpf_load approach), instead of calling bpf_object_load()
+> > > that handles everything on its own, including map creation. And because
+> > > of this problem, this sample had problems with refactoring from bpf_load
+> > > to libbbpf.
 > > >
-> > > This function will be used when checking the helper function
-> > > PTR_TO_BTF_ID arguments. If the argument has an offset value,
-> > > the btf_struct_address will check if the final address is
-> > > the expected BTF ID.
+> > > However, by commit 1bdb6c9a1c43 ("libbpf: Add a bunch of attribute
+> > > getters/setters for map definitions"), a helper function which allows
+> > > the numa_node attribute to be set in the map prior to calling
+> > > bpf_object_load() has been added.
 > > >
-> > > This way we can access nested BTF objects under PTR_TO_BTF_ID
-> > > pointer type and pass them to helpers, while they still point
-> > > to valid kernel BTF objects.
+> > > By using libbpf instead of bpf_load, the inner map definition has
+> > > been explicitly declared with BTF-defined format. And for this reason
+> > > some logic in fixup_map() was not needed and changed or removed.
 > > >
-> > > Using btf_struct_access to implement new btf_struct_address
-> > > function, because it already walks down the given BTF object.
-> > >
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 > > > ---
+> > >  samples/bpf/Makefile             |   2 +-
+> > >  samples/bpf/map_perf_test_kern.c | 180 +++++++++++++++----------------
+> > >  samples/bpf/map_perf_test_user.c | 130 +++++++++++++++-------
+> > >  3 files changed, 181 insertions(+), 131 deletions(-)
+> > >
+> >
+> > [...]
+> >
+> > > +struct inner_lru {
+> > > +       __uint(type, BPF_MAP_TYPE_LRU_HASH);
+> > > +       __type(key, u32);
+> > > +       __type(value, long);
+> > > +       __uint(max_entries, MAX_ENTRIES);
+> > > +       __uint(map_flags, BPF_F_NUMA_NODE); /* from _user.c, set numa_node to 0 */
+> > > +} inner_lru_hash_map SEC(".maps");
+> >
+> > you can declaratively set numa_node here with __uint(numa_node, 0),
+> > which is actually a default, but for explicitness it's better
+> >
+>
+> It would make _user.c code cleaner, but as you said,
+> I'll keep with this implementation.
 
-[...]
+I meant to do __uint(numa_node, 0) declaratively, even if it's a bit
+redundant (because default value is already zero).
 
-> >
-> > Ok, I think I'm grasping this a bit more. How about we actually don't
-> > have two different cases (btf_struct_access and btf_struct_address),
-> > but instead make unified btf_struct_access that will return the
-> > earliest field that register points to (so it sort of iterates deeper
-> > and deeper with each invocation). So e.g., let's assume we have this
-> > type:
-> >
-> >
-> > struct A {
-> >   struct B {
-> >     struct C {
-> >       int x;
-> >     } c;
-> >   } b;
-> >   struct D { int y; } d;
-> > };
-> >
-> > Now consider the extreme case of a BPF helper that expects a pointer
-> > to the struct C or D (so uses a custom btf_id check function to say if
-> > a passed argument is acceptable or not), ok?
-> >
-> > Now you write BPF program as such, r1 has pointer to struct A,
-> > originally (so verifier knows btf_id points to struct A):
-> >
-> > int prog(struct A *a) {
-> >    return fancy_helper(&a->b.c);
-> > }
-> >
-> > Now, when verifier checks fancy_helper first time, its btf_id check
-> > will say "nope". But before giving up, verifier calls
-> > btf_struct_access, it goes into struct A field, finds field b with
-> > offset 0, it matches register's offset (always zero in this scenario),
-> > sees that that field is a struct B, so returns that register now
-> > points to struct B. Verifier passed that updated BTF ID to
-> > fancy_helper's check, it still says no. Again, don't give up,
-> > btf_struct_access again, but now register assumes it starts in struct
-> > B. It finds field c of type struct C, so returns successfully. Again,
-> > we are checking with fancy_helper's check_btf_id() check, now it
-> > succeeds, so we keep register's BTF_ID as struct C and carry on.
-> >
-> > Now assume fancy_helper only accepts struct D. So once we pass struct
-> > C, it rejects. Again, btf_struct_access() is called, this time find
-> > field x, which is int (and thus register is SCALAR now).
-> > check_btf_id() rejects it, we call btf_struct_access() again, but this
-> > time we can't really go deeper into type int, so we give up at this
-> > point and return error.
-> >
-> > Now, when register's offset is non-zero, the process is exactly the
-> > same, we just need to keep locally adjusted offset, so that when we
-> > find inner struct, we start with the offset within that struct, not
-> > origin struct A's offset.
-> >
-> > It's quite verbose explanation, but hopefully you get the idea. I
-> > think implementation shouldn't be too hard, we might need to extend
-> > register's state to have this extra local offset to get to the start
-> > of a type we believe register points to (something like inner_offset,
-> > or something). Then btf_struct_access can take into account both
-> > register's off and inner_off to maintain this offset to inner type.
-> >
-> > It should nicely work in all cases, not just partially as it is right now. WDYT?
->
-> I think above should work nicely for my case, but we need
-> to keep the current btf_struct_access usage, which is to
-> check if we point to a pointer type and return the ID it
-> points to
->
-> I think it's doable with the functionality you described,
-> we'll just check of the returned type is pointer and get
-> the ID it points to.. which makes me think we still need
-> functions like below (again bad names probably ;-) )
->
->   btf_struct_walk
->     - implements the walk through the type as you described
->       above.. returns the type we point to and we can call
->       it again to resolve the next type at the same offset
->
->   btf_struct_address
->     - calls btf_struct_walk and checks if the returned type ID
->       matches the requested BTF ID of the helper argument if not
->       and the returned type is struct, call btf_struct_walk again
->       to get the next layer and repeat..
->
->   btf_struct_access
->     - calls btf_struct_walk repeatedly until the returned type is
->       a pointer and then it returns the BTF ID it points to
->
+user-space bpf_program__numa_node() is inferior for such a simple
+static use case.
 
-Sure, as long as all the BTF walking is contained in one place (in
-btf_struct_walk), which was my main objection on your very first
-version. All the other wrapper functions can have their own extra
-restrictions, but still use the same struct-walking primitive
-operation. Ok, glad we figured it out :)
-
-> thanks,
-> jirka
 >
+> > > +
+> > > +struct {
+> > > +       __uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
+> > > +       __uint(max_entries, MAX_NR_CPUS);
+> > > +       __uint(key_size, sizeof(u32));
+> > > +       __array(values, struct inner_lru); /* use inner_lru as inner map */
+> > > +} array_of_lru_hashs SEC(".maps");
+> > > +
+> >
+> > [...]
+> >
+> > > -static void fixup_map(struct bpf_map_data *map, int idx)
+> > > +static void fixup_map(struct bpf_object *obj)
+> > >  {
+> > > +       struct bpf_map *map;
+> > >         int i;
+> > >
+> > > -       if (!strcmp("inner_lru_hash_map", map->name)) {
+> > > -               inner_lru_hash_idx = idx;
+> > > -               inner_lru_hash_size = map->def.max_entries;
+> > > -       }
+> > > +       bpf_object__for_each_map(map, obj) {
+> > > +               const char *name = bpf_map__name(map);
+> > >
+> > > -       if (!strcmp("array_of_lru_hashs", map->name)) {
+> >
+> > I'm a bit too lazy right now to figure out exact logic here, but just
+> > wanted to mention that it is possible to statically set inner map
+> > elements for array_of_maps and hash_of_maps. Please check
+> > tools/testing/selftests/bpf/progs/test_btf_map_in_map.c and see if you
+> > can use this feature to simplify this logic a bit.
+> >
+>
+> Thanks for the feedback! But I'm not sure I'm following properly.
+>
+> If what you are talking about is specifying the inner_map_idx of
+> array_of_lru_hashes, I've changed it by using the __array() directives
+> of the BTF-defined MAP.
+>
+> Since inner_map_idx logic has been replaced with BTF-defined map
+> definition, the only thing left at here fixup_map() is just resizing map size
+> with bpf_map__resize.
+
+Ok, as I said, a bit too lazy to try to figure out the entire logic of
+this sample. My point was to check if static initialization of
+ARRAY_OF_MAPS/HASH_OF_MAPS elements is doable. If not, it's fine as is
+as well.
+
+>
+> Thanks for your time and effort for the review.
+> Daniel
+>
+> > > -               if (inner_lru_hash_idx == -1) {
+> > > -                       printf("inner_lru_hash_map must be defined before array_of_lru_hashs\n");
+> > > -                       exit(1);
+> > > +               /* Only change the max_entries for the enabled test(s) */
+> > > +               for (i = 0; i < NR_TESTS; i++) {
+> > > +                       if (!strcmp(test_map_names[i], name) &&
+> > > +                           (check_test_flags(i))) {
+> > > +                               bpf_map__resize(map, num_map_entries);
+> > > +                               continue;
+> > > +                       }
+> > >                 }
+> > > -               map->def.inner_map_idx = inner_lru_hash_idx;
+> > > -               array_of_lru_hashs_idx = idx;
+> > >         }
+> > >
+> >
+> > [...]
