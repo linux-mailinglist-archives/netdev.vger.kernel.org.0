@@ -2,107 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A881215FEC
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 22:11:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD7A2215FEE
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 22:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726211AbgGFULB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 16:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52312 "EHLO
+        id S1726831AbgGFULx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 16:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725860AbgGFULA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 16:11:00 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E93C061755
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 13:11:00 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id i18so34038586ilk.10
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 13:11:00 -0700 (PDT)
+        with ESMTP id S1726540AbgGFULw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 16:11:52 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922B3C08C5DF
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 13:11:52 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id n24so30396773otr.13
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 13:11:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Oa/aJouFbJLkQLfFA0r1P4W9x+GhQvpGbBemILMpEmc=;
-        b=VKos2DRNZXZT2WMF1gMLVPbpcD/4xXpo+62QFY2aJXcm8qwxMIcfcxTHUyhg3/7eaR
-         0pXARjkONkN/h831nF6sS577R3tYwDBEsP6yVgcZQBeiXzwHc0k/uQOs1s7UTtFR6yN2
-         34kCh5wfP6MQ8FWaKzLFS/5X/H4I5YQVJD4IrV2Zr08kG7TK9nA/WSTKbV0ogmHm0kvr
-         /FmBaZse1TkQGVUCgb6eZ51mLmq7jLJ9vS1FOGUdnR0QigqDJeTAIUYhrQ96VhFcXzj0
-         JoCFWRPHd7rWXAfQIGTvQXmAUQa+Qy5NcPz7AMKegQRFU//1RFu0KQ/O7ZeZj1VSsYJa
-         Piaw==
+         :cc:content-transfer-encoding;
+        bh=NH51QzKoo8vcvgmX1earnUW3W8VarBLxn3wxnDS2NOk=;
+        b=y1/ZKuIhjHhOsxpSw+1xMcKmg2e5dWBH3F1+AO7aZkt4nuahkvlotHPyJkqTmzHRcU
+         dayynd91m96Pxs75SBm30PdnqAQSw9PL8yc4R6iUdxaAF1DhMjqCqX5AiCR1neYMayFs
+         YcV2BKubqr6RmiXZqJp8NyNrKmK28zR8AhFYLntpBZX43yc4BitVunCWcr/iQBkUgeor
+         rhyMSBQvEvS+98Wzh3MLqUIDMsOKDiXerdn7gA2pjwesgHWpial6dAPS2MAqVfiQBxqR
+         MGIVvMl/Md/p013QyXWb4A0uMaG16Xbv1m23EGeoS82CBXGGKDuB5gOktniOknC0nkwX
+         B2WQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Oa/aJouFbJLkQLfFA0r1P4W9x+GhQvpGbBemILMpEmc=;
-        b=N0i32E7fKiRYeNm7jYqw/dd0XaN+rqAxFNnll9MF+knGT1HFBxhXh0iGr437o7a1zY
-         bgeezzBvCtSOIVoD71Byz1yb8mlhHqEp7e5c/3ikJCP+Eloz1yPTnuG7yKLzDIA1i4tm
-         59aWL20gpWe9iWVpti94vd2hxOPgOR2K13SbcaZAJPebL/X7we9Mib88yttvF/H9AXO1
-         PhVjEj8pfOrX+vSTJLaOc0q9A3uSm5hd61UJuFM8Cmrbq7BC0OX+vNLERJv4qgfVi0MC
-         AY8jFaoelLcWydaU5i+x57z9cYv/m/c2KHDOwKOun9SOSb2VM9QTxSJyws62hfvTGfPp
-         bTLg==
-X-Gm-Message-State: AOAM5339qHDwuryGBBDVXAOMS1HjBu5qSPdS0RXA5lko1gS3kQb7emWP
-        ZTjC0fnDUE0VpkIRUZxF3VrvUU3syX5IppKnRRk=
-X-Google-Smtp-Source: ABdhPJw+ymCScGxYz829Xh/PZ80rmwT38J53m/QF2cbBozp8R5dkgIQqXsvKnDOpzsNBqmD26BtKKbwvdqqMm/7TSQQ=
-X-Received: by 2002:a92:bb0b:: with SMTP id w11mr32812031ili.238.1594066259162;
- Mon, 06 Jul 2020 13:10:59 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NH51QzKoo8vcvgmX1earnUW3W8VarBLxn3wxnDS2NOk=;
+        b=n5CJ3/5Fh8G8/JeXhMoIX/xld9EvZ5MZn1OtJhYQLmyNJoHW9XDm7d7WqhFdSo/V9n
+         oLmCrNm1FeVwZI7lYBdIyG1qgFBrfJxWIn2GQHTw2RMxCA7JLezWD12bxXrUayla9ntR
+         bkVcjzOoOmBpZyXI0GjXdbc+SGTjMZn1aRwmdsAudGnXj6PRWTumplZ2mCInmD/EIYus
+         CjdsRwbpGbxgAol7YtsILmWVZ4pfCdAy7eayXTy4r2jqOwo/QrYXkMh25kVmVHFW939+
+         QC3feamlW6IHJGX6W3r90W/u2+TI8R6dRNX47htELh2Z7bda6S/Pj9XtiQDm0A2ecHhu
+         +ylQ==
+X-Gm-Message-State: AOAM533Ckb89N40dFocGE+n4a868pNxQhpz+hr9SnTUDeTzFRNFr7c+z
+        G9DOoi2RCj/c3u7dqIwer8EjtX116oJG5e9AlpeGig==
+X-Google-Smtp-Source: ABdhPJxWWUEOZiTzl4XMzBiep/6hLNneDCfCqQ3s06apjoLTB29tsG8ceo9LV97cMRx0HUQs4qjZVEIL4axcOjO71UI=
+X-Received: by 2002:a05:6830:1e13:: with SMTP id s19mr45133059otr.102.1594066311761;
+ Mon, 06 Jul 2020 13:11:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <28bff9d7-fa2d-5284-f6d5-e08cd792c9c6@alibaba-inc.com>
-In-Reply-To: <28bff9d7-fa2d-5284-f6d5-e08cd792c9c6@alibaba-inc.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 6 Jul 2020 13:10:48 -0700
-Message-ID: <CAM_iQpVux85OXH-oYeH15sYTb=kEj0o7uu9ug9PeTesHzXk_gQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: sched: Lockless Token Bucket (LTB) Qdisc
-To:     "YU, Xiangning" <xiangning.yu@alibaba-inc.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <CAADnVQ+BqPeVqbgojN+nhYTE0nDcGF2-TfaeqyfPLOF-+DLn5Q@mail.gmail.com>
+ <20200620212616.93894-1-zenczykowski@gmail.com> <CALAqxLVeg=EE06Eh5yMBoXtb2KTHLKKnBLXwGu-yGV4aGgoVMA@mail.gmail.com>
+ <CAADnVQJOpsQhT0oY5GZikf00MT1=pR3vpCZkn+Z4hp2_duUFSQ@mail.gmail.com>
+In-Reply-To: <CAADnVQJOpsQhT0oY5GZikf00MT1=pR3vpCZkn+Z4hp2_duUFSQ@mail.gmail.com>
+From:   John Stultz <john.stultz@linaro.org>
+Date:   Mon, 6 Jul 2020 13:11:42 -0700
+Message-ID: <CALAqxLVfxSj961C5muL5iAYjB5p_JTx7T6E7zQ7nsfQGC-exFA@mail.gmail.com>
+Subject: Re: [PATCH bpf v2] restore behaviour of CAP_SYS_ADMIN allowing the
+ loading of networking bpf programs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 6, 2020 at 11:11 AM YU, Xiangning
-<xiangning.yu@alibaba-inc.com> wrote:
-> +static int ltb_enqueue(struct sk_buff *skb, struct Qdisc *sch, spinlock_t *root_lock,
-> +                      struct sk_buff **to_free)
-> +{
-> +       struct ltb_sched *ltb = qdisc_priv(sch);
-> +       struct ltb_pcpu_sched *pcpu_q;
-> +       struct ltb_class *cl;
-> +       struct ltb_pcpu_data *pcpu = this_cpu_ptr(ltb->pcpu_data);
-> +       int cpu;
-> +
-> +       cpu = smp_processor_id();
-> +       pcpu_q = qdisc_priv(pcpu->qdisc);
-> +       ltb_skb_cb(skb)->cpu = cpu;
-> +
-> +       cl = ltb_classify(sch, ltb, skb);
-> +       if (unlikely(!cl)) {
-> +               kfree_skb(skb);
-> +               return NET_XMIT_DROP;
-> +       }
-> +
-> +       pcpu->active = true;
-> +       if (unlikely(kfifo_put(&cl->aggr_queues[cpu], skb) == 0)) {
-> +               kfree_skb(skb);
-> +               atomic64_inc(&cl->stat_drops);
-> +               return NET_XMIT_DROP;
-> +       }
+On Tue, Jun 23, 2020 at 5:54 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+> On Mon, Jun 22, 2020 at 12:44 PM John Stultz <john.stultz@linaro.org> wro=
+te:
+> > On Sat, Jun 20, 2020 at 2:26 PM Maciej =C5=BBenczykowski
+> > <zenczykowski@gmail.com> wrote:
+> > > From: Maciej =C5=BBenczykowski <maze@google.com>
+> > >
+> > > This is a fix for a regression introduced in 5.8-rc1 by:
+> > >   commit 2c78ee898d8f10ae6fb2fa23a3fbaec96b1b7366
+> > >   'bpf: Implement CAP_BPF'
+> > >
+> > > Before the above commit it was possible to load network bpf programs
+> > > with just the CAP_SYS_ADMIN privilege.
+> > >
+> > > The Android bpfloader happens to run in such a configuration (it has
+> > > SYS_ADMIN but not NET_ADMIN) and creates maps and loads bpf programs
+> > > for later use by Android's netd (which has NET_ADMIN but not SYS_ADMI=
+N).
+> > >
+> > > Cc: Alexei Starovoitov <ast@kernel.org>
+> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > > Reported-by: John Stultz <john.stultz@linaro.org>
+> > > Fixes: 2c78ee898d8f ("bpf: Implement CAP_BPF")
+> > > Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
+> >
+> > Thanks so much for helping narrow this regression down and submitting t=
+his fix!
+> > It's much appreciated!
+> >
+> > Tested-by: John Stultz <john.stultz@linaro.org>
+>
+> Applied to bpf tree. Thanks
 
+Hey all,
+  Just wanted to follow up on this as I've not seen the regression fix
+land in 5.8-rc4 yet? Is it still pending, or did it fall through a
+gap?
 
-How do you prevent out-of-order packets?
-
-
-> +static int ltb_init(struct Qdisc *sch, struct nlattr *opt,
-...
-> +       ltb->default_cls = ltb->shadow_cls; /* Default hasn't been created */
-> +       tasklet_init(&ltb->fanout_tasklet, ltb_fanout_tasklet,
-> +                    (unsigned long)ltb);
-> +
-> +       /* Bandwidth balancer, this logic can be implemented in user-land. */
-> +       init_waitqueue_head(&ltb->bwbalancer_wq);
-> +       ltb->bwbalancer_task =
-> +           kthread_create(ltb_bw_balancer_kthread, ltb, "ltb-balancer");
-> +       wake_up_process(ltb->bwbalancer_task);
-
-Creating a kthread for each qdisc doesn't look good. Why do you
-need a per-qdisc kthread or even a kernel thread at all?
-
-Thanks.
+thanks
+-john
