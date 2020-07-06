@@ -2,112 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 549482160A0
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 22:53:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 842CC2160A5
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 22:53:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727091AbgGFUxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 16:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
+        id S1727798AbgGFUxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 16:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725941AbgGFUxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 16:53:06 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEE6C08C5DF
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 13:53:05 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id y18so23436667lfh.11
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 13:53:05 -0700 (PDT)
+        with ESMTP id S1725941AbgGFUxb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 16:53:31 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E5E3C061755
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 13:53:31 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id r12so42655125wrj.13
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 13:53:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=f4F27NvYH7YHeuYKRHbuc0Pqyyr+0B+jF6d12ClwIkI=;
-        b=lOW1Wg/PzgJlEH+GqjhrxmTv3li0t626WCwwPoL6jeD55GR1+mIMCvoF8Thzf2T5sK
-         rLJxpMmZ+sS6+PIzU3TwaiH4y+/FQyfsIxPpTXUocUxF0H9/v9NUr670HttAabkNfvfq
-         Yj76IHiRc4an4LNkLTkRaTbpTGOuZQine0yUk25XXrtJHWQaPNoK+grfuhhf2MrHTqx4
-         cgkgbdoKyM1ZadeGrUWVA4rNcg8A08Uf0fDOhFc8erb0hz3NcckZNUkCX+1vNdFh+bVh
-         ksx6Y7+P0VIRAJ3z1lwgk2WH80GLIadVYwbtWQ5MBXwn8MkUpQrrvSNiLVfcYdPwORwH
-         aA4A==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=eve4O4C8UTzN0RISNCluFtUbow9NOyYSnxvO0Vr8WBw=;
+        b=YitR/ngeRskKjw2+3QdpYyilSxeObGM+0oBk5QeLyjQd94DNJ06f5OjCds/hvgCFY8
+         V5csSW++4rWqISPpvhl14rYvlLaP/N+19lYK2XJ//ag2cAeTHHjanw3Ry4HHkX6Sud/l
+         h75D2Uv4lJ/gNmwzIzARPoLElBVzES895rQ13aqpGMEddBQpaaq8JngGysuq0FB1w/LN
+         x/qWKJzCV+FJ9cvuMPJjlik3gay1928hx9eJB+MTGNhrT7Pgfa+YvpSKLqeSyhmRlHbF
+         F3G54w7pjBt7ggyYFBSeujIab9U4XwDYVl590gaz203QGxxgXQmfe93UAZ64rc1+0goi
+         ZWWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=f4F27NvYH7YHeuYKRHbuc0Pqyyr+0B+jF6d12ClwIkI=;
-        b=kiqE57bGGBnVqpgY65rxQ5FHKhB21zE5GRxz0H2C6g2JxNXT2g3T/4Kn8KNGV4t2cm
-         1OyAJRvbMdsw6VuYVmyv3wyvGkiFAnUTJpiEQlvXWV3i4LWBsbG3OQobLoJDhuby7SLm
-         bOtpNAtoFL2HzDGJPZP98xzDprTgN9cbzeLsxCT2P5og/n8xuzYVcwlr3SO90VKvl/LL
-         KcU+zlVrCjp+INlgHUju6I9BV87bx6iOO48oQt6IsJVWc15xfNDvVMG6j67F6/az/DDe
-         MIEzym4cawn/KBKKsANLms2Ys0e+5idK3aNYDaItEIrG1JEMxEdWdS/E4eu8+w1drFNq
-         PRlw==
-X-Gm-Message-State: AOAM530pgodsI+yNgPgMiX24doJkwwMKYAiPgPWWV5itljHNIdlKmrWA
-        5Fu8qAHpBzTXNorf33EPRJWuSQ==
-X-Google-Smtp-Source: ABdhPJweudQ4Zps5g3GaP+6vIwfBjVW4ykzkwUD6KuhgpRarif8Chp4AWsRzjMzBMLZwc2sWZxtlxg==
-X-Received: by 2002:ac2:5593:: with SMTP id v19mr30767322lfg.43.1594068784389;
-        Mon, 06 Jul 2020 13:53:04 -0700 (PDT)
-Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id t10sm624714ljg.60.2020.07.06.13.53.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2020 13:53:03 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Subject: [net-next PATCH 5/5 v4] net: dsa: rtl8366: Use top VLANs for default
-Date:   Mon,  6 Jul 2020 22:52:45 +0200
-Message-Id: <20200706205245.937091-6-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200706205245.937091-1-linus.walleij@linaro.org>
-References: <20200706205245.937091-1-linus.walleij@linaro.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=eve4O4C8UTzN0RISNCluFtUbow9NOyYSnxvO0Vr8WBw=;
+        b=nOdeI8rC1GZQG6S3tq7fGBlef52WlXFz7SQxkBpRLWlHakjET+u4jDqVItM7uMVS+m
+         s9LTu0ZwNl2VzB9L6t7Y8OU4dO9xJliiZF7mfExB6r326OR3rvJ85nTtsqQBZ5wfaQCW
+         VCvBdpy3jegHd9UXbrLmsdV9/LZBYE+Hf1EFpCueLxJ+HIf5yR834zq4xTCqyyzS6Yzf
+         iwPiPZwqi5FPirB8odgEKDgMvuZ9WpZjQfil53O5mdmNAB3coKiesBmRKT4Vh9q24FB5
+         xME+C/a5wdL0t2JwXNdPs5Zu0d3efRqEmQhGbOy+YPhicDGzvCRC96WQyqe9HRQPZ2yj
+         i6dw==
+X-Gm-Message-State: AOAM530XfHpJ5Encn7Dev0+ifm3AZ8MBsCL5/8U7Rh4vM40MvlUDDlcd
+        6E0XgVqY/O4w6/TXkJ+RJOY=
+X-Google-Smtp-Source: ABdhPJx9linQxZrjGzXhfHqqAtOamOAKmu8qXLZyh/QKFBleJT9L8m4UX3mMgrEqrJBOrYAKdOHFHw==
+X-Received: by 2002:a5d:4002:: with SMTP id n2mr53659112wrp.255.1594068810281;
+        Mon, 06 Jul 2020 13:53:30 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id g144sm1112200wme.2.2020.07.06.13.53.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jul 2020 13:53:29 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 0/6] PHYLINK integration improvements for
+ Felix DSA driver
+To:     David Miller <davem@davemloft.net>, linux@armlinux.org.uk
+Cc:     olteanv@gmail.com, netdev@vger.kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, ioana.ciornei@nxp.com
+References: <20200706084503.GU1551@shell.armlinux.org.uk>
+ <20200706.125454.557093783656648876.davem@davemloft.net>
+ <20200706203924.GV1551@shell.armlinux.org.uk>
+ <20200706.134611.1669469964883291908.davem@davemloft.net>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <fc1115e0-e603-d742-125a-30f42ff97016@gmail.com>
+Date:   Mon, 6 Jul 2020 13:53:26 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200706.134611.1669469964883291908.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The RTL8366 DSA switches will not work unless we set
-up a default VLAN for each port. We are currently using
-e.g. VLAN 1..6 for a 5-port switch as default VLANs.
 
-This is not very helpful for users, move it to allocate
-the top VLANs for default instead, for example on
-RTL8366RB there are 16 VLANs so instead of using
-VLAN 1..6 as default use VLAN 10..15 so VLAN 1
-thru VLAN 9 is available for users.
 
-Cc: DENG Qingfang <dqfext@gmail.com>
-Cc: Mauri Sandberg <sandberg@mailfence.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v3->v4:
-- Resend with the rest
-ChangeLog v2->v3:
-- Collect Andrew's reviewed-by.
-ChangeLog v1->v2:
-- Rebase on v5.8-rc1.
----
- drivers/net/dsa/rtl8366.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On 7/6/2020 1:46 PM, David Miller wrote:
+> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> Date: Mon, 6 Jul 2020 21:39:24 +0100
+> 
+>> On Mon, Jul 06, 2020 at 12:54:54PM -0700, David Miller wrote:
+>>> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+>>> Date: Mon, 6 Jul 2020 09:45:04 +0100
+>>>
+>>>> v3 was posted yesterday...
+>>>
+>>> My tree is immutable, so you know what that means :-)
+>>
+>> I was wondering whether there was a reason why you merged v2 when v3 had
+>> already been posted.
+> 
+> I simply missed it, so relative fixups need to be sent to me.
 
-diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-index a000d458d121..06adcf68ff8d 100644
---- a/drivers/net/dsa/rtl8366.c
-+++ b/drivers/net/dsa/rtl8366.c
-@@ -260,8 +260,8 @@ static int rtl8366_set_default_vlan_and_pvid(struct realtek_smi *smi,
- 	u16 vid;
- 	int ret;
- 
--	/* This is the reserved default VLAN for this port */
--	vid = port + 1;
-+	/* Use the top VLANs for per-port default VLAN */
-+	vid = smi->num_vlan_mc - smi->num_ports + port;
- 
- 	if (port == smi->cpu_port)
- 		/* For the CPU port, make all ports members of this
+The changes were more about the commit message than the code itself...
+so I am not sure how this can be fixed without a fixup! or squash!
+commit which you probably would not do since it would amount to
+rewriting history.
 -- 
-2.26.2
-
+Florian
