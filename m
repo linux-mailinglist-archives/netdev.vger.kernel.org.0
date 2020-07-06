@@ -2,120 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C39D12161D0
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 01:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E8FC2161D2
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 01:03:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727780AbgGFXDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 19:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50644 "EHLO
+        id S1727819AbgGFXDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 19:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727058AbgGFXDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 19:03:12 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A852DC061755
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 16:03:11 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id e15so36732975edr.2
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 16:03:11 -0700 (PDT)
+        with ESMTP id S1727058AbgGFXDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 19:03:17 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D3CC061755;
+        Mon,  6 Jul 2020 16:03:17 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id f23so41207070iof.6;
+        Mon, 06 Jul 2020 16:03:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JWkCpXScroA2bJSzEtEb5Yx/DaaZTadHtRitzt1JbJk=;
-        b=eXzmxyzyTT3PIK+pxOidovOVfpJwX+le2BRxAUkRTWin6it3WIFK6+a3Nh3PY9r2cL
-         6LwABLQoQkv0i5ezZNuB9pyxD87PPyrhRSxxcjWma7McZv6RZsY6v7H9XXyEJcJ7Iu2i
-         WochK5aSwsbj36ltziyCCaBhG/RFsGfcGOn6zctvErPW6YLxzwNwoU24kee291+fZI64
-         oBoW9loEU+VXjqO9Dl4LQzfCIGfNdKrFfH9vk6kCZjDuLV0aiKcdE3vMoER6YzuYjz22
-         hQqID/+mDEJBh2fBiFYQtEZ92u8r/BSMPVgBBSNf1Z4++h9mIExY7zsepa1PDFM+0adg
-         /4zw==
+        bh=UGk5VMo7016wWm4hFuTU503NGuLqOJi9iG46lhgQ9kQ=;
+        b=RemhuDYAtzErC73fTdjuGrfZBTVuPaoW7+b2ZdoqwRXfLLcS0Lp9m1CuvKqY2+w2+r
+         zdJQJbXoEzA0gnLtrq3SKi1HD6hGzRqTGFm9FmeiCPmYd3zqZ99Wuwg3ZJjI2EU+uqJT
+         Dl0vJ3JyBS0nmbxb4++9vqPSamdIYSLzM53KvkL9FUH/HOoxPM8RY6/88Vr8LQpJlgdd
+         Zs7B5d0/UYvcY5IP1QlOufzVDwmqDAZvO9I5zV/aZBaeCBnKP1S7Gx0jiseaEfbxEjT4
+         c3ZbPMbYgpAgN2LfEFS+L6PiIpayX7e0/DFFiJZXQAm3DCOU3wwjrKO9mb3Ufpp5nsvc
+         nSKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JWkCpXScroA2bJSzEtEb5Yx/DaaZTadHtRitzt1JbJk=;
-        b=XEyYkieF/S9jAkfrB4pbVH+7zyd2f15wTH6WbHJWXeblmrJk8Q4IB89VtRYFJ406Xr
-         Y0Tua15IrHYBRFe+C4OHAQtN5Wzk/rtu1XEwZE8W7j22mglTHzuNQ5F2pMU+H3HPVTgO
-         B/hMljrMyhCEqvMBG0lphmSqIwrmB1XCgOmWN6bFleK5dYGaSbAimTuQs2tJnUbW/O8Q
-         ro3GisMf/v6OuhfX32v+jcEJjaU4qo51srAdOu765yLAYfd8Ih9jdxajvriHt6qW6DvU
-         n71dG5jArB4QNUDaflzO3gKpvd9HvauWIS5lvMA1tnucExxjX0smrhhQNbZVEcIATURf
-         R27g==
-X-Gm-Message-State: AOAM530zVvfv6uKYBW1j8jvnPS0P9SIsGLNHdpZd6t4N69eHz2ZJ4tvn
-        afaxdTv2thnhke8ceSE0E7oFL4z+slz9jv7fDu4N2Q==
-X-Google-Smtp-Source: ABdhPJyVuFki/ZtPZ4Ma9OT4MWhdXP1IudP5hfiY2MCbZVdr2Z7zP+1YqvmsEtc5UN/mvfl81WhK9wDNaeYvf62GYO8=
-X-Received: by 2002:aa7:d043:: with SMTP id n3mr60634615edo.102.1594076588926;
- Mon, 06 Jul 2020 16:03:08 -0700 (PDT)
+        bh=UGk5VMo7016wWm4hFuTU503NGuLqOJi9iG46lhgQ9kQ=;
+        b=BvMlAYcCNz94zdbIuPwG2XILxB0xDdz7YGkpjD2zic10CI1v6EjH55Fmt+lTMqL5mh
+         2m/Tnbu4hHVotQkGB6qxb6ksflq+8GMHwuDQ2UXcucll7NX8YsyaTrcDSfAJ5ri9TKQw
+         tqRQRZ2Y6lVbCme8tZTNbErjphr43r4j3Hrov2NcgSNi546e0rnCGauvk17h+HIcMRAB
+         cg6pHoJk7oZy0UJlCF80ew3CHG+w/vfEjc7Jy7FaxgcMbJL82WLiXlv1X6jSlvdCgmVM
+         TZo2aHCm8VN+vzPqT5SzNttOJO1CmNXXgDGAtyWS2abDALVZ+P5O6UmpjAI2tSm1KyTx
+         85aQ==
+X-Gm-Message-State: AOAM531QAxzkDxZdnffpflUMbRZqozrxeDnvcOZfI9jcysMYLB1e0qDA
+        SVFrcrgHbCQ8jdXADZJToxbK2Ib7KM3MrUqc80o=
+X-Google-Smtp-Source: ABdhPJyiuEgtO2IBSNzAk1rEWbTOkOpvaAcTTnOI2B2dT7nVtxVzq5J350MZR297Oo1WNu/zCIdGX5dxoqpN4DfZGNo=
+X-Received: by 2002:a05:6602:2c0a:: with SMTP id w10mr27688990iov.46.1594076596792;
+ Mon, 06 Jul 2020 16:03:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
- <20200524063519.GB1369260@kroah.com> <fe44419b-924c-b183-b761-78771b7d506d@linux.intel.com>
- <s5h5zcistpb.wl-tiwai@suse.de> <20200527071733.GB52617@kroah.com>
- <20200629203317.GM5499@sirena.org.uk> <20200629225959.GF25301@ziepe.ca>
- <20200630103141.GA5272@sirena.org.uk> <20200630113245.GG25301@ziepe.ca>
- <936d8b1cbd7a598327e1b247441fa055d7083cb6.camel@linux.intel.com>
- <20200701065915.GF2044019@kroah.com> <8b88749c197f07c7c70273614dd6ee8840b2b14d.camel@linux.intel.com>
-In-Reply-To: <8b88749c197f07c7c70273614dd6ee8840b2b14d.camel@linux.intel.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Mon, 6 Jul 2020 16:02:57 -0700
-Message-ID: <CAPcyv4g9xCMh5cQF0qbObpHX5ckMK_SWPO12BcXF2ijn8MnckA@mail.gmail.com>
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF client
-To:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>, nhorman@redhat.com,
-        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>,
-        lee.jones@linaro.org
+References: <CAFXsbZp5A7FHoXPA6Rg8XqZPD9NXmSeZZb-RsEGXnktbo04GOw@mail.gmail.com>
+ <20200706200742.GB893522@lunn.ch>
+In-Reply-To: <20200706200742.GB893522@lunn.ch>
+From:   Chris Healy <cphealy@gmail.com>
+Date:   Mon, 6 Jul 2020 16:03:05 -0700
+Message-ID: <CAFXsbZrNgqqOCke=iZrX_fD8N2H6YecA-8JbJkxVh-KJLjENcw@mail.gmail.com>
+Subject: Re: [PATCH] net: sfp: Unique GPIO interrupt names
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 6:44 AM Ranjani Sridharan
-<ranjani.sridharan@linux.intel.com> wrote:
-[..]
-> > > Hi Jason,
-> > >
-> > > We're addressing the naming in the next version as well. We've had
-> > > several people reject the name virtual bus and we've narrowed in on
-> > > "ancillary bus" for the new name suggesting that we have the core
-> > > device that is attached to the primary bus and one or more sub-
-> > > devices
-> > > that are attached to the ancillary bus. Please let us know what you
-> > > think of it.
+On Mon, Jul 6, 2020 at 1:07 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Mon, Jul 06, 2020 at 12:38:37PM -0700, Chris Healy wrote:
+> > Dynamically generate a unique GPIO interrupt name, based on the
+> > device name and the GPIO name.  For example:
 > >
-> > I'm thinking that the primary person who keeps asking you to create
-> > this
-> > "virtual bus" was not upset about that name, nor consulted, so why
-> > are
-> > you changing this?  :(
+> > 103:          0   sx1503q  12 Edge      sff2-los
+> > 104:          0   sx1503q  13 Edge      sff3-los
 > >
-> > Right now this feels like the old technique of "keep throwing crap at
-> > a
-> > maintainer until they get so sick of it that they do the work
-> > themselves..."
+> > The sffX indicates the SFP the loss of signal GPIO is associated with.
 >
-> Hi Greg,
+> Hi Chris
 >
-> It wasnt our intention to frustrate you with the name change but in the
-> last exchange you had specifically asked for signed-off-by's from other
-> Intel developers. In that process, one of the recent feedback from some
-> of them was about the name being misleading and confusing.
+> For netdev, please put inside the [PATCH] part of the subject, which
+> tree this is for, i.e. net-next.
+
+Will do.
 >
-> If you feel strongly about the keeping name "virtual bus", please let
-> us know and we can circle back with them again.
+> > Signed-off-by: Chris Healy <cphealy@gmail.com>
+> > ---
+> >  drivers/net/phy/sfp.c | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+> > index 73c2969f11a4..9b03c7229320 100644
+> > --- a/drivers/net/phy/sfp.c
+> > +++ b/drivers/net/phy/sfp.c
+> > @@ -220,6 +220,7 @@ struct sfp {
+> >      struct phy_device *mod_phy;
+> >      const struct sff_data *type;
+> >      u32 max_power_mW;
+> > +    char sfp_irq_name[32];
+> >
+> >      unsigned int (*get_state)(struct sfp *);
+> >      void (*set_state)(struct sfp *, unsigned int);
+> > @@ -2349,12 +2350,15 @@ static int sfp_probe(struct platform_device *pdev)
+> >              continue;
+> >          }
+> >
+> > +        snprintf(sfp->sfp_irq_name, sizeof(sfp->sfp_irq_name),
+> > +             "%s-%s", dev_name(sfp->dev), gpio_of_names[i]);
+> > +
+>
+> This is perfectly O.K, but you could consider using
+> devm_kasprintf(). That will allocate as much memory as needed for the
+> string, and hence avoid truncation issues, which we have seen before
+> with other interrupt names.
 
-Hey Greg,
+I'll give this a try for the next version of this patch.
 
-Feel free to blame me for the naming thrash it was part of my internal
-review feedback trying to crispen the definition of this facility. I
-was expecting the next revision to come with the internal reviewed-by
-and an explanation of all the items that were changed during that
-review.
-
-Ranjani, is the next rev ready to go out with the review items
-identified? Let's just proceed with the current direction of the
-review tags that Greg asked for, name changes and all, and iterate the
-next details on the list with the new patches in hand.
+>
+>      Andrew
