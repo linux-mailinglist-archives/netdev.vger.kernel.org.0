@@ -2,173 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2922E215F49
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 21:25:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFC6C215F4C
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 21:26:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbgGFTZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 15:25:27 -0400
-Received: from mga01.intel.com ([192.55.52.88]:55143 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725901AbgGFTZ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jul 2020 15:25:26 -0400
-IronPort-SDR: 2p9isU6ALL0yH4wYsn0/7ar5LyWJea9LMHWmIV3VachyN+zXNpVUYtGhMxOERTPWsDS3fjDbrR
- UZmC0Vrm+2RQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9674"; a="165559186"
-X-IronPort-AV: E=Sophos;i="5.75,320,1589266800"; 
-   d="scan'208";a="165559186"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2020 12:25:25 -0700
-IronPort-SDR: 6InQr+djssYuTbk8yyjzazP5P4RVSKqb9d/fIc8YfmNHhY2gMCqR0mHvllmtJj5sGXkkPOUBEK
- FIDTSU58P07g==
-X-IronPort-AV: E=Sophos;i="5.75,320,1589266800"; 
-   d="scan'208";a="305401155"
-Received: from haghighi-mobl.amr.corp.intel.com ([10.254.110.140])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2020 12:25:26 -0700
-Date:   Mon, 6 Jul 2020 12:25:25 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-X-X-Sender: mjmartin@haghighi-mobl.amr.corp.intel.com
-To:     Davide Caratti <dcaratti@redhat.com>
-cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        mptcp@lists.01.org
-Subject: Re: [PATCH net-next] mptcp: fix race in subflow_data_ready()
-In-Reply-To: <4eed4130aba55b8a2b3854fe99d254a50530866b.1594062200.git.dcaratti@redhat.com>
-Message-ID: <alpine.OSX.2.23.453.2007061224510.56827@haghighi-mobl.amr.corp.intel.com>
-References: <4eed4130aba55b8a2b3854fe99d254a50530866b.1594062200.git.dcaratti@redhat.com>
-User-Agent: Alpine 2.23 (OSX 453 2020-06-18)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+        id S1726761AbgGFT02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 15:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725982AbgGFT02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 15:26:28 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B673C061755;
+        Mon,  6 Jul 2020 12:26:28 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1A8B21277D626;
+        Mon,  6 Jul 2020 12:26:27 -0700 (PDT)
+Date:   Mon, 06 Jul 2020 12:26:26 -0700 (PDT)
+Message-Id: <20200706.122626.2248567362397969247.davem@davemloft.net>
+To:     horatiu.vultur@microchip.com
+Cc:     nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        kuba@kernel.org, jiri@resnulli.us, ivecera@redhat.com,
+        andrew@lunn.ch, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 01/12] switchdev: mrp: Extend switchdev API
+ for MRP Interconnect
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200706091842.3324565-2-horatiu.vultur@microchip.com>
+References: <20200706091842.3324565-1-horatiu.vultur@microchip.com>
+        <20200706091842.3324565-2-horatiu.vultur@microchip.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 06 Jul 2020 12:26:27 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 Jul 2020, Davide Caratti wrote:
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+Date: Mon, 6 Jul 2020 11:18:31 +0200
 
-> syzkaller was able to make the kernel reach subflow_data_ready() for a
-> server subflow that was closed before subflow_finish_connect() completed.
-> In these cases we can avoid using the path for regular/fallback MPTCP
-> data, and just wake the main socket, to avoid the following warning:
->
-> WARNING: CPU: 0 PID: 9370 at net/mptcp/subflow.c:885
-> subflow_data_ready+0x1e6/0x290 net/mptcp/subflow.c:885
-> Kernel panic - not syncing: panic_on_warn set ...
-> CPU: 0 PID: 9370 Comm: syz-executor.0 Not tainted 5.7.0 #106
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-> rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-> Call Trace:
->  <IRQ>
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0xb7/0xfe lib/dump_stack.c:118
->  panic+0x29e/0x692 kernel/panic.c:221
->  __warn.cold+0x2f/0x3d kernel/panic.c:582
->  report_bug+0x28b/0x2f0 lib/bug.c:195
->  fixup_bug arch/x86/kernel/traps.c:105 [inline]
->  fixup_bug arch/x86/kernel/traps.c:100 [inline]
->  do_error_trap+0x10f/0x180 arch/x86/kernel/traps.c:197
->  do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:216
->  invalid_op+0x1e/0x30 arch/x86/entry/entry_64.S:1027
-> RIP: 0010:subflow_data_ready+0x1e6/0x290 net/mptcp/subflow.c:885
-> Code: 04 02 84 c0 74 06 0f 8e 91 00 00 00 41 0f b6 5e 48 31 ff 83 e3 18
-> 89 de e8 37 ec 3d fe 84 db 0f 85 65 ff ff ff e8 fa ea 3d fe <0f> 0b e9
-> 59 ff ff ff e8 ee ea 3d fe 48 89 ee 4c 89 ef e8 f3 77 ff
-> RSP: 0018:ffff88811b2099b0 EFLAGS: 00010206
-> RAX: ffff888111197000 RBX: 0000000000000000 RCX: ffffffff82fbc609
-> RDX: 0000000000000100 RSI: ffffffff82fbc616 RDI: 0000000000000001
-> RBP: ffff8881111bc800 R08: ffff888111197000 R09: ffffed10222a82af
-> R10: ffff888111541577 R11: ffffed10222a82ae R12: 1ffff11023641336
-> R13: ffff888111541000 R14: ffff88810fd4ca00 R15: ffff888111541570
->  tcp_child_process+0x754/0x920 net/ipv4/tcp_minisocks.c:841
->  tcp_v4_do_rcv+0x749/0x8b0 net/ipv4/tcp_ipv4.c:1642
->  tcp_v4_rcv+0x2666/0x2e60 net/ipv4/tcp_ipv4.c:1999
->  ip_protocol_deliver_rcu+0x29/0x1f0 net/ipv4/ip_input.c:204
->  ip_local_deliver_finish net/ipv4/ip_input.c:231 [inline]
->  NF_HOOK include/linux/netfilter.h:421 [inline]
->  ip_local_deliver+0x2da/0x390 net/ipv4/ip_input.c:252
->  dst_input include/net/dst.h:441 [inline]
->  ip_rcv_finish net/ipv4/ip_input.c:428 [inline]
->  ip_rcv_finish net/ipv4/ip_input.c:414 [inline]
->  NF_HOOK include/linux/netfilter.h:421 [inline]
->  ip_rcv+0xef/0x140 net/ipv4/ip_input.c:539
->  __netif_receive_skb_one_core+0x197/0x1e0 net/core/dev.c:5268
->  __netif_receive_skb+0x27/0x1c0 net/core/dev.c:5382
->  process_backlog+0x1e5/0x6d0 net/core/dev.c:6226
->  napi_poll net/core/dev.c:6671 [inline]
->  net_rx_action+0x3e3/0xd70 net/core/dev.c:6739
->  __do_softirq+0x18c/0x634 kernel/softirq.c:292
->  do_softirq_own_stack+0x2a/0x40 arch/x86/entry/entry_64.S:1082
->  </IRQ>
->  do_softirq.part.0+0x26/0x30 kernel/softirq.c:337
->  do_softirq arch/x86/include/asm/preempt.h:26 [inline]
->  __local_bh_enable_ip+0x46/0x50 kernel/softirq.c:189
->  local_bh_enable include/linux/bottom_half.h:32 [inline]
->  rcu_read_unlock_bh include/linux/rcupdate.h:723 [inline]
->  ip_finish_output2+0x78a/0x19c0 net/ipv4/ip_output.c:229
->  __ip_finish_output+0x471/0x720 net/ipv4/ip_output.c:306
->  dst_output include/net/dst.h:435 [inline]
->  ip_local_out+0x181/0x1e0 net/ipv4/ip_output.c:125
->  __ip_queue_xmit+0x7a1/0x14e0 net/ipv4/ip_output.c:530
->  __tcp_transmit_skb+0x19dc/0x35e0 net/ipv4/tcp_output.c:1238
->  __tcp_send_ack.part.0+0x3c2/0x5b0 net/ipv4/tcp_output.c:3785
->  __tcp_send_ack net/ipv4/tcp_output.c:3791 [inline]
->  tcp_send_ack+0x7d/0xa0 net/ipv4/tcp_output.c:3791
->  tcp_rcv_synsent_state_process net/ipv4/tcp_input.c:6040 [inline]
->  tcp_rcv_state_process+0x36a4/0x49c2 net/ipv4/tcp_input.c:6209
->  tcp_v4_do_rcv+0x343/0x8b0 net/ipv4/tcp_ipv4.c:1651
->  sk_backlog_rcv include/net/sock.h:996 [inline]
->  __release_sock+0x1ad/0x310 net/core/sock.c:2548
->  release_sock+0x54/0x1a0 net/core/sock.c:3064
->  inet_wait_for_connect net/ipv4/af_inet.c:594 [inline]
->  __inet_stream_connect+0x57e/0xd50 net/ipv4/af_inet.c:686
->  inet_stream_connect+0x53/0xa0 net/ipv4/af_inet.c:725
->  mptcp_stream_connect+0x171/0x5f0 net/mptcp/protocol.c:1920
->  __sys_connect_file net/socket.c:1854 [inline]
->  __sys_connect+0x267/0x2f0 net/socket.c:1871
->  __do_sys_connect net/socket.c:1882 [inline]
->  __se_sys_connect net/socket.c:1879 [inline]
->  __x64_sys_connect+0x6f/0xb0 net/socket.c:1879
->  do_syscall_64+0xb7/0x3d0 arch/x86/entry/common.c:295
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x7fb577d06469
-> Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89
-> f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01
-> f0 ff ff 73 01 c3 48 8b 0d ff 49 2b 00 f7 d8 64 89 01 48
-> RSP: 002b:00007fb5783d5dd8 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-> RAX: ffffffffffffffda RBX: 000000000068bfa0 RCX: 00007fb577d06469
-> RDX: 000000000000004d RSI: 0000000020000040 RDI: 0000000000000003
-> RBP: 00000000ffffffff R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 000000000041427c R14: 00007fb5783d65c0 R15: 0000000000000003
->
-> Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/39
-> Reported-by: Christoph Paasch <cpaasch@apple.com>
-> Fixes: e1ff9e82e2ea ("net: mptcp: improve fallback to TCP")
-> Suggested-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> ---
-> net/mptcp/subflow.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-> index e1e19c76e267..9f7f3772c13c 100644
-> --- a/net/mptcp/subflow.c
-> +++ b/net/mptcp/subflow.c
-> @@ -873,7 +873,7 @@ static void subflow_data_ready(struct sock *sk)
-> 	struct mptcp_sock *msk;
->
-> 	msk = mptcp_sk(parent);
-> -	if (inet_sk_state_load(sk) == TCP_LISTEN) {
-> +	if ((1 << inet_sk_state_load(sk)) & (TCPF_LISTEN | TCPF_CLOSE)) {
-> 		set_bit(MPTCP_DATA_READY, &msk->flags);
-> 		parent->sk_data_ready(parent);
-> 		return;
-> -- 
-> 2.26.2
+> +/* SWITCHDEV_OBJ_ID_IN_TEST_MRP */
+> +struct switchdev_obj_in_test_mrp {
+> +	struct switchdev_obj obj;
+> +	/* The value is in us and a value of 0 represents to stop */
+> +	u32 interval;
+> +	u8 max_miss;
+> +	u32 in_id;
+> +	u32 period;
+> +};
+ ...
+> +#define SWITCHDEV_OBJ_IN_TEST_MRP(OBJ) \
+> +	container_of((OBJ), struct switchdev_obj_in_test_mrp, obj)
+> +
+> +/* SWICHDEV_OBJ_ID_IN_ROLE_MRP */
+> +struct switchdev_obj_in_role_mrp {
+> +	struct switchdev_obj obj;
+> +	u16 in_id;
+> +	u32 ring_id;
+> +	u8 in_role;
+> +	struct net_device *i_port;
+> +};
+ ...
+> +#define SWITCHDEV_OBJ_IN_ROLE_MRP(OBJ) \
+> +	container_of((OBJ), struct switchdev_obj_in_role_mrp, obj)
+> +
+> +struct switchdev_obj_in_state_mrp {
+> +	struct switchdev_obj obj;
+> +	u8 in_state;
+> +	u32 in_id;
+> +};
 
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Please arrange these structure members in a more optimal order so that
+the resulting object is denser.  For example, in switchdev_obj_in_role_mrp
+if you order it such that:
 
---
-Mat Martineau
-Intel
+> +	u32 ring_id;
+> +	u16 in_id;
+> +	u8 in_role;
+
+You'll have less wasted space from padding.
+
+Use 'pahole' or similar tools to guide you.
