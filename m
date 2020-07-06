@@ -2,99 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA1232153B6
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 10:09:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D53682153EE
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 10:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728363AbgGFIJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 04:09:17 -0400
-Received: from sitav-80046.hsr.ch ([152.96.80.46]:57582 "EHLO
-        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728117AbgGFIJR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 04:09:17 -0400
-Received: from [IPv6:2a01:8b81:5404:6500:7918:bad6:ec84:9e74] (unknown [IPv6:2a01:8b81:5404:6500:7918:bad6:ec84:9e74])
-        by mail.strongswan.org (Postfix) with ESMTPSA id 5E8DB401B3;
-        Mon,  6 Jul 2020 10:09:14 +0200 (CEST)
-Subject: Re: [PATCH ipsec] xfrm: esp6: fix encapsulation header offset
- computation
-To:     Sabrina Dubroca <sd@queasysnail.net>, netdev@vger.kernel.org
-Cc:     steffen.klassert@secunet.com
-References: <37e23af3698e92fd095c401937ed0cacf5f2e455.1593785611.git.sd@queasysnail.net>
-From:   Tobias Brunner <tobias@strongswan.org>
-Autocrypt: addr=tobias@strongswan.org; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <21c4da93-03be-efc8-ee9e-310504813bfe@strongswan.org>
-Date:   Mon, 6 Jul 2020 10:09:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728308AbgGFIYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 04:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726277AbgGFIYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 04:24:11 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544D4C061794
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 01:24:11 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id f139so40925882wmf.5
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 01:24:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vPOtMPLX0FQjyWQURSr+T40yVxoGzANFZyUTps234PE=;
+        b=MYhgcHNk7TQrhzjTpr4sRtE37e7A/Lti3eyP9For23pWYDlN8DBUGCP2wjz0m6jxph
+         ZXIm3hjh+u0+uV3bEGBjrLELpaiHUzjMB0IeIHMWPT7bqvcnusMDtISFYUxarcxFNoae
+         5nptyemrG417d6gSHQPQ5m9lYaRZj0pf2cQTLzS+SG7AsBNhqeOgJw8Ct2ECCKZg7Arr
+         ZI87F7fIUlnlH3vxV70ruhYqOlx6DmhT/klb25rEW9X54Bre6q/gARcDAyEhVAq+SL/C
+         NAtd0Zf/r8YIv7SLIvDfOh7ChKpT1hrPOnHM5hRlinyPxRQAg5RxJGGFlOM+05QGIwTI
+         n1Ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vPOtMPLX0FQjyWQURSr+T40yVxoGzANFZyUTps234PE=;
+        b=qe/jwCYqBj63fPVgLyYly82/noaxwjGojQTAcNrJzGkO5E2mZ76bp7QlFNEK+V+AkC
+         /7rVZhuTJj0tZvUqJBCAT5aaQEnFYrEQCKD02dK+ROAzJeE7aX2WBjiE9gVLuO31RH/n
+         TkBpjtlWhhg7I1yFTfMJFDqenfdmhG766NjnUiHmE70ToazXdbZTX9QGUXqQ3VFbqD1g
+         lPK7rGZfcZZJPQI89thhoE03/M0afktHxLlgVnkwF0dMuxk5tl8YajCQinhRgvDKV7oB
+         sTmX/BBF9O9ucn4XfZ5C0De7FLMXMNuVNH//8kOKtqQ0pPAJ5g4Ozq3dsDxYt/gX6ide
+         RQOQ==
+X-Gm-Message-State: AOAM531dVSxOOhKxlIxaxAdrOQZLRYdLOHBYCzHSW66OPtP8F/YkofjH
+        +qfEVegfllaNd4iuXeCCX33WEyEqa42NiNJndJPIUjJ6Vvc=
+X-Google-Smtp-Source: ABdhPJyHsMduSf4w1qC22QDmq8Wjvf9fWsSHOWO6DI6HI6JWE0IasttDlOjQjVl2X/69uvJU4eM2rW/JvbeCO7XO3KI=
+X-Received: by 2002:a1c:6006:: with SMTP id u6mr47233658wmb.111.1594023850038;
+ Mon, 06 Jul 2020 01:24:10 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <37e23af3698e92fd095c401937ed0cacf5f2e455.1593785611.git.sd@queasysnail.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <4aaead9f8306859eb652b90582f23295792e9d15.1593497708.git.lucien.xin@gmail.com>
+ <d510d172-c605-725d-e6bc-e6462a3718ab@strongswan.org>
+In-Reply-To: <d510d172-c605-725d-e6bc-e6462a3718ab@strongswan.org>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 6 Jul 2020 16:33:53 +0800
+Message-ID: <CADvbK_cQBbFwYj_CYTm69LP8a7R3PsS=nr0MyfRjAcASVz=dhQ@mail.gmail.com>
+Subject: Re: [PATCH ipsec] xfrm: state: match with both mark and mask on user interfaces
+To:     Tobias Brunner <tobias@strongswan.org>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <hadi@cyberus.ca>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>, pwouters@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sabrina,
+Hi, Tobias
 
-> In commit 0146dca70b87, I incorrectly adapted the code that computes
-> the location of the UDP or TCP encapsulation header from IPv4 to
-> IPv6. In esp6_input_done2, skb->transport_header points to the ESP
-> header, so by adding skb_network_header_len, uh and th will point to
-> the ESP header, not the encapsulation header that's in front of it.
-> 
-> Since the TCP header's size can change with options, we have to start
-> from the IPv6 header and walk past possible extensions.
-> 
-> Fixes: 0146dca70b87 ("xfrm: add support for UDPv6 encapsulation of ESP")
-> Fixes: 26333c37fc28 ("xfrm: add IPv6 support for espintcp")
-> Reported-by: Tobias Brunner <tobias@strongswan.org>
-> Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Sorry for late.
 
-Thanks for the fix!
+On Tue, Jun 30, 2020 at 5:08 PM Tobias Brunner <tobias@strongswan.org> wrote:
+>
+> Hi Xin,
+>
+> > Similar to commit 4f47e8ab6ab79 ("xfrm: policy: match with both mark and
+> > mask on user interfaces"), this patch is to match both mark and mask for
+> > state on these user interfaces:
+> >
+> >   xfrm_state_lookup_byaddr_user
+> >   xfrm_state_lookup_user
+> >   xfrm_state_update
+> >   xfrm_state_find
+> >   xfrm_state_add
+> >       __xfrm_state_lookup_byaddr(struct xfrm_mark)
+> >       __xfrm_state_lookup(struct xfrm_mark)
+> >   xfrm_find_acq_byseq
+> >   xfrm_stateonly_find
+> >
+> >           mark.v == x->mark.v && mark.m == x->mark.m
+>
+> I generally agree with matching marks/masks exactly for operations from
+> userland, and it doesn't introduce any issues in our test suite.
+> However, xfrm_state_find() is used to find an outbound state based on
+> the templates in a policy and the marks on both, so it's not directly
+> userland-facing.  Before this change, the mask configured on the state
+> was a applied to the policy's mark/mask and then compared to the state's
+> mark.  Now, the mark and mask both must match exactly:
+Good catch.
 
-Tested-by: Tobias Brunner <tobias@strongswan.org>
+>
+> > @@ -1051,7 +1061,6 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+> >       int acquire_in_progress = 0;
+> >       int error = 0;
+> >       struct xfrm_state *best = NULL;
+> > -     u32 mark = pol->mark.v & pol->mark.m;
+> >       unsigned short encap_family = tmpl->encap_family;
+> >       unsigned int sequence;
+> >       struct km_event c;
+> > @@ -1065,7 +1074,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+> >       hlist_for_each_entry_rcu(x, net->xfrm.state_bydst + h, bydst) {
+> >               if (x->props.family == encap_family &&
+> >                   x->props.reqid == tmpl->reqid &&
+> > -                 (mark & x->mark.m) == x->mark.v &&
+> > +                 (pol->mark.v == x->mark.v && pol->mark.m == x->mark.m) &&
+> >                   x->if_id == if_id &&
+> >                   !(x->props.flags & XFRM_STATE_WILDRECV) &&
+> >                   xfrm_state_addr_check(x, daddr, saddr, encap_family) &&
+> > @@ -1082,7 +1091,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+> >       hlist_for_each_entry_rcu(x, net->xfrm.state_bydst + h_wildcard, bydst) {
+> >               if (x->props.family == encap_family &&
+> >                   x->props.reqid == tmpl->reqid &&
+> > -                 (mark & x->mark.m) == x->mark.v &&
+> > +                 (pol->mark.v == x->mark.v && pol->mark.m == x->mark.m) &&
+> >                   x->if_id == if_id &&
+> >                   !(x->props.flags & XFRM_STATE_WILDRECV) &&
+> >                   xfrm_addr_equal(&x->id.daddr, daddr, encap_family) &&
+>
+> While this should usually not be a problem for strongSwan, as we set the
+> same mark/value on both states and corresponding policies (although the
+> latter can be disabled as users may want to install policies themselves
+> or via another daemon e.g. for MIPv6), it might be a limitation for some
+> use cases.  The current code allows sharing states with multiple
+> policies whose mark/mask doesn't match exactly (i.e. depended on the
+> masks of both).  I wonder if anybody uses it like this, and how others
+> think about it.
+IMHO, the non-exact match "(mark & x->mark.m) == x->mark.v" should be only
+for packet flow. "sharing states with multiple policies" should not be the
+purpose of xfrm_mark. (Add Jamal to the CC list)
 
-Regards,
-Tobias
+"(((pol->mark.v & pol->mark.m) & x->mark.m) == x->mark.v)" is just strange.
+We could do either:
+ (pol->mark.v == x->mark.v && pol->mark.m == x->mark.m), like this patch.
+Or use fl->flowi_mark in xfrm_state_find():
+ (fl->flowi_mark & x->mark.m) == x->mark.v)
+
+The 1st one will require userland to configure policy and state with the
+same xfrm_mark, like strongswan.
+
+The 2nd one will match state with tx packet flow's mark, it's more like
+rx packet flow path.
+
+But you're right, either of these may cause slight differences, let's see
+how other userland cases use it. (also Add Libreswan's developer, Paul Wouters)
