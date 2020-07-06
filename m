@@ -2,127 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B6C8215174
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 06:24:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F6202151A7
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 06:28:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727774AbgGFEYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 00:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47430 "EHLO
+        id S1726991AbgGFE2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 00:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727039AbgGFEYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 00:24:51 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF0BC061794;
-        Sun,  5 Jul 2020 21:24:51 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id f2so14829016plr.8;
-        Sun, 05 Jul 2020 21:24:51 -0700 (PDT)
+        with ESMTP id S1725892AbgGFE2E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 00:28:04 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB381C061794;
+        Sun,  5 Jul 2020 21:28:04 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id t11so11586717pfq.11;
+        Sun, 05 Jul 2020 21:28:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NhQuh/M+EWr/H+2AN4zsqP1K1gI1NFzEkYpBnUNzwu8=;
-        b=tzabOV92NsrmrViHXK0nWYnzKyxMnXybz1c5LHrpbDZvsULkOEjoUwyg0SEJZWfv2j
-         ke044ICDxjqm31S6SUtqUtsSNgikx9OupmoDwcqP4bmuxNg3IK1qbyy3SvLCR2/I2pur
-         VxoNfSeScLptOrJjsstSIQo9lvVctL3xwjCOl0BpXU1wfF3hp3IWqZsRLp8zzqIqGJAK
-         BzdKyAYWRXGcwRVo6Xb5F9dbkqkuQunR5ZZ/I/wk4eNu8OWhQ+ROPxtuaCJbZuj0Ga6i
-         C3CW4lXhSdwsxT8A5EMFgsQGQs/5JFpeTr7wKEz4Wbdhzew5aHKRXnYJMH00J12AbpKe
-         nIQQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c0/ZnaHlwR0HIQUxoQtTXVqcJB0m2bht+2IMFyQlFwE=;
+        b=L+zNyhLgXoLTLnSy9wtpK//KjcLMBvbzVUmzxN1L5xtScgLPGZXQ7x3CGgzEVQ7Qny
+         slKxBaboWJeVh9pB3Yr2DjwzURtQhZcxE/0GRix0a1rijKpOV8UEc0ECRNb1/Vmp1ssc
+         uyNduXjT0sZgicKMBQM+KR8InLHeOAB5Xz1liCaIlm4Hjf6o5FLPZI9n3t4XliDDbEbt
+         yO6xrR4DvyZA/O/vx3H13JS4V6Y2Cvn8VqGID4nyVsTLfxwXkOKOA1iER8ojDxOYJX5s
+         B5hgMCskLwwq2UUx8/gJW3+kkUm//e0QvkaXgyrfOj3lLQE2LitZHxNDa0BV7qa+0IoN
+         C6qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=NhQuh/M+EWr/H+2AN4zsqP1K1gI1NFzEkYpBnUNzwu8=;
-        b=dgPFk/51CzJw8R9ZVRxcDygIgYefCG+chT1YaRoI9qCI/hERgKF8AK51jFryTSRyd9
-         g3yez9UZcooGb/5AoF/5fLO1b7dr+JZVfssJ3856i0aK9QmnxMxhA/XqP3Z1a0HBF+EP
-         K2XD7mbV62BaDVvVCDaFzQy0hXtsywDJbmy5VAmcBirqKjcp87fOygSxr4rE8kky0v8Y
-         u45ohCddemDqlOiJyDgl+1hpH8yzl2TbRO4ctPmOJhxBctXnkitg1CS2wTVTii2A/jkd
-         99oiy9TB4xo4nIDa0UmIpR/nQN090K/FdDQC5tysXYgr/SB8dKUxwAmUNvNBa/8e9lng
-         zqOQ==
-X-Gm-Message-State: AOAM532EYscvjbIBMpkcgMbTnWT9wgilWno87E+Bm1eyejEdBhbJsRpq
-        K/VSn6ES8CJrpytPxK6zukM=
-X-Google-Smtp-Source: ABdhPJyHCUXMwb1alkHT6aU83lgl85yKQ4N8yg8Bm1A7RfvY/tx7kGh5nrkaA6qdA1Cf5r2jzEe7Sw==
-X-Received: by 2002:a17:902:684e:: with SMTP id f14mr11268525pln.166.1594009490929;
-        Sun, 05 Jul 2020 21:24:50 -0700 (PDT)
-Received: from [172.20.20.103] ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id d14sm298902pjc.20.2020.07.05.21.24.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Jul 2020 21:24:50 -0700 (PDT)
-Subject: Re: [PATCH net v3] sched: consistently handle layer3 header accesses
- in the presence of VLANs
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        cake@lists.bufferbloat.net, Davide Caratti <dcaratti@redhat.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Ilya Ponetayev <i.ponetaev@ndmsystems.com>
-References: <20200703202643.12919-1-toke@redhat.com>
- <ada37763-16cd-7b51-f9ce-41e8d313bf96@gmail.com> <878sfzms4p.fsf@toke.dk>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <b62fcd67-1b0a-ab7f-850d-22e62faf3a23@gmail.com>
-Date:   Mon, 6 Jul 2020 13:24:42 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
+        bh=c0/ZnaHlwR0HIQUxoQtTXVqcJB0m2bht+2IMFyQlFwE=;
+        b=dSLczE8rBYmC+EdBle1b3UO+RkUtHenJECuuABR1/QTQcFVW5eJfOiR3wN0/A7//5Y
+         5iTdvJIloDvlgPJ+wyVX1pGTxR4tz4ocCPIQqJxdBJhtsEzj4Xryt7YBA36U3UtJTk3M
+         KwA7y4e9CX5X+NfN78t1swfqgOvug4qWN09Cn7v7cHLU5kpWuVTfmLC7BgzFAkIKGi8P
+         k+2Q7L/NKml6jHsbelYVal6IDW9u8vFQKR3WV+PyNkWvAXxibO4tnfJrtd4WgkjBtdWd
+         m4UsEvGDFgNkK1j9TYjwV4U7klcJXOY9baMODK1J18sJBNC9Kro2x3kBO1F8qEfORsVW
+         S7yQ==
+X-Gm-Message-State: AOAM531ETGjriA4Ng3sAhSTv/OjSC46bxr6NhGRBaJNNSz++PHaU4b/0
+        r/oYu9dFzs31XjHX60L6ncgrcDBz
+X-Google-Smtp-Source: ABdhPJx/3odWdSz9MMj8+RDHBuZysYmRiGNViGogz/1LUUwvthBso3wywjnUS6wOzOOlf3xAH0fwoQ==
+X-Received: by 2002:a05:6a00:1589:: with SMTP id u9mr44431242pfk.201.1594009683833;
+        Sun, 05 Jul 2020 21:28:03 -0700 (PDT)
+Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id ia13sm16558680pjb.42.2020.07.05.21.28.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Jul 2020 21:28:03 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next v2 0/3]  net: ethtool: Untangle PHYLIB dependency
+Date:   Sun,  5 Jul 2020 21:27:55 -0700
+Message-Id: <20200706042758.168819-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <878sfzms4p.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/07/04 20:33, Toke Høiland-Jørgensen wrote:
-> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
->> On 2020/07/04 5:26, Toke Høiland-Jørgensen wrote:
->> ...
->>> +/* A getter for the SKB protocol field which will handle VLAN tags consistently
->>> + * whether VLAN acceleration is enabled or not.
->>> + */
->>> +static inline __be16 skb_protocol(const struct sk_buff *skb, bool skip_vlan)
->>> +{
->>> +	unsigned int offset = skb_mac_offset(skb) + sizeof(struct ethhdr);
->>> +	__be16 proto = skb->protocol;
->>> +
->>> +	if (!skip_vlan)
->>> +		/* VLAN acceleration strips the VLAN header from the skb and
->>> +		 * moves it to skb->vlan_proto
->>> +		 */
->>> +		return skb_vlan_tag_present(skb) ? skb->vlan_proto : proto;
->>> +
->>> +	while (eth_type_vlan(proto)) {
->>> +		struct vlan_hdr vhdr, *vh;
->>> +
->>> +		vh = skb_header_pointer(skb, offset, sizeof(vhdr), &vhdr);
->>> +		if (!vh)
->>> +			break;
->>> +
->>> +		proto = vh->h_vlan_encapsulated_proto;
->>> +		offset += sizeof(vhdr);
->>> +	}
->>
->> Why don't you use __vlan_get_protocol() here? It looks quite similar.
->> Is there any problem with using that?
-> 
-> TBH, I completely missed that helper. It seems to have side effects,
-> though (pskb_may_pull()), which is one of the things the original patch
-> to sch_cake that initiated all of this was trying to avoid.
+Hi all,
 
-Sorry for not completely following the discussion...
-Pulling data is wrong for cake or other schedulers?
+This patch series untangles the ethtool netlink dependency with PHYLIB
+which exists because the cable test feature calls directly into PHY
+library functions. The approach taken here is to introduce
+ethtool_phy_ops function pointers which can be dynamically registered
+when PHYLIB loads.
 
-> I guess I could just fix that, though, and switch __vlan_get_protocol()
-> over to using skb_header_pointer(). Will send a follow-up to do that.
-> 
-> Any opinion on whether it's a good idea to limit the max parse depth
-> while I'm at it (see Daniel's reply)?
+Florian Fainelli (3):
+  net: ethtool: Introduce ethtool_phy_ops
+  net: phy: Register ethtool PHY operations
+  net: ethtool: Remove PHYLIB direct dependency
 
-The logic was originally introduced by skb_network_protocol() back in v3.10,
-and I have never heard of security report about that. But yes, I guess it
-potentially can be used for DoS attack.
+ drivers/net/phy/phy_device.c |  7 +++++++
+ include/linux/ethtool.h      | 25 +++++++++++++++++++++++++
+ net/Kconfig                  |  1 -
+ net/ethtool/cabletest.c      | 18 ++++++++++++++++--
+ net/ethtool/common.c         | 11 +++++++++++
+ net/ethtool/common.h         |  2 ++
+ 6 files changed, 61 insertions(+), 3 deletions(-)
 
-Toshiaki Makita
+-- 
+2.25.1
+
