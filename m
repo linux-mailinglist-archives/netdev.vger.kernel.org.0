@@ -2,90 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D605215DE0
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 20:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED6F215DE4
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 20:02:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729701AbgGFSBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 14:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60662 "EHLO
+        id S1729722AbgGFSCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 14:02:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729657AbgGFSBr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 14:01:47 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB0BC061755
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 11:01:47 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id e8so18745799pgc.5
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 11:01:47 -0700 (PDT)
+        with ESMTP id S1729657AbgGFSCm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 14:02:42 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5362C061755
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 11:02:41 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x72so7845518pfc.6
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 11:02:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=c1BP4kkd5mQvXLT6gvyFMq5KFfU0a9HUZV4HI0V2JgM=;
-        b=z0SDURRPP8pIwoHLsHJiywXVTwGBEha7/eRi66zb/rmkCTtpdxfwSvoCP9+N//CZHh
-         0TQvDcuCjARu0CQq/sjVee3UPylTXExh8NQH4R5OHujWUbwWsnANTjg/Bs2zlYSiDVUm
-         TuroqJODFE5QF66HvqLRdLdq8slVdzTRVIzvUJRRyalzdFvfLFe6PfkSXJLumUsLjKVj
-         Cnwx7VIAOwieYVG9UhSM2JTIM2IRDa+WGIVC3Pioa2s8uiVDKtOof3tOqNSJhqsY537r
-         0yFuvlOB9kkfE7KAjAHqrv8jBUNGC40I+wRL5COoU6hxZ+ZGlFGXEgqIEtcSXmk8shpu
-         swbw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=vE9HhVeh7WdKuA497jnquICOWUMZkjd853XLQH+n2do=;
+        b=eLbmlA+N2fonS3GB9j07zQECHziylWc7EVfQwxyhunlxc79l6miPFzWTXeri20LNH7
+         ytT36GOhR7EPPHafMSU1d6vgetvGPotI/SD2LpV72cqii9z6HwpvPitiv0m4Z0P2Zq6z
+         dX9TCfI95Bn7VwhJDQVqD65i1+/8z70ov6F0ZxSKjm6K2yYPU9CM7MUw5g+sBlUH/nwB
+         rDgsBGa5c7zJQoJ6v1pEddjVvl7Pc6TPV1wJy/ktL/Y1ZBeEclcy/1UJ1vXU6Rczbwvm
+         ZU66Yax6tOotoLB8WiS0dHEo8AMWR7mqKUj5Wvbeee3d13Ryku6CXY7KIs6Bn8JNIf+Q
+         nYsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=c1BP4kkd5mQvXLT6gvyFMq5KFfU0a9HUZV4HI0V2JgM=;
-        b=gx33AzykhvSoS8PWOIewoWuj8BEIJgnBOPJAgjBmDqjcax954b2S7CDQELBQd/eLbf
-         HCvLrnQpmYvBl34p2ajaNvnBJo61/Rdm9VYKBidJ08WrvNA83HRJBICz7+kQj+shhEc6
-         Mo0PibkJpskTd5FcrG5oAK5emMpLBksWsYzMgg/sUOO3+4S4il+3abE5Y92tVdISTT2E
-         xc1hwbETmPpeZ1A1hQCYrp5EzzhCv9K6zafrS/2xrQNaH1Ln/ubFzPjJ5u3W9fDz39DB
-         XGZQwvg4SIxZ9OgY09W95aLpl+6i3WAZz9ABOv3kqLPo5PqPkFH3qLsqpPxCFXsy5lnv
-         vz/A==
-X-Gm-Message-State: AOAM533FiCISaD700klqQhXXileyi19Edk5i/zX5UW2hWqV/jEW1lUly
-        edjCAXeoICFcID3Y4EuFnhr0IA==
-X-Google-Smtp-Source: ABdhPJysJMsIJO6XZlGH3CAQJZCDHxIBnjZ0jz1oW0/MDIVyY2ByG/LI673VFDedgfJ4xq1EsD8o5Q==
-X-Received: by 2002:a65:6916:: with SMTP id s22mr42369299pgq.128.1594058506639;
-        Mon, 06 Jul 2020 11:01:46 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id n15sm19887455pgs.25.2020.07.06.11.01.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2020 11:01:46 -0700 (PDT)
-Date:   Mon, 6 Jul 2020 11:01:38 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Anton Danilov <littlesmilingcloud@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2 v3] tc: improve the qdisc show command
-Message-ID: <20200706110138.36a1528c@hermes.lan>
-In-Reply-To: <20200703153921.9312-1-littlesmilingcloud@gmail.com>
-References: <20200618151702.24c33261@hermes.lan>
-        <20200703153921.9312-1-littlesmilingcloud@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=vE9HhVeh7WdKuA497jnquICOWUMZkjd853XLQH+n2do=;
+        b=PiK+UEHjEZQMJwpiuYhWZvay3Wsrf2i1O5yz16+v6FZGqwdMwxlDSHVnYxHpfVHQXr
+         Gm+ZauJ36nGw8zeYMdylrKwrtr77F5LYuQ0Q4MmMOeP90cmm2muXUbAPiRDVJz6DBz41
+         rHLHsIYctDi7kIMd7Em4V9H+fn6mgWf1iCF6HnbBqKTnsGxYMYFUrwnc8J9i5sHy06ca
+         Hmn4PmfXd/UoPS2z37201kYxNIEwftXB2x2Pu2H1q0NO0zX0WE3eLkmRqgsOwYN94NYv
+         SWy0rXoVmRzPiPI+lFZBQlRfpB3qe+/EAIRYA6E6XMqfjc5zEt4sXk6zB9WmgHaagC/8
+         1tRA==
+X-Gm-Message-State: AOAM532x9KadwkJVG6MmFbRYvIy8grNcwxE5l/l8kPp618u2toXOluYz
+        I/Ly1OWBVP01haIOa1RZpjThncXVL3g=
+X-Google-Smtp-Source: ABdhPJxGHXc39IpY38UVyh4KdTIbsU1Ou7yE6g/so/Htjco6xfjVi/T+3nSvPDFb5A2yeHCcegVqNQ==
+X-Received: by 2002:a63:3005:: with SMTP id w5mr40528976pgw.441.1594058560988;
+        Mon, 06 Jul 2020 11:02:40 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id v15sm19972562pgo.15.2020.07.06.11.02.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 Jul 2020 11:02:40 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, James Chapman <jchapman@katalix.com>,
+        Guillaume Nault <gnault@redhat.com>
+Subject: [PATCH net] l2tp: remove skb_dst_set() from l2tp_xmit_skb()
+Date:   Tue,  7 Jul 2020 02:02:32 +0800
+Message-Id: <57ec206296ac8049d51755667b69aa0e978e3d6e.1594058552.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  3 Jul 2020 18:39:22 +0300
-Anton Danilov <littlesmilingcloud@gmail.com> wrote:
+In the tx path of l2tp, l2tp_xmit_skb() calls skb_dst_set() to set
+skb's dst. However, it will eventually call inet6_csk_xmit() or
+ip_queue_xmit() where skb's dst will be overwritten by:
 
-> Before can be possible show only all qeueue disciplines on an interface.
-> There wasn't a way to get the qdisc info by handle or parent, only full
-> dump of the disciplines with a following grep/sed usage.
-> 
-> Now new and old options work as expected to filter a qdisc by handle or
-> parent.
-> 
-> Full syntax of the qdisc show command:
-> 
-> tc qdisc { show | list } [ dev STRING ] [ QDISC_ID ] [ invisible ]
->   QDISC_ID := { root | ingress | handle QHANDLE | parent CLASSID }
-> 
-> This change doesn't require any changes in the kernel.
-> 
-> Signed-off-by: Anton Danilov <littlesmilingcloud@gmail.com>
-> ---
-> v2:
-> - Fix the coding style
-> v3:
-> - Make the parameters checking more simple
+   skb_dst_set_noref(skb, dst);
 
-Applied, thanks
+without releasing the old dst in skb. Then it causes dst/dev refcnt leak:
+
+  unregister_netdevice: waiting for eth0 to become free. Usage count = 1
+
+This can be reproduced by simply running:
+
+  # modprobe l2tp_eth && modprobe l2tp_ip
+  # sh ./tools/testing/selftests/net/l2tp.sh
+
+So before going to inet6_csk_xmit() or ip_queue_xmit(), skb's dst
+should be dropped. This patch is to fix it by removing skb_dst_set()
+from l2tp_xmit_skb() and moving skb_dst_drop() into l2tp_xmit_core().
+
+Fixes: 3557baabf280 ("[L2TP]: PPP over L2TP driver core")
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/l2tp/l2tp_core.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index fcb53ed..df133c24 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -1028,6 +1028,7 @@ static void l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb,
+ 
+ 	/* Queue the packet to IP for output */
+ 	skb->ignore_df = 1;
++	skb_dst_drop(skb);
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	if (l2tp_sk_is_v6(tunnel->sock))
+ 		error = inet6_csk_xmit(tunnel->sock, skb, NULL);
+@@ -1099,10 +1100,6 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb, int hdr_len
+ 		goto out_unlock;
+ 	}
+ 
+-	/* Get routing info from the tunnel socket */
+-	skb_dst_drop(skb);
+-	skb_dst_set(skb, sk_dst_check(sk, 0));
+-
+ 	inet = inet_sk(sk);
+ 	fl = &inet->cork.fl;
+ 	switch (tunnel->encap) {
+-- 
+2.1.0
+
