@@ -2,144 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80B09215ACF
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 17:34:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC987215ADA
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 17:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729451AbgGFPeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 11:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729351AbgGFPeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 11:34:09 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856AFC08C5DF
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 08:34:09 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id q17so1049005pls.9
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 08:34:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2k2hbPhkWweF7cLfaAlco18/gAjmQL1VA8QeUZk2IDs=;
-        b=OagKnMIgpgCJnhru2Z6F1OwWIFBf3SN+y2OfCovePGZIuLrTF/nRI+GDYcy2KjYAs1
-         ++qSitiDJGXLArCMnPS20ukW55tzKpQzB8Cu4U3LFvOD7zfF125j85Do1bBecl2JSrgp
-         UNTlg8r21yWCoyaf24FivPXQwGx2006gzAFhU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2k2hbPhkWweF7cLfaAlco18/gAjmQL1VA8QeUZk2IDs=;
-        b=F5XDHGck1SDFmAlMMaN3d8U4ipG1bCXzzGD1pG3ZaMvpdr71iXvySMzQhUOCr/ZjiZ
-         adQkSggeVMuwj2fvjIjosZwLxdnVhlIIuoIwSWoVDJ7W1OrCBszquZWPx6abw60jlVgv
-         kE2RsfGnznUkQu4KeKk7gvcdm13z5va/pNhzIRD8pcZOG4Fd+pxBuDrdbaAoEWnAkspW
-         M/Nr5LI2p2xxF+tgK5G+QXrQs+6lFov2Ki09DJuYy+UbI1bzJXoe5zH5cY2CYqs1WGnK
-         KVNF0IZ8l/vi++7NvbdmmTzVmUCbiQ+RMKX9VHnYq4ty8r09CXVbHlqrqk5KJ/5GhxHX
-         dEYw==
-X-Gm-Message-State: AOAM530oyot0wT70WzSqG9sSlAX1wsW/0st5R058aysGDIjya6r78dI7
-        94ZIlTLH948hDtob5B03FTL0QA==
-X-Google-Smtp-Source: ABdhPJyG5yXSH5wzz03o2yh+N8HdVwwIQHNogdAtABoG1rJq2H1Q1au4F8P3NBp4eYhUsmAXwBu/Pg==
-X-Received: by 2002:a17:902:a3c7:: with SMTP id q7mr7536954plb.20.1594049648909;
-        Mon, 06 Jul 2020 08:34:08 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q13sm20497150pfk.8.2020.07.06.08.34.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2020 08:34:07 -0700 (PDT)
-Date:   Mon, 6 Jul 2020 08:34:06 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     linux-kernel@vger.kernel.org, Sargun Dhillon <sargun@sargun.me>,
-        Christian Brauner <christian@brauner.io>,
-        Tycho Andersen <tycho@tycho.ws>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Matt Denton <mpdenton@google.com>,
-        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
-        Robert Sesek <rsesek@google.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
-        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 4/7] pidfd: Replace open-coded partial
- fd_install_received()
-Message-ID: <202007060830.0FE753B@keescook>
-References: <20200617220327.3731559-1-keescook@chromium.org>
- <20200617220327.3731559-5-keescook@chromium.org>
- <20200706130713.n6r3vhn4hn2lodex@wittgenstein>
+        id S1729452AbgGFPip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 11:38:45 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:4388 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729254AbgGFPio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 11:38:44 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 066Fa2iQ025471;
+        Mon, 6 Jul 2020 08:38:42 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=pfpt0818;
+ bh=kbrcjkJmWfKDZ13FOr3lXXusLb6V6Y+RzmXQCd9TcRs=;
+ b=cml+93NsmZgI6k2xHHSOnOSDLvZqrwmWJ4a2hyNpw0resE0lc6KtGxLVRG1r8EDP4uTL
+ nlAGtGj+z94y8wuXZ5cmYSUb9q1qa+YMBkWXlon+hJgBxI3ek2IoFbzdFfr7kQ5zsPDO
+ x3RAAEsTHD5CH9fbk+bt84Jj2OQ3zqe5q4f5x9tZAjuAR3K1m3StUlm3220fKudItHvB
+ y7W2W7D5nJsgRyWgvANjG4ns0Gc+IYTY0+ljoga9G1V+7+GKEOJ2ufy2ZwSfCk+8/Jt+
+ idG3CCFV/24cJzuXnrglVqjJ4TN1ctzS3lY+UefkgKDO7levovWIoheR2WxyWkZ4JJ/7 Yw== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0a-0016f401.pphosted.com with ESMTP id 322q4pqm49-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jul 2020 08:38:42 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 6 Jul
+ 2020 08:38:41 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 6 Jul 2020 08:38:41 -0700
+Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
+        by maili.marvell.com (Postfix) with ESMTP id 48CDE3F703F;
+        Mon,  6 Jul 2020 08:38:38 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Alexander Lobakin <alobakin@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        "Ariel Elior" <aelior@marvell.com>,
+        Denis Bolotin <denis.bolotin@marvell.com>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next 0/9] net: qed/qede: W=1 C=1 warnings cleanup
+Date:   Mon, 6 Jul 2020 18:38:12 +0300
+Message-ID: <20200706153821.786-1-alobakin@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200706130713.n6r3vhn4hn2lodex@wittgenstein>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-06_12:2020-07-06,2020-07-06 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 06, 2020 at 03:07:13PM +0200, Christian Brauner wrote:
-> On Wed, Jun 17, 2020 at 03:03:24PM -0700, Kees Cook wrote:
-> > The sock counting (sock_update_netprioidx() and sock_update_classid()) was
-> > missing from pidfd's implementation of received fd installation. Replace
-> > the open-coded version with a call to the new fd_install_received()
-> > helper.
-> > 
-> > Fixes: 8649c322f75c ("pid: Implement pidfd_getfd syscall")
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > ---
-> >  kernel/pid.c | 11 +----------
-> >  1 file changed, 1 insertion(+), 10 deletions(-)
-> > 
-> > diff --git a/kernel/pid.c b/kernel/pid.c
-> > index f1496b757162..24924ec5df0e 100644
-> > --- a/kernel/pid.c
-> > +++ b/kernel/pid.c
-> > @@ -635,18 +635,9 @@ static int pidfd_getfd(struct pid *pid, int fd)
-> >  	if (IS_ERR(file))
-> >  		return PTR_ERR(file);
-> >  
-> > -	ret = security_file_receive(file);
-> > -	if (ret) {
-> > -		fput(file);
-> > -		return ret;
-> > -	}
-> > -
-> > -	ret = get_unused_fd_flags(O_CLOEXEC);
-> > +	ret = fd_install_received(file, O_CLOEXEC);
-> >  	if (ret < 0)
-> >  		fput(file);
-> > -	else
-> > -		fd_install(ret, file);
-> 
-> So someone just sent a fix for pidfd_getfd() that was based on the
-> changes done here.
+This set cleans qed/qede build log under W=1 C=1 with GCC 8 and
+sparse 0.6.2. The only thing left is "context imbalance -- unexpected
+unlock" in one of the source files, which will be issued later during
+the refactoring cycles.
 
-Hi! Ah yes, that didn't get CCed to me. I'll go reply.
+The biggest part is handling the endianness warnings. The current code
+often just assumes that both host and device operate in LE, which is
+obviously incorrect (despite the fact that it's true for x86 platforms),
+and makes sparse {s,m}ad.
 
-> I've been on vacation so didn't have a change to review this series and
-> I see it's already in linux-next. This introduces a memory leak and
-> actually proves a point I tried to stress when adding this helper:
-> fd_install_received() in contrast to fd_install() does _not_ consume a
-> reference because it takes one before it calls into fd_install(). That
-> means, you need an unconditional fput() here both in the failure and
-> error path.
+The rest of the series is mostly random non-functional fixes
+here-and-there.
 
-Yup, this was a mistake in my refactoring of the pidfs changes.
+Alexander Lobakin (9):
+  net: qed: move static iro_arr[] out of header file
+  net: qed: cleanup global structs declarations
+  net: qed: correct qed_hw_err_notify() prototype
+  net: qed: address kernel-doc warnings
+  net: qed: improve indentation of some parts of code
+  net: qed: use ptr shortcuts to dedup field accessing in some parts
+  net: qed: sanitize BE/LE data processing
+  net: qede: fix kernel-doc for qede_ptp_adjfreq()
+  net: qede: fix BE vs CPU comparison
 
-> I strongly suggest though that we simply align the behavior between
-> fd_install() and fd_install_received() and have the latter simply
-> consume a reference when it succeeds! Imho, this bug proves that I was
-> right to insist on this before. ;)
-
-I still don't agree: it radically complicates the SCM_RIGHTS and seccomp
-cases. The primary difference is that fd_install() cannot fail, and it
-was optimized for this situation. The other file-related helpers that
-can fail do not consume the reference, so this is in keeping with those
-as well.
+ drivers/net/ethernet/qlogic/qed/qed_cxt.c     |  14 +-
+ drivers/net/ethernet/qlogic/qed/qed_dcbx.c    |  27 +-
+ drivers/net/ethernet/qlogic/qed/qed_dcbx.h    |   2 +
+ drivers/net/ethernet/qlogic/qed/qed_debug.c   |  52 ++--
+ drivers/net/ethernet/qlogic/qed/qed_fcoe.c    |  54 ++--
+ drivers/net/ethernet/qlogic/qed/qed_fcoe.h    |   5 -
+ drivers/net/ethernet/qlogic/qed/qed_hsi.h     | 267 +++++++-----------
+ drivers/net/ethernet/qlogic/qed/qed_hw.c      |   5 +-
+ drivers/net/ethernet/qlogic/qed/qed_hw.h      |   7 +-
+ .../ethernet/qlogic/qed/qed_init_fw_funcs.c   | 128 +++++----
+ .../net/ethernet/qlogic/qed/qed_init_ops.c    |  73 +++++
+ drivers/net/ethernet/qlogic/qed/qed_int.c     | 123 ++++----
+ drivers/net/ethernet/qlogic/qed/qed_iscsi.c   |  48 ++--
+ drivers/net/ethernet/qlogic/qed/qed_iscsi.h   |   4 -
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c   | 150 ++++++----
+ drivers/net/ethernet/qlogic/qed/qed_l2.c      |  81 +++---
+ drivers/net/ethernet/qlogic/qed/qed_ll2.c     |   9 +-
+ drivers/net/ethernet/qlogic/qed/qed_ll2.h     |   2 +
+ drivers/net/ethernet/qlogic/qed/qed_main.c    |  16 +-
+ drivers/net/ethernet/qlogic/qed/qed_mng_tlv.c |   4 +-
+ drivers/net/ethernet/qlogic/qed/qed_ptp.c     |   1 +
+ drivers/net/ethernet/qlogic/qed/qed_ptp.h     |   9 +
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c    |  52 ++--
+ drivers/net/ethernet/qlogic/qed/qed_rdma.h    |   2 +-
+ drivers/net/ethernet/qlogic/qed/qed_roce.c    | 203 ++++++-------
+ drivers/net/ethernet/qlogic/qed/qed_sp.h      |   9 +-
+ .../net/ethernet/qlogic/qed/qed_sp_commands.c |  24 +-
+ drivers/net/ethernet/qlogic/qed/qed_spq.c     |  16 +-
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c   |  27 +-
+ drivers/net/ethernet/qlogic/qed/qed_sriov.h   |   2 +
+ .../net/ethernet/qlogic/qede/qede_filter.c    |   8 +-
+ drivers/net/ethernet/qlogic/qede/qede_ptp.c   |  10 +-
+ include/linux/qed/qed_if.h                    |  15 +-
+ 33 files changed, 743 insertions(+), 706 deletions(-)
+ create mode 100644 drivers/net/ethernet/qlogic/qed/qed_ptp.h
 
 -- 
-Kees Cook
+2.25.1
+
