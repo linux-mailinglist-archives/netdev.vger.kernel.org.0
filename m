@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37DF721609A
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 22:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A7A521609E
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 22:53:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726881AbgGFUxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 16:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
+        id S1726996AbgGFUxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 16:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725941AbgGFUxA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 16:53:00 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA22C08C5DF
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 13:53:00 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id c11so23440361lfh.8
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 13:53:00 -0700 (PDT)
+        with ESMTP id S1725941AbgGFUxD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 16:53:03 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83000C08C5DF
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 13:53:02 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id h22so40053553lji.9
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 13:53:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=c+ak1vCwUbkOf/U1XrGYOgY9Jz2T36VyPtI9qVgHch0=;
-        b=q4141YYrdSddtQ3Hx/T36ky7NypmfPqANBNnVlVbOXTe6o1QhMGVsnZjbApn3HV4/O
-         z4vAjFlfNZOQ/MXVAO30nMY274kftjHb0k5netUXzsGtS2ePPYV+uJbeN9V9Bn0cszaq
-         tZZcdk1BeQCKx5j5gTDyiNdtS7o+dP1qX1VKjNa7wP977n6Bvq3AKG6vTlvIOpgvMdxn
-         +0Bv8WpnpRrYj+ecJynGNV1UR3UllFuWc1yeFpFbn/VUFqIWxPrgnFAl+cZ+0eziWOOE
-         ufXMsPHfLD+P3S7zsneFbtnwZVaUKTjyTWCPGp+VI8ZEYG4+USGsRQiV5PLgV/oi1Y49
-         1qZg==
+        bh=IGRiCDosImo09IoK/bbV7wmdxtWQy6UAfjTnx38Q7Bo=;
+        b=YbumsW7bQiN1yq7HrBRq3mtBzVIIOdhbZitKA3MVoINuEVSsetVz+FYmvYoqTnAOdm
+         /pEYTx+SNIuj13maKN/UsybPzw21/Kb2YVqv+LtbZsT0A3MZYg62MiCCnxsTTQsn+OAj
+         MLJGEawGQAhKq8LOBu+mKHULLkWWs3fNPxJQyKUlfQkJ+mnbp6VNvmLCHtcV0OzntVvr
+         81xyB5hWJa++60i5ZJJRgfVFbObM4qdaWX/g3T7rnJf2zbOaYI6kshJk94Sxrqxj5ZV0
+         uWDyeSSZBBKLUHBGrsF9sU/7Ew58Xamp/wbznbvupslRnLRGMYuPB6o5MjvIH6BujA5E
+         TFQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=c+ak1vCwUbkOf/U1XrGYOgY9Jz2T36VyPtI9qVgHch0=;
-        b=pMOaXz8ouYtrYrj0lFvjsOiUkxLgNrCa1MlE/iKFJu7fVvTdwkH2LPQZj1REjRtANt
-         W/zXkX8JtGxIitpR/dmVP3NQzALVoAdnwuF08qUJ9NvKgpq8MIJwBvOSJBOtJvlD57WT
-         K1mf8KqQLENVwRmLa3t91TBsPS921pt263MRW64DcrGNsThccrdqd9lU5qxWJHR2Tr2B
-         /k0D6RMSv0i81f/Pqp/DkNJmjifEMm92irCxq8NG/c8dPbppRAATp1UiyIAzNaOpcPXx
-         9UrPr9OJ8ZEtX6nB1eHuwkUGlDkx47PMHIcKm/JOTo5tIjsRt8gQmNcqUq5IXrhSNN71
-         CevA==
-X-Gm-Message-State: AOAM530AvhTe5iHJLJLmln7qGPP8G0wZeslMStUU6XaWCTBj1rH5C2GD
-        Jl7+uVkpTuFWa9vFV4nGTHroBw==
-X-Google-Smtp-Source: ABdhPJzcLlbtPneqTJ8NlRpDaewBA6d9C8VzZVXE1P6qoRkAWCNK25IlPbVSB4r0VmT6ZDJhig4TsA==
-X-Received: by 2002:ac2:5295:: with SMTP id q21mr30828029lfm.185.1594068779038;
-        Mon, 06 Jul 2020 13:52:59 -0700 (PDT)
+        bh=IGRiCDosImo09IoK/bbV7wmdxtWQy6UAfjTnx38Q7Bo=;
+        b=kzS1DCbpbSygAh1UOdFlMCaaGebyxQkJ1TFu1NlHnil6Qgr06gVevzNAsP7+LvtYNU
+         UmGYZiCmQqkJg5EudQOV+eN5wnBwL2gJ+cMO61CRrSJZH8uD+WuY437D+buMYZbQvpM3
+         fEwFfKDu2pJskZB0N6W45H27LilAEyjj/eEEEoHjcwBNns9mE/AHTjNdnwevCuG9HSLF
+         oqZEey/RzsqrU2Td+DOQ6HlnQBazNSaEfEk5wqf3rAnFVntDefIxZAh9k3Mm3SAvnqtb
+         /osYBBgo3P6UmXk7btI4z2/2gHxbmL9fuGGhpCxKQ/G5+ndCsljKsJtfy8N+qOw9toY7
+         mJVA==
+X-Gm-Message-State: AOAM532Vq9PcXB3gFgDrcuh9HE12U0MLdCWCzBv8gtCR0BdOWZacNijY
+        gwWg5UKu0myajg9WDUjLrAnwrQ==
+X-Google-Smtp-Source: ABdhPJw7zToliW2chOPqSxVzP2DAqaDHcRyJg58ry842rVfYpXIt/14ONRgIbA+Y+D224sNLqv7eUA==
+X-Received: by 2002:a2e:730c:: with SMTP id o12mr22541989ljc.165.1594068780891;
+        Mon, 06 Jul 2020 13:53:00 -0700 (PDT)
 Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id t10sm624714ljg.60.2020.07.06.13.52.58
+        by smtp.gmail.com with ESMTPSA id t10sm624714ljg.60.2020.07.06.13.53.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2020 13:52:58 -0700 (PDT)
+        Mon, 06 Jul 2020 13:53:00 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -55,9 +55,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
         DENG Qingfang <dqfext@gmail.com>,
         Mauri Sandberg <sandberg@mailfence.com>
-Subject: [net-next PATCH 2/5 v4] net: dsa: rtl8366rb: Support the CPU DSA tag
-Date:   Mon,  6 Jul 2020 22:52:42 +0200
-Message-Id: <20200706205245.937091-3-linus.walleij@linaro.org>
+Subject: [net-next PATCH 3/5 v4] net: dsa: rtl8366: Split out default VLAN config
+Date:   Mon,  6 Jul 2020 22:52:43 +0200
+Message-Id: <20200706205245.937091-4-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200706205245.937091-1-linus.walleij@linaro.org>
 References: <20200706205245.937091-1-linus.walleij@linaro.org>
@@ -68,21 +68,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This activates the support to use the CPU tag to properly
-direct ingress traffic to the right port.
-
-Bit 15 in register RTL8368RB_CPU_CTRL_REG can be set to
-1 to disable the insertion of the CPU tag which is what
-the code currently does. The bit 15 define calls this
-setting RTL8368RB_CPU_INSTAG which is confusing since the
-inverse meaning is implied: programmers may think that
-setting this bit to 1 will *enable* inserting the tag
-rather than disabling it, so rename this setting in
-bit 15 to RTL8368RB_CPU_NO_TAG which is more to the
-point.
-
-After this e.g. ping works out-of-the-box with the
-RTL8366RB.
+We loop over the ports to initialize the default VLAN
+and PVID for each port. As we need to reuse the
+code to reinitialize a single port, break out the
+function rtl8366_set_default_vlan_and_pvid().
 
 Cc: DENG Qingfang <dqfext@gmail.com>
 Cc: Mauri Sandberg <sandberg@mailfence.com>
@@ -92,88 +81,103 @@ Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ChangeLog v3->v4:
 - Resend with the rest
 ChangeLog v2->v3:
-- Fix up the commit message.
+- Rebased on Andrew's patch for the (int) compile warning
+  on GENMASK(). change is carried over.
 - Collect Andrew's review tag.
 ChangeLog v1->v2:
-- Update the commit message to explain why we are renaming
-  bit 15 in RTL8368RB_CPU_CTRL_REG.
+- Rebased on v5.8-rc1 and other changes.
 ---
- drivers/net/dsa/Kconfig     |  1 +
- drivers/net/dsa/rtl8366rb.c | 31 ++++++++-----------------------
- 2 files changed, 9 insertions(+), 23 deletions(-)
+ drivers/net/dsa/rtl8366.c | 70 ++++++++++++++++++++++++---------------
+ 1 file changed, 43 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
-index d0024cb30a7b..468b3c4273c5 100644
---- a/drivers/net/dsa/Kconfig
-+++ b/drivers/net/dsa/Kconfig
-@@ -70,6 +70,7 @@ config NET_DSA_QCA8K
- config NET_DSA_REALTEK_SMI
- 	tristate "Realtek SMI Ethernet switch family support"
- 	depends on NET_DSA
-+	select NET_DSA_TAG_RTL4_A
- 	select FIXED_PHY
- 	select IRQ_DOMAIN
- 	select REALTEK_PHY
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index fd1977590cb4..48f1ff746799 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -109,8 +109,8 @@
- /* CPU port control reg */
- #define RTL8368RB_CPU_CTRL_REG		0x0061
- #define RTL8368RB_CPU_PORTS_MSK		0x00FF
--/* Enables inserting custom tag length/type 0x8899 */
--#define RTL8368RB_CPU_INSTAG		BIT(15)
-+/* Disables inserting custom tag length/type 0x8899 */
-+#define RTL8368RB_CPU_NO_TAG		BIT(15)
- 
- #define RTL8366RB_SMAR0			0x0070 /* bits 0..15 */
- #define RTL8366RB_SMAR1			0x0071 /* bits 16..31 */
-@@ -844,16 +844,14 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
- 	if (ret)
- 		return ret;
- 
--	/* Enable CPU port and enable inserting CPU tag
-+	/* Enable CPU port with custom DSA tag 8899.
- 	 *
--	 * Disabling RTL8368RB_CPU_INSTAG here will change the behaviour
--	 * of the switch totally and it will start talking Realtek RRCP
--	 * internally. It is probably possible to experiment with this,
--	 * but then the kernel needs to understand and handle RRCP first.
-+	 * If you set RTL8368RB_CPU_NO_TAG (bit 15) in this registers
-+	 * the custom tag is turned off.
- 	 */
- 	ret = regmap_update_bits(smi->map, RTL8368RB_CPU_CTRL_REG,
- 				 0xFFFF,
--				 RTL8368RB_CPU_INSTAG | BIT(smi->cpu_port));
-+				 BIT(smi->cpu_port));
- 	if (ret)
- 		return ret;
- 
-@@ -967,21 +965,8 @@ static enum dsa_tag_protocol rtl8366_get_tag_protocol(struct dsa_switch *ds,
- 						      int port,
- 						      enum dsa_tag_protocol mp)
- {
--	/* For now, the RTL switches are handled without any custom tags.
--	 *
--	 * It is possible to turn on "custom tags" by removing the
--	 * RTL8368RB_CPU_INSTAG flag when enabling the port but what it
--	 * does is unfamiliar to DSA: ethernet frames of type 8899, the Realtek
--	 * Remote Control Protocol (RRCP) start to appear on the CPU port of
--	 * the device. So this is not the ordinary few extra bytes in the
--	 * frame. Instead it appears that the switch starts to talk Realtek
--	 * RRCP internally which means a pretty complex RRCP implementation
--	 * decoding and responding the RRCP protocol is needed to exploit this.
--	 *
--	 * The OpenRRCP project (dormant since 2009) have reverse-egineered
--	 * parts of the protocol.
--	 */
--	return DSA_TAG_PROTO_NONE;
-+	/* This switch uses the 4 byte protocol A Realtek DSA tag */
-+	return DSA_TAG_PROTO_RTL4_A;
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
+index 993cf3ac59d9..b907c0ed9697 100644
+--- a/drivers/net/dsa/rtl8366.c
++++ b/drivers/net/dsa/rtl8366.c
+@@ -253,6 +253,48 @@ int rtl8366_reset_vlan(struct realtek_smi *smi)
  }
+ EXPORT_SYMBOL_GPL(rtl8366_reset_vlan);
  
- static void rtl8366rb_adjust_link(struct dsa_switch *ds, int port,
++static int rtl8366_set_default_vlan_and_pvid(struct realtek_smi *smi,
++					     int port)
++{
++	u32 mask;
++	u16 vid;
++	int ret;
++
++	/* This is the reserved default VLAN for this port */
++	vid = port + 1;
++
++	if (port == smi->cpu_port)
++		/* For the CPU port, make all ports members of this
++		 * VLAN.
++		 */
++		mask = GENMASK((int)smi->num_ports - 1, 0);
++	else
++		/* For all other ports, enable itself plus the
++		 * CPU port.
++		 */
++		mask = BIT(port) | BIT(smi->cpu_port);
++
++	/* For each port, set the port as member of VLAN (port+1)
++	 * and untagged, except for the CPU port: the CPU port (5) is
++	 * member of VLAN 6 and so are ALL the other ports as well.
++	 * Use filter 0 (no filter).
++	 */
++	dev_info(smi->dev, "Set VLAN %04x portmask to %08x (port %d %s)\n",
++		 vid, mask, port, (port == smi->cpu_port) ?
++		 "CPU PORT and all other ports" : "and CPU port");
++	ret = rtl8366_set_vlan(smi, vid, mask, mask, 0);
++	if (ret)
++		return ret;
++
++	dev_info(smi->dev, "Set PVID %04x on port %d\n",
++		 vid, port);
++	ret = rtl8366_set_pvid(smi, port, vid);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
+ int rtl8366_init_vlan(struct realtek_smi *smi)
+ {
+ 	int port;
+@@ -266,33 +308,7 @@ int rtl8366_init_vlan(struct realtek_smi *smi)
+ 	 * it with the VLAN (port+1)
+ 	 */
+ 	for (port = 0; port < smi->num_ports; port++) {
+-		u32 mask;
+-
+-		if (port == smi->cpu_port)
+-			/* For the CPU port, make all ports members of this
+-			 * VLAN.
+-			 */
+-			mask = GENMASK((int)smi->num_ports - 1, 0);
+-		else
+-			/* For all other ports, enable itself plus the
+-			 * CPU port.
+-			 */
+-			mask = BIT(port) | BIT(smi->cpu_port);
+-
+-		/* For each port, set the port as member of VLAN (port+1)
+-		 * and untagged, except for the CPU port: the CPU port (5) is
+-		 * member of VLAN 6 and so are ALL the other ports as well.
+-		 * Use filter 0 (no filter).
+-		 */
+-		dev_info(smi->dev, "VLAN%d port mask for port %d, %08x\n",
+-			 (port + 1), port, mask);
+-		ret = rtl8366_set_vlan(smi, (port + 1), mask, mask, 0);
+-		if (ret)
+-			return ret;
+-
+-		dev_info(smi->dev, "VLAN%d port %d, PVID set to %d\n",
+-			 (port + 1), port, (port + 1));
+-		ret = rtl8366_set_pvid(smi, port, (port + 1));
++		ret = rtl8366_set_default_vlan_and_pvid(smi, port);
+ 		if (ret)
+ 			return ret;
+ 	}
 -- 
 2.26.2
 
