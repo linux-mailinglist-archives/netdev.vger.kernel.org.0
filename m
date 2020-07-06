@@ -2,104 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 898CE215EEE
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 20:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CF43215EF8
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 20:45:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729739AbgGFSkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 14:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38460 "EHLO
+        id S1729797AbgGFSpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 14:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729569AbgGFSkl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 14:40:41 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782D1C061755
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 11:40:41 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id k71so13666684pje.0
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 11:40:41 -0700 (PDT)
+        with ESMTP id S1729738AbgGFSpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 14:45:43 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99941C061755;
+        Mon,  6 Jul 2020 11:45:43 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id j18so40361364wmi.3;
+        Mon, 06 Jul 2020 11:45:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TugJQ4pXXgIecgvqoOuUHX3i9QSmZK+IeNGDcSbnxZ0=;
-        b=fMsF3sFFKQmSNLNlkYzzboSRRhTRxEKNEgYA648M0FkcE3vHd0nqhIzkabKqCchoqN
-         CSzjYYFT8IRcorVMz+lWB7yGIChWVjBy1oY9BjCerNx6eF4i1N+aPiRLbWSyJFTRWSOy
-         2WMG+plGIalBCwN9+ep6KKZwMa9Mj4RihKXnMdMaL1fh/3xJfHPUl79S/KH0930FB5sC
-         CqaJvMMlUSZ0/o5hJSJ7y5/4URB+FPj9HdkHKzHjba1x9LgIGqtVyHT+7ag7RQlV5emG
-         kSTta8cOVTGHkoauaq9nN0z/TQ4Tb9lxQuEqjfqv+X8j1u47gt9K1SrfHhFtaW7Egph5
-         Oe8A==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sB+M5xN2q4aSHO4ImD3f9WDwtbdfsUY52yLNYBoRoMk=;
+        b=sOw+T1jXnmcOBApPeHZG3ZXckOn+qWGRfSFB/+A6Ssg5pNiiuu/Uy5xZJNt0DeRQei
+         KLFmMx8fKdNYYcreXPfjn8d/XX+ndO4PsoaYYr3ziKynahHxS0gc8cO7IAKvXPMAzcZc
+         j8kgKHF72bXfaw37A50fR5BZ7HovOHpDtVAsNGpQ+6Gu5klU1FbFnVhrQzXu7oM7zZVX
+         q2fv/u/jO/U0JU1Ja+AA/Zc8grG1mozSe/RTqa6tijd5zgO+Vw2LjiIPUTPnMq5Wyw7w
+         uf7ZVwamP+cD0ragN3/2JUI8b+gDDoMwNKrmPkyfUcFuz+tZd9zdUohX/RXov1gmPtxh
+         NQaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TugJQ4pXXgIecgvqoOuUHX3i9QSmZK+IeNGDcSbnxZ0=;
-        b=AVpCmh3Xegz7L91JSCG+3efOEh1jlC8pWsHAcA87d+dNTEvx7AQIJrNcqXz1PJRs5L
-         oQHXcCW/5azA/L0TT2I20B5ZppTPZ1JCvVNEAcpZBfahW9utorQ2Mj89X2Z5G4WSbs7G
-         0A4vY+h+aFa6horIqOYhH3HfhiCLidoMs3tsolPoPSqEYPUUeKq/Xxx4Vu/kRRPw7pSI
-         MLboJslSc16yzalGG1+A/bBN/aSS0TafcwKLD7lFAo6YNXxQOVUxkiXJ3VfFWL/HkBnU
-         WQpoL5hCYx46gRI26GK2gRdmKPpXR6iHXaWtQgdJCMuQNGAI5RdXtbnsrgWhP776wT3X
-         hb0g==
-X-Gm-Message-State: AOAM532DieXbB16rxBSQFFUf8w0igfu1mvSx9AXpTR+4ez/PYg7fzg5w
-        D0Z8DrTDPqL9i7yNeZ7e8vBDGz9JJkA=
-X-Google-Smtp-Source: ABdhPJyBBEAAcQpxlw9Zu4cHd0nIGe3A8xaAo912xpuLtxE7VvJt7ArXd18UBXNJbWfLHeegFWU49A==
-X-Received: by 2002:a17:902:b18b:: with SMTP id s11mr34887693plr.92.1594060841070;
-        Mon, 06 Jul 2020 11:40:41 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id c19sm184373pjs.11.2020.07.06.11.40.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2020 11:40:40 -0700 (PDT)
-Date:   Mon, 6 Jul 2020 11:40:37 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     "YU, Xiangning" <xiangning.yu@alibaba-inc.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2-next] iproute2 Support lockless token bucket
- (LTB)
-Message-ID: <20200706114037.519161d0@hermes.lan>
-In-Reply-To: <0010e146-ccda-ee6b-819b-96e518204f8a@alibaba-inc.com>
-References: <0010e146-ccda-ee6b-819b-96e518204f8a@alibaba-inc.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sB+M5xN2q4aSHO4ImD3f9WDwtbdfsUY52yLNYBoRoMk=;
+        b=Qm0rb2sixucqhxCkkD3WQaMSz7m0o7KBAbsZeCIgJ1Tknef8hjn7GN2J7PFRWaXqtU
+         MRtXdb2akauQ3Rz+Gc6ATmjvxZloOetH0UkCaBwnfBfFZ2K5w91ptp6/MSK7gx4ILV1Z
+         2XC2D2Vw4VfHJgm9dG9ck85LtPj5U2ntRs3jv9S9GWbm+gFnN/f4TCfKFbHT/i8ML54W
+         0G+Ut6mbtPZhJxI7Gsr4+hLryfBuqpYTl96HTbEu4+tfKop1SttvviDojGdWI0/UG8lH
+         TRFU8Nu5iGQg7ccBPrpdRvDR6nwARg8PDk1hYqhVgT/Kgg4sMKcI9TgyZKcgby3BURBA
+         y3xA==
+X-Gm-Message-State: AOAM530aDC8swvAD0S4qom5Ehc6KbmHTG8rXc4W7TWE2mAAe6Q4qBGBq
+        wUPEdmD+U4j2mM7/XzybZwSWT8Q+
+X-Google-Smtp-Source: ABdhPJzkLw9HjsK+77mKDWHEKufH4k9ZKlgtwrVIspUS2QmWsD1KW1YQSRx5MF7CQ1AAt0/9j9ti9g==
+X-Received: by 2002:a7b:c38c:: with SMTP id s12mr518917wmj.136.1594061142041;
+        Mon, 06 Jul 2020 11:45:42 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id 12sm393621wmg.6.2020.07.06.11.45.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jul 2020 11:45:41 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/3] net: ethtool: Remove PHYLIB direct
+ dependency
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20200706042758.168819-1-f.fainelli@gmail.com>
+ <20200706042758.168819-4-f.fainelli@gmail.com>
+ <20200706114000.223e27eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <262dbde0-2a0e-6820-fd69-157b7f05a8c4@gmail.com>
+Date:   Mon, 6 Jul 2020 11:45:38 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200706114000.223e27eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 07 Jul 2020 02:08:21 +0800
-"YU, Xiangning" <xiangning.yu@alibaba-inc.com> wrote:
 
-> +static int ltb_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
-> +{
-> +	struct rtattr *tb[TCA_LTB_MAX + 1];
-> +	struct tc_ltb_opt *lopt;
-> +	struct tc_ltb_glob *gopt;
-> +	__u64 rate64, ceil64;
-> +
-> +	SPRINT_BUF(b1);
-> +	if (opt == NULL)
-> +		return 0;
-> +
-> +	parse_rtattr_nested(tb, TCA_LTB_MAX, opt);
-> +
-> +	if (tb[TCA_LTB_PARMS]) {
-> +		lopt = RTA_DATA(tb[TCA_LTB_PARMS]);
-> +		if (RTA_PAYLOAD(tb[TCA_LTB_PARMS])  < sizeof(*lopt))
-> +			return -1;
-> +
-> +		fprintf(f, "prio %d ", (int)lopt->prio);
-> +
-> +		rate64 = lopt->rate.rate;
-> +		if (tb[TCA_LTB_RATE64] &&
-> +		    RTA_PAYLOAD(tb[TCA_LTB_RATE64]) >= sizeof(rate64)) {
-> +			rate64 = *(__u64 *)RTA_DATA(tb[TCA_LTB_RATE64]);
-> +		}
-> +
-> +		ceil64 = lopt->ceil.rate;
-> +		if (tb[TCA_LTB_CEIL64] &&
-> +		    RTA_PAYLOAD(tb[TCA_LTB_CEIL64]) >= sizeof(ceil64))
-> +			ceil64 = *(__u64 *)RTA_DATA(tb[TCA_LTB_CEIL64]);
-> +
-> +		fprintf(f, "rate %s ", sprint_rate(rate64, b1));
-> +		fprintf(f, "ceil %s ", sprint_rate(ceil64, b1));
 
-The print function needs to support JSON output like the rest
-of the qdisc in current iproute2.
+On 7/6/2020 11:40 AM, Jakub Kicinski wrote:
+> On Sun,  5 Jul 2020 21:27:58 -0700 Florian Fainelli wrote:
+>> +	ops = ethtool_phy_ops;
+>> +	if (!ops || !ops->start_cable_test) {
+> 
+> nit: don't think member-by-member checking is necessary. We don't
+> expect there to be any alternative versions of the ops, right?
+
+There could be, a network device driver not using PHYLIB could register
+its own operations and only implement a subset of these operations.
+
+> 
+>> +		ret = -EOPNOTSUPP;
+>> +		goto out_rtnl;
+>> +	}
+>> +
+>>  	ret = ethnl_ops_begin(dev);
+>>  	if (ret < 0)
+>>  		goto out_rtnl;
+>>  
+>> -	ret = phy_start_cable_test(dev->phydev, info->extack);
+>> +	ret = ops->start_cable_test(dev->phydev, info->extack);
+> 
+> nit: my personal preference would be to hide checking the ops and
+> calling the member in a static inline helper.
+> 
+> Note that we should be able to remove this from phy.h now:
+
+I would prefer to keep thsose around in case a network device driver
+cannot punt entirely onto PHYLIB and instead needs to wrap those calls
+around.
+
+> 
+> #if IS_ENABLED(CONFIG_PHYLIB)
+> int phy_start_cable_test(struct phy_device *phydev,
+> 			 struct netlink_ext_ack *extack);
+> int phy_start_cable_test_tdr(struct phy_device *phydev,
+> 			     struct netlink_ext_ack *extack,
+> 			     const struct phy_tdr_config *config);
+> #else
+> static inline
+> int phy_start_cable_test(struct phy_device *phydev,
+> 			 struct netlink_ext_ack *extack)
+> {
+> 	NL_SET_ERR_MSG(extack, "Kernel not compiled with PHYLIB support");
+> 	return -EOPNOTSUPP;
+> }
+> static inline
+> int phy_start_cable_test_tdr(struct phy_device *phydev,
+> 			     struct netlink_ext_ack *extack,
+> 			     const struct phy_tdr_config *config)
+> {
+> 	NL_SET_ERR_MSG(extack, "Kernel not compiled with PHYLIB support");
+> 	return -EOPNOTSUPP;
+> }
+> #endif
+> 
+> 
+> We could even risk a direct call:
+> 
+> #if IS_REACHABLE(CONFIG_PHYLIB)
+> static inline int do_x()
+> {
+> 	return __do_x();
+> }
+> #else
+> static inline int do_x()
+> {
+> 	if (!ops)
+> 		return -EOPNOTSUPP;
+> 	return ops->do_x();
+> }
+> #endif
+> 
+> But that's perhaps doing too much...
+
+Fine either way with me, let us see what Michal and Andrew think about that.
+-- 
+Florian
