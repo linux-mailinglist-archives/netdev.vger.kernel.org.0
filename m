@@ -2,167 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D00B9215723
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 14:19:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02EA3215742
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 14:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728975AbgGFMT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 08:19:27 -0400
-Received: from mail.katalix.com ([3.9.82.81]:57868 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727896AbgGFMT0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jul 2020 08:19:26 -0400
-X-Greylist: delayed 384 seconds by postgrey-1.27 at vger.kernel.org; Mon, 06 Jul 2020 08:19:24 EDT
-Received: from localhost (unknown [IPv6:2a02:8010:6359:1:21b:21ff:fe6a:7e96])
-        (Authenticated sender: james)
-        by mail.katalix.com (Postfix) with ESMTPSA id 4639E91532;
-        Mon,  6 Jul 2020 13:12:59 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=katalix.com; s=mail;
-        t=1594037579; bh=ZXkw1YtEWr4ltdw99ajOOAdNlxU8aRIXOVUh/7lathY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=wg708B9ahUJN0uD8o3ejbCZsi5smBpNwP46DnqQnu8TsBF9crkgDy1eErJ1bUljxD
-         WX44fRPwra4NU8joQYqdVNlCIFmWyB4IhF4KKbRqmYbVjUHwz1O+wVK9y0GDi1HbSf
-         JjcmzqaxPstWCDt9mIVFreHIb+xm0JOH/uqHKWLUO/EbKdJub7WvmxCPE8PnsINAJF
-         pR4eIxE/cJCgEac0j8bdScjUBB6O1nkZrCg1pgwVwAI8hBdhupnntMxrRe4biA7p8V
-         Rm18py7oiMXojXYFwH3WZ2uLNh90l+h71sfYTyp4glkQXV+Bmgype4st9iw15Tf5VQ
-         piK2+lW+lOa4w==
-Date:   Mon, 6 Jul 2020 13:12:59 +0100
-From:   James Chapman <jchapman@katalix.com>
-To:     netdev@vger.kernel.org
-Cc:     gnault@redhat.com
-Subject: [PATCH net] l2tp: add sk_reuseport checks to l2tp_validate_socket
-Message-ID: <20200706121259.GA20199@katalix.com>
+        id S1729088AbgGFMam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 08:30:42 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:59931 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729016AbgGFMal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 08:30:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594038639;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=wXWAdqNpNpJ8PzmXu+LnUcnHfb9Qo0xXxjNDy2nWeNs=;
+        b=P2CVz14e9TDBHG5lg+6Xd/eqWu66tVVi0EgFPORiGatISnXyAglDfV6YamzWeITONsCYzO
+        t3spEIiywC/KBVIXgFRBq+Tievg6wokWXESVPrMYzaDVRkRn6yYowsQSsubf0uGJvvB4bp
+        w8HP1lam7r6QE7A+oSEHclKxtU0t8b8=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-455-NqUnxRxINe-3tKCB1x3PPQ-1; Mon, 06 Jul 2020 08:30:37 -0400
+X-MC-Unique: NqUnxRxINe-3tKCB1x3PPQ-1
+Received: by mail-il1-f200.google.com with SMTP id q9so2727973ilt.15
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 05:30:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wXWAdqNpNpJ8PzmXu+LnUcnHfb9Qo0xXxjNDy2nWeNs=;
+        b=bbw6p/WvSwtHDpy/FEjRJC46noa5C16P8DE1omV8IAa3odw0buvwpNDoH3kxbxMf/3
+         pioTxCV1mT8JycslN4KIGDhk5jtbPQdpT1Mx/z+tyo+v0s+Mhpu3SUsWcaWZpNZESnn4
+         bFCMBh7E4pmgss1DISiBLTzaxxflyj+iC99xNKrDo3MVmZuL0PiUXV3OACnXsQdfGotG
+         3QphvxyQDKAu87g2TE5Rj+9Ofz+tSLnBzfydZZnmVa/gKhwuoPgNcWY84tuj40EmRcXJ
+         vkFcsDjYH2m5KH3mIAVVd1Z7aEl+CBx+UvXvUwvURDksJoV/kMwgQu8Xt5aEXCyTU83Q
+         6jNQ==
+X-Gm-Message-State: AOAM532NbnxFE4h37H76Y2DV2gemxMGqJQ5mT3zqdSUVJAnhHrSX5K8H
+        7HbMqsyE58e10lIpqLraPgjrLb70NxrBVTVu6zQnIXOF//AmG5/JDKEFj901r2QOvYMEAj5l/f0
+        czG4iLC+HuWJrCtkz
+X-Received: by 2002:a92:d9c4:: with SMTP id n4mr13321185ilq.280.1594038637287;
+        Mon, 06 Jul 2020 05:30:37 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz3xF55IVY4TMVryG+hd/owtJ6QxxvTlfa8bAab9hAsQJBUZzelZQCb4KQXHAJv57LXdauSGg==
+X-Received: by 2002:a92:d9c4:: with SMTP id n4mr13321160ilq.280.1594038636982;
+        Mon, 06 Jul 2020 05:30:36 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id m16sm9955840ili.26.2020.07.06.05.30.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2020 05:30:36 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 1C70C1804EA; Mon,  6 Jul 2020 14:30:34 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     davem@davemloft.net
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, cake@lists.bufferbloat.net,
+        Davide Caratti <dcaratti@redhat.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH net] vlan: consolidate VLAN parsing code and limit max parsing depth
+Date:   Mon,  6 Jul 2020 14:29:51 +0200
+Message-Id: <20200706122951.48142-1-toke@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot is able to trigger a BUG_ON in l2tp by setting SO_REUSEPORT on
-a UDP socket which is then used by l2tp. However, the bug occurs only
-if the kernel has CONFIG_BPF_SYSCALL enabled.
+Toshiaki pointed out that we now have two very similar functions to extract
+the L3 protocol number in the presence of VLAN tags. And Daniel pointed out
+that the unbounded parsing loop makes it possible for maliciously crafted
+packets to loop through potentially hundreds of tags.
 
-kernel BUG at net/l2tp/l2tp_core.c:1572!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:l2tp_session_free+0x1ee/0x1f0 net/l2tp/l2tp_core.c:1572
-Code: 44 89 e1 80 e1 07 80 c1 03 38 c1 0f 8c b8 fe ff ff 4c 89 e7 e8 03 64 37 fa e9 ab fe ff ff e8 d9 7f f8 f9 0f 0b e8 d2 7f f8 f9 <0f> 0b 55 41 57 41 56 41 55 41 54 53 49 89 fe 48 bd 00 00 00 00 00
-RSP: 0018:ffffc90000da8da8 EFLAGS: 00010246
-RAX: ffffffff877c235e RBX: 0000000000000000 RCX: ffff8880a99f4340
-RDX: 0000000080000101 RSI: 0000000000000000 RDI: 0000000042114dda
-RBP: ffff8880a7958238 R08: ffffffff877c220d R09: ffffed1014f2b01a
-R10: ffffed1014f2b01a R11: 0000000000000000 R12: ffff8880a6f77800
-R13: dffffc0000000000 R14: ffff8880a7958000 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000049f410 CR3: 0000000009279000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <IRQ>
- __sk_destruct+0x50/0x740 net/core/sock.c:1785
- rcu_do_batch kernel/rcu/tree.c:2396 [inline]
- rcu_core+0x90c/0x1200 kernel/rcu/tree.c:2623
- __do_softirq+0x268/0x80c kernel/softirq.c:292
- invoke_softirq kernel/softirq.c:373 [inline]
- irq_exit+0x223/0x230 kernel/softirq.c:413
- exiting_irq arch/x86/include/asm/apic.h:546 [inline]
- smp_apic_timer_interrupt+0x113/0x280 arch/x86/kernel/apic/apic.c:1107
- apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
- </IRQ>
-RIP: 0010:native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:61
-Code: 80 e1 07 80 c1 03 38 c1 7c bc 48 89 df e8 9a 17 9b f9 eb b2 cc cc cc cc cc cc cc cc e9 07 00 00 00 0f 00 2d 56 46 4a 00 fb f4 <c3> 90 e9 07 00 00 00 0f 00 2d 46 46 4a 00 f4 c3 cc cc 41 56 53 65
-RSP: 0018:ffffc90000d3fd60 EFLAGS: 00000286 ORIG_RAX: ffffffffffffff13
-RAX: 1ffffffff12577b9 RBX: 0000000000000000 RCX: ffffffffffffffff
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8880a99f4ba4
-RBP: 1ffff1104351244e R08: ffffffff817a4660 R09: ffffed101533e869
-R10: ffffed101533e869 R11: 0000000000000000 R12: 0000000000000001
-R13: dffffc0000000000 R14: dffffc0000000000 R15: ffff88821a892270
- arch_safe_halt arch/x86/include/asm/paravirt.h:150 [inline]
- acpi_safe_halt+0x87/0xe0 drivers/acpi/processor_idle.c:111
- acpi_idle_do_entry drivers/acpi/processor_idle.c:525 [inline]
- acpi_idle_enter+0x3f4/0xac0 drivers/acpi/processor_idle.c:651
- cpuidle_enter_state+0x2d7/0x7b0 drivers/cpuidle/cpuidle.c:234
- cpuidle_enter+0x59/0x90 drivers/cpuidle/cpuidle.c:345
- call_cpuidle kernel/sched/idle.c:117 [inline]
- cpuidle_idle_call kernel/sched/idle.c:207 [inline]
- do_idle+0x49c/0x650 kernel/sched/idle.c:269
- cpu_startup_entry+0x15/0x20 kernel/sched/idle.c:365
- start_secondary+0x213/0x240 arch/x86/kernel/smpboot.c:268
- secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:242
-Modules linked in:
----[ end trace 1d65b89c4fe927df ]---
-RIP: 0010:l2tp_session_free+0x1ee/0x1f0 net/l2tp/l2tp_core.c:1572
-Code: 44 89 e1 80 e1 07 80 c1 03 38 c1 0f 8c b8 fe ff ff 4c 89 e7 e8 03 64 37 fa e9 ab fe ff ff e8 d9 7f f8 f9 0f 0b e8 d2 7f f8 f9 <0f> 0b 55 41 57 41 56 41 55 41 54 53 49 89 fe 48 bd 00 00 00 00 00
-RSP: 0018:ffffc90000da8da8 EFLAGS: 00010246
-RAX: ffffffff877c235e RBX: 0000000000000000 RCX: ffff8880a99f4340
-RDX: 0000000080000101 RSI: 0000000000000000 RDI: 0000000042114dda
-RBP: ffff8880a7958238 R08: ffffffff877c220d R09: ffffed1014f2b01a
-R10: ffffed1014f2b01a R11: 0000000000000000 R12: ffff8880a6f77800
-R13: dffffc0000000000 R14: ffff8880a7958000 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000049f410 CR3: 0000000009279000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Fix both of these issues by consolidating the two parsing functions and
+limiting the VLAN tag parsing to an arbitrarily-chosen, but hopefully
+conservative, max depth of 32 tags. As part of this, switch over
+__vlan_get_protocol() to use skb_header_pointer() instead of
+pskb_may_pull(), to avoid the possible side effects of the latter and keep
+the skb pointer 'const' through all the parsing functions.
 
-The bug is triggered by a simple sequence:
-
- [pid 21579] socket(AF_PPPOX, SOCK_STREAM, 1) = 3
- [pid 21579] socket(AF_INET6, SOCK_DGRAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
- [pid 21579] setsockopt(4, SOL_SOCKET, SO_REUSEPORT, [11], 4) = 0
- [pid 21579] bind(4, {sa_family=AF_INET6, sin6_port=htons(20000), sin6_flowinfo=htonl(0), inet_pton(AF_INET6, "::", &sin6_addr), sin6_scope_id=0}, 28) = 0
- [pid 21579] connect(3, {sa_family=AF_PPPOX, sa_data="\1\0\0\0\0\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\1\0\0\0\0\0\0\0\n\0N \0\0\0\7\0\0\0\0\0\0\0\0\0\0\377\377\254\24\24\22\377\3\0\0"}, 58) = 0
- [pid 21579] close(3)                    = 0
- [pid 21579] close(4)                    = 0
-
-The crash occurs in the socket destroy path. bpf_sk_reuseport_detach
-assumes ownership of sk_user_data if sk_reuseport is set and writes a
-NULL pointer to the memory pointed to by
-sk_user_data. bpf_sk_reuseport_detach is called via
-udp_lib_unhash. l2tp does its socket cleanup through sk_destruct,
-which fetches private data through sk_user_data. The BUG_ON fires
-because this data has been corrupted.
-
-Prevent this crash by adding a check for sk_reuseport in
-l2tp_validate_socket. l2tp won't be able to use SO_REUSEPORT.
-
-This brings up two questions:
-
- 1. If CONFIG_BPF_SYSCALL is enabled, should the SO_REUSEPORT setsockopt
-    handler check that sk_user_data isn't already set on the socket?
-    This crash could also occur if SO_REUSEPORT were set after the
-    socket is initialised by l2tp.
-
- 2. Should the reuseport code have a dedicated member of struct sock
-    to use instead of sk_user_data such that SO_REUSEPORT can be used
-    by UDP encap socket users like l2tp?
-
-Fixes: 6b9f34239b00 ("l2tp: fix races in tunnel creation")
-Signed-off-by: James Chapman <jchapman@katalix.com>
-Cc: Guillaume Nault <gnault@redhat.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Reported-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
+Reported-by: Daniel Borkmann <daniel@iogearbox.net>
+Fixes: d7bf2ebebc2b ("sched: consistently handle layer3 header accesses in the presence of VLANs")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- net/l2tp/l2tp_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/if_vlan.h | 57 ++++++++++++++++-------------------------
+ 1 file changed, 22 insertions(+), 35 deletions(-)
 
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index 6d7ef78c88af..5bfd046326ca 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -1465,6 +1465,9 @@ static int l2tp_validate_socket(const struct sock *sk, const struct net *net,
- 	    (encap == L2TP_ENCAPTYPE_IP && sk->sk_protocol != IPPROTO_L2TP))
- 		return -EPROTONOSUPPORT;
+diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
+index 427a5b8597c2..855d16192e6a 100644
+--- a/include/linux/if_vlan.h
++++ b/include/linux/if_vlan.h
+@@ -25,6 +25,8 @@
+ #define VLAN_ETH_DATA_LEN	1500	/* Max. octets in payload	 */
+ #define VLAN_ETH_FRAME_LEN	1518	/* Max. octets in frame sans FCS */
  
-+	if (sk->sk_reuseport)
-+		return -EPROTONOSUPPORT;
++#define VLAN_MAX_DEPTH	32		/* Max. number of nested VLAN tags parsed */
 +
- 	if (sk->sk_user_data)
- 		return -EBUSY;
+ /*
+  * 	struct vlan_hdr - vlan header
+  * 	@h_vlan_TCI: priority and VLAN ID
+@@ -308,34 +310,6 @@ static inline bool eth_type_vlan(__be16 ethertype)
+ 	}
+ }
  
+-/* A getter for the SKB protocol field which will handle VLAN tags consistently
+- * whether VLAN acceleration is enabled or not.
+- */
+-static inline __be16 skb_protocol(const struct sk_buff *skb, bool skip_vlan)
+-{
+-	unsigned int offset = skb_mac_offset(skb) + sizeof(struct ethhdr);
+-	__be16 proto = skb->protocol;
+-
+-	if (!skip_vlan)
+-		/* VLAN acceleration strips the VLAN header from the skb and
+-		 * moves it to skb->vlan_proto
+-		 */
+-		return skb_vlan_tag_present(skb) ? skb->vlan_proto : proto;
+-
+-	while (eth_type_vlan(proto)) {
+-		struct vlan_hdr vhdr, *vh;
+-
+-		vh = skb_header_pointer(skb, offset, sizeof(vhdr), &vhdr);
+-		if (!vh)
+-			break;
+-
+-		proto = vh->h_vlan_encapsulated_proto;
+-		offset += sizeof(vhdr);
+-	}
+-
+-	return proto;
+-}
+-
+ static inline bool vlan_hw_offload_capable(netdev_features_t features,
+ 					   __be16 proto)
+ {
+@@ -605,10 +579,10 @@ static inline int vlan_get_tag(const struct sk_buff *skb, u16 *vlan_tci)
+  * Returns the EtherType of the packet, regardless of whether it is
+  * vlan encapsulated (normal or hardware accelerated) or not.
+  */
+-static inline __be16 __vlan_get_protocol(struct sk_buff *skb, __be16 type,
++static inline __be16 __vlan_get_protocol(const struct sk_buff *skb, __be16 type,
+ 					 int *depth)
+ {
+-	unsigned int vlan_depth = skb->mac_len;
++	unsigned int vlan_depth = skb->mac_len, parse_depth = VLAN_MAX_DEPTH;
+ 
+ 	/* if type is 802.1Q/AD then the header should already be
+ 	 * present at mac_len - VLAN_HLEN (if mac_len > 0), or at
+@@ -623,13 +597,12 @@ static inline __be16 __vlan_get_protocol(struct sk_buff *skb, __be16 type,
+ 			vlan_depth = ETH_HLEN;
+ 		}
+ 		do {
+-			struct vlan_hdr *vh;
++			struct vlan_hdr vhdr, *vh;
+ 
+-			if (unlikely(!pskb_may_pull(skb,
+-						    vlan_depth + VLAN_HLEN)))
++			vh = skb_header_pointer(skb, vlan_depth, sizeof(vhdr), &vhdr);
++			if (unlikely(!vh || !--parse_depth))
+ 				return 0;
+ 
+-			vh = (struct vlan_hdr *)(skb->data + vlan_depth);
+ 			type = vh->h_vlan_encapsulated_proto;
+ 			vlan_depth += VLAN_HLEN;
+ 		} while (eth_type_vlan(type));
+@@ -648,11 +621,25 @@ static inline __be16 __vlan_get_protocol(struct sk_buff *skb, __be16 type,
+  * Returns the EtherType of the packet, regardless of whether it is
+  * vlan encapsulated (normal or hardware accelerated) or not.
+  */
+-static inline __be16 vlan_get_protocol(struct sk_buff *skb)
++static inline __be16 vlan_get_protocol(const struct sk_buff *skb)
+ {
+ 	return __vlan_get_protocol(skb, skb->protocol, NULL);
+ }
+ 
++/* A getter for the SKB protocol field which will handle VLAN tags consistently
++ * whether VLAN acceleration is enabled or not.
++ */
++static inline __be16 skb_protocol(const struct sk_buff *skb, bool skip_vlan)
++{
++	if (!skip_vlan)
++		/* VLAN acceleration strips the VLAN header from the skb and
++		 * moves it to skb->vlan_proto
++		 */
++		return skb_vlan_tag_present(skb) ? skb->vlan_proto : skb->protocol;
++
++	return vlan_get_protocol(skb);
++}
++
+ static inline void vlan_set_encap_proto(struct sk_buff *skb,
+ 					struct vlan_hdr *vhdr)
+ {
 -- 
-2.17.1
+2.27.0
 
