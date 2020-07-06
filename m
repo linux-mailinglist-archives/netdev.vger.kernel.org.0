@@ -2,90 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15960215F24
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 21:00:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B8D9215F2C
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 21:06:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729865AbgGFTAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 15:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729632AbgGFTAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 15:00:36 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BB5C061755
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 12:00:36 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id dm12so17702022qvb.9
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 12:00:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Cgc2aGSMcE4uE38jwbP8aUlB6C5htK7sM9vaPdzRikA=;
-        b=Y95q57fcMIEAJG99/iJP4CkvIUw8ZHiziEq1gAPGq01oepZ0YIGzSKREOKTBrToUYc
-         6TVB/yBE4ggOWehj9XzCFXCwcoyivxgq+ylO3F603MXNLRxo5NYZhwlaZq/KQsQ5PmIi
-         8aKy22BtiJcF7ZRlA7BYIru+hegNP7WAcqBts=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Cgc2aGSMcE4uE38jwbP8aUlB6C5htK7sM9vaPdzRikA=;
-        b=g3IqS4ZUxEi8Dh29VVREl5OjDkdFumAlbReN4eoLXykHqdFHt4E77W4LhCUQ8zxV+R
-         a1CARew+QiDAp6hUXgZNeHzkuQ8abex7BouwhlbUlMPgFiuAFImpMWSDh5vu+2J7Jiy7
-         0Lwq2qCe9EYAn27e0puEgEuldvknxnWPCxPFTwRNdReqw3+YnUF5/gQe9tHj5lt2faf+
-         pchrJOKt2jDI/i4ljlDBhF0aLGkisfgTOj1/6PGMq0rCc1egoX3VLMqwcIQkfVF64Ksw
-         j2hzZsEAcNhrCphrgnw/3Y63YTfCe5ZSQ4hIAqLBnog/sr57PM5mjsOMubRUY8yY9pn3
-         OEvw==
-X-Gm-Message-State: AOAM532hJvVybuIyKecPXnFDSPIOfJI8iRUR94QqYuqqOXuS60R3HGCK
-        TEQLhFsVYRZSFqsV1vCCm3Mkv0ONdduw2/V5NHM8Vw==
-X-Google-Smtp-Source: ABdhPJz4lLtx+COEY87kjke8VfCUDrCbvavTnMwFbMSeFgbBkweNefKlza8xoM+3w1ZJB+sUewbIH6+FPS52LoR/ZUg=
-X-Received: by 2002:a05:6214:1927:: with SMTP id es7mr40431538qvb.166.1594062035596;
- Mon, 06 Jul 2020 12:00:35 -0700 (PDT)
+        id S1726480AbgGFTGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 15:06:39 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:31327 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725942AbgGFTGj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 15:06:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594062396;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XOI9LcVovvLx+/GTMSIDxUHqL9jWuPYsavKZrhyMkB0=;
+        b=Gm/G46V1S/OkqWBmLsU8d/eMVcXwzPCiVdIexNoXw7AzYGIhFtR1rhN7+REeq50ykk1shm
+        lDIsSOaqKlD0Ls1QyPSsIoY2jep1U2occOPmTQixa0yJfn7SjYhUNEE7zxBte1kS6ni8ed
+        m8ge1ulnAP5RnyQNnyrtW863AjVu5yc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-157-5FUKE45bMnmNoWvJ1mW2Ww-1; Mon, 06 Jul 2020 15:06:31 -0400
+X-MC-Unique: 5FUKE45bMnmNoWvJ1mW2Ww-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D4FEA800406;
+        Mon,  6 Jul 2020 19:06:29 +0000 (UTC)
+Received: from new-host-5.redhat.com (unknown [10.40.192.250])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2D8A060BF3;
+        Mon,  6 Jul 2020 19:06:27 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org
+Subject: [PATCH net-next] mptcp: fix race in subflow_data_ready()
+Date:   Mon,  6 Jul 2020 21:06:12 +0200
+Message-Id: <4eed4130aba55b8a2b3854fe99d254a50530866b.1594062200.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-References: <1593987732-1336-1-git-send-email-michael.chan@broadcom.com>
- <1593987732-1336-7-git-send-email-michael.chan@broadcom.com> <20200706115228.317e9915@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200706115228.317e9915@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Mon, 6 Jul 2020 12:00:24 -0700
-Message-ID: <CACKFLimkfy974T7OPk5vuKq8fL3JHF4yWrr+xMq0EQ5vq6-d+Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 6/8] bnxt_en: Implement ethtool -X to set
- indirection table.
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 6, 2020 at 11:52 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> Maybe let me just type out what I had in mind:
->
-> unsigned int bnxt_max_rss_ring(bp)
-> {
->         int i, tbl_size, max_ring;
->
->         if (!bp->rss_indir_tbl)
->                 return 0;
->
->         max_ring = 0;
->         tbl_size = bnxt_get_rxfh_indir_size(dev);
->         for (i = 0; i < tbl_size; i++)
->                 max_ring = max(max_ring, bp->rss_indir_tbl[i]);
->
->         return max_ring;
-> }
->
-> Then:
->
->         if (rx_rings != bp->rx_nr_rings) {
->                 netdev_warn(bp->dev, "Able to reserve only %d out of %d requested RX rings\n",
->                             rx_rings, bp->rx_nr_rings);
->
->                 if (netif_is_rxfh_configured(bp->dev) &&
->                     rx_rings < bnxt_max_rss_ring(bp)) {
->                         netdev_err(bp->dev, "RSS table entries reverting to default\n");
->                         bp->dev->priv_flags &= ~IFF_RXFH_CONFIGURED;
->                 }
->         }
+syzkaller was able to make the kernel reach subflow_data_ready() for a
+server subflow that was closed before subflow_finish_connect() completed.
+In these cases we can avoid using the path for regular/fallback MPTCP
+data, and just wake the main socket, to avoid the following warning:
 
-OK Got it.  You want to reset the RSS map only when absolutely necessary.
+ WARNING: CPU: 0 PID: 9370 at net/mptcp/subflow.c:885
+ subflow_data_ready+0x1e6/0x290 net/mptcp/subflow.c:885
+ Kernel panic - not syncing: panic_on_warn set ...
+ CPU: 0 PID: 9370 Comm: syz-executor.0 Not tainted 5.7.0 #106
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+ rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+ Call Trace:
+  <IRQ>
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0xb7/0xfe lib/dump_stack.c:118
+  panic+0x29e/0x692 kernel/panic.c:221
+  __warn.cold+0x2f/0x3d kernel/panic.c:582
+  report_bug+0x28b/0x2f0 lib/bug.c:195
+  fixup_bug arch/x86/kernel/traps.c:105 [inline]
+  fixup_bug arch/x86/kernel/traps.c:100 [inline]
+  do_error_trap+0x10f/0x180 arch/x86/kernel/traps.c:197
+  do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:216
+  invalid_op+0x1e/0x30 arch/x86/entry/entry_64.S:1027
+ RIP: 0010:subflow_data_ready+0x1e6/0x290 net/mptcp/subflow.c:885
+ Code: 04 02 84 c0 74 06 0f 8e 91 00 00 00 41 0f b6 5e 48 31 ff 83 e3 18
+ 89 de e8 37 ec 3d fe 84 db 0f 85 65 ff ff ff e8 fa ea 3d fe <0f> 0b e9
+ 59 ff ff ff e8 ee ea 3d fe 48 89 ee 4c 89 ef e8 f3 77 ff
+ RSP: 0018:ffff88811b2099b0 EFLAGS: 00010206
+ RAX: ffff888111197000 RBX: 0000000000000000 RCX: ffffffff82fbc609
+ RDX: 0000000000000100 RSI: ffffffff82fbc616 RDI: 0000000000000001
+ RBP: ffff8881111bc800 R08: ffff888111197000 R09: ffffed10222a82af
+ R10: ffff888111541577 R11: ffffed10222a82ae R12: 1ffff11023641336
+ R13: ffff888111541000 R14: ffff88810fd4ca00 R15: ffff888111541570
+  tcp_child_process+0x754/0x920 net/ipv4/tcp_minisocks.c:841
+  tcp_v4_do_rcv+0x749/0x8b0 net/ipv4/tcp_ipv4.c:1642
+  tcp_v4_rcv+0x2666/0x2e60 net/ipv4/tcp_ipv4.c:1999
+  ip_protocol_deliver_rcu+0x29/0x1f0 net/ipv4/ip_input.c:204
+  ip_local_deliver_finish net/ipv4/ip_input.c:231 [inline]
+  NF_HOOK include/linux/netfilter.h:421 [inline]
+  ip_local_deliver+0x2da/0x390 net/ipv4/ip_input.c:252
+  dst_input include/net/dst.h:441 [inline]
+  ip_rcv_finish net/ipv4/ip_input.c:428 [inline]
+  ip_rcv_finish net/ipv4/ip_input.c:414 [inline]
+  NF_HOOK include/linux/netfilter.h:421 [inline]
+  ip_rcv+0xef/0x140 net/ipv4/ip_input.c:539
+  __netif_receive_skb_one_core+0x197/0x1e0 net/core/dev.c:5268
+  __netif_receive_skb+0x27/0x1c0 net/core/dev.c:5382
+  process_backlog+0x1e5/0x6d0 net/core/dev.c:6226
+  napi_poll net/core/dev.c:6671 [inline]
+  net_rx_action+0x3e3/0xd70 net/core/dev.c:6739
+  __do_softirq+0x18c/0x634 kernel/softirq.c:292
+  do_softirq_own_stack+0x2a/0x40 arch/x86/entry/entry_64.S:1082
+  </IRQ>
+  do_softirq.part.0+0x26/0x30 kernel/softirq.c:337
+  do_softirq arch/x86/include/asm/preempt.h:26 [inline]
+  __local_bh_enable_ip+0x46/0x50 kernel/softirq.c:189
+  local_bh_enable include/linux/bottom_half.h:32 [inline]
+  rcu_read_unlock_bh include/linux/rcupdate.h:723 [inline]
+  ip_finish_output2+0x78a/0x19c0 net/ipv4/ip_output.c:229
+  __ip_finish_output+0x471/0x720 net/ipv4/ip_output.c:306
+  dst_output include/net/dst.h:435 [inline]
+  ip_local_out+0x181/0x1e0 net/ipv4/ip_output.c:125
+  __ip_queue_xmit+0x7a1/0x14e0 net/ipv4/ip_output.c:530
+  __tcp_transmit_skb+0x19dc/0x35e0 net/ipv4/tcp_output.c:1238
+  __tcp_send_ack.part.0+0x3c2/0x5b0 net/ipv4/tcp_output.c:3785
+  __tcp_send_ack net/ipv4/tcp_output.c:3791 [inline]
+  tcp_send_ack+0x7d/0xa0 net/ipv4/tcp_output.c:3791
+  tcp_rcv_synsent_state_process net/ipv4/tcp_input.c:6040 [inline]
+  tcp_rcv_state_process+0x36a4/0x49c2 net/ipv4/tcp_input.c:6209
+  tcp_v4_do_rcv+0x343/0x8b0 net/ipv4/tcp_ipv4.c:1651
+  sk_backlog_rcv include/net/sock.h:996 [inline]
+  __release_sock+0x1ad/0x310 net/core/sock.c:2548
+  release_sock+0x54/0x1a0 net/core/sock.c:3064
+  inet_wait_for_connect net/ipv4/af_inet.c:594 [inline]
+  __inet_stream_connect+0x57e/0xd50 net/ipv4/af_inet.c:686
+  inet_stream_connect+0x53/0xa0 net/ipv4/af_inet.c:725
+  mptcp_stream_connect+0x171/0x5f0 net/mptcp/protocol.c:1920
+  __sys_connect_file net/socket.c:1854 [inline]
+  __sys_connect+0x267/0x2f0 net/socket.c:1871
+  __do_sys_connect net/socket.c:1882 [inline]
+  __se_sys_connect net/socket.c:1879 [inline]
+  __x64_sys_connect+0x6f/0xb0 net/socket.c:1879
+  do_syscall_64+0xb7/0x3d0 arch/x86/entry/common.c:295
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+ RIP: 0033:0x7fb577d06469
+ Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89
+ f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01
+ f0 ff ff 73 01 c3 48 8b 0d ff 49 2b 00 f7 d8 64 89 01 48
+ RSP: 002b:00007fb5783d5dd8 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+ RAX: ffffffffffffffda RBX: 000000000068bfa0 RCX: 00007fb577d06469
+ RDX: 000000000000004d RSI: 0000000020000040 RDI: 0000000000000003
+ RBP: 00000000ffffffff R08: 0000000000000000 R09: 0000000000000000
+ R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+ R13: 000000000041427c R14: 00007fb5783d65c0 R15: 0000000000000003
+
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/39
+Reported-by: Christoph Paasch <cpaasch@apple.com>
+Fixes: e1ff9e82e2ea ("net: mptcp: improve fallback to TCP")
+Suggested-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ net/mptcp/subflow.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index e1e19c76e267..9f7f3772c13c 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -873,7 +873,7 @@ static void subflow_data_ready(struct sock *sk)
+ 	struct mptcp_sock *msk;
+ 
+ 	msk = mptcp_sk(parent);
+-	if (inet_sk_state_load(sk) == TCP_LISTEN) {
++	if ((1 << inet_sk_state_load(sk)) & (TCPF_LISTEN | TCPF_CLOSE)) {
+ 		set_bit(MPTCP_DATA_READY, &msk->flags);
+ 		parent->sk_data_ready(parent);
+ 		return;
+-- 
+2.26.2
+
