@@ -2,45 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89C63215FA6
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 21:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B663D215FAF
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 21:54:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726694AbgGFTuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 15:50:19 -0400
-Received: from mga03.intel.com ([134.134.136.65]:10736 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725860AbgGFTuS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jul 2020 15:50:18 -0400
-IronPort-SDR: UlDEFaIY3GXC6+sUE5l63N2iljwM81ot3OZEswJOREdzdeOlkwIsZnsy5dHBhWzKNhqGjzWlF+
- nBIloTSL31bw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9674"; a="147505977"
-X-IronPort-AV: E=Sophos;i="5.75,321,1589266800"; 
-   d="scan'208";a="147505977"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2020 12:50:17 -0700
-IronPort-SDR: +N5rseYLr1lDYqNiavH5byDprej7NlY1eO23n7foN6n5v6JsR7zGvoqK5DXeqg6nR286oKwEq2
- 3Os5u94KVYlQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,321,1589266800"; 
-   d="scan'208";a="483246170"
-Received: from samudral-mobl.amr.corp.intel.com (HELO [10.255.228.177]) ([10.255.228.177])
-  by fmsmga005.fm.intel.com with ESMTP; 06 Jul 2020 12:50:16 -0700
-Subject: Re: [PATCH v2] fs/epoll: Enable non-blocking busypoll when epoll
- timeout is 0
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-To:     linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, davem@davemloft.net,
-        viro@zeniv.linux.org.uk
-References: <1593027056-43779-1-git-send-email-sridhar.samudrala@intel.com>
-Message-ID: <f7126487-71fc-ff8d-939a-d29316cda8e1@intel.com>
-Date:   Mon, 6 Jul 2020 12:50:16 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1725982AbgGFTyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 15:54:43 -0400
+Received: from out0-152.mail.aliyun.com ([140.205.0.152]:51246 "EHLO
+        out0-152.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725892AbgGFTyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 15:54:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=alibaba-inc.com; s=default;
+        t=1594065281; h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        bh=51mz9zmmJk640KnnFyPIYsKDhnD4dBFpYvQxyF74ArE=;
+        b=gbQkgPDZE95xeLaNi5QfubZ0uz0ZZFVmq8yxTyIHVoqjG7mYNaMuNXLJ9uLq94MU9iFSpiB5bkCAvzwCfmJMitgg4+Eu2xu75COq9X9zyMx/kagTo3zM39NTCECrWNEc12xmFgzXJPgCVPBt5WflB7fZ4biyIhUhBpil4SFW7dI=
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R331e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e02c03299;MF=xiangning.yu@alibaba-inc.com;NM=1;PH=DS;RN=2;SR=0;TI=SMTPD_---.Hz2LvyQ_1594065279;
+Received: from US-118000MP.local(mailfrom:xiangning.yu@alibaba-inc.com fp:SMTPD_---.Hz2LvyQ_1594065279)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 07 Jul 2020 03:54:40 +0800
+Subject: Re: [PATCH iproute2-next] iproute2 Support lockless token bucket
+ (LTB)
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+References: <0010e146-ccda-ee6b-819b-96e518204f8a@alibaba-inc.com>
+ <20200706114037.519161d0@hermes.lan>
+From:   "=?UTF-8?B?WVUsIFhpYW5nbmluZw==?=" <xiangning.yu@alibaba-inc.com>
+Message-ID: <d0ad669c-4203-9987-e625-f2fae4a6b81c@alibaba-inc.com>
+Date:   Tue, 07 Jul 2020 03:54:38 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <1593027056-43779-1-git-send-email-sridhar.samudrala@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20200706114037.519161d0@hermes.lan>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -48,54 +41,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Resending.
+On 7/6/20 11:40 AM, Stephen Hemminger wrote:
+> On Tue, 07 Jul 2020 02:08:21 +0800
+> "YU, Xiangning" <xiangning.yu@alibaba-inc.com> wrote:
+> 
+>> +static int ltb_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+>> +{
+>> +	struct rtattr *tb[TCA_LTB_MAX + 1];
+>> +	struct tc_ltb_opt *lopt;
+>> +	struct tc_ltb_glob *gopt;
+>> +	__u64 rate64, ceil64;
+>> +
+>> +	SPRINT_BUF(b1);
+>> +	if (opt == NULL)
+>> +		return 0;
+>> +
+>> +	parse_rtattr_nested(tb, TCA_LTB_MAX, opt);
+>> +
+>> +	if (tb[TCA_LTB_PARMS]) {
+>> +		lopt = RTA_DATA(tb[TCA_LTB_PARMS]);
+>> +		if (RTA_PAYLOAD(tb[TCA_LTB_PARMS])  < sizeof(*lopt))
+>> +			return -1;
+>> +
+>> +		fprintf(f, "prio %d ", (int)lopt->prio);
+>> +
+>> +		rate64 = lopt->rate.rate;
+>> +		if (tb[TCA_LTB_RATE64] &&
+>> +		    RTA_PAYLOAD(tb[TCA_LTB_RATE64]) >= sizeof(rate64)) {
+>> +			rate64 = *(__u64 *)RTA_DATA(tb[TCA_LTB_RATE64]);
+>> +		}
+>> +
+>> +		ceil64 = lopt->ceil.rate;
+>> +		if (tb[TCA_LTB_CEIL64] &&
+>> +		    RTA_PAYLOAD(tb[TCA_LTB_CEIL64]) >= sizeof(ceil64))
+>> +			ceil64 = *(__u64 *)RTA_DATA(tb[TCA_LTB_CEIL64]);
+>> +
+>> +		fprintf(f, "rate %s ", sprint_rate(rate64, b1));
+>> +		fprintf(f, "ceil %s ", sprint_rate(ceil64, b1));
+> 
+> The print function needs to support JSON output like the rest
+> of the qdisc in current iproute2.
+> 
+Hi Stephen,
 
-Dave, Eric,
+Thank you for pointing this out! While I'm a bit confused about the JSON output. This is a sample output of `tc -j class show` command. Looks like it doesn't display JSON output even for HTB. Am I missing anything? 
 
-Can we get this in via net-next as this is targeted for networking use 
-case using epoll/busypoll.
+# ./tc -s  -j -p class show dev enp7s0f0
+class htb 1:1 root rate 10Gbit ceil 10Gbit burst 13750b cburst 0b 
+ Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0) 
+ backlog 0b 0p requeues 0
+ lended: 0 borrowed: 0 giants: 0
+ tokens: 187 ctokens: 15
 
-Thanks
-Sridhar
+class htb 1:10 parent 1:1 prio 1 rate 10Gbit ceil 10Gbit burst 13750b cburst 13750b 
+ Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0) 
+ backlog 0b 0p requeues 0
+ lended: 0 borrowed: 0 giants: 0
+ tokens: 187 ctokens: 187
 
-On 6/24/2020 12:30 PM, Sridhar Samudrala wrote:
-> This patch triggers non-blocking busy poll when busy_poll is enabled,
-> epoll is called with a timeout of 0 and is associated with a napi_id.
-> This enables an app thread to go through napi poll routine once by
-> calling epoll with a 0 timeout.
-> 
-> poll/select with a 0 timeout behave in a similar manner.
-> 
-> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
-> 
-> v2:
-> Added net_busy_loop_on() check (Eric)
-> 
-> ---
->   fs/eventpoll.c | 13 +++++++++++++
->   1 file changed, 13 insertions(+)
-> 
-> diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-> index 12eebcdea9c8..c33cc98d3848 100644
-> --- a/fs/eventpoll.c
-> +++ b/fs/eventpoll.c
-> @@ -1847,6 +1847,19 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
->   		eavail = ep_events_available(ep);
->   		write_unlock_irq(&ep->lock);
->   
-> +		/*
-> +		 * Trigger non-blocking busy poll if timeout is 0 and there are
-> +		 * no events available. Passing timed_out(1) to ep_busy_loop
-> +		 * will make sure that busy polling is triggered only once.
-> +		 */
-> +		if (!eavail && net_busy_loop_on()) {
-> +			ep_busy_loop(ep, timed_out);
-> +			write_lock_irq(&ep->lock);
-> +			eavail = ep_events_available(ep);
-> +			write_unlock_irq(&ep->lock);
-> +		}
-> +
->   		goto send_events;
->   	}
->   
-> 
+Thanks,
+- Xiangning
+
