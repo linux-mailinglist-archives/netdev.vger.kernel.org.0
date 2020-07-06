@@ -2,83 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D06A42152BD
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 08:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A9782152CD
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 08:54:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727990AbgGFGhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 02:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725889AbgGFGhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 02:37:38 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E597C061794
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 23:37:38 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id s10so39471390wrw.12
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 23:37:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=xwWBkFk6RN986GOG/12Xtl/4y20SlvTZY/q6FM8tW1Q=;
-        b=aSIAEtPXgtK669+bOn5Ozc4VHf23KT7KycYh2uRYMbPTaTGiLUCORkS8QRaJueyS2e
-         6zC3lWeWq+92XxxZ2YDI8ej929Sz+oxKqNPoaGcD6TKWiNZ70TfaHbA1eg11HpzoFSGU
-         xgmIC+vjzr8j423Y8fca5ert/Bp1t+JEQsXgNom1QZOVTj41JMfiNTx/xeOKt+2TGY01
-         lu7OGuOMm106emAT9yb1oQCeYXJXC/zK0QLksdmRrS4yoXbr8PwL6F7LOvfcN+XdW+8a
-         cY9+jlcGis3enwDUwMYkintrvnVxN856C6v8drikA4RVNPybbArzo2i6CYr8p/xdAAt5
-         FCoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xwWBkFk6RN986GOG/12Xtl/4y20SlvTZY/q6FM8tW1Q=;
-        b=Efth0OVr7KO3EFnd9VH35eKJLOXXOlZsWo8ASlcpjMdcGRLEJtFbKYZj2ukoAgq57h
-         TcCTHKU10Dg2VKw96nAFR17ao/Zbr/otpCSBw7EwQaxZ+jN6RrJGEUn4BXuhJG/xoZP+
-         7AYTlz2hCFk3VAFGAZsipc0Cm3krH4kmYQOIoxPpxViCNw5Btp/rXgWBU2tOqTD/ThE6
-         l1lDv1RS44zg8S9mDXpGhvYU6VsMtf97U0WatUUZDfDTWewzlvSvBx6kGSEyWQZ+lWNj
-         ZzGQTryV8TYbyxT2KqoSDlCuJcrAuqfV4/jPCgotu4UFNpqWBLzisjTw2tmzWFV6ZMAk
-         rJxw==
-X-Gm-Message-State: AOAM532I23sVzxdSuG4kgWiH+wGFRdeTb8A43FMpif9i6w8A4OSieZhS
-        KB8UjC65Nrk3q5K7v2uNCD4=
-X-Google-Smtp-Source: ABdhPJxxP7K0VHgt52jGxWPHCRZ0zppW+/qWmlSExQ19gWfzMzAwZq/zc4CrLR6Kcvh35Z/W5FjM3Q==
-X-Received: by 2002:adf:e4c9:: with SMTP id v9mr46349883wrm.62.1594017457113;
-        Sun, 05 Jul 2020 23:37:37 -0700 (PDT)
-Received: from hoboy (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
-        by smtp.gmail.com with ESMTPSA id r3sm25729193wrg.70.2020.07.05.23.37.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2020 23:37:36 -0700 (PDT)
-Date:   Sun, 5 Jul 2020 23:37:34 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 5/7] net: phy: dp83640: Fixup cast to restricted
- __be16 warning
-Message-ID: <20200706063734.GA8486@hoboy>
-References: <20200705182921.887441-1-andrew@lunn.ch>
- <20200705182921.887441-6-andrew@lunn.ch>
- <9d433028-1c46-d24b-f700-63f12c45f3af@gmail.com>
+        id S1728177AbgGFGyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 02:54:20 -0400
+Received: from mx24.baidu.com ([111.206.215.185]:39984 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727896AbgGFGyU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Jul 2020 02:54:20 -0400
+Received: from BC-Mail-Ex30.internal.baidu.com (unknown [172.31.51.24])
+        by Forcepoint Email with ESMTPS id 2DA8DE84217917A62844;
+        Mon,  6 Jul 2020 14:38:32 +0800 (CST)
+Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
+ BC-Mail-Ex30.internal.baidu.com (172.31.51.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1979.3; Mon, 6 Jul 2020 14:38:31 +0800
+Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
+ BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
+ 15.01.1979.003; Mon, 6 Jul 2020 14:38:25 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+CC:     intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Netdev <netdev@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbSW50ZWwtd2lyZWQtbGFuXSBbYnVnID9dIGk0MGVfcnhfYnVm?=
+ =?utf-8?B?ZmVyX2ZsaXAgc2hvdWxkIG5vdCBiZSBjYWxsZWQgZm9yIHJlZGlyZWN0ZWQg?=
+ =?utf-8?Q?xsk_copy_mode?=
+Thread-Topic: [Intel-wired-lan] [bug ?] i40e_rx_buffer_flip should not be
+ called for redirected xsk copy mode
+Thread-Index: AdZQR0EbXNQd8xyJRvWOWMhzMsvatQC0jCIAABEVlZA=
+Date:   Mon, 6 Jul 2020 06:38:25 +0000
+Message-ID: <3a12136e75a04b98b736c14da4044506@baidu.com>
+References: <2863b548da1d4c369bbd9d6ceb337a24@baidu.com>
+ <CAJ8uoz08pyWR43K_zhp6PsDLi0KE=y_4QTs-a7kBA-jkRQksaw@mail.gmail.com>
+In-Reply-To: <CAJ8uoz08pyWR43K_zhp6PsDLi0KE=y_4QTs-a7kBA-jkRQksaw@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.197.248]
+x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex30_2020-07-06 14:38:32:013
+x-baidu-bdmsfe-viruscheck: BC-Mail-Ex30_GRAY_Inside_WithoutAtta_2020-07-06
+ 14:38:32:013
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9d433028-1c46-d24b-f700-63f12c45f3af@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 05, 2020 at 01:45:50PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 7/5/2020 11:29 AM, Andrew Lunn wrote:
-> > ntohs() expects to be passed a __be16. Correct the type of the
-> > variable holding the sequence ID.
-> > 
-> > Cc: Richard Cochran <richardcochran@gmail.com>
-> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> 
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IE1hZ251cyBLYXJsc3Nv
+biBbbWFpbHRvOm1hZ251cy5rYXJsc3NvbkBnbWFpbC5jb21dDQo+IOWPkemAgeaXtumXtDogMjAy
+MOW5tDfmnIg25pelIDE0OjEzDQo+IOaUtuS7tuS6ujogTGksUm9uZ3FpbmcgPGxpcm9uZ3FpbmdA
+YmFpZHUuY29tPg0KPiDmioTpgIE6IGludGVsLXdpcmVkLWxhbiA8aW50ZWwtd2lyZWQtbGFuQGxp
+c3RzLm9zdW9zbC5vcmc+OyBCasO2cm4gVMO2cGVsDQo+IDxiam9ybi50b3BlbEBpbnRlbC5jb20+
+OyBLYXJsc3NvbiwgTWFnbnVzIDxtYWdudXMua2FybHNzb25AaW50ZWwuY29tPjsNCj4gTmV0ZGV2
+IDxuZXRkZXZAdmdlci5rZXJuZWwub3JnPg0KPiDkuLvpopg6IFJlOiBbSW50ZWwtd2lyZWQtbGFu
+XSBbYnVnID9dIGk0MGVfcnhfYnVmZmVyX2ZsaXAgc2hvdWxkIG5vdCBiZSBjYWxsZWQgZm9yDQo+
+IHJlZGlyZWN0ZWQgeHNrIGNvcHkgbW9kZQ0KPiANCj4gVGhhbmsgeW91IFJvbmdRaW5nIGZvciBy
+ZXBvcnRpbmcgdGhpcy4gSSB3aWxsIHRha2UgYSBsb29rIGF0IGl0IGFuZCBwcm9kdWNlIGENCj4g
+cGF0Y2guDQo+IA0KPiAvTWFnbnVzDQoNClRoYW5rcywgYW5kIGl4Z2JldmYvaXhnYmUgaGF2ZSBz
+YW1lIGlzc3VlLg0KDQpkcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9peGdiZXZmL2l4Z2JldmZf
+bWFpbi5jDQpkcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9pNDBlL2k0MGVfdHhyeC5jDQpkcml2
+ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9peGdiZS9peGdiZV9tYWluLmMNCg0KSSBoYXZlIGEgUkZD
+LCBpdCBtYXliZSBub3QgYmV0dGVyIGR1ZSB0byBhZGRpbmcgYSBuZXcgdmFyaWFibGUgDQpodHRw
+Oi8vcGF0Y2h3b3JrLm96bGFicy5vcmcvcHJvamVjdC9uZXRkZXYvcGF0Y2gvMTU5Mzc2MzkyNi0y
+NDI5Mi0xLWdpdC1zZW5kLWVtYWlsLWxpcm9uZ3FpbmdAYmFpZHUuY29tLw0KDQpvciBjaGVjayBt
+ZW1vcnkgdHlwZQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaTQw
+ZS9pNDBlX3R4cnguYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2k0MGUvaTQwZV90eHJ4
+LmMNCmluZGV4IGIzODM2MDkyYzMyNy4uZjQxNjY0ZTBjODRlIDEwMDY0NA0KLS0tIGEvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvaW50ZWwvaTQwZS9pNDBlX3R4cnguYw0KKysrIGIvZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvaW50ZWwvaTQwZS9pNDBlX3R4cnguYw0KQEAgLTIzOTQsNyArMjM5NCw5IEBAIHN0
+YXRpYyBpbnQgaTQwZV9jbGVhbl9yeF9pcnEoc3RydWN0IGk0MGVfcmluZyAqcnhfcmluZywgaW50
+IGJ1ZGdldCkNCiANCiAgICAgICAgICAgICAgICAgICAgICAgIGlmICh4ZHBfcmVzICYgKEk0MEVf
+WERQX1RYIHwgSTQwRV9YRFBfUkVESVIpKSB7DQogICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHhkcF94bWl0IHw9IHhkcF9yZXM7DQotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IGk0MGVfcnhfYnVmZmVyX2ZsaXAocnhfcmluZywgcnhfYnVmZmVyLCBzaXplKTsNCisNCisgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgaWYgKHhkcC0+cnhxLT5tZW0udHlwZSAhPSBNRU1f
+VFlQRV9YU0tfQlVGRl9QT09MKQ0KKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIGk0MGVfcnhfYnVmZmVyX2ZsaXAocnhfcmluZywgcnhfYnVmZmVyLCBzaXplKTsNCiAgICAg
+ICAgICAgICAgICAgICAgICAgIH0gZWxzZSB7DQogICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHJ4X2J1ZmZlci0+cGFnZWNudF9iaWFzKys7DQogICAgICAgICAgICAgICAgICAgICAgICB9
+DQpXaGV0aGVyLCAgbGlrZSB0byBzZWUgeW91ciBwYXRjaA0KDQotTGkgUm9uZ1FpbmcNCg==
