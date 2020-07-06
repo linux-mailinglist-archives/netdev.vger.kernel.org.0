@@ -2,111 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DE7C215D65
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 19:45:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55834215D73
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 19:50:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729758AbgGFRpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 13:45:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729550AbgGFRpK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jul 2020 13:45:10 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF788208D5;
-        Mon,  6 Jul 2020 17:45:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594057509;
-        bh=KknJPOB/p48fDu4wmZ5eaPAJdL9VYIP2U/8CNi8iAHY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mJOgAX9s8hLBuiS/URQlWqArbHNGQfp946mTDxoeuaqOIWgJV0Dkfd+PkWShu5sgc
-         mX5f9tdHJKTPUDZhuzpbm5AV+YpLmbtFwKKRkU8hz5Vy/fSdO6SaSZ2JDFnc8azlrA
-         uGLd0Ycz6kymHaCBZsHkjJd35Geq+2V8wNT7I81o=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net
-Cc:     brak@choopa.com, David Ahern <dsahern@kernel.org>
-Subject: [PATCH v2 net] ipv6: fib6_select_path can not use out path for nexthop objects
-Date:   Mon,  6 Jul 2020 11:45:07 -0600
-Message-Id: <20200706174507.18556-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
+        id S1729656AbgGFRuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 13:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729550AbgGFRuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 13:50:02 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D5DC061755
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 10:50:01 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id t15so2935659pjq.5
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 10:50:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FbyLgQ3HJQ9yt8d1dnRyBTK1OmgI3W4424HZqH1BfH4=;
+        b=yCz2qdbks20lnHTFOalI5N3uJk28haDPZsDkrjNvtow3V58B8jigMLl0rELevHCVTh
+         z1fJuvE2smzI9k7WYkFv3Z5jKWGnlCG0b0HX7NVKIQe+YKc/mRdvvfiMhwnnn6E+wXUd
+         JP8FwS0+W2QVjAyTzbhRLd4gDFwUlCtOowj6tOWEGhnxksJWcofm0CukmTd24PsJ/u63
+         E5IEiBK+AKIYiJiPiRc8vKu+aoTfyvRQYXT+ioNxr9FASimMooMUaJW+pOJRDgbNzKtz
+         aLJ9W1WGm0gy5+BD/baEZW+DykpP8xZmOiAc1uWlKumGNjfHao428BkyT8JEYhOvDVo2
+         5ZIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FbyLgQ3HJQ9yt8d1dnRyBTK1OmgI3W4424HZqH1BfH4=;
+        b=iDQlxN467aqn+DJkVAGBrQqnyurgnpNzEIO8nRXXUjT/NCjmBPyKowMv8D18YJn1T2
+         +giQx3TL8XQTh0n4GK5LVBF+pHWNFQN24l+OnRft57Q6qaz6XZ1Cr/hx4J5EJcUAjXS/
+         EI13a9qfOfJciA95OUZu/xS8ivIPPX77b5lmzxcJ79ylrM2jjsTI6zvopx/JmQ1LV96p
+         odKpYJlvY99lGluOCL5Y+DiO2J3vUQtG5CSMQ14BXdw1bVvqOL0wOjNBZaepVYf8jOqk
+         w10raBsGwMudV8wHiSJW5F3XZX7LldBu23lfJDfY7Ypy0Y7L4SZEGE+1QXaz8KWFa9Jh
+         a3Nw==
+X-Gm-Message-State: AOAM530oy1RNqgaHKhxuDuUHQhQZYLGsEezCBnN2+HfkdFatUb9i7BCx
+        R7hgLuxu4WeavEmk9V047lyFviz/VnY=
+X-Google-Smtp-Source: ABdhPJzTEeRXd1yh9GiMGquq4R2c0qtM7fkXJ868XV5DT/FIH8EBry4E9kelwgV+TN3U1kLj9IP/Pw==
+X-Received: by 2002:a17:902:bd08:: with SMTP id p8mr32581076pls.154.1594057801483;
+        Mon, 06 Jul 2020 10:50:01 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id b191sm20009032pga.13.2020.07.06.10.50.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2020 10:50:00 -0700 (PDT)
+Date:   Mon, 6 Jul 2020 10:49:52 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Bjarni Ingi Gislason <bjarniig@rhi.hi.is>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] libnetlink.3: display section numbers in roman font,
+ not boldface
+Message-ID: <20200706104952.28bdf23a@hermes.lan>
+In-Reply-To: <20200628162615.GA27573@rhi.hi.is>
+References: <20200628162615.GA27573@rhi.hi.is>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Brian reported a crash in IPv6 code when using rpfilter with a setup
-running FRR and external nexthop objects. The root cause of the crash
-is fib6_select_path setting fib6_nh in the result to NULL because of
-an improper check for nexthop objects.
+On Sun, 28 Jun 2020 16:26:15 +0000
+Bjarni Ingi Gislason <bjarniig@rhi.hi.is> wrote:
 
-More specifically, rpfilter invokes ip6_route_lookup with flowi6_oif
-set causing fib6_select_path to be called with have_oif_match set.
-fib6_select_path has early check on have_oif_match and jumps to the
-out label which presumes a builtin fib6_nh. This path is invalid for
-nexthop objects; for external nexthops fib6_select_path needs to just
-return if the fib6_nh has already been set in the result otherwise it
-returns after the call to nexthop_path_fib6_result. Update the check
-on have_oif_match to not bail on external nexthops.
+>   Typeset section numbers in roman font, see man-pages(7).
+> 
+> ###
+> 
+>   Details:
+> 
+> Output is from: test-groff -b -mandoc -T utf8 -rF0 -t -w w -z
+> 
+>   [ "test-groff" is a developmental version of "groff" ]
+> 
+> <./man/man3/libnetlink.3>:53 (macro BR): only 1 argument, but more are expected
+> <./man/man3/libnetlink.3>:132 (macro BR): only 1 argument, but more are expected
+> <./man/man3/libnetlink.3>:134 (macro BR): only 1 argument, but more are expected
+> <./man/man3/libnetlink.3>:197 (macro BR): only 1 argument, but more are expected
+> <./man/man3/libnetlink.3>:198 (macro BR): only 1 argument, but more are expected
+> 
+> Signed-off-by: Bjarni Ingi Gislason <bjarniig@rhi.hi.is>
 
-Update selftests for this problem.
-
-Fixes: f88d8ea67fbd ("ipv6: Plumb support for nexthop object in a fib6_info")
-Reported-by: Brian Rak <brak@choopa.com>
-Signed-off-by: David Ahern <dsahern@kernel.org>
----
-v2
-- for multipath nexthops path may already be set; do not want to
-  overwrite that selection based on hash
-
- net/ipv6/route.c                            |  5 ++++-
- tools/testing/selftests/net/fib_nexthops.sh | 13 +++++++++++++
- 2 files changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 82cbb46a2a4f..ea0be7cf3d93 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -431,9 +431,12 @@ void fib6_select_path(const struct net *net, struct fib6_result *res,
- 	struct fib6_info *sibling, *next_sibling;
- 	struct fib6_info *match = res->f6i;
- 
--	if ((!match->fib6_nsiblings && !match->nh) || have_oif_match)
-+	if (!match->nh && (!match->fib6_nsiblings || have_oif_match))
- 		goto out;
- 
-+	if (match->nh && have_oif_match && res->nh)
-+		return;
-+
- 	/* We might have already computed the hash for ICMPv6 errors. In such
- 	 * case it will always be non-zero. Otherwise now is the time to do it.
- 	 */
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index dee567f7576a..22dc2f3d428b 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -747,6 +747,19 @@ ipv6_fcnal_runtime()
- 	run_cmd "$IP nexthop add id 86 via 2001:db8:91::2 dev veth1"
- 	run_cmd "$IP ro add 2001:db8:101::1/128 nhid 81"
- 
-+	# rpfilter and default route
-+	$IP nexthop flush >/dev/null 2>&1
-+	run_cmd "ip netns exec me ip6tables -t mangle -I PREROUTING 1 -m rpfilter --invert -j DROP"
-+	run_cmd "$IP nexthop add id 91 via 2001:db8:91::2 dev veth1"
-+	run_cmd "$IP nexthop add id 92 via 2001:db8:92::2 dev veth3"
-+	run_cmd "$IP nexthop add id 93 group 91/92"
-+	run_cmd "$IP -6 ro add default nhid 91"
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	log_test $? 0 "Nexthop with default route and rpfilter"
-+	run_cmd "$IP -6 ro replace default nhid 93"
-+	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
-+	log_test $? 0 "Nexthop with multipath default route and rpfilter"
-+
- 	# TO-DO:
- 	# existing route with old nexthop; append route with new nexthop
- 	# existing route with old nexthop; replace route with new
--- 
-2.17.1
-
+Applied, thanks.
