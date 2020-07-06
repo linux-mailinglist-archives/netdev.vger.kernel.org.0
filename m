@@ -2,255 +2,576 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB8E9215A67
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 17:13:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6125215A8A
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 17:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729310AbgGFPMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 11:12:53 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:35735 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729269AbgGFPMY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 11:12:24 -0400
-Received: by mail-il1-f197.google.com with SMTP id v12so6929719ilg.2
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 08:12:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=A8AMKY8aPzdRnisOHV7tznqt6RcTPKGq2mtLpSQhRdM=;
-        b=Pwh1DRomNsFXJgOuLaYrFnCi+hGv61xOQp4AVAADRzMttfcSo+f3J7mbdBSzfUlayw
-         93AMg+aDkBAr0FhHvcqoZ93pZ4UEhXB5zofwgiZt28diiPGrGZOaPHnnZJyuq1hZfocL
-         co0MS257VRaO+eLj+wolOeMrbfvxNdu/ApbzDZmJ0mOm5ap99U6pMUr0VOgRXK1kmu8n
-         pTJDytutrEOEApkyk9PyNbGCqOFF5ReGg9pJWgJ2uAdtUQO/SLVNQYx0B0ZEoBbC2ZVW
-         ehJFIMrGzSV1vdWqopQIYc6k6Qv/Gb5Ihwi+1y5HkiD2cbX4slf1OFmwe4ydUElHqi+q
-         Dzhw==
-X-Gm-Message-State: AOAM531iJIf5WlkNGsyHBU8mMxe4s1ykR9cH1iHFv1c2IqBqrVYaovf3
-        umb3Yfni+aZRas7h58aecO/DaidIGIfSuwRQrugGkJ6lohiJ
-X-Google-Smtp-Source: ABdhPJwKIbZpsvpXV+5Ek9wHgpR6MvEdpzwlMpofnHIEydYavIzgAr+goB0Sh77D4pLypL9fiFObLqRjAuesafDVFtmcTwHhFk0n
+        id S1729409AbgGFPSj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 6 Jul 2020 11:18:39 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:56343 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729254AbgGFPSi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 11:18:38 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-499-joU4YiTuNIqyV6XCMwJx_w-1; Mon, 06 Jul 2020 11:18:31 -0400
+X-MC-Unique: joU4YiTuNIqyV6XCMwJx_w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F3347800415;
+        Mon,  6 Jul 2020 15:18:30 +0000 (UTC)
+Received: from hog.localdomain, (unknown [10.40.192.208])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B479D71669;
+        Mon,  6 Jul 2020 15:18:29 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     Sabrina Dubroca <sd@queasysnail.net>,
+        Stefano Brivio <sbrivio@redhat.com>
+Subject: [PATCH net-next] geneve: move all configuration under struct geneve_config
+Date:   Mon,  6 Jul 2020 17:18:08 +0200
+Message-Id: <0e05d6eb47238c62282bc9862d0607c41adc9330.1594046961.git.sd@queasysnail.net>
 MIME-Version: 1.0
-X-Received: by 2002:a92:c530:: with SMTP id m16mr31740900ili.300.1594048343040;
- Mon, 06 Jul 2020 08:12:23 -0700 (PDT)
-Date:   Mon, 06 Jul 2020 08:12:23 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003dea2205a9c74d50@google.com>
-Subject: INFO: task hung in pcpu_alloc
-From:   syzbot <syzbot+9b3b388c8ccd4c8bae92@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        netdev@vger.kernel.org, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This patch adds a new structure geneve_config and moves the per-device
+configuration attributes to it, like we already have in VXLAN with
+struct vxlan_config. This ends up being pretty invasive since those
+attributes are used everywhere.
 
-syzbot found the following crash on:
+This allows us to clean up the argument lists for geneve_configure (4
+arguments instead of 8) and geneve_nl2info (5 instead of 9).
 
-HEAD commit:    caffb99b Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11df10ee100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b3368ce0cc5f5ace
-dashboard link: https://syzkaller.appspot.com/bug?extid=9b3b388c8ccd4c8bae92
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+This also reduces the copy-paste of code setting those attributes
+between geneve_configure and geneve_changelink to a single memcpy,
+which would have avoided the bug fixed in commit
+56c09de347e4 ("geneve: allow changing DF behavior after creation").
 
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+9b3b388c8ccd4c8bae92@syzkaller.appspotmail.com
-
-INFO: task syz-executor.1:28515 blocked for more than 143 seconds.
-      Not tainted 5.7.0-rc6-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor.1  D28392 28515   7206 0x00000004
-Call Trace:
- context_switch kernel/sched/core.c:3367 [inline]
- __schedule+0x937/0x1ff0 kernel/sched/core.c:4083
- rwsem_down_write_slowpath+0x90a/0xf90 kernel/locking/rwsem.c:1216
- __sched_text_start+0x8/0x8
- schedule+0xd0/0x2a0 kernel/sched/core.c:4158
- rwsem_down_write_slowpath+0x706/0xf90 kernel/locking/rwsem.c:1235
- pcpu_alloc+0xfed/0x13b0 mm/percpu.c:1703
- rwsem_mark_wake+0x8d0/0x8d0 include/linux/compiler.h:199
- lock_acquire+0x1f2/0x8f0 kernel/locking/lockdep.c:4934
- register_netdevice_notifier+0x1e/0x270 net/core/dev.c:1729
- lock_release+0x800/0x800 kernel/locking/lockdep.c:4689
- __down_write kernel/locking/rwsem.c:1389 [inline]
- down_write+0x137/0x150 kernel/locking/rwsem.c:1532
- atomic64_try_cmpxchg include/asm-generic/atomic-instrumented.h:1504 [inline]
- atomic_long_try_cmpxchg_acquire include/asm-generic/atomic-long.h:442 [inline]
- __down_write kernel/locking/rwsem.c:1387 [inline]
- down_write+0xb2/0x150 kernel/locking/rwsem.c:1532
- __down_write kernel/locking/rwsem.c:1389 [inline]
- down_write+0x137/0x150 kernel/locking/rwsem.c:1532
- __down_timeout+0x2d0/0x2d0
- pcpu_alloc+0x128/0x13b0 mm/percpu.c:1740
- register_netdevice_notifier+0x1e/0x270 net/core/dev.c:1729
- raw_init+0x296/0x340 net/can/raw.c:339
- raw_sock_no_ioctlcmd+0x10/0x10 net/can/raw.c:843
- can_create+0x27c/0x500 net/can/af_can.c:168
- __sock_create+0x3cb/0x730 net/socket.c:1433
- sock_create net/socket.c:1484 [inline]
- __sys_socket+0xef/0x200 net/socket.c:1526
- move_addr_to_kernel+0x70/0x70 net/socket.c:195
- __do_sys_clock_gettime kernel/time/posix-timers.c:1094 [inline]
- __se_sys_clock_gettime kernel/time/posix-timers.c:1082 [inline]
- __x64_sys_clock_gettime+0x165/0x240 kernel/time/posix-timers.c:1082
- __ia32_sys_clock_settime+0x260/0x260 kernel/time/posix-timers.c:1410
- trace_hardirqs_off_caller+0x55/0x230 kernel/trace/trace_preemptirq.c:73
- __do_sys_socket net/socket.c:1535 [inline]
- __se_sys_socket net/socket.c:1533 [inline]
- __x64_sys_socket+0x6f/0xb0 net/socket.c:1533
- __trace_hardirqs_on_caller kernel/locking/lockdep.c:3657 [inline]
- lockdep_hardirqs_on+0x463/0x620 kernel/locking/lockdep.c:3702
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-INFO: task syz-executor.1:28577 blocked for more than 143 seconds.
-      Not tainted 5.7.0-rc6-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor.1  D28392 28577   7206 0x00000004
-Call Trace:
- context_switch kernel/sched/core.c:3367 [inline]
- __schedule+0x937/0x1ff0 kernel/sched/core.c:4083
- rwsem_down_write_slowpath+0x90a/0xf90 kernel/locking/rwsem.c:1216
- __sched_text_start+0x8/0x8
- schedule+0xd0/0x2a0 kernel/sched/core.c:4158
- rwsem_down_write_slowpath+0x706/0xf90 kernel/locking/rwsem.c:1235
- pcpu_alloc+0xfed/0x13b0 mm/percpu.c:1703
- rwsem_mark_wake+0x8d0/0x8d0 include/linux/compiler.h:199
- lock_acquire+0x1f2/0x8f0 kernel/locking/lockdep.c:4934
- register_netdevice_notifier+0x1e/0x270 net/core/dev.c:1729
- lock_release+0x800/0x800 kernel/locking/lockdep.c:4689
- __down_write kernel/locking/rwsem.c:1389 [inline]
- down_write+0x137/0x150 kernel/locking/rwsem.c:1532
- atomic64_try_cmpxchg include/asm-generic/atomic-instrumented.h:1504 [inline]
- atomic_long_try_cmpxchg_acquire include/asm-generic/atomic-long.h:442 [inline]
- __down_write kernel/locking/rwsem.c:1387 [inline]
- down_write+0xb2/0x150 kernel/locking/rwsem.c:1532
- __down_write kernel/locking/rwsem.c:1389 [inline]
- down_write+0x137/0x150 kernel/locking/rwsem.c:1532
- __down_timeout+0x2d0/0x2d0
- pcpu_alloc+0x128/0x13b0 mm/percpu.c:1740
- register_netdevice_notifier+0x1e/0x270 net/core/dev.c:1729
- raw_init+0x296/0x340 net/can/raw.c:339
- raw_sock_no_ioctlcmd+0x10/0x10 net/can/raw.c:843
- can_create+0x27c/0x500 net/can/af_can.c:168
- __sock_create+0x3cb/0x730 net/socket.c:1433
- sock_create net/socket.c:1484 [inline]
- __sys_socket+0xef/0x200 net/socket.c:1526
- move_addr_to_kernel+0x70/0x70 net/socket.c:195
- __do_sys_clock_gettime kernel/time/posix-timers.c:1094 [inline]
- __se_sys_clock_gettime kernel/time/posix-timers.c:1082 [inline]
- __x64_sys_clock_gettime+0x165/0x240 kernel/time/posix-timers.c:1082
- __ia32_sys_clock_settime+0x260/0x260 kernel/time/posix-timers.c:1410
- trace_hardirqs_off_caller+0x55/0x230 kernel/trace/trace_preemptirq.c:73
- __do_sys_socket net/socket.c:1535 [inline]
- __se_sys_socket net/socket.c:1533 [inline]
- __x64_sys_socket+0x6f/0xb0 net/socket.c:1533
- __trace_hardirqs_on_caller kernel/locking/lockdep.c:3657 [inline]
- lockdep_hardirqs_on+0x463/0x620 kernel/locking/lockdep.c:3702
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-
-Showing all locks held in the system:
-3 locks held by kworker/u4:0/7:
- #0: ffff8880ae637998 (&rq->lock){-.-.}-{2:2}, at: newidle_balance+0x9be/0xdb0 kernel/sched/fair.c:10512
- #1: ffffffff899bea80 (rcu_read_lock){....}-{1:2}, at: __update_idle_core+0x42/0x3e0 kernel/sched/fair.c:5969
- #2: ffff8880ae627598 (&base->lock){-.-.}-{2:2}, at: lock_timer_base+0x55/0x1a0 kernel/time/timer.c:936
-1 lock held by khungtaskd/1131:
- #0: ffffffff899bea80 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:5754
-1 lock held by in:imklog/6746:
- #0: ffff8880a68f8bb0 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:826
-2 locks held by agetty/6968:
- #0: ffff88809fe6f098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:267
- #1: ffffc90000fb42e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0x220/0x1b30 drivers/tty/n_tty.c:2156
-3 locks held by kworker/u4:1/3824:
- #0: ffff8880a9771938 ((wq_completion)netns){+.+.}-{0:0}, at: __write_once_size include/linux/compiler.h:226 [inline]
- #0: ffff8880a9771938 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8880a9771938 ((wq_completion)netns){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:855 [inline]
- #0: ffff8880a9771938 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:40 [inline]
- #0: ffff8880a9771938 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:615 [inline]
- #0: ffff8880a9771938 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:642 [inline]
- #0: ffff8880a9771938 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x844/0x16a0 kernel/workqueue.c:2239
- #1: ffffc90007defdc0 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x878/0x16a0 kernel/workqueue.c:2243
- #2: ffffffff8a57aaf0 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xa50 net/core/net_namespace.c:565
-1 lock held by syz-executor.1/28515:
- #0: ffffffff8a57aaf0 (pernet_ops_rwsem){++++}-{3:3}, at: register_netdevice_notifier+0x1e/0x270 net/core/dev.c:1729
-1 lock held by syz-executor.1/28577:
- #0: ffffffff8a57aaf0 (pernet_ops_rwsem){++++}-{3:3}, at: register_netdevice_notifier+0x1e/0x270 net/core/dev.c:1729
-
-=============================================
-
-NMI backtrace for cpu 1
-CPU: 1 PID: 1131 Comm: khungtaskd Not tainted 5.7.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
- lapic_can_unplug_cpu.cold+0x3b/0x3b
- nmi_trigger_cpumask_backtrace+0x231/0x27e lib/nmi_backtrace.c:62
- trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
- check_hung_uninterruptible_tasks kernel/hung_task.c:205 [inline]
- watchdog+0xa8c/0x1010 kernel/hung_task.c:289
- reset_hung_task_detector+0x30/0x30 kernel/hung_task.c:243
- kthread+0x388/0x470 kernel/kthread.c:268
- kthread_mod_delayed_work+0x1a0/0x1a0 kernel/kthread.c:1090
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:351
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 PID: 4128 Comm: systemd-journal Not tainted 5.7.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__debug_check_no_obj_freed lib/debugobjects.c:958 [inline]
-RIP: 0010:debug_check_no_obj_freed+0x107/0x449 lib/debugobjects.c:998
-Code: 10 4c 8b 38 4d 85 ff 0f 84 26 02 00 00 31 ed 4c 89 f8 48 c1 e8 03 80 3c 18 00 0f 85 2d 02 00 00 49 8d 7f 18 83 c5 01 4d 8b 27 <48> 89 f8 48 c1 e8 03 80 3c 18 00 0f 85 29 02 00 00 4d 8b 77 18 4c
-RSP: 0018:ffffc90001677bf0 EFLAGS: 00000006
-RAX: 1ffff1101225c9ab RBX: dffffc0000000000 RCX: ffffffff815a8709
-RDX: 1ffffffff19128ff RSI: 0000000000000082 RDI: ffff8880912e4d70
-RBP: 0000000000000005 R08: 0000000000000004 R09: fffff520002cef6d
-R10: 0000000000000003 R11: fffff520002cef6c R12: ffff888050a8bbd0
-R13: ffffffff8c8947e8 R14: ffff88820550e8e8 R15: ffff8880912e4d58
-FS:  00007f9721f0e8c0(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f971f87e000 CR3: 0000000093734000 CR4: 00000000001426f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- kmem_cache_free+0x185/0x320 mm/slab.c:3693
- putname+0xe1/0x120 fs/namei.c:259
- filename_lookup+0x282/0x3e0 fs/namei.c:2362
- nd_jump_link+0x360/0x360 fs/namei.c:895
- __phys_addr_symbol+0x2c/0x70 arch/x86/mm/physaddr.c:42
- overlaps mm/usercopy.c:110 [inline]
- check_kernel_text_object mm/usercopy.c:142 [inline]
- __check_object_size mm/usercopy.c:289 [inline]
- __check_object_size+0x171/0x437 mm/usercopy.c:256
- audit_getname include/linux/audit.h:328 [inline]
- getname_flags fs/namei.c:202 [inline]
- getname_flags+0x275/0x5b0 fs/namei.c:128
- security_prepare_creds+0xee/0x180 security/security.c:1604
- user_path_at include/linux/namei.h:59 [inline]
- do_faccessat+0x248/0x7a0 fs/open.c:398
- __ia32_sys_fallocate+0xf0/0xf0 fs/open.c:338
- trace_hardirqs_off_caller+0x55/0x230 kernel/trace/trace_preemptirq.c:73
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x7f97211ca9c7
-Code: 83 c4 08 48 3d 01 f0 ff ff 73 01 c3 48 8b 0d c8 d4 2b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 b8 15 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d a1 d4 2b 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffe13203578 EFLAGS: 00000246 ORIG_RAX: 0000000000000015
-RAX: ffffffffffffffda RBX: 00007ffe13206490 RCX: 00007f97211ca9c7
-RDX: 00007f9721c3ba00 RSI: 0000000000000000 RDI: 000056391a37a9a3
-RBP: 00007ffe132035b0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000069 R11: 0000000000000246 R12: 0000000000000000
-R13: 0000000000000000 R14: 00007ffe13206490 R15: 00007ffe13203aa0
-
-
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/net/geneve.c | 185 ++++++++++++++++++++-----------------------
+ 1 file changed, 87 insertions(+), 98 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index 4661ef865807..e3d074008da2 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -48,6 +48,14 @@ struct geneve_dev_node {
+ 	struct geneve_dev *geneve;
+ };
+ 
++struct geneve_config {
++	struct ip_tunnel_info	info;
++	bool			collect_md;
++	bool			use_udp6_rx_checksums;
++	bool			ttl_inherit;
++	enum ifla_geneve_df	df;
++};
++
+ /* Pseudo network device */
+ struct geneve_dev {
+ 	struct geneve_dev_node hlist4;	/* vni hash table for IPv4 socket */
+@@ -56,17 +64,13 @@ struct geneve_dev {
+ #endif
+ 	struct net	   *net;	/* netns for packet i/o */
+ 	struct net_device  *dev;	/* netdev for geneve tunnel */
+-	struct ip_tunnel_info info;
+ 	struct geneve_sock __rcu *sock4;	/* IPv4 socket used for geneve tunnel */
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	struct geneve_sock __rcu *sock6;	/* IPv6 socket used for geneve tunnel */
+ #endif
+ 	struct list_head   next;	/* geneve's per namespace list */
+ 	struct gro_cells   gro_cells;
+-	bool		   collect_md;
+-	bool		   use_udp6_rx_checksums;
+-	bool		   ttl_inherit;
+-	enum ifla_geneve_df df;
++	struct geneve_config cfg;
+ };
+ 
+ struct geneve_sock {
+@@ -132,8 +136,8 @@ static struct geneve_dev *geneve_lookup(struct geneve_sock *gs,
+ 	hash = geneve_net_vni_hash(vni);
+ 	vni_list_head = &gs->vni_list[hash];
+ 	hlist_for_each_entry_rcu(node, vni_list_head, hlist) {
+-		if (eq_tun_id_and_vni((u8 *)&node->geneve->info.key.tun_id, vni) &&
+-		    addr == node->geneve->info.key.u.ipv4.dst)
++		if (eq_tun_id_and_vni((u8 *)&node->geneve->cfg.info.key.tun_id, vni) &&
++		    addr == node->geneve->cfg.info.key.u.ipv4.dst)
+ 			return node->geneve;
+ 	}
+ 	return NULL;
+@@ -151,8 +155,8 @@ static struct geneve_dev *geneve6_lookup(struct geneve_sock *gs,
+ 	hash = geneve_net_vni_hash(vni);
+ 	vni_list_head = &gs->vni_list[hash];
+ 	hlist_for_each_entry_rcu(node, vni_list_head, hlist) {
+-		if (eq_tun_id_and_vni((u8 *)&node->geneve->info.key.tun_id, vni) &&
+-		    ipv6_addr_equal(&addr6, &node->geneve->info.key.u.ipv6.dst))
++		if (eq_tun_id_and_vni((u8 *)&node->geneve->cfg.info.key.tun_id, vni) &&
++		    ipv6_addr_equal(&addr6, &node->geneve->cfg.info.key.u.ipv6.dst))
+ 			return node->geneve;
+ 	}
+ 	return NULL;
+@@ -321,7 +325,7 @@ static int geneve_init(struct net_device *dev)
+ 		return err;
+ 	}
+ 
+-	err = dst_cache_init(&geneve->info.dst_cache, GFP_KERNEL);
++	err = dst_cache_init(&geneve->cfg.info.dst_cache, GFP_KERNEL);
+ 	if (err) {
+ 		free_percpu(dev->tstats);
+ 		gro_cells_destroy(&geneve->gro_cells);
+@@ -334,7 +338,7 @@ static void geneve_uninit(struct net_device *dev)
+ {
+ 	struct geneve_dev *geneve = netdev_priv(dev);
+ 
+-	dst_cache_destroy(&geneve->info.dst_cache);
++	dst_cache_destroy(&geneve->cfg.info.dst_cache);
+ 	gro_cells_destroy(&geneve->gro_cells);
+ 	free_percpu(dev->tstats);
+ }
+@@ -654,19 +658,19 @@ static int geneve_sock_add(struct geneve_dev *geneve, bool ipv6)
+ 	__u8 vni[3];
+ 	__u32 hash;
+ 
+-	gs = geneve_find_sock(gn, ipv6 ? AF_INET6 : AF_INET, geneve->info.key.tp_dst);
++	gs = geneve_find_sock(gn, ipv6 ? AF_INET6 : AF_INET, geneve->cfg.info.key.tp_dst);
+ 	if (gs) {
+ 		gs->refcnt++;
+ 		goto out;
+ 	}
+ 
+-	gs = geneve_socket_create(net, geneve->info.key.tp_dst, ipv6,
+-				  geneve->use_udp6_rx_checksums);
++	gs = geneve_socket_create(net, geneve->cfg.info.key.tp_dst, ipv6,
++				  geneve->cfg.use_udp6_rx_checksums);
+ 	if (IS_ERR(gs))
+ 		return PTR_ERR(gs);
+ 
+ out:
+-	gs->collect_md = geneve->collect_md;
++	gs->collect_md = geneve->cfg.collect_md;
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	if (ipv6) {
+ 		rcu_assign_pointer(geneve->sock6, gs);
+@@ -679,7 +683,7 @@ static int geneve_sock_add(struct geneve_dev *geneve, bool ipv6)
+ 	}
+ 	node->geneve = geneve;
+ 
+-	tunnel_id_to_vni(geneve->info.key.tun_id, vni);
++	tunnel_id_to_vni(geneve->cfg.info.key.tun_id, vni);
+ 	hash = geneve_net_vni_hash(vni);
+ 	hlist_add_head_rcu(&node->hlist, &gs->vni_list[hash]);
+ 	return 0;
+@@ -688,11 +692,11 @@ static int geneve_sock_add(struct geneve_dev *geneve, bool ipv6)
+ static int geneve_open(struct net_device *dev)
+ {
+ 	struct geneve_dev *geneve = netdev_priv(dev);
+-	bool metadata = geneve->collect_md;
++	bool metadata = geneve->cfg.collect_md;
+ 	bool ipv4, ipv6;
+ 	int ret = 0;
+ 
+-	ipv6 = geneve->info.mode & IP_TUNNEL_INFO_IPV6 || metadata;
++	ipv6 = geneve->cfg.info.mode & IP_TUNNEL_INFO_IPV6 || metadata;
+ 	ipv4 = !ipv6 || metadata;
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	if (ipv6) {
+@@ -791,7 +795,7 @@ static struct rtable *geneve_get_v4_rt(struct sk_buff *skb,
+ 	fl4->saddr = info->key.u.ipv4.src;
+ 
+ 	tos = info->key.tos;
+-	if ((tos == 1) && !geneve->collect_md) {
++	if ((tos == 1) && !geneve->cfg.collect_md) {
+ 		tos = ip_tunnel_get_dsfield(ip_hdr(skb), skb);
+ 		use_cache = false;
+ 	}
+@@ -840,7 +844,7 @@ static struct dst_entry *geneve_get_v6_dst(struct sk_buff *skb,
+ 	fl6->daddr = info->key.u.ipv6.dst;
+ 	fl6->saddr = info->key.u.ipv6.src;
+ 	prio = info->key.tos;
+-	if ((prio == 1) && !geneve->collect_md) {
++	if ((prio == 1) && !geneve->cfg.collect_md) {
+ 		prio = ip_tunnel_get_dsfield(ip_hdr(skb), skb);
+ 		use_cache = false;
+ 	}
+@@ -893,22 +897,22 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 			      GENEVE_IPV4_HLEN + info->options_len);
+ 
+ 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
+-	if (geneve->collect_md) {
++	if (geneve->cfg.collect_md) {
+ 		tos = ip_tunnel_ecn_encap(key->tos, ip_hdr(skb), skb);
+ 		ttl = key->ttl;
+ 
+ 		df = key->tun_flags & TUNNEL_DONT_FRAGMENT ? htons(IP_DF) : 0;
+ 	} else {
+ 		tos = ip_tunnel_ecn_encap(fl4.flowi4_tos, ip_hdr(skb), skb);
+-		if (geneve->ttl_inherit)
++		if (geneve->cfg.ttl_inherit)
+ 			ttl = ip_tunnel_get_ttl(ip_hdr(skb), skb);
+ 		else
+ 			ttl = key->ttl;
+ 		ttl = ttl ? : ip4_dst_hoplimit(&rt->dst);
+ 
+-		if (geneve->df == GENEVE_DF_SET) {
++		if (geneve->cfg.df == GENEVE_DF_SET) {
+ 			df = htons(IP_DF);
+-		} else if (geneve->df == GENEVE_DF_INHERIT) {
++		} else if (geneve->cfg.df == GENEVE_DF_INHERIT) {
+ 			struct ethhdr *eth = eth_hdr(skb);
+ 
+ 			if (ntohs(eth->h_proto) == ETH_P_IPV6) {
+@@ -927,7 +931,7 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 		return err;
+ 
+ 	udp_tunnel_xmit_skb(rt, gs4->sock->sk, skb, fl4.saddr, fl4.daddr,
+-			    tos, ttl, df, sport, geneve->info.key.tp_dst,
++			    tos, ttl, df, sport, geneve->cfg.info.key.tp_dst,
+ 			    !net_eq(geneve->net, dev_net(geneve->dev)),
+ 			    !(info->key.tun_flags & TUNNEL_CSUM));
+ 	return 0;
+@@ -954,13 +958,13 @@ static int geneve6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 	skb_tunnel_check_pmtu(skb, dst, GENEVE_IPV6_HLEN + info->options_len);
+ 
+ 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
+-	if (geneve->collect_md) {
++	if (geneve->cfg.collect_md) {
+ 		prio = ip_tunnel_ecn_encap(key->tos, ip_hdr(skb), skb);
+ 		ttl = key->ttl;
+ 	} else {
+ 		prio = ip_tunnel_ecn_encap(ip6_tclass(fl6.flowlabel),
+ 					   ip_hdr(skb), skb);
+-		if (geneve->ttl_inherit)
++		if (geneve->cfg.ttl_inherit)
+ 			ttl = ip_tunnel_get_ttl(ip_hdr(skb), skb);
+ 		else
+ 			ttl = key->ttl;
+@@ -972,7 +976,7 @@ static int geneve6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 
+ 	udp_tunnel6_xmit_skb(dst, gs6->sock->sk, skb, dev,
+ 			     &fl6.saddr, &fl6.daddr, prio, ttl,
+-			     info->key.label, sport, geneve->info.key.tp_dst,
++			     info->key.label, sport, geneve->cfg.info.key.tp_dst,
+ 			     !(info->key.tun_flags & TUNNEL_CSUM));
+ 	return 0;
+ }
+@@ -984,7 +988,7 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct ip_tunnel_info *info = NULL;
+ 	int err;
+ 
+-	if (geneve->collect_md) {
++	if (geneve->cfg.collect_md) {
+ 		info = skb_tunnel_info(skb);
+ 		if (unlikely(!info || !(info->mode & IP_TUNNEL_INFO_TX))) {
+ 			netdev_dbg(dev, "no tunnel metadata\n");
+@@ -993,7 +997,7 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			return NETDEV_TX_OK;
+ 		}
+ 	} else {
+-		info = &geneve->info;
++		info = &geneve->cfg.info;
+ 	}
+ 
+ 	rcu_read_lock();
+@@ -1065,7 +1069,7 @@ static int geneve_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
+ 
+ 	info->key.tp_src = udp_flow_src_port(geneve->net, skb,
+ 					     1, USHRT_MAX, true);
+-	info->key.tp_dst = geneve->info.key.tp_dst;
++	info->key.tp_dst = geneve->cfg.info.key.tp_dst;
+ 	return 0;
+ }
+ 
+@@ -1227,13 +1231,13 @@ static struct geneve_dev *geneve_find_dev(struct geneve_net *gn,
+ 	*tun_on_same_port = false;
+ 	*tun_collect_md = false;
+ 	list_for_each_entry(geneve, &gn->geneve_list, next) {
+-		if (info->key.tp_dst == geneve->info.key.tp_dst) {
+-			*tun_collect_md = geneve->collect_md;
++		if (info->key.tp_dst == geneve->cfg.info.key.tp_dst) {
++			*tun_collect_md = geneve->cfg.collect_md;
+ 			*tun_on_same_port = true;
+ 		}
+-		if (info->key.tun_id == geneve->info.key.tun_id &&
+-		    info->key.tp_dst == geneve->info.key.tp_dst &&
+-		    !memcmp(&info->key.u, &geneve->info.key.u, sizeof(info->key.u)))
++		if (info->key.tun_id == geneve->cfg.info.key.tun_id &&
++		    info->key.tp_dst == geneve->cfg.info.key.tp_dst &&
++		    !memcmp(&info->key.u, &geneve->cfg.info.key.u, sizeof(info->key.u)))
+ 			t = geneve;
+ 	}
+ 	return t;
+@@ -1257,16 +1261,15 @@ static bool geneve_dst_addr_equal(struct ip_tunnel_info *a,
+ 
+ static int geneve_configure(struct net *net, struct net_device *dev,
+ 			    struct netlink_ext_ack *extack,
+-			    const struct ip_tunnel_info *info,
+-			    bool metadata, bool ipv6_rx_csum,
+-			    bool ttl_inherit, enum ifla_geneve_df df)
++			    const struct geneve_config *cfg)
+ {
+ 	struct geneve_net *gn = net_generic(net, geneve_net_id);
+ 	struct geneve_dev *t, *geneve = netdev_priv(dev);
++	const struct ip_tunnel_info *info = &cfg->info;
+ 	bool tun_collect_md, tun_on_same_port;
+ 	int err, encap_len;
+ 
+-	if (metadata && !is_tnl_info_zero(info)) {
++	if (cfg->collect_md && !is_tnl_info_zero(info)) {
+ 		NL_SET_ERR_MSG(extack,
+ 			       "Device is externally controlled, so attributes (VNI, Port, and so on) must not be specified");
+ 		return -EINVAL;
+@@ -1281,7 +1284,7 @@ static int geneve_configure(struct net *net, struct net_device *dev,
+ 
+ 	/* make enough headroom for basic scenario */
+ 	encap_len = GENEVE_BASE_HLEN + ETH_HLEN;
+-	if (!metadata && ip_tunnel_info_af(info) == AF_INET) {
++	if (!cfg->collect_md && ip_tunnel_info_af(info) == AF_INET) {
+ 		encap_len += sizeof(struct iphdr);
+ 		dev->max_mtu -= sizeof(struct iphdr);
+ 	} else {
+@@ -1290,7 +1293,7 @@ static int geneve_configure(struct net *net, struct net_device *dev,
+ 	}
+ 	dev->needed_headroom = encap_len + ETH_HLEN;
+ 
+-	if (metadata) {
++	if (cfg->collect_md) {
+ 		if (tun_on_same_port) {
+ 			NL_SET_ERR_MSG(extack,
+ 				       "There can be only one externally controlled device on a destination port");
+@@ -1304,12 +1307,8 @@ static int geneve_configure(struct net *net, struct net_device *dev,
+ 		}
+ 	}
+ 
+-	dst_cache_reset(&geneve->info.dst_cache);
+-	geneve->info = *info;
+-	geneve->collect_md = metadata;
+-	geneve->use_udp6_rx_checksums = ipv6_rx_csum;
+-	geneve->ttl_inherit = ttl_inherit;
+-	geneve->df = df;
++	dst_cache_reset(&geneve->cfg.info.dst_cache);
++	memcpy(&geneve->cfg, cfg, sizeof(*cfg));
+ 
+ 	err = register_netdevice(dev);
+ 	if (err)
+@@ -1327,11 +1326,10 @@ static void init_tnl_info(struct ip_tunnel_info *info, __u16 dst_port)
+ 
+ static int geneve_nl2info(struct nlattr *tb[], struct nlattr *data[],
+ 			  struct netlink_ext_ack *extack,
+-			  struct ip_tunnel_info *info, bool *metadata,
+-			  bool *use_udp6_rx_checksums, bool *ttl_inherit,
+-			  enum ifla_geneve_df *df, bool changelink)
++			  struct geneve_config *cfg, bool changelink)
+ {
+ 	int attrtype;
++	struct ip_tunnel_info *info = &cfg->info;
+ 
+ 	if (data[IFLA_GENEVE_REMOTE] && data[IFLA_GENEVE_REMOTE6]) {
+ 		NL_SET_ERR_MSG(extack,
+@@ -1378,7 +1376,7 @@ static int geneve_nl2info(struct nlattr *tb[], struct nlattr *data[],
+ 			return -EINVAL;
+ 		}
+ 		info->key.tun_flags |= TUNNEL_CSUM;
+-		*use_udp6_rx_checksums = true;
++		cfg->use_udp6_rx_checksums = true;
+ #else
+ 		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_GENEVE_REMOTE6],
+ 				    "IPv6 support not enabled in the kernel");
+@@ -1406,19 +1404,19 @@ static int geneve_nl2info(struct nlattr *tb[], struct nlattr *data[],
+ 
+ 	if (data[IFLA_GENEVE_TTL_INHERIT]) {
+ 		if (nla_get_u8(data[IFLA_GENEVE_TTL_INHERIT]))
+-			*ttl_inherit = true;
++			cfg->ttl_inherit = true;
+ 		else
+-			*ttl_inherit = false;
++			cfg->ttl_inherit = false;
+ 	} else if (data[IFLA_GENEVE_TTL]) {
+ 		info->key.ttl = nla_get_u8(data[IFLA_GENEVE_TTL]);
+-		*ttl_inherit = false;
++		cfg->ttl_inherit = false;
+ 	}
+ 
+ 	if (data[IFLA_GENEVE_TOS])
+ 		info->key.tos = nla_get_u8(data[IFLA_GENEVE_TOS]);
+ 
+ 	if (data[IFLA_GENEVE_DF])
+-		*df = nla_get_u8(data[IFLA_GENEVE_DF]);
++		cfg->df = nla_get_u8(data[IFLA_GENEVE_DF]);
+ 
+ 	if (data[IFLA_GENEVE_LABEL]) {
+ 		info->key.label = nla_get_be32(data[IFLA_GENEVE_LABEL]) &
+@@ -1443,7 +1441,7 @@ static int geneve_nl2info(struct nlattr *tb[], struct nlattr *data[],
+ 			attrtype = IFLA_GENEVE_COLLECT_METADATA;
+ 			goto change_notsup;
+ 		}
+-		*metadata = true;
++		cfg->collect_md = true;
+ 	}
+ 
+ 	if (data[IFLA_GENEVE_UDP_CSUM]) {
+@@ -1477,7 +1475,7 @@ static int geneve_nl2info(struct nlattr *tb[], struct nlattr *data[],
+ 			goto change_notsup;
+ 		}
+ 		if (nla_get_u8(data[IFLA_GENEVE_UDP_ZERO_CSUM6_RX]))
+-			*use_udp6_rx_checksums = false;
++			cfg->use_udp6_rx_checksums = false;
+ #else
+ 		NL_SET_ERR_MSG_ATTR(extack, data[IFLA_GENEVE_UDP_ZERO_CSUM6_RX],
+ 				    "IPv6 support not enabled in the kernel");
+@@ -1542,25 +1540,24 @@ static int geneve_newlink(struct net *net, struct net_device *dev,
+ 			  struct nlattr *tb[], struct nlattr *data[],
+ 			  struct netlink_ext_ack *extack)
+ {
+-	enum ifla_geneve_df df = GENEVE_DF_UNSET;
+-	bool use_udp6_rx_checksums = false;
+-	struct ip_tunnel_info info;
+-	bool ttl_inherit = false;
+-	bool metadata = false;
++	struct geneve_config cfg = {
++		.df = GENEVE_DF_UNSET,
++		.use_udp6_rx_checksums = false,
++		.ttl_inherit = false,
++		.collect_md = false,
++	};
+ 	int err;
+ 
+-	init_tnl_info(&info, GENEVE_UDP_PORT);
+-	err = geneve_nl2info(tb, data, extack, &info, &metadata,
+-			     &use_udp6_rx_checksums, &ttl_inherit, &df, false);
++	init_tnl_info(&cfg.info, GENEVE_UDP_PORT);
++	err = geneve_nl2info(tb, data, extack, &cfg, false);
+ 	if (err)
+ 		return err;
+ 
+-	err = geneve_configure(net, dev, extack, &info, metadata,
+-			       use_udp6_rx_checksums, ttl_inherit, df);
++	err = geneve_configure(net, dev, extack, &cfg);
+ 	if (err)
+ 		return err;
+ 
+-	geneve_link_config(dev, &info, tb);
++	geneve_link_config(dev, &cfg.info, tb);
+ 
+ 	return 0;
+ }
+@@ -1616,40 +1613,28 @@ static int geneve_changelink(struct net_device *dev, struct nlattr *tb[],
+ {
+ 	struct geneve_dev *geneve = netdev_priv(dev);
+ 	struct geneve_sock *gs4, *gs6;
+-	struct ip_tunnel_info info;
+-	bool metadata;
+-	bool use_udp6_rx_checksums;
+-	enum ifla_geneve_df df;
+-	bool ttl_inherit;
++	struct geneve_config cfg;
+ 	int err;
+ 
+ 	/* If the geneve device is configured for metadata (or externally
+ 	 * controlled, for example, OVS), then nothing can be changed.
+ 	 */
+-	if (geneve->collect_md)
++	if (geneve->cfg.collect_md)
+ 		return -EOPNOTSUPP;
+ 
+ 	/* Start with the existing info. */
+-	memcpy(&info, &geneve->info, sizeof(info));
+-	metadata = geneve->collect_md;
+-	use_udp6_rx_checksums = geneve->use_udp6_rx_checksums;
+-	ttl_inherit = geneve->ttl_inherit;
+-	err = geneve_nl2info(tb, data, extack, &info, &metadata,
+-			     &use_udp6_rx_checksums, &ttl_inherit, &df, true);
++	memcpy(&cfg, &geneve->cfg, sizeof(cfg));
++	err = geneve_nl2info(tb, data, extack, &cfg, true);
+ 	if (err)
+ 		return err;
+ 
+-	if (!geneve_dst_addr_equal(&geneve->info, &info)) {
+-		dst_cache_reset(&info.dst_cache);
+-		geneve_link_config(dev, &info, tb);
++	if (!geneve_dst_addr_equal(&geneve->cfg.info, &cfg.info)) {
++		dst_cache_reset(&cfg.info.dst_cache);
++		geneve_link_config(dev, &cfg.info, tb);
+ 	}
+ 
+ 	geneve_quiesce(geneve, &gs4, &gs6);
+-	geneve->info = info;
+-	geneve->collect_md = metadata;
+-	geneve->use_udp6_rx_checksums = use_udp6_rx_checksums;
+-	geneve->ttl_inherit = ttl_inherit;
+-	geneve->df = df;
++	memcpy(&geneve->cfg, &cfg, sizeof(cfg));
+ 	geneve_unquiesce(geneve, gs4, gs6);
+ 
+ 	return 0;
+@@ -1683,9 +1668,9 @@ static size_t geneve_get_size(const struct net_device *dev)
+ static int geneve_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ {
+ 	struct geneve_dev *geneve = netdev_priv(dev);
+-	struct ip_tunnel_info *info = &geneve->info;
+-	bool ttl_inherit = geneve->ttl_inherit;
+-	bool metadata = geneve->collect_md;
++	struct ip_tunnel_info *info = &geneve->cfg.info;
++	bool ttl_inherit = geneve->cfg.ttl_inherit;
++	bool metadata = geneve->cfg.collect_md;
+ 	__u8 tmp_vni[3];
+ 	__u32 vni;
+ 
+@@ -1718,7 +1703,7 @@ static int geneve_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 	    nla_put_be32(skb, IFLA_GENEVE_LABEL, info->key.label))
+ 		goto nla_put_failure;
+ 
+-	if (nla_put_u8(skb, IFLA_GENEVE_DF, geneve->df))
++	if (nla_put_u8(skb, IFLA_GENEVE_DF, geneve->cfg.df))
+ 		goto nla_put_failure;
+ 
+ 	if (nla_put_be16(skb, IFLA_GENEVE_PORT, info->key.tp_dst))
+@@ -1729,7 +1714,7 @@ static int geneve_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	if (nla_put_u8(skb, IFLA_GENEVE_UDP_ZERO_CSUM6_RX,
+-		       !geneve->use_udp6_rx_checksums))
++		       !geneve->cfg.use_udp6_rx_checksums))
+ 		goto nla_put_failure;
+ #endif
+ 
+@@ -1760,10 +1745,15 @@ struct net_device *geneve_dev_create_fb(struct net *net, const char *name,
+ 					u8 name_assign_type, u16 dst_port)
+ {
+ 	struct nlattr *tb[IFLA_MAX + 1];
+-	struct ip_tunnel_info info;
+ 	struct net_device *dev;
+ 	LIST_HEAD(list_kill);
+ 	int err;
++	struct geneve_config cfg = {
++		.df = GENEVE_DF_UNSET,
++		.use_udp6_rx_checksums = true,
++		.ttl_inherit = false,
++		.collect_md = true,
++	};
+ 
+ 	memset(tb, 0, sizeof(tb));
+ 	dev = rtnl_create_link(net, name, name_assign_type,
+@@ -1771,9 +1761,8 @@ struct net_device *geneve_dev_create_fb(struct net *net, const char *name,
+ 	if (IS_ERR(dev))
+ 		return dev;
+ 
+-	init_tnl_info(&info, dst_port);
+-	err = geneve_configure(net, dev, NULL, &info,
+-			       true, true, false, GENEVE_DF_UNSET);
++	init_tnl_info(&cfg.info, dst_port);
++	err = geneve_configure(net, dev, NULL, &cfg);
+ 	if (err) {
+ 		free_netdev(dev);
+ 		return ERR_PTR(err);
+-- 
+2.27.0
+
