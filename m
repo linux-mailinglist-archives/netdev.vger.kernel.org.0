@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AE0A215B07
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 17:44:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2769A215B05
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 17:44:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729650AbgGFPmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 11:42:43 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:38661 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729525AbgGFPmZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 11:42:25 -0400
-Received: by mail-il1-f197.google.com with SMTP id c12so25409198ilf.5
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 08:42:24 -0700 (PDT)
+        id S1729635AbgGFPmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 11:42:36 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:41373 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729606AbgGFPm1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 11:42:27 -0400
+Received: by mail-il1-f200.google.com with SMTP id k6so27961634ilg.8
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 08:42:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=DY+QZek1Wbu3XeWKS2p3CLC4ByQyovd34PXDobirkfE=;
-        b=JcB+8RCYNRxZEBF7eE0eJQVUXH/9ZFh77swZrSfpGYByRVSUvo4Z1/8XxkyEq2szyK
-         T29KbpU6tD7jd35j4cXG2lGlxShYZpadJAsFaIvRwsCLEcrxYgdhynBCd54lKbDSKscG
-         iJxr2KnXRRao9bzP79qsur8M1r5JUhK5rhdzTx5kaG5USISdZAXEjCzrCth75qRSZRds
-         kEUxsXKVHR1P669WC6kaMc46MNjOOEVTA93ulJ2bGll1vMjTUC9qvH4XPhopn8GZl72h
-         uY0Fi2rrY15hxd9MphdO5G0Fh5jjQBWLLKDxG/jR3Jzs5aqus5yRYpG8Z1fhwXdm2wbI
-         m/oA==
-X-Gm-Message-State: AOAM533PZjw7rbqjDzA8mAXjwD54utj0Kpm6fzrhE/NJXy0xxdNWT9Fz
-        0ArrFfp3BikLWkmVm/TQGki+MGY53xTPD++pxRtxyIcdbztU
-X-Google-Smtp-Source: ABdhPJzT6Hr6mNFVK0y20scXTICwcpAfAZZPTcTrLhBECpSZm3zsw3/7VTMozGtha2p+aJZOO5cG76IVoE0+FgKI0pbkwJ2ubMeb
+        bh=SdFBYNt6WtvkPpJM1KJwyhopP5DLN5qVlixPic0GYE8=;
+        b=RmrkT/hFI0rPIp3Dwcn5Q80pLPJL7r4+AGBSnY1SyYAEl31cwYyBXSyhthO2Ut3P8G
+         BIqj7S1Y8Xp3vLRgWizOct0s0lhRr0+ktegSZMU+t9yQXNfazRh7rBAHTqewDzrQH2iy
+         dSX+uaLNFQknEjbUbKhl6MUBdpOJvEyBZ4wIXMBCWbkfeMq757EnHr+ZX6WGbQDZ9P6c
+         L+6TXpYWhsbEHGBNQwSKm6Y95mqU7NKJ1Gpi/baH5c6fmTd252qkm4EGszfGoqdIT3Td
+         ggvfjEFu29TWfjCCdDtohFA4a6wQRqqrh/B6BIErhgS9vblCNe43Hhx8DWMtPSQJLENG
+         4lpw==
+X-Gm-Message-State: AOAM5314/fH4JjQ7eAlLSoxwzeTYAflPjw1zpTky/0o7Gp2giZ33JaQ+
+        Pcwi1YH1ml2SvqJmxkEU7Nb/QE2YsLNkFm8ZgQx6rMXTT4eL
+X-Google-Smtp-Source: ABdhPJzlliNiJwiXFrE9n03lcmPypZ0ktUsuHsEPSrwvQCXHlVX0zmadn0yu5pq7qrF+qsqPJwYG+EnxicKrIE4f3HZZYMuxi7bM
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:58a:: with SMTP id v10mr25963484iox.203.1594050144123;
- Mon, 06 Jul 2020 08:42:24 -0700 (PDT)
-Date:   Mon, 06 Jul 2020 08:42:24 -0700
+X-Received: by 2002:a5d:9c0e:: with SMTP id 14mr26246422ioe.109.1594050145584;
+ Mon, 06 Jul 2020 08:42:25 -0700 (PDT)
+Date:   Mon, 06 Jul 2020 08:42:25 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000983e0405a9c7b870@google.com>
-Subject: INFO: rcu detected stall in __sys_sendmsg
-From:   syzbot <syzbot+f517075b510306f61903@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
+Message-ID: <000000000000ae8d6e05a9c7b889@google.com>
+Subject: possible deadlock in dev_uc_sync
+From:   syzbot <syzbot+4a0f7bc34e3997a6c7df@syzkaller.appspotmail.com>
+To:     ap420073@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -49,90 +48,158 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    7cc2a8ea Merge tag 'block-5.8-2020-07-01' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12c4e36d100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=183dd243398ba7ec
-dashboard link: https://syzkaller.appspot.com/bug?extid=f517075b510306f61903
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f01c1f100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16c40ba7100000
+HEAD commit:    e44f65fd xen-netfront: remove redundant assignment to vari..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1741774b100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=829871134ca5e230
+dashboard link: https://syzkaller.appspot.com/bug?extid=4a0f7bc34e3997a6c7df
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+f517075b510306f61903@syzkaller.appspotmail.com
+Reported-by: syzbot+4a0f7bc34e3997a6c7df@syzkaller.appspotmail.com
 
-rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-rcu: 	0-...0: (1 GPs behind) idle=59a/1/0x4000000000000000 softirq=8266/8267 fqs=5250 
-	(detected by 1, t=10502 jiffies, g=6117, q=61)
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 PID: 6826 Comm: syz-executor019 Not tainted 5.8.0-rc3-syzkaller #0
+======================================================
+WARNING: possible circular locking dependency detected
+5.8.0-rc2-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor.3/10181 is trying to acquire lock:
+ffff8880681cc280 (&dev_addr_list_lock_key/2){+...}-{2:2}, at: netif_addr_lock_nested include/linux/netdevice.h:4243 [inline]
+ffff8880681cc280 (&dev_addr_list_lock_key/2){+...}-{2:2}, at: dev_uc_sync+0xdc/0x190 net/core/dev_addr_lists.c:640
+
+but task is already holding lock:
+ffff888069c62280 (&macvlan_netdev_addr_lock_key/1){+...}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:358 [inline]
+ffff888069c62280 (&macvlan_netdev_addr_lock_key/1){+...}-{2:2}, at: netif_addr_lock_bh include/linux/netdevice.h:4248 [inline]
+ffff888069c62280 (&macvlan_netdev_addr_lock_key/1){+...}-{2:2}, at: dev_set_rx_mode net/core/dev.c:8212 [inline]
+ffff888069c62280 (&macvlan_netdev_addr_lock_key/1){+...}-{2:2}, at: __dev_open+0x319/0x470 net/core/dev.c:1529
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #1 (&macvlan_netdev_addr_lock_key/1){+...}-{2:2}:
+       _raw_spin_lock_nested+0x30/0x40 kernel/locking/spinlock.c:361
+       netif_addr_lock_nested include/linux/netdevice.h:4243 [inline]
+       dev_uc_sync_multiple+0xdc/0x190 net/core/dev_addr_lists.c:670
+       bond_set_rx_mode+0x1ae/0x480 drivers/net/bonding/bond_main.c:3846
+       __dev_set_rx_mode+0x1ea/0x300 net/core/dev.c:8207
+       dev_mc_unsync net/core/dev_addr_lists.c:917 [inline]
+       dev_mc_unsync+0x139/0x190 net/core/dev_addr_lists.c:909
+       vlan_dev_stop+0x51/0x350 net/8021q/vlan_dev.c:315
+       __dev_close_many+0x1b3/0x2e0 net/core/dev.c:1605
+       dev_close_many+0x238/0x650 net/core/dev.c:1630
+       rollback_registered_many+0x3af/0xf60 net/core/dev.c:8953
+       unregister_netdevice_many.part.0+0x1a/0x2f0 net/core/dev.c:10121
+       unregister_netdevice_many net/core/dev.c:10120 [inline]
+       default_device_exit_batch+0x30c/0x3d0 net/core/dev.c:10604
+       ops_exit_list+0x10d/0x160 net/core/net_namespace.c:189
+       cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:603
+       process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+       worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+       kthread+0x3b5/0x4a0 kernel/kthread.c:291
+       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+
+-> #0 (&dev_addr_list_lock_key/2){+...}-{2:2}:
+       check_prev_add kernel/locking/lockdep.c:2496 [inline]
+       check_prevs_add kernel/locking/lockdep.c:2601 [inline]
+       validate_chain kernel/locking/lockdep.c:3218 [inline]
+       __lock_acquire+0x2acb/0x56e0 kernel/locking/lockdep.c:4380
+       lock_acquire+0x1f1/0xad0 kernel/locking/lockdep.c:4959
+       _raw_spin_lock_nested+0x30/0x40 kernel/locking/spinlock.c:361
+       netif_addr_lock_nested include/linux/netdevice.h:4243 [inline]
+       dev_uc_sync+0xdc/0x190 net/core/dev_addr_lists.c:640
+       macvlan_set_mac_lists+0x55/0x110 drivers/net/macvlan.c:802
+       __dev_set_rx_mode+0x1ea/0x300 net/core/dev.c:8207
+       dev_set_rx_mode net/core/dev.c:8213 [inline]
+       __dev_open+0x321/0x470 net/core/dev.c:1529
+       dev_open net/core/dev.c:1557 [inline]
+       dev_open+0xe8/0x150 net/core/dev.c:1550
+       bond_enslave+0x927/0x48a0 drivers/net/bonding/bond_main.c:1714
+       do_set_master+0x1c8/0x220 net/core/rtnetlink.c:2476
+       __rtnl_newlink+0x132f/0x1730 net/core/rtnetlink.c:3366
+       rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3397
+       rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5460
+       netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
+       netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+       netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
+       netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
+       sock_sendmsg_nosec net/socket.c:652 [inline]
+       sock_sendmsg+0xcf/0x120 net/socket.c:672
+       ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
+       ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
+       __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
+       do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
+       entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&macvlan_netdev_addr_lock_key/1);
+                               lock(&dev_addr_list_lock_key/2);
+                               lock(&macvlan_netdev_addr_lock_key/1);
+  lock(&dev_addr_list_lock_key/2);
+
+ *** DEADLOCK ***
+
+2 locks held by syz-executor.3/10181:
+ #0: ffffffff8a7b08e8 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
+ #0: ffffffff8a7b08e8 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3f9/0xad0 net/core/rtnetlink.c:5457
+ #1: ffff888069c62280 (&macvlan_netdev_addr_lock_key/1){+...}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:358 [inline]
+ #1: ffff888069c62280 (&macvlan_netdev_addr_lock_key/1){+...}-{2:2}, at: netif_addr_lock_bh include/linux/netdevice.h:4248 [inline]
+ #1: ffff888069c62280 (&macvlan_netdev_addr_lock_key/1){+...}-{2:2}, at: dev_set_rx_mode net/core/dev.c:8212 [inline]
+ #1: ffff888069c62280 (&macvlan_netdev_addr_lock_key/1){+...}-{2:2}, at: __dev_open+0x319/0x470 net/core/dev.c:1529
+
+stack backtrace:
+CPU: 1 PID: 10181 Comm: syz-executor.3 Not tainted 5.8.0-rc2-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:preempt_count_add+0xe/0x150 kernel/sched/core.c:3873
-Code: 07 80 c1 03 38 c1 0f 8c 40 ff ff ff 48 89 ef e8 48 f2 62 00 e9 33 ff ff ff 0f 1f 00 41 57 41 56 53 89 fb 65 01 3d 4e 75 b1 7e <48> c7 c0 30 7d 5a 8b 48 c1 e8 03 49 bf 00 00 00 00 00 fc ff df 42
-RSP: 0018:ffffc90000007cf0 EFLAGS: 00000006
-RAX: 1ffff11012ddc459 RBX: 0000000000000001 RCX: ffff8880a8c44300
-RDX: 0000000000010202 RSI: 0000000000000000 RDI: 0000000000000001
-RBP: ffff888096ee2000 R08: ffffffff8164ef7e R09: fffffbfff12da576
-R10: fffffbfff12da576 R11: 0000000000000000 R12: ffff888096ee2340
-R13: dffffc0000000000 R14: ffff888096ee22e8 R15: ffff888096ee2340
-FS:  0000000000753880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000610 CR3: 00000000a9a34000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- <IRQ>
- __raw_spin_lock include/linux/spinlock_api_smp.h:141 [inline]
- _raw_spin_lock+0xe/0x40 kernel/locking/spinlock.c:151
- spin_lock include/linux/spinlock.h:353 [inline]
- advance_sched+0x47/0x8c0 net/sched/sch_taprio.c:699
- __run_hrtimer kernel/time/hrtimer.c:1520 [inline]
- __hrtimer_run_queues+0x47f/0x930 kernel/time/hrtimer.c:1584
- hrtimer_interrupt+0x373/0xd60 kernel/time/hrtimer.c:1646
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1080 [inline]
- __sysvec_apic_timer_interrupt+0xf0/0x260 arch/x86/kernel/apic/apic.c:1097
- asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
- sysvec_apic_timer_interrupt+0xb9/0x130 arch/x86/kernel/apic/apic.c:1091
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:596
-RIP: 0010:arch_local_irq_restore arch/x86/include/asm/paravirt.h:765 [inline]
-RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:160 [inline]
-RIP: 0010:_raw_spin_unlock_irqrestore+0xa5/0xd0 kernel/locking/spinlock.c:191
-Code: b9 00 00 00 00 00 fc ff df 80 3c 08 00 74 0c 48 c7 c7 f0 c7 2b 89 e8 ea 7c 94 f9 48 83 3d d2 c9 0c 01 00 74 2c 4c 89 f7 57 9d <0f> 1f 44 00 00 bf 01 00 00 00 e8 cc 8b 31 f9 65 8b 05 d1 ff e2 77
-RSP: 0018:ffffc90001277408 EFLAGS: 00000282
-RAX: 1ffffffff12578fe RBX: ffff888096ee22e8 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: 0000000000000282
-RBP: ffffc90001277600 R08: dffffc0000000000 R09: fffffbfff16334b8
-R10: fffffbfff16334b8 R11: 0000000000000000 R12: ffff888096ee2340
-R13: 0000000000000000 R14: 0000000000000282 R15: 161f1f2ad520785b
- spin_unlock_irqrestore include/linux/spinlock.h:408 [inline]
- taprio_change+0x4245/0x51f0 net/sched/sch_taprio.c:1557
- qdisc_create+0x7d1/0x1410 net/sched/sch_api.c:1246
- tc_modify_qdisc+0x962/0x1d90 net/sched/sch_api.c:1662
- rtnetlink_rcv_msg+0x889/0xd40 net/core/rtnetlink.c:5460
- netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2469
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ check_noncircular+0x324/0x3e0 kernel/locking/lockdep.c:1827
+ check_prev_add kernel/locking/lockdep.c:2496 [inline]
+ check_prevs_add kernel/locking/lockdep.c:2601 [inline]
+ validate_chain kernel/locking/lockdep.c:3218 [inline]
+ __lock_acquire+0x2acb/0x56e0 kernel/locking/lockdep.c:4380
+ lock_acquire+0x1f1/0xad0 kernel/locking/lockdep.c:4959
+ _raw_spin_lock_nested+0x30/0x40 kernel/locking/spinlock.c:361
+ netif_addr_lock_nested include/linux/netdevice.h:4243 [inline]
+ dev_uc_sync+0xdc/0x190 net/core/dev_addr_lists.c:640
+ macvlan_set_mac_lists+0x55/0x110 drivers/net/macvlan.c:802
+ __dev_set_rx_mode+0x1ea/0x300 net/core/dev.c:8207
+ dev_set_rx_mode net/core/dev.c:8213 [inline]
+ __dev_open+0x321/0x470 net/core/dev.c:1529
+ dev_open net/core/dev.c:1557 [inline]
+ dev_open+0xe8/0x150 net/core/dev.c:1550
+ bond_enslave+0x927/0x48a0 drivers/net/bonding/bond_main.c:1714
+ do_set_master+0x1c8/0x220 net/core/rtnetlink.c:2476
+ __rtnl_newlink+0x132f/0x1730 net/core/rtnetlink.c:3366
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3397
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5460
+ netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
  netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
  sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
- do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:359
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x443799
+RIP: 0033:0x45cb29
 Code: Bad RIP value.
-RSP: 002b:00007ffe68f74b78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443799
-RDX: 0000000000000000 RSI: 00000000200007c0 RDI: 0000000000000004
-RBP: 00007ffe68f74b80 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
-R10: 0000000001bbbbbb R11: 0000000000000246 R12: 00007ffe68f74b90
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 0.000 msecs
+RSP: 002b:00007f485c5bdc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000502760 RCX: 000000000045cb29
+RDX: 0000000004000890 RSI: 0000000020000080 RDI: 0000000000000004
+RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 0000000000000a43 R14: 00000000004cd2a1 R15: 00007f485c5be6d4
+8021q: adding VLAN 0 to HW filter on device macvlan4
 
 
 ---
@@ -142,5 +209,3 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this bug report. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
