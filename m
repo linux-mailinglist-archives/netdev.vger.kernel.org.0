@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABA2921529F
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 08:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41F012152A7
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 08:22:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728905AbgGFGV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 02:21:26 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:44496 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728906AbgGFGVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 02:21:25 -0400
-Received: by mail-io1-f70.google.com with SMTP id h15so23004174ioj.11
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 23:21:25 -0700 (PDT)
+        id S1728942AbgGFGWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 02:22:16 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:33627 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728828AbgGFGWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 02:22:15 -0400
+Received: by mail-il1-f197.google.com with SMTP id c1so17491393ilr.0
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 23:22:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=bifEgsdlIbIjEg7pabMBEtW7TXHbbAKTyRXUw/iOlU8=;
-        b=jLJ30KDAyoFUpRZZggxSf/tIg3Mfch6i9LAwkZNcApfaEq9OEhi2AzFlwtnt1YY+fi
-         efx1FdQ87qzflAn0nRt5lLTEJo58mi0oFBKiqBk2M4QQPleAvR2YnHNhGL5vRBn1I7zb
-         FHGlFOir8oCdyx8JXqCk9kWX/fygqVtvNxu9P0NC2uRWnv6Kl9aQ0BdlYEGtZ73T8Upq
-         fnbi2LVz+bcnWbTF4du+HQUijjR/n6T8RtSo5GhIek0WMoZ+PGXS274ILIbj12TM3nWU
-         yFYukhjChh+rW/ijfMu+EP0LxFrHovoZYznJAkN2AhLQ3qxT5UfPPkYyWocqrKzzk/wG
-         TD7A==
-X-Gm-Message-State: AOAM530a628+lZCabb9UlAF3N+T6E9YKuOAym3XnyEVCMUeuyR2CWVAO
-        7ro0kPrIRUdILxNb56gFugHWxDM35vF/4dKy7vJdm/btHhgt
-X-Google-Smtp-Source: ABdhPJw6BPaOH2iRFAYDzIDQMa6riVilt/mJUZnFImpXe7w6tQdhMjaeBAfMXo/O+u1Nxwguoe7XvpMby02Oa+p5AWim5fzXw0F0
+        bh=65VFK3CeGOY6XsF4+JQsV3Lwx5hkLbk2n9tjz+Qw9Jo=;
+        b=SgsmLnXXoR4yASo0AYowRebSbaLnY1k+1x0QOttdliM+HV96SzY8U2iALCvWnlguNN
+         QtpbpCDaMkhhnyEhjAXvrCg+3ejUH1WK+oSCIBD+LI2reN+0VxjaFgwbczGi/HvrR8n6
+         fJ/7gT16bxU5kSaLU5CCiSUjmQkIAiiFgvcPYAxFtq59ENgc4D/EQaBtlMYJr5bfue87
+         WRDNZY2Gi4UuKWV03DTnjQ2wbDyLUq0QvNMmmlPKqCmeBaXdszWbqxM5EX2/RCrWbICu
+         ETVi/EajVP+rsofZ9FTY9wzdwuF0FpIT+/0trXWmkSaDumEr+hUZuvrpX+VrTVyihJE4
+         gwwg==
+X-Gm-Message-State: AOAM5336Ss52jtk/bP4gJBivw/4iWts6GWv95ugHNJ2brJ9AvT8yTPPl
+        aopZ9hx6lKr7TbAugN2X0x/cCib6hIfDxknBAe5c8WS42NRZ
+X-Google-Smtp-Source: ABdhPJzxJfprkEfzW1CDLFjw0CpuAk9bdct5cThB4k/Pgp3XcKi4EsWkOqKoaALvUQgTFtVbA7bcf/rlB1rqsD1zoXgBN1gbx34K
 MIME-Version: 1.0
-X-Received: by 2002:a6b:e20b:: with SMTP id z11mr23417921ioc.2.1594016484899;
- Sun, 05 Jul 2020 23:21:24 -0700 (PDT)
-Date:   Sun, 05 Jul 2020 23:21:24 -0700
+X-Received: by 2002:a92:b749:: with SMTP id c9mr30062467ilm.289.1594016534226;
+ Sun, 05 Jul 2020 23:22:14 -0700 (PDT)
+Date:   Sun, 05 Jul 2020 23:22:14 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000059437305a9bfe2a2@google.com>
-Subject: BUG: unable to handle kernel NULL pointer dereference in bpf_prog_ADDR_L
-From:   syzbot <syzbot+a4c6e533af740abd3922@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Message-ID: <00000000000049f07f05a9bfe509@google.com>
+Subject: KASAN: use-after-free Read in wg_get_device_start
+From:   syzbot <syzbot+e869cfbeeae05d706b9c@syzkaller.appspotmail.com>
+To:     Jason@zx2c4.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, wireguard@lists.zx2c4.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -51,70 +48,117 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    cb8e59cc Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1446cfd3100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a16ddbc78955e3a9
-dashboard link: https://syzkaller.appspot.com/bug?extid=a4c6e533af740abd3922
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+HEAD commit:    7cc2a8ea Merge tag 'block-5.8-2020-07-01' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=123532a7100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=183dd243398ba7ec
+dashboard link: https://syzkaller.appspot.com/bug?extid=e869cfbeeae05d706b9c
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
 
 Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+a4c6e533af740abd3922@syzkaller.appspotmail.com
+Reported-by: syzbot+e869cfbeeae05d706b9c@syzkaller.appspotmail.com
 
-BUG: kernel NULL pointer dereference, address: 0000000000000000
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 85748067 P4D 85748067 PUD 61918067 PMD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 4768 Comm: syz-executor.0 Not tainted 5.7.0-syzkaller #0
+==================================================================
+BUG: KASAN: use-after-free in nla_get_u32 include/net/netlink.h:1541 [inline]
+BUG: KASAN: use-after-free in lookup_interface drivers/net/wireguard/netlink.c:61 [inline]
+BUG: KASAN: use-after-free in wg_get_device_start+0x2bc/0x2d0 drivers/net/wireguard/netlink.c:203
+Read of size 4 at addr ffff88803b9c3818 by task syz-executor.3/15521
+
+CPU: 1 PID: 15521 Comm: syz-executor.3 Not tainted 5.8.0-rc3-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:bpf_prog_6df1c5236f32720a_L+0x1f/0xa18
-Code: cc cc cc cc cc cc cc cc cc cc cc 0f 1f 44 00 00 55 48 89 e5 48 81 ec 00 00 00 00 53 41 55 41 56 41 57 6a 00 31 c0 48 8b 7f 28 <48> 8b 7f 00 8b bf 00 01 00 00 5b 41 5f 41 5e 41 5d 5b c9 c3 cc cc
-RSP: 0018:ffffc90001ee7ac0 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffffc900022ea000
-RDX: 0000000000000230 RSI: ffffc90000cb8038 RDI: 0000000000000000
-RBP: ffffc90001ee7ae8 R08: ffff88805dc5e200 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000000 R12: ffffc90000cb8000
-R13: dffffc0000000000 R14: 0000000000000001 R15: ffff88805dc5e200
-FS:  00007fc83e30f700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000008c0f4000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000600
 Call Trace:
- bpf_prog_run_xdp include/linux/filter.h:734 [inline]
- bpf_test_run+0x226/0xc70 net/bpf/test_run.c:47
- bpf_prog_test_run_xdp+0x2ca/0x510 net/bpf/test_run.c:507
- bpf_prog_test_run kernel/bpf/syscall.c:2998 [inline]
- __do_sys_bpf+0x28ce/0x4a80 kernel/bpf/syscall.c:4138
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1f0/0x31e lib/dump_stack.c:118
+ print_address_description+0x66/0x5a0 mm/kasan/report.c:383
+ __kasan_report mm/kasan/report.c:513 [inline]
+ kasan_report+0x132/0x1d0 mm/kasan/report.c:530
+ nla_get_u32 include/net/netlink.h:1541 [inline]
+ lookup_interface drivers/net/wireguard/netlink.c:61 [inline]
+ wg_get_device_start+0x2bc/0x2d0 drivers/net/wireguard/netlink.c:203
+ genl_start+0x390/0x570 net/netlink/genetlink.c:556
+ __netlink_dump_start+0x3d2/0x700 net/netlink/af_netlink.c:2343
+ genl_family_rcv_msg_dumpit net/netlink/genetlink.c:638 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:733 [inline]
+ genl_rcv_msg+0xb03/0xe00 net/netlink/genetlink.c:753
+ netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2469
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:764
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x519/0x800 net/socket.c:2352
+ ___sys_sendmsg net/socket.c:2406 [inline]
+ __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
+ do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:359
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 RIP: 0033:0x45cb29
-Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fc83e30ec78 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 00000000004dade0 RCX: 000000000045cb29
-RDX: 0000000000000040 RSI: 0000000020000040 RDI: 000000000000000a
-RBP: 000000000078bfa0 R08: 0000000000000000 R09: 0000000000000000
+Code: Bad RIP value.
+RSP: 002b:00007f1bd1266c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000502320 RCX: 000000000045cb29
+RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
+RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
 R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 000000000000005d R14: 00000000004c32db R15: 00007fc83e30f6d4
-Modules linked in:
-CR2: 0000000000000000
----[ end trace 6c5d2c7e681a670d ]---
-RIP: 0010:bpf_prog_6df1c5236f32720a_L+0x1f/0xa18
-Code: cc cc cc cc cc cc cc cc cc cc cc 0f 1f 44 00 00 55 48 89 e5 48 81 ec 00 00 00 00 53 41 55 41 56 41 57 6a 00 31 c0 48 8b 7f 28 <48> 8b 7f 00 8b bf 00 01 00 00 5b 41 5f 41 5e 41 5d 5b c9 c3 cc cc
-RSP: 0018:ffffc90001ee7ac0 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffffc900022ea000
-RDX: 0000000000000230 RSI: ffffc90000cb8038 RDI: 0000000000000000
-RBP: ffffc90001ee7ae8 R08: ffff88805dc5e200 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000000 R12: ffffc90000cb8000
-R13: dffffc0000000000 R14: 0000000000000001 R15: ffff88805dc5e200
-FS:  00007fc83e30f700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000008c0f4000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000600
+R13: 0000000000000a32 R14: 00000000004cd184 R15: 00007f1bd12676d4
+
+Allocated by task 15525:
+ save_stack mm/kasan/common.c:48 [inline]
+ set_track mm/kasan/common.c:56 [inline]
+ __kasan_kmalloc+0x103/0x140 mm/kasan/common.c:494
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0xde/0x4f0 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1083 [inline]
+ netlink_alloc_large_skb net/netlink/af_netlink.c:1175 [inline]
+ netlink_sendmsg+0x7b2/0xd70 net/netlink/af_netlink.c:1893
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x519/0x800 net/socket.c:2352
+ ___sys_sendmsg net/socket.c:2406 [inline]
+ __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
+ do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:359
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Freed by task 15525:
+ save_stack mm/kasan/common.c:48 [inline]
+ set_track mm/kasan/common.c:56 [inline]
+ kasan_set_free_info mm/kasan/common.c:316 [inline]
+ __kasan_slab_free+0x114/0x170 mm/kasan/common.c:455
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x10a/0x220 mm/slab.c:3757
+ skb_release_all net/core/skbuff.c:664 [inline]
+ __kfree_skb+0x56/0x1c0 net/core/skbuff.c:678
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x78e/0x940 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x519/0x800 net/socket.c:2352
+ ___sys_sendmsg net/socket.c:2406 [inline]
+ __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
+ do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:359
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+The buggy address belongs to the object at ffff88803b9c3800
+ which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 24 bytes inside of
+ 1024-byte region [ffff88803b9c3800, ffff88803b9c3c00)
+The buggy address belongs to the page:
+page:ffffea0000ee70c0 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea0001859248 ffffea0000e02ec8 ffff8880aa400c40
+raw: 0000000000000000 ffff88803b9c3000 0000000100000002 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88803b9c3700: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88803b9c3780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff88803b9c3800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                            ^
+ ffff88803b9c3880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88803b9c3900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
 ---
