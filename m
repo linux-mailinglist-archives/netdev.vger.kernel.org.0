@@ -2,93 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7863D215A21
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 16:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 412D0215A4D
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 17:08:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729395AbgGFO7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 10:59:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
+        id S1729264AbgGFPIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 11:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729222AbgGFO7q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 10:59:46 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E32C061755;
-        Mon,  6 Jul 2020 07:59:46 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id t18so19051816otq.5;
-        Mon, 06 Jul 2020 07:59:46 -0700 (PDT)
+        with ESMTP id S1729121AbgGFPIT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 11:08:19 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97340C061755;
+        Mon,  6 Jul 2020 08:08:18 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id rk21so42928702ejb.2;
+        Mon, 06 Jul 2020 08:08:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ly03rVdFQZQZEzVS8ZzCtaoVt13O7+0BUw8XNPJWMK8=;
-        b=R9EoK0fa9Z++JThkR5FKP1qYU/9TIgD3WeTrbgZFENW7JFTScXN/gLqD9Rv/AwIzKJ
-         KUykzhblpZLE1bmkyp8UAYL5rwIghmE5Ql5df4hd389nsT6e13JxsySDzLto/UmqOjL0
-         Wk4RyMWs67rwheZnSxcr/c2b8NDQCH+fQOrgK0Iji/m8bFJcMYbiYhcGX6jMdt//6PKZ
-         xhSe3iwCCF6mN7b68mXkFhrFd045gJhNcpohEYlAo2do6v+YYY/G61UL6ruqsbSH/AEC
-         qUkdqIohw0iH+a4bXaLYW95RtIKbwWLrUm6XuQtu0SDUtrvPp9NC6VRo2PE5xP439i9X
-         WAvw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+QV0foaqZfR1DGTEKz4tnb7W5JLiiR6E9hmIsjOaInY=;
+        b=eRWNAlNZNgupqf/XW+C4vAF8eh7vePcdv6oiE8s87gxTkZGqEsEBbVe49Lo7v1QOQ2
+         ClaMf13wmAfdlY42+jT8j75GvgKlLSERkFGMqLWFAQ0qDFmMLMYjOZmNHpiPUiEVGEHp
+         z2gvRxZiE+vIwBs5q2owvrp41jdKlxe8+lVNIOq8jS/HEzDCe8dl7RgjgnxgJMHrLxd4
+         Ef5V9EgzLH/X7CemCHZUCoBFI0FclmYdH5A3X8zWGiTqPuGiEWeByijAiazr/jYYd12K
+         CZ5kQiHebxKZIwPySsxaS1zn0UW34MzusEH5AWPAyXMovZ1iYhMOM5H6u0WKyU9/LdWt
+         9wEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ly03rVdFQZQZEzVS8ZzCtaoVt13O7+0BUw8XNPJWMK8=;
-        b=rZDMyhGpm5E9efNNLz8HyR6Irk3y9ltxtoRkwytCcZF/bu+Qyt2yat7LpCcna2XQNe
-         OIXtvCPumCGVoHB2zUl2xTROBLsX+zccpMImYvYmZC7CiO411EAIgxooPyNwUss72slY
-         7qFJLXmZMRRNQyPrwjvqvbgZhmrCa1yXpqI+qV4pVYcxIqYaNCeFG3eWQxAsIjR/CawP
-         EEtzpJESC++WpTQxzehPM2r0L+d95LVv6qvnEpirYqXqQgijHwummDqC7YK7a9rI+6aD
-         J+EmHgzLlNIOYTUQq2TlFpxPA0fJ6iwkeDKPTAfLlHy8MhYNMm7fLPSxHGu8rx+GyWdy
-         ZDAw==
-X-Gm-Message-State: AOAM532WeoD9h57XqEbboq0ctqS2iF9cNnkgi+BzgHhz1lfu2wonPX/Z
-        8jnrcLRzhKnqHSC2/y/zTkcUdhMPsRwXBESdmno=
-X-Google-Smtp-Source: ABdhPJx6HvqkKPk89a4sqbpGujQgm6H45OJwozxgw+lVqfKgYNdzjqzfMw1NP4lEXKSBrFeezzESieFNYIvIKLSWIB8=
-X-Received: by 2002:a05:6830:15cc:: with SMTP id j12mr32125945otr.116.1594047585387;
- Mon, 06 Jul 2020 07:59:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200702175352.19223-1-TheSven73@gmail.com> <20200702175352.19223-3-TheSven73@gmail.com>
- <CAOMZO5DxUeXH8ZYxmKynA7xO3uF6SP_Kt-g=8MPgsF7tqkRvAA@mail.gmail.com>
- <CAGngYiXGXDqCZeJme026uz5FjU56UojmQFFiJ5_CZ_AywdQiEw@mail.gmail.com>
- <AM6PR0402MB360781DA3F738C2DF445E821FF680@AM6PR0402MB3607.eurprd04.prod.outlook.com>
- <CAGngYiWc8rNVEPC-8GK1yH4zXx7tgR9gseYaopu9GWDnSG1oyg@mail.gmail.com>
- <AM6PR0402MB36073F63D2DE2646B4F71081FF690@AM6PR0402MB3607.eurprd04.prod.outlook.com>
- <CAOMZO5ATv9o197pH4O-7DV-ftsP7gGVuF1+r-sGd2j44x+n-Ug@mail.gmail.com> <CAGngYiVeNQits4CXiXmN2ZBWyoN32zqUYtaxKCqwtKztm-Ky8A@mail.gmail.com>
-In-Reply-To: <CAGngYiVeNQits4CXiXmN2ZBWyoN32zqUYtaxKCqwtKztm-Ky8A@mail.gmail.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Mon, 6 Jul 2020 10:59:34 -0400
-Message-ID: <CAGngYiX9Hx413BX-rgaaUjD9umS9hGg=gMLbM+QmdyEt2Nut5A@mail.gmail.com>
-Subject: Re: [EXT] Re: [PATCH v5 3/3] ARM: imx6plus: optionally enable
- internal routing of clk_enet_ref
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Andy Duan <fugang.duan@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+QV0foaqZfR1DGTEKz4tnb7W5JLiiR6E9hmIsjOaInY=;
+        b=fSIXlfHq1SewDLTsojM8xb9jTGSMKAuAeAReKs99N1LtRmZJK364rDEWpQlvaCR71M
+         AFUhRuPtcKxnkP8SG2aU2/nq+DaWmB/rco857n8/oU7wCpM/EVNmS9hdcTmKU+ZvMLsV
+         H7YWT6QdAuC7f3KTFWaTGe7UFPY/Slw7Feds7guzhGH3ARhau3gN8C1zW/7I+MzDSFF6
+         B91aUPv4DecRf+JO2I+iMawj2eiFxvmXzeupFk31tqVqSdU6SaHw+oe0pqzjkWODsk1A
+         QyAV7LfqnCjyZqDvsVY2R+swvuv8scybLY9KZcsQEGVH4HsjCqBD89+4hzUY6GJX22uM
+         donw==
+X-Gm-Message-State: AOAM532WNAtzoI3xAuif/HNw9gl3pEUfyno1A3JKxPbFcqtobNMDgRPY
+        3jtFuF7tFNxjvIqTPFQ+I2U=
+X-Google-Smtp-Source: ABdhPJx/FKMlLT2apCdXfjM3rMGs1ywVu/BWMY9t0TXGsw7WrkqfVEI3IC2yYq9h6CXPNq4nt2gS3A==
+X-Received: by 2002:a17:906:2a91:: with SMTP id l17mr45311743eje.539.1594048097227;
+        Mon, 06 Jul 2020 08:08:17 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id v5sm16730084ejj.61.2020.07.06.08.08.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2020 08:08:16 -0700 (PDT)
+Date:   Mon, 6 Jul 2020 18:08:14 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     sorganov@gmail.com, richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fugang Duan <fugang.duan@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>, andrew@lunn.ch
+Subject: Re: [PATCH  1/5] net: fec: properly support external PTP PHY for
+ hardware time stamping
+Message-ID: <20200706150814.kba7dh2dsz4mpiuc@skbuf>
+References: <20200706142616.25192-1-sorganov@gmail.com>
+ <20200706142616.25192-2-sorganov@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200706142616.25192-2-sorganov@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 6, 2020 at 10:58 AM Sven Van Asbroeck <thesven73@gmail.com> wrote:
->
-> Hi Fabio,
->
-> On Mon, Jul 6, 2020 at 9:46 AM Fabio Estevam <festevam@gmail.com> wrote:
-> >
-> > Would it make sense to use compatible = "mmio-mux"; like we do on
-> > imx7s, imx6qdl.dtsi and imx8mq.dtsi?
->
-> Maybe "fixed-mmio-clock" is a better candidate ?
+Hi Sergey,
 
-Actually no, the mmio memory there only controls the frequency...
+On Mon, Jul 06, 2020 at 05:26:12PM +0300, Sergey Organov wrote:
+> When external PTP-aware PHY is in use, it's that PHY that is to time
+> stamp network packets, and it's that PHY where configuration requests
+> of time stamping features are to be routed.
+> 
+> To achieve these goals:
+> 
+> 1. Make sure we don't time stamp packets when external PTP PHY is in use
+> 
+> 2. Make sure we redirect ioctl() related to time stamping of Ethernet
+>    packets to connected PTP PHY rather than handle them ourselves
+> 
+> Signed-off-by: Sergey Organov <sorganov@gmail.com>
+> ---
+>  drivers/net/ethernet/freescale/fec.h      |  1 +
+>  drivers/net/ethernet/freescale/fec_main.c | 18 ++++++++++++++----
+>  drivers/net/ethernet/freescale/fec_ptp.c  | 12 ++++++++++++
+>  3 files changed, 27 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+> index a6cdd5b6..de9f46a 100644
+> --- a/drivers/net/ethernet/freescale/fec.h
+> +++ b/drivers/net/ethernet/freescale/fec.h
+> @@ -595,6 +595,7 @@ struct fec_enet_private {
+>  void fec_ptp_init(struct platform_device *pdev, int irq_idx);
+>  void fec_ptp_stop(struct platform_device *pdev);
+>  void fec_ptp_start_cyclecounter(struct net_device *ndev);
+> +void fec_ptp_disable_hwts(struct net_device *ndev);
+>  int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr);
+>  int fec_ptp_get(struct net_device *ndev, struct ifreq *ifr);
+>  
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index 2d0d313..995ea2e 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -1298,7 +1298,11 @@ fec_enet_tx_queue(struct net_device *ndev, u16 queue_id)
+>  			ndev->stats.tx_bytes += skb->len;
+>  		}
+>  
+> +		/* It could be external PHY that had set SKBTX_IN_PROGRESS, so
+> +		 * we still need to check it's we who are to time stamp
+> +		 */
+>  		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS) &&
+> +		    unlikely(fep->hwts_tx_en) &&
 
-I don't think the clock framework has a ready-made abstraction
-suitable for a GPR clock mux yet?
+I think this could qualify as a pretty significant fix in its own right,
+that should go to stable trees. Right now, this patch appears pretty
+easy to overlook.
+
+Is this the same situation as what is being described here for the
+gianfar driver?
+
+https://patchwork.ozlabs.org/project/netdev/patch/20191227004435.21692-2-olteanv@gmail.com/
+
+If so, it is interesting because I thought we had agreed that it's only
+DSA who suffers from the double-TX-timestamp design issue, not PHYTER.
+Not to mention, interesting because FEC + a timestamping DSA switch such
+as mv88e6xxx is not unheard of. Hmmm...
+
+>  			fep->bufdesc_ex) {
+>  			struct skb_shared_hwtstamps shhwtstamps;
+>  			struct bufdesc_ex *ebdp = (struct bufdesc_ex *)bdp;
+> @@ -2755,10 +2759,16 @@ static int fec_enet_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
+>  		return -ENODEV;
+>  
+>  	if (fep->bufdesc_ex) {
+> -		if (cmd == SIOCSHWTSTAMP)
+> -			return fec_ptp_set(ndev, rq);
+> -		if (cmd == SIOCGHWTSTAMP)
+> -			return fec_ptp_get(ndev, rq);
+> +		bool use_fec_hwts = !phy_has_hwtstamp(phydev);
+> +
+> +		if (cmd == SIOCSHWTSTAMP) {
+> +			if (use_fec_hwts)
+> +				return fec_ptp_set(ndev, rq);
+> +			fec_ptp_disable_hwts(ndev);
+> +		} else if (cmd == SIOCGHWTSTAMP) {
+> +			if (use_fec_hwts)
+> +				return fec_ptp_get(ndev, rq);
+> +		}
+>  	}
+>  
+>  	return phy_mii_ioctl(phydev, rq, cmd);
+> diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+> index 945643c..f8a592c 100644
+> --- a/drivers/net/ethernet/freescale/fec_ptp.c
+> +++ b/drivers/net/ethernet/freescale/fec_ptp.c
+> @@ -452,6 +452,18 @@ static int fec_ptp_enable(struct ptp_clock_info *ptp,
+>  	return -EOPNOTSUPP;
+>  }
+>  
+> +/**
+> + * fec_ptp_disable_hwts - disable hardware time stamping
+> + * @ndev: pointer to net_device
+> + */
+> +void fec_ptp_disable_hwts(struct net_device *ndev)
+> +{
+> +	struct fec_enet_private *fep = netdev_priv(ndev);
+> +
+> +	fep->hwts_tx_en = 0;
+> +	fep->hwts_rx_en = 0;
+> +}
+> +
+>  int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr)
+>  {
+>  	struct fec_enet_private *fep = netdev_priv(ndev);
+> -- 
+> 2.10.0.1.g57b01a3
+> 
+
+Cheers,
+-Vladimir
