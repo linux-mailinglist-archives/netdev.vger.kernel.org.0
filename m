@@ -2,51 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 298D2215FB0
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 21:54:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F3E215FB6
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 21:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726270AbgGFTy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 15:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbgGFTy4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 15:54:56 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02076C061755
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 12:54:55 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3215B1280D585;
-        Mon,  6 Jul 2020 12:54:55 -0700 (PDT)
-Date:   Mon, 06 Jul 2020 12:54:54 -0700 (PDT)
-Message-Id: <20200706.125454.557093783656648876.davem@davemloft.net>
-To:     linux@armlinux.org.uk
-Cc:     olteanv@gmail.com, netdev@vger.kernel.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
-        ioana.ciornei@nxp.com
-Subject: Re: [PATCH v2 net-next 0/6] PHYLINK integration improvements for
- Felix DSA driver
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200706084503.GU1551@shell.armlinux.org.uk>
-References: <20200704124507.3336497-1-olteanv@gmail.com>
-        <20200705.152620.1918268774429284685.davem@davemloft.net>
-        <20200706084503.GU1551@shell.armlinux.org.uk>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 06 Jul 2020 12:54:55 -0700 (PDT)
+        id S1726815AbgGFT4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 15:56:11 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49804 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725892AbgGFT4L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Jul 2020 15:56:11 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jsXDf-003uPR-1e; Mon, 06 Jul 2020 21:56:03 +0200
+Date:   Mon, 6 Jul 2020 21:56:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 3/3] net: ethtool: Remove PHYLIB direct
+ dependency
+Message-ID: <20200706195603.GA893522@lunn.ch>
+References: <20200706042758.168819-1-f.fainelli@gmail.com>
+ <20200706042758.168819-4-f.fainelli@gmail.com>
+ <20200706114000.223e27eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200706114000.223e27eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Date: Mon, 6 Jul 2020 09:45:04 +0100
+On Mon, Jul 06, 2020 at 11:40:00AM -0700, Jakub Kicinski wrote:
+> On Sun,  5 Jul 2020 21:27:58 -0700 Florian Fainelli wrote:
+> > +	ops = ethtool_phy_ops;
+> > +	if (!ops || !ops->start_cable_test) {
+> 
+> nit: don't think member-by-member checking is necessary. We don't
+> expect there to be any alternative versions of the ops, right?
 
-> v3 was posted yesterday...
+I would not like to see anything else registering an ops. So i think
+taking an Opps would be a good indication somebody is doing something
+wrong and needs fixing.
 
-My tree is immutable, so you know what that means :-)
+> We could even risk a direct call:
+> 
+> #if IS_REACHABLE(CONFIG_PHYLIB)
+> static inline int do_x()
+> {
+> 	return __do_x();
+> }
+> #else
+> static inline int do_x()
+> {
+> 	if (!ops)
+> 		return -EOPNOTSUPP;
+> 	return ops->do_x();
+> }
+> #endif
+> 
+> But that's perhaps doing too much...
+
+I would say it is too far. Two ways of doing the same thing requires
+twice as much testing. And these are not hot paths where we want to
+eliminate as many instructions and trampolines as possible.
+
+	  Andrew
