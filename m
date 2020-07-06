@@ -2,137 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 269C22150FD
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 03:44:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60093215138
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 04:56:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728664AbgGFBn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jul 2020 21:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51114 "EHLO
+        id S1728667AbgGFC4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jul 2020 22:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728430AbgGFBnZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 21:43:25 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB7FC061794;
-        Sun,  5 Jul 2020 18:43:24 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4B0SyH0ln5z9sDX;
-        Mon,  6 Jul 2020 11:43:18 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1593999800;
-        bh=1G1w5foTPLzMSqkizEB3dQQHU9BJDlBNIyWwFvDqBAI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Rzpt9LG7+GqSloMm8kCKK+WEro1KxFTa4K848rXPwc+NR6l0vC2E+xv5nmTErtOf3
-         jCH/UEqf5SsgmbczNWS34KWzyCGqJIAlqae4MUb68fHBbZwm4edHRUe0SIb3piVUBz
-         Wyk3AaTWP7eoO1Fm0vuZQP9wpEnDUDD78bbHYRGSWkmhiNm433p7bylRX5U/4mWaTE
-         IVkBTejGm52v7VvYDlQwexAatfZPy/Pnszz8kIBsq1y0bwuxh3AqmSRJGdxDWuYzvt
-         GgDG6s3hFkRV/iurCq7H3WTy04JlYxr10OgvB1Ayq+hvF8TxxW2oXEhV8j2sUn2Mvw
-         wBbGayX+G+RZA==
-Date:   Mon, 6 Jul 2020 11:43:16 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>
-Subject: Re: linux-next: manual merge of the bpf-next tree with the bpf tree
-Message-ID: <20200706114316.400be49e@canb.auug.org.au>
-In-Reply-To: <20200626100527.4dad8695@canb.auug.org.au>
-References: <20200626100527.4dad8695@canb.auug.org.au>
+        with ESMTP id S1728653AbgGFC4B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jul 2020 22:56:01 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDF1C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 19:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Date:Message-ID:Subject:From:To:Sender:Reply-To:Cc:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=zB+iDMbYROXi/HincljxaPI4dsp4ivy+5va/6El7q0A=; b=lr5/LYeelUCTqTGhkEODUTrE1Y
+        T/kaSauYY8sv2J1P268yt24McD6KV+cvZVJuEWmpciFtutkJMt6uks6YWX3RsjTV3EiNj2b3+a4LP
+        UyCs/NUsBQhUJm19Os3SWAXQRt7XuK3ZHzOLQoLLHzxKlwxeNBVLHJSSXlmk2rV8solYQ3dwrg2Xt
+        /AXBrYkOog2ZOZSnrmjKGLZoi4Vte9bbS7jy36XeNz7G0YRyvWQyLZVXcGDkyxHmbIe5MMLxZXJSN
+        /WCVT/GiQ2XEL8j24aBgqk7m0rb7jOOhI+1MVhVBF5kM1vd0AphwEZ0hrcofTe6GQn/iWsGsQELHh
+        K5Zy1KSA==;
+Received: from [2601:1c0:6280:3f0::19c2]
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jsHIJ-0002Dm-Ok; Mon, 06 Jul 2020 02:55:54 +0000
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH -next] Documentation: networking: fix ethtool-netlink table
+ formats
+Message-ID: <10c2e583-af4a-7f06-b3d0-79fbec0ebfd6@infradead.org>
+Date:   Sun, 5 Jul 2020 19:55:44 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/23I18qynHUoHQ.hO=eYNg5E";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/23I18qynHUoHQ.hO=eYNg5E
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Hi all,
+Fix table formatting to eliminate warnings.
 
-On Fri, 26 Jun 2020 10:05:27 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> Today's linux-next merge of the bpf-next tree got a conflict in:
->=20
->   tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
->=20
-> between commits:
->=20
->   9c82a63cf370 ("libbpf: Fix CO-RE relocs against .text section")
->   647b502e3d54 ("selftests/bpf: Refactor some net macros to bpf_tracing_n=
-et.h")
->=20
-> from the bpf tree and commit:
->=20
->   84544f5637ff ("selftests/bpf: Move newer bpf_iter_* type redefining to =
-a new header file")
->=20
-> from the bpf-next tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> diff --cc tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
-> index 75ecf956a2df,cec82a419800..000000000000
-> --- a/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
-> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
-> @@@ -11,21 -7,7 +7,7 @@@
->  =20
->   char _license[] SEC("license") =3D "GPL";
->  =20
-> - #define sk_rmem_alloc	sk_backlog.rmem_alloc
-> - #define sk_refcnt	__sk_common.skc_refcnt
-> -=20
-> - struct bpf_iter_meta {
-> - 	struct seq_file *seq;
-> - 	__u64 session_id;
-> - 	__u64 seq_num;
-> - } __attribute__((preserve_access_index));
-> -=20
-> - struct bpf_iter__netlink {
-> - 	struct bpf_iter_meta *meta;
-> - 	struct netlink_sock *sk;
-> - } __attribute__((preserve_access_index));
-> -=20
->  -static inline struct inode *SOCK_INODE(struct socket *socket)
->  +static __attribute__((noinline)) struct inode *SOCK_INODE(struct socket=
- *socket)
->   {
->   	return &container_of(socket, struct socket_alloc, socket)->vfs_inode;
->   }
+Documentation/networking/ethtool-netlink.rst:509: WARNING: Malformed table.
+Documentation/networking/ethtool-netlink.rst:522: WARNING: Malformed table.
+Documentation/networking/ethtool-netlink.rst:543: WARNING: Malformed table.
+Documentation/networking/ethtool-netlink.rst:555: WARNING: Malformed table.
+Documentation/networking/ethtool-netlink.rst:591: WARNING: Malformed table.
 
-This is now a conflict between net-next tree and the net tree.
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+---
+ Documentation/networking/ethtool-netlink.rst |   18 ++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
---=20
-Cheers,
-Stephen Rothwell
+--- linux-next-20200703.orig/Documentation/networking/ethtool-netlink.rst
++++ linux-next-20200703/Documentation/networking/ethtool-netlink.rst
+@@ -506,13 +506,13 @@ Link extended states:
+                                                         power required from cable or module
+ 
+   ``ETHTOOL_LINK_EXT_STATE_OVERHEAT``                   The module is overheated
+-  =================================================     ============================================
++  ================================================      ============================================
+ 
+ Link extended substates:
+ 
+   Autoneg substates:
+ 
+-  ==============================================================    ================================
++  ===============================================================   ================================
+   ``ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_PARTNER_DETECTED``              Peer side is down
+ 
+   ``ETHTOOL_LINK_EXT_SUBSTATE_AN_ACK_NOT_RECEIVED``                 Ack not received from peer side
+@@ -527,11 +527,11 @@ Link extended substates:
+                                                                     in both sides are mismatched
+ 
+   ``ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_HCD``                           No Highest Common Denominator
+-  ==============================================================    ================================
++  ===============================================================   ================================
+ 
+   Link training substates:
+ 
+-  ==========================================================================    ====================
++  ===========================================================================   ====================
+   ``ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_FRAME_LOCK_NOT_ACQUIRED``                    Frames were not
+                                                                                  recognized, the
+                                                                                  lock failed
+@@ -547,11 +547,11 @@ Link extended substates:
+ 
+   ``ETHTOOL_LINK_EXT_SUBSTATE_LT_REMOTE_FAULT``                                  Remote side is not
+                                                                                  ready yet
+-  ==========================================================================    ====================
++  ===========================================================================   ====================
+ 
+   Link logical mismatch substates:
+ 
+-  ===============================================================    ===============================
++  ================================================================   ===============================
+   ``ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_BLOCK_LOCK``   Physical coding sublayer was
+                                                                      not locked in first phase -
+                                                                      block lock
+@@ -568,7 +568,7 @@ Link extended substates:
+ 
+   ``ETHTOOL_LINK_EXT_SUBSTATE_LLM_RS_FEC_IS_NOT_LOCKED``             RS forward error correction is
+                                                                      not locked
+-  ===============================================================    ===============================
++  ================================================================   ===============================
+ 
+   Bad signal integrity substates:
+ 
+@@ -585,11 +585,11 @@ Link extended substates:
+ 
+   Cable issue substates:
+ 
+-  ==================================================    ============================================
++  ===================================================   ============================================
+   ``ETHTOOL_LINK_EXT_SUBSTATE_CI_UNSUPPORTED_CABLE``    Unsupported cable
+ 
+   ``ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE``   Cable test failure
+-  ==================================================    ============================================
++  ===================================================   ============================================
+ 
+ DEBUG_GET
+ =========
 
---Sig_/23I18qynHUoHQ.hO=eYNg5E
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8CgbQACgkQAVBC80lX
-0GwXaAf/WSMHGgauwreog5bZWHBRaI8CKhxEYFjH80ugpyBm2n9o168kfOIjw3u/
-JNFCWFAaSl3eM1ry6r9bl8PShzyHMdEpuYXr1DUTn+6UQvuYXD7JpLR8NAm8Snha
-ik2AOAkPWe4soJ9XbuooNuLDEeozXLgNsIkgBO+1/lHHu5EgGskoPexGaMvLyAlu
-YDsIQ9iv8kcjXXxJiA+wXy4XhTbL3Yl/IYXiWenvWy3lkIDc+7VDV248o5V4vXKb
-sWSQzxz2EDEEq6cdgqHcnQ0HUAk4f4j8u0ppnZ11kjH1UE1qAE4+6MDhOWF+Qi9o
-ht9wzCNyje1AVKE46szGqt6t1A8RSQ==
-=JZE7
------END PGP SIGNATURE-----
-
---Sig_/23I18qynHUoHQ.hO=eYNg5E--
