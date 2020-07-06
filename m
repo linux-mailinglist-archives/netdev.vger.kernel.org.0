@@ -2,126 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA4C5215C77
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 19:00:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C95215CDE
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 19:19:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729646AbgGFRAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 13:00:25 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:40116 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729495AbgGFRAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 13:00:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594054823;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sxp8KWaWgJw4WshhI3nQX8hZlCBBJb92GnlvBY7ow9Q=;
-        b=HfbGgJIr/nI5Kq2pbDtWCWP/VyNH0YbUi578O1mp0n7yj8Ek8FPkGOZS0ChupvHxgo91QU
-        ruDKy6V9QnXBfIFiMFfN2rw6W6j5jRkKxOfzmMNAHMicjh5OAJcPHRisa1Xa0on1zmgsxQ
-        Gj5T0Pq6+gAqo0oVZJ1BgBuzx7zIUh0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-261-5wWf46BnOtmQAa7b9mq7OQ-1; Mon, 06 Jul 2020 13:00:19 -0400
-X-MC-Unique: 5wWf46BnOtmQAa7b9mq7OQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1729596AbgGFRTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 13:19:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54700 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729297AbgGFRTO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Jul 2020 13:19:14 -0400
+Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E717787950B;
-        Mon,  6 Jul 2020 17:00:17 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.40.208.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 953235C290;
-        Mon,  6 Jul 2020 17:00:17 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 95636300019CC;
-        Mon,  6 Jul 2020 19:00:16 +0200 (CEST)
-Subject: [PATCH bpf-next V2 2/2] selftests/bpf: test_progs avoid minus shell
- exit codes
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org, Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        vkabatov@redhat.com, jbenc@redhat.com, yhs@fb.com, kafai@fb.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 06 Jul 2020 19:00:16 +0200
-Message-ID: <159405481655.1091613.6475075949369245359.stgit@firesoul>
-In-Reply-To: <159405478968.1091613.16934652228902650021.stgit@firesoul>
-References: <159405478968.1091613.16934652228902650021.stgit@firesoul>
-User-Agent: StGit/0.19
+        by mail.kernel.org (Postfix) with ESMTPSA id 180F0206DF;
+        Mon,  6 Jul 2020 17:19:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594055953;
+        bh=2wi4tp71oiMUpNuhHCSRxSoO0cc9XcYHqI69BCPTwT8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OLBt5ZIE6E3LTIw+CDbzoWTRluMlhwuXfT1cHUCOf59Sm6X581JK+qUNDDDFUTmOW
+         oRplkGka6wSmFU8FWrbrqSBqf/UnTcq2LTa7uIlkklN+4nuKpSvhwABeHqV0cr/vkz
+         MhZ4H1GH1863MT34pgtstaKV8WR6xWo5jx5Ca4QM=
+From:   David Ahern <dsahern@kernel.org>
+To:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net
+Cc:     brak@choopa.com, David Ahern <dsahern@kernel.org>
+Subject: [PATCH net] ipv6: fib6_select_path can not use out path for nexthop objects
+Date:   Mon,  6 Jul 2020 11:19:08 -0600
+Message-Id: <20200706171908.18222-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are a number of places in test_progs that use minus-1 as the argument
-to exit(). This improper use as a process exit status is masked to be a
-number between 0 and 255 as defined in man exit(3).
+Brian reported a crash in IPv6 code when using rpfilter with a setup
+running FRR and external nexthop objects. The root cause of the crash
+is fib6_select_path setting fib6_nh in the result to NULL because of
+an improper check for nexthop objects (fib6_nh in fib6_info is not
+set for this case).
 
-This patch use two different positive exit codes instead, to allow a shell
-script to tell the two error cases apart.
+More specifically, rpfilter invokes ip6_route_lookup with flowi6_oif
+set causing fib6_select_path to be called with have_oif_match set.
+fib6_select_path has early check on have_oif_match and jumps to the
+out label which presumes a builtin fib6_nh. This path is invalid for
+nexthop objects; for external nexthops fib6_select_path needs to proceed
+and return after the call to nexthop_path_fib6_result. Update the check
+on have_oif_match to not bail on external nexthops.
 
-Fixes: fd27b1835e70 ("selftests/bpf: Reset process and thread affinity after each test/sub-test")
-Fixes: 811d7e375d08 ("bpf: selftests: Restore netns after each test")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Update selftests for this problem.
+
+Fixes: f88d8ea67fbd ("ipv6: Plumb support for nexthop object in a fib6_info")
+Reported-by: Brian Rak <brak@choopa.com>
+Signed-off-by: David Ahern <dsahern@kernel.org>
 ---
- tools/testing/selftests/bpf/test_progs.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ net/ipv6/route.c                            |  2 +-
+ tools/testing/selftests/net/fib_nexthops.sh | 13 +++++++++++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-index e8f7cd5dbae4..50803b080593 100644
---- a/tools/testing/selftests/bpf/test_progs.c
-+++ b/tools/testing/selftests/bpf/test_progs.c
-@@ -12,7 +12,9 @@
- #include <string.h>
- #include <execinfo.h> /* backtrace */
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 82cbb46a2a4f..6451ba313506 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -431,7 +431,7 @@ void fib6_select_path(const struct net *net, struct fib6_result *res,
+ 	struct fib6_info *sibling, *next_sibling;
+ 	struct fib6_info *match = res->f6i;
  
--#define EXIT_NO_TEST 2
-+#define EXIT_NO_TEST		2
-+#define EXIT_ERR_NETNS		3
-+#define EXIT_ERR_RESET_AFFINITY	4
+-	if ((!match->fib6_nsiblings && !match->nh) || have_oif_match)
++	if (!match->nh && (!match->fib6_nsiblings || have_oif_match))
+ 		goto out;
  
- /* defined in test_progs.h */
- struct test_env env = {};
-@@ -113,13 +115,13 @@ static void reset_affinity() {
- 	if (err < 0) {
- 		stdio_restore();
- 		fprintf(stderr, "Failed to reset process affinity: %d!\n", err);
--		exit(-1);
-+		exit(EXIT_ERR_RESET_AFFINITY);
- 	}
- 	err = pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset);
- 	if (err < 0) {
- 		stdio_restore();
- 		fprintf(stderr, "Failed to reset thread affinity: %d!\n", err);
--		exit(-1);
-+		exit(EXIT_ERR_RESET_AFFINITY);
- 	}
- }
+ 	/* We might have already computed the hash for ICMPv6 errors. In such
+diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+index dee567f7576a..f6d388dbd881 100755
+--- a/tools/testing/selftests/net/fib_nexthops.sh
++++ b/tools/testing/selftests/net/fib_nexthops.sh
+@@ -747,6 +747,19 @@ ipv6_fcnal_runtime()
+ 	run_cmd "$IP nexthop add id 86 via 2001:db8:91::2 dev veth1"
+ 	run_cmd "$IP ro add 2001:db8:101::1/128 nhid 81"
  
-@@ -128,7 +130,7 @@ static void save_netns(void)
- 	env.saved_netns_fd = open("/proc/self/ns/net", O_RDONLY);
- 	if (env.saved_netns_fd == -1) {
- 		perror("open(/proc/self/ns/net)");
--		exit(-1);
-+		exit(EXIT_ERR_NETNS);
- 	}
- }
- 
-@@ -137,7 +139,7 @@ static void restore_netns(void)
- 	if (setns(env.saved_netns_fd, CLONE_NEWNET) == -1) {
- 		stdio_restore();
- 		perror("setns(CLONE_NEWNS)");
--		exit(-1);
-+		exit(EXIT_ERR_NETNS);
- 	}
- }
- 
-
++	# rpfilter and default route
++	$IP nexthop flush >/dev/null 2>&1
++	run_cmd "ip netns exec me ip6tables -t mangle -I PREROUTING 1 -m rpfilter --invert -j ACCEPT"
++	run_cmd "$IP nexthop add id 91 via 2001:db8:91::2 dev veth1"
++	run_cmd "$IP nexthop add id 92 via 2001:db8:92::2 dev veth3"
++	run_cmd "$IP nexthop add id 93 group 91/92"
++	run_cmd "$IP -6 ro add default nhid 91"
++	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
++	log_test $? 0 "Nexthop with default route and rpfilter"
++	run_cmd "$IP -6 ro replace default nhid 93"
++	run_cmd "ip netns exec me ping -c1 -w1 2001:db8:101::1"
++	log_test $? 0 "Nexthop with multipath default route and rpfilter"
++
+ 	# TO-DO:
+ 	# existing route with old nexthop; append route with new nexthop
+ 	# existing route with old nexthop; replace route with new
+-- 
+2.17.1
 
