@@ -2,93 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 436A521543D
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 10:56:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB475215446
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 10:59:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728605AbgGFIz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 04:55:57 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:44082 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728321AbgGFIz5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 04:55:57 -0400
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0668XxYm126782;
-        Mon, 6 Jul 2020 04:55:41 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 322nx10ccc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Jul 2020 04:55:41 -0400
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0668Y0Ak126893;
-        Mon, 6 Jul 2020 04:55:41 -0400
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 322nx10cbh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Jul 2020 04:55:41 -0400
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0668ajOF002840;
-        Mon, 6 Jul 2020 08:55:39 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma06ams.nl.ibm.com with ESMTP id 322h1h236g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Jul 2020 08:55:39 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0668tap552429026
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 6 Jul 2020 08:55:36 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9D73742042;
-        Mon,  6 Jul 2020 08:55:36 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2108A4203F;
-        Mon,  6 Jul 2020 08:55:36 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  6 Jul 2020 08:55:36 +0000 (GMT)
-From:   Sumanth Korikkar <sumanthk@linux.ibm.com>
-To:     jolsa@redhat.com
-Cc:     Sumanth.Korikkar@ibm.com, sumanthk@linux.ibm.com,
-        agordeev@linux.ibm.com, ast@kernel.org, bas@baslab.org,
-        bpf@vger.kernel.org, brendan.d.gregg@gmail.com,
-        daniel@iogearbox.net, dxu@dxuuu.xyz, linux-s390@vger.kernel.org,
-        mat@mmarchini.me, netdev@vger.kernel.org,
-        yauheni.kaliuta@redhat.com
-Subject: Re: bpf: bpf_probe_read helper restriction on s390x
-Date:   Mon,  6 Jul 2020 10:54:56 +0200
-Message-Id: <20200706085456.48306-1-sumanthk@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200705194225.GB3356590@krava>
-References: <20200705194225.GB3356590@krava>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-06_04:2020-07-06,2020-07-06 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
- impostorscore=0 mlxscore=0 malwarescore=0 mlxlogscore=769
- priorityscore=1501 lowpriorityscore=0 spamscore=0 bulkscore=0 phishscore=0
- adultscore=0 cotscore=-2147483648 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2007060064
+        id S1728666AbgGFI7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 04:59:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32932 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728321AbgGFI7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 04:59:18 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46EE3C061794;
+        Mon,  6 Jul 2020 01:59:18 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id m9so6445286pfh.0;
+        Mon, 06 Jul 2020 01:59:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zB8UGJwVVuUJ7z3/tn8lFjXFFz4cB0VoK0RQrWVh/kA=;
+        b=uY9d/63Dp+ffxpmCL07ExtVosl/D32ZNJg4ja/bHrJhk/IV/UUHToL53A/IHxIo7C1
+         qD/AXxdx1siGqrKKEOxrZNvtasyRNeJZCLCfb8BtvqcBxn9JNAHA13cizHUgoRLByiWO
+         7L7hg//e2h8O8b4xXUrS3dv6/y7CHfbMTK/G6NxfcU8VM6xEPSuH5hNdMc3qXVCG0JK/
+         2h99miDaU36t1SUrfybO4NVlMTlPl8Rm7l7smOVT5mpssxn7xEqN2tIlftaIcmH5ZT6I
+         IeV1Ovf9TPgzQWbfQ2pnU/W2zX6dOExvriSFUTqAEicasSf+ikXzNmn8SQpj7Wt+k3oe
+         4WhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zB8UGJwVVuUJ7z3/tn8lFjXFFz4cB0VoK0RQrWVh/kA=;
+        b=EFZB5c3lmDELe+yb1YKFlNF/NAccRsTPy2g08afO3+r3ob/WiXC7PrlH6p0v5Nta6T
+         wsHNjKzTLhLtJamRIFAx8A3Ghfme+LXOtOzXgkavFyP71DlF+SkFa4xSGIFwb0j3yX7/
+         n9+S+fZbVatSeYa9QJyt6HE8MMiumJeMedphzJcaqenZpiyp2v23BNdsY1DjoAIbjCn6
+         kK1jlmeKwxN/PPMfLZW4AvRd5Qd+8YWE1L0FeRIprgJpK98mb8/xl2OZwUKSIWqnpURe
+         QVfbAhtRBBWUBrmFtSCeWJf4w3oGKilFonZ0nbYPOPM/ajWj1sgx2ZQ6GcrZnTjTq5Tb
+         y4IQ==
+X-Gm-Message-State: AOAM530OpJ8GNVSP7J8O369EoKdiT/GEVAoSSbzKgc2026mrjNaCtb6V
+        uJ1Rdqv7QLGQRJ+qZPo/8+Q=
+X-Google-Smtp-Source: ABdhPJwp6m7DYniWo1fOmyV+2e0zCqDDXlJnFgjk/KIBDiKmQnuJ+/xhXasYN/AnUW0PDcs0uTH+dg==
+X-Received: by 2002:aa7:86c1:: with SMTP id h1mr30044632pfo.175.1594025957343;
+        Mon, 06 Jul 2020 01:59:17 -0700 (PDT)
+Received: from varodek.iballbatonwifi.com ([103.105.153.67])
+        by smtp.gmail.com with ESMTPSA id a19sm10068149pfn.136.2020.07.06.01.59.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2020 01:59:16 -0700 (PDT)
+From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
+        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        skhan@linuxfoundation.org
+Subject: [PATCH v1 0/3] ethernet: sun: use generic power management
+Date:   Mon,  6 Jul 2020 14:27:43 +0530
+Message-Id: <20200706085746.221992-1-vaibhavgupta40@gmail.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiri,
+Linux Kernel Mentee: Remove Legacy Power Management.
 
-Sorry about the noise. My email seems to be rejected to the list. Resending
-with plain text.
+The purpose of this patch series is to remove legacy power management callbacks
+from sun ethernet drivers.
 
-s390 has overlapping address space. As suggested by the commit,
-ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE should not be enabled for s390 kernel.
-This should be changed in bpftrace application.
+The callbacks performing suspend() and resume() operations are still calling
+pci_save_state(), pci_set_power_state(), etc. and handling the power management
+themselves, which is not recommended.
 
-Even if we enable ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE, bpf_probe_read will
-only work in certain cases like kernel pointer deferences (kprobes).  User
-pointer deferences in uprobes/kprobes/etc will fail or have some invalid data
+The conversion requires the removal of the those function calls and change the
+callback definition accordingly and make use of dev_pm_ops structure.
 
-I am looking forward to this fix: https://github.com/iovisor/bpftrace/pull/1141
-OR probe split in bpftrace.
+All patches are compile-tested only.
 
-Thank you
+Vaibhav Gupta (3):
+  sun/sungem: use generic power management
+  sun/niu: use generic power management
+  sun/cassini: use generic power management
 
-Best Regards
-Sumanth
+ drivers/net/ethernet/sun/cassini.c | 17 +++----
+ drivers/net/ethernet/sun/niu.c     | 17 +++----
+ drivers/net/ethernet/sun/sungem.c  | 76 +++++++++++++++++-------------
+ 3 files changed, 57 insertions(+), 53 deletions(-)
+
+-- 
+2.27.0
+
