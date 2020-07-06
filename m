@@ -2,83 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37EEB216062
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 22:37:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F10221605E
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 22:36:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727071AbgGFUhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 16:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
+        id S1727028AbgGFUgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 16:36:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725941AbgGFUhG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 16:37:06 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523C6C061755
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 13:37:06 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id w17so32387290oie.6
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 13:37:06 -0700 (PDT)
+        with ESMTP id S1725941AbgGFUgy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 16:36:54 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83C3C061755;
+        Mon,  6 Jul 2020 13:36:54 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id i18so34101686ilk.10;
+        Mon, 06 Jul 2020 13:36:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qxuInpeT0zPJ81Anrcmt2sLX1ftg1++39V+NueezsYo=;
-        b=bV2U5lx1GZOWJexjjtF82NlU68mdRX31jnCdkCvS68+1fl8Wne3/qEWGuGngdDvQwK
-         k5xNocV+mNu7AdErJYmosE7jbf2ohtef+B8brHO3694aaKrS2Etfdvbvfo6mv7RraVzG
-         uj+Jqo1/KiNfx+1/18f/8rD0kXtk+xJTpNhEirXz1ZtkJ1dU+LZGta9rDg0uYWQcX8Bk
-         LBJKQ0cQf7sfLG4SScuOSVaMpeniTR43Qzc2y1dLT//tKvFxBCvZZ/y4hPJs/3BBfJSj
-         /BP5t2+3h+hZrZ8egCJbutVdz5NVmG7RY1cfuFj+n+JZbAZEF5Fi3FzutV3ATEZwPDhi
-         xldA==
+        bh=MCJphnGHi4ugJamu91O2peu/WOTsRbYb5BCnex+CVB8=;
+        b=UBdS65GKr5NxV/i1VWdBZsz0Nzk77f4SvA4DDlsmNTWg33gHKXW0Evdq6sSdcJ0JK5
+         nBCrdnGMAKyWKVicP+Vrdlx3WyJ4GZsy6Ofm2kdsYP4QUK9YcrwBuRdnyy1Yx8VQFv1Y
+         Nn5LgoH8E0V1RuczIBdUrpSFJTeXgRAWlQ1K1r9MOdn3/NwzkkANlyxnXTYhatViUBcB
+         Xi+ky2uqwrA/pJbg9BbN3GsrrV7+y7UMwCxE1KH98BHwdOuWAfi1GGOIwDt8awU3bVy1
+         fGjSCNplYvVf8FIK22YSXBZgSEiVvmY55sHFYmOYsZm/VuCPNBn+AHiKDBTC+z6ujAcE
+         XcbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qxuInpeT0zPJ81Anrcmt2sLX1ftg1++39V+NueezsYo=;
-        b=PgsfQBZroDSsid6HRB/z51HZa0USyPhWnQ5aGqmd3P1C6G4BawqGp5QoOvOMKGEhN9
-         Ov3Y9cMe6CzyPzBx+ne2qPjQVNR5aUh1jKaWSZo1BPFtueWfVV5ApLypm2IBA4dPl1U0
-         T1Ya78t4Qq2fTl4Smupey96DgiQvf/3RaeRQNs+ZtQNMOvnn2mmPsDxw5VGApoNpH+D7
-         mDjG7UgNg6UexuJS3EBg1m+5eYl7EAokwZxb27Mn+u/owmwaenw6KEYINGgsri7olIQc
-         UynSW8erY1Kmr955isRLCFUnJdS4cX2InU/zG7n8/Z6w2BuA+HYDENQtWoko1Me9iKgn
-         zj0A==
-X-Gm-Message-State: AOAM531SekV0iBbqmiW8yFyd1FmJJYVJImAExDskuw7l+mzVHiY9Vh8E
-        hTbb+EVRtY8DRc/QtyW7wXQXbqbmMwwGGkmvfy31Eg==
-X-Google-Smtp-Source: ABdhPJyDEw+SzjKlL22HJ8/oMKjyLCyK1GAHS6gZHbrCOpQbYUR9KROo5WTX0ArpxfhKhFtk5moFoa/Bmkpua0AeyI0=
-X-Received: by 2002:aca:494d:: with SMTP id w74mr856423oia.97.1594067825776;
- Mon, 06 Jul 2020 13:37:05 -0700 (PDT)
+        bh=MCJphnGHi4ugJamu91O2peu/WOTsRbYb5BCnex+CVB8=;
+        b=I8pj+geWmK6p5j/66Pbdh0ZrUi+/JfU/BdQpUEZb90r0E0XRijjbg3yckaqoCAzhBt
+         JUM5BnBUgb0ZSgfKZRTHTjML5deHHjGFhO+XsCgc9nvpNw+rq0CO7K2hXAiBikPPthsK
+         uz1EvRwELe+K9sF2/0CId5NCEe0dt9ovAi4GXIhYUoWFRUEzNagFVqL5RSV3qzQCrkxa
+         hsu2o/2jo2fmydEwZm6T29bByZW1mziEsAbay9tEeAKZENSrCVs1/O2gkaQM6A2RE8/U
+         MTsbtuAT3sUjWWf72zjisXg6b0/iKAmBeAm8FsGJqEQXjlo6L0h8t7hnlMOP64hFsUxO
+         Dw7Q==
+X-Gm-Message-State: AOAM530xv6prFriRhC5wIkkA4/gvG8+kU2Qcdci4VnGHeA8chaHFpW5G
+        k9ksVYOhWeEoMnUb3IObVU4YhkEBoc2mqe9h4HQ=
+X-Google-Smtp-Source: ABdhPJzJ8AsCUj1Krh+ANHbICZ+1ndjQ3JjCD+N0vaixFPQB8mdeyopRJ2RLKMxlY4mDEmJMgFBMugK9yAEa4WtaS8Q=
+X-Received: by 2002:a05:6e02:1212:: with SMTP id a18mr29300654ilq.97.1594067813705;
+ Mon, 06 Jul 2020 13:36:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAADnVQ+BqPeVqbgojN+nhYTE0nDcGF2-TfaeqyfPLOF-+DLn5Q@mail.gmail.com>
- <20200620212616.93894-1-zenczykowski@gmail.com> <CALAqxLVeg=EE06Eh5yMBoXtb2KTHLKKnBLXwGu-yGV4aGgoVMA@mail.gmail.com>
- <CAADnVQJOpsQhT0oY5GZikf00MT1=pR3vpCZkn+Z4hp2_duUFSQ@mail.gmail.com>
- <CALAqxLVfxSj961C5muL5iAYjB5p_JTx7T6E7zQ7nsfQGC-exFA@mail.gmail.com> <39345ec1-79a1-c329-4d2e-98904cdb11e1@iogearbox.net>
-In-Reply-To: <39345ec1-79a1-c329-4d2e-98904cdb11e1@iogearbox.net>
-From:   John Stultz <john.stultz@linaro.org>
-Date:   Mon, 6 Jul 2020 13:36:41 -0700
-Message-ID: <CALAqxLXNCcXp-dNudZJRYhpbR5BgES6yrYdfRj7pJg3TpeHroA@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] restore behaviour of CAP_SYS_ADMIN allowing the
- loading of networking bpf programs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
+References: <1593027056-43779-1-git-send-email-sridhar.samudrala@intel.com>
+In-Reply-To: <1593027056-43779-1-git-send-email-sridhar.samudrala@intel.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 6 Jul 2020 13:36:42 -0700
+Message-ID: <CAKgT0UdD2cyikv8WgCoZSsHsxsbLm0-KZ9SxatbgEfgbb3z-FQ@mail.gmail.com>
+Subject: Re: [PATCH v2] fs/epoll: Enable non-blocking busypoll when epoll
+ timeout is 0
+To:     Sridhar Samudrala <sridhar.samudrala@intel.com>
+Cc:     linux-fsdevel@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        David Miller <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 6, 2020 at 1:15 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> On 7/6/20 10:11 PM, John Stultz wrote:
-> >    Just wanted to follow up on this as I've not seen the regression fix
-> > land in 5.8-rc4 yet? Is it still pending, or did it fall through a
-> > gap?
+On Wed, Jun 24, 2020 at 4:03 PM Sridhar Samudrala
+<sridhar.samudrala@intel.com> wrote:
 >
-> No, it's in DaveM's -net tree currently, will go to Linus' tree on his next pull req:
+> This patch triggers non-blocking busy poll when busy_poll is enabled,
+> epoll is called with a timeout of 0 and is associated with a napi_id.
+> This enables an app thread to go through napi poll routine once by
+> calling epoll with a 0 timeout.
 >
->    https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=b338cb921e6739ff59ce32f43342779fe5ffa732
+> poll/select with a 0 timeout behave in a similar manner.
+>
+> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+>
+> v2:
+> Added net_busy_loop_on() check (Eric)
+>
+> ---
+>  fs/eventpoll.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+>
+> diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+> index 12eebcdea9c8..c33cc98d3848 100644
+> --- a/fs/eventpoll.c
+> +++ b/fs/eventpoll.c
+> @@ -1847,6 +1847,19 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
+>                 eavail = ep_events_available(ep);
+>                 write_unlock_irq(&ep->lock);
+>
+> +               /*
+> +                * Trigger non-blocking busy poll if timeout is 0 and there are
+> +                * no events available. Passing timed_out(1) to ep_busy_loop
+> +                * will make sure that busy polling is triggered only once.
+> +                */
+> +               if (!eavail && net_busy_loop_on()) {
+> +                       ep_busy_loop(ep, timed_out);
+> +                       write_lock_irq(&ep->lock);
+> +                       eavail = ep_events_available(ep);
+> +                       write_unlock_irq(&ep->lock);
+> +               }
+> +
+>                 goto send_events;
+>         }
 
-Great! Much appreciated! Sorry to nag!
--john
+Doesn't this create a scenario where the NAPI ID will not be
+disassociated if the polling fails?
+
+It seems like in order to keep parity with existing busy poll code you
+should need to check for !eavail after you release the lock and if
+that is true you should be calling ep_reset_busy_poll_napi_id so that
+you disassociate the NAPI ID from the eventpoll.
