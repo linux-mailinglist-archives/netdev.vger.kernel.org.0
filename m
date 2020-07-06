@@ -2,86 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 709A82161D9
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 01:08:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9630C2161E7
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 01:10:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727082AbgGFXIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 19:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        id S1726845AbgGFXKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 19:10:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726845AbgGFXIf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 19:08:35 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A2EC061755;
-        Mon,  6 Jul 2020 16:08:35 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id t7so18024015qvl.8;
-        Mon, 06 Jul 2020 16:08:35 -0700 (PDT)
+        with ESMTP id S1726366AbgGFXKO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 19:10:14 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C3FC061755
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 16:10:14 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id y2so41192531ioy.3
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 16:10:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yJTy/ZKtNePxlxQ8E0U9JYdohrE319mlkThftrxObes=;
-        b=q9+PVyYDq6U6uC92ALdEIzz1xoekYs9cduBoKTcI54BaxGYmniaxUv1XKEF5PAgX4n
-         t4YctUEdR4OrnWGYblUIHjqoLjgGU2VY0fjGE6RhaJmXKAaeHmzyEFdQLjCXJ5RltETW
-         aiMY4oxyW2wFJ13JVfT6chR4q0kCbBAeJI4wA9sKgsuSsMnBcbBo5dVZxRVxyywJuhhO
-         ahe2NrUJkJ0EqgLrgGLACkeZFuFMPEbKACsMz3hvV4xXVQf+hdQIxlOksTObKpMZ4xmv
-         gcF3lCr5iHmFGkSoumXZpBTO4t+erTSTvy8uh0F4zAKIZttCFvoWpb00Ec36NEklHsbr
-         mtZg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MvdQAtR2qLs6B429J/6XsvbOWOPlty7E5zuF1Tgl9m8=;
+        b=GDiOOarHp+MEQ+Uu3HqUP9PHZ4Qz4Gf5zVG2X2eXXv10rUAE4NTfBuWeMk/yrxDiji
+         hi0Kr7CpTalp92Fzx1ItR+NxhhtCqqUmG/FQXrM6QsNJJpl6GcE4KZrf3l0PN9gmXUaC
+         NR343QyAF+vR2ilpU61weijHo5fLVIc1nyNAXdkzizkQVyPL60YEakmOf9ABVESld1TK
+         XDseO0ZGtFD7hVSYWIn4510XRPHrHPsoA/Lav71I703H6JOhU27zH1c6CB5nI6q5tV+C
+         L6Kh/CewEH77zMl7hr9YvDFKj+mSRvRC572C55NrvjPBtg4zby149VvxvbgbUXb1bILy
+         K6cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yJTy/ZKtNePxlxQ8E0U9JYdohrE319mlkThftrxObes=;
-        b=inyJ+rufnI7fOHRRYshfut4GQdkQDUpFWCVkE7FN1DouwoZW6JFIlSkj789T7H8DKf
-         WN1gXD8KWYqYn191wWJZ7HeSNd83prGxVQjJ/UKDKAKU3lUh+iXJ8Lj+1uf5T0oSbSuU
-         R2j/Azz84RNldmxcVn6fbGmOg5DkSF59VKyaDnE8S28RMSDXB4Uqs5t/QHfGDeLkN1b8
-         fck3oma4Dh2p5P+/1kqD3GbGRdx3UhFo+kRk2MNqak6oulHptVd39FLyZfz1Juvler9U
-         hmguGsUO1Uwzv8BL+r/k9YOQdpe728HSsIJjD4oViRthq81Lez7281wc3qih8RXpee8B
-         2m2Q==
-X-Gm-Message-State: AOAM530gzEIJQPLWJ8KpJnWdhAUjGEx4i+nq3KiBfT+01xB24iGf2RRw
-        dr0/BW5VsXb/6d4Gzy+z3SSdGWC+FRqDORIcm2Y=
-X-Google-Smtp-Source: ABdhPJzrMC0wl1xdaoXdQlmUCSGK+wh0NXovh8B4e8cFUYYRkHaixDwdHNXkmegcZmsp2AeIDy/gEOc1owBTPDOZA1Y=
-X-Received: by 2002:a0c:9ae2:: with SMTP id k34mr48127540qvf.247.1594076914393;
- Mon, 06 Jul 2020 16:08:34 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MvdQAtR2qLs6B429J/6XsvbOWOPlty7E5zuF1Tgl9m8=;
+        b=HvtlAbIn7ftO4i9xcXfkH9hVU2nzljUYVSC0CnjwvALyrI+ro9v9LqkBANtcgGsMB8
+         4/qZpBQ9Wwy3f+GiSJGwUODtLVcm1eLPVIRLFrNGyH2IKIwwwjQrnbWgVK+08cB1GJR9
+         P9IB/paV3hfzmdp5lewJncKp2xhFgPez14klX7s7a7ES4Iou5oTJfEa8C4ITzTbr5pb+
+         6IM19RUzHcdhXWChjNlQ+fsUqEPgXmWIg0ce6pM/Hp1BHywFu7QZx50HFehag6NwXbBw
+         4QnthAW/NhODEX/JCPwKHmv+KJ8N/SBrgMoQgLn7UkywOmEsQdBTeNZAng5Ye466BIdt
+         /j1w==
+X-Gm-Message-State: AOAM530Ju1lM932sE0XszfaRTemz9SPwYShapYSSeEDTnRDN2+eFhXzo
+        Zw9ro0rqgn0Rfy5rtQtMT82B80ZGdP0u1A==
+X-Google-Smtp-Source: ABdhPJxHTuxCo5/s7nKOrl258qMT98b9xIBsONO5xuPusMwKd3AOokf9GdfhUGWXvusnGV1JY66HBg==
+X-Received: by 2002:a6b:611a:: with SMTP id v26mr14884468iob.22.1594077013475;
+        Mon, 06 Jul 2020 16:10:13 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id w16sm11523029iom.27.2020.07.06.16.10.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2020 16:10:12 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net 0/3] net: ipa: fix warning-reported errors
+Date:   Mon,  6 Jul 2020 18:10:07 -0500
+Message-Id: <20200706231010.1233505-1-elder@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200702200329.83224-1-alexei.starovoitov@gmail.com> <20200702200329.83224-2-alexei.starovoitov@gmail.com>
-In-Reply-To: <20200702200329.83224-2-alexei.starovoitov@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Jul 2020 16:08:23 -0700
-Message-ID: <CAEf4BzbemM5WpA-eiHkiHCU6+VcoQNEKr1rNnXHhGwYjPmny4g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] bpf: Factor out bpf_link_get_by_id() helper.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 1:04 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> From: Alexei Starovoitov <ast@kernel.org>
->
-> Refactor the code a bit to extract bpf_link_get_by_id() helper.
-> It's similar to existing bpf_prog_by_id().
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
+Building the kernel with W=1 produces numerous warnings for the IPA
+code.  Some of those warnings turn out to flag real problems, and
+this series fixes them.  The first patch fixes the most important
+ones, but the second and third are problems I think are worth
+treating as bugs as well.
 
-LGTM.
+Note:  I'll happily combine any of these if someone prefers that.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+					-Alex
 
+Alex Elder (3):
+  net: ipa: fix QMI structure definition bugs
+  net: ipa: declare struct types in "ipa_gsi.h"
+  net: ipa: include declarations in "ipa_gsi.c"
 
->  include/linux/bpf.h  |  1 +
->  kernel/bpf/syscall.c | 46 +++++++++++++++++++++++++++-----------------
->  2 files changed, 29 insertions(+), 18 deletions(-)
->
+ drivers/net/ipa/ipa_gsi.c     | 1 +
+ drivers/net/ipa/ipa_gsi.h     | 2 ++
+ drivers/net/ipa/ipa_qmi_msg.c | 6 +++---
+ 3 files changed, 6 insertions(+), 3 deletions(-)
 
-[...]
+-- 
+2.25.1
+
