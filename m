@@ -2,115 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1D682155C9
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 12:47:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C724F2155D6
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 12:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728897AbgGFKrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 06:47:18 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:46232 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728851AbgGFKrQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 06:47:16 -0400
-Received: by mail-il1-f198.google.com with SMTP id d8so24376367ilc.13
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 03:47:16 -0700 (PDT)
+        id S1728611AbgGFKuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 06:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728441AbgGFKuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 06:50:12 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 228AEC061794
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 03:50:12 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id j4so37873898wrp.10
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 03:50:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BkSmHrh2ZLGv5grEC4R+w7X480jRmn+K+RayTDZm/VE=;
+        b=eoNrCMZ1nUAfBNcD+5Yp6sOEVG/vjD6KRDgq7SsNTE5jFZbs4YfVuYPN2zk/dAvt/m
+         qx+y+htTtTy0uFH6eoJAXITxPHjhTd3UtDIyQDFkkJJTTgXHrCoXATzGZY8jCIqUQ5fg
+         2jMSStUMklSG6rt4S33VNj3ktWwzIjza2zwCnCHAodwvYp4NfH1jQDqyLwKHibN/bRF9
+         PSHNxNyC0FrDRrRlT4socqBWsyTm1QJc1Q8lUNMYyvxNsz9KlscxAGa0jV3XeqWh88+M
+         T8jRUf6WIkHNuEjgWRU+Eoaa6iFffCIYmHezFEbHBWFAb+IU9aZW0XKC9PnSaJqZSGj/
+         oqkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=o/+nsIISRaR1UrBUB4a9yq3mmK58VS9sslSGe+mCmmE=;
-        b=SqX0qXWGa7dAwDAlfj4krB5dr7CCDmPRi+6GuP01/A11yRUeq0F8Dc8tg0+OuLXPtS
-         wScIeogMGARx2f8LAvLroVQ0+Xfr/qxTQN5hFqxImWq1H0Lju0kdnEmRFEldM70/RAqH
-         a7icVzR+uDKXNOThz6H+GM81J0WC5TE5xuAOLyx5+7Oo1XxMRVv/rHCUJeF+xfXNj4cF
-         9Xk92Vm6XlVY9zWq5zJb3MOUPhtiEyw6paawh9m3jnlACoxeDDK1b+kKKfZ1XdHQ5nW/
-         4BccLuKu7Xz0rauYAdIdCWxmQYscgWATWqQAcwNnj42wp7SorY/5y2bR9SlddOHm+ZxB
-         6mgg==
-X-Gm-Message-State: AOAM53066c70Fh3xuqTnuTLgDN6WYwt25yjWt3WDlLFmO/2RQN3BiSvt
-        V8QmGle3LaqScoUmcukG7OBDhM2LBaYlZ/CyTEa0X4nY4ARc
-X-Google-Smtp-Source: ABdhPJyk+EJS6DncAZ9gMYNkHM+eSchccXnLzjXZJPLRW6EFCALsyjxejwWsDLJN4YPNct78Z7zPBLtVeU7M1lyUHeCk2wLjk3cl
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BkSmHrh2ZLGv5grEC4R+w7X480jRmn+K+RayTDZm/VE=;
+        b=U7NLFpGiu2KXEb7c9lc7wsRh/3W5CFhDZcN/3CPvlmdGQVTUs4ooYTsILZIRL6U9Lu
+         g4eo9JOecxGjjPw80fzJMoEFaSJ+j3PjzaRifvoCfKpgg5HKVjYTpywhYaLEqFTLn7Wv
+         I+jRL25yZfq6053+VFfpNptZEUh+F8JOqiHdo4bdI3kmWnO8c8N2knYBipUGCZ3KYG5E
+         1EFqtYaYzNNZ9hKtX6+jmdI33F9XR52O0QRen2X5gxwfN0MnWnOUy3LfXr9FQjHluJu0
+         OYuloMuAraQl/UDJ0t/t7c7hpbYxHYynnE01/9abCDjvAwyP5Gahab1fF0GZFDDoVe1J
+         4zsA==
+X-Gm-Message-State: AOAM532MbSrygZbm6Nfaq48dh6bNCq6R6XvmXfXm0S4yT7lgL6pX46Fp
+        zjimg4vWhXvJGoCf4rSE32C5phnXeSE=
+X-Google-Smtp-Source: ABdhPJyIVUgkaDkHh+n/UXkPIWY11npPKo8XeeNqpvqx/TSEEqqLA2ObkdwpLsW+ZZP2uqfom2TvHA==
+X-Received: by 2002:a05:6000:cf:: with SMTP id q15mr49240629wrx.203.1594032610421;
+        Mon, 06 Jul 2020 03:50:10 -0700 (PDT)
+Received: from localhost.localdomain ([77.139.6.232])
+        by smtp.gmail.com with ESMTPSA id 190sm11583226wmb.15.2020.07.06.03.50.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2020 03:50:09 -0700 (PDT)
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Eyal Birger <eyal.birger@gmail.com>
+Subject: [PATCH iproute2] ip xfrm: policy: support policies with IF_ID in get/delete/deleteall
+Date:   Mon,  6 Jul 2020 13:47:56 +0300
+Message-Id: <20200706104756.3546238-1-eyal.birger@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:bf0c:: with SMTP id z12mr28944209ilh.151.1594032436051;
- Mon, 06 Jul 2020 03:47:16 -0700 (PDT)
-Date:   Mon, 06 Jul 2020 03:47:16 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001c866805a9c3993f@google.com>
-Subject: WARNING in remove_one_compat_dev
-From:   syzbot <syzbot+4e28a66bf14b987f9dee@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, rafael@kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The XFRMA_IF_ID attribute is set in policies for them to be
+associated with an XFRM interface (4.19+).
 
-syzbot found the following crash on:
+Add support for getting/deleting policies with this attribute.
 
-HEAD commit:    bdc48fa1 checkpatch/coding-style: deprecate 80-column warn..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=12b3ffe2100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=129ea1e5950835e5
-dashboard link: https://syzkaller.appspot.com/bug?extid=4e28a66bf14b987f9dee
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+For supporting 'deleteall' the XFRMA_IF_ID attribute needs to be
+explicitly copied.
 
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+4e28a66bf14b987f9dee@syzkaller.appspotmail.com
-
-infiniband syz1: Port 1 not found
-infiniband syz1: Couldn't close port 1 for agents
-infiniband syz1: Port 1 not found
-infiniband syz1: Couldn't close port 1
-------------[ cut here ]------------
-sysfs group 'power' not found for kobject 'syz1'
-WARNING: CPU: 1 PID: 3384 at fs/sysfs/group.c:279 sysfs_remove_group fs/sysfs/group.c:279 [inline]
-WARNING: CPU: 1 PID: 3384 at fs/sysfs/group.c:279 sysfs_remove_group+0x155/0x1b0 fs/sysfs/group.c:270
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 3384 Comm: kworker/u4:2 Not tainted 5.7.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events_unbound ib_unregister_work
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:221
- __warn.cold+0x2f/0x35 kernel/panic.c:582
- report_bug+0x27b/0x2f0 lib/bug.c:195
- fixup_bug arch/x86/kernel/traps.c:175 [inline]
- fixup_bug arch/x86/kernel/traps.c:170 [inline]
- do_error_trap+0x12b/0x220 arch/x86/kernel/traps.c:267
- do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
- invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:sysfs_remove_group fs/sysfs/group.c:279 [inline]
-RIP: 0010:sysfs_remove_group+0x155/0x1b0 fs/sysfs/group.c:270
-Code: 48 89 d9 49 8b 14 24 48 b8 00 00 00 00 00 fc ff df 48 c1 e9 03 80 3c 01 00 75 41 48 8b 33 48 c7 c7 20 f2 39 88 e8 03 bb 5e ff <0f> 0b eb 95 e8 32 50 cb ff e9 d2 fe ff ff 48 89 df e8 25 50 cb ff
-RSP: 0018:ffffc90005447b40 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: ffffffff88931b20 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815cf161 RDI: fffff52000a88f5a
-RBP: 0000000000000000 R08: ffff888066c68280 R09: ffffed1015ce45f1
-R10: ffff8880ae722f83 R11: ffffed1015ce45f0 R12: ffff88808995c000
-R13: ffffffff889320c0 R14: ffff88808eae8700 R15: ffff8880aa034800
- dpm_sysfs_remove+0x97/0xb0 drivers/base/power/sysfs.c:794
- device_del+0x18b/0xd30 drivers/base/core.c:2711
- remove_one_compat_dev+0x52/0x70 drivers/infiniband/core/device.c:940
- remove_compat_devs drivers/infiniband/core/device.c:951 [inline]
- disable_device+0x1ab/0x230 drivers/infiniband/core/device.c:1282
- __ib_unregister_device+0x91/0x180 drivers/infiniband/core/device.c:1437
- ib_unregister_work+0x15/0x30 drivers/infiniband/core/device.c:1547
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2268
- worker_thread+0x96/0xe20 kernel/workqueue.c:2414
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:351
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ ip/xfrm_policy.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
+index d3c706d3..7cc00e7c 100644
+--- a/ip/xfrm_policy.c
++++ b/ip/xfrm_policy.c
+@@ -59,6 +59,7 @@ static void usage(void)
+ 		"	[ if_id IF_ID ] [ LIMIT-LIST ] [ TMPL-LIST ]\n"
+ 		"Usage: ip xfrm policy { delete | get } { SELECTOR | index INDEX } dir DIR\n"
+ 		"	[ ctx CTX ] [ mark MARK [ mask MASK ] ] [ ptype PTYPE ]\n"
++		"	[ if_id IF_ID ]\n"
+ 		"Usage: ip xfrm policy { deleteall | list } [ nosock ] [ SELECTOR ] [ dir DIR ]\n"
+ 		"	[ index INDEX ] [ ptype PTYPE ] [ action ACTION ] [ priority PRIORITY ]\n"
+ 		"	[ flag FLAG-LIST ]\n"
+@@ -582,6 +583,8 @@ static int xfrm_policy_get_or_delete(int argc, char **argv, int delete,
+ 		struct xfrm_user_sec_ctx sctx;
+ 		char    str[CTX_BUF_SIZE];
+ 	} ctx = {};
++	bool is_if_id_set = false;
++	__u32 if_id = 0;
+ 
+ 	while (argc > 0) {
+ 		if (strcmp(*argv, "dir") == 0) {
+@@ -619,7 +622,11 @@ static int xfrm_policy_get_or_delete(int argc, char **argv, int delete,
+ 
+ 			NEXT_ARG();
+ 			xfrm_policy_ptype_parse(&upt.type, &argc, &argv);
+-
++		} else if (strcmp(*argv, "if_id") == 0) {
++			NEXT_ARG();
++			if (get_u32(&if_id, *argv, 0))
++				invarg("IF_ID value is invalid", *argv);
++			is_if_id_set = true;
+ 		} else {
+ 			if (selp)
+ 				invarg("unknown", *argv);
+@@ -669,6 +676,9 @@ static int xfrm_policy_get_or_delete(int argc, char **argv, int delete,
+ 			  (void *)&ctx, ctx.sctx.len);
+ 	}
+ 
++	if (is_if_id_set)
++		addattr32(&req.n, sizeof(req.buf), XFRMA_IF_ID, if_id);
++
+ 	if (rtnl_talk(&rth, &req.n, answer) < 0)
+ 		exit(2);
+ 
+@@ -767,6 +777,11 @@ static int xfrm_policy_keep(struct nlmsghdr *n, void *arg)
+ 		}
+ 	}
+ 
++	if (tb[XFRMA_IF_ID]) {
++		addattr32(new_n, xb->size, XFRMA_IF_ID,
++			  rta_getattr_u32(tb[XFRMA_IF_ID]));
++	}
++
+ 	xb->offset += new_n->nlmsg_len;
+ 	xb->nlmsg_count++;
+ 
+-- 
+2.25.1
+
