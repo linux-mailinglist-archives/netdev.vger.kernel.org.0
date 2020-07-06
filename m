@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAEE921609F
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 22:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 549482160A0
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 22:53:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727065AbgGFUxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 16:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
+        id S1727091AbgGFUxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 16:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725941AbgGFUxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 16:53:04 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28EC5C08C5DF
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 13:53:04 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id h19so47239372ljg.13
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 13:53:04 -0700 (PDT)
+        with ESMTP id S1725941AbgGFUxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 16:53:06 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEE6C08C5DF
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 13:53:05 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id y18so23436667lfh.11
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 13:53:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qoKUfx+bRpgzp/ddkVCT09K2I1cceu5SICdacEnRFsc=;
-        b=dXL2nwR1FHFz8hawRIFOqQ+ZRX40ODMEYiFqApVojfzJfKE9Tfa5UvJDg0BuPdeAg7
-         DdT45jA4MoFvZBcnEbkJIgdQFvKOppIrA3I/0Zf1tyzyn+xYgrSlu7GEnKdN5Gi1euok
-         ViAOWQdSrC/+1dsLi1YwILCPSLv0Y9KWC7MNhJ2xMkknSUbVwLYcAHQcAZNfCGKlmzqi
-         XYQiBhpEJ/4nCDpxpYRmDMImUvoy2sA/pYbLC73s8EhOFoKUu5l73XSXYKjQjQvGm6E6
-         UHG+dOwsEaCrIG9R5fqPwPQ1n99kwOKC76RstDpuj90KjEijhwkVxLwsFPkc/tmkIu2k
-         3kiQ==
+        bh=f4F27NvYH7YHeuYKRHbuc0Pqyyr+0B+jF6d12ClwIkI=;
+        b=lOW1Wg/PzgJlEH+GqjhrxmTv3li0t626WCwwPoL6jeD55GR1+mIMCvoF8Thzf2T5sK
+         rLJxpMmZ+sS6+PIzU3TwaiH4y+/FQyfsIxPpTXUocUxF0H9/v9NUr670HttAabkNfvfq
+         Yj76IHiRc4an4LNkLTkRaTbpTGOuZQine0yUk25XXrtJHWQaPNoK+grfuhhf2MrHTqx4
+         cgkgbdoKyM1ZadeGrUWVA4rNcg8A08Uf0fDOhFc8erb0hz3NcckZNUkCX+1vNdFh+bVh
+         ksx6Y7+P0VIRAJ3z1lwgk2WH80GLIadVYwbtWQ5MBXwn8MkUpQrrvSNiLVfcYdPwORwH
+         aA4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qoKUfx+bRpgzp/ddkVCT09K2I1cceu5SICdacEnRFsc=;
-        b=Pk/map70T45wWAu03lhz+m3gaQTZ5Fk4L8bmPLvqlrhnygVjM2sETmLDVtqF/jy3XO
-         n+yaeIBqfbx0CmScVUIcIyLWQ4wT3pAfJ7YVZuqqss5K5rcY6yh8wjjqnPJ8MemtQasC
-         G5gLs7s77+XvcUyXphxANzDreCtbq+fqsWH0QbX+iFdkJpQkkxGf1Ox/M9A1V6d0alkQ
-         /J+x/8MeCqBEtJvp/rw15hXkItUWXyQhJjJT2OptNM7eLv642mbAYA/c8xpdFU6mi+xk
-         AS2XXUVhAmGbMXbWUCKwHFmsIYP46A9RbH3YFMimj2PBOvlUUL2l0Lgp5fDlxT+R2gpl
-         M7xg==
-X-Gm-Message-State: AOAM532gGyF+iiAS/xh1PWPZSS3vhYTMEb17erNshFx6dvIubt/oVGP/
-        cu8uCv/NVFEVlzIJvVUziHkKIQ==
-X-Google-Smtp-Source: ABdhPJzlr2YZKW1pd/vWgz+UVr2d55yXoIDSOC6bDwdr3OUNQvcQIqvfVV8NS1f3uGGSoSqzKiP4GA==
-X-Received: by 2002:a2e:9b41:: with SMTP id o1mr16107100ljj.360.1594068782597;
-        Mon, 06 Jul 2020 13:53:02 -0700 (PDT)
+        bh=f4F27NvYH7YHeuYKRHbuc0Pqyyr+0B+jF6d12ClwIkI=;
+        b=kiqE57bGGBnVqpgY65rxQ5FHKhB21zE5GRxz0H2C6g2JxNXT2g3T/4Kn8KNGV4t2cm
+         1OyAJRvbMdsw6VuYVmyv3wyvGkiFAnUTJpiEQlvXWV3i4LWBsbG3OQobLoJDhuby7SLm
+         bOtpNAtoFL2HzDGJPZP98xzDprTgN9cbzeLsxCT2P5og/n8xuzYVcwlr3SO90VKvl/LL
+         KcU+zlVrCjp+INlgHUju6I9BV87bx6iOO48oQt6IsJVWc15xfNDvVMG6j67F6/az/DDe
+         MIEzym4cawn/KBKKsANLms2Ys0e+5idK3aNYDaItEIrG1JEMxEdWdS/E4eu8+w1drFNq
+         PRlw==
+X-Gm-Message-State: AOAM530pgodsI+yNgPgMiX24doJkwwMKYAiPgPWWV5itljHNIdlKmrWA
+        5Fu8qAHpBzTXNorf33EPRJWuSQ==
+X-Google-Smtp-Source: ABdhPJweudQ4Zps5g3GaP+6vIwfBjVW4ykzkwUD6KuhgpRarif8Chp4AWsRzjMzBMLZwc2sWZxtlxg==
+X-Received: by 2002:ac2:5593:: with SMTP id v19mr30767322lfg.43.1594068784389;
+        Mon, 06 Jul 2020 13:53:04 -0700 (PDT)
 Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id t10sm624714ljg.60.2020.07.06.13.53.01
+        by smtp.gmail.com with ESMTPSA id t10sm624714ljg.60.2020.07.06.13.53.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2020 13:53:02 -0700 (PDT)
+        Mon, 06 Jul 2020 13:53:03 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -55,9 +55,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
         DENG Qingfang <dqfext@gmail.com>,
         Mauri Sandberg <sandberg@mailfence.com>
-Subject: [net-next PATCH 4/5 v4] net: dsa: rtl8366: VLAN 0 as disable tagging
-Date:   Mon,  6 Jul 2020 22:52:44 +0200
-Message-Id: <20200706205245.937091-5-linus.walleij@linaro.org>
+Subject: [net-next PATCH 5/5 v4] net: dsa: rtl8366: Use top VLANs for default
+Date:   Mon,  6 Jul 2020 22:52:45 +0200
+Message-Id: <20200706205245.937091-6-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200706205245.937091-1-linus.walleij@linaro.org>
 References: <20200706205245.937091-1-linus.walleij@linaro.org>
@@ -68,18 +68,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The code in net/8021q/vlan.c, vlan_device_event() sets
-VLAN 0 for a VLAN-capable ethernet device when it
-comes up.
+The RTL8366 DSA switches will not work unless we set
+up a default VLAN for each port. We are currently using
+e.g. VLAN 1..6 for a 5-port switch as default VLANs.
 
-Since the RTL8366 DSA switches must have a VLAN and
-PVID set up for any packets to come through we have
-already set up default VLAN for each port as part of
-bringing the switch online.
-
-Make sure that setting VLAN 0 has the same effect
-and does not try to actually tell the hardware to use
-VLAN 0 on the port because that will not work.
+This is not very helpful for users, move it to allocate
+the top VLANs for default instead, for example on
+RTL8366RB there are 16 VLANs so instead of using
+VLAN 1..6 as default use VLAN 10..15 so VLAN 1
+thru VLAN 9 is available for users.
 
 Cc: DENG Qingfang <dqfext@gmail.com>
 Cc: Mauri Sandberg <sandberg@mailfence.com>
@@ -89,129 +86,28 @@ Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ChangeLog v3->v4:
 - Resend with the rest
 ChangeLog v2->v3:
-- Collected Andrew's review tag.
+- Collect Andrew's reviewed-by.
 ChangeLog v1->v2:
-- Rebased on v5.8-rc1 and other changes.
+- Rebase on v5.8-rc1.
 ---
- drivers/net/dsa/rtl8366.c | 65 +++++++++++++++++++++++++++++++--------
- 1 file changed, 52 insertions(+), 13 deletions(-)
+ drivers/net/dsa/rtl8366.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-index b907c0ed9697..a000d458d121 100644
+index a000d458d121..06adcf68ff8d 100644
 --- a/drivers/net/dsa/rtl8366.c
 +++ b/drivers/net/dsa/rtl8366.c
-@@ -355,15 +355,25 @@ int rtl8366_vlan_prepare(struct dsa_switch *ds, int port,
- 			 const struct switchdev_obj_port_vlan *vlan)
- {
- 	struct realtek_smi *smi = ds->priv;
-+	u16 vid_begin = vlan->vid_begin;
-+	u16 vid_end = vlan->vid_end;
+@@ -260,8 +260,8 @@ static int rtl8366_set_default_vlan_and_pvid(struct realtek_smi *smi,
  	u16 vid;
  	int ret;
  
--	for (vid = vlan->vid_begin; vid < vlan->vid_end; vid++)
-+	if (vid_begin == 0) {
-+		dev_info(smi->dev, "prepare VLAN 0 - ignored\n");
-+		if (vid_end == 0)
-+			return 0;
-+		/* Skip VLAN 0 and start with VLAN 1 */
-+		vid_begin = 1;
-+	}
-+
-+	for (vid = vid_begin; vid < vid_end; vid++)
- 		if (!smi->ops->is_vlan_valid(smi, vid))
- 			return -EINVAL;
+-	/* This is the reserved default VLAN for this port */
+-	vid = port + 1;
++	/* Use the top VLANs for per-port default VLAN */
++	vid = smi->num_vlan_mc - smi->num_ports + port;
  
- 	dev_info(smi->dev, "prepare VLANs %04x..%04x\n",
--		 vlan->vid_begin, vlan->vid_end);
-+		 vid_begin, vid_end);
- 
- 	/* Enable VLAN in the hardware
- 	 * FIXME: what's with this 4k business?
-@@ -383,27 +393,46 @@ void rtl8366_vlan_add(struct dsa_switch *ds, int port,
- 	bool untagged = !!(vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED);
- 	bool pvid = !!(vlan->flags & BRIDGE_VLAN_INFO_PVID);
- 	struct realtek_smi *smi = ds->priv;
-+	u16 vid_begin = vlan->vid_begin;
-+	u16 vid_end = vlan->vid_end;
- 	u32 member = 0;
- 	u32 untag = 0;
- 	u16 vid;
- 	int ret;
- 
--	for (vid = vlan->vid_begin; vid < vlan->vid_end; vid++)
--		if (!smi->ops->is_vlan_valid(smi, vid))
-+	if (vid_begin == 0) {
-+		dev_info(smi->dev, "set VLAN 0 on port %d = default VLAN\n",
-+			 port);
-+		/* Set up default tagging */
-+		ret = rtl8366_set_default_vlan_and_pvid(smi, port);
-+		if (ret) {
-+			dev_err(smi->dev,
-+				"error setting default VLAN on port %d\n",
-+				port);
- 			return;
-+		}
-+		if (vid_end == 0)
-+			return;
-+		/* Skip VLAN 0 and start with VLAN 1 */
-+		vid_begin = 1;
-+	}
- 
--	dev_info(smi->dev, "add VLAN on port %d, %s, %s\n",
--		 port,
--		 untagged ? "untagged" : "tagged",
--		 pvid ? " PVID" : "no PVID");
-+	for (vid = vid_begin; vid < vid_end; vid++)
-+		if (!smi->ops->is_vlan_valid(smi, vid))
-+			return;
- 
- 	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
- 		dev_err(smi->dev, "port is DSA or CPU port\n");
- 
--	for (vid = vlan->vid_begin; vid <= vlan->vid_end; ++vid) {
-+	for (vid = vid_begin; vid <= vid_end; ++vid) {
- 		int pvid_val = 0;
- 
--		dev_info(smi->dev, "add VLAN %04x\n", vid);
-+		dev_info(smi->dev, "add VLAN %04x to port %d, %s, %s\n",
-+			 vid,
-+			 port,
-+			 untagged ? "untagged" : "tagged",
-+			 pvid ? " PVID" : "no PVID");
-+
- 		member |= BIT(port);
- 
- 		if (untagged)
-@@ -437,15 +466,25 @@ int rtl8366_vlan_del(struct dsa_switch *ds, int port,
- 		     const struct switchdev_obj_port_vlan *vlan)
- {
- 	struct realtek_smi *smi = ds->priv;
-+	u16 vid_begin = vlan->vid_begin;
-+	u16 vid_end = vlan->vid_end;
- 	u16 vid;
- 	int ret;
- 
--	dev_info(smi->dev, "del VLAN on port %d\n", port);
-+	if (vid_begin == 0) {
-+		dev_info(smi->dev, "remove port %d from VLAN 0 (no-op)\n",
-+			 port);
-+		if (vid_end == 0)
-+			return 0;
-+		/* Skip VLAN 0 and start with VLAN 1 */
-+		vid_begin = 1;
-+	}
- 
--	for (vid = vlan->vid_begin; vid <= vlan->vid_end; ++vid) {
-+	for (vid = vid_begin; vid <= vid_end; ++vid) {
- 		int i;
- 
--		dev_info(smi->dev, "del VLAN %04x\n", vid);
-+		dev_info(smi->dev, "remove VLAN %04x from port %d\n",
-+			 vid, port);
- 
- 		for (i = 0; i < smi->num_vlan_mc; i++) {
- 			struct rtl8366_vlan_mc vlanmc;
+ 	if (port == smi->cpu_port)
+ 		/* For the CPU port, make all ports members of this
 -- 
 2.26.2
 
