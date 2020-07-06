@@ -2,137 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A328121544E
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 11:00:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93E5D21547A
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 11:20:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728800AbgGFI7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 04:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32988 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728321AbgGFI7i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 04:59:38 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FAAC061794;
-        Mon,  6 Jul 2020 01:59:38 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id k5so7157265pjg.3;
-        Mon, 06 Jul 2020 01:59:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=It/KCincJ1QGaOO3UJT7U/GTe3VbLriw3afVTbDT6II=;
-        b=CB8z185MxQ6CkLhK0kdmZB3E7Cyhh8QOuACpiO1OpxmyJ0wkeqL67RoQwYbGemDlMu
-         M7AIRJ+gb5Q05PLdon3i/wfbgW2rRuHO+OTu5WGmPKh0qyC5tb0SpOtTMBdb7RLyaqWx
-         zCKTelnHV5b00qyds1fhiBpcuohnKWgNqNUSOgUL8aeYQXaPLgv/gOzJHA9dtdbrSxhu
-         W4iUUhWvbDvgt3dMRE923QYawVRiUzd4O7dBYyX/RF59TisTSLpxmVgdQ/SLMZOFF9JQ
-         GEcs+yYDc/W555OuwkWYm+zyiZL1al7hgUk3L8g+heBOJO4AGY2palhari4fyx/7qf3d
-         fqTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=It/KCincJ1QGaOO3UJT7U/GTe3VbLriw3afVTbDT6II=;
-        b=m3fGbJh3UypJga1BcauBuRNDbdoi6ErVA/h3JmW9TdnMilQKv9zBcmUdEH7c0P3Z+D
-         o5bBF9j/u0WZLEDnzXb7L/lv6CvnI8YHsSMizwu3Sg2SYbIzsBt8B/1c7RPB0WAW4p8g
-         8G6W+gYNFb00hNrQNvjEynQTAzCs8pVA0NnFJTl0zQtDmCwUQFxL1O/5fsAQB4SlmvfB
-         qIG4uCp+DGvr5GFAcxfIatLuUH988nWPG4Flp+dLCucmPqhqh0ew4HNyPozDzdNkNdj7
-         Gl8eltYJvK4p4Eq/H5+eB/dnVf+F1vLCnbfylxpRwIZ5MSdUCnPLOGuUJMKcRgGUjaao
-         M3GQ==
-X-Gm-Message-State: AOAM530gq50x0CTs6ZBS0DCZzGjieW2nlatZStZkGlBbUbVyxpWESIca
-        1+DOFLuMqWCxiE0u7X7zJVM=
-X-Google-Smtp-Source: ABdhPJzdwMBcEoHGFBN8BFYtVx9Mvr6X3ml8KNAOxTdBCKB+cQEsfLXBpCgjAIzQ1rj34+kighSeTA==
-X-Received: by 2002:a17:90a:cc03:: with SMTP id b3mr46644646pju.80.1594025977830;
-        Mon, 06 Jul 2020 01:59:37 -0700 (PDT)
-Received: from varodek.iballbatonwifi.com ([103.105.153.67])
-        by smtp.gmail.com with ESMTPSA id a19sm10068149pfn.136.2020.07.06.01.59.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2020 01:59:37 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org
-Subject: [PATCH v1 3/3] sun/cassini: use generic power management
-Date:   Mon,  6 Jul 2020 14:27:46 +0530
-Message-Id: <20200706085746.221992-4-vaibhavgupta40@gmail.com>
+        id S1728662AbgGFJUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 05:20:42 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:16636 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728024AbgGFJUl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 05:20:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1594027240; x=1625563240;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=geAAVdtwO9Bz84BCA+quZKFfwpYizDUN5bzgDqOE4NM=;
+  b=1AKPGoBlxBDES05s/4m52Msn700vKW+JNLzm3nIPpGIeNp+bBa/wpqlS
+   msdeI5rUgSRK37X9w7LpZ9NuQd70Ub/oKUhq7FZFbTotZXeofyRgp1G27
+   T6L8xZwdjXbKgdSAMDo2Z5boU5ohyEHRk2kUFppA7iz6R0FBjDtUGqY16
+   oxu4CRskNUgc43eGgvL7vB9gOY7EZgwgvr8yerzfncNIKH1YPe04ouU2P
+   26OL8j5HxZvskqh2M3iyonZJEsbxsnUHWDMgT+682ij78uoEPE/SJxIVz
+   i7HBhbdgHVubwo+GZ/G0MdQ9ARE1Ha5Qo7Kenk2F7opGqAG3MjqnrkVxO
+   g==;
+IronPort-SDR: a4wiyh8ZLodXlPZofkiDLjAxKkw4XNbH6tGjpYtQgZWkvtn6952TmkjZRVIBBqFoIuVIcZuVHg
+ CkOtL99zqsZ/0BnvjPHamwLaK8mzoGDNz6EDOdcDCvvS5+9v45JiGnDkVJQewMm2bNU2OhWwCS
+ xatBqm1DNK71T9MQ2DFNWkPYrPyVNSIvVH4TYiD8fF00Cfk3+hIRP1riDgLPGkBzV3LEIDYz3L
+ F/ASHhMyT4fWJha0VSo4+TLguYPrSdDnGdVUM3HYPs9Phw6xdctj1psdaLhU0FvbcI8kVFFlGU
+ bw0=
+X-IronPort-AV: E=Sophos;i="5.75,318,1589266800"; 
+   d="scan'208";a="18108960"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jul 2020 02:20:39 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 6 Jul 2020 02:20:39 -0700
+Received: from soft-dev3.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Mon, 6 Jul 2020 02:20:12 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <jiri@resnulli.us>,
+        <ivecera@redhat.com>, <andrew@lunn.ch>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 00/12] bridge: mrp: Add support for interconnect ring
+Date:   Mon, 6 Jul 2020 11:18:30 +0200
+Message-ID: <20200706091842.3324565-1-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200706085746.221992-1-vaibhavgupta40@gmail.com>
-References: <20200706085746.221992-1-vaibhavgupta40@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With legacy PM, drivers themselves were responsible for managing the
-device's power states and takes care of register states.
+This patch series extends existing MRP to add support for interconnect ring.  An
+interconnect ring is a ring that connects 2 rings. In this way is possible to
+connect multiple rings. Each interconnect ring is form of 4 nodes, in which 3
+have the role MIC(Media Redundancy Interconnect Client) and one has the role
+MIM(Media Redundancy Interconnect Manager). All these nodes need to have the
+same ID and the ID needs to be unique between multiple interconnect rings. And 2
+nodes needs to be part of one ring and the other 2 nodes needs to be part of the
+other ring that is connected.
 
-After upgrading to the generic structure, PCI core will take care of
-required tasks and drivers should do only device-specific operations.
+                 +---------+
+                 |         |
+      +----------|   MRM   |---------------+
+      |          |         |               |
+      |          +---------+               |
+      |                                    |
+      |                                    |
+      |                                    |
++--------------+                  +-----------------+
+|              |                  |                 |
+|  MRC/MIC     |------------------|    MRC/MIM      |
+|              |                  |                 |
++--------------+                  +-----------------+
+      |                                     |
+      |Interconnect port                    |Interconnect port
+      |                                     |
+      |                                     |
++--------------+                  +-----------------+
+|              |                  |                 |
+|  MRC/MIC     |----------------- |   MRC/MIC       |
+|              |                  |                 |
++--------------+                  +-----------------+
+      |                                     |
+      |                                     |
+      |          +---------+                |
+      |          |         |                |
+      +----------|  MRM    |----------------+
+                 |         |
+                 +---------+
 
-Compile-tested only.
+Each node in a ring needs to have one of the following ring roles, MRM or MRC.
+And it can also have an interconnect role like MIM or MIC if it is part of an
+interconnect ring. In the figure above the MRM doesn't have any interconnect
+role but the MRC from the top ring have the interconnect roles MIC respectively
+MIM. Therefore it is not possible for a node to have only an interconnect role.
 
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- drivers/net/ethernet/sun/cassini.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+There are 2 ways for interconnect ring to detect when is open or closed:
+1. To use CCM frames on the interconnect port to detect when the interconnect
+   link goes down/up. This mode is called LC-mode.
+2. To send InTest frames on all 3 ports(2 ring ports and 1 interconnect port)
+   and detect when these frames are received back. This mode is called RC-mode.
 
-diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
-index debd3c3fa6fb..5b11124450d6 100644
---- a/drivers/net/ethernet/sun/cassini.c
-+++ b/drivers/net/ethernet/sun/cassini.c
-@@ -5172,10 +5172,9 @@ static void cas_remove_one(struct pci_dev *pdev)
- 	pci_disable_device(pdev);
- }
- 
--#ifdef CONFIG_PM
--static int cas_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused cas_suspend(struct device *dev_d)
- {
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct cas *cp = netdev_priv(dev);
- 	unsigned long flags;
- 
-@@ -5204,9 +5203,9 @@ static int cas_suspend(struct pci_dev *pdev, pm_message_t state)
- 	return 0;
- }
- 
--static int cas_resume(struct pci_dev *pdev)
-+static int cas_resume(struct device *dev_d)
- {
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct cas *cp = netdev_priv(dev);
- 
- 	netdev_info(dev, "resuming\n");
-@@ -5227,17 +5226,15 @@ static int cas_resume(struct pci_dev *pdev)
- 	mutex_unlock(&cp->pm_mutex);
- 	return 0;
- }
--#endif /* CONFIG_PM */
-+
-+static SIMPLE_DEV_PM_OPS(cas_pm_ops, cas_suspend, cas_resume);
- 
- static struct pci_driver cas_driver = {
- 	.name		= DRV_MODULE_NAME,
- 	.id_table	= cas_pci_tbl,
- 	.probe		= cas_init_one,
- 	.remove		= cas_remove_one,
--#ifdef CONFIG_PM
--	.suspend	= cas_suspend,
--	.resume		= cas_resume
--#endif
-+	.driver.pm	= &cas_pm_ops,
- };
- 
- static int __init cas_init(void)
+This patch series adds support only for RC-mode. Where MIM sends InTest frames
+on all 3 ports and detects when it receives back the InTest. When it receives
+the InTest it means that the ring is closed so it would set the interconnect
+port in blocking state. If it stops receiving the InTest frames then it would
+set the port in forwarding state and it would send InTopo frames. These InTopo
+frames will be received by MRM nodes and process them. And then the MRM will
+send Topo frames in the rings so each client will clear its FDB.
+
+Horatiu Vultur (12):
+  switchdev: mrp: Extend switchdev API for MRP Interconnect
+  bridge: uapi: mrp: Extend MRP attributes for MRP interconnect
+  bridge: mrp: Extend bridge interface
+  bridge: mrp: Extend br_mrp for MRP interconnect
+  bridge: mrp: Rename br_mrp_port_open to br_mrp_ring_port_open
+  bridge: mrp: Add br_mrp_in_port_open function
+  bridge: switchdev: mrp: Extend MRP API for switchdev for MRP
+    Interconnect
+  bridge: mrp: Implement the MRP Interconnect API
+  bridge: mrp: Extend MRP netlink interface for configuring MRP
+    interconnect
+  bridge: uapi: mrp: Extend MRP_INFO attributes for interconnect status
+  bridge: mrp: Extend br_mrp_fill_info
+  net: bridge: Add port attribute IFLA_BRPORT_MRP_IN_OPEN
+
+ include/linux/if_bridge.h          |   1 +
+ include/net/switchdev.h            |  38 +++
+ include/uapi/linux/if_bridge.h     |  58 ++++
+ include/uapi/linux/if_link.h       |   1 +
+ include/uapi/linux/mrp_bridge.h    |  38 +++
+ net/bridge/br_mrp.c                | 531 +++++++++++++++++++++++++++--
+ net/bridge/br_mrp_netlink.c        | 182 +++++++++-
+ net/bridge/br_mrp_switchdev.c      |  62 ++++
+ net/bridge/br_netlink.c            |   3 +
+ net/bridge/br_private_mrp.h        |  27 +-
+ tools/include/uapi/linux/if_link.h |   1 +
+ 11 files changed, 906 insertions(+), 36 deletions(-)
+
 -- 
 2.27.0
 
