@@ -2,62 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E45A216242
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 01:27:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F2C421624C
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 01:30:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726898AbgGFX12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 19:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54496 "EHLO
+        id S1727099AbgGFXad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 19:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726280AbgGFX11 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 19:27:27 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA06C061755;
-        Mon,  6 Jul 2020 16:27:27 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id e13so36548400qkg.5;
-        Mon, 06 Jul 2020 16:27:27 -0700 (PDT)
+        with ESMTP id S1726883AbgGFXac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 19:30:32 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B089C061755;
+        Mon,  6 Jul 2020 16:30:32 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id el4so13953534qvb.13;
+        Mon, 06 Jul 2020 16:30:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Nk596EgdTx9bruearQGvPUmGFW9uDd9pIjVlQVe/Js0=;
-        b=dvrjiAUwG+gXKGyCpiUhFHadrl/yilQk2vh22k6+SiiAkO7xbT0yaU/Nh6t0aMX9uN
-         p6tpVpJ+iSoefLzR5m32Vzrd9dnYUBOshZbQ1V0yeuT1w7RAzK92TEdit8XAfuuGLSju
-         O0o6VJrDzXh6SVWjM3vfUpU21277cya4EgxQ3xsJeOTLZCz9LPdNCDVAP2CVuhDBS/Ov
-         zDOStIt3yVREP9KXTDTpdXJ1KKRI2yGF4VbXMQS8m86i8wlmgyXgB7vhf9B99xxcqswy
-         81mE7BHaI5jYzFKjMvxOiwDxHB38/IrCDyoEA+4gZatSUCMq7Bgqkfchq+u/SpKFyJd0
-         0mAA==
+        bh=sEYAnl7prQHprAtPmbvkOLzh+EIfJl1q1qPEd73ZF90=;
+        b=IaEooQ+HtW5/ixteRvdLrim36x/MJPp2A+EpNKz+MwgPVivK+J4Hy5O6nsp0hvmDRz
+         4Poe/DwVBR8rM/jt5hdQgW3JIAFwelIdR6jC1Bt58D032G7YXOM/PRq1xkjfk08qi0UU
+         2J6MitC5W2WsA8TuJXdtxgFwDPCpbSur55hEx+KUeYt/RbjtNr9Wvx+BSqErGMcVZwgE
+         kQ5gJRybYt7q4AA1ItTtdnVgdiimbkhoc+9QFva2cgEbcKu+CrnYJDGTUl/o7vNjbbTY
+         7LqQhz+IpgPou5mGkL8UqDrKfFSxkPRABc07a63zZxswBkDggLrz2R1r8D7e0NLedBs8
+         0DIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Nk596EgdTx9bruearQGvPUmGFW9uDd9pIjVlQVe/Js0=;
-        b=Vhezmf75RYPgJrLxPQBEfTM8ZwJCZT2ip+brGf/POoIL6isKY9D6NgSPKMlgPf7GK3
-         UZo0/etxVoySLaY+bWtcanucD/hjmY165RolJ+XgG/WPL3uYTTkiVE3UxWp3iSbNOPIw
-         rVywgbJ/SL1YwdkJuXyYOkT0cndpuLlUcNKZn5UXMWP+iVov0zUG9Z/8Zk70PTZFTK4Y
-         YCmxKMsjL2PWATwByhAKRK0gs/IQY1NRyXW7+3KqmKgixPE/6aWPm+F+ociUN3q4nBoA
-         5ggy+Hh8xzIomSAhJLB7lJtkPDxgMvI9m22Vbh0ztWQzzatWHkEMgYFWOVkslwJmAGAA
-         Qb+A==
-X-Gm-Message-State: AOAM530m4F+BH+5mTtH8wzcBYpxund6qdUUtwcXiXIm0GvJBwaAkneCd
-        O8VrbJClQG0g8Uci3S+WeZ6zvokB1ExNwIbJ1uU=
-X-Google-Smtp-Source: ABdhPJxJEep0+I4j2/z3whYbec9TQKWHRMmS9g76q9mHwHSdRx4mkMNNYiFi/36xQ71irGQ+nDGe9KLott3rH1Su8Pc=
-X-Received: by 2002:a37:270e:: with SMTP id n14mr47509015qkn.92.1594078046950;
- Mon, 06 Jul 2020 16:27:26 -0700 (PDT)
+        bh=sEYAnl7prQHprAtPmbvkOLzh+EIfJl1q1qPEd73ZF90=;
+        b=qheDGAcXbHY7q5h3fJbkIK0g1aVOZLv5vmjepGfotFLMjDQc999s+jJgl5YLRXDuos
+         NyfeD0vGvnV0tqgiAee2/BI1I8eWOAYqgiElfFkUQxsQYNGvn8vhbzh+2RhJHA+3J5NN
+         qZa7ZusI3CxKPsFuBQJLhJQuYsVbMy9jWdfeHWv9V5qiP+emQJVEl9PgmyttJhCWjOur
+         ZcRtZ6SB3CF34kg9iX7dJ4OZAAUNXWyedX7YOlL9FqwuOBgbfc57YYfnT+fuKGPYrliL
+         yfuUs1ybj6Q5X+wsXFRjX7YACE1yXLhp/Zl6uL8ZLT9BRQ5OoK1As7gCx6ZAnUhh+7/g
+         gGaQ==
+X-Gm-Message-State: AOAM531K+5iRvB8V9ZbrxmOBs02u7iJs6Xr2bvOETdOBdvpUroSQeFis
+        Y85soRXRRuCypYCMZPqMUPDmM+d3l5vHaJQKzSI=
+X-Google-Smtp-Source: ABdhPJzhi3dXMW2wLnhMZTfNDYvtRvQbwopLobSphC8nOA8mplWldKl87o5czG0BeCBJUDgXBB9nTglkEeUv/Y+DaBQ=
+X-Received: by 2002:a05:6214:bce:: with SMTP id ff14mr48906742qvb.196.1594078231585;
+ Mon, 06 Jul 2020 16:30:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200702021646.90347-1-danieltimlee@gmail.com>
- <20200702021646.90347-4-danieltimlee@gmail.com> <CAEf4BzZsx+pkkdjhJt1AHaUy6=B=nqZdpR+TrRrjreNa0GMWug@mail.gmail.com>
- <CAEKGpzikhnamOsh=qnmYPJ+6Lr2c4arOdqhuACdHTXmwEF1naQ@mail.gmail.com>
-In-Reply-To: <CAEKGpzikhnamOsh=qnmYPJ+6Lr2c4arOdqhuACdHTXmwEF1naQ@mail.gmail.com>
+References: <159371070880.18158.837974429614447605.stgit@john-XPS-13-9370>
+In-Reply-To: <159371070880.18158.837974429614447605.stgit@john-XPS-13-9370>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Jul 2020 16:27:15 -0700
-Message-ID: <CAEf4BzZS945fhRCCv8gNjJpTAbtCdH3XMChRw7so7F2PPJgJDw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/4] samples: bpf: refactor BPF map performance
- test with libbpf
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+Date:   Mon, 6 Jul 2020 16:30:20 -0700
+Message-ID: <CAEf4BzYXxrmT3oBF470WvqDX0pv5RUnuuFb+S0kxzXzEs4nq_w@mail.gmail.com>
+Subject: Re: [bpf-next PATCH] bpf: fix bpftool without skeleton code enabled
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -65,127 +61,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 4:24 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+On Thu, Jul 2, 2020 at 10:25 AM John Fastabend <john.fastabend@gmail.com> wrote:
 >
-> On Thu, Jul 2, 2020 at 1:34 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Wed, Jul 1, 2020 at 7:17 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
-> > >
-> > > Previously, in order to set the numa_node attribute at the time of map
-> > > creation using "libbpf", it was necessary to call bpf_create_map_node()
-> > > directly (bpf_load approach), instead of calling bpf_object_load()
-> > > that handles everything on its own, including map creation. And because
-> > > of this problem, this sample had problems with refactoring from bpf_load
-> > > to libbbpf.
-> > >
-> > > However, by commit 1bdb6c9a1c43 ("libbpf: Add a bunch of attribute
-> > > getters/setters for map definitions"), a helper function which allows
-> > > the numa_node attribute to be set in the map prior to calling
-> > > bpf_object_load() has been added.
-> > >
-> > > By using libbpf instead of bpf_load, the inner map definition has
-> > > been explicitly declared with BTF-defined format. And for this reason
-> > > some logic in fixup_map() was not needed and changed or removed.
-> > >
-> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> > > ---
-> > >  samples/bpf/Makefile             |   2 +-
-> > >  samples/bpf/map_perf_test_kern.c | 180 +++++++++++++++----------------
-> > >  samples/bpf/map_perf_test_user.c | 130 +++++++++++++++-------
-> > >  3 files changed, 181 insertions(+), 131 deletions(-)
-> > >
-> >
-> > [...]
-> >
-> > > +struct inner_lru {
-> > > +       __uint(type, BPF_MAP_TYPE_LRU_HASH);
-> > > +       __type(key, u32);
-> > > +       __type(value, long);
-> > > +       __uint(max_entries, MAX_ENTRIES);
-> > > +       __uint(map_flags, BPF_F_NUMA_NODE); /* from _user.c, set numa_node to 0 */
-> > > +} inner_lru_hash_map SEC(".maps");
-> >
-> > you can declaratively set numa_node here with __uint(numa_node, 0),
-> > which is actually a default, but for explicitness it's better
-> >
+> Fix segfault from bpftool by adding emit_obj_refs_plain when skeleton
+> code is disabled.
 >
-> It would make _user.c code cleaner, but as you said,
-> I'll keep with this implementation.
+> Tested by deleting BUILD_BPF_SKELS in Makefile.
+>
+> # ./bpftool prog show
+> Error: bpftool built without PID iterator support
+> 3: cgroup_skb  tag 7be49e3934a125ba  gpl
+>         loaded_at 2020-07-01T08:01:29-0700  uid 0
+> Segmentation fault
+>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
 
-I meant to do __uint(numa_node, 0) declaratively, even if it's a bit
-redundant (because default value is already zero).
+My bad, thanks for the fix!
 
-user-space bpf_program__numa_node() is inferior for such a simple
-static use case.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
+>  tools/bpf/bpftool/pids.c |    1 +
+>  1 file changed, 1 insertion(+)
 >
-> > > +
-> > > +struct {
-> > > +       __uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
-> > > +       __uint(max_entries, MAX_NR_CPUS);
-> > > +       __uint(key_size, sizeof(u32));
-> > > +       __array(values, struct inner_lru); /* use inner_lru as inner map */
-> > > +} array_of_lru_hashs SEC(".maps");
-> > > +
-> >
-> > [...]
-> >
-> > > -static void fixup_map(struct bpf_map_data *map, int idx)
-> > > +static void fixup_map(struct bpf_object *obj)
-> > >  {
-> > > +       struct bpf_map *map;
-> > >         int i;
-> > >
-> > > -       if (!strcmp("inner_lru_hash_map", map->name)) {
-> > > -               inner_lru_hash_idx = idx;
-> > > -               inner_lru_hash_size = map->def.max_entries;
-> > > -       }
-> > > +       bpf_object__for_each_map(map, obj) {
-> > > +               const char *name = bpf_map__name(map);
-> > >
-> > > -       if (!strcmp("array_of_lru_hashs", map->name)) {
-> >
-> > I'm a bit too lazy right now to figure out exact logic here, but just
-> > wanted to mention that it is possible to statically set inner map
-> > elements for array_of_maps and hash_of_maps. Please check
-> > tools/testing/selftests/bpf/progs/test_btf_map_in_map.c and see if you
-> > can use this feature to simplify this logic a bit.
-> >
+> diff --git a/tools/bpf/bpftool/pids.c b/tools/bpf/bpftool/pids.c
+> index 2709be4de2b1..7d5416667c85 100644
+> --- a/tools/bpf/bpftool/pids.c
+> +++ b/tools/bpf/bpftool/pids.c
+> @@ -19,6 +19,7 @@ int build_obj_refs_table(struct obj_refs_table *table, enum bpf_obj_type type)
+>         return -ENOTSUP;
+>  }
+>  void delete_obj_refs_table(struct obj_refs_table *table) {}
+> +void emit_obj_refs_plain(struct obj_refs_table *table, __u32 id, const char *prefix) {}
 >
-> Thanks for the feedback! But I'm not sure I'm following properly.
+>  #else /* BPFTOOL_WITHOUT_SKELETONS */
 >
-> If what you are talking about is specifying the inner_map_idx of
-> array_of_lru_hashes, I've changed it by using the __array() directives
-> of the BTF-defined MAP.
 >
-> Since inner_map_idx logic has been replaced with BTF-defined map
-> definition, the only thing left at here fixup_map() is just resizing map size
-> with bpf_map__resize.
-
-Ok, as I said, a bit too lazy to try to figure out the entire logic of
-this sample. My point was to check if static initialization of
-ARRAY_OF_MAPS/HASH_OF_MAPS elements is doable. If not, it's fine as is
-as well.
-
->
-> Thanks for your time and effort for the review.
-> Daniel
->
-> > > -               if (inner_lru_hash_idx == -1) {
-> > > -                       printf("inner_lru_hash_map must be defined before array_of_lru_hashs\n");
-> > > -                       exit(1);
-> > > +               /* Only change the max_entries for the enabled test(s) */
-> > > +               for (i = 0; i < NR_TESTS; i++) {
-> > > +                       if (!strcmp(test_map_names[i], name) &&
-> > > +                           (check_test_flags(i))) {
-> > > +                               bpf_map__resize(map, num_map_entries);
-> > > +                               continue;
-> > > +                       }
-> > >                 }
-> > > -               map->def.inner_map_idx = inner_lru_hash_idx;
-> > > -               array_of_lru_hashs_idx = idx;
-> > >         }
-> > >
-> >
-> > [...]
