@@ -2,179 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 531E2215AC5
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 17:32:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80B09215ACF
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 17:34:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729387AbgGFPcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 11:32:13 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:60535 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729316AbgGFPcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 11:32:12 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jsT6H-00041I-AO; Mon, 06 Jul 2020 15:32:09 +0000
-Subject: Re: mvpp2: XDP TX support
-To:     Matteo Croce <mcroce@linux.microsoft.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S1729451AbgGFPeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 11:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729351AbgGFPeJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 11:34:09 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856AFC08C5DF
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 08:34:09 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id q17so1049005pls.9
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 08:34:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2k2hbPhkWweF7cLfaAlco18/gAjmQL1VA8QeUZk2IDs=;
+        b=OagKnMIgpgCJnhru2Z6F1OwWIFBf3SN+y2OfCovePGZIuLrTF/nRI+GDYcy2KjYAs1
+         ++qSitiDJGXLArCMnPS20ukW55tzKpQzB8Cu4U3LFvOD7zfF125j85Do1bBecl2JSrgp
+         UNTlg8r21yWCoyaf24FivPXQwGx2006gzAFhU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2k2hbPhkWweF7cLfaAlco18/gAjmQL1VA8QeUZk2IDs=;
+        b=F5XDHGck1SDFmAlMMaN3d8U4ipG1bCXzzGD1pG3ZaMvpdr71iXvySMzQhUOCr/ZjiZ
+         adQkSggeVMuwj2fvjIjosZwLxdnVhlIIuoIwSWoVDJ7W1OrCBszquZWPx6abw60jlVgv
+         kE2RsfGnznUkQu4KeKk7gvcdm13z5va/pNhzIRD8pcZOG4Fd+pxBuDrdbaAoEWnAkspW
+         M/Nr5LI2p2xxF+tgK5G+QXrQs+6lFov2Ki09DJuYy+UbI1bzJXoe5zH5cY2CYqs1WGnK
+         KVNF0IZ8l/vi++7NvbdmmTzVmUCbiQ+RMKX9VHnYq4ty8r09CXVbHlqrqk5KJ/5GhxHX
+         dEYw==
+X-Gm-Message-State: AOAM530oyot0wT70WzSqG9sSlAX1wsW/0st5R058aysGDIjya6r78dI7
+        94ZIlTLH948hDtob5B03FTL0QA==
+X-Google-Smtp-Source: ABdhPJyG5yXSH5wzz03o2yh+N8HdVwwIQHNogdAtABoG1rJq2H1Q1au4F8P3NBp4eYhUsmAXwBu/Pg==
+X-Received: by 2002:a17:902:a3c7:: with SMTP id q7mr7536954plb.20.1594049648909;
+        Mon, 06 Jul 2020 08:34:08 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q13sm20497150pfk.8.2020.07.06.08.34.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2020 08:34:07 -0700 (PDT)
+Date:   Mon, 6 Jul 2020 08:34:06 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     linux-kernel@vger.kernel.org, Sargun Dhillon <sargun@sargun.me>,
+        Christian Brauner <christian@brauner.io>,
+        Tycho Andersen <tycho@tycho.ws>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <18eb549b-d2f6-9352-582e-aec484dc95c1@canonical.com>
- <20200706171504.0494beba@msft-t490s.lan>
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <3a941f1e-2842-f43e-59ea-479038b75ab5@canonical.com>
-Date:   Mon, 6 Jul 2020 16:32:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
+        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 4/7] pidfd: Replace open-coded partial
+ fd_install_received()
+Message-ID: <202007060830.0FE753B@keescook>
+References: <20200617220327.3731559-1-keescook@chromium.org>
+ <20200617220327.3731559-5-keescook@chromium.org>
+ <20200706130713.n6r3vhn4hn2lodex@wittgenstein>
 MIME-Version: 1.0
-In-Reply-To: <20200706171504.0494beba@msft-t490s.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200706130713.n6r3vhn4hn2lodex@wittgenstein>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/07/2020 16:28, Matteo Croce wrote:
-> On Mon, 6 Jul 2020 14:59:22 +0100
-> Colin Ian King <colin.king@canonical.com> wrote:
+On Mon, Jul 06, 2020 at 03:07:13PM +0200, Christian Brauner wrote:
+> On Wed, Jun 17, 2020 at 03:03:24PM -0700, Kees Cook wrote:
+> > The sock counting (sock_update_netprioidx() and sock_update_classid()) was
+> > missing from pidfd's implementation of received fd installation. Replace
+> > the open-coded version with a call to the new fd_install_received()
+> > helper.
+> > 
+> > Fixes: 8649c322f75c ("pid: Implement pidfd_getfd syscall")
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > ---
+> >  kernel/pid.c | 11 +----------
+> >  1 file changed, 1 insertion(+), 10 deletions(-)
+> > 
+> > diff --git a/kernel/pid.c b/kernel/pid.c
+> > index f1496b757162..24924ec5df0e 100644
+> > --- a/kernel/pid.c
+> > +++ b/kernel/pid.c
+> > @@ -635,18 +635,9 @@ static int pidfd_getfd(struct pid *pid, int fd)
+> >  	if (IS_ERR(file))
+> >  		return PTR_ERR(file);
+> >  
+> > -	ret = security_file_receive(file);
+> > -	if (ret) {
+> > -		fput(file);
+> > -		return ret;
+> > -	}
+> > -
+> > -	ret = get_unused_fd_flags(O_CLOEXEC);
+> > +	ret = fd_install_received(file, O_CLOEXEC);
+> >  	if (ret < 0)
+> >  		fput(file);
+> > -	else
+> > -		fd_install(ret, file);
 > 
->> Hi,
->>
->> Static analysis with Coverity has found a potential issue in the
->> following commit:
->>
->> commit c2d6fe6163de80d7f7cf400ee351f56d6cdb7a5a
->> Author: Matteo Croce <mcroce@microsoft.com>
->> Date:   Thu Jul 2 16:12:43 2020 +0200
->>
->>     mvpp2: XDP TX support
->>
->>
->> In source drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c in function
->> mvpp2_check_pagepool_dma, analysis is as follows:
->>
->>
->> 4486        if (!priv->percpu_pools)
->> 4487                return err;
->> 4488
->> CID (#1 of 1): Array compared against 0 (NO_EFFECT)
->> array_null: Comparing an array to null is not useful: priv->page_pool,
->> since the test will always evaluate as true.
->>
->>     Was priv->page_pool formerly declared as a pointer?
->>
->> 4489        if (!priv->page_pool)
->> 4490                return -ENOMEM;
->> 4491
->>
->>
->> page_pool is declared as:
->>
->> 	struct page_pool *page_pool[MVPP2_PORT_MAX_RXQ];
->>
->> ..it is an array and hence cannot be null, so the null check is
->> redundant.  Later on there is a reference of priv->page_pool[0], so
->> was the check meant to be:
->>
->> 	if (!priv->page_pool[0])
->>
->> Colin
-> 
-> Hi,
-> 
-> yes, the check was meant to be 'if (!priv->page_pool[0])'.
-> Maybe it's a copy/paste error from other points where 'page_pool' is a
-> local variable.
-> 
-> While at it, I've found that in case a page_pool allocation fails, I
-> don't cleanup the previously allocated pools, and upon deallocation the
-> pointer isn't set back to NULL.
-> 
-> I should add something like:
-> 
-> @@ -548,8 +548,10 @@ static int mvpp2_bm_pool_destroy(struct device
-> *dev, struct mvpp2 *priv, val |= MVPP2_BM_STOP_MASK;
->  	mvpp2_write(priv, MVPP2_BM_POOL_CTRL_REG(bm_pool->id), val);
->  
-> -	if (priv->percpu_pools)
-> +	if (priv->percpu_pools) {
->  		page_pool_destroy(priv->page_pool[bm_pool->id]);
-> +		priv->page_pool[bm_pool->id] = NULL;
-> +	}
->  
->  	dma_free_coherent(dev, bm_pool->size_bytes,
->  			  bm_pool->virt_addr,
-> @@ -609,8 +611,15 @@ static int mvpp2_bm_init(struct device *dev,
-> struct mvpp2 *priv) mvpp2_pools[pn].buf_num,
->  						       mvpp2_pools[pn].pkt_size,
->  						       dma_dir);
-> -			if (IS_ERR(priv->page_pool[i]))
-> -				return PTR_ERR(priv->page_pool[i]);
-> +			if (IS_ERR(priv->page_pool[i])) {
-> +				err = PTR_ERR(priv->page_pool[i]);
-> +
-> +				for (i--; i >=0; i--) {
-> +
-> page_pool_destroy(priv->page_pool[i]);
-> +					priv->page_pool[i] = NULL;
-> +				}
-> +				return err;
-> +			}
->  		}
->  	}
->  
-> Looks sane to you?
-> 
-> Regards,
-> 
-Oh, good catch on the cleanups. Yes, that looks sane.
+> So someone just sent a fix for pidfd_getfd() that was based on the
+> changes done here.
 
-Colin
+Hi! Ah yes, that didn't get CCed to me. I'll go reply.
+
+> I've been on vacation so didn't have a change to review this series and
+> I see it's already in linux-next. This introduces a memory leak and
+> actually proves a point I tried to stress when adding this helper:
+> fd_install_received() in contrast to fd_install() does _not_ consume a
+> reference because it takes one before it calls into fd_install(). That
+> means, you need an unconditional fput() here both in the failure and
+> error path.
+
+Yup, this was a mistake in my refactoring of the pidfs changes.
+
+> I strongly suggest though that we simply align the behavior between
+> fd_install() and fd_install_received() and have the latter simply
+> consume a reference when it succeeds! Imho, this bug proves that I was
+> right to insist on this before. ;)
+
+I still don't agree: it radically complicates the SCM_RIGHTS and seccomp
+cases. The primary difference is that fd_install() cannot fail, and it
+was optimized for this situation. The other file-related helpers that
+can fail do not consume the reference, so this is in keeping with those
+as well.
+
+-- 
+Kees Cook
