@@ -2,111 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ED6F215DE4
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 20:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02DAA215DE7
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 20:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729722AbgGFSCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 14:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60804 "EHLO
+        id S1729737AbgGFSET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 14:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729657AbgGFSCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 14:02:42 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5362C061755
-        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 11:02:41 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id x72so7845518pfc.6
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 11:02:41 -0700 (PDT)
+        with ESMTP id S1729632AbgGFSET (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 14:04:19 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A6CC061755
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 11:04:19 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id j19so11873377pgm.11
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 11:04:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=vE9HhVeh7WdKuA497jnquICOWUMZkjd853XLQH+n2do=;
-        b=eLbmlA+N2fonS3GB9j07zQECHziylWc7EVfQwxyhunlxc79l6miPFzWTXeri20LNH7
-         ytT36GOhR7EPPHafMSU1d6vgetvGPotI/SD2LpV72cqii9z6HwpvPitiv0m4Z0P2Zq6z
-         dX9TCfI95Bn7VwhJDQVqD65i1+/8z70ov6F0ZxSKjm6K2yYPU9CM7MUw5g+sBlUH/nwB
-         rDgsBGa5c7zJQoJ6v1pEddjVvl7Pc6TPV1wJy/ktL/Y1ZBeEclcy/1UJ1vXU6Rczbwvm
-         ZU66Yax6tOotoLB8WiS0dHEo8AMWR7mqKUj5Wvbeee3d13Ryku6CXY7KIs6Bn8JNIf+Q
-         nYsg==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Ut4HFBsEh29ptxxlJbvMmMtEdhl160i8B1dbFQM+jv0=;
+        b=PZglCRKiT9CvpbPgjBFx8KQfyIFKpnj/QPL3upxo9bUFiV6LzK2onfUj/ThrLZ/1FN
+         LFmqdw1YKtyuwOT1sKsqfzOPxhnQPBUNnaSBeoQpR+i7gg7mE9dF24YYFYEnclWt0ed/
+         iIhUopqDleEJOCkwbEC4Z4Wt8WW1y2sPlYTJ6kzLIQjC+j6daCmCTC41db88OF4MpU7s
+         xcTJC7sMH5qnJZC03u/rAcmg6vRR2MXhmo1k7cjojG4Ub7+XEm/Suxe8a+DjAKqb064y
+         htsDFJmZYqZ+W3Hjx190tzJ41R1eGUKDhLyGNAQaG/ELrwPy+U1hklyFMM+w6qK5DLUl
+         DhKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=vE9HhVeh7WdKuA497jnquICOWUMZkjd853XLQH+n2do=;
-        b=PiK+UEHjEZQMJwpiuYhWZvay3Wsrf2i1O5yz16+v6FZGqwdMwxlDSHVnYxHpfVHQXr
-         Gm+ZauJ36nGw8zeYMdylrKwrtr77F5LYuQ0Q4MmMOeP90cmm2muXUbAPiRDVJz6DBz41
-         rHLHsIYctDi7kIMd7Em4V9H+fn6mgWf1iCF6HnbBqKTnsGxYMYFUrwnc8J9i5sHy06ca
-         Hmn4PmfXd/UoPS2z37201kYxNIEwftXB2x2Pu2H1q0NO0zX0WE3eLkmRqgsOwYN94NYv
-         SWy0rXoVmRzPiPI+lFZBQlRfpB3qe+/EAIRYA6E6XMqfjc5zEt4sXk6zB9WmgHaagC/8
-         1tRA==
-X-Gm-Message-State: AOAM532x9KadwkJVG6MmFbRYvIy8grNcwxE5l/l8kPp618u2toXOluYz
-        I/Ly1OWBVP01haIOa1RZpjThncXVL3g=
-X-Google-Smtp-Source: ABdhPJxGHXc39IpY38UVyh4KdTIbsU1Ou7yE6g/so/Htjco6xfjVi/T+3nSvPDFb5A2yeHCcegVqNQ==
-X-Received: by 2002:a63:3005:: with SMTP id w5mr40528976pgw.441.1594058560988;
-        Mon, 06 Jul 2020 11:02:40 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v15sm19972562pgo.15.2020.07.06.11.02.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 Jul 2020 11:02:40 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, James Chapman <jchapman@katalix.com>,
-        Guillaume Nault <gnault@redhat.com>
-Subject: [PATCH net] l2tp: remove skb_dst_set() from l2tp_xmit_skb()
-Date:   Tue,  7 Jul 2020 02:02:32 +0800
-Message-Id: <57ec206296ac8049d51755667b69aa0e978e3d6e.1594058552.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Ut4HFBsEh29ptxxlJbvMmMtEdhl160i8B1dbFQM+jv0=;
+        b=YSnkpPm+WCGxWYuDrbedQPgKaa0wzGaYqbHlGaFWsWH6tNA2qJfPUCHhRgf/v7tER5
+         IV2Ej6Ib2ctJk6i3FJSWdDhZD/vlLm2QuiiCQ01UgXqBxuakNMtsiAnthwypm24fxi1v
+         CF2yuS/NBhIdCSWqSKy8f74G5KwmCX1e7R9ta03GBu/e+jEsLy8U75zBZArl++88SQVd
+         b9eEOWse73oWbbXT6T2Iff6RqfwxAKz0HJY0YZEYJv4RhdhUMZDzYUP5AAXC/mr/mRYi
+         0wiLYDym0CznBE6iPP2IAQ8HVnlVvz0INWly+6nPARTnGBapuQLYgqsk5Wk7AH+i3VQa
+         QP6w==
+X-Gm-Message-State: AOAM533+RRGHV/K98YgAFpwCxK0zFIUUvZKA+/oGdl6wotMTQ5zStv+T
+        ffkEa4xGZ3TggCTuAZ8ZYqyB4vireOk=
+X-Google-Smtp-Source: ABdhPJxD9ioxMX0zKuh6/YlK63k20sXNHjs02bc9v3aWN9F72NpDLRvmxBe3lEjUaphl8LgHzar7SA==
+X-Received: by 2002:aa7:930b:: with SMTP id 11mr41380284pfj.320.1594058658531;
+        Mon, 06 Jul 2020 11:04:18 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id d14sm137064pjc.20.2020.07.06.11.04.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2020 11:04:18 -0700 (PDT)
+Date:   Mon, 6 Jul 2020 11:04:10 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Sorah Fukumori <her@sorah.jp>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] ip fou: respect preferred_family for IPv6
+Message-ID: <20200706110410.0d559006@hermes.lan>
+In-Reply-To: <20200625210712.1863300-1-her@sorah.jp>
+References: <20200625210712.1863300-1-her@sorah.jp>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the tx path of l2tp, l2tp_xmit_skb() calls skb_dst_set() to set
-skb's dst. However, it will eventually call inet6_csk_xmit() or
-ip_queue_xmit() where skb's dst will be overwritten by:
+On Fri, 26 Jun 2020 06:07:12 +0900
+Sorah Fukumori <her@sorah.jp> wrote:
 
-   skb_dst_set_noref(skb, dst);
+> ip(8) accepts -family ipv6 (-6) option at the toplevel. It is
+> straightforward to support the existing option for modifying listener
+> on IPv6 addresses.
+> 
+> Maintain the backward compatibility by leaving ip fou -6 flag
+> implemented, while it's removed from the usage message.
+> 
+> Signed-off-by: Sorah Fukumori <her@sorah.jp>
 
-without releasing the old dst in skb. Then it causes dst/dev refcnt leak:
-
-  unregister_netdevice: waiting for eth0 to become free. Usage count = 1
-
-This can be reproduced by simply running:
-
-  # modprobe l2tp_eth && modprobe l2tp_ip
-  # sh ./tools/testing/selftests/net/l2tp.sh
-
-So before going to inet6_csk_xmit() or ip_queue_xmit(), skb's dst
-should be dropped. This patch is to fix it by removing skb_dst_set()
-from l2tp_xmit_skb() and moving skb_dst_drop() into l2tp_xmit_core().
-
-Fixes: 3557baabf280 ("[L2TP]: PPP over L2TP driver core")
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/l2tp/l2tp_core.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index fcb53ed..df133c24 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -1028,6 +1028,7 @@ static void l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb,
- 
- 	/* Queue the packet to IP for output */
- 	skb->ignore_df = 1;
-+	skb_dst_drop(skb);
- #if IS_ENABLED(CONFIG_IPV6)
- 	if (l2tp_sk_is_v6(tunnel->sock))
- 		error = inet6_csk_xmit(tunnel->sock, skb, NULL);
-@@ -1099,10 +1100,6 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb, int hdr_len
- 		goto out_unlock;
- 	}
- 
--	/* Get routing info from the tunnel socket */
--	skb_dst_drop(skb);
--	skb_dst_set(skb, sk_dst_check(sk, 0));
--
- 	inet = inet_sk(sk);
- 	fl = &inet->cork.fl;
- 	switch (tunnel->encap) {
--- 
-2.1.0
-
+Applied, thanks
