@@ -2,80 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 374AF2152BC
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 08:36:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D06A42152BD
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 08:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728180AbgGFGgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 02:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39208 "EHLO
+        id S1727990AbgGFGhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 02:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725889AbgGFGgA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 02:36:00 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F5BC061794
-        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 23:36:00 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id t7so16718695qvl.8
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 23:36:00 -0700 (PDT)
+        with ESMTP id S1725889AbgGFGhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 02:37:38 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E597C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 23:37:38 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id s10so39471390wrw.12
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 23:37:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=RFjST6WTWl2HErgo/MFlw9oz3Ck4pyxWRgkJWzlGF00=;
-        b=CJhxBQpXsgP8TbGRfvVpZyD1osC0yTV0Kk4R9pN1O3e0AsBTvJypndk9RRx8Nsjaht
-         gVi9LJkb9No/qS0vVi/fRqrdK131fu1ZbH3poOiR7LYh8RWLGpI2fCRglEHXmSLR5W+x
-         OGFs6Jd9ieTHeangtpx0viSdbDho8yUA2W7gkkHb1p/WSTv3q1guRNLksd3Rs8J/aO+7
-         Xt27RmZNtGv6eZhdPSvIGF2wU9V5drR0wKJ9/0olFTrdBTFA8SZTIS/7knF/cBCRN9Ut
-         M1czM6J+yccnbYoOnNrgCH+leWTWTSACe13fcYVNiMUanTUKtmXF6LMD7rMvNVI1Q+/q
-         EujA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xwWBkFk6RN986GOG/12Xtl/4y20SlvTZY/q6FM8tW1Q=;
+        b=aSIAEtPXgtK669+bOn5Ozc4VHf23KT7KycYh2uRYMbPTaTGiLUCORkS8QRaJueyS2e
+         6zC3lWeWq+92XxxZ2YDI8ej929Sz+oxKqNPoaGcD6TKWiNZ70TfaHbA1eg11HpzoFSGU
+         xgmIC+vjzr8j423Y8fca5ert/Bp1t+JEQsXgNom1QZOVTj41JMfiNTx/xeOKt+2TGY01
+         lu7OGuOMm106emAT9yb1oQCeYXJXC/zK0QLksdmRrS4yoXbr8PwL6F7LOvfcN+XdW+8a
+         cY9+jlcGis3enwDUwMYkintrvnVxN856C6v8drikA4RVNPybbArzo2i6CYr8p/xdAAt5
+         FCoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=RFjST6WTWl2HErgo/MFlw9oz3Ck4pyxWRgkJWzlGF00=;
-        b=dXQXqFa9aukcSlSLBEebb3uBd7aQ/R7jO4TphA5CwGNdUOUf9HSZgD2rL85A9v94AY
-         nsoGe6fbYYMoYen+qJFhxJaRNzA8E5I23eF6JbW2UEfK9uOvqT0NuYTXuCML5RdJzxgG
-         ZCdWxPAK5LJy2hTIqQwfBupOU61E737O6ctwuMjhKsPA1YiC0SMVvRv4ju7mEt0b1gki
-         hlSovIYTb4SW2oeSOMgmPqe7T7kiPveY9g16w9JyPUBkaJ3t0etkBtnntkNwDXW6mrhe
-         aQuOb8+H/C87STMjz/Ng6DhUGP1UccFvik9cUF53eU7aTf4sFd+cdkvNgyyl7ICP0X40
-         41eA==
-X-Gm-Message-State: AOAM533/0F9G7Ikd3KFTBKcqM2CZJ8l5EZ+4qwnCBNVh75Y22zrVU8Mw
-        XfTV52MM72NjNv2xGGs/08BtOLiITLOzN/rYPDc=
-X-Google-Smtp-Source: ABdhPJx1Z4ik9eUbguYdXGLdzlCzUzrscjznepZmH4pTwErL+ME10aun4oQmk7K4D9FR3IJzA775WxeKTYTcQ7033BQ=
-X-Received: by 2002:ad4:4444:: with SMTP id l4mr22207538qvt.121.1594017359055;
- Sun, 05 Jul 2020 23:35:59 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xwWBkFk6RN986GOG/12Xtl/4y20SlvTZY/q6FM8tW1Q=;
+        b=Efth0OVr7KO3EFnd9VH35eKJLOXXOlZsWo8ASlcpjMdcGRLEJtFbKYZj2ukoAgq57h
+         TcCTHKU10Dg2VKw96nAFR17ao/Zbr/otpCSBw7EwQaxZ+jN6RrJGEUn4BXuhJG/xoZP+
+         7AYTlz2hCFk3VAFGAZsipc0Cm3krH4kmYQOIoxPpxViCNw5Btp/rXgWBU2tOqTD/ThE6
+         l1lDv1RS44zg8S9mDXpGhvYU6VsMtf97U0WatUUZDfDTWewzlvSvBx6kGSEyWQZ+lWNj
+         ZzGQTryV8TYbyxT2KqoSDlCuJcrAuqfV4/jPCgotu4UFNpqWBLzisjTw2tmzWFV6ZMAk
+         rJxw==
+X-Gm-Message-State: AOAM532I23sVzxdSuG4kgWiH+wGFRdeTb8A43FMpif9i6w8A4OSieZhS
+        KB8UjC65Nrk3q5K7v2uNCD4=
+X-Google-Smtp-Source: ABdhPJxxP7K0VHgt52jGxWPHCRZ0zppW+/qWmlSExQ19gWfzMzAwZq/zc4CrLR6Kcvh35Z/W5FjM3Q==
+X-Received: by 2002:adf:e4c9:: with SMTP id v9mr46349883wrm.62.1594017457113;
+        Sun, 05 Jul 2020 23:37:37 -0700 (PDT)
+Received: from hoboy (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
+        by smtp.gmail.com with ESMTPSA id r3sm25729193wrg.70.2020.07.05.23.37.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Jul 2020 23:37:36 -0700 (PDT)
+Date:   Sun, 5 Jul 2020 23:37:34 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next 5/7] net: phy: dp83640: Fixup cast to restricted
+ __be16 warning
+Message-ID: <20200706063734.GA8486@hoboy>
+References: <20200705182921.887441-1-andrew@lunn.ch>
+ <20200705182921.887441-6-andrew@lunn.ch>
+ <9d433028-1c46-d24b-f700-63f12c45f3af@gmail.com>
 MIME-Version: 1.0
-Received: by 2002:aed:224e:0:0:0:0:0 with HTTP; Sun, 5 Jul 2020 23:35:58 -0700 (PDT)
-Reply-To: dunawattara96@outlook.com
-From:   Mr Duna Wattara <drhajiuga003@gmail.com>
-Date:   Sun, 5 Jul 2020 23:35:58 -0700
-Message-ID: <CALpYtwBBgsf4kbv2Y8PF4ML9mQ12RUCsX8v-w5xHH=X_okigkA@mail.gmail.com>
-Subject: with due respect
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9d433028-1c46-d24b-f700-63f12c45f3af@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+On Sun, Jul 05, 2020 at 01:45:50PM -0700, Florian Fainelli wrote:
+> 
+> 
+> On 7/5/2020 11:29 AM, Andrew Lunn wrote:
+> > ntohs() expects to be passed a __be16. Correct the type of the
+> > variable holding the sequence ID.
+> > 
+> > Cc: Richard Cochran <richardcochran@gmail.com>
+> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> 
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-I know that this mail will come to you as a surprise as we have never
-met before, but need not to worry as I am contacting you independently
-of my investigation and no one is informed of this communication.
-
-I need your urgent assistance in transferring the sum of $11.3million
-immediately to your private account.The money has been here in our
-Bank lying dormant for years now without anybody coming for the claim of it.
-
-I want to release the money to you as the relative to our deceased
-customer (the account owner) who died a long with his supposed NEXT OF
-KIN since 16th October 2005. The Banking laws here does not allow such
-money to stay more than 15 years, because the money will be recalled
-to the Bank treasury account as unclaimed fund.
-
-By indicating your interest I will send you the full details on how
-the business will be executed.
-
-Please respond urgently and delete if you are not interested.
-
-Best Regards,
-Mr. Duna Wattara.
+Acked-by: Richard Cochran <richardcochran@gmail.com>
