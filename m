@@ -2,124 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 169B5215624
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 13:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4521621564B
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 13:25:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728965AbgGFLMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 07:12:20 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:54454 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728697AbgGFLMT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 07:12:19 -0400
-Received: by mail-il1-f198.google.com with SMTP id d18so27623279ill.21
-        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 04:12:18 -0700 (PDT)
+        id S1728861AbgGFLZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 07:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728738AbgGFLZE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 07:25:04 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D35C061794
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 04:25:03 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id q4so9094583lji.2
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 04:25:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=uvjy6TQw4BzmhpYm8sKke8+oa4SeXvV80srNJ1pxzBM=;
+        b=wE4ZoJI0Wa20MnwOtb4Mb97jm90seDCaqKaJWq5waebC75dAHt0mW+CJ3qrY2XZobm
+         jdeIRJnSJlbj0b9ub87VirYe0xU/P7VsquePEYHeTgefv1id4GihqoSirDZteVa6g1r1
+         SWBWyQF0JJM9ZAOD1hfB33oDNJvatVM7xf4jU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=h1YpK10W3aeduo3q7tBUxEMa5S5Rp2GyfLzRDjpjFQ4=;
-        b=I9AfKpZ9R2LSP/GsMDc7F1A5acvgYH5JGanF9HUzNpgauRDKFN13M8ENfY/NE8fz4+
-         Y91Job9Ch87pEYcV46SiR4Agob6PpzxAM5asBIJfK9WFzr1bQhYr3G77OTMdqiw4IXjr
-         Jk0MdtDLb7l/Ac+V9fLBzgFShZVG92+Q/JTY3c6gnys6ZONNm6kUOjNVR3tNMhblpawE
-         Rnij0WRDAiWm9w7rhgjTleLziPAveUxh0XhSBU8JMpnmQS/mO0t2DhyVQ7Ap9qcGOehT
-         jCCDq0gmt3dUgTv4YFa/gSOxuT2twBVZLK/hsc7nsaX8h3SgNLhSZXQEkjCEadWIHGgg
-         WSPg==
-X-Gm-Message-State: AOAM532n3oGtE7NxA5PHxNXqoFoK35HSGAI+6XzandFYsMAE3t3vfKhW
-        3ml6gHzk4LmFM68WinBAS5bPLN4zAMAWnM1sq6M1rpxC6Bi1
-X-Google-Smtp-Source: ABdhPJyCWm4ddGjWDMb6KBkIOfKZ2jMBruKcBYY/+myqjOGXT+1Csag2VXa8UU9Zx5XOic37CgKlU+RRFdYDqQGkIdCDii1+Ndkj
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=uvjy6TQw4BzmhpYm8sKke8+oa4SeXvV80srNJ1pxzBM=;
+        b=k1wAKLu//OF0HavjfRIoUK0+B2mUnH3x/BDJLnAvBn7oKo1aV5X//vfiicMF9MG6/1
+         cS3j2Tm4AvDz6+/5GamrtSgCMKiz//L6pK4T9Wk69ImHbE2UaComy6+7pH3lk6E6cGhe
+         pW9Iq0lDU+LSGHQXlZac/90zx29V9uKqN6iCDQrdfz1o8Md4wurilOM5QTJSErWr9gYE
+         maE3DfI1ioxTexwLvvPZQADJXkA/thkL7ue8/TlZmSfEfYDJ+M5uaEA2+uxL06g4GrLK
+         x09MSyiarcbHpgQW9vBmDc9bvxvsQRjlwv1InQnDZMt5ZBeZpxNeaRIaYKLgh1mfpcU6
+         E+lw==
+X-Gm-Message-State: AOAM532OJLABO1uxtyDxPs3r6KheNcZLQZDx9blGuMEupaCS7r9dUcF2
+        c9/zaV4tvYy4n1zAQbgpQahVYg==
+X-Google-Smtp-Source: ABdhPJwr+j4Vg2Avgd+1vx/ZdU7eaZPJNeYx9LviwOJHQRjWclCi0PlzWGiAw3fJiMrxlhrL+XfmnQ==
+X-Received: by 2002:a2e:984e:: with SMTP id e14mr14411490ljj.169.1594034702088;
+        Mon, 06 Jul 2020 04:25:02 -0700 (PDT)
+Received: from cloudflare.com (apn-31-0-46-84.dynamic.gprs.plus.pl. [31.0.46.84])
+        by smtp.gmail.com with ESMTPSA id d6sm7789132lja.77.2020.07.06.04.25.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2020 04:25:01 -0700 (PDT)
+References: <20200702092416.11961-1-jakub@cloudflare.com> <20200702092416.11961-5-jakub@cloudflare.com> <CACAyw9-6OCPqg3eoPOPeKYy=kBNVJT8-qbLh6QOo=8aEV6pWjw@mail.gmail.com> <87mu4inky6.fsf@cloudflare.com> <CACAyw98MsdcVkFPpXatr3F6j6F79KuTqcpwpB6TNpLBVuGKJTQ@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>
+Subject: Re: [PATCH bpf-next v3 04/16] inet: Run SK_LOOKUP BPF program on socket lookup
+In-reply-to: <CACAyw98MsdcVkFPpXatr3F6j6F79KuTqcpwpB6TNpLBVuGKJTQ@mail.gmail.com>
+Date:   Mon, 06 Jul 2020 13:24:59 +0200
+Message-ID: <87k0zgj378.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:58d1:: with SMTP id z78mr29218378ilf.276.1594033938293;
- Mon, 06 Jul 2020 04:12:18 -0700 (PDT)
-Date:   Mon, 06 Jul 2020 04:12:18 -0700
-In-Reply-To: <000000000000735f5205a5b02279@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a6ebe005a9c3f210@google.com>
-Subject: Re: BUG: unable to handle kernel paging request in fl_dump_key
-From:   syzbot <syzbot+9c1be56e9317b795e874@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+On Thu, Jul 02, 2020 at 03:19 PM CEST, Lorenz Bauer wrote:
+> On Thu, 2 Jul 2020 at 13:46, Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> On Thu, Jul 02, 2020 at 12:27 PM CEST, Lorenz Bauer wrote:
+>> > On Thu, 2 Jul 2020 at 10:24, Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>> >>
+>> >> Run a BPF program before looking up a listening socket on the receive path.
+>> >> Program selects a listening socket to yield as result of socket lookup by
+>> >> calling bpf_sk_assign() helper and returning BPF_REDIRECT (7) code.
+>> >>
+>> >> Alternatively, program can also fail the lookup by returning with
+>> >> BPF_DROP (1), or let the lookup continue as usual with BPF_OK (0) on
+>> >> return. Other return values are treated the same as BPF_OK.
+>> >
+>> > I'd prefer if other values were treated as BPF_DROP, with other semantics
+>> > unchanged. Otherwise we won't be able to introduce new semantics
+>> > without potentially breaking user code.
+>>
+>> That might be surprising or even risky. If you attach a badly written
+>> program that say returns a negative value, it will drop all TCP SYNs and
+>> UDP traffic.
+>
+> I think if you do that all bets are off anyways. No use in trying to stagger on.
+> Being stricter here will actually make it easier to for a developer to ensure
+> that their program is doing the right thing.
+>
+> My point about future extensions also still stands.
 
-HEAD commit:    1ca0fafd tcp: md5: allow changing MD5 keys in all socket s..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=15ec52b7100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=bf3aec367b9ab569
-dashboard link: https://syzkaller.appspot.com/bug?extid=9c1be56e9317b795e874
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1062a40b100000
+We've chatted with Lorenz off-list about pros & cons of defaulting to
+drop on illegal return code from a BPF program.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+9c1be56e9317b795e874@syzkaller.appspotmail.com
+On the upside, it is consistent with XDP, SK_REUSEPORT, and SK_SKB
+(sockmap) program types.
 
-batman_adv: Cannot find parent device
-BUG: unable to handle page fault for address: fffffbfffa2f173f
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 21ffe5067 P4D 21ffe5067 PUD 21ffe4067 PMD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 2591 Comm: syz-executor.2 Not tainted 5.8.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:fl_dump_key+0x8d/0x22a0 net/sched/cls_flower.c:2769
-Code: 04 f2 04 f2 c7 40 0c 04 f3 f3 f3 65 48 8b 04 25 28 00 00 00 48 89 84 24 00 01 00 00 31 c0 e8 1a 32 0d fb 4c 89 f8 48 c1 e8 03 <42> 0f b6 04 28 84 c0 74 08 3c 03 0f 8e a8 1f 00 00 45 8b 2f 31 ff
-RSP: 0018:ffffc900035e72c8 EFLAGS: 00010a06
-RAX: 1ffffffffa2f173f RBX: ffffffffd178b819 RCX: ffffffffd178b9f9
-RDX: ffff88806c8d2140 RSI: ffffffff86662036 RDI: ffff88809fa14800
-RBP: ffff88809fa14800 R08: 0000000000000000 R09: ffff8880953a203c
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff888087ce0040
-R13: dffffc0000000000 R14: ffff88809fa148b8 R15: ffffffffd178b9f9
-FS:  00007f7df9322700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffffbfffa2f173f CR3: 000000006c49a000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- fl_tmplt_dump+0xc9/0x250 net/sched/cls_flower.c:3081
- tc_chain_fill_node+0x48d/0x7c0 net/sched/cls_api.c:2679
- tc_chain_notify+0x187/0x2e0 net/sched/cls_api.c:2705
- tc_ctl_chain+0xb30/0x1000 net/sched/cls_api.c:2891
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5460
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45cb29
-Code: Bad RIP value.
-RSP: 002b:00007f7df9321c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000005027a0 RCX: 000000000045cb29
-RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 0000000000000009
-RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000a44 R14: 00000000004cd2b2 R15: 00007f7df93226d4
-Modules linked in:
-CR2: fffffbfffa2f173f
----[ end trace aa31af5515bd8e77 ]---
-RIP: 0010:fl_dump_key+0x8d/0x22a0 net/sched/cls_flower.c:2769
-Code: 04 f2 04 f2 c7 40 0c 04 f3 f3 f3 65 48 8b 04 25 28 00 00 00 48 89 84 24 00 01 00 00 31 c0 e8 1a 32 0d fb 4c 89 f8 48 c1 e8 03 <42> 0f b6 04 28 84 c0 74 08 3c 03 0f 8e a8 1f 00 00 45 8b 2f 31 ff
-RSP: 0018:ffffc900035e72c8 EFLAGS: 00010a06
-RAX: 1ffffffffa2f173f RBX: ffffffffd178b819 RCX: ffffffffd178b9f9
-RDX: ffff88806c8d2140 RSI: ffffffff86662036 RDI: ffff88809fa14800
-RBP: ffff88809fa14800 R08: 0000000000000000 R09: ffff8880953a203c
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff888087ce0040
-R13: dffffc0000000000 R14: ffff88809fa148b8 R15: ffffffffd178b9f9
-FS:  00007f7df9322700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffffbfffa2f173f CR3: 000000006c49a000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+TC BPF ignores illegal return values, unspecified action means no
+action, so no drop. While CGROUP_INET_INGRESS and SOCKET_FILTER look
+only at the lowest bit ("ret & 1"), so it is a roulette.
 
+Then there is also the extensibility argument. If we allow traffic to
+pass to regular socket lookup on illegal return code from BPF, and users
+start to rely on that, then it will be hard or impossible to repurpose
+an illegal return value for something else.
+
+Downside of defaulting to drop is that you can accidentally lock
+yourself out, e.g. lose SSH access, by attaching a buggy program.
+
+
+Being consistent with other existing program types is what convinces me
+most to set default to drop, so I'll make the change in v4 unless there
+are objections.
+
+[...]
