@@ -2,127 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66695215E45
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 20:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98360215E5B
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 20:32:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729693AbgGFSYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 14:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35940 "EHLO
+        id S1729717AbgGFScS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 14:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729550AbgGFSY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 14:24:29 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38306C061755;
-        Mon,  6 Jul 2020 11:24:29 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id g139so23170271lfd.10;
-        Mon, 06 Jul 2020 11:24:29 -0700 (PDT)
+        with ESMTP id S1729657AbgGFScS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 14:32:18 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4926FC061755
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 11:32:18 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id q17so17300747pfu.8
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 11:32:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=GNvkm4qlrLyrpc6mI9W5mMAuFTgjd7/fxQQLIFTdU1Q=;
-        b=LmNYZkDihijVpiZmPMzxg4oPZTvQuA6M3Hv9gZ/sfxfAviJdLcw13lQROOw7ow95G9
-         Bh6BZbKmgiJOdiuAsZWjpoaJxsOeO2amF/10Xr8LEpTdk0HCD3buzPNk/Z0rP/NKNQz0
-         P1wEqwX/IMknr3lITY4yH9/FAPXFQQHTkiJ2z9nVh/uuFenzoUIFY6mNjyFC2sI5OvzZ
-         toJ1VsFm3ycCv10GW7T3a1hufgv47AoS5LjacMH5feScB+A3rZGvzneg16tZiGtsBHSR
-         35hIz7z7c+MFmtHtAduUz5BccwB8Osg65k4oDjGMLL7KGnaMydSqvuE126l+MNDU30tW
-         z6Wg==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GrX+V4MpE6PWPi/82Y3YiEWhym0Z3uGDlKAfxIvrSG4=;
+        b=ISINL683XZKvUoHdyl79/ptwsl9xvXPRIm7/YG5jJS6Drh75qsEBDoQoTuvcLLd7Sq
+         8EdzrDIBQx0DvkNsR68c9/IjAS0RO4h27VI6RD64XmljtAF4Dxoz3srT5tIlE3JEzTXN
+         sqaKJNlpgevnuz1qgOzy76Tw998VRXN2akj7cBA791z4M549cXsds2CKhLw6uwCAE4zl
+         oz8lke+kC3y4TvftQTyzYp6aqcAXCBJaOxm1ZDmVe6HSgn/ka4165IWNxjX/CNjgcTxB
+         0QkTTJLm1iN+EnCwuei0ivnNEixoOeuhO1hykknHJEB5bYlvTpG7QnQupVwOfiXsKy0o
+         nLRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=GNvkm4qlrLyrpc6mI9W5mMAuFTgjd7/fxQQLIFTdU1Q=;
-        b=T/nHUszzQl3En1gsbDM7ZWqFiRuoO/5C6yj/kAe/1TDGzfD04GHXZMc5rH4MujzoYE
-         FsfaOvHyLM7l8A2SbsKgVK41QXanuQa1K0Uoqv6fpAsYgFb56d0EOWaNQ2MdxlJ/KC+u
-         3UtRNQm19LdATyC4tg9SMtPRL/ulMmTGI2naQ0MPTOY8SpEL+mjZz70sjdwDySc52RAz
-         fwKMFZiHPDY3FgmHn0VTzUogY+zYaav8YtUX/egWT26EPbsqtdbKoyMt//WUr/SsA7Zk
-         nagZF2TSiGkFHXTtzWBVk8dH3pbILk/m7nfux8HYWpAYqnNeFKHq1zIXOvrthYU4CNnh
-         V9Ug==
-X-Gm-Message-State: AOAM530HVhLAJavCknyl89/f9TViNaoX3Aoa60gUiMH9I5125+Ok3dUF
-        LhmJbL9grV3l2H6U2prowuw=
-X-Google-Smtp-Source: ABdhPJwpuyZX2j0nAIjSro1X6784HLmhor2st7ncGY53Y0bOMOhNkJqj4+D5xoFfW/BGD4+BDHjzcA==
-X-Received: by 2002:ac2:47e7:: with SMTP id b7mr30423731lfp.68.1594059867015;
-        Mon, 06 Jul 2020 11:24:27 -0700 (PDT)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id j26sm9023140lfm.11.2020.07.06.11.24.25
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GrX+V4MpE6PWPi/82Y3YiEWhym0Z3uGDlKAfxIvrSG4=;
+        b=R+MY4fEK7Spwf83MPNRWpt5E4bQvPXT/NR8yfHisSC4um2xkRbl/7nDkqC9w//o47+
+         1Fu9NYQjTNFnbpvqQ6kD36Q7Oj9LK6ZgCZFNpxRJGORwBkZLAaLHfdvDGTqPVKKLU4ca
+         sLaibr3oNWkwH6IVS+p0qN78QPUw1X8xfYG5yKeveVvhU+uXgN5THRj1FyoEWVVFECrW
+         pciBp5oAGKHarZAk+5TtVuoFxYTlq8Q0XzbVSQJxx/Y5QYZ54whhVwUOJZYlrwd1dbof
+         wmW3XJGnUhfDsaDxOqbPPJaPQkcOteS8JWe28cWveP+4E0wf5WzF3a+NN7HYvckVfxT0
+         AXYQ==
+X-Gm-Message-State: AOAM5315spgDihZYp9iEXmO1dqfx4bZsN+0c9YbaXWlP32voGjBRxKzz
+        1JZnLBZhjbJT9CrU/VfqqJQgGbjA10c=
+X-Google-Smtp-Source: ABdhPJxA0uvOB2jmx2FuiUl2SbzQbSp/L++LiSyR85iCpNYzNRe3LfgnKBNbah3zTAGqn/GTjwdjKQ==
+X-Received: by 2002:a62:6446:: with SMTP id y67mr39423849pfb.299.1594060337856;
+        Mon, 06 Jul 2020 11:32:17 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id d37sm20527438pgd.18.2020.07.06.11.32.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2020 11:24:25 -0700 (PDT)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     richardcochran@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH  3/5] net: fec: initialize clock with 0 rather than
- current kernel time
-References: <20200706142616.25192-1-sorganov@gmail.com>
-        <20200706142616.25192-4-sorganov@gmail.com>
-        <20200706152721.3j54m73bm673zlnj@skbuf>
-Date:   Mon, 06 Jul 2020 21:24:24 +0300
-In-Reply-To: <20200706152721.3j54m73bm673zlnj@skbuf> (Vladimir Oltean's
-        message of "Mon, 6 Jul 2020 18:27:21 +0300")
-Message-ID: <874kqksdrb.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        Mon, 06 Jul 2020 11:32:17 -0700 (PDT)
+Date:   Mon, 6 Jul 2020 11:32:08 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     "YU, Xiangning" <xiangning.yu@alibaba-inc.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] net: sched: Lockless Token Bucket (LTB)
+ Qdisc
+Message-ID: <20200706113208.672ce199@hermes.lan>
+In-Reply-To: <28bff9d7-fa2d-5284-f6d5-e08cd792c9c6@alibaba-inc.com>
+References: <28bff9d7-fa2d-5284-f6d5-e08cd792c9c6@alibaba-inc.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <olteanv@gmail.com> writes:
+On Tue, 07 Jul 2020 02:08:13 +0800
+"YU, Xiangning" <xiangning.yu@alibaba-inc.com> wrote:
 
-> Hi Sergey,
->
-> On Mon, Jul 06, 2020 at 05:26:14PM +0300, Sergey Organov wrote:
->> Initializing with 0 makes it much easier to identify time stamps from
->> otherwise uninitialized clock.
->> 
->> Initialization of PTP clock with current kernel time makes little sense as
->> PTP time scale differs from UTC time scale that kernel time represents.
->> It only leads to confusion when no actual PTP initialization happens, as
->> these time scales differ in a small integer number of seconds (37 at the
->> time of writing.)
->> 
->> Signed-off-by: Sergey Organov <sorganov@gmail.com>
->> ---
->
-> Reading your patch, I got reminded of my own attempt of making an
-> identical change to the ptp_qoriq driver:
->
-> https://www.spinics.net/lists/netdev/msg601625.html
->
-> Could we have some sort of kernel-wide convention, I wonder (even though
-> it might be too late for that)? After your patch, I can see equal
-> amounts of confusion of users expecting some boot-time output of
-> $(phc_ctl /dev/ptp0 get) as it used to be, and now getting something
-> else.
->
-> There's no correct answer, I'm afraid.
+> +static inline s64 get_linkspeed(struct net_device *dev)
 
-IMHO, the correct answer would be keep non-initialized clock at 0. No
-ticking.
+This is not performance sensitive and should not be marked inline.
 
-> Whatever the default value of the clock may be, it's bound to be
-> confusing for some reason, _if_ the reason why you're investigating it
-> in the first place is a driver bug. Also, I don't really see how your
-> change to use Jan 1st 1970 makes it any less confusing.
 
-When I print the clocks in application, I see seconds and milliseconds
-part since epoch. With this patch seconds count from 0, that simply
-match uptime. Easy to tell from any other (malfunctioning) clock.
+> +{
+> +	struct ethtool_link_ksettings ecmd;
+> +
+> +	ASSERT_RTNL();
+> +	if (netif_running(dev) && !__ethtool_get_link_ksettings(dev, &ecmd))
+> +		/* Convert to bytes per second */
+> +		return ecmd.base.speed * 1000 * 1000L / 8;
 
-Here is the description of confusion and improvement. I spent half a day
-not realizing that I sometimes get timestamps from the wrong PTP clock.
-Part of the problem is that kernel time at startup, when it is used for
-initialization of the PTP clock, is in fact somewhat random, and it
-could be off by a few seconds. Now, when in application I get time stamp
-that is almost right, and then another one that is, say, 9 seconds off,
-what should I think? Right, that I drive PTP clock wrongly.
+You need to be more careful in handling of devices that return unknown for speed.
 
-Now, when one of those timestamps is almost 0, I see immediately I got
-time from wrong PTP clock, rather than wrong time from correct PTP
-clock.
-
-Thanks,
--- Sergey
+> +	return 0;
+> +}
+> +
