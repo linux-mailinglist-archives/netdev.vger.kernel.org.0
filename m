@@ -2,169 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41F012152A7
-	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 08:22:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8C12152BB
+	for <lists+netdev@lfdr.de>; Mon,  6 Jul 2020 08:34:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728942AbgGFGWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 02:22:16 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:33627 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728828AbgGFGWP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 02:22:15 -0400
-Received: by mail-il1-f197.google.com with SMTP id c1so17491393ilr.0
-        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 23:22:14 -0700 (PDT)
+        id S1728084AbgGFGey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 02:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39038 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725889AbgGFGex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 02:34:53 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477B1C061794
+        for <netdev@vger.kernel.org>; Sun,  5 Jul 2020 23:34:53 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id f7so36508349wrw.1
+        for <netdev@vger.kernel.org>; Sun, 05 Jul 2020 23:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vusR7Udle/joV+Wqxbtpki1vDkcBy0QYRYxJjsQCBSI=;
+        b=uVtjsCaovPQrbprwgnv/oI4J5wS5Kj6k8u32nfjo2mBUnVYzpaJVE4KJ0jQuPkbtfG
+         2GADPzt4OhdcHmsL8hTDOF+SCw2uH4Rm6DovzyaoWifZNQ3wUzkM81QY+cLMYrtvFGuu
+         Gha63GLvHwzgm2ZUwwYRxc7vYDZng37/aVd4qsb7ZzliG0Q0NCcFRJY26I/1XvX92iPt
+         5i9Q/Fzto8CBDbmgyCCy56pVZK7azqv86TUg/OLBu+L7PoLL37e0ZY8tvxwFFXI+3Fdp
+         IKljJe+Xhv7iIG4MEoM86AwICWOzeS8cvlpV670EOSdjXKCKSoxyLRT5hIO6yS0tBIMl
+         nbpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=65VFK3CeGOY6XsF4+JQsV3Lwx5hkLbk2n9tjz+Qw9Jo=;
-        b=SgsmLnXXoR4yASo0AYowRebSbaLnY1k+1x0QOttdliM+HV96SzY8U2iALCvWnlguNN
-         QtpbpCDaMkhhnyEhjAXvrCg+3ejUH1WK+oSCIBD+LI2reN+0VxjaFgwbczGi/HvrR8n6
-         fJ/7gT16bxU5kSaLU5CCiSUjmQkIAiiFgvcPYAxFtq59ENgc4D/EQaBtlMYJr5bfue87
-         WRDNZY2Gi4UuKWV03DTnjQ2wbDyLUq0QvNMmmlPKqCmeBaXdszWbqxM5EX2/RCrWbICu
-         ETVi/EajVP+rsofZ9FTY9wzdwuF0FpIT+/0trXWmkSaDumEr+hUZuvrpX+VrTVyihJE4
-         gwwg==
-X-Gm-Message-State: AOAM5336Ss52jtk/bP4gJBivw/4iWts6GWv95ugHNJ2brJ9AvT8yTPPl
-        aopZ9hx6lKr7TbAugN2X0x/cCib6hIfDxknBAe5c8WS42NRZ
-X-Google-Smtp-Source: ABdhPJzxJfprkEfzW1CDLFjw0CpuAk9bdct5cThB4k/Pgp3XcKi4EsWkOqKoaALvUQgTFtVbA7bcf/rlB1rqsD1zoXgBN1gbx34K
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vusR7Udle/joV+Wqxbtpki1vDkcBy0QYRYxJjsQCBSI=;
+        b=efTGBIyGPw8ze7Y0rxMcM7EfNwDYRVS1IgHEnygEyb5Qfzlp8G/lx8o4njlG/U13NR
+         F7GU1boOIB6Je7PmnikcikfGQgMKMXb2vOQwRa96MAjcUZjUna0eKguKJKnYA0owAURC
+         FvBjaVkuf/HLWh1JFeCbmw3SfnsG5ya84+hCLnjdyJCXgK00R972FwLcHc9jaaDqABi1
+         W6UIEgwyPn1c2DvATB2KXijNUD8v1iLZVaLz9B6LyTr8mxwJPpYBffJEGWYvuGaa3Uso
+         Uk6TbSLwyszgRavAM5JNM/Pha74Xdwug6+3GS7BTv0v2Q4qhDHbYcBe0V5m33wBopnfY
+         UsZg==
+X-Gm-Message-State: AOAM530EtP+XaETXQ3ylguigD2gs9OQgfYtZOLt2XENk4e+VAlYqCt86
+        fB089R4GmX3P5WYdmFncyvxZMg==
+X-Google-Smtp-Source: ABdhPJxTD7P+Ta0iCzUkBvd0HNtY51RE2SFRWQjlVXYuo5lwWIPa57BZI4RITYUw+Y6QA4CujuKEJA==
+X-Received: by 2002:adf:ef89:: with SMTP id d9mr50015461wro.124.1594017291919;
+        Sun, 05 Jul 2020 23:34:51 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id q7sm11287170wra.56.2020.07.05.23.34.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Jul 2020 23:34:51 -0700 (PDT)
+Date:   Mon, 6 Jul 2020 08:34:50 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        netdev@vger.kernel.org, dsahern@gmail.com, davem@davemloft.net,
+        jiri@mellanox.com, kuba@kernel.org, michael.chan@broadcom.com
+Subject: Re: [PATCH v2 iproute2-next] devlink: Add board.serial_number to
+ info subcommand.
+Message-ID: <20200706063450.GA2251@nanopsycho.orion>
+References: <1593416584-24145-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <20200705110301.20baf5c2@hermes.lan>
 MIME-Version: 1.0
-X-Received: by 2002:a92:b749:: with SMTP id c9mr30062467ilm.289.1594016534226;
- Sun, 05 Jul 2020 23:22:14 -0700 (PDT)
-Date:   Sun, 05 Jul 2020 23:22:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000049f07f05a9bfe509@google.com>
-Subject: KASAN: use-after-free Read in wg_get_device_start
-From:   syzbot <syzbot+e869cfbeeae05d706b9c@syzkaller.appspotmail.com>
-To:     Jason@zx2c4.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, wireguard@lists.zx2c4.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200705110301.20baf5c2@hermes.lan>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Sun, Jul 05, 2020 at 08:03:01PM CEST, stephen@networkplumber.org wrote:
+>On Mon, 29 Jun 2020 13:13:04 +0530
+>Vasundhara Volam <vasundhara-v.volam@broadcom.com> wrote:
+>
+>> Add support for reading board serial_number to devlink info
+>> subcommand. Example:
+>> 
+>> $ devlink dev info pci/0000:af:00.0 -jp
+>> {
+>>     "info": {
+>>         "pci/0000:af:00.0": {
+>>             "driver": "bnxt_en",
+>>             "serial_number": "00-10-18-FF-FE-AD-1A-00",
+>>             "board.serial_number": "433551F+172300000",
+>>             "versions": {
+>>                 "fixed": {
+>>                     "board.id": "7339763 Rev 0.",
+>>                     "asic.id": "16D7",
+>>                     "asic.rev": "1"
+>>                 },
+>>                 "running": {
+>>                     "fw": "216.1.216.0",
+>>                     "fw.psid": "0.0.0",
+>>                     "fw.mgmt": "216.1.192.0",
+>>                     "fw.mgmt.api": "1.10.1",
+>>                     "fw.ncsi": "0.0.0.0",
+>>                     "fw.roce": "216.1.16.0"
+>>                 }
+>>             }
+>>         }
+>>     }
+>> }
+>
+>Although this is valid JSON, many JSON style guides do not allow
+>for periods in property names. This is done so libraries can use
+>dot notation to reference objects.
+>
+>Also the encoding of PCI is problematic
 
-syzbot found the following crash on:
+Well, besides board.serial_number, this is what we have right now...
 
-HEAD commit:    7cc2a8ea Merge tag 'block-5.8-2020-07-01' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=123532a7100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=183dd243398ba7ec
-dashboard link: https://syzkaller.appspot.com/bug?extid=e869cfbeeae05d706b9c
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+e869cfbeeae05d706b9c@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: use-after-free in nla_get_u32 include/net/netlink.h:1541 [inline]
-BUG: KASAN: use-after-free in lookup_interface drivers/net/wireguard/netlink.c:61 [inline]
-BUG: KASAN: use-after-free in wg_get_device_start+0x2bc/0x2d0 drivers/net/wireguard/netlink.c:203
-Read of size 4 at addr ffff88803b9c3818 by task syz-executor.3/15521
-
-CPU: 1 PID: 15521 Comm: syz-executor.3 Not tainted 5.8.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1f0/0x31e lib/dump_stack.c:118
- print_address_description+0x66/0x5a0 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report+0x132/0x1d0 mm/kasan/report.c:530
- nla_get_u32 include/net/netlink.h:1541 [inline]
- lookup_interface drivers/net/wireguard/netlink.c:61 [inline]
- wg_get_device_start+0x2bc/0x2d0 drivers/net/wireguard/netlink.c:203
- genl_start+0x390/0x570 net/netlink/genetlink.c:556
- __netlink_dump_start+0x3d2/0x700 net/netlink/af_netlink.c:2343
- genl_family_rcv_msg_dumpit net/netlink/genetlink.c:638 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:733 [inline]
- genl_rcv_msg+0xb03/0xe00 net/netlink/genetlink.c:753
- netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2469
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:764
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
- do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45cb29
-Code: Bad RIP value.
-RSP: 002b:00007f1bd1266c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000502320 RCX: 000000000045cb29
-RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
-RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000a32 R14: 00000000004cd184 R15: 00007f1bd12676d4
-
-Allocated by task 15525:
- save_stack mm/kasan/common.c:48 [inline]
- set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc+0x103/0x140 mm/kasan/common.c:494
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0xde/0x4f0 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1083 [inline]
- netlink_alloc_large_skb net/netlink/af_netlink.c:1175 [inline]
- netlink_sendmsg+0x7b2/0xd70 net/netlink/af_netlink.c:1893
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
- do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 15525:
- save_stack mm/kasan/common.c:48 [inline]
- set_track mm/kasan/common.c:56 [inline]
- kasan_set_free_info mm/kasan/common.c:316 [inline]
- __kasan_slab_free+0x114/0x170 mm/kasan/common.c:455
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x10a/0x220 mm/slab.c:3757
- skb_release_all net/core/skbuff.c:664 [inline]
- __kfree_skb+0x56/0x1c0 net/core/skbuff.c:678
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x78e/0x940 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
- do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The buggy address belongs to the object at ffff88803b9c3800
- which belongs to the cache kmalloc-1k of size 1024
-The buggy address is located 24 bytes inside of
- 1024-byte region [ffff88803b9c3800, ffff88803b9c3c00)
-The buggy address belongs to the page:
-page:ffffea0000ee70c0 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea0001859248 ffffea0000e02ec8 ffff8880aa400c40
-raw: 0000000000000000 ffff88803b9c3000 0000000100000002 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff88803b9c3700: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88803b9c3780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88803b9c3800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                            ^
- ffff88803b9c3880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88803b9c3900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>
+>
