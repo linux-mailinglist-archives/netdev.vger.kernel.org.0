@@ -2,131 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C952216638
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 08:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21A40216645
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 08:17:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727831AbgGGGJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 02:09:13 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:24664 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727003AbgGGGJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 02:09:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594102152;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M6vzX4pgRklp7CNc1swxRtrbo/Er7OvueNgs+gb+Ros=;
-        b=WyEIavzCc60FG286YsPer+CBa8owZj/uu88a5xw4bwdcbk7gpmec6kOT9J22l85Dep4uow
-        2Od95tDl7QSddv9BMughGIH+8ILhMdFaYc0d6/nQx7X1DejAChDK/ok11dkUSl6sA404DF
-        WtYhBs8Z8COkbhWMka41Q/A/nibxS80=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-97-sQPcG_A1O8m0LYGZvKO0OQ-1; Tue, 07 Jul 2020 02:09:09 -0400
-X-MC-Unique: sQPcG_A1O8m0LYGZvKO0OQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726961AbgGGGRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 02:17:23 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:58392 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725974AbgGGGRX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jul 2020 02:17:23 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 8594120411;
+        Tue,  7 Jul 2020 08:17:21 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id mVnmsVHkTRbF; Tue,  7 Jul 2020 08:17:21 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6975880058A;
-        Tue,  7 Jul 2020 06:09:08 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 528D25C1B2;
-        Tue,  7 Jul 2020 06:08:59 +0000 (UTC)
-Date:   Tue, 7 Jul 2020 08:08:57 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Hangbin Liu <haliu@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>, Yonghong Song <yhs@fb.com>,
-        Martin Lau <kafai@fb.com>, Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, brouer@redhat.com
-Subject: Re: [PATCH bpf-next V2 2/2] selftests/bpf: test_progs avoid minus
- shell exit codes
-Message-ID: <20200707080857.29d45856@carbon>
-In-Reply-To: <CAEf4BzZ=v1fMxfxP9XdtEOmQV97XdwJ+Ago++VyVN19-TmeF3A@mail.gmail.com>
-References: <159405478968.1091613.16934652228902650021.stgit@firesoul>
-        <159405481655.1091613.6475075949369245359.stgit@firesoul>
-        <CAEf4BzZ=v1fMxfxP9XdtEOmQV97XdwJ+Ago++VyVN19-TmeF3A@mail.gmail.com>
+        by a.mx.secunet.com (Postfix) with ESMTPS id 06CC2201A0;
+        Tue,  7 Jul 2020 08:17:21 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Tue, 7 Jul 2020 08:17:20 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Tue, 7 Jul 2020
+ 08:17:20 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id F3EA231800BE;
+ Tue,  7 Jul 2020 08:17:19 +0200 (CEST)
+Date:   Tue, 7 Jul 2020 08:17:19 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Xin Long <lucien.xin@gmail.com>
+CC:     Tobias Brunner <tobias@strongswan.org>,
+        network dev <netdev@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <hadi@cyberus.ca>,
+        "Sabrina Dubroca" <sd@queasysnail.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>, <pwouters@redhat.com>
+Subject: Re: [PATCH ipsec] xfrm: state: match with both mark and mask on user
+ interfaces
+Message-ID: <20200707061719.GV19286@gauss3.secunet.de>
+References: <4aaead9f8306859eb652b90582f23295792e9d15.1593497708.git.lucien.xin@gmail.com>
+ <d510d172-c605-725d-e6bc-e6462a3718ab@strongswan.org>
+ <CADvbK_cQBbFwYj_CYTm69LP8a7R3PsS=nr0MyfRjAcASVz=dhQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CADvbK_cQBbFwYj_CYTm69LP8a7R3PsS=nr0MyfRjAcASVz=dhQ@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 Jul 2020 15:17:57 -0700
-Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-
-> On Mon, Jul 6, 2020 at 10:00 AM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
+On Mon, Jul 06, 2020 at 04:33:53PM +0800, Xin Long wrote:
 > >
-> > There are a number of places in test_progs that use minus-1 as the argument
-> > to exit(). This improper use as a process exit status is masked to be a
-> > number between 0 and 255 as defined in man exit(3).  
-> 
-> nit: I wouldn't call it improper use, as it's a well defined behavior
-> (lower byte of returned integer).
-> 
+> > > @@ -1051,7 +1061,6 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+> > >       int acquire_in_progress = 0;
+> > >       int error = 0;
+> > >       struct xfrm_state *best = NULL;
+> > > -     u32 mark = pol->mark.v & pol->mark.m;
+> > >       unsigned short encap_family = tmpl->encap_family;
+> > >       unsigned int sequence;
+> > >       struct km_event c;
+> > > @@ -1065,7 +1074,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+> > >       hlist_for_each_entry_rcu(x, net->xfrm.state_bydst + h, bydst) {
+> > >               if (x->props.family == encap_family &&
+> > >                   x->props.reqid == tmpl->reqid &&
+> > > -                 (mark & x->mark.m) == x->mark.v &&
+> > > +                 (pol->mark.v == x->mark.v && pol->mark.m == x->mark.m) &&
+> > >                   x->if_id == if_id &&
+> > >                   !(x->props.flags & XFRM_STATE_WILDRECV) &&
+> > >                   xfrm_state_addr_check(x, daddr, saddr, encap_family) &&
+> > > @@ -1082,7 +1091,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+> > >       hlist_for_each_entry_rcu(x, net->xfrm.state_bydst + h_wildcard, bydst) {
+> > >               if (x->props.family == encap_family &&
+> > >                   x->props.reqid == tmpl->reqid &&
+> > > -                 (mark & x->mark.m) == x->mark.v &&
+> > > +                 (pol->mark.v == x->mark.v && pol->mark.m == x->mark.m) &&
+> > >                   x->if_id == if_id &&
+> > >                   !(x->props.flags & XFRM_STATE_WILDRECV) &&
+> > >                   xfrm_addr_equal(&x->id.daddr, daddr, encap_family) &&
 > >
-> > This patch use two different positive exit codes instead, to allow a shell  
+> > While this should usually not be a problem for strongSwan, as we set the
+> > same mark/value on both states and corresponding policies (although the
+> > latter can be disabled as users may want to install policies themselves
+> > or via another daemon e.g. for MIPv6), it might be a limitation for some
+> > use cases.  The current code allows sharing states with multiple
+> > policies whose mark/mask doesn't match exactly (i.e. depended on the
+> > masks of both).  I wonder if anybody uses it like this, and how others
+> > think about it.
+> IMHO, the non-exact match "(mark & x->mark.m) == x->mark.v" should be only
+> for packet flow. "sharing states with multiple policies" should not be the
+> purpose of xfrm_mark. (Add Jamal to the CC list)
 > 
-> typo: uses
+> "(((pol->mark.v & pol->mark.m) & x->mark.m) == x->mark.v)" is just strange.
+> We could do either:
+>  (pol->mark.v == x->mark.v && pol->mark.m == x->mark.m), like this patch.
+> Or use fl->flowi_mark in xfrm_state_find():
+>  (fl->flowi_mark & x->mark.m) == x->mark.v)
 > 
-> > script to tell the two error cases apart.
-> >
-> > Fixes: fd27b1835e70 ("selftests/bpf: Reset process and thread affinity after each test/sub-test")
-> > Fixes: 811d7e375d08 ("bpf: selftests: Restore netns after each test")
-> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > ---
-> >  tools/testing/selftests/bpf/test_progs.c |   12 +++++++-----
-> >  1 file changed, 7 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-> > index e8f7cd5dbae4..50803b080593 100644
-> > --- a/tools/testing/selftests/bpf/test_progs.c
-> > +++ b/tools/testing/selftests/bpf/test_progs.c
-> > @@ -12,7 +12,9 @@
-> >  #include <string.h>
-> >  #include <execinfo.h> /* backtrace */
-> >
-> > -#define EXIT_NO_TEST 2
-> > +#define EXIT_NO_TEST           2
-> > +#define EXIT_ERR_NETNS         3
-> > +#define EXIT_ERR_RESET_AFFINITY        4  
+> The 1st one will require userland to configure policy and state with the
+> same xfrm_mark, like strongswan.
 > 
-> Let's not overdo this with too granular error codes? All of those seem
-> to be just a failure, is there any practical need to differentiate
-> between NETNS vs RESET_AFFINITY failure?
-
-I agree, because both cases (NETNS vs RESET_AFFINITY) print to stderr,
-which makes it possible to troubleshoot for a human afterwards.  The
-shell script just need to differentiate that is an "infra" setup issue,
-as we e.g. might want to allow the RPM build to continue in those cases.
-
-
-> I'd go with 3 values:
+> The 2nd one will match state with tx packet flow's mark, it's more like
+> rx packet flow path.
 > 
-> 1 - at least one test failed
-> 2 - no tests were selected
-> 3 - "infra" (not a test-specific failure) error (like netns or affinity failed).
-> 
-> Thoughts?
+> But you're right, either of these may cause slight differences, let's see
+> how other userland cases use it. (also Add Libreswan's developer, Paul Wouters)
 
-Sure, I can do this.
-
-What define name reflect this best:
- EXIT_ERR_SETUP ?
- EXIT_ERR_INFRA ?
- EXIT_ERR_SETUP_INFRA ?
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+We should care that everything that worked before, will still work after
+this change. Otherwise we might break someones usecase, even if the
+usecase seems to be odd and nobody complains now.
