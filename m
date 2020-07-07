@@ -2,99 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62DDA21673F
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 09:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01F39216749
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 09:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728174AbgGGHVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 03:21:44 -0400
-Received: from mail-eopbgr130081.outbound.protection.outlook.com ([40.107.13.81]:58211
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725825AbgGGHVn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jul 2020 03:21:43 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=crda7jdyqEwJRHajgkJFy72WHUb6meMw/YNV2aYi9GSHeggdcPai1WOSvzbqK5vwTnDK+6RbNomhQwqEnbZ4bAVpkSn91zhug05H0wr4GbZJidmm6uzDY8/LV2rOlldHXOyVx/eAGQLrMQPeZ0Qg0lqkQZ2vhbmzHv2ovTtrk/+Zc25LRzb9uCIf0MhnDB3OBcxZquPGML6zjABgCdX8UvI0zNgLAFFK4wcziCKfnvqRvJzjOjyuHv7bEV69Rfnd13gEWppu+qAiON/oxLmLXpMD1+DZk9zjEqhXhqzyXDpDbla31GSlV1h1w9wEw0hnvYdmN8x5bVR01AzdIPjUYg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JOXvbG4EWJhsWF/k9oH2j1dc0MQ4vzKH8zDUnbHwS1w=;
- b=HV+MrQRkPveTRHeY2MgzZ48PQv/crbBzsgsuFce2nZr+kKcsgpP/V5hEdN/nsz9C29/Tx4cjIin4PjDTFryRWVXgw5QVwexgW2Rk4lHUFNcsOAntxmNynd89u+VhjATQkjcUoNQFTghJ4qOd5OcfCQEa+t/LAmO9v3dDH2vLei+i4+R5hoJ68KXRwvvl7xCYo9X7X3I18ziyxYCwE3ool+TBri18O9NC4jsgd3CiEpixc4B9m1Q5m5SIhqSHVw+/Fz1VTgGBy4csMOTDMNuiuS3utCo/TbvZcmSz9S7a6M6lWunfwENEFFQlieLRVo9OIj2bBpXcCIbGI0q1W+MNEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JOXvbG4EWJhsWF/k9oH2j1dc0MQ4vzKH8zDUnbHwS1w=;
- b=CpWVorzv9OctGr8VEzFc1NgY5CKMSZ8pN1uU3pYqUZ/zKd00hF+XTO1AhxJf4KQ84L4ca/++f4C5y5aH6wz8YabmlaXckAubPS33yi+I8U4qLqrGEEu4I26kqle884LYTZsn5MquZjE/pENlnMTm/PSkNzht9cdACWB3G0VyVNk=
-Received: from VI1PR04MB4366.eurprd04.prod.outlook.com (2603:10a6:803:3d::27)
- by VI1PR04MB5837.eurprd04.prod.outlook.com (2603:10a6:803:ec::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.27; Tue, 7 Jul
- 2020 07:21:39 +0000
-Received: from VI1PR04MB4366.eurprd04.prod.outlook.com
- ([fe80::8102:b59d:36b:4d09]) by VI1PR04MB4366.eurprd04.prod.outlook.com
- ([fe80::8102:b59d:36b:4d09%7]) with mapi id 15.20.3153.029; Tue, 7 Jul 2020
- 07:21:39 +0000
-From:   Ganapathi Bhat <ganapathi.bhat@nxp.com>
-To:     =?utf-8?B?UGFsaSBSb2jDoXI=?= <pali@kernel.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [EXT] [PATCH] mwifiex: Fix reporting 'operation not supported'
- error code
-Thread-Topic: [EXT] [PATCH] mwifiex: Fix reporting 'operation not supported'
- error code
-Thread-Index: AQHWUSxGeMcJM+WKlk+t0TapJn5iJ6j7u8Dw
-Date:   Tue, 7 Jul 2020 07:21:39 +0000
-Message-ID: <VI1PR04MB4366C310C7F50DB7CAFB733A8F660@VI1PR04MB4366.eurprd04.prod.outlook.com>
-References: <20200703112151.18917-1-pali@kernel.org>
-In-Reply-To: <20200703112151.18917-1-pali@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [103.54.18.180]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: e57b1137-3c09-4144-d403-08d822466418
-x-ms-traffictypediagnostic: VI1PR04MB5837:
-x-microsoft-antispam-prvs: <VI1PR04MB58372BE426D6F5BB1146FBB08F660@VI1PR04MB5837.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0457F11EAF
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: k8zBLoNweWEV13Q09kIUrjDgarz2KCNDs7JpaK59vDyc7o33jlTgsHR4gJY2LDRV4aAOZSRYy3oeVWvyuepWaQXhKfW+kvF+KGSy0HhsJhzuQM34bD/UVb9HSdXVOIyd8HC1BR5/A3IJ5QB38uqR6pU7F1BIb4jyyBd4ZsxQi8ZYo5qQRlvnALJjiEsm9xfpxK4v+NSJ9MvHO0IrEPYS71xwreRKFgW20fIV27ENFgbNzt+hgJ+PKb3Y2weNT+Wzic/CXSWedC6eQQ20xPB/5JXvM/4CH731d9zelH05avPO0fIYn/sEazmVUN5lfkYp
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4366.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(346002)(376002)(39860400002)(136003)(366004)(5660300002)(71200400001)(52536014)(2906002)(44832011)(66446008)(86362001)(4326008)(64756008)(66556008)(76116006)(66946007)(66476007)(9686003)(55016002)(8936002)(26005)(33656002)(7696005)(478600001)(6506007)(186003)(4744005)(8676002)(316002)(110136005)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: otYjQphSnVS2FRxTUIpS/G9qNbF0BtVOh7tSCXqnUJ0rFv6haW6j4JxWct0beYu3qvAcqFsLbfzeM1qip11isHcDj8l/myRVP1TREqguUjS/52+XEDOLqWtCKauUWdCjVtyFGuReGtGgYx8q5aZwcIrdkrFaeLWgnHwXZcsqURs06qOmVByiWHUMEC4ih5ftzLSoyRgH3VZXExfuO7Ilu+X8LOZbyV7KpnPRmw25OkIBrfCkE29n8Yt3l2JXXYKrgvl5QDx1kvNjbD630aAa4U3p/Kc2+6q1EHFCJD70cdGuRGaBFXyPB7gClEklWiMucNduXBFZXdT5vbG4x+4ynIEiFlZ5BACzGPhFD59I327imGa0x2I0svNRp9V+krOalNZKnLvXeii0tiOtiexNbR60FlS40bid0neb6fYibgTyTBbZ6nIDBi7yDvE++F15gaavaYwxOPJujdFnuNEITEu1gmW/twAdKU8+99ReiUY=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728276AbgGGHXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 03:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725825AbgGGHXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 03:23:36 -0400
+Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199CEC061755;
+        Tue,  7 Jul 2020 00:23:36 -0700 (PDT)
+Received: by mail-vk1-xa44.google.com with SMTP id h1so9091732vkn.12;
+        Tue, 07 Jul 2020 00:23:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eTRuakPnfWXbOPA0YuwVEGPF6BELfW2YGI8FV22a3D8=;
+        b=DX1im+xZt1K0FqBnN82RJezZvsKYs0Ot3lUUcTTGBlMKlp+7o+X/rD0/E+KA+LvbOs
+         0LK4bY9K2Rx2nQL1KZy5N1IPbLnTB8RgRjZK+Zg2QmdfbTR//xPfQKb8gV66Y0vcP+2s
+         bE7AQYkBA2ACbzQiJnBDUsEp3MWpblmDAKIlcn56SW1XK9qy6L3YZni32LMm8YRYFoNk
+         MVAQo7SSFj2C9T5mSDI5zr+BzgQJQWDBnKkFJWV3v7uBZqNRLLe5tHqGh5Z15/xXGsyv
+         tCAVvPqYQ/ZKp+7hqT/2Zqax3U9WMNyWw+M1keUkQ7vkrG3TVmRv44A0aci2goBrlK5Y
+         YCAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eTRuakPnfWXbOPA0YuwVEGPF6BELfW2YGI8FV22a3D8=;
+        b=tyihyG+CT/fSaC2UF2JJGwB0qNnKD0Mn2gj3zyDqPpPi/vY0cjNPb2wzWaGI1mkFcV
+         mlqiYJqC3WPYb/HvqLOlQN3n+XmbC4l6fFcMWswd5Ghjj5/T0/KdU86f94wqSYBVmhDp
+         nYpCu2epzw3aCnNAh3RHBAfyEQgYhjH/V2InZi0k6OFuk0eO+c76f741KC36643qgPB1
+         2UBNK0IbKEAVeKQ7Ik/b4oyuiXXOu57SD5iSk4SHDX9k4KIvXFgcnMjPrBj/rjZaU6E+
+         0fVrwxolf26KRVRd8Ohj4uc/IVFQdlmNwR4NtPSx8vkM0eJvPx2KvPA0TON3QqtPM7Nm
+         0FNw==
+X-Gm-Message-State: AOAM5313kbmd74mODc3yF9vHqD/8MOtzm4QqTPgBGXZvKJMXIQp599iU
+        iAfwLOO+ZVzpGLx84dQZnsDEekIKbLz//DDTQtyP7j6MpDY=
+X-Google-Smtp-Source: ABdhPJwDoGUthv+zTNF0YQ+DIJ6TUQ/UQkySAGd4cH60E4xW8nEVh/n1Kk8o+49qubrZkhgotuQDWZVp2wGV2w1BEpY=
+X-Received: by 2002:a1f:2409:: with SMTP id k9mr8926758vkk.80.1594106615240;
+ Tue, 07 Jul 2020 00:23:35 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4366.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e57b1137-3c09-4144-d403-08d822466418
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2020 07:21:39.2880
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KkyOMPdQeu89FxbIZIBoPbuA7M5Gn/Pq4LkUSdLIFH8cNHtAIeosAc8fHfzcbFs8cn/0cpMmCcwKx9+zcUCb0A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5837
+References: <20200707170650.692c98f0@canb.auug.org.au>
+In-Reply-To: <20200707170650.692c98f0@canb.auug.org.au>
+From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+Date:   Tue, 7 Jul 2020 12:51:53 +0530
+Message-ID: <CAP+cEOOUoD6f6DByqC-YF3WN1nO2BMUh5t39Ud6Vz6JEge7oKg@mail.gmail.com>
+Subject: Re: linux-next: build warning after merge of the net-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgUGFsaSwNCg0KPiBUaGlzIHBhdGNoIGZpeGVzIHByb2JsZW0gdGhhdCBtd2lmaWV4IGtlcm5l
-bCBkcml2ZXIgc2VuZHMgdG8gdXNlcnNwYWNlDQo+IHVuc3VwcG9ydGVkIGVycm9yIGNvZGVzIGxp
-a2U6ICJmYWlsZWQ6IC01MjQgKE5vIGVycm9yIGluZm9ybWF0aW9uKSIuDQo+IEFmdGVyIGFwcGx5
-aW5nIHRoaXMgcGF0Y2ggdXNlcnNwYWNlIHNlZTogImZhaWxlZDogLTk1IChOb3Qgc3VwcG9ydGVk
-KSIuDQo+IA0KDQoNCk9LLCB5ZXMgdGhpcyB3YXMgYSBtaXN0YWtlLiBUaGFuayB5b3UgZm9yIHRo
-aXMgY2hhbmdlLg0KDQpBY2tlZC1ieTogR2FuYXBhdGhpIEJoYXQgPGdhbmFwYXRoaS5iaGF0QG54
-cC5jb20+DQoNClJlZ2FyZHMsDQpHYW5hcGF0aGkNCg==
+On Tue, Jul 7, 2020 at 12:36 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> After merging the net-next tree, today's linux-next build (sparc64
+> defconfig) produced this warning:
+>
+> drivers/net/ethernet/sun/niu.c:9903:12: warning: 'niu_resume' defined but not used [-Wunused-function]
+>  static int niu_resume(struct device *dev_d)
+>             ^~~~~~~~~~
+> drivers/net/ethernet/sun/niu.c:9876:12: warning: 'niu_suspend' defined but not used [-Wunused-function]
+>  static int niu_suspend(struct device *dev_d)
+>             ^~~~~~~~~~~
+>
+> Introduced by commit
+>
+>   b0db0cc2f695 ("sun/niu: use generic power management")
+This warning should not have come as the earlier definition of.suspend() and
+.resume(), they were not inside "#ifdef CONFIG_PM" container. Or any other
+container. Hence I thought adding the "__maybe_unused" attribute to them
+would be unnecessary.
+
+I am sending a patch to do the same.
+
+-- Vaibhav Gupta
+>
+> --
+> Cheers,
+> Stephen Rothwell
