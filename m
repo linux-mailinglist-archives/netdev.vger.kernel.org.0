@@ -2,266 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20748217591
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 19:49:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE6B72175A4
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 19:52:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728857AbgGGRth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 13:49:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
+        id S1728525AbgGGRwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 13:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728404AbgGGRte (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 13:49:34 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCA2C061755;
-        Tue,  7 Jul 2020 10:49:34 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id h18so19216558qvl.3;
-        Tue, 07 Jul 2020 10:49:34 -0700 (PDT)
+        with ESMTP id S1728297AbgGGRwh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 13:52:37 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6122FC061755;
+        Tue,  7 Jul 2020 10:52:37 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id m22so9977467pgv.9;
+        Tue, 07 Jul 2020 10:52:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3A9pj/+sDYtaBhomGrTHi/WUOTb74PSiC/HfOmJjW14=;
-        b=gJPHZ3UWU8w8Dm/sJn1RXPqHp3zQGIHQFn+jZnl/eGc3uXdlDvsMZrWp5Xe/iTOOzJ
-         9WZBaxX4tAq6LSWVbNX55qYHrmmiyuo+cpTUuPqJQ4QAQ3oIKzypnahVOxIYK4jTXxyH
-         wjUCZUtWMqa5fEkNwSypDiF3jL0jnckLAk2ibxvRbhBV8IxOJtea0X/S8ztq1VGMmLJD
-         vtjYvs2BL/QopwGX2m2gySyY+CiWrQwdbV9k5P98AT/+Zt7HhFbBytZhqtlcuKoqMnnO
-         oZrwuPFnwB1Uny82nCL+oj04zi7Wv+uxQ50vA/Fu05FMtHW4yVEFnaTTzNrIi6oh34vi
-         2nRw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GYX4tTYyxLfkm2WsVXxZPveW6hzan+/DPaAowNfvqLA=;
+        b=cb585bb4ltXfoM2cMOXjwfJQzyHTR072WgUGpAWqSWdj4xJMI40dXY8q95yvnMJ3sc
+         Wptvu9FnaRYyPnhwpOK/FaUC0NH6NgO8j6WOK7XsIJv8kX3XzYd+ir3kKda4JqGh4sDx
+         hbK1swyt2Ukx5wocq6mXcEV52Z8qFmAQpx65ZJ6yMPcMO5cLozL4FtLcVCiKCAvJTuuU
+         wV64TZIxJogEfxkFDyZtkwSQUUteJz+kFuS68FZC5uIR1vGDychH95HNgriK2Sr6JJIv
+         Z4vu+W1i7WaTc5dQPH9zUgaboftpMf21wzDkBe0/e7HwPbIdFjFfXAxXV4lMa6Jb/MUw
+         F0iw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3A9pj/+sDYtaBhomGrTHi/WUOTb74PSiC/HfOmJjW14=;
-        b=J9r3j7D4RExs3/dINshuNHRqD6PH0c2I+Ep5+F5W7JTjFIzdGdd3OVBIvIiQ4mKjw5
-         3bj/5Umdow4pYDdadFLKXeOKqu1LTslok1+PsxxAdhSy0l/iIyZd54GNwWeFF6hQWfrJ
-         +BSQqyvgONguMjfP/Iyn/xUwQsq2Tgl/QilF+MUXN/oZOmY5QvMOWdjAh4LHV4m6Mqe6
-         xrRlQxKHvDpt9iYOKj3RADEAzJrf6cVoQbTnhhU9+Bv0JzOt1TutfSaKOSIudyVVh8V4
-         6sIt7+/7NbGNvvwY7wPrOJBidR8DjxMHt8KNP19xxPMl3CwQTrlY5kdgjIm8gG5pnEnO
-         0PkA==
-X-Gm-Message-State: AOAM532i8NhL8dFGhLkjrIT3X9ugH5PQuiv6+Epdrv8OT15rNYx4MA0H
-        sVLGxcnORB0WkVqBI1S76k661v3S0L2/2Oq4z4A=
-X-Google-Smtp-Source: ABdhPJwpgAdg0XLESfNsVoQN5Z+oZOVlu1shESUM6aVfeAdDbkXBFf4Q3RogUcHlbqlcS62CELGU7SQ0tDXp4DyOuxw=
-X-Received: by 2002:a05:6214:8f4:: with SMTP id dr20mr50215654qvb.228.1594144173515;
- Tue, 07 Jul 2020 10:49:33 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GYX4tTYyxLfkm2WsVXxZPveW6hzan+/DPaAowNfvqLA=;
+        b=RQdU2zUmpjDHEfgxpYPgnVH0her6Owoh9inlQchPRQbVw7na+53YgB5fOX7pO5QvWd
+         vx8UERq3czypWOy/CkHpphk2+4QajWl1sLaflkznDI0obJRRzg9YQ1ZphUv91rc1IRwI
+         tBmCSsu+K6HqXjxDY4k5O68hz1IGgxiIdd5mjVYC6aaJa0ZmTU60Yr1sUTv6conS4vsW
+         HY09t35tU2wSFOs1m6oouQNgDwhEhI0t/AzPxY/ezCsP7geinXKasC6U1VGObWl9Y7YS
+         iEtyOc532lRmhfsoSLeyx5sYTdL5zAOoYa3ZzFV44g7t0kskYMFZXrQp7ZPRVnRHPeDF
+         WvSw==
+X-Gm-Message-State: AOAM531H+HjKk75Cas+szJqlmmXnQh7c0xt7PsYdm4xMOcywkOdVmOb4
+        vYD/p5l73XH6UOEqOaCywtM=
+X-Google-Smtp-Source: ABdhPJzRiRAZz9+f3HOJ8YRC8hoFKlqkglXlexmMj/JMKbuMCWnvek4e9ON5JscghSY0tb7ohV/HlQ==
+X-Received: by 2002:a63:481:: with SMTP id 123mr43035507pge.2.1594144356931;
+        Tue, 07 Jul 2020 10:52:36 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id f207sm23576303pfa.107.2020.07.07.10.52.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jul 2020 10:52:36 -0700 (PDT)
+Subject: Re: [PATCH net-next] dropwatch: Support monitoring of dropped frames
+To:     izabela.bakollari@gmail.com, nhorman@tuxdriver.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+References: <20200707171515.110818-1-izabela.bakollari@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <647a37da-cd95-b84b-bc76-036a813c00e2@gmail.com>
+Date:   Tue, 7 Jul 2020 10:52:35 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200703095111.3268961-1-jolsa@kernel.org> <20200703095111.3268961-10-jolsa@kernel.org>
- <CAEf4BzYuDU2mARcP5GVAv+WiknSnWuzGyNqQx0TiJ23CWA8NiA@mail.gmail.com> <20200707155720.GI3424581@krava>
-In-Reply-To: <20200707155720.GI3424581@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 7 Jul 2020 10:49:22 -0700
-Message-ID: <CAEf4BzYYHEwDZ9YqqyfzSZsk-8=DrL-WVEee-gisBLQRZWUTHw@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 9/9] selftests/bpf: Add test for resolve_btfids
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200707171515.110818-1-izabela.bakollari@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 7, 2020 at 8:57 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Mon, Jul 06, 2020 at 06:26:28PM -0700, Andrii Nakryiko wrote:
-> > On Fri, Jul 3, 2020 at 2:54 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > >
-> > > Adding resolve_btfids test under test_progs suite.
-> > >
-> > > It's possible to use btf_ids.h header and its logic in
-> > > user space application, so we can add easy test for it.
-> > >
-> > > The test defines BTF_ID_LIST and checks it gets properly
-> > > resolved.
-> > >
-> > > For this reason the test_progs binary (and other binaries
-> > > that use TRUNNER* macros) is processed with resolve_btfids
-> > > tool, which resolves BTF IDs in .BTF.ids section.
-> > >
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > ---
-> > >  tools/testing/selftests/bpf/Makefile          |  22 ++-
-> > >  .../selftests/bpf/prog_tests/resolve_btfids.c | 170 ++++++++++++++++++
-> > >  2 files changed, 190 insertions(+), 2 deletions(-)
-> > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> > > index 1f9c696b3edf..b47a685d12bd 100644
-> > > --- a/tools/testing/selftests/bpf/Makefile
-> > > +++ b/tools/testing/selftests/bpf/Makefile
-> > > @@ -190,6 +190,16 @@ else
-> > >         cp "$(VMLINUX_H)" $@
-> > >  endif
-> > >
-> > > +$(SCRATCH_DIR)/resolve_btfids: $(BPFOBJ)                               \
-> > > +                              $(TOOLSDIR)/bpf/resolve_btfids/main.c    \
-> > > +                              $(TOOLSDIR)/lib/rbtree.c                 \
-> > > +                              $(TOOLSDIR)/lib/zalloc.c                 \
-> > > +                              $(TOOLSDIR)/lib/string.c                 \
-> > > +                              $(TOOLSDIR)/lib/ctype.c                  \
-> > > +                              $(TOOLSDIR)/lib/str_error_r.c
-> > > +       $(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/resolve_btfids \
-> > > +       OUTPUT=$(SCRATCH_DIR)/ BPFOBJ=$(BPFOBJ)
-> > > +
-> >
-> > please indent OUTPUT, so it doesn't look like it's a separate command
->
-> ok
->
-> >
-> > >  # Get Clang's default includes on this system, as opposed to those seen by
-> > >  # '-target bpf'. This fixes "missing" files on some architectures/distros,
-> > >  # such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
-> > > @@ -333,7 +343,8 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:                   \
-> > >                       $(TRUNNER_BPF_SKELS)                              \
-> > >                       $$(BPFOBJ) | $(TRUNNER_OUTPUT)
-> > >         $$(call msg,TEST-OBJ,$(TRUNNER_BINARY),$$@)
-> > > -       cd $$(@D) && $$(CC) -I. $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
-> > > +       cd $$(@D) && $$(CC) -I. $$(CFLAGS) $(TRUNNER_EXTRA_CFLAGS)      \
-> > > +       -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
-> > >
-> > >  $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:                          \
-> > >                        %.c                                              \
-> > > @@ -355,6 +366,7 @@ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)                   \
-> > >                              | $(TRUNNER_BINARY)-extras
-> > >         $$(call msg,BINARY,,$$@)
-> > >         $$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
-> > > +       $(TRUNNER_BINARY_EXTRA_CMD)
-> >
-> > no need to make this generic, just write out resolve_btfids here explicitly
->
-> currently resolve_btfids fails if there's no .BTF.ids section found,
-> but we can make it silently pass i nthis case and then we can invoke
-> it for all the binaries
-
-ah, I see. Yeah, either we can add an option to resolve_btfids to not
-error when .BTF_ids is missing (probably best), or we can check
-whether the test has .BTF_ids section, and if it does - run
-resolve_btfids on it. Just ignoring errors always is more error-prone,
-because we won't know if it's a real problem we are ignoring, or
-missing .BTF_ids.
-
->
-> >
-> > >
-> > >  endef
-> > >
-> > > @@ -365,7 +377,10 @@ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c     \
-> > >                          network_helpers.c testing_helpers.c            \
-> > >                          flow_dissector_load.h
-> > >  TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read                          \
-> > > -                      $(wildcard progs/btf_dump_test_case_*.c)
-> > > +                      $(wildcard progs/btf_dump_test_case_*.c)         \
-> > > +                      $(SCRATCH_DIR)/resolve_btfids
-> > > +TRUNNER_EXTRA_CFLAGS := -D"BUILD_STR(s)=\#s" -DVMLINUX_BTF="BUILD_STR($(VMLINUX_BTF))"
-> > > +TRUNNER_BINARY_EXTRA_CMD := $(SCRATCH_DIR)/resolve_btfids --btf $(VMLINUX_BTF) test_progs
-> >
-> > I hope we can get rid of this, see suggestion below.
-> >
-> > >  TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
-> > >  TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS)
-> > >  TRUNNER_BPF_LDFLAGS := -mattr=+alu32
-> > > @@ -373,6 +388,7 @@ $(eval $(call DEFINE_TEST_RUNNER,test_progs))
-> > >
-> >
-> > [...]
-> >
-> > > +
-> > > +static int duration;
-> > > +
-> > > +static struct btf *btf__parse_raw(const char *file)
-> >
-> > another copy here...
->
-> ok
->
-> >
-> > > +{
-> > > +       struct btf *btf;
-> > > +       struct stat st;
-> > > +       __u8 *buf;
-> > > +       FILE *f;
-> > > +
-> >
-> > [...]
-> >
-> > > +
-> > > +BTF_ID_LIST(test_list)
-> > > +BTF_ID_UNUSED
-> > > +BTF_ID(typedef, pid_t)
-> > > +BTF_ID(struct,  sk_buff)
-> > > +BTF_ID(union,   thread_union)
-> > > +BTF_ID(func,    memcpy)
-> > > +
-> > > +struct symbol {
-> > > +       const char      *name;
-> > > +       int              type;
-> > > +       int              id;
-> > > +};
-> > > +
-> > > +struct symbol test_symbols[] = {
-> > > +       { "unused",       -1,                0 },
-> >
-> > could use BTF_KIND_UNKN here instead of -1
->
-> ok
->
-> >
-> > > +       { "pid_t",        BTF_KIND_TYPEDEF, -1 },
-> > > +       { "sk_buff",      BTF_KIND_STRUCT,  -1 },
-> > > +       { "thread_union", BTF_KIND_UNION,   -1 },
-> > > +       { "memcpy",       BTF_KIND_FUNC,    -1 },
-> > > +};
-> > > +
-> >
-> > [...]
-> >
-> > > +
-> > > +static int resolve_symbols(void)
-> > > +{
-> > > +       const char *path = VMLINUX_BTF;
-> >
-> >
-> > This build-time parameter passing to find the original VMLINUX_BTF
-> > really sucks, IMO.
-> >
-> > Why not use the btf_dump tests approach and have our own small
-> > "vmlinux BTF", which resolve_btfids would use to resolve these IDs?
-> > See how btf_dump_xxx.c files define BTFs that are used in tests. You
-> > can do something similar here, and use a well-known BPF object file as
-> > a source of BTF, both here in a test and in Makefile for --btf param
-> > to resolve_btfids?
->
-> well VMLINUX_BTF is there and those types are used are not going
-> away any time soon ;-) but yea, we can do that.. we do this also
-> for bpftrace, it's nicer
 
 
-"VMLINUX_BTF is there" is not really true in a lot of more complicated
-setups, which is why I'd like to avoid that assumption. E.g., for
-libbpf Travis CI, we build self-tests in one VM, but run the binary in
-a different VM. So either vmlinux itself or the path to it might
-change.
+On 7/7/20 10:15 AM, izabela.bakollari@gmail.com wrote:
+> From: Izabela Bakollari <izabela.bakollari@gmail.com>
+> 
+> Dropwatch is a utility that monitors dropped frames by having userspace
+> record them over the dropwatch protocol over a file. This augument
+> allows live monitoring of dropped frames using tools like tcpdump.
+> 
+> With this feature, dropwatch allows two additional commands (start and
+> stop interface) which allows the assignment of a net_device to the
+> dropwatch protocol. When assinged, dropwatch will clone dropped frames,
+> and receive them on the assigned interface, allowing tools like tcpdump
+> to monitor for them.
+> 
+> With this feature, create a dummy ethernet interface (ip link add dev
+> dummy0 type dummy), assign it to the dropwatch kernel subsystem, by using
+> these new commands, and then monitor dropped frames in real time by
+> running tcpdump -i dummy0.
+> 
+> Signed-off-by: Izabela Bakollari <izabela.bakollari@gmail.com>
+> ---
+>  include/uapi/linux/net_dropmon.h |  3 ++
+>  net/core/drop_monitor.c          | 79 +++++++++++++++++++++++++++++++-
+>  2 files changed, 80 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+> index 67e31f329190..e8e861e03a8a 100644
+> --- a/include/uapi/linux/net_dropmon.h
+> +++ b/include/uapi/linux/net_dropmon.h
+> @@ -58,6 +58,8 @@ enum {
+>  	NET_DM_CMD_CONFIG_NEW,
+>  	NET_DM_CMD_STATS_GET,
+>  	NET_DM_CMD_STATS_NEW,
+> +	NET_DM_CMD_START_IFC,
+> +	NET_DM_CMD_STOP_IFC,
+>  	_NET_DM_CMD_MAX,
+>  };
+>  
+> @@ -93,6 +95,7 @@ enum net_dm_attr {
+>  	NET_DM_ATTR_SW_DROPS,			/* flag */
+>  	NET_DM_ATTR_HW_DROPS,			/* flag */
+>  	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
+> +	NET_DM_ATTR_IFNAME,			/* string */
+>  
+>  	__NET_DM_ATTR_MAX,
+>  	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+> diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+> index 8e33cec9fc4e..8049bff05abd 100644
+> --- a/net/core/drop_monitor.c
+> +++ b/net/core/drop_monitor.c
+> @@ -30,6 +30,7 @@
+>  #include <net/genetlink.h>
+>  #include <net/netevent.h>
+>  #include <net/flow_offload.h>
+> +#include <net/sock.h>
+>  
+>  #include <trace/events/skb.h>
+>  #include <trace/events/napi.h>
+> @@ -46,6 +47,7 @@
+>   */
+>  static int trace_state = TRACE_OFF;
+>  static bool monitor_hw;
+> +struct net_device *interface;
+>  
+>  /* net_dm_mutex
+>   *
+> @@ -220,9 +222,8 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+>  	struct per_cpu_dm_data *data;
+>  	unsigned long flags;
+>  
+> -	local_irq_save(flags);
+> +	spin_lock_irqsave(&data->lock, flags);
+>  	data = this_cpu_ptr(&dm_cpu_data);
+> -	spin_lock(&data->lock);
+>  	dskb = data->skb;
+>  
+>  	if (!dskb)
+> @@ -255,6 +256,12 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+>  
+>  out:
+>  	spin_unlock_irqrestore(&data->lock, flags);
+> +
 
-Also, having full control over **small** BTF allows to create various
-test situations that might be harder to pinpoint in real vmlinux BTF,
-e.g., same-named entities with different KINDS (typedef vs struct,
-etc). Then if that fails, debugging this on a small BTF is much-much
-easier than on a real thing. Real vmlinux BTF is being tested each
-time you build a kernel and run selftests inside VM either way, so I
-don't think we lose anything in terms of coverage.
+What protects interface from being changed under us by another thread/cpu ?
+
+> +	if (interface && interface != skb->dev) {
+> +		skb = skb_clone(skb, GFP_ATOMIC);
+> +		skb->dev = interface;
+> +		netif_receive_skb(skb);
+> +	}
+>  }
+>  
+>  static void trace_kfree_skb_hit(void *ignore, struct sk_buff *skb, void *location)
+> @@ -1315,6 +1322,63 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
+>  	return -EOPNOTSUPP;
+>  }
+>  
+> +static int net_dm_interface_start(struct net *net, const char *ifname)
+> +{
+> +	struct net_device *nd;
+> +
+> +	nd = dev_get_by_name(net, ifname);
+> +
+> +	if (nd) {
+> +		interface = nd;
+
+If interface was already set, you forgot to dev_put() it.
+
+> +		dev_hold(interface);
+
+Note that dev_get_by_name() already did a dev_hold()
+
+> +	} else {
+> +		return -ENODEV;
+> +	}
+> +	return 0;
+> +}
+> +
+> +static int net_dm_interface_stop(struct net *net, const char *ifname)
+> +{
+> +	struct net_device *nd;
+> +
+> +	nd = dev_get_by_name(net, ifname);
+> +
+> +	if (nd) {
 
 
->
-> jirka
->
+
+> +		interface = nd;
+
+
+You probably meant : interface = NULL; ?
+
+> +		dev_put(interface);
+
+		and dev_put(nd);
+
+
+> +	} else {
+> +		return -ENODEV;
+> +	}
+> +	return 0;
+> +}
+> +
+> +static int net_dm_cmd_ifc_trace(struct sk_buff *skb, struct genl_info *info)
+> +{
+> +	struct net *net = sock_net(skb->sk);
+> +	char ifname[IFNAMSIZ];
+> +	int rc;
+> +
+> +	memset(ifname, 0, IFNAMSIZ);
+> +	nla_strlcpy(ifname, info->attrs[NET_DM_ATTR_IFNAME], IFNAMSIZ - 1);
+> +
+> +	switch (info->genlhdr->cmd) {
+> +	case NET_DM_CMD_START_IFC:
+> +		rc = net_dm_interface_start(net, ifname);
+> +		if (rc)
+> +			return rc;
+> +		break;
+> +	case NET_DM_CMD_STOP_IFC:
+> +		if (interface) {
+> +			rc = net_dm_interface_stop(net, interface->ifname);
+> +			return rc;
+> +		} else {
+> +			return -ENODEV;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int net_dm_config_fill(struct sk_buff *msg, struct genl_info *info)
+>  {
+>  	void *hdr;
+> @@ -1543,6 +1607,7 @@ static const struct nla_policy net_dm_nl_policy[NET_DM_ATTR_MAX + 1] = {
+>  	[NET_DM_ATTR_QUEUE_LEN] = { .type = NLA_U32 },
+>  	[NET_DM_ATTR_SW_DROPS]	= {. type = NLA_FLAG },
+>  	[NET_DM_ATTR_HW_DROPS]	= {. type = NLA_FLAG },
+> +	[NET_DM_ATTR_IFNAME] = {. type = NLA_STRING, .len = IFNAMSIZ },
+>  };
+>  
+>  static const struct genl_ops dropmon_ops[] = {
+> @@ -1570,6 +1635,16 @@ static const struct genl_ops dropmon_ops[] = {
+>  		.cmd = NET_DM_CMD_STATS_GET,
+>  		.doit = net_dm_cmd_stats_get,
+>  	},
+> +	{
+> +		.cmd = NET_DM_CMD_START_IFC,
+> +		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+> +		.doit = net_dm_cmd_ifc_trace,
+> +	},
+> +	{
+> +		.cmd = NET_DM_CMD_STOP_IFC,
+> +		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+> +		.doit = net_dm_cmd_ifc_trace,
+> +	},
+>  };
+>  
+>  static int net_dm_nl_pre_doit(const struct genl_ops *ops,
+> 
