@@ -2,83 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 107FA21754E
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 19:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0492A217558
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 19:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728597AbgGGRg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 13:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53374 "EHLO
+        id S1728152AbgGGRku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 13:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728507AbgGGRgY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 13:36:24 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD94DC061755;
-        Tue,  7 Jul 2020 10:36:24 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id mn17so5271436pjb.4;
-        Tue, 07 Jul 2020 10:36:24 -0700 (PDT)
+        with ESMTP id S1727834AbgGGRku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 13:40:50 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC5BC061755
+        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 10:40:50 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id 17so47392726wmo.1
+        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 10:40:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hD+v1VwjgoeBfusFCbIYd6+V9RKkmN7xz9LUMK9w9XU=;
-        b=Qv/uEpNWiakSuZNYA5rbzaOVChoyrZxuHlViO3KTV7XI6WH15OgKLlOFjNo1OxvCo3
-         mv389p+O9FjSGJgY3gKdVuaPowMcstPA6vpiLWD1X/l2erLUadryvFN+qe0MSsnFqP6N
-         3kWSEccbINtlLux5TRFxA3tGRoGRLQii+MmpmneyhG5Zfqo2EyD85jxWSjLS5NBZi235
-         wNo2tZWXNAq+xTM1qqc8sFU4Uez7W2SVglEVsw2DN+9M0TtgA1vfp6YBDU2FBg6ungz8
-         1E/rwAby402S4OHpGgVHY4dby0JtSxRuQAsB6BsgK6tuxR50TUhIf/XWOFXHQOUa4A87
-         ecaw==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=LOio8vNKEJ0xg5YgLJAkeb7hoLWBcn3xl0FDpYc4wb0=;
+        b=C5Z8D91trpg3Ch6xEJtis7CO8oZVueCwkpo/dfz3L+SnFjDwHn2I2VJOzCBbZXeu+F
+         4koHb9nkpxO0PVdzQi3iUPhg+6pDZIsWQF/SNWTPuQySH3twQ0wJKE3AQ30kzPQOcS3g
+         8Xk642MT7MU2rnmZSEHwYHrAIse+HNkq2/Dc0nezWvfdyVVSMucmusXPRFaQk5+XAtfW
+         pIfLekJdx6ZuPQuoO5A87QhOi19m1A3TAB1Uu3K6ihy94+sOKYyx4SKOJe5Y6tnxiVuk
+         STk8Z8HCJaywYnp/8bm5Ob3NFrgUKzJb9+FDhs1VDgr8DDH4MeCGE8id1eoKXH2lU5Zx
+         bKbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hD+v1VwjgoeBfusFCbIYd6+V9RKkmN7xz9LUMK9w9XU=;
-        b=Xo9hHKi+m/cU2GtVuNm6gRsfQtmW2lVxkifnuCfr4ePzVMx8Onnn7s9i8Y6F01NTDs
-         zVfaieOu7PUdOtGv56z2IAcj27sBVZrbg/rSmdkkcUZGCzV5BVCiTeXA9AgwG4wx/0B5
-         2oNM4UYXfqqkQSH05n4myhu3gL2OvOwRXRLalFsajHnHZISEyNwIaXeNbMwUzAHIonYb
-         fMWOkR5t0GQPmCyTbiXzGpYfM/pTYRTY85T7KlyU0ltavxpMlHX30eDptE6eAKcmBYXr
-         AcXa0djNSgwWYoLAiviTWudKW6GMZ6aJ4UFFTLbCw+rZZ0XdOxYSNqSj4G3Dp7nV0hQG
-         0/RA==
-X-Gm-Message-State: AOAM531QT0/YcCnVM2DZwckJwsbFZlzKGEOqaNLUPjIJOVBWkwSB7TwR
-        qdFrxTb5EOvtBWdk/X3HAvc=
-X-Google-Smtp-Source: ABdhPJy3v1cAGREGtVx9lCAdWMpeWbRUW51kXJcikmNKcG38AoWdWxTkdOWfaMxLFnjl3Fmv1r1k7A==
-X-Received: by 2002:a17:902:7611:: with SMTP id k17mr46664468pll.255.1594143384186;
-        Tue, 07 Jul 2020 10:36:24 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id c188sm22817275pfc.143.2020.07.07.10.36.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jul 2020 10:36:23 -0700 (PDT)
-Subject: Re: [PATCH net-next] dropwatch: Support monitoring of dropped frames
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     izabela.bakollari@gmail.com, nhorman@tuxdriver.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org
-References: <20200707171515.110818-1-izabela.bakollari@gmail.com>
- <8aa6bcfe-8117-0fc9-1bc5-9b6a600e0972@gmail.com>
-Message-ID: <48534d9d-49c3-5e43-d1f6-51b96ba7fd90@gmail.com>
-Date:   Tue, 7 Jul 2020 10:36:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=LOio8vNKEJ0xg5YgLJAkeb7hoLWBcn3xl0FDpYc4wb0=;
+        b=DVXT4VmDi3c93/NkJGY/csP7xMPr7KJsYvnP0GxiVuCPmOIoeiQCeOlv82kn1Mr88I
+         bUZoEPvOOpIg/aI4IxxXDJB0OuBxYRMpgk2SrqMhGmVm5u7Ve/oj7urkSCTmQIC66ant
+         NLWX0gW4RFSB/b1etV6loZGZcohDiRQV0dBf5BUeduD1yFPacT3+Pld+4P3PTpx074X5
+         phdfDLGDf8r6vGXPH3yxa8XLu0+mDIF1GEZrqVve0Ep9O8yLjGHE89icTI6BsMY1Zkqd
+         AIWaKY1AS0vW4300f+i742NMz5MKP6hLVfHLGBCXKBfQKEKWUXbw71TeIWLFf5bFVf2y
+         HPWA==
+X-Gm-Message-State: AOAM531yBZNLtDHUdcp/EDE4ORfBGMD/0oSZEBKrGM+7IKO1yh/82RIH
+        A4TnLt4sQ3/R2Y1jvbr43h+JjBoXtmOQdkpZJPVEF2RtRUU=
+X-Google-Smtp-Source: ABdhPJwBrUU08fiJLLwy7TGgeAjxErZWgdkgMZKNkRS/LdLhDz1j8eE6B2lgB4Oe07qLoj1AQs5PYnTKp5r5RrC/Dyk=
+X-Received: by 2002:a1c:81c1:: with SMTP id c184mr5213887wmd.120.1594143647926;
+ Tue, 07 Jul 2020 10:40:47 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <8aa6bcfe-8117-0fc9-1bc5-9b6a600e0972@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From:   Evelyn Mitchell <efmphone@gmail.com>
+Date:   Tue, 7 Jul 2020 11:40:37 -0600
+Message-ID: <CABD0H0sKx14FoWthLAC9MijT4q7RYOdZhyW_x-JPHdFm+=ggXw@mail.gmail.com>
+Subject: [PATCH iproute2] man: ip-rule.8: minor changes
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+These are grammatical and typographical fixes, with one wording change.
 
+Evelyn Mitchell
+tummy.com
 
-On 7/7/20 10:33 AM, Eric Dumazet wrote:
-> 
-> 
-> What happens after this monitoring is started, then the admin does :
-> 
-> rmmod ifb
-> 
+---
+--- ip-rule.8.orig      2020-07-07 11:17:00.609932807 -0600
++++ ip-rule.8   2020-07-07 11:25:48.247022637 -0600
+@@ -88,7 +88,7 @@
+ .SH DESCRIPTION
+ .I ip rule
+ manipulates rules
+-in the routing policy database control the route selection algorithm.
++in the routing policy database to control the route selection algorithm.
 
-I meant  :  rmmod dummy
+ .P
+ Classic routing algorithms used in the Internet make routing decisions
+@@ -166,7 +166,7 @@
 
+ .P
+ Each RPDB entry has additional
+-attributes. F.e. each rule has a pointer to some routing
++attributes. For example, each rule has a pointer to some routing
+ table. NAT and masquerading rules have an attribute to select new IP
+ address to translate/masquerade. Besides that, rules have some
+ optional attributes, which routes have, namely
+@@ -252,11 +252,11 @@
+
+ .TP
+ .BI sport " NUMBER | NUMBER-NUMBER"
+-select the source port value to match. supports port range.
++select the source port value to match. Supports port range.
+
+ .TP
+ .BI dport " NUMBER | NUMBER-NUMBER"
+-select the destination port value to match. supports port range.
++select the destination port value to match. Supports port range.
+
+ .TP
+ .BI priority " PREFERENCE"
+@@ -276,7 +276,7 @@
+
+ .TP
+ .BI protocol " PROTO"
+-the routing protocol who installed the rule in question.  As an
+example when zebra installs a rule it would get RTPROT_ZEBRA as the
+installing protocol.
++the routing protocol which installed the rule in question.  As an
+example when zebra installs a rule it would get RTPROT_ZEBRA as the
+installing protocol.
+
+ .TP
+ .BI suppress_prefixlength " NUMBER"
