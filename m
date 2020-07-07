@@ -2,156 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BD18217224
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 17:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB307217238
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 17:44:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730247AbgGGP3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 11:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730052AbgGGP3U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 11:29:20 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928D0C061755;
-        Tue,  7 Jul 2020 08:29:19 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id t25so45801430lji.12;
-        Tue, 07 Jul 2020 08:29:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=aOe0/CpihO2VIfvM8hUlVWaFQmkSk5Jbw/jxFFeo+2o=;
-        b=kReXtNmNceWx33PM1PSiLuGzG2FrbrwPIO/v5cj1LeAKGBuzqmz96bUOGQYV9XbC7X
-         U6gYu+y86H9ysG7L55OKcem11J5zWyaJLVptbSUBaIq1A1qr5q3VVY3+oPxCYeNu1i5e
-         ydNCqlPOzR0OEuobS5kRqKrkkZMOSHHEW0usvIIXJ71INAIQVAxBy7BbppSo2Ic1RLVu
-         pVKFPtEhhdpeYhbaMnyNxqwOsr3Okm503mSBffbx8xRoCwk3bfgdGKI/ntwPruDftN2q
-         rIDKn8kQQOWHhlwPA9dy/HTwVvPYG0+7a5dlkMV8CV1yN5Jt7hNf0I7MarACYbF+dpHH
-         pySw==
+        id S1730364AbgGGPaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 11:30:21 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:45413 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729725AbgGGPaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 11:30:15 -0400
+Received: by mail-il1-f199.google.com with SMTP id c1so30449541ilk.12
+        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 08:30:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=aOe0/CpihO2VIfvM8hUlVWaFQmkSk5Jbw/jxFFeo+2o=;
-        b=okBuhvRdOANV5QO7lDg8inTa5CJVaOB/rzI3fKoOHovE56Jp+OsQ8Otg9uDxB1IpDK
-         2cX4I7KESBY+uEjFfySpwt+6My+RubWb7RFUjGEQBAYdiWuth4Zqs+y9DDbu6IzxEILw
-         Gs/9gqLt/b9DswcyVZTYn9WBEIDumUonnpequq3WdcEA0BRm6KyCXB1r5ZeQAvwY4pTg
-         ZJn9TjkPL8MHniQQn54jNpBpZuNYSvzK10f33KDoCeenXx1IafUC3sVRpwwabnsBQsep
-         +ZJVJEuMazo0Nw3phOeBbBymdmgB1+YIUraS1zZe5Oql8hm5Bx/tqQ3k9/mj0UvcQToH
-         SSNw==
-X-Gm-Message-State: AOAM532lON4XqyV2vE8BQWhYAGwUPKrRTxby//RAV6mZwvkUmLvyV1dn
-        LDryEmrEoQXUiG7Y4PZ7/5Y=
-X-Google-Smtp-Source: ABdhPJwv1tAgI6rbclWsOjFbxi3JDULa6B+l7yukn8Wrt3EHS1QlktEbGpLyDRjab+9ZtbCOWa+TxA==
-X-Received: by 2002:a2e:97d7:: with SMTP id m23mr19667067ljj.103.1594135758018;
-        Tue, 07 Jul 2020 08:29:18 -0700 (PDT)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id 24sm9612947lfy.59.2020.07.07.08.29.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2020 08:29:16 -0700 (PDT)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     richardcochran@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, andrew@lunn.ch
-Subject: Re: [PATCH  1/5] net: fec: properly support external PTP PHY for
- hardware time stamping
-References: <20200706142616.25192-1-sorganov@gmail.com>
-        <20200706142616.25192-2-sorganov@gmail.com>
-        <20200706150814.kba7dh2dsz4mpiuc@skbuf> <87zh8cu0rs.fsf@osv.gnss.ru>
-        <20200706154728.lfywhchrtaeeda4g@skbuf> <87zh8cqyrp.fsf@osv.gnss.ru>
-        <20200707070437.gyfoulyezi6ubmdv@skbuf>
-Date:   Tue, 07 Jul 2020 18:29:14 +0300
-In-Reply-To: <20200707070437.gyfoulyezi6ubmdv@skbuf> (Vladimir Oltean's
-        message of "Tue, 7 Jul 2020 10:04:37 +0300")
-Message-ID: <87pn978hth.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=l5UfEPh6FpvcqMK9z9YCj6DGXnLOftd9sD9CfnuWGio=;
+        b=n6TH3EANIvi9t+/VY3NbV0foIzEm2QJ9v2gnwqeEO10+z3Fc65bsYzIsD4OyRvtemK
+         yrKspNC3rxCnzie0eJtFxlhWBdo62bXS2wGPIhwTFgNRuWfo0Vj8Q4NLQjQqszmwzMk5
+         wBKAbv7eykyjp7v/snjAvh8YTZ1gqKiTHI/OlMsPvpecBtRLOqhZ6OebAJpx8enRc+re
+         odYOb/loH8MCZ4WxTMzYf9obLa0PuSMxlhy2tvLLxCZ4ZA8jdF0SztNyMv5+yBch8OPM
+         mCEtvBgwHCyFxccD2gQLdcvfiW6d0LLFvGMthqsNlub2twuZPQYnBP5IPfdFDuwnqmgH
+         jFmg==
+X-Gm-Message-State: AOAM530hwrHGANul1IFnwb7xB01tgxAjVycNkMilu1n1w/ML33MvRIzB
+        m53kMnmg1jIGiqyT3Hfl2Gp1lAMxKtRhmOG9+idJVYfZLQY5
+X-Google-Smtp-Source: ABdhPJz38T51Ko5sHjG40+v5KRv3EC++gkZunO00fGv8OmSqfw3SsUSP6S8MGjq1G+jBQ8orWn+UoH3rpNWToypbts+u/bx/KU74
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Received: by 2002:a05:6602:2c8b:: with SMTP id i11mr31473413iow.139.1594135814367;
+ Tue, 07 Jul 2020 08:30:14 -0700 (PDT)
+Date:   Tue, 07 Jul 2020 08:30:14 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f06edf05a9dbaa44@google.com>
+Subject: general protection fault in batadv_iv_ogm_schedule_buff (2)
+From:   syzbot <syzbot+2eeeb5ad0766b57394d8@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sven@narfation.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <olteanv@gmail.com> writes:
+Hello,
 
-> On Mon, Jul 06, 2020 at 09:33:30PM +0300, Sergey Organov wrote:
+syzbot found the following crash on:
 
-[...]
+HEAD commit:    7cc2a8ea Merge tag 'block-5.8-2020-07-01' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=130b828f100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7be693511b29b338
+dashboard link: https://syzkaller.appspot.com/bug?extid=2eeeb5ad0766b57394d8
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
->
->> I'll then make these 2 changes separate in v2 indeed, though I'm not
->> aware about Fixes: tag and if I should do something about it. Any clues?
->> 
->
-> Add these 2 lines to your .gitconfig file:
->
-> [pretty]
-> 	fixes = Fixes: %h (\"%s\")
->
-> Then use $(git blame) to find the commit which introduced the bad
-> behavior. I was able to go down back to this commit, which I then tagged
-> as follows:
->
-> git show 6605b730c061f67c44113391e5af5125d0672e99 --pretty=fixes
->
-> Then you copy the first line of the generated output to the patch, right
-> above your Signed-off-by: tag. Like this:
->
-> Fixes: 6605b730c061 ("FEC: Add time stamping code and a PTP hardware clock")
->
-> Note that the offending commit has been obscured, in the meantime, by
-> refactoring commit ff43da86c69d ("NET: FEC: dynamtic check DMA desc buff
-> type"). That doesn't mean that the Fixes: tag should point to the newest
-> commit touching the code though. In case where the refactoring is recent
-> though (not this case), Greg will send an email that backporting failed,
-> and you can send him a follow-up with a patch adjusted for each
-> individual stable tree where adjustments need to be made. You can also
-> ignore Greg's email, if you don't care about old stable trees.
->
-> In this particular case, the original offending commit and the one
-> obscuring it were included first in the following kernel tags:
->
-> $(git tag --contains 6605b730c061): v3.8
-> $(git tag --contains ff43da86c69d): v3.9
->
-> But, if you look at https://www.kernel.org/, the oldest stable tree
-> being actively maintained should be 3.16, so v3.8 vs v3.9 shouldn't make
-> any difference because nobody will try to apply your fix patch to a tree
-> older than 3.9 anyway.
->
-> When sending a bugfix patch, there are 2 options:
->
-> - You send the patch to the linux-stable mailing list directly. For
->   networking fixes, however, David doesn't prefer this. See below.
->
-> - You send the patch to the netdev list (the same list where you sent
->   this one), but with --subject-prefix "PATCH net" so that it gets
->   applied to a different tree (this one:
->   https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git as
->   opposed to this one:
->   https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git).
->   The "net" tree is periodically merged into "net-next". Because your
->   patch series will have to be split, there are 2 options: either you
->   send your bugfix patches first, wait for them to be merged, and then
->   for "net" to be merged into "net-next", or try somehow to make sure
->   that the patches for "net" and for "net-next" can be applied in
->   parallel without interfering and creating merge conflicts. I think you
->   can do the latter.
->
-> Whatever you do, however, please be sure to copy Richard Cochran to
-> PTP-related patches, he tends to have a broader picture of the 1588 work
-> that is being done throughout the kernel, and can provide more
-> feedback.
+Unfortunately, I don't have any reproducer for this crash yet.
 
-Thanks a lot for thorough explanations and for finding the offensive
-commit for me!
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+2eeeb5ad0766b57394d8@syzkaller.appspotmail.com
 
-I'll then start with sending that separate patch as bug-fix with "PATCH net"
-subject prefix, and then will re-send v2 of the series to net-next (with
-just "PATCH v2") later, as soon as I collect all the feedback. I expect
-no merge conflicts indeed.
+general protection fault, probably for non-canonical address 0xdffffc000000000e: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
+CPU: 1 PID: 9126 Comm: kworker/u4:9 Not tainted 5.8.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: bat_events batadv_iv_send_outstanding_bat_ogm_packet
+RIP: 0010:batadv_iv_ogm_schedule_buff+0xd1e/0x1410 net/batman-adv/bat_iv_ogm.c:843
+Code: 80 3c 28 00 0f 85 ee 05 00 00 4d 8b 3f 49 81 ff e0 e9 4e 8d 0f 84 dd 02 00 00 e8 bd 80 ae f9 49 8d 7f 70 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 af 06 00 00 48 8b 44 24 08 49 8b 6f 70 80 38
+RSP: 0018:ffffc90004e97b98 EFLAGS: 00010202
+RAX: 000000000000000e RBX: ffff8880a7471800 RCX: ffffffff87c5394d
+RDX: ffff88804cf02380 RSI: ffffffff87c536a3 RDI: 0000000000000070
+RBP: 0000000000077000 R08: 0000000000000001 R09: ffff8880a875a02b
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000007
+R13: dffffc0000000000 R14: ffff888051ad4c40 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000400200 CR3: 0000000061cac000 CR4: 00000000001426e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ batadv_iv_ogm_schedule net/batman-adv/bat_iv_ogm.c:869 [inline]
+ batadv_iv_ogm_schedule net/batman-adv/bat_iv_ogm.c:862 [inline]
+ batadv_iv_send_outstanding_bat_ogm_packet+0x5c8/0x800 net/batman-adv/bat_iv_ogm.c:1722
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+Modules linked in:
+---[ end trace f5c5eda032070cd1 ]---
+RIP: 0010:batadv_iv_ogm_schedule_buff+0xd1e/0x1410 net/batman-adv/bat_iv_ogm.c:843
+Code: 80 3c 28 00 0f 85 ee 05 00 00 4d 8b 3f 49 81 ff e0 e9 4e 8d 0f 84 dd 02 00 00 e8 bd 80 ae f9 49 8d 7f 70 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 af 06 00 00 48 8b 44 24 08 49 8b 6f 70 80 38
+RSP: 0018:ffffc90004e97b98 EFLAGS: 00010202
+RAX: 000000000000000e RBX: ffff8880a7471800 RCX: ffffffff87c5394d
+RDX: ffff88804cf02380 RSI: ffffffff87c536a3 RDI: 0000000000000070
+RBP: 0000000000077000 R08: 0000000000000001 R09: ffff8880a875a02b
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000007
+R13: dffffc0000000000 R14: ffff888051ad4c40 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000400200 CR3: 000000009480d000 CR4: 00000000001426e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-Sounds like a plan!
 
-Thanks again,
--- Sergey
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
