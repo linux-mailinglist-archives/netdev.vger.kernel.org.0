@@ -2,121 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F9F1217770
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 21:01:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62F9A2177AC
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 21:14:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728364AbgGGTBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 15:01:51 -0400
-Received: from mail-dm6nam10on2061.outbound.protection.outlook.com ([40.107.93.61]:57569
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728243AbgGGTBu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jul 2020 15:01:50 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XqEOqWR6r2cG40X730/TKTHG7G9AlHeNZWocKWsccKwMGEoJDc7fPLd4dsCOT7Zw3tclK8lzRowQ4D4C3+gP3qDmqS9zWzYbhWJjWFTKmqJQymi2X/zPWDTnjJ353Ex0c/tl6BrH/Wu00bkb8RU5D3+1McJRUpOEt7XPaGFnkeTk0x4zQbt+uKelxutlm/X2qu8M/S4pnls1c5/JCXUaGDlvgQjaIG5rOerRoou7JyfTMH1Z3SAg6dlZcZ1ELyiNn/BI7xSdBwH7iyxu77F9tjFAsDCCkiweSAMjWvOYlSOIAKm3tTs1gqnm1cUexMa48f78yore7S/QzZCoxqeuRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PidHPGUUO019W46a7XOQ8wsKhe/qrbp30qmDh1RIawA=;
- b=kfHmvWeuhHoL/rCnz7XlEnmJG5Kghcw05oSA2dwDewWcTNNetQm9B+mPdMh0pjq4vZskBVV/l8fIJgsdQLNtLYSYSQx8XoVLAc2omEfw8yqpbkYxMFl+XLdM+dl3kouu+J2ERsIPhB5yYbD2TBc+xAeJplX27hFg5QaQUZyJBucAYFOd/uV/S0gT5+Afh09ihUFeZBHaPyVeWd7BEYykqSG1ocrW1duV5cd4lUU3FyMe/Dsq+CwaBOIr0vU7uHnYQJuqms6ek+RllFW5H/CPUUO4Y5/MuAynGujaf68pSVWgI3wT5ZEIBdBRYWItRUkFcF2B2y2G8qQcmuKF2f4y+w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
+        id S1728238AbgGGTOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 15:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728133AbgGGTOH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 15:14:07 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34798C061755
+        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 12:14:07 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id k23so44321829iom.10
+        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 12:14:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PidHPGUUO019W46a7XOQ8wsKhe/qrbp30qmDh1RIawA=;
- b=wFjABsKC0DQ17ecWiTM8XAEkRGBLiHqZvTaqN1no9t/TA90ghxXre5k2CHPCfQVg//sme1Os5f7GVa3YjFFDTeLxBjVvsXkKIDo69R/dHd1w5SZQNsSzYDCLkeSeZ9uByFxTJ2C73CEZJB+t9OYN8wQHTzWW6p9uqRCOGKhGK/k=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=amd.com;
-Received: from BN6PR1201MB0258.namprd12.prod.outlook.com
- (2603:10b6:405:57::13) by BN7PR12MB2802.namprd12.prod.outlook.com
- (2603:10b6:408:25::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20; Tue, 7 Jul
- 2020 19:01:46 +0000
-Received: from BN6PR1201MB0258.namprd12.prod.outlook.com
- ([fe80::ac9a:b1f:fa1a:403b]) by BN6PR1201MB0258.namprd12.prod.outlook.com
- ([fe80::ac9a:b1f:fa1a:403b%3]) with mapi id 15.20.3153.020; Tue, 7 Jul 2020
- 19:01:46 +0000
-Subject: Re: [PATCH] amd-xgbe: add module param for auto negotiation
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-Cc:     Tom Lendacky <thomas.lendacky@amd.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <20200707173254.1564625-1-Shyam-sundar.S-k@amd.com>
- <20200707175541.GB938746@lunn.ch>
-From:   Shyam Sundar S K <ssundark@amd.com>
-Message-ID: <a9e5c55f-55cf-439e-30aa-6cf70e44dffd@amd.com>
-Date:   Wed, 8 Jul 2020 00:31:25 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-In-Reply-To: <20200707175541.GB938746@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-ClientProxiedBy: BMXPR01CA0075.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:54::15) To BN6PR1201MB0258.namprd12.prod.outlook.com
- (2603:10b6:405:57::13)
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rWTFkU+asopeVMil6XRFdv9T205H+J4pMM3XkOPrkZ0=;
+        b=ixvBTl2Ehpjo7+xG/8IVyw2nYmcrU3SL2zeK261Sc7n9bPhC2MeA1Srcyy61Haznze
+         o1PivixfAK89i3VdtZmwjyURBL73yjkVBdp/BGAZs4DdWAwcKa8LduYGSADiptH4LzwP
+         vYjKrHVbXi1fgoUjuvSw7a4rgza9l+l05meO2DttkVJa+DspJ6A/QgKUqGMNiSZlL8g3
+         Y0c9qyY7wvsODrYBjimkkUr0fVVhVl43xgwvSzanrHdk2yMt+0H61031CF/jrYLdjx+Y
+         KXHadyysXP4D8Dn3YoCio7kdKh4nX9b7rbJADbNCSYHvXUA70KUHtPnli7iPwgjgCrhe
+         NwYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rWTFkU+asopeVMil6XRFdv9T205H+J4pMM3XkOPrkZ0=;
+        b=XA+qU15ojfPoEDtEDc4lAFpunaqS+J8dC1aYL6J7VH3tl4qNIMK5RApKkeMIr/4NDe
+         BUtX84Tv6KpU9ktxYGMQeJ/I9tY2QW8590c2SooBhq048BZdZUIybQjuTm/VEr7jiPhS
+         gupj4VBW27gJpEDpDd33OXu8wVpADWpfis5hD4DG3Ppv2VZBFiZIVfuMp6TZEnyI3hf+
+         QZGPLUAVn8U8qt3HCBnJ123pyyoIeBc7RrCbfq6YAwvt2dh6MQKyWRacXiCnpMwQSR+H
+         NCbWnsNiaV0KZui29Fbt+Bgv0r9B+9A+uCCv4rzpFnPXTeenfD1BAz1FSrUUVGVlyRHa
+         NgUQ==
+X-Gm-Message-State: AOAM533PCWaGNmH3DEkePDDY77sx4uFnZJD1plWEMk1pxMqRs2++K44+
+        +l2IlKKqmwH/YlU8AllAo3BINJ/jnbx6j3rSHrg=
+X-Google-Smtp-Source: ABdhPJzlnSRsPhUj1HhAeasuebwpLalHH04G5MUHPmiua/309L5Uwx/Gn7BOIEjBE/FNvvJH9sdgLUeHxuknndvFI44=
+X-Received: by 2002:a05:6602:2f0a:: with SMTP id q10mr31824817iow.134.1594149245125;
+ Tue, 07 Jul 2020 12:14:05 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.252.89.180] (165.204.159.242) by BMXPR01CA0075.INDPRD01.PROD.OUTLOOK.COM (2603:1096:b00:54::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Tue, 7 Jul 2020 19:01:44 +0000
-X-Originating-IP: [165.204.159.242]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 8bc1d5b8-1b02-469c-b02c-08d822a8322b
-X-MS-TrafficTypeDiagnostic: BN7PR12MB2802:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BN7PR12MB28020AC54BE5239CAE1618299A660@BN7PR12MB2802.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: a56A4bGyCHKOSl1ff8nX6nSVF+8soOQwZCSrgYIG4nKQ/MN9ohU2kMgl7QjjWb7P4Tru4I1KZ6UHPhhiOcv7rYvQ94RotoCikXKQ1Kaj5nKF7nZnHOg4rQK+gfEedF0zhtdHRPQUvQBOVFCDBqECFdGOQXmzm1bSstbF2Ok22vwMp0MAoW4ZAGWyjIPCJ/T8jWNcllHw8Vuzj1uf8/AjL3+pPg8S7ewl3UYal8+jLrOvoSBUaWR4/WO1qJpsYFg2jTKSJ6xWlcTc9WX7wTDFASMM7d7UDW7kaRSTlJvf39+69OiRzr21pBFu4SmjTrpv+ZeJR4g+x/8RHOhKpjJv8QKkvWF4LJ/bsPiU8Uy0NoaFcjhgWTsSqeHY9MZtL5aB
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR1201MB0258.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(136003)(396003)(346002)(39860400002)(376002)(4744005)(66556008)(66476007)(26005)(6486002)(31696002)(2906002)(186003)(16526019)(31686004)(478600001)(8676002)(6666004)(8936002)(53546011)(66946007)(36756003)(52116002)(54906003)(956004)(2616005)(6636002)(4326008)(16576012)(110136005)(5660300002)(316002)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 53yD9Z34eAMqi0YDlOdhJQKOi3rXJ9kdzp2W6TqYD5dcc8wk1WfICAI5usEl/KcZ07yprG8SRwWxLPbMdaLmi+oiBLxKQmSjDWB3UDAEKVIfH4Wc3h30nm8kSX91RySRWm7YfrWkTdAEut5DMQHBAFHA0NIcSoMHT2y/1s6c/yyiRZRgbJ7VHMqvNV5ZfMMc2UHrWquZpDNRl+4imXSDWgjzgVmfOuq2HwXqmKFV+PiLZ4X5sHYE4N4j5fL2b74e83k4EjT/kfpgURux1BoThXmqlAYH8K59XzuxPb0YgDmfZxH2cUqhIbu5NCjXl5fbkVszz+Mwk2LDWEcqstfmzPBzUt1ry36yDwCdeo5WvOAV9iH0BTcHZz72fy9YC/gJHLlsDd4XkHQ18QbOXXL8O3Zkw5QOa0sS3FIJcWtK3GRz2tXKFU0Ek0Nded34aY3NXyqxBGuL/Hw2R2oz0EmSr7cUxDcSUx36B8cGS9cLGcijHWnb2pKpV71HcnXo9cL1
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8bc1d5b8-1b02-469c-b02c-08d822a8322b
-X-MS-Exchange-CrossTenant-AuthSource: BN6PR1201MB0258.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2020 19:01:46.8137
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 74GeF0v3TGMCTvAneE3IeC1/qCLRtToKsg9I4YCwWxygXfltjs00hsRPrp7A+HhZjnwmfJFTbz1jswYZ1RkEeg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2802
+References: <cover.1593209494.git.petrm@mellanox.com> <79417f27b7c57da5c0eb54bb6d074d3a472d9ebf.1593209494.git.petrm@mellanox.com>
+ <CAM_iQpXvwPGz=kKBFKQAkoJ0hwijC9M03SV9arC++gYBAU5VKw@mail.gmail.com> <87a70bic3n.fsf@mellanox.com>
+In-Reply-To: <87a70bic3n.fsf@mellanox.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 7 Jul 2020 12:13:54 -0700
+Message-ID: <CAM_iQpWjod0oLew-jSN+KUXkoPYkJYWyePHsvLyW4f2JbYQFRw@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 2/5] net: sched: Introduce helpers for qevent blocks
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 7/7/2020 11:25 PM, Andrew Lunn wrote:
-> [CAUTION: External Email]
+On Tue, Jul 7, 2020 at 8:22 AM Petr Machata <petrm@mellanox.com> wrote:
 >
-> On Tue, Jul 07, 2020 at 05:32:54PM +0000, Shyam Sundar S K wrote:
->> In embedded environments, ethtool may not be available to toggle between
->> auto negotiation on/off.
->>
->> Add a module parameter to control auto negotiation for these situations.
-Hi Andrew
-> Where does this end? You can set the link speed via module parameters?
-> Pause? Duplex?
 >
->         Andrew
+> Cong Wang <xiyou.wangcong@gmail.com> writes:
+>
+> > On Fri, Jun 26, 2020 at 3:46 PM Petr Machata <petrm@mellanox.com> wrote:
+> >> The function tcf_qevent_handle() should be invoked when qdisc hits the
+> >> "interesting event" corresponding to a block. This function releases root
+> >> lock for the duration of executing the attached filters, to allow packets
+> >> generated through user actions (notably mirred) to be reinserted to the
+> >> same qdisc tree.
+> >
+> > Are you sure releasing the root lock in the middle of an enqueue operation
+> > is a good idea? I mean, it seems racy with qdisc change or reset path,
+> > for example, __red_change() could update some RED parameters
+> > immediately after you release the root lock.
+>
+> So I had mulled over this for a while. If packets are enqueued or
+> dequeued while the lock is released, maybe the packet under
+> consideration should have been hard_marked instead of prob_marked, or
+> vice versa. (I can't really go to not marked at all, because the fact
+> that we ran the qevent is a very observable commitment to put the packet
+> in the queue with marking.) I figured that is not such a big deal.
+>
+> Regarding a configuration change, for a brief period after the change, a
+> few not-yet-pushed packets could have been enqueued with ECN marking
+> even as I e.g. disabled ECN. This does not seem like a big deal either,
+> these are transient effects.
 
-Agree to your feedback. Most of the information required to control the 
-connection is already present in the
+Hmm, let's see:
 
-driver and this piece of information is missing. Customers who run a 
-minimal Linux do not have the flexibility
+1. red_enqueue() caches a pointer to child qdisc, child = q->qdisc
+2. root lock is released by tcf_qevent_handle().
+3. __red_change() acquires the root lock and then changes child
+qdisc with a new one
+4. The old child qdisc is put by qdisc_put()
+5. tcf_qevent_handle() acquires the root lock again, and still uses
+the cached but now freed old child qdisc.
 
-to add userspace applications like ethtool to control the connection 
-information. Please consider this as expectional
+Isn't this a problem?
 
-case, or else I would not have proposed this change.
+Even if it really is not, why do we make tcf_qevent_handle() callers'
+life so hard? They have to be very careful with race conditions like this.
 
-Thanks,
-
-Shyam
-
+Thanks.
