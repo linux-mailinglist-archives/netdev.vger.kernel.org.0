@@ -2,138 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91687217198
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 17:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45C6521725B
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 17:44:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729828AbgGGPWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 11:22:17 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:39264 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728494AbgGGPWO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 11:22:14 -0400
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1594135332;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=LxVBy1DoV2t42uekM6oHIWgLJZVcrbHKxbpdNbzHSDs=;
-        b=IunFX7pjGAEVmxnZIas6oJ/9YwdsdmaOA9OE0FtMlOPvlgWFtOaDDqJlHXovnGOiHKnwhQ
-        CwmW+ri3FxF7YregfVsAJREGXSzvsY4ZqHEvUR9G6B9I9JtAaqU5PgJJ+CY671yQs1SrTD
-        CzIbm2ksIhMHNjW5uKURBWLEU48a/ZHAuKJYerMv/bXMxk9Ld5luig3w92mIP8SJh1i0Ix
-        SiEvieSpDZNk90FEqL+pFe3asOgmXnQZQNRkDjN0xsKxmw8UbH87jBHjRX+3gPy/ED+D+S
-        Q1ZCBwYmS2heNzlLDfIlSXcE4nCDwDLEBZvaL6e2zFOI4mpLSyK15kqdRmoxBA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1594135332;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=LxVBy1DoV2t42uekM6oHIWgLJZVcrbHKxbpdNbzHSDs=;
-        b=MchddIYbD4bgGWqwWIU33Se5uTwF1xc1iG+Q9Eqx0+0tI6PBGs9CAVHRdjslaOLlbkkHe1
-        dX8EQH35Pne8orBQ==
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] af_packet: TPACKET_V3: replace busy-wait loop
-Date:   Tue,  7 Jul 2020 17:28:04 +0206
-Message-Id: <20200707152204.10314-1-john.ogness@linutronix.de>
+        id S1730334AbgGGPbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 11:31:51 -0400
+Received: from mail-db8eur05on2070.outbound.protection.outlook.com ([40.107.20.70]:4513
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729893AbgGGPWm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jul 2020 11:22:42 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hkcDtffsX1/CUVwNy3rDdViKitAqTu2B5cIbfvhhCWZNHhh703e79qA4tGNgG7qoVqLQpOxvyYj8lnyzNeEKdhkEv15/FoAeEatn/16nrT+fIycWjNd16JoZwvF5OjNZv/Vl1F5QmsWMY3c8HaJPOdZ5eF1X0eYM7Nmw0qzmYbCrTMWrAYssX9mv0ERb8822UFbSXiMybnPyBUl5OzNZJ6HInkhb9bSOd1deHAyyXtg0iK4aZXlAnLB45FB11zNlDIJoUXHxWqM1CgNpXXm2kAIR2cwHICGngjs00azJoSYHmaf20HvjD4bmI0uqAYMGB+tS+jUuV9V7P+jvFrqwSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ayT1UJpPytQC43T3fVsRxcK65IPWIhVm/YpmJfaIadM=;
+ b=OaOUDLSdJ8skIsLofGSJYoEI8Qd0AzFHEU+EjtRkBnwjQP7lCxIQ7GV4fI/0e5MV+HVI2SpUZVBMsuzzmnSbH5/eX2J2dnUcHRlEtTmvmlRiyPqz46a7RnIRCUYcOKeFbWERV4Ogn6xB7/pzCjfrwmnXh1ILvsw2u08W6e0guxfTjNB2Pv3+fowVf4I4eqIyUGBppczWUC2yBPwLwQtNJO1lr5MyZsjgv3PZanWAE/AoAKmrJcIQMqIrvBT7j5eSOzq8YkGVqnmngJFVUjc/2xATjAtgbQ9zFKqVxax6cuLUTld+XGRh5FnrErCTcIBzLphP4ZnlETJquieW7N3iiw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ayT1UJpPytQC43T3fVsRxcK65IPWIhVm/YpmJfaIadM=;
+ b=BEDKOoFuOzRjVDblRqvrctPdpkz6WZGSMVmRutlBcXs7Pa//WPRc+kiWrBXOD0Qoxhu7ds5R2ysFVoA1cesTajDBeXcdihKnrsrFQw5pyTkBEX8Y/v5MXujXivK8r/qovrmgUSccs+/VbQyYftBD1t5osr7YMejCx/0+TPBfV+s=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
+ HE1PR05MB3420.eurprd05.prod.outlook.com (2603:10a6:7:30::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3153.20; Tue, 7 Jul 2020 15:22:38 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::78f6:fb7a:ea76:c2d6]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::78f6:fb7a:ea76:c2d6%7]) with mapi id 15.20.3153.029; Tue, 7 Jul 2020
+ 15:22:38 +0000
+References: <cover.1593209494.git.petrm@mellanox.com> <79417f27b7c57da5c0eb54bb6d074d3a472d9ebf.1593209494.git.petrm@mellanox.com> <CAM_iQpXvwPGz=kKBFKQAkoJ0hwijC9M03SV9arC++gYBAU5VKw@mail.gmail.com>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next v1 2/5] net: sched: Introduce helpers for qevent blocks
+In-reply-to: <CAM_iQpXvwPGz=kKBFKQAkoJ0hwijC9M03SV9arC++gYBAU5VKw@mail.gmail.com>
+Date:   Tue, 07 Jul 2020 17:22:36 +0200
+Message-ID: <87a70bic3n.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: AM3PR03CA0054.eurprd03.prod.outlook.com
+ (2603:10a6:207:5::12) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (213.220.234.169) by AM3PR03CA0054.eurprd03.prod.outlook.com (2603:10a6:207:5::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20 via Frontend Transport; Tue, 7 Jul 2020 15:22:38 +0000
+X-Originating-IP: [213.220.234.169]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 335bb001-5854-4384-2be9-08d82289955c
+X-MS-TrafficTypeDiagnostic: HE1PR05MB3420:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR05MB3420CB5286B9D8F19DFC6959DB660@HE1PR05MB3420.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 0457F11EAF
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: X3TvTA3xByv+PW3OHNkdp4fbl9tzUmJoqoC1DnS9aLoNLa31kGHn674v2l1GdZwFiRSJo54ubGdAJTD8iQJRMtbxh+5Ihn6IvXWeQwLwrN8lGwF9gygScBsbnp2XcZuYUrmvkovCgaQtA7DU5SYPB1Kk8GmQU1QGDOdwaQXkClt5t4K2toPOktg4FS8OqjbAWeKThOoMLCAN2kOKD8UqsMEx/BcWiSz5/vHzJYwUtG3H01Bm+fPzhZ9HHwszNiIF/OwyaaiyCHbvRTm5GPQCKCka316JU5FhZL7jB+PmgH7fSpCFfOJOSaqj6MxqmO0bplWfu+Wz8rcJn3iyRBZeqg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(107886003)(186003)(53546011)(26005)(54906003)(6496006)(8936002)(52116002)(36756003)(2616005)(956004)(6486002)(4326008)(6916009)(8676002)(5660300002)(16526019)(2906002)(498600001)(86362001)(66946007)(66556008)(83380400001)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: lvnjC44jLPgWGD0wT+6cNlRMVhSm0mMn6SvzIyHTmsf42WNvWuYOpKwNZGRPnKxW5XWIx1fdLGRHM/TOqf9GktJwUTrbzSxN+qeYDff4NqQaMoC+2JqRMgPwcHFomA8DYeskH6gVxqJj83AcXic9wsBmC4qCxQ7bH1BgZZAhj7EYjE9cwwxOjQDgwe1JXihf/gvbx30iSzzdE9SDpP8bRdwYMfmMGbKOL5s0tudWUYF95IusuRseVpODh3n2UFwYWrDlJS1vy35S60cPadpmGFDk9wKTjNol+vAiV5SItuVGnaOjT3DEZnmujdKNx6UAmu8cOR76sZXCDN72dzHC4gg3MlhA1bqViAG+v2cGWsnzDSLtkZ28OcUTcIlf3h77UOUbVFdVZGYZhRYW/pCkd+19exCNGjE8HUMlCtxBnTreJreolGZ2ELrQosccQ5GvprVkB4EoYqfAmFf595+uzx1vMyoL41EJsHTX2+Tilu3Vqz86T/WCTwHwBCaB14Xh
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 335bb001-5854-4384-2be9-08d82289955c
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2020 15:22:38.6173
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VKupHjBEGg/QtP/sMML0pp71iBa+KFADI+FwyFJZd+ZXj8Yhazd8RMR2pXcbjYuGNAPtLWvd8ApzovISL/dzvQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3420
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A busy-wait loop is used to implement waiting for bits to be copied
-from the skb to the kernel buffer before retiring a block. This is
-a problem on PREEMPT_RT because the copying task could be preempted
-by the busy-waiting task and thus live lock in the busy-wait loop.
 
-Replace the busy-wait logic with an rwlock_t. This provides lockdep
-coverage and makes the code RT ready.
+Cong Wang <xiyou.wangcong@gmail.com> writes:
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- patch against v5.8-rc4
+> On Fri, Jun 26, 2020 at 3:46 PM Petr Machata <petrm@mellanox.com> wrote:
+>> The function tcf_qevent_handle() should be invoked when qdisc hits the
+>> "interesting event" corresponding to a block. This function releases root
+>> lock for the duration of executing the attached filters, to allow packets
+>> generated through user actions (notably mirred) to be reinserted to the
+>> same qdisc tree.
+>
+> Are you sure releasing the root lock in the middle of an enqueue operation
+> is a good idea? I mean, it seems racy with qdisc change or reset path,
+> for example, __red_change() could update some RED parameters
+> immediately after you release the root lock.
 
- net/packet/af_packet.c | 20 ++++++++++----------
- net/packet/internal.h  |  2 +-
- 2 files changed, 11 insertions(+), 11 deletions(-)
+So I had mulled over this for a while. If packets are enqueued or
+dequeued while the lock is released, maybe the packet under
+consideration should have been hard_marked instead of prob_marked, or
+vice versa. (I can't really go to not marked at all, because the fact
+that we ran the qevent is a very observable commitment to put the packet
+in the queue with marking.) I figured that is not such a big deal.
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 29bd405adbbd..dd1eec2dd6ef 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -593,6 +593,7 @@ static void init_prb_bdqc(struct packet_sock *po,
- 						req_u->req3.tp_block_size);
- 	p1->tov_in_jiffies = msecs_to_jiffies(p1->retire_blk_tov);
- 	p1->blk_sizeof_priv = req_u->req3.tp_sizeof_priv;
-+	rwlock_init(&p1->blk_fill_in_prog_lock);
- 
- 	p1->max_frame_len = p1->kblk_size - BLK_PLUS_PRIV(p1->blk_sizeof_priv);
- 	prb_init_ft_ops(p1, req_u);
-@@ -659,10 +660,9 @@ static void prb_retire_rx_blk_timer_expired(struct timer_list *t)
- 	 *
- 	 */
- 	if (BLOCK_NUM_PKTS(pbd)) {
--		while (atomic_read(&pkc->blk_fill_in_prog)) {
--			/* Waiting for skb_copy_bits to finish... */
--			cpu_relax();
--		}
-+		/* Waiting for skb_copy_bits to finish... */
-+		write_lock(&pkc->blk_fill_in_prog_lock);
-+		write_unlock(&pkc->blk_fill_in_prog_lock);
- 	}
- 
- 	if (pkc->last_kactive_blk_num == pkc->kactive_blk_num) {
-@@ -921,10 +921,9 @@ static void prb_retire_current_block(struct tpacket_kbdq_core *pkc,
- 		 * the timer-handler already handled this case.
- 		 */
- 		if (!(status & TP_STATUS_BLK_TMO)) {
--			while (atomic_read(&pkc->blk_fill_in_prog)) {
--				/* Waiting for skb_copy_bits to finish... */
--				cpu_relax();
--			}
-+			/* Waiting for skb_copy_bits to finish... */
-+			write_lock(&pkc->blk_fill_in_prog_lock);
-+			write_unlock(&pkc->blk_fill_in_prog_lock);
- 		}
- 		prb_close_block(pkc, pbd, po, status);
- 		return;
-@@ -944,7 +943,8 @@ static int prb_queue_frozen(struct tpacket_kbdq_core *pkc)
- static void prb_clear_blk_fill_status(struct packet_ring_buffer *rb)
- {
- 	struct tpacket_kbdq_core *pkc  = GET_PBDQC_FROM_RB(rb);
--	atomic_dec(&pkc->blk_fill_in_prog);
-+
-+	read_unlock(&pkc->blk_fill_in_prog_lock);
- }
- 
- static void prb_fill_rxhash(struct tpacket_kbdq_core *pkc,
-@@ -998,7 +998,7 @@ static void prb_fill_curr_block(char *curr,
- 	pkc->nxt_offset += TOTAL_PKT_LEN_INCL_ALIGN(len);
- 	BLOCK_LEN(pbd) += TOTAL_PKT_LEN_INCL_ALIGN(len);
- 	BLOCK_NUM_PKTS(pbd) += 1;
--	atomic_inc(&pkc->blk_fill_in_prog);
-+	read_lock(&pkc->blk_fill_in_prog_lock);
- 	prb_run_all_ft_ops(pkc, ppd);
- }
- 
-diff --git a/net/packet/internal.h b/net/packet/internal.h
-index 907f4cd2a718..fd41ecb7f605 100644
---- a/net/packet/internal.h
-+++ b/net/packet/internal.h
-@@ -39,7 +39,7 @@ struct tpacket_kbdq_core {
- 	char		*nxt_offset;
- 	struct sk_buff	*skb;
- 
--	atomic_t	blk_fill_in_prog;
-+	rwlock_t	blk_fill_in_prog_lock;
- 
- 	/* Default is set to 8ms */
- #define DEFAULT_PRB_RETIRE_TOV	(8)
--- 
-2.20.1
-
+Regarding a configuration change, for a brief period after the change, a
+few not-yet-pushed packets could have been enqueued with ECN marking
+even as I e.g. disabled ECN. This does not seem like a big deal either,
+these are transient effects.
