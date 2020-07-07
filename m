@@ -2,72 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8558216313
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 02:40:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7965121631E
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 02:46:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727061AbgGGAkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 20:40:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50090 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725942AbgGGAkm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jul 2020 20:40:42 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jsbf0-003vqW-Tz; Tue, 07 Jul 2020 02:40:34 +0200
-Date:   Tue, 7 Jul 2020 02:40:34 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Chris Healy <cphealy@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net: sfp: Unique GPIO interrupt names
-Message-ID: <20200707004034.GA935794@lunn.ch>
-References: <CAFXsbZoOoOkgkxXNbG5JTXHdJiSoxu2OiHKHh39m3GfYE2jGcg@mail.gmail.com>
+        id S1726765AbgGGAq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 20:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725942AbgGGAqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 20:46:24 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4647C061755;
+        Mon,  6 Jul 2020 17:46:24 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id r22so36665147qke.13;
+        Mon, 06 Jul 2020 17:46:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2/4R2TDVsfWcU2NIIZ17CBxJ/c2A5FC8g6oh4b2GAr0=;
+        b=Pxz+Qg/WOQuAwDhBVfWKWMnmjNNq1c8svFffZPP/8t5dJMri8w1cciLNffZRK0PTpZ
+         Fs/Z15E0E96V8oioHp4KESBJ1Vc9+/ZHwjMgJu4RwVmixXJg7kPl2Q5KIKzNo56hfXps
+         OxWWi96ItGCUFi/DjofYE2/2bbRPuc0yjxGXS2tIyoO/1tNp3T7FLUGRm9ub9/SyI760
+         yAcAhFM+icqSUeK1HeQhYrYbk8s1suykvZCdaB1y1FVValxhk4/Y6LKSyueyEAWY4nvV
+         4UavpwRIKlcsq/mePATrpHvnd7n1Ou54hklVLP4tEi2FYXwpyuN8gn1YViQNsctTXpKM
+         Nqnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2/4R2TDVsfWcU2NIIZ17CBxJ/c2A5FC8g6oh4b2GAr0=;
+        b=a61jh9xf7EzYXsbD4U/2Ki3IkhvmmK1n5em2N8UXX+A4ZpPDgLkcq/j6X6Ym9b+9UT
+         r3/GZv58dM2+1UGiFPiRqP/cbMD28JRok8ewsPWzLDCHqku3fPbJPjPQ4otIMzjwMxQg
+         23lP8A2lkHPaRAiT13sCl2DJL8P7pFvFCSo8/Elgti83SMvEIRPOGLKwSIvorcal0Fr7
+         M5TeCOh997tY3YlNxYSGlinbCOv1waltdNvLrADXwvub7zppVUooL8vhHdvqT8SCumgK
+         xP952m9BkVDntmwen8TWplFwJKzWbDWjSwrobqiOIOphqieTqtzh9rNU5No1yJhKZnGE
+         GsYw==
+X-Gm-Message-State: AOAM532yvOVvvRE4dp1N4TUejfm72oR+qFCF24mYJkTvZR0560LJ+Z3k
+        CVw6/WxK8z7KqezSLUR49x34Mh7k4W87ORR2blM=
+X-Google-Smtp-Source: ABdhPJyHKU5hZAhgIFMiVc5tmzr8RcO7cbu/XH8kLwx1i/TG69+iamdMQ3K+0AzRysN8UqVIOGU0FDEBKrACSLNKLDk=
+X-Received: by 2002:a05:620a:2409:: with SMTP id d9mr51607880qkn.36.1594082783964;
+ Mon, 06 Jul 2020 17:46:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFXsbZoOoOkgkxXNbG5JTXHdJiSoxu2OiHKHh39m3GfYE2jGcg@mail.gmail.com>
+References: <20200703095111.3268961-1-jolsa@kernel.org> <20200703095111.3268961-6-jolsa@kernel.org>
+In-Reply-To: <20200703095111.3268961-6-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 6 Jul 2020 17:46:12 -0700
+Message-ID: <CAEf4BzbsB9zzGeq08vAX5xt+C8VtnPuXry8o6ErWJw2iy+8DwQ@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 5/9] bpf: Remove btf_id helpers resolving
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-> index 73c2969f11a4..193a124c26c4 100644
-> --- a/drivers/net/phy/sfp.c
-> +++ b/drivers/net/phy/sfp.c
-> @@ -2239,6 +2239,7 @@ static int sfp_probe(struct platform_device *pdev)
->      const struct sff_data *sff;
->      struct i2c_adapter *i2c;
->      struct sfp *sfp;
-> +    char *sfp_irq_name;
->      int err, i;
+On Fri, Jul 3, 2020 at 2:52 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Now when we moved the helpers btf_id arrays into .BTF_ids section,
+> we can remove the code that resolve those IDs in runtime.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  kernel/bpf/btf.c | 89 +++---------------------------------------------
+>  1 file changed, 5 insertions(+), 84 deletions(-)
+>
 
-Hi Chris
+LGTM.
 
-Reverse Christmas tree.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-> 
->      sfp = sfp_alloc(&pdev->dev);
-> @@ -2349,12 +2350,16 @@ static int sfp_probe(struct platform_device *pdev)
->              continue;
->          }
-> 
-> +        sfp_irq_name = devm_kasprintf(sfp->dev, GFP_KERNEL,
-> +                          "%s-%s", dev_name(sfp->dev),
-> +                          gpio_of_names[i]);
-> +
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 4c3007f428b1..71140b73ae3c 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -4079,96 +4079,17 @@ int btf_struct_access(struct bpf_verifier_log *log,
+>         return -EINVAL;
+>  }
+>
 
-Did you run ./scripts/checkpatch.pl on this patch? I suspect it will
-complain about spaces, not tabs.
-
-Humm, actually, all tabs seem to of been converted to spaces.
-
-Something David often recommends. email the patch to yourself, and
-then apply it using git am. If it does not apply cleanly, something
-has mangled it.
-
-    Andrew
+[...]
