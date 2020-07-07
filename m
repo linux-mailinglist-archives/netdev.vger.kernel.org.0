@@ -2,133 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DD30217A33
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 23:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C70C3217A36
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 23:24:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728392AbgGGVYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 17:24:25 -0400
-Received: from out0-157.mail.aliyun.com ([140.205.0.157]:35669 "EHLO
-        out0-157.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726273AbgGGVYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 17:24:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=alibaba-inc.com; s=default;
-        t=1594157061; h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        bh=Hyw+eiNcfwFGl0K5RvKjp1GetQqIv3t5qIjfXS7a00o=;
-        b=IZ+KwiBnYV7RWe26aC+MZ91H0YOdsA4H7303Hp3pZPSrPaBNh6m1qR+ws9Ygsck6El4Jt/rLd3U3lj7+qOhXEkvTCWprgStEwyX1YvwdYXdzMwa+OG6gkat24pMy10rBnvQnvYtANGSrBzijZKzLEs73X1dXMSwYrJUqVsxNADg=
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R641e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e02c03305;MF=xiangning.yu@alibaba-inc.com;NM=1;PH=DS;RN=2;SR=0;TI=SMTPD_---.HzmCU.q_1594157060;
-Received: from US-118000MP.local(mailfrom:xiangning.yu@alibaba-inc.com fp:SMTPD_---.HzmCU.q_1594157060)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 08 Jul 2020 05:24:21 +0800
-Subject: Re: [PATCH net-next 2/2] net: sched: Lockless Token Bucket (LTB)
- Qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <28bff9d7-fa2d-5284-f6d5-e08cd792c9c6@alibaba-inc.com>
- <CAM_iQpVux85OXH-oYeH15sYTb=kEj0o7uu9ug9PeTesHzXk_gQ@mail.gmail.com>
- <5c963736-2a83-b658-2a9d-485d0876c03f@alibaba-inc.com>
- <CAM_iQpV5LRU-JxfLETsdNqh75wv3vWyCsxiTTgC392HvTxa9CQ@mail.gmail.com>
-From:   "=?UTF-8?B?WVUsIFhpYW5nbmluZw==?=" <xiangning.yu@alibaba-inc.com>
-Message-ID: <ad662f0b-c4ab-01c0-57e1-45ddd7325e66@alibaba-inc.com>
-Date:   Wed, 08 Jul 2020 05:24:19 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        id S1728872AbgGGVYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 17:24:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33748 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726273AbgGGVYo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jul 2020 17:24:44 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2610B206BE;
+        Tue,  7 Jul 2020 21:24:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594157083;
+        bh=h9J8qMmeU4jOBnQL12TNFhdqmmVajg4+jlWZKfTURHI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mNEPlxJA9W0lKmpRJmQImXljTmE/+qH8JgOIVVskHcxCMo8mghmJlatMcs+o6SOHd
+         nGBiJcYQA00iucpDzRGcVHaH1t1Oux1JdbdCrizvgTB3+vhLelqZ3sUBiYv8TevJUA
+         AjV7d3IVlx8kuCjy3fvz3tNda0qAwMyo2nunXSEc=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
+        michael.chan@broadcom.com, edwin.peer@broadcom.com,
+        emil.s.tantilov@intel.com, alexander.h.duyck@linux.intel.com,
+        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com, mkubecek@suse.cz,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/9] udp_tunnel: add NIC RX port offload infrastructure
+Date:   Tue,  7 Jul 2020 14:24:25 -0700
+Message-Id: <20200707212434.3244001-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpV5LRU-JxfLETsdNqh75wv3vWyCsxiTTgC392HvTxa9CQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Kernel has a facility to notify drivers about the UDP tunnel ports
+so that devices can recognize tunneled packets. This is important
+mostly for RX - devices which don't support CHECKSUM_COMPLETE can
+report checksums of inner packets, and compute RSS over inner headers.
+Some drivers also match the UDP tunnel ports also for TX, although
+doing so may lead to false positives and negatives.
 
+Unfortunately the user experience when trying to take adavantage
+of these facilities is suboptimal. First of all there is no way
+for users to check which ports are offloaded. Many drivers resort
+to printing messages to aid debugging, other use debugfs. Even worse
+the availability of the RX features (NETIF_F_RX_UDP_TUNNEL_PORT)
+is established purely on the basis of the driver having the ndos
+installed. For most drivers, however, the ability to perform offloads
+is contingent on device capabilities (driver support multiple device
+and firmware versions). Unless driver resorts to hackish clearing
+of features set incorrectly by the core - users are left guessing
+whether their device really supports UDP tunnel port offload or not.
 
-On 7/7/20 1:06 PM, Cong Wang wrote:
-> On Mon, Jul 6, 2020 at 1:34 PM YU, Xiangning
-> <xiangning.yu@alibaba-inc.com> wrote:
->>
->>
->>
->> On 7/6/20 1:10 PM, Cong Wang wrote:
->>> On Mon, Jul 6, 2020 at 11:11 AM YU, Xiangning
->>> <xiangning.yu@alibaba-inc.com> wrote:
->>>> +static int ltb_enqueue(struct sk_buff *skb, struct Qdisc *sch, spinlock_t *root_lock,
->>>> +                      struct sk_buff **to_free)
->>>> +{
->>>> +       struct ltb_sched *ltb = qdisc_priv(sch);
->>>> +       struct ltb_pcpu_sched *pcpu_q;
->>>> +       struct ltb_class *cl;
->>>> +       struct ltb_pcpu_data *pcpu = this_cpu_ptr(ltb->pcpu_data);
->>>> +       int cpu;
->>>> +
->>>> +       cpu = smp_processor_id();
->>>> +       pcpu_q = qdisc_priv(pcpu->qdisc);
->>>> +       ltb_skb_cb(skb)->cpu = cpu;
->>>> +
->>>> +       cl = ltb_classify(sch, ltb, skb);
->>>> +       if (unlikely(!cl)) {
->>>> +               kfree_skb(skb);
->>>> +               return NET_XMIT_DROP;
->>>> +       }
->>>> +
->>>> +       pcpu->active = true;
->>>> +       if (unlikely(kfifo_put(&cl->aggr_queues[cpu], skb) == 0)) {
->>>> +               kfree_skb(skb);
->>>> +               atomic64_inc(&cl->stat_drops);
->>>> +               return NET_XMIT_DROP;
->>>> +       }
->>>
->>>
->>> How do you prevent out-of-order packets?
->>>
->>
->> Hi Cong,
->>
->> That's a good question. In theory there will be out of order packets during aggregation. While keep in mind this is per-class aggregation, and it runs at a high frequency, that the chance to have any left over skbs from the same TCP flow on many CPUs is low.
->>
->> Also, based on real deployment experience, we haven't observed an increased out of order events even under heavy work load.
->>
-> 
-> Yeah, but unless you always classify packets into proper flows, there
-> is always a chance to generate out-of-order packets here, which
-> means the default configuration is flawed.
->
+There is currently no way to indicate or configure whether RX
+features include just the checksum offload or checksum and using
+inner headers for RSS. Many drivers default to not using inner
+headers for RSS because most implementations populate the source
+port with entropy from the inner headers. This, however, is not
+always the case, for example certain switches are only able to
+use a fixed source port during encapsulation.
 
-The key is to avoid classifying packets from a same flow into different classes. So we use socket priority to classify packets. It's always going to be correctly classified.
+We have also seen many driver authors get the intricacies of UDP
+tunnel port offloads wrong. Most commonly the drivers forget to
+perform reference counting, or take sleeping locks in the callbacks.
 
-Not sure what do you mean by default configuration. But we create a shadow class when the qdisc is created. Before any other classes are created, all packets from any flow will be classified to this same shadow class, there won't be any incorrect classified packets either. 
+This work tries to improve the situation by pulling the UDP tunnel
+port table maintenance out of the drivers. It turns out that almost
+all drivers maintain a fixed size table of ports (in most cases one
+per tunnel type), so we can take care of all the refcounting in the
+core, and let the driver specify if they need to sleep in the
+callbacks or not. The new common implementation will also support
+replacing ports - when a port is removed from a full table it will
+try to find a previously missing port to take its place.
 
-> 
->>>
->>>> +static int ltb_init(struct Qdisc *sch, struct nlattr *opt,
->>> ...
->>>> +       ltb->default_cls = ltb->shadow_cls; /* Default hasn't been created */
->>>> +       tasklet_init(&ltb->fanout_tasklet, ltb_fanout_tasklet,
->>>> +                    (unsigned long)ltb);
->>>> +
->>>> +       /* Bandwidth balancer, this logic can be implemented in user-land. */
->>>> +       init_waitqueue_head(&ltb->bwbalancer_wq);
->>>> +       ltb->bwbalancer_task =
->>>> +           kthread_create(ltb_bw_balancer_kthread, ltb, "ltb-balancer");
->>>> +       wake_up_process(ltb->bwbalancer_task);
->>>
->>> Creating a kthread for each qdisc doesn't look good. Why do you
->>> need a per-qdisc kthread or even a kernel thread at all?
->>>
->>
->> We moved the bandwidth sharing out of the critical data path, that's why we use a kernel thread to balance the current maximum bandwidth used by each class periodically.
->>
->> This part could be implemented at as timer. What's your suggestion?
-> 
-> I doubt you can use a timer, as you call rtnl_trylock() there.
-> Why not use a delayed work?
-> 
+This patch only implements the core functionality along with a few
+drivers I was hoping to test manually [1] along with a test based
+on a netdevsim implementation. Following patches will convert all
+the drivers. Once that's complete we can remove the ndos, and rely
+directly on the new infrastrucutre.
 
-Thank you for the suggestion, I will replace it with a delayed work and send out the new patch.
+Then after RSS (RXFH) is converted to netlink we can add the ability
+to configure the use of inner RSS headers for UDP tunnels.
 
-- Xiangning
+[1] Unfortunately I wasn't able to, turns out 2 of the devices
+I had access to were older generation or had old FW, and they
+did not actually support UDP tunnel port notifications (see
+the second paragraph). The thrid device appears to program
+the UDP ports correctly but it generates bad UDP checksums with
+or without these patches. Long story short - I'd appreciate
+reviews and testing here..
 
-> Thanks.
-> 
+Jakub Kicinski (9):
+  debugfs: make sure we can remove u32_array files cleanly
+  udp_tunnel: re-number the offload tunnel types
+  udp_tunnel: add central NIC RX port offload infrastructure
+  ethtool: add tunnel info interface
+  netdevsim: add UDP tunnel port offload support
+  net: add a test for UDP tunnel info infra
+  ixgbe: convert to new udp_tunnel_nic infra
+  bnxt: convert to new udp_tunnel_nic infra
+  mlx4: convert to new udp_tunnel_nic infra
+
+ Documentation/filesystems/debugfs.rst         |  12 +-
+ Documentation/networking/ethtool-netlink.rst  |  33 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 133 +--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   6 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   3 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 195 +---
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    | 107 +--
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |   2 -
+ drivers/net/geneve.c                          |   6 +-
+ drivers/net/netdevsim/Makefile                |   2 +-
+ drivers/net/netdevsim/dev.c                   |   1 +
+ drivers/net/netdevsim/netdev.c                |  12 +-
+ drivers/net/netdevsim/netdevsim.h             |  19 +
+ drivers/net/netdevsim/udp_tunnels.c           | 188 ++++
+ drivers/net/vxlan.c                           |   6 +-
+ fs/debugfs/file.c                             |  27 +-
+ include/linux/debugfs.h                       |  12 +-
+ include/linux/netdevice.h                     |   8 +
+ include/net/udp_tunnel.h                      | 129 ++-
+ include/uapi/linux/ethtool.h                  |   2 +
+ include/uapi/linux/ethtool_netlink.h          |  55 ++
+ mm/cma.h                                      |   3 +
+ mm/cma_debug.c                                |   7 +-
+ net/ethtool/Makefile                          |   3 +-
+ net/ethtool/common.c                          |   9 +
+ net/ethtool/common.h                          |   1 +
+ net/ethtool/netlink.c                         |  12 +
+ net/ethtool/netlink.h                         |   4 +
+ net/ethtool/strset.c                          |   5 +
+ net/ethtool/tunnels.c                         | 273 ++++++
+ net/ipv4/Makefile                             |   3 +-
+ net/ipv4/{udp_tunnel.c => udp_tunnel_core.c}  |   0
+ net/ipv4/udp_tunnel_nic.c                     | 877 ++++++++++++++++++
+ net/ipv4/udp_tunnel_stub.c                    |   7 +
+ .../drivers/net/netdevsim/udp_tunnel_nic.sh   | 785 ++++++++++++++++
+ 35 files changed, 2556 insertions(+), 391 deletions(-)
+ create mode 100644 drivers/net/netdevsim/udp_tunnels.c
+ create mode 100644 net/ethtool/tunnels.c
+ rename net/ipv4/{udp_tunnel.c => udp_tunnel_core.c} (100%)
+ create mode 100644 net/ipv4/udp_tunnel_nic.c
+ create mode 100644 net/ipv4/udp_tunnel_stub.c
+ create mode 100644 tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
+
+-- 
+2.26.2
+
