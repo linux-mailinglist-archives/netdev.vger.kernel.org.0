@@ -2,294 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 013FD21658A
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 06:49:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F11F42165A3
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 06:55:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727949AbgGGEtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 00:49:20 -0400
-Received: from mga02.intel.com ([134.134.136.20]:18745 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726889AbgGGEtU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jul 2020 00:49:20 -0400
-IronPort-SDR: mhyBj73LX15IczQsDt862UJFkIkW7l/xhcsjJgpTAB+vSLNwDYToICON/tVDOCBE9N3+Alzspk
- CSn943vuX6sQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9674"; a="135783254"
-X-IronPort-AV: E=Sophos;i="5.75,321,1589266800"; 
-   d="scan'208";a="135783254"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2020 21:49:18 -0700
-IronPort-SDR: NuFZVNkp3EvsE24oEL9//Fl7l+e30kGVLZL3Gq2xIWu7JS2DFCHpXncOg+ao2sqOKjYcpPHWzb
- tsxQ3C+toKyQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,321,1589266800"; 
-   d="scan'208";a="279485193"
-Received: from vgjayaku-ilbpg7.png.intel.com ([10.88.227.96])
-  by orsmga003.jf.intel.com with ESMTP; 06 Jul 2020 21:49:15 -0700
-From:   vineetha.g.jaya.kumaran@intel.com
-To:     davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
-        robh+dt@kernel.org
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        weifeng.voon@intel.com, hock.leong.kweh@intel.com,
-        boon.leong.ong@intel.com
-Subject: [PATCH 2/2] net: stmmac: Add dwmac-intel-plat for GBE driver
-Date:   Tue,  7 Jul 2020 12:47:18 +0800
-Message-Id: <1594097238-8827-3-git-send-email-vineetha.g.jaya.kumaran@intel.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1594097238-8827-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
-References: <1594097238-8827-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+        id S1727810AbgGGEzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 00:55:15 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:7514 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727088AbgGGEzP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 00:55:15 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 052944174E;
+        Tue,  7 Jul 2020 12:55:11 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     netdev@vger.kernel.org
+Cc:     netfilter-devel@vger.kernel.org, fw@strlen.de
+Subject: [PATCH net-next v2 0/3] make nf_ct_frag/6_gather elide the skb CB clear
+Date:   Tue,  7 Jul 2020 12:55:08 +0800
+Message-Id: <1594097711-9365-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSFVOTU1CQkJNTEhDT0hIQ1lXWShZQU
+        lCN1dZLVlBSVdZDwkaFQgSH1lBWR0iNQs4HDoVEgMuDTo6KR0kGg0vOhxWVlVKT0pCKElZV1kJDh
+        ceCFlBWTU0KTY6NyQpLjc#WVdZFhoPEhUdFFlBWTQwWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NFE6CQw4MT5MEk0qQyEMAg8D
+        MRUKFDZVSlVKTkJPS0JMTEpJQktLVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUlKTEs3Bg++
+X-HM-Tid: 0a7327a0bba52086kuqy052944174e
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rusaimi Amira Ruslan <rusaimi.amira.rusaimi@intel.com>
+From: wenxu <wenxu@ucloud.cn>
 
-Add dwmac-intel-plat to enable the stmmac driver in Intel Keem Bay.
-Also add fix_mac_speed and tx_clk in order to change link speeds.
-This is required as mac_speed_o is not connected in the
-Intel Keem Bay SoC.
+Add nf_ct_frag_gather and Make nf_ct_frag6_gather elide the CB clear 
+when packets are defragmented by connection tracking. This can make
+each subsystem such as br_netfilter, openvswitch, act_ct do defrag
+without restore the CB. 
+This also avoid serious crashes and problems in  ct subsystem.
+Because Some packet schedulers store pointers in the qdisc CB private
+area and parallel accesses to the SKB.
 
-Signed-off-by: Rusaimi Amira Ruslan <rusaimi.amira.rusaimi@intel.com>
-Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/Kconfig        |  10 ++
- drivers/net/ethernet/stmicro/stmmac/Makefile       |   1 +
- .../net/ethernet/stmicro/stmmac/dwmac-intel-plat.c | 191 +++++++++++++++++++++
- 3 files changed, 202 insertions(+)
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
+This series following up
+http://patchwork.ozlabs.org/project/netdev/patch/1593422178-26949-1-git-send-email-wenxu@ucloud.cn/
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 9a47c5a..7572cea 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -209,6 +209,16 @@ config DWMAC_IMX8
- 	  device driver. This driver is used for i.MX8 series like
- 	  iMX8MP/iMX8DXL GMAC ethernet controller.
- 
-+config DWMAC_INTEL_PLAT
-+	tristate "Intel dwmac support"
-+	depends on OF && COMMON_CLK
-+	depends on STMMAC_ETH
-+	help
-+	  Support for ethernet controllers on Intel SoCs
-+
-+	  This selects the Intel platform specific glue layer support for
-+	  the stmmac device driver. This driver is used for the Intel Keem Bay
-+	  SoC.
- endif
- 
- config DWMAC_INTEL
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
-index 295615a..24e6145 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Makefile
-+++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
-@@ -26,6 +26,7 @@ obj-$(CONFIG_DWMAC_STM32)	+= dwmac-stm32.o
- obj-$(CONFIG_DWMAC_SUNXI)	+= dwmac-sunxi.o
- obj-$(CONFIG_DWMAC_SUN8I)	+= dwmac-sun8i.o
- obj-$(CONFIG_DWMAC_DWC_QOS_ETH)	+= dwmac-dwc-qos-eth.o
-+obj-$(CONFIG_DWMAC_INTEL_PLAT)	+= dwmac-intel-plat.o
- obj-$(CONFIG_DWMAC_GENERIC)	+= dwmac-generic.o
- obj-$(CONFIG_DWMAC_IMX8)	+= dwmac-imx.o
- stmmac-platform-objs:= stmmac_platform.o
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
-new file mode 100644
-index 0000000..ccac7bf
---- /dev/null
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
-@@ -0,0 +1,191 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Intel DWMAC platform driver
-+ *
-+ * Copyright(C) 2020 Intel Corporation
-+ */
-+
-+#include <linux/ethtool.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/stmmac.h>
-+
-+#include "stmmac.h"
-+#include "stmmac_platform.h"
-+
-+struct intel_dwmac {
-+	struct device *dev;
-+	struct clk *tx_clk;
-+	const struct intel_dwmac_data *data;
-+};
-+
-+struct intel_dwmac_data {
-+	void (*fix_mac_speed)(void *priv, unsigned int speed);
-+	unsigned long ptp_ref_clk_rate;
-+	unsigned long tx_clk_rate;
-+	bool tx_clk_en;
-+};
-+
-+static void kmb_eth_fix_mac_speed(void *priv, unsigned int speed)
-+{
-+	struct intel_dwmac *dwmac = priv;
-+	unsigned long rate;
-+	int ret;
-+
-+	rate = clk_get_rate(dwmac->tx_clk);
-+
-+	switch (speed) {
-+	case SPEED_1000:
-+		rate = 125000000;
-+		break;
-+
-+	case SPEED_100:
-+		rate = 25000000;
-+		break;
-+
-+	case SPEED_10:
-+		rate = 2500000;
-+		break;
-+
-+	default:
-+		dev_err(dwmac->dev, "Invalid speed\n");
-+		break;
-+	}
-+
-+	ret = clk_set_rate(dwmac->tx_clk, rate);
-+	if (ret)
-+		dev_err(dwmac->dev, "Failed to configure tx clock rate\n");
-+}
-+
-+static const struct intel_dwmac_data kmb_data = {
-+	.fix_mac_speed = kmb_eth_fix_mac_speed,
-+	.ptp_ref_clk_rate = 200000000,
-+	.tx_clk_rate = 125000000,
-+	.tx_clk_en = true,
-+};
-+
-+static const struct of_device_id intel_eth_plat_match[] = {
-+	{ .compatible = "intel,keembay-dwmac", .data = &kmb_data },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, intel_eth_plat_match);
-+
-+static int intel_eth_plat_probe(struct platform_device *pdev)
-+{
-+	struct net_device *ndev = platform_get_drvdata(pdev);
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+	struct plat_stmmacenet_data *plat_dat;
-+	struct stmmac_resources stmmac_res;
-+	const struct of_device_id *match;
-+	struct intel_dwmac *dwmac;
-+	unsigned long rate;
-+	int ret;
-+
-+	plat_dat = priv->plat;
-+	ret = stmmac_get_platform_resources(pdev, &stmmac_res);
-+	if (ret)
-+		return ret;
-+
-+	plat_dat = stmmac_probe_config_dt(pdev, &stmmac_res.mac);
-+	if (IS_ERR(plat_dat)) {
-+		dev_err(&pdev->dev, "dt configuration failed\n");
-+		return PTR_ERR(plat_dat);
-+	}
-+
-+	dwmac = devm_kzalloc(&pdev->dev, sizeof(*dwmac), GFP_KERNEL);
-+	if (!dwmac) {
-+		ret = -ENOMEM;
-+		goto err_remove_config_dt;
-+	}
-+
-+	dwmac->dev = &pdev->dev;
-+	dwmac->tx_clk = NULL;
-+
-+	match = of_match_device(intel_eth_plat_match, &pdev->dev);
-+	if (match && match->data) {
-+		dwmac->data = (const struct intel_dwmac_data *)match->data;
-+
-+		if (dwmac->data->fix_mac_speed)
-+			plat_dat->fix_mac_speed = dwmac->data->fix_mac_speed;
-+
-+		/* Enable TX clock */
-+		if (dwmac->data->tx_clk_en) {
-+			dwmac->tx_clk = devm_clk_get(&pdev->dev, "tx_clk");
-+			if (IS_ERR(dwmac->tx_clk))
-+				goto err_remove_config_dt;
-+
-+			clk_prepare_enable(dwmac->tx_clk);
-+
-+			/* Check and configure TX clock rate */
-+			rate = clk_get_rate(dwmac->tx_clk);
-+			if (dwmac->data->tx_clk_rate &&
-+			    rate != dwmac->data->tx_clk_rate) {
-+				rate = dwmac->data->tx_clk_rate;
-+				ret = clk_set_rate(dwmac->tx_clk, rate);
-+				if (ret) {
-+					dev_err(&pdev->dev,
-+						"Failed to set tx_clk\n");
-+					return ret;
-+				}
-+			}
-+		}
-+
-+		/* Check and configure PTP ref clock rate */
-+		rate = clk_get_rate(plat_dat->clk_ptp_ref);
-+		if (dwmac->data->ptp_ref_clk_rate &&
-+		    rate != dwmac->data->ptp_ref_clk_rate) {
-+			rate = dwmac->data->ptp_ref_clk_rate;
-+			ret = clk_set_rate(plat_dat->clk_ptp_ref, rate);
-+			if (ret) {
-+				dev_err(&pdev->dev,
-+					"Failed to set clk_ptp_ref\n");
-+				return ret;
-+			}
-+		}
-+	}
-+
-+	plat_dat->bsp_priv = dwmac;
-+
-+	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
-+	if (ret) {
-+		if (dwmac->tx_clk)
-+			clk_disable_unprepare(dwmac->tx_clk);
-+
-+		goto err_remove_config_dt;
-+	}
-+
-+	return 0;
-+
-+err_remove_config_dt:
-+	stmmac_remove_config_dt(pdev, plat_dat);
-+
-+	return ret;
-+}
-+
-+static int intel_eth_plat_remove(struct platform_device *pdev)
-+{
-+	struct intel_dwmac *dwmac = get_stmmac_bsp_priv(&pdev->dev);
-+	int ret;
-+
-+	ret = stmmac_pltfr_remove(pdev);
-+
-+	if (dwmac->tx_clk)
-+		clk_disable_unprepare(dwmac->tx_clk);
-+
-+	return ret;
-+}
-+
-+static struct platform_driver intel_eth_plat_driver = {
-+	.probe  = intel_eth_plat_probe,
-+	.remove = intel_eth_plat_remove,
-+	.driver = {
-+		.name		= "intel-eth-plat",
-+		.pm		= &stmmac_pltfr_pm_ops,
-+		.of_match_table = intel_eth_plat_match,
-+	},
-+};
-+module_platform_driver(intel_eth_plat_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("Intel DWMAC platform driver");
+patch1: add nf_ct_frag_gather elide the CB clear
+patch2: make nf_ct_frag6_gather elide the CB clear
+patch3: fix clobber qdisc_skb_cb in act_ct with defrag
+
+v2: resue some ip_defrag function in patch1
+
+wenxu (3):
+  net: ip_fragment: Add ip_defrag_ignore_cb support
+  netfilter: nf_conntrack_reasm: make nf_ct_frag6_gather elide the CB
+    clear
+  net/sched: act_ct: fix clobber qdisc_skb_cb in defrag
+
+ include/linux/netfilter_ipv6.h              |  9 ++---
+ include/net/ip.h                            |  2 ++
+ include/net/netfilter/ipv6/nf_defrag_ipv6.h |  3 +-
+ net/bridge/netfilter/nf_conntrack_bridge.c  |  7 ++--
+ net/ipv4/ip_fragment.c                      | 55 ++++++++++++++++++++++++-----
+ net/ipv6/netfilter/nf_conntrack_reasm.c     | 19 ++++++----
+ net/ipv6/netfilter/nf_defrag_ipv6_hooks.c   |  3 +-
+ net/openvswitch/conntrack.c                 |  8 ++---
+ net/sched/act_ct.c                          |  8 ++---
+ 9 files changed, 77 insertions(+), 37 deletions(-)
+
 -- 
-1.9.1
+1.8.3.1
 
