@@ -2,110 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEF0121776D
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 21:01:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F9F1217770
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 21:01:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728829AbgGGTBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 15:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38524 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728029AbgGGTBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 15:01:24 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E316AC061755;
-        Tue,  7 Jul 2020 12:01:23 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id a14so19327064qvq.6;
-        Tue, 07 Jul 2020 12:01:23 -0700 (PDT)
+        id S1728364AbgGGTBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 15:01:51 -0400
+Received: from mail-dm6nam10on2061.outbound.protection.outlook.com ([40.107.93.61]:57569
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728243AbgGGTBu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jul 2020 15:01:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XqEOqWR6r2cG40X730/TKTHG7G9AlHeNZWocKWsccKwMGEoJDc7fPLd4dsCOT7Zw3tclK8lzRowQ4D4C3+gP3qDmqS9zWzYbhWJjWFTKmqJQymi2X/zPWDTnjJ353Ex0c/tl6BrH/Wu00bkb8RU5D3+1McJRUpOEt7XPaGFnkeTk0x4zQbt+uKelxutlm/X2qu8M/S4pnls1c5/JCXUaGDlvgQjaIG5rOerRoou7JyfTMH1Z3SAg6dlZcZ1ELyiNn/BI7xSdBwH7iyxu77F9tjFAsDCCkiweSAMjWvOYlSOIAKm3tTs1gqnm1cUexMa48f78yore7S/QzZCoxqeuRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PidHPGUUO019W46a7XOQ8wsKhe/qrbp30qmDh1RIawA=;
+ b=kfHmvWeuhHoL/rCnz7XlEnmJG5Kghcw05oSA2dwDewWcTNNetQm9B+mPdMh0pjq4vZskBVV/l8fIJgsdQLNtLYSYSQx8XoVLAc2omEfw8yqpbkYxMFl+XLdM+dl3kouu+J2ERsIPhB5yYbD2TBc+xAeJplX27hFg5QaQUZyJBucAYFOd/uV/S0gT5+Afh09ihUFeZBHaPyVeWd7BEYykqSG1ocrW1duV5cd4lUU3FyMe/Dsq+CwaBOIr0vU7uHnYQJuqms6ek+RllFW5H/CPUUO4Y5/MuAynGujaf68pSVWgI3wT5ZEIBdBRYWItRUkFcF2B2y2G8qQcmuKF2f4y+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6MlKFZsb65XMk2FLiCoPqp4gBUptFzxLdjsvpN/u+Vk=;
-        b=nzKY6J57O92oJYl79Kdvn7qhi9AhJWkhY+JZRi531jPTmHmRHaEdmZ4rQeSjWM0KQ4
-         04CrgUD7FT6noHnW9KqnIApqRco9s4OGhvWaHatLMoNPo7mYgtA2Sp0MXo75Wnl6TIMh
-         vuRVhMokQ+iUIBujlJmB9Po27v8+90xJynucfHlN/+g95xjV6K9jHWRv919SBu2lhEBn
-         qc2FHyJaCa3jIT32cosjY3fo4DQud/2MsnZO2jxWLHdDnB+KEzh5BGLEgLh3uGLOhSTb
-         KeSlcT1IkZ7DuxnvSJ/SIKLvwfUFBH8KOUtVsyYL292Ts+9AP8gNEE5HQ5BRmLzCT9xn
-         ftWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6MlKFZsb65XMk2FLiCoPqp4gBUptFzxLdjsvpN/u+Vk=;
-        b=jPjmBdoY05ZDJINIq1U5AW7jaYpSAfyNFQmp2bGTlH+GAlBB81KAQKjecROGFi0yAZ
-         yRFimjTRBClzEo1JiuzAEfHxTYv+0+0oXXZDOUUpxfxqfDf31t4zNc5RuTFn+zaEX9Q/
-         d7FbeQqnmTNH1G3eZqrPENZ09tgXy8QwVsbLZAqr8313e63AxTa7r+vnF5IzFxjqn3fJ
-         Gd0BRQ3uCwzUF+L4xFKYW2X9Z0Jp9ubhwSlAC1eKyntemFAITi1LXkmoKr/h++sSUHH6
-         id+gNir36AmZmL8lYe2A05uF0TEqkkDj6v5LR2evSAtK2DI35euu1uLae9VFn2ECYXsR
-         QuBQ==
-X-Gm-Message-State: AOAM532ej2wxexejnuNJzhesLjqc2ONuF+BqwThh4A/MIyQdCfFe81JL
-        +ADmiN1qC+YM/76L6m/w+4Zr+8+e9lwGvpvyCeg=
-X-Google-Smtp-Source: ABdhPJwRkH2kVW1XXOL6S+lCsM2wXTLA0kUHZiHJZ6AQELbqcV22n6QQ+1vtluS6HtP8lIETbTcT00Rgeymhq0MvitQ=
-X-Received: by 2002:a05:6214:bce:: with SMTP id ff14mr52879615qvb.196.1594148483169;
- Tue, 07 Jul 2020 12:01:23 -0700 (PDT)
+ d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PidHPGUUO019W46a7XOQ8wsKhe/qrbp30qmDh1RIawA=;
+ b=wFjABsKC0DQ17ecWiTM8XAEkRGBLiHqZvTaqN1no9t/TA90ghxXre5k2CHPCfQVg//sme1Os5f7GVa3YjFFDTeLxBjVvsXkKIDo69R/dHd1w5SZQNsSzYDCLkeSeZ9uByFxTJ2C73CEZJB+t9OYN8wQHTzWW6p9uqRCOGKhGK/k=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=amd.com;
+Received: from BN6PR1201MB0258.namprd12.prod.outlook.com
+ (2603:10b6:405:57::13) by BN7PR12MB2802.namprd12.prod.outlook.com
+ (2603:10b6:408:25::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20; Tue, 7 Jul
+ 2020 19:01:46 +0000
+Received: from BN6PR1201MB0258.namprd12.prod.outlook.com
+ ([fe80::ac9a:b1f:fa1a:403b]) by BN6PR1201MB0258.namprd12.prod.outlook.com
+ ([fe80::ac9a:b1f:fa1a:403b%3]) with mapi id 15.20.3153.020; Tue, 7 Jul 2020
+ 19:01:46 +0000
+Subject: Re: [PATCH] amd-xgbe: add module param for auto negotiation
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Cc:     Tom Lendacky <thomas.lendacky@amd.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+References: <20200707173254.1564625-1-Shyam-sundar.S-k@amd.com>
+ <20200707175541.GB938746@lunn.ch>
+From:   Shyam Sundar S K <ssundark@amd.com>
+Message-ID: <a9e5c55f-55cf-439e-30aa-6cf70e44dffd@amd.com>
+Date:   Wed, 8 Jul 2020 00:31:25 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
+In-Reply-To: <20200707175541.GB938746@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
+X-ClientProxiedBy: BMXPR01CA0075.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:b00:54::15) To BN6PR1201MB0258.namprd12.prod.outlook.com
+ (2603:10b6:405:57::13)
 MIME-Version: 1.0
-References: <20200707184855.30968-1-danieltimlee@gmail.com>
-In-Reply-To: <20200707184855.30968-1-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 7 Jul 2020 12:01:11 -0700
-Message-ID: <CAEf4BzY1JQcq6LBpwjSi8XwK_7+ktwz53ZR4vk=imLQkZn1xXA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/4] samples: bpf: refactor BPF map test with libbpf
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.252.89.180] (165.204.159.242) by BMXPR01CA0075.INDPRD01.PROD.OUTLOOK.COM (2603:1096:b00:54::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Tue, 7 Jul 2020 19:01:44 +0000
+X-Originating-IP: [165.204.159.242]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 8bc1d5b8-1b02-469c-b02c-08d822a8322b
+X-MS-TrafficTypeDiagnostic: BN7PR12MB2802:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BN7PR12MB28020AC54BE5239CAE1618299A660@BN7PR12MB2802.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: a56A4bGyCHKOSl1ff8nX6nSVF+8soOQwZCSrgYIG4nKQ/MN9ohU2kMgl7QjjWb7P4Tru4I1KZ6UHPhhiOcv7rYvQ94RotoCikXKQ1Kaj5nKF7nZnHOg4rQK+gfEedF0zhtdHRPQUvQBOVFCDBqECFdGOQXmzm1bSstbF2Ok22vwMp0MAoW4ZAGWyjIPCJ/T8jWNcllHw8Vuzj1uf8/AjL3+pPg8S7ewl3UYal8+jLrOvoSBUaWR4/WO1qJpsYFg2jTKSJ6xWlcTc9WX7wTDFASMM7d7UDW7kaRSTlJvf39+69OiRzr21pBFu4SmjTrpv+ZeJR4g+x/8RHOhKpjJv8QKkvWF4LJ/bsPiU8Uy0NoaFcjhgWTsSqeHY9MZtL5aB
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR1201MB0258.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(136003)(396003)(346002)(39860400002)(376002)(4744005)(66556008)(66476007)(26005)(6486002)(31696002)(2906002)(186003)(16526019)(31686004)(478600001)(8676002)(6666004)(8936002)(53546011)(66946007)(36756003)(52116002)(54906003)(956004)(2616005)(6636002)(4326008)(16576012)(110136005)(5660300002)(316002)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 53yD9Z34eAMqi0YDlOdhJQKOi3rXJ9kdzp2W6TqYD5dcc8wk1WfICAI5usEl/KcZ07yprG8SRwWxLPbMdaLmi+oiBLxKQmSjDWB3UDAEKVIfH4Wc3h30nm8kSX91RySRWm7YfrWkTdAEut5DMQHBAFHA0NIcSoMHT2y/1s6c/yyiRZRgbJ7VHMqvNV5ZfMMc2UHrWquZpDNRl+4imXSDWgjzgVmfOuq2HwXqmKFV+PiLZ4X5sHYE4N4j5fL2b74e83k4EjT/kfpgURux1BoThXmqlAYH8K59XzuxPb0YgDmfZxH2cUqhIbu5NCjXl5fbkVszz+Mwk2LDWEcqstfmzPBzUt1ry36yDwCdeo5WvOAV9iH0BTcHZz72fy9YC/gJHLlsDd4XkHQ18QbOXXL8O3Zkw5QOa0sS3FIJcWtK3GRz2tXKFU0Ek0Nded34aY3NXyqxBGuL/Hw2R2oz0EmSr7cUxDcSUx36B8cGS9cLGcijHWnb2pKpV71HcnXo9cL1
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8bc1d5b8-1b02-469c-b02c-08d822a8322b
+X-MS-Exchange-CrossTenant-AuthSource: BN6PR1201MB0258.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2020 19:01:46.8137
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 74GeF0v3TGMCTvAneE3IeC1/qCLRtToKsg9I4YCwWxygXfltjs00hsRPrp7A+HhZjnwmfJFTbz1jswYZ1RkEeg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2802
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 7, 2020 at 11:49 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> There have been many changes in how the current bpf program defines
-> map. The development of libbbpf has led to the new method called
-> BTF-defined map, which is a new way of defining BPF maps, and thus has
-> a lot of differences from the existing MAP definition method.
->
-> Although bpf_load was also internally using libbbpf, fragmentation in
-> its implementation began to occur, such as using its own structure,
-> bpf_load_map_def, to define the map.
->
-> Therefore, in this patch set, map test programs, which are closely
-> related to changes in the definition method of BPF map, were refactored
-> with libbbpf.
->
-> ---
 
-For the series:
+On 7/7/2020 11:25 PM, Andrew Lunn wrote:
+> [CAUTION: External Email]
+>
+> On Tue, Jul 07, 2020 at 05:32:54PM +0000, Shyam Sundar S K wrote:
+>> In embedded environments, ethtool may not be available to toggle between
+>> auto negotiation on/off.
+>>
+>> Add a module parameter to control auto negotiation for these situations.
+Hi Andrew
+> Where does this end? You can set the link speed via module parameters?
+> Pause? Duplex?
+>
+>         Andrew
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Agree to your feedback. Most of the information required to control the 
+connection is already present in the
 
-> Changes in V2:
->  - instead of changing event from __x64_sys_connect to __sys_connect,
->  fetch and set register values directly
->  - fix wrong error check logic with bpf_program
->  - set numa_node 0 declaratively at map definition instead of setting it
->  from user-space
->  - static initialization of ARRAY_OF_MAPS element with '.values'
->
-> Daniel T. Lee (4):
->   samples: bpf: fix bpf programs with kprobe/sys_connect event
->   samples: bpf: refactor BPF map in map test with libbpf
->   samples: bpf: refactor BPF map performance test with libbpf
->   selftests: bpf: remove unused bpf_map_def_legacy struct
->
->  samples/bpf/Makefile                     |   2 +-
->  samples/bpf/map_perf_test_kern.c         | 188 ++++++++++++-----------
->  samples/bpf/map_perf_test_user.c         | 164 +++++++++++++-------
->  samples/bpf/test_map_in_map_kern.c       |  94 ++++++------
->  samples/bpf/test_map_in_map_user.c       |  53 ++++++-
->  samples/bpf/test_probe_write_user_kern.c |   9 +-
->  tools/testing/selftests/bpf/bpf_legacy.h |  14 --
->  7 files changed, 305 insertions(+), 219 deletions(-)
->
-> --
-> 2.25.1
->
+driver and this piece of information is missing. Customers who run a 
+minimal Linux do not have the flexibility
+
+to add userspace applications like ethtool to control the connection 
+information. Please consider this as expectional
+
+case, or else I would not have proposed this change.
+
+Thanks,
+
+Shyam
+
