@@ -2,330 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFA70217501
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 19:18:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A6D2217504
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 19:18:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728598AbgGGRSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 13:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728440AbgGGRSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 13:18:30 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898C9C061755
-        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 10:18:30 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id gc9so12066209pjb.2
-        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 10:18:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8cY0UjCqQW+XSyCWIjc/cIyKo3bTfjDtS/okyB/bgKU=;
-        b=HwtUr+jCHgdVdQ/4DQ+mnArfTxmKtDKFK+/dWGDL2hTzGtliqnCvqDjZpUfrNAv3OK
-         V0JhsNG/ymULp48sJeuBFYFpZm2cOZvvC05IOQsz4hS3wtspfm0pqZale2pUORJKSzVW
-         eG3m6ZIg3foorBvtflPR1PabbzK8xB5PpY5cE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8cY0UjCqQW+XSyCWIjc/cIyKo3bTfjDtS/okyB/bgKU=;
-        b=TTjMrfvG1IgUO3yj1O6NJERCgO9J+HMJavg7emhnjwA7aiZdo0YWyFvOK3bYoWdvp9
-         pUdE0AN1yoR3SrdF/oQbXaJSCUxBthR/4AlY6ncukJKCdcd60gze8QZWsTbpJVXOujV9
-         yfO6jKn7uQJT253b/YKHdFKkT2lFP2WGKjuMevPura4P8YDTfM2c43B8jqCPnSzH+8Mj
-         KizqxeS6ymsA6M/8ZmkbNA4zMKFohZ5kijTI/821jOKTx9YDfh1D5D7X8eeRCdRnaYRR
-         vG7z2aCyIqzjPvd6MXwbVrx9uv3+rtLVLY+DbhXCXrIG6IKct7hatWxcgx3qYgcdHghP
-         JhSw==
-X-Gm-Message-State: AOAM532MT//AlUM5khvod2LkIJ78eBro9tVBqnw2UQlLUBuZYM2uzGi3
-        b/nEZbxOU+h7afBSJz3NhZ+/lA==
-X-Google-Smtp-Source: ABdhPJxGK0bs1Msv9keoWPtVbcaPgpRLF8GJdwuI1T+wvmJQfbWZ1ep2ADN/b+nXgvZNdJNUpND+cA==
-X-Received: by 2002:a17:90a:ab96:: with SMTP id n22mr5486082pjq.52.1594142309941;
-        Tue, 07 Jul 2020 10:18:29 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:42b0:34ff:fe3d:58e6])
-        by smtp.gmail.com with ESMTPSA id 16sm2924230pjb.48.2020.07.07.10.18.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2020 10:18:29 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     kvalo@codeaurora.org, ath10k@lists.infradead.org
-Cc:     saiprakash.ranjan@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-wireless@vger.kernel.org, pillair@codeaurora.org,
-        kuabhs@google.com, Douglas Anderson <dianders@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] ath10k: Keep track of which interrupts fired, don't poll them
-Date:   Tue,  7 Jul 2020 10:17:34 -0700
-Message-Id: <20200707101712.1.I4d2f85ffa06f38532631e864a3125691ef5ffe06@changeid>
-X-Mailer: git-send-email 2.27.0.383.g050319c2ae-goog
+        id S1728620AbgGGRSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 13:18:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55784 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728036AbgGGRSo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jul 2020 13:18:44 -0400
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 085FC2078A;
+        Tue,  7 Jul 2020 17:18:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594142323;
+        bh=pUTBhug55qWGrkAB5wyXchKr2yiif3vkK2Iy9BKGHjA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=wr+azqwMC9OUQNGFPyarr/RRGonhfj+ni3j/001lS0VuvuHb1DU3ElKkcqIEDyrDN
+         isR7LcVuOlEzX8pprkE6WoKBcqYEQ22xsePJLpWYdS2r7Gn5LsPNU7dnRrc4xPcZYF
+         KopGEdei7R2mWWjl0ko2ftoay7RToo1lnwhV1j24=
+Received: by mail-oi1-f174.google.com with SMTP id k4so35474878oik.2;
+        Tue, 07 Jul 2020 10:18:43 -0700 (PDT)
+X-Gm-Message-State: AOAM531gsCp3povzGC48otAPz6drY6B1xkG9S7B4PrAmWMGpappznIb8
+        3Dc3ekYlUMeUFy8FxWGM5GpU1N7HwnfamrcY6w==
+X-Google-Smtp-Source: ABdhPJwnW18eGjcb7GypEIvTrmIdxT1Ml5LeeQBihduI7SVrU/0eaFhyDjBHwHYGID/JvvhQjMBKML+Lr4CMW074jT8=
+X-Received: by 2002:aca:4844:: with SMTP id v65mr4330159oia.152.1594142322315;
+ Tue, 07 Jul 2020 10:18:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200706181331.x2tn5cl5jn5kqmhx@gilmour.lan> <20200707141918.GA928075@lunn.ch>
+ <20200707145440.teimwt6kmsnyi5dz@gilmour.lan> <82482500-d329-71d4-619a-7cb2eddaf9ad@gmail.com>
+In-Reply-To: <82482500-d329-71d4-619a-7cb2eddaf9ad@gmail.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Tue, 7 Jul 2020 11:18:31 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLxUbf28MqYXsTd-bUPTq9XXaRqVOOy6qnDd9t3LQoP9A@mail.gmail.com>
+Message-ID: <CAL_JsqLxUbf28MqYXsTd-bUPTq9XXaRqVOOy6qnDd9t3LQoP9A@mail.gmail.com>
+Subject: Re: PHY reset handling during DT parsing
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we have a per CE (Copy Engine) IRQ then we have no summary
-register.  Right now the code generates a summary register by
-iterating over all copy engines and seeing if they have an interrupt
-pending.
+On Tue, Jul 7, 2020 at 10:39 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+>
+>
+> On 7/7/2020 7:54 AM, Maxime Ripard wrote:
+> > Hi Andrew,
+> >
+> > On Tue, Jul 07, 2020 at 04:19:18PM +0200, Andrew Lunn wrote:
+> >> On Mon, Jul 06, 2020 at 08:13:31PM +0200, Maxime Ripard wrote:
+> >>> I came across an issue today on an Allwinner board, but I believe it's a
+> >>> core issue.
+> >>>
+> >>> That board is using the stmac driver together with a phy that happens to
+> >>> have a reset GPIO, except that that GPIO will never be claimed, and the
+> >>> PHY will thus never work.
+> >>>
+> >>> You can find an example of such a board here:
+> >>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm/boot/dts/sun6i-a31-hummingbird.dts#n195
+> >>>
+> >>> It looks like when of_mdiobus_register() will parse the DT, it will then
+> >>> call of_mdiobus_register_phy() for each PHY it encounters [1].
+> >>> of_mdiobus_register_phy() will then if the phy doesn't have an
+> >>> ethernet-phy-id* compatible call get_phy_device() [2], and will later on
+> >>> call phy_register_device [3].
+> >>>
+> >>> get_phy_device() will then call get_phy_id() [4], that will try to
+> >>> access the PHY through the MDIO bus [5].
+> >>>
+> >>> The code that deals with the PHY reset line / GPIO is however only done
+> >>> in mdiobus_device_register, called through phy_device_register. Since
+> >>> this is happening way after the call to get_phy_device, our PHY might
+> >>> still very well be in reset if the bootloader hasn't put it out of reset
+> >>> and left it there.
+> >>
+> >> Hi Maxime
+> >>
+> >> If you look at the history of this code,
+> >>
+> >> commit bafbdd527d569c8200521f2f7579f65a044271be
+> >> Author: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+> >> Date:   Mon Dec 4 13:35:05 2017 +0100
+> >>
+> >>     phylib: Add device reset GPIO support
+> >>
+> >> you will see there is an assumption the PHY can be detected while in
+> >> reset. The reset was originally handled inside the at803x PHY driver
+> >> probe function, before it got moved into the core.
+> >>
+> >> What you are asking for it reasonable, but you have some history to
+> >> deal with, changing some assumptions as to what the reset is all
+> >> about.
+> >
+> > Thanks for the pointer.
+> >
+> > It looks to me from the commit log that the assumption was that a
+> > bootloader could leave the PHY into reset though?
+> >
+> > It starts with:
+> >
+> >> The PHY devices sometimes do have their reset signal (maybe even power
+> >> supply?) tied to some GPIO and sometimes it also does happen that a
+> >> boot loader does not leave it deasserted.
+> >
+> > This is exactly the case I was discussing. The bootloader hasn't used
+> > the PHY, and thus the PHY reset signal is still asserted?
+>
+> The current solution to this problem would be to have a reset property
+> specified for the MDIO bus controller node such that the reset would be
+> de-asserted during mdiobus_register() and prior to scanning the MDIO bus.
 
-This has a problem.  Specifically if _none_ if the Copy Engines have
-an interrupt pending then they might go into low power mode and
-reading from their address space will cause a full system crash.  This
-was seen to happen when two interrupts went off at nearly the same
-time.  Both were handled by a single call of ath10k_snoc_napi_poll()
-but, because there were two interrupts handled and thus two calls to
-napi_schedule() there was still a second call to
-ath10k_snoc_napi_poll() which ran with no interrupts pending.
+Unless the reset controls all the devices on the mdio bus, the
+controller node is not the right place. The core could look into the
+child nodes, but this is just one possible property.
 
-Instead of iterating over all the copy engines, let's just keep track
-of the IRQs that fire.  Then we can effectively generate our own
-summary without ever needing to read the Copy Engines.
+> This has the nice property that for a 1:1 mapping between MDIO bus
+> controller and device, it works (albeit maybe not being accurately
+> describing hardware), but if you have multiple MDIO/PHY devices sitting
+> on the bus, they might each have their own reset control and while we
+> would attempt to manage that reset line from that call path:
+>
+> mdiobus_scan()
+>  -> phy_device_register()
+>     -> mdiobus_register_device()
+>
+> it would be too late because there is a preceding get_phy_device() which
+> attempts to read the PHY device's OUI and it would fail if the PHY is
+> still held in reset.
+>
+> We have had a similar discussion before with regulators:
+>
+> http://archive.lwn.net:8080/devicetree/20200622093744.13685-1-brgl@bgdev.pl/
+>
+> and so far we do not really have a good solution to this problem either.
+>
+> For your specific use case with resets you could do a couple of things:
+>
+> - if there is only one PHY on the MDIO bus you can describe the reset
+> line to be within the MDIO bus controller node (explained above), this
+> is not great but it is not necessarily too far from reality either
+>
+> - if you know the PHY OUI, you can put it as a compatible string in the
+> form: ethernet-phy-id%4x.%4x and that will avoid the MDIO bus layer to
+> try to read from the PHY but instead match it with a driver and create a
+> phy_device instance right away
 
-Tested-on: WCN3990 SNOC WLAN.HL.3.2.2-00490-QCAHLSWMTPL-1
+The h/w is simply not discoverable, so it needs a compatible string.
 
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
-This patch continues work to try to squash all instances of the crash
-we've been seeing while reading CE registers and hopefully this patch
-addresses the true root of the issue.
+> I think we are open to a "pre probe" model where it is possible to have
+> a phy_device instance created that would allow reset controller or
+> regulator (or clocks, too) to be usable with a struct device reference,
+> yet make no HW access until all of these resources have been enabled.
 
-The first patch that attempted to address these problems landed as
-commit 8f9ed93d09a9 ("ath10k: Wait until copy complete is actually
-done before completing").  After that Rakesh Pillai posted ("ath10k:
-Add interrupt summary based CE processing") [1] and this patch is
-based atop that one.  Both of those patches significantly reduced the
-instances of problems but didn't fully eliminate them.  Crossing my
-fingers that they're all gone now.
+I think this is needed for the kernel's driver model in general. It's
+not an MDIO specific problem.
 
-[1] https://lore.kernel.org/r/1593193967-29897-1-git-send-email-pillair@codeaurora.org
-
- drivers/net/wireless/ath/ath10k/ce.c   | 84 ++++++++++----------------
- drivers/net/wireless/ath/ath10k/ce.h   | 14 ++---
- drivers/net/wireless/ath/ath10k/snoc.c | 18 ++++--
- drivers/net/wireless/ath/ath10k/snoc.h |  1 +
- 4 files changed, 51 insertions(+), 66 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath10k/ce.c b/drivers/net/wireless/ath/ath10k/ce.c
-index 1e16f263854a..84ec80c6d08f 100644
---- a/drivers/net/wireless/ath/ath10k/ce.c
-+++ b/drivers/net/wireless/ath/ath10k/ce.c
-@@ -481,38 +481,6 @@ static inline void ath10k_ce_engine_int_status_clear(struct ath10k *ar,
- 	ath10k_ce_write32(ar, ce_ctrl_addr + wm_regs->addr, mask);
- }
- 
--static bool ath10k_ce_engine_int_status_check(struct ath10k *ar, u32 ce_ctrl_addr,
--					      unsigned int mask)
--{
--	struct ath10k_hw_ce_host_wm_regs *wm_regs = ar->hw_ce_regs->wm_regs;
--
--	return ath10k_ce_read32(ar, ce_ctrl_addr + wm_regs->addr) & mask;
--}
--
--u32 ath10k_ce_gen_interrupt_summary(struct ath10k *ar)
--{
--	struct ath10k_hw_ce_host_wm_regs *wm_regs = ar->hw_ce_regs->wm_regs;
--	struct ath10k_ce_pipe *ce_state;
--	struct ath10k_ce *ce;
--	u32 irq_summary = 0;
--	u32 ctrl_addr;
--	u32 ce_id;
--
--	ce = ath10k_ce_priv(ar);
--
--	for (ce_id = 0; ce_id < CE_COUNT; ce_id++) {
--		ce_state = &ce->ce_states[ce_id];
--		ctrl_addr = ce_state->ctrl_addr;
--		if (ath10k_ce_engine_int_status_check(ar, ctrl_addr,
--						      wm_regs->cc_mask)) {
--			irq_summary |= BIT(ce_id);
--		}
--	}
--
--	return irq_summary;
--}
--EXPORT_SYMBOL(ath10k_ce_gen_interrupt_summary);
--
- /*
-  * Guts of ath10k_ce_send.
-  * The caller takes responsibility for any needed locking.
-@@ -1399,45 +1367,55 @@ static void ath10k_ce_per_engine_handler_adjust(struct ath10k_ce_pipe *ce_state)
- 	ath10k_ce_watermark_intr_disable(ar, ctrl_addr);
- }
- 
--int ath10k_ce_disable_interrupts(struct ath10k *ar)
-+void ath10k_ce_disable_interrupt(struct ath10k *ar, int ce_id)
- {
- 	struct ath10k_ce *ce = ath10k_ce_priv(ar);
- 	struct ath10k_ce_pipe *ce_state;
- 	u32 ctrl_addr;
--	int ce_id;
- 
--	for (ce_id = 0; ce_id < CE_COUNT; ce_id++) {
--		ce_state  = &ce->ce_states[ce_id];
--		if (ce_state->attr_flags & CE_ATTR_POLL)
--			continue;
-+	ce_state  = &ce->ce_states[ce_id];
-+	if (ce_state->attr_flags & CE_ATTR_POLL)
-+		return;
- 
--		ctrl_addr = ath10k_ce_base_address(ar, ce_id);
-+	ctrl_addr = ath10k_ce_base_address(ar, ce_id);
- 
--		ath10k_ce_copy_complete_intr_disable(ar, ctrl_addr);
--		ath10k_ce_error_intr_disable(ar, ctrl_addr);
--		ath10k_ce_watermark_intr_disable(ar, ctrl_addr);
--	}
-+	ath10k_ce_copy_complete_intr_disable(ar, ctrl_addr);
-+	ath10k_ce_error_intr_disable(ar, ctrl_addr);
-+	ath10k_ce_watermark_intr_disable(ar, ctrl_addr);
-+}
-+EXPORT_SYMBOL(ath10k_ce_disable_interrupt);
- 
--	return 0;
-+void ath10k_ce_disable_interrupts(struct ath10k *ar)
-+{
-+	int ce_id;
-+
-+	for (ce_id = 0; ce_id < CE_COUNT; ce_id++)
-+		ath10k_ce_disable_interrupt(ar, ce_id);
- }
- EXPORT_SYMBOL(ath10k_ce_disable_interrupts);
- 
--void ath10k_ce_enable_interrupts(struct ath10k *ar)
-+void ath10k_ce_enable_interrupt(struct ath10k *ar, int ce_id)
- {
- 	struct ath10k_ce *ce = ath10k_ce_priv(ar);
--	int ce_id;
- 	struct ath10k_ce_pipe *ce_state;
- 
-+	ce_state  = &ce->ce_states[ce_id];
-+	if (ce_state->attr_flags & CE_ATTR_POLL)
-+		return;
-+
-+	ath10k_ce_per_engine_handler_adjust(ce_state);
-+}
-+EXPORT_SYMBOL(ath10k_ce_enable_interrupt);
-+
-+void ath10k_ce_enable_interrupts(struct ath10k *ar)
-+{
-+	int ce_id;
-+
- 	/* Enable interrupts for copy engine that
- 	 * are not using polling mode.
- 	 */
--	for (ce_id = 0; ce_id < CE_COUNT; ce_id++) {
--		ce_state  = &ce->ce_states[ce_id];
--		if (ce_state->attr_flags & CE_ATTR_POLL)
--			continue;
--
--		ath10k_ce_per_engine_handler_adjust(ce_state);
--	}
-+	for (ce_id = 0; ce_id < CE_COUNT; ce_id++)
-+		ath10k_ce_enable_interrupt(ar, ce_id);
- }
- EXPORT_SYMBOL(ath10k_ce_enable_interrupts);
- 
-diff --git a/drivers/net/wireless/ath/ath10k/ce.h b/drivers/net/wireless/ath/ath10k/ce.h
-index a440aaf74aa4..666ce384a1d8 100644
---- a/drivers/net/wireless/ath/ath10k/ce.h
-+++ b/drivers/net/wireless/ath/ath10k/ce.h
-@@ -255,12 +255,13 @@ int ath10k_ce_cancel_send_next(struct ath10k_ce_pipe *ce_state,
- /*==================CE Interrupt Handlers====================*/
- void ath10k_ce_per_engine_service_any(struct ath10k *ar);
- void ath10k_ce_per_engine_service(struct ath10k *ar, unsigned int ce_id);
--int ath10k_ce_disable_interrupts(struct ath10k *ar);
-+void ath10k_ce_disable_interrupt(struct ath10k *ar, int ce_id);
-+void ath10k_ce_disable_interrupts(struct ath10k *ar);
-+void ath10k_ce_enable_interrupt(struct ath10k *ar, int ce_id);
- void ath10k_ce_enable_interrupts(struct ath10k *ar);
- void ath10k_ce_dump_registers(struct ath10k *ar,
- 			      struct ath10k_fw_crash_data *crash_data);
- 
--u32 ath10k_ce_gen_interrupt_summary(struct ath10k *ar);
- void ath10k_ce_alloc_rri(struct ath10k *ar);
- void ath10k_ce_free_rri(struct ath10k *ar);
- 
-@@ -376,12 +377,9 @@ static inline u32 ath10k_ce_interrupt_summary(struct ath10k *ar)
- {
- 	struct ath10k_ce *ce = ath10k_ce_priv(ar);
- 
--	if (!ar->hw_params.per_ce_irq)
--		return CE_WRAPPER_INTERRUPT_SUMMARY_HOST_MSI_GET(
--			ce->bus_ops->read32((ar), CE_WRAPPER_BASE_ADDRESS +
--			CE_WRAPPER_INTERRUPT_SUMMARY_ADDRESS));
--	else
--		return ath10k_ce_gen_interrupt_summary(ar);
-+	return CE_WRAPPER_INTERRUPT_SUMMARY_HOST_MSI_GET(
-+		ce->bus_ops->read32((ar), CE_WRAPPER_BASE_ADDRESS +
-+		CE_WRAPPER_INTERRUPT_SUMMARY_ADDRESS));
- }
- 
- /* Host software's Copy Engine configuration. */
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index 354d49b1cd45..2fc4dcbab70a 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -3,6 +3,7 @@
-  * Copyright (c) 2018 The Linux Foundation. All rights reserved.
-  */
- 
-+#include <linux/bits.h>
- #include <linux/clk.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -1158,7 +1159,9 @@ static irqreturn_t ath10k_snoc_per_engine_handler(int irq, void *arg)
- 		return IRQ_HANDLED;
- 	}
- 
--	ath10k_snoc_irq_disable(ar);
-+	ath10k_ce_disable_interrupt(ar, ce_id);
-+	set_bit(ce_id, ar_snoc->pending_ce_irqs);
-+
- 	napi_schedule(&ar->napi);
- 
- 	return IRQ_HANDLED;
-@@ -1167,20 +1170,25 @@ static irqreturn_t ath10k_snoc_per_engine_handler(int irq, void *arg)
- static int ath10k_snoc_napi_poll(struct napi_struct *ctx, int budget)
- {
- 	struct ath10k *ar = container_of(ctx, struct ath10k, napi);
-+	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
- 	int done = 0;
-+	int ce_id;
- 
- 	if (test_bit(ATH10K_FLAG_CRASH_FLUSH, &ar->dev_flags)) {
- 		napi_complete(ctx);
- 		return done;
- 	}
- 
--	ath10k_ce_per_engine_service_any(ar);
-+	for (ce_id = 0; ce_id < CE_COUNT; ce_id++)
-+		if (test_and_clear_bit(ce_id, ar_snoc->pending_ce_irqs)) {
-+			ath10k_ce_per_engine_service(ar, ce_id);
-+			ath10k_ce_enable_interrupt(ar, ce_id);
-+		}
-+
- 	done = ath10k_htt_txrx_compl_task(ar, budget);
- 
--	if (done < budget) {
-+	if (done < budget)
- 		napi_complete(ctx);
--		ath10k_snoc_irq_enable(ar);
--	}
- 
- 	return done;
- }
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.h b/drivers/net/wireless/ath/ath10k/snoc.h
-index a3dd06f6ac62..5095d1893681 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.h
-+++ b/drivers/net/wireless/ath/ath10k/snoc.h
-@@ -78,6 +78,7 @@ struct ath10k_snoc {
- 	unsigned long flags;
- 	bool xo_cal_supported;
- 	u32 xo_cal_data;
-+	DECLARE_BITMAP(pending_ce_irqs, CE_COUNT_MAX);
- };
- 
- static inline struct ath10k_snoc *ath10k_snoc_priv(struct ath10k *ar)
--- 
-2.27.0.383.g050319c2ae-goog
-
+Rob
