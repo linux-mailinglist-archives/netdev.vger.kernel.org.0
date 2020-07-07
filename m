@@ -2,160 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F003216738
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 09:20:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62DDA21673F
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 09:21:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbgGGHUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 03:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725825AbgGGHUi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 03:20:38 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3ACCC061755
-        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 00:20:37 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id z17so37517060edr.9
-        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 00:20:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Q/NWJKbwiMGgVPAVwY7f/7LY8x5kSAx972BUT1yPVGc=;
-        b=W1pRFAIjAN2RGg91fGYIjpJllb0niRqwlyjmNEDjPGGKET0ndcz4h1hFCwU3aV8pD5
-         EypbQtMhiZVa/k7d9vScoOL9ll/BRTaiYuq8G+AX1CHqkhgdLyok8MUN6V0yA+2FNPfd
-         i/UbYm87gZp4r2LKQVt9mYWmg+CADzZL8UygiSs+ZJQNTWu+73DKDFiUlQ9qW7p95HFN
-         a/ZIiEj8/WL+9IF8apok4aC7b/9UQZ/DJiamOhmVZU0EybG1rC6LYOWOfaNYrdblDP4v
-         Q50WhsJvpC03C22YHhYBjM6wZ50bw5Mb/tw0ruce2Z2nXULCyC1YkAWfo9mBV8b/34Se
-         UV2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Q/NWJKbwiMGgVPAVwY7f/7LY8x5kSAx972BUT1yPVGc=;
-        b=rUJxcyW8UqWX3uMxhfrSPuEn70xln6LwqIM9fZPQ9eOL5TDGHiIVIvw7jxQOdqliYu
-         nSj4rXFEWwT46irFQmKaZS3J7e8egcWf6kf9cX4d11V7Ot95iGPgNEk3hdEvMc5vyfaM
-         YNV8ciOyZmvV/qc4KuyjO9IxuNNtXmIcLm+7PkhVdOv5NGnfIpAB7rM6XJIi9oj9Ys10
-         18jkr6MshzyZTPJMJqDY57XKcZqExJgyZvEC1usTC5M0ZiftEoOiMJ1GmnqttYvTDTfw
-         JU/ygb0OsK2G8AcHOvBzij7ttNLyRAdqi5d5lyZsvSsC974r8NkSFu+0u9vn5+NrM3bE
-         16gw==
-X-Gm-Message-State: AOAM530Us/my1J5VjqHqv0pmnbUmQ9rphzbqTrjmqAfNuMnKfIjIsafl
-        E2xwx7Cc5wHCizid5iRTdqc=
-X-Google-Smtp-Source: ABdhPJyntNlujE2VQU4bKVZe1HbZBwH7eCjlP5Pj9ELDxcxlvCnvVT34E4ZVaiJTUDRBvijvF0X65w==
-X-Received: by 2002:a50:c219:: with SMTP id n25mr60685798edf.306.1594106435518;
-        Tue, 07 Jul 2020 00:20:35 -0700 (PDT)
-Received: from skbuf ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id lm22sm17789794ejb.109.2020.07.07.00.20.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2020 00:20:35 -0700 (PDT)
-Date:   Tue, 7 Jul 2020 10:20:32 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Subject: Re: [net-next PATCH 4/5 v4] net: dsa: rtl8366: VLAN 0 as disable
- tagging
-Message-ID: <20200707072032.tfwfip5lvck4cg6z@skbuf>
-References: <20200706205245.937091-1-linus.walleij@linaro.org>
- <20200706205245.937091-5-linus.walleij@linaro.org>
- <9a87a847-05e9-0de8-bdf1-d56eab15f2a9@gmail.com>
+        id S1728174AbgGGHVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 03:21:44 -0400
+Received: from mail-eopbgr130081.outbound.protection.outlook.com ([40.107.13.81]:58211
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725825AbgGGHVn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jul 2020 03:21:43 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=crda7jdyqEwJRHajgkJFy72WHUb6meMw/YNV2aYi9GSHeggdcPai1WOSvzbqK5vwTnDK+6RbNomhQwqEnbZ4bAVpkSn91zhug05H0wr4GbZJidmm6uzDY8/LV2rOlldHXOyVx/eAGQLrMQPeZ0Qg0lqkQZ2vhbmzHv2ovTtrk/+Zc25LRzb9uCIf0MhnDB3OBcxZquPGML6zjABgCdX8UvI0zNgLAFFK4wcziCKfnvqRvJzjOjyuHv7bEV69Rfnd13gEWppu+qAiON/oxLmLXpMD1+DZk9zjEqhXhqzyXDpDbla31GSlV1h1w9wEw0hnvYdmN8x5bVR01AzdIPjUYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JOXvbG4EWJhsWF/k9oH2j1dc0MQ4vzKH8zDUnbHwS1w=;
+ b=HV+MrQRkPveTRHeY2MgzZ48PQv/crbBzsgsuFce2nZr+kKcsgpP/V5hEdN/nsz9C29/Tx4cjIin4PjDTFryRWVXgw5QVwexgW2Rk4lHUFNcsOAntxmNynd89u+VhjATQkjcUoNQFTghJ4qOd5OcfCQEa+t/LAmO9v3dDH2vLei+i4+R5hoJ68KXRwvvl7xCYo9X7X3I18ziyxYCwE3ool+TBri18O9NC4jsgd3CiEpixc4B9m1Q5m5SIhqSHVw+/Fz1VTgGBy4csMOTDMNuiuS3utCo/TbvZcmSz9S7a6M6lWunfwENEFFQlieLRVo9OIj2bBpXcCIbGI0q1W+MNEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JOXvbG4EWJhsWF/k9oH2j1dc0MQ4vzKH8zDUnbHwS1w=;
+ b=CpWVorzv9OctGr8VEzFc1NgY5CKMSZ8pN1uU3pYqUZ/zKd00hF+XTO1AhxJf4KQ84L4ca/++f4C5y5aH6wz8YabmlaXckAubPS33yi+I8U4qLqrGEEu4I26kqle884LYTZsn5MquZjE/pENlnMTm/PSkNzht9cdACWB3G0VyVNk=
+Received: from VI1PR04MB4366.eurprd04.prod.outlook.com (2603:10a6:803:3d::27)
+ by VI1PR04MB5837.eurprd04.prod.outlook.com (2603:10a6:803:ec::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.27; Tue, 7 Jul
+ 2020 07:21:39 +0000
+Received: from VI1PR04MB4366.eurprd04.prod.outlook.com
+ ([fe80::8102:b59d:36b:4d09]) by VI1PR04MB4366.eurprd04.prod.outlook.com
+ ([fe80::8102:b59d:36b:4d09%7]) with mapi id 15.20.3153.029; Tue, 7 Jul 2020
+ 07:21:39 +0000
+From:   Ganapathi Bhat <ganapathi.bhat@nxp.com>
+To:     =?utf-8?B?UGFsaSBSb2jDoXI=?= <pali@kernel.org>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [EXT] [PATCH] mwifiex: Fix reporting 'operation not supported'
+ error code
+Thread-Topic: [EXT] [PATCH] mwifiex: Fix reporting 'operation not supported'
+ error code
+Thread-Index: AQHWUSxGeMcJM+WKlk+t0TapJn5iJ6j7u8Dw
+Date:   Tue, 7 Jul 2020 07:21:39 +0000
+Message-ID: <VI1PR04MB4366C310C7F50DB7CAFB733A8F660@VI1PR04MB4366.eurprd04.prod.outlook.com>
+References: <20200703112151.18917-1-pali@kernel.org>
+In-Reply-To: <20200703112151.18917-1-pali@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [103.54.18.180]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: e57b1137-3c09-4144-d403-08d822466418
+x-ms-traffictypediagnostic: VI1PR04MB5837:
+x-microsoft-antispam-prvs: <VI1PR04MB58372BE426D6F5BB1146FBB08F660@VI1PR04MB5837.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 0457F11EAF
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: k8zBLoNweWEV13Q09kIUrjDgarz2KCNDs7JpaK59vDyc7o33jlTgsHR4gJY2LDRV4aAOZSRYy3oeVWvyuepWaQXhKfW+kvF+KGSy0HhsJhzuQM34bD/UVb9HSdXVOIyd8HC1BR5/A3IJ5QB38uqR6pU7F1BIb4jyyBd4ZsxQi8ZYo5qQRlvnALJjiEsm9xfpxK4v+NSJ9MvHO0IrEPYS71xwreRKFgW20fIV27ENFgbNzt+hgJ+PKb3Y2weNT+Wzic/CXSWedC6eQQ20xPB/5JXvM/4CH731d9zelH05avPO0fIYn/sEazmVUN5lfkYp
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4366.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(346002)(376002)(39860400002)(136003)(366004)(5660300002)(71200400001)(52536014)(2906002)(44832011)(66446008)(86362001)(4326008)(64756008)(66556008)(76116006)(66946007)(66476007)(9686003)(55016002)(8936002)(26005)(33656002)(7696005)(478600001)(6506007)(186003)(4744005)(8676002)(316002)(110136005)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: otYjQphSnVS2FRxTUIpS/G9qNbF0BtVOh7tSCXqnUJ0rFv6haW6j4JxWct0beYu3qvAcqFsLbfzeM1qip11isHcDj8l/myRVP1TREqguUjS/52+XEDOLqWtCKauUWdCjVtyFGuReGtGgYx8q5aZwcIrdkrFaeLWgnHwXZcsqURs06qOmVByiWHUMEC4ih5ftzLSoyRgH3VZXExfuO7Ilu+X8LOZbyV7KpnPRmw25OkIBrfCkE29n8Yt3l2JXXYKrgvl5QDx1kvNjbD630aAa4U3p/Kc2+6q1EHFCJD70cdGuRGaBFXyPB7gClEklWiMucNduXBFZXdT5vbG4x+4ynIEiFlZ5BACzGPhFD59I327imGa0x2I0svNRp9V+krOalNZKnLvXeii0tiOtiexNbR60FlS40bid0neb6fYibgTyTBbZ6nIDBi7yDvE++F15gaavaYwxOPJujdFnuNEITEu1gmW/twAdKU8+99ReiUY=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9a87a847-05e9-0de8-bdf1-d56eab15f2a9@gmail.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4366.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e57b1137-3c09-4144-d403-08d822466418
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2020 07:21:39.2880
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KkyOMPdQeu89FxbIZIBoPbuA7M5Gn/Pq4LkUSdLIFH8cNHtAIeosAc8fHfzcbFs8cn/0cpMmCcwKx9+zcUCb0A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5837
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus,
-
-On Mon, Jul 06, 2020 at 02:23:11PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 7/6/2020 1:52 PM, Linus Walleij wrote:
-> > The code in net/8021q/vlan.c, vlan_device_event() sets
-> > VLAN 0 for a VLAN-capable ethernet device when it
-> > comes up.
-> > 
-> > Since the RTL8366 DSA switches must have a VLAN and
-> > PVID set up for any packets to come through we have
-> > already set up default VLAN for each port as part of
-> > bringing the switch online.
-> > 
-> > Make sure that setting VLAN 0 has the same effect
-> > and does not try to actually tell the hardware to use
-> > VLAN 0 on the port because that will not work.
-> > 
-> > Cc: DENG Qingfang <dqfext@gmail.com>
-> > Cc: Mauri Sandberg <sandberg@mailfence.com>
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> > ---
-> > ChangeLog v3->v4:
-> > - Resend with the rest
-> > ChangeLog v2->v3:
-> > - Collected Andrew's review tag.
-> > ChangeLog v1->v2:
-> > - Rebased on v5.8-rc1 and other changes.
-> > ---
-> >  drivers/net/dsa/rtl8366.c | 65 +++++++++++++++++++++++++++++++--------
-> >  1 file changed, 52 insertions(+), 13 deletions(-)
-> > 
-> > diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-> > index b907c0ed9697..a000d458d121 100644
-> > --- a/drivers/net/dsa/rtl8366.c
-> > +++ b/drivers/net/dsa/rtl8366.c
-> > @@ -355,15 +355,25 @@ int rtl8366_vlan_prepare(struct dsa_switch *ds, int port,
-> >  			 const struct switchdev_obj_port_vlan *vlan)
-> >  {
-> >  	struct realtek_smi *smi = ds->priv;
-> > +	u16 vid_begin = vlan->vid_begin;
-> > +	u16 vid_end = vlan->vid_end;
-> >  	u16 vid;
-> >  	int ret;
-> >  
-> > -	for (vid = vlan->vid_begin; vid < vlan->vid_end; vid++)
-> > +	if (vid_begin == 0) {
-> > +		dev_info(smi->dev, "prepare VLAN 0 - ignored\n");
-> > +		if (vid_end == 0)
-> > +			return 0;
-> > +		/* Skip VLAN 0 and start with VLAN 1 */
-> > +		vid_begin = 1;
-> > +	}
-> 
-> Humm I still don't understand why you are doing that. Upon DSA network
-> device creation, VID 0 will be pushed because we advertise support for
-> NETIF_F_HW_VLAN_CTAG_FILTER, so if nothing else, we will be getting the
-> "prepare VLAN 0 -ignored" message which is not relevant nor a good idea
-> to print.
-> 
-> You can force this VLAN to be programmed as untagged, in fact you should
-> be doing that per the 802.1Q specification.
-> 
-> There are no other cases other than the initial network device creation
-> that will lead to programming this VLAN ID. The bridge will always
-> specify a VID range within 1 through 4094 and the VLAN RX filter offload
-> will not add or remove VID 0 other than at creation/destruction.
-> 
-> As mentioned before, if you need VLAN awareness into the switch from the
-> get go, you need to set configure_vlan_while_not_filtering and that
-> would ensure that all ports belong to a VID at startup. Later on, when
-> the bridge gets set-up, it will be requesting the ports added as bridge
-> ports to be programmed into VID 1 as PVID untagged. And this should
-> still be fine.
-> -- 
-> Florian
-
-To add to what Florian said, you should basically try to enable and test
-"ds->configure_vlan_while_not_filtering = true" regardless, while you're
-at it. The whole reason why it's there is because we didn't want to
-introduce breakage when changing behavior of the DSA core. But ideally,
-all drivers would use this setting, and then it could get deleted and so
-would the old behavior of DSA.
-
-Thanks,
--Vladimir
+SGkgUGFsaSwNCg0KPiBUaGlzIHBhdGNoIGZpeGVzIHByb2JsZW0gdGhhdCBtd2lmaWV4IGtlcm5l
+bCBkcml2ZXIgc2VuZHMgdG8gdXNlcnNwYWNlDQo+IHVuc3VwcG9ydGVkIGVycm9yIGNvZGVzIGxp
+a2U6ICJmYWlsZWQ6IC01MjQgKE5vIGVycm9yIGluZm9ybWF0aW9uKSIuDQo+IEFmdGVyIGFwcGx5
+aW5nIHRoaXMgcGF0Y2ggdXNlcnNwYWNlIHNlZTogImZhaWxlZDogLTk1IChOb3Qgc3VwcG9ydGVk
+KSIuDQo+IA0KDQoNCk9LLCB5ZXMgdGhpcyB3YXMgYSBtaXN0YWtlLiBUaGFuayB5b3UgZm9yIHRo
+aXMgY2hhbmdlLg0KDQpBY2tlZC1ieTogR2FuYXBhdGhpIEJoYXQgPGdhbmFwYXRoaS5iaGF0QG54
+cC5jb20+DQoNClJlZ2FyZHMsDQpHYW5hcGF0aGkNCg==
