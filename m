@@ -2,107 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0492A217558
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 19:40:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20748217591
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 19:49:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728152AbgGGRku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 13:40:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54046 "EHLO
+        id S1728857AbgGGRth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 13:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727834AbgGGRku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 13:40:50 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC5BC061755
-        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 10:40:50 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id 17so47392726wmo.1
-        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 10:40:49 -0700 (PDT)
+        with ESMTP id S1728404AbgGGRte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 13:49:34 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCA2C061755;
+        Tue,  7 Jul 2020 10:49:34 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id h18so19216558qvl.3;
+        Tue, 07 Jul 2020 10:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=LOio8vNKEJ0xg5YgLJAkeb7hoLWBcn3xl0FDpYc4wb0=;
-        b=C5Z8D91trpg3Ch6xEJtis7CO8oZVueCwkpo/dfz3L+SnFjDwHn2I2VJOzCBbZXeu+F
-         4koHb9nkpxO0PVdzQi3iUPhg+6pDZIsWQF/SNWTPuQySH3twQ0wJKE3AQ30kzPQOcS3g
-         8Xk642MT7MU2rnmZSEHwYHrAIse+HNkq2/Dc0nezWvfdyVVSMucmusXPRFaQk5+XAtfW
-         pIfLekJdx6ZuPQuoO5A87QhOi19m1A3TAB1Uu3K6ihy94+sOKYyx4SKOJe5Y6tnxiVuk
-         STk8Z8HCJaywYnp/8bm5Ob3NFrgUKzJb9+FDhs1VDgr8DDH4MeCGE8id1eoKXH2lU5Zx
-         bKbg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3A9pj/+sDYtaBhomGrTHi/WUOTb74PSiC/HfOmJjW14=;
+        b=gJPHZ3UWU8w8Dm/sJn1RXPqHp3zQGIHQFn+jZnl/eGc3uXdlDvsMZrWp5Xe/iTOOzJ
+         9WZBaxX4tAq6LSWVbNX55qYHrmmiyuo+cpTUuPqJQ4QAQ3oIKzypnahVOxIYK4jTXxyH
+         wjUCZUtWMqa5fEkNwSypDiF3jL0jnckLAk2ibxvRbhBV8IxOJtea0X/S8ztq1VGMmLJD
+         vtjYvs2BL/QopwGX2m2gySyY+CiWrQwdbV9k5P98AT/+Zt7HhFbBytZhqtlcuKoqMnnO
+         oZrwuPFnwB1Uny82nCL+oj04zi7Wv+uxQ50vA/Fu05FMtHW4yVEFnaTTzNrIi6oh34vi
+         2nRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=LOio8vNKEJ0xg5YgLJAkeb7hoLWBcn3xl0FDpYc4wb0=;
-        b=DVXT4VmDi3c93/NkJGY/csP7xMPr7KJsYvnP0GxiVuCPmOIoeiQCeOlv82kn1Mr88I
-         bUZoEPvOOpIg/aI4IxxXDJB0OuBxYRMpgk2SrqMhGmVm5u7Ve/oj7urkSCTmQIC66ant
-         NLWX0gW4RFSB/b1etV6loZGZcohDiRQV0dBf5BUeduD1yFPacT3+Pld+4P3PTpx074X5
-         phdfDLGDf8r6vGXPH3yxa8XLu0+mDIF1GEZrqVve0Ep9O8yLjGHE89icTI6BsMY1Zkqd
-         AIWaKY1AS0vW4300f+i742NMz5MKP6hLVfHLGBCXKBfQKEKWUXbw71TeIWLFf5bFVf2y
-         HPWA==
-X-Gm-Message-State: AOAM531yBZNLtDHUdcp/EDE4ORfBGMD/0oSZEBKrGM+7IKO1yh/82RIH
-        A4TnLt4sQ3/R2Y1jvbr43h+JjBoXtmOQdkpZJPVEF2RtRUU=
-X-Google-Smtp-Source: ABdhPJwBrUU08fiJLLwy7TGgeAjxErZWgdkgMZKNkRS/LdLhDz1j8eE6B2lgB4Oe07qLoj1AQs5PYnTKp5r5RrC/Dyk=
-X-Received: by 2002:a1c:81c1:: with SMTP id c184mr5213887wmd.120.1594143647926;
- Tue, 07 Jul 2020 10:40:47 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3A9pj/+sDYtaBhomGrTHi/WUOTb74PSiC/HfOmJjW14=;
+        b=J9r3j7D4RExs3/dINshuNHRqD6PH0c2I+Ep5+F5W7JTjFIzdGdd3OVBIvIiQ4mKjw5
+         3bj/5Umdow4pYDdadFLKXeOKqu1LTslok1+PsxxAdhSy0l/iIyZd54GNwWeFF6hQWfrJ
+         +BSQqyvgONguMjfP/Iyn/xUwQsq2Tgl/QilF+MUXN/oZOmY5QvMOWdjAh4LHV4m6Mqe6
+         xrRlQxKHvDpt9iYOKj3RADEAzJrf6cVoQbTnhhU9+Bv0JzOt1TutfSaKOSIudyVVh8V4
+         6sIt7+/7NbGNvvwY7wPrOJBidR8DjxMHt8KNP19xxPMl3CwQTrlY5kdgjIm8gG5pnEnO
+         0PkA==
+X-Gm-Message-State: AOAM532i8NhL8dFGhLkjrIT3X9ugH5PQuiv6+Epdrv8OT15rNYx4MA0H
+        sVLGxcnORB0WkVqBI1S76k661v3S0L2/2Oq4z4A=
+X-Google-Smtp-Source: ABdhPJwpgAdg0XLESfNsVoQN5Z+oZOVlu1shESUM6aVfeAdDbkXBFf4Q3RogUcHlbqlcS62CELGU7SQ0tDXp4DyOuxw=
+X-Received: by 2002:a05:6214:8f4:: with SMTP id dr20mr50215654qvb.228.1594144173515;
+ Tue, 07 Jul 2020 10:49:33 -0700 (PDT)
 MIME-Version: 1.0
-From:   Evelyn Mitchell <efmphone@gmail.com>
-Date:   Tue, 7 Jul 2020 11:40:37 -0600
-Message-ID: <CABD0H0sKx14FoWthLAC9MijT4q7RYOdZhyW_x-JPHdFm+=ggXw@mail.gmail.com>
-Subject: [PATCH iproute2] man: ip-rule.8: minor changes
-To:     netdev@vger.kernel.org
+References: <20200703095111.3268961-1-jolsa@kernel.org> <20200703095111.3268961-10-jolsa@kernel.org>
+ <CAEf4BzYuDU2mARcP5GVAv+WiknSnWuzGyNqQx0TiJ23CWA8NiA@mail.gmail.com> <20200707155720.GI3424581@krava>
+In-Reply-To: <20200707155720.GI3424581@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 7 Jul 2020 10:49:22 -0700
+Message-ID: <CAEf4BzYYHEwDZ9YqqyfzSZsk-8=DrL-WVEee-gisBLQRZWUTHw@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 9/9] selftests/bpf: Add test for resolve_btfids
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These are grammatical and typographical fixes, with one wording change.
+On Tue, Jul 7, 2020 at 8:57 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Mon, Jul 06, 2020 at 06:26:28PM -0700, Andrii Nakryiko wrote:
+> > On Fri, Jul 3, 2020 at 2:54 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > >
+> > > Adding resolve_btfids test under test_progs suite.
+> > >
+> > > It's possible to use btf_ids.h header and its logic in
+> > > user space application, so we can add easy test for it.
+> > >
+> > > The test defines BTF_ID_LIST and checks it gets properly
+> > > resolved.
+> > >
+> > > For this reason the test_progs binary (and other binaries
+> > > that use TRUNNER* macros) is processed with resolve_btfids
+> > > tool, which resolves BTF IDs in .BTF.ids section.
+> > >
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> > >  tools/testing/selftests/bpf/Makefile          |  22 ++-
+> > >  .../selftests/bpf/prog_tests/resolve_btfids.c | 170 ++++++++++++++++++
+> > >  2 files changed, 190 insertions(+), 2 deletions(-)
+> > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
+> > >
+> > > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> > > index 1f9c696b3edf..b47a685d12bd 100644
+> > > --- a/tools/testing/selftests/bpf/Makefile
+> > > +++ b/tools/testing/selftests/bpf/Makefile
+> > > @@ -190,6 +190,16 @@ else
+> > >         cp "$(VMLINUX_H)" $@
+> > >  endif
+> > >
+> > > +$(SCRATCH_DIR)/resolve_btfids: $(BPFOBJ)                               \
+> > > +                              $(TOOLSDIR)/bpf/resolve_btfids/main.c    \
+> > > +                              $(TOOLSDIR)/lib/rbtree.c                 \
+> > > +                              $(TOOLSDIR)/lib/zalloc.c                 \
+> > > +                              $(TOOLSDIR)/lib/string.c                 \
+> > > +                              $(TOOLSDIR)/lib/ctype.c                  \
+> > > +                              $(TOOLSDIR)/lib/str_error_r.c
+> > > +       $(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/resolve_btfids \
+> > > +       OUTPUT=$(SCRATCH_DIR)/ BPFOBJ=$(BPFOBJ)
+> > > +
+> >
+> > please indent OUTPUT, so it doesn't look like it's a separate command
+>
+> ok
+>
+> >
+> > >  # Get Clang's default includes on this system, as opposed to those seen by
+> > >  # '-target bpf'. This fixes "missing" files on some architectures/distros,
+> > >  # such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
+> > > @@ -333,7 +343,8 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:                   \
+> > >                       $(TRUNNER_BPF_SKELS)                              \
+> > >                       $$(BPFOBJ) | $(TRUNNER_OUTPUT)
+> > >         $$(call msg,TEST-OBJ,$(TRUNNER_BINARY),$$@)
+> > > -       cd $$(@D) && $$(CC) -I. $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
+> > > +       cd $$(@D) && $$(CC) -I. $$(CFLAGS) $(TRUNNER_EXTRA_CFLAGS)      \
+> > > +       -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
+> > >
+> > >  $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:                          \
+> > >                        %.c                                              \
+> > > @@ -355,6 +366,7 @@ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)                   \
+> > >                              | $(TRUNNER_BINARY)-extras
+> > >         $$(call msg,BINARY,,$$@)
+> > >         $$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
+> > > +       $(TRUNNER_BINARY_EXTRA_CMD)
+> >
+> > no need to make this generic, just write out resolve_btfids here explicitly
+>
+> currently resolve_btfids fails if there's no .BTF.ids section found,
+> but we can make it silently pass i nthis case and then we can invoke
+> it for all the binaries
 
-Evelyn Mitchell
-tummy.com
+ah, I see. Yeah, either we can add an option to resolve_btfids to not
+error when .BTF_ids is missing (probably best), or we can check
+whether the test has .BTF_ids section, and if it does - run
+resolve_btfids on it. Just ignoring errors always is more error-prone,
+because we won't know if it's a real problem we are ignoring, or
+missing .BTF_ids.
 
----
---- ip-rule.8.orig      2020-07-07 11:17:00.609932807 -0600
-+++ ip-rule.8   2020-07-07 11:25:48.247022637 -0600
-@@ -88,7 +88,7 @@
- .SH DESCRIPTION
- .I ip rule
- manipulates rules
--in the routing policy database control the route selection algorithm.
-+in the routing policy database to control the route selection algorithm.
+>
+> >
+> > >
+> > >  endef
+> > >
+> > > @@ -365,7 +377,10 @@ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c     \
+> > >                          network_helpers.c testing_helpers.c            \
+> > >                          flow_dissector_load.h
+> > >  TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read                          \
+> > > -                      $(wildcard progs/btf_dump_test_case_*.c)
+> > > +                      $(wildcard progs/btf_dump_test_case_*.c)         \
+> > > +                      $(SCRATCH_DIR)/resolve_btfids
+> > > +TRUNNER_EXTRA_CFLAGS := -D"BUILD_STR(s)=\#s" -DVMLINUX_BTF="BUILD_STR($(VMLINUX_BTF))"
+> > > +TRUNNER_BINARY_EXTRA_CMD := $(SCRATCH_DIR)/resolve_btfids --btf $(VMLINUX_BTF) test_progs
+> >
+> > I hope we can get rid of this, see suggestion below.
+> >
+> > >  TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
+> > >  TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS)
+> > >  TRUNNER_BPF_LDFLAGS := -mattr=+alu32
+> > > @@ -373,6 +388,7 @@ $(eval $(call DEFINE_TEST_RUNNER,test_progs))
+> > >
+> >
+> > [...]
+> >
+> > > +
+> > > +static int duration;
+> > > +
+> > > +static struct btf *btf__parse_raw(const char *file)
+> >
+> > another copy here...
+>
+> ok
+>
+> >
+> > > +{
+> > > +       struct btf *btf;
+> > > +       struct stat st;
+> > > +       __u8 *buf;
+> > > +       FILE *f;
+> > > +
+> >
+> > [...]
+> >
+> > > +
+> > > +BTF_ID_LIST(test_list)
+> > > +BTF_ID_UNUSED
+> > > +BTF_ID(typedef, pid_t)
+> > > +BTF_ID(struct,  sk_buff)
+> > > +BTF_ID(union,   thread_union)
+> > > +BTF_ID(func,    memcpy)
+> > > +
+> > > +struct symbol {
+> > > +       const char      *name;
+> > > +       int              type;
+> > > +       int              id;
+> > > +};
+> > > +
+> > > +struct symbol test_symbols[] = {
+> > > +       { "unused",       -1,                0 },
+> >
+> > could use BTF_KIND_UNKN here instead of -1
+>
+> ok
+>
+> >
+> > > +       { "pid_t",        BTF_KIND_TYPEDEF, -1 },
+> > > +       { "sk_buff",      BTF_KIND_STRUCT,  -1 },
+> > > +       { "thread_union", BTF_KIND_UNION,   -1 },
+> > > +       { "memcpy",       BTF_KIND_FUNC,    -1 },
+> > > +};
+> > > +
+> >
+> > [...]
+> >
+> > > +
+> > > +static int resolve_symbols(void)
+> > > +{
+> > > +       const char *path = VMLINUX_BTF;
+> >
+> >
+> > This build-time parameter passing to find the original VMLINUX_BTF
+> > really sucks, IMO.
+> >
+> > Why not use the btf_dump tests approach and have our own small
+> > "vmlinux BTF", which resolve_btfids would use to resolve these IDs?
+> > See how btf_dump_xxx.c files define BTFs that are used in tests. You
+> > can do something similar here, and use a well-known BPF object file as
+> > a source of BTF, both here in a test and in Makefile for --btf param
+> > to resolve_btfids?
+>
+> well VMLINUX_BTF is there and those types are used are not going
+> away any time soon ;-) but yea, we can do that.. we do this also
+> for bpftrace, it's nicer
 
- .P
- Classic routing algorithms used in the Internet make routing decisions
-@@ -166,7 +166,7 @@
 
- .P
- Each RPDB entry has additional
--attributes. F.e. each rule has a pointer to some routing
-+attributes. For example, each rule has a pointer to some routing
- table. NAT and masquerading rules have an attribute to select new IP
- address to translate/masquerade. Besides that, rules have some
- optional attributes, which routes have, namely
-@@ -252,11 +252,11 @@
+"VMLINUX_BTF is there" is not really true in a lot of more complicated
+setups, which is why I'd like to avoid that assumption. E.g., for
+libbpf Travis CI, we build self-tests in one VM, but run the binary in
+a different VM. So either vmlinux itself or the path to it might
+change.
 
- .TP
- .BI sport " NUMBER | NUMBER-NUMBER"
--select the source port value to match. supports port range.
-+select the source port value to match. Supports port range.
+Also, having full control over **small** BTF allows to create various
+test situations that might be harder to pinpoint in real vmlinux BTF,
+e.g., same-named entities with different KINDS (typedef vs struct,
+etc). Then if that fails, debugging this on a small BTF is much-much
+easier than on a real thing. Real vmlinux BTF is being tested each
+time you build a kernel and run selftests inside VM either way, so I
+don't think we lose anything in terms of coverage.
 
- .TP
- .BI dport " NUMBER | NUMBER-NUMBER"
--select the destination port value to match. supports port range.
-+select the destination port value to match. Supports port range.
 
- .TP
- .BI priority " PREFERENCE"
-@@ -276,7 +276,7 @@
-
- .TP
- .BI protocol " PROTO"
--the routing protocol who installed the rule in question.  As an
-example when zebra installs a rule it would get RTPROT_ZEBRA as the
-installing protocol.
-+the routing protocol which installed the rule in question.  As an
-example when zebra installs a rule it would get RTPROT_ZEBRA as the
-installing protocol.
-
- .TP
- .BI suppress_prefixlength " NUMBER"
+>
+> jirka
+>
