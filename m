@@ -2,113 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21BDE2167D4
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 09:54:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4321C2167DC
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 09:59:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728277AbgGGHx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 03:53:58 -0400
-Received: from mail-eopbgr60047.outbound.protection.outlook.com ([40.107.6.47]:36122
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725766AbgGGHx5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jul 2020 03:53:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O4pyivyty2rp801+noXgj2CAz2fZz2Xxgk48VlE1NIxpM2ye2YY6upX1z3xQdzgMqnEeq1FUReQAvAjyW0D86VOLbajR53bV8z8wm5F3Q0sq2oj20mBH+9nWAJAI+JRs2NzuQeUGENEmrmcMfFnKKIsm81eSZTQIWEG/qllGBTgLvlFcsIj/oSJ32763JXOjODr5Jqs53jArnb/UK/XzusAPHngQB8feuZvO8dCjjMVx2FqLT2NFXkvD49R6ehP/Uhg7y9tp5IrlW8I+jpahlpd+EV1FGNFbhNf+pJWm7LUxHfYwtjDN6+1ITacfJ9kgoKQMKK3uVah+SfivFMy5Ww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iHweeRCmoOcJB+WjGk8RrK5FzD7DSuXAgSjbuxXpm0A=;
- b=PZ99a6QxSl7y2P+6PRnyG0jJwDID9+u88Us3twx+/hs/atcIYIfUGF2FC6NPQejbmTHu/aiv16hwYK7MjXLZ4taHxsDaGJqQ7/YUxxSgICPvWPaX5HDzLUPiKqPrGWlModw4W6vRXeXitV2LuQAqd2mRc5LxUqaJSYL32sQ0Be2D0GXAGt+iLzG7NFUKW2S0FX46ANByCrZnm64OnSqhPH4wEjBqKb3sR4wDCyEgily/FVgcHww9+VYJk9eYbrVwjmQHUvWVJrbxDajBBHxvskgmT2CJTPR6OITtsBTpqXtsZ/QL17tYxKSrrVN8PDU7F814fPfGqzbdjM1ixeKDsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iHweeRCmoOcJB+WjGk8RrK5FzD7DSuXAgSjbuxXpm0A=;
- b=d5jXKY0rbeGWuJItwZIXkQMw/IRxef6KYszlA4lk7LhoumE8T33YrnB019PSmMd3CNz5XEs6nnTbqeNa7/onVPKfwi+3XVSxmnLOLeykQNkAgKfqDmC/4x39NqsCtc0ZlKATX6EUPGE06DZxn2ZmdWwIFd/3W/vh26iJmwnas7U=
-Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
- by AM0PR04MB6324.eurprd04.prod.outlook.com (2603:10a6:208:13f::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20; Tue, 7 Jul
- 2020 07:53:54 +0000
-Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
- ([fe80::41d8:c1a9:7e34:9987]) by AM0PR04MB6754.eurprd04.prod.outlook.com
- ([fe80::41d8:c1a9:7e34:9987%3]) with mapi id 15.20.3153.029; Tue, 7 Jul 2020
- 07:53:54 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     Michael Walle <michael@walle.cc>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Heiko Thiery <heiko.thiery@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: RE: [PATCH net-next v4 2/3] net: enetc: Initialize SerDes for SGMII
- and USXGMII protocols
-Thread-Topic: [PATCH net-next v4 2/3] net: enetc: Initialize SerDes for SGMII
- and USXGMII protocols
-Thread-Index: AQHWU+E9FWRJOkbrqUWzPMt++F8GBqj7vtLw
-Date:   Tue, 7 Jul 2020 07:53:54 +0000
-Message-ID: <AM0PR04MB67543C11443FC2AD56E9095696660@AM0PR04MB6754.eurprd04.prod.outlook.com>
-References: <20200706220255.14738-1-michael@walle.cc>
- <20200706220255.14738-3-michael@walle.cc>
-In-Reply-To: <20200706220255.14738-3-michael@walle.cc>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: walle.cc; dkim=none (message not signed)
- header.d=none;walle.cc; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [82.76.66.138]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 1e04250a-233e-4fa8-c38c-08d8224ae592
-x-ms-traffictypediagnostic: AM0PR04MB6324:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR04MB6324612021AF021E6ED18C7F96660@AM0PR04MB6324.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3173;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: YzcfyAxHs9mpbOxSrkAI4udpkKbdgFgiCmBlINtW0Djx983t8VWM0DRoyXMNA3ewwKgstuPnUiAdhlPWxOHZHrO+l/Gh13KL1L/ZAW0JDran7Fq6w2Ge+J/WlkwfWi+opmmybSpiOtkgCHmySCYEk27P6iV44iX7y1DsIMzdBsEvxtS1wmwaFUdkIQKLeqGByaOzL6xOdVKfjE9sY8V7U3e4vWvVdeVdeWdaog/RJvN5Rte0tjUbNM+AaCRQ/Mc2JbHCv6hvDWa3qdkUnmZSZri5dac7tmup81vYVGxk+y3vJn/lonvF2GmY3drvbJ5V7QlgNaeAi7mr3Zt3WadVtw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(346002)(39860400002)(136003)(366004)(376002)(66446008)(64756008)(478600001)(26005)(6506007)(66946007)(66556008)(66476007)(4326008)(186003)(83380400001)(2906002)(110136005)(54906003)(9686003)(316002)(55016002)(76116006)(44832011)(4744005)(86362001)(5660300002)(8936002)(8676002)(52536014)(33656002)(71200400001)(7696005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: +S+BeObyH/rhM+PDo6sIjpaGpXeXi3UaGR5kaJGHMOF+1nERiWNCZ0iE+2/xflF5Qj0saiLlZ0mjt7+/j2FoBxl3kKIeInyQqVi8YdfDODVZYwizhMpX4Ff4qn9Kvwjh0WULiTvyM1m4JVJp5xNaAmsYOSb+0b+TO5tRh/HCw1afdo0X/eNEi6+gTN6JcX88FKiivGIVJinIXi4PM+dZicYI6aX4hCh4D367TZmY53lqITjumOndiUD3b4VIO0mBAozMdzQybKJ266YUA04IZiSz/93K/ZVF3N7UFtwsLMhnmlWoCZnuRaxPB0wFQe4VpLErDT3ZtDNJc0CObe9/8Q8bliokon9wmG1KxPJ7DS3rr4cdB0YMEjgsZDh+LhbwUM6HavYI8oQOWAjQ5rRZhvnPkDudvgmu+fe6why30NA14MWeF027B8iTt1wDVwV823v8VKHNsZAXs/x9mRfYncpI79HMijzPQeSEhG9sgE8=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e04250a-233e-4fa8-c38c-08d8224ae592
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2020 07:53:54.6710
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NT7iFQweBhF4qNW1Zj9zUcatCCsxI/BM9VqoCGB4X/FPpgwbIPXZY0nB+lNjYTgIIltgoVEi1xP1hTQ+DCaYsw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6324
+        id S1728125AbgGGH7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 03:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726757AbgGGH7Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 03:59:16 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC3EC061755
+        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 00:59:15 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id cv18so667465pjb.1
+        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 00:59:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=3olRL5AOtjYkaaCEnumLovJR2dhQKUs6npZPSM9Nj9c=;
+        b=aWrs9WgwWbcEF1thIokLU5gSh21k4m4uXiT2qALtmFmIxFANvGC1ed1FGz2gOp2PSd
+         Lii5uwLXsiDPf9qHsu5s7vR2mCkATvP7RoqiER2GP39XdG2pdTTIJq9CuQ0b0bO91bQT
+         PEPepz0OjA0kEM1ngU2L3/cal7Dr43J0W/1TbSkue/ZK5F/E4jt15yoifEA6N5tEHKa6
+         Y9RnN2eHlAhhU9tgF5zqn758QBRlCZIn7Zq/de+HvPzafRun3bHox/k7kYNH2Vw0j/SQ
+         9UeoGoXRQMVmpkwbWvPWBAb5C3xHQYUd8LaMhBnlvWKnoJaehf0DavuPoN2mmTxIW5HE
+         wUaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3olRL5AOtjYkaaCEnumLovJR2dhQKUs6npZPSM9Nj9c=;
+        b=gU5qbZbWnvRfuORAW/sdpwzHJQ4Hi1uWGpoi+NL1A0SKdR4hZxGCK5WIIoZkXkIWUE
+         jv7OkhjG05rsf9UhQTQX/jiKFv5lvxOCFXRckUsl4WbJNZacdMURSLoWlqwOFTYRhegR
+         8DAB1khDgMD0gHhdMbSAxbX70Gn8/Ir2OR61bpFcO3LRcJw7Qa0vx+ac0IEQY6zz+1gq
+         y5xx1lAyfv2szBxi86zGd3QACtkYorEMjufKohziMw7StMw0G3KfpIDDGL0+cjMXl/UY
+         udCCwvCtWlOXvnODkmhoNHMBxVrYhVZtuSgwIHFmv3GoSD4zvjaGCdKV6AV5raBdLkzY
+         Gn9A==
+X-Gm-Message-State: AOAM530sQOEPSTUu8OoVnfTwRc9MN8bI2X35favRWhaAEOGDKwxYKgpc
+        tAsr56cPcx/nKGaIKo2ygDyHpSzZ/mI=
+X-Google-Smtp-Source: ABdhPJxML/iKkIM+/ww3tNqjcscSjolXtI1Z6un0x7s0k9S/A1mN6z+RlwV/ImfrvqdOj2ZkhkTAuw==
+X-Received: by 2002:a17:90a:db8a:: with SMTP id h10mr3114105pjv.197.1594108755171;
+        Tue, 07 Jul 2020 00:59:15 -0700 (PDT)
+Received: from ubuntu.lan ([2001:470:e92d:10:d902:a0b:7fe5:30e6])
+        by smtp.gmail.com with ESMTPSA id j70sm22023271pfd.208.2020.07.07.00.59.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jul 2020 00:59:14 -0700 (PDT)
+From:   Tony Ambardar <tony.ambardar@gmail.com>
+X-Google-Original-From: Tony Ambardar <Tony.Ambardar@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Tony Ambardar <Tony.Ambardar@gmail.com>
+Subject: [PATCH iproute2] configure: support ipset version 7 with kernel version 5
+Date:   Tue,  7 Jul 2020 00:58:33 -0700
+Message-Id: <20200707075833.1698-1-Tony.Ambardar@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->-----Original Message-----
->From: Michael Walle <michael@walle.cc>
->Sent: Tuesday, July 7, 2020 1:03 AM
-[...]
->Subject: [PATCH net-next v4 2/3] net: enetc: Initialize SerDes for SGMII a=
-nd
->USXGMII protocols
->
->ENETC has ethernet MACs capable of SGMII, 2500BaseX and USXGMII. But in
->order to use these protocols some SerDes configurations need to be
->performed. The SerDes is configurable via an internal PCS PHY which is
->connected to an internal MDIO bus at address 0.
->
->This patch basically removes the dependency on bootloader regarding
->SerDes initialization.
->
->Signed-off-by: Michael Walle <michael@walle.cc>
+The configure script checks for ipset v6 availability but doesn't test
+for v7, which is backward compatible and used on kernel v5.x systems.
+Update the script to test for both ipset versions. Without this change,
+the tc ematch function em_ipset will be disabled.
 
-Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+---
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index f415bf49..307912aa 100755
+--- a/configure
++++ b/configure
+@@ -208,7 +208,7 @@ typedef unsigned short ip_set_id_t;
+ #include <linux/netfilter/xt_set.h>
+ 
+ struct xt_set_info info;
+-#if IPSET_PROTOCOL == 6
++#if IPSET_PROTOCOL == 6 || IPSET_PROTOCOL == 7
+ int main(void)
+ {
+ 	return IPSET_MAXNAMELEN;
+-- 
+2.17.1
+
