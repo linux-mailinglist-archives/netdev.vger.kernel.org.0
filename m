@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3C0217A39
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 23:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F353A217A38
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 23:24:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729143AbgGGVYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 17:24:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33796 "EHLO mail.kernel.org"
+        id S1729124AbgGGVYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 17:24:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33826 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726273AbgGGVYr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728001AbgGGVYr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 7 Jul 2020 17:24:47 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E20612077D;
-        Tue,  7 Jul 2020 21:24:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 861ED207BB;
+        Tue,  7 Jul 2020 21:24:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594157085;
-        bh=5T4ZRP7E+DUtYzgAg012J16hdMaKqQhL/AXOd6e+MYc=;
+        s=default; t=1594157086;
+        bh=GQbReVXRyUZ0u/yD558hVgfFj5Z4iOWM82P6wbLytWE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o1i/AvtB+JS3TgrE6ZlpAyhY7nTAJQ9up1UHcIEODnr+oWpG2GPkX17wFno66UYqC
-         AmPdth6GQMHdLlvpcCOt+PpWNWisJXxWC3p9UPhwqVkC5ZhppVFGbMk3pzgCJ7Lmp1
-         l7pEprMNsft8FKzAT+u2GFjst9aidIrrcgLcOgb4=
+        b=VmaxiscMs32g4p6NhnSMtE8eSKPfktRJtdV44vDcfdDAvix//VF9nvtrO6PWmirsB
+         SZL1kS7PriI7HeuMaStaQ0p0i/WGJq2/a6s8uApPlY2fL5d8w5TKtTn1JNV1NjNbqF
+         Ywriprb2iYvCgoDfupHz3V6KHMGSa7HI3PKIvFOk=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
         emil.s.tantilov@intel.com, alexander.h.duyck@linux.intel.com,
         jeffrey.t.kirsher@intel.com, tariqt@mellanox.com, mkubecek@suse.cz,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/9] udp_tunnel: add central NIC RX port offload infrastructure
-Date:   Tue,  7 Jul 2020 14:24:28 -0700
-Message-Id: <20200707212434.3244001-4-kuba@kernel.org>
+Subject: [PATCH net-next 4/9] ethtool: add tunnel info interface
+Date:   Tue,  7 Jul 2020 14:24:29 -0700
+Message-Id: <20200707212434.3244001-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200707212434.3244001-1-kuba@kernel.org>
 References: <20200707212434.3244001-1-kuba@kernel.org>
@@ -43,1110 +43,703 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cater to devices which:
- (a) may want to sleep in the callbacks;
- (b) only have IPv4 support;
- (c) need all the programming to happen while the netdev is up.
+Add an interface to report offloaded UDP ports via ethtool netlink.
 
-Drivers attach UDP tunnel offload info struct to their netdevs,
-where they declare how many UDP ports of various tunnel types
-they support. Core takes care of tracking which ports to offload.
+Now that core takes care of tracking which UDP tunnel ports the NICs
+are aware of we can quite easily export this information out to
+user space.
 
-Use a fixed-size array since this matches what almost all drivers
-do, and avoids a complexity and uncertainty around memory allocations
-in an atomic context.
+The responsibility of writing the netlink dumps is split between
+ethtool code and udp_tunnel_nic.c - since udp_tunnel module may
+not always be loaded, yet we should always report the capabilities
+of the NIC.
 
-Make sure that tunnel drivers don't try to replay the ports when
-new NIC netdev is registered. Automatic replays would mess up
-reference counting, and will be removed completely once all drivers
-are converted.
+$ ethtool --show-tunnels eth0
+Tunnel information for eth0:
+  UDP port table 0:
+    Size: 4
+    Types: vxlan
+    No entries
+  UDP port table 1:
+    Size: 4
+    Types: geneve, vxlan-gpe
+    Entries (1):
+        port 1230, vxlan-gpe
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/geneve.c                         |   6 +-
- drivers/net/vxlan.c                          |   6 +-
- include/linux/netdevice.h                    |   8 +
- include/net/udp_tunnel.h                     | 113 +++
- net/ipv4/Makefile                            |   3 +-
- net/ipv4/{udp_tunnel.c => udp_tunnel_core.c} |   0
- net/ipv4/udp_tunnel_nic.c                    | 828 +++++++++++++++++++
- net/ipv4/udp_tunnel_stub.c                   |   7 +
- 8 files changed, 966 insertions(+), 5 deletions(-)
- rename net/ipv4/{udp_tunnel.c => udp_tunnel_core.c} (100%)
- create mode 100644 net/ipv4/udp_tunnel_nic.c
- create mode 100644 net/ipv4/udp_tunnel_stub.c
+ Documentation/networking/ethtool-netlink.rst |  33 +++
+ include/net/udp_tunnel.h                     |  21 ++
+ include/uapi/linux/ethtool.h                 |   2 +
+ include/uapi/linux/ethtool_netlink.h         |  55 ++++
+ net/ethtool/Makefile                         |   3 +-
+ net/ethtool/common.c                         |   9 +
+ net/ethtool/common.h                         |   1 +
+ net/ethtool/netlink.c                        |  12 +
+ net/ethtool/netlink.h                        |   4 +
+ net/ethtool/strset.c                         |   5 +
+ net/ethtool/tunnels.c                        | 261 +++++++++++++++++++
+ net/ipv4/udp_tunnel_nic.c                    |  69 +++++
+ 12 files changed, 474 insertions(+), 1 deletion(-)
+ create mode 100644 net/ethtool/tunnels.c
 
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 4661ef865807..0089b9aa7eaa 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -1807,9 +1807,11 @@ static int geneve_netdevice_event(struct notifier_block *unused,
- 	    event == NETDEV_UDP_TUNNEL_DROP_INFO) {
- 		geneve_offload_rx_ports(dev, event == NETDEV_UDP_TUNNEL_PUSH_INFO);
- 	} else if (event == NETDEV_UNREGISTER) {
--		geneve_offload_rx_ports(dev, false);
-+		if (!dev->udp_tunnel_nic_info)
-+			geneve_offload_rx_ports(dev, false);
- 	} else if (event == NETDEV_REGISTER) {
--		geneve_offload_rx_ports(dev, true);
-+		if (!dev->udp_tunnel_nic_info)
-+			geneve_offload_rx_ports(dev, true);
- 	}
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index 396390f4936b..6a9265401d31 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -1230,6 +1230,39 @@ used to report the amplitude of the reflection for a given pair.
+  | | | ``ETHTOOL_A_CABLE_AMPLITUDE_mV``        | s16    | Reflection amplitude |
+  +-+-+-----------------------------------------+--------+----------------------+
  
- 	return NOTIFY_DONE;
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 89d85dcb200e..a43c97b13924 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -4477,10 +4477,12 @@ static int vxlan_netdevice_event(struct notifier_block *unused,
- 	struct vxlan_net *vn = net_generic(dev_net(dev), vxlan_net_id);
- 
- 	if (event == NETDEV_UNREGISTER) {
--		vxlan_offload_rx_ports(dev, false);
-+		if (!dev->udp_tunnel_nic_info)
-+			vxlan_offload_rx_ports(dev, false);
- 		vxlan_handle_lowerdev_unregister(vn, dev);
- 	} else if (event == NETDEV_REGISTER) {
--		vxlan_offload_rx_ports(dev, true);
-+		if (!dev->udp_tunnel_nic_info)
-+			vxlan_offload_rx_ports(dev, true);
- 	} else if (event == NETDEV_UDP_TUNNEL_PUSH_INFO ||
- 		   event == NETDEV_UDP_TUNNEL_DROP_INFO) {
- 		vxlan_offload_rx_ports(dev, event == NETDEV_UDP_TUNNEL_PUSH_INFO);
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 39e28e11863c..ac2cd3f49aba 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -65,6 +65,8 @@ struct wpan_dev;
- struct mpls_dev;
- /* UDP Tunnel offloads */
- struct udp_tunnel_info;
-+struct udp_tunnel_nic_info;
-+struct udp_tunnel_nic;
- struct bpf_prog;
- struct xdp_buff;
- 
-@@ -1836,6 +1838,10 @@ enum netdev_priv_flags {
-  *
-  *	@macsec_ops:    MACsec offloading ops
-  *
-+ *	@udp_tunnel_nic_info:	static structure describing the UDP tunnel
-+ *				offload capabilities of the device
-+ *	@udp_tunnel_nic:	UDP tunnel offload state
-+ *
-  *	FIXME: cleanup struct net_device such that network protocol info
-  *	moves out.
-  */
-@@ -2134,6 +2140,8 @@ struct net_device {
- 	/* MACsec management functions */
- 	const struct macsec_ops *macsec_ops;
- #endif
-+	const struct udp_tunnel_nic_info	*udp_tunnel_nic_info;
-+	struct udp_tunnel_nic	*udp_tunnel_nic;
- };
- #define to_net_dev(d) container_of(d, struct net_device, dev)
++TUNNEL_INFO
++===========
++
++Gets information about the tunnel state NIC is aware of.
++
++Request contents:
++
++  =====================================  ======  ==========================
++  ``ETHTOOL_A_TUNNEL_INFO_HEADER``       nested  request header
++  =====================================  ======  ==========================
++
++Kernel response contents:
++
++ +---------------------------------------------+--------+---------------------+
++ | ``ETHTOOL_A_TUNNEL_INFO_HEADER``            | nested | reply header        |
++ +---------------------------------------------+--------+---------------------+
++ | ``ETHTOOL_A_TUNNEL_INFO_UDP_PORTS``         | nested | all UDP port tables |
++ +-+-------------------------------------------+--------+---------------------+
++ | | ``ETHTOOL_A_TUNNEL_UDP_TABLE``            | nested | one UDP port table  |
++ +-+-+-----------------------------------------+--------+---------------------+
++ | | | ``ETHTOOL_A_TUNNEL_UDP_TABLE_SIZE``     | u32    | max size of the     |
++ | | |                                         |        | table               |
++ +-+-+-----------------------------------------+--------+---------------------+
++ | | | ``ETHTOOL_A_TUNNEL_UDP_TABLE_TYPES``    | u32    | bitmask of tunnel   |
++ | | |                                         |        | types table can hold|
++ +-+-+-----------------------------------------+--------+---------------------+
++ | | | ``ETHTOOL_A_TUNNEL_UDP_TABLE_ENTRY``    | nested | offloaded UDP port  |
++ +-+-+-+---------------------------------------+--------+---------------------+
++ | | | | ``ETHTOOL_A_TUNNEL_UDP_ENTRY_PORT``   | be16   | UDP port            |
++ +-+-+-+---------------------------------------+--------+---------------------+
++ | | | | ``ETHTOOL_A_TUNNEL_UDP_ENTRY_TYPE``   | u32    | tunnel type         |
++ +-+-+-+---------------------------------------+--------+---------------------+
++
+ Request translation
+ ===================
  
 diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
-index 0615e25f041c..2987730577e6 100644
+index 2987730577e6..f2cc2574ef9c 100644
 --- a/include/net/udp_tunnel.h
 +++ b/include/net/udp_tunnel.h
-@@ -115,6 +115,7 @@ struct udp_tunnel_info {
- 	unsigned short type;
- 	sa_family_t sa_family;
- 	__be16 port;
-+	u8 hw_priv;
+@@ -255,6 +255,10 @@ struct udp_tunnel_nic_ops {
+ 	void (*add_port)(struct net_device *dev, struct udp_tunnel_info *ti);
+ 	void (*del_port)(struct net_device *dev, struct udp_tunnel_info *ti);
+ 	void (*reset_ntf)(struct net_device *dev);
++
++	size_t (*dump_size)(struct net_device *dev, unsigned int table);
++	int (*dump_write)(struct net_device *dev, unsigned int table,
++			  struct sk_buff *skb);
  };
  
- /* Notify network devices of offloadable types */
-@@ -181,4 +182,116 @@ static inline void udp_tunnel_encap_enable(struct socket *sock)
- 		udp_encap_enable();
+ extern const struct udp_tunnel_nic_ops *udp_tunnel_nic_ops;
+@@ -294,4 +298,21 @@ static inline void udp_tunnel_nic_reset_ntf(struct net_device *dev)
+ 	if (udp_tunnel_nic_ops)
+ 		udp_tunnel_nic_ops->reset_ntf(dev);
  }
- 
-+#define UDP_TUNNEL_NIC_MAX_TABLES	4
 +
-+enum udp_tunnel_nic_info_flags {
-+	/* Device callbacks may sleep */
-+	UDP_TUNNEL_NIC_INFO_MAY_SLEEP	= BIT(0),
-+	/* Device only supports offloads when it's open, all ports
-+	 * will be removed before close and re-added after open.
-+	 */
-+	UDP_TUNNEL_NIC_INFO_OPEN_ONLY	= BIT(1),
-+	/* Device supports only IPv4 tunnels */
-+	UDP_TUNNEL_NIC_INFO_IPV4_ONLY	= BIT(2),
-+};
-+
-+/**
-+ * struct udp_tunnel_nic_info - driver UDP tunnel offload information
-+ * @set_port:	callback for adding a new port
-+ * @unset_port:	callback for removing a port
-+ * @sync_table:	callback for syncing the entire port table at once
-+ * @flags:	device flags from enum udp_tunnel_nic_info_flags
-+ * @tables:	UDP port tables this device has
-+ * @tables.n_entries:		number of entries in this table
-+ * @tables.tunnel_types:	types of tunnels this table accepts
-+ *
-+ * Drivers are expected to provide either @set_port and @unset_port callbacks
-+ * or the @sync_table callback. Callbacks are invoked with rtnl lock held.
-+ *
-+ * Known limitations:
-+ *  - UDP tunnel port notifications are fundamentally best-effort -
-+ *    it is likely the driver will both see skbs which use a UDP tunnel port,
-+ *    while not being a tunneled skb, and tunnel skbs from other ports -
-+ *    drivers should only use these ports for non-critical RX-side offloads,
-+ *    e.g. the checksum offload;
-+ *  - none of the devices care about the socket family at present, so we don't
-+ *    track it. Please extend this code if you care.
-+ */
-+struct udp_tunnel_nic_info {
-+	/* one-by-one */
-+	int (*set_port)(struct net_device *dev,
-+			unsigned int table, unsigned int entry,
-+			struct udp_tunnel_info *ti);
-+	int (*unset_port)(struct net_device *dev,
-+			  unsigned int table, unsigned int entry,
-+			  struct udp_tunnel_info *ti);
-+
-+	/* all at once */
-+	int (*sync_table)(struct net_device *dev, unsigned int table);
-+
-+	unsigned int flags;
-+
-+	struct udp_tunnel_nic_table_info {
-+		unsigned int n_entries;
-+		unsigned int tunnel_types;
-+	} tables[UDP_TUNNEL_NIC_MAX_TABLES];
-+};
-+
-+/* UDP tunnel module dependencies
-+ *
-+ * Tunnel drivers are expected to have a hard dependency on the udp_tunnel
-+ * module. NIC drivers are not, they just attach their
-+ * struct udp_tunnel_nic_info to the netdev and wait for callbacks to come.
-+ * Loading a tunnel driver will cause the udp_tunnel module to be loaded
-+ * and only then will all the required state structures be allocated.
-+ * Since we want a weak dependency from the drivers and the core to udp_tunnel
-+ * we call things through the following stubs.
-+ */
-+struct udp_tunnel_nic_ops {
-+	void (*get_port)(struct net_device *dev, unsigned int table,
-+			 unsigned int idx, struct udp_tunnel_info *ti);
-+	void (*set_port_priv)(struct net_device *dev, unsigned int table,
-+			      unsigned int idx, u8 priv);
-+	void (*add_port)(struct net_device *dev, struct udp_tunnel_info *ti);
-+	void (*del_port)(struct net_device *dev, struct udp_tunnel_info *ti);
-+	void (*reset_ntf)(struct net_device *dev);
-+};
-+
-+extern const struct udp_tunnel_nic_ops *udp_tunnel_nic_ops;
-+
-+static inline void
-+udp_tunnel_nic_get_port(struct net_device *dev, unsigned int table,
-+			unsigned int idx, struct udp_tunnel_info *ti)
++static inline size_t
++udp_tunnel_nic_dump_size(struct net_device *dev, unsigned int table)
 +{
-+	if (udp_tunnel_nic_ops)
-+		udp_tunnel_nic_ops->get_port(dev, table, idx, ti);
++	if (!udp_tunnel_nic_ops)
++		return 0;
++	return udp_tunnel_nic_ops->dump_size(dev, table);
 +}
 +
-+static inline void
-+udp_tunnel_nic_set_port_priv(struct net_device *dev, unsigned int table,
-+			     unsigned int idx, u8 priv)
++static inline int
++udp_tunnel_nic_dump_write(struct net_device *dev, unsigned int table,
++			  struct sk_buff *skb)
 +{
-+	if (udp_tunnel_nic_ops)
-+		udp_tunnel_nic_ops->set_port_priv(dev, table, idx, priv);
-+}
-+
-+static inline void
-+udp_tunnel_nic_add_port(struct net_device *dev, struct udp_tunnel_info *ti)
-+{
-+	if (udp_tunnel_nic_ops)
-+		udp_tunnel_nic_ops->add_port(dev, ti);
-+}
-+
-+static inline void
-+udp_tunnel_nic_del_port(struct net_device *dev, struct udp_tunnel_info *ti)
-+{
-+	if (udp_tunnel_nic_ops)
-+		udp_tunnel_nic_ops->del_port(dev, ti);
-+}
-+
-+static inline void udp_tunnel_nic_reset_ntf(struct net_device *dev)
-+{
-+	if (udp_tunnel_nic_ops)
-+		udp_tunnel_nic_ops->reset_ntf(dev);
++	if (!udp_tunnel_nic_ops)
++		return 0;
++	return udp_tunnel_nic_ops->dump_write(dev, table, skb);
 +}
  #endif
-diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
-index 9e1a186a3671..5b77a46885b9 100644
---- a/net/ipv4/Makefile
-+++ b/net/ipv4/Makefile
-@@ -14,7 +14,7 @@ obj-y     := route.o inetpeer.o protocol.o \
- 	     udp_offload.o arp.o icmp.o devinet.o af_inet.o igmp.o \
- 	     fib_frontend.o fib_semantics.o fib_trie.o fib_notifier.o \
- 	     inet_fragment.o ping.o ip_tunnel_core.o gre_offload.o \
--	     metrics.o netlink.o nexthop.o
-+	     metrics.o netlink.o nexthop.o udp_tunnel_stub.o
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index d1413538ef30..0495314ce20b 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -669,6 +669,7 @@ enum ethtool_link_ext_substate_cable_issue {
+  * @ETH_SS_SOF_TIMESTAMPING: SOF_TIMESTAMPING_* flags
+  * @ETH_SS_TS_TX_TYPES: timestamping Tx types
+  * @ETH_SS_TS_RX_FILTERS: timestamping Rx filters
++ * @ETH_SS_UDP_TUNNEL_TYPES: UDP tunnel types
+  */
+ enum ethtool_stringset {
+ 	ETH_SS_TEST		= 0,
+@@ -686,6 +687,7 @@ enum ethtool_stringset {
+ 	ETH_SS_SOF_TIMESTAMPING,
+ 	ETH_SS_TS_TX_TYPES,
+ 	ETH_SS_TS_RX_FILTERS,
++	ETH_SS_UDP_TUNNEL_TYPES,
  
- obj-$(CONFIG_BPFILTER) += bpfilter/
+ 	/* add new constants above here */
+ 	ETH_SS_COUNT
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index c12ce4df4b6b..b06fc125df3f 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -41,6 +41,7 @@ enum {
+ 	ETHTOOL_MSG_TSINFO_GET,
+ 	ETHTOOL_MSG_CABLE_TEST_ACT,
+ 	ETHTOOL_MSG_CABLE_TEST_TDR_ACT,
++	ETHTOOL_MSG_TUNNEL_INFO_GET,
  
-@@ -29,6 +29,7 @@ gre-y := gre_demux.o
- obj-$(CONFIG_NET_FOU) += fou.o
- obj-$(CONFIG_NET_IPGRE_DEMUX) += gre.o
- obj-$(CONFIG_NET_IPGRE) += ip_gre.o
-+udp_tunnel-y := udp_tunnel_core.o udp_tunnel_nic.o
- obj-$(CONFIG_NET_UDP_TUNNEL) += udp_tunnel.o
- obj-$(CONFIG_NET_IPVTI) += ip_vti.o
- obj-$(CONFIG_SYN_COOKIES) += syncookies.o
-diff --git a/net/ipv4/udp_tunnel.c b/net/ipv4/udp_tunnel_core.c
-similarity index 100%
-rename from net/ipv4/udp_tunnel.c
-rename to net/ipv4/udp_tunnel_core.c
-diff --git a/net/ipv4/udp_tunnel_nic.c b/net/ipv4/udp_tunnel_nic.c
-new file mode 100644
-index 000000000000..098fb0ebe998
---- /dev/null
-+++ b/net/ipv4/udp_tunnel_nic.c
-@@ -0,0 +1,828 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+// Copyright (c) 2020 Facebook Inc.
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_USER_CNT,
+@@ -556,6 +557,60 @@ enum {
+ 	ETHTOOL_A_CABLE_TEST_TDR_NTF_MAX = __ETHTOOL_A_CABLE_TEST_TDR_NTF_CNT - 1
+ };
+ 
++/* TUNNEL INFO */
 +
-+#include <linux/netdevice.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+#include <linux/workqueue.h>
++enum {
++	ETHTOOL_A_TUNNEL_INFO_UNSPEC,
++	ETHTOOL_A_TUNNEL_INFO_HEADER,			/* nest - _A_HEADER_* */
++
++	ETHTOOL_A_TUNNEL_INFO_UDP_PORTS,		/* nest - _UDP_TABLE */
++
++	/* add new constants above here */
++	__ETHTOOL_A_TUNNEL_INFO_CNT,
++	ETHTOOL_A_TUNNEL_INFO_MAX = (__ETHTOOL_A_TUNNEL_INFO_CNT - 1)
++};
++
++enum {
++	ETHTOOL_A_TUNNEL_UDP_UNSPEC,
++
++	ETHTOOL_A_TUNNEL_UDP_TABLE,			/* nest - _UDP_TABLE_* */
++
++	/* add new constants above here */
++	__ETHTOOL_A_TUNNEL_UDP_CNT,
++	ETHTOOL_A_TUNNEL_UDP_MAX = (__ETHTOOL_A_TUNNEL_UDP_CNT - 1)
++};
++
++enum {
++	ETHTOOL_A_TUNNEL_UDP_TABLE_UNSPEC,
++
++	ETHTOOL_A_TUNNEL_UDP_TABLE_SIZE,		/* u32 */
++	ETHTOOL_A_TUNNEL_UDP_TABLE_TYPES,		/* u32 */
++	ETHTOOL_A_TUNNEL_UDP_TABLE_ENTRY,		/* nest - _UDP_ENTRY_* */
++
++	/* add new constants above here */
++	__ETHTOOL_A_TUNNEL_UDP_TABLE_CNT,
++	ETHTOOL_A_TUNNEL_UDP_TABLE_MAX = (__ETHTOOL_A_TUNNEL_UDP_TABLE_CNT - 1)
++};
++
++enum {
++	ETHTOOL_A_TUNNEL_UDP_ENTRY_UNSPEC,
++
++	ETHTOOL_A_TUNNEL_UDP_ENTRY_PORT,		/* be16 */
++	ETHTOOL_A_TUNNEL_UDP_ENTRY_TYPE,		/* u32 */
++
++	/* add new constants above here */
++	__ETHTOOL_A_TUNNEL_UDP_ENTRY_CNT,
++	ETHTOOL_A_TUNNEL_UDP_ENTRY_MAX = (__ETHTOOL_A_TUNNEL_UDP_ENTRY_CNT - 1)
++};
++
++enum {
++	ETHTOOL_UDP_TUNNEL_TYPE_VXLAN,
++	ETHTOOL_UDP_TUNNEL_TYPE_GENEVE,
++	ETHTOOL_UDP_TUNNEL_TYPE_VXLAN_GPE,
++
++	__ETHTOOL_UDP_TUNNEL_TYPE_BIT_CNT
++};
++
+ /* generic netlink info */
+ #define ETHTOOL_GENL_NAME "ethtool"
+ #define ETHTOOL_GENL_VERSION 1
+diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
+index 0c2b94f20499..7a849ff22dad 100644
+--- a/net/ethtool/Makefile
++++ b/net/ethtool/Makefile
+@@ -6,4 +6,5 @@ obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
+ 
+ ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
+ 		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
+-		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o
++		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
++		   tunnels.o
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index aaecfc916a4d..fe79f260b234 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ 
++#include <linux/ethtool_netlink.h>
+ #include <linux/net_tstamp.h>
+ #include <linux/phy.h>
+ 
+@@ -256,6 +257,14 @@ const char ts_rx_filter_names[][ETH_GSTRING_LEN] = {
+ };
+ static_assert(ARRAY_SIZE(ts_rx_filter_names) == __HWTSTAMP_FILTER_CNT);
+ 
++const char udp_tunnel_type_names[][ETH_GSTRING_LEN] = {
++	[ETHTOOL_UDP_TUNNEL_TYPE_VXLAN]		= "vxlan",
++	[ETHTOOL_UDP_TUNNEL_TYPE_GENEVE]	= "geneve",
++	[ETHTOOL_UDP_TUNNEL_TYPE_VXLAN_GPE]	= "vxlan-gpe",
++};
++static_assert(ARRAY_SIZE(udp_tunnel_type_names) ==
++	      __ETHTOOL_UDP_TUNNEL_TYPE_BIT_CNT);
++
+ /* return false if legacy contained non-0 deprecated fields
+  * maxtxpkt/maxrxpkt. rest of ksettings always updated
+  */
+diff --git a/net/ethtool/common.h b/net/ethtool/common.h
+index a62f68ccc43a..371c69b6141e 100644
+--- a/net/ethtool/common.h
++++ b/net/ethtool/common.h
+@@ -28,6 +28,7 @@ extern const char wol_mode_names[][ETH_GSTRING_LEN];
+ extern const char sof_timestamping_names[][ETH_GSTRING_LEN];
+ extern const char ts_tx_type_names[][ETH_GSTRING_LEN];
+ extern const char ts_rx_filter_names[][ETH_GSTRING_LEN];
++extern const char udp_tunnel_type_names[][ETH_GSTRING_LEN];
+ 
+ int __ethtool_get_link(struct net_device *dev);
+ 
+diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+index 88fd07f47040..fb9d096faaa4 100644
+--- a/net/ethtool/netlink.c
++++ b/net/ethtool/netlink.c
+@@ -181,6 +181,12 @@ struct sk_buff *ethnl_reply_init(size_t payload, struct net_device *dev, u8 cmd,
+ 	return NULL;
+ }
+ 
++void *ethnl_dump_put(struct sk_buff *skb, struct netlink_callback *cb, u8 cmd)
++{
++	return genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
++			   &ethtool_genl_family, 0, cmd);
++}
++
+ void *ethnl_bcastmsg_put(struct sk_buff *skb, u8 cmd)
+ {
+ 	return genlmsg_put(skb, 0, ++ethnl_bcast_seq, &ethtool_genl_family, 0,
+@@ -849,6 +855,12 @@ static const struct genl_ops ethtool_genl_ops[] = {
+ 		.flags	= GENL_UNS_ADMIN_PERM,
+ 		.doit	= ethnl_act_cable_test_tdr,
+ 	},
++	{
++		.cmd	= ETHTOOL_MSG_TUNNEL_INFO_GET,
++		.doit	= ethnl_tunnel_info_doit,
++		.start	= ethnl_tunnel_info_start,
++		.dumpit	= ethnl_tunnel_info_dumpit,
++	},
+ };
+ 
+ static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+index 9a96b6e90dc2..e2085005caac 100644
+--- a/net/ethtool/netlink.h
++++ b/net/ethtool/netlink.h
+@@ -19,6 +19,7 @@ int ethnl_fill_reply_header(struct sk_buff *skb, struct net_device *dev,
+ struct sk_buff *ethnl_reply_init(size_t payload, struct net_device *dev, u8 cmd,
+ 				 u16 hdr_attrtype, struct genl_info *info,
+ 				 void **ehdrp);
++void *ethnl_dump_put(struct sk_buff *skb, struct netlink_callback *cb, u8 cmd);
+ void *ethnl_bcastmsg_put(struct sk_buff *skb, u8 cmd);
+ int ethnl_multicast(struct sk_buff *skb, struct net_device *dev);
+ 
+@@ -361,5 +362,8 @@ int ethnl_set_pause(struct sk_buff *skb, struct genl_info *info);
+ int ethnl_set_eee(struct sk_buff *skb, struct genl_info *info);
+ int ethnl_act_cable_test(struct sk_buff *skb, struct genl_info *info);
+ int ethnl_act_cable_test_tdr(struct sk_buff *skb, struct genl_info *info);
++int ethnl_tunnel_info_doit(struct sk_buff *skb, struct genl_info *info);
++int ethnl_tunnel_info_start(struct netlink_callback *cb);
++int ethnl_tunnel_info_dumpit(struct sk_buff *skb, struct netlink_callback *cb);
+ 
+ #endif /* _NET_ETHTOOL_NETLINK_H */
+diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
+index 0eed4e4909ab..5d3f315d4781 100644
+--- a/net/ethtool/strset.c
++++ b/net/ethtool/strset.c
+@@ -75,6 +75,11 @@ static const struct strset_info info_template[] = {
+ 		.count		= __HWTSTAMP_FILTER_CNT,
+ 		.strings	= ts_rx_filter_names,
+ 	},
++	[ETH_SS_UDP_TUNNEL_TYPES] = {
++		.per_dev	= false,
++		.count		= __ETHTOOL_A_TUNNEL_UDP_ENTRY_CNT,
++		.strings	= udp_tunnel_type_names,
++	},
+ };
+ 
+ struct strset_req_info {
+diff --git a/net/ethtool/tunnels.c b/net/ethtool/tunnels.c
+new file mode 100644
+index 000000000000..e9e09ea08c6a
+--- /dev/null
++++ b/net/ethtool/tunnels.c
+@@ -0,0 +1,261 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <linux/ethtool_netlink.h>
 +#include <net/udp_tunnel.h>
 +
-+enum udp_tunnel_nic_table_entry_flags {
-+	UDP_TUNNEL_NIC_ENTRY_ADD	= BIT(0),
-+	UDP_TUNNEL_NIC_ENTRY_DEL	= BIT(1),
-+	UDP_TUNNEL_NIC_ENTRY_OP_FAIL	= BIT(2),
-+	UDP_TUNNEL_NIC_ENTRY_FROZEN	= BIT(3),
++#include "bitset.h"
++#include "common.h"
++#include "netlink.h"
++
++static const struct nla_policy
++ethtool_tunnel_info_policy[ETHTOOL_A_TUNNEL_INFO_MAX + 1] = {
++	[ETHTOOL_A_TUNNEL_INFO_UNSPEC]		= { .type = NLA_REJECT },
++	[ETHTOOL_A_TUNNEL_INFO_HEADER]		= { .type = NLA_NESTED },
 +};
 +
-+struct udp_tunnel_nic_table_entry {
-+	__be16 port;
-+	u8 type;
-+	u8 use_cnt;
-+	u8 flags;
-+	u8 hw_priv;
-+};
++static_assert(ETHTOOL_UDP_TUNNEL_TYPE_VXLAN == ilog2(UDP_TUNNEL_TYPE_VXLAN));
++static_assert(ETHTOOL_UDP_TUNNEL_TYPE_GENEVE == ilog2(UDP_TUNNEL_TYPE_GENEVE));
++static_assert(ETHTOOL_UDP_TUNNEL_TYPE_VXLAN_GPE ==
++	      ilog2(UDP_TUNNEL_TYPE_VXLAN_GPE));
 +
-+/**
-+ * struct udp_tunnel_nic - UDP tunnel port offload state
-+ * @work:	async work for talking to hardware from process context
-+ * @dev:	netdev pointer
-+ * @need_sync:	at least one port start changed
-+ * @need_replay: space was freed, we need a replay of all ports
-+ * @work_pending: @work is currently scheduled
-+ * @n_tables:	number of tables under @entries
-+ * @missed:	bitmap of tables which overflown
-+ * @entries:	table of tables of ports currently offloaded
-+ */
-+struct udp_tunnel_nic {
-+	struct work_struct work;
-+
-+	struct net_device *dev;
-+
-+	u8 need_sync:1;
-+	u8 need_replay:1;
-+	u8 work_pending:1;
-+
-+	unsigned int n_tables;
-+	unsigned long missed;
-+	struct udp_tunnel_nic_table_entry **entries;
-+};
-+
-+/* We ensure all work structs are done using driver state, but not the code.
-+ * We need a workqueue we can flush before module gets removed.
-+ */
-+static struct workqueue_struct *udp_tunnel_nic_workqueue;
-+
-+static const char *udp_tunnel_nic_tunnel_type_name(unsigned int type)
++static ssize_t
++ethnl_tunnel_info_reply_size(const struct ethnl_req_info *req_base,
++			     struct netlink_ext_ack *extack)
 +{
-+	switch (type) {
-+	case UDP_TUNNEL_TYPE_VXLAN:
-+		return "vxlan";
-+	case UDP_TUNNEL_TYPE_GENEVE:
-+		return "geneve";
-+	case UDP_TUNNEL_TYPE_VXLAN_GPE:
-+		return "vxlan-gpe";
-+	default:
-+		return "unknown";
-+	}
-+}
-+
-+static bool
-+udp_tunnel_nic_entry_is_free(struct udp_tunnel_nic_table_entry *entry)
-+{
-+	return entry->use_cnt == 0 && !entry->flags;
-+}
-+
-+static bool
-+udp_tunnel_nic_entry_is_frozen(struct udp_tunnel_nic_table_entry *entry)
-+{
-+	return entry->flags & UDP_TUNNEL_NIC_ENTRY_FROZEN;
-+}
-+
-+static void
-+udp_tunnel_nic_entry_freeze_used(struct udp_tunnel_nic_table_entry *entry)
-+{
-+	if (!udp_tunnel_nic_entry_is_free(entry))
-+		entry->flags |= UDP_TUNNEL_NIC_ENTRY_FROZEN;
-+}
-+
-+static void
-+udp_tunnel_nic_entry_unfreeze(struct udp_tunnel_nic_table_entry *entry)
-+{
-+	entry->flags &= ~UDP_TUNNEL_NIC_ENTRY_FROZEN;
-+}
-+
-+static bool
-+udp_tunnel_nic_entry_is_queued(struct udp_tunnel_nic_table_entry *entry)
-+{
-+	return entry->flags & (UDP_TUNNEL_NIC_ENTRY_ADD |
-+			       UDP_TUNNEL_NIC_ENTRY_DEL);
-+}
-+
-+static void
-+udp_tunnel_nic_entry_queue(struct udp_tunnel_nic *utn,
-+			   struct udp_tunnel_nic_table_entry *entry,
-+			   unsigned int flag)
-+{
-+	entry->flags |= flag;
-+	utn->need_sync = 1;
-+}
-+
-+static void
-+udp_tunnel_nic_ti_from_entry(struct udp_tunnel_nic_table_entry *entry,
-+			     struct udp_tunnel_info *ti)
-+{
-+	memset(ti, 0, sizeof(*ti));
-+	ti->port = entry->port;
-+	ti->type = entry->type;
-+	ti->hw_priv = entry->hw_priv;
-+}
-+
-+static bool
-+udp_tunnel_nic_is_empty(struct net_device *dev, struct udp_tunnel_nic *utn)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	unsigned int i, j;
-+
-+	for (i = 0; i < utn->n_tables; i++)
-+		for (j = 0; j < info->tables[i].n_entries; j++)
-+			if (!udp_tunnel_nic_entry_is_free(&utn->entries[i][j]))
-+				return false;
-+	return true;
-+}
-+
-+static bool
-+udp_tunnel_nic_should_replay(struct net_device *dev, struct udp_tunnel_nic *utn)
-+{
-+	const struct udp_tunnel_nic_table_info *table;
-+	unsigned int i, j;
-+
-+	if (!utn->missed)
-+		return false;
-+
-+	for (i = 0; i < utn->n_tables; i++) {
-+		table = &dev->udp_tunnel_nic_info->tables[i];
-+		if (!test_bit(i, &utn->missed))
-+			continue;
-+
-+		for (j = 0; j < table->n_entries; j++)
-+			if (udp_tunnel_nic_entry_is_free(&utn->entries[i][j]))
-+				return true;
-+	}
-+
-+	return false;
-+}
-+
-+static void
-+__udp_tunnel_nic_get_port(struct net_device *dev, unsigned int table,
-+			  unsigned int idx, struct udp_tunnel_info *ti)
-+{
-+	struct udp_tunnel_nic_table_entry *entry;
-+	struct udp_tunnel_nic *utn;
-+
-+	utn = dev->udp_tunnel_nic;
-+	entry = &utn->entries[table][idx];
-+
-+	/* This helper is used from .sync_table, we indicate empty entries
-+	 * by zero'ed @ti. Drivers which need to know the details of a port
-+	 * when it gets deleted should use the .set_port / .unset_port
-+	 * callbacks.
-+	 */
-+	if (entry->use_cnt)
-+		udp_tunnel_nic_ti_from_entry(entry, ti);
-+	else
-+		memset(ti, 0, sizeof(*ti));
-+}
-+
-+static void
-+__udp_tunnel_nic_set_port_priv(struct net_device *dev, unsigned int table,
-+			       unsigned int idx, u8 priv)
-+{
-+	dev->udp_tunnel_nic->entries[table][idx].hw_priv = priv;
-+}
-+
-+static void
-+udp_tunnel_nic_entry_update_done(struct udp_tunnel_nic_table_entry *entry,
-+				 int err)
-+{
-+	bool dodgy = entry->flags & UDP_TUNNEL_NIC_ENTRY_OP_FAIL;
-+
-+	WARN_ON_ONCE(entry->flags & UDP_TUNNEL_NIC_ENTRY_ADD &&
-+		     entry->flags & UDP_TUNNEL_NIC_ENTRY_DEL);
-+
-+	if (entry->flags & UDP_TUNNEL_NIC_ENTRY_ADD &&
-+	    (!err || (err == -EEXIST && dodgy)))
-+		entry->flags &= ~UDP_TUNNEL_NIC_ENTRY_ADD;
-+
-+	if (entry->flags & UDP_TUNNEL_NIC_ENTRY_DEL &&
-+	    (!err || (err == -ENOENT && dodgy)))
-+		entry->flags &= ~UDP_TUNNEL_NIC_ENTRY_DEL;
-+
-+	if (!err)
-+		entry->flags &= ~UDP_TUNNEL_NIC_ENTRY_OP_FAIL;
-+	else
-+		entry->flags |= UDP_TUNNEL_NIC_ENTRY_OP_FAIL;
-+}
-+
-+static void
-+udp_tunnel_nic_device_sync_one(struct net_device *dev,
-+			       struct udp_tunnel_nic *utn,
-+			       unsigned int table, unsigned int idx)
-+{
-+	struct udp_tunnel_nic_table_entry *entry;
-+	struct udp_tunnel_info ti;
-+	int err;
-+
-+	entry = &utn->entries[table][idx];
-+	if (!udp_tunnel_nic_entry_is_queued(entry))
-+		return;
-+
-+	udp_tunnel_nic_ti_from_entry(entry, &ti);
-+	if (entry->flags & UDP_TUNNEL_NIC_ENTRY_ADD)
-+		err = dev->udp_tunnel_nic_info->set_port(dev, table, idx, &ti);
-+	else
-+		err = dev->udp_tunnel_nic_info->unset_port(dev, table, idx,
-+							   &ti);
-+	udp_tunnel_nic_entry_update_done(entry, err);
-+
-+	if (err)
-+		netdev_warn(dev,
-+			    "UDP tunnel port sync failed port %d type %s: %d\n",
-+			    be16_to_cpu(entry->port),
-+			    udp_tunnel_nic_tunnel_type_name(entry->type),
-+			    err);
-+}
-+
-+static void
-+udp_tunnel_nic_device_sync_by_port(struct net_device *dev,
-+				   struct udp_tunnel_nic *utn)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	unsigned int i, j;
-+
-+	for (i = 0; i < utn->n_tables; i++)
-+		for (j = 0; j < info->tables[i].n_entries; j++)
-+			udp_tunnel_nic_device_sync_one(dev, utn, i, j);
-+}
-+
-+static void
-+udp_tunnel_nic_device_sync_by_table(struct net_device *dev,
-+				    struct udp_tunnel_nic *utn)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	unsigned int i, j;
-+	int err;
-+
-+	for (i = 0; i < utn->n_tables; i++) {
-+		/* Find something that needs sync in this table */
-+		for (j = 0; j < info->tables[i].n_entries; j++)
-+			if (udp_tunnel_nic_entry_is_queued(&utn->entries[i][j]))
-+				break;
-+		if (j == info->tables[i].n_entries)
-+			continue;
-+
-+		err = info->sync_table(dev, i);
-+		if (err)
-+			netdev_warn(dev, "UDP tunnel port sync failed for table %d: %d\n",
-+				    i, err);
-+
-+		for (j = 0; j < info->tables[i].n_entries; j++) {
-+			struct udp_tunnel_nic_table_entry *entry;
-+
-+			entry = &utn->entries[i][j];
-+			if (udp_tunnel_nic_entry_is_queued(entry))
-+				udp_tunnel_nic_entry_update_done(entry, err);
-+		}
-+	}
-+}
-+
-+static void
-+__udp_tunnel_nic_device_sync(struct net_device *dev, struct udp_tunnel_nic *utn)
-+{
-+	if (!utn->need_sync)
-+		return;
-+
-+	if (dev->udp_tunnel_nic_info->sync_table)
-+		udp_tunnel_nic_device_sync_by_table(dev, utn);
-+	else
-+		udp_tunnel_nic_device_sync_by_port(dev, utn);
-+
-+	utn->need_sync = 0;
-+	/* Can't replay directly here, in case we come from the tunnel driver's
-+	 * notification - trying to replay may deadlock inside tunnel driver.
-+	 */
-+	utn->need_replay = udp_tunnel_nic_should_replay(dev, utn);
-+}
-+
-+static void
-+udp_tunnel_nic_device_sync(struct net_device *dev, struct udp_tunnel_nic *utn)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	bool may_sleep;
-+
-+	if (!utn->need_sync)
-+		return;
-+
-+	/* Drivers which sleep in the callback need to update from
-+	 * the workqueue, if we come from the tunnel driver's notification.
-+	 */
-+	may_sleep = info->flags & UDP_TUNNEL_NIC_INFO_MAY_SLEEP;
-+	if (!may_sleep)
-+		__udp_tunnel_nic_device_sync(dev, utn);
-+	if (may_sleep || utn->need_replay) {
-+		queue_work(udp_tunnel_nic_workqueue, &utn->work);
-+		utn->work_pending = 1;
-+	}
-+}
-+
-+static bool
-+udp_tunnel_nic_table_is_capable(const struct udp_tunnel_nic_table_info *table,
-+				struct udp_tunnel_info *ti)
-+{
-+	return table->tunnel_types & ti->type;
-+}
-+
-+static bool
-+udp_tunnel_nic_is_capable(struct net_device *dev, struct udp_tunnel_nic *utn,
-+			  struct udp_tunnel_info *ti)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	unsigned int i;
-+
-+	/* Special case IPv4-only NICs */
-+	if (info->flags & UDP_TUNNEL_NIC_INFO_IPV4_ONLY &&
-+	    ti->sa_family != AF_INET)
-+		return false;
-+
-+	for (i = 0; i < utn->n_tables; i++)
-+		if (udp_tunnel_nic_table_is_capable(&info->tables[i], ti))
-+			return true;
-+	return false;
-+}
-+
-+static int
-+udp_tunnel_nic_has_collision(struct net_device *dev, struct udp_tunnel_nic *utn,
-+			     struct udp_tunnel_info *ti)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	struct udp_tunnel_nic_table_entry *entry;
-+	unsigned int i, j;
-+
-+	for (i = 0; i < utn->n_tables; i++)
-+		for (j = 0; j < info->tables[i].n_entries; j++) {
-+			entry =	&utn->entries[i][j];
-+
-+			if (!udp_tunnel_nic_entry_is_free(entry) &&
-+			    entry->port == ti->port &&
-+			    entry->type != ti->type) {
-+				__set_bit(i, &utn->missed);
-+				return true;
-+			}
-+		}
-+	return false;
-+}
-+
-+static void
-+udp_tunnel_nic_entry_adj(struct udp_tunnel_nic *utn,
-+			 unsigned int table, unsigned int idx, int use_cnt_adj)
-+{
-+	struct udp_tunnel_nic_table_entry *entry =  &utn->entries[table][idx];
-+	bool dodgy = entry->flags & UDP_TUNNEL_NIC_ENTRY_OP_FAIL;
-+	unsigned int from, to;
-+
-+	/* If not going from used to unused or vice versa - all done.
-+	 * For dodgy entries make sure we try to sync again (queue the entry).
-+	 */
-+	entry->use_cnt += use_cnt_adj;
-+	if (!dodgy && !entry->use_cnt == !(entry->use_cnt - use_cnt_adj))
-+		return;
-+
-+	/* Cancel the op before it was sent to the device, if possible,
-+	 * otherwise we'd need to take special care to issue commands
-+	 * in the same order the ports arrived.
-+	 */
-+	if (use_cnt_adj < 0) {
-+		from = UDP_TUNNEL_NIC_ENTRY_ADD;
-+		to = UDP_TUNNEL_NIC_ENTRY_DEL;
-+	} else {
-+		from = UDP_TUNNEL_NIC_ENTRY_DEL;
-+		to = UDP_TUNNEL_NIC_ENTRY_ADD;
-+	}
-+
-+	if (entry->flags & from) {
-+		entry->flags &= ~from;
-+		if (!dodgy)
-+			return;
-+	}
-+
-+	udp_tunnel_nic_entry_queue(utn, entry, to);
-+}
-+
-+static bool
-+udp_tunnel_nic_entry_try_adj(struct udp_tunnel_nic *utn,
-+			     unsigned int table, unsigned int idx,
-+			     struct udp_tunnel_info *ti, int use_cnt_adj)
-+{
-+	struct udp_tunnel_nic_table_entry *entry =  &utn->entries[table][idx];
-+
-+	if (udp_tunnel_nic_entry_is_free(entry) ||
-+	    entry->port != ti->port ||
-+	    entry->type != ti->type)
-+		return false;
-+
-+	if (udp_tunnel_nic_entry_is_frozen(entry))
-+		return true;
-+
-+	udp_tunnel_nic_entry_adj(utn, table, idx, use_cnt_adj);
-+	return true;
-+}
-+
-+/* Try to find existing matching entry and adjust its use count, instead of
-+ * adding a new one. Returns true if entry was found. In case of delete the
-+ * entry may have gotten removed in the process, in which case it will be
-+ * queued for removal.
-+ */
-+static bool
-+udp_tunnel_nic_try_existing(struct net_device *dev, struct udp_tunnel_nic *utn,
-+			    struct udp_tunnel_info *ti, int use_cnt_adj)
-+{
-+	const struct udp_tunnel_nic_table_info *table;
-+	unsigned int i, j;
-+
-+	for (i = 0; i < utn->n_tables; i++) {
-+		table = &dev->udp_tunnel_nic_info->tables[i];
-+		if (!udp_tunnel_nic_table_is_capable(table, ti))
-+			continue;
-+
-+		for (j = 0; j < table->n_entries; j++)
-+			if (udp_tunnel_nic_entry_try_adj(utn, i, j, ti,
-+							 use_cnt_adj))
-+				return true;
-+	}
-+
-+	return false;
-+}
-+
-+static bool
-+udp_tunnel_nic_add_existing(struct net_device *dev, struct udp_tunnel_nic *utn,
-+			    struct udp_tunnel_info *ti)
-+{
-+	return udp_tunnel_nic_try_existing(dev, utn, ti, +1);
-+}
-+
-+static bool
-+udp_tunnel_nic_del_existing(struct net_device *dev, struct udp_tunnel_nic *utn,
-+			    struct udp_tunnel_info *ti)
-+{
-+	return udp_tunnel_nic_try_existing(dev, utn, ti, -1);
-+}
-+
-+static bool
-+udp_tunnel_nic_add_new(struct net_device *dev, struct udp_tunnel_nic *utn,
-+		       struct udp_tunnel_info *ti)
-+{
-+	const struct udp_tunnel_nic_table_info *table;
-+	unsigned int i, j;
-+
-+	for (i = 0; i < utn->n_tables; i++) {
-+		table = &dev->udp_tunnel_nic_info->tables[i];
-+		if (!udp_tunnel_nic_table_is_capable(table, ti))
-+			continue;
-+
-+		for (j = 0; j < table->n_entries; j++) {
-+			struct udp_tunnel_nic_table_entry *entry;
-+
-+			entry = &utn->entries[i][j];
-+			if (!udp_tunnel_nic_entry_is_free(entry))
-+				continue;
-+
-+			entry->port = ti->port;
-+			entry->type = ti->type;
-+			entry->use_cnt = 1;
-+			udp_tunnel_nic_entry_queue(utn, entry,
-+						   UDP_TUNNEL_NIC_ENTRY_ADD);
-+			return true;
-+		}
-+
-+		/* The different table may still fit this port in, but there
-+		 * are no devices currently which have multiple tables accepting
-+		 * the same tunnel type, and false positives are okay.
-+		 */
-+		__set_bit(i, &utn->missed);
-+	}
-+
-+	return false;
-+}
-+
-+static void
-+__udp_tunnel_nic_add_port(struct net_device *dev, struct udp_tunnel_info *ti)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	struct udp_tunnel_nic *utn;
-+
-+	utn = dev->udp_tunnel_nic;
-+	if (!utn)
-+		return;
-+	if (!netif_running(dev) && info->flags & UDP_TUNNEL_NIC_INFO_OPEN_ONLY)
-+		return;
-+
-+	if (!udp_tunnel_nic_is_capable(dev, utn, ti))
-+		return;
-+
-+	/* It may happen that a tunnel of one type is removed and different
-+	 * tunnel type tries to reuse its port before the device was informed.
-+	 * Rely on utn->missed to re-add this port later.
-+	 */
-+	if (udp_tunnel_nic_has_collision(dev, utn, ti))
-+		return;
-+
-+	if (!udp_tunnel_nic_add_existing(dev, utn, ti))
-+		udp_tunnel_nic_add_new(dev, utn, ti);
-+
-+	udp_tunnel_nic_device_sync(dev, utn);
-+}
-+
-+static void
-+__udp_tunnel_nic_del_port(struct net_device *dev, struct udp_tunnel_info *ti)
-+{
-+	struct udp_tunnel_nic *utn;
-+
-+	utn = dev->udp_tunnel_nic;
-+	if (!utn)
-+		return;
-+
-+	if (!udp_tunnel_nic_is_capable(dev, utn, ti))
-+		return;
-+
-+	udp_tunnel_nic_del_existing(dev, utn, ti);
-+
-+	udp_tunnel_nic_device_sync(dev, utn);
-+}
-+
-+static void __udp_tunnel_nic_reset_ntf(struct net_device *dev)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	struct udp_tunnel_nic *utn;
-+	unsigned int i, j;
-+
-+	ASSERT_RTNL();
-+
-+	utn = dev->udp_tunnel_nic;
-+	if (!utn)
-+		return;
-+
-+	utn->need_sync = false;
-+	for (i = 0; i < utn->n_tables; i++)
-+		for (j = 0; j < info->tables[i].n_entries; j++) {
-+			struct udp_tunnel_nic_table_entry *entry;
-+
-+			entry = &utn->entries[i][j];
-+
-+			entry->flags &= ~(UDP_TUNNEL_NIC_ENTRY_DEL |
-+					  UDP_TUNNEL_NIC_ENTRY_OP_FAIL);
-+			/* We don't release rtnl across ops */
-+			WARN_ON(entry->flags & UDP_TUNNEL_NIC_ENTRY_FROZEN);
-+			if (!entry->use_cnt)
-+				continue;
-+
-+			udp_tunnel_nic_entry_queue(utn, entry,
-+						   UDP_TUNNEL_NIC_ENTRY_ADD);
-+		}
-+
-+	__udp_tunnel_nic_device_sync(dev, utn);
-+}
-+
-+static const struct udp_tunnel_nic_ops __udp_tunnel_nic_ops = {
-+	.get_port	= __udp_tunnel_nic_get_port,
-+	.set_port_priv	= __udp_tunnel_nic_set_port_priv,
-+	.add_port	= __udp_tunnel_nic_add_port,
-+	.del_port	= __udp_tunnel_nic_del_port,
-+	.reset_ntf	= __udp_tunnel_nic_reset_ntf,
-+};
-+
-+static void
-+udp_tunnel_nic_flush(struct net_device *dev, struct udp_tunnel_nic *utn)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	unsigned int i, j;
-+
-+	for (i = 0; i < utn->n_tables; i++)
-+		for (j = 0; j < info->tables[i].n_entries; j++) {
-+			int adj_cnt = -utn->entries[i][j].use_cnt;
-+
-+			if (adj_cnt)
-+				udp_tunnel_nic_entry_adj(utn, i, j, adj_cnt);
-+		}
-+
-+	__udp_tunnel_nic_device_sync(dev, utn);
-+
-+	for (i = 0; i < utn->n_tables; i++)
-+		memset(utn->entries[i], 0, array_size(info->tables[i].n_entries,
-+						      sizeof(**utn->entries)));
-+	WARN_ON(utn->need_sync);
-+	utn->need_replay = 0;
-+}
-+
-+static void
-+udp_tunnel_nic_replay(struct net_device *dev, struct udp_tunnel_nic *utn)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	unsigned int i, j;
-+
-+	/* Freeze all the ports we are already tracking so that the replay
-+	 * does not double up the refcount.
-+	 */
-+	for (i = 0; i < utn->n_tables; i++)
-+		for (j = 0; j < info->tables[i].n_entries; j++)
-+			udp_tunnel_nic_entry_freeze_used(&utn->entries[i][j]);
-+	utn->missed = 0;
-+	utn->need_replay = 0;
-+
-+	udp_tunnel_get_rx_info(dev);
-+
-+	for (i = 0; i < utn->n_tables; i++)
-+		for (j = 0; j < info->tables[i].n_entries; j++)
-+			udp_tunnel_nic_entry_unfreeze(&utn->entries[i][j]);
-+}
-+
-+static void udp_tunnel_nic_device_sync_work(struct work_struct *work)
-+{
-+	struct udp_tunnel_nic *utn =
-+		container_of(work, struct udp_tunnel_nic, work);
-+
-+	rtnl_lock();
-+	utn->work_pending = 0;
-+	__udp_tunnel_nic_device_sync(utn->dev, utn);
-+
-+	if (utn->need_replay)
-+		udp_tunnel_nic_replay(utn->dev, utn);
-+	rtnl_unlock();
-+}
-+
-+static struct udp_tunnel_nic *
-+udp_tunnel_nic_alloc(const struct udp_tunnel_nic_info *info,
-+		     unsigned int n_tables)
-+{
-+	struct udp_tunnel_nic *utn;
-+	unsigned int i;
-+
-+	utn = kzalloc(sizeof(*utn), GFP_KERNEL);
-+	if (!utn)
-+		return NULL;
-+	utn->n_tables = n_tables;
-+	INIT_WORK(&utn->work, udp_tunnel_nic_device_sync_work);
-+
-+	utn->entries = kmalloc_array(n_tables, sizeof(void *), GFP_KERNEL);
-+	if (!utn->entries)
-+		goto err_free_utn;
-+
-+	for (i = 0; i < n_tables; i++) {
-+		utn->entries[i] = kcalloc(info->tables[i].n_entries,
-+					  sizeof(*utn->entries[i]), GFP_KERNEL);
-+		if (!utn->entries[i])
-+			goto err_free_prev_entries;
-+	}
-+
-+	return utn;
-+
-+err_free_prev_entries:
-+	while (i--)
-+		kfree(utn->entries[i]);
-+	kfree(utn->entries);
-+err_free_utn:
-+	kfree(utn);
-+	return NULL;
-+}
-+
-+static int udp_tunnel_nic_register(struct net_device *dev)
-+{
-+	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
-+	struct udp_tunnel_nic *utn;
-+	unsigned int n_tables, i;
-+
-+	BUILD_BUG_ON(sizeof(utn->missed) * BITS_PER_BYTE <
-+		     UDP_TUNNEL_NIC_MAX_TABLES);
-+
-+	if (WARN_ON(!info->set_port != !info->unset_port) ||
-+	    WARN_ON(!info->set_port == !info->sync_table) ||
-+	    WARN_ON(!info->tables[0].n_entries))
-+		return -EINVAL;
-+
-+	n_tables = 1;
-+	for (i = 1; i < UDP_TUNNEL_NIC_MAX_TABLES; i++) {
-+		if (!info->tables[i].n_entries)
-+			continue;
-+
-+		n_tables++;
-+		if (WARN_ON(!info->tables[i - 1].n_entries))
-+			return -EINVAL;
-+	}
-+
-+	utn = udp_tunnel_nic_alloc(info, n_tables);
-+	if (!utn)
-+		return -ENOMEM;
-+
-+	utn->dev = dev;
-+	dev_hold(dev);
-+	dev->udp_tunnel_nic = utn;
-+
-+	if (!(info->flags & UDP_TUNNEL_NIC_INFO_OPEN_ONLY))
-+		udp_tunnel_get_rx_info(dev);
-+
-+	return 0;
-+}
-+
-+static void
-+udp_tunnel_nic_unregister(struct net_device *dev, struct udp_tunnel_nic *utn)
-+{
-+	unsigned int i;
-+
-+	/* Flush before we check work, so we don't waste time adding entries
-+	 * from the work which we will boot immediately.
-+	 */
-+	udp_tunnel_nic_flush(dev, utn);
-+
-+	/* Wait for the work to be done using the state, netdev core will
-+	 * retry unregister until we give up our reference on this device.
-+	 */
-+	if (utn->work_pending)
-+		return;
-+
-+	for (i = 0; i < utn->n_tables; i++)
-+		kfree(utn->entries[i]);
-+	kfree(utn->entries);
-+	kfree(utn);
-+	dev->udp_tunnel_nic = NULL;
-+	dev_put(dev);
-+}
-+
-+static int
-+udp_tunnel_nic_netdevice_event(struct notifier_block *unused,
-+			       unsigned long event, void *ptr)
-+{
-+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++	bool compact = req_base->flags & ETHTOOL_FLAG_COMPACT_BITSETS;
 +	const struct udp_tunnel_nic_info *info;
-+	struct udp_tunnel_nic *utn;
++	unsigned int i;
++	size_t size;
++	int ret;
 +
-+	info = dev->udp_tunnel_nic_info;
-+	if (!info)
-+		return NOTIFY_DONE;
++	BUILD_BUG_ON(__ETHTOOL_UDP_TUNNEL_TYPE_BIT_CNT > 32);
 +
-+	if (event == NETDEV_REGISTER) {
-+		int err;
-+
-+		err = udp_tunnel_nic_register(dev);
-+		if (err)
-+			netdev_WARN(dev, "failed to register for UDP tunnel offloads: %d", err);
-+		return notifier_from_errno(err);
-+	}
-+	/* All other events will need the udp_tunnel_nic state */
-+	utn = dev->udp_tunnel_nic;
-+	if (!utn)
-+		return NOTIFY_DONE;
-+
-+	if (event == NETDEV_UNREGISTER) {
-+		udp_tunnel_nic_unregister(dev, utn);
-+		return NOTIFY_OK;
++	info = req_base->dev->udp_tunnel_nic_info;
++	if (!info) {
++		NL_SET_ERR_MSG(extack,
++			       "device does not report tunnel offload info");
++		return -EOPNOTSUPP;
 +	}
 +
-+	/* All other events only matter if NIC has to be programmed open */
-+	if (!(info->flags & UDP_TUNNEL_NIC_INFO_OPEN_ONLY))
-+		return NOTIFY_DONE;
++	size =	nla_total_size(0); /* _INFO_UDP_PORTS */
 +
-+	if (event == NETDEV_UP) {
-+		WARN_ON(!udp_tunnel_nic_is_empty(dev, utn));
-+		udp_tunnel_get_rx_info(dev);
-+		return NOTIFY_OK;
-+	}
-+	if (event == NETDEV_GOING_DOWN) {
-+		udp_tunnel_nic_flush(dev, utn);
-+		return NOTIFY_OK;
++	for (i = 0; i < UDP_TUNNEL_NIC_MAX_TABLES; i++) {
++		if (!info->tables[i].n_entries)
++			return size;
++
++		size += nla_total_size(0); /* _UDP_TABLE */
++		size +=	nla_total_size(sizeof(u32)); /* _UDP_TABLE_SIZE */
++		ret = ethnl_bitset32_size(&info->tables[i].tunnel_types, NULL,
++					  __ETHTOOL_UDP_TUNNEL_TYPE_BIT_CNT,
++					  udp_tunnel_type_names, compact);
++		if (ret < 0)
++			return ret;
++		size += ret;
++
++		size += udp_tunnel_nic_dump_size(req_base->dev, i);
 +	}
 +
-+	return NOTIFY_DONE;
++	return size;
 +}
 +
-+static struct notifier_block udp_tunnel_nic_notifier_block __read_mostly = {
-+	.notifier_call = udp_tunnel_nic_netdevice_event,
-+};
-+
-+static int __init udp_tunnel_nic_init_module(void)
++static int
++ethnl_tunnel_info_fill_reply(const struct ethnl_req_info *req_base,
++			     struct sk_buff *skb)
 +{
-+	int err;
++	bool compact = req_base->flags & ETHTOOL_FLAG_COMPACT_BITSETS;
++	const struct udp_tunnel_nic_info *info;
++	struct nlattr *ports, *table;
++	unsigned int i;
 +
-+	udp_tunnel_nic_workqueue = alloc_workqueue("udp_tunnel_nic", 0, 0);
-+	if (!udp_tunnel_nic_workqueue)
-+		return -ENOMEM;
++	info = req_base->dev->udp_tunnel_nic_info;
++	if (!info)
++		return -EOPNOTSUPP;
 +
-+	rtnl_lock();
-+	udp_tunnel_nic_ops = &__udp_tunnel_nic_ops;
-+	rtnl_unlock();
++	ports = nla_nest_start(skb, ETHTOOL_A_TUNNEL_INFO_UDP_PORTS);
++	if (!ports)
++		return -EMSGSIZE;
 +
-+	err = register_netdevice_notifier(&udp_tunnel_nic_notifier_block);
-+	if (err)
-+		goto err_unset_ops;
++	for (i = 0; i < UDP_TUNNEL_NIC_MAX_TABLES; i++) {
++		if (!info->tables[i].n_entries)
++			break;
++
++		table = nla_nest_start(skb, ETHTOOL_A_TUNNEL_UDP_TABLE);
++		if (!table)
++			goto err_cancel_ports;
++
++		if (nla_put_u32(skb, ETHTOOL_A_TUNNEL_UDP_TABLE_SIZE,
++				info->tables[i].n_entries))
++			goto err_cancel_table;
++
++		if (ethnl_put_bitset32(skb, ETHTOOL_A_TUNNEL_UDP_TABLE_TYPES,
++				       &info->tables[i].tunnel_types, NULL,
++				       __ETHTOOL_UDP_TUNNEL_TYPE_BIT_CNT,
++				       udp_tunnel_type_names, compact))
++			goto err_cancel_table;
++
++		if (udp_tunnel_nic_dump_write(req_base->dev, i, skb))
++			goto err_cancel_table;
++
++		nla_nest_end(skb, table);
++	}
++
++	nla_nest_end(skb, ports);
 +
 +	return 0;
 +
-+err_unset_ops:
-+	rtnl_lock();
-+	udp_tunnel_nic_ops = NULL;
-+	rtnl_unlock();
-+	destroy_workqueue(udp_tunnel_nic_workqueue);
-+	return err;
++err_cancel_table:
++	nla_nest_cancel(skb, table);
++err_cancel_ports:
++	nla_nest_cancel(skb, ports);
++	return -EMSGSIZE;
 +}
-+late_initcall(udp_tunnel_nic_init_module);
 +
-+static void __exit udp_tunnel_nic_cleanup_module(void)
++static int
++ethnl_tunnel_info_req_parse(struct ethnl_req_info *req_info,
++			    const struct nlmsghdr *nlhdr, struct net *net,
++			    struct netlink_ext_ack *extack, bool require_dev)
 +{
-+	unregister_netdevice_notifier(&udp_tunnel_nic_notifier_block);
++	struct nlattr *tb[ETHTOOL_A_TUNNEL_INFO_MAX + 1];
++	int ret;
++
++	ret = nlmsg_parse(nlhdr, GENL_HDRLEN, tb, ETHTOOL_A_TUNNEL_INFO_MAX,
++			  ethtool_tunnel_info_policy, extack);
++	if (ret < 0)
++		return ret;
++
++	return ethnl_parse_header_dev_get(req_info,
++					  tb[ETHTOOL_A_TUNNEL_INFO_HEADER],
++					  net, extack, require_dev);
++}
++
++int ethnl_tunnel_info_doit(struct sk_buff *skb, struct genl_info *info)
++{
++	struct ethnl_req_info req_info = {};
++	struct sk_buff *rskb;
++	void *reply_payload;
++	int reply_len;
++	int ret;
++
++	ret = ethnl_tunnel_info_req_parse(&req_info, info->nlhdr,
++					  genl_info_net(info), info->extack,
++					  true);
++	if (ret < 0)
++		return ret;
 +
 +	rtnl_lock();
-+	udp_tunnel_nic_ops = NULL;
++	ret = ethnl_tunnel_info_reply_size(&req_info, info->extack);
++	if (ret < 0)
++		goto err_unlock_rtnl;
++	reply_len = ret + ethnl_reply_header_size();
++
++	rskb = ethnl_reply_init(reply_len, req_info.dev,
++				ETHTOOL_MSG_TUNNEL_INFO_GET,
++				ETHTOOL_A_TUNNEL_INFO_HEADER,
++				info, &reply_payload);
++	if (!rskb) {
++		ret = -ENOMEM;
++		goto err_unlock_rtnl;
++	}
++
++	ret = ethnl_tunnel_info_fill_reply(&req_info, rskb);
++	if (ret)
++		goto err_free_msg;
++	rtnl_unlock();
++	dev_put(req_info.dev);
++	genlmsg_end(rskb, reply_payload);
++
++	return genlmsg_reply(rskb, info);
++
++err_free_msg:
++	nlmsg_free(rskb);
++err_unlock_rtnl:
++	rtnl_unlock();
++	dev_put(req_info.dev);
++	return ret;
++}
++
++struct ethnl_tunnel_info_dump_ctx {
++	struct ethnl_req_info	req_info;
++	int			pos_hash;
++	int			pos_idx;
++};
++
++int ethnl_tunnel_info_start(struct netlink_callback *cb)
++{
++	struct ethnl_tunnel_info_dump_ctx *ctx = (void *)cb->ctx;
++	int ret;
++
++	BUILD_BUG_ON(sizeof(*ctx) > sizeof(cb->ctx));
++
++	memset(ctx, 0, sizeof(*ctx));
++
++	ret = ethnl_tunnel_info_req_parse(&ctx->req_info, cb->nlh,
++					  sock_net(cb->skb->sk), cb->extack,
++					  false);
++	if (ctx->req_info.dev) {
++		dev_put(ctx->req_info.dev);
++		ctx->req_info.dev = NULL;
++	}
++
++	return ret;
++}
++
++int ethnl_tunnel_info_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
++{
++	struct ethnl_tunnel_info_dump_ctx *ctx = (void *)cb->ctx;
++	struct net *net = sock_net(skb->sk);
++	int s_idx = ctx->pos_idx;
++	int h, idx = 0;
++	int ret = 0;
++	void *ehdr;
++
++	rtnl_lock();
++	cb->seq = net->dev_base_seq;
++	for (h = ctx->pos_hash; h < NETDEV_HASHENTRIES; h++, s_idx = 0) {
++		struct hlist_head *head;
++		struct net_device *dev;
++
++		head = &net->dev_index_head[h];
++		idx = 0;
++		hlist_for_each_entry(dev, head, index_hlist) {
++			if (idx < s_idx)
++				goto cont;
++
++			ehdr = ethnl_dump_put(skb, cb,
++					      ETHTOOL_MSG_TUNNEL_INFO_GET);
++			if (!ehdr) {
++				ret = -EMSGSIZE;
++				goto out;
++			}
++
++			ret = ethnl_fill_reply_header(skb, dev, ETHTOOL_A_TUNNEL_INFO_HEADER);
++			if (ret < 0) {
++				genlmsg_cancel(skb, ehdr);
++				goto out;
++			}
++
++			ctx->req_info.dev = dev;
++			ret = ethnl_tunnel_info_fill_reply(&ctx->req_info, skb);
++			ctx->req_info.dev = NULL;
++			if (ret < 0) {
++				genlmsg_cancel(skb, ehdr);
++				if (ret == -EOPNOTSUPP)
++					goto cont;
++				goto out;
++			}
++			genlmsg_end(skb, ehdr);
++cont:
++			idx++;
++		}
++	}
++out:
 +	rtnl_unlock();
 +
-+	destroy_workqueue(udp_tunnel_nic_workqueue);
++	ctx->pos_hash = h;
++	ctx->pos_idx = idx;
++	nl_dump_check_consistent(cb, nlmsg_hdr(skb));
++
++	if (ret == -EMSGSIZE && skb->len)
++		return skb->len;
++	return ret;
 +}
-+module_exit(udp_tunnel_nic_cleanup_module);
+diff --git a/net/ipv4/udp_tunnel_nic.c b/net/ipv4/udp_tunnel_nic.c
+index 098fb0ebe998..687c94447d5e 100644
+--- a/net/ipv4/udp_tunnel_nic.c
++++ b/net/ipv4/udp_tunnel_nic.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ // Copyright (c) 2020 Facebook Inc.
+ 
++#include <linux/ethtool_netlink.h>
+ #include <linux/netdevice.h>
+ #include <linux/slab.h>
+ #include <linux/types.h>
+@@ -72,6 +73,12 @@ udp_tunnel_nic_entry_is_free(struct udp_tunnel_nic_table_entry *entry)
+ 	return entry->use_cnt == 0 && !entry->flags;
+ }
+ 
++static bool
++udp_tunnel_nic_entry_is_present(struct udp_tunnel_nic_table_entry *entry)
++{
++	return entry->use_cnt && !(entry->flags & ~UDP_TUNNEL_NIC_ENTRY_FROZEN);
++}
 +
-+MODULE_LICENSE("GPL");
-diff --git a/net/ipv4/udp_tunnel_stub.c b/net/ipv4/udp_tunnel_stub.c
-new file mode 100644
-index 000000000000..c4b2888f5fef
---- /dev/null
-+++ b/net/ipv4/udp_tunnel_stub.c
-@@ -0,0 +1,7 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+// Copyright (c) 2020 Facebook Inc.
+ static bool
+ udp_tunnel_nic_entry_is_frozen(struct udp_tunnel_nic_table_entry *entry)
+ {
+@@ -571,12 +578,74 @@ static void __udp_tunnel_nic_reset_ntf(struct net_device *dev)
+ 	__udp_tunnel_nic_device_sync(dev, utn);
+ }
+ 
++static size_t
++__udp_tunnel_nic_dump_size(struct net_device *dev, unsigned int table)
++{
++	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
++	struct udp_tunnel_nic *utn;
++	unsigned int j;
++	size_t size;
 +
-+#include <net/udp_tunnel.h>
++	utn = dev->udp_tunnel_nic;
++	if (!utn)
++		return 0;
 +
-+const struct udp_tunnel_nic_ops *udp_tunnel_nic_ops;
-+EXPORT_SYMBOL_GPL(udp_tunnel_nic_ops);
++	size = 0;
++	for (j = 0; j < info->tables[table].n_entries; j++) {
++		if (!udp_tunnel_nic_entry_is_present(&utn->entries[table][j]))
++			continue;
++
++		size += nla_total_size(0) +		 /* _TABLE_ENTRY */
++			nla_total_size(sizeof(__be16)) + /* _ENTRY_PORT */
++			nla_total_size(sizeof(u32));	 /* _ENTRY_TYPE */
++	}
++
++	return size;
++}
++
++static int
++__udp_tunnel_nic_dump_write(struct net_device *dev, unsigned int table,
++			    struct sk_buff *skb)
++{
++	const struct udp_tunnel_nic_info *info = dev->udp_tunnel_nic_info;
++	struct udp_tunnel_nic *utn;
++	struct nlattr *nest;
++	unsigned int j;
++
++	utn = dev->udp_tunnel_nic;
++	if (!utn)
++		return 0;
++
++	for (j = 0; j < info->tables[table].n_entries; j++) {
++		if (!udp_tunnel_nic_entry_is_present(&utn->entries[table][j]))
++			continue;
++
++		nest = nla_nest_start(skb, ETHTOOL_A_TUNNEL_UDP_TABLE_ENTRY);
++
++		if (nla_put_be16(skb, ETHTOOL_A_TUNNEL_UDP_ENTRY_PORT,
++				 utn->entries[table][j].port) ||
++		    nla_put_u32(skb, ETHTOOL_A_TUNNEL_UDP_ENTRY_TYPE,
++				ilog2(utn->entries[table][j].type)))
++			goto err_cancel;
++
++		nla_nest_end(skb, nest);
++	}
++
++	return 0;
++
++err_cancel:
++	nla_nest_cancel(skb, nest);
++	return -EMSGSIZE;
++}
++
+ static const struct udp_tunnel_nic_ops __udp_tunnel_nic_ops = {
+ 	.get_port	= __udp_tunnel_nic_get_port,
+ 	.set_port_priv	= __udp_tunnel_nic_set_port_priv,
+ 	.add_port	= __udp_tunnel_nic_add_port,
+ 	.del_port	= __udp_tunnel_nic_del_port,
+ 	.reset_ntf	= __udp_tunnel_nic_reset_ntf,
++	.dump_size	= __udp_tunnel_nic_dump_size,
++	.dump_write	= __udp_tunnel_nic_dump_write,
+ };
+ 
+ static void
 -- 
 2.26.2
 
