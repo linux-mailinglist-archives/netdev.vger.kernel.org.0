@@ -2,63 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A0B4217971
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 22:33:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8888B217977
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 22:34:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728787AbgGGUdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 16:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52846 "EHLO
+        id S1728653AbgGGUez convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Jul 2020 16:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727090AbgGGUdz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 16:33:55 -0400
+        with ESMTP id S1728335AbgGGUez (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 16:34:55 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D60C061755
-        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 13:33:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71162C061755
+        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 13:34:55 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8CF6F120F93E0;
-        Tue,  7 Jul 2020 13:33:54 -0700 (PDT)
-Date:   Tue, 07 Jul 2020 13:33:51 -0700 (PDT)
-Message-Id: <20200707.133351.1107364856000095627.davem@davemloft.net>
-To:     saeedm@mellanox.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [pull request][net 00/11] mlx5 fixes 2020-07-02
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BBEC6120F93E0;
+        Tue,  7 Jul 2020 13:34:53 -0700 (PDT)
+Date:   Tue, 07 Jul 2020 13:34:52 -0700 (PDT)
+Message-Id: <20200707.133452.1011109347469465282.davem@davemloft.net>
+To:     xiyou.wangcong@gmail.com
+Cc:     netdev@vger.kernel.org, cam@neo-zeon.de, pgwipeout@gmail.com,
+        lufq.fnst@cn.fujitsu.com, dsonck92@gmail.com,
+        qiang.zhang@windriver.com, t.lamprecht@proxmox.com,
+        daniel@iogearbox.net, lizefan@huawei.com, tj@kernel.org,
+        guro@fb.com
+Subject: Re: [Patch net v2] cgroup: fix cgroup_sk_alloc() for
+ sk_clone_lock()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200702221923.650779-1-saeedm@mellanox.com>
-References: <20200702221923.650779-1-saeedm@mellanox.com>
+In-Reply-To: <20200702185256.17917-1-xiyou.wangcong@gmail.com>
+References: <20200702185256.17917-1-xiyou.wangcong@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 07 Jul 2020 13:33:54 -0700 (PDT)
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 07 Jul 2020 13:34:54 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@mellanox.com>
-Date: Thu,  2 Jul 2020 15:19:12 -0700
+From: Cong Wang <xiyou.wangcong@gmail.com>
+Date: Thu,  2 Jul 2020 11:52:56 -0700
 
-> This series introduces some fixes to mlx5 driver.
+> When we clone a socket in sk_clone_lock(), its sk_cgrp_data is
+> copied, so the cgroup refcnt must be taken too. And, unlike the
+> sk_alloc() path, sock_update_netprioidx() is not called here.
+> Therefore, it is safe and necessary to grab the cgroup refcnt
+> even when cgroup_sk_alloc is disabled.
 > 
-> Please pull and let me know if there is any problem.
+> sk_clone_lock() is in BH context anyway, the in_interrupt()
+> would terminate this function if called there. And for sk_alloc()
+> skcd->val is always zero. So it's safe to factor out the code
+> to make it more readable.
+> 
+> The global variable 'cgroup_sk_alloc_disabled' is used to determine
+> whether to take these reference counts. It is impossible to make
+> the reference counting correct unless we save this bit of information
+> in skcd->val. So, add a new bit there to record whether the socket
+> has already taken the reference counts. This obviously relies on
+> kmalloc() to align cgroup pointers to at least 4 bytes,
+> ARCH_KMALLOC_MINALIGN is certainly larger than that.
+> 
+> This bug seems to be introduced since the beginning, commit
+> d979a39d7242 ("cgroup: duplicate cgroup reference when cloning sockets")
+> tried to fix it but not compeletely. It seems not easy to trigger until
+> the recent commit 090e28b229af
+> ("netprio_cgroup: Fix unlimited memory leak of v2 cgroups") was merged.
+> 
+> Fixes: bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup")
+> Reported-by: Cameron Berkenpas <cam@neo-zeon.de>
+> Reported-by: Peter Geis <pgwipeout@gmail.com>
+> Reported-by: Lu Fengqi <lufq.fnst@cn.fujitsu.com>
+> Reported-by: Daniël Sonck <dsonck92@gmail.com>
+> Reported-by: Zhang Qiang <qiang.zhang@windriver.com>
+> Tested-by: Cameron Berkenpas <cam@neo-zeon.de>
+> Tested-by: Peter Geis <pgwipeout@gmail.com>
+> Tested-by: Thomas Lamprecht <t.lamprecht@proxmox.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Zefan Li <lizefan@huawei.com>
+> Cc: Tejun Heo <tj@kernel.org>
+> Cc: Roman Gushchin <guro@fb.com>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-This needs more work.
-
-I agree with Jakub that duplicating standard stats in ethtool -S is
-and has always been a very bad idea.  We let people get away with it
-initially in order to allow per-queue stats, but that was a mistake
-and even if it was the right way forward it doesn't mean the rest of
-the ip -s stats should have been duplicated as well.
-
-Jakub's base argument is true, if we ever do something better in the
-generic 'ip -s' stuff it will not propagate to all of the 'ethtool -S'
-because it is duplicated around in every driver.
-
-We let driver developers get away with a lot with ethtool custom
-statistics and we're past due to perform some push back on this issue.
-
-There also seems to be some necessary discussion about where the tc
-reference count fix really belongs.
+Applied and queued up for -stable, thanks!
