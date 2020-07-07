@@ -2,185 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14DF92169B0
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 12:06:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 869CD216A79
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 12:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgGGKF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 06:05:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726681AbgGGKF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 06:05:59 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021B6C061755
-        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 03:05:58 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id o11so44545914wrv.9
-        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 03:05:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xkz5ETWjNrQFf/cWgOKpyYJFf+I8t8uMaY0GHfvAid8=;
-        b=DTzEgPwy/cHXdWlqhXWIXJKAxLqCuIslFEY+kwOzxfW/OcBINiMF4r+HmMasVqMNjv
-         eDpv95PZz8ICKNh1alcgRwzMFEm4ra7z1FPqlC3zthvkri1JKyQPx+m2N8MOEQBf/mCW
-         mEReFLDLtVwijxm9qG8/vFL4kpKQEouKpl61dQeeFsN3LtnWuZ80fb1jhmUnBrjedeiP
-         flWCc3HKnO1HCaXX/Fu+64dc9nSDP5yrzK8rVD3z6IVhHT45QUVw9tTbZn/rxSxapt+E
-         /JMV8dkIWRgn0IAaM4YQRKWBvWMMKVbF9KsTzGEMIHhrG2soAnx60zSht2HaWql3CC2s
-         SDAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xkz5ETWjNrQFf/cWgOKpyYJFf+I8t8uMaY0GHfvAid8=;
-        b=n1f+yFO4gRlcqO49lv3Jylo8TFgd/KS1rkRJVYbMyip5AjXbY7PMiJXV5KyX6CmQ/9
-         u7n0Feq2auGPwHLcvfgAKDJHMpgGERS4De3DXr+cwyISYLKkBzQG7k0DJgVl/jjsNeXS
-         5MsORNKYlGdbZ/ZSdp9Er0o+5juaeL6VK+pRlglGI/23mwhrE8N4jgSNdZrpWdZl0Bua
-         Qq0X3/RuQHhXJSVdB+NykQtJ4V2OOGy9kE0kgymmuRzuPz7JdWwb9es5jjted9Z1x07M
-         090mitnOxJe81fLzWBZCMqKMQnaTdJqFyMaISPKX5gtXyZXYEvpFHbWGPf4LImJa2xQS
-         KO0A==
-X-Gm-Message-State: AOAM533bYvSolDDnWYVWkbLxGWUYhnGv2rA7UyXJLlV7Dn9WXSL3WNIX
-        B9LYVp+aygM/bcK4WwqJH2JWeQ==
-X-Google-Smtp-Source: ABdhPJyo1bovtIZX7f5FW4bTTU8pb0NefoN7dDQ3mNWUgDXp4rJVDmXSpMzdtj2d5IHDlAw0Ecev6Q==
-X-Received: by 2002:a5d:6045:: with SMTP id j5mr52202442wrt.209.1594116357547;
-        Tue, 07 Jul 2020 03:05:57 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id 65sm401073wma.48.2020.07.07.03.05.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2020 03:05:56 -0700 (PDT)
-Date:   Tue, 7 Jul 2020 12:05:56 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Ariel Levkovich <lariel@mellanox.com>, netdev@vger.kernel.org,
-        kuba@kernel.org, xiyou.wangcong@gmail.com, ast@kernel.org,
-        daniel@iogearbox.net
-Subject: Re: [PATCH net-next v2 0/3] ] TC datapath hash api
-Message-ID: <20200707100556.GB2251@nanopsycho.orion>
-References: <20200701184719.8421-1-lariel@mellanox.com>
- <13b36fb1-f93e-dad7-9dba-575909197652@mojatatu.com>
+        id S1728140AbgGGKhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 06:37:53 -0400
+Received: from mail-eopbgr80082.outbound.protection.outlook.com ([40.107.8.82]:23906
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725874AbgGGKhw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jul 2020 06:37:52 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UVd9OhniSILjXTvzbgmdZgLnlCg4iAzck+WfSc0m2gFpZ2urugEqCR9iUSV9LByWq+JY90rv4tk6+sivvMCFjpg6/8ELB6SYy/vo8oz5VGAgbFloegntpGaJlFkmrATAK0a7IAkzyZsQ0fVF3YcZ5UyBm8XfZuXnjhb/gbk9uNWMdIt55fta5bP6VwNNNET6LdcniA6ab+fIMd3JSHtyHUBiyF9ZBzDiqVi3sA5kA3Q7erZXrcFpLSDMshXDWHCcADUEVvPrY7AqbKeArH34lc4IyC/IB0iobT25ZBYXbF0q7zKE+kWwp7/+fWBl5kOpLeMMXX2mCaUhRPbS5vLhWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EBCO1p3EEF+pDizrIk6BVODRHjxOz1Kwm7MruV4Rgb8=;
+ b=e7ij4A2FaPT2XKbIBhLDNTgm/6fByP/J/k4NvLnLbYNxJe+In7/0RmoMaDNveHSxAM1DFlW4WRdRDpi/CKqrgZ0LzLI98Y50GLN3N11xOsc5ZQB164zHU/vv9DHjrz/JTPqkD3t76iVoXAJ4SG3uDQovwtds7Gy45ztbfiGyKW9x5Sq5QBHnJXDUsHJrjNBOhwYeZCjku1ttdvrg9f3Xb2xi7LSAjvLJw7Q9Paz3EWie6f6IVGEZtV6PTAVC5ICQ7N3RMduiWjDm1j+EH5Zl66EehoafJk2pTFKQktGBq1SxteecNPUGht6o9WT8VHYOaAhGiVCRk+PdlRX0AWI/zA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EBCO1p3EEF+pDizrIk6BVODRHjxOz1Kwm7MruV4Rgb8=;
+ b=J98FC+6Nmc24jl3O3EeRv6E04GU9rlQR6yh10P6jVkdvNLQjDko5zwM8AK31/FqQLvp5kgS/Nli1Jkb21ve8NOSp0868FQdTxksTApBoDZiyfxhswSQMwAUTsPCQmhn8XXaVwF94raO0/TmNdbeq779I57O/MCoqvLhnoObO57M=
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=mellanox.com;
+Received: from AM6PR05MB5974.eurprd05.prod.outlook.com (2603:10a6:20b:a7::12)
+ by AM6PR05MB6519.eurprd05.prod.outlook.com (2603:10a6:20b:ba::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.21; Tue, 7 Jul
+ 2020 10:37:48 +0000
+Received: from AM6PR05MB5974.eurprd05.prod.outlook.com
+ ([fe80::55:e9a6:86b0:8ba2]) by AM6PR05MB5974.eurprd05.prod.outlook.com
+ ([fe80::55:e9a6:86b0:8ba2%7]) with mapi id 15.20.3153.029; Tue, 7 Jul 2020
+ 10:37:48 +0000
+Subject: Re: [PATCH bpf-next 00/14] xsk: support shared umems between devices
+ and queues
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        bjorn.topel@intel.com, ast@kernel.org, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com,
+        cristian.dumitrescu@intel.com
+References: <1593692353-15102-1-git-send-email-magnus.karlsson@intel.com>
+ <b016b064-3e46-d73c-758f-4c0e97c1f1a4@iogearbox.net>
+From:   Maxim Mikityanskiy <maximmi@mellanox.com>
+Message-ID: <27fabafe-16d5-6128-7e9d-a808f4728ba7@mellanox.com>
+Date:   Tue, 7 Jul 2020 13:37:45 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <b016b064-3e46-d73c-758f-4c0e97c1f1a4@iogearbox.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM0PR04CA0011.eurprd04.prod.outlook.com
+ (2603:10a6:208:122::24) To AM6PR05MB5974.eurprd05.prod.outlook.com
+ (2603:10a6:20b:a7::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <13b36fb1-f93e-dad7-9dba-575909197652@mojatatu.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.44.1.235] (37.57.128.233) by AM0PR04CA0011.eurprd04.prod.outlook.com (2603:10a6:208:122::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20 via Frontend Transport; Tue, 7 Jul 2020 10:37:47 +0000
+X-Originating-IP: [37.57.128.233]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 12fc4a5e-21f3-4524-9a77-08d82261ca84
+X-MS-TrafficTypeDiagnostic: AM6PR05MB6519:
+X-Microsoft-Antispam-PRVS: <AM6PR05MB651958D3A0BF7579B5852036D1660@AM6PR05MB6519.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0457F11EAF
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: S+NwwfvOLvEnX+7QjdJuyM4aRGd7cuSOzBLnbyk2Es8InjWU4Owmf00m/6hI/BYn2j6Tmvumj6sG5IpBSGZyhfJGCmESKe53FGTSW0zQWTZXOFdf3PvWgP0xFScwfw7ZWf0AS/VShbc2o/ST2e5JhD9Lj/UHZtaWVA8nLIexzbOEfjJsz53L75fpLKPxuB/zRHGnK5YyXSQjRttUtCXRFRieG3XPEXshGXfKbZcG3hjsmb2ib67O97Kr7/4kL2RoMGGeqw9osAPvpaTZp5/HlI4TUymfa2aPWrDd9FY09FGAQfeSq36iKaRQUMkiGk2YNPH40npMuAaV9PejpnJ0eQawewwc76r54+WKDcq6R3dUMrcwkZgSa1xoyge368AU
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB5974.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(39860400002)(396003)(136003)(366004)(53546011)(5660300002)(16576012)(316002)(110136005)(8676002)(66556008)(478600001)(66476007)(66946007)(8936002)(4326008)(7416002)(2906002)(186003)(16526019)(55236004)(26005)(6486002)(31696002)(86362001)(31686004)(83380400001)(36756003)(52116002)(956004)(2616005)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: q7BdFyJS3XHbJQpynW9iKnR+7Y2UARM98QUiytM1zoIByXCXEDa4a6cyUqfvydAxqynNKYBnuU/5iXdzqtOvEk+yS99v8enmuIjhRZYJQIdp/biQvVR8dP2+bC+L8caP9EJzUi0v2cYlPddOFnddx02Payis8poolvW1m4Hrj/pGvX+oKCkSoPIDfS/jZItUiSrFbWJuPbTLeNqpDyTv21nE2ypYW6beXeEGdnpVRo5gN3jonzMjJFfbxAZHt4yWKEUSxsvlGxJHG2Wj1Zu8B/2IU5u1jVky22HXI9/aLEASvkhJgkDavI+HmPiS6Ox5KNfuH2i5f7+iCjz9MW1ePkXPysjF15hk0JArQl946WujCE9sOPpTKdup5EzTyQOW9flyErmFbLADcQp2mWbuJ8RcU+yINuOxXyBuJA54VIZTrxHh/CT6VIACCmpm2iTAr4I6+BCLfxBy/QsM9gLYYtHoo9j+jfQKvx75wwLK4EA=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12fc4a5e-21f3-4524-9a77-08d82261ca84
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR05MB5974.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2020 10:37:48.0873
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vfxE6ERxRDzwglu46L4+I8T83oCxwobOMejVneBlrEdIHukcLi5D7nnk0NrW21T39k103N1D3B5QbpSH7I/+wg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6519
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jul 03, 2020 at 01:22:47PM CEST, jhs@mojatatu.com wrote:
->Hi,
->
->Several comments:
->1) I agree with previous comments that you should
->look at incorporating this into skbedit.
->Unless incorporating into skbedit introduces huge
->complexity, IMO it belongs there.
->
->2) I think it would make sense to create a skb hash classifier
->instead of tying this entirely to flower i.e i should not
->have to change u32 just so i can support hash classification.
+On 2020-07-06 21:39, Daniel Borkmann wrote:
+> On 7/2/20 2:18 PM, Magnus Karlsson wrote:
+>> This patch set adds support to share a umem between AF_XDP sockets
+>> bound to different queue ids on the same device or even between
+>> devices. It has already been possible to do this by registering the
+>> umem multiple times, but this wastes a lot of memory. Just imagine
+>> having 10 threads each having 10 sockets open sharing a single
+>> umem. This means that you would have to register the umem 100 times
+>> consuming large quantities of memory.
 
-Well, we don't have multiple classifiers for each flower match, we have
-them all in one classifier. It turned out to be very convenient and
-intuitive for people to use one classifier to do the job for them.
-Modularity is nice, but useability is I think more important in this
-case. Flower turned out to do good job there.
+Sounds like this series has some great stuff!
 
-+ Nothing stops you from creating separate classifier to match on hash
-as you wanted to :)
+> [...]
+> 
+>> Note to Maxim at Mellanox. I do not have a mlx5 card, so I have not
+>> been able to test the changes to your driver. It compiles, but that is
+>> all I can say, so it would be great if you could test it. Also, I did
+>> change the name of many functions and variables from umem to pool as a
+>> buffer pool is passed down to the driver in this patch set instead of
+>> the umem. I did not change the name of the files umem.c and
+>> umem.h. Please go through the changes and change things to your
+>> liking.
+> 
+> Bjorn / Maxim, this is waiting on review (& mlx5 testing) from you, ptal.
 
+Sure, I'll take a look and do the mlx5 testing (I only noticed this 
+series yesterday).
 
->So policy would be something of the sort:
->
->$ tc filter add dev ens1f0_0 ingress \
->prio 1 chain 0 proto ip \
->flower ip_proto tcp \
->action skbedit hash bpf object-file <file> \
->action goto chain 2
->
->$ tc filter add dev ens1f0_0 ingress \
->prio 1 chain 2 proto ip \
->handle 0x0 skbhash  flowid 1:11 mask 0xf  \
->action mirred egress redirect dev ens1f0_1
->
->$ tc filter add dev ens1f0_0 ingress \
->prio 1 chain 2 proto ip \
->handle 0x1 skbhash  flowid 1:11 mask 0xf  \
->action mirred egress redirect dev ens1f0_2
->
->IOW, we maintain current modularity as opposed
->to dumping everything into flower.
->Ive always wanted to write the skbhash classifier but
->time was scarce. At one point i had some experiment
->where I would copy skb hash into mark in the driver
->and use fw classifier for further processing.
->It was ugly.
->
->cheers,
->jamal
->
->On 2020-07-01 2:47 p.m., Ariel Levkovich wrote:
->> Supporting datapath hash allows user to set up rules that provide
->> load balancing of traffic across multiple vports and for ECMP path
->> selection while keeping the number of rule at minimum.
->> 
->> Instead of matching on exact flow spec, which requires a rule per
->> flow, user can define rules based on hashing on the packet headers
->> and distribute the flows to different buckets. The number of rules
->> in this case will be constant and equal to the number of buckets.
->> 
->> The datapath hash functionality is achieved in two steps -
->> performing the hash action and then matching on the result, as
->> part of the packet's classification.
->> 
->> The api allows user to define a filter with a tc hash action
->> where the hash function can be standard asymetric hashing that Linux
->> offers or alternatively user can provide a bpf program that
->> performs hash calculation on a packet.
->> 
->> Usage is as follows:
->> 
->> $ tc filter add dev ens1f0_0 ingress \
->> prio 1 chain 0 proto ip \
->> flower ip_proto tcp \
->> action hash bpf object-file <file> \
->> action goto chain 2
->> 
->> $ tc filter add dev ens1f0_0 ingress \
->> prio 1 chain 0 proto ip \
->> flower ip_proto udp \
->> action hash bpf asym_l4 basis <basis> \
->> action goto chain 2
->> 
->> $ tc filter add dev ens1f0_0 ingress \
->> prio 1 chain 2 proto ip \
->> flower hash 0x0/0xf  \
->> action mirred egress redirect dev ens1f0_1
->> 
->> $ tc filter add dev ens1f0_0 ingress \
->> prio 1 chain 2 proto ip \
->> flower hash 0x1/0xf  \
->> action mirred egress redirect dev ens1f0_2
->> 
->> Ariel Levkovich (3):
->>    net/sched: Introduce action hash
->>    net/flow_dissector: add packet hash dissection
->>    net/sched: cls_flower: Add hash info to flow classification
->> 
->>   include/linux/skbuff.h              |   4 +
->>   include/net/act_api.h               |   2 +
->>   include/net/flow_dissector.h        |   9 +
->>   include/net/tc_act/tc_hash.h        |  22 ++
->>   include/uapi/linux/pkt_cls.h        |   4 +
->>   include/uapi/linux/tc_act/tc_hash.h |  32 +++
->>   net/core/flow_dissector.c           |  17 ++
->>   net/sched/Kconfig                   |  11 +
->>   net/sched/Makefile                  |   1 +
->>   net/sched/act_hash.c                | 389 ++++++++++++++++++++++++++++
->>   net/sched/cls_api.c                 |   1 +
->>   net/sched/cls_flower.c              |  16 ++
->>   12 files changed, 508 insertions(+)
->>   create mode 100644 include/net/tc_act/tc_hash.h
->>   create mode 100644 include/uapi/linux/tc_act/tc_hash.h
->>   create mode 100644 net/sched/act_hash.c
->> 
->
+> Thanks,
+> Daniel
+
