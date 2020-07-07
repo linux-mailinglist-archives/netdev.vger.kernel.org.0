@@ -2,67 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A27A216C49
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 13:50:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04D94216CA1
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 14:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728892AbgGGLt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 07:49:27 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:37981 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727116AbgGGLt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 07:49:27 -0400
-Received: from ip5f5af08c.dynamic.kabel-deutschland.de ([95.90.240.140] helo=wittgenstein)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1jsm6G-0004ZI-Uh; Tue, 07 Jul 2020 11:49:25 +0000
-Date:   Tue, 7 Jul 2020 13:49:23 +0200
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, Sargun Dhillon <sargun@sargun.me>,
-        Christian Brauner <christian@brauner.io>,
-        Tycho Andersen <tycho@tycho.ws>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Matt Denton <mpdenton@google.com>,
-        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
-        Robert Sesek <rsesek@google.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
-        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v6 3/7] fs: Add receive_fd() wrapper for __receive_fd()
-Message-ID: <20200707114923.6huxnb4e5vkl657a@wittgenstein>
-References: <20200706201720.3482959-1-keescook@chromium.org>
- <20200706201720.3482959-4-keescook@chromium.org>
+        id S1727850AbgGGMQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 08:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726911AbgGGMQI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 08:16:08 -0400
+X-Greylist: delayed 654 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jul 2020 05:16:08 PDT
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A3DC061755;
+        Tue,  7 Jul 2020 05:16:07 -0700 (PDT)
+Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 067C4xPH027462
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Tue, 7 Jul 2020 14:05:00 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1594123500; bh=LpYHzL1Fv+6r+q+/DerBNxWDzKGX9YKvtsmvkogOo+I=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=cMhTetJjnHHTM68v7z/MTjWLOy0iXztNxRx3x3KxRBHdOZRjbDqRmhXwtOyt1gUHq
+         yK4NbRM0DpgXhLGO6+4Jr2LpFABkr90sXKNq7GSKbMxocqGNdt5TM+Jv3dRpgpt5Pu
+         umdNqQCbLEb8vMeh3qls1TyQF0GMv9p+8qrIjf2g=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
+        (envelope-from <bjorn@mork.no>)
+        id 1jsmLK-000PCr-JH; Tue, 07 Jul 2020 14:04:58 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     AceLan Kao <acelan.kao@canonical.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: usb: qmi_wwan: add support for Quectel EG95 LTE modem
+Organization: m
+References: <20200707081445.1064346-1-acelan.kao@canonical.com>
+Date:   Tue, 07 Jul 2020 14:04:58 +0200
+In-Reply-To: <20200707081445.1064346-1-acelan.kao@canonical.com> (AceLan Kao's
+        message of "Tue, 7 Jul 2020 16:14:45 +0800")
+Message-ID: <873663cyz9.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200706201720.3482959-4-keescook@chromium.org>
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.2 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 06, 2020 at 01:17:16PM -0700, Kees Cook wrote:
-> For both pidfd and seccomp, the __user pointer is not used. Update
-> __receive_fd() to make writing to ufd optional via a NULL check. However,
-> for the receive_fd_user() wrapper, ufd is NULL checked so an -EFAULT
-> can be returned to avoid changing the SCM_RIGHTS interface behavior. Add
-> new wrapper receive_fd() for pidfd and seccomp that does not use the ufd
-> argument. For the new helper, the allocated fd needs to be returned on
-> success. Update the existing callers to handle it.
-> 
-> Reviewed-by: Sargun Dhillon <sargun@sargun.me>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
+AceLan Kao <acelan.kao@canonical.com> writes:
 
-Hm, I'm not sure why 2/7 and 3/7 aren't just one patch but ok. :)
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+> Add support for Quectel Wireless Solutions Co., Ltd. EG95 LTE modem
+>
+> T:  Bus=3D01 Lev=3D01 Prnt=3D01 Port=3D02 Cnt=3D02 Dev#=3D  5 Spd=3D480 M=
+xCh=3D 0
+> D:  Ver=3D 2.00 Cls=3Def(misc ) Sub=3D02 Prot=3D01 MxPS=3D64 #Cfgs=3D  1
+> P:  Vendor=3D2c7c ProdID=3D0195 Rev=3D03.18
+> S:  Manufacturer=3DAndroid
+> S:  Product=3DAndroid
+> C:  #Ifs=3D 5 Cfg#=3D 1 Atr=3Da0 MxPwr=3D500mA
+> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
+r=3D(none)
+> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Drive=
+r=3D(none)
+> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Drive=
+r=3D(none)
+> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Drive=
+r=3D(none)
+> I:  If#=3D0x4 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
+r=3D(none)
+>
+> Signed-off-by: AceLan Kao <acelan.kao@canonical.com>
+> ---
+>  drivers/net/usb/qmi_wwan.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+> index 31b1d4b959f6..07c42c0719f5 100644
+> --- a/drivers/net/usb/qmi_wwan.c
+> +++ b/drivers/net/usb/qmi_wwan.c
+> @@ -1370,6 +1370,7 @@ static const struct usb_device_id products[] =3D {
+>  	{QMI_QUIRK_SET_DTR(0x1e0e, 0x9001, 5)},	/* SIMCom 7100E, 7230E, 7600E +=
++ */
+>  	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0121, 4)},	/* Quectel EC21 Mini PCIe */
+>  	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0191, 4)},	/* Quectel EG91 */
+> +	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0195, 4)},	/* Quectel EG95 */
+>  	{QMI_FIXED_INTF(0x2c7c, 0x0296, 4)},	/* Quectel BG96 */
+>  	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
+>  	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
+
+Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
