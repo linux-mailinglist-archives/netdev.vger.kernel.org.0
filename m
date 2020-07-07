@@ -2,86 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4321C2167DC
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 09:59:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E79F216813
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 10:15:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728125AbgGGH7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 03:59:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
+        id S1728317AbgGGIOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 04:14:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726757AbgGGH7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 03:59:16 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC3EC061755
-        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 00:59:15 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id cv18so667465pjb.1
-        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 00:59:15 -0700 (PDT)
+        with ESMTP id S1725825AbgGGIOs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 04:14:48 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F34C061755;
+        Tue,  7 Jul 2020 01:14:48 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id d10so16449043pls.5;
+        Tue, 07 Jul 2020 01:14:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=3olRL5AOtjYkaaCEnumLovJR2dhQKUs6npZPSM9Nj9c=;
-        b=aWrs9WgwWbcEF1thIokLU5gSh21k4m4uXiT2qALtmFmIxFANvGC1ed1FGz2gOp2PSd
-         Lii5uwLXsiDPf9qHsu5s7vR2mCkATvP7RoqiER2GP39XdG2pdTTIJq9CuQ0b0bO91bQT
-         PEPepz0OjA0kEM1ngU2L3/cal7Dr43J0W/1TbSkue/ZK5F/E4jt15yoifEA6N5tEHKa6
-         Y9RnN2eHlAhhU9tgF5zqn758QBRlCZIn7Zq/de+HvPzafRun3bHox/k7kYNH2Vw0j/SQ
-         9UeoGoXRQMVmpkwbWvPWBAb5C3xHQYUd8LaMhBnlvWKnoJaehf0DavuPoN2mmTxIW5HE
-         wUaA==
+        h=sender:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0C0wcrNGaktDjuYvX7l+qcJPA3Xk9qtFSM1cNlh6Gqw=;
+        b=MHVP5Ibh0HfJIKkVSxQSJqtyapKe7AmeX3KHnvylIYdLmkrFdK+BdWnLHlnA6xX0wO
+         olcwcJxLWCZ+G9sSZ5n51OjJUvX0MT95bQeWi7ndH0ZDenKaIga4mFRwOlzEsTw4Q5BV
+         K6TkhASmK++WOvxa+gmi30ZuR6c2c8hFGS3xC4waI/0c3l5eWwM4018gJmHsqOrBOx0y
+         9GdKpXvIVj6hcXvGYMZf9t4mtO634XsEsFayB4WviwtpQkX6mVG6O5AGzl8+E+8CHMMu
+         TapQFobQonVp/XH4BjQgbvmdajDWK/QnmWsWIqdlk8kpwiNg8/HnvVXubdySHmpCFLYE
+         kCIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=3olRL5AOtjYkaaCEnumLovJR2dhQKUs6npZPSM9Nj9c=;
-        b=gU5qbZbWnvRfuORAW/sdpwzHJQ4Hi1uWGpoi+NL1A0SKdR4hZxGCK5WIIoZkXkIWUE
-         jv7OkhjG05rsf9UhQTQX/jiKFv5lvxOCFXRckUsl4WbJNZacdMURSLoWlqwOFTYRhegR
-         8DAB1khDgMD0gHhdMbSAxbX70Gn8/Ir2OR61bpFcO3LRcJw7Qa0vx+ac0IEQY6zz+1gq
-         y5xx1lAyfv2szBxi86zGd3QACtkYorEMjufKohziMw7StMw0G3KfpIDDGL0+cjMXl/UY
-         udCCwvCtWlOXvnODkmhoNHMBxVrYhVZtuSgwIHFmv3GoSD4zvjaGCdKV6AV5raBdLkzY
-         Gn9A==
-X-Gm-Message-State: AOAM530sQOEPSTUu8OoVnfTwRc9MN8bI2X35favRWhaAEOGDKwxYKgpc
-        tAsr56cPcx/nKGaIKo2ygDyHpSzZ/mI=
-X-Google-Smtp-Source: ABdhPJxML/iKkIM+/ww3tNqjcscSjolXtI1Z6un0x7s0k9S/A1mN6z+RlwV/ImfrvqdOj2ZkhkTAuw==
-X-Received: by 2002:a17:90a:db8a:: with SMTP id h10mr3114105pjv.197.1594108755171;
-        Tue, 07 Jul 2020 00:59:15 -0700 (PDT)
-Received: from ubuntu.lan ([2001:470:e92d:10:d902:a0b:7fe5:30e6])
-        by smtp.gmail.com with ESMTPSA id j70sm22023271pfd.208.2020.07.07.00.59.14
+        h=x-gm-message-state:sender:from:to:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=0C0wcrNGaktDjuYvX7l+qcJPA3Xk9qtFSM1cNlh6Gqw=;
+        b=F++R2zlwwvz/6UJvOKX1jQTapJC8cbBlTomUup/WQT1peKtEDHW2LlxgBBfQ81f0dc
+         cImVKDcRMykArL7D5PdGjpKXz0H5jjkjdB2kzmw/Mzq41tFd8nAUie7ecEopFKpKvSlx
+         ktVUz0fxOQmy9Jrd+Ve3KTdqQayf6tbUWheY7i0dc6qGvu8CECx+KRHL/KA9gzZUGbjl
+         dSwgQFfBG8H7UyoNFmY1BUtx1jYEY1xG4oLoCnCjT6RIG2uzsylWBDtxYEnpoznO+sjc
+         Nxekh2yTEPLgPOWpipaYhjfnIp8jYgYP5/bFuJzK2JXxAkIp5fnPtzkauO4icKiuruqq
+         c2hg==
+X-Gm-Message-State: AOAM5339Ct/U+JOE7CZOqa53Lep7e9Fy5QFjHjjPitz2aQrdPW4NTziT
+        CfkO4RISOYVdPr4EueR4+nlxZ8985Xc=
+X-Google-Smtp-Source: ABdhPJzH5j0mGQivJNGvT6+qUs8TD2MzZMPQcNhcl+65cjsduM7sELqERvmAeUCCagK7ZJVhlZ9ytA==
+X-Received: by 2002:a17:90a:ad8e:: with SMTP id s14mr3331658pjq.36.1594109687736;
+        Tue, 07 Jul 2020 01:14:47 -0700 (PDT)
+Received: from localhost (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
+        by smtp.gmail.com with ESMTPSA id n137sm21997748pfd.194.2020.07.07.01.14.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2020 00:59:14 -0700 (PDT)
-From:   Tony Ambardar <tony.ambardar@gmail.com>
-X-Google-Original-From: Tony Ambardar <Tony.Ambardar@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Tony Ambardar <Tony.Ambardar@gmail.com>
-Subject: [PATCH iproute2] configure: support ipset version 7 with kernel version 5
-Date:   Tue,  7 Jul 2020 00:58:33 -0700
-Message-Id: <20200707075833.1698-1-Tony.Ambardar@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 07 Jul 2020 01:14:47 -0700 (PDT)
+From:   AceLan Kao <acelan.kao@canonical.com>
+To:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: usb: qmi_wwan: add support for Quectel EG95 LTE modem
+Date:   Tue,  7 Jul 2020 16:14:45 +0800
+Message-Id: <20200707081445.1064346-1-acelan.kao@canonical.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The configure script checks for ipset v6 availability but doesn't test
-for v7, which is backward compatible and used on kernel v5.x systems.
-Update the script to test for both ipset versions. Without this change,
-the tc ematch function em_ipset will be disabled.
+Add support for Quectel Wireless Solutions Co., Ltd. EG95 LTE modem
 
-Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+T:  Bus=01 Lev=01 Prnt=01 Port=02 Cnt=02 Dev#=  5 Spd=480 MxCh= 0
+D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=0195 Rev=03.18
+S:  Manufacturer=Android
+S:  Product=Android
+C:  #Ifs= 5 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:  If#=0x0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=(none)
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=(none)
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=(none)
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+
+Signed-off-by: AceLan Kao <acelan.kao@canonical.com>
 ---
- configure | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/qmi_wwan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/configure b/configure
-index f415bf49..307912aa 100755
---- a/configure
-+++ b/configure
-@@ -208,7 +208,7 @@ typedef unsigned short ip_set_id_t;
- #include <linux/netfilter/xt_set.h>
- 
- struct xt_set_info info;
--#if IPSET_PROTOCOL == 6
-+#if IPSET_PROTOCOL == 6 || IPSET_PROTOCOL == 7
- int main(void)
- {
- 	return IPSET_MAXNAMELEN;
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 31b1d4b959f6..07c42c0719f5 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1370,6 +1370,7 @@ static const struct usb_device_id products[] = {
+ 	{QMI_QUIRK_SET_DTR(0x1e0e, 0x9001, 5)},	/* SIMCom 7100E, 7230E, 7600E ++ */
+ 	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0121, 4)},	/* Quectel EC21 Mini PCIe */
+ 	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0191, 4)},	/* Quectel EG91 */
++	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0195, 4)},	/* Quectel EG95 */
+ 	{QMI_FIXED_INTF(0x2c7c, 0x0296, 4)},	/* Quectel BG96 */
+ 	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
+ 	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
 -- 
-2.17.1
+2.25.1
 
