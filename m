@@ -2,95 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D94216CA1
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 14:16:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABE34216CB0
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 14:22:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727850AbgGGMQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 08:16:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726911AbgGGMQI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 08:16:08 -0400
-X-Greylist: delayed 654 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jul 2020 05:16:08 PDT
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A3DC061755;
-        Tue,  7 Jul 2020 05:16:07 -0700 (PDT)
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 067C4xPH027462
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Tue, 7 Jul 2020 14:05:00 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1594123500; bh=LpYHzL1Fv+6r+q+/DerBNxWDzKGX9YKvtsmvkogOo+I=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=cMhTetJjnHHTM68v7z/MTjWLOy0iXztNxRx3x3KxRBHdOZRjbDqRmhXwtOyt1gUHq
-         yK4NbRM0DpgXhLGO6+4Jr2LpFABkr90sXKNq7GSKbMxocqGNdt5TM+Jv3dRpgpt5Pu
-         umdNqQCbLEb8vMeh3qls1TyQF0GMv9p+8qrIjf2g=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
-        (envelope-from <bjorn@mork.no>)
-        id 1jsmLK-000PCr-JH; Tue, 07 Jul 2020 14:04:58 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     AceLan Kao <acelan.kao@canonical.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: qmi_wwan: add support for Quectel EG95 LTE modem
-Organization: m
-References: <20200707081445.1064346-1-acelan.kao@canonical.com>
-Date:   Tue, 07 Jul 2020 14:04:58 +0200
-In-Reply-To: <20200707081445.1064346-1-acelan.kao@canonical.com> (AceLan Kao's
-        message of "Tue, 7 Jul 2020 16:14:45 +0800")
-Message-ID: <873663cyz9.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
+        id S1727096AbgGGMW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 08:22:26 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:38950 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725944AbgGGMWZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 08:22:25 -0400
+Received: from ip5f5af08c.dynamic.kabel-deutschland.de ([95.90.240.140] helo=wittgenstein)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1jsmcA-0006wX-2H; Tue, 07 Jul 2020 12:22:22 +0000
+Date:   Tue, 7 Jul 2020 14:22:20 +0200
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     Kees Cook <keescook@chromium.org>, Christoph Hellwig <hch@lst.de>
+Cc:     linux-kernel@vger.kernel.org, Sargun Dhillon <sargun@sargun.me>,
+        Christian Brauner <christian@brauner.io>,
+        Tycho Andersen <tycho@tycho.ws>,
+        David Laight <David.Laight@ACULAB.COM>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
+        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v6 4/7] pidfd: Replace open-coded partial receive_fd()
+Message-ID: <20200707122220.cazzek4655gj4tj7@wittgenstein>
+References: <20200706201720.3482959-1-keescook@chromium.org>
+ <20200706201720.3482959-5-keescook@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.2 at canardo
-X-Virus-Status: Clean
+Content-Disposition: inline
+In-Reply-To: <20200706201720.3482959-5-keescook@chromium.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-AceLan Kao <acelan.kao@canonical.com> writes:
-
-> Add support for Quectel Wireless Solutions Co., Ltd. EG95 LTE modem
->
-> T:  Bus=3D01 Lev=3D01 Prnt=3D01 Port=3D02 Cnt=3D02 Dev#=3D  5 Spd=3D480 M=
-xCh=3D 0
-> D:  Ver=3D 2.00 Cls=3Def(misc ) Sub=3D02 Prot=3D01 MxPS=3D64 #Cfgs=3D  1
-> P:  Vendor=3D2c7c ProdID=3D0195 Rev=3D03.18
-> S:  Manufacturer=3DAndroid
-> S:  Product=3DAndroid
-> C:  #Ifs=3D 5 Cfg#=3D 1 Atr=3Da0 MxPwr=3D500mA
-> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
-r=3D(none)
-> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Drive=
-r=3D(none)
-> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Drive=
-r=3D(none)
-> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Drive=
-r=3D(none)
-> I:  If#=3D0x4 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
-r=3D(none)
->
-> Signed-off-by: AceLan Kao <acelan.kao@canonical.com>
+On Mon, Jul 06, 2020 at 01:17:17PM -0700, Kees Cook wrote:
+> The sock counting (sock_update_netprioidx() and sock_update_classid()) was
+> missing from pidfd's implementation of received fd installation. Replace
+> the open-coded version with a call to the new receive_fd()
+> helper.
+> 
+> Thanks to Vamshi K Sthambamkadi <vamshi.k.sthambamkadi@gmail.com> for
+> catching a missed fput() in an earlier version of this patch.
+> 
+> Fixes: 8649c322f75c ("pid: Implement pidfd_getfd syscall")
+> Reviewed-by: Sargun Dhillon <sargun@sargun.me>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 > ---
->  drivers/net/usb/qmi_wwan.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-> index 31b1d4b959f6..07c42c0719f5 100644
-> --- a/drivers/net/usb/qmi_wwan.c
-> +++ b/drivers/net/usb/qmi_wwan.c
-> @@ -1370,6 +1370,7 @@ static const struct usb_device_id products[] =3D {
->  	{QMI_QUIRK_SET_DTR(0x1e0e, 0x9001, 5)},	/* SIMCom 7100E, 7230E, 7600E +=
-+ */
->  	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0121, 4)},	/* Quectel EC21 Mini PCIe */
->  	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0191, 4)},	/* Quectel EG91 */
-> +	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0195, 4)},	/* Quectel EG95 */
->  	{QMI_FIXED_INTF(0x2c7c, 0x0296, 4)},	/* Quectel BG96 */
->  	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
->  	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+Thanks!
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+
+Christoph, Kees,
+
+So while the patch is correct it leaves 5.6 and 5.7 with a bug in the
+pidfd_getfd() implementation and that just doesn't seem right. I'm
+wondering whether we should introduce:
+
+void sock_update(struct file *file)
+{
+	struct socket *sock;
+	int error;
+
+	sock = sock_from_file(file, &error);
+	if (sock) {
+		sock_update_netprioidx(&sock->sk->sk_cgrp_data);
+		sock_update_classid(&sock->sk->sk_cgrp_data);
+	}
+}
+
+and switch pidfd_getfd() over to:
+
+diff --git a/kernel/pid.c b/kernel/pid.c
+index f1496b757162..c26bba822be3 100644
+--- a/kernel/pid.c
++++ b/kernel/pid.c
+@@ -642,10 +642,12 @@ static int pidfd_getfd(struct pid *pid, int fd)
+        }
+
+        ret = get_unused_fd_flags(O_CLOEXEC);
+-       if (ret < 0)
++       if (ret < 0) {
+                fput(file);
+-       else
++       } else {
++               sock_update(file);
+                fd_install(ret, file);
++       }
+
+        return ret;
+ }
+
+first thing in the series and then all of the other patches on top of it
+so that we can Cc stable for this and that can get it backported to 5.6,
+5.7, and 5.8.
+
+Alternatively, I can make this a separate bugfix patch series which I'll
+send upstream soonish. Or we have specific patches just for 5.6, 5.7,
+and 5.8. Thoughts?
+
+Thanks!
+Christian
