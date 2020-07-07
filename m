@@ -2,180 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22D0E217A1C
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 23:16:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4E2217A20
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 23:17:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729190AbgGGVQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 17:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
+        id S1729200AbgGGVQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 17:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728184AbgGGVQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 17:16:25 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A511FC061755
-        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 14:16:24 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id q4so15977649lji.2
-        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 14:16:24 -0700 (PDT)
+        with ESMTP id S1728437AbgGGVQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 17:16:53 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5DAC061755
+        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 14:16:53 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id g10so20967624ybd.0
+        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 14:16:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oWLf8mA2zVq2KsL68W1eYCkCCoZOvVmx6e/XhqjhW2s=;
-        b=DrCz4GJONbnM4IVTKuYwTya2u+OuN6nMFK+txwc17z7CiCy0dZH+/KTX19leAGASkP
-         /tmKxjFOJ5z0IkFHJpQekGUNAUFznL/gjPJ3YWzNEOIy4QNFv76aQh/sby5J8gGnOnqE
-         EQyfhJeaZUR1lKlCtoBWHMbhOL2gliynPyiY25/CxJjBRfsdcJ+DUB+aswSjxgXeo0d7
-         t9cpVbvP60NglSF99/T1OJh0wV3nN5rELXL6oeAP1BleYMfauAmGXLo2eD/DR1kOhL2v
-         v5chYPVLT/eWi8QaiNCwZxCGabbjstOQsZk9ag8Rnd6qv9nOSdf+HJLtR3a8EjMrl5X2
-         0T+Q==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=LK+EBRynEXsucfX04gFvi+gNnB4EOZ/bB2WzuaaMYIc=;
+        b=Rug8tm+xa2icYOqvro5VOiB7Xb1MvWVSdcHzdKmC5ojZ1nEeGXG4Z7+A9IpOHkU3id
+         vZ14aeY8oW8KS5Ms4Y6CcnEvMMZQEwc+KXXJzM7uvknJPWiNLF4FHQh+MLvz5eK9+1WK
+         2UAS1N5Te+mjL/j3pUa9f+zrdmJxEb2wWf12T6FvlND+IIRhzsmnIW4/SZQ2hGc6GYjy
+         RDRASgQOSHIrzI+59CFyx7vDoXfZ9OoDQObliOx+xsar02qBSpqWD4G4IvCWoOm0jg+U
+         GR+s9JWZ9b2WkUIUCDq6tdDhQ7aR9zUNdO5VOjyfHmebj6JwnfZIBbmQFBZ7md/5ZlTg
+         FdsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oWLf8mA2zVq2KsL68W1eYCkCCoZOvVmx6e/XhqjhW2s=;
-        b=V+r737rq7S1OlZiydrkgB0jxFczevfSJkyCWgn1vC/rFPiP6JHKJNSYpS8G70mtkbG
-         i5W2+aUTE+e3/RuFh1RZdR0x0kJFlisZEQX4wtF9keGvG7IbEqLPuT6uFk9kWHbK2Sun
-         97nBmhuYgtBh+TThMCBzyDf2d0+kiVdELnHn9NiGe50/i0SoZBfN+cROXCu+Xrbo83ll
-         DfQTGgCbjXrsf8BCxLnBudJkAeL0GfOJkeWlqFWP9mpelNZLnFeF4lCjF9SMvRmEmjbG
-         wOjZit0Ysgmg5cJWwIbE4bhL/Oxl/e/AtgJ/4U65at+RMX7laCHTU6THCUlff6nu3poK
-         LA0Q==
-X-Gm-Message-State: AOAM5315Mp0mOCjgJfa/QckR4DVqhGZ2UnT0qQQNOpgkPHQo8VHzMDC1
-        yCjWGvqsffyl5gsSNOn+WDYBvA==
-X-Google-Smtp-Source: ABdhPJwngm2qIIyP3CwegTZwQLbu2FRDQgCXWYSj7aaqXPKOMFC1Jh57g9ZURkVwTp4q9PbKEleAtA==
-X-Received: by 2002:a2e:95d6:: with SMTP id y22mr23581653ljh.316.1594156583093;
-        Tue, 07 Jul 2020 14:16:23 -0700 (PDT)
-Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id u7sm12750493lfi.45.2020.07.07.14.16.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2020 14:16:22 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Subject: [net-next PATCH 2/2 v5] net: dsa: rtl8366rb: Support the CPU DSA tag
-Date:   Tue,  7 Jul 2020 23:16:14 +0200
-Message-Id: <20200707211614.1217258-3-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200707211614.1217258-1-linus.walleij@linaro.org>
-References: <20200707211614.1217258-1-linus.walleij@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=LK+EBRynEXsucfX04gFvi+gNnB4EOZ/bB2WzuaaMYIc=;
+        b=qZKVnWsrR9JXoA55DFkb3LImGROIJcROjvzOZ92tqxwcGzdvKYLTjfGdq0xCJggdaa
+         LLcRs4rnV+gZA4s/M953F5gUrJHr/Yg0bjmKsafcz/cjC+hKsDFcFSG/0vzF4FpWdAzv
+         /e7TYo+wSdoBkFf0QzQP89C6bIZk4Hxt8mQf6YqBjSh+WiLPfPLlFNH9/ufHLZsUs4Oc
+         eFhrRKFNDa1c3ZgYipCTPl1a/HhQHbgjaGnkiQgjOfT3G/0xRrpCKTohyKO1TvG6BGgb
+         gAuzsXxXYOQJmtgAB2xLxODPIpSie0deIC7Sj53Rllj8f+UqwxYcyqUUn7uxoPqeGXOt
+         f+Tg==
+X-Gm-Message-State: AOAM530TVSmlaK+9nh1gYw5Ks09dENJa13SZupDon3TgfwH2ykUaSqnp
+        IyP92C9xpReFXr5uumF8+apjO62NVWxNh3VbE3M=
+X-Google-Smtp-Source: ABdhPJzn9lxSCriqI2ToiXXIRoLSzrjmr41xe5HIRNGl0I0vjbYHXb13MWkUw/9ODphxfJt2wWrtcsLV1Vf1u8OuiVg=
+X-Received: by 2002:a25:21c5:: with SMTP id h188mr36451509ybh.468.1594156612336;
+ Tue, 07 Jul 2020 14:16:52 -0700 (PDT)
+Date:   Tue,  7 Jul 2020 14:16:41 -0700
+Message-Id: <20200707211642.1106946-1-ndesaulniers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.383.g050319c2ae-goog
+Subject: [PATCH] bitfield.h: don't compile-time validate _val in FIELD_FIT
+From:   Nick Desaulniers <ndesaulniers@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, stable@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Alex Elder <elder@linaro.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This activates the support to use the CPU tag to properly
-direct ingress traffic to the right port.
+From: Jakub Kicinski <kuba@kernel.org>
 
-Bit 15 in register RTL8368RB_CPU_CTRL_REG can be set to
-1 to disable the insertion of the CPU tag which is what
-the code currently does. The bit 15 define calls this
-setting RTL8368RB_CPU_INSTAG which is confusing since the
-inverse meaning is implied: programmers may think that
-setting this bit to 1 will *enable* inserting the tag
-rather than disabling it, so rename this setting in
-bit 15 to RTL8368RB_CPU_NO_TAG which is more to the
-point.
+When ur_load_imm_any() is inlined into jeq_imm(), it's possible for the
+compiler to deduce a case where _val can only have the value of -1 at
+compile time. Specifically,
 
-After this e.g. ping works out-of-the-box with the
-RTL8366RB.
+/* struct bpf_insn: _s32 imm */
+u64 imm = insn->imm; /* sign extend */
+if (imm >> 32) { /* non-zero only if insn->imm is negative */
+  /* inlined from ur_load_imm_any */
+  u32 __imm = imm >> 32; /* therefore, always 0xffffffff */
+  if (__builtin_constant_p(__imm) && __imm > 255)
+    compiletime_assert_XXX()
 
-Cc: DENG Qingfang <dqfext@gmail.com>
-Cc: Mauri Sandberg <sandberg@mailfence.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+This can result in tripping a BUILD_BUG_ON() in __BF_FIELD_CHECK() that
+checks that a given value is representable in one byte (interpreted as
+unsigned).
+
+FIELD_FIT() should return true or false at runtime for whether a value
+can fit for not. Don't break the build over a value that's too large for
+the mask. We'd prefer to keep the inlining and compiler optimizations
+though we know this case will always return false.
+
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/kernel-hardening/CAK7LNASvb0UDJ0U5wkYYRzTAdnEs64HjXpEUL7d=V0CXiAXcNw@mail.gmail.com/
+Reported-by: Masahiro Yamada <masahiroy@kernel.org>
+Debugged-by: Sami Tolvanen <samitolvanen@google.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
 ---
-ChangeLog v4->v5:
-- Split tagging support from the VLAN fix-ups.
-ChangeLog v3->v4:
-- Resend with the rest
-ChangeLog v2->v3:
-- Fix up the commit message.
-- Collect Andrew's review tag.
-ChangeLog v1->v2:
-- Update the commit message to explain why we are renaming
-  bit 15 in RTL8368RB_CPU_CTRL_REG.
----
- drivers/net/dsa/Kconfig     |  1 +
- drivers/net/dsa/rtl8366rb.c | 31 ++++++++-----------------------
- 2 files changed, 9 insertions(+), 23 deletions(-)
+ include/linux/bitfield.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
-index d0024cb30a7b..468b3c4273c5 100644
---- a/drivers/net/dsa/Kconfig
-+++ b/drivers/net/dsa/Kconfig
-@@ -70,6 +70,7 @@ config NET_DSA_QCA8K
- config NET_DSA_REALTEK_SMI
- 	tristate "Realtek SMI Ethernet switch family support"
- 	depends on NET_DSA
-+	select NET_DSA_TAG_RTL4_A
- 	select FIXED_PHY
- 	select IRQ_DOMAIN
- 	select REALTEK_PHY
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index fd1977590cb4..48f1ff746799 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -109,8 +109,8 @@
- /* CPU port control reg */
- #define RTL8368RB_CPU_CTRL_REG		0x0061
- #define RTL8368RB_CPU_PORTS_MSK		0x00FF
--/* Enables inserting custom tag length/type 0x8899 */
--#define RTL8368RB_CPU_INSTAG		BIT(15)
-+/* Disables inserting custom tag length/type 0x8899 */
-+#define RTL8368RB_CPU_NO_TAG		BIT(15)
+diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
+index 48ea093ff04c..4e035aca6f7e 100644
+--- a/include/linux/bitfield.h
++++ b/include/linux/bitfield.h
+@@ -77,7 +77,7 @@
+  */
+ #define FIELD_FIT(_mask, _val)						\
+ 	({								\
+-		__BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_FIT: ");	\
++		__BF_FIELD_CHECK(_mask, 0ULL, 0ULL, "FIELD_FIT: ");	\
+ 		!((((typeof(_mask))_val) << __bf_shf(_mask)) & ~(_mask)); \
+ 	})
  
- #define RTL8366RB_SMAR0			0x0070 /* bits 0..15 */
- #define RTL8366RB_SMAR1			0x0071 /* bits 16..31 */
-@@ -844,16 +844,14 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
- 	if (ret)
- 		return ret;
- 
--	/* Enable CPU port and enable inserting CPU tag
-+	/* Enable CPU port with custom DSA tag 8899.
- 	 *
--	 * Disabling RTL8368RB_CPU_INSTAG here will change the behaviour
--	 * of the switch totally and it will start talking Realtek RRCP
--	 * internally. It is probably possible to experiment with this,
--	 * but then the kernel needs to understand and handle RRCP first.
-+	 * If you set RTL8368RB_CPU_NO_TAG (bit 15) in this registers
-+	 * the custom tag is turned off.
- 	 */
- 	ret = regmap_update_bits(smi->map, RTL8368RB_CPU_CTRL_REG,
- 				 0xFFFF,
--				 RTL8368RB_CPU_INSTAG | BIT(smi->cpu_port));
-+				 BIT(smi->cpu_port));
- 	if (ret)
- 		return ret;
- 
-@@ -967,21 +965,8 @@ static enum dsa_tag_protocol rtl8366_get_tag_protocol(struct dsa_switch *ds,
- 						      int port,
- 						      enum dsa_tag_protocol mp)
- {
--	/* For now, the RTL switches are handled without any custom tags.
--	 *
--	 * It is possible to turn on "custom tags" by removing the
--	 * RTL8368RB_CPU_INSTAG flag when enabling the port but what it
--	 * does is unfamiliar to DSA: ethernet frames of type 8899, the Realtek
--	 * Remote Control Protocol (RRCP) start to appear on the CPU port of
--	 * the device. So this is not the ordinary few extra bytes in the
--	 * frame. Instead it appears that the switch starts to talk Realtek
--	 * RRCP internally which means a pretty complex RRCP implementation
--	 * decoding and responding the RRCP protocol is needed to exploit this.
--	 *
--	 * The OpenRRCP project (dormant since 2009) have reverse-egineered
--	 * parts of the protocol.
--	 */
--	return DSA_TAG_PROTO_NONE;
-+	/* This switch uses the 4 byte protocol A Realtek DSA tag */
-+	return DSA_TAG_PROTO_RTL4_A;
- }
- 
- static void rtl8366rb_adjust_link(struct dsa_switch *ds, int port,
 -- 
-2.26.2
+2.27.0.383.g050319c2ae-goog
 
