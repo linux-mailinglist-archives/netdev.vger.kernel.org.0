@@ -2,110 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CE302167A1
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 09:44:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B46342167D8
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 09:58:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728114AbgGGHny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 03:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45950 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725825AbgGGHnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 03:43:53 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBA5C061755;
-        Tue,  7 Jul 2020 00:43:53 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id o13so16651271pgf.0;
-        Tue, 07 Jul 2020 00:43:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Oqg0waFV1lp8h1+Iq31KyC6DKlnZLj0Pwy1UxBj6Ho8=;
-        b=DAsb8bSZtj79L46P+civ1l7WY7x77+BCU4mrZLoBfLIpXtNgH1HY/lGwcKX2o3IbLD
-         5YRotXnwFtE0/TLB7mK53OSZivzhuVYrhazRzq+ZZ6HVXVsn2BmZBf8z8/XZ+m2Uh8ev
-         bBcfzjmSV01aIEj+gdxVZvQ48Qx50LPHGWxHhGlnK2wC7rrJAiUw3wfAAm1GYV1VrnTs
-         RTPqS5j1+9Cxw44HyDO6ExYYCPzmdqCqvIj+0AZGi/cL34fB+11+/LIPWONa2K4EA4/q
-         19V0Al4aVIL718Dqf1AvU/RGpCkCwOrFh29Egcac8Nn27l613DujT9givcMQe+j6yewv
-         dCaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Oqg0waFV1lp8h1+Iq31KyC6DKlnZLj0Pwy1UxBj6Ho8=;
-        b=nKPlFdosCkykiq48AAwmA1V4p+cWiapFvAodt1v2595pxbC9S4DLWDeFPQx98aWKCK
-         W9QSrAQeopJmojHDXOj/X1TS4YxqkNBnviDgtXAUvWSgNIlEGKQZgHZkDx+DOcVck5Pk
-         r45EwR2cXQziTro1QW3a3NpUD6hn/fXtYXrlYaS4TsMoK0dDG/w4TEcq9bFowAX3f6FP
-         /A+wBnp7FK2L6bZ5tWNWlKdxooZh+JVSQUlHQzQ9eeTUemwlmjfgv0bZWfnBl37T2cXZ
-         mEK51aNCdx5A4LUiqvlYcGv3IzCkRQKWK+0ukXZukOIKSKbj80E4lj7Opblxw/Nk9Ucx
-         MPnw==
-X-Gm-Message-State: AOAM533n923SLP9MD/ycY5zp+2psE1L4KyfUrc7C4op32Z4pwaHHbkR0
-        84tRQ4l3PhEGzS30tirC2vU=
-X-Google-Smtp-Source: ABdhPJyZxivWa3Zwd3TiXVj2C5Co1Tk0OgrJzdk8Va7YqEXPvY+3BH4n2OB5Ix08Z3T1moPGNugPhA==
-X-Received: by 2002:a62:fb06:: with SMTP id x6mr48186275pfm.28.1594107832958;
-        Tue, 07 Jul 2020 00:43:52 -0700 (PDT)
-Received: from varodek.iballbatonwifi.com ([103.105.153.67])
-        by smtp.gmail.com with ESMTPSA id s30sm21439248pgn.34.2020.07.07.00.43.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2020 00:43:52 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org
-Subject: [PATCH net-next] sun/niu: add __maybe_unused attribute to PM functions
-Date:   Tue,  7 Jul 2020 13:11:22 +0530
-Message-Id: <20200707074121.230686-1-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S1726661AbgGGH6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 03:58:20 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:12335 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725874AbgGGH6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 03:58:20 -0400
+X-Greylist: delayed 336 seconds by postgrey-1.27 at vger.kernel.org; Tue, 07 Jul 2020 03:58:19 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1594108698;
+        s=strato-dkim-0002; d=xenosoft.de;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=qNfwcH9LfWaclr0Jyq7Q1GHfpiAsj+fNTGwreOU0xXU=;
+        b=nzYPLzyrmsKg8B5hE00bdIpw6xizze0tGukTyRrEpOwp0EaoRWlqvpDNkXE2CKbSOf
+        ujw4y3O0UhpOXyL4j+9VCbBXeRp/MidC9//66863YZ0eqgsltKUGS+ML6qTRCVZbdO41
+        RIv7uyqJH5FQot94NxEz+5JIhp3d72dKn0XM6PexwBJhboolb2frL32nHD8hTL4J/vs3
+        T9/+vPdrmPLV03Wwyceqpcvw+D29679YRYVjRE1VM3aCQBtbfEOUFjU+AEVb6eaJVWW5
+        Jczkfb1Re0jsmcA1mwk7YhKBRac1IgPjHjnqjhvHPzf9P3vrxgPK/ExZDNqwFl/cfv0A
+        DVgQ==
+X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBJSrwuuqxvPhSI1Vi9hdbute3wuvmUTfEdg9AyQ=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a02:8109:89c0:ebfc:15f9:f3ba:c3bc:6875]
+        by smtp.strato.de (RZmta 46.10.5 AUTH)
+        with ESMTPSA id 60686ew677qGleO
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Tue, 7 Jul 2020 09:52:16 +0200 (CEST)
+Subject: Re: FSL P5020/P5040: DPAA Ethernet issue with the latest Git kernel
+To:     Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        mad skateman <madskateman@gmail.com>,
+        "R.T.Dickinson" <rtd2@xtra.co.nz>,
+        Darren Stevens <darren@stevens-zone.net>,
+        Christian Zigotzky <info@xenosoft.de>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <56DB95B8-5F42-4837-ABA0-7E580FE04B73@xenosoft.de>
+ <20200624082352.GA24934@oc3871087118.ibm.com>
+ <004794fb-370c-c165-38e6-a451dc50c294@xenosoft.de>
+ <20200625102223.GA3646@oc3871087118.ibm.com>
+From:   Christian Zigotzky <chzigotzky@xenosoft.de>
+Message-ID: <4a08422d-86aa-ebb5-40a6-4e20467f5240@xenosoft.de>
+Date:   Tue, 7 Jul 2020 09:52:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20200625102223.GA3646@oc3871087118.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: de-DE
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The upgraded .suspend() and .resume() throw
-"defined but not used [-Wunused-function]" warning for certain
-configurations.
+On 25 June 2020 at 12:22 pm, Alexander Gordeev wrote:
+> On Thu, Jun 25, 2020 at 01:01:52AM +0200, Christian Zigotzky wrote:
+> [...]
+>> I compiled a test kernel with the option "CONFIG_TEST_BITMAP=y"
+>> yesterday. After that Skateman and I booted it and looked for the
+>> bitmap tests with "dmesg | grep -i bitmap".
+>>
+>> Results:
+>>
+>> FSL P5020:
+>>
+>> [    0.297756] test_bitmap: loaded.
+>> [    0.298113] test_bitmap: parselist: 14: input is '0-2047:128/256'
+>> OK, Time: 562
+>> [    0.298142] test_bitmap: parselist_user: 14: input is
+>> '0-2047:128/256' OK, Time: 761
+>> [    0.301553] test_bitmap: all 1663 tests passed
+>>
+>> FSL P5040:
+>>
+>> [    0.296563] test_bitmap: loaded.
+>> [    0.296894] test_bitmap: parselist: 14: input is '0-2047:128/256'
+>> OK, Time: 540
+>> [    0.296920] test_bitmap: parselist_user: 14: input is
+>> '0-2047:128/256' OK, Time: 680
+>> [    0.299994] test_bitmap: all 1663 tests passed
+> Thanks for the test! So it works as expected.
+>
+> I would suggest to compare what is going on on the device probing
+> with and without the bisected commit.
+>
+> There seems to be MAC and PHY mode initialization issue that might
+> resulted from the bitmap format change.
+>
+> I put Madalin and Sascha on CC as they have done some works on
+> this part recently.
+>
+> Thanks!
+>
 
-Mark them with "__maybe_unused" attribute.
+Hi All,
 
-Compile-tested only.
+The issue still exists [1] so we still need the dpaa patch [2]. Could 
+you please check the problematic commit [3]?
 
-Fixes: b0db0cc2f695 ("sun/niu: use generic power management")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- drivers/net/ethernet/sun/niu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks,
+Christian
 
-diff --git a/drivers/net/ethernet/sun/niu.c b/drivers/net/ethernet/sun/niu.c
-index 68541c823245..b4e20d15d138 100644
---- a/drivers/net/ethernet/sun/niu.c
-+++ b/drivers/net/ethernet/sun/niu.c
-@@ -9873,7 +9873,7 @@ static void niu_pci_remove_one(struct pci_dev *pdev)
- 	}
- }
- 
--static int niu_suspend(struct device *dev_d)
-+static int __maybe_unused niu_suspend(struct device *dev_d)
- {
- 	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct niu *np = netdev_priv(dev);
-@@ -9900,7 +9900,7 @@ static int niu_suspend(struct device *dev_d)
- 	return 0;
- }
- 
--static int niu_resume(struct device *dev_d)
-+static int __maybe_unused niu_resume(struct device *dev_d)
- {
- 	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct niu *np = netdev_priv(dev);
--- 
-2.27.0
-
+[1] https://forum.hyperion-entertainment.com/viewtopic.php?p=50885#p50885
+[2] https://forum.hyperion-entertainment.com/viewtopic.php?p=50982#p50982
+[3] https://forum.hyperion-entertainment.com/viewtopic.php?p=50980#p50980
