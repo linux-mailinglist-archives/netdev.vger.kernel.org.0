@@ -2,173 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D89A4216CF5
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 14:39:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0EA4216CFE
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 14:41:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727916AbgGGMi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 08:38:58 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:39390 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725944AbgGGMi6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 08:38:58 -0400
-Received: from ip5f5af08c.dynamic.kabel-deutschland.de ([95.90.240.140] helo=wittgenstein)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1jsmsB-0008IT-CA; Tue, 07 Jul 2020 12:38:55 +0000
-Date:   Tue, 7 Jul 2020 14:38:54 +0200
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, Sargun Dhillon <sargun@sargun.me>,
-        Christian Brauner <christian@brauner.io>,
-        Tycho Andersen <tycho@tycho.ws>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Matt Denton <mpdenton@google.com>,
-        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
-        Robert Sesek <rsesek@google.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
-        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v6 5/7] fs: Expand __receive_fd() to accept existing fd
-Message-ID: <20200707123854.wi4s2kzwkhkgieyv@wittgenstein>
-References: <20200706201720.3482959-1-keescook@chromium.org>
- <20200706201720.3482959-6-keescook@chromium.org>
+        id S1727107AbgGGMk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 08:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725944AbgGGMk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 08:40:56 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4637FC061755
+        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 05:40:56 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1jsmu6-0007rh-Uk; Tue, 07 Jul 2020 14:40:54 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>
+Subject: [PATCH net-next] mptcp: use mptcp worker for path management
+Date:   Tue,  7 Jul 2020 14:40:48 +0200
+Message-Id: <20200707124048.2403-1-fw@strlen.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200706201720.3482959-6-keescook@chromium.org>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 06, 2020 at 01:17:18PM -0700, Kees Cook wrote:
-> Expand __receive_fd() with support for replace_fd() for the coming seccomp
-> "addfd" ioctl(). Add new wrapper receive_fd_replace() for the new behavior
-> and update existing wrappers to retain old behavior.
-> 
-> Thanks to Colin Ian King <colin.king@canonical.com> for pointing out an
-> uninitialized variable exposure in an earlier version of this patch.
-> 
-> Reviewed-by: Sargun Dhillon <sargun@sargun.me>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
+We can re-use the existing work queue to handle path management
+instead of a dedicated work queue.  Just move pm_worker to protocol.c,
+call it from the mptcp worker and get rid of the msk lock (already held).
 
-Thanks!
-(One tiny-nit below.)
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/mptcp/pm.c       | 44 +-------------------------------------------
+ net/mptcp/protocol.c | 27 ++++++++++++++++++++++++++-
+ net/mptcp/protocol.h |  3 ---
+ 3 files changed, 27 insertions(+), 47 deletions(-)
 
->  fs/file.c            | 24 ++++++++++++++++++------
->  include/linux/file.h | 10 +++++++---
->  2 files changed, 25 insertions(+), 9 deletions(-)
-> 
-> diff --git a/fs/file.c b/fs/file.c
-> index 0efdcf413210..11313ff36802 100644
-> --- a/fs/file.c
-> +++ b/fs/file.c
-> @@ -937,6 +937,7 @@ int replace_fd(unsigned fd, struct file *file, unsigned flags)
->  /**
->   * __receive_fd() - Install received file into file descriptor table
->   *
-> + * @fd: fd to install into (if negative, a new fd will be allocated)
->   * @file: struct file that was received from another process
->   * @ufd: __user pointer to write new fd number to
->   * @o_flags: the O_* flags to apply to the new fd entry
-> @@ -950,7 +951,7 @@ int replace_fd(unsigned fd, struct file *file, unsigned flags)
->   *
->   * Returns newly install fd or -ve on error.
->   */
-> -int __receive_fd(struct file *file, int __user *ufd, unsigned int o_flags)
-> +int __receive_fd(int fd, struct file *file, int __user *ufd, unsigned int o_flags)
->  {
->  	struct socket *sock;
->  	int new_fd;
-> @@ -960,18 +961,30 @@ int __receive_fd(struct file *file, int __user *ufd, unsigned int o_flags)
->  	if (error)
->  		return error;
->  
-> -	new_fd = get_unused_fd_flags(o_flags);
-> -	if (new_fd < 0)
-> -		return new_fd;
-> +	if (fd < 0) {
-> +		new_fd = get_unused_fd_flags(o_flags);
-> +		if (new_fd < 0)
-> +			return new_fd;
-> +	} else
-> +		new_fd = fd;
+diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
+index 7de09fdd42a3..a8ad20559aaa 100644
+--- a/net/mptcp/pm.c
++++ b/net/mptcp/pm.c
+@@ -10,8 +10,6 @@
+ #include <net/mptcp.h>
+ #include "protocol.h"
+ 
+-static struct workqueue_struct *pm_wq;
+-
+ /* path manager command handlers */
+ 
+ int mptcp_pm_announce_addr(struct mptcp_sock *msk,
+@@ -78,7 +76,7 @@ static bool mptcp_pm_schedule_work(struct mptcp_sock *msk,
+ 		return false;
+ 
+ 	msk->pm.status |= BIT(new_status);
+-	if (queue_work(pm_wq, &msk->pm.work))
++	if (schedule_work(&msk->work))
+ 		sock_hold((struct sock *)msk);
+ 	return true;
+ }
+@@ -181,35 +179,6 @@ int mptcp_pm_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
+ 	return mptcp_pm_nl_get_local_id(msk, skc);
+ }
+ 
+-static void pm_worker(struct work_struct *work)
+-{
+-	struct mptcp_pm_data *pm = container_of(work, struct mptcp_pm_data,
+-						work);
+-	struct mptcp_sock *msk = container_of(pm, struct mptcp_sock, pm);
+-	struct sock *sk = (struct sock *)msk;
+-
+-	lock_sock(sk);
+-	spin_lock_bh(&msk->pm.lock);
+-
+-	pr_debug("msk=%p status=%x", msk, pm->status);
+-	if (pm->status & BIT(MPTCP_PM_ADD_ADDR_RECEIVED)) {
+-		pm->status &= ~BIT(MPTCP_PM_ADD_ADDR_RECEIVED);
+-		mptcp_pm_nl_add_addr_received(msk);
+-	}
+-	if (pm->status & BIT(MPTCP_PM_ESTABLISHED)) {
+-		pm->status &= ~BIT(MPTCP_PM_ESTABLISHED);
+-		mptcp_pm_nl_fully_established(msk);
+-	}
+-	if (pm->status & BIT(MPTCP_PM_SUBFLOW_ESTABLISHED)) {
+-		pm->status &= ~BIT(MPTCP_PM_SUBFLOW_ESTABLISHED);
+-		mptcp_pm_nl_subflow_established(msk);
+-	}
+-
+-	spin_unlock_bh(&msk->pm.lock);
+-	release_sock(sk);
+-	sock_put(sk);
+-}
+-
+ void mptcp_pm_data_init(struct mptcp_sock *msk)
+ {
+ 	msk->pm.add_addr_signaled = 0;
+@@ -223,22 +192,11 @@ void mptcp_pm_data_init(struct mptcp_sock *msk)
+ 	msk->pm.status = 0;
+ 
+ 	spin_lock_init(&msk->pm.lock);
+-	INIT_WORK(&msk->pm.work, pm_worker);
+ 
+ 	mptcp_pm_nl_data_init(msk);
+ }
+ 
+-void mptcp_pm_close(struct mptcp_sock *msk)
+-{
+-	if (cancel_work_sync(&msk->pm.work))
+-		sock_put((struct sock *)msk);
+-}
+-
+ void __init mptcp_pm_init(void)
+ {
+-	pm_wq = alloc_workqueue("pm_wq", WQ_UNBOUND | WQ_MEM_RECLAIM, 8);
+-	if (!pm_wq)
+-		panic("Failed to allocate workqueue");
+-
+ 	mptcp_pm_nl_init();
+ }
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 3ab060e30038..dbe43e0cd734 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1214,6 +1214,29 @@ static unsigned int mptcp_sync_mss(struct sock *sk, u32 pmtu)
+ 	return 0;
+ }
+ 
++static void pm_work(struct mptcp_sock *msk)
++{
++	struct mptcp_pm_data *pm = &msk->pm;
++
++	spin_lock_bh(&msk->pm.lock);
++
++	pr_debug("msk=%p status=%x", msk, pm->status);
++	if (pm->status & BIT(MPTCP_PM_ADD_ADDR_RECEIVED)) {
++		pm->status &= ~BIT(MPTCP_PM_ADD_ADDR_RECEIVED);
++		mptcp_pm_nl_add_addr_received(msk);
++	}
++	if (pm->status & BIT(MPTCP_PM_ESTABLISHED)) {
++		pm->status &= ~BIT(MPTCP_PM_ESTABLISHED);
++		mptcp_pm_nl_fully_established(msk);
++	}
++	if (pm->status & BIT(MPTCP_PM_SUBFLOW_ESTABLISHED)) {
++		pm->status &= ~BIT(MPTCP_PM_SUBFLOW_ESTABLISHED);
++		mptcp_pm_nl_subflow_established(msk);
++	}
++
++	spin_unlock_bh(&msk->pm.lock);
++}
++
+ static void mptcp_worker(struct work_struct *work)
+ {
+ 	struct mptcp_sock *msk = container_of(work, struct mptcp_sock, work);
+@@ -1230,6 +1253,9 @@ static void mptcp_worker(struct work_struct *work)
+ 	__mptcp_flush_join_list(msk);
+ 	__mptcp_move_skbs(msk);
+ 
++	if (msk->pm.status)
++		pm_work(msk);
++
+ 	if (test_and_clear_bit(MPTCP_WORK_EOF, &msk->flags))
+ 		mptcp_check_for_eof(msk);
+ 
+@@ -1420,7 +1446,6 @@ static void mptcp_close(struct sock *sk, long timeout)
+ 	}
+ 
+ 	mptcp_cancel_work(sk);
+-	mptcp_pm_close(msk);
+ 
+ 	__skb_queue_purge(&sk->sk_receive_queue);
+ 
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index a6412ff0fddb..39bfec3f1586 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -174,8 +174,6 @@ struct mptcp_pm_data {
+ 	u8		local_addr_max;
+ 	u8		subflows_max;
+ 	u8		status;
+-
+-	struct		work_struct work;
+ };
+ 
+ struct mptcp_data_frag {
+@@ -412,7 +410,6 @@ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac);
+ 
+ void __init mptcp_pm_init(void);
+ void mptcp_pm_data_init(struct mptcp_sock *msk);
+-void mptcp_pm_close(struct mptcp_sock *msk);
+ void mptcp_pm_new_connection(struct mptcp_sock *msk, int server_side);
+ void mptcp_pm_fully_established(struct mptcp_sock *msk);
+ bool mptcp_pm_allow_new_subflow(struct mptcp_sock *msk);
+-- 
+2.26.2
 
-This is nitpicky but coding style technically wants us to use braces
-around both branches if one of them requires them. ;)
-
->  
->  	if (ufd) {
->  		error = put_user(new_fd, ufd);
->  		if (error) {
-> -			put_unused_fd(new_fd);
-> +			if (fd < 0)
-> +				put_unused_fd(new_fd);
->  			return error;
->  		}
->  	}
->  
-> +	if (fd < 0)
-> +		fd_install(new_fd, get_file(file));
-> +	else {
-> +		error = replace_fd(new_fd, file, o_flags);
-> +		if (error)
-> +			return error;
-> +	}
-> +
->  	/*
->  	 * Bump the usage count and install the file. The resulting value of
->  	 * "error" is ignored here since we only need to take action when
-> @@ -982,7 +995,6 @@ int __receive_fd(struct file *file, int __user *ufd, unsigned int o_flags)
->  		sock_update_netprioidx(&sock->sk->sk_cgrp_data);
->  		sock_update_classid(&sock->sk->sk_cgrp_data);
->  	}
-> -	fd_install(new_fd, get_file(file));
->  	return new_fd;
->  }
->  
-> diff --git a/include/linux/file.h b/include/linux/file.h
-> index d9fee9f5c8da..225982792fa2 100644
-> --- a/include/linux/file.h
-> +++ b/include/linux/file.h
-> @@ -92,18 +92,22 @@ extern void put_unused_fd(unsigned int fd);
->  
->  extern void fd_install(unsigned int fd, struct file *file);
->  
-> -extern int __receive_fd(struct file *file, int __user *ufd,
-> +extern int __receive_fd(int fd, struct file *file, int __user *ufd,
->  			unsigned int o_flags);
->  static inline int receive_fd_user(struct file *file, int __user *ufd,
->  				  unsigned int o_flags)
->  {
->  	if (ufd == NULL)
->  		return -EFAULT;
-> -	return __receive_fd(file, ufd, o_flags);
-> +	return __receive_fd(-1, file, ufd, o_flags);
->  }
->  static inline int receive_fd(struct file *file, unsigned int o_flags)
->  {
-> -	return __receive_fd(file, NULL, o_flags);
-> +	return __receive_fd(-1, file, NULL, o_flags);
-> +}
-> +static inline int receive_fd_replace(int fd, struct file *file, unsigned int o_flags)
-> +{
-> +	return __receive_fd(fd, file, NULL, o_flags);
->  }
->  
->  extern void flush_delayed_fput(void);
-> -- 
-> 2.25.1
-> 
