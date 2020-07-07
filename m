@@ -2,98 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E79F216813
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 10:15:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1EC121685F
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 10:30:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728317AbgGGIOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 04:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
+        id S1726788AbgGGI36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 04:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725825AbgGGIOs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 04:14:48 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F34C061755;
-        Tue,  7 Jul 2020 01:14:48 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id d10so16449043pls.5;
-        Tue, 07 Jul 2020 01:14:48 -0700 (PDT)
+        with ESMTP id S1725941AbgGGI35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 04:29:57 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A96C061755
+        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 01:29:57 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id p1so7195653pls.4
+        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 01:29:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0C0wcrNGaktDjuYvX7l+qcJPA3Xk9qtFSM1cNlh6Gqw=;
-        b=MHVP5Ibh0HfJIKkVSxQSJqtyapKe7AmeX3KHnvylIYdLmkrFdK+BdWnLHlnA6xX0wO
-         olcwcJxLWCZ+G9sSZ5n51OjJUvX0MT95bQeWi7ndH0ZDenKaIga4mFRwOlzEsTw4Q5BV
-         K6TkhASmK++WOvxa+gmi30ZuR6c2c8hFGS3xC4waI/0c3l5eWwM4018gJmHsqOrBOx0y
-         9GdKpXvIVj6hcXvGYMZf9t4mtO634XsEsFayB4WviwtpQkX6mVG6O5AGzl8+E+8CHMMu
-         TapQFobQonVp/XH4BjQgbvmdajDWK/QnmWsWIqdlk8kpwiNg8/HnvVXubdySHmpCFLYE
-         kCIw==
+        h=from:to:cc:subject:date:message-id;
+        bh=gi9AUWvKHBxsgeNzNjvq3Traaevp48iBvws+7LcTlQc=;
+        b=n0DzExPv6NxRVxQRUNIvhVrMt5m9Eo5GhNvCXKap3LOZU58IV7C642APLwJEtf4lpK
+         ueDO3TZJoG+87gM/WdcCEGw/spZjeHX7LfQxjVR6XlcKMXuDTqeLCrwrxjonotcy4r3Z
+         Thwum2AHatMhgVbeRFT98v21Vt65/mzQqPBSoRsUAQysyr/b50WU5RaEvhue3Yip5cjf
+         epqyLvmcMqRxW/2l9CXiznn8lbopYk/34+6aTZUS46oG6Uxxf95Q9eIRkxizmWOoHMEf
+         bK0E+1EhXsprABFtgRXnimQvyjieCkEW7IsIpFGzj5FVIyVnj4gVsPseBml7Dxca8P6n
+         Amew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=0C0wcrNGaktDjuYvX7l+qcJPA3Xk9qtFSM1cNlh6Gqw=;
-        b=F++R2zlwwvz/6UJvOKX1jQTapJC8cbBlTomUup/WQT1peKtEDHW2LlxgBBfQ81f0dc
-         cImVKDcRMykArL7D5PdGjpKXz0H5jjkjdB2kzmw/Mzq41tFd8nAUie7ecEopFKpKvSlx
-         ktVUz0fxOQmy9Jrd+Ve3KTdqQayf6tbUWheY7i0dc6qGvu8CECx+KRHL/KA9gzZUGbjl
-         dSwgQFfBG8H7UyoNFmY1BUtx1jYEY1xG4oLoCnCjT6RIG2uzsylWBDtxYEnpoznO+sjc
-         Nxekh2yTEPLgPOWpipaYhjfnIp8jYgYP5/bFuJzK2JXxAkIp5fnPtzkauO4icKiuruqq
-         c2hg==
-X-Gm-Message-State: AOAM5339Ct/U+JOE7CZOqa53Lep7e9Fy5QFjHjjPitz2aQrdPW4NTziT
-        CfkO4RISOYVdPr4EueR4+nlxZ8985Xc=
-X-Google-Smtp-Source: ABdhPJzH5j0mGQivJNGvT6+qUs8TD2MzZMPQcNhcl+65cjsduM7sELqERvmAeUCCagK7ZJVhlZ9ytA==
-X-Received: by 2002:a17:90a:ad8e:: with SMTP id s14mr3331658pjq.36.1594109687736;
-        Tue, 07 Jul 2020 01:14:47 -0700 (PDT)
-Received: from localhost (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
-        by smtp.gmail.com with ESMTPSA id n137sm21997748pfd.194.2020.07.07.01.14.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2020 01:14:47 -0700 (PDT)
-From:   AceLan Kao <acelan.kao@canonical.com>
-To:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: usb: qmi_wwan: add support for Quectel EG95 LTE modem
-Date:   Tue,  7 Jul 2020 16:14:45 +0800
-Message-Id: <20200707081445.1064346-1-acelan.kao@canonical.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=gi9AUWvKHBxsgeNzNjvq3Traaevp48iBvws+7LcTlQc=;
+        b=JHXg9NDqkXbxtJanS/zgOLqPjqnjISFTyso/0kkATa9XrNYoTwGTZGUsxB+cJrADWQ
+         wf957bABKgDQ3CFIOBaIlrjo7ysy4lJbUp6A07hc5ASo6/LMA91jDHaGgfex37wKwGOV
+         hFMq+BXHjumCnUd8Aw2DueMLKzUEGgqDUUSx1+8PyZYCUlW7PBQFAw2RE5WAlB+d50A6
+         cBrMlYVVUWJ9qVNE4qsBEHKM05GUXC+MAwQi7IE3LtkQwAf2aD6vP/ikuRqbtCpvRMp/
+         DCF60zqu/7R0PdYSKJaJfFsT89wIZZIGjriYpdoIxtv5CCxbpfulx8srOS+atWBOTUr3
+         EGpg==
+X-Gm-Message-State: AOAM5314tPHjmdaAqswxoOxgTAvVYYtK5nvJTqd4k89pE8A464KH4Lzm
+        hAobLoYZECByPYUJPsgeIQc=
+X-Google-Smtp-Source: ABdhPJwT8azrdzQ9gdPwqykO3DDH0bf7mJL8QvIb34ZYvLw/BkQH0G7GcFI7iQxqWQEz0EsPzpRUuA==
+X-Received: by 2002:a17:90a:254f:: with SMTP id j73mr2968772pje.16.1594110597396;
+        Tue, 07 Jul 2020 01:29:57 -0700 (PDT)
+Received: from hyd1358.caveonetworks.com ([115.113.156.2])
+        by smtp.googlemail.com with ESMTPSA id i196sm127510pgc.55.2020.07.07.01.29.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 07 Jul 2020 01:29:56 -0700 (PDT)
+From:   sundeep.lkml@gmail.com
+To:     davem@davemloft.net, kuba@kernel.org, richardcochran@gmail.com,
+        netdev@vger.kernel.org, sgoutham@marvell.com
+Cc:     Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [PATCH net-next 0/3] Add PTP support for Octeontx2
+Date:   Tue,  7 Jul 2020 13:59:43 +0530
+Message-Id: <1594110586-11674-1-git-send-email-sundeep.lkml@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for Quectel Wireless Solutions Co., Ltd. EG95 LTE modem
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-T:  Bus=01 Lev=01 Prnt=01 Port=02 Cnt=02 Dev#=  5 Spd=480 MxCh= 0
-D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=2c7c ProdID=0195 Rev=03.18
-S:  Manufacturer=Android
-S:  Product=Android
-C:  #Ifs= 5 Cfg#= 1 Atr=a0 MxPwr=500mA
-I:  If#=0x0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
-I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=(none)
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=(none)
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=(none)
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+Hi,
 
-Signed-off-by: AceLan Kao <acelan.kao@canonical.com>
----
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+This patchset adds PTP support for Octeontx2 platform.
+PTP is an independent coprocessor block from which
+CGX block fetches timestamp and prepends it to the
+packet before sending to NIX block. Patches are as
+follows:
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 31b1d4b959f6..07c42c0719f5 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1370,6 +1370,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_QUIRK_SET_DTR(0x1e0e, 0x9001, 5)},	/* SIMCom 7100E, 7230E, 7600E ++ */
- 	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0121, 4)},	/* Quectel EC21 Mini PCIe */
- 	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0191, 4)},	/* Quectel EG91 */
-+	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0195, 4)},	/* Quectel EG95 */
- 	{QMI_FIXED_INTF(0x2c7c, 0x0296, 4)},	/* Quectel BG96 */
- 	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
- 	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
+Patch 1: Patch to enable/disable packet timstamping
+	 in CGX upon mailbox request. It also adjusts
+	 packet parser (NPC) for the 8 bytes timestamp
+	 appearing before the packet.
+
+Patch 2: Patch adding PTP pci driver which configures
+	 the PTP block and hooks up to RVU AF driver.
+	 It also exposes a mailbox call to adjust PTP
+	 hardware clock.
+
+Patch 3: Patch adding PTP clock driver for PF netdev.
+
+
+Aleksey Makarov (2):
+  octeontx2-af: Add support for Marvell PTP coprocessor
+  octeontx2-pf: Add support for PTP clock
+
+Zyta Szpak (1):
+  octeontx2-af: Support to enable/disable HW timestamping
+
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |   2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |  29 +++
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |   4 +
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  21 ++
+ drivers/net/ethernet/marvell/octeontx2/af/ptp.c    | 245 +++++++++++++++++++++
+ drivers/net/ethernet/marvell/octeontx2/af/ptp.h    |  22 ++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  29 ++-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   5 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  54 +++++
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |  52 +++++
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    |  27 +++
+ .../net/ethernet/marvell/octeontx2/nic/Makefile    |   3 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |   7 +
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  10 +
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  28 +++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 168 +++++++++++++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_ptp.c  | 219 ++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_ptp.h  |  13 ++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  87 +++++++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   1 +
+ 20 files changed, 1016 insertions(+), 10 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/ptp.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.h
+
 -- 
-2.25.1
+2.7.4
 
