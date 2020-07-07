@@ -2,91 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A355A2176D2
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 20:35:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F059217708
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 20:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728266AbgGGSfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 14:35:02 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:58972 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728073AbgGGSfC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 14:35:02 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A6411600E4;
-        Tue,  7 Jul 2020 18:35:01 +0000 (UTC)
-Received: from us4-mdac16-70.ut7.mdlocal (unknown [10.7.64.189])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A5C04800BA;
-        Tue,  7 Jul 2020 18:35:01 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.35])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0295C80070;
-        Tue,  7 Jul 2020 18:35:01 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 7FC9D48007B;
-        Tue,  7 Jul 2020 18:35:00 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 7 Jul 2020
- 19:34:54 +0100
-Subject: Re: [PATCH net-next 03/15] sfc_ef100: skeleton EF100 PF driver
-To:     kernel test robot <lkp@intel.com>,
-        <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <kbuild-all@lists.01.org>, <netdev@vger.kernel.org>
-References: <b9ccfacc-93c8-5f60-d3a5-ecd87fcef5ee@solarflare.com>
- <202007041218.2NXltj0z%lkp@intel.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <24a6f07b-7888-e722-0c4c-41fb3a8f3cc7@solarflare.com>
-Date:   Tue, 7 Jul 2020 19:34:51 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1728504AbgGGStK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 14:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728149AbgGGStK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 14:49:10 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D902BC061755;
+        Tue,  7 Jul 2020 11:49:09 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id m9so8544570pfh.0;
+        Tue, 07 Jul 2020 11:49:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kf653+zbToz7bmDqSuYXxZeQRGyIzjUbN2keubtjwkM=;
+        b=RAQCPqnLfeS0KdnUeuC7YgwFIg+VZaASxr7DCPAhM2HBRGKL2LsBx78/tKTN/nK7UI
+         C6kJvpkcugUkxy4c09JDNVF5nLG4DFq4PIQDhou9NOrOz8KMQVlvZjY+Xs7P3GOPYCV7
+         x2nIQgwHZK+FyCfLv0phvc3iGrKgRPPQrAZ7fUGe9RKfpRRtekZBl8YpQrw5nUNEoq3e
+         l23ubgkFdl3KhOJzSc5OOOj4JeMUfQ+H8yCntdDEpWQmG65B6MIBVp5mjQ7wYQgyeo2b
+         4zFDTFr+weObSgYhsiiqTOqu3no3OcZruRPISVlTV5MHibiTCmj1tUC6P3GWMLdbOInp
+         VRJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kf653+zbToz7bmDqSuYXxZeQRGyIzjUbN2keubtjwkM=;
+        b=erOIhmviSUxOBQcwFOX+ZgeX2yi0QojATrYeBqp6Onj5/tMXXYT19fIgdlf1wT48vU
+         Gu5tfGt+QYM7zMBx8qaWeACmb4Tjuw69emEQUNcZgHJS5sDkkirnAh0s8x4jtpheN+I7
+         tnVFW9MExYntqhEgv5m8KNqbaT6E37tbTYBSJsCa2381NtfTg4CQ4KuBYK7Nv3l8Rqlo
+         OnBOcR3nK4803YN3WYCx0d3wlCnj9TPnlUXo1w/QGMeI+4GyghrMOLIDY5LclyI2rydS
+         797WPvXbzMwLJrDxmSLicB/lqMQEh2lDk4/md7L36vHCQkAqi29pmRDci7KNOu8duvN6
+         Bmjw==
+X-Gm-Message-State: AOAM531V0WaL/uB1M4O5xX7uPVZGcwvRkpAsnh0WIsNgYHHafHd21t0/
+        qH2Ees6xJWc65XA3nzH6YQ==
+X-Google-Smtp-Source: ABdhPJyY4oY8kuBTTlFKRTdDjEYAjCtD/q0wxsOefK6zDP4zTt/fyEtxcfE5LJQpgFAraG0NMwD4Fw==
+X-Received: by 2002:a65:6650:: with SMTP id z16mr48401881pgv.161.1594147749326;
+        Tue, 07 Jul 2020 11:49:09 -0700 (PDT)
+Received: from localhost.localdomain ([182.209.58.45])
+        by smtp.gmail.com with ESMTPSA id r7sm1625278pgu.51.2020.07.07.11.49.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jul 2020 11:49:04 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf-next v2 0/4] samples: bpf: refactor BPF map test with libbpf
+Date:   Wed,  8 Jul 2020 03:48:51 +0900
+Message-Id: <20200707184855.30968-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <202007041218.2NXltj0z%lkp@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25526.003
-X-TM-AS-Result: No-5.905300-8.000000-10
-X-TMASE-MatchedRID: +c13yJDs902czwUwXNyhwjVUc/h8Ki+CABYRpyLYSPrk1kyQDpEj8Iu3
-        renu5Y0w8XVI39JCRnSjfNAVYAJRAtkPVp3JBnY+CWlWR223da4KogTtqoQiBkYuFnR35mKodyG
-        0kjowQuNfPdB4I1erZ1/9ixLlAv/alwV2iaAfSWc5f9Xw/xqKXXJnzNw42kCxxEHRux+uk8jHUU
-        +U0ACZwCxk9hS/bFnI4fZtGyJTLKM3DiKzYX7ITUVPqJ4sus2Nnqg/VrSZEiM=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.905300-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25526.003
-X-MDID: 1594146901-B4Ug2pXIY86v
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/07/2020 05:16, kernel test robot wrote:
->>> drivers/net/ethernet/sfc/ptp.c:1442:1-4: alloc with no test, possible model on line 1457
-This one's a false positive, see below:
-> vim +1442 drivers/net/ethernet/sfc/ptp.c
->
-> 5d0dab01175bff0 Ben Hutchings   2013-10-16  1434  
-> ac36baf817c39fc Ben Hutchings   2013-10-15  1435  /* Initialise PTP state. */
-> ac36baf817c39fc Ben Hutchings   2013-10-15  1436  int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
-> 7c236c43b838221 Stuart Hodgson  2012-09-03  1437  {
-> 7c236c43b838221 Stuart Hodgson  2012-09-03  1438  	struct efx_ptp_data *ptp;
-> 7c236c43b838221 Stuart Hodgson  2012-09-03  1439  	int rc = 0;
-> 7c236c43b838221 Stuart Hodgson  2012-09-03  1440  	unsigned int pos;
-> 7c236c43b838221 Stuart Hodgson  2012-09-03  1441  
-> 7c236c43b838221 Stuart Hodgson  2012-09-03 @1442  	ptp = kzalloc(sizeof(struct efx_ptp_data), GFP_KERNEL);
-We allocate ptp...
-> 7c236c43b838221 Stuart Hodgson  2012-09-03  1443  	efx->ptp_data = ptp;
-... assign it to efx->ptp_data...
-> 7c236c43b838221 Stuart Hodgson  2012-09-03  1444  	if (!efx->ptp_data)
-> 7c236c43b838221 Stuart Hodgson  2012-09-03  1445  		return -ENOMEM;
-... which we then test.
+There have been many changes in how the current bpf program defines
+map. The development of libbbpf has led to the new method called 
+BTF-defined map, which is a new way of defining BPF maps, and thus has
+a lot of differences from the existing MAP definition method.
 
-So by here...
-> 7c236c43b838221 Stuart Hodgson  2012-09-03 @1457  	ptp->workwq = create_singlethread_workqueue("sfc_ptp");
-... we know ptp is non-NULL.
+Although bpf_load was also internally using libbbpf, fragmentation in 
+its implementation began to occur, such as using its own structure, 
+bpf_load_map_def, to define the map.
 
--ed
+Therefore, in this patch set, map test programs, which are closely
+related to changes in the definition method of BPF map, were refactored
+with libbbpf.
+
+---
+Changes in V2:
+ - instead of changing event from __x64_sys_connect to __sys_connect,
+ fetch and set register values directly
+ - fix wrong error check logic with bpf_program
+ - set numa_node 0 declaratively at map definition instead of setting it
+ from user-space
+ - static initialization of ARRAY_OF_MAPS element with '.values'
+
+Daniel T. Lee (4):
+  samples: bpf: fix bpf programs with kprobe/sys_connect event
+  samples: bpf: refactor BPF map in map test with libbpf
+  samples: bpf: refactor BPF map performance test with libbpf
+  selftests: bpf: remove unused bpf_map_def_legacy struct
+
+ samples/bpf/Makefile                     |   2 +-
+ samples/bpf/map_perf_test_kern.c         | 188 ++++++++++++-----------
+ samples/bpf/map_perf_test_user.c         | 164 +++++++++++++-------
+ samples/bpf/test_map_in_map_kern.c       |  94 ++++++------
+ samples/bpf/test_map_in_map_user.c       |  53 ++++++-
+ samples/bpf/test_probe_write_user_kern.c |   9 +-
+ tools/testing/selftests/bpf/bpf_legacy.h |  14 --
+ 7 files changed, 305 insertions(+), 219 deletions(-)
+
+-- 
+2.25.1
+
