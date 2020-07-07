@@ -2,119 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5310B21753F
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 19:34:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A90FE21753E
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 19:33:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728421AbgGGReK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 13:34:10 -0400
-Received: from mail-bn7nam10on2084.outbound.protection.outlook.com ([40.107.92.84]:44863
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727834AbgGGReK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jul 2020 13:34:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nzIh6KJOhK0qm2Qq6dPtHRCxzwE4Lhnfcj3V/IfCzcEyl0eHHkgzmMgA79NI/R/2DyX/4oHcuKafTaAiwqrkIK18H1tNg18B+xUO8YlWtolgqi6eI4hbbMY2P1kq8/8Xt/VoZXq6/VBAckOUFAaHIAz2D2SF9DU8SMSAfV4IoXCBBVF5VrI4iod/BpZlppvEc7uZY82SRWEvd2PFxG+3suGRuFOGZf/UUBj1do59EWsJ1+nprNxamNb1bBo2yzqLX9blfe+/zgThjIUbKHtUfBabNJ0PRtim2VZ29LmS8UEW+mQqAGyzjVrQI7q7DA27UypQACP74yO2ClZdS2aESQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rtCMaoC4hFWkykET+IGT4XVLghmBb7Pr7RAoqVv6djY=;
- b=C+nLADX2XRVkAuWJI1Vdej/TyA6lBDjB8pSsIlDYzE3/sIZanPOHii5NKtXqz7A9I1+jK+yIkZgA4Ly8FHvBDofDUso3jvjDJ5sN5CU6THAyhUw+MZ3vtzWwCUG+9jj5bfBET7Cs5ghA5cBOxIFtCP05qwBAx4TsicxOZZXYmAR2P5Jk20gPW+7WRwR3n8CBrVJNG5GiI99sD8zrvLmwHl8Sj6FN+FiSZTNXlwzRO++BjnXcocl2d+e1+0qpFkLNbxa3VbRATI6tUfSS00S+YsqetSmTI9AvoAXdBP1JczwkghB/vmfapm4BkFJoIwJ/ByNzgichn6Xp1dlM/22RFQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
+        id S1728333AbgGGRdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 13:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52982 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727834AbgGGRdx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 13:33:53 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01217C061755;
+        Tue,  7 Jul 2020 10:33:53 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id x11so17014793plo.7;
+        Tue, 07 Jul 2020 10:33:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rtCMaoC4hFWkykET+IGT4XVLghmBb7Pr7RAoqVv6djY=;
- b=HAFbxi34NM4i6SuKGdpAXXTGAgak5HDWgxTqJ37pm3S9Kr++LrzptTwQECWnKZi2RT5QUxVWveTBg5s7MmR0uIYbn5cosUfIUVd1tb2zauILxsBmYs0F9Q2XCNeW/y5FBVXj2uK3cf0BOKr2+l+zZazRd46Zr7Fo1RDm6hboB68=
-Authentication-Results: amd.com; dkim=none (message not signed)
- header.d=none;amd.com; dmarc=none action=none header.from=amd.com;
-Received: from BN6PR1201MB0258.namprd12.prod.outlook.com
- (2603:10b6:405:57::13) by BN6PR12MB1443.namprd12.prod.outlook.com
- (2603:10b6:405:e::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.28; Tue, 7 Jul
- 2020 17:34:07 +0000
-Received: from BN6PR1201MB0258.namprd12.prod.outlook.com
- ([fe80::ac9a:b1f:fa1a:403b]) by BN6PR1201MB0258.namprd12.prod.outlook.com
- ([fe80::ac9a:b1f:fa1a:403b%3]) with mapi id 15.20.3153.020; Tue, 7 Jul 2020
- 17:34:07 +0000
-From:   Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-To:     Tom Lendacky <thomas.lendacky@amd.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-Subject: [PATCH] amd-xgbe: print the right c45 id
-Date:   Tue,  7 Jul 2020 17:33:47 +0000
-Message-Id: <20200707173347.1564682-1-Shyam-sundar.S-k@amd.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MA1PR0101CA0030.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a00:22::16) To BN6PR1201MB0258.namprd12.prod.outlook.com
- (2603:10b6:405:57::13)
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OG2UGSwTtZ3JhpHjOf9/K5Mq8nGQGxILirbLiIW7/lE=;
+        b=oGqcWcGzRQP3aQKmSSrH/bX1Vqjd9YWJebkVyo71vwBL5Eb/wsWmEczRasIBhPbV1E
+         M5q3e8MIbFsgK6VLQG2nRHs2BPFDj7QYWvlVigEVb8v2fsSQZWZmP+UJNqIR74jYR3iB
+         CIrh0ioE7wi9DHbES0JMF4R0ET1XGg2l+lfY+Q2ppedMJPSk901K1ULEOEoYkpoVWmpw
+         5yC9Jg61OiJtbFGJopPVjZitLETsWRTmvEN3beNquwv7h/y7nq+UReiC6JEEWfOEvMq9
+         sRIUgrsJGpZ5eVeWg1gdwOkUGiHfa+QBS5M/VUmSDKSPOZWXbOf1fU0t9B8uJUtz+0B/
+         CsmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OG2UGSwTtZ3JhpHjOf9/K5Mq8nGQGxILirbLiIW7/lE=;
+        b=bXBWn9ST2rXTkHcsqfwjzOhd3mTVTKF4of6NQWXJs4oQhxtEbvvSh0e6VIWje4+66J
+         TI8YgfgRRWBER/WJMmj1nl7eS/0oicqUXsvIzuMhy1ns/R93LahR3DA2jW5iqvOS1qpt
+         HDjubhYaQMGLEZCcOsXt717JuasCJudUjk6uzU9AMpzcG20eOZwvxni6iWmxX4OZb6y5
+         j3gfAEQXIKdJ4CfgA2AaHxlF9Y+WDtJcYXmmq10qee2AWqIMOF0IALtNbszBLi1tFhbQ
+         SovQOifWt8ZH2xx6Dqn1rzsmq9g16ETJZNJQxvBvSDpid2w1ETX9JTWtzZkT+ciTVY10
+         xntQ==
+X-Gm-Message-State: AOAM531xL8oFfg6vvNIDWXMAQnnTygYHFomkEyMlXQv/uYk1mI1XVyjG
+        FBjabbK3lgtdlQ3xfyjzPzU=
+X-Google-Smtp-Source: ABdhPJw6mDbNYNk2zkHO904T8LdoKcgLU8JjL9z3qxqChr8Ge4i6nLV465YRGMqYh2nB2zT4RpFsUw==
+X-Received: by 2002:a17:90a:ce96:: with SMTP id g22mr5540446pju.9.1594143232494;
+        Tue, 07 Jul 2020 10:33:52 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id i21sm7383950pfa.18.2020.07.07.10.33.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jul 2020 10:33:51 -0700 (PDT)
+Subject: Re: [PATCH net-next] dropwatch: Support monitoring of dropped frames
+To:     izabela.bakollari@gmail.com, nhorman@tuxdriver.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+References: <20200707171515.110818-1-izabela.bakollari@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <8aa6bcfe-8117-0fc9-1bc5-9b6a600e0972@gmail.com>
+Date:   Tue, 7 Jul 2020 10:33:50 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from jatayu.amd.com (165.204.156.251) by MA1PR0101CA0030.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:22::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.22 via Frontend Transport; Tue, 7 Jul 2020 17:34:05 +0000
-X-Mailer: git-send-email 2.25.1
-X-Originating-IP: [165.204.156.251]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 2b1415c9-cc55-4c2a-7b11-08d8229bf37b
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1443:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BN6PR12MB1443139F95D70D06CFA962DE9A660@BN6PR12MB1443.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 0457F11EAF
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GzFT7DqlSSrcq4/+AZ4FdD/GtOkGOUa1+FHv39ChXsWCQONkaIxkIt8QiFaAQMhwrQ+LIz6jNpvcFH+LvjAoCKvdMJk57rjcKYnWgeS6SB3XB6O5+3p0FjuBAiokJNR8VkfAhoQk7d+2sH1QBEKTqusRI3VmRQks8RHhNo6c3jpY7pwYl1Ii4N0fy4nDum7B/ekEaFX37aowv0/aSCnVcNLWAM4hA4lJ3oN2vgOLUcZSMp6ybVe23tdgWfopsnRDK2klEEhWR5NCt2MvzrLDdihXWkzmTb5YLckCcEQ4IncFxFUTWk0Rx9fQiLfp/VRjxYnZYtH+HVsg5QvsUtxhFQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR1201MB0258.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(396003)(39860400002)(366004)(136003)(110136005)(1076003)(316002)(8676002)(6486002)(36756003)(6666004)(83380400001)(5660300002)(2906002)(16526019)(52116002)(7696005)(66476007)(66946007)(66556008)(26005)(4326008)(8936002)(478600001)(186003)(2616005)(956004)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: juMAYuUeThZ2RqQhxMeYeghUo49XRjJse9SoUj5NNf8CMl524Lg8J/VMVqrDOuW+GPi98Gdf/qqy1eSSF/37EVml+5ZRjZy5EJK+Wz5elMTMUTnRcdH68NHLQThVnxLVylVS3EL896qTAfZ1Vc/fNqd743gHbZR46v37YlxUiyQtm3ksTMLdRfURG4AZIu53mRt5sN+fskpE25pS+yO6a5tMPN/b0eQSvGNLXRvM5M9A0NnZ07WeMX+6htzw3RuXt3ZAjYEKLiUsSqgTfErFALfsOtUpHC6VxhEHJl3gxW0+LFNSiZUhZ4NQ7TJIHaKo0vVm4XVgWExrMkgPDWkkKO8TGEFlUCVNo67RM803XztoWsaYPqMrjGjDlLdc3xqxG4rrYleVgIN8CnqfscvQZAhhurshiu+Q0K9ExUzg9wDCfRYpEo01k4z0EzA9bYNR2EmgYI4QhTNixSvA4l845sbRhE6W29vu+DPoUJzW9jQUQejfJ4bD6dcBInqjWP3j
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b1415c9-cc55-4c2a-7b11-08d8229bf37b
-X-MS-Exchange-CrossTenant-AuthSource: BN6PR1201MB0258.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2020 17:34:07.7594
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: epp+RCDfJ6y4XseY1DxHnZPMPJBRYGNJyRG5ZdB5DADR67AjdMzAmT/95U/NUeBWxniTiKEHQgq7CA3vC3ziiQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1443
+In-Reply-To: <20200707171515.110818-1-izabela.bakollari@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If an external PHY uses the CL45 protocol, then phydev->phy_id will be
-zero. Update the debug message that prints the PHY ID to check the PHY
-mode and print the PMAPMD MMD PHY ID value for a CL45 PHY.
 
-Also, removing the TODO note, as the CL45 support has been updated to
-do this.
 
-Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
----
- drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On 7/7/20 10:15 AM, izabela.bakollari@gmail.com wrote:
+> From: Izabela Bakollari <izabela.bakollari@gmail.com>
+> 
+> Dropwatch is a utility that monitors dropped frames by having userspace
+> record them over the dropwatch protocol over a file. This augument
+> allows live monitoring of dropped frames using tools like tcpdump.
+> 
+> With this feature, dropwatch allows two additional commands (start and
+> stop interface) which allows the assignment of a net_device to the
+> dropwatch protocol. When assinged, dropwatch will clone dropped frames,
+> and receive them on the assigned interface, allowing tools like tcpdump
+> to monitor for them.
+> 
+> With this feature, create a dummy ethernet interface (ip link add dev
+> dummy0 type dummy), assign it to the dropwatch kernel subsystem, by using
+> these new commands, and then monitor dropped frames in real time by
+> running tcpdump -i dummy0.
+> 
+> Signed-off-by: Izabela Bakollari <izabela.bakollari@gmail.com>
+> ---
+>  include/uapi/linux/net_dropmon.h |  3 ++
+>  net/core/drop_monitor.c          | 79 +++++++++++++++++++++++++++++++-
+>  2 files changed, 80 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+> index 67e31f329190..e8e861e03a8a 100644
+> --- a/include/uapi/linux/net_dropmon.h
+> +++ b/include/uapi/linux/net_dropmon.h
+> @@ -58,6 +58,8 @@ enum {
+>  	NET_DM_CMD_CONFIG_NEW,
+>  	NET_DM_CMD_STATS_GET,
+>  	NET_DM_CMD_STATS_NEW,
+> +	NET_DM_CMD_START_IFC,
+> +	NET_DM_CMD_STOP_IFC,
+>  	_NET_DM_CMD_MAX,
+>  };
+>  
+> @@ -93,6 +95,7 @@ enum net_dm_attr {
+>  	NET_DM_ATTR_SW_DROPS,			/* flag */
+>  	NET_DM_ATTR_HW_DROPS,			/* flag */
+>  	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
+> +	NET_DM_ATTR_IFNAME,			/* string */
+>  
+>  	__NET_DM_ATTR_MAX,
+>  	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+> diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+> index 8e33cec9fc4e..8049bff05abd 100644
+> --- a/net/core/drop_monitor.c
+> +++ b/net/core/drop_monitor.c
+> @@ -30,6 +30,7 @@
+>  #include <net/genetlink.h>
+>  #include <net/netevent.h>
+>  #include <net/flow_offload.h>
+> +#include <net/sock.h>
+>  
+>  #include <trace/events/skb.h>
+>  #include <trace/events/napi.h>
+> @@ -46,6 +47,7 @@
+>   */
+>  static int trace_state = TRACE_OFF;
+>  static bool monitor_hw;
+> +struct net_device *interface;
+>  
+>  /* net_dm_mutex
+>   *
+> @@ -220,9 +222,8 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+>  	struct per_cpu_dm_data *data;
+>  	unsigned long flags;
+>  
+> -	local_irq_save(flags);
+> +	spin_lock_irqsave(&data->lock, flags);
+>  	data = this_cpu_ptr(&dm_cpu_data);
+> -	spin_lock(&data->lock);
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-index 46c3c1ca38d6..5b14fc758c2f 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-@@ -1024,9 +1024,9 @@ static int xgbe_phy_find_phy_device(struct xgbe_prv_data *pdata)
- 		return -ENODEV;
- 	}
- 	netif_dbg(pdata, drv, pdata->netdev, "external PHY id is %#010x\n",
--		  phydev->phy_id);
--
--	/*TODO: If c45, add request_module based on one of the MMD ids? */
-+		(phy_data->phydev_mode == XGBE_MDIO_MODE_CL45)
-+		? phydev->c45_ids.device_ids[MDIO_MMD_PMAPMD]
-+		: phydev->phy_id);
- 
- 	ret = phy_device_register(phydev);
- 	if (ret) {
--- 
-2.25.1
+This change seems unrelated ?
+
+And also buggy, since data is essentially garbage when you call spin_lock_irqsave(&data->lock, flags);
+
+>  	dskb = data->skb;
+>  
+>  	if (!dskb)
+> @@ -255,6 +256,12 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+>  
+>  out:
+>  	spin_unlock_irqrestore(&data->lock, flags);
+> +
+> +	if (interface && interface != skb->dev) {
+> +		skb = skb_clone(skb, GFP_ATOMIC);
+
+skb_clone() can return NULL
+
+> +		skb->dev = interface;
+> +		netif_receive_skb(skb);
+> +	}
+>  }
+>  
+>  static void trace_kfree_skb_hit(void *ignore, struct sk_buff *skb, void *location)
+> @@ -1315,6 +1322,63 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
+>  	return -EOPNOTSUPP;
+>  }
+>  
+> +static int net_dm_interface_start(struct net *net, const char *ifname)
+> +{
+> +	struct net_device *nd;
+> +
+> +	nd = dev_get_by_name(net, ifname);
+> +
+> +	if (nd) {
+> +		interface = nd;
+> +		dev_hold(interface);
+> +	} else {
+> +		return -ENODEV;
+> +	}
+> +	return 0;
+> +}
+> +
+
+
+What happens after this monitoring is started, then the admin does :
+
+rmmod ifb
+
 
