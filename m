@@ -2,134 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46556216877
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 10:40:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB851216893
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 10:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726869AbgGGIj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 04:39:59 -0400
-Received: from mail134-4.atl141.mandrillapp.com ([198.2.134.4]:21974 "EHLO
-        mail134-4.atl141.mandrillapp.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725825AbgGGIj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 04:39:59 -0400
-X-Greylist: delayed 901 seconds by postgrey-1.27 at vger.kernel.org; Tue, 07 Jul 2020 04:39:58 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=mandrill; d=nexedi.com;
- h=From:Subject:To:Cc:In-Reply-To:References:Message-Id:Date:MIME-Version:Content-Type:Content-Transfer-Encoding; i=thomas.gambier@nexedi.com;
- bh=kKg+uSIlv++SijT4VbFda0/YH/bvE4D7BFl6JIt8uh8=;
- b=bPU7uPdwfa1OnxjrOok9vZRqlmOMxBJSDg0PmkoOVyyq4Eq/dBY/DUOcHvS5jeOBYF9fKfjvQ2r8
-   71Q2Tzrr2pF1sL0Hxymd9OLR12XZmNygT4kso+auVEx64V3e5Y5zAvvfq9JOAAt5DkR/heq7wF0d
-   n34pFoqsOPKQTvDpBGw=
-Received: from pmta03.mandrill.prod.atl01.rsglab.com (127.0.0.1) by mail134-4.atl141.mandrillapp.com id h0gqds1sau8b for <netdev@vger.kernel.org>; Tue, 7 Jul 2020 08:24:57 +0000 (envelope-from <bounce-md_31050260.5f043159.v1-5c7b703fee4e4263a60e594ec121d70c@mandrillapp.com>)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com; 
- i=@mandrillapp.com; q=dns/txt; s=mandrill; t=1594110297; h=From : 
- Subject : To : Cc : In-Reply-To : References : Message-Id : Date : 
- MIME-Version : Content-Type : Content-Transfer-Encoding : From : 
- Subject : Date : X-Mandrill-User : List-Unsubscribe; 
- bh=kKg+uSIlv++SijT4VbFda0/YH/bvE4D7BFl6JIt8uh8=; 
- b=jbzXWV9TR63KdsQYjR0cGXOG2QFDyd8Crvw1BAMPcLNHkXuruxANOGDHTHSIAyY0wmO+/D
- yGuNHoiwcBKxG9FaclDfiLTAdXtyFQ9g/c3yp+FlDQc2QCoSq2Ekjl7dOkMFoCEMhzjPQALv
- ekWOpSu0DDp0xt7ECLixqz0Ua0Al4=
-From:   thomas.gambier@nexedi.com
-Subject: Re: PROBLEM: can't ping anycast IPv6 address on lo interface
-Received: from [87.98.221.171] by mandrillapp.com id 5c7b703fee4e4263a60e594ec121d70c; Tue, 07 Jul 2020 08:24:57 +0000
-X-Sender: thomas.gambier@nexedi.com
-To:     David Ahern <dsahern@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org, Julien Muchembled <jm@nexedi.com>,
-        Jean-Paul Smets <jp@nexedi.com>,
-        Juliusz Chroboczek <jch@irif.fr>
-In-Reply-To: <4a87a3f2-8960-b7dc-47c0-1801d92b544e@gmail.com>
-References: <fcb3d6853922beec880dda255e249288@nexedi.com> <4a87a3f2-8960-b7dc-47c0-1801d92b544e@gmail.com>
-Message-Id: <2c03f7b2f5546cb33ba860fdb0dcbe2f@nexedi.com>
-X-Report-Abuse: Please forward a copy of this message, including all headers, to abuse@mandrill.com
-X-Report-Abuse: You can also report abuse here: http://mandrillapp.com/contact/abuse?id=31050260.5c7b703fee4e4263a60e594ec121d70c
-X-Mandrill-User: md_31050260
-Date:   Tue, 07 Jul 2020 08:24:57 +0000
+        id S1727792AbgGGIrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 04:47:41 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:43276 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725941AbgGGIrl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jul 2020 04:47:41 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0678e1pQ017342;
+        Tue, 7 Jul 2020 01:47:36 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0818;
+ bh=8c5mPkGG7H30YLL+hWMIaNUtKr3dVimKBm6pzrqc0Es=;
+ b=yvoJFDIoFDNvAY7UK5NmLn9ZAqLCWAYEQ/IHSt9Epx7RFwwb/laTEA9+Q0AA149qdNpN
+ VobDgnt0HnT8y3MRaJGYRnhOTUg2gGGEA+Ui1/uHRARtcENx2tAXQ72H2vNhVt4GQJpF
+ +dV50CwxIFvdJE7g4sApNeoji+PpDLdY6ChyWxGnAT8njXpzpTx4nEPSNoIgG5jfZVs8
+ Z07xGg0mxDrRrKPweNeJ/EV8nu93tIlF7qsJxmAVwL194h49YX/8aAPW73/OOVKS9u3M
+ oIQf3OnfmejLoY1/zGa8RSXDd7rTxub0eBDttzvOj/UnY+54oHCxn4ZtZnOLcJbt0gS4 zw== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0a-0016f401.pphosted.com with ESMTP id 322q4ptt6y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jul 2020 01:47:36 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 7 Jul
+ 2020 01:47:35 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 7 Jul 2020 01:47:35 -0700
+Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
+        by maili.marvell.com (Postfix) with ESMTP id 286E53F703F;
+        Tue,  7 Jul 2020 01:47:31 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+CC:     Alexander Lobakin <alobakin@marvell.com>,
+        <anthony.wong@canonical.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nikita Danilov <ndanilov@marvell.com>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        "Dmitry Bezrukov" <dmitry.bezrukov@marvell.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: atlantic: Add support for firmware v4
+Date:   Tue, 7 Jul 2020 11:46:57 +0300
+Message-ID: <20200707084657.205-1-alobakin@marvell.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200707063830.15645-1-kai.heng.feng@canonical.com>
+References: <20200707063830.15645-1-kai.heng.feng@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-07_05:2020-07-07,2020-07-07 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-07-07 02:25, David Ahern wrote:
-> [ sorry for the delay; on PTO for a couple weeks ]
-> 
-> On 6/26/20 3:20 AM, thomas.gambier@nexedi.com wrote:
->> Hello,
->> 
->> this is the first time I report a bug to the kernel team. Please let 
->> me
->> know if there are any missing information or if I should post on
->> bugzilla instead.
->> 
->> 
->> Since Linux 5.2, I can't ping anycast address on lo interface.
->> 
->> If you enable IPv6 forwarding for an interface and add a IPv6 address
->> range on this interface, it is possible to ping the addres 0 of the
->> range (anycast address). This doesn't work for "lo" interface since
->> Linux 5.2.
->> 
->> I bisected to find that the commit
->> c7a1ce397adacaf5d4bb2eab0a738b5f80dc3e43
->> (https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?=
-id=3Dc7a1ce397adacaf5d4bb2eab0a738b5f80dc3e43)
->> introduced the regression. Please note that the regression is still
->> present on master branch of net repository (commit
->> 2570284060b48f3f79d8f1a2698792f36c385e9a from yesterday).
->> 
->> I attach my config file to this email (this config was used to compile
->> latest master branch).
->> 
->> In order to reproduce you can use this small script:
->> 
->> root@kernel-compil-vm:~# cat test.bash
->> #! /bin/bash
->> echo 1 >=C2=A0 /proc/sys/net/ipv6/conf/all/forwarding
->> ip -6 a add fc12::1/16 dev lo
->> sleep 2
->> echo "pinging lo"
->> ping6 -c 2 fc12::
->> 
-> 
-> Thanks for the quick reproducer.
-> 
->> 
->> Before the regression you will see:
->> pinging lo
->> PING fc12::(fc12::) 56 data bytes
->> 64 bytes from fc12::1: icmp_seq=3D1 ttl=3D64 time=3D0.111 ms
->> 64 bytes from fc12::1: icmp_seq=3D2 ttl=3D64 time=3D0.062 ms
->> 
->> 
->> After the regression you will see:
->> pinging lo
->> PING fc12::(fc12::) 56 data bytes
->> From fc12::: icmp_seq=3D1 Destination unreachable: No route
->> From fc12::: icmp_seq=3D2 Destination unreachable: No route
->> 
-> 
-> This solves the problem for me; can you try it out in your environment?
-> 
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index ea0be7cf3d93..f3279810d765 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -3405,7 +3405,7 @@ static bool fib6_is_reject(u32 flags, struct
-> net_device *dev, int addr_type)
->         if ((flags & RTF_REJECT) ||
->             (dev && (dev->flags & IFF_LOOPBACK) &&
->              !(addr_type & IPV6_ADDR_LOOPBACK) &&
-> -            !(flags & RTF_LOCAL)))
-> +            !(flags & (RTF_ANYCAST | RTF_LOCAL))))
->                 return true;
-> 
->         return false;
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Tue,  7 Jul 2020 14:38:28 +0800
 
-Yes, I confirm this patch solves the bug.
+> We have a new ethernet card that is supported by the atlantic driver:
+> 01:00.0 Ethernet controller [0200]: Aquantia Corp. AQC107 NBase-T/IEEE 802.3bz Ethernet Controller [AQtion] [1d6a:07b1] (rev 02)
+> 
+> But the driver failed to probe the device:
+> kernel: atlantic: Bad FW version detected: 400001e
+> kernel: atlantic: probe of 0000:01:00.0 failed with error -95
+> 
+> As a pure guesswork, simply adding the firmware version to the driver
 
-Thank you very much.
+Please don't send "pure guessworks" to net-fixes tree. You should have
+reported this as a bug to LKML and/or atlantic team, so we could issue
+it.
 
+> can make it function. Doing iperf3 as a smoketest doesn't show any
+> abnormality either.
+> 
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+>  drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+> index 73c0f41df8d8..0b4cd1c0e022 100644
+> --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+> +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+> @@ -46,6 +46,7 @@
+>  #define HW_ATL_FW_VER_1X 0x01050006U
+>  #define HW_ATL_FW_VER_2X 0x02000000U
+>  #define HW_ATL_FW_VER_3X 0x03000000U
+> +#define HW_ATL_FW_VER_4X 0x0400001EU
+>  
+>  #define FORCE_FLASHLESS 0
+>  
+> @@ -81,6 +82,9 @@ int hw_atl_utils_initfw(struct aq_hw_s *self, const struct aq_fw_ops **fw_ops)
+>  	} else if (hw_atl_utils_ver_match(HW_ATL_FW_VER_3X,
+>  					  self->fw_ver_actual) == 0) {
+>  		*fw_ops = &aq_fw_2x_ops;
+> +	} else if (hw_atl_utils_ver_match(HW_ATL_FW_VER_4X,
+> +					  self->fw_ver_actual) == 0) {
+> +		*fw_ops = &aq_fw_2x_ops;
+>  	} else {
+>  		aq_pr_err("Bad FW version detected: %x\n",
+>  			  self->fw_ver_actual);
+> -- 
+> 2.17.1
