@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF501217A3F
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 23:25:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAF08217A3B
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 23:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729253AbgGGVY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jul 2020 17:24:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33874 "EHLO mail.kernel.org"
+        id S1729197AbgGGVYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jul 2020 17:24:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33878 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729085AbgGGVYt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jul 2020 17:24:49 -0400
+        id S1729095AbgGGVYs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jul 2020 17:24:48 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A8F17207CD;
-        Tue,  7 Jul 2020 21:24:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 401FA20773;
+        Tue,  7 Jul 2020 21:24:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1594157087;
-        bh=xZZr1NGg4wDEEmyRBrDfATZt+llLYAHJWqUdlNRNV6s=;
+        bh=kDDMBB2f9oxv/Wr43KFwekMBBUl44Cs6Vp+0PJBwO8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fi6RBUYvR/TYPXkZhD2+OI4akcuL/mNqmqLcgXxEYZS3VZdT3o1iiH4GttxlDDggL
-         uz8L/MaNJdCyugXIx+K9vPSPdwCd3fNS6fRgwRq8+bki+qoShIYCakh/KrChf9GpY/
-         LNs3SNwEVmSwY+qac6ylwTnlhzWrntJjnIBAlPrg=
+        b=tVao9QpPMgchNPIjqbCoc9/AvcdoqYaje5fUmMZWPeUob4B0IIRY9l4xORy2eWcFp
+         MiXshMWrJIWSG7mAh4hSn7U4rLk/tBWO93mH/nq1vlZfsJYDkbDwNuEL0iS7+k4S1P
+         5T7fnLm3yKh9n9KQuFrJfNXekUqXI620GTSLq9Vk=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
         emil.s.tantilov@intel.com, alexander.h.duyck@linux.intel.com,
         jeffrey.t.kirsher@intel.com, tariqt@mellanox.com, mkubecek@suse.cz,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 6/9] selftests: net: add a test for UDP tunnel info infra
-Date:   Tue,  7 Jul 2020 14:24:31 -0700
-Message-Id: <20200707212434.3244001-7-kuba@kernel.org>
+Subject: [PATCH net-next 7/9] ixgbe: convert to new udp_tunnel_nic infra
+Date:   Tue,  7 Jul 2020 14:24:32 -0700
+Message-Id: <20200707212434.3244001-8-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200707212434.3244001-1-kuba@kernel.org>
 References: <20200707212434.3244001-1-kuba@kernel.org>
@@ -43,809 +43,325 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add validating the UDP tunnel infra works.
+Make use of new common udp_tunnel_nic infra. ixgbe supports
+IPv4 only, and only single VxLAN and Geneve ports (one each).
 
-$ ./udp_tunnel_nic.sh
-PASSED all 383 checks
+I'm dropping the confusing piece of code in ixgbe_set_features().
+ndo_udp_tunnel_add and ndo_udp_tunnel_del did not check if RXCSUM
+is enabled, so this code was either unnecessary or buggy anyway.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- .../drivers/net/netdevsim/udp_tunnel_nic.sh   | 786 ++++++++++++++++++
- 1 file changed, 786 insertions(+)
- create mode 100644 tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   3 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 195 ++++--------------
+ 2 files changed, 37 insertions(+), 161 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh b/tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
-new file mode 100644
-index 000000000000..ba1d53b9f815
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
-@@ -0,0 +1,786 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+VNI_GEN=$RANDOM
-+NSIM_ID=$((RANDOM % 1024))
-+NSIM_DEV_SYS=/sys/bus/netdevsim/devices/netdevsim$NSIM_ID
-+NSIM_DEV_DFS=/sys/kernel/debug/netdevsim/netdevsim$NSIM_ID
-+NSIM_NETDEV=
-+HAS_ETHTOOL=
-+EXIT_STATUS=0
-+num_cases=0
-+num_errors=0
-+
-+clean_up_devs=( )
-+
-+function err_cnt {
-+    echo "ERROR:" $@
-+    EXIT_STATUS=1
-+    ((num_errors++))
-+    ((num_cases++))
-+}
-+
-+function pass_cnt {
-+    ((num_cases++))
-+}
-+
-+function cleanup_tuns {
-+    for dev in "${clean_up_devs[@]}"; do
-+	[ -e /sys/class/net/$dev ] && ip link del dev $dev
-+    done
-+    clean_up_devs=( )
-+}
-+
-+function cleanup_nsim {
-+    if [ -e $NSIM_DEV_SYS ]; then
-+	echo $NSIM_ID > /sys/bus/netdevsim/del_device
-+    fi
-+}
-+
-+function cleanup {
-+    cleanup_tuns
-+    cleanup_nsim
-+}
-+
-+trap cleanup EXIT
-+
-+function new_vxlan {
-+    local dev=$1
-+    local dstport=$2
-+    local lower=$3
-+    local ipver=$4
-+    local flags=$5
-+
-+    local group ipfl
-+
-+    [ "$ipver" != '6' ] && group=239.1.1.1 || group=fff1::1
-+    [ "$ipver" != '6' ] || ipfl="-6"
-+
-+    [[ ! "$flags" =~ "external" ]] && flags="$flags id $((VNI_GEN++))"
-+
-+    ip $ipfl link add $dev type vxlan \
-+       group $group \
-+       dev $lower \
-+       dstport $dstport \
-+       $flags
-+
-+    ip link set dev $dev up
-+
-+    clean_up_devs=("${clean_up_devs[@]}" $dev)
-+
-+    check_tables
-+}
-+
-+function new_geneve {
-+    local dev=$1
-+    local dstport=$2
-+    local ipver=$3
-+    local flags=$4
-+
-+    local group ipfl
-+
-+    [ "$ipver" != '6' ] && remote=1.1.1.2 || group=::2
-+    [ "$ipver" != '6' ] || ipfl="-6"
-+
-+    [[ ! "$flags" =~ "external" ]] && flags="$flags vni $((VNI_GEN++))"
-+
-+    ip $ipfl link add $dev type geneve \
-+       remote $remote  \
-+       dstport $dstport \
-+       $flags
-+
-+    ip link set dev $dev up
-+
-+    clean_up_devs=("${clean_up_devs[@]}" $dev)
-+
-+    check_tables
-+}
-+
-+function del_dev {
-+    local dev=$1
-+
-+    ip link del dev $dev
-+    check_tables
-+}
-+
-+# Helpers for netdevsim port/type encoding
-+function mke {
-+    local port=$1
-+    local type=$2
-+
-+    echo $((port << 16 | type))
-+}
-+
-+function pre {
-+    local val=$1
-+
-+    echo -e "port: $((val >> 16))\ttype: $((val & 0xffff))"
-+}
-+
-+function pre_ethtool {
-+    local val=$1
-+    local port=$((val >> 16))
-+    local type=$((val & 0xffff))
-+
-+    case $type in
-+	1)
-+	    type_name="vxlan"
-+	    ;;
-+	2)
-+	    type_name="geneve"
-+	    ;;
-+	4)
-+	    type_name="vxlan-gpe"
-+	    ;;
-+	*)
-+	    type_name="bit X"
-+	    ;;
-+    esac
-+
-+    echo "port $port, $type_name"
-+}
-+
-+function check_table {
-+    local path=$NSIM_DEV_DFS/ports/$port/udp_ports_table$1
-+    local -n expected=$2
-+    local last=$3
-+
-+    read -a have < $path
-+
-+    if [ ${#expected[@]} -ne ${#have[@]} ]; then
-+	echo "check_table: BAD NUMBER OF ITEMS"
-+	return 0
-+    fi
-+
-+    for i in "${!expected[@]}"; do
-+	if [ -n "$HAS_ETHTOOL" -a ${expected[i]} -ne 0 ]; then
-+	    pp_expected=`pre_ethtool ${expected[i]}`
-+	    ethtool --show-tunnels $NSIM_NETDEV | grep "$pp_expected" >/dev/null
-+	    if [ $? -ne 0 -a $last -ne 0 ]; then
-+		err_cnt "ethtool table $1 on port $port: $pfx - $msg"
-+		echo "       check_table: ethtool does not contain '$pp_expected'"
-+		ethtool --show-tunnels $NSIM_NETDEV
-+		return 0
-+
-+	    fi
-+	fi
-+
-+	if [ ${expected[i]} != ${have[i]} ]; then
-+	    if [ $last -ne 0 ]; then
-+		err_cnt "table $1 on port $port: $pfx - $msg"
-+		echo "       check_table: wrong entry $i"
-+		echo "       expected: `pre ${expected[i]}`"
-+		echo "       have:     `pre ${have[i]}`"
-+		return 0
-+	    fi
-+	    return 1
-+	fi
-+    done
-+
-+    pass_cnt
-+    return 0
-+}
-+
-+function check_tables {
-+    # Need retries in case we have workqueue making the changes
-+    local retries=10
-+
-+    while ! check_table 0 exp0 $((retries == 0)); do
-+	sleep 0.02
-+	((retries--))
-+    done
-+    while ! check_table 1 exp1 $((retries == 0)); do
-+	sleep 0.02
-+	((retries--))
-+    done
-+}
-+
-+function print_table {
-+    local path=$NSIM_DEV_DFS/ports/$port/udp_ports_table$1
-+    read -a have < $path
-+
-+    tree $NSIM_DEV_DFS/
-+
-+    echo "Port $port table $1:"
-+
-+    for i in "${!have[@]}"; do
-+	echo "    `pre ${have[i]}`"
-+    done
-+
-+}
-+
-+function print_tables {
-+    print_table 0
-+    print_table 1
-+}
-+
-+function get_netdev_name {
-+    local -n old=$1
-+
-+    new=$(ls /sys/class/net)
-+
-+    for netdev in $new; do
-+	for check in $old; do
-+            [ $netdev == $check ] && break
-+	done
-+
-+	if [ $netdev != $check ]; then
-+	    echo $netdev
-+	    break
-+	fi
-+    done
-+}
-+
-+###
-+### Code start
-+###
-+
-+# Probe ethtool support
-+ethtool -h | grep show-tunnels 2>&1 >/dev/null && HAS_ETHTOOL=y
-+
-+modprobe netdevsim
-+
-+# Basic test
-+pfx="basic"
-+
-+for port in 0 1; do
-+    old_netdevs=$(ls /sys/class/net)
-+    if [ $port -eq 0 ]; then
-+	echo $NSIM_ID > /sys/bus/netdevsim/new_device
-+    else
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_open_only
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_sleep
-+	echo 1 > $NSIM_DEV_SYS/new_port
-+    fi
-+    NSIM_NETDEV=`get_netdev_name old_netdevs`
-+
-+    msg="new NIC device created"
-+    exp0=( 0 0 0 0 )
-+    exp1=( 0 0 0 0 )
-+    check_tables
-+
-+    msg="VxLAN v4 devices"
-+    exp0=( `mke 4789 1` 0 0 0 )
-+    new_vxlan vxlan0 4789 $NSIM_NETDEV
-+    new_vxlan vxlan1 4789 $NSIM_NETDEV
-+
-+    msg="VxLAN v4 devices go down"
-+    exp0=( 0 0 0 0 )
-+    ifconfig vxlan1 down
-+    ifconfig vxlan0 down
-+    check_tables
-+
-+    msg="VxLAN v6 devices"
-+    exp0=( `mke 4789 1` 0 0 0 )
-+    new_vxlan vxlanA 4789 $NSIM_NETDEV 6
-+
-+    for ifc in vxlan0 vxlan1; do
-+	ifconfig $ifc up
-+    done
-+
-+    new_vxlan vxlanB 4789 $NSIM_NETDEV 6
-+
-+    msg="another VxLAN v6 devices"
-+    exp0=( `mke 4789 1` `mke 4790 1` 0 0 )
-+    new_vxlan vxlanC 4790 $NSIM_NETDEV 6
-+
-+    msg="Geneve device"
-+    exp1=( `mke 6081 2` 0 0 0 )
-+    new_geneve gnv0 6081
-+
-+    msg="NIC device goes down"
-+    ifconfig $NSIM_NETDEV down
-+    if [ $port -eq 1 ]; then
-+	exp0=( 0 0 0 0 )
-+	exp1=( 0 0 0 0 )
-+    fi
-+    check_tables
-+    msg="NIC device goes up again"
-+    ifconfig $NSIM_NETDEV up
-+    exp0=( `mke 4789 1` `mke 4790 1` 0 0 )
-+    exp1=( `mke 6081 2` 0 0 0 )
-+    check_tables
-+
-+    cleanup_tuns
-+
-+    msg="tunnels destroyed"
-+    exp0=( 0 0 0 0 )
-+    exp1=( 0 0 0 0 )
-+    check_tables
-+
-+    modprobe -r geneve
-+    modprobe -r vxlan
-+    modprobe -r udp_tunnel
-+
-+    check_tables
-+done
-+
-+modprobe -r netdevsim
-+
-+# Module tests
-+pfx="module tests"
-+
-+if modinfo netdevsim | grep udp_tunnel >/dev/null; then
-+    err_cnt "netdevsim depends on udp_tunnel"
-+else
-+    pass_cnt
-+fi
-+
-+modprobe netdevsim
-+
-+old_netdevs=$(ls /sys/class/net)
-+port=0
-+echo $NSIM_ID > /sys/bus/netdevsim/new_device
-+echo 0 > $NSIM_DEV_SYS/del_port
-+echo 1000 > $NSIM_DEV_DFS/udp_ports_sleep
-+echo 0 > $NSIM_DEV_SYS/new_port
-+NSIM_NETDEV=`get_netdev_name old_netdevs`
-+
-+msg="create VxLANs"
-+exp0=( 0 0 0 0 ) # sleep is longer than out wait
-+new_vxlan vxlan0 10000 $NSIM_NETDEV
-+
-+modprobe -r vxlan
-+modprobe -r udp_tunnel
-+
-+msg="remove tunnels"
-+exp0=( 0 0 0 0 )
-+check_tables
-+
-+msg="create VxLANs"
-+exp0=( 0 0 0 0 ) # sleep is longer than out wait
-+new_vxlan vxlan0 10000 $NSIM_NETDEV
-+
-+exp0=( 0 0 0 0 )
-+
-+modprobe -r netdevsim
-+modprobe netdevsim
-+
-+# Overflow the table
-+
-+function overflow_table0 {
-+    local pfx=$1
-+
-+    msg="create VxLANs 1/5"
-+    exp0=( `mke 10000 1` 0 0 0 )
-+    new_vxlan vxlan0 10000 $NSIM_NETDEV
-+
-+    msg="create VxLANs 2/5"
-+    exp0=( `mke 10000 1` `mke 10001 1` 0 0 )
-+    new_vxlan vxlan1 10001 $NSIM_NETDEV
-+
-+    msg="create VxLANs 3/5"
-+    exp0=( `mke 10000 1` `mke 10001 1` `mke 10002 1` 0 )
-+    new_vxlan vxlan2 10002 $NSIM_NETDEV
-+
-+    msg="create VxLANs 4/5"
-+    exp0=( `mke 10000 1` `mke 10001 1` `mke 10002 1` `mke 10003 1` )
-+    new_vxlan vxlan3 10003 $NSIM_NETDEV
-+
-+    msg="create VxLANs 5/5"
-+    new_vxlan vxlan4 10004 $NSIM_NETDEV
-+}
-+
-+function overflow_table1 {
-+    local pfx=$1
-+
-+    msg="create GENEVE 1/5"
-+    exp1=( `mke 20000 2` 0 0 0 )
-+    new_geneve gnv0 20000
-+
-+    msg="create GENEVE 2/5"
-+    exp1=( `mke 20000 2` `mke 20001 2` 0 0 )
-+    new_geneve gnv1 20001
-+
-+    msg="create GENEVE 3/5"
-+    exp1=( `mke 20000 2` `mke 20001 2` `mke 20002 2` 0 )
-+    new_geneve gnv2 20002
-+
-+    msg="create GENEVE 4/5"
-+    exp1=( `mke 20000 2` `mke 20001 2` `mke 20002 2` `mke 20003 2` )
-+    new_geneve gnv3 20003
-+
-+    msg="create GENEVE 5/5"
-+    new_geneve gnv4 20004
-+}
-+
-+echo $NSIM_ID > /sys/bus/netdevsim/new_device
-+echo 0 > $NSIM_DEV_SYS/del_port
-+
-+for port in 0 1; do
-+    if [ $port -ne 0 ]; then
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_open_only
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_sleep
-+    fi
-+
-+    echo $port > $NSIM_DEV_SYS/new_port
-+    ifconfig $NSIM_NETDEV up
-+
-+    overflow_table0 "overflow NIC table"
-+    overflow_table1 "overflow NIC table"
-+
-+    msg="replace VxLAN in overflow table"
-+    exp0=( `mke 10000 1` `mke 10004 1` `mke 10002 1` `mke 10003 1` )
-+    del_dev vxlan1
-+
-+    msg="vacate VxLAN in overflow table"
-+    exp0=( `mke 10000 1` `mke 10004 1` 0 `mke 10003 1` )
-+    del_dev vxlan2
-+
-+    msg="replace GENEVE in overflow table"
-+    exp1=( `mke 20000 2` `mke 20004 2` `mke 20002 2` `mke 20003 2` )
-+    del_dev gnv1
-+
-+    msg="vacate GENEVE in overflow table"
-+    exp1=( `mke 20000 2` `mke 20004 2` 0 `mke 20003 2` )
-+    del_dev gnv2
-+
-+    msg="table sharing - share"
-+    exp1=( `mke 20000 2` `mke 20004 2` `mke 30001 4` `mke 20003 2` )
-+    new_vxlan vxlanG0 30001 $NSIM_NETDEV 4 "gpe external"
-+
-+    msg="table sharing - overflow"
-+    new_vxlan vxlanG1 30002 $NSIM_NETDEV 4 "gpe external"
-+    msg="table sharing - overflow v6"
-+    new_vxlan vxlanG2 30002 $NSIM_NETDEV 6 "gpe external"
-+
-+    exp1=( `mke 20000 2` `mke 30002 4` `mke 30001 4` `mke 20003 2` )
-+    del_dev gnv4
-+
-+    msg="destroy NIC"
-+    echo $port > $NSIM_DEV_SYS/del_port
-+
-+    cleanup_tuns
-+    exp0=( 0 0 0 0 )
-+    exp1=( 0 0 0 0 )
-+done
-+
-+cleanup_nsim
-+
-+# Sync all
-+pfx="sync all"
-+
-+echo $NSIM_ID > /sys/bus/netdevsim/new_device
-+echo 0 > $NSIM_DEV_SYS/del_port
-+echo 1 > $NSIM_DEV_DFS/udp_ports_sync_all
-+
-+for port in 0 1; do
-+    if [ $port -ne 0 ]; then
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_open_only
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_sleep
-+    fi
-+
-+    echo $port > $NSIM_DEV_SYS/new_port
-+    ifconfig $NSIM_NETDEV up
-+
-+    overflow_table0 "overflow NIC table"
-+    overflow_table1 "overflow NIC table"
-+
-+    msg="replace VxLAN in overflow table"
-+    exp0=( `mke 10000 1` `mke 10004 1` `mke 10002 1` `mke 10003 1` )
-+    del_dev vxlan1
-+
-+    msg="vacate VxLAN in overflow table"
-+    exp0=( `mke 10000 1` `mke 10004 1` 0 `mke 10003 1` )
-+    del_dev vxlan2
-+
-+    msg="replace GENEVE in overflow table"
-+    exp1=( `mke 20000 2` `mke 20004 2` `mke 20002 2` `mke 20003 2` )
-+    del_dev gnv1
-+
-+    msg="vacate GENEVE in overflow table"
-+    exp1=( `mke 20000 2` `mke 20004 2` 0 `mke 20003 2` )
-+    del_dev gnv2
-+
-+    msg="table sharing - share"
-+    exp1=( `mke 20000 2` `mke 20004 2` `mke 30001 4` `mke 20003 2` )
-+    new_vxlan vxlanG0 30001 $NSIM_NETDEV 4 "gpe external"
-+
-+    msg="table sharing - overflow"
-+    new_vxlan vxlanG1 30002 $NSIM_NETDEV 4 "gpe external"
-+    msg="table sharing - overflow v6"
-+    new_vxlan vxlanG2 30002 $NSIM_NETDEV 6 "gpe external"
-+
-+    exp1=( `mke 20000 2` `mke 30002 4` `mke 30001 4` `mke 20003 2` )
-+    del_dev gnv4
-+
-+    msg="destroy NIC"
-+    echo $port > $NSIM_DEV_SYS/del_port
-+
-+    cleanup_tuns
-+    exp0=( 0 0 0 0 )
-+    exp1=( 0 0 0 0 )
-+done
-+
-+cleanup_nsim
-+
-+# Destroy full NIC
-+pfx="destroy full"
-+
-+echo $NSIM_ID > /sys/bus/netdevsim/new_device
-+echo 0 > $NSIM_DEV_SYS/del_port
-+
-+for port in 0 1; do
-+    if [ $port -ne 0 ]; then
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_open_only
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_sleep
-+    fi
-+
-+    echo $port > $NSIM_DEV_SYS/new_port
-+    ifconfig $NSIM_NETDEV up
-+
-+    overflow_table0 "destroy NIC"
-+    overflow_table1 "destroy NIC"
-+
-+    msg="destroy NIC"
-+    echo $port > $NSIM_DEV_SYS/del_port
-+
-+    cleanup_tuns
-+    exp0=( 0 0 0 0 )
-+    exp1=( 0 0 0 0 )
-+done
-+
-+cleanup_nsim
-+
-+# IPv4 only
-+pfx="IPv4 only"
-+
-+echo $NSIM_ID > /sys/bus/netdevsim/new_device
-+echo 0 > $NSIM_DEV_SYS/del_port
-+echo 1 > $NSIM_DEV_DFS/udp_ports_ipv4_only
-+
-+for port in 0 1; do
-+    if [ $port -ne 0 ]; then
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_open_only
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_sleep
-+    fi
-+
-+    echo $port > $NSIM_DEV_SYS/new_port
-+    ifconfig $NSIM_NETDEV up
-+
-+    msg="create VxLANs v6"
-+    new_vxlan vxlanA0 10000 $NSIM_NETDEV 6
-+
-+    msg="create VxLANs v6"
-+    new_vxlan vxlanA1 10000 $NSIM_NETDEV 6
-+
-+    ip link set dev vxlanA0 down
-+    ip link set dev vxlanA0 up
-+    check_tables
-+
-+    msg="create VxLANs v4"
-+    exp0=( `mke 10000 1` 0 0 0 )
-+    new_vxlan vxlan0 10000 $NSIM_NETDEV
-+
-+    msg="down VxLANs v4"
-+    exp0=( 0 0 0 0 )
-+    ip link set dev vxlan0 down
-+    check_tables
-+
-+    msg="up VxLANs v4"
-+    exp0=( `mke 10000 1` 0 0 0 )
-+    ip link set dev vxlan0 up
-+    check_tables
-+
-+    msg="destroy VxLANs v4"
-+    exp0=( 0 0 0 0 )
-+    del_dev vxlan0
-+
-+    msg="recreate VxLANs v4"
-+    exp0=( `mke 10000 1` 0 0 0 )
-+    new_vxlan vxlan0 10000 $NSIM_NETDEV
-+
-+    del_dev vxlanA0
-+    del_dev vxlanA1
-+
-+    msg="destroy NIC"
-+    echo $port > $NSIM_DEV_SYS/del_port
-+
-+    cleanup_tuns
-+    exp0=( 0 0 0 0 )
-+    exp1=( 0 0 0 0 )
-+done
-+
-+cleanup_nsim
-+
-+# Failures
-+pfx="error injection"
-+
-+echo $NSIM_ID > /sys/bus/netdevsim/new_device
-+echo 0 > $NSIM_DEV_SYS/del_port
-+
-+for port in 0 1; do
-+    if [ $port -ne 0 ]; then
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_open_only
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_sleep
-+    fi
-+
-+    echo $port > $NSIM_DEV_SYS/new_port
-+    ifconfig $NSIM_NETDEV up
-+
-+    echo 110 > $NSIM_DEV_DFS/ports/$port/udp_ports_inject_error
-+
-+    msg="1 - create VxLANs v6"
-+    exp0=( 0 0 0 0 )
-+    new_vxlan vxlanA0 10000 $NSIM_NETDEV 6
-+
-+    msg="1 - create VxLANs v4"
-+    exp0=( `mke 10000 1` 0 0 0 )
-+    new_vxlan vxlan0 10000 $NSIM_NETDEV
-+
-+    msg="1 - remove VxLANs v4"
-+    del_dev vxlan0
-+
-+    msg="1 - remove VxLANs v6"
-+    exp0=( 0 0 0 0 )
-+    del_dev vxlanA0
-+
-+    msg="2 - create GENEVE"
-+    exp1=( `mke 20000 2` 0 0 0 )
-+    new_geneve gnv0 20000
-+
-+    msg="2 - destroy GENEVE"
-+    echo 2 > $NSIM_DEV_DFS/ports/$port/udp_ports_inject_error
-+    exp1=( `mke 20000 2` 0 0 0 )
-+    del_dev gnv0
-+
-+    msg="2 - create second GENEVE"
-+    exp1=( 0 `mke 20001 2` 0 0 )
-+    new_geneve gnv0 20001
-+
-+    msg="destroy NIC"
-+    echo $port > $NSIM_DEV_SYS/del_port
-+
-+    cleanup_tuns
-+    exp0=( 0 0 0 0 )
-+    exp1=( 0 0 0 0 )
-+done
-+
-+cleanup_nsim
-+
-+# netdev flags
-+pfx="netdev flags"
-+
-+echo $NSIM_ID > /sys/bus/netdevsim/new_device
-+echo 0 > $NSIM_DEV_SYS/del_port
-+
-+for port in 0 1; do
-+    if [ $port -ne 0 ]; then
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_open_only
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_sleep
-+    fi
-+
-+    echo $port > $NSIM_DEV_SYS/new_port
-+    ifconfig $NSIM_NETDEV up
-+
-+    msg="create VxLANs v6"
-+    exp0=( `mke 10000 1` 0 0 0 )
-+    new_vxlan vxlanA0 10000 $NSIM_NETDEV 6
-+
-+    msg="create VxLANs v4"
-+    new_vxlan vxlan0 10000 $NSIM_NETDEV
-+
-+    msg="turn off"
-+    exp0=( 0 0 0 0 )
-+    ethtool -K $NSIM_NETDEV rx-udp_tunnel-port-offload off
-+    check_tables
-+
-+    msg="turn on"
-+    exp0=( `mke 10000 1` 0 0 0 )
-+    ethtool -K $NSIM_NETDEV rx-udp_tunnel-port-offload on
-+    check_tables
-+
-+    msg="remove both"
-+    del_dev vxlanA0
-+    exp0=( 0 0 0 0 )
-+    del_dev vxlan0
-+    check_tables
-+
-+    ethtool -K $NSIM_NETDEV rx-udp_tunnel-port-offload off
-+
-+    msg="create VxLANs v4 - off"
-+    exp0=( 0 0 0 0 )
-+    new_vxlan vxlan0 10000 $NSIM_NETDEV
-+
-+    msg="created off - turn on"
-+    exp0=( `mke 10000 1` 0 0 0 )
-+    ethtool -K $NSIM_NETDEV rx-udp_tunnel-port-offload on
-+    check_tables
-+
-+    msg="destroy NIC"
-+    echo $port > $NSIM_DEV_SYS/del_port
-+
-+    cleanup_tuns
-+    exp0=( 0 0 0 0 )
-+    exp1=( 0 0 0 0 )
-+done
-+
-+cleanup_nsim
-+
-+# device initiated reset
-+pfx="reset notification"
-+
-+echo $NSIM_ID > /sys/bus/netdevsim/new_device
-+echo 0 > $NSIM_DEV_SYS/del_port
-+
-+for port in 0 1; do
-+    if [ $port -ne 0 ]; then
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_open_only
-+	echo 1 > $NSIM_DEV_DFS/udp_ports_sleep
-+    fi
-+
-+    echo $port > $NSIM_DEV_SYS/new_port
-+    ifconfig $NSIM_NETDEV up
-+
-+    msg="create VxLANs v6"
-+    exp0=( `mke 10000 1` 0 0 0 )
-+    new_vxlan vxlanA0 10000 $NSIM_NETDEV 6
-+
-+    msg="create VxLANs v4"
-+    new_vxlan vxlan0 10000 $NSIM_NETDEV
-+
-+    echo 1 > $NSIM_DEV_DFS/ports/$port/udp_ports_reset
-+    check_tables
-+
-+    msg="NIC device goes down"
-+    ifconfig $NSIM_NETDEV down
-+    if [ $port -eq 1 ]; then
-+	exp0=( 0 0 0 0 )
-+	exp1=( 0 0 0 0 )
-+    fi
-+    check_tables
-+
-+    echo 1 > $NSIM_DEV_DFS/ports/$port/udp_ports_reset
-+    check_tables
-+
-+    msg="NIC device goes up again"
-+    ifconfig $NSIM_NETDEV up
-+    exp0=( `mke 10000 1` 0 0 0 )
-+    check_tables
-+
-+    msg="remove both"
-+    del_dev vxlanA0
-+    exp0=( 0 0 0 0 )
-+    del_dev vxlan0
-+    check_tables
-+
-+    echo 1 > $NSIM_DEV_DFS/ports/$port/udp_ports_reset
-+    check_tables
-+
-+    msg="destroy NIC"
-+    echo $port > $NSIM_DEV_SYS/del_port
-+
-+    cleanup_tuns
-+    exp0=( 0 0 0 0 )
-+    exp1=( 0 0 0 0 )
-+done
-+
-+modprobe -r netdevsim
-+
-+if [ $num_errors -eq 0 ]; then
-+    echo "PASSED all $num_cases checks"
-+else
-+    echo "FAILED $num_errors/$num_cases checks"
-+fi
-+
-+exit $EXIT_STATUS
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+index debbcf216134..1e8a809233a0 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+@@ -588,11 +588,9 @@ struct ixgbe_adapter {
+ #define IXGBE_FLAG_FCOE_ENABLED			BIT(21)
+ #define IXGBE_FLAG_SRIOV_CAPABLE		BIT(22)
+ #define IXGBE_FLAG_SRIOV_ENABLED		BIT(23)
+-#define IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE	BIT(24)
+ #define IXGBE_FLAG_RX_HWTSTAMP_ENABLED		BIT(25)
+ #define IXGBE_FLAG_RX_HWTSTAMP_IN_REGISTER	BIT(26)
+ #define IXGBE_FLAG_DCB_CAPABLE			BIT(27)
+-#define IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE	BIT(28)
+ 
+ 	u32 flags2;
+ #define IXGBE_FLAG2_RSC_CAPABLE			BIT(0)
+@@ -606,7 +604,6 @@ struct ixgbe_adapter {
+ #define IXGBE_FLAG2_RSS_FIELD_IPV6_UDP		BIT(9)
+ #define IXGBE_FLAG2_PTP_PPS_ENABLED		BIT(10)
+ #define IXGBE_FLAG2_PHY_INTERRUPT		BIT(11)
+-#define IXGBE_FLAG2_UDP_TUN_REREG_NEEDED	BIT(12)
+ #define IXGBE_FLAG2_VLAN_PROMISC		BIT(13)
+ #define IXGBE_FLAG2_EEE_CAPABLE			BIT(14)
+ #define IXGBE_FLAG2_EEE_ENABLED			BIT(15)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index f5d3d6230786..29f1313b5ab0 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -4994,25 +4994,40 @@ static void ixgbe_napi_disable_all(struct ixgbe_adapter *adapter)
+ 		napi_disable(&adapter->q_vector[q_idx]->napi);
+ }
+ 
+-static void ixgbe_clear_udp_tunnel_port(struct ixgbe_adapter *adapter, u32 mask)
++static int ixgbe_udp_tunnel_sync(struct net_device *dev, unsigned int table)
+ {
++	struct ixgbe_adapter *adapter = netdev_priv(dev);
+ 	struct ixgbe_hw *hw = &adapter->hw;
+-	u32 vxlanctrl;
+-
+-	if (!(adapter->flags & (IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE |
+-				IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE)))
+-		return;
++	struct udp_tunnel_info ti;
+ 
+-	vxlanctrl = IXGBE_READ_REG(hw, IXGBE_VXLANCTRL) & ~mask;
+-	IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL, vxlanctrl);
+-
+-	if (mask & IXGBE_VXLANCTRL_VXLAN_UDPPORT_MASK)
+-		adapter->vxlan_port = 0;
++	udp_tunnel_nic_get_port(dev, table, 0, &ti);
++	if (!table)
++		adapter->vxlan_port = ti.port;
++	else
++		adapter->geneve_port = ti.port;
+ 
+-	if (mask & IXGBE_VXLANCTRL_GENEVE_UDPPORT_MASK)
+-		adapter->geneve_port = 0;
++	IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL,
++			ntohs(adapter->vxlan_port) |
++			ntohs(adapter->geneve_port) <<
++				IXGBE_VXLANCTRL_GENEVE_UDPPORT_SHIFT);
++	return 0;
+ }
+ 
++static const struct udp_tunnel_nic_info ixgbe_udp_tunnels_x550 = {
++	.sync_table	= ixgbe_udp_tunnel_sync,
++	.flags		= UDP_TUNNEL_NIC_INFO_IPV4_ONLY,
++	.tables		= {
++		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
++	},
++}, ixgbe_udp_tunnels_x550em_a = {
++	.sync_table	= ixgbe_udp_tunnel_sync,
++	.flags		= UDP_TUNNEL_NIC_INFO_IPV4_ONLY,
++	.tables		= {
++		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
++		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_GENEVE, },
++	},
++};
++
+ #ifdef CONFIG_IXGBE_DCB
+ /**
+  * ixgbe_configure_dcb - Configure DCB hardware
+@@ -6227,6 +6242,7 @@ static void ixgbe_init_dcb(struct ixgbe_adapter *adapter)
+ /**
+  * ixgbe_sw_init - Initialize general software structures (struct ixgbe_adapter)
+  * @adapter: board private structure to initialize
++ * @netdev: network interface device structure
+  * @ii: pointer to ixgbe_info for device
+  *
+  * ixgbe_sw_init initializes the Adapter private data structure.
+@@ -6234,6 +6250,7 @@ static void ixgbe_init_dcb(struct ixgbe_adapter *adapter)
+  * OS network device settings (MTU size).
+  **/
+ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
++			 struct net_device *netdev,
+ 			 const struct ixgbe_info *ii)
+ {
+ 	struct ixgbe_hw *hw = &adapter->hw;
+@@ -6332,7 +6349,7 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+ 			adapter->flags2 |= IXGBE_FLAG2_TEMP_SENSOR_CAPABLE;
+ 		break;
+ 	case ixgbe_mac_x550em_a:
+-		adapter->flags |= IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE;
++		netdev->udp_tunnel_nic_info = &ixgbe_udp_tunnels_x550em_a;
+ 		switch (hw->device_id) {
+ 		case IXGBE_DEV_ID_X550EM_A_1G_T:
+ 		case IXGBE_DEV_ID_X550EM_A_1G_T_L:
+@@ -6359,7 +6376,8 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+ #ifdef CONFIG_IXGBE_DCA
+ 		adapter->flags &= ~IXGBE_FLAG_DCA_CAPABLE;
+ #endif
+-		adapter->flags |= IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE;
++		if (!netdev->udp_tunnel_nic_info)
++			netdev->udp_tunnel_nic_info = &ixgbe_udp_tunnels_x550;
+ 		break;
+ 	default:
+ 		break;
+@@ -6798,8 +6816,7 @@ int ixgbe_open(struct net_device *netdev)
+ 
+ 	ixgbe_up_complete(adapter);
+ 
+-	ixgbe_clear_udp_tunnel_port(adapter, IXGBE_VXLANCTRL_ALL_UDPPORT_MASK);
+-	udp_tunnel_get_rx_info(netdev);
++	udp_tunnel_nic_reset_ntf(netdev);
+ 
+ 	return 0;
+ 
+@@ -7921,12 +7938,6 @@ static void ixgbe_service_task(struct work_struct *work)
+ 		ixgbe_service_event_complete(adapter);
+ 		return;
+ 	}
+-	if (adapter->flags2 & IXGBE_FLAG2_UDP_TUN_REREG_NEEDED) {
+-		rtnl_lock();
+-		adapter->flags2 &= ~IXGBE_FLAG2_UDP_TUN_REREG_NEEDED;
+-		udp_tunnel_get_rx_info(adapter->netdev);
+-		rtnl_unlock();
+-	}
+ 	ixgbe_reset_subtask(adapter);
+ 	ixgbe_phy_interrupt_subtask(adapter);
+ 	ixgbe_sfp_detection_subtask(adapter);
+@@ -9784,26 +9795,6 @@ static int ixgbe_set_features(struct net_device *netdev,
+ 
+ 	netdev->features = features;
+ 
+-	if ((adapter->flags & IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE)) {
+-		if (features & NETIF_F_RXCSUM) {
+-			adapter->flags2 |= IXGBE_FLAG2_UDP_TUN_REREG_NEEDED;
+-		} else {
+-			u32 port_mask = IXGBE_VXLANCTRL_VXLAN_UDPPORT_MASK;
+-
+-			ixgbe_clear_udp_tunnel_port(adapter, port_mask);
+-		}
+-	}
+-
+-	if ((adapter->flags & IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE)) {
+-		if (features & NETIF_F_RXCSUM) {
+-			adapter->flags2 |= IXGBE_FLAG2_UDP_TUN_REREG_NEEDED;
+-		} else {
+-			u32 port_mask = IXGBE_VXLANCTRL_GENEVE_UDPPORT_MASK;
+-
+-			ixgbe_clear_udp_tunnel_port(adapter, port_mask);
+-		}
+-	}
+-
+ 	if ((changed & NETIF_F_HW_L2FW_DOFFLOAD) && adapter->num_rx_pools > 1)
+ 		ixgbe_reset_l2fw_offload(adapter);
+ 	else if (need_reset)
+@@ -9815,118 +9806,6 @@ static int ixgbe_set_features(struct net_device *netdev,
+ 	return 1;
+ }
+ 
+-/**
+- * ixgbe_add_udp_tunnel_port - Get notifications about adding UDP tunnel ports
+- * @dev: The port's netdev
+- * @ti: Tunnel endpoint information
+- **/
+-static void ixgbe_add_udp_tunnel_port(struct net_device *dev,
+-				      struct udp_tunnel_info *ti)
+-{
+-	struct ixgbe_adapter *adapter = netdev_priv(dev);
+-	struct ixgbe_hw *hw = &adapter->hw;
+-	__be16 port = ti->port;
+-	u32 port_shift = 0;
+-	u32 reg;
+-
+-	if (ti->sa_family != AF_INET)
+-		return;
+-
+-	switch (ti->type) {
+-	case UDP_TUNNEL_TYPE_VXLAN:
+-		if (!(adapter->flags & IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE))
+-			return;
+-
+-		if (adapter->vxlan_port == port)
+-			return;
+-
+-		if (adapter->vxlan_port) {
+-			netdev_info(dev,
+-				    "VXLAN port %d set, not adding port %d\n",
+-				    ntohs(adapter->vxlan_port),
+-				    ntohs(port));
+-			return;
+-		}
+-
+-		adapter->vxlan_port = port;
+-		break;
+-	case UDP_TUNNEL_TYPE_GENEVE:
+-		if (!(adapter->flags & IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE))
+-			return;
+-
+-		if (adapter->geneve_port == port)
+-			return;
+-
+-		if (adapter->geneve_port) {
+-			netdev_info(dev,
+-				    "GENEVE port %d set, not adding port %d\n",
+-				    ntohs(adapter->geneve_port),
+-				    ntohs(port));
+-			return;
+-		}
+-
+-		port_shift = IXGBE_VXLANCTRL_GENEVE_UDPPORT_SHIFT;
+-		adapter->geneve_port = port;
+-		break;
+-	default:
+-		return;
+-	}
+-
+-	reg = IXGBE_READ_REG(hw, IXGBE_VXLANCTRL) | ntohs(port) << port_shift;
+-	IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL, reg);
+-}
+-
+-/**
+- * ixgbe_del_udp_tunnel_port - Get notifications about removing UDP tunnel ports
+- * @dev: The port's netdev
+- * @ti: Tunnel endpoint information
+- **/
+-static void ixgbe_del_udp_tunnel_port(struct net_device *dev,
+-				      struct udp_tunnel_info *ti)
+-{
+-	struct ixgbe_adapter *adapter = netdev_priv(dev);
+-	u32 port_mask;
+-
+-	if (ti->type != UDP_TUNNEL_TYPE_VXLAN &&
+-	    ti->type != UDP_TUNNEL_TYPE_GENEVE)
+-		return;
+-
+-	if (ti->sa_family != AF_INET)
+-		return;
+-
+-	switch (ti->type) {
+-	case UDP_TUNNEL_TYPE_VXLAN:
+-		if (!(adapter->flags & IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE))
+-			return;
+-
+-		if (adapter->vxlan_port != ti->port) {
+-			netdev_info(dev, "VXLAN port %d not found\n",
+-				    ntohs(ti->port));
+-			return;
+-		}
+-
+-		port_mask = IXGBE_VXLANCTRL_VXLAN_UDPPORT_MASK;
+-		break;
+-	case UDP_TUNNEL_TYPE_GENEVE:
+-		if (!(adapter->flags & IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE))
+-			return;
+-
+-		if (adapter->geneve_port != ti->port) {
+-			netdev_info(dev, "GENEVE port %d not found\n",
+-				    ntohs(ti->port));
+-			return;
+-		}
+-
+-		port_mask = IXGBE_VXLANCTRL_GENEVE_UDPPORT_MASK;
+-		break;
+-	default:
+-		return;
+-	}
+-
+-	ixgbe_clear_udp_tunnel_port(adapter, port_mask);
+-	adapter->flags2 |= IXGBE_FLAG2_UDP_TUN_REREG_NEEDED;
+-}
+-
+ static int ixgbe_ndo_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
+ 			     struct net_device *dev,
+ 			     const unsigned char *addr, u16 vid,
+@@ -10416,8 +10295,8 @@ static const struct net_device_ops ixgbe_netdev_ops = {
+ 	.ndo_bridge_getlink	= ixgbe_ndo_bridge_getlink,
+ 	.ndo_dfwd_add_station	= ixgbe_fwd_add,
+ 	.ndo_dfwd_del_station	= ixgbe_fwd_del,
+-	.ndo_udp_tunnel_add	= ixgbe_add_udp_tunnel_port,
+-	.ndo_udp_tunnel_del	= ixgbe_del_udp_tunnel_port,
++	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
++	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
+ 	.ndo_features_check	= ixgbe_features_check,
+ 	.ndo_bpf		= ixgbe_xdp,
+ 	.ndo_xdp_xmit		= ixgbe_xdp_xmit,
+@@ -10858,7 +10737,7 @@ static int ixgbe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	hw->phy.mdio.mdio_write = ixgbe_mdio_write;
+ 
+ 	/* setup the private structure */
+-	err = ixgbe_sw_init(adapter, ii);
++	err = ixgbe_sw_init(adapter, netdev, ii);
+ 	if (err)
+ 		goto err_sw_init;
+ 
 -- 
 2.26.2
 
