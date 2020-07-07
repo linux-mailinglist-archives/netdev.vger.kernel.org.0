@@ -2,66 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4387A216397
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 04:08:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 008F221640B
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 04:29:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726864AbgGGCH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 22:07:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44262 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726434AbgGGCH6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jul 2020 22:07:58 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7551D206E6;
-        Tue,  7 Jul 2020 02:07:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594087677;
-        bh=jbGDUIGvWHFxfOr2K9dhq/WVM2luJ+MG5pZSVocXvyw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KHMXF/0fdFr06ZMUILckRc5hSIms/dmQGXEbWqqNSO+6sHmN4bgW6AndH7dk0TMbd
-         IcmrZYdK7RsJVzkVfIl/n+6Lgf0R3nu+7PRuunAWrA1mzDtQsH/5P92EeAlDq/6T6y
-         iQvP6gP03fPXGxM1cBrrQccwXr00BaBJgy9yt26U=
-Date:   Mon, 6 Jul 2020 19:07:55 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Ron Diskin <rondi@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [net 02/11] net/mlx5e: Fix multicast counter not up-to-date in
- "ip -s"
-Message-ID: <20200706190755.688f6fa7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <f5ddd73d9fc5ccdf340de0c6c335888de51d98de.camel@mellanox.com>
-References: <20200702221923.650779-1-saeedm@mellanox.com>
-        <20200702221923.650779-3-saeedm@mellanox.com>
-        <20200702184757.7d3b1216@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3b7c4d436e55787fff3d8d045478dd4c08ba1d19.camel@mellanox.com>
-        <20200702212511.1fcbbb26@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <763ba5f0a5ae07f4da736572f1a3e183420efcd0.camel@mellanox.com>
-        <20200703105938.2b7b0b48@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <a8ef2aece592d352dd6bd978db2d430ce55826ed.camel@mellanox.com>
-        <20200706125704.465b3a0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <f5ddd73d9fc5ccdf340de0c6c335888de51d98de.camel@mellanox.com>
+        id S1727869AbgGGC2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 22:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54100 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726591AbgGGC2x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 22:28:53 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1B3C061755
+        for <netdev@vger.kernel.org>; Mon,  6 Jul 2020 19:28:53 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id p20so44970688ejd.13
+        for <netdev@vger.kernel.org>; Mon, 06 Jul 2020 19:28:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=e3BAvGHyT5vul4bkvhHx+liZG66MEtRjIuz8mZ36jJs=;
+        b=kviW74H4Lu4gPaoNGy3XeSTZ4meXzi0hQw3BPwR61GAAtD3pZ6sMYiqZ4Rr9JQHVXD
+         e03vwQerso/FkO1O3QQX7S2pbXoZ1NWeo4MtDHoLQPPuGBTLA+gTXiFmvpf45/KM6xfl
+         CQAA+gN1lDVl7z//FnTv5suvNZ8RnArjmhHWw/e6tcTkN+gsbI+t7znTL/2nB2CJwBNE
+         mQThSleqSMAt4NPneQpK5qnFpbx8XRTbCH6og9PhraYKPtvQ6faNpgNpiCY/sksDlqqE
+         McAF4O2hT1jZUxYMkIkgjo6sniQY+NoJeS4OFTBc2WXq30PnOlXEU+CLmSrc67hqHcmG
+         FqKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=e3BAvGHyT5vul4bkvhHx+liZG66MEtRjIuz8mZ36jJs=;
+        b=OEGjtoP0mTz1Wksijoa6m5H9P9AmYvruZfbIdFVkfWNZ6NER7dMZgZQRPUcvSvmtqx
+         qXMnkC+L79luXu7MsMpSDPwFDedOpOCtNt/OeEqfSvcqlOkUQy6KFZYBmPrRt9e8i1fF
+         oEyv/ifWi6AoZgVICZuLLE+NNNDmo9DA/0NmofEqxt8oFxSfggyVpLmUGe5TpszNiaq9
+         uRsvhiep6fKa/qrPSBq2sgKblDIjd9WTIsQHkgOZiu0cLehwUIGHkugRzg3W0GswLRDf
+         hnH+W5PdIwB7OvH4VelFy1E/GKw8OYKVsfLqZtp/gWmO9nNC3FsUFQmgvf/ZmjW/z6ev
+         fM7g==
+X-Gm-Message-State: AOAM530kk1V7T6MHLOidk7fKXKjdDcFz5ty4X3dUCB5zDJ6ZiB1seNkk
+        AMs+Oe6yUb+WJRoMtws0pV8cfVke
+X-Google-Smtp-Source: ABdhPJyeHOnHO60jjA1jee1+y4PSXa7QQST2rLQiL3scsZw797HHeuTAlcAgS8yTpFst+AVrtf8Png==
+X-Received: by 2002:a17:906:95d6:: with SMTP id n22mr45731187ejy.138.1594088932229;
+        Mon, 06 Jul 2020 19:28:52 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id rv16sm17503231ejb.60.2020.07.06.19.28.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jul 2020 19:28:51 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 1/7] net: phy: at803x: Avoid comparison is
+ always false warning
+To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20200707014939.938621-1-andrew@lunn.ch>
+ <20200707014939.938621-2-andrew@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <842a4462-26c4-72c0-4427-2f44ba46b722@gmail.com>
+Date:   Mon, 6 Jul 2020 19:28:45 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200707014939.938621-2-andrew@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Jul 2020 01:51:21 +0000 Saeed Mahameed wrote:
-> > Also looks like you report the total number of mcast packets in
-> > ethtool
-> > -S, which should be identical to ip -s? If so please remove that.  
+
+
+On 7/6/2020 6:49 PM, Andrew Lunn wrote:
+> By placing the GENMASK value into an unsigned int and then passing it
+> to PREF_FIELD, the type is reduces down from ULL. Given the reduced
+> size of the type, the range checks in PREP_FAIL() are always true, and
+> -Wtype-limits then gives a warning.
 > 
-> why ? it is ok to report the same counter both in ehttool and netdev
-> stats.
+> By skipping the intermediate variable, the warning can be avoided.
+> 
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-I don't think it is, Stephen and I have been trying to catch this in
-review for a while now. It's an entirely unnecessary code duplication.
-We should steer towards proper APIs first if those exist.
-
-Using ethtool -S stats gets very messy very quickly in production.
+Reviwed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
