@@ -2,282 +2,337 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3D23216413
-	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 04:33:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06AED216423
+	for <lists+netdev@lfdr.de>; Tue,  7 Jul 2020 04:50:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728076AbgGGCdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jul 2020 22:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726900AbgGGCdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 22:33:46 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07575C061755;
-        Mon,  6 Jul 2020 19:33:46 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id j202so19895182ybg.6;
-        Mon, 06 Jul 2020 19:33:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jwg9JBylbv/mt3zy7tsoj2gPTnZdsmGTQJYmuhzzU2k=;
-        b=f9njYXtSl/MI/zWIxxyFsktgTHGv/YhUD2LN05DcUef3rmwgG/bO6eTl2Q0RjPGrwo
-         ujGHmLg+Li2sbscsyYPNm+n+PVeGsvGDGRYvRhXXJC/8POs7s9zM7QYz7yDKibRfyG9a
-         3MPScBDlVtG0hDP51M6iqNspumfvJVB66a9YVmcW66G1l2aizLvChrZQUJeLmb520Qtw
-         4YBKOCW+b/g25Nkxpkpsbs2bgujDGu6OfrDpiSpg40ESkddKnRwoZ/t4iSu7e7AHsJmE
-         wKPr1yGb8+Od6fPQSsiVyRzRIf76cHGP7Pk6eihT8hmCyAShVBYmdfD/1j9aUKbaOxES
-         PEBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jwg9JBylbv/mt3zy7tsoj2gPTnZdsmGTQJYmuhzzU2k=;
-        b=Sfo17fV453ZM/fxWjk17c3HFv1lX9KF8rPANlaMZLAeI0zM/1PVGN9xnCJUKBGKpC4
-         lovGU1rtJg98ra8cplyYpz2LF04t32arVG1vH1CgWVUUrbBf1k57zVLyium+4o/VCpbl
-         QyG/rV64vEQNcIk1kHKPt9yb5vD4b+NA+XPJVAymWfnLvH+7kkOIJLesVynb+IXHo+Ue
-         vvPMf8y+JDupCwkIsBoRB8z2q8vUT3rDUYCxRl1JuVOfZLYPqhspwfOrOTVNgLNVNm4L
-         01MNeUOVBuz3uCHXAWhN752bdaC9bGxL7B726qlePhpDwyV9bWG3j46/ZAFIA1uG6ukl
-         fE1g==
-X-Gm-Message-State: AOAM5332bSa3C5R1w8CZx234s0qAt3Dn4soNvNGnQzJ13b3ULgM3luAK
-        n/nWm70jN/hDpU6mIgrinLkYc74D9k4CHFq6vA==
-X-Google-Smtp-Source: ABdhPJxqAfpg+87PDMwE3OEGT0C7FztkBglcboOMTqBXe6F1KTDv00tYkhzLTkP98Zj8sQLPgxcNszToEdny5GB7Zpc=
-X-Received: by 2002:a25:a505:: with SMTP id h5mr612590ybi.419.1594089225208;
- Mon, 06 Jul 2020 19:33:45 -0700 (PDT)
+        id S1727123AbgGGCuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jul 2020 22:50:39 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:51532 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726802AbgGGCuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jul 2020 22:50:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594090236;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yxXlYWxcxG8pWngZ/9z2Sr6gsZr9wcEP+Rkwxu1y7t0=;
+        b=JboM26mzhnu8VDRcLJBO2gf6hdaZ4fpoadmlmULj3pafuuPnWPpqPLVlC1fUEqidSWcDdh
+        3Pz5MqW0yWmY0v9eusdsP8R0+o1u43qMWH9KOrGNRDHSbTfZVLnVeq1xI5sNe1WPYO6SOi
+        maczH3UfOFrQ50iwif7PaaTpJufBKDU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-347-acDzPFKRNsexecKoQ3XNBQ-1; Mon, 06 Jul 2020 22:50:32 -0400
+X-MC-Unique: acDzPFKRNsexecKoQ3XNBQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 13587EC1A0;
+        Tue,  7 Jul 2020 02:50:30 +0000 (UTC)
+Received: from madcap2.tricolour.ca (unknown [10.10.110.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id F40B32B6D6;
+        Tue,  7 Jul 2020 02:50:16 +0000 (UTC)
+Date:   Mon, 6 Jul 2020 22:50:14 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Subject: Re: [PATCH ghak90 V9 01/13] audit: collect audit task parameters
+Message-ID: <20200707025014.x33eyxbankw2fbww@madcap2.tricolour.ca>
+References: <cover.1593198710.git.rgb@redhat.com>
+ <6abeb26e64489fc29b00c86b60b501c8b7316424.1593198710.git.rgb@redhat.com>
+ <CAHC9VhTx=4879F1MSXg4=Xd1i5rhEtyam6CakQhy=_ZjGtTaMA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200702021646.90347-1-danieltimlee@gmail.com>
- <20200702021646.90347-2-danieltimlee@gmail.com> <c4061b5f-b42e-4ecc-e3fb-7a70206da417@fb.com>
- <CAEKGpzhU31p=i=xbD3Fk2vJh_btrk73CgkJXMXDgM1umsEaEpg@mail.gmail.com>
- <41ca5ad1-2b79-dbc2-5f6e-e466712fe7a9@fb.com> <CAEKGpzjpm36YFnqSqTxh7RsS_PH6Xk31NM3174gd74ABbMNVWw@mail.gmail.com>
- <CAEf4BzYx8dT3nFx69-oXXqmwBXia62bTbjG3Nb9X7vz=OxefFg@mail.gmail.com>
-In-Reply-To: <CAEf4BzYx8dT3nFx69-oXXqmwBXia62bTbjG3Nb9X7vz=OxefFg@mail.gmail.com>
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Tue, 7 Jul 2020 11:33:26 +0900
-Message-ID: <CAEKGpzi65SaHbaF3RHCB5P9Ro+Wt7_4HFJZxRd2HSXhg07P_Gg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] samples: bpf: fix bpf programs with
- kprobe/sys_connect event
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhTx=4879F1MSXg4=Xd1i5rhEtyam6CakQhy=_ZjGtTaMA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 7, 2020 at 8:50 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Mon, Jul 6, 2020 at 3:28 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+On 2020-07-05 11:09, Paul Moore wrote:
+> On Sat, Jun 27, 2020 at 9:21 AM Richard Guy Briggs <rgb@redhat.com> wrote:
 > >
-> > On Fri, Jul 3, 2020 at 1:04 AM Yonghong Song <yhs@fb.com> wrote:
-> > >
-> > >
-> > >
-> > > On 7/2/20 4:13 AM, Daniel T. Lee wrote:
-> > > > On Thu, Jul 2, 2020 at 2:13 PM Yonghong Song <yhs@fb.com> wrote:
-> > > >>
-> > > >>
-> > > >>
-> > > >> On 7/1/20 7:16 PM, Daniel T. Lee wrote:
-> > > >>> Currently, BPF programs with kprobe/sys_connect does not work properly.
-> > > >>>
-> > > >>> Commit 34745aed515c ("samples/bpf: fix kprobe attachment issue on x64")
-> > > >>> This commit modifies the bpf_load behavior of kprobe events in the x64
-> > > >>> architecture. If the current kprobe event target starts with "sys_*",
-> > > >>> add the prefix "__x64_" to the front of the event.
-> > > >>>
-> > > >>> Appending "__x64_" prefix with kprobe/sys_* event was appropriate as a
-> > > >>> solution to most of the problems caused by the commit below.
-> > > >>>
-> > > >>>       commit d5a00528b58c ("syscalls/core, syscalls/x86: Rename struct
-> > > >>>       pt_regs-based sys_*() to __x64_sys_*()")
-> > > >>>
-> > > >>> However, there is a problem with the sys_connect kprobe event that does
-> > > >>> not work properly. For __sys_connect event, parameters can be fetched
-> > > >>> normally, but for __x64_sys_connect, parameters cannot be fetched.
-> > > >>>
-> > > >>> Because of this problem, this commit fixes the sys_connect event by
-> > > >>> specifying the __sys_connect directly and this will bypass the
-> > > >>> "__x64_" appending rule of bpf_load.
-> > > >>
-> > > >> In the kernel code, we have
-> > > >>
-> > > >> SYSCALL_DEFINE3(connect, int, fd, struct sockaddr __user *, uservaddr,
-> > > >>                   int, addrlen)
-> > > >> {
-> > > >>           return __sys_connect(fd, uservaddr, addrlen);
-> > > >> }
-> > > >>
-> > > >> Depending on compiler, there is no guarantee that __sys_connect will
-> > > >> not be inlined. I would prefer to still use the entry point
-> > > >> __x64_sys_* e.g.,
-> > > >>      SEC("kprobe/" SYSCALL(sys_write))
-> > > >>
-> > > >
-> > > > As you mentioned, there is clearly a possibility that problems may arise
-> > > > because the symbol does not exist according to the compiler.
-> > > >
-> > > > However, in x64, when using Kprobe for __x64_sys_connect event, the
-> > > > tests are not working properly because the parameters cannot be fetched,
-> > > > and the test under selftests/bpf is using "kprobe/_sys_connect" directly.
-> > >
-> > > This is the assembly code for __x64_sys_connect.
-> > >
-> > > ffffffff818d3520 <__x64_sys_connect>:
-> > > ffffffff818d3520: e8 fb df 32 00        callq   0xffffffff81c01520
-> > > <__fentry__>
-> > > ffffffff818d3525: 48 8b 57 60           movq    96(%rdi), %rdx
-> > > ffffffff818d3529: 48 8b 77 68           movq    104(%rdi), %rsi
-> > > ffffffff818d352d: 48 8b 7f 70           movq    112(%rdi), %rdi
-> > > ffffffff818d3531: e8 1a ff ff ff        callq   0xffffffff818d3450
-> > > <__sys_connect>
-> > > ffffffff818d3536: 48 98                 cltq
-> > > ffffffff818d3538: c3                    retq
-> > > ffffffff818d3539: 0f 1f 80 00 00 00 00  nopl    (%rax)
-> > >
-> > > In bpf program, the step is:
-> > >        struct pt_regs *real_regs = PT_REGS_PARM1(pt_regs);
-> > >        param1 = PT_REGS_PARM1(real_regs);
-> > >        param2 = PT_REGS_PARM2(real_regs);
-> > >        param3 = PT_REGS_PARM3(real_regs);
-> > > The same for s390.
-> > >
+> > The audit-related parameters in struct task_struct should ideally be
+> > collected together and accessed through a standard audit API.
 > >
-> > I'm sorry that I seem to get it wrong,
-> > But is it available to access 'struct pt_regs *' recursively?
+> > Collect the existing loginuid, sessionid and audit_context together in a
+> > new struct audit_task_info called "audit" in struct task_struct.
 > >
-> > It seems nested use of PT_REGS_PARM causes invalid memory access.
+> > Use kmem_cache to manage this pool of memory.
+> > Un-inline audit_free() to be able to always recover that memory.
 > >
-> >     $ sudo ./test_probe_write_user
-> >     libbpf: load bpf program failed: Permission denied
-> >     libbpf: -- BEGIN DUMP LOG ---
-> >     libbpf:
-> >     Unrecognized arg#0 type PTR
-> >     ; struct pt_regs *real_regs = PT_REGS_PARM1(ctx);
-> >     0: (79) r1 = *(u64 *)(r1 +112)
-> >     ; void *sockaddr_arg = (void *)PT_REGS_PARM2(real_regs);
-> >     1: (79) r6 = *(u64 *)(r1 +104)
-> >     R1 invalid mem access 'inv'
-> >     processed 2 insns (limit 1000000) max_states_per_insn 0
-> > total_states 0 peak_states 0 mark_read 0
+> > Please see the upstream github issue
+> > https://github.com/linux-audit/audit-kernel/issues/81
 > >
-> >     libbpf: -- END LOG --
-> >     libbpf: failed to load program 'kprobe/__x64_sys_connect'
-> >     libbpf: failed to load object './test_probe_write_user_kern.o'
-> >     ERROR: loading BPF object file failed
+> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
+> > ---
+> >  include/linux/audit.h | 49 +++++++++++++++++++++++------------
+> >  include/linux/sched.h |  7 +----
+> >  init/init_task.c      |  3 +--
+> >  init/main.c           |  2 ++
+> >  kernel/audit.c        | 71 +++++++++++++++++++++++++++++++++++++++++++++++++--
+> >  kernel/audit.h        |  5 ++++
+> >  kernel/auditsc.c      | 26 ++++++++++---------
+> >  kernel/fork.c         |  1 -
+> >  8 files changed, 124 insertions(+), 40 deletions(-)
 > >
-> > I'm not fully aware of the BPF verifier's internal structure.
-> > Is there any workaround to solve this problem?
->
-> You need to use bpf_probe_read_kernel() to get those arguments from
-> real_args. Or better just use PT_REGS_PARM1_CORE(x) and others, which
-> does that for you (+ CO-RE relocation).
->
->
-
-Thanks for the tip!
-
-I've just tried the old hack '_(P)':
-(which is similar implementation with BPF_CORE_READ())
-
-    #define _(P) ({typeof(P) val = 0; bpf_probe_read(&val,
-sizeof(val), &P); val;})
-    [...]
-    struct pt_regs *regs = (struct pt_regs *)PT_REGS_PARM1(ctx);
-    void *sockaddr_arg = (void *)_(PT_REGS_PARM2(regs));
-    int sockaddr_len = (int)_(PT_REGS_PARM3(regs));
-
-and it works properly.
-
-Just wondering, why is the pointer chasing of the original ctx
-considered as an unsafe pointer here?
-
-    ; struct pt_regs *real_regs = (struct pt_regs *)PT_REGS_PARM1(ctx);
-    0: (79) r1 = *(u64 *)(r1 +112)
-    [...]
-    ; void *sockaddr_arg = (void *)PT_REGS_PARM2(real_regs);
-    4: (79) r6 = *(u64 *)(r1 +104)
-
-Is it considered as an unsafe pointer since it is unknown what exists
-in the pointer (r1 + 104), but the instruction is trying to access it?
-
-
-I am a little concerned about using PT_REGS_PARM1_CORE
-because it is not a CORE-related patch, but if using CORE is the
-direction BPF wants to take, I will use PT_REGS_PARM1_CORE()
-instead of _(P) hack using bpf_probe_read().
-
-In addition, PT_REGS_PARM1_CORE() allows me to write code
-neatly without having to define additional macro _(P).
-
-Thank you for your time and effort for the review.
-Daniel
-
+> > diff --git a/include/linux/audit.h b/include/linux/audit.h
+> > index 3fcd9ee49734..c2150415f9df 100644
+> > --- a/include/linux/audit.h
+> > +++ b/include/linux/audit.h
+> > @@ -100,6 +100,16 @@ enum audit_nfcfgop {
+> >         AUDIT_XT_OP_UNREGISTER,
+> >  };
 > >
-> > Thanks for your time and effort for the review.
-> > Daniel.
+> > +struct audit_task_info {
+> > +       kuid_t                  loginuid;
+> > +       unsigned int            sessionid;
+> > +#ifdef CONFIG_AUDITSYSCALL
+> > +       struct audit_context    *ctx;
+> > +#endif
+> > +};
+> > +
+> > +extern struct audit_task_info init_struct_audit;
+> > +
+> >  extern int is_audit_feature_set(int which);
 > >
-> > >
-> > > For other architectures, no above indirection is needed.
-> > >
-> > > I guess you can abstract the above into trace_common.h?
-> > >
-> > > >
-> > > > I'm not sure how to deal with this problem. Any advice and suggestions
-> > > > will be greatly appreciated.
-> > > >
-> > > > Thanks for your time and effort for the review.
-> > > > Daniel
-> > > >
-> > > >>>
-> > > >>> Fixes: 34745aed515c ("samples/bpf: fix kprobe attachment issue on x64")
-> > > >>> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> > > >>> ---
-> > > >>>    samples/bpf/map_perf_test_kern.c         | 2 +-
-> > > >>>    samples/bpf/test_map_in_map_kern.c       | 2 +-
-> > > >>>    samples/bpf/test_probe_write_user_kern.c | 2 +-
-> > > >>>    3 files changed, 3 insertions(+), 3 deletions(-)
-> > > >>>
-> > > >>> diff --git a/samples/bpf/map_perf_test_kern.c b/samples/bpf/map_perf_test_kern.c
-> > > >>> index 12e91ae64d4d..cebe2098bb24 100644
-> > > >>> --- a/samples/bpf/map_perf_test_kern.c
-> > > >>> +++ b/samples/bpf/map_perf_test_kern.c
-> > > >>> @@ -154,7 +154,7 @@ int stress_percpu_hmap_alloc(struct pt_regs *ctx)
-> > > >>>        return 0;
-> > > >>>    }
-> > > >>>
-> > > >>> -SEC("kprobe/sys_connect")
-> > > >>> +SEC("kprobe/__sys_connect")
-> > > >>>    int stress_lru_hmap_alloc(struct pt_regs *ctx)
-> > > >>>    {
-> > > >>>        char fmt[] = "Failed at stress_lru_hmap_alloc. ret:%dn";
-> > > >>> diff --git a/samples/bpf/test_map_in_map_kern.c b/samples/bpf/test_map_in_map_kern.c
-> > > >>> index 6cee61e8ce9b..b1562ba2f025 100644
-> > > >>> --- a/samples/bpf/test_map_in_map_kern.c
-> > > >>> +++ b/samples/bpf/test_map_in_map_kern.c
-> > > >>> @@ -102,7 +102,7 @@ static __always_inline int do_inline_hash_lookup(void *inner_map, u32 port)
-> > > >>>        return result ? *result : -ENOENT;
-> > > >>>    }
-> > > >>>
-> > > >>> -SEC("kprobe/sys_connect")
-> > > >>> +SEC("kprobe/__sys_connect")
-> > > >>>    int trace_sys_connect(struct pt_regs *ctx)
-> > > >>>    {
-> > > >>>        struct sockaddr_in6 *in6;
-> > > >>> diff --git a/samples/bpf/test_probe_write_user_kern.c b/samples/bpf/test_probe_write_user_kern.c
-> > > >>> index 6579639a83b2..9b3c3918c37d 100644
-> > > >>> --- a/samples/bpf/test_probe_write_user_kern.c
-> > > >>> +++ b/samples/bpf/test_probe_write_user_kern.c
-> > > >>> @@ -26,7 +26,7 @@ struct {
-> > > >>>     * This example sits on a syscall, and the syscall ABI is relatively stable
-> > > >>>     * of course, across platforms, and over time, the ABI may change.
-> > > >>>     */
-> > > >>> -SEC("kprobe/sys_connect")
-> > > >>> +SEC("kprobe/__sys_connect")
-> > > >>>    int bpf_prog1(struct pt_regs *ctx)
-> > > >>>    {
-> > > >>>        struct sockaddr_in new_addr, orig_addr = {};
-> > > >>>
+> >  extern int __init audit_register_class(int class, unsigned *list);
+> 
+> ...
+> 
+> > diff --git a/include/linux/sched.h b/include/linux/sched.h
+> > index b62e6aaf28f0..2213ac670386 100644
+> > --- a/include/linux/sched.h
+> > +++ b/include/linux/sched.h
+> > @@ -34,7 +34,6 @@
+> >  #include <linux/kcsan.h>
+> >
+> >  /* task_struct member predeclarations (sorted alphabetically): */
+> > -struct audit_context;
+> >  struct backing_dev_info;
+> >  struct bio_list;
+> >  struct blk_plug;
+> > @@ -946,11 +945,7 @@ struct task_struct {
+> >         struct callback_head            *task_works;
+> >
+> >  #ifdef CONFIG_AUDIT
+> > -#ifdef CONFIG_AUDITSYSCALL
+> > -       struct audit_context            *audit_context;
+> > -#endif
+> > -       kuid_t                          loginuid;
+> > -       unsigned int                    sessionid;
+> > +       struct audit_task_info          *audit;
+> >  #endif
+> >         struct seccomp                  seccomp;
+> 
+> In the early days of this patchset we talked a lot about how to handle
+> the task_struct and the changes that would be necessary, ultimately
+> deciding that encapsulating all of the audit fields into an
+> audit_task_info struct.  However, what is puzzling me a bit at this
+> moment is why we are only including audit_task_info in task_info by
+> reference *and* making it a build time conditional (via CONFIG_AUDIT).
+> 
+> If audit is enabled at build time it would seem that we are always
+> going to allocate an audit_task_info struct, so I have to wonder why
+> we don't simply embed it inside the task_info struct (similar to the
+> seccomp struct in the snippet above?  Of course the audit_context
+> struct needs to remain as is, I'm talking only about the
+> task_info/audit_task_info struct.
+
+I agree that including the audit_task_info struct in the struct
+task_struct would have been preferred to simplify allocation and free,
+but the reason it was included by reference instead was to make the
+task_struct size independent of audit so that future changes would not
+cause as many kABI challenges.  This first change will cause kABI
+challenges regardless, but it was future ones that we were trying to
+ease.
+
+Does that match with your recollection?
+
+> Richard, I'm sure you can answer this off the top of your head, but
+> I'd have to go digging through the archives to pull out the relevant
+> discussions so I figured I would just ask you for a reminder ... ?  I
+> imagine it's also possible things have changed a bit since those early
+> discussions and the solution we arrived at then no longer makes as
+> much sense as it did before.
+
+Agreed, it doesn't make as much sense now as it did when proposed, but
+will make more sense in the future depending on when this change gets
+accepted upstream.  This is why I wanted this patch to go through as
+part of ghak81 at the time the rest of it did so that future kABI issues
+would be easier to handle, but that ship has long sailed.  I didn't make
+that argument then and I regret it now that I realize and recall some of
+the thinking behind the change.  Your reasons at the time were that
+contid was the only user of that change but there have been some
+CONFIG_AUDIT and CONFIG_AUDITSYSCALL changes since that were related.
+
+> > diff --git a/init/init_task.c b/init/init_task.c
+> > index 15089d15010a..92d34c4b7702 100644
+> > --- a/init/init_task.c
+> > +++ b/init/init_task.c
+> > @@ -130,8 +130,7 @@ struct task_struct init_task
+> >         .thread_group   = LIST_HEAD_INIT(init_task.thread_group),
+> >         .thread_node    = LIST_HEAD_INIT(init_signals.thread_head),
+> >  #ifdef CONFIG_AUDIT
+> > -       .loginuid       = INVALID_UID,
+> > -       .sessionid      = AUDIT_SID_UNSET,
+> > +       .audit          = &init_struct_audit,
+> >  #endif
+> >  #ifdef CONFIG_PERF_EVENTS
+> >         .perf_event_mutex = __MUTEX_INITIALIZER(init_task.perf_event_mutex),
+> > diff --git a/init/main.c b/init/main.c
+> > index 0ead83e86b5a..349470ad7458 100644
+> > --- a/init/main.c
+> > +++ b/init/main.c
+> > @@ -96,6 +96,7 @@
+> >  #include <linux/jump_label.h>
+> >  #include <linux/mem_encrypt.h>
+> >  #include <linux/kcsan.h>
+> > +#include <linux/audit.h>
+> >
+> >  #include <asm/io.h>
+> >  #include <asm/bugs.h>
+> > @@ -1028,6 +1029,7 @@ asmlinkage __visible void __init start_kernel(void)
+> >         nsfs_init();
+> >         cpuset_init();
+> >         cgroup_init();
+> > +       audit_task_init();
+> >         taskstats_init_early();
+> >         delayacct_init();
+> >
+> > diff --git a/kernel/audit.c b/kernel/audit.c
+> > index 8c201f414226..5d8147a29291 100644
+> > --- a/kernel/audit.c
+> > +++ b/kernel/audit.c
+> > @@ -203,6 +203,73 @@ struct audit_reply {
+> >         struct sk_buff *skb;
+> >  };
+> >
+> > +static struct kmem_cache *audit_task_cache;
+> > +
+> > +void __init audit_task_init(void)
+> > +{
+> > +       audit_task_cache = kmem_cache_create("audit_task",
+> > +                                            sizeof(struct audit_task_info),
+> > +                                            0, SLAB_PANIC, NULL);
+> > +}
+> > +
+> > +/**
+> > + * audit_alloc - allocate an audit info block for a task
+> > + * @tsk: task
+> > + *
+> > + * Call audit_alloc_syscall to filter on the task information and
+> > + * allocate a per-task audit context if necessary.  This is called from
+> > + * copy_process, so no lock is needed.
+> > + */
+> > +int audit_alloc(struct task_struct *tsk)
+> > +{
+> > +       int ret = 0;
+> > +       struct audit_task_info *info;
+> > +
+> > +       info = kmem_cache_alloc(audit_task_cache, GFP_KERNEL);
+> > +       if (!info) {
+> > +               ret = -ENOMEM;
+> > +               goto out;
+> > +       }
+> > +       info->loginuid = audit_get_loginuid(current);
+> > +       info->sessionid = audit_get_sessionid(current);
+> > +       tsk->audit = info;
+> > +
+> > +       ret = audit_alloc_syscall(tsk);
+> > +       if (ret) {
+> > +               tsk->audit = NULL;
+> > +               kmem_cache_free(audit_task_cache, info);
+> > +       }
+> > +out:
+> > +       return ret;
+> > +}
+> 
+> This is a big nitpick, and I'm only mentioning this in the case you
+> need to respin this patchset: the "out" label is unnecessary in the
+> function above.  Simply return the error code, there is no need to
+> jump to "out" only to immediately return the error code there and
+> nothing more.
+
+Agreed.  This must have been due to some restructuring that no longer
+needed an exit cleanup action.
+
+> > +struct audit_task_info init_struct_audit = {
+> > +       .loginuid = INVALID_UID,
+> > +       .sessionid = AUDIT_SID_UNSET,
+> > +#ifdef CONFIG_AUDITSYSCALL
+> > +       .ctx = NULL,
+> > +#endif
+> > +};
+> > +
+> > +/**
+> > + * audit_free - free per-task audit info
+> > + * @tsk: task whose audit info block to free
+> > + *
+> > + * Called from copy_process and do_exit
+> > + */
+> > +void audit_free(struct task_struct *tsk)
+> > +{
+> > +       struct audit_task_info *info = tsk->audit;
+> > +
+> > +       audit_free_syscall(tsk);
+> > +       /* Freeing the audit_task_info struct must be performed after
+> > +        * audit_log_exit() due to need for loginuid and sessionid.
+> > +        */
+> > +       info = tsk->audit;
+> > +       tsk->audit = NULL;
+> > +       kmem_cache_free(audit_task_cache, info);
+> 
+> Another nitpick, and this one may even become a moot point given the
+> question posed above.  However, is there any reason we couldn't get
+> rid of "info" and simplify this a bit?
+
+That info allocation and assignment does now seem pointless, I agree...
+
+>   audit_free_syscall(tsk);
+>   kmem_cache_free(audit_task_cache, tsk->audit);
+>   tsk->audit = NULL;
+> 
+> > diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+> > index 468a23390457..f00c1da587ea 100644
+> > --- a/kernel/auditsc.c
+> > +++ b/kernel/auditsc.c
+> > @@ -1612,7 +1615,6 @@ void __audit_free(struct task_struct *tsk)
+> >                 if (context->current_state == AUDIT_RECORD_CONTEXT)
+> >                         audit_log_exit();
+> >         }
+> > -
+> >         audit_set_context(tsk, NULL);
+> >         audit_free_context(context);
+> >  }
+> 
+> This nitpick is barely worth the time it is taking me to write this,
+> but the whitespace change above isn't strictly necessary.
+
+Sure, it is a harmless but noisy cleanup when the function was being
+cleaned up and renamed.  It wasn't an accident, but a style preference.
+Do you prefer a vertical space before cleanup actions at the end of
+functions and more versus less vertical whitespace in general?
+
+> paul moore
+
+- RGB
+
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
+
