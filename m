@@ -2,118 +2,362 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D667218D85
+	by mail.lfdr.de (Postfix) with ESMTP id AE7A6218D86
 	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 18:52:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730414AbgGHQug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 12:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
+        id S1730514AbgGHQuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 12:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728148AbgGHQug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 12:50:36 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC8CC061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 09:50:36 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id 72so7843764ple.0
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 09:50:36 -0700 (PDT)
+        with ESMTP id S1728148AbgGHQuk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 12:50:40 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3039C061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 09:50:39 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id w17so3955429ply.11
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 09:50:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=3B9JQlboND7uu2oqs60UkgNTlXYwPNJGifVp+MsSN08=;
-        b=N6raitJ8swRv1FUHc3GWAz4QB7IlDhvW5VDrhjN1R1kliKMjF7QHxlWjR0Js1btG42
-         7PpUByiQ6SlhQBfvWPaHKf53EW0I2s+0hu3IDHSmHKAue7l1yWPY3jWOAQLgbQAfIyAb
-         aUlWCvbs5mWUNcCvLZf7Yo677YXPpw3UCR4vP21/q9Ajs/irdsLxCfi9pKBU2mDAEpA2
-         ZUvAGqrGYibl00FQ4jLaT0G3x27rcVxR+tvV3pZ43KYCv0tslX4cclCSt7LdJ4JNJmr8
-         IR+5kaLNeoJspGAqOx6aT7FQ9XBszczGFUr07B2uEQvniFWTTHzm08buLiZQnYeq8mu2
-         /qeg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=zIpTecyir7b+FlLSMJpIBnlbVEzP33n+ZSSxN09IQqQ=;
+        b=c7AUbWC3QgzDs8S7sxL1U62UKgCm4HibJDMWy2bAnum8Aq+UzLOvZ7Vezmei8f2ckt
+         7HKLUaq8HVBWq95WbrFd9lNSgpl1jjOGeXqzApLH6G12u47eSFKelIPgvj1rDrSaKHIH
+         Yto0H0QCKq+4ZW0ANoM3H2V3yMgCCiK8pw0+5/a/eyUHHDkKI8mMb+qi+zy2plc92zmh
+         NSzYGNd5bJlUMIutJB0uAwur04Q53bdE4WH56WbADRTrC+OjT2LpgY4l1U4MJQyjYWu3
+         7Bih6N3Q1bickmcXp5n/SgKAdeHsG8Lf8E4phJA/KVycrnLGzQX7W+3JhZDOizEyogLj
+         xWJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=3B9JQlboND7uu2oqs60UkgNTlXYwPNJGifVp+MsSN08=;
-        b=S64ACNKxIwUeYrwu6smMWLqjwrGYiyt2/2xCuoTxE5RzQA4VWXvmpPoXZ4UQjJh5hx
-         82FIn1ASbY6iuHBni4SLZwPRdDOpxVlXq4+0tvJEHTit/Nyja/SwpuEjQNUCK+inJ8Pc
-         8MGq14lQC84vRWYB+iq1wJzNOdO4IWbMCb9i0bn1RGexYFRMY07UirhFcK86oNUhqFZL
-         /X/x4IkMzpbXQQFJK2+p8vKGXCCr2iNJpo5RZC9uC0yQWePWJqZexB7E6rxmmByxy9hA
-         qNz86zfntgsvtuIqhXoxbkSd9/MJ9Vcx34/Xe17ztRQ6CjTS3Dpld4qA2fhmoAzDanwS
-         S7ZA==
-X-Gm-Message-State: AOAM5307tpLN2v3LXGkbOlfgiL+szNaPKg6uR7SPWmKZSo9OEVaOJFpo
-        hPhf+FQjvBxApHJ0tE9vXTU=
-X-Google-Smtp-Source: ABdhPJxyDbG51dcbqWMHU70j3GXpUwjg0Qh+UJgAVc9gTRTxkdGqIzdb5mgIrYnhbt2CweEUlXEKyw==
-X-Received: by 2002:a17:90a:7487:: with SMTP id p7mr10555402pjk.233.1594227036000;
-        Wed, 08 Jul 2020 09:50:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=zIpTecyir7b+FlLSMJpIBnlbVEzP33n+ZSSxN09IQqQ=;
+        b=Q+4tel/up/hsc658chgF9/ZQrDzlSlIIQm9PJv8EQ9xHw3lF8MS0MEs8U+B/LhQfFi
+         weR7fG0Md+gD/h5Jp0ysEeejWv7oJBx0Hb2D57gg2xIhgI8bDiycVKbqPaA098xkg2E2
+         mdQOLjjvHeSap9SV1YPpjYUYXOAHHxxMmn3lIR2ljIQuP5NQBvrJ+FI7ByjN7wDtKj+R
+         uPxpff6xTcERCoRxB0fjRERaUIBrWHPg9OcXsJr1UpIMnC72dMJyGvdWoszg6Y7GbqOQ
+         gPn6sETf2o/b3qa3LU/x7GxbB96TF7t5GAQCtBslknDpGoQfgyeHuPl67HoRPknISRh8
+         u4tA==
+X-Gm-Message-State: AOAM53290oMgA9wj60r62SuAxnHR7x25zV93/rnlxw83ZSZTg6B4HXCi
+        iKJtYp/S9KUcXcRQVu/G8cg=
+X-Google-Smtp-Source: ABdhPJyMKoon9bKWixLUt8c0KmaSBB1lKuMuf8cjKhuDhi3ArIaDrrS15lMrngHLRude+RIZUrMlZw==
+X-Received: by 2002:a17:90a:a393:: with SMTP id x19mr10806530pjp.228.1594227039447;
+        Wed, 08 Jul 2020 09:50:39 -0700 (PDT)
 Received: from hyd1358.caveonetworks.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id c1sm323716pgi.52.2020.07.08.09.50.33
+        by smtp.googlemail.com with ESMTPSA id c1sm323716pgi.52.2020.07.08.09.50.36
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 08 Jul 2020 09:50:35 -0700 (PDT)
+        Wed, 08 Jul 2020 09:50:38 -0700 (PDT)
 From:   sundeep.lkml@gmail.com
 To:     davem@davemloft.net, kuba@kernel.org, richardcochran@gmail.com,
         netdev@vger.kernel.org, sgoutham@marvell.com
-Cc:     Subbaraya Sundeep <sundeep.lkml@gmail.com>
-Subject: [PATCH v2 net-next 0/3] Add PTP support for Octeontx2
-Date:   Wed,  8 Jul 2020 22:20:15 +0530
-Message-Id: <1594227018-4913-1-git-send-email-sundeep.lkml@gmail.com>
+Cc:     Zyta Szpak <zyta@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [PATCH v2 net-next 1/3] octeontx2-af: Support to enable/disable HW timestamping
+Date:   Wed,  8 Jul 2020 22:20:16 +0530
+Message-Id: <1594227018-4913-2-git-send-email-sundeep.lkml@gmail.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1594227018-4913-1-git-send-email-sundeep.lkml@gmail.com>
+References: <1594227018-4913-1-git-send-email-sundeep.lkml@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Subbaraya Sundeep <sundeep.lkml@gmail.com>
+From: Zyta Szpak <zyta@marvell.com>
 
-Hi,
+Four new mbox messages ids and handler are added in order to
+enable or disable timestamping procedure on tx and rx side.
+Additionally when PTP is enabled, the packet parser must skip
+over 8 bytes and start analyzing packet data there. To make NPC
+profiles work seemlesly PTR_ADVANCE of IKPU is set so that
+parsing can be done as before when all data pointers
+are shifted by 8 bytes automatically.
 
-This patchset adds PTP support for Octeontx2 platform.
-PTP is an independent coprocessor block from which
-CGX block fetches timestamp and prepends it to the
-packet before sending to NIX block. Patches are as
-follows:
+Signed-off-by: Zyta Szpak <zyta@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
 
-Patch 1: Patch to enable/disable packet timstamping
-	 in CGX upon mailbox request. It also adjusts
-	 packet parser (NPC) for the 8 bytes timestamp
-	 appearing before the packet.
+v2:
+  No changes
 
-Patch 2: Patch adding PTP pci driver which configures
-	 the PTP block and hooks up to RVU AF driver.
-	 It also exposes a mailbox call to adjust PTP
-	 hardware clock.
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 29 ++++++++++++
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  4 ++
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  4 ++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  1 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 54 ++++++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 52 +++++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    | 27 +++++++++++
+ 7 files changed, 171 insertions(+)
 
-Patch 3: Patch adding PTP clock driver for PF netdev.
-
-
-Aleksey Makarov (2):
-  octeontx2-af: Add support for Marvell PTP coprocessor
-  octeontx2-pf: Add support for PTP clock
-
-Zyta Szpak (1):
-  octeontx2-af: Support to enable/disable HW timestamping
-
- drivers/net/ethernet/marvell/octeontx2/af/Makefile |   2 +-
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |  29 +++
- drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |   4 +
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  21 ++
- drivers/net/ethernet/marvell/octeontx2/af/ptp.c    | 245 +++++++++++++++++++++
- drivers/net/ethernet/marvell/octeontx2/af/ptp.h    |  22 ++
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  29 ++-
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   5 +
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  54 +++++
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |  52 +++++
- .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    |  27 +++
- .../net/ethernet/marvell/octeontx2/nic/Makefile    |   3 +-
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   |   7 +
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  19 ++
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  28 +++
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 168 +++++++++++++-
- .../net/ethernet/marvell/octeontx2/nic/otx2_ptp.c  | 208 +++++++++++++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_ptp.h  |  13 ++
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  87 +++++++-
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   1 +
- 20 files changed, 1014 insertions(+), 10 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/ptp.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/ptp.h
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.h
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index a4e65da..8f17e26 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -468,6 +468,35 @@ static void cgx_lmac_pause_frm_config(struct cgx *cgx, int lmac_id, bool enable)
+ 	}
+ }
+ 
++void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable)
++{
++	struct cgx *cgx = cgxd;
++	u64 cfg;
++
++	if (!cgx)
++		return;
++
++	if (enable) {
++		/* Enable inbound PTP timestamping */
++		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
++		cfg |= CGX_GMP_GMI_RXX_FRM_CTL_PTP_MODE;
++		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
++
++		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
++		cfg |= CGX_SMUX_RX_FRM_CTL_PTP_MODE;
++		cgx_write(cgx, lmac_id,	CGXX_SMUX_RX_FRM_CTL, cfg);
++	} else {
++		/* Disable inbound PTP stamping */
++		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
++		cfg &= ~CGX_GMP_GMI_RXX_FRM_CTL_PTP_MODE;
++		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
++
++		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
++		cfg &= ~CGX_SMUX_RX_FRM_CTL_PTP_MODE;
++		cgx_write(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL, cfg);
++	}
++}
++
+ /* CGX Firmware interface low level support */
+ static int cgx_fwi_cmd_send(u64 req, u64 *resp, struct lmac *lmac)
+ {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
+index 394f965..27ca329 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
+@@ -58,8 +58,10 @@
+ 
+ #define CGXX_SMUX_RX_FRM_CTL		0x20020
+ #define CGX_SMUX_RX_FRM_CTL_CTL_BCK	BIT_ULL(3)
++#define CGX_SMUX_RX_FRM_CTL_PTP_MODE	BIT_ULL(12)
+ #define CGXX_GMP_GMI_RXX_FRM_CTL	0x38028
+ #define CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK	BIT_ULL(3)
++#define CGX_GMP_GMI_RXX_FRM_CTL_PTP_MODE BIT_ULL(12)
+ #define CGXX_SMUX_TX_CTL		0x20178
+ #define CGXX_SMUX_TX_PAUSE_PKT_TIME	0x20110
+ #define CGXX_SMUX_TX_PAUSE_PKT_INTERVAL	0x20120
+@@ -139,4 +141,6 @@ int cgx_lmac_get_pause_frm(void *cgxd, int lmac_id,
+ 			   u8 *tx_pause, u8 *rx_pause);
+ int cgx_lmac_set_pause_frm(void *cgxd, int lmac_id,
+ 			   u8 tx_pause, u8 rx_pause);
++void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable);
++
+ #endif /* CGX_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index 6dfd0f9..c89b098 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -143,6 +143,8 @@ M(CGX_STOP_LINKEVENTS,	0x208, cgx_stop_linkevents, msg_req, msg_rsp)	\
+ M(CGX_GET_LINKINFO,	0x209, cgx_get_linkinfo, msg_req, cgx_link_info_msg) \
+ M(CGX_INTLBK_ENABLE,	0x20A, cgx_intlbk_enable, msg_req, msg_rsp)	\
+ M(CGX_INTLBK_DISABLE,	0x20B, cgx_intlbk_disable, msg_req, msg_rsp)	\
++M(CGX_PTP_RX_ENABLE,	0x20C, cgx_ptp_rx_enable, msg_req, msg_rsp)	\
++M(CGX_PTP_RX_DISABLE,	0x20D, cgx_ptp_rx_disable, msg_req, msg_rsp)	\
+ M(CGX_CFG_PAUSE_FRM,	0x20E, cgx_cfg_pause_frm, cgx_pause_frm_cfg,	\
+ 			       cgx_pause_frm_cfg)			\
+ /* NPA mbox IDs (range 0x400 - 0x5FF) */				\
+@@ -213,6 +215,8 @@ M(NIX_LSO_FORMAT_CFG,	0x8011, nix_lso_format_cfg,			\
+ 				 nix_lso_format_cfg,			\
+ 				 nix_lso_format_cfg_rsp)		\
+ M(NIX_RXVLAN_ALLOC,	0x8012, nix_rxvlan_alloc, msg_req, msg_rsp)	\
++M(NIX_LF_PTP_TX_ENABLE, 0x8013, nix_lf_ptp_tx_enable, msg_req, msg_rsp)	\
++M(NIX_LF_PTP_TX_DISABLE, 0x8014, nix_lf_ptp_tx_disable, msg_req, msg_rsp) \
+ M(NIX_BP_ENABLE,	0x8016, nix_bp_enable, nix_bp_cfg_req,	\
+ 				nix_bp_cfg_rsp)	\
+ M(NIX_BP_DISABLE,	0x8017, nix_bp_disable, nix_bp_cfg_req, msg_rsp) \
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index dcf25a0..62c3ed2 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -469,6 +469,7 @@ int rvu_npc_init(struct rvu *rvu);
+ void rvu_npc_freemem(struct rvu *rvu);
+ int rvu_npc_get_pkind(struct rvu *rvu, u16 pf);
+ void rvu_npc_set_pkind(struct rvu *rvu, int pkind, struct rvu_pfvf *pfvf);
++int npc_config_ts_kpuaction(struct rvu *rvu, int pf, u16 pcifunc, bool en);
+ void rvu_npc_install_ucast_entry(struct rvu *rvu, u16 pcifunc,
+ 				 int nixlf, u64 chan, u8 *mac_addr);
+ void rvu_npc_install_promisc_entry(struct rvu *rvu, u16 pcifunc,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index f3c82e4..e751cbc 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -509,6 +509,60 @@ int rvu_mbox_handler_cgx_promisc_disable(struct rvu *rvu, struct msg_req *req,
+ 	return 0;
+ }
+ 
++int rvu_mbox_handler_cgx_ptp_rx_enable(struct rvu *rvu, struct msg_req *req,
++				       struct msg_rsp *rsp)
++{
++	u16 pcifunc = req->hdr.pcifunc;
++	int pf = rvu_get_pf(pcifunc);
++	u8 cgx_id, lmac_id;
++	void *cgxd;
++
++	/* This msg is expected only from PFs that are mapped to CGX LMACs,
++	 * if received from other PF/VF simply ACK, nothing to do.
++	 */
++	if ((req->hdr.pcifunc & RVU_PFVF_FUNC_MASK) ||
++	    !is_pf_cgxmapped(rvu, pf))
++		return -ENODEV;
++
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
++	cgxd = rvu_cgx_pdata(cgx_id, rvu);
++
++	cgx_lmac_ptp_config(cgxd, lmac_id, true);
++	/* Inform NPC that packets to be parsed by this PF
++	 * will have their data shifted by 8B
++	 */
++	if (npc_config_ts_kpuaction(rvu, pf, pcifunc, true))
++		return -EINVAL;
++
++	return 0;
++}
++
++int rvu_mbox_handler_cgx_ptp_rx_disable(struct rvu *rvu, struct msg_req *req,
++					struct msg_rsp *rsp)
++{
++	u16 pcifunc = req->hdr.pcifunc;
++	int pf = rvu_get_pf(pcifunc);
++	u8 cgx_id, lmac_id;
++	void *cgxd;
++
++	/* This msg is expected only from PFs that are mapped to CGX LMACs,
++	 * if received from other PF/VF simply ACK, nothing to do.
++	 */
++	if ((req->hdr.pcifunc & RVU_PFVF_FUNC_MASK) ||
++	    !is_pf_cgxmapped(rvu, pf))
++		return -ENODEV;
++
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
++	cgxd = rvu_cgx_pdata(cgx_id, rvu);
++
++	cgx_lmac_ptp_config(cgxd, lmac_id, false);
++	/* Inform NPC that 8B shift is cancelled */
++	if (npc_config_ts_kpuaction(rvu, pf, pcifunc, false))
++		return -EINVAL;
++
++	return 0;
++}
++
+ static int rvu_cgx_config_linkevents(struct rvu *rvu, u16 pcifunc, bool en)
+ {
+ 	int pf = rvu_get_pf(pcifunc);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 36953d4..6c1abfb 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -3319,6 +3319,58 @@ void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int nixlf)
+ 	nix_ctx_free(rvu, pfvf);
+ }
+ 
++int rvu_mbox_handler_nix_lf_ptp_tx_enable(struct rvu *rvu, struct msg_req *req,
++					  struct msg_rsp *rsp)
++{
++	struct rvu_hwinfo *hw = rvu->hw;
++	u16 pcifunc = req->hdr.pcifunc;
++	struct rvu_block *block;
++	int blkaddr;
++	int nixlf;
++	u64 cfg;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
++	if (blkaddr < 0)
++		return NIX_AF_ERR_AF_LF_INVALID;
++
++	block = &hw->block[blkaddr];
++	nixlf = rvu_get_lf(rvu, block, pcifunc, 0);
++	if (nixlf < 0)
++		return NIX_AF_ERR_AF_LF_INVALID;
++
++	cfg = rvu_read64(rvu, blkaddr, NIX_AF_LFX_TX_CFG(nixlf));
++	cfg |= BIT_ULL(32);
++	rvu_write64(rvu, blkaddr, NIX_AF_LFX_TX_CFG(nixlf), cfg);
++
++	return 0;
++}
++
++int rvu_mbox_handler_nix_lf_ptp_tx_disable(struct rvu *rvu, struct msg_req *req,
++					   struct msg_rsp *rsp)
++{
++	struct rvu_hwinfo *hw = rvu->hw;
++	u16 pcifunc = req->hdr.pcifunc;
++	struct rvu_block *block;
++	int blkaddr;
++	int nixlf;
++	u64 cfg;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
++	if (blkaddr < 0)
++		return NIX_AF_ERR_AF_LF_INVALID;
++
++	block = &hw->block[blkaddr];
++	nixlf = rvu_get_lf(rvu, block, pcifunc, 0);
++	if (nixlf < 0)
++		return NIX_AF_ERR_AF_LF_INVALID;
++
++	cfg = rvu_read64(rvu, blkaddr, NIX_AF_LFX_TX_CFG(nixlf));
++	cfg &= ~BIT_ULL(32);
++	rvu_write64(rvu, blkaddr, NIX_AF_LFX_TX_CFG(nixlf), cfg);
++
++	return 0;
++}
++
+ int rvu_mbox_handler_nix_lso_format_cfg(struct rvu *rvu,
+ 					struct nix_lso_format_cfg *req,
+ 					struct nix_lso_format_cfg_rsp *rsp)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+index 0a21408..8179bbe 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -27,6 +27,7 @@
+ #define NIXLF_PROMISC_ENTRY	2
+ 
+ #define NPC_PARSE_RESULT_DMAC_OFFSET	8
++#define NPC_HW_TSTAMP_OFFSET		8
+ 
+ static void npc_mcam_free_all_entries(struct rvu *rvu, struct npc_mcam *mcam,
+ 				      int blkaddr, u16 pcifunc);
+@@ -61,6 +62,32 @@ int rvu_npc_get_pkind(struct rvu *rvu, u16 pf)
+ 	return -1;
+ }
+ 
++int npc_config_ts_kpuaction(struct rvu *rvu, int pf, u16 pcifunc, bool en)
++{
++	int pkind, blkaddr;
++	u64 val;
++
++	pkind = rvu_npc_get_pkind(rvu, pf);
++	if (pkind < 0) {
++		dev_err(rvu->dev, "%s: pkind not mapped\n", __func__);
++		return -EINVAL;
++	}
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, pcifunc);
++	if (blkaddr < 0) {
++		dev_err(rvu->dev, "%s: NPC block not implemented\n", __func__);
++		return -EINVAL;
++	}
++	val = rvu_read64(rvu, blkaddr, NPC_AF_PKINDX_ACTION0(pkind));
++	val &= ~0xff00000ULL; /* Zero ptr advance field */
++	if (en)
++		/* Set to timestamp offset */
++		val |= (NPC_HW_TSTAMP_OFFSET << 20);
++	rvu_write64(rvu, blkaddr, NPC_AF_PKINDX_ACTION0(pkind), val);
++
++	return 0;
++}
++
+ static int npc_get_nixlf_mcam_index(struct npc_mcam *mcam,
+ 				    u16 pcifunc, int nixlf, int type)
+ {
 -- 
 2.7.4
 
