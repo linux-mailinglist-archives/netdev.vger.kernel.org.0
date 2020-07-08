@@ -2,148 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 131FE2186F8
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 14:12:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6B5D218701
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 14:14:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728899AbgGHMLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 08:11:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56884 "EHLO
+        id S1728995AbgGHMOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 08:14:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728847AbgGHMLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 08:11:52 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B370DC08C5DC
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 05:11:51 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id h18so20313894qvl.3
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 05:11:51 -0700 (PDT)
+        with ESMTP id S1728897AbgGHMOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 08:14:49 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC82EC08C5DC;
+        Wed,  8 Jul 2020 05:14:48 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id j11so5218114ljo.7;
+        Wed, 08 Jul 2020 05:14:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a8wDv+bWblZ3h9/74Zhd+5yTvEfHXSGMBXEjaVTCeSc=;
-        b=fAyUS/S9SA+NftMAPxRUDaPe4snyUJrrE2w0DPFEkxt30reYkRUZb1OHABecjwaF92
-         jSE+b0wfwg/qDu0B+L4RAr+TnwwtUgI/LDPWdNdKrE1ZU02d8o0RGtQeqC8fsVWV5ClE
-         zqhdTf3pCUJKM8QZauvmAe312K0i5G9vH0sqfEHU2xUizCc0h0ZnK6jySdJ4t9W0tQZT
-         28OubqC8zqFFYJ/sWhBo4ndChWVsvzXVQQI1cPrBgD7jZ1S8fcil1B901/Kg1sWJBaNd
-         HgKtlCEDx1UI7vR3U5HVE/AWv9o0IW9VG5PGkuvwUB9suxJv1AluIw4uT9X/It5Oa+J9
-         wrCA==
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=dYRZ5YGQEE6w3RMX9i2qHogQUMCaMwTTIeFRNaVpsoY=;
+        b=tdgoY+Q4fftG38O0kKmD6uhGmdD3Vx5EATHT78L+gTgkZIUK9Tqxl9zYcTHn1VLH7q
+         1UnpBr5GA1BxDjLEKiurZJhdfqg0zUlwVWtCdcWQeR/T4ywPfT+7f2PZLGJ+R/uw0CsC
+         qepeiSN15NoM8htTLcZiK3m4/RX5eG2imAYmDyd3BpemvjFvWGQY9baUVy5EKq9YPt/3
+         jkQ0rdyyvzJd9I9HBbG6gFcLHCGl7ogMtDoK/BFoXRp1yfOKJluS9KXleeTXswp/bgN9
+         FyKf9lNmNQJ5/VE6Tj7DSR+6AO2JvsBAtjvyMc9wuLojnYCyC20uStA/M93FVFAXZ7nl
+         X/fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a8wDv+bWblZ3h9/74Zhd+5yTvEfHXSGMBXEjaVTCeSc=;
-        b=QvmZNcXQH0PetC/bTjWuvhJZKRV8a1K2QQaajFyYFpkFO8jc3nBt6Z18AP/rXnmDaW
-         INAdo0QJ+sHqpsdU85OWqBGeKNxeb4hVuPI2KhMmCyjewjucL7g3Olgk7TBKe6A+Ck1N
-         iCaecqvYOHrWZDscG3/QRY2rkkn4GidE8qolFRzKxIAnUvU8Q7glqrOsQug3g/eBzOZi
-         UmE2/OCrsqLSeuyeOv0egTzmMjNMgBnDMvfiwwn4WbHZZ110KIeJbWWKYiQzVTVdtccA
-         RLR9SezeJHGiV04w8A8ij8hz4PSlTvBrzmYae17UEOxA3YBC6ECIztq537dfS05iiv5n
-         +5eg==
-X-Gm-Message-State: AOAM533VY4GRGL0Nu4CH6MMuN+1VycU2SlKaz7L10l4Sp8iGWTpog0zE
-        6xjhTO1C62tihnI3U+P4oJclmLL/
-X-Google-Smtp-Source: ABdhPJwcqeg12Qij9YZduQddVvpVhpodA7uSNT7GE6+Tc3VE/951ml7jvxJY7bWSIcIlq+4QNfs2xg==
-X-Received: by 2002:a0c:f109:: with SMTP id i9mr54008562qvl.154.1594210309794;
-        Wed, 08 Jul 2020 05:11:49 -0700 (PDT)
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
-        by smtp.gmail.com with ESMTPSA id e129sm27164262qkf.132.2020.07.08.05.11.48
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jul 2020 05:11:48 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id a15so7323384ybs.8
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 05:11:48 -0700 (PDT)
-X-Received: by 2002:a25:cc4e:: with SMTP id l75mr47249785ybf.165.1594210307842;
- Wed, 08 Jul 2020 05:11:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=dYRZ5YGQEE6w3RMX9i2qHogQUMCaMwTTIeFRNaVpsoY=;
+        b=qdcii5qI3iA/TW1WJ5qgzwhYA7AhSUCINjbREPass2WjuVk8COqLdF2M4rNgOfD7EK
+         kNzR8x8xIJBjUABtanQ0myTijC+AKIe4bYvVuQZVtPhvrn0k4MNogcX497ckcsr6JKbk
+         LEajiGplRXgmOEpcp0rQ2NpQ2CCz02/Mt/oggbnbLV3ZiMSDxVzYTp6AbQkcbpEEHWJZ
+         3FQWemi6VNvk/LzdlYsRcZ7tlsj6mfwPQBvDB6a8x0Jjj76j7zMhpRq6biSPVRLx4j7U
+         38lfyDxK3eZl46UI2XOMNKQEge1bPv7/IW7Vvd2pbzIH6jvk4DIBsaGELuGhcBP4sbc6
+         PbWQ==
+X-Gm-Message-State: AOAM5305v+F9Ch2S2+JQNEJ7d4o+tBb0ajJYqnw1nvEYdmp3sqtSf8Wk
+        FPnPo39w3rEzo+f5mAXI7lM=
+X-Google-Smtp-Source: ABdhPJxGI3LkNELxPhFHI+r7iTw1yLHA3eNSw980jDlMU0TcSVCU/9wikGNIfJacQGY+Hn5u9+YFjA==
+X-Received: by 2002:a2e:8851:: with SMTP id z17mr29558726ljj.225.1594210487151;
+        Wed, 08 Jul 2020 05:14:47 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id i197sm10336226lfi.58.2020.07.08.05.14.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 05:14:45 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH  3/5] net: fec: initialize clock with 0 rather than
+ current kernel time
+References: <20200706142616.25192-1-sorganov@gmail.com>
+        <20200706142616.25192-4-sorganov@gmail.com>
+        <20200706152721.3j54m73bm673zlnj@skbuf> <874kqksdrb.fsf@osv.gnss.ru>
+        <20200707063651.zpt6bblizo5r3kir@skbuf> <87sge371hv.fsf@osv.gnss.ru>
+        <20200707164329.pm4p73nzbsda3sfv@skbuf> <87sge345ho.fsf@osv.gnss.ru>
+        <20200707171233.et6zrwfqq7fddz2r@skbuf> <87zh8b1a5i.fsf@osv.gnss.ru>
+        <20200708111518.GF9080@hoboy>
+Date:   Wed, 08 Jul 2020 15:14:34 +0300
+In-Reply-To: <20200708111518.GF9080@hoboy> (Richard Cochran's message of "Wed,
+        8 Jul 2020 04:15:18 -0700")
+Message-ID: <87y2nub3v9.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-References: <1594180136-15912-1-git-send-email-tanhuazhong@huawei.com> <1594180136-15912-2-git-send-email-tanhuazhong@huawei.com>
-In-Reply-To: <1594180136-15912-2-git-send-email-tanhuazhong@huawei.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 8 Jul 2020 08:11:09 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScYPDhP0NigDgcu+Gpz5GUxttX2htS1NT__pqQOvtsKqw@mail.gmail.com>
-Message-ID: <CA+FuTScYPDhP0NigDgcu+Gpz5GUxttX2htS1NT__pqQOvtsKqw@mail.gmail.com>
-Subject: Re: [RFC net-next 1/2] udp: add NETIF_F_GSO_UDP_L4 to NETIF_F_SOFTWARE_GSO
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linuxarm@huawei.com, Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 7, 2020 at 11:50 PM Huazhong Tan <tanhuazhong@huawei.com> wrote:
+Richard Cochran <richardcochran@gmail.com> writes:
+
+> On Tue, Jul 07, 2020 at 08:56:41PM +0300, Sergey Organov wrote:
+>> It won't. Supposedly it'd force clock (that doesn't tick by default and
+>> stays at 0) to start ticking.
 >
-> Add NETIF_F_SOFTWARE_GSO to the the list of GSO features with
-> a software fallback.  This allows UDP GSO to be used even if
-> the hardware does not support it,
+> No existing clockid_t has this behavior.  Consider CLOCK_REALTIME or
+> CLOCK_MONOTONIC.
+>  
+> The PHC must act the same as the other POSIX clocks.
 
-That is already the case if just calling UDP_SEGMENT.
+Yeah, that's a good argument!
 
-It seems the specific goal here is to postpone segmentation when
-going through a vxlan device?
-
-> and for virtual device such
-> as VxLAN device, this UDP segmentation will be postponed to
-> physical device.
-
-See previous commits
-
-commit 83aa025f535f76733e334e3d2a4d8577c8441a7e
-Author: Willem de Bruijn <willemb@google.com>
-Date:   Thu Apr 26 13:42:21 2018 -0400
-
-    udp: add gso support to virtual devices
-
-    Virtual devices such as tunnels and bonding can handle large packets.
-    Only segment packets when reaching a physical or loopback device.
-
-    Signed-off-by: Willem de Bruijn <willemb@google.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-
-and
-
-commit 8eea1ca82be90a7e7a4624ab9cb323574a5f71df
-Author: Willem de Bruijn <willemb@google.com>
-Date:   Tue May 22 11:34:40 2018 -0400
-
-    gso: limit udp gso to egress-only virtual devices
-
-    Until the udp receive stack supports large packets (UDP GRO), GSO
-    packets must not loop from the egress to the ingress path.
-
-    Revert the change that added NETIF_F_GSO_UDP_L4 to various virtual
-    devices through NETIF_F_GSO_ENCAP_ALL as this included devices that
-    may loop packets, such as veth and macvlan.
-
-    Instead add it to specific devices that forward to another device's
-    egress path, bonding and team.
-
-    Fixes: 83aa025f535f ("udp: add gso support to virtual devices")
-    CC: Alexander Duyck <alexander.duyck@gmail.com>
-    Signed-off-by: Willem de Bruijn <willemb@google.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-
-Though with UDP_GRO this specific loop concern is addressed.
-
-
-
-> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-> ---
->  include/linux/netdev_features.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-> index 2cc3cf8..c7eef16 100644
-> --- a/include/linux/netdev_features.h
-> +++ b/include/linux/netdev_features.h
-> @@ -207,7 +207,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
->                                  NETIF_F_FSO)
->
->  /* List of features with software fallbacks. */
-> -#define NETIF_F_GSO_SOFTWARE   (NETIF_F_ALL_TSO | \
-> +#define NETIF_F_GSO_SOFTWARE   (NETIF_F_ALL_TSO | NETIF_F_GSO_UDP_L4 | \
->                                  NETIF_F_GSO_SCTP)
->
->  /*
-> --
-> 2.7.4
->
+Thanks,
+-- Sergey
