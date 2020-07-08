@@ -2,41 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B3312191F1
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:07:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B7332191FA
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:14:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726065AbgGHVHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 17:07:08 -0400
-Received: from out0-147.mail.aliyun.com ([140.205.0.147]:37000 "EHLO
-        out0-147.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725964AbgGHVHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:07:07 -0400
+        id S1725978AbgGHVOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 17:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725787AbgGHVOK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:14:10 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791E3C061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 14:14:10 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id u185so33502pfu.1
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 14:14:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=alibaba-inc.com; s=default;
-        t=1594242424; h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        bh=QK77R55sKm/agml+oo3dfwt2PUPJG143UCbM9AGjfTw=;
-        b=lb6iSvshW8px3NU2uDBLqWxHDL/is1tEnUZe6oFOIJMzs/km4f3n3JnyCfY0Ij38dkc85toZw8Zbi6o+Q4cIFgVRSgOI732RJoUAu1cboz8alo/HWl0A2DSw62eBAn7OQf4SWPSTy/NvCALOiDObzoik8o7xaPNxriaDn7KFoEU=
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e02c03300;MF=xiangning.yu@alibaba-inc.com;NM=1;PH=DS;RN=2;SR=0;TI=SMTPD_---.I-NMrwH_1594242423;
-Received: from US-118000MP.local(mailfrom:xiangning.yu@alibaba-inc.com fp:SMTPD_---.I-NMrwH_1594242423)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 09 Jul 2020 05:07:04 +0800
-Subject: Re: [PATCH net-next 2/2] net: sched: Lockless Token Bucket (LTB)
- Qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <28bff9d7-fa2d-5284-f6d5-e08cd792c9c6@alibaba-inc.com>
- <CAM_iQpVux85OXH-oYeH15sYTb=kEj0o7uu9ug9PeTesHzXk_gQ@mail.gmail.com>
- <5c963736-2a83-b658-2a9d-485d0876c03f@alibaba-inc.com>
- <CAM_iQpV5LRU-JxfLETsdNqh75wv3vWyCsxiTTgC392HvTxa9CQ@mail.gmail.com>
- <ad662f0b-c4ab-01c0-57e1-45ddd7325e66@alibaba-inc.com>
- <CAM_iQpUE658hhk8n9j+T5Qfm4Vj7Zfzw08EECh8CF8QW0GLW_g@mail.gmail.com>
-From:   "=?UTF-8?B?WVUsIFhpYW5nbmluZw==?=" <xiangning.yu@alibaba-inc.com>
-Message-ID: <00ab4144-397e-41b8-e518-ad2aacb9afd3@alibaba-inc.com>
-Date:   Thu, 09 Jul 2020 05:07:02 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=7iQsxGSyEH3MyHRTG0oUTpnNA246oLU0Ge746Dv78/8=;
+        b=qZHVTxc43MhkPx1WKmNbl3tL7Zswe1LC53OsLte2eZubNvuw5Y5qh8ot8X3PZKDKKO
+         gXyw8AJtWbUibOF/m4VwNArf4HTup9nTkObngDUAUl6ETeRWU/xmM7sSfnoaudqrsxZU
+         odBjFNu/78ZvfArllZfYQTrjaJR0JY1tczAGXj8CDbthL2bQFPgOuuGuN8w4eFRsoEie
+         gYWDyYP8CrLOLmXPdHE80B5hv6ULyx6hGtztqeL2LhR2KHCZ1Dnb20ZNz3wfMfQvfDbx
+         q6R3f7x/sndJLgvuzEa1aIN2zXkH1qn+kFsPG7V7HPelFfGc1DAgV+13ML1rohnt70gK
+         d9sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7iQsxGSyEH3MyHRTG0oUTpnNA246oLU0Ge746Dv78/8=;
+        b=ioh+IfHJ9LE5rZzYGijm7scLDq5Dl03Gy8OeGgeerV8u9+6QDlZNoCmx5V+Js1+cAr
+         fn4ljaM3V1V39Br9kL6RJE6l8a7RJfCLttqgjcjvdkNzjPOXO3LT9OaB+/djfbPIWcPE
+         1J/xhdtUsnvzMDD6J16p7Zd9/B8FwXIHvX/+Bpc0tQAB2oXfQjI5juMyr/e4FyvpvlFf
+         7EN7bgsHPfusKuk3tr7vX2JD7tH5HLuU3cwcSfMocy47qHubP+4LKUkue5HWrcG2mgDv
+         rFk9BbYUyH7/SRMcHGQlEJ/+6JJZGPHlver6rTFoEQLYUNVArqHmHU5ruBfm2Ln02clb
+         /lew==
+X-Gm-Message-State: AOAM533ThaTaxFS/a0z1aOEiBhjaH/2efgYOfm8I6iXXl+2J05QScrOC
+        3lt0VZH5SXYJJ+jM1C+L99XptaHl
+X-Google-Smtp-Source: ABdhPJyQLB2xAXRinl9iDKDpCI1AFwhAHWUFYGIzK/FtC88QjWfRC7tQTVRq34tXWz64LizoQuY88A==
+X-Received: by 2002:aa7:9f8f:: with SMTP id z15mr31015182pfr.73.1594242849667;
+        Wed, 08 Jul 2020 14:14:09 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id c15sm666774pgb.4.2020.07.08.14.14.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jul 2020 14:14:08 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/2] net: sched: Lockless Token Bucket (LTB)
+ qdisc
+To:     "YU, Xiangning" <xiangning.yu@alibaba-inc.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <4835f4cb-eee0-81e7-d935-5ad85767802c@alibaba-inc.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <049a23c1-a404-60c8-9b20-1825b5319239@gmail.com>
+Date:   Wed, 8 Jul 2020 14:14:03 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpUE658hhk8n9j+T5Qfm4Vj7Zfzw08EECh8CF8QW0GLW_g@mail.gmail.com>
+In-Reply-To: <4835f4cb-eee0-81e7-d935-5ad85767802c@alibaba-inc.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -47,31 +70,17 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 7/8/20 1:24 PM, Cong Wang wrote:
-> On Tue, Jul 7, 2020 at 2:24 PM YU, Xiangning
-> <xiangning.yu@alibaba-inc.com> wrote:
->>
->> The key is to avoid classifying packets from a same flow into different classes. So we use socket priority to classify packets. It's always going to be correctly classified.
->>
->> Not sure what do you mean by default configuration. But we create a shadow class when the qdisc is created. Before any other classes are created, all packets from any flow will be classified to this same shadow class, there won't be any incorrect classified packets either.
-> 
-> By "default configuration" I mean no additional configuration on top
-> of qdisc creation. If you have to rely on additional TC filters to
-> do the classification, it could be problematic. Same for setting
-> skb priority, right?
+On 7/8/20 9:38 AM, YU, Xiangning wrote:
+> Lockless Token Bucket (LTB) is a qdisc implementation that controls the
+> use of outbound bandwidth on a shared link. With the help of lockless
+> qdisc, and by decoupling rate limiting and bandwidth sharing, LTB is
+> designed to scale in the cloud data centers.
 > 
 
-In this patch we don't rely on other TC filters. In our use case, socket priority is set on a per-flow basis, not per-skb basis.
+Before reviewing this patch (with many outcomes at first glance),
+we need experimental data, eg how this is expected to work on a
+typical host with 100Gbit NIC (multi queue), 64 cores at least,
+and what is the performance we can get from it (Number of skbs per second,
+on a class limited to 99Gbit)
 
-> Also, you use a default class, this means all unclassified packets
-> share the same class, and a flow falls into this class could be still
-> out-of-order, right?
-> 
-
-A flow will fall and only fall to this class. If we can keep the order within a flow, I'm not sure why we still have this issue?
- 
-Thanks,
-- Xiangning
-
-> Thanks.
-> 
+Four lines of changelog seems terse to me.
