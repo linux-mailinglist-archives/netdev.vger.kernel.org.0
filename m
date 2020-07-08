@@ -2,74 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F70D21830F
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 11:01:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C390C218318
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 11:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbgGHJBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 05:01:42 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36960 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725789AbgGHJBm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 05:01:42 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jt5xQ-0002sR-Fr; Wed, 08 Jul 2020 11:01:36 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jt5xQ-000Xy5-8p; Wed, 08 Jul 2020 11:01:36 +0200
-Subject: Re: add an API to check if a streamming mapping needs sync calls
-To:     Christoph Hellwig <hch@lst.de>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200629130359.2690853-1-hch@lst.de>
- <b97104e1-433c-8e35-59c6-b4dad047464c@intel.com>
- <20200708074418.GA6815@lst.de>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <ce7dc444-534e-636b-81d8-dbad249ad6aa@iogearbox.net>
-Date:   Wed, 8 Jul 2020 11:01:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727114AbgGHJE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 05:04:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55886 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726121AbgGHJE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 05:04:58 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F48C08C5DC
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 02:04:58 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id dr13so49551536ejc.3
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 02:04:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=ZnVTT8e8E5uE5W1IEqG8v7xljDoffbPIC4fgn+PQcWg=;
+        b=GpDfdGn4ZY1oscicGSuS0egnhCrJ9y3j0R+zKdvM0XswCvyWq0yoYlSWk+qLdMTlaH
+         7HhroEet2sHgCzt6CgzeEPMB6i4BaqZGfhsf48LxDPOyEO6H73+nGXW2B5gzVMZxylBO
+         P5bROVUkDI8UspfXCQaJ4Lf8Ah8fD1pOrEPscnRS0J80yRnxKuykOqBw/DE91C6VyG+F
+         hOP7RHxtkLda3sXxSojFRvdpzMgqo9DXG4Ecgk8pwXQSRi5NRfhUjiTYvF6xinS8RwbZ
+         TRlG7fQl82ba3sJsyr+4xN8+sGJ6skSZHvnRrLLwBcNWcLzg3XS+8irlEmWTLj/FWM3O
+         VeDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=ZnVTT8e8E5uE5W1IEqG8v7xljDoffbPIC4fgn+PQcWg=;
+        b=Xd+pIHNCTORgNS+9lW5nC4qekTmIUWELMcJz98nXwncGx8lh9ILvQH09iquywgwI5H
+         dry0GgBnsKJvGhFXx/9uri2d3JVizMziv02y3StbK40da7cb1z+qab19pZr8ryc/HKmY
+         i+SjtHZaNfDgRMtbWV+BGeXLhf+MRPFCtm0oCR2XuNnfvLx3zjL4ZaBtWUypNvplRrRU
+         jeUZn/65xyj2joiijRZHqVsn6Pmf2LurkyAa2xhFj7EM3Y3bsugUm8zSUv54V40L2Eom
+         2DpCZYIkGHkwpN7pKUMiAhSp+BEfUoRU/+XlOF/mToyMXAGPPq3ZMZZJJOPIMN9abMMf
+         6g5A==
+X-Gm-Message-State: AOAM5336w1weD+sXExZBERA1lPd7I6qhfPypbVgrTPS0Jnenb9/+vc7E
+        UTkiCMKxLILZ0kGnVAdPQDmgx7Nw
+X-Google-Smtp-Source: ABdhPJwcpUeKqZJFe0cfS2bTyxx1AA4L2WNCs3uLQd5Pd0Gj1gJsA3gyHFOE48Ir0Fhr+h6albGfOw==
+X-Received: by 2002:a17:906:6499:: with SMTP id e25mr50580520ejm.352.1594199096796;
+        Wed, 08 Jul 2020 02:04:56 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id v5sm1654889ejj.61.2020.07.08.02.04.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 02:04:56 -0700 (PDT)
+Date:   Wed, 8 Jul 2020 12:04:54 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        netdev@vger.kernel.org
+Subject: What is the correct way to install an L2 multicast route into a
+ bridge?
+Message-ID: <20200708090454.zvb6o7jr2woirw3i@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20200708074418.GA6815@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25866/Tue Jul  7 15:47:52 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/8/20 9:44 AM, Christoph Hellwig wrote:
-> On Mon, Jun 29, 2020 at 03:39:01PM +0200, Björn Töpel wrote:
->> On 2020-06-29 15:03, Christoph Hellwig wrote:
->>> Hi all,
->>>
->>> this series lifts the somewhat hacky checks in the XSK code if a DMA
->>> streaming mapping needs dma_sync_single_for_{device,cpu} calls to the
->>> DMA API.
->>>
->>
->> Thanks a lot for working on, and fixing this, Christoph!
->>
->> I took the series for a spin, and there are (obviously) no performance
->> regressions.
->>
->> Would the patches go through the net/bpf trees or somewhere else?
-> 
-> Where did this end up?  I still don't see it in Linus' tree and this
-> is getting urgent now.
+Hi,
 
-It was merged into bpf tree and we sent the PR to DaveM which was merged into
-net tree around a week ago [0]; I assume the PR for net might go to Linus soon
-this week.
+I am confused after reading man/man8/bridge.8. I have a bridge br0 with
+4 interfaces (eth0 -> eth3), and I would like to install a rule such
+that the non-IP multicast address of 09:00:70:00:00:00 is only forwarded
+towards 3 of those ports, instead of being flooded.
+The manual says that 'bridge mdb' is only for IP multicast, and implies
+that 'bridge fdb append' (NLM_F_APPEND) is only used by vxlan. So, what
+is the correct user interface for what I am trying to do?
 
-   [0] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=e708e2bd55c921f5bb554fa5837d132a878951cf
+Thank you,
+-Vladimir
