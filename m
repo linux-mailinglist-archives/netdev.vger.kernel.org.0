@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 710DA218C9E
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 18:11:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEB12218CAA
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 18:12:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730588AbgGHQLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 12:11:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40222 "EHLO mail.kernel.org"
+        id S1730625AbgGHQMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 12:12:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43194 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730093AbgGHQLB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jul 2020 12:11:01 -0400
+        id S1728148AbgGHQMm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jul 2020 12:12:42 -0400
 Received: from linux-8ccs.fritz.box (p57a23121.dip0.t-ipconnect.de [87.162.49.33])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 562EB2067D;
-        Wed,  8 Jul 2020 16:10:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F3F4620720;
+        Wed,  8 Jul 2020 16:12:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594224660;
-        bh=n3F3bcX2Vci1bakFZU/eICyLnnE7X851ZV5TuN+qGqk=;
+        s=default; t=1594224761;
+        bh=wvHjxZxUZUUkYWq6mEbxkcnvzWEL0F6xg2+xf/F0qnA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Qwr4w1GhLORsHNOTadWKjxr/+KY5sGtD9V/DyZUDtdD+u5cE9FDlC92dZV2DHGD4d
-         inc0O+LwJL1lPNpljIww0uV07+QfktCd23Johh5BjrBE0zyU/VjscdMbX/vVE9qUVy
-         tG/e+qToIXaQHmyIMQOtfV1ISiBh6i/qbbnSrIHI=
-Date:   Wed, 8 Jul 2020 18:10:52 +0200
+        b=OdlewKOXT4w7chOuimi+NRrqQKuLn+dX5NTKYo4SIzQyDzA12aSFG6KscIhvd9VHU
+         cebUXOVOlotPVrB9iqWRvv5KxuVMB+L50oQ1FRo3NwitSn01OTkTU6LrbmN74gjyPi
+         LJfjrwd4dzS6QqKI3qGEuCERfNXDGHfirUjbEXZA=
+Date:   Wed, 8 Jul 2020 18:12:33 +0200
 From:   Jessica Yu <jeyu@kernel.org>
 To:     Kees Cook <keescook@chromium.org>
 Cc:     Dominik Czarnota <dominik.czarnota@trailofbits.com>,
@@ -56,14 +56,15 @@ Cc:     Dominik Czarnota <dominik.czarnota@trailofbits.com>,
         Thomas Richter <tmricht@linux.ibm.com>,
         Ingo Molnar <mingo@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/5] module: Refactor section attr into bin attribute
-Message-ID: <20200708161049.GA5609@linux-8ccs.fritz.box>
+Subject: Re: [PATCH 3/5] module: Do not expose section addresses to
+ non-CAP_SYSLOG
+Message-ID: <20200708161233.GB5609@linux-8ccs.fritz.box>
 References: <20200702232638.2946421-1-keescook@chromium.org>
- <20200702232638.2946421-3-keescook@chromium.org>
+ <20200702232638.2946421-4-keescook@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20200702232638.2946421-3-keescook@chromium.org>
+In-Reply-To: <20200702232638.2946421-4-keescook@chromium.org>
 X-OS:   Linux linux-8ccs 4.12.14-lp150.12.61-default x86_64
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
@@ -72,19 +73,35 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 +++ Kees Cook [02/07/20 16:26 -0700]:
->In order to gain access to the open file's f_cred for kallsym visibility
->permission checks, refactor the module section attributes to use the
->bin_attribute instead of attribute interface. Additionally removes the
->redundant "name" struct member.
+>The printing of section addresses in /sys/module/*/sections/* was not
+>using the correct credentials to evaluate visibility.
+>
+>Before:
+>
+> # cat /sys/module/*/sections/.*text
+> 0xffffffffc0458000
+> ...
+> # capsh --drop=CAP_SYSLOG -- -c "cat /sys/module/*/sections/.*text"
+> 0xffffffffc0458000
+> ...
+>
+>After:
+>
+> # cat /sys/module/*/sections/*.text
+> 0xffffffffc0458000
+> ...
+> # capsh --drop=CAP_SYSLOG -- -c "cat /sys/module/*/sections/.*text"
+> 0x0000000000000000
+> ...
+>
+>Additionally replaces the existing (safe) /proc/modules check with
+>file->f_cred for consistency.
 >
 >Cc: stable@vger.kernel.org
+>Reported-by: Dominik Czarnota <dominik.czarnota@trailofbits.com>
+>Fixes: be71eda5383f ("module: Fix display of wrong module .text address")
 >Signed-off-by: Kees Cook <keescook@chromium.org>
-
-Hi Kees,
-
-This looks good to me:
 
 Tested-by: Jessica Yu <jeyu@kernel.org>
 Acked-by: Jessica Yu <jeyu@kernel.org>
 
-Thanks!
