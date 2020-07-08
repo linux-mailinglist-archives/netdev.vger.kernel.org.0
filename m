@@ -2,83 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA299218C63
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 17:59:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13A05218C76
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 18:00:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730268AbgGHP7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 11:59:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35990 "EHLO
+        id S1730604AbgGHQAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 12:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730048AbgGHP7h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 11:59:37 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C37CC061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 08:59:37 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id f2so18355170plr.8
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 08:59:37 -0700 (PDT)
+        with ESMTP id S1730179AbgGHQAx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 12:00:53 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623D5C061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 09:00:53 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id d27so34886111qtg.4
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 09:00:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dfsy8YM0DDECiIz6MPnrjWaP9lAaD4OKRogI6YWiw3s=;
-        b=sFJ0rCE7LHvqOZN0IrLznh9iYrKZVGVzBrgwa6ljr+3y6/GsYXhigq36JEmMO935X/
-         DZC3o+cBed27FFbtR0i0uRTJvt4RA/nYzpVV1r6x4EvV5U/s0xWM+UCEQoln9vVsv+Ba
-         UtRA6J5OBqSL+g1V87+LI7eQz2fYvMbl8aXkosYJfHiCZb+nCDPfsVjR3PczyccOCLAP
-         INj8ts8Oq3GDx9aNm9OZqfOJz/tc70fxcbXbISJ3rabD8UimqbcXChu8/7tUAbOWnapL
-         b1KlUNZ34mh7P1RbsAFoGqmRKKWpGowTWmGyKc9Mn9RAnOrOLzwnhPsVBzoSQ44PawIB
-         2IfA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=r2kAm9ImfAoL9iHCU1qn7FVfAasZNPHmlDTAjkYz4NQ=;
+        b=ikUGGiA9Ps6CZTdDiszDkrI/ENUgmRVLHt0ONdBZ61GJTSG/4j29M5gD9+l1o9KkWf
+         UwY3Xz1LRpbf49mU/4Z87evyEtkp40kUwo60V6qCbOe8nNz/3KKA6TySOzSZS2KINLh3
+         u9tVjlAoO4s0lgm23hSeVbbqbJ8EUlcWM3yg0AerLYNl846e3U7A+C+JCCUWP7R5k8Nk
+         Cl3s8/Xj+3rlukYKSyqiv9dHmnVG5wBApfOv7gte+q/dYdeM4q/O5GMLCCmyI/y3XomI
+         yjXsGuDzMaPvBPAfZBEKrwsZIlh4dVdTm1xljAFeMFXiSQy0O3xzcF84WeowjXa1Tyh+
+         +W1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dfsy8YM0DDECiIz6MPnrjWaP9lAaD4OKRogI6YWiw3s=;
-        b=Yui+wDTwANndTf2+7xNHoNaMUzmdjwqAIvSm2e6CVVU8w8IdpfE3Zvow5HnPX9IXgk
-         KwLUf8YJmfhpe9ww0aEA4ipp/EAqIcYw7HVr886aHuGXXvgSFwE6LC/OLv8z0niEEQGA
-         Q6NrYw5+Cg4Qf30X2Pq3mrsNi7SzP6RvkyugW2+Fn8C5N/fg7zYXEpgrueVR0cHZIKWS
-         rJsgLYusPta31gDdcCuuaReaSb7N6AuclCmwQ0rQTpV+CiYBeWDCNZbLCyr8pLnbSTep
-         GVCihrIyHCjqsnMeJwVYXLABp2sS+sfuvl3v7fG6SlOWHQMI14HxrgCvn+z4aDpVUCgV
-         OmUw==
-X-Gm-Message-State: AOAM533tybxSHILvIW2MHsswZDJzvcEPjGAeuUSOsZ6+1LhqHYs20MdU
-        hWr5u1cU481p6MWPXLTDm6lTuA==
-X-Google-Smtp-Source: ABdhPJxgB0YFveeiA/rQS1rhLcG5Jj0QD7bwS2yR8UhDe2ujNQo1rB2jxlPmVfgQoY69XUQILVuk/Q==
-X-Received: by 2002:a17:90a:a393:: with SMTP id x19mr10571266pjp.228.1594223977098;
-        Wed, 08 Jul 2020 08:59:37 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id i13sm70444pjd.33.2020.07.08.08.59.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jul 2020 08:59:36 -0700 (PDT)
-Date:   Wed, 8 Jul 2020 08:59:33 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Evelyn Mitchell <efmphone@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] man: ip-rule.8: minor changes
-Message-ID: <20200708085933.261507bb@hermes.lan>
-In-Reply-To: <CABD0H0sKx14FoWthLAC9MijT4q7RYOdZhyW_x-JPHdFm+=ggXw@mail.gmail.com>
-References: <CABD0H0sKx14FoWthLAC9MijT4q7RYOdZhyW_x-JPHdFm+=ggXw@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=r2kAm9ImfAoL9iHCU1qn7FVfAasZNPHmlDTAjkYz4NQ=;
+        b=LAf1YBdPgTDoP8r0XN0brk2ZJeyyDL3y+58aYHWYPjhxOD/KvbjWCv7JLLh87+g+gS
+         C1YUAbFWDdrWWczmwVOsWOpsUT0vAgmzzHsgHHSsQc0/5jefiv4oNTVHzq8ztCpMRmaR
+         mB1DhH3NnQ/lFhJGgFhlEcKV8GkQyRvJbYLY4XUTTNmgPSXOclJG8uVzUZPcdke8Jn56
+         D/gTG0iWZw5tVRd+T6OGYuQmzMZPsbMjN5EZz9fFZpJAdhNyx35NuFJ7oqPCqqjY8CoC
+         2F5ZlJ6QCW02v/TYshJ7O5gOiqIObbJzIGdbBDBRBtRi0blzSxB5wbGl0fXlp8UkzCvd
+         1+dQ==
+X-Gm-Message-State: AOAM5334kiT+hOtKQb6PEbOfhRscB9qUIy3aYU7kuoRu/JSOgHiUKI9h
+        j1ymuBsp033GaQgRojDWvUU=
+X-Google-Smtp-Source: ABdhPJytkksOsqqn9E1Bcu1JmkyJ4RAtQnpiFwfYyifgnYCYAxuoF0n6b5lmF30C7sxxqZlu5C7nEQ==
+X-Received: by 2002:ac8:1a12:: with SMTP id v18mr61693168qtj.347.1594224052702;
+        Wed, 08 Jul 2020 09:00:52 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:35d7:e173:4535:718f? ([2601:282:803:7700:35d7:e173:4535:718f])
+        by smtp.googlemail.com with ESMTPSA id y143sm252651qka.22.2020.07.08.09.00.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jul 2020 09:00:52 -0700 (PDT)
+Subject: Re: [PATCH v2 iproute2-next] devlink: Add board.serial_number to info
+ subcommand.
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>
+References: <1593416584-24145-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <20200705110301.20baf5c2@hermes.lan>
+ <CAACQVJogqmNG_jb0W-gV23uWTcpitrx=TF9asZ9s0kfrjbB2ZA@mail.gmail.com>
+ <20200708113505.GA3667@nanopsycho.orion>
+ <CAACQVJpxsOXFPaSn9pjqeEeVRu_VJumvndpPpYNs_zx5SmiHgA@mail.gmail.com>
+ <20200708082623.2252d2e8@hermes.lan>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <7a815f0d-717b-6b34-9bd4-0fc9cf606b93@gmail.com>
+Date:   Wed, 8 Jul 2020 10:00:50 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200708082623.2252d2e8@hermes.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Jul 2020 11:40:37 -0600
-Evelyn Mitchell <efmphone@gmail.com> wrote:
+On 7/8/20 9:26 AM, Stephen Hemminger wrote:
+> Resolving may mean doing more widespread changes across iproute
 
-> These are grammatical and typographical fixes, with one wording change.
-> 
-> Evelyn Mitchell
-> tummy.com
-
-The wording change looks fine, but the patch has a couple of issues.
-First, you did not include a Signed-off-by: as required.
-See Linux kernel documentation on submitting patches.
-
-Second, the patch was not formatted in a way that it could
-be automatically consumed by git (or patch) commands.
-
-Lastly, it looks like your mail client maybe modifiying the
-patch when sending. Hard to tell because of the patch formatting issues.
-
-Please fix the above and resubmit.
+some of the devlink messages come from the driver, so it is not just
+iproute2.
