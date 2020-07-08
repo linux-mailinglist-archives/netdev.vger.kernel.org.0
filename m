@@ -2,223 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D699219438
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 01:19:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C368F219442
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 01:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726187AbgGHXS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 19:18:56 -0400
-Received: from nwk-aaemail-lapp01.apple.com ([17.151.62.66]:53284 "EHLO
-        nwk-aaemail-lapp01.apple.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725903AbgGHXS4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 19:18:56 -0400
-Received: from pps.filterd (nwk-aaemail-lapp01.apple.com [127.0.0.1])
-        by nwk-aaemail-lapp01.apple.com (8.16.0.42/8.16.0.42) with SMTP id 068MvJ7I020238;
-        Wed, 8 Jul 2020 16:18:51 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=20180706; bh=xAllw7OlFO46lr7bIsmcmKuwtENrzVisYMxa6X6qSeM=;
- b=AjKzpYKpxGXYlg6xG4w9tUAilsrz0GDWnzw4q3J0wR6Mov53YwGUk+zDIIE+IzQnCZ9P
- vdaXSquIRlSPEhTbF2wxYjHhwFD2BV4rIUMCYAFExgNz5UCH5qsl4IpIcRSfLzAk2/gQ
- xMEUc0peSsqd5UCc96+iOacVPSe6ckBTrXhSdywKnokuZeX65Q7fCuVMH2oQXVC19GID
- +oZC9byILFmjA4nRc10xBfnih8Ch8akEvL+dytMUPFfB/6S/S/Q1mM/ork84xzVNpCZ2
- StxM9F8lvV+LNUJBVgSF1JlJU5ns7jZOssPKbbKlI21WSk/ZW++DupDFZ4TNUKB5I+Dn zQ== 
-Received: from rn-mailsvcp-mta-lapp01.rno.apple.com (rn-mailsvcp-mta-lapp01.rno.apple.com [10.225.203.149])
-        by nwk-aaemail-lapp01.apple.com with ESMTP id 325k3hvjdy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Wed, 08 Jul 2020 16:18:51 -0700
-Received: from rn-mailsvcp-mmp-lapp01.rno.apple.com
- (rn-mailsvcp-mmp-lapp01.rno.apple.com [17.179.253.14])
- by rn-mailsvcp-mta-lapp01.rno.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020)) with ESMTPS id <0QD600CPHBFFSC50@rn-mailsvcp-mta-lapp01.rno.apple.com>;
- Wed, 08 Jul 2020 16:18:51 -0700 (PDT)
-Received: from process_milters-daemon.rn-mailsvcp-mmp-lapp01.rno.apple.com by
- rn-mailsvcp-mmp-lapp01.rno.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020)) id <0QD600000B1LK800@rn-mailsvcp-mmp-lapp01.rno.apple.com>; Wed,
- 08 Jul 2020 16:18:51 -0700 (PDT)
-X-Va-A: 
-X-Va-T-CD: 58b165e5c05c56e35c1cede95136570d
-X-Va-E-CD: 907520315f113abce664413607b219b8
-X-Va-R-CD: 8580df6bf73cd730155f98e2c0fdc7bc
-X-Va-CD: 0
-X-Va-ID: 9da2e2fe-23fb-4d6d-bb6f-072d0e5ce15b
-X-V-A:  
-X-V-T-CD: 58b165e5c05c56e35c1cede95136570d
-X-V-E-CD: 907520315f113abce664413607b219b8
-X-V-R-CD: 8580df6bf73cd730155f98e2c0fdc7bc
-X-V-CD: 0
-X-V-ID: 3f162cad-85bd-46ac-b967-8b042364ceb1
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-08_18:2020-07-08,2020-07-08 signatures=0
-Received: from localhost ([17.149.229.113])
- by rn-mailsvcp-mmp-lapp01.rno.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020))
- with ESMTPSA id <0QD600U19BFDVF40@rn-mailsvcp-mmp-lapp01.rno.apple.com>; Wed,
- 08 Jul 2020 16:18:50 -0700 (PDT)
-From:   Christoph Paasch <cpaasch@apple.com>
-To:     netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Wei Wang <weiwan@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2 net] tcp: make sure listeners don't initialize
- congestion-control state
-Date:   Wed, 08 Jul 2020 16:18:34 -0700
-Message-id: <20200708231834.55194-1-cpaasch@apple.com>
-X-Mailer: git-send-email 2.23.0
-MIME-version: 1.0
-Content-transfer-encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-08_18:2020-07-08,2020-07-08 signatures=0
+        id S1726265AbgGHX0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 19:26:17 -0400
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:13363 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725903AbgGHX0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 19:26:16 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f0655ac0000>; Wed, 08 Jul 2020 16:24:28 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Wed, 08 Jul 2020 16:26:15 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Wed, 08 Jul 2020 16:26:15 -0700
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 8 Jul
+ 2020 23:26:05 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.173)
+ by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 8 Jul 2020 23:26:05 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RzTi0I5pmlMPuDqxhTpLAVbmgiBFlMapgPY7MuijmYwQbshcKa7B2JQHABNnuLAwsRYJ9kNNd0BMIhUN3LuEeuS8dLRUpvMBQkPUIY4K9Q0dq9MqSqmD6BtFU9xC6rQ3vsK3fG0ndcuMXHXbkKw+8KoliJQNffUN+re75NXfYCMisI1fDNNSxnhyGSKZg/tSFwO3uvn1wlNJM8Kzj/3iM4XSS7kGvCGvw4rxHXDDqrc1ShZDqyDfEz8AwsMX8OGWYSAZF+BnzghAQ5QsrdqTcipMp+0ebFZgOJcmJnu56/8CMahUVejOCjPCEYUiwDpyE4PrhWBMHr7uhuckAHZ3Pg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Wk4JZYMtC4cLUrF2la0XEwWSP85bdzx445RLu0DN4Vs=;
+ b=YAMTNaQhINAJ4Mj84oTHyfk3GgW3uDcYmpEDB9SfrHdgz+8nou+X2S0e4pKVqeO4tE4fvQ5lwhDUv/8erpRBcUv0KHkXgYCxBIN3NxXbD8+sHD86bzgZ4zbxAItx5gpbxuzJwlP67RpSVlx7B/1JX8XCxuIYPvPKzRi9gHtK55vjK1haighzIEJ84uJ545g8Pv3kDCBxVBe0X1WFr7w5jriB6OF1dlAcuHOwMDu9xrY6bEzFzv6+j2ym/tbP16wcelYWERMBLwfifktaXe77BuTbBvbXfcqtPyVUv9w2pxr1ky+eivEq/lwTSqMmpiwJb09CJgWEfXBGnsugthv3CA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB2486.namprd12.prod.outlook.com (2603:10b6:4:b2::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20; Wed, 8 Jul
+ 2020 23:26:04 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1d53:7cb4:c3d7:2b54]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1d53:7cb4:c3d7:2b54%6]) with mapi id 15.20.3153.030; Wed, 8 Jul 2020
+ 23:26:04 +0000
+Date:   Wed, 8 Jul 2020 20:26:02 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+CC:     Aya Levin <ayal@mellanox.com>, David Miller <davem@davemloft.net>,
+        <kuba@kernel.org>, <saeedm@mellanox.com>, <mkubecek@suse.cz>,
+        <linux-pci@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <tariqt@mellanox.com>, <alexander.h.duyck@linux.intel.com>
+Subject: Re: [net-next 10/10] net/mlx5e: Add support for PCI relaxed ordering
+Message-ID: <20200708232602.GO23676@nvidia.com>
+References: <0506f0aa-f35e-09c7-5ba0-b74cd9eb1384@mellanox.com>
+ <20200708231630.GA472767@bjorn-Precision-5520>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200708231630.GA472767@bjorn-Precision-5520>
+X-ClientProxiedBy: YTOPR0101CA0006.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b00:15::19) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (206.223.160.26) by YTOPR0101CA0006.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b00:15::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20 via Frontend Transport; Wed, 8 Jul 2020 23:26:03 +0000
+Received: from jgg by mlx with local (Exim 4.93)        (envelope-from <jgg@nvidia.com>)        id 1jtJRy-007MPa-E5; Wed, 08 Jul 2020 20:26:02 -0300
+X-Originating-IP: [206.223.160.26]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7b53b2ce-9af7-4fe5-0fd1-08d823964843
+X-MS-TrafficTypeDiagnostic: DM5PR12MB2486:
+X-Microsoft-Antispam-PRVS: <DM5PR12MB2486E1D2EF2C6DE8897508E9C2670@DM5PR12MB2486.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mU9N1xBCbVh2V1tv1P/2RYtomtwVAlqymE2fOJajNocsWicGjvqgb293x6iinCOGLk64mreJh9jdKS2924wTSQWLdBZWOEQHdrJXvitSsh0iBiwhpcpclvhW+p38g/gLGFsj8cLFefk6mhsdmpqvq2znv8KFrVe8yKi+TQA5fRq+DoM81NXw4W+Tk3XhC4i5Wx9LzoMlcnFARpXvnL22cqrc9jPgFeLJIkFH+WN9aq4OkrignxeI8qqW0tHxUaqoOCSuit3mimnenFiuIqzxTw3eJNXO3eKuHzW2ZhsgqndQuBb5whCQ12U50c6SxOVNcZM9xbKjkwD+nms3RZMzag==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(346002)(376002)(366004)(396003)(39860400002)(2616005)(8936002)(316002)(1076003)(33656002)(66556008)(66476007)(9786002)(9746002)(66946007)(4326008)(186003)(36756003)(2906002)(26005)(478600001)(54906003)(7416002)(86362001)(6916009)(83380400001)(5660300002)(426003)(8676002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 5UMwuWUZs83T6DDjPJl02827K2KNjE/PvWe/AO790OGKOMK/knzTayZ3yWJl/ZqfbtnHrbQHCuIj5GJn86v8vhJIN4eQEfHGLD83n5fC1OmOT+KLQ2z5m1JbcO62btmslUvq+iBOj1PxmuqRVUH7SIPo8vei1cjRPyucb4iu9vM26nJXr0Xzq29NJKrjpIeoyGHGLBdz1URjiggQYf321qB5TTiuEa0E09CiN9M2Inj7XMK5EG5tD+ZyhsC5jALM6jPwbxuAV155OWdFdIKjZYqKa+iVYMmSBa9p0iHyoN18yv6tKTFH5ixjs+Lq606vpvR1Xs9zH4ydJwSIgdFViMgjdzWfK/TfpbMUtGbmbT+hX7puJOnBlDsUmx3Yx6dFGqHsAE4inZeD8McAXApij8iBvAJwqV4ddgOj5w+mqw0NUWswL0ScEDQraFyWOXi3m9vohjNTa+2oUq9/mhpGwDRa2TsMS+0Fua3IIJtNP/h8I/e2ECOTZESPwp9E/h9Y
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b53b2ce-9af7-4fe5-0fd1-08d823964843
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2020 23:26:03.8975
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: reR0tNbvvchH1ScM0gh3w7A4Pw6wmFZf+S9zmjyOsMoUGxnlWH/V4rJrJ1rKm2cX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2486
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1594250668; bh=Wk4JZYMtC4cLUrF2la0XEwWSP85bdzx445RLu0DN4Vs=;
+        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+         ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
+         Subject:Message-ID:References:Content-Type:Content-Disposition:
+         In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
+         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
+         X-MS-TrafficTypeDiagnostic:X-Microsoft-Antispam-PRVS:
+         X-MS-Oob-TLC-OOBClassifiers:X-MS-Exchange-SenderADCheck:
+         X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+         X-Forefront-Antispam-Report:X-MS-Exchange-AntiSpam-MessageData:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+         X-MS-Exchange-CrossTenant-FromEntityHeader:
+         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+         X-MS-Exchange-CrossTenant-UserPrincipalName:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=BHgPPiglu2uZ5WS2zGqro6ZpszuEA51NUJJm+fhp/3oSGjKmSad1npb08bnrPquef
+         T6GFg1w8yjD/JqjtQBGEaauV9oYlrjZ54xNyQFPxB6d1WXYFBCBYqmp5SuTHpl2YIa
+         lAmrYcclwATumfKHcIWLPCSCleQKgKrpKFhyzrECppbMDuz4V9+Khb+AzhPX3OdMko
+         0ScXCbylN6j83DyqtDh/kp5vZB0pbmfuxbj226ms/7i/dr+PPAzxxi6vMABvbjx22s
+         yR/o6gFsyiLGIQYCFyGCuOsLoZZ1nnICHVIyCcT9W9vkXioWgUCLtNij+QuNeiwUzI
+         GqIgx+m5jwPfw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzkaller found its way into setsockopt with TCP_CONGESTION "cdg".
-tcp_cdg_init() does a kcalloc to store the gradients. As sk_clone_lock
-just copies all the memory, the allocated pointer will be copied as
-well, if the app called setsockopt(..., TCP_CONGESTION) on the listener.
-If now the socket will be destroyed before the congestion-control
-has properly been initialized (through a call to tcp_init_transfer), we
-will end up freeing memory that does not belong to that particular
-socket, opening the door to a double-free:
+On Wed, Jul 08, 2020 at 06:16:30PM -0500, Bjorn Helgaas wrote:
+>     I suspect there may be device-specific controls, too, because [1]
+>     claims to enable/disable Relaxed Ordering but doesn't touch the
+>     PCIe Device Control register.  Device-specific controls are
+>     certainly allowed, but of course it would be up to the driver, and
+>     the device cannot generate TLPs with Relaxed Ordering unless the
+>     architected PCIe Enable Relaxed Ordering bit is *also* set.
 
-[   11.413102] ==================================================================
-[   11.414181] BUG: KASAN: double-free or invalid-free in tcp_cleanup_congestion_control+0x58/0xd0
-[   11.415329]
-[   11.415560] CPU: 3 PID: 4884 Comm: syz-executor.5 Not tainted 5.8.0-rc2 #80
-[   11.416544] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-[   11.418148] Call Trace:
-[   11.418534]  <IRQ>
-[   11.418834]  dump_stack+0x7d/0xb0
-[   11.419297]  print_address_description.constprop.0+0x1a/0x210
-[   11.422079]  kasan_report_invalid_free+0x51/0x80
-[   11.423433]  __kasan_slab_free+0x15e/0x170
-[   11.424761]  kfree+0x8c/0x230
-[   11.425157]  tcp_cleanup_congestion_control+0x58/0xd0
-[   11.425872]  tcp_v4_destroy_sock+0x57/0x5a0
-[   11.426493]  inet_csk_destroy_sock+0x153/0x2c0
-[   11.427093]  tcp_v4_syn_recv_sock+0xb29/0x1100
-[   11.427731]  tcp_get_cookie_sock+0xc3/0x4a0
-[   11.429457]  cookie_v4_check+0x13d0/0x2500
-[   11.433189]  tcp_v4_do_rcv+0x60e/0x780
-[   11.433727]  tcp_v4_rcv+0x2869/0x2e10
-[   11.437143]  ip_protocol_deliver_rcu+0x23/0x190
-[   11.437810]  ip_local_deliver+0x294/0x350
-[   11.439566]  __netif_receive_skb_one_core+0x15d/0x1a0
-[   11.441995]  process_backlog+0x1b1/0x6b0
-[   11.443148]  net_rx_action+0x37e/0xc40
-[   11.445361]  __do_softirq+0x18c/0x61a
-[   11.445881]  asm_call_on_stack+0x12/0x20
-[   11.446409]  </IRQ>
-[   11.446716]  do_softirq_own_stack+0x34/0x40
-[   11.447259]  do_softirq.part.0+0x26/0x30
-[   11.447827]  __local_bh_enable_ip+0x46/0x50
-[   11.448406]  ip_finish_output2+0x60f/0x1bc0
-[   11.450109]  __ip_queue_xmit+0x71c/0x1b60
-[   11.451861]  __tcp_transmit_skb+0x1727/0x3bb0
-[   11.453789]  tcp_rcv_state_process+0x3070/0x4d3a
-[   11.456810]  tcp_v4_do_rcv+0x2ad/0x780
-[   11.457995]  __release_sock+0x14b/0x2c0
-[   11.458529]  release_sock+0x4a/0x170
-[   11.459005]  __inet_stream_connect+0x467/0xc80
-[   11.461435]  inet_stream_connect+0x4e/0xa0
-[   11.462043]  __sys_connect+0x204/0x270
-[   11.465515]  __x64_sys_connect+0x6a/0xb0
-[   11.466088]  do_syscall_64+0x3e/0x70
-[   11.466617]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   11.467341] RIP: 0033:0x7f56046dc469
-[   11.467844] Code: Bad RIP value.
-[   11.468282] RSP: 002b:00007f5604dccdd8 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-[   11.469326] RAX: ffffffffffffffda RBX: 000000000068bf00 RCX: 00007f56046dc469
-[   11.470379] RDX: 0000000000000010 RSI: 0000000020000000 RDI: 0000000000000004
-[   11.471311] RBP: 00000000ffffffff R08: 0000000000000000 R09: 0000000000000000
-[   11.472286] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-[   11.473341] R13: 000000000041427c R14: 00007f5604dcd5c0 R15: 0000000000000003
-[   11.474321]
-[   11.474527] Allocated by task 4884:
-[   11.475031]  save_stack+0x1b/0x40
-[   11.475548]  __kasan_kmalloc.constprop.0+0xc2/0xd0
-[   11.476182]  tcp_cdg_init+0xf0/0x150
-[   11.476744]  tcp_init_congestion_control+0x9b/0x3a0
-[   11.477435]  tcp_set_congestion_control+0x270/0x32f
-[   11.478088]  do_tcp_setsockopt.isra.0+0x521/0x1a00
-[   11.478744]  __sys_setsockopt+0xff/0x1e0
-[   11.479259]  __x64_sys_setsockopt+0xb5/0x150
-[   11.479895]  do_syscall_64+0x3e/0x70
-[   11.480395]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   11.481097]
-[   11.481321] Freed by task 4872:
-[   11.481783]  save_stack+0x1b/0x40
-[   11.482230]  __kasan_slab_free+0x12c/0x170
-[   11.482839]  kfree+0x8c/0x230
-[   11.483240]  tcp_cleanup_congestion_control+0x58/0xd0
-[   11.483948]  tcp_v4_destroy_sock+0x57/0x5a0
-[   11.484502]  inet_csk_destroy_sock+0x153/0x2c0
-[   11.485144]  tcp_close+0x932/0xfe0
-[   11.485642]  inet_release+0xc1/0x1c0
-[   11.486131]  __sock_release+0xc0/0x270
-[   11.486697]  sock_close+0xc/0x10
-[   11.487145]  __fput+0x277/0x780
-[   11.487632]  task_work_run+0xeb/0x180
-[   11.488118]  __prepare_exit_to_usermode+0x15a/0x160
-[   11.488834]  do_syscall_64+0x4a/0x70
-[   11.489326]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Yes, at least on RDMA relaxed ordering can be set on a per transaction
+basis and is something userspace can choose to use or not at a fine
+granularity. This is because we have to support historical
+applications that make assumptions that data arrives in certain
+orders.
 
-Wei Wang fixed a part of these CDG-malloc issues with commit c12014440750
-("tcp: memset ca_priv data to 0 properly").
+I've been thinking of doing the same as this patch but for RDMA kernel
+ULPs and just globally turn it on if the PCI CAP is enabled as none of
+our in-kernel uses have the legacy data ordering problem.
 
-This patch here fixes the listener-scenario: We make sure that listeners
-setting the congestion-control through setsockopt won't initialize it
-(thus CDG never allocates on listeners). For those who use AF_UNSPEC to
-reuse a socket, tcp_disconnect() is changed to cleanup afterwards.
+There are reports that using relaxed ordering is a *huge* speed up in
+certain platforms/configurations/etc.
 
-(The issue can be reproduced at least down to v4.4.x.)
+>     issues, it might be enough to disable Relaxed Ordering using
+>     setpci, e.g., "setpci -s02:00.0 CAP_EXP+8.w=0"
 
-Cc: Wei Wang <weiwan@google.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Fixes: 2b0a8c9eee81 ("tcp: add CDG congestion control")
-Signed-off-by: Christoph Paasch <cpaasch@apple.com>
----
+For the purposes of occasional performance testing I think this should
+be good enough?
 
-Notes:
-    v2: Rather prevent listeners from initializign congestion-control state and
-        make sure tcp_disconnect() cleans up for those that want to re-use sockets
-        with AF_UNSPEC (suggested by Eric)
+Aya?
 
- net/ipv4/tcp.c      | 3 +++
- net/ipv4/tcp_cong.c | 2 +-
- 2 files changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 861fbd84c9cf..6f0caf9a866d 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -2691,6 +2691,9 @@ int tcp_disconnect(struct sock *sk, int flags)
- 	tp->window_clamp = 0;
- 	tp->delivered = 0;
- 	tp->delivered_ce = 0;
-+	if (icsk->icsk_ca_ops->release)
-+		icsk->icsk_ca_ops->release(sk);
-+	memset(icsk->icsk_ca_priv, 0, sizeof(icsk->icsk_ca_priv));
- 	tcp_set_ca_state(sk, TCP_CA_Open);
- 	tp->is_sack_reneg = 0;
- 	tcp_clear_retrans(tp);
-diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
-index 3172e31987be..62878cf26d9c 100644
---- a/net/ipv4/tcp_cong.c
-+++ b/net/ipv4/tcp_cong.c
-@@ -197,7 +197,7 @@ static void tcp_reinit_congestion_control(struct sock *sk,
- 	icsk->icsk_ca_setsockopt = 1;
- 	memset(icsk->icsk_ca_priv, 0, sizeof(icsk->icsk_ca_priv));
- 
--	if (sk->sk_state != TCP_CLOSE)
-+	if (!((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)))
- 		tcp_init_congestion_control(sk);
- }
- 
--- 
-2.23.0
-
+Jason
