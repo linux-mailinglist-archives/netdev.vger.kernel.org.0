@@ -2,147 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D2B8219248
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:18:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A478219275
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:24:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726140AbgGHVSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 17:18:55 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:41508 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725903AbgGHVSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:18:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594243132;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sSibTsf2Tmt/F++kFCgdv25YlYSJRrS5Z/yFkhUz0yA=;
-        b=guPGUHVmXhDambeq6Ml0KfVbFyHoEsXEJcncjBumAUvV3SUHsR7M1dmzST1H6UQC1PWUZ3
-        X3sYmKNClyNOCu4gkuyWmFF03Pgh8oKaSJbWUOBgAs8lOSM1h6RC9VFCCLNk9CsKtP2BuG
-        NlAtJFjtH6q1cp/mAd7sJXW+z1oyKSM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-195-hcoEgA-sMxOcnH7LvnHgXA-1; Wed, 08 Jul 2020 17:18:49 -0400
-X-MC-Unique: hcoEgA-sMxOcnH7LvnHgXA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A3511107ACCD;
-        Wed,  8 Jul 2020 21:18:46 +0000 (UTC)
-Received: from krava (unknown [10.40.195.124])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 60FF36FEC7;
-        Wed,  8 Jul 2020 21:18:40 +0000 (UTC)
-Date:   Wed, 8 Jul 2020 23:18:39 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v5 bpf-next 9/9] selftests/bpf: Add test for
- resolve_btfids
-Message-ID: <20200708211839.GE3581918@krava>
-References: <20200703095111.3268961-1-jolsa@kernel.org>
- <20200703095111.3268961-10-jolsa@kernel.org>
- <CAEf4BzYuDU2mARcP5GVAv+WiknSnWuzGyNqQx0TiJ23CWA8NiA@mail.gmail.com>
- <20200707155720.GI3424581@krava>
- <CAEf4BzYYHEwDZ9YqqyfzSZsk-8=DrL-WVEee-gisBLQRZWUTHw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYYHEwDZ9YqqyfzSZsk-8=DrL-WVEee-gisBLQRZWUTHw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+        id S1726065AbgGHVYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 17:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58078 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725787AbgGHVYd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:24:33 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268FBC061A0B;
+        Wed,  8 Jul 2020 14:24:33 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id e11so43127933qkm.3;
+        Wed, 08 Jul 2020 14:24:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=FVKlHGclMG+5g9LsvCjwR+crIgaigZMQlcw6o5VC/d0=;
+        b=Dm9yzue0JCJDgD0vCdDvqtaFMKqgyO7w9y7H0//ubAjWRm0/3O8D2wlD2f5NVZ8yTc
+         eGzE2ffhucQx0pr1kV6XrXojEz5vMhjy/LMhxlQlNLQ3ec5Dvs0YoOYRpD6f+NhJjXWG
+         R8KvhV6o762LbWAi6ovr+prNm+e5tetaoUmnMGF+Fv5P6jX1467Ke2BM3eVpefqtGj+j
+         +giKgr5YdfC+mETp7mNQ10Vc2uBtef7ggmNo6KsGCgwvZ76opB+7AANjrma7aJCCdk3e
+         JiV+iI6YfPVILQV5pRfBSW9S5wYhXX6CYs4gwDeYXpY0tioLAE44kC0DOpRsx8ojtOiB
+         AQWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=FVKlHGclMG+5g9LsvCjwR+crIgaigZMQlcw6o5VC/d0=;
+        b=sxiR3TJJW0kbpEMVdXtanwl50Fn+R08M7TVXekRhWdYZdi0DYTS+xbrboAFDDfdN2N
+         IL6llhpti1w9FDWu/mULHFD03wwyxXxGOOnVvJNqjUNC7+LthZazVHsmbMoiR5ET/UYk
+         kGXPlt+Sq39i/hWl8SBulY7nB8Fo76TR+bt31mZfedD4Fy2/kHOmBOh2GG6eHvKlc/8Z
+         QZyGp1aXy8JRlrGLh+B2iHSArPj7kuJdONVvmSv3BMtOcpjSDyNGSm5eSJ1vgCI1HgyC
+         Y/ZJbMGm7oIjbHSCAiMJdj990NsjU9KapvloSePN5qkYYPmj61yzKCeaHR07TZVbTiYb
+         BfQQ==
+X-Gm-Message-State: AOAM532uDW75FFnIGGDskNO9sbrOOo4FQ48VUdERkV82jLvA0f6D0TGZ
+        geG5gigsNk9CbBPWVMHp5Qw=
+X-Google-Smtp-Source: ABdhPJwlSKZaNFppArHFpMJfVylTjkE/5sIgKqFmM1F2IKM7vAaIPt3CMq/yvTaRVJMSWatBNPwgyA==
+X-Received: by 2002:a37:4fd1:: with SMTP id d200mr20626474qkb.163.1594243472177;
+        Wed, 08 Jul 2020 14:24:32 -0700 (PDT)
+Received: from localhost.localdomain ([2804:14c:482:92b:9d6d:2996:7c26:fb1d])
+        by smtp.gmail.com with ESMTPSA id f54sm1165848qte.76.2020.07.08.14.24.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 14:24:31 -0700 (PDT)
+From:   Fabio Estevam <festevam@gmail.com>
+To:     davem@davemloft.net
+Cc:     dmurphy@ti.com, robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH net-next 1/2] dt-bindings: dp83867: Fix the type of device
+Date:   Wed,  8 Jul 2020 18:24:21 -0300
+Message-Id: <20200708212422.7599-1-festevam@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 07, 2020 at 10:49:22AM -0700, Andrii Nakryiko wrote:
+DP83867 is an Ethernet PHY, not a charger, so fix the documentation
+accordingly.
 
-SNIP
+Fixes: 74ac28f16486 ("dt-bindings: dp83867: Convert DP83867 to yaml")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+---
+ Documentation/devicetree/bindings/net/ti,dp83867.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > > >  # Get Clang's default includes on this system, as opposed to those seen by
-> > > >  # '-target bpf'. This fixes "missing" files on some architectures/distros,
-> > > >  # such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
-> > > > @@ -333,7 +343,8 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:                   \
-> > > >                       $(TRUNNER_BPF_SKELS)                              \
-> > > >                       $$(BPFOBJ) | $(TRUNNER_OUTPUT)
-> > > >         $$(call msg,TEST-OBJ,$(TRUNNER_BINARY),$$@)
-> > > > -       cd $$(@D) && $$(CC) -I. $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
-> > > > +       cd $$(@D) && $$(CC) -I. $$(CFLAGS) $(TRUNNER_EXTRA_CFLAGS)      \
-> > > > +       -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
-> > > >
-> > > >  $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:                          \
-> > > >                        %.c                                              \
-> > > > @@ -355,6 +366,7 @@ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)                   \
-> > > >                              | $(TRUNNER_BINARY)-extras
-> > > >         $$(call msg,BINARY,,$$@)
-> > > >         $$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
-> > > > +       $(TRUNNER_BINARY_EXTRA_CMD)
-> > >
-> > > no need to make this generic, just write out resolve_btfids here explicitly
-> >
-> > currently resolve_btfids fails if there's no .BTF.ids section found,
-> > but we can make it silently pass i nthis case and then we can invoke
-> > it for all the binaries
-> 
-> ah, I see. Yeah, either we can add an option to resolve_btfids to not
-> error when .BTF_ids is missing (probably best), or we can check
-> whether the test has .BTF_ids section, and if it does - run
-> resolve_btfids on it. Just ignoring errors always is more error-prone,
-> because we won't know if it's a real problem we are ignoring, or
-> missing .BTF_ids.
-
-ok, sounds good
-
-> > > > +static int resolve_symbols(void)
-> > > > +{
-> > > > +       const char *path = VMLINUX_BTF;
-> > >
-> > >
-> > > This build-time parameter passing to find the original VMLINUX_BTF
-> > > really sucks, IMO.
-> > >
-> > > Why not use the btf_dump tests approach and have our own small
-> > > "vmlinux BTF", which resolve_btfids would use to resolve these IDs?
-> > > See how btf_dump_xxx.c files define BTFs that are used in tests. You
-> > > can do something similar here, and use a well-known BPF object file as
-> > > a source of BTF, both here in a test and in Makefile for --btf param
-> > > to resolve_btfids?
-> >
-> > well VMLINUX_BTF is there and those types are used are not going
-> > away any time soon ;-) but yea, we can do that.. we do this also
-> > for bpftrace, it's nicer
-> 
-> 
-> "VMLINUX_BTF is there" is not really true in a lot of more complicated
-> setups, which is why I'd like to avoid that assumption. E.g., for
-> libbpf Travis CI, we build self-tests in one VM, but run the binary in
-> a different VM. So either vmlinux itself or the path to it might
-> change.
-
-ok
-
-> 
-> Also, having full control over **small** BTF allows to create various
-> test situations that might be harder to pinpoint in real vmlinux BTF,
-> e.g., same-named entities with different KINDS (typedef vs struct,
-> etc). Then if that fails, debugging this on a small BTF is much-much
-> easier than on a real thing. Real vmlinux BTF is being tested each
-> time you build a kernel and run selftests inside VM either way, so I
-> don't think we lose anything in terms of coverage.
-
-agreed, will add that
-
-thanks,
-jirka
+diff --git a/Documentation/devicetree/bindings/net/ti,dp83867.yaml b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
+index 554dcd7a40a9..c6716ac6cbcc 100644
+--- a/Documentation/devicetree/bindings/net/ti,dp83867.yaml
++++ b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
+@@ -24,7 +24,7 @@ description: |
+   IEEE 802.3 Standard Media Independent Interface (MII), the IEEE 802.3 Gigabit
+   Media Independent Interface (GMII) or Reduced GMII (RGMII).
+ 
+-  Specifications about the charger can be found at:
++  Specifications about the Ethernet PHY can be found at:
+     https://www.ti.com/lit/gpn/dp83867ir
+ 
+ properties:
+-- 
+2.17.1
 
