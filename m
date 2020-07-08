@@ -2,147 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E54C521860D
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 13:25:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C505E21863B
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 13:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728854AbgGHLZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 07:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49458 "EHLO
+        id S1728763AbgGHLfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 07:35:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728688AbgGHLZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 07:25:28 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CEFC08C5DC;
-        Wed,  8 Jul 2020 04:25:28 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id t27so33770619ill.9;
-        Wed, 08 Jul 2020 04:25:27 -0700 (PDT)
+        with ESMTP id S1728598AbgGHLfJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 07:35:09 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3FCBC08C5DC
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 04:35:08 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id z2so26299826wrp.2
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 04:35:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7ROJmAmlrv2K7BTumTUPVQDyi0qWehgUULex/JMDOtg=;
-        b=T4l4YxNUQK6zjbqIgyyPtPtZPhbJWv5nwD043lVas5RIHsEkMkqLf18GCAo456tjCY
-         pgIUPDiCZ29hNKcbB+hZHNz2IWLNnE9pPWGP6eL3UStzgv658p7s6m1QkOKSwxX5lA0c
-         ce8gKWBj4/qIG6CjeFJvv7qRoZJ0Q/8oeGY6F82dHYI+kHL7tmmN4T0zkT8dbgSHYOxe
-         peD7J79Dr01tgJb9WzCeZjMgJN3gTuv8N05wUGJO8GdFSFqxKG7k//APWJyxnF9dZv3Q
-         SB+uQySi+sQqWqqhKASLHLbR9+q07gokqztvN4K/9qtDMNOtlUUsuhK3Mm58fN0ScW3V
-         by9A==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/hafEpgse99+DA+r/Az58pAMZ7VKTM94BFXdZWlmA6E=;
+        b=WEYZPUYGYmULN+137H/tCq6ky25Ym5YSH36cys6eF7p6FAFPslBBKOZXuSCQ429Txo
+         qIZdRVuqLRRdMHTK3nwriF/wr5iKP0TrqJnwJ6Zn9nSea1EHZqt2cQsBWhNrPIXjoF+K
+         RcqGfGj6eGi85wiVuPlJ1sttRqdQcIdNPOABBDt4wXE5SgkQFuN4EieZ43W4uR+4gkXW
+         wD0K40ZLulpQuJiWOePllBkK50KpeN7zFm8udq2pa3E0dKb+B6pTnXaJpwe4b/EdqJdF
+         /33m8NwsPfCHKQ1giisheKFkNp3mqm2wHKCUmXVSyQZdm+Stf6FVKl4Y+XDKESAV6W4T
+         lQng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7ROJmAmlrv2K7BTumTUPVQDyi0qWehgUULex/JMDOtg=;
-        b=PFPgFWGGlKvNcgeKmAUgyQrqg+17GOMaCIsiYCPXj1kCPbMehSs6WFJdxV5T7/mRF7
-         ku0hUPm3hh9Ynlb8CNHURmIRXvh590evuKWzqYGrivMLMTomfirG4C85nXW9NFU8NFnu
-         +ZU7v4oMIXhghEulvEgxs1Zq8hN/AUoYGwYJth+ZU//pJS59b1TGPnZoChXAFdPM7Lk3
-         HjBm1764anpXkGvWDB2aAG+wkdVxRpUeaduwoY12lEj4Eh7QjwPgI4TnCyvsFVp6kkPH
-         Uvy9KaqWfxehzfTc/h7SJ8VBSY25HixZTevbHt/RN5Vda+f5jSDUtTJ0K03zhcpNOboY
-         OSAg==
-X-Gm-Message-State: AOAM532CaPNDV8uu8qTw1QwAZH9GGQcBZU9FTp2BAKIw1OY2EU3o1fLe
-        D58Klchuvnp36Q4FeG6YOyuqpp1hulGQ+y5AnkqsccUMTHo=
-X-Google-Smtp-Source: ABdhPJyxDeLrfCflP+Xy4iTpQCHzKv+AsR6M56vWlh6bN5a1kfAxmpQpB1A3ivVpGAbrlZ4kYCjZG9sLcHwA0nTcuFQ=
-X-Received: by 2002:a05:6e02:970:: with SMTP id q16mr30878956ilt.112.1594207526418;
- Wed, 08 Jul 2020 04:25:26 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/hafEpgse99+DA+r/Az58pAMZ7VKTM94BFXdZWlmA6E=;
+        b=o0IIaIGPl9r3Rmsoi+RqMBYtp3MHVv9OxERPP3nQp+EBPmvUPPIPKRoHOmrMZ/rA74
+         aI9UmqUfO8a/SL/81ZAVig03YxloT7iVTbN7vtO9gdv0iS6z/IUEtGqF5ksqSDct9YtB
+         g1kqrIiVByhCS5yLlrH4zMfiMfxsHABNz9sFA2vf3iuYUf9k7aTvs1wlMAbRp3WlFrGA
+         wNToiiZEPQsLs/CK207UARHQNvtBRinqQmyuYCAWH3wIILu5J6jx1foftdkytRELFYNn
+         7rXeVIZ8paYKs9kUnE5ZEw/nTfihvj8sRiZ77VI7Uvt2fPGd4AIznHqjLg1SkueSliQ1
+         uzdg==
+X-Gm-Message-State: AOAM531kJPCOy6FjJz8zeQY/Q4YSqsQiGc330Xt8Tezfdag8U/9LpHgI
+        dtta7pmkoQ+1ZxRULC9oHAECig==
+X-Google-Smtp-Source: ABdhPJwIqgWQieB55/KrfECgWnmDzy79medLXflbQrL8RQmzSWvlpXD4nZ86XuLt+6E3qThpDGENnw==
+X-Received: by 2002:adf:8462:: with SMTP id 89mr57153510wrf.420.1594208107604;
+        Wed, 08 Jul 2020 04:35:07 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id r1sm5277718wrt.73.2020.07.08.04.35.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 04:35:06 -0700 (PDT)
+Date:   Wed, 8 Jul 2020 13:35:05 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Netdev <netdev@vger.kernel.org>, dsahern@gmail.com,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH v2 iproute2-next] devlink: Add board.serial_number to
+ info subcommand.
+Message-ID: <20200708113505.GA3667@nanopsycho.orion>
+References: <1593416584-24145-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <20200705110301.20baf5c2@hermes.lan>
+ <CAACQVJogqmNG_jb0W-gV23uWTcpitrx=TF9asZ9s0kfrjbB2ZA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200708065328.13031-1-grandmaster@al2klimov.de>
-In-Reply-To: <20200708065328.13031-1-grandmaster@al2klimov.de>
-From:   Ilya Dryomov <idryomov@gmail.com>
-Date:   Wed, 8 Jul 2020 13:25:35 +0200
-Message-ID: <CAOi1vP_vS-nNMXuo4n8njx=pRVUQd-C8LAeSTpVTufqiHsCS-g@mail.gmail.com>
-Subject: Re: [PATCH] Replace HTTP links with HTTPS ones: CEPH COMMON CODE (LIBCEPH)
-To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Cc:     Jeff Layton <jlayton@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        Ceph Development <ceph-devel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAACQVJogqmNG_jb0W-gV23uWTcpitrx=TF9asZ9s0kfrjbB2ZA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 8, 2020 at 8:53 AM Alexander A. Klimov
-<grandmaster@al2klimov.de> wrote:
->
-> Rationale:
-> Reduces attack surface on kernel devs opening the links for MITM
-> as HTTPS traffic is much harder to manipulate.
->
-> Deterministic algorithm:
-> For each file:
->   If not .svg:
->     For each line:
->       If doesn't contain `\bxmlns\b`:
->         For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
->           If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
->             If both the HTTP and HTTPS versions
->             return 200 OK and serve the same content:
->               Replace HTTP with HTTPS.
->
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
-> ---
->  Continuing my work started at 93431e0607e5.
->  See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
->  (Actually letting a shell for loop submit all this stuff for me.)
->
->  If there are any URLs to be removed completely or at least not HTTPSified:
->  Just clearly say so and I'll *undo my change*.
->  See also: https://lkml.org/lkml/2020/6/27/64
->
->  If there are any valid, but yet not changed URLs:
->  See: https://lkml.org/lkml/2020/6/26/837
->
->  If you apply the patch, please let me know.
->
->
->  net/ceph/ceph_hash.c    | 2 +-
->  net/ceph/crush/hash.c   | 2 +-
->  net/ceph/crush/mapper.c | 2 +-
->  3 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/net/ceph/ceph_hash.c b/net/ceph/ceph_hash.c
-> index 9a5850f264ed..81e1e006c540 100644
-> --- a/net/ceph/ceph_hash.c
-> +++ b/net/ceph/ceph_hash.c
-> @@ -4,7 +4,7 @@
->
->  /*
->   * Robert Jenkin's hash function.
-> - * http://burtleburtle.net/bob/hash/evahash.html
-> + * https://burtleburtle.net/bob/hash/evahash.html
->   * This is in the public domain.
->   */
->  #define mix(a, b, c)                                           \
-> diff --git a/net/ceph/crush/hash.c b/net/ceph/crush/hash.c
-> index e5cc603cdb17..fe79f6d2d0db 100644
-> --- a/net/ceph/crush/hash.c
-> +++ b/net/ceph/crush/hash.c
-> @@ -7,7 +7,7 @@
->
->  /*
->   * Robert Jenkins' function for mixing 32-bit values
-> - * http://burtleburtle.net/bob/hash/evahash.html
-> + * https://burtleburtle.net/bob/hash/evahash.html
->   * a, b = random bits, c = input and output
->   */
->  #define crush_hashmix(a, b, c) do {                    \
-> diff --git a/net/ceph/crush/mapper.c b/net/ceph/crush/mapper.c
-> index 3f323ed9df52..07e5614eb3f1 100644
-> --- a/net/ceph/crush/mapper.c
-> +++ b/net/ceph/crush/mapper.c
-> @@ -298,7 +298,7 @@ static __u64 crush_ln(unsigned int xin)
->   *
->   * for reference, see:
->   *
-> - * http://en.wikipedia.org/wiki/Exponential_distribution#Distribution_of_the_minimum_of_exponential_random_variables
-> + * https://en.wikipedia.org/wiki/Exponential_distribution#Distribution_of_the_minimum_of_exponential_random_variables
->   *
->   */
->
+Wed, Jul 08, 2020 at 11:40:12AM CEST, vasundhara-v.volam@broadcom.com wrote:
+>On Sun, Jul 5, 2020 at 11:33 PM Stephen Hemminger
+><stephen@networkplumber.org> wrote:
+>>
+>> On Mon, 29 Jun 2020 13:13:04 +0530
+>> Vasundhara Volam <vasundhara-v.volam@broadcom.com> wrote:
+>>
+>> > Add support for reading board serial_number to devlink info
+>> > subcommand. Example:
+>> >
+>> > $ devlink dev info pci/0000:af:00.0 -jp
+>> > {
+>> >     "info": {
+>> >         "pci/0000:af:00.0": {
+>> >             "driver": "bnxt_en",
+>> >             "serial_number": "00-10-18-FF-FE-AD-1A-00",
+>> >             "board.serial_number": "433551F+172300000",
+>> >             "versions": {
+>> >                 "fixed": {
+>> >                     "board.id": "7339763 Rev 0.",
+>> >                     "asic.id": "16D7",
+>> >                     "asic.rev": "1"
+>> >                 },
+>> >                 "running": {
+>> >                     "fw": "216.1.216.0",
+>> >                     "fw.psid": "0.0.0",
+>> >                     "fw.mgmt": "216.1.192.0",
+>> >                     "fw.mgmt.api": "1.10.1",
+>> >                     "fw.ncsi": "0.0.0.0",
+>> >                     "fw.roce": "216.1.16.0"
+>> >                 }
+>> >             }
+>> >         }
+>> >     }
+>> > }
+>>
+>> Although this is valid JSON, many JSON style guides do not allow
+>> for periods in property names. This is done so libraries can use
+>> dot notation to reference objects.
+>Okay, I will modify the name to board_serial_number and resend the
+>patch. Thanks.
 
-Applied with a couple more link fixes folded in.
+Does not make sense. We have plenty of other items with ".". Having one
+without it does not resolve anything, only brings inconsistency. Please
+have ".".
 
-Thanks,
 
-                Ilya
+>
+>>
+>> Also the encoding of PCI is problematic
+>>
+>>
