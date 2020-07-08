@@ -2,112 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F619217FFF
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 08:54:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89312218106
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 09:22:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729851AbgGHGxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 02:53:39 -0400
-Received: from smtp.al2klimov.de ([78.46.175.9]:34890 "EHLO smtp.al2klimov.de"
+        id S1730425AbgGHHWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 03:22:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46178 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729535AbgGHGxi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jul 2020 02:53:38 -0400
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id C4DB6BC06E;
-        Wed,  8 Jul 2020 06:53:34 +0000 (UTC)
-From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     idryomov@gmail.com, jlayton@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ceph-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH] Replace HTTP links with HTTPS ones: CEPH COMMON CODE (LIBCEPH)
-Date:   Wed,  8 Jul 2020 08:53:28 +0200
-Message-Id: <20200708065328.13031-1-grandmaster@al2klimov.de>
+        id S1730224AbgGHHWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jul 2020 03:22:09 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 26F98206E2;
+        Wed,  8 Jul 2020 07:22:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594192928;
+        bh=gZLYphm/8a/epa3E7RA5fX3xr14yYSnJtxLzPsd4g7M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YftndEr5NH4IRw/bTOP+tIRhjZ0Yu/1xeV4AHGIBIEwZCWgmbs6K2WY0AsfgvwWJ2
+         eO6B8vOtQVAm7mVJ0WKvN06Tk4pkGkZ2E+A6zZU/GxDPopPNfLDMdhSnocE67McmX9
+         qc7rerPIdwLwNuDAO0B5bYMJ6315kbq2FH4LXswc=
+Date:   Wed, 8 Jul 2020 09:22:00 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, saeedm@mellanox.com,
+        michael.chan@broadcom.com, edwin.peer@broadcom.com,
+        emil.s.tantilov@intel.com, alexander.h.duyck@linux.intel.com,
+        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com, mkubecek@suse.cz,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Chucheng Luo <luochucheng@vivo.com>
+Subject: Re: [PATCH net-next 1/9] debugfs: make sure we can remove u32_array
+ files cleanly
+Message-ID: <20200708072200.GC353684@kroah.com>
+References: <20200707212434.3244001-1-kuba@kernel.org>
+ <20200707212434.3244001-2-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: +++++
-X-Spam-Level: *****
-Authentication-Results: smtp.al2klimov.de;
-        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200707212434.3244001-2-kuba@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rationale:
-Reduces attack surface on kernel devs opening the links for MITM
-as HTTPS traffic is much harder to manipulate.
+On Tue, Jul 07, 2020 at 02:24:26PM -0700, Jakub Kicinski wrote:
+> debugfs_create_u32_array() allocates a small structure to wrap
+> the data and size information about the array. If users ever
+> try to remove the file this leads to a leak since nothing ever
+> frees this wrapper.
+> 
+> That said there are no upstream users of debugfs_create_u32_array()
+> that'd remove a u32 array file (we only have one u32 array user in
+> CMA), so there is no real bug here.
+> 
+> Make callers pass a wrapper they allocated. This way the lifetime
+> management of the wrapper is on the caller, and we can avoid the
+> potential leak in debugfs.
+> 
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> CC: Marek Szyprowski <m.szyprowski@samsung.com>
+> CC: Chucheng Luo <luochucheng@vivo.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Deterministic algorithm:
-For each file:
-  If not .svg:
-    For each line:
-      If doesn't contain `\bxmlns\b`:
-        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
-            If both the HTTP and HTTPS versions
-            return 200 OK and serve the same content:
-              Replace HTTP with HTTPS.
-
-Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
----
- Continuing my work started at 93431e0607e5.
- See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
- (Actually letting a shell for loop submit all this stuff for me.)
-
- If there are any URLs to be removed completely or at least not HTTPSified:
- Just clearly say so and I'll *undo my change*.
- See also: https://lkml.org/lkml/2020/6/27/64
-
- If there are any valid, but yet not changed URLs:
- See: https://lkml.org/lkml/2020/6/26/837
-
- If you apply the patch, please let me know.
-
-
- net/ceph/ceph_hash.c    | 2 +-
- net/ceph/crush/hash.c   | 2 +-
- net/ceph/crush/mapper.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/net/ceph/ceph_hash.c b/net/ceph/ceph_hash.c
-index 9a5850f264ed..81e1e006c540 100644
---- a/net/ceph/ceph_hash.c
-+++ b/net/ceph/ceph_hash.c
-@@ -4,7 +4,7 @@
- 
- /*
-  * Robert Jenkin's hash function.
-- * http://burtleburtle.net/bob/hash/evahash.html
-+ * https://burtleburtle.net/bob/hash/evahash.html
-  * This is in the public domain.
-  */
- #define mix(a, b, c)						\
-diff --git a/net/ceph/crush/hash.c b/net/ceph/crush/hash.c
-index e5cc603cdb17..fe79f6d2d0db 100644
---- a/net/ceph/crush/hash.c
-+++ b/net/ceph/crush/hash.c
-@@ -7,7 +7,7 @@
- 
- /*
-  * Robert Jenkins' function for mixing 32-bit values
-- * http://burtleburtle.net/bob/hash/evahash.html
-+ * https://burtleburtle.net/bob/hash/evahash.html
-  * a, b = random bits, c = input and output
-  */
- #define crush_hashmix(a, b, c) do {			\
-diff --git a/net/ceph/crush/mapper.c b/net/ceph/crush/mapper.c
-index 3f323ed9df52..07e5614eb3f1 100644
---- a/net/ceph/crush/mapper.c
-+++ b/net/ceph/crush/mapper.c
-@@ -298,7 +298,7 @@ static __u64 crush_ln(unsigned int xin)
-  *
-  * for reference, see:
-  *
-- * http://en.wikipedia.org/wiki/Exponential_distribution#Distribution_of_the_minimum_of_exponential_random_variables
-+ * https://en.wikipedia.org/wiki/Exponential_distribution#Distribution_of_the_minimum_of_exponential_random_variables
-  *
-  */
- 
--- 
-2.27.0
-
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
