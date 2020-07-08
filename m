@@ -2,273 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A9DC2189CE
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 16:07:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A54772189F5
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 16:18:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729634AbgGHOG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 10:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46802 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729493AbgGHOG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 10:06:58 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DA15C061A0B;
-        Wed,  8 Jul 2020 07:06:58 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id o11so49199748wrv.9;
-        Wed, 08 Jul 2020 07:06:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c0RpjaCUMUz6o0HkW/J+nFuyyVve1i61JY9VJVht368=;
-        b=lqW4PIqWfQiWwKnz+W2eTaeQPRyW1yJbvTZi9pJ0M3CEC6b8DhDd4ue1MyrIy0Cs/l
-         MnGklkRXGkKz3LU3+Cv662jtLDcfKROCrMFS4F+UFBwEUzjYKt7IMK+CUZeC08C0KVp6
-         H2MXZR8CwFQPSRealaknGKIQKxnO//Ttu3XlaZfrnE8bWa2/UkzBrkVz5Ado1JA1zn9p
-         0vLwaRWf0PaKnZ7eOjmwcTa/rIrydyFJQpJ1JuMCU/etujF87ccZzRLYmv5SFRwFTX/t
-         QaIbmsuy5Y+ixWPx3kY6JozgDWVxuvhEzJr/5ifzIadgu4ssoZmrerZ5N+fuWiJJeCyp
-         gPeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c0RpjaCUMUz6o0HkW/J+nFuyyVve1i61JY9VJVht368=;
-        b=mLU08oI6zFUpfzs0X42roqVel+8esZ25IOnwKOOJrR4iUGut+k9OOP10A8n+cqaCQY
-         OWo1KjatjLmW7ho+7zAl/Nc5JaNJX/k7hQjS3zAT3nPpczlJUytNkEIFzYwyNKrJiTCT
-         eHc+PfZJzwgrpVEzms1weWAruA9YIJeRUBh9yqInj63AiKCDZzwlMtKCXWowJAYcZlsZ
-         pl2luQEiJCgdLu9jTcAHKZf8QWwSK4OTrgERrKDq58A1TtVS4bqFEpAIOPpcccsO8MO6
-         fLzTOxTCtDIEK1HCjyK8IvxuIJLbtWs4H4OELh2XakueLLSOyaREkhyPoRj/26Eyfz2p
-         800w==
-X-Gm-Message-State: AOAM5320Fa5JQc1KOsiwCImhOxPXsKZ7HJ0V9+t59QmtEK4rjZ69Tk4m
-        DnuW/NCZsLS3sp3yRoAl4CTw3ybSZga+zlUHzHGe79BEtNcm2w==
-X-Google-Smtp-Source: ABdhPJyc/7gbJobUWolD4EV3jhsiVwVBD24Com3m40psFxhlOMB0QKUDUK1y7dIK52QfjrIU3gQSC3DH6f5AtBte8Y8=
-X-Received: by 2002:a5d:6846:: with SMTP id o6mr59235183wrw.370.1594217216838;
- Wed, 08 Jul 2020 07:06:56 -0700 (PDT)
+        id S1729720AbgGHOSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 10:18:01 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:63318 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729468AbgGHOSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 10:18:01 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 068EFu9J014410;
+        Wed, 8 Jul 2020 07:17:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0818; bh=D6nmSWfWy5bSBQT2UH7xqHuqon/tMiiTzK5HS5iA6VQ=;
+ b=xL8tvX5YfJC3U0OwoLSMyiLLY+M0SGwUYHxDpBdPL4Sp1PlDwDdz6GHDvHo2bNuId+L5
+ ZKtpaougK0tSWtAGbfBpRXPjWj2gh4QtSHrwSpU8qblh0lzI9nEoeVqvmN+hC9GBMHmS
+ nzguzueEQ/zzjXH/NQ4L09+FqSua45fnqEWM2PJ4Fbkfr/fvTwY7qTwqTof11aEacEqx
+ z6yhSZyOzlu+7HsQmnGyE3UYulb7IHtZBgN5hE95ELIHalyT8gRls6b5GajUucdxWA7W
+ C9A/e3auaeLQzdrVoLl3qG+E16lZq2zQMAwmKWLcZIS6f9BtyiOTHs1x0SOix11mF7eT EQ== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 322s9ng6a9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 08 Jul 2020 07:17:56 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 8 Jul
+ 2020 07:17:54 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 8 Jul 2020 07:17:54 -0700
+Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
+        by maili.marvell.com (Postfix) with ESMTP id 6388F3F703F;
+        Wed,  8 Jul 2020 07:17:51 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Igor Russkikh <irusskikh@marvell.com>,
+        Dmitry Bezrukov <dbezrukov@marvell.com>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        "Dmitry Bogdanov" <dbogdanov@marvell.com>,
+        Egor Pomozov <epomozov@marvell.com>,
+        "Sergey Samoilenko" <sergey.samoilenko@marvell.com>,
+        Alexander Lobakin <alobakin@marvell.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] net: atlantic: fix ip dst and ipv6 address filters
+Date:   Wed, 8 Jul 2020 17:17:10 +0300
+Message-ID: <20200708141710.758-1-alobakin@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200707171515.110818-1-izabela.bakollari@gmail.com> <647a37da-cd95-b84b-bc76-036a813c00e2@gmail.com>
-In-Reply-To: <647a37da-cd95-b84b-bc76-036a813c00e2@gmail.com>
-From:   Izabela Bakollari <izabela.bakollari@gmail.com>
-Date:   Wed, 8 Jul 2020 16:06:45 +0200
-Message-ID: <CAC8tkWAESmBmwYpj7qT0Wc5gD9Lw-2LMHBp2-QGtsJ_eGk7Kdg@mail.gmail.com>
-Subject: Re: [PATCH net-next] dropwatch: Support monitoring of dropped frames
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-08_13:2020-07-08,2020-07-08 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+From: Dmitry Bogdanov <dbogdanov@marvell.com>
 
-Thank you for reviewing my patch. I understand your comments
-and will be working on correcting what you pointed out.
+This patch fixes ip dst and ipv6 address filters.
+There were 2 mistakes in the code, which led to the issue:
+* invalid register was used for ipv4 dst address;
+* incorrect write order of dwords for ipv6 addresses.
 
-Best,
-Izabela
+Fixes: 23e7a718a49b ("net: aquantia: add rx-flow filter definitions")
+Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
+Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
+Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
+---
+ drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c    | 4 ++--
+ .../ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h   | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
+index 3c8e8047ea1e..d775b23025c1 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
+@@ -1700,7 +1700,7 @@ void hw_atl_rpfl3l4_ipv6_src_addr_set(struct aq_hw_s *aq_hw, u8 location,
+ 	for (i = 0; i < 4; ++i)
+ 		aq_hw_write_reg(aq_hw,
+ 				HW_ATL_RPF_L3_SRCA_ADR(location + i),
+-				ipv6_src[i]);
++				ipv6_src[3 - i]);
+ }
+ 
+ void hw_atl_rpfl3l4_ipv6_dest_addr_set(struct aq_hw_s *aq_hw, u8 location,
+@@ -1711,7 +1711,7 @@ void hw_atl_rpfl3l4_ipv6_dest_addr_set(struct aq_hw_s *aq_hw, u8 location,
+ 	for (i = 0; i < 4; ++i)
+ 		aq_hw_write_reg(aq_hw,
+ 				HW_ATL_RPF_L3_DSTA_ADR(location + i),
+-				ipv6_dest[i]);
++				ipv6_dest[3 - i]);
+ }
+ 
+ u32 hw_atl_sem_ram_get(struct aq_hw_s *self)
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
+index 06220792daf1..7430ff025134 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
+@@ -1360,7 +1360,7 @@
+  */
+ 
+  /* Register address for bitfield pif_rpf_l3_da0_i[31:0] */
+-#define HW_ATL_RPF_L3_DSTA_ADR(filter) (0x000053B0 + (filter) * 0x4)
++#define HW_ATL_RPF_L3_DSTA_ADR(filter) (0x000053D0 + (filter) * 0x4)
+ /* Bitmask for bitfield l3_da0[1F:0] */
+ #define HW_ATL_RPF_L3_DSTA_MSK 0xFFFFFFFFu
+ /* Inverted bitmask for bitfield l3_da0[1F:0] */
+-- 
+2.25.1
 
-On Tue, Jul 7, 2020 at 7:52 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 7/7/20 10:15 AM, izabela.bakollari@gmail.com wrote:
-> > From: Izabela Bakollari <izabela.bakollari@gmail.com>
-> >
-> > Dropwatch is a utility that monitors dropped frames by having userspace
-> > record them over the dropwatch protocol over a file. This augument
-> > allows live monitoring of dropped frames using tools like tcpdump.
-> >
-> > With this feature, dropwatch allows two additional commands (start and
-> > stop interface) which allows the assignment of a net_device to the
-> > dropwatch protocol. When assinged, dropwatch will clone dropped frames,
-> > and receive them on the assigned interface, allowing tools like tcpdump
-> > to monitor for them.
-> >
-> > With this feature, create a dummy ethernet interface (ip link add dev
-> > dummy0 type dummy), assign it to the dropwatch kernel subsystem, by using
-> > these new commands, and then monitor dropped frames in real time by
-> > running tcpdump -i dummy0.
-> >
-> > Signed-off-by: Izabela Bakollari <izabela.bakollari@gmail.com>
-> > ---
-> >  include/uapi/linux/net_dropmon.h |  3 ++
-> >  net/core/drop_monitor.c          | 79 +++++++++++++++++++++++++++++++-
-> >  2 files changed, 80 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
-> > index 67e31f329190..e8e861e03a8a 100644
-> > --- a/include/uapi/linux/net_dropmon.h
-> > +++ b/include/uapi/linux/net_dropmon.h
-> > @@ -58,6 +58,8 @@ enum {
-> >       NET_DM_CMD_CONFIG_NEW,
-> >       NET_DM_CMD_STATS_GET,
-> >       NET_DM_CMD_STATS_NEW,
-> > +     NET_DM_CMD_START_IFC,
-> > +     NET_DM_CMD_STOP_IFC,
-> >       _NET_DM_CMD_MAX,
-> >  };
-> >
-> > @@ -93,6 +95,7 @@ enum net_dm_attr {
-> >       NET_DM_ATTR_SW_DROPS,                   /* flag */
-> >       NET_DM_ATTR_HW_DROPS,                   /* flag */
-> >       NET_DM_ATTR_FLOW_ACTION_COOKIE,         /* binary */
-> > +     NET_DM_ATTR_IFNAME,                     /* string */
-> >
-> >       __NET_DM_ATTR_MAX,
-> >       NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
-> > diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-> > index 8e33cec9fc4e..8049bff05abd 100644
-> > --- a/net/core/drop_monitor.c
-> > +++ b/net/core/drop_monitor.c
-> > @@ -30,6 +30,7 @@
-> >  #include <net/genetlink.h>
-> >  #include <net/netevent.h>
-> >  #include <net/flow_offload.h>
-> > +#include <net/sock.h>
-> >
-> >  #include <trace/events/skb.h>
-> >  #include <trace/events/napi.h>
-> > @@ -46,6 +47,7 @@
-> >   */
-> >  static int trace_state = TRACE_OFF;
-> >  static bool monitor_hw;
-> > +struct net_device *interface;
-> >
-> >  /* net_dm_mutex
-> >   *
-> > @@ -220,9 +222,8 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
-> >       struct per_cpu_dm_data *data;
-> >       unsigned long flags;
-> >
-> > -     local_irq_save(flags);
-> > +     spin_lock_irqsave(&data->lock, flags);
-> >       data = this_cpu_ptr(&dm_cpu_data);
-> > -     spin_lock(&data->lock);
-> >       dskb = data->skb;
-> >
-> >       if (!dskb)
-> > @@ -255,6 +256,12 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
-> >
-> >  out:
-> >       spin_unlock_irqrestore(&data->lock, flags);
-> > +
->
-> What protects interface from being changed under us by another thread/cpu ?
->
-> > +     if (interface && interface != skb->dev) {
-> > +             skb = skb_clone(skb, GFP_ATOMIC);
-> > +             skb->dev = interface;
-> > +             netif_receive_skb(skb);
-> > +     }
-> >  }
-> >
-> >  static void trace_kfree_skb_hit(void *ignore, struct sk_buff *skb, void *location)
-> > @@ -1315,6 +1322,63 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
-> >       return -EOPNOTSUPP;
-> >  }
-> >
-> > +static int net_dm_interface_start(struct net *net, const char *ifname)
-> > +{
-> > +     struct net_device *nd;
-> > +
-> > +     nd = dev_get_by_name(net, ifname);
-> > +
-> > +     if (nd) {
-> > +             interface = nd;
->
-> If interface was already set, you forgot to dev_put() it.
->
-> > +             dev_hold(interface);
->
-> Note that dev_get_by_name() already did a dev_hold()
->
-> > +     } else {
-> > +             return -ENODEV;
-> > +     }
-> > +     return 0;
-> > +}
-> > +
-> > +static int net_dm_interface_stop(struct net *net, const char *ifname)
-> > +{
-> > +     struct net_device *nd;
-> > +
-> > +     nd = dev_get_by_name(net, ifname);
-> > +
-> > +     if (nd) {
->
->
->
-> > +             interface = nd;
->
->
-> You probably meant : interface = NULL; ?
->
-> > +             dev_put(interface);
->
->                 and dev_put(nd);
->
->
-> > +     } else {
-> > +             return -ENODEV;
-> > +     }
-> > +     return 0;
-> > +}
-> > +
-> > +static int net_dm_cmd_ifc_trace(struct sk_buff *skb, struct genl_info *info)
-> > +{
-> > +     struct net *net = sock_net(skb->sk);
-> > +     char ifname[IFNAMSIZ];
-> > +     int rc;
-> > +
-> > +     memset(ifname, 0, IFNAMSIZ);
-> > +     nla_strlcpy(ifname, info->attrs[NET_DM_ATTR_IFNAME], IFNAMSIZ - 1);
-> > +
-> > +     switch (info->genlhdr->cmd) {
-> > +     case NET_DM_CMD_START_IFC:
-> > +             rc = net_dm_interface_start(net, ifname);
-> > +             if (rc)
-> > +                     return rc;
-> > +             break;
-> > +     case NET_DM_CMD_STOP_IFC:
-> > +             if (interface) {
-> > +                     rc = net_dm_interface_stop(net, interface->ifname);
-> > +                     return rc;
-> > +             } else {
-> > +                     return -ENODEV;
-> > +             }
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >  static int net_dm_config_fill(struct sk_buff *msg, struct genl_info *info)
-> >  {
-> >       void *hdr;
-> > @@ -1543,6 +1607,7 @@ static const struct nla_policy net_dm_nl_policy[NET_DM_ATTR_MAX + 1] = {
-> >       [NET_DM_ATTR_QUEUE_LEN] = { .type = NLA_U32 },
-> >       [NET_DM_ATTR_SW_DROPS]  = {. type = NLA_FLAG },
-> >       [NET_DM_ATTR_HW_DROPS]  = {. type = NLA_FLAG },
-> > +     [NET_DM_ATTR_IFNAME] = {. type = NLA_STRING, .len = IFNAMSIZ },
-> >  };
-> >
-> >  static const struct genl_ops dropmon_ops[] = {
-> > @@ -1570,6 +1635,16 @@ static const struct genl_ops dropmon_ops[] = {
-> >               .cmd = NET_DM_CMD_STATS_GET,
-> >               .doit = net_dm_cmd_stats_get,
-> >       },
-> > +     {
-> > +             .cmd = NET_DM_CMD_START_IFC,
-> > +             .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-> > +             .doit = net_dm_cmd_ifc_trace,
-> > +     },
-> > +     {
-> > +             .cmd = NET_DM_CMD_STOP_IFC,
-> > +             .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-> > +             .doit = net_dm_cmd_ifc_trace,
-> > +     },
-> >  };
-> >
-> >  static int net_dm_nl_pre_doit(const struct genl_ops *ops,
-> >
