@@ -2,436 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE065218DC4
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 19:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91CDD218DF5
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 19:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730783AbgGHRAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 13:00:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
+        id S1730500AbgGHRK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 13:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725989AbgGHRAt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 13:00:49 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B732DC08C5C1
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 10:00:48 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id o3so22298958ilo.12
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 10:00:48 -0700 (PDT)
+        with ESMTP id S1730380AbgGHRK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 13:10:27 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27942C08C5CE
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 10:10:27 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id k27so5882416pgm.2
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 10:10:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=uRLnb9hO81uvdPUmwfEyIUTdO5je6EVKt6otZbiy3vo=;
-        b=tLU3sUD/RqQZnS9oJv4he6l5ImistKLpeSF/4e+baSimfUFgAdiSifOALT09g/zwnH
-         jh1CPEoTn1DEXZvQJy9ygc5uA2t3dMpfIUdrjfEXspjHCee9+XYxcVmcI52z7GAlylyt
-         JqNoBL92uJa5gGf0pBSozoUE3gNSmMFno7drPY0DQUtdC+I29HnF4c/clo7cQC9avaIV
-         E+WAsSHlDF7GnvWKFfWoZnN/16eJE1idf8NfE0IxqdcewI7MNqf6iXYEnvOuHfzoIlSQ
-         RIx2Dfs3wWK02DL6er4nrhint5IU7VZaOHEgLq8HgVTpbN52PJ/rfCp8SA8C5KQ8DCTH
-         sb8w==
+        bh=0rEN23cbd1SKA3NGgD72iDuMJC8fxPRHEEwlwQ22hpY=;
+        b=n3f7ckSQTYxY4oOO8C4Z4sELvQoSxfPuNNn5dS5itgz86q7oeo6QAE5dnY3J8ean9i
+         6dvZUT2D5UoOUQYFMRIphN2tg3/E0o0u05fgXWbfYNdG3CZngyfAq7WUJOYeAFMlC0Zd
+         N77A/v1AFDsWhOHGZQ9z/9FmP3EU77jnkVYGxPDCa4WffEdnSowEm+8OqO4TLltztoio
+         b6DPBKGnr/2gByDXf3TsF4fRI+44HDCNThtu2KIhKTXKLKqVFz0RbdfSz6DjYy9nWF43
+         hWKIf1qRkcfvq+So1oikHSAY2Reos3ReB+a+Yu7L00yMWsIWoJOCDTFU0T5jy1NAIZrn
+         CWOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uRLnb9hO81uvdPUmwfEyIUTdO5je6EVKt6otZbiy3vo=;
-        b=UINCH9ODCN6/I4o7yh+mGw5QWC7jWBgMHlrnANbl74UHQwniQ7j8Hu4hppqR5ViFpU
-         7DKdY7PsadFBf/VxmIP4yumMLbh5BJfNTlDovns9DpieN9xlzaUIY4ceJdCO9GvEKnWQ
-         qleU5HG4pCrinZePgQ7l3lYBQAiBSgDlmZI9c88tsFbNq3ww2DvNwrild7RlRivLL5Kx
-         I8Lll8CpAhYtMU/sZAOsFWRBmJq+AlUJr6Tu+f5lFO54gmJJHD0RXqxntIUVIMiHmDhD
-         Jh0+c+/cz54qj8pRiD1tTqnLxgGg+C8x4ECQJbTM7tqqY/EES+/xjp3WyYb1BU29MV4m
-         FnCg==
-X-Gm-Message-State: AOAM532Z3+nKMldeg9w7IQc3kZFFNcssp/tmynciUFkYOlmUklwKKLqs
-        pYocDM5UpZ9GBjEM8NHxRfVy90fKMOx9lNZvwxI=
-X-Google-Smtp-Source: ABdhPJxwHfYUtmUuUyBikCL+PiWH+fYajtDEqfFSRiRnyOveIk2rJB+T8G4UYyng4NAYpRN9JRRB7Q9016xMoON7OSE=
-X-Received: by 2002:a05:6e02:11a6:: with SMTP id 6mr24766228ilj.64.1594227647783;
- Wed, 08 Jul 2020 10:00:47 -0700 (PDT)
+        bh=0rEN23cbd1SKA3NGgD72iDuMJC8fxPRHEEwlwQ22hpY=;
+        b=nSY4lFakj/NBUiG7bSc21YW/pGGty2adJ+jmb/pmi65TFKLZBrC0dclJTx5PTVfP3R
+         6OZJgY5Ju3LcNKQDn437t6eZOqV6yhZlJepcHy1HSXkWyneWjV7JOzhk1m7H37HjF5Kg
+         OPgEVgcNWtpVfcteh4k8f+7k9tOehBPbq6NE+5PvSopStqJ6Q+UuPLvAdlOlAXOwb135
+         CyR4yOjqfSp56BXlpda+0T9IEFt4sdO2b24vOnOqPmsRxt8wK1xPV7MnKWszp7sxL1H+
+         2cyAAEoY1XOxnjTNCvk+ok5fPcWthPCW/nDKR4Et+4rOk5OjFVSOF7H2OH659qoMYbhg
+         spPQ==
+X-Gm-Message-State: AOAM532bikrylwF8yFA670R0bYSrMb3GU9KXz+LWWijO5GqkVQ3cReWe
+        be0hxxjNAi//xihowL27C74+NydNKK3nYFtwxH7znQ==
+X-Google-Smtp-Source: ABdhPJzv8hmcPMQH68pT1oCrLz0ZeqUbfp5c1EkwtUlJxi7EMIom41s9drUIMd+EWqnR/3xanznSqmzVFWme8WK7OaA=
+X-Received: by 2002:aa7:9303:: with SMTP id 3mr45101796pfj.108.1594228226197;
+ Wed, 08 Jul 2020 10:10:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200707212434.3244001-1-kuba@kernel.org> <20200707212434.3244001-8-kuba@kernel.org>
-In-Reply-To: <20200707212434.3244001-8-kuba@kernel.org>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 8 Jul 2020 10:00:36 -0700
-Message-ID: <CAKgT0Udi60-zs08eppC-5roPnpi_r4nAV53xovG8xfnovUtS4A@mail.gmail.com>
-Subject: Re: [PATCH net-next 7/9] ixgbe: convert to new udp_tunnel_nic infra
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        edwin.peer@broadcom.com,
-        "Tantilov, Emil S" <emil.s.tantilov@intel.com>,
-        Alexander Duyck <alexander.h.duyck@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Michal Kubecek <mkubecek@suse.cz>
+References: <20200707211642.1106946-1-ndesaulniers@google.com> <bca8cff8-3ffe-e5ab-07a5-2ab29d5e394a@linaro.org>
+In-Reply-To: <bca8cff8-3ffe-e5ab-07a5-2ab29d5e394a@linaro.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Wed, 8 Jul 2020 10:10:14 -0700
+Message-ID: <CAKwvOdmtv2EdNQz+c_DZm_47EEibkaXfDW8dGPwNPA3OrcoC9g@mail.gmail.com>
+Subject: Re: [PATCH] bitfield.h: don't compile-time validate _val in FIELD_FIT
+To:     Alex Elder <elder@linaro.org>, Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "# 3.4.x" <stable@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 7, 2020 at 2:28 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Tue, Jul 7, 2020 at 3:43 PM Alex Elder <elder@linaro.org> wrote:
 >
-> Make use of new common udp_tunnel_nic infra. ixgbe supports
-> IPv4 only, and only single VxLAN and Geneve ports (one each).
->
-> I'm dropping the confusing piece of code in ixgbe_set_features().
-> ndo_udp_tunnel_add and ndo_udp_tunnel_del did not check if RXCSUM
-> is enabled, so this code was either unnecessary or buggy anyway.
+> On 7/7/20 4:16 PM, Nick Desaulniers wrote:
+> > From: Jakub Kicinski <kuba@kernel.org>
+> >
+> > When ur_load_imm_any() is inlined into jeq_imm(), it's possible for the
+> > compiler to deduce a case where _val can only have the value of -1 at
+> > compile time. Specifically,
+> >
+> > /* struct bpf_insn: _s32 imm */
+> > u64 imm = insn->imm; /* sign extend */
+> > if (imm >> 32) { /* non-zero only if insn->imm is negative */
+> >   /* inlined from ur_load_imm_any */
+> >   u32 __imm = imm >> 32; /* therefore, always 0xffffffff */
+> >   if (__builtin_constant_p(__imm) && __imm > 255)
+> >     compiletime_assert_XXX()
+> >
+> > This can result in tripping a BUILD_BUG_ON() in __BF_FIELD_CHECK() that
+> > checks that a given value is representable in one byte (interpreted as
+> > unsigned).
 
-The code is unnecessary from what I can tell. I suspect the reason for
-adding the code was because the port values are used when performing
-the Rx checksum offload. However we never disable it in hardware, and
-the software path in ixgbe_rx_checksum will simply disable the related
-code anyway since we cannot set skb->encapsulation if RXCSUM is
-disabled.
-
-With that said moving this to a separate patch might be preferable as
-it would make the patch more readable.
-
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   3 -
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 195 ++++--------------
->  2 files changed, 37 insertions(+), 161 deletions(-)
->
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> index debbcf216134..1e8a809233a0 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> @@ -588,11 +588,9 @@ struct ixgbe_adapter {
->  #define IXGBE_FLAG_FCOE_ENABLED                        BIT(21)
->  #define IXGBE_FLAG_SRIOV_CAPABLE               BIT(22)
->  #define IXGBE_FLAG_SRIOV_ENABLED               BIT(23)
-> -#define IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE       BIT(24)
->  #define IXGBE_FLAG_RX_HWTSTAMP_ENABLED         BIT(25)
->  #define IXGBE_FLAG_RX_HWTSTAMP_IN_REGISTER     BIT(26)
->  #define IXGBE_FLAG_DCB_CAPABLE                 BIT(27)
-> -#define IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE      BIT(28)
->
->         u32 flags2;
->  #define IXGBE_FLAG2_RSC_CAPABLE                        BIT(0)
-> @@ -606,7 +604,6 @@ struct ixgbe_adapter {
->  #define IXGBE_FLAG2_RSS_FIELD_IPV6_UDP         BIT(9)
->  #define IXGBE_FLAG2_PTP_PPS_ENABLED            BIT(10)
->  #define IXGBE_FLAG2_PHY_INTERRUPT              BIT(11)
-> -#define IXGBE_FLAG2_UDP_TUN_REREG_NEEDED       BIT(12)
->  #define IXGBE_FLAG2_VLAN_PROMISC               BIT(13)
->  #define IXGBE_FLAG2_EEE_CAPABLE                        BIT(14)
->  #define IXGBE_FLAG2_EEE_ENABLED                        BIT(15)
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index f5d3d6230786..29f1313b5ab0 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -4994,25 +4994,40 @@ static void ixgbe_napi_disable_all(struct ixgbe_adapter *adapter)
->                 napi_disable(&adapter->q_vector[q_idx]->napi);
->  }
->
-> -static void ixgbe_clear_udp_tunnel_port(struct ixgbe_adapter *adapter, u32 mask)
-> +static int ixgbe_udp_tunnel_sync(struct net_device *dev, unsigned int table)
->  {
-> +       struct ixgbe_adapter *adapter = netdev_priv(dev);
->         struct ixgbe_hw *hw = &adapter->hw;
-> -       u32 vxlanctrl;
-> -
-> -       if (!(adapter->flags & (IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE |
-> -                               IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE)))
-> -               return;
-> +       struct udp_tunnel_info ti;
->
-> -       vxlanctrl = IXGBE_READ_REG(hw, IXGBE_VXLANCTRL) & ~mask;
-> -       IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL, vxlanctrl);
-> -
-> -       if (mask & IXGBE_VXLANCTRL_VXLAN_UDPPORT_MASK)
-> -               adapter->vxlan_port = 0;
-> +       udp_tunnel_nic_get_port(dev, table, 0, &ti);
-> +       if (!table)
-> +               adapter->vxlan_port = ti.port;
-> +       else
-> +               adapter->geneve_port = ti.port;
-
-So this !table thing is a bit hard to read. It might be more useful if
-you had a define that made it clear that the expectation is that entry
-0 is a VXLAN table and entry 1 is the GENEVE.
+Hi Alex,
+Thanks for taking a look. They're good and fair questions.
 
 >
-> -       if (mask & IXGBE_VXLANCTRL_GENEVE_UDPPORT_MASK)
-> -               adapter->geneve_port = 0;
-> +       IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL,
-> +                       ntohs(adapter->vxlan_port) |
-> +                       ntohs(adapter->geneve_port) <<
-> +                               IXGBE_VXLANCTRL_GENEVE_UDPPORT_SHIFT);
-> +       return 0;
->  }
+> Why does FIELD_FIT() pass an unsigned long long value as the second
+> argument to __BF_FIELD_CHECK()?
 
-I'm assuming the new logic will call this for all entries in the
-tables regardless of if they are set or not. If so I suppose this is
-fine.
+Was Jakub's suggestion; I don't feel strongly against it either way, though...
 
-> +static const struct udp_tunnel_nic_info ixgbe_udp_tunnels_x550 = {
-> +       .sync_table     = ixgbe_udp_tunnel_sync,
-> +       .flags          = UDP_TUNNEL_NIC_INFO_IPV4_ONLY,
-> +       .tables         = {
-> +               { .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
-> +       },
-> +}, ixgbe_udp_tunnels_x550em_a = {
-> +       .sync_table     = ixgbe_udp_tunnel_sync,
-> +       .flags          = UDP_TUNNEL_NIC_INFO_IPV4_ONLY,
-> +       .tables         = {
-> +               { .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
-> +               { .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_GENEVE, },
-> +       },
-> +};
-> +
+> Could it pass (typeof(_mask))0 instead?
 
-This should really be two seperate declarations. It is a bit ugly to
-read a structure definition starting with "},".
+...might be nice to avoid implicit promotions and conversions if _mask
+is not the same sizeof _val.
 
->  #ifdef CONFIG_IXGBE_DCB
->  /**
->   * ixgbe_configure_dcb - Configure DCB hardware
-> @@ -6227,6 +6242,7 @@ static void ixgbe_init_dcb(struct ixgbe_adapter *adapter)
->  /**
->   * ixgbe_sw_init - Initialize general software structures (struct ixgbe_adapter)
->   * @adapter: board private structure to initialize
-> + * @netdev: network interface device structure
->   * @ii: pointer to ixgbe_info for device
->   *
->   * ixgbe_sw_init initializes the Adapter private data structure.
-> @@ -6234,6 +6250,7 @@ static void ixgbe_init_dcb(struct ixgbe_adapter *adapter)
->   * OS network device settings (MTU size).
->   **/
->  static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
-> +                        struct net_device *netdev,
->                          const struct ixgbe_info *ii)
->  {
->         struct ixgbe_hw *hw = &adapter->hw;
+> It wouldn't fix this particular case, because UR_REG_IMM_MAX is also
+> defined with that type.  But (without working through this in more
+> detail) it seems like there might be a solution that preserves the
+> compile-time checking.
 
-There is no need to add the argument. It should be accessible via
-adapter->netdev, or for that matter you could pass the netdev and drop
-the adapter and just pull it out via netdev_priv since the two are all
-contained in the same structure anyway. Another option would be to
-just pull the logic out of this section and put it in a switch
-statement of its own in the probe function.
+I'd argue the point of the patch is to not check at compile time for
+FIELD_FIT, since we have a case in
+drivers/net/ethernet/netronome/nfp/bpf/jit.c (jeq_imm()) that will
+always pass -1 (unintentionally due to compiler optimization).
 
-> @@ -6332,7 +6349,7 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
->                         adapter->flags2 |= IXGBE_FLAG2_TEMP_SENSOR_CAPABLE;
->                 break;
->         case ixgbe_mac_x550em_a:
-> -               adapter->flags |= IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE;
-> +               netdev->udp_tunnel_nic_info = &ixgbe_udp_tunnels_x550em_a;
->                 switch (hw->device_id) {
->                 case IXGBE_DEV_ID_X550EM_A_1G_T:
->                 case IXGBE_DEV_ID_X550EM_A_1G_T_L:
-> @@ -6359,7 +6376,8 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
->  #ifdef CONFIG_IXGBE_DCA
->                 adapter->flags &= ~IXGBE_FLAG_DCA_CAPABLE;
->  #endif
-> -               adapter->flags |= IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE;
-> +               if (!netdev->udp_tunnel_nic_info)
-> +                       netdev->udp_tunnel_nic_info = &ixgbe_udp_tunnels_x550;
->                 break;
->         default:
->                 break;
+> A second comment about this is that it might be nice to break
+> __BF_FIELD_CHECK() into the parts that verify the mask (which
+> could be used by FIELD_FIT() here) and the parts that verify
+> other things.
 
-Not a fan of the !udp_tunnel_nic_info check, but I understand you are
-having to do it because of the fall-through.
+Like so? Jakub, WDYT? Or do you prefer v1+Alex's suggestion about
+using `(typeof(_mask))0` in place of 0ULL?
 
-> @@ -6798,8 +6816,7 @@ int ixgbe_open(struct net_device *netdev)
+diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
+b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
+index 311a5be25acb..938fc733fccb 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
++++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
+@@ -492,11 +492,12 @@ nfp_eth_set_bit_config(struct nfp_nsp *nsp,
+unsigned int raw_idx,
+        return 0;
+ }
+
+-#define NFP_ETH_SET_BIT_CONFIG(nsp, raw_idx, mask, val, ctrl_bit)      \
+-       ({                                                              \
+-               __BF_FIELD_CHECK(mask, 0ULL, val, "NFP_ETH_SET_BIT_CONFIG: "); \
+-               nfp_eth_set_bit_config(nsp, raw_idx, mask, __bf_shf(mask), \
+-                                      val, ctrl_bit);                  \
++#define NFP_ETH_SET_BIT_CONFIG(nsp, raw_idx, mask, val, ctrl_bit)
+         \
++       ({
+         \
++               __BF_FIELD_CHECK_MASK(mask, "NFP_ETH_SET_BIT_CONFIG:
+");        \
++               __BF_FIELD_CHECK_VAL(mask, val,
+"NFP_ETH_SET_BIT_CONFIG: ");    \
++               nfp_eth_set_bit_config(nsp, raw_idx, mask,
+__bf_shf(mask),      \
++                                      val, ctrl_bit);
+         \
+        })
+
+ /**
+diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
+index 48ea093ff04c..79651867beb3 100644
+--- a/include/linux/bitfield.h
++++ b/include/linux/bitfield.h
+@@ -41,18 +41,26 @@
+
+ #define __bf_shf(x) (__builtin_ffsll(x) - 1)
+
+-#define __BF_FIELD_CHECK(_mask, _reg, _val, _pfx)                      \
++#define __BF_FIELD_CHECK_MASK(_mask, _pfx)                             \
+        ({                                                              \
+                BUILD_BUG_ON_MSG(!__builtin_constant_p(_mask),          \
+                                 _pfx "mask is not constant");          \
+                BUILD_BUG_ON_MSG((_mask) == 0, _pfx "mask is zero");    \
++               __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
++                                             (1ULL << __bf_shf(_mask))); \
++       })
++
++#define __BF_FIELD_CHECK_VAL(_mask, _val, _pfx)
+         \
++       ({                                                              \
+                BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?           \
+                                 ~((_mask) >> __bf_shf(_mask)) & (_val) : 0, \
+                                 _pfx "value too large for the field"); \
+-               BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ull,         \
++       })
++
++#define __BF_FIELD_CHECK_REG(_mask, _reg, _pfx)
+         \
++       ({                                                              \
++               BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ULL,         \
+                                 _pfx "type of reg too small for mask"); \
+-               __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
+-                                             (1ULL << __bf_shf(_mask))); \
+        })
+
+ /**
+@@ -64,7 +72,7 @@
+  */
+ #define FIELD_MAX(_mask)                                               \
+        ({                                                              \
+-               __BF_FIELD_CHECK(_mask, 0ULL, 0ULL, "FIELD_MAX: ");     \
++               __BF_FIELD_CHECK_MASK(_mask, "FIELD_MAX: ");            \
+                (typeof(_mask))((_mask) >> __bf_shf(_mask));            \
+        })
+
+@@ -77,7 +85,7 @@
+  */
+ #define FIELD_FIT(_mask, _val)                                         \
+        ({                                                              \
+-               __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_FIT: ");     \
++               __BF_FIELD_CHECK_MASK(_mask, "FIELD_FIT: ");            \
+                !((((typeof(_mask))_val) << __bf_shf(_mask)) & ~(_mask)); \
+        })
+ @@ -91,7 +99,8 @@
+  */
+ #define FIELD_PREP(_mask, _val)
+         \
+        ({                                                              \
+-               __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");    \
++               __BF_FIELD_CHECK_MASK(_mask, "FIELD_PREP: ");           \
++               __BF_FIELD_CHECK_VAL(_mask, _val, "FIELD_PREP: ");      \
+                ((typeof(_mask))(_val) << __bf_shf(_mask)) & (_mask);   \
+        })
+
+@@ -105,7 +114,8 @@
+  */
+ #define FIELD_GET(_mask, _reg)                                         \
+        ({                                                              \
+-               __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
++               __BF_FIELD_CHECK_MASK(_mask, "FIELD_GET: ");            \
++               __BF_FIELD_CHECK_REG(_mask, _reg,  "FIELD_GET: ");      \
+                (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
+        })
+
+
+
 >
->         ixgbe_up_complete(adapter);
+> That's all--just questions, I have no problem with the patch...
 >
-> -       ixgbe_clear_udp_tunnel_port(adapter, IXGBE_VXLANCTRL_ALL_UDPPORT_MASK);
-> -       udp_tunnel_get_rx_info(netdev);
-> +       udp_tunnel_nic_reset_ntf(netdev);
+>                                         -Alex
 >
->         return 0;
+>
+>
+>
+> > FIELD_FIT() should return true or false at runtime for whether a value
+> > can fit for not. Don't break the build over a value that's too large for
+> > the mask. We'd prefer to keep the inlining and compiler optimizations
+> > though we know this case will always return false.
+> >
+> > Cc: stable@vger.kernel.org
+> > Link: https://lore.kernel.org/kernel-hardening/CAK7LNASvb0UDJ0U5wkYYRzTAdnEs64HjXpEUL7d=V0CXiAXcNw@mail.gmail.com/
+> > Reported-by: Masahiro Yamada <masahiroy@kernel.org>
+> > Debugged-by: Sami Tolvanen <samitolvanen@google.com>
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> > ---
+> >  include/linux/bitfield.h | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
+> > index 48ea093ff04c..4e035aca6f7e 100644
+> > --- a/include/linux/bitfield.h
+> > +++ b/include/linux/bitfield.h
+> > @@ -77,7 +77,7 @@
+> >   */
+> >  #define FIELD_FIT(_mask, _val)                                               \
+> >       ({                                                              \
+> > -             __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_FIT: ");     \
+> > +             __BF_FIELD_CHECK(_mask, 0ULL, 0ULL, "FIELD_FIT: ");     \
+> >               !((((typeof(_mask))_val) << __bf_shf(_mask)) & ~(_mask)); \
+> >       })
+> >
+> >
+>
 
-So I went looking through the earlier patches for an explanation of
-udp_tunnel_nic_reset_ntf. It might be useful to have some doxygen
-comments with the declaration explaining what it does and when/why we
-should use it.
 
-> @@ -7921,12 +7938,6 @@ static void ixgbe_service_task(struct work_struct *work)
->                 ixgbe_service_event_complete(adapter);
->                 return;
->         }
-> -       if (adapter->flags2 & IXGBE_FLAG2_UDP_TUN_REREG_NEEDED) {
-> -               rtnl_lock();
-> -               adapter->flags2 &= ~IXGBE_FLAG2_UDP_TUN_REREG_NEEDED;
-> -               udp_tunnel_get_rx_info(adapter->netdev);
-> -               rtnl_unlock();
-> -       }
->         ixgbe_reset_subtask(adapter);
->         ixgbe_phy_interrupt_subtask(adapter);
->         ixgbe_sfp_detection_subtask(adapter);
-
-Like I said earlier, this and the other REREG removal bits below might
-make more sense in another patch.
-
-> @@ -9784,26 +9795,6 @@ static int ixgbe_set_features(struct net_device *netdev,
->
->         netdev->features = features;
->
-> -       if ((adapter->flags & IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE)) {
-> -               if (features & NETIF_F_RXCSUM) {
-> -                       adapter->flags2 |= IXGBE_FLAG2_UDP_TUN_REREG_NEEDED;
-> -               } else {
-> -                       u32 port_mask = IXGBE_VXLANCTRL_VXLAN_UDPPORT_MASK;
-> -
-> -                       ixgbe_clear_udp_tunnel_port(adapter, port_mask);
-> -               }
-> -       }
-> -
-> -       if ((adapter->flags & IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE)) {
-> -               if (features & NETIF_F_RXCSUM) {
-> -                       adapter->flags2 |= IXGBE_FLAG2_UDP_TUN_REREG_NEEDED;
-> -               } else {
-> -                       u32 port_mask = IXGBE_VXLANCTRL_GENEVE_UDPPORT_MASK;
-> -
-> -                       ixgbe_clear_udp_tunnel_port(adapter, port_mask);
-> -               }
-> -       }
-> -
->         if ((changed & NETIF_F_HW_L2FW_DOFFLOAD) && adapter->num_rx_pools > 1)
->                 ixgbe_reset_l2fw_offload(adapter);
->         else if (need_reset)
-> @@ -9815,118 +9806,6 @@ static int ixgbe_set_features(struct net_device *netdev,
->         return 1;
->  }
->
-> -/**
-> - * ixgbe_add_udp_tunnel_port - Get notifications about adding UDP tunnel ports
-> - * @dev: The port's netdev
-> - * @ti: Tunnel endpoint information
-> - **/
-> -static void ixgbe_add_udp_tunnel_port(struct net_device *dev,
-> -                                     struct udp_tunnel_info *ti)
-> -{
-> -       struct ixgbe_adapter *adapter = netdev_priv(dev);
-> -       struct ixgbe_hw *hw = &adapter->hw;
-> -       __be16 port = ti->port;
-> -       u32 port_shift = 0;
-> -       u32 reg;
-> -
-> -       if (ti->sa_family != AF_INET)
-> -               return;
-> -
-> -       switch (ti->type) {
-> -       case UDP_TUNNEL_TYPE_VXLAN:
-> -               if (!(adapter->flags & IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE))
-> -                       return;
-> -
-> -               if (adapter->vxlan_port == port)
-> -                       return;
-> -
-> -               if (adapter->vxlan_port) {
-> -                       netdev_info(dev,
-> -                                   "VXLAN port %d set, not adding port %d\n",
-> -                                   ntohs(adapter->vxlan_port),
-> -                                   ntohs(port));
-> -                       return;
-> -               }
-> -
-> -               adapter->vxlan_port = port;
-> -               break;
-> -       case UDP_TUNNEL_TYPE_GENEVE:
-> -               if (!(adapter->flags & IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE))
-> -                       return;
-> -
-> -               if (adapter->geneve_port == port)
-> -                       return;
-> -
-> -               if (adapter->geneve_port) {
-> -                       netdev_info(dev,
-> -                                   "GENEVE port %d set, not adding port %d\n",
-> -                                   ntohs(adapter->geneve_port),
-> -                                   ntohs(port));
-> -                       return;
-> -               }
-> -
-> -               port_shift = IXGBE_VXLANCTRL_GENEVE_UDPPORT_SHIFT;
-> -               adapter->geneve_port = port;
-> -               break;
-> -       default:
-> -               return;
-> -       }
-> -
-> -       reg = IXGBE_READ_REG(hw, IXGBE_VXLANCTRL) | ntohs(port) << port_shift;
-> -       IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL, reg);
-> -}
-> -
-> -/**
-> - * ixgbe_del_udp_tunnel_port - Get notifications about removing UDP tunnel ports
-> - * @dev: The port's netdev
-> - * @ti: Tunnel endpoint information
-> - **/
-> -static void ixgbe_del_udp_tunnel_port(struct net_device *dev,
-> -                                     struct udp_tunnel_info *ti)
-> -{
-> -       struct ixgbe_adapter *adapter = netdev_priv(dev);
-> -       u32 port_mask;
-> -
-> -       if (ti->type != UDP_TUNNEL_TYPE_VXLAN &&
-> -           ti->type != UDP_TUNNEL_TYPE_GENEVE)
-> -               return;
-> -
-> -       if (ti->sa_family != AF_INET)
-> -               return;
-> -
-> -       switch (ti->type) {
-> -       case UDP_TUNNEL_TYPE_VXLAN:
-> -               if (!(adapter->flags & IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE))
-> -                       return;
-> -
-> -               if (adapter->vxlan_port != ti->port) {
-> -                       netdev_info(dev, "VXLAN port %d not found\n",
-> -                                   ntohs(ti->port));
-> -                       return;
-> -               }
-> -
-> -               port_mask = IXGBE_VXLANCTRL_VXLAN_UDPPORT_MASK;
-> -               break;
-> -       case UDP_TUNNEL_TYPE_GENEVE:
-> -               if (!(adapter->flags & IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE))
-> -                       return;
-> -
-> -               if (adapter->geneve_port != ti->port) {
-> -                       netdev_info(dev, "GENEVE port %d not found\n",
-> -                                   ntohs(ti->port));
-> -                       return;
-> -               }
-> -
-> -               port_mask = IXGBE_VXLANCTRL_GENEVE_UDPPORT_MASK;
-> -               break;
-> -       default:
-> -               return;
-> -       }
-> -
-> -       ixgbe_clear_udp_tunnel_port(adapter, port_mask);
-> -       adapter->flags2 |= IXGBE_FLAG2_UDP_TUN_REREG_NEEDED;
-> -}
-> -
->  static int ixgbe_ndo_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
->                              struct net_device *dev,
->                              const unsigned char *addr, u16 vid,
-> @@ -10416,8 +10295,8 @@ static const struct net_device_ops ixgbe_netdev_ops = {
->         .ndo_bridge_getlink     = ixgbe_ndo_bridge_getlink,
->         .ndo_dfwd_add_station   = ixgbe_fwd_add,
->         .ndo_dfwd_del_station   = ixgbe_fwd_del,
-> -       .ndo_udp_tunnel_add     = ixgbe_add_udp_tunnel_port,
-> -       .ndo_udp_tunnel_del     = ixgbe_del_udp_tunnel_port,
-> +       .ndo_udp_tunnel_add     = udp_tunnel_nic_add_port,
-> +       .ndo_udp_tunnel_del     = udp_tunnel_nic_del_port,
->         .ndo_features_check     = ixgbe_features_check,
->         .ndo_bpf                = ixgbe_xdp,
->         .ndo_xdp_xmit           = ixgbe_xdp_xmit,
-> @@ -10858,7 +10737,7 @@ static int ixgbe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->         hw->phy.mdio.mdio_write = ixgbe_mdio_write;
->
->         /* setup the private structure */
-> -       err = ixgbe_sw_init(adapter, ii);
-> +       err = ixgbe_sw_init(adapter, netdev, ii);
->         if (err)
->                 goto err_sw_init;
->
-> --
-> 2.26.2
->
+--
+Thanks,
+~Nick Desaulniers
