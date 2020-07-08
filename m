@@ -2,115 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A54772189F5
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 16:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E169218A54
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 16:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729720AbgGHOSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 10:18:01 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:63318 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729468AbgGHOSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 10:18:01 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 068EFu9J014410;
-        Wed, 8 Jul 2020 07:17:56 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0818; bh=D6nmSWfWy5bSBQT2UH7xqHuqon/tMiiTzK5HS5iA6VQ=;
- b=xL8tvX5YfJC3U0OwoLSMyiLLY+M0SGwUYHxDpBdPL4Sp1PlDwDdz6GHDvHo2bNuId+L5
- ZKtpaougK0tSWtAGbfBpRXPjWj2gh4QtSHrwSpU8qblh0lzI9nEoeVqvmN+hC9GBMHmS
- nzguzueEQ/zzjXH/NQ4L09+FqSua45fnqEWM2PJ4Fbkfr/fvTwY7qTwqTof11aEacEqx
- z6yhSZyOzlu+7HsQmnGyE3UYulb7IHtZBgN5hE95ELIHalyT8gRls6b5GajUucdxWA7W
- C9A/e3auaeLQzdrVoLl3qG+E16lZq2zQMAwmKWLcZIS6f9BtyiOTHs1x0SOix11mF7eT EQ== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 322s9ng6a9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jul 2020 07:17:56 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 8 Jul
- 2020 07:17:54 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 8 Jul 2020 07:17:54 -0700
-Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
-        by maili.marvell.com (Postfix) with ESMTP id 6388F3F703F;
-        Wed,  8 Jul 2020 07:17:51 -0700 (PDT)
-From:   Alexander Lobakin <alobakin@marvell.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Igor Russkikh <irusskikh@marvell.com>,
-        Dmitry Bezrukov <dbezrukov@marvell.com>,
-        Mark Starovoytov <mstarovoitov@marvell.com>,
-        "Dmitry Bogdanov" <dbogdanov@marvell.com>,
-        Egor Pomozov <epomozov@marvell.com>,
-        "Sergey Samoilenko" <sergey.samoilenko@marvell.com>,
-        Alexander Lobakin <alobakin@marvell.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net: atlantic: fix ip dst and ipv6 address filters
-Date:   Wed, 8 Jul 2020 17:17:10 +0300
-Message-ID: <20200708141710.758-1-alobakin@marvell.com>
-X-Mailer: git-send-email 2.25.1
+        id S1729745AbgGHOot (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 10:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729595AbgGHOos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 10:44:48 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48321C08C5CE
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 07:44:48 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id q15so3513808wmj.2
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 07:44:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XhjAnlDZIEYuR5nWOQ26Xfd/nf3Myskmxf7fUqB3Xt4=;
+        b=0dY6oXuQZLXNjJCFEJh0g6JCLl1Ce++tIlZ4bMAcVfBj2FDzqA77rSeJWkHHqEft90
+         EcPLZWP8Sp8lRldfaiJb8KhmDli2O5FqX0xIyNbR3NTTAjLDigS6YT2qfdEHINPbm5WE
+         +Z5rfsjry3aSs2GbHwMoQozFmswGAlveLN114o50CZRLIANhu7Y+K4Q86NLBQZh2lbw/
+         OxDrBWEd6jJcRMGjqaK7P9eMlKqV3gZTtQoeBLeAc+GrJTwPAYyCAynTsgDFzAe9mqe2
+         FcJ14lqhjDyQHo94HDluMrhEX7zYe0zHzxa485XdPozIqUJHGOP0eVE1X7Dw1AVcznsA
+         37Ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XhjAnlDZIEYuR5nWOQ26Xfd/nf3Myskmxf7fUqB3Xt4=;
+        b=UGntyy9dSt+9+e+POLxBALq9JY9soQiW+wRyFTmeV00vWPhZol0ODX84B7XJ4Sk9VX
+         zvL5qNOb7p1Lu3mwpWPDNY/dW8h5Lo0zXfE05r/sD92solaQUmiT+4GlvsPBQ2RPrDx+
+         xbhyokWwxhdx9cMBpJWnFuGheTtQTw4Kgly8guLtquTmEQNHx7ZjyOUuv/OrnDnaZL3E
+         hY1l9xKYwuSNk0Z3ZDDZYf3lzwtcDfTZvrD7vewf1hE1zVd/QJa4YP4q+J7b2wzxtXS3
+         oMOmGbU3fU9GSJj1MHz821YIY4xqHNCRjocK6XuMmQaDEq+l1lw4ZDxroArT1FbMHcT0
+         lg9A==
+X-Gm-Message-State: AOAM532mNu+VvKyyc5tbQTHWpO6jwWLfqZeB0BhPy4rAbXAEHhtbuSeh
+        mawX3yX1okPLQ3sV4JSW0BQNuVtMxReGQg==
+X-Google-Smtp-Source: ABdhPJyVXOZ12o5h6eCWqW/wy3OAUwLhKs8OFQCEqRv2HLLp1jbmZ+Lg2Do8rYQCV5iJsto3iokf5w==
+X-Received: by 2002:a1c:2d4b:: with SMTP id t72mr9536117wmt.105.1594219487060;
+        Wed, 08 Jul 2020 07:44:47 -0700 (PDT)
+Received: from [192.168.1.12] ([194.35.118.83])
+        by smtp.gmail.com with ESMTPSA id x185sm6976028wmg.41.2020.07.08.07.44.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jul 2020 07:44:46 -0700 (PDT)
+Subject: Re: [PATCH bpf-next] bpf: Fix another bpftool segfault without
+ skeleton code enabled
+To:     louis.peens@netronome.com, ast@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, oss-drivers@netronome.com
+References: <20200708110827.7673-1-louis.peens@netronome.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <90a6acce-93f7-62df-fc96-0294cb168d64@isovalent.com>
+Date:   Wed, 8 Jul 2020 15:44:45 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-08_13:2020-07-08,2020-07-08 signatures=0
+In-Reply-To: <20200708110827.7673-1-louis.peens@netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmitry Bogdanov <dbogdanov@marvell.com>
+2020-07-08 13:08 UTC+0200 ~ louis.peens@netronome.com
+> From: Louis Peens <louis.peens@netronome.com>
+> 
+> emit_obj_refs_json needs to added the same as with emit_obj_refs_plain
+> to prevent segfaults, similar to Commit "8ae4121bd89e bpf: Fix bpftool
+> without skeleton code enabled"). See the error below:
+> 
+>     # ./bpftool -p prog
+>     {
+>         "error": "bpftool built without PID iterator support"
+>     },[{
+>             "id": 2,
+>             "type": "cgroup_skb",
+>             "tag": "7be49e3934a125ba",
+>             "gpl_compatible": true,
+>             "loaded_at": 1594052789,
+>             "uid": 0,
+>             "bytes_xlated": 296,
+>             "jited": true,
+>             "bytes_jited": 203,
+>             "bytes_memlock": 4096,
+>             "map_ids": [2,3
+>     Segmentation fault (core dumped)
+> 
+> The same happens for ./bpftool -p map, as well as ./bpftool -j prog/map.
+> 
+> Fixes: d53dee3fe013 ("tools/bpftool: Show info for processes holding BPF map/prog/link/btf FDs")
+> Signed-off-by: Louis Peens <louis.peens@netronome.com>
+> Reviewed-by: Simon Horman <simon.horman@netronome.com>
 
-This patch fixes ip dst and ipv6 address filters.
-There were 2 mistakes in the code, which led to the issue:
-* invalid register was used for ipv4 dst address;
-* incorrect write order of dwords for ipv6 addresses.
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
 
-Fixes: 23e7a718a49b ("net: aquantia: add rx-flow filter definitions")
-Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
-Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
-Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
----
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c    | 4 ++--
- .../ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h   | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-index 3c8e8047ea1e..d775b23025c1 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-@@ -1700,7 +1700,7 @@ void hw_atl_rpfl3l4_ipv6_src_addr_set(struct aq_hw_s *aq_hw, u8 location,
- 	for (i = 0; i < 4; ++i)
- 		aq_hw_write_reg(aq_hw,
- 				HW_ATL_RPF_L3_SRCA_ADR(location + i),
--				ipv6_src[i]);
-+				ipv6_src[3 - i]);
- }
- 
- void hw_atl_rpfl3l4_ipv6_dest_addr_set(struct aq_hw_s *aq_hw, u8 location,
-@@ -1711,7 +1711,7 @@ void hw_atl_rpfl3l4_ipv6_dest_addr_set(struct aq_hw_s *aq_hw, u8 location,
- 	for (i = 0; i < 4; ++i)
- 		aq_hw_write_reg(aq_hw,
- 				HW_ATL_RPF_L3_DSTA_ADR(location + i),
--				ipv6_dest[i]);
-+				ipv6_dest[3 - i]);
- }
- 
- u32 hw_atl_sem_ram_get(struct aq_hw_s *self)
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-index 06220792daf1..7430ff025134 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-@@ -1360,7 +1360,7 @@
-  */
- 
-  /* Register address for bitfield pif_rpf_l3_da0_i[31:0] */
--#define HW_ATL_RPF_L3_DSTA_ADR(filter) (0x000053B0 + (filter) * 0x4)
-+#define HW_ATL_RPF_L3_DSTA_ADR(filter) (0x000053D0 + (filter) * 0x4)
- /* Bitmask for bitfield l3_da0[1F:0] */
- #define HW_ATL_RPF_L3_DSTA_MSK 0xFFFFFFFFu
- /* Inverted bitmask for bitfield l3_da0[1F:0] */
--- 
-2.25.1
-
+Thanks Louis.
