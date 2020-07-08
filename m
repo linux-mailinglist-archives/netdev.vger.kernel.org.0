@@ -2,176 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F47217DEF
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 06:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8BC6217E6F
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 06:38:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729360AbgGHEII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 00:08:08 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:44266 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727837AbgGHEII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 00:08:08 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 068456IK031018;
-        Tue, 7 Jul 2020 21:08:06 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=UjTz+5KiuL1BUwzwIm13jKE4A1u1Qajjp24533Lsbe0=;
- b=t1Yc/kd3Qpx5YhwE4kDMvASIfdcOXTXL3EL/Z6jqcJtp7w6+ibF5gDONCgtmMl+WOJ20
- yHgBm3u4s49DtT7eP5fqsjXqqT44vZi6wsP7oR+Rc9vCvlU0BSOsWk7wwXrIy2LhViaf
- UA7hhDNC4eT11+53gUUmnN2R4JYNBqcCvrILEarhtt1GAaYWaViw+BTn7j0Z5s4APWur
- BU+BJlpSEvEDnEDb/PXyl4qoOLkFviUHzsLdqDVEItqGuWYfbpvg7L6Ycfh7Vq216UQ7
- om9sOYQFUg+BiynOJt6M1fxnhbLZIsdaHyOL9xuSbIMZ2rV05Wp0t3gAJEU9rTjbwfZF tA== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 322s9ne94f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 07 Jul 2020 21:08:06 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 7 Jul
- 2020 21:08:04 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 7 Jul 2020 21:08:04 -0700
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id 93DB73F7043;
-        Tue,  7 Jul 2020 21:08:04 -0700 (PDT)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 068484gG017186;
-        Tue, 7 Jul 2020 21:08:04 -0700
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 068483gw017177;
-        Tue, 7 Jul 2020 21:08:03 -0700
-From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
-        <irusskikh@marvell.com>, <mkalderon@marvell.com>
-Subject: [PATCH net v2 1/1] qed: Populate nvm-file attributes while reading nvm config partition.
-Date:   Tue, 7 Jul 2020 21:07:37 -0700
-Message-ID: <20200708040737.17141-1-skalluru@marvell.com>
-X-Mailer: git-send-email 2.12.0
+        id S1728868AbgGHEiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 00:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726185AbgGHEiF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 00:38:05 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5F7C061755;
+        Tue,  7 Jul 2020 21:38:04 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id m9so9148305pfh.0;
+        Tue, 07 Jul 2020 21:38:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pGbaCoMke0eHVeVRLkTlHstsJU5HzwWe4OVKEnmf1ZQ=;
+        b=sbxCs0Xh2GFQxQ+jOOqUDA4ATECZXZ2LYdmSyQjvs7devdjXaMII5lDZiIUTSCJY0X
+         U7UCVgT7t1OcdgWbf9oY1ilqODpu70WpY1ItakeeQmoerMUy/LMhjq5iJWq5rSbtdejy
+         xbvIMeKzFf6x7fmtlSHMpjB7hXA3OvGR1LN1mHVnowtPTVUmRyrn9ozfCjk+sbS4E+Dt
+         st1okfrv4p7vrDbRRB7EgbaQRl86CQoSa0BlRByLqKjrz4kYwlSSvXj0OBuZcJOMocpW
+         mAVyxhpQ1C/JAouRcBrBWG4pOqMhKdWUZO2moH/xqvObFvLjpRo+QkTlUZiH60M+V64Q
+         LhJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pGbaCoMke0eHVeVRLkTlHstsJU5HzwWe4OVKEnmf1ZQ=;
+        b=UOeqvUaYOChqQxfyTtAbewQT/Wka2Z4c4HniEkChI1ca8hfQhlzv0fcQkSODZLXeNM
+         bL1pK+fcaY4JFJtsjS1iauZrfj6yL+EM40araeyRtlrg1PkEHyFSCarY9Mgpo8eImvAP
+         L/N8IoOI9Z/3MqRnTpgsIu9qwarJzxaL8P4H+dhWjNchtzpTNRUoZyUkuKBi/PXwdPKj
+         XMulAlf0lxNpu4E4Zci8UWlNxW+LVAvtPGA9TNb1h7+gi3gksKGr7RPGcJF4XQYniI+k
+         0eZk1vnAwcE/Y5eUBvu/keLvMX6ryAdLMr1nJX9bnzL50d2sBrbTaxVhDYDsXF0Ok4JW
+         YYrQ==
+X-Gm-Message-State: AOAM533OUdw2RYvpeIXRTKA/RKUJDOIQQ3aBfK9J9BAv9P7AhnnXVwLC
+        0+EUCmMpIygqw4ck/KplQD0=
+X-Google-Smtp-Source: ABdhPJyueUvBUwFB5CkcsW7TctjCVGF9ROFxbj4AKt5/+V3u8yHu6Y7DuT1FOCV6MrMPQqKXKnknFg==
+X-Received: by 2002:aa7:9736:: with SMTP id k22mr50226247pfg.62.1594183083354;
+        Tue, 07 Jul 2020 21:38:03 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:4dfb:86a6:10aa:1756])
+        by smtp.gmail.com with ESMTPSA id f6sm26191724pfe.174.2020.07.07.21.38.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jul 2020 21:38:02 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Martin Habets <mhabets@solarflare.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Xie He <xie.he.0141@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
+Subject: [PATCH] drivers/net/wan/x25_asy: Fix to make it work
+Date:   Tue,  7 Jul 2020 21:37:54 -0700
+Message-Id: <20200708043754.46554-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-08_01:2020-07-08,2020-07-08 signatures=0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NVM config file address will be modified when the MBI image is upgraded.
-Driver would return stale config values if user reads the nvm-config
-(via ethtool -d) in this state. The fix is to re-populate nvm attribute
-info while reading the nvm config values/partition.
+This driver is not working because of problems of its receiving code.
+This patch fixes it to make it work.
 
-Changes from previous version:
--------------------------------
-v2: Added 'Fixes' tag.
+When the driver receives an LAPB frame, it should first pass the frame
+to the LAPB module to process. After processing, the LAPB module passes
+the data (the packet) back to the driver, the driver should then add a
+one-byte pseudo header and pass the data to upper layers.
 
-Fixes: 1ac4329a1cff (qed: Add configuration information to register dump and debug data)
-Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+The changes to the "x25_asy_bump" function and the
+"x25_asy_data_indication" function are to correctly implement this
+procedure.
+
+Also, the "x25_asy_unesc" function ignores any frame that is shorter
+than 3 bytes. However the shortest frames are 2-byte long. So we need
+to change it to allow 2-byte frames to pass.
+
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed_debug.c |  4 ++++
- drivers/net/ethernet/qlogic/qed/qed_dev.c   | 12 +++---------
- drivers/net/ethernet/qlogic/qed/qed_mcp.c   |  7 +++++++
- drivers/net/ethernet/qlogic/qed/qed_mcp.h   |  7 +++++++
- 4 files changed, 21 insertions(+), 9 deletions(-)
+ drivers/net/wan/x25_asy.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-index cb80863..3b9bbaf 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-@@ -7941,6 +7941,10 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
- 		DP_ERR(cdev, "qed_dbg_mcp_trace failed. rc = %d\n", rc);
+diff --git a/drivers/net/wan/x25_asy.c b/drivers/net/wan/x25_asy.c
+index 69773d228ec1..3fd8938e591b 100644
+--- a/drivers/net/wan/x25_asy.c
++++ b/drivers/net/wan/x25_asy.c
+@@ -183,7 +183,7 @@ static inline void x25_asy_unlock(struct x25_asy *sl)
+ 	netif_wake_queue(sl->dev);
+ }
+ 
+-/* Send one completely decapsulated IP datagram to the IP layer. */
++/* Send an LAPB frame to the LAPB module to process. */
+ 
+ static void x25_asy_bump(struct x25_asy *sl)
+ {
+@@ -195,13 +195,12 @@ static void x25_asy_bump(struct x25_asy *sl)
+ 	count = sl->rcount;
+ 	dev->stats.rx_bytes += count;
+ 
+-	skb = dev_alloc_skb(count+1);
++	skb = dev_alloc_skb(count);
+ 	if (skb == NULL) {
+ 		netdev_warn(sl->dev, "memory squeeze, dropping packet\n");
+ 		dev->stats.rx_dropped++;
+ 		return;
  	}
+-	skb_push(skb, 1);	/* LAPB internal control */
+ 	skb_put_data(skb, sl->rbuff, count);
+ 	skb->protocol = x25_type_trans(skb, sl->dev);
+ 	err = lapb_data_received(skb->dev, skb);
+@@ -209,7 +208,6 @@ static void x25_asy_bump(struct x25_asy *sl)
+ 		kfree_skb(skb);
+ 		printk(KERN_DEBUG "x25_asy: data received err - %d\n", err);
+ 	} else {
+-		netif_rx(skb);
+ 		dev->stats.rx_packets++;
+ 	}
+ }
+@@ -356,12 +354,16 @@ static netdev_tx_t x25_asy_xmit(struct sk_buff *skb,
+  */
  
-+	/* Re-populate nvm attribute info */
-+	qed_mcp_nvm_info_free(p_hwfn);
-+	qed_mcp_nvm_info_populate(p_hwfn);
+ /*
+- *	Called when I frame data arrives. We did the work above - throw it
+- *	at the net layer.
++ *	Called when I frame data arrives. We add a pseudo header for upper
++ *	layers and pass it to upper layers.
+  */
+ 
+ static int x25_asy_data_indication(struct net_device *dev, struct sk_buff *skb)
+ {
++	skb_push(skb, 1);
++	skb->data[0] = X25_IFACE_DATA;
++	skb->protocol = x25_type_trans(skb, dev);
 +
- 	/* nvm cfg1 */
- 	rc = qed_dbg_nvm_image(cdev,
- 			       (u8 *)buffer + offset +
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index 3aa5137..9c26fde 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -4472,12 +4472,6 @@ static int qed_get_dev_info(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
- 	return 0;
+ 	return netif_rx(skb);
  }
  
--static void qed_nvm_info_free(struct qed_hwfn *p_hwfn)
--{
--	kfree(p_hwfn->nvm_info.image_att);
--	p_hwfn->nvm_info.image_att = NULL;
--}
--
- static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
- 				 void __iomem *p_regview,
- 				 void __iomem *p_doorbells,
-@@ -4562,7 +4556,7 @@ static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
- 	return rc;
- err3:
- 	if (IS_LEAD_HWFN(p_hwfn))
--		qed_nvm_info_free(p_hwfn);
-+		qed_mcp_nvm_info_free(p_hwfn);
- err2:
- 	if (IS_LEAD_HWFN(p_hwfn))
- 		qed_iov_free_hw_info(p_hwfn->cdev);
-@@ -4623,7 +4617,7 @@ int qed_hw_prepare(struct qed_dev *cdev,
- 		if (rc) {
- 			if (IS_PF(cdev)) {
- 				qed_init_free(p_hwfn);
--				qed_nvm_info_free(p_hwfn);
-+				qed_mcp_nvm_info_free(p_hwfn);
- 				qed_mcp_free(p_hwfn);
- 				qed_hw_hwfn_free(p_hwfn);
- 			}
-@@ -4657,7 +4651,7 @@ void qed_hw_remove(struct qed_dev *cdev)
- 
- 	qed_iov_free_hw_info(cdev);
- 
--	qed_nvm_info_free(p_hwfn);
-+	qed_mcp_nvm_info_free(p_hwfn);
- }
- 
- static void qed_chain_free_next_ptr(struct qed_dev *cdev,
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-index 9624616..0fd4520 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-@@ -3280,6 +3280,13 @@ int qed_mcp_nvm_info_populate(struct qed_hwfn *p_hwfn)
- 	return rc;
- }
- 
-+void qed_mcp_nvm_info_free(struct qed_hwfn *p_hwfn)
-+{
-+	kfree(p_hwfn->nvm_info.image_att);
-+	p_hwfn->nvm_info.image_att = NULL;
-+	p_hwfn->nvm_info.valid = false;
-+}
-+
- int
- qed_mcp_get_nvm_image_att(struct qed_hwfn *p_hwfn,
- 			  enum qed_nvm_images image_id,
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.h b/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-index 5750b4c..12a705e 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-@@ -1221,6 +1221,13 @@ void qed_mcp_resc_lock_default_init(struct qed_resc_lock_params *p_lock,
- int qed_mcp_nvm_info_populate(struct qed_hwfn *p_hwfn);
- 
- /**
-+ * @brief Delete nvm info shadow in the given hardware function
-+ *
-+ * @param p_hwfn
-+ */
-+void qed_mcp_nvm_info_free(struct qed_hwfn *p_hwfn);
-+
-+/**
-  * @brief Get the engine affinity configuration.
-  *
-  * @param p_hwfn
+@@ -657,7 +659,7 @@ static void x25_asy_unesc(struct x25_asy *sl, unsigned char s)
+ 	switch (s) {
+ 	case X25_END:
+ 		if (!test_and_clear_bit(SLF_ERROR, &sl->flags) &&
+-		    sl->rcount > 2)
++		    sl->rcount >= 2)
+ 			x25_asy_bump(sl);
+ 		clear_bit(SLF_ESCAPE, &sl->flags);
+ 		sl->rcount = 0;
 -- 
-1.8.3.1
+2.25.1
 
