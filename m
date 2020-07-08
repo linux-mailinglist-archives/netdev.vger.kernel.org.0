@@ -2,139 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06D9021856C
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 13:02:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9032218579
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 13:04:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728633AbgGHLCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 07:02:05 -0400
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:44055 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728579AbgGHLCE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 07:02:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1594206124; x=1625742124;
-  h=subject:to:references:from:message-id:date:mime-version:
-   in-reply-to:content-transfer-encoding;
-  bh=wmuV9psr/Peaq9G11JJtpKoYnlH6sHa9TFptgxN5frg=;
-  b=YDVLL3qj/MXgPKgIcEVMX6jboJIgjc+0L/pxdz2MMXabjZNOaDc2/br9
-   8BrOcJGqBA8ULFUasMsL79aJtVEMy5hiKEzujZUsXZGMj/TdkQ2xZufVZ
-   ayluqStfJ8CxvfbeT+UaRDUi1Yx64T9eAH0jcgE88G0neL8mG8EXR74GA
-   vsYEbpxzknlP6Dg9jpDZ7lMuYB4AgWhH4WJLj1A9VCUJ7EbdV6hH9E8FY
-   xaCwgV94XZ8BPVgizhsFDU1QN6XSNbiCciQWtem4I1OgQzoP39mLU66l3
-   Xgyq3PgAFcIMxOJQaNimrs775BO8luBMiKFc+b3w7FCWkBY4nZHDzUJp0
-   A==;
-IronPort-SDR: r4wtfuMLILFnSiHL3BRw2lBDOloCRi8JcohnL3jslrPsWmXnBZRgB24Ro0HHCIc4G8M7Zq5jsl
- zIKh98lObXs0nxGiLpA5erTlJ+fsaXNwEXPIe2vlAxsgs1/+LZzvrfg5NuH3zKVLmS6tJaHaq3
- 1QI/YPIzeo7KIQ3P3bQ31h0B8Ky3++XiFIxgzVWmlzCztDcbQqRfFxvqOV5kKfFVRwu1EBXl7B
- 7RSdrwBpybxJ3N7AqPwNyKB4mwgOdOv7bFPO+Kg760dMphyZPMJy1BIIzVlbGDq5hyv+6JPKr0
- xek=
-X-IronPort-AV: E=Sophos;i="5.75,327,1589266800"; 
-   d="scan'208";a="82267012"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jul 2020 04:02:03 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 8 Jul 2020 04:01:36 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 8 Jul 2020 04:01:34 -0700
-Subject: Re: [PATCH] Replace HTTP links with HTTPS ones: ATMEL MACB ETHERNET
- DRIVER
-To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20200708103519.13915-1-grandmaster@al2klimov.de>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <caf7b073-a254-44a9-9466-b919b03596cf@microchip.com>
-Date:   Wed, 8 Jul 2020 13:01:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728717AbgGHLEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 07:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728589AbgGHLEr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 07:04:47 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E364C08C5DC;
+        Wed,  8 Jul 2020 04:04:47 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id z5so21501394pgb.6;
+        Wed, 08 Jul 2020 04:04:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=x5Oz9T0/nlpWj7gcRwNRrBgun+HLR/g5S659t05tKAk=;
+        b=LR39heqMav7WHvZ4pKnrJQ31+4CyEVw+2hGuDisH+j9n1gkJwVc2/K6mxG1EQjfVil
+         LIGEYplcDD5qpXFPV8tgnl3KRw8fbxbycvmGyxMWqGiq9Q3ph4o5oRCLRWDrKdWli+by
+         K2ivVVunWUo+RHTwLF6uZtpR3HuqutuT1+xRXDuNSnW5Cy5Uwsy6qT8XR+16J4XQi1pb
+         JpvHS3+4fBTNk6cV0cehgvv2T8it1xEcJ1UEMhQXNnAwEadlHIUJX7Re5TNCGBmLQ14e
+         Szcu1XewElo2h5mjv/uqNISLi0pICRMI7+Cw5Zshlsz9/d92OMWqo6gCKvlaQ14N7krb
+         2DxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=x5Oz9T0/nlpWj7gcRwNRrBgun+HLR/g5S659t05tKAk=;
+        b=bnGlypUo+N9hlMU6KzzAR1+oypsZWGRplZuP3gf4mUwxppKH6l/8ygr1tTyimIcLbP
+         GHdOAq/7zxniqq0xyFrHXxcJpDoCGGDD+gpz+wrD72lRQJtl7NQwlUmH1I2s6uVBNNsy
+         vbDoN4twklOX0V1zV2SxXnCgZyRB3q56+7A2yJNEkXU/zYauD8r2Fl29ElwV1CMdHvxh
+         iLDUoquaNf7bydPxJMDwvSgJf401s2CPzmJeHQRsRGMGdwkdwvx1fqI++C2kX/pzLNZm
+         aO2+fLose0tXCMEDODU/Dv+iHqsFnxut4sfZC5QFurWkOib1Z3fiTaQWFiIs57OPtwqf
+         D6Bg==
+X-Gm-Message-State: AOAM531Ca0WbvngjNp+Xio1H5cnQs52w0tm0uBNrRKzECMxi+Wop9gV9
+        PUgdxzwxS4fuiSyQk1bXvmA=
+X-Google-Smtp-Source: ABdhPJxb5ozr+JWoQl+Jz5jWG6SYLjXBLp6JNhv89WOi4DyJQNDOmtFEPYGpDsnU7XuR0T9m4Cl2xw==
+X-Received: by 2002:a62:64ce:: with SMTP id y197mr31491046pfb.19.1594206286983;
+        Wed, 08 Jul 2020 04:04:46 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id d18sm5092249pjz.11.2020.07.08.04.04.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 04:04:46 -0700 (PDT)
+Date:   Wed, 8 Jul 2020 04:04:44 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sergey Organov <sorganov@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH  3/5] net: fec: initialize clock with 0 rather than
+ current kernel time
+Message-ID: <20200708110444.GD9080@hoboy>
+References: <20200706142616.25192-1-sorganov@gmail.com>
+ <20200706142616.25192-4-sorganov@gmail.com>
+ <20200706152721.3j54m73bm673zlnj@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20200708103519.13915-1-grandmaster@al2klimov.de>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200706152721.3j54m73bm673zlnj@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/07/2020 at 12:35, Alexander A. Klimov wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> Rationale:
-> Reduces attack surface on kernel devs opening the links for MITM
-> as HTTPS traffic is much harder to manipulate.
-> 
-> Deterministic algorithm:
-> For each file:
->    If not .svg:
->      For each line:
->        If doesn't contain `\bxmlns\b`:
->          For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
->            If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
->              If both the HTTP and HTTPS versions
->              return 200 OK and serve the same content:
->                Replace HTTP with HTTPS.
-> 
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+On Mon, Jul 06, 2020 at 06:27:21PM +0300, Vladimir Oltean wrote:
+> There's no correct answer, I'm afraid. Whatever the default value of the
+> clock may be, it's bound to be confusing for some reason, _if_ the
+> reason why you're investigating it in the first place is a driver bug.
+> Also, I don't really see how your change to use Jan 1st 1970 makes it
+> any less confusing.
 
-The links go to Cadence. If people from Cadence want to change 
-something, don't hesitate to speak out. On my side:
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
++1
 
-> ---
->   Continuing my work started at 93431e0607e5.
->   See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
->   (Actually letting a shell for loop submit all this stuff for me.)
-> 
->   If there are any URLs to be removed completely or at least not HTTPSified:
->   Just clearly say so and I'll *undo my change*.
->   See also: https://lkml.org/lkml/2020/6/27/64
-> 
->   If there are any valid, but yet not changed URLs:
->   See: https://lkml.org/lkml/2020/6/26/837
-> 
->   If you apply the patch, please let me know.
-> 
-> 
->   drivers/net/ethernet/cadence/macb_pci.c | 2 +-
->   drivers/net/ethernet/cadence/macb_ptp.c | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_pci.c b/drivers/net/ethernet/cadence/macb_pci.c
-> index 617b3b728dd0..cd7d0332cba3 100644
-> --- a/drivers/net/ethernet/cadence/macb_pci.c
-> +++ b/drivers/net/ethernet/cadence/macb_pci.c
-> @@ -2,7 +2,7 @@
->   /**
->    * Cadence GEM PCI wrapper.
->    *
-> - * Copyright (C) 2016 Cadence Design Systems - http://www.cadence.com
-> + * Copyright (C) 2016 Cadence Design Systems - https://www.cadence.com
->    *
->    * Authors: Rafal Ozieblo <rafalo@cadence.com>
->    *         Bartosz Folta <bfolta@cadence.com>
-> diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
-> index 43a3f0dbf857..31ebf3ee7ec0 100644
-> --- a/drivers/net/ethernet/cadence/macb_ptp.c
-> +++ b/drivers/net/ethernet/cadence/macb_ptp.c
-> @@ -2,7 +2,7 @@
->   /**
->    * 1588 PTP support for Cadence GEM device.
->    *
-> - * Copyright (C) 2017 Cadence Design Systems - http://www.cadence.com
-> + * Copyright (C) 2017 Cadence Design Systems - https://www.cadence.com
->    *
->    * Authors: Rafal Ozieblo <rafalo@cadence.com>
->    *          Bartosz Folta <bfolta@cadence.com>
-> --
-> 2.27.0
-> 
+For a PHC, the user of the clock must check the PTP stack's
+synchronization flags via the management interface to know the status
+of the time signal.
 
-
--- 
-Nicolas Ferre
+Thanks,
+Richard
