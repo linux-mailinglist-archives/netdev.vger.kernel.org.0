@@ -2,99 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22FC22193EF
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 00:58:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2992F2193F2
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 00:59:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726162AbgGHW6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 18:58:41 -0400
-Received: from www62.your-server.de ([213.133.104.62]:34048 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725903AbgGHW6k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 18:58:40 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jtJ1S-0000SC-LY; Thu, 09 Jul 2020 00:58:38 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jtJ1S-000NfG-ET; Thu, 09 Jul 2020 00:58:38 +0200
-Subject: Re: [PATCH bpf-next 0/6] Improve libbpf support of old kernels
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        Matthew Lim <matthewlim@fb.com>
-References: <20200708015318.3827358-1-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7851cece-001e-40d2-a9b0-3689d4be2e5e@iogearbox.net>
-Date:   Thu, 9 Jul 2020 00:58:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726291AbgGHW7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 18:59:04 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:52090 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726174AbgGHW7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 18:59:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594249142;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=5273qNZ2G1pvs6o6EmJVKX3kUo6d0ElK4jyei1Dx3qQ=;
+        b=Hrf1dQ33Nm98whQufWdd1nyZfEEoq0IV2VmEqFKlmzIgdXD7t2smvqgI6cqVG+FNoLToVN
+        wwKwZ0BqH3WSHeAHvpSt41cXc8iGYbaCBSxKTaIbvR+vs7udOCoVqE+mtdqnSjFOM4ZTaE
+        e3AHx6mU6M8pvmYb881wG8R+7dYOQz8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-122-GVqzbkf7MEi_x9rvI2YAUA-1; Wed, 08 Jul 2020 18:58:58 -0400
+X-MC-Unique: GVqzbkf7MEi_x9rvI2YAUA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7858F108B;
+        Wed,  8 Jul 2020 22:58:56 +0000 (UTC)
+Received: from hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com (hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com [10.16.210.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 865C15D9C9;
+        Wed,  8 Jul 2020 22:58:51 +0000 (UTC)
+From:   Jarod Wilson <jarod@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jarod Wilson <jarod@redhat.com>,
+        syzbot+582c98032903dcc04816@syzkaller.appspotmail.com,
+        Huy Nguyen <huyn@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Subject: [PATCH net-next] bonding: don't need RTNL for ipsec helpers
+Date:   Wed,  8 Jul 2020 18:58:49 -0400
+Message-Id: <20200708225849.25198-1-jarod@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200708015318.3827358-1-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25867/Wed Jul  8 15:50:39 2020)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/8/20 3:53 AM, Andrii Nakryiko wrote:
-> This patch set improves libbpf's support of old kernels, missing features like
-> BTF support, global variables support, etc.
-> 
-> Most critical one is a silent drop of CO-RE relocations if libbpf fails to
-> load BTF (despite sanitization efforts). This is frequently the case for
-> kernels that have no BTF support whatsoever. There are still useful BPF
-> applications that could work on such kernels and do rely on CO-RE. To that
-> end, this series revamps the way BTF is handled in libbpf. Failure to load BTF
-> into kernel doesn't prevent libbpf from using BTF in its full capability
-> (e.g., for CO-RE relocations) internally.
-> 
-> Another issue that was identified was reliance of perf_buffer__new() on
-> BPF_OBJ_GET_INFO_BY_FD command, which is more recent that perf_buffer support
-> itself. Furthermore, BPF_OBJ_GET_INFO_BY_FD is needed just for some sanity
-> checks to provide better user errors, so could be safely omitted if kernel
-> doesn't provide it.
-> 
-> Perf_buffer selftest was adjusted to use skeleton, instead of bpf_prog_load().
-> The latter uses BPF_F_TEST_RND_HI32 flag, which is a relatively recent
-> addition and unnecessary fails selftest in libbpf's Travis CI tests. By using
-> skeleton we both get a shorter selftest and it work on pretty ancient kernels,
-> giving better libbpf test coverage.
-> 
-> One new selftest was added that relies on basic CO-RE features, but otherwise
-> doesn't expect any recent features (like global variables) from kernel. Again,
-> it's good to have better coverage of old kernels in libbpf testing.
-> 
-> Cc: Matthew Lim <matthewlim@fb.com>
-> 
-> Andrii Nakryiko (6):
->    libbpf: make BTF finalization strict
->    libbpf: add btf__set_fd() for more control over loaded BTF FD
->    libbpf: improve BTF sanitization handling
->    selftests/bpf: add test relying only on CO-RE and no recent kernel
->      features
->    libbpf: handle missing BPF_OBJ_GET_INFO_BY_FD gracefully in
->      perf_buffer
->    selftests/bpf: switch perf_buffer test to tracepoint and skeleton
-> 
->   tools/lib/bpf/btf.c                           |   7 +-
->   tools/lib/bpf/btf.h                           |   1 +
->   tools/lib/bpf/libbpf.c                        | 150 ++++++++++--------
->   tools/lib/bpf/libbpf.map                      |   1 +
->   .../selftests/bpf/prog_tests/core_retro.c     |  33 ++++
->   .../selftests/bpf/prog_tests/perf_buffer.c    |  42 ++---
->   .../selftests/bpf/progs/test_core_retro.c     |  30 ++++
->   .../selftests/bpf/progs/test_perf_buffer.c    |   4 +-
->   8 files changed, 167 insertions(+), 101 deletions(-)
->   create mode 100644 tools/testing/selftests/bpf/prog_tests/core_retro.c
->   create mode 100644 tools/testing/selftests/bpf/progs/test_core_retro.c
-> 
+The bond_ipsec_* helpers don't need RTNL, and can potentially get called
+without it being held, so switch from rtnl_dereference() to
+rcu_dereference() to access bond struct data.
 
-Applied, thanks!
+Lightly tested with xfrm bonding, no problems found, should address the
+syzkaller bug referenced below.
+
+Reported-by: syzbot+582c98032903dcc04816@syzkaller.appspotmail.com
+CC: Huy Nguyen <huyn@mellanox.com>
+CC: Saeed Mahameed <saeedm@mellanox.com>
+CC: Jay Vosburgh <j.vosburgh@gmail.com>
+CC: Veaceslav Falico <vfalico@gmail.com>
+CC: Andy Gospodarek <andy@greyhouse.net>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+CC: Jakub Kicinski <kuba@kernel.org>
+CC: Steffen Klassert <steffen.klassert@secunet.com>
+CC: Herbert Xu <herbert@gondor.apana.org.au>
+CC: netdev@vger.kernel.org
+CC: intel-wired-lan@lists.osuosl.org
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
+---
+ drivers/net/bonding/bond_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index f886d97c4359..e2d491c4378c 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -390,7 +390,7 @@ static int bond_ipsec_add_sa(struct xfrm_state *xs)
+ 		return -EINVAL;
+ 
+ 	bond = netdev_priv(bond_dev);
+-	slave = rtnl_dereference(bond->curr_active_slave);
++	slave = rcu_dereference(bond->curr_active_slave);
+ 	xs->xso.real_dev = slave->dev;
+ 	bond->xs = xs;
+ 
+@@ -417,7 +417,7 @@ static void bond_ipsec_del_sa(struct xfrm_state *xs)
+ 		return;
+ 
+ 	bond = netdev_priv(bond_dev);
+-	slave = rtnl_dereference(bond->curr_active_slave);
++	slave = rcu_dereference(bond->curr_active_slave);
+ 
+ 	if (!slave)
+ 		return;
+@@ -442,7 +442,7 @@ static bool bond_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *xs)
+ {
+ 	struct net_device *bond_dev = xs->xso.dev;
+ 	struct bonding *bond = netdev_priv(bond_dev);
+-	struct slave *curr_active = rtnl_dereference(bond->curr_active_slave);
++	struct slave *curr_active = rcu_dereference(bond->curr_active_slave);
+ 	struct net_device *slave_dev = curr_active->dev;
+ 
+ 	if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
+-- 
+2.20.1
+
