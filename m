@@ -2,65 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23B67219179
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 22:28:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D67621918B
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 22:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbgGHU1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 16:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49254 "EHLO
+        id S1726220AbgGHUcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 16:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726347AbgGHU1O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 16:27:14 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191D8C061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 13:27:14 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id s26so6827292pfm.4
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 13:27:14 -0700 (PDT)
+        with ESMTP id S1725915AbgGHUco (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 16:32:44 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C12BC061A0B;
+        Wed,  8 Jul 2020 13:32:44 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id o2so4518907wmh.2;
+        Wed, 08 Jul 2020 13:32:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ToJzbdYs6xui2Ecf1WAzRUlAxl4aife6b607dTzimxw=;
-        b=XU+WP2iYp+FLAs8byopqgt3gmQdT0Pza4tUKPy8Wnjoqw1jAFBHHuKvx3jgitCC/ON
-         d+eUnSmaVIGh5qJXXOFm3M1cGhGht/ijNg2phhbZUd0df0ZsezwoaRHIYTm11JoUVZ5k
-         9HvrCI3UBcdFjZgykaWLkPbK6S5iRfyclIOzazY72B1fpz+QmrpkWujl7/7jzlJDpMg5
-         7k/T0J/04ya/OehQPEtQKqz0BNwLffI+sA88qQNHq8NLnpZADYU95s3Y0FTdwzMXrMIt
-         +nU/t/0vAM5GXrPNGUM9v+MksXkH7jg9+spBGtBc+kJyo6rTYkFWauWh5Ik1d/Qc25Q0
-         dsAw==
+        bh=BWHchiefPK+XOTzjJQ+4nudfM6T1kJ3R4r+KV6BHsM0=;
+        b=lcODy2Gu+QWAnBnAkIOmzziVbPMqUlV/u08v4JxX6n59setch3cdOg7Hq+L8IoooSh
+         jXaGfkSnRN6t5NwIYkX5gUoz5mrxUsAVHP1nI7u+D4gP/+qvFtVqrFEOyI14nenT6NBt
+         J+fFm6j1eC1x2TPqFEZSJ+6/G/hT48VopmGoQN+vvy/qLeeUGb93iZJ6rxDRfiRQDFjh
+         8f+o8AHY4j2nja/A6o3xHl2SXUyN0YGTXP56b9l0cc9InbsIMRxb22a4K1h4iIs24V/V
+         yLK/QNE0U1lGO6mdD5Dr3642DwlnZ3dAdkFWJwg53Hd3Kw3NnUL9DSanL+RajIvBnf3a
+         QLGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ToJzbdYs6xui2Ecf1WAzRUlAxl4aife6b607dTzimxw=;
-        b=N2HIL61f8/VqFq++/GfE2LWeAgvamlVkCcZCJwxfN3bLRenrI9+ffI2ItnUh1lKrZX
-         d9OTyBjerAMdfyguo9CcvBi2hTiCvV8R1YlFntLvE6xdhWnfjsRjQ49IXJ4QQEvCEPrN
-         kQqCVE0zbcYGyLSgs/XKbv+jRn+Dgc+RS/RZzgNVNkdFNFNAlwsEwXuNC53Gu4kHHDtV
-         djMUqwrwZc7cpcHWEuwZt8MbDN+ze6BAkTvUOhGgTHYNwAtc9CRSomc/iadp0KmcF9yz
-         42cX5H6b8KPz+kGbqPoHora8T1Kp6IZQbwiPeQOQjJldrVpN79voEsyR49OnKeMLXmY/
-         TY0g==
-X-Gm-Message-State: AOAM530owK80/aX4tDiu8BBJUCej9rEwkicLXGvMiEPc1AFTZdQFB0sv
-        8jxADpxgBImMaNlgxGuueJJ3eGVp
-X-Google-Smtp-Source: ABdhPJwIWvOky0mgQQ7BnPTAe7cCLMlmyCR/XRcYOaI6Bq4/dkGwxdFgy/8m1RIvphKU5nuz+k+2Kg==
-X-Received: by 2002:aa7:8b4b:: with SMTP id i11mr55933196pfd.123.1594240033394;
-        Wed, 08 Jul 2020 13:27:13 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id t73sm586052pfc.78.2020.07.08.13.27.07
+        bh=BWHchiefPK+XOTzjJQ+4nudfM6T1kJ3R4r+KV6BHsM0=;
+        b=VE3OnmbpU50CfDfxEgzUScRTEFvIivor+JwvUQfakTTOXDcOgppbuFKdXjcrjBiOR3
+         8mDZAWJSRtHwgTKNN3D7UnbxfJ9jIJM063j1cjGZi8bbiH/TTkDtZnINSFlivQoOTiAO
+         bn6fOrbdYU1ShVqupp5ThMsnNexUCS3OGZfM4xQsUgED+B/uz0BhmzowutHnD4q5vLhe
+         V7lACPMciqoCBCNWKiCavw04KGDsWlLOZ08SsDLh9WcN9p1OkptLzUcbqdVAg0YeLEG1
+         kAf/9LWRyFrK4z9vCEoG7BBNG4kFy4KtbUMsGMiuW8WCMETnpGIQhV7zIHLpolyffJqq
+         8g2A==
+X-Gm-Message-State: AOAM533hS4BcHT2l6zUHcqVLUwjA6N+7F1rzCSh+5m/U2c/clDhsS4LL
+        Zzowphl+wlOz0NE1RrwACLbdiQGi
+X-Google-Smtp-Source: ABdhPJxvTN6Wu8aBc/hXBxREqaAtUlzZSvk/MJVq7oOYj/XUSs/Kn0NZKzfin8g+fvkp4bQRtUmOiA==
+X-Received: by 2002:a7b:cb92:: with SMTP id m18mr9057074wmi.94.1594240362948;
+        Wed, 08 Jul 2020 13:32:42 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id s10sm1428653wme.31.2020.07.08.13.32.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jul 2020 13:27:12 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 1/2] irq_work: Export symbol
- "irq_work_queue_on"
-To:     David Miller <davem@davemloft.net>, xiangning.yu@alibaba-inc.com
-Cc:     netdev@vger.kernel.org
-References: <12188783-aa3c-9a83-1e9f-c92e37485445@alibaba-inc.com>
- <20200708.123750.2177855708364007871.davem@davemloft.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e6ff5906-45a6-79c7-7f91-830eccea8a58@gmail.com>
-Date:   Wed, 8 Jul 2020 13:27:06 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        Wed, 08 Jul 2020 13:32:41 -0700 (PDT)
+Subject: Re: [PATCH][next] net: systemport: fix double shift of a vlan_tci by
+ VLAN_PRIO_SHIFT
+To:     Colin King <colin.king@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200708183723.1212652-1-colin.king@canonical.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <3e581bfd-7447-881f-1e0b-9ab1ccd4496d@gmail.com>
+Date:   Wed, 8 Jul 2020 13:32:38 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200708.123750.2177855708364007871.davem@davemloft.net>
+In-Reply-To: <20200708183723.1212652-1-colin.king@canonical.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,28 +73,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 7/8/20 12:37 PM, David Miller wrote:
-> From: "YU, Xiangning" <xiangning.yu@alibaba-inc.com>
-> Date: Thu, 09 Jul 2020 00:38:16 +0800
+On 7/8/2020 11:37 AM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
->> @@ -111,7 +111,7 @@ bool irq_work_queue_on(struct irq_work *work, int cpu)
->>  	return true;
->>  #endif /* CONFIG_SMP */
->>  }
->> -
->> +EXPORT_SYMBOL_GPL(irq_work_queue_on);
+> Currently the u16 skb->vlan_tci is being right  shifted twice by
+> VLAN_PRIO_SHIFT, once in the macro skb_vlan_tag_get_pri and explicitly
+> by VLAN_PRIO_SHIFT afterwards. The combined shift amount is larger than
+> the u16 so the end result is always zero.  Remove the second explicit
+> shift as this is extraneous.
 > 
-> You either removed the need for kthreads or you didn't.
-> 
-> If you are queueing IRQ work like this, you're still using kthreads.
-> 
-> That's why Eric is asking why you still need this export.
-> 
+> Fixes: 6e9fdb60d362 ("net: systemport: Add support for VLAN transmit acceleration")
+> Addresses-Coverity: ("Operands don't affect result")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-I received my copy of the 2/2 patch very late, I probably misunderstood
-the v2 changes.
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 
-It seems irq_work_queue_on() is till heavily used, and this makes me nervous.
-
-Has this thing being tested on 256 cores platform ?
-
+The change was forward ported from a 4.9 kernel where the shift is not
+done, I should have checked the helper usage, thanks!
+-- 
+Florian
