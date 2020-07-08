@@ -2,81 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A70A321948E
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 01:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FC54219494
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 01:48:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726072AbgGHXsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 19:48:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42328 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725787AbgGHXsP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jul 2020 19:48:15 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 49F3D20720;
-        Wed,  8 Jul 2020 23:48:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594252094;
-        bh=19UO96FB6A26kj4urfzwCUGYyyXLV9ts4L5kQP4qUs0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MATxVHoguBUq7R9Yd80Ooopp/CjcJuQi3hIYsAVTONFysanJd4UX0sDhlRYVjajIR
-         yrESSW7ZxisbtgUFc12Xadhmdg0uRvzWKygtop+71XWer6XRg+7+bOitaJJRj2N43G
-         TSLmayAE7B4IBG5872/B/dpTmLX8N80NWjj6Weo0=
-Date:   Wed, 8 Jul 2020 16:48:12 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Cc:     "Wang, Haiyue" <haiyue.wang@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Zhang, Xiao" <xiao.zhang@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Xing, Beilei" <beilei.xing@intel.com>,
-        "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>
-Subject: Re: [Intel-wired-lan] [net-next, v7 5/5] ice: add switch rule
- management for DCF
-Message-ID: <20200708164812.384ae8ea@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <eca3253391dd34a267e607dbd847d6878bc3a6fe.camel@intel.com>
-References: <20200619045711.16055-1-haiyue.wang@intel.com>
-        <20200701012557.40234-1-haiyue.wang@intel.com>
-        <20200701012557.40234-6-haiyue.wang@intel.com>
-        <eca3253391dd34a267e607dbd847d6878bc3a6fe.camel@intel.com>
+        id S1726244AbgGHXsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 19:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52128 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726112AbgGHXs0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 19:48:26 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97417C08C5CE
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 16:48:25 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id b9so50157plx.6
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 16:48:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KX2uewx3IUSFSrhS49nvHbreqfSp55lLuPQ39ByWwuc=;
+        b=VSTVR4XDCZkzC8WSBJX/KM/kGq0iHH2AcaBaZDwX5J91prDWjxtRm3s3HYgPSgN/gH
+         veaQZ9BPpfL/s4wD2q9BT8GIPNH9KkzzQ2iS0XPhAxWjlDKuLM7GqVWkH4fj6SxMa+gR
+         +SwRkobGC4/zeqpOJAwzIZX+ALIgbBGzMliAk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KX2uewx3IUSFSrhS49nvHbreqfSp55lLuPQ39ByWwuc=;
+        b=pCBbuP7UshWQ7Z9tSnk88v60zQereMoQtR6b+tfWRAawUqs4ye9OUXGTungvb50jv/
+         BXe2sklC++pSfvi6Bd3vThmoSGSNdEnikfc92xeeFqSZ1A675rLkwd83PuNA1UFixSYo
+         OnyGcWFK/cVunTHJTAlJmvYNkCflPVCYx/eLT5ePgbNWmcUqh4jaHgekfsvcX0Y5K5Jh
+         hZ0hc47EN9uJjIpiUNaPcVAeguRXMFE0qYWd3O1LfohSA00GDDdTVwNq7FPtAegt4YfD
+         wf/HiSIi+hT8o/MydxLaKINvlPb1FffVwrwsdDboxvR5sLnR21NRno6MfnUfmG4D6F7/
+         PoRA==
+X-Gm-Message-State: AOAM532XLQBW3MEEl5rgjwyYHfpIccilr9wkL8I4RJe+E3OayhgmQ1iF
+        ukwoyn8wue+HPGcrhNeCfC7Afg==
+X-Google-Smtp-Source: ABdhPJyiszI8/x+0s4vNHYAvtZesBdjqbGz/Qvm/wRI0AQQLImcB72/hJw/YuEZdEteyZw91l1ugpw==
+X-Received: by 2002:a17:902:9042:: with SMTP id w2mr53578773plz.9.1594252105178;
+        Wed, 08 Jul 2020 16:48:25 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id i125sm794790pgd.21.2020.07.08.16.48.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 16:48:24 -0700 (PDT)
+Date:   Wed, 8 Jul 2020 16:48:23 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     linux-kernel@vger.kernel.org, Sargun Dhillon <sargun@sargun.me>,
+        Christian Brauner <christian@brauner.io>,
+        Tycho Andersen <tycho@tycho.ws>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
+        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v6 3/7] fs: Add receive_fd() wrapper for __receive_fd()
+Message-ID: <202007081646.59E1A664@keescook>
+References: <20200706201720.3482959-1-keescook@chromium.org>
+ <20200706201720.3482959-4-keescook@chromium.org>
+ <20200707114923.6huxnb4e5vkl657a@wittgenstein>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200707114923.6huxnb4e5vkl657a@wittgenstein>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Jul 2020 22:55:21 +0000 Nguyen, Anthony L wrote:
-> > @@ -490,7 +476,7 @@ ice_aq_alloc_free_vsi_list(struct ice_hw *hw, u16
-> > *vsi_list_id,
-> >   *
-> >   * Add(0x02a0)/Update(0x02a1)/Remove(0x02a2) switch rules commands
-> > to firmware
-> >   */
-> > -static enum ice_status
-> > +enum ice_status
-> >  ice_aq_sw_rules(struct ice_hw *hw, void *rule_list, u16
-> > rule_list_sz,
-> >  		u8 num_rules, enum ice_adminq_opc opc, struct ice_sq_cd
-> > *cd)
-> >  {  
+On Tue, Jul 07, 2020 at 01:49:23PM +0200, Christian Brauner wrote:
+> On Mon, Jul 06, 2020 at 01:17:16PM -0700, Kees Cook wrote:
+> > For both pidfd and seccomp, the __user pointer is not used. Update
+> > __receive_fd() to make writing to ufd optional via a NULL check. However,
+> > for the receive_fd_user() wrapper, ufd is NULL checked so an -EFAULT
+> > can be returned to avoid changing the SCM_RIGHTS interface behavior. Add
+> > new wrapper receive_fd() for pidfd and seccomp that does not use the ufd
+> > argument. For the new helper, the allocated fd needs to be returned on
+> > success. Update the existing callers to handle it.
+> > 
+> > Reviewed-by: Sargun Dhillon <sargun@sargun.me>
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > ---
 > 
-> Hi Dave, Jakub,
-> 
-> This feature is only built when CONFIG_PCI_IOV is set. We end up with
-> this namespace issue using defconfig when checked against namespace.pl
-> since CONFIG_PCI_IOV is not enabled.
-> 	Externally defined symbols with no external references
->           ice_switch.o
->             ice_aq_sw_rules
-> 
-> From a previous patch, neither of you liked the use of CONFIG_ to
-> control static-ness. I wanted to check that you are ok with the
-> namespace issue or if you have a preferred method to resolve this
-> issue. I appreciate your feedback.
+> Hm, I'm not sure why 2/7 and 3/7 aren't just one patch but ok. :)
 
-IMHO that should be fine. I'd only trust namespace.pl on a all*config
-kernel, if at all.
+I wanted to do a "clean" move from one source to another without any
+behavioral changes first.
+
+> Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+
+Thanks!
+
+-- 
+Kees Cook
