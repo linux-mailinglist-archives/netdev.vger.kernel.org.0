@@ -2,170 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF5F52192EB
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:56:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD742192ED
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:56:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725982AbgGHV4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 17:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34738 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgGHV4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:56:02 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2EEDC061A0B;
-        Wed,  8 Jul 2020 14:56:01 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id ed14so60382qvb.2;
-        Wed, 08 Jul 2020 14:56:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7O5VagG2AewCrkpK9SMpTigVOJGwjJDU9ZCind3bOZY=;
-        b=dX/HRH8lGDtiuEUwwQcPIB6Rmp/9hPAxbL0QYrRNCh6Eqp1LDjrDX5gOCd4bIqt9M1
-         UDFACw6mrIVAHw0JCDeS1oxy1kKTkRpi7jITFmUcLK2Q8tDZ1oP9l7JSgzoQ81XCpSrZ
-         BoBLH8eko/OoiKxjFBUHGxm2DdGqpNVIf4lKBFPZ03Ik1D9DR2RW089tY9C4kuIvo0Cb
-         PLGbsYluvaJX0pG4bgW0ocikXHpxCBcDJmTKWEIN6YrBmvqpJcqxYGCT/HbdaokuD4ss
-         wUeJmGvHlsByzWxDyEixF7AYcFHLIB8Px69+GM+YwnL+ufmd75i5TXknaEaGrAjPVizl
-         8rxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7O5VagG2AewCrkpK9SMpTigVOJGwjJDU9ZCind3bOZY=;
-        b=W8iAgbW9h2YKt2n0s7jqkxU09KZi28mqRd2mr4qlG6WhP2DuLl5aAnG4V8oDLkcSFx
-         SVspV3vX0bIhWWWgVtpg8+SOS7KpHpA5YafYofTJLQwpr408GF3uvV/0kvzGZm+sD/S9
-         r0IV8QBjrF8B5n+zArybNqyQ42tow1sH1wzCf6J7z8hrndnuJQaEQskkJeiIx4Kfbzgb
-         bjMxfheOC0E8YZHui5Xa7/ECP/Gd/vXB2dCuATMnUZaj5Cu9Nn5SI89dGhnLORzcNrH5
-         XSdXsapr/uH8PD4Zm2lhStF8FzQQadvGA7LvDRRUL/obZZEDiC0bL7p3Jj0YGtC3TJx3
-         OV/Q==
-X-Gm-Message-State: AOAM530zXKYw8Y5VZGZO8HXo+2tEh7IDPw+jCKgcktgYwPBq+HiVSqIY
-        Zm+XkdI6s+f7AuhJsWWcCKAJdVIu2q/+Jgtu3GM=
-X-Google-Smtp-Source: ABdhPJw/d+8nsahqn0k5Lz5akcXmd5Qp6ML0LT/JIo4ucIXeBVVHslifRz0qD0McRxEzbwzuatQ75/NLkwe3KpO7MRU=
-X-Received: by 2002:a05:6214:8f4:: with SMTP id dr20mr55992303qvb.228.1594245361141;
- Wed, 08 Jul 2020 14:56:01 -0700 (PDT)
+        id S1726107AbgGHV4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 17:56:08 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:34576 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgGHV4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:56:08 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 068Lu4CS035725;
+        Wed, 8 Jul 2020 16:56:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1594245364;
+        bh=XaaHSvurwO3Of0+afndZ3dr3Py9hwzyQs4kynZ2rCpM=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=jLKM82n/+D+zYSPpQLkYMdZ6g/GEPJ2rejstUc1IAKA03waxs3IKEOuVhf5neu1vz
+         BO1qRqsUnlH2sBWzITsMeaXAHfUWlo2+XXVbb6XH8dV6Is7el2OEHGvGWpr3E5zoCV
+         PQtHETEcGuM5cnKKBfmHbeFy1baIcdx937XFtOOk=
+Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 068Lu3jQ063706
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 8 Jul 2020 16:56:04 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 8 Jul
+ 2020 16:56:03 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 8 Jul 2020 16:56:03 -0500
+Received: from [10.250.32.229] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 068Lu3GY028307;
+        Wed, 8 Jul 2020 16:56:03 -0500
+Subject: Re: [PATCH net-next 1/2] dt-bindings: dp83867: Fix the type of device
+To:     Fabio Estevam <festevam@gmail.com>, <davem@davemloft.net>
+CC:     <robh+dt@kernel.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+References: <20200708212422.7599-1-festevam@gmail.com>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <62d60830-4209-869d-fe2c-fb30a642e2c3@ti.com>
+Date:   Wed, 8 Jul 2020 16:55:58 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200702200329.83224-1-alexei.starovoitov@gmail.com> <20200702200329.83224-3-alexei.starovoitov@gmail.com>
-In-Reply-To: <20200702200329.83224-3-alexei.starovoitov@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 8 Jul 2020 14:55:50 -0700
-Message-ID: <CAEf4BzZA3_eXuUQtUCUF6hMk5winEYgsUeT1HoJCFnz9REkjZQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/3] bpf: Add BPF program and map iterators as
- built-in BPF programs.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200708212422.7599-1-festevam@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 1:04 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> From: Alexei Starovoitov <ast@kernel.org>
->
-> The program and map iterators work similar to seq_file-s.
-> Once the program is pinned in bpffs it can be read with "cat" tool
-> to print human readable output. In this case about BPF programs and maps.
-> For example:
-> $ cat /sys/fs/bpf/progs
->   id name            pages attached
->    5    dump_bpf_map     1 bpf_iter_bpf_map
->    6   dump_bpf_prog     1 bpf_iter_bpf_prog
+Fabio
 
-
-
-> $ cat /sys/fs/bpf/maps
->   id name            pages
->    3 iterator.rodata     2
+On 7/8/20 4:24 PM, Fabio Estevam wrote:
+> DP83867 is an Ethernet PHY, not a charger, so fix the documentation
+> accordingly.
 >
-> To avoid kernel build dependency on clang 10 separate bpf skeleton generation
-> into manual "make" step and instead check-in generated .skel.h into git.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> Fixes: 74ac28f16486 ("dt-bindings: dp83867: Convert DP83867 to yaml")
+> Signed-off-by: Fabio Estevam <festevam@gmail.com>
 > ---
->  kernel/bpf/preload/iterators/.gitignore       |   2 +
->  kernel/bpf/preload/iterators/Makefile         |  57 +++
->  kernel/bpf/preload/iterators/README           |   4 +
->  kernel/bpf/preload/iterators/iterators.bpf.c  |  81 ++++
->  kernel/bpf/preload/iterators/iterators.skel.h | 359 ++++++++++++++++++
->  5 files changed, 503 insertions(+)
->  create mode 100644 kernel/bpf/preload/iterators/.gitignore
->  create mode 100644 kernel/bpf/preload/iterators/Makefile
->  create mode 100644 kernel/bpf/preload/iterators/README
->  create mode 100644 kernel/bpf/preload/iterators/iterators.bpf.c
->  create mode 100644 kernel/bpf/preload/iterators/iterators.skel.h
+>   Documentation/devicetree/bindings/net/ti,dp83867.yaml | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
-
-[...]
-
-> +struct seq_file;
-> +struct bpf_iter_meta {
-> +       struct seq_file *seq;
-> +       __u64 session_id;
-> +       __u64 seq_num;
-> +} __attribute__((preserve_access_index));
-> +
-> +struct bpf_map_memory {
-> +       __u32 pages;
-> +};
-
-forgot __attribute__((preserve_access_index)) here?
-
-> +struct bpf_map {
-> +       __u32 id;
-> +       struct bpf_map_memory memory;
-> +       char name[16];
-> +} __attribute__((preserve_access_index));
-> +
-
-[...]
-
-> +SEC("iter/bpf_map")
-> +int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
-> +{
-> +       struct seq_file *seq = ctx->meta->seq;
-> +       __u64 seq_num = ctx->meta->seq_num;
-> +       struct bpf_map *map = ctx->map;
-> +
-> +       if (!map)
-> +               return 0;
-> +
-> +       if (seq_num == 0)
-> +               BPF_SEQ_PRINTF(seq, "  id name            pages\n");
-> +
-> +       BPF_SEQ_PRINTF(seq, "%4u%16s%6d\n", map->id, map->name, map->memory.pages);
-
-Here and below, please use %-16s for left-aligned strings for map name
-and prog name.
-
-> +       return 0;
-> +}
-> +
-> +SEC("iter/bpf_prog")
-> +int dump_bpf_prog(struct bpf_iter__bpf_prog *ctx)
-> +{
-> +       struct seq_file *seq = ctx->meta->seq;
-> +       __u64 seq_num = ctx->meta->seq_num;
-> +       struct bpf_prog *prog = ctx->prog;
-> +       struct bpf_prog_aux *aux;
-> +
-> +       if (!prog)
-> +               return 0;
-> +
-> +       aux = prog->aux;
-> +       if (seq_num == 0)
-> +               BPF_SEQ_PRINTF(seq, "  id name            pages attached\n");
-> +
-> +       BPF_SEQ_PRINTF(seq, "%4u%16s%6d %s %s\n", aux->id, aux->name, prog->pages,
-> +                      aux->attach_func_name, aux->linked_prog->aux->name);
-> +       return 0;
-> +}
-> +char LICENSE[] SEC("license") = "GPL";
-
-[...]
+> diff --git a/Documentation/devicetree/bindings/net/ti,dp83867.yaml b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
+> index 554dcd7a40a9..c6716ac6cbcc 100644
+> --- a/Documentation/devicetree/bindings/net/ti,dp83867.yaml
+> +++ b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
+> @@ -24,7 +24,7 @@ description: |
+>     IEEE 802.3 Standard Media Independent Interface (MII), the IEEE 802.3 Gigabit
+>     Media Independent Interface (GMII) or Reduced GMII (RGMII).
+>   
+> -  Specifications about the charger can be found at:
+> +  Specifications about the Ethernet PHY can be found at:
+>       https://www.ti.com/lit/gpn/dp83867ir
+>   
+>   properties:
+Acked-by: Dan Murphy <dmurphy@ti.com>
