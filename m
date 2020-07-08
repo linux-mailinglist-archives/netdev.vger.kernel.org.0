@@ -2,117 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8011217FBE
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 08:44:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32041217FC3
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 08:44:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729545AbgGHGoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 02:44:09 -0400
-Received: from mail-am6eur05on2058.outbound.protection.outlook.com ([40.107.22.58]:6024
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726174AbgGHGoJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jul 2020 02:44:09 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GYvgFpgozfAjBNuWo4+YYZd+yg+dWIORmhCcCAKUWxGX9PMAVYOyvFU/2+nXqNa1+fQinSjrFdD52lQz9QnwV/xSLJCW1TcA3ffWu+XK2KmOPas0otMS651ixhBsnDTbsZMvTWe/1glElkRs2NawhVUsNRupuZPtduiK5Jxd9gEH4CcWuQv6npMLeotaxRlUt1R0rdsxoWch2u/TVuHqwwBFKlSpzsLlrY95NMzcDjOPazFRedTer/xRob+22R2mSUhBdFYZPwjXvx+zgun90ljxeMkYfVoX7Zl1JzL8K1+g6LPfewxGFY1lkQfgxxzKcfQ+ZHNfjmcQbYVctwBQNA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HrFVdzzqTaJI64osuU0VOiHu+1+IrpQ29Ew8/kCqIYQ=;
- b=k3M3VkyVyylYJfVo2+j/JtxCCTC3NC+IxxPeTFCI/GcBA7Fi+9MZcpg6qXWDeKZDXQtfz02zv4o3q3TJ0wlrXWvUF7RR8UenCySOhvIY7JDfuN7L55CPZnfCSK99E3dNSCdKMJ3RjTBv8MGVPI5XUeHNuVGss+gv099RPdf31J+LWJAskFr/WOnK+TpeM830nDPjWiA1GFb8B6PNgmk/wHXweu1kpLNrbwAI4Hsma0TPr8DfhuN+apijuSP602VQKZcOdEHpKjAby1+xf8fLltTNbNy7RjUfFsoS8A+SLAaYnPnoZtigDSeoMufl01/Ida8HHk85NX5ibRIIojT5Qw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HrFVdzzqTaJI64osuU0VOiHu+1+IrpQ29Ew8/kCqIYQ=;
- b=CcA4H9xrfnY7gDuZ08WwCguNZDyHNk8bETasaBVdx2PgncCs6EEpggDZlxPbj196Vl+jOLZlxP7HpqRJ/FwI5aFtTak2aKUHqcsZRDyHIDHGT5nddIU4LNqBKsOxa4kg6hnqp0sdCEVzY+aI6fxxJZ0bQx29c+4auHsQW72IvHw=
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-Received: from VI1PR0501MB2205.eurprd05.prod.outlook.com
- (2603:10a6:800:2a::20) by VI1PR05MB6398.eurprd05.prod.outlook.com
- (2603:10a6:803:101::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.24; Wed, 8 Jul
- 2020 06:44:05 +0000
-Received: from VI1PR0501MB2205.eurprd05.prod.outlook.com
- ([fe80::d58c:3ca1:a6bb:e5fe]) by VI1PR0501MB2205.eurprd05.prod.outlook.com
- ([fe80::d58c:3ca1:a6bb:e5fe%5]) with mapi id 15.20.3174.021; Wed, 8 Jul 2020
- 06:44:05 +0000
-Subject: Re: [net-next 09/15] Revert "net/tls: Add force_resync for driver
- resync"
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Boris Pismenny <borisp@mellanox.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-References: <20200627211727.259569-1-saeedm@mellanox.com>
- <20200627211727.259569-10-saeedm@mellanox.com>
-From:   Tariq Toukan <tariqt@mellanox.com>
-Message-ID: <4ea0a2c2-be2d-e99b-3fa9-6339640219b6@mellanox.com>
-Date:   Wed, 8 Jul 2020 09:44:00 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-In-Reply-To: <20200627211727.259569-10-saeedm@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM4PR05CA0002.eurprd05.prod.outlook.com (2603:10a6:205::15)
- To VI1PR0501MB2205.eurprd05.prod.outlook.com (2603:10a6:800:2a::20)
+        id S1729804AbgGHGov (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 02:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729794AbgGHGov (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 02:44:51 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11BDCC061755
+        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 23:44:51 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id h16so14824433ilj.11
+        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 23:44:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9kqWBaMefVTlEcS1n8EE12tWXnM1tMbGs9EizVGJu7M=;
+        b=c5We1pmV5yKLEFj+CAo1NyFIvVOIU5PB0+BtpT74M44zZ52k40+VKh9khwZIX8l0VV
+         DQsKDpJkCRVb0jM756+22IPx2ZeY241JX3Kynl2fErcEzhpoviFo23VqlSusI+zRhkhg
+         v3KavVLj2Zu+xrwfNLc7IJ6dWGZdmwmvAsjpflkiqv8s4dUUAgV+QVcS9YnsmC3eXJbC
+         z78O4wkTNHh05b/5LcnWhPyyaBUsKiR8JZrzVpchojyzsWmvC6aQX6FjqV3dynhX0IAq
+         WTS7xssgVVi16w6Ep+DXkQN8HpDp5PGAar2xsxJqqV/bpanW52i3v7rqtyw/Y1F0SLLm
+         X5uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9kqWBaMefVTlEcS1n8EE12tWXnM1tMbGs9EizVGJu7M=;
+        b=nU4av7DIkWuPrT58SoYhEbjigoByUUhjDc4eISAhC+z1PCRM3K7wZCkATskK0R01P6
+         8AOPiPBma+0C3Ctv2Hi4NNRkxtJOEtfVjcZKm74N0jj7iGyB1oqXR/PxVU35uY5ioe5M
+         S88YpdYeJD+T8UByitWpjLIDpbl4lFIJuz71G1qudPqqlOjucM14AXSmkq12xGzwJiMu
+         583k2T1gjm6xrgx769lcJq+tyv/dPKsaAeWnFFE2Z1Uia6LEQrAH5SIo4jkaoGO8TP+7
+         lPNzNTEeSqFk7OrP7LAzLdnyFT01YmB5dG7slKdDqujOWAzYVZbNqX+TAvPugeOmObZN
+         W70Q==
+X-Gm-Message-State: AOAM531otjbRzd5nZ1iUL1dksLTOxs02fTe1k3cmi+MwxMhAXQUy6Yht
+        Zp3/HnxfKP33fRY6GcS1eWsJAs2CA1KH56OxDAy8RwDu
+X-Google-Smtp-Source: ABdhPJyPeUmy3dV1MBIBvdLOpjguYfT74XJ96HjyEyZLOHpMiny1VTLwycwJUGi6VJ77PzPr/mcJ/vn/ILDWxyj0Hns=
+X-Received: by 2002:a92:b655:: with SMTP id s82mr41237244ili.268.1594190690290;
+ Tue, 07 Jul 2020 23:44:50 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.110] (77.126.93.183) by AM4PR05CA0002.eurprd05.prod.outlook.com (2603:10a6:205::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20 via Frontend Transport; Wed, 8 Jul 2020 06:44:03 +0000
-X-Originating-IP: [77.126.93.183]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 0c5105df-a6f2-4953-fe9c-08d8230a4e88
-X-MS-TrafficTypeDiagnostic: VI1PR05MB6398:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB63988D0548C32DF92CE8DF3FAE670@VI1PR05MB6398.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:357;
-X-Forefront-PRVS: 04583CED1A
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: L9/BKzGuh4ItJPFPZa095XPH+TXUgxEud5EPu+bktA1a249sY+aWABHomnR8W9M55h9nqjUmhQI82m4bfPYVz/9O3vcaSHDs2DhzVAZYTQLKNLO7lKY66M+nGqWYCKb7z3gknyd3OzktGQa3E7ACRIvyeDnuTjJHhEr/Tb7a5djTOdtP2pTMobHRTaCjwZVpVnNl7MLIaau/MsxTLBwVWd+XlmVOis7NGPziRHRVCbMCkWMRY5XC/jfumwhPOEqwy9IpucfxD+aQqLKp2m9rEohWUcJLJhwI/0XHysm7Y6IGYHHyl1HVXrIce7xhyOhjeoJweBnJqLjneOykt+N21o1bvFprNZOuMjrhhIl56tFql1SxCZiLBzlLzbru2WEP
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0501MB2205.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(39860400002)(346002)(376002)(366004)(86362001)(107886003)(5660300002)(6486002)(31696002)(186003)(54906003)(83380400001)(16526019)(2616005)(110136005)(8936002)(2906002)(956004)(31686004)(316002)(16576012)(66946007)(8676002)(26005)(53546011)(4326008)(4744005)(36756003)(66556008)(478600001)(66476007)(52116002)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: VpQtRz4uHma2V0ZUtN+B82USMP7m6W0sLC9Lqo4odaOblOFn8KkR4gOIer8LZ2weJgYfa9gVxtwXpmYHztygGqzGTsmu1YpVuYESyCKg0Zd4mfI7HAPUJMp2n9NfDLvopRJH6j8Y6778lTWnrViaFwoXMb/HHf1kvbsYQBfqrQZJ7qIxp2IXZ/ojNFuhmWL5oEB7YC6vgRmKaPphQ91IKqjehhQHosRzB0benzdLyVy2bOE2U0un4Lo7eXIMdS305tw2AETFfn2D/Gaxqlx6wkiSsLa+oCwWUYOKPOSefK9DwE9274JudACjOnab8uYNJ8QuU5RjnMFYkCa9ZixvZwDzi+CNSyn4foLzr0Zmke+mGy4ZoOsI7QegnBj+YehdaFX9J81fVgUD9hsivtVDQDMs9n3ujTbIoLNOuziE7VSx4Z7qGw9SNbI+H1idc/RbENqIAKASF0qRVSzNjVJhmNF6m/UrhzeBaj9QY3BaArw=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0c5105df-a6f2-4953-fe9c-08d8230a4e88
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0501MB2205.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2020 06:44:05.1829
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5O0KaB5++gusi2qxmMdehu1ReNPkDK5t8UEZB1gaNlhirElbDo0imqKvlv6t5zHuya5vHtUSPKY8s4Fn/XgHiQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6398
+References: <20200626104610.21185-1-maximmi@mellanox.com>
+In-Reply-To: <20200626104610.21185-1-maximmi@mellanox.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 7 Jul 2020 23:44:38 -0700
+Message-ID: <CAM_iQpUSY2Oxy2umgM5-DwMg9Y9UXX-Gkf=O4StPJFVz-N7PzA@mail.gmail.com>
+Subject: Re: [RFC PATCH] sch_htb: Hierarchical QoS hardware offload
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Dave Taht <dave.taht@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 26, 2020 at 3:46 AM Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
+>
+> HTB doesn't scale well because of contention on a single lock, and it
+> also consumes CPU. Mellanox hardware supports hierarchical rate limiting
+> that can be leveraged by offloading the functionality of HTB.
 
+True, essentially because it has to enforce a global rate limit with
+link sharing.
 
-On 6/28/2020 12:17 AM, Saeed Mahameed wrote:
-> From: Boris Pismenny <borisp@mellanox.com>
-> 
-> This reverts commit b3ae2459f89773adcbf16fef4b68deaaa3be1929.
-> Revert the force resync API.
-> Not in use. To be replaced by a better async resync API downstream.
-> 
-> Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-> Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
-> Reviewed-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-> ---
->   include/net/tls.h    | 12 +-----------
->   net/tls/tls_device.c |  9 +++------
->   2 files changed, 4 insertions(+), 17 deletions(-)
-> 
+There is a proposal of adding a new lockless shaping qdisc, which
+you can find in netdev list.
 
-Hi Dave,
+>
+> Our solution addresses two problems of HTB:
+>
+> 1. Contention by flow classification. Currently the filters are attached
+> to the HTB instance as follows:
+>
+>     # tc filter add dev eth0 parent 1:0 protocol ip flower dst_port 80
+>     classid 1:10
+>
+> It's possible to move classification to clsact egress hook, which is
+> thread-safe and lock-free:
+>
+>     # tc filter add dev eth0 egress protocol ip flower dst_port 80
+>     action skbedit priority 1:10
+>
+> This way classification still happens in software, but the lock
+> contention is eliminated, and it happens before selecting the TX queue,
+> allowing the driver to translate the class to the corresponding hardware
+> queue.
+>
+> Note that this is already compatible with non-offloaded HTB and doesn't
+> require changes to the kernel nor iproute2.
+>
+> 2. Contention by handling packets. HTB is not multi-queue, it attaches
+> to a whole net device, and handling of all packets takes the same lock.
+> Our solution offloads the logic of HTB to the hardware and registers HTB
+> as a multi-queue qdisc, similarly to how mq qdisc does, i.e. HTB is
+> attached to the netdev, and each queue has its own qdisc. The control
+> flow is performed by HTB, it replicates the hierarchy of classes in
+> hardware by calling callbacks of the driver. Leaf classes are presented
+> by hardware queues. The data path works as follows: a packet is
+> classified by clsact, the driver selectes the hardware queue according
+> to its class, and the packet is enqueued into this queue's qdisc.
 
-Please cherry-pick this revert to net as well.
-The force_resync API still exists there, with no usage.
+Are you sure the HTB algorithm could still work even after you
+kinda make each HTB class separated? I think they must still share
+something when they borrow bandwidth from each other. This is why I
+doubt you can simply add a ->attach() without touching the core
+algorithm.
 
-Regards,
-Tariq
+Thanks.
