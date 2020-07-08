@@ -2,212 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA9D4218AF6
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 17:15:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59BDB218B2B
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 17:26:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730125AbgGHPPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 11:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
+        id S1730136AbgGHP0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 11:26:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729022AbgGHPPh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 11:15:37 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5925C061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 08:15:37 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id f18so3620783wml.3
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 08:15:37 -0700 (PDT)
+        with ESMTP id S1729022AbgGHP0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 11:26:34 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24644C061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 08:26:34 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id x8so17425103plm.10
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 08:26:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xWBTRBhMqunHOj4YJ5dV+lc5++IAMIqO7O5wAwFK16E=;
-        b=IBpViC30bmuY0aMeTBgYYE7fYv8dIWFNKFtXOoBOVZX5BvRyQAi9jNc6NcBAS60oXC
-         ODphL7JL5RdJ9Zh+bw0fYs5co8ea7v4yQ+vBc1npq3IWX9LmRNlIKgaqX9k9jDMQs21K
-         n3T28EBBhxmdsV1nGhW9e4MEIPZ7ZakZhQbe0xmeeGU+SwfEy0ImgL90YFmoAc9Y7oQO
-         AiCDDXVRAIsj36X8l6bW72hzJfqB9Ds7zFTf1k8ZzytiETLDcFWj6iUd4qGVVSv+/iFv
-         VQnURlTf9VCYvuIJmRGgT9N3kc+sCvx9JxIN+9QM6OACj9X3t645x9wi6r9W/21eC5Ui
-         e4iw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=bCwi179233gzohscNZ7VZ+bahR6sC1TbXO6rxG4BpGY=;
+        b=hjGrTuxYzCjidq48q03Yt62F4KlEPwyB10K6mxgKoLOFlj4YigHiTcRiMXFKDUdZGB
+         +w9p0Lz3v201kVpUxlKQHhbiYVZ1aQPcZhtj6sOsPGHYQqmM15FZz9yXPuVlLyb+SkYW
+         tOA856TPAz2FdcsRlN87zc3HopsC6KsCQaTIZmzVnxHelmzJfBFI7TrxlWMlPBf+36Wo
+         aKnYRQ1jFeg1iAFTf/D/lNy0kv0CGzb3l9IpAZ0nTLKLGk+qAr/8sHZOeW0n8BuRASQ4
+         AI0oPna8TJc9h+vt9T1SA8b3KpJtVd/AK10LLkMPIIpoKBy9OFsMM+xZ3EMMtKU2atIR
+         B5aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xWBTRBhMqunHOj4YJ5dV+lc5++IAMIqO7O5wAwFK16E=;
-        b=Z2qjvpbISiebKSUrxK6HaY4bSoHxR08Dnh9HauR9lJszU2b+smDF4ZYcz7NlPdOWwH
-         6zpe5/3FLZb95jAoE7HDp1jR+PSopxoTEhumOyPPSczrYiOvlsjed4RotaAx8P92yCwM
-         aN+ME+8C9RuRGjxAUJio9atakEKRe6IHRbgzF+x7omZDzpTNGQOct59yWKYOmHTfDwDI
-         eipW66MkVUQ9CF3O0UZgEUrGhC1ilL8M7uar1w7B/T5VhLAixT2crRYik2rIVFHwBLAC
-         3+QtolUHPZlR3ZJ9thhiMF7Rdp/eGMiMI6tZMx0ffJfdSJxkKIOIBeYwLEGzLhJjzdZ7
-         znXg==
-X-Gm-Message-State: AOAM533HhmmQfh6ieB8l9rzFP2byXVDZmlXI17AYB9mp3GXkcRAvuq2y
-        ib8g7UZHw5/fcRYHI3g9i14feVwOaAPknetJefHTWw==
-X-Google-Smtp-Source: ABdhPJwyogSayFVl8/gyXE4ClQk0n7IxYRyXrGig9XGZYX/+V6UOLYpu3pW1nwtG4w9wbUZO7Rv7Cph2H6Mnhs2szew=
-X-Received: by 2002:a05:600c:2295:: with SMTP id 21mr9554339wmf.87.1594221336191;
- Wed, 08 Jul 2020 08:15:36 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=bCwi179233gzohscNZ7VZ+bahR6sC1TbXO6rxG4BpGY=;
+        b=nAlBrdOwLmqmyPr9KfavYU0iu4L6Gik2LnalepTkvsYL2xKKxmSJoHp8F+xMXxVTWV
+         EV2Jf58I3yC8qzrKO0KaKCDKyJB2auxgzDY+POcS+50zDJbUFJ82r4IzHqrArtLHZyNy
+         +ZA666OO7ZRCNOYat6Y9z60ZxGpHfPU2ij7Hcp1l9GRUclNpxA3MmnG6nRRUwRl2cpYS
+         ekepniA2RflyAvw6e5P31AWyH9EZEDLTRlFq8yD6U239lXmbx43AjuzFbU7gtPO24Dcf
+         DsNJnbsjD2c+D4/pTBbIGD+hFtNw3hpxH1lXkkZWafaWlzCr3M33sPbmDjUNUrycbJ2l
+         t88Q==
+X-Gm-Message-State: AOAM530YYCc0DVD5+rfxrvPgiUuqnWPFNvRKULKCgyt+G4aG5wYTUSuW
+        az+4EOgu3RYBcYjFWmP2gZHQPQ==
+X-Google-Smtp-Source: ABdhPJxRGNJYA0DhkA+WGXzwW+7Xqh/YULG144eBXOZBE+8swcyKrgdO01GNCli/4pY+t+j+EbaTqA==
+X-Received: by 2002:a17:90a:2069:: with SMTP id n96mr10835970pjc.213.1594221992199;
+        Wed, 08 Jul 2020 08:26:32 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id f15sm222513pgr.36.2020.07.08.08.26.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 08:26:31 -0700 (PDT)
+Date:   Wed, 8 Jul 2020 08:26:23 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Netdev <netdev@vger.kernel.org>,
+        dsahern@gmail.com, David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH v2 iproute2-next] devlink: Add board.serial_number to
+ info subcommand.
+Message-ID: <20200708082623.2252d2e8@hermes.lan>
+In-Reply-To: <CAACQVJpxsOXFPaSn9pjqeEeVRu_VJumvndpPpYNs_zx5SmiHgA@mail.gmail.com>
+References: <1593416584-24145-1-git-send-email-vasundhara-v.volam@broadcom.com>
+        <20200705110301.20baf5c2@hermes.lan>
+        <CAACQVJogqmNG_jb0W-gV23uWTcpitrx=TF9asZ9s0kfrjbB2ZA@mail.gmail.com>
+        <20200708113505.GA3667@nanopsycho.orion>
+        <CAACQVJpxsOXFPaSn9pjqeEeVRu_VJumvndpPpYNs_zx5SmiHgA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200707211449.3868944-1-irogers@google.com> <20200708111935.GK1320@kernel.org>
-In-Reply-To: <20200708111935.GK1320@kernel.org>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 8 Jul 2020 08:15:24 -0700
-Message-ID: <CAP-5=fXr2xKbiYaNKOGytnwgNYOKYuGK-qT+GYpJZ4tdPb88eA@mail.gmail.com>
-Subject: Re: [PATCH] perf parse-events: report bpf errors
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 8, 2020 at 4:19 AM Arnaldo Carvalho de Melo <acme@kernel.org> wrote:
->
-> Em Tue, Jul 07, 2020 at 02:14:49PM -0700, Ian Rogers escreveu:
-> > Setting the parse_events_error directly doesn't increment num_errors
-> > causing the error message not to be displayed. Use the
-> > parse_events__handle_error function that sets num_errors and handle
-> > multiple errors.
->
-> What was the command line you used to exercise the error and then the
-> fix?
+On Wed, 8 Jul 2020 20:34:50 +0530
+Vasundhara Volam <vasundhara-v.volam@broadcom.com> wrote:
 
-You need something to stand in for the BPF event so:
+> On Wed, Jul 8, 2020 at 5:05 PM Jiri Pirko <jiri@resnulli.us> wrote:
+> >
+> > Wed, Jul 08, 2020 at 11:40:12AM CEST, vasundhara-v.volam@broadcom.com wrote:  
+> > >On Sun, Jul 5, 2020 at 11:33 PM Stephen Hemminger
+> > ><stephen@networkplumber.org> wrote:  
+> > >>
+> > >> On Mon, 29 Jun 2020 13:13:04 +0530
+> > >> Vasundhara Volam <vasundhara-v.volam@broadcom.com> wrote:
+> > >>  
+> > >> > Add support for reading board serial_number to devlink info
+> > >> > subcommand. Example:
+> > >> >
+> > >> > $ devlink dev info pci/0000:af:00.0 -jp
+> > >> > {
+> > >> >     "info": {
+> > >> >         "pci/0000:af:00.0": {
+> > >> >             "driver": "bnxt_en",
+> > >> >             "serial_number": "00-10-18-FF-FE-AD-1A-00",
+> > >> >             "board.serial_number": "433551F+172300000",
+> > >> >             "versions": {
+> > >> >                 "fixed": {
+> > >> >                     "board.id": "7339763 Rev 0.",
+> > >> >                     "asic.id": "16D7",
+> > >> >                     "asic.rev": "1"
+> > >> >                 },
+> > >> >                 "running": {
+> > >> >                     "fw": "216.1.216.0",
+> > >> >                     "fw.psid": "0.0.0",
+> > >> >                     "fw.mgmt": "216.1.192.0",
+> > >> >                     "fw.mgmt.api": "1.10.1",
+> > >> >                     "fw.ncsi": "0.0.0.0",
+> > >> >                     "fw.roce": "216.1.16.0"
+> > >> >                 }
+> > >> >             }
+> > >> >         }
+> > >> >     }
+> > >> > }  
+> > >>
+> > >> Although this is valid JSON, many JSON style guides do not allow
+> > >> for periods in property names. This is done so libraries can use
+> > >> dot notation to reference objects.  
+> > >Okay, I will modify the name to board_serial_number and resend the
+> > >patch. Thanks.  
+> >
+> > Does not make sense. We have plenty of other items with ".". Having one
+> > without it does not resolve anything, only brings inconsistency. Please
+> > have ".".  
+> Okay so keeping the patch as-is.
 
-Before:
-```
-$ /tmp/perf/perf record -e /tmp/perf/util/parse-events.o
-Run 'perf list' for a list of valid events
+For now yes the patch is ok as-is, but we should have a discussion about the best JSON style.
+The current free form style is getting out of hand.
 
-Usage: perf record [<options>] [<command>]
-   or: perf record [<options>] -- <command> [<options>]
-
-   -e, --event <event>   event selector. use 'perf list' to list available event
-```
-After:
-```
-$ /tmp/perf/perf record -e /tmp/perf/util/parse-events.o
-event syntax error: '/tmp/perf/util/parse-events.o'
-                    \___ Failed to load /tmp/perf/util/parse-events.o:
-BPF object format invalid
-
-(add -v to see detail)
-Run 'perf list' for a list of valid events
-
-Usage: perf record [<options>] [<command>]
-   or: perf record [<options>] -- <command> [<options>]
-
-   -e, --event <event>   event selector. use 'perf list' to list
-available events
-```
-
-Thanks,
-Ian
-
-> - Arnaldo
->
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/util/parse-events.c | 38 ++++++++++++++++++----------------
-> >  1 file changed, 20 insertions(+), 18 deletions(-)
-> >
-> > diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-> > index c4906a6a9f1a..e88e4c7a2a9a 100644
-> > --- a/tools/perf/util/parse-events.c
-> > +++ b/tools/perf/util/parse-events.c
-> > @@ -767,8 +767,8 @@ int parse_events_load_bpf_obj(struct parse_events_state *parse_state,
-> >
-> >       return 0;
-> >  errout:
-> > -     parse_state->error->help = strdup("(add -v to see detail)");
-> > -     parse_state->error->str = strdup(errbuf);
-> > +     parse_events__handle_error(parse_state->error, 0,
-> > +                             strdup(errbuf), strdup("(add -v to see detail)"));
-> >       return err;
-> >  }
-> >
-> > @@ -784,36 +784,38 @@ parse_events_config_bpf(struct parse_events_state *parse_state,
-> >               return 0;
-> >
-> >       list_for_each_entry(term, head_config, list) {
-> > -             char errbuf[BUFSIZ];
-> >               int err;
-> >
-> >               if (term->type_term != PARSE_EVENTS__TERM_TYPE_USER) {
-> > -                     snprintf(errbuf, sizeof(errbuf),
-> > -                              "Invalid config term for BPF object");
-> > -                     errbuf[BUFSIZ - 1] = '\0';
-> > -
-> > -                     parse_state->error->idx = term->err_term;
-> > -                     parse_state->error->str = strdup(errbuf);
-> > +                     parse_events__handle_error(parse_state->error, term->err_term,
-> > +                                             strdup("Invalid config term for BPF object"),
-> > +                                             NULL);
-> >                       return -EINVAL;
-> >               }
-> >
-> >               err = bpf__config_obj(obj, term, parse_state->evlist, &error_pos);
-> >               if (err) {
-> > +                     char errbuf[BUFSIZ];
-> > +                     int idx;
-> > +
-> >                       bpf__strerror_config_obj(obj, term, parse_state->evlist,
-> >                                                &error_pos, err, errbuf,
-> >                                                sizeof(errbuf));
-> > -                     parse_state->error->help = strdup(
-> > +
-> > +                     if (err == -BPF_LOADER_ERRNO__OBJCONF_MAP_VALUE)
-> > +                             idx = term->err_val;
-> > +                     else
-> > +                             idx = term->err_term + error_pos;
-> > +
-> > +                     parse_events__handle_error(parse_state->error, idx,
-> > +                                             strdup(errbuf),
-> > +                                             strdup(
-> >  "Hint:\tValid config terms:\n"
-> >  "     \tmap:[<arraymap>].value<indices>=[value]\n"
-> >  "     \tmap:[<eventmap>].event<indices>=[event]\n"
-> >  "\n"
-> >  "     \twhere <indices> is something like [0,3...5] or [all]\n"
-> > -"     \t(add -v to see detail)");
-> > -                     parse_state->error->str = strdup(errbuf);
-> > -                     if (err == -BPF_LOADER_ERRNO__OBJCONF_MAP_VALUE)
-> > -                             parse_state->error->idx = term->err_val;
-> > -                     else
-> > -                             parse_state->error->idx = term->err_term + error_pos;
-> > +"     \t(add -v to see detail)"));
-> >                       return err;
-> >               }
-> >       }
-> > @@ -877,8 +879,8 @@ int parse_events_load_bpf(struct parse_events_state *parse_state,
-> >                                                  -err, errbuf,
-> >                                                  sizeof(errbuf));
-> >
-> > -             parse_state->error->help = strdup("(add -v to see detail)");
-> > -             parse_state->error->str = strdup(errbuf);
-> > +             parse_events__handle_error(parse_state->error, 0,
-> > +                                     strdup(errbuf), strdup("(add -v to see detail)"));
-> >               return err;
-> >       }
-> >
-> > --
-> > 2.27.0.383.g050319c2ae-goog
-> >
->
-> --
->
-> - Arnaldo
+Resolving may mean doing more widespread changes across iproute
