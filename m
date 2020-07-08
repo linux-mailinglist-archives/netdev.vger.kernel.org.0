@@ -2,76 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3A70219024
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 21:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1DDD219026
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 21:04:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726662AbgGHTEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 15:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
+        id S1726770AbgGHTEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 15:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725978AbgGHTEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 15:04:38 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B2A9C061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 12:04:38 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id i4so48132128iov.11
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 12:04:38 -0700 (PDT)
+        with ESMTP id S1725978AbgGHTEp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 15:04:45 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4F3C061A0B;
+        Wed,  8 Jul 2020 12:04:44 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id b9so1031887plx.6;
+        Wed, 08 Jul 2020 12:04:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/GnEDsTEui6RtiKtXZLF8+1Cpdjnr4z2NpMZ4oWWUZQ=;
-        b=X41V64M53ND62ZvjIeHgrr6FdHeXQJwpC2a7IPHIsJA+3jFua7SFMDkfuTtGDFYVNd
-         NVmqMIHvxVDhBpncxPSLS8sWsPn2a/SHxq2gKGpeQXuIjpB/cA7+GbM9LCzcUEI8aI7v
-         Py9jFvGCqMPgsn9lwGf7YEs6Rd7sJYP31woeFBax5gjTnDpBYej0O3UW4hDgE1v4siDB
-         4nrmAXdtuFpNE+yMi3mZuQXztoZqJw2Ig4GbcF/cnzVEYdoMl+QVbR+Yqwk+prN9OTMA
-         RBP3mRFhjGgu2tLydhw7AUgyWOKkD/GSvf74XRJk5MZC4uZRVhVD8RX3dq2TVNg3TqiG
-         IuJQ==
+        bh=tMh+N4AelkPm2oxZYynrDFABsoJu3LSOWaAFcX31Lf8=;
+        b=bbuDMatH/BcR0zzFHOI3DZgIsYWFm64I++XTTIGrVi2+xdx+pMM7n6CWrcgGn5kk0i
+         9e5MqVzqDEY/IA7Im1fKWhdJiRKtfl7Qq8p5IDvRHdTqK0Z2wt64Ry9T98MygfZUlqwp
+         Qvzg4nK1jLVyn/mGtdIZOW7XkKepbBTEo4dIP+8SdeLhOXJ42t3sgyvKMGgcHOZhayvd
+         TtC6m0u4TIQKMnkDUVOaL52hHtEZJZS1kolgpG5EmwQ1uRr136gJG6UcRsArjIbsZ7qa
+         7vwxbXzTd84lNdeCAo6LroBh/EkJBk7GEO4HDF3NcDv1EF6g5Wm0JiudEmXiXL2s+98+
+         fJiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/GnEDsTEui6RtiKtXZLF8+1Cpdjnr4z2NpMZ4oWWUZQ=;
-        b=HJUCvKz41rLyelXJUagRjFnKCwRNHUmjJgmREAknzBnBo59pi4f4+7D4+uLyocXn7M
-         G5QgaNa1IybnUkJCQv2u0BXLidNQDzl2vNFq+ORuZiT8Ia0xEbg6j5NcCXtVPivirKlJ
-         64TToGmNKgZFZ7K87oy5YKlELgUiAfs8b5s7LdeHLcbM0cCqy6OubnO/8uxcFLuHWVF9
-         0zeP5g+MH4qJsUsHl2DWlUGfFJOwL0B4jGG80VoAzuDm+78A04Id7zD6J7bQLdBh8Ed6
-         W5mJnU0zDDYzjYnJ1P6ZLakICZkTzgO1nZah2but/2b5eqTBnpJpmbiDLP57is/aBSwN
-         C7GQ==
-X-Gm-Message-State: AOAM531ZOizyTOEKVLzt0uh/D2fIBbiVEUkhrNeT/iPvnTmPi3wKSkd0
-        WD0cnmB6EsNbkaZ88HQevzIKIwEqXczBRcbVlp8=
-X-Google-Smtp-Source: ABdhPJzUSDoEv9OlwmobsRzu22w4VV7iMmCoVrLSQIsAm6V3UgS+ieMtj1gC+XWe7e6mGA1jiMjXrxzT6RqS+CZwLKg=
-X-Received: by 2002:a5d:9819:: with SMTP id a25mr37050073iol.85.1594235077953;
- Wed, 08 Jul 2020 12:04:37 -0700 (PDT)
+        bh=tMh+N4AelkPm2oxZYynrDFABsoJu3LSOWaAFcX31Lf8=;
+        b=GGzFFUC7gMM/0YUzwVhXPZ8ScdoQ4nY0beABdLpHyCVOJQOgtxy9m4ilhOlcpkp+u4
+         2z3XgpRmgiupFICyHLkobi+l0YSUEe9MH8zt2W+rwt+NNzbwrLInG+phviJnbljTgY9s
+         hVYlccbttMo+qbzHnjg1JG1MUXxqbTc1nkuesxsvMDG/O/YzqRdKlG3c8uMmS3MBDRpg
+         9E+xHwYVG33TQ+2SjC+oojbWYLhj3c6TByN0S6lBG7IsknfD9PDbKWGXECgfglwWz3/J
+         wxXJwC7DcBn3W83yyOUpszfCxzXPC5rDv+FazVooxrkGPgy9/HLw7GMpwM2GHxRLjdfp
+         O7Pg==
+X-Gm-Message-State: AOAM530Lf7HwdSJqxQtZusbU6nKnnMo7XCvZG+aYSZ5xzef6Y9zfHWNg
+        p968+5NKCzmW0hSr47mlX5+zLEEgnjdw2igRH4o=
+X-Google-Smtp-Source: ABdhPJyy3TSipk2YYG/tuc7Dy5N4FMY3OHCMqS4pCZQoXQb0WR+rAjCtGOKlh71Q3iIpaSxdKRWydloMvpDw21iA1dQ=
+X-Received: by 2002:a17:902:fe0b:: with SMTP id g11mr51231040plj.269.1594235084568;
+ Wed, 08 Jul 2020 12:04:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1593209494.git.petrm@mellanox.com> <79417f27b7c57da5c0eb54bb6d074d3a472d9ebf.1593209494.git.petrm@mellanox.com>
- <CAM_iQpXvwPGz=kKBFKQAkoJ0hwijC9M03SV9arC++gYBAU5VKw@mail.gmail.com>
- <87a70bic3n.fsf@mellanox.com> <CAM_iQpWjod0oLew-jSN+KUXkoPYkJYWyePHsvLyW4f2JbYQFRw@mail.gmail.com>
- <873662i3rc.fsf@mellanox.com>
-In-Reply-To: <873662i3rc.fsf@mellanox.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 8 Jul 2020 12:04:26 -0700
-Message-ID: <CAM_iQpVs_OEBw54qMhn7Tx6_YAGh5PMSApj=RrO0j6ThSXpkcg@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 2/5] net: sched: Introduce helpers for qevent blocks
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>
+References: <20200708043754.46554-1-xie.he.0141@gmail.com> <20200708.101321.1049330296069021543.davem@davemloft.net>
+In-Reply-To: <20200708.101321.1049330296069021543.davem@davemloft.net>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Wed, 8 Jul 2020 12:04:33 -0700
+Message-ID: <CAJht_EOqgWh0dShG258C3uoYdQga+EUae34tvL9HhqpztAv1PQ@mail.gmail.com>
+Subject: Re: [PATCH] drivers/net/wan/x25_asy: Fix to make it work
+To:     David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Martin Habets <mhabets@solarflare.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 8, 2020 at 5:35 AM Petr Machata <petrm@mellanox.com> wrote:
-> Do you have another solution in mind here? I think the deadlock (in both
-> classification and qevents) is an issue, but really don't know how to
-> avoid it except by dropping the lock.
+From: David Miller <davem@davemloft.net>
+Date: Wed, Jul 8, 2020 at 10:13 AM -0700
+> Something's not right, because I find it hard to believe this has been
+> so fundamentally broken for such a long period of time.
+>
+> Maybe the drivers all handle things differently, and whilst your change
+> might fix some drivers, it will break others.
+>
+> I'm not applying this until this situation is better understood.
 
-Ideally we should only take the lock once, but it clearly requires some
-work to teach the dev_queue_xmit() in act_mirred not to acquire it again.
+Yes, it was hard for me to believe, too.
 
-Thanks.
+At first when I tried this driver, it was silently not able to establish
+LAPB connections, I found that it was because it was ignoring
+2-byte frames. I changed it to make 2-byte frames pass. Then I
+encountered kernel panic. I don't know how to solve it, so I looked
+at the way "lapbether" does things and changed this driver according
+to the "lapbether" driver. And it worked.
+
+The "lapbether" driver and this driver both use the "lapb" module to
+implement the LAPB protocol, so they should implement LAPB-related
+code in the same way.
+
+This patch only changes this driver and does not affect other drivers.
+
+I don't know how I can better explain this situation. Please tell me
+anything I can do to help. Thanks!
