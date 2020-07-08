@@ -2,161 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A4082191F2
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:07:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B3312191F1
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726129AbgGHVHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 17:07:44 -0400
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:57475 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725964AbgGHVHo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:07:44 -0400
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 69BA28011F;
-        Thu,  9 Jul 2020 09:07:41 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1594242461;
-        bh=lOcqW9kQBQPUKzn+30nL5JxuhuLG/kivjJrZYxfwTPk=;
-        h=From:To:Cc:Subject:Date;
-        b=PYntDVm/kOXFeLFLSv/YvB2ZgwrpvamSLf9HgLHh8S1p+jie/31lL1KDjdFWvBoFV
-         nefWoI949/rrlfez5UpObMKaUpDaYOqAPRi87rq7diA1znfWEhRLa6fVPcsLyyZ/rA
-         H4u0vAqBNcXa5d1y5MWFjQRrc4zAEEiprk1gAjqr8m1uTM8pP36X8kzDf1V57t1e13
-         /QDulgqu8sWTOHYG1ucbyGovY2E/En850nwKzVQTtTZZPqd2W3ACxWzY5l6oHW8j4/
-         5OzGAnDwzmNZXXZGovIpmA+qze8W5jvteYecfvL0Y/CdR4MPrLREMD5DBGvkscdfMa
-         /ZzrKAd7J6FLA==
-Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5f06359b0000>; Thu, 09 Jul 2020 09:07:41 +1200
-Received: from hamishm-dl.ws.atlnz.lc (hamishm-dl.ws.atlnz.lc [10.33.24.30])
-        by smtp (Postfix) with ESMTP id 2B07A13EEA8;
-        Thu,  9 Jul 2020 09:07:38 +1200 (NZST)
-Received: by hamishm-dl.ws.atlnz.lc (Postfix, from userid 1133)
-        id DDDFE2A00D7; Thu,  9 Jul 2020 09:07:17 +1200 (NZST)
-From:   Hamish Martin <hamish.martin@alliedtelesis.co.nz>
-To:     davem@davemloft.net, kuba@kernel.org, jmaloy@redhat.com,
-        ying.xue@windriver.com
-Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        tuong.t.lien@dektech.com.au, hoang.h.le@dektech.com.au,
-        canh.d.luu@dektech.com.au, chris.packham@alliedtelesis.co.nz,
-        john.thompson@alliedtelesis.co.nz,
-        Hamish Martin <hamish.martin@alliedtelesis.co.nz>
-Subject: [PATCH v2] tipc: fix retransmission on unicast links
-Date:   Thu,  9 Jul 2020 09:06:44 +1200
-Message-Id: <20200708210644.27161-1-hamish.martin@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.27.0
+        id S1726065AbgGHVHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 17:07:08 -0400
+Received: from out0-147.mail.aliyun.com ([140.205.0.147]:37000 "EHLO
+        out0-147.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725964AbgGHVHH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:07:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=alibaba-inc.com; s=default;
+        t=1594242424; h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        bh=QK77R55sKm/agml+oo3dfwt2PUPJG143UCbM9AGjfTw=;
+        b=lb6iSvshW8px3NU2uDBLqWxHDL/is1tEnUZe6oFOIJMzs/km4f3n3JnyCfY0Ij38dkc85toZw8Zbi6o+Q4cIFgVRSgOI732RJoUAu1cboz8alo/HWl0A2DSw62eBAn7OQf4SWPSTy/NvCALOiDObzoik8o7xaPNxriaDn7KFoEU=
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e02c03300;MF=xiangning.yu@alibaba-inc.com;NM=1;PH=DS;RN=2;SR=0;TI=SMTPD_---.I-NMrwH_1594242423;
+Received: from US-118000MP.local(mailfrom:xiangning.yu@alibaba-inc.com fp:SMTPD_---.I-NMrwH_1594242423)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 09 Jul 2020 05:07:04 +0800
+Subject: Re: [PATCH net-next 2/2] net: sched: Lockless Token Bucket (LTB)
+ Qdisc
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <28bff9d7-fa2d-5284-f6d5-e08cd792c9c6@alibaba-inc.com>
+ <CAM_iQpVux85OXH-oYeH15sYTb=kEj0o7uu9ug9PeTesHzXk_gQ@mail.gmail.com>
+ <5c963736-2a83-b658-2a9d-485d0876c03f@alibaba-inc.com>
+ <CAM_iQpV5LRU-JxfLETsdNqh75wv3vWyCsxiTTgC392HvTxa9CQ@mail.gmail.com>
+ <ad662f0b-c4ab-01c0-57e1-45ddd7325e66@alibaba-inc.com>
+ <CAM_iQpUE658hhk8n9j+T5Qfm4Vj7Zfzw08EECh8CF8QW0GLW_g@mail.gmail.com>
+From:   "=?UTF-8?B?WVUsIFhpYW5nbmluZw==?=" <xiangning.yu@alibaba-inc.com>
+Message-ID: <00ab4144-397e-41b8-e518-ad2aacb9afd3@alibaba-inc.com>
+Date:   Thu, 09 Jul 2020 05:07:02 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-x-atlnz-ls: pat
+In-Reply-To: <CAM_iQpUE658hhk8n9j+T5Qfm4Vj7Zfzw08EECh8CF8QW0GLW_g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A scenario has been observed where a 'bc_init' message for a link is not
-retransmitted if it fails to be received by the peer. This leads to the
-peer never establishing the link fully and it discarding all other data
-received on the link. In this scenario the message is lost in transit to
-the peer.
 
-The issue is traced to the 'nxt_retr' field of the skb not being
-initialised for links that aren't a bc_sndlink. This leads to the
-comparison in tipc_link_advance_transmq() that gates whether to attempt
-retransmission of a message performing in an undesirable way.
-Depending on the relative value of 'jiffies', this comparison:
-    time_before(jiffies, TIPC_SKB_CB(skb)->nxt_retr)
-may return true or false given that 'nxt_retr' remains at the
-uninitialised value of 0 for non bc_sndlinks.
 
-This is most noticeable shortly after boot when jiffies is initialised
-to a high value (to flush out rollover bugs) and we compare a jiffies of,
-say, 4294940189 to zero. In that case time_before returns 'true' leading
-to the skb not being retransmitted.
+On 7/8/20 1:24 PM, Cong Wang wrote:
+> On Tue, Jul 7, 2020 at 2:24 PM YU, Xiangning
+> <xiangning.yu@alibaba-inc.com> wrote:
+>>
+>> The key is to avoid classifying packets from a same flow into different classes. So we use socket priority to classify packets. It's always going to be correctly classified.
+>>
+>> Not sure what do you mean by default configuration. But we create a shadow class when the qdisc is created. Before any other classes are created, all packets from any flow will be classified to this same shadow class, there won't be any incorrect classified packets either.
+> 
+> By "default configuration" I mean no additional configuration on top
+> of qdisc creation. If you have to rely on additional TC filters to
+> do the classification, it could be problematic. Same for setting
+> skb priority, right?
+> 
 
-The fix is to ensure that all skbs have a valid 'nxt_retr' time set for
-them and this is achieved by refactoring the setting of this value into
-a central function.
-With this fix, transmission losses of 'bc_init' messages do not stall
-the link establishment forever because the 'bc_init' message is
-retransmitted and the link eventually establishes correctly.
+In this patch we don't rely on other TC filters. In our use case, socket priority is set on a per-flow basis, not per-skb basis.
 
-Fixes: 382f598fb66b ("tipc: reduce duplicate packets for unicast traffic"=
-)
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Hamish Martin <hamish.martin@alliedtelesis.co.nz>
----
+> Also, you use a default class, this means all unclassified packets
+> share the same class, and a flow falls into this class could be still
+> out-of-order, right?
+> 
 
-Changes in v2:
-- Ack from Jon Molloy
-- Added Fixes tag
-- submitting to netdev. v1 went to tipc-discussion only
+A flow will fall and only fall to this class. If we can keep the order within a flow, I'm not sure why we still have this issue?
+ 
+Thanks,
+- Xiangning
 
- net/tipc/link.c | 26 ++++++++++++++++++--------
- 1 file changed, 18 insertions(+), 8 deletions(-)
-
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index ee3b8d0576b8..263d950e70e9 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -921,6 +921,21 @@ static void link_prepare_wakeup(struct tipc_link *l)
-=20
- }
-=20
-+/**
-+ * tipc_link_set_skb_retransmit_time - set the time at which retransmiss=
-ion of
-+ *                                     the given skb should be next atte=
-mpted
-+ * @skb: skb to set a future retransmission time for
-+ * @l: link the skb will be transmitted on
-+ */
-+static void tipc_link_set_skb_retransmit_time(struct sk_buff *skb,
-+					      struct tipc_link *l)
-+{
-+	if (link_is_bc_sndlink(l))
-+		TIPC_SKB_CB(skb)->nxt_retr =3D TIPC_BC_RETR_LIM;
-+	else
-+		TIPC_SKB_CB(skb)->nxt_retr =3D TIPC_UC_RETR_TIME;
-+}
-+
- void tipc_link_reset(struct tipc_link *l)
- {
- 	struct sk_buff_head list;
-@@ -1036,9 +1051,7 @@ int tipc_link_xmit(struct tipc_link *l, struct sk_b=
-uff_head *list,
- 				return -ENOBUFS;
- 			}
- 			__skb_queue_tail(transmq, skb);
--			/* next retransmit attempt */
--			if (link_is_bc_sndlink(l))
--				TIPC_SKB_CB(skb)->nxt_retr =3D TIPC_BC_RETR_LIM;
-+			tipc_link_set_skb_retransmit_time(skb, l);
- 			__skb_queue_tail(xmitq, _skb);
- 			TIPC_SKB_CB(skb)->ackers =3D l->ackers;
- 			l->rcv_unacked =3D 0;
-@@ -1139,9 +1152,7 @@ static void tipc_link_advance_backlog(struct tipc_l=
-ink *l,
- 		if (unlikely(skb =3D=3D l->backlog[imp].target_bskb))
- 			l->backlog[imp].target_bskb =3D NULL;
- 		__skb_queue_tail(&l->transmq, skb);
--		/* next retransmit attempt */
--		if (link_is_bc_sndlink(l))
--			TIPC_SKB_CB(skb)->nxt_retr =3D TIPC_BC_RETR_LIM;
-+		tipc_link_set_skb_retransmit_time(skb, l);
-=20
- 		__skb_queue_tail(xmitq, _skb);
- 		TIPC_SKB_CB(skb)->ackers =3D l->ackers;
-@@ -1584,8 +1595,7 @@ static int tipc_link_advance_transmq(struct tipc_li=
-nk *l, struct tipc_link *r,
- 			/* retransmit skb if unrestricted*/
- 			if (time_before(jiffies, TIPC_SKB_CB(skb)->nxt_retr))
- 				continue;
--			TIPC_SKB_CB(skb)->nxt_retr =3D (is_uc) ?
--					TIPC_UC_RETR_TIME : TIPC_BC_RETR_LIM;
-+			tipc_link_set_skb_retransmit_time(skb, l);
- 			_skb =3D pskb_copy(skb, GFP_ATOMIC);
- 			if (!_skb)
- 				continue;
---=20
-2.27.0
-
+> Thanks.
+> 
