@@ -2,124 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C505E21863B
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 13:35:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AB9F218652
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 13:40:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728763AbgGHLfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 07:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
+        id S1728842AbgGHLkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 07:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728598AbgGHLfJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 07:35:09 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3FCBC08C5DC
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 04:35:08 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id z2so26299826wrp.2
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 04:35:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/hafEpgse99+DA+r/Az58pAMZ7VKTM94BFXdZWlmA6E=;
-        b=WEYZPUYGYmULN+137H/tCq6ky25Ym5YSH36cys6eF7p6FAFPslBBKOZXuSCQ429Txo
-         qIZdRVuqLRRdMHTK3nwriF/wr5iKP0TrqJnwJ6Zn9nSea1EHZqt2cQsBWhNrPIXjoF+K
-         RcqGfGj6eGi85wiVuPlJ1sttRqdQcIdNPOABBDt4wXE5SgkQFuN4EieZ43W4uR+4gkXW
-         wD0K40ZLulpQuJiWOePllBkK50KpeN7zFm8udq2pa3E0dKb+B6pTnXaJpwe4b/EdqJdF
-         /33m8NwsPfCHKQ1giisheKFkNp3mqm2wHKCUmXVSyQZdm+Stf6FVKl4Y+XDKESAV6W4T
-         lQng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/hafEpgse99+DA+r/Az58pAMZ7VKTM94BFXdZWlmA6E=;
-        b=o0IIaIGPl9r3Rmsoi+RqMBYtp3MHVv9OxERPP3nQp+EBPmvUPPIPKRoHOmrMZ/rA74
-         aI9UmqUfO8a/SL/81ZAVig03YxloT7iVTbN7vtO9gdv0iS6z/IUEtGqF5ksqSDct9YtB
-         g1kqrIiVByhCS5yLlrH4zMfiMfxsHABNz9sFA2vf3iuYUf9k7aTvs1wlMAbRp3WlFrGA
-         wNToiiZEPQsLs/CK207UARHQNvtBRinqQmyuYCAWH3wIILu5J6jx1foftdkytRELFYNn
-         7rXeVIZ8paYKs9kUnE5ZEw/nTfihvj8sRiZ77VI7Uvt2fPGd4AIznHqjLg1SkueSliQ1
-         uzdg==
-X-Gm-Message-State: AOAM531kJPCOy6FjJz8zeQY/Q4YSqsQiGc330Xt8Tezfdag8U/9LpHgI
-        dtta7pmkoQ+1ZxRULC9oHAECig==
-X-Google-Smtp-Source: ABdhPJwIqgWQieB55/KrfECgWnmDzy79medLXflbQrL8RQmzSWvlpXD4nZ86XuLt+6E3qThpDGENnw==
-X-Received: by 2002:adf:8462:: with SMTP id 89mr57153510wrf.420.1594208107604;
-        Wed, 08 Jul 2020 04:35:07 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id r1sm5277718wrt.73.2020.07.08.04.35.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jul 2020 04:35:06 -0700 (PDT)
-Date:   Wed, 8 Jul 2020 13:35:05 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Netdev <netdev@vger.kernel.org>, dsahern@gmail.com,
-        David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH v2 iproute2-next] devlink: Add board.serial_number to
- info subcommand.
-Message-ID: <20200708113505.GA3667@nanopsycho.orion>
-References: <1593416584-24145-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <20200705110301.20baf5c2@hermes.lan>
- <CAACQVJogqmNG_jb0W-gV23uWTcpitrx=TF9asZ9s0kfrjbB2ZA@mail.gmail.com>
+        with ESMTP id S1728742AbgGHLkl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 07:40:41 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EDDC08C5DC;
+        Wed,  8 Jul 2020 04:40:40 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 26C6A23068;
+        Wed,  8 Jul 2020 13:40:38 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1594208439;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nhbzphc6s/8yq5nZ/x51u8ir0EyNta3CXB0NHXBNL44=;
+        b=oVO3nZeZvIULdQSkQc4xBlzwi81fGG7by7fvH4hp/qrBXeSMaziHJRSQ3UjJJcQQ6PIG4h
+        /Qmk8QWW8Fvi4/Ie8rlb/omJlwhk+OGPlf913fsZ+mobVk4OW8HVTRzcHGiYu4Rk4Ie+cH
+        HOuIV/cVIOcNFIuX12m6e/SKOFRGsXk=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAACQVJogqmNG_jb0W-gV23uWTcpitrx=TF9asZ9s0kfrjbB2ZA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 08 Jul 2020 13:40:38 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next v5 2/4] net: dsa: felix: (re)use already existing
+ constants
+In-Reply-To: <20200708104756.y42eid56w5jspl6u@skbuf>
+References: <20200707212131.15690-1-michael@walle.cc>
+ <20200707212131.15690-3-michael@walle.cc>
+ <20200708104756.y42eid56w5jspl6u@skbuf>
+User-Agent: Roundcube Webmail/1.4.6
+Message-ID: <381859c567b9786f0320eb2a3a68c748@walle.cc>
+X-Sender: michael@walle.cc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jul 08, 2020 at 11:40:12AM CEST, vasundhara-v.volam@broadcom.com wrote:
->On Sun, Jul 5, 2020 at 11:33 PM Stephen Hemminger
-><stephen@networkplumber.org> wrote:
->>
->> On Mon, 29 Jun 2020 13:13:04 +0530
->> Vasundhara Volam <vasundhara-v.volam@broadcom.com> wrote:
->>
->> > Add support for reading board serial_number to devlink info
->> > subcommand. Example:
->> >
->> > $ devlink dev info pci/0000:af:00.0 -jp
->> > {
->> >     "info": {
->> >         "pci/0000:af:00.0": {
->> >             "driver": "bnxt_en",
->> >             "serial_number": "00-10-18-FF-FE-AD-1A-00",
->> >             "board.serial_number": "433551F+172300000",
->> >             "versions": {
->> >                 "fixed": {
->> >                     "board.id": "7339763 Rev 0.",
->> >                     "asic.id": "16D7",
->> >                     "asic.rev": "1"
->> >                 },
->> >                 "running": {
->> >                     "fw": "216.1.216.0",
->> >                     "fw.psid": "0.0.0",
->> >                     "fw.mgmt": "216.1.192.0",
->> >                     "fw.mgmt.api": "1.10.1",
->> >                     "fw.ncsi": "0.0.0.0",
->> >                     "fw.roce": "216.1.16.0"
->> >                 }
->> >             }
->> >         }
->> >     }
->> > }
->>
->> Although this is valid JSON, many JSON style guides do not allow
->> for periods in property names. This is done so libraries can use
->> dot notation to reference objects.
->Okay, I will modify the name to board_serial_number and resend the
->patch. Thanks.
+Am 2020-07-08 12:47, schrieb Vladimir Oltean:
+> On Tue, Jul 07, 2020 at 11:21:29PM +0200, Michael Walle wrote:
+>> Now that there are USXGMII constants available, drop the old 
+>> definitions
+>> and reuse the generic ones.
+>> 
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> ---
+>>  drivers/net/dsa/ocelot/felix_vsc9959.c | 45 
+>> +++++++-------------------
+>>  1 file changed, 12 insertions(+), 33 deletions(-)
+>> 
+>> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c 
+>> b/drivers/net/dsa/ocelot/felix_vsc9959.c
+>> index 19614537b1ba..4310b1527022 100644
+>> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
+>> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+>> @@ -10,35 +10,15 @@
+>>  #include <soc/mscc/ocelot.h>
+>>  #include <net/pkt_sched.h>
+>>  #include <linux/iopoll.h>
+>> +#include <linux/mdio.h>
+>>  #include <linux/pci.h>
+>>  #include "felix.h"
+>> 
+>>  #define VSC9959_VCAP_IS2_CNT		1024
+>>  #define VSC9959_VCAP_IS2_ENTRY_WIDTH	376
+>>  #define VSC9959_VCAP_PORT_CNT		6
+>> -
+>> -/* TODO: should find a better place for these */
+>> -#define USXGMII_BMCR_RESET		BIT(15)
+>> -#define USXGMII_BMCR_AN_EN		BIT(12)
+>> -#define USXGMII_BMCR_RST_AN		BIT(9)
+>> -#define USXGMII_BMSR_LNKS(status)	(((status) & GENMASK(2, 2)) >> 2)
+>> -#define USXGMII_BMSR_AN_CMPL(status)	(((status) & GENMASK(5, 5)) >> 
+>> 5)
+>> -#define USXGMII_ADVERTISE_LNKS(x)	(((x) << 15) & BIT(15))
+>> -#define USXGMII_ADVERTISE_FDX		BIT(12)
+>> -#define USXGMII_ADVERTISE_SPEED(x)	(((x) << 9) & GENMASK(11, 9))
+>> -#define USXGMII_LPA_LNKS(lpa)		((lpa) >> 15)
+>> -#define USXGMII_LPA_DUPLEX(lpa)		(((lpa) & GENMASK(12, 12)) >> 12)
+>> -#define USXGMII_LPA_SPEED(lpa)		(((lpa) & GENMASK(11, 9)) >> 9)
+>> -
+>>  #define VSC9959_TAS_GCL_ENTRY_MAX	63
+>> 
+>> -enum usxgmii_speed {
+>> -	USXGMII_SPEED_10	= 0,
+>> -	USXGMII_SPEED_100	= 1,
+>> -	USXGMII_SPEED_1000	= 2,
+>> -	USXGMII_SPEED_2500	= 4,
+>> -};
+>> -
+>>  static const u32 vsc9959_ana_regmap[] = {
+>>  	REG(ANA_ADVLEARN,			0x0089a0),
+>>  	REG(ANA_VLANMASK,			0x0089a4),
+>> @@ -787,11 +767,10 @@ static void vsc9959_pcs_config_usxgmii(struct 
+>> phy_device *pcs,
+>>  {
+>>  	/* Configure device ability for the USXGMII Replicator */
+>>  	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_ADVERTISE,
+>> -		      USXGMII_ADVERTISE_SPEED(USXGMII_SPEED_2500) |
+>> -		      USXGMII_ADVERTISE_LNKS(1) |
+>> +		      MDIO_LPA_USXGMII_2500FULL |
+>> +		      MDIO_LPA_USXGMII_LINK |
+>>  		      ADVERTISE_SGMII |
+>> -		      ADVERTISE_LPACK |
+>> -		      USXGMII_ADVERTISE_FDX);
+>> +		      ADVERTISE_LPACK);
+>>  }
+>> 
+>>  static void vsc9959_pcs_config(struct ocelot *ocelot, int port,
+>> @@ -1005,8 +984,8 @@ static void vsc9959_pcs_link_state_usxgmii(struct 
+>> phy_device *pcs,
+>>  		return;
+>> 
+>>  	pcs->autoneg = true;
+>> -	pcs->autoneg_complete = USXGMII_BMSR_AN_CMPL(status);
+>> -	pcs->link = USXGMII_BMSR_LNKS(status);
+>> +	pcs->autoneg_complete = status & BMSR_ANEGCOMPLETE;
+>> +	pcs->link = status & BMSR_LSTATUS;
+> 
+> These are "unsigned :1" in struct phy_device, and not booleans. I'm not
+> sure how the compiler is going to treat this assignment of an integer.
+> I have a feeling it may not do the right thing.
 
-Does not make sense. We have plenty of other items with ".". Having one
-without it does not resolve anything, only brings inconsistency. Please
-have ".".
+Yeah I checked the same and assumed the compiler will convert/cast it, 
+so
+I deliberatly didn't do the "!!". But thinking about it again; there 
+seems
+to be no way this could work.
 
+> Could you please do this?
 
->
->>
->> Also the encoding of PCI is problematic
->>
->>
+sure.
+
+-michael
