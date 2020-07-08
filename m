@@ -2,81 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 093E6218FE6
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 20:47:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA811219001
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 20:55:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726777AbgGHSrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 14:47:45 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:22488 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726425AbgGHSrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 14:47:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594234064;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fcsHqKvyEn+7TUlrftNO7s3T6e7eg/prGJp2vr2tLls=;
-        b=g3sMSZfu2QI791LF/HUR8RVvOUob4km53kYKE0ZV+ZloRtXvXWEjv7P0W8r+O2IId35zgl
-        A8RgsNZPcE6akXAnG7YLT+q/BaYQctDr5ZEs5JFp5pEQJ5OTRps+x15HJfhsHu33hHEgWX
-        /FLPfI5p7BpSu90DcK8Y33ZqgIU1xkQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-50-l8cy0SDLO6CVRyfWjFLFnw-1; Wed, 08 Jul 2020 14:47:40 -0400
-X-MC-Unique: l8cy0SDLO6CVRyfWjFLFnw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9521719057A0;
-        Wed,  8 Jul 2020 18:47:37 +0000 (UTC)
-Received: from krava (unknown [10.40.195.124])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 358367F8A7;
-        Wed,  8 Jul 2020 18:47:33 +0000 (UTC)
-Date:   Wed, 8 Jul 2020 20:47:32 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH] perf parse-events: report bpf errors
-Message-ID: <20200708184732.GC3581918@krava>
-References: <20200707211449.3868944-1-irogers@google.com>
+        id S1726856AbgGHSzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 14:55:14 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53928 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726144AbgGHSzN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jul 2020 14:55:13 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jtFDm-004Dur-RT; Wed, 08 Jul 2020 20:55:06 +0200
+Date:   Wed, 8 Jul 2020 20:55:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>, linux.cj@gmail.com,
+        linux-acpi@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v3 2/5] net/fsl: store mdiobus fwnode
+Message-ID: <20200708185506.GI928075@lunn.ch>
+References: <20200708173435.16256-1-calvin.johnson@oss.nxp.com>
+ <20200708173435.16256-3-calvin.johnson@oss.nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200707211449.3868944-1-irogers@google.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <20200708173435.16256-3-calvin.johnson@oss.nxp.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 07, 2020 at 02:14:49PM -0700, Ian Rogers wrote:
-> Setting the parse_events_error directly doesn't increment num_errors
-> causing the error message not to be displayed. Use the
-> parse_events__handle_error function that sets num_errors and handle
-> multiple errors.
+On Wed, Jul 08, 2020 at 11:04:32PM +0530, Calvin Johnson wrote:
+> Store fwnode for mdiobus in the bus structure so that it can
+> later be retrieved and used whenever mdiobus fwnode information
+> is required.
 > 
-> Signed-off-by: Ian Rogers <irogers@google.com>
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> ---
+> 
+> Changes in v3: None
+> Changes in v2: None
+> 
+>  drivers/net/ethernet/freescale/xgmac_mdio.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
+> index 98be51d8b08c..8189c86d5a44 100644
+> --- a/drivers/net/ethernet/freescale/xgmac_mdio.c
+> +++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+> @@ -269,6 +269,8 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
+>  	bus->write = xgmac_mdio_write;
+>  	bus->parent = &pdev->dev;
+>  	bus->probe_capabilities = MDIOBUS_C22_C45;
+> +	if (pdev->dev.fwnode)
+> +		bus->dev.fwnode = pdev->dev.fwnode;
 
-looks good
+This is pretty fundamental to making this work. In the device tree
+world, this is setup by of_mdiobus_register(). Maybe we need an
+fwnode_mdiobus_register(), just to ensure the next device wanting to
+do ACPI does not forget this?
 
-Acked-by: Jiri Olsa <jolsa@redhat.com>
-
-thanks,
-jirka
-
+   Andrew
