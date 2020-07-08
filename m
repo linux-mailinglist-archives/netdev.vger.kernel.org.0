@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41A2E218C4D
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 17:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA299218C63
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 17:59:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730272AbgGHPyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 11:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35260 "EHLO
+        id S1730268AbgGHP7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 11:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730260AbgGHPyx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 11:54:53 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2DF0C061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 08:54:53 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id j19so15002119pgm.11
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 08:54:53 -0700 (PDT)
+        with ESMTP id S1730048AbgGHP7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 11:59:37 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C37CC061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 08:59:37 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id f2so18355170plr.8
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 08:59:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vlhc23pGLTmQpRyyA094Gn/bmVXqB+tFJHwoFer0vTg=;
-        b=Ors03V8sNrfmypp3bb7UKchAItV1dEUFRAWJPqaUcuXalQpK/L+e9qf7pCHOcO9r8j
-         EJmpXlOy4avwQ62mFQVd1HRp10RSTeiqx6UY8uSepu6EhWfzSted1lj1sh0/aKMujJeV
-         BcLZJTjSMb9K+7YZBI9L3y/eiVQgYOnKEkEV8fpR4IWBQv9/t4cCYnMvuzxQ0K669z1t
-         rlN/3X+DVMOZD7V7n3YBAgpi+hWQ0FtoD5LZrDi87sY2C/WSTH1qjyBGfhPNjpUNSJg1
-         uT7yeMj0ONaKQQB0GJNGnOKLjeJRF7FjxKf30TAXhxP5mxwF/NP45BouoVvaj3/rRrva
-         bw8A==
+        bh=dfsy8YM0DDECiIz6MPnrjWaP9lAaD4OKRogI6YWiw3s=;
+        b=sFJ0rCE7LHvqOZN0IrLznh9iYrKZVGVzBrgwa6ljr+3y6/GsYXhigq36JEmMO935X/
+         DZC3o+cBed27FFbtR0i0uRTJvt4RA/nYzpVV1r6x4EvV5U/s0xWM+UCEQoln9vVsv+Ba
+         UtRA6J5OBqSL+g1V87+LI7eQz2fYvMbl8aXkosYJfHiCZb+nCDPfsVjR3PczyccOCLAP
+         INj8ts8Oq3GDx9aNm9OZqfOJz/tc70fxcbXbISJ3rabD8UimqbcXChu8/7tUAbOWnapL
+         b1KlUNZ34mh7P1RbsAFoGqmRKKWpGowTWmGyKc9Mn9RAnOrOLzwnhPsVBzoSQ44PawIB
+         2IfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vlhc23pGLTmQpRyyA094Gn/bmVXqB+tFJHwoFer0vTg=;
-        b=nGlo+oMNSN7KKpJLrZitvy3pNC44FWCqAYTobZ37kKWnLHBVZuAaenTkomVTM2jpeD
-         V94UF9JrUOnxUkGWKMJU2lsXsO8PA/8wF/wwActZJOgpniXyS+EZVOvw6qFQSoxRr84K
-         nqMI4sawhNRvgK26TPrCSauL/Aew8DJSPBPlb7qG2PFTXkaNdEO5NsHSl4rX3kGUwhIH
-         Hsf6fYPfmsl8yeREYuHARVylJBjCitNRVUpccUVLHv9T8XoVKClydi5VkPpqqv45irLQ
-         fW6FPpv1aA95iA4nd5l3qUoed2ymqVHQBBEb7TSN860HldHw9B76PwdKvuN2sEDMOgiD
-         i36g==
-X-Gm-Message-State: AOAM530LDh5CEwWAzWbG9j9AFQRlRfjXXTHDK52vZ1Gdd+6T8ZaoFv4w
-        t7Yfh5gohGugcdNESO2LyHMCsA==
-X-Google-Smtp-Source: ABdhPJzMPjAllIUTNZEJxN1mKpKXdCoBiG5ExjisaV2aQfxYm7cVhtaCp6Qi/7eLcZ5XZ+isGeAXYA==
-X-Received: by 2002:a63:d208:: with SMTP id a8mr49280179pgg.351.1594223693007;
-        Wed, 08 Jul 2020 08:54:53 -0700 (PDT)
+        bh=dfsy8YM0DDECiIz6MPnrjWaP9lAaD4OKRogI6YWiw3s=;
+        b=Yui+wDTwANndTf2+7xNHoNaMUzmdjwqAIvSm2e6CVVU8w8IdpfE3Zvow5HnPX9IXgk
+         KwLUf8YJmfhpe9ww0aEA4ipp/EAqIcYw7HVr886aHuGXXvgSFwE6LC/OLv8z0niEEQGA
+         Q6NrYw5+Cg4Qf30X2Pq3mrsNi7SzP6RvkyugW2+Fn8C5N/fg7zYXEpgrueVR0cHZIKWS
+         rJsgLYusPta31gDdcCuuaReaSb7N6AuclCmwQ0rQTpV+CiYBeWDCNZbLCyr8pLnbSTep
+         GVCihrIyHCjqsnMeJwVYXLABp2sS+sfuvl3v7fG6SlOWHQMI14HxrgCvn+z4aDpVUCgV
+         OmUw==
+X-Gm-Message-State: AOAM533tybxSHILvIW2MHsswZDJzvcEPjGAeuUSOsZ6+1LhqHYs20MdU
+        hWr5u1cU481p6MWPXLTDm6lTuA==
+X-Google-Smtp-Source: ABdhPJxgB0YFveeiA/rQS1rhLcG5Jj0QD7bwS2yR8UhDe2ujNQo1rB2jxlPmVfgQoY69XUQILVuk/Q==
+X-Received: by 2002:a17:90a:a393:: with SMTP id x19mr10571266pjp.228.1594223977098;
+        Wed, 08 Jul 2020 08:59:37 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 15sm73236pjs.8.2020.07.08.08.54.52
+        by smtp.gmail.com with ESMTPSA id i13sm70444pjd.33.2020.07.08.08.59.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jul 2020 08:54:52 -0700 (PDT)
-Date:   Wed, 8 Jul 2020 08:54:45 -0700
+        Wed, 08 Jul 2020 08:59:36 -0700 (PDT)
+Date:   Wed, 8 Jul 2020 08:59:33 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Eyal Birger <eyal.birger@gmail.com>
+To:     Evelyn Mitchell <efmphone@gmail.com>
 Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] ip xfrm: policy: support policies with IF_ID
- in get/delete/deleteall
-Message-ID: <20200708085445.26673615@hermes.lan>
-In-Reply-To: <20200706104756.3546238-1-eyal.birger@gmail.com>
-References: <20200706104756.3546238-1-eyal.birger@gmail.com>
+Subject: Re: [PATCH iproute2] man: ip-rule.8: minor changes
+Message-ID: <20200708085933.261507bb@hermes.lan>
+In-Reply-To: <CABD0H0sKx14FoWthLAC9MijT4q7RYOdZhyW_x-JPHdFm+=ggXw@mail.gmail.com>
+References: <CABD0H0sKx14FoWthLAC9MijT4q7RYOdZhyW_x-JPHdFm+=ggXw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,23 +63,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  6 Jul 2020 13:47:56 +0300
-Eyal Birger <eyal.birger@gmail.com> wrote:
+On Tue, 7 Jul 2020 11:40:37 -0600
+Evelyn Mitchell <efmphone@gmail.com> wrote:
 
-> The XFRMA_IF_ID attribute is set in policies for them to be
-> associated with an XFRM interface (4.19+).
+> These are grammatical and typographical fixes, with one wording change.
 > 
-> Add support for getting/deleting policies with this attribute.
-> 
-> For supporting 'deleteall' the XFRMA_IF_ID attribute needs to be
-> explicitly copied.
-> 
-> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+> Evelyn Mitchell
+> tummy.com
 
-What about man page? That needs to be updated.
+The wording change looks fine, but the patch has a couple of issues.
+First, you did not include a Signed-off-by: as required.
+See Linux kernel documentation on submitting patches.
 
-PS: disappointing that ip xfrm does not display all
-the attributes of existing policies. But that appears to be something
-that has always been broken.
+Second, the patch was not formatted in a way that it could
+be automatically consumed by git (or patch) commands.
 
-PPS: ip xfrm needs to get jsonify'd
+Lastly, it looks like your mail client maybe modifiying the
+patch when sending. Hard to tell because of the patch formatting issues.
+
+Please fix the above and resubmit.
