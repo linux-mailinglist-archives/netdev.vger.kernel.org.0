@@ -2,106 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 410D92183FB
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 11:40:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B70B5218401
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 11:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726855AbgGHJk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 05:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
+        id S1728097AbgGHJmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 05:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727775AbgGHJkZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 05:40:25 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820DAC08C5DC
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 02:40:25 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id s9so53333942ljm.11
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 02:40:25 -0700 (PDT)
+        with ESMTP id S1725949AbgGHJmE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 05:42:04 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0084C08C5DC
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 02:42:03 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id o18so45206716eje.7
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 02:42:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BgK2oERkS87fizOvSp8og/hQrsSt24BjxvtZPq/UjzI=;
-        b=U0KchNzadA9gQl6yP3b6FcMOlkx5Hw1p8aIDH+gNXIpitzBb79bjTmm/CuOwlsICrQ
-         HqmPF+kTsgAkto2VKVSY0dbx/Qgn3E/3QqGEmcWJSCfZrEudUZ6fB83bo569cospJdlK
-         sNPufWPZ16Vk2GKDaOUlr5vIj/d6NkpcUoSN0=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i+mgJkcy6YPfI3WA4aAUbSJJVrX4FUftvYtU8JJ14iA=;
+        b=koTbbF6twkw65CxQL6Lqiw2wJLkCKIMjgIJ7YGJS0fvx6o2NVisHmslYfrn4XwCjgE
+         l8Ifst9FD6bViRYRgLF0xAiZ33bIurUvooHIPuMOcpDLONMb5GDUnCZ+kPoFWlyhSiJC
+         OlnGEjwWMB/GRO3EPrjQWfbSxFRdnkHy4G1dHOdyWQvrAef/xXFV/NNyHJpCmyuMyQsD
+         y9rSa7EdrKxQAHf+5rYQQR7r8o8RuMR7kGBajK8pIWDHTNhNvUu5BoY/M+pJV728vjhc
+         3HeYrEsxPUd3xo0Jm6b1MWxG2rS19xPnv/3kGtFJvAXI0YXHELlK8j4WKk3J9GkM1UMf
+         8FVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BgK2oERkS87fizOvSp8og/hQrsSt24BjxvtZPq/UjzI=;
-        b=nirPCzJJO7L5zuJA/VVhuZ7Hlnty3f+JpZ16p8ySDGdRmyhEQ41uzTDmeGE0QJnakP
-         KXEgqZwV25pm7gwy8LIjqAstqjZ4DClvdY28Ie9EROL/twpEMTe6Zdr/6RZFgAJWZkpu
-         AdpeLqJhp+aJSp37MQemIM7eu+TD7A3vnPEpo9WAsAtJ2Tf2i+D2QxjAU0DWvuKgtLKm
-         rt3OoIdPp0nckYjISCyJMYrBlHok8dTqZLsHmFjJsXlwmwAdyObmXJA0Z2utpbpR1R+z
-         blGBlGWem/w3yAbyQu/80j/AtcXj0K3f2OHxrMzg58WQ5hYKT/EW7XKq0hR6IhuBFim0
-         usuA==
-X-Gm-Message-State: AOAM532+PrXsJ9kVV/Eq8qz+We3dLcC5t//jp7ZnySeCD2S2jB/oRJDd
-        UvCWnNKcnbA/KphAutpGTcmf1cnAOoHqWP1Oid0ieg==
-X-Google-Smtp-Source: ABdhPJz3acrdo6YOqq/+1pcpMjX2xrZzg9n8xFDl9jIPpuKWY64a3YU8nMuIGZ7unZz6/kzaRewUb0xLk9PXl0ubiGk=
-X-Received: by 2002:a05:651c:32c:: with SMTP id b12mr33452799ljp.326.1594201223722;
- Wed, 08 Jul 2020 02:40:23 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i+mgJkcy6YPfI3WA4aAUbSJJVrX4FUftvYtU8JJ14iA=;
+        b=OliDoCbcF3uB88e0alxJf+/W2f0yJwn1P2CzpMEjtEBMFMOne5ucKiz1z8xYnln3FC
+         Bw93h6R9pql2t30QybtX51VRIqH9YjNBjc/viq3KJd1scgGclzvrDJIWDqQ0LKDarr7t
+         jQzFFKe790VMlCG/Opb3tRViMdPi24yj42SoOptIaCUd4AW+BFefeCoPSBK0GEeuyVwC
+         xFKv7tj4lOo8tDOeSyqFc+wl9hieYjRxD6Rjz+7ThNiljS6mYo/Tu0jED51ni6wNUfe8
+         Ot60QiJjerrzW5Zfz/SOZFUZXIn63G7Sn4502w5FVQlBlJj3mfoHedVT9xw/LyAJXnUv
+         nOoA==
+X-Gm-Message-State: AOAM53190QF4so/4trXsGeHA9k4+deCdDrG/nr2KTdAba90Q7ZFzwLfK
+        p/UcSffVtqvvS5clCpAXimOU1WJl
+X-Google-Smtp-Source: ABdhPJysnWLdONdR8x37Ri9H5rSagSwJRlT2k9l9D7HJxNiyKJeOxam/98fI4wjgkgiVakOQUUGijg==
+X-Received: by 2002:a17:907:2654:: with SMTP id ar20mr48244374ejc.62.1594201322493;
+        Wed, 08 Jul 2020 02:42:02 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id p9sm1708153ejd.50.2020.07.08.02.42.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 02:42:02 -0700 (PDT)
+Date:   Wed, 8 Jul 2020 12:42:00 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     roopa@cumulusnetworks.com, netdev@vger.kernel.org
+Subject: Re: What is the correct way to install an L2 multicast route into a
+ bridge?
+Message-ID: <20200708094200.p6lprjdpgncspima@skbuf>
+References: <20200708090454.zvb6o7jr2woirw3i@skbuf>
+ <6e654725-ec5e-8f6d-b8ae-3cf8b898c62e@cumulusnetworks.com>
 MIME-Version: 1.0
-References: <1593416584-24145-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <20200705110301.20baf5c2@hermes.lan>
-In-Reply-To: <20200705110301.20baf5c2@hermes.lan>
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Date:   Wed, 8 Jul 2020 15:10:12 +0530
-Message-ID: <CAACQVJogqmNG_jb0W-gV23uWTcpitrx=TF9asZ9s0kfrjbB2ZA@mail.gmail.com>
-Subject: Re: [PATCH v2 iproute2-next] devlink: Add board.serial_number to info subcommand.
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Netdev <netdev@vger.kernel.org>, dsahern@gmail.com,
-        David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6e654725-ec5e-8f6d-b8ae-3cf8b898c62e@cumulusnetworks.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 5, 2020 at 11:33 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Mon, 29 Jun 2020 13:13:04 +0530
-> Vasundhara Volam <vasundhara-v.volam@broadcom.com> wrote:
->
-> > Add support for reading board serial_number to devlink info
-> > subcommand. Example:
-> >
-> > $ devlink dev info pci/0000:af:00.0 -jp
-> > {
-> >     "info": {
-> >         "pci/0000:af:00.0": {
-> >             "driver": "bnxt_en",
-> >             "serial_number": "00-10-18-FF-FE-AD-1A-00",
-> >             "board.serial_number": "433551F+172300000",
-> >             "versions": {
-> >                 "fixed": {
-> >                     "board.id": "7339763 Rev 0.",
-> >                     "asic.id": "16D7",
-> >                     "asic.rev": "1"
-> >                 },
-> >                 "running": {
-> >                     "fw": "216.1.216.0",
-> >                     "fw.psid": "0.0.0",
-> >                     "fw.mgmt": "216.1.192.0",
-> >                     "fw.mgmt.api": "1.10.1",
-> >                     "fw.ncsi": "0.0.0.0",
-> >                     "fw.roce": "216.1.16.0"
-> >                 }
-> >             }
-> >         }
-> >     }
-> > }
->
-> Although this is valid JSON, many JSON style guides do not allow
-> for periods in property names. This is done so libraries can use
-> dot notation to reference objects.
-Okay, I will modify the name to board_serial_number and resend the
-patch. Thanks.
+On Wed, Jul 08, 2020 at 12:16:27PM +0300, Nikolay Aleksandrov wrote:
+> On 08/07/2020 12:04, Vladimir Oltean wrote:
+> > Hi,
+> > 
+> > I am confused after reading man/man8/bridge.8. I have a bridge br0 with
+> > 4 interfaces (eth0 -> eth3), and I would like to install a rule such
+> > that the non-IP multicast address of 09:00:70:00:00:00 is only forwarded
+> > towards 3 of those ports, instead of being flooded.
+> > The manual says that 'bridge mdb' is only for IP multicast, and implies
+> > that 'bridge fdb append' (NLM_F_APPEND) is only used by vxlan. So, what
+> > is the correct user interface for what I am trying to do?
+> > 
+> > Thank you,
+> > -Vladimir
+> > 
+> 
+> Hi Vladimir,
+> The bridge currently doesn't support L2 multicast routes. The MDB interface needs to be extended
+> for such support. Soon I'll post patches that move it to a new, entirely netlink attribute-
+> based, structure so it can be extended easily for that, too. My change is motivated mainly by SSM
+> but it will help with implementing this feature as well.
+> In case you need it sooner, patches are always welcome! :)
+> 
+> Current MDB fixed-size structure can also be used for implementing L2 mcast routes, but it would
+> require some workarounds. 
+> 
+> Cheers,
+>  Nik
+> 
+> 
 
->
-> Also the encoding of PCI is problematic
->
->
+Thanks, Nikolay.
+Isn't mdb_modify() already netlink-based? I think you're talking about
+some changes to 'struct br_mdb_entry' which would be necessary. What
+changes would be needed, do you know (both in the 'workaround' case as
+well as in 'fully netlink')?
+
+-Vladimir
