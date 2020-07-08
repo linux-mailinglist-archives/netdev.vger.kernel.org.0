@@ -2,126 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7792B21898E
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 15:54:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF982218992
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 15:57:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729479AbgGHNyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 09:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44800 "EHLO
+        id S1729479AbgGHN5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 09:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729392AbgGHNyS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 09:54:18 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7D0C061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 06:54:18 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id z63so41486935qkb.8
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 06:54:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7QTdmCV7uJI09EUvoJaGnkyF1y38CQHgo+7lXY70zZE=;
-        b=AHK3MYE4/CwM9kmd2/YleKd/eqpUOpBTPPiSioeG4GhDBpMqWgsEZJ4pFuDeE6N/es
-         8sVf96pLZj/+2GA45kJrtqID+cuVJJhTJu4i3+5ADDfWPe8HPRlg8NWdVfyPIAIe6Lyn
-         BlGRh+c5GAhY9/Syssq61AxcCAB8/N0GNuxLCCERgSJxk6ftVgN1NPkxClw7rYZQwIPc
-         5hQxPLag2HWaLHTn6KaPaNuvWsmKAx4lHDGdPiMzJ2Qk7usgXmhVJbZLCQ1vnJyRkbFc
-         Jo3BkNFeCzEy+R+VV5FRz9r3xXxlmNvgmplWXj4OLoks8NfKqE0cvKUemc4RKKl34mI5
-         ddSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7QTdmCV7uJI09EUvoJaGnkyF1y38CQHgo+7lXY70zZE=;
-        b=i3LYKdBxrdx0rVNWByALZevl10TtL0vR2yrrWt1ycUcEGgUckC2C7tc4wdI4j+IQDT
-         a2CtCciUU3euXyjtVN7RiGj0zkcnuSkeYYRVWPQduhVHFGufMqfWFeoKdUIsBZklavzE
-         bS2phf0EprE9HwqGwx+GGtwSHD2geMXHWYieFHMODEwVCUSETlGXPF5GxyMWeHlQ6H4A
-         R4/jlTwOpemuG2tZpdyDC1C1rZ5/OClU/KmnATBTg9CB1V84fGShXLkZOHexJBuDIYzM
-         7AFcqHyO7xheFkRMb3cjNLi+g2LqHKNrtjHetfPngssOK213ghslA7FLkSLr4zx7rkXO
-         QD5A==
-X-Gm-Message-State: AOAM531HohZFgsYFzZXg8ihj4mZn7dbNjWcNzSYQzpz6MA9zllndsz93
-        KgLyYGtBllweycKSnOMJqred0g==
-X-Google-Smtp-Source: ABdhPJy7xTV8OmnEc4++p6pUrj7gUcJsBNVj7KvhXgR/i95WLvrrI0Tr1C57LiM5xfbNn9kiwjt0GA==
-X-Received: by 2002:a37:a711:: with SMTP id q17mr57402823qke.257.1594216457795;
-        Wed, 08 Jul 2020 06:54:17 -0700 (PDT)
-Received: from [192.168.1.117] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
-        by smtp.googlemail.com with ESMTPSA id e25sm28048105qtc.93.2020.07.08.06.54.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jul 2020 06:54:16 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 0/3] ] TC datapath hash api
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Ariel Levkovich <lariel@mellanox.com>, netdev@vger.kernel.org,
-        kuba@kernel.org, xiyou.wangcong@gmail.com, ast@kernel.org,
-        daniel@iogearbox.net
-References: <20200701184719.8421-1-lariel@mellanox.com>
- <13b36fb1-f93e-dad7-9dba-575909197652@mojatatu.com>
- <20200707100556.GB2251@nanopsycho.orion>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <20877e09-45f2-fa89-d11c-4ae73c9a7310@mojatatu.com>
-Date:   Wed, 8 Jul 2020 09:54:14 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        with ESMTP id S1728148AbgGHN5t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 09:57:49 -0400
+Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F531C061A0B;
+        Wed,  8 Jul 2020 06:57:49 -0700 (PDT)
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by smtp.al2klimov.de (Postfix) with ESMTPA id 0F4B4BC118;
+        Wed,  8 Jul 2020 13:57:43 +0000 (UTC)
+From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
+To:     corbet@lwn.net, ast@kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        john.fastabend@gmail.com, mchehab+samsung@kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Subject: [PATCH] Replace HTTP links with HTTPS ones: XDP (eXpress Data Path)
+Date:   Wed,  8 Jul 2020 15:57:37 +0200
+Message-Id: <20200708135737.14660-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
-In-Reply-To: <20200707100556.GB2251@nanopsycho.orion>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++++++
+X-Spam-Level: ******
+Authentication-Results: smtp.al2klimov.de;
+        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-07-07 6:05 a.m., Jiri Pirko wrote:
-> Fri, Jul 03, 2020 at 01:22:47PM CEST, jhs@mojatatu.com wrote:
->> Hi,
->>
->> Several comments:
->> 1) I agree with previous comments that you should
->> look at incorporating this into skbedit.
->> Unless incorporating into skbedit introduces huge
->> complexity, IMO it belongs there.
->>
->> 2) I think it would make sense to create a skb hash classifier
->> instead of tying this entirely to flower i.e i should not
->> have to change u32 just so i can support hash classification.
-> 
-> Well, we don't have multiple classifiers for each flower match, we have
-> them all in one classifier.
+Rationale:
+Reduces attack surface on kernel devs opening the links for MITM
+as HTTPS traffic is much harder to manipulate.
 
-Packet data matches, yes - makes sense. You could argue the same for
-the other classifiers.
+Deterministic algorithm:
+For each file:
+  If not .svg:
+    For each line:
+      If doesn't contain `\bxmlns\b`:
+        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
+	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
+            If both the HTTP and HTTPS versions
+            return 200 OK and serve the same content:
+              Replace HTTP with HTTPS.
 
-> It turned out to be very convenient and
-> intuitive for people to use one classifier to do the job for them.
+Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+---
+ Continuing my work started at 93431e0607e5.
+ See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
+ (Actually letting a shell for loop submit all this stuff for me.)
 
-IMO:
-For this specific case where _offload_ is the main use case i think
-it is not a good idea because flower on ingress is slow.
-The goal of offloading classifiers to hardware is so one can reduce
-consumed cpu cycles on the host. If the hardware
-has done the classification for me, a simple hash lookup of the
-32 bit skbhash(similar to fw) in the host would be a lot less
-compute intensive than running flower's algorithm.
+ If there are any URLs to be removed completely or at least not HTTPSified:
+ Just clearly say so and I'll *undo my change*.
+ See also: https://lkml.org/lkml/2020/6/27/64
 
-I think there is a line for adding everything in one place,
-my main concern is that this feature this is needed
-by all classifiers and not just flower.
+ If there are any valid, but yet not changed URLs:
+ See: https://lkml.org/lkml/2020/6/26/837
+
+ If you apply the patch, please let me know.
 
 
-> Modularity is nice, but useability is I think more important in this
-> case. Flower turned out to do good job there.
-> 
+ Documentation/arm/ixp4xx.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-For humans, agreed everything in one place is convinient.
-Note: your arguement could be used for "ls" to include "grep"
-functionality because in my scripts I do both most of the time.
+diff --git a/Documentation/arm/ixp4xx.rst b/Documentation/arm/ixp4xx.rst
+index a57235616294..d94188b8624f 100644
+--- a/Documentation/arm/ixp4xx.rst
++++ b/Documentation/arm/ixp4xx.rst
+@@ -119,14 +119,14 @@ http://www.gateworks.com/support/overview.php
+    the expansion bus.
+ 
+ Intel IXDP425 Development Platform
+-http://www.intel.com/design/network/products/npfamily/ixdpg425.htm
++https://www.intel.com/design/network/products/npfamily/ixdpg425.htm
+ 
+    This is Intel's standard reference platform for the IXDP425 and is
+    also known as the Richfield board. It contains 4 PCI slots, 16MB
+    of flash, two 10/100 ports and one ADSL port.
+ 
+ Intel IXDP465 Development Platform
+-http://www.intel.com/design/network/products/npfamily/ixdp465.htm
++https://www.intel.com/design/network/products/npfamily/ixdp465.htm
+ 
+    This is basically an IXDP425 with an IXP465 and 32M of flash instead
+    of just 16.
+-- 
+2.27.0
 
-cheers,
-jamal
-
-
-
-> + Nothing stops you from creating separate classifier to match on hash
-> as you wanted to :)
-> 
->
