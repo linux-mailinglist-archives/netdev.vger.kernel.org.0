@@ -2,150 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5AD5219422
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 01:14:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32C5F219428
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 01:14:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726385AbgGHXOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 19:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46862 "EHLO
+        id S1726445AbgGHXOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 19:14:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbgGHXOd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 19:14:33 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85836C08C5C1
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 16:14:33 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id a17so100062vsq.6
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 16:14:33 -0700 (PDT)
+        with ESMTP id S1726321AbgGHXOs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 19:14:48 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224D4C061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 16:14:48 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id y2so387241ioy.3
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 16:14:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=mw2PmlJzHWQhRNNd30hc3xruqPMvRejs+H96jtSFf2Q=;
-        b=kk8nuYBif+rgHaNw9hL1gR1Vae1V/jQHGwONLe1TxyhDzjPnEdAojzripI9lqKlDuJ
-         nTWZC3Qj9n0Xx2pPKxQNMVMV0PknVfApA/VUmZeUgCwCiBWmowJYRlxLp8Z4gxW63v6H
-         iJjlAIYvbg2zTxdoC11Y3otPA3qowTJKaiojc=
+        bh=bawm1qdRqZMifHT0oDE9TS4ZfVsKk3gISLw9AOHjoVY=;
+        b=C9VDJByuvezG8WEb2jHCBsn6jUIZ0sTgdZrExm3xy+GwJa3u3rKqliJHmm4MlNgOpM
+         /BBRMG+m4mJiNCxoBU8lI926JpP8ZF8Lt34/tcvhS+EH9qXyevGltCiT8ioSBRGREGpJ
+         mV5Rl8U0C6QsvKbrBe4nMOixUvU2B99mhbblaGp4kMUC9Jv8RDGi2Lb5hk3PpmiXAwLC
+         a2TLWLG7Oy6oiXVyq6BAddITpAi9QpCvSMvGy3sejQr7GHpsymCF+RsuaJW+BmtYar3u
+         4lTIFL/65+KMsXVoRwrXKuKbtqvWqubDVdYcsVw8Ki63UQFFlTjWAbOVQ0X2FuLeGZee
+         cW+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mw2PmlJzHWQhRNNd30hc3xruqPMvRejs+H96jtSFf2Q=;
-        b=MHEvpF+sPYLIlc/Y+5XpQkhAe57L7W/ut7UGhVrekwvGKK2Pn0PODLfSj6/HHRkbAH
-         H9a6z7WQ3l4hwUr8yRDdeECe5u1eUhzxQFiKXpMm6F3CkxwesJl63iSHjpcJWIVLRuad
-         XKASlbWvT1bySWryRY9PBXIwDwt9Xw0dNKwVSHr40krLyEhF7IIotMlMQVj+dm8iQi3L
-         0OAV8hFs62ECPMmjt41HgvkHywOXv+te6xEey1JArJzhFd0j3hDTCOTVkEzZiwHFBSPX
-         Cb3feVdgG4ExVPlmnlsMJj99QbUfcV//Xecu0nkwN/fKRNvoycdjIvJZ8tW5fkI7G930
-         afQg==
-X-Gm-Message-State: AOAM530PfgPTJZv0gETLqfdS1vmuvGcQB92/25PmvyRELstLalWlKZSC
-        R8juktPA57vhCVs+Xn4gi4LIoZUalEE=
-X-Google-Smtp-Source: ABdhPJw8Irr45D818xkXe+JZyePSojWmJZZqgwPF80MN9cEX9i7NquQQuM7hR4HqmBEtyTVNXIkDaA==
-X-Received: by 2002:a67:fd49:: with SMTP id g9mr31155642vsr.58.1594250072483;
-        Wed, 08 Jul 2020 16:14:32 -0700 (PDT)
-Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
-        by smtp.gmail.com with ESMTPSA id e18sm135799vsp.7.2020.07.08.16.14.30
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jul 2020 16:14:31 -0700 (PDT)
-Received: by mail-ua1-f45.google.com with SMTP id f11so127474uao.9
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 16:14:30 -0700 (PDT)
-X-Received: by 2002:ab0:6e8e:: with SMTP id b14mr48881584uav.0.1594250070318;
- Wed, 08 Jul 2020 16:14:30 -0700 (PDT)
+        bh=bawm1qdRqZMifHT0oDE9TS4ZfVsKk3gISLw9AOHjoVY=;
+        b=Chzpiwlz3vQ7/g/7e1EGN0O8Y/VJQmRMGeSZOjX0Fa/FlvxltvDkaM5PBm6DPC+DlE
+         Qsb6i7Oi64fNAss1JI80CE+VmLIDWIJy4p/GG84pzf6PZ4qOLOXNWaEmZoRBuoEamqQU
+         Tkj99p4jxvDCj2H5CKE41oSD4pfGRmLT5GEr5R3ANuYMqd/lRDGUyniDHOBXQ3e+HRy4
+         XXkWCuAofGyWJPdNRx/X2jeLauqi9nR8TjBnp1lrGcuB6vP4ZxmeJRLqgxR3yvlZUIR3
+         d5+2cRm1/avnqkQ3xHRuh2f7TOnVfgzzP/ugeWaVQOa4aJ7dR1hfGT3v+1dSJkMWRfVa
+         Ocvg==
+X-Gm-Message-State: AOAM530HshQGVuj7a4PiGpZ3eTVNCfQpltU+3+i5i1iUW2ikeyZ54BTd
+        Vb5P4klyyQw90oQzLvlGGHKLDSyuckqLk9Mv9Ns=
+X-Google-Smtp-Source: ABdhPJw+70yPL7vX38nAF1HneBymTXarBxEW+LLdGNu0XUZEcubt1jXH1aGJpD+dDhCSX1w3PTcpoPSq6ShD1sNx2Cs=
+X-Received: by 2002:a05:6638:cc7:: with SMTP id e7mr67702646jak.87.1594250087268;
+ Wed, 08 Jul 2020 16:14:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200707101712.1.I4d2f85ffa06f38532631e864a3125691ef5ffe06@changeid>
- <CA+ASDXMXtwdV4BNL1GSj8DY-3z8-dZ=1hP8Xv_R-AjKvJs0NMw@mail.gmail.com>
-In-Reply-To: <CA+ASDXMXtwdV4BNL1GSj8DY-3z8-dZ=1hP8Xv_R-AjKvJs0NMw@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 8 Jul 2020 16:14:18 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WU2dUFtG4W6o574DRN9VV+u_B5-ThqV3BogjztBibyLQ@mail.gmail.com>
-Message-ID: <CAD=FV=WU2dUFtG4W6o574DRN9VV+u_B5-ThqV3BogjztBibyLQ@mail.gmail.com>
-Subject: Re: [PATCH] ath10k: Keep track of which interrupts fired, don't poll them
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        ath10k <ath10k@lists.infradead.org>,
-        Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        Abhishek Kumar <kuabhs@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
+References: <20200707212434.3244001-1-kuba@kernel.org> <20200707212434.3244001-8-kuba@kernel.org>
+ <CAKgT0Udi60-zs08eppC-5roPnpi_r4nAV53xovG8xfnovUtS4A@mail.gmail.com> <20200708142545.66057f36@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200708142545.66057f36@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 8 Jul 2020 16:14:36 -0700
+Message-ID: <CAKgT0UcOSducbD1Lg1ADmnrGnaGvNM0Fb-098eUdnaKewuB8Ew@mail.gmail.com>
+Subject: Re: [PATCH net-next 7/9] ixgbe: convert to new udp_tunnel_nic infra
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        edwin.peer@broadcom.com,
+        "Tantilov, Emil S" <emil.s.tantilov@intel.com>,
+        Alexander Duyck <alexander.h.duyck@linux.intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Michal Kubecek <mkubecek@suse.cz>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Wed, Jul 8, 2020 at 4:03 PM Brian Norris <briannorris@chromium.org> wrote:
+On Wed, Jul 8, 2020 at 2:25 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Tue, Jul 7, 2020 at 10:18 AM Douglas Anderson <dianders@chromium.org> wrote:
-> > diff --git a/drivers/net/wireless/ath/ath10k/ce.h b/drivers/net/wireless/ath/ath10k/ce.h
-> > index a440aaf74aa4..666ce384a1d8 100644
-> > --- a/drivers/net/wireless/ath/ath10k/ce.h
-> > +++ b/drivers/net/wireless/ath/ath10k/ce.h
-> ...
-> > @@ -376,12 +377,9 @@ static inline u32 ath10k_ce_interrupt_summary(struct ath10k *ar)
-> >  {
-> >         struct ath10k_ce *ce = ath10k_ce_priv(ar);
+> On Wed, 8 Jul 2020 10:00:36 -0700 Alexander Duyck wrote:
+> > On Tue, Jul 7, 2020 at 2:28 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > >
+> > > Make use of new common udp_tunnel_nic infra. ixgbe supports
+> > > IPv4 only, and only single VxLAN and Geneve ports (one each).
+> > >
+> > > I'm dropping the confusing piece of code in ixgbe_set_features().
+> > > ndo_udp_tunnel_add and ndo_udp_tunnel_del did not check if RXCSUM
+> > > is enabled, so this code was either unnecessary or buggy anyway.
 > >
-> > -       if (!ar->hw_params.per_ce_irq)
->
-> If I'm reading correctly, you're removing the only remaining use of
-> 'per_ce_irq'. Should we kill the field entirely?
-
-Ah, you are indeed correct!  I hadn't noticed that.  Unless I hear
-otherwise, I'll send a v2 tomorrow that removes the field entirely.
-
-
-> Or perhaps we should
-> leave some kind of WARN_ON() (BUG_ON()?) if this function is called
-> erroneously with per_ce_irq==true? But I suppose this driver is full
-> of landmines if the CE API is used incorrectly.
-
-Yeah, I originally had a WARN_ON() here and then took it out because
-it seemed like extra overhead and, as you said, someone writing the
-code has to know how the API works already I think.  ...but I'll add
-it back in if people want.
-
-
-> > -               return CE_WRAPPER_INTERRUPT_SUMMARY_HOST_MSI_GET(
-> > -                       ce->bus_ops->read32((ar), CE_WRAPPER_BASE_ADDRESS +
-> > -                       CE_WRAPPER_INTERRUPT_SUMMARY_ADDRESS));
-> > -       else
-> > -               return ath10k_ce_gen_interrupt_summary(ar);
-> > +       return CE_WRAPPER_INTERRUPT_SUMMARY_HOST_MSI_GET(
-> > +               ce->bus_ops->read32((ar), CE_WRAPPER_BASE_ADDRESS +
-> > +               CE_WRAPPER_INTERRUPT_SUMMARY_ADDRESS));
-> >  }
+> > The code is unnecessary from what I can tell. I suspect the reason for
+> > adding the code was because the port values are used when performing
+> > the Rx checksum offload. However we never disable it in hardware, and
+> > the software path in ixgbe_rx_checksum will simply disable the related
+> > code anyway since we cannot set skb->encapsulation if RXCSUM is
+> > disabled.
 > >
-> >  /* Host software's Copy Engine configuration. */
+> > With that said moving this to a separate patch might be preferable as
+> > it would make the patch more readable.
 >
-> > diff --git a/drivers/net/wireless/ath/ath10k/snoc.h b/drivers/net/wireless/ath/ath10k/snoc.h
-> > index a3dd06f6ac62..5095d1893681 100644
-> > --- a/drivers/net/wireless/ath/ath10k/snoc.h
-> > +++ b/drivers/net/wireless/ath/ath10k/snoc.h
-> > @@ -78,6 +78,7 @@ struct ath10k_snoc {
-> >         unsigned long flags;
-> >         bool xo_cal_supported;
-> >         u32 xo_cal_data;
-> > +       DECLARE_BITMAP(pending_ce_irqs, CE_COUNT_MAX);
+> Ack on all points!
 >
-> Do you need to clear this map if the interface goes down or if there's
-> a firmware crash? Right now, I don't think there's a guarantee that
-> we'll run through a NAPI poll in those cases, which is the only place
-> you clear the map, and if the hardware/firmware has been reset, the
-> state map is probably not valid.
-
-Seems like a good idea.  Is the right place at the start of
-ath10k_snoc_hif_start()?
-
-
-> Otherwise, looks OK to me:
+> > > -static void ixgbe_clear_udp_tunnel_port(struct ixgbe_adapter *adapter, u32 mask)
+> > > +static int ixgbe_udp_tunnel_sync(struct net_device *dev, unsigned int table)
+> > >  {
+> > > +       struct ixgbe_adapter *adapter = netdev_priv(dev);
+> > >         struct ixgbe_hw *hw = &adapter->hw;
+> > > -       u32 vxlanctrl;
+> > > -
+> > > -       if (!(adapter->flags & (IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE |
+> > > -                               IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE)))
+> > > -               return;
+> > > +       struct udp_tunnel_info ti;
+> > >
+> > > -       vxlanctrl = IXGBE_READ_REG(hw, IXGBE_VXLANCTRL) & ~mask;
+> > > -       IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL, vxlanctrl);
+> > > -
+> > > -       if (mask & IXGBE_VXLANCTRL_VXLAN_UDPPORT_MASK)
+> > > -               adapter->vxlan_port = 0;
+> > > +       udp_tunnel_nic_get_port(dev, table, 0, &ti);
+> > > +       if (!table)
+> > > +               adapter->vxlan_port = ti.port;
+> > > +       else
+> > > +               adapter->geneve_port = ti.port;
+> >
+> > So this !table thing is a bit hard to read. It might be more useful if
+> > you had a define that made it clear that the expectation is that entry
+> > 0 is a VXLAN table and entry 1 is the GENEVE.
 >
-> Reviewed-by: Brian Norris <briannorris@chromium.org>
+> How about:
+>
+> if (ti.type == UDP_TUNNEL_TYPE_VXLAN)
+>
+> Tunnel info will have the type.
 
-Thanks for the review!
+That would work too.
 
--Doug
+> > >
+> > > -       if (mask & IXGBE_VXLANCTRL_GENEVE_UDPPORT_MASK)
+> > > -               adapter->geneve_port = 0;
+> > > +       IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL,
+> > > +                       ntohs(adapter->vxlan_port) |
+> > > +                       ntohs(adapter->geneve_port) <<
+> > > +                               IXGBE_VXLANCTRL_GENEVE_UDPPORT_SHIFT);
+> > > +       return 0;
+> > >  }
+> >
+> > I'm assuming the new logic will call this for all entries in the
+> > tables regardless of if they are set or not. If so I suppose this is
+> > fine.
+>
+> Yup, I think this is preferred form of sync for devices which just
+> write registers. I wrote it for NFP initially but it seems to work
+> in more places.
+>
+> The driver can query the entire table and will get either the port
+> or 0 if port is not set.
+
+Okay, sounds good.
+
+> > >  #ifdef CONFIG_IXGBE_DCB
+> > >  /**
+> > >   * ixgbe_configure_dcb - Configure DCB hardware
+> > > @@ -6227,6 +6242,7 @@ static void ixgbe_init_dcb(struct ixgbe_adapter *adapter)
+> > >  /**
+> > >   * ixgbe_sw_init - Initialize general software structures (struct ixgbe_adapter)
+> > >   * @adapter: board private structure to initialize
+> > > + * @netdev: network interface device structure
+> > >   * @ii: pointer to ixgbe_info for device
+> > >   *
+> > >   * ixgbe_sw_init initializes the Adapter private data structure.
+> > > @@ -6234,6 +6250,7 @@ static void ixgbe_init_dcb(struct ixgbe_adapter *adapter)
+> > >   * OS network device settings (MTU size).
+> > >   **/
+> > >  static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+> > > +                        struct net_device *netdev,
+> > >                          const struct ixgbe_info *ii)
+> > >  {
+> > >         struct ixgbe_hw *hw = &adapter->hw;
+> >
+> > There is no need to add the argument. It should be accessible via
+> > adapter->netdev, or for that matter you could pass the netdev and drop
+> > the adapter and just pull it out via netdev_priv since the two are all
+> > contained in the same structure anyway. Another option would be to
+> > just pull the logic out of this section and put it in a switch
+> > statement of its own in the probe function.
+>
+> Hm, new switch section definitely looks best. I'll do that.
+>
+> > > @@ -6332,7 +6349,7 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+> > >                         adapter->flags2 |= IXGBE_FLAG2_TEMP_SENSOR_CAPABLE;
+> > >                 break;
+> > >         case ixgbe_mac_x550em_a:
+> > > -               adapter->flags |= IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE;
+> > > +               netdev->udp_tunnel_nic_info = &ixgbe_udp_tunnels_x550em_a;
+> > >                 switch (hw->device_id) {
+> > >                 case IXGBE_DEV_ID_X550EM_A_1G_T:
+> > >                 case IXGBE_DEV_ID_X550EM_A_1G_T_L:
+> > > @@ -6359,7 +6376,8 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+> > >  #ifdef CONFIG_IXGBE_DCA
+> > >                 adapter->flags &= ~IXGBE_FLAG_DCA_CAPABLE;
+> > >  #endif
+> > > -               adapter->flags |= IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE;
+> > > +               if (!netdev->udp_tunnel_nic_info)
+> > > +                       netdev->udp_tunnel_nic_info = &ixgbe_udp_tunnels_x550;
+> > >                 break;
+> > >         default:
+> > >                 break;
+> >
+> > Not a fan of the !udp_tunnel_nic_info check, but I understand you are
+> > having to do it because of the fall-through.
+>
+> Yup.
+>
+> > > @@ -6798,8 +6816,7 @@ int ixgbe_open(struct net_device *netdev)
+> > >
+> > >         ixgbe_up_complete(adapter);
+> > >
+> > > -       ixgbe_clear_udp_tunnel_port(adapter, IXGBE_VXLANCTRL_ALL_UDPPORT_MASK);
+> > > -       udp_tunnel_get_rx_info(netdev);
+> > > +       udp_tunnel_nic_reset_ntf(netdev);
+> > >
+> > >         return 0;
+> >
+> > So I went looking through the earlier patches for an explanation of
+> > udp_tunnel_nic_reset_ntf. It might be useful to have some doxygen
+> > comments with the declaration explaining what it does and when/why we
+> > should use it.
+>
+> Looks like I hated the need for this one so much I forgot to document
+> it :S
+>
+> I was hoping the core can issue all the callbacks just based on netdev
+> notifications, but it seems like most drivers have internal resets
+> procedures which require re-programming the ports :( Hence this helper
+> was born.
+>
+> I'll document it like this:
+>
+>  * Called by the driver to inform the core that the entire UDP tunnel port
+>  * state has been lost, usually due to device reset. Core will assume device
+>  * forgot all the ports and issue .set_port and .sync_table callbacks as
+>  * necessary.
+>
+>
+> Thanks for the review! I'll post v2 in a couple hours hoping someone
+> else will find time to review :S
+
+Thanks, this does appear to do quite a bit to simplify the driver code.
+
+- Alex
