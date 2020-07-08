@@ -2,88 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29B5421872A
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 14:25:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0622218738
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 14:26:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729109AbgGHMZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 08:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58946 "EHLO
+        id S1729160AbgGHM0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 08:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728962AbgGHMZK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 08:25:10 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FD2C08C5DC
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 05:25:09 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id z24so29102773ljn.8
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 05:25:09 -0700 (PDT)
+        with ESMTP id S1729147AbgGHM0E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 08:26:04 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921B9C08C5DC
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 05:26:04 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id f5so38151715ljj.10
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 05:26:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6qXU5UVTnz5zSgURxY48AW/oWyflqTTe69fogbsvfzY=;
-        b=JpdUOrqF/I+8YlpygYVF6Ux1gR3sVJPnNKtJCAjday4nkp2/fDQbBCUtIHIaibGcdE
-         EES7kUppV1/kZpn8PJATStF5V+6t2NVnYivIVhvBsMgFvZqRONK5vpELzYXUXWMjDF6/
-         zwxAtecHyfm18owuzeBpynrTag9MjJNXuGxKdtgxD+l8YLEA8wwVCqj+Hg26mAjsL/ps
-         lgbqTVn1n2AtnSYTukbbyWdSjWv7hg1gcHxcqhVevJ5dniDX8viawk73da6oGQIcvDPF
-         lslFmvbYTOWb8pnz1sJBMbQ3b65aJHqmYdzBpBQxcjHbhphmliR4ued9k5sq9MAkIcv3
-         XV7g==
+        bh=2R+KQCTyrveBpGh4ucun2aE369nQ+wm18EnYKfQqTko=;
+        b=wiLZjnFNLUNPgEMHDdan+Acv/mPyBZOXelUk1IizzMmO00OgiYC7LIZxUihJx/ogjU
+         5dPGUqdTczWKyrgAvd7ubZEtm6Q+b1QUUvdPx9nafx00xyVOXqsYrmcDgZKrKZt8LQS2
+         /DNty599kvG7LoH5r+NG6ff3paV3FkDEthoDU5oR5G5eGRgYYm77ccHSDsJdd+Fvonfe
+         G0fbxJD52ydjMOGj8EFJguvTxlIV4lPfOfpnbkojd6j1ZfH3VDWLYexbWhN+CaeC2fCu
+         e5W4BZ4u5NF04G8cbK23TfImdFGV1SH4qGPNXwIlvEgHN5hildQxyjCIw5c4Jd7Dh5a9
+         /khg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=6qXU5UVTnz5zSgURxY48AW/oWyflqTTe69fogbsvfzY=;
-        b=LWLIBhwSzbm003fhNzDIY3c0ptBJ0Op92pA+NsToRlfJydKXltKOedYzh5pf6JUhSj
-         TTrvpxC+W8k47syiIA5GrXvjlxgGXhv52jjw9IlpiVSN/kSEaKLZHuMykPCEPxZpMcAr
-         NyRsWo8vPJjHW9gSvgdJuDaVATbQtpNUo33k7sMKVI7zBZlG2/gX6JExJUarL7DIDwp7
-         l1aho00g4s8kT4t91iTxALbhEmws+geUzM0QmC0QnwVvCJUuIZ/Z1xVPfZe5EojHhOAI
-         KztcTafKOvcqxIqSAiYL7D9dq98AEUICPNqzglYRqGmr8yZ6n3yXujo5Bh2/kzkeZDBK
-         cVgA==
-X-Gm-Message-State: AOAM53036osIRLXkPQ5h6hfelGRdnqFJyBRkjkA3zeuFVDgtf33NqWgx
-        yzcnbLM5rZNEkVJT7O497KVSYHtduQKr8UzmrME=
-X-Google-Smtp-Source: ABdhPJwCLLgcnir2rCNQdgOBxvMVthtbKV8SquXDITzW5mCZvo8oPnT0iKO2RSp5sEk9s8hAZZReDCMn4nXURJrztOs=
-X-Received: by 2002:a2e:9943:: with SMTP id r3mr16559218ljj.280.1594211107986;
- Wed, 08 Jul 2020 05:25:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2R+KQCTyrveBpGh4ucun2aE369nQ+wm18EnYKfQqTko=;
+        b=JoBduuDm/I4LqvW2ttRgBEnERb6lmDX/2XFXtcpEi+tZuog3fLs/IUcXVwKXIoDVVm
+         gMkFpuFBk8DhJwTVTnv6IJX/L2zfcfNw/RdnjOhx0W7zvp1Xk+jm/19k+kcAIBAk6LmA
+         NgP8LmObjQev2cnXV9h0qbGgTcGTm2XMFodF27lUoxXkJfDlv3BkUv3N/r/gBjrc1SRP
+         vDBltsEquCGzEmtoTNrb63N5jcIK/YvUUPCwsy6ykc84KJI6tpCwdn0fKcW84fKpvpdY
+         ICD0obqE5dBg/UrifvcWN0nxNLkNR8U6cumaiQei0dV2U6V/AomBvOat7DutvKKDW+7j
+         pXmg==
+X-Gm-Message-State: AOAM53118ql8ZXPTEHij7LErdJp2dJoMyo1ZxtGcgm58UXl4pli7La2y
+        TDVvif4A5iC7Y5Ckb3YzfVkzSg==
+X-Google-Smtp-Source: ABdhPJy8TwRyhqKTqV75GHGFWMJ62Adnf2d6keaL6WgKfceLmW/olJeN8g/KMU2Ge4y7dVBiZvDfnw==
+X-Received: by 2002:a2e:b8d5:: with SMTP id s21mr31941266ljp.34.1594211163092;
+        Wed, 08 Jul 2020 05:26:03 -0700 (PDT)
+Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
+        by smtp.gmail.com with ESMTPSA id q128sm874934ljb.140.2020.07.08.05.26.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 05:26:02 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     Linus Walleij <linus.walleij@linaro.org>
+Subject: [net-next PATCH 0/2 v6] RTL8366RB tagging support
+Date:   Wed,  8 Jul 2020 14:25:35 +0200
+Message-Id: <20200708122537.1341307-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Received: by 2002:a2e:9d93:0:0:0:0:0 with HTTP; Wed, 8 Jul 2020 05:25:07 -0700 (PDT)
-From:   Marina Bagni <marinadanielsbagni1@gmail.com>
-Date:   Wed, 8 Jul 2020 05:25:07 -0700
-X-Google-Sender-Auth: HDbWC5RYUq-EkSeL-HqGTYPTYWA
-Message-ID: <CAC31sBbbDYA1F+BxZo7j5BTjOvLJmmq2_7JEr86LrovnkXN1ww@mail.gmail.com>
-Subject: Hello Greetings,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello and Greetings my dear,
-How are you today? With hope you are found in good condition of
-health, together with your beloved family? My Dear, this is the second
-time I am sending the same message to you, because I have an urgent
-and very important request that made me contact you in this regard. I
-am a widow diagnosed with brain tumor disease. It has gotten to a very
-bad stage which my doctors have confirmed and announced to me that I
-have just a few days to leave, Now that I=E2=80=99m ending the race like th=
-is,
-without any family members and no child.
+This patch set adds DSA tagging support to the RTL8366RB
+DSA driver.
 
-I'm a business woman from Indonesia dealing with gold exportation here
-in Africa. I made a substantial deposit with the bank which I have
-decided to hand over and entrust the sum of ($ 9,650,000.00, Nine
-Million Six Hundred and Fifty Thousand Dollars) in my account to you
-for the mutual benefit of the orphans and the less privileged ones in
-your country to fulfill my final wish on earth. But before handing
-over my data=E2=80=99s to you, I want you to understand that It will be my
-pleasure to compensate you as my Investment Manager/Partner with 50%
-percent of the total money for your effort in handling the
-transaction, while 50% of the fund will be invested into the charity
-project there in your country. Meanwhile if only you are interested I
-am waiting for your prompt response Now I have access to the Internet
-in the hospital, I will give you further details and my data. Please
-always check your e-mail as I have only a few days to leave on this
-earth. Your early response will be appreciated.
+There is a minor performance improvement in the tag parser
+compared to the previous patch set and the review tags
+have been collected.
 
-Kind Regards.
-Sincerely Mrs. Marina Bagni.
+Linus Walleij (2):
+  net: dsa: tag_rtl4_a: Implement Realtek 4 byte A tag
+  net: dsa: rtl8366rb: Support the CPU DSA tag
+
+ drivers/net/dsa/Kconfig     |   1 +
+ drivers/net/dsa/rtl8366rb.c |  31 +++------
+ include/net/dsa.h           |   2 +
+ net/dsa/Kconfig             |   7 ++
+ net/dsa/Makefile            |   1 +
+ net/dsa/tag_rtl4_a.c        | 130 ++++++++++++++++++++++++++++++++++++
+ 6 files changed, 149 insertions(+), 23 deletions(-)
+ create mode 100644 net/dsa/tag_rtl4_a.c
+
+-- 
+2.26.2
+
