@@ -2,183 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 552E4219409
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 01:04:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD28E219417
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 01:09:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726352AbgGHXEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 19:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
+        id S1726247AbgGHXJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 19:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726174AbgGHXEn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 19:04:43 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C2AC061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 16:04:43 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id s9so504519ybj.18
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 16:04:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=Jny5Jx5rRXxMy/sC2H9QJqimOZ5hbGj1rz6/5Fw+2UM=;
-        b=qBuqwOKV7bQlTsZUh6QG8X200PnhiWCcbV0CYfl/19ebuoYpaCjHciGfnwc4xpERiT
-         oGPwUKczb7e640dhE0Aetn212ws5ZrUM3c/EQj5xTcSKYbcE5ExNgxomuuDJ+acfv71V
-         MJaEaoZJycaKvBSrcwpO2oNt5soZHpkv881Iu5Jf4BTm7TVwPgMQVIrq+Y4batucKEz6
-         on/7aQN4fzu871sdsToAy7qBev0UAp1EEg6tXuHsLfTp/e15QD/vrV5NTyRXFtj7HfMI
-         xA8Kz5pTqUGoY7ZjHluAxocSkJAJtR+nFsshyr1oRyruKJ0sXpixnNJIo2xRa0f9R5Ar
-         REyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=Jny5Jx5rRXxMy/sC2H9QJqimOZ5hbGj1rz6/5Fw+2UM=;
-        b=QqWOCAF1N1Vk0lJnhQJgBqklnvzxM6RtHfgmSidRli3qoyzdBL3evvGPo4hLxEOPgj
-         hIWj6uC85coXQlsquDa9hLvkcghLrtN1oKVwPTk2YQYGorYfFD8l6XN5m7eLnw7s7owd
-         8RR78DXqWYmGOaauk315VFuu8xj565j0OXQdhSmLPCkwhbSOIpA8zllO7ItumGJrcLY7
-         ZA4muIMckHweSilkS+ZZCL//Zr9E3IQlWn4L5O3knO1d+HzDxe51jki0SvUMnFj+LzCX
-         hgiON//SgKg8w5jkhnk3M7rxGvZCij71De9QMdlS87CxQlsRHuaZ35UfG0nxVgbgBa3r
-         J6Vg==
-X-Gm-Message-State: AOAM5332i+v7O3gGrdIHMmVBzlz+E7tl+pZ4gqUnIa/yGLaZ71BNIORr
-        YVZAc+IizcgimoJYLZ+yZGgsxhO4QKxhSmjCBa8=
-X-Google-Smtp-Source: ABdhPJx6jLZ9Y3bCf7Mw+P2PyuwSU2tVMYJaFk4lhhD9G80zH3tVnFyX+9w1cgH2JUvzLVddrT8iwMoEC8RM5uAoVTs=
-X-Received: by 2002:a25:bf8c:: with SMTP id l12mr106119503ybk.447.1594249482233;
- Wed, 08 Jul 2020 16:04:42 -0700 (PDT)
-Date:   Wed,  8 Jul 2020 16:04:02 -0700
-In-Reply-To: <20200708230402.1644819-1-ndesaulniers@google.com>
-Message-Id: <20200708230402.1644819-3-ndesaulniers@google.com>
+        with ESMTP id S1726065AbgGHXJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 19:09:28 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E220BC061A0B;
+        Wed,  8 Jul 2020 16:09:27 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7E0FD12780FED;
+        Wed,  8 Jul 2020 16:09:26 -0700 (PDT)
+Date:   Wed, 08 Jul 2020 16:09:25 -0700 (PDT)
+Message-Id: <20200708.160925.601637997950999733.davem@davemloft.net>
+To:     jarod@redhat.com
+Cc:     linux-kernel@vger.kernel.org,
+        syzbot+582c98032903dcc04816@syzkaller.appspotmail.com,
+        huyn@mellanox.com, saeedm@mellanox.com, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, jeffrey.t.kirsher@intel.com,
+        kuba@kernel.org, steffen.klassert@secunet.com,
+        herbert@gondor.apana.org.au, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH net-next] bonding: don't need RTNL for ipsec helpers
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200708225849.25198-1-jarod@redhat.com>
+References: <20200708225849.25198-1-jarod@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
-References: <20200708230402.1644819-1-ndesaulniers@google.com>
-X-Mailer: git-send-email 2.27.0.383.g050319c2ae-goog
-Subject: [PATCH v2 2/2] bitfield.h: split up __BF_FIELD_CHECK macro
-From:   Nick Desaulniers <ndesaulniers@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, oss-drivers@netronome.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alex Elder <elder@linaro.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 08 Jul 2020 16:09:27 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This macro has a few expansion sites that pass literal 0s as parameters.
-Split these up so that we do the precise checks where we care about
-them.
+From: Jarod Wilson <jarod@redhat.com>
+Date: Wed,  8 Jul 2020 18:58:49 -0400
 
-Suggested-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
----
-Changes V1-V2:
-* New patch in v2.
-* Rebased on 0001.
+> The bond_ipsec_* helpers don't need RTNL, and can potentially get called
+> without it being held, so switch from rtnl_dereference() to
+> rcu_dereference() to access bond struct data.
+> 
+> Lightly tested with xfrm bonding, no problems found, should address the
+> syzkaller bug referenced below.
+> 
+> Reported-by: syzbot+582c98032903dcc04816@syzkaller.appspotmail.com
+> Signed-off-by: Jarod Wilson <jarod@redhat.com>
 
- .../netronome/nfp/nfpcore/nfp_nsp_eth.c       | 11 ++++----
- include/linux/bitfield.h                      | 26 +++++++++++++------
- 2 files changed, 24 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
-index 311a5be25acb..938fc733fccb 100644
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
-@@ -492,11 +492,12 @@ nfp_eth_set_bit_config(struct nfp_nsp *nsp, unsigned int raw_idx,
- 	return 0;
- }
- 
--#define NFP_ETH_SET_BIT_CONFIG(nsp, raw_idx, mask, val, ctrl_bit)	\
--	({								\
--		__BF_FIELD_CHECK(mask, 0ULL, val, "NFP_ETH_SET_BIT_CONFIG: "); \
--		nfp_eth_set_bit_config(nsp, raw_idx, mask, __bf_shf(mask), \
--				       val, ctrl_bit);			\
-+#define NFP_ETH_SET_BIT_CONFIG(nsp, raw_idx, mask, val, ctrl_bit)		\
-+	({									\
-+		__BF_FIELD_CHECK_MASK(mask, "NFP_ETH_SET_BIT_CONFIG: ");	\
-+		__BF_FIELD_CHECK_VAL(mask, val, "NFP_ETH_SET_BIT_CONFIG: ");	\
-+		nfp_eth_set_bit_config(nsp, raw_idx, mask, __bf_shf(mask),	\
-+				       val, ctrl_bit);				\
- 	})
- 
- /**
-diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
-index 4e035aca6f7e..79651867beb3 100644
---- a/include/linux/bitfield.h
-+++ b/include/linux/bitfield.h
-@@ -41,18 +41,26 @@
- 
- #define __bf_shf(x) (__builtin_ffsll(x) - 1)
- 
--#define __BF_FIELD_CHECK(_mask, _reg, _val, _pfx)			\
-+#define __BF_FIELD_CHECK_MASK(_mask, _pfx)				\
- 	({								\
- 		BUILD_BUG_ON_MSG(!__builtin_constant_p(_mask),		\
- 				 _pfx "mask is not constant");		\
- 		BUILD_BUG_ON_MSG((_mask) == 0, _pfx "mask is zero");	\
-+		__BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +			\
-+					      (1ULL << __bf_shf(_mask))); \
-+	})
-+
-+#define __BF_FIELD_CHECK_VAL(_mask, _val, _pfx)				\
-+	({								\
- 		BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?		\
- 				 ~((_mask) >> __bf_shf(_mask)) & (_val) : 0, \
- 				 _pfx "value too large for the field"); \
--		BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ull,		\
-+	})
-+
-+#define __BF_FIELD_CHECK_REG(_mask, _reg, _pfx)				\
-+	({								\
-+		BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ULL,		\
- 				 _pfx "type of reg too small for mask"); \
--		__BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +			\
--					      (1ULL << __bf_shf(_mask))); \
- 	})
- 
- /**
-@@ -64,7 +72,7 @@
-  */
- #define FIELD_MAX(_mask)						\
- 	({								\
--		__BF_FIELD_CHECK(_mask, 0ULL, 0ULL, "FIELD_MAX: ");	\
-+		__BF_FIELD_CHECK_MASK(_mask, "FIELD_MAX: ");		\
- 		(typeof(_mask))((_mask) >> __bf_shf(_mask));		\
- 	})
- 
-@@ -77,7 +85,7 @@
-  */
- #define FIELD_FIT(_mask, _val)						\
- 	({								\
--		__BF_FIELD_CHECK(_mask, 0ULL, 0ULL, "FIELD_FIT: ");	\
-+		__BF_FIELD_CHECK_MASK(_mask, "FIELD_FIT: ");		\
- 		!((((typeof(_mask))_val) << __bf_shf(_mask)) & ~(_mask)); \
- 	})
- 
-@@ -91,7 +99,8 @@
-  */
- #define FIELD_PREP(_mask, _val)						\
- 	({								\
--		__BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");	\
-+		__BF_FIELD_CHECK_MASK(_mask, "FIELD_PREP: ");		\
-+		__BF_FIELD_CHECK_VAL(_mask, _val, "FIELD_PREP: ");	\
- 		((typeof(_mask))(_val) << __bf_shf(_mask)) & (_mask);	\
- 	})
- 
-@@ -105,7 +114,8 @@
-  */
- #define FIELD_GET(_mask, _reg)						\
- 	({								\
--		__BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");	\
-+		__BF_FIELD_CHECK_MASK(_mask, "FIELD_GET: ");		\
-+		__BF_FIELD_CHECK_REG(_mask, _reg,  "FIELD_GET: ");	\
- 		(typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask));	\
- 	})
- 
--- 
-2.27.0.383.g050319c2ae-goog
-
+Applied, thank you.
