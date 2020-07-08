@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66BD7219407
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 01:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 552E4219409
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 01:04:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726320AbgGHXEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 19:04:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
+        id S1726352AbgGHXEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 19:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726309AbgGHXE3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 19:04:29 -0400
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A70FC08C5C1
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 16:04:29 -0700 (PDT)
-Received: by mail-qv1-xf4a.google.com with SMTP id j18so165134qvk.1
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 16:04:29 -0700 (PDT)
+        with ESMTP id S1726174AbgGHXEn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 19:04:43 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C2AC061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 16:04:43 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id s9so504519ybj.18
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 16:04:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=H30vrOQhccXy2z47QDukRitq+MH3qKUcVxED3fXqq14=;
-        b=pd5fjTGg8IdtNYtO/lHGKAz9d2SZPFouoIpNeSlUCDTLBtIrh2/I8I7U/8irXxQJSU
-         9Tykg5Ogpx5oim6otterHsWP3x9tn0kH6sqxTqHk8Mn49gOqUqYkw2d+eo3Fz5IGHAT7
-         t/CDTKbLZRQb8eSj2P5SxDaCerceRSB0j685tSuk3X5B0iMpmkMYZqnsEnoc3IhlzQjB
-         4zKkb8w6I9zoovm3BdJ2A3zAKPUBFaYZTevK9xF2cXg77/h7lbUA5KyRnbhFr9bO/Vjm
-         7iUrbhU4/oSJ6CvGXEL6oFqoc7jgnrZX2mm7WydBNnNNeCBGs9DR9Hw43PIC1d3i/fNd
-         f2yQ==
+        bh=Jny5Jx5rRXxMy/sC2H9QJqimOZ5hbGj1rz6/5Fw+2UM=;
+        b=qBuqwOKV7bQlTsZUh6QG8X200PnhiWCcbV0CYfl/19ebuoYpaCjHciGfnwc4xpERiT
+         oGPwUKczb7e640dhE0Aetn212ws5ZrUM3c/EQj5xTcSKYbcE5ExNgxomuuDJ+acfv71V
+         MJaEaoZJycaKvBSrcwpO2oNt5soZHpkv881Iu5Jf4BTm7TVwPgMQVIrq+Y4batucKEz6
+         on/7aQN4fzu871sdsToAy7qBev0UAp1EEg6tXuHsLfTp/e15QD/vrV5NTyRXFtj7HfMI
+         xA8Kz5pTqUGoY7ZjHluAxocSkJAJtR+nFsshyr1oRyruKJ0sXpixnNJIo2xRa0f9R5Ar
+         REyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=H30vrOQhccXy2z47QDukRitq+MH3qKUcVxED3fXqq14=;
-        b=iOiJXA2Q67EpsNHAHjVpGXE4xlG+Q/VSunF3AZKO6Tzn961Cd+h2AxhGEHdJR18Frb
-         vZupLCmbHDBjTi0kSAB5YwurXsU3Qo011qfnC1XvOWLUQFzVIiCbxQo6WBI0cGPUjJlw
-         wwG2SA1C0qvjX1jxHouQGS+Gq8EZ7SzTYiIsStZiLNOWCrLOlhxuKitL3O27hkoDsVHH
-         ct9z29SKn9bNZE75P8nB2o7N8ieMOuKfrJUbxtqnzoUSRbIRlhFfB//5jURBgI1HTBDU
-         qqX2z/iylx7meXm3UN6KIq7ZUENJzNvGfvplvGq2/XGLvcmaQ6SnH5H6SLMWkSpvqg5X
-         eOSA==
-X-Gm-Message-State: AOAM5303LbL+Qiq7d6hyHnmcW2vH2bs1/sS1u/ImsDkIP63/FRTpqJEb
-        hDicYw39MoEPlJiV1F606/uyAmw/oo5DErwMito=
-X-Google-Smtp-Source: ABdhPJyCbEpTQo5d8KBsrN2ab+vvAVkwMfY8qhefN9+75WMTnJ3OnbMj5LjWLR3gjKX5dur1iSxAmbU7TJ982n7fJuI=
-X-Received: by 2002:ad4:476a:: with SMTP id d10mr59900422qvx.13.1594249468307;
- Wed, 08 Jul 2020 16:04:28 -0700 (PDT)
-Date:   Wed,  8 Jul 2020 16:04:01 -0700
+        bh=Jny5Jx5rRXxMy/sC2H9QJqimOZ5hbGj1rz6/5Fw+2UM=;
+        b=QqWOCAF1N1Vk0lJnhQJgBqklnvzxM6RtHfgmSidRli3qoyzdBL3evvGPo4hLxEOPgj
+         hIWj6uC85coXQlsquDa9hLvkcghLrtN1oKVwPTk2YQYGorYfFD8l6XN5m7eLnw7s7owd
+         8RR78DXqWYmGOaauk315VFuu8xj565j0OXQdhSmLPCkwhbSOIpA8zllO7ItumGJrcLY7
+         ZA4muIMckHweSilkS+ZZCL//Zr9E3IQlWn4L5O3knO1d+HzDxe51jki0SvUMnFj+LzCX
+         hgiON//SgKg8w5jkhnk3M7rxGvZCij71De9QMdlS87CxQlsRHuaZ35UfG0nxVgbgBa3r
+         J6Vg==
+X-Gm-Message-State: AOAM5332i+v7O3gGrdIHMmVBzlz+E7tl+pZ4gqUnIa/yGLaZ71BNIORr
+        YVZAc+IizcgimoJYLZ+yZGgsxhO4QKxhSmjCBa8=
+X-Google-Smtp-Source: ABdhPJx6jLZ9Y3bCf7Mw+P2PyuwSU2tVMYJaFk4lhhD9G80zH3tVnFyX+9w1cgH2JUvzLVddrT8iwMoEC8RM5uAoVTs=
+X-Received: by 2002:a25:bf8c:: with SMTP id l12mr106119503ybk.447.1594249482233;
+ Wed, 08 Jul 2020 16:04:42 -0700 (PDT)
+Date:   Wed,  8 Jul 2020 16:04:02 -0700
 In-Reply-To: <20200708230402.1644819-1-ndesaulniers@google.com>
-Message-Id: <20200708230402.1644819-2-ndesaulniers@google.com>
+Message-Id: <20200708230402.1644819-3-ndesaulniers@google.com>
 Mime-Version: 1.0
 References: <20200708230402.1644819-1-ndesaulniers@google.com>
 X-Mailer: git-send-email 2.27.0.383.g050319c2ae-goog
-Subject: [PATCH v2 1/2 net] bitfield.h: don't compile-time validate _val in FIELD_FIT
+Subject: [PATCH v2 2/2] bitfield.h: split up __BF_FIELD_CHECK macro
 From:   Nick Desaulniers <ndesaulniers@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -61,9 +61,7 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         KP Singh <kpsingh@chromium.org>, oss-drivers@netronome.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Alex Elder <elder@linaro.org>, stable@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
+        Alex Elder <elder@linaro.org>,
         Nick Desaulniers <ndesaulniers@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -71,53 +69,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+This macro has a few expansion sites that pass literal 0s as parameters.
+Split these up so that we do the precise checks where we care about
+them.
 
-When ur_load_imm_any() is inlined into jeq_imm(), it's possible for the
-compiler to deduce a case where _val can only have the value of -1 at
-compile time. Specifically,
-
-/* struct bpf_insn: _s32 imm */
-u64 imm = insn->imm; /* sign extend */
-if (imm >> 32) { /* non-zero only if insn->imm is negative */
-  /* inlined from ur_load_imm_any */
-  u32 __imm = imm >> 32; /* therefore, always 0xffffffff */
-  if (__builtin_constant_p(__imm) && __imm > 255)
-    compiletime_assert_XXX()
-
-This can result in tripping a BUILD_BUG_ON() in __BF_FIELD_CHECK() that
-checks that a given value is representable in one byte (interpreted as
-unsigned).
-
-FIELD_FIT() should return true or false at runtime for whether a value
-can fit for not. Don't break the build over a value that's too large for
-the mask. We'd prefer to keep the inlining and compiler optimizations
-though we know this case will always return false.
-
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/kernel-hardening/CAK7LNASvb0UDJ0U5wkYYRzTAdnEs64HjXpEUL7d=V0CXiAXcNw@mail.gmail.com/
-Reported-by: Masahiro Yamada <masahiroy@kernel.org>
-Debugged-by: Sami Tolvanen <samitolvanen@google.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Suggested-by: Alex Elder <elder@linaro.org>
 Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
 ---
-Changes V1->V2:
-* None
+Changes V1-V2:
+* New patch in v2.
+* Rebased on 0001.
 
- include/linux/bitfield.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../netronome/nfp/nfpcore/nfp_nsp_eth.c       | 11 ++++----
+ include/linux/bitfield.h                      | 26 +++++++++++++------
+ 2 files changed, 24 insertions(+), 13 deletions(-)
 
+diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
+index 311a5be25acb..938fc733fccb 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
++++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
+@@ -492,11 +492,12 @@ nfp_eth_set_bit_config(struct nfp_nsp *nsp, unsigned int raw_idx,
+ 	return 0;
+ }
+ 
+-#define NFP_ETH_SET_BIT_CONFIG(nsp, raw_idx, mask, val, ctrl_bit)	\
+-	({								\
+-		__BF_FIELD_CHECK(mask, 0ULL, val, "NFP_ETH_SET_BIT_CONFIG: "); \
+-		nfp_eth_set_bit_config(nsp, raw_idx, mask, __bf_shf(mask), \
+-				       val, ctrl_bit);			\
++#define NFP_ETH_SET_BIT_CONFIG(nsp, raw_idx, mask, val, ctrl_bit)		\
++	({									\
++		__BF_FIELD_CHECK_MASK(mask, "NFP_ETH_SET_BIT_CONFIG: ");	\
++		__BF_FIELD_CHECK_VAL(mask, val, "NFP_ETH_SET_BIT_CONFIG: ");	\
++		nfp_eth_set_bit_config(nsp, raw_idx, mask, __bf_shf(mask),	\
++				       val, ctrl_bit);				\
+ 	})
+ 
+ /**
 diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
-index 48ea093ff04c..4e035aca6f7e 100644
+index 4e035aca6f7e..79651867beb3 100644
 --- a/include/linux/bitfield.h
 +++ b/include/linux/bitfield.h
-@@ -77,7 +77,7 @@
+@@ -41,18 +41,26 @@
+ 
+ #define __bf_shf(x) (__builtin_ffsll(x) - 1)
+ 
+-#define __BF_FIELD_CHECK(_mask, _reg, _val, _pfx)			\
++#define __BF_FIELD_CHECK_MASK(_mask, _pfx)				\
+ 	({								\
+ 		BUILD_BUG_ON_MSG(!__builtin_constant_p(_mask),		\
+ 				 _pfx "mask is not constant");		\
+ 		BUILD_BUG_ON_MSG((_mask) == 0, _pfx "mask is zero");	\
++		__BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +			\
++					      (1ULL << __bf_shf(_mask))); \
++	})
++
++#define __BF_FIELD_CHECK_VAL(_mask, _val, _pfx)				\
++	({								\
+ 		BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?		\
+ 				 ~((_mask) >> __bf_shf(_mask)) & (_val) : 0, \
+ 				 _pfx "value too large for the field"); \
+-		BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ull,		\
++	})
++
++#define __BF_FIELD_CHECK_REG(_mask, _reg, _pfx)				\
++	({								\
++		BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ULL,		\
+ 				 _pfx "type of reg too small for mask"); \
+-		__BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +			\
+-					      (1ULL << __bf_shf(_mask))); \
+ 	})
+ 
+ /**
+@@ -64,7 +72,7 @@
+  */
+ #define FIELD_MAX(_mask)						\
+ 	({								\
+-		__BF_FIELD_CHECK(_mask, 0ULL, 0ULL, "FIELD_MAX: ");	\
++		__BF_FIELD_CHECK_MASK(_mask, "FIELD_MAX: ");		\
+ 		(typeof(_mask))((_mask) >> __bf_shf(_mask));		\
+ 	})
+ 
+@@ -77,7 +85,7 @@
   */
  #define FIELD_FIT(_mask, _val)						\
  	({								\
--		__BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_FIT: ");	\
-+		__BF_FIELD_CHECK(_mask, 0ULL, 0ULL, "FIELD_FIT: ");	\
+-		__BF_FIELD_CHECK(_mask, 0ULL, 0ULL, "FIELD_FIT: ");	\
++		__BF_FIELD_CHECK_MASK(_mask, "FIELD_FIT: ");		\
  		!((((typeof(_mask))_val) << __bf_shf(_mask)) & ~(_mask)); \
+ 	})
+ 
+@@ -91,7 +99,8 @@
+  */
+ #define FIELD_PREP(_mask, _val)						\
+ 	({								\
+-		__BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");	\
++		__BF_FIELD_CHECK_MASK(_mask, "FIELD_PREP: ");		\
++		__BF_FIELD_CHECK_VAL(_mask, _val, "FIELD_PREP: ");	\
+ 		((typeof(_mask))(_val) << __bf_shf(_mask)) & (_mask);	\
+ 	})
+ 
+@@ -105,7 +114,8 @@
+  */
+ #define FIELD_GET(_mask, _reg)						\
+ 	({								\
+-		__BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");	\
++		__BF_FIELD_CHECK_MASK(_mask, "FIELD_GET: ");		\
++		__BF_FIELD_CHECK_REG(_mask, _reg,  "FIELD_GET: ");	\
+ 		(typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask));	\
  	})
  
 -- 
