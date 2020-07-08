@@ -2,83 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E4ED217E91
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 06:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BC0C217F11
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 07:26:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729228AbgGHEvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 00:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44764 "EHLO
+        id S1728612AbgGHF0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 01:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725903AbgGHEvQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 00:51:16 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB3AC061755
-        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 21:51:15 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id g6so1719559ybo.11
-        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 21:51:15 -0700 (PDT)
+        with ESMTP id S1725848AbgGHF0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 01:26:52 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5C9C061755
+        for <netdev@vger.kernel.org>; Tue,  7 Jul 2020 22:26:52 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id d194so17736023pga.13
+        for <netdev@vger.kernel.org>; Tue, 07 Jul 2020 22:26:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/NEBnfjrAWHAq4ehCeb+vuRXUMH/QW/Cfmqsnvz+s4E=;
-        b=gDhbTd+51Mpfk63X4f+GdNUVMxstI1LEUFrBpBFmGS97f5XmiV52pyM+ObLfBe56hY
-         a7f5PgCdarmFbeu95+mjRGewucSeedQdnGymFk7+zb/RyC9pb3YCXgCtaItW/H70wFCx
-         kp+uaWmeHN9tDcf9M5aJa8HUo+YOpFl1HRLFFLYCi2XTQfcYXqO9Uj7TlcUxbaJLUJfY
-         g/hMoC+3pKL+cgNSuC/6SuOSFTssFjG0433Q55kLFC1S0ijd9Zj7Zn3Nx55XbvCm7VL/
-         gJS/tngOX0CpcBGdDIc9aWN/DWLqjfVckBvsUWsX1Ll5ulAcyj5YR0g5jlXbG1Y73WbF
-         09dA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZH1oNxYlroOMdlZigCIOZepS0C+vxs6N4dX/LN9MkP4=;
+        b=sMzfLBCigtH0rHImJ1jEP1FE6p13Cjkcj2IH/voKBguC3Jx9Q+LjQC9x4TxivSoXug
+         XJTvO0GfmqmXMlYT4f0JUm/GYNznlL7spDici8RArmJMQtf8ryy+Jb3q2AnBfFfrHpwE
+         eYE0WiKvWYXUneC+g28fj1JTBcTLUIzfMEaMy/ehg5JRLiQjGgqe3pus7hDwmVALWZg7
+         11n4GtJNegFJ3+rbRVJu3hX8dSnI5NaLvwQ/RHlU4x3GQ/y3Yd6u4JOc4XiurzaPIyq7
+         9tbPEv6QuXYbNcmYeYtd6rxlhVCwz/VJB4dSOXJRT2GCz5DXy+6JiJ3YxmGpygjUaEUp
+         Q9Ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/NEBnfjrAWHAq4ehCeb+vuRXUMH/QW/Cfmqsnvz+s4E=;
-        b=WJkklplbBv7uZ+q1LP12FR42z0h37GH4xOoRf7bSyFyAHqF9CIaS7huTgWu4xp82y/
-         v1SpMvQFdCT8vvIO6SSeLgQWbOymHaWFMbCXy4jRie+Ot+CUtIqM46pCM2cWGpF5jbYc
-         dPuTt9P0lWjCozGBmYqyLLmOFbOx20QLR6KIIDvE62rKKMl+dvl1TH9Lb0ZkTzexZT8p
-         mcvQPotsREc1wc4RvCp/mapxpQ4hLoAtn3ZsMtL698GzSHIfaV+y/hckVHe/xcla8OSP
-         JK+hMvufUIpyyRkrp5cG7RMq2o1osxYEoK22OZHKxaCiPxQt10rzTszJjCOeMXWBvJRy
-         FSmQ==
-X-Gm-Message-State: AOAM5300B48aL/YC5cF52M4VWt5F4t7L373awcJgzdjEZmjPrHyoZz19
-        G6/2aNvlk0VsKFY5KHDJznFIlMPeTSDokz2bpoQZUQ==
-X-Google-Smtp-Source: ABdhPJy58v+nLtkWVD5uJj4WAAmQ9sVEnzaUSBvg8P2773leMf92UmjGN7zq0vod4P53J4b9JhIhAxahIMFvpP8V1Wg=
-X-Received: by 2002:a25:a121:: with SMTP id z30mr387607ybh.408.1594183875001;
- Tue, 07 Jul 2020 21:51:15 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZH1oNxYlroOMdlZigCIOZepS0C+vxs6N4dX/LN9MkP4=;
+        b=tavz+0hPNqzKt6tRKw11KD1g9W87FpRSwPuEUQGt5tlOtQ6vGjgp/RGbsvtgv4CIrG
+         1cpuo/GooKM8HTO3eeWd4tnwWN25QkVRhJl7cVhSRHbjM4B5qgeoc2cB1DBaDrbPqlCk
+         ITKSxVM41DmvgzdpK1JyFSbsaCGxmpRF8MSVtACGsTBJOfphPqZgmxSvXz7Fyq8adElQ
+         ugKjBowF9OEliUElfmB2Mv3EEWkE80dpKzyWaV+NJHNI+h9ykFc0hV5J+iHCK17RUoI7
+         VsiGLuOXZJqgZwarnHxciahit2Myhi+EbUeUcs9slOj/LB5iAaxT69vO/VZ5AvqGS0Uz
+         N3qQ==
+X-Gm-Message-State: AOAM5302ZQPakCiB8BifaDg7AShq+/oUH69GFS+rcwrxPOrtIDZJkmuv
+        HGOi4h2g/x8744IkeLdQTaQ=
+X-Google-Smtp-Source: ABdhPJz2lwAlKsLBriKk1pUJd8+GNBvXD75KTL5sXh882ov8Xqx54tmh4X0WEF94J7NgSDvTy+222Q==
+X-Received: by 2002:a63:6e0e:: with SMTP id j14mr46089509pgc.384.1594186011852;
+        Tue, 07 Jul 2020 22:26:51 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id q24sm21534305pfg.34.2020.07.07.22.26.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jul 2020 22:26:51 -0700 (PDT)
+Subject: Re: [RFC net-next 1/2] udp: add NETIF_F_GSO_UDP_L4 to
+ NETIF_F_SOFTWARE_GSO
+To:     Huazhong Tan <tanhuazhong@huawei.com>, davem@davemloft.net,
+        willemb@google.com
+Cc:     netdev@vger.kernel.org, linuxarm@huawei.com, kuba@kernel.org
+References: <1594180136-15912-1-git-send-email-tanhuazhong@huawei.com>
+ <1594180136-15912-2-git-send-email-tanhuazhong@huawei.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <96a4cb06-c4d2-2aec-2d63-dfcd6691e05a@gmail.com>
+Date:   Tue, 7 Jul 2020 22:26:49 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200708041030.24375-1-cpaasch@apple.com> <CANn89iLZ1kDbpm81ftXkrtKBNx-NVHSYzP++_Jd0-xwy2J2Mpg@mail.gmail.com>
-In-Reply-To: <CANn89iLZ1kDbpm81ftXkrtKBNx-NVHSYzP++_Jd0-xwy2J2Mpg@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 7 Jul 2020 21:51:03 -0700
-Message-ID: <CANn89i+mTjmvyd-=q=_tw7eYe6xAbto70YjsUrvn7TMT86qAdw@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: Initialize ca_priv when inheriting from listener
-To:     Christoph Paasch <cpaasch@apple.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Wei Wang <weiwan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1594180136-15912-2-git-send-email-tanhuazhong@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 7, 2020 at 9:43 PM Eric Dumazet <edumazet@google.com> wrote:
->
 
-> Could this be done instead in tcp_disconnect() ?
->
 
-Note this might need to extend one of the change done in commit 4d4d3d1e8807d6
-("[TCP]: Congestion control initialization.")
+On 7/7/20 8:48 PM, Huazhong Tan wrote:
+> Add NETIF_F_SOFTWARE_GSO to the the list of GSO features with
 
-diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
-index 3172e31987be4232af90e7b204742c5bb09ef6ca..62878cf26d9cc5c0ae44d5ecdadd0b7a5acf5365
-100644
---- a/net/ipv4/tcp_cong.c
-+++ b/net/ipv4/tcp_cong.c
-@@ -197,7 +197,7 @@ static void tcp_reinit_congestion_control(struct sock *sk,
-        icsk->icsk_ca_setsockopt = 1;
-        memset(icsk->icsk_ca_priv, 0, sizeof(icsk->icsk_ca_priv));
 
--       if (sk->sk_state != TCP_CLOSE)
-+       if (!((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN)))
-                tcp_init_congestion_control(sk);
- }
+s/NETIF_F_SOFTWARE_GSO/NETIF_F_GSO_UDP_L4/
+
+> a software fallback.  This allows UDP GSO to be used even if
+> the hardware does not support it, and for virtual device such
+> as VxLAN device, this UDP segmentation will be postponed to
+> physical device.
+
+Is GSO stack or hardware USO able to perform this segmentation,
+with vxlan (or other) added encapsulation ?
+
+What about code in net/core/tso.c (in net-next tree) ?
+
+> 
+> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> ---
+>  include/linux/netdev_features.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+> index 2cc3cf8..c7eef16 100644
+> --- a/include/linux/netdev_features.h
+> +++ b/include/linux/netdev_features.h
+> @@ -207,7 +207,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+>  				 NETIF_F_FSO)
+>  
+>  /* List of features with software fallbacks. */
+> -#define NETIF_F_GSO_SOFTWARE	(NETIF_F_ALL_TSO | \
+> +#define NETIF_F_GSO_SOFTWARE	(NETIF_F_ALL_TSO | NETIF_F_GSO_UDP_L4 | \
+>  				 NETIF_F_GSO_SCTP)
+>  
+>  /*
+> 
