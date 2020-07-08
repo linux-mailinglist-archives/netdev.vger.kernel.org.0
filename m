@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EBCC217F4A
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 07:56:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33699217F51
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 08:01:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729712AbgGHF4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 01:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54752 "EHLO
+        id S1728858AbgGHGBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 02:01:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729670AbgGHF43 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 01:56:29 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017ADC061755;
-        Tue,  7 Jul 2020 22:56:29 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id g13so33623158qtv.8;
-        Tue, 07 Jul 2020 22:56:28 -0700 (PDT)
+        with ESMTP id S1726278AbgGHGBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 02:01:45 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E07C061755;
+        Tue,  7 Jul 2020 23:01:45 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id e13so40480471qkg.5;
+        Tue, 07 Jul 2020 23:01:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Ede8UCLHh6UsB8NU2wRY++2AzYreMnz6NE+PpTkdL98=;
-        b=hmOhTu0bZ1qSrrBabkvGxLEkZ6Tmxj4uI8hMEYNDcbakRAgvMsuDZnazGEZynvTCiJ
-         bfi/OBeeX2McKvP0C4RiyguymOlK+lW3uQUOK+si6eZgNCNaicQRly1rO1fjktjBRrKQ
-         9p4xz6HPzxMweLxx8DltGiyb0ThA0y4bYzk7fk849e8c07DKAVCx+NHYodc5mUo4EOQo
-         wNfuwA4mW0ASVjcme8pfyC5TJI+QKg0JVwHk0WzyWule9ThvFHA+F+aacLeL3MdCY9Oc
-         UDuTyDxXTvAYtrMN0DDUggvpIZhmp6umf4aY9JajNrz0gcch1Ubnf/1+ussfKEPvzn25
-         ya/g==
+        bh=h46sytC3dVmHv8xrOAubvrrK7HsHhfWItZlwDU6JO/I=;
+        b=Q3aLc47qKjpaan/9JjMLz2pepmzfJao0bSK4t/G2ejkYNlnIs7cQtCPXktZSm2tzni
+         uUNS2x4gu+TMDPBjV1+5ffhBo+YjHBxSzYjnip9cHC0niX/T4k7yJJCLGvazoss8IIiO
+         NWGBNqhfWCo/M71etTwhUHGfEA+pU9HQDRc79sdpcOp298WgQZOUpR15UHJJLpVmmPsM
+         hE53n80Z1+vi2z4C4jDCO/0kn+SQZUCnSru8dLTbI4WLAwefz2kexYKxEAi2vJZ9/6Bc
+         PMnY63y6Ud85Oa+QA7aLFq1lq6t1Zp28pch91Bk2TwIURiyOK9dtdnL73wIYpIudiwW4
+         Lsuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ede8UCLHh6UsB8NU2wRY++2AzYreMnz6NE+PpTkdL98=;
-        b=Bdi7yg0tcGAexA2QlHDYMCk77DWNrTnwQrawBCfxBDAJYWA6fsEB9+1AWW3YLeV74e
-         k0DbjMgH8cumyRWPIbNOzJqUpkMOospeA4Je9SBL3lQArfFtnOgMAaDJKS6P6CG7LqG/
-         vi69J/H0HUx0eeUNldYokc/b2xyzXWmktTeobyaElLHtLOruRSHnf50AnWskGx/tvBYE
-         4KIp5cM4dESrRHI58/IPwWuRcaN6kErr82rQIHSC7Pjr1oI/CERwWWLk0QA2Suqx89Xj
-         KCKa0OMxBDSjTsehUUNC0bCx7ajDStyKsxClLzIlzPYp9M6+l70sO/zHLA/E4MpK630W
-         l3Ug==
-X-Gm-Message-State: AOAM530uN1j6XF0JIsOhnEct8CLUKZsDPlZEvA4h6wg+YWuTxAdjDl1u
-        uigieGtpyVKdOtdUC7LDvWyyEQVbFY57g1ZU3Ww=
-X-Google-Smtp-Source: ABdhPJzyBiKleEu5SueSzbeJcoPFdUlCA5bsg0IlxIguusVGJrcnFS9fyhDINLrfrwxoiI5whB4X1OCdXROVWfJBtUc=
-X-Received: by 2002:ac8:19c4:: with SMTP id s4mr54112512qtk.117.1594187788189;
- Tue, 07 Jul 2020 22:56:28 -0700 (PDT)
+        bh=h46sytC3dVmHv8xrOAubvrrK7HsHhfWItZlwDU6JO/I=;
+        b=LeWts6nNMtFnFh5AfOdkC/QKaV2l71sTXBQP/qta9HP97Rr0UMGzbIfQqE/+0FclI9
+         Ol2THCfG5TBwg/gVnE6IEfTJw496MJhwHdB2dR0fjaD3nD4TSE77cAcAxPuFH4sIwMRp
+         BxkQgiheU0Aujz8tuMgBlQa0mTAxcH36AoiUZNunt6Hjn+yHfS9TCMidfEwKWwA/thec
+         7KXxEDH35NRTXifIQ5XDUd6OHs74cwS8l0vR1PESv/EBd1VdntVN6uVaxiGTmv5hjpm6
+         VO0AB4M4XfsDaStYHBKpxEB+1bjPr0Fvanc6gCgKo4eSSLibHoLaTN7oRO188dEOHrMY
+         D/XA==
+X-Gm-Message-State: AOAM5331byKz1hWPDlcWZQ2pxFp15iiOuOgXGmUNkiodTflEib40oEc0
+        2bJdAFbyOtGlHBfsPf3XNiYwaZKpLGeInidqw/U=
+X-Google-Smtp-Source: ABdhPJwWoyGm00k/ypOdXdVBhWYkHXAq5w/0Pi0eB8KyYebc89k2VEUPFyfXjs6puYqw9FpEqiRrR3M7uoSYDKLO8j4=
+X-Received: by 2002:a05:620a:2409:: with SMTP id d9mr57777749qkn.36.1594188104172;
+ Tue, 07 Jul 2020 23:01:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <1593787468-29931-1-git-send-email-alan.maguire@oracle.com> <1593787468-29931-2-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1593787468-29931-2-git-send-email-alan.maguire@oracle.com>
+References: <1593787468-29931-1-git-send-email-alan.maguire@oracle.com> <1593787468-29931-3-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1593787468-29931-3-git-send-email-alan.maguire@oracle.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 7 Jul 2020 22:56:17 -0700
-Message-ID: <CAEf4BzaGWZGYQf6C0GT3mwhjh8PSVLwgoFiHtpx6zaTny3B_gw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf: use dedicated bpf_trace_printk event
- instead of trace_printk()
+Date:   Tue, 7 Jul 2020 23:01:33 -0700
+Message-ID: <CAEf4BzaUQT8399tvd+XsbjL+ZyC-sfH-B5ixrgzWC+q6Wnvh8w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: add selftests verifying
+ bpf_trace_printk() behaviour
 To:     Alan Maguire <alan.maguire@oracle.com>
 Cc:     Steven Rostedt <rostedt@goodmis.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -68,104 +68,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 3, 2020 at 7:47 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+On Fri, Jul 3, 2020 at 7:45 AM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
-> The bpf helper bpf_trace_printk() uses trace_printk() under the hood.
-> This leads to an alarming warning message originating from trace
-> buffer allocation which occurs the first time a program using
-> bpf_trace_printk() is loaded.
+> Simple selftest that verifies bpf_trace_printk() returns a sensible
+> value and tracing messages appear.
 >
-> We can instead create a trace event for bpf_trace_printk() and enable
-> it in-kernel when/if we encounter a program using the
-> bpf_trace_printk() helper.  With this approach, trace_printk()
-> is not used directly and no warning message appears.
->
-> This work was started by Steven (see Link) and finished by Alan; added
-> Steven's Signed-off-by with his permission.
->
-> Link: https://lore.kernel.org/r/20200628194334.6238b933@oasis.local.home
-> Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
 > Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 > ---
->  kernel/trace/Makefile    |  2 ++
->  kernel/trace/bpf_trace.c | 41 +++++++++++++++++++++++++++++++++++++----
->  kernel/trace/bpf_trace.h | 34 ++++++++++++++++++++++++++++++++++
->  3 files changed, 73 insertions(+), 4 deletions(-)
->  create mode 100644 kernel/trace/bpf_trace.h
+>  .../selftests/bpf/prog_tests/trace_printk.c        | 71 ++++++++++++++++++++++
+>  tools/testing/selftests/bpf/progs/trace_printk.c   | 21 +++++++
+>  2 files changed, 92 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_printk.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/trace_printk.c
 >
 
 [...]
 
-> +static DEFINE_SPINLOCK(trace_printk_lock);
+> +       fd = open(TRACEBUF, O_RDONLY);
+> +       if (CHECK(fd < 0, "could not open trace buffer",
+> +                 "error %d opening %s", errno, TRACEBUF))
+> +               goto cleanup;
 > +
-> +#define BPF_TRACE_PRINTK_SIZE   1024
+> +       /* We do not want to wait forever if this test fails... */
+> +       fcntl(fd, F_SETFL, O_NONBLOCK);
 > +
-> +static inline int bpf_do_trace_printk(const char *fmt, ...)
+> +       /* wait for tracepoint to trigger */
+> +       sleep(1);
+
+that's a long sleep, it's better to use tp/raw_syscalls/sys_enter
+tracepoint to trigger BPF program and then just usleep(1)
+
+> +       trace_printk__detach(skel);
+> +
+> +       if (CHECK(bss->trace_printk_ran == 0,
+> +                 "bpf_trace_printk never ran",
+> +                 "ran == %d", bss->trace_printk_ran))
+> +               goto cleanup;
+> +
+
+[...]
+
+> +
+> +int trace_printk_ret = 0;
+> +int trace_printk_ran = 0;
+> +
+> +SEC("tracepoint/sched/sched_switch")
+
+see above, probably better to stick to something like
+tp/raw_syscalls/sys_enter or raw_tp/sys_enter. Also, to not overwhelm
+trace_pipe output, might want to filter by PID and emit messages for
+test_prog's PID only.
+
+
+> +int sched_switch(void *ctx)
 > +{
-> +       static char buf[BPF_TRACE_PRINTK_SIZE];
-> +       unsigned long flags;
-> +       va_list ap;
-> +       int ret;
+> +       static const char fmt[] = "testing,testing %d\n";
 > +
-> +       spin_lock_irqsave(&trace_printk_lock, flags);
-> +       va_start(ap, fmt);
-> +       ret = vsnprintf(buf, BPF_TRACE_PRINTK_SIZE, fmt, ap);
-> +       va_end(ap);
-> +       if (ret > 0)
-> +               trace_bpf_trace_printk(buf);
-
-Is there any reason to artificially limit the case of printing empty
-string? It's kind of an awkward use case, for sure, but having
-guarantee that every bpf_trace_printk() invocation triggers tracepoint
-is a nice property, no?
-
-> +       spin_unlock_irqrestore(&trace_printk_lock, flags);
-> +
-> +       return ret;
+> +       trace_printk_ret = bpf_trace_printk(fmt, sizeof(fmt),
+> +                                           ++trace_printk_ran);
+> +       return 0;
 > +}
-> +
->  /*
->   * Only limited trace_printk() conversion specifiers allowed:
->   * %d %i %u %x %ld %li %lu %lx %lld %lli %llu %llx %p %pB %pks %pus %s
-> @@ -483,8 +510,7 @@ static void bpf_trace_copy_string(char *buf, void *unsafe_ptr, char fmt_ptype,
->   */
->  #define __BPF_TP_EMIT()        __BPF_ARG3_TP()
->  #define __BPF_TP(...)                                                  \
-> -       __trace_printk(0 /* Fake ip */,                                 \
-> -                      fmt, ##__VA_ARGS__)
-> +       bpf_do_trace_printk(fmt, ##__VA_ARGS__)
+> --
+> 1.8.3.1
 >
->  #define __BPF_ARG1_TP(...)                                             \
->         ((mod[0] == 2 || (mod[0] == 1 && __BITS_PER_LONG == 64))        \
-> @@ -518,13 +544,20 @@ static void bpf_trace_copy_string(char *buf, void *unsafe_ptr, char fmt_ptype,
->         .arg2_type      = ARG_CONST_SIZE,
->  };
->
-> +int bpf_trace_printk_enabled;
-
-static?
-
-> +
->  const struct bpf_func_proto *bpf_get_trace_printk_proto(void)
->  {
->         /*
->          * this program might be calling bpf_trace_printk,
-> -        * so allocate per-cpu printk buffers
-> +        * so enable the associated bpf_trace/bpf_trace_printk event.
->          */
-> -       trace_printk_init_buffers();
-> +       if (!bpf_trace_printk_enabled) {
-> +               if (trace_set_clr_event("bpf_trace", "bpf_trace_printk", 1))
-
-just to double check, it's ok to simultaneously enable same event in
-parallel, right?
-
-> +                       pr_warn_ratelimited("could not enable bpf_trace_printk events");
-> +               else
-> +                       bpf_trace_printk_enabled = 1;
-> +       }
->
->         return &bpf_trace_printk_proto;
->  }
-
-[...]
