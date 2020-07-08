@@ -2,85 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B7332191FA
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:14:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D2B8219248
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:18:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725978AbgGHVOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 17:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725787AbgGHVOK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:14:10 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791E3C061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 14:14:10 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id u185so33502pfu.1
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 14:14:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=7iQsxGSyEH3MyHRTG0oUTpnNA246oLU0Ge746Dv78/8=;
-        b=qZHVTxc43MhkPx1WKmNbl3tL7Zswe1LC53OsLte2eZubNvuw5Y5qh8ot8X3PZKDKKO
-         gXyw8AJtWbUibOF/m4VwNArf4HTup9nTkObngDUAUl6ETeRWU/xmM7sSfnoaudqrsxZU
-         odBjFNu/78ZvfArllZfYQTrjaJR0JY1tczAGXj8CDbthL2bQFPgOuuGuN8w4eFRsoEie
-         gYWDyYP8CrLOLmXPdHE80B5hv6ULyx6hGtztqeL2LhR2KHCZ1Dnb20ZNz3wfMfQvfDbx
-         q6R3f7x/sndJLgvuzEa1aIN2zXkH1qn+kFsPG7V7HPelFfGc1DAgV+13ML1rohnt70gK
-         d9sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7iQsxGSyEH3MyHRTG0oUTpnNA246oLU0Ge746Dv78/8=;
-        b=ioh+IfHJ9LE5rZzYGijm7scLDq5Dl03Gy8OeGgeerV8u9+6QDlZNoCmx5V+Js1+cAr
-         fn4ljaM3V1V39Br9kL6RJE6l8a7RJfCLttqgjcjvdkNzjPOXO3LT9OaB+/djfbPIWcPE
-         1J/xhdtUsnvzMDD6J16p7Zd9/B8FwXIHvX/+Bpc0tQAB2oXfQjI5juMyr/e4FyvpvlFf
-         7EN7bgsHPfusKuk3tr7vX2JD7tH5HLuU3cwcSfMocy47qHubP+4LKUkue5HWrcG2mgDv
-         rFk9BbYUyH7/SRMcHGQlEJ/+6JJZGPHlver6rTFoEQLYUNVArqHmHU5ruBfm2Ln02clb
-         /lew==
-X-Gm-Message-State: AOAM533ThaTaxFS/a0z1aOEiBhjaH/2efgYOfm8I6iXXl+2J05QScrOC
-        3lt0VZH5SXYJJ+jM1C+L99XptaHl
-X-Google-Smtp-Source: ABdhPJyQLB2xAXRinl9iDKDpCI1AFwhAHWUFYGIzK/FtC88QjWfRC7tQTVRq34tXWz64LizoQuY88A==
-X-Received: by 2002:aa7:9f8f:: with SMTP id z15mr31015182pfr.73.1594242849667;
-        Wed, 08 Jul 2020 14:14:09 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id c15sm666774pgb.4.2020.07.08.14.14.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jul 2020 14:14:08 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/2] net: sched: Lockless Token Bucket (LTB)
- qdisc
-To:     "YU, Xiangning" <xiangning.yu@alibaba-inc.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <4835f4cb-eee0-81e7-d935-5ad85767802c@alibaba-inc.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <049a23c1-a404-60c8-9b20-1825b5319239@gmail.com>
-Date:   Wed, 8 Jul 2020 14:14:03 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1726140AbgGHVSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 17:18:55 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:41508 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725903AbgGHVSy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:18:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594243132;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sSibTsf2Tmt/F++kFCgdv25YlYSJRrS5Z/yFkhUz0yA=;
+        b=guPGUHVmXhDambeq6Ml0KfVbFyHoEsXEJcncjBumAUvV3SUHsR7M1dmzST1H6UQC1PWUZ3
+        X3sYmKNClyNOCu4gkuyWmFF03Pgh8oKaSJbWUOBgAs8lOSM1h6RC9VFCCLNk9CsKtP2BuG
+        NlAtJFjtH6q1cp/mAd7sJXW+z1oyKSM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-195-hcoEgA-sMxOcnH7LvnHgXA-1; Wed, 08 Jul 2020 17:18:49 -0400
+X-MC-Unique: hcoEgA-sMxOcnH7LvnHgXA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A3511107ACCD;
+        Wed,  8 Jul 2020 21:18:46 +0000 (UTC)
+Received: from krava (unknown [10.40.195.124])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 60FF36FEC7;
+        Wed,  8 Jul 2020 21:18:40 +0000 (UTC)
+Date:   Wed, 8 Jul 2020 23:18:39 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v5 bpf-next 9/9] selftests/bpf: Add test for
+ resolve_btfids
+Message-ID: <20200708211839.GE3581918@krava>
+References: <20200703095111.3268961-1-jolsa@kernel.org>
+ <20200703095111.3268961-10-jolsa@kernel.org>
+ <CAEf4BzYuDU2mARcP5GVAv+WiknSnWuzGyNqQx0TiJ23CWA8NiA@mail.gmail.com>
+ <20200707155720.GI3424581@krava>
+ <CAEf4BzYYHEwDZ9YqqyfzSZsk-8=DrL-WVEee-gisBLQRZWUTHw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <4835f4cb-eee0-81e7-d935-5ad85767802c@alibaba-inc.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYYHEwDZ9YqqyfzSZsk-8=DrL-WVEee-gisBLQRZWUTHw@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jul 07, 2020 at 10:49:22AM -0700, Andrii Nakryiko wrote:
 
+SNIP
 
-On 7/8/20 9:38 AM, YU, Xiangning wrote:
-> Lockless Token Bucket (LTB) is a qdisc implementation that controls the
-> use of outbound bandwidth on a shared link. With the help of lockless
-> qdisc, and by decoupling rate limiting and bandwidth sharing, LTB is
-> designed to scale in the cloud data centers.
+> > > >  # Get Clang's default includes on this system, as opposed to those seen by
+> > > >  # '-target bpf'. This fixes "missing" files on some architectures/distros,
+> > > >  # such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
+> > > > @@ -333,7 +343,8 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:                   \
+> > > >                       $(TRUNNER_BPF_SKELS)                              \
+> > > >                       $$(BPFOBJ) | $(TRUNNER_OUTPUT)
+> > > >         $$(call msg,TEST-OBJ,$(TRUNNER_BINARY),$$@)
+> > > > -       cd $$(@D) && $$(CC) -I. $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
+> > > > +       cd $$(@D) && $$(CC) -I. $$(CFLAGS) $(TRUNNER_EXTRA_CFLAGS)      \
+> > > > +       -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
+> > > >
+> > > >  $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:                          \
+> > > >                        %.c                                              \
+> > > > @@ -355,6 +366,7 @@ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)                   \
+> > > >                              | $(TRUNNER_BINARY)-extras
+> > > >         $$(call msg,BINARY,,$$@)
+> > > >         $$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
+> > > > +       $(TRUNNER_BINARY_EXTRA_CMD)
+> > >
+> > > no need to make this generic, just write out resolve_btfids here explicitly
+> >
+> > currently resolve_btfids fails if there's no .BTF.ids section found,
+> > but we can make it silently pass i nthis case and then we can invoke
+> > it for all the binaries
 > 
+> ah, I see. Yeah, either we can add an option to resolve_btfids to not
+> error when .BTF_ids is missing (probably best), or we can check
+> whether the test has .BTF_ids section, and if it does - run
+> resolve_btfids on it. Just ignoring errors always is more error-prone,
+> because we won't know if it's a real problem we are ignoring, or
+> missing .BTF_ids.
 
-Before reviewing this patch (with many outcomes at first glance),
-we need experimental data, eg how this is expected to work on a
-typical host with 100Gbit NIC (multi queue), 64 cores at least,
-and what is the performance we can get from it (Number of skbs per second,
-on a class limited to 99Gbit)
+ok, sounds good
 
-Four lines of changelog seems terse to me.
+> > > > +static int resolve_symbols(void)
+> > > > +{
+> > > > +       const char *path = VMLINUX_BTF;
+> > >
+> > >
+> > > This build-time parameter passing to find the original VMLINUX_BTF
+> > > really sucks, IMO.
+> > >
+> > > Why not use the btf_dump tests approach and have our own small
+> > > "vmlinux BTF", which resolve_btfids would use to resolve these IDs?
+> > > See how btf_dump_xxx.c files define BTFs that are used in tests. You
+> > > can do something similar here, and use a well-known BPF object file as
+> > > a source of BTF, both here in a test and in Makefile for --btf param
+> > > to resolve_btfids?
+> >
+> > well VMLINUX_BTF is there and those types are used are not going
+> > away any time soon ;-) but yea, we can do that.. we do this also
+> > for bpftrace, it's nicer
+> 
+> 
+> "VMLINUX_BTF is there" is not really true in a lot of more complicated
+> setups, which is why I'd like to avoid that assumption. E.g., for
+> libbpf Travis CI, we build self-tests in one VM, but run the binary in
+> a different VM. So either vmlinux itself or the path to it might
+> change.
+
+ok
+
+> 
+> Also, having full control over **small** BTF allows to create various
+> test situations that might be harder to pinpoint in real vmlinux BTF,
+> e.g., same-named entities with different KINDS (typedef vs struct,
+> etc). Then if that fails, debugging this on a small BTF is much-much
+> easier than on a real thing. Real vmlinux BTF is being tested each
+> time you build a kernel and run selftests inside VM either way, so I
+> don't think we lose anything in terms of coverage.
+
+agreed, will add that
+
+thanks,
+jirka
+
