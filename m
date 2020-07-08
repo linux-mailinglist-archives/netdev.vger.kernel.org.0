@@ -2,65 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B78A02192F5
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:58:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 752ED2192CD
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 23:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726116AbgGHV6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 17:58:07 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:10965 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725903AbgGHV6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:58:07 -0400
-Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 068Lvk6I014036;
-        Wed, 8 Jul 2020 14:57:47 -0700
-From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, pavel@denx.de, nirranjan@chelsio.com,
-        vishal@chelsio.com, dt@chelsio.com
-Subject: [PATCH net] cxgb4: fix all-mask IP address comparison
-Date:   Thu,  9 Jul 2020 03:14:27 +0530
-Message-Id: <1594244667-14543-1-git-send-email-rahul.lakkireddy@chelsio.com>
-X-Mailer: git-send-email 2.5.3
+        id S1726006AbgGHVsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 17:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725787AbgGHVsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 17:48:37 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CF7C061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 14:48:37 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id y18so27727410lfh.11
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 14:48:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CLy55D+0/BwpBtr1ZxsTL1vopgXGP3cZae8SXAEegmM=;
+        b=fykGTcPtMrs8wwk8rhV0vVrxQAOMjyEZdy6lx/oa4PQkQvQUDJXNDvAqTF1KS1FMtU
+         K39vdQxHQXD8Ihht8pGgVet27cv1u1V2GRCd543eWycDNyv/pu9xGjebKVfBI/+RDu6E
+         UGpQ2uS4HqGB4SgEumZ5VtIoNnBrrOb/R9M1Fve7QghdlUIcRoPW/6ROX2eqDo1JiR1Q
+         9J+uS5CA9MoWTeCX37pthJnV7dApZ4W/2v8keUTQS7VPdoDQ1v5JkFvYKTTirkAnRcsm
+         8JY+bZQLn2hWxcenJ8Xr0bHQn1U0LvudfyHI0ymhDeVmCeQqsM0sO1UcgFoQ6/IUdU+n
+         k5JQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CLy55D+0/BwpBtr1ZxsTL1vopgXGP3cZae8SXAEegmM=;
+        b=P0vqWQiA6EJKhk0LRRxCD8Q+UIMAcYaRKi3PHaC0ghaEOV222PV/YATaRq8bqw1VIN
+         Pe4nqe3rA2eRBobxo0ndVWyR+hVnaYr7GBtS1ajCO6KvZb0mG6hclqiBeSVcVkA1tbY7
+         Qtwp0mRXHJPgkL/UiZLC5JKhnjSh+QgB+pssKtQ1IZQ1MDPJhgtUVgMSDR3Kpd2v/mT4
+         sioBQw/lDhXjA7a117C0XpuaZ91RhvS6GGUwYSEwjBzQyM3gor5RRtNQek7e4GNejYJF
+         VYNv708SXdcPc/cUF4FTfx9DhgVkxcVuehgHu0aLn4sP8fQhzZre/sEZtz8yUb9kPos/
+         7Syw==
+X-Gm-Message-State: AOAM530FEMqYCIvgtnx1yKT1BFLYcU8uPcITK6GMDXCyAjCmhxFNKk5B
+        u7ZtZWrC6/Rvks+BOn0UNtC2Q/K1Nqfl2d+YYJN2hQYcgJw=
+X-Google-Smtp-Source: ABdhPJxSl7lVdzhcZPC39sKTHaxj5U1ajPKiof3AwBgBr0/Pue+oC6+O438JzjssM8BnJrqQqQLSa2MvVXWwRx25Gbk=
+X-Received: by 2002:a19:8608:: with SMTP id i8mr25290458lfd.54.1594244915951;
+ Wed, 08 Jul 2020 14:48:35 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200708123801.878-1-littlesmilingcloud@gmail.com> <20200708084028.143d1181@hermes.lan>
+In-Reply-To: <20200708084028.143d1181@hermes.lan>
+From:   Anton Danilov <littlesmilingcloud@gmail.com>
+Date:   Thu, 9 Jul 2020 00:48:04 +0300
+Message-ID: <CAEzD07+PmoX-wXJ5Vc_i6LEYKB=A0POFJD+CNAO2QNbLnxihnQ@mail.gmail.com>
+Subject: Re: [PATCH iproute2] nstat: case-insensitive pattern matching
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert all-mask IP address to Big Endian, instead, for comparison.
+Hello, Stephen.
 
-Fixes: f286dd8eaad5 ("cxgb4: use correct type for all-mask IP address comparison")
-Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Thanks for feedback.
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
-index 7a7f61a8cdf4..d02d346629b3 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
-@@ -1112,16 +1112,16 @@ static bool is_addr_all_mask(u8 *ipmask, int family)
- 		struct in_addr *addr;
- 
- 		addr = (struct in_addr *)ipmask;
--		if (ntohl(addr->s_addr) == 0xffffffff)
-+		if (addr->s_addr == htonl(0xffffffff))
- 			return true;
- 	} else if (family == AF_INET6) {
- 		struct in6_addr *addr6;
- 
- 		addr6 = (struct in6_addr *)ipmask;
--		if (ntohl(addr6->s6_addr32[0]) == 0xffffffff &&
--		    ntohl(addr6->s6_addr32[1]) == 0xffffffff &&
--		    ntohl(addr6->s6_addr32[2]) == 0xffffffff &&
--		    ntohl(addr6->s6_addr32[3]) == 0xffffffff)
-+		if (addr6->s6_addr32[0] == htonl(0xffffffff) &&
-+		    addr6->s6_addr32[1] == htonl(0xffffffff) &&
-+		    addr6->s6_addr32[2] == htonl(0xffffffff) &&
-+		    addr6->s6_addr32[3] == htonl(0xffffffff))
- 			return true;
- 	}
- 	return false;
--- 
-2.24.0
+> Why not just make it the default?
+> I can't imagine a scenario where user would want to match on icmp different than ICMP
 
+Yes, I'm agreed. I'll make it the default in the v2 patch.
+
+> Perhaps it should also be applied to ifstat and ss.
+
+I'll prepare the patches for ifstat ans ss too.
