@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9AEF21812C
-	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 09:26:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 281F121812F
+	for <lists+netdev@lfdr.de>; Wed,  8 Jul 2020 09:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730498AbgGHH0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 03:26:07 -0400
-Received: from mga02.intel.com ([134.134.136.20]:57769 "EHLO mga02.intel.com"
+        id S1730512AbgGHH0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 03:26:20 -0400
+Received: from mga03.intel.com ([134.134.136.65]:15287 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729807AbgGHH0G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jul 2020 03:26:06 -0400
-IronPort-SDR: 4Mf9DLlm1K1r/z2DSfkiQElK2Gbeg4ya3Trw9jR5+cKH3QaLbcT88SL3b+rVzg56zv64OaKgdL
- 3CTJrTDYBXbQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9675"; a="135985998"
+        id S1730279AbgGHH0T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jul 2020 03:26:19 -0400
+IronPort-SDR: O/Zj2jhczkMT+IPYKJbJ8lydDTB12RJQbgbOdBGksUTf/aWpNIkgJJHSPW8ub9XsTQKcij18uo
+ ObtV1atO0B1Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9675"; a="147759450"
 X-IronPort-AV: E=Sophos;i="5.75,327,1589266800"; 
-   d="scan'208";a="135985998"
+   d="scan'208";a="147759450"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2020 00:26:00 -0700
-IronPort-SDR: ejxX0zMY2r4QCqUi5lAdKZ5/77dp9VjRf/rw9bCtJqgqv4XM71qmWudKDo9YscJv40+OCYj3B4
- Rhe/AEV/81yA==
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2020 00:26:18 -0700
+IronPort-SDR: CByh53ZrPYft6rgu4wbs/3b47Nhg62pvQHmCrzrbS8h48mg30/3rTZWZT+sgEkTpkxinwS1ycE
+ +3sXROn1fXkQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,327,1589266800"; 
-   d="scan'208";a="358025211"
+   d="scan'208";a="358025287"
 Received: from pg-nxl3.altera.com ([10.142.129.93])
-  by orsmga001.jf.intel.com with ESMTP; 08 Jul 2020 00:25:57 -0700
+  by orsmga001.jf.intel.com with ESMTP; 08 Jul 2020 00:26:15 -0700
 From:   "Ooi, Joyce" <joyce.ooi@intel.com>
 To:     Thor Thayer <thor.thayer@linux.intel.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -38,10 +38,10 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         See Chin Liang <chin.liang.see@intel.com>,
         Dinh Nguyen <dinh.nguyen@intel.com>,
         Dalon Westergreen <dalon.westergreen@intel.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH v4 08/10] net: eth: altera: add support for ptp and timestamping
-Date:   Wed,  8 Jul 2020 15:23:59 +0800
-Message-Id: <20200708072401.169150-9-joyce.ooi@intel.com>
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH v4 10/10] net: eth: altera: update devicetree bindings documentation
+Date:   Wed,  8 Jul 2020 15:24:01 +0800
+Message-Id: <20200708072401.169150-11-joyce.ooi@intel.com>
 X-Mailer: git-send-email 2.13.0
 In-Reply-To: <20200708072401.169150-1-joyce.ooi@intel.com>
 References: <20200708072401.169150-1-joyce.ooi@intel.com>
@@ -52,745 +52,175 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dalon Westergreen <dalon.westergreen@intel.com>
 
-Add support for the ptp clock used with the tse, and update
-the driver to support timestamping when enabled.  We also
-enable debugfs entries for the ptp clock to allow some user
-control and interaction with the ptp clock.
+Update devicetree bindings documentation to include msgdma
+prefetcher and ptp bindings.
 
-Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: devicetree@vger.kernel.org
 Signed-off-by: Dalon Westergreen <dalon.westergreen@intel.com>
 Signed-off-by: Joyce Ooi <joyce.ooi@intel.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
-v2: this patch is added in patch version 2
+v2: no change
 v3: no change
 v4: no change
 ---
- drivers/net/ethernet/altera/Kconfig              |   1 +
- drivers/net/ethernet/altera/Makefile             |   3 +-
- drivers/net/ethernet/altera/altera_tse.h         |   8 +
- drivers/net/ethernet/altera/altera_tse_ethtool.c |  28 ++
- drivers/net/ethernet/altera/altera_tse_main.c    | 118 +++++++-
- drivers/net/ethernet/altera/intel_fpga_tod.c     | 358 +++++++++++++++++++++++
- drivers/net/ethernet/altera/intel_fpga_tod.h     |  56 ++++
- 7 files changed, 570 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/altera/intel_fpga_tod.c
- create mode 100644 drivers/net/ethernet/altera/intel_fpga_tod.h
+ .../devicetree/bindings/net/altera_tse.txt         | 103 +++++++++++++++++----
+ 1 file changed, 84 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/altera/Kconfig b/drivers/net/ethernet/altera/Kconfig
-index 914e56b91467..c24374f532f2 100644
---- a/drivers/net/ethernet/altera/Kconfig
-+++ b/drivers/net/ethernet/altera/Kconfig
-@@ -3,6 +3,7 @@ config ALTERA_TSE
- 	tristate "Altera Triple-Speed Ethernet MAC support"
- 	depends on HAS_DMA
- 	select PHYLIB
-+	imply PTP_1588_CLOCK
- 	help
- 	  This driver supports the Altera Triple-Speed (TSE) Ethernet MAC.
+diff --git a/Documentation/devicetree/bindings/net/altera_tse.txt b/Documentation/devicetree/bindings/net/altera_tse.txt
+index 0b7d4d3758ea..2f2d12603907 100644
+--- a/Documentation/devicetree/bindings/net/altera_tse.txt
++++ b/Documentation/devicetree/bindings/net/altera_tse.txt
+@@ -2,53 +2,86 @@
  
-diff --git a/drivers/net/ethernet/altera/Makefile b/drivers/net/ethernet/altera/Makefile
-index a52db80aee9f..fc2e460926b3 100644
---- a/drivers/net/ethernet/altera/Makefile
-+++ b/drivers/net/ethernet/altera/Makefile
-@@ -5,4 +5,5 @@
+ Required properties:
+ - compatible: Should be "altr,tse-1.0" for legacy SGDMA based TSE, and should
+-		be "altr,tse-msgdma-1.0" for the preferred MSGDMA based TSE.
++		be "altr,tse-msgdma-1.0" for the preferred MSGDMA based TSE,
++		and "altr,tse-msgdma-2.0" for MSGDMA with prefetcher based
++		implementations.
+ 		ALTR is supported for legacy device trees, but is deprecated.
+ 		altr should be used for all new designs.
+ - reg: Address and length of the register set for the device. It contains
+   the information of registers in the same order as described by reg-names
+ - reg-names: Should contain the reg names
+-  "control_port": MAC configuration space region
+-  "tx_csr":       xDMA Tx dispatcher control and status space region
+-  "tx_desc":      MSGDMA Tx dispatcher descriptor space region
+-  "rx_csr" :      xDMA Rx dispatcher control and status space region
+-  "rx_desc":      MSGDMA Rx dispatcher descriptor space region
+-  "rx_resp":      MSGDMA Rx dispatcher response space region
+-  "s1":		  SGDMA descriptor memory
+ - interrupts: Should contain the TSE interrupts and it's mode.
+ - interrupt-names: Should contain the interrupt names
+-  "rx_irq":       xDMA Rx dispatcher interrupt
+-  "tx_irq":       xDMA Tx dispatcher interrupt
++  "rx_irq":       DMA Rx dispatcher interrupt
++  "tx_irq":       DMA Tx dispatcher interrupt
+ - rx-fifo-depth: MAC receive FIFO buffer depth in bytes
+ - tx-fifo-depth: MAC transmit FIFO buffer depth in bytes
+ - phy-mode: See ethernet.txt in the same directory.
+ - phy-handle: See ethernet.txt in the same directory.
+ - phy-addr: See ethernet.txt in the same directory. A configuration should
+ 		include phy-handle or phy-addr.
+-- altr,has-supplementary-unicast:
+-		If present, TSE supports additional unicast addresses.
+-		Otherwise additional unicast addresses are not supported.
+-- altr,has-hash-multicast-filter:
+-		If present, TSE supports a hash based multicast filter.
+-		Otherwise, hash-based multicast filtering is not supported.
+-
+ - mdio device tree subnode: When the TSE has a phy connected to its local
+ 		mdio, there must be device tree subnode with the following
+ 		required properties:
+-
+ 	- compatible: Must be "altr,tse-mdio".
+ 	- #address-cells: Must be <1>.
+ 	- #size-cells: Must be <0>.
  
- obj-$(CONFIG_ALTERA_TSE) += altera_tse.o
- altera_tse-objs := altera_tse_main.o altera_tse_ethtool.o \
--altera_msgdma.o altera_sgdma.o altera_utils.o
-+		   altera_msgdma.o altera_sgdma.o altera_utils.o \
-+		   intel_fpga_tod.o
-diff --git a/drivers/net/ethernet/altera/altera_tse.h b/drivers/net/ethernet/altera/altera_tse.h
-index 79d02748c89d..b7c176a808ac 100644
---- a/drivers/net/ethernet/altera/altera_tse.h
-+++ b/drivers/net/ethernet/altera/altera_tse.h
-@@ -28,6 +28,8 @@
- #include <linux/netdevice.h>
- #include <linux/phy.h>
+ 	For each phy on the mdio bus, there must be a node with the following
+ 	fields:
+-
+ 	- reg: phy id used to communicate to phy.
+ 	- device_type: Must be "ethernet-phy".
  
-+#include "intel_fpga_tod.h"
-+
- #define ALTERA_TSE_SW_RESET_WATCHDOG_CNTR	10000
- #define ALTERA_TSE_MAC_FIFO_WIDTH		4	/* TX/RX FIFO width in
- 							 * bytes
-@@ -417,6 +419,12 @@ struct altera_tse_private {
- 	/* TSE Revision */
- 	u32	revision;
+ The MAC address will be determined using the optional properties defined in
+ ethernet.txt.
  
-+	/* Shared PTP structure */
-+	struct intel_fpga_tod_private ptp_priv;
-+	int hwts_tx_en;
-+	int hwts_rx_en;
-+	u32 ptp_enable;
++- altr,has-supplementary-unicast:
++		If present, TSE supports additional unicast addresses.
++		Otherwise additional unicast addresses are not supported.
++- altr,has-hash-multicast-filter:
++		If present, TSE supports a hash based multicast filter.
++		Otherwise, hash-based multicast filtering is not supported.
++- altr,has-ptp:
++		If present, TSE supports 1588 timestamping.  Currently only
++		supported with the msgdma prefetcher.
++- altr,tx-poll-cnt:
++		Optional cycle count for Tx prefetcher to poll descriptor
++		list.  If not present, defaults to 128, which at 125MHz is
++		roughly 1usec. Only for "altr,tse-msgdma-2.0".
++- altr,rx-poll-cnt:
++		Optional cycle count for Tx prefetcher to poll descriptor
++		list.  If not present, defaults to 128, which at 125MHz is
++		roughly 1usec. Only for "altr,tse-msgdma-2.0".
 +
- 	/* mSGDMA Rx Dispatcher address space */
- 	void __iomem *rx_dma_csr;
- 	void __iomem *rx_dma_desc;
-diff --git a/drivers/net/ethernet/altera/altera_tse_ethtool.c b/drivers/net/ethernet/altera/altera_tse_ethtool.c
-index 420d77f00eab..cec41a2c7b00 100644
---- a/drivers/net/ethernet/altera/altera_tse_ethtool.c
-+++ b/drivers/net/ethernet/altera/altera_tse_ethtool.c
-@@ -19,6 +19,7 @@
- #include <linux/ethtool.h>
- #include <linux/kernel.h>
- #include <linux/netdevice.h>
-+#include <linux/net_tstamp.h>
- #include <linux/phy.h>
++Required registers by compatibility string:
++ - "altr,tse-1.0"
++	"control_port": MAC configuration space region
++	"tx_csr":       DMA Tx dispatcher control and status space region
++	"rx_csr" :      DMA Rx dispatcher control and status space region
++	"s1":		DMA descriptor memory
++
++ - "altr,tse-msgdma-1.0"
++	"control_port": MAC configuration space region
++	"tx_csr":       DMA Tx dispatcher control and status space region
++	"tx_desc":      DMA Tx dispatcher descriptor space region
++	"rx_csr" :      DMA Rx dispatcher control and status space region
++	"rx_desc":      DMA Rx dispatcher descriptor space region
++	"rx_resp":      DMA Rx dispatcher response space region
++
++ - "altr,tse-msgdma-2.0"
++	"control_port": MAC configuration space region
++	"tx_csr":       DMA Tx dispatcher control and status space region
++	"tx_pref":      DMA Tx prefetcher configuration space region
++	"rx_csr" :      DMA Rx dispatcher control and status space region
++	"rx_pref":      DMA Rx prefetcher configuration space region
++	"tod_ctrl":     Time of Day Control register only required when
++			timestamping support is enabled.  Timestamping is
++			only supported with the msgdma-2.0 implementation.
++
++Optional properties:
++- local-mac-address: See ethernet.txt in the same directory.
++- max-frame-size: See ethernet.txt in the same directory.
++
+ Example:
  
- #include "altera_tse.h"
-@@ -222,6 +223,32 @@ static void tse_get_regs(struct net_device *dev, struct ethtool_regs *regs,
- 		buf[i] = csrrd32(priv->mac_dev, i * 4);
- }
+ 	tse_sub_0_eth_tse_0: ethernet@1,00000000 {
+@@ -86,6 +119,11 @@ Example:
+ 				device_type = "ethernet-phy";
+ 			};
  
-+static int tse_get_ts_info(struct net_device *dev,
-+			   struct ethtool_ts_info *info)
-+{
-+	struct altera_tse_private *priv = netdev_priv(dev);
++			phy2: ethernet-phy@2 {
++				reg = <0x2>;
++				device_type = "ethernet-phy";
++			};
 +
-+	if (priv->ptp_enable) {
-+		if (priv->ptp_priv.ptp_clock)
-+			info->phc_index =
-+				ptp_clock_index(priv->ptp_priv.ptp_clock);
-+
-+		info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
-+					SOF_TIMESTAMPING_RX_HARDWARE |
-+					SOF_TIMESTAMPING_RAW_HARDWARE;
-+
-+		info->tx_types = (1 << HWTSTAMP_TX_OFF) |
-+						 (1 << HWTSTAMP_TX_ON);
-+
-+		info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
-+						   (1 << HWTSTAMP_FILTER_ALL);
-+
-+		return 0;
-+	} else {
-+		return ethtool_op_get_ts_info(dev, info);
-+	}
-+}
-+
- static const struct ethtool_ops tse_ethtool_ops = {
- 	.get_drvinfo = tse_get_drvinfo,
- 	.get_regs_len = tse_reglen,
-@@ -234,6 +261,7 @@ static const struct ethtool_ops tse_ethtool_ops = {
- 	.set_msglevel = tse_set_msglevel,
- 	.get_link_ksettings = phy_ethtool_get_link_ksettings,
- 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
-+	.get_ts_info = tse_get_ts_info,
- };
+ 		};
+ 	};
  
- void altera_tse_set_ethtool_ops(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index c9100ce24b0a..bdc2fb1c41c7 100644
---- a/drivers/net/ethernet/altera/altera_tse_main.c
-+++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -18,14 +18,17 @@
-  */
- 
- #include <linux/atomic.h>
-+#include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/etherdevice.h>
-+#include <linux/if_ether.h>
- #include <linux/if_vlan.h>
- #include <linux/init.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mii.h>
-+#include <linux/net_tstamp.h>
- #include <linux/netdevice.h>
- #include <linux/of_device.h>
- #include <linux/of_mdio.h>
-@@ -40,6 +43,7 @@
- #include "altera_tse.h"
- #include "altera_sgdma.h"
- #include "altera_msgdma.h"
-+#include "intel_fpga_tod.h"
- 
- static atomic_t instance_count = ATOMIC_INIT(~0);
- /* Module parameters */
-@@ -598,7 +602,11 @@ static netdev_tx_t tse_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	if (ret)
- 		goto out;
- 
--	skb_tx_timestamp(skb);
-+	if (unlikely((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-+		     priv->hwts_tx_en))
-+		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
-+	else
-+		skb_tx_timestamp(skb);
- 
- 	priv->tx_prod++;
- 	dev->stats.tx_bytes += skb->len;
-@@ -1238,6 +1246,13 @@ static int tse_open(struct net_device *dev)
- 	if (dev->phydev)
- 		phy_start(dev->phydev);
- 
-+	ret = intel_fpga_tod_init(&priv->ptp_priv);
-+	if (ret)
-+		netdev_warn(dev, "Failed PTP initialization\n");
-+
-+	priv->hwts_tx_en = 0;
-+	priv->hwts_rx_en = 0;
-+
- 	napi_enable(&priv->napi);
- 	netif_start_queue(dev);
- 
-@@ -1309,6 +1324,83 @@ static int tse_shutdown(struct net_device *dev)
- 	return 0;
- }
- 
-+/* ioctl to configure timestamping */
-+static int tse_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+{
-+	struct altera_tse_private *priv = netdev_priv(dev);
-+	struct hwtstamp_config config;
-+
-+	if (!netif_running(dev))
-+		return -EINVAL;
-+
-+	if (!priv->ptp_enable)	{
-+		netdev_alert(priv->dev, "Timestamping not supported");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (cmd == SIOCSHWTSTAMP) {
-+		if (copy_from_user(&config, ifr->ifr_data,
-+				   sizeof(struct hwtstamp_config)))
-+			return -EFAULT;
-+
-+		if (config.flags)
-+			return -EINVAL;
-+
-+		switch (config.tx_type) {
-+		case HWTSTAMP_TX_OFF:
-+			priv->hwts_tx_en = 0;
-+			break;
-+		case HWTSTAMP_TX_ON:
-+			priv->hwts_tx_en = 1;
-+			break;
-+		default:
-+			return -ERANGE;
-+		}
-+
-+		switch (config.rx_filter) {
-+		case HWTSTAMP_FILTER_NONE:
-+			priv->hwts_rx_en = 0;
-+			config.rx_filter = HWTSTAMP_FILTER_NONE;
-+			break;
-+		default:
-+			priv->hwts_rx_en = 1;
-+			config.rx_filter = HWTSTAMP_FILTER_ALL;
-+			break;
-+		}
-+
-+		if (copy_to_user(ifr->ifr_data, &config,
-+				 sizeof(struct hwtstamp_config)))
-+			return -EFAULT;
-+		else
-+			return 0;
-+	}
-+
-+	if (cmd == SIOCGHWTSTAMP) {
-+		config.flags = 0;
-+
-+		if (priv->hwts_tx_en)
-+			config.tx_type = HWTSTAMP_TX_ON;
-+		else
-+			config.tx_type = HWTSTAMP_TX_OFF;
-+
-+		if (priv->hwts_rx_en)
-+			config.rx_filter = HWTSTAMP_FILTER_ALL;
-+		else
-+			config.rx_filter = HWTSTAMP_FILTER_NONE;
-+
-+		if (copy_to_user(ifr->ifr_data, &config,
-+				 sizeof(struct hwtstamp_config)))
-+			return -EFAULT;
-+		else
-+			return 0;
-+	}
-+
-+	if (!dev->phydev)
-+		return -EINVAL;
-+
-+	return phy_mii_ioctl(dev->phydev, ifr, cmd);
-+}
-+
- static struct net_device_ops altera_tse_netdev_ops = {
- 	.ndo_open		= tse_open,
- 	.ndo_stop		= tse_shutdown,
-@@ -1317,6 +1409,7 @@ static struct net_device_ops altera_tse_netdev_ops = {
- 	.ndo_set_rx_mode	= tse_set_rx_mode,
- 	.ndo_change_mtu		= tse_change_mtu,
- 	.ndo_validate_addr	= eth_validate_addr,
-+	.ndo_do_ioctl		= tse_do_ioctl,
- };
- 
- /* Probe Altera TSE MAC device
-@@ -1568,6 +1661,27 @@ static int altera_tse_probe(struct platform_device *pdev)
- 		netdev_err(ndev, "Cannot attach to PHY (error: %d)\n", ret);
- 		goto err_init_phy;
- 	}
-+
-+	priv->ptp_enable = of_property_read_bool(pdev->dev.of_node,
-+						 "altr,has-ptp");
-+	dev_info(&pdev->dev, "PTP Enable: %d\n", priv->ptp_enable);
-+
-+	if (priv->ptp_enable) {
-+		/* MAP PTP */
-+		ret = intel_fpga_tod_probe(pdev, &priv->ptp_priv);
-+		if (ret) {
-+			dev_err(&pdev->dev, "cannot map PTP\n");
-+			goto err_init_phy;
-+		}
-+		ret = intel_fpga_tod_register(&priv->ptp_priv,
-+					      priv->device);
-+		if (ret) {
-+			dev_err(&pdev->dev, "Failed to register PTP clock\n");
-+			ret = -ENXIO;
-+			goto err_init_phy;
-+		}
-+	}
-+
- 	return 0;
- 
- err_init_phy:
-@@ -1595,6 +1709,8 @@ static int altera_tse_remove(struct platform_device *pdev)
- 	}
- 
- 	platform_set_drvdata(pdev, NULL);
-+	if (priv->ptp_enable)
-+		intel_fpga_tod_unregister(&priv->ptp_priv);
- 	altera_tse_mdio_destroy(ndev);
- 	unregister_netdev(ndev);
- 	free_netdev(ndev);
-diff --git a/drivers/net/ethernet/altera/intel_fpga_tod.c b/drivers/net/ethernet/altera/intel_fpga_tod.c
-new file mode 100644
-index 000000000000..3771597642da
---- /dev/null
-+++ b/drivers/net/ethernet/altera/intel_fpga_tod.c
-@@ -0,0 +1,358 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Intel FPGA ToD PTP Hardware Clock (PHC) Linux driver
-+ * Copyright (C) 2015-2016 Altera Corporation. All rights reserved.
-+ * Copyright (C) 2017-2020 Intel Corporation. All rights reserved.
-+ *
-+ * Author(s):
-+ *	Dalon Westergreen <dalon.westergreen@intel.com>
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/gcd.h>
-+#include <linux/module.h>
-+#include <linux/math64.h>
-+#include <linux/net_tstamp.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+
-+#include "altera_utils.h"
-+#include "intel_fpga_tod.h"
-+
-+#define NOMINAL_PPB			1000000000ULL
-+#define TOD_PERIOD_MAX			0xfffff
-+#define TOD_PERIOD_MIN			0
-+#define TOD_DRIFT_ADJUST_FNS_MAX	0xffff
-+#define TOD_DRIFT_ADJUST_RATE_MAX	0xffff
-+#define TOD_ADJUST_COUNT_MAX		0xfffff
-+#define TOD_ADJUST_MS_MAX		(((((TOD_PERIOD_MAX) >> 16) + 1) * \
-+					  ((TOD_ADJUST_COUNT_MAX) + 1)) /  \
-+					 1000000UL)
-+
-+/* A fine ToD HW clock offset adjustment.
-+ * To perform the fine offset adjustment the AdjustPeriod register is used
-+ * to replace the Period register for AdjustCount clock cycles in hardware.
-+ */
-+static int fine_adjust_tod_clock(struct intel_fpga_tod_private *priv,
-+				 u32 adjust_period, u32 adjust_count)
-+{
-+	int limit;
-+
-+	csrwr32(adjust_period, priv->tod_ctrl, tod_csroffs(adjust_period));
-+	csrwr32(adjust_count, priv->tod_ctrl, tod_csroffs(adjust_count));
-+
-+	/* Wait for present offset adjustment update to complete */
-+	limit = TOD_ADJUST_MS_MAX;
-+	while (limit--) {
-+		if (!csrrd32(priv->tod_ctrl, tod_csroffs(adjust_count)))
-+			break;
-+		mdelay(1);
-+	}
-+	if (limit < 0)
-+		return -EBUSY;
-+
-+	return 0;
-+}
-+
-+/* A coarse ToD HW clock offset adjustment.
-+ * The coarse time adjustment performs by adding or subtracting the delta value
-+ * from the current ToD HW clock time.
-+ */
-+static int coarse_adjust_tod_clock(struct intel_fpga_tod_private *priv,
-+				   s64 delta)
-+{
-+	u32 seconds_msb, seconds_lsb, nanosec;
-+	u64 seconds, now;
-+
-+	if (delta == 0)
-+		goto out;
-+
-+	/* Get current time */
-+	nanosec = csrrd32(priv->tod_ctrl, tod_csroffs(nanosec));
-+	seconds_lsb = csrrd32(priv->tod_ctrl, tod_csroffs(seconds_lsb));
-+	seconds_msb = csrrd32(priv->tod_ctrl, tod_csroffs(seconds_msb));
-+
-+	/* Calculate new time */
-+	seconds = (((u64)(seconds_msb & 0x0000ffff)) << 32) | seconds_lsb;
-+	now = seconds * NSEC_PER_SEC + nanosec + delta;
-+
-+	seconds = div_u64_rem(now, NSEC_PER_SEC, &nanosec);
-+	seconds_msb = upper_32_bits(seconds) & 0x0000ffff;
-+	seconds_lsb = lower_32_bits(seconds);
-+
-+	/* Set corrected time */
-+	csrwr32(seconds_msb, priv->tod_ctrl, tod_csroffs(seconds_msb));
-+	csrwr32(seconds_lsb, priv->tod_ctrl, tod_csroffs(seconds_lsb));
-+	csrwr32(nanosec, priv->tod_ctrl, tod_csroffs(nanosec));
-+
-+out:
-+	return 0;
-+}
-+
-+static int intel_fpga_tod_adjust_fine(struct ptp_clock_info *ptp,
-+				      long scaled_ppm)
-+{
-+	struct intel_fpga_tod_private *priv =
-+		container_of(ptp, struct intel_fpga_tod_private, ptp_clock_ops);
-+	u32 tod_period, tod_rem, tod_drift_adjust_fns, tod_drift_adjust_rate;
-+	unsigned long flags;
-+	unsigned long rate;
-+	int ret = 0;
-+	u64 ppb;
-+
-+	rate = clk_get_rate(priv->tod_clk);
-+
-+	/* From scaled_ppm_to_ppb */
-+	ppb = 1 + scaled_ppm;
-+	ppb *= 125;
-+	ppb >>= 13;
-+
-+	ppb += NOMINAL_PPB;
-+
-+	tod_period = div_u64_rem(ppb << 16, rate, &tod_rem);
-+	if (tod_period > TOD_PERIOD_MAX) {
-+		ret = -ERANGE;
-+		goto out;
-+	}
-+
-+	/* The drift of ToD adjusted periodically by adding a drift_adjust_fns
-+	 * correction value every drift_adjust_rate count of clock cycles.
-+	 */
-+	tod_drift_adjust_fns = tod_rem / gcd(tod_rem, rate);
-+	tod_drift_adjust_rate = rate / gcd(tod_rem, rate);
-+
-+	while ((tod_drift_adjust_fns > TOD_DRIFT_ADJUST_FNS_MAX) |
-+		(tod_drift_adjust_rate > TOD_DRIFT_ADJUST_RATE_MAX)) {
-+		tod_drift_adjust_fns = tod_drift_adjust_fns >> 1;
-+		tod_drift_adjust_rate = tod_drift_adjust_rate >> 1;
-+	}
-+
-+	if (tod_drift_adjust_fns == 0)
-+		tod_drift_adjust_rate = 0;
-+
-+	spin_lock_irqsave(&priv->tod_lock, flags);
-+	csrwr32(tod_period, priv->tod_ctrl, tod_csroffs(period));
-+	csrwr32(0, priv->tod_ctrl, tod_csroffs(adjust_period));
-+	csrwr32(0, priv->tod_ctrl, tod_csroffs(adjust_count));
-+	csrwr32(tod_drift_adjust_fns, priv->tod_ctrl,
-+		tod_csroffs(drift_adjust));
-+	csrwr32(tod_drift_adjust_rate, priv->tod_ctrl,
-+		tod_csroffs(drift_adjust_rate));
-+	spin_unlock_irqrestore(&priv->tod_lock, flags);
-+
-+out:
-+	return ret;
-+}
-+
-+static int intel_fpga_tod_adjust_time(struct ptp_clock_info *ptp, s64 delta)
-+{
-+	struct intel_fpga_tod_private *priv =
-+		container_of(ptp, struct intel_fpga_tod_private, ptp_clock_ops);
-+	unsigned long flags;
-+	u32 period, diff, rem, rem_period, adj_period;
-+	u64 count;
-+	int neg_adj = 0, ret = 0;
-+
-+	if (delta < 0) {
-+		neg_adj = 1;
-+		delta = -delta;
-+	}
-+
-+	spin_lock_irqsave(&priv->tod_lock, flags);
-+
-+	/* Get the maximum possible value of the Period register offset
-+	 * adjustment in nanoseconds scale. This depends on the current
-+	 * Period register setting and the maximum and minimum possible
-+	 * values of the Period register.
-+	 */
-+	period = csrrd32(priv->tod_ctrl, tod_csroffs(period));
-+
-+	if (neg_adj)
-+		diff = (period - TOD_PERIOD_MIN) >> 16;
-+	else
-+		diff = (TOD_PERIOD_MAX - period) >> 16;
-+
-+	/* Find the number of cycles required for the
-+	 * time adjustment
-+	 */
-+	count = div_u64_rem(delta, diff, &rem);
-+
-+	if (neg_adj) {
-+		adj_period = period - (diff << 16);
-+		rem_period = period - (rem << 16);
-+	} else {
-+		adj_period = period + (diff << 16);
-+		rem_period = period + (rem << 16);
-+	}
-+
-+	/* If count is larger than the maximum count,
-+	 * just set the time.
-+	 */
-+	if (count > TOD_ADJUST_COUNT_MAX) {
-+		/* Perform the coarse time offset adjustment */
-+		ret = coarse_adjust_tod_clock(priv, delta);
-+	} else {
-+		/* Adjust the period for count cycles to adjust
-+		 * the time.
-+		 */
-+		if (count)
-+			ret = fine_adjust_tod_clock(priv, adj_period, count);
-+
-+		/* If there is a remainder, adjust the period for an
-+		 * additional cycle
-+		 */
-+		if (rem)
-+			ret = fine_adjust_tod_clock(priv, rem_period, 1);
-+	}
-+
-+	spin_unlock_irqrestore(&priv->tod_lock, flags);
-+
-+	return ret;
-+}
-+
-+static int intel_fpga_tod_get_time(struct ptp_clock_info *ptp,
-+				   struct timespec64 *ts)
-+{
-+	struct intel_fpga_tod_private *priv =
-+		container_of(ptp, struct intel_fpga_tod_private, ptp_clock_ops);
-+	u32 seconds_msb, seconds_lsb, nanosec;
-+	unsigned long flags;
-+	u64 seconds;
-+
-+	spin_lock_irqsave(&priv->tod_lock, flags);
-+	nanosec = csrrd32(priv->tod_ctrl, tod_csroffs(nanosec));
-+	seconds_lsb = csrrd32(priv->tod_ctrl, tod_csroffs(seconds_lsb));
-+	seconds_msb = csrrd32(priv->tod_ctrl, tod_csroffs(seconds_msb));
-+	spin_unlock_irqrestore(&priv->tod_lock, flags);
-+
-+	seconds = (((u64)(seconds_msb & 0x0000ffff)) << 32) | seconds_lsb;
-+
-+	ts->tv_nsec = nanosec;
-+	ts->tv_sec = (__kernel_old_time_t)seconds;
-+
-+	return 0;
-+}
-+
-+static int intel_fpga_tod_set_time(struct ptp_clock_info *ptp,
-+				   const struct timespec64 *ts)
-+{
-+	struct intel_fpga_tod_private *priv =
-+		container_of(ptp, struct intel_fpga_tod_private, ptp_clock_ops);
-+	u32 seconds_msb = upper_32_bits(ts->tv_sec) & 0x0000ffff;
-+	u32 seconds_lsb = lower_32_bits(ts->tv_sec);
-+	u32 nanosec = lower_32_bits(ts->tv_nsec);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&priv->tod_lock, flags);
-+	csrwr32(seconds_msb, priv->tod_ctrl, tod_csroffs(seconds_msb));
-+	csrwr32(seconds_lsb, priv->tod_ctrl, tod_csroffs(seconds_lsb));
-+	csrwr32(nanosec, priv->tod_ctrl, tod_csroffs(nanosec));
-+	spin_unlock_irqrestore(&priv->tod_lock, flags);
-+
-+	return 0;
-+}
-+
-+static int intel_fpga_tod_enable_feature(struct ptp_clock_info *ptp,
-+					 struct ptp_clock_request *request,
-+					 int on)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static struct ptp_clock_info intel_fpga_tod_clock_ops = {
-+	.owner = THIS_MODULE,
-+	.name = "intel_fpga_tod",
-+	.max_adj = 500000000,
-+	.n_alarm = 0,
-+	.n_ext_ts = 0,
-+	.n_per_out = 0,
-+	.pps = 0,
-+	.adjfine = intel_fpga_tod_adjust_fine,
-+	.adjtime = intel_fpga_tod_adjust_time,
-+	.gettime64 = intel_fpga_tod_get_time,
-+	.settime64 = intel_fpga_tod_set_time,
-+	.enable = intel_fpga_tod_enable_feature,
-+};
-+
-+/* Initialize PTP control block registers */
-+int intel_fpga_tod_init(struct intel_fpga_tod_private *priv)
-+{
-+	struct timespec64 now;
-+	int ret = 0;
-+
-+	ret = intel_fpga_tod_adjust_fine(&priv->ptp_clock_ops, 0l);
-+	if (ret != 0)
-+		goto out;
-+
-+	/* Initialize the hardware clock to the system time */
-+	ktime_get_real_ts64(&now);
-+	intel_fpga_tod_set_time(&priv->ptp_clock_ops, &now);
-+
-+	spin_lock_init(&priv->tod_lock);
-+
-+out:
-+	return ret;
-+}
-+
-+/* Register the PTP clock driver to kernel */
-+int intel_fpga_tod_register(struct intel_fpga_tod_private *priv,
-+			    struct device *device)
-+{
-+	int ret = 0;
-+
-+	priv->ptp_clock_ops = intel_fpga_tod_clock_ops;
-+
-+	priv->ptp_clock = ptp_clock_register(&priv->ptp_clock_ops, device);
-+	if (IS_ERR(priv->ptp_clock)) {
-+		priv->ptp_clock = NULL;
-+		ret = -ENODEV;
-+	}
-+
-+	if (priv->tod_clk)
-+		ret = clk_prepare_enable(priv->tod_clk);
-+
-+	return ret;
-+}
-+
-+/* Remove/unregister the ptp clock driver from the kernel */
-+void intel_fpga_tod_unregister(struct intel_fpga_tod_private *priv)
-+{
-+	if (priv->ptp_clock) {
-+		ptp_clock_unregister(priv->ptp_clock);
-+		priv->ptp_clock = NULL;
-+	}
-+
-+	if (priv->tod_clk)
-+		clk_disable_unprepare(priv->tod_clk);
-+}
-+
-+/* Common PTP probe function */
-+int intel_fpga_tod_probe(struct platform_device *pdev,
-+			 struct intel_fpga_tod_private *priv)
-+{
-+	struct resource *ptp_res;
-+	int ret = -ENODEV;
-+
-+	priv->dev = (struct net_device *)platform_get_drvdata(pdev);
-+
-+	/* Time-of-Day (ToD) Clock address space */
-+	ret = request_and_map(pdev, "tod_ctrl", &ptp_res,
-+			      (void __iomem **)&priv->tod_ctrl);
-+	if (ret)
-+		goto err;
-+
-+	dev_info(&pdev->dev, "\tTOD Ctrl at 0x%08lx\n",
-+		 (unsigned long)ptp_res->start);
-+
-+	/* Time-of-Day (ToD) Clock period clock */
-+	priv->tod_clk = devm_clk_get(&pdev->dev, "tod_clk");
-+	if (IS_ERR(priv->tod_clk)) {
-+		dev_err(&pdev->dev, "cannot obtain ToD period clock\n");
-+		ret = -ENXIO;
-+		goto err;
-+	}
-+err:
-+	return ret;
-+}
-+
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/ethernet/altera/intel_fpga_tod.h b/drivers/net/ethernet/altera/intel_fpga_tod.h
-new file mode 100644
-index 000000000000..064b97c2bf38
---- /dev/null
-+++ b/drivers/net/ethernet/altera/intel_fpga_tod.h
-@@ -0,0 +1,56 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Altera PTP Hardware Clock (PHC) Linux driver
-+ * Copyright (C) 2015-2016 Altera Corporation. All rights reserved.
-+ * Copyright (C) 2017-2020 Intel Corporation. All rights reserved.
-+ *
-+ * Author(s):
-+ *	Dalon Westergreen <dalon.westergreen@intel.com>
-+ */
-+
-+#ifndef __INTEL_FPGA_TOD_H__
-+#define __INTEL_FPGA_TOD_H__
-+
-+#include <linux/debugfs.h>
-+#include <linux/netdevice.h>
-+#include <linux/ptp_clock_kernel.h>
-+#include <linux/platform_device.h>
-+#include <linux/mutex.h>
-+
-+/* Altera Time-of-Day (ToD) clock register space. */
-+struct intel_fpga_tod {
-+	u32 seconds_msb;
-+	u32 seconds_lsb;
-+	u32 nanosec;
-+	u32 reserved1[0x1];
-+	u32 period;
-+	u32 adjust_period;
-+	u32 adjust_count;
-+	u32 drift_adjust;
-+	u32 drift_adjust_rate;
-+};
-+
-+#define tod_csroffs(a)	(offsetof(struct intel_fpga_tod, a))
-+
-+struct intel_fpga_tod_private {
-+	struct net_device *dev;
-+
-+	struct ptp_clock_info ptp_clock_ops;
-+	struct ptp_clock *ptp_clock;
-+
-+	/* Time-of-Day (ToD) Clock address space */
-+	struct intel_fpga_tod __iomem *tod_ctrl;
-+	struct clk *tod_clk;
-+
-+	/* ToD clock registers protection */
-+	spinlock_t tod_lock;
-+};
-+
-+int intel_fpga_tod_init(struct intel_fpga_tod_private *priv);
-+void intel_fpga_tod_uinit(struct intel_fpga_tod_private *priv);
-+int intel_fpga_tod_register(struct intel_fpga_tod_private *priv,
-+			    struct device *device);
-+void intel_fpga_tod_unregister(struct intel_fpga_tod_private *priv);
-+int intel_fpga_tod_probe(struct platform_device *pdev,
-+			 struct intel_fpga_tod_private *priv);
-+
-+#endif /* __INTEL_FPGA_TOD_H__ */
+@@ -111,3 +149,30 @@ Example:
+ 		altr,has-hash-multicast-filter;
+ 		phy-handle = <&phy1>;
+ 	};
++
++
++	tse_sub_2_eth_tse_0: ethernet@1,00002000 {
++		compatible = "altr,tse-msgdma-2.0";
++		reg = 	<0x00000001 0x00002000 0x00000400>,
++			<0x00000001 0x00002400 0x00000020>,
++			<0x00000001 0x00002420 0x00000020>,
++			<0x00000001 0x00002440 0x00000020>,
++			<0x00000001 0x00002460 0x00000020>,
++			<0x00000001 0x00002480 0x00000040>;
++		reg-names = "control_port", "rx_csr", "rx_pref","tx_csr", "tx_pref", "tod_ctrl";
++		interrupt-parent = <&hps_0_arm_gic_0>;
++		interrupts = <0 45 4>, <0 44 4>;
++		interrupt-names = "rx_irq", "tx_irq";
++		rx-fifo-depth = <2048>;
++		tx-fifo-depth = <2048>;
++		address-bits = <48>;
++		max-frame-size = <1500>;
++		local-mac-address = [ 00 00 00 00 00 00 ];
++		phy-mode = "sgmii";
++		altr,has-supplementary-unicast;
++		altr,has-hash-multicast-filter;
++		altr,has-ptp;
++		altr,tx-poll-cnt = <128>;
++		altr,rx-poll-cnt = <32>;
++		phy-handle = <&phy2>;
++	};
 -- 
 2.13.0
 
