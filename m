@@ -2,118 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2315421A903
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 22:31:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 092F321A919
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 22:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726306AbgGIUbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 16:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726183AbgGIUbm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 16:31:42 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C471DC08C5CE;
-        Thu,  9 Jul 2020 13:31:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Koqd6kCw0kFF9cQ+B8QeO0El7U/kaG6Z8/n9tod5TOg=; b=IvgeTeN2x0f/Xu41dh0Jtt43E
-        ab7TM2+A2KH+t+kIXz6OB22IIg/CDFop78jPS70LfusrdJQfLrVK4K42mg+fqKmbW0T9VqwasG526
-        BC/ZzctqVt3zMj2EJCYZLtw6PUoA2ip4gRkjBxil/FBOrz0Rm3UI7HhzuJzGm8sqItDWz8L1/6jIz
-        Jgt8Wh5eSbPHuNaLc0Yz1Uov0lIcnS5XcJMEZSVfozmjzoRi9rLN3XRX20ttGRmC/Skh7UMtA3Ndv
-        81gTPavt8z8Eokby2ne6SXDkBRjmNPYNAtgRCbmF8Yy7fSdvprCxMKclacB/Zqx2WT7uMZvaOZRm7
-        cH2Ipjsyg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:37450)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jtdCj-0000xj-W6; Thu, 09 Jul 2020 21:31:38 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jtdCg-0002Xp-Gd; Thu, 09 Jul 2020 21:31:34 +0100
-Date:   Thu, 9 Jul 2020 21:31:34 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Frank Wunderlich <frank-w@public-files.de>, netdev@vger.kernel.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        linux-mediatek@lists.infradead.org,
-        John Crispin <john@phrozen.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, Felix Fietkau <nbd@nbd.name>
-Subject: Re: [PATCH v2] net: ethernet: mtk_eth_soc: fix mtu warning
-Message-ID: <20200709203134.GI1551@shell.armlinux.org.uk>
-References: <20200709055742.3425-1-frank-w@public-files.de>
- <20200709134115.GK928075@lunn.ch>
+        id S1726289AbgGIUed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 16:34:33 -0400
+Received: from smtp8.emailarray.com ([65.39.216.67]:18081 "EHLO
+        smtp8.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726196AbgGIUed (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 16:34:33 -0400
+Received: (qmail 24340 invoked by uid 89); 9 Jul 2020 20:33:58 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
+  by smtp8.emailarray.com with SMTP; 9 Jul 2020 20:33:58 -0000
+Date:   Thu, 9 Jul 2020 13:33:51 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>, Aya Levin <ayal@mellanox.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        saeedm@mellanox.com, mkubecek@suse.cz, linux-pci@vger.kernel.org,
+        netdev@vger.kernel.org, tariqt@mellanox.com,
+        alexander.h.duyck@linux.intel.com
+Subject: Re: [net-next 10/10] net/mlx5e: Add support for PCI relaxed ordering
+Message-ID: <20200709203351.2bj4vf5gehphy2ru@bsd-mbp.dhcp.thefacebook.com>
+References: <0506f0aa-f35e-09c7-5ba0-b74cd9eb1384@mellanox.com>
+ <20200708231630.GA472767@bjorn-Precision-5520>
+ <20200708232602.GO23676@nvidia.com>
+ <20200709173550.skza6igm72xrkw4w@bsd-mbp.dhcp.thefacebook.com>
+ <20200709182011.GQ23676@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200709134115.GK928075@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200709182011.GQ23676@nvidia.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 09, 2020 at 03:41:15PM +0200, Andrew Lunn wrote:
-> On Thu, Jul 09, 2020 at 07:57:42AM +0200, Frank Wunderlich wrote:
-> > From: René van Dorst <opensource@vdorst.com>
+On Thu, Jul 09, 2020 at 03:20:11PM -0300, Jason Gunthorpe wrote:
+> On Thu, Jul 09, 2020 at 10:35:50AM -0700, Jonathan Lemon wrote:
+> > On Wed, Jul 08, 2020 at 08:26:02PM -0300, Jason Gunthorpe wrote:
+> > > On Wed, Jul 08, 2020 at 06:16:30PM -0500, Bjorn Helgaas wrote:
+> > > >     I suspect there may be device-specific controls, too, because [1]
+> > > >     claims to enable/disable Relaxed Ordering but doesn't touch the
+> > > >     PCIe Device Control register.  Device-specific controls are
+> > > >     certainly allowed, but of course it would be up to the driver, and
+> > > >     the device cannot generate TLPs with Relaxed Ordering unless the
+> > > >     architected PCIe Enable Relaxed Ordering bit is *also* set.
+> > > 
+> > > Yes, at least on RDMA relaxed ordering can be set on a per transaction
+> > > basis and is something userspace can choose to use or not at a fine
+> > > granularity. This is because we have to support historical
+> > > applications that make assumptions that data arrives in certain
+> > > orders.
+> > > 
+> > > I've been thinking of doing the same as this patch but for RDMA kernel
+> > > ULPs and just globally turn it on if the PCI CAP is enabled as none of
+> > > our in-kernel uses have the legacy data ordering problem.
 > > 
-> > in recent Kernel-Versions there are warnings about incorrect MTU-Size
-> > like these:
+> > If I'm following this correctly - there are two different controls being
+> > discussed here:
 > > 
-> > mt7530 mdio-bus:00: nonfatal error -95 setting MTU on port x
-> > eth0: mtu greater than device maximum
-> > mtk_soc_eth 1b100000.ethernet eth0: error -22 setting MTU to include DSA overhead
-> > 
-> > Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
-> > Fixes: 72579e14a1d3 ("net: dsa: don't fail to probe if we couldn't set the MTU")
-> > Fixes: 7a4c53bee332 ("net: report invalid mtu value via netlink extack")
-> > Signed-off-by: René van Dorst <opensource@vdorst.com>
-> > Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-> > ---
-> > changes in v2:
-> >   Fixes: tag show 12-chars of sha1 and moved above other tags
-> > ---
-> >  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > index 85735d32ecb0..00e3d70f7d07 100644
-> > --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > @@ -2891,6 +2891,10 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
-> >  	eth->netdev[id]->irq = eth->irq[0];
-> >  	eth->netdev[id]->dev.of_node = np;
-> > 
-> > +	eth->netdev[id]->mtu = 1536;
+> >     1) having the driver request PCI relaxed ordering, which may or may
+> >        not be granted, based on other system settings, and
 > 
-> Hi Frank
+> This is what Bjorn was thinking about, yes, it is some PCI layer
+> function to control the global config space bit.
 > 
-> Don't change to MTU from the default. Anybody using this interface for
-> non-DSA traffic expects the default MTU. DSA will change it as needed.
+> >     2) having the driver set RO on the transactions it initiates, which
+> >        are honored iff the PCI bit is set.
+> >
+> > It seems that in addition to the PCI core changes, there still is a need
+> > for driver controls?  Unless the driver always enables RO if it's capable?
 > 
-> > +	eth->netdev[id]->min_mtu = ETH_MIN_MTU;
+> I think the PCI spec imagined that when the config space RO bit was
+> enabled the PCI device would just start using RO packets, in an
+> appropriate and device specific way.
 > 
-> No need to set the minimum. ether_setup() will initialize it.
+> So the fine grained control in #2 is something done extra by some
+> devices.
 > 
-> > +	eth->netdev[id]->max_mtu = 1536;
-> 
-> I assume this is enough to make the DSA warning go away, but it is the
-> true max? I have a similar patch for the FEC driver which i should
-> post sometime. Reviewing the FEC code and after some testing, i found
-> the real max was 2K - 64.
+> IMHO if the driver knows it is functionally correct with RO then it
+> should enable it fully on the device when the config space bit is set.
 
-Are there any plans to solve these warnings for Marvell 88e6xxx DSA ports?
-
+Sounds reasonable to me.
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Jonathan
