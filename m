@@ -2,41 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2232F219615
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 04:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C440219622
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 04:18:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726122AbgGICQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 22:16:24 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7272 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726106AbgGICQY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jul 2020 22:16:24 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 42DA6B01DDC9842EE8C0;
-        Thu,  9 Jul 2020 10:16:22 +0800 (CST)
-Received: from [127.0.0.1] (10.74.149.191) by DGGEMS405-HUB.china.huawei.com
- (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Thu, 9 Jul 2020
- 10:16:14 +0800
-Subject: Re: [RFC net-next 1/2] udp: add NETIF_F_GSO_UDP_L4 to
- NETIF_F_SOFTWARE_GSO
-To:     Eric Dumazet <eric.dumazet@gmail.com>, <davem@davemloft.net>,
-        <willemb@google.com>
-CC:     <netdev@vger.kernel.org>, <linuxarm@huawei.com>, <kuba@kernel.org>
-References: <1594180136-15912-1-git-send-email-tanhuazhong@huawei.com>
- <1594180136-15912-2-git-send-email-tanhuazhong@huawei.com>
- <96a4cb06-c4d2-2aec-2d63-dfcd6691e05a@gmail.com>
-From:   tanhuazhong <tanhuazhong@huawei.com>
-Message-ID: <8af4dce7-f2a0-286a-bb5b-36c66d05c0f3@huawei.com>
-Date:   Thu, 9 Jul 2020 10:16:14 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S1726245AbgGICSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 22:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726082AbgGICSu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 22:18:50 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3E3C061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 19:18:50 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id cm21so405759pjb.3
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 19:18:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zCl+baPXI8kohW7ilikGmY0qav3TozsBIOv71gmZwCQ=;
+        b=rIKbvRZh2lLri1VkzNPbTJ5bKGctn6azrwQCu74tt0DR30ugy+fWgGgAOKteaT4/aZ
+         nRWaFcpbQBzFekFpZ2oJ6L0CzYk8MlQr8ZqPXNi9xyJ05OP+/jiulnY7x8yV7wQqBx/Y
+         IE6SxqwB3a0wEpns45l6LXsrlYlcQ5SRnMYgA9pmJuXYA2Nlyd8NBZJoUpbTFuwbqU5e
+         avBAA0Z1Wi0RcKmYDowfXD9hrnjTaZior5ZeZujDHGPyGfZqjKJw8AsthJUKSS2FQ0IJ
+         nexDTgP8QvAIanmiS9cI4gyQVGZoXRlKN74kz6dItvw/sXM6dhQPP70TFQ4L6bl5/a+W
+         RLOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zCl+baPXI8kohW7ilikGmY0qav3TozsBIOv71gmZwCQ=;
+        b=eUXx5lT743LlTNm37Ob8+kUVtlQg1nj1RiBGhs6yln9pjono01pttDkS/gVLMR3DWC
+         u+NAuBjJWY49YLromWjiM18H158BSV5lo0wH7t6V3m+bTRqak3RBXg7RfAbCy7raxtzD
+         qkpK9ud/VJ1sEQ+QwZIFt0ZWwHZp3asre6GnqTsa4Brk6Eh3BnoWp+9lTeeZIvPOAG4g
+         YABDLv30D031sw6SrtKdyhWIBdMwg7MP/K3r6LkAlbNh4fhpbiB4f5SLougv5fPm6Mmv
+         c+1aq3Ghk4/ArezXmmeABMUAWrYVBdoaMPd7xlTxtp3BZSOJuRsIGs7to6AuNOb7FDve
+         MDpQ==
+X-Gm-Message-State: AOAM531+tHWyN841nF9AQ4U9TAHrCy/K4LNENxU61ta7hcDl9LbQ86IP
+        SfV/4/PuRmj26U3pD/I8Vh4=
+X-Google-Smtp-Source: ABdhPJwzw2VD1grsRpt5XGqFRlGani8hpPJiO4kYMSmScrByhiBqiSp0lPHXb+cmNJvpBIRdYiby4w==
+X-Received: by 2002:a17:902:bd46:: with SMTP id b6mr52647388plx.287.1594261130292;
+        Wed, 08 Jul 2020 19:18:50 -0700 (PDT)
+Received: from ?IPv6:2001:470:67:5b9:5dec:e971:4cde:a128? ([2001:470:67:5b9:5dec:e971:4cde:a128])
+        by smtp.gmail.com with ESMTPSA id z62sm921246pfb.47.2020.07.08.19.18.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jul 2020 19:18:49 -0700 (PDT)
+Subject: Re: [net-next PATCH 2/3 v1] net: dsa: rtl8366: Fix VLAN set-up
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        Mauri Sandberg <sandberg@mailfence.com>
+References: <20200708204456.1365855-1-linus.walleij@linaro.org>
+ <20200708204456.1365855-3-linus.walleij@linaro.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <c30321cf-6a7d-03bc-7fa3-9dbba0d84249@gmail.com>
+Date:   Wed, 8 Jul 2020 19:18:48 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <96a4cb06-c4d2-2aec-2d63-dfcd6691e05a@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <20200708204456.1365855-3-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.149.191]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -44,70 +74,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2020/7/8 13:26, Eric Dumazet wrote:
+On 7/8/2020 1:44 PM, Linus Walleij wrote:
+> Alter the rtl8366_vlan_add() to call rtl8366_set_vlan()
+> inside the loop that goes over all VIDs since we now
+> properly support calling that function more than once.
+> Augment the loop to postincrement as this is more
+> intuitive.
 > 
+> The loop moved past the last VID but called
+> rtl8366_set_vlan() with the port number instead of
+> the VID, assuming a 1-to-1 correspondence between
+> ports and VIDs. This was also a bug.
 > 
-> On 7/7/20 8:48 PM, Huazhong Tan wrote:
->> Add NETIF_F_SOFTWARE_GSO to the the list of GSO features with
-> 
-> 
-> s/NETIF_F_SOFTWARE_GSO/NETIF_F_GSO_UDP_L4/
-> 
+> Cc: DENG Qingfang <dqfext@gmail.com>
+> Cc: Mauri Sandberg <sandberg@mailfence.com>
+> Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-yes, thanks.
-
->> a software fallback.  This allows UDP GSO to be used even if
->> the hardware does not support it, and for virtual device such
->> as VxLAN device, this UDP segmentation will be postponed to
->> physical device.
-> 
-> Is GSO stack or hardware USO able to perform this segmentation,
-> with vxlan (or other) added encapsulation ?
-> 
-
-I have tested this patch with vxlan and vlan in i40e, the driver
-of vxlan and vlan uses  NETIF_F_SOFTWARE_GSO.
-case 1:
-tx-udp-segmentation of virtual device and i40e is on, then the
-UDP GSO is handled by hardware.
-case 2:
-tx-udp-segmentation of virual device is on, i40e is off, then
-the UDP GSO is handled between xmit of virtual device and physical device.
-case 3:
-tx-udp-segmentation of virtual device and i40e is off, then
-the UDP GSO is handled before calling virtual device's xmit.
-
-the packet captured on receiver is same for the above cases.
-so the behavior of UDP is similar to TCP (which has already been supported)?
-
-> What about code in net/core/tso.c (in net-next tree) ?
-> 
-
-by reading the code, i can not find anything related to the
-tunnel header. Is there any way to verify it?
-
-Thanks for reviewing:)
-
->>
->> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
->> ---
->>   include/linux/netdev_features.h | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
->> index 2cc3cf8..c7eef16 100644
->> --- a/include/linux/netdev_features.h
->> +++ b/include/linux/netdev_features.h
->> @@ -207,7 +207,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
->>   				 NETIF_F_FSO)
->>   
->>   /* List of features with software fallbacks. */
->> -#define NETIF_F_GSO_SOFTWARE	(NETIF_F_ALL_TSO | \
->> +#define NETIF_F_GSO_SOFTWARE	(NETIF_F_ALL_TSO | NETIF_F_GSO_UDP_L4 | \
->>   				 NETIF_F_GSO_SCTP)
->>   
->>   /*
->>
-> 
-> 
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
