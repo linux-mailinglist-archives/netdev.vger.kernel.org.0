@@ -2,140 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD82A21AB8D
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 01:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6747121AB96
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 01:29:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbgGIX1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 19:27:51 -0400
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:60197 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726311AbgGIX1u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 19:27:50 -0400
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        id S1726819AbgGIX32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 19:29:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46138 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726222AbgGIX32 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 19:29:28 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 2093A8011F;
-        Fri, 10 Jul 2020 11:27:40 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1594337260;
-        bh=4uO0FQkJ2bMOYbPCP2S5T13rQBHTrhp3SnMQYNhrvdk=;
-        h=From:To:Cc:Subject:Date;
-        b=xKFOKNrqfHbNw21332QWpopQoe7q4ydV3nkXrvBq+WaoKQF3aN2Y5czIhKPZoxcqD
-         RsVgQPKyMeiPAjoMUIDwcYTPymRkRloVA0D74RFR4cnnWs0c2Rn/r54msO9+tH5Ruw
-         MOIi5zEXKUzaeGMiylmT6KTklLau6ftzWrPMXA9D+84LHfqqtFO0XUY9R5drjV7bU2
-         Qh5SMFLUNrqwrxwMQBnSDzs/yYHSScAak56n2gg3AtrMTKoV/M7JuZ+angY2UTcg2W
-         aK3lL9NzroMqXf9DBeP7+Itfumd2hFgAPRgwJdNoXtVIr7cMw/Te20BpFJr+t0sR4m
-         7ygaPapI4yZSw==
-Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5f07a7eb0000>; Fri, 10 Jul 2020 11:27:40 +1200
-Received: from markto-dl.ws.atlnz.lc (markto-dl.ws.atlnz.lc [10.33.23.25])
-        by smtp (Postfix) with ESMTP id 6E29F13EEAA;
-        Fri, 10 Jul 2020 11:27:38 +1200 (NZST)
-Received: by markto-dl.ws.atlnz.lc (Postfix, from userid 1155)
-        id 134B73410D1; Fri, 10 Jul 2020 11:27:39 +1200 (NZST)
-From:   Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
-To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
-Subject: [PATCH] ipv6: Support more than 32 MIFS
-Date:   Fri, 10 Jul 2020 11:27:34 +1200
-Message-Id: <20200709232734.12814-1-mark.tomlinson@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.27.0
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2C31020578;
+        Thu,  9 Jul 2020 23:29:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594337367;
+        bh=xe/nIAG8PxZLdo2Wymd/Gqa34oBApjnWnJ/Jqmw02w0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=n6usXrIctK4bLFNqRgtMidKpGw88O2N3ex3ALo1z7682VQorDBgyRXXkd/ZMob5xx
+         On7QConhsxZmwiAMkZSpYb2pEHvXRQBeO/cFr79nC3CP0yNpvNAxfcYEhDqW2narRC
+         QhSzBsrptJ9Bt4BAZbYVmMkXlQ0SBJUS0k1HtqgU=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
+        michael.chan@broadcom.com, emil.s.tantilov@intel.com,
+        alexander.h.duyck@linux.intel.com, jeffrey.t.kirsher@intel.com,
+        tariqt@mellanox.com, mkubecek@suse.cz,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v3 00/10] udp_tunnel: add NIC RX port offload infrastructure
+Date:   Thu,  9 Jul 2020 16:28:50 -0700
+Message-Id: <20200709232900.105163-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-x-atlnz-ls: pat
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function ip6mr_mfc_add() declared an array of ttls. If MAXMIFS is
-large, this would create a large stack frame. This is fixed, and made
-more efficient, by passing mf6cc_ifset to ip6mr_update_thresholds().
+Kernel has a facility to notify drivers about the UDP tunnel ports
+so that devices can recognize tunneled packets. This is important
+mostly for RX - devices which don't support CHECKSUM_COMPLETE can
+report checksums of inner packets, and compute RSS over inner headers.
+Some drivers also match the UDP tunnel ports also for TX, although
+doing so may lead to false positives and negatives.
 
-Signed-off-by: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
----
+Unfortunately the user experience when trying to take adavantage
+of these facilities is suboptimal. First of all there is no way
+for users to check which ports are offloaded. Many drivers resort
+to printing messages to aid debugging, other use debugfs. Even worse
+the availability of the RX features (NETIF_F_RX_UDP_TUNNEL_PORT)
+is established purely on the basis of the driver having the ndos
+installed. For most drivers, however, the ability to perform offloads
+is contingent on device capabilities (driver support multiple device
+and firmware versions). Unless driver resorts to hackish clearing
+of features set incorrectly by the core - users are left guessing
+whether their device really supports UDP tunnel port offload or not.
 
-As background to this patch, we have MAXMIFS set to 1025 in our kernel.
-This creates other issues apart from what this patch fixes, but this
-change does make the IPv4 and IPv6 code look more similar, and reduces
-total amount of code. Without the double handling of TTLs, I think it is
-also easier to understand. Hence I thought it could still become part of
-the main kernel.
+There is currently no way to indicate or configure whether RX
+features include just the checksum offload or checksum and using
+inner headers for RSS. Many drivers default to not using inner
+headers for RSS because most implementations populate the source
+port with entropy from the inner headers. This, however, is not
+always the case, for example certain switches are only able to
+use a fixed source port during encapsulation.
 
- net/ipv6/ip6mr.c | 20 ++++++--------------
- 1 file changed, 6 insertions(+), 14 deletions(-)
+We have also seen many driver authors get the intricacies of UDP
+tunnel port offloads wrong. Most commonly the drivers forget to
+perform reference counting, or take sleeping locks in the callbacks.
 
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 1f4d20e97c07..7123849d201b 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -836,7 +836,7 @@ static void ipmr_expire_process(struct timer_list *t)
-=20
- static void ip6mr_update_thresholds(struct mr_table *mrt,
- 				    struct mr_mfc *cache,
--				    unsigned char *ttls)
-+				    struct if_set *ifset)
- {
- 	int vifi;
-=20
-@@ -845,9 +845,8 @@ static void ip6mr_update_thresholds(struct mr_table *=
-mrt,
- 	memset(cache->mfc_un.res.ttls, 255, MAXMIFS);
-=20
- 	for (vifi =3D 0; vifi < mrt->maxvif; vifi++) {
--		if (VIF_EXISTS(mrt, vifi) &&
--		    ttls[vifi] && ttls[vifi] < 255) {
--			cache->mfc_un.res.ttls[vifi] =3D ttls[vifi];
-+		if (VIF_EXISTS(mrt, vifi) && IF_ISSET(vifi, ifset)) {
-+			cache->mfc_un.res.ttls[vifi] =3D 1;
- 			if (cache->mfc_un.res.minvif > vifi)
- 				cache->mfc_un.res.minvif =3D vifi;
- 			if (cache->mfc_un.res.maxvif <=3D vifi)
-@@ -1406,21 +1405,14 @@ void ip6_mr_cleanup(void)
- static int ip6mr_mfc_add(struct net *net, struct mr_table *mrt,
- 			 struct mf6cctl *mfc, int mrtsock, int parent)
- {
--	unsigned char ttls[MAXMIFS];
- 	struct mfc6_cache *uc, *c;
- 	struct mr_mfc *_uc;
- 	bool found;
--	int i, err;
-+	int err;
-=20
- 	if (mfc->mf6cc_parent >=3D MAXMIFS)
- 		return -ENFILE;
-=20
--	memset(ttls, 255, MAXMIFS);
--	for (i =3D 0; i < MAXMIFS; i++) {
--		if (IF_ISSET(i, &mfc->mf6cc_ifset))
--			ttls[i] =3D 1;
--	}
--
- 	/* The entries are added/deleted only under RTNL */
- 	rcu_read_lock();
- 	c =3D ip6mr_cache_find_parent(mrt, &mfc->mf6cc_origin.sin6_addr,
-@@ -1429,7 +1421,7 @@ static int ip6mr_mfc_add(struct net *net, struct mr=
-_table *mrt,
- 	if (c) {
- 		write_lock_bh(&mrt_lock);
- 		c->_c.mfc_parent =3D mfc->mf6cc_parent;
--		ip6mr_update_thresholds(mrt, &c->_c, ttls);
-+		ip6mr_update_thresholds(mrt, &c->_c, &mfc->mf6cc_ifset);
- 		if (!mrtsock)
- 			c->_c.mfc_flags |=3D MFC_STATIC;
- 		write_unlock_bh(&mrt_lock);
-@@ -1450,7 +1442,7 @@ static int ip6mr_mfc_add(struct net *net, struct mr=
-_table *mrt,
- 	c->mf6c_origin =3D mfc->mf6cc_origin.sin6_addr;
- 	c->mf6c_mcastgrp =3D mfc->mf6cc_mcastgrp.sin6_addr;
- 	c->_c.mfc_parent =3D mfc->mf6cc_parent;
--	ip6mr_update_thresholds(mrt, &c->_c, ttls);
-+	ip6mr_update_thresholds(mrt, &c->_c, &mfc->mf6cc_ifset);
- 	if (!mrtsock)
- 		c->_c.mfc_flags |=3D MFC_STATIC;
-=20
---=20
-2.27.0
+This work tries to improve the situation by pulling the UDP tunnel
+port table maintenance out of the drivers. It turns out that almost
+all drivers maintain a fixed size table of ports (in most cases one
+per tunnel type), so we can take care of all the refcounting in the
+core, and let the driver specify if they need to sleep in the
+callbacks or not. The new common implementation will also support
+replacing ports - when a port is removed from a full table it will
+try to find a previously missing port to take its place.
+
+This patch only implements the core functionality along with a few
+drivers I was hoping to test manually [1] along with a test based
+on a netdevsim implementation. Following patches will convert all
+the drivers. Once that's complete we can remove the ndos, and rely
+directly on the new infrastrucutre.
+
+Then after RSS (RXFH) is converted to netlink we can add the ability
+to configure the use of inner RSS headers for UDP tunnels.
+
+[1] Unfortunately I wasn't able to, turns out 2 of the devices
+I had access to were older generation or had old FW, and they
+did not actually support UDP tunnel port notifications (see
+the second paragraph). The thrid device appears to program
+the UDP ports correctly but it generates bad UDP checksums with
+or without these patches. Long story short - I'd appreciate
+reviews and testing here..
+
+v3:
+ - fix build issue;
+ - improve bnxt changes.
+
+Jakub Kicinski (10):
+  debugfs: make sure we can remove u32_array files cleanly
+  udp_tunnel: re-number the offload tunnel types
+  udp_tunnel: add central NIC RX port offload infrastructure
+  ethtool: add tunnel info interface
+  netdevsim: add UDP tunnel port offload support
+  selftests: net: add a test for UDP tunnel info infra
+  ixgbe: don't clear UDP tunnel ports when RXCSUM is disabled
+  ixgbe: convert to new udp_tunnel_nic infra
+  bnxt: convert to new udp_tunnel_nic infra
+  mlx4: convert to new udp_tunnel_nic infra
+
+ Documentation/filesystems/debugfs.rst         |  12 +-
+ Documentation/networking/ethtool-netlink.rst  |  33 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 141 +--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  12 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   3 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 200 +---
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    | 107 +--
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |   2 -
+ drivers/net/geneve.c                          |   6 +-
+ drivers/net/netdevsim/Makefile                |   2 +-
+ drivers/net/netdevsim/dev.c                   |   1 +
+ drivers/net/netdevsim/netdev.c                |  12 +-
+ drivers/net/netdevsim/netdevsim.h             |  19 +
+ drivers/net/netdevsim/udp_tunnels.c           | 192 ++++
+ drivers/net/vxlan.c                           |   6 +-
+ fs/debugfs/file.c                             |  27 +-
+ include/linux/debugfs.h                       |  12 +-
+ include/linux/netdevice.h                     |   8 +
+ include/net/udp_tunnel.h                      | 152 ++-
+ include/uapi/linux/ethtool.h                  |   2 +
+ include/uapi/linux/ethtool_netlink.h          |  55 ++
+ mm/cma.h                                      |   3 +
+ mm/cma_debug.c                                |   7 +-
+ net/ethtool/Makefile                          |   4 +
+ net/ethtool/common.c                          |   9 +
+ net/ethtool/common.h                          |   1 +
+ net/ethtool/netlink.c                         |  14 +
+ net/ethtool/netlink.h                         |   4 +
+ net/ethtool/strset.c                          |   5 +
+ net/ethtool/tunnels.c                         | 259 +++++
+ net/ipv4/Makefile                             |   3 +-
+ net/ipv4/{udp_tunnel.c => udp_tunnel_core.c}  |   0
+ net/ipv4/udp_tunnel_nic.c                     | 897 ++++++++++++++++++
+ net/ipv4/udp_tunnel_stub.c                    |   7 +
+ .../drivers/net/netdevsim/udp_tunnel_nic.sh   | 786 +++++++++++++++
+ 35 files changed, 2607 insertions(+), 396 deletions(-)
+ create mode 100644 drivers/net/netdevsim/udp_tunnels.c
+ create mode 100644 net/ethtool/tunnels.c
+ rename net/ipv4/{udp_tunnel.c => udp_tunnel_core.c} (100%)
+ create mode 100644 net/ipv4/udp_tunnel_nic.c
+ create mode 100644 net/ipv4/udp_tunnel_stub.c
+ create mode 100644 tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
+
+-- 
+2.26.2
 
