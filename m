@@ -2,111 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B127E21A054
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 14:54:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B13321A070
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:04:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726923AbgGIMy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 08:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60186 "EHLO
+        id S1726772AbgGINEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 09:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726896AbgGIMyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 08:54:54 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580CCC061A0B
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 05:54:54 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id o5so2141563iow.8
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 05:54:54 -0700 (PDT)
+        with ESMTP id S1726320AbgGINEJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:04:09 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90CAC061A0B;
+        Thu,  9 Jul 2020 06:04:09 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id e12so1535600qtr.9;
+        Thu, 09 Jul 2020 06:04:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=24/ET2HxWh0GkoLM7w5zuWzmjh5T8FbYz3qPSsOV6p4=;
-        b=B4Szxu6gi8Ox/6Sz9y55Sc8TM15pcjTO2LNntTmHIUCkw3vMM7PWWchVNMxSVlE1X1
-         mtii6G5Y3nNtsk/fFW7pQtojJrPbWXGFKv4KgwRuy2x5qSkkFxC1g9q4Y/jVnUib9fFC
-         3ZdhpT58LOLJ3mdyZlr0MVo6ZmkWnhnVAZj0HtiIqcN1i6LMeh63+oaIHMupDs4UgB4Z
-         NVLSPJ3IQIxO3o3uw3VZvH35AdvkkrjOEUCrgLS38izC7tc+Deqjq5AN9X0ajpVInXdG
-         EO+2otnXgFJCUqzZ3xlRF+hFPIYGCHn5bbonxp/Aq2rwnZSwJ0+vjATmoxk3jtX75pmS
-         n6Tg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=QGEwhK7+HOB5UDgh/+KiU6/EDHzIv+5VNqxy139wdGM=;
+        b=sdQvfSnDRAJBUsy+ESk4398OyprIdU0M5hUcZa+PA922C/+M4v0Z9UQNrEC4+TYTfA
+         tYneGiD04EOzzYC+Wkznu3Illuf9QZVpbClghcgrU7TSFQQyCuPQpLR/6axtrYtHm8nN
+         LhQNtvhdmlwyLWO1ggwMrTITgwSXREje0yQ7kTRWIE0N7pr1c9LgHgsaetzb0pTI8cA1
+         12xew+zGAloXiRL9HDVvy3Tn8A1y0+bpLIgG0SGtaA8Q89Zyosc3trGCo5iDVkGV3D49
+         TQWx0H/rl1dGETXFQgt7j2/rY/bO/iPkk4a7Qv7syqb8RycQ7I7GRnsXSDomWmElG3Hf
+         ditw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=24/ET2HxWh0GkoLM7w5zuWzmjh5T8FbYz3qPSsOV6p4=;
-        b=hJZFjAVwPA1MdDKubuxn4kdTOznbiitl8a7Z3tVtOViRuXz/+x3aV6rFqQQknUI1dx
-         PwoPdFVET/5CNjUAHpOQ3GBRg+pyzFZVPzLIaNlpyNUn5FB8IfXjZSXwucOGjjrEv6sj
-         BldBLGxde6H6ziB2J3LYG2SdgpnXEpBjXYXiRPXsL1vLkjWAHCRJz64QbH0NtM5Kzb9F
-         iOJ55xz0Rk5qCv4drRMzR1hitv1C/cJ+Z9GtfdG64ZS4XfLDDfIcV8hZUQ5zbbL0zAj+
-         exWX+wGy6rSpujWrGzSwsCviUaF5VU9OQ6DknbPzqiMKdh45CWDsfz2GEcmiVpMUV1K/
-         hnEw==
-X-Gm-Message-State: AOAM530FtPgP8u6zTgDpUATRL66sVi9cj4Kxg6AasHx8BU0n6epmt7zH
-        aqmboYZgkz8XSbHATjrJyvn08SoUz3QrrYBKRTg=
-X-Google-Smtp-Source: ABdhPJxdGP5htTaIrON9JwIg39qJq8qlCSSET5lrIhIZ5F3o+38EOBBjSMMxz5QbxpW368MnfeC3vA5gq1dwEPswFvs=
-X-Received: by 2002:a6b:197:: with SMTP id 145mr41907622iob.77.1594299293694;
- Thu, 09 Jul 2020 05:54:53 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=QGEwhK7+HOB5UDgh/+KiU6/EDHzIv+5VNqxy139wdGM=;
+        b=As9XFwq/lVKGnZ2TyWw8+5TxrsMLQAIpizOaA2q1AC/Q1lZz9T8k6tvIQkqxhc+0/Z
+         /se379FSuEdWNK+uqTSl20r6BuFwA9bhAXKZZ0F+kThs7atMZOAgxQsecEMmCYa2w86C
+         afDk9G7qUt1cOwz7Oxz6kqxX0WFBlROPHcyKMIfFM50JBVGMkmmzgI49R1XMLOA6Dgkp
+         zROAKk14qhTyJgVAvPgDwxuxLXBMbrjXcjBqF8sAiHRKBbdXpcDs4vshAShbiJ1kOGWZ
+         pwQXzPANWIpjBW5328xMnxJr7uqt3OIWsEnC/RmnoPCAusZMdbmrGgcw4v9CUCdLSiiZ
+         Se2Q==
+X-Gm-Message-State: AOAM532etSLmIaRbBg6B4sbDgC0m9XEnnQzRBCDSEgg0VuPoeXS/4bTT
+        lMzYRjxz7IYehC7i9bbU8mOr9wjzsBHa
+X-Google-Smtp-Source: ABdhPJw73GzxPHh95KuS+8iUpcn45BCe3CRu5/OTi7CJ2JO0fCvf4YVaQIXayVOeIH8DOPuKW38axQ==
+X-Received: by 2002:ac8:47d0:: with SMTP id d16mr65906935qtr.349.1594299848927;
+        Thu, 09 Jul 2020 06:04:08 -0700 (PDT)
+Received: from localhost.localdomain (c-76-119-149-155.hsd1.ma.comcast.net. [76.119.149.155])
+        by smtp.gmail.com with ESMTPSA id v62sm3882456qkb.81.2020.07.09.06.04.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jul 2020 06:04:08 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>
+Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org
+Subject: [Linux-kernel-mentees] [PATCH v2] net/bluetooth: Fix slab-out-of-bounds read in hci_extended_inquiry_result_evt()
+Date:   Thu,  9 Jul 2020 09:02:24 -0400
+Message-Id: <20200709130224.214204-1-yepeilin.cs@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200709051802.185168-1-yepeilin.cs@gmail.com>
+References: <20200709051802.185168-1-yepeilin.cs@gmail.com>
 MIME-Version: 1.0
-References: <1594227018-4913-1-git-send-email-sundeep.lkml@gmail.com>
- <1594227018-4913-4-git-send-email-sundeep.lkml@gmail.com> <20200708104056.1ed85daf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200708104056.1ed85daf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   sundeep subbaraya <sundeep.lkml@gmail.com>
-Date:   Thu, 9 Jul 2020 18:24:42 +0530
-Message-ID: <CALHRZupLPK22=fia+sRNG5k0HDe7xjxfCOB+tFN5fhZOf4K_-Q@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 3/3] octeontx2-pf: Add support for PTP clock
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, richardcochran@gmail.com,
-        netdev@vger.kernel.org, sgoutham@marvell.com,
-        Aleksey Makarov <amakarov@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Check upon `num_rsp` is insufficient. A malformed event packet with a
+large `num_rsp` number makes hci_extended_inquiry_result_evt() go out
+of bounds. Fix it.
 
-On Wed, Jul 8, 2020 at 11:10 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed,  8 Jul 2020 22:20:18 +0530 sundeep.lkml@gmail.com wrote:
-> > From: Aleksey Makarov <amakarov@marvell.com>
-> >
-> > This patch adds PTP clock and uses it in Octeontx2
-> > network device. PTP clock uses mailbox calls to
-> > access the hardware counter on the RVU side.
-> >
-> > Co-developed-by: Subbaraya Sundeep <sbhatta@marvell.com>
-> > Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-> > Signed-off-by: Aleksey Makarov <amakarov@marvell.com>
-> > Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
->
-> Please address the new sparse warnings as well:
->
-> drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c:130:42: warning: cast to restricted __be64
->
-Sure. There are some already existing in octeontx2/ for those I will
-fix and submit after this patch set.
+This patch fixes the following syzbot bug:
 
-> > +static inline void otx2_set_rxtstamp(struct otx2_nic *pfvf,
-> > +                                  struct sk_buff *skb, void *data)
-> > +{
->
-> Please don't use static inline in C files, compiler will know which
-> static functions to inline, and static inline covers up unused code.
->
-Sure.
+    https://syzkaller.appspot.com/bug?id=4bf11aa05c4ca51ce0df86e500fce486552dc8d2
 
-Thanks,
-Sundeep
+Reported-by: syzbot+d8489a79b781849b9c46@syzkaller.appspotmail.com
+Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+---
+Changes in v2:
+    - Use `skb->len` instead of `skb->truesize` as the length limit.
+    - Leave `num_rsp` as of type `int`.
 
-> > +     u64 tsns;
-> > +     int err;
-> > +
-> > +     if (!(pfvf->flags & OTX2_FLAG_RX_TSTAMP_ENABLED))
-> > +             return;
-> > +
-> > +     /* The first 8 bytes is the timestamp */
-> > +     err = otx2_ptp_tstamp2time(pfvf, be64_to_cpu(*(u64 *)data), &tsns);
-> > +     if (err)
-> > +             return;
-> > +
-> > +     skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(tsns);
-> > +}
+ net/bluetooth/hci_event.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 03a0759f2fc2..91cb3707d20a 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4375,7 +4375,7 @@ static void hci_extended_inquiry_result_evt(struct hci_dev *hdev,
+ 
+ 	BT_DBG("%s num_rsp %d", hdev->name, num_rsp);
+ 
+-	if (!num_rsp)
++	if (!num_rsp || skb->len < num_rsp * sizeof(*info))
+ 		return;
+ 
+ 	if (hci_dev_test_flag(hdev, HCI_PERIODIC_INQ))
+-- 
+2.25.1
+
