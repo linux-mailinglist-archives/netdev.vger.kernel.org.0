@@ -2,177 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1425C219685
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 05:15:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDE7A219687
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 05:15:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726183AbgGIDPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 23:15:00 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:23424 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726107AbgGIDPA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 23:15:00 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0693BljE006951;
-        Wed, 8 Jul 2020 20:14:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=A7xf4HnnKkp9cKBBE4Jxj673KXi33rdsPe8t/Qxclpo=;
- b=aQcN1GAJXKobcM3AYAidkgFbg3SUAyMbz+o7pQsAQzhqTdBrDe37fDDV1AnqL0KuTmzD
- JUmohQ268lRCV9yZzXExghTzrz2dB6FYal7NY0F9RP1qY30NBjg/LMuTIjW1Hlv4zD0v
- k5gP/TNlDSf7zGvR+vccTVhEuIXFMl3qEoOBWuPdx6HE6q6JtMfTwvQ7/dY4acvayBbu
- qbfm8eooPU3UsSxqZH/zQ2IyJ9rW+HSNsbvoyENfVcKjdbQcaBuBNIxO655fp5oeHnWM
- F55Wo/t0mVhnzN0CClUHX5Gq2dqbl5mYjwiWbhdntBS8T0c0S1FGpxsXr6rWwF65szvJ 1Q== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 325jyv1p6r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jul 2020 20:14:58 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 8 Jul
- 2020 20:14:56 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 8 Jul 2020 20:14:56 -0700
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id 8116C3F703F;
-        Wed,  8 Jul 2020 20:14:56 -0700 (PDT)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 0693EuVb008304;
-        Wed, 8 Jul 2020 20:14:56 -0700
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 0693EthC008303;
-        Wed, 8 Jul 2020 20:14:55 -0700
-From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
-        <irusskikh@marvell.com>, <mkalderon@marvell.com>
-Subject: [PATCH net v3 1/1] qed: Populate nvm-file attributes while reading nvm config partition.
-Date:   Wed, 8 Jul 2020 20:14:29 -0700
-Message-ID: <20200709031429.8267-1-skalluru@marvell.com>
-X-Mailer: git-send-email 2.12.0
+        id S1726213AbgGIDPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 23:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726107AbgGIDPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 23:15:18 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E64C061A0B;
+        Wed,  8 Jul 2020 20:15:17 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id h17so375528qvr.0;
+        Wed, 08 Jul 2020 20:15:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Qem3/7JAMxwp2XvQr47isJLzhtW2DSpGdcpfSmsSEgQ=;
+        b=acgbVwi9FFqPclfKd4VloCf568TaHsfww746RKQaXXTOSCMYyR3rJJjyeXsgl8laeS
+         lD9/YvTL2dSTjYbcBe9ABhCR3P77m32jxjKydi9SZDZfAZV3nEYKeExX/CvZ4vgBtV/S
+         OLfD00vX3kYtp9+2IZTMZxjfbw77ZcYeZGaigmXif8muxRisTK96SEKxTWfcfCB2O4xH
+         +jXSIodXaTa4fOq99nq2tW03K/y9S3W4c52barKJMn9fJQdmGo1knv9kr7XqteZl8KyJ
+         IWIE3f+kSX/e08lDOUg/BqyJGC1N46RVzA8Ow/xEi6RJEMwhaYbew1YWDxXGAper73Tf
+         qSJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Qem3/7JAMxwp2XvQr47isJLzhtW2DSpGdcpfSmsSEgQ=;
+        b=VnMb0/iy5Wp733tqz7rMKqx4CucMiXVPJvf9mr5cLlfXwZI+wnxFVbkelODZNiPEI9
+         1Hpglq3FbrIny4wOCCNi5Fm6ydoqaM2IxuxRgiDJ8hcmw/lQtRxY0Lzj4x4idy55gigr
+         SonLypZJNanHIDRxwesE9LBVTZMVH50VUgtIrSD3/MFvKUi6nfEJwLkvVQLkLyP9JeG5
+         NzmHETvcLvCYwEDZaMvQecqM7ulbVro2lAp0nze3fSLeq4vSeR52Fg1uyyUrdJGO6Jfs
+         SeVYUdI92JLVWvUveGX9UDv+NzDUoPI8t2kHpUwS6nvSumLbUMTgJxCKAqzoF4De2RHH
+         RTqg==
+X-Gm-Message-State: AOAM532zNL5bCyFx83nAs736adgaaRm2+VekABEnsX0Enmj+hqHNpIv0
+        YiO81VfT6gG8eP6FPwDmRbBneirIpyRMh8rXrps=
+X-Google-Smtp-Source: ABdhPJwRXkhGnqfHL36u3j4YjSOV721LgqwXyqcAo/bkRvDKj7y4CmfhinxBqM62k7ne5AYo/rzZ5ZhPhdiysjEnGx0=
+X-Received: by 2002:a05:6214:8f4:: with SMTP id dr20mr56978987qvb.228.1594264517036;
+ Wed, 08 Jul 2020 20:15:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-08_19:2020-07-08,2020-07-08 signatures=0
+References: <20200702200329.83224-1-alexei.starovoitov@gmail.com> <20200702200329.83224-4-alexei.starovoitov@gmail.com>
+In-Reply-To: <20200702200329.83224-4-alexei.starovoitov@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 8 Jul 2020 20:15:05 -0700
+Message-ID: <CAEf4BzYf64VEEMJaF8jS=KjRw7UQzOhNJpXW0+YtQZ+TxpT2aQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/3] bpf: Add kernel module with user mode driver
+ that populates bpffs.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NVM config file address will be modified when the MBI image is upgraded.
-Driver would return stale config values if user reads the nvm-config
-(via ethtool -d) in this state. The fix is to re-populate nvm attribute
-info while reading the nvm config values/partition.
+On Thu, Jul 2, 2020 at 1:04 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> From: Alexei Starovoitov <ast@kernel.org>
+>
+> Add kernel module with user mode driver that populates bpffs with
+> BPF iterators.
+>
+> $ mount bpffs /sys/fs/bpf/ -t bpf
+> $ ls -la /sys/fs/bpf/
+> total 4
+> drwxrwxrwt  2 root root    0 Jul  2 00:27 .
+> drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
+> -rw-------  1 root root    0 Jul  2 00:27 maps
+> -rw-------  1 root root    0 Jul  2 00:27 progs
+>
+> The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
+> maps, load two BPF programs, attach them to BPF iterators, and finally send two
+> bpf_link IDs back to the kernel.
+> The kernel will pin two bpf_links into newly mounted bpffs instance under
+> names "progs" and "maps". These two files become human readable.
+>
+> $ cat /sys/fs/bpf/progs
+>   id name            pages attached
+>   11    dump_bpf_map     1 bpf_iter_bpf_map
+>   12   dump_bpf_prog     1 bpf_iter_bpf_prog
+>   27 test_pkt_access     1
+>   32       test_main     1 test_pkt_access test_pkt_access
+>   33   test_subprog1     1 test_pkt_access_subprog1 test_pkt_access
+>   34   test_subprog2     1 test_pkt_access_subprog2 test_pkt_access
+>   35   test_subprog3     1 test_pkt_access_subprog3 test_pkt_access
+>   36 new_get_skb_len     1 get_skb_len test_pkt_access
+>   37 new_get_skb_ifi     1 get_skb_ifindex test_pkt_access
+>   38 new_get_constan     1 get_constant test_pkt_access
+>
+> The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
+> all BPF programs currently loaded in the system. This information is unstable
+> and will change from kernel to kernel.
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
 
-Changes from previous version:
--------------------------------
-v3: Corrected the formatting in 'Fixes' tag.
-v2: Added 'Fixes' tag.
+[...]
 
-Fixes: 1ac4329a1cff ("qed: Add configuration information to register dump and debug data")
-Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_debug.c |  4 ++++
- drivers/net/ethernet/qlogic/qed/qed_dev.c   | 12 +++---------
- drivers/net/ethernet/qlogic/qed/qed_mcp.c   |  7 +++++++
- drivers/net/ethernet/qlogic/qed/qed_mcp.h   |  7 +++++++
- 4 files changed, 21 insertions(+), 9 deletions(-)
+> +static int bpf_link_pin_kernel(struct dentry *parent,
+> +                              const char *name, struct bpf_link *link)
+> +{
+> +       umode_t mode = S_IFREG | S_IRUSR | S_IWUSR;
+> +       struct dentry *dentry;
+> +       int ret;
+> +
+> +       inode_lock(parent->d_inode);
+> +       dentry = lookup_one_len(name, parent, strlen(name));
+> +       if (IS_ERR(dentry)) {
+> +               inode_unlock(parent->d_inode);
+> +               return PTR_ERR(dentry);
+> +       }
+> +       ret = bpf_mkobj_ops(dentry, mode, link, &bpf_link_iops,
+> +                           &bpf_iter_fops);
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-index cb80863..3b9bbaf 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-@@ -7941,6 +7941,10 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
- 		DP_ERR(cdev, "qed_dbg_mcp_trace failed. rc = %d\n", rc);
- 	}
- 
-+	/* Re-populate nvm attribute info */
-+	qed_mcp_nvm_info_free(p_hwfn);
-+	qed_mcp_nvm_info_populate(p_hwfn);
-+
- 	/* nvm cfg1 */
- 	rc = qed_dbg_nvm_image(cdev,
- 			       (u8 *)buffer + offset +
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index 3aa5137..9c26fde 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -4472,12 +4472,6 @@ static int qed_get_dev_info(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
- 	return 0;
- }
- 
--static void qed_nvm_info_free(struct qed_hwfn *p_hwfn)
--{
--	kfree(p_hwfn->nvm_info.image_att);
--	p_hwfn->nvm_info.image_att = NULL;
--}
--
- static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
- 				 void __iomem *p_regview,
- 				 void __iomem *p_doorbells,
-@@ -4562,7 +4556,7 @@ static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
- 	return rc;
- err3:
- 	if (IS_LEAD_HWFN(p_hwfn))
--		qed_nvm_info_free(p_hwfn);
-+		qed_mcp_nvm_info_free(p_hwfn);
- err2:
- 	if (IS_LEAD_HWFN(p_hwfn))
- 		qed_iov_free_hw_info(p_hwfn->cdev);
-@@ -4623,7 +4617,7 @@ int qed_hw_prepare(struct qed_dev *cdev,
- 		if (rc) {
- 			if (IS_PF(cdev)) {
- 				qed_init_free(p_hwfn);
--				qed_nvm_info_free(p_hwfn);
-+				qed_mcp_nvm_info_free(p_hwfn);
- 				qed_mcp_free(p_hwfn);
- 				qed_hw_hwfn_free(p_hwfn);
- 			}
-@@ -4657,7 +4651,7 @@ void qed_hw_remove(struct qed_dev *cdev)
- 
- 	qed_iov_free_hw_info(cdev);
- 
--	qed_nvm_info_free(p_hwfn);
-+	qed_mcp_nvm_info_free(p_hwfn);
- }
- 
- static void qed_chain_free_next_ptr(struct qed_dev *cdev,
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-index 9624616..0fd4520 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-@@ -3280,6 +3280,13 @@ int qed_mcp_nvm_info_populate(struct qed_hwfn *p_hwfn)
- 	return rc;
- }
- 
-+void qed_mcp_nvm_info_free(struct qed_hwfn *p_hwfn)
-+{
-+	kfree(p_hwfn->nvm_info.image_att);
-+	p_hwfn->nvm_info.image_att = NULL;
-+	p_hwfn->nvm_info.valid = false;
-+}
-+
- int
- qed_mcp_get_nvm_image_att(struct qed_hwfn *p_hwfn,
- 			  enum qed_nvm_images image_id,
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.h b/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-index 5750b4c..12a705e 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-@@ -1221,6 +1221,13 @@ void qed_mcp_resc_lock_default_init(struct qed_resc_lock_params *p_lock,
- int qed_mcp_nvm_info_populate(struct qed_hwfn *p_hwfn);
- 
- /**
-+ * @brief Delete nvm info shadow in the given hardware function
-+ *
-+ * @param p_hwfn
-+ */
-+void qed_mcp_nvm_info_free(struct qed_hwfn *p_hwfn);
-+
-+/**
-  * @brief Get the engine affinity configuration.
-  *
-  * @param p_hwfn
--- 
-1.8.3.1
+bpf_iter_fops only applies to bpf_iter links, while
+bpf_link_pin_kernel allows any link type. See bpf_mklink(), it checks
+bpf_link_is_iter() to decide between bpf_iter_fops and bpffs_obj_fops.
 
+
+> +       dput(dentry);
+> +       inode_unlock(parent->d_inode);
+> +       return ret;
+> +}
+> +
+>  static int bpf_obj_do_pin(const char __user *pathname, void *raw,
+>                           enum bpf_type type)
+>  {
+> @@ -638,6 +659,57 @@ static int bpf_parse_param(struct fs_context *fc, struct fs_parameter *param)
+>         return 0;
+>  }
+>
+> +struct bpf_preload_ops bpf_preload_ops = { .info.driver_name = "bpf_preload" };
+> +EXPORT_SYMBOL_GPL(bpf_preload_ops);
+> +
+> +static int populate_bpffs(struct dentry *parent)
+
+So all the pinning has to happen from the kernel side because at the
+time that bpf_fill_super is called, user-space can't yet see the
+mounted BPFFS, do I understand the problem correctly? Would it be
+possible to add callback to fs_context_operations that would be called
+after FS is mounted and visible to user-space? At that point the
+kernel can spawn the user-mode blob and just instruct it to do both
+BPF object loading and pinning?
+
+Or are there some other complications with such approach?
+
+> +{
+> +       struct bpf_link *links[BPF_PRELOAD_LINKS] = {};
+> +       u32 link_id[BPF_PRELOAD_LINKS] = {};
+> +       int err = 0, i;
+> +
+> +       mutex_lock(&bpf_preload_ops.lock);
+> +       if (!bpf_preload_ops.do_preload) {
+> +               mutex_unlock(&bpf_preload_ops.lock);
+> +               request_module("bpf_preload");
+> +               mutex_lock(&bpf_preload_ops.lock);
+> +
+> +               if (!bpf_preload_ops.do_preload) {
+> +                       pr_err("bpf_preload module is missing.\n"
+> +                              "bpffs will not have iterators.\n");
+> +                       goto out;
+> +               }
+> +       }
+> +
+> +       if (!bpf_preload_ops.info.tgid) {
+> +               err = bpf_preload_ops.do_preload(link_id);
+> +               if (err)
+> +                       goto out;
+> +               for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
+> +                       links[i] = bpf_link_by_id(link_id[i]);
+> +                       if (IS_ERR(links[i])) {
+> +                               err = PTR_ERR(links[i]);
+> +                               goto out;
+> +                       }
+> +               }
+> +               err = bpf_link_pin_kernel(parent, "maps", links[0]);
+> +               if (err)
+> +                       goto out;
+> +               err = bpf_link_pin_kernel(parent, "progs", links[1]);
+> +               if (err)
+> +                       goto out;
+
+This hard coded "maps" -> link #0, "progs" -> link #1 mapping is what
+motivated the question above about letting user-space do all pinning.
+It would significantly simplify the kernel part, right?
+
+> +               err = bpf_preload_ops.do_finish();
+> +               if (err)
+> +                       goto out;
+> +       }
+
+[...]
