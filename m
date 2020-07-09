@@ -2,70 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8363821A899
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 22:07:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D80621A89A
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 22:07:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbgGIUHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 16:07:10 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49774 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726290AbgGIUHJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 16:07:09 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jtcp1-00018j-Ig; Thu, 09 Jul 2020 22:07:07 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jtcp1-000L3z-D7; Thu, 09 Jul 2020 22:07:07 +0200
-Subject: Re: [PATCH v2 bpf 0/2] bpf: net: Fixes in sk_user_data of
- reuseport_array
-To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>, kernel-team@fb.com,
-        netdev@vger.kernel.org
-References: <20200709061057.4018499-1-kafai@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f84a5aeb-9040-f7dc-d4ed-63bd6d764878@iogearbox.net>
-Date:   Thu, 9 Jul 2020 22:07:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20200709061057.4018499-1-kafai@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        id S1726306AbgGIUHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 16:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726290AbgGIUHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 16:07:19 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AE2C08C5CE;
+        Thu,  9 Jul 2020 13:07:19 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9C00F120F19C4;
+        Thu,  9 Jul 2020 13:07:18 -0700 (PDT)
+Date:   Thu, 09 Jul 2020 13:07:17 -0700 (PDT)
+Message-Id: <20200709.130717.943617001507092696.davem@davemloft.net>
+To:     colin.king@canonical.com
+Cc:     f.fainelli@gmail.com, kuba@kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] net: systemport: fix double shift of a vlan_tci
+ by VLAN_PRIO_SHIFT
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200708183723.1212652-1-colin.king@canonical.com>
+References: <20200708183723.1212652-1-colin.king@canonical.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25868/Thu Jul  9 15:58:00 2020)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 Jul 2020 13:07:18 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/9/20 8:10 AM, Martin KaFai Lau wrote:
-> This set fixes two issues on sk_user_data when a sk is added to
-> a reuseport_array.
-> 
-> The first patch is to avoid the sk_user_data being copied
-> to a cloned sk.  The second patch avoids doing bpf_sk_reuseport_detach()
-> on sk_user_data that is not managed by reuseport_array.
-> 
-> Since the changes are mostly related to bpf reuseport_array, so it is
-> currently tagged as bpf fixes.
-> 
-> v2:
-> - Avoid ~3UL (Andrii)
-> 
-> Martin KaFai Lau (2):
->    bpf: net: Avoid copying sk_user_data of reuseport_array during
->      sk_clone
->    bpf: net: Avoid incorrect bpf_sk_reuseport_detach call
-> 
->   include/net/sock.h           |  3 ++-
->   kernel/bpf/reuseport_array.c | 14 ++++++++++----
->   2 files changed, 12 insertions(+), 5 deletions(-)
-> 
+From: Colin King <colin.king@canonical.com>
+Date: Wed,  8 Jul 2020 19:37:23 +0100
 
-Applied, thanks!
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Currently the u16 skb->vlan_tci is being right  shifted twice by
+> VLAN_PRIO_SHIFT, once in the macro skb_vlan_tag_get_pri and explicitly
+> by VLAN_PRIO_SHIFT afterwards. The combined shift amount is larger than
+> the u16 so the end result is always zero.  Remove the second explicit
+> shift as this is extraneous.
+> 
+> Fixes: 6e9fdb60d362 ("net: systemport: Add support for VLAN transmit acceleration")
+> Addresses-Coverity: ("Operands don't affect result")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+
+Applied to net-next, thanks.
