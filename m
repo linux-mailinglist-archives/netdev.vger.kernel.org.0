@@ -2,131 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0395621AB04
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 00:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 978A821AB13
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 00:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726272AbgGIW53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 18:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
+        id S1727047AbgGIW70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 18:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726228AbgGIW53 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 18:57:29 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFADC08C5CE
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 15:57:29 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id z17so3095253edr.9
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 15:57:29 -0700 (PDT)
+        with ESMTP id S1726228AbgGIW70 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 18:59:26 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC92C08C5CE;
+        Thu,  9 Jul 2020 15:59:25 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id t7so1744230qvl.8;
+        Thu, 09 Jul 2020 15:59:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SoRqBHHWyZgrISFV5W3Qq/uD1jjlgW+w82nM0RwwXMg=;
-        b=Xv6JD3KCyVefFacB8Gwoz+FTYrQkE6CZRkhe1GNth//AWI8hJuxL3+mBaSaP0vY1Iw
-         AcrN83odnrHC5I4sZQ3T4dxRik6cnPm81kT4dBjAM36Rs00kBOfN4dCysz2dELQti3zK
-         6DyRYxNNQKQlbz33RT89Vf+YioDdcRnWas3JN2BigiQZ1DacdD5TcHgBYTSgvLOf0SKP
-         QfMZ0zr8gVQNRkdfNtCUvCn5/DwgYE48Ahb3XYgS0si8HCKBExG5sZQEIhOJSxKkF5Sr
-         +zSFcu70EskTZ7O1cUFPpRgc2Etp61Y1f5MXsblhFhGik4GjYgrDoml6fRL/3bO34Q69
-         b8iA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=D8zldaeMRzQtVvKu+IeVdJQHKskFweaij0NhK30PA3Y=;
+        b=pe/6eYHwcQdrkKoLboqkDZcq+Mc5owjkFIRYDjlaX1ymMVT3uRyUGIELxGkgWzHd+e
+         XCHWzr8wzLNncmREnJj36WuvJXKrZxLKqfQ0B6GNxQFDLEZtyHZ4Q7kSm+UW3k8+xiEb
+         XLBglUIdS71eAWhbqTTPnmOS5/BdypcEGaUShFU3OAU+4kwF40oQLY/+3q135rx6UWuX
+         jYg96gXWITyYctcGYB9EQ5d/XjKEDcL64s54g3m+/kf3fZXwHPXPcnHCFdM0vY3cRJwV
+         lX33NAJj9HvT7h7I0BycBgOkHewC0zEuP4DnpSZrW6+jfreO7uuw65Sa7SRdP7AwxwUD
+         v+Gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SoRqBHHWyZgrISFV5W3Qq/uD1jjlgW+w82nM0RwwXMg=;
-        b=OT1PV0Bdfl9xalvgXv82q4jHQdurvjZmiSiFOlydAwQOQHfrLqPxnHyU/61shLNAmN
-         aEF2wI6xpnYX3vSIBFUQ/yZujHu93mjFqbbaPwqQ8rUu/meIeUXgY/Uaryo1l9kUINDn
-         09jhQIWI6EWB2gDJecGAHZ3TStXZpiT4U1C2waJwxgQQu3rBPJQtqNHcZ62X1VjFWrSh
-         aF68BvIVCh7UYdB4lBTgEklQy71onPDtoot+KLOBgXn3RhPAS5d9BOJaOGrA1+KGSfzc
-         xUWBckD7JniseKTTOYWAe9J10LXJwwd2eeEWI0HQIaQ7fVa+BO6bH0wIKmNQIZ1MXFpC
-         jQtw==
-X-Gm-Message-State: AOAM532pDzcFATJ2wcvi0KpwPwbWAvTAZ0gswSwR+SgBxsxR7fEc/g3y
-        xIlnhY73ktaZGkxG4pH+d8lqhhZO
-X-Google-Smtp-Source: ABdhPJwnmEMXbTRTdDj4XvXJBL7AKIjbMUHcU9+YhlRWv/Fj6gA8uuI0oqXFqGEfGfe9a4McjVCWyg==
-X-Received: by 2002:a05:6402:21d3:: with SMTP id bi19mr75762868edb.56.1594335447809;
-        Thu, 09 Jul 2020 15:57:27 -0700 (PDT)
-Received: from skbuf ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id r17sm2944120edw.68.2020.07.09.15.57.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2020 15:57:27 -0700 (PDT)
-Date:   Fri, 10 Jul 2020 01:57:25 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>, netdev@vger.kernel.org,
-        f.fainelli@gmail.com, hkallweit1@gmail.com
-Subject: Re: MDIO Debug Interface
-Message-ID: <20200709225725.xwmyhny4hmiyb5nt@skbuf>
-References: <C42DZQLTPHM5.2THDSRK84BI3T@wkz-x280>
- <20200709223936.GC1014141@lunn.ch>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=D8zldaeMRzQtVvKu+IeVdJQHKskFweaij0NhK30PA3Y=;
+        b=qfjzYGbcYS4LMYkHO0YQQTuj5PNKWaL5jUULq9gPTMfr0pxBIgbNntBSWqsaMMuEfd
+         dD4J6IvNm0sq2yMBuUyE0RgpwiDXwfvbV7EWSOeFlMe2B0LkEoOln2QYzPfAkIrXJdQV
+         t4CJLHuSDzoqx4CjDGtP5Lx8b2K7W4/puDCuUY0pb2SmjT+UQNukBcojFO5lBK0Jx5am
+         z5W1uszxOR3f2UleciSTY0PH1DobZZzMJYn/lkS0tMxn/4HoyAVzn0yxy00CEiSeo1V2
+         7+FuvYyX4Dl1eHlFCwQoLenr4Sp6WaquS3hKZRdnGANziGFwjJv0gkT0MaVAnOOET4st
+         et+g==
+X-Gm-Message-State: AOAM531JCYFRBvkSSw+0xyatEyeBl7IUijWJopobTEZ9qky+tLcvpxgk
+        A81oy9+yfIxKbFaK+7VOr6WiquO4vhvHkpf9TwHmWy9s
+X-Google-Smtp-Source: ABdhPJzotRxxj4Og9+W7jhl6eodHTSnm1veiYlAzJDbC6uU6yyHa11Tk9bo9o0H5WyMKcjHyFPRqEeYP5yTT7yCyWc0=
+X-Received: by 2002:ad4:4645:: with SMTP id y5mr66926326qvv.163.1594335565089;
+ Thu, 09 Jul 2020 15:59:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200709223936.GC1014141@lunn.ch>
+References: <20200709225723.1069937-1-andriin@fb.com>
+In-Reply-To: <20200709225723.1069937-1-andriin@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 9 Jul 2020 15:59:13 -0700
+Message-ID: <CAEf4Bzbq9KPyn7RaRfowny=uOynuEM6ki5V+BuHR-tDDN1W_ew@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: Fix libbpf hashmap on (I)LP32 architectures
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Bogusz <qboosh@pld-linux.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On Thu, Jul 9, 2020 at 3:57 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> From: Jakub Bogusz <qboosh@pld-linux.org>
+>
+> On ILP32, 64-bit result was shifted by value calculated for 32-bit long type
+> and returned value was much outside hashmap capacity.
+> As advised by Andrii Nakryiko, this patch uses different hashing variant for
+> architectures with size_t shorter than long long.
+>
+> Fixes: e3b924224028 ("libbpf: add resizable non-thread safe internal hashmap")
+> Signed-off-by: Jakub Bogusz <qboosh@pld-linux.org>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
 
-On Fri, Jul 10, 2020 at 12:39:36AM +0200, Andrew Lunn wrote:
-> On Thu, Jul 09, 2020 at 10:47:54PM +0200, Tobias Waldekranz wrote:
-> > Hi netdev,
-> > 
-> > TL;DR: Is something like https://github.com/wkz/mdio-tools a good
-> > idea?
-> > 
-> > The kernel does not, as far as I know, have a low-level debug
-> > interface to MDIO devices. I.e. something equivalent to i2c-dev or
-> > spi-dev for example.
-> 
-> Hi Tobias
-> 
-> These APIs exist to allow user space drivers. I don't know how much
-> that happens now a days, there seems to be a lot of kernel space
-> drivers for SPI and I2C, but it is still possible to write user space
-> drivers.
-> 
-> We have never allowed user space drivers for MDIO devices. As a
-> result, we have pretty good kernel support for PHYs and quite a few L2
-> switches, and the numbers keep increasing.
-> 
-> But the API you are suggesting sounds like it becomes an easy way for
-> vendors to run their SDKs in user space, with a small bit of glue code
-> to this new API. That is something we should avoid.
-> 
-> It is a difficult trade off. Such an API as you suggest does allow for
-> nice debug tools for driver developers. And i have no problems with
-> such a tool existing, being out of tree for any developer to use. But
-> i'm not too happy with it being in mainline because i suspect it will
-> get abused by vendors.
-> 
-> Something i'm want to look at soon is dumping more of the internal
-> state of the mv88e6xxx switches. The full ATU and VTU, TCAM etc. I
-> think devlink region could work for this. And i think the ethtool -d
-> command could be made a lot better now we have a netlink API. The old
-> API assumed a single address space. It would be nice to support
-> multiple address spaces.
-> 
-> The advantage of these APIs is that they cannot be abused by vendors
-> to write user space drivers. But we can still have reasonably powerful
-> debug tools built on top of them.
-> 
->        Andrew
+This was supposed to have my Acked-by as well, I forgot to add it, sorry.
 
-Fear not, the lack of a mainline UAPI for MDIO access will not prevent
-any vendor from adding a sysfs mdio_read and mdio_write, if they need it
-for their user space SDK :)
-
-The reverse also seems true: if there are things that only the kernel
-can do, then there should be a kernel driver for that respective
-MDIO/SPI/I2C device, regardless of whether there is also a raw UAPI
-available. It is not unheard of for a user space solution to finally get
-converted to a kernel implementation.
-
-Virtualization is a reasonable use case in my opinion and it would need
-something like this, for the guest kernel to have access to its PHY.
-
-Whereas things like "devlink region" for the ATU, VTU, etc could be kept
-more high-level than the interface Tobias is proposing. There is no
-clash between the 2.
-
--Vladimir
+>  tools/lib/bpf/hashmap.h | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
+>
+> diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
+> index df59fd4fc95b..e0af36b0e5d8 100644
+> --- a/tools/lib/bpf/hashmap.h
+> +++ b/tools/lib/bpf/hashmap.h
+> @@ -11,14 +11,18 @@
+>  #include <stdbool.h>
+>  #include <stddef.h>
+>  #include <limits.h>
+> -#ifndef __WORDSIZE
+> -#define __WORDSIZE (__SIZEOF_LONG__ * 8)
+> -#endif
+>
+>  static inline size_t hash_bits(size_t h, int bits)
+>  {
+>         /* shuffle bits and return requested number of upper bits */
+> -       return (h * 11400714819323198485llu) >> (__WORDSIZE - bits);
+> +#if (__SIZEOF_SIZE_T__ == __SIZEOF_LONG_LONG__)
+> +       /* LP64 case */
+> +       return (h * 11400714819323198485llu) >> (__SIZEOF_LONG_LONG__ * 8 - bits);
+> +#elif (__SIZEOF_SIZE_T__ <= __SIZEOF_LONG__)
+> +       return (h * 2654435769lu) >> (__SIZEOF_LONG__ * 8 - bits);
+> +#else
+> +#      error "Unsupported size_t size"
+> +#endif
+>  }
+>
+>  typedef size_t (*hashmap_hash_fn)(const void *key, void *ctx);
+> --
+> 2.24.1
+>
