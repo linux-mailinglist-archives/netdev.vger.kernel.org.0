@@ -2,140 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1918B21A822
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 21:50:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABD8F21A828
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 21:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726418AbgGITt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 15:49:29 -0400
-Received: from mout.gmx.net ([212.227.17.22]:58935 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726605AbgGITsx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 15:48:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1594324081;
-        bh=qjjKU85vWrmvdFue2XV3Qb2IIMAX9y66v6AoZZPoc2M=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=e7IvaRLpDkT/47bzRnTddtiimKHgCOu//u3jijFPYjXMYg+NwEdyW8xhh/2wlymUH
-         tChSZTTaaVLRdjGn7cNFEpwFWuHkAcOSqFg5XFHSYYOh+whMzslBnIA8N7zaJom7vM
-         bDPbsC3UElWQU7/ODWeeoMn3+uh5uZlNRL8KIojU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [80.208.213.58] ([80.208.213.58]) by web-mail.gmx.net
- (3c-app-gmx-bap65.server.lan [172.19.172.65]) (via HTTP); Thu, 9 Jul 2020
- 21:48:01 +0200
+        id S1726456AbgGITuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 15:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726311AbgGITt7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 15:49:59 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD4AC08C5CE
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 12:49:56 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id e4so3791048ljn.4
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 12:49:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=habets.se; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=qyfJ7rlKHi80QWYEFhgDft7oO+HZpsE5iYNVH2coXhQ=;
+        b=InA6IVrxLFGXi7UVTQsyDgaX3CnOOp5A1Pi3JP+12k3vNC60qAVxkQnGWId573sUg8
+         K64RMlnVft7qwFE7S8w4FawgTzz2aEpeewR3w2BIgVSWOgKphWFc7nq+ElZlkorKKAA0
+         bXL38rs3qJfPHIplPOx+EHEJrzSMBlwjsr8TU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=qyfJ7rlKHi80QWYEFhgDft7oO+HZpsE5iYNVH2coXhQ=;
+        b=C8FNaElOHtL0E8VUTkoV0WnipuysH5GtN8x3w9NTqRV4NpRVbhmbFq0ydaoBRSX4mz
+         wOG9ioSlagAN/AQ0lsa9LW1CsjWSG4snXu+iDLEaI2RPetLjU8FWAxBrXQrXaXduN52V
+         M6zAdt4Quh3jrvkgAQwHqWDu52+58PI/KyVUxf6COWW7xXCOL29JD1orJPYHqjdhEAaR
+         3yUlbxj81NB2zBQ2xu/4x5h5quqk+rw8VxFlu/sZ+a1xpudG5jb7Ddqq6nHY1iZ4Z6eu
+         yLvrOwwADS+hrr7YmLxxRDKo5YhOHcsjlJXhlMUzMqqfmWCnKtm77o8uugybMePx4WNj
+         GTHA==
+X-Gm-Message-State: AOAM533MnCNrZksung+pxqx3p9LPfKMSP5pJsSuKrx0oZj1ys40IIKT8
+        y/klYs0qLd3dJ26s5p7qDvK8BI0ppw9YG4w+UA3snKco5n5fVw==
+X-Google-Smtp-Source: ABdhPJzbRoiNc2D1S/fDTwY4DPthZSWZ6EO3Bf9NfutFTlFxMw9J33xsxs+GK6RYpJWOVPtc1jzMrIBDh3CRno+OAN8=
+X-Received: by 2002:a2e:b0ef:: with SMTP id h15mr2695464ljl.43.1594324194111;
+ Thu, 09 Jul 2020 12:49:54 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <trinity-487c0605-faeb-462e-a373-bc393ce3dbfa-1594324081639@3c-app-gmx-bap65>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-mediatek@lists.infradead.org,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Landen Chao <landen.chao@mediatek.com>
-Subject: Aw: Re: [PATCH v2] net: ethernet: mtk_eth_soc: fix mtu warning
-Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 9 Jul 2020 21:48:01 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20200709134115.GK928075@lunn.ch>
-References: <20200709055742.3425-1-frank-w@public-files.de>
- <20200709134115.GK928075@lunn.ch>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:n4zQntLiWUydrYDQKBFrQyQq/zGUb616R6yRiuIW4EkJfjq+54nieuV/hYKY/1qyo45o+
- T2AV17jN910J1AYgwwgjqWXNF94zV6gLBYMT9Hl4WOnfgtJTvXNzcnqT/xY+bj7KTOvcfPBe2qLH
- iufWNu521oC6dI9gX0kLgb9Ft7IHy4L3NXJ8+w0rSZudmHd/G3VMlJ4H2z+UG2OBzWIm2Q5L2Glg
- rZbzX/ZP8wO9W5+MuBod2H8YjmwO4CiGt4uOWYEiWOSID3DQ8+IH6TSyRDTaIzL/nUQZcmB2n/mo
- BQ=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:RyfU1bnrcBs=:QIrBsHWDa406vNbEkzdDWM
- tUp9/4HQvksPc36DfD8pCJggCEq1HLpFMZ7/stSKtdVeygNt+Y9lxt6OLVvw1xaZv2RbU7Tag
- E+21kkdjiVq7f8kNpC+/gFAUrn05JhzoawIW5TbrzE8GjMF50uCs22GqGuVSg3cJrWx375YGV
- wQkx2xFQNnLIVMGmIVLbxxnlWc/J1EFlJdYuksr4e5IOz0tuQ8/DdV3T5DyI4eYbR/UjC80/T
- 4aoGD8Si03yFjIOl5qiW8CsqmO8v0HCQzKfPp4P/oYq8iZ9oCNUtFl+ltDcNtK58geEcS2UHw
- vDJYXH+3VBpKRfWuylYykkNYowZGoKSMjiWrs6O+Qujl9IuHf0HUGdY+XaDO6MMYW4D3DbSuP
- ME+TY3YICgPwVLz+6JmG2F1J+8T4Wm4/EBIh9hDf3LrfanI1SENfD0iYP3ivPVqLrIJRifAaG
- fiTazWXG5d12bqqs9u+yKR73kvLIA1wGeyB8hREZf+94XoJe5mw6npVuvXI+EmxNkiyRkHz3Q
- YnVQGnw3vmJI1Iv8oK0uRTZD/uudXQNQxvdOa2e/kVmUpw3V5cO7wR30jP2AejfrmaxHr1ZdL
- QWbXmCoyHuQ67WV28L+oyZuzVS4C98uUsZDamcYVFORyri17iJcAOiOM0oe9P6IZ5Fjf406fr
- +ou5Av5QPvuUnc4CJmeCTwbubuDE48AmBESyFn4O0+cahSCSQ5Ej5hB9Ua7fNAX5mc3M=
-Content-Transfer-Encoding: quoted-printable
+References: <CA+kHd+cdzU2qxvHxUNcPtEZiwrDHFCgraOd=BdksMs-snZRUXQ@mail.gmail.com>
+ <CA+kHd+ejR-WcVj_PGz9OHXOvSH51R2hQA+NQiLUnqoxE6QQd+g@mail.gmail.com> <CA+kHd+cTpqDa+-42Mg1FfNTD9rK7UXR7qjjQUwxta8EO2ahxjg@mail.gmail.com>
+In-Reply-To: <CA+kHd+cTpqDa+-42Mg1FfNTD9rK7UXR7qjjQUwxta8EO2ahxjg@mail.gmail.com>
+From:   Thomas Habets <thomas@habets.se>
+Date:   Thu, 9 Jul 2020 20:49:41 +0100
+Message-ID: <CA+kHd+fh2UW4FvxL4v_rd8mQ=avuzHxb=n_ogpVwCMSXVTCeAg@mail.gmail.com>
+Subject: PATCH ax25: Don't hold skb lock while doing blocking read
+To:     netdev@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Gesendet: Donnerstag, 09. Juli 2020 um 15:41 Uhr
-> Von: "Andrew Lunn" <andrew@lunn.ch>
+Here's a test program that illustrates the problem:
+https://github.com/ThomasHabets/radiostuff/blob/master/ax25/axftp/examples/client_lockcheck.cc
 
-> > +	eth->netdev[id]->max_mtu =3D 1536;
->
-> I assume this is enough to make the DSA warning go away, but it is the
-> true max? I have a similar patch for the FEC driver which i should
-> post sometime. Reviewing the FEC code and after some testing, i found
-> the real max was 2K - 64.
+Before this patch, this hangs, because the read(2) blocks the
+write(2).
 
-i tried setting only the max_mtu, but the dsa-error is still present
+I see that calling skb_recv_datagram without this lock is done in
+pep_sock_accept() and atalk_recvmsg() and others, which is what makes
+me think it's safe to do here too. But I'm far from an expert on skb
+lock semantics.
 
-mt7530 mdio-bus:00: nonfatal error -95 setting MTU on port 0
+I see some other socket types are also locking during
+read. E.g. qrtr_recvmsg. Maybe they need to be fixed too.
 
-but i got it too, if i revert the change...mhm, strange that these were ab=
-sent last time...
+Before:
+strace -f -eread,write ./examples/client_lockcheck M0THC-9 M0THC-0 M0THC-2
+strace: Process 3888 attached
+[pid  3888] read(3,  <unfinished ...>
+[pid  3887] write(3, "hello world", 11
+[hang]
 
-the other 2 are fixed with only max_mtu.
-@andrew where did you got the 2k-64 (=3D1984) information? sounds like orw=
-ell ;)
+After:
+strace -f -eread,write ./examples/client_lockcheck M0THC-9 M0THC-0 M0THC-2
+strace: Process 2433 attached
+[pid  2433] read(3,  <unfinished ...>
+[pid  2432] write(3, "hello world", 11) = 11
+[pid  2433] <... read resumed> "yo", 1000) = 2
+[pid  2433] write(1, "yo\n", 3yo
+)         = 3
+[successful exit]
 
--95 is EOPNOTSUPP
 
-as so far, commit 72579e14a1d3d3d561039dfe7e5f47aaf22e3fd3 introduces the =
-warning,
-but the change is making it non-fatal...so i need to adjust my fixes-tag.
-i guess the real problem lies in this:
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index fd91cd34f25e..378ee132e4d0 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -1617,22 +1617,22 @@ static int ax25_recvmsg(struct socket *sock,
+struct msghdr *msg, size_t size,
+        int copied;
+        int err = 0;
 
-bfcb813203e6 net: dsa: configure the MTU for switch ports
+-       lock_sock(sk);
+        /*
+         *      This works for seqpacket too. The receiver has ordered the
+         *      queue for us! We do one quick check first though
+         */
+        if (sk->sk_type == SOCK_SEQPACKET && sk->sk_state != TCP_ESTABLISHED) {
+                err =  -ENOTCONN;
+-               goto out;
++               goto out_nolock;
+        }
 
-it looks like dsa_slave_change_mtu failes because of missing callback in m=
-tk_driver (mt7530 for mt7531 in my case).
+        /* Now we can treat all alike */
+        skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
+                                flags & MSG_DONTWAIT, &err);
+        if (skb == NULL)
+-               goto out;
++               goto out_nolock;
 
-net/dsa/slave.c
-1405 static int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
-...
-1420     if (!ds->ops->port_change_mtu)
-1421         return -EOPNOTSUPP;
++       lock_sock(sk);
+        if (!sk_to_ax25(sk)->pidincl)
+                skb_pull(skb, 1);               /* Remove PID */
 
-i added an empty callback to avoid this message, but mtu should be set in =
-hardware too...
-here i will ne some assistance from mtk ethernet experts and mt7531 driver=
- (from landen chao) to be merged first (after some needed changes)
+@@ -1677,6 +1677,7 @@ static int ax25_recvmsg(struct socket *sock,
+struct msghdr *msg, size_t size,
 
-=2D-- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2259,6 +2259,12 @@ mt753x_phy_write(struct dsa_switch *ds, int port, i=
-nt regnum, u16 val)
-        return priv->info->phy_write(ds, port, regnum, val);
+ out:
+        release_sock(sk);
++out_nolock:
+
+        return err;
  }
-
-+static int
-+mt753x_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
-+{
-+       return 0;
-+}
-+
- static const struct dsa_switch_ops mt7530_switch_ops =3D {
-        .get_tag_protocol       =3D mtk_get_tag_protocol,
-        .setup                  =3D mt753x_setup,
-@@ -2281,6 +2287,7 @@ static const struct dsa_switch_ops mt7530_switch_ops=
- =3D {
-        .port_vlan_del          =3D mt7530_port_vlan_del,
-        .port_mirror_add        =3D mt7530_port_mirror_add,
-        .port_mirror_del        =3D mt7530_port_mirror_del,
-+       .port_change_mtu        =3D mt753x_port_change_mtu,
-        .phylink_validate       =3D mt753x_phylink_validate,
-        .phylink_mac_link_state =3D mt7530_phylink_mac_link_state,
-        .phylink_mac_config     =3D mt753x_phylink_mac_config,
