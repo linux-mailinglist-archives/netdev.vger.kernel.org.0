@@ -2,508 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99B1721A9C3
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 23:32:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8466921A9BC
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 23:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726228AbgGIVcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 17:32:16 -0400
-Received: from mga14.intel.com ([192.55.52.115]:49958 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726523AbgGIVcP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 17:32:15 -0400
-IronPort-SDR: IDDe6+cXXm1Dhc8Ydcs+eFaSGHD/MRWzOgpgd5BSJLjBoXsuteSI2f2jwO8HSgnzgCSqB2KiDD
- 32EfNpXxGQrg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9677"; a="147202450"
-X-IronPort-AV: E=Sophos;i="5.75,332,1589266800"; 
-   d="scan'208";a="147202450"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2020 14:26:55 -0700
-IronPort-SDR: PCa1GPIrjMWx2SSLTkOzj4q7JFntsboEA7mUxfx6nrf8SArVwMSiHvTm7y1QtcjA7aEJLgi2Sb
- 3RMews6hBMHA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,332,1589266800"; 
-   d="scan'208";a="284293656"
-Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.33])
-  by orsmga006.jf.intel.com with ESMTP; 09 Jul 2020 14:26:54 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kubakici@wp.pl>, Jiri Pirko <jiri@resnulli.us>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tom Herbert <tom@herbertland.com>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: [RFC PATCH net-next 6/6] ice: implement devlink parameters to control flash update
-Date:   Thu,  9 Jul 2020 14:26:52 -0700
-Message-Id: <20200709212652.2785924-7-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.27.0.353.gb9a2d1a0207f
-In-Reply-To: <20200709212652.2785924-1-jacob.e.keller@intel.com>
-References: <20200709212652.2785924-1-jacob.e.keller@intel.com>
+        id S1726840AbgGIV1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 17:27:35 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:36782 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726830AbgGIV1e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 17:27:34 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 069L8kM9014679;
+        Thu, 9 Jul 2020 14:27:20 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=l5qUOcDF4zNcBrB47aXMCP0zUZamw+Eof0I4QVyb24A=;
+ b=CsY/Rdo8PmhVaGdsyHLR93YwiNX0W8+f0SZKt+BjJt8rbHMIh+XExjuv4VOvrIqPqT6/
+ fqCrOpiIQ+Uy9TYi10kBz6UMgyF43u9wiDGj2k6cqy84Q32ldRWLeahTjGtmmQVP5uha
+ 76bECRKoXofBHkQNWGNoWfLZsw84RtPz4Co= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 325k2cetgg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 09 Jul 2020 14:27:19 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 9 Jul 2020 14:27:18 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=j2CwN1+XoFARcuLfwb1aLGLI/2bub7QH7PjlRPDzb9If5JM41uhxYeX+DgVm6o4Lh+l0Mk10Y9cao6hf0XTWsoo5eSG/IVwfiwu4wLTJ3/bcrgKwYQj+3nJnlK5qm/u6zmGlnMuH0ifEwSFcpdfpyWvt80SdEP5oXYBgleH0VNdkdwjWZHsL7HGI6sl0aq2ycaAqtnRs+BfR1XYTew6IKAQZaUL2XX4TQUuwTSKVrTWo5x7N2C/O5oSxgXDXSPoJ7ttFjJ+s8wWDz5LvwjzhRjUHGgKhwBnYrGaIef6vIjnX4RFSaE/Eb6/zmoFGENl1MQRFT6p/sjtxF2C8dnXEMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l5qUOcDF4zNcBrB47aXMCP0zUZamw+Eof0I4QVyb24A=;
+ b=PmPjoC57LpkmAPKxIutdkNAyP5gWoOgyz2vAhMdWCYiXpCExzBNigkoptttBMSF9KHG4F5J1I6gBoZvZdZPW9I+UnzSo1IcmluNAr/s4NVAh90aRn7XZilcioWLdwgD3sXON2rMD7bIcG+D+56ToF7sUwqUbabwq9/MGpzOsjxj9DpLUqTz9B33pZIkICA4zLU1gknl5YYflXQMc4l3IhjqgDXwPXcJD5ppHbXdWl6K/5WlHxnpuA9tjwnXc5q+KzKvpcnz0dT3evPSKaFaJKpTZq4ry5rNeILaczM5mDYRpLqN5B9W4qz7E9Z8La5g3Qm7ICYt9o3u+gQfwO7UVRQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l5qUOcDF4zNcBrB47aXMCP0zUZamw+Eof0I4QVyb24A=;
+ b=T4ZSD01mRSUkOhNhDXANKRNQdQ8d09tPvsv1XAa7/XTT2yiSCkqoLmLMqjGX16XgWChc4ObrJCg7DB7k+OvZvgvHr9KZe1zh5KTi1co63hJKD2EHFia8nVsd4mFEKbaRxd8RtcCvAoIRwulfWM3OfX5C1bzuPRv1Dki5Yo5AwrY=
+Authentication-Results: iogearbox.net; dkim=none (message not signed)
+ header.d=none;iogearbox.net; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2406.namprd15.prod.outlook.com (2603:10b6:a02:84::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.28; Thu, 9 Jul
+ 2020 21:27:17 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::d489:8f7f:614e:1b99]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::d489:8f7f:614e:1b99%7]) with mapi id 15.20.3174.023; Thu, 9 Jul 2020
+ 21:27:17 +0000
+Date:   Thu, 9 Jul 2020 14:27:16 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+CC:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        <kernel-team@fb.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf 1/2] bpf: net: Avoid copying sk_user_data of
+ reuseport_array during sk_clone
+Message-ID: <20200709212716.fvuas7m5dvlotwnj@kafai-mbp>
+References: <20200709061057.4018499-1-kafai@fb.com>
+ <20200709061104.4018798-1-kafai@fb.com>
+ <7535d0e3-e442-8611-3c35-cbc9f4cace8c@iogearbox.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7535d0e3-e442-8611-3c35-cbc9f4cace8c@iogearbox.net>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: BY3PR04CA0011.namprd04.prod.outlook.com
+ (2603:10b6:a03:217::16) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:e463) by BY3PR04CA0011.namprd04.prod.outlook.com (2603:10b6:a03:217::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Thu, 9 Jul 2020 21:27:17 +0000
+X-Originating-IP: [2620:10d:c090:400::5:e463]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 99fb4cf2-5084-4f5f-e95a-08d8244edb0b
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2406:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB24060525C666C73F2307DBACD5640@BYAPR15MB2406.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:2150;
+X-Forefront-PRVS: 04599F3534
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: esqVdFd7lebLAw4M+CY4AJW/bowamWNiTITHLjs8ahl/LOfh6697O3eLIOVbeu5k2ER30NWoK8g3JaSpMihSs8FpItV9So1tmxDMrXfUPmG1a9I+MPRTb1H7PIFfvjZ5SUt9xhf//J6+hQn9BBCEKE1pjpHByd7Ndpe4WQ+jVZpMd1wd7KHZQyY+F6t+rwnzRl6fq2En1L4Vwtdb7jWZO4zTur8WnB+ppIVsdXEdYH+hxhCQppFEh4IbXGMmFDDkV/dky/yDimxugpSPLaz7ULytx3HEEvkPumxLhTU4cpIXA2/p9G/AE2rq7NYCzbubuiZy7Kfsw1wftLWWrqjv6Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(396003)(39860400002)(366004)(136003)(33716001)(2906002)(83380400001)(8676002)(478600001)(316002)(53546011)(5660300002)(186003)(8936002)(16526019)(66946007)(52116002)(66476007)(66556008)(1076003)(6916009)(6496006)(4326008)(86362001)(9686003)(55016002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: HQXtLtqvRtsYPiuhke9k/UEE+12FMdPCXGwtCZl2hN5d08I9Pwr71pABLKq9Dvgknw6wPMmfgYN0Br5PE79U8JEo76aoOa/0l5pBUVSQ6mm9mDYmhdLR2YZID8Kfq47X1R1TOYIaq1NoTWudoepuSj3XAh8YpUGqPrm+DhJmx9t1gLHHw7U9vUteQ1tWOd2fMGw8xfEuZSsxGJQupbufxxmDZyKfteuj368WI9jYGZVTeYevINgr5gWi3humjqCPCucQwH9+oXYaSZrEMBxUOUizbJZwWNV9CzU7pDyDsf2QaHy36cJx7anFn6ZF4i4dIMBdHvIhoiGxQ9ocexc9fxTuV5JROAVLKvEpkdwkSJMQUobJJjK8Toi8goXTsuj7wB6yyuhyt4K8TK6/qH1UfzM0pCUUSy+S2h7uS9sNulCzpRoMLPcwHfgnogx2l74i3ZazDQ8MrkmowPtyxBxDqU44Z5T6zsF/gs9gCOh6cdQQ4tRWWKb5xqIhGzD+ViZsCyevsxZyfAr1V4+SV7Eipg==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99fb4cf2-5084-4f5f-e95a-08d8244edb0b
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2020 21:27:17.6303
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: a2RD/80muyZYxpdd4TRYvkoWR+ypc9fYsM/IM2eS4jLSYfbz7MGTxqgvSTZMSRNB
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2406
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-09_11:2020-07-09,2020-07-09 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 spamscore=0
+ priorityscore=1501 clxscore=1015 malwarescore=0 adultscore=0
+ lowpriorityscore=0 mlxscore=0 suspectscore=0 bulkscore=0 impostorscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007090143
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The flash update for the ice hardware currently supports a single fixed
-configuration:
+On Thu, Jul 09, 2020 at 10:07:59PM +0200, Daniel Borkmann wrote:
+> On 7/9/20 8:11 AM, Martin KaFai Lau wrote:
+> > It makes little sense for copying sk_user_data of reuseport_array during
+> > sk_clone_lock().  This patch reuses the SK_USER_DATA_NOCOPY bit introduced in
+> > commit f1ff5ce2cd5e ("net, sk_msg: Clear sk_user_data pointer on clone if tagged").
+> > It is used to mark the sk_user_data is not supposed to be copied to its clone.
+> > 
+> > Although the cloned sk's sk_user_data will not be used/freed in
+> > bpf_sk_reuseport_detach(), this change can still allow the cloned
+> > sk's sk_user_data to be used by some other means.
+> > 
+> > Freeing the reuseport_array's sk_user_data does not require a rcu grace
+> > period.  Thus, the existing rcu_assign_sk_user_data_nocopy() is not
+> > used.
+> 
+> nit: Would have been nice though to add a nonrcu API for this nevertheless
+> instead of open coding.
+Agreed.  I will create a follow-up patch to bpf-next later.
 
-* Firmware is always asked to preserve all changeable fields
-* The driver never allows downgrades
-* The driver will not allow canceling a previous update that never
-  completed (for example because an EMP reset never occurred)
-* The driver does not attempt to trigger an EMP reset immediately.
-
-This default mode of operation is reasonable. However, it is often
-useful to allow system administrators more control over the update
-process. To enable this, implement devlink parameters that allow the
-system administrator to specify the desired behaviors:
-
-* 'reset_after_flash_update'
-  If enabled, the driver will request that the firmware immediately
-  trigger an EMP reset when completing the device update. This will
-  result in the device switching active banks immediately and
-  re-initializing with the new firmware.
-* 'allow_downgrade_on_flash_update'
-  If enabled, the driver will attempt to update device flash even when
-  firmware indicates that such an update would be a downgrade.
-* 'ignore_pending_flash_update'
-  If enabled, the device driver will cancel a previous pending update.
-  A pending update is one where the steps to write the update to the NVM
-  bank has finished, but the device never reset, as the system had not
-  yet been rebooted.
-* 'flash_update_preservation_level'
-  The value determines the preservation mode to request from firmware,
-  among the following 4 choices:
-  * PRESERVE_ALL (0)
-    Preserve all settings and fields in the NVM configuration
-  * PRESERVE_LIMITED (1)
-    Preserve only a limited set of fields, including the VPD, PCI serial
-    ID, MAC address, etc. This results in permanent settings being
-    reset, including changes to the port configuration, such as the
-    number of physical functions created.
-  * PRESERVE_FACTORY_SETTINGS (2)
-    Reset all configuration fields to the factory default settings
-    stored within the NVM.
-  * PRESERVE_NONE (3)
-    Do not perform any preservation.
-
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
----
- Documentation/networking/devlink/ice.rst      |  46 +++++
- drivers/net/ethernet/intel/ice/ice.h          |  20 ++
- drivers/net/ethernet/intel/ice/ice_devlink.c  | 175 +++++++++++++++++-
- .../net/ethernet/intel/ice/ice_fw_update.c    |  73 +++++++-
- 4 files changed, 309 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
-index 237848d56f9b..7a62eb7fac71 100644
---- a/Documentation/networking/devlink/ice.rst
-+++ b/Documentation/networking/devlink/ice.rst
-@@ -156,3 +156,49 @@ Users can request an immediate capture of a snapshot via the
-     0000000000000210 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 
-     $ devlink region delete pci/0000:01:00.0/device-caps snapshot 1
-+
-+Parameters
-+==========
-+
-+The ``ice`` driver implements the following driver-specific parameters.
-+
-+.. list-table:: Driver-specific parameters implemented
-+   :widths: 5 5 5 85
-+
-+   * - Name
-+     - Type
-+     - Mode
-+     - Description
-+   * - ``reset_after_flash_update``
-+     - Boolean
-+     - runtime
-+     - If set to true, the driver will request that firmware trigger an EMP
-+       reset after completing a flash update. This causes the device to
-+       immediately re-initialize with the new flash contents.
-+   * - ``allow_downgrade_on_flash_update``
-+     - Boolean
-+     - runtime
-+     - If set to true, the driver will attempt to perform a flash update
-+       even if the firmware indicates that the upgrade is a downgrade to a
-+       previous version of the firmware.
-+   * - ``ignore_pending_flash_update``
-+     - Boolean
-+     - runtime
-+     - If set to true, the driver will attempt to cancel any previous
-+       pending flash update. Such an update is one where the device never
-+       reset after finishing the flash update.
-+   * - ``flash_update_preservation_level``
-+     - u8
-+     - runtime
-+     - Controls the flash update preservation policy requested by the
-+       driver.
-+        - ``ICE_FLASH_UPDATE_PRESERVE_ALL`` (0)
-+          Preserve all settings and fields in the current NVM configuration,
-+          carrying them forward to the new version.
-+        - ``ICE_FLASH_UPDATE_PRESERVE_LIMITED`` (1)
-+          Preserve only a limited set of fields including the VPD, PCI
-+          serial ID, and MAC address.
-+        - ``ICE_FLASH_UPDATE_PRESERVE_FACTORY_SETTINGS`` (2)
-+          Restore all configuration fields to the factory default settings.
-+        - ``ICE_FLASH_UPDATE_PRESERVE_NONE`` (3)
-+          Do not perform any preservation.
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 152b1f71045c..7b5c72dd98ae 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -374,6 +374,25 @@ enum ice_pf_flags {
- 	ICE_PF_FLAGS_NBITS		/* must be last */
- };
- 
-+enum ice_flash_update_preservation {
-+	/* Preserve all settings and fields */
-+	ICE_FLASH_UPDATE_PRESERVE_ALL = 0,
-+	/* Preserve limited fields, such as VPD, PCI serial ID, MACs, etc */
-+	ICE_FLASH_UPDATE_PRESERVE_LIMITED,
-+	/* Return all fields to factory settings */
-+	ICE_FLASH_UPDATE_PRESERVE_FACTORY_SETTINGS,
-+	/* Do not perform any preservation */
-+	ICE_FLASH_UPDATE_PRESERVE_NONE,
-+};
-+
-+struct ice_devlink_flash_params {
-+	u8 reset_after_update : 1;
-+	u8 allow_downgrade : 1;
-+	u8 ignore_pending_update : 1;
-+
-+	enum ice_flash_update_preservation preservation_level;
-+};
-+
- struct ice_pf {
- 	struct pci_dev *pdev;
- 
-@@ -382,6 +401,7 @@ struct ice_pf {
- 
- 	struct devlink_region *nvm_region;
- 	struct devlink_region *devcaps_region;
-+	struct ice_devlink_flash_params flash_params;
- 
- 	/* OS reserved IRQ details */
- 	struct msix_entry *msix_entries;
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index a6080bfb78dd..1f9cdd06bb86 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -230,6 +230,165 @@ static int ice_devlink_info_get(struct devlink *devlink,
- 	return 0;
- }
- 
-+enum ice_devlink_param_id {
-+	ICE_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
-+	ICE_DEVLINK_PARAM_ID_RESET_AFTER_FLASH_UPDATE,
-+	ICE_DEVLINK_PARAM_ID_ALLOW_DOWNGRADE_ON_FLASH_UPDATE,
-+	ICE_DEVLINK_PARAM_ID_IGNORE_PENDING_FLASH_UPDATE,
-+	ICE_DEVLINK_PARAM_ID_FLASH_UPDATE_PRESERVATION_LEVEL,
-+};
-+
-+/**
-+ * ice_devlink_flash_param_get - Get a flash update parameter value
-+ * @devlink: pointer to the devlink instance
-+ * @id: the parameter id to get
-+ * @ctx: context to return the parameter value
-+ *
-+ * Reads the value of the given parameter and reports it back via the provided
-+ * context.
-+ *
-+ * Used to get the devlink parameters which control specific driver
-+ * behaviors during the .flash_update command.
-+ *
-+ * Returns: zero on success, or an error code on failure.
-+ */
-+static int ice_devlink_flash_param_get(struct devlink *devlink, u32 id,
-+				       struct devlink_param_gset_ctx *ctx)
-+{
-+	struct ice_pf *pf = devlink_priv(devlink);
-+	struct ice_devlink_flash_params *params;
-+
-+	params = &pf->flash_params;
-+
-+	switch (id) {
-+	case ICE_DEVLINK_PARAM_ID_RESET_AFTER_FLASH_UPDATE:
-+		ctx->val.vbool = params->reset_after_update;
-+		break;
-+	case ICE_DEVLINK_PARAM_ID_ALLOW_DOWNGRADE_ON_FLASH_UPDATE:
-+		ctx->val.vbool = params->allow_downgrade;
-+		break;
-+	case ICE_DEVLINK_PARAM_ID_IGNORE_PENDING_FLASH_UPDATE:
-+		ctx->val.vbool = params->ignore_pending_update;
-+		break;
-+	case ICE_DEVLINK_PARAM_ID_FLASH_UPDATE_PRESERVATION_LEVEL:
-+		ctx->val.vu8 = params->preservation_level;
-+		break;
-+	default:
-+		WARN(1, "parameter ID %u is not a flash update parameter", id);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_devlink_flash_param_set - Set a flash update parameter value
-+ * @devlink: pointer to the devlink instance
-+ * @id: the parameter ID to set
-+ * @ctx: context to return the parameter value
-+ *
-+ * Reads the value of the given parameter and reports it back via the provided
-+ * context.
-+ *
-+ * Used to set the devlink parameters which control specific driver
-+ * behaviors during the .flash_update command.
-+ *
-+ * Returns: zero on success, or an error code on failure.
-+ */
-+static int ice_devlink_flash_param_set(struct devlink *devlink, u32 id,
-+				       struct devlink_param_gset_ctx *ctx)
-+{
-+	struct ice_pf *pf = devlink_priv(devlink);
-+	struct ice_devlink_flash_params *params;
-+
-+	params = &pf->flash_params;
-+
-+	switch (id) {
-+	case ICE_DEVLINK_PARAM_ID_RESET_AFTER_FLASH_UPDATE:
-+		params->reset_after_update = ctx->val.vbool;
-+		break;
-+	case ICE_DEVLINK_PARAM_ID_ALLOW_DOWNGRADE_ON_FLASH_UPDATE:
-+		params->allow_downgrade = ctx->val.vbool;
-+		break;
-+	case ICE_DEVLINK_PARAM_ID_IGNORE_PENDING_FLASH_UPDATE:
-+		params->ignore_pending_update = ctx->val.vbool;
-+		break;
-+	case ICE_DEVLINK_PARAM_ID_FLASH_UPDATE_PRESERVATION_LEVEL:
-+		params->preservation_level =
-+			(enum ice_flash_update_preservation)ctx->val.vu8;
-+		break;
-+	default:
-+		WARN(1, "parameter ID %u is not a flash update parameter", id);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_devlink_flash_preservation_validate - Validate preservation level
-+ * @devlink: unused pointer to devlink instance
-+ * @id: the parameter ID to validate
-+ * @val: value to validate
-+ * @extack: netlink extended ACK structure
-+ *
-+ * Validate that the value for "flash_update_preservation_level" is within the
-+ * valid range.
-+ *
-+ * Returns: zero if the value is valid, -ERANGE if it is out of range, and
-+ * -EINVAL if this function is called with the wrong id.
-+ */
-+static int
-+ice_devlink_flash_preservation_validate(struct devlink __always_unused *devlink,
-+					u32 id, union devlink_param_value val,
-+					struct netlink_ext_ack *extack)
-+{
-+	if (WARN_ON(id != ICE_DEVLINK_PARAM_ID_FLASH_UPDATE_PRESERVATION_LEVEL))
-+		return -EINVAL;
-+
-+	switch (val.vu8) {
-+	case ICE_FLASH_UPDATE_PRESERVE_ALL:
-+	case ICE_FLASH_UPDATE_PRESERVE_LIMITED:
-+	case ICE_FLASH_UPDATE_PRESERVE_FACTORY_SETTINGS:
-+	case ICE_FLASH_UPDATE_PRESERVE_NONE:
-+		return 0;
-+	}
-+
-+	return -ERANGE;
-+}
-+
-+/* devlink parameters for the ice driver */
-+static const struct devlink_param ice_devlink_params[] = {
-+	DEVLINK_PARAM_DRIVER(ICE_DEVLINK_PARAM_ID_RESET_AFTER_FLASH_UPDATE,
-+			     "reset_after_flash_update",
-+			     DEVLINK_PARAM_TYPE_BOOL,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     ice_devlink_flash_param_get,
-+			     ice_devlink_flash_param_set,
-+			     NULL),
-+	DEVLINK_PARAM_DRIVER(ICE_DEVLINK_PARAM_ID_ALLOW_DOWNGRADE_ON_FLASH_UPDATE,
-+			     "allow_downgrade_on_flash_update",
-+			     DEVLINK_PARAM_TYPE_BOOL,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     ice_devlink_flash_param_get,
-+			     ice_devlink_flash_param_set,
-+			     NULL),
-+	DEVLINK_PARAM_DRIVER(ICE_DEVLINK_PARAM_ID_IGNORE_PENDING_FLASH_UPDATE,
-+			     "ignore_pending_flash_update",
-+			     DEVLINK_PARAM_TYPE_BOOL,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     ice_devlink_flash_param_get,
-+			     ice_devlink_flash_param_set,
-+			     NULL),
-+	DEVLINK_PARAM_DRIVER(ICE_DEVLINK_PARAM_ID_FLASH_UPDATE_PRESERVATION_LEVEL,
-+			     "flash_update_preservation_level",
-+			     DEVLINK_PARAM_TYPE_U8,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     ice_devlink_flash_param_get,
-+			     ice_devlink_flash_param_set,
-+			     ice_devlink_flash_preservation_validate),
-+};
-+
- /**
-  * ice_devlink_flash_update - Update firmware stored in flash on the device
-  * @devlink: pointer to devlink associated with device to update
-@@ -337,6 +496,15 @@ int ice_devlink_register(struct ice_pf *pf)
- 		return err;
- 	}
- 
-+	err = devlink_params_register(devlink, ice_devlink_params,
-+				      ARRAY_SIZE(ice_devlink_params));
-+	if (err) {
-+		dev_err(dev, "devlink params registration failed: %d\n", err);
-+		return err;
-+	}
-+
-+	devlink_params_publish(devlink);
-+
- 	return 0;
- }
- 
-@@ -348,7 +516,12 @@ int ice_devlink_register(struct ice_pf *pf)
-  */
- void ice_devlink_unregister(struct ice_pf *pf)
- {
--	devlink_unregister(priv_to_devlink(pf));
-+	struct devlink *devlink = priv_to_devlink(pf);
-+
-+	devlink_params_unpublish(devlink);
-+	devlink_params_unregister(devlink, ice_devlink_params,
-+				  ARRAY_SIZE(ice_devlink_params));
-+	devlink_unregister(devlink);
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.c b/drivers/net/ethernet/intel/ice/ice_fw_update.c
-index 717be16ec073..7b106e687e04 100644
---- a/drivers/net/ethernet/intel/ice/ice_fw_update.c
-+++ b/drivers/net/ethernet/intel/ice/ice_fw_update.c
-@@ -107,6 +107,11 @@ ice_check_component_response(struct ice_pf *pf, u16 id, u8 response, u8 code,
- 		/* firmware indicated this update is good to proceed */
- 		return 0;
- 	case ICE_AQ_NVM_PASS_COMP_CAN_MAY_BE_UPDATEABLE:
-+		if (pf->flash_params.allow_downgrade) {
-+			dev_warn(dev, "allow_downgrade_on_flash_update set, ignoring firmware recommendation that this update may not be necessary\n");
-+			return 0;
-+		}
-+
- 		dev_info(dev, "firmware recommends not updating %s\n",
- 			 component);
- 		break;
-@@ -610,6 +615,22 @@ static int ice_finalize_update(struct pldmfw *context)
- 	if (err)
- 		return err;
- 
-+	/* If requested, perform an immediate EMP reset */
-+	if (pf->flash_params.reset_after_update) {
-+		struct device *dev = ice_pf_to_dev(pf);
-+		struct ice_hw *hw = &pf->hw;
-+		enum ice_status status;
-+
-+		status = ice_aq_nvm_update_empr(hw);
-+		if (status) {
-+			dev_err(dev, "Failed to trigger immediate device reset, err %s aq_err %s\n",
-+				ice_stat_str(status),
-+				ice_aq_str(hw->adminq.sq_last_status));
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to trigger immediate device reset");
-+			return -EIO;
-+		}
-+	}
-+
- 	return 0;
- }
- 
-@@ -650,7 +671,24 @@ int ice_flash_pldm_image(struct ice_pf *pf, const struct firmware *fw,
- 	priv.context.dev = dev;
- 	priv.extack = extack;
- 	priv.pf = pf;
--	priv.activate_flags = ICE_AQC_NVM_PRESERVE_ALL;
-+
-+	/* Determine the preservation mode, used when activating the NVM banks
-+	 * at the end of the update.
-+	 */
-+	switch (pf->flash_params.preservation_level) {
-+	case ICE_FLASH_UPDATE_PRESERVE_ALL:
-+		priv.activate_flags = ICE_AQC_NVM_PRESERVE_ALL;
-+		break;
-+	case ICE_FLASH_UPDATE_PRESERVE_LIMITED:
-+		priv.activate_flags = ICE_AQC_NVM_PRESERVE_SELECTED;
-+		break;
-+	case ICE_FLASH_UPDATE_PRESERVE_FACTORY_SETTINGS:
-+		priv.activate_flags = ICE_AQC_NVM_FACTORY_DEFAULT;
-+		break;
-+	case ICE_FLASH_UPDATE_PRESERVE_NONE:
-+		priv.activate_flags = ICE_AQC_NVM_NO_PRESERVATION;
-+		break;
-+	}
- 
- 	status = ice_acquire_nvm(hw, ICE_RES_WRITE);
- 	if (status) {
-@@ -689,11 +727,13 @@ int ice_flash_pldm_image(struct ice_pf *pf, const struct firmware *fw,
- int ice_check_for_pending_update(struct ice_pf *pf, const char *component,
- 				 struct netlink_ext_ack *extack)
- {
-+	struct devlink *devlink = priv_to_devlink(pf);
- 	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_hw_dev_caps *dev_caps;
- 	struct ice_hw *hw = &pf->hw;
- 	enum ice_status status;
- 	u8 pending = 0;
-+	int err;
- 
- 	dev_caps = kzalloc(sizeof(*dev_caps), GFP_KERNEL);
- 	if (!dev_caps)
-@@ -746,7 +786,32 @@ int ice_check_for_pending_update(struct ice_pf *pf, const char *component,
- 	if (!pending)
- 		return 0;
- 
--	dev_err(dev, "Flash update request rejected due to previous pending update\n");
--	NL_SET_ERR_MSG_MOD(extack, "The device already has a pending update");
--	return -EALREADY;
-+	if (!pf->flash_params.ignore_pending_update) {
-+		dev_err(dev, "Flash update request rejected due to previous pending update\n");
-+		NL_SET_ERR_MSG_MOD(extack, "The device already has a pending update");
-+		return -EALREADY;
-+	}
-+
-+	/* In order to allow overwriting a previous pending update, notify
-+	 * firmware to cancel that update by issuing the appropriate command.
-+	 */
-+	devlink_flash_update_status_notify(devlink,
-+					   "Canceling previous pending update",
-+					   component, 0, 0);
-+
-+	status = ice_acquire_nvm(hw, ICE_RES_WRITE);
-+	if (status) {
-+		dev_err(dev, "Failed to acquire device flash lock, err %s aq_err %s\n",
-+			ice_stat_str(status),
-+			ice_aq_str(hw->adminq.sq_last_status));
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to acquire device flash lock");
-+		return -EIO;
-+	}
-+
-+	pending |= ICE_AQC_NVM_REVERT_LAST_ACTIV;
-+	err = ice_switch_flash_banks(pf, pending, extack);
-+
-+	ice_release_nvm(hw);
-+
-+	return err;
- }
--- 
-2.27.0.353.gb9a2d1a0207f
-
+I had created (READ|WRITE)_ONCE_SK_USER_DATA() earlier but then noticed
+there is no use on the READ_ONCE in that particular call, so ditched the
+idea.  I think it does not matter much and should just use READ_ONCE also.
