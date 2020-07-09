@@ -2,72 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70B0B219572
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 02:58:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D516219595
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 03:19:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726171AbgGIA6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 20:58:11 -0400
-Received: from out0-141.mail.aliyun.com ([140.205.0.141]:34731 "EHLO
-        out0-141.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbgGIA6L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 20:58:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=alibaba-inc.com; s=default;
-        t=1594256289; h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        bh=Ddzysup6Lbxn4AghrKT764Y0x81HYoyhQVLgbVdXWzQ=;
-        b=alwUh05QvZPDxbKGwhvmdmBCz8JZ7Jw6sUbANzj+Vf/Pkd2eQxlFsecXR4gkPgZgztE0sPVz95IyjGr778/O2cjkE9a7xHiBV2QtQne1MfkU3ws5ysMV8YOLqJ2uteSv15FLEgHLF+Mn/WHwL46pRRDwGLMqCeXeng88YxOk6cw=
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R271e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e02c03307;MF=xiangning.yu@alibaba-inc.com;NM=1;PH=DS;RN=2;SR=0;TI=SMTPD_---.I-Z-bTO_1594256287;
-Received: from US-118000MP.local(mailfrom:xiangning.yu@alibaba-inc.com fp:SMTPD_---.I-Z-bTO_1594256287)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 09 Jul 2020 08:58:08 +0800
-Subject: Re: [PATCH net-next v2 2/2] net: sched: Lockless Token Bucket (LTB)
- qdisc
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <4835f4cb-eee0-81e7-d935-5ad85767802c@alibaba-inc.com>
- <554197ce-cef1-0e75-06d7-56dbef7c13cc@gmail.com>
- <d1716bc1-a975-54a3-8b7e-a3d3bcac69c5@alibaba-inc.com>
- <91fc642f-6447-4863-a182-388591cc1cc0@gmail.com>
-From:   "=?UTF-8?B?WVUsIFhpYW5nbmluZw==?=" <xiangning.yu@alibaba-inc.com>
-Message-ID: <387fe086-9596-c71e-d1d9-998749ae093c@alibaba-inc.com>
-Date:   Thu, 09 Jul 2020 08:58:05 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        id S1726118AbgGIBSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 21:18:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48218 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726081AbgGIBSq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jul 2020 21:18:46 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 99A4B20739;
+        Thu,  9 Jul 2020 01:18:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594257525;
+        bh=OVYXkDg8PTC80LqulpO111hd8h37JKn1joxRpOsgrIY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fmNhxYIArGtPk5rl6CtLdU7EOHucnHWVgmLuj+oSe7woFS63FzDb/Q30Q37tUv+Os
+         M/XT4J+3iIGpHUA3JnAt0XrOx2vBDgd9ESRBOCFSXtTr8roFNrwv3sXj9ryMie9T7D
+         B7ClQAc4TwZl1qCHvSxYER0BAhdFMMzeEWKBIr0w=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
+        michael.chan@broadcom.com, edwin.peer@broadcom.com,
+        emil.s.tantilov@intel.com, alexander.h.duyck@linux.intel.com,
+        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com, mkubecek@suse.cz,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 00/10] udp_tunnel: add NIC RX port offload infrastructure
+Date:   Wed,  8 Jul 2020 18:18:04 -0700
+Message-Id: <20200709011814.4003186-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <91fc642f-6447-4863-a182-388591cc1cc0@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Kernel has a facility to notify drivers about the UDP tunnel ports
+so that devices can recognize tunneled packets. This is important
+mostly for RX - devices which don't support CHECKSUM_COMPLETE can
+report checksums of inner packets, and compute RSS over inner headers.
+Some drivers also match the UDP tunnel ports also for TX, although
+doing so may lead to false positives and negatives.
 
+Unfortunately the user experience when trying to take adavantage
+of these facilities is suboptimal. First of all there is no way
+for users to check which ports are offloaded. Many drivers resort
+to printing messages to aid debugging, other use debugfs. Even worse
+the availability of the RX features (NETIF_F_RX_UDP_TUNNEL_PORT)
+is established purely on the basis of the driver having the ndos
+installed. For most drivers, however, the ability to perform offloads
+is contingent on device capabilities (driver support multiple device
+and firmware versions). Unless driver resorts to hackish clearing
+of features set incorrectly by the core - users are left guessing
+whether their device really supports UDP tunnel port offload or not.
 
-On 7/8/20 5:08 PM, Eric Dumazet wrote:
-> 
-> 
-> On 7/8/20 4:59 PM, YU, Xiangning wrote:
-> 
->>
->> Yes, we are touching a cache line here to make sure aggregation tasklet is scheduled immediately. In most cases it is a call to test_and_set_bit(). 
-> 
-> 
-> test_and_set_bit() is dirtying the cache line even if the bit is already set.
-> 
+There is currently no way to indicate or configure whether RX
+features include just the checksum offload or checksum and using
+inner headers for RSS. Many drivers default to not using inner
+headers for RSS because most implementations populate the source
+port with entropy from the inner headers. This, however, is not
+always the case, for example certain switches are only able to
+use a fixed source port during encapsulation.
 
-Yes. I do hope we can avoid this.
+We have also seen many driver authors get the intricacies of UDP
+tunnel port offloads wrong. Most commonly the drivers forget to
+perform reference counting, or take sleeping locks in the callbacks.
 
->>
->> We might be able to do some inline processing without tasklet here, still we need to make sure the aggregation won't run simultaneously on multiple CPUs. 
-> 
-> I am actually surprised you can reach 8 Mpps with so many cache line bouncing around.
-> 
-> If you replace the ltb qdisc with standard mq+pfifo_fast, what kind of throughput do you get ?
-> 
+This work tries to improve the situation by pulling the UDP tunnel
+port table maintenance out of the drivers. It turns out that almost
+all drivers maintain a fixed size table of ports (in most cases one
+per tunnel type), so we can take care of all the refcounting in the
+core, and let the driver specify if they need to sleep in the
+callbacks or not. The new common implementation will also support
+replacing ports - when a port is removed from a full table it will
+try to find a previously missing port to take its place.
 
-Just tried it using pktgen, we are far from baseline. I can get 13Mpps with 10 threads in my test setup.
+This patch only implements the core functionality along with a few
+drivers I was hoping to test manually [1] along with a test based
+on a netdevsim implementation. Following patches will convert all
+the drivers. Once that's complete we can remove the ndos, and rely
+directly on the new infrastrucutre.
 
-Thanks,
-- Xiangning
+Then after RSS (RXFH) is converted to netlink we can add the ability
+to configure the use of inner RSS headers for UDP tunnels.
+
+[1] Unfortunately I wasn't able to, turns out 2 of the devices
+I had access to were older generation or had old FW, and they
+did not actually support UDP tunnel port notifications (see
+the second paragraph). The thrid device appears to program
+the UDP ports correctly but it generates bad UDP checksums with
+or without these patches. Long story short - I'd appreciate
+reviews and testing here..
+
+Jakub Kicinski (10):
+  debugfs: make sure we can remove u32_array files cleanly
+  udp_tunnel: re-number the offload tunnel types
+  udp_tunnel: add central NIC RX port offload infrastructure
+  ethtool: add tunnel info interface
+  netdevsim: add UDP tunnel port offload support
+  selftests: net: add a test for UDP tunnel info infra
+  ixgbe: don't clear UDP tunnel ports when RXCSUM is disabled
+  ixgbe: convert to new udp_tunnel_nic infra
+  bnxt: convert to new udp_tunnel_nic infra
+  mlx4: convert to new udp_tunnel_nic infra
+
+ Documentation/filesystems/debugfs.rst         |  12 +-
+ Documentation/networking/ethtool-netlink.rst  |  33 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 133 +--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   6 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   3 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 200 +---
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    | 107 +--
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |   2 -
+ drivers/net/geneve.c                          |   6 +-
+ drivers/net/netdevsim/Makefile                |   2 +-
+ drivers/net/netdevsim/dev.c                   |   1 +
+ drivers/net/netdevsim/netdev.c                |  12 +-
+ drivers/net/netdevsim/netdevsim.h             |  19 +
+ drivers/net/netdevsim/udp_tunnels.c           | 192 ++++
+ drivers/net/vxlan.c                           |   6 +-
+ fs/debugfs/file.c                             |  27 +-
+ include/linux/debugfs.h                       |  12 +-
+ include/linux/netdevice.h                     |   8 +
+ include/net/udp_tunnel.h                      | 152 ++-
+ include/uapi/linux/ethtool.h                  |   2 +
+ include/uapi/linux/ethtool_netlink.h          |  55 ++
+ mm/cma.h                                      |   3 +
+ mm/cma_debug.c                                |   7 +-
+ net/ethtool/Makefile                          |   3 +-
+ net/ethtool/common.c                          |   9 +
+ net/ethtool/common.h                          |   1 +
+ net/ethtool/netlink.c                         |  12 +
+ net/ethtool/netlink.h                         |   4 +
+ net/ethtool/strset.c                          |   5 +
+ net/ethtool/tunnels.c                         | 259 +++++
+ net/ipv4/Makefile                             |   3 +-
+ net/ipv4/{udp_tunnel.c => udp_tunnel_core.c}  |   0
+ net/ipv4/udp_tunnel_nic.c                     | 897 ++++++++++++++++++
+ net/ipv4/udp_tunnel_stub.c                    |   7 +
+ .../drivers/net/netdevsim/udp_tunnel_nic.sh   | 786 +++++++++++++++
+ 35 files changed, 2597 insertions(+), 389 deletions(-)
+ create mode 100644 drivers/net/netdevsim/udp_tunnels.c
+ create mode 100644 net/ethtool/tunnels.c
+ rename net/ipv4/{udp_tunnel.c => udp_tunnel_core.c} (100%)
+ create mode 100644 net/ipv4/udp_tunnel_nic.c
+ create mode 100644 net/ipv4/udp_tunnel_stub.c
+ create mode 100644 tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
+
+-- 
+2.26.2
+
