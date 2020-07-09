@@ -2,73 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 313A421AFF5
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 09:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72C5021A8DA
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 22:23:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727116AbgGJHSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 03:18:16 -0400
-Received: from 142-4-5-186.unifiedlayer.com ([142.4.5.186]:46452 "EHLO
-        142-4-5-186.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726004AbgGJHSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 03:18:15 -0400
-X-Greylist: delayed 38428 seconds by postgrey-1.27 at vger.kernel.org; Fri, 10 Jul 2020 03:18:15 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=supersmileindia.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        Message-ID:Reply-To:Subject:To:From:Date:MIME-Version:Sender:Cc:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QfHHHYoDnTYmQFC+5FsXkNPafoLG13PMcYBYVro1uDI=; b=YglKxixOr7741tmufqvbsOg3YU
-        l3ylyGKu1A59klN/W7ZVkoyINOo28IefYaztynjAjYxbLUep8ssCMXpuonpfxHnInBmWBgv7ePnu9
-        YLhrUrS3yaCJi8qlwfWog20rquTwpYoS5UlYtdJr+P0i9cLxLhoBs0MEvyvZ8sK+p6h/oSP/3NuuW
-        kkm4vW4RsCP6ffD10kE1Pyg9wGwkARkOdkDrne3OWpL1nHBQzzMpuaa9DXkpmbJqUo9VpwYJL6ox3
-        nVjltld2hVS2Chzz0TI/V3qlY/pF0nnVeL43olZ7tqvsVnbL0d5bkNnCcSZvl3FY0IMSGHAYIU2kF
-        jgqqBIBw==;
-Received: from localhost ([127.0.0.1]:42040 helo=142-4-5-186.webhostbox.net)
-        by 142-4-5-186.webhostbox.net with esmtpa (Exim 4.93)
-        (envelope-from <noreply@supersmileindia.com>)
-        id 1jtd4I-0007TN-P6; Fri, 10 Jul 2020 01:52:54 +0530
+        id S1726582AbgGIUXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 16:23:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43158 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726261AbgGIUXO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 16:23:14 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6EB9320720;
+        Thu,  9 Jul 2020 20:23:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594326194;
+        bh=d2HH2sCMfYdiHAR3XgX7+HdwNhr6+1f6WXjP3urtzbg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Nz7zinD34/ubL7ctiV9MZxiASdMR7tIl4w3MaYgw4Q2f2WUvMJrwGkMF4oZp1W15d
+         gOA053KhebT1u3r58M/IrL/wR1sfNE97vY9eodZh7n7SrdUmVJ4Gw9fouPb/kZl/gO
+         E/a97CJ48YIuoEKqRKETY49aVl26DISuLzkgnZGQ=
+Date:   Thu, 9 Jul 2020 13:23:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     <akiyano@amazon.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
+        <sameehj@amazon.com>
+Subject: Re: [PATCH V1 net-next 6/8] net: ena: enable support of rss hash
+ key and function changes
+Message-ID: <20200709132311.63720a70@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1594321503-12256-7-git-send-email-akiyano@amazon.com>
+References: <1594321503-12256-1-git-send-email-akiyano@amazon.com>
+        <1594321503-12256-7-git-send-email-akiyano@amazon.com>
 MIME-Version: 1.0
-Date:   Fri, 10 Jul 2020 01:52:54 +0530
-From:   Hans Smith <noreply@supersmileindia.com>
-To:     undisclosed-recipients:;
-Subject: Interesting Investment Offer Sir
-Reply-To: hansmithpost@yahoo.com
-Mail-Reply-To: hansmithpost@yahoo.com
-Message-ID: <4169c1a7f308e033fbd2f39d94745dd0@supersmileindia.com>
-X-Sender: noreply@supersmileindia.com
-User-Agent: Roundcube Webmail/1.3.13
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - 142-4-5-186.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - supersmileindia.com
-X-Get-Message-Sender-Via: 142-4-5-186.webhostbox.net: authenticated_id: noreply@supersmileindia.com
-X-Authenticated-Sender: 142-4-5-186.webhostbox.net: noreply@supersmileindia.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 9 Jul 2020 22:05:01 +0300 akiyano@amazon.com wrote:
+> From: Arthur Kiyanovski <akiyano@amazon.com>
+> 
+> Add the rss_configurable_function_key bit to driver_supported_feature.
+> 
+> This bit tells the device that the driver in question supports the
+> retrieving and updating of RSS function and hash key, and therefore
+> the device should allow RSS function and key manipulation.
+> 
+> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 
-Sir,
-Firstly, I apologize for sending you this sensitive information via 
-E-mail.
-I am Mr Hans Smith. My associates and I have been working in tandem to 
-find a reliable and trustworthy investment manager that will invest the 
-sum of US$250,000,000.00 (Two Hundred And Fifty Million Dollars) for our 
-client from Angola.
-We have no particular preference to any area of investment. We are only 
-interested in a foreign investment manager that will invest the funds in 
-profitable and viable investment projects.I saw your profile and We want 
-to have a Profitable Joint Venture with you.Your sincerity is highly 
-needed. Contact me for more details.
-REPLY TO: hansmith.67post@gmail.com
-Thanks
-Mr Hans Smith.
+Is this a fix of the previous patches? looks strange to just start
+advertising a feature bit but not add any code..
