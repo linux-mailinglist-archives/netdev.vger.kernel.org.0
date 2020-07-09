@@ -2,229 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73CC5219592
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 03:19:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F586219598
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 03:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726185AbgGIBSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 21:18:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48364 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726270AbgGIBSv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jul 2020 21:18:51 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 54F74207DF;
-        Thu,  9 Jul 2020 01:18:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594257530;
-        bh=vRxRsTth+H5cX1Y+uj4WuThPPRoXWKx5bLW7RxBp3t4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fdB32PoLbJJ1/RUMuLpoqg2hLPk/eim5qGwthtEMwDAFW1vytpNAHv+7rBkhSHVuz
-         E2MNof3nPyRWdsoIHhBGhEVNKOLT85o+1M9SH0Kg7eMJRnXz05/vp+M4ty4gSC1naI
-         7nxXPtyyvubnMQQjdcy9FQLJDNFv69PhNIljkwwA=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
-        michael.chan@broadcom.com, edwin.peer@broadcom.com,
-        emil.s.tantilov@intel.com, alexander.h.duyck@linux.intel.com,
-        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com, mkubecek@suse.cz,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 10/10] mlx4: convert to new udp_tunnel_nic infra
-Date:   Wed,  8 Jul 2020 18:18:14 -0700
-Message-Id: <20200709011814.4003186-11-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200709011814.4003186-1-kuba@kernel.org>
-References: <20200709011814.4003186-1-kuba@kernel.org>
+        id S1726117AbgGIBYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 21:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725982AbgGIBYM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 21:24:12 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D4EC061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 18:24:12 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id b9so137102plx.6
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 18:24:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=0Nj0ktv/rlc+R61V3NMXnCgAAQ1yfPIW7qtMIJSxMLM=;
+        b=LGoj3rFnwu3rvJJCMNp/DzoLUtIejikW1axrcHjnxy6ZqYNPJgR3EDj9ka0DsEJuOL
+         g3j3sNv6gKsOBNb8WKnXkj9JzFoCv7LipeR2DQ5Onqh8NGioG65r6Yi+wm50O56/7w12
+         JSIYKN9rxJXlxxHrGqvkrKWJJKXMFvJS5h6ncX4t1PO9lluWZTChJwURh3LgCdvsQET/
+         QwwsWqq1mFBel9sVrs3npkB8uV/lYMpCJpWpHzG6HKmW5ztKyG+q2zDOqbp0eaFBjV0j
+         HFi49et+rnnn2qDt9bxqHI1e1x14z2NbCvVNr6Rviuwm4yLjVlx/WzAC3O4NTCSHWj8p
+         DmEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0Nj0ktv/rlc+R61V3NMXnCgAAQ1yfPIW7qtMIJSxMLM=;
+        b=dNJOjjD6Ynp5+m/SVe1YlcGK1YkXhrJGtysXfCcHuEM2TDJ1x8U6T27UcQS+R66bVy
+         7+cUzLFpJNDAsZW1h7i/8qf1Qny9RcyOHM04HHAaospJQglyffhVZ0cv4Z3gZfg9Cb+V
+         m+bjAzFL7qr1vKCS4fy4r/uOKv2N+GEPLQnK59EBgeTwHTmxKIt1ehG1lUlCgnoH26M8
+         7EFiJMPHBJwzay5y7Vf/TIfZBuzHm4o4MaiyKQgvhdwYi2XnwHOKA1GsP08TTFWkW1p3
+         L1vTKq0fIfg/NMfVMDaUbkizQKGbrz87QLKi8TCjq0OLjmJlU3ZnSAo4OuV2GG5Kcy64
+         PHMQ==
+X-Gm-Message-State: AOAM53057HmX4a4+DlvpN1aqioXrTIEWX2aSw8t6A1KZyZHeZR6HpimJ
+        Ljn73AHfyGEKV2hWYvQbJy5Rd4vZ
+X-Google-Smtp-Source: ABdhPJwg6f84LsKweWS7GVBKRBHBhnl1xx0Zws2x/uYAxzg71ADqn7ILlV0rLx9LmmiGBu9K+0rWSA==
+X-Received: by 2002:a17:90a:4bc7:: with SMTP id u7mr12557701pjl.217.1594257851284;
+        Wed, 08 Jul 2020 18:24:11 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id 7sm843511pgw.85.2020.07.08.18.24.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jul 2020 18:24:10 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/2] net: sched: Lockless Token Bucket (LTB)
+ qdisc
+To:     "YU, Xiangning" <xiangning.yu@alibaba-inc.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <4835f4cb-eee0-81e7-d935-5ad85767802c@alibaba-inc.com>
+ <554197ce-cef1-0e75-06d7-56dbef7c13cc@gmail.com>
+ <d1716bc1-a975-54a3-8b7e-a3d3bcac69c5@alibaba-inc.com>
+ <91fc642f-6447-4863-a182-388591cc1cc0@gmail.com>
+ <387fe086-9596-c71e-d1d9-998749ae093c@alibaba-inc.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <c4796548-5c3b-f3db-a060-1e46fb42970a@gmail.com>
+Date:   Wed, 8 Jul 2020 18:24:09 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <387fe086-9596-c71e-d1d9-998749ae093c@alibaba-inc.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert to new infra, make use of the ability to sleep in the callback.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- .../net/ethernet/mellanox/mlx4/en_netdev.c    | 107 ++++--------------
- drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |   2 -
- 2 files changed, 25 insertions(+), 84 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-index 5bd3cd37d50f..2b8608f8f0a9 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-@@ -1816,7 +1816,7 @@ int mlx4_en_start_port(struct net_device *dev)
- 	queue_work(mdev->workqueue, &priv->rx_mode_task);
- 
- 	if (priv->mdev->dev->caps.tunnel_offload_mode == MLX4_TUNNEL_OFFLOAD_MODE_VXLAN)
--		udp_tunnel_get_rx_info(dev);
-+		udp_tunnel_nic_reset_ntf(dev);
- 
- 	priv->port_up = true;
- 
-@@ -2628,89 +2628,32 @@ static int mlx4_en_get_phys_port_id(struct net_device *dev,
- 	return 0;
- }
- 
--static void mlx4_en_add_vxlan_offloads(struct work_struct *work)
-+static int mlx4_udp_tunnel_sync(struct net_device *dev, unsigned int table)
- {
-+	struct mlx4_en_priv *priv = netdev_priv(dev);
-+	struct udp_tunnel_info ti;
- 	int ret;
--	struct mlx4_en_priv *priv = container_of(work, struct mlx4_en_priv,
--						 vxlan_add_task);
- 
--	ret = mlx4_config_vxlan_port(priv->mdev->dev, priv->vxlan_port);
--	if (ret)
--		goto out;
-+	udp_tunnel_nic_get_port(dev, table, 0, &ti);
-+	priv->vxlan_port = ti.port;
- 
--	ret = mlx4_SET_PORT_VXLAN(priv->mdev->dev, priv->port,
--				  VXLAN_STEER_BY_OUTER_MAC, 1);
--out:
--	if (ret) {
--		en_err(priv, "failed setting L2 tunnel configuration ret %d\n", ret);
--		return;
--	}
--}
--
--static void mlx4_en_del_vxlan_offloads(struct work_struct *work)
--{
--	int ret;
--	struct mlx4_en_priv *priv = container_of(work, struct mlx4_en_priv,
--						 vxlan_del_task);
--	ret = mlx4_SET_PORT_VXLAN(priv->mdev->dev, priv->port,
--				  VXLAN_STEER_BY_OUTER_MAC, 0);
-+	ret = mlx4_config_vxlan_port(priv->mdev->dev, priv->vxlan_port);
- 	if (ret)
--		en_err(priv, "failed setting L2 tunnel configuration ret %d\n", ret);
-+		return ret;
- 
--	priv->vxlan_port = 0;
-+	return mlx4_SET_PORT_VXLAN(priv->mdev->dev, priv->port,
-+				   VXLAN_STEER_BY_OUTER_MAC,
-+				   !!priv->vxlan_port);
- }
- 
--static void mlx4_en_add_vxlan_port(struct  net_device *dev,
--				   struct udp_tunnel_info *ti)
--{
--	struct mlx4_en_priv *priv = netdev_priv(dev);
--	__be16 port = ti->port;
--	__be16 current_port;
--
--	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
--		return;
--
--	if (ti->sa_family != AF_INET)
--		return;
--
--	if (priv->mdev->dev->caps.tunnel_offload_mode != MLX4_TUNNEL_OFFLOAD_MODE_VXLAN)
--		return;
--
--	current_port = priv->vxlan_port;
--	if (current_port && current_port != port) {
--		en_warn(priv, "vxlan port %d configured, can't add port %d\n",
--			ntohs(current_port), ntohs(port));
--		return;
--	}
--
--	priv->vxlan_port = port;
--	queue_work(priv->mdev->workqueue, &priv->vxlan_add_task);
--}
--
--static void mlx4_en_del_vxlan_port(struct  net_device *dev,
--				   struct udp_tunnel_info *ti)
--{
--	struct mlx4_en_priv *priv = netdev_priv(dev);
--	__be16 port = ti->port;
--	__be16 current_port;
--
--	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
--		return;
--
--	if (ti->sa_family != AF_INET)
--		return;
--
--	if (priv->mdev->dev->caps.tunnel_offload_mode != MLX4_TUNNEL_OFFLOAD_MODE_VXLAN)
--		return;
--
--	current_port = priv->vxlan_port;
--	if (current_port != port) {
--		en_dbg(DRV, priv, "vxlan port %d isn't configured, ignoring\n", ntohs(port));
--		return;
--	}
--
--	queue_work(priv->mdev->workqueue, &priv->vxlan_del_task);
--}
-+static const struct udp_tunnel_nic_info mlx4_udp_tunnels = {
-+	.sync_table	= mlx4_udp_tunnel_sync,
-+	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP |
-+			  UDP_TUNNEL_NIC_INFO_IPV4_ONLY,
-+	.tables		= {
-+		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN, },
-+	},
-+};
- 
- static netdev_features_t mlx4_en_features_check(struct sk_buff *skb,
- 						struct net_device *dev,
-@@ -2914,8 +2857,8 @@ static const struct net_device_ops mlx4_netdev_ops = {
- 	.ndo_rx_flow_steer	= mlx4_en_filter_rfs,
- #endif
- 	.ndo_get_phys_port_id	= mlx4_en_get_phys_port_id,
--	.ndo_udp_tunnel_add	= mlx4_en_add_vxlan_port,
--	.ndo_udp_tunnel_del	= mlx4_en_del_vxlan_port,
-+	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
- 	.ndo_features_check	= mlx4_en_features_check,
- 	.ndo_set_tx_maxrate	= mlx4_en_set_tx_maxrate,
- 	.ndo_bpf		= mlx4_xdp,
-@@ -2948,8 +2891,8 @@ static const struct net_device_ops mlx4_netdev_ops_master = {
- 	.ndo_rx_flow_steer	= mlx4_en_filter_rfs,
- #endif
- 	.ndo_get_phys_port_id	= mlx4_en_get_phys_port_id,
--	.ndo_udp_tunnel_add	= mlx4_en_add_vxlan_port,
--	.ndo_udp_tunnel_del	= mlx4_en_del_vxlan_port,
-+	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
- 	.ndo_features_check	= mlx4_en_features_check,
- 	.ndo_set_tx_maxrate	= mlx4_en_set_tx_maxrate,
- 	.ndo_bpf		= mlx4_xdp,
-@@ -3250,8 +3193,6 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
- 	INIT_WORK(&priv->linkstate_task, mlx4_en_linkstate);
- 	INIT_DELAYED_WORK(&priv->stats_task, mlx4_en_do_get_stats);
- 	INIT_DELAYED_WORK(&priv->service_task, mlx4_en_service_task);
--	INIT_WORK(&priv->vxlan_add_task, mlx4_en_add_vxlan_offloads);
--	INIT_WORK(&priv->vxlan_del_task, mlx4_en_del_vxlan_offloads);
- #ifdef CONFIG_RFS_ACCEL
- 	INIT_LIST_HEAD(&priv->filters);
- 	spin_lock_init(&priv->filters_lock);
-@@ -3406,6 +3347,8 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
- 				       NETIF_F_GSO_UDP_TUNNEL |
- 				       NETIF_F_GSO_UDP_TUNNEL_CSUM |
- 				       NETIF_F_GSO_PARTIAL;
-+
-+		dev->udp_tunnel_nic_info = &mlx4_udp_tunnels;
- 	}
- 
- 	dev->vlan_features = dev->hw_features;
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-index 9f5603612960..a46efe37cfa9 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-@@ -599,8 +599,6 @@ struct mlx4_en_priv {
- 	struct work_struct linkstate_task;
- 	struct delayed_work stats_task;
- 	struct delayed_work service_task;
--	struct work_struct vxlan_add_task;
--	struct work_struct vxlan_del_task;
- 	struct mlx4_en_perf_stats pstats;
- 	struct mlx4_en_pkt_stats pkstats;
- 	struct mlx4_en_counter_stats pf_stats;
--- 
-2.26.2
+On 7/8/20 5:58 PM, YU, Xiangning wrote:
+> 
+> 
+> On 7/8/20 5:08 PM, Eric Dumazet wrote:
+>>
+>>
+>> On 7/8/20 4:59 PM, YU, Xiangning wrote:
+>>
+>>>
+>>> Yes, we are touching a cache line here to make sure aggregation tasklet is scheduled immediately. In most cases it is a call to test_and_set_bit(). 
+>>
+>>
+>> test_and_set_bit() is dirtying the cache line even if the bit is already set.
+>>
+> 
+> Yes. I do hope we can avoid this.
+> 
+>>>
+>>> We might be able to do some inline processing without tasklet here, still we need to make sure the aggregation won't run simultaneously on multiple CPUs. 
+>>
+>> I am actually surprised you can reach 8 Mpps with so many cache line bouncing around.
+>>
+>> If you replace the ltb qdisc with standard mq+pfifo_fast, what kind of throughput do you get ?
+>>
+> 
+> Just tried it using pktgen, we are far from baseline. I can get 13Mpps with 10 threads in my test setup.
+
+This is quite low performance.
+
+I suspect your 10 threads are sharing a smaller number of TX queues perhaps ?
 
