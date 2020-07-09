@@ -2,96 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1562F21A568
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 19:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60DB121A56B
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 19:04:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727091AbgGIREK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 13:04:10 -0400
-Received: from smtp1.emailarray.com ([65.39.216.14]:40666 "EHLO
-        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726708AbgGIREK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 13:04:10 -0400
-Received: (qmail 23236 invoked by uid 89); 9 Jul 2020 17:03:59 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 9 Jul 2020 17:03:59 -0000
-Date:   Thu, 9 Jul 2020 10:03:56 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Magnus Karlsson <magnus.karlsson@intel.com>
-Cc:     bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, A.Zema@falconvsystems.com
-Subject: Re: [PATCH bpf] xsk: do not discard packet when QUEUE_STATE_FROZEN
-Message-ID: <20200709170356.pivsunwnk57jm4kr@bsd-mbp.dhcp.thefacebook.com>
-References: <1594287951-27479-1-git-send-email-magnus.karlsson@intel.com>
+        id S1727910AbgGIREk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 13:04:40 -0400
+Received: from out0-152.mail.aliyun.com ([140.205.0.152]:53828 "EHLO
+        out0-152.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726708AbgGIREk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 13:04:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=alibaba-inc.com; s=default;
+        t=1594314277; h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        bh=ehAC77Rmal6mtbVxQxEwdmCmKVQYfjNFxvumOd60iOc=;
+        b=QF19UfS5H+b8KTSS+ERUBKN1nj5ooXl5beh3O/NeOoyF2bhKRdc3FSx5CFS2LecUlq5+PfEo2THffjgcY6dAARaa+Jw4KtX724GCk5HDlm1fIJpaftJCbpDibsPzpN+SxngJIrQbU1oRqrZ4wwIgFl+SwXBY40OcCq9GJyA1M6g=
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e02c03306;MF=xiangning.yu@alibaba-inc.com;NM=1;PH=DS;RN=2;SR=0;TI=SMTPD_---.I-yn5xE_1594314275;
+Received: from US-118000MP.local(mailfrom:xiangning.yu@alibaba-inc.com fp:SMTPD_---.I-yn5xE_1594314275)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 10 Jul 2020 01:04:36 +0800
+Subject: Re: [PATCH net-next v2 2/2] net: sched: Lockless Token Bucket (LTB)
+ qdisc
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <4835f4cb-eee0-81e7-d935-5ad85767802c@alibaba-inc.com>
+ <554197ce-cef1-0e75-06d7-56dbef7c13cc@gmail.com>
+ <d1716bc1-a975-54a3-8b7e-a3d3bcac69c5@alibaba-inc.com>
+ <91fc642f-6447-4863-a182-388591cc1cc0@gmail.com>
+ <387fe086-9596-c71e-d1d9-998749ae093c@alibaba-inc.com>
+ <c4796548-5c3b-f3db-a060-1e46fb42970a@gmail.com>
+From:   "=?UTF-8?B?WVUsIFhpYW5nbmluZw==?=" <xiangning.yu@alibaba-inc.com>
+Message-ID: <7ea368d0-d12c-2f04-17a7-1e31a61bbe2b@alibaba-inc.com>
+Date:   Fri, 10 Jul 2020 01:04:34 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1594287951-27479-1-git-send-email-magnus.karlsson@intel.com>
+In-Reply-To: <c4796548-5c3b-f3db-a060-1e46fb42970a@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 09, 2020 at 11:45:51AM +0200, Magnus Karlsson wrote:
-> In the skb Tx path, transmission of a packet is performed with
-> dev_direct_xmit(). When QUEUE_STATE_FROZEN is set in the transmit
-> routines, it returns NETDEV_TX_BUSY signifying that it was not
-> possible to send the packet now, please try later. Unfortunately, the
-> xsk transmit code discarded the packet and returned EBUSY to the
-> application. Fix this unnecessary packet loss, by not discarding the
-> packet and return EAGAIN. As EAGAIN is returned to the application, it
-> can then retry the send operation and the packet will finally be sent
-> as we will likely not be in the QUEUE_STATE_FROZEN state anymore. So
-> EAGAIN tells the application that the packet was not discarded from
-> the Tx ring and that it needs to call send() again. EBUSY, on the
-> other hand, signifies that the packet was not sent and discarded from
-> the Tx ring. The application needs to put the packet on the Tx ring
-> again if it wants it to be sent.
-
-Doesn't the original code leak the skb if NETDEV_TX_BUSY is returned?
-I'm not seeing where it was released.  The new code looks correct.
 
 
-> Fixes: 35fcde7f8deb ("xsk: support for Tx")
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> Reported-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-> Suggested-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-> ---
->  net/xdp/xsk.c | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
+On 7/8/20 6:24 PM, Eric Dumazet wrote:
 > 
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 3700266..5304250 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -376,13 +376,22 @@ static int xsk_generic_xmit(struct sock *sk)
->  		skb->destructor = xsk_destruct_skb;
->  
->  		err = dev_direct_xmit(skb, xs->queue_id);
-> -		xskq_cons_release(xs->tx);
->  		/* Ignore NET_XMIT_CN as packet might have been sent */
-> -		if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
-> +		if (err == NET_XMIT_DROP) {
->  			/* SKB completed but not sent */
-> +			xskq_cons_release(xs->tx);
->  			err = -EBUSY;
->  			goto out;
-> +		} else if  (err == NETDEV_TX_BUSY) {
-
-Should be "if (err == ..." here, no else.
-
-
-> +			/* QUEUE_STATE_FROZEN, tell application to
-> +			 * retry sending the packet
-> +			 */
-> +			skb->destructor = NULL;
-> +			kfree_skb(skb);
-> +			err = -EAGAIN;
-> +			goto out;
->  		}
-> +		xskq_cons_release(xs->tx);
->  
->  		sent_frame = true;
->  	}
-> -- 
-> 2.7.4
 > 
+> On 7/8/20 5:58 PM, YU, Xiangning wrote:
+>>
+>>
+>> On 7/8/20 5:08 PM, Eric Dumazet wrote:
+>>>
+>>>
+>>> On 7/8/20 4:59 PM, YU, Xiangning wrote:
+>>>
+>>>>
+>>>> Yes, we are touching a cache line here to make sure aggregation tasklet is scheduled immediately. In most cases it is a call to test_and_set_bit(). 
+>>>
+>>>
+>>> test_and_set_bit() is dirtying the cache line even if the bit is already set.
+>>>
+>>
+>> Yes. I do hope we can avoid this.
+>>
+>>>>
+>>>> We might be able to do some inline processing without tasklet here, still we need to make sure the aggregation won't run simultaneously on multiple CPUs. 
+>>>
+>>> I am actually surprised you can reach 8 Mpps with so many cache line bouncing around.
+>>>
+>>> If you replace the ltb qdisc with standard mq+pfifo_fast, what kind of throughput do you get ?
+>>>
+>>
+>> Just tried it using pktgen, we are far from baseline. I can get 13Mpps with 10 threads in my test setup.
+> 
+> This is quite low performance.
+> 
+> I suspect your 10 threads are sharing a smaller number of TX queues perhaps ?
+> 
+
+Thank you for the hint. Looks like pktgen only used the first 10 queues.
+
+I fined tuned ltb to reach 10M pps with 10 threads last night. I can further push the limit. But we probably won't be able to get close to baseline. Rate limiting really brings a lot of headache, at least we are not burning CPUs to get this result.
+
+Thanks,
+- Xiangning 
