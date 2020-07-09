@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26482219608
+	by mail.lfdr.de (Postfix) with ESMTP id B5327219609
 	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 04:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726151AbgGICLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 22:11:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
+        id S1726251AbgGICLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 22:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726072AbgGICLF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 22:11:05 -0400
+        with ESMTP id S1726208AbgGICLH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 22:11:07 -0400
 Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7C8DC061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 19:11:05 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id d18so748399ion.0
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 19:11:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9077EC08C5C1
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 19:11:07 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id f23so707829iof.6
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 19:11:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
         bh=XQKwdZHWoHY2rSxRNRjfiy4s8SsL+NaMfgyEBt9FVMQ=;
-        b=yq5oLu8Ao5cM+9i/QwjMwwbHAJ7qi9TlcWwXcNu9Pm4ERI9yjeGThHirHyl4q1xSwD
-         ZdJCFe7f5u3WPuTjh7p3Q4XQf+t+ot3C03XJUzTfjJLOK4iQ9TmqQb4Y5r5Z7p5pPH13
-         RmSNPkLWPpOEWkR2ORv0bF/1KRmcq55WUJLrNRC5Qp8VeTkclHI4F6c5FHJms5D46vW/
-         RRWBnfALX+2RkMIbU+aPky8VYmyoJjyCV/BfB8KhRJ6j3a6wKbm3ge1dq2hRxNF9PfYm
-         PDWeUks+oBW88zxWIwmFghKnJhCCshPEOeMZtgu18Qp04rt41Obuvpzrly+e2VYRkxqL
-         FXaw==
+        b=HyeOmbP69hy5by2aKWO+LM8Rs2KtKRT74K82KD4HQTcsFZ24MRyGImPMPlhce5FHKb
+         AVus0TeDI83nyIRToHSqku0RA4HGwTAL5ENXwXeHv44Jds3sj4bF8WhCYbj8r7bgQZX8
+         h1n0vY8UXXY/sOsykWUrcsQwCcl6DDc/qcA4LUL1/mPVcwR3p3PrNVtA44v3c5NzyZVh
+         N8ejoRw1b4NQ0x5fhgokSs9XRpZcwY53GV0BDNOG2S5bv+uHpi0dt4onj+C/tDuHyHFB
+         drmo7nrDYGNPcVV8q0mos3wMH+Q8ZYZFKQnayhJo4xjo/3iC7fgP1syB8eC/lhK35S5w
+         gBgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
         bh=XQKwdZHWoHY2rSxRNRjfiy4s8SsL+NaMfgyEBt9FVMQ=;
-        b=bF28S5UYRE/ZBaxsq9kbcnWz41Exe3Xx68jT1gqQ5gl4yhaL8gxWkCokusyhHtQa35
-         /T/ZNo6s/3zwM0CMEZ/L1/vwuFaMlpDzeq05tz+7SdcupbsXa+gczFhV3uG4Q87IwuaE
-         WKc0VeyzGat3gnQZYqgNpc1iA6fRUYBuJqAXYlbe21GnYpyYoBWDij9+ki3QmZ5hHnQq
-         ULbC/PI7jscFmVymhZPLyomx/nCzORM9GnWLREeLh2AwX4+SS4pc+Pf3OiFRzrCH7TRH
-         piCqoHFpgV10rNSu/ar0RkNekmM2wnjhWL0MmMYUG4je4w2PiXg39qoD99/AZVT4oeqz
-         IbBQ==
-X-Gm-Message-State: AOAM533w5vQcxVZ2jMoLnpK80aKBBUeMQ0aPIy5nl+suazren0Dkuoac
-        fXCOUw+lqefaiPivIEhADxvmxg==
-X-Google-Smtp-Source: ABdhPJzUaribanHeB7RYNCUqwFUZGpNAJBtINhYQYo1QOCVuZMwyjasupVK3U0gH8W850q5lF8+gcg==
-X-Received: by 2002:a02:cca8:: with SMTP id t8mr69432488jap.31.1594260665112;
-        Wed, 08 Jul 2020 19:11:05 -0700 (PDT)
+        b=AWgaw4qx8yyHifKHLHVThe4dCGCMfHKHJxlCJWOmHn9QlydzfDU/I+4Bpv/5XVdcQD
+         hpGMyesgxauSgcUZYmpISt0UctrCeKSVhJsiBfvoAsbVqa5TsMM8plKw7n07DYHmpGXp
+         3aj/Hac82ouugEvOwgfyd7YEgYEClTaUJWI8/oviPdPgfeXz+E3yiaLHce0/KpfYqHVQ
+         KX1vl3DusK6dOsAtv6U23CxPOY+22qGqJxs9z6HHqHoG/ZRZQi6JUB0tuIYvSXr9aF8H
+         ycUXdNkQrj+7O+g5kt88p4PsyjxSiNDb9twoH1SySNzetZ5MYzRc4cPglg5ozEvpPPdZ
+         IVvA==
+X-Gm-Message-State: AOAM530MT8iNVDL2/Wn3OHxrxKYRaDNi9k5a8tEUsqiGOxq2TFJGOEro
+        MNlmDWF0bJtVqBjZ6GGfAihczQ==
+X-Google-Smtp-Source: ABdhPJyu4qYUVmwutCnsTR9t8EWrgbz3Zq8qaXzw3Z7hYQ/d7qhwCYxzFOsvCag0r1fGqW4U84SL9w==
+X-Received: by 2002:a5d:9590:: with SMTP id a16mr23921644ioo.150.1594260666941;
+        Wed, 08 Jul 2020 19:11:06 -0700 (PDT)
 Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id a5sm1080977ilt.71.2020.07.08.19.11.03
+        by smtp.googlemail.com with ESMTPSA id t12sm1049935ilo.80.2020.07.08.19.11.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jul 2020 19:11:04 -0700 (PDT)
+        Wed, 08 Jul 2020 19:11:06 -0700 (PDT)
 Subject: Re: [PATCH v2 2/2] bitfield.h: split up __BF_FIELD_CHECK macro
 To:     Nick Desaulniers <ndesaulniers@google.com>,
         "David S . Miller" <davem@davemloft.net>
@@ -63,8 +63,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
 References: <20200708230402.1644819-1-ndesaulniers@google.com>
  <20200708230402.1644819-3-ndesaulniers@google.com>
 From:   Alex Elder <elder@linaro.org>
-Message-ID: <265aac2c-85a9-7e80-5f51-43556c37d3d0@linaro.org>
-Date:   Wed, 8 Jul 2020 21:11:03 -0500
+Message-ID: <4ff07f7c-f4d5-1d50-e9b4-86ded2c20081@linaro.org>
+Date:   Wed, 8 Jul 2020 21:11:05 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
