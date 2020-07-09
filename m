@@ -2,154 +2,277 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 577EC219F10
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 13:26:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEEAB219F15
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 13:31:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727782AbgGIL03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 07:26:29 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:43806 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726433AbgGIL0Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 07:26:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594293983;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gB/jRVI1prkorpTFE+RHZKDPeMWYsL/X1nUnMDyfQyk=;
-        b=CGGCNjnLC4h2RTL67ePKs4V0L55vHK4ut6n64WrSlOY0T6vx1WeMwGFxtAkAL9Te9k5ERp
-        qy5sc09yHNXXtDnZLFOJR6OpywTu3jOwvmg8NBlL4s+t1ZbQAfQmhqvtfJkn+daqO3Jo59
-        UyZ4txQLBTs7U9EzUozaWQE3k+KOwEs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-503-Vlh-uILLPiGVKrj3BhSYyQ-1; Thu, 09 Jul 2020 07:26:18 -0400
-X-MC-Unique: Vlh-uILLPiGVKrj3BhSYyQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 13A0B800EB6;
-        Thu,  9 Jul 2020 11:26:16 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.42])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9918290E63;
-        Thu,  9 Jul 2020 11:26:11 +0000 (UTC)
-Date:   Thu, 9 Jul 2020 13:26:07 +0200
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Cc:     Jonathan Corbet <corbet@lwn.net>, ast@kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        mchehab+samsung@kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] Replace HTTP links with HTTPS ones: XDP (eXpress Data
- Path)
-Message-ID: <20200709132607.7fb42415@carbon>
-In-Reply-To: <2aefc870-bf17-9528-958e-bc5b76de85dd@al2klimov.de>
-References: <20200708135737.14660-1-grandmaster@al2klimov.de>
-        <20200708080239.2ce729f3@lwn.net>
-        <2aefc870-bf17-9528-958e-bc5b76de85dd@al2klimov.de>
-Organization: Red Hat Inc.
+        id S1726813AbgGILba (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 07:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726315AbgGILba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 07:31:30 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F15DC061A0B;
+        Thu,  9 Jul 2020 04:31:30 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id a14so910418pfi.2;
+        Thu, 09 Jul 2020 04:31:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=sXEmKxMUQPh+anjWf/TN85kjSCFF6dnVSzbWyKgc7V8=;
+        b=JiGJzxiL6Of4/SizVoILjcNlJp9Wzoh1P+aJZskAC5LRDAjD/Lv4QBsgDH3XMjSqVP
+         SEpNt2YQDTSmXX9MEKd2Z+e2aGpZMn4/5bHkKo3tOPw3m3g8ofiIEpZW+eT6o3YCz3/B
+         j+qa3N4UeVuxrnuiGbSw7LpcnaeuvwvpxxoU5rTl9gu+rUmzHD00pToInuZ2dV0hEYXn
+         gDNCiunYDscpN70u3dPO6sl7ddpR78BobQdepS+WbRVLC3KhzXNVL9AgFwG8yJW1DMgt
+         yp+h/4sQL/sFbPFvphompDeg+XySw4idQrQBGQ7XaL7KOXY3ZmF/jYfbebeE41BeOIc2
+         nymg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=sXEmKxMUQPh+anjWf/TN85kjSCFF6dnVSzbWyKgc7V8=;
+        b=gApH9djCxN3TOk5GAOc3OUcm1Q24PsiQ2lBWcDM80OMD3X9w8WcnrylHh4n91nLy35
+         s01r33rHlw/RH8FQNeZvC9DVqfdV/x9kcmbEThKWdrRxzx2b1sl+Jka3gd+yV7TZyB5n
+         J1WcnEydf2sBGQ/arMQj0C5Vn7XTVf9JustqeadbQAkD4X05oU8GNMxdrC994BEshCCz
+         BdGE8u5xkJtYrKj4q7/lKOMVomL1JOb31REagaANmsfaNCueyeqNxHYA4jRxbGuNnDyM
+         Ug6417pTc//cvVC/bKH98iCY1eLBHoPWhkla3EPuFblyKV5tKSNHuxgDW0/VFsCD67wY
+         m7ow==
+X-Gm-Message-State: AOAM531mc1+i0uer7hKOTgL3yhxKc1x1O74C/kknqYtPSJ97FkU3sddA
+        IpT6R7FZ9hI3oH8ShKB2l80=
+X-Google-Smtp-Source: ABdhPJxU4JlBuhXofkSOx2RQJ3pZUvyTfO/HTtm9Kxbvz8m7rRAF9ouXaGbcl7QNg0MmjhvADxzNzw==
+X-Received: by 2002:a63:e045:: with SMTP id n5mr56526701pgj.274.1594294289690;
+        Thu, 09 Jul 2020 04:31:29 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id z26sm2601293pfr.187.2020.07.09.04.31.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jul 2020 04:31:28 -0700 (PDT)
+Date:   Thu, 9 Jul 2020 04:31:26 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Ooi, Joyce" <joyce.ooi@intel.com>
+Cc:     Thor Thayer <thor.thayer@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Dalon Westergreen <dalon.westergreen@linux.intel.com>,
+        Tan Ley Foon <ley.foon.tan@intel.com>,
+        See Chin Liang <chin.liang.see@intel.com>,
+        Dinh Nguyen <dinh.nguyen@intel.com>,
+        Dalon Westergreen <dalon.westergreen@intel.com>
+Subject: Re: [PATCH v4 08/10] net: eth: altera: add support for ptp and
+ timestamping
+Message-ID: <20200709113126.GA776@hoboy>
+References: <20200708072401.169150-1-joyce.ooi@intel.com>
+ <20200708072401.169150-9-joyce.ooi@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200708072401.169150-9-joyce.ooi@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Jul 2020 20:58:39 +0200
-"Alexander A. Klimov" <grandmaster@al2klimov.de> wrote:
+On Wed, Jul 08, 2020 at 03:23:59PM +0800, Ooi, Joyce wrote:
 
-> Am 08.07.20 um 16:02 schrieb Jonathan Corbet:
-> > On Wed,  8 Jul 2020 15:57:37 +0200
-> > "Alexander A. Klimov" <grandmaster@al2klimov.de> wrote:
-> >  =20
-> >>   Documentation/arm/ixp4xx.rst | 4 ++--
-> >>   1 file changed, 2 insertions(+), 2 deletions(-) =20
-> >=20
-> > That's not XDP; something went awry in there somewhere. =20
->
-> RoFL. Now as you said it I... noticed it at all... (*sigh*, the curse of
-> automation) and I absolutely agree with you. But I've literally no idea...
+> @@ -222,6 +223,32 @@ static void tse_get_regs(struct net_device *dev, struct ethtool_regs *regs,
+>  		buf[i] = csrrd32(priv->mac_dev, i * 4);
+>  }
+>  
+> +static int tse_get_ts_info(struct net_device *dev,
+> +			   struct ethtool_ts_info *info)
+> +{
+> +	struct altera_tse_private *priv = netdev_priv(dev);
+> +
+> +	if (priv->ptp_enable) {
+> +		if (priv->ptp_priv.ptp_clock)
+> +			info->phc_index =
+> +				ptp_clock_index(priv->ptp_priv.ptp_clock);
 
-Yes, we know that scripts/get_maintainer.pl gives false positives for
-XDP, but we choose this to capture drivers that implement XDP.
+Need to handle case where priv->ptp_priv.ptp_clock == NULL.
 
-As you can see here, the chip name IXDP425 contains "XDP", which is why
-it matches...
+> +		info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
+> +					SOF_TIMESTAMPING_RX_HARDWARE |
+> +					SOF_TIMESTAMPING_RAW_HARDWARE;
+> +
+> +		info->tx_types = (1 << HWTSTAMP_TX_OFF) |
+> +						 (1 << HWTSTAMP_TX_ON);
 
-=20
-> =E2=9E=9C  linux git:(master) perl scripts/get_maintainer.pl --nogit{,-fa=
-llback}=20
-> --nol 0003-Replace-HTTP-links-with-HTTPS-ones-XDP-eXpress-Data-.patch
-> Jonathan Corbet <corbet@lwn.net> (maintainer:DOCUMENTATION)
-> Alexei Starovoitov <ast@kernel.org> (supporter:XDP (eXpress Data Path))
-> Daniel Borkmann <daniel@iogearbox.net> (supporter:XDP (eXpress Data Path))
-> "David S. Miller" <davem@davemloft.net> (supporter:XDP (eXpress Data Path=
-))
-> Jakub Kicinski <kuba@kernel.org> (supporter:XDP (eXpress Data Path))
-> Jesper Dangaard Brouer <hawk@kernel.org> (supporter:XDP (eXpress Data Pat=
-h))
-> John Fastabend <john.fastabend@gmail.com> (supporter:XDP (eXpress Data=20
-> Path))
-> =E2=9E=9C  linux git:(master) cat=20
-> 0003-Replace-HTTP-links-with-HTTPS-ones-XDP-eXpress-Data-.patch
->  From 40aee4678ab84b925ab21581030a2cc0b988fbf9 Mon Sep 17 00:00:00 2001
-> From: "Alexander A. Klimov" <grandmaster@al2klimov.de>
-> Date: Wed, 8 Jul 2020 08:00:39 +0200
-> Subject: [PATCH] Replace HTTP links with HTTPS ones: XDP (eXpress Data Pa=
-th)
->=20
-> Rationale:
-> Reduces attack surface on kernel devs opening the links for MITM
-> as HTTPS traffic is much harder to manipulate.
->=20
-> Deterministic algorithm:
-> For each file:
->    If not .svg:
->      For each line:
->        If doesn't contain `\bxmlns\b`:
->          For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-> 	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
->              If both the HTTP and HTTPS versions
->              return 200 OK and serve the same content:
->                Replace HTTP with HTTPS.
->=20
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
-> ---
->   Documentation/arm/ixp4xx.rst | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/Documentation/arm/ixp4xx.rst b/Documentation/arm/ixp4xx.rst
-> index a57235616294..d94188b8624f 100644
-> --- a/Documentation/arm/ixp4xx.rst
-> +++ b/Documentation/arm/ixp4xx.rst
-> @@ -119,14 +119,14 @@ http://www.gateworks.com/support/overview.php
->      the expansion bus.
->=20
->   Intel IXDP425 Development Platform
-> -http://www.intel.com/design/network/products/npfamily/ixdpg425.htm
-> +https://www.intel.com/design/network/products/npfamily/ixdpg425.htm
->=20
->      This is Intel's standard reference platform for the IXDP425 and is
->      also known as the Richfield board. It contains 4 PCI slots, 16MB
->      of flash, two 10/100 ports and one ADSL port.
->=20
->   Intel IXDP465 Development Platform
-> -http://www.intel.com/design/network/products/npfamily/ixdp465.htm
-> +https://www.intel.com/design/network/products/npfamily/ixdp465.htm
->=20
->      This is basically an IXDP425 with an IXP465 and 32M of flash instead
->      of just 16.
-> --
-> 2.27.0
+No need to break statement.  This fits nicely on one line.
+
+> +
+> +		info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
+> +						   (1 << HWTSTAMP_FILTER_ALL);
+> +
+> +		return 0;
+> +	} else {
+
+No need for else block.
+
+> +		return ethtool_op_get_ts_info(dev, info);
+> +	}
+> +}
+> +
+>  static const struct ethtool_ops tse_ethtool_ops = {
+>  	.get_drvinfo = tse_get_drvinfo,
+>  	.get_regs_len = tse_reglen,
 
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+> @@ -1309,6 +1324,83 @@ static int tse_shutdown(struct net_device *dev)
+>  	return 0;
+>  }
+>  
+> +/* ioctl to configure timestamping */
+> +static int tse_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+> +{
+> +	struct altera_tse_private *priv = netdev_priv(dev);
+> +	struct hwtstamp_config config;
 
+Need to check here for phy_has_hwtstamp() and pass through to PHY
+layer if true.
+
+> +
+> +	if (!netif_running(dev))
+> +		return -EINVAL;
+> +
+> +	if (!priv->ptp_enable)	{
+> +		netdev_alert(priv->dev, "Timestamping not supported");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (cmd == SIOCSHWTSTAMP) {
+> +		if (copy_from_user(&config, ifr->ifr_data,
+> +				   sizeof(struct hwtstamp_config)))
+> +			return -EFAULT;
+> +
+> +		if (config.flags)
+> +			return -EINVAL;
+> +
+> +		switch (config.tx_type) {
+> +		case HWTSTAMP_TX_OFF:
+> +			priv->hwts_tx_en = 0;
+> +			break;
+> +		case HWTSTAMP_TX_ON:
+> +			priv->hwts_tx_en = 1;
+> +			break;
+> +		default:
+> +			return -ERANGE;
+> +		}
+> +
+> +		switch (config.rx_filter) {
+> +		case HWTSTAMP_FILTER_NONE:
+> +			priv->hwts_rx_en = 0;
+> +			config.rx_filter = HWTSTAMP_FILTER_NONE;
+> +			break;
+> +		default:
+> +			priv->hwts_rx_en = 1;
+> +			config.rx_filter = HWTSTAMP_FILTER_ALL;
+> +			break;
+> +		}
+> +
+> +		if (copy_to_user(ifr->ifr_data, &config,
+> +				 sizeof(struct hwtstamp_config)))
+> +			return -EFAULT;
+> +		else
+> +			return 0;
+> +	}
+> +
+> +	if (cmd == SIOCGHWTSTAMP) {
+> +		config.flags = 0;
+> +
+> +		if (priv->hwts_tx_en)
+> +			config.tx_type = HWTSTAMP_TX_ON;
+> +		else
+> +			config.tx_type = HWTSTAMP_TX_OFF;
+> +
+> +		if (priv->hwts_rx_en)
+> +			config.rx_filter = HWTSTAMP_FILTER_ALL;
+> +		else
+> +			config.rx_filter = HWTSTAMP_FILTER_NONE;
+> +
+> +		if (copy_to_user(ifr->ifr_data, &config,
+> +				 sizeof(struct hwtstamp_config)))
+> +			return -EFAULT;
+> +		else
+> +			return 0;
+> +	}
+> +
+> +	if (!dev->phydev)
+> +		return -EINVAL;
+> +
+> +	return phy_mii_ioctl(dev->phydev, ifr, cmd);
+> +}
+> +
+>  static struct net_device_ops altera_tse_netdev_ops = {
+>  	.ndo_open		= tse_open,
+>  	.ndo_stop		= tse_shutdown,
+
+
+> @@ -1568,6 +1661,27 @@ static int altera_tse_probe(struct platform_device *pdev)
+>  		netdev_err(ndev, "Cannot attach to PHY (error: %d)\n", ret);
+>  		goto err_init_phy;
+>  	}
+> +
+> +	priv->ptp_enable = of_property_read_bool(pdev->dev.of_node,
+> +						 "altr,has-ptp");
+
+The name "ptp_enable" is a poor choice.  It sounds like something that
+can be enabled at run time.  Suggest "has_ptp" instead.
+
+> +	dev_info(&pdev->dev, "PTP Enable: %d\n", priv->ptp_enable);
+> +
+> +	if (priv->ptp_enable) {
+> +		/* MAP PTP */
+> +		ret = intel_fpga_tod_probe(pdev, &priv->ptp_priv);
+> +		if (ret) {
+> +			dev_err(&pdev->dev, "cannot map PTP\n");
+> +			goto err_init_phy;
+> +		}
+> +		ret = intel_fpga_tod_register(&priv->ptp_priv,
+> +					      priv->device);
+> +		if (ret) {
+> +			dev_err(&pdev->dev, "Failed to register PTP clock\n");
+> +			ret = -ENXIO;
+> +			goto err_init_phy;
+> +		}
+> +	}
+> +
+>  	return 0;
+>  
+>  err_init_phy:
+
+
+> +/* Initialize PTP control block registers */
+> +int intel_fpga_tod_init(struct intel_fpga_tod_private *priv)
+> +{
+> +	struct timespec64 now;
+> +	int ret = 0;
+> +
+> +	ret = intel_fpga_tod_adjust_fine(&priv->ptp_clock_ops, 0l);
+
+Why clobber a learned frequency offset here?  If user space closes
+then re-opens, then it expects the old frequency to be preserved.
+
+It is fine to set this to zero when the driver loads, but not after.
+
+> +	if (ret != 0)
+> +		goto out;
+> +
+> +	/* Initialize the hardware clock to the system time */
+> +	ktime_get_real_ts64(&now);
+
+Please initialize to zero instead, as some people prefer it that way.
+
+(But only the first time when the driver loads!)
+
+> +	intel_fpga_tod_set_time(&priv->ptp_clock_ops, &now);
+> +
+> +	spin_lock_init(&priv->tod_lock);
+> +
+> +out:
+> +	return ret;
+> +}
+
+Thanks,
+Richard
