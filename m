@@ -2,107 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F586219598
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 03:24:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85DC52195A3
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 03:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726117AbgGIBYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 21:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38616 "EHLO
+        id S1726118AbgGIBae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 21:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725982AbgGIBYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 21:24:12 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D4EC061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 18:24:12 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id b9so137102plx.6
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 18:24:12 -0700 (PDT)
+        with ESMTP id S1726044AbgGIBad (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 21:30:33 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F2FCC061A0B;
+        Wed,  8 Jul 2020 18:30:33 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id u5so277386pfn.7;
+        Wed, 08 Jul 2020 18:30:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=0Nj0ktv/rlc+R61V3NMXnCgAAQ1yfPIW7qtMIJSxMLM=;
-        b=LGoj3rFnwu3rvJJCMNp/DzoLUtIejikW1axrcHjnxy6ZqYNPJgR3EDj9ka0DsEJuOL
-         g3j3sNv6gKsOBNb8WKnXkj9JzFoCv7LipeR2DQ5Onqh8NGioG65r6Yi+wm50O56/7w12
-         JSIYKN9rxJXlxxHrGqvkrKWJJKXMFvJS5h6ncX4t1PO9lluWZTChJwURh3LgCdvsQET/
-         QwwsWqq1mFBel9sVrs3npkB8uV/lYMpCJpWpHzG6HKmW5ztKyG+q2zDOqbp0eaFBjV0j
-         HFi49et+rnnn2qDt9bxqHI1e1x14z2NbCvVNr6Rviuwm4yLjVlx/WzAC3O4NTCSHWj8p
-         DmEA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=P+OCiIt48Lfq6sVjMRjIl4e/Svp3OTkzGT6ew3FZ4fw=;
+        b=clofY1HZJV6pAEe7hv8JUSK1OeTjcV2PojvnvLjB8oFqUs3dj650AlhgzgOxZA797z
+         csPalfF9D9AzEykzIk+/GthvlJ06nl7pN5p1GncY2VJAXWtVHszJtT37yQ+DrZgfvcNr
+         EhL2fJsQOeQecAQxWHv1RB7uXB1UKePeYu+GHdY1gua1ZjySSeobVRKSEmFBnXYVS59P
+         nEp0jL9frxcuAauu55Bua/46Vx2rQ0blUpGjBVv4fLW2o+L/JDd38vIDxWpfgC5439jc
+         cOjIrgeSWTshasMErnx9dL9rPbvdTb1vKoK5LVhnUFdwI1jT2c/iHxYEeu19UsyjWS1b
+         QSrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0Nj0ktv/rlc+R61V3NMXnCgAAQ1yfPIW7qtMIJSxMLM=;
-        b=dNJOjjD6Ynp5+m/SVe1YlcGK1YkXhrJGtysXfCcHuEM2TDJ1x8U6T27UcQS+R66bVy
-         7+cUzLFpJNDAsZW1h7i/8qf1Qny9RcyOHM04HHAaospJQglyffhVZ0cv4Z3gZfg9Cb+V
-         m+bjAzFL7qr1vKCS4fy4r/uOKv2N+GEPLQnK59EBgeTwHTmxKIt1ehG1lUlCgnoH26M8
-         7EFiJMPHBJwzay5y7Vf/TIfZBuzHm4o4MaiyKQgvhdwYi2XnwHOKA1GsP08TTFWkW1p3
-         L1vTKq0fIfg/NMfVMDaUbkizQKGbrz87QLKi8TCjq0OLjmJlU3ZnSAo4OuV2GG5Kcy64
-         PHMQ==
-X-Gm-Message-State: AOAM53057HmX4a4+DlvpN1aqioXrTIEWX2aSw8t6A1KZyZHeZR6HpimJ
-        Ljn73AHfyGEKV2hWYvQbJy5Rd4vZ
-X-Google-Smtp-Source: ABdhPJwg6f84LsKweWS7GVBKRBHBhnl1xx0Zws2x/uYAxzg71ADqn7ILlV0rLx9LmmiGBu9K+0rWSA==
-X-Received: by 2002:a17:90a:4bc7:: with SMTP id u7mr12557701pjl.217.1594257851284;
-        Wed, 08 Jul 2020 18:24:11 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id 7sm843511pgw.85.2020.07.08.18.24.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jul 2020 18:24:10 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/2] net: sched: Lockless Token Bucket (LTB)
- qdisc
-To:     "YU, Xiangning" <xiangning.yu@alibaba-inc.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <4835f4cb-eee0-81e7-d935-5ad85767802c@alibaba-inc.com>
- <554197ce-cef1-0e75-06d7-56dbef7c13cc@gmail.com>
- <d1716bc1-a975-54a3-8b7e-a3d3bcac69c5@alibaba-inc.com>
- <91fc642f-6447-4863-a182-388591cc1cc0@gmail.com>
- <387fe086-9596-c71e-d1d9-998749ae093c@alibaba-inc.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <c4796548-5c3b-f3db-a060-1e46fb42970a@gmail.com>
-Date:   Wed, 8 Jul 2020 18:24:09 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=P+OCiIt48Lfq6sVjMRjIl4e/Svp3OTkzGT6ew3FZ4fw=;
+        b=oZ1xMSHW8S1nq22mPbbNQ07BkviXqXqz8Bq2c0+ykmuCblT2SP+1L1lj1z1a9Ck5Zr
+         2DADQLJblWyngBLNbBO0RQrMiLCVWvlYipRIc84tKWMf0Tw1FTHjspfYWuw6/p+l1JuJ
+         BnWJUmhDyy7lw58Uzmf4k6JzFZSBYXIP10HYu1TFgPgt9G20g/LT/v4HFqElH70wVhm2
+         sNyk/vv15/Y2Mmw1KtuFcXHQEgiKGsghrqKxrdyY0CmkiTC+P1ynq2BI6OtG8SbrGmfb
+         XDP3a54VEy5+W8LP6rNHKWXfHpQu35n0wGpKli6RsHTBWY6vnuvu7Q7WYs/UbfVjZcMY
+         IZaw==
+X-Gm-Message-State: AOAM532aw771mWo//GGtI/2gr5O5p5FDlnByyVNnPlFcpz7LrOLqh7mx
+        cOwtsk8Tm8ee0iIwaazyGzyylWk8xk9dHw==
+X-Google-Smtp-Source: ABdhPJwQ77CMy+NLCmn7U4Uk4wnIs1BvAuf/oyVKwbpo4NRIFkCXbfirZ4IWrdIEKg82a2Wusfq6eA==
+X-Received: by 2002:aa7:9ac3:: with SMTP id x3mr45348194pfp.261.1594258232578;
+        Wed, 08 Jul 2020 18:30:32 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id q14sm847157pgk.86.2020.07.08.18.30.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 18:30:31 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv6 bpf-next 0/3] xdp: add a new helper for dev map multicast support
+Date:   Thu,  9 Jul 2020 09:30:05 +0800
+Message-Id: <20200709013008.3900892-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20200701041938.862200-1-liuhangbin@gmail.com>
+References: <20200701041938.862200-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <387fe086-9596-c71e-d1d9-998749ae093c@alibaba-inc.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch is for xdp multicast support. which has been discussed before[0],
+The goal is to be able to implement an OVS-like data plane in XDP, i.e.,
+a software switch that can forward XDP frames to multiple ports.
 
+To achieve this, an application needs to specify a group of interfaces
+to forward a packet to. It is also common to want to exclude one or more
+physical interfaces from the forwarding operation - e.g., to forward a
+packet to all interfaces in the multicast group except the interface it
+arrived on. While this could be done simply by adding more groups, this
+quickly leads to a combinatorial explosion in the number of groups an
+application has to maintain.
 
-On 7/8/20 5:58 PM, YU, Xiangning wrote:
-> 
-> 
-> On 7/8/20 5:08 PM, Eric Dumazet wrote:
->>
->>
->> On 7/8/20 4:59 PM, YU, Xiangning wrote:
->>
->>>
->>> Yes, we are touching a cache line here to make sure aggregation tasklet is scheduled immediately. In most cases it is a call to test_and_set_bit(). 
->>
->>
->> test_and_set_bit() is dirtying the cache line even if the bit is already set.
->>
-> 
-> Yes. I do hope we can avoid this.
-> 
->>>
->>> We might be able to do some inline processing without tasklet here, still we need to make sure the aggregation won't run simultaneously on multiple CPUs. 
->>
->> I am actually surprised you can reach 8 Mpps with so many cache line bouncing around.
->>
->> If you replace the ltb qdisc with standard mq+pfifo_fast, what kind of throughput do you get ?
->>
-> 
-> Just tried it using pktgen, we are far from baseline. I can get 13Mpps with 10 threads in my test setup.
+To avoid the combinatorial explosion, we propose to include the ability
+to specify an "exclude group" as part of the forwarding operation. This
+needs to be a group (instead of just a single port index), because a
+physical interface can be part of a logical grouping, such as a bond
+device.
 
-This is quite low performance.
+Thus, the logical forwarding operation becomes a "set difference"
+operation, i.e. "forward to all ports in group A that are not also in
+group B". This series implements such an operation using device maps to
+represent the groups. This means that the XDP program specifies two
+device maps, one containing the list of netdevs to redirect to, and the
+other containing the exclude list.
 
-I suspect your 10 threads are sharing a smaller number of TX queues perhaps ?
+To achieve this, I re-implement a new helper bpf_redirect_map_multi()
+to accept two maps, the forwarding map and exclude map. If user
+don't want to use exclude map and just want simply stop redirecting back
+to ingress device, they can use flag BPF_F_EXCLUDE_INGRESS.
+
+The 2nd and 3rd patches are for usage sample and testing purpose, so there
+is no effort has been made on performance optimisation. I did same tests
+with pktgen(pkt size 64) to compire with xdp_redirect_map(). Here is the
+test result(the veth peer has a dummy xdp program with XDP_DROP directly):
+
+Version         | Test                                   | Native | Generic
+5.8 rc1         | xdp_redirect_map       i40e->i40e      |  10.0M |   1.9M
+5.8 rc1         | xdp_redirect_map       i40e->veth      |  12.7M |   1.6M
+5.8 rc1 + patch | xdp_redirect_map       i40e->i40e      |  10.0M |   1.9M
+5.8 rc1 + patch | xdp_redirect_map       i40e->veth      |  12.3M |   1.6M
+5.8 rc1 + patch | xdp_redirect_map_multi i40e->i40e      |   7.2M |   1.5M
+5.8 rc1 + patch | xdp_redirect_map_multi i40e->veth      |   8.5M |   1.3M
+5.8 rc1 + patch | xdp_redirect_map_multi i40e->i40e+veth |   3.0M |  0.98M
+
+The bpf_redirect_map_multi() is slower than bpf_redirect_map() as we loop
+the arrays and do clone skb/xdpf. The native path is slower than generic
+path as we send skbs by pktgen. So the result looks reasonable.
+
+Last but not least, thanks a lot to Jiri, Eelco, Toke and Jesper for
+suggestions and help on implementation.
+
+[0] https://xdp-project.net/#Handling-multicast
+
+v6: converted helper return types from int to long
+
+v5:
+a) Check devmap_get_next_key() return value.
+b) Pass through flags to __bpf_tx_xdp_map() instead of bool value.
+c) In function dev_map_enqueue_multi(), consume xdpf for the last
+   obj instead of the first on.
+d) Update helper description and code comments to explain that we
+   use NULL target value to distinguish multicast and unicast
+   forwarding.
+e) Update memory model, memory id and frame_sz in xdpf_clone().
+f) Split the tests from sample and add a bpf kernel selftest patch.
+
+v4: Fix bpf_xdp_redirect_map_multi_proto arg2_type typo
+
+v3: Based on Toke's suggestion, do the following update
+a) Update bpf_redirect_map_multi() description in bpf.h.
+b) Fix exclude_ifindex checking order in dev_in_exclude_map().
+c) Fix one more xdpf clone in dev_map_enqueue_multi().
+d) Go find next one in dev_map_enqueue_multi() if the interface is not
+   able to forward instead of abort the whole loop.
+e) Remove READ_ONCE/WRITE_ONCE for ex_map.
+
+v2: Add new syscall bpf_xdp_redirect_map_multi() which could accept
+include/exclude maps directly.
+
+Hangbin Liu (3):
+  xdp: add a new helper for dev map multicast support
+  sample/bpf: add xdp_redirect_map_multicast test
+  selftests/bpf: add xdp_redirect_multi test
+
+ include/linux/bpf.h                           |  20 ++
+ include/linux/filter.h                        |   1 +
+ include/net/xdp.h                             |   1 +
+ include/uapi/linux/bpf.h                      |  22 +++
+ kernel/bpf/devmap.c                           | 154 ++++++++++++++++
+ kernel/bpf/verifier.c                         |   6 +
+ net/core/filter.c                             | 109 ++++++++++-
+ net/core/xdp.c                                |  29 +++
+ samples/bpf/Makefile                          |   3 +
+ samples/bpf/xdp_redirect_map_multi_kern.c     |  57 ++++++
+ samples/bpf/xdp_redirect_map_multi_user.c     | 166 +++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  22 +++
+ tools/testing/selftests/bpf/Makefile          |   4 +-
+ .../bpf/progs/xdp_redirect_multi_kern.c       |  90 +++++++++
+ .../selftests/bpf/test_xdp_redirect_multi.sh  | 164 +++++++++++++++++
+ .../selftests/bpf/xdp_redirect_multi.c        | 173 ++++++++++++++++++
+ 16 files changed, 1015 insertions(+), 6 deletions(-)
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_kern.c
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_user.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_redirect_multi.c
+
+-- 
+2.25.4
 
