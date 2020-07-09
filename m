@@ -2,143 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 289E721AA65
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 00:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E57A21AA6A
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 00:22:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726921AbgGIWSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 18:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
+        id S1726275AbgGIWWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 18:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbgGIWSE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 18:18:04 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E70CC08C5CE
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 15:18:04 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id w16so3918617ejj.5
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 15:18:04 -0700 (PDT)
+        with ESMTP id S1726265AbgGIWWK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 18:22:10 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626D0C08C5CE
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 15:22:10 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id m22so1580225pgv.9
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 15:22:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uXi67HVDuWkVFa4LhfWcOMwk9O5PdTnj3Aohxb+DD7Y=;
-        b=RRk/ZefscGMI/BTeorlFbUOu8cxyiAgCh76g5oe9SGAR7WZKBg6dSQ+cDnLSVejFe1
-         tc+KAvekOXH2cCuySBnW5K9PlYlObxytSMG2wl/wH/ObUd2aq1ztXn6EY8H8flT2iSkM
-         3Fz4MWwCYBjEUB1JHOlZYc7VNdNbC5l4aYLmCE7z0BJ9moUT31nXDAN6mxoaJwtNCD/y
-         1A4JKaYGttmRxmB/04U3nbPtY4W7pLyIsf2QbRtKLDALzt9lUneyCL3UWA+XeQtbwAuo
-         QeCKWyONSXkmQe8pQGJ6emk+zITPp3e+ytCNlEdWCfLd91VfSl/xOGvWA3KVsAbqG6GL
-         L/Ng==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=GoXtqEjVvsMOdMLzwhP4omsWynXn8W5TGbLTcJ+zO4k=;
+        b=Lgtrpc/f0gviNRHkJZmxqJiNU0IYYune7Xr79yIn0jQnRH4lzri+yLb5F5gLjDWG9C
+         7GKvGHmseZtoiZGZZjPFI93La8OhTJaIc1XiBPR7RjUeW/Q6lGMkU7mJtDSQutvlvVhr
+         4MPlk6T1wcQb16sWZ5KiXR4PPwd1pdFOZsdhjAnvCT+QZS1GKBY/BOZcZdvD2mvkj9rM
+         MbrS5Fc2duLpn8C4k6fSjIEApadT2X0KFcWcEQe6ePcCPqKkn/e3q17xDe0XdN+YPgKo
+         rKi+TDhu+ZNr9QH/0xNgBdvvKY59waOpVWqBzGV82/KmPm6GQawGjDw3esiBu1FXqYHS
+         sx9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uXi67HVDuWkVFa4LhfWcOMwk9O5PdTnj3Aohxb+DD7Y=;
-        b=pTttlmqKb/ykyGXYRU2fBoKKJhzG5E2sFqWYhwdaVVy6tF7hVhofMv4/e4/lUkg5d6
-         GNIQ4vFocd82MC6fqs/LVXlzqwfFAnSGoVWXfmyTFWftuu9w1nACKk+fT+9V/lzcAfqY
-         gEqQjQCZ2aerAkwDT2/4QxQUs3pbdakqMX1o+G0yQkb1lU0K1EB+8FvEWj3SYw0ZlOFN
-         R7cpBZBppgZo/nH5/ABly5t2xSjorooTwLSFkodeETYqOUHxY8hioetSUdXiLAXeb2KP
-         7x7g2Q2MaMKk7LidjNyMjuVmGbMOulhpRU1mPH8Eg3UOn0Jjoaf7UfOVQkKg2g8Rmko8
-         2ZUg==
-X-Gm-Message-State: AOAM533++xLdNahg8VkVLimazjPq7dHpohG+jbUp1uOlc6VtAJspfGSx
-        egHuSAQpHzAhN3ZNRw7qeSU=
-X-Google-Smtp-Source: ABdhPJxNQAnYa/2M1w8OxyI8eRmAUgzYyJbFyQqrkMUW240HKG8/u8rO5JiEeXkGt8iEeoG/HTEcbA==
-X-Received: by 2002:a17:906:53d4:: with SMTP id p20mr57565061ejo.472.1594333083124;
-        Thu, 09 Jul 2020 15:18:03 -0700 (PDT)
-Received: from skbuf ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id v3sm2992197edj.89.2020.07.09.15.18.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2020 15:18:02 -0700 (PDT)
-Date:   Fri, 10 Jul 2020 01:18:00 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com
-Subject: Re: MDIO Debug Interface
-Message-ID: <20200709221800.yqnvepm3p57gfxym@skbuf>
-References: <C42DZQLTPHM5.2THDSRK84BI3T@wkz-x280>
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GoXtqEjVvsMOdMLzwhP4omsWynXn8W5TGbLTcJ+zO4k=;
+        b=jDLzD1qQpE2bFJJZoFLlhkxx2X3rSQDHeIQAfo7S7sZ8uPiNQZV2TeLqfnunECJRO3
+         v2/Cfpm+TPCYcc7GiN0FtiEscuEqEMT2LvPQcZpuRN/jK3XHXI/53Qj0C1vZJ8+DtUQV
+         BxxkGEbmhYW/GiS6s/Wc3VGPB9AwInlWlZjdfpsdK+i/5VdjfrhcuTyYyjfsK0ViO9+c
+         LD/6yh8Oo2x7II+FzIRiiyJyJCTixTLNWe+bGlkDyf76g7f/B4XkFPQCtow73XW72rTL
+         /xio5ez9y+EFnsA7/imi9LhLdg2G0K38sxk6ZKVpS+6P0LR4S9d+JpDq3pA3xF1ePisE
+         BRQw==
+X-Gm-Message-State: AOAM5336vYbByRcrU5GeFPWCWjrMz3SQqm45NGV+lVbJRBTpIEh+g277
+        soXfQM3VN0DQ16XahmOBZZyUoemv
+X-Google-Smtp-Source: ABdhPJxnf1etKwFXoCTsdzXD0x41huDBD+Jytl9DdJMBhdGSI2Pi9hGS/OzT6Vv4XN5kcb80Hh4E0A==
+X-Received: by 2002:a63:a558:: with SMTP id r24mr57492418pgu.70.1594333329478;
+        Thu, 09 Jul 2020 15:22:09 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id g18sm3863230pfk.40.2020.07.09.15.22.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jul 2020 15:22:08 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/2] net: sched: Lockless Token Bucket (LTB)
+ qdisc
+To:     "YU, Xiangning" <xiangning.yu@alibaba-inc.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <4835f4cb-eee0-81e7-d935-5ad85767802c@alibaba-inc.com>
+ <554197ce-cef1-0e75-06d7-56dbef7c13cc@gmail.com>
+ <d1716bc1-a975-54a3-8b7e-a3d3bcac69c5@alibaba-inc.com>
+ <91fc642f-6447-4863-a182-388591cc1cc0@gmail.com>
+ <387fe086-9596-c71e-d1d9-998749ae093c@alibaba-inc.com>
+ <c4796548-5c3b-f3db-a060-1e46fb42970a@gmail.com>
+ <7ea368d0-d12c-2f04-17a7-1e31a61bbe2b@alibaba-inc.com>
+ <825c8af6-66b5-eaf4-2c46-76d018489ebd@gmail.com>
+ <345bf201-f7cf-c821-1dba-50d0f2b76101@alibaba-inc.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <ad26a7a3-38b1-5cbc-b4ed-ea5626a74bd8@gmail.com>
+Date:   Thu, 9 Jul 2020 15:22:07 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <C42DZQLTPHM5.2THDSRK84BI3T@wkz-x280>
+In-Reply-To: <345bf201-f7cf-c821-1dba-50d0f2b76101@alibaba-inc.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tobias,
 
-On Thu, Jul 09, 2020 at 10:47:54PM +0200, Tobias Waldekranz wrote:
-> Hi netdev,
-> 
-> TL;DR: Is something like https://github.com/wkz/mdio-tools a good
-> idea?
-> 
-> The kernel does not, as far as I know, have a low-level debug
-> interface to MDIO devices. I.e. something equivalent to i2c-dev or
-> spi-dev for example. The closest thing I've found are the
-> SIOCG/SMIIREG ioctls, but they have several drawbacks:
-> 
-> 1. "Write register" is not always exactly that. The kernel will try to
->    be extra helpful and do things behind the scenes if it detects a
->    write to the reset bit of a PHY for example.
-> 
-> 2. Only one op per syscall. This means that is impossible to implement
->    many operations in a safe manner. Something as simple as a
->    read/mask/write cycle can race against an in-kernel driver.
-> 
-> 3. Addressing is awkward since you don't address the MDIO bus
->    directly, rather "the MDIO bus to which this netdev's PHY is
->    connected". This makes it hard to talk to devices on buses to which
->    no PHYs are connected, the typical case being Ethernet switches.
-> 
-> The kernel side of mdio-tools, mdio-netlink, tries to address these
-> problems by adding a GENL interface with which a user can interact
-> with an MDIO bus directly.
-> 
-> The user sends a program that the mdio-netlink module executes,
-> possibly emitting data back to the user. I.e. it implements a very
-> simple VM. Read/mask/write operations could be implemented by
-> dedicated commands, but when you start looking at more advanced things
-> like reading out the VLAN database of a switch you need to state and
-> branching.
-> 
-> FAQ:
-> 
-> - A VM just for MDIO, that seems ridiculous, no?
-> 
->   It does. But if you want to support the complex kinds of operations
->   that I'm looking for, without the kernel module having to be aware
->   of every kind of MDIO device in the world, I haven't found an easier
->   way.
-> 
-> - Why not use BPF?
-> 
->   That could absolutely be one way forward, but the GENL approach was
->   easy to build out-of-tree to prove the idea. Its not obvious how it
->   would work though as BPF programs typically run async on some event
->   (probe hit, packet received etc.) whereas this is a single execution
->   on behalf of a user. So to what would the program be attached? The
->   output path is also not straight forward, but it could be done with
->   perf events i suppose.
-> 
-> My question is thus; do you think mdio-netlink, or something like it,
-> is a candidate for mainline?
-> 
-> Thank you
 
-I will let the PHY library maintainers comment about implementation
-design choices made by mdio-netlink. However, I want to add a big "+1"
-from my side for identifying the correct issues in the existing PHY
-ioctls and doing something about it. I think the mainline kernel needs
-this.
-Please be aware that, if your mdio-netlink module, or something
-equivalent to it, lands in mainline, QEMU/KVM is going to be one of its
-users (for virtualizing an MDIO bus). So this is going to be more than
-just for debugging.
-And, while we're at it: context switches from a VM to a host are
-expensive. And the PHY library polls around 5 MDIO registers per PHY
-every second. It would be nice if your mdio-netlink module had some sort
-of concept of "poll offload": just do the polling in the kernel side and
-notify the user space only of a change.
+On 7/9/20 11:20 AM, YU, Xiangning wrote:
+> 
+> 
+> On 7/9/20 10:15 AM, Eric Dumazet wrote:
+>>
+>> Well, at Google we no longer have this issue.
+>>
+>> We adopted EDT model, so that rate limiting can be done in eBPF, by simply adjusting skb->tstamp.
+>>
+>> The qdisc is MQ + FQ.
+>>
+>> Stanislas Fomichev will present this use case at netdev conference 
+>>
+>> https://netdevconf.info/0x14/session.html?talk-replacing-HTB-with-EDT-and-BPF
+>>
+> This is cool, I would love to learn more about this!
+> 
+> Still please correct me if I'm wrong. This looks more like pacing on a per-flow basis, how do you support an overall rate limiting of multiple flows? Each individual flow won't have a global rate usage about others.
+> 
 
-Thanks,
--Vladimir
+
+No, this is really per-aggregate rate limiting, multiple TCP/UDP flows can share the same class.
+
+Before that, we would have between 10 and 3000 HTB classes on a host.
+We had internal code to bypass the HTB (on bond0 device) for non throttled packets,
+since HTB could hardly cope with more than 1Mpps.
+
+Now, an eBPF program (from sch_handle_egress()) using maps to perform classification
+and (optional) rate-limiting based on various rules.
+
+MQ+FQ is already doing the per-flow pacing (we have been using this for 8 years now)
+
+The added eBPF code extended this pacing to be per aggregate as well.
+
