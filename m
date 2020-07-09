@@ -2,78 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67454219660
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 04:56:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D057219684
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 05:15:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726184AbgGIC44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 22:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52820 "EHLO
+        id S1726124AbgGIDOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 23:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726117AbgGIC4z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 22:56:55 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA37C061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 19:56:55 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id q74so827476iod.1
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 19:56:55 -0700 (PDT)
+        with ESMTP id S1726107AbgGIDOG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 23:14:06 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371B5C061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 20:14:06 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id 207so391664pfu.3
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 20:14:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mwi4XiRSiSHdZ35Fhs59FbXA4LdsHf9+LFsa9mWmJpw=;
-        b=GoUMytjouTR+pFo7yqbmKClMAiSIzjfdPDYxzk+/0U1rnuqFrRWKWXyI/q8mr5gJZ6
-         S4CX1vXFr+XzjsnrxafQwFkO82vLsjXFK49zainaT0mNFFDh4TRxRQUfl4Xzqtd8qJRd
-         elurSssXBzgL2HxsbyK0cSdZRVY5rIljrp0ZyyooQSoEpN6mUpw7bFwZ7tPu4DHc66+n
-         mNz3U+q+CFcS2EHEWq35HyCw2ySmapEzSUKM5syw92Lzno8JPa4z0GVC4MBHQH8HRk3R
-         24bER5+ir7L0ERV3Hn1JMnloM/jdZV33qJSiCwYu2bpFeBy+++kWCCTe2zmFiOdaZA/S
-         5k2A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5KH6XYznKGCYv8UPPyiRobi0Jchj48PdngxMhlgJRHY=;
+        b=kK2juvB6mhJdcpxUzxoJufNrZ4UptTzbFrJEiWjnquB9tiAp0g+SwrEe2j0zOl6liR
+         OaFvinK5/3+Fhwgz2gEVTpWu0Z8NG156cb2fo5vQQjvxoYJhQ57J0o1cdbnR+evtoIS5
+         AYUQE/yr/qelZp7AUPvSSA3aMbEFs1itaOSKNz3Osi8f+CnjKBztEKyrI9N0/wKFtaZU
+         8Jex4ufFplsMLsE+NmQnyv0SfXZhhLd2c3SYGK5fk5M1aTivfx9h+PrAetWG2fTctkBy
+         cwH8hmrzCw8JIcq/88hz2M1OA4Imt2vxsiOh3V3Fprc4qb9gnuj1HKYMUbDO6zrf3zjg
+         TOlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mwi4XiRSiSHdZ35Fhs59FbXA4LdsHf9+LFsa9mWmJpw=;
-        b=QQrTtL6oRNUD8AgElgRG0x+35p2nrrSLuI9/MP6H7uEOk6/SyPB+WjBtx8pcy03VEf
-         FflBGxyYFXJueEginAa3pXI5GlBECz468plMNNy+x9JuiRhw/Kde7VDtsu6UICiRHTRh
-         YvbH4YURFwtFgt4MSfSdQzUbtB/rMeGPmsTFrOVf8I61qr6co8rwGtC1qDOqV4Es9BbU
-         SA3Kj3lULpUrdSAchvxz8GUErn+2SxfXWnfbUqE7YiEg5QshL+QN+cZGnneMgicSClk0
-         SqGjb0wTPRG8A2Ih0ZhMKhDP855yEC6WYTUwrO1PlvaI9FK651A6ETT7HMnPyqeOnvYO
-         T1wA==
-X-Gm-Message-State: AOAM531lZ0Eyli68XAgWgPF/T11TyUmLUGMVmRMe4hN8e5CN+x/JbtH4
-        mfDu7zj2YeHWojb+KQpp5tZTVCf8tOiJfR9tG09naDxq
-X-Google-Smtp-Source: ABdhPJxQvBks76brYL22SCSS8XAE8rPqOpTGVPtwNtd0GDw65uFeLybzI5MjY0lJ0gpMwpRTCTda0FZn95QjdX2NAx0=
-X-Received: by 2002:a02:a408:: with SMTP id c8mr71312527jal.59.1594263414769;
- Wed, 08 Jul 2020 19:56:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5KH6XYznKGCYv8UPPyiRobi0Jchj48PdngxMhlgJRHY=;
+        b=KiVRoybz58ki16kBTI9rubpot/qNECmm4/m0V05+0NUUHWyb6HOzc+n6o5wWpVqpW4
+         4RiTg7ifoazerihICYvAsyAajcf8cJxoHy/+XyYrrYtXzXbTtbj6yXkMwA9PiZJyZ+Yo
+         7G9Pdf8U5xTjRBeS4+5x+q43YKtn3yjYoUSIEDowtqwnqUsachkkQbEp0756knu6m6om
+         BjLBgQiTHMxwqPgW8la7BQ5GDAezbe/HEvMPhqNbbwVnh5vCAjP4SawYMQHLt+cJc3N5
+         9vcsHQDF/YyRotb7CCq1h1br8u1fjmXQjyenj6SaFBaogGHCGf5HtL5EQQceM3m7fA0b
+         909Q==
+X-Gm-Message-State: AOAM530Ge1a5wHBzJPkxzBNmsm0Qly8mVNxZ/BwGdYGILylZIDenzZZR
+        bOUG8DLGQygc8gyaAG6bHtA9FEljlOo=
+X-Google-Smtp-Source: ABdhPJz6V9M5nm0lqB7MXDWGuZMusCw5P3n1eMHTkBTQU6klhYZeeBIay4NNMQvMe4TSlsztd/1mdQ==
+X-Received: by 2002:a63:7a56:: with SMTP id j22mr50196716pgn.194.1594264445368;
+        Wed, 08 Jul 2020 20:14:05 -0700 (PDT)
+Received: from MacBookAir.linux-6brj.site ([2600:1700:727f::46])
+        by smtp.gmail.com with ESMTPSA id z6sm991610pfn.173.2020.07.08.20.14.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2020 20:14:04 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot+d411cff6ab29cc2c311b@syzkaller.appspotmail.com,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: [Patch net] net_sched: fix a memory leak in atm_tc_init()
+Date:   Wed,  8 Jul 2020 20:13:59 -0700
+Message-Id: <20200709031359.11063-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20200707075833.1698-1-Tony.Ambardar@gmail.com> <20200708084904.5affa861@hermes.lan>
-In-Reply-To: <20200708084904.5affa861@hermes.lan>
-From:   Tony Ambardar <tony.ambardar@gmail.com>
-Date:   Wed, 8 Jul 2020 19:56:44 -0700
-Message-ID: <CAPGftE_4ea+AVOEjM1CUsL-CvyR8oCk19hx69KS9SroRwzhBOg@mail.gmail.com>
-Subject: Re: [PATCH iproute2] configure: support ipset version 7 with kernel
- version 5
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Jul 2020 at 08:49, Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Tue,  7 Jul 2020 00:58:33 -0700
-> Tony Ambardar <tony.ambardar@gmail.com> wrote:
->
-> > The configure script checks for ipset v6 availability but doesn't test
-> > for v7, which is backward compatible and used on kernel v5.x systems.
-> > Update the script to test for both ipset versions. Without this change,
-> > the tc ematch function em_ipset will be disabled.
-> >
-> > Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
->
-> Sure applied. Maybe it should just check for > 6 to be future proof.
+When tcf_block_get() fails inside atm_tc_init(),
+atm_tc_put() is called to release the qdisc p->link.q.
+But the flow->ref prevents it to do so, as the flow->ref
+is still zero.
 
-Thank you. I kept the test as is since I couldn't confirm ipset
-backward compatibility in
-the future. If you have more insight, please let me know and I'll update it.
+Fix this by moving the p->link.ref initialization before
+tcf_block_get().
+
+Fixes: 6529eaba33f0 ("net: sched: introduce tcf block infractructure")
+Reported-and-tested-by: syzbot+d411cff6ab29cc2c311b@syzkaller.appspotmail.com
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+---
+ net/sched/sch_atm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
+index ee12ca9f55b4..1c281cc81f57 100644
+--- a/net/sched/sch_atm.c
++++ b/net/sched/sch_atm.c
+@@ -553,16 +553,16 @@ static int atm_tc_init(struct Qdisc *sch, struct nlattr *opt,
+ 	if (!p->link.q)
+ 		p->link.q = &noop_qdisc;
+ 	pr_debug("atm_tc_init: link (%p) qdisc %p\n", &p->link, p->link.q);
++	p->link.vcc = NULL;
++	p->link.sock = NULL;
++	p->link.common.classid = sch->handle;
++	p->link.ref = 1;
+ 
+ 	err = tcf_block_get(&p->link.block, &p->link.filter_list, sch,
+ 			    extack);
+ 	if (err)
+ 		return err;
+ 
+-	p->link.vcc = NULL;
+-	p->link.sock = NULL;
+-	p->link.common.classid = sch->handle;
+-	p->link.ref = 1;
+ 	tasklet_init(&p->task, sch_atm_dequeue, (unsigned long)sch);
+ 	return 0;
+ }
+-- 
+2.27.0
+
