@@ -2,68 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D35521A7F4
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 21:43:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4062221A806
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 21:46:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726407AbgGITnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 15:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
+        id S1726363AbgGITqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 15:46:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726220AbgGITnH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 15:43:07 -0400
-Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08D6C08C5CE;
-        Thu,  9 Jul 2020 12:43:07 -0700 (PDT)
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id 710BDBC0C2;
-        Thu,  9 Jul 2020 19:43:03 +0000 (UTC)
-From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        mchehab+huawei@kernel.org, robh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH] MAINTAINERS: XDP: restrict N: and K:
-Date:   Thu,  9 Jul 2020 21:42:57 +0200
-Message-Id: <20200709194257.26904-1-grandmaster@al2klimov.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Authentication-Results: smtp.al2klimov.de;
-        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
-X-Spamd-Bar: /
+        with ESMTP id S1726260AbgGITqC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 15:46:02 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15436C08C5CE;
+        Thu,  9 Jul 2020 12:46:02 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8AE301279621D;
+        Thu,  9 Jul 2020 12:46:01 -0700 (PDT)
+Date:   Thu, 09 Jul 2020 12:46:00 -0700 (PDT)
+Message-Id: <20200709.124600.1376090134337246963.davem@davemloft.net>
+To:     cphealy@gmail.com
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Add serdes read/write
+ dynamic debug
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200709184318.4192-1-cphealy@gmail.com>
+References: <20200709184318.4192-1-cphealy@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 Jul 2020 12:46:01 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rationale:
-Documentation/arm/ixp4xx.rst contains "xdp" as part of "ixdp465"
-which has nothing to do with XDP.
+From: Chris Healy <cphealy@gmail.com>
+Date: Thu,  9 Jul 2020 11:43:18 -0700
 
-Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
----
- See also: https://lore.kernel.org/lkml/20200709132607.7fb42415@carbon/
+> Add deb_dbg print statements in both serdes_read and serdes_write
+> functions.
+> 
+> Signed-off-by: Chris Healy <cphealy@gmail.com>
 
- MAINTAINERS | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1d4aa7f942de..2bb7feb838af 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18708,8 +18708,8 @@ F:	include/trace/events/xdp.h
- F:	kernel/bpf/cpumap.c
- F:	kernel/bpf/devmap.c
- F:	net/core/xdp.c
--N:	xdp
--K:	xdp
-+N:	(?:\b|_)xdp(?:\b|_)
-+K:	(?:\b|_)xdp(?:\b|_)
- 
- XDP SOCKETS (AF_XDP)
- M:	Björn Töpel <bjorn.topel@intel.com>
--- 
-2.27.0
-
+Please just use tracepoints or similar for this.
