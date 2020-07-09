@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4669921A0A4
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:19:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 911A721A0A6
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726828AbgGINTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 09:19:04 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:54605 "EHLO
+        id S1726867AbgGINTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 09:19:19 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:47001 "EHLO
         new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726315AbgGINTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:19:04 -0400
+        by vger.kernel.org with ESMTP id S1726315AbgGINTH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:19:07 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id C78EF5804D0;
-        Thu,  9 Jul 2020 09:19:02 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 15DB05804CA;
+        Thu,  9 Jul 2020 09:19:07 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Thu, 09 Jul 2020 09:19:02 -0400
+  by compute4.internal (MEProxy); Thu, 09 Jul 2020 09:19:07 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=UqBxurt22x458TpuEWsYDsxDjg5Jk0S+wSjzQGC8PjM=; b=KGavvwas
-        8HVBA6Drycaq3vGaI2H2A/eEJhTA1i857QpPTODMajN6RqMgw8D1d53x9JhaTbkq
-        f37DtjwjwGeUf9lEsN0UMiMMlBiYOixqX8dYsNxZDSiphgTVzdqRa/NfudJBrYoR
-        DYTQtyAWzcxgXRZbKU40jX5LXhRLmNsyGs35b7TmQCzbqjh0YlQelpBmJlE47Qol
-        V7Ec4hwpnwhH0nCeeSMX5Mj75MKtLbPavmOT4+GlXGnDNUp/ERC2y41jUh5K2ca7
-        Ty4i6jeNZn3dxOcT60ta83FxQPfU3KLTT68NNEa52Uvc6AhmS/Av1Go/cA0K4Ydb
-        +8bL1/JGhEF2VQ==
-X-ME-Sender: <xms:RhkHX_4PoHhujHEosNOJEzQNVy49_8BgTdIsoJGqnk4ikmJWmetiGA>
+        fm3; bh=EmIeC1M6zTAjAo6hq9Tehx4369Lb5jUo1S394iDJ84w=; b=U0QztFVX
+        mhJYVdsqkYrVybcn4vGCPVkqe9KXOBJS9BWjcS2/Y/XK4w7m8LuwIdB7rlxgIIZo
+        weCtimzFzTBkhCEnjUgcReeFwQG/MSAdbwqKUBBoOl5iH+LWUGE+KcWkb1Dj6q1O
+        5L6ndVzlbvDzv0lDyMied0ToX/tvtsKCljsRxIQQOetFKLDFUmOpO2U6NQMoPEQ+
+        yl7Z/Ubv9h9WaJ/givnwAnDwDp6m/rBFxIo+oK9qiRHJq2qv+tiQcXGRjr7vgpdA
+        Zgfv0TkG1edu9BJB8GopM9zQkyYIBb+RxlAnUlbsn6srbkU6iX62jsBqCQDIjGRb
+        2xdqn1u3Pjb07A==
+X-ME-Sender: <xms:ShkHX-1SzgAvdUIpuclXh6ao-2ZhHiaDKSqKehEVH_2XNzsYsGXmJA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudelgdeigecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -36,13 +36,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudelgdeigecutefuodetggdote
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieeirdduledrudeffeen
     ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:RhkHX04fo3TqEdwsyfxDd33MGA-0f1Mbper_woY2NhrUkKy0Im44oQ>
-    <xmx:RhkHX2fA3K7L144MQYZHBC_SIfFtKyhwBUxs3FdGVPhvMKdnql-iFA>
-    <xmx:RhkHXwLisb7NO1LvCTK7zMTBj0rzffxyBJnAHq8y1JvOIUwWgSQjXQ>
-    <xmx:RhkHXwCOPr-y3CrjQzgMFhD6u76oZu5ccdN0ut6iQiAmlHnankLJJQ>
+X-ME-Proxy: <xmx:ShkHXxFZzPakzxuhXLVJQmLWHihJ3LgvupJpM8H3M4sUpkDP6tPS2A>
+    <xmx:ShkHX26KE36lvmlTwgaM2AdM6x3US6uGPZTGCWLrgNJD9tuOEBjqCQ>
+    <xmx:ShkHX_0w_IKxnr3LGHv6uHIQMIthjJ0QDl1wAdMWjpizD87vG27DnQ>
+    <xmx:SxkHX58m1vUYnrwLLn8-TeA9Nt0ibShYm4g15bUB69DHbytfHM-p5Q>
 Received: from shredder.mtl.com (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 1F23A3280066;
-        Thu,  9 Jul 2020 09:18:58 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 412363280063;
+        Thu,  9 Jul 2020 09:19:02 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
@@ -51,9 +51,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
         vivien.didelot@gmail.com, f.fainelli@gmail.com,
         danieller@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v3 1/9] devlink: Move set attribute of devlink_port_attrs to devlink_port
-Date:   Thu,  9 Jul 2020 16:18:14 +0300
-Message-Id: <20200709131822.542252-2-idosch@idosch.org>
+Subject: [PATCH net-next v3 2/9] devlink: Move switch_port attribute of devlink_port_attrs to devlink_port
+Date:   Thu,  9 Jul 2020 16:18:15 +0300
+Message-Id: <20200709131822.542252-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200709131822.542252-1-idosch@idosch.org>
 References: <20200709131822.542252-1-idosch@idosch.org>
@@ -68,72 +68,72 @@ From: Danielle Ratson <danieller@mellanox.com>
 
 The struct devlink_port_attrs holds the attributes of devlink_port.
 
-The 'set' field is not devlink_port's attribute as opposed to most of the
-others.
+Similarly to the previous patch, 'switch_port' attribute is another
+exception.
 
-Move 'set' to be devlink_port's field called 'attrs_set'.
+Move 'switch_port' to be devlink_port's field.
 
 Signed-off-by: Danielle Ratson <danieller@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- include/net/devlink.h | 4 ++--
+ include/net/devlink.h | 6 +++---
  net/core/devlink.c    | 6 +++---
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 428f55f8197c..28f8d92c5741 100644
+index 28f8d92c5741..de4b5dcdb4a5 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
 @@ -65,8 +65,7 @@ struct devlink_port_pci_vf_attrs {
  };
  
  struct devlink_port_attrs {
--	u8 set:1,
--	   split:1,
-+	u8 split:1,
- 	   switch_port:1;
+-	u8 split:1,
+-	   switch_port:1;
++	u8 split:1;
  	enum devlink_port_flavour flavour;
  	struct netdev_phys_item_id switch_id;
-@@ -90,6 +89,7 @@ struct devlink_port {
+ 	union {
+@@ -89,7 +88,8 @@ struct devlink_port {
  	enum devlink_port_type desired_type;
  	void *type_dev;
  	struct devlink_port_attrs attrs;
-+	u8 attrs_set:1;
+-	u8 attrs_set:1;
++	u8 attrs_set:1,
++	   switch_port:1;
  	struct delayed_work type_warn_dw;
  };
  
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 6ae36808c152..f28ae63cdb6b 100644
+index f28ae63cdb6b..452b2f8a054e 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -528,7 +528,7 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
- {
- 	struct devlink_port_attrs *attrs = &devlink_port->attrs;
- 
--	if (!attrs->set)
-+	if (!devlink_port->attrs_set)
- 		return 0;
- 	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_FLAVOUR, attrs->flavour))
- 		return -EMSGSIZE;
-@@ -7518,7 +7518,7 @@ static int __devlink_port_attrs_set(struct devlink_port *devlink_port,
- 
- 	if (WARN_ON(devlink_port->registered))
- 		return -EEXIST;
--	attrs->set = true;
-+	devlink_port->attrs_set = true;
+@@ -7521,13 +7521,13 @@ static int __devlink_port_attrs_set(struct devlink_port *devlink_port,
+ 	devlink_port->attrs_set = true;
  	attrs->flavour = flavour;
  	if (switch_id) {
- 		attrs->switch_port = true;
-@@ -7626,7 +7626,7 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
- 	struct devlink_port_attrs *attrs = &devlink_port->attrs;
- 	int n = 0;
- 
--	if (!attrs->set)
-+	if (!devlink_port->attrs_set)
+-		attrs->switch_port = true;
++		devlink_port->switch_port = true;
+ 		if (WARN_ON(switch_id_len > MAX_PHYS_ITEM_ID_LEN))
+ 			switch_id_len = MAX_PHYS_ITEM_ID_LEN;
+ 		memcpy(attrs->switch_id.id, switch_id, switch_id_len);
+ 		attrs->switch_id.id_len = switch_id_len;
+ 	} else {
+-		attrs->switch_port = false;
++		devlink_port->switch_port = false;
+ 	}
+ 	return 0;
+ }
+@@ -9461,7 +9461,7 @@ int devlink_compat_switch_id_get(struct net_device *dev,
+ 	 * any devlink lock as only permanent values are accessed.
+ 	 */
+ 	devlink_port = netdev_to_devlink_port(dev);
+-	if (!devlink_port || !devlink_port->attrs.switch_port)
++	if (!devlink_port || !devlink_port->switch_port)
  		return -EOPNOTSUPP;
  
- 	switch (attrs->flavour) {
+ 	memcpy(ppid, &devlink_port->attrs.switch_id, sizeof(*ppid));
 -- 
 2.26.2
 
