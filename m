@@ -2,152 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27EF5219FE2
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 14:19:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A92A219FE6
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 14:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727078AbgGIMTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 08:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
+        id S1726460AbgGIMVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 08:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726327AbgGIMTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 08:19:22 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74AE0C061A0B
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 05:19:22 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id 22so1561501wmg.1
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 05:19:22 -0700 (PDT)
+        with ESMTP id S1726327AbgGIMVs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 08:21:48 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D793AC061A0B
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 05:21:47 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id o4so1015548lfi.7
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 05:21:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rHUX9k/QZQL3wbZQqkLrYTPwl6GOZUQVnsjlbkZujZ4=;
-        b=WbdWQjvZ861Nc4R1IA8l70iKZc0gFdHA8ahAD+E+sMxVwMMbMBpNeD8X9j/8+l8GHn
-         82mzIpay/OiipI1cwGXz77o474wmWhTs/lKhjJBY2JjoeNXR3yEoYYG9kdyfyajU7TVY
-         81vs3QC6zTNyy5/TRKXExYAqAKKsCb8/Jj9briw/WcLBAehO6PjqnP9niL2SihYMFLxJ
-         pXdksFyH8XpD4LRD4wYL1MP90yRHosShilcAU6XyL4bsiQH0tLR4U/ImfQCo5s/DcH41
-         yNDb7lcN7TBBZGp9bmf+E0PYSJKRgwOyKuIRu2VpNPG1do/u6AhyGhcUtbZxCYQ7li9+
-         NTXw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=MYqN9GwvxDULCNeXLySa8pNzJyV/Zz3BtJrQac+7wS4=;
+        b=Yyk/I5VWh+NoBhKtnJPoq5rxzIuy7xDA3N07dQ3QZp3Nk10PTRC82wHrZ2/G6ASjZ1
+         3JJjmH7vnBUEx+lQN72rKQTKsq7e7is0H5lPUDIX1CCrpAFJTpnLA4r61gsEKvHDru9s
+         Fm8VR8uDsAtb7FW0+bKERLZ0K0bhMgWIbyjvZP1wFLxaMySLGn3ZBrI2MA/Vw5ORP+42
+         Nd50a0+j1PmBQSRExQky9D0d1Rn6n/6AAUtUnHe4p4N1eT5j0Yf6MPekDs+dZCMZF/nv
+         jK7HWvyJ0lFRsfnyxzl8nPwlZUhD8WiErfQfrabR6GSB/TVe+pjEplePKRrViTk9+3AE
+         HqIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rHUX9k/QZQL3wbZQqkLrYTPwl6GOZUQVnsjlbkZujZ4=;
-        b=Nj/a+QAVU/xV6ws6eLCb0vDY9UNZy3Z5jlR27G+HVxSIcYvR7XI7pIar6MvaCcA0lv
-         MWrxjjQ6GhjWIum1AhecGym0jYc4g12Rb5fsfV/pV/RzGnl2TURk6Bb/D/nbylPDr/hg
-         kSBNqydGD5VrSqWDvWaVKs6vIPefysZ0LYBts+F7CSJ4UepFLQQ8bcnAhd87m44mXXox
-         0F5ikmbmDwT+raMxCIqmZ1XSk9owaZU8ds+WycnwKTEgdqORNepjT0/3UXcmTYn/Yv2j
-         hit3bw6HrgnNcO640dvYbXV7XADebBdSpRONzl1yvOI7M/5APurXhT70vm9g4KR/IGUs
-         zQHQ==
-X-Gm-Message-State: AOAM531+oXIDKTwVLJn6fmZ8xNTJHm2czQ88yB7TnGZ0sUSxs1ts7KSy
-        ZKczxCnjP8UkKD1yYEZaBliGtg==
-X-Google-Smtp-Source: ABdhPJz+EMD4Y5P6/UX+7QKS6of15PTByKQEAvNLPZXf7oAb7lr5HAxjK+Z5srdVIPs9sYHz0tbJuQ==
-X-Received: by 2002:a05:600c:4109:: with SMTP id j9mr13502220wmi.157.1594297161196;
-        Thu, 09 Jul 2020 05:19:21 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id r28sm4973267wrr.20.2020.07.09.05.19.20
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=MYqN9GwvxDULCNeXLySa8pNzJyV/Zz3BtJrQac+7wS4=;
+        b=ZEEnimrZBSFQSFRzRv1GA+Ht+Ag0Gw6kL4KIDVKavyNcKHRBbnm5WM9TyUcux7k4jz
+         Or/xZZtpXJXqu5poGhA8fNwBk0+yhUp3Qk7/ieHR2WPtFXL9UXCN5zMtWQb8DCLsIg0P
+         QSiPrDQTm7QmJb/q5Q3qVvZYkyNB+N6pIWEXk19oF3xeApF7PiznZtsYUkcxESYdpFZ2
+         /3wXyEp/DGVZePzRhiGrFAyS9Mj9g6vhvUn7lZQnlqgGaig9kvQZB/diwuiQCXr6Zp54
+         7QaQnosvpxXcp3DANx1HJdSHd92NNcKFEy22luexSlKcO8dfPZDPvRe0WaAAcTFFjwyT
+         57fg==
+X-Gm-Message-State: AOAM533wmTc8dySGyBBvyayWw97b4RcfP2VCYGXMMyg+LQH+KWOwDhFy
+        bgJi7YvAugV0jt6EnzbYC8g=
+X-Google-Smtp-Source: ABdhPJzlEFp/nnLIGArQr76qm/W75VVgKm0AlBHSmC6lH1MQU/haDAKw+go5egvFpE5GLKWiKA8k6g==
+X-Received: by 2002:a05:6512:54d:: with SMTP id h13mr39596661lfl.8.1594297306228;
+        Thu, 09 Jul 2020 05:21:46 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id l5sm1111463lfp.9.2020.07.09.05.21.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2020 05:19:20 -0700 (PDT)
-Date:   Thu, 9 Jul 2020 14:19:19 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Ariel Levkovich <lariel@mellanox.com>, netdev@vger.kernel.org,
-        kuba@kernel.org, xiyou.wangcong@gmail.com, ast@kernel.org,
-        daniel@iogearbox.net
-Subject: Re: [PATCH net-next v2 0/3] ] TC datapath hash api
-Message-ID: <20200709121919.GC3667@nanopsycho.orion>
-References: <20200701184719.8421-1-lariel@mellanox.com>
- <13b36fb1-f93e-dad7-9dba-575909197652@mojatatu.com>
- <20200707100556.GB2251@nanopsycho.orion>
- <20877e09-45f2-fa89-d11c-4ae73c9a7310@mojatatu.com>
- <20200708144508.GB3667@nanopsycho.orion>
- <908144ff-315c-c743-ed2e-93466d40523c@mojatatu.com>
+        Thu, 09 Jul 2020 05:21:45 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        richardcochran@gmail.com, andrew@lunn.ch
+Subject: Re: [PATCH] docs: networking: timestamping: add section for stacked
+ PHC devices
+References: <20200708205621.1463971-1-olteanv@gmail.com>
+Date:   Thu, 09 Jul 2020 15:21:44 +0300
+In-Reply-To: <20200708205621.1463971-1-olteanv@gmail.com> (Vladimir Oltean's
+        message of "Wed, 8 Jul 2020 23:56:21 +0300")
+Message-ID: <87mu48ho9z.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <908144ff-315c-c743-ed2e-93466d40523c@mojatatu.com>
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 09, 2020 at 01:00:26PM CEST, jhs@mojatatu.com wrote:
->On 2020-07-08 10:45 a.m., Jiri Pirko wrote:
->> Wed, Jul 08, 2020 at 03:54:14PM CEST, jhs@mojatatu.com wrote:
->> > On 2020-07-07 6:05 a.m., Jiri Pirko wrote:
->
->
->[..]
->> > IMO:
->> > For this specific case where _offload_ is the main use case i think
->> > it is not a good idea because flower on ingress is slow.
->> 
->> Eh? What do you mean by that?
->> 
->> 
->> > The goal of offloading classifiers to hardware is so one can reduce
->> > consumed cpu cycles on the host. If the hardware
->> > has done the classification for me, a simple hash lookup of the
->> > 32 bit skbhash(similar to fw) in the host would be a lot less
->> > compute intensive than running flower's algorithm.
->> 
->> It is totally up to the driver/fw how they decide to offload flower.
->> There are multiple ways. So I don't really follow what do you mean by
->> "flower's algorithm"
->> 
->
->Nothing to do with how a driver offloads. That part is fine.
->
->By "flower's algorithm" I mean the fact you have to parse and
->create the flow cache from scratch on ingress - that slows down
->the ingress path. Compare, from cpu cycles pov, to say fw
+Vladimir Oltean <olteanv@gmail.com> writes:
 
-Could you point to the specific code please?
-
-The skb->hash is only accessed if the user sets it up for matching.
-I don't understand what slowdown you are talking about :/
-
-
->classifier which dereferences skbmark and uses it as a key
->to lookup a hash table.
->An skbhash classifier would look the same as fw in its
->approach.
->subtle point i was making was: if your goal was to save cpu cycles
->by offloading the lookup(whose result you then use to do
->less work on the host) then you need all the cycles you can
->save.
+> The concept of timestamping DSA switches / Ethernet PHYs is becoming
+> more and more popular, however the Linux kernel timestamping code has
+> evolved quite organically and there's layers upon layers of new and old
+> code that need to work together for things to behave as expected.
 >
->Main point is: classifying based on hash(and for that
->matter any other metadata like mark) is needed as a general
->utility for the system and should not be only available for
->flower. The one big reason we allow all kinds of classifiers
->in tc is in the name of "do one thing and do it well".
+> Add this chapter to explain what the overall goals are.
 
-Sure. That classifier can exist, no problem. At the same time, flower
-can match on it as well. There are already multiple examples of
-classifiers matching on the same thing. I don't see any problem there.
+Nice job! That'd definitely save me a day or two if it were there a
+month ago.
 
+Please see one minor doubt below.
 
->It is impossible for any one classifier to classify everything
->and do a good job at it. For example, I hope you are NEVER
->going to add string classification in flower.
 >
->Note, what i am describing has precendence:
->I can do the same thing with skbmark offloading today.
->On ingress I use fw classifier (not u32 or flower).
+> Loosely based upon this email discussion plus some more info:
+> https://lkml.org/lkml/2020/7/6/481
 >
->> 
->> > 
->> > I think there is a line for adding everything in one place,
->> > my main concern is that this feature this is needed
->> > by all classifiers and not just flower.
->> 
->> "All" is effectively only flower. Let's be clear about that.
->> 
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> ---
+>  Documentation/networking/timestamping.rst | 149 ++++++++++++++++++++++
+>  1 file changed, 149 insertions(+)
 >
->Unless I am misunderstanding, why is it just about flower?
->u32 does offload to some hardware. RSS can set this value
->and various existing things like XDP, tc ebpf and the action
->posted by Ariel.
->
->cheers,
->jamal
+> diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
+> index 1adead6a4527..14df58c24e8c 100644
+> --- a/Documentation/networking/timestamping.rst
+> +++ b/Documentation/networking/timestamping.rst
+> @@ -589,3 +589,152 @@ Time stamps for outgoing packets are to be generated as follows:
+>    this would occur at a later time in the processing pipeline than other
+>    software time stamping and therefore could lead to unexpected deltas
+>    between time stamps.
+> +
+> +3.2 Special considerations for stacked PTP Hardware Clocks
+> +----------------------------------------------------------
+> +
+> +There are situations when there may be more than one PHC (PTP Hardware Clock)
+> +in the data path of a packet. The kernel has no explicit mechanism to allow the
+> +user to select which PHC to use for timestamping Ethernet frames. Instead, the
+> +assumption is that the outermost PHC is always the most preferable, and that
+> +kernel drivers collaborate towards achieving that goal. Currently there are 3
+> +cases of stacked PHCs, detailed below:
+> +
+> +- DSA (Distributed Switch Architecture) switches. These are Ethernet switches
+> +  which have one of their ports connected to an (otherwise completely unaware)
+> +  host Ethernet interface, and perform the role of a port multiplier with
+> +  optional forwarding acceleration features.  Each DSA switch port is visible
+> +  to the user as a standalone (virtual) network interface, however network I/O
+> +  is performed under the hood indirectly through the host interface.
+
+Here, "however" somehow makes me feel uneasy. "even though" maybe?
+
+[...]
+
+Thanks,
+-- Sergey
