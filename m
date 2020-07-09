@@ -2,158 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EB8121A07F
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:08:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 475C921A08E
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:13:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726874AbgGINIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 09:08:17 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:35601 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726785AbgGINIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:08:17 -0400
-Received: from ip5f5af08c.dynamic.kabel-deutschland.de ([95.90.240.140] helo=wittgenstein)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1jtWHd-0001Iq-Q4; Thu, 09 Jul 2020 13:08:13 +0000
-Date:   Thu, 9 Jul 2020 15:08:11 +0200
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, Sargun Dhillon <sargun@sargun.me>,
-        Matt Denton <mpdenton@google.com>,
-        Christian Brauner <christian@brauner.io>,
-        Tycho Andersen <tycho@tycho.ws>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Aleksa Sarai <cyphar@cyphar.com>, Jann Horn <jannh@google.com>,
-        Chris Palmer <palmer@google.com>,
-        Robert Sesek <rsesek@google.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
-        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v6 6/7] seccomp: Introduce addfd ioctl to seccomp user
- notifier
-Message-ID: <20200709130811.zjyn6ptsd3rss3j4@wittgenstein>
-References: <20200706201720.3482959-1-keescook@chromium.org>
- <20200706201720.3482959-7-keescook@chromium.org>
- <20200707133049.nfxc6vz6vcs26m3b@wittgenstein>
- <202007082307.EB5BAD3A0@keescook>
+        id S1726775AbgGINNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 09:13:02 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:51930 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726480AbgGINNC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:13:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594300380;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=B7dJZJlcb9zuBnrqDf69wpo2Z6Z3U6uqEdH3jg/B9aM=;
+        b=CivoAJrGn2tvZWF4wli7llHJg2Ug5sTfF78Z4GekYHZU4Tf5XpODYb3q52DLi7j5ndvm6/
+        V3gbZ9X1rvbdPBTdTpwMrbynIqr8uSu2NS2zDTcTcZPvnP3ALEYSDyI+LLDKecwvx77Eon
+        BR0tusT0EMY91fQ/Yeult20XWpO66KE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-419-sCmpfgU9P1GRMbMDnoy6xQ-1; Thu, 09 Jul 2020 09:12:58 -0400
+X-MC-Unique: sCmpfgU9P1GRMbMDnoy6xQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C335C100945B;
+        Thu,  9 Jul 2020 13:12:57 +0000 (UTC)
+Received: from localhost.localdomain.com (ovpn-113-239.ams2.redhat.com [10.36.113.239])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6F1AB2B6DD;
+        Thu,  9 Jul 2020 13:12:56 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org
+Subject: [PATCH net-next 0/4] mptcp: introduce msk diag interface
+Date:   Thu,  9 Jul 2020 15:12:38 +0200
+Message-Id: <cover.1594292774.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <202007082307.EB5BAD3A0@keescook>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 08, 2020 at 11:12:02PM -0700, Kees Cook wrote:
-> On Tue, Jul 07, 2020 at 03:30:49PM +0200, Christian Brauner wrote:
-> > Hm, maybe change that description to sm like:
-> > 
-> > [...]
-> 
-> Cool, yeah. Thanks! I've tweaked it a little more
-> 
-> > > +	/* 24 is original sizeof(struct seccomp_notif_addfd) */
-> > > +	if (size < 24 || size >= PAGE_SIZE)
-> > > +		return -EINVAL;
-> > 
-> > Hm, so maybe add the following:
-> > 
-> > #define SECCOMP_NOTIFY_ADDFD_VER0 24
-> > #define SECCOMP_NOTIFY_ADDFD_LATEST SECCOMP_NOTIFY_ADDFD_VER0
-> > 
-> > and then place:
-> > 
-> > BUILD_BUG_ON(sizeof(struct seccomp_notify_addfd) < SECCOMP_NOTIFY_ADDFD_VER0);
-> > BUILD_BUG_ON(sizeof(struct open_how) != SECCOMP_NOTIFY_ADDFD_LATEST);
-> 
-> Yes, good idea (BTW, did the EA syscall docs land?)
+This series implements the diag interface for the MPTCP sockets.
 
-I'll be giving a kernel summit talk about extensible syscalls to come to
-some agreement on a few things. After this we'll update the doc patch
-we have now and merge it. :)
+Since the MPTCP protocol value can't be represented with the
+current diag uAPI, the first patch introduces an extended attribute
+allowing user-space to specify lager protocol values.
 
-> 
-> I've made these SECCOMP_NOTIFY_ADDFD_SIZE_* to match your examples below
-> (i.e.  I added "SIZE" to what you suggested above).
+The token APIs are then extended to allow traversing the
+whole token container.
 
-Yup, sounds good!
+Patch 3 carries the actual diag interface implementation, and 
+later patch bring-in some functional self-tests.
 
-> 
-> > somewhere which is what we do for clone3(), openat2() and others to
-> > catch build-time nonsense.
-> > 
-> > include/uapi/linux/perf_event.h:#define PERF_ATTR_SIZE_VER0     64      /* sizeof first published struct */
-> > include/uapi/linux/sched.h:#define CLONE_ARGS_SIZE_VER0 64 /* sizeof first published struct */
-> > include/uapi/linux/sched/types.h:#define SCHED_ATTR_SIZE_VER0   48      /* sizeof first published struct */
-> > include/linux/fcntl.h:#define OPEN_HOW_SIZE_VER0        24 /* sizeof first published struct */
-> > include/linux/fcntl.h:#define OPEN_HOW_SIZE_LATEST      OPEN_HOW_SIZE_VER0
-> 
-> The ..._SIZE_VER0 and ...LATEST stuff doesn't seem useful to export via
-> UAPI. Above, 2 of the 3 export to uapi. Is there a specific rationale
-> for which should and which shouldn't?
+Paolo Abeni (4):
+  inet_diag: support for wider protocol numbers
+  mptcp: add msk interations helper
+  mptcp: add MPTCP socket diag interface
+  selftests/mptcp: add diag interface tests
 
-I think openat2() just didn't think it was useful. I find them helpful
-because I often update codebase to the newest struct I know about:
+ include/uapi/linux/inet_diag.h                |   1 +
+ include/uapi/linux/mptcp.h                    |  17 ++
+ net/core/sock.c                               |   1 +
+ net/ipv4/inet_diag.c                          |  65 +++++--
+ net/mptcp/Kconfig                             |   4 +
+ net/mptcp/Makefile                            |   2 +
+ net/mptcp/mptcp_diag.c                        | 169 ++++++++++++++++++
+ net/mptcp/protocol.h                          |   2 +
+ net/mptcp/token.c                             |  61 ++++++-
+ tools/testing/selftests/net/mptcp/Makefile    |   2 +-
+ tools/testing/selftests/net/mptcp/diag.sh     | 122 +++++++++++++
+ .../selftests/net/mptcp/mptcp_connect.c       |  22 ++-
+ 12 files changed, 445 insertions(+), 23 deletions(-)
+ create mode 100644 net/mptcp/mptcp_diag.c
+ create mode 100755 tools/testing/selftests/net/mptcp/diag.sh
 
-struct clone_args {
-	__aligned_u64 flags;
-	__aligned_u64 pidfd;
-	__aligned_u64 child_tid;
-	__aligned_u64 parent_tid;
-	__aligned_u64 exit_signal;
-	__aligned_u64 stack;
-	__aligned_u64 stack_size;
-	__aligned_u64 tls;
-/* CLONE_ARGS_SIZE_VER0 64 */
-	__aligned_u64 set_tid;
-	__aligned_u64 set_tid_size;
-/* CLONE_ARGS_SIZE_VER1 80 */
-	__aligned_u64 cgroup;
-/* CLONE_ARGS_SIZE_VER2 88 */
-};
+-- 
+2.26.2
 
-But bumping it means I can't use:
-
-clone3(&clone_args, sizeof(clone));
-
-everywhere in the codebase because I'm fscking over everyone on older
-kernels now. :)
-
-Soin various parts of the codebase I will just use:
-
-clone3(&clone_args, CLONE_ARGS_SIZE_VER0);
-
-because I don't care about any of the additional features and I don't
-need the kernel to copy any of the other stuff. Then in other parts of
-the codebase I want to set_tid so I use:
-
-clone3(&clone_args, CLONE_ARGS_SIZE_VER1);
-
-This way I can also set "templates", i.e.
-
-struct clone_args clone_template1 = {
-	.flags		|= CLONE_CLEAR_SIGHAND,
-	.exit_signal	= SIGCHLD,
-	.set_tid	= 1000,
-	.set_tid_size	= 1,
-};
-
-and then use the same struct for:
-
-clone3(&clone_template1, CLONE_ARGS_SIZE_VER0);
-clone3(&clone_template1, CLONE_ARGS_SIZE_VER1);
-
-Whereas sizeof(clone_template1) would always give me
-CLONE_ARGS_SIZE_VER2.
-
-Christian
