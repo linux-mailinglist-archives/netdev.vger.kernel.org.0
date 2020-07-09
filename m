@@ -2,83 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BDC721A94F
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 22:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E12FC21A95D
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 22:52:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbgGIUtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 16:49:35 -0400
-Received: from smtp.al2klimov.de ([78.46.175.9]:52806 "EHLO smtp.al2klimov.de"
+        id S1726787AbgGIUwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 16:52:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53218 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726196AbgGIUte (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 16:49:34 -0400
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id 00206BC0D9;
-        Thu,  9 Jul 2020 20:49:31 +0000 (UTC)
-From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     kda@linux-powerpc.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH] SUNDANCE NETWORK DRIVER: Replace HTTP links with HTTPS ones
-Date:   Thu,  9 Jul 2020 22:49:25 +0200
-Message-Id: <20200709204925.27287-1-grandmaster@al2klimov.de>
+        id S1726196AbgGIUwA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 16:52:00 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2784220672;
+        Thu,  9 Jul 2020 20:52:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594327920;
+        bh=pypqqmtfXxmTAb4faWeQqNr+f2ItwATRuhxt47pyXOs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VosFc0W0TeXemwpxHtlihH1qz99e3CHFkp7+8rdrEl944xh0U3lKsc+ulJWrbJk+Q
+         +QMZ0e9+Cpl19AuMK/bRLpA8TJGQJHRtag3hK1RwKoE8kwQuxA7OSXEjbA8dUhGbjF
+         2eAzkc+tSI6CM8bYdy4mdNpjir+AmAj+4cJZjTH8=
+Date:   Thu, 9 Jul 2020 13:51:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
+        michael.chan@broadcom.com, edwin.peer@broadcom.com,
+        emil.s.tantilov@intel.com, alexander.h.duyck@linux.intel.com,
+        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com, mkubecek@suse.cz
+Subject: Re: [PATCH net-next v2 00/10] udp_tunnel: add NIC RX port offload
+ infrastructure
+Message-ID: <20200709135158.5567f476@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200709.112346.2015479962285681249.davem@davemloft.net>
+References: <20200709011814.4003186-1-kuba@kernel.org>
+        <20200709.112346.2015479962285681249.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: +++++
-X-Spam-Level: *****
-Authentication-Results: smtp.al2klimov.de;
-        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rationale:
-Reduces attack surface on kernel devs opening the links for MITM
-as HTTPS traffic is much harder to manipulate.
+On Thu, 09 Jul 2020 11:23:46 -0700 (PDT) David Miller wrote:
+> Looks like we get a build failure if IPV4=n and ETHTOOL_NL=y because
+> the code unconditionally references the udp tunnel ops from the
+> ethtool tunnel stuff.
 
-Deterministic algorithm:
-For each file:
-  If not .svg:
-    For each line:
-      If doesn't contain `\bxmlns\b`:
-        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
-            If both the HTTP and HTTPS versions
-            return 200 OK and serve the same content:
-              Replace HTTP with HTTPS.
+I see :S 
 
-Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
----
- Continuing my work started at 93431e0607e5.
- See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
- (Actually letting a shell for loop submit all this stuff for me.)
-
- If there are any URLs to be removed completely or at least not HTTPSified:
- Just clearly say so and I'll *undo my change*.
- See also: https://lkml.org/lkml/2020/6/27/64
-
- If there are any valid, but yet not changed URLs:
- See: https://lkml.org/lkml/2020/6/26/837
-
- If you apply the patch, please let me know.
-
-
- drivers/net/ethernet/dlink/sundance.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/dlink/sundance.c b/drivers/net/ethernet/dlink/sundance.c
-index dc566fcc3ba9..ebaca07f7873 100644
---- a/drivers/net/ethernet/dlink/sundance.c
-+++ b/drivers/net/ethernet/dlink/sundance.c
-@@ -18,7 +18,7 @@
- 	http://www.scyld.com/network/sundance.html
- 	[link no longer provides useful info -jgarzik]
- 	Archives of the mailing list are still available at
--	http://www.beowulf.org/pipermail/netdrivers/
-+	https://www.beowulf.org/pipermail/netdrivers/
- 
- */
- 
--- 
-2.27.0
-
+I think I'll cut out the entire ETHTOOL_MSG_TUNNEL_INFO_GET support if
+IPv4=n, theoretically there could be an non-IP tunnel info we want to
+report, but we can deal with that (unlikely) case later.
