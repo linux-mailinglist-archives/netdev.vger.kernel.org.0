@@ -2,300 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD09921A094
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:13:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0609321A0A3
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:19:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727006AbgGINNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 09:13:17 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:54701 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726768AbgGINNQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:13:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594300393;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=x77Ep7G2PFmADvB+1MZ29ho8XM+6bAAuD5zU0fkGyoY=;
-        b=MIZ4DnbF20yaPtwAutee0LTrBBRxXRrfiqleVY7WEzdAvUWNAqEiBBGtCgr20BgWMudSwZ
-        cwLDVTiKdbt4pMwH8fwfxe1GsMyIrl0FIB7autmjctQRt264Gwtpol9deXDoCCG5KqQ+Ve
-        3gy/e/Cd2h+NVAB//dooc8oeGx3pdRM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-396-pUcnpJzROW-gCTKV-Qzezg-1; Thu, 09 Jul 2020 09:13:06 -0400
-X-MC-Unique: pUcnpJzROW-gCTKV-Qzezg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 18C39107B7F0;
-        Thu,  9 Jul 2020 13:13:04 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-113-239.ams2.redhat.com [10.36.113.239])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E42B22B6DD;
-        Thu,  9 Jul 2020 13:13:02 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
+        id S1726772AbgGINTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 09:19:02 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:58851 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726315AbgGINTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:19:01 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id B613C5804CA;
+        Thu,  9 Jul 2020 09:19:00 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 09 Jul 2020 09:19:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=aSqi1/sH4SHEGVuqn
+        qwC/G/6rLysTDqlpKG6+HZIF44=; b=awEhSVoa4KQMUQxhtAeVA/MCWKLeOsEN5
+        +wGtfh/6XYgRYK9/+10wLNxOeR5dhUjBeLUceg69cT1pJL24pRISWIlYHMoAQpi8
+        b+iJjR9En/FJUCG1YiOovbtFGdDmhagAIMgsDIkgAWKt3RjmgYNLjj2d4rC+h+wT
+        7tOG3m9QrgPYScqY8E+oF+PQMoK21YkFwjCYvdO1LTKEtJyCduaRtEH+sdbHb63S
+        HpdaIsqUyioU07RO5Y/eVGFj4NRD2JHYMJRMPlSBNfuK70AzHNSJ8OYmvFlvuDvr
+        K/GoGX1xfPM57wz15qUppm+P2xvdy1HIbLgDXlpjZCO5qp+U3OC2A==
+X-ME-Sender: <xms:QhkHX2_CqsucofgITTprQi2QCMfdYa0vStEnNOaPrA6RxEKKIIepvQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudelgdeigecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
+    ffieekgeehveefvdegledvffduhfenucfkphepuddtledrieeirdduledrudeffeenucev
+    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthh
+    esihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:QhkHX2ufruo4wEo0NJQxRhuyRb8QQe8vJweNuPP4_s8RfG5J0VHUfw>
+    <xmx:QhkHX8BamIfR7zdoF5lty6yqiM7cxoXlF0TjM5j0kqwGGFIKl0oM6w>
+    <xmx:QhkHX-ePSgu8z3hG3SQwV44KdhCzaT8faCBzJQZeGq1UbAPEHcfZsA>
+    <xmx:RBkHX8F4D_I8-rO00hJgAVXiqeub69iAkJqCgrCCm0b9nWSE6fMj-w>
+Received: from shredder.mtl.com (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8B8C7328005A;
+        Thu,  9 Jul 2020 09:18:54 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org
-Subject: [PATCH net-next 4/4] selftests/mptcp: add diag interface tests
-Date:   Thu,  9 Jul 2020 15:12:42 +0200
-Message-Id: <cbaa69a08c809543b1647919687a300a297e0752.1594292774.git.pabeni@redhat.com>
-In-Reply-To: <cover.1594292774.git.pabeni@redhat.com>
-References: <cover.1594292774.git.pabeni@redhat.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
+        jeffrey.t.kirsher@intel.com, saeedm@mellanox.com, leon@kernel.org,
+        jiri@mellanox.com, snelson@pensando.io, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        danieller@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next v3 0/9] Expose port split attributes
+Date:   Thu,  9 Jul 2020 16:18:13 +0300
+Message-Id: <20200709131822.542252-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-basic functional test, triggering the msk diag interface
-code. Require appropriate iproute2 support, skip elsewhere.
+From: Ido Schimmel <idosch@mellanox.com>
 
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- tools/testing/selftests/net/mptcp/Makefile    |   2 +-
- tools/testing/selftests/net/mptcp/diag.sh     | 122 ++++++++++++++++++
- .../selftests/net/mptcp/mptcp_connect.c       |  22 +++-
- 3 files changed, 141 insertions(+), 5 deletions(-)
- create mode 100755 tools/testing/selftests/net/mptcp/diag.sh
+Danielle says:
 
-diff --git a/tools/testing/selftests/net/mptcp/Makefile b/tools/testing/selftests/net/mptcp/Makefile
-index f50976ee7d44..aa254aefc2c3 100644
---- a/tools/testing/selftests/net/mptcp/Makefile
-+++ b/tools/testing/selftests/net/mptcp/Makefile
-@@ -5,7 +5,7 @@ KSFT_KHDR_INSTALL := 1
- 
- CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g  -I$(top_srcdir)/usr/include
- 
--TEST_PROGS := mptcp_connect.sh pm_netlink.sh mptcp_join.sh
-+TEST_PROGS := mptcp_connect.sh pm_netlink.sh mptcp_join.sh diag.sh
- 
- TEST_GEN_FILES = mptcp_connect pm_nl_ctl
- 
-diff --git a/tools/testing/selftests/net/mptcp/diag.sh b/tools/testing/selftests/net/mptcp/diag.sh
-new file mode 100755
-index 000000000000..b3eee7ede18a
---- /dev/null
-+++ b/tools/testing/selftests/net/mptcp/diag.sh
-@@ -0,0 +1,122 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+rndh=$(printf %x $sec)-$(mktemp -u XXXXXX)
-+ns="ns1-$rndh"
-+ksft_skip=4
-+test_cnt=1
-+ret=0
-+pids=()
-+
-+flush_pids()
-+{
-+	# mptcp_connect in join mode will sleep a bit before completing,
-+	# give it some time
-+	sleep 1.1
-+
-+	for pid in ${pids[@]}; do
-+		[ -d /proc/$pid ] && kill -SIGUSR1 $pid >/dev/null 2>&1
-+	done
-+	pids=()
-+}
-+
-+cleanup()
-+{
-+	ip netns del $ns
-+	for pid in ${pids[@]}; do
-+		[ -d /proc/$pid ] && kill -9 $pid >/dev/null 2>&1
-+	done
-+}
-+
-+ip -Version > /dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not run test without ip tool"
-+	exit $ksft_skip
-+fi
-+ss -h | grep -q MPTCP
-+if [ $? -ne 0 ];then
-+	echo "SKIP: ss tool does not support MPTCP"
-+	exit $ksft_skip
-+fi
-+
-+__chk_nr()
-+{
-+	local condition="$1"
-+	local expected=$2
-+	local msg nr
-+
-+	shift 2
-+	msg=$*
-+	nr=$(ss -inmHMN $ns | $condition)
-+
-+	printf "%-50s" "$msg"
-+	if [ $nr != $expected ]; then
-+		echo "[ fail ] expected $expected found $nr"
-+		ret=$test_cnt
-+	else
-+		echo "[  ok  ]"
-+	fi
-+	test_cnt=$((test_cnt+1))
-+}
-+
-+chk_msk_nr()
-+{
-+	__chk_nr "grep -c token:" $*
-+}
-+
-+chk_msk_fallback_nr()
-+{
-+		__chk_nr "grep -c fallback" $*
-+}
-+
-+chk_msk_remote_key_nr()
-+{
-+		__chk_nr "grep -c remote_key" $*
-+}
-+
-+
-+trap cleanup EXIT
-+ip netns add $ns
-+ip -n $ns link set dev lo up
-+
-+echo "a" | ip netns exec $ns ./mptcp_connect -p 10000 -l 0.0.0.0 -t 100 >/dev/null &
-+sleep 0.1
-+pids[0]=$!
-+chk_msk_nr 0 "no msk on netns creation"
-+
-+echo "b" | ip netns exec $ns ./mptcp_connect -p 10000 127.0.0.1 -j -t 100 >/dev/null &
-+sleep 0.1
-+pids[1]=$!
-+chk_msk_nr 2 "after MPC handshake "
-+chk_msk_remote_key_nr 2 "....chk remote_key"
-+chk_msk_fallback_nr 0 "....chk no fallback"
-+flush_pids
-+
-+
-+echo "a" | ip netns exec $ns ./mptcp_connect -p 10001 -s TCP -l 0.0.0.0 -t 100 >/dev/null &
-+pids[0]=$!
-+sleep 0.1
-+echo "b" | ip netns exec $ns ./mptcp_connect -p 10001 127.0.0.1 -j -t 100 >/dev/null &
-+pids[1]=$!
-+sleep 0.1
-+chk_msk_fallback_nr 1 "check fallback"
-+flush_pids
-+
-+NR_CLIENTS=100
-+for I in `seq 1 $NR_CLIENTS`; do
-+	echo "a" | ip netns exec $ns ./mptcp_connect -p $((I+10001)) -l 0.0.0.0 -t 100 -w 10 >/dev/null  &
-+	pids[$((I*2))]=$!
-+done
-+sleep 0.1
-+
-+for I in `seq 1 $NR_CLIENTS`; do
-+	echo "b" | ip netns exec $ns ./mptcp_connect -p $((I+10001)) 127.0.0.1 -t 100 -w 10 >/dev/null &
-+	pids[$((I*2 + 1))]=$!
-+done
-+sleep 1.5
-+
-+chk_msk_nr $((NR_CLIENTS*2)) "many msk socket present"
-+flush_pids
-+
-+exit $ret
-+
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.c b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-index cedee5b952ba..cad6f73a5fd0 100644
---- a/tools/testing/selftests/net/mptcp/mptcp_connect.c
-+++ b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-@@ -11,6 +11,7 @@
- #include <stdio.h>
- #include <stdlib.h>
- #include <strings.h>
-+#include <signal.h>
- #include <unistd.h>
- 
- #include <sys/poll.h>
-@@ -36,6 +37,7 @@ extern int optind;
- 
- static int  poll_timeout = 10 * 1000;
- static bool listen_mode;
-+static bool quit;
- 
- enum cfg_mode {
- 	CFG_MODE_POLL,
-@@ -52,11 +54,12 @@ static int pf = AF_INET;
- static int cfg_sndbuf;
- static int cfg_rcvbuf;
- static bool cfg_join;
-+static int cfg_wait;
- 
- static void die_usage(void)
- {
- 	fprintf(stderr, "Usage: mptcp_connect [-6] [-u] [-s MPTCP|TCP] [-p port] [-m mode]"
--		"[-l] connect_address\n");
-+		"[-l] [-w sec] connect_address\n");
- 	fprintf(stderr, "\t-6 use ipv6\n");
- 	fprintf(stderr, "\t-t num -- set poll timeout to num\n");
- 	fprintf(stderr, "\t-S num -- set SO_SNDBUF to num\n");
-@@ -65,9 +68,15 @@ static void die_usage(void)
- 	fprintf(stderr, "\t-m [MPTCP|TCP] -- use tcp or mptcp sockets\n");
- 	fprintf(stderr, "\t-s [mmap|poll] -- use poll (default) or mmap\n");
- 	fprintf(stderr, "\t-u -- check mptcp ulp\n");
-+	fprintf(stderr, "\t-w num -- wait num sec before closing the socket\n");
- 	exit(1);
- }
- 
-+static void handle_signal(int nr)
-+{
-+	quit = true;
-+}
-+
- static const char *getxinfo_strerr(int err)
- {
- 	if (err == EAI_SYSTEM)
-@@ -418,8 +427,8 @@ static int copyfd_io_poll(int infd, int peerfd, int outfd)
- 	}
- 
- 	/* leave some time for late join/announce */
--	if (cfg_join)
--		usleep(400000);
-+	if (cfg_wait)
-+		usleep(cfg_wait);
- 
- 	close(peerfd);
- 	return 0;
-@@ -812,11 +821,12 @@ static void parse_opts(int argc, char **argv)
- {
- 	int c;
- 
--	while ((c = getopt(argc, argv, "6jlp:s:hut:m:S:R:")) != -1) {
-+	while ((c = getopt(argc, argv, "6jlp:s:hut:m:S:R:w:")) != -1) {
- 		switch (c) {
- 		case 'j':
- 			cfg_join = true;
- 			cfg_mode = CFG_MODE_POLL;
-+			cfg_wait = 400000;
- 			break;
- 		case 'l':
- 			listen_mode = true;
-@@ -850,6 +860,9 @@ static void parse_opts(int argc, char **argv)
- 		case 'R':
- 			cfg_rcvbuf = parse_int(optarg);
- 			break;
-+		case 'w':
-+			cfg_wait = atoi(optarg)*1000000;
-+			break;
- 		}
- 	}
- 
-@@ -865,6 +878,7 @@ int main(int argc, char *argv[])
- {
- 	init_rng();
- 
-+	signal(SIGUSR1, handle_signal);
- 	parse_opts(argc, argv);
- 
- 	if (tcpulp_audit)
+Currently, user space has no way of knowing if a port can be split and
+into how many ports. Among other things, this makes it impossible to
+write generic tests for port split functionality.
+
+Therefore, this set exposes two new devlink port attributes to user
+space: Number of lanes and whether the port can be split or not.
+
+Patch set overview:
+
+Patches #1-#4 cleanup 'struct devlink_port_attrs' and reduce the number
+of parameters passed between drivers and devlink via
+devlink_port_attrs_set()
+
+Patch #5 adds devlink port lanes attributes
+
+Patches #6-#7 add devlink port splittable attribute
+
+Patch #8 exploits the fact that devlink is now aware of port's number of
+lanes and whether the port can be split or not and moves some checks
+from drivers to devlink
+
+Patch #9 adds a port split test
+
+Changes since v2:
+* Remove some local variables from patch #3
+* Reword function description in patch #5
+* Fix a bug in patch #8
+* Add a test for the splittable attribute in patch #9
+
+Changes since v1:
+* Rename 'width' attribute to 'lanes'
+* Add 'splittable' attribute
+* Move checks from drivers to devlink
+
+Danielle Ratson (9):
+  devlink: Move set attribute of devlink_port_attrs to devlink_port
+  devlink: Move switch_port attribute of devlink_port_attrs to
+    devlink_port
+  devlink: Replace devlink_port_attrs_set parameters with a struct
+  mlxsw: Set number of port lanes attribute in driver
+  devlink: Add a new devlink port lanes attribute and pass to netlink
+  mlxsw: Set port split ability attribute in driver
+  devlink: Add a new devlink port split ability attribute and pass to
+    netlink
+  devlink: Move input checks from driver to devlink
+  selftests: net: Add port split test
+
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |   9 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |   6 +-
+ .../ethernet/mellanox/mlx5/core/en/devlink.c  |  19 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  16 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  18 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |   4 +-
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c |   4 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  23 +-
+ .../net/ethernet/mellanox/mlxsw/switchib.c    |   2 +-
+ .../net/ethernet/mellanox/mlxsw/switchx2.c    |   2 +-
+ .../net/ethernet/netronome/nfp/nfp_devlink.c  |  17 +-
+ .../ethernet/pensando/ionic/ionic_devlink.c   |   5 +-
+ drivers/net/netdevsim/dev.c                   |  10 +-
+ include/net/devlink.h                         |  30 +-
+ include/uapi/linux/devlink.h                  |   3 +
+ net/core/devlink.c                            |  93 +++---
+ net/dsa/dsa2.c                                |  17 +-
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/devlink_port_split.py       | 277 ++++++++++++++++++
+ 19 files changed, 424 insertions(+), 132 deletions(-)
+ create mode 100755 tools/testing/selftests/net/devlink_port_split.py
+
 -- 
 2.26.2
 
