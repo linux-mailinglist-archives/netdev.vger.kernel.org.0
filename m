@@ -2,389 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B95C21A0AD
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:20:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 236B021A0C5
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:25:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727116AbgGINTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 09:19:51 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:48133 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726947AbgGINTd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:19:33 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 7A0915804D1;
-        Thu,  9 Jul 2020 09:19:31 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Thu, 09 Jul 2020 09:19:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=vWbqJe3KAW8zP2+4B2dPehOrHYa0VCDKnuPwLsEenOs=; b=WeW2tWsK
-        3FZDwIHhtPdimICJ3wLX/taW2D8R//1bY8w4AldsSwqR4EaIoQ4uvomIIGWaX2x1
-        iCeYZx+y9GCLGBFiySfjvuAYdBtgftiEKVpmiTaEiNoGO+XiUqo3Nx0u2yacx7Q/
-        BitnDjsWV0R2dIB/QGiNqZOoF+d7hJ/RzoUIbkDYIzE5YNB9PbOFvFHT/0do1gW4
-        h7vQchlGwbwsMYkrju7FZJfswCjQB8q10sqHtdv9sJ8Gd7uxn7fu5j8fyOqTkic1
-        esxDrN1ebyLPcUlcJXGBYdKoY0nsNmwefXELyCH1axROdkcDjTFriORys/uGWQDc
-        UIWWka8/a80xMQ==
-X-ME-Sender: <xms:YxkHX0QsAQ-pnZAeWIXT9iet38y1ua__Ew-9E_rCB6PF7QV_aqVYyQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudelgdeigecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
-    fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieeirdduledrudeffeen
-    ucevlhhushhtvghrufhiiigvpeeknecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
-    gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:YxkHXxwN63__1__gmDY1z_wlM4A5Cv5YtfHk-Cfq4SMDlIrs_QH8-A>
-    <xmx:YxkHXx0VDPpAEAGXrKRk4TJGTdoEMB2CSw3DxYQEtjKUa72bqA9GEw>
-    <xmx:YxkHX4B3vDPNuEZ_oM-HgsbgvMHfObtRhVVd7GQn3WXnLanvecaidw>
-    <xmx:YxkHXyZeW25TBhidEWPj698nxh1M-JPfSQ6sqwAzJkU7JFQvV7nhvw>
-Received: from shredder.mtl.com (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2899C328005A;
-        Thu,  9 Jul 2020 09:19:27 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
-        jeffrey.t.kirsher@intel.com, saeedm@mellanox.com, leon@kernel.org,
-        jiri@mellanox.com, snelson@pensando.io, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        danieller@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v3 9/9] selftests: net: Add port split test
-Date:   Thu,  9 Jul 2020 16:18:22 +0300
-Message-Id: <20200709131822.542252-10-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200709131822.542252-1-idosch@idosch.org>
-References: <20200709131822.542252-1-idosch@idosch.org>
+        id S1726874AbgGINZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 09:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726315AbgGINZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:25:19 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D94C08C5CE
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 06:25:19 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id h22so2354024lji.9
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 06:25:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=at4hm4Wx8VLhlrK8tltrCSWFZtJCd4xqnDRE0pFvwm8=;
+        b=BuFovPuGqFimHTwri1BZviUEULKIQ/sRl9M1QBhrj4PQPzFn0bSk7da4QW8rBc+wZx
+         RvL9tpJKksXNM3D0YLclKathu9fuV7iF04BmZZVrnFKgf8Gr7B0Zzlke1cw2QxZBAO1g
+         XxmNg9F7ihOTypPTXAJ1ex8cher3Jzf7UyN/c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=at4hm4Wx8VLhlrK8tltrCSWFZtJCd4xqnDRE0pFvwm8=;
+        b=q/oPSLFeAQpIVEXWwsbXt1Vk/obJ2eXzgV8W+J1uCntH2izgLiypvi0EUDqghLIYnQ
+         x8LMLxaCViHvflGkrP7eUylGRyTlPa6VwcWHg5WCo6kbmPQ86/x1PQnuDezb8HZpX2Z9
+         PZBKQ5ebfjJtZmWqgxVlaB22Y6l547N86ljCgKKsNcQbeGrXpYtf/H+iRhSYp2H/BcAS
+         iSQLCqOSMoAz/h+axZ7QpSJ0uwXgbEwd6FQ866myz+DmVa2/Gzj9rqglbwa/6V4+Z6O1
+         AwmLAux1+6l/7+7MF1B5sssLoZhp/hoCOARsVzq0g1uNpUGcJMXB+bzrJwRsflGD4V3+
+         3a5w==
+X-Gm-Message-State: AOAM533TaMdF3c6Gajp/YBUotIMr704Ocg0VmPh2ykTrnwbY+KXns43M
+        bp/sGB2GNAfsqiGti8BXhiHySA==
+X-Google-Smtp-Source: ABdhPJzV/fdptT7nLgaWgQcZxOCPYelcJVDpUEbTnlNt145e4dPwPRtdbq3h7Y1KEEbXKC1+9gAXdg==
+X-Received: by 2002:a2e:92d0:: with SMTP id k16mr27573249ljh.48.1594301114442;
+        Thu, 09 Jul 2020 06:25:14 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id q3sm501170ljm.22.2020.07.09.06.25.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jul 2020 06:25:13 -0700 (PDT)
+References: <20200702092416.11961-1-jakub@cloudflare.com> <20200702092416.11961-3-jakub@cloudflare.com> <CAEf4BzZ7-0TFD4+NqpK9X=Yuiem89Ug27v90fev=nn+3anCTpA@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>
+Subject: Re: [PATCH bpf-next v3 02/16] bpf: Introduce SK_LOOKUP program type with a dedicated attach point
+In-reply-to: <CAEf4BzZ7-0TFD4+NqpK9X=Yuiem89Ug27v90fev=nn+3anCTpA@mail.gmail.com>
+Date:   Thu, 09 Jul 2020 15:25:12 +0200
+Message-ID: <87imewakhz.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Danielle Ratson <danieller@mellanox.com>
+On Thu, Jul 09, 2020 at 06:08 AM CEST, Andrii Nakryiko wrote:
+> On Thu, Jul 2, 2020 at 2:25 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> Add a new program type BPF_PROG_TYPE_SK_LOOKUP with a dedicated attach type
+>> BPF_SK_LOOKUP. The new program kind is to be invoked by the transport layer
+>> when looking up a listening socket for a new connection request for
+>> connection oriented protocols, or when looking up an unconnected socket for
+>> a packet for connection-less protocols.
+>>
+>> When called, SK_LOOKUP BPF program can select a socket that will receive
+>> the packet. This serves as a mechanism to overcome the limits of what
+>> bind() API allows to express. Two use-cases driving this work are:
+>>
+>>  (1) steer packets destined to an IP range, on fixed port to a socket
+>>
+>>      192.0.2.0/24, port 80 -> NGINX socket
+>>
+>>  (2) steer packets destined to an IP address, on any port to a socket
+>>
+>>      198.51.100.1, any port -> L7 proxy socket
+>>
+>> In its run-time context program receives information about the packet that
+>> triggered the socket lookup. Namely IP version, L4 protocol identifier, and
+>> address 4-tuple. Context can be further extended to include ingress
+>> interface identifier.
+>>
+>> To select a socket BPF program fetches it from a map holding socket
+>> references, like SOCKMAP or SOCKHASH, and calls bpf_sk_assign(ctx, sk, ...)
+>> helper to record the selection. Transport layer then uses the selected
+>> socket as a result of socket lookup.
+>>
+>> This patch only enables the user to attach an SK_LOOKUP program to a
+>> network namespace. Subsequent patches hook it up to run on local delivery
+>> path in ipv4 and ipv6 stacks.
+>>
+>> Suggested-by: Marek Majkowski <marek@cloudflare.com>
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>>
+>> Notes:
+>>     v3:
+>>     - Allow bpf_sk_assign helper to replace previously selected socket only
+>>       when BPF_SK_LOOKUP_F_REPLACE flag is set, as a precaution for multiple
+>>       programs running in series to accidentally override each other's verdict.
+>>     - Let BPF program decide that load-balancing within a reuseport socket group
+>>       should be skipped for the socket selected with bpf_sk_assign() by passing
+>>       BPF_SK_LOOKUP_F_NO_REUSEPORT flag. (Martin)
+>>     - Extend struct bpf_sk_lookup program context with an 'sk' field containing
+>>       the selected socket with an intention for multiple attached program
+>>       running in series to see each other's choices. However, currently the
+>>       verifier doesn't allow checking if pointer is set.
+>>     - Use bpf-netns infra for link-based multi-program attachment. (Alexei)
+>>     - Get rid of macros in convert_ctx_access to make it easier to read.
+>>     - Disallow 1-,2-byte access to context fields containing IP addresses.
+>>
+>>     v2:
+>>     - Make bpf_sk_assign reject sockets that don't use RCU freeing.
+>>       Update bpf_sk_assign docs accordingly. (Martin)
+>>     - Change bpf_sk_assign proto to take PTR_TO_SOCKET as argument. (Martin)
+>>     - Fix broken build when CONFIG_INET is not selected. (Martin)
+>>     - Rename bpf_sk_lookup{} src_/dst_* fields remote_/local_*. (Martin)
+>>     - Enforce BPF_SK_LOOKUP attach point on load & attach. (Martin)
+>>
+>>  include/linux/bpf-netns.h  |   3 +
+>>  include/linux/bpf_types.h  |   2 +
+>>  include/linux/filter.h     |  19 ++++
+>>  include/uapi/linux/bpf.h   |  74 +++++++++++++++
+>>  kernel/bpf/net_namespace.c |   5 +
+>>  kernel/bpf/syscall.c       |   9 ++
+>>  net/core/filter.c          | 186 +++++++++++++++++++++++++++++++++++++
+>>  scripts/bpf_helpers_doc.py |   9 +-
+>>  8 files changed, 306 insertions(+), 1 deletion(-)
+>>
 
-Test port split configuration using previously added number of port lanes
-attribute.
+[...]
 
-Check that all the splittable ports are successfully split to their maximum
-number of lanes and below, and that those which are not splittable fail to
-be split.
+>> +
+>> +static u32 sk_lookup_convert_ctx_access(enum bpf_access_type type,
+>> +                                       const struct bpf_insn *si,
+>> +                                       struct bpf_insn *insn_buf,
+>> +                                       struct bpf_prog *prog,
+>> +                                       u32 *target_size)
+>
+> Would it be too extreme to rely on BTF and direct memory access
+> (similar to tp_raw, fentry/fexit, etc) for accessing context fields,
+> instead of all this assembly rewrites? So instead of having
+> bpf_sk_lookup and bpf_sk_lookup_kern, it will always be a full variant
+> (bpf_sk_lookup_kern, or however we'd want to name it then) and
+> verifier will just ensure that direct memory reads go to the right
+> field boundaries?
 
-Test output example:
+Sounds like a decision related to long-term vision. I'd appreciate input
+from maintainers if this is the direction we want to go in.
 
-TEST: swp4 is unsplittable                                         [ OK ]
-TEST: split port swp53 into 4                                      [ OK ]
-TEST: Unsplit port pci/0000:03:00.0/25                             [ OK ]
-TEST: split port swp53 into 2                                      [ OK ]
-TEST: Unsplit port pci/0000:03:00.0/25                             [ OK ]
+From implementation PoV - hard for me to say what would be needed to get
+it working, I'm not familiar how BPF_TRACE_* attach types provide access
+to context, so I'd need to look around and prototype it
+first. (Actually, I'm not sure if you're asking if it is doable or you
+already know?)
 
-Signed-off-by: Danielle Ratson <danieller@mellanox.com>
-Reviewed-by: Petr Machata <petrm@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- tools/testing/selftests/net/Makefile          |   1 +
- .../selftests/net/devlink_port_split.py       | 277 ++++++++++++++++++
- 2 files changed, 278 insertions(+)
- create mode 100755 tools/testing/selftests/net/devlink_port_split.py
+Off the top of my head, I have one concern, I'm exposing the selected
+socket in the context. This is for the benefit of one program being
+aware of other program's selection, if multiple programs are attached.
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index bfacb960450f..9491bbaa0831 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -18,6 +18,7 @@ TEST_PROGS += reuseaddr_ports_exhausted.sh
- TEST_PROGS += txtimestamp.sh
- TEST_PROGS += vrf-xfrm-tests.sh
- TEST_PROGS += rxtimestamp.sh
-+TEST_PROGS += devlink_port_split.py
- TEST_PROGS_EXTENDED := in_netns.sh
- TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
-diff --git a/tools/testing/selftests/net/devlink_port_split.py b/tools/testing/selftests/net/devlink_port_split.py
-new file mode 100755
-index 000000000000..58bb7e9b88ce
---- /dev/null
-+++ b/tools/testing/selftests/net/devlink_port_split.py
-@@ -0,0 +1,277 @@
-+#!/usr/bin/python3
-+# SPDX-License-Identifier: GPL-2.0
-+
-+from subprocess import PIPE, Popen
-+import json
-+import time
-+import argparse
-+import collections
-+import sys
-+
-+#
-+# Test port split configuration using devlink-port lanes attribute.
-+# The test is skipped in case the attribute is not available.
-+#
-+# First, check that all the ports with 1 lane fail to split.
-+# Second, check that all the ports with more than 1 lane can be split
-+# to all valid configurations (e.g., split to 2, split to 4 etc.)
-+#
-+
-+
-+Port = collections.namedtuple('Port', 'bus_info name')
-+
-+
-+def run_command(cmd, should_fail=False):
-+    """
-+    Run a command in subprocess.
-+    Return: Tuple of (stdout, stderr).
-+    """
-+
-+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
-+    stdout, stderr = p.communicate()
-+    stdout, stderr = stdout.decode(), stderr.decode()
-+
-+    if stderr != "" and not should_fail:
-+        print("Error sending command: %s" % cmd)
-+        print(stdout)
-+        print(stderr)
-+    return stdout, stderr
-+
-+
-+class devlink_ports(object):
-+    """
-+    Class that holds information on the devlink ports, required to the tests;
-+    if_names: A list of interfaces in the devlink ports.
-+    """
-+
-+    def get_if_names(dev):
-+        """
-+        Get a list of physical devlink ports.
-+        Return: Array of tuples (bus_info/port, if_name).
-+        """
-+
-+        arr = []
-+
-+        cmd = "devlink -j port show"
-+        stdout, stderr = run_command(cmd)
-+        assert stderr == ""
-+        ports = json.loads(stdout)['port']
-+
-+        for port in ports:
-+            if dev in port:
-+                if ports[port]['flavour'] == 'physical':
-+                    arr.append(Port(bus_info=port, name=ports[port]['netdev']))
-+
-+        return arr
-+
-+    def __init__(self, dev):
-+        self.if_names = devlink_ports.get_if_names(dev)
-+
-+
-+def get_max_lanes(port):
-+    """
-+    Get the $port's maximum number of lanes.
-+    Return: number of lanes, e.g. 1, 2, 4 and 8.
-+    """
-+
-+    cmd = "devlink -j port show %s" % port
-+    stdout, stderr = run_command(cmd)
-+    assert stderr == ""
-+    values = list(json.loads(stdout)['port'].values())[0]
-+
-+    if 'lanes' in values:
-+        lanes = values['lanes']
-+    else:
-+        lanes = 0
-+    return lanes
-+
-+
-+def get_split_ability(port):
-+    """
-+    Get the $port split ability.
-+    Return: split ability, true or false.
-+    """
-+
-+    cmd = "devlink -j port show %s" % port.name
-+    stdout, stderr = run_command(cmd)
-+    assert stderr == ""
-+    values = list(json.loads(stdout)['port'].values())[0]
-+
-+    return values['splittable']
-+
-+
-+def split(k, port, should_fail=False):
-+    """
-+    Split $port into $k ports.
-+    If should_fail == True, the split should fail. Otherwise, should pass.
-+    Return: Array of sub ports after splitting.
-+            If the $port wasn't split, the array will be empty.
-+    """
-+
-+    cmd = "devlink port split %s count %s" % (port.bus_info, k)
-+    stdout, stderr = run_command(cmd, should_fail=should_fail)
-+
-+    if should_fail:
-+        if not test(stderr != "", "%s is unsplittable" % port.name):
-+            print("split an unsplittable port %s" % port.name)
-+            return create_split_group(port, k)
-+    else:
-+        if stderr == "":
-+            return create_split_group(port, k)
-+        print("didn't split a splittable port %s" % port.name)
-+
-+    return []
-+
-+
-+def unsplit(port):
-+    """
-+    Unsplit $port.
-+    """
-+
-+    cmd = "devlink port unsplit %s" % port
-+    stdout, stderr = run_command(cmd)
-+    test(stderr == "", "Unsplit port %s" % port)
-+
-+
-+def exists(port, dev):
-+    """
-+    Check if $port exists in the devlink ports.
-+    Return: True is so, False otherwise.
-+    """
-+
-+    return any(dev_port.name == port
-+               for dev_port in devlink_ports.get_if_names(dev))
-+
-+
-+def exists_and_lanes(ports, lanes, dev):
-+    """
-+    Check if every port in the list $ports exists in the devlink ports and has
-+    $lanes number of lanes after splitting.
-+    Return: True if both are True, False otherwise.
-+    """
-+
-+    for port in ports:
-+        max_lanes = get_max_lanes(port)
-+        if not exists(port, dev):
-+            print("port %s doesn't exist in devlink ports" % port)
-+            return False
-+        if max_lanes != lanes:
-+            print("port %s has %d lanes, but %s were expected"
-+                  % (port, lanes, max_lanes))
-+            return False
-+    return True
-+
-+
-+def test(cond, msg):
-+    """
-+    Check $cond and print a message accordingly.
-+    Return: True is pass, False otherwise.
-+    """
-+
-+    if cond:
-+        print("TEST: %-60s [ OK ]" % msg)
-+    else:
-+        print("TEST: %-60s [FAIL]" % msg)
-+
-+    return cond
-+
-+
-+def create_split_group(port, k):
-+    """
-+    Create the split group for $port.
-+    Return: Array with $k elements, which are the split port group.
-+    """
-+
-+    return list(port.name + "s" + str(i) for i in range(k))
-+
-+
-+def split_unsplittable_port(port, k):
-+    """
-+    Test that splitting of unsplittable port fails.
-+    """
-+
-+    # split to max
-+    new_split_group = split(k, port, should_fail=True)
-+
-+    if new_split_group != []:
-+        unsplit(port.bus_info)
-+
-+
-+def split_splittable_port(port, k, lanes, dev):
-+    """
-+    Test that splitting of splittable port passes correctly.
-+    """
-+
-+    new_split_group = split(k, port)
-+
-+    # Once the split command ends, it takes some time to the sub ifaces'
-+    # to get their names. Use udevadm to continue only when all current udev
-+    # events are handled.
-+    cmd = "udevadm settle"
-+    stdout, stderr = run_command(cmd)
-+    assert stderr == ""
-+
-+    if new_split_group != []:
-+        test(exists_and_lanes(new_split_group, lanes/k, dev),
-+             "split port %s into %s" % (port.name, k))
-+
-+    unsplit(port.bus_info)
-+
-+
-+def make_parser():
-+    parser = argparse.ArgumentParser(description='A test for port splitting.')
-+    parser.add_argument('--dev',
-+                        help='The devlink handle of the device under test. ' +
-+                             'The default is the first registered devlink ' +
-+                             'handle.')
-+
-+    return parser
-+
-+
-+def main(cmdline=None):
-+    parser = make_parser()
-+    args = parser.parse_args(cmdline)
-+
-+    dev = args.dev
-+    if not dev:
-+        cmd = "devlink -j dev show"
-+        stdout, stderr = run_command(cmd)
-+        assert stderr == ""
-+
-+        devs = json.loads(stdout)['dev']
-+        dev = list(devs.keys())[0]
-+
-+    cmd = "devlink dev show %s" % dev
-+    stdout, stderr = run_command(cmd)
-+    if stderr != "":
-+        print("devlink device %s can not be found" % dev)
-+        sys.exit(1)
-+
-+    ports = devlink_ports(dev)
-+
-+    for port in ports.if_names:
-+        max_lanes = get_max_lanes(port.name)
-+
-+        # If max lanes is 0, do not test port splitting at all
-+        if max_lanes == 0:
-+            continue
-+
-+        # If 1 lane, shouldn't be able to split
-+        elif max_lanes == 1:
-+            test(not get_split_ability(port),
-+                 "%s should not be able to split" % port.name)
-+            split_unsplittable_port(port, max_lanes)
-+
-+        # Else, splitting should pass and all the split ports should exist.
-+        else:
-+            lane = max_lanes
-+            test(get_split_ability(port),
-+                 "%s should be able to split" % port.name)
-+            while lane > 1:
-+                split_splittable_port(port, lane, max_lanes, dev)
-+
-+                lane //= 2
-+
-+
-+if __name__ == "__main__":
-+    main()
--- 
-2.26.2
+I understand that any piece of data reachable from struct sock *, would
+be readable by SK_LOOKUP prog (writes can be blocked in
+is_valid_access). And that this is a desired property for tracing. Not
+sure how to limit it for a network program that doesn't need all that
+info.
 
+>
+>> +{
+>> +       struct bpf_insn *insn = insn_buf;
+>> +#if IS_ENABLED(CONFIG_IPV6)
+>> +       int off;
+>> +#endif
+>> +
+>
+> [...]
