@@ -2,207 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACF8B21A374
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 17:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6C1121A37D
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 17:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728178AbgGIPWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 11:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55006 "EHLO
+        id S1728283AbgGIPWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 11:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728103AbgGIPWT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 11:22:19 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38703C08C5CE
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 08:22:19 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id t11so1145031pfq.11
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 08:22:19 -0700 (PDT)
+        with ESMTP id S1728254AbgGIPWq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 11:22:46 -0400
+Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDD6C08C5DC
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 08:22:46 -0700 (PDT)
+Received: by mail-ua1-x941.google.com with SMTP id p6so833325uaq.12
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 08:22:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RMOOBkt6BiuVxgQAzukgH1LpqaS9kRk1p3gI+ObCk8A=;
-        b=jzrlJ6Psxebm3YoLPTkaCJx36p17IwBdX/2XjTuRBRRB7pQyapYp/sG9EN0nHWGwNN
-         vTpGQwaR5D/X4WAW9zWuimP4reSpSYzoU72J9th6SMGqr3DkvaI2YWujtefDul6v33Vn
-         Dw5mzLDK4K2Y3STydiNqmQRAxhAmjM2rsISlU=
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NlZV7q7oZfSsF7eZZwKOePXY88Q+axAbOXXuZcZlzCE=;
+        b=hFbUxwkrUwczQtSXAxGKo0vdW2IUs0zf+zn25GxqMjc0mhWqQV+rAOaMJe31oBUkHg
+         INzNLPLLe84Ksm2T8pEVrgP0fnOOez1gR9Gu3nmGD7M+NY4J9FPg2GOXGNRn2sdyUxcS
+         gsU9lHLptI9Vtt2KL+FJDwLrLfmocJwZmDVfY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RMOOBkt6BiuVxgQAzukgH1LpqaS9kRk1p3gI+ObCk8A=;
-        b=HjwuvlDas2EimykuvEw3DDB29hD7gyFOEF4b8kUDZRfpwKPURx2WDXByEsNNNYuQ5d
-         jC92wbKjnVhSxvL/97HpNOsTz++T0P7QpIfxSjDIg4/oosj5ZtPHZlmQME6e+p4BElZx
-         GZdyuCgyYAkFVLqc+mkMjURMwJupwFwqgChuHKnxbLA/PA1ThzFEU9PBnRrfdn9bBWej
-         cswR4MLqvECUy72A6tVbw9iMACxLLVJ7LSWkmxwoRR7v1+e/DVqtKeJ0hqT4WpQmWpGe
-         5TvCfLW/ybBKU0FWEVGoPBla+DdJzohYlhHxnhidDcKlX1c6U44xsEFZq51E3xj/PbU0
-         mx+A==
-X-Gm-Message-State: AOAM532hdBDS1VPMbFtBE8D7oYZJMpCN6hGncqH0BJ1nkwmWFMVBFi7Q
-        gl31TsrKylC4dEL4yEHq6OKTww==
-X-Google-Smtp-Source: ABdhPJy/6mLFNsMrvrosVpNqu0HDjvO0HrWBNowFAIRcw5RHr2ZKshxCYnHJzeZ3fr3oioRfz/bZOw==
-X-Received: by 2002:a62:ae0d:: with SMTP id q13mr50726036pff.89.1594308138738;
-        Thu, 09 Jul 2020 08:22:18 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:42b0:34ff:fe3d:58e6])
-        by smtp.gmail.com with ESMTPSA id 137sm3116462pgg.72.2020.07.09.08.22.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2020 08:22:18 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     kvalo@codeaurora.org, ath10k@lists.infradead.org
-Cc:     linux-arm-msm@vger.kernel.org, briannorris@chromium.org,
-        saiprakash.ranjan@codeaurora.org, linux-wireless@vger.kernel.org,
-        pillair@codeaurora.org, kuabhs@google.com,
-        Douglas Anderson <dianders@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v2 2/2] ath10k: Get rid of "per_ce_irq" hw param
-Date:   Thu,  9 Jul 2020 08:21:05 -0700
-Message-Id: <20200709082024.v2.2.I083faa4e62e69f863311c89ae5eb28ec5a229b70@changeid>
-X-Mailer: git-send-email 2.27.0.383.g050319c2ae-goog
-In-Reply-To: <20200709082024.v2.1.I4d2f85ffa06f38532631e864a3125691ef5ffe06@changeid>
-References: <20200709082024.v2.1.I4d2f85ffa06f38532631e864a3125691ef5ffe06@changeid>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NlZV7q7oZfSsF7eZZwKOePXY88Q+axAbOXXuZcZlzCE=;
+        b=EUG3YaBIDV2IrVeWyb07z7ZTnStiQk8KeyjdfnGh+56Ujh8jxHDHDjEhDjWx1j2J1p
+         2Up6lr0mNhTXPsS/StgW5MMELRHcM0Y4jqQudysLK2rUtDEq0GPl7dZOL8V920xmlnUM
+         NUUbxkwvCEwMsfFFKsK5qvPBd3NC+H10xyvDCdC1gVL2+k0am78ixwRPua5N4x3KkMpv
+         pdQI+pH+xCJ7o+ENIV6yJdmDSrkEzbBjgU2p7jMy0HKOfrEPUxvd3FZiyoVJZfo3HwGM
+         Y5BjTb1+lZwnXEfO7hPpQiSipT6kk0xRMTJXISW3GWrxg0/0NJWZOw4DtifbixbdNZHZ
+         L76g==
+X-Gm-Message-State: AOAM532NPgUhPwVjwbG40cJrI5OOQFeyHPR+AA/Wf+kMFLVMpNpLu3/l
+        t+tWGb1pSVNs8JKg9mV/Id3F3XR+xdE=
+X-Google-Smtp-Source: ABdhPJzKViy07I5VMNV3XoNdJfnziU5Zv3Kwz1mjRh8xPfESs6bEzrE9jYEvY93nkHqJU1CHLwBb1Q==
+X-Received: by 2002:a9f:2612:: with SMTP id 18mr49083269uag.78.1594308164054;
+        Thu, 09 Jul 2020 08:22:44 -0700 (PDT)
+Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com. [209.85.221.175])
+        by smtp.gmail.com with ESMTPSA id e5sm395677vsq.15.2020.07.09.08.22.42
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jul 2020 08:22:43 -0700 (PDT)
+Received: by mail-vk1-f175.google.com with SMTP id m18so81690vkk.7
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 08:22:42 -0700 (PDT)
+X-Received: by 2002:a1f:61c2:: with SMTP id v185mr16966422vkb.42.1594308161819;
+ Thu, 09 Jul 2020 08:22:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200707101712.1.I4d2f85ffa06f38532631e864a3125691ef5ffe06@changeid>
+ <CA+ASDXMXtwdV4BNL1GSj8DY-3z8-dZ=1hP8Xv_R-AjKvJs0NMw@mail.gmail.com>
+ <CAD=FV=WU2dUFtG4W6o574DRN9VV+u_B5-ThqV3BogjztBibyLQ@mail.gmail.com> <CA+ASDXOwFnCcMC9g11FSVLvj2nepArJyihGvx3SU-XqySoJruw@mail.gmail.com>
+In-Reply-To: <CA+ASDXOwFnCcMC9g11FSVLvj2nepArJyihGvx3SU-XqySoJruw@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 9 Jul 2020 08:22:28 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WUpHGoLm+NG-_eGsVKO7X+SLObFCoQVBSCNEa6KRmpmA@mail.gmail.com>
+Message-ID: <CAD=FV=WUpHGoLm+NG-_eGsVKO7X+SLObFCoQVBSCNEa6KRmpmA@mail.gmail.com>
+Subject: Re: [PATCH] ath10k: Keep track of which interrupts fired, don't poll them
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        ath10k <ath10k@lists.infradead.org>,
+        Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Rakesh Pillai <pillair@codeaurora.org>,
+        Abhishek Kumar <kuabhs@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As of the patch ("ath10k: Keep track of which interrupts fired, don't
-poll them") we now have no users of this hardware parameter.  Remove
-it.
+Hi,
 
-Suggested-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
+On Wed, Jul 8, 2020 at 4:40 PM Brian Norris <briannorris@chromium.org> wrote:
+>
+> On Wed, Jul 8, 2020 at 4:14 PM Doug Anderson <dianders@chromium.org> wrote:
+> > On Wed, Jul 8, 2020 at 4:03 PM Brian Norris <briannorris@chromium.org> wrote:
+> > > If I'm reading correctly, you're removing the only remaining use of
+> > > 'per_ce_irq'. Should we kill the field entirely?
+> >
+> > Ah, you are indeed correct!  I hadn't noticed that.  Unless I hear
+> > otherwise, I'll send a v2 tomorrow that removes the field entirely.
+>
+> A healthy middle ground might put that in a patch 2, so it's easily
+> dropped if desired. *shrug*
 
-Changes in v2:
-- Patch ("ath10k: Get rid of "per_ce_irq" hw param") new for v2.
+Sure, sounds like a plan.
 
- drivers/net/wireless/ath/ath10k/core.c | 13 -------------
- drivers/net/wireless/ath/ath10k/hw.h   |  3 ---
- 2 files changed, 16 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index 22b6937ac225..9104496a5125 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -119,7 +119,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -155,7 +154,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -220,7 +218,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -255,7 +252,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -290,7 +286,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -328,7 +323,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -369,7 +363,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -417,7 +410,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -462,7 +454,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -497,7 +488,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -534,7 +524,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -603,7 +592,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.target_64bit = false,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL,
--		.per_ce_irq = false,
- 		.shadow_reg_support = false,
- 		.rri_on_ddr = false,
- 		.hw_filter_reset_required = true,
-@@ -631,7 +619,6 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = TARGET_HL_TLV_NUM_WDS_ENTRIES,
- 		.target_64bit = true,
- 		.rx_ring_fill_level = HTT_RX_RING_FILL_LEVEL_DUAL_MAC,
--		.per_ce_irq = true,
- 		.shadow_reg_support = true,
- 		.rri_on_ddr = true,
- 		.hw_filter_reset_required = false,
-diff --git a/drivers/net/wireless/ath/ath10k/hw.h b/drivers/net/wireless/ath/ath10k/hw.h
-index f16edcb9f326..c6ded21f5ed6 100644
---- a/drivers/net/wireless/ath/ath10k/hw.h
-+++ b/drivers/net/wireless/ath/ath10k/hw.h
-@@ -593,9 +593,6 @@ struct ath10k_hw_params {
- 	/* Target rx ring fill level */
- 	u32 rx_ring_fill_level;
- 
--	/* target supporting per ce IRQ */
--	bool per_ce_irq;
--
- 	/* target supporting shadow register for ce write */
- 	bool shadow_reg_support;
- 
--- 
-2.27.0.383.g050319c2ae-goog
+> > > Or perhaps we should
+> > > leave some kind of WARN_ON() (BUG_ON()?) if this function is called
+> > > erroneously with per_ce_irq==true? But I suppose this driver is full
+> > > of landmines if the CE API is used incorrectly.
+> >
+> > Yeah, I originally had a WARN_ON() here and then took it out because
+> > it seemed like extra overhead and, as you said, someone writing the
+> > code has to know how the API works already I think.  ...but I'll add
+> > it back in if people want.
+>
+> I believe WARN_ON() and friends have a built-in unlikely(), so it
+> shouldn't have much overhead. But I don't really mind either way.
 
+Since you don't feel strongly, leaving it off.
+
+
+> > > Do you need to clear this map if the interface goes down or if there's
+> > > a firmware crash? Right now, I don't think there's a guarantee that
+> > > we'll run through a NAPI poll in those cases, which is the only place
+> > > you clear the map, and if the hardware/firmware has been reset, the
+> > > state map is probably not valid.
+> >
+> > Seems like a good idea.  Is the right place at the start of
+> > ath10k_snoc_hif_start()?
+>
+> Either there or in .power_down()/.power_up(). I think either would be
+> equally correct, but I'm not entirely sure if the semantic difference
+> is meaningful for this.
+
+Will choose ath10k_snoc_hif_start() since it's where napi_enable() is
+and ath10k_snoc_irq_enable() are and those are related.
+
+
+-Doug
