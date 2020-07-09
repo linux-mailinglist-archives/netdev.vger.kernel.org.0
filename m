@@ -2,203 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDE7A219687
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 05:15:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83FF12196CD
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 05:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726213AbgGIDPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 23:15:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55660 "EHLO
+        id S1726272AbgGIDpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 23:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726107AbgGIDPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 23:15:18 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E64C061A0B;
-        Wed,  8 Jul 2020 20:15:17 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id h17so375528qvr.0;
-        Wed, 08 Jul 2020 20:15:17 -0700 (PDT)
+        with ESMTP id S1726117AbgGIDpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jul 2020 23:45:05 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A56C061A0B;
+        Wed,  8 Jul 2020 20:45:05 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id h17so395469qvr.0;
+        Wed, 08 Jul 2020 20:45:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Qem3/7JAMxwp2XvQr47isJLzhtW2DSpGdcpfSmsSEgQ=;
-        b=acgbVwi9FFqPclfKd4VloCf568TaHsfww746RKQaXXTOSCMYyR3rJJjyeXsgl8laeS
-         lD9/YvTL2dSTjYbcBe9ABhCR3P77m32jxjKydi9SZDZfAZV3nEYKeExX/CvZ4vgBtV/S
-         OLfD00vX3kYtp9+2IZTMZxjfbw77ZcYeZGaigmXif8muxRisTK96SEKxTWfcfCB2O4xH
-         +jXSIodXaTa4fOq99nq2tW03K/y9S3W4c52barKJMn9fJQdmGo1knv9kr7XqteZl8KyJ
-         IWIE3f+kSX/e08lDOUg/BqyJGC1N46RVzA8Ow/xEi6RJEMwhaYbew1YWDxXGAper73Tf
-         qSJQ==
+        bh=B4pXDEaiwBUsL8ydILkn1qTObfdMqkZpkg0ZS0TVFHY=;
+        b=K1oZkb5FahNf/sRjuOcIUVdMmHfdUIroU35NlWVEz+cFlmoWLuiQaDvQ2gdyEwQ5Sf
+         A30ApSPPLNyZqZuCAZROPFH8Z2kOI0TxE97Lf/W4U/d5J08VtmEh8iMtsUShWhEX96Bd
+         buT8Xzc87I7mnuTB/fAD8NxGC2FcNSo/+ogCIr8dwwnYdIwnqjgys6FFA7DQJUytVPiU
+         KdaACIsCB7pVNC4Uu4KYTE19tgi4XX7gW4YkrLQilxERXlnRjdplnkGj9ZhWhSltPCx1
+         z21QOoUNSHwlhtQKg78RjNTGz6DixCrBSGYS5G37Ww3chwgJ7xcNS2Y7wSGBpZektOPo
+         1+tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Qem3/7JAMxwp2XvQr47isJLzhtW2DSpGdcpfSmsSEgQ=;
-        b=VnMb0/iy5Wp733tqz7rMKqx4CucMiXVPJvf9mr5cLlfXwZI+wnxFVbkelODZNiPEI9
-         1Hpglq3FbrIny4wOCCNi5Fm6ydoqaM2IxuxRgiDJ8hcmw/lQtRxY0Lzj4x4idy55gigr
-         SonLypZJNanHIDRxwesE9LBVTZMVH50VUgtIrSD3/MFvKUi6nfEJwLkvVQLkLyP9JeG5
-         NzmHETvcLvCYwEDZaMvQecqM7ulbVro2lAp0nze3fSLeq4vSeR52Fg1uyyUrdJGO6Jfs
-         SeVYUdI92JLVWvUveGX9UDv+NzDUoPI8t2kHpUwS6nvSumLbUMTgJxCKAqzoF4De2RHH
-         RTqg==
-X-Gm-Message-State: AOAM532zNL5bCyFx83nAs736adgaaRm2+VekABEnsX0Enmj+hqHNpIv0
-        YiO81VfT6gG8eP6FPwDmRbBneirIpyRMh8rXrps=
-X-Google-Smtp-Source: ABdhPJwRXkhGnqfHL36u3j4YjSOV721LgqwXyqcAo/bkRvDKj7y4CmfhinxBqM62k7ne5AYo/rzZ5ZhPhdiysjEnGx0=
-X-Received: by 2002:a05:6214:8f4:: with SMTP id dr20mr56978987qvb.228.1594264517036;
- Wed, 08 Jul 2020 20:15:17 -0700 (PDT)
+        bh=B4pXDEaiwBUsL8ydILkn1qTObfdMqkZpkg0ZS0TVFHY=;
+        b=RUyBmqYJeXU/pDJPtP+Q7z90GXpu+KOzffVgMCLoIgNdLX/yapvHXwFPeoM2Mbj8Iu
+         OE+0pFPyFOsopOvKVzQGlq+9uWz62URA/SVOOCfwPIbeGkoRid6hP8TvIJwj9pJ8rE80
+         UvEh/I4GBY3LgiJvK9NiHw8MbnvYTsvKDiGXFOoHTDSjV/gELBFFFaQ1ZIjYEll7HJKP
+         pTF9FCRe7a+zL0BRe5vfUEefRNWGGWH+lDbaMr4tja/1JNACrqBPvnWssOvq0Yu4koik
+         GYrXnQPMiREyklCVD++lKuxFvn54NgQ/Vo3NAmLmqVxGp0gZ3kZ/zMr7RHVb5DY6Yzlz
+         oP/Q==
+X-Gm-Message-State: AOAM532iQbWpkRlu9SBHSfskqLpI1OcldOZ2S1HkST4FhDdkCsFF+6v3
+        Y6MpQltmwvaT6/nXS5RoG7HGpYfVyj9CMyEJvVA=
+X-Google-Smtp-Source: ABdhPJxHOKslyj/PApFzsLNlXrbEcMqp863bGRFoEMpeLZ19zx0vseWbI3zfNkc0yCRjsQVyw66/PIFDtDxs/5Py0Z0=
+X-Received: by 2002:a0c:9ae2:: with SMTP id k34mr58907008qvf.247.1594266304173;
+ Wed, 08 Jul 2020 20:45:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200702200329.83224-1-alexei.starovoitov@gmail.com> <20200702200329.83224-4-alexei.starovoitov@gmail.com>
-In-Reply-To: <20200702200329.83224-4-alexei.starovoitov@gmail.com>
+References: <20200702092416.11961-1-jakub@cloudflare.com> <20200702092416.11961-2-jakub@cloudflare.com>
+In-Reply-To: <20200702092416.11961-2-jakub@cloudflare.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 8 Jul 2020 20:15:05 -0700
-Message-ID: <CAEf4BzYf64VEEMJaF8jS=KjRw7UQzOhNJpXW0+YtQZ+TxpT2aQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] bpf: Add kernel module with user mode driver
- that populates bpffs.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
+Date:   Wed, 8 Jul 2020 20:44:52 -0700
+Message-ID: <CAEf4Bzby9pxaaadTAfuvBER1UnaksS3ajpE6SB79L+g3j_YdAg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 01/16] bpf, netns: Handle multiple link attachments
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 2, 2020 at 1:04 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Thu, Jul 2, 2020 at 2:24 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
 >
-> From: Alexei Starovoitov <ast@kernel.org>
+> Extend the BPF netns link callbacks to rebuild (grow/shrink) or update the
+> prog_array at given position when link gets attached/updated/released.
 >
-> Add kernel module with user mode driver that populates bpffs with
-> BPF iterators.
+> This let's us lift the limit of having just one link attached for the new
+> attach type introduced by subsequent patch.
 >
-> $ mount bpffs /sys/fs/bpf/ -t bpf
-> $ ls -la /sys/fs/bpf/
-> total 4
-> drwxrwxrwt  2 root root    0 Jul  2 00:27 .
-> drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
-> -rw-------  1 root root    0 Jul  2 00:27 maps
-> -rw-------  1 root root    0 Jul  2 00:27 progs
+> No functional changes intended.
 >
-> The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
-> maps, load two BPF programs, attach them to BPF iterators, and finally send two
-> bpf_link IDs back to the kernel.
-> The kernel will pin two bpf_links into newly mounted bpffs instance under
-> names "progs" and "maps". These two files become human readable.
->
-> $ cat /sys/fs/bpf/progs
->   id name            pages attached
->   11    dump_bpf_map     1 bpf_iter_bpf_map
->   12   dump_bpf_prog     1 bpf_iter_bpf_prog
->   27 test_pkt_access     1
->   32       test_main     1 test_pkt_access test_pkt_access
->   33   test_subprog1     1 test_pkt_access_subprog1 test_pkt_access
->   34   test_subprog2     1 test_pkt_access_subprog2 test_pkt_access
->   35   test_subprog3     1 test_pkt_access_subprog3 test_pkt_access
->   36 new_get_skb_len     1 get_skb_len test_pkt_access
->   37 new_get_skb_ifi     1 get_skb_ifindex test_pkt_access
->   38 new_get_constan     1 get_constant test_pkt_access
->
-> The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
-> all BPF programs currently loaded in the system. This information is unstable
-> and will change from kernel to kernel.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 > ---
-
-[...]
-
-> +static int bpf_link_pin_kernel(struct dentry *parent,
-> +                              const char *name, struct bpf_link *link)
-> +{
-> +       umode_t mode = S_IFREG | S_IRUSR | S_IWUSR;
-> +       struct dentry *dentry;
-> +       int ret;
-> +
-> +       inode_lock(parent->d_inode);
-> +       dentry = lookup_one_len(name, parent, strlen(name));
-> +       if (IS_ERR(dentry)) {
-> +               inode_unlock(parent->d_inode);
-> +               return PTR_ERR(dentry);
-> +       }
-> +       ret = bpf_mkobj_ops(dentry, mode, link, &bpf_link_iops,
-> +                           &bpf_iter_fops);
-
-bpf_iter_fops only applies to bpf_iter links, while
-bpf_link_pin_kernel allows any link type. See bpf_mklink(), it checks
-bpf_link_is_iter() to decide between bpf_iter_fops and bpffs_obj_fops.
-
-
-> +       dput(dentry);
-> +       inode_unlock(parent->d_inode);
-> +       return ret;
-> +}
-> +
->  static int bpf_obj_do_pin(const char __user *pathname, void *raw,
->                           enum bpf_type type)
->  {
-> @@ -638,6 +659,57 @@ static int bpf_parse_param(struct fs_context *fc, struct fs_parameter *param)
->         return 0;
+>
+> Notes:
+>     v3:
+>     - New in v3 to support multi-prog attachments. (Alexei)
+>
+>  include/linux/bpf.h        |  4 ++
+>  kernel/bpf/core.c          | 22 ++++++++++
+>  kernel/bpf/net_namespace.c | 88 +++++++++++++++++++++++++++++++++++---
+>  3 files changed, 107 insertions(+), 7 deletions(-)
+>
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 3d2ade703a35..26bc70533db0 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -928,6 +928,10 @@ int bpf_prog_array_copy_to_user(struct bpf_prog_array *progs,
+>
+>  void bpf_prog_array_delete_safe(struct bpf_prog_array *progs,
+>                                 struct bpf_prog *old_prog);
+> +void bpf_prog_array_delete_safe_at(struct bpf_prog_array *array,
+> +                                  unsigned int index);
+> +void bpf_prog_array_update_at(struct bpf_prog_array *array, unsigned int index,
+> +                             struct bpf_prog *prog);
+>  int bpf_prog_array_copy_info(struct bpf_prog_array *array,
+>                              u32 *prog_ids, u32 request_cnt,
+>                              u32 *prog_cnt);
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index 9df4cc9a2907..d4b3b9ee6bf1 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -1958,6 +1958,28 @@ void bpf_prog_array_delete_safe(struct bpf_prog_array *array,
+>                 }
 >  }
 >
-> +struct bpf_preload_ops bpf_preload_ops = { .info.driver_name = "bpf_preload" };
-> +EXPORT_SYMBOL_GPL(bpf_preload_ops);
+> +void bpf_prog_array_delete_safe_at(struct bpf_prog_array *array,
+> +                                  unsigned int index)
+> +{
+> +       bpf_prog_array_update_at(array, index, &dummy_bpf_prog.prog);
+> +}
 > +
-> +static int populate_bpffs(struct dentry *parent)
+> +void bpf_prog_array_update_at(struct bpf_prog_array *array, unsigned int index,
+> +                             struct bpf_prog *prog)
 
-So all the pinning has to happen from the kernel side because at the
-time that bpf_fill_super is called, user-space can't yet see the
-mounted BPFFS, do I understand the problem correctly? Would it be
-possible to add callback to fs_context_operations that would be called
-after FS is mounted and visible to user-space? At that point the
-kernel can spawn the user-mode blob and just instruct it to do both
-BPF object loading and pinning?
+it's a good idea to mention it in a comment for both delete_safe_at
+and update_at that slots with dummy entries are ignored.
 
-Or are there some other complications with such approach?
+Also, given that index can be out of bounds, should these functions
+actually return error if the slot is not found?
 
 > +{
-> +       struct bpf_link *links[BPF_PRELOAD_LINKS] = {};
-> +       u32 link_id[BPF_PRELOAD_LINKS] = {};
-> +       int err = 0, i;
+> +       struct bpf_prog_array_item *item;
 > +
-> +       mutex_lock(&bpf_preload_ops.lock);
-> +       if (!bpf_preload_ops.do_preload) {
-> +               mutex_unlock(&bpf_preload_ops.lock);
-> +               request_module("bpf_preload");
-> +               mutex_lock(&bpf_preload_ops.lock);
-> +
-> +               if (!bpf_preload_ops.do_preload) {
-> +                       pr_err("bpf_preload module is missing.\n"
-> +                              "bpffs will not have iterators.\n");
-> +                       goto out;
+> +       for (item = array->items; item->prog; item++) {
+> +               if (item->prog == &dummy_bpf_prog.prog)
+> +                       continue;
+> +               if (!index) {
+> +                       WRITE_ONCE(item->prog, prog);
+> +                       break;
 > +               }
+> +               index--;
 > +       }
+> +}
 > +
-> +       if (!bpf_preload_ops.info.tgid) {
-> +               err = bpf_preload_ops.do_preload(link_id);
-> +               if (err)
-> +                       goto out;
-> +               for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
-> +                       links[i] = bpf_link_by_id(link_id[i]);
-> +                       if (IS_ERR(links[i])) {
-> +                               err = PTR_ERR(links[i]);
-> +                               goto out;
-> +                       }
-> +               }
-> +               err = bpf_link_pin_kernel(parent, "maps", links[0]);
-> +               if (err)
-> +                       goto out;
-> +               err = bpf_link_pin_kernel(parent, "progs", links[1]);
-> +               if (err)
-> +                       goto out;
-
-This hard coded "maps" -> link #0, "progs" -> link #1 mapping is what
-motivated the question above about letting user-space do all pinning.
-It would significantly simplify the kernel part, right?
-
-> +               err = bpf_preload_ops.do_finish();
-> +               if (err)
-> +                       goto out;
+>  int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+>                         struct bpf_prog *exclude_prog,
+>                         struct bpf_prog *include_prog,
+> diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
+> index 247543380fa6..6011122c35b6 100644
+> --- a/kernel/bpf/net_namespace.c
+> +++ b/kernel/bpf/net_namespace.c
+> @@ -36,11 +36,51 @@ static void netns_bpf_run_array_detach(struct net *net,
+>         bpf_prog_array_free(run_array);
+>  }
+>
+> +static unsigned int link_index(struct net *net,
+> +                              enum netns_bpf_attach_type type,
+> +                              struct bpf_netns_link *link)
+> +{
+> +       struct bpf_netns_link *pos;
+> +       unsigned int i = 0;
+> +
+> +       list_for_each_entry(pos, &net->bpf.links[type], node) {
+> +               if (pos == link)
+> +                       return i;
+> +               i++;
 > +       }
+> +       return UINT_MAX;
+
+Why not return a negative error, if the slot is not found? Feels a bit
+unusual as far as error reporting goes.
+
+> +}
+> +
 
 [...]
