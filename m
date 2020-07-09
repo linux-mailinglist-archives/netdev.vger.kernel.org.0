@@ -2,277 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEEAB219F15
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 13:31:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1251219F1A
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 13:32:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726813AbgGILba (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 07:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbgGILba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 07:31:30 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F15DC061A0B;
-        Thu,  9 Jul 2020 04:31:30 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id a14so910418pfi.2;
-        Thu, 09 Jul 2020 04:31:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=sXEmKxMUQPh+anjWf/TN85kjSCFF6dnVSzbWyKgc7V8=;
-        b=JiGJzxiL6Of4/SizVoILjcNlJp9Wzoh1P+aJZskAC5LRDAjD/Lv4QBsgDH3XMjSqVP
-         SEpNt2YQDTSmXX9MEKd2Z+e2aGpZMn4/5bHkKo3tOPw3m3g8ofiIEpZW+eT6o3YCz3/B
-         j+qa3N4UeVuxrnuiGbSw7LpcnaeuvwvpxxoU5rTl9gu+rUmzHD00pToInuZ2dV0hEYXn
-         gDNCiunYDscpN70u3dPO6sl7ddpR78BobQdepS+WbRVLC3KhzXNVL9AgFwG8yJW1DMgt
-         yp+h/4sQL/sFbPFvphompDeg+XySw4idQrQBGQ7XaL7KOXY3ZmF/jYfbebeE41BeOIc2
-         nymg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sXEmKxMUQPh+anjWf/TN85kjSCFF6dnVSzbWyKgc7V8=;
-        b=gApH9djCxN3TOk5GAOc3OUcm1Q24PsiQ2lBWcDM80OMD3X9w8WcnrylHh4n91nLy35
-         s01r33rHlw/RH8FQNeZvC9DVqfdV/x9kcmbEThKWdrRxzx2b1sl+Jka3gd+yV7TZyB5n
-         J1WcnEydf2sBGQ/arMQj0C5Vn7XTVf9JustqeadbQAkD4X05oU8GNMxdrC994BEshCCz
-         BdGE8u5xkJtYrKj4q7/lKOMVomL1JOb31REagaANmsfaNCueyeqNxHYA4jRxbGuNnDyM
-         Ug6417pTc//cvVC/bKH98iCY1eLBHoPWhkla3EPuFblyKV5tKSNHuxgDW0/VFsCD67wY
-         m7ow==
-X-Gm-Message-State: AOAM531mc1+i0uer7hKOTgL3yhxKc1x1O74C/kknqYtPSJ97FkU3sddA
-        IpT6R7FZ9hI3oH8ShKB2l80=
-X-Google-Smtp-Source: ABdhPJxU4JlBuhXofkSOx2RQJ3pZUvyTfO/HTtm9Kxbvz8m7rRAF9ouXaGbcl7QNg0MmjhvADxzNzw==
-X-Received: by 2002:a63:e045:: with SMTP id n5mr56526701pgj.274.1594294289690;
-        Thu, 09 Jul 2020 04:31:29 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id z26sm2601293pfr.187.2020.07.09.04.31.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2020 04:31:28 -0700 (PDT)
-Date:   Thu, 9 Jul 2020 04:31:26 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Ooi, Joyce" <joyce.ooi@intel.com>
-Cc:     Thor Thayer <thor.thayer@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Dalon Westergreen <dalon.westergreen@linux.intel.com>,
-        Tan Ley Foon <ley.foon.tan@intel.com>,
-        See Chin Liang <chin.liang.see@intel.com>,
-        Dinh Nguyen <dinh.nguyen@intel.com>,
-        Dalon Westergreen <dalon.westergreen@intel.com>
-Subject: Re: [PATCH v4 08/10] net: eth: altera: add support for ptp and
- timestamping
-Message-ID: <20200709113126.GA776@hoboy>
-References: <20200708072401.169150-1-joyce.ooi@intel.com>
- <20200708072401.169150-9-joyce.ooi@intel.com>
+        id S1727058AbgGILcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 07:32:35 -0400
+Received: from mout.gmx.net ([212.227.17.21]:46435 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726315AbgGILcf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 07:32:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1594294353;
+        bh=xf3HvEHnxDgbM/Vy22VMW98HUJTkiezhWUckf8FOXBA=;
+        h=X-UI-Sender-Class:To:Reply-To:From:Subject:Date;
+        b=BrzGzjyhgylVy31DfhUoRtQUpqbk78dlPBrstuW2hhhCzrvUQk7MkSYWh0NuRpL38
+         XGmWTiG+ip6nKvFfwBxF0lYfKndSbV5pcoqyQlYbzZZpdCTAofITjTINTFU9lz60A+
+         8ENCQ++c4lDjS7G0noT4dm/uDG7dq4WKl/L7dpZQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.84.20] ([149.224.144.145]) by mail.gmx.com (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1McH5Q-1kTwbd2zF6-00cdaX for
+ <netdev@vger.kernel.org>; Thu, 09 Jul 2020 13:32:33 +0200
+To:     netdev@vger.kernel.org
+Reply-To: vtol@gmx.net
+From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Subject: [DSA] L2 Forwarding Offload not working
+Message-ID: <29a9c85b-8f5a-2b85-2c7d-9b7ca0a6cb41@gmx.net>
+Date:   Thu, 9 Jul 2020 11:32:00 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200708072401.169150-9-joyce.ooi@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-GB
+X-Provags-ID: V03:K1:62i4Wz/FhuEPUsYu6ApmOqWlKuKmF0z4p8Ea2EI9Gz29ZTw2K4j
+ PuT9onFVcXijXy1yJ/D+JKPaAHxAOeOSl2dzkhqVmjSNonLJt6mF67EZHtoZF1fKtP7gQ9Z
+ VzXkOWqIXqluRz3Llea+1AlchStyRUBfBqpkP/vZtKFnTbDRRxQAdVrzFpc50chd/l/ezdL
+ Oz9df6bjcrROKWduD62QQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:XInn5lNdZhs=:TcBRX1PtZ3RSoI8HbQYP5i
+ rF9TB81+G/RmczGhuK44odJCpgblZi+CkzbNyhstBqVIOy9NZMifDIVrKUGOj8azLTVHz93Jm
+ njKxAD3QDvU7DhYrIoorOLvGrQ8pc0ediz+FlI3aPWptCNM9S/LoEc5drzEeFl/5IlRfZ9JIL
+ vKsFjE3zeRDkwqfh3+K386zElwxk+ptg1C0gMmrtj5GvC+hXQNoAWoeO1NFFm8wi5YJULJ2Q7
+ J7bGYL/2yk6HeTVxoKd3wV9MrOVLNS7+V4kHRC4F2KwHniCj9dnQp7H4ztcbHVPrn4x65BGrJ
+ DEhSNiltCWJMKVRIFK8RuZNd+m9r5RaCKYz9jTIFC5WUJl51Ue9ZLzpnFvHs7eIrokfqHGOkp
+ YVfDM/WlQ0vy/GBGJ27BTloH2jM5WiijBkDa5tXi9tBR0uJ8xk2lP9FcnN50gLBOuYljnD/MM
+ eLhRn27tSghw9lQQMnXd2X6FoOXQPK/qtRNTN1rnprflWBT7R8NKMz8qzYXBfukw+oZtfIJpS
+ 2uN+SMFPJGoZo6kBMLeXLqgH573lkUOYHAPAxJbFuZyU/nLQ+owFzP0ieSBYGseLx/vdL5qGb
+ ZXEStmAINzCJT41lWNDb8rH3+UD1DrpdddX+agXB4TnukMezXlZKs4XoFCDloMRVvFqvHYRd7
+ w1NpX3V3HzmAr9pq181TwZn26MC8oZ1F1CPHPe4Ed4rxOSg+ebxuPY4g86qdhS1xAMaJL5X2D
+ C8BJx7hgCiqoRqxJgfkNOQcsreacH5E1+2fK8OtP02uqLsL2fITq7K77130q9LAXhCDB14Wkz
+ kyNHK3BSSbDZXk9f53lZT80d8SyNSvOS4iEvn1xBYW7rZP91xoqG/WSeZg4E4PSm707La81zo
+ zLQqaxjOuJnftzdnwpKqtIbr90hLC1w2E2eQj6CaIC8GA+Nv5W+PKqs68cmL+2Scf+kNkOizz
+ to7rU9wnfg0hcf7n+KBDP8q6OwOULLoW5Aob/bMQKY27aLFn1MuuXjqQiD1cJxjesxmusVHu6
+ 0wZv7MwTLAlhS2kOjh9sX0XtU/Mr4kJGaVSprNY414/XkO+2vI9aE21x5QiGBZSgJ9171N7V6
+ z9073YEs5nfJj2gGFBCx1j46bjCA8heEtm2z4bjQGNJDfPyRTzaWH775mtlOq6V8QeYBUuDwY
+ +BElXnosEbrn/Rri+fXLgWxRbjCuIqNkrfr9DplmCkxVh4MvehLwpLCL3oUCkqAaZNvZiGIYK
+ jJcjYb3z2iyiC6ZNW
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 08, 2020 at 03:23:59PM +0800, Ooi, Joyce wrote:
+"kernel":"5.4.50", "system":"ARMv7 Processor rev 1
+(v7l)","model":"Turris
+Omnia","board_name":"cznic,turris-omnia","release":{"distribution":"OpenWr=
+t","version":"SNAPSHOT","revision":"r13719-66e04abbb6","target":"mvebu/cor=
+texa9","}
 
-> @@ -222,6 +223,32 @@ static void tse_get_regs(struct net_device *dev, struct ethtool_regs *regs,
->  		buf[i] = csrrd32(priv->mac_dev, i * 4);
->  }
->  
-> +static int tse_get_ts_info(struct net_device *dev,
-> +			   struct ethtool_ts_info *info)
-> +{
-> +	struct altera_tse_private *priv = netdev_priv(dev);
-> +
-> +	if (priv->ptp_enable) {
-> +		if (priv->ptp_priv.ptp_clock)
-> +			info->phc_index =
-> +				ptp_clock_index(priv->ptp_priv.ptp_clock);
+CPU Marvell Armada 385 88F6820 | Switch=C2=A0 Marvell 88E6176
 
-Need to handle case where priv->ptp_priv.ptp_clock == NULL.
+soft bridge br-lan enslaving DSA ports lan0 lan1 lan2
 
-> +		info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
-> +					SOF_TIMESTAMPING_RX_HARDWARE |
-> +					SOF_TIMESTAMPING_RAW_HARDWARE;
-> +
-> +		info->tx_types = (1 << HWTSTAMP_TX_OFF) |
-> +						 (1 << HWTSTAMP_TX_ON);
+DSA master device eth1 (subsequent ip l exhibits slaves as lanX@eth1)
+=2D---------
 
-No need to break statement.  This fits nicely on one line.
+After perusal of
+https://www.kernel.org/doc/Documentation/networking/switchdev.txt it is
+my understanding that offloading works only for static FDB entries,
+though not clear to me:
 
-> +
-> +		info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
-> +						   (1 << HWTSTAMP_FILTER_ALL);
-> +
-> +		return 0;
-> +	} else {
+* what the logic is behind, and
+* why DSA ports are not static FDB entries by default (would only seem
+logical)
 
-No need for else block.
+That said queried bridge fdb for lan2 (as example here), producing:
 
-> +		return ethtool_op_get_ts_info(dev, info);
-> +	}
-> +}
-> +
->  static const struct ethtool_ops tse_ethtool_ops = {
->  	.get_drvinfo = tse_get_drvinfo,
->  	.get_regs_len = tse_reglen,
+44:8a:5b:47:0b:c2 dev lan2 master br-lan
+44:8a:5b:47:0b:c2 dev lan2 vlan 1 self
 
+then went ahead with
 
-> @@ -1309,6 +1324,83 @@ static int tse_shutdown(struct net_device *dev)
->  	return 0;
->  }
->  
-> +/* ioctl to configure timestamping */
-> +static int tse_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-> +{
-> +	struct altera_tse_private *priv = netdev_priv(dev);
-> +	struct hwtstamp_config config;
+bridge fdb add 44:8a:5b:47:0b:c2 dev lan2 vlan 1 self
 
-Need to check here for phy_has_hwtstamp() and pass through to PHY
-layer if true.
+resulting in
 
-> +
-> +	if (!netif_running(dev))
-> +		return -EINVAL;
-> +
-> +	if (!priv->ptp_enable)	{
-> +		netdev_alert(priv->dev, "Timestamping not supported");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	if (cmd == SIOCSHWTSTAMP) {
-> +		if (copy_from_user(&config, ifr->ifr_data,
-> +				   sizeof(struct hwtstamp_config)))
-> +			return -EFAULT;
-> +
-> +		if (config.flags)
-> +			return -EINVAL;
-> +
-> +		switch (config.tx_type) {
-> +		case HWTSTAMP_TX_OFF:
-> +			priv->hwts_tx_en = 0;
-> +			break;
-> +		case HWTSTAMP_TX_ON:
-> +			priv->hwts_tx_en = 1;
-> +			break;
-> +		default:
-> +			return -ERANGE;
-> +		}
-> +
-> +		switch (config.rx_filter) {
-> +		case HWTSTAMP_FILTER_NONE:
-> +			priv->hwts_rx_en = 0;
-> +			config.rx_filter = HWTSTAMP_FILTER_NONE;
-> +			break;
-> +		default:
-> +			priv->hwts_rx_en = 1;
-> +			config.rx_filter = HWTSTAMP_FILTER_ALL;
-> +			break;
-> +		}
-> +
-> +		if (copy_to_user(ifr->ifr_data, &config,
-> +				 sizeof(struct hwtstamp_config)))
-> +			return -EFAULT;
-> +		else
-> +			return 0;
-> +	}
-> +
-> +	if (cmd == SIOCGHWTSTAMP) {
-> +		config.flags = 0;
-> +
-> +		if (priv->hwts_tx_en)
-> +			config.tx_type = HWTSTAMP_TX_ON;
-> +		else
-> +			config.tx_type = HWTSTAMP_TX_OFF;
-> +
-> +		if (priv->hwts_rx_en)
-> +			config.rx_filter = HWTSTAMP_FILTER_ALL;
-> +		else
-> +			config.rx_filter = HWTSTAMP_FILTER_NONE;
-> +
-> +		if (copy_to_user(ifr->ifr_data, &config,
-> +				 sizeof(struct hwtstamp_config)))
-> +			return -EFAULT;
-> +		else
-> +			return 0;
-> +	}
-> +
-> +	if (!dev->phydev)
-> +		return -EINVAL;
-> +
-> +	return phy_mii_ioctl(dev->phydev, ifr, cmd);
-> +}
-> +
->  static struct net_device_ops altera_tse_netdev_ops = {
->  	.ndo_open		= tse_open,
->  	.ndo_stop		= tse_shutdown,
+44:8a:5b:47:0b:c2 dev lan2 master br-lan
+44:8a:5b:47:0b:c2 dev lan2 vlan 1 self static
 
+So it is static now but nothing about offload still. Next up
 
-> @@ -1568,6 +1661,27 @@ static int altera_tse_probe(struct platform_device *pdev)
->  		netdev_err(ndev, "Cannot attach to PHY (error: %d)\n", ret);
->  		goto err_init_phy;
->  	}
-> +
-> +	priv->ptp_enable = of_property_read_bool(pdev->dev.of_node,
-> +						 "altr,has-ptp");
+ip l s br-lan ty bridge vlan_filtering 1
 
-The name "ptp_enable" is a poor choice.  It sounds like something that
-can be enabled at run time.  Suggest "has_ptp" instead.
+checking again bridge fdb and now exhibiting
 
-> +	dev_info(&pdev->dev, "PTP Enable: %d\n", priv->ptp_enable);
-> +
-> +	if (priv->ptp_enable) {
-> +		/* MAP PTP */
-> +		ret = intel_fpga_tod_probe(pdev, &priv->ptp_priv);
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "cannot map PTP\n");
-> +			goto err_init_phy;
-> +		}
-> +		ret = intel_fpga_tod_register(&priv->ptp_priv,
-> +					      priv->device);
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "Failed to register PTP clock\n");
-> +			ret = -ENXIO;
-> +			goto err_init_phy;
-> +		}
-> +	}
-> +
->  	return 0;
->  
->  err_init_phy:
+44:8a:5b:47:0b:c2 dev lan2 vlan 1 master br-lan
+44:8a:5b:47:0b:c2 dev lan2 master br-lan
+44:8a:5b:47:0b:c2 dev lan2 vlan 1 self static
 
-
-> +/* Initialize PTP control block registers */
-> +int intel_fpga_tod_init(struct intel_fpga_tod_private *priv)
-> +{
-> +	struct timespec64 now;
-> +	int ret = 0;
-> +
-> +	ret = intel_fpga_tod_adjust_fine(&priv->ptp_clock_ops, 0l);
-
-Why clobber a learned frequency offset here?  If user space closes
-then re-opens, then it expects the old frequency to be preserved.
-
-It is fine to set this to zero when the driver loads, but not after.
-
-> +	if (ret != 0)
-> +		goto out;
-> +
-> +	/* Initialize the hardware clock to the system time */
-> +	ktime_get_real_ts64(&now);
-
-Please initialize to zero instead, as some people prefer it that way.
-
-(But only the first time when the driver loads!)
-
-> +	intel_fpga_tod_set_time(&priv->ptp_clock_ops, &now);
-> +
-> +	spin_lock_init(&priv->tod_lock);
-> +
-> +out:
-> +	return ret;
-> +}
-
-Thanks,
-Richard
+Do I suffer some sort of misconception of how to get it working, missing
+something?
