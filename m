@@ -2,150 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 082842198AE
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 08:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 012B72198B5
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 08:33:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726365AbgGIGaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 02:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57322 "EHLO
+        id S1726119AbgGIGdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 02:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726374AbgGIGaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 02:30:17 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0C3C061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 23:30:17 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id a6so5497959wmm.0
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 23:30:17 -0700 (PDT)
+        with ESMTP id S1725787AbgGIGdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 02:33:15 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9030C061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 23:33:14 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id u185so593142pfu.1
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 23:33:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ww/enzP452BGCBC/bQOZJWzgEyqmgDQ14Qk4+WNZW3U=;
-        b=nAhl6JYpOclqHzUyh+5RrEfXV1yYu5DeoClCSWtgMG/Ly9lCd6Ot9Kn2aAwQg6REIL
-         U0LA3YGxpX0slEjRWr6fK7scr28dLxsY4OZZZzzqWODyLLZGUvMW6xb1v43BxuXSuyPu
-         mBFGXLKV6tU7pTKOhmCPaJgit/FS5qr5LjuBc23HvV8jnKIATgNp5TOSkU7rpAQUgH0n
-         iIiJDDJ4svHDTUtz+muZ5egWBgDH1GVYcptuFg40rTdzi2QalzkCp8fJMlsiHvqsj61g
-         E14J2tLfsXXANzXszjrrEX5+XKk83NDOxtN5pN6X4R8EdDb7PSgvflnQvPNujK6aPGhl
-         5yvg==
+        bh=1ASyABw7/LeIWt6xZQU9j/A9LrD0CY3X+I23w3SZ/Ew=;
+        b=HyNbU6wF/U+nMNQBiad43bGJm/cZhSok6kxGlDPfmtVHiSdux9Xcwjq/KijpCBG4LS
+         rNINr0YwzSuxEfjj/fedS3svhwoZaDvEv32X9gU6mMmqU91asWsqQ4+dvChXBNhWhe2n
+         oxGYrEItmY+3BJXANb/UKsqLcTIK+ebrRDgGAwVfoEAuuxqN/efL3VSfe8M+YgdOdN0j
+         bLtsRkLAjs1vGotBh1J6Rhr4NZWiR4ee4mFo758hR4dQEY6PLFNvUGKP98sHjRgIzAXI
+         41Rocwh84ydTRo8GGcOIRuf1Ru5ie0QWCgVBdpPJEr06oNMlWM3/clHyRK39kIHKbpoL
+         3jyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ww/enzP452BGCBC/bQOZJWzgEyqmgDQ14Qk4+WNZW3U=;
-        b=PlbWycZMxyDHYfbYc+kLNqEvtpxD5S0+GazlPIn/yLC4exZneJ1Kzcwf7IiofJ8iIU
-         LjCf4N6ncy1QqWcjgGqBRrovrFdSHaXSKXfOb1giWvUlg52E9ExYygljVinh5uPW8XUF
-         pQ9MucpDRmtP8JMKZ2GYMt2VF2Zs4gpoX7uQsUV8TgxIGI6rHl1dTywrClZ6/uiXEup0
-         WCMS9p209ZHDztVxHI67ckiqFjXhfvmUCBq1qIZWrERUm4xX8kH4mRaMkCqggwHor3uL
-         wl81jCtwkG8OuFeMAX2PWeLU8vGr4jvzGlTIqAsu8YUVBk20PRSEbDyI+IMh6nxijWVW
-         3t5A==
-X-Gm-Message-State: AOAM530tWC24V6Ntd5QzuOk2ZM3zP0nJ0+JVNXLoxix6PMC2lhJmbZp5
-        BSHs35b50KOwZFY7VkeMglZ+GMOfFWo=
-X-Google-Smtp-Source: ABdhPJzcHPLwVscIKMTW74nMzVYIHPWf11bHzZCuPH3WHzMSkWmblPOGs+TWLMLibQyFlg5YCU7poQ==
-X-Received: by 2002:a7b:c8c8:: with SMTP id f8mr13088519wml.142.1594276215892;
-        Wed, 08 Jul 2020 23:30:15 -0700 (PDT)
-Received: from localhost.localdomain ([77.139.6.232])
-        by smtp.gmail.com with ESMTPSA id l8sm3777854wrq.15.2020.07.08.23.30.14
+        bh=1ASyABw7/LeIWt6xZQU9j/A9LrD0CY3X+I23w3SZ/Ew=;
+        b=XMadv+9b/ojMrra+Yb56V8ACU1aFWbPhkC5qm/vEcR7cZjqJE5BPBlrAXViWvJ4DCq
+         cvvhQ4puZ647aOo9V+Gc0gJjl21pDg52ls3m9L2pj4Qt5nu2T+AW5d+4mE2VEozXbUA3
+         /YPaowsFGMXzSE4n5nAHzJQZp5V5FdyX8srw+8SpAVAPihdEAXPqiUX1PBDtu0Gr8UQf
+         Ed2yjPRUeL+Ys8PPY+D44Oxb5zdYj8Tlr+q9868lMZHgBIV/mfDERipvnms0Qwe5Viw6
+         co4ck8Y9HZ1iruTlCl9IajIZSIAwJoAgq/cEXmYm1JvfC0PnOl7g1dbejdd7tOwrXcyD
+         bvgg==
+X-Gm-Message-State: AOAM533yq3vPH81Yy6K2CDW909W2Wa/8M7sedXn0BcTPsYFlu3jsx70m
+        Rf0QwruTnONI0H+WA4L4OsTqog==
+X-Google-Smtp-Source: ABdhPJzcHzc8xHxBHhvEDXpG+k08WluqSHl6CzOiDASFu959kwdWuXIdhl6ClmbP0mB02vGX/vQDAw==
+X-Received: by 2002:a05:6a00:14ce:: with SMTP id w14mr58835092pfu.121.1594276394455;
+        Wed, 08 Jul 2020 23:33:14 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id k92sm1342645pje.30.2020.07.08.23.33.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jul 2020 23:30:15 -0700 (PDT)
-From:   Eyal Birger <eyal.birger@gmail.com>
-To:     stephen@networkplumber.org, netdev@vger.kernel.org
-Cc:     Eyal Birger <eyal.birger@gmail.com>
-Subject: [PATCH iproute2,v2 2/2] ip xfrm: policy: support policies with IF_ID in get/delete/deleteall
-Date:   Thu,  9 Jul 2020 09:29:48 +0300
-Message-Id: <20200709062948.1762006-3-eyal.birger@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200709062948.1762006-1-eyal.birger@gmail.com>
-References: <20200709062948.1762006-1-eyal.birger@gmail.com>
+        Wed, 08 Jul 2020 23:33:14 -0700 (PDT)
+Date:   Wed, 8 Jul 2020 23:33:05 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     "YU, Xiangning" <xiangning.yu@alibaba-inc.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: [PATCH iproute2-next v2] iproute2 Support lockless token bucket
+ (ltb)
+Message-ID: <20200708233305.07b53f8a@hermes.lan>
+In-Reply-To: <2a2b2cc9-eeba-4176-198f-fab74ebe4a33@alibaba-inc.com>
+References: <2a2b2cc9-eeba-4176-198f-fab74ebe4a33@alibaba-inc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The XFRMA_IF_ID attribute is set in policies for them to be
-associated with an XFRM interface (4.19+).
+On Thu, 09 Jul 2020 00:38:27 +0800
+"YU, Xiangning" <xiangning.yu@alibaba-inc.com> wrote:
 
-Add support for getting/deleting policies with this attribute.
+> +static int ltb_parse_class_opt(struct qdisc_util *qu, int argc, char **argv,
+> +			       struct nlmsghdr *n, const char *dev)
+> +{
+> +	struct tc_ltb_opt opt;
 
-For supporting 'deleteall' the XFRMA_IF_ID attribute needs to be
-explicitly copied.
+If you use empty initializer in C it will make everything 0 and save you some pain.
 
-Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
----
- ip/xfrm_policy.c   | 17 ++++++++++++++++-
- man/man8/ip-xfrm.8 |  2 ++
- 2 files changed, 18 insertions(+), 1 deletion(-)
+	struct tc_ltb_opt opt = { };
 
-diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
-index d3c706d3..7cc00e7c 100644
---- a/ip/xfrm_policy.c
-+++ b/ip/xfrm_policy.c
-@@ -59,6 +59,7 @@ static void usage(void)
- 		"	[ if_id IF_ID ] [ LIMIT-LIST ] [ TMPL-LIST ]\n"
- 		"Usage: ip xfrm policy { delete | get } { SELECTOR | index INDEX } dir DIR\n"
- 		"	[ ctx CTX ] [ mark MARK [ mask MASK ] ] [ ptype PTYPE ]\n"
-+		"	[ if_id IF_ID ]\n"
- 		"Usage: ip xfrm policy { deleteall | list } [ nosock ] [ SELECTOR ] [ dir DIR ]\n"
- 		"	[ index INDEX ] [ ptype PTYPE ] [ action ACTION ] [ priority PRIORITY ]\n"
- 		"	[ flag FLAG-LIST ]\n"
-@@ -582,6 +583,8 @@ static int xfrm_policy_get_or_delete(int argc, char **argv, int delete,
- 		struct xfrm_user_sec_ctx sctx;
- 		char    str[CTX_BUF_SIZE];
- 	} ctx = {};
-+	bool is_if_id_set = false;
-+	__u32 if_id = 0;
- 
- 	while (argc > 0) {
- 		if (strcmp(*argv, "dir") == 0) {
-@@ -619,7 +622,11 @@ static int xfrm_policy_get_or_delete(int argc, char **argv, int delete,
- 
- 			NEXT_ARG();
- 			xfrm_policy_ptype_parse(&upt.type, &argc, &argv);
--
-+		} else if (strcmp(*argv, "if_id") == 0) {
-+			NEXT_ARG();
-+			if (get_u32(&if_id, *argv, 0))
-+				invarg("IF_ID value is invalid", *argv);
-+			is_if_id_set = true;
- 		} else {
- 			if (selp)
- 				invarg("unknown", *argv);
-@@ -669,6 +676,9 @@ static int xfrm_policy_get_or_delete(int argc, char **argv, int delete,
- 			  (void *)&ctx, ctx.sctx.len);
- 	}
- 
-+	if (is_if_id_set)
-+		addattr32(&req.n, sizeof(req.buf), XFRMA_IF_ID, if_id);
-+
- 	if (rtnl_talk(&rth, &req.n, answer) < 0)
- 		exit(2);
- 
-@@ -767,6 +777,11 @@ static int xfrm_policy_keep(struct nlmsghdr *n, void *arg)
- 		}
- 	}
- 
-+	if (tb[XFRMA_IF_ID]) {
-+		addattr32(new_n, xb->size, XFRMA_IF_ID,
-+			  rta_getattr_u32(tb[XFRMA_IF_ID]));
-+	}
-+
- 	xb->offset += new_n->nlmsg_len;
- 	xb->nlmsg_count++;
- 
-diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
-index d717205d..aa28db49 100644
---- a/man/man8/ip-xfrm.8
-+++ b/man/man8/ip-xfrm.8
-@@ -259,6 +259,8 @@ ip-xfrm \- transform configuration
- .IR MASK " ] ]"
- .RB "[ " ptype
- .IR PTYPE " ]"
-+.RB "[ " if_id
-+.IR IF-ID " ]"
- 
- .ti -8
- .BR ip " [ " -4 " | " -6 " ] " "xfrm policy" " { " deleteall " | " list " }"
--- 
-2.25.1
 
+> +		fprintf(f, "rate %s ", sprint_rate(rate64, b1));
+> +		fprintf(f, "ceil %s ", sprint_rate(ceil64, b1));
+> +		if (show_details) {
+> +			fprintf(f, "measured %llu allocated %llu highwater %llu",
+> +				lopt->measured, lopt->allocated,
+> +				lopt->high_water);
+
+
+All output has to be in JSON. Any use of fprintf(f, ...) directly
+is a indication to me of code that is not supporting JSON correctly.
