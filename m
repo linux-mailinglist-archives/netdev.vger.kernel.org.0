@@ -2,155 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0088821A244
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 16:39:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A96521A249
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 16:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbgGIOjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 10:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726410AbgGIOjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 10:39:10 -0400
-Received: from mout1.freenet.de (mout1.freenet.de [IPv6:2001:748:100:40::2:3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614EEC08C5CE;
-        Thu,  9 Jul 2020 07:39:10 -0700 (PDT)
-Received: from [195.4.92.163] (helo=mjail0.freenet.de)
-        by mout1.freenet.de with esmtpa (ID viktor.jaegerskuepper@freenet.de) (port 25) (Exim 4.92 #3)
-        id 1jtXhY-0000fE-Jj; Thu, 09 Jul 2020 16:39:04 +0200
-Received: from localhost ([::1]:43698 helo=mjail0.freenet.de)
-        by mjail0.freenet.de with esmtpa (ID viktor.jaegerskuepper@freenet.de) (Exim 4.92 #3)
-        id 1jtXhY-0001zB-HJ; Thu, 09 Jul 2020 16:39:04 +0200
-Received: from sub4.freenet.de ([195.4.92.123]:55558)
-        by mjail0.freenet.de with esmtpa (ID viktor.jaegerskuepper@freenet.de) (Exim 4.92 #3)
-        id 1jtXf7-0000ot-KE; Thu, 09 Jul 2020 16:36:33 +0200
-Received: from p200300e7072d05009530c91dafb9c844.dip0.t-ipconnect.de ([2003:e7:72d:500:9530:c91d:afb9:c844]:35596 helo=[127.0.0.1])
-        by sub4.freenet.de with esmtpsa (ID viktor.jaegerskuepper@freenet.de) (TLSv1.2:ECDHE-RSA-CHACHA20-POLY1305:256) (port 465) (Exim 4.92 #3)
-        id 1jtXf7-0006kg-GW; Thu, 09 Jul 2020 16:36:33 +0200
-Subject: Re: [PATCH] Revert "ath9k: Fix general protection fault in
- ath9k_hif_usb_rx_cb"
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Roman Mamedov <rm@romanrm.net>, Qiujun Huang <hqjagain@gmail.com>,
-        ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, anenbupt@gmail.com,
-        syzkaller-bugs@googlegroups.com
-References: <20200404041838.10426-1-hqjagain@gmail.com>
- <20200404041838.10426-6-hqjagain@gmail.com> <20200621020428.6417d6fb@natsu>
- <87lfkff9qe.fsf@codeaurora.org>
- <53940af0-d156-3117-ac86-2f3ccaee9513@freenet.de>
- <87imf6beo0.fsf@codeaurora.org>
-From:   =?UTF-8?B?VmlrdG9yIErDpGdlcnNrw7xwcGVy?= 
-        <viktor_jaegerskuepper@freenet.de>
-Message-ID: <abb99acd-e001-6e80-4d46-fae5ad3887f6@freenet.de>
-Date:   Thu, 9 Jul 2020 16:36:24 +0200
+        id S1726793AbgGIOke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 10:40:34 -0400
+Received: from mga17.intel.com ([192.55.52.151]:23641 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726410AbgGIOke (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 10:40:34 -0400
+IronPort-SDR: ubzEQhUlLFZpV0bBRZOdb0X4n7qPgS07Ac3tUuMH59aUplZhbhtgPrw0d1XfmCbS975C3NAPpD
+ 9kKSdxAMeapg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9677"; a="128075328"
+X-IronPort-AV: E=Sophos;i="5.75,331,1589266800"; 
+   d="scan'208";a="128075328"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2020 07:40:33 -0700
+IronPort-SDR: F8V15igqbACKcOSj5eMkaicV90nNc42bKcGMQUfsgcj2ufjuiAlf9rmwWcpn3SMBc5zvMzm9o/
+ c1A1dFa4u6AA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,331,1589266800"; 
+   d="scan'208";a="306455245"
+Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
+  by fmsmga004.fm.intel.com with ESMTP; 09 Jul 2020 07:40:33 -0700
+Received: from orsmsx151.amr.corp.intel.com (10.22.226.38) by
+ ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 9 Jul 2020 07:40:33 -0700
+Received: from ORSEDG002.ED.cps.intel.com (10.7.248.5) by
+ ORSMSX151.amr.corp.intel.com (10.22.226.38) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 9 Jul 2020 07:40:32 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.53) by
+ edgegateway.intel.com (134.134.137.101) with Microsoft SMTP Server (TLS) id
+ 14.3.439.0; Thu, 9 Jul 2020 07:40:32 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gkzsO5IrXdkjShQGu+lGB6h1lhmPckMj+JBHiA53GT8F+t4um3MkjKFXPZ1CeQ6XCP0v9gX5mplFL/DFOYOyfogKsQ1EbExgF/WbpGhxqKXWz/QMyC7vMv0aHnisM8ecxk1O8WEZi1eKP9C/MHv3WurgsACYhMOdFJEjhofkvz5W003HsSynQhKzITvPyPhh1d9SKkSHIlzeYix7aHSOM6jZT12HlA/v5CzezNdXF5EWTGltlBAx+Li9wHNM9dzVfuR/Hbgb0L02T+zWjYcmDUbXvkIHBMlU42qht8li5DCQWrjHP2Fz0vsEjF7lPOwEgZo70S0ZKz51EjO3NZFvrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ompuPW2BLQZdB6nlO/nyK+hd+ZOboj5/3nUoI1/A6vY=;
+ b=lTeP5dUXwyvAlMZR99LV/EU99DFDqJnECS+OEg7Z8cKJU3xQB194vmVh6aeBoHaeCjRjMQZyGUhLYTj1ecTXT9PjTNzQjWzvDZ6G3kBE73WmzydOCovMlCiWLFMKE6A/Np5GvcX18q2Vl0sHCY7PAwSH5o0JCDhSbpP01JALcxLMFbGKGiomhB4r5u8rPd5ZfUMIf8Vw+6H646Jy6nEH2/8S5nBmET+EarWvk19QQw0lDaoMOGOmgKg6561otuSEwWjy9ibRWdxBu85bCAkRJfDBLLu6y632JCPmidBu1uZp2iIiR8oaMnIQHJ2yX4b1z8kAxlii2dvgfifmKFqTbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ompuPW2BLQZdB6nlO/nyK+hd+ZOboj5/3nUoI1/A6vY=;
+ b=cxxciJ9SjvvQnXXi6v2DbIKwkpyEQn11XzRyzL1l+VHtzcODEHsUoJeURjHV4eSAQ0lclqM0/ilQ06K2Iujn36SIccNtWcChFCw4o5KOJFgqCDdM2iTDxeSGn+uZtNaGkz5aYdSms0ogkw3H6BCUloI2C5ullGFHoH+q0v9pIgs=
+Received: from SN6PR11MB2575.namprd11.prod.outlook.com (2603:10b6:805:57::20)
+ by SN6PR11MB3423.namprd11.prod.outlook.com (2603:10b6:805:db::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Thu, 9 Jul
+ 2020 14:40:31 +0000
+Received: from SN6PR11MB2575.namprd11.prod.outlook.com
+ ([fe80::cd49:6ea7:530c:95e0]) by SN6PR11MB2575.namprd11.prod.outlook.com
+ ([fe80::cd49:6ea7:530c:95e0%4]) with mapi id 15.20.3174.022; Thu, 9 Jul 2020
+ 14:40:31 +0000
+From:   "G Jaya Kumaran, Vineetha" <vineetha.g.jaya.kumaran@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>
+Subject: RE: [PATCH 1/2] dt-bindings: net: Add bindings for Intel Keem Bay
+Thread-Topic: [PATCH 1/2] dt-bindings: net: Add bindings for Intel Keem Bay
+Thread-Index: AQHWVBoHg2J3hFBg90GdtvIrstZWeKj8FvyAgALf7vA=
+Date:   Thu, 9 Jul 2020 14:40:31 +0000
+Message-ID: <SN6PR11MB2575FC91B5567824F521C60CF6640@SN6PR11MB2575.namprd11.prod.outlook.com>
+References: <1594097238-8827-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+ <1594097238-8827-2-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+ <20200707130741.GA938746@lunn.ch>
+In-Reply-To: <20200707130741.GA938746@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.2.0.6
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.147.214]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ac0b75f1-81a6-485c-3000-08d8241607d0
+x-ms-traffictypediagnostic: SN6PR11MB3423:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN6PR11MB34233D72645110E05E4C3069F6640@SN6PR11MB3423.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: g4FfoPH2/QHtifE+deysKrlNAupLEzQz2m1qF7YasvOr5fO88bgOLlZxWaRiL6pyOxzb/avQ59ia16WtkRm8UVIJ38cdWSQSs5ORsGknuBcdQMc1LJI0HGq7Ew2UV49Sw7tNlfuMsHLgZm26ybTShHaAbHWNWRsLgboD6ePecbwP4h2KpZdMbpUrB+baNXdMRQRCYO9RYOJrjZUNkvB4/Hhqcp81PSj3HdZoLx3w43A5ZMxvd7Fa9NYb/eJTHC1VZredrW9pR8LNf9MOKiPunUY7RwkHANFV16/mqreANZdldiPS/ZACXHSF4recjIU7
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2575.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(33656002)(83380400001)(55016002)(66446008)(64756008)(66556008)(66476007)(76116006)(2906002)(6506007)(53546011)(4326008)(52536014)(26005)(186003)(107886003)(8936002)(498600001)(5660300002)(8676002)(6916009)(66946007)(71200400001)(86362001)(7696005)(9686003)(54906003)(4744005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: qVQm2F/9oXjKPQPs3OAN8prH3Wjov1k3O8SKjDC73JVnX9Npu+Wsjvt+9wW8PLWL28/7E5xwYEe9X4KASiG8/EthVsVTTFJrY0rEkb46nZzQf8lX7O3nyxPOZZgF9tgka3QiNwukd3pzjcZS8D7yPRm+m5PKeLGCzT5pr9Nxsu1b5XWO4rM7dxxotL638eGqXWNH9n/AHV+cfXmW7plgO8pgnhPkqIxfbUsag20wpJfI3TsPjf0IlMcDzcGdJPT7tp7sb38vNK9dMfdJJXVv3lS2DldqtMfk5M85sMCPQ7DGaUHVfH6ZR5H16Pi383BICOX3+Da9Z3FN7R56swR2FeGSTWytrETHeY+DhuQQ0RM76Kmgc91rDLriUFIvWd26tnJ9FcaVXDORtx66gZQLAC45mcVpD16rVcr8oDwAp6mU8XhZrBrAMTXp4AxSwz33c7HfHh4Fa7On77Mo+zmFBHxkf9u5++6kBFMhPZL4EjsSrmC6Ux+pnZnMFWVgBUQ9
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <87imf6beo0.fsf@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US-large
-Content-Transfer-Encoding: 8bit
-X-Originated-At: 2003:e7:72d:500:9530:c91d:afb9:c844!35596
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2575.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ac0b75f1-81a6-485c-3000-08d8241607d0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2020 14:40:31.0350
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6TVWjVAg9nM/015MyqA+hNTwhTkJuQNvEidYrSlLBHhtlwKPlJI2zKLnPDA/jRd2gnLtP0NKJGgGdhRliZkCV6+UZ5XFWXilrGrFFmv3xxzJttT8+VAaLhdgwz633qNq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB3423
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo wrote:
-> Viktor Jägersküpper <viktor_jaegerskuepper@freenet.de> writes:
-> 
->> Kalle Valo writes:
->>> Roman Mamedov <rm@romanrm.net> writes:
->>>
->>>> On Sat,  4 Apr 2020 12:18:38 +0800
->>>> Qiujun Huang <hqjagain@gmail.com> wrote:
->>>>
->>>>> In ath9k_hif_usb_rx_cb interface number is assumed to be 0.
->>>>> usb_ifnum_to_if(urb->dev, 0)
->>>>> But it isn't always true.
->>>>>
->>>>> The case reported by syzbot:
->>>>> https://lore.kernel.org/linux-usb/000000000000666c9c05a1c05d12@google.com
->>>>> usb 2-1: new high-speed USB device number 2 using dummy_hcd
->>>>> usb 2-1: config 1 has an invalid interface number: 2 but max is 0
->>>>> usb 2-1: config 1 has no interface number 0
->>>>> usb 2-1: New USB device found, idVendor=0cf3, idProduct=9271, bcdDevice=
->>>>> 1.08
->>>>> usb 2-1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
->>>>> general protection fault, probably for non-canonical address
->>>>> 0xdffffc0000000015: 0000 [#1] SMP KASAN
->>>>> KASAN: null-ptr-deref in range [0x00000000000000a8-0x00000000000000af]
->>>>> CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.6.0-rc5-syzkaller #0
->>>>>
->>>>> Call Trace
->>>>> __usb_hcd_giveback_urb+0x29a/0x550 drivers/usb/core/hcd.c:1650
->>>>> usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1716
->>>>> dummy_timer+0x1258/0x32ae drivers/usb/gadget/udc/dummy_hcd.c:1966
->>>>> call_timer_fn+0x195/0x6f0 kernel/time/timer.c:1404
->>>>> expire_timers kernel/time/timer.c:1449 [inline]
->>>>> __run_timers kernel/time/timer.c:1773 [inline]
->>>>> __run_timers kernel/time/timer.c:1740 [inline]
->>>>> run_timer_softirq+0x5f9/0x1500 kernel/time/timer.c:1786
->>>>> __do_softirq+0x21e/0x950 kernel/softirq.c:292
->>>>> invoke_softirq kernel/softirq.c:373 [inline]
->>>>> irq_exit+0x178/0x1a0 kernel/softirq.c:413
->>>>> exiting_irq arch/x86/include/asm/apic.h:546 [inline]
->>>>> smp_apic_timer_interrupt+0x141/0x540 arch/x86/kernel/apic/apic.c:1146
->>>>> apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
->>>>>
->>>>> Reported-and-tested-by: syzbot+40d5d2e8a4680952f042@syzkaller.appspotmail.com
->>>>> Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
->>>>
->>>> This causes complete breakage of ath9k operation across all the stable kernel
->>>> series it got backported to, and I guess the mainline as well. Please see:
->>>> https://bugzilla.kernel.org/show_bug.cgi?id=208251
->>>> https://bugzilla.redhat.com/show_bug.cgi?id=1848631
->>>
->>> So there's no fix for this? I was under impression that someone fixed
->>> this, but maybe I'm mixing with something else.
->>>
->>> If this is not fixed can someone please submit a patch to revert the
->>> offending commit (or commits) so that we get ath9k working again?
->>>
->>
->> This reverts commit 2bbcaaee1fcbd83272e29f31e2bb7e70d8c49e05 ("ath9k: Fix general protection fault
->> in ath9k_hif_usb_rx_cb") because the driver gets stuck like this:
->>
->>   [    5.778803] usb 1-5: Manufacturer: ATHEROS
->>   [   21.697488] usb 1-5: ath9k_htc: Firmware ath9k_htc/htc_9271-1.4.0.fw requested
->>   [   21.701377] usbcore: registered new interface driver ath9k_htc
->>   [   22.053705] usb 1-5: ath9k_htc: Transferred FW: ath9k_htc/htc_9271-1.4.0.fw, size: 51008
->>   [   22.306182] ath9k_htc 1-5:1.0: ath9k_htc: HTC initialized with 33 credits
->>   [  115.708513] ath9k_htc: Failed to initialize the device
->>   [  115.708683] usb 1-5: ath9k_htc: USB layer deinitialized
->>
->> Reported-by: Roman Mamedov <rm@romanrm.net>
->> Ref: https://bugzilla.kernel.org/show_bug.cgi?id=208251
->> Fixes: 2bbcaaee1fcb ("ath9k: Fix general protection fault in ath9k_hif_usb_rx_cb")
->> Tested-by: Viktor Jägersküpper <viktor_jaegerskuepper@freenet.de>
->> Signed-off-by: Viktor Jägersküpper <viktor_jaegerskuepper@freenet.de>
->> ---
->>
->> I couldn't find any fix for this, so here is the patch which reverts the
->> offending commit. I have tested it with 5.8.0-rc3 and with 5.7.4.
->>
->> Feel free to change the commit message if it is necessary or appropriate, I am
->> just a user affected by this bug.
-> 
-> This was badly formatted:
-> 
-> https://patchwork.kernel.org/patch/11636783/
-> 
-> But v2 looks correct:
-> 
-> https://patchwork.kernel.org/patch/11637341/
-> 
-> Thanks, I'll take a closer look at this as soon as I can.
-> 
 
-Hi Kalle,
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Tuesday, July 7, 2020 9:08 PM
+> To: G Jaya Kumaran, Vineetha <vineetha.g.jaya.kumaran@intel.com>
+> Cc: davem@davemloft.net; kuba@kernel.org; mcoquelin.stm32@gmail.com;
+> robh+dt@kernel.org; netdev@vger.kernel.org; devicetree@vger.kernel.org;
+> Voon, Weifeng <weifeng.voon@intel.com>; Kweh, Hock Leong
+> <hock.leong.kweh@intel.com>; Ong, Boon Leong <boon.leong.ong@intel.com>
+> Subject: Re: [PATCH 1/2] dt-bindings: net: Add bindings for Intel Keem Ba=
+y
+>=20
+> > +        mdio0 {
+> > +            #address-cells =3D <1>;
+> > +            #size-cells =3D <0>;
+> > +            compatible =3D "snps,dwmac-mdio";
+> > +
+> > +            ethernet-phy@0 {
+> > +                compatible =3D "ethernet-phy-id0141.0dd0",
+> > +                              "ethernet-phy-ieee802.3-c22";
+>=20
+> You only need to provide the phy-id when the PHY is broken and registers =
+2 and
+> 3 don't contain a valid ID. And c22 is the default, so also not needed. T=
+he
+> Marvell 88E1510 will work without these compatible strings.
+>=20
+> 	   Andrew
 
-it seems you didn't have time for this so far. If you don't have time at the
-moment, is there someone else who can fix this? Reverting the commit is just the
-first and easy option and fixing this properly can be done after that.
-
-Thanks,
-Viktor
+Thanks Andrew, I will change this in v2.
