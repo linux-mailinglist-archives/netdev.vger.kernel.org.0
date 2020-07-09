@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 500D821A704
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 20:28:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4668621A6F8
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 20:27:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbgGIS2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 14:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
+        id S1727854AbgGIS1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 14:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726314AbgGIS0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 14:26:49 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E64C08E6DC
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 11:26:49 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id o13so1343815pgf.0
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 11:26:49 -0700 (PDT)
+        with ESMTP id S1726755AbgGIS0v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 14:26:51 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C8CC08E8A9
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 11:26:51 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id w17so1157037ply.11
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 11:26:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ah/xwyUwLDcO5c6QVFl6V0itB29Y6z2+QXTTe1nwKSY=;
-        b=LLdYWtX2Ocxzeqrp4lxxrExn+xcyO48LOp5c6ZDWdc234/u9a5SODz90KAgrKxCN8W
-         aNWPR4t1ijUoVqeoqb3RQCycFkimFWJYaV/kEuNOn2ZjD0QBAa0ao6eHZCm5TmkfcCgS
-         w6JMIfWsigDUAVICaYgQjKNjyQ0WJHCeBLKpA=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JDLlch6jQ6b/Ci4KTwYO3yaCS+hjAOCVDzfUIy5QEwQ=;
+        b=DNDleAo0uMHf7/DTXLL/i2S24PvXDPvlQ14Ivr2titwFCsKNgi+Kv/vKbnaXprb6f1
+         chcoIAKkLN9//ppx4zyPvXEqToxeppaTc44FyNcsYcs2zXewo1+29WB3m2ouuFmQ3vud
+         vI+jn29PW0Sf+mrlVCIaa3TsiU1811viEuh3g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ah/xwyUwLDcO5c6QVFl6V0itB29Y6z2+QXTTe1nwKSY=;
-        b=DKKszhA8qoiYMrZvKPWW+bUnbrSaKrtnWJ7o2lpy+IP0uiva29zORjdCUJZ+lZ5hA0
-         a5JozZ65Uf0uz01YyN+22+PJNjJdh+MKp5LhfeHork30Asmt+SxNVXLvy4nWNFaw/TBw
-         /WFH8LYMpxmqlOwr4dp1Ayu9qsE6br7+lxPXw5KzHNCPFLmfngtRfSFhHsVdrwFmWE/J
-         Rg6D9AWBrkPjyIkOYArq/L13polQRbdt31YqkkMQACJbHewkif1kOFOgvx+hoR4eF2U7
-         Fyuf1/i4NYn52rc8H/FLALU+AowKKDogTxUzaSQojfrfEOjlD7YgPI5A6hSH2qmENXlQ
-         P2gg==
-X-Gm-Message-State: AOAM531KR2LcyJLssaOyQ9Zfs0TZUy6kCZvI2mGK/IKfXlwa5SJiti/N
-        8vLwiY8wbblVpEH4inBD+C0sTw==
-X-Google-Smtp-Source: ABdhPJyj3kXdp3Y89vB25U3RAgnxdfxtaz0Z4xZpDPqeUGcsCQaO8cgdoenYnidhHgf9LaZ0+/Sm6A==
-X-Received: by 2002:a65:6089:: with SMTP id t9mr56104275pgu.236.1594319209137;
-        Thu, 09 Jul 2020 11:26:49 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JDLlch6jQ6b/Ci4KTwYO3yaCS+hjAOCVDzfUIy5QEwQ=;
+        b=cARKv88ua0nRFYglZH8jV0lmyp8mmQ69iauyXvvkudmQFWEMVz1y5CFrijbFVed7rW
+         YSyUpvENX4/KFw8163pBfpgYQJg6I5PQ/JeE6oCi9/EXu+uaa2jWpiNJhRikBuQTQZpc
+         6vDnxjdMwsLubd8ro0jFDED958pXYX0xfN978/hL5rDijjBCdAXzxOxNQXO+ZFKMVJOE
+         eA7M244OMvpBwnC0SA+QTEK1LtHFiHi4cTgPPAsLyneBUmTVffLGWkEGizU9cMNXDoN+
+         qBqtnzWrTkcoYVJnVL5djXJRO9131fcGrw4oK9vmsb3qKNREHDKgLq8HtB2BB0CTKo3g
+         fJ6Q==
+X-Gm-Message-State: AOAM532r6ohpqsc6A0vzSn/iVuNuvY912e5nX7I4+1iuvbJJTLKnttWO
+        g2shJ/PiCzaiISqofLG9ZbLxDQ==
+X-Google-Smtp-Source: ABdhPJyA+Ic2E+z6uMO1UTG3SkSJOCj/9RBjg+eRJHv5onUU1yxGvD5dA+aRgVJ0h36ibNdtF7idTw==
+X-Received: by 2002:a17:90a:f206:: with SMTP id bs6mr1490003pjb.48.1594319210806;
+        Thu, 09 Jul 2020 11:26:50 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id n25sm3462318pff.51.2020.07.09.11.26.47
+        by smtp.gmail.com with ESMTPSA id z1sm3429471pgk.89.2020.07.09.11.26.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 09 Jul 2020 11:26:47 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
+Cc:     Kees Cook <keescook@chromium.org>, stable@vger.kernel.org,
         Sargun Dhillon <sargun@sargun.me>,
         Christian Brauner <christian@brauner.io>,
         Tycho Andersen <tycho@tycho.ws>,
@@ -66,10 +66,12 @@ Cc:     Kees Cook <keescook@chromium.org>,
         netdev@vger.kernel.org, containers@lists.linux-foundation.org,
         linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         linux-kselftest@vger.kernel.org
-Subject: [PATCH v7 0/9] Add seccomp notifier ioctl that enables adding fds
-Date:   Thu,  9 Jul 2020 11:26:33 -0700
-Message-Id: <20200709182642.1773477-1-keescook@chromium.org>
+Subject: [PATCH v7 1/9] net/compat: Add missing sock updates for SCM_RIGHTS
+Date:   Thu,  9 Jul 2020 11:26:34 -0700
+Message-Id: <20200709182642.1773477-2-keescook@chromium.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200709182642.1773477-1-keescook@chromium.org>
+References: <20200709182642.1773477-1-keescook@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -77,59 +79,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Add missed sock updates to compat path via a new helper, which will be
+used more in coming patches. (The net/core/scm.c code is left as-is here
+to assist with -stable backports for the compat path.)
 
-v7:
-- break out sock usage counting fixes into more cleanly backportable pieces
-- code style cleanups (christian)
-- clarify addfd commit log (christian)
-- add ..._SIZE_{VER0,LATEST} and BUILD_BUG_ON()s (christian)
-- remove undef (christian)
-- fix addfd embedded URL reference numbers
-v6: https://lore.kernel.org/lkml/20200706201720.3482959-1-keescook@chromium.org/
+Cc: stable@vger.kernel.org
+Fixes: 48a87cc26c13 ("net: netprio: fd passed in SCM_RIGHTS datagram not set correctly")
+Fixes: d84295067fc7 ("net: net_cls: fd passed in SCM_RIGHTS datagram not set correctly")
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ include/net/sock.h |  4 ++++
+ net/compat.c       |  1 +
+ net/core/sock.c    | 21 +++++++++++++++++++++
+ 3 files changed, 26 insertions(+)
 
-This continues the thread-merge between [1] and [2]. tl;dr: add a way for
-a seccomp user_notif process manager to inject files into the managed
-process in order to handle emulation of various fd-returning syscalls
-across security boundaries. Containers folks and Chrome are in need
-of the feature, and investigating this solution uncovered (and fixed)
-implementation issues with existing file sending routines.
-
-I intend to carry this in the for-next/seccomp tree, unless someone
-has objections. :) Please review and test!
-
--Kees
-
-[1] https://lore.kernel.org/lkml/20200603011044.7972-1-sargun@sargun.me/
-[2] https://lore.kernel.org/lkml/20200610045214.1175600-1-keescook@chromium.org/
-
-
-Kees Cook (7):
-  net/compat: Add missing sock updates for SCM_RIGHTS
-  pidfd: Add missing sock updates for pidfd_getfd()
-  net/scm: Regularize compat handling of scm_detach_fds()
-  fs: Move __scm_install_fd() to __receive_fd()
-  fs: Add receive_fd() wrapper for __receive_fd()
-  pidfd: Replace open-coded receive_fd()
-  fs: Expand __receive_fd() to accept existing fd
-
-Sargun Dhillon (2):
-  seccomp: Introduce addfd ioctl to seccomp user notifier
-  selftests/seccomp: Test SECCOMP_IOCTL_NOTIF_ADDFD
-
- fs/file.c                                     |  57 +++++
- include/linux/file.h                          |  19 ++
- include/linux/seccomp.h                       |   4 +
- include/net/sock.h                            |   4 +
- include/uapi/linux/seccomp.h                  |  22 ++
- kernel/pid.c                                  |  14 +-
- kernel/seccomp.c                              | 173 ++++++++++++-
- net/compat.c                                  |  55 ++---
- net/core/scm.c                                |  50 +---
- net/core/sock.c                               |  21 ++
- tools/testing/selftests/seccomp/seccomp_bpf.c | 229 ++++++++++++++++++
- 11 files changed, 566 insertions(+), 82 deletions(-)
-
+diff --git a/include/net/sock.h b/include/net/sock.h
+index c53cc42b5ab9..2be67f1ee8b1 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -890,6 +890,8 @@ static inline int sk_memalloc_socks(void)
+ {
+ 	return static_branch_unlikely(&memalloc_socks_key);
+ }
++
++void __receive_sock(struct file *file);
+ #else
+ 
+ static inline int sk_memalloc_socks(void)
+@@ -897,6 +899,8 @@ static inline int sk_memalloc_socks(void)
+ 	return 0;
+ }
+ 
++static inline void __receive_sock(struct file *file)
++{ }
+ #endif
+ 
+ static inline gfp_t sk_gfp_mask(const struct sock *sk, gfp_t gfp_mask)
+diff --git a/net/compat.c b/net/compat.c
+index 5e3041a2c37d..2937b816107d 100644
+--- a/net/compat.c
++++ b/net/compat.c
+@@ -309,6 +309,7 @@ void scm_detach_fds_compat(struct msghdr *kmsg, struct scm_cookie *scm)
+ 			break;
+ 		}
+ 		/* Bump the usage count and install the file. */
++		__receive_sock(fp[i]);
+ 		fd_install(new_fd, get_file(fp[i]));
+ 	}
+ 
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 6c4acf1f0220..bde394979041 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2840,6 +2840,27 @@ int sock_no_mmap(struct file *file, struct socket *sock, struct vm_area_struct *
+ }
+ EXPORT_SYMBOL(sock_no_mmap);
+ 
++/*
++ * When a file is received (via SCM_RIGHTS, etc), we must bump the
++ * various sock-based usage counts.
++ */
++void __receive_sock(struct file *file)
++{
++	struct socket *sock;
++	int error;
++
++	/*
++	 * The resulting value of "error" is ignored here since we only
++	 * need to take action when the file is a socket and testing
++	 * "sock" for NULL is sufficient.
++	 */
++	sock = sock_from_file(file, &error);
++	if (sock) {
++		sock_update_netprioidx(&sock->sk->sk_cgrp_data);
++		sock_update_classid(&sock->sk->sk_cgrp_data);
++	}
++}
++
+ ssize_t sock_no_sendpage(struct socket *sock, struct page *page, int offset, size_t size, int flags)
+ {
+ 	ssize_t res;
 -- 
 2.25.1
 
