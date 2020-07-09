@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0609321A0A3
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:19:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4669921A0A4
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:19:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbgGINTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 09:19:02 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:58851 "EHLO
+        id S1726828AbgGINTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 09:19:04 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:54605 "EHLO
         new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726315AbgGINTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:19:01 -0400
+        by vger.kernel.org with ESMTP id S1726315AbgGINTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 09:19:04 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B613C5804CA;
-        Thu,  9 Jul 2020 09:19:00 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id C78EF5804D0;
+        Thu,  9 Jul 2020 09:19:02 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Thu, 09 Jul 2020 09:19:00 -0400
+  by compute4.internal (MEProxy); Thu, 09 Jul 2020 09:19:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=aSqi1/sH4SHEGVuqn
-        qwC/G/6rLysTDqlpKG6+HZIF44=; b=awEhSVoa4KQMUQxhtAeVA/MCWKLeOsEN5
-        +wGtfh/6XYgRYK9/+10wLNxOeR5dhUjBeLUceg69cT1pJL24pRISWIlYHMoAQpi8
-        b+iJjR9En/FJUCG1YiOovbtFGdDmhagAIMgsDIkgAWKt3RjmgYNLjj2d4rC+h+wT
-        7tOG3m9QrgPYScqY8E+oF+PQMoK21YkFwjCYvdO1LTKEtJyCduaRtEH+sdbHb63S
-        HpdaIsqUyioU07RO5Y/eVGFj4NRD2JHYMJRMPlSBNfuK70AzHNSJ8OYmvFlvuDvr
-        K/GoGX1xfPM57wz15qUppm+P2xvdy1HIbLgDXlpjZCO5qp+U3OC2A==
-X-ME-Sender: <xms:QhkHX2_CqsucofgITTprQi2QCMfdYa0vStEnNOaPrA6RxEKKIIepvQ>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=UqBxurt22x458TpuEWsYDsxDjg5Jk0S+wSjzQGC8PjM=; b=KGavvwas
+        8HVBA6Drycaq3vGaI2H2A/eEJhTA1i857QpPTODMajN6RqMgw8D1d53x9JhaTbkq
+        f37DtjwjwGeUf9lEsN0UMiMMlBiYOixqX8dYsNxZDSiphgTVzdqRa/NfudJBrYoR
+        DYTQtyAWzcxgXRZbKU40jX5LXhRLmNsyGs35b7TmQCzbqjh0YlQelpBmJlE47Qol
+        V7Ec4hwpnwhH0nCeeSMX5Mj75MKtLbPavmOT4+GlXGnDNUp/ERC2y41jUh5K2ca7
+        Ty4i6jeNZn3dxOcT60ta83FxQPfU3KLTT68NNEa52Uvc6AhmS/Av1Go/cA0K4Ydb
+        +8bL1/JGhEF2VQ==
+X-ME-Sender: <xms:RhkHX_4PoHhujHEosNOJEzQNVy49_8BgTdIsoJGqnk4ikmJWmetiGA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudelgdeigecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
-    ffieekgeehveefvdegledvffduhfenucfkphepuddtledrieeirdduledrudeffeenucev
-    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthh
-    esihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:QhkHX2ufruo4wEo0NJQxRhuyRb8QQe8vJweNuPP4_s8RfG5J0VHUfw>
-    <xmx:QhkHX8BamIfR7zdoF5lty6yqiM7cxoXlF0TjM5j0kqwGGFIKl0oM6w>
-    <xmx:QhkHX-ePSgu8z3hG3SQwV44KdhCzaT8faCBzJQZeGq1UbAPEHcfZsA>
-    <xmx:RBkHX8F4D_I8-rO00hJgAVXiqeub69iAkJqCgrCCm0b9nWSE6fMj-w>
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
+    fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieeirdduledrudeffeen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    gthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:RhkHX04fo3TqEdwsyfxDd33MGA-0f1Mbper_woY2NhrUkKy0Im44oQ>
+    <xmx:RhkHX2fA3K7L144MQYZHBC_SIfFtKyhwBUxs3FdGVPhvMKdnql-iFA>
+    <xmx:RhkHXwLisb7NO1LvCTK7zMTBj0rzffxyBJnAHq8y1JvOIUwWgSQjXQ>
+    <xmx:RhkHXwCOPr-y3CrjQzgMFhD6u76oZu5ccdN0ut6iQiAmlHnankLJJQ>
 Received: from shredder.mtl.com (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8B8C7328005A;
-        Thu,  9 Jul 2020 09:18:54 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1F23A3280066;
+        Thu,  9 Jul 2020 09:18:58 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
@@ -50,10 +51,12 @@ Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
         vivien.didelot@gmail.com, f.fainelli@gmail.com,
         danieller@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v3 0/9] Expose port split attributes
-Date:   Thu,  9 Jul 2020 16:18:13 +0300
-Message-Id: <20200709131822.542252-1-idosch@idosch.org>
+Subject: [PATCH net-next v3 1/9] devlink: Move set attribute of devlink_port_attrs to devlink_port
+Date:   Thu,  9 Jul 2020 16:18:14 +0300
+Message-Id: <20200709131822.542252-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200709131822.542252-1-idosch@idosch.org>
+References: <20200709131822.542252-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -61,79 +64,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Danielle Ratson <danieller@mellanox.com>
 
-Danielle says:
+The struct devlink_port_attrs holds the attributes of devlink_port.
 
-Currently, user space has no way of knowing if a port can be split and
-into how many ports. Among other things, this makes it impossible to
-write generic tests for port split functionality.
+The 'set' field is not devlink_port's attribute as opposed to most of the
+others.
 
-Therefore, this set exposes two new devlink port attributes to user
-space: Number of lanes and whether the port can be split or not.
+Move 'set' to be devlink_port's field called 'attrs_set'.
 
-Patch set overview:
+Signed-off-by: Danielle Ratson <danieller@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+---
+ include/net/devlink.h | 4 ++--
+ net/core/devlink.c    | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-Patches #1-#4 cleanup 'struct devlink_port_attrs' and reduce the number
-of parameters passed between drivers and devlink via
-devlink_port_attrs_set()
-
-Patch #5 adds devlink port lanes attributes
-
-Patches #6-#7 add devlink port splittable attribute
-
-Patch #8 exploits the fact that devlink is now aware of port's number of
-lanes and whether the port can be split or not and moves some checks
-from drivers to devlink
-
-Patch #9 adds a port split test
-
-Changes since v2:
-* Remove some local variables from patch #3
-* Reword function description in patch #5
-* Fix a bug in patch #8
-* Add a test for the splittable attribute in patch #9
-
-Changes since v1:
-* Rename 'width' attribute to 'lanes'
-* Add 'splittable' attribute
-* Move checks from drivers to devlink
-
-Danielle Ratson (9):
-  devlink: Move set attribute of devlink_port_attrs to devlink_port
-  devlink: Move switch_port attribute of devlink_port_attrs to
-    devlink_port
-  devlink: Replace devlink_port_attrs_set parameters with a struct
-  mlxsw: Set number of port lanes attribute in driver
-  devlink: Add a new devlink port lanes attribute and pass to netlink
-  mlxsw: Set port split ability attribute in driver
-  devlink: Add a new devlink port split ability attribute and pass to
-    netlink
-  devlink: Move input checks from driver to devlink
-  selftests: net: Add port split test
-
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |   9 +-
- drivers/net/ethernet/intel/ice/ice_devlink.c  |   6 +-
- .../ethernet/mellanox/mlx5/core/en/devlink.c  |  19 +-
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  16 +-
- drivers/net/ethernet/mellanox/mlxsw/core.c    |  18 +-
- drivers/net/ethernet/mellanox/mlxsw/core.h    |   4 +-
- drivers/net/ethernet/mellanox/mlxsw/minimal.c |   4 +-
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  23 +-
- .../net/ethernet/mellanox/mlxsw/switchib.c    |   2 +-
- .../net/ethernet/mellanox/mlxsw/switchx2.c    |   2 +-
- .../net/ethernet/netronome/nfp/nfp_devlink.c  |  17 +-
- .../ethernet/pensando/ionic/ionic_devlink.c   |   5 +-
- drivers/net/netdevsim/dev.c                   |  10 +-
- include/net/devlink.h                         |  30 +-
- include/uapi/linux/devlink.h                  |   3 +
- net/core/devlink.c                            |  93 +++---
- net/dsa/dsa2.c                                |  17 +-
- tools/testing/selftests/net/Makefile          |   1 +
- .../selftests/net/devlink_port_split.py       | 277 ++++++++++++++++++
- 19 files changed, 424 insertions(+), 132 deletions(-)
- create mode 100755 tools/testing/selftests/net/devlink_port_split.py
-
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 428f55f8197c..28f8d92c5741 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -65,8 +65,7 @@ struct devlink_port_pci_vf_attrs {
+ };
+ 
+ struct devlink_port_attrs {
+-	u8 set:1,
+-	   split:1,
++	u8 split:1,
+ 	   switch_port:1;
+ 	enum devlink_port_flavour flavour;
+ 	struct netdev_phys_item_id switch_id;
+@@ -90,6 +89,7 @@ struct devlink_port {
+ 	enum devlink_port_type desired_type;
+ 	void *type_dev;
+ 	struct devlink_port_attrs attrs;
++	u8 attrs_set:1;
+ 	struct delayed_work type_warn_dw;
+ };
+ 
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 6ae36808c152..f28ae63cdb6b 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -528,7 +528,7 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
+ {
+ 	struct devlink_port_attrs *attrs = &devlink_port->attrs;
+ 
+-	if (!attrs->set)
++	if (!devlink_port->attrs_set)
+ 		return 0;
+ 	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_FLAVOUR, attrs->flavour))
+ 		return -EMSGSIZE;
+@@ -7518,7 +7518,7 @@ static int __devlink_port_attrs_set(struct devlink_port *devlink_port,
+ 
+ 	if (WARN_ON(devlink_port->registered))
+ 		return -EEXIST;
+-	attrs->set = true;
++	devlink_port->attrs_set = true;
+ 	attrs->flavour = flavour;
+ 	if (switch_id) {
+ 		attrs->switch_port = true;
+@@ -7626,7 +7626,7 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
+ 	struct devlink_port_attrs *attrs = &devlink_port->attrs;
+ 	int n = 0;
+ 
+-	if (!attrs->set)
++	if (!devlink_port->attrs_set)
+ 		return -EOPNOTSUPP;
+ 
+ 	switch (attrs->flavour) {
 -- 
 2.26.2
 
