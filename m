@@ -2,361 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2479A21A6D7
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 20:27:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7923221A71D
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 20:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726945AbgGIS1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 14:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726898AbgGIS06 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 14:26:58 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984BEC08E763
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 11:26:56 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id l63so1314329pge.12
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 11:26:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YWZ2OuQizQzGzF3RDi6D4WkV24kF9MLp4QDJR72dZB4=;
-        b=OsdMigTS1TZ7gryM952/sdzg/vSp6wtxWibgkJLGvPmqDjrer0WjNiB9L1FmFTWcjY
-         khB3DYkskNmWM5wLgPkOjeEqFw/hR2hADFK4jSXvi+4ma/PbCm/zjwKQdZdHwu293kEV
-         LdaIQ1GAEa/5HEugszrzpwpASI/+Dbp0095aY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YWZ2OuQizQzGzF3RDi6D4WkV24kF9MLp4QDJR72dZB4=;
-        b=k5uufKatqhphVD5NLQNuvqT2vv0B0nTBeco70e/Y9WSCYPOfYUlW44Zog0Q4ZwshAS
-         Kraas6UUxkqxldmM7pWl159dFU3MC+gxef4dOm8YDIMnkMs+qAPK+WznOhoTaKb0o6wC
-         h4E0eEwrz72Pphgq8JscnnWjYnRSuqQolZ2JAi/YdLEwkKsy0BNScwkDhuQHG22h5HOQ
-         qD8zgyDbhaYC8tUyNSMJc5q6Fw5FBlngPuuj6pXKv6MV4dUlxcIr5p4hXXlhi/3UCjTL
-         LFkGWIohhM4jfMuOSKNHXS0VOkiF5YkmS7gtgjfnf53D1oDjk63S10BLSlLygLV3ohGw
-         mtqA==
-X-Gm-Message-State: AOAM5309hpVYJQVQbQECrW7afpY5ODKy5UB4HU7svzeWXfXR+slWTNFZ
-        CqB/7f2kGNenIDFtjITcZEZuEQ==
-X-Google-Smtp-Source: ABdhPJyqxSVtupX3puECtbZi+bMBfwoIQ/EspFx3WlAJYTyT81T+rTNfAyy7jAcXryqqfjECtHDV+Q==
-X-Received: by 2002:aa7:8edc:: with SMTP id b28mr48226035pfr.230.1594319216060;
-        Thu, 09 Jul 2020 11:26:56 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d9sm3571541pgv.45.2020.07.09.11.26.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2020 11:26:52 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Sargun Dhillon <sargun@sargun.me>,
-        Christian Brauner <christian@brauner.io>,
-        Tycho Andersen <tycho@tycho.ws>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Matt Denton <mpdenton@google.com>,
-        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
-        Robert Sesek <rsesek@google.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
-        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH v7 9/9] selftests/seccomp: Test SECCOMP_IOCTL_NOTIF_ADDFD
-Date:   Thu,  9 Jul 2020 11:26:42 -0700
-Message-Id: <20200709182642.1773477-10-keescook@chromium.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200709182642.1773477-1-keescook@chromium.org>
-References: <20200709182642.1773477-1-keescook@chromium.org>
+        id S1726299AbgGISeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 14:34:31 -0400
+Received: from mail-eopbgr20063.outbound.protection.outlook.com ([40.107.2.63]:39317
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726163AbgGISea (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 14:34:30 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NP3rtYwn9qXsFvn5z+/Q0E7ovTd/G/opfDWyuHhCaLpNsmkb+XIFU0/V7vh1yAGPLNTDSjQ5xmR3RGB8yF9ofcyNuROQ0NKzE2y1CJIFcmOUKdSzk6swb3o8I4RctdlwsOL9+4cVCtIEL9CUEdSYgooW2NuOANjVgLZmN8ZwzJCj5yglHJncPtWp/WU4A7aLOPF4KYmARSihoTJar3DCN/5rRVBuqpKUzWbTQl4Uy3tLKBLePlNl7WtzPoWwj3JvZ/9a9em1dHbSWKMQk3vDC49o07Izy1BSvuqlSP7PV5378fwsYncWuhn+bUEjJcoljPaIkyu+AtwmXnBeTR5SIw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GVnYd1eijcT3n/eQqJrEFwxsfBHlmRraYuumt/pAuXA=;
+ b=fm3ZBJbbcDAU7oo0knftfzT0VtpAu/gMQCsRcX6NxpfnxwYHRVLp2La0IscAAaQGuDpO44/yE7ZO2yxgOze0liTKFKm/V30z3bMMS5MDW4WZjafPCZ3BT+cnaddeyfiK9ZS/Ykr01UP8qxU1qQH0ecHrdvK3jbbsOg0jAHxAqkMlZyZLQLcf7wxls+7GfkQMjKtf0LVQ2w0rAjHYd5Yz0C5vNslq5pMQ30zgCqIJFcjQntHF4tkPJSsFuzxJx454sthFMPqpIeSvQpFiGcj0YWYZRPjE0MHL0vQR2GoQyWYUBOg6q2bzqMXz3fz7SJ45Yu3JyJxC6pA2YuXn4bMlKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GVnYd1eijcT3n/eQqJrEFwxsfBHlmRraYuumt/pAuXA=;
+ b=i48tgBe5JoyhRMLR/dR4Aj3u/vF2K+QwiHukWKtJaRMXX6yHP2F9jVy0y1Mt1KN7LJv7kvaciGtXuwndbEkXJ5q/GCAAnsFNlVrc8EWG4CCJR77/os/Acw7jo/KCjbdNphX656LJHx1JCjXZlx+0JqE3FrJcZiceWSBc/GtVv0k=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (2603:10a6:208:c0::32)
+ by AM4PR05MB3426.eurprd05.prod.outlook.com (2603:10a6:205:8::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20; Thu, 9 Jul
+ 2020 18:34:25 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::d44d:a804:c730:d2b7]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::d44d:a804:c730:d2b7%2]) with mapi id 15.20.3153.032; Thu, 9 Jul 2020
+ 18:34:25 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Shay Drory <shayd@mellanox.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ubraun@linux.ibm.com" <ubraun@linux.ibm.com>,
+        "kgraul@linux.ibm.com" <kgraul@linux.ibm.com>,
+        "raspl@de.ibm.com" <raspl@de.ibm.com>
+Subject: Re: [REGRESSION] mlx5: Driver remove during hot unplug is broken
+Thread-Topic: [REGRESSION] mlx5: Driver remove during hot unplug is broken
+Thread-Index: AQHWQLrGbNXD35X8/0i/OqCLS1MuKqjViLcAgAPttwCAJC+e4IAAEqcAgAAdSxCAAVnFAIAAjeoA
+Date:   Thu, 9 Jul 2020 18:34:25 +0000
+Message-ID: <d4b590df-bc66-870f-2327-d207a3ee7134@mellanox.com>
+References: <f942d546-ee7e-60f6-612a-ae093a9459a5@linux.ibm.com>
+ <7660d8e0d2cb1fbd40cf89ea4c9a0eff4807157c.camel@mellanox.com>
+ <26dedb23-819f-8121-6e04-72677110f3cc@linux.ibm.com>
+ <AM0PR05MB4866585FF543DA370E78B992D1670@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <0e94b811-7d2e-5c2d-f6a4-64dd536aa72d@linux.ibm.com>
+ <AM0PR05MB4866B2F0A712A5DEAC1AFDA0D1670@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <1d8966f1-bc62-3981-6889-cda6ef19ae44@linux.ibm.com>
+In-Reply-To: <1d8966f1-bc62-3981-6889-cda6ef19ae44@linux.ibm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
+authentication-results: linux.ibm.com; dkim=none (message not signed)
+ header.d=none;linux.ibm.com; dmarc=none action=none header.from=mellanox.com;
+x-originating-ip: [106.51.28.254]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 19d37f35-2ede-4f6e-70ee-08d82436b513
+x-ms-traffictypediagnostic: AM4PR05MB3426:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM4PR05MB3426C18BAC62D49966ABD8CFD1640@AM4PR05MB3426.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Z7tLpgucDdJjy44BqchjKGOSO3Ggv62oR6TseLObpp00VbI3iKqSUP4f1clvgo7az27DWF8S1xIE8cWF+TTrFcL3ft0UvHEZhfxQ0Y/qJFQsZvnIALK0q+asNZpoimrT10ZZGDFJ1Sp5lbY3gypvqGvdoPkFzXp6nOuI7stB1r6pev0ioR28HAhyx/78rS9Y+evjUiIAcbTTLCeiFlCMbDvWu1XYnypir6uQpcaD06uY9aXXx0fXUxvRWOIaM26kPoCMNHrC2o8dx3UqA/7hEO9QxWdXgl2Mh4xz46snyQhaTWSBSd0wCwlgVYdRT1f/K/h97CqhtF8cGRxJpLe5020Sw3xHcaoC2QxFlGkWoeP18G3wlILDyY5493O6LbUD
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4866.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(346002)(136003)(376002)(39860400002)(366004)(6636002)(4326008)(26005)(6506007)(8936002)(53546011)(8676002)(478600001)(83380400001)(86362001)(31696002)(2616005)(6512007)(76116006)(5660300002)(36756003)(31686004)(66946007)(66556008)(64756008)(66476007)(66446008)(110136005)(316002)(55236004)(54906003)(91956017)(71200400001)(6486002)(2906002)(186003)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: ACF8BWsho8d4zK/hf9GGRbC+yU+/fr2hmDv/Akm+Sj0A2FAoOKrKUmVWzx5wDOMm0aUr17tODfPKwDol/Ayuyz6eUexk0JQZL+Pj0bsYWC9kRIkmFdtBx/oXgZeSQM9vJ1a7VISjEPmICsimSZmILpWZO6fPBhjqUgVrmvdJlLaW9xPCSt6P/3H4ADRpVXTn4KmqiVqh9uHPu3RmkfQaJndY8lTf8HtX16adLo7siy0IpZUMGbtsobpLnBGHSSxOgQIAF2SzZgE2Fb8lIqSBnVn9CyjDv2AQdPw+Nys6b+BnOrlLfSxsISz7u3ZCF/+0m9z0dXnBAO9ZjzpsEbK4O8IjdnlDxaNBclkeQfc70qicAYCqyyMpTkJLpM2esQe8qd0xLXjud3r9zA51RHfH5RYATwZx/nupJAXsAyOYc9TF1DB1glbVQpGtjL/UiITqsFHDBEObXpdU2da4XUaY46zYa11nc5ynDxrqLc/djIU=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <8E8C2895EEB6BE4E8B60727DB7DD930F@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4866.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19d37f35-2ede-4f6e-70ee-08d82436b513
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2020 18:34:25.5230
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: iIi611YYJMXLbx9QCW66I2UySO1lK5J1S0jN2OwcFm+1ZLkyheN9ixk3NucVx0NYLUa+sScNWq/sXh57fNu8MQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3426
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sargun Dhillon <sargun@sargun.me>
-
-Test whether we can add file descriptors in response to notifications.
-This injects the file descriptors via notifications, and then uses kcmp
-to determine whether or not it has been successful.
-
-It also includes some basic sanity checking for arguments.
-
-Signed-off-by: Sargun Dhillon <sargun@sargun.me>
-Link: https://lore.kernel.org/r/20200603011044.7972-5-sargun@sargun.me
-Co-developed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- tools/testing/selftests/seccomp/seccomp_bpf.c | 229 ++++++++++++++++++
- 1 file changed, 229 insertions(+)
-
-diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-index 4662a25bc9e8..3f41b32b9165 100644
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -45,6 +45,7 @@
- #include <sys/socket.h>
- #include <sys/ioctl.h>
- #include <linux/kcmp.h>
-+#include <sys/resource.h>
- 
- #include <unistd.h>
- #include <sys/syscall.h>
-@@ -168,7 +169,9 @@ struct seccomp_metadata {
- 
- #ifndef SECCOMP_FILTER_FLAG_NEW_LISTENER
- #define SECCOMP_FILTER_FLAG_NEW_LISTENER	(1UL << 3)
-+#endif
- 
-+#ifndef SECCOMP_RET_USER_NOTIF
- #define SECCOMP_RET_USER_NOTIF 0x7fc00000U
- 
- #define SECCOMP_IOC_MAGIC		'!'
-@@ -204,6 +207,39 @@ struct seccomp_notif_sizes {
- };
- #endif
- 
-+#ifndef SECCOMP_IOCTL_NOTIF_ADDFD
-+/* On success, the return value is the remote process's added fd number */
-+#define SECCOMP_IOCTL_NOTIF_ADDFD	SECCOMP_IOW(3,	\
-+						struct seccomp_notif_addfd)
-+
-+/* valid flags for seccomp_notif_addfd */
-+#define SECCOMP_ADDFD_FLAG_SETFD	(1UL << 0) /* Specify remote fd */
-+
-+struct seccomp_notif_addfd {
-+	__u64 id;
-+	__u32 flags;
-+	__u32 srcfd;
-+	__u32 newfd;
-+	__u32 newfd_flags;
-+};
-+#endif
-+
-+struct seccomp_notif_addfd_small {
-+	__u64 id;
-+	char weird[4];
-+};
-+#define SECCOMP_IOCTL_NOTIF_ADDFD_SMALL	\
-+	SECCOMP_IOW(3, struct seccomp_notif_addfd_small)
-+
-+struct seccomp_notif_addfd_big {
-+	union {
-+		struct seccomp_notif_addfd addfd;
-+		char buf[sizeof(struct seccomp_notif_addfd) + 8];
-+	};
-+};
-+#define SECCOMP_IOCTL_NOTIF_ADDFD_BIG	\
-+	SECCOMP_IOWR(3, struct seccomp_notif_addfd_big)
-+
- #ifndef PTRACE_EVENTMSG_SYSCALL_ENTRY
- #define PTRACE_EVENTMSG_SYSCALL_ENTRY	1
- #define PTRACE_EVENTMSG_SYSCALL_EXIT	2
-@@ -3740,6 +3776,199 @@ TEST(user_notification_filter_empty_threaded)
- 	EXPECT_GT((pollfd.revents & POLLHUP) ?: 0, 0);
- }
- 
-+TEST(user_notification_addfd)
-+{
-+	pid_t pid;
-+	long ret;
-+	int status, listener, memfd, fd;
-+	struct seccomp_notif_addfd addfd = {};
-+	struct seccomp_notif_addfd_small small = {};
-+	struct seccomp_notif_addfd_big big = {};
-+	struct seccomp_notif req = {};
-+	struct seccomp_notif_resp resp = {};
-+	/* 100 ms */
-+	struct timespec delay = { .tv_nsec = 100000000 };
-+
-+	memfd = memfd_create("test", 0);
-+	ASSERT_GE(memfd, 0);
-+
-+	ret = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
-+	ASSERT_EQ(0, ret) {
-+		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
-+	}
-+
-+	/* Check that the basic notification machinery works */
-+	listener = user_notif_syscall(__NR_getppid,
-+				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
-+	ASSERT_GE(listener, 0);
-+
-+	pid = fork();
-+	ASSERT_GE(pid, 0);
-+
-+	if (pid == 0) {
-+		if (syscall(__NR_getppid) != USER_NOTIF_MAGIC)
-+			exit(1);
-+		exit(syscall(__NR_getppid) != USER_NOTIF_MAGIC);
-+	}
-+
-+	ASSERT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
-+
-+	addfd.srcfd = memfd;
-+	addfd.newfd = 0;
-+	addfd.id = req.id;
-+	addfd.flags = 0x0;
-+
-+	/* Verify bad newfd_flags cannot be set */
-+	addfd.newfd_flags = ~O_CLOEXEC;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd), -1);
-+	EXPECT_EQ(errno, EINVAL);
-+	addfd.newfd_flags = O_CLOEXEC;
-+
-+	/* Verify bad flags cannot be set */
-+	addfd.flags = 0xff;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd), -1);
-+	EXPECT_EQ(errno, EINVAL);
-+	addfd.flags = 0;
-+
-+	/* Verify that remote_fd cannot be set without setting flags */
-+	addfd.newfd = 1;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd), -1);
-+	EXPECT_EQ(errno, EINVAL);
-+	addfd.newfd = 0;
-+
-+	/* Verify small size cannot be set */
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD_SMALL, &small), -1);
-+	EXPECT_EQ(errno, EINVAL);
-+
-+	/* Verify we can't send bits filled in unknown buffer area */
-+	memset(&big, 0xAA, sizeof(big));
-+	big.addfd = addfd;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD_BIG, &big), -1);
-+	EXPECT_EQ(errno, E2BIG);
-+
-+
-+	/* Verify we can set an arbitrary remote fd */
-+	fd = ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd);
-+	/*
-+	 * The child has fds 0(stdin), 1(stdout), 2(stderr), 3(memfd),
-+	 * 4(listener), so the newly allocated fd should be 5.
-+	 */
-+	EXPECT_EQ(fd, 5);
-+	EXPECT_EQ(filecmp(getpid(), pid, memfd, fd), 0);
-+
-+	/* Verify we can set an arbitrary remote fd with large size */
-+	memset(&big, 0x0, sizeof(big));
-+	big.addfd = addfd;
-+	fd = ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD_BIG, &big);
-+	EXPECT_EQ(fd, 6);
-+
-+	/* Verify we can set a specific remote fd */
-+	addfd.newfd = 42;
-+	addfd.flags = SECCOMP_ADDFD_FLAG_SETFD;
-+	fd = ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd);
-+	EXPECT_EQ(fd, 42);
-+	EXPECT_EQ(filecmp(getpid(), pid, memfd, fd), 0);
-+
-+	/* Resume syscall */
-+	resp.id = req.id;
-+	resp.error = 0;
-+	resp.val = USER_NOTIF_MAGIC;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0);
-+
-+	/*
-+	 * This sets the ID of the ADD FD to the last request plus 1. The
-+	 * notification ID increments 1 per notification.
-+	 */
-+	addfd.id = req.id + 1;
-+
-+	/* This spins until the underlying notification is generated */
-+	while (ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd) != -1 &&
-+	       errno != -EINPROGRESS)
-+		nanosleep(&delay, NULL);
-+
-+	memset(&req, 0, sizeof(req));
-+	ASSERT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
-+	ASSERT_EQ(addfd.id, req.id);
-+
-+	resp.id = req.id;
-+	resp.error = 0;
-+	resp.val = USER_NOTIF_MAGIC;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0);
-+
-+	/* Wait for child to finish. */
-+	EXPECT_EQ(waitpid(pid, &status, 0), pid);
-+	EXPECT_EQ(true, WIFEXITED(status));
-+	EXPECT_EQ(0, WEXITSTATUS(status));
-+
-+	close(memfd);
-+}
-+
-+TEST(user_notification_addfd_rlimit)
-+{
-+	pid_t pid;
-+	long ret;
-+	int status, listener, memfd;
-+	struct seccomp_notif_addfd addfd = {};
-+	struct seccomp_notif req = {};
-+	struct seccomp_notif_resp resp = {};
-+	const struct rlimit lim = {
-+		.rlim_cur	= 0,
-+		.rlim_max	= 0,
-+	};
-+
-+	memfd = memfd_create("test", 0);
-+	ASSERT_GE(memfd, 0);
-+
-+	ret = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
-+	ASSERT_EQ(0, ret) {
-+		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
-+	}
-+
-+	/* Check that the basic notification machinery works */
-+	listener = user_notif_syscall(__NR_getppid,
-+				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
-+	ASSERT_GE(listener, 0);
-+
-+	pid = fork();
-+	ASSERT_GE(pid, 0);
-+
-+	if (pid == 0)
-+		exit(syscall(__NR_getppid) != USER_NOTIF_MAGIC);
-+
-+
-+	ASSERT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
-+
-+	ASSERT_EQ(prlimit(pid, RLIMIT_NOFILE, &lim, NULL), 0);
-+
-+	addfd.srcfd = memfd;
-+	addfd.newfd_flags = O_CLOEXEC;
-+	addfd.newfd = 0;
-+	addfd.id = req.id;
-+	addfd.flags = 0;
-+
-+	/* Should probably spot check /proc/sys/fs/file-nr */
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd), -1);
-+	EXPECT_EQ(errno, EMFILE);
-+
-+	addfd.newfd = 100;
-+	addfd.flags = SECCOMP_ADDFD_FLAG_SETFD;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd), -1);
-+	EXPECT_EQ(errno, EBADF);
-+
-+	resp.id = req.id;
-+	resp.error = 0;
-+	resp.val = USER_NOTIF_MAGIC;
-+
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0);
-+
-+	/* Wait for child to finish. */
-+	EXPECT_EQ(waitpid(pid, &status, 0), pid);
-+	EXPECT_EQ(true, WIFEXITED(status));
-+	EXPECT_EQ(0, WEXITSTATUS(status));
-+
-+	close(memfd);
-+}
-+
- /*
-  * TODO:
-  * - expand NNP testing
--- 
-2.25.1
-
+T24gNy85LzIwMjAgMzozNiBQTSwgTmlrbGFzIFNjaG5lbGxlIHdyb3RlOg0KPiANCj4gT24gNy84
+LzIwIDU6NDQgUE0sIFBhcmF2IFBhbmRpdCB3cm90ZToNCj4gLi4uIHNuaXAgLi4NCj4+Pg0KPj4N
+Cj4+IEl0IGlzIGxpa2VseSBiZWNhdXNlIGV2ZW50c19jbGVhbnVwKCkgZnJlZWQgdGhlIG1lbW9y
+eSB1c2luZyBrdmZyZWUoKSB0aGF0IGhlYWx0aCByZWNvdmVyeSBjb250ZXh0IGlzIHRyeWluZyB0
+byBhY2Nlc3MgaW4gbm90aWZpZXIgY2hhaW4uDQo+Pg0KPj4gV2hpbGUgcmV2aWV3aW5nIEkgc2Vl
+IGZldyBtb3JlIGVycm9ycyBhcyBiZWxvdy4NCj4+IChhKSBtbHg1X3BjaV9lcnJfZGV0ZWN0ZWQo
+KSBpbnZva2VzIG1seDVfZHJhaW5faGVhbHRoX3dxKCkgb3V0c2lkZSBvZiBpbnRmX3N0YXRlX211
+dGV4Lg0KPj4gKGIpIG1seDVfZW50ZXJfZXJyb3Jfc3RhdGUoKSBpbiBjb21taXQgYjZlMGI2YmVi
+ZTAgcmVhZCBhbmQgdXBkYXRlcyBkZXYgc3RhdGUgb3V0c2lkZSBvZiBpbnRmX3N0YXRlX211dGV4
+Lg0KPj4gKGMpIGR1ZSB0byBkcmFpbl9oZWFsdGhfd3EoKSBpbnRyb2R1Y3Rpb24gaW4gbWx4NV9w
+Y2lfY2xvc2UoKSAgaW4gY29tbWl0IDQyZWE5ZjFiNWM2MjUgaGVhbHRoX3dxIGlzIGZsdXNoZWQg
+dHdpY2UuDQo+PiAoZCkgcHJpdi0+ZXZlbnRzIGZyZWVkIGlzIGt2ZnJlZSgpIGJ1dCBhbGxvY2F0
+ZWQgdXNpbmcga3phbGxvYygpLg0KPj4NCj4+IFRoaXMgY29kZSBjZXJ0YWlubHkgbmVlZHMgcmV3
+b3JrLg0KPj4NCj4+IEluIG1lYW50aW1lIHRvIGF2b2lkIHRoaXMgcmVncmVzc2lvbiwgSSBiZWxp
+ZXZlIGJlbG93IGh1bmsgZWxpbWluYXRlcyBlcnJvciBpbnRyb2R1Y2VkIGluIHBhdGNoIDQxNzk4
+ZGY5YmZjLg0KPj4gV2lsbCB5b3UgcGxlYXNlIGhlbHAgdGVzdCBpdD8NCj4+DQo+PiBTaGF5IGFu
+ZCBJIGRpZCB0aGUgcmV2aWV3IG9mIGJlbG93IHBhdGNoLg0KPj4gSWYgaXQgd29ya3MgSSB3aWxs
+IGdldCBpdCB0aHJvdWdoIFNhZWVkJ3MgdHJlZSBhbmQgaW50ZXJuYWwgcmV2aWV3cy4NCj4+DQo+
+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL21h
+aW4uYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9tYWluLmMNCj4+
+IGluZGV4IGViZWMyMzE4ZGJjNC4uNTI5ZGY1NzAzNzM3IDEwMDY0NA0KPj4gLS0tIGEvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL21haW4uYw0KPj4gKysrIGIvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL21haW4uYw0KPj4gQEAgLTc4NSwxMSAr
+Nzg1LDYgQEAgc3RhdGljIGludCBtbHg1X3BjaV9pbml0KHN0cnVjdCBtbHg1X2NvcmVfZGV2ICpk
+ZXYsIHN0cnVjdCBwY2lfZGV2ICpwZGV2LA0KPj4NCj4+ICBzdGF0aWMgdm9pZCBtbHg1X3BjaV9j
+bG9zZShzdHJ1Y3QgbWx4NV9jb3JlX2RldiAqZGV2KQ0KPj4gIHsNCj4+IC0gICAgICAgLyogaGVh
+bHRoIHdvcmsgbWlnaHQgc3RpbGwgYmUgYWN0aXZlLCBhbmQgaXQgbmVlZHMgcGNpIGJhciBpbg0K
+Pj4gLSAgICAgICAgKiBvcmRlciB0byBrbm93IHRoZSBOSUMgc3RhdGUuIFRoZXJlZm9yZSwgZHJh
+aW4gdGhlIGhlYWx0aCBXUQ0KPj4gLSAgICAgICAgKiBiZWZvcmUgcmVtb3ZpbmcgdGhlIHBjaSBi
+YXJzDQo+PiAtICAgICAgICAqLw0KPj4gLSAgICAgICBtbHg1X2RyYWluX2hlYWx0aF93cShkZXYp
+Ow0KPj4gICAgICAgICBpb3VubWFwKGRldi0+aXNlZyk7DQo+PiAgICAgICAgIHBjaV9jbGVhcl9t
+YXN0ZXIoZGV2LT5wZGV2KTsNCj4+ICAgICAgICAgcmVsZWFzZV9iYXIoZGV2LT5wZGV2KTsNCj4+
+IEBAIC0xMjM1LDYgKzEyMzAsNyBAQCB2b2lkIG1seDVfdW5sb2FkX29uZShzdHJ1Y3QgbWx4NV9j
+b3JlX2RldiAqZGV2LCBib29sIGNsZWFudXApDQo+PiAgICAgICAgIGlmIChjbGVhbnVwKSB7DQo+
+PiAgICAgICAgICAgICAgICAgbWx4NV91bnJlZ2lzdGVyX2RldmljZShkZXYpOw0KPj4gICAgICAg
+ICAgICAgICAgIG1seDVfZGV2bGlua191bnJlZ2lzdGVyKHByaXZfdG9fZGV2bGluayhkZXYpKTsN
+Cj4+ICsgICAgICAgICAgICAgICBtbHg1X2RyYWluX2hlYWx0aF93cShkZXYpOw0KPiBJIHRoaW5r
+IHdpdGggdGhlIGFib3ZlIHlvdSBjYW4gcmVtb3ZlIHRoZSBtbHg1X2RyYWluX2hlYWx0aF93cShk
+ZXYpIGluIHJlbW92ZV9vbmUoKQ0KPiBhcyB0aGF0IGNhbGxzIG1seDVfdW5sb2FkX29uZSgpIHdp
+dGggY2xlYW51cCA9PSB0cnVlLg0KT2ggeWVzLCBJIHdhcyBzdXBwb3NlZCB0byByZW1vdmUgZnJv
+bSB0aGVyZSB0b28uDQpUaGF0IHdhcyB0aGUgd2hvbGUgcG9pbnQgb2YgcmVtb3ZpbmcgZnJvbSB0
+aGVyZS4gQnV0IEkgbWlzc2VkLiA6KA0KTXkgYmFkIHRoYXQgSSBkaWRuJ3QgZ2l2ZSBzaGFyZSBw
+YXRjaC4NClBsZWFzZSBmaW5kIHRoZSBpbmxpbmUgcGF0Y2ggYXQgdGhlIGVuZCBvZiB0aGUgZW1h
+aWwgdGhyZWFkLg0KDQo+IEFsc28gSSB3b25kZXIgaWYgaXQgaXMgYSBwcm9ibGVtDQo+IHRoYXQg
+dGhlIG9yZGVyIG9mIG1seDVfZGV2bGlua191bnJlZ2lzdGVyKHByaXZfdG9fZGV2bGluayhkZXYp
+KSBhbmQgbWx4NV91bnJlZ2lzdGVyX2RldmljZShkZXYpDQo+IGlzIHN3aXRjaGVkIGNvbXBhcmVk
+IHRvIHRoZSA1LjcgY29kZS4gVGhhdCBzYWlkIGNoYW5naW5nIGJvdGggc2VlbXMgdG8gcmVzdWx0
+IGluIGEgZGVhZGxvY2sNCj4gdGhvdWdoIG5vdCB0aGUgImxlYWsgb2YgYSBjb21tYW5kIHJlc291
+cmNlIjoNCj4gDQpDdXJyZW50IG9yZGVyIGluIDUuOC1yYzQgb2YgdW5yZWdpc3Rlcl9kZXZpY2Ug
+YW5kIGRldmxpbmtfdW5yZWdpc3RlciBpcw0KdGhlIHJpZ2h0IG9uZS4gVGhhdCBpcywgdG8gdW5y
+ZWdpc3RlciB0aGUgbmV0ZGV2aWNlIGJlZm9yZSB1bnJlZ2lzdGVyaW5nDQpkZXZsaW5rIGRldmlj
+ZS4NCg0KUGxlYXNlIGRvIG5vdCBjaGFuZ2UgIHRoZSBvcmRlciBvZiBtbHg1X3VucmVnaXN0ZXJf
+ZGV2aWNlKCkgYW5kDQptbHg1X2RldmxpbmtfdW5yZWdpc3RlcigpLg0KDQoNCj4+DQo+IEFzIGlz
+IHRoZSBwYXRjaCBhYm92ZSBmaXhlcyB0aGUgZGVyZWZlcmVuY2UgYnV0IHJlc3VsdHMgaW4gdGhl
+IHNhbWUgY29tcGxldGlvbiBlcnJvcg0KPiBhcyBjdXJyZW50IDUuOC1yYzQNCg0KQmVsb3cgcGF0
+Y2ggc2hvdWxkIGhvcGVmdWxseSBmaXggaXQuIEl0IGZpeGVzIHRoZSBidWcgaW50cm9kdWNlZCBp
+bg0KY29tbWl0IDQxNzk4ZGY5YmZjYS4NCkFkZGl0aW9uYWxseSBpdCBmaXhlcyBvbmUgc21hbGwg
+Y2hhbmdlIG9mIDQyZWE5ZjFiNWM2Mi4NClBsZWFzZSByZW1vdmUgYWxsIHByZXZpb3VzIGNoYW5n
+ZXMgYW5kIGFwcGx5IGJlbG93IGNoYW5nZXMuDQpIb3BlZnVsbHkgdGhpcyBzaG91bGQgcmVzb2x2
+ZS4NCg0KDQpGcm9tIGEyNjBiMmU2YTYwNjVhNTdjMmZhNjIxMjcxNDgzY2Q1MWQwYTFhYmYgTW9u
+IFNlcCAxNyAwMDowMDowMCAyMDAxDQpGcm9tOiBQYXJhdiBQYW5kaXQgPHBhcmF2QG1lbGxhbm94
+LmNvbT4NCkRhdGU6IFRodSwgOSBKdWwgMjAyMCAyMDo1NzoxMyArMDMwMA0KU3ViamVjdDogW1BB
+VENIXSBuZXQvbWx4NTogRHJhaW4gaGVhbHRoIHdxIGFmdGVyIHVucmVnaXN0ZXJpbmcgZGV2aWNl
+DQoNCldoZW4gaGVhbHRoIHdvcmtlciBpcyBkaXNhYmxlZCBiZWZvcmUgdW5yZWdpc3RlcmluZyB0
+aGUgZGV2aWNlcywgYW5kIGlmDQp0aGUgZmlybXdhcmUgZXJyb3IgaXMgdHJpZ2dlcmVkIHdoaWxl
+IGluIG1pZGRsZSBvZiB1bnJlZ3N0ZXJpbmcgdGhlDQpkZXZpY2UsIGl0IGxlYWRzIHRvIHZlcnkg
+bG9uZyBjb21tYW5kIHRpbWVvdXQuDQoNClRoaXMgZXJyb3Igb2NjdXJzIGJlY2F1c2UgdW5yZWdp
+c3RlcmluZyBkZXZpY2UgaW52b2x2ZXMgc2V2ZXJhbCBmaXJtd2FyZQ0KY29tbWFuZHMsIGFuZCBo
+ZWFsdGggcmVjb3Zlcnkgd29ya2VyIGlzIGRpc2FibGVkLiBTbyBkZXZpY2Ugc3RhdGUgaXMNCm5l
+dmVyIHVwZGF0ZWQgYXMgZXJyb3IuDQoNCiAgICBjcHUtMCAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBjcHUtMQ0KICAgIC0tLS0tICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIC0tLS0tDQpyZW1vdmVfb25lKCkNCiAgbWx4NV9kcmFpbl9oZWFsdGhfd3EoKSAgICAgICAg
+ICAgICAgICAgcG9sbF9oZWFsdGgoKQ0KICBtbHg1X3VucmVnaXN0ZXJfZGV2aWNlKCkgICAgICAg
+ICAgICAgICAgbWx4NV90cmlnZ2VyX2hlYWx0aF93b3JrKCkNCiAgICAgbWx4NV9jbWRfZXhlYygp
+ICAgICAgICAgICAgICAgICAgICAgICAgLyogaGVhbHRoIHdvcmsgc2tpcHBlZCAqLw0KICAgICAg
+LyogdGltZW91dCAqLw0KDQpIZW5jZSwgZGlzYWJsZSB0aGUgaGVhbHRoIHdvcmtlciBhZnRlciB1
+bnJlZ2lzdGVyaW5nIHRoZSBkZXZpY2UgYW5kDQpiZWZvcmUgZnVsbHkgdW5sb2FkaW5nIHRoZSBk
+ZXZpY2UsIGFzIGhlYWx0aCB3b3JrZXIgdXNlcyB0aGUgZGV2aWNlDQpkdXJpbmcgaGVhbHRoIHJl
+Y292ZXJ5LiBCb3RoIHN1Y2ggY29udGV4dHMgYXJlIHNlcmlhbGl6ZWQgYnkNCmludGZfc3RhdGVf
+bXV0ZXguDQoNCkNoYW5nZS1JZDogSTA1NGRmODY1NzI2YWY0MmVhOTQwMzAwYjQzOTg4OWU1OGQw
+OTU2ZDENCkZpeGVzOiA0MTc5OGRmOWJmY2EgKCJuZXQvbWx4NTogRHJhaW4gd3EgZmlyc3QgZHVy
+aW5nIFBDSSBkZXZpY2UgcmVtb3ZhbCIpDQpGaXhlczogNDJlYTlmMWI1YzYyICgibmV0L21seDU6
+IGRyYWluIGhlYWx0aCB3b3JrcXVldWUgaW4gY2FzZSBvZiBkcml2ZXINCmxvYWQgZXJyb3IiKQ0K
+UmVwb3J0ZWQtYnk6IE5pa2xhcyBTY2huZWxsZSA8c2NobmVsbGVAbGludXguaWJtLmNvbT4NClNp
+Z25lZC1vZmYtYnk6IFNoYXkgRHJvcnkgPHNoYXlkQG1lbGxhbm94LmNvbT4NClNpZ25lZC1vZmYt
+Ynk6IFBhcmF2IFBhbmRpdCA8cGFyYXZAbWVsbGFub3guY29tPg0KLS0tDQogZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL21haW4uYyB8IDEyICsrKysrKy0tLS0tLQ0KIDEg
+ZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1n
+aXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbWFpbi5jDQpiL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9tYWluLmMNCmluZGV4IGUzMmQ0
+NmMzMzcwMS4uMTAwYTVjMzFlZTBiIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQv
+bWVsbGFub3gvbWx4NS9jb3JlL21haW4uYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVs
+bGFub3gvbWx4NS9jb3JlL21haW4uYw0KQEAgLTc4NSwxMSArNzg1LDYgQEAgc3RhdGljIGludCBt
+bHg1X3BjaV9pbml0KHN0cnVjdCBtbHg1X2NvcmVfZGV2ICpkZXYsDQpzdHJ1Y3QgcGNpX2RldiAq
+cGRldiwNCg0KIHN0YXRpYyB2b2lkIG1seDVfcGNpX2Nsb3NlKHN0cnVjdCBtbHg1X2NvcmVfZGV2
+ICpkZXYpDQogew0KLQkvKiBoZWFsdGggd29yayBtaWdodCBzdGlsbCBiZSBhY3RpdmUsIGFuZCBp
+dCBuZWVkcyBwY2kgYmFyIGluDQotCSAqIG9yZGVyIHRvIGtub3cgdGhlIE5JQyBzdGF0ZS4gVGhl
+cmVmb3JlLCBkcmFpbiB0aGUgaGVhbHRoIFdRDQotCSAqIGJlZm9yZSByZW1vdmluZyB0aGUgcGNp
+IGJhcnMNCi0JICovDQotCW1seDVfZHJhaW5faGVhbHRoX3dxKGRldik7DQogCWlvdW5tYXAoZGV2
+LT5pc2VnKTsNCiAJcGNpX2NsZWFyX21hc3RlcihkZXYtPnBkZXYpOw0KIAlyZWxlYXNlX2Jhcihk
+ZXYtPnBkZXYpOw0KQEAgLTEyMzAsNiArMTIyNSw3IEBAIHZvaWQgbWx4NV91bmxvYWRfb25lKHN0
+cnVjdCBtbHg1X2NvcmVfZGV2ICpkZXYsDQpib29sIGNsZWFudXApDQogCWlmIChjbGVhbnVwKSB7
+DQogCQltbHg1X3VucmVnaXN0ZXJfZGV2aWNlKGRldik7DQogCQltbHg1X2RldmxpbmtfdW5yZWdp
+c3Rlcihwcml2X3RvX2RldmxpbmsoZGV2KSk7DQorCQltbHg1X2RyYWluX2hlYWx0aF93cShkZXYp
+Ow0KIAl9IGVsc2Ugew0KIAkJbWx4NV9kZXRhY2hfZGV2aWNlKGRldik7DQogCX0NCkBAIC0xMzYx
+LDYgKzEzNTcsMTEgQEAgc3RhdGljIGludCBpbml0X29uZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwg
+Y29uc3QNCnN0cnVjdCBwY2lfZGV2aWNlX2lkICppZCkNCiAJcmV0dXJuIDA7DQoNCiBlcnJfbG9h
+ZF9vbmU6DQorCS8qIGhlYWx0aCB3b3JrIG1pZ2h0IHN0aWxsIGJlIGFjdGl2ZSwgYW5kIGl0IG5l
+ZWRzIHBjaSBiYXIgaW4NCisJICogb3JkZXIgdG8ga25vdyB0aGUgTklDIHN0YXRlLiBUaGVyZWZv
+cmUsIGRyYWluIHRoZSBoZWFsdGggV1ENCisJICogYmVmb3JlIHJlbW92aW5nIHRoZSBwY2kgYmFy
+cw0KKwkgKi8NCisJbWx4NV9kcmFpbl9oZWFsdGhfd3EoZGV2KTsNCiAJbWx4NV9wY2lfY2xvc2Uo
+ZGV2KTsNCiBwY2lfaW5pdF9lcnI6DQogCW1seDVfbWRldl91bmluaXQoZGV2KTsNCkBAIC0xMzc3
+LDcgKzEzNzgsNiBAQCBzdGF0aWMgdm9pZCByZW1vdmVfb25lKHN0cnVjdCBwY2lfZGV2ICpwZGV2
+KQ0KDQogCWRldmxpbmtfcmVsb2FkX2Rpc2FibGUoZGV2bGluayk7DQogCW1seDVfY3JkdW1wX2Rp
+c2FibGUoZGV2KTsNCi0JbWx4NV9kcmFpbl9oZWFsdGhfd3EoZGV2KTsNCiAJbWx4NV91bmxvYWRf
+b25lKGRldiwgdHJ1ZSk7DQogCW1seDVfcGNpX2Nsb3NlKGRldik7DQogCW1seDVfbWRldl91bmlu
+aXQoZGV2KTsNCi0tIA0KMi4yNi4yDQoNCg==
