@@ -2,99 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6029121ABAF
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 01:33:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B92B421ABC6
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 01:46:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbgGIXdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 19:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47120 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726222AbgGIXdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 19:33:41 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D27C08C5CE
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 16:33:41 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id h28so3193832edz.0
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 16:33:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=awu71g6w9tVgShIVUktwo147GkD8GiWeBYlmNc1SKDw=;
-        b=PpM30GWzgEHwBOF1GT+MF/Loman6ouO3iaC8qXu2FRTonT2eoNDBg311ybSkj9md77
-         3yrFFIEMPebQA1BwU/Xwlh4p+d40YSIb/+fH8LAqoHMP7I5vXVoO4l62oJtLihA2Z540
-         ixjlm1j9pMf83yeaRHK/2siGzFn+6GUeK/iaMOdWNX8B4z+lkifJhPTBULVfqV47pGNF
-         5HMU3S0Be/sbmkv1rpSUyOHjcTpSwL8KyNDlUsAY18fus86l39arifPvtGuRaS+U6oY1
-         LgxI+CFB4uR3ViE+kFyVYhEk0pNN+850rpTAhDzCeIkI8kLxLHzwt4NsbbvH3nt9Y6xH
-         RTew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=awu71g6w9tVgShIVUktwo147GkD8GiWeBYlmNc1SKDw=;
-        b=QBhLERuhCmIxJdgV8GKAWDA54PaV0r/5dViriBsAM0WNH/2ThQa1tEE3j2kVFHF4Gn
-         fGCizrmX66ARHaeEcNyLMHcF8VVTwpsHQjn7qMbdlb3o48k8ooJQUrURIZKH+J855WgN
-         X8h8GIv1XUveqtuNhLlGpPvpvW7TuAd/AIJAjDfusbGfA1K8g9cl+WKLjvvog69kUOPg
-         77F6iBU9M3xRUP5eWDMJp9Z1g+uPPt0PNye/rFEIPKHL/yM7pBzA4fiURsC0fFPlcMCY
-         h9sFQ9FC2EjeyjW/Z9i9JbTIFXaFqD5pX9WxFf/clTPgAZ/sG6GEci1tl1NaYEXOEkJ/
-         bdtw==
-X-Gm-Message-State: AOAM533v8vGkVGKlE8GPcKLfv4gb7nUPK62EB9FapvsOtObe/o3rchQr
-        XTqPzYusFb22jJQZ2Ucmf0E=
-X-Google-Smtp-Source: ABdhPJw2B+YdIxz50k+YxpFQx0LSSBwlmvgxjV/7Y6lxH9eWioD13DhBbY8Lln4G4KBbM9+cdXb/Og==
-X-Received: by 2002:a05:6402:1a3c:: with SMTP id be28mr65624587edb.140.1594337620226;
-        Thu, 09 Jul 2020 16:33:40 -0700 (PDT)
-Received: from skbuf ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id m13sm2599007ejc.1.2020.07.09.16.33.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2020 16:33:39 -0700 (PDT)
-Date:   Fri, 10 Jul 2020 02:33:37 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>, netdev@vger.kernel.org,
-        f.fainelli@gmail.com, hkallweit1@gmail.com
-Subject: Re: MDIO Debug Interface
-Message-ID: <20200709233337.xxneb7kweayr4yis@skbuf>
-References: <C42DZQLTPHM5.2THDSRK84BI3T@wkz-x280>
- <20200709223936.GC1014141@lunn.ch>
- <20200709225725.xwmyhny4hmiyb5nt@skbuf>
- <20200709232035.GE1014141@lunn.ch>
+        id S1726794AbgGIXp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 19:45:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49258 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726228AbgGIXp6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 19:45:58 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 04DF72070E;
+        Thu,  9 Jul 2020 23:45:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594338358;
+        bh=7fTLSevMH3QOHKBO+40Tu6VJxm1d2rjJtTvX5ceS550=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qpZBfPS7lB781TorLKh1L0+kPrlSDWEEW5Up0pxwMBLWHs/Mx4Mvs7AU4SeGDB9BW
+         CjJiUGCPdtp/j7ugwXs9pZrvkLgfUPbXJiPVFfdrqTaKu3wSBRw+UYrAeasyjVQHOJ
+         sn8zFFpa1BWPJBGQ23ET5jdxFeQHlo1xVS01yYvA=
+Date:   Thu, 9 Jul 2020 16:45:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
+        michael.chan@broadcom.com, emil.s.tantilov@intel.com,
+        alexander.h.duyck@linux.intel.com, jeffrey.t.kirsher@intel.com,
+        tariqt@mellanox.com, mkubecek@suse.cz
+Subject: Re: [PATCH net-next v3 00/10] udp_tunnel: add NIC RX port offload
+ infrastructure
+Message-ID: <20200709164556.470e8ba1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200709232900.105163-1-kuba@kernel.org>
+References: <20200709232900.105163-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200709232035.GE1014141@lunn.ch>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 01:20:35AM +0200, Andrew Lunn wrote:
-> > Virtualization is a reasonable use case in my opinion and it would
-> > need something like this, for the guest kernel to have access to its
-> > PHY.
-> 
-> And i would like a better understanding of this use case. It seems odd
-> you are putting the driver for a PHY in the VM. Is the MAC driver also
-> in the VM? As you said, VM context switches are expensive, so it would
-> seem to make more sense to let the host drive the hardware, which it
-> can do without all these context switches, and export a much simpler
-> and efficient API to the VM.
-> 
->     Andrew
+On Thu,  9 Jul 2020 16:28:50 -0700 Jakub Kicinski wrote:
+> v3:
+>  - fix build issue;
 
-The MAC driver is also in the VM, yes, and the VM can be given
-pass-through access to the MAC register map. But the PHY is on a shared
-bus. It is not desirable to give the VM access to the entire MDIO
-controller's register map, for a number of reasons which I'm sure I
-don't need to enumerate. So QEMU should be instructed which PHY should
-each network interface use and on which bus, and it should fix-up the
-device tree of the guest with a phy-handle to a PHY on a
-para-virtualized MDIO bus, guest-side driver of which is going to be
-accessing the real MDIO bus through this UAPI which we're talking about.
-Then the host-side MDIO driver can ensure serialization of MDIO
-accesses, etc etc.
+Ugh. The drivers need access to the stubs as well. Maybe:
 
-It's been a while since I looked at this, so I may be lacking some of
-the technical details, and brushing them up is definitely not something
-for today.
-
--Vladimir
++#ifdef CONFIG_INET
+ extern const struct udp_tunnel_nic_ops *udp_tunnel_nic_ops;
++#else
++#define udp_tunnel_nic_ops     NULL
++#endif
