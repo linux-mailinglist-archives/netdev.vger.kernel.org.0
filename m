@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74941219590
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 03:19:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D28F021958F
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 03:18:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726361AbgGIBS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jul 2020 21:18:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48364 "EHLO mail.kernel.org"
+        id S1726343AbgGIBSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jul 2020 21:18:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48398 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726313AbgGIBSu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726318AbgGIBSu (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 8 Jul 2020 21:18:50 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 420DE2082E;
+        by mail.kernel.org (Postfix) with ESMTPSA id C65AB207BB;
         Thu,  9 Jul 2020 01:18:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594257529;
-        bh=KUi9NCu0IpnnuSlHn3ffjRU7JG8ylU1NimfnJhNI7sk=;
+        s=default; t=1594257530;
+        bh=ruf780YPE3HyQarEPxekKK2138eivCb6aPTlSSChw0s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1+ePJWtx9Jpe/6Mo78ajsWrLDLAggb4YKT+VDKLrm4xd2aLF05mQjAhG/Y3lzL5Bc
-         Jx0wMArhWtT8b8F923/4UvTt4AQEtbOhTibbK45ub0eam5F50O16PT+RvIMaVowdzf
-         Tj+w+ogbq9FFN+8wzHmEL/8lkOFc+eLdijAxwqd8=
+        b=px90+MTkN2LNPo5z8lAeQGxvKbo3jYzYE210VZtZineR1NZetShLkSOXefaVCoeAv
+         UGnH4q6AarHuy2WabJPpI+ckTPhhonOQYA0X3DyFg8cQDhdffEN5Rlla6i0/tQ/1cs
+         CuLQkZ00dD5u2AiFp905+lnO+C2AwmTWI7XVUJ5o=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
         emil.s.tantilov@intel.com, alexander.h.duyck@linux.intel.com,
         jeffrey.t.kirsher@intel.com, tariqt@mellanox.com, mkubecek@suse.cz,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 08/10] ixgbe: convert to new udp_tunnel_nic infra
-Date:   Wed,  8 Jul 2020 18:18:12 -0700
-Message-Id: <20200709011814.4003186-9-kuba@kernel.org>
+Subject: [PATCH net-next v2 09/10] bnxt: convert to new udp_tunnel_nic infra
+Date:   Wed,  8 Jul 2020 18:18:13 -0700
+Message-Id: <20200709011814.4003186-10-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200709011814.4003186-1-kuba@kernel.org>
 References: <20200709011814.4003186-1-kuba@kernel.org>
@@ -43,291 +43,236 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make use of new common udp_tunnel_nic infra. ixgbe supports
-IPv4 only, and only single VxLAN and Geneve ports (one each).
-
-v2:
- - split out the RXCSUM feature handling to separate change;
- - declare structs separately;
- - use ti.type instead of assuming table 0 is VxLAN;
- - move setting netdev->udp_tunnel_nic_info to its own switch.
+Convert to new infra, taking advantage of sleeping in callbacks.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   3 -
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 180 +++++-------------
- 2 files changed, 44 insertions(+), 139 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 133 ++++++----------------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |   6 -
+ 2 files changed, 34 insertions(+), 105 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-index debbcf216134..1e8a809233a0 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-@@ -588,11 +588,9 @@ struct ixgbe_adapter {
- #define IXGBE_FLAG_FCOE_ENABLED			BIT(21)
- #define IXGBE_FLAG_SRIOV_CAPABLE		BIT(22)
- #define IXGBE_FLAG_SRIOV_ENABLED		BIT(23)
--#define IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE	BIT(24)
- #define IXGBE_FLAG_RX_HWTSTAMP_ENABLED		BIT(25)
- #define IXGBE_FLAG_RX_HWTSTAMP_IN_REGISTER	BIT(26)
- #define IXGBE_FLAG_DCB_CAPABLE			BIT(27)
--#define IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE	BIT(28)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 6a884df44612..7cd078521ac0 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -7470,16 +7470,15 @@ static int bnxt_hwrm_pcie_qstats(struct bnxt *bp)
  
- 	u32 flags2;
- #define IXGBE_FLAG2_RSC_CAPABLE			BIT(0)
-@@ -606,7 +604,6 @@ struct ixgbe_adapter {
- #define IXGBE_FLAG2_RSS_FIELD_IPV6_UDP		BIT(9)
- #define IXGBE_FLAG2_PTP_PPS_ENABLED		BIT(10)
- #define IXGBE_FLAG2_PHY_INTERRUPT		BIT(11)
--#define IXGBE_FLAG2_UDP_TUN_REREG_NEEDED	BIT(12)
- #define IXGBE_FLAG2_VLAN_PROMISC		BIT(13)
- #define IXGBE_FLAG2_EEE_CAPABLE			BIT(14)
- #define IXGBE_FLAG2_EEE_ENABLED			BIT(15)
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index acdf525272a3..4d898ff21a46 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -4994,24 +4994,41 @@ static void ixgbe_napi_disable_all(struct ixgbe_adapter *adapter)
- 		napi_disable(&adapter->q_vector[q_idx]->napi);
+ static void bnxt_hwrm_free_tunnel_ports(struct bnxt *bp)
+ {
+-	if (bp->vxlan_port_cnt) {
++	if (bp->vxlan_port)
+ 		bnxt_hwrm_tunnel_dst_port_free(
+ 			bp, TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN);
+-	}
+-	bp->vxlan_port_cnt = 0;
+-	if (bp->nge_port_cnt) {
++	bp->vxlan_port = 0;
++
++	if (bp->nge_port)
+ 		bnxt_hwrm_tunnel_dst_port_free(
+ 			bp, TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE);
+-	}
+-	bp->nge_port_cnt = 0;
++	bp->nge_port = 0;
  }
  
--static void ixgbe_clear_udp_tunnel_port(struct ixgbe_adapter *adapter, u32 mask)
-+static int ixgbe_udp_tunnel_sync(struct net_device *dev, unsigned int table)
+ static int bnxt_set_tpa(struct bnxt *bp, bool set_tpa)
+@@ -9194,7 +9193,7 @@ static int __bnxt_open_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
+ 	}
+ 
+ 	if (irq_re_init)
+-		udp_tunnel_get_rx_info(bp->dev);
++		udp_tunnel_nic_reset_ntf(bp->dev);
+ 
+ 	set_bit(BNXT_STATE_OPEN, &bp->state);
+ 	bnxt_enable_int(bp);
+@@ -10353,24 +10352,6 @@ static void bnxt_sp_task(struct work_struct *work)
+ 		bnxt_cfg_ntp_filters(bp);
+ 	if (test_and_clear_bit(BNXT_HWRM_EXEC_FWD_REQ_SP_EVENT, &bp->sp_event))
+ 		bnxt_hwrm_exec_fwd_req(bp);
+-	if (test_and_clear_bit(BNXT_VXLAN_ADD_PORT_SP_EVENT, &bp->sp_event)) {
+-		bnxt_hwrm_tunnel_dst_port_alloc(
+-			bp, bp->vxlan_port,
+-			TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN);
+-	}
+-	if (test_and_clear_bit(BNXT_VXLAN_DEL_PORT_SP_EVENT, &bp->sp_event)) {
+-		bnxt_hwrm_tunnel_dst_port_free(
+-			bp, TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN);
+-	}
+-	if (test_and_clear_bit(BNXT_GENEVE_ADD_PORT_SP_EVENT, &bp->sp_event)) {
+-		bnxt_hwrm_tunnel_dst_port_alloc(
+-			bp, bp->nge_port,
+-			TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE);
+-	}
+-	if (test_and_clear_bit(BNXT_GENEVE_DEL_PORT_SP_EVENT, &bp->sp_event)) {
+-		bnxt_hwrm_tunnel_dst_port_free(
+-			bp, TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE);
+-	}
+ 	if (test_and_clear_bit(BNXT_PERIODIC_STATS_SP_EVENT, &bp->sp_event)) {
+ 		bnxt_hwrm_port_qstats(bp);
+ 		bnxt_hwrm_port_qstats_ext(bp);
+@@ -11294,85 +11275,37 @@ static void bnxt_cfg_ntp_filters(struct bnxt *bp)
+ 
+ #endif /* CONFIG_RFS_ACCEL */
+ 
+-static void bnxt_udp_tunnel_add(struct net_device *dev,
+-				struct udp_tunnel_info *ti)
++static int bnxt_udp_tunnel_sync(struct net_device *netdev, unsigned int table)
  {
-+	struct ixgbe_adapter *adapter = netdev_priv(dev);
- 	struct ixgbe_hw *hw = &adapter->hw;
--	u32 vxlanctrl;
-+	struct udp_tunnel_info ti;
- 
--	if (!(adapter->flags & (IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE |
--				IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE)))
+-	struct bnxt *bp = netdev_priv(dev);
+-
+-	if (ti->sa_family != AF_INET6 && ti->sa_family != AF_INET)
 -		return;
-+	udp_tunnel_nic_get_port(dev, table, 0, &ti);
-+	if (ti.type == UDP_TUNNEL_TYPE_VXLAN)
-+		adapter->vxlan_port = ti.port;
-+	else
-+		adapter->geneve_port = ti.port;
+-
+-	if (!netif_running(dev))
+-		return;
+-
+-	switch (ti->type) {
+-	case UDP_TUNNEL_TYPE_VXLAN:
+-		if (bp->vxlan_port_cnt && bp->vxlan_port != ti->port)
+-			return;
+-
+-		bp->vxlan_port_cnt++;
+-		if (bp->vxlan_port_cnt == 1) {
+-			bp->vxlan_port = ti->port;
+-			set_bit(BNXT_VXLAN_ADD_PORT_SP_EVENT, &bp->sp_event);
+-			bnxt_queue_sp_work(bp);
+-		}
+-		break;
+-	case UDP_TUNNEL_TYPE_GENEVE:
+-		if (bp->nge_port_cnt && bp->nge_port != ti->port)
+-			return;
++	struct bnxt *bp = netdev_priv(netdev);
++	struct udp_tunnel_info ti;
++	unsigned int cmd;
  
--	vxlanctrl = IXGBE_READ_REG(hw, IXGBE_VXLANCTRL) & ~mask;
--	IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL, vxlanctrl);
-+	IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL,
-+			ntohs(adapter->vxlan_port) |
-+			ntohs(adapter->geneve_port) <<
-+				IXGBE_VXLANCTRL_GENEVE_UDPPORT_SHIFT);
-+	return 0;
-+}
+-		bp->nge_port_cnt++;
+-		if (bp->nge_port_cnt == 1) {
+-			bp->nge_port = ti->port;
+-			set_bit(BNXT_GENEVE_ADD_PORT_SP_EVENT, &bp->sp_event);
+-		}
+-		break;
+-	default:
+-		return;
++	udp_tunnel_nic_get_port(netdev, table, 0, &ti);
++	if (ti.type == UDP_TUNNEL_TYPE_VXLAN) {
++		cmd = TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN;
++		bp->vxlan_port = ti.port;
++	} else {
++		cmd = TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE;
++		bp->nge_port = ti.port;
+ 	}
  
--	if (mask & IXGBE_VXLANCTRL_VXLAN_UDPPORT_MASK)
--		adapter->vxlan_port = 0;
-+static const struct udp_tunnel_nic_info ixgbe_udp_tunnels_x550 = {
-+	.sync_table	= ixgbe_udp_tunnel_sync,
-+	.flags		= UDP_TUNNEL_NIC_INFO_IPV4_ONLY,
-+	.tables		= {
-+		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
-+	},
-+};
- 
--	if (mask & IXGBE_VXLANCTRL_GENEVE_UDPPORT_MASK)
--		adapter->geneve_port = 0;
+-	bnxt_queue_sp_work(bp);
 -}
-+static const struct udp_tunnel_nic_info ixgbe_udp_tunnels_x550em_a = {
-+	.sync_table	= ixgbe_udp_tunnel_sync,
-+	.flags		= UDP_TUNNEL_NIC_INFO_IPV4_ONLY,
+-
+-static void bnxt_udp_tunnel_del(struct net_device *dev,
+-				struct udp_tunnel_info *ti)
+-{
+-	struct bnxt *bp = netdev_priv(dev);
+-
+-	if (ti->sa_family != AF_INET6 && ti->sa_family != AF_INET)
+-		return;
+-
+-	if (!netif_running(dev))
+-		return;
+-
+-	switch (ti->type) {
+-	case UDP_TUNNEL_TYPE_VXLAN:
+-		if (!bp->vxlan_port_cnt || bp->vxlan_port != ti->port)
+-			return;
+-		bp->vxlan_port_cnt--;
+-
+-		if (bp->vxlan_port_cnt != 0)
+-			return;
+-
+-		set_bit(BNXT_VXLAN_DEL_PORT_SP_EVENT, &bp->sp_event);
+-		break;
+-	case UDP_TUNNEL_TYPE_GENEVE:
+-		if (!bp->nge_port_cnt || bp->nge_port != ti->port)
+-			return;
+-		bp->nge_port_cnt--;
+-
+-		if (bp->nge_port_cnt != 0)
+-			return;
+-
+-		set_bit(BNXT_GENEVE_DEL_PORT_SP_EVENT, &bp->sp_event);
+-		break;
+-	default:
+-		return;
+-	}
++	if (ti.port)
++		return bnxt_hwrm_tunnel_dst_port_alloc(bp, ti.port, cmd);
+ 
+-	bnxt_queue_sp_work(bp);
++	return bnxt_hwrm_tunnel_dst_port_free(bp, cmd);
+ }
+ 
++static const struct udp_tunnel_nic_info bnxt_udp_tunnels = {
++	.sync_table	= bnxt_udp_tunnel_sync,
++	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP |
++			  UDP_TUNNEL_NIC_INFO_OPEN_ONLY,
 +	.tables		= {
 +		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
 +		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_GENEVE, },
 +	},
 +};
- 
- #ifdef CONFIG_IXGBE_DCB
- /**
-@@ -6332,7 +6349,6 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
- 			adapter->flags2 |= IXGBE_FLAG2_TEMP_SENSOR_CAPABLE;
- 		break;
- 	case ixgbe_mac_x550em_a:
--		adapter->flags |= IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE;
- 		switch (hw->device_id) {
- 		case IXGBE_DEV_ID_X550EM_A_1G_T:
- 		case IXGBE_DEV_ID_X550EM_A_1G_T_L:
-@@ -6359,7 +6375,6 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
- #ifdef CONFIG_IXGBE_DCA
- 		adapter->flags &= ~IXGBE_FLAG_DCA_CAPABLE;
++
+ static int bnxt_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
+ 			       struct net_device *dev, u32 filter_mask,
+ 			       int nlflags)
+@@ -11469,8 +11402,8 @@ static const struct net_device_ops bnxt_netdev_ops = {
+ #ifdef CONFIG_RFS_ACCEL
+ 	.ndo_rx_flow_steer	= bnxt_rx_flow_steer,
  #endif
--		adapter->flags |= IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE;
- 		break;
- 	default:
- 		break;
-@@ -6798,8 +6813,7 @@ int ixgbe_open(struct net_device *netdev)
- 
- 	ixgbe_up_complete(adapter);
- 
--	ixgbe_clear_udp_tunnel_port(adapter, IXGBE_VXLANCTRL_ALL_UDPPORT_MASK);
--	udp_tunnel_get_rx_info(netdev);
-+	udp_tunnel_nic_reset_ntf(netdev);
- 
- 	return 0;
- 
-@@ -7921,12 +7935,6 @@ static void ixgbe_service_task(struct work_struct *work)
- 		ixgbe_service_event_complete(adapter);
- 		return;
- 	}
--	if (adapter->flags2 & IXGBE_FLAG2_UDP_TUN_REREG_NEEDED) {
--		rtnl_lock();
--		adapter->flags2 &= ~IXGBE_FLAG2_UDP_TUN_REREG_NEEDED;
--		udp_tunnel_get_rx_info(adapter->netdev);
--		rtnl_unlock();
--	}
- 	ixgbe_reset_subtask(adapter);
- 	ixgbe_phy_interrupt_subtask(adapter);
- 	ixgbe_sfp_detection_subtask(adapter);
-@@ -9795,118 +9803,6 @@ static int ixgbe_set_features(struct net_device *netdev,
- 	return 1;
- }
- 
--/**
-- * ixgbe_add_udp_tunnel_port - Get notifications about adding UDP tunnel ports
-- * @dev: The port's netdev
-- * @ti: Tunnel endpoint information
-- **/
--static void ixgbe_add_udp_tunnel_port(struct net_device *dev,
--				      struct udp_tunnel_info *ti)
--{
--	struct ixgbe_adapter *adapter = netdev_priv(dev);
--	struct ixgbe_hw *hw = &adapter->hw;
--	__be16 port = ti->port;
--	u32 port_shift = 0;
--	u32 reg;
--
--	if (ti->sa_family != AF_INET)
--		return;
--
--	switch (ti->type) {
--	case UDP_TUNNEL_TYPE_VXLAN:
--		if (!(adapter->flags & IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE))
--			return;
--
--		if (adapter->vxlan_port == port)
--			return;
--
--		if (adapter->vxlan_port) {
--			netdev_info(dev,
--				    "VXLAN port %d set, not adding port %d\n",
--				    ntohs(adapter->vxlan_port),
--				    ntohs(port));
--			return;
--		}
--
--		adapter->vxlan_port = port;
--		break;
--	case UDP_TUNNEL_TYPE_GENEVE:
--		if (!(adapter->flags & IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE))
--			return;
--
--		if (adapter->geneve_port == port)
--			return;
--
--		if (adapter->geneve_port) {
--			netdev_info(dev,
--				    "GENEVE port %d set, not adding port %d\n",
--				    ntohs(adapter->geneve_port),
--				    ntohs(port));
--			return;
--		}
--
--		port_shift = IXGBE_VXLANCTRL_GENEVE_UDPPORT_SHIFT;
--		adapter->geneve_port = port;
--		break;
--	default:
--		return;
--	}
--
--	reg = IXGBE_READ_REG(hw, IXGBE_VXLANCTRL) | ntohs(port) << port_shift;
--	IXGBE_WRITE_REG(hw, IXGBE_VXLANCTRL, reg);
--}
--
--/**
-- * ixgbe_del_udp_tunnel_port - Get notifications about removing UDP tunnel ports
-- * @dev: The port's netdev
-- * @ti: Tunnel endpoint information
-- **/
--static void ixgbe_del_udp_tunnel_port(struct net_device *dev,
--				      struct udp_tunnel_info *ti)
--{
--	struct ixgbe_adapter *adapter = netdev_priv(dev);
--	u32 port_mask;
--
--	if (ti->type != UDP_TUNNEL_TYPE_VXLAN &&
--	    ti->type != UDP_TUNNEL_TYPE_GENEVE)
--		return;
--
--	if (ti->sa_family != AF_INET)
--		return;
--
--	switch (ti->type) {
--	case UDP_TUNNEL_TYPE_VXLAN:
--		if (!(adapter->flags & IXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE))
--			return;
--
--		if (adapter->vxlan_port != ti->port) {
--			netdev_info(dev, "VXLAN port %d not found\n",
--				    ntohs(ti->port));
--			return;
--		}
--
--		port_mask = IXGBE_VXLANCTRL_VXLAN_UDPPORT_MASK;
--		break;
--	case UDP_TUNNEL_TYPE_GENEVE:
--		if (!(adapter->flags & IXGBE_FLAG_GENEVE_OFFLOAD_CAPABLE))
--			return;
--
--		if (adapter->geneve_port != ti->port) {
--			netdev_info(dev, "GENEVE port %d not found\n",
--				    ntohs(ti->port));
--			return;
--		}
--
--		port_mask = IXGBE_VXLANCTRL_GENEVE_UDPPORT_MASK;
--		break;
--	default:
--		return;
--	}
--
--	ixgbe_clear_udp_tunnel_port(adapter, port_mask);
--	adapter->flags2 |= IXGBE_FLAG2_UDP_TUN_REREG_NEEDED;
--}
--
- static int ixgbe_ndo_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- 			     struct net_device *dev,
- 			     const unsigned char *addr, u16 vid,
-@@ -10396,8 +10292,8 @@ static const struct net_device_ops ixgbe_netdev_ops = {
- 	.ndo_bridge_getlink	= ixgbe_ndo_bridge_getlink,
- 	.ndo_dfwd_add_station	= ixgbe_fwd_add,
- 	.ndo_dfwd_del_station	= ixgbe_fwd_del,
--	.ndo_udp_tunnel_add	= ixgbe_add_udp_tunnel_port,
--	.ndo_udp_tunnel_del	= ixgbe_del_udp_tunnel_port,
+-	.ndo_udp_tunnel_add	= bnxt_udp_tunnel_add,
+-	.ndo_udp_tunnel_del	= bnxt_udp_tunnel_del,
 +	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
 +	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
- 	.ndo_features_check	= ixgbe_features_check,
- 	.ndo_bpf		= ixgbe_xdp,
- 	.ndo_xdp_xmit		= ixgbe_xdp_xmit,
-@@ -10842,6 +10738,18 @@ static int ixgbe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (err)
- 		goto err_sw_init;
- 
-+	switch (adapter->hw.mac.type) {
-+	case ixgbe_mac_X550:
-+	case ixgbe_mac_X550EM_x:
-+		netdev->udp_tunnel_nic_info = &ixgbe_udp_tunnels_x550;
-+		break;
-+	case ixgbe_mac_x550em_a:
-+		netdev->udp_tunnel_nic_info = &ixgbe_udp_tunnels_x550em_a;
-+		break;
-+	default:
-+		break;
-+	}
+ 	.ndo_bpf		= bnxt_xdp,
+ 	.ndo_xdp_xmit		= bnxt_xdp_xmit,
+ 	.ndo_bridge_getlink	= bnxt_bridge_getlink,
+@@ -11958,6 +11891,8 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_GRE |
+ 			NETIF_F_GSO_UDP_TUNNEL_CSUM | NETIF_F_GSO_GRE_CSUM |
+ 			NETIF_F_GSO_IPXIP4 | NETIF_F_GSO_PARTIAL;
++	dev->udp_tunnel_nic_info = &bnxt_udp_tunnels;
 +
- 	/* Make sure the SWFW semaphore is in a valid state */
- 	if (hw->mac.ops.init_swfw_sync)
- 		hw->mac.ops.init_swfw_sync(hw);
+ 	dev->gso_partial_features = NETIF_F_GSO_UDP_TUNNEL_CSUM |
+ 				    NETIF_F_GSO_GRE_CSUM;
+ 	dev->vlan_features = dev->hw_features | NETIF_F_HIGHDMA;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 78e2fd63ac3d..352a56a18916 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1752,10 +1752,8 @@ struct bnxt {
+ #define BNXT_FW_MAJ(bp)		((bp)->fw_ver_code >> 48)
+ 
+ 	__be16			vxlan_port;
+-	u8			vxlan_port_cnt;
+ 	__le16			vxlan_fw_dst_port_id;
+ 	__be16			nge_port;
+-	u8			nge_port_cnt;
+ 	__le16			nge_fw_dst_port_id;
+ 	u8			port_partition_type;
+ 	u8			port_count;
+@@ -1776,16 +1774,12 @@ struct bnxt {
+ #define BNXT_RX_NTP_FLTR_SP_EVENT	1
+ #define BNXT_LINK_CHNG_SP_EVENT		2
+ #define BNXT_HWRM_EXEC_FWD_REQ_SP_EVENT	3
+-#define BNXT_VXLAN_ADD_PORT_SP_EVENT	4
+-#define BNXT_VXLAN_DEL_PORT_SP_EVENT	5
+ #define BNXT_RESET_TASK_SP_EVENT	6
+ #define BNXT_RST_RING_SP_EVENT		7
+ #define BNXT_HWRM_PF_UNLOAD_SP_EVENT	8
+ #define BNXT_PERIODIC_STATS_SP_EVENT	9
+ #define BNXT_HWRM_PORT_MODULE_SP_EVENT	10
+ #define BNXT_RESET_TASK_SILENT_SP_EVENT	11
+-#define BNXT_GENEVE_ADD_PORT_SP_EVENT	12
+-#define BNXT_GENEVE_DEL_PORT_SP_EVENT	13
+ #define BNXT_LINK_SPEED_CHNG_SP_EVENT	14
+ #define BNXT_FLOW_STATS_SP_EVENT	15
+ #define BNXT_UPDATE_PHY_SP_EVENT	16
 -- 
 2.26.2
 
