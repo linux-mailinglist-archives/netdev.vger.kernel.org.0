@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4752121A9E0
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 23:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF62921A9D6
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 23:43:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbgGIVqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 17:46:30 -0400
-Received: from mga14.intel.com ([192.55.52.115]:49964 "EHLO mga14.intel.com"
+        id S1726228AbgGIVnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 17:43:01 -0400
+Received: from mga14.intel.com ([192.55.52.115]:49966 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726772AbgGIVq2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 17:46:28 -0400
-IronPort-SDR: EmMuN/eYslkFipVLQ6uYiVgLHgw7p+dVcKvgWd0M493J8yneG9LDep3PTbZjDyoIzcd08wZp3B
- LjMDEjoZBefQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9677"; a="147202448"
+        id S1726773AbgGIVnB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 17:43:01 -0400
+IronPort-SDR: VTVLT23qY7YwRSaZ7OSPHnaiF2owdhg2B/KmV7PsBj/Mseivtcz8ZcGqsT29JBu22o2tne4j3J
+ tuTffrFTC+tQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9677"; a="147202449"
 X-IronPort-AV: E=Sophos;i="5.75,332,1589266800"; 
-   d="scan'208";a="147202448"
+   d="scan'208";a="147202449"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2020 14:26:54 -0700
-IronPort-SDR: 0CrKH08Nen/WVFUT7ZbqbStug+FbZF27NHxPAwlRKWQDKlua/TTugzHHaxraXxHZJ2NSe8nsMp
- ghwXKJGODmgA==
+IronPort-SDR: mo/vt/PpW7j82P2LUzUgOQnzbFlUf1D4f7pfqAg2p46A8XvgvbWTIBa8SB9vhCfCgl0+UVZBhL
+ UJV1ai6f6PXg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,332,1589266800"; 
-   d="scan'208";a="284293651"
+   d="scan'208";a="284293654"
 Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.33])
   by orsmga006.jf.intel.com with ESMTP; 09 Jul 2020 14:26:54 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -33,9 +33,9 @@ Cc:     Jakub Kicinski <kubakici@wp.pl>, Jiri Pirko <jiri@resnulli.us>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tom Herbert <tom@herbertland.com>,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [RFC PATCH net-next 4/6] Add pldmfw library for PLDM firmware update
-Date:   Thu,  9 Jul 2020 14:26:50 -0700
-Message-Id: <20200709212652.2785924-5-jacob.e.keller@intel.com>
+Subject: [RFC PATCH net-next 5/6] ice: implement device flash update via devlink
+Date:   Thu,  9 Jul 2020 14:26:51 -0700
+Message-Id: <20200709212652.2785924-6-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.27.0.353.gb9a2d1a0207f
 In-Reply-To: <20200709212652.2785924-1-jacob.e.keller@intel.com>
 References: <20200709212652.2785924-1-jacob.e.keller@intel.com>
@@ -46,1760 +46,1182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pldmfw library is used to implement common logic needed to flash
-devices based on firmware files using the format described by the PLDM
-for Firmware Update standard.
+Use the newly added pldmfw library to implement device flash update for
+the Intel ice networking device driver. This support uses the devlink
+flash update interface.
 
-This library consists of logic to parse the PLDM file format from
-a firmware file object, as well as common logic for sending the relevant
-PLDM header data to the device firmware.
+The main parts of the flash include the Option ROM, the netlist module,
+and the main NVM data. The PLDM firmware file contains modules for each
+of these components.
 
-A simple ops table is provided so that device drivers can implement
-device specific hardware interactions while keeping the common logic to
-the pldmfw library.
+Using the pldmfw library, the provided firmware file will be scanned for
+the three major components, "fw.undi" for the Option ROM, "fw.mgmt" for
+the main NVM module containing the primary device firmware, and
+"fw.netlist" containing the netlist module.
 
-This library will be used by the Intel ice networking driver as part of
-implementing device flash update via devlink. The library aims to be
-vendor and device agnostic. For this reason, it has been placed in
-lib/pldmfw, in the hopes that other devices which use the PLDM firmware
-file format may benefit from it in the future. However, do note that not
-all features defined in the PLDM standard have been implemented.
+The flash is separated into two banks, the active bank containing the
+running firmware, and the inactive bank which we use for update. Each
+module is updated in a staged process. First, the inactive bank is
+erased, preparing the device for update. Second, the contents of the
+component are copied to the inactive portion of the flash. After all
+components are updated, the driver signals the device to switch the
+active bank during the next EMP reset (which would usually occur during
+the next reboot).
+
+Although the firmware AdminQ interface does report an immediate status
+for each command, the NVM erase and NVM write commands receive status
+asynchronously. The driver must not continue writing until previous
+erase and write commands have finished. The real status of the NVM
+commands is returned over the receive AdminQ. Implement a simple
+interface that uses a wait queue so that the main update thread can
+sleep until the completion status is reported by firmware. For erasing
+the inactive banks, this can take quite a while in practice.
+
+To help visualize the process to the devlink application and other
+applications based on the devlink netlink interface, status is reported
+via the devlink_flash_update_status_notify. While we do report status
+after each 4k block when writing, there is no real status we can report
+during erasing. We simply must wait for the complete module erasure to
+finish.
+
+With this implementation, basic flash update for the ice hardware is
+supported.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- Documentation/driver-api/index.rst            |   1 +
- .../driver-api/pldmfw/driver-ops.rst          |  56 ++
- .../driver-api/pldmfw/file-format.rst         | 203 ++++
- Documentation/driver-api/pldmfw/index.rst     |  72 ++
- MAINTAINERS                                   |   7 +
- include/linux/pldmfw.h                        | 165 ++++
- lib/Kconfig                                   |   4 +
- lib/Makefile                                  |   3 +
- lib/pldmfw/Makefile                           |   2 +
- lib/pldmfw/pldmfw.c                           | 879 ++++++++++++++++++
- lib/pldmfw/pldmfw_private.h                   | 238 +++++
- 11 files changed, 1630 insertions(+)
- create mode 100644 Documentation/driver-api/pldmfw/driver-ops.rst
- create mode 100644 Documentation/driver-api/pldmfw/file-format.rst
- create mode 100644 Documentation/driver-api/pldmfw/index.rst
- create mode 100644 include/linux/pldmfw.h
- create mode 100644 lib/pldmfw/Makefile
- create mode 100644 lib/pldmfw/pldmfw.c
- create mode 100644 lib/pldmfw/pldmfw_private.h
+ drivers/net/ethernet/intel/Kconfig            |   1 +
+ drivers/net/ethernet/intel/ice/Makefile       |   1 +
+ drivers/net/ethernet/intel/ice/ice.h          |   9 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |   2 +-
+ drivers/net/ethernet/intel/ice/ice_common.h   |   2 +
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |  54 ++
+ .../net/ethernet/intel/ice/ice_fw_update.c    | 752 ++++++++++++++++++
+ .../net/ethernet/intel/ice/ice_fw_update.h    |  12 +
+ drivers/net/ethernet/intel/ice/ice_main.c     | 154 ++++
+ 9 files changed, 986 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_fw_update.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_fw_update.h
 
-diff --git a/Documentation/driver-api/index.rst b/Documentation/driver-api/index.rst
-index 6567187e7687..7fc1e0cccae7 100644
---- a/Documentation/driver-api/index.rst
-+++ b/Documentation/driver-api/index.rst
-@@ -95,6 +95,7 @@ available subsections can be seen below.
-    phy/index
-    pti_intel_mid
-    pwm
-+   pldmfw/index
-    rfkill
-    serial/index
-    sm501
-diff --git a/Documentation/driver-api/pldmfw/driver-ops.rst b/Documentation/driver-api/pldmfw/driver-ops.rst
-new file mode 100644
-index 000000000000..f0654783d3b3
---- /dev/null
-+++ b/Documentation/driver-api/pldmfw/driver-ops.rst
-@@ -0,0 +1,56 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
+diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
+index 3cd13fd55011..5aa86318ed3e 100644
+--- a/drivers/net/ethernet/intel/Kconfig
++++ b/drivers/net/ethernet/intel/Kconfig
+@@ -295,6 +295,7 @@ config ICE
+ 	default n
+ 	depends on PCI_MSI
+ 	select NET_DEVLINK
++	select PLDMFW
+ 	help
+ 	  This driver supports Intel(R) Ethernet Connection E800 Series of
+ 	  devices.  For more information on how to identify your adapter, go
+diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
+index 229740c3c1e1..3a34e717adf3 100644
+--- a/drivers/net/ethernet/intel/ice/Makefile
++++ b/drivers/net/ethernet/intel/ice/Makefile
+@@ -23,6 +23,7 @@ ice-y := ice_main.o	\
+ 	 ice_flex_pipe.o \
+ 	 ice_flow.o	\
+ 	 ice_devlink.o	\
++	 ice_fw_update.o \
+ 	 ice_ethtool.o
+ ice-$(CONFIG_PCI_IOV) += ice_virtchnl_pf.o ice_sriov.o ice_dcf.o ice_virtchnl_fdir.o
+ ice-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index 9b4c70310c3a..152b1f71045c 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -19,6 +19,7 @@
+ #include <linux/dma-mapping.h>
+ #include <linux/pci.h>
+ #include <linux/workqueue.h>
++#include <linux/wait.h>
+ #include <linux/aer.h>
+ #include <linux/interrupt.h>
+ #include <linux/ethtool.h>
+@@ -415,6 +416,12 @@ struct ice_pf {
+ 	struct mutex sw_mutex;		/* lock for protecting VSI alloc flow */
+ 	struct mutex tc_mutex;		/* lock to protect TC changes */
+ 	u32 msg_enable;
 +
-+=========================
-+Driver-specific callbacks
-+=========================
++	/* spinlock to protect the AdminQ wait list */
++	spinlock_t aq_wait_lock;
++	struct hlist_head aq_wait_list;
++	wait_queue_head_t aq_wait_queue;
 +
-+The ``pldmfw`` module relies on the device driver for implementing device
-+specific behavior using the following operations.
-+
-+``.match_record``
-+-----------------
-+
-+The ``.match_record`` operation is used to determine whether a given PLDM
-+record matches the device being updated. This requires comparing the record
-+descriptors in the record with information from the device. Many record
-+descriptors are defined by the PLDM standard, but it is also allowed for
-+devices to implement their own descriptors.
-+
-+The ``.match_record`` operation should return true if a given record matches
-+the device.
-+
-+``.send_package_data``
-+----------------------
-+
-+The ``.send_package_data`` operation is used to send the device-specific
-+package data in a record to the device firmware. If the matching record
-+provides package data, ``pldmfw`` will call the ``.send_package_data``
-+function with a pointer to the package data and with the package data
-+length. The device driver should send this data to firmware.
-+
-+``.send_component_table``
-+-------------------------
-+
-+The ``.send_component_table`` operation is used to forward component
-+information to the device. It is called once for each applicable component,
-+that is, for each component indicated by the matching record. The
-+device driver should send the component information to the device firmware,
-+and wait for a response. The provided transfer flag indicates whether this
-+is the first, last, or a middle component, and is expected to be forwarded
-+to firmware as part of the component table information. The driver should an
-+error in the case when the firmware indicates that the component cannot be
-+updated, or return zero if the component can be updated.
-+
-+``.flash_component``
-+--------------------
-+
-+The ``.flash_component`` operation is used to inform the device driver to
-+flash a given component. The driver must perform any steps necessary to send
-+the component data to the device.
-+
-+``.finalize_update``
-+--------------------
-+
-+The ``.finalize_update`` operation is used by the ``pldmfw`` library in
-+order to allow the device driver to perform any remaining device specific
-+logic needed to finish the update.
-diff --git a/Documentation/driver-api/pldmfw/file-format.rst b/Documentation/driver-api/pldmfw/file-format.rst
-new file mode 100644
-index 000000000000..b7a9cebe09c6
---- /dev/null
-+++ b/Documentation/driver-api/pldmfw/file-format.rst
-@@ -0,0 +1,203 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+==================================
-+PLDM Firmware file format overview
-+==================================
-+
-+A PLDM firmware package is a binary file which contains a header that
-+describes the contents of the firmware package. This includes an initial
-+package header, one or more firmware records, and one or more components
-+describing the actual flash contents to program.
-+
-+This diagram provides an overview of the file format::
-+
-+        overall file layout
-+      +----------------------+
-+      |                      |
-+      |  Package Header      |
-+      |                      |
-+      +----------------------+
-+      |                      |
-+      |  Device Records      |
-+      |                      |
-+      +----------------------+
-+      |                      |
-+      |  Component Info      |
-+      |                      |
-+      +----------------------+
-+      |                      |
-+      |  Package Header CRC  |
-+      |                      |
-+      +----------------------+
-+      |                      |
-+      |  Component Image 1   |
-+      |                      |
-+      +----------------------+
-+      |                      |
-+      |  Component Image 2   |
-+      |                      |
-+      +----------------------+
-+      |                      |
-+      |         ...          |
-+      |                      |
-+      +----------------------+
-+      |                      |
-+      |  Component Image N   |
-+      |                      |
-+      +----------------------+
-+
-+Package Header
-+==============
-+
-+The package header begins with the UUID of the PLDM file format, and
-+contains information about the version of the format that the file uses. It
-+also includes the total header size, a release date, the size of the
-+component bitmap, and an overall package version.
-+
-+The following diagram provides an overview of the package header::
-+
-+             header layout
-+      +-------------------------+
-+      | PLDM UUID               |
-+      +-------------------------+
-+      | Format Revision         |
-+      +-------------------------+
-+      | Header Size             |
-+      +-------------------------+
-+      | Release Date            |
-+      +-------------------------+
-+      | Component Bitmap Length |
-+      +-------------------------+
-+      | Package Version Info    |
-+      +-------------------------+
-+
-+Device Records
-+==============
-+
-+The device firmware records area starts with a count indicating the total
-+number of records in the file, followed by each record. A single device
-+record describes what device matches this record. All valid PLDM firmware
-+files must contain at least one record, but optionally may contain more than
-+one record if they support multiple devices.
-+
-+Each record will identify the device it supports via TLVs that describe the
-+device, such as the PCI device and vendor information. It will also indicate
-+which set of components that are used by this device. It is possible that
-+only subset of provided components will be used by a given record. A record
-+may also optionally contain device-specific package data that will be used
-+by the device firmware during the update process.
-+
-+The following diagram provides an overview of the device record area::
-+
-+         area layout
-+      +---------------+
-+      |               |
-+      |  Record Count |
-+      |               |
-+      +---------------+
-+      |               |
-+      |  Record 1     |
-+      |               |
-+      +---------------+
-+      |               |
-+      |  Record 2     |
-+      |               |
-+      +---------------+
-+      |               |
-+      |      ...      |
-+      |               |
-+      +---------------+
-+      |               |
-+      |  Record N     |
-+      |               |
-+      +---------------+
-+
-+           record layout
-+      +-----------------------+
-+      | Record Length         |
-+      +-----------------------+
-+      | Descriptor Count      |
-+      +-----------------------+
-+      | Option Flags          |
-+      +-----------------------+
-+      | Version Settings      |
-+      +-----------------------+
-+      | Package Data Length   |
-+      +-----------------------+
-+      | Applicable Components |
-+      +-----------------------+
-+      | Version String        |
-+      +-----------------------+
-+      | Descriptor TLVs       |
-+      +-----------------------+
-+      | Package Data          |
-+      +-----------------------+
-+
-+Component Info
-+==============
-+
-+The component information area begins with a count of the number of
-+components. Following this count is a description for each component. The
-+component information points to the location in the file where the component
-+data is stored, and includes version data used to identify the version of
-+the component.
-+
-+The following diagram provides an overview of the component area::
-+
-+         area layout
-+      +-----------------+
-+      |                 |
-+      | Component Count |
-+      |                 |
-+      +-----------------+
-+      |                 |
-+      | Component 1     |
-+      |                 |
-+      +-----------------+
-+      |                 |
-+      | Component 2     |
-+      |                 |
-+      +-----------------+
-+      |                 |
-+      |     ...         |
-+      |                 |
-+      +-----------------+
-+      |                 |
-+      | Component N     |
-+      |                 |
-+      +-----------------+
-+
-+           component layout
-+      +------------------------+
-+      | Classification         |
-+      +------------------------+
-+      | Component Identifier   |
-+      +------------------------+
-+      | Comparison Stamp       |
-+      +------------------------+
-+      | Component Options      |
-+      +------------------------+
-+      | Activation Method      |
-+      +------------------------+
-+      | Location Offset        |
-+      +------------------------+
-+      | Component Size         |
-+      +------------------------+
-+      | Component Version Info |
-+      +------------------------+
-+      | Package Data           |
-+      +------------------------+
-+
-+
-+Package Header CRC
-+==================
-+
-+Following the component information is a short 4-byte CRC calculated over
-+the contents of all of the header information.
-+
-+Component Images
-+================
-+
-+The component images follow the package header information in the PLDM
-+firmware file. Each of these is simply a binary chunk with its start and
-+size defined by the matching component structure in the component info area.
-diff --git a/Documentation/driver-api/pldmfw/index.rst b/Documentation/driver-api/pldmfw/index.rst
-new file mode 100644
-index 000000000000..ad2c33ece30f
---- /dev/null
-+++ b/Documentation/driver-api/pldmfw/index.rst
-@@ -0,0 +1,72 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+==================================
-+PLDM Firmware Flash Update Library
-+==================================
-+
-+``pldmfw`` implements functionality for updating the flash on a device using
-+the PLDM for Firmware Update standard
-+<https://www.dmtf.org/documents/pmci/pldm-firmware-update-specification-100>.
-+
-+.. toctree::
-+   :maxdepth: 1
-+
-+   file-format
-+   driver-ops
-+
-+==================================
-+Overview of the ``pldmfw`` library
-+==================================
-+
-+The ``pldmfw`` library is intended to be used by device drivers for
-+implementing device flash update based on firmware files following the PLDM
-+firwmare file format.
-+
-+It is implemented using an ops table that allows device drivers to provide
-+the underlying device specific functionality.
-+
-+``pldmfw`` implements logic to parse the packed binary format of the PLDM
-+firmware file into data structures, and then uses the provided function
-+operations to determine if the firmware file is a match for the device. If
-+so, it sends the record and component data to the firmware using the device
-+specific implementations provided by device drivers. Once the device
-+firmware indicates that the update may be performed, the firmware data is
-+sent to the device for programming.
-+
-+Parsing the PLDM file
-+=====================
-+
-+The PLDM file format uses packed binary data, with most multi-byte fields
-+stored in the Little Endian format. Several pieces of data are variable
-+length, including version strings and the number of records and components.
-+Due to this, it is not straight forward to index the record, record
-+descriptors, or components.
-+
-+To avoid proliferating access to the packed binary data, the ``pldmfw``
-+library parses and extracts this data into simpler structures for ease of
-+access.
-+
-+In order to safely process the firmware file, care is taken to avoid
-+unaligned access of multi-byte fields, and to properly convert from Little
-+Endian to CPU host format. Additionally the records, descriptors, and
-+components are stored in linked lists.
-+
-+Performing a flash update
-+=========================
-+
-+To perform a flash update, the ``pldmfw`` module performs the following
-+steps
-+
-+1. Parse the firmware file for record and component information
-+2. Scan through the records and determine if the device matches any record
-+   in the file. The first matched record will be used.
-+3. If the matching record provides package data, send this package data to
-+   the device.
-+4. For each component that the record indicates, send the component data to
-+   the device. For each component, the firmware may respond with an
-+   indication of whether the update is suitable or not. If any component is
-+   not suitable, the update is canceled.
-+5. For each component, send the binary data to the device firmware for
-+   updating.
-+6. After all components are programmed, perform any final device-specific
-+   actions to finalize the update.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e5a1da603924..212c66c77fc9 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13585,6 +13585,13 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml
- F:	drivers/iio/chemical/pms7003.c
+ 	u32 hw_csum_rx_error;
+ 	u16 oicr_idx;		/* Other interrupt cause MSIX vector index */
+ 	u16 num_avail_sw_msix;	/* remaining MSIX SW vectors left unclaimed */
+@@ -598,6 +605,8 @@ void ice_fdir_release_flows(struct ice_hw *hw);
+ void ice_fdir_replay_flows(struct ice_hw *hw);
+ void ice_fdir_replay_fltrs(struct ice_pf *pf);
+ int ice_fdir_create_dflt_rules(struct ice_pf *pf);
++int ice_aq_wait_for_event(struct ice_pf *pf, u16 opcode, unsigned long timeout,
++			  struct ice_rq_event_info *event);
+ int ice_open(struct net_device *netdev);
+ int ice_stop(struct net_device *netdev);
+ void ice_service_task_schedule(struct ice_pf *pf);
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 7a6eb36ef2da..3aa281957d71 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -2223,7 +2223,7 @@ ice_aq_list_caps(struct ice_hw *hw, void *buf, u16 buf_size, u32 *cap_count,
+  * Read the device capabilities and extract them into the dev_caps structure
+  * for later use.
+  */
+-static enum ice_status
++enum ice_status
+ ice_discover_dev_caps(struct ice_hw *hw, struct ice_hw_dev_caps *dev_caps)
+ {
+ 	enum ice_status status;
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index d8b33d7285c0..906113db6be6 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -88,6 +88,8 @@ ice_aq_get_phy_caps(struct ice_port_info *pi, bool qual_mods, u8 report_mode,
+ enum ice_status
+ ice_aq_list_caps(struct ice_hw *hw, void *buf, u16 buf_size, u32 *cap_count,
+ 		 enum ice_adminq_opc opc, struct ice_sq_cd *cd);
++enum ice_status
++ice_discover_dev_caps(struct ice_hw *hw, struct ice_hw_dev_caps *dev_caps);
+ void
+ ice_update_phy_type(u64 *phy_type_low, u64 *phy_type_high,
+ 		    u16 link_speeds_bitmap);
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index 3ea470e8cfa2..a6080bfb78dd 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -4,6 +4,7 @@
+ #include "ice.h"
+ #include "ice_lib.h"
+ #include "ice_devlink.h"
++#include "ice_fw_update.h"
  
-+PLDMFW LIBRARY
-+M:	Jacob Keller <jacob.e.keller@intel.com>
-+S:	Maintained
-+F:	Documentation/driver-api/pldmfw/
-+F:	include/linux/pldmfw.h
-+F:	lib/pldmfw/
-+
- PLX DMA DRIVER
- M:	Logan Gunthorpe <logang@deltatee.com>
- S:	Maintained
-diff --git a/include/linux/pldmfw.h b/include/linux/pldmfw.h
-new file mode 100644
-index 000000000000..0fc831338226
---- /dev/null
-+++ b/include/linux/pldmfw.h
-@@ -0,0 +1,165 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2018-2019, Intel Corporation. */
-+
-+#ifndef _PLDMFW_H_
-+#define _PLDMFW_H_
-+
-+#include <linux/list.h>
-+#include <linux/firmware.h>
-+
-+#define PLDM_DEVICE_UPDATE_CONTINUE_AFTER_FAIL BIT(0)
-+
-+#define PLDM_STRING_TYPE_UNKNOWN	0
-+#define PLDM_STRING_TYPE_ASCII		1
-+#define PLDM_STRING_TYPE_UTF8		2
-+#define PLDM_STRING_TYPE_UTF16		3
-+#define PLDM_STRING_TYPE_UTF16LE	4
-+#define PLDM_STRING_TYPE_UTF16BE	5
-+
-+struct pldmfw_record {
-+	struct list_head entry;
-+
-+	/* List of descriptor TLVs */
-+	struct list_head descs;
-+
-+	/* Component Set version string*/
-+	const u8 *version_string;
-+	u8 version_type;
-+	u8 version_len;
-+
-+	/* Package Data length */
-+	u16 package_data_len;
-+
-+	/* Bitfield of Device Update Flags */
-+	u32 device_update_flags;
-+
-+	/* Package Data block */
-+	const u8 *package_data;
-+
-+	/* Bitmap of components applicable to this record */
-+	unsigned long *component_bitmap;
-+	u16 component_bitmap_len;
-+};
-+
-+/* Standard descriptor TLV identifiers */
-+#define PLDM_DESC_ID_PCI_VENDOR_ID	0x0000
-+#define PLDM_DESC_ID_IANA_ENTERPRISE_ID	0x0001
-+#define PLDM_DESC_ID_UUID		0x0002
-+#define PLDM_DESC_ID_PNP_VENDOR_ID	0x0003
-+#define PLDM_DESC_ID_ACPI_VENDOR_ID	0x0004
-+#define PLDM_DESC_ID_PCI_DEVICE_ID	0x0100
-+#define PLDM_DESC_ID_PCI_SUBVENDOR_ID	0x0101
-+#define PLDM_DESC_ID_PCI_SUBDEV_ID	0x0102
-+#define PLDM_DESC_ID_PCI_REVISION_ID	0x0103
-+#define PLDM_DESC_ID_PNP_PRODUCT_ID	0x0104
-+#define PLDM_DESC_ID_ACPI_PRODUCT_ID	0x0105
-+#define PLDM_DESC_ID_VENDOR_DEFINED	0xFFFF
-+
-+struct pldmfw_desc_tlv {
-+	struct list_head entry;
-+
-+	const u8 *data;
-+	u16 type;
-+	u16 size;
-+};
-+
-+#define PLDM_CLASSIFICATION_UNKNOWN		0x0000
-+#define PLDM_CLASSIFICATION_OTHER		0x0001
-+#define PLDM_CLASSIFICATION_DRIVER		0x0002
-+#define PLDM_CLASSIFICATION_CONFIG_SW		0x0003
-+#define PLDM_CLASSIFICATION_APP_SW		0x0004
-+#define PLDM_CLASSIFICATION_INSTRUMENTATION	0x0005
-+#define PLDM_CLASSIFICATION_BIOS		0x0006
-+#define PLDM_CLASSIFICATION_DIAGNOSTIC_SW	0x0007
-+#define PLDM_CLASSIFICATION_OS			0x0008
-+#define PLDM_CLASSIFICATION_MIDDLEWARE		0x0009
-+#define PLDM_CLASSIFICATION_FIRMWARE		0x000A
-+#define PLDM_CLASSIFICATION_CODE		0x000B
-+#define PLDM_CLASSIFICATION_SERVICE_PACK	0x000C
-+#define PLDM_CLASSIFICATION_SOFTWARE_BUNDLE	0x000D
-+
-+#define PLDM_ACTIVATION_METHOD_AUTO		BIT(0)
-+#define PLDM_ACTIVATION_METHOD_SELF_CONTAINED	BIT(1)
-+#define PLDM_ACTIVATION_METHOD_MEDIUM_SPECIFIC	BIT(2)
-+#define PLDM_ACTIVATION_METHOD_REBOOT		BIT(3)
-+#define PLDM_ACTIVATION_METHOD_DC_CYCLE		BIT(4)
-+#define PLDM_ACTIVATION_METHOD_AC_CYCLE		BIT(5)
-+
-+#define PLDMFW_COMPONENT_OPTION_FORCE_UPDATE		BIT(0)
-+#define PLDMFW_COMPONENT_OPTION_USE_COMPARISON_STAMP	BIT(1)
-+
-+struct pldmfw_component {
-+	struct list_head entry;
-+
-+	/* component identifier */
-+	u16 classification;
-+	u16 identifier;
-+
-+	u16 options;
-+	u16 activation_method;
-+
-+	u32 comparison_stamp;
-+
-+	u32 component_size;
-+	const u8 *component_data;
-+
-+	/* Component version string */
-+	const u8 *version_string;
-+	u8 version_type;
-+	u8 version_len;
-+
-+	/* component index */
-+	u8 index;
-+
-+};
-+
-+/* Transfer flag used for sending components to the firmware */
-+#define PLDM_TRANSFER_FLAG_START		BIT(0)
-+#define PLDM_TRANSFER_FLAG_MIDDLE		BIT(1)
-+#define PLDM_TRANSFER_FLAG_END			BIT(2)
-+
-+struct pldmfw_ops;
-+
-+/* Main entry point to the PLDM firmware update engine. Device drivers
-+ * should embed this in a private structure and use container_of to obtain
-+ * a pointer to their own data, used to implement the device specific
-+ * operations.
+ static int ice_info_get_dsn(struct ice_pf *pf, char *buf, size_t len)
+ {
+@@ -229,8 +230,61 @@ static int ice_devlink_info_get(struct devlink *devlink,
+ 	return 0;
+ }
+ 
++/**
++ * ice_devlink_flash_update - Update firmware stored in flash on the device
++ * @devlink: pointer to devlink associated with device to update
++ * @path: the path of the firmware file to use via request_firmware
++ * @component: name of the component to update, or NULL
++ * @extack: netlink extended ACK structure
++ *
++ * Perform a device flash update. The bulk of the update logic is contained
++ * within the ice_flash_pldm_image function.
++ *
++ * Returns: zero on success, or an error code on failure.
 + */
-+struct pldmfw {
-+	const struct pldmfw_ops *ops;
-+	struct device *dev;
-+};
++static int
++ice_devlink_flash_update(struct devlink *devlink, const char *path,
++			 const char *component, struct netlink_ext_ack *extack)
++{
++	struct ice_pf *pf = devlink_priv(devlink);
++	struct device *dev = &pf->pdev->dev;
++	struct ice_hw *hw = &pf->hw;
++	const struct firmware *fw;
++	int err;
 +
-+bool pldmfw_op_pci_match_record(struct pldmfw *context, struct pldmfw_record *record);
++	/* individual component update is not yet supported */
++	if (component)
++		return -EOPNOTSUPP;
 +
-+/* Operations invoked by the generic PLDM firmware update engine. Used to
-+ * implement device specific logic.
-+ *
-+ * @match_record: check if the device matches the given record. For
-+ * convenience, a standard implementation is provided for PCI devices.
-+ *
-+ * @send_package_data: send the package data associated with the matching
-+ * record to firmware.
-+ *
-+ * @send_component_table: send the component data associated with a given
-+ * component to firmware. Called once for each applicable component.
-+ *
-+ * @flash_component: Flash the data for a given component to the device.
-+ * Called once for each applicable component, after all component tables have
-+ * been sent.
-+ *
-+ * @finalize_update: (optional) Finish the update. Called after all components
-+ * have been flashed.
-+ */
-+struct pldmfw_ops {
-+	bool (*match_record)(struct pldmfw *context, struct pldmfw_record *record);
-+	int (*send_package_data)(struct pldmfw *context, const u8 *data, u16 length);
-+	int (*send_component_table)(struct pldmfw *context, struct pldmfw_component *component,
-+				    u8 transfer_flag);
-+	int (*flash_component)(struct pldmfw *context, struct pldmfw_component *component);
-+	int (*finalize_update)(struct pldmfw *context);
-+};
++	if (!hw->dev_caps.common_cap.nvm_unified_update) {
++		NL_SET_ERR_MSG_MOD(extack, "Current firmware does not support unified update");
++		return -EOPNOTSUPP;
++	}
 +
-+int pldmfw_flash_image(struct pldmfw *context, const struct firmware *fw);
++	err = ice_check_for_pending_update(pf, component, extack);
++	if (err)
++		return err;
 +
-+#endif
-diff --git a/lib/Kconfig b/lib/Kconfig
-index df3f3da95990..3ffbca6998e5 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -676,3 +676,7 @@ config GENERIC_LIB_CMPDI2
++	err = request_firmware(&fw, path, dev);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Unable to read file from disk");
++		return err;
++	}
++
++	devlink_flash_update_begin_notify(devlink);
++	devlink_flash_update_status_notify(devlink, "Preparing to flash",
++					   component, 0, 0);
++	err = ice_flash_pldm_image(pf, fw, extack);
++	devlink_flash_update_end_notify(devlink);
++
++	release_firmware(fw);
++
++	return err;
++}
++
+ static const struct devlink_ops ice_devlink_ops = {
+ 	.info_get = ice_devlink_info_get,
++	.flash_update = ice_devlink_flash_update,
+ };
  
- config GENERIC_LIB_UCMPDI2
- 	bool
-+
-+config PLDMFW
-+	bool
-+	default n
-diff --git a/lib/Makefile b/lib/Makefile
-index b1c42c10073b..281888ff713b 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -315,6 +315,9 @@ obj-$(CONFIG_GENERIC_LIB_CMPDI2) += cmpdi2.o
- obj-$(CONFIG_GENERIC_LIB_UCMPDI2) += ucmpdi2.o
- obj-$(CONFIG_OBJAGG) += objagg.o
- 
-+# pldmfw library
-+obj-$(CONFIG_PLDMFW) += pldmfw/
-+
- # KUnit tests
- obj-$(CONFIG_LIST_KUNIT_TEST) += list-test.o
- obj-$(CONFIG_LINEAR_RANGES_TEST) += test_linear_ranges.o
-diff --git a/lib/pldmfw/Makefile b/lib/pldmfw/Makefile
+ static void ice_devlink_free(void *devlink_ptr)
+diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.c b/drivers/net/ethernet/intel/ice/ice_fw_update.c
 new file mode 100644
-index 000000000000..99ad10711abe
+index 000000000000..717be16ec073
 --- /dev/null
-+++ b/lib/pldmfw/Makefile
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-$(CONFIG_PLDMFW)	+= pldmfw.o
-diff --git a/lib/pldmfw/pldmfw.c b/lib/pldmfw/pldmfw.c
-new file mode 100644
-index 000000000000..e5d4b3b2af81
---- /dev/null
-+++ b/lib/pldmfw/pldmfw.c
-@@ -0,0 +1,879 @@
++++ b/drivers/net/ethernet/intel/ice/ice_fw_update.c
+@@ -0,0 +1,752 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (C) 2018-2019, Intel Corporation. */
 +
 +#include <asm/unaligned.h>
-+#include <linux/crc32.h>
-+#include <linux/device.h>
-+#include <linux/firmware.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+#include <linux/pldmfw.h>
-+#include <linux/slab.h>
 +#include <linux/uuid.h>
++#include <linux/crc32.h>
++#include <linux/pldmfw.h>
++#include "ice.h"
++#include "ice_fw_update.h"
 +
-+#include "pldmfw_private.h"
++struct ice_fwu_priv {
++	struct pldmfw context;
 +
-+/* Internal structure used to store details about the PLDM image file as it is
-+ * being validated and processed.
-+ */
-+struct pldmfw_priv {
-+	struct pldmfw *context;
-+	const struct firmware *fw;
++	struct ice_pf *pf;
++	struct netlink_ext_ack *extack;
 +
-+	/* current offset of firmware image */
-+	size_t offset;
-+
-+	struct list_head records;
-+	struct list_head components;
-+
-+	/* PLDM Firmware Package Header */
-+	const struct __pldm_header *header;
-+	u16 total_header_size;
-+
-+	/* length of the component bitmap */
-+	u16 component_bitmap_len;
-+	u16 bitmap_size;
-+
-+	/* Start of the component image information */
-+	u16 component_count;
-+	const u8 *component_start;
-+
-+	/* Start pf the firmware device id records */
-+	const u8 *record_start;
-+	u8 record_count;
-+
-+	/* The CRC at the end of the package header */
-+	u32 header_crc;
-+
-+	struct pldmfw_record *matching_record;
++	/* Track which NVM banks to activate at the end of the update */
++	u8 activate_flags;
 +};
 +
 +/**
-+ * pldm_check_fw_space - Verify that the firmware image has space left
-+ * @data: pointer to private data
-+ * @offset: offset to start from
-+ * @length: length to check for
++ * ice_send_package_data - Send record package data to firmware
++ * @context: PLDM fw update structure
++ * @data: pointer to the package data
++ * @length: length of the package data
 + *
-+ * Verify that the firmware data can hold a chunk of bytes with the specified
-+ * offset and length.
++ * Send a copy of the package data associated with the PLDM record matching
++ * this device to the firmware.
 + *
-+ * Returns: zero on success, or -EFAULT if the image does not have enough
-+ * space left to fit the expected length.
-+ */
-+static int
-+pldm_check_fw_space(struct pldmfw_priv *data, size_t offset, size_t length)
-+{
-+	size_t expected_size = offset + length;
-+	struct device *dev = data->context->dev;
-+
-+	if (data->fw->size < expected_size) {
-+		dev_dbg(dev, "Firmware file size smaller than expected. Got %zu bytes, needed %zu bytes\n",
-+			data->fw->size, expected_size);
-+		return -EFAULT;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * pldm_move_fw_offset - Move the current firmware offset forward
-+ * @data: pointer to private data
-+ * @bytes_to_move: number of bytes to move the offset forward by
-+ *
-+ * Check that there is enough space past the current offset, and then move the
-+ * offset forward by this ammount.
-+ *
-+ * Returns: zero on success, or -EFAULT if the image is too small to fit the
-+ * expected length.
-+ */
-+static int
-+pldm_move_fw_offset(struct pldmfw_priv *data, size_t bytes_to_move)
-+{
-+	int err;
-+
-+	err = pldm_check_fw_space(data, data->offset, bytes_to_move);
-+	if (err)
-+		return err;
-+
-+	data->offset += bytes_to_move;
-+
-+	return 0;
-+}
-+
-+/**
-+ * pldm_parse_header - Validate and extract details about the PLDM header
-+ * @data: pointer to private data
-+ *
-+ * Performs initial basic verification of the PLDM image, up to the first
-+ * firmware record.
-+ *
-+ * This includes the following checks and extractions
-+ *
-+ *   * Verify that the UUID at the start of the header matches the expected
-+ *     value as defined in the DSP0267 PLDM specification
-+ *   * Check that the revision is 0x01
-+ *   * Extract the total header_size and verify that the image is large enough
-+ *     to contain at least the length of this header
-+ *   * Extract the size of the component bitmap length
-+ *   * Extract a pointer to the start of the record area
++ * Note that this function sends an AdminQ command that will fail unless the
++ * NVM resource has been acquired.
 + *
 + * Returns: zero on success, or a negative error code on failure.
 + */
-+static int pldm_parse_header(struct pldmfw_priv *data)
++static int
++ice_send_package_data(struct pldmfw *context, const u8 *data, u16 length)
 +{
-+	const struct __pldmfw_record_area *record_area;
-+	struct device *dev = data->context->dev;
-+	const struct __pldm_header *header;
-+	size_t header_size;
-+	int err;
++	struct ice_fwu_priv *priv = container_of(context, struct ice_fwu_priv, context);
++	struct netlink_ext_ack *extack = priv->extack;
++	struct device *dev = context->dev;
++	struct ice_pf *pf = priv->pf;
++	struct ice_hw *hw = &pf->hw;
++	enum ice_status status;
++	u8 *package_data;
 +
-+	err = pldm_move_fw_offset(data, sizeof(*header));
-+	if (err)
-+		return err;
++	package_data = kmemdup(data, length, GFP_KERNEL);
++	if (!package_data)
++		return -ENOMEM;
 +
-+	header = (const struct __pldm_header *)data->fw->data;
-+	data->header = header;
++	status = ice_nvm_set_pkg_data(hw, false, package_data, length, NULL);
 +
-+	if (!uuid_equal(&header->id, &pldm_firmware_header_id)) {
-+		dev_dbg(dev, "Invalid package header identifier. Expected UUID %pUB, but got %pUB\n",
-+			&pldm_firmware_header_id, &header->id);
++	kfree(package_data);
++
++	if (status) {
++		dev_err(dev, "Failed to send record package data to firmware, err %s aq_err %s\n",
++			ice_stat_str(status),
++			ice_aq_str(hw->adminq.sq_last_status));
++		NL_SET_ERR_MSG_MOD(extack, "Failed to record package data to firmware");
++		return -EIO;
++	}
++
++	return 0;
++}
++
++/**
++ * ice_check_component_response - Report firmware response to a component
++ * @pf: device private data structure
++ * @id: component id being checked
++ * @response: indicates whether this component can be updated
++ * @code: code indicating reason for response
++ * @extack: netlink extended ACK structure
++ *
++ * Check whether firmware indicates if this component can be updated. Report
++ * a suitable error message over the netlink extended ACK if the component
++ * cannot be updated.
++ *
++ * Returns: zero if the component can be updated, or -ECANCELED of the
++ * firmware indicates the component cannot be updated.
++ */
++static int
++ice_check_component_response(struct ice_pf *pf, u16 id, u8 response, u8 code,
++			     struct netlink_ext_ack *extack)
++{
++	struct device *dev = ice_pf_to_dev(pf);
++	const char *component;
++
++	switch (id) {
++	case NVM_COMP_ID_OROM:
++		component = "fw.undi";
++		break;
++	case NVM_COMP_ID_NVM:
++		component = "fw.mgmt";
++		break;
++	case NVM_COMP_ID_NETLIST:
++		component = "fw.netlist";
++		break;
++	default:
++		WARN(1, "Unexpected unknown component identifier 0x%02x", id);
 +		return -EINVAL;
 +	}
 +
-+	if (header->revision != PACKAGE_HEADER_FORMAT_REVISION) {
-+		dev_dbg(dev, "Invalid package header revision. Expected revision %u but got %u\n",
-+			PACKAGE_HEADER_FORMAT_REVISION, header->revision);
++	dev_dbg(dev, "%s: firmware response 0x%x, code 0x%x\n",
++		component, response, code);
++
++	switch (response) {
++	case ICE_AQ_NVM_PASS_COMP_CAN_BE_UPDATED:
++		/* firmware indicated this update is good to proceed */
++		return 0;
++	case ICE_AQ_NVM_PASS_COMP_CAN_MAY_BE_UPDATEABLE:
++		dev_info(dev, "firmware recommends not updating %s\n",
++			 component);
++		break;
++	case ICE_AQ_NVM_PASS_COMP_CAN_NOT_BE_UPDATED:
++		dev_info(dev, "firmware has rejected updating %s\n", component);
++		break;
++	}
++
++	switch (code) {
++	case ICE_AQ_NVM_PASS_COMP_STAMP_IDENTICAL_CODE:
++		dev_err(dev, "Component comparison stamp for %s is identical to the running image\n",
++			component);
++		NL_SET_ERR_MSG_MOD(extack, "Component comparison stamp is identical to running image");
++		break;
++	case ICE_AQ_NVM_PASS_COMP_STAMP_LOWER:
++		dev_err(dev, "Component comparison stamp for %s is lower than the running image\n",
++			component);
++		NL_SET_ERR_MSG_MOD(extack, "Component comparison stamp is lower than running image");
++		break;
++	case ICE_AQ_NVM_PASS_COMP_INVALID_STAMP_CODE:
++		dev_err(dev, "Component comparison stamp for %s is invalid\n",
++			component);
++		NL_SET_ERR_MSG_MOD(extack, "Component comparison stamp is invalid");
++		break;
++	case ICE_AQ_NVM_PASS_COMP_CONFLICT_CODE:
++		dev_err(dev, "%s conflicts with a previous component table\n",
++			component);
++		NL_SET_ERR_MSG_MOD(extack, "Component table conflict occurred");
++		break;
++	case ICE_AQ_NVM_PASS_COMP_PRE_REQ_NOT_MET_CODE:
++		dev_err(dev, "Pre-requisites for component %s have not been met\n",
++			component);
++		NL_SET_ERR_MSG_MOD(extack, "Component pre-requisites not met");
++		break;
++	case ICE_AQ_NVM_PASS_COMP_NOT_SUPPORTED_CODE:
++		dev_err(dev, "%s is not a supported component\n",
++			component);
++		NL_SET_ERR_MSG_MOD(extack, "Component not supported");
++		break;
++	case ICE_AQ_NVM_PASS_COMP_CANNOT_DOWNGRADE_CODE:
++		dev_err(dev, "Security restrictions prevent %s from being downgraded\n",
++			component);
++		NL_SET_ERR_MSG_MOD(extack, "Component cannot be downgraded");
++		break;
++	case ICE_AQ_NVM_PASS_COMP_INCOMPLETE_IMAGE_CODE:
++		dev_err(dev, "Received an incomplete component image for %s\n",
++			component);
++		NL_SET_ERR_MSG_MOD(extack, "Incomplete component image");
++		break;
++	case ICE_AQ_NVM_PASS_COMP_VER_STR_IDENTICAL_CODE:
++		dev_err(dev, "Component version for %s is identical to the running image\n",
++			component);
++		NL_SET_ERR_MSG_MOD(extack, "Component version is identical to running image");
++		break;
++	case ICE_AQ_NVM_PASS_COMP_VER_STR_LOWER_CODE:
++		dev_err(dev, "Component version for %s is lower than the running image\n",
++			component);
++		NL_SET_ERR_MSG_MOD(extack, "Component version is lower than the running image");
++		break;
++	default:
++		dev_err(dev, "Unexpected response code 0x02%x for %s\n",
++			code, component);
++		NL_SET_ERR_MSG_MOD(extack, "Received unexpected response code from firmware");
++		break;
++	}
++
++	return -ECANCELED;
++}
++
++/**
++ * ice_send_component_table - Send PLDM component table to firmware
++ * @context: PLDM fw update structure
++ * @component: the component to process
++ * @transfer_flag: relative transfer order of this component
++ *
++ * Read relevant data from the component and forward it to the device
++ * firmware. Check the response to determine if the firmware indicates that
++ * the update can proceed.
++ *
++ * This function sends AdminQ commands related to the NVM, and assumes that
++ * the NVM resource has been acquired.
++ *
++ * Returns: zero on success, or a negative error code on failure.
++ */
++static int
++ice_send_component_table(struct pldmfw *context, struct pldmfw_component *component,
++			 u8 transfer_flag)
++{
++	struct ice_fwu_priv *priv = container_of(context, struct ice_fwu_priv, context);
++	struct netlink_ext_ack *extack = priv->extack;
++	struct ice_aqc_nvm_comp_tbl *comp_tbl;
++	u8 comp_response, comp_response_code;
++	struct device *dev = context->dev;
++	struct ice_pf *pf = priv->pf;
++	struct ice_hw *hw = &pf->hw;
++	enum ice_status status;
++	size_t length;
++
++	switch (component->identifier) {
++	case NVM_COMP_ID_OROM:
++	case NVM_COMP_ID_NVM:
++	case NVM_COMP_ID_NETLIST:
++		break;
++	default:
++		dev_err(dev, "Unable to update due to a firmware component with unknown ID %u\n",
++			component->identifier);
++		NL_SET_ERR_MSG_MOD(extack, "Unable to update due to unknown firmware component");
 +		return -EOPNOTSUPP;
 +	}
 +
-+	data->total_header_size = get_unaligned_le16(&header->size);
-+	header_size = data->total_header_size - sizeof(*header);
++	length = struct_size(comp_tbl, cvs, component->version_len);
++	comp_tbl = kzalloc(length, GFP_KERNEL);
++	if (!comp_tbl)
++		return -ENOMEM;
 +
-+	err = pldm_check_fw_space(data, data->offset, header_size);
-+	if (err)
-+		return err;
++	comp_tbl->comp_class = cpu_to_le16(component->classification);
++	comp_tbl->comp_id = cpu_to_le16(component->identifier);
++	comp_tbl->comp_class_idx = FWU_COMP_CLASS_IDX_NOT_USE;
++	comp_tbl->comp_cmp_stamp = cpu_to_le32(component->comparison_stamp);
++	comp_tbl->cvs_type = component->version_type;
++	comp_tbl->cvs_len = component->version_len;
++	memcpy(comp_tbl->cvs, component->version_string, component->version_len);
 +
-+	data->component_bitmap_len =
-+		get_unaligned_le16(&header->component_bitmap_len);
++	status = ice_nvm_pass_component_tbl(hw, (u8 *)comp_tbl, length,
++					    transfer_flag, &comp_response,
++					    &comp_response_code, NULL);
 +
-+	if (data->component_bitmap_len % 8 != 0) {
-+		dev_dbg(dev, "Invalid component bitmap length. The length is %u, which is not a multiple of 8\n",
-+			data->component_bitmap_len);
-+		return -EINVAL;
++	kfree(comp_tbl);
++
++	if (status) {
++		dev_err(dev, "Failed to transfer component table to firmware, err %s aq_err %s\n",
++			ice_stat_str(status),
++			ice_aq_str(hw->adminq.sq_last_status));
++		NL_SET_ERR_MSG_MOD(extack, "Failed to transfer component table to firmware");
++		return -EIO;
 +	}
 +
-+	data->bitmap_size = data->component_bitmap_len / 8;
++	return ice_check_component_response(pf, component->identifier, comp_response,
++					    comp_response_code, extack);
++}
 +
-+	err = pldm_move_fw_offset(data, header->version_len);
-+	if (err)
-+		return err;
++/**
++ * ice_write_one_nvm_block - Write an NVM block and await completion response
++ * @pf: the PF data structure
++ * @module: the module to write to
++ * @offset: offset in bytes
++ * @block_size: size of the block to write, up to 4k
++ * @block: pointer to block of data to write
++ * @last_cmd: whether this is the last command
++ * @extack: netlink extended ACK structure
++ *
++ * Write a block of data to a flash module, and await for the completion
++ * response message from firmware.
++ *
++ * Note this function assumes the caller has acquired the NVM resource.
++ *
++ * Returns: zero on success, or a negative error code on failure.
++ */
++static int
++ice_write_one_nvm_block(struct ice_pf *pf, u16 module, u32 offset,
++			u16 block_size, u8 *block, bool last_cmd,
++			struct netlink_ext_ack *extack)
++{
++	u16 completion_module, completion_retval;
++	struct ice_rq_event_info event = { 0 };
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_hw *hw = &pf->hw;
++	enum ice_status status;
++	u32 completion_offset;
++	int err;
 +
-+	/* extract a pointer to the record area, which just follows the main
-+	 * PLDM header data.
-+	 */
-+	record_area = (const struct __pldmfw_record_area *)(data->fw->data +
-+							 data->offset);
++	status = ice_aq_update_nvm(hw, module, offset, block_size, block,
++				   last_cmd, 0, NULL);
++	if (status) {
++		dev_err(dev, "Failed to program flash module 0x%02x at offset %u, err %s aq_err %s\n",
++			module, offset, ice_stat_str(status),
++			ice_aq_str(hw->adminq.sq_last_status));
++		NL_SET_ERR_MSG_MOD(extack, "Failed to program flash module");
++		return -EIO;
++	}
 +
-+	err = pldm_move_fw_offset(data, sizeof(*record_area));
-+	if (err)
-+		return err;
++	err = ice_aq_wait_for_event(pf, ice_aqc_opc_nvm_write, HZ, &event);
++	if (err) {
++		dev_err(dev, "Timed out waiting for firmware write completion for module 0x%02x, err %d\n",
++			module, err);
++		NL_SET_ERR_MSG_MOD(extack, "Timed out waiting for firmware");
++		return -EIO;
++	}
 +
-+	data->record_count = record_area->record_count;
-+	data->record_start = record_area->records;
++	completion_module = le16_to_cpu(event.desc.params.nvm.module_typeid);
++	completion_retval = le16_to_cpu(event.desc.retval);
++
++	completion_offset = le16_to_cpu(event.desc.params.nvm.offset_low);
++	completion_offset |= event.desc.params.nvm.offset_high << 16;
++
++	if (completion_module != module) {
++		dev_err(dev, "Unexpected module_typeid in write completion: got 0x%x, expected 0x%x\n",
++			completion_module, module);
++		NL_SET_ERR_MSG_MOD(extack, "Unexpected firmware response");
++		return -EIO;
++	}
++
++	if (completion_offset != offset) {
++		dev_err(dev, "Unexpected offset in write completion: got %u, expected %u\n",
++			completion_offset, offset);
++		NL_SET_ERR_MSG_MOD(extack, "Unexpected firmware response");
++		return -EIO;
++	}
++
++	if (completion_retval) {
++		dev_err(dev, "Firmware failed to program flash module 0x%02x at offset %u, completion err %s\n",
++			module, offset,
++			ice_aq_str((enum ice_aq_err)completion_retval));
++		NL_SET_ERR_MSG_MOD(extack, "Firmware failed to program flash module");
++		return -EIO;
++	}
 +
 +	return 0;
 +}
 +
 +/**
-+ * pldm_check_desc_tlv_len - Check that the length matches expectation
-+ * @data: pointer to image details
-+ * @type: the descriptor type
-+ * @size: the length from the descriptor header
++ * ice_write_nvm_module - Write data to an NVM module
++ * @pf: the PF driver structure
++ * @module: the module id to program
++ * @component: the name of the component being updated
++ * @image: buffer of image data to write to the NVM
++ * @length: length of the buffer
++ * @extack: netlink extended ACK structure
 + *
-+ * If the descriptor type is one of the documented descriptor types according
-+ * to the standard, verify that the provided length matches.
++ * Loop over the data for a given NVM module and program it in 4 Kb
++ * blocks. Notify devlink core of progress after each block is programmed.
++ * Loops over a block of data and programs the NVM in 4k block chunks.
 + *
-+ * If the type is not recognized or is VENDOR_DEFINED, return zero.
++ * Note this function assumes the caller has acquired the NVM resource.
 + *
-+ * Returns: zero on success, or -EINVAL if the specified size of a standard
-+ * TLV does not match the expected value defined for that TLV.
++ * Returns: zero on success, or a negative error code on failure.
 + */
 +static int
-+pldm_check_desc_tlv_len(struct pldmfw_priv *data, u16 type, u16 size)
++ice_write_nvm_module(struct ice_pf *pf, u16 module, const char *component,
++		     const u8 *image, u32 length,
++		     struct netlink_ext_ack *extack)
 +{
-+	struct device *dev = data->context->dev;
-+	u16 expected_size;
++	struct devlink *devlink;
++	u32 offset = 0;
++	bool last_cmd;
++	u8 *block;
++	int err;
 +
-+	switch (type) {
-+	case PLDM_DESC_ID_PCI_VENDOR_ID:
-+	case PLDM_DESC_ID_PCI_DEVICE_ID:
-+	case PLDM_DESC_ID_PCI_SUBVENDOR_ID:
-+	case PLDM_DESC_ID_PCI_SUBDEV_ID:
-+		expected_size = 2;
++	devlink = priv_to_devlink(pf);
++
++	devlink_flash_update_status_notify(devlink, "Flashing",
++					   component, 0, length);
++
++	block = kzalloc(ICE_AQ_MAX_BUF_LEN, GFP_KERNEL);
++	if (!block)
++		return -ENOMEM;
++
++	do {
++		u32 block_size;
++
++		block_size = min_t(u32, ICE_AQ_MAX_BUF_LEN, length - offset);
++		last_cmd = !(offset + block_size < length);
++
++		/* ice_aq_update_nvm may copy the firmware response into the
++		 * buffer, so we must make a copy since the source data is
++		 * constant.
++		 */
++		memcpy(block, image + offset, block_size);
++
++		err = ice_write_one_nvm_block(pf, module, offset, block_size,
++					      block, last_cmd, extack);
++		if (err)
++			break;
++
++		offset += block_size;
++
++		devlink_flash_update_status_notify(devlink, "Flashing",
++						   component, offset, length);
++	} while (!last_cmd);
++
++	if (err)
++		devlink_flash_update_status_notify(devlink, "Flashing failed",
++						   component, length, length);
++	else
++		devlink_flash_update_status_notify(devlink, "Flashing done",
++						   component, length, length);
++
++	kfree(block);
++	return err;
++}
++
++/**
++ * ice_erase_nvm_module - Erase an NVM module and await firmware completion
++ * @pf: the PF data structure
++ * @module: the module to erase
++ * @component: name of the component being updated
++ * @extack: netlink extended ACK structure
++ *
++ * Erase the inactive NVM bank associated with this module, and await for
++ * a completion response message from firmware.
++ *
++ * Note this function assumes the caller has acquired the NVM resource.
++ *
++ * Returns: zero on success, or a negative error code on failure.
++ */
++static int
++ice_erase_nvm_module(struct ice_pf *pf, u16 module, const char *component,
++		     struct netlink_ext_ack *extack)
++{
++	u16 completion_module, completion_retval;
++	struct ice_rq_event_info event = { 0 };
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_hw *hw = &pf->hw;
++	struct devlink *devlink;
++	enum ice_status status;
++	int err;
++
++	devlink = priv_to_devlink(pf);
++
++	devlink_flash_update_status_notify(devlink, "Erasing", component, 0, 0);
++
++	status = ice_aq_erase_nvm(hw, module, NULL);
++	if (status) {
++		dev_err(dev, "Failed to erase %s (module 0x%02x), err %s aq_err %s\n",
++			component, module, ice_stat_str(status),
++			ice_aq_str(hw->adminq.sq_last_status));
++		NL_SET_ERR_MSG_MOD(extack, "Failed to erase flash module");
++		err = -EIO;
++		goto out_notify_devlink;
++	}
++
++	/* Yes, this really can take minutes to complete */
++	err = ice_aq_wait_for_event(pf, ice_aqc_opc_nvm_erase, 300 * HZ, &event);
++	if (err) {
++		dev_err(dev, "Timed out waiting for firmware to respond with erase completion for %s (module 0x%02x), err %d\n",
++			component, module, err);
++		NL_SET_ERR_MSG_MOD(extack, "Timed out waiting for firmware");
++		goto out_notify_devlink;
++	}
++
++	completion_module = le16_to_cpu(event.desc.params.nvm.module_typeid);
++	completion_retval = le16_to_cpu(event.desc.retval);
++
++	if (completion_module != module) {
++		dev_err(dev, "Unexpected module_typeid in erase completion for %s: got 0x%x, expected 0x%x\n",
++			component, completion_module, module);
++		NL_SET_ERR_MSG_MOD(extack, "Unexpected firmware response");
++		err = -EIO;
++		goto out_notify_devlink;
++	}
++
++	if (completion_retval) {
++		dev_err(dev, "Firmware failed to erase %s (module 0x02%x), aq_err %s\n",
++			component, module,
++			ice_aq_str((enum ice_aq_err)completion_retval));
++		NL_SET_ERR_MSG_MOD(extack, "Firmware failed to erase flash");
++		err = -EIO;
++		goto out_notify_devlink;
++	}
++
++out_notify_devlink:
++	if (err)
++		devlink_flash_update_status_notify(devlink, "Erasing failed",
++						   component, 0, 0);
++	else
++		devlink_flash_update_status_notify(devlink, "Erasing done",
++						   component, 0, 0);
++
++	return err;
++}
++
++/**
++ * ice_switch_flash_banks - Tell firmware to switch NVM banks
++ * @pf: Pointer to the PF data structure
++ * @activate_flags: flags used for the activation command
++ * @extack: netlink extended ACK structure
++ *
++ * Notify firmware to activate the newly written flash banks, and wait for the
++ * firmware response.
++ *
++ * Returns: zero on success or an error code on failure.
++ */
++static int ice_switch_flash_banks(struct ice_pf *pf, u8 activate_flags,
++				  struct netlink_ext_ack *extack)
++{
++	struct ice_rq_event_info event = { 0 };
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_hw *hw = &pf->hw;
++	enum ice_status status;
++	u16 completion_retval;
++	int err;
++
++	status = ice_nvm_write_activate(hw, activate_flags);
++	if (status) {
++		dev_err(dev, "Failed to switch active flash banks, err %s aq_err %s\n",
++			ice_stat_str(status),
++			ice_aq_str(hw->adminq.sq_last_status));
++		NL_SET_ERR_MSG_MOD(extack, "Failed to switch active flash banks");
++		return -EIO;
++	}
++
++	err = ice_aq_wait_for_event(pf, ice_aqc_opc_nvm_write_activate, HZ,
++				    &event);
++	if (err) {
++		dev_err(dev, "Timed out waiting for firmware to switch active flash banks, err %d\n",
++			err);
++		NL_SET_ERR_MSG_MOD(extack, "Timed out waiting for firmware");
++		return err;
++	}
++
++	completion_retval = le16_to_cpu(event.desc.retval);
++	if (completion_retval) {
++		dev_err(dev, "Firmware failed to switch active flash banks aq_err %s\n",
++			ice_aq_str((enum ice_aq_err)completion_retval));
++		NL_SET_ERR_MSG_MOD(extack, "Firmware failed to switch active flash banks");
++		return -EIO;
++	}
++
++	return 0;
++}
++
++/**
++ * ice_flash_component - Flash a component of the NVM
++ * @context: PLDM fw update structure
++ * @component: the component table to program
++ *
++ * Program the flash contents for a given component. First, determine the
++ * module id. Then, erase the secondary bank for this module. Finally, write
++ * the contents of the component to the NVM.
++ *
++ * Note this function assumes the caller has acquired the NVM resource.
++ *
++ * Returns: zero on success, or a negative error code on failure.
++ */
++static int
++ice_flash_component(struct pldmfw *context, struct pldmfw_component *component)
++{
++	struct ice_fwu_priv *priv = container_of(context, struct ice_fwu_priv, context);
++	struct netlink_ext_ack *extack = priv->extack;
++	struct ice_pf *pf = priv->pf;
++	const char *name;
++	u16 module;
++	u8 flag;
++	int err;
++
++	switch (component->identifier) {
++	case NVM_COMP_ID_OROM:
++		module = ICE_SR_1ST_OROM_BANK_PTR;
++		flag = ICE_AQC_NVM_ACTIV_SEL_OROM;
++		name = "fw.undi";
 +		break;
-+	case PLDM_DESC_ID_PCI_REVISION_ID:
-+		expected_size = 1;
++	case NVM_COMP_ID_NVM:
++		module = ICE_SR_1ST_NVM_BANK_PTR;
++		flag = ICE_AQC_NVM_ACTIV_SEL_NVM;
++		name = "fw.mgmt";
 +		break;
-+	case PLDM_DESC_ID_PNP_VENDOR_ID:
-+		expected_size = 3;
++	case NVM_COMP_ID_NETLIST:
++		module = ICE_SR_NETLIST_BANK_PTR;
++		flag = ICE_AQC_NVM_ACTIV_SEL_NETLIST;
++		name = "fw.netlist";
 +		break;
-+	case PLDM_DESC_ID_IANA_ENTERPRISE_ID:
-+	case PLDM_DESC_ID_ACPI_VENDOR_ID:
-+	case PLDM_DESC_ID_PNP_PRODUCT_ID:
-+	case PLDM_DESC_ID_ACPI_PRODUCT_ID:
-+		expected_size = 4;
-+		break;
-+	case PLDM_DESC_ID_UUID:
-+		expected_size = 16;
-+		break;
-+	case PLDM_DESC_ID_VENDOR_DEFINED:
-+		return 0;
 +	default:
-+		/* Do not report an error on an unexpected TLV */
-+		dev_dbg(dev, "Found unrecognized TLV type 0x%04x\n", type);
-+		return 0;
-+	}
-+
-+	if (size != expected_size) {
-+		dev_dbg(dev, "Found TLV type 0x%04x with unexpected length. Got %u bytes, but expected %u bytes\n",
-+			type, size, expected_size);
++		/* This should not trigger, since we check the id before
++		 * sending the component table to firmware.
++		 */
++		WARN(1, "Unexpected unknown component identifier 0x%02x",
++		     component->identifier);
 +		return -EINVAL;
 +	}
 +
-+	return 0;
-+}
++	/* Mark this component for activating at the end */
++	priv->activate_flags |= flag;
 +
-+/**
-+ * pldm_parse_desc_tlvs - Check and skip past a number of TLVs
-+ * @data: pointer to private data
-+ * @record: pointer to the record this TLV belongs too
-+ * @desc_count: descriptor count
-+ *
-+ * From the current offset, read and extract the descriptor TLVs, updating the
-+ * current offset each time.
-+ *
-+ * Returns: zero on success, or a negative error code on failure.
-+ */
-+static int
-+pldm_parse_desc_tlvs(struct pldmfw_priv *data, struct pldmfw_record *record, u8 desc_count)
-+{
-+	const struct __pldmfw_desc_tlv *__desc;
-+	const u8 *desc_start;
-+	u8 i;
-+
-+	desc_start = data->fw->data + data->offset;
-+
-+	pldm_for_each_desc_tlv(i, __desc, desc_start, desc_count) {
-+		struct pldmfw_desc_tlv *desc;
-+		int err;
-+		u16 type, size;
-+
-+		err = pldm_move_fw_offset(data, sizeof(*__desc));
-+		if (err)
-+			return err;
-+
-+		type = get_unaligned_le16(&__desc->type);
-+
-+		/* According to DSP0267, this only includes the data field */
-+		size = get_unaligned_le16(&__desc->size);
-+
-+		err = pldm_check_desc_tlv_len(data, type, size);
-+		if (err)
-+			return err;
-+
-+		/* check that we have space and move the offset forward */
-+		err = pldm_move_fw_offset(data, size);
-+		if (err)
-+			return err;
-+
-+		desc = kzalloc(sizeof(*desc), GFP_KERNEL);
-+		if (!desc)
-+			return -ENOMEM;
-+
-+		desc->type = type;
-+		desc->size = size;
-+		desc->data = __desc->data;
-+
-+		list_add_tail(&desc->entry, &record->descs);
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * pldm_parse_one_record - Verify size of one PLDM record
-+ * @data: pointer to image details
-+ * @__record: pointer to the record to check
-+ *
-+ * This function checks that the record size does not exceed either the size
-+ * of the firmware file or the total length specified in the header section.
-+ *
-+ * It also verifies that the recorded length of the start of the record
-+ * matches the size calculated by adding the static structure length, the
-+ * component bitmap length, the version string length, the length of all
-+ * descriptor TLVs, and the length of the package data.
-+ *
-+ * Returns: zero on success, or a negative error code on failure.
-+ */
-+static int
-+pldm_parse_one_record(struct pldmfw_priv *data,
-+		      const struct __pldmfw_record_info *__record)
-+{
-+	struct pldmfw_record *record;
-+	size_t measured_length;
-+	int err;
-+	const u8 *bitmap_ptr;
-+	u16 record_len;
-+	int i;
-+
-+	/* Make a copy and insert it into the record list */
-+	record = kzalloc(sizeof(*record), GFP_KERNEL);
-+	if (!record)
-+		return -ENOMEM;
-+
-+	INIT_LIST_HEAD(&record->descs);
-+	list_add_tail(&record->entry, &data->records);
-+
-+	/* Then check that we have space and move the offset */
-+	err = pldm_move_fw_offset(data, sizeof(*__record));
++	err = ice_erase_nvm_module(pf, module, name, extack);
 +	if (err)
 +		return err;
 +
-+	record_len = get_unaligned_le16(&__record->record_len);
-+	record->package_data_len = get_unaligned_le16(&__record->package_data_len);
-+	record->version_len = __record->version_len;
-+	record->version_type = __record->version_type;
-+
-+	bitmap_ptr = data->fw->data + data->offset;
-+
-+	/* check that we have space for the component bitmap length */
-+	err = pldm_move_fw_offset(data, data->bitmap_size);
-+	if (err)
-+		return err;
-+
-+	record->component_bitmap_len = data->component_bitmap_len;
-+	record->component_bitmap = bitmap_zalloc(record->component_bitmap_len,
-+						 GFP_KERNEL);
-+	if (!record->component_bitmap)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < data->bitmap_size; i++)
-+		bitmap_set_value8(record->component_bitmap, bitmap_ptr[i], i * 8);
-+
-+	record->version_string = data->fw->data + data->offset;
-+
-+	err = pldm_move_fw_offset(data, record->version_len);
-+	if (err)
-+		return err;
-+
-+	/* Scan through the descriptor TLVs and find the end */
-+	err = pldm_parse_desc_tlvs(data, record, __record->descriptor_count);
-+	if (err)
-+		return err;
-+
-+	record->package_data = data->fw->data + data->offset;
-+
-+	err = pldm_move_fw_offset(data, record->package_data_len);
-+	if (err)
-+		return err;
-+
-+	measured_length = data->offset - ((const u8 *)__record - data->fw->data);
-+	if (measured_length != record_len) {
-+		dev_dbg(data->context->dev, "Unexpected record length. Measured record length is %zu bytes, expected length is %u bytes\n",
-+			measured_length, record_len);
-+		return -EFAULT;
-+	}
-+
-+	return 0;
++	return ice_write_nvm_module(pf, module, name, component->component_data,
++				    component->component_size, extack);
 +}
 +
 +/**
-+ * pldm_parse_records - Locate the start of the component area
-+ * @data: pointer to private data
++ * ice_finalize_update - Perform last steps to complete device update
++ * @context: PLDM fw update structure
 + *
-+ * Extract the record count, and loop through each record, searching for the
-+ * component area.
++ * Called as the last step of the update process. Complete the update by
++ * telling the firmware to switch active banks, and perform a reset of
++ * configured.
 + *
-+ * Returns: zero on success, or a negative error code on failure.
++ * Returns: 0 on success, or an error code on failure.
 + */
-+static int pldm_parse_records(struct pldmfw_priv *data)
++static int ice_finalize_update(struct pldmfw *context)
 +{
-+	const struct __pldmfw_component_area *component_area;
-+	const struct __pldmfw_record_info *record;
-+	int err;
-+	u8 i;
-+
-+	pldm_for_each_record(i, record, data->record_start, data->record_count) {
-+		err = pldm_parse_one_record(data, record);
-+		if (err)
-+			return err;
-+	}
-+
-+	/* Extract a pointer to the component area, which just follows the
-+	 * PLDM device record data.
-+	 */
-+	component_area = (const struct __pldmfw_component_area *)(data->fw->data + data->offset);
-+
-+	err = pldm_move_fw_offset(data, sizeof(*component_area));
-+	if (err)
-+		return err;
-+
-+	data->component_count =
-+		get_unaligned_le16(&component_area->component_image_count);
-+	data->component_start = component_area->components;
-+
-+	return 0;
-+}
-+
-+/**
-+ * pldm_parse_components - Locate the CRC header checksum
-+ * @data: pointer to private data
-+ *
-+ * Extract the component count, and find the pointer to the component area.
-+ * Scan through each component searching for the end, which should point to
-+ * the package header checksum.
-+ *
-+ * Extract the package header CRC and save it for verification.
-+ *
-+ * Returns: zero on success, or a negative error code on failure.
-+ */
-+static int pldm_parse_components(struct pldmfw_priv *data)
-+{
-+	const struct __pldmfw_component_info *__component;
-+	struct device *dev = data->context->dev;
-+	const u8 *header_crc_ptr;
-+	int err;
-+	u8 i;
-+
-+	pldm_for_each_component(i, __component, data->component_start, data->component_count) {
-+		struct pldmfw_component *component;
-+		u32 offset, size;
-+
-+		err = pldm_move_fw_offset(data, sizeof(*__component));
-+		if (err)
-+			return err;
-+
-+		err = pldm_move_fw_offset(data, __component->version_len);
-+		if (err)
-+			return err;
-+
-+		offset = get_unaligned_le32(&__component->location_offset);
-+		size = get_unaligned_le32(&__component->size);
-+
-+		err = pldm_check_fw_space(data, offset, size);
-+		if (err)
-+			return err;
-+
-+		component = kzalloc(sizeof(*component), GFP_KERNEL);
-+		if (!component)
-+			return -ENOMEM;
-+
-+		component->index = i;
-+		component->classification = get_unaligned_le16(&__component->classification);
-+		component->identifier = get_unaligned_le16(&__component->identifier);
-+		component->comparison_stamp = get_unaligned_le32(&__component->comparison_stamp);
-+		component->options = get_unaligned_le16(&__component->options);
-+		component->activation_method = get_unaligned_le16(&__component->activation_method);
-+		component->version_type = __component->version_type;
-+		component->version_len = __component->version_len;
-+		component->version_string = __component->version_string;
-+		component->component_data = data->fw->data + offset;
-+		component->component_size = size;
-+
-+		list_add_tail(&component->entry, &data->components);
-+	}
-+
-+	header_crc_ptr = data->fw->data + data->offset;
-+
-+	err = pldm_move_fw_offset(data, sizeof(data->header_crc));
-+	if (err)
-+		return err;
-+
-+	/* Make sure that we reached the expected offset */
-+	if (data->offset != data->total_header_size) {
-+		dev_dbg(dev, "Invalid firmware header size. Expected %u but got %zu\n",
-+			data->total_header_size, data->offset);
-+		return -EFAULT;
-+	}
-+
-+	data->header_crc = get_unaligned_le32(header_crc_ptr);
-+
-+	return 0;
-+}
-+
-+/**
-+ * pldm_verify_header_crc - Verify that the CRC in the header matches
-+ * @data: pointer to private data
-+ *
-+ * Calculates the 32-bit CRC using the standard IEEE 802.3 CRC polynomial and
-+ * compares it to the value stored in the header.
-+ *
-+ * Returns: zero on success if the CRC matches, or -EBADMSG on an invalid CRC.
-+ */
-+static int pldm_verify_header_crc(struct pldmfw_priv *data)
-+{
-+	struct device *dev = data->context->dev;
-+	u32 calculated_crc;
-+	size_t length;
-+
-+	/* Calculate the 32-bit CRC of the header header contents up to but
-+	 * not including the checksum. Note that the Linux crc32_le function
-+	 * does not perform an expected final XOR.
-+	 */
-+	length = data->offset - sizeof(data->header_crc);
-+	calculated_crc = crc32_le(~0, data->fw->data, length) ^ ~0;
-+
-+	if (calculated_crc != data->header_crc) {
-+		dev_dbg(dev, "Invalid CRC in firmware header. Got 0x%08x but expected 0x%08x\n",
-+			calculated_crc, data->header_crc);
-+		return -EBADMSG;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * pldmfw_free_priv - Free memory allocated while parsing the PLDM image
-+ * @data: pointer to the PLDM data structure
-+ *
-+ * Loops through and clears all allocated memory associated with each
-+ * allocated descriptor, record, and component.
-+ */
-+static void pldmfw_free_priv(struct pldmfw_priv *data)
-+{
-+	struct pldmfw_component *component, *c_safe;
-+	struct pldmfw_record *record, *r_safe;
-+	struct pldmfw_desc_tlv *desc, *d_safe;
-+
-+	list_for_each_entry_safe(component, c_safe, &data->components, entry) {
-+		list_del(&component->entry);
-+		kfree(component);
-+	}
-+
-+	list_for_each_entry_safe(record, r_safe, &data->records, entry) {
-+		list_for_each_entry_safe(desc, d_safe, &record->descs, entry) {
-+			list_del(&desc->entry);
-+			kfree(desc);
-+		}
-+
-+		if (record->component_bitmap) {
-+			bitmap_free(record->component_bitmap);
-+			record->component_bitmap = NULL;
-+		}
-+
-+		list_del(&record->entry);
-+		kfree(record);
-+	}
-+}
-+
-+/**
-+ * pldm_parse_image - parse and extract details from PLDM image
-+ * @data: pointer to private data
-+ *
-+ * Verify that the firmware file contains valid data for a PLDM firmware
-+ * file. Extract useful pointers and data from the firmware file and store
-+ * them in the data structure.
-+ *
-+ * The PLDM firmware file format is defined in DMTF DSP0267 1.0.0. Care
-+ * should be taken to use get_unaligned_le* when accessing data from the
-+ * pointers in data.
-+ *
-+ * Returns: zero on success, or a negative error code on failure.
-+ */
-+static int pldm_parse_image(struct pldmfw_priv *data)
-+{
++	struct ice_fwu_priv *priv = container_of(context, struct ice_fwu_priv, context);
++	struct netlink_ext_ack *extack = priv->extack;
++	struct ice_pf *pf = priv->pf;
 +	int err;
 +
-+	if (WARN_ON(!(data->context->dev && data->fw->data && data->fw->size)))
-+		return -EINVAL;
-+
-+	err = pldm_parse_header(data);
++	/* Finally, notify firmware to activate the written NVM banks */
++	err = ice_switch_flash_banks(pf, priv->activate_flags, extack);
 +	if (err)
 +		return err;
 +
-+	err = pldm_parse_records(data);
-+	if (err)
-+		return err;
-+
-+	err = pldm_parse_components(data);
-+	if (err)
-+		return err;
-+
-+	return pldm_verify_header_crc(data);
++	return 0;
 +}
 +
-+/* these are u32 so that we can store PCI_ANY_ID */
-+struct pldm_pci_record_id {
-+	int vendor;
-+	int device;
-+	int subsystem_vendor;
-+	int subsystem_device;
++static const struct pldmfw_ops ice_fwu_ops = {
++	.match_record = &pldmfw_op_pci_match_record,
++	.send_package_data = &ice_send_package_data,
++	.send_component_table = &ice_send_component_table,
++	.flash_component = &ice_flash_component,
++	.finalize_update = &ice_finalize_update,
 +};
 +
 +/**
-+ * pldmfw_op_pci_match_record - Check if a PCI device matches the record
-+ * @context: PLDM fw update structure
-+ * @record: list of records extracted from the PLDM image
-+ *
-+ * Determine of the PCI device associated with this device matches the record
-+ * data provided.
-+ *
-+ * Searches the descriptor TLVs and extracts the relevant descriptor data into
-+ * a pldm_pci_record_id. This is then compared against the PCI device ID
-+ * information.
-+ *
-+ * Returns: true if the device matches the record, false otherwise.
-+ */
-+bool pldmfw_op_pci_match_record(struct pldmfw *context, struct pldmfw_record *record)
-+{
-+	struct pci_dev *pdev = to_pci_dev(context->dev);
-+	struct pldm_pci_record_id id = {
-+		.vendor = PCI_ANY_ID,
-+		.device = PCI_ANY_ID,
-+		.subsystem_vendor = PCI_ANY_ID,
-+		.subsystem_device = PCI_ANY_ID,
-+	};
-+	struct pldmfw_desc_tlv *desc;
-+
-+	list_for_each_entry(desc, &record->descs, entry) {
-+		u16 value;
-+		int *ptr;
-+
-+		switch (desc->type) {
-+		case PLDM_DESC_ID_PCI_VENDOR_ID:
-+			ptr = &id.vendor;
-+			break;
-+		case PLDM_DESC_ID_PCI_DEVICE_ID:
-+			ptr = &id.device;
-+			break;
-+		case PLDM_DESC_ID_PCI_SUBVENDOR_ID:
-+			ptr = &id.subsystem_vendor;
-+			break;
-+		case PLDM_DESC_ID_PCI_SUBDEV_ID:
-+			ptr = &id.subsystem_device;
-+			break;
-+		default:
-+			/* Skip unrelated TLVs */
-+			continue;
-+		}
-+
-+		value = get_unaligned_le16(desc->data);
-+		/* A value of zero for one of the descriptors is sometimes
-+		 * used when the record should ignore this field when matching
-+		 * device. For example if the record applies to any subsystem
-+		 * device or vendor.
-+		 */
-+		if (value)
-+			*ptr = (int)value;
-+		else
-+			*ptr = PCI_ANY_ID;
-+	}
-+
-+	if ((id.vendor == PCI_ANY_ID || id.vendor == pdev->vendor) &&
-+	    (id.device == PCI_ANY_ID || id.device == pdev->device) &&
-+	    (id.subsystem_vendor == PCI_ANY_ID || id.subsystem_vendor == pdev->subsystem_vendor) &&
-+	    (id.subsystem_device == PCI_ANY_ID || id.subsystem_device == pdev->subsystem_device))
-+		return true;
-+	else
-+		return false;
-+}
-+EXPORT_SYMBOL(pldmfw_op_pci_match_record);
-+
-+/**
-+ * pldm_find_matching_record - Find the first matching PLDM record
-+ * @data: pointer to private data
-+ *
-+ * Search through PLDM records and find the first matching entry. It is
-+ * expected that only one entry matches.
-+ *
-+ * Store a pointer to the matching record, if found.
-+ *
-+ * Returns: zero on success, or -ENOENT if no matching record is found.
-+ */
-+static int pldm_find_matching_record(struct pldmfw_priv *data)
-+{
-+	struct pldmfw_record *record;
-+
-+	list_for_each_entry(record, &data->records, entry) {
-+		if (data->context->ops->match_record(data->context, record)) {
-+			data->matching_record = record;
-+			return 0;
-+		}
-+	}
-+
-+	return -ENOENT;
-+}
-+
-+/**
-+ * pldm_send_package_data - Send firmware the package data for the record
-+ * @data: pointer to private data
-+ *
-+ * Send the package data associated with the matching record to the firmware,
-+ * using the send_pkg_data operation.
-+ *
-+ * Returns: zero on success, or a negative error code on failure.
-+ */
-+static int
-+pldm_send_package_data(struct pldmfw_priv *data)
-+{
-+	struct pldmfw_record *record = data->matching_record;
-+	const struct pldmfw_ops *ops = data->context->ops;
-+
-+	return ops->send_package_data(data->context, record->package_data,
-+				      record->package_data_len);
-+}
-+
-+/**
-+ * pldm_send_component_tables - Send component table information to firmware
-+ * @data: pointer to private data
-+ *
-+ * Loop over each component, sending the applicable components to the firmware
-+ * via the send_component_table operation.
-+ *
-+ * Returns: zero on success, or a negative error code on failure.
-+ */
-+static int
-+pldm_send_component_tables(struct pldmfw_priv *data)
-+{
-+	unsigned long *bitmap = data->matching_record->component_bitmap;
-+	struct pldmfw_component *component;
-+	int err;
-+
-+	list_for_each_entry(component, &data->components, entry) {
-+		u8 index = component->index, transfer_flag = 0;
-+
-+		/* Skip components which are not intended for this device */
-+		if (!test_bit(index, bitmap))
-+			continue;
-+
-+		/* determine whether this is the start, middle, end, or both
-+		 * the start and end of the component tables
-+		 */
-+		if (index == find_first_bit(bitmap, data->component_bitmap_len))
-+			transfer_flag |= PLDM_TRANSFER_FLAG_START;
-+		if (index == find_last_bit(bitmap, data->component_bitmap_len))
-+			transfer_flag |= PLDM_TRANSFER_FLAG_END;
-+		if (!transfer_flag)
-+			transfer_flag = PLDM_TRANSFER_FLAG_MIDDLE;
-+
-+		err = data->context->ops->send_component_table(data->context,
-+							       component,
-+							       transfer_flag);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * pldm_flash_components - Program each component to device flash
-+ * @data: pointer to private data
-+ *
-+ * Loop through each component that is active for the matching device record,
-+ * and send it to the device driver for flashing.
-+ *
-+ * Returns: zero on success, or a negative error code on failure.
-+ */
-+static int pldm_flash_components(struct pldmfw_priv *data)
-+{
-+	unsigned long *bitmap = data->matching_record->component_bitmap;
-+	struct pldmfw_component *component;
-+	int err;
-+
-+	list_for_each_entry(component, &data->components, entry) {
-+		u8 index = component->index;
-+
-+		/* Skip components which are not intended for this device */
-+		if (!test_bit(index, bitmap))
-+			continue;
-+
-+		err = data->context->ops->flash_component(data->context, component);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * pldm_finalize_update - Finalize the device flash update
-+ * @data: pointer to private data
-+ *
-+ * Tell the device driver to perform any remaining logic to complete the
-+ * device update.
-+ *
-+ * Returns: zero on success, or a PLFM_FWU error indicating the reason for
-+ * failure.
-+ */
-+static int pldm_finalize_update(struct pldmfw_priv *data)
-+{
-+	if (data->context->ops->finalize_update)
-+		return data->context->ops->finalize_update(data->context);
-+
-+	return 0;
-+}
-+
-+/**
-+ * pldmfw_flash_image - Write a PLDM-formatted firmware image to the device
-+ * @context: ops and data for firmware update
-+ * @fw: firmware object pointing to the relevant firmware file to program
++ * ice_flash_pldm_image - Write a PLDM-formatted firmware image to the device
++ * @pf: private device driver structure
++ * @fw: firmware object pointing to the relevant firmware file
++ * @extack: netlink extended ACK structure
 + *
 + * Parse the data for a given firmware file, verifying that it is a valid PLDM
 + * formatted image that matches this device.
 + *
 + * Extract the device record Package Data and Component Tables and send them
-+ * to the device firmware. Extract and write the flash data for each of the
-+ * components indicated in the firmware file.
++ * to the firmware. Extract and write the flash data for each of the three
++ * main flash components, "fw.mgmt", "fw.undi", and "fw.netlist". Notify
++ * firmware once the data is written to the inactive banks.
 + *
-+ * Returns: zero on success, or a negative error code on failure.
++ * Returns: zero on success or a negative error code on failure.
 + */
-+int pldmfw_flash_image(struct pldmfw *context, const struct firmware *fw)
++int ice_flash_pldm_image(struct ice_pf *pf, const struct firmware *fw,
++			 struct netlink_ext_ack *extack)
 +{
-+	struct pldmfw_priv *data;
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_fwu_priv priv = { 0 };
++	struct ice_hw *hw = &pf->hw;
++	enum ice_status status;
 +	int err;
 +
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
++	priv.context.ops = &ice_fwu_ops;
++	priv.context.dev = dev;
++	priv.extack = extack;
++	priv.pf = pf;
++	priv.activate_flags = ICE_AQC_NVM_PRESERVE_ALL;
 +
-+	INIT_LIST_HEAD(&data->records);
-+	INIT_LIST_HEAD(&data->components);
++	status = ice_acquire_nvm(hw, ICE_RES_WRITE);
++	if (status) {
++		dev_err(dev, "Failed to acquire device flash lock, err %s aq_err %s\n",
++			ice_stat_str(status),
++			ice_aq_str(hw->adminq.sq_last_status));
++		NL_SET_ERR_MSG_MOD(extack, "Failed to acquire device flash lock");
++		return -EIO;
++	}
 +
-+	data->fw = fw;
-+	data->context = context;
++	err = pldmfw_flash_image(&priv.context, fw);
 +
-+	err = pldm_parse_image(data);
-+	if (err)
-+		goto out_release_data;
-+
-+	err = pldm_find_matching_record(data);
-+	if (err)
-+		goto out_release_data;
-+
-+	err = pldm_send_package_data(data);
-+	if (err)
-+		goto out_release_data;
-+
-+	err = pldm_send_component_tables(data);
-+	if (err)
-+		goto out_release_data;
-+
-+	err = pldm_flash_components(data);
-+	if (err)
-+		goto out_release_data;
-+
-+	err = pldm_finalize_update(data);
-+
-+out_release_data:
-+	pldmfw_free_priv(data);
-+	kfree(data);
++	ice_release_nvm(hw);
 +
 +	return err;
 +}
-+EXPORT_SYMBOL(pldmfw_flash_image);
 +
-+MODULE_AUTHOR("Jacob Keller <jacob.e.keller@intel.com>");
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("PLDM firmware flash update library");
-diff --git a/lib/pldmfw/pldmfw_private.h b/lib/pldmfw/pldmfw_private.h
++/**
++ * ice_check_for_pending_update - Check for a pending flash update
++ * @pf: the PF driver structure
++ * @component: if not NULL, the name of the component being updated
++ * @extack: Netlink extended ACK structure
++ *
++ * Check whether the device already has a pending flash update.
++ *
++ * If `ignore_pending_flash_update` is false, return an error in case of
++ * a pending update.
++ *
++ * If `ignore_pending_flash_update` is true, tell the device to cancel the
++ * pending update and return 0.
++ *
++ * Returns: -EALREADY if `ignore_pending_flash_update` is false and there is
++ * a pending update. Zero if there is no pending update or if the update is
++ * successfully canceled.
++ */
++int ice_check_for_pending_update(struct ice_pf *pf, const char *component,
++				 struct netlink_ext_ack *extack)
++{
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_hw_dev_caps *dev_caps;
++	struct ice_hw *hw = &pf->hw;
++	enum ice_status status;
++	u8 pending = 0;
++
++	dev_caps = kzalloc(sizeof(*dev_caps), GFP_KERNEL);
++	if (!dev_caps)
++		return -ENOMEM;
++
++	/* Read the most recent device capabilities from firmware. Do not use
++	 * the cached values in hw->dev_caps, because the pending update flag
++	 * may have changed, e.g. if an update was previously completed and
++	 * the system has not yet rebooted.
++	 */
++	status = ice_discover_dev_caps(hw, dev_caps);
++	if (status) {
++		NL_SET_ERR_MSG_MOD(extack, "Unable to read device capabilities");
++		kfree(dev_caps);
++		return -EIO;
++	}
++
++	if (dev_caps->common_cap.nvm_update_pending_nvm) {
++		dev_info(dev, "The fw.mgmt flash component has a pending update\n");
++		pending |= ICE_AQC_NVM_ACTIV_SEL_NVM;
++	}
++
++	if (dev_caps->common_cap.nvm_update_pending_orom) {
++		dev_info(dev, "The fw.undi flash component has a pending update\n");
++		pending |= ICE_AQC_NVM_ACTIV_SEL_OROM;
++	}
++
++	if (dev_caps->common_cap.nvm_update_pending_netlist) {
++		dev_info(dev, "The fw.netlist flash component has a pending update\n");
++		pending |= ICE_AQC_NVM_ACTIV_SEL_NETLIST;
++	}
++
++	kfree(dev_caps);
++
++	/* If the flash_update request is for a specific component, ignore all
++	 * of the other components.
++	 */
++	if (component) {
++		if (strcmp(component, "fw.mgmt") == 0)
++			pending &= ICE_AQC_NVM_ACTIV_SEL_NVM;
++		else if (strcmp(component, "fw.undi") == 0)
++			pending &= ICE_AQC_NVM_ACTIV_SEL_OROM;
++		else if (strcmp(component, "fw.netlist") == 0)
++			pending &= ICE_AQC_NVM_ACTIV_SEL_NETLIST;
++		else
++			WARN(1, "Unexpected flash component %s", component);
++	}
++
++	/* There is no previous pending update, so this request may continue */
++	if (!pending)
++		return 0;
++
++	dev_err(dev, "Flash update request rejected due to previous pending update\n");
++	NL_SET_ERR_MSG_MOD(extack, "The device already has a pending update");
++	return -EALREADY;
++}
+diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.h b/drivers/net/ethernet/intel/ice/ice_fw_update.h
 new file mode 100644
-index 000000000000..0abc0238df3b
+index 000000000000..79472cc618b4
 --- /dev/null
-+++ b/lib/pldmfw/pldmfw_private.h
-@@ -0,0 +1,238 @@
++++ b/drivers/net/ethernet/intel/ice/ice_fw_update.h
+@@ -0,0 +1,12 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/* Copyright (C) 2018-2019, Intel Corporation. */
 +
-+#ifndef _PLDMFW_PRIVATE_H_
-+#define _PLDMFW_PRIVATE_H_
++#ifndef _ICE_FW_UPDATE_H_
++#define _ICE_FW_UPDATE_H_
 +
-+/* The following data structures define the layout of a firmware binary
-+ * following the "PLDM For Firmware Update Specification", DMTF standard
-+ * #DSP0267.
-+ *
-+ * pldmfw.c uses these structures to implement a simple engine that will parse
-+ * a fw binary file in this format and perform a firmware update for a given
-+ * device.
-+ *
-+ * Due to the variable sized data layout, alignment of fields within these
-+ * structures is not guaranteed when reading. For this reason, all multi-byte
-+ * field accesses should be done using the unaligned access macros.
-+ * Additionally, the standard specifies that multi-byte fields are in
-+ * LittleEndian format.
-+ *
-+ * The structure definitions are not made public, in order to keep direct
-+ * accesses within code that is prepared to deal with the limitation of
-+ * unaligned access.
-+ */
-+
-+/* UUID for PLDM firmware packages: f018878c-cb7d-4943-9800-a02f059aca02 */
-+static const uuid_t pldm_firmware_header_id =
-+	UUID_INIT(0xf018878c, 0xcb7d, 0x4943,
-+		  0x98, 0x00, 0xa0, 0x2f, 0x05, 0x9a, 0xca, 0x02);
-+
-+/* Revision number of the PLDM header format this code supports */
-+#define PACKAGE_HEADER_FORMAT_REVISION 0x01
-+
-+/* timestamp104 structure defined in PLDM Base specification */
-+#define PLDM_TIMESTAMP_SIZE 13
-+struct __pldm_timestamp {
-+	u8 b[PLDM_TIMESTAMP_SIZE];
-+} __aligned(1);
-+
-+/* Package Header Information */
-+struct __pldm_header {
-+	uuid_t id;			    /* PackageHeaderIdentifier */
-+	u8 revision;			    /* PackageHeaderFormatRevision */
-+	__le16 size;			    /* PackageHeaderSize */
-+	struct __pldm_timestamp release_date; /* PackageReleaseDateTime */
-+	__le16 component_bitmap_len;	    /* ComponentBitmapBitLength */
-+	u8 version_type;		    /* PackageVersionStringType */
-+	u8 version_len;			    /* PackageVersionStringLength */
-+
-+	/*
-+	 * DSP0267 also includes the following variable length fields at the
-+	 * end of this structure:
-+	 *
-+	 * PackageVersionString, length is version_len.
-+	 *
-+	 * The total size of this section is
-+	 *   sizeof(pldm_header) + version_len;
-+	 */
-+	u8 version_string[];		/* PackageVersionString */
-+} __packed __aligned(1);
-+
-+/* Firmware Device ID Record */
-+struct __pldmfw_record_info {
-+	__le16 record_len;		/* RecordLength */
-+	u8 descriptor_count;		/* DescriptorCount */
-+	__le32 device_update_flags;	/* DeviceUpdateOptionFlags */
-+	u8 version_type;		/* ComponentImageSetVersionType */
-+	u8 version_len;			/* ComponentImageSetVersionLength */
-+	__le16 package_data_len;	/* FirmwareDevicePackageDataLength */
-+
-+	/*
-+	 * DSP0267 also includes the following variable length fields at the
-+	 * end of this structure:
-+	 *
-+	 * ApplicableComponents, length is component_bitmap_len from header
-+	 * ComponentImageSetVersionString, length is version_len
-+	 * RecordDescriptors, a series of TLVs with 16bit type and length
-+	 * FirmwareDevicePackageData, length is package_data_len
-+	 *
-+	 * The total size of each record is
-+	 *   sizeof(pldmfw_record_info) +
-+	 *   component_bitmap_len (converted to bytes!) +
-+	 *   version_len +
-+	 *   <length of RecordDescriptors> +
-+	 *   package_data_len
-+	 */
-+	u8 variable_record_data[];
-+} __packed __aligned(1);
-+
-+/* Firmware Descriptor Definition */
-+struct __pldmfw_desc_tlv {
-+	__le16 type;			/* DescriptorType */
-+	__le16 size;			/* DescriptorSize */
-+	u8 data[];			/* DescriptorData */
-+} __aligned(1);
-+
-+/* Firmware Device Identification Area */
-+struct __pldmfw_record_area {
-+	u8 record_count;		/* DeviceIDRecordCount */
-+	/* This is not a struct type because the size of each record varies */
-+	u8 records[];
-+} __aligned(1);
-+
-+/* Individual Component Image Information */
-+struct __pldmfw_component_info {
-+	__le16 classification;		/* ComponentClassfication */
-+	__le16 identifier;		/* ComponentIdentifier */
-+	__le32 comparison_stamp;	/* ComponentComparisonStamp */
-+	__le16 options;			/* componentOptions */
-+	__le16 activation_method;	/* RequestedComponentActivationMethod */
-+	__le32 location_offset;		/* ComponentLocationOffset */
-+	__le32 size;			/* ComponentSize */
-+	u8 version_type;		/* ComponentVersionStringType */
-+	u8 version_len;		/* ComponentVersionStringLength */
-+
-+	/*
-+	 * DSP0267 also includes the following variable length fields at the
-+	 * end of this structure:
-+	 *
-+	 * ComponentVersionString, length is version_len
-+	 *
-+	 * The total size of this section is
-+	 *   sizeof(pldmfw_component_info) + version_len;
-+	 */
-+	u8 version_string[];		/* ComponentVersionString */
-+} __packed __aligned(1);
-+
-+/* Component Image Information Area */
-+struct __pldmfw_component_area {
-+	__le16 component_image_count;
-+	/* This is not a struct type because the component size varies */
-+	u8 components[];
-+} __aligned(1);
-+
-+/**
-+ * pldm_first_desc_tlv
-+ * @start: byte offset of the start of the descriptor TLVs
-+ *
-+ * Converts the starting offset of the descriptor TLVs into a pointer to the
-+ * first descriptor.
-+ */
-+#define pldm_first_desc_tlv(start)					\
-+	((const struct __pldmfw_desc_tlv *)(start))
-+
-+/**
-+ * pldm_next_desc_tlv
-+ * @desc: pointer to a descriptor TLV
-+ *
-+ * Finds the pointer to the next descriptor following a given descriptor
-+ */
-+#define pldm_next_desc_tlv(desc)						\
-+	((const struct __pldmfw_desc_tlv *)((desc)->data +			\
-+					     get_unaligned_le16(&(desc)->size)))
-+
-+/**
-+ * pldm_for_each_desc_tlv
-+ * @i: variable to store descriptor index
-+ * @desc: variable to store descriptor pointer
-+ * @start: byte offset of the start of the descriptors
-+ * @count: the number of descriptors
-+ *
-+ * for loop macro to iterate over all of the descriptors of a given PLDM
-+ * record.
-+ */
-+#define pldm_for_each_desc_tlv(i, desc, start, count)			\
-+	for ((i) = 0, (desc) = pldm_first_desc_tlv(start);		\
-+	     (i) < (count);						\
-+	     (i)++, (desc) = pldm_next_desc_tlv(desc))
-+
-+/**
-+ * pldm_first_record
-+ * @start: byte offset of the start of the PLDM records
-+ *
-+ * Converts a starting offset of the PLDM records into a pointer to the first
-+ * record.
-+ */
-+#define pldm_first_record(start)					\
-+	((const struct __pldmfw_record_info *)(start))
-+
-+/**
-+ * pldm_next_record
-+ * @record: pointer to a PLDM record
-+ *
-+ * Finds a pointer to the next record following a given record
-+ */
-+#define pldm_next_record(record)					\
-+	((const struct __pldmfw_record_info *)				\
-+	 ((const u8 *)(record) + get_unaligned_le16(&(record)->record_len)))
-+
-+/**
-+ * pldm_for_each_record
-+ * @i: variable to store record index
-+ * @record: variable to store record pointer
-+ * @start: byte offset of the start of the records
-+ * @count: the number of records
-+ *
-+ * for loop macro to iterate over all of the records of a PLDM file.
-+ */
-+#define pldm_for_each_record(i, record, start, count)			\
-+	for ((i) = 0, (record) = pldm_first_record(start);		\
-+	     (i) < (count);						\
-+	     (i)++, (record) = pldm_next_record(record))
-+
-+/**
-+ * pldm_first_component
-+ * @start: byte offset of the start of the PLDM components
-+ *
-+ * Convert a starting offset of the PLDM components into a pointer to the
-+ * first component
-+ */
-+#define pldm_first_component(start)					\
-+	((const struct __pldmfw_component_info *)(start))
-+
-+/**
-+ * pldm_next_component
-+ * @component: pointer to a PLDM component
-+ *
-+ * Finds a pointer to the next component following a given component
-+ */
-+#define pldm_next_component(component)						\
-+	((const struct __pldmfw_component_info *)((component)->version_string +	\
-+						  (component)->version_len))
-+
-+/**
-+ * pldm_for_each_component
-+ * @i: variable to store component index
-+ * @component: variable to store component pointer
-+ * @start: byte offset to the start of the first component
-+ * @count: the number of components
-+ *
-+ * for loop macro to iterate over all of the components of a PLDM file.
-+ */
-+#define pldm_for_each_component(i, component, start, count)		\
-+	for ((i) = 0, (component) = pldm_first_component(start);	\
-+	     (i) < (count);						\
-+	     (i)++, (component) = pldm_next_component(component))
++int ice_flash_pldm_image(struct ice_pf *pf, const struct firmware *fw,
++			 struct netlink_ext_ack *extack);
++int ice_check_for_pending_update(struct ice_pf *pf, const char *component,
++				 struct netlink_ext_ack *extack);
 +
 +#endif
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 7ea99f164d18..3b456fddb4b8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -914,6 +914,151 @@ ice_handle_link_event(struct ice_pf *pf, struct ice_rq_event_info *event)
+ 	return status;
+ }
+ 
++enum ice_aq_task_state {
++	ICE_AQ_TASK_WAITING = 0,
++	ICE_AQ_TASK_COMPLETE,
++	ICE_AQ_TASK_CANCELED,
++};
++
++struct ice_aq_task {
++	struct hlist_node entry;
++
++	u16 opcode;
++	struct ice_rq_event_info *event;
++	enum ice_aq_task_state state;
++};
++
++/**
++ * ice_wait_for_aq_event - Wait for an AdminQ event from firmware
++ * @pf: pointer to the PF private structure
++ * @opcode: the opcode to wait for
++ * @timeout: how long to wait, in jiffies
++ * @event: storage for the event info
++ *
++ * Waits for a specific AdminQ completion event on the ARQ for a given PF. The
++ * current thread will be put to sleep until the specified event occurs or
++ * until the given timeout is reached.
++ *
++ * To obtain only the descriptor contents, pass an event without an allocated
++ * msg_buf. If the complete data buffer is desired, allocate the
++ * event->msg_buf with enough space ahead of time.
++ *
++ * Returns: zero on success, or a negative error code on failure.
++ */
++int ice_aq_wait_for_event(struct ice_pf *pf, u16 opcode, unsigned long timeout,
++			  struct ice_rq_event_info *event)
++{
++	struct ice_aq_task *task;
++	long ret;
++	int err;
++
++	task = kzalloc(sizeof(*task), GFP_KERNEL);
++	if (!task)
++		return -ENOMEM;
++
++	INIT_HLIST_NODE(&task->entry);
++	task->opcode = opcode;
++	task->event = event;
++	task->state = ICE_AQ_TASK_WAITING;
++
++	spin_lock_bh(&pf->aq_wait_lock);
++	hlist_add_head(&task->entry, &pf->aq_wait_list);
++	spin_unlock_bh(&pf->aq_wait_lock);
++
++	ret = wait_event_interruptible_timeout(pf->aq_wait_queue, task->state,
++					       timeout);
++	switch (task->state) {
++	case ICE_AQ_TASK_WAITING:
++		err = ret < 0 ? ret : -ETIMEDOUT;
++		break;
++	case ICE_AQ_TASK_CANCELED:
++		err = ret < 0 ? ret : -ECANCELED;
++		break;
++	case ICE_AQ_TASK_COMPLETE:
++		err = ret < 0 ? ret : 0;
++		break;
++	default:
++		WARN(1, "Unexpected AdminQ wait task state %u", task->state);
++		err = -EINVAL;
++		break;
++	}
++
++	spin_lock_bh(&pf->aq_wait_lock);
++	hlist_del(&task->entry);
++	spin_unlock_bh(&pf->aq_wait_lock);
++	kfree(task);
++
++	return err;
++}
++
++/**
++ * ice_aq_check_events - Check if any thread is waiting for an AdminQ event
++ * @pf: pointer to the PF private structure
++ * @opcode: the opcode of the event
++ * @event: the event to check
++ *
++ * Loops over the current list of pending threads waiting for an AdminQ event.
++ * For each matching task, copy the contents of the event into the task
++ * structure and wake up the thread.
++ *
++ * If multiple threads wait for the same opcode, they will all be woken up.
++ *
++ * Note that event->msg_buf will only be duplicated if the event has a buffer
++ * with enough space already allocated. Otherwise, only the descriptor and
++ * message length will be copied.
++ *
++ * Returns: true if an event was found, false otherwise
++ */
++static void ice_aq_check_events(struct ice_pf *pf, u16 opcode,
++				struct ice_rq_event_info *event)
++{
++	struct ice_aq_task *task;
++	bool found = false;
++
++	spin_lock_bh(&pf->aq_wait_lock);
++	hlist_for_each_entry(task, &pf->aq_wait_list, entry) {
++		if (task->state || task->opcode != opcode)
++			continue;
++
++		memcpy(&task->event->desc, &event->desc, sizeof(event->desc));
++		task->event->msg_len = event->msg_len;
++
++		/* Only copy the data buffer if a destination was set */
++		if (task->event->msg_buf &&
++		    task->event->buf_len > event->buf_len) {
++			memcpy(task->event->msg_buf, event->msg_buf,
++			       event->buf_len);
++			task->event->buf_len = event->buf_len;
++		}
++
++		task->state = ICE_AQ_TASK_COMPLETE;
++		found = true;
++	}
++	spin_unlock_bh(&pf->aq_wait_lock);
++
++	if (found)
++		wake_up(&pf->aq_wait_queue);
++}
++
++/**
++ * ice_aq_cancel_waiting_tasks - Immediately cancel all waiting tasks
++ * @pf: the PF private structure
++ *
++ * Set all waiting tasks to ICE_AQ_TASK_CANCELED, and wake up their threads.
++ * This will then cause ice_aq_wait_for_event to exit with -ECANCELED.
++ */
++static void ice_aq_cancel_waiting_tasks(struct ice_pf *pf)
++{
++	struct ice_aq_task *task;
++
++	spin_lock_bh(&pf->aq_wait_lock);
++	hlist_for_each_entry(task, &pf->aq_wait_list, entry)
++		task->state = ICE_AQ_TASK_CANCELED;
++	spin_unlock_bh(&pf->aq_wait_lock);
++
++	wake_up(&pf->aq_wait_queue);
++}
++
+ /**
+  * __ice_clean_ctrlq - helper function to clean controlq rings
+  * @pf: ptr to struct ice_pf
+@@ -1010,6 +1155,9 @@ static int __ice_clean_ctrlq(struct ice_pf *pf, enum ice_ctl_q q_type)
+ 
+ 		opcode = le16_to_cpu(event.desc.opcode);
+ 
++		/* Notify any thread that might be waiting for this event */
++		ice_aq_check_events(pf, opcode, &event);
++
+ 		switch (opcode) {
+ 		case ice_aqc_opc_get_link_status:
+ 			if (ice_handle_link_event(pf, &event))
+@@ -3096,6 +3244,10 @@ static int ice_init_pf(struct ice_pf *pf)
+ 	mutex_init(&pf->sw_mutex);
+ 	mutex_init(&pf->tc_mutex);
+ 
++	INIT_HLIST_HEAD(&pf->aq_wait_list);
++	spin_lock_init(&pf->aq_wait_lock);
++	init_waitqueue_head(&pf->aq_wait_queue);
++
+ 	/* setup service timer and periodic service task */
+ 	timer_setup(&pf->serv_tmr, ice_service_timer, 0);
+ 	pf->serv_tmr_period = HZ;
+@@ -4026,6 +4178,8 @@ static void ice_remove(struct pci_dev *pdev)
+ 	set_bit(__ICE_DOWN, pf->state);
+ 	ice_service_task_stop(pf);
+ 
++	ice_aq_cancel_waiting_tasks(pf);
++
+ 	mutex_destroy(&(&pf->hw)->fdir_fltr_lock);
+ 	if (!ice_is_safe_mode(pf))
+ 		ice_remove_arfs(pf);
 -- 
 2.27.0.353.gb9a2d1a0207f
 
