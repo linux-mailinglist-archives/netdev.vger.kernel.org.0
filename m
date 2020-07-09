@@ -2,124 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D0F3219D1F
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 12:11:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98D68219D67
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 12:17:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726471AbgGIKLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 06:11:53 -0400
-Received: from mx2.suse.de ([195.135.220.15]:58286 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726327AbgGIKLw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 06:11:52 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 738F3B04C;
-        Thu,  9 Jul 2020 10:11:50 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 65DBB60567; Thu,  9 Jul 2020 12:11:50 +0200 (CEST)
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net] ethtool: fix genlmsg_put() failure handling in
- ethnl_default_dumpit()
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Message-Id: <20200709101150.65DBB60567@lion.mk-sys.cz>
-Date:   Thu,  9 Jul 2020 12:11:50 +0200 (CEST)
+        id S1726446AbgGIKRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 06:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726340AbgGIKRZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 06:17:25 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C960BC061A0B
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 03:17:24 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id l17so1236903wmj.0
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 03:17:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=afDF9tYQy3W+Uj2Se1N0w02pg9VfKGxHoSqKW9keUYE=;
+        b=uL/2pxzYB9KrLWol1bKSNqPDV03Ru7cM7TwwJmxzMgSNn6pAb2KMLSBgA7Y9z7Skmr
+         VAejBngPEtrDN158Yo0kic0rmcMlst5hA1pYM2x8tlhJY9moBJme4Ny1eSAt29aw+u7N
+         0h99YgwOXSlrrolzvwQpq1pcmPdkWs7tODU6SIyqDakBXK3D4k69Y32l8dsLLRiusAEM
+         uYAy1IgedsFEOkfuZEJzRKss8n809/TWjLyEuuqSNWD8Ts0qvqoK368Jxocs1xaTn2w5
+         RXCD6xLXairxH5c7AHMsIUQ2ta7QBWwoc3xXlJNn5jjSDV768FQY9wSEjcW/p9gQc/gs
+         3xNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=afDF9tYQy3W+Uj2Se1N0w02pg9VfKGxHoSqKW9keUYE=;
+        b=mXJtTl4nPYoRESvr7YCP8cnFzILtJhp3oYlr+Rhly4qQOBn8sfffNlGvPH448umpiH
+         1S0NWEQp4FqDjWbfp7avYbV6NMOIhKlPSY4eOw5o9S5VilcERUrWGdJBj1YNCkrQ5SMh
+         1VDHjhkTWlsXIjzTcgKctCynBMjOftxwx3l0gc9ehMjeiExwcWz6iQowEdEgaAUFXzU4
+         ha5D7OBP1vnQ0qPX2vtGc1S2c8pAWkZZiJyBNk0kHzHhgkgqvf9qaulibKd9W1WLuG8U
+         wFPKso5eca2mD55RYPiwRyvLsjqbVGeX4mcunVXuolg++Y2UDs2b6LWqXN1673Zh0s6h
+         MIYg==
+X-Gm-Message-State: AOAM532G9PTg26kmnsRwH9uZRIdtEkSfb2/Yi0H41cgTaK2Uqexl0aOm
+        +vFNyCayVQ2ZAoAYsFWlVXg=
+X-Google-Smtp-Source: ABdhPJyflSvMQC0ay3MnWryIPsPVF8inyPKPl75vmPTGngasnxjQ0xW8sdx4AwzDZvkZq2cfkM7ppg==
+X-Received: by 2002:a1c:b6c3:: with SMTP id g186mr14037765wmf.135.1594289843358;
+        Thu, 09 Jul 2020 03:17:23 -0700 (PDT)
+Received: from localhost.localdomain ([77.139.6.232])
+        by smtp.gmail.com with ESMTPSA id o21sm3988607wmh.18.2020.07.09.03.17.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jul 2020 03:17:22 -0700 (PDT)
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     steffen.klassert@secunet.com, davem@davemloft.net,
+        herbert@gondor.apana.org.au, netdev@vger.kernel.org
+Cc:     Eyal Birger <eyal.birger@gmail.com>
+Subject: [PATCH ipsec-next 0/2] xfrm interface: use hash to store xfrmi contexts
+Date:   Thu,  9 Jul 2020 13:16:50 +0300
+Message-Id: <20200709101652.1911784-1-eyal.birger@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the genlmsg_put() call in ethnl_default_dumpit() fails, we bail out
-without checking if we already have some messages in current skb like we do
-with ethnl_default_dump_one() failure later. Therefore if existing messages
-almost fill up the buffer so that there is not enough space even for
-netlink and genetlink header, we lose all prepared messages and return and
-error.
+When having many xfrm interfaces, the linear lookup of devices based on
+if_id becomes costly.
 
-Rather than duplicating the skb->len check, move the genlmsg_put(),
-genlmsg_cancel() and genlmsg_end() calls into ethnl_default_dump_one().
-This is also more logical as all message composition will be in
-ethnl_default_dump_one() and only iteration logic will be left in
-ethnl_default_dumpit().
+The first patch refactors xfrmi_decode_session() to use the xi used in
+the netdevice priv context instead of looking it up in the list based
+on ifindex. This is needed in order to use if_id as the only key used
+for xi lookup.
 
-Fixes: 728480f12442 ("ethtool: default handlers for GET requests")
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- net/ethtool/netlink.c | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+The second patch extends the existing infrastructure - which already
+stores the xfrmi contexts in an array of lists - to use a hash of the
+if_id.
 
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index 88fd07f47040..dd8a1c1dc07d 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -376,10 +376,17 @@ static int ethnl_default_doit(struct sk_buff *skb, struct genl_info *info)
- }
- 
- static int ethnl_default_dump_one(struct sk_buff *skb, struct net_device *dev,
--				  const struct ethnl_dump_ctx *ctx)
-+				  const struct ethnl_dump_ctx *ctx,
-+				  struct netlink_callback *cb)
- {
-+	void *ehdr;
- 	int ret;
- 
-+	ehdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
-+			   &ethtool_genl_family, 0, ctx->ops->reply_cmd);
-+	if (!ehdr)
-+		return -EMSGSIZE;
-+
- 	ethnl_init_reply_data(ctx->reply_data, ctx->ops, dev);
- 	rtnl_lock();
- 	ret = ctx->ops->prepare_data(ctx->req_info, ctx->reply_data, NULL);
-@@ -395,6 +402,10 @@ static int ethnl_default_dump_one(struct sk_buff *skb, struct net_device *dev,
- 	if (ctx->ops->cleanup_data)
- 		ctx->ops->cleanup_data(ctx->reply_data);
- 	ctx->reply_data->dev = NULL;
-+	if (ret < 0)
-+		genlmsg_cancel(skb, ehdr);
-+	else
-+		genlmsg_end(skb, ehdr);
- 	return ret;
- }
- 
-@@ -411,7 +422,6 @@ static int ethnl_default_dumpit(struct sk_buff *skb,
- 	int s_idx = ctx->pos_idx;
- 	int h, idx = 0;
- 	int ret = 0;
--	void *ehdr;
- 
- 	rtnl_lock();
- 	for (h = ctx->pos_hash; h < NETDEV_HASHENTRIES; h++, s_idx = 0) {
-@@ -431,26 +441,15 @@ static int ethnl_default_dumpit(struct sk_buff *skb,
- 			dev_hold(dev);
- 			rtnl_unlock();
- 
--			ehdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid,
--					   cb->nlh->nlmsg_seq,
--					   &ethtool_genl_family, 0,
--					   ctx->ops->reply_cmd);
--			if (!ehdr) {
--				dev_put(dev);
--				ret = -EMSGSIZE;
--				goto out;
--			}
--			ret = ethnl_default_dump_one(skb, dev, ctx);
-+			ret = ethnl_default_dump_one(skb, dev, ctx, cb);
- 			dev_put(dev);
- 			if (ret < 0) {
--				genlmsg_cancel(skb, ehdr);
- 				if (ret == -EOPNOTSUPP)
- 					goto lock_and_cont;
- 				if (likely(skb->len))
- 					ret = skb->len;
- 				goto out;
- 			}
--			genlmsg_end(skb, ehdr);
- lock_and_cont:
- 			rtnl_lock();
- 			if (net->dev_base_seq != seq) {
+Example benchmarks:
+- running on a KVM based VM
+- xfrm tunnel mode between two namespaces
+- xfrm interface in one namespace (10.0.0.2)
+
+Before this change set:
+
+Single xfrm interface in namespace:
+$ netperf -H 10.0.0.2 -l8 -I95,10 -t TCP_STREAM
+
+MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 10.0.0.2 () port 0 AF_INET : +/-5.000% @ 95% conf.  : demo
+Recv   Send    Send                          
+Socket Socket  Message  Elapsed              
+Size   Size    Size     Time     Throughput  
+bytes  bytes   bytes    secs.    10^6bits/sec  
+
+131072  16384  16384    8.00      298.36
+
+After adding 400 xfrmi interfaces in the same namespace:
+
+$ netperf -H 10.0.0.2 -l8 -I95,10 -t TCP_STREAM
+
+MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 10.0.0.2 () port 0 AF_INET : +/-5.000% @ 95% conf.  : demo
+Recv   Send    Send                          
+Socket Socket  Message  Elapsed              
+Size   Size    Size     Time     Throughput  
+bytes  bytes   bytes    secs.    10^6bits/sec  
+
+131072  16384  16384    8.00      221.77   
+
+After this patchset there was no observed change after adding the
+xfrmi interfaces.
+
+Eyal Birger (2):
+  xfrm interface: avoid xi lookup in xfrmi_decode_session()
+  xfrm interface: store xfrmi contexts in a hash by if_id
+
+ net/xfrm/xfrm_interface.c | 52 +++++++++++++++++++++++++--------------
+ 1 file changed, 33 insertions(+), 19 deletions(-)
+
 -- 
-2.27.0
+2.25.1
 
