@@ -2,124 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8639921A2DB
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 16:57:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4677721A2FB
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 17:06:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728230AbgGIO5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 10:57:20 -0400
-Received: from mout.gmx.net ([212.227.15.19]:40047 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727092AbgGIO5R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 10:57:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1594306634;
-        bh=M5e+/eaY/5UG+2MSsrtR/fR1Rk9bVfJo5kIypTgzTBU=;
-        h=X-UI-Sender-Class:Reply-To:Subject:To:Cc:References:From:Date:
-         In-Reply-To;
-        b=ZStSHV4wjIgNbC3dD7hY9Nfx9HArUSGonZQ9gL/0Ls0NDw3n/0I/i+RxPYTet4kBK
-         C8zxUjb9AK7HqrbUMqsRu/toD2F16XWExrr6nG0GmwlAhu8zf9BEjyRo7ZfbGK8I3t
-         1xXe8f/EKz6AuMjU65Anb/Lb0Rlf8VEQoNywJXUs=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.84.20] ([149.224.144.145]) by mail.gmx.com (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N2DxE-1ktseK0dUE-013cip; Thu, 09
- Jul 2020 16:57:14 +0200
-Reply-To: vtol@gmx.net
-Subject: Re: [DSA] L2 Forwarding Offload not working
+        id S1726758AbgGIPGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 11:06:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726615AbgGIPGt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 11:06:49 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81672C08C5CE
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 08:06:49 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id f5so2761528ljj.10
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 08:06:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Sxi/o3f0P5JQ40jJX/xPS0UF1hNrlzQvkms8dM2CJOQ=;
+        b=o/x/whIBozHpGOKBxKndeSmrUkyUkt85XUjRqC2OtL/19ugAmoF2rOX+lNu9Wy4l/q
+         UcwnBzY8zFYW2Mim1N5Lzj5o+NgdJi50WPX8LLv4BjwR/NphyOXBhlAQTcPXGbRH5nhF
+         1jgl51nfwiykfoDBMNAO4Y9XRYzae9iQXgE8xl56zvBjl/E4wZE2tckSzihCqbjHRGGp
+         zaOBIFUIxxqdyBUIv83dtFJlBmvrhEDG5rmLE8Vur+wWmK77PqmpZ4NyHrAyJoMO/StR
+         8fFE9UUbZnFbZ8wmF2B+H7g+OcxTZULqYvtuzacWhNvsKmWXZvWXhxmiWooWGI6VIXY0
+         ko1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Sxi/o3f0P5JQ40jJX/xPS0UF1hNrlzQvkms8dM2CJOQ=;
+        b=ESh6tj4XYCXROgKsp0ZZMRJ1NuGnV0/NXKolmDC+s2OAqDbXQNhaeX0aS4oThH60m7
+         ziFvleS86nWCpBTRY+0s3PZ0Giu76okXHfhv8IyZR/w2hynqLwe31UT80ot31JWS54d8
+         I7S6DOxiTI06v6IgELTF2n3ucS9WkrgIjz1GoSqEeoljHp7pNOSCyA37lyMZnuWSfVJD
+         FUhWfkeSanoU41JFbtbZ98GP2lCqnKdTJgyMnO3NW5DP+ZNY9/bz1LK47FmXxxxdwaEX
+         K88I0pkAlzvHhqXiWzNkmXfe5AaPkrmkN3aKmIZO8lCl4Z4HtzZ4pNGli9YYtiR1AOe7
+         ptug==
+X-Gm-Message-State: AOAM532POU4haEWXZ27cbjEa2m0tvBgvN1vhwH19XaBaW0XxGheqHCxR
+        pssnTmJ5ETmNdaOub/VgvMWdgsRFZgw=
+X-Google-Smtp-Source: ABdhPJys+oo5Enxq/2LYELzVoqKDqM4T0xFalPERxMo228L50DFPMnwPZVbDyH5Y5ICjZ8w+bvPJLQ==
+X-Received: by 2002:a05:651c:547:: with SMTP id q7mr34936245ljp.437.1594307207553;
+        Thu, 09 Jul 2020 08:06:47 -0700 (PDT)
+Received: from dau-pc-work.sunlink.ru ([87.244.6.228])
+        by smtp.googlemail.com with ESMTPSA id x24sm895055ljh.21.2020.07.09.08.06.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jul 2020 08:06:46 -0700 (PDT)
+From:   Anton Danilov <littlesmilingcloud@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>
-References: <29a9c85b-8f5a-2b85-2c7d-9b7ca0a6cb41@gmx.net>
- <20200709135335.GL928075@lunn.ch>
- <50c35a41-45c2-1f2b-7189-96fe7c0a1740@gmx.net>
- <20200709143533.GN928075@lunn.ch>
-From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
-Message-ID: <c1030071-2c97-28ef-aaaf-44076a3b805c@gmx.net>
-Date:   Thu, 9 Jul 2020 14:57:00 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0
+Cc:     stephen@networkplumber.org,
+        Anton Danilov <littlesmilingcloud@gmail.com>
+Subject: [PATCH v2 iproute2] misc: make the pattern matching case-insensitive
+Date:   Thu,  9 Jul 2020 18:03:43 +0300
+Message-Id: <20200709150341.30892-1-littlesmilingcloud@gmail.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200708082819.155f7bb7@hermes.lan>
+References: <20200708082819.155f7bb7@hermes.lan>
 MIME-Version: 1.0
-In-Reply-To: <20200709143533.GN928075@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-GB
-X-Provags-ID: V03:K1:Salq+prUrk3/E+viVdOGCIemzFVqRllFke5g35pmJrMfvaPHkca
- GOlK8ZK9fzfStLLTOqmnKiagKrqvK3Gccmoh6HvF5ipDUFius+DUcWd57+iBFURoI1WsQHc
- fbbpDP2iKNx0y1KFiyz4iSF51u7nk8N4VlsVbiHUkV4zN3WnRHeGrQVnMwPxyQ8nrZGjCSv
- VG8pKeN9VPxe7Udw6Qhhg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:/DIBKFVrpGs=:38NN7cdIo/m/hGyHGZoHAQ
- aIrpmG6HGpkYCh5klMdJ0qSeX0oGaCZFyOJe9Z83cvex7bH2rNiOeIuB8i6BJrV1DCIHqoYt5
- /rHtZ5i6SdtXDhjSyL/hxIQ1ST87JcjuQGvLSn2GFQ9jFzTUSxX/AN+MgADGM3XBhWSyX0+B+
- fP4BYll5UsWO/Z8FimAdAwjGqM4XTDP4Naq2sjNt/f9p7GQ0EGnycquL4D7+IwuO49jTZSs5u
- 7XdxN0nIhIkv70j1hnnSpNNFIt59pKcGIPDEPl51djp+9sOaWzyh36LKiwf3IYSbGwHCWVF9i
- gKpCUSkFVkX00oiL+ktdVW+UCbScRL4UfT76FM8K8sLPQGpIJwybHI7kNiQnbu4woBNTspFAq
- WJ1vTbDOPc3dZ7ETDiYY3gwax+rTmMKYdC773xZ86wMDsm5hwOkeVPZK9+ocKOCeK8TGvaiBh
- rmxQ8CNkuFBAI3GPVuGBMirF2QZ4qJVNPVm45b7Cz5mln+9Tjsdva58klZWARTVIUSMoUMWc2
- EDXnIUADUGob7iTX3JDsifWdLpfIfhkqgGD92NgNXWUkuqEoSBTCmLLMCbIOscOS3Or6GZWnw
- PzTtEEgzC0SRbJYuOSGa6PpQF4rWZ7q4G/lHHAAe0yEPJCCNS44a9wfP7OAyuyjGKdxjiZ207
- 6DK506guKFCVSvWCgPVB/vfzF+DpcqHKScAgMqAz8JmmSGVmPbrXuMUD0sW5VP0NmxD9ycx+n
- hzRMyF+3txFiaJ9NWL98oeZi0BznvYeEQorpEdFXfZ6FCmji5QBbNKanV1TsLBwq2lPugq5/C
- 4ASHclj6GtDHzotku+VA3J3pLw0XwreuOtmuJN5eRIWVKq3LrdXqktb3BloPrQFvmh+vIYILu
- EMFI1nyaFC8N12taphayYGH3ioAPT2y8fxUEgwwlp+51z6OJh9zbv4YAw7J1vG5aze3uuXofE
- /IPBlFWvAc3feND2XCAPlWIsEBQLs1zhrVj7BR6VqTJLsH/ThoKKX/zJHf56wcCvjk17Kd9Y2
- rWmkatReXYFFWPlV//AB1r8OmipL/Rpr9fMCZ6gY24Nz0me/jn64lLSWw2HQ0+3wTnlI2eZPy
- SdLy+uNsPV5qb+dS0tV0XaF1Oeo+OeeRGjxEuTZMFMamjMOBYjSnefosB0a/4HEcuzcAR8xkH
- g2EWeoX+6fjhAbelJSaEgi3W4shVFLuToy5ODfbeoGsGTFngtvffWR1KI9/qmDiaFc8/9Lyqt
- KGvOFi65zdWxVvVhN
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/07/2020 14:35, Andrew Lunn wrote:
->> Two questions if you do not mind:
->>
->> 1) does the above apply to all stable kernel releases or only =3D> 5.4?
->> Because with 4.14 there are reports that dynamic addresses of clients
->> roaming from a switch port to an bridge port (upstream of the switch,
->> e.g. WLan AP provided by the router) facing time outs until the switch
->> retires (ages) the client's MAC.
-> DSA has always worked like this.
->
-> It does however very from switch to switch. When adding a new switch,
-> the first version of the driver sometimes does not support offloading.
-> All frames are forwarded to the software bridge, and the software
-> bridge does all the work. Then the driver gets extended, to support
-> the hardware doing the work. And the driver gets extended again to
-> allow static FDB entries to be passed to the hardware. DSA drivers are
-> not 'big bang'. It is not all or nothing. They gain features with
-> time. So you need to look at the driver in your specific version of
-> the kernel to see what it supports. And you might need to be careful
-> with the OpenWRT kernel, see if they have backported features.
->
->> 2) The document
->> https://www.kernel.org/doc/Documentation/networking/switchdev.txt cites
->> (for static entries)
->>
->> bridge command will label these entries "offload"
->>
->> Is that still up-to-date or rather outdated from the earlier days of DS=
-A?
-> It should be true. But you need a reasonably recent iproute2 for this
-> to be shown.
->
->     Andrew
+To improve the usability better use case-insensitive pattern-matching
+in ifstat, nstat and ss tools.
 
-The distro backported bridge from 5.7 (ip-bridge 5.7.0-1)
+Signed-off-by: Anton Danilov <littlesmilingcloud@gmail.com>
+---
+ man/man8/rtacct.8 | 7 +++++++
+ misc/ifstat.c     | 2 +-
+ misc/nstat.c      | 2 +-
+ misc/ss.c         | 2 +-
+ 4 files changed, 10 insertions(+), 3 deletions(-)
 
-but the offload label does not show, which I would reckon does make
-sense anyway for the DSA ports (or should it anyway?) but then attempted
-to add a MAC to a WLan port (mPCIe to CPUl), e.g.
+diff --git a/man/man8/rtacct.8 b/man/man8/rtacct.8
+index ccdbf6ca..988a6d1b 100644
+--- a/man/man8/rtacct.8
++++ b/man/man8/rtacct.8
+@@ -14,6 +14,13 @@ and
+ .B rtacct
+ are simple tools to monitor kernel snmp counters and network interface statistics.
+ 
++.B nstat
++can filter kernel snmp counters by name with one or several specified wildcards. Wildcards are case-insensitive and can include special symbols
++.B ?
++and
++.B *
++.
++
+ .SH OPTIONS
+ .B \-h, \-\-help
+ Print help
+diff --git a/misc/ifstat.c b/misc/ifstat.c
+index 60efe6cb..03327af8 100644
+--- a/misc/ifstat.c
++++ b/misc/ifstat.c
+@@ -104,7 +104,7 @@ static int match(const char *id)
+ 		return 1;
+ 
+ 	for (i = 0; i < npatterns; i++) {
+-		if (!fnmatch(patterns[i], id, 0))
++		if (!fnmatch(patterns[i], id, FNM_CASEFOLD))
+ 			return 1;
+ 	}
+ 	return 0;
+diff --git a/misc/nstat.c b/misc/nstat.c
+index 425e75ef..88f52eaf 100644
+--- a/misc/nstat.c
++++ b/misc/nstat.c
+@@ -114,7 +114,7 @@ static int match(const char *id)
+ 		return 1;
+ 
+ 	for (i = 0; i < npatterns; i++) {
+-		if (!fnmatch(patterns[i], id, 0))
++		if (!fnmatch(patterns[i], id, FNM_CASEFOLD))
+ 			return 1;
+ 	}
+ 	return 0;
+diff --git a/misc/ss.c b/misc/ss.c
+index f3d01812..5aa10e4a 100644
+--- a/misc/ss.c
++++ b/misc/ss.c
+@@ -1670,7 +1670,7 @@ static int unix_match(const inet_prefix *a, const inet_prefix *p)
+ 		return 1;
+ 	if (addr == NULL)
+ 		addr = "";
+-	return !fnmatch(pattern, addr, 0);
++	return !fnmatch(pattern, addr, FNM_CASEFOLD);
+ }
+ 
+ static int run_ssfilter(struct ssfilter *f, struct sockstat *s)
+-- 
+2.26.2
 
-bridge fdb add MAC dev WLan_5G vlan 1 self
-
-which printed
-
-RTNETLINK answers: Invalid argument
-
-and
-
-bridge fdb add MAC dev WLan_5G self
-
-which worked but does not show the offload label either, instead when
-queried with bridge fdb exhibiting:
-
-MAC dev WLan_5G self permanent
