@@ -2,504 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4D121A446
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 18:02:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FE7321A454
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 18:05:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727853AbgGIQCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 12:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726357AbgGIQCB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 12:02:01 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB0CC08C5CE
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 09:02:00 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id x72so1203560pfc.6
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 09:02:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=A3AXTMg73kST+LZKukzm4AzOe3bxg4QFgJT8PoB1cZ8=;
-        b=hGsVjhG0V4FiT+Nv008ZFYuAkdSsigaDtNZvx0vc/SUDGzE55M3atOJaJjmHxR8HEL
-         QkmksAe1cIu/0ECit6b88IMfLAWr3irs8mI2L0vTZAZNjzl3UDBEowyImNlEGfyB1tHT
-         iaM2gYlgOqJU7ysRyEU0fAnRz4emTSbOs2bKgCECX+nlocFs3gfjGojgw9nMGA5ULtGc
-         45+BvS/949lRz61B7LimJ2Q7NCwLoECZ6q0IdIL2+Q1ezY+J5z+NmbXjifB+vsbDoqxH
-         AGFNQYs9DacuQBTVUUWZSlvRzpYNILCY89ZAyTlyK+qntHJIpWEogWkrpAVCNiQk9cci
-         uNwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=A3AXTMg73kST+LZKukzm4AzOe3bxg4QFgJT8PoB1cZ8=;
-        b=AGPfY2ApRW03mFaf6zNHDZ27szAoCyCifyF6tYMRbdomMCX92UvNZRkhgegZXIkWIV
-         XSwguihT0MRibDlwsqJVd8Ya3PTGnSdhZ+ZsnvTKmjKS9YFhVMTdM47LvkN83Kohmn37
-         hSUOyIKqx5Bi0eBoRUg8kYcNRVm4oGU4APunSm0upomV4GY0MBfCCDWWLwxx4htM0Rl2
-         /8XFTOcPhRvjdX7sD+fMJD0YTPNQfECz590Gqnn0ZN3vBm5/mKB06H5Z1aJeg37uG1KA
-         X6nXLFJ8sTnsIWj99RSv/bkY7IiU2QJWXi4KHCf5sYqHbYOTiYGzmMnPEeP2EuF2GoUV
-         bAHg==
-X-Gm-Message-State: AOAM530SrbtdSXjBm4dEn+u/Ze/+73wD5Fv62Dc0ZwtvKEm7veXqoM89
-        eVf23a9ycBSfhb2vZeChrNk=
-X-Google-Smtp-Source: ABdhPJz/B2qniydyBN/zSOaYrzQ8jnuaBwmDanAFnN07Uu2In3gKKjdoMSrtJPXmZqV0YEk55V/MMA==
-X-Received: by 2002:a05:6a00:15c8:: with SMTP id o8mr60577055pfu.286.1594310520331;
-        Thu, 09 Jul 2020 09:02:00 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id k2sm3322292pgm.11.2020.07.09.09.01.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2020 09:01:59 -0700 (PDT)
-Date:   Thu, 9 Jul 2020 09:01:56 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     sundeep.lkml@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sgoutham@marvell.com, sbhatta@marvell.com,
-        Aleksey Makarov <amakarov@marvell.com>
-Subject: Re: [PATCH v3 net-next 3/3] octeontx2-pf: Add support for PTP clock
-Message-ID: <20200709160156.GC7904@hoboy>
-References: <1594301221-3731-1-git-send-email-sundeep.lkml@gmail.com>
- <1594301221-3731-4-git-send-email-sundeep.lkml@gmail.com>
+        id S1727983AbgGIQFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 12:05:31 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:49454 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726357AbgGIQFa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 12:05:30 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 069FpnaO160519;
+        Thu, 9 Jul 2020 16:04:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : mime-version :
+ content-type; s=corp-2020-01-29;
+ bh=Iaxp8WVU9LYuQViXmfxKLlsL1ZcMCICKq4clfeVvLdI=;
+ b=wjcjVJysydjM0e+dD3PbW+CL84+4mYqCPzUGYmwDhtcm8Y+4h5kP7QksnI8PsblfZGj6
+ b161l4lUWtJGLDD8CfZKSMgUQYwtPoB7B9YrnZRIYFTosL7/cO/S/oYDHaI24EVgBLbV
+ uEVmLqZ6yK+4vIWxUN/qyFp6Ie6/mCQMcetWRIqL+iPCuJfcJ+0KjKufHkYFfbZJJRWV
+ qTYxbV/utsJu958isB2UEGE8hLiIdRfofK+DaWLrIcCkN6sUyCj4sWlyfqwMeWQScuEF
+ LqjFwPEB6tlclKknEO5VkwxAi3BJK3PYXXm0iH8enKjclAxZ8dINektHtkYlBH+RxpZw YQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 325y0ajqxv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 09 Jul 2020 16:04:23 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 069FnGUO132786;
+        Thu, 9 Jul 2020 16:04:22 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 325k3h9c1c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 09 Jul 2020 16:04:22 +0000
+Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 069G4Lg7001625;
+        Thu, 9 Jul 2020 16:04:21 GMT
+Received: from dhcp-10-175-207-152.vpn.oracle.com (/10.175.207.152)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 09 Jul 2020 09:04:21 -0700
+Date:   Thu, 9 Jul 2020 17:04:13 +0100 (IST)
+From:   Alan Maguire <alan.maguire@oracle.com>
+X-X-Sender: alan@localhost
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+cc:     Alan Maguire <alan.maguire@oracle.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/2] bpf: use dedicated bpf_trace_printk event
+ instead of trace_printk()
+In-Reply-To: <CAEf4BzaGWZGYQf6C0GT3mwhjh8PSVLwgoFiHtpx6zaTny3B_gw@mail.gmail.com>
+Message-ID: <alpine.LRH.2.21.2007091656240.16404@localhost>
+References: <1593787468-29931-1-git-send-email-alan.maguire@oracle.com> <1593787468-29931-2-git-send-email-alan.maguire@oracle.com> <CAEf4BzaGWZGYQf6C0GT3mwhjh8PSVLwgoFiHtpx6zaTny3B_gw@mail.gmail.com>
+User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1594301221-3731-4-git-send-email-sundeep.lkml@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9677 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ phishscore=0 adultscore=0 suspectscore=0 malwarescore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007090115
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9677 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 clxscore=1015
+ lowpriorityscore=0 impostorscore=0 malwarescore=0 bulkscore=0 phishscore=0
+ adultscore=0 suspectscore=0 mlxlogscore=999 priorityscore=1501 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007090115
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 09, 2020 at 06:57:01PM +0530, sundeep.lkml@gmail.com wrote:
 
-> @@ -1736,6 +1751,143 @@ static void otx2_reset_task(struct work_struct *work)
->  	netif_trans_update(pf->netdev);
->  }
->  
-> +static int otx2_config_hw_rx_tstamp(struct otx2_nic *pfvf, bool enable)
-> +{
-> +	struct msg_req *req;
-> +	int err;
-> +
-> +	if (pfvf->flags & OTX2_FLAG_RX_TSTAMP_ENABLED && enable)
-> +		return 0;
+On Tue, 7 Jul 2020, Andrii Nakryiko wrote:
 
-It appears that nothing protects pfvf->flags from concurrent access.
-Please double check and correct if needed.
+> On Fri, Jul 3, 2020 at 7:47 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+> >
+> > The bpf helper bpf_trace_printk() uses trace_printk() under the hood.
+> > This leads to an alarming warning message originating from trace
+> > buffer allocation which occurs the first time a program using
+> > bpf_trace_printk() is loaded.
+> >
+> > We can instead create a trace event for bpf_trace_printk() and enable
+> > it in-kernel when/if we encounter a program using the
+> > bpf_trace_printk() helper.  With this approach, trace_printk()
+> > is not used directly and no warning message appears.
+> >
+> > This work was started by Steven (see Link) and finished by Alan; added
+> > Steven's Signed-off-by with his permission.
+> >
+> > Link: https://lore.kernel.org/r/20200628194334.6238b933@oasis.local.home
+> > Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+> > Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+> > ---
+> >  kernel/trace/Makefile    |  2 ++
+> >  kernel/trace/bpf_trace.c | 41 +++++++++++++++++++++++++++++++++++++----
+> >  kernel/trace/bpf_trace.h | 34 ++++++++++++++++++++++++++++++++++
+> >  3 files changed, 73 insertions(+), 4 deletions(-)
+> >  create mode 100644 kernel/trace/bpf_trace.h
+> >
+> 
+> [...]
+> 
+> > +static DEFINE_SPINLOCK(trace_printk_lock);
+> > +
+> > +#define BPF_TRACE_PRINTK_SIZE   1024
+> > +
+> > +static inline int bpf_do_trace_printk(const char *fmt, ...)
+> > +{
+> > +       static char buf[BPF_TRACE_PRINTK_SIZE];
+> > +       unsigned long flags;
+> > +       va_list ap;
+> > +       int ret;
+> > +
+> > +       spin_lock_irqsave(&trace_printk_lock, flags);
+> > +       va_start(ap, fmt);
+> > +       ret = vsnprintf(buf, BPF_TRACE_PRINTK_SIZE, fmt, ap);
+> > +       va_end(ap);
+> > +       if (ret > 0)
+> > +               trace_bpf_trace_printk(buf);
+> 
+> Is there any reason to artificially limit the case of printing empty
+> string? It's kind of an awkward use case, for sure, but having
+> guarantee that every bpf_trace_printk() invocation triggers tracepoint
+> is a nice property, no?
+>
 
-> +	mutex_lock(&pfvf->mbox.lock);
-> +	if (enable)
-> +		req = otx2_mbox_alloc_msg_cgx_ptp_rx_enable(&pfvf->mbox);
-> +	else
-> +		req = otx2_mbox_alloc_msg_cgx_ptp_rx_disable(&pfvf->mbox);
-> +	if (!req) {
-> +		mutex_unlock(&pfvf->mbox.lock);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	err = otx2_sync_mbox_msg(&pfvf->mbox);
-> +	if (err) {
-> +		mutex_unlock(&pfvf->mbox.lock);
-> +		return err;
-> +	}
-> +
-> +	mutex_unlock(&pfvf->mbox.lock);
-> +	if (enable)
-> +		pfvf->flags |= OTX2_FLAG_RX_TSTAMP_ENABLED;
-> +	else
-> +		pfvf->flags &= ~OTX2_FLAG_RX_TSTAMP_ENABLED;
-> +	return 0;
-> +}
-> +
-> +static int otx2_config_hw_tx_tstamp(struct otx2_nic *pfvf, bool enable)
-> +{
-> +	struct msg_req *req;
-> +	int err;
-> +
-> +	if (pfvf->flags & OTX2_FLAG_TX_TSTAMP_ENABLED && enable)
-> +		return 0;
+True enough; I'll modify the above to support empty string display also.
+ 
+> > +       spin_unlock_irqrestore(&trace_printk_lock, flags);
+> > +
+> > +       return ret;
+> > +}
+> > +
+> >  /*
+> >   * Only limited trace_printk() conversion specifiers allowed:
+> >   * %d %i %u %x %ld %li %lu %lx %lld %lli %llu %llx %p %pB %pks %pus %s
+> > @@ -483,8 +510,7 @@ static void bpf_trace_copy_string(char *buf, void *unsafe_ptr, char fmt_ptype,
+> >   */
+> >  #define __BPF_TP_EMIT()        __BPF_ARG3_TP()
+> >  #define __BPF_TP(...)                                                  \
+> > -       __trace_printk(0 /* Fake ip */,                                 \
+> > -                      fmt, ##__VA_ARGS__)
+> > +       bpf_do_trace_printk(fmt, ##__VA_ARGS__)
+> >
+> >  #define __BPF_ARG1_TP(...)                                             \
+> >         ((mod[0] == 2 || (mod[0] == 1 && __BITS_PER_LONG == 64))        \
+> > @@ -518,13 +544,20 @@ static void bpf_trace_copy_string(char *buf, void *unsafe_ptr, char fmt_ptype,
+> >         .arg2_type      = ARG_CONST_SIZE,
+> >  };
+> >
+> > +int bpf_trace_printk_enabled;
+> 
+> static?
+> 
 
-Again, please check concurrency here.
+oops, will fix.
 
-> +
-> +	mutex_lock(&pfvf->mbox.lock);
-> +	if (enable)
-> +		req = otx2_mbox_alloc_msg_nix_lf_ptp_tx_enable(&pfvf->mbox);
-> +	else
-> +		req = otx2_mbox_alloc_msg_nix_lf_ptp_tx_disable(&pfvf->mbox);
-> +	if (!req) {
-> +		mutex_unlock(&pfvf->mbox.lock);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	err = otx2_sync_mbox_msg(&pfvf->mbox);
-> +	if (err) {
-> +		mutex_unlock(&pfvf->mbox.lock);
-> +		return err;
-> +	}
-> +
-> +	mutex_unlock(&pfvf->mbox.lock);
-> +	if (enable)
-> +		pfvf->flags |= OTX2_FLAG_TX_TSTAMP_ENABLED;
-> +	else
-> +		pfvf->flags &= ~OTX2_FLAG_TX_TSTAMP_ENABLED;
-> +	return 0;
-> +}
-> +
-> +static int otx2_config_hwtstamp(struct net_device *netdev, struct ifreq *ifr)
-> +{
-> +	struct otx2_nic *pfvf = netdev_priv(netdev);
-> +	struct hwtstamp_config config;
-> +
-> +	if (!pfvf->ptp)
-> +		return -ENODEV;
-> +
-> +	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
-> +		return -EFAULT;
-> +
-> +	/* reserved for future extensions */
-> +	if (config.flags)
-> +		return -EINVAL;
-> +
-> +	switch (config.tx_type) {
-> +	case HWTSTAMP_TX_OFF:
-> +		otx2_config_hw_tx_tstamp(pfvf, false);
-> +		break;
-> +	case HWTSTAMP_TX_ON:
-> +		otx2_config_hw_tx_tstamp(pfvf, true);
-> +		break;
-> +	default:
-> +		return -ERANGE;
-> +	}
-> +
-> +	switch (config.rx_filter) {
-> +	case HWTSTAMP_FILTER_NONE:
-> +		otx2_config_hw_rx_tstamp(pfvf, false);
-> +		break;
-> +	case HWTSTAMP_FILTER_ALL:
-> +	case HWTSTAMP_FILTER_SOME:
-> +	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
-> +	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
-> +	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
-> +	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-> +	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-> +	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-> +	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-> +	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-> +	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-> +	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-> +	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-> +	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-> +		otx2_config_hw_rx_tstamp(pfvf, true);
-> +		config.rx_filter = HWTSTAMP_FILTER_ALL;
-> +		break;
-> +	default:
-> +		return -ERANGE;
-> +	}
-> +
-> +	memcpy(&pfvf->tstamp, &config, sizeof(config));
-> +
-> +	return copy_to_user(ifr->ifr_data, &config,
-> +			    sizeof(config)) ? -EFAULT : 0;
-> +}
-> +
-> +static int otx2_ioctl(struct net_device *netdev, struct ifreq *req, int cmd)
-> +{
-> +	struct otx2_nic *pfvf = netdev_priv(netdev);
-> +	struct hwtstamp_config *cfg = &pfvf->tstamp;
-> +
+> > +
+> >  const struct bpf_func_proto *bpf_get_trace_printk_proto(void)
+> >  {
+> >         /*
+> >          * this program might be calling bpf_trace_printk,
+> > -        * so allocate per-cpu printk buffers
+> > +        * so enable the associated bpf_trace/bpf_trace_printk event.
+> >          */
+> > -       trace_printk_init_buffers();
+> > +       if (!bpf_trace_printk_enabled) {
+> > +               if (trace_set_clr_event("bpf_trace", "bpf_trace_printk", 1))
+> 
+> just to double check, it's ok to simultaneously enable same event in
+> parallel, right?
+>
 
-Need to test phy_has_hwtstamp() here and pass ioctl to PHY if true.
+From an ftrace perspective, it looks fine since the actual enable is 
+mutex-protected. We could grab the trace_printk_lock here too I guess,
+but I don't _think_ there's a need. 
+ 
+Thanks for reviewing! I'll spin up a v2 with the above fixes shortly
+plus I'll change to using tp/raw_syscalls/sys_enter in the test as you 
+suggested.
 
-> +	switch (cmd) {
-> +	case SIOCSHWTSTAMP:
-> +		return otx2_config_hwtstamp(netdev, req);
-> +	case SIOCGHWTSTAMP:
-> +		return copy_to_user(req->ifr_data, cfg,
-> +				    sizeof(*cfg)) ? -EFAULT : 0;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +}
-> +
->  static const struct net_device_ops otx2_netdev_ops = {
->  	.ndo_open		= otx2_open,
->  	.ndo_stop		= otx2_stop,
-
-
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c
-> new file mode 100644
-> index 0000000..28058bd
-> --- /dev/null
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c
-> @@ -0,0 +1,208 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Marvell OcteonTx2 PTP support for ethernet driver */
-> +
-> +#include "otx2_common.h"
-> +#include "otx2_ptp.h"
-> +
-> +static int otx2_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
-> +{
-> +	struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
-> +					    ptp_info);
-> +	struct ptp_req *req;
-> +	int err;
-> +
-> +	if (!ptp->nic)
-> +		return -ENODEV;
-> +
-> +	req = otx2_mbox_alloc_msg_ptp_op(&ptp->nic->mbox);
-> +	if (!req)
-> +		return -ENOMEM;
-> +
-> +	req->op = PTP_OP_ADJFINE;
-> +	req->scaled_ppm = scaled_ppm;
-> +
-> +	err = otx2_sync_mbox_msg(&ptp->nic->mbox);
-> +	if (err)
-> +		return err;
-> +
-> +	return 0;
-> +}
-> +
-> +static u64 ptp_cc_read(const struct cyclecounter *cc)
-> +{
-> +	struct otx2_ptp *ptp = container_of(cc, struct otx2_ptp, cycle_counter);
-> +	struct ptp_req *req;
-> +	struct ptp_rsp *rsp;
-> +	int err;
-> +
-> +	if (!ptp->nic)
-> +		return 0;
-> +
-> +	req = otx2_mbox_alloc_msg_ptp_op(&ptp->nic->mbox);
-> +	if (!req)
-> +		return 0;
-> +
-> +	req->op = PTP_OP_GET_CLOCK;
-> +
-> +	err = otx2_sync_mbox_msg(&ptp->nic->mbox);
-> +	if (err)
-> +		return 0;
-> +
-> +	rsp = (struct ptp_rsp *)otx2_mbox_get_rsp(&ptp->nic->mbox.mbox, 0,
-> +						  &req->hdr);
-> +	if (IS_ERR(rsp))
-> +		return 0;
-> +
-> +	return rsp->clk;
-> +}
-> +
-> +static int otx2_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
-> +{
-> +	struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
-> +					    ptp_info);
-> +	struct otx2_nic *pfvf = ptp->nic;
-> +
-> +	mutex_lock(&pfvf->mbox.lock);
-> +	timecounter_adjtime(&ptp->time_counter, delta);
-> +	mutex_unlock(&pfvf->mbox.lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static int otx2_ptp_gettime(struct ptp_clock_info *ptp_info,
-> +			    struct timespec64 *ts)
-> +{
-> +	struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
-> +					    ptp_info);
-> +	struct otx2_nic *pfvf = ptp->nic;
-> +	u64 nsec;
-> +
-> +	mutex_lock(&pfvf->mbox.lock);
-> +	nsec = timecounter_read(&ptp->time_counter);
-> +	mutex_unlock(&pfvf->mbox.lock);
-> +
-> +	*ts = ns_to_timespec64(nsec);
-> +
-> +	return 0;
-> +}
-> +
-> +static int otx2_ptp_settime(struct ptp_clock_info *ptp_info,
-> +			    const struct timespec64 *ts)
-> +{
-> +	struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
-> +					    ptp_info);
-> +	struct otx2_nic *pfvf = ptp->nic;
-> +	u64 nsec;
-> +
-> +	nsec = timespec64_to_ns(ts);
-> +
-> +	mutex_lock(&pfvf->mbox.lock);
-> +	timecounter_init(&ptp->time_counter, &ptp->cycle_counter, nsec);
-> +	mutex_unlock(&pfvf->mbox.lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static int otx2_ptp_enable(struct ptp_clock_info *ptp_info,
-> +			   struct ptp_clock_request *rq, int on)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +int otx2_ptp_init(struct otx2_nic *pfvf)
-> +{
-> +	struct otx2_ptp *ptp_ptr;
-> +	struct cyclecounter *cc;
-> +	struct ptp_req *req;
-> +	int err;
-> +
-> +	mutex_lock(&pfvf->mbox.lock);
-> +	/* check if PTP block is available */
-> +	req = otx2_mbox_alloc_msg_ptp_op(&pfvf->mbox);
-> +	if (!req) {
-> +		mutex_unlock(&pfvf->mbox.lock);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	req->op = PTP_OP_GET_CLOCK;
-> +
-> +	err = otx2_sync_mbox_msg(&pfvf->mbox);
-> +	if (err) {
-> +		mutex_unlock(&pfvf->mbox.lock);
-> +		return err;
-> +	}
-> +	mutex_unlock(&pfvf->mbox.lock);
-> +
-> +	ptp_ptr = kzalloc(sizeof(*ptp_ptr), GFP_KERNEL);
-> +	if (!ptp_ptr) {
-> +		err = -ENOMEM;
-> +		goto error;
-> +	}
-> +
-> +	ptp_ptr->nic = pfvf;
-> +
-> +	cc = &ptp_ptr->cycle_counter;
-> +	cc->read = ptp_cc_read;
-> +	cc->mask = CYCLECOUNTER_MASK(64);
-> +	cc->mult = 1;
-> +	cc->shift = 0;
-> +
-> +	timecounter_init(&ptp_ptr->time_counter, &ptp_ptr->cycle_counter,
-> +			 ktime_to_ns(ktime_get_real()));
-> +
-> +	ptp_ptr->ptp_info = (struct ptp_clock_info) {
-> +		.owner          = THIS_MODULE,
-> +		.name           = "OcteonTX2 PTP",
-> +		.max_adj        = 1000000000ull,
-> +		.n_ext_ts       = 0,
-> +		.n_pins         = 0,
-> +		.pps            = 0,
-> +		.adjfine        = otx2_ptp_adjfine,
-> +		.adjtime        = otx2_ptp_adjtime,
-> +		.gettime64      = otx2_ptp_gettime,
-> +		.settime64      = otx2_ptp_settime,
-> +		.enable         = otx2_ptp_enable,
-> +	};
-> +
-> +	ptp_ptr->ptp_clock = ptp_clock_register(&ptp_ptr->ptp_info, pfvf->dev);
-> +	if (IS_ERR(ptp_ptr->ptp_clock)) {
-> +		err = PTR_ERR(ptp_ptr->ptp_clock);
-> +		kfree(ptp_ptr);
-> +		goto error;
-> +	}
-
-You need to handle NULL here.
-
- * ptp_clock_register() - register a PTP hardware clock driver
- *
- * @info:   Structure describing the new clock.
- * @parent: Pointer to the parent device of the new clock.
- *
- * Returns a valid pointer on success or PTR_ERR on failure.  If PHC
- * support is missing at the configuration level, this function
- * returns NULL, and drivers are expected to gracefully handle that
- * case separately.
-
-> +
-> +	pfvf->ptp = ptp_ptr;
-> +
-> +error:
-> +	return err;
-> +}
-> +
-> +void otx2_ptp_destroy(struct otx2_nic *pfvf)
-> +{
-> +	struct otx2_ptp *ptp = pfvf->ptp;
-> +
-> +	if (!ptp)
-> +		return;
-> +
-> +	ptp_clock_unregister(ptp->ptp_clock);
-> +	kfree(ptp);
-> +	pfvf->ptp = NULL;
-> +}
-> +
-> +int otx2_ptp_clock_index(struct otx2_nic *pfvf)
-> +{
-> +	if (!pfvf->ptp)
-> +		return -ENODEV;
-> +
-> +	return ptp_clock_index(pfvf->ptp->ptp_clock);
-> +}
-> +
-> +int otx2_ptp_tstamp2time(struct otx2_nic *pfvf, u64 tstamp, u64 *tsns)
-> +{
-> +	if (!pfvf->ptp)
-> +		return -ENODEV;
-> +
-> +	*tsns = timecounter_cyc2time(&pfvf->ptp->time_counter, tstamp);
-> +
-> +	return 0;
-> +}
-
-
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-> index 3a5b34a..1f90426 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-> @@ -16,6 +16,7 @@
->  #include "otx2_common.h"
->  #include "otx2_struct.h"
->  #include "otx2_txrx.h"
-> +#include "otx2_ptp.h"
->  
->  #define CQE_ADDR(CQ, idx) ((CQ)->cqe_base + ((CQ)->cqe_size * (idx)))
->  
-> @@ -81,8 +82,11 @@ static void otx2_snd_pkt_handler(struct otx2_nic *pfvf,
->  				 int budget, int *tx_pkts, int *tx_bytes)
->  {
->  	struct nix_send_comp_s *snd_comp = &cqe->comp;
-> +	struct skb_shared_hwtstamps ts;
->  	struct sk_buff *skb = NULL;
-> +	u64 timestamp, tsns;
->  	struct sg_list *sg;
-> +	int err;
->  
->  	if (unlikely(snd_comp->status) && netif_msg_tx_err(pfvf))
->  		net_err_ratelimited("%s: TX%d: Error in send CQ status:%x\n",
-> @@ -94,6 +98,18 @@ static void otx2_snd_pkt_handler(struct otx2_nic *pfvf,
->  	if (unlikely(!skb))
->  		return;
->  
-> +	if (skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS) {
-
-SKBTX_IN_PROGRESS may be set by the PHY, so you need to test whether
-time stamping is enabled in your MAC driver as well.
-
-> +		timestamp = ((u64 *)sq->timestamps->base)[snd_comp->sqe_id];
-> +		if (timestamp != 1) {
-> +			err = otx2_ptp_tstamp2time(pfvf, timestamp, &tsns);
-> +			if (!err) {
-> +				memset(&ts, 0, sizeof(ts));
-> +				ts.hwtstamp = ns_to_ktime(tsns);
-> +				skb_tstamp_tx(skb, &ts);
-> +			}
-> +		}
-> +	}
-> +
->  	*tx_bytes += skb->len;
->  	(*tx_pkts)++;
->  	otx2_dma_unmap_skb_frags(pfvf, sg);
-
-Thanks,
-Richard
+Alan
