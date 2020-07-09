@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 896FE2198AD
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 08:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 082842198AE
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 08:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726363AbgGIGaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 02:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
+        id S1726365AbgGIGaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 02:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726006AbgGIGaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 02:30:14 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC41C061A0B
-        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 23:30:13 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id o8so619635wmh.4
-        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 23:30:13 -0700 (PDT)
+        with ESMTP id S1726374AbgGIGaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 02:30:17 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0C3C061A0B
+        for <netdev@vger.kernel.org>; Wed,  8 Jul 2020 23:30:17 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id a6so5497959wmm.0
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 23:30:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GGkkfPBgCYDEMdWX01WzA5f8FzKOhiCh33CsoasxCEE=;
-        b=jyvIfq0ozNkLFSgxvzaQJ4ndL4FKG01uA9cukN5w5abnZY0Bd1jc1bShoF/y6u2OIO
-         tcZX3Vo/u+cjMq04yi0PPxbiFEKXHOQWpzXwVC48McDqmFYeeXZEn41UPR01JylKYmFF
-         NYDuAMeekfqu5KwSDGei3QUyMR3HGb8DcXVS3rmSOynEuHE7wdGP76H9QoLfZmEKbf9A
-         6scRdddp5wzs2MDp+TP5eUOd4LCCP/IJOKaH5SUYwPTdZbIvxf7EO7jXtUaASdasKJam
-         Ihg8PHdnntVIIoYl2xDd/dyjBpmmK6614Y4PDJ2b2rEyGKKML2nwYs3jU84YpS6fqgl8
-         w2Kw==
+        bh=ww/enzP452BGCBC/bQOZJWzgEyqmgDQ14Qk4+WNZW3U=;
+        b=nAhl6JYpOclqHzUyh+5RrEfXV1yYu5DeoClCSWtgMG/Ly9lCd6Ot9Kn2aAwQg6REIL
+         U0LA3YGxpX0slEjRWr6fK7scr28dLxsY4OZZZzzqWODyLLZGUvMW6xb1v43BxuXSuyPu
+         mBFGXLKV6tU7pTKOhmCPaJgit/FS5qr5LjuBc23HvV8jnKIATgNp5TOSkU7rpAQUgH0n
+         iIiJDDJ4svHDTUtz+muZ5egWBgDH1GVYcptuFg40rTdzi2QalzkCp8fJMlsiHvqsj61g
+         E14J2tLfsXXANzXszjrrEX5+XKk83NDOxtN5pN6X4R8EdDb7PSgvflnQvPNujK6aPGhl
+         5yvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GGkkfPBgCYDEMdWX01WzA5f8FzKOhiCh33CsoasxCEE=;
-        b=CIVS+BL44C+tzDLbUjmrjwexEBOXCw7B+bqzTiQjks3+b1AQdgNJ4WRo6o514MHka6
-         4o+kiKiZd8DDaio0NOJ3QiHdeuaZmaSYYVS5ZG+b/3eAV1xuAfjm2w1Zg0et2kXy46tN
-         72vPr3dzVa1wIQOeXlDSI6OkJBUS6oRIPr4J127H6Q7RWntwdrWaAet5kWbL50e2UwI7
-         5rQ3WKvDWbTnB5+9Uc4zE5AkVthP1EcTRyXxSKSzunN+aRy0yy/cra+Urop/S+MC221L
-         94dT2og6TGlIf/jAAgZW72HwOKq8DxZP8hmWuuwoD9OQ6yXzlmrOpq87G6MsD+iz3wfB
-         cPrg==
-X-Gm-Message-State: AOAM531QcrJs3ZAPF3osYe2npV7+IGcPQFue0+PHaQBQjP1sx9hy9OVa
-        ONXE5QlDCdDXRKipza33Ad4=
-X-Google-Smtp-Source: ABdhPJyKrgCv4BKXlmYhqEUEjB5eQRZQI4Ua5enFBVqZSRvKN6GW4N6Vkprd/idJTlk2WUd8RQLmGQ==
-X-Received: by 2002:a1c:4c16:: with SMTP id z22mr12388101wmf.103.1594276212563;
-        Wed, 08 Jul 2020 23:30:12 -0700 (PDT)
+        bh=ww/enzP452BGCBC/bQOZJWzgEyqmgDQ14Qk4+WNZW3U=;
+        b=PlbWycZMxyDHYfbYc+kLNqEvtpxD5S0+GazlPIn/yLC4exZneJ1Kzcwf7IiofJ8iIU
+         LjCf4N6ncy1QqWcjgGqBRrovrFdSHaXSKXfOb1giWvUlg52E9ExYygljVinh5uPW8XUF
+         pQ9MucpDRmtP8JMKZ2GYMt2VF2Zs4gpoX7uQsUV8TgxIGI6rHl1dTywrClZ6/uiXEup0
+         WCMS9p209ZHDztVxHI67ckiqFjXhfvmUCBq1qIZWrERUm4xX8kH4mRaMkCqggwHor3uL
+         wl81jCtwkG8OuFeMAX2PWeLU8vGr4jvzGlTIqAsu8YUVBk20PRSEbDyI+IMh6nxijWVW
+         3t5A==
+X-Gm-Message-State: AOAM530tWC24V6Ntd5QzuOk2ZM3zP0nJ0+JVNXLoxix6PMC2lhJmbZp5
+        BSHs35b50KOwZFY7VkeMglZ+GMOfFWo=
+X-Google-Smtp-Source: ABdhPJzcHPLwVscIKMTW74nMzVYIHPWf11bHzZCuPH3WHzMSkWmblPOGs+TWLMLibQyFlg5YCU7poQ==
+X-Received: by 2002:a7b:c8c8:: with SMTP id f8mr13088519wml.142.1594276215892;
+        Wed, 08 Jul 2020 23:30:15 -0700 (PDT)
 Received: from localhost.localdomain ([77.139.6.232])
-        by smtp.gmail.com with ESMTPSA id l8sm3777854wrq.15.2020.07.08.23.30.10
+        by smtp.gmail.com with ESMTPSA id l8sm3777854wrq.15.2020.07.08.23.30.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jul 2020 23:30:11 -0700 (PDT)
+        Wed, 08 Jul 2020 23:30:15 -0700 (PDT)
 From:   Eyal Birger <eyal.birger@gmail.com>
 To:     stephen@networkplumber.org, netdev@vger.kernel.org
 Cc:     Eyal Birger <eyal.birger@gmail.com>
-Subject: [PATCH iproute2,v2 1/2] ip xfrm: update man page on setting/printing XFRMA_IF_ID in states/policies
-Date:   Thu,  9 Jul 2020 09:29:47 +0300
-Message-Id: <20200709062948.1762006-2-eyal.birger@gmail.com>
+Subject: [PATCH iproute2,v2 2/2] ip xfrm: policy: support policies with IF_ID in get/delete/deleteall
+Date:   Thu,  9 Jul 2020 09:29:48 +0300
+Message-Id: <20200709062948.1762006-3-eyal.birger@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200709062948.1762006-1-eyal.birger@gmail.com>
 References: <20200709062948.1762006-1-eyal.birger@gmail.com>
@@ -63,49 +63,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit aed63ae1acb9 ("ip xfrm: support setting/printing XFRMA_IF_ID attribute in states/policies")
-I added the ability to set/print the xfrm interface ID without updating
-the man page.
+The XFRMA_IF_ID attribute is set in policies for them to be
+associated with an XFRM interface (4.19+).
 
-Fixes: aed63ae1acb9 ("ip xfrm: support setting/printing XFRMA_IF_ID attribute in states/policies")
+Add support for getting/deleting policies with this attribute.
+
+For supporting 'deleteall' the XFRMA_IF_ID attribute needs to be
+explicitly copied.
+
 Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 ---
- man/man8/ip-xfrm.8 | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ ip/xfrm_policy.c   | 17 ++++++++++++++++-
+ man/man8/ip-xfrm.8 |  2 ++
+ 2 files changed, 18 insertions(+), 1 deletion(-)
 
+diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
+index d3c706d3..7cc00e7c 100644
+--- a/ip/xfrm_policy.c
++++ b/ip/xfrm_policy.c
+@@ -59,6 +59,7 @@ static void usage(void)
+ 		"	[ if_id IF_ID ] [ LIMIT-LIST ] [ TMPL-LIST ]\n"
+ 		"Usage: ip xfrm policy { delete | get } { SELECTOR | index INDEX } dir DIR\n"
+ 		"	[ ctx CTX ] [ mark MARK [ mask MASK ] ] [ ptype PTYPE ]\n"
++		"	[ if_id IF_ID ]\n"
+ 		"Usage: ip xfrm policy { deleteall | list } [ nosock ] [ SELECTOR ] [ dir DIR ]\n"
+ 		"	[ index INDEX ] [ ptype PTYPE ] [ action ACTION ] [ priority PRIORITY ]\n"
+ 		"	[ flag FLAG-LIST ]\n"
+@@ -582,6 +583,8 @@ static int xfrm_policy_get_or_delete(int argc, char **argv, int delete,
+ 		struct xfrm_user_sec_ctx sctx;
+ 		char    str[CTX_BUF_SIZE];
+ 	} ctx = {};
++	bool is_if_id_set = false;
++	__u32 if_id = 0;
+ 
+ 	while (argc > 0) {
+ 		if (strcmp(*argv, "dir") == 0) {
+@@ -619,7 +622,11 @@ static int xfrm_policy_get_or_delete(int argc, char **argv, int delete,
+ 
+ 			NEXT_ARG();
+ 			xfrm_policy_ptype_parse(&upt.type, &argc, &argv);
+-
++		} else if (strcmp(*argv, "if_id") == 0) {
++			NEXT_ARG();
++			if (get_u32(&if_id, *argv, 0))
++				invarg("IF_ID value is invalid", *argv);
++			is_if_id_set = true;
+ 		} else {
+ 			if (selp)
+ 				invarg("unknown", *argv);
+@@ -669,6 +676,9 @@ static int xfrm_policy_get_or_delete(int argc, char **argv, int delete,
+ 			  (void *)&ctx, ctx.sctx.len);
+ 	}
+ 
++	if (is_if_id_set)
++		addattr32(&req.n, sizeof(req.buf), XFRMA_IF_ID, if_id);
++
+ 	if (rtnl_talk(&rth, &req.n, answer) < 0)
+ 		exit(2);
+ 
+@@ -767,6 +777,11 @@ static int xfrm_policy_keep(struct nlmsghdr *n, void *arg)
+ 		}
+ 	}
+ 
++	if (tb[XFRMA_IF_ID]) {
++		addattr32(new_n, xb->size, XFRMA_IF_ID,
++			  rta_getattr_u32(tb[XFRMA_IF_ID]));
++	}
++
+ 	xb->offset += new_n->nlmsg_len;
+ 	xb->nlmsg_count++;
+ 
 diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
-index f99f30bb..d717205d 100644
+index d717205d..aa28db49 100644
 --- a/man/man8/ip-xfrm.8
 +++ b/man/man8/ip-xfrm.8
-@@ -61,6 +61,8 @@ ip-xfrm \- transform configuration
- .IR EXTRA-FLAG-LIST " ]"
- .RB "[ " output-mark
- .IR OUTPUT-MARK " ]"
+@@ -259,6 +259,8 @@ ip-xfrm \- transform configuration
+ .IR MASK " ] ]"
+ .RB "[ " ptype
+ .IR PTYPE " ]"
 +.RB "[ " if_id
 +.IR IF-ID " ]"
  
  .ti -8
- .B "ip xfrm state allocspi"
-@@ -238,6 +240,8 @@ ip-xfrm \- transform configuration
- .IR PRIORITY " ]"
- .RB "[ " flag
- .IR FLAG-LIST " ]"
-+.RB "[ " if_id
-+.IR IF-ID " ]"
- .RI "[ " LIMIT-LIST " ] [ " TMPL-LIST " ]"
- 
- .ti -8
-@@ -561,6 +565,10 @@ used to match xfrm policies and states
- used to set the output mark to influence the routing
- of the packets emitted by the state
- 
-+.TP
-+.I IF-ID
-+xfrm interface identifier used to in both xfrm policies and states
-+
- .sp
- .PP
- .TS
+ .BR ip " [ " -4 " | " -6 " ] " "xfrm policy" " { " deleteall " | " list " }"
 -- 
 2.25.1
 
