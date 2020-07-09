@@ -2,69 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B57921A8AC
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 22:08:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02AE421A8AF
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 22:09:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726935AbgGIUIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 16:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726629AbgGIUIj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 16:08:39 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88398C08C5CE
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 13:08:39 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 33FE5120F19DD;
-        Thu,  9 Jul 2020 13:08:39 -0700 (PDT)
-Date:   Thu, 09 Jul 2020 13:08:38 -0700 (PDT)
-Message-Id: <20200709.130838.1280141169142103459.davem@davemloft.net>
-To:     cpaasch@apple.com
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, weiwan@google.com,
-        edumazet@google.com
-Subject: Re: [PATCH v2 net] tcp: make sure listeners don't initialize
- congestion-control state
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200708231834.55194-1-cpaasch@apple.com>
-References: <20200708231834.55194-1-cpaasch@apple.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726721AbgGIUJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 16:09:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35320 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726220AbgGIUJ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 16:09:27 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3290720720;
+        Thu,  9 Jul 2020 20:09:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594325366;
+        bh=7WX1ILd0dshu6yJFE1jDhBfT8Dpii3SViG15P8i4kzo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BcvmC0FSQFEfCblqNg6k5p/Q93X6JrCWIHbvqeEYdMAifEWs7eJ60kIWfrISiML3n
+         bYVZkiGB6gTuitF8g8b8rxzj9g9rjatxjnUxBPcWsqwDXb6h4C19gebmpOvsF5Gw4b
+         0qdC1qZRNV47fzpcCUV9S8kQyOe/jBPLRYh0at1Y=
+Date:   Thu, 9 Jul 2020 13:09:24 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        michael.chan@broadcom.com, jeffrey.t.kirsher@intel.com,
+        saeedm@mellanox.com, leon@kernel.org, jiri@mellanox.com,
+        snelson@pensando.io, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, danieller@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next v3 0/9] Expose port split attributes
+Message-ID: <20200709130924.0460d8be@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200709131822.542252-1-idosch@idosch.org>
+References: <20200709131822.542252-1-idosch@idosch.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 Jul 2020 13:08:39 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christoph Paasch <cpaasch@apple.com>
-Date: Wed, 08 Jul 2020 16:18:34 -0700
+On Thu,  9 Jul 2020 16:18:13 +0300 Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> Danielle says:
+> 
+> Currently, user space has no way of knowing if a port can be split and
+> into how many ports. Among other things, this makes it impossible to
+> write generic tests for port split functionality.
+> 
+> Therefore, this set exposes two new devlink port attributes to user
+> space: Number of lanes and whether the port can be split or not.
+> 
+> Patch set overview:
+> 
+> Patches #1-#4 cleanup 'struct devlink_port_attrs' and reduce the number
+> of parameters passed between drivers and devlink via
+> devlink_port_attrs_set()
+> 
+> Patch #5 adds devlink port lanes attributes
+> 
+> Patches #6-#7 add devlink port splittable attribute
+> 
+> Patch #8 exploits the fact that devlink is now aware of port's number of
+> lanes and whether the port can be split or not and moves some checks
+> from drivers to devlink
+> 
+> Patch #9 adds a port split test
+> 
+> Changes since v2:
+> * Remove some local variables from patch #3
+> * Reword function description in patch #5
+> * Fix a bug in patch #8
+> * Add a test for the splittable attribute in patch #9
+> 
+> Changes since v1:
+> * Rename 'width' attribute to 'lanes'
+> * Add 'splittable' attribute
+> * Move checks from drivers to devlink
 
-> syzkaller found its way into setsockopt with TCP_CONGESTION "cdg".
-> tcp_cdg_init() does a kcalloc to store the gradients. As sk_clone_lock
-> just copies all the memory, the allocated pointer will be copied as
-> well, if the app called setsockopt(..., TCP_CONGESTION) on the listener.
-> If now the socket will be destroyed before the congestion-control
-> has properly been initialized (through a call to tcp_init_transfer), we
-> will end up freeing memory that does not belong to that particular
-> socket, opening the door to a double-free:
-...
-> Wei Wang fixed a part of these CDG-malloc issues with commit c12014440750
-> ("tcp: memset ca_priv data to 0 properly").
-> 
-> This patch here fixes the listener-scenario: We make sure that listeners
-> setting the congestion-control through setsockopt won't initialize it
-> (thus CDG never allocates on listeners). For those who use AF_UNSPEC to
-> reuse a socket, tcp_disconnect() is changed to cleanup afterwards.
-> 
-> (The issue can be reproduced at least down to v4.4.x.)
-> 
-> Cc: Wei Wang <weiwan@google.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Fixes: 2b0a8c9eee81 ("tcp: add CDG congestion control")
-> Signed-off-by: Christoph Paasch <cpaasch@apple.com>
+FWIW I fancy my:
 
-Applied and queued up for -stable, thanks.
+	lanes % count != 0
+
+from the nfp cleaner than the:
+
+	!is_power_of_2(count) || count > lanes
+
+of mlxsw, but that's bike shedding at best, and at worst 
+I'm missing something ;) so:
+
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
