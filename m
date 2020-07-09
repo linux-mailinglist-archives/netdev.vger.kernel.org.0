@@ -2,152 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 729E121985A
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 08:16:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F3D7219843
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 08:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726215AbgGIGQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 02:16:16 -0400
-Received: from smtp.netregistry.net ([202.124.241.204]:33962 "EHLO
-        smtp.netregistry.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725787AbgGIGQQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 02:16:16 -0400
-X-Greylist: delayed 317 seconds by postgrey-1.27 at vger.kernel.org; Thu, 09 Jul 2020 02:16:15 EDT
-Received: from pa49-197-58-130.pa.qld.optusnet.com.au ([49.197.58.130]:58645 helo=localhost)
-        by smtp-1.servers.netregistry.net protocol: esmtpa (Exim 4.84_2 #1 (Debian))
-        id 1jtPlU-0000xP-HJ
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 16:10:57 +1000
-Date:   Thu, 9 Jul 2020 16:10:34 +1000
-From:   Russell Strong <russell@strong.id.au>
-To:     netdev@vger.kernel.org
-Subject: amplifying qdisc
-Message-ID: <20200709161034.71bf8e09@strong.id.au>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1726542AbgGIGLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 02:11:16 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:2412 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726517AbgGIGLP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 02:11:15 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0696BAav004343
+        for <netdev@vger.kernel.org>; Wed, 8 Jul 2020 23:11:14 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=9w/W7gadCnPV8FsAX9sFMZ/0YEwhyKmbyL970+hTteU=;
+ b=LsmU5CAH0J7SN5gMEc0CqM7xtaSFHA0/PZDpIYC3K7jqU4hwHegB4UMa5Ea5UdFh5qNJ
+ 3U6OXdFKBsPlZRwdpDkruKO5gBviq7y+C3+CJXh8bSZBGt2hZHkzEvoyigRdkRZ/jBC+
+ YQMv7Cc3Mm46LQ5wj4WH7UahbT1e6bpesAI= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 325k2uate4-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 08 Jul 2020 23:11:14 -0700
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 8 Jul 2020 23:10:59 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id F26452945AE1; Wed,  8 Jul 2020 23:10:57 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf 0/2] bpf: net: Fixes in sk_user_data of reuseport_array
+Date:   Wed, 8 Jul 2020 23:10:57 -0700
+Message-ID: <20200709061057.4018499-1-kafai@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Authenticated-User: russell@strong.id.au
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-09_01:2020-07-08,2020-07-09 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ adultscore=0 mlxscore=0 suspectscore=13 priorityscore=1501 clxscore=1015
+ bulkscore=0 phishscore=0 spamscore=0 mlxlogscore=382 lowpriorityscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007090049
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This set fixes two issues on sk_user_data when a sk is added to
+a reuseport_array.
 
-I'm attempting to fill a link with background traffic that is sent
-whenever the link is idle.  To do this I've creates a qdisc that will
-repeat the last packet in the queue for a defined number of times
-(possibly infinite in the future). I am able to control the contents of
-the fill traffic by sending the occasional packet through this qdisc.
+The first patch is to avoid the sk_user_data being copied
+to a cloned sk.  The second patch avoids doing bpf_sk_reuseport_detach()
+on sk_user_data that is not managed by reuseport_array.
 
-This is works as the root qdisc and below a TBF.  When I try it as a
-leaf of HTB unexpected behaviour ensues.  I suspect my approach is
-violating some rules for qdiscs?  Any help/ideas/pointers would be
-appreciated.
+Since the changes are mostly related to bpf reuseport_array, so it is
+currently tagged as bpf fixes.
 
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_amp.c	amplifying qdisc
- *
- * Authors:	Russell Strong <russell@strong.id.au>
- */
+v2:
+- Avoid ~3UL (Andrii)
 
-#include <linux/module.h>
-#include <linux/slab.h>
-#include <linux/types.h>
-#include <linux/kernel.h>
-#include <linux/errno.h>
-#include <linux/skbuff.h>
-#include <net/pkt_sched.h>
+Martin KaFai Lau (2):
+  bpf: net: Avoid copying sk_user_data of reuseport_array during
+    sk_clone
+  bpf: net: Avoid incorrect bpf_sk_reuseport_detach call
 
-struct amp_sched_data {
-	u32 duplicates;
-	u32 remaining;
-};
+ include/net/sock.h           |  3 ++-
+ kernel/bpf/reuseport_array.c | 14 ++++++++++----
+ 2 files changed, 12 insertions(+), 5 deletions(-)
 
-static int amp_enqueue(struct sk_buff *skb, struct Qdisc *sch,
-			 struct sk_buff **to_free)
-{
-	struct amp_sched_data *asd = qdisc_priv(sch);
+--=20
+2.24.1
 
-	printk(KERN_DEBUG "amp_enqueue: qlen %d\n", sch->q.qlen);
-
-	asd->remaining = asd->duplicates;
-
-	if (likely(sch->q.qlen < sch->limit))
-		return qdisc_enqueue_tail(skb, sch);
-
-	return qdisc_drop(skb, sch, to_free);
-}
-
-static struct sk_buff *amp_dequeue(struct Qdisc *sch)
-{
-	struct sk_buff *skb;
-	struct amp_sched_data *asd = qdisc_priv(sch);
-
-	printk(KERN_DEBUG "amp_dequeue: qlen %d, remaining %d\n",
-		sch->q.qlen, asd->remaining);
-
-	if (sch->q.qlen == 1 && asd->remaining > 0) {
-		skb = qdisc_peek_head(sch);
-		skb = skb_clone(skb, GFP_ATOMIC);
-		asd->remaining -= 1;
-	} else
-		skb = qdisc_dequeue_head(sch);
-
-	return skb;
-}
-
-static int amp_init(struct Qdisc *sch, struct nlattr *opt,
-		     struct netlink_ext_ack *extack)
-{
-	struct amp_sched_data *asd = qdisc_priv(sch);
-	u32 limit = qdisc_dev(sch)->tx_queue_len;
-
-	sch->limit = limit;
-	asd->duplicates = 10;
-	asd->remaining = 0;
-
-	printk(KERN_DEBUG "amp_init\n");
-
-	return 0;
-}
-
-static void amp_reset_queue(struct Qdisc *sch)
-{
-	struct amp_sched_data *asd = qdisc_priv(sch);
-	asd->remaining = 0;
-
-	qdisc_reset_queue(sch);
-}
-
-static int amp_dump(struct Qdisc *sch, struct sk_buff *skb)
-{
-	return skb->len;
-}
-
-struct Qdisc_ops amp_qdisc_ops __read_mostly = {
-	.id		=	"amp",
-	.priv_size	=	sizeof(struct amp_sched_data),
-	.enqueue	=	amp_enqueue,
-	.dequeue	=	amp_dequeue,
-	.peek		=	qdisc_peek_head,
-	.init		=	amp_init,
-	.reset		=	amp_reset_queue,
-	.change		=	amp_init,
-	.dump		=	amp_dump,
-	.owner		=	THIS_MODULE,
-};
-
-static int __init amp_module_init(void)
-{
-        return register_qdisc(&amp_qdisc_ops);
-}
-
-static void __exit amp_module_exit(void)
-{
-        unregister_qdisc(&amp_qdisc_ops);
-}
-
-module_init(amp_module_init)
-module_exit(amp_module_exit)
-MODULE_LICENSE("GPL");
