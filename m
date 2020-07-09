@@ -2,113 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84D2121A7EC
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 21:39:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F6921A7ED
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 21:40:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbgGITjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 15:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38542 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726286AbgGITjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 15:39:54 -0400
-Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392E8C08C5CE
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 12:39:54 -0700 (PDT)
-Received: by mail-ua1-x941.google.com with SMTP id b13so1098247uav.3
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 12:39:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LnE3qdXGpMyNm8Oh3xCm33hvZVYcAbi5yH6tSVaScNA=;
-        b=pl3A5LuBz/IZl07f0hwrnc5uEedBhkG1gnFExf/RDW9U7Mu741ggJr6KdkxViarWE6
-         KHWYLGKlHwJG6xhlgyTqYXE+ZMmniUdalbcSiA1Eot1VXHWACFe1U2JTVaTF0HGbjM/e
-         koNNqNENyInUmSKKDTZokV+8QtxoGcm95wRPNaABqQq5ph9rsNOjQUf0CrwvyvV3kwy2
-         NpuE6bs7WwOAfGvZudZTGJDTu0N9i7RQhv2ZxCVp6HAh3snWpIaPrzu0l/4rLyJvykSN
-         hz9B4BeIHZ43LWvNCMlrr3atMDhGds1UlFBH1xidwLUc7k+h2I8oxFKmZL/MFbChzXJK
-         OC4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LnE3qdXGpMyNm8Oh3xCm33hvZVYcAbi5yH6tSVaScNA=;
-        b=bPUzWS5LOfZJS3GZAR5yvTxlTEo770Tyq+Ca36ISugOOHqQ+9sSBgz0mP8qPhbYxJI
-         U7JH0aUDi+twG+8DY8AXhtt1rcQbV2P/hWJHCEYWwLqx8IXTT/C6HDuARE2hr4TgtGdk
-         TuAn2eizqAXmxJ2QR0TjJnNEDMfRkoOH+/VhhqICyRaPOQrOIHrwN6i1hY0Y4d+AU1Nq
-         XBdufU3ukb/LKOeEuOjlrCAX6E3dvDYcgsHW3KsLJGUosPqTdIr3tS44nMAXJxbDpsa7
-         voMm9+yq+MN7nB9KDH6jvwYHNuG08AGU3qEDl8kIstNKgx4rQ+I7S3KnSZeSQyvFP032
-         lGbg==
-X-Gm-Message-State: AOAM533GjbcfV6YyumK+gFY48L7GNT7Ro7fgx5FlPOcAmRn0lAGF2sMB
-        DgIuzXtcmp3lE1xcpz05trJbKlMXyzBhE+7W/C8=
-X-Google-Smtp-Source: ABdhPJwBSRgJLEIhnLBBBkU0NQWqipYGHp38UGSP3fnIaitubT6vQDyIGeDOYd611XBDNNfWCoEAM4WfGNX1ELVzD7U=
-X-Received: by 2002:ab0:64cd:: with SMTP id j13mr15216299uaq.33.1594323593489;
- Thu, 09 Jul 2020 12:39:53 -0700 (PDT)
+        id S1726782AbgGITkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 15:40:00 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:40142 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726286AbgGITkA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 15:40:00 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 069JVbRB126031
+        for <netdev@vger.kernel.org>; Thu, 9 Jul 2020 15:39:58 -0400
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 325kgup2aw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 15:39:58 -0400
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 069JUpna008411
+        for <netdev@vger.kernel.org>; Thu, 9 Jul 2020 19:39:58 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma04dal.us.ibm.com with ESMTP id 325k28ar35-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 19:39:58 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 069Jdu8T44040600
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 9 Jul 2020 19:39:56 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 85013BE04F;
+        Thu,  9 Jul 2020 19:39:56 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2E509BE058;
+        Thu,  9 Jul 2020 19:39:56 +0000 (GMT)
+Received: from Criss-MacBook-Pro.local (unknown [9.211.141.107])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTPS;
+        Thu,  9 Jul 2020 19:39:56 +0000 (GMT)
+From:   Cris Forno <cforno12@linux.ibm.com>
+To:     Thomas Falcon <tlfalcon@linux.ibm.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH] ibmvnic: store RX and TX subCRQ handle array in ibmvnic_adapter struct
+In-Reply-To: <d2ac4a60-9375-df80-4f00-7eae72c72291@linux.ibm.com>
+References: <20200701212553.70956-1-cforno12@linux.ibm.com> <d2ac4a60-9375-df80-4f00-7eae72c72291@linux.ibm.com>
+Date:   Thu, 09 Jul 2020 14:39:55 -0500
+Message-ID: <m2fta0tr3o.fsf@Criss-MacBook-Pro.local.i-did-not-set--mail-host-address--so-tickle-me>
 MIME-Version: 1.0
-References: <1594287951-27479-1-git-send-email-magnus.karlsson@intel.com>
- <20200709170356.pivsunwnk57jm4kr@bsd-mbp.dhcp.thefacebook.com>
- <CAJ8uoz2_m+-s4UXuChu9Edk99BS7NK=0cRFGFB4+z9KsHiDTMg@mail.gmail.com>
- <CAJ8uoz1WTvNC52GTB4rqNV3arDhufXr_xrDg9pJfxvMK6stkZg@mail.gmail.com> <20200709193431.wruc3u6x5ddnkicv@bsd-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200709193431.wruc3u6x5ddnkicv@bsd-mbp.dhcp.thefacebook.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 9 Jul 2020 21:39:42 +0200
-Message-ID: <CAJ8uoz2-q5EVcSj1nURgVsg_y5rfBbYrbVugcvj2LPWwTBpH+w@mail.gmail.com>
-Subject: Re: [PATCH bpf] xsk: do not discard packet when QUEUE_STATE_FROZEN
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        A.Zema@falconvsystems.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-09_09:2020-07-09,2020-07-09 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 mlxlogscore=999 spamscore=0
+ adultscore=0 lowpriorityscore=0 suspectscore=5 mlxscore=0 bulkscore=0
+ phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2007090131
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 9, 2020 at 9:34 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+Thomas Falcon <tlfalcon@linux.ibm.com> writes:
+
+> On 7/1/20 4:25 PM, Cristobal Forno wrote:
+>> Currently the driver reads RX and TX subCRQ handle array directly from
+>> a DMA-mapped buffer address when it needs to make a H_SEND_SUBCRQ
+>> hcall. This patch stores that information in the ibmvnic_sub_crq_queue
+>> structure instead of reading from the buffer received at login.
+>>   
 >
-> On Thu, Jul 09, 2020 at 09:30:42PM +0200, Magnus Karlsson wrote:
-> > On Thu, Jul 9, 2020 at 7:10 PM Magnus Karlsson
-> > <magnus.karlsson@gmail.com> wrote:
-> > >
-> > > On Thu, Jul 9, 2020 at 7:06 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
-> > > >
-> > > > On Thu, Jul 09, 2020 at 11:45:51AM +0200, Magnus Karlsson wrote:
-> > > > > In the skb Tx path, transmission of a packet is performed with
-> > > > > dev_direct_xmit(). When QUEUE_STATE_FROZEN is set in the transmit
-> > > > > routines, it returns NETDEV_TX_BUSY signifying that it was not
-> > > > > possible to send the packet now, please try later. Unfortunately, the
-> > > > > xsk transmit code discarded the packet and returned EBUSY to the
-> > > > > application. Fix this unnecessary packet loss, by not discarding the
-> > > > > packet and return EAGAIN. As EAGAIN is returned to the application, it
-> > > > > can then retry the send operation and the packet will finally be sent
-> > > > > as we will likely not be in the QUEUE_STATE_FROZEN state anymore. So
-> > > > > EAGAIN tells the application that the packet was not discarded from
-> > > > > the Tx ring and that it needs to call send() again. EBUSY, on the
-> > > > > other hand, signifies that the packet was not sent and discarded from
-> > > > > the Tx ring. The application needs to put the packet on the Tx ring
-> > > > > again if it wants it to be sent.
-> > > >
-> > > > Doesn't the original code leak the skb if NETDEV_TX_BUSY is returned?
-> > > > I'm not seeing where it was released.  The new code looks correct.
-> > >
-> > > You are correct. Should also have mentioned that in the commit message.
-> >
-> > Jonathan,
-> >
-> > Some context here. The bug report from Arkadiusz started out with the
-> > unnecessary packet loss. While fixing it, I discovered that it was
-> > actually leaking memory too. If you want, I can send a v2 that has a
-> > commit message that mentions both problems? Let me know what you
-> > prefer.
+> Hi, thank you for the submission. I think it would be better, however, 
+> if each subCRQ structure had a member denoting its respective handle 
+> rather than a pointer to the handle array. This would allow us to 
+> discard the login_rsp buffer later when it is no longer needed.
 >
-> I think it would be best to mention both problems for the benefit of
-> future readers.
+> Tom
 
-You will get a v2 tomorrow.
+Hi, thanks for you suggestion. I have sent another patch (v2) with your
+suggestions.
 
-/Magnus
-
-> --
-> Jonathan
+-Cristobal Forno
+>
+>> Signed-off-by: Cristobal Forno <cforno12@linux.ibm.com>
+>> ---
+>>   drivers/net/ethernet/ibm/ibmvnic.c | 27 ++++++++++++++++++++-------
+>>   drivers/net/ethernet/ibm/ibmvnic.h |  1 +
+>>   2 files changed, 21 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+>> index 0fd7eae25fe9..ca0d88aab6da 100644
+>> --- a/drivers/net/ethernet/ibm/ibmvnic.c
+>> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
+>> @@ -305,6 +305,7 @@ static void deactivate_rx_pools(struct ibmvnic_adapter *adapter)
+>>   static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+>>   			      struct ibmvnic_rx_pool *pool)
+>>   {
+>> +	u64 *handle_array = adapter->rx_scrq[pool->index]->handle_array;
+>>   	int count = pool->size - atomic_read(&pool->available);
+>>   	struct device *dev = &adapter->vdev->dev;
+>>   	int buffers_added = 0;
+>> @@ -314,7 +315,6 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+>>   	unsigned int offset;
+>>   	dma_addr_t dma_addr;
+>>   	unsigned char *dst;
+>> -	u64 *handle_array;
+>>   	int shift = 0;
+>>   	int index;
+>>   	int i;
+>> @@ -322,10 +322,6 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+>>   	if (!pool->active)
+>>   		return;
+>>   
+>> -	handle_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
+>> -				      be32_to_cpu(adapter->login_rsp_buf->
+>> -				      off_rxadd_subcrqs));
+>> -
+>>   	for (i = 0; i < count; ++i) {
+>>   		skb = alloc_skb(pool->buff_size, GFP_ATOMIC);
+>>   		if (!skb) {
+>> @@ -1553,8 +1549,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+>>   
+>>   	tx_scrq = adapter->tx_scrq[queue_num];
+>>   	txq = netdev_get_tx_queue(netdev, skb_get_queue_mapping(skb));
+>> -	handle_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
+>> -		be32_to_cpu(adapter->login_rsp_buf->off_txsubm_subcrqs));
+>> +	handle_array = tx_scrq->handle_array;
+>>   
+>>   	index = tx_pool->free_map[tx_pool->consumer_index];
+>>   
+>> @@ -4292,6 +4287,8 @@ static int handle_login_rsp(union ibmvnic_crq *login_rsp_crq,
+>>   	struct net_device *netdev = adapter->netdev;
+>>   	struct ibmvnic_login_rsp_buffer *login_rsp = adapter->login_rsp_buf;
+>>   	struct ibmvnic_login_buffer *login = adapter->login_buf;
+>> +	int num_tx_pools;
+>> +	int num_rx_pools;
+>>   	int i;
+>>   
+>>   	dma_unmap_single(dev, adapter->login_buf_token, adapter->login_buf_sz,
+>> @@ -4326,6 +4323,22 @@ static int handle_login_rsp(union ibmvnic_crq *login_rsp_crq,
+>>   		ibmvnic_remove(adapter->vdev);
+>>   		return -EIO;
+>>   	}
+>> +
+>> +	num_tx_pools = be32_to_cpu(adapter->login_rsp_buf->num_txsubm_subcrqs);
+>> +	num_rx_pools = be32_to_cpu(adapter->login_rsp_buf->num_rxadd_subcrqs);
+>> +
+>> +	for (i = 0; i < num_tx_pools; i++)
+>> +		adapter->tx_scrq[i]->handle_array =
+>> +			(u64 *)((u8 *)(adapter->login_rsp_buf) +
+>> +				be32_to_cpu(adapter->login_rsp_buf->
+>> +					    off_txsubm_subcrqs));
+>> +
+>> +	for (i = 0; i < num_rx_pools; i++)
+>> +		adapter->rx_scrq[i]->handle_array =
+>> +			(u64 *)((u8 *)(adapter->login_rsp_buf) +
+>> +				be32_to_cpu(adapter->login_rsp_buf->
+>> +					    off_rxadd_subcrqs));
+>> +
+>>   	release_login_buffer(adapter);
+>>   	complete(&adapter->init_done);
+>>   
+>> diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+>> index f8416e1d4cf0..e51c72d1e357 100644
+>> --- a/drivers/net/ethernet/ibm/ibmvnic.h
+>> +++ b/drivers/net/ethernet/ibm/ibmvnic.h
+>> @@ -875,6 +875,7 @@ struct ibmvnic_sub_crq_queue {
+>>   	struct ibmvnic_adapter *adapter;
+>>   	atomic_t used;
+>>   	char name[32];
+>> +	u64 *handle_array;
+>>   };
+>>   
+>>   struct ibmvnic_long_term_buff {
