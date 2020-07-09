@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81D8221A782
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 21:06:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D87A21A787
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 21:06:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726659AbgGITGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 15:06:15 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:36876 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726116AbgGITGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 15:06:13 -0400
+        id S1726734AbgGITGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 15:06:24 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:52481 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726710AbgGITGX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 15:06:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1594321573; x=1625857573;
+  t=1594321582; x=1625857582;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=vDmyu9ZfCqGQ6c63yZbjgIh4LteNyiCb9CdnhZR4K3Y=;
-  b=FLunReeDrFxtjlWqh2YEpjtwG0xAfm2JJcQ8kwj8FSVLCxKTbqj2KifJ
-   xMjj0SAUV+ex6ocAjo1QTElmoEsQgKo2NGxP4JCmcAM35CbMb/zh8be9p
-   m9r/CepGdLa2ANdTv2rKjwA2NF2zVggzFxjrYAbG7xzpxWhVa6nPYS3LW
-   0=;
-IronPort-SDR: FUnwQvqj9Yngo3Y6E5avEvvbttY0oLVcBfkQ58AHoBPGRyERlVOmbcs2++xNS5R4SCIPvF8GbU
- mmqT8Ge6k5tw==
+  bh=ljFWJ0r8D0MqhB2cXeLybqM3QpMmnzXt3XBde+P0TfY=;
+  b=epEMVCYetVHnmRAx5tGtD6q0qxqlBuNQIgupLJ4cye1SDNVTKbI/Bh87
+   hLVb+rAFyq5aMm6nMrnt75j9BlvVrNczrauizjXForlFmEQLakIfAkzaF
+   apA4VyEQ40ElcI3ZSxj4XQSx+O4gbVMjQr9a2XkB2d2Rzn6QQveRA2wHw
+   A=;
+IronPort-SDR: v/sLUJzSFMOA6oox1I2SHbYBkqwwimzkoaW3oK7PffMjUECRuS0V3RZxxd/dUEqpFpg0ZPqY2B
+ bqdjy+ZKk8Jg==
 X-IronPort-AV: E=Sophos;i="5.75,332,1589241600"; 
-   d="scan'208";a="41020905"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1a-67b371d8.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 09 Jul 2020 19:06:04 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1a-67b371d8.us-east-1.amazon.com (Postfix) with ESMTPS id A1B48A231D;
-        Thu,  9 Jul 2020 19:06:03 +0000 (UTC)
-Received: from EX13d09UWC004.ant.amazon.com (10.43.162.114) by
+   d="scan'208";a="57413826"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 09 Jul 2020 19:06:12 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id EB6132425B9;
+        Thu,  9 Jul 2020 19:06:11 +0000 (UTC)
+Received: from EX13d09UWC002.ant.amazon.com (10.43.162.102) by
  EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 9 Jul 2020 19:05:43 +0000
+ id 15.0.1497.2; Thu, 9 Jul 2020 19:05:48 +0000
 Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13d09UWC004.ant.amazon.com (10.43.162.114) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 9 Jul 2020 19:05:42 +0000
+ EX13d09UWC002.ant.amazon.com (10.43.162.102) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 9 Jul 2020 19:05:47 +0000
 Received: from HFA15-G63729NC.amazon.com (10.1.213.15) by
  mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Thu, 9 Jul 2020 19:05:38 +0000
+ 15.0.1497.2 via Frontend Transport; Thu, 9 Jul 2020 19:05:43 +0000
 From:   <akiyano@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
@@ -47,9 +47,9 @@ CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
         <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
         <sameehj@amazon.com>
-Subject: [PATCH V1 net-next 6/8] net: ena: enable support of rss hash key and function changes
-Date:   Thu, 9 Jul 2020 22:05:01 +0300
-Message-ID: <1594321503-12256-7-git-send-email-akiyano@amazon.com>
+Subject: [PATCH V1 net-next 7/8] net: ena: move llq configuration from ena_probe to ena_device_init()
+Date:   Thu, 9 Jul 2020 22:05:02 +0300
+Message-ID: <1594321503-12256-8-git-send-email-akiyano@amazon.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1594321503-12256-1-git-send-email-akiyano@amazon.com>
 References: <1594321503-12256-1-git-send-email-akiyano@amazon.com>
@@ -62,55 +62,220 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arthur Kiyanovski <akiyano@amazon.com>
 
-Add the rss_configurable_function_key bit to driver_supported_feature.
+When the ENA device resets to recover from some error state, all LLQ
+configuration values are reset to their defaults, because LLQ is
+initialized only once during ena_probe().
 
-This bit tells the device that the driver in question supports the
-retrieving and updating of RSS function and hash key, and therefore
-the device should allow RSS function and key manipulation.
+Changes in this commit:
+1. Move the LLQ configuration process into ena_init_device()
+which is called from both ena_probe() and ena_restore_device(). This
+way, LLQ setup configurations that are different from the default
+values will survive resets.
 
+2. Extract the LLQ bar mapping to ena_map_llq_bar(),
+and call once in the lifetime of the driver from ena_probe(),
+since there is no need to unmap and map the LLQ bar again every reset.
+
+3. Map the LLQ bar if it exists, regardless if initialization of LLQ
+placement policy (ENA_ADMIN_PLACEMENT_POLICY_DEV) succeeded
+or not. Initialization might fail the first time, falling back to the
+ENA_ADMIN_PLACEMENT_POLICY_HOST placement policy, but later succeed
+after device reset, in which case the LLQ bar needs to be mapped
+already.
+
+Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_admin_defs.h | 5 ++++-
- drivers/net/ethernet/amazon/ena/ena_netdev.c     | 3 ++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 136 ++++++++++---------
+ 1 file changed, 73 insertions(+), 63 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-index afe87ff09b20..7f7978b135a9 100644
---- a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-@@ -817,7 +817,8 @@ struct ena_admin_host_info {
- 	 * 1 : rx_offset
- 	 * 2 : interrupt_moderation
- 	 * 3 : rx_buf_mirroring
--	 * 31:4 : reserved
-+	 * 4 : rss_configurable_function_key
-+	 * 31:5 : reserved
- 	 */
- 	u32 driver_supported_features;
- };
-@@ -1132,6 +1133,8 @@ struct ena_admin_ena_mmio_req_read_less_resp {
- #define ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK       BIT(2)
- #define ENA_ADMIN_HOST_INFO_RX_BUF_MIRRORING_SHIFT          3
- #define ENA_ADMIN_HOST_INFO_RX_BUF_MIRRORING_MASK           BIT(3)
-+#define ENA_ADMIN_HOST_INFO_RSS_CONFIGURABLE_FUNCTION_KEY_SHIFT 4
-+#define ENA_ADMIN_HOST_INFO_RSS_CONFIGURABLE_FUNCTION_KEY_MASK BIT(4)
- 
- /* aenq_common_desc */
- #define ENA_ADMIN_AENQ_COMMON_DESC_PHASE_MASK               BIT(0)
 diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index fd5f0d87cc59..b3dd9abfedd1 100644
+index b3dd9abfedd1..6f0f2f28aedb 100644
 --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
 +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3126,7 +3126,8 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev, struct pci_dev *pd
- 	host_info->driver_supported_features =
- 		ENA_ADMIN_HOST_INFO_RX_OFFSET_MASK |
- 		ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK |
--		ENA_ADMIN_HOST_INFO_RX_BUF_MIRRORING_MASK;
-+		ENA_ADMIN_HOST_INFO_RX_BUF_MIRRORING_MASK |
-+		ENA_ADMIN_HOST_INFO_RSS_CONFIGURABLE_FUNCTION_KEY_MASK;
+@@ -3280,10 +3280,71 @@ static int ena_device_validate_params(struct ena_adapter *adapter,
+ 	return 0;
+ }
  
- 	rc = ena_com_set_host_attributes(ena_dev);
++static void set_default_llq_configurations(struct ena_llq_configurations *llq_config)
++{
++	llq_config->llq_header_location = ENA_ADMIN_INLINE_HEADER;
++	llq_config->llq_stride_ctrl = ENA_ADMIN_MULTIPLE_DESCS_PER_ENTRY;
++	llq_config->llq_num_decs_before_header = ENA_ADMIN_LLQ_NUM_DESCS_BEFORE_HEADER_2;
++	llq_config->llq_ring_entry_size = ENA_ADMIN_LIST_ENTRY_SIZE_128B;
++	llq_config->llq_ring_entry_size_value = 128;
++}
++
++static int ena_set_queues_placement_policy(struct pci_dev *pdev,
++					   struct ena_com_dev *ena_dev,
++					   struct ena_admin_feature_llq_desc *llq,
++					   struct ena_llq_configurations *llq_default_configurations)
++{
++	int rc;
++	u32 llq_feature_mask;
++
++	llq_feature_mask = 1 << ENA_ADMIN_LLQ;
++	if (!(ena_dev->supported_features & llq_feature_mask)) {
++		dev_err(&pdev->dev,
++			"LLQ is not supported Fallback to host mode policy.\n");
++		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
++		return 0;
++	}
++
++	rc = ena_com_config_dev_mode(ena_dev, llq, llq_default_configurations);
++	if (unlikely(rc)) {
++		dev_err(&pdev->dev,
++			"Failed to configure the device mode.  Fallback to host mode policy.\n");
++		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
++	}
++
++	return 0;
++}
++
++static int ena_map_llq_mem_bar(struct pci_dev *pdev, struct ena_com_dev *ena_dev,
++			       int bars)
++{
++	bool has_mem_bar = !!(bars & BIT(ENA_MEM_BAR));
++
++	if (!has_mem_bar) {
++		if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) {
++			dev_err(&pdev->dev,
++				"ENA device does not expose LLQ bar. Fallback to host mode policy.\n");
++			ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
++		}
++
++		return 0;
++	}
++
++	ena_dev->mem_bar = devm_ioremap_wc(&pdev->dev,
++					   pci_resource_start(pdev, ENA_MEM_BAR),
++					   pci_resource_len(pdev, ENA_MEM_BAR));
++
++	if (!ena_dev->mem_bar)
++		return -EFAULT;
++
++	return 0;
++}
++
+ static int ena_device_init(struct ena_com_dev *ena_dev, struct pci_dev *pdev,
+ 			   struct ena_com_dev_get_features_ctx *get_feat_ctx,
+ 			   bool *wd_state)
+ {
++	struct ena_llq_configurations llq_config;
+ 	struct device *dev = &pdev->dev;
+ 	bool readless_supported;
+ 	u32 aenq_groups;
+@@ -3374,6 +3435,15 @@ static int ena_device_init(struct ena_com_dev *ena_dev, struct pci_dev *pdev,
+ 
+ 	*wd_state = !!(aenq_groups & BIT(ENA_ADMIN_KEEP_ALIVE));
+ 
++	set_default_llq_configurations(&llq_config);
++
++	rc = ena_set_queues_placement_policy(pdev, ena_dev, &get_feat_ctx->llq,
++					     &llq_config);
++	if (rc) {
++		dev_err(&pdev->dev, "ena device init failed\n");
++		goto err_admin_init;
++	}
++
+ 	return 0;
+ 
+ err_admin_init:
+@@ -3880,54 +3950,6 @@ static u32 ena_calc_max_io_queue_num(struct pci_dev *pdev,
+ 	return max_num_io_queues;
+ }
+ 
+-static int ena_set_queues_placement_policy(struct pci_dev *pdev,
+-					   struct ena_com_dev *ena_dev,
+-					   struct ena_admin_feature_llq_desc *llq,
+-					   struct ena_llq_configurations *llq_default_configurations)
+-{
+-	bool has_mem_bar;
+-	int rc;
+-	u32 llq_feature_mask;
+-
+-	llq_feature_mask = 1 << ENA_ADMIN_LLQ;
+-	if (!(ena_dev->supported_features & llq_feature_mask)) {
+-		dev_err(&pdev->dev,
+-			"LLQ is not supported Fallback to host mode policy.\n");
+-		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
+-		return 0;
+-	}
+-
+-	has_mem_bar = pci_select_bars(pdev, IORESOURCE_MEM) & BIT(ENA_MEM_BAR);
+-
+-	rc = ena_com_config_dev_mode(ena_dev, llq, llq_default_configurations);
+-	if (unlikely(rc)) {
+-		dev_err(&pdev->dev,
+-			"Failed to configure the device mode.  Fallback to host mode policy.\n");
+-		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
+-		return 0;
+-	}
+-
+-	/* Nothing to config, exit */
+-	if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_HOST)
+-		return 0;
+-
+-	if (!has_mem_bar) {
+-		dev_err(&pdev->dev,
+-			"ENA device does not expose LLQ bar. Fallback to host mode policy.\n");
+-		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
+-		return 0;
+-	}
+-
+-	ena_dev->mem_bar = devm_ioremap_wc(&pdev->dev,
+-					   pci_resource_start(pdev, ENA_MEM_BAR),
+-					   pci_resource_len(pdev, ENA_MEM_BAR));
+-
+-	if (!ena_dev->mem_bar)
+-		return -EFAULT;
+-
+-	return 0;
+-}
+-
+ static void ena_set_dev_offloads(struct ena_com_dev_get_features_ctx *feat,
+ 				 struct net_device *netdev)
+ {
+@@ -4043,14 +4065,6 @@ static void ena_release_bars(struct ena_com_dev *ena_dev, struct pci_dev *pdev)
+ 	pci_release_selected_regions(pdev, release_bars);
+ }
+ 
+-static void set_default_llq_configurations(struct ena_llq_configurations *llq_config)
+-{
+-	llq_config->llq_header_location = ENA_ADMIN_INLINE_HEADER;
+-	llq_config->llq_ring_entry_size = ENA_ADMIN_LIST_ENTRY_SIZE_128B;
+-	llq_config->llq_stride_ctrl = ENA_ADMIN_MULTIPLE_DESCS_PER_ENTRY;
+-	llq_config->llq_num_decs_before_header = ENA_ADMIN_LLQ_NUM_DESCS_BEFORE_HEADER_2;
+-	llq_config->llq_ring_entry_size_value = 128;
+-}
+ 
+ static int ena_calc_io_queue_size(struct ena_calc_queue_size_ctx *ctx)
+ {
+@@ -4132,7 +4146,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ {
+ 	struct ena_calc_queue_size_ctx calc_queue_ctx = { 0 };
+ 	struct ena_com_dev_get_features_ctx get_feat_ctx;
+-	struct ena_llq_configurations llq_config;
+ 	struct ena_com_dev *ena_dev = NULL;
+ 	struct ena_adapter *adapter;
+ 	struct net_device *netdev;
+@@ -4187,13 +4200,10 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto err_free_region;
+ 	}
+ 
+-	set_default_llq_configurations(&llq_config);
+-
+-	rc = ena_set_queues_placement_policy(pdev, ena_dev, &get_feat_ctx.llq,
+-					     &llq_config);
++	rc = ena_map_llq_mem_bar(pdev, ena_dev, bars);
  	if (rc) {
+-		dev_err(&pdev->dev, "ena device init failed\n");
+-		goto err_device_destroy;
++		dev_err(&pdev->dev, "ena llq bar mapping failed\n");
++		goto err_free_ena_dev;
+ 	}
+ 
+ 	calc_queue_ctx.ena_dev = ena_dev;
 -- 
 2.23.1
 
