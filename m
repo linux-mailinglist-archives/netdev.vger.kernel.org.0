@@ -2,113 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 424E821A18A
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 15:58:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6579D21A1CB
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 16:07:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727901AbgGIN6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 09:58:46 -0400
-Received: from mail-eopbgr60080.outbound.protection.outlook.com ([40.107.6.80]:38468
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726444AbgGIN6p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 09:58:45 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cTjWr0019zBmmfY79QVkaLuhmwT8ob0zzkFKFChZZqWQEpORJsHTn4l/JeGAwmLZ/p7daJTG12EdYu5SVSA+CaDU6vgCVDXOZ9k342PEgYk+Edn+4zGws0zzzendrjQf8suNTZTVCWrzFQuNOUEqmk7KzjWitKT9VGAzWNe+veREpzvptk73KXPBRYPdmPhCjsO9ydkeOTfHrYXd9SRAOCCXaq39GGMOknRSTxalxwgI4Ywtl+ECC5v/SrG1Uz5eRBjk8yCQFWrwcG28l5gzJX83O5bsCeBItbYIemSDaq5tDtqvB9Sgnu6QykUWubG+G0G4NEtcCxKiAu6UmK80lw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5NxPbjDRjz2ggvj1V6/5nnNG1eWqRGqqBdwC5HWdXmY=;
- b=Y/a3nA+9DaVZdKZN2afpYwnrqHP8bGXXww3ZfJNFLwzgGc7coeRo/YuQXEfmvlGRn0AGXN7EdvBcypNRDhUqkL6CYHCzXdJzUtWW8NzzzM4cwHU1uW5Jl3ZMAxaBTz1KGQEFUEm/99BrlHlBDc4yAP3gL1pdfOK3X4eY97q+/f0HIHhXfmHlK4AtXnBSwK/bB31Jxwpz74LVLPuRCNDqlRGg9ceoLPsgPAWMvXZjen9DTtWlUYl8YHbNnhFHsBgL2Pouji9aDvePEBqZjZvYAe0Utdf+fAWQmE0mBEt+6PlJn3mdvTEgxJZH5KWqtiP0nGtnme3ip1llUA3gACGngQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5NxPbjDRjz2ggvj1V6/5nnNG1eWqRGqqBdwC5HWdXmY=;
- b=BZ9IbqqANQLB/pazHUEuFDy9H0MH3fI0n84RmRFWqUX5gV11WNEbOT1PgxjLQ3935oTdEE9Czf/fON352piYbBTHuGroWds+uo1KQnZ+7BO4Tbwx8Q5rT7G37gC6LrkhOMLrrP/d2Pcg9pPnhgD8GMCyYjHVVPP4348HUOY0vS0=
-Authentication-Results: suse.cz; dkim=none (message not signed)
- header.d=none;suse.cz; dmarc=none action=none header.from=mellanox.com;
-Received: from VI1PR0501MB2205.eurprd05.prod.outlook.com
- (2603:10a6:800:2a::20) by VI1PR05MB5997.eurprd05.prod.outlook.com
- (2603:10a6:803:e4::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20; Thu, 9 Jul
- 2020 13:58:41 +0000
-Received: from VI1PR0501MB2205.eurprd05.prod.outlook.com
- ([fe80::d58c:3ca1:a6bb:e5fe]) by VI1PR0501MB2205.eurprd05.prod.outlook.com
- ([fe80::d58c:3ca1:a6bb:e5fe%5]) with mapi id 15.20.3174.022; Thu, 9 Jul 2020
- 13:58:41 +0000
-Subject: Re: [PATCH net-next v2 10/10] mlx4: convert to new udp_tunnel_nic
- infra
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
-        michael.chan@broadcom.com, edwin.peer@broadcom.com,
-        emil.s.tantilov@intel.com, alexander.h.duyck@linux.intel.com,
-        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com, mkubecek@suse.cz
-References: <20200709011814.4003186-1-kuba@kernel.org>
- <20200709011814.4003186-11-kuba@kernel.org>
-From:   Tariq Toukan <tariqt@mellanox.com>
-Message-ID: <bb47d592-4ef8-3cde-7aee-a31f2adcc5bb@mellanox.com>
-Date:   Thu, 9 Jul 2020 16:58:32 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-In-Reply-To: <20200709011814.4003186-11-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR01CA0158.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:aa::27) To VI1PR0501MB2205.eurprd05.prod.outlook.com
- (2603:10a6:800:2a::20)
+        id S1726517AbgGIOHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 10:07:00 -0400
+Received: from mout.gmx.net ([212.227.15.19]:40339 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726340AbgGIOHA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 10:07:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1594303618;
+        bh=X1A9f1U9k0P0efJPzez9VGexRHZjZOiwfgktfCqvlZk=;
+        h=X-UI-Sender-Class:Reply-To:Subject:To:Cc:References:From:Date:
+         In-Reply-To;
+        b=RVM5MMdX2QoARhxPc8mQBt4X7y9u0W7bda3BLV3vVuPWSLEbrICl33A5v/GuE8i5L
+         3VD8Q3sVZ13DaCfLJfCOlA9YIGQsLqel2OrKwvtihUJqF+fvV0k0aYyh3I0utRgRsu
+         dGsuBYejdb/dEx+d3qVIdjDWbJccRf6Rb+BQrw7w=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.84.20] ([149.224.144.145]) by mail.gmx.com (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MCbEf-1k1ThB1DKV-009fIN; Thu, 09
+ Jul 2020 16:06:58 +0200
+Reply-To: vtol@gmx.net
+Subject: Re: [DSA] L2 Forwarding Offload not working
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>
+References: <29a9c85b-8f5a-2b85-2c7d-9b7ca0a6cb41@gmx.net>
+ <20200709135335.GL928075@lunn.ch>
+From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Message-ID: <50c35a41-45c2-1f2b-7189-96fe7c0a1740@gmx.net>
+Date:   Thu, 9 Jul 2020 14:06:00 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.110] (77.126.93.183) by AM0PR01CA0158.eurprd01.prod.exchangelabs.com (2603:10a6:208:aa::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Thu, 9 Jul 2020 13:58:38 +0000
-X-Originating-IP: [77.126.93.183]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 28d2f753-1352-4156-a430-08d824102fc9
-X-MS-TrafficTypeDiagnostic: VI1PR05MB5997:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB5997CFFC81F873DD675D33B8AE640@VI1PR05MB5997.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1qAk97ptjqbPRntAjPqaYjaJ3/NvR1kEQSnK4sIzQ7oD+u56LMRvpELPyb2MVpi800S+aygV4c/0Y9gC/HEEPYyrTvtXx26i7e45KtdDxBRTMn24p/7UAx58c2F/Vuh0guUXuxmh93NaBC3o9HYgjr2fpowbQxni0i8L0jofCZ1BFu3ZoyyP7MxiXRhQ+Qm4uaeeokujrLuDLahf5Yzy1sO2xZclwIIAQDLbNY3jdjSaKqfgSYQZTTaJxIQBJsePe48ChxRelOaLeIGXwNbFsEEGVkzS4HixxUNFGm4ktPxXGIFedx4LC3p334erR/v+cx8d15vocreM6R8qnDD/hY/g/+6IcsHlyfrhK+52JMzQ+PpyIPC6VUZcsZxr38Xs
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0501MB2205.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(5660300002)(86362001)(186003)(2616005)(36756003)(956004)(2906002)(4326008)(4744005)(16526019)(31696002)(31686004)(52116002)(6666004)(8676002)(8936002)(26005)(498600001)(83380400001)(16576012)(53546011)(66476007)(66556008)(66946007)(6486002)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: DhSxrzqBaueK+kVuM8lROuVzS4mknEJGe0mruDYIPE7Id38D9zHwWIvW95udtfWE/tYSpnJVn212z3cKJbLjxNYo6HCAaNUaYbD6Na5EEjkhVY1bafEGGYHX5YkOl79txZN5DZ/P+TJjX3MtAPrRjribkEDf8NUCQNBYABZLOwtDkqJzejl5ajHPxqdzDQYkXDf2bvd+wdiXUB8jY2zmjDEpYB08Yb6jbSLZWoE7kgBludw0cPSR6j3O3xJCH0ADXnPP1UsnVFKJmHW96+P4VWV3aJXev/O8caa9XkrWp+yfLdgbrqYP4AJz8UO6dkHFgrgYF6s2qf26E1S1RUbiF8E81Ncncn10Ujk7D6yCTyZaN7ScAKu6OJgguCfLVtS+03qdzFJKTi0BnYdhyPJgJYdJZXKjocm3UrQSJKb4ZSLCGuifJU0DpwCSHAl0KvOWNv14CLAXyV9OHne+LeqAwT//EJxohtTzQa9VHFHtIHg=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28d2f753-1352-4156-a430-08d824102fc9
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0501MB2205.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2020 13:58:41.5194
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2m3GegZwh4QfTW/dRptlg7p2jKJi04MwG3tG2VNT2BgEjB1vB5lTkkAehktHGHJV18TpAOdPHdXCkQykkuRypA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5997
+In-Reply-To: <20200709135335.GL928075@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-GB
+X-Provags-ID: V03:K1:J089gYuFzdFfhIQkMSqpzrnqBsxoIB/1NyApFm6bgw7JgimWfva
+ uGXIB7ko52iXZy1iHk53VFqqDn8cw+23zghb4AgBXOlXo/Q5ZPQEg3JrvyVcWEbP5zt0bDP
+ DLBz7WWQLP6nccbw5NegieeFboSzPOJRz7ZoVlLUWx1CMh6nSGeU1js5bFt9KRqmHf0+2XO
+ kPjz3iCNODJiHDFOxjOwg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:aeA0J4rdMRI=:N9OLkimiaHL/nPlEDCrQrA
+ hodMvACIQoRKa/qYlAK5VGbCvRsOpmI8LxoxHRMm7Y4/XRCYmtUkBM++7biP1hDZx4zN8b89y
+ HesbtW+y6xsFbDNRT1IYdbDjyC+PXkKW7AeELzvk+DV20ftrthJ0AvtfmH9UddUwMFrd+EwTs
+ jXiHNmJipXdwcahk27iAN5+TiITPD7uu+C9icxq4GnSAwFa98rzKhoL8O1WvruEQ0+LacoyK/
+ IfLzNBaktgPfAC8+WAnE1DFaxv9YIdeVeg/nAENNV7u5tFVmFEyQ+B4WGQVHnpG6D/16oMLug
+ oRGCxZjkdqmweUaR+RJhe2NCx7SF107jwbllQ16ABNVLzh8AXSMv+zudRdHC75acITTSCNTKA
+ gcYqtmPJupBtqNhE2AjYcKfpMGmJ8eTxiQ32EVOXPxg+C0mod/JBzIlWmeQnK2yaZhXvSWycY
+ LAs6vk2OV+YXeL0OJww80oR+GeIGr3WdZtgjRCmuiMqvcMQhc5L7Oz5Hkk0ibANF//CaTj0nu
+ QVMDhyo4IEhr23v7kayIpkGp0l3yyYeyLBCwOSkvMqDNXnS3zS2TuK7iuu7gHJ3Jrj93jCfX0
+ MaHaU0BhjchtSjcu5dL8Rc8cua+aI3pjfSHKud/2WFoY8o72iyqv8GqZciK9nQXLnOOzNf7kH
+ w7lvYcwDfibWAue5n3SSsBFFsGaSNCMK3OrYwJWrj3Dya367H70ePt6r3Z6QHfP71oleqlTfl
+ YG8Xqe+kUIv5m4Ru4+EykK+Vayqz4bn01sh1G4l1aCXejlTBroAj5VR31xruZTvhZ0iDDLEl5
+ I/H6+bx3bYrap6LbNscO40sv25OTj06MA7oH5AmfZ2q5iGExjObdrMuTdguov00XfzxQkNzj8
+ XpzntyenvEKqfRVlc46loiW2x9BYTnG0V0IltNLJwfvF4JJMydS6d+stkwLXEeN+3A2YGqTzP
+ iswaxIYUewaZ0yDS5LGmsq5Tp8r98revssdCY3rL5NynWMnrqSqZ+nVHDMrmvBXXIUV5r9/GK
+ 0C1N8HaKMtcYNDDO28Yv04z7f9JCq9Nw45z+ZIPGYIIv9ZBk6utwGw753UarNm5XyiXA8Fypn
+ rCD6zq+Ri25aY2iA5qJeQqZctnG4NXWcCp82BjiwbMlXwKyPoVizrr+eYWVmh4CdsTzd3KEs1
+ xJ9eqcyrTY6cZiXaTIIkcMlQw3empimZOzoPQPbZqo/uEqk4qEj8LWcmsErkGHqk8NRN/s4gk
+ CyyY+oQhoDGQfAs2T
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 09/07/2020 13:53, Andrew Lunn wrote:
+> On Thu, Jul 09, 2020 at 11:32:00AM +0000, =D1=BD=D2=89=E1=B6=AC=E1=B8=B3=
+=E2=84=A0 wrote:
+>> "kernel":"5.4.50", "system":"ARMv7 Processor rev 1
+>> (v7l)","model":"Turris
+>> Omnia","board_name":"cznic,turris-omnia","release":{"distribution":"Ope=
+nWrt","version":"SNAPSHOT","revision":"r13719-66e04abbb6","target":"mvebu/=
+cortexa9","}
+>>
+>> CPU Marvell Armada 385 88F6820 | Switch=C2=A0 Marvell 88E6176
+>>
+>> soft bridge br-lan enslaving DSA ports lan0 lan1 lan2
+>>
+>> DSA master device eth1 (subsequent ip l exhibits slaves as lanX@eth1)
+>> ----------
+>>
+>> After perusal of
+>> https://www.kernel.org/doc/Documentation/networking/switchdev.txt it is
+>> my understanding that offloading works only for static FDB entries,
+>> though not clear to me:
+>>
+>> * what the logic is behind, and
+>> * why DSA ports are not static FDB entries by default (would only seem
+>> logical)
+> Hello
+>
+> With DSA, we have two sets of tables. The switch performs address
+> learning, and the software bridge performs address learning. No
+> attempt is made to keep these dynamic FDB entries in sync. There is
+> not enough bandwidth over the MDIO link to keep the two tables in
+> sync. However, when you dump the FDB using the bridge command, you get
+> to see the combination of both tables. The hardware will perform
+> forwarding based on its table, and the software bridge based on its
+> table.. However, if there is no entry in the hardware table for a
+> given destination MAC address, it will forward the frame to the
+> software bridge, so it can decide what to do with it.
+>
+> For static FDB entries which the user adds, they are first added to
+> the software bridge, and then pushed down to the switch.
+>
+>      Andrew
 
-On 7/9/2020 4:18 AM, Jakub Kicinski wrote:
-> Convert to new infra, make use of the ability to sleep in the callback.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->   .../net/ethernet/mellanox/mlx4/en_netdev.c    | 107 ++++--------------
->   drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |   2 -
->   2 files changed, 25 insertions(+), 84 deletions(-)
-> 
+Thank you for the instantaneous feedback and insight!
 
-Hi Jakub,
-Thanks for your patch.
+Two questions if you do not mind:
 
-Our team started running relevant functional tests to verify the change 
-and look for regressions.
-I'll update about the results once done.
+1) does the above apply to all stable kernel releases or only =3D> 5.4?
+Because with 4.14 there are reports that dynamic addresses of clients
+roaming from a switch port to an bridge port (upstream of the switch,
+e.g. WLan AP provided by the router) facing time outs until the switch
+retires (ages) the client's MAC.
 
-Regards,
-Tariq
+2) The document
+https://www.kernel.org/doc/Documentation/networking/switchdev.txt cites
+(for static entries)
+
+bridge command will label these entries "offload"
+
+Is that still up-to-date or rather outdated from the earlier days of DSA?
