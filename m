@@ -2,111 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1251219F1A
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 13:32:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CEE7219F55
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 13:52:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727058AbgGILcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 07:32:35 -0400
-Received: from mout.gmx.net ([212.227.17.21]:46435 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726315AbgGILcf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 07:32:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1594294353;
-        bh=xf3HvEHnxDgbM/Vy22VMW98HUJTkiezhWUckf8FOXBA=;
-        h=X-UI-Sender-Class:To:Reply-To:From:Subject:Date;
-        b=BrzGzjyhgylVy31DfhUoRtQUpqbk78dlPBrstuW2hhhCzrvUQk7MkSYWh0NuRpL38
-         XGmWTiG+ip6nKvFfwBxF0lYfKndSbV5pcoqyQlYbzZZpdCTAofITjTINTFU9lz60A+
-         8ENCQ++c4lDjS7G0noT4dm/uDG7dq4WKl/L7dpZQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.84.20] ([149.224.144.145]) by mail.gmx.com (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1McH5Q-1kTwbd2zF6-00cdaX for
- <netdev@vger.kernel.org>; Thu, 09 Jul 2020 13:32:33 +0200
-To:     netdev@vger.kernel.org
-Reply-To: vtol@gmx.net
-From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
-Subject: [DSA] L2 Forwarding Offload not working
-Message-ID: <29a9c85b-8f5a-2b85-2c7d-9b7ca0a6cb41@gmx.net>
-Date:   Thu, 9 Jul 2020 11:32:00 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0
+        id S1727814AbgGILwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 07:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727058AbgGILwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 07:52:21 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A4DC08C5DD
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 04:52:21 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id f139so1485033wmf.5
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 04:52:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RgnLFkfDlMduGKE/ztPFGecYYc7s1DxZ/PWGRQJJLRs=;
+        b=ZtbKjxMvYP/9FTODupwovxGroCNIJmYSlsUpzaQ0CEcJTMNqQB9k02e8gNtpuMlUGS
+         YkOAXNIFqxplT/lIOV1voPg4Xw2jsXMdoOM5W+quL5iJp77pYnViJ+wsOj/m8VRnNOiY
+         4lHtvYKQRtS7Msyq1+AbHrymke6YGaWmtisdc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RgnLFkfDlMduGKE/ztPFGecYYc7s1DxZ/PWGRQJJLRs=;
+        b=GxFfuD5msRzcO1ZqqVzzdlzNUepKYjO3/TfEVfZh5xImLzAPDcHHTPggZXbINqF7oJ
+         w8i70q9rRZIoi8dVgZnVmW820RiKNOynFiK2luBbtX6TjTjlpvXkzD5rNuw7KE0t634S
+         cSftWiLhd73o6j5tswg4xlIArWpSF5I0I0SzJ8N+hDPXtiyqUdYpRxzwPQ6Frk4gHks+
+         qLojoyQylATTH1jUFjVejpYPDcWNzyrdwLrSfQre4f4EHdJPsGIw1PCm7a68peVe48Ql
+         oc7YuktH5LbzWHlGAUWu2awPELV7xt/sIYNUk8HJILoJJgafi+nk7VRAkHeDaelgnFsH
+         BxVQ==
+X-Gm-Message-State: AOAM530EEDB7b7VWRJaft11t75wPBUC1VwjqRPB5bySket7s7swS15bP
+        V8NVGzkxwMALXUcMo17rUUfIcA==
+X-Google-Smtp-Source: ABdhPJw2JnRN/XTa6+WZL2sIDnwotc3qUGVnnswUvYbo913hMwzPuzrdX231q7/X1v5wKPOQ0hYQ4A==
+X-Received: by 2002:a1c:7916:: with SMTP id l22mr13271541wme.115.1594295539736;
+        Thu, 09 Jul 2020 04:52:19 -0700 (PDT)
+Received: from antares.lan (6.b.4.5.a.4.9.1.1.9.d.d.1.2.d.8.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:8d21:dd91:194a:54b6])
+        by smtp.gmail.com with ESMTPSA id u1sm6331001wrb.78.2020.07.09.04.52.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jul 2020 04:52:18 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Cc:     kernel-team@cloudflare.com, Martin KaFai Lau <kafai@fb.com>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf] selftests: bpf: fix detach from sockmap tests
+Date:   Thu,  9 Jul 2020 12:51:51 +0100
+Message-Id: <20200709115151.75829-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-GB
-X-Provags-ID: V03:K1:62i4Wz/FhuEPUsYu6ApmOqWlKuKmF0z4p8Ea2EI9Gz29ZTw2K4j
- PuT9onFVcXijXy1yJ/D+JKPaAHxAOeOSl2dzkhqVmjSNonLJt6mF67EZHtoZF1fKtP7gQ9Z
- VzXkOWqIXqluRz3Llea+1AlchStyRUBfBqpkP/vZtKFnTbDRRxQAdVrzFpc50chd/l/ezdL
- Oz9df6bjcrROKWduD62QQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:XInn5lNdZhs=:TcBRX1PtZ3RSoI8HbQYP5i
- rF9TB81+G/RmczGhuK44odJCpgblZi+CkzbNyhstBqVIOy9NZMifDIVrKUGOj8azLTVHz93Jm
- njKxAD3QDvU7DhYrIoorOLvGrQ8pc0ediz+FlI3aPWptCNM9S/LoEc5drzEeFl/5IlRfZ9JIL
- vKsFjE3zeRDkwqfh3+K386zElwxk+ptg1C0gMmrtj5GvC+hXQNoAWoeO1NFFm8wi5YJULJ2Q7
- J7bGYL/2yk6HeTVxoKd3wV9MrOVLNS7+V4kHRC4F2KwHniCj9dnQp7H4ztcbHVPrn4x65BGrJ
- DEhSNiltCWJMKVRIFK8RuZNd+m9r5RaCKYz9jTIFC5WUJl51Ue9ZLzpnFvHs7eIrokfqHGOkp
- YVfDM/WlQ0vy/GBGJ27BTloH2jM5WiijBkDa5tXi9tBR0uJ8xk2lP9FcnN50gLBOuYljnD/MM
- eLhRn27tSghw9lQQMnXd2X6FoOXQPK/qtRNTN1rnprflWBT7R8NKMz8qzYXBfukw+oZtfIJpS
- 2uN+SMFPJGoZo6kBMLeXLqgH573lkUOYHAPAxJbFuZyU/nLQ+owFzP0ieSBYGseLx/vdL5qGb
- ZXEStmAINzCJT41lWNDb8rH3+UD1DrpdddX+agXB4TnukMezXlZKs4XoFCDloMRVvFqvHYRd7
- w1NpX3V3HzmAr9pq181TwZn26MC8oZ1F1CPHPe4Ed4rxOSg+ebxuPY4g86qdhS1xAMaJL5X2D
- C8BJx7hgCiqoRqxJgfkNOQcsreacH5E1+2fK8OtP02uqLsL2fITq7K77130q9LAXhCDB14Wkz
- kyNHK3BSSbDZXk9f53lZT80d8SyNSvOS4iEvn1xBYW7rZP91xoqG/WSeZg4E4PSm707La81zo
- zLQqaxjOuJnftzdnwpKqtIbr90hLC1w2E2eQj6CaIC8GA+Nv5W+PKqs68cmL+2Scf+kNkOizz
- to7rU9wnfg0hcf7n+KBDP8q6OwOULLoW5Aob/bMQKY27aLFn1MuuXjqQiD1cJxjesxmusVHu6
- 0wZv7MwTLAlhS2kOjh9sX0XtU/Mr4kJGaVSprNY414/XkO+2vI9aE21x5QiGBZSgJ9171N7V6
- z9073YEs5nfJj2gGFBCx1j46bjCA8heEtm2z4bjQGNJDfPyRTzaWH775mtlOq6V8QeYBUuDwY
- +BElXnosEbrn/Rri+fXLgWxRbjCuIqNkrfr9DplmCkxVh4MvehLwpLCL3oUCkqAaZNvZiGIYK
- jJcjYb3z2iyiC6ZNW
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"kernel":"5.4.50", "system":"ARMv7 Processor rev 1
-(v7l)","model":"Turris
-Omnia","board_name":"cznic,turris-omnia","release":{"distribution":"OpenWr=
-t","version":"SNAPSHOT","revision":"r13719-66e04abbb6","target":"mvebu/cor=
-texa9","}
+Fix sockmap tests which rely on old bpf_prog_dispatch behaviour.
+In the first case, the tests check that detaching without giving
+a program succeeds. Since these are not the desired semantics,
+invert the condition. In the second case, the clean up code doesn't
+supply the necessary program fds.
 
-CPU Marvell Armada 385 88F6820 | Switch=C2=A0 Marvell 88E6176
+Reported-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+Fixes: bb0de3131f4c ("bpf: sockmap: Require attach_bpf_fd when detaching a program")
+---
+ tools/testing/selftests/bpf/test_maps.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-soft bridge br-lan enslaving DSA ports lan0 lan1 lan2
+diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
+index 6a12a0e01e07..754cf611723e 100644
+--- a/tools/testing/selftests/bpf/test_maps.c
++++ b/tools/testing/selftests/bpf/test_maps.c
+@@ -789,19 +789,19 @@ static void test_sockmap(unsigned int tasks, void *data)
+ 	}
+ 
+ 	err = bpf_prog_detach(fd, BPF_SK_SKB_STREAM_PARSER);
+-	if (err) {
++	if (!err) {
+ 		printf("Failed empty parser prog detach\n");
+ 		goto out_sockmap;
+ 	}
+ 
+ 	err = bpf_prog_detach(fd, BPF_SK_SKB_STREAM_VERDICT);
+-	if (err) {
++	if (!err) {
+ 		printf("Failed empty verdict prog detach\n");
+ 		goto out_sockmap;
+ 	}
+ 
+ 	err = bpf_prog_detach(fd, BPF_SK_MSG_VERDICT);
+-	if (err) {
++	if (!err) {
+ 		printf("Failed empty msg verdict prog detach\n");
+ 		goto out_sockmap;
+ 	}
+@@ -1090,19 +1090,19 @@ static void test_sockmap(unsigned int tasks, void *data)
+ 		assert(status == 0);
+ 	}
+ 
+-	err = bpf_prog_detach(map_fd_rx, __MAX_BPF_ATTACH_TYPE);
++	err = bpf_prog_detach2(parse_prog, map_fd_rx, __MAX_BPF_ATTACH_TYPE);
+ 	if (!err) {
+ 		printf("Detached an invalid prog type.\n");
+ 		goto out_sockmap;
+ 	}
+ 
+-	err = bpf_prog_detach(map_fd_rx, BPF_SK_SKB_STREAM_PARSER);
++	err = bpf_prog_detach2(parse_prog, map_fd_rx, BPF_SK_SKB_STREAM_PARSER);
+ 	if (err) {
+ 		printf("Failed parser prog detach\n");
+ 		goto out_sockmap;
+ 	}
+ 
+-	err = bpf_prog_detach(map_fd_rx, BPF_SK_SKB_STREAM_VERDICT);
++	err = bpf_prog_detach2(verdict_prog, map_fd_rx, BPF_SK_SKB_STREAM_VERDICT);
+ 	if (err) {
+ 		printf("Failed parser prog detach\n");
+ 		goto out_sockmap;
+-- 
+2.25.1
 
-DSA master device eth1 (subsequent ip l exhibits slaves as lanX@eth1)
-=2D---------
-
-After perusal of
-https://www.kernel.org/doc/Documentation/networking/switchdev.txt it is
-my understanding that offloading works only for static FDB entries,
-though not clear to me:
-
-* what the logic is behind, and
-* why DSA ports are not static FDB entries by default (would only seem
-logical)
-
-That said queried bridge fdb for lan2 (as example here), producing:
-
-44:8a:5b:47:0b:c2 dev lan2 master br-lan
-44:8a:5b:47:0b:c2 dev lan2 vlan 1 self
-
-then went ahead with
-
-bridge fdb add 44:8a:5b:47:0b:c2 dev lan2 vlan 1 self
-
-resulting in
-
-44:8a:5b:47:0b:c2 dev lan2 master br-lan
-44:8a:5b:47:0b:c2 dev lan2 vlan 1 self static
-
-So it is static now but nothing about offload still. Next up
-
-ip l s br-lan ty bridge vlan_filtering 1
-
-checking again bridge fdb and now exhibiting
-
-44:8a:5b:47:0b:c2 dev lan2 vlan 1 master br-lan
-44:8a:5b:47:0b:c2 dev lan2 master br-lan
-44:8a:5b:47:0b:c2 dev lan2 vlan 1 self static
-
-Do I suffer some sort of misconception of how to get it working, missing
-something?
