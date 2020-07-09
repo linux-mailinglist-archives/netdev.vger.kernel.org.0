@@ -2,76 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ACCA21A573
-	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 19:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8427E21A574
+	for <lists+netdev@lfdr.de>; Thu,  9 Jul 2020 19:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727768AbgGIRKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 13:10:06 -0400
-Received: from out0-137.mail.aliyun.com ([140.205.0.137]:44005 "EHLO
-        out0-137.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727003AbgGIRKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 13:10:06 -0400
+        id S1727856AbgGIRKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 13:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727003AbgGIRKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 13:10:25 -0400
+Received: from mail-vk1-xa43.google.com (mail-vk1-xa43.google.com [IPv6:2607:f8b0:4864:20::a43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E57BC08C5CE
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 10:10:25 -0700 (PDT)
+Received: by mail-vk1-xa43.google.com with SMTP id s192so609251vkh.3
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 10:10:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=alibaba-inc.com; s=default;
-        t=1594314604; h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        bh=iMnBtfixZth/446ZleyX3VrFVJIJxOTvs3Y0sw4XXfM=;
-        b=OHTDpTh5P+frrjAmB8jYrrWXRRa6P4mINtFJ46rTf/0Bi14G7EwKY1RiwFcK+uR30S6gUxa8x6fahHF9C5lG2jlXt1r0Do2UIOI0ruMBpLjsLjK1cqeaZhh9ZYq+LT2svfSw0tm0ahA0dOSNTp40NmaIru2Q6IAY7ItdqqYGPp8=
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R461e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e02c03311;MF=xiangning.yu@alibaba-inc.com;NM=1;PH=DS;RN=2;SR=0;TI=SMTPD_---.I.2V46Y_1594314602;
-Received: from US-118000MP.local(mailfrom:xiangning.yu@alibaba-inc.com fp:SMTPD_---.I.2V46Y_1594314602)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 10 Jul 2020 01:10:03 +0800
-Subject: Re: [PATCH iproute2-next v2] iproute2 Support lockless token bucket
- (ltb)
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <2a2b2cc9-eeba-4176-198f-fab74ebe4a33@alibaba-inc.com>
- <20200708233305.07b53f8a@hermes.lan>
-From:   "=?UTF-8?B?WVUsIFhpYW5nbmluZw==?=" <xiangning.yu@alibaba-inc.com>
-Message-ID: <00e9179c-a4a4-fb37-705e-0d790ae9b7b0@alibaba-inc.com>
-Date:   Fri, 10 Jul 2020 01:10:02 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nb4yAj76qW7j7QKdCL7aF0Y1HRm3InumXPzB7ld987M=;
+        b=GOFlgpfHpElM6QHDT9KhkpShl7IauszBWYmm3pxyIwkfhYefzDv62QwQ27IPQ5iI3e
+         squ0qrsg//rPdULElxbRHqcmIR19wzNSD2KoggqhwyL13ee8XoRTiER8tDJDeCL6Xd0c
+         48VRl8Q+mcTBKclba1v24jmtK80xno5U1i0NMihQwQYPzEixIFnSOFVMUUyXZkbFdRU5
+         1zGwP0ckj5jo7NDuoFzvnh1Ad5s/XXuuUzS1SjSJCyROtkZBowAI18tIdScQYVOCcv1l
+         9XoS4y0prM3lalwgJGBBnUeQ8jIMLQ0csujjCNl7SwXoJfNwvMqac/BmJgCNwjfqul4V
+         WGAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nb4yAj76qW7j7QKdCL7aF0Y1HRm3InumXPzB7ld987M=;
+        b=Q8QYiYaBZ/Tm9uFnFNco5/IGwnrAWiVIhz6oQGjmvgz7mvPcVtGRQ4f1VVbbCKuhLy
+         9PPsRQbSYnGgqb3ugmP97hRH9KIqL5kLP+/NnFH/UWYW6cuAPhMzm7ZgiW55CmMedhN1
+         Ih5kN/X+oWkdQ5UwxdfXJ2TV427COIq6RhNE+PwS1LloZ/3h4OSpRINdHmCdMyZvtjHm
+         +xoxthKCIcWe8Hl1snAfBHt4gEfHJBZIVO3VqoY5UxUX3GmdBieAv3VNkTD3taBGVYdQ
+         6UktVVcKwF5TUUWQFgY7/rBpJs7N3OQ4KeAC8RG4MQ3Vq1FGy11VWyPvzcXqqGGI0LUf
+         L+HA==
+X-Gm-Message-State: AOAM532ed3GQ9k2K8HLZwN9g6USv8Q+ARCBA0QgN6IYSYkzOiMGnCzQo
+        lQxKEbysR+gmULXYYDAVcQJ9luckM+XhPY7Z66Q=
+X-Google-Smtp-Source: ABdhPJyyP8xLmYVGVYAZsCAIJd/kIf9+f28sfFK6TA3G7M+etecLuaj0My8Gn1u7i/ccLtDPhtGz2eHqGoWovJLQx/8=
+X-Received: by 2002:a1f:16c3:: with SMTP id 186mr31551559vkw.16.1594314624149;
+ Thu, 09 Jul 2020 10:10:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200708233305.07b53f8a@hermes.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1594287951-27479-1-git-send-email-magnus.karlsson@intel.com> <20200709170356.pivsunwnk57jm4kr@bsd-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200709170356.pivsunwnk57jm4kr@bsd-mbp.dhcp.thefacebook.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Thu, 9 Jul 2020 19:10:13 +0200
+Message-ID: <CAJ8uoz2_m+-s4UXuChu9Edk99BS7NK=0cRFGFB4+z9KsHiDTMg@mail.gmail.com>
+Subject: Re: [PATCH bpf] xsk: do not discard packet when QUEUE_STATE_FROZEN
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        A.Zema@falconvsystems.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jul 9, 2020 at 7:06 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+>
+> On Thu, Jul 09, 2020 at 11:45:51AM +0200, Magnus Karlsson wrote:
+> > In the skb Tx path, transmission of a packet is performed with
+> > dev_direct_xmit(). When QUEUE_STATE_FROZEN is set in the transmit
+> > routines, it returns NETDEV_TX_BUSY signifying that it was not
+> > possible to send the packet now, please try later. Unfortunately, the
+> > xsk transmit code discarded the packet and returned EBUSY to the
+> > application. Fix this unnecessary packet loss, by not discarding the
+> > packet and return EAGAIN. As EAGAIN is returned to the application, it
+> > can then retry the send operation and the packet will finally be sent
+> > as we will likely not be in the QUEUE_STATE_FROZEN state anymore. So
+> > EAGAIN tells the application that the packet was not discarded from
+> > the Tx ring and that it needs to call send() again. EBUSY, on the
+> > other hand, signifies that the packet was not sent and discarded from
+> > the Tx ring. The application needs to put the packet on the Tx ring
+> > again if it wants it to be sent.
+>
+> Doesn't the original code leak the skb if NETDEV_TX_BUSY is returned?
+> I'm not seeing where it was released.  The new code looks correct.
 
+You are correct. Should also have mentioned that in the commit message.
 
-On 7/8/20 11:33 PM, Stephen Hemminger wrote:
-> On Thu, 09 Jul 2020 00:38:27 +0800
-> "YU, Xiangning" <xiangning.yu@alibaba-inc.com> wrote:
-> 
->> +static int ltb_parse_class_opt(struct qdisc_util *qu, int argc, char **argv,
->> +			       struct nlmsghdr *n, const char *dev)
->> +{
->> +	struct tc_ltb_opt opt;
-> 
-> If you use empty initializer in C it will make everything 0 and save you some pain.
-> 
-> 	struct tc_ltb_opt opt = { };
-> 
+/Magnus
 
-Thank you!
-> 
->> +		fprintf(f, "rate %s ", sprint_rate(rate64, b1));
->> +		fprintf(f, "ceil %s ", sprint_rate(ceil64, b1));
->> +		if (show_details) {
->> +			fprintf(f, "measured %llu allocated %llu highwater %llu",
->> +				lopt->measured, lopt->allocated,
->> +				lopt->high_water);
-> 
-> 
-> All output has to be in JSON. Any use of fprintf(f, ...) directly
-> is a indication to me of code that is not supporting JSON correctly.
-> 
-
-I see your point now. Looks like everything is heading to support JSON, but we have some thing left in other files to be cleaned up. Will change all fprintf in this file.
-
-Thanks,
-- Xiangning
+>
+> > Fixes: 35fcde7f8deb ("xsk: support for Tx")
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > Reported-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
+> > Suggested-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
+> > ---
+> >  net/xdp/xsk.c | 13 +++++++++++--
+> >  1 file changed, 11 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index 3700266..5304250 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -376,13 +376,22 @@ static int xsk_generic_xmit(struct sock *sk)
+> >               skb->destructor = xsk_destruct_skb;
+> >
+> >               err = dev_direct_xmit(skb, xs->queue_id);
+> > -             xskq_cons_release(xs->tx);
+> >               /* Ignore NET_XMIT_CN as packet might have been sent */
+> > -             if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
+> > +             if (err == NET_XMIT_DROP) {
+> >                       /* SKB completed but not sent */
+> > +                     xskq_cons_release(xs->tx);
+> >                       err = -EBUSY;
+> >                       goto out;
+> > +             } else if  (err == NETDEV_TX_BUSY) {
+>
+> Should be "if (err == ..." here, no else.
+>
+>
+> > +                     /* QUEUE_STATE_FROZEN, tell application to
+> > +                      * retry sending the packet
+> > +                      */
+> > +                     skb->destructor = NULL;
+> > +                     kfree_skb(skb);
+> > +                     err = -EAGAIN;
+> > +                     goto out;
+> >               }
+> > +             xskq_cons_release(xs->tx);
+> >
+> >               sent_frame = true;
+> >       }
+> > --
+> > 2.7.4
+> >
