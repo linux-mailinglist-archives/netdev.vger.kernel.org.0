@@ -2,157 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 741A021BA17
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 17:58:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53F9221BA29
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 18:01:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727978AbgGJP6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 11:58:17 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:13189 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727851AbgGJP6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 11:58:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1594396692; x=1625932692;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=kPpp9D62kCDEEcaAKz8Tk+DV6UF7wvF3qu4DbXt42lc=;
-  b=XFRWZ4PPpUcViE+lzL0H4USxyTvxxNyfyYbhCcNCV0//lF2P8H78pMot
-   YH/wKCgjWjGqn3FsjwvpWUGlPR8+Qjuq+eKRRGAzlMDZ4jSCXq73P07ab
-   aIx3b8SuR+HkwSwwPD8f9ucTPMhjU8Gqx7lN09uUNtPhbubNc0snEuya9
-   c=;
-IronPort-SDR: 1SdK163lNIQPLwRn2LcEuz8VO0YsGC/GJ2CL1Wg0RdYkI13KY+U/N5aDSvz1qY7VlQobBhndLi
- kDcHEnnItUsA==
-X-IronPort-AV: E=Sophos;i="5.75,336,1589241600"; 
-   d="scan'208";a="41128815"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-168cbb73.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 10 Jul 2020 15:58:11 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2c-168cbb73.us-west-2.amazon.com (Postfix) with ESMTPS id 472C8A073B;
-        Fri, 10 Jul 2020 15:58:10 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 10 Jul 2020 15:58:09 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.162.73) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 10 Jul 2020 15:58:05 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-CC:     <netdev@vger.kernel.org>, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        <osa-contribution-log@amazon.com>, Julian Anastasov <ja@ssi.bg>
-Subject: [PATCH v4 net-next] inet: Remove an unnecessary argument of syn_ack_recalc().
-Date:   Sat, 11 Jul 2020 00:57:59 +0900
-Message-ID: <20200710155759.87178-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+        id S1727932AbgGJQAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 12:00:52 -0400
+Received: from smtprelay0092.hostedemail.com ([216.40.44.92]:35094 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726925AbgGJQAv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 12:00:51 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 79AB018224D66;
+        Fri, 10 Jul 2020 16:00:50 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1381:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3165:3353:3622:3653:3865:3866:3867:3868:3870:3872:3873:4321:5007:6119:6737:7903:10004:10400:10848:11232:11473:11658:11914:12043:12048:12297:12555:12679:12740:12760:12895:13069:13311:13357:13439:14181:14659:14721:21080:21451:21627:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: swim81_190e06826ecf
+X-Filterd-Recvd-Size: 2357
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf04.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 10 Jul 2020 16:00:48 +0000 (UTC)
+Message-ID: <a2f48c734bdc6b865a41ad684e921ac04b221821.camel@perches.com>
+Subject: Re: [PATCH] MAINTAINERS: XDP: restrict N: and K:
+From:   Joe Perches <joe@perches.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        "Alexander A. Klimov" <grandmaster@al2klimov.de>, ast@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        john.fastabend@gmail.com, mchehab+huawei@kernel.org,
+        robh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Date:   Fri, 10 Jul 2020 09:00:46 -0700
+In-Reply-To: <7d4427cc-a57c-ca99-1119-1674d509ba9d@iogearbox.net>
+References: <20200709194257.26904-1-grandmaster@al2klimov.de>
+         <d7689340-55fc-5f3f-60ee-b9c952839cab@iogearbox.net>
+         <19a4a48b-3b83-47b9-ac48-e0a95a50fc5e@al2klimov.de>
+         <7d4427cc-a57c-ca99-1119-1674d509ba9d@iogearbox.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.73]
-X-ClientProxiedBy: EX13D43UWA003.ant.amazon.com (10.43.160.9) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 0c3d79bce48034018e840468ac5a642894a521a3 ("tcp: reduce SYN-ACK
-retrans for TCP_DEFER_ACCEPT") introduces syn_ack_recalc() which decides
-if a minisock is held and a SYN+ACK is retransmitted or not.
+On Fri, 2020-07-10 at 17:14 +0200, Daniel Borkmann wrote:
+> On 7/10/20 8:17 AM, Alexander A. Klimov wrote:
+> > Am 09.07.20 um 22:37 schrieb Daniel Borkmann:
+> > > On 7/9/20 9:42 PM, Alexander A. Klimov wrote:
+> > > > Rationale:
+> > > > Documentation/arm/ixp4xx.rst contains "xdp" as part of "ixdp465"
+> > > > which has nothing to do with XDP.
+[]
+> > > > diff --git a/MAINTAINERS b/MAINTAINERS
+[]
+> > > > @@ -18708,8 +18708,8 @@ F:    include/trace/events/xdp.h
+> > > >   F:    kernel/bpf/cpumap.c
+> > > >   F:    kernel/bpf/devmap.c
+> > > >   F:    net/core/xdp.c
+> > > > -N:    xdp
+> > > > -K:    xdp
+> > > > +N:    (?:\b|_)xdp(?:\b|_)
+> > > > +K:    (?:\b|_)xdp(?:\b|_)
+> > > 
+> > > Please also include \W to generally match on non-alphanumeric char given you
+> > > explicitly want to avoid [a-z0-9] around the term xdp.
+> > Aren't \W, ^ and $ already covered by \b?
+> 
+> Ah, true; it says '\b really means (?:(?<=\w)(?!\w)|(?<!\w)(?=\w))', so all good.
+> In case this goes via net or net-next tree:
 
-If rskq_defer_accept is not zero in syn_ack_recalc(), max_retries always
-has the same value because max_retries is overwritten by rskq_defer_accept
-in reqsk_timer_handler().
+This N: pattern does not match files like:
 
-This commit adds three changes:
-- remove redundant non-zero check for rskq_defer_accept in
-   reqsk_timer_handler().
-- remove max_retries from the arguments of syn_ack_recalc() and use
-   rskq_defer_accept instead.
-- rename thresh to max_syn_ack_retries for readability.
+	samples/bpf/xdp1_kern.c
 
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
-CC: Julian Anastasov <ja@ssi.bg>
----
- net/ipv4/inet_connection_sock.c | 33 +++++++++++++--------------------
- 1 file changed, 13 insertions(+), 20 deletions(-)
+and does match files like:
 
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index afaf582a5aa9..22b0e7336360 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -648,20 +648,19 @@ struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
- EXPORT_SYMBOL_GPL(inet_csk_route_child_sock);
- 
- /* Decide when to expire the request and when to resend SYN-ACK */
--static inline void syn_ack_recalc(struct request_sock *req, const int thresh,
--				  const int max_retries,
--				  const u8 rskq_defer_accept,
--				  int *expire, int *resend)
-+static void syn_ack_recalc(struct request_sock *req,
-+			   const int max_syn_ack_retries,
-+			   const u8 rskq_defer_accept,
-+			   int *expire, int *resend)
- {
- 	if (!rskq_defer_accept) {
--		*expire = req->num_timeout >= thresh;
-+		*expire = req->num_timeout >= max_syn_ack_retries;
- 		*resend = 1;
- 		return;
- 	}
--	*expire = req->num_timeout >= thresh &&
--		  (!inet_rsk(req)->acked || req->num_timeout >= max_retries);
--	/*
--	 * Do not resend while waiting for data after ACK,
-+	*expire = req->num_timeout >= max_syn_ack_retries &&
-+		  (!inet_rsk(req)->acked || req->num_timeout >= rskq_defer_accept);
-+	/* Do not resend while waiting for data after ACK,
- 	 * start to resend on end of deferring period to give
- 	 * last chance for data or ACK to create established socket.
- 	 */
-@@ -720,15 +719,12 @@ static void reqsk_timer_handler(struct timer_list *t)
- 	struct net *net = sock_net(sk_listener);
- 	struct inet_connection_sock *icsk = inet_csk(sk_listener);
- 	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
--	int qlen, expire = 0, resend = 0;
--	int max_retries, thresh;
--	u8 defer_accept;
-+	int max_syn_ack_retries, qlen, expire = 0, resend = 0;
- 
- 	if (inet_sk_state_load(sk_listener) != TCP_LISTEN)
- 		goto drop;
- 
--	max_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
--	thresh = max_retries;
-+	max_syn_ack_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
- 	/* Normally all the openreqs are young and become mature
- 	 * (i.e. converted to established socket) for first timeout.
- 	 * If synack was not acknowledged for 1 second, it means
-@@ -750,17 +746,14 @@ static void reqsk_timer_handler(struct timer_list *t)
- 	if ((qlen << 1) > max(8U, READ_ONCE(sk_listener->sk_max_ack_backlog))) {
- 		int young = reqsk_queue_len_young(queue) << 1;
- 
--		while (thresh > 2) {
-+		while (max_syn_ack_retries > 2) {
- 			if (qlen < young)
- 				break;
--			thresh--;
-+			max_syn_ack_retries--;
- 			young <<= 1;
- 		}
- 	}
--	defer_accept = READ_ONCE(queue->rskq_defer_accept);
--	if (defer_accept)
--		max_retries = defer_accept;
--	syn_ack_recalc(req, thresh, max_retries, defer_accept,
-+	syn_ack_recalc(req, max_syn_ack_retries, READ_ONCE(queue->rskq_defer_accept),
- 		       &expire, &resend);
- 	req->rsk_ops->syn_ack_timeout(req);
- 	if (!expire &&
--- 
-2.17.2 (Apple Git-113)
+	drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+
+Should it?
+
 
