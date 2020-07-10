@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 926EF21B567
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 14:48:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFAFF21B565
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 14:48:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728006AbgGJMrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 08:47:41 -0400
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:15336 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727092AbgGJMrd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 08:47:33 -0400
+        id S1727990AbgGJMri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 08:47:38 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:50138 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727978AbgGJMrg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 08:47:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1594385253; x=1625921253;
+  t=1594385257; x=1625921257;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=CXqNu8fKVw9rY4hUYMuHMCoxx0VX8MHiv6b9yf2xcA0=;
-  b=XZFFh4cMfiQF9188YXVRXr1DaI1oCirdwEbwGcIqWHKMw8OIbHwsSfc/
-   1cBi+osxRTLOUgiYHXSCvTTP2Ef5W+vh/tAKGKLRSgWK1CTWHNMz1zPPE
-   v7m3jvADFmJxqkAsaNrTd+GQguzAJN6+KIbim0YYevwUo43rR2BFtmxDC
-   VHDW3guwbqn1IJ6TnBuOgzLUF0pD0o9wubPSnflxNw6Sm69B2nCoQdIJp
-   EWqsvyfE515/RON/1Z3nwNu9HqPwp/2kp9quNn/6OKi1H6srvEQhjS1QD
-   O/aEx1+TVYRvaw0CyNSfcCZorGWIsdtPVEVlCjOqIHmMgrV7qvY7XChzL
+  bh=zvVFXVg26gKJue+5xGIofrm/3BbbDksLZVvakopyGEQ=;
+  b=hppezngz0Stb8tiFsXsQo1wc/UNoK1GeZlVkIlRZq1Nr1MNnZz4GaAU7
+   g9QhmgXc0YgZrkfh1ttgi4LawCX6g2Rf+qcKzFhI7BFtqmE4cw/bXFI3y
+   QKYRxxl0dniVV8rvy6WxIczbcoOy5Fuq39dkm8ITcRQXRSt7qnrJeVGXU
+   38k7mEDPfhs3jBk6g0rwwTVHhhBr1ggwVVYd2nopsaw1XevH0Om/DUn4A
+   bijlhKc8Wiv7BsVLURYfmq8uEs7vEyRKh8SfFpysYfgOrMreJ+Mwl6guW
+   IeSKe/UvMl89Smh9dazAEgphaLspL0FT2/riuxgow8dMUQofaYcEw8jvH
    A==;
-IronPort-SDR: pjId5Jp/Nsf/F0YkmieRr6fv/tTZUtlGX3W78j7dJA7gc0aZ1Xv1wTAfgWggfPSFz0JPmp6VAs
- +18Jz0GdEEX37h/x5H2FKjPqM4nnzCtEtGFs/oo0gboDGypSN2dSwvGwYN/GU3YNXs5Z8VrZny
- 5ZxEQRtA9I4ZKZsyC7oHge/hJWPDXFSGsr04BTnHYAfdhORNmHyGVzeoyzeNRSaQUeZ4VBSQsf
- Jx9g8ZrW53mlyJDkS2jwCNP/OXrK4wM6jAB6D2uXTCmMNd6NUbIdHDV+xqwHBqr3RtJ6lLIXWP
- 7qY=
+IronPort-SDR: NplFPck3JUElnTy7fY7g5mvxsN7nFfXmDdWETcEKVZfYIdeQZotJt85eSxGX4KpCNzRoUcYCq/
+ RW0GoOduYim8yskSCvoOcJLTgHrPyuciSHDoTYa/FasuBZnmIaKdiiS8nE76VlocbVqhULifY5
+ rDBM9ExDSlR/3E7CjFUeJzbwalEImzFQQzoQdD0hUSI24qFkZvJ6ziWGGGDfVeB17DJ5Zt6d5O
+ k/oXJ2ktWyBcaWMzNkFrfSbEz3+nCzwLNYiXJho2gi8R0nxqJNOOTY0mL6Jt4XmWnWLga7Dcng
+ RX0=
 X-IronPort-AV: E=Sophos;i="5.75,335,1589266800"; 
-   d="scan'208";a="18675455"
+   d="scan'208";a="82588083"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Jul 2020 05:47:32 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Jul 2020 05:47:37 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 10 Jul 2020 05:47:03 -0700
+ 15.1.1979.3; Fri, 10 Jul 2020 05:47:35 -0700
 Received: from ness.mchp-main.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
  (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Fri, 10 Jul 2020 05:47:29 -0700
+ Transport; Fri, 10 Jul 2020 05:47:32 -0700
 From:   <nicolas.ferre@microchip.com>
 To:     <linux@armlinux.org.uk>, <linux-arm-kernel@lists.infradead.org>,
         <netdev@vger.kernel.org>,
@@ -50,9 +50,9 @@ CC:     <linux-kernel@vger.kernel.org>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         <antoine.tenart@bootlin.com>,
         Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH v5 3/5] net: macb: fix macb_get/set_wol() when moving to phylink
-Date:   Fri, 10 Jul 2020 14:46:43 +0200
-Message-ID: <be2b7d826fae585ce62a1783dc322965a8861162.1594384335.git.nicolas.ferre@microchip.com>
+Subject: [PATCH v5 4/5] net: macb: fix macb_suspend() by removing call to netif_carrier_off()
+Date:   Fri, 10 Jul 2020 14:46:44 +0200
+Message-ID: <a7eb7eb11da8b4e4326d86e30e4110872ac987c6.1594384335.git.nicolas.ferre@microchip.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1594384335.git.nicolas.ferre@microchip.com>
 References: <cover.1594384335.git.nicolas.ferre@microchip.com>
@@ -66,71 +66,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Keep previous function goals and integrate phylink actions to them.
-
-phylink_ethtool_get_wol() is not enough to figure out if Ethernet driver
-supports Wake-on-Lan.
-Initialization of "supported" and "wolopts" members is done in phylink
-function, no need to keep them in calling function.
-
-phylink_ethtool_set_wol() return value is considered and determines
-if the MAC has to handle WoL or not. The case where the PHY doesn't
-implement WoL leads to the MAC configuring it to provide this feature.
+As we now use the phylink call to phylink_stop() in the non-WoL path,
+there is no need for this call to netif_carrier_off() anymore. It can
+disturb the underlying phylink FSM.
 
 Fixes: 7897b071ac3b ("net: macb: convert to phylink")
 Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
 Cc: Harini Katakam <harini.katakam@xilinx.com>
 Cc: Antoine Tenart <antoine.tenart@bootlin.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 ---
-Changes in v5:
-- Addressed the error code returned by phylink_ethtool_set_wol() as suggested
-  by Russell.
-  If PHY handles WoL, MAC doesn't stay in the way.
-- Removed Florian's tag
+Changes in v2:
+- new in v2 serries
 
- drivers/net/ethernet/cadence/macb_main.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 4cafe343c0a2..79c2fe054303 100644
+index 79c2fe054303..548815255e22 100644
 --- a/drivers/net/ethernet/cadence/macb_main.c
 +++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -2821,11 +2821,13 @@ static void macb_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
- {
- 	struct macb *bp = netdev_priv(netdev);
+@@ -4604,7 +4604,6 @@ static int __maybe_unused macb_suspend(struct device *dev)
+ 			bp->pm_data.scrt2 = gem_readl_n(bp, ETHT, SCRT2_ETHT);
+ 	}
  
--	wol->supported = 0;
--	wol->wolopts = 0;
--
--	if (bp->wol & MACB_WOL_HAS_MAGIC_PACKET)
-+	if (bp->wol & MACB_WOL_HAS_MAGIC_PACKET) {
- 		phylink_ethtool_get_wol(bp->phylink, wol);
-+		wol->supported |= WAKE_MAGIC;
-+
-+		if (bp->wol & MACB_WOL_ENABLED)
-+			wol->wolopts |= WAKE_MAGIC;
-+	}
- }
- 
- static int macb_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
-@@ -2833,9 +2835,13 @@ static int macb_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
- 	struct macb *bp = netdev_priv(netdev);
- 	int ret;
- 
-+	/* Pass the order to phylink layer */
- 	ret = phylink_ethtool_set_wol(bp->phylink, wol);
--	if (!ret)
--		return 0;
-+	/* Don't manage WoL on MAC if handled by the PHY
-+	 * or if there's a failure in talking to the PHY
-+	 */
-+	if (!ret || ret != -EOPNOTSUPP)
-+		return ret;
- 
- 	if (!(bp->wol & MACB_WOL_HAS_MAGIC_PACKET) ||
- 	    (wol->wolopts & ~WAKE_MAGIC))
+-	netif_carrier_off(netdev);
+ 	if (bp->ptp_info)
+ 		bp->ptp_info->ptp_remove(netdev);
+ 	pm_runtime_force_suspend(dev);
 -- 
 2.27.0
 
