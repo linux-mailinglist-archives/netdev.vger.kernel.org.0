@@ -2,40 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2232121AC15
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 02:43:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96F5221AC2A
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 02:51:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbgGJAnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 20:43:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35334 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726793AbgGJAnB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 20:43:01 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 049D520767;
-        Fri, 10 Jul 2020 00:42:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594341780;
-        bh=fJf5YhFp7p8K2IWAK5RN3OjD5Jq2zNFanVxhHClvRK0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZVoyWl0uJ+8oWSzNsVgKMV3uS+QJ6LsH+DbCJoI5JP9AfqDhRAI6uy85ZdwJnYoF
-         8qjwZNQhkgp9/59vRdHft9TAA2RuX5ZTA3CPEZVpSYOi0PYhx7KvdPDLqSsHCZbKS2
-         U2MYQSYfqUPIC3ExB3hhgOFAz5hQnjnvG/lnJkCg=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, saeedm@mellanox.com,
-        michael.chan@broadcom.com, emil.s.tantilov@intel.com,
-        alexander.h.duyck@linux.intel.com, jeffrey.t.kirsher@intel.com,
-        tariqt@mellanox.com, mkubecek@suse.cz,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v4 10/10] mlx4: convert to new udp_tunnel_nic infra
-Date:   Thu,  9 Jul 2020 17:42:53 -0700
-Message-Id: <20200710004253.211130-11-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200710004253.211130-1-kuba@kernel.org>
-References: <20200710004253.211130-1-kuba@kernel.org>
+        id S1726446AbgGJAvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 20:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59056 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726272AbgGJAvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 20:51:17 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A033FC08C5CE
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 17:51:16 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id g20so3267155edm.4
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 17:51:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UJ7FDz4ZttePdy2WT1D1Djok9WjKt+wRrqPoVgEsSqA=;
+        b=Zw5HZUuReosPkxZVZBEwu4L5bgueaTnKzWJZ7zA5rh1Iy9eMT+lilb/5Tpg3ZxzbEU
+         8pmkY9ww0UkE+sUhpeR++ccRMGt+mwBVg5EMJvub+PTfUDvHie5diPKbL0EKI3jhav7U
+         2g0U2zWPSKkDLCsDZlM4Y/2PgaJhXxxVT/UhU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UJ7FDz4ZttePdy2WT1D1Djok9WjKt+wRrqPoVgEsSqA=;
+        b=l7VLAw1nX428fE+FKTw70ydMaaDZhCI3EgNLJ8ofY70qC93qfFhK27/9ewx0Ky5TwI
+         6xBRZ6Bv+JZVfYIODzLz34PYyIwygWmU4vYMSPVjegDkXqPE6JB98yqNZXTZCkrOPdae
+         mv5cdYJoH8CxtfilryWUNr28ELUe4MGQDlSDgEfjSXS9hFRn332JRB8IpDCAQ538gU2u
+         Ljv6MxfYtwixu+MyW3KddqzzVazhKoJ8rzfU9Z+ZXICwjEZOEI+ZrCnwksPpE6jBi2TR
+         AHFVyQ6enVcM6dKPCTyCsvKiUqjQIBCQyihJiw6qF7Jx08ERET+cayTyq3bKBOnuoTFV
+         tbwg==
+X-Gm-Message-State: AOAM530g6j8z7o+soNe6Tjcf3/H7tKf5P5NAeIYEFSICIWI3sOZ8Kk64
+        Fahuuf0ehcjoJXZZobtgVX2qmUbB4yF7
+X-Google-Smtp-Source: ABdhPJyy4Gogm9af8PEMooI9UKWQs3AqwfNSyQuppw/p0L9ysmE9ARCkC0ysfTKXBcJDxwPqBXGLcQ==
+X-Received: by 2002:a05:6402:1766:: with SMTP id da6mr72472920edb.48.1594342274935;
+        Thu, 09 Jul 2020 17:51:14 -0700 (PDT)
+Received: from jfk18.home (ip565315ca.direct-adsl.nl. [86.83.21.202])
+        by smtp.googlemail.com with ESMTPSA id mf24sm2678971ejb.58.2020.07.09.17.51.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 09 Jul 2020 17:51:14 -0700 (PDT)
+From:   Julien Fortin <julien@cumulusnetworks.com>
+X-Google-Original-From: Julien Fortin
+To:     netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com, dsahern@gmail.com,
+        Julien Fortin <julien@cumulusnetworks.com>
+Subject: [PATCH iproute2-next master] bridge: fdb show: fix fdb entry state output for json context
+Date:   Fri, 10 Jul 2020 02:50:55 +0200
+Message-Id: <20200710005055.8439-1-julien@cumulusnetworks.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -43,189 +60,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert to new infra, make use of the ability to sleep in the callback.
+From: Julien Fortin <julien@cumulusnetworks.com>
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Acked-by: Tariq Toukan <tariqt@mellanox.com>
+bridge json fdb show is printing an incorrect / non-machine readable
+value, when using -j (json output) we are expecting machine readable
+data that shouldn't require special handling/parsing.
+
+$ bridge -j fdb show | \
+python -c \
+'import sys,json;print(json.dumps(json.loads(sys.stdin.read()),indent=4))'
+[
+    {
+        "master": "br0",
+        "mac": "56:23:28:4f:4f:e5",
+        "flags": [],
+        "ifname": "vx0",
+        "state": "state=0x80"  <<<<<<<<< with the patch: "state": "0x80"
+    }
+]
+
+Fixes: c7c1a1ef51aea7c ("bridge: colorize output and use JSON print library")
+Signed-off-by: Julien Fortin <julien@cumulusnetworks.com>
 ---
- .../net/ethernet/mellanox/mlx4/en_netdev.c    | 107 ++++--------------
- drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |   2 -
- 2 files changed, 25 insertions(+), 84 deletions(-)
+ bridge/fdb.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-index 5bd3cd37d50f..2b8608f8f0a9 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-@@ -1816,7 +1816,7 @@ int mlx4_en_start_port(struct net_device *dev)
- 	queue_work(mdev->workqueue, &priv->rx_mode_task);
+diff --git a/bridge/fdb.c b/bridge/fdb.c
+index d2247e80..198c51d1 100644
+--- a/bridge/fdb.c
++++ b/bridge/fdb.c
+@@ -62,7 +62,10 @@ static const char *state_n2a(unsigned int s)
+ 	if (s & NUD_REACHABLE)
+ 		return "";
  
- 	if (priv->mdev->dev->caps.tunnel_offload_mode == MLX4_TUNNEL_OFFLOAD_MODE_VXLAN)
--		udp_tunnel_get_rx_info(dev);
-+		udp_tunnel_nic_reset_ntf(dev);
- 
- 	priv->port_up = true;
- 
-@@ -2628,89 +2628,32 @@ static int mlx4_en_get_phys_port_id(struct net_device *dev,
- 	return 0;
+-	sprintf(buf, "state=%#x", s);
++	if (is_json_context())
++		sprintf(buf, "%#x", s);
++	else
++		sprintf(buf, "state=%#x", s);
+ 	return buf;
  }
  
--static void mlx4_en_add_vxlan_offloads(struct work_struct *work)
-+static int mlx4_udp_tunnel_sync(struct net_device *dev, unsigned int table)
- {
-+	struct mlx4_en_priv *priv = netdev_priv(dev);
-+	struct udp_tunnel_info ti;
- 	int ret;
--	struct mlx4_en_priv *priv = container_of(work, struct mlx4_en_priv,
--						 vxlan_add_task);
- 
--	ret = mlx4_config_vxlan_port(priv->mdev->dev, priv->vxlan_port);
--	if (ret)
--		goto out;
-+	udp_tunnel_nic_get_port(dev, table, 0, &ti);
-+	priv->vxlan_port = ti.port;
- 
--	ret = mlx4_SET_PORT_VXLAN(priv->mdev->dev, priv->port,
--				  VXLAN_STEER_BY_OUTER_MAC, 1);
--out:
--	if (ret) {
--		en_err(priv, "failed setting L2 tunnel configuration ret %d\n", ret);
--		return;
--	}
--}
--
--static void mlx4_en_del_vxlan_offloads(struct work_struct *work)
--{
--	int ret;
--	struct mlx4_en_priv *priv = container_of(work, struct mlx4_en_priv,
--						 vxlan_del_task);
--	ret = mlx4_SET_PORT_VXLAN(priv->mdev->dev, priv->port,
--				  VXLAN_STEER_BY_OUTER_MAC, 0);
-+	ret = mlx4_config_vxlan_port(priv->mdev->dev, priv->vxlan_port);
- 	if (ret)
--		en_err(priv, "failed setting L2 tunnel configuration ret %d\n", ret);
-+		return ret;
- 
--	priv->vxlan_port = 0;
-+	return mlx4_SET_PORT_VXLAN(priv->mdev->dev, priv->port,
-+				   VXLAN_STEER_BY_OUTER_MAC,
-+				   !!priv->vxlan_port);
- }
- 
--static void mlx4_en_add_vxlan_port(struct  net_device *dev,
--				   struct udp_tunnel_info *ti)
--{
--	struct mlx4_en_priv *priv = netdev_priv(dev);
--	__be16 port = ti->port;
--	__be16 current_port;
--
--	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
--		return;
--
--	if (ti->sa_family != AF_INET)
--		return;
--
--	if (priv->mdev->dev->caps.tunnel_offload_mode != MLX4_TUNNEL_OFFLOAD_MODE_VXLAN)
--		return;
--
--	current_port = priv->vxlan_port;
--	if (current_port && current_port != port) {
--		en_warn(priv, "vxlan port %d configured, can't add port %d\n",
--			ntohs(current_port), ntohs(port));
--		return;
--	}
--
--	priv->vxlan_port = port;
--	queue_work(priv->mdev->workqueue, &priv->vxlan_add_task);
--}
--
--static void mlx4_en_del_vxlan_port(struct  net_device *dev,
--				   struct udp_tunnel_info *ti)
--{
--	struct mlx4_en_priv *priv = netdev_priv(dev);
--	__be16 port = ti->port;
--	__be16 current_port;
--
--	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
--		return;
--
--	if (ti->sa_family != AF_INET)
--		return;
--
--	if (priv->mdev->dev->caps.tunnel_offload_mode != MLX4_TUNNEL_OFFLOAD_MODE_VXLAN)
--		return;
--
--	current_port = priv->vxlan_port;
--	if (current_port != port) {
--		en_dbg(DRV, priv, "vxlan port %d isn't configured, ignoring\n", ntohs(port));
--		return;
--	}
--
--	queue_work(priv->mdev->workqueue, &priv->vxlan_del_task);
--}
-+static const struct udp_tunnel_nic_info mlx4_udp_tunnels = {
-+	.sync_table	= mlx4_udp_tunnel_sync,
-+	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP |
-+			  UDP_TUNNEL_NIC_INFO_IPV4_ONLY,
-+	.tables		= {
-+		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN, },
-+	},
-+};
- 
- static netdev_features_t mlx4_en_features_check(struct sk_buff *skb,
- 						struct net_device *dev,
-@@ -2914,8 +2857,8 @@ static const struct net_device_ops mlx4_netdev_ops = {
- 	.ndo_rx_flow_steer	= mlx4_en_filter_rfs,
- #endif
- 	.ndo_get_phys_port_id	= mlx4_en_get_phys_port_id,
--	.ndo_udp_tunnel_add	= mlx4_en_add_vxlan_port,
--	.ndo_udp_tunnel_del	= mlx4_en_del_vxlan_port,
-+	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
- 	.ndo_features_check	= mlx4_en_features_check,
- 	.ndo_set_tx_maxrate	= mlx4_en_set_tx_maxrate,
- 	.ndo_bpf		= mlx4_xdp,
-@@ -2948,8 +2891,8 @@ static const struct net_device_ops mlx4_netdev_ops_master = {
- 	.ndo_rx_flow_steer	= mlx4_en_filter_rfs,
- #endif
- 	.ndo_get_phys_port_id	= mlx4_en_get_phys_port_id,
--	.ndo_udp_tunnel_add	= mlx4_en_add_vxlan_port,
--	.ndo_udp_tunnel_del	= mlx4_en_del_vxlan_port,
-+	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
- 	.ndo_features_check	= mlx4_en_features_check,
- 	.ndo_set_tx_maxrate	= mlx4_en_set_tx_maxrate,
- 	.ndo_bpf		= mlx4_xdp,
-@@ -3250,8 +3193,6 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
- 	INIT_WORK(&priv->linkstate_task, mlx4_en_linkstate);
- 	INIT_DELAYED_WORK(&priv->stats_task, mlx4_en_do_get_stats);
- 	INIT_DELAYED_WORK(&priv->service_task, mlx4_en_service_task);
--	INIT_WORK(&priv->vxlan_add_task, mlx4_en_add_vxlan_offloads);
--	INIT_WORK(&priv->vxlan_del_task, mlx4_en_del_vxlan_offloads);
- #ifdef CONFIG_RFS_ACCEL
- 	INIT_LIST_HEAD(&priv->filters);
- 	spin_lock_init(&priv->filters_lock);
-@@ -3406,6 +3347,8 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
- 				       NETIF_F_GSO_UDP_TUNNEL |
- 				       NETIF_F_GSO_UDP_TUNNEL_CSUM |
- 				       NETIF_F_GSO_PARTIAL;
-+
-+		dev->udp_tunnel_nic_info = &mlx4_udp_tunnels;
- 	}
- 
- 	dev->vlan_features = dev->hw_features;
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-index 9f5603612960..a46efe37cfa9 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-@@ -599,8 +599,6 @@ struct mlx4_en_priv {
- 	struct work_struct linkstate_task;
- 	struct delayed_work stats_task;
- 	struct delayed_work service_task;
--	struct work_struct vxlan_add_task;
--	struct work_struct vxlan_del_task;
- 	struct mlx4_en_perf_stats pstats;
- 	struct mlx4_en_pkt_stats pkstats;
- 	struct mlx4_en_counter_stats pf_stats;
 -- 
-2.26.2
+2.27.0
 
