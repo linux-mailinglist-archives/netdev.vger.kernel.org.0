@@ -2,107 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1757321BDBD
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 21:37:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D42621BDC0
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 21:38:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728208AbgGJThw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 15:37:52 -0400
-Received: from smtprelay0004.hostedemail.com ([216.40.44.4]:42658 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726867AbgGJThv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 15:37:51 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 68277100E7B48;
-        Fri, 10 Jul 2020 19:37:50 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1381:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3165:3352:3622:3866:3867:3872:4321:5007:6119:6737:7514:10004:10400:10848:11232:11657:11658:11914:12043:12048:12297:12555:12740:12895:12986:13069:13311:13357:13439:13894:14093:14097:14181:14659:14721:21080:21451:21627:21740:30029:30054:30056:30064:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: prose65_0f116ea26ed0
-X-Filterd-Recvd-Size: 2625
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf04.hostedemail.com (Postfix) with ESMTPA;
-        Fri, 10 Jul 2020 19:37:48 +0000 (UTC)
-Message-ID: <28a81dfe62b1dc00ccc721ddb88669d13665252b.camel@perches.com>
-Subject: Re: [PATCH v2] MAINTAINERS: XDP: restrict N: and K:
-From:   Joe Perches <joe@perches.com>
-To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>, ast@kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        mchehab+huawei@kernel.org, robh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Date:   Fri, 10 Jul 2020 12:37:47 -0700
-In-Reply-To: <20200710190407.31269-1-grandmaster@al2klimov.de>
-References: <87tuyfi4fm.fsf@toke.dk>
-         <20200710190407.31269-1-grandmaster@al2klimov.de>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1728376AbgGJTiJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 10 Jul 2020 15:38:09 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24090 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728354AbgGJTiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 15:38:07 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-132-H_GURmi5O1aVilO0lgtFEg-1; Fri, 10 Jul 2020 15:38:04 -0400
+X-MC-Unique: H_GURmi5O1aVilO0lgtFEg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 47914100CCC8;
+        Fri, 10 Jul 2020 19:38:03 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.192.98])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CD0EA1002391;
+        Fri, 10 Jul 2020 19:38:01 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH v6 bpf-next 3/9] bpf: Add BTF_ID_LIST/BTF_ID/BTF_ID_UNUSED macros
+Date:   Fri, 10 Jul 2020 21:37:48 +0200
+Message-Id: <20200710193754.3821104-4-jolsa@kernel.org>
+In-Reply-To: <20200710193754.3821104-1-jolsa@kernel.org>
+References: <20200710193754.3821104-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-07-10 at 21:04 +0200, Alexander A. Klimov wrote:
-> Rationale:
-> Documentation/arm/ixp4xx.rst contains "xdp" as part of "ixdp465"
-> which has nothing to do with XDP.
-> 
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
-> ---
->  Better?
-> 
->  MAINTAINERS | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 1d4aa7f942de..735e2475e926 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -18708,8 +18708,8 @@ F:	include/trace/events/xdp.h
->  F:	kernel/bpf/cpumap.c
->  F:	kernel/bpf/devmap.c
->  F:	net/core/xdp.c
-> -N:	xdp
-> -K:	xdp
-> +N:	(?:\b|_)xdp
-> +K:	(?:\b|_)xdp
+Adding support to generate .BTF_ids section that will hold BTF
+ID lists for verifier.
 
-Generally, it's better to have comprehensive files lists
-rather than adding name matching regexes.
+Adding macros that will help to define lists of BTF ID values
+placed in .BTF_ids section. They are initially filled with zeros
+(during compilation) and resolved later during the linking phase
+by resolve_btfids tool.
 
-Perhaps:
+Following defines list of one BTF ID value:
+
+  BTF_ID_LIST(bpf_skb_output_btf_ids)
+  BTF_ID(struct, sk_buff)
+
+It also defines following variable to access the list:
+
+  extern u32 bpf_skb_output_btf_ids[];
+
+The BTF_ID_UNUSED macro defines 4 zero bytes. It's used when we
+want to define 'unused' entry in BTF_ID_LIST, like:
+
+  BTF_ID_LIST(bpf_skb_output_btf_ids)
+  BTF_ID(struct, sk_buff)
+  BTF_ID_UNUSED
+  BTF_ID(struct, task_struct)
+
+Suggested-by: Andrii Nakryiko <andriin@fb.com>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- MAINTAINERS | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ include/asm-generic/vmlinux.lds.h |  4 ++
+ include/linux/btf_ids.h           | 87 +++++++++++++++++++++++++++++++
+ 2 files changed, 91 insertions(+)
+ create mode 100644 include/linux/btf_ids.h
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 16854e47e8cb..2e96cbf15b31 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18763,13 +18763,19 @@ M:	John Fastabend <john.fastabend@gmail.com>
- L:	netdev@vger.kernel.org
- L:	bpf@vger.kernel.org
- S:	Supported
--F:	include/net/xdp.h
-+F:	Documentation/networking/af_xdp.rst
-+F:	include/net/xdp*
- F:	include/trace/events/xdp.h
-+F:	include/uapi/linux/if_xdp.h
-+F:	include/uapi/linux/xdp_diag.h
- F:	kernel/bpf/cpumap.c
- F:	kernel/bpf/devmap.c
- F:	net/core/xdp.c
--N:	xdp
--K:	xdp
-+F:	net/xdp/
-+F:	samples/bpf/xdp*
-+F:	tools/testing/selftests/bfp/*xdp*
-+F:	tools/testing/selftests/bfp/*/*xdp*
-+K:	(?:\b|_)xdp(?:\b|_)
- 
- XDP SOCKETS (AF_XDP)
- M:	Björn Töpel <bjorn.topel@intel.com>
-
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index db600ef218d7..0be2ee265931 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -641,6 +641,10 @@
+ 		__start_BTF = .;					\
+ 		*(.BTF)							\
+ 		__stop_BTF = .;						\
++	}								\
++	. = ALIGN(4);							\
++	.BTF_ids : AT(ADDR(.BTF_ids) - LOAD_OFFSET) {			\
++		*(.BTF_ids)						\
+ 	}
+ #else
+ #define BTF
+diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
+new file mode 100644
+index 000000000000..fe019774f8a7
+--- /dev/null
++++ b/include/linux/btf_ids.h
+@@ -0,0 +1,87 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef _LINUX_BTF_IDS_H
++#define _LINUX_BTF_IDS_H
++
++#include <linux/compiler.h> /* for __PASTE */
++
++/*
++ * Following macros help to define lists of BTF IDs placed
++ * in .BTF_ids section. They are initially filled with zeros
++ * (during compilation) and resolved later during the
++ * linking phase by resolve_btfids tool.
++ *
++ * Any change in list layout must be reflected in resolve_btfids
++ * tool logic.
++ */
++
++#define BTF_IDS_SECTION ".BTF_ids"
++
++#define ____BTF_ID(symbol)				\
++asm(							\
++".pushsection " BTF_IDS_SECTION ",\"a\";       \n"	\
++".local " #symbol " ;                          \n"	\
++".type  " #symbol ", @object;                  \n"	\
++".size  " #symbol ", 4;                        \n"	\
++#symbol ":                                     \n"	\
++".zero 4                                       \n"	\
++".popsection;                                  \n");
++
++#define __BTF_ID(symbol) \
++	____BTF_ID(symbol)
++
++#define __ID(prefix) \
++	__PASTE(prefix, __COUNTER__)
++
++/*
++ * The BTF_ID defines unique symbol for each ID pointing
++ * to 4 zero bytes.
++ */
++#define BTF_ID(prefix, name) \
++	__BTF_ID(__ID(__BTF_ID__##prefix##__##name##__))
++
++/*
++ * The BTF_ID_LIST macro defines pure (unsorted) list
++ * of BTF IDs, with following layout:
++ *
++ * BTF_ID_LIST(list1)
++ * BTF_ID(type1, name1)
++ * BTF_ID(type2, name2)
++ *
++ * list1:
++ * __BTF_ID__type1__name1__1:
++ * .zero 4
++ * __BTF_ID__type2__name2__2:
++ * .zero 4
++ *
++ */
++#define __BTF_ID_LIST(name)				\
++asm(							\
++".pushsection " BTF_IDS_SECTION ",\"a\";       \n"	\
++".local " #name ";                             \n"	\
++#name ":;                                      \n"	\
++".popsection;                                  \n");	\
++
++#define BTF_ID_LIST(name)				\
++__BTF_ID_LIST(name)					\
++extern u32 name[];
++
++/*
++ * The BTF_ID_UNUSED macro defines 4 zero bytes.
++ * It's used when we want to define 'unused' entry
++ * in BTF_ID_LIST, like:
++ *
++ *   BTF_ID_LIST(bpf_skb_output_btf_ids)
++ *   BTF_ID(struct, sk_buff)
++ *   BTF_ID_UNUSED
++ *   BTF_ID(struct, task_struct)
++ */
++
++#define BTF_ID_UNUSED					\
++asm(							\
++".pushsection " BTF_IDS_SECTION ",\"a\";       \n"	\
++".zero 4                                       \n"	\
++".popsection;                                  \n");
++
++
++#endif
+-- 
+2.25.4
 
