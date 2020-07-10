@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E7A721AD1B
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 04:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5796D21AD1C
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 04:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbgGJCbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 22:31:15 -0400
+        id S1727121AbgGJCbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 22:31:18 -0400
 Received: from mail-eopbgr30081.outbound.protection.outlook.com ([40.107.3.81]:54404
         "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727050AbgGJCbO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 22:31:14 -0400
+        id S1726446AbgGJCbR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jul 2020 22:31:17 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LI6J9OQIXCpFv7a0ufYOzkvLZcUB2wfJgtvSfV7ryTtHxPqhBFLtjrswA/medF39JXL1lyzMj5ZelDQoi4pLhhPfKS/5HiNGGLkqxysO22QrZBrJ8pnFXtvERFikaa3EseJ7fZOfe7ti5hb/UWmzWE4h5w8UHFM2tdXSY/GhCnOO/8nLzfy28h6Ga7RDAIsh66/KgrUEjnRPebVPcKUXWhCf4mHufo1uI1Ya92HQKWgfNw3ttIj0FXNZ/JQwiw4QCQ2+kApep+8g6ps1FBvJoMdfVSPQFJO5iTumWaR2cAjC9FpeU52AzjWkwr5boaazBM4tSw9fuaUFWU63wbu7lw==
+ b=R+WwG2CfKs0Bi17j0ynCD6BYOOFDl8BbuCAlSBLmb8izxIykh4rymnEmgyA9pUpPDVF5qUYYgh6/C/3bX1Xk6FBBIPRucV3iku5iAY3xjCwvTj6gBPscSnSrm3jPmuwr927b9sT8vL2W0af9iiFECLD7iG4IBnjbfeuUWAXqD1gpyFlUGzi58PHUxDBEeZXc40k6XAArDFhwTxjvgrnO2aFwa/t4Rq58oKJiuJb1qAPcoJ46ChVpifqs7MLQ/ONpNRmhnPDCqTa5mPwSvr2Jc8xZNdknU/DomcJQ3XqnKWE8GSwCWFAKL8mV2Zf8fvY9TPtcI3kGFJzu2MOyG0L2xg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SZ5iRHmhlV8gRWGDPccowPp++N10dYA2PokiOb4YW1E=;
- b=DTtDxBsMu+Wo54pricQ3z8cc5xWUbpRllOZ84xzwijIm9UPLRALwFUlddlEzkC4Y9y7O21z8JLbMpq+SPWY3DJxDTi8xp4I2xaBDWIbfmEX47R6Q0bkKvbsUT3PFugVV2K1AT/H05J/motwa0dRhkBJz/OqzdHAcwgyQUOMdHnopzCakHwpV2UA/byqax4IweVrHeHCxzYx0N3LyKhK4vIa7L9he0E1yLattR5jXmdQH1UpU02UkU0Msqg9pSiXwUwRYHRjIhLXyd0QmZ2eNElwWdTw+HUCWbcQUq4OSeBBOUzkHLkayxKePaAmqlfj/DfbutLg4jKIq9HYXNviehA==
+ bh=EkHj7dzH23a0FGt1Op2WBt8Gd2NSZ4UN3UoS6tI9sI8=;
+ b=Lzf06KnDbkKGpVJ5bA8iLBKvmRipcIegE4Wtf5T+BiE18r54+tjsJWCwo1YxOA0vSi44j1NgYcXRZwUP4oFNlvvwsla8kDYZwkyoxiMdvUQ9kZmj1HkmAamtJj/2J/zjh8rMKDLweicWygLh8O6YYE83BRs5YeT3dJJciN3tuS5AubAuXQnmu+lGj/y/HvjUBc4jP+eIrymV/r/2687ra1UGtRVe/wkbVpSlykaFuchjNi7IIJZ3jf7xEvV39d/q937fTSPu2pz53+F21WWC8jWOzkshG+YTD6TWmNoG8DrS4vphUnqAx+ghdYYBZOV3yicxdv1AdZsN/YuMUnGg/A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SZ5iRHmhlV8gRWGDPccowPp++N10dYA2PokiOb4YW1E=;
- b=FlOXGaDxQiYAr5koaBDGE66F6CUbBFhtACxPAJIKHhbpKiCg3J4ua4ljZ086yShT23T/Kdfi1sG1JpcoeZLHPm4P9Jsr012erwSW0Y4e2eIlqECs5WE72pfAeulJih3/EvtXCjITdo26zOWsDUPkMbJkCoWAkcUfzMtahsBposc=
+ bh=EkHj7dzH23a0FGt1Op2WBt8Gd2NSZ4UN3UoS6tI9sI8=;
+ b=ZJDIHZMIkFDcVfLgN7P9JaACA61IDfmf1Xa2kHUYfqV13GBnOGuHZrKXAobkNbcU3kBpOgssEN4oXJFkmqd1sPLNO6Q/++lUEynExAEH9jBhIQgxQd5FmRfhFahhvI0t3HWVu8edgSRO66a3RKpWWrMeFdtyBFKbEsgMyUJk110=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB7120.eurprd05.prod.outlook.com (2603:10a6:800:185::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Fri, 10 Jul
- 2020 02:31:01 +0000
+ 2020 02:31:03 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3174.022; Fri, 10 Jul 2020
- 02:31:01 +0000
+ 02:31:03 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Aya Levin <ayal@mellanox.com>,
         Eran Ben Elisha <eranbe@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net V2 6/9] net/mlx5e: Fix CPU mapping after function reload to avoid aRFS RX crash
-Date:   Thu,  9 Jul 2020 19:30:15 -0700
-Message-Id: <20200710023018.31905-7-saeedm@mellanox.com>
+Subject: [net V2 7/9] net/mlx5e: Fix 50G per lane indication
+Date:   Thu,  9 Jul 2020 19:30:16 -0700
+Message-Id: <20200710023018.31905-8-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200710023018.31905-1-saeedm@mellanox.com>
 References: <20200710023018.31905-1-saeedm@mellanox.com>
@@ -57,31 +57,31 @@ X-ClientProxiedBy: BYAPR06CA0064.namprd06.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR06CA0064.namprd06.prod.outlook.com (2603:10b6:a03:14b::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Fri, 10 Jul 2020 02:30:59 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR06CA0064.namprd06.prod.outlook.com (2603:10b6:a03:14b::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Fri, 10 Jul 2020 02:31:01 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: af7d9fa3-14c3-46fb-1d69-08d824794953
+X-MS-Office365-Filtering-Correlation-Id: 8038fb04-4eed-428f-487e-08d824794a8b
 X-MS-TrafficTypeDiagnostic: VI1PR05MB7120:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB71205433AEB7562A55FA768EBE650@VI1PR05MB7120.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB712089DFCF13FA0DD0B933D4BE650@VI1PR05MB7120.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2276;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GB9MBYNsFzphapezuN5WouQ/TnAK4uwrpCuPwPxNK6Gae0xeByXci9q2dZlY8KpuyXiJCee4BdY9h0HQDxh97NZEJ7bb6S6xVEFTuvpF3OiCv6P6Ln93Adf4joq2yRrxqWLn5llAH8OL4LtcCXLDizQmIX8mW0RQ4sgQS85eNi4rhkMjjLEdjNBvZSvf3s9QC95ebvFQsd7Ey5RVj6QfdEG3njpGgmFyguu2m4H5SIh26y881b4JUs44wdWYT8DtWRcsXvsc76elrXc8dtZYi4PbnPVqQvipFibw/AQWt8AiqwOcL+g6M2rDhh9M7NbTgK+ql2SH8URII4rt+OwE1n55p5EIMmlcX9jhJjFJf/8uHDKdpw/2jmNQzJQis1jO
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(136003)(39860400002)(366004)(346002)(478600001)(26005)(4326008)(86362001)(52116002)(83380400001)(956004)(2906002)(186003)(16526019)(6506007)(2616005)(6666004)(5660300002)(8676002)(8936002)(66946007)(107886003)(66556008)(316002)(66476007)(1076003)(6512007)(110136005)(36756003)(6486002)(54906003)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: bLQpEh/lsHolHvbYNet0PGmdLQToqjhgMKUatu9ZwBLp9aOSRofeqy1yMVLJQ2/qjcBg4ywVtxVidb14w0L7MefmJMGADpCdkWO98cc4uXHIP408SKTIvVk/VwI6MJ5rd4Q50ljaHUbzw479UH+8Xk9H3PpE7zCldZGC6AGRjVT3J5UVNXWSSCK6QwBCb6tiatEjj9F3t9rdT/6gJV1kaVzCZ/uqJyd71UNMEBr3QKbBEKuYGL1ENopfXmAhYzbgloAD/r2SYsEv1NxnE0fX6crmacvQlcgA2hX2TCxokSZ/RvndBLf8dcjrH0YgKTmmclQg4xPGsxUINaOEszALGGSSDxUy1RH4DQd2eeuG3hL0VvM5qLGEhLzHKXImrldQe1DOt8BSrHiLVBLXUVpVaS52spa3CPZuHg6kLk8Op8nEJ3vzPPpgdevDRGcbJuZNeALuuy1wrijvkJVM5TzoZQ613esuq+xpjjIgLzdMUrg=
+X-Microsoft-Antispam-Message-Info: GNrPBr69PxRXjzDmFYbPsYzVOaFm83D+adnJACdsQjcCKPU6qRB1k+vz5ouAtwVWM3kh9C9KEgG8XmnRgWtsFMgcJT3w5IVxCpu3h3ylcupfBiMf/GTFuKFSAbvOMkZcOZt7CEDJ0a1BmXnJAIWWiR3ctZwXRvP/EmYuAZwHOqdKAkWCPK19ue5Q0V5hkD+h7e7B1RvEEbuBRxwQD9Ibij77qh7ly+wKHlTVr1IRdDSOMYFjdkKxOd+/bZr56YxGOvQfEdoNt8dfiEBAWFUxf2s8l3wB99B0EBqzI70wV3tqsEVNIw/5p24NHYz6NshzPb0jKJ99NfuNfcCWEMPelTt8xDf1AOR/mXksRU8J3Oz5SQnPyJivLCQmgKoLNHtQHM8B5XfhSUUuXwK9WNE8e0miQlhqVxKVZ1m3EKfXY5k=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(136003)(39860400002)(366004)(346002)(478600001)(26005)(4326008)(86362001)(52116002)(83380400001)(956004)(2906002)(186003)(16526019)(6506007)(2616005)(6666004)(5660300002)(8676002)(8936002)(66946007)(107886003)(66556008)(316002)(66476007)(1076003)(6512007)(110136005)(36756003)(6486002)(54906003)(54420400002)(309714004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: LT7jTFLomFei3q93HZ/PUP4hLmFVo8RYJCyMLSvQSwr0/fEBB3nBjtB7+Pm69L9vpOz4Mo0EJqgCH/d+mvQ0Cy8f9ZG3O+P0QSQrXr2uK+lzYnZ3CLmb4E4f+YV1s5MTz77x0tuPtN8dF2PM+9jSP/qhjk3TcLOAqkiZPjh1/xiFydlLV1wXY+wkvmR+L24WEk8S9dL+8VpfXqlPZxxetKP4QO7jgzlsvutQL6re+Ckxa2A85cMvmpECFjiMxLvQgAd2CMVowQ+n/uy0n5dUoUn1Xlqn8BY21J5fklcOJ41Etx0otelWViEDZiYcRgtFSIv27xQdThlM1zqI6cle16Bd4fRtCyPcNzx2jYniRnE4ubDQSTk4edD4xoRmKs1la3j90OYhoOTXXHrM/iWzbg9SL57KAoVsj4RG6U/YtARzcU5JK/hmlxseiXTwRiGY1fK/LTJHK8ZT8fNcDm92Jw+6X0Fz+tKYwPpHeJo/nzo=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af7d9fa3-14c3-46fb-1d69-08d824794953
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8038fb04-4eed-428f-487e-08d824794a8b
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2020 02:31:01.4630
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2020 02:31:03.7167
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /MpVN5Edju03DrbCA58x/fOheD88gP7+Ri7gGPUk9Fv2CBEUQ38Sz8ab5V9OV7Fir3clV/Qd/7LEQx9JRzTo3A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: z7WW2LfSi5AV2o4dPaxwHvXPy7qiSmYpAnWopQP8rbP4r54lej7mDDpnUme/eefH3h57GhlrlJLzdzMs+3rLBg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB7120
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -90,76 +90,127 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@mellanox.com>
 
-After function reload, CPU mapping used by aRFS RX is broken, leading to
-a kernel panic. Fix by moving initialization of rx_cpu_rmap from
-netdev_init to netdev_attach. IRQ table is re-allocated on mlx5_load,
-but netdev is not re-initialize.
+Some released FW versions mistakenly don't set the capability that 50G
+per lane link-modes are supported for VFs (ptys_extended_ethernet
+capability bit). When the capability is unset, read
+PTYS.ext_eth_proto_capability (always reliable).
+If PTYS.ext_eth_proto_capability is valid (has a non-zero value)
+conclude that the HCA supports 50G per lane. Otherwise, conclude that
+the HCA doesn't support 50G per lane.
 
-Trace of the panic:
-[ 22.055672] general protection fault, probably for non-canonical address 0x785634120000ff1c: 0000 [#1] SMP PTI
-[ 22.065010] CPU: 4 PID: 0 Comm: swapper/4 Not tainted 5.7.0-rc2-for-upstream-perf-2020-04-21_16-34-03-31 #1
-[ 22.067967] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-[ 22.071174] RIP: 0010:get_rps_cpu+0x267/0x300
-[ 22.075692] RSP: 0018:ffffc90000244d60 EFLAGS: 00010202
-[ 22.076888] RAX: ffff888459b0e400 RBX: 0000000000000000 RCX:0000000000000007
-[ 22.078364] RDX: 0000000000008884 RSI: ffff888467cb5b00 RDI:0000000000000000
-[ 22.079815] RBP: 00000000ff342b27 R08: 0000000000000007 R09:0000000000000003
-[ 22.081289] R10: ffffffffffffffff R11: 00000000000070cc R12:ffff888454900000
-[ 22.082767] R13: ffffc90000e5a950 R14: ffffc90000244dc0 R15:0000000000000007
-[ 22.084190] FS: 0000000000000000(0000) GS:ffff88846fc80000(0000)knlGS:0000000000000000
-[ 22.086161] CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 22.087427] CR2: ffffffffffffffff CR3: 0000000464426003 CR4:0000000000760ee0
-[ 22.088888] DR0: 0000000000000000 DR1: 0000000000000000 DR2:0000000000000000
-[ 22.090336] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:0000000000000400
-[ 22.091764] PKRU: 55555554
-[ 22.092618] Call Trace:
-[ 22.093442] <IRQ>
-[ 22.094211] ? kvm_clock_get_cycles+0xd/0x10
-[ 22.095272] netif_receive_skb_list_internal+0x258/0x2a0
-[ 22.096460] gro_normal_list.part.137+0x19/0x40
-[ 22.097547] napi_complete_done+0xc6/0x110
-[ 22.098685] mlx5e_napi_poll+0x190/0x670 [mlx5_core]
-[ 22.099859] net_rx_action+0x2a0/0x400
-[ 22.100848] __do_softirq+0xd8/0x2a8
-[ 22.101829] irq_exit+0xa5/0xb0
-[ 22.102750] do_IRQ+0x52/0xd0
-[ 22.103654] common_interrupt+0xf/0xf
-[ 22.104641] </IRQ>
-
-Fixes: 4383cfcc65e7 ("net/mlx5: Add devlink reload")
+Fixes: a08b4ed1373d ("net/mlx5: Add support to ext_* fields introduced in Port Type and Speed register")
 Signed-off-by: Aya Levin <ayal@mellanox.com>
 Reviewed-by: Eran Ben Elisha <eranbe@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/port.c | 21 ++++++++++++++++---
+ .../net/ethernet/mellanox/mlx5/core/en/port.h |  2 +-
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  8 +++----
+ 3 files changed, 23 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 888e38b21c3d..081f15074cac 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5118,6 +5118,10 @@ static int mlx5e_init_nic_rx(struct mlx5e_priv *priv)
- 	if (err)
- 		goto err_destroy_flow_steering;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/port.c b/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
+index 2a8950b3056f..3cf3e35053f7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
+@@ -78,11 +78,26 @@ static const u32 mlx5e_ext_link_speed[MLX5E_EXT_LINK_MODES_NUMBER] = {
+ 	[MLX5E_400GAUI_8]			= 400000,
+ };
  
-+#ifdef CONFIG_MLX5_EN_ARFS
-+	priv->netdev->rx_cpu_rmap =  mlx5_eq_table_get_rmap(priv->mdev);
-+#endif
++bool mlx5e_ptys_ext_supported(struct mlx5_core_dev *mdev)
++{
++	struct mlx5e_port_eth_proto eproto;
++	int err;
 +
- 	return 0;
++	if (MLX5_CAP_PCAM_FEATURE(mdev, ptys_extended_ethernet))
++		return true;
++
++	err = mlx5_port_query_eth_proto(mdev, 1, true, &eproto);
++	if (err)
++		return false;
++
++	return !!eproto.cap;
++}
++
+ static void mlx5e_port_get_speed_arr(struct mlx5_core_dev *mdev,
+ 				     const u32 **arr, u32 *size,
+ 				     bool force_legacy)
+ {
+-	bool ext = force_legacy ? false : MLX5_CAP_PCAM_FEATURE(mdev, ptys_extended_ethernet);
++	bool ext = force_legacy ? false : mlx5e_ptys_ext_supported(mdev);
  
- err_destroy_flow_steering:
-@@ -5289,10 +5293,6 @@ int mlx5e_netdev_init(struct net_device *netdev,
- 	/* netdev init */
- 	netif_carrier_off(netdev);
+ 	*size = ext ? ARRAY_SIZE(mlx5e_ext_link_speed) :
+ 		      ARRAY_SIZE(mlx5e_link_speed);
+@@ -177,7 +192,7 @@ int mlx5e_port_linkspeed(struct mlx5_core_dev *mdev, u32 *speed)
+ 	bool ext;
+ 	int err;
  
--#ifdef CONFIG_MLX5_EN_ARFS
--	netdev->rx_cpu_rmap =  mlx5_eq_table_get_rmap(mdev);
--#endif
+-	ext = MLX5_CAP_PCAM_FEATURE(mdev, ptys_extended_ethernet);
++	ext = mlx5e_ptys_ext_supported(mdev);
+ 	err = mlx5_port_query_eth_proto(mdev, 1, ext, &eproto);
+ 	if (err)
+ 		goto out;
+@@ -205,7 +220,7 @@ int mlx5e_port_max_linkspeed(struct mlx5_core_dev *mdev, u32 *speed)
+ 	int err;
+ 	int i;
+ 
+-	ext = MLX5_CAP_PCAM_FEATURE(mdev, ptys_extended_ethernet);
++	ext = mlx5e_ptys_ext_supported(mdev);
+ 	err = mlx5_port_query_eth_proto(mdev, 1, ext, &eproto);
+ 	if (err)
+ 		return err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/port.h b/drivers/net/ethernet/mellanox/mlx5/core/en/port.h
+index a2ddd446dd59..7a7defe60792 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/port.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/port.h
+@@ -54,7 +54,7 @@ int mlx5e_port_linkspeed(struct mlx5_core_dev *mdev, u32 *speed);
+ int mlx5e_port_max_linkspeed(struct mlx5_core_dev *mdev, u32 *speed);
+ u32 mlx5e_port_speed2linkmodes(struct mlx5_core_dev *mdev, u32 speed,
+ 			       bool force_legacy);
 -
- 	return 0;
++bool mlx5e_ptys_ext_supported(struct mlx5_core_dev *mdev);
+ int mlx5e_port_query_pbmc(struct mlx5_core_dev *mdev, void *out);
+ int mlx5e_port_set_pbmc(struct mlx5_core_dev *mdev, void *in);
+ int mlx5e_port_query_priority2buffer(struct mlx5_core_dev *mdev, u8 *buffer);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+index ec5658bbe3c5..c2464c349117 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -200,7 +200,7 @@ static void mlx5e_ethtool_get_speed_arr(struct mlx5_core_dev *mdev,
+ 					struct ptys2ethtool_config **arr,
+ 					u32 *size)
+ {
+-	bool ext = MLX5_CAP_PCAM_FEATURE(mdev, ptys_extended_ethernet);
++	bool ext = mlx5e_ptys_ext_supported(mdev);
  
- err_free_cpumask:
+ 	*arr = ext ? ptys2ext_ethtool_table : ptys2legacy_ethtool_table;
+ 	*size = ext ? ARRAY_SIZE(ptys2ext_ethtool_table) :
+@@ -883,7 +883,7 @@ static void get_lp_advertising(struct mlx5_core_dev *mdev, u32 eth_proto_lp,
+ 			       struct ethtool_link_ksettings *link_ksettings)
+ {
+ 	unsigned long *lp_advertising = link_ksettings->link_modes.lp_advertising;
+-	bool ext = MLX5_CAP_PCAM_FEATURE(mdev, ptys_extended_ethernet);
++	bool ext = mlx5e_ptys_ext_supported(mdev);
+ 
+ 	ptys2ethtool_adver_link(lp_advertising, eth_proto_lp, ext);
+ }
+@@ -913,7 +913,7 @@ int mlx5e_ethtool_get_link_ksettings(struct mlx5e_priv *priv,
+ 			   __func__, err);
+ 		goto err_query_regs;
+ 	}
+-	ext = MLX5_CAP_PCAM_FEATURE(mdev, ptys_extended_ethernet);
++	ext = !!MLX5_GET_ETH_PROTO(ptys_reg, out, true, eth_proto_capability);
+ 	eth_proto_cap    = MLX5_GET_ETH_PROTO(ptys_reg, out, ext,
+ 					      eth_proto_capability);
+ 	eth_proto_admin  = MLX5_GET_ETH_PROTO(ptys_reg, out, ext,
+@@ -1066,7 +1066,7 @@ int mlx5e_ethtool_set_link_ksettings(struct mlx5e_priv *priv,
+ 	autoneg = link_ksettings->base.autoneg;
+ 	speed = link_ksettings->base.speed;
+ 
+-	ext_supported = MLX5_CAP_PCAM_FEATURE(mdev, ptys_extended_ethernet);
++	ext_supported = mlx5e_ptys_ext_supported(mdev);
+ 	ext = ext_requested(autoneg, adver, ext_supported);
+ 	if (!ext_supported && ext)
+ 		return -EOPNOTSUPP;
 -- 
 2.26.2
 
