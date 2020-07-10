@@ -2,203 +2,556 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1375221B96B
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 17:26:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E239321BA8A
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 18:16:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727840AbgGJP0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 11:26:54 -0400
-Received: from correo.us.es ([193.147.175.20]:56720 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726925AbgGJP0y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jul 2020 11:26:54 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 071F7508CDB
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 17:26:52 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id DA661DA84A
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 17:26:51 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id C8158DA7B6; Fri, 10 Jul 2020 17:26:51 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 57397DA78D;
-        Fri, 10 Jul 2020 17:26:49 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 10 Jul 2020 17:26:49 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 1789D4265A2F;
-        Fri, 10 Jul 2020 17:26:49 +0200 (CEST)
-Date:   Fri, 10 Jul 2020 17:26:48 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        mlxsw@mellanox.com, michael.chan@broadcom.com, saeedm@mellanox.com,
-        leon@kernel.org, kadlec@netfilter.org, fw@strlen.de,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        simon.horman@netronome.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 01/13] net: sched: Pass qdisc reference in
- struct flow_block_offload
-Message-ID: <20200710152648.GA14902@salvia>
-References: <20200710135706.601409-1-idosch@idosch.org>
- <20200710135706.601409-2-idosch@idosch.org>
- <20200710141500.GA12659@salvia>
- <87sgdzflk4.fsf@mellanox.com>
+        id S1728276AbgGJQOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 12:14:23 -0400
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:47036 "EHLO
+        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727943AbgGJQOX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 12:14:23 -0400
+X-Greylist: delayed 1944 seconds by postgrey-1.27 at vger.kernel.org; Fri, 10 Jul 2020 12:14:21 EDT
+Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
+        by pbmsgap02.intersil.com (8.16.0.27/8.16.0.27) with SMTP id 06AFYSj6031844;
+        Fri, 10 Jul 2020 11:41:55 -0400
+Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
+        by pbmsgap02.intersil.com with ESMTP id 325k328snd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 10 Jul 2020 11:41:55 -0400
+Received: from pbmxdp03.intersil.corp (132.158.200.224) by
+ pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1979.3; Fri, 10 Jul 2020 11:41:54 -0400
+Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
+ (132.158.200.224) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Fri, 10 Jul 2020 11:41:53 -0400
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net-next] ptp: add debugfs support for IDT family of timing devices
+Date:   Fri, 10 Jul 2020 11:41:25 -0400
+Message-ID: <1594395685-25199-1-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87sgdzflk4.fsf@mellanox.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-10_10:2020-07-10,2020-07-10 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 suspectscore=4 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-2006250000 definitions=main-2007100106
+X-Proofpoint-Spam-Reason: mlx
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 05:15:39PM +0200, Petr Machata wrote:
-> 
-> Pablo Neira Ayuso <pablo@netfilter.org> writes:
-> 
-> > On Fri, Jul 10, 2020 at 04:56:54PM +0300, Ido Schimmel wrote:
-> >> From: Petr Machata <petrm@mellanox.com>
-> >>
-> >> Previously, shared blocks were only relevant for the pseudo-qdiscs ingress
-> >> and clsact. Recently, a qevent facility was introduced, which allows to
-> >> bind blocks to well-defined slots of a qdisc instance. RED in particular
-> >> got two qevents: early_drop and mark. Drivers that wish to offload these
-> >> blocks will be sent the usual notification, and need to know which qdisc it
-> >> is related to.
-> >>
-> >> To that end, extend flow_block_offload with a "sch" pointer, and initialize
-> >> as appropriate. This prompts changes in the indirect block facility, which
-> >> now tracks the scheduler instead of the netdevice. Update signatures of
-> >> several functions similarly. Deduce the device from the scheduler when
-> >> necessary.
-> >>
-> >> Signed-off-by: Petr Machata <petrm@mellanox.com>
-> >> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> >> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> >> ---
-> >>  drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  | 11 ++++++----
-> >>  .../ethernet/mellanox/mlx5/core/en/rep/tc.c   | 11 +++++-----
-> >>  .../net/ethernet/netronome/nfp/flower/main.h  |  2 +-
-> >>  .../ethernet/netronome/nfp/flower/offload.c   | 11 ++++++----
-> >>  include/net/flow_offload.h                    |  9 ++++----
-> >>  net/core/flow_offload.c                       | 12 +++++------
-> >>  net/netfilter/nf_flow_table_offload.c         | 17 +++++++--------
-> >>  net/netfilter/nf_tables_offload.c             | 20 ++++++++++--------
-> >>  net/sched/cls_api.c                           | 21 +++++++++++--------
-> >>  9 files changed, 63 insertions(+), 51 deletions(-)
-> >>
-> > [...]
-> >> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-> >> index eefeb1cdc2ee..4fc42c1955ff 100644
-> >> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-> >> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-> >> @@ -404,7 +404,7 @@ static void mlx5e_rep_indr_block_unbind(void *cb_priv)
-> >>  static LIST_HEAD(mlx5e_block_cb_list);
-> >>
-> >>  static int
-> >> -mlx5e_rep_indr_setup_block(struct net_device *netdev,
-> >> +mlx5e_rep_indr_setup_block(struct Qdisc *sch,
-> >>  			   struct mlx5e_rep_priv *rpriv,
-> >>  			   struct flow_block_offload *f,
-> >>  			   flow_setup_cb_t *setup_cb,
-> >> @@ -412,6 +412,7 @@ mlx5e_rep_indr_setup_block(struct net_device *netdev,
-> >>  			   void (*cleanup)(struct flow_block_cb *block_cb))
-> >>  {
-> >>  	struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
-> >> +	struct net_device *netdev = sch->dev_queue->dev;
-> >
-> > This break indirect block support for netfilter since the driver
-> > is assuming a Qdisc object.
-> 
-> Sorry, I don't follow. You mean mlx5 driver? What does it mean to
-> "assume a qdisc object"?
-> 
-> Is it incorrect to rely on the fact that the netdevice can be deduced
-> from a qdisc, or that there is always a qdisc associated with a block
-> binding point?
+From: Min Li <min.li.xe@renesas.com>
 
-The drivers assume that the xyz_indr_setup_block() always gets a sch
-object, which is not always true. Are you really sure this will work
-for the TC CT offload?
+This patch is to add debugfs support for ptp_clockmatrix and ptp_idt82p33.
+It will create a debugfs directory called idtptp{x} and x is the ptp index.
+Three inerfaces are present, which are cmd, help and regs. help is read
+only and will display a brief help message. regs is read only amd will show
+all register values. cmd is write only and will accept certain commands.
+Currently, the accepted commands are combomode to set comobo mode and write
+to write up to 4 registers.
 
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -928,26 +928,27 @@ static int nf_flow_table_block_setup(struct nf_flowtable *flowtable,
- }
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+---
+ drivers/ptp/Kconfig           |   2 +
+ drivers/ptp/Makefile          |   4 +-
+ drivers/ptp/ptp_idt_debugfs.c | 354 ++++++++++++++++++++++++++++++++++++++++++
+ drivers/ptp/ptp_idt_debugfs.h |  83 ++++++++++
+ 4 files changed, 442 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/ptp/ptp_idt_debugfs.c
+ create mode 100644 drivers/ptp/ptp_idt_debugfs.h
 
- static void nf_flow_table_block_offload_init(struct flow_block_offload *bo,
--                                            struct net *net,
-+                                            struct net_device *dev,
-                                             enum flow_block_command cmd,
-                                             struct nf_flowtable *flowtable,
-                                             struct netlink_ext_ack *extack)
- {
-        memset(bo, 0, sizeof(*bo));
--       bo->net         = net;
-+       bo->net         = dev_net(dev);
-        bo->block       = &flowtable->flow_block;
-        bo->command     = cmd;
-        bo->binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
-        bo->extack      = extack;
-+       bo->sch         = dev_ingress_queue(dev)->qdisc_sleeping;
-        INIT_LIST_HEAD(&bo->cb_list);
- }
+diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+index 942f72d..25b74a2 100644
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@ -118,6 +118,7 @@ config PTP_1588_CLOCK_KVM
+ config PTP_1588_CLOCK_IDT82P33
+ 	tristate "IDT 82P33xxx PTP clock"
+ 	depends on PTP_1588_CLOCK && I2C
++	select DEBUG_FS
+ 	default n
+ 	help
+ 	  This driver adds support for using the IDT 82P33xxx as a PTP
+@@ -130,6 +131,7 @@ config PTP_1588_CLOCK_IDT82P33
+ config PTP_1588_CLOCK_IDTCM
+ 	tristate "IDT CLOCKMATRIX as PTP clock"
+ 	depends on PTP_1588_CLOCK && I2C
++	select DEBUG_FS
+ 	default n
+ 	help
+ 	  This driver adds support for using IDT CLOCKMATRIX(TM) as a PTP
+diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
+index 7aff75f..a4a9e35 100644
+--- a/drivers/ptp/Makefile
++++ b/drivers/ptp/Makefile
+@@ -12,6 +12,8 @@ obj-$(CONFIG_PTP_1588_CLOCK_KVM)	+= ptp_kvm.o
+ obj-$(CONFIG_PTP_1588_CLOCK_QORIQ)	+= ptp-qoriq.o
+ ptp-qoriq-y				+= ptp_qoriq.o
+ ptp-qoriq-$(CONFIG_DEBUG_FS)		+= ptp_qoriq_debugfs.o
+-obj-$(CONFIG_PTP_1588_CLOCK_IDTCM)	+= ptp_clockmatrix.o
++obj-$(CONFIG_PTP_1588_CLOCK_IDTCM)	+= ptp_idtcm.o
+ obj-$(CONFIG_PTP_1588_CLOCK_IDT82P33)	+= ptp_idt82p33.o
+ obj-$(CONFIG_PTP_1588_CLOCK_VMW)	+= ptp_vmw.o
++
++ptp_idtcm-objs += ptp_clockmatrix.o ptp_idt_debugfs.o
+diff --git a/drivers/ptp/ptp_idt_debugfs.c b/drivers/ptp/ptp_idt_debugfs.c
+new file mode 100644
+index 0000000..0ae02f7
+--- /dev/null
++++ b/drivers/ptp/ptp_idt_debugfs.c
+@@ -0,0 +1,354 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * PTP debugfs interface for the IDT family of timing and
++ * synchronization devices.
++ *
++ * Copyright (C) 2019 Integrated Device Technology, Inc., a Renesas Company.
++ */
++#include <linux/debugfs.h>
++#include <linux/module.h>
++#include <linux/seq_file.h>
++#include <linux/slab.h>
++#include <linux/uaccess.h>
++
++#include "ptp_idt_debugfs.h"
++
++MODULE_LICENSE("GPL");
++
++#define DEBUGFS_CMD_MAX_WRITE_SIZE (4)
++#define DEBUGFS_CMD_MENU_SIZE (4)
++#define DEBUGFS_CMD_MAX_SIZE (64)
++#define DEBUGFS_CMD_HELP \
++	"1) set combomode:\n" \
++	"echo -n \"combomode:mode[current/fast/slow/hold]\" > cmd\n" \
++	"2) write up to 4 registers:\n" \
++	"echo -n \"write:addr[hex]:value[hex]:num of bytes[max 4]\" > cmd\n" \
++	"3) show all registers:\n" \
++	"cat regs"
++
++struct idtptp_debugfs {
++	idtptp_debugfs_handle handle;
++	struct ptp_clock_info *info;
++	debugfs_cmd_handler handler;
++	struct idtptp_debugfs_regs space;
++	struct dentry *root;
++	struct dentry *cmd;
++	struct dentry *regs;
++	struct dentry *help;
++};
++
++struct idtptp_debugfs_menu {
++	const char *input[DEBUGFS_CMD_MENU_SIZE];
++	const int output[DEBUGFS_CMD_MENU_SIZE];
++	const int size;
++};
++
++static struct idtptp_debugfs_menu cmdmenu = {
++	.input = {"combomode", "write", "read"},
++	.output = {IDTPTP_DEBUGFS_COMBOMODE,
++		   IDTPTP_DEBUGFS_WRITE_REG,
++		   IDTPTP_DEBUGFS_READ_REG},
++	.size = 3,
++};
++
++static struct idtptp_debugfs_menu combomodemenu = {
++	.input = {"current", "fast", "slow", "hold"},
++	.output = {E_COMBOMODE_CURRENT,
++		   E_COMBOMODE_FASTAVG,
++		   E_COMBOMODE_SLOWAVG,
++		   E_COMBOMODE_HOLDOVER},
++	.size = 4,
++};
++
++static inline int
++idtptp_debugfs_parse_menu(char *input,
++			  struct idtptp_debugfs_menu *menu)
++{
++	int i;
++
++	for (i = 0; i < menu->size; i++) {
++		if (strcmp(input, menu->input[i]) == 0)
++			return menu->output[i];
++	}
++
++	return -EINVAL;
++}
++
++static inline int
++idtptp_debugfs_parse_combomode(char *param,
++			       struct idtptp_debugfs_data *data)
++{
++	char **strp = &param;
++	char *modein;
++
++	modein = strsep(strp, ":");
++	if (modein == NULL)
++		return -EINVAL;
++
++	data->combomode = idtptp_debugfs_parse_menu(modein, &combomodemenu);
++
++	return data->combomode;
++}
++
++static inline int
++idtptp_debugfs_parse_write(char *param,
++			   struct idtptp_debugfs_regs space,
++			   struct idtptp_debugfs_data *data)
++{
++	struct idtptp_debugfs_wr *wr = &data->wr;
++	char *addrin, *valuein, *bytesin;
++	unsigned int addr, value, bytes;
++	char **strp = &param;
++	int ret, i;
++
++	addrin = strsep(strp, ":");
++	if (addrin == NULL)
++		return -EINVAL;
++
++	ret = kstrtouint(addrin, 16, &addr);
++	if (ret < 0)
++		return ret;
++
++	if (addr < space.addr || addr > space.addr + space.length - 1)
++		return -EINVAL;
++
++	valuein = strsep(strp, ":");
++	if (valuein == NULL)
++		return -EINVAL;
++
++	ret = kstrtouint(valuein, 16, &value);
++	if (ret < 0)
++		return ret;
++
++	bytesin = strsep(strp, ":");
++	if (bytesin == NULL)
++		return -EINVAL;
++
++	ret = kstrtouint(bytesin, 16, &bytes);
++	if (ret < 0)
++		return ret;
++
++	if (bytes > DEBUGFS_CMD_MAX_WRITE_SIZE)
++		return -EINVAL;
++
++	wr->addr = (u16)addr;
++	wr->length = bytes;
++
++	for (i = 0; i < bytes; i++) {
++		wr->buf[i] = value & 0xff;
++		value >>= 8;
++	}
++
++	return 0;
++}
++
++
++static int idtptp_debugfs_help_show(struct seq_file *m, void *data)
++{
++	seq_printf(m, "%s\n", DEBUGFS_CMD_HELP);
++
++	return 0;
++}
++
++static int idtptp_debugfs_help_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, idtptp_debugfs_help_show, inode->i_private);
++}
++
++static const struct file_operations fops_help = {
++	.owner = THIS_MODULE,
++	.open = idtptp_debugfs_help_open,
++	.read = seq_read,
++	.llseek = seq_lseek,
++	.release = single_release,
++};
++
++static int idtptp_debugfs_reg_show(struct seq_file *m, void *data)
++{
++	struct idtptp_debugfs *dbg = m->private;
++	struct idtptp_debugfs_data wrdata;
++	u16 regaddr = dbg->space.addr;
++	u8 buf[8] = {0};
++	int i, err;
++
++	wrdata.wr.buf = buf;
++	wrdata.wr.length = 8;
++
++	for (i = 0; i < dbg->space.length; i += 8, regaddr += 8) {
++		wrdata.wr.addr = regaddr;
++
++		err = dbg->handler(dbg->info, IDTPTP_DEBUGFS_READ_REG, &wrdata);
++
++		if (err)
++			return err;
++
++		seq_printf(m,
++			   "%04x %03x: %02x %02x %02x %02x %02x %02x %02x %02x\n",
++			   regaddr, i,
++			   buf[0], buf[1], buf[2], buf[3],
++			   buf[4], buf[5], buf[6], buf[7]);
++	}
++
++	return err;
++}
++
++static int idtptp_debugfs_reg_r_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, idtptp_debugfs_reg_show, inode->i_private);
++}
++
++static const struct file_operations fops_reg_r = {
++	.owner = THIS_MODULE,
++	.open = idtptp_debugfs_reg_r_open,
++	.read = seq_read,
++	.llseek = seq_lseek,
++	.release = single_release,
++};
++
++static int idtptp_debugfs_parse(struct idtptp_debugfs *dbg,
++				char *cmdstr,
++				struct idtptp_debugfs_data *data)
++{
++	char **strp = &cmdstr;
++	int cmd, ret;
++	char *cmdin;
++
++	cmdin = strsep(strp, ":");
++	if (cmdin == NULL)
++		return -EINVAL;
++
++	cmd = idtptp_debugfs_parse_menu(cmdin, &cmdmenu);
++
++	switch (cmd) {
++	case IDTPTP_DEBUGFS_COMBOMODE:
++		ret = idtptp_debugfs_parse_combomode(cmdstr, data);
++		break;
++	case IDTPTP_DEBUGFS_WRITE_REG:
++		ret = idtptp_debugfs_parse_write(cmdstr, dbg->space, data);
++		break;
++	case IDTPTP_DEBUGFS_READ_REG:
++	default:
++		ret = -EINVAL;
++	}
++
++	if (ret < 0)
++		return ret;
++
++	return cmd;
++}
++
++static ssize_t idtptp_debugfs_cmd(struct file *file,
++				  const char __user *ptr,
++				  size_t len, loff_t *off)
++{
++	struct idtptp_debugfs *dbg = file->private_data;
++
++	struct idtptp_debugfs_data data;
++	char cmdstr[DEBUGFS_CMD_MAX_SIZE];
++	int cmd, err;
++	u8 wr_buf[DEBUGFS_CMD_MAX_WRITE_SIZE] = {0};
++
++	if (*off != 0)
++		return 0;
++
++	if (len > DEBUGFS_CMD_MAX_SIZE - 1)
++		len = DEBUGFS_CMD_MAX_SIZE - 1;
++
++	err = strncpy_from_user(cmdstr, ptr, len);
++	if (err < 0)
++		return err;
++	cmdstr[len] = '\0';
++
++	data.wr.buf = wr_buf;
++	data.wr.length = sizeof(wr_buf);
++
++	cmd = idtptp_debugfs_parse(dbg, cmdstr, &data);
++	if (cmd < 0)
++		return cmd;
++
++	err = dbg->handler(dbg->info, cmd, &data);
++	if (err < 0)
++		return err;
++
++	return len;
++}
++
++static const struct file_operations fops_cmd = {
++	.owner = THIS_MODULE,
++	.open = simple_open,
++	.write = idtptp_debugfs_cmd,
++	.llseek = noop_llseek,
++};
++
++idtptp_debugfs_handle *
++idtptp_debugfs_init(int index, struct ptp_clock_info *info,
++		    debugfs_cmd_handler handler,
++		    struct idtptp_debugfs_regs space)
++{
++	struct idtptp_debugfs *dbg;
++	char name[16];
++	int err = 0;
++
++	dbg = kzalloc(sizeof(struct idtptp_debugfs), GFP_KERNEL);
++	if (dbg == NULL)
++		return ERR_PTR(-ENOMEM);
++
++	dbg->info = info;
++	dbg->handle = index;
++	dbg->handler = handler;
++	dbg->space = space;
++
++	snprintf(name, sizeof(name), "idtptp%u", index);
++
++	dbg->root = debugfs_create_dir(name, NULL);
++	if (!dbg->root) {
++		err = -ENOMEM;
++		goto ret;
++	}
++
++	dbg->help = debugfs_create_file("help", S_IFREG | S_IRUSR,
++					dbg->root, dbg, &fops_help);
++	if (!dbg->help) {
++		err = -ENOMEM;
++		goto ret;
++	}
++
++	dbg->regs = debugfs_create_file("regs", S_IFREG | S_IRUSR,
++					dbg->root, dbg, &fops_reg_r);
++	if (!dbg->regs) {
++		err = -ENOMEM;
++		goto ret;
++	}
++
++	dbg->cmd = debugfs_create_file("cmd", S_IFREG | S_IWUSR,
++					dbg->root, dbg, &fops_cmd);
++	if (!dbg->cmd) {
++		err = -ENOMEM;
++		goto ret;
++	}
++
++ret:
++	if (err < 0) {
++		idtptp_debugfs_exit(&dbg->handle);
++		return ERR_PTR(err);
++	}
++	return &dbg->handle;
++}
++EXPORT_SYMBOL(idtptp_debugfs_init);
++
++void idtptp_debugfs_exit(idtptp_debugfs_handle *handle)
++{
++	struct idtptp_debugfs *dbg =
++		container_of(handle, struct idtptp_debugfs, handle);
++
++	if (dbg == NULL)
++		return;
++
++	debugfs_remove(dbg->help);
++	debugfs_remove(dbg->regs);
++	debugfs_remove(dbg->cmd);
++	debugfs_remove(dbg->root);
++
++	kfree(dbg);
++}
++EXPORT_SYMBOL(idtptp_debugfs_exit);
+diff --git a/drivers/ptp/ptp_idt_debugfs.h b/drivers/ptp/ptp_idt_debugfs.h
+new file mode 100644
+index 0000000..3c5e670
+--- /dev/null
++++ b/drivers/ptp/ptp_idt_debugfs.h
+@@ -0,0 +1,83 @@
++/* SPDX-License-Identifier: GPL-2.0+
++ *
++ * PTP debugfs interface for the IDT family of timing and
++ * synchronization devices.
++ *
++ * Copyright (C) 2019 Integrated Device Technology, Inc., a Renesas Company.
++ */
++#ifndef PTP_IDT_DEBUGFS_H
++#define PTP_IDT_DEBUGFS_H
++
++enum idtptp_debugfs_cmd {
++	IDTPTP_DEBUGFS_READ_REG = 0, /* read registers */
++	IDTPTP_DEBUGFS_WRITE_REG,    /* write registers */
++	IDTPTP_DEBUGFS_COMBOMODE,    /* set combo mode */
++	IDTPTP_DEBUGFS_MAX,
++};
++
++/**
++ * @brief Enumerated type listing DPLL combination modes
++ */
++enum idtdpll_combomode {
++	E_COMBOMODE_CURRENT = 0,   /* CURRENT/INSTANEOUS HOLDOVER OFFSET */
++	E_COMBOMODE_FASTAVG,       /* FAST AVERAGED HOLDOVER OFFSET */
++	E_COMBOMODE_SLOWAVG,       /* SLOW AVERAGED HOLDOVER OFFSET */
++	E_COMBOMODE_HOLDOVER,      /* HOLDER OVER OFFSET REGISTER VALUE USED */
++	E_COMBOMODE_MAX,
++};
++
++/* for register read/write */
++struct idtptp_debugfs_wr {
++	u16 addr;
++	u8 *buf;
++	u16 length;
++};
++
++/* device register space */
++struct idtptp_debugfs_regs {
++	u16 addr;
++	u16 length;
++};
++
++/* data passing to phc driver */
++struct idtptp_debugfs_data {
++	union {
++		enum idtdpll_combomode combomode;
++		struct idtptp_debugfs_wr wr;
++	};
++};
++
++struct ptp_clock_info;
++
++/* command handler provided by phc driver to handle idtptp_debugfs_cmd */
++typedef int (*debugfs_cmd_handler)(struct ptp_clock_info *info,
++				   enum idtptp_debugfs_cmd cmd,
++				   struct idtptp_debugfs_data *data);
++
++typedef int idtptp_debugfs_handle;
++
++/**
++ * idtptp_debugfs_init() - initialize idtptp debugfs interface
++ *
++ * @index   idtptp${index} as debugfs dir name
++ * @info    phc registered ptp_clock_info
++ * @handler handle idtptp_debugfs_cmd
++ * @space   device register space
++ *
++ * Returns a valid handle pointer on success or PTR_ERR on failure.
++ */
++idtptp_debugfs_handle *
++idtptp_debugfs_init(int index, struct ptp_clock_info *info,
++		    debugfs_cmd_handler handler,
++		    struct idtptp_debugfs_regs space);
++
++/**
++ * idtptp_debugfs_exit() - delete idtptp debugfs interface
++ *
++ * @handle  handle pointer from idtptp_debugfs_init
++ *
++ */
++void idtptp_debugfs_exit(idtptp_debugfs_handle *handle);
++
++#endif/* PTP_IDT_DEBUGFS_H */
++
+-- 
+2.7.4
 
- static void nf_flow_table_indr_cleanup(struct flow_block_cb *block_cb)
- {
-        struct nf_flowtable *flowtable = block_cb->indr.data;
--       struct net_device *dev = block_cb->indr.dev;
-+       struct Qdisc *sch = block_cb->indr.sch;
-
--       nf_flow_table_gc_cleanup(flowtable, dev);
-+       nf_flow_table_gc_cleanup(flowtable, sch->dev_queue->dev);
-        down_write(&flowtable->flow_block_lock);
-        list_del(&block_cb->list);
-        list_del(&block_cb->driver_list);
-
-Moreover, the flow_offload infrastructure should also remain
-independent from the front-end, either tc/netfilter/ethtool, this is
-pulling in tc specific stuff into it, eg.
-
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index de395498440d..fda29140bdc5 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -444,6 +444,7 @@ struct flow_block_offload {
-        struct list_head cb_list;
-        struct list_head *driver_block_list;
-        struct netlink_ext_ack *extack;
-+       struct Qdisc *sch;
- };
-
- enum tc_setup_type;
-@@ -454,7 +455,7 @@ struct flow_block_cb;
-
- struct flow_block_indr {
-        struct list_head                list;
--       struct net_device               *dev;
-+       struct Qdisc                    *sch;
-        enum flow_block_binder_type     binder_type;
-        void                            *data;
-        void                            *cb_priv;
-@@ -479,7 +480,7 @@ struct flow_block_cb *flow_indr_block_cb_alloc(flow_setup_cb_t *cb,
-                                               void *cb_ident, void *cb_priv,
-                                               void (*release)(void *cb_priv),
-                                               struct flow_block_offload *bo,
--                                              struct net_device *dev, void *data,
-+                                              struct Qdisc *sch, void *data,
-                                               void *indr_cb_priv,
-                                               void (*cleanup)(struct flow_block_cb *block_cb));
- void flow_block_cb_free(struct flow_block_cb *block_cb);
