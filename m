@@ -2,118 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A43C921AD1E
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 04:31:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52AB521AD1F
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 04:33:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727785AbgGJCb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 22:31:27 -0400
-Received: from mail-eopbgr30081.outbound.protection.outlook.com ([40.107.3.81]:54404
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727124AbgGJCb0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jul 2020 22:31:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NBZ6WuCsmz9tBMXiacVBznWEgpQNBU+lYz2n8dWKZg/qlTanoettDj2qeezMXsw53DEvJJlhQWrXe0g/ylGCDZN2yoLEBjkjVIDMVRPlC2J65pJ7oT6A5NqTzTfmO5KLqTlSIe/IPQTJXcFSyhmbVHGXUKHz8Tt9M6jX5sjyHJzGzWfr4nF1VwLIo1JANsBUL0tRpoIawuIn71njZY3ldEm2pPaZVyVKP56PKZqAsQXWageCHKXPZGeZEnL5ei1hW6MH6NLRR30quWr3/LAJjNCgaqEMDLGbk1vsa/J0tblcp1XPvm5NpJh5z9qa6r71v3Tb5KRoM0TtzkDkGgjbLQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n3ISsaoAVE4MqFYgU6y/L4W8FeiK38odjh2vqeTo6dQ=;
- b=R3YHS97EN4JCebUXb12Wu6VKqfiQU89D1XzmU5SVxhe6HAz7FN/ufjXLRfMyWCtk79GcVpAaZe2j/YbKWdjV0LoRa21Y+M3Tdl2dQ1XObu+BvIj75/TddB0MIS8YIYtQxcbygZq4akJ0wi6zfDiMj9Udtxx7lwcF2F35uqSH2eeJg17DvafQUYPyv12Yudhx8kkgMBfhyB+ch0/j/T3rK4CJmYVtCOKNSHcPSfZ18wnx8B16CX6fhThL/KpXN8f1RdiXyuKrWe0foTNg6rTETbcK9voanCZXvB5GjsrkpNiU/dD3oObBkj9De+XUYnDJrlBNKKP7LrHhGihzxiRyPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n3ISsaoAVE4MqFYgU6y/L4W8FeiK38odjh2vqeTo6dQ=;
- b=OIOo5BjqPO/Fi3WhC2OPG4n5Gs7XrZt5A35BhW0/nW+577lnmgW36gVWG6ShD1CQ8vx0S7yXWYJP6ZQydFYNsTOEqnRJnUUtuw0YffPCyhp64VcYft4vnSDAQiIIhlUTIi3JZfSVEpJ9si+CTJUTtgzIPeMpQbTGDiNKwT5lK8c=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB7120.eurprd05.prod.outlook.com (2603:10a6:800:185::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Fri, 10 Jul
- 2020 02:31:08 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3174.022; Fri, 10 Jul 2020
- 02:31:08 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Eli Britstein <elibr@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net V2 9/9] net/mlx5e: CT: Fix memory leak in cleanup
-Date:   Thu,  9 Jul 2020 19:30:18 -0700
-Message-Id: <20200710023018.31905-10-saeedm@mellanox.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200710023018.31905-1-saeedm@mellanox.com>
-References: <20200710023018.31905-1-saeedm@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BYAPR06CA0064.namprd06.prod.outlook.com
- (2603:10b6:a03:14b::41) To VI1PR05MB5102.eurprd05.prod.outlook.com
- (2603:10a6:803:5e::23)
+        id S1726832AbgGJCdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 22:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726560AbgGJCdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 22:33:25 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A62C08C5CE
+        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 19:33:23 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id dg28so3410670edb.3
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 19:33:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XQtWhDwHVdqElFK/QXgJMOyqBqrbGytE8W++797Ka9c=;
+        b=FUE89Jy76tjVIiyTChhlTlSMRr3OmgHZpg5F1V0nC84t2gp86HjThmVPEJDQ+4J5ug
+         3fx+tPWUrBvfV4DgU1zZ3G/2bRlx0rfcmctYRk0TiFpWU8j+MR6lAeVhas5w346x0lWy
+         tXgVoTs3mBKT/UTLR/MotNjwbScKYLC33DXXiUhMZ4GFgZWUgaxt00CKdUfDmPWnh0h1
+         S6NCnaYGgy6zVF7elheVyv3Bovi/FHfbcSUUsoZg2c/TOHH6Y64hszwoCZZz0/iDtao3
+         2jfcCl4rHWafIXVlYbladC/r4tmDCtSkj6HtfRir4mpTODS5ZHIUnIgnALbVDZ5T8B7T
+         Zomw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XQtWhDwHVdqElFK/QXgJMOyqBqrbGytE8W++797Ka9c=;
+        b=O5uX4FKbUhtpIz4vb7HHvSEMT+nDMgisu4WhjVguHC3JIk+Fmo2pdjar1F3Bm8sD0J
+         /voIvsmkbJPbKQu4FVSZR6iHOU/AG4x85WZWxPx8DWvX6B/0hN9IW6uNbheax12I1ASm
+         V2Twty9rAD9S+5EUKdm+j39RNk7SG1HEqjF2TPGLHxnsW71vHFN2rqwYI0F+suUQVh/U
+         mzqwIi7JYmLnyO72xrHD1BCthi+Lcx3mO4fBNkS57XTMaOCkQ+foqLo0QRKvMUFPb8ic
+         5R7GPMiJVgULygDgvMtkE/w8wTf3p57eJ7I/4FFf/ZhnrIIa/4RVc6ZvtEr4ASi8BvZk
+         a+vw==
+X-Gm-Message-State: AOAM531bSyv+Ngs4+n9Tq3hPguFrCJ7apMceAF3d+J1WTNr26QbnUJCx
+        vL13ON60K5AXbE5kxv7u59V64p/b/Y6s4vOxLrNTtw==
+X-Google-Smtp-Source: ABdhPJzrSuoX6LWOAI4bReMpjKESS54UoZfxe1ZCFs7OcGnLWm9e29XHgnyuSGnsthCQGfaGtIR3Y8tLxC5oGlRK+ME=
+X-Received: by 2002:a50:d513:: with SMTP id u19mr72895727edi.241.1594348402044;
+ Thu, 09 Jul 2020 19:33:22 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR06CA0064.namprd06.prod.outlook.com (2603:10b6:a03:14b::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Fri, 10 Jul 2020 02:31:06 +0000
-X-Mailer: git-send-email 2.26.2
-X-Originating-IP: [73.15.39.150]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 0f6bfa17-1316-4483-81f2-08d824794d5f
-X-MS-TrafficTypeDiagnostic: VI1PR05MB7120:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB7120E8398EE5F833CC3B3A41BE650@VI1PR05MB7120.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: koVSbPys3d+vQtUD1rKnMhl9eNbVxHP800FLmn3rZgR5ENRdEbZw+pqWgNUotvh1MAesA/BHzlUjznHv1Z9Ftj/bEl1v5uf5I+icyquNXKaWjRJZfsiJg3kIH1h+E5qVK0DY0PLI5Fq2Hr5vULMqa+ZnQKPYYR0VGEV/P2fmyxIOcKoH1EQD+0F1WuwxgdslyelaFF4zwYlfqRx0F2Fc9xIeyj06OuxqL/EnTDF4eMXDTIWtXbuOCaDji3cLEd5wXoNnAK47U21jXE3y3dXr0z61DcrkP9Fq7YY3RqWQ8p+1P3e1v9XVv2XgH24naZRypoJKMnf7UjQhDkFxkXe3hc7K1bch0IBDnSZyl3TkmwHzj4zf7evIsrysDqoQN+wD
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(136003)(39860400002)(366004)(346002)(478600001)(26005)(4326008)(86362001)(52116002)(83380400001)(956004)(2906002)(186003)(16526019)(6506007)(2616005)(6666004)(4744005)(5660300002)(8676002)(8936002)(66946007)(107886003)(66556008)(316002)(66476007)(1076003)(6512007)(110136005)(36756003)(6486002)(54906003)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 7pbcyFpANF4+LjRYvoGK23ThB38cil0oktJUxPoKqoVAEU2zcf3Qk3abkyM/twy93s67ug6a+kIu4QxJtwzzM1lqYgyEoC1uXP6IDxdAy+15Oi/Ia1X/bMnxqE8ubQKN4Tt5N14yuvlyzO8G3+I3WBVSt3topb0tz1HaUeo63A2qa1XvcIRDfBXPWSawM+reIa615V3iioBLhZkv8V5UT+slf3dsZec3AZfkARA67bySvvxicBgXCc58ifxobRkLkro0iIBH/oyQyB/7KrFEtTp08O5VcO+AA5vpfv9IRjXq9FlABAh+un2QWFAwSk2M4BE5cv+HGj9bNRvQjqRKn7N0VuNiWnUvX8eQrfEnlfXhmWyeBY63wf/JdaDttMosYqVLjsVVxywyR/fooiJ5TzRf6aQo+BFfZVvkwOtkk3zy/OBkM8OpWU7OoFYazbl9TqXLVQsZu73cumQ69bwGojw55mhy+RlXUBs6nB8JOVY=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f6bfa17-1316-4483-81f2-08d824794d5f
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2020 02:31:08.4900
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ma6+qr3codTEmZQ3KBCnpNuPaZGHX50FR4NuXt5Vadp1XQdIMp+8gb48Q4zz0ffzCvxmpnULY+0qZwYHBWjNrw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB7120
+References: <20200709011814.4003186-1-kuba@kernel.org>
+In-Reply-To: <20200709011814.4003186-1-kuba@kernel.org>
+From:   Tom Herbert <tom@herbertland.com>
+Date:   Thu, 9 Jul 2020 19:33:11 -0700
+Message-ID: <CALx6S34JePNX62=rPq5aTW6W_tpPwSeseGcq13iAaJ9Y53QTiQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 00/10] udp_tunnel: add NIC RX port offload infrastructure
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        edwin.peer@broadcom.com, emil.s.tantilov@intel.com,
+        alexander.h.duyck@linux.intel.com,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Michal Kubecek <mkubecek@suse.cz>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Britstein <elibr@mellanox.com>
+The patch set looks good for its purpose, but, sorry, I can't resist
+another round of complaining about vendors that continue to develop
+protocol specific offloads instead of moving to protocol agnostic
+generic offloads.
 
-CT entries are deleted via a workqueue from netfilter. If removing the
-module before that, the rules are cleaned by the driver itself, but the
-memory entries for them are not freed. Fix that.
+On Wed, Jul 8, 2020 at 6:19 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Kernel has a facility to notify drivers about the UDP tunnel ports
+> so that devices can recognize tunneled packets. This is important
+> mostly for RX - devices which don't support CHECKSUM_COMPLETE can
+> report checksums of inner packets, and compute RSS over inner headers.
 
-Fixes: ac991b48d43c ("net/mlx5e: CT: Offload established flows")
-Signed-off-by: Eli Britstein <elibr@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 1 +
- 1 file changed, 1 insertion(+)
+With the more use of various routing headers and other protocols we're
+going to see more and more cases where it's impossible for devices to
+verify checksums. CHECKSUM_COMPLETE is the only way forward!
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index 430025550fad..aad1c29b23db 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -1097,6 +1097,7 @@ mlx5_tc_ct_flush_ft_entry(void *ptr, void *arg)
- 	struct mlx5_ct_entry *entry = ptr;
- 
- 	mlx5_tc_ct_entry_del_rules(ct_priv, entry);
-+	kfree(entry);
- }
- 
- static void
--- 
-2.26.2
+> Some drivers also match the UDP tunnel ports also for TX, although
+> doing so may lead to false positives and negatives.
 
+Hmm, do you know why they do that? I suppose because they don't
+support NETIF_F_HW_CSUM and want to offload an inner checksum so they
+need to parse the packet in device, which sadly means they need to
+parse the packet in the driver to make sure the device can parse it
+and set the checksum. So much driver complexity to support protocol
+specific offloads... there is no reason why a driver should ever need
+to parse a packet on transmit, everything it needs to know is in the
+skbuff. Oh, what a tangled web we weave...
+
+>
+> Unfortunately the user experience when trying to take adavantage
+> of these facilities is suboptimal. First of all there is no way
+> for users to check which ports are offloaded. Many drivers resort
+> to printing messages to aid debugging, other use debugfs. Even worse
+> the availability of the RX features (NETIF_F_RX_UDP_TUNNEL_PORT)
+> is established purely on the basis of the driver having the ndos
+> installed. For most drivers, however, the ability to perform offloads
+> is contingent on device capabilities (driver support multiple device
+> and firmware versions). Unless driver resorts to hackish clearing
+> of features set incorrectly by the core - users are left guessing
+> whether their device really supports UDP tunnel port offload or not.
+>
+> There is currently no way to indicate or configure whether RX
+> features include just the checksum offload or checksum and using
+> inner headers for RSS. Many drivers default to not using inner
+> headers for RSS because most implementations populate the source
+> port with entropy from the inner headers. This, however, is not
+> always the case, for example certain switches are only able to
+> use a fixed source port during encapsulation.
+>
+Well, the concept of devices parsing UDP payloads is marginal to begin
+with because of the port number ambiguity problem, but as long as the
+device isn't modifying UDP payload data I guess we live with it.
+
+As for RSS over the internal headers, I believe this is another lost
+cause. The device can only parse what it's programmed to understand
+which will always be less than what the host can do. Device sees a new
+encap or extension header it doesn't understand, then it doesn't go
+into that header and it hits a roadblock. For IPv6 all this should be
+remedied by the flow label anyway which Linux and all other OSes set
+by default, so in that case a device doesn't need to do anything more
+than parse the IP header to do both RSS and RX csum.
+
+> We have also seen many driver authors get the intricacies of UDP
+> tunnel port offloads wrong. Most commonly the drivers forget to
+> perform reference counting, or take sleeping locks in the callbacks.
+>
+> This work tries to improve the situation by pulling the UDP tunnel
+> port table maintenance out of the drivers. It turns out that almost
+> all drivers maintain a fixed size table of ports (in most cases one
+> per tunnel type), so we can take care of all the refcounting in the
+> core, and let the driver specify if they need to sleep in the
+> callbacks or not. The new common implementation will also support
+> replacing ports - when a port is removed from a full table it will
+> try to find a previously missing port to take its place.
+>
+> This patch only implements the core functionality along with a few
+> drivers I was hoping to test manually [1] along with a test based
+> on a netdevsim implementation. Following patches will convert all
+> the drivers. Once that's complete we can remove the ndos, and rely
+> directly on the new infrastrucutre.
+>
+> Then after RSS (RXFH) is converted to netlink we can add the ability
+> to configure the use of inner RSS headers for UDP tunnels.
+>
+> [1] Unfortunately I wasn't able to, turns out 2 of the devices
+> I had access to were older generation or had old FW, and they
+> did not actually support UDP tunnel port notifications (see
+> the second paragraph). The thrid device appears to program
+> the UDP ports correctly but it generates bad UDP checksums with
+> or without these patches. Long story short - I'd appreciate
+> reviews and testing here..
+>
+> Jakub Kicinski (10):
+>   debugfs: make sure we can remove u32_array files cleanly
+>   udp_tunnel: re-number the offload tunnel types
+>   udp_tunnel: add central NIC RX port offload infrastructure
+>   ethtool: add tunnel info interface
+>   netdevsim: add UDP tunnel port offload support
+>   selftests: net: add a test for UDP tunnel info infra
+>   ixgbe: don't clear UDP tunnel ports when RXCSUM is disabled
+>   ixgbe: convert to new udp_tunnel_nic infra
+>   bnxt: convert to new udp_tunnel_nic infra
+>   mlx4: convert to new udp_tunnel_nic infra
+>
+>  Documentation/filesystems/debugfs.rst         |  12 +-
+>  Documentation/networking/ethtool-netlink.rst  |  33 +
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 133 +--
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   6 -
+>  drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   3 -
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 200 +---
+>  .../net/ethernet/mellanox/mlx4/en_netdev.c    | 107 +--
+>  drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |   2 -
+>  drivers/net/geneve.c                          |   6 +-
+>  drivers/net/netdevsim/Makefile                |   2 +-
+>  drivers/net/netdevsim/dev.c                   |   1 +
+>  drivers/net/netdevsim/netdev.c                |  12 +-
+>  drivers/net/netdevsim/netdevsim.h             |  19 +
+>  drivers/net/netdevsim/udp_tunnels.c           | 192 ++++
+>  drivers/net/vxlan.c                           |   6 +-
+>  fs/debugfs/file.c                             |  27 +-
+>  include/linux/debugfs.h                       |  12 +-
+>  include/linux/netdevice.h                     |   8 +
+>  include/net/udp_tunnel.h                      | 152 ++-
+>  include/uapi/linux/ethtool.h                  |   2 +
+>  include/uapi/linux/ethtool_netlink.h          |  55 ++
+>  mm/cma.h                                      |   3 +
+>  mm/cma_debug.c                                |   7 +-
+>  net/ethtool/Makefile                          |   3 +-
+>  net/ethtool/common.c                          |   9 +
+>  net/ethtool/common.h                          |   1 +
+>  net/ethtool/netlink.c                         |  12 +
+>  net/ethtool/netlink.h                         |   4 +
+>  net/ethtool/strset.c                          |   5 +
+>  net/ethtool/tunnels.c                         | 259 +++++
+>  net/ipv4/Makefile                             |   3 +-
+>  net/ipv4/{udp_tunnel.c => udp_tunnel_core.c}  |   0
+>  net/ipv4/udp_tunnel_nic.c                     | 897 ++++++++++++++++++
+>  net/ipv4/udp_tunnel_stub.c                    |   7 +
+>  .../drivers/net/netdevsim/udp_tunnel_nic.sh   | 786 +++++++++++++++
+>  35 files changed, 2597 insertions(+), 389 deletions(-)
+>  create mode 100644 drivers/net/netdevsim/udp_tunnels.c
+>  create mode 100644 net/ethtool/tunnels.c
+>  rename net/ipv4/{udp_tunnel.c => udp_tunnel_core.c} (100%)
+>  create mode 100644 net/ipv4/udp_tunnel_nic.c
+>  create mode 100644 net/ipv4/udp_tunnel_stub.c
+>  create mode 100644 tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
+>
+> --
+> 2.26.2
+>
