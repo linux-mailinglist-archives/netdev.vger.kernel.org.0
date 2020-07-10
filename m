@@ -2,135 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06D1421AC64
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 03:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BE3B21AC8D
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 03:43:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726615AbgGJBKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jul 2020 21:10:34 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:9442 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726265AbgGJBKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 21:10:34 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06A0pYZw031703
-        for <netdev@vger.kernel.org>; Thu, 9 Jul 2020 18:10:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=xfAknqrzBkEU4BjOQfd350WpBtIFa49QBe655gjJm08=;
- b=E2x6hFbw43k1Hj4Kihmkc/8Kki5w7oUCB1BSEtoNfWuSudR7MrVKRiVVHc+R4yVrV+Ca
- o4gkOxinIgc2OsBAlH6kkXCVHtOJ9cyfviUgcDU8EApHuFibsjM6fbIi7dBHSi0btFg/
- wQ7EdKgyhDYcx2o5dJlidWXIMdaZjDrlIzg= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 325jysqnbw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 18:10:33 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 9 Jul 2020 18:10:33 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 4363F2EC3C81; Thu,  9 Jul 2020 18:10:28 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] libbpf: fix memory leak and optimize BTF sanitization
-Date:   Thu, 9 Jul 2020 18:10:23 -0700
-Message-ID: <20200710011023.1655008-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726789AbgGJBnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jul 2020 21:43:03 -0400
+Received: from out0-134.mail.aliyun.com ([140.205.0.134]:35098 "EHLO
+        out0-134.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726265AbgGJBnD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jul 2020 21:43:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=alibaba-inc.com; s=default;
+        t=1594345380; h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        bh=tL6uZ5Ff/zIGdf7sORij0YGiVfkWqtJcPtB7965aQ3o=;
+        b=dUDBhYmBsj9z0xUhKeo0YcDYivEBMiE73KPZeCePoyoqbhtnkW3gcSNQD2/3zM2wVqB99nVC8Swj3iih6UOlRnT4dLqkFgWF4YhBmimsBZofbpWXneLTGU18LVjqUL3JQmT9fuivW77+tVildfYQoxPipjrf6wbBRyyDffWCo14=
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e02c03279;MF=xiangning.yu@alibaba-inc.com;NM=1;PH=DS;RN=2;SR=0;TI=SMTPD_---.I.Gq5In_1594345378;
+Received: from US-118000MP.local(mailfrom:xiangning.yu@alibaba-inc.com fp:SMTPD_---.I.Gq5In_1594345378)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 10 Jul 2020 09:42:59 +0800
+Subject: Re: [PATCH net-next v2 2/2] net: sched: Lockless Token Bucket (LTB)
+ qdisc
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <4835f4cb-eee0-81e7-d935-5ad85767802c@alibaba-inc.com>
+ <554197ce-cef1-0e75-06d7-56dbef7c13cc@gmail.com>
+ <d1716bc1-a975-54a3-8b7e-a3d3bcac69c5@alibaba-inc.com>
+ <91fc642f-6447-4863-a182-388591cc1cc0@gmail.com>
+ <387fe086-9596-c71e-d1d9-998749ae093c@alibaba-inc.com>
+ <c4796548-5c3b-f3db-a060-1e46fb42970a@gmail.com>
+ <7ea368d0-d12c-2f04-17a7-1e31a61bbe2b@alibaba-inc.com>
+ <825c8af6-66b5-eaf4-2c46-76d018489ebd@gmail.com>
+ <345bf201-f7cf-c821-1dba-50d0f2b76101@alibaba-inc.com>
+ <ad26a7a3-38b1-5cbc-b4ed-ea5626a74bd8@gmail.com>
+From:   "=?UTF-8?B?WVUsIFhpYW5nbmluZw==?=" <xiangning.yu@alibaba-inc.com>
+Message-ID: <419dbdae-19f9-2bb3-2ca5-eaffd58f1266@alibaba-inc.com>
+Date:   Fri, 10 Jul 2020 09:42:57 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-09_11:2020-07-09,2020-07-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 malwarescore=0
- mlxlogscore=999 suspectscore=25 adultscore=0 phishscore=0 impostorscore=0
- priorityscore=1501 bulkscore=0 lowpriorityscore=0 spamscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007100001
-X-FB-Internal: deliver
+In-Reply-To: <ad26a7a3-38b1-5cbc-b4ed-ea5626a74bd8@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Coverity's static analysis helpfully reported a memory leak introduced by
-0f0e55d8247c ("libbpf: Improve BTF sanitization handling"). While fixing =
-it,
-I realized that btf__new() already creates a memory copy, so there is no =
-need
-to do this. So this patch also fixes misleading btf__new() signature to m=
-ake
-data into a `const void *` input parameter. And it avoids unnecessary mem=
-ory
-allocation and copy in BTF sanitization code altogether.
 
-Fixes: 0f0e55d8247c ("libbpf: Improve BTF sanitization handling")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/btf.c    |  2 +-
- tools/lib/bpf/btf.h    |  2 +-
- tools/lib/bpf/libbpf.c | 11 +++--------
- 3 files changed, 5 insertions(+), 10 deletions(-)
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index c8861c9e3635..c9e760e120dc 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -397,7 +397,7 @@ void btf__free(struct btf *btf)
- 	free(btf);
- }
-=20
--struct btf *btf__new(__u8 *data, __u32 size)
-+struct btf *btf__new(const void *data, __u32 size)
- {
- 	struct btf *btf;
- 	int err;
-diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-index 173eff23c472..a3b7ef9b737f 100644
---- a/tools/lib/bpf/btf.h
-+++ b/tools/lib/bpf/btf.h
-@@ -63,7 +63,7 @@ struct btf_ext_header {
- };
-=20
- LIBBPF_API void btf__free(struct btf *btf);
--LIBBPF_API struct btf *btf__new(__u8 *data, __u32 size);
-+LIBBPF_API struct btf *btf__new(const void *data, __u32 size);
- LIBBPF_API struct btf *btf__parse_elf(const char *path,
- 				      struct btf_ext **btf_ext);
- LIBBPF_API int btf__finalize_data(struct bpf_object *obj, struct btf *bt=
-f);
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 6602eb479596..25e4f77be8d7 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -2533,17 +2533,12 @@ static int bpf_object__sanitize_and_load_btf(stru=
-ct bpf_object *obj)
-=20
- 	sanitize =3D btf_needs_sanitization(obj);
- 	if (sanitize) {
--		const void *orig_data;
--		void *san_data;
-+		const void *raw_data;
- 		__u32 sz;
-=20
- 		/* clone BTF to sanitize a copy and leave the original intact */
--		orig_data =3D btf__get_raw_data(obj->btf, &sz);
--		san_data =3D malloc(sz);
--		if (!san_data)
--			return -ENOMEM;
--		memcpy(san_data, orig_data, sz);
--		kern_btf =3D btf__new(san_data, sz);
-+		raw_data =3D btf__get_raw_data(obj->btf, &sz);
-+		kern_btf =3D btf__new(raw_data, sz);
- 		if (IS_ERR(kern_btf))
- 			return PTR_ERR(kern_btf);
-=20
---=20
-2.24.1
+On 7/9/20 3:22 PM, Eric Dumazet wrote:
+> 
+> 
+> On 7/9/20 11:20 AM, YU, Xiangning wrote:
+>>
+>>
+>> On 7/9/20 10:15 AM, Eric Dumazet wrote:
+>>>
+>>> Well, at Google we no longer have this issue.
+>>>
+>>> We adopted EDT model, so that rate limiting can be done in eBPF, by simply adjusting skb->tstamp.
+>>>
+>>> The qdisc is MQ + FQ.
+>>>
+>>> Stanislas Fomichev will present this use case at netdev conference 
+>>>
+>>> https://netdevconf.info/0x14/session.html?talk-replacing-HTB-with-EDT-and-BPF
+>>>
+>> This is cool, I would love to learn more about this!
+>>
+>> Still please correct me if I'm wrong. This looks more like pacing on a per-flow basis, how do you support an overall rate limiting of multiple flows? Each individual flow won't have a global rate usage about others.
+>>
+> 
+> 
+> No, this is really per-aggregate rate limiting, multiple TCP/UDP flows can share the same class.
+> 
+> Before that, we would have between 10 and 3000 HTB classes on a host.
+> We had internal code to bypass the HTB (on bond0 device) for non throttled packets,
+> since HTB could hardly cope with more than 1Mpps.
+> 
+> Now, an eBPF program (from sch_handle_egress()) using maps to perform classification
+> and (optional) rate-limiting based on various rules.
+> 
+> MQ+FQ is already doing the per-flow pacing (we have been using this for 8 years now)
+> 
+> The added eBPF code extended this pacing to be per aggregate as well.
+> 
+That's very interesting! Thank you for sharing. 
 
+We have been deploying ltb for several years too. It's far better than htb but still have degradation compared with the baseline. Usng EDT across flows should be able to yield an even better result.
+
+Thanks
+- Xiangning
