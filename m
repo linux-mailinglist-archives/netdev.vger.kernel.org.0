@@ -2,161 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B8721B832
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7EF921B885
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:24:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728328AbgGJORo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 10:17:44 -0400
-Received: from mga06.intel.com ([134.134.136.31]:32740 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726925AbgGJORo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jul 2020 10:17:44 -0400
-IronPort-SDR: sn9gzMoXwuXy9KrhWf6RI/Io22Ui0q21cKYTawpj8/kJJHTPAuge0OC8HTZmTZ38LrOnCA3zMP
- Jph4SRGNtFSw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9677"; a="209731731"
-X-IronPort-AV: E=Sophos;i="5.75,336,1589266800"; 
-   d="scan'208";a="209731731"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2020 07:17:42 -0700
-IronPort-SDR: 7QNaPYVUUAbLSqf9eU9eSP8+qj7RtynpNXl5upfGYUuQyTVqgXP8yj0rTIMR1ZMGResT3Zxdkz
- Xb5TC0epNYMw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,336,1589266800"; 
-   d="scan'208";a="428575555"
-Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.54.29])
-  by orsmga004.jf.intel.com with ESMTP; 10 Jul 2020 07:17:38 -0700
-From:   Magnus Karlsson <magnus.karlsson@intel.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, maximmi@mellanox.com
-Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
-        maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com,
-        cristian.dumitrescu@intel.com
-Subject: [PATCH bpf-next v2 14/14] xsk: documentation for XDP_SHARED_UMEM between queues and netdevs
-Date:   Fri, 10 Jul 2020 16:16:42 +0200
-Message-Id: <1594390602-7635-15-git-send-email-magnus.karlsson@intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1594390602-7635-1-git-send-email-magnus.karlsson@intel.com>
-References: <1594390602-7635-1-git-send-email-magnus.karlsson@intel.com>
+        id S1728209AbgGJOYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 10:24:23 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:58382 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728544AbgGJOYH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 10:24:07 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06AEM74M028636;
+        Fri, 10 Jul 2020 14:23:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2020-01-29;
+ bh=0Wdlwm4raGSymgpKP2Ty7pQ0EeMTWnHCuUjWg1PBerE=;
+ b=Vt+j4s4YEx8RqaGNXtY65QkthAHBAD/9rZb8WGb5kpCWnsw8EDJtr0JSdKz9vlWshXaG
+ tJGnjAMv3P6TV+ljWZSdBImSWliqUmF6Kw5BLdrgkruMWa6wT3/3koMJTJYTBOsGI5pZ
+ YCwGxoP0j8tJfyk3ZdklJqjre4n/ouN0BNFrQ/ILJKtOrwz792XyOqVY9/TiB/W25jg+
+ VqMjL8W0YkRk9SxLcgUA1Yt40kPpeEac66abdq5nRv4RUFbuMnJKkPQg1fLp0WDn3glP
+ p2Ga6tvggKzppXecjnESb8PrgPzNCKloBQ07C+cybbdbHHHaFntMoA7b/Rs4bAXFBWX6 8w== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 325y0aqrp6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 10 Jul 2020 14:23:21 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06AENKJf102332;
+        Fri, 10 Jul 2020 14:23:20 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 325k3mfrd0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 10 Jul 2020 14:23:20 +0000
+Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 06AENGBb024188;
+        Fri, 10 Jul 2020 14:23:16 GMT
+Received: from localhost.uk.oracle.com (/10.175.190.31)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 10 Jul 2020 07:23:16 -0700
+From:   Alan Maguire <alan.maguire@oracle.com>
+To:     rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andriin@fb.com
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Alan Maguire <alan.maguire@oracle.com>
+Subject: [PATCH v2 bpf-next 0/2] bpf: fix use of trace_printk() in BPF
+Date:   Fri, 10 Jul 2020 15:22:31 +0100
+Message-Id: <1594390953-31757-1-git-send-email-alan.maguire@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9677 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ phishscore=0 adultscore=0 suspectscore=0 malwarescore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007100101
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9677 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 clxscore=1015
+ lowpriorityscore=0 impostorscore=0 malwarescore=0 bulkscore=0 phishscore=0
+ adultscore=0 suspectscore=0 mlxlogscore=999 priorityscore=1501 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007100101
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for the XDP_SHARED_UMEM feature when a UMEM is
-shared between different queues and/or netdevs.
+Steven suggested a way to resolve the appearance of the warning banner
+that appears as a result of using trace_printk() in BPF [1].
+Applying the patch and testing reveals all works as expected; we
+can call bpf_trace_printk() and see the trace messages in
+/sys/kernel/debug/tracing/trace_pipe and no banner message appears.
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- Documentation/networking/af_xdp.rst | 68 +++++++++++++++++++++++++++++++------
- 1 file changed, 58 insertions(+), 10 deletions(-)
+Also add a test prog to verify basic bpf_trace_printk() helper behaviour.
 
-diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networking/af_xdp.rst
-index 5bc55a4..2ccc564 100644
---- a/Documentation/networking/af_xdp.rst
-+++ b/Documentation/networking/af_xdp.rst
-@@ -258,14 +258,21 @@ socket into zero-copy mode or fail.
- XDP_SHARED_UMEM bind flag
- -------------------------
- 
--This flag enables you to bind multiple sockets to the same UMEM, but
--only if they share the same queue id. In this mode, each socket has
--their own RX and TX rings, but the UMEM (tied to the fist socket
--created) only has a single FILL ring and a single COMPLETION
--ring. To use this mode, create the first socket and bind it in the normal
--way. Create a second socket and create an RX and a TX ring, or at
--least one of them, but no FILL or COMPLETION rings as the ones from
--the first socket will be used. In the bind call, set he
-+This flag enables you to bind multiple sockets to the same UMEM. It
-+works on the same queue id, between queue ids and between
-+netdevs/devices. In this mode, each socket has their own RX and TX
-+rings as usual, but you are going to have one or more FILL and
-+COMPLETION ring pairs. You have to create one of these pairs per
-+unique netdev and queue id tuple that you bind to.
-+
-+Starting with the case were we would like to share a UMEM between
-+sockets bound to the same netdev and queue id. The UMEM (tied to the
-+fist socket created) will only have a single FILL ring and a single
-+COMPLETION ring as there is only on unique netdev,queue_id tuple that
-+we have bound to. To use this mode, create the first socket and bind
-+it in the normal way. Create a second socket and create an RX and a TX
-+ring, or at least one of them, but no FILL or COMPLETION rings as the
-+ones from the first socket will be used. In the bind call, set he
- XDP_SHARED_UMEM option and provide the initial socket's fd in the
- sxdp_shared_umem_fd field. You can attach an arbitrary number of extra
- sockets this way.
-@@ -305,11 +312,41 @@ concurrently. There are no synchronization primitives in the
- libbpf code that protects multiple users at this point in time.
- 
- Libbpf uses this mode if you create more than one socket tied to the
--same umem. However, note that you need to supply the
-+same UMEM. However, note that you need to supply the
- XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD libbpf_flag with the
- xsk_socket__create calls and load your own XDP program as there is no
- built in one in libbpf that will route the traffic for you.
- 
-+The second case is when you share a UMEM between sockets that are
-+bound to different queue ids and/or netdevs. In this case you have to
-+create one FILL ring and one COMPLETION ring for each unique
-+netdev,queue_id pair. Let us say you want to create two sockets bound
-+to two different queue ids on the same netdev. Create the first socket
-+and bind it in the normal way. Create a second socket and create an RX
-+and a TX ring, or at least one of them, and then one FILL and
-+COMPLETION ring for this socket. Then in the bind call, set he
-+XDP_SHARED_UMEM option and provide the initial socket's fd in the
-+sxdp_shared_umem_fd field as you registered the UMEM on that
-+socket. These two sockets will now share one and the same UMEM.
-+
-+There is no need to supply an XDP program like the one in the previous
-+case where sockets were bound to the same queue id and
-+device. Instead, use the NIC's packet steering capabilities to steer
-+the packets to the right queue. In the previous example, there is only
-+one queue shared among sockets, so the NIC cannot do this steering. It
-+can only steer between queues.
-+
-+In libbpf, you need to use the xsk_socket__create_shared() API as it
-+takes a reference to a FILL ring and a COMPLETION ring that will be
-+created for you and bound to the shared UMEM. You can use this
-+function for all the sockets you create, or you can use it for the
-+second and following ones and use xsk_socket__create() for the first
-+one. Both methods yield the same result.
-+
-+Note that a UMEM can be shared between sockets on the same queue id
-+and device, as well as between queues on the same device and between
-+devices at the same time.
-+
- XDP_USE_NEED_WAKEUP bind flag
- -----------------------------
- 
-@@ -364,7 +401,7 @@ resources by only setting up one of them. Both the FILL ring and the
- COMPLETION ring are mandatory as you need to have a UMEM tied to your
- socket. But if the XDP_SHARED_UMEM flag is used, any socket after the
- first one does not have a UMEM and should in that case not have any
--FILL or COMPLETION rings created as the ones from the shared umem will
-+FILL or COMPLETION rings created as the ones from the shared UMEM will
- be used. Note, that the rings are single-producer single-consumer, so
- do not try to access them from multiple processes at the same
- time. See the XDP_SHARED_UMEM section.
-@@ -567,6 +604,17 @@ A: The short answer is no, that is not supported at the moment. The
-    switch, or other distribution mechanism, in your NIC to direct
-    traffic to the correct queue id and socket.
- 
-+Q: My packets are sometimes corrupted. What is wrong?
-+
-+A: Care has to be taken not to feed the same buffer in the UMEM into
-+   more than one ring at the same time. If you for example feed the
-+   same buffer into the FILL ring and the TX ring at the same time, the
-+   NIC might receive data into the buffer at the same time it is
-+   sending it. This will cause some packets to become corrupted. Same
-+   thing goes for feeding the same buffer into the FILL rings
-+   belonging to different queue ids or netdevs bound with the
-+   XDP_SHARED_UMEM flag.
-+
- Credits
- =======
- 
+Changes since v1:
+
+- reorder header inclusion in bpf_trace.c (Steven, patch 1)
+- trace zero-length messages also (Andrii, patch 1)
+- use a raw spinlock to ensure there are no issues for PREMMPT_RT
+  kernels when using bpf_trace_printk() within other raw spinlocks
+  (Steven, patch 1)
+- always enable bpf_trace_printk() tracepoint when loading programs
+  using bpf_trace_printk() as this will ensure that a user disabling
+  that tracepoint will not prevent tracing output from being logged
+  (Steven, patch 1)
+- use "tp/raw_syscalls/sys_enter" and a usleep(1) to trigger events
+  in the selftest ensuring test runs faster (Andrii, patch 2)
+
+[1]  https://lore.kernel.org/r/20200628194334.6238b933@oasis.local.home
+
+Alan Maguire (2):
+  bpf: use dedicated bpf_trace_printk event instead of trace_printk()
+  selftests/bpf: add selftests verifying bpf_trace_printk() behaviour
+
+ kernel/trace/Makefile                              |  2 +
+ kernel/trace/bpf_trace.c                           | 41 ++++++++++--
+ kernel/trace/bpf_trace.h                           | 34 ++++++++++
+ .../selftests/bpf/prog_tests/trace_printk.c        | 74 ++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/trace_printk.c   | 21 ++++++
+ 5 files changed, 167 insertions(+), 5 deletions(-)
+ create mode 100644 kernel/trace/bpf_trace.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_printk.c
+ create mode 100644 tools/testing/selftests/bpf/progs/trace_printk.c
+
 -- 
-2.7.4
+1.8.3.1
 
