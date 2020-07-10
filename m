@@ -2,72 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 409DB21AE71
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 07:21:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 855E621AED0
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 07:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726536AbgGJFVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 01:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726288AbgGJFUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 01:20:21 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B68C08C5CE
-        for <netdev@vger.kernel.org>; Thu,  9 Jul 2020 22:20:17 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id d18so4818955ion.0
-        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 22:20:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+lwkF5O8BWiY8G7im/kz7Xiwf3lJM09LEg4kvnx/I7s=;
-        b=BeVUg6bBGzXciUBNaRyQSOLa665k2L+cfAgPSQ48PnmXVUcpOroJPgEfv5qGrMLZ5a
-         x2bmiHqsR0l/mvefwo8GYLw/bG5hCRFm5bjtvfKdcDtymoLuzQxivMx1nBzI46dwAk10
-         uNc2LmDcw3PIcF5WGlVThBPzZlLf8kGQqGDs01iw7NsnjKnUG/sm3dOVc2HeWbbDi/+k
-         W/tKs6VjSupiUoFFwEpfDnWmGiWIIxKn2C6naE4gNmxUQ0lXpRyXyJzzljh5DqaTHeS4
-         Ffv1Ke+UPLwo/8nHZRgQ6UzlYMi2O2YH2N9jeASdSWD33tN7pwa3PyGwdnqZcy7M7ZwA
-         P7Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+lwkF5O8BWiY8G7im/kz7Xiwf3lJM09LEg4kvnx/I7s=;
-        b=td9q/nrqVKGwErpx0uUTBI7lc8heBFUIirJy0UsEP9A5qjA+mNNnm3Rz2TyazUHHp/
-         1uTUi1hsURPuipUhnOp2LbIpks+57WoCAXMxY94s1MaF7FACkhv95W4TVr+QhkeK8Kpd
-         tmuoqSKkaXa7gS02NDaGCKAILLVPcw1daIfMhveXUdpfz8rQDO8vFodHM1Ak0/S3TJ4/
-         yPKFnoIwGu5jBsKwaUFst4kYKvTF1aCOii3FAZSvecpZi+9ltUvE1E6V8KWFwMzUoztP
-         EynGLvMLas892LQypEg0OTAYSNL+3NBWOd6yQWeMmp/FvrET8KxYxEsM7BSUVmrW4Vbp
-         c0ug==
-X-Gm-Message-State: AOAM532p4RYR4q30Zurp9HXrB3lPz1zs0JS07qD3XcD5HO1fVI6ppgP/
-        zdkUoRSv/mIdP1qobdyGf117gxaTN7eMGxdzAHhUHOujdyA=
-X-Google-Smtp-Source: ABdhPJzoRaeUPzjkiTIHl2AJJN7ZwteDJqj+4vKlVnoIX4EBRECyTQ62/9rQYNco9JuU1rZU0Rp8VLhksMQf4f9t0gM=
-X-Received: by 2002:a5d:9819:: with SMTP id a25mr44285019iol.85.1594358417259;
- Thu, 09 Jul 2020 22:20:17 -0700 (PDT)
+        id S1726768AbgGJFi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 01:38:29 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:37802 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726047AbgGJFi3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jul 2020 01:38:29 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 1904C2055E;
+        Fri, 10 Jul 2020 07:38:28 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id AIQmszMbNI9z; Fri, 10 Jul 2020 07:38:27 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id A14CF201A0;
+        Fri, 10 Jul 2020 07:38:27 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 10 Jul 2020 07:38:27 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Fri, 10 Jul
+ 2020 07:38:27 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 09E9631846AE; Fri, 10 Jul 2020 07:38:27 +0200 (CEST)
+Date:   Fri, 10 Jul 2020 07:38:27 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Xin Long <lucien.xin@gmail.com>
+CC:     <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        "kbuild test robot" <lkp@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: Re: [PATCHv3 ipsec-next 00/10] xfrm: support ipip and ipv6 tunnels
+ in vti and xfrmi
+Message-ID: <20200710053826.GB20687@gauss3.secunet.de>
+References: <cover.1594036709.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-References: <28bff9d7-fa2d-5284-f6d5-e08cd792c9c6@alibaba-inc.com>
- <CAM_iQpVux85OXH-oYeH15sYTb=kEj0o7uu9ug9PeTesHzXk_gQ@mail.gmail.com>
- <5c963736-2a83-b658-2a9d-485d0876c03f@alibaba-inc.com> <CAM_iQpV5LRU-JxfLETsdNqh75wv3vWyCsxiTTgC392HvTxa9CQ@mail.gmail.com>
- <ad662f0b-c4ab-01c0-57e1-45ddd7325e66@alibaba-inc.com> <CAM_iQpUE658hhk8n9j+T5Qfm4Vj7Zfzw08EECh8CF8QW0GLW_g@mail.gmail.com>
- <00ab4144-397e-41b8-e518-ad2aacb9afd3@alibaba-inc.com> <CAM_iQpVoxDz2mrZozAKAjr=bykKO++XM3R-rgyUCb8-Edsv58g@mail.gmail.com>
-In-Reply-To: <CAM_iQpVoxDz2mrZozAKAjr=bykKO++XM3R-rgyUCb8-Edsv58g@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 9 Jul 2020 22:20:06 -0700
-Message-ID: <CAM_iQpWAHdws4Zu=qD1g5E3tOShefQwK8Mbf9YNCiR2OvHA-Kw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: sched: Lockless Token Bucket (LTB) Qdisc
-To:     "YU, Xiangning" <xiangning.yu@alibaba-inc.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <cover.1594036709.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 9, 2020 at 10:04 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> IOW, without these *additional* efforts, it is broken in terms of
-> out-of-order.
->
+On Mon, Jul 06, 2020 at 08:01:28PM +0800, Xin Long wrote:
+> Now ipip and ipv6 tunnels processing is supported by xfrm4/6_tunnel,
+> but not in vti and xfrmi. This feature is needed by processing those
+> uncompressed small fragments and packets when using comp protocol.
+> It means vti and xfrmi won't be able to accept small fragments or
+> packets when using comp protocol, which is not expected.
+> 
+> xfrm4/6_tunnel eventually calls xfrm_input() to process ipip and ipv6
+> tunnels with an ipip/ipv6-proto state (a child state of comp-proto
+> state), and vti and xfrmi should do the same.
+> 
+> The extra things for vti to do is:
+> 
+>   - vti_input() should be called before xfrm_input() to set
+>     XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4/6 = tunnel. [A]
+> 
+>   - vti_rcv_cb() should be called after xfrm_input() to update
+>     the skb->dev. [B]
+> 
+> And the extra things for xfrmi to do is:
+> 
+>    - The ipip/ipv6-proto state should be assigned if_id from its
+>      parent's state. [C]
+> 
+>    - xfrmi_rcv_cb() should be called after xfrm_input() to update
+>      the skb->dev. [D]
+> 
+> 
+> Patch 4-7 does the things in [A].
+> 
+> To implement [B] and [D], patch 1-3 is to build a callback function
+> for xfrm4/6_tunnel, which can be called after xfrm_input(), similar
+> to xfrm4/6_protocol's .cb_handler. vti and xfrmi only needs to give
+> their own callback function in patch 4-7 and 9-10, which already
+> exists: vti_rcv_cb() and xfrmi_rcv_cb().
+> 
+> Patch 8 is to do the thing in [C] by assigning child tunnel's if_id
+> from its parent tunnel.
+> 
+> With the whole patch series, the segments or packets with any size
+> can work with ipsec comp proto on vti and xfrmi.
+> 
+> v1->v2:
+>   - See Patch 2-3.
+> v2->v3:
+>   - See Patch 2-3, 4, 6, 9-10.
 
-Take a look at fq_codel, it provides a hash function for flow classification,
-fq_codel_hash(), as default, thus its default configuration does not
-have such issues. So, you probably want to provide such a hash
-function too instead of a default class.
+Series applied, thanks a lot Xin!
