@@ -2,116 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8C5921B80A
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:15:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06C8521B825
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:17:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726950AbgGJOPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 10:15:07 -0400
-Received: from correo.us.es ([193.147.175.20]:35932 "EHLO mail.us.es"
+        id S1728054AbgGJORG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 10:17:06 -0400
+Received: from mga06.intel.com ([134.134.136.31]:32648 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727065AbgGJOPG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jul 2020 10:15:06 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 47F4A3066B5
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 16:15:04 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 17169DA792
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 16:15:04 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id F204DDA858; Fri, 10 Jul 2020 16:15:03 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 6E672DA72F;
-        Fri, 10 Jul 2020 16:15:01 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 10 Jul 2020 16:15:01 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 316E742EE38E;
-        Fri, 10 Jul 2020 16:15:01 +0200 (CEST)
-Date:   Fri, 10 Jul 2020 16:15:00 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@mellanox.com, petrm@mellanox.com, mlxsw@mellanox.com,
-        michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
-        kadlec@netfilter.org, fw@strlen.de, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, simon.horman@netronome.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 01/13] net: sched: Pass qdisc reference in
- struct flow_block_offload
-Message-ID: <20200710141500.GA12659@salvia>
-References: <20200710135706.601409-1-idosch@idosch.org>
- <20200710135706.601409-2-idosch@idosch.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200710135706.601409-2-idosch@idosch.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727003AbgGJORF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jul 2020 10:17:05 -0400
+IronPort-SDR: c+tm2/uSyrXjfx9RzG0vRvBo79BP1KoAS2mYG+1hkbhPuMR83NzagkE/n1kMxHZ0w1iZxOs5uy
+ sBNWO3jh79Jg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9677"; a="209731546"
+X-IronPort-AV: E=Sophos;i="5.75,336,1589266800"; 
+   d="scan'208";a="209731546"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2020 07:16:48 -0700
+IronPort-SDR: 7JmXGk5zxkeq5rB9wOMdLv4o/kJ3h0tGO2RJTv+ZpK7yNdlLHNUC0sGeoZB1sR6klGnF6KLJk4
+ wpkh+12qeIig==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,336,1589266800"; 
+   d="scan'208";a="428575308"
+Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.54.29])
+  by orsmga004.jf.intel.com with ESMTP; 10 Jul 2020 07:16:45 -0700
+From:   Magnus Karlsson <magnus.karlsson@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, maximmi@mellanox.com
+Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com,
+        cristian.dumitrescu@intel.com
+Subject: [PATCH bpf-next v2 00/14] xsk: support shared umems between devices and queues
+Date:   Fri, 10 Jul 2020 16:16:28 +0200
+Message-Id: <1594390602-7635-1-git-send-email-magnus.karlsson@intel.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 04:56:54PM +0300, Ido Schimmel wrote:
-> From: Petr Machata <petrm@mellanox.com>
-> 
-> Previously, shared blocks were only relevant for the pseudo-qdiscs ingress
-> and clsact. Recently, a qevent facility was introduced, which allows to
-> bind blocks to well-defined slots of a qdisc instance. RED in particular
-> got two qevents: early_drop and mark. Drivers that wish to offload these
-> blocks will be sent the usual notification, and need to know which qdisc it
-> is related to.
-> 
-> To that end, extend flow_block_offload with a "sch" pointer, and initialize
-> as appropriate. This prompts changes in the indirect block facility, which
-> now tracks the scheduler instead of the netdevice. Update signatures of
-> several functions similarly. Deduce the device from the scheduler when
-> necessary.
-> 
-> Signed-off-by: Petr Machata <petrm@mellanox.com>
-> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  | 11 ++++++----
->  .../ethernet/mellanox/mlx5/core/en/rep/tc.c   | 11 +++++-----
->  .../net/ethernet/netronome/nfp/flower/main.h  |  2 +-
->  .../ethernet/netronome/nfp/flower/offload.c   | 11 ++++++----
->  include/net/flow_offload.h                    |  9 ++++----
->  net/core/flow_offload.c                       | 12 +++++------
->  net/netfilter/nf_flow_table_offload.c         | 17 +++++++--------
->  net/netfilter/nf_tables_offload.c             | 20 ++++++++++--------
->  net/sched/cls_api.c                           | 21 +++++++++++--------
->  9 files changed, 63 insertions(+), 51 deletions(-)
-> 
-[...]
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-> index eefeb1cdc2ee..4fc42c1955ff 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-> @@ -404,7 +404,7 @@ static void mlx5e_rep_indr_block_unbind(void *cb_priv)
->  static LIST_HEAD(mlx5e_block_cb_list);
->  
->  static int
-> -mlx5e_rep_indr_setup_block(struct net_device *netdev,
-> +mlx5e_rep_indr_setup_block(struct Qdisc *sch,
->  			   struct mlx5e_rep_priv *rpriv,
->  			   struct flow_block_offload *f,
->  			   flow_setup_cb_t *setup_cb,
-> @@ -412,6 +412,7 @@ mlx5e_rep_indr_setup_block(struct net_device *netdev,
->  			   void (*cleanup)(struct flow_block_cb *block_cb))
->  {
->  	struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
-> +	struct net_device *netdev = sch->dev_queue->dev;
+This patch set adds support to share a umem between AF_XDP sockets
+bound to different queue ids on the same device or even between
+devices. It has already been possible to do this by registering the
+umem multiple times, but this wastes a lot of memory. Just imagine
+having 10 threads each having 10 sockets open sharing a single
+umem. This means that you would have to register the umem 100 times
+consuming large quantities of memory.
 
-This break indirect block support for netfilter since the driver
-is assuming a Qdisc object.
+Instead, we extend the existing XDP_SHARED_UMEM flag to also work when
+sharing a umem between different queue ids as well as devices. If you
+would like to share umem between two sockets, just create the first
+one as would do normally. For the second socket you would not register
+the same umem using the XDP_UMEM_REG setsockopt. Instead attach one
+new fill ring and one new completion ring to this second socket and
+then use the XDP_SHARED_UMEM bind flag supplying the file descriptor of
+the first socket in the sxdp_shared_umem_fd field to signify that it
+is the umem of the first socket you would like to share.
+
+One important thing to note in this example, is that there needs to be
+one fill ring and one completion ring per unique device and queue id
+bound to. This so that the single-producer and single-consumer semantics
+of the rings can be upheld. To recap, if you bind multiple sockets to
+the same device and queue id (already supported without this patch
+set), you only need one pair of fill and completion rings. If you bind
+multiple sockets to multiple different queues or devices, you need one
+fill and completion ring pair per unique device,queue_id tuple.
+
+The implementation is based around extending the buffer pool in the
+core xsk code. This is a structure that exists on a per unique device
+and queue id basis. So, a number of entities that can now be shared
+are moved from the umem to the buffer pool. Information about DMA
+mappings are also moved from the buffer pool, but as these are per
+device independent of the queue id, they are now hanging off the umem
+in list. However, the pool is set up to point directly to the
+dma_addr_t array that it needs. In summary after this patch set, there
+is one xdp_sock struct per socket created. This points to an
+xsk_buff_pool for which there is one per unique device and queue
+id. The buffer pool points to a DMA mapping structure for which there
+is one per device that a umem has been bound to. And finally, the
+buffer pool also points to a xdp_umem struct, for which there is only
+one per umem registration.
+
+Before:
+
+XSK -> UMEM -> POOL
+
+Now:
+
+XSK -> POOL -> DMA
+            \
+	     > UMEM
+
+Patches 1-8 only rearrange internal structures to support the buffer
+pool carrying this new information, while patch 9 improves performance
+as we now have rearranged the internal structures quite a bit. Finally,
+patches 10-14 introduce the new functionality together with libbpf
+support, samples, and documentation.
+
+Libbpf has also been extended to support sharing of umems between
+sockets bound to different devices and queue ids by introducing a new
+function called xsk_socket__create_shared(). The difference between
+this and the existing xsk_socket__create() is that the former takes a
+reference to a fill ring and a completion ring as these need to be
+created. This new function needs to be used for the second and
+following sockets that binds to the same umem. The first socket can be
+created by either function as it will also have called
+xsk_umem__create().
+
+There is also a new sample xsk_fwd that demonstrates this new
+interface and capability.
+
+Note to Maxim at Mellanox. I do not have a mlx5 card, so I have not
+been able to test the changes to your driver. It compiles, but that is
+all I can say, so it would be great if you could test it. Also, I did
+change the name of many functions and variables from umem to pool as a
+buffer pool is passed down to the driver in this patch set instead of
+the umem. I did not change the name of the files umem.c and
+umem.h. Please go through the changes and change things to your
+liking.
+
+Performance for the non-shared umem case is unchanged for the xdpsock
+sample application with this patch set. For workloads that share a
+umem, this patch set can give rise to added performance benefits due
+to the decrease in memory usage.
+
+v1 -> v2:
+
+* Tx need_wakeup init bug fixed. Missed to set the cached_need_wakeup
+  flag for Tx.
+* Need wakeup turned on for xsk_fwd sample [Cristian]
+* Commit messages cleaned up
+* Moved dma mapping list from netdev to umem [Maxim]
+* Now the buffer pool is only created once. Fill ring and completion
+  ring pointers are stored in the socket during initialization (before
+  bind) and at bind these pointers are moved over to the buffer pool
+  which is used all the time after that. [Maxim]
+
+This patch has been applied against commit 2977282b63c3 ("Merge branch 'bpf-libbpf-old-kernel'")
+
+Structure of the patch set:
+
+Patch 1: Pass the buffer pool to the driver instead of the umem. This
+         because the driver needs one buffer pool per napi context
+         when we later introduce sharing of the umem between queue ids
+         and devices.
+Patch 2: Rename the xsk driver interface so they have better names
+         after the move to the buffer pool
+Patch 3: There is one buffer pool per device and queue, while there is
+         only one umem per registration. The buffer pool needs to be
+         created and destroyed independently of the umem.
+Patch 4: Move fill and completion rings to the buffer pool as there will
+         be one set of these per device and queue
+Patch 5: Move queue_id, dev and need_wakeup to buffer pool again as these
+         will now be per buffer pool as the umem can be shared between
+         devices and queues
+Patch 6: Move xsk_tx_list and its lock to buffer pool
+Patch 7: Move the creation/deletion of addrs from buffer pool to umem
+Patch 8: Enable sharing of DMA mappings when multiple queues of the
+         same device are bound
+Patch 9: Rearrange internal structs for better performance as these
+         have been substantially scrambled by the previous patches
+Patch 10: Add shared umem support between queue ids
+Patch 11: Add shared umem support between devices
+Patch 12: Add support for this in libbpf
+Patch 13: Add a new sample that demonstrates this new feature by
+          forwarding packets between different netdevs and queues
+Patch 14: Add documentation
+
+Thanks: Magnus
+
+Cristian Dumitrescu (1):
+  samples/bpf: add new sample xsk_fwd.c
+
+Magnus Karlsson (13):
+  xsk: i40e: ice: ixgbe: mlx5: pass buffer pool to driver instead of
+    umem
+  xsk: i40e: ice: ixgbe: mlx5: rename xsk zero-copy driver interfaces
+  xsk: create and free buffer pool independently from umem
+  xsk: move fill and completion rings to buffer pool
+  xsk: move queue_id, dev and need_wakeup to buffer pool
+  xsk: move xsk_tx_list and its lock to buffer pool
+  xsk: move addrs from buffer pool to umem
+  xsk: enable sharing of dma mappings
+  xsk: rearrange internal structs for better performance
+  xsk: add shared umem support between queue ids
+  xsk: add shared umem support between devices
+  libbpf: support shared umems between queues and devices
+  xsk: documentation for XDP_SHARED_UMEM between queues and netdevs
+
+ Documentation/networking/af_xdp.rst                |   68 +-
+ drivers/net/ethernet/intel/i40e/i40e_ethtool.c     |    2 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |   29 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c        |   10 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h        |    2 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         |   79 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.h         |    4 +-
+ drivers/net/ethernet/intel/ice/ice.h               |   18 +-
+ drivers/net/ethernet/intel/ice/ice_base.c          |   16 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c           |    2 +-
+ drivers/net/ethernet/intel/ice/ice_main.c          |   10 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c          |    8 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.h          |    2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c           |  142 +--
+ drivers/net/ethernet/intel/ice/ice_xsk.h           |    7 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h           |    2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |   34 +-
+ .../net/ethernet/intel/ixgbe/ixgbe_txrx_common.h   |    7 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |   61 +-
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   19 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |    5 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/pool.c  |  217 ++++
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/pool.h  |   27 +
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.h    |   10 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |   12 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.h |    2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.c    |   14 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.h    |    6 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/umem.c  |  217 ----
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/umem.h  |   29 -
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |    2 +-
+ .../ethernet/mellanox/mlx5/core/en_fs_ethtool.c    |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   49 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |   16 +-
+ include/linux/netdevice.h                          |   10 +-
+ include/net/xdp_sock.h                             |   31 +-
+ include/net/xdp_sock_drv.h                         |  115 ++-
+ include/net/xsk_buff_pool.h                        |   44 +-
+ net/ethtool/channels.c                             |    2 +-
+ net/ethtool/ioctl.c                                |    2 +-
+ net/xdp/xdp_umem.c                                 |  222 +---
+ net/xdp/xdp_umem.h                                 |    6 -
+ net/xdp/xsk.c                                      |  208 ++--
+ net/xdp/xsk.h                                      |    3 +
+ net/xdp/xsk_buff_pool.c                            |  306 +++++-
+ net/xdp/xsk_diag.c                                 |   14 +-
+ net/xdp/xsk_queue.h                                |   12 +-
+ samples/bpf/Makefile                               |    3 +
+ samples/bpf/xsk_fwd.c                              | 1075 ++++++++++++++++++++
+ tools/lib/bpf/libbpf.map                           |    1 +
+ tools/lib/bpf/xsk.c                                |  376 ++++---
+ tools/lib/bpf/xsk.h                                |    9 +
+ 53 files changed, 2498 insertions(+), 1073 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.h
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.c
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.h
+ create mode 100644 samples/bpf/xsk_fwd.c
+
+--
+2.7.4
