@@ -2,100 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48D4321AF9B
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 08:42:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2151221AFA3
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 08:44:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726942AbgGJGl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 02:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56288 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbgGJGl5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 02:41:57 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F477C08C5CE;
-        Thu,  9 Jul 2020 23:41:57 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id z5so2090477pgb.6;
-        Thu, 09 Jul 2020 23:41:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=m06JBY0moWcYj2O83O8dBVgQgKUTL68mbtCuBLL/TiI=;
-        b=iwialKqNmdGMpRGEEJcojvSOHa9Y49BQ2pVyuLbcWZmMyKdwXgNdLdHHG/PrITcqNX
-         q10D4hxrkmVGiQOmI056klawo87vEnZRA8LlKbS0qtH09XURUxoY3Qycy/4xwoqEoYtA
-         U271kFtsgE1n+IG/9EAK+3Vx7nqyhU3etlEwkbsWrO1f+PHZAc/UTHsLW2985n88AAYI
-         ZMQQlvGiUJB3EIT9P39gM/JRon+yUixTDnpgvu6Bb93QyfU5dsz5J6SVmVzc03d8Xnme
-         gaaE84arlQUgDJjIvnnCog/8qTgP08j2dmMbvMpNdBpPS6pZyYwefNQK856Pk/JkSSbO
-         m+CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=m06JBY0moWcYj2O83O8dBVgQgKUTL68mbtCuBLL/TiI=;
-        b=IxIGXutTp1gjnkQi+cygCf+hcpn9yPh3ai/DPwwo859ZmFXwvzx0hdEopOQ2TMPXVH
-         vS9dwVhlNqlOZIkKuNawRkcw2ecN4R2UTLBM/UIHXOveaFS2NfghkkNTmdnj3aufKE06
-         59TE/pKxbJOhZdWZvixlYy5JsyZSmZMY5OPCJltlavnZzBLcQCjVWwZOJZ6mXkbqytnS
-         kN0auZAV5IX6rXXeoYO+2cPKDfngMSBSynqcilzr9Ns1txmWaFTfCYBuzFrmlsH6o+qB
-         JX5979OBZ1VQsIm9m/eCtgJTEJ+l9n2kHoZmWuIlAeLYKZZGHyOVA6RPatQH7H/NEjem
-         aq8A==
-X-Gm-Message-State: AOAM533N49bCX8IwK71fNfwKkC54rM66T808sO7NjiAZQGKh1BJNJpCJ
-        oIYgj/ROcvZNs4b4UsWzSko=
-X-Google-Smtp-Source: ABdhPJw4m/pjRpYpC45Jk4M9OywSqbF+WoBq94IM2Ch+KBypWIMgxhcO/nyIiwEuOGKOpOizedqgew==
-X-Received: by 2002:a63:531e:: with SMTP id h30mr55201360pgb.165.1594363317006;
-        Thu, 09 Jul 2020 23:41:57 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y18sm4949461pff.10.2020.07.09.23.41.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2020 23:41:56 -0700 (PDT)
-Date:   Fri, 10 Jul 2020 14:41:45 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCHv6 bpf-next 2/3] sample/bpf: add
- xdp_redirect_map_multicast test
-Message-ID: <20200710064145.GA2531@dhcp-12-153.nay.redhat.com>
-References: <20200701041938.862200-1-liuhangbin@gmail.com>
- <20200709013008.3900892-1-liuhangbin@gmail.com>
- <20200709013008.3900892-3-liuhangbin@gmail.com>
- <6170ec86-9cce-a5ec-bd14-7aa56cee951e@iogearbox.net>
+        id S1726920AbgGJGoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 02:44:19 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:55662 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726047AbgGJGoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 02:44:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594363458;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MzGyARVdJCOFDOhVSOMVsmLn0aigNSts0XTYJa817V4=;
+        b=bYvO2CeRc5VMgOoFQEauPf+lyXE69zqL1wbKy4PgfqGJJ1ij8sQ1erw26iaaoXrUkY6onE
+        EnXUx7gz81IfmsKEJRpNM+SqyrHPMx9mIA5M5cIv+7pr92m1iK+OhISQDxr8AMDX9UCTr3
+        0/CCrdOTlZPUAUfbsNaxrMhUsCBhtLc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-138-KQOJWU4-NHmNmPCiOqvlnQ-1; Fri, 10 Jul 2020 02:44:16 -0400
+X-MC-Unique: KQOJWU4-NHmNmPCiOqvlnQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5459B8015CB;
+        Fri, 10 Jul 2020 06:44:15 +0000 (UTC)
+Received: from [10.72.13.228] (ovpn-13-228.pek2.redhat.com [10.72.13.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 167F419D7D;
+        Fri, 10 Jul 2020 06:44:09 +0000 (UTC)
+Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
+To:     Eugenio Perez Martin <eperezma@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com>
+ <20200622114622-mutt-send-email-mst@kernel.org>
+ <CAJaqyWfrf94Gc-DMaXO+f=xC8eD3DVCD9i+x1dOm5W2vUwOcGQ@mail.gmail.com>
+ <20200622122546-mutt-send-email-mst@kernel.org>
+ <CAJaqyWfbouY4kEXkc6sYsbdCAEk0UNsS5xjqEdHTD7bcTn40Ow@mail.gmail.com>
+ <CAJaqyWefMHPguj8ZGCuccTn0uyKxF9ZTEi2ASLtDSjGNb1Vwsg@mail.gmail.com>
+ <419cc689-adae-7ba4-fe22-577b3986688c@redhat.com>
+ <CAJaqyWedEg9TBkH1MxGP1AecYHD-e-=ugJ6XUN+CWb=rQGf49g@mail.gmail.com>
+ <0a83aa03-8e3c-1271-82f5-4c07931edea3@redhat.com>
+ <CAJaqyWeqF-KjFnXDWXJ2M3Hw3eQeCEE2-7p1KMLmMetMTm22DQ@mail.gmail.com>
+ <20200709133438-mutt-send-email-mst@kernel.org>
+ <7dec8cc2-152c-83f4-aa45-8ef9c6aca56d@redhat.com>
+ <CAJaqyWdLOH2EceTUduKYXCQUUNo1XQ1tLgjYHTBGhtdhBPHn_Q@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <6282b6d5-4d2b-a996-c090-6bc7ae6043ce@redhat.com>
+Date:   Fri, 10 Jul 2020 14:44:08 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6170ec86-9cce-a5ec-bd14-7aa56cee951e@iogearbox.net>
+In-Reply-To: <CAJaqyWdLOH2EceTUduKYXCQUUNo1XQ1tLgjYHTBGhtdhBPHn_Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 12:40:11AM +0200, Daniel Borkmann wrote:
-> > +SEC("xdp_redirect_map_multi")
-> > +int xdp_redirect_map_multi_prog(struct xdp_md *ctx)
-> > +{
-> > +	long *value;
-> > +	u32 key = 0;
-> > +
-> > +	/* count packet in global counter */
-> > +	value = bpf_map_lookup_elem(&rxcnt, &key);
-> > +	if (value)
-> > +		*value += 1;
-> > +
-> > +	return bpf_redirect_map_multi(&forward_map, &null_map,
-> > +				      BPF_F_EXCLUDE_INGRESS);
-> 
-> Why not extending to allow use-case like ...
-> 
->   return bpf_redirect_map_multi(&fwd_map, NULL, BPF_F_EXCLUDE_INGRESS);
-> 
-> ... instead of requiring a dummy/'null' map?
-> 
 
-I planed to let user set NULL, but the arg2_type is ARG_CONST_MAP_PTR, which
-not allow NULL pointer.
+On 2020/7/10 下午1:39, Eugenio Perez Martin wrote:
+> It is allocated 1 thread in lcore 1 (F_THREAD=1) which belongs to the
+> same NUMA as testpmd. Actually, it is the testpmd master core, so it
+> should be a good idea to move it to another lcore of the same NUMA
+> node.
+>
+> Is this enough for pktgen to allocate the memory in that numa node?
+> Since the script only write parameters to /proc, I assume that it has
+> no effect to run it under numactl/taskset, and pktgen will allocate
+> memory based on the lcore is running. Am I right?
+>
+> Thanks!
+>
+
+I think you're right.
 
 Thanks
-Hangbin
+
