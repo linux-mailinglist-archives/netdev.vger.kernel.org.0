@@ -2,97 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4A0621AEFB
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 07:49:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9312221AF0E
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 07:58:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726391AbgGJFtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 01:49:04 -0400
-Received: from out0-149.mail.aliyun.com ([140.205.0.149]:57550 "EHLO
-        out0-149.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725966AbgGJFtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 01:49:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=alibaba-inc.com; s=default;
-        t=1594360141; h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        bh=pfbtkVkU4gLyuXkFwDV+IVVHw5bA2GfBHivKQ07f2I4=;
-        b=K+muwl9m3R2EkvuYYb5oLpmW2w5bJidY0vTm/9sip1OHmZYfHR9xHSj2gy4n2e30xWG6rMQ0793fva3eJTLiw3ojPJy/VYv86RAk8+yW8GY58/6ss1pTh2/etTFtEyxfylyo42CztMj8PMa2J+qbxzsri311oBdvLScqFXMSVPA=
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e02c03279;MF=xiangning.yu@alibaba-inc.com;NM=1;PH=DS;RN=2;SR=0;TI=SMTPD_---.I.NXh-z_1594360139;
-Received: from US-118000MP.local(mailfrom:xiangning.yu@alibaba-inc.com fp:SMTPD_---.I.NXh-z_1594360139)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 10 Jul 2020 13:49:01 +0800
-Subject: Re: [PATCH net-next 2/2] net: sched: Lockless Token Bucket (LTB)
- Qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <28bff9d7-fa2d-5284-f6d5-e08cd792c9c6@alibaba-inc.com>
- <CAM_iQpVux85OXH-oYeH15sYTb=kEj0o7uu9ug9PeTesHzXk_gQ@mail.gmail.com>
- <5c963736-2a83-b658-2a9d-485d0876c03f@alibaba-inc.com>
- <CAM_iQpV5LRU-JxfLETsdNqh75wv3vWyCsxiTTgC392HvTxa9CQ@mail.gmail.com>
- <ad662f0b-c4ab-01c0-57e1-45ddd7325e66@alibaba-inc.com>
- <CAM_iQpUE658hhk8n9j+T5Qfm4Vj7Zfzw08EECh8CF8QW0GLW_g@mail.gmail.com>
- <00ab4144-397e-41b8-e518-ad2aacb9afd3@alibaba-inc.com>
- <CAM_iQpVoxDz2mrZozAKAjr=bykKO++XM3R-rgyUCb8-Edsv58g@mail.gmail.com>
-From:   "=?UTF-8?B?WVUsIFhpYW5nbmluZw==?=" <xiangning.yu@alibaba-inc.com>
-Message-ID: <a33f9de6-b066-6014-8be2-585203a97d89@alibaba-inc.com>
-Date:   Fri, 10 Jul 2020 13:48:58 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        id S1726933AbgGJF6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 01:58:31 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:53179 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725802AbgGJF6a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 01:58:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594360708;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=C4LnrvqT9+DNx24YkEZw2+SXe1o6FKiLlzwpTypzG8A=;
+        b=Y+XxOvBjEbl9F7XdtOTWEY97JVlA/4JP9m1OmOM/D/jNmDESGG8eUGLrkYTpi8iDjHO65f
+        DcJzt/9EtJvnxVr49HXpyCfTyPviqACGraWwl9LAp+nvbzYOwfs3ZJ/2BEaJ1Ey//5I0mk
+        Ry4yH4AO8/XNtQnB4TbTvmqSHnhav1M=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-259-ZD-6VCJxNga62OFj6PP7Kg-1; Fri, 10 Jul 2020 01:58:26 -0400
+X-MC-Unique: ZD-6VCJxNga62OFj6PP7Kg-1
+Received: by mail-wm1-f70.google.com with SMTP id q20so5291623wme.3
+        for <netdev@vger.kernel.org>; Thu, 09 Jul 2020 22:58:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=C4LnrvqT9+DNx24YkEZw2+SXe1o6FKiLlzwpTypzG8A=;
+        b=IU4gcZw2Bz8yi76ZBgtKzCAv2CX6gA2K3TvA1Aean6YYLK1Fcu7h+fG8koxRX7dAt8
+         gf6uVW7ZdOjdFbEd8oexj5FSf18LI0i/EKMeB5LC1OHDT0VS4LefrOQdidJmUm5t6bCK
+         TXv0TRE38L4BEKGwiHnHqyRenr6/gV9aJ3Idg+uW5+PmSlK+Da5XTeg9cZpXVf1kuCxW
+         WX+e/qzzeA02dvzDT2iKWicH7e5YKokQIF0AzPsQo0RgMBuUnpdJYI2olq5lIE6/hcwt
+         4UrVWahfg8/rWeVpCYezqG4blvv9PS1iF48F9cKNwsklwvOA+D++B0q32rWlxCvQyRw9
+         jc1A==
+X-Gm-Message-State: AOAM533QomKyHfqJxqpU3Wcj3rlRzaSK9OwrkYbRDfe+eX6/6Eff3m/l
+        xTrWqwK2Etm3xgsUhnDZujeOKkvgEP8rhZpt2Ye3vfaIhK1YfFDV4cazWynSvBXrKgFYmJRzq0+
+        0J+gWI1qtVUfdp23p
+X-Received: by 2002:a7b:c38f:: with SMTP id s15mr3394782wmj.152.1594360705672;
+        Thu, 09 Jul 2020 22:58:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwLn6mDVLNvrd8u4soiaqjHIlkFvr4sTxn75hYjrWzq/00SA7DFxiythkthHZ5njp79o9gOug==
+X-Received: by 2002:a7b:c38f:: with SMTP id s15mr3394766wmj.152.1594360705488;
+        Thu, 09 Jul 2020 22:58:25 -0700 (PDT)
+Received: from redhat.com (bzq-79-182-31-92.red.bezeqint.net. [79.182.31.92])
+        by smtp.gmail.com with ESMTPSA id j15sm8366155wrx.69.2020.07.09.22.58.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jul 2020 22:58:24 -0700 (PDT)
+Date:   Fri, 10 Jul 2020 01:58:21 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eugenio Perez Martin <eperezma@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
+Message-ID: <20200710015615-mutt-send-email-mst@kernel.org>
+References: <20200622122546-mutt-send-email-mst@kernel.org>
+ <CAJaqyWfbouY4kEXkc6sYsbdCAEk0UNsS5xjqEdHTD7bcTn40Ow@mail.gmail.com>
+ <CAJaqyWefMHPguj8ZGCuccTn0uyKxF9ZTEi2ASLtDSjGNb1Vwsg@mail.gmail.com>
+ <419cc689-adae-7ba4-fe22-577b3986688c@redhat.com>
+ <CAJaqyWedEg9TBkH1MxGP1AecYHD-e-=ugJ6XUN+CWb=rQGf49g@mail.gmail.com>
+ <0a83aa03-8e3c-1271-82f5-4c07931edea3@redhat.com>
+ <CAJaqyWeqF-KjFnXDWXJ2M3Hw3eQeCEE2-7p1KMLmMetMTm22DQ@mail.gmail.com>
+ <20200709133438-mutt-send-email-mst@kernel.org>
+ <7dec8cc2-152c-83f4-aa45-8ef9c6aca56d@redhat.com>
+ <CAJaqyWdLOH2EceTUduKYXCQUUNo1XQ1tLgjYHTBGhtdhBPHn_Q@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpVoxDz2mrZozAKAjr=bykKO++XM3R-rgyUCb8-Edsv58g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJaqyWdLOH2EceTUduKYXCQUUNo1XQ1tLgjYHTBGhtdhBPHn_Q@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/9/20 10:04 PM, Cong Wang wrote:
-> On Wed, Jul 8, 2020 at 2:07 PM YU, Xiangning
-> <xiangning.yu@alibaba-inc.com> wrote:
->>
->>
->>
->> On 7/8/20 1:24 PM, Cong Wang wrote:
->>> On Tue, Jul 7, 2020 at 2:24 PM YU, Xiangning
->>> <xiangning.yu@alibaba-inc.com> wrote:
->>>>
->>>> The key is to avoid classifying packets from a same flow into different classes. So we use socket priority to classify packets. It's always going to be correctly classified.
->>>>
->>>> Not sure what do you mean by default configuration. But we create a shadow class when the qdisc is created. Before any other classes are created, all packets from any flow will be classified to this same shadow class, there won't be any incorrect classified packets either.
->>>
->>> By "default configuration" I mean no additional configuration on top
->>> of qdisc creation. If you have to rely on additional TC filters to
->>> do the classification, it could be problematic. Same for setting
->>> skb priority, right?
->>>
->>
->> In this patch we don't rely on other TC filters. In our use case, socket priority is set on a per-flow basis, not per-skb basis.
+On Fri, Jul 10, 2020 at 07:39:26AM +0200, Eugenio Perez Martin wrote:
+> > > How about playing with the batch size? Make it a mod parameter instead
+> > > of the hard coded 64, and measure for all values 1 to 64 ...
+> >
+> >
+> > Right, according to the test result, 64 seems to be too aggressive in
+> > the case of TX.
+> >
 > 
-> Your use case is not the default configuration I mentioned.
-> 
->>
->>> Also, you use a default class, this means all unclassified packets
->>> share the same class, and a flow falls into this class could be still
->>> out-of-order, right?
->>>
->>
->> A flow will fall and only fall to this class. If we can keep the order within a flow, I'm not sure why we still have this issue?
-> 
-> The issue here is obvious: you have to rely on either TC filters or
-> whatever sets skb priority to make packets in a flow in-order.
->> IOW, without these *additional* efforts, it is broken in terms of
-> out-of-order.
-> 
+> Got it, thanks both!
 
-Well, we do ask packets from a flow to be classified to a single class, not multiple ones. It doesn't have to be socket priority, it could be five tuple hash, or even container classid.
+In particular I wonder whether with batch size 1
+we get same performance as without batching
+(would indicate 64 is too aggressive)
+or not (would indicate one of the code changes
+affects performance in an unexpected way).
 
-I think it's ok to have this requirement, even if we use htb, I would suggest the same. Why do you think this is a problem?
+-- 
+MST
 
-Thanks,
-- Xiangning
-
-> Thanks.
-> 
