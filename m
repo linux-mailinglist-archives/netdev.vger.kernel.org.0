@@ -2,86 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97AE321BD94
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 21:24:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DED0721BDB4
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 21:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727944AbgGJTYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 15:24:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
+        id S1728350AbgGJTcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 15:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726908AbgGJTYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 15:24:46 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71816C08C5DC
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 12:24:46 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id k15so3809260lfc.4
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 12:24:46 -0700 (PDT)
+        with ESMTP id S1728341AbgGJTcI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 15:32:08 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E172FC08C5DC
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 12:32:07 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id f16so3036026pjt.0
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 12:32:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=4Vr2AZgZniEXewC9xAQKzNmLuU22NOIzV1lBzaMmNY4=;
-        b=ICgcKrJdMrQVfzVYYyLc9LVDmgFs5iCW4N829rjqCff+MNewsk/ItBTvX3dZem4NqR
-         GF9A6EqK5RjnpNrvJh1P3RgDIxiCeYGlWjGvaRCi/rMRhMLaBvOigT//ViXCHMEc9gxg
-         C8BEhjg1S6Ykm9jwfIStnaNdWzShuhWGzH5ik=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=G9thzUdus1jwGwpbJqecUdLCO9kuhLvArm1gzFbZOzw=;
+        b=E+KqliagRVN2uVHE/u57FGeeBa1d5ddBKbnyK2AHULwxysut9Vq+CwaW4Jeg3gwWtK
+         ng/Q3XzfXME2tqPH9QyYVfNQQHepjkO2lCBYnQWD8OUEK1OB8jEdE8x/lAHJv7YgxkVb
+         CKOhFl9+nX2yVi2022fy+qkmcfGBTaC+9gGPtfJeiEihCS6PMZQa/Lju5nAQUUHU0mDN
+         PiOXzxR/GvoqMrLB+hfO+96L2us0A0WTdXdwiuJTKsEWCs83yBvcX8y79cL8/mrOzYCe
+         KH2ZS+mfqqgAyL5OWg7XG1ai+tGzeN+Ie5zl5/oW6eaKR4/WCMarf+HujsKO+h/7qkC6
+         0Naw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=4Vr2AZgZniEXewC9xAQKzNmLuU22NOIzV1lBzaMmNY4=;
-        b=SmYup7rNw+uLuWEk/Hq2yiFrcBn97/Q5EPCD/vNwasEwj/6YjZ5gQTlHI+q4ArcyqK
-         5tgIJ97M59ZKbW1TsMSDx59+5whrWcDdY8n46zKyYalUY28OMvsHtOMgyOnhM9be0xu/
-         xZSLIwopSMKofv8VZOPhshsZHybSpFvRh/ob/49gJvwc8RQVA8Qmb2AMTEJUahCS9eib
-         byKhmorYdly2nHEKVFHkF0YQyuch3WVk3IqXN/Y/ISeHiiRLZr3PagELzLul3fS9ydK5
-         FWhODEv4Wze5OL++F1g+fsXpsG7UMG4056eLY6fALbTksSoWU1t0kfzbbPX/0XKjjYwo
-         qtAQ==
-X-Gm-Message-State: AOAM530Uq7WTpVxgpuEDQiSy5uhBRlZiJHRuh6NIQqOJWGkZr01ZNirB
-        GWY5th5y9U3sFYn/mv0V3WIf6w==
-X-Google-Smtp-Source: ABdhPJxSofShlNFCDTNj5wuUKktPnfqZkNqtTKb3WW9anql7gup+ARvEvEskOAvK9ZYrKZN9JHeOXw==
-X-Received: by 2002:a19:811:: with SMTP id 17mr42574455lfi.197.1594409084968;
-        Fri, 10 Jul 2020 12:24:44 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id r15sm2193032ljd.130.2020.07.10.12.24.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jul 2020 12:24:44 -0700 (PDT)
-References: <20200702092416.11961-1-jakub@cloudflare.com> <20200702092416.11961-13-jakub@cloudflare.com> <CAEf4BzbrUZhpxfw_eeJJCoo46_x1Y8naE19qoVUWi5sTSNSdzA@mail.gmail.com> <87h7ugadpt.fsf@cloudflare.com> <CAEf4BzY75c+gARvkmQ8OtbpDbZvBkia4qMyxO7HCoOeu=B1AxQ@mail.gmail.com> <87d053ahqn.fsf@cloudflare.com> <CAEf4Bzbxiwk6reDxF78V36mRhavc9j=woQiib7SjsQ=LbcGJQg@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH bpf-next v3 12/16] libbpf: Add support for SK_LOOKUP program type
-In-reply-to: <CAEf4Bzbxiwk6reDxF78V36mRhavc9j=woQiib7SjsQ=LbcGJQg@mail.gmail.com>
-Date:   Fri, 10 Jul 2020 21:24:43 +0200
-Message-ID: <878sfr9nr8.fsf@cloudflare.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=G9thzUdus1jwGwpbJqecUdLCO9kuhLvArm1gzFbZOzw=;
+        b=PAm9vqhayhubRww8wuUk4JnY2KG4Mv0kdMUMWWk5Uk6nuAeqR/qubfuCPzBQHISdcY
+         ruBaCpATl31DCCNoMerga2Ar2g6Eau24EfDjHIwTvNZfJ2GUItUnbGSKmxgjm0F7plEg
+         Ir9IOxu0UmncQS61/KXmQ4MxPIgN1DKpOidJ+zuoAgqXOodSCyKZQcGIjzOnXfiLyKHW
+         kGsrKWc1y5zeAqyEoluDCnPKqxvNh6Hv9JhLDhFVu/cUogFDwV0rOuc8hWMk2HkaeBbN
+         R5HOSs0Oi5qtualb0+66qrYMz/Fd924PpECMR+4w9HT+AgqzPyzd/OkfoKweiDF5dbMK
+         uJ2w==
+X-Gm-Message-State: AOAM533q8dALq9EMjp61snS0wE314LYaRHgwfgvq/WhUAZmckJBbJ81m
+        CVoLYzufH4Ss0m+kI+9B5bk=
+X-Google-Smtp-Source: ABdhPJzBGy8+GkW5a7tVJa6ljbO2/pLFUcw3sLiOqfSvg82mmlfN4fJYzLtRNDonHiTDwF2eroUFOg==
+X-Received: by 2002:a17:90a:ad8e:: with SMTP id s14mr7657964pjq.36.1594409527473;
+        Fri, 10 Jul 2020 12:32:07 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id g3sm6614489pfq.19.2020.07.10.12.32.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jul 2020 12:32:06 -0700 (PDT)
+Subject: Re: [PATCH v4 net-next] inet: Remove an unnecessary argument of
+ syn_ack_recalc().
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, Kuniyuki Iwashima <kuni1840@gmail.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        osa-contribution-log@amazon.com, Julian Anastasov <ja@ssi.bg>
+References: <20200710155759.87178-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <6920caee-c422-52a6-3787-36b56e9f5120@gmail.com>
+Date:   Fri, 10 Jul 2020 12:32:04 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200710155759.87178-1-kuniyu@amazon.co.jp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 08:55 PM CEST, Andrii Nakryiko wrote:
-> On Fri, Jul 10, 2020 at 1:37 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
 
-[...]
 
->> I've been happily using the part of section name following "sk_lookup"
->> prefix to name the programs just to make section names in ELF object
->> unique:
->>
->>   SEC("sk_lookup/lookup_pass")
->>   SEC("sk_lookup/lookup_drop")
->>   SEC("sk_lookup/redir_port")
->
-> oh, right, which reminds me: how about adding / to sk_lookup in that
-> libbpf table, so that it's always sk_lookup/<something> for section
-> name? We did similar change to xdp_devmap recently, and it seems like
-> a good trend overall to have / separation between program type and
-> whatever extra name user wants to give?
+On 7/10/20 8:57 AM, Kuniyuki Iwashima wrote:
+> Commit 0c3d79bce48034018e840468ac5a642894a521a3 ("tcp: reduce SYN-ACK
+> retrans for TCP_DEFER_ACCEPT") introduces syn_ack_recalc() which decides
+> if a minisock is held and a SYN+ACK is retransmitted or not.
+> 
+> If rskq_defer_accept is not zero in syn_ack_recalc(), max_retries always
+> has the same value because max_retries is overwritten by rskq_defer_accept
+> in reqsk_timer_handler().
+> 
+> This commit adds three changes:
+> - remove redundant non-zero check for rskq_defer_accept in
+>    reqsk_timer_handler().
+> - remove max_retries from the arguments of syn_ack_recalc() and use
+>    rskq_defer_accept instead.
+> - rename thresh to max_syn_ack_retries for readability.
+> 
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+> CC: Julian Anastasov <ja@ssi.bg>
 
-Will do. Thanks for pointing out it. I didn't pick up on it.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+
+Thanks.
