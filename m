@@ -2,114 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50C1B21BB6A
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 18:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85F6A21BB97
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 18:54:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728467AbgGJQws (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 12:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37916 "EHLO
+        id S1728735AbgGJQyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 12:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728449AbgGJQwq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 12:52:46 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7552BC08C5DC;
-        Fri, 10 Jul 2020 09:52:46 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id 145so5894803qke.9;
-        Fri, 10 Jul 2020 09:52:46 -0700 (PDT)
+        with ESMTP id S1726977AbgGJQyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 12:54:05 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFEBC08C5DD
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 09:54:05 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id f5so7218472ljj.10
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 09:54:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=n2GO5ZJ8LczdnU8kmwHXchFCiGk6Ti6c0vCFbbXfOVs=;
-        b=h+kxtmgCb6TYJADBiDvGER3yYkaALQ3l7K88ZBh3uhwl2R06QupSmOgAX5c+0n/Xrl
-         iguyUOPj1Ft+Tm+hasuLMzPH53PErjy7qWFE6lVVflkvm5xyZQn4zVc3VRzBhDUe7P/a
-         V0moqVaf+/UZno0F/lxB+/rJbr548uZofZU8OS5k8IzOxN6PeszcwxIQFytI4WRdbtJI
-         lFxyvZ5Y8b0w0Nd3Yw6GFzyPk0tN5NzQeG3CDwTuCwZRlcr/2FsY272EYZn76mzLIyKz
-         P+cawwRS3KbzLNyDIKA9UO3AYuC+2U1/QvkojH7j7pSINwjROdQIkRGDAdSx1PlHTj6i
-         RnAw==
+        d=cloudflare.com; s=google;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=b0UCI+vE/H5YEMNhzArkLPkiIfli4eA98Ddz6rfQoAE=;
+        b=jZK/7OrVXtX30S+NFpQlALDPq6xCyQiqDzUDKtmbnBYpY5pbNM8KZNfjFeOJZG+MyM
+         /oH7lHovV8Oz/nPDSvoPOKWmC2PTkGeq2MzaUf6b4b4jiEZGyfjwwTquQpiYy117Lju1
+         5cyccxAqVAAanN0yF+02cnIKObq+0JIOQqDVQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=n2GO5ZJ8LczdnU8kmwHXchFCiGk6Ti6c0vCFbbXfOVs=;
-        b=FPTNqSeos6n7KumeR1STUCULKePeve5hv2lVzGuO2sBteVu2QlRIlOKppfPnCN2lBa
-         vvnstjy+PlXwFwg2BCZvzpdL0mWOJxCphObPB+OdBMLvCDl4FCW5hAAHKY0pQq0OTPc/
-         +ElDcR2YjcJ4oT3Cxs0GhosvrzjXvRJ6tZxE5vdCoJDOVjcEfFvSrOKpX4UUADoxYmQL
-         zmfhhOY+NBft6HReOGejQidA9J3qyfaHqjZOmdQbECU3BZAQtBaoZzwuwWg7RPRtKyJA
-         TpnE1QsbklGsORFSLz3iTaHws7FrqVG4PJ5cCdA3SXuZ4p614VVnLQqhBSFGoE8dYU1q
-         Toyw==
-X-Gm-Message-State: AOAM531+N693msdV3qOhdHyF/Eiq5FJXrybAek8DG+5wS05yPlA4XoOj
-        LrQO6T+oOIOCbNXCD3OCZaQ=
-X-Google-Smtp-Source: ABdhPJwccJQrHgJR2ikrn49yxMc2mqxvzj3OlykWGkGbmpKhb8VMRiYVDMUoYBUehSYVX1+F9NObfg==
-X-Received: by 2002:a37:a306:: with SMTP id m6mr50442291qke.7.1594399965681;
-        Fri, 10 Jul 2020 09:52:45 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:94b4:214e:fabf:bc82? ([2601:282:803:7700:94b4:214e:fabf:bc82])
-        by smtp.googlemail.com with ESMTPSA id a185sm7804517qkg.3.2020.07.10.09.52.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jul 2020 09:52:45 -0700 (PDT)
-Subject: Re: [PATCHv6 bpf-next 0/3] xdp: add a new helper for dev map
- multicast support
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-References: <20200701041938.862200-1-liuhangbin@gmail.com>
- <20200709013008.3900892-1-liuhangbin@gmail.com>
- <7c80ca4b-4c7d-0322-9483-f6f0465d6370@iogearbox.net>
- <20200710073652.GC2531@dhcp-12-153.nay.redhat.com>
- <9a04393c-f924-5aaf-4644-d7f33350004f@iogearbox.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0c97f21a-03d8-6c9f-2071-b0c4b87c4955@gmail.com>
-Date:   Fri, 10 Jul 2020 10:52:43 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.10.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=b0UCI+vE/H5YEMNhzArkLPkiIfli4eA98Ddz6rfQoAE=;
+        b=ENgcCjhDELnw5GUX4FvTXG3IbBLA18/haPGdqyGj9l6Txpsr8Y7shp2lRlOfATf5FJ
+         XB6itC5njYMyM9x2ptc9jaoj5fFHnaORtnCgQQuyaYnYwxz3FmLIdksZAY68RTl4YSbA
+         tJSsP+8d1IE7m0/J+9feYywUzUDfraWLXPO49ZkDAt8QfC2WOI+hStz8DrEUHQiVUKo+
+         nYCdyC8oTdcPVy3UPonuN2gJMfd4lRiXpLQ9RXu0p8KkxFiLTwHQ7BTBGZgosvEwt6xz
+         +n09uDdD6WSLyzb3ZEWw3IZzrcOQ/bAeiZ7SBgzuL5GXi6A5pRGxebYsrZJsodItrLuv
+         mfeQ==
+X-Gm-Message-State: AOAM533MU+BdSutuJVJUGGv5bxj2srSFgtYx/iNyvdQUD+TjVc+yTKci
+        INg9e3gO0rNEgMfE9BloTdeTrw==
+X-Google-Smtp-Source: ABdhPJxcE085DZvWGPSpPnNdiuGFrUCCovySUBZOmQpIGKEtFXT01kX3wYYa1mdUgjSozvjPAhUZPw==
+X-Received: by 2002:a2e:a54a:: with SMTP id e10mr41905143ljn.198.1594400043603;
+        Fri, 10 Jul 2020 09:54:03 -0700 (PDT)
+Received: from toad ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id x30sm2347043lfn.3.2020.07.10.09.54.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jul 2020 09:54:03 -0700 (PDT)
+Date:   Fri, 10 Jul 2020 18:54:00 +0200
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org, sdf@google.com
+Subject: Re: [PATCH bpf] selftests/bpf: Fix cgroup sockopt verifier test
+Message-ID: <20200710185400.153cef3b@toad>
+In-Reply-To: <20200710150439.126627-1-jean-philippe@linaro.org>
+References: <20200710150439.126627-1-jean-philippe@linaro.org>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <9a04393c-f924-5aaf-4644-d7f33350004f@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/10/20 9:02 AM, Daniel Borkmann wrote:
-> Right, but what about the other direction where one device forwards to a
-> bond,
-> presumably eth1 + eth2 are in the include map and shared also between other
-> ifaces? Given the logic for the bond mode is on bond0, so one layer
-> higher, how
-> do you determine which of eth1 + eth2 to send to in the BPF prog? Daemon
-> listening
-> for link events via arp or mii monitor and then update include map?
-> Ideally would
-> be nice to have some sort of a bond0 pass-through for the XDP buffer so
-> it ends
-> up eventually at one of the two through the native logic, e.g. what do
-> you do when
-> it's configured in xor mode or when slave dev is selected via hash or
-> some other
-> user logic (e.g. via team driver); how would this be modeled via
-> inclusion map? I
-> guess the issue can be regarded independently to this set, but given you
-> mention
-> explicitly bond here as a use case for the exclusion map, I was
-> wondering how you
-> solve the inclusion one for bond devices for your data plane?
+On Fri, 10 Jul 2020 17:04:40 +0200
+Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
 
-bond driver does not support xdp_xmit, and I do not believe there is a
-good ROI for adapting it to handle xdp buffers.
+> Since the BPF_PROG_TYPE_CGROUP_SOCKOPT verifier test does not set an
+> attach type, bpf_prog_load_check_attach() disallows loading the program
+> and the test is always skipped:
+> 
+>  #434/p perfevent for cgroup sockopt SKIP (unsupported program type 25)
+> 
+> Fix the issue by setting a valid attach type.
+> 
+> Fixes: 0456ea170cd6 ("bpf: Enable more helpers for BPF_PROG_TYPE_CGROUP_{DEVICE,SYSCTL,SOCKOPT}")
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+>  tools/testing/selftests/bpf/verifier/event_output.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/tools/testing/selftests/bpf/verifier/event_output.c b/tools/testing/selftests/bpf/verifier/event_output.c
+> index 99f8f582c02b..c5e805980409 100644
+> --- a/tools/testing/selftests/bpf/verifier/event_output.c
+> +++ b/tools/testing/selftests/bpf/verifier/event_output.c
+> @@ -112,6 +112,7 @@
+>  	"perfevent for cgroup sockopt",
+>  	.insns =  { __PERF_EVENT_INSNS__ },
+>  	.prog_type = BPF_PROG_TYPE_CGROUP_SOCKOPT,
+> +	.expected_attach_type = BPF_CGROUP_SETSOCKOPT,
+>  	.fixup_map_event_output = { 4 },
+>  	.result = ACCEPT,
+>  	.retval = 1,
 
-For round robin and active-backup modes it is straightforward to adapt
-the new ndo_get_xmit_slave to work with ebpf. That is not the case for
-any of them that use a hash on the skb. e.g., for L3+L4 hashing I found
-it easier to replicate the algorithm in bpf than trying to adapt the
-bond code to work with XDP buffers. I put that in the category of 'XDP
-is advanced networking that requires unraveling the generic for a
-specific deployment.' In short, for bonds and Tx the bpf program needs
-to pick the slave device.
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
