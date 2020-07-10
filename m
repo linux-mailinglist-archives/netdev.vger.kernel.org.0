@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 835BA21B8BA
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:32:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F1021B8D8
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:38:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727083AbgGJOci (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 10:32:38 -0400
-Received: from www62.your-server.de ([213.133.104.62]:45970 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726820AbgGJOch (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 10:32:37 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jtu4q-0003f1-4H; Fri, 10 Jul 2020 16:32:36 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jtu4p-000Ezt-TD; Fri, 10 Jul 2020 16:32:35 +0200
-Subject: Re: [PATCHv6 bpf-next 2/3] sample/bpf: add xdp_redirect_map_multicast
- test
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-References: <20200701041938.862200-1-liuhangbin@gmail.com>
- <20200709013008.3900892-1-liuhangbin@gmail.com>
- <20200709013008.3900892-3-liuhangbin@gmail.com>
- <6170ec86-9cce-a5ec-bd14-7aa56cee951e@iogearbox.net>
- <20200710064145.GA2531@dhcp-12-153.nay.redhat.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f244bae1-25a8-58f7-9368-70c765ea5aae@iogearbox.net>
-Date:   Fri, 10 Jul 2020 16:32:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728196AbgGJOht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 10:37:49 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:47192 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726725AbgGJOht (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 10:37:49 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06AEbdOo090306;
+        Fri, 10 Jul 2020 09:37:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1594391859;
+        bh=s/Z8V9mGX3gOoutpqf8o4ND8qHAKcSCacNptqGjaKUI=;
+        h=From:To:CC:Subject:Date;
+        b=WDvzP9jYBZUZkzu325ftwGkluhcMqAEvy+t5AUGlcTXz8nf6IwSn1k1iWbVe3McDK
+         xhceuPIyQvRQo+L3ZAvZul8Zfhr24ZyIEUq+cDAeWEedokiaQAIgiEcs7u16oLp0Ux
+         t8ecclIzVMmPtPYSvwHdFQPjXDayhMWQDbYiUiFc=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06AEbdYm118635
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 10 Jul 2020 09:37:39 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 10
+ Jul 2020 09:37:39 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 10 Jul 2020 09:37:39 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06AEbc0S083159;
+        Fri, 10 Jul 2020 09:37:39 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <robh@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net-next v2 0/2] DP83822 Fiber enablement
+Date:   Fri, 10 Jul 2020 09:37:31 -0500
+Message-ID: <20200710143733.30751-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20200710064145.GA2531@dhcp-12-153.nay.redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25868/Thu Jul  9 15:58:00 2020)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/10/20 8:41 AM, Hangbin Liu wrote:
-> On Fri, Jul 10, 2020 at 12:40:11AM +0200, Daniel Borkmann wrote:
->>> +SEC("xdp_redirect_map_multi")
->>> +int xdp_redirect_map_multi_prog(struct xdp_md *ctx)
->>> +{
->>> +	long *value;
->>> +	u32 key = 0;
->>> +
->>> +	/* count packet in global counter */
->>> +	value = bpf_map_lookup_elem(&rxcnt, &key);
->>> +	if (value)
->>> +		*value += 1;
->>> +
->>> +	return bpf_redirect_map_multi(&forward_map, &null_map,
->>> +				      BPF_F_EXCLUDE_INGRESS);
->>
->> Why not extending to allow use-case like ...
->>
->>    return bpf_redirect_map_multi(&fwd_map, NULL, BPF_F_EXCLUDE_INGRESS);
->>
->> ... instead of requiring a dummy/'null' map?
-> 
-> I planed to let user set NULL, but the arg2_type is ARG_CONST_MAP_PTR, which
-> not allow NULL pointer.
+Hello
 
-Right, but then why not adding a new type ARG_CONST_MAP_PTR_OR_NULL ?
+The DP83822 Ethernet PHY has the ability to connect via a Fiber port.  The
+derivative PHYs DP83825 and DP83826 do not have this ability. In fiber mode
+the DP83822 disables auto negotiation and has a fixed 100Mbps speed with
+support for full or half duplex modes.
+
+A devicetree binding was added to set the signal polarity for the fiber
+connection.  This property is only applicable if the FX_EN strap is set in
+hardware other wise the signal loss detection is disabled on the PHY.
+
+If the FX_EN is not strapped the device can be configured to run in fiber mode
+via the device tree. All be it the PHY will not perfomr signal loss detection.
+
+Dan
+
+Dan Murphy (2):
+  dt-bindings: net: dp83822: Add TI dp83822 phy
+  net: phy: DP83822: Add ability to advertise Fiber connection
+
+ .../devicetree/bindings/net/ti,dp83822.yaml   |  80 +++++++++
+ drivers/net/phy/dp83822.c                     | 161 ++++++++++++++++++
+ 2 files changed, 241 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/ti,dp83822.yaml
+
+-- 
+2.27.0
+
