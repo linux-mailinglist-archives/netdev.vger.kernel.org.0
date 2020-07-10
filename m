@@ -2,156 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEFDD21B202
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 11:07:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 952E621B21D
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 11:20:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727003AbgGJJHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 05:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50418 "EHLO
+        id S1726872AbgGJJUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 05:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726288AbgGJJHI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 05:07:08 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27037C08C5CE;
-        Fri, 10 Jul 2020 02:07:08 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1594372025;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wMQmhd6Fe9xnnGisd+9Bp/JqC2PYsEleUByPZLFwnxs=;
-        b=JHoyDoI4CpI+ckSGskrfyw8uTI0r9abY1t5aspQzMtK4+SNY2eYFbnR/XS4PmiDW9OcaER
-        vz3+HxglvrAHTkQd92JvX5pzuRGb/X77nSeJeBeNgXx2mQZPLTRdlwSkpz0148mIeC3tT1
-        TKuiS5ogbdaCxIVGDGARZtxveBaY6qfSaAuijHF3a6Z47vX25v17w3jmy/HNbvLqqCBbu0
-        k9Iufy5nevdnoIZaAs3Qb5+yoPFwJq7YaQIsu7+iHpk8tW5i2ezc6Q1pq2Bni/zzJUnHD6
-        aosPAQQORrm+kZF9EVwIRHtZ/LkmFTus4PF+nFaDDIADOzLu8BPp17Al4tpVoQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1594372025;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wMQmhd6Fe9xnnGisd+9Bp/JqC2PYsEleUByPZLFwnxs=;
-        b=KIXo9qwVj4674IauAIxi8bBQJt91/RkKdKAjAECN0tCpbZuqteOgifnUIoXb8hzc8opt8I
-        daZD6cyIQgUCP9CA==
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v1 1/1] dt-bindings: net: dsa: Add DSA yaml binding
-Date:   Fri, 10 Jul 2020 11:06:18 +0200
-Message-Id: <20200710090618.28945-2-kurt@linutronix.de>
-In-Reply-To: <20200710090618.28945-1-kurt@linutronix.de>
-References: <20200710090618.28945-1-kurt@linutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S1726288AbgGJJUq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 05:20:46 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6128C08C5CE;
+        Fri, 10 Jul 2020 02:20:46 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id gc15so4344618pjb.0;
+        Fri, 10 Jul 2020 02:20:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=k3Fg5uwWi3YIL1ND93G+AfS7yVUtKWD1/rSB1uSDlrw=;
+        b=V2AkEhpMUH+KvSbxIjWFzekdSoByVCjiHrqM6j0Af5aT1HNGdfs/S13m1HgEk8L8uH
+         /N+ZRBJbte83Mbv+EqjVgM/73jc2jrMwIV8u//7tMQkcsk7L9YOWqF9En11idEEYHNUo
+         CoFyial+U9c+L8f3mh2CK0T76qzCiwTTrSwOqeJdmzbdvMlHPpCISev+77I/QmPj/KLk
+         vfMLTuVDyLw+HrB5h9VhB3i3+k7CHItB+1q4s9QvbMAma+BU/qBRnXzpfolepnmrB7tY
+         SLvZJGLljmjxie1ca/3PxOPcHsiBnIFdfWkfrd7fnmW3/SkvKfmwJcWpZrj77T5+5aAq
+         I7mA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=k3Fg5uwWi3YIL1ND93G+AfS7yVUtKWD1/rSB1uSDlrw=;
+        b=PyDxvRIQITpInFu2a5HprzWpFB+lbuN4KFYZIGDUD/SepqwL9EYDHWCi6I46uEJ1n1
+         YqPG7wvrP8eDW1sJDV8K6ys+0f9mtX4oBDi5T5/+RJj94cdzlIZPojukGeo/XMyBKYqe
+         Y9CEPuNN5abo9OrGxxHB7Gc9IaN2ngj86V8a2j07SRda8Mzy3bkgxQqn8snKCzxdWo+H
+         Cu9ybHeWUlvqeI3Ti52+FGNGXRuc0iF+eMqt+Nk1VqBHWKRRWpZT/24SdVf7R5Ai/7eT
+         pDphIztqAbBljebQO72U+73MIVHAvcqUkAxi8UEXnSwv0JM/A9eT6hP6nc+yYVuZQs8f
+         acxA==
+X-Gm-Message-State: AOAM5319VXECIGJxIupDPTiWebWkLCmCI98wDS0cP7u1Z2pCq0kHE/DN
+        a3xPSKxeHMkj/3uYUNAOLniDDqgygsxHzsj8
+X-Google-Smtp-Source: ABdhPJx0z3oN+10frWzUngzJ8rZr4E4WNMuJsBdU4vBk4Qe3hRr1WE3NechrtXApQrlpC1p3cSZsiQ==
+X-Received: by 2002:a17:90a:2a4d:: with SMTP id d13mr4505138pjg.195.1594372846367;
+        Fri, 10 Jul 2020 02:20:46 -0700 (PDT)
+Received: from ubuntu-18.04-x8664 ([119.28.181.184])
+        by smtp.gmail.com with ESMTPSA id i23sm5580924pfq.206.2020.07.10.02.20.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jul 2020 02:20:46 -0700 (PDT)
+From:   Wenbo Zhang <ethercflow@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ethercflow@gmail.com
+Subject: [PATCH] bpf: fix fds_example SIGSEGV error
+Date:   Fri, 10 Jul 2020 05:20:35 -0400
+Message-Id: <20200710092035.28919-1-ethercflow@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For future DSA drivers it makes sense to add a generic DSA yaml binding which
-can be used then. This was created using the properties from dsa.txt. It
-includes the ports and the dsa,member property.
+The `BPF_LOG_BUF_SIZE`'s value is `UINT32_MAX >> 8`, so define an array
+with it on stack caused an overflow.
 
-Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
 ---
- .../devicetree/bindings/net/dsa/dsa.yaml      | 80 +++++++++++++++++++
- 1 file changed, 80 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/dsa/dsa.yaml
+ samples/bpf/fds_example.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-new file mode 100644
-index 000000000000..bec257231bf8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-@@ -0,0 +1,80 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/dsa/dsa.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/samples/bpf/fds_example.c b/samples/bpf/fds_example.c
+index d5992f787232..59f45fef5110 100644
+--- a/samples/bpf/fds_example.c
++++ b/samples/bpf/fds_example.c
+@@ -30,6 +30,8 @@
+ #define BPF_M_MAP	1
+ #define BPF_M_PROG	2
+ 
++char bpf_log_buf[BPF_LOG_BUF_SIZE];
 +
-+title: Distributed Switch Architecture Device Tree Bindings
-+
-+maintainers:
-+  - Andrew Lunn <andrew@lunn.ch>
-+  - Florian Fainelli <f.fainelli@gmail.com>
-+  - Vivien Didelot <vivien.didelot@gmail.com>
-+
-+description:
-+  Switches are true Linux devices and can be probed by any means. Once probed,
-+  they register to the DSA framework, passing a node pointer. This node is
-+  expected to fulfil the following binding, and may contain additional
-+  properties as required by the device it is embedded within.
-+
-+properties:
-+  $nodename:
-+    pattern: "^switch(@.*)?$"
-+
-+  dsa,member:
-+    minItems: 2
-+    maxItems: 2
-+    description:
-+      A two element list indicates which DSA cluster, and position within the
-+      cluster a switch takes. <0 0> is cluster 0, switch 0. <0 1> is cluster 0,
-+      switch 1. <1 0> is cluster 1, switch 0. A switch not part of any cluster
-+      (single device hanging off a CPU port) must not specify this property
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+
-+  ports:
-+    type: object
-+    properties:
-+      '#address-cells':
-+        const: 1
-+      '#size-cells':
-+        const: 0
-+
-+    patternProperties:
-+      "^port@[0-9]+$":
-+          type: object
-+          description: DSA switch ports
-+
-+          allOf:
-+            - $ref: ../ethernet-controller.yaml#
-+
-+          properties:
-+            reg:
-+              description: Port number
-+
-+            label:
-+              description:
-+                Describes the label associated with this port, which will become
-+                the netdev name
-+              $ref: /schemas/types.yaml#definitions/string
-+
-+            link:
-+              description:
-+                Should be a list of phandles to other switch's DSA port. This
-+                port is used as the outgoing port towards the phandle ports. The
-+                full routing information must be given, not just the one hop
-+                routes to neighbouring switches
-+              $ref: /schemas/types.yaml#definitions/phandle-array
-+
-+            ethernet:
-+              description:
-+                Should be a phandle to a valid Ethernet device node.  This host
-+                device is what the switch port is connected to
-+              $ref: /schemas/types.yaml#definitions/phandle
-+
-+          required:
-+            - reg
-+
-+required:
-+  - ports
-+
-+...
+ static void usage(void)
+ {
+ 	printf("Usage: fds_example [...]\n");
+@@ -57,7 +59,6 @@ static int bpf_prog_create(const char *object)
+ 		BPF_EXIT_INSN(),
+ 	};
+ 	size_t insns_cnt = sizeof(insns) / sizeof(struct bpf_insn);
+-	char bpf_log_buf[BPF_LOG_BUF_SIZE];
+ 	struct bpf_object *obj;
+ 	int prog_fd;
+ 
 -- 
-2.20.1
+2.17.1
 
