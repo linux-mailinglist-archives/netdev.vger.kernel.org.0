@@ -2,130 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C982721BD1C
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 20:38:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 129B421BD23
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 20:42:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728089AbgGJSiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 14:38:19 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:32917 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727065AbgGJSiT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 14:38:19 -0400
-Received: by mail-io1-f71.google.com with SMTP id a12so4183141ioo.0
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 11:38:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=WqdH68p6XjuG3WJATM6GmNbQRoflL6uFHqhjW36VFBI=;
-        b=pSwXpQXXHig2qD2mpGkbiZR61s2lUbKOXkM66bi2MqrhgZNwpADcykRonOSttMKcQi
-         Ti5hk3YJDS/u+NmD8RpOPGMwQE6REtMYOjxMMsKmkdNHDgRokuMIi4cvbq4dyU24lcYN
-         3av6o/8+IlHbcGNbxPlINCSriSkRf6wYoko5mxzotWmJtUt6bAHBu6jqGxyiIEZTsSmk
-         6zUHsBe67korSc4lXYzD69kPfm2W1YOU/HOP/ZN4GTA9vgw/zDOgjdzhlhXYR9n631J8
-         S/meqL3uwM+BS+GODe3w1gRrn4XRWcFY3htaB/8DyH9KVGp9vAGYONkzbd1cyXvf1dxT
-         UA5w==
-X-Gm-Message-State: AOAM531o1p6GV+sDASBIJLqAqYSCJWElrEerxmzjzwLjzabwrqknv1Gs
-        T8GYraM8ctLmF3UUzUFMnend/F8PBM1/s/Gqx1JIvPbLBVjs
-X-Google-Smtp-Source: ABdhPJz4xg63WBLjem4rE0VTxzgBQIchhCQvKSZPrPVyR0wiGwBEI9XprvdZYiAjtwzQFWMSU9WwVDmpnGdw0BiCx2YmmHrBQdE0
+        id S1728013AbgGJSmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 14:42:14 -0400
+Received: from smtprelay0092.hostedemail.com ([216.40.44.92]:46638 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727082AbgGJSmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 14:42:14 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 25EAB18224D98;
+        Fri, 10 Jul 2020 18:42:13 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1381:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3165:3355:3622:3653:3865:3866:3867:3868:3870:3871:3872:3873:3874:4321:5007:6119:6737:7903:10004:10400:10848:10946:11026:11232:11473:11657:11658:11914:12043:12048:12297:12555:12740:12895:13161:13200:13225:13229:13439:13894:14093:14097:14181:14659:14721:21080:21451:21627:30054:30056:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: offer53_1103c9226ed0
+X-Filterd-Recvd-Size: 3791
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf20.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 10 Jul 2020 18:42:10 +0000 (UTC)
+Message-ID: <a91354960fc97437bd872fa22a2ce1c60bda3e25.camel@perches.com>
+Subject: Re: [PATCH] MAINTAINERS: XDP: restrict N: and K:
+From:   Joe Perches <joe@perches.com>
+To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>,
+        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        john.fastabend@gmail.com, mchehab+huawei@kernel.org,
+        robh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Date:   Fri, 10 Jul 2020 11:42:08 -0700
+In-Reply-To: <458f6e74-b547-299a-4255-4c1e20cdba1b@al2klimov.de>
+References: <20200709194257.26904-1-grandmaster@al2klimov.de>
+         <d7689340-55fc-5f3f-60ee-b9c952839cab@iogearbox.net>
+         <19a4a48b-3b83-47b9-ac48-e0a95a50fc5e@al2klimov.de>
+         <7d4427cc-a57c-ca99-1119-1674d509ba9d@iogearbox.net>
+         <a2f48c734bdc6b865a41ad684e921ac04b221821.camel@perches.com>
+         <875zavjqnj.fsf@toke.dk>
+         <458f6e74-b547-299a-4255-4c1e20cdba1b@al2klimov.de>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
 MIME-Version: 1.0
-X-Received: by 2002:a6b:730a:: with SMTP id e10mr49422839ioh.108.1594406298127;
- Fri, 10 Jul 2020 11:38:18 -0700 (PDT)
-Date:   Fri, 10 Jul 2020 11:38:18 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000714f605aa1aa56c@google.com>
-Subject: general protection fault in raw_notifier
-From:   syzbot <syzbot+d2ff507f470081495266@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        netdev@vger.kernel.org, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, 2020-07-10 at 20:18 +0200, Alexander A. Klimov wrote:
+> 
+> Am 10.07.20 um 18:12 schrieb Toke Høiland-Jørgensen:
+> > Joe Perches <joe@perches.com> writes:
+> > 
+> > > On Fri, 2020-07-10 at 17:14 +0200, Daniel Borkmann wrote:
+> > > > On 7/10/20 8:17 AM, Alexander A. Klimov wrote:
+> > > > > Am 09.07.20 um 22:37 schrieb Daniel Borkmann:
+> > > > > > On 7/9/20 9:42 PM, Alexander A. Klimov wrote:
+> > > > > > > Rationale:
+> > > > > > > Documentation/arm/ixp4xx.rst contains "xdp" as part of "ixdp465"
+> > > > > > > which has nothing to do with XDP.
+> > > []
+> > > > > > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > []
+> > > > > > > @@ -18708,8 +18708,8 @@ F:    include/trace/events/xdp.h
+> > > > > > >    F:    kernel/bpf/cpumap.c
+> > > > > > >    F:    kernel/bpf/devmap.c
+> > > > > > >    F:    net/core/xdp.c
+> > > > > > > -N:    xdp
+> > > > > > > -K:    xdp
+> > > > > > > +N:    (?:\b|_)xdp(?:\b|_)
+> > > > > > > +K:    (?:\b|_)xdp(?:\b|_)
+> > > > > > 
+> > > > > > Please also include \W to generally match on non-alphanumeric char given you
+> > > > > > explicitly want to avoid [a-z0-9] around the term xdp.
+> > > > > Aren't \W, ^ and $ already covered by \b?
+> > > > 
+> > > > Ah, true; it says '\b really means (?:(?<=\w)(?!\w)|(?<!\w)(?=\w))', so all good.
+> > > > In case this goes via net or net-next tree:
+> > > 
+> > > This N: pattern does not match files like:
+> > > 
+> > > 	samples/bpf/xdp1_kern.c
+> > > 
+> > > and does match files like:
+> > > 
+> > > 	drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> > > 
+> > > Should it?
+> > 
+> > I think the idea is that it should match both?
+> In *your* opinion: Which of these shall it (not) match?
 
-syzbot found the following crash on:
+Dunno, but it doesn't match these files.
+The first 5 are good, the rest probably should.
 
-HEAD commit:    7cc2a8ea Merge tag 'block-5.8-2020-07-01' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=111cddcb100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7be693511b29b338
-dashboard link: https://syzkaller.appspot.com/bug?extid=d2ff507f470081495266
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+d2ff507f470081495266@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xe0000aeee00000aa: 0000 [#1] PREEMPT SMP KASAN
-KASAN: probably user-memory-access in range [0x0000777700000550-0x0000777700000557]
-CPU: 0 PID: 8345 Comm: syz-executor.5 Not tainted 5.8.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:read_pnet include/net/net_namespace.h:330 [inline]
-RIP: 0010:dev_net include/linux/netdevice.h:2261 [inline]
-RIP: 0010:raw_notifier+0x7c/0x740 net/can/raw.c:273
-Code: 03 80 3c 02 00 0f 85 de 05 00 00 4d 8d b7 98 05 00 00 48 8b ab 70 fb ff ff 48 b8 00 00 00 00 00 fc ff df 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 cc 05 00 00 49 3b af 98 05 00 00 74 16 e8 0c 5d
-RSP: 0018:ffffc9001ab27c78 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffff88802521c4c0 RCX: ffffc90014660000
-RDX: 00000eeee00000aa RSI: ffffffff871159dc RDI: ffff88802521c030
-RBP: ffff88805602a180 R08: 0000000000000000 R09: ffffffff8a7b30cb
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000005
-R13: ffffed1004a43898 R14: 0000777700000550 R15: 00007776ffffffb8
-FS:  00007fe94efbf700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b32d21000 CR3: 00000001e1c55000 CR4: 00000000001426f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- call_netdevice_notifier net/core/dev.c:1727 [inline]
- call_netdevice_register_notifiers net/core/dev.c:1735 [inline]
- call_netdevice_register_net_notifiers+0xdd/0x2b0 net/core/dev.c:1765
- register_netdevice_notifier+0xf5/0x260 net/core/dev.c:1816
- raw_init+0x296/0x340 net/can/raw.c:339
- can_create+0x27c/0x4d0 net/can/af_can.c:168
- __sock_create+0x3ca/0x740 net/socket.c:1428
- sock_create net/socket.c:1479 [inline]
- __sys_socket+0xef/0x200 net/socket.c:1521
- __do_sys_socket net/socket.c:1530 [inline]
- __se_sys_socket net/socket.c:1528 [inline]
- __x64_sys_socket+0x6f/0xb0 net/socket.c:1528
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45cb29
-Code: Bad RIP value.
-RSP: 002b:00007fe94efbec78 EFLAGS: 00000246 ORIG_RAX: 0000000000000029
-RAX: ffffffffffffffda RBX: 00000000005084a0 RCX: 000000000045cb29
-RDX: 0000000000000001 RSI: 0000000000000003 RDI: 000000000000001d
-RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000bb8 R14: 00000000004ce1ab R15: 00007fe94efbf6d4
-Modules linked in:
----[ end trace 8db5579e5986dda6 ]---
-RIP: 0010:read_pnet include/net/net_namespace.h:330 [inline]
-RIP: 0010:dev_net include/linux/netdevice.h:2261 [inline]
-RIP: 0010:raw_notifier+0x7c/0x740 net/can/raw.c:273
-Code: 03 80 3c 02 00 0f 85 de 05 00 00 4d 8d b7 98 05 00 00 48 8b ab 70 fb ff ff 48 b8 00 00 00 00 00 fc ff df 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f 85 cc 05 00 00 49 3b af 98 05 00 00 74 16 e8 0c 5d
-RSP: 0018:ffffc9001ab27c78 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffff88802521c4c0 RCX: ffffc90014660000
-RDX: 00000eeee00000aa RSI: ffffffff871159dc RDI: ffff88802521c030
-RBP: ffff88805602a180 R08: 0000000000000000 R09: ffffffff8a7b30cb
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000005
-R13: ffffed1004a43898 R14: 0000777700000550 R15: 00007776ffffffb8
-FS:  00007fe94efbf700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fe94ef7cdb8 CR3: 00000001e1c55000 CR4: 00000000001426f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+$ git ls-files | grep xdp | grep -v -P '(?:\b|_)xdp(?:\b|_)'
+Documentation/hwmon/xdpe12284.rst
+arch/arm/mach-ixp4xx/ixdp425-pci.c
+arch/arm/mach-ixp4xx/ixdp425-setup.c
+arch/arm/mach-ixp4xx/ixdpg425-pci.c
+drivers/hwmon/pmbus/xdpe12284.c
+samples/bpf/xdp1_kern.c
+samples/bpf/xdp1_user.c
+samples/bpf/xdp2_kern.c
+samples/bpf/xdp2skb_meta.sh
+samples/bpf/xdp2skb_meta_kern.c
+samples/bpf/xdpsock.h
+samples/bpf/xdpsock_kern.c
+samples/bpf/xdpsock_user.c
+tools/testing/selftests/bpf/progs/xdping_kern.c
+tools/testing/selftests/bpf/test_xdping.sh
+tools/testing/selftests/bpf/xdping.c
+tools/testing/selftests/bpf/xdping.h
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
