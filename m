@@ -2,132 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8421F21B249
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 11:29:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD8A821B1B3
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 10:52:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728106AbgGJJ3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 05:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726787AbgGJJ3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 05:29:06 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE80EC08C5CE
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 02:29:05 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id t9so2824638lfl.5
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 02:29:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=content-transfer-encoding:to:cc:subject:from:date:message-id
-         :in-reply-to;
-        bh=S/uivifO5g9FxfRNSpxatx43xdheAZQQW9+Fbj995qs=;
-        b=zfFFSX+0JHBSlvr5go8MBOrurf/N7Uk7+Tk1fgZjL0V08pN5EDU8fCIjjwuiUMlZHP
-         HSH2THaQKGTR9BF6u7Z4FrWC5ok5PYr9X5YQwrLnuF1siFS3MBvk9g8rOZ0ZGwNXBPeW
-         srjKgc5QLo1ashdkAYmAVzNUY1C1rbNNqOtx4m1R26AdS9+vYLh2Nt5UNy68O6LwUcYl
-         flMYmSeyHPo15z9S99kz93JJNPBx3zDsudFnz9XyYRYIrqx66iYzNPJa+uxymTK4+dFQ
-         aVKDeY/Cxa3A/eIps3Ws/zP+WOmjri0ORFZTCW3ibmDyo+HsIvqUIfER/1I2H/HwS6pV
-         1I1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:to:cc:subject:from
-         :date:message-id:in-reply-to;
-        bh=S/uivifO5g9FxfRNSpxatx43xdheAZQQW9+Fbj995qs=;
-        b=TxDbUMo5BCCGd5nDRGsG3w/Y1Uo+iMIHTjIlnbS0nLwoKPJsdbq1mp/+3rMhVpPXpp
-         DyTGz+wRMwr2EkZVcee1YTy5R7Cp9zJPpSAD4XZFJV4QBpU0/NBwCF+MHxDpw2/W8z2K
-         ps6iOq5cz444Qq3pqptPO5fYg8O1bH0C3q6xMTjZDN4oo3s19MEJIGRMdowwgp3sFfuB
-         dOFlJafbPmZINYsm+mjYPeBQ+o9hr2vFIys/URyVApIsh1i+6z3Mbvvc7VAw6ESvD7zi
-         Y12GmmE4oIizRJXFtdjOHRb7Pp6YUJlz+UznhQsyXdfsNIxgqk/6YE/5xqWfBxi5WJ20
-         P0nA==
-X-Gm-Message-State: AOAM5327dUkj8dCVnemHkXSP35kvKC7RUgUmSD2Luh4V0Mjyq49yGSQF
-        pCECdmWCn/WXCPbrKgu5MfTcI60PRMM4lw==
-X-Google-Smtp-Source: ABdhPJz1yAgAkQ3ufvmXAvN2jqiA+Y1RBLdv9C/maJKC9BG8lAFlme8eOmHmwXr7e65X928REVUE9A==
-X-Received: by 2002:ac2:544c:: with SMTP id d12mr42360572lfn.97.1594373343568;
-        Fri, 10 Jul 2020 02:29:03 -0700 (PDT)
-Received: from localhost (h-79-28.A259.priv.bahnhof.se. [79.136.79.28])
-        by smtp.gmail.com with ESMTPSA id v10sm1695059ljg.113.2020.07.10.02.29.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jul 2020 02:29:02 -0700 (PDT)
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-To:     "Andrew Lunn" <andrew@lunn.ch>
-Cc:     <netdev@vger.kernel.org>, <f.fainelli@gmail.com>,
-        <hkallweit1@gmail.com>
-Subject: Re: MDIO Debug Interface
-From:   "Tobias Waldekranz" <tobias@waldekranz.com>
-Date:   Fri, 10 Jul 2020 10:51:40 +0200
-Message-Id: <C42TDW0HKHP7.1W0IVO67UCM4R@wkz-x280>
-In-Reply-To: <20200709223936.GC1014141@lunn.ch>
+        id S1728032AbgGJIwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 04:52:14 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:34540 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726832AbgGJIwN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jul 2020 04:52:13 -0400
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9CxGdQpLAhfS0kBAA--.1768S2;
+        Fri, 10 Jul 2020 16:51:54 +0800 (CST)
+From:   Zhi Li <lizhi01@loongson.cn>
+To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lixuefeng@loongson.cn, chenhc@lemote.com, jiaxun.yang@flygoat.com,
+        yangtiezhu@loongson.cn, Hongbin Li <lihongbin@loongson.cn>
+Subject: [PATCH] stmmac: pci: Add support for LS7A bridge chip
+Date:   Fri, 10 Jul 2020 16:51:50 +0800
+Message-Id: <1594371110-7580-1-git-send-email-lizhi01@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9CxGdQpLAhfS0kBAA--.1768S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7urWfKw1UCF43tr1fAw4DXFb_yoW8urW5p3
+        y3Aas2grs3JF1xAws8Jw4DZFy5Ja9xKrWDG3y7tw1fWFWqk3yaqFySqFW5AFy7JrWkWw13
+        Xw4UCr4UuF4DC3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUBY14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
+        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26F4j6r
+        4UJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI2
+        0VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVAFwVW8ZwCF04k20xvY0x0EwI
+        xGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480
+        Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7
+        IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k2
+        6cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x
+        0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU18wI3UUUUU==
+X-CM-SenderInfo: xol2xxqqr6z05rqj20fqof0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri Jul 10, 2020 at 2:39 AM CEST, Andrew Lunn wrote:
-> On Thu, Jul 09, 2020 at 10:47:54PM +0200, Tobias Waldekranz wrote:
-> > Hi netdev,
-> >=20
-> > TL;DR: Is something like https://github.com/wkz/mdio-tools a good
-> > idea?
-> >=20
-> > The kernel does not, as far as I know, have a low-level debug
-> > interface to MDIO devices. I.e. something equivalent to i2c-dev or
-> > spi-dev for example.
->
-> Hi Tobias
->
-> These APIs exist to allow user space drivers. I don't know how much
-> that happens now a days, there seems to be a lot of kernel space
-> drivers for SPI and I2C, but it is still possible to write user space
-> drivers.
->
-> We have never allowed user space drivers for MDIO devices. As a
-> result, we have pretty good kernel support for PHYs and quite a few L2
-> switches, and the numbers keep increasing.
+Add gmac platform data to support LS7A bridge chip.
 
-I'd be hesitant to claim any causality between those two statements
-though. The way I see it, userspace drivers make sense for
-"leaf-devices" i.e. devices which can be used by applications
-directly. PHYs are not leaf-devices as they're intimately tied to a
-netdev. Switches are doable as leaf-devices, which is why we have
-vendor SDKs, but as the plethora of switchdev-ready applications grows
-any single vendor won't be able to keep up with the community.
+Co-developed-by: Hongbin Li <lihongbin@loongson.cn>
+Signed-off-by: Hongbin Li <lihongbin@loongson.cn>
+Signed-off-by: Zhi Li <lizhi01@loongson.cn>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-It is not the stick but the carrots that will kill the vendor SDKs.
-
-> But the API you are suggesting sounds like it becomes an easy way for
-> vendors to run their SDKs in user space, with a small bit of glue code
-> to this new API. That is something we should avoid.
->
-> It is a difficult trade off. Such an API as you suggest does allow for
-> nice debug tools for driver developers. And i have no problems with
-> such a tool existing, being out of tree for any developer to use. But
-> i'm not too happy with it being in mainline because i suspect it will
-> get abused by vendors.
-
-Five years ago I would have signed on to that. No vendor had even
-heard of switchdev and you were laughed out of the room for suggesting
-they take that route. These days, they'll typically show switchdev
-support as a target on marketing slides etc. Their primary target is
-still their own SDK (which makes sense since that's where most of
-their customers are), but they see the writing on the wall.
-
-> Something i'm want to look at soon is dumping more of the internal
-> state of the mv88e6xxx switches. The full ATU and VTU, TCAM etc. I
-> think devlink region could work for this. And i think the ethtool -d
-> command could be made a lot better now we have a netlink API. The old
-> API assumed a single address space. It would be nice to support
-> multiple address spaces.
-
-Yes! I really like this part of devlink as well. I see it as a great
-way to add production safe ways of extracting debug information.
-
-> The advantage of these APIs is that they cannot be abused by vendors
-> to write user space drivers. But we can still have reasonably powerful
-> debug tools built on top of them.
-
-Agreed. The drawback is that they are really only geared towards
-non-destructive debugging. Sometimes, especially during development,
-that is not enough.
-
-> Andrew
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+index 272cb47..dab2a40 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+@@ -138,6 +138,24 @@ static const struct stmmac_pci_info snps_gmac5_pci_info = {
+ 	.setup = snps_gmac5_default_data,
+ };
+ 
++static int loongson_default_data(struct pci_dev *pdev, struct plat_stmmacenent_data *plat)
++{
++	common_default_data(plat);
++
++	plat->bus_id = pci_dev_id(pdev);
++	plat->phy_addr = 0;
++	plat->interface = PHY_INTERFACE_MODE_GMII;
++
++	plat->dma_cfg->pbl = 32;
++	plat->dma_cfg->pblx8 = true;
++
++	return 0;
++}
++
++static struct stmmac_pci_info loongson_pci_info = {
++	.setup = loongson_default_data;
++};
++
+ /**
+  * stmmac_pci_probe
+  *
+@@ -204,6 +222,8 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
+ 	res.addr = pcim_iomap_table(pdev)[i];
+ 	res.wol_irq = pdev->irq;
+ 	res.irq = pdev->irq;
++	if (pdev->vendor == PCI_VENDOR_ID_LOONGSON)
++		res.lpi_irq = pdev->irq + 1;
+ 
+ 	return stmmac_dvr_probe(&pdev->dev, plat, &res);
+ }
+@@ -273,11 +293,13 @@ static SIMPLE_DEV_PM_OPS(stmmac_pm_ops, stmmac_pci_suspend, stmmac_pci_resume);
+ 
+ #define PCI_DEVICE_ID_STMMAC_STMMAC		0x1108
+ #define PCI_DEVICE_ID_SYNOPSYS_GMAC5_ID		0x7102
++#define PCI_DEVICE_ID_LOONGSON_GMAC		0x7a03
+ 
+ static const struct pci_device_id stmmac_id_table[] = {
+ 	{ PCI_DEVICE_DATA(STMMAC, STMMAC, &stmmac_pci_info) },
+ 	{ PCI_DEVICE_DATA(STMICRO, MAC, &stmmac_pci_info) },
+ 	{ PCI_DEVICE_DATA(SYNOPSYS, GMAC5_ID, &snps_gmac5_pci_info) },
++	{ PCI_DEVICE_DATA(LOONGSON, GMAC, &loongson_pci_info) },
+ 	{}
+ };
+ 
+-- 
+2.1.0
 
