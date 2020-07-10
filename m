@@ -2,155 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D3F921BDC2
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 21:38:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1757321BDBD
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 21:37:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728387AbgGJTiL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 10 Jul 2020 15:38:11 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:36395 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728362AbgGJTiI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 15:38:08 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-40-4KfsuBDeNsKkbLjQJ_BUbQ-1; Fri, 10 Jul 2020 15:38:02 -0400
-X-MC-Unique: 4KfsuBDeNsKkbLjQJ_BUbQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4D608100CCC5;
-        Fri, 10 Jul 2020 19:38:01 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.192.98])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D56110016E8;
-        Fri, 10 Jul 2020 19:37:59 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH v6 bpf-next 2/9] bpf: Compile resolve_btfids tool at kernel compilation start
-Date:   Fri, 10 Jul 2020 21:37:47 +0200
-Message-Id: <20200710193754.3821104-3-jolsa@kernel.org>
-In-Reply-To: <20200710193754.3821104-1-jolsa@kernel.org>
-References: <20200710193754.3821104-1-jolsa@kernel.org>
+        id S1728208AbgGJThw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 15:37:52 -0400
+Received: from smtprelay0004.hostedemail.com ([216.40.44.4]:42658 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726867AbgGJThv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 15:37:51 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 68277100E7B48;
+        Fri, 10 Jul 2020 19:37:50 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1381:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3165:3352:3622:3866:3867:3872:4321:5007:6119:6737:7514:10004:10400:10848:11232:11657:11658:11914:12043:12048:12297:12555:12740:12895:12986:13069:13311:13357:13439:13894:14093:14097:14181:14659:14721:21080:21451:21627:21740:30029:30054:30056:30064:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: prose65_0f116ea26ed0
+X-Filterd-Recvd-Size: 2625
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf04.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 10 Jul 2020 19:37:48 +0000 (UTC)
+Message-ID: <28a81dfe62b1dc00ccc721ddb88669d13665252b.camel@perches.com>
+Subject: Re: [PATCH v2] MAINTAINERS: XDP: restrict N: and K:
+From:   Joe Perches <joe@perches.com>
+To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>, ast@kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        mchehab+huawei@kernel.org, robh@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Date:   Fri, 10 Jul 2020 12:37:47 -0700
+In-Reply-To: <20200710190407.31269-1-grandmaster@al2klimov.de>
+References: <87tuyfi4fm.fsf@toke.dk>
+         <20200710190407.31269-1-grandmaster@al2klimov.de>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The resolve_btfids tool will be used during the vmlinux linking,
-so it's necessary it's ready for it.
+On Fri, 2020-07-10 at 21:04 +0200, Alexander A. Klimov wrote:
+> Rationale:
+> Documentation/arm/ixp4xx.rst contains "xdp" as part of "ixdp465"
+> which has nothing to do with XDP.
+> 
+> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+> ---
+>  Better?
+> 
+>  MAINTAINERS | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1d4aa7f942de..735e2475e926 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -18708,8 +18708,8 @@ F:	include/trace/events/xdp.h
+>  F:	kernel/bpf/cpumap.c
+>  F:	kernel/bpf/devmap.c
+>  F:	net/core/xdp.c
+> -N:	xdp
+> -K:	xdp
+> +N:	(?:\b|_)xdp
+> +K:	(?:\b|_)xdp
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Generally, it's better to have comprehensive files lists
+rather than adding name matching regexes.
+
+Perhaps:
 ---
- Makefile           | 22 ++++++++++++++++++----
- tools/Makefile     |  3 +++
- tools/bpf/Makefile |  9 ++++++++-
- 3 files changed, 29 insertions(+), 5 deletions(-)
+ MAINTAINERS | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/Makefile b/Makefile
-index ac2c61c37a73..017e775b3288 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1053,9 +1053,10 @@ export mod_sign_cmd
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 16854e47e8cb..2e96cbf15b31 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18763,13 +18763,19 @@ M:	John Fastabend <john.fastabend@gmail.com>
+ L:	netdev@vger.kernel.org
+ L:	bpf@vger.kernel.org
+ S:	Supported
+-F:	include/net/xdp.h
++F:	Documentation/networking/af_xdp.rst
++F:	include/net/xdp*
+ F:	include/trace/events/xdp.h
++F:	include/uapi/linux/if_xdp.h
++F:	include/uapi/linux/xdp_diag.h
+ F:	kernel/bpf/cpumap.c
+ F:	kernel/bpf/devmap.c
+ F:	net/core/xdp.c
+-N:	xdp
+-K:	xdp
++F:	net/xdp/
++F:	samples/bpf/xdp*
++F:	tools/testing/selftests/bfp/*xdp*
++F:	tools/testing/selftests/bfp/*/*xdp*
++K:	(?:\b|_)xdp(?:\b|_)
  
- HOST_LIBELF_LIBS = $(shell pkg-config libelf --libs 2>/dev/null || echo -lelf)
- 
-+has_libelf = $(call try-run,\
-+               echo "int main() {}" | $(HOSTCC) -xc -o /dev/null $(HOST_LIBELF_LIBS) -,1,0)
-+
- ifdef CONFIG_STACK_VALIDATION
--  has_libelf := $(call try-run,\
--		echo "int main() {}" | $(HOSTCC) -xc -o /dev/null $(HOST_LIBELF_LIBS) -,1,0)
-   ifeq ($(has_libelf),1)
-     objtool_target := tools/objtool FORCE
-   else
-@@ -1064,6 +1065,14 @@ ifdef CONFIG_STACK_VALIDATION
-   endif
- endif
- 
-+ifdef CONFIG_DEBUG_INFO_BTF
-+  ifeq ($(has_libelf),1)
-+    resolve_btfids_target := tools/bpf/resolve_btfids FORCE
-+  else
-+    ERROR_RESOLVE_BTFIDS := 1
-+  endif
-+endif
-+
- PHONY += prepare0
- 
- export MODORDER := $(extmod-prefix)modules.order
-@@ -1175,7 +1184,7 @@ prepare0: archprepare
- 	$(Q)$(MAKE) $(build)=.
- 
- # All the preparing..
--prepare: prepare0 prepare-objtool
-+prepare: prepare0 prepare-objtool prepare-resolve_btfids
- 
- # Support for using generic headers in asm-generic
- asm-generic := -f $(srctree)/scripts/Makefile.asm-generic obj
-@@ -1188,7 +1197,7 @@ uapi-asm-generic:
- 	$(Q)$(MAKE) $(asm-generic)=arch/$(SRCARCH)/include/generated/uapi/asm \
- 	generic=include/uapi/asm-generic
- 
--PHONY += prepare-objtool
-+PHONY += prepare-objtool prepare-resolve_btfids
- prepare-objtool: $(objtool_target)
- ifeq ($(SKIP_STACK_VALIDATION),1)
- ifdef CONFIG_UNWINDER_ORC
-@@ -1199,6 +1208,11 @@ else
- endif
- endif
- 
-+prepare-resolve_btfids: $(resolve_btfids_target)
-+ifeq ($(ERROR_RESOLVE_BTFIDS),1)
-+	@echo "error: Cannot resolve BTF IDs for CONFIG_DEBUG_INFO_BTF, please install libelf-dev, libelf-devel or elfutils-libelf-devel" >&2
-+	@false
-+endif
- # Generate some files
- # ---------------------------------------------------------------------------
- 
-diff --git a/tools/Makefile b/tools/Makefile
-index bd778812e915..85af6ebbce91 100644
---- a/tools/Makefile
-+++ b/tools/Makefile
-@@ -67,6 +67,9 @@ cpupower: FORCE
- cgroup firewire hv guest bootconfig spi usb virtio vm bpf iio gpio objtool leds wmi pci firmware debugging: FORCE
- 	$(call descend,$@)
- 
-+bpf/%: FORCE
-+	$(call descend,$@)
-+
- liblockdep: FORCE
- 	$(call descend,lib/lockdep)
- 
-diff --git a/tools/bpf/Makefile b/tools/bpf/Makefile
-index 6df1850f8353..74bc9a105225 100644
---- a/tools/bpf/Makefile
-+++ b/tools/bpf/Makefile
-@@ -123,5 +123,12 @@ runqslower_install:
- runqslower_clean:
- 	$(call descend,runqslower,clean)
- 
-+resolve_btfids:
-+	$(call descend,resolve_btfids)
-+
-+resolve_btfids_clean:
-+	$(call descend,resolve_btfids,clean)
-+
- .PHONY: all install clean bpftool bpftool_install bpftool_clean \
--	runqslower runqslower_install runqslower_clean
-+	runqslower runqslower_install runqslower_clean \
-+	resolve_btfids resolve_btfids_clean
--- 
-2.25.4
+ XDP SOCKETS (AF_XDP)
+ M:	Björn Töpel <bjorn.topel@intel.com>
+
 
