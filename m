@@ -2,278 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8103C21B767
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 15:59:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B7821B7D1
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:08:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728263AbgGJN6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 09:58:52 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:48879 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728199AbgGJN6v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 09:58:51 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 6D59058059E;
-        Fri, 10 Jul 2020 09:58:50 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 10 Jul 2020 09:58:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=gdJlc80kkmB28sMn3OWS6YQjXmbSrJ2kpKk7Jl1Wfq8=; b=Pb8oA/Qq
-        spfILyXiouSMjUIdY0idollc6IlA5Yfgt70ytb9K1QPYzQx3iTdzOgPnwR5acHd3
-        PLrevfUUSfaaVyyMAOvVhGG/HpPbBYbcQxLIwNEujakyhfi0KmMRzydLYSDDBsae
-        q4fKj5REdppT5gWHHlLRAsZQnN+PuSe/RjMMkxfNGhcMFiabgNC/9fUXg1JcxlRf
-        mwNeVNOrNvIljFfhY80p/YeCDqs8rHI50eqSm/Ux+0U7YN9neY3w9RfLI56XYZD4
-        DCMDqM+JyQyLsMkDPuKLIx1Wuk4a3BNcsQWUj8iPQsAuTX7Fqi4oHVi+3phW9gnv
-        se0urABRXRac2w==
-X-ME-Sender: <xms:GnQIX2RHL_e96p2YNI9lhlc6982XpdyI3RoZxRWqs7PNiB-UMF4cLg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrvddugdejgecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
-    fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieeirdduledrudeffeen
-    ucevlhhushhtvghrufhiiigvpeduvdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:GnQIX7xZa4mVj8zn3hCGdBizFtlvbQ8D3ESMK16cshBkdu5SN7_CGg>
-    <xmx:GnQIXz11BK49ky7M5h8FX2VzvPpXesyQLUoF4qe-iQ_tIN9pbHjpsQ>
-    <xmx:GnQIXyAlWliYiHakLv572aHeuKGvQdExXc_9QMo20WC2BG7z9fUgPQ>
-    <xmx:GnQIXyqhAtfrMuHZ2bbi9jPmdlVOTFy1C_KgkFKi_klOpaDoWJtQvQ>
-Received: from shredder.mtl.com (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 71AEC328005A;
-        Fri, 10 Jul 2020 09:58:46 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        petrm@mellanox.com, mlxsw@mellanox.com, michael.chan@broadcom.com,
-        saeedm@mellanox.com, leon@kernel.org, pablo@netfilter.org,
-        kadlec@netfilter.org, fw@strlen.de, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, simon.horman@netronome.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 13/13] selftests: mlxsw: RED: Test offload of mirror on RED early_drop qevent
-Date:   Fri, 10 Jul 2020 16:57:06 +0300
-Message-Id: <20200710135706.601409-14-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200710135706.601409-1-idosch@idosch.org>
-References: <20200710135706.601409-1-idosch@idosch.org>
+        id S1727768AbgGJOIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 10:08:22 -0400
+Received: from mail-db8eur05on2070.outbound.protection.outlook.com ([40.107.20.70]:45409
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727031AbgGJOIW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jul 2020 10:08:22 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vr5AVRxoNlIjD3U4yZbI2GBeQx/y3ILU+qUSYA+hZ5sz7AgChc+zYIPh99ZwqlzGG4GXhKwm3oBjO+v/OHokwXDV/wPi8OuYuuiblElKx7u74Hn5w377yj1g3NsIbKlx3tdLkFh1ChsZZSwj0P9jAGyX65khOMvx8vTtR1rXLE5a9cRnld1cIWqjZm0We9BJs8KBXtkDNgyP7mlGwAEuEfU/VU8yrikC0Lu2A5QdICyLqXDKEXTJzgJuxnJXjDgdIGGJ4r4s1a6GDgsZNjSQKBlHkltfuQ/jY8FAX+mFQ1I+EtSp538EDvoPMsY0/iR1B0Y1EBEmTFPDAXZ3NVIBvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PyhrvK15la7mJdtXGs8wsbcadxLx9LZ+P3OJWeMusac=;
+ b=jwH7rpH0uSY2ixLiiilykZby0bH3S1nuUXdlzBtrWV7S4FFALR6cWWNpWTVmT33eehOhQH3IpaBMuP0kCTafNUa3ywpijDNLpObwFnDp1czBSywlhF4QZHykCZtufATK5d1SQqCTrp5ph47O0rE7w4s+5Aq0jtthCvKl+F69zvD77BjVuxGPDxcDuNxh2pOoFP6LXxrduqFNE0eS0AdOtbzKYXgUBo/pDo1ZunRqwnJP1QiFCwykc8UIKxnchlBYdElK67GfzgJ6VS6sCMj3T/0rmjBj0oaARfvIwW4r81Yp5rAmYjdWNwDnuy28nPS1kgs7Is7KN2sb7p/i/ke1bQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PyhrvK15la7mJdtXGs8wsbcadxLx9LZ+P3OJWeMusac=;
+ b=mSRtj85P8lWmKaHJkaDM/h4j3fKzO2sdejjKvfapeNsjhElDEAnjtBytq8/5I2EPpPQDI8zW4hZBN6o29848vbCIujCAyW8yBPoEewWe0k8CMwPOOCP/vEeBm9reyHbKY6x1LI5iY0tVwrsgtN6rdMOieiLdCOQ5haHuPgxZeTc=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB4387.eurprd04.prod.outlook.com (2603:10a6:208:73::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Fri, 10 Jul
+ 2020 14:08:18 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::7dda:a30:6b25:4d45]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::7dda:a30:6b25:4d45%7]) with mapi id 15.20.3174.023; Fri, 10 Jul 2020
+ 14:08:18 +0000
+Date:   Fri, 10 Jul 2020 19:38:08 +0530
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux.cj@gmail.com, netdev <netdev@vger.kernel.org>
+Subject: Re: [net-next PATCH v4 5/6] phylink: introduce
+ phylink_fwnode_phy_connect()
+Message-ID: <20200710140808.GA26486@lsv03152.swis.in-blr01.nxp.com>
+References: <20200709175722.5228-1-calvin.johnson@oss.nxp.com>
+ <20200709175722.5228-6-calvin.johnson@oss.nxp.com>
+ <CAHp75VdOF2qXFQOAyYVFLY-_JbGUAZ-6Cq-q_LRzKeV69RrJgg@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75VdOF2qXFQOAyYVFLY-_JbGUAZ-6Cq-q_LRzKeV69RrJgg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: SG2PR02CA0105.apcprd02.prod.outlook.com
+ (2603:1096:4:92::21) To AM0PR04MB5636.eurprd04.prod.outlook.com
+ (2603:10a6:208:130::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR02CA0105.apcprd02.prod.outlook.com (2603:1096:4:92::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Fri, 10 Jul 2020 14:08:15 +0000
+X-Originating-IP: [14.142.151.118]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: d6027a6e-97a0-44e3-351a-08d824dab22f
+X-MS-TrafficTypeDiagnostic: AM0PR04MB4387:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB438739B4BE775C9635FD6D4ED2650@AM0PR04MB4387.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YKvwEcaS/JiWtYdIG1P0I1Zwig6fvsKVd72FgHvCfARu5/62NTFjI1+DefM30aqzNGxe85px+h0BzyWyOfWp+4q00T091I2XO7+2GOKgh8myi7nsCdKV9xYqYrteyf9Ic1Vh6UksFErnbNYsL97u3AuYOnzTGTyn2PbmJN9A9RzVPAe8XwVvJigvzonsxcml9NV7SvMqOJEb+toVmLXgV/D1DxfFKvepOMpC2UnznDs1q3sVvCH8NSP7QPNU5czF8SwqVxL8p20gp6OtE2XZXn9M5jorFZphdyPujNJ62Ywbvr+DkjHW+85oLCQ+3pLTvSEpX4nFlhMcJMcXBeTQYhF/IzYmfznHheh28DJhcuqS2y6UEh/M+GyDfaRkG670
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(136003)(39860400002)(366004)(396003)(346002)(478600001)(26005)(4326008)(86362001)(52116002)(6916009)(956004)(7696005)(2906002)(186003)(55236004)(16526019)(53546011)(6506007)(9686003)(5660300002)(8676002)(8936002)(66556008)(54906003)(6666004)(1076003)(66946007)(316002)(66476007)(1006002)(44832011)(33656002)(55016002)(110426005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 5pWhmLm3s44bdxOw9exgs7R2IVfuCIKC0H+RLBzBFpq4tp824HyuEWBf1nnJWcBBEQti4uOPP345LhZy/RthFPl3xHI5Uj9UGKhIAvAvXyQX/zWTSlnA5U0FP8MJj6bUm8zNOuDu1vFxfDX+La5os3dP6TaNNhxZPlv/DJiAvhXOG7fN3Hdn0K9FQyNnFnNsnE3H6qNzCRPjVY7wB2dNjw5ixcIWQMDwdzAg/ghsipgAs7Vy3bSCd8pQbo87yOvcyOL9TOWEdt+VTkqZJIp6VsNGMdY4xStauufw5nxJjD8XYTGTtzKgsF+C6rnDQjeVqZZJxwY6xxd3oC2QiS5FQEGNKqFjNRdVQvulu3UsrLKN8V9I9GGZ6RcpkoO4YXYA5oSVr4tuo0LVSAfG/Aczr9g+2Cq0/Fncg2VFEV2QHMZI6ZnwgWNm7GXRIXuMgpTodPoPT4c7kyDbRtbG85w+LpBxvLPnWl0wZwIK+7rNOJQPGI0IjWcu2Zi/0AcybM0O
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6027a6e-97a0-44e3-351a-08d824dab22f
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2020 14:08:18.7072
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3l9KNayyOCy2GNU3Xj/7IsPd7r1lkHHo74LjY4WjW2Oi0r1Gq2AkqOBlbmQMKMTniLfWMy1ieAgFmuPN7BoFmg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4387
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+On Thu, Jul 09, 2020 at 11:48:03PM +0300, Andy Shevchenko wrote:
+> On Thu, Jul 9, 2020 at 8:58 PM Calvin Johnson
+> <calvin.johnson@oss.nxp.com> wrote:
+> >
+> > Define phylink_fwnode_phy_connect() to connect phy specified by
+> > a fwnode to a phylink instance.
+> 
+> ...
+> 
+> > +       if (is_of_node(fwnode)) {
+> > +               ret = phylink_of_phy_connect(pl, to_of_node(fwnode), flags);
+> > +       } else if (is_acpi_device_node(fwnode)) {
+> > +               phy_dev = phy_find_by_fwnode(fwnode);
+> > +               if (!phy_dev)
+> > +                       return -ENODEV;
+> > +               ret = phylink_connect_phy(pl, phy_dev);
+> > +       }
+> 
+> Looking at this more I really don't like how this if-else-if looks like.
+> 
+> I would rather expect something like
+> 
+>                phy_dev = phy_find_by_fwnode(fwnode);
+>                if (!phy_dev)
+>                        return -ENODEV;
+>                ret = phylink_connect_phy(pl, phy_dev);
+> 
+> Where phy_find_by_fwnode() will take care about OF or any other
+> possible fwnode cases.
 
-Add a selftest for offloading a mirror action attached to the block
-associated with RED early_drop qevent.
+phy_find_by_fwnode() has a different purpose from that of
+phylink_fwnode_phy_connect(). Current implementation looks good to me as it
+clearly takes different paths for DT and ACPI cases.
 
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- .../drivers/net/mlxsw/sch_red_core.sh         | 106 +++++++++++++++++-
- .../drivers/net/mlxsw/sch_red_ets.sh          |  11 ++
- .../drivers/net/mlxsw/sch_red_root.sh         |   8 ++
- 3 files changed, 122 insertions(+), 3 deletions(-)
-
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-index 0d347d48c112..45042105ead7 100644
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-@@ -121,6 +121,7 @@ h1_destroy()
- h2_create()
- {
- 	host_create $h2 2
-+	tc qdisc add dev $h2 clsact
- 
- 	# Some of the tests in this suite use multicast traffic. As this traffic
- 	# enters BR2_10 resp. BR2_11, it is flooded to all other ports. Thus
-@@ -141,6 +142,7 @@ h2_create()
- h2_destroy()
- {
- 	ethtool -s $h2 autoneg on
-+	tc qdisc del dev $h2 clsact
- 	host_destroy $h2
- }
- 
-@@ -336,6 +338,17 @@ get_qdisc_npackets()
- 		qdisc_stats_get $swp3 $(get_qdisc_handle $vlan) .packets
- }
- 
-+send_packets()
-+{
-+	local vlan=$1; shift
-+	local proto=$1; shift
-+	local pkts=$1; shift
-+
-+	$MZ $h2.$vlan -p 8000 -a own -b $h3_mac \
-+	    -A $(ipaddr 2 $vlan) -B $(ipaddr 3 $vlan) \
-+	    -t $proto -q -c $pkts "$@"
-+}
-+
- # This sends traffic in an attempt to build a backlog of $size. Returns 0 on
- # success. After 10 failed attempts it bails out and returns 1. It dumps the
- # backlog size to stdout.
-@@ -364,9 +377,7 @@ build_backlog()
- 			return 1
- 		fi
- 
--		$MZ $h2.$vlan -p 8000 -a own -b $h3_mac \
--		    -A $(ipaddr 2 $vlan) -B $(ipaddr 3 $vlan) \
--		    -t $proto -q -c $pkts "$@"
-+		send_packets $vlan $proto $pkts "$@"
- 	done
- }
- 
-@@ -531,3 +542,92 @@ do_mc_backlog_test()
- 
- 	log_test "TC $((vlan - 10)): Qdisc reports MC backlog"
- }
-+
-+do_drop_test()
-+{
-+	local vlan=$1; shift
-+	local limit=$1; shift
-+	local trigger=$1; shift
-+	local subtest=$1; shift
-+	local fetch_counter=$1; shift
-+	local backlog
-+	local base
-+	local now
-+	local pct
-+
-+	RET=0
-+
-+	start_traffic $h1.$vlan $(ipaddr 1 $vlan) $(ipaddr 3 $vlan) $h3_mac
-+
-+	# Create a bit of a backlog and observe no mirroring due to drops.
-+	qevent_rule_install_$subtest
-+	base=$($fetch_counter)
-+
-+	build_backlog $vlan $((2 * limit / 3)) udp >/dev/null
-+
-+	busywait 1100 until_counter_is ">= $((base + 1))" $fetch_counter >/dev/null
-+	check_fail $? "Spurious packets observed without buffer pressure"
-+
-+	qevent_rule_uninstall_$subtest
-+
-+	# Push to the queue until it's at the limit. The configured limit is
-+	# rounded by the qdisc and then by the driver, so this is the best we
-+	# can do to get to the real limit of the system. Do this with the rules
-+	# uninstalled so that the inevitable drops don't get counted.
-+	build_backlog $vlan $((3 * limit / 2)) udp >/dev/null
-+
-+	qevent_rule_install_$subtest
-+	base=$($fetch_counter)
-+
-+	send_packets $vlan udp 11
-+
-+	now=$(busywait 1100 until_counter_is ">= $((base + 10))" $fetch_counter)
-+	check_err $? "Dropped packets not observed: 11 expected, $((now - base)) seen"
-+
-+	# When no extra traffic is injected, there should be no mirroring.
-+	busywait 1100 until_counter_is ">= $((base + 20))" $fetch_counter >/dev/null
-+	check_fail $? "Spurious packets observed"
-+
-+	# When the rule is uninstalled, there should be no mirroring.
-+	qevent_rule_uninstall_$subtest
-+	send_packets $vlan udp 11
-+	busywait 1100 until_counter_is ">= $((base + 20))" $fetch_counter >/dev/null
-+	check_fail $? "Spurious packets observed after uninstall"
-+
-+	log_test "TC $((vlan - 10)): ${trigger}ped packets $subtest'd"
-+
-+	stop_traffic
-+	sleep 1
-+}
-+
-+qevent_rule_install_mirror()
-+{
-+	tc filter add block 10 pref 1234 handle 102 matchall skip_sw \
-+	   action mirred egress mirror dev $swp2 hw_stats disabled
-+}
-+
-+qevent_rule_uninstall_mirror()
-+{
-+	tc filter del block 10 pref 1234 handle 102 matchall
-+}
-+
-+qevent_counter_fetch_mirror()
-+{
-+	tc_rule_handle_stats_get "dev $h2 ingress" 101
-+}
-+
-+do_drop_mirror_test()
-+{
-+	local vlan=$1; shift
-+	local limit=$1; shift
-+	local qevent_name=$1; shift
-+
-+	tc filter add dev $h2 ingress pref 1 handle 101 prot ip \
-+	   flower skip_sw ip_proto udp \
-+	   action drop
-+
-+	do_drop_test "$vlan" "$limit" "$qevent_name" mirror \
-+		     qevent_counter_fetch_mirror
-+
-+	tc filter del dev $h2 ingress pref 1 handle 101 flower
-+}
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-index 1c36c576613b..c8968b041bea 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-@@ -7,6 +7,7 @@ ALL_TESTS="
- 	ecn_nodrop_test
- 	red_test
- 	mc_backlog_test
-+	red_mirror_test
- "
- : ${QDISC:=ets}
- source sch_red_core.sh
-@@ -83,6 +84,16 @@ mc_backlog_test()
- 	uninstall_qdisc
- }
- 
-+red_mirror_test()
-+{
-+	install_qdisc qevent early_drop block 10
-+
-+	do_drop_mirror_test 10 $BACKLOG1 early_drop
-+	do_drop_mirror_test 11 $BACKLOG2 early_drop
-+
-+	uninstall_qdisc
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh
-index 558667ea11ec..ede9c38d3eff 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh
-@@ -7,6 +7,7 @@ ALL_TESTS="
- 	ecn_nodrop_test
- 	red_test
- 	mc_backlog_test
-+	red_mirror_test
- "
- source sch_red_core.sh
- 
-@@ -57,6 +58,13 @@ mc_backlog_test()
- 	uninstall_qdisc
- }
- 
-+red_mirror_test()
-+{
-+	install_qdisc qevent early_drop block 10
-+	do_drop_mirror_test 10 $BACKLOG
-+	uninstall_qdisc
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
--- 
-2.26.2
-
+Thanks
+Calvin
