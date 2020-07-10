@@ -2,177 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C6AA21B94E
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 17:20:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1375221B96B
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 17:26:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728140AbgGJPUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 11:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727906AbgGJPUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 11:20:16 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0522C08C5CE
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 08:20:15 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id 2so2826265ybr.13
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 08:20:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QGz8fwqi3iWK7OiEZGygZqp0dNUEBw6lIEZJdnz5zYk=;
-        b=hvhiM1TRvvWuag1g1IiVFVDwV4ZAOVA8tlZM6LEBtbwEtKie5RvCmIb+OBfhFZywT3
-         t+d1pQLlG4BnFdyCBcBU9os0H9LsVg8cMypSAoYx6oS2Jedyn+SyL7wTGcfq68gn/Po5
-         OJ5DsiJ07rxM1KiqkpW7XGlFSFMdWwhOgPZfa7tj+7r/Ps8rp97UHOhGz8zxCVr/xDyP
-         /WAxjlnyq5RZZknreRfdSfrFXCxXHcUQE8Bxzjb44Pj/gVsZTGkV3B5FfTJWbfkw3hn1
-         kh3Q7Nn7h2iy74bZqzodagAFXj8tt9FFvatpkMLNzg79hRChX/YHjWR/nm1NsCrRYcI7
-         Hk9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QGz8fwqi3iWK7OiEZGygZqp0dNUEBw6lIEZJdnz5zYk=;
-        b=aYjut5dgyAgXLF8/ydQ86oceAZtG4YEgBJHWwsxCQl7w26rg0geiNEgTXgBXa2UsQj
-         8hFcnLb85W1Ft8xlkhnD171Q/qOv63aRVoHS+wqCHKeJqJTopx2RGWKmOXs2wik5Qpm1
-         H/b38hxjcEFsUJqGszjkoWJHA6WxQg09ZCy52YoWmuSmO7PcbL6yT6J6RYDT042B6Z25
-         gFcXVZLCKUnBDnpUIbqIahUxO9XfVskpEwXQzsDdtj/CqquMvsbF6kwq1lA8CgeqC8SI
-         JLzGUBF7xulg8BiMmbHmllU8/2W3lJk2eMAEk2mi61Zp2YfvLamkGszkau7+u8dTdxUt
-         7RNA==
-X-Gm-Message-State: AOAM530RiuD9jvcU38SWHEIjcl89yfP1rP/kvnQcJ5RfauKP1GNGrBoT
-        6UCP4p0eSEEQR7LqGPr2Z8tkb7+h1rYVtcUwHS6iIg==
-X-Google-Smtp-Source: ABdhPJzUBD6OYc3XJwUOPIDIJ58SiHzYGW+VgUxb1G8PwXOBug4QmjjCeEJTV+eTWWEf9hj+s4MyIPYonC6fskG13WY=
-X-Received: by 2002:a25:ad66:: with SMTP id l38mr23952236ybe.274.1594394414497;
- Fri, 10 Jul 2020 08:20:14 -0700 (PDT)
+        id S1727840AbgGJP0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 11:26:54 -0400
+Received: from correo.us.es ([193.147.175.20]:56720 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726925AbgGJP0y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jul 2020 11:26:54 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 071F7508CDB
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 17:26:52 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id DA661DA84A
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 17:26:51 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id C8158DA7B6; Fri, 10 Jul 2020 17:26:51 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 57397DA78D;
+        Fri, 10 Jul 2020 17:26:49 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 10 Jul 2020 17:26:49 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 1789D4265A2F;
+        Fri, 10 Jul 2020 17:26:49 +0200 (CEST)
+Date:   Fri, 10 Jul 2020 17:26:48 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        mlxsw@mellanox.com, michael.chan@broadcom.com, saeedm@mellanox.com,
+        leon@kernel.org, kadlec@netfilter.org, fw@strlen.de,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        simon.horman@netronome.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 01/13] net: sched: Pass qdisc reference in
+ struct flow_block_offload
+Message-ID: <20200710152648.GA14902@salvia>
+References: <20200710135706.601409-1-idosch@idosch.org>
+ <20200710135706.601409-2-idosch@idosch.org>
+ <20200710141500.GA12659@salvia>
+ <87sgdzflk4.fsf@mellanox.com>
 MIME-Version: 1.0
-References: <20200710141053.65581-1-kuniyu@amazon.co.jp>
-In-Reply-To: <20200710141053.65581-1-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 10 Jul 2020 08:20:03 -0700
-Message-ID: <CANn89iJsC73o9hJ_RUd9qfv50ebt2H5VZx0-xgrPXFAZVWeGgQ@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next] inet: Remove an unnecessary argument of syn_ack_recalc().
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        osa-contribution-log@amazon.com, Julian Anastasov <ja@ssi.bg>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87sgdzflk4.fsf@mellanox.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 7:11 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
->
-> Commit 0c3d79bce48034018e840468ac5a642894a521a3 ("tcp: reduce SYN-ACK
-> retrans for TCP_DEFER_ACCEPT") introduces syn_ack_recalc() which decides
-> if a minisock is held and a SYN+ACK is retransmitted or not.
->
-> If rskq_defer_accept is not zero in syn_ack_recalc(), max_retries always
-> has the same value because max_retries is overwritten by rskq_defer_accept
-> in reqsk_timer_handler().
->
-> This commit adds three changes:
-> - remove redundant non-zero check for rskq_defer_accept in
->    reqsk_timer_handler().
-> - remove max_retries from the arguments of syn_ack_recalc() and use
->    rskq_defer_accept instead.
-> - rename thresh to max_syn_ack_retries for readability.
->
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
-> CC: Julian Anastasov <ja@ssi.bg>
-> ---
->  net/ipv4/inet_connection_sock.c | 33 +++++++++++++++------------------
->  1 file changed, 15 insertions(+), 18 deletions(-)
->
-> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> index afaf582a5aa9..21bc80a3c7cf 100644
-> --- a/net/ipv4/inet_connection_sock.c
-> +++ b/net/ipv4/inet_connection_sock.c
-> @@ -648,20 +648,23 @@ struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
->  EXPORT_SYMBOL_GPL(inet_csk_route_child_sock);
->
->  /* Decide when to expire the request and when to resend SYN-ACK */
-> -static inline void syn_ack_recalc(struct request_sock *req, const int thresh,
-> -                                 const int max_retries,
-> +static inline void syn_ack_recalc(struct request_sock *req,
+On Fri, Jul 10, 2020 at 05:15:39PM +0200, Petr Machata wrote:
+> 
+> Pablo Neira Ayuso <pablo@netfilter.org> writes:
+> 
+> > On Fri, Jul 10, 2020 at 04:56:54PM +0300, Ido Schimmel wrote:
+> >> From: Petr Machata <petrm@mellanox.com>
+> >>
+> >> Previously, shared blocks were only relevant for the pseudo-qdiscs ingress
+> >> and clsact. Recently, a qevent facility was introduced, which allows to
+> >> bind blocks to well-defined slots of a qdisc instance. RED in particular
+> >> got two qevents: early_drop and mark. Drivers that wish to offload these
+> >> blocks will be sent the usual notification, and need to know which qdisc it
+> >> is related to.
+> >>
+> >> To that end, extend flow_block_offload with a "sch" pointer, and initialize
+> >> as appropriate. This prompts changes in the indirect block facility, which
+> >> now tracks the scheduler instead of the netdevice. Update signatures of
+> >> several functions similarly. Deduce the device from the scheduler when
+> >> necessary.
+> >>
+> >> Signed-off-by: Petr Machata <petrm@mellanox.com>
+> >> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> >> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> >> ---
+> >>  drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  | 11 ++++++----
+> >>  .../ethernet/mellanox/mlx5/core/en/rep/tc.c   | 11 +++++-----
+> >>  .../net/ethernet/netronome/nfp/flower/main.h  |  2 +-
+> >>  .../ethernet/netronome/nfp/flower/offload.c   | 11 ++++++----
+> >>  include/net/flow_offload.h                    |  9 ++++----
+> >>  net/core/flow_offload.c                       | 12 +++++------
+> >>  net/netfilter/nf_flow_table_offload.c         | 17 +++++++--------
+> >>  net/netfilter/nf_tables_offload.c             | 20 ++++++++++--------
+> >>  net/sched/cls_api.c                           | 21 +++++++++++--------
+> >>  9 files changed, 63 insertions(+), 51 deletions(-)
+> >>
+> > [...]
+> >> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+> >> index eefeb1cdc2ee..4fc42c1955ff 100644
+> >> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+> >> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+> >> @@ -404,7 +404,7 @@ static void mlx5e_rep_indr_block_unbind(void *cb_priv)
+> >>  static LIST_HEAD(mlx5e_block_cb_list);
+> >>
+> >>  static int
+> >> -mlx5e_rep_indr_setup_block(struct net_device *netdev,
+> >> +mlx5e_rep_indr_setup_block(struct Qdisc *sch,
+> >>  			   struct mlx5e_rep_priv *rpriv,
+> >>  			   struct flow_block_offload *f,
+> >>  			   flow_setup_cb_t *setup_cb,
+> >> @@ -412,6 +412,7 @@ mlx5e_rep_indr_setup_block(struct net_device *netdev,
+> >>  			   void (*cleanup)(struct flow_block_cb *block_cb))
+> >>  {
+> >>  	struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
+> >> +	struct net_device *netdev = sch->dev_queue->dev;
+> >
+> > This break indirect block support for netfilter since the driver
+> > is assuming a Qdisc object.
+> 
+> Sorry, I don't follow. You mean mlx5 driver? What does it mean to
+> "assume a qdisc object"?
+> 
+> Is it incorrect to rely on the fact that the netdevice can be deduced
+> from a qdisc, or that there is always a qdisc associated with a block
+> binding point?
 
-While we are at it, please remove the inline keyword.
+The drivers assume that the xyz_indr_setup_block() always gets a sch
+object, which is not always true. Are you really sure this will work
+for the TC CT offload?
 
-> +                                 const int max_syn_ack_retries,
->                                   const u8 rskq_defer_accept,
->                                   int *expire, int *resend)
->  {
->         if (!rskq_defer_accept) {
-> -               *expire = req->num_timeout >= thresh;
-> +               *expire = req->num_timeout >= max_syn_ack_retries;
->                 *resend = 1;
->                 return;
->         }
-> -       *expire = req->num_timeout >= thresh &&
-> -                 (!inet_rsk(req)->acked || req->num_timeout >= max_retries);
-> -       /*
-> -        * Do not resend while waiting for data after ACK,
-> +       /* If a bare ACK has already been dropped, the client is alive, so
-> +        * do not free the request_sock to drop a bare ACK at most
-> +        * rskq_defer_accept times and wait for data.
-> +        */
+--- a/net/netfilter/nf_flow_table_offload.c
++++ b/net/netfilter/nf_flow_table_offload.c
+@@ -928,26 +928,27 @@ static int nf_flow_table_block_setup(struct nf_flowtable *flowtable,
+ }
 
-I honestly do not believe this comment is needed.
-The bare ack has not been 'dropped' since it had the effect of
-validating the 3WHS.
-I find it confusing, and not describing the order of the conditions
-expressed in the C code.
+ static void nf_flow_table_block_offload_init(struct flow_block_offload *bo,
+-                                            struct net *net,
++                                            struct net_device *dev,
+                                             enum flow_block_command cmd,
+                                             struct nf_flowtable *flowtable,
+                                             struct netlink_ext_ack *extack)
+ {
+        memset(bo, 0, sizeof(*bo));
+-       bo->net         = net;
++       bo->net         = dev_net(dev);
+        bo->block       = &flowtable->flow_block;
+        bo->command     = cmd;
+        bo->binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+        bo->extack      = extack;
++       bo->sch         = dev_ingress_queue(dev)->qdisc_sleeping;
+        INIT_LIST_HEAD(&bo->cb_list);
+ }
 
-> +       *expire = req->num_timeout >= max_syn_ack_retries &&
-> +                 (!inet_rsk(req)->acked || req->num_timeout >= rskq_defer_accept);
-> +       /* Do not resend while waiting for data after ACK,
->          * start to resend on end of deferring period to give
->          * last chance for data or ACK to create established socket.
->          */
-> @@ -720,15 +723,12 @@ static void reqsk_timer_handler(struct timer_list *t)
->         struct net *net = sock_net(sk_listener);
->         struct inet_connection_sock *icsk = inet_csk(sk_listener);
->         struct request_sock_queue *queue = &icsk->icsk_accept_queue;
-> -       int qlen, expire = 0, resend = 0;
-> -       int max_retries, thresh;
-> -       u8 defer_accept;
-> +       int max_syn_ack_retries, qlen, expire = 0, resend = 0;
->
->         if (inet_sk_state_load(sk_listener) != TCP_LISTEN)
->                 goto drop;
->
-> -       max_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
-> -       thresh = max_retries;
-> +       max_syn_ack_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
->         /* Normally all the openreqs are young and become mature
->          * (i.e. converted to established socket) for first timeout.
->          * If synack was not acknowledged for 1 second, it means
-> @@ -750,17 +750,14 @@ static void reqsk_timer_handler(struct timer_list *t)
->         if ((qlen << 1) > max(8U, READ_ONCE(sk_listener->sk_max_ack_backlog))) {
->                 int young = reqsk_queue_len_young(queue) << 1;
->
-> -               while (thresh > 2) {
-> +               while (max_syn_ack_retries > 2) {
->                         if (qlen < young)
->                                 break;
-> -                       thresh--;
-> +                       max_syn_ack_retries--;
->                         young <<= 1;
->                 }
->         }
-> -       defer_accept = READ_ONCE(queue->rskq_defer_accept);
-> -       if (defer_accept)
-> -               max_retries = defer_accept;
-> -       syn_ack_recalc(req, thresh, max_retries, defer_accept,
-> +       syn_ack_recalc(req, max_syn_ack_retries, READ_ONCE(queue->rskq_defer_accept),
->                        &expire, &resend);
->         req->rsk_ops->syn_ack_timeout(req);
->         if (!expire &&
-> --
-> 2.17.2 (Apple Git-113)
->
+ static void nf_flow_table_indr_cleanup(struct flow_block_cb *block_cb)
+ {
+        struct nf_flowtable *flowtable = block_cb->indr.data;
+-       struct net_device *dev = block_cb->indr.dev;
++       struct Qdisc *sch = block_cb->indr.sch;
+
+-       nf_flow_table_gc_cleanup(flowtable, dev);
++       nf_flow_table_gc_cleanup(flowtable, sch->dev_queue->dev);
+        down_write(&flowtable->flow_block_lock);
+        list_del(&block_cb->list);
+        list_del(&block_cb->driver_list);
+
+Moreover, the flow_offload infrastructure should also remain
+independent from the front-end, either tc/netfilter/ethtool, this is
+pulling in tc specific stuff into it, eg.
+
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index de395498440d..fda29140bdc5 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -444,6 +444,7 @@ struct flow_block_offload {
+        struct list_head cb_list;
+        struct list_head *driver_block_list;
+        struct netlink_ext_ack *extack;
++       struct Qdisc *sch;
+ };
+
+ enum tc_setup_type;
+@@ -454,7 +455,7 @@ struct flow_block_cb;
+
+ struct flow_block_indr {
+        struct list_head                list;
+-       struct net_device               *dev;
++       struct Qdisc                    *sch;
+        enum flow_block_binder_type     binder_type;
+        void                            *data;
+        void                            *cb_priv;
+@@ -479,7 +480,7 @@ struct flow_block_cb *flow_indr_block_cb_alloc(flow_setup_cb_t *cb,
+                                               void *cb_ident, void *cb_priv,
+                                               void (*release)(void *cb_priv),
+                                               struct flow_block_offload *bo,
+-                                              struct net_device *dev, void *data,
++                                              struct Qdisc *sch, void *data,
+                                               void *indr_cb_priv,
+                                               void (*cleanup)(struct flow_block_cb *block_cb));
+ void flow_block_cb_free(struct flow_block_cb *block_cb);
