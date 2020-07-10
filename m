@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D69621BECB
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 22:55:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C48C21BED0
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 22:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728090AbgGJUzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 16:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
+        id S1728042AbgGJUzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 16:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726832AbgGJUzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 16:55:22 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA6FC08C5DC;
-        Fri, 10 Jul 2020 13:55:22 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id q198so6649807qka.2;
-        Fri, 10 Jul 2020 13:55:22 -0700 (PDT)
+        with ESMTP id S1726832AbgGJUzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 16:55:53 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1990C08C5DC;
+        Fri, 10 Jul 2020 13:55:53 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id e11so6655850qkm.3;
+        Fri, 10 Jul 2020 13:55:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=pmcDlrw4meZJFYWX3EhmB3yugEQBs6tKcBmf6yeQHvQ=;
-        b=WnOw1ejXVtSEmc0a/5XFQfNAbtJXvGUudGY5lnwPZf2AeHXAk2y7EYAGND69nYtczt
-         QVFWnZl3wmOUzZqqqIFXFxNf/Ifi+U7xmHUU++nwJ1Q/WyqxwRhgczrYFxRk5W7EO6q1
-         wxNvtnhOAJB6RBPB+Ns2xrYOGAz4qdZtZI5dOts5a1fnfSodSjsQuEL7v29hTf4/cqxc
-         sZTlSu/cGHtxh0ewQQo2o5Pg26oOsIccjfApZLhyzrx6i5PFHahBWIsvWbUrqZnxD4tF
-         YTpAbpN/qiTMOduTmwdXTeNUsWZdACs1765rTR8jbqyoieKE1AJJtQlezBe0lnv+/tOm
-         dwzg==
+        bh=umxzZ9l+zQBonEiIpx0tLenM6i//HJK3uk8ryAmYO6Y=;
+        b=IOKxiaGo3+r6vUQQY+pFq+PCP3gGqfYI8u28d8jT68pc7ASmi9ypo/72ZBbwbZEy7z
+         j/cqyqzx2h3OpdDCnDhvNe1jmVeNN+atM/KLzvK+swqIOD0/HSQw2qE00khhWaCBX/JN
+         OKQEMlACX2AcFIeIvbmgX42Y1OaiTy2RQvEGXM1WRkd6nJV3XAg+VTFPlSgKEKYzf/wD
+         0carPgvw1UTFCG6vIJWrXabmSBomeu+F1jM1jDTnvEi7XW9tFZAvnktZ3bHsAFlgextV
+         Li1E3HzNGLnDI78D5n3LgSHW/Z79RphQhm0hB9oIYbU7BIVdImsbae9Y93xXFUzR4yBw
+         b7oQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pmcDlrw4meZJFYWX3EhmB3yugEQBs6tKcBmf6yeQHvQ=;
-        b=cTYZ9JvnM0a5sVXpmh+7LKENnae703fE/f93xVSOJxaJrZBR1ACs7ijfhv1aV0nM0D
-         1/9k2jL8TRjP4Jcy9c6nJ2P9gZV2Ie8LOXOiAtZqfLMeEcmNUR/B8Cclnu2zPBJ987Dq
-         R6dV+QGHyvEiTQBES30J6RRDg4nhzC1Z3QIZX6GbazThrk4deZ/J9wzgzJ95ECY62/mV
-         sERB5tLbVRZ9/J51kOfH+trfdeIZ7ojFRBisTacEPSkesA2KoVHfwQuvuG+RswDGxgYq
-         x6oVJvWuDewiNpkbkbWSLAU74UqNy6R9d22w9hNFMM8qD6S6YXgtQcq+2EbP5ydP9wGp
-         Lhcg==
-X-Gm-Message-State: AOAM5336+Tbq5+l5y2DXDK43Gb0uuwFaQJy6nxTZxjx83w1/fRlARsP9
-        ybgOFvrk0H2m/QXGFN/cg8VYn/SGbiQTzRjYODQ=
-X-Google-Smtp-Source: ABdhPJzFvrDqynOy0aH+oFH6/6mPgh59gkw370MYYW2U+aV4cG+M1arimhQoEW5JcEPzj3BSsAp7rrSaKInRMZKMaqs=
-X-Received: by 2002:ae9:f002:: with SMTP id l2mr61156551qkg.437.1594414521627;
- Fri, 10 Jul 2020 13:55:21 -0700 (PDT)
+        bh=umxzZ9l+zQBonEiIpx0tLenM6i//HJK3uk8ryAmYO6Y=;
+        b=fGEr8+uLJb0QFBGcQfXZhXc/sMVEcgjhQq2eMwbc2alxi86pjt34uqg9tSIWCS47+N
+         QOC062u2II1T58m7AC+pjLe42WmtSx038zDtmAgl1Sv0kE/PW+wb0RQ4+BX8bAuG1BqX
+         lkbm/X910E7286pWTpoj/ztK9WieKPz9Fn9HizATgiTOG/KeFWwI4VR+7wUJA1wUKNR6
+         pLe/qAJiyO3w25OyfMxt9+jMMO++g/NzCOSVWzp64wCrRGmyOAlsmBvA9m4jknV+zUQw
+         jgMeWl5fMo56+/VlyPE4OO4AZa6xU0GfzMxeYRyAlkwsqdpgWPqkhRAiayGgxDK8SPA4
+         Rzaw==
+X-Gm-Message-State: AOAM532m0bNpOA3PaPQSRrcoLxVKuGGz6hsxruTOqJPMBonYB3PzqjJt
+        2vMJmSdeLPM5b+mm0I8jkFihuVTl13omrJUPUzijfoJA
+X-Google-Smtp-Source: ABdhPJzjNRIbTmxWF6b67i0FEABG0rtnFThtdCrOIHhzY52R63JviI5RQ7RYTS+b/7LuBpE6xn99Nux9ryyTRI57MWY=
+X-Received: by 2002:a37:7683:: with SMTP id r125mr67674733qkc.39.1594414552906;
+ Fri, 10 Jul 2020 13:55:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <1594390953-31757-1-git-send-email-alan.maguire@oracle.com> <1594390953-31757-3-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1594390953-31757-3-git-send-email-alan.maguire@oracle.com>
+References: <1594390953-31757-1-git-send-email-alan.maguire@oracle.com> <1594390953-31757-2-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1594390953-31757-2-git-send-email-alan.maguire@oracle.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 10 Jul 2020 13:55:10 -0700
-Message-ID: <CAEf4BzZ4X67E7dxWA8sdiBpuyFfeWZ4yNAagQpwho+FncJv=GQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/2] selftests/bpf: add selftests verifying
- bpf_trace_printk() behaviour
+Date:   Fri, 10 Jul 2020 13:55:41 -0700
+Message-ID: <CAEf4BzbYk_kmqMEDS6BZR-jYbPNHpSCQFxaG5uSwzkKmMO8UbA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/2] bpf: use dedicated bpf_trace_printk event
+ instead of trace_printk()
 To:     Alan Maguire <alan.maguire@oracle.com>
 Cc:     Steven Rostedt <rostedt@goodmis.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -70,62 +70,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Jul 10, 2020 at 7:25 AM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
-> Simple selftests that verifies bpf_trace_printk() returns a sensible
-> value and tracing messages appear.
+> The bpf helper bpf_trace_printk() uses trace_printk() under the hood.
+> This leads to an alarming warning message originating from trace
+> buffer allocation which occurs the first time a program using
+> bpf_trace_printk() is loaded.
 >
+> We can instead create a trace event for bpf_trace_printk() and enable
+> it in-kernel when/if we encounter a program using the
+> bpf_trace_printk() helper.  With this approach, trace_printk()
+> is not used directly and no warning message appears.
+>
+> This work was started by Steven (see Link) and finished by Alan; added
+> Steven's Signed-off-by with his permission.
+>
+> Link: https://lore.kernel.org/r/20200628194334.6238b933@oasis.local.home
+> Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
 > Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 > ---
 
-see pedantic note below, but I don't think that's an issue in practice
+LGTM.
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
->  .../selftests/bpf/prog_tests/trace_printk.c        | 74 ++++++++++++++++++++++
->  tools/testing/selftests/bpf/progs/trace_printk.c   | 21 ++++++
->  2 files changed, 95 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_printk.c
->  create mode 100644 tools/testing/selftests/bpf/progs/trace_printk.c
+>  kernel/trace/Makefile    |  2 ++
+>  kernel/trace/bpf_trace.c | 41 ++++++++++++++++++++++++++++++++++++-----
+>  kernel/trace/bpf_trace.h | 34 ++++++++++++++++++++++++++++++++++
+>  3 files changed, 72 insertions(+), 5 deletions(-)
+>  create mode 100644 kernel/trace/bpf_trace.h
 >
-
-[...]
-
-> +
-> +       /* verify our search string is in the trace buffer */
-> +       while (read(fd, buf, sizeof(buf)) >= 0 || errno == EAGAIN) {
-
-There is a minor chance that "testing,testing" won't be found, if it
-so happened that the first part is in the first read buffer, and the
-second is in the second. I don't think it's ever the case for our CI
-and for my local testing setup, but could be a cause of some
-instability if there is something else emitting data to trace_pipe,
-right?
-
-Maybe line-based reading would be more reliable (unless printk can
-intermix, not sure about that, in which case there is simply no way to
-solve this 100% reliably).
-
-
-> +               if (strstr(buf, SEARCHMSG) != NULL)
-> +                       found++;
-> +               if (found == bss->trace_printk_ran)
-> +                       break;
-> +               if (++iter > 1000)
-> +                       break;
-> +       }
-> +
-> +       if (CHECK(!found, "message from bpf_trace_printk not found",
-> +                 "no instance of %s in %s", SEARCHMSG, TRACEBUF))
-> +               goto cleanup;
-> +
-> +       printf("ran %d times; last return value %d, with %d instances of msg\n",
-> +              bss->trace_printk_ran, bss->trace_printk_ret, found);
-
-Is this needed or it's some debug leftover?
-
-> +cleanup:
-> +       trace_printk__destroy(skel);
-> +       if (fd != -1)
-> +               close(fd);
-> +}
 
 [...]
