@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A0621B421
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 13:36:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80B4A21B420
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 13:36:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728059AbgGJLgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 07:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45334 "EHLO
+        id S1728163AbgGJLgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 07:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728088AbgGJLgd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 07:36:33 -0400
+        with ESMTP id S1727092AbgGJLge (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 07:36:34 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D50C08C5DD;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C564AC08E6DC;
         Fri, 10 Jul 2020 04:36:33 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1594380991;
+        s=2020; t=1594380992;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CO4O+UG66HNt+D0j8JhkwKZPdz8JTrsuv8lWpk4iYbA=;
-        b=ah2sBbxkfX+edokjhg/6ku3XMUjPmZezKSJLdItdtY/hZFZNF68t6uzX5/s/Rv4+0Rzqdp
-        sVxVdSQyZigq+IyCdgRDO8T7MAUJA73nJzAV6sptJI4LsHym7JIHmav0uemlZWjL0aX3SL
-        vwexHq21bVE/ywgoqagT3ROAegwG3HM5ds3hkAI5NyZcFKJexvtqB7rOFGx23R2DzRWbk6
-        /1CVtjp4gx82YWG7s8oYOhDGR4cBlFGsJU/4ltNdjoKzBD5NljPw9WP6+rAQLkgTrogEaQ
-        xiWX2P331ENYS0LREpff9fh65UxWSEwdY6bRJD69aQYcC7sf/uQ8cK2q3Um5mA==
+        bh=E6vNxszJ+QpAHIwzS32Xb3utPJ984pUYlUYs3hKg754=;
+        b=cPD3yhM37oQ+oIY1/VAO6t2vS3yZF2ubOoBNZrNM/YGVwS64TGNnc8P3/7i3Lyg9AiJEfp
+        dUMN3GsEj6WMezE8WNHpKOzHjlUDyBWZDO4oFV3QMbU8FZ/r1BV91VVyYcomiS2yoTWyFg
+        toIP52rrzZmxNj5JIcOXllbyQUE9OIRYisW6x6ptpiyhDPqv/19/S2LBL0rM6aOP8LpcZ2
+        BKhzKLS5lMDbwyqxDZLG0Q3KqcPu9NgxVMwBSp1Dpj71WAJKda7Pfrn+zLmy9a4HMrnE7p
+        eGNf1msuMn5F7VD6NNMSnyxZka5ckpBj+rGtz1ar73LMuYMr9uOLRUYKgABD6Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1594380991;
+        s=2020e; t=1594380992;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CO4O+UG66HNt+D0j8JhkwKZPdz8JTrsuv8lWpk4iYbA=;
-        b=pASZdrKbCkRMZfG1Fk4a3iw0TBWUAniHwpN+clFxAPwPuJgEr7PGkLlRTXxY0t9xf9Ek0Q
-        OPbgvVc6X6m2CTCg==
+        bh=E6vNxszJ+QpAHIwzS32Xb3utPJ984pUYlUYs3hKg754=;
+        b=ZYD5hezyn5HO/Vnj4gisrZ+LUxUeEyG+eka+dosoWIfu7wg+H0MlLWd/ze3E9eNZA5MQ0h
+        kfsCLiN/yMi13lBQ==
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>
@@ -47,9 +47,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
         ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v1 6/8] net: dsa: hellcreek: Add PTP status LEDs
-Date:   Fri, 10 Jul 2020 13:36:09 +0200
-Message-Id: <20200710113611.3398-7-kurt@linutronix.de>
+Subject: [PATCH v1 7/8] dt-bindings: Add vendor prefix for Hirschmann
+Date:   Fri, 10 Jul 2020 13:36:10 +0200
+Message-Id: <20200710113611.3398-8-kurt@linutronix.de>
 In-Reply-To: <20200710113611.3398-1-kurt@linutronix.de>
 References: <20200710113611.3398-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -59,249 +59,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The switch has two controllable I/Os which are usually connected to LEDs. This
-is useful to immediately visually see the PTP status.
-
-These provide two signals:
-
- * is_gm
-
-   This LED can be activated if the current device is the grand master in that
-   PTP domain.
-
- * sync_good
-
-   This LED can be activated if the current device is in sync with the network
-   time.
-
-Expose these via the LED framework to be controlled via user space
-e.g. linuxptp.
+Hirschmann is building devices for automation and networking. Add them to the
+vendor prefixes.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- drivers/net/dsa/hirschmann/hellcreek.h     |   4 +
- drivers/net/dsa/hirschmann/hellcreek_ptp.c | 149 +++++++++++++++++++++
- drivers/net/dsa/hirschmann/hellcreek_ptp.h |   3 +
- 3 files changed, 156 insertions(+)
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.h b/drivers/net/dsa/hirschmann/hellcreek.h
-index d3d1a1144857..c83af1af8d8a 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.h
-+++ b/drivers/net/dsa/hirschmann/hellcreek.h
-@@ -17,6 +17,7 @@
- #include <linux/timecounter.h>
- #include <linux/spinlock.h>
- #include <linux/hrtimer.h>
-+#include <linux/leds.h>
- #include <net/dsa.h>
- 
- /* Ports:
-@@ -280,6 +281,8 @@ struct hellcreek {
- 	struct ptp_clock_info ptp_clock_info;
- 	struct hellcreek_port ports[4];
- 	struct delayed_work overflow_work;
-+	struct led_classdev led_is_gm;
-+	struct led_classdev led_sync_good;
- 	spinlock_t reg_lock;	/* Switch IP register lock */
- 	spinlock_t ptp_lock;	/* PTP IP register lock */
- 	void __iomem *base;
-@@ -287,6 +290,7 @@ struct hellcreek {
- 	u8 *vidmbrcfg;		/* vidmbrcfg shadow */
- 	u64 seconds;		/* PTP seconds */
- 	u64 last_ts;		/* Used for overflow detection */
-+	u16 status_out;		/* ptp.status_out shadow */
- 	size_t fdb_entries;
- };
- 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek_ptp.c b/drivers/net/dsa/hirschmann/hellcreek_ptp.c
-index 8c2cef2b60fb..579a38d8ad15 100644
---- a/drivers/net/dsa/hirschmann/hellcreek_ptp.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek_ptp.c
-@@ -239,9 +239,148 @@ static void hellcreek_ptp_overflow_check(struct work_struct *work)
- 			      HELLCREEK_OVERFLOW_PERIOD);
- }
- 
-+static enum led_brightness hellcreek_get_brightness(struct hellcreek *hellcreek,
-+						    int led)
-+{
-+	return (hellcreek->status_out & led) ? 1 : 0;
-+}
-+
-+static void hellcreek_set_brightness(struct hellcreek *hellcreek, int led,
-+				     enum led_brightness b)
-+{
-+	spin_lock(&hellcreek->ptp_lock);
-+
-+	if (b)
-+		hellcreek->status_out |= led;
-+	else
-+		hellcreek->status_out &= ~led;
-+
-+	hellcreek_ptp_write(hellcreek, hellcreek->status_out, STATUS_OUT);
-+
-+	spin_unlock(&hellcreek->ptp_lock);
-+}
-+
-+static void hellcreek_led_sync_good_set(struct led_classdev *ldev,
-+					enum led_brightness b)
-+{
-+	struct hellcreek *hellcreek = led_to_hellcreek(ldev, led_sync_good);
-+
-+	hellcreek_set_brightness(hellcreek, STATUS_OUT_SYNC_GOOD, b);
-+}
-+
-+static enum led_brightness hellcreek_led_sync_good_get(struct led_classdev *ldev)
-+{
-+	struct hellcreek *hellcreek = led_to_hellcreek(ldev, led_sync_good);
-+
-+	return hellcreek_get_brightness(hellcreek, STATUS_OUT_SYNC_GOOD);
-+}
-+
-+static void hellcreek_led_is_gm_set(struct led_classdev *ldev,
-+				    enum led_brightness b)
-+{
-+	struct hellcreek *hellcreek = led_to_hellcreek(ldev, led_is_gm);
-+
-+	hellcreek_set_brightness(hellcreek, STATUS_OUT_IS_GM, b);
-+}
-+
-+static enum led_brightness hellcreek_led_is_gm_get(struct led_classdev *ldev)
-+{
-+	struct hellcreek *hellcreek = led_to_hellcreek(ldev, led_is_gm);
-+
-+	return hellcreek_get_brightness(hellcreek, STATUS_OUT_IS_GM);
-+}
-+
-+/* There two available LEDs internally called sync_good and is_gm. However, the
-+ * user might want to use a different label and specify the default state. Take
-+ * those properties from device tree.
-+ */
-+static int hellcreek_led_setup(struct hellcreek *hellcreek)
-+{
-+	struct device_node *leds, *led = NULL;
-+	const char *label, *state;
-+	int ret = -EINVAL;
-+
-+	leds = of_find_node_by_name(hellcreek->dev->of_node, "leds");
-+	if (!leds) {
-+		dev_err(hellcreek->dev, "No LEDs specified in device tree!\n");
-+		return ret;
-+	}
-+
-+	hellcreek->status_out = 0;
-+
-+	led = of_get_next_available_child(leds, led);
-+	if (!led) {
-+		dev_err(hellcreek->dev, "First LED not specified!\n");
-+		goto out;
-+	}
-+
-+	ret = of_property_read_string(led, "label", &label);
-+	hellcreek->led_sync_good.name = ret ? "sync_good" : label;
-+
-+	ret = of_property_read_string(led, "default-state", &state);
-+	if (!ret) {
-+		if (!strcmp(state, "on"))
-+			hellcreek->led_sync_good.brightness = 1;
-+		else if (!strcmp(state, "off"))
-+			hellcreek->led_sync_good.brightness = 0;
-+		else if (!strcmp(state, "keep"))
-+			hellcreek->led_sync_good.brightness =
-+				hellcreek_get_brightness(hellcreek,
-+							 STATUS_OUT_SYNC_GOOD);
-+	}
-+
-+	hellcreek->led_sync_good.max_brightness = 1;
-+	hellcreek->led_sync_good.brightness_set = hellcreek_led_sync_good_set;
-+	hellcreek->led_sync_good.brightness_get = hellcreek_led_sync_good_get;
-+
-+	led = of_get_next_available_child(leds, led);
-+	if (!led) {
-+		dev_err(hellcreek->dev, "Second LED not specified!\n");
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	ret = of_property_read_string(led, "label", &label);
-+	hellcreek->led_is_gm.name = ret ? "is_gm" : label;
-+
-+	ret = of_property_read_string(led, "default-state", &state);
-+	if (!ret) {
-+		if (!strcmp(state, "on"))
-+			hellcreek->led_is_gm.brightness = 1;
-+		else if (!strcmp(state, "off"))
-+			hellcreek->led_is_gm.brightness = 0;
-+		else if (!strcmp(state, "keep"))
-+			hellcreek->led_is_gm.brightness =
-+				hellcreek_get_brightness(hellcreek,
-+							 STATUS_OUT_IS_GM);
-+	}
-+
-+	hellcreek->led_is_gm.max_brightness = 1;
-+	hellcreek->led_is_gm.brightness_set = hellcreek_led_is_gm_set;
-+	hellcreek->led_is_gm.brightness_get = hellcreek_led_is_gm_get;
-+
-+	/* Set initial state */
-+	if (hellcreek->led_sync_good.brightness == 1)
-+		hellcreek_set_brightness(hellcreek, STATUS_OUT_SYNC_GOOD, 1);
-+	if (hellcreek->led_is_gm.brightness == 1)
-+		hellcreek_set_brightness(hellcreek, STATUS_OUT_IS_GM, 1);
-+
-+	/* Register both leds */
-+	led_classdev_register(hellcreek->dev, &hellcreek->led_sync_good);
-+	led_classdev_register(hellcreek->dev, &hellcreek->led_is_gm);
-+
-+	ret = 0;
-+
-+out:
-+	of_node_put(leds);
-+
-+	return ret;
-+}
-+
- int hellcreek_ptp_setup(struct hellcreek *hellcreek)
- {
- 	u16 status;
-+	int ret;
- 
- 	/* Set up the overflow work */
- 	INIT_DELAYED_WORK(&hellcreek->overflow_work,
-@@ -288,6 +427,14 @@ int hellcreek_ptp_setup(struct hellcreek *hellcreek)
- 	hellcreek_ptp_write(hellcreek, status | PR_CLOCK_STATUS_C_ENA_DRIFT,
- 			    PR_CLOCK_STATUS_C);
- 
-+	/* LED setup */
-+	ret = hellcreek_led_setup(hellcreek);
-+	if (ret) {
-+		if (hellcreek->ptp_clock)
-+			ptp_clock_unregister(hellcreek->ptp_clock);
-+		return ret;
-+	}
-+
- 	schedule_delayed_work(&hellcreek->overflow_work,
- 			      HELLCREEK_OVERFLOW_PERIOD);
- 
-@@ -296,6 +443,8 @@ int hellcreek_ptp_setup(struct hellcreek *hellcreek)
- 
- void hellcreek_ptp_free(struct hellcreek *hellcreek)
- {
-+	led_classdev_unregister(&hellcreek->led_is_gm);
-+	led_classdev_unregister(&hellcreek->led_sync_good);
- 	cancel_delayed_work_sync(&hellcreek->overflow_work);
- 	if (hellcreek->ptp_clock)
- 		ptp_clock_unregister(hellcreek->ptp_clock);
-diff --git a/drivers/net/dsa/hirschmann/hellcreek_ptp.h b/drivers/net/dsa/hirschmann/hellcreek_ptp.h
-index e0eca1f4a494..0b51392c7e56 100644
---- a/drivers/net/dsa/hirschmann/hellcreek_ptp.h
-+++ b/drivers/net/dsa/hirschmann/hellcreek_ptp.h
-@@ -70,4 +70,7 @@ u64 hellcreek_ptp_gettime_seconds(struct hellcreek *hellcreek, u64 ns);
- #define dw_overflow_to_hellcreek(dw)				\
- 	container_of(dw, struct hellcreek, overflow_work)
- 
-+#define led_to_hellcreek(ldev, led)				\
-+	container_of(ldev, struct hellcreek, led)
-+
- #endif /* _HELLCREEK_PTP_H_ */
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 9aeab66be85f..279a10418ce8 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -429,6 +429,8 @@ patternProperties:
+     description: HiDeep Inc.
+   "^himax,.*":
+     description: Himax Technologies, Inc.
++  "^hirschmann,.*":
++    description: Hirschmann Automation and Control GmbH
+   "^hisilicon,.*":
+     description: Hisilicon Limited.
+   "^hit,.*":
 -- 
 2.20.1
 
