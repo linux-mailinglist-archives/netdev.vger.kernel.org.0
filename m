@@ -2,151 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D35B021B933
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 17:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C6AA21B94E
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 17:20:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727851AbgGJPQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 11:16:37 -0400
-Received: from mail-eopbgr60042.outbound.protection.outlook.com ([40.107.6.42]:2882
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727932AbgGJPPs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jul 2020 11:15:48 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=etYPnLb6Pmp1Edu2y1KrMeoTEYkeQalR0xG7zTRo08pwupfW7Gw6k+7rp5kBdIDCKFGqnhFZEzF0LvepWjQfBXDvLGlZplWMZnZpfhzl39WKUwDwi+Uzg1lAPcuitn1kjHm/dsE1SDfJGHVzUD3F2rzwoNOnn7evziWDrQpaZV3D8Gmsa8ZziD9OL5ZolujUQukJU1/Obp4QQLvBMVabfiBU7thSy6RW4rq4l9Ae2QSjJ4oAlB/PzTUAeoy6fUcDPYuohJZzAJ+7b/nthqnFD1G55kX3R9KKHdtWlwtz1psAyEdq5La2AOEN+VIscBGxTRlJoEqYvt88uvWxrbYPFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x/JO7xzaXqeEUE93ro0ht7UDhLz9vP6coq0rEsf1u7E=;
- b=CTGXDVBENQ+W7W+vUWHnV7204s96gLsn+IU9wAEKMuNCT9725N3NMUbjlswaTMez3btWa8kDoX4sEuqXFzpR1rZKDk2Skd7oFq5ypfRpoQvu+Y3espZiKfJcw48gsV70qDpba7kfnGvkyXDuYQrg5hqfoVA4P4LnSk+xj74Fybxdri67+aQNjsgw7Bwn1KbqQ+BbqUAJwxhHO30RdVx/TlJZ/xGAYBKYuFEODwRiA+Jw4JPhRgknJFlHE6qpYgizcmy7p8a6UbJp3dHH2KdQZNVFip9i8v55zoUXqrdHeY+JqD51rhdiUL1MPE0b1ddKGNa/d1S+mlxJtMwyQMj+XA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x/JO7xzaXqeEUE93ro0ht7UDhLz9vP6coq0rEsf1u7E=;
- b=UiCc55CoLNYfk7rPLsZiniZTMFIeyeG4tJ0M9QQM+ttlMDR8B0hzof4UtRnGbkPE7LfK98d0mJjsUQw1RDj0eaABgmUVgKKz2iHxvKQ577hytju4tlWmkW43qqaASAZWvT5fqy+ON/HJ3QSD4juRaDeWPpbY39wc0gScn3bHPqw=
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR05MB3355.eurprd05.prod.outlook.com (2603:10a6:7:34::21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3174.20; Fri, 10 Jul 2020 15:15:42 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6%7]) with mapi id 15.20.3174.023; Fri, 10 Jul 2020
- 15:15:42 +0000
-References: <20200710135706.601409-1-idosch@idosch.org> <20200710135706.601409-2-idosch@idosch.org> <20200710141500.GA12659@salvia>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@mellanox.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        mlxsw@mellanox.com, michael.chan@broadcom.com, saeedm@mellanox.com,
-        leon@kernel.org, kadlec@netfilter.org, fw@strlen.de,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        simon.horman@netronome.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 01/13] net: sched: Pass qdisc reference in struct flow_block_offload
-In-reply-to: <20200710141500.GA12659@salvia>
-Date:   Fri, 10 Jul 2020 17:15:39 +0200
-Message-ID: <87sgdzflk4.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: AM4PR0501CA0064.eurprd05.prod.outlook.com
- (2603:10a6:200:68::32) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+        id S1728140AbgGJPUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 11:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727906AbgGJPUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 11:20:16 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0522C08C5CE
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 08:20:15 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id 2so2826265ybr.13
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 08:20:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QGz8fwqi3iWK7OiEZGygZqp0dNUEBw6lIEZJdnz5zYk=;
+        b=hvhiM1TRvvWuag1g1IiVFVDwV4ZAOVA8tlZM6LEBtbwEtKie5RvCmIb+OBfhFZywT3
+         t+d1pQLlG4BnFdyCBcBU9os0H9LsVg8cMypSAoYx6oS2Jedyn+SyL7wTGcfq68gn/Po5
+         OJ5DsiJ07rxM1KiqkpW7XGlFSFMdWwhOgPZfa7tj+7r/Ps8rp97UHOhGz8zxCVr/xDyP
+         /WAxjlnyq5RZZknreRfdSfrFXCxXHcUQE8Bxzjb44Pj/gVsZTGkV3B5FfTJWbfkw3hn1
+         kh3Q7Nn7h2iy74bZqzodagAFXj8tt9FFvatpkMLNzg79hRChX/YHjWR/nm1NsCrRYcI7
+         Hk9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QGz8fwqi3iWK7OiEZGygZqp0dNUEBw6lIEZJdnz5zYk=;
+        b=aYjut5dgyAgXLF8/ydQ86oceAZtG4YEgBJHWwsxCQl7w26rg0geiNEgTXgBXa2UsQj
+         8hFcnLb85W1Ft8xlkhnD171Q/qOv63aRVoHS+wqCHKeJqJTopx2RGWKmOXs2wik5Qpm1
+         H/b38hxjcEFsUJqGszjkoWJHA6WxQg09ZCy52YoWmuSmO7PcbL6yT6J6RYDT042B6Z25
+         gFcXVZLCKUnBDnpUIbqIahUxO9XfVskpEwXQzsDdtj/CqquMvsbF6kwq1lA8CgeqC8SI
+         JLzGUBF7xulg8BiMmbHmllU8/2W3lJk2eMAEk2mi61Zp2YfvLamkGszkau7+u8dTdxUt
+         7RNA==
+X-Gm-Message-State: AOAM530RiuD9jvcU38SWHEIjcl89yfP1rP/kvnQcJ5RfauKP1GNGrBoT
+        6UCP4p0eSEEQR7LqGPr2Z8tkb7+h1rYVtcUwHS6iIg==
+X-Google-Smtp-Source: ABdhPJzUBD6OYc3XJwUOPIDIJ58SiHzYGW+VgUxb1G8PwXOBug4QmjjCeEJTV+eTWWEf9hj+s4MyIPYonC6fskG13WY=
+X-Received: by 2002:a25:ad66:: with SMTP id l38mr23952236ybe.274.1594394414497;
+ Fri, 10 Jul 2020 08:20:14 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yaviefel (213.220.234.169) by AM4PR0501CA0064.eurprd05.prod.outlook.com (2603:10a6:200:68::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Fri, 10 Jul 2020 15:15:40 +0000
-X-Originating-IP: [213.220.234.169]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: d4ea22ce-c17d-4ee9-2596-08d824e41c40
-X-MS-TrafficTypeDiagnostic: HE1PR05MB3355:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB335541F9CEB5E0BB9E4C85F6DB650@HE1PR05MB3355.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qHjj64QDii45SWulyG8+cxVRHPwu9DzWZ/6Dk62EbXV2nK3taXNYpRga4JYnNMSKQTg9ovhyK3A9i7rOjDMLEGhVCCkfQo/lszvNSBMDHJfnxQo4+TMeR1j03k2LAz/B4khgCixFsGritMbjoLb3vpw+m9O8h7hw98MNn0jSH8OpZJNAwPJdFx6s/kjbZustVJwqzU2B64sg612eOdq5f69kdpygBWI+PFmc2Iz7+A/G9bwMc4TYa0Y30aIl9KdK8+KxsGNa0cwKZ+mk+va12HXseAQwJM/U1qpHgNDcEQyVdtRpsMwolIYjf1nqgXQUBP+MYL/38wgZYfdxR3YKqg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(396003)(39860400002)(136003)(366004)(6486002)(66476007)(107886003)(6496006)(2616005)(956004)(52116002)(5660300002)(4326008)(26005)(7416002)(6916009)(16526019)(66946007)(36756003)(186003)(66556008)(2906002)(54906003)(83380400001)(86362001)(8936002)(316002)(8676002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: uZnOKgLeHKZuivAEhRP8LMgPFQvd6kxFidJNuJ0VAbt1KwBqOlNAl9ZbRBkzaM6s9Umg/Uq7PPlVl0nmgO0fgppDndOsxPE8G8ZsG1Rzxtw+L+Oz9Zr3/pfG7qouoaQiTP/iJS3EQv+/plajyo1ck17mmxX3o6ZAjmNfPYg4fbSgzfVztZozzPTazYf/DTSW0Lo9+i9LL7bqP12xN3QfVC7/gfcMThxPGWBd78O+/2ADkZQHu5h43Sw2vhSXDLURfwwUQhMez+ZQP6XpByNC7bY7OhGYZw7OSE2RhPxTqMthBakg0WL10EMkbQAnPbdroYxk2yrXTYTWWx6te5MNX5fmpMB3xBE6/9nRLRV0XXcoLu2XHN3EXqQmUIqkT0vBQDtNGP5SJ3QrEv6mGxwaZD0P8yUVt9/yJBxJArxIeUGiqENCmXjK0Ir23Zti5CjvRqMVRiUcZMfe9mSn3HsNZuNhOZ9wyTa4jXP79BTfkoYx+MA2u+WFg8dCgNsWpPf9
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4ea22ce-c17d-4ee9-2596-08d824e41c40
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2020 15:15:41.9913
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qlHxXfbwCadS/bVujlKf52/bJn7uUxfvE8oM2rSEKH/AH/O57OofIEoxcOMe9DnPT0JETb2QMkWg4DC3VbGrdA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3355
+References: <20200710141053.65581-1-kuniyu@amazon.co.jp>
+In-Reply-To: <20200710141053.65581-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 10 Jul 2020 08:20:03 -0700
+Message-ID: <CANn89iJsC73o9hJ_RUd9qfv50ebt2H5VZx0-xgrPXFAZVWeGgQ@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next] inet: Remove an unnecessary argument of syn_ack_recalc().
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        osa-contribution-log@amazon.com, Julian Anastasov <ja@ssi.bg>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Pablo Neira Ayuso <pablo@netfilter.org> writes:
-
-> On Fri, Jul 10, 2020 at 04:56:54PM +0300, Ido Schimmel wrote:
->> From: Petr Machata <petrm@mellanox.com>
->>
->> Previously, shared blocks were only relevant for the pseudo-qdiscs ingress
->> and clsact. Recently, a qevent facility was introduced, which allows to
->> bind blocks to well-defined slots of a qdisc instance. RED in particular
->> got two qevents: early_drop and mark. Drivers that wish to offload these
->> blocks will be sent the usual notification, and need to know which qdisc it
->> is related to.
->>
->> To that end, extend flow_block_offload with a "sch" pointer, and initialize
->> as appropriate. This prompts changes in the indirect block facility, which
->> now tracks the scheduler instead of the netdevice. Update signatures of
->> several functions similarly. Deduce the device from the scheduler when
->> necessary.
->>
->> Signed-off-by: Petr Machata <petrm@mellanox.com>
->> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
->> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
->> ---
->>  drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  | 11 ++++++----
->>  .../ethernet/mellanox/mlx5/core/en/rep/tc.c   | 11 +++++-----
->>  .../net/ethernet/netronome/nfp/flower/main.h  |  2 +-
->>  .../ethernet/netronome/nfp/flower/offload.c   | 11 ++++++----
->>  include/net/flow_offload.h                    |  9 ++++----
->>  net/core/flow_offload.c                       | 12 +++++------
->>  net/netfilter/nf_flow_table_offload.c         | 17 +++++++--------
->>  net/netfilter/nf_tables_offload.c             | 20 ++++++++++--------
->>  net/sched/cls_api.c                           | 21 +++++++++++--------
->>  9 files changed, 63 insertions(+), 51 deletions(-)
->>
-> [...]
->> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
->> index eefeb1cdc2ee..4fc42c1955ff 100644
->> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
->> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
->> @@ -404,7 +404,7 @@ static void mlx5e_rep_indr_block_unbind(void *cb_priv)
->>  static LIST_HEAD(mlx5e_block_cb_list);
->>
->>  static int
->> -mlx5e_rep_indr_setup_block(struct net_device *netdev,
->> +mlx5e_rep_indr_setup_block(struct Qdisc *sch,
->>  			   struct mlx5e_rep_priv *rpriv,
->>  			   struct flow_block_offload *f,
->>  			   flow_setup_cb_t *setup_cb,
->> @@ -412,6 +412,7 @@ mlx5e_rep_indr_setup_block(struct net_device *netdev,
->>  			   void (*cleanup)(struct flow_block_cb *block_cb))
->>  {
->>  	struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
->> +	struct net_device *netdev = sch->dev_queue->dev;
+On Fri, Jul 10, 2020 at 7:11 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
 >
-> This break indirect block support for netfilter since the driver
-> is assuming a Qdisc object.
+> Commit 0c3d79bce48034018e840468ac5a642894a521a3 ("tcp: reduce SYN-ACK
+> retrans for TCP_DEFER_ACCEPT") introduces syn_ack_recalc() which decides
+> if a minisock is held and a SYN+ACK is retransmitted or not.
+>
+> If rskq_defer_accept is not zero in syn_ack_recalc(), max_retries always
+> has the same value because max_retries is overwritten by rskq_defer_accept
+> in reqsk_timer_handler().
+>
+> This commit adds three changes:
+> - remove redundant non-zero check for rskq_defer_accept in
+>    reqsk_timer_handler().
+> - remove max_retries from the arguments of syn_ack_recalc() and use
+>    rskq_defer_accept instead.
+> - rename thresh to max_syn_ack_retries for readability.
+>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+> CC: Julian Anastasov <ja@ssi.bg>
+> ---
+>  net/ipv4/inet_connection_sock.c | 33 +++++++++++++++------------------
+>  1 file changed, 15 insertions(+), 18 deletions(-)
+>
+> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> index afaf582a5aa9..21bc80a3c7cf 100644
+> --- a/net/ipv4/inet_connection_sock.c
+> +++ b/net/ipv4/inet_connection_sock.c
+> @@ -648,20 +648,23 @@ struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
+>  EXPORT_SYMBOL_GPL(inet_csk_route_child_sock);
+>
+>  /* Decide when to expire the request and when to resend SYN-ACK */
+> -static inline void syn_ack_recalc(struct request_sock *req, const int thresh,
+> -                                 const int max_retries,
+> +static inline void syn_ack_recalc(struct request_sock *req,
 
-Sorry, I don't follow. You mean mlx5 driver? What does it mean to
-"assume a qdisc object"?
+While we are at it, please remove the inline keyword.
 
-Is it incorrect to rely on the fact that the netdevice can be deduced
-from a qdisc, or that there is always a qdisc associated with a block
-binding point?
+> +                                 const int max_syn_ack_retries,
+>                                   const u8 rskq_defer_accept,
+>                                   int *expire, int *resend)
+>  {
+>         if (!rskq_defer_accept) {
+> -               *expire = req->num_timeout >= thresh;
+> +               *expire = req->num_timeout >= max_syn_ack_retries;
+>                 *resend = 1;
+>                 return;
+>         }
+> -       *expire = req->num_timeout >= thresh &&
+> -                 (!inet_rsk(req)->acked || req->num_timeout >= max_retries);
+> -       /*
+> -        * Do not resend while waiting for data after ACK,
+> +       /* If a bare ACK has already been dropped, the client is alive, so
+> +        * do not free the request_sock to drop a bare ACK at most
+> +        * rskq_defer_accept times and wait for data.
+> +        */
+
+I honestly do not believe this comment is needed.
+The bare ack has not been 'dropped' since it had the effect of
+validating the 3WHS.
+I find it confusing, and not describing the order of the conditions
+expressed in the C code.
+
+> +       *expire = req->num_timeout >= max_syn_ack_retries &&
+> +                 (!inet_rsk(req)->acked || req->num_timeout >= rskq_defer_accept);
+> +       /* Do not resend while waiting for data after ACK,
+>          * start to resend on end of deferring period to give
+>          * last chance for data or ACK to create established socket.
+>          */
+> @@ -720,15 +723,12 @@ static void reqsk_timer_handler(struct timer_list *t)
+>         struct net *net = sock_net(sk_listener);
+>         struct inet_connection_sock *icsk = inet_csk(sk_listener);
+>         struct request_sock_queue *queue = &icsk->icsk_accept_queue;
+> -       int qlen, expire = 0, resend = 0;
+> -       int max_retries, thresh;
+> -       u8 defer_accept;
+> +       int max_syn_ack_retries, qlen, expire = 0, resend = 0;
+>
+>         if (inet_sk_state_load(sk_listener) != TCP_LISTEN)
+>                 goto drop;
+>
+> -       max_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
+> -       thresh = max_retries;
+> +       max_syn_ack_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
+>         /* Normally all the openreqs are young and become mature
+>          * (i.e. converted to established socket) for first timeout.
+>          * If synack was not acknowledged for 1 second, it means
+> @@ -750,17 +750,14 @@ static void reqsk_timer_handler(struct timer_list *t)
+>         if ((qlen << 1) > max(8U, READ_ONCE(sk_listener->sk_max_ack_backlog))) {
+>                 int young = reqsk_queue_len_young(queue) << 1;
+>
+> -               while (thresh > 2) {
+> +               while (max_syn_ack_retries > 2) {
+>                         if (qlen < young)
+>                                 break;
+> -                       thresh--;
+> +                       max_syn_ack_retries--;
+>                         young <<= 1;
+>                 }
+>         }
+> -       defer_accept = READ_ONCE(queue->rskq_defer_accept);
+> -       if (defer_accept)
+> -               max_retries = defer_accept;
+> -       syn_ack_recalc(req, thresh, max_retries, defer_accept,
+> +       syn_ack_recalc(req, max_syn_ack_retries, READ_ONCE(queue->rskq_defer_accept),
+>                        &expire, &resend);
+>         req->rsk_ops->syn_ack_timeout(req);
+>         if (!expire &&
+> --
+> 2.17.2 (Apple Git-113)
+>
