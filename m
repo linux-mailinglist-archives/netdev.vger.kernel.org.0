@@ -2,112 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39F2021BA70
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 18:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C36721BA77
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 18:12:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728156AbgGJQLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 12:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727915AbgGJQLG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 12:11:06 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0286DC08C5DC;
-        Fri, 10 Jul 2020 09:11:05 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id k18so4804257qtm.10;
-        Fri, 10 Jul 2020 09:11:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=y861TMCTvpy5racGqaIyx07iIXHTPCR4jkREHmo0X5A=;
-        b=Wo/NdRrrqJwONxOj542PxpeohJSIuPR2d8D8UJ1NhigILOhHqNScqYXo4FuVZW2m3/
-         4RPeZrUFgFC2r6OcczdiXafs3KAFyuFac9hPAx3VIFAquc2YLN5wZfJR2/AZuPOe/1IB
-         80KfxaoKKw1yQV2CGz+SqD5mNjW2/O6nfzxTVu+Rj1AiYHvNEG5AMiv3ZGINdzhcZQFi
-         i24JSldDuvZ+7xCh4BqUniylYKz/mZrnfDtPiG32tlf5xy6WYBzVSuI3/TBYee1hqDwc
-         kYBrYUkhB0uSwY/2RQ0g13WfbTUrqPAhz991mdMZprIDnTXUlkHEb6evurkptYXEuxON
-         7XdA==
+        id S1728256AbgGJQML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 12:12:11 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:25146 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728226AbgGJQMH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 12:12:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594397525;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KjEBh/BOTj8O0DP/1T6iu+nKRTbX5bjS6l9mZZGhjTI=;
+        b=cfvoWVVLcpMeMSN+GPKjwMEwZRkuzO9kjwG8JpCCyOkORIKXeMfLKNeMQuJlVE+8Gme2Nc
+        xPw0AtudR4xxLGzYYxqD2bb0x2Cwnv0ocWDd2gIeRpl04hOk/8F/hUO++YXoODzr1eEFYQ
+        0lDMkJUZmY4S3tP3TIeIhUHIDNj3wCg=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-318-BY1hIi-kOfS5vRsl9p63Ng-1; Fri, 10 Jul 2020 12:12:03 -0400
+X-MC-Unique: BY1hIi-kOfS5vRsl9p63Ng-1
+Received: by mail-io1-f72.google.com with SMTP id g11so3894262ioc.20
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 09:12:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=y861TMCTvpy5racGqaIyx07iIXHTPCR4jkREHmo0X5A=;
-        b=J+QlFEn0nDg0PmFFtiooI0TqHzzfeonzKbATDgoqyNfi72egORJrFMmsbueit2S7pz
-         TmZQy/oDow4zkGl4gdlYU+/J8nbPHgUFW63LxJt3pGSxekN6vxyMsC+DJJhMaZbv6/tG
-         noaJnMSzPt0au+B9KYEYk27nroLKBpeqZTO4LhpQU5DYDVZe4hLNRoSy7iQsoQFlg8bw
-         1P7wEPnkUTKeq87TPSy06kiUrgaRqfXzfYub1Wq/se3uiywFv2ETUuigfcqFtUY3fqdq
-         L+JSu3C/5ZY1kf95j/bzUqaxezJj43s8lZm56xhr6VxbCSHN5wcrhlh0UwyhR6l3fDDw
-         /iPg==
-X-Gm-Message-State: AOAM5337nmwuiiVT+cjxBGrO2GMRuMunhj9Q4X00PSRfnpRdVK81wXhx
-        hQi+7bCJ8VPIbZehsxN5G5o1ZoJpiioU
-X-Google-Smtp-Source: ABdhPJzpzxl71N47ydC8eo3OOanW2bRGZsq9dHQ51PlHyGRFUZjTOqsaik7xr3g2ncxiofZqEgzKxA==
-X-Received: by 2002:ac8:7454:: with SMTP id h20mr26634878qtr.84.1594397465192;
-        Fri, 10 Jul 2020 09:11:05 -0700 (PDT)
-Received: from localhost.localdomain (c-76-119-149-155.hsd1.ma.comcast.net. [76.119.149.155])
-        by smtp.gmail.com with ESMTPSA id o18sm7360586qkk.91.2020.07.10.09.11.03
+        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=KjEBh/BOTj8O0DP/1T6iu+nKRTbX5bjS6l9mZZGhjTI=;
+        b=PProv7r4b/TuKYdR37lUGKR45CftxSsmx1eCqIPi2l8n7CZl1WlaXck/njuWLwcTgY
+         gVMwdj9HeoO6zzbsn9raHR5pDQZMZcuHaNEzqMErMSzWuWaYHNX1fVYEzXfW93f6FAM3
+         L03hc9ltJH2Mza1GZxTnPIWDGk10Fz4v8eHnB+h0ZSw5E9pdAZ8YRuqY5E6J3PqxX5kf
+         VIluIF7ubM7PAiAlmka7lVwQ3r+d+AhRiTMzKMEW9ZljuCtHN9QLa8uaJTNTPn+WTJeM
+         DlvadE6bgmnI8wtxitN5f/xJFiAXxtULINYYwnrVSIRKMNAwyEn0G7WUHU3QRvSs8QNx
+         N+gw==
+X-Gm-Message-State: AOAM532NJMVnuukWAOxodPvE5DhJkzS0Gh9HAhwT5uCe3lGq8p16krmt
+        tHcczuH2B3ZEtpSGfmtRXv7Ey/rApHcZKKczUjVwGyrSD2A/m0zoc7yO2gNnvRAq1d3v5J4TFHS
+        D/xQpw1f1k+YJ3Eis
+X-Received: by 2002:a02:a88a:: with SMTP id l10mr48785633jam.110.1594397522409;
+        Fri, 10 Jul 2020 09:12:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy94wI731wHeAF8lN4eK3rZcY0aU8wnnlQa/0Aw+qE/7Bpzae229hnG2N1PedlmgS/crLLGSw==
+X-Received: by 2002:a02:a88a:: with SMTP id l10mr48785622jam.110.1594397522235;
+        Fri, 10 Jul 2020 09:12:02 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id a1sm3518204ilq.50.2020.07.10.09.12.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jul 2020 09:11:04 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [Linux-kernel-mentees] [PATCH v3] net/bluetooth: Fix slab-out-of-bounds read in hci_extended_inquiry_result_evt()
-Date:   Fri, 10 Jul 2020 12:09:15 -0400
-Message-Id: <20200710160915.228980-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200709130224.214204-1-yepeilin.cs@gmail.com>
-References: <20200709130224.214204-1-yepeilin.cs@gmail.com>
+        Fri, 10 Jul 2020 09:12:01 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 08EDE1808CD; Fri, 10 Jul 2020 18:12:00 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Joe Perches <joe@perches.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Alexander A. Klimov" <grandmaster@al2klimov.de>, ast@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        john.fastabend@gmail.com, mchehab+huawei@kernel.org,
+        robh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: XDP: restrict N: and K:
+In-Reply-To: <a2f48c734bdc6b865a41ad684e921ac04b221821.camel@perches.com>
+References: <20200709194257.26904-1-grandmaster@al2klimov.de> <d7689340-55fc-5f3f-60ee-b9c952839cab@iogearbox.net> <19a4a48b-3b83-47b9-ac48-e0a95a50fc5e@al2klimov.de> <7d4427cc-a57c-ca99-1119-1674d509ba9d@iogearbox.net> <a2f48c734bdc6b865a41ad684e921ac04b221821.camel@perches.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 10 Jul 2020 18:12:00 +0200
+Message-ID: <875zavjqnj.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check upon `num_rsp` is insufficient. A malformed event packet with a
-large `num_rsp` number makes hci_extended_inquiry_result_evt() go out
-of bounds. Fix it.
+Joe Perches <joe@perches.com> writes:
 
-This patch fixes the following syzbot bug:
+> On Fri, 2020-07-10 at 17:14 +0200, Daniel Borkmann wrote:
+>> On 7/10/20 8:17 AM, Alexander A. Klimov wrote:
+>> > Am 09.07.20 um 22:37 schrieb Daniel Borkmann:
+>> > > On 7/9/20 9:42 PM, Alexander A. Klimov wrote:
+>> > > > Rationale:
+>> > > > Documentation/arm/ixp4xx.rst contains "xdp" as part of "ixdp465"
+>> > > > which has nothing to do with XDP.
+> []
+>> > > > diff --git a/MAINTAINERS b/MAINTAINERS
+> []
+>> > > > @@ -18708,8 +18708,8 @@ F:    include/trace/events/xdp.h
+>> > > >   F:    kernel/bpf/cpumap.c
+>> > > >   F:    kernel/bpf/devmap.c
+>> > > >   F:    net/core/xdp.c
+>> > > > -N:    xdp
+>> > > > -K:    xdp
+>> > > > +N:    (?:\b|_)xdp(?:\b|_)
+>> > > > +K:    (?:\b|_)xdp(?:\b|_)
+>> > > 
+>> > > Please also include \W to generally match on non-alphanumeric char given you
+>> > > explicitly want to avoid [a-z0-9] around the term xdp.
+>> > Aren't \W, ^ and $ already covered by \b?
+>> 
+>> Ah, true; it says '\b really means (?:(?<=\w)(?!\w)|(?<!\w)(?=\w))', so all good.
+>> In case this goes via net or net-next tree:
+>
+> This N: pattern does not match files like:
+>
+> 	samples/bpf/xdp1_kern.c
+>
+> and does match files like:
+>
+> 	drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+>
+> Should it?
 
-    https://syzkaller.appspot.com/bug?id=4bf11aa05c4ca51ce0df86e500fce486552dc8d2
+I think the idea is that it should match both?
 
-Reported-by: syzbot+d8489a79b781849b9c46@syzkaller.appspotmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
----
-Change in v3:
-    - Minimum `skb->len` requirement was 1 byte inaccurate since `info`
-      starts from `skb->data + 1`. Fix it.
-
-Changes in v2:
-    - Use `skb->len` instead of `skb->truesize` as the length limit.
-    - Leave `num_rsp` as of type `int`.
-
- net/bluetooth/hci_event.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 03a0759f2fc2..13d8802b8137 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4375,7 +4375,7 @@ static void hci_extended_inquiry_result_evt(struct hci_dev *hdev,
- 
- 	BT_DBG("%s num_rsp %d", hdev->name, num_rsp);
- 
--	if (!num_rsp)
-+	if (!num_rsp || skb->len < num_rsp * sizeof(*info) + 1)
- 		return;
- 
- 	if (hci_dev_test_flag(hdev, HCI_PERIODIC_INQ))
--- 
-2.25.1
+-Toke
 
