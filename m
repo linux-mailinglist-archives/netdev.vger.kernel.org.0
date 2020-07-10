@@ -2,255 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EBF221BDCE
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 21:38:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49EF021BDD3
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 21:39:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728470AbgGJTia convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 10 Jul 2020 15:38:30 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:44816 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728444AbgGJTiX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 15:38:23 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-469-pXsXF9x0MgqWVx4crsZIeg-1; Fri, 10 Jul 2020 15:38:15 -0400
-X-MC-Unique: pXsXF9x0MgqWVx4crsZIeg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1728478AbgGJTi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 15:38:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33216 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726908AbgGJTi4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jul 2020 15:38:56 -0400
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6FBB98015F7;
-        Fri, 10 Jul 2020 19:38:14 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.192.98])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C42D610016E8;
-        Fri, 10 Jul 2020 19:38:12 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH v6 bpf-next 9/9] selftests/bpf: Add test for resolve_btfids
-Date:   Fri, 10 Jul 2020 21:37:54 +0200
-Message-Id: <20200710193754.3821104-10-jolsa@kernel.org>
-In-Reply-To: <20200710193754.3821104-1-jolsa@kernel.org>
-References: <20200710193754.3821104-1-jolsa@kernel.org>
+        by mail.kernel.org (Postfix) with ESMTPSA id 20CC0207D0;
+        Fri, 10 Jul 2020 19:38:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594409935;
+        bh=LoSJMfK92YumYrvaNsXj0AvUWvu64EYY6m7/BSaeTZE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Hfo2UZfOYx7MpoASvQLR99H+ibRB7SEkkhnbNkgJliAjznTi2b/kwTwCzWjoCb9Qs
+         eAqPBuekTIt3JjJ0YbXm3xoJwfW89Io9IOJp7y6LmOWBc17HisInGsENy91VP2A3zK
+         6An4u/q+LOm/Fdhiq0n2Ylago4ABnI1N0QmtEbX8=
+Received: by mail-oi1-f177.google.com with SMTP id k22so5755189oib.0;
+        Fri, 10 Jul 2020 12:38:55 -0700 (PDT)
+X-Gm-Message-State: AOAM530VawN/oLmTYunAQMtve420c8Ow0G5OArjyXaZ4TETSm+kpr6iL
+        +aMFLI2gX48Y3zujxddLuIgVll+/Mr1rV9s9ag==
+X-Google-Smtp-Source: ABdhPJzAB5d07pCJasiAsdsh07SEaezq9dexRFAqKHbwbvGpDpVDW2NzrP+hP7WWnZwkzjXsmVZfthZDAm74TW+L56A=
+X-Received: by 2002:aca:bb82:: with SMTP id l124mr5555099oif.106.1594409934332;
+ Fri, 10 Jul 2020 12:38:54 -0700 (PDT)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+References: <20200710090618.28945-1-kurt@linutronix.de> <20200710090618.28945-2-kurt@linutronix.de>
+ <20200710164500.GA2775934@bogus> <8c105489-42c5-b4ba-73b6-c3a858f646a6@gmail.com>
+In-Reply-To: <8c105489-42c5-b4ba-73b6-c3a858f646a6@gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Fri, 10 Jul 2020 13:38:42 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+zP9++MftM+Dh2Fe-OdKq6EiGA_tASEbBwA_jEdwoFCA@mail.gmail.com>
+Message-ID: <CAL_Jsq+zP9++MftM+Dh2Fe-OdKq6EiGA_tASEbBwA_jEdwoFCA@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] dt-bindings: net: dsa: Add DSA yaml binding
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding resolve_btfids test under test_progs suite.
+On Fri, Jul 10, 2020 at 11:20 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+>
+>
+> On 7/10/2020 9:45 AM, Rob Herring wrote:
+> > On Fri, Jul 10, 2020 at 11:06:18AM +0200, Kurt Kanzenbach wrote:
+> >> For future DSA drivers it makes sense to add a generic DSA yaml binding which
+> >> can be used then. This was created using the properties from dsa.txt. It
+> >> includes the ports and the dsa,member property.
+> >>
+> >> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
+> >> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> >> ---
+> >>  .../devicetree/bindings/net/dsa/dsa.yaml      | 80 +++++++++++++++++++
+> >>  1 file changed, 80 insertions(+)
+> >>  create mode 100644 Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> >> new file mode 100644
+> >> index 000000000000..bec257231bf8
+> >> --- /dev/null
+> >> +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> >> @@ -0,0 +1,80 @@
+> >> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >> +%YAML 1.2
+> >> +---
+> >> +$id: http://devicetree.org/schemas/net/dsa/dsa.yaml#
+> >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >> +
+> >> +title: Distributed Switch Architecture Device Tree Bindings
+> >
+> > DSA is a Linuxism, right?
+>
+> Not really, it is a Marvell term that describes their proprietary
+> switching protocol. Since then DSA within Linux expands well beyond just
+> Marvell switches, so the terms have been blurred a little bit.
 
-It's possible to use btf_ids.h header and its logic in
-user space application, so we can add easy test for it.
+Either way, sounds like the terminology here should be more general.
 
-The test defines BTF_ID_LIST and checks it gets properly
-resolved.
+Though I missed that this is really just a conversion of dsa.txt which
+should be removed in this patch. Otherwise, you'll get me re-reviewing
+the binding.
 
-For this reason the test_progs binary (and other binaries
-that use TRUNNER* macros) is processed with resolve_btfids
-tool, which resolves BTF IDs in .BTF_ids section. The BTF
-data are taken from btf_data.o object rceated from
-progs/btf_data.c.
+> >> +
+> >> +maintainers:
+> >> +  - Andrew Lunn <andrew@lunn.ch>
+> >> +  - Florian Fainelli <f.fainelli@gmail.com>
+> >> +  - Vivien Didelot <vivien.didelot@gmail.com>
+> >> +
+> >> +description:
+> >> +  Switches are true Linux devices and can be probed by any means. Once probed,
+> >
+> > Bindings are OS independent.
+> >
+> >> +  they register to the DSA framework, passing a node pointer. This node is
+> >> +  expected to fulfil the following binding, and may contain additional
+> >> +  properties as required by the device it is embedded within.
+> >
+> > Describe what type of h/w should use this binding.
+> >
+> >> +
+> >> +properties:
+> >> +  $nodename:
+> >> +    pattern: "^switch(@.*)?$"
+> >> +
+> >> +  dsa,member:
+> >> +    minItems: 2
+> >> +    maxItems: 2
+> >> +    description:
+> >> +      A two element list indicates which DSA cluster, and position within the
+> >> +      cluster a switch takes. <0 0> is cluster 0, switch 0. <0 1> is cluster 0,
+> >> +      switch 1. <1 0> is cluster 1, switch 0. A switch not part of any cluster
+> >> +      (single device hanging off a CPU port) must not specify this property
+> >> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> >> +
+> >> +  ports:
+> >> +    type: object
+> >> +    properties:
+> >> +      '#address-cells':
+> >> +        const: 1
+> >> +      '#size-cells':
+> >> +        const: 0
+> >> +
+> >> +    patternProperties:
+> >> +      "^port@[0-9]+$":
+> >
+> > As ports and port are OF graph nodes, it would be better if we
+> > standardized on a different name for these. I think we've used
+> > 'ethernet-port' some.
+>
+> Yes we did talk about that before, however when the original DSA binding
+> was introduced about 7 years ago (or maybe more recently, my memory
+> fails me now), "ports" was chosen as the encapsulating node. We should
+> be accepting both ethernet-ports and ports.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/testing/selftests/bpf/Makefile          |  14 ++-
- .../selftests/bpf/prog_tests/resolve_btfids.c | 107 ++++++++++++++++++
- tools/testing/selftests/bpf/progs/btf_data.c  |  26 +++++
- 3 files changed, 146 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf_data.c
+Yes, I'm aware of the history. Back then it was a free-for-all on node
+names. Now we're trying to be more disciplined. Ideally, we pick
+something unique to standardize on and fix the dts files to match as
+long as the node name is generally a don't care for the OS.
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 1f9c696b3edf..2eae482b2713 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -190,6 +190,16 @@ else
- 	cp "$(VMLINUX_H)" $@
- endif
- 
-+$(SCRATCH_DIR)/resolve_btfids: $(BPFOBJ)				\
-+			       $(TOOLSDIR)/bpf/resolve_btfids/main.c	\
-+			       $(TOOLSDIR)/lib/rbtree.c			\
-+			       $(TOOLSDIR)/lib/zalloc.c			\
-+			       $(TOOLSDIR)/lib/string.c			\
-+			       $(TOOLSDIR)/lib/ctype.c			\
-+			       $(TOOLSDIR)/lib/str_error_r.c
-+	$(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/resolve_btfids	\
-+		OUTPUT=$(SCRATCH_DIR)/ BPFOBJ=$(BPFOBJ)
-+
- # Get Clang's default includes on this system, as opposed to those seen by
- # '-target bpf'. This fixes "missing" files on some architectures/distros,
- # such as asm/byteorder.h, asm/socket.h, asm/sockios.h, sys/cdefs.h etc.
-@@ -355,6 +365,7 @@ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
- 			     | $(TRUNNER_BINARY)-extras
- 	$$(call msg,BINARY,,$$@)
- 	$$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
-+	$(SCRATCH_DIR)/resolve_btfids --no-fail --btf btf_data.o $$@
- 
- endef
- 
-@@ -365,7 +376,8 @@ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c	\
- 			 network_helpers.c testing_helpers.c		\
- 			 flow_dissector_load.h
- TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read				\
--		       $(wildcard progs/btf_dump_test_case_*.c)
-+		       $(wildcard progs/btf_dump_test_case_*.c)		\
-+		       $(SCRATCH_DIR)/resolve_btfids
- TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
- TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS)
- TRUNNER_BPF_LDFLAGS := -mattr=+alu32
-diff --git a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-new file mode 100644
-index 000000000000..060264c96601
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-@@ -0,0 +1,107 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/err.h>
-+#include <string.h>
-+#include <bpf/btf.h>
-+#include <bpf/libbpf.h>
-+#include <linux/btf.h>
-+#include <linux/kernel.h>
-+#include <linux/btf_ids.h>
-+#include "test_progs.h"
-+
-+static int duration;
-+
-+struct symbol {
-+	const char	*name;
-+	int		 type;
-+	int		 id;
-+};
-+
-+struct symbol test_symbols[] = {
-+	{ "unused",  BTF_KIND_UNKN,     0 },
-+	{ "T",       BTF_KIND_TYPEDEF, -1 },
-+	{ "S",       BTF_KIND_STRUCT,  -1 },
-+	{ "U",       BTF_KIND_UNION,   -1 },
-+	{ "func",    BTF_KIND_FUNC,    -1 },
-+};
-+
-+BTF_ID_LIST(test_list)
-+BTF_ID_UNUSED
-+BTF_ID(typedef, T)
-+BTF_ID(struct,  S)
-+BTF_ID(union,   U)
-+BTF_ID(func,    func)
-+
-+static int
-+__resolve_symbol(struct btf *btf, int type_id)
-+{
-+	const struct btf_type *type;
-+	const char *str;
-+	unsigned int i;
-+
-+	type = btf__type_by_id(btf, type_id);
-+	if (!type) {
-+		PRINT_FAIL("Failed to get type for ID %d\n", type_id);
-+		return -1;
-+	}
-+
-+	for (i = 0; i < ARRAY_SIZE(test_symbols); i++) {
-+		if (test_symbols[i].id != -1)
-+			continue;
-+
-+		if (BTF_INFO_KIND(type->info) != test_symbols[i].type)
-+			continue;
-+
-+		str = btf__name_by_offset(btf, type->name_off);
-+		if (!str) {
-+			PRINT_FAIL("Failed to get name for BTF ID %d\n", type_id);
-+			return -1;
-+		}
-+
-+		if (!strcmp(str, test_symbols[i].name))
-+			test_symbols[i].id = type_id;
-+	}
-+
-+	return 0;
-+}
-+
-+static int resolve_symbols(void)
-+{
-+	struct btf *btf;
-+	int type_id;
-+	__u32 nr;
-+
-+	btf = btf__parse_elf("btf_data.o", NULL);
-+	if (CHECK(libbpf_get_error(btf), "resolve",
-+		  "Failed to load BTF from btf_data.o\n"))
-+		return -1;
-+
-+	nr = btf__get_nr_types(btf);
-+
-+	for (type_id = 1; type_id <= nr; type_id++) {
-+		if (__resolve_symbol(btf, type_id))
-+			break;
-+	}
-+
-+	btf__free(btf);
-+	return 0;
-+}
-+
-+int test_resolve_btfids(void)
-+{
-+	unsigned int i;
-+	int ret = 0;
-+
-+	if (resolve_symbols())
-+		return -1;
-+
-+	/* Check BTF_ID_LIST(test_list) IDs */
-+	for (i = 0; i < ARRAY_SIZE(test_symbols) && !ret; i++) {
-+		ret = CHECK(test_list[i] != test_symbols[i].id,
-+			    "id_check",
-+			    "wrong ID for %s (%d != %d)\n", test_symbols[i].name,
-+			    test_list[i], test_symbols[i].id);
-+	}
-+
-+	return ret;
-+}
-diff --git a/tools/testing/selftests/bpf/progs/btf_data.c b/tools/testing/selftests/bpf/progs/btf_data.c
-new file mode 100644
-index 000000000000..26b85f45e584
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf_data.c
-@@ -0,0 +1,26 @@
-+// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-+
-+struct S {
-+	int	a;
-+	int	b;
-+	int	c;
-+};
-+
-+union U {
-+	int	a;
-+	int	b;
-+	int	c;
-+};
-+
-+typedef int T;
-+
-+struct root_struct {
-+	T		m_1;
-+	struct S	m_2;
-+	union U		m_3;
-+};
-+
-+int func(struct root_struct *root)
-+{
-+	return 0;
-+}
--- 
-2.25.4
+The schema says only port/ports is allowed, so at a minimum
+ethernet-port/ethernet-ports needs to be added here.
 
+>
+> >
+> >> +          type: object
+> >> +          description: DSA switch ports
+> >> +
+> >> +          allOf:
+> >> +            - $ref: ../ethernet-controller.yaml#
+> >
+> > How does this and 'ethernet' both apply?
+>
+> I think the intent here was to mean that some of the properties from the
+> Ethernet controller such as phy-mode, phy-handle, fixed-link also apply
+> here since the switch port is a simplified Ethernet MAC on a number of
+> counts.
+
+Okay, it's good to explicitly define which of those apply as I imagine
+some don't. Just need "<prop>: true" to do that.
+
+Rob
