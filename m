@@ -2,159 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D9CF21B7E7
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:11:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8C5921B80A
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:15:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727906AbgGJOLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 10:11:11 -0400
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:30055 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726828AbgGJOLK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 10:11:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1594390270; x=1625926270;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=rznFQAP9uTleW0vRE2qq4adQFH6WHAMU0MiTTxk+oh4=;
-  b=KBXEFvMGL/JJWWMT0XQamPLJ3O+H/bKZ+Pc5tDdT/NDa8rSLfaFQm8Je
-   duPB6SSsVzuZQugjYhYgBKoAukNQUse7erQmXH90d1OECJ/KSrk9jVw6f
-   SsECKZh/G9tD5GI8p53/m+m04ZvjJxXBvJUyvW2bQCZg8ZBvQpDntsOy8
-   o=;
-IronPort-SDR: zMEiT/chi6M3h7VGjzvFn5CgeyzAOmoOpeA7/lomnqgH/OsAdvTnK343S3nDZFgz6yJZFt/c5C
- ycbfxPB1A8Pg==
-X-IronPort-AV: E=Sophos;i="5.75,335,1589241600"; 
-   d="scan'208";a="41277032"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 10 Jul 2020 14:11:08 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com (Postfix) with ESMTPS id 16F8DA1EB9;
-        Fri, 10 Jul 2020 14:11:07 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 10 Jul 2020 14:11:04 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.162.140) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 10 Jul 2020 14:11:00 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-CC:     <netdev@vger.kernel.org>, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        <osa-contribution-log@amazon.com>, Julian Anastasov <ja@ssi.bg>
-Subject: [PATCH v3 net-next] inet: Remove an unnecessary argument of syn_ack_recalc().
-Date:   Fri, 10 Jul 2020 23:10:53 +0900
-Message-ID: <20200710141053.65581-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+        id S1726950AbgGJOPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 10:15:07 -0400
+Received: from correo.us.es ([193.147.175.20]:35932 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727065AbgGJOPG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jul 2020 10:15:06 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 47F4A3066B5
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 16:15:04 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 17169DA792
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 16:15:04 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id F204DDA858; Fri, 10 Jul 2020 16:15:03 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6E672DA72F;
+        Fri, 10 Jul 2020 16:15:01 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 10 Jul 2020 16:15:01 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 316E742EE38E;
+        Fri, 10 Jul 2020 16:15:01 +0200 (CEST)
+Date:   Fri, 10 Jul 2020 16:15:00 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@mellanox.com, petrm@mellanox.com, mlxsw@mellanox.com,
+        michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
+        kadlec@netfilter.org, fw@strlen.de, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, simon.horman@netronome.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 01/13] net: sched: Pass qdisc reference in
+ struct flow_block_offload
+Message-ID: <20200710141500.GA12659@salvia>
+References: <20200710135706.601409-1-idosch@idosch.org>
+ <20200710135706.601409-2-idosch@idosch.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.140]
-X-ClientProxiedBy: EX13D47UWC003.ant.amazon.com (10.43.162.70) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200710135706.601409-2-idosch@idosch.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 0c3d79bce48034018e840468ac5a642894a521a3 ("tcp: reduce SYN-ACK
-retrans for TCP_DEFER_ACCEPT") introduces syn_ack_recalc() which decides
-if a minisock is held and a SYN+ACK is retransmitted or not.
+On Fri, Jul 10, 2020 at 04:56:54PM +0300, Ido Schimmel wrote:
+> From: Petr Machata <petrm@mellanox.com>
+> 
+> Previously, shared blocks were only relevant for the pseudo-qdiscs ingress
+> and clsact. Recently, a qevent facility was introduced, which allows to
+> bind blocks to well-defined slots of a qdisc instance. RED in particular
+> got two qevents: early_drop and mark. Drivers that wish to offload these
+> blocks will be sent the usual notification, and need to know which qdisc it
+> is related to.
+> 
+> To that end, extend flow_block_offload with a "sch" pointer, and initialize
+> as appropriate. This prompts changes in the indirect block facility, which
+> now tracks the scheduler instead of the netdevice. Update signatures of
+> several functions similarly. Deduce the device from the scheduler when
+> necessary.
+> 
+> Signed-off-by: Petr Machata <petrm@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> ---
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  | 11 ++++++----
+>  .../ethernet/mellanox/mlx5/core/en/rep/tc.c   | 11 +++++-----
+>  .../net/ethernet/netronome/nfp/flower/main.h  |  2 +-
+>  .../ethernet/netronome/nfp/flower/offload.c   | 11 ++++++----
+>  include/net/flow_offload.h                    |  9 ++++----
+>  net/core/flow_offload.c                       | 12 +++++------
+>  net/netfilter/nf_flow_table_offload.c         | 17 +++++++--------
+>  net/netfilter/nf_tables_offload.c             | 20 ++++++++++--------
+>  net/sched/cls_api.c                           | 21 +++++++++++--------
+>  9 files changed, 63 insertions(+), 51 deletions(-)
+> 
+[...]
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+> index eefeb1cdc2ee..4fc42c1955ff 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+> @@ -404,7 +404,7 @@ static void mlx5e_rep_indr_block_unbind(void *cb_priv)
+>  static LIST_HEAD(mlx5e_block_cb_list);
+>  
+>  static int
+> -mlx5e_rep_indr_setup_block(struct net_device *netdev,
+> +mlx5e_rep_indr_setup_block(struct Qdisc *sch,
+>  			   struct mlx5e_rep_priv *rpriv,
+>  			   struct flow_block_offload *f,
+>  			   flow_setup_cb_t *setup_cb,
+> @@ -412,6 +412,7 @@ mlx5e_rep_indr_setup_block(struct net_device *netdev,
+>  			   void (*cleanup)(struct flow_block_cb *block_cb))
+>  {
+>  	struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
+> +	struct net_device *netdev = sch->dev_queue->dev;
 
-If rskq_defer_accept is not zero in syn_ack_recalc(), max_retries always
-has the same value because max_retries is overwritten by rskq_defer_accept
-in reqsk_timer_handler().
-
-This commit adds three changes:
-- remove redundant non-zero check for rskq_defer_accept in
-   reqsk_timer_handler().
-- remove max_retries from the arguments of syn_ack_recalc() and use
-   rskq_defer_accept instead.
-- rename thresh to max_syn_ack_retries for readability.
-
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
-CC: Julian Anastasov <ja@ssi.bg>
----
- net/ipv4/inet_connection_sock.c | 33 +++++++++++++++------------------
- 1 file changed, 15 insertions(+), 18 deletions(-)
-
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index afaf582a5aa9..21bc80a3c7cf 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -648,20 +648,23 @@ struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
- EXPORT_SYMBOL_GPL(inet_csk_route_child_sock);
- 
- /* Decide when to expire the request and when to resend SYN-ACK */
--static inline void syn_ack_recalc(struct request_sock *req, const int thresh,
--				  const int max_retries,
-+static inline void syn_ack_recalc(struct request_sock *req,
-+				  const int max_syn_ack_retries,
- 				  const u8 rskq_defer_accept,
- 				  int *expire, int *resend)
- {
- 	if (!rskq_defer_accept) {
--		*expire = req->num_timeout >= thresh;
-+		*expire = req->num_timeout >= max_syn_ack_retries;
- 		*resend = 1;
- 		return;
- 	}
--	*expire = req->num_timeout >= thresh &&
--		  (!inet_rsk(req)->acked || req->num_timeout >= max_retries);
--	/*
--	 * Do not resend while waiting for data after ACK,
-+	/* If a bare ACK has already been dropped, the client is alive, so
-+	 * do not free the request_sock to drop a bare ACK at most
-+	 * rskq_defer_accept times and wait for data.
-+	 */
-+	*expire = req->num_timeout >= max_syn_ack_retries &&
-+		  (!inet_rsk(req)->acked || req->num_timeout >= rskq_defer_accept);
-+	/* Do not resend while waiting for data after ACK,
- 	 * start to resend on end of deferring period to give
- 	 * last chance for data or ACK to create established socket.
- 	 */
-@@ -720,15 +723,12 @@ static void reqsk_timer_handler(struct timer_list *t)
- 	struct net *net = sock_net(sk_listener);
- 	struct inet_connection_sock *icsk = inet_csk(sk_listener);
- 	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
--	int qlen, expire = 0, resend = 0;
--	int max_retries, thresh;
--	u8 defer_accept;
-+	int max_syn_ack_retries, qlen, expire = 0, resend = 0;
- 
- 	if (inet_sk_state_load(sk_listener) != TCP_LISTEN)
- 		goto drop;
- 
--	max_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
--	thresh = max_retries;
-+	max_syn_ack_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
- 	/* Normally all the openreqs are young and become mature
- 	 * (i.e. converted to established socket) for first timeout.
- 	 * If synack was not acknowledged for 1 second, it means
-@@ -750,17 +750,14 @@ static void reqsk_timer_handler(struct timer_list *t)
- 	if ((qlen << 1) > max(8U, READ_ONCE(sk_listener->sk_max_ack_backlog))) {
- 		int young = reqsk_queue_len_young(queue) << 1;
- 
--		while (thresh > 2) {
-+		while (max_syn_ack_retries > 2) {
- 			if (qlen < young)
- 				break;
--			thresh--;
-+			max_syn_ack_retries--;
- 			young <<= 1;
- 		}
- 	}
--	defer_accept = READ_ONCE(queue->rskq_defer_accept);
--	if (defer_accept)
--		max_retries = defer_accept;
--	syn_ack_recalc(req, thresh, max_retries, defer_accept,
-+	syn_ack_recalc(req, max_syn_ack_retries, READ_ONCE(queue->rskq_defer_accept),
- 		       &expire, &resend);
- 	req->rsk_ops->syn_ack_timeout(req);
- 	if (!expire &&
--- 
-2.17.2 (Apple Git-113)
-
+This break indirect block support for netfilter since the driver
+is assuming a Qdisc object.
