@@ -2,94 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26B9B21BF54
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 23:41:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 364A621BF59
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 23:45:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726339AbgGJVlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 17:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54162 "EHLO
+        id S1726299AbgGJVpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 17:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726251AbgGJVlW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 17:41:22 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E47C08C5DC;
-        Fri, 10 Jul 2020 14:41:22 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id di5so3270563qvb.11;
-        Fri, 10 Jul 2020 14:41:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Da2tkZhxp36WWIM5SU4wWRnWrL+fbZs7REwsgJam7ZQ=;
-        b=VHhl70xJKGvDmkqn9+GFeBcUZmC518WJVEFdfy8ur5HqlFExf0rxCQqHtur+CxOaqb
-         iC/aDjq4YILIXcE9snn6uUpJEJSctpWWeSIcBd1gpIwKFbv+erXR9MKTWreSo0dOQKMo
-         +S2JOme4t+ViPdBBTh2LgOFP78FdMRVZa/KvKW3P12B3HMV4vmIDdLoL79AnN3/2ZMDp
-         GI/pYYdntjQ8qmt2ICS6qw2mjW85VFeM86w2EtTA4jwe+uQ4Zgt9eXxcDc8W1JL+247M
-         SDWh+bYC/tB5vjOXT2GObQ3uC1A7k3UDT3aCQI4VnJ9IcFq51Wrp+jeuyastgyymV+A4
-         D/QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Da2tkZhxp36WWIM5SU4wWRnWrL+fbZs7REwsgJam7ZQ=;
-        b=JO7KY24cK6qlP+MaJXUMypghc1aH8DTWDqJLMAP2hSUm1CP0JyM00cFr0dWO8fj6yx
-         MKpLOCnbRDRvajPppP/Zn9I2bjdwpGs5SJxIsQ+PyMra93TKxP3CYUe93B2tnwSA24hP
-         yNsQ+c6mCAVIE+/OPEeCAM9Oax20Hbi6sUtLDhCfiWqC24ZGpBQzonFUYmLM7Oo/m/97
-         6qqcFvNKG/KSsrqLC767tnsHZ7FS9THuhabQY3QGDlbaQqJ09WaQr06VhBINpXwFRMQb
-         4hDEZwxNlEfoA9pvPDlviFD954YryCcULumfG1S0+VPGpQTd68UujzgTMxftE9nOAZqN
-         08bg==
-X-Gm-Message-State: AOAM532jxGiq47B/utf5vJ2tVW+v/3GLPyBqqRnreKq81c9dnGhcc0Gm
-        eK+CggF9QIpAEFKJ1k0kZw==
-X-Google-Smtp-Source: ABdhPJwg0Bs8T3eqvmOkVd+YCSi+G7i0B+ClGVozwdpkm7Ok6mUVGyf25q1e54in3JRQd8S88Lf8gg==
-X-Received: by 2002:a0c:ab55:: with SMTP id i21mr71409390qvb.139.1594417281580;
-        Fri, 10 Jul 2020 14:41:21 -0700 (PDT)
-Received: from localhost.localdomain (c-76-119-149-155.hsd1.ma.comcast.net. [76.119.149.155])
-        by smtp.gmail.com with ESMTPSA id 2sm8652249qka.42.2020.07.10.14.41.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jul 2020 14:41:21 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [Linux-kernel-mentees] [PATCH 1/2] net/bluetooth: Prevent out-of-bounds read in hci_inquiry_result_evt()
-Date:   Fri, 10 Jul 2020 17:39:18 -0400
-Message-Id: <3f69f09d6eb0bc1430cae2894c635252a1cb09e1.1594414498.git.yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S1726251AbgGJVpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 17:45:00 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90EBC08C5DC
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 14:45:00 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6601312860344;
+        Fri, 10 Jul 2020 14:45:00 -0700 (PDT)
+Date:   Fri, 10 Jul 2020 14:44:59 -0700 (PDT)
+Message-Id: <20200710.144459.1317276747917429038.davem@davemloft.net>
+To:     kuba@kernel.org
+Cc:     xiyou.wangcong@gmail.com, netdev@vger.kernel.org,
+        linux@roeck-us.net
+Subject: Re: [PATCH net] cgroup: Fix sock_cgroup_data on big-endian.
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200710135424.609af50a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200709170320.2fa4885b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200710.134747.830440492796528440.davem@davemloft.net>
+        <20200710135424.609af50a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 10 Jul 2020 14:45:00 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check `num_rsp` before using it as for-loop counter.
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Fri, 10 Jul 2020 13:54:24 -0700
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
----
- net/bluetooth/hci_event.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Fri, 10 Jul 2020 13:47:47 -0700 (PDT) David Miller wrote:
+>> From: Jakub Kicinski <kuba@kernel.org>
+>> Date: Thu, 9 Jul 2020 17:03:20 -0700
+>> 
+>> > On Thu, 09 Jul 2020 16:32:35 -0700 (PDT) David Miller wrote:  
+>> >> From: Cong Wang <xiyou.wangcong@gmail.com>
+>> >> 
+>> >> In order for no_refcnt and is_data to be the lowest order two
+>> >> bits in the 'val' we have to pad out the bitfield of the u8.
+>> >> 
+>> >> Fixes: ad0f75e5f57c ("cgroup: fix cgroup_sk_alloc() for sk_clone_lock()")
+>> >> Reported-by: Guenter Roeck <linux@roeck-us.net>
+>> >> Signed-off-by: David S. Miller <davem@davemloft.net>  
+>> > 
+>> > FWIW Cong's listed in From: but there's no sign-off from him so the
+>> > signoff checking script may get upset about this one.  
+>> 
+>> I wonder how I should handle that situation though?  I want to give
+>> Cong credit for the change, and not take full credit for it myself.
+> 
+> Cong, would you mind responding with a Sign-off for the patch?
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 03a0759f2fc2..8b3736c83b8e 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -2517,7 +2517,7 @@ static void hci_inquiry_result_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 
- 	BT_DBG("%s num_rsp %d", hdev->name, num_rsp);
- 
--	if (!num_rsp)
-+	if (!num_rsp || skb->len < num_rsp * sizeof(*info) + 1)
- 		return;
- 
- 	if (hci_dev_test_flag(hdev, HCI_PERIODIC_INQ))
--- 
-2.25.1
+That's not useful for two reasons:
 
+1) This commit is in my tree and the commit message is immutable.
+
+2) I needed to apply this patch because I didn't have time to wait for
+   a turn-around from Cong or anyone else.  That's the situation where
+   I'm asking "what should I do in this situation?"  I don't have the
+   luxury of waiting for the author to reply and add a signoff because
+   I'm trying to get a pull request out to Linus with the fix or
+   similar.
+
+Is it more clear now? :-)
