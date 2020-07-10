@@ -2,123 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2073521B7D7
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:09:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D9CF21B7E7
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 16:11:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727941AbgGJOJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 10:09:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726820AbgGJOJa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jul 2020 10:09:30 -0400
-Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7F09B20748;
-        Fri, 10 Jul 2020 14:09:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594390170;
-        bh=5fxYRNZaEf3WwSNJCGI+SYYktTeEynst8KjYwY2HCws=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ySwyUu3s7Op9GTBAs25t+cSBeExY6KM961X5qZHaNoswi+zL45hkTUktIDyprPRBK
-         mOH0YvQkDOJ8Z4MEdMenrOVsR7T5aJKTgqmOR06+cs+H6ufX4qaLg96EUH6+GCCdkF
-         dQjeYxkhT4RmHTy/OCSIhxnNn2rDnDytCK/IPF7I=
-Date:   Fri, 10 Jul 2020 23:09:21 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Dominik Czarnota <dominik.czarnota@trailofbits.com>,
-        stable@vger.kernel.org, Jessica Yu <jeyu@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Matteo Croce <mcroce@redhat.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Alexander Lobakin <alobakin@dlink.ru>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Ingo Molnar <mingo@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] kprobes: Do not expose probe addresses to
- non-CAP_SYSLOG
-Message-Id: <20200710230921.7199e51fa19a7dce53823835@kernel.org>
-In-Reply-To: <20200702232638.2946421-5-keescook@chromium.org>
-References: <20200702232638.2946421-1-keescook@chromium.org>
-        <20200702232638.2946421-5-keescook@chromium.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1727906AbgGJOLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 10:11:11 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:30055 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726828AbgGJOLK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 10:11:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1594390270; x=1625926270;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=rznFQAP9uTleW0vRE2qq4adQFH6WHAMU0MiTTxk+oh4=;
+  b=KBXEFvMGL/JJWWMT0XQamPLJ3O+H/bKZ+Pc5tDdT/NDa8rSLfaFQm8Je
+   duPB6SSsVzuZQugjYhYgBKoAukNQUse7erQmXH90d1OECJ/KSrk9jVw6f
+   SsECKZh/G9tD5GI8p53/m+m04ZvjJxXBvJUyvW2bQCZg8ZBvQpDntsOy8
+   o=;
+IronPort-SDR: zMEiT/chi6M3h7VGjzvFn5CgeyzAOmoOpeA7/lomnqgH/OsAdvTnK343S3nDZFgz6yJZFt/c5C
+ ycbfxPB1A8Pg==
+X-IronPort-AV: E=Sophos;i="5.75,335,1589241600"; 
+   d="scan'208";a="41277032"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 10 Jul 2020 14:11:08 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com (Postfix) with ESMTPS id 16F8DA1EB9;
+        Fri, 10 Jul 2020 14:11:07 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 10 Jul 2020 14:11:04 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.162.140) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 10 Jul 2020 14:11:00 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+CC:     <netdev@vger.kernel.org>, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        <osa-contribution-log@amazon.com>, Julian Anastasov <ja@ssi.bg>
+Subject: [PATCH v3 net-next] inet: Remove an unnecessary argument of syn_ack_recalc().
+Date:   Fri, 10 Jul 2020 23:10:53 +0900
+Message-ID: <20200710141053.65581-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.140]
+X-ClientProxiedBy: EX13D47UWC003.ant.amazon.com (10.43.162.70) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  2 Jul 2020 16:26:37 -0700
-Kees Cook <keescook@chromium.org> wrote:
+Commit 0c3d79bce48034018e840468ac5a642894a521a3 ("tcp: reduce SYN-ACK
+retrans for TCP_DEFER_ACCEPT") introduces syn_ack_recalc() which decides
+if a minisock is held and a SYN+ACK is retransmitted or not.
 
-> The kprobe show() functions were using "current"'s creds instead
-> of the file opener's creds for kallsyms visibility. Fix to use
-> seq_file->file->f_cred.
+If rskq_defer_accept is not zero in syn_ack_recalc(), max_retries always
+has the same value because max_retries is overwritten by rskq_defer_accept
+in reqsk_timer_handler().
 
-This looks good to me.
+This commit adds three changes:
+- remove redundant non-zero check for rskq_defer_accept in
+   reqsk_timer_handler().
+- remove max_retries from the arguments of syn_ack_recalc() and use
+   rskq_defer_accept instead.
+- rename thresh to max_syn_ack_retries for readability.
 
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+CC: Julian Anastasov <ja@ssi.bg>
+---
+ net/ipv4/inet_connection_sock.c | 33 +++++++++++++++------------------
+ 1 file changed, 15 insertions(+), 18 deletions(-)
 
-Thanks!
-
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 81365a947de4 ("kprobes: Show address of kprobes if kallsyms does")
-> Fixes: ffb9bd68ebdb ("kprobes: Show blacklist addresses as same as kallsyms does")
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  kernel/kprobes.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-> index d4de217e4a91..2e97febeef77 100644
-> --- a/kernel/kprobes.c
-> +++ b/kernel/kprobes.c
-> @@ -2448,7 +2448,7 @@ static void report_probe(struct seq_file *pi, struct kprobe *p,
->  	else
->  		kprobe_type = "k";
->  
-> -	if (!kallsyms_show_value(current_cred()))
-> +	if (!kallsyms_show_value(pi->file->f_cred))
->  		addr = NULL;
->  
->  	if (sym)
-> @@ -2540,7 +2540,7 @@ static int kprobe_blacklist_seq_show(struct seq_file *m, void *v)
->  	 * If /proc/kallsyms is not showing kernel address, we won't
->  	 * show them here either.
->  	 */
-> -	if (!kallsyms_show_value(current_cred()))
-> +	if (!kallsyms_show_value(m->file->f_cred))
->  		seq_printf(m, "0x%px-0x%px\t%ps\n", NULL, NULL,
->  			   (void *)ent->start_addr);
->  	else
-> -- 
-> 2.25.1
-> 
-
-
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index afaf582a5aa9..21bc80a3c7cf 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -648,20 +648,23 @@ struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
+ EXPORT_SYMBOL_GPL(inet_csk_route_child_sock);
+ 
+ /* Decide when to expire the request and when to resend SYN-ACK */
+-static inline void syn_ack_recalc(struct request_sock *req, const int thresh,
+-				  const int max_retries,
++static inline void syn_ack_recalc(struct request_sock *req,
++				  const int max_syn_ack_retries,
+ 				  const u8 rskq_defer_accept,
+ 				  int *expire, int *resend)
+ {
+ 	if (!rskq_defer_accept) {
+-		*expire = req->num_timeout >= thresh;
++		*expire = req->num_timeout >= max_syn_ack_retries;
+ 		*resend = 1;
+ 		return;
+ 	}
+-	*expire = req->num_timeout >= thresh &&
+-		  (!inet_rsk(req)->acked || req->num_timeout >= max_retries);
+-	/*
+-	 * Do not resend while waiting for data after ACK,
++	/* If a bare ACK has already been dropped, the client is alive, so
++	 * do not free the request_sock to drop a bare ACK at most
++	 * rskq_defer_accept times and wait for data.
++	 */
++	*expire = req->num_timeout >= max_syn_ack_retries &&
++		  (!inet_rsk(req)->acked || req->num_timeout >= rskq_defer_accept);
++	/* Do not resend while waiting for data after ACK,
+ 	 * start to resend on end of deferring period to give
+ 	 * last chance for data or ACK to create established socket.
+ 	 */
+@@ -720,15 +723,12 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 	struct net *net = sock_net(sk_listener);
+ 	struct inet_connection_sock *icsk = inet_csk(sk_listener);
+ 	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
+-	int qlen, expire = 0, resend = 0;
+-	int max_retries, thresh;
+-	u8 defer_accept;
++	int max_syn_ack_retries, qlen, expire = 0, resend = 0;
+ 
+ 	if (inet_sk_state_load(sk_listener) != TCP_LISTEN)
+ 		goto drop;
+ 
+-	max_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
+-	thresh = max_retries;
++	max_syn_ack_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
+ 	/* Normally all the openreqs are young and become mature
+ 	 * (i.e. converted to established socket) for first timeout.
+ 	 * If synack was not acknowledged for 1 second, it means
+@@ -750,17 +750,14 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 	if ((qlen << 1) > max(8U, READ_ONCE(sk_listener->sk_max_ack_backlog))) {
+ 		int young = reqsk_queue_len_young(queue) << 1;
+ 
+-		while (thresh > 2) {
++		while (max_syn_ack_retries > 2) {
+ 			if (qlen < young)
+ 				break;
+-			thresh--;
++			max_syn_ack_retries--;
+ 			young <<= 1;
+ 		}
+ 	}
+-	defer_accept = READ_ONCE(queue->rskq_defer_accept);
+-	if (defer_accept)
+-		max_retries = defer_accept;
+-	syn_ack_recalc(req, thresh, max_retries, defer_accept,
++	syn_ack_recalc(req, max_syn_ack_retries, READ_ONCE(queue->rskq_defer_accept),
+ 		       &expire, &resend);
+ 	req->rsk_ops->syn_ack_timeout(req);
+ 	if (!expire &&
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.17.2 (Apple Git-113)
+
