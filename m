@@ -2,126 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4D0B21BC69
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 19:40:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1469B21BC70
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 19:40:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728030AbgGJRjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 13:39:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57788 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727866AbgGJRjm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jul 2020 13:39:42 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jtwzo-004VL4-Ci; Fri, 10 Jul 2020 19:39:36 +0200
-Date:   Fri, 10 Jul 2020 19:39:36 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v1 1/1] dt-bindings: net: dsa: Add DSA yaml binding
-Message-ID: <20200710173936.GF1037260@lunn.ch>
-References: <20200710090618.28945-1-kurt@linutronix.de>
- <20200710090618.28945-2-kurt@linutronix.de>
- <20200710164500.GA2775934@bogus>
+        id S1728211AbgGJRki (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 13:40:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727065AbgGJRki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 13:40:38 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60B3C08C5DC;
+        Fri, 10 Jul 2020 10:40:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=nzj9xEzg94TiDWiQ2mj7wOcGxexy5FgiHulDtZkhqco=; b=E0sLL2v+dosTWZ483q887n3x/L
+        ongb9Eg5BLuc74OARhk+JyNg+hKdT/4dEJvtxdmYeCiG25LIaUcL06KNdIsf8e7v1123jmPex6Wtc
+        vMoShmm64O2B3f8BixYU08T8GF0h8eXZjHJPhcuXCObxj+AH3tjisMjSDxHM7rkcVwVD87E6rJ3GE
+        nqsaMOp2BrUs0H9u0gLeTYaEhVhTpqhet2OpS4ExVBZvspLqGGClUd1s+QMwgjkEfmF6No41r8Hed
+        TVeEDTDaZpaZ2iiHafIzUEtX0BU+Gx1gKetifX6dcTOXLbiwQDcHb6D39ediV8HpQq4tbCaHAwb3O
+        2tUyTfnA==;
+Received: from [2601:1c0:6280:3f0:897c:6038:c71d:ecac]
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jtx0k-00079r-Uz; Fri, 10 Jul 2020 17:40:35 +0000
+Subject: Re: mmotm 2020-07-09-21-00 uploaded
+ (drivers/net/ethernet/mellanox/mlx5/core/en_main.c)
+To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-next@vger.kernel.org, mhocko@suse.cz,
+        mm-commits@vger.kernel.org, sfr@canb.auug.org.au,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+References: <20200710040047.md-jEb0TK%akpm@linux-foundation.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <8a6f8902-c36c-b46c-8e6f-05ae612d25ea@infradead.org>
+Date:   Fri, 10 Jul 2020 10:40:29 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200710164500.GA2775934@bogus>
+In-Reply-To: <20200710040047.md-jEb0TK%akpm@linux-foundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 10:45:00AM -0600, Rob Herring wrote:
-> On Fri, Jul 10, 2020 at 11:06:18AM +0200, Kurt Kanzenbach wrote:
-> > For future DSA drivers it makes sense to add a generic DSA yaml binding which
-> > can be used then. This was created using the properties from dsa.txt. It
-> > includes the ports and the dsa,member property.
-> > 
-> > Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
-> > Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-> > ---
-> >  .../devicetree/bindings/net/dsa/dsa.yaml      | 80 +++++++++++++++++++
-> >  1 file changed, 80 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > new file mode 100644
-> > index 000000000000..bec257231bf8
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > @@ -0,0 +1,80 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/dsa/dsa.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Distributed Switch Architecture Device Tree Bindings
+On 7/9/20 9:00 PM, Andrew Morton wrote:
+> The mm-of-the-moment snapshot 2020-07-09-21-00 has been uploaded to
 > 
-> DSA is a Linuxism, right?
-
-Hi Rob
-
-Marvell'ism actually. They came up the idea for how you can
-interconnect multiple switches to form a distributed switch fabric. So
-far, the Marvell driver is the only driver that makes use of D in
-DSA. But it seems like some other vendors have similar concepts. And
-those which don't allow D in DSA can use a simplified version of the
-architecture for a single switch.
-
-> Describe what type of h/w should use this binding.
+>    http://www.ozlabs.org/~akpm/mmotm/
 > 
-> > +
-> > +properties:
-> > +  $nodename:
-> > +    pattern: "^switch(@.*)?$"
-> > +
-> > +  dsa,member:
-> > +    minItems: 2
-> > +    maxItems: 2
-> > +    description:
-> > +      A two element list indicates which DSA cluster, and position within the
-> > +      cluster a switch takes. <0 0> is cluster 0, switch 0. <0 1> is cluster 0,
-> > +      switch 1. <1 0> is cluster 1, switch 0. A switch not part of any cluster
-> > +      (single device hanging off a CPU port) must not specify this property
-> > +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> > +
-> > +  ports:
-> > +    type: object
-> > +    properties:
-> > +      '#address-cells':
-> > +        const: 1
-> > +      '#size-cells':
-> > +        const: 0
-> > +
-> > +    patternProperties:
-> > +      "^port@[0-9]+$":
+> mmotm-readme.txt says
 > 
-> As ports and port are OF graph nodes, it would be better if we 
-> standardized on a different name for these. I think we've used 
-> 'ethernet-port' some.
+> README for mm-of-the-moment:
+> 
+> http://www.ozlabs.org/~akpm/mmotm/
+> 
+> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+> more than once a week.
+> 
+> You will need quilt to apply these patches to the latest Linus release (5.x
+> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+> http://ozlabs.org/~akpm/mmotm/series
+> 
 
-I suspect DSA was using port before OF graph came along. Yep:
+on i386:
 
-commit 5e95329b701c4edf6c4d72487ec0369fa148c0bd
-Author: Florian Fainelli <florian@openwrt.org>
-Date:   Fri Mar 22 10:50:50 2013 +0000
+In file included from ../drivers/net/ethernet/mellanox/mlx5/core/en_main.c:49:0:
+../drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h: In function ‘mlx5e_accel_sk_get_rxq’:
+../drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h:153:12: error: implicit declaration of function ‘sk_rx_queue_get’; did you mean ‘sk_rx_queue_set’? [-Werror=implicit-function-declaration]
+  int rxq = sk_rx_queue_get(sk);
+            ^~~~~~~~~~~~~~~
+            sk_rx_queue_set
 
-    dsa: add device tree bindings to register DSA switches
 
-commit 4d56ed5a009b7d31ecae1dd26c047b8bb0dd9287
-Author: Philipp Zabel <p.zabel@pengutronix.de>
-Date:   Tue Feb 25 15:44:49 2014 +0100
 
-    Documentation: of: Document graph bindings
-
-So this usage is will established and it is probably a bit late to
-change it now.
-
-   Andrew
+-- 
+~Randy
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
