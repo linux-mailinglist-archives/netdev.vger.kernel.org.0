@@ -2,161 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9694221BE68
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 22:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC91C21BE77
+	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 22:32:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727820AbgGJUZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 16:25:30 -0400
-Received: from mx4.wp.pl ([212.77.101.12]:39730 "EHLO mx4.wp.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726828AbgGJUZ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jul 2020 16:25:29 -0400
-Received: (wp-smtpd smtp.wp.pl 11096 invoked from network); 10 Jul 2020 22:25:24 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1594412724; bh=To+VloMcsEc9e2vbW9bPE28LAUJlsKWrcG6AYS89Ga4=;
-          h=From:To:Cc:Subject;
-          b=vYCJeg8EqbXIj1NBnteefSZJDJraPTrGxFW8RcP5A2yxZ0CAjiHMM5CsObHAslunV
-           +E68efCBtgo4QPcmPWGTmG1u0muzRPuoaL78p4gTapxHWOIrMRDbARMsdsw61cGIk4
-           GBvWr9sRfAsCKbh/pWplXxp6uX1ERZ1njkn5pbsY=
-Received: from unknown (HELO kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com) (kubakici@wp.pl@[163.114.132.6])
-          (envelope-sender <kubakici@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <jacob.e.keller@intel.com>; 10 Jul 2020 22:25:24 +0200
-Date:   Fri, 10 Jul 2020 13:25:16 -0700
-From:   Jakub Kicinski <kubakici@wp.pl>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tom Herbert <tom@herbertland.com>
-Subject: Re: [RFC PATCH net-next 6/6] ice: implement devlink parameters to
- control flash update
-Message-ID: <20200710132516.24994a33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <ee8fc0a5-6cea-2689-372c-4e733cc06056@intel.com>
-References: <20200709212652.2785924-1-jacob.e.keller@intel.com>
-        <20200709212652.2785924-7-jacob.e.keller@intel.com>
-        <20200709171913.5b779cc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <ee8fc0a5-6cea-2689-372c-4e733cc06056@intel.com>
+        id S1727819AbgGJUcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 16:32:03 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:49671 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726725AbgGJUcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 16:32:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1594413122; x=1625949122;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-id:content-transfer-encoding:mime-version:subject;
+  bh=i1pUaERWgOFWEtdtLChCqNzuzrq4NHWIfzgKGnKVzZ8=;
+  b=gjGR3cMIXQR5G8KfPlBXnskObhUIcfqXI3pSIuPcUGxOuXHuXdFa8wM9
+   AtESCWNdsdnd7Zs6UkqG2zxC7cK7L2DRCkI1xHHWGIoGPFGdufkWuwYKC
+   6/Y7PrdcM6DVBClLJH3XB5Vu+awIMyo/it9mos4deeuxzKzVti0Xp6KW5
+   c=;
+IronPort-SDR: PHBOVm0KzPOE47EdsiTKQSeFkNxnfT7qGLDm/zS2++dEBl+v6cDL2e9zPz+J102w5dtkt0014H
+ QFnW/2RsVCkw==
+X-IronPort-AV: E=Sophos;i="5.75,336,1589241600"; 
+   d="scan'208";a="41223846"
+Subject: Re: [PATCH V1 net-next 6/8] net: ena: enable support of rss hash key and
+ function changes
+Thread-Topic: [PATCH V1 net-next 6/8] net: ena: enable support of rss hash key and
+ function changes
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2b-4ff6265a.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 10 Jul 2020 20:32:01 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2b-4ff6265a.us-west-2.amazon.com (Postfix) with ESMTPS id 9FC1CA1787;
+        Fri, 10 Jul 2020 20:32:00 +0000 (UTC)
+Received: from EX13D11EUB004.ant.amazon.com (10.43.166.188) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 10 Jul 2020 20:32:00 +0000
+Received: from EX13D10EUB001.ant.amazon.com (10.43.166.211) by
+ EX13D11EUB004.ant.amazon.com (10.43.166.188) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 10 Jul 2020 20:31:59 +0000
+Received: from EX13D10EUB001.ant.amazon.com ([10.43.166.211]) by
+ EX13D10EUB001.ant.amazon.com ([10.43.166.211]) with mapi id 15.00.1497.006;
+ Fri, 10 Jul 2020 20:31:58 +0000
+From:   "Machulsky, Zorik" <zorik@amazon.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>
+Thread-Index: AQHWViPyxgncFwies0e5jhwpAWeGRqj/sUCAgAEUwoCAAHiNgP//kiCA
+Date:   Fri, 10 Jul 2020 20:31:58 +0000
+Message-ID: <C1F3BC8C-AFAD-4AB4-8329-A48F4AD0E60B@amazon.com>
+References: <1594321503-12256-1-git-send-email-akiyano@amazon.com>
+ <1594321503-12256-7-git-send-email-akiyano@amazon.com>
+ <20200709132311.63720a70@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <53596F13-16F7-4C82-A5BC-5F5DB22C36A4@amazon.com>
+ <20200710130513.057a2854@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200710130513.057a2854@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.164.8]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C85C6E8E00CCAE42B6268B47F445EC9E@amazon.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-WP-MailID: ac86915149baf49df119f44289e7b215
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000004 [4Vdy]                               
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Jul 2020 10:32:24 -0700 Jacob Keller wrote:
-> On 7/9/2020 5:19 PM, Jakub Kicinski wrote:
-> > On Thu,  9 Jul 2020 14:26:52 -0700 Jacob Keller wrote:  
-> >> The flash update for the ice hardware currently supports a single fixed
-> >> configuration:
-> >>
-> >> * Firmware is always asked to preserve all changeable fields
-> >> * The driver never allows downgrades
-> >> * The driver will not allow canceling a previous update that never
-> >>   completed (for example because an EMP reset never occurred)
-> >> * The driver does not attempt to trigger an EMP reset immediately.
-> >>
-> >> This default mode of operation is reasonable. However, it is often
-> >> useful to allow system administrators more control over the update
-> >> process. To enable this, implement devlink parameters that allow the
-> >> system administrator to specify the desired behaviors:
-> >>
-> >> * 'reset_after_flash_update'
-> >>   If enabled, the driver will request that the firmware immediately
-> >>   trigger an EMP reset when completing the device update. This will
-> >>   result in the device switching active banks immediately and
-> >>   re-initializing with the new firmware.  
-> > 
-> > This should probably be handled through a reset API like what
-> > Vasundhara is already working on.
-> 
-> Sure. I hadn't seen that work but I'll go take a look.
-> 
-> >> * 'allow_downgrade_on_flash_update'
-> >>   If enabled, the driver will attempt to update device flash even when
-> >>   firmware indicates that such an update would be a downgrade.  
-> 
-> There is also some trickiness here, because what this parameter does is
-> cause the driver to ignore the firmware version check. I suppose we
-> could just change the default behavior to ignoring that and assume user
-> space will check itself?
-
-Seems only appropriate to me.
-
-I assume this is a safety check because downgrades are sometimes
-impossible without factory reset (new FW version makes incompatible
-changes to the NVM params or such)? FWIW that's a terrible user
-experience, best avoided and handled as a exceptional circumstance
-which it should be.
-
-The defaults should be any FW version can be installed after any FW
-version. Including downgrades, skipping versions etc.
-
-> >> * 'ignore_pending_flash_update'
-> >>   If enabled, the device driver will cancel a previous pending update.
-> >>   A pending update is one where the steps to write the update to the NVM
-> >>   bank has finished, but the device never reset, as the system had not
-> >>   yet been rebooted.  
-> > 
-> > These can be implemented in user space based on the values of running
-> > and stored versions from devlink info.  
-> 
-> So, there's some trickiness here. We actually have to perform some steps
-> to cancel an update. Perhaps we should introduce a new option to request
-> that a previous update be cancelled? If we don't tell the firmware to
-> cancel the update, then future update requests will simply fail with
-> some errors.
-
-Can't it be canceled automatically when user requests a new image to
-be flashed?
-
-Perhaps best to think about it from the user perspective rather than
-how the internal works. User wants a new FW, they flash it. Next boot -
-the last flashed version should be activated.
-
-If user wants to "cancel" and upgrade they will most likely flash the
-previous version of the FW.
-
-Is the pending update/ability to cancel thing also part of the DTMF
-spec?
-
-> >> * 'flash_update_preservation_level'
-> >>   The value determines the preservation mode to request from firmware,
-> >>   among the following 4 choices:
-> >>   * PRESERVE_ALL (0)
-> >>     Preserve all settings and fields in the NVM configuration
-> >>   * PRESERVE_LIMITED (1)
-> >>     Preserve only a limited set of fields, including the VPD, PCI serial
-> >>     ID, MAC address, etc. This results in permanent settings being
-> >>     reset, including changes to the port configuration, such as the
-> >>     number of physical functions created.
-> >>   * PRESERVE_FACTORY_SETTINGS (2)
-> >>     Reset all configuration fields to the factory default settings
-> >>     stored within the NVM.
-> >>   * PRESERVE_NONE (3)
-> >>     Do not perform any preservation.  
-> > 
-> > Could this also be handled in a separate reset API? It seems useful to
-> > be able to reset to factory defaults at any time, not just FW upgrade..
->
-> I'm not sure. At least the way it's described in the datasheet here is
-> that this must be done during an update. I'll have to look into this
-> further.
-> 
-> For the other 3 (I kept preserve none for completeness), these are
-> referring to how much of the settings we preserve when updating to the
-> new image, so I think they only apply at update time.
-
-Not sure what the difference is between 2 and 3.
-
-Not sure differentiating between 0 and 1 matters in practice. Clearly
-users will not do 0 in the field, cause they don't have new IDs assigned
-per product, and don't want to loose the IDs they put in their HW DB.
-
-0 is only something a OEM can use, right? OEMs presumably generate the
-image per device to flash the IDs, meaning difference between 0 and 1
-seems to be equivalent to flashing a special OEM FW package vs flashing
-a normal customer FW update...
+DQoNCu+7v09uIDcvMTAvMjAsIDE6MDUgUE0sICJKYWt1YiBLaWNpbnNraSIgPGt1YmFAa2VybmVs
+Lm9yZz4gd3JvdGU6DQoNCiAgICBPbiBGcmksIDEwIEp1bCAyMDIwIDE5OjUzOjQ2ICswMDAwIE1h
+Y2h1bHNreSwgWm9yaWsgd3JvdGU6DQogICAgPiBPbiA3LzkvMjAsIDE6MjQgUE0sICJKYWt1YiBL
+aWNpbnNraSIgPGt1YmFAa2VybmVsLm9yZz4gd3JvdGU6DQogICAgPg0KICAgID4gICAgIE9uIFRo
+dSwgOSBKdWwgMjAyMCAyMjowNTowMSArMDMwMCBha2l5YW5vQGFtYXpvbi5jb20gd3JvdGU6DQog
+ICAgPiAgICAgPiBGcm9tOiBBcnRodXIgS2l5YW5vdnNraSA8YWtpeWFub0BhbWF6b24uY29tPg0K
+ICAgID4gICAgID4NCiAgICA+ICAgICA+IEFkZCB0aGUgcnNzX2NvbmZpZ3VyYWJsZV9mdW5jdGlv
+bl9rZXkgYml0IHRvIGRyaXZlcl9zdXBwb3J0ZWRfZmVhdHVyZS4NCiAgICA+ICAgICA+DQogICAg
+PiAgICAgPiBUaGlzIGJpdCB0ZWxscyB0aGUgZGV2aWNlIHRoYXQgdGhlIGRyaXZlciBpbiBxdWVz
+dGlvbiBzdXBwb3J0cyB0aGUNCiAgICA+ICAgICA+IHJldHJpZXZpbmcgYW5kIHVwZGF0aW5nIG9m
+IFJTUyBmdW5jdGlvbiBhbmQgaGFzaCBrZXksIGFuZCB0aGVyZWZvcmUNCiAgICA+ICAgICA+IHRo
+ZSBkZXZpY2Ugc2hvdWxkIGFsbG93IFJTUyBmdW5jdGlvbiBhbmQga2V5IG1hbmlwdWxhdGlvbi4N
+CiAgICA+ICAgICA+DQogICAgPiAgICAgPiBTaWduZWQtb2ZmLWJ5OiBBcnRodXIgS2l5YW5vdnNr
+aSA8YWtpeWFub0BhbWF6b24uY29tPg0KICAgID4NCiAgICA+ICAgICBJcyB0aGlzIGEgZml4IG9m
+IHRoZSBwcmV2aW91cyBwYXRjaGVzPyBsb29rcyBzdHJhbmdlIHRvIGp1c3Qgc3RhcnQNCiAgICA+
+ICAgICBhZHZlcnRpc2luZyBhIGZlYXR1cmUgYml0IGJ1dCBub3QgYWRkIGFueSBjb2RlLi4NCiAg
+ICA+DQogICAgPiBUaGUgcHJldmlvdXMgcmVsYXRlZCBjb21taXRzIHdlcmUgbWVyZ2VkIGFscmVh
+ZHk6DQogICAgPiAwYWYzYzRlMmVhYjggbmV0OiBlbmE6IGNoYW5nZXMgdG8gUlNTIGhhc2gga2V5
+IGFsbG9jYXRpb24NCiAgICA+IGMxYmQxN2U1MWM3MSBuZXQ6IGVuYTogY2hhbmdlIGRlZmF1bHQg
+UlNTIGhhc2ggZnVuY3Rpb24gdG8gVG9lcGxpdHoNCiAgICA+IGY2NmMyZWEzYjE4YSBuZXQ6IGVu
+YTogYWxsb3cgc2V0dGluZyB0aGUgaGFzaCBmdW5jdGlvbiB3aXRob3V0IGNoYW5naW5nIHRoZSBr
+ZXkNCiAgICA+IGU5YTFkZTM3OGRkNCBuZXQ6IGVuYTogZml4IGVycm9yIHJldHVybmluZyBpbiBl
+bmFfY29tX2dldF9oYXNoX2Z1bmN0aW9uKCkNCiAgICA+IDgwZjg0NDNmY2RhYSBuZXQ6IGVuYTog
+YXZvaWQgdW5uZWNlc3NhcnkgYWRtaW4gY29tbWFuZCB3aGVuIFJTUyBmdW5jdGlvbiBzZXQgZmFp
+bHMNCiAgICA+IDZhNGY3ZGM4MmQxZSBuZXQ6IGVuYTogcnNzOiBkbyBub3QgYWxsb2NhdGUga2V5
+IHdoZW4gbm90IHN1cHBvcnRlZA0KICAgID4gMGQxYzNkZTdiOGM3IG5ldDogZW5hOiBmaXggaW5j
+b3JyZWN0IGRlZmF1bHQgUlNTIGtleQ0KDQogICAgVGhlc2UgY29tbWl0cyBhcmUgaW4gbmV0Lg0K
+DQogICAgPiBUaGlzIGNvbW1pdCB3YXMgbm90IGluY2x1ZGVkIGJ5IG1pc3Rha2UsIHNvIHdlIGFy
+ZSBhZGRpbmcgaXQgbm93Lg0KDQogICAgWW91J3JlIGFkZGluZyBpdCB0byBuZXQtbmV4dC4NClRo
+aXMgY29tbWl0IGFjdHVhbGx5IGVuYWJsZXMgYSBmZWF0dXJlIGFmdGVyIGl0IHdhcyBmaXhlZCBi
+eSBwcmV2aW91cyBjb21taXRzLCB0aGVyZWZvcmUgd2UgdGhvdWdodA0KdGhhdCBuZXQtbmV4dCBj
+b3VsZCBiZSBhIHJpZ2h0IHBsYWNlLiBCdXQgaWYgeW91IHRoaW5rIGl0IHNob3VsZCBnbyB0byBu
+ZXQsIHdlJ2xsIGdvIGFoZWFkIGFuZCByZXN1Ym1pdCANCml0IHRoZXJlLiBUaGFua3MgZm9yIHlv
+dXIgY29tbWVudHMuIA0KDQo=
