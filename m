@@ -2,301 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8223F21BF7A
-	for <lists+netdev@lfdr.de>; Fri, 10 Jul 2020 23:57:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9740521BFF7
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 00:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726775AbgGJV5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jul 2020 17:57:25 -0400
-Received: from mail-am6eur05on2064.outbound.protection.outlook.com ([40.107.22.64]:49249
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726582AbgGJV5Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jul 2020 17:57:24 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GHul1P1YYvxlZk1bd9/VBkzqid7C+iiiGYtLPgLpp4YnidrI+Op1g3PKPp9rb3JBaQAtWxcaRPqcSMDunszaiNTpFTHdUk1/b7yinM+dM//znvq99OqAb4qVoSA24MmzOVXE4GjNJ1vMOo71uIXHGtMtjB5Namu0IV8icZslCBOsf1Z+EUcZozmqpmGF0hCBr2taW09Y7Ma6vcmkA5NhItJIq4jbpFOKUzhYcQuIs2RCJnFONWrhqZJet6ujN7jcgDBbQKOx0bCD551QlZPvpyBSSr8i4liOG/ZkglUY8EqBvfbQUkvWQPRovK5pxD6ajJdAc0MQ5PhlY5Nspvt/YQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iNWz5KW9UAs06u7qtLAri2yoNE+YxT5VAG2vhIv2A+Y=;
- b=h4Yn5ScLLhds/nGZUCTjsRITeOeU4/WvReO05q8m/fImtXADydhPTSOuf628nUmkqxVw+ide8pjXTKS3cC8Nu2wXMhFyLffyfC9dWJECs1Vcha9hn7yUgVD2tZhvX2xJ/we9XwPrrW5K94482C65VrMmbWmRmBeDChbqcM+9jvvM3KITnqgIpt9yHNd9kMvAnCY1UYPE0gbDbrDrP/SjAx3roFg/+FPgKBXH0f+YEw6unod5TiP4z4VShJXt8TxKQ24yEennD+El18pbg0928BacZ8eFpslazkf+WYxyg1l/iUpgiFKmdjAevYgxfmz/7zOpDbSCuvFxGyIdT8jJ6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iNWz5KW9UAs06u7qtLAri2yoNE+YxT5VAG2vhIv2A+Y=;
- b=cG8y6T6SY0mjVewbTA/e+Xtn5PBBO+CyVKIu25Vzj98tTRdPq7SdL9arr85wpdj47AP0SeZALuZjRkCYGWjNs5vnd7gG0AaL2h0E2iC5jO8VxqvA/UUf1OANjmTKsXG9eSDcnuLHsTXG8eYeSdtr3751aQ38wqXqhDM+wXWE39g=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR05MB3354.eurprd05.prod.outlook.com (2603:10a6:7:35::30) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3174.20; Fri, 10 Jul 2020 21:57:10 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6%7]) with mapi id 15.20.3174.023; Fri, 10 Jul 2020
- 21:57:10 +0000
-From:   Petr Machata <petrm@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>, davem@davemloft.net,
-        kuba@kernel.org, jiri@mellanox.com, petrm@mellanox.com,
-        mlxsw@mellanox.com, michael.chan@broadcom.com, saeedm@mellanox.com,
-        leon@kernel.org, kadlec@netfilter.org, fw@strlen.de,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        simon.horman@netronome.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 13/13] selftests: mlxsw: RED: Test offload of mirror on RED early_drop qevent
-Date:   Sat, 11 Jul 2020 00:55:15 +0300
-Message-Id: <da6685a467076ad2881fec341649ece09f314ff9.1594416408.git.petrm@mellanox.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1594416408.git.petrm@mellanox.com>
-References: <cover.1594416408.git.petrm@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR07CA0116.eurprd07.prod.outlook.com
- (2603:10a6:207:7::26) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+        id S1726903AbgGJWgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jul 2020 18:36:16 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:60623 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726262AbgGJWgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jul 2020 18:36:16 -0400
+X-Originating-IP: 90.65.108.121
+Received: from localhost (lfbn-lyo-1-1676-121.w90-65.abo.wanadoo.fr [90.65.108.121])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 1D5921BF203;
+        Fri, 10 Jul 2020 22:36:10 +0000 (UTC)
+Date:   Sat, 11 Jul 2020 00:36:10 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        David Jander <david@protonic.nl>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next v3] net: phy: micrel: add phy-mode support for
+ the KSZ9031 PHY
+Message-ID: <20200710223610.GC3759@piout.net>
+References: <20200422072137.8517-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by AM3PR07CA0116.eurprd07.prod.outlook.com (2603:10a6:207:7::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.8 via Frontend Transport; Fri, 10 Jul 2020 21:57:08 +0000
-X-Mailer: git-send-email 2.20.1
-X-Originating-IP: [37.142.13.130]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 5043ef0f-312b-42d6-5445-08d8251c3234
-X-MS-TrafficTypeDiagnostic: HE1PR05MB3354:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB3354474EE45900D0CB176849DB650@HE1PR05MB3354.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HAIP608Dce9JkVbwAX5Kmm9xzlUCpju8DWta9OAGH21pzA7p/ig6OnB2ku6bim2NRNcH0dyDryDT0Jkng3ak+UCML4LjlBbQXCPADTD/me13G1pATE9HB77wNhWmCjLnVHyRHg9Rchmo2hH2merscpwZnWDGWAiIw2Zmqw11QAWD/mPSLASKODjYUuKcQOUWTErUu7cmS6ovt7iawyKlFvrreJdOo2wh3H6QaL5OIEo8Ozxow/3WBXrgEv/90zV/LXUZPDXfVHeubcasFsGiBbfPh1f5OlJl1xxE5lFp0TnKc2cLw06QhpcYKkb+qjMD
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(136003)(376002)(346002)(396003)(366004)(956004)(86362001)(2906002)(6916009)(5660300002)(2616005)(83380400001)(54906003)(7416002)(6512007)(8676002)(107886003)(26005)(52116002)(6506007)(36756003)(66556008)(66476007)(316002)(8936002)(4326008)(478600001)(16526019)(6486002)(6666004)(186003)(66946007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 7ea97Q9Mel2Erd44IHfxyTysl7EPSG9KXyk9ZzBQDXuCgdrSYBOwcsaBdNjwCuPzmQwMRR7ycKp+Xl0n9BpJ7ZCAV6kjCzEqxpl+ph8NCm2oGoBkx4a4/mBB2mAuPUw5ftEbWCpATDM4971aq6MyWSxtUaI9+n+UN2wl7TKzIx04qZ2W3TEYTCscNAg4e/FK5uUu02Q414CK9b/Lxk8IYGry10Y6+LOEqz8CulVzn1h+sc5QnOJozv4rs8lhpM985UzhueA6VGz0Nguyk0guU9lFMwAtdcQmrYulhbKOj0kZhX/88cmjTEgckwAuH52wl8ryVsgcrmONlqXmDN8phPgblXS+nEblSoktk3Ht56enY4c4wtBrdlcsuOZGIb7F4nXS1DstaO1JjZ9fb95ESs4keKNcyaMZJ1fBzkC6HQRwdV8yvJpLEU1aSqy8pRmn67Ncw9Rdr8aVsIY+paBdoUx7BCBOTtg324qC/bAQ/uI=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5043ef0f-312b-42d6-5445-08d8251c3234
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2020 21:57:10.7285
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: S3y52leSBHUqhDJd7pX1ZsqPaNT7ThAkTaRIrvDTNjT88VIBXWvX726wuVmh61rm4s2fERK8NmBz7UD7u52wuA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3354
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200422072137.8517-1-o.rempel@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a selftest for offloading a mirror action attached to the block
-associated with RED early_drop qevent.
+Hi Oleksij,
 
-Signed-off-by: Petr Machata <petrm@mellanox.com>
----
- .../drivers/net/mlxsw/sch_red_core.sh         | 106 +++++++++++++++++-
- .../drivers/net/mlxsw/sch_red_ets.sh          |  11 ++
- .../drivers/net/mlxsw/sch_red_root.sh         |   8 ++
- 3 files changed, 122 insertions(+), 3 deletions(-)
+This patch breaks Ethernet on the sama5d3 Xplained and I have not been
+able to unbreak it. Note tat If you want to test, networking has been
+further broken in v5.8-rc1 but should be properly working in v5.8-rc4
+after reverting this patch.
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-index 0d347d48c112..45042105ead7 100644
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-@@ -121,6 +121,7 @@ h1_destroy()
- h2_create()
- {
- 	host_create $h2 2
-+	tc qdisc add dev $h2 clsact
- 
- 	# Some of the tests in this suite use multicast traffic. As this traffic
- 	# enters BR2_10 resp. BR2_11, it is flooded to all other ports. Thus
-@@ -141,6 +142,7 @@ h2_create()
- h2_destroy()
- {
- 	ethtool -s $h2 autoneg on
-+	tc qdisc del dev $h2 clsact
- 	host_destroy $h2
- }
- 
-@@ -336,6 +338,17 @@ get_qdisc_npackets()
- 		qdisc_stats_get $swp3 $(get_qdisc_handle $vlan) .packets
- }
- 
-+send_packets()
-+{
-+	local vlan=$1; shift
-+	local proto=$1; shift
-+	local pkts=$1; shift
-+
-+	$MZ $h2.$vlan -p 8000 -a own -b $h3_mac \
-+	    -A $(ipaddr 2 $vlan) -B $(ipaddr 3 $vlan) \
-+	    -t $proto -q -c $pkts "$@"
-+}
-+
- # This sends traffic in an attempt to build a backlog of $size. Returns 0 on
- # success. After 10 failed attempts it bails out and returns 1. It dumps the
- # backlog size to stdout.
-@@ -364,9 +377,7 @@ build_backlog()
- 			return 1
- 		fi
- 
--		$MZ $h2.$vlan -p 8000 -a own -b $h3_mac \
--		    -A $(ipaddr 2 $vlan) -B $(ipaddr 3 $vlan) \
--		    -t $proto -q -c $pkts "$@"
-+		send_packets $vlan $proto $pkts "$@"
- 	done
- }
- 
-@@ -531,3 +542,92 @@ do_mc_backlog_test()
- 
- 	log_test "TC $((vlan - 10)): Qdisc reports MC backlog"
- }
-+
-+do_drop_test()
-+{
-+	local vlan=$1; shift
-+	local limit=$1; shift
-+	local trigger=$1; shift
-+	local subtest=$1; shift
-+	local fetch_counter=$1; shift
-+	local backlog
-+	local base
-+	local now
-+	local pct
-+
-+	RET=0
-+
-+	start_traffic $h1.$vlan $(ipaddr 1 $vlan) $(ipaddr 3 $vlan) $h3_mac
-+
-+	# Create a bit of a backlog and observe no mirroring due to drops.
-+	qevent_rule_install_$subtest
-+	base=$($fetch_counter)
-+
-+	build_backlog $vlan $((2 * limit / 3)) udp >/dev/null
-+
-+	busywait 1100 until_counter_is ">= $((base + 1))" $fetch_counter >/dev/null
-+	check_fail $? "Spurious packets observed without buffer pressure"
-+
-+	qevent_rule_uninstall_$subtest
-+
-+	# Push to the queue until it's at the limit. The configured limit is
-+	# rounded by the qdisc and then by the driver, so this is the best we
-+	# can do to get to the real limit of the system. Do this with the rules
-+	# uninstalled so that the inevitable drops don't get counted.
-+	build_backlog $vlan $((3 * limit / 2)) udp >/dev/null
-+
-+	qevent_rule_install_$subtest
-+	base=$($fetch_counter)
-+
-+	send_packets $vlan udp 11
-+
-+	now=$(busywait 1100 until_counter_is ">= $((base + 10))" $fetch_counter)
-+	check_err $? "Dropped packets not observed: 11 expected, $((now - base)) seen"
-+
-+	# When no extra traffic is injected, there should be no mirroring.
-+	busywait 1100 until_counter_is ">= $((base + 20))" $fetch_counter >/dev/null
-+	check_fail $? "Spurious packets observed"
-+
-+	# When the rule is uninstalled, there should be no mirroring.
-+	qevent_rule_uninstall_$subtest
-+	send_packets $vlan udp 11
-+	busywait 1100 until_counter_is ">= $((base + 20))" $fetch_counter >/dev/null
-+	check_fail $? "Spurious packets observed after uninstall"
-+
-+	log_test "TC $((vlan - 10)): ${trigger}ped packets $subtest'd"
-+
-+	stop_traffic
-+	sleep 1
-+}
-+
-+qevent_rule_install_mirror()
-+{
-+	tc filter add block 10 pref 1234 handle 102 matchall skip_sw \
-+	   action mirred egress mirror dev $swp2 hw_stats disabled
-+}
-+
-+qevent_rule_uninstall_mirror()
-+{
-+	tc filter del block 10 pref 1234 handle 102 matchall
-+}
-+
-+qevent_counter_fetch_mirror()
-+{
-+	tc_rule_handle_stats_get "dev $h2 ingress" 101
-+}
-+
-+do_drop_mirror_test()
-+{
-+	local vlan=$1; shift
-+	local limit=$1; shift
-+	local qevent_name=$1; shift
-+
-+	tc filter add dev $h2 ingress pref 1 handle 101 prot ip \
-+	   flower skip_sw ip_proto udp \
-+	   action drop
-+
-+	do_drop_test "$vlan" "$limit" "$qevent_name" mirror \
-+		     qevent_counter_fetch_mirror
-+
-+	tc filter del dev $h2 ingress pref 1 handle 101 flower
-+}
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-index 1c36c576613b..c8968b041bea 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-@@ -7,6 +7,7 @@ ALL_TESTS="
- 	ecn_nodrop_test
- 	red_test
- 	mc_backlog_test
-+	red_mirror_test
- "
- : ${QDISC:=ets}
- source sch_red_core.sh
-@@ -83,6 +84,16 @@ mc_backlog_test()
- 	uninstall_qdisc
- }
- 
-+red_mirror_test()
-+{
-+	install_qdisc qevent early_drop block 10
-+
-+	do_drop_mirror_test 10 $BACKLOG1 early_drop
-+	do_drop_mirror_test 11 $BACKLOG2 early_drop
-+
-+	uninstall_qdisc
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh
-index 558667ea11ec..ede9c38d3eff 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh
-@@ -7,6 +7,7 @@ ALL_TESTS="
- 	ecn_nodrop_test
- 	red_test
- 	mc_backlog_test
-+	red_mirror_test
- "
- source sch_red_core.sh
- 
-@@ -57,6 +58,13 @@ mc_backlog_test()
- 	uninstall_qdisc
- }
- 
-+red_mirror_test()
-+{
-+	install_qdisc qevent early_drop block 10
-+	do_drop_mirror_test 10 $BACKLOG
-+	uninstall_qdisc
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
+On 22/04/2020 09:21:37+0200, Oleksij Rempel wrote:
+> Add support for following phy-modes: rgmii, rgmii-id, rgmii-txid, rgmii-rxid.
+> 
+> This PHY has an internal RX delay of 1.2ns and no delay for TX.
+> 
+> The pad skew registers allow to set the total TX delay to max 1.38ns and
+> the total RX delay to max of 2.58ns (configurable 1.38ns + build in
+> 1.2ns) and a minimal delay of 0ns.
+> 
+> According to the RGMII v1.3 specification the delay provided by PCB traces
+> should be between 1.5ns and 2.0ns. The RGMII v2.0 allows to provide this
+> delay by MAC or PHY. So, we configure this PHY to the best values we can
+> get by this HW: TX delay to 1.38ns (max supported value) and RX delay to
+> 1.80ns (best calculated delay)
+> 
+> The phy-modes can still be fine tuned/overwritten by *-skew-ps
+> device tree properties described in:
+> Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+> changes v3:
+> - change delay on RX line to 1.80ns
+> - add warning if *-skew-ps properties are used together with not rgmii
+>   mode. 
+> 
+> changes v2:
+> - change RX_ID value from 0x1a to 0xa. The overflow bit was detected by
+>   FIELD_PREP() build check.
+>   Reported-by: kbuild test robot <lkp@intel.com>
+> 
+>  drivers/net/phy/micrel.c | 128 +++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 123 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index 05d20343b8161..045783eb4bc70 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -19,6 +19,7 @@
+>   *			 ksz9477
+>   */
+>  
+> +#include <linux/bitfield.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/phy.h>
+> @@ -490,9 +491,50 @@ static int ksz9021_config_init(struct phy_device *phydev)
+>  
+>  /* MMD Address 0x2 */
+>  #define MII_KSZ9031RN_CONTROL_PAD_SKEW	4
+> +#define MII_KSZ9031RN_RX_CTL_M		GENMASK(7, 4)
+> +#define MII_KSZ9031RN_TX_CTL_M		GENMASK(3, 0)
+> +
+>  #define MII_KSZ9031RN_RX_DATA_PAD_SKEW	5
+> +#define MII_KSZ9031RN_RXD3		GENMASK(15, 12)
+> +#define MII_KSZ9031RN_RXD2		GENMASK(11, 8)
+> +#define MII_KSZ9031RN_RXD1		GENMASK(7, 4)
+> +#define MII_KSZ9031RN_RXD0		GENMASK(3, 0)
+> +
+>  #define MII_KSZ9031RN_TX_DATA_PAD_SKEW	6
+> +#define MII_KSZ9031RN_TXD3		GENMASK(15, 12)
+> +#define MII_KSZ9031RN_TXD2		GENMASK(11, 8)
+> +#define MII_KSZ9031RN_TXD1		GENMASK(7, 4)
+> +#define MII_KSZ9031RN_TXD0		GENMASK(3, 0)
+> +
+>  #define MII_KSZ9031RN_CLK_PAD_SKEW	8
+> +#define MII_KSZ9031RN_GTX_CLK		GENMASK(9, 5)
+> +#define MII_KSZ9031RN_RX_CLK		GENMASK(4, 0)
+> +
+> +/* KSZ9031 has internal RGMII_IDRX = 1.2ns and RGMII_IDTX = 0ns. To
+> + * provide different RGMII options we need to configure delay offset
+> + * for each pad relative to build in delay.
+> + */
+> +/* keep rx as "No delay adjustment" and set rx_clk to +0.60ns to get delays of
+> + * 1.80ns
+> + */
+> +#define RX_ID				0x7
+> +#define RX_CLK_ID			0x19
+> +
+> +/* set rx to +0.30ns and rx_clk to -0.90ns to compensate the
+> + * internal 1.2ns delay.
+> + */
+> +#define RX_ND				0xc
+> +#define RX_CLK_ND			0x0
+> +
+> +/* set tx to -0.42ns and tx_clk to +0.96ns to get 1.38ns delay */
+> +#define TX_ID				0x0
+> +#define TX_CLK_ID			0x1f
+> +
+> +/* set tx and tx_clk to "No delay adjustment" to keep 0ns
+> + * dealy
+> + */
+> +#define TX_ND				0x7
+> +#define TX_CLK_ND			0xf
+>  
+>  /* MMD Address 0x1C */
+>  #define MII_KSZ9031RN_EDPD		0x23
+> @@ -501,7 +543,8 @@ static int ksz9021_config_init(struct phy_device *phydev)
+>  static int ksz9031_of_load_skew_values(struct phy_device *phydev,
+>  				       const struct device_node *of_node,
+>  				       u16 reg, size_t field_sz,
+> -				       const char *field[], u8 numfields)
+> +				       const char *field[], u8 numfields,
+> +				       bool *update)
+>  {
+>  	int val[4] = {-1, -2, -3, -4};
+>  	int matches = 0;
+> @@ -517,6 +560,8 @@ static int ksz9031_of_load_skew_values(struct phy_device *phydev,
+>  	if (!matches)
+>  		return 0;
+>  
+> +	*update |= true;
+> +
+>  	if (matches < numfields)
+>  		newval = phy_read_mmd(phydev, 2, reg);
+>  	else
+> @@ -565,6 +610,67 @@ static int ksz9031_enable_edpd(struct phy_device *phydev)
+>  			     reg | MII_KSZ9031RN_EDPD_ENABLE);
+>  }
+>  
+> +static int ksz9031_config_rgmii_delay(struct phy_device *phydev)
+> +{
+> +	u16 rx, tx, rx_clk, tx_clk;
+> +	int ret;
+> +
+> +	switch (phydev->interface) {
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +		tx = TX_ND;
+> +		tx_clk = TX_CLK_ND;
+> +		rx = RX_ND;
+> +		rx_clk = RX_CLK_ND;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII_ID:
+> +		tx = TX_ID;
+> +		tx_clk = TX_CLK_ID;
+> +		rx = RX_ID;
+> +		rx_clk = RX_CLK_ID;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> +		tx = TX_ND;
+> +		tx_clk = TX_CLK_ND;
+> +		rx = RX_ID;
+> +		rx_clk = RX_CLK_ID;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> +		tx = TX_ID;
+> +		tx_clk = TX_CLK_ID;
+> +		rx = RX_ND;
+> +		rx_clk = RX_CLK_ND;
+> +		break;
+> +	default:
+> +		return 0;
+> +	}
+> +
+> +	ret = phy_write_mmd(phydev, 2, MII_KSZ9031RN_CONTROL_PAD_SKEW,
+> +			    FIELD_PREP(MII_KSZ9031RN_RX_CTL_M, rx) |
+> +			    FIELD_PREP(MII_KSZ9031RN_TX_CTL_M, tx));
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = phy_write_mmd(phydev, 2, MII_KSZ9031RN_RX_DATA_PAD_SKEW,
+> +			    FIELD_PREP(MII_KSZ9031RN_RXD3, rx) |
+> +			    FIELD_PREP(MII_KSZ9031RN_RXD2, rx) |
+> +			    FIELD_PREP(MII_KSZ9031RN_RXD1, rx) |
+> +			    FIELD_PREP(MII_KSZ9031RN_RXD0, rx));
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = phy_write_mmd(phydev, 2, MII_KSZ9031RN_TX_DATA_PAD_SKEW,
+> +			    FIELD_PREP(MII_KSZ9031RN_TXD3, tx) |
+> +			    FIELD_PREP(MII_KSZ9031RN_TXD2, tx) |
+> +			    FIELD_PREP(MII_KSZ9031RN_TXD1, tx) |
+> +			    FIELD_PREP(MII_KSZ9031RN_TXD0, tx));
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return phy_write_mmd(phydev, 2, MII_KSZ9031RN_CLK_PAD_SKEW,
+> +			     FIELD_PREP(MII_KSZ9031RN_GTX_CLK, tx_clk) |
+> +			     FIELD_PREP(MII_KSZ9031RN_RX_CLK, rx_clk));
+> +}
+> +
+>  static int ksz9031_config_init(struct phy_device *phydev)
+>  {
+>  	const struct device *dev = &phydev->mdio.dev;
+> @@ -597,21 +703,33 @@ static int ksz9031_config_init(struct phy_device *phydev)
+>  	} while (!of_node && dev_walker);
+>  
+>  	if (of_node) {
+> +		bool update = false;
+> +
+> +		if (phy_interface_is_rgmii(phydev)) {
+> +			result = ksz9031_config_rgmii_delay(phydev);
+> +			if (result < 0)
+> +				return result;
+> +		}
+> +
+>  		ksz9031_of_load_skew_values(phydev, of_node,
+>  				MII_KSZ9031RN_CLK_PAD_SKEW, 5,
+> -				clk_skews, 2);
+> +				clk_skews, 2, &update);
+>  
+>  		ksz9031_of_load_skew_values(phydev, of_node,
+>  				MII_KSZ9031RN_CONTROL_PAD_SKEW, 4,
+> -				control_skews, 2);
+> +				control_skews, 2, &update);
+>  
+>  		ksz9031_of_load_skew_values(phydev, of_node,
+>  				MII_KSZ9031RN_RX_DATA_PAD_SKEW, 4,
+> -				rx_data_skews, 4);
+> +				rx_data_skews, 4, &update);
+>  
+>  		ksz9031_of_load_skew_values(phydev, of_node,
+>  				MII_KSZ9031RN_TX_DATA_PAD_SKEW, 4,
+> -				tx_data_skews, 4);
+> +				tx_data_skews, 4, &update);
+> +
+> +		if (update && phydev->interface != PHY_INTERFACE_MODE_RGMII)
+> +			phydev_warn(phydev,
+> +				    "*-skew-ps values should be used only with phy-mode = \"rgmii\"\n");
+>  
+>  		/* Silicon Errata Sheet (DS80000691D or DS80000692D):
+>  		 * When the device links in the 1000BASE-T slave mode only,
+> -- 
+> 2.26.0.rc2
+> 
+
 -- 
-2.20.1
-
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
