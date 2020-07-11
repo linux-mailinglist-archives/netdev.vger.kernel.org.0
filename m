@@ -2,182 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA3D21C615
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 22:19:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2E2921C624
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 22:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727777AbgGKUS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 16:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36020 "EHLO
+        id S1727833AbgGKUaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 16:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727107AbgGKUS5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 16:18:57 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3517BC08C5DE;
-        Sat, 11 Jul 2020 13:18:57 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id ch3so4062446pjb.5;
-        Sat, 11 Jul 2020 13:18:57 -0700 (PDT)
+        with ESMTP id S1726780AbgGKUaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 16:30:18 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13556C08C5DD;
+        Sat, 11 Jul 2020 13:30:18 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id m16so2465913pls.5;
+        Sat, 11 Jul 2020 13:30:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+W9lcpdbR+gbswF4mAEkwAjlZYQZEcdmRIB2Ky3Trb8=;
-        b=AqDP0ZuHWk4mUmEuWDg++234B8G9w7n8pXLEcl6ZCwUmjfkfmvb6DHh04mLvxPCUI4
-         PQvVBdI9Ll/YZ0DlLS5P21EIkmTZi7037EwpBm2ie9j7Lx11gqHIDyKS280iMhfP8ISp
-         kWdLfAFVXi+k73KDoaCUI7AIuZ8xGlDTd07grS36YIjCCsYQU18s61vX8jjhf2UJJCPm
-         BaWKkcEvd/NCZm+ujt/z+Tn0M3DlW3cAjU7jl2W0E2+NzcZgwRLc2LFij5dHebiXwM4H
-         V7vm36+WyL1z3TRhYssmCCeS1t8ehSaBw+eLcLElGQbGJwpFYPbeT6N6S4tshvMAJBOG
-         TYEA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=5SxQ/W4fQ7dzP/hsn63V8CBLGv3LBO6R8zOG1XBAxQg=;
+        b=r1uev5EJYj14z6OIUA2WzEr5gq48rqe95et2oKueB8EWZ+Y0lP2OGRRQlKhX66AMqV
+         MmD42JAE7Qe1bKFoF2DXgufLjTc+beTeiNSCRqXNhV+Rkc7Cd+AdEkjQhD1SxGa8OL4R
+         vY4JnGyfdbqeUx49H6jYvpPWGRuJqm3LqUeVnOZFUlNAmv2dgSIyizfLpfua8JVHPXFD
+         xolp0f9DPSgRx8wETIQVk64ixiNGLS+tEl1MY/eR3mxAE52RtDktQFcI7Tz6wuFaKnew
+         KxIjutHWryEyXTJnVrlJl+qt/k2llqO/TyKP1SlbHS7vrlgPo+728goPFE2l0u7VZmQR
+         4FNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+W9lcpdbR+gbswF4mAEkwAjlZYQZEcdmRIB2Ky3Trb8=;
-        b=AOkSGQMI4mnFn0BzWivfmbnPkvqoPtzLGwnCdvSWPILFe7VjkNaYvD0sXOw1FtCAyP
-         2sgexFBwQ9afCz1U3kdR+VgmzDWx7JMMvA9Uwo7oR/gPOAudD8WLpRwceinCbZiLOZ/u
-         Enye4peOZqLoCiOWt8n0jQenxf4r6YzHvDcb4deOS6KkC+aFHAqWtBZkumTJBlgl7ry7
-         mfgzBLWyL+odxl0MK4wZi2fPhJUGp1Xk+eOA3fmU+Nsmgs3+EKr6JggPZUnrXGx1ik7y
-         E3q32a5NM7Xjelg3ko8+x54Xzrpb0LPiCHp0aNNi6uT30w82qUOPO9tKGZh/QA3SpO6w
-         qRKA==
-X-Gm-Message-State: AOAM530A8PYKSxH7sGBT1bLIj2Rbk/x3+ziCrxXDx973TECtIu7SZaC6
-        lv7Qp+9vkTWRsi+3l4sBRG4=
-X-Google-Smtp-Source: ABdhPJwJjmZXTes0CpNtictuio/y3kdHja0U879m+LcpdxXmVn886eMMdjDx4Y2jRmb6qvNU1dE3hA==
-X-Received: by 2002:a17:90b:918:: with SMTP id bo24mr12695792pjb.191.1594498736693;
-        Sat, 11 Jul 2020 13:18:56 -0700 (PDT)
-Received: from ?IPv6:2001:470:67:5b9:108c:a2dd:75d1:a903? ([2001:470:67:5b9:108c:a2dd:75d1:a903])
-        by smtp.gmail.com with ESMTPSA id m20sm10349179pfk.52.2020.07.11.13.18.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Jul 2020 13:18:55 -0700 (PDT)
-Subject: Re: [PATCH v1 8/8] dt-bindings: net: dsa: Add documentation for
- Hellcreek switches
-To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=5SxQ/W4fQ7dzP/hsn63V8CBLGv3LBO6R8zOG1XBAxQg=;
+        b=OgsOV4KiKMUOHMVraC1Ib+e0jkxdWC6LvvGV8IoOleyqZE/B7zeA+SYyUgCZ2OOrra
+         Trv/8+McB6WPwn1j5/Z2Y9f/jMDzt9aaEcjpkWJLXUK28Bey8UkxwfULFl82pIaUwy19
+         +1wuTpxpZaoydendqHdvCBsyicfSQGEVsaI1y4mbNMDfglhDvf9LDDJEOTKb3UxAgxYZ
+         NTP5/Yj924RMVdg80mNPgHAaZBCHtw2Nj5q3FqQTq1SSi2qODvs4J7zcRyeROXc6XxtM
+         /uSTnNC2vYyde3Yg5Sw0nQoXub+y2xFSsoUZDp1Gi3q5ijnZftTsYB4WMguXSUrvV1m2
+         5VNw==
+X-Gm-Message-State: AOAM5334LOfARGsG1t2dA0da2R/ck4Nt3V+VkbB8+uCLLhpN7aPkNq/4
+        O4ph9J//uw52+o1nPi5NtTjx989P
+X-Google-Smtp-Source: ABdhPJzBRccBaPGRXGSWz4vPQ96Ry7hFEM/ut7r0OjTO2ACfWIG5KxOhwrWSNrKXOIGmlDED8jgKYw==
+X-Received: by 2002:a17:90a:e981:: with SMTP id v1mr11916618pjy.130.1594499416411;
+        Sat, 11 Jul 2020 13:30:16 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id x3sm9923306pfn.154.2020.07.11.13.30.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jul 2020 13:30:15 -0700 (PDT)
+Date:   Sat, 11 Jul 2020 13:30:13 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
         ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH v1 3/8] net: dsa: hellcreek: Add PTP clock support
+Message-ID: <20200711203013.GA27467@hoboy>
 References: <20200710113611.3398-1-kurt@linutronix.de>
- <20200710113611.3398-9-kurt@linutronix.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <92b7dca3-f56d-ecb1-59c2-0981c2b99dad@gmail.com>
-Date:   Sat, 11 Jul 2020 13:18:54 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.10.0
+ <20200710113611.3398-4-kurt@linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20200710113611.3398-9-kurt@linutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200710113611.3398-4-kurt@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/10/2020 4:36 AM, Kurt Kanzenbach wrote:
-> Add basic documentation and example.
+On Fri, Jul 10, 2020 at 01:36:06PM +0200, Kurt Kanzenbach wrote:
+> From: Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
 > 
+> The switch has internal PTP hardware clocks. Add support for it. There are three
+> clocks:
+> 
+>  * Synchronized
+>  * Syntonized
+>  * Free running
+> 
+> Currently the synchronized clock is exported to user space which is a good
+> default for the beginning. The free running clock might be exported later
+> e.g. for implementing 802.1AS-2011/2020 Time Aware Bridges (TAB). The switch
+> also supports cross time stamping for that purpose.
+> 
+> The implementation adds support setting/getting the time as well as offset and
+> frequency adjustments. However, the clock only holds a partial timeofday
+> timestamp. This is why we track the seconds completely in software (see overflow
+> work and last_ts).
+> 
+> Furthermore, add the PTP multicast addresses into the FDB to forward that
+> packages only to the CPU port where they are processed by a PTP program.
+> 
+> Signed-off-by: Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
 > Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-> ---
->  .../bindings/net/dsa/hellcreek.yaml           | 132 ++++++++++++++++++
->  1 file changed, 132 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/dsa/hellcreek.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/hellcreek.yaml b/Documentation/devicetree/bindings/net/dsa/hellcreek.yaml
-> new file mode 100644
-> index 000000000000..bb8ccc1762c8
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/dsa/hellcreek.yaml
-> @@ -0,0 +1,132 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/dsa/hellcreek.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Hirschmann Hellcreek TSN Switch Device Tree Bindings
-> +
-> +allOf:
-> +  - $ref: dsa.yaml#
-> +
-> +maintainers:
-> +  - Andrew Lunn <andrew@lunn.ch>
-> +  - Florian Fainelli <f.fainelli@gmail.com>
-> +  - Vivien Didelot <vivien.didelot@gmail.com>
 
-Don't you want to add yourself here as well?
-
-> +
-> +description:
-> +  The Hellcreek TSN Switch IP is a 802.1Q Ethernet compliant switch. It supports
-> +  the Pricision Time Protocol, Hardware Timestamping as well the Time Aware
-> +  Shaper.
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - const: hirschmann,hellcreek
-> +
-> +  reg:
-> +    description:
-> +      The physical base address and size of TSN and PTP memory base
-
-You need to indicate how many of these cells are required.
-
-> +
-> +  reg-names:
-> +    description:
-> +      Names of the physical base addresses
-
-Likewise.
-
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 1
-
-Humm, not sure about those, you do not expose a memory mapped interface
-bus from this switch to another sub node.
-
-> +
-> +  leds:
-> +    type: object
-> +    properties:
-> +      '#address-cells':
-> +        const: 1
-> +      '#size-cells':
-> +        const: 0
-> +
-> +    patternProperties:
-> +      "^led@[0-9]+$":
-> +          type: object
-> +          description: Hellcreek leds
-> +
-> +          properties:
-> +            reg:
-> +              items:
-> +                - enum: [0, 1]
-> +              description: Led number
-> +
-> +            label:
-> +              description: Label associated with this led
-> +              $ref: /schemas/types.yaml#/definitions/string
-> +
-> +            default-state:
-> +              items:
-> +                enum: ["on", "off", "keep"]
-> +              description: Default state for the led
-> +              $ref: /schemas/types.yaml#/definitions/string
-> +
-> +          required:
-> +            - reg
-
-Can you reference an existing LED binding by any chance?
--- 
-Florian
+Acked-by: Richard Cochran <richardcochran@gmail.com>
