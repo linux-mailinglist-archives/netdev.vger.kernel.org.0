@@ -2,130 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C04C21C3E1
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 13:10:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E497321C401
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 13:35:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728178AbgGKLKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 07:10:19 -0400
-Received: from smtprelay0109.hostedemail.com ([216.40.44.109]:58056 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726523AbgGKLKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 07:10:19 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 22C46100E7B42;
-        Sat, 11 Jul 2020 11:10:17 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:1801:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3165:3355:3622:3865:3866:3867:3870:3871:3872:3873:3874:4321:4605:5007:6119:6742:7514:10004:10400:10848:10967:11232:11657:11658:11914:12043:12295:12297:12555:12663:12740:12895:12986:13439:13894:14093:14097:14181:14659:14721:21080:21451:21627:21740:30029:30054:30056:30064:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: day58_420072326ed6
-X-Filterd-Recvd-Size: 3571
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf18.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 11 Jul 2020 11:10:15 +0000 (UTC)
-Message-ID: <02995ace8cc4524d44bf6e6db0282391c3f6d8e4.camel@perches.com>
-Subject: Re: [PATCH v2] MAINTAINERS: XDP: restrict N: and K:
-From:   Joe Perches <joe@perches.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>, ast@kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        mchehab+huawei@kernel.org, robh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Date:   Sat, 11 Jul 2020 04:10:13 -0700
-In-Reply-To: <20200711102318.28ce29d6@carbon>
-References: <87tuyfi4fm.fsf@toke.dk>
-         <20200710190407.31269-1-grandmaster@al2klimov.de>
-         <28a81dfe62b1dc00ccc721ddb88669d13665252b.camel@perches.com>
-         <20200711102318.28ce29d6@carbon>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1726963AbgGKLf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 07:35:29 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:53808 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726342AbgGKLf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 07:35:29 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1594467326;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=DgnS2u/iZEVZUFMYv/l3fA9kTrSNsYlDPdDSbnGCtnA=;
+        b=MyRqZkHNqgmXRO+II7wtGu4lp41woc9bM50qsxTiZeHrBvQTEs4DQOypvqfKwsGJ+yFbs+
+        Js9DE0Zjxp89OghXKINbnaRWSH6cQ1gZzkJGHbkTabSDoK9uX5IbqJrPUcn0niKTw+kXSm
+        NVwPADgxiWa3LIlHc2LPjfA74PCa+u5owm4yBqXv1Vj85ZVaj5NCFmqyxGJiipQiFLjp0Q
+        xz7WM2rUQZ47AXFCiLc/As0zNYtz4I+Yc+2tcgl8/Z/7RII5JonXvfpUQYlxFXJifg+mej
+        l/V+2j/uPl49ewsvJbi/SdvQNql43++GfEA7sItGwaZAln0h+eoPEti+4Kql8A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1594467326;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=DgnS2u/iZEVZUFMYv/l3fA9kTrSNsYlDPdDSbnGCtnA=;
+        b=5y9NRFdh2SVWFfsCKr3Zjat/8HwNC/EkpwchTco90hwMZ4aBYebtau/5rko1GtMnD1Dx8S
+        AMaJSr3TSeZotWAg==
+To:     Rob Herring <robh@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v1 1/1] dt-bindings: net: dsa: Add DSA yaml binding
+In-Reply-To: <20200710163940.GA2775145@bogus>
+References: <20200710090618.28945-1-kurt@linutronix.de> <20200710090618.28945-2-kurt@linutronix.de> <20200710163940.GA2775145@bogus>
+Date:   Sat, 11 Jul 2020 13:35:12 +0200
+Message-ID: <874kqewahb.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-07-11 at 10:23 +0200, Jesper Dangaard Brouer wrote:
-> On Fri, 10 Jul 2020 12:37:47 -0700
-> Joe Perches <joe@perches.com> wrote:
-> 
-> > On Fri, 2020-07-10 at 21:04 +0200, Alexander A. Klimov wrote:
-> > > Rationale:
-> > > Documentation/arm/ixp4xx.rst contains "xdp" as part of "ixdp465"
-> > > which has nothing to do with XDP.
-> > > 
-> > > Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
-> > > ---
-> > >  Better?
-> > > 
-> > >  MAINTAINERS | 4 ++--
-> > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > index 1d4aa7f942de..735e2475e926 100644
-> > > --- a/MAINTAINERS
-> > > +++ b/MAINTAINERS
-> > > @@ -18708,8 +18708,8 @@ F:	include/trace/events/xdp.h
-> > >  F:	kernel/bpf/cpumap.c
-> > >  F:	kernel/bpf/devmap.c
-> > >  F:	net/core/xdp.c
-> > > -N:	xdp
-> > > -K:	xdp
-> > > +N:	(?:\b|_)xdp
-> > > +K:	(?:\b|_)xdp  
-> > 
-> > Generally, it's better to have comprehensive files lists
-> > rather than adding name matching regexes.
-> 
-> I like below more direct matching of the files we already know are XDP
-> related. The pattern match are meant to catch drivers containing XDP
-> related bits.
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-That's what the K: entry is for no?
+On Fri Jul 10 2020, Rob Herring wrote:
+> On Fri, 10 Jul 2020 11:06:18 +0200, Kurt Kanzenbach wrote:
+>> For future DSA drivers it makes sense to add a generic DSA yaml binding =
+which
+>> can be used then. This was created using the properties from dsa.txt. It
+>> includes the ports and the dsa,member property.
+>>=20
+>> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
+>> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+>> ---
+>>  .../devicetree/bindings/net/dsa/dsa.yaml      | 80 +++++++++++++++++++
+>>  1 file changed, 80 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/net/dsa/dsa.yaml
+>>=20
+>
+>
+> My bot found errors running 'make dt_binding_check' on your patch:
+>
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/=
+ti,cpsw-switch.example.dt.yaml: switch@0: 'ports' is a required property
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/=
+qcom,ipq8064-mdio.example.dt.yaml: switch@10: 'ports' is a required property
 
-Anyway, if you agree with using the appropriate F: patterns,
-please submit it.  I'm not going to.
+Okay, the requirement for 'ports' has be to removed.
 
-> (small typo in your patch below)
-> 
-> > Perhaps:
-> > ---
-> >  MAINTAINERS | 12 +++++++++---
-> >  1 file changed, 9 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 16854e47e8cb..2e96cbf15b31 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -18763,13 +18763,19 @@ M:	John Fastabend <john.fastabend@gmail.com>
-> >  L:	netdev@vger.kernel.org
-> >  L:	bpf@vger.kernel.org
-> >  S:	Supported
-> > -F:	include/net/xdp.h
-> > +F:	Documentation/networking/af_xdp.rst
-> > +F:	include/net/xdp*
-> >  F:	include/trace/events/xdp.h
-> > +F:	include/uapi/linux/if_xdp.h
-> > +F:	include/uapi/linux/xdp_diag.h
-> >  F:	kernel/bpf/cpumap.c
-> >  F:	kernel/bpf/devmap.c
-> >  F:	net/core/xdp.c
-> > -N:	xdp
-> > -K:	xdp
-> > +F:	net/xdp/
-> > +F:	samples/bpf/xdp*
-> > +F:	tools/testing/selftests/bfp/*xdp*
->                                ^^^^ 
-> Typo, should be "bpf"
-> 
-> > +F:	tools/testing/selftests/bfp/*/*xdp*
-> > +K:	(?:\b|_)xdp(?:\b|_)
-> >  
-> >  XDP SOCKETS (AF_XDP)
-> >  M:	Björn Töpel <bjorn.topel@intel.com>
-> > 
-> 
-> 
+Thanks,
+Kurt
 
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8Jo/AACgkQeSpbgcuY
+8KaLXA/+NPPoaiikeFDzjgjRt4O12iCt5MG0wwBb5VHk3d9B4Y666hFDtv+qxhtD
+ZBHuhx2nycKyVAORa4oa7cvEtKlwWRokgDpSe9qyTXs9RpZN7S1dbBc+s9UhteQN
+j8ndkSndrNe40Iw+4ru0f5NljQB4cTcf8gV8417LPUY6P2cHxrAv6ANuE0zFT1Ws
+T7XgqGftaWo1324KaZQHCjo0Y/B+GZjyB/lbgJ9h2mMe839gebeghoRSlcDiQweh
+xZqrWTkznAFUjT4KPoPyucAGz1hOp+jFWuPQlCnsEZx1UFx8Ukzfqo+DfsfZ1YHk
+cAz24LwXYbm31eZ4Jvf3ptKvGi7x5KxufD2RxHV5dh5U6+mdDPRvDaw2ty2++X1R
+7xiN9a6n2wHrbT4qHnPrGq3P/xtGsWkLXF3WbHo+FXr8y3o75AnMi9abG9l1YhWY
+thD1UElZCcDM7SqGIZ+3HSPMio+gw0HWS49mqetIPLjNd8fKBEWFi6fSo0DGcgS3
+szdVPMbKxMJZOul1SI28i0/Qi08nWImtKV9ZoD2XoN2mYnkE2M3lBcizemvMT5I7
++2Bm20UGlD1B0PAtvQUrZLs/9VcR5TE8lVQVuDTWGizkelDZaLjMlaBH2s941AZ7
+NFOfdK3PP0r4uhipzTMUutAADqBLb1PokrO+2yxIR7lFJPMAy8k=
+=bQlp
+-----END PGP SIGNATURE-----
+--=-=-=--
