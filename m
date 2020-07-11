@@ -2,215 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5951521C2F1
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 08:58:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4122F21C314
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 09:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728234AbgGKG6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 02:58:17 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:53515 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728049AbgGKG6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 02:58:16 -0400
-Received: by mail-io1-f71.google.com with SMTP id g11so4994491ioc.20
-        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 23:58:15 -0700 (PDT)
+        id S1728170AbgGKHkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 03:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33128 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726900AbgGKHkK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 03:40:10 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8A6C08C5DD
+        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 00:40:09 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id u133so4184434vsc.0
+        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 00:40:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=f5lPF3XdF6K0NGZOyKOCMg14RTyoEyN0JADWifX2WeU=;
+        b=NYWdZGqMU2ljOqlNCd0aow0Ffxs+se03nR4vC/cMS9SWDuhpXJbOylQ8vhFscv1TcL
+         ttAozVtjpaEdPCtIh1/vDLyhjRK6ti30Os3dUF2QVdntWWcDXE6Kpp4GEnyEy0dkTcrm
+         qWbIYB8I+a+17/hOyK3geoqPMVXA64G6qwbsxekswYWU7NuNbBQ4d2UOrk1UK7Elt0FT
+         EsxJV438UPDm3av0CAg/IQLfWIptvrN/W0yvP8cg0iWOq6F5TcKXVocmbwbhC5F6z+ut
+         IV2+DdZjGJgfAkBOdmjiClMaRWZKwshiu3a1lx/Yrj0ccNF2g4OTZFd9Lx7VX3pCYNhx
+         hYcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=AkBx8LTbEovSwhwwJ9FeFsD5TmflPO84M/ic/EDjK1M=;
-        b=MwRMLlHK534c6ZxmW4XS6NTzDnhIE1toa4AMkh15j8rEZ9t5AREABljTzIzMB2btHE
-         1Hg5sTrnQRfpSX5Na2rs/ntIWcMh49d1MQlJBQg8t8Akyhr3C819EOr0JRYtD9pznmB9
-         7N3OAnnnlH+Nqot3+4461scqploh7HbR9MGyDM4q1b8yr3vF/Vy/ey9QoP/oT12G0hgN
-         m65lOrKGPFfvASVu8WyM+8TPzZucyzEmL6ezvFSZ2BV40y7d/64/hCXbF7Xq4cp2mYgu
-         blca2o60HCFwa1keBe/6MKF8NZmRN8O28+n1zB0/+YKuppwUkGc6J/0H8G/KfYIRI06j
-         G+6w==
-X-Gm-Message-State: AOAM531PusrjaMsRgcyS7p2A97B87/6wUKFDpvurEIS2I7Nr35Z8zk5z
-        mKL1dDgACM/OO561eGFeAEZgTBk/3u53gw7yX/nvw2JtESE8
-X-Google-Smtp-Source: ABdhPJyHkFmFk9sP90ajG41S5cTk8F61qKnof5/Gg9oZeuf3WWRrWJgUgUCEGrpP6Ouw4P/GSXLP5u8lRScyMR0/DNxEF9rwqt1D
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f5lPF3XdF6K0NGZOyKOCMg14RTyoEyN0JADWifX2WeU=;
+        b=Sv5jfdE9krR9clJh0lq4WICTLUvuK6ze4CguHGC/DkzBfxHN/vSsnnl5VX5AKy7E+w
+         +4GpOI3Al03ZMh1BMv36rd69o2nWeBiOa5QL+rOanESc57z4m+avxVN24w+FI1P/+GVv
+         inXcoSpz5HY8HpDf1chiCFh7yJ/8tWye6HOFA9dth2qEBa/QgxZLzIjBYLYU75GpNeK5
+         NmKIQKQGhp4IyDWfrrJ10laJGzi1jURukzh4JzOaQSEYNBxh8A9Z9T988TXKhhV28rar
+         sFbxPnV4yWCupKJ0r4qskWAciOUfVN20bJMEpWHeFNxy572JMRwWYsX6rTpQmtk4lf34
+         rzUg==
+X-Gm-Message-State: AOAM532pV+0H5LTrtlb4DsGOdES8UkBi6Qg0fWQypZSdMlUDBKmVurV9
+        Mk6/qX61Gzu7u3i8x7K299bDCKUVPDcUSe6wv6JceqeohxRk8w==
+X-Google-Smtp-Source: ABdhPJx8/zaIcZxWP5pbJ7zrJXG2TNvexf+u5OUgTW2TIwyAJo5tnZzXvndLkFlLQ3n+Tr7Pn3DZKo7hZ+GVxj8fZd0=
+X-Received: by 2002:a05:6102:830:: with SMTP id k16mr21333035vsb.182.1594453209071;
+ Sat, 11 Jul 2020 00:40:09 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:c21:: with SMTP id q1mr5169902ilg.28.1594450694903;
- Fri, 10 Jul 2020 23:58:14 -0700 (PDT)
-Date:   Fri, 10 Jul 2020 23:58:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000481e2505aa24fb32@google.com>
-Subject: BUG: stack guard page was hit in __bad_area_nosemaphore
-From:   syzbot <syzbot+89eb3f606b866757455d@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, jeyu@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
+References: <1594363554-4076-1-git-send-email-magnus.karlsson@intel.com> <3e42533f-fb6e-d6fa-af48-cb7f5c70890b@iogearbox.net>
+In-Reply-To: <3e42533f-fb6e-d6fa-af48-cb7f5c70890b@iogearbox.net>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Sat, 11 Jul 2020 09:39:58 +0200
+Message-ID: <CAJ8uoz3WhJkqN2=D+VP+ikvY2_WTRx7Pcuihr_8qJiYh0DUtog@mail.gmail.com>
+Subject: Re: [PATCH bpf v2] xsk: fix memory leak and packet loss in Tx skb path
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        A.Zema@falconvsystems.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, Jul 11, 2020 at 1:28 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Hi Magnus,
+>
+> On 7/10/20 8:45 AM, Magnus Karlsson wrote:
+> > In the skb Tx path, transmission of a packet is performed with
+> > dev_direct_xmit(). When QUEUE_STATE_FROZEN is set in the transmit
+> > routines, it returns NETDEV_TX_BUSY signifying that it was not
+> > possible to send the packet now, please try later. Unfortunately, the
+> > xsk transmit code discarded the packet, missed to free the skb, and
+> > returned EBUSY to the application. Fix this memory leak and
+> > unnecessary packet loss, by not discarding the packet in the Tx ring,
+> > freeing the allocated skb, and return EAGAIN. As EAGAIN is returned to the
+> > application, it can then retry the send operation and the packet will
+> > finally be sent as we will likely not be in the QUEUE_STATE_FROZEN
+> > state anymore. So EAGAIN tells the application that the packet was not
+> > discarded from the Tx ring and that it needs to call send()
+> > again. EBUSY, on the other hand, signifies that the packet was not
+> > sent and discarded from the Tx ring. The application needs to put the
+> > packet on the Tx ring again if it wants it to be sent.
+> >
+> > Fixes: 35fcde7f8deb ("xsk: support for Tx")
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > Reported-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
+> > Suggested-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
+> > ---
+> > The v1 of this patch was called "xsk: do not discard packet when
+> > QUEUE_STATE_FROZEN".
+> > ---
+> >   net/xdp/xsk.c | 13 +++++++++++--
+> >   1 file changed, 11 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index 3700266..5304250 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -376,13 +376,22 @@ static int xsk_generic_xmit(struct sock *sk)
+> >               skb->destructor = xsk_destruct_skb;
+> >
+> >               err = dev_direct_xmit(skb, xs->queue_id);
+> > -             xskq_cons_release(xs->tx);
+> >               /* Ignore NET_XMIT_CN as packet might have been sent */
+> > -             if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
+> > +             if (err == NET_XMIT_DROP) {
+> >                       /* SKB completed but not sent */
+> > +                     xskq_cons_release(xs->tx);
+> >                       err = -EBUSY;
+> >                       goto out;
+> > +             } else if  (err == NETDEV_TX_BUSY) {
+> > +                     /* QUEUE_STATE_FROZEN, tell application to
+> > +                      * retry sending the packet
+> > +                      */
+> > +                     skb->destructor = NULL;
+> > +                     kfree_skb(skb);
+> > +                     err = -EAGAIN;
+> > +                     goto out;
+>
+> Hmm, I'm probably missing something or I should blame my current lack of coffee,
+> but I'll ask anyway.. What is the relation here to the kfree_skb{,_list}() in
+> dev_direct_xmit() when we have NETDEV_TX_BUSY condition? Wouldn't the patch above
+> double-free with NETDEV_TX_BUSY?
 
-syzbot found the following crash on:
+I think you are correct even without coffee :-). I misinterpreted the
+following piece of code in dev_direct_xmit():
 
-HEAD commit:    7cc2a8ea Merge tag 'block-5.8-2020-07-01' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=135403a3100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7be693511b29b338
-dashboard link: https://syzkaller.appspot.com/bug?extid=89eb3f606b866757455d
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+if (!dev_xmit_complete(ret))
+     kfree_skb(skb);
 
-Unfortunately, I don't have any reproducer for this crash yet.
+If the skb was NOT consumed by the transmit, then it goes and frees
+the skb. NETDEV_TX_BUSY as a return value will make
+dev_xmit_complete() return false which triggers the freeing of the
+skb. So if I now understand dev_direct_xmit() correctly, it will
+always consume the skb, even when NETDEV_TX_BUSY is returned. And this
+is what I would like to avoid. If the skb is freed, the destructor is
+triggered and it will complete the packet to user-space, which is the
+same thing as dropping it, which is what I want to avoid in the first
+place since it is completely unnecessary.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+89eb3f606b866757455d@syzkaller.appspotmail.com
+So what would be the best way to solve this? Prefer to share the code
+with AF_PACKET if possible. Introduce a boolean function parameter to
+indicate if it should be freed in this case? Other ideas? Here are the
+users of dev_direct_xmit():
 
-BUG: stack guard page was hit at 0000000046f5170d (stack is 00000000087b5eff..00000000b28869c7)
-kernel stack overflow (double-fault): 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 25511 Comm: syz-executor.4 Not tainted 5.8.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__bad_area_nosemaphore+0x15/0x480 arch/x86/mm/fault.c:743
-Code: ff ff 4c 89 ff e8 8b 35 7f 00 e9 0c ff ff ff 66 0f 1f 44 00 00 41 57 41 56 45 89 c6 41 55 49 89 d5 41 54 49 89 f4 55 48 89 fd <53> 4c 8d bd 88 00 00 00 48 83 ec 28 89 4c 24 14 e8 d6 df 3f 00 4c
-RSP: 0018:ffffc90016598000 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: ffff88804d04c580 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffffc900165980d8
-RBP: ffffc900165980d8 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
-R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000000000
-FS:  00007f2d59c18700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffc90016597ff8 CR3: 00000000599e5000 CR4: 00000000001426f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
- handle_page_fault arch/x86/mm/fault.c:1365 [inline]
- exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
-RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
-Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-RSP: 0018:ffffc90016598188 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: ffffc90016598490 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
-RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
- search_module_extables+0xce/0x100 kernel/module.c:4422
- search_exception_tables+0x42/0x50 kernel/extable.c:59
- fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
- no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
- __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
- do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
- handle_page_fault arch/x86/mm/fault.c:1365 [inline]
- exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
-RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
-Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-RSP: 0018:ffffc900165984b8 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: ffffc900165987c0 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
-RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
- search_module_extables+0xce/0x100 kernel/module.c:4422
- search_exception_tables+0x42/0x50 kernel/extable.c:59
- fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
- no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
- __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
- do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
- handle_page_fault arch/x86/mm/fault.c:1365 [inline]
- exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
-RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
-Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-RSP: 0018:ffffc900165987e8 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: ffffc90016598af0 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
-RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
- search_module_extables+0xce/0x100 kernel/module.c:4422
- search_exception_tables+0x42/0x50 kernel/extable.c:59
- fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
- no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
- __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
- do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
- handle_page_fault arch/x86/mm/fault.c:1365 [inline]
- exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
-RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
-Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-RSP: 0018:ffffc90016598b18 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: ffffc90016598e20 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
-RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
- search_module_extables+0xce/0x100 kernel/module.c:4422
- search_exception_tables+0x42/0x50 kernel/extable.c:59
- fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
- no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
- __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
- do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
- handle_page_fault arch/x86/mm/fault.c:1365 [inline]
- exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
-RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
-Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-RSP: 0018:ffffc90016598e48 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: ffffc90016599150 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
-RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
- search_module_extables+0xce/0x100 kernel/module.c:4422
- search_exception_tables+0x42/0x50 kernel/extable.c:59
- fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
- no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
- __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
- do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
- handle_page_fault arch/x86/mm/fault.c:1365 [inline]
- exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
-RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
-Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-RSP: 0018:ffffc90016599178 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: ffffc90016599480 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
-RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
- search_module_extables+0xce/0x100 kernel/module.c:4422
- search_exception_tables+0x42/0x50 kernel/extable.c:59
- fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
- no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
- __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
- do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
- handle_page_fault arch/x86/mm/fault.c:1365 [inline]
- exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
-RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
-Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-RSP: 0018:ffffc900165994a8 EFLAGS: 00010046
-RAX: 0000000000000000 
-Lost 804 message(s)!
----[ end trace ffd1ab463dd60bcc ]---
-RIP: 0010:__bad_area_nosemaphore+0x15/0x480 arch/x86/mm/fault.c:743
-Code: ff ff 4c 89 ff e8 8b 35 7f 00 e9 0c ff ff ff 66 0f 1f 44 00 00 41 57 41 56 45 89 c6 41 55 49 89 d5 41 54 49 89 f4 55 48 89 fd <53> 4c 8d bd 88 00 00 00 48 83 ec 28 89 4c 24 14 e8 d6 df 3f 00 4c
-RSP: 0018:ffffc90016598000 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: ffff88804d04c580 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffffc900165980d8
-RBP: ffffc900165980d8 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
-R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000000000
-FS:  00007f2d59c18700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffc90016597ff8 CR3: 00000000599e5000 CR4: 00000000001426f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
 
+line 349
+line 939
+line 1033
+line 1303
+line 1665
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+include/linux/netdevice.h, line 2719
+net/core/dev.c
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+line 4095
+line 4132
+
+net/packet/af_packet.c, line 240
+net/xdp/xsk.c, line 425
+
+Thanks: Magnus
+
+> >               }
+> > +             xskq_cons_release(xs->tx);
+> >
+> >               sent_frame = true;
+> >       }
+> >
+>
+> Thanks,
+> Daniel
