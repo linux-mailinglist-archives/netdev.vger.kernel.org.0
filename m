@@ -2,69 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79BA921C533
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 18:23:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A47A21C550
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 18:38:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728556AbgGKQXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 12:23:53 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58598 "EHLO vps0.lunn.ch"
+        id S1728651AbgGKQiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 12:38:12 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58620 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728441AbgGKQXx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Jul 2020 12:23:53 -0400
+        id S1728412AbgGKQiM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Jul 2020 12:38:12 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1juII1-004dcq-1V; Sat, 11 Jul 2020 18:23:49 +0200
-Date:   Sat, 11 Jul 2020 18:23:49 +0200
+        id 1juIVq-004dfe-Si; Sat, 11 Jul 2020 18:38:06 +0200
+Date:   Sat, 11 Jul 2020 18:38:06 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Martin Rowe <martin.p.rowe@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        vivien.didelot@gmail.com, linux@armlinux.org.uk
-Subject: Re: bug: net: dsa: mv88e6xxx: unable to tx or rx with Clearfog GT 8K
- (with git bisect)
-Message-ID: <20200711162349.GL1014141@lunn.ch>
-References: <CAOAjy5T63wDzDowikwZXPTC5fCnPL1QbH9P1v+MMOfydegV30w@mail.gmail.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, min.li.xe@renesas.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] ptp: add debugfs support for IDT family of
+ timing devices
+Message-ID: <20200711163806.GM1014141@lunn.ch>
+References: <1594395685-25199-1-git-send-email-min.li.xe@renesas.com>
+ <20200710135844.58d76d44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200711134601.GD20443@hoboy>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAOAjy5T63wDzDowikwZXPTC5fCnPL1QbH9P1v+MMOfydegV30w@mail.gmail.com>
+In-Reply-To: <20200711134601.GD20443@hoboy>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 11, 2020 at 01:50:21PM +0000, Martin Rowe wrote:
-> Hello,
+On Sat, Jul 11, 2020 at 06:46:01AM -0700, Richard Cochran wrote:
+> On Fri, Jul 10, 2020 at 01:58:44PM -0700, Jakub Kicinski wrote:
+> > On Fri, 10 Jul 2020 11:41:25 -0400 min.li.xe@renesas.com wrote:
+> > > From: Min Li <min.li.xe@renesas.com>
+> > > 
+> > > This patch is to add debugfs support for ptp_clockmatrix and ptp_idt82p33.
+> > > It will create a debugfs directory called idtptp{x} and x is the ptp index.
+> > > Three inerfaces are present, which are cmd, help and regs. help is read
+> > > only and will display a brief help message. regs is read only amd will show
+> > > all register values. cmd is write only and will accept certain commands.
+> > > Currently, the accepted commands are combomode to set comobo mode and write
+> > > to write up to 4 registers.
+> > > 
+> > > Signed-off-by: Min Li <min.li.xe@renesas.com>
+> > 
+> > No private configuration interfaces in debugfs, please.
 > 
-> I hope this is the right forum.
+> I suggested to Min to use debugfs for device-specific configuration
+> that would be out of place in the generic PTP Hardware Clock
+> interface.
 > 
-> I have been troubleshooting an issue with my Clearfog GT 8Ks where I
-> am unable to tx or rx on the switch interface, which uses the
-> mv88e6xxx driver. Based on git bisect, I believe it is related to
-> commit 34b5e6a33c1a8e466c3a73fd437f66fb16cb83ea from around the
-> 5.7-rc2 era.
+> > If what you're exposing is a useful feature it deserves a proper 
+> > uAPI interface.
+> 
+> Can you expand on what you mean by "proper uAPI interface" please?
 
-Hi Martin
+Hi Richard
 
-Thanks for the bug report.
+Well, one obvious issues is that debugfs it totally optional, and
+often not built. You would not want the correct operation of a device
+to depend something which is optional. debugfs is also unstable. There
+are no ABI rules. So user space cannot rely on the API being the same
+from version to version. Again, not something you want for the correct
+operation of a device.
 
-> Symptoms:
-> The interface used to work, then it stopped and I didn't immediately
-> notice because of life. Now the network never comes fully up. dmesg
-> indicates no issues bringing the device up. Links are brought up and
-> down with cable connects and disconnects. Negotiation seems to be
-> working. But the interface rx counter never increases. While the tx
-> counters do increase, tcpdumps on the other end of the cables never
-> see any traffic. Basically, it doesn't look like any traffic is going
-> out or in.
+Allowing registers to be read, is a typical debug operation. So that
+part seems reasonable. A kernel developer/debugger has the skills to
+deal with unstable APIs, and rebuilding the kernel to actually have
+debugfs in the image.
 
-So i'm guessing it is the connection between the CPU and the switch.
-Could you confirm this? Create a bridge, add two ports of the switch
-to the bridge, and then see if packets can pass between switch ports.
+But configuration does not belong in debugfs. It would be good to
+explain what is being configured by these parameters, then we can
+maybe make a suggestion about the correct API to use.
 
-If it is the connection between the CPU and the switch, i would then
-be thinking about the comphy and the firmware. We have seen issues
-where the firmware is too old. That is not something i've debugged
-myself, so i don't know where the version information is, or what
-version is required.
-
-	Andrew
+      Andrew
