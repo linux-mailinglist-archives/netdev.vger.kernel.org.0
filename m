@@ -2,69 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 873ED21C5CB
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 20:33:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F322621C5D2
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 20:38:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728674AbgGKSdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 14:33:50 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58708 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728390AbgGKSdu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Jul 2020 14:33:50 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1juKJm-004eCm-TM; Sat, 11 Jul 2020 20:33:46 +0200
-Date:   Sat, 11 Jul 2020 20:33:46 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: Re: [PATCH net-next v1 5/5] net: phy: micrel: ksz886x/ksz8081: add
- cabletest support
-Message-ID: <20200711183346.GQ1014141@lunn.ch>
-References: <20200710120851.28984-1-o.rempel@pengutronix.de>
- <20200710120851.28984-6-o.rempel@pengutronix.de>
+        id S1728754AbgGKSin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 14:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728510AbgGKSim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 14:38:42 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CD4C08C5DD;
+        Sat, 11 Jul 2020 11:38:42 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id t6so4014981pgq.1;
+        Sat, 11 Jul 2020 11:38:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=THHKkt+w/SZNXzFVYoleIURyuBADbu4KYpkN8nJTW9Q=;
+        b=T5xYXZAd0SWS5N1u8g1JNXEyBmYAr6qdVbKb98PCVTppRlk0mlk3lCjpdtrogebXPO
+         IzHBrzmEQ4WEw1fHVlNonL6/R1PKmaXnoZ/e6oVhxhp3I4ywTJuUX/hi3oD9w0RmxXVO
+         uzT2kxPcm5A6cqF2CEOwGAwCbT3sldGugZPgsZNVUub7wD8Yqcn04jm13hrckC5ZGBF1
+         hP4yLU1Yf2kaxHA5jqomAqxu+MxryyuqlKWgjCKJICl9fxExNPudEkd2uzeWv7AWI+oD
+         28ZkNwoIxfEtTeN6y2pg51b62eYfzY0RUpVbVrTQxDS56tlJd/10fzL1UKE9jXtAjtOf
+         UMwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=THHKkt+w/SZNXzFVYoleIURyuBADbu4KYpkN8nJTW9Q=;
+        b=d381AvMC/FuuJKdyIUHrZCm822ZzlRbWBdociVA1MufXtLqj7R7KZDm3te4BT+CN33
+         2DzSK8tu6Tth08+UvC6bjrsZQ+HUsryYqErwncqFBIZg3FiWkCFpvgc6U65VZLZwZqSM
+         kUMYvXo1jBntDD0qhfdAeJx30TvvrbBvA4sSUqKX1kUazBTlSX4rcuNrKUXCeSrcWieC
+         XLC8g+SW5YBVT8BYtByvhkB+KCdDtWfYmYa4IMSbldaB51rQDxGMxyuuzXHEuAxtf3hJ
+         woBzeFXrNi706zICY3yVzo3OI8Q/5OOG3jspIItfy6UWf0i1sWeNjwnahtblOXVMyeXP
+         LAYQ==
+X-Gm-Message-State: AOAM532FVWUc1MdJdikU7/M7mcIrora+c3p5YkXDllZ0ChddbjsRaQUK
+        nDh1Sdix615jgOFGWL45V5PzZ+2A
+X-Google-Smtp-Source: ABdhPJz5MgMVzTfGKGN+9KOG5W4Kt5lEo8eCA8w/R/jefRInFTdeTDST6Bv/m7uAW3jlNTZES4h1Lg==
+X-Received: by 2002:a05:6a00:4f:: with SMTP id i15mr37622792pfk.93.1594492722220;
+        Sat, 11 Jul 2020 11:38:42 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id y19sm5175471pgj.35.2020.07.11.11.38.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jul 2020 11:38:41 -0700 (PDT)
+Date:   Sat, 11 Jul 2020 11:38:39 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jakub Kicinski <kuba@kernel.org>, min.li.xe@renesas.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] ptp: add debugfs support for IDT family of
+ timing devices
+Message-ID: <20200711183839.GA26032@hoboy>
+References: <1594395685-25199-1-git-send-email-min.li.xe@renesas.com>
+ <20200710135844.58d76d44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200711134601.GD20443@hoboy>
+ <20200711163806.GM1014141@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200710120851.28984-6-o.rempel@pengutronix.de>
+In-Reply-To: <20200711163806.GM1014141@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 02:08:51PM +0200, Oleksij Rempel wrote:
-> This patch support for cable test for the ksz886x switches and the
-> ksz8081 PHY.
-> 
-> The patch was tested on a KSZ8873RLL switch with following results:
-> 
-> - port 1:
->   - cannot detect any distance
->   - provides inverted values
->     (Errata: DS80000830A: "LinkMD does not work on Port 1",
->      http://ww1.microchip.com/downloads/en/DeviceDoc/KSZ8873-Errata-DS80000830A.pdf)
->     - Reports "short" on open or ok.
->     - Reports "ok" on short.
-> 
-> - port 2:
->   - can detect distance
->   - can detect open on each wire of pair A (wire 1 and 2)
->   - can detect open only on one wire of pair B (only wire 3)
->   - can detect short between wires of a pair (wires 1 + 2 or 3 + 6)
->   - short between pairs is detected as open.
->     For example short between wires 2 + 3 is detected as open.
-> 
-> In order to work around the errata for port 1, the ksz8795 switch driver
-> should be extended to provide proper device tree support for the related
-> PHY nodes. So we can set a DT property to mark the port 1 as affected by
-> the errata.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+On Sat, Jul 11, 2020 at 06:38:06PM +0200, Andrew Lunn wrote:
+> But configuration does not belong in debugfs. It would be good to
+> explain what is being configured by these parameters, then we can
+> maybe make a suggestion about the correct API to use.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Can we at least enumerate the possibilities?
 
-    Andrew
+- driver specific char device
+- private ioctls
+- debugfs
+
+What else?
+
+My understanding is that debugfs is the preferred place for this kind
+of thing.  Of course nobody expects any kind of stable ABI for this,
+and so that is a non-issue IHMO.
+
+Thanks,
+Richard
