@@ -2,126 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89DC621C66E
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 23:29:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C6321C674
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 23:36:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728109AbgGKV3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 17:29:03 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:47994 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727865AbgGKV25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 17:28:57 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from lariel@mellanox.com)
-        with SMTP; 12 Jul 2020 00:28:49 +0300
-Received: from gen-l-vrt-029.mtl.labs.mlnx (gen-l-vrt-029.mtl.labs.mlnx [10.237.29.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 06BLSn25028048;
-        Sun, 12 Jul 2020 00:28:49 +0300
-From:   Ariel Levkovich <lariel@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jiri@resnulli.us, kuba@kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        Ariel Levkovich <lariel@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next v3 4/4] net/sched: cls_flower: Add hash info to flow classification
-Date:   Sun, 12 Jul 2020 00:28:48 +0300
-Message-Id: <20200711212848.20914-5-lariel@mellanox.com>
-X-Mailer: git-send-email 2.25.2
-In-Reply-To: <20200711212848.20914-1-lariel@mellanox.com>
-References: <20200711212848.20914-1-lariel@mellanox.com>
+        id S1727793AbgGKVgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 17:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726948AbgGKVgY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 17:36:24 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECBCC08C5DD;
+        Sat, 11 Jul 2020 14:36:24 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id m22so4168952pgv.9;
+        Sat, 11 Jul 2020 14:36:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hXr0UmCW3IxsSUYajVlkF8cBg9e3wS7ndcvUWmdqDG8=;
+        b=AzH0nFZmhCWX0rrjsWgLMfvQA/IfSEhNRl6ovOACAQuHrcUMDpQjV+pCTzt1RKwcCr
+         9VRn+3qoaUrtA8hlQcm5mvdfv5NoIT3DNp9KjgAjdkeStzkw2h6+OkBbOIVfGx8V6c44
+         UAeEu2SLL+DqYsF+G9Tb3af3u+vFJnerW6cPJ4h1N8kP0DmlkdYni8bqKY3rieI5+K7T
+         9xTJXNF0RgJsMX6DG2kKPO8F1tBOLliNIsYjtsCKiW0ZtLQRwWLkTo0+/fpY0Y8oDUpE
+         D9sP3YgFGahWMcF+ZbNdwvw1GYF1Vf5xFupcD0BWixY4quSMh0rvACplf7DJgtKdYaaJ
+         8ieg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hXr0UmCW3IxsSUYajVlkF8cBg9e3wS7ndcvUWmdqDG8=;
+        b=l1ijl5xZDgk0pN3SJwwCvgw2rgZxf73cwfXIhYwwUBN89/JdwJs3dDZsg/ujCzB0m0
+         D2EJvt7WMEouX09XpcOAlRP+6bUz4Llqx9BuI5CoUdunbB3WeM8o5zH6ToycjRukY3p2
+         IGcgrT8Ah7BD/fo1eF2Jjb0fvT3zidxvN8u16GIft3yGQRVIQPct/CTTCCQR3SwQQl/S
+         LaFT9mWEiMB6SpVJAJhtZEs4jVq6Uo1JKtTdIcCG9Sl2ckuiX5zj9pso7f/e5Rk5l4Si
+         d9Fh55w4E5y0j/kicXCf1b5YZryLXHUDRosF11NbVczPS6IysXj2ElGfAUdI3/vqvF3p
+         BKLQ==
+X-Gm-Message-State: AOAM531SzNq6hHNFeuAp2tbdjL+8HYBjN+XXG5iS/B1fVHwJen7lx9Fg
+        UygLAaFl0aC3d9k9H/hawd8q+tdw
+X-Google-Smtp-Source: ABdhPJxfaT580Ux8aP//K91Pf6fsIqPwk158JNjJG6hWaP1UiQmg9whpBkVHlLG4SIKCPyb/ar3Vdg==
+X-Received: by 2002:a62:1ad3:: with SMTP id a202mr6406791pfa.263.1594503383615;
+        Sat, 11 Jul 2020 14:36:23 -0700 (PDT)
+Received: from ?IPv6:2001:470:67:5b9:108c:a2dd:75d1:a903? ([2001:470:67:5b9:108c:a2dd:75d1:a903])
+        by smtp.gmail.com with ESMTPSA id y7sm9748517pjy.54.2020.07.11.14.36.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 11 Jul 2020 14:36:22 -0700 (PDT)
+Subject: Re: [net-next PATCH v6 2/6] net: phy: introduce
+ device_mdiobus_register()
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>
+Cc:     netdev@vger.kernel.org, linux.cj@gmail.com,
+        linux-acpi@vger.kernel.org
+References: <20200711065600.9448-1-calvin.johnson@oss.nxp.com>
+ <20200711065600.9448-3-calvin.johnson@oss.nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <a35e0437-0340-a676-619a-f3671b1c1f91@gmail.com>
+Date:   Sat, 11 Jul 2020 14:36:20 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200711065600.9448-3-calvin.johnson@oss.nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding new cls flower keys for hash value and hash
-mask and dissect the hash info from the skb into
-the flow key towards flow classication.
 
-Signed-off-by: Ariel Levkovich <lariel@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
----
- include/uapi/linux/pkt_cls.h |  3 +++
- net/sched/cls_flower.c       | 16 ++++++++++++++++
- 2 files changed, 19 insertions(+)
 
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 2fd93389d091..ef145320ee99 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -579,6 +579,9 @@ enum {
- 
- 	TCA_FLOWER_KEY_MPLS_OPTS,
- 
-+	TCA_FLOWER_KEY_HASH,		/* u32 */
-+	TCA_FLOWER_KEY_HASH_MASK,	/* u32 */
-+
- 	__TCA_FLOWER_MAX,
- };
- 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index b2da37286082..ff739e0d86fc 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -64,6 +64,7 @@ struct fl_flow_key {
- 		};
- 	} tp_range;
- 	struct flow_dissector_key_ct ct;
-+	struct flow_dissector_key_hash hash;
- } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
- 
- struct fl_flow_mask_range {
-@@ -318,6 +319,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 		skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
- 				    fl_ct_info_to_flower_map,
- 				    ARRAY_SIZE(fl_ct_info_to_flower_map));
-+		skb_flow_dissect_hash(skb, &mask->dissector, &skb_key);
- 		skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
- 
- 		f = fl_mask_lookup(mask, &skb_key);
-@@ -694,6 +696,9 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
- 	[TCA_FLOWER_KEY_CT_LABELS_MASK]	= { .type = NLA_BINARY,
- 					    .len = 128 / BITS_PER_BYTE },
- 	[TCA_FLOWER_FLAGS]		= { .type = NLA_U32 },
-+	[TCA_FLOWER_KEY_HASH]		= { .type = NLA_U32 },
-+	[TCA_FLOWER_KEY_HASH_MASK]	= { .type = NLA_U32 },
-+
- };
- 
- static const struct nla_policy
-@@ -1625,6 +1630,10 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 
- 	fl_set_key_ip(tb, true, &key->enc_ip, &mask->enc_ip);
- 
-+	fl_set_key_val(tb, &key->hash.hash, TCA_FLOWER_KEY_HASH,
-+		       &mask->hash.hash, TCA_FLOWER_KEY_HASH_MASK,
-+		       sizeof(key->hash.hash));
-+
- 	if (tb[TCA_FLOWER_KEY_ENC_OPTS]) {
- 		ret = fl_set_enc_opt(tb, key, mask, extack);
- 		if (ret)
-@@ -1739,6 +1748,8 @@ static void fl_init_dissector(struct flow_dissector *dissector,
- 			     FLOW_DISSECTOR_KEY_ENC_OPTS, enc_opts);
- 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
- 			     FLOW_DISSECTOR_KEY_CT, ct);
-+	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
-+			     FLOW_DISSECTOR_KEY_HASH, hash);
- 
- 	skb_flow_dissector_init(dissector, keys, cnt);
- }
-@@ -2959,6 +2970,11 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
- 	if (fl_dump_key_flags(skb, key->control.flags, mask->control.flags))
- 		goto nla_put_failure;
- 
-+	if (fl_dump_key_val(skb, &key->hash.hash, TCA_FLOWER_KEY_HASH,
-+			     &mask->hash.hash, TCA_FLOWER_KEY_HASH_MASK,
-+			     sizeof(key->hash.hash)))
-+		goto nla_put_failure;
-+
- 	return 0;
- 
- nla_put_failure:
+On 7/10/2020 11:55 PM, Calvin Johnson wrote:
+> Introduce device_mdiobus_register() to register mdiobus
+> in cases of either DT or ACPI.
+> 
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> 
+> ---
+> 
+> Changes in v6:
+> - change device_mdiobus_register() parameter position
+> - improve documentation
+> 
+> Changes in v5:
+> - add description
+> - clean up if else
+> 
+> Changes in v4: None
+> Changes in v3: None
+> Changes in v2: None
+> 
+>  drivers/net/phy/mdio_bus.c | 26 ++++++++++++++++++++++++++
+>  include/linux/mdio.h       |  1 +
+>  2 files changed, 27 insertions(+)
+> 
+> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> index 46b33701ad4b..8610f938f81f 100644
+> --- a/drivers/net/phy/mdio_bus.c
+> +++ b/drivers/net/phy/mdio_bus.c
+> @@ -501,6 +501,32 @@ static int mdiobus_create_device(struct mii_bus *bus,
+>  	return ret;
+>  }
+>  
+> +/**
+> + * device_mdiobus_register - register mdiobus for either DT or ACPI
+> + * @bus: target mii_bus
+> + * @dev: given MDIO device
+> + *
+> + * Description: Given an MDIO device and target mii bus, this function
+> + * calls of_mdiobus_register() for DT node and mdiobus_register() in
+> + * case of ACPI.
+> + *
+> + * Returns 0 on success or negative error code on failure.
+> + */
+> +int device_mdiobus_register(struct device *dev,
+> +			    struct mii_bus *bus)
+> +{
+> +	struct fwnode_handle *fwnode = dev_fwnode(dev);
+> +
+> +	if (is_of_node(fwnode))
+> +		return of_mdiobus_register(bus, to_of_node(fwnode));
+> +	if (fwnode) {
+> +		bus->dev.fwnode = fwnode;
+> +		return mdiobus_register(bus);
+> +	}
+> +	return -ENODEV;
+> +}
+> +EXPORT_SYMBOL(device_mdiobus_register);
+> +
+>  /**
+>   * __mdiobus_register - bring up all the PHYs on a given bus and attach them to bus
+>   * @bus: target mii_bus
+> diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+> index 898cbf00332a..f454c5435101 100644
+> --- a/include/linux/mdio.h
+> +++ b/include/linux/mdio.h
+> @@ -358,6 +358,7 @@ static inline int mdiobus_c45_read(struct mii_bus *bus, int prtad, int devad,
+>  	return mdiobus_read(bus, prtad, mdiobus_c45_addr(devad, regnum));
+>  }
+>  
+> +int device_mdiobus_register(struct device *dev, struct mii_bus *bus);
+
+Humm, this header file does not have any of the mii_bus registration
+functions declared, and it typically pertains to mdio_device instances
+which are devices *on* the mii_bus. phy.h may be more appropriate here
+until we break it up into phy_device proper, mii_bus, etc.
+
+>  int mdiobus_register_device(struct mdio_device *mdiodev);
+>  int mdiobus_unregister_device(struct mdio_device *mdiodev);
+>  bool mdiobus_is_registered_device(struct mii_bus *bus, int addr);
+> 
+
 -- 
-2.25.2
-
+Florian
