@@ -2,225 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5BC21C44C
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 14:47:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAEF621C458
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 15:04:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728244AbgGKMqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 08:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726342AbgGKMqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 08:46:52 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69783C08C5DD;
-        Sat, 11 Jul 2020 05:46:52 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id q17so3354381pls.9;
-        Sat, 11 Jul 2020 05:46:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=fl44Qdgvc5qqO8fXjvD0IhwD/4PIb8ojo5zkF0IptrU=;
-        b=ZvqDjVeYFVsWFNefhx/ntIhkuT5BYSyv1u54XQLFqxJQ5waHB1h+QUn54TXgfiaXCF
-         HDg7vm3aVaVqdrI47/GzWQl6LvQuBqLPGV/4O9Fe+4Wh9NdXR5ik2p7fJnH7x82EmmEx
-         3crVPCeqbO+RHRHFK5dosiUmGL2NaVZjsVZqniyeBVUTq8U6QLw2Ao9CFrxBqzpLXm2m
-         d6lk6OCNPggr9o2lXdZc5loBr2mFST9h/6CC6wzHZEJmIqkzIwkaswh6L4k6u2qBwedP
-         tcs2Mim26G3T0MdCsNJlLLBeqKqGAgdA+KE8heH/tfiPfREQnsJFRJ5lOkxUvlKdrhH6
-         sZ/A==
+        id S1728174AbgGKNEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 09:04:21 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:33944 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726502AbgGKNEU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 09:04:20 -0400
+Received: by mail-io1-f72.google.com with SMTP id b133so1838886iof.1
+        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 06:04:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=fl44Qdgvc5qqO8fXjvD0IhwD/4PIb8ojo5zkF0IptrU=;
-        b=UxEalgZv4NHVFq7vYNxrioGvLFO7mxIGs79Q8kbl+PXQ3zNvLKjrR7QatAXCHZEk+f
-         mU41RH/rh0MemsBB49t0saCFya7rW2fr3hJ4vUC/uVIqAUPSdIoi9k1lU1CoIgJww4Nz
-         8XGzKGWVigf0cKnEaOeKhce0uEdjgwDa37g9y2wf6+fHGoinahF1pQJrMJcj2nsgob6U
-         WzUrjHB+x6RkE5XywhPKlHTmK892FomQRLHLHG+0zcjjRMRrK2FaIcvLjmjyeZNaqwao
-         HkRcaPoQBP6Nekb8BeTQWIsfgR8Ztgv7xZpC/DmmWlAuH8dOF9fBl8Pw46GbBel/Ovpo
-         rlhw==
-X-Gm-Message-State: AOAM530e2N0WS5aHgFahCqH8uBYvSWgf6UM74nw97A/yY/4sqMJ24ogb
-        Orue7g9F6byyBNfpf67h7bs=
-X-Google-Smtp-Source: ABdhPJy0k7DsVVFaohURJmno3Y57eZ9mTpyZUG5n7aFQkxro38UFfTiqD+TVKxJRApKh9FyEjk0Ttg==
-X-Received: by 2002:a17:902:c142:: with SMTP id 2mr65090258plj.222.1594471611043;
-        Sat, 11 Jul 2020 05:46:51 -0700 (PDT)
-Received: from blackclown ([103.88.82.158])
-        by smtp.gmail.com with ESMTPSA id s131sm8662636pgc.30.2020.07.11.05.46.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 11 Jul 2020 05:46:50 -0700 (PDT)
-Date:   Sat, 11 Jul 2020 18:16:33 +0530
-From:   Suraj Upadhyay <usuraj35@gmail.com>
-To:     manishrc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        gregkh@linuxfoundation.org
-Cc:     netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] staging: qlge: Remove pci-dma-compat wrapper APIs.
-Message-ID: <20200711124633.GA16459@blackclown>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=eCXMSGgT1Enymkedn2+djY3z54jhZl0rPUIbe5jrd5c=;
+        b=Ao1vggKxpHQIanJgV81zrJC+fb3SaA5ls+YS4dGrD0118DXJh3/I241xeMGOJdVgP5
+         nr7wRnUJLCjZN8jZsEV2iXCi6ncB5KVaptjwZzfWhVVjxrAfaM3JTtvQgzU6uOyd1kan
+         nCYLY8SY9NZf8AYcQXTfiMKMyCpbx6XKi2do+d8uAM6OfHI34JyV1MFyyxoUuhV6i1b1
+         15dOcyjO8yxZas5lowfCfTE0kZ8cs9P4gTDy0WQPNxRKhM7FqDhi1ABfuPuGC/Vrt8HY
+         +j6iIkVipaNarUks88u0J8SWLgkDpzHghrHgQaHlk4tqmOpnusS0Ist04BDU3351e8g7
+         2DXQ==
+X-Gm-Message-State: AOAM531sj96gO3kJDUlvoWm+ji73sM2T/Qm1l9STcNtkTWPErsieF0T6
+        ITcZ/XZp4D4VD4vUAPk8EZFIfMMGffS4BX78GmCa3iFLbS7r
+X-Google-Smtp-Source: ABdhPJz0KY4/CNUXD0tHvOu0J3MW8EXeEONAcXRxW3ooFoDauyGqYNGcd4xi6N4bJsD1rzoMs3AmQ8Fin7amfuMWjMYTH+J6asvC
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="EeQfGwPcQSOJBaQU"
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Received: by 2002:a92:d2c6:: with SMTP id w6mr53207955ilg.24.1594472659347;
+ Sat, 11 Jul 2020 06:04:19 -0700 (PDT)
+Date:   Sat, 11 Jul 2020 06:04:19 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000076ef3605aa2a188b@google.com>
+Subject: WARNING in disable_device
+From:   syzbot <syzbot+eb4b29a7ddcec62914e9@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, rafael@kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
---EeQfGwPcQSOJBaQU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+syzbot found the following crash on:
 
-The legacy API wrappers in include/linux/pci-dma-compat.h
-should go away as it creates unnecessary midlayering
-for include/linux/dma-mapping.h APIs, instead use dma-mapping.h
-APIs directly.
+HEAD commit:    e44f65fd xen-netfront: remove redundant assignment to vari..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=16ff23a3100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=829871134ca5e230
+dashboard link: https://syzkaller.appspot.com/bug?extid=eb4b29a7ddcec62914e9
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-The patch has been generated with the coccinelle script below
-and compile-tested.
+Unfortunately, I don't have any reproducer for this crash yet.
 
-@@@@
-- PCI_DMA_BIDIRECTIONAL
-+ DMA_BIDIRECTIONAL
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+eb4b29a7ddcec62914e9@syzkaller.appspotmail.com
 
-@@@@
-- PCI_DMA_TODEVICE
-+ DMA_TO_DEVICE
+WARNING: CPU: 0 PID: 271 at fs/sysfs/group.c:279 sysfs_remove_group+0x126/0x170 fs/sysfs/group.c:279
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 271 Comm: kworker/u4:5 Not tainted 5.8.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events_unbound ib_unregister_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:231
+ __warn.cold+0x20/0x45 kernel/panic.c:600
+ report_bug+0x1bd/0x210 lib/bug.c:198
+ exc_invalid_op+0x24d/0x400 arch/x86/kernel/traps.c:235
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:563
+RIP: 0010:sysfs_remove_group+0x126/0x170 fs/sysfs/group.c:279
+Code: 48 89 d9 49 8b 14 24 48 b8 00 00 00 00 00 fc ff df 48 c1 e9 03 80 3c 01 00 75 37 48 8b 33 48 c7 c7 c0 5a 5a 88 e8 7c 50 5d ff <0f> 0b eb 98 e8 d1 5d cb ff e9 01 ff ff ff 48 89 df e8 c4 5d cb ff
+RSP: 0018:ffffc90001c67b48 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: ffffffff88b45640 RCX: 0000000000000000
+RDX: ffff8880a849c300 RSI: ffffffff815ce8d7 RDI: fffff5200038cf5b
+RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8880ae6318e7
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff88808b0a0000
+R13: ffffffff88b45be0 R14: ffffc90001c67c70 R15: ffff8880aa034800
+ dpm_sysfs_remove+0x97/0xb0 drivers/base/power/sysfs.c:794
+ device_del+0x18b/0xd20 drivers/base/core.c:2834
+ remove_one_compat_dev drivers/infiniband/core/device.c:952 [inline]
+ remove_compat_devs drivers/infiniband/core/device.c:963 [inline]
+ disable_device+0x1e1/0x270 drivers/infiniband/core/device.c:1294
+ __ib_unregister_device+0x91/0x190 drivers/infiniband/core/device.c:1450
+ ib_unregister_work+0x15/0x30 drivers/infiniband/core/device.c:1561
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+Kernel Offset: disabled
 
-@@@@
-- PCI_DMA_FROMDEVICE
-+ DMA_FROM_DEVICE
 
-@@@@
-- PCI_DMA_NONE
-+ DMA_NONE
-
-@@ expression E1, E2, E3; @@
-- pci_alloc_consistent(E1, E2, E3)
-+ dma_alloc_coherent(&E1->dev, E2, E3, GFP_ATOMIC)
-
-@@ expression E1, E2, E3; @@
-- pci_zalloc_consistent(E1, E2, E3)
-+ dma_alloc_coherent(&E1->dev, E2, E3, GFP_ATOMIC)
-
-@@ expression E1, E2, E3, E4; @@
-- pci_free_consistent(E1, E2, E3, E4)
-+ dma_free_coherent(&E1->dev, E2, E3, E4)
-
-@@ expression E1, E2, E3, E4; @@
-- pci_map_single(E1, E2, E3, E4)
-+ dma_map_single(&E1->dev, E2, E3, (enum dma_data_direction)E4)
-
-@@ expression E1, E2, E3, E4; @@
-- pci_unmap_single(E1, E2, E3, E4)
-+ dma_unmap_single(&E1->dev, E2, E3, (enum dma_data_direction)E4)
-
-@@ expression E1, E2, E3, E4, E5; @@
-- pci_map_page(E1, E2, E3, E4, E5)
-+ dma_map_page(&E1->dev, E2, E3, E4, (enum dma_data_direction)E5)
-
-@@ expression E1, E2, E3, E4; @@
-- pci_unmap_page(E1, E2, E3, E4)
-+ dma_unmap_page(&E1->dev, E2, E3, (enum dma_data_direction)E4)
-
-@@ expression E1, E2, E3, E4; @@
-- pci_map_sg(E1, E2, E3, E4)
-+ dma_map_sg(&E1->dev, E2, E3, (enum dma_data_direction)E4)
-
-@@ expression E1, E2, E3, E4; @@
-- pci_unmap_sg(E1, E2, E3, E4)
-+ dma_unmap_sg(&E1->dev, E2, E3, (enum dma_data_direction)E4)
-
-@@ expression E1, E2, E3, E4; @@
-- pci_dma_sync_single_for_cpu(E1, E2, E3, E4)
-+ dma_sync_single_for_cpu(&E1->dev, E2, E3, (enum dma_data_direction)E4)
-
-@@ expression E1, E2, E3, E4; @@
-- pci_dma_sync_single_for_device(E1, E2, E3, E4)
-+ dma_sync_single_for_device(&E1->dev, E2, E3, (enum dma_data_direction)E4)
-
-@@ expression E1, E2, E3, E4; @@
-- pci_dma_sync_sg_for_cpu(E1, E2, E3, E4)
-+ dma_sync_sg_for_cpu(&E1->dev, E2, E3, (enum dma_data_direction)E4)
-
-@@ expression E1, E2, E3, E4; @@
-- pci_dma_sync_sg_for_device(E1, E2, E3, E4)
-+ dma_sync_sg_for_device(&E1->dev, E2, E3, (enum dma_data_direction)E4)
-
-@@ expression E1, E2; @@
-- pci_dma_mapping_error(E1, E2)
-+ dma_mapping_error(&E1->dev, E2)
-
-@@ expression E1, E2; @@
-- pci_set_consistent_dma_mask(E1, E2)
-+ dma_set_coherent_mask(&E1->dev, E2)
-
-@@ expression E1, E2; @@
-- pci_set_dma_mask(E1, E2)
-+ dma_set_mask(&E1->dev, E2)
-
-Signed-off-by: Suraj Upadhyay <usuraj35@gmail.com>
 ---
-	This change is proposed by Christoph Hellwig <hch@infradead.org>
-        in the post https://marc.info/?l=3Dkernel-janitors&m=3D158745678307=
-186&w=3D4
-        on kernel-janitors Mailing List.
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
- drivers/staging/qlge/qlge_mpi.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mp=
-i.c
-index fa178fc642a6..16a9bf818346 100644
---- a/drivers/staging/qlge/qlge_mpi.c
-+++ b/drivers/staging/qlge/qlge_mpi.c
-@@ -788,8 +788,9 @@ int ql_dump_risc_ram_area(struct ql_adapter *qdev, void=
- *buf,
- 	char *my_buf;
- 	dma_addr_t buf_dma;
-=20
--	my_buf =3D pci_alloc_consistent(qdev->pdev, word_count * sizeof(u32),
--				      &buf_dma);
-+	my_buf =3D dma_alloc_coherent(&qdev->pdev->dev,
-+				    word_count * sizeof(u32), &buf_dma,
-+				    GFP_ATOMIC);
- 	if (!my_buf)
- 		return -EIO;
-=20
-@@ -797,8 +798,8 @@ int ql_dump_risc_ram_area(struct ql_adapter *qdev, void=
- *buf,
- 	if (!status)
- 		memcpy(buf, my_buf, word_count * sizeof(u32));
-=20
--	pci_free_consistent(qdev->pdev, word_count * sizeof(u32), my_buf,
--			    buf_dma);
-+	dma_free_coherent(&qdev->pdev->dev, word_count * sizeof(u32), my_buf,
-+			  buf_dma);
- 	return status;
- }
-=20
---=20
-2.17.1
-
-
---EeQfGwPcQSOJBaQU
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE7AbCa0kOsMJ4cx0j+gRsbIfe744FAl8JtKkACgkQ+gRsbIfe
-747D0g//R1ChLyHMnDJc6GeilVs7gCG2zUGsdaMK4qr11DUt+48TbVyHwFp64/3p
-QKmTK3rsaIOTFIonk8mhSll/foS6mpVBv4NXFWpCOSeyqPSvyYiCWyH8ZoAr7l06
-k6mL6QYZwVczVRXt/+hStzVLef9ToEEjzmdLJbP9JWuew9xSqfVbyNDV4TvgERmi
-3JuzM6gFCBR/nLdisBkEVKU4hrjGwHc2DRO96bSFPJtwwLnTXwZc+QDv10H9r1JY
-tVzaGa8czpsYlJv67vBRZ3Isym4iGb4ri94kICBTSfvZGdyE/HaWPqpEZzobOALK
-kBwFP65T0r3j+i+QEOeK3r3DwI96BX8qjzMzWu4C9D/vzIwlD4weyvmg2MM/mD44
-YlEucF2PhOrqWYlkYE1/JApT/7h3AaOe2SQ9cYmvTeDHWeNUrfcfr9yc13LaVJwW
-NVpKez7TQxzQ5YupsSctM8fiZIrS5uxIzXA9JKLM7HW6f4OJ8sN9wux1O8cCnrv5
-RIJw4bME/C6ihNJMNZQU/v8VGS9L9v+Ryw2AU7gs4mSA5M0JZUT1SduejM/SFsp8
-oCH1WATqdz/EG7mBC6N+m9sI8zdUeKUaRZsIvIXjYsrvoeU0g6d0OY4gAQZwx37v
-Ohot02UCvSuBoqXngEb/IGyh0GnuPCug68YBOPTYZNyuFhgy80Q=
-=/Cjw
------END PGP SIGNATURE-----
-
---EeQfGwPcQSOJBaQU--
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
