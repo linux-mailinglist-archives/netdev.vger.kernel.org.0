@@ -2,169 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14C3021C4C2
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 17:08:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CCEA21C4E7
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 17:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728404AbgGKPFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 11:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44658 "EHLO
+        id S1728478AbgGKPxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 11:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728330AbgGKPFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 11:05:22 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA54C08C5DD
-        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 08:05:22 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id a6so10432306wmm.0
-        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 08:05:21 -0700 (PDT)
+        with ESMTP id S1728390AbgGKPxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 11:53:38 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0B8C08C5DD
+        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 08:53:38 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id e13so8289709qkg.5
+        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 08:53:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3RZP+kRoNIsT3FziqMqySvsKme/wXQTMMb6By92Wljw=;
-        b=g3tfppG019TKLAramyd/bDEFL6hxOQIHnsdNOtBYcM1S2/eqTeGBxQoWb48DCNMqJn
-         H/PHB56Ye8QR2nwKqx21FM0DkCu/A0f25zXJhc4ezI/AGLtcYXxiOygqaTSCojLeXM3F
-         JAbiHVKWrh/bK+mJpvo6dTcsjxNu6YIqA2rkc=
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=Vxsv99WlZ5LulTTgQhIQ3IrcOEfFeudcZ7xM4E8EheA=;
+        b=K1bNiPrqymGq8XIFvoCUWqa0xkdXNJEaGD1/ftNfQ3jvtHfG5nrr8ZO4Pgop0s5EA+
+         vHE62OWwqYITiyM7tXwCGeWlBubNAj8XVl3yvxMxezLXjbf+ZTckEMNr7AY/OgPmYQ9+
+         KxcrnGi7x6nXYlFBaOeEV3xUPBacNkTuCIGSi3YS40IzH/LYHFuXO4rydl0jZdUUTmb/
+         cky85gl9A2gIQ6RKCPe0qYNH3rHv3s6juJCPrJgtl0hLEwHmshMf44U0KHHleMdTFx22
+         hmP25hpukgQWnma7o1QMw4BW6c0TtqENEuRbKBsUfyRqC4XLxJ3SPLGmsmQscjyClSZh
+         dDFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3RZP+kRoNIsT3FziqMqySvsKme/wXQTMMb6By92Wljw=;
-        b=GKr0ya3g4XaKgqWM1wj4YZyXFcvA++h68/1Aig6Eqej48ZFgGKpIgbFaw9n0dSnYvQ
-         +puhajWUQ+kAqnWdKNX9PlYiSjt/3xqbkzV0Q0AWyytp/9TXgcAvX0/xSPtCSEUbjSIq
-         Gedq2CfwLCAllKc9eqyzMs8m1+5Q3NXGdBzQJmN+aFXTaB8VsXQ/O0R3Ebvrgr8g+5CH
-         UaeSnImiUWCtm9cZPj++YFT+4eFhk3vnPUy/jKqz97YQJlYARUlaIOSkekZX7kYt/H0R
-         2ldX79+2TdbFfvXkXrAYP7w/s6fa+RF5emGUOky9XgJqyDvIOSv72dafwwk3XoQwGwo+
-         sBkw==
-X-Gm-Message-State: AOAM531rOCN5ybaGotpiIOhUgq3F6C5+B3x16y3P0gskXs9KyNC6GeQh
-        aP/NmP8kuNLQCer1W4KnQg0zLI7bFVErtA==
-X-Google-Smtp-Source: ABdhPJyBriyhIWZQYNPSP8zQ4Ydk+5ozNY38EE66bVx3lcqNZFBASw6HsUcgsjg2Hg/JvU+Nb+G12A==
-X-Received: by 2002:a05:600c:d7:: with SMTP id u23mr9741401wmm.183.1594479920056;
-        Sat, 11 Jul 2020 08:05:20 -0700 (PDT)
-Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id u84sm14277723wmg.7.2020.07.11.08.05.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jul 2020 08:05:19 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
-        bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next] net: bridge: notify on vlan tunnel changes done via the old api
-Date:   Sat, 11 Jul 2020 18:05:04 +0300
-Message-Id: <20200711150504.885831-1-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.25.4
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=Vxsv99WlZ5LulTTgQhIQ3IrcOEfFeudcZ7xM4E8EheA=;
+        b=UyIrfNv6SzxO6M+rT7g7v0OkNv3QUOlWmfV4N7rDff5AALdUA/jYJ7WeaSgeIfhd2d
+         JNLKi7p4gl/CpnuNePBkVk3jdRVrEv2Y0Q21K0Ief85T7OFKaQLfv02t+ArMbBYaMR2M
+         4e/mys8kTQ2yJIXLZ/3RPjgDv4d2G5YRxBG8dpxa6gmnHOrjGOS7i+yG6qJOMMAfPR+g
+         4dd2IhYP0gfhUG0YoS0gddgyZiZqyaBscDiLQAff9fB+oMdmZHA8N0bv7meDaapNv19Y
+         U1d13Of7IuVBQIOacssmLrRrswO/tJuCrwK+Ojhf7c8UL+uxevnx/DHPK5dh47fa1UFm
+         CgOQ==
+X-Gm-Message-State: AOAM533HZSClaBgqnaZCR5lklG0JDyUt40tWpTZ1b7fTGR6uG12g6qFC
+        G5p6Qx4pXkap8vzais75wok6Pu697SgvZSVquXYJlEbk
+X-Google-Smtp-Source: ABdhPJzOfZhallAeT8xdnABIIp7VbOpm8F2VeFMmPNWKnLXvfVKffS7GY97hbmpIQVMO5Doty5vky6o1P/jhtBug+eI=
+X-Received: by 2002:a37:8283:: with SMTP id e125mr71192009qkd.175.1594482816897;
+ Sat, 11 Jul 2020 08:53:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Ian Kumlien <ian.kumlien@gmail.com>
+Date:   Sat, 11 Jul 2020 17:53:25 +0200
+Message-ID: <CAA85sZvKNXCo5bB5a6kKmsOUAiw+_daAVaSYqNW6QbSBJ0TcyQ@mail.gmail.com>
+Subject: NAT performance issue 944mbit -> ~40mbit
+To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If someone uses the old vlan API to configure tunnel mappings we'll only
-generate the old-style full port notification. That would be a problem
-if we are monitoring the new vlan notifications for changes. The patch
-resolves the issue by adding vlan notifications to the old tunnel netlink
-code. As usual we try to compress the notifications for as many vlans
-in a range as possible, thus a vlan tunnel change is considered able
-to enter the "current" vlan notification range if:
- 1. vlan exists
- 2. it has actually changed (curr_change == true)
- 3. it passes all standard vlan notification range checks done by
-    br_vlan_can_enter_range() such as option equality, id continuity etc
+Hi,
 
-Note that vlan tunnel changes (add/del) are considered a part of vlan
-options so only RTM_NEWVLAN notification is generated with the relevant
-information inside.
+I first detected this with 5.7.6 but it seems to apply as far back as 5.6.1...
+(so, 5.7.8 client -> nat (5.6.1 -> 5.8-rc4 -> server 5.7.7)
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- net/bridge/br_netlink_tunnel.c | 49 ++++++++++++++++++++++++++++++++--
- 1 file changed, 47 insertions(+), 2 deletions(-)
+It seems to me that the window size doesn't advance, so i did revert
+the tcp: grow window for OOO packets only for SACK flows [1]
+but it did no difference...
 
-diff --git a/net/bridge/br_netlink_tunnel.c b/net/bridge/br_netlink_tunnel.c
-index 162998e2f039..8914290c75d4 100644
---- a/net/bridge/br_netlink_tunnel.c
-+++ b/net/bridge/br_netlink_tunnel.c
-@@ -250,6 +250,36 @@ int br_parse_vlan_tunnel_info(struct nlattr *attr,
- 	return 0;
- }
- 
-+/* send a notification if v_curr can't enter the range and start a new one */
-+static void __vlan_tunnel_handle_range(const struct net_bridge_port *p,
-+				       struct net_bridge_vlan **v_start,
-+				       struct net_bridge_vlan **v_end,
-+				       int v_curr, bool curr_change)
-+{
-+	struct net_bridge_vlan_group *vg;
-+	struct net_bridge_vlan *v;
-+
-+	vg = nbp_vlan_group(p);
-+	if (!vg)
-+		return;
-+
-+	v = br_vlan_find(vg, v_curr);
-+
-+	if (!*v_start)
-+		goto out_init;
-+
-+	if (v && curr_change && br_vlan_can_enter_range(v, *v_end)) {
-+		*v_end = v;
-+		return;
-+	}
-+
-+	br_vlan_notify(p->br, p, (*v_start)->vid, (*v_end)->vid, RTM_NEWVLAN);
-+out_init:
-+	/* we start a range only if there are any changes to notify about */
-+	*v_start = curr_change ? v : NULL;
-+	*v_end = *v_start;
-+}
-+
- int br_process_vlan_tunnel_info(const struct net_bridge *br,
- 				const struct net_bridge_port *p, int cmd,
- 				struct vtunnel_info *tinfo_curr,
-@@ -263,6 +293,7 @@ int br_process_vlan_tunnel_info(const struct net_bridge *br,
- 			return -EINVAL;
- 		memcpy(tinfo_last, tinfo_curr, sizeof(struct vtunnel_info));
- 	} else if (tinfo_curr->flags & BRIDGE_VLAN_INFO_RANGE_END) {
-+		struct net_bridge_vlan *v_start = NULL, *v_end = NULL;
- 		int t, v;
- 
- 		if (!(tinfo_last->flags & BRIDGE_VLAN_INFO_RANGE_BEGIN))
-@@ -272,11 +303,24 @@ int br_process_vlan_tunnel_info(const struct net_bridge *br,
- 			return -EINVAL;
- 		t = tinfo_last->tunid;
- 		for (v = tinfo_last->vid; v <= tinfo_curr->vid; v++) {
--			err = br_vlan_tunnel_info(p, cmd, v, t, changed);
-+			bool curr_change = false;
-+
-+			err = br_vlan_tunnel_info(p, cmd, v, t, &curr_change);
- 			if (err)
--				return err;
-+				break;
- 			t++;
-+
-+			if (curr_change)
-+				*changed = curr_change;
-+			 __vlan_tunnel_handle_range(p, &v_start, &v_end, v,
-+						    curr_change);
- 		}
-+		if (v_start && v_end)
-+			br_vlan_notify(br, p, v_start->vid, v_end->vid,
-+				       RTM_NEWVLAN);
-+		if (err)
-+			return err;
-+
- 		memset(tinfo_last, 0, sizeof(struct vtunnel_info));
- 		memset(tinfo_curr, 0, sizeof(struct vtunnel_info));
- 	} else {
-@@ -286,6 +330,7 @@ int br_process_vlan_tunnel_info(const struct net_bridge *br,
- 					  tinfo_curr->tunid, changed);
- 		if (err)
- 			return err;
-+		br_vlan_notify(br, p, tinfo_curr->vid, 0, RTM_NEWVLAN);
- 		memset(tinfo_last, 0, sizeof(struct vtunnel_info));
- 		memset(tinfo_curr, 0, sizeof(struct vtunnel_info));
- 	}
--- 
-2.25.4
+I have a 384 MB tcpdump of a iperf3 session that starts low and then
+actually starts to get the bandwidth...
+I do use BBR - I have tried with cubic... it didn't help  - the NAT
+machine does use fq but changing it doesn't seem to yield any other
+results.
 
+Doing -P10 gives you the bandwith and can sometimes break the
+stalemate but you'll end up back with the lower transfer speed again.
+(it only seems to apply to NAT - the machine is a: A2SDi-12C-HLN4F and
+has handled this without problems in the past...)
+
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=v5.7.8&id=bf780119617797b5690e999e59a64ad79a572374
+
+First iperf3 as a reference:
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   113 MBytes   945 Mbits/sec    0    814 KBytes
+[  5]   1.00-2.00   sec   109 MBytes   912 Mbits/sec    0    806 KBytes
+[  5]   2.00-3.00   sec   112 MBytes   944 Mbits/sec   31    792 KBytes
+[  5]   3.00-4.00   sec   101 MBytes   849 Mbits/sec   31   1.18 MBytes
+[  5]   4.00-5.00   sec   108 MBytes   902 Mbits/sec    0    783 KBytes
+[  5]   5.00-6.00   sec   111 MBytes   933 Mbits/sec   31    778 KBytes
+[  5]   6.00-7.00   sec   111 MBytes   933 Mbits/sec   93    772 KBytes
+[  5]   7.00-8.00   sec   112 MBytes   944 Mbits/sec    0    778 KBytes
+[  5]   8.00-9.00   sec   111 MBytes   933 Mbits/sec   60    778 KBytes
+[  5]   9.00-10.00  sec   111 MBytes   933 Mbits/sec   92    814 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  1.07 GBytes   923 Mbits/sec  338             sender
+[  5]   0.00-10.01  sec  1.07 GBytes   919 Mbits/sec                  receiver
+
+After that:
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec  4.77 MBytes  40.0 Mbits/sec    0   42.4 KBytes
+[  5]   1.00-2.00   sec  4.10 MBytes  34.4 Mbits/sec    0   84.8 KBytes
+[  5]   2.00-3.00   sec  4.60 MBytes  38.6 Mbits/sec    0   87.7 KBytes
+[  5]   3.00-4.00   sec  4.23 MBytes  35.4 Mbits/sec    0   42.4 KBytes
+[  5]   4.00-5.00   sec  4.23 MBytes  35.4 Mbits/sec    0   42.4 KBytes
+[  5]   5.00-6.00   sec  4.47 MBytes  37.5 Mbits/sec    0   76.4 KBytes
+[  5]   6.00-7.00   sec  5.47 MBytes  45.9 Mbits/sec    0   67.9 KBytes
+[  5]   7.00-8.00   sec  4.66 MBytes  39.1 Mbits/sec    0   67.9 KBytes
+[  5]   8.00-9.00   sec  4.35 MBytes  36.5 Mbits/sec    0   82.0 KBytes
+[  5]   9.00-10.00  sec  4.66 MBytes  39.1 Mbits/sec    0    139 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  45.5 MBytes  38.2 Mbits/sec    0             sender
+[  5]   0.00-10.00  sec  45.0 MBytes  37.8 Mbits/sec                  receiver
+
+You even get some:
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec  5.38 MBytes  45.2 Mbits/sec    0   42.4 KBytes
+[  5]   1.00-2.00   sec  7.08 MBytes  59.4 Mbits/sec    0    535 KBytes
+[  5]   2.00-3.00   sec   108 MBytes   907 Mbits/sec    0    778 KBytes
+[  5]   3.00-4.00   sec   111 MBytes   933 Mbits/sec    0    814 KBytes
+[  5]   4.00-5.00   sec  91.2 MBytes   765 Mbits/sec    0    829 KBytes
+[  5]   5.00-6.00   sec   111 MBytes   933 Mbits/sec    0    783 KBytes
+[  5]   6.00-7.00   sec   111 MBytes   933 Mbits/sec    0    769 KBytes
+[  5]   7.00-8.00   sec   111 MBytes   933 Mbits/sec    0    778 KBytes
+[  5]   8.00-9.00   sec   112 MBytes   944 Mbits/sec    0    809 KBytes
+[  5]   9.00-10.00  sec   110 MBytes   923 Mbits/sec    0    823 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec   879 MBytes   738 Mbits/sec    0             sender
+[  5]   0.00-10.00  sec   875 MBytes   734 Mbits/sec                  receiver
