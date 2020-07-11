@@ -2,75 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F263A21C669
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 23:26:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F6B821C66A
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 23:28:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbgGKV0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 17:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726779AbgGKV0d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 17:26:33 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4FF1C08C5DD
-        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 14:26:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=HPQn0ck4gm6w0VBTI9pE3A0mzQw+Bw/ePvhwU2qYhwk=; b=lNXdddwMgxoNEGE9jbtjw4t62
-        pWgHma2tqlVaoqmU9UeQ4PrGg/LYWztuoGy6/aGYZ0ioCm8PGPD4zIrIj3Qi+kltcubrZDbloygwI
-        OkWHMt2fxIvKpQwnGB4eGKJeWkqjayT7K+dkthnpHsufLh4yKnR91tCyJuQtn2W38Ppv5CCkpM2zA
-        EvBGDNOMXitCigGKl9/kI1dpVp/82Ir/4Hw7AYe0MrBs9xNIAmbYMbjd3MToBQz8olfsLzozvrLBn
-        pGeLBICgZSbxCClxqWSsS0v/Dzy21bg4fdVKC3Gx/KKNAvbJmF4Mej5haoz9iZN2WFo6MB+DVLoBJ
-        7DaTKLZBw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38288)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1juN0o-0002kL-TS; Sat, 11 Jul 2020 22:26:22 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1juN0k-0004b9-9o; Sat, 11 Jul 2020 22:26:18 +0100
-Date:   Sat, 11 Jul 2020 22:26:18 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Chris Healy <cphealy@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>
-Subject: Re: [PATCH net-next 0/2] Fix MTU warnings for fec/mv886xxx combo
-Message-ID: <20200711212618.GP1551@shell.armlinux.org.uk>
-References: <20200711203206.1110108-1-andrew@lunn.ch>
+        id S1727777AbgGKV2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 17:28:52 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:47964 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726779AbgGKV2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 17:28:52 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from lariel@mellanox.com)
+        with SMTP; 12 Jul 2020 00:28:49 +0300
+Received: from gen-l-vrt-029.mtl.labs.mlnx (gen-l-vrt-029.mtl.labs.mlnx [10.237.29.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 06BLSn21028048;
+        Sun, 12 Jul 2020 00:28:49 +0300
+From:   Ariel Levkovich <lariel@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jiri@resnulli.us, kuba@kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, ast@kernel.org, daniel@iogearbox.net,
+        Ariel Levkovich <lariel@mellanox.com>
+Subject: [PATCH net-next v3 0/4] ] TC datapath hash api
+Date:   Sun, 12 Jul 2020 00:28:44 +0300
+Message-Id: <20200711212848.20914-1-lariel@mellanox.com>
+X-Mailer: git-send-email 2.25.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200711203206.1110108-1-andrew@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 11, 2020 at 10:32:04PM +0200, Andrew Lunn wrote:
-> Since changing the MTU of dsa slave interfaces was implemented, the
-> fec/mv88e6xxx combo has been giving warnings:
-> 
-> [    2.275925] mv88e6085 0.2:00: nonfatal error -95 setting MTU on port 9
-> [    2.284306] eth1: mtu greater than device maximum
-> [    2.287759] fec 400d1000.ethernet eth1: error -22 setting MTU to include DSA overhead
-> 
-> This patchset adds support for changing the MTU on mv88e6xxx switches,
-> which do support jumbo frames. And it modifies the FEC driver to
-> support its true MTU range, which is larger than the default Ethernet
-> MTU.
+Supporting datapath hash allows user to set up rules that provide
+load balancing of traffic across multiple vports and for ECMP path
+selection while keeping the number of rule at minimum.
 
-It's not just the fec/mv88e6xxx combo - I've been getting them on
-Clearfog too.  It just hasn't been important enough to report yet.
+Instead of matching on exact flow spec, which requires a rule per
+flow, user can define rules based on hashing on the packet headers
+and distribute the flows to different buckets. The number of rules
+in this case will be constant and equal to the number of buckets.
+
+The datapath hash functionality is achieved in two steps -
+performing the hash action and then matching on the result, as
+part of the packet's classification.
+
+To compute the hash value, the api offers 2 methods:
+1. Linux implementation of an asymmetric hash algorithm
+which is performed on the L4 headers of the packet.
+This method is usable via an extention to act_skbedit and
+allows user to provide a basis value to be included in
+the computation.
+
+2. User provided bpf program that implements
+a hash computation algorithm. This option is usable
+via a new type of tc action - action_hash.
+
+Through both methods, the hash value is calculated
+and stored in the skb->hash field so it can be matched
+later as a key in the cls flower classifier.
+where the hash function can be standard asymetric hashing that Linux
+offers or alternatively user can provide a bpf program that
+performs hash calculation on a packet.
+
+Usage is as follows:
+
+For hash calculation:
+$ tc filter add dev ens1f0_0 ingress \
+prio 1 chain 0 proto ip \
+flower ip_proto tcp \
+action hash object-file <file> section <hash_section>\
+action goto chain 2
+
+Or:
+
+$ tc filter add dev ens1f0_0 ingress \
+prio 1 chain 0 proto ip \
+flower ip_proto udp \
+action skbedit hash asym_l4 basis <basis> \
+action goto chain 2
+
+Matching on hash result:
+
+$ tc filter add dev ens1f0_0 ingress \
+prio 1 chain 2 proto ip \
+flower hash 0x0/0xf  \
+action mirred egress redirect dev ens1f0_1
+
+$ tc filter add dev ens1f0_0 ingress \
+prio 1 chain 2 proto ip \
+flower hash 0x1/0xf  \
+action mirred egress redirect dev ens1f0_2
+
+
+v2 -> v3:
+ *Split hash algorithm option into 2 different actions.
+  Asym_l4 available via act_skbedit and bpf via new act_hash.
+
+Ariel Levkovich (4):
+  net/sched: Add skb->hash field editing via act_skbedit
+  net/sched: Introduce action hash
+  net/flow_dissector: add packet hash dissection
+  net/sched: cls_flower: Add hash info to flow classification
+
+ include/linux/skbuff.h                 |   4 +
+ include/net/act_api.h                  |   2 +
+ include/net/flow_dissector.h           |   9 +
+ include/net/tc_act/tc_hash.h           |  20 ++
+ include/net/tc_act/tc_skbedit.h        |   2 +
+ include/uapi/linux/pkt_cls.h           |   4 +
+ include/uapi/linux/tc_act/tc_hash.h    |  25 ++
+ include/uapi/linux/tc_act/tc_skbedit.h |   7 +
+ net/core/flow_dissector.c              |  17 ++
+ net/sched/Kconfig                      |  11 +
+ net/sched/Makefile                     |   1 +
+ net/sched/act_hash.c                   | 348 +++++++++++++++++++++++++
+ net/sched/act_skbedit.c                |  38 +++
+ net/sched/cls_api.c                    |   1 +
+ net/sched/cls_flower.c                 |  16 ++
+ 15 files changed, 505 insertions(+)
+ create mode 100644 include/net/tc_act/tc_hash.h
+ create mode 100644 include/uapi/linux/tc_act/tc_hash.h
+ create mode 100644 net/sched/act_hash.c
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.2
+
