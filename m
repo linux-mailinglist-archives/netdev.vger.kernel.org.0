@@ -2,175 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4122F21C314
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 09:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 878AF21C31A
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 09:52:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728170AbgGKHkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 03:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33128 "EHLO
+        id S1728052AbgGKHwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 03:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726900AbgGKHkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 03:40:10 -0400
-Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8A6C08C5DD
-        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 00:40:09 -0700 (PDT)
-Received: by mail-vs1-xe43.google.com with SMTP id u133so4184434vsc.0
-        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 00:40:09 -0700 (PDT)
+        with ESMTP id S1726958AbgGKHwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 03:52:47 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBB2C08C5DD;
+        Sat, 11 Jul 2020 00:52:47 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id d18so6361955edv.6;
+        Sat, 11 Jul 2020 00:52:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f5lPF3XdF6K0NGZOyKOCMg14RTyoEyN0JADWifX2WeU=;
-        b=NYWdZGqMU2ljOqlNCd0aow0Ffxs+se03nR4vC/cMS9SWDuhpXJbOylQ8vhFscv1TcL
-         ttAozVtjpaEdPCtIh1/vDLyhjRK6ti30Os3dUF2QVdntWWcDXE6Kpp4GEnyEy0dkTcrm
-         qWbIYB8I+a+17/hOyK3geoqPMVXA64G6qwbsxekswYWU7NuNbBQ4d2UOrk1UK7Elt0FT
-         EsxJV438UPDm3av0CAg/IQLfWIptvrN/W0yvP8cg0iWOq6F5TcKXVocmbwbhC5F6z+ut
-         IV2+DdZjGJgfAkBOdmjiClMaRWZKwshiu3a1lx/Yrj0ccNF2g4OTZFd9Lx7VX3pCYNhx
-         hYcg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=chblfhw/pZ7F1F13XRbjCEZ4EpDpVMofJy+rOKK895o=;
+        b=rZQEKQXLQHKsEKZ14YIUwLgP1Gg4TVDuTNwwxGCX1yBHgmGU0JmdWGoPJqVUKH4Ije
+         9V6yRwBMetaPJrBSAk3DJIWfCMv9HkUDdzL39lNSoKVcgsTAwOExFiru9aFF4wJWaT6J
+         TvQ7kVPHGLHQ4qznP/EDGXTDXI7M4DI0YFawdEuCC5DSaMtB5hvlSkVOsF2Rm/tc8McB
+         Igjw9ApnydtBCHn/MJjexNiGHiLZ0NSp5j1H7KA++jOAnfnd1LqhHqQMQXvt6AkmIWti
+         Nps1YyHiiIEOaygafwoUVSUbFx+4CpJ3fCj5dfmAaJbUeRSmkMmvonPiv5FYLTKT6WcP
+         dIqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f5lPF3XdF6K0NGZOyKOCMg14RTyoEyN0JADWifX2WeU=;
-        b=Sv5jfdE9krR9clJh0lq4WICTLUvuK6ze4CguHGC/DkzBfxHN/vSsnnl5VX5AKy7E+w
-         +4GpOI3Al03ZMh1BMv36rd69o2nWeBiOa5QL+rOanESc57z4m+avxVN24w+FI1P/+GVv
-         inXcoSpz5HY8HpDf1chiCFh7yJ/8tWye6HOFA9dth2qEBa/QgxZLzIjBYLYU75GpNeK5
-         NmKIQKQGhp4IyDWfrrJ10laJGzi1jURukzh4JzOaQSEYNBxh8A9Z9T988TXKhhV28rar
-         sFbxPnV4yWCupKJ0r4qskWAciOUfVN20bJMEpWHeFNxy572JMRwWYsX6rTpQmtk4lf34
-         rzUg==
-X-Gm-Message-State: AOAM532pV+0H5LTrtlb4DsGOdES8UkBi6Qg0fWQypZSdMlUDBKmVurV9
-        Mk6/qX61Gzu7u3i8x7K299bDCKUVPDcUSe6wv6JceqeohxRk8w==
-X-Google-Smtp-Source: ABdhPJx8/zaIcZxWP5pbJ7zrJXG2TNvexf+u5OUgTW2TIwyAJo5tnZzXvndLkFlLQ3n+Tr7Pn3DZKo7hZ+GVxj8fZd0=
-X-Received: by 2002:a05:6102:830:: with SMTP id k16mr21333035vsb.182.1594453209071;
- Sat, 11 Jul 2020 00:40:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=chblfhw/pZ7F1F13XRbjCEZ4EpDpVMofJy+rOKK895o=;
+        b=G2bzA9dh88knSy1uQwYJoTEE+9VoIoHe6iMAeA5JwwbToVwwxoYofSovGOmbY64fke
+         Unja7tbgpiEpCOHX6qxN0Y+2gYNbopC0gDDjY+bp3g77JqICUPZxHZ1NkrTY8xmzaUtA
+         eDWTDpsi4Lr5F0zbwernAxgoVJAJCKj681bdho0JJ7TXL9tafchoL4gvLxjkmjspvqxJ
+         6TMLoB2VoZIL4jW1DV6AJK0tcI22W49DwAJco2s4bxhJV37+dBMvO2PWOnGAN7Tp7TOt
+         2MbfgK39Cn/cLCEoBpVx5FPaCo6MJf7DY1TcCVbuUXH22pEMS6hb4KHxIZ/Tj5WwLWqt
+         HDSw==
+X-Gm-Message-State: AOAM532p6CZqCSPV/t2dyMGHy49SjzLioTXDM3zj/73KxOCdya2djZSC
+        2XsORtYg4q75RUdu7EOtbHs=
+X-Google-Smtp-Source: ABdhPJwihN9PIaXQhbGqnJH6ukFMQ3u+W+sA+rUYcCgbXMxlm1nwnsGuXmBouw+4drIRnpRE9Tl0IQ==
+X-Received: by 2002:aa7:c24d:: with SMTP id y13mr84833261edo.123.1594453965789;
+        Sat, 11 Jul 2020 00:52:45 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id r17sm6262069edw.68.2020.07.11.00.52.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jul 2020 00:52:44 -0700 (PDT)
+Date:   Sat, 11 Jul 2020 10:52:42 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next v6 0/4] net: enetc: remove bootloader dependency
+Message-ID: <20200711075242.dl72ymyyby6ivsk2@skbuf>
+References: <20200709213526.21972-1-michael@walle.cc>
 MIME-Version: 1.0
-References: <1594363554-4076-1-git-send-email-magnus.karlsson@intel.com> <3e42533f-fb6e-d6fa-af48-cb7f5c70890b@iogearbox.net>
-In-Reply-To: <3e42533f-fb6e-d6fa-af48-cb7f5c70890b@iogearbox.net>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Sat, 11 Jul 2020 09:39:58 +0200
-Message-ID: <CAJ8uoz3WhJkqN2=D+VP+ikvY2_WTRx7Pcuihr_8qJiYh0DUtog@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] xsk: fix memory leak and packet loss in Tx skb path
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        A.Zema@falconvsystems.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200709213526.21972-1-michael@walle.cc>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 11, 2020 at 1:28 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Hi Magnus,
->
-> On 7/10/20 8:45 AM, Magnus Karlsson wrote:
-> > In the skb Tx path, transmission of a packet is performed with
-> > dev_direct_xmit(). When QUEUE_STATE_FROZEN is set in the transmit
-> > routines, it returns NETDEV_TX_BUSY signifying that it was not
-> > possible to send the packet now, please try later. Unfortunately, the
-> > xsk transmit code discarded the packet, missed to free the skb, and
-> > returned EBUSY to the application. Fix this memory leak and
-> > unnecessary packet loss, by not discarding the packet in the Tx ring,
-> > freeing the allocated skb, and return EAGAIN. As EAGAIN is returned to the
-> > application, it can then retry the send operation and the packet will
-> > finally be sent as we will likely not be in the QUEUE_STATE_FROZEN
-> > state anymore. So EAGAIN tells the application that the packet was not
-> > discarded from the Tx ring and that it needs to call send()
-> > again. EBUSY, on the other hand, signifies that the packet was not
-> > sent and discarded from the Tx ring. The application needs to put the
-> > packet on the Tx ring again if it wants it to be sent.
-> >
-> > Fixes: 35fcde7f8deb ("xsk: support for Tx")
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > Reported-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-> > Suggested-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-> > ---
-> > The v1 of this patch was called "xsk: do not discard packet when
-> > QUEUE_STATE_FROZEN".
-> > ---
-> >   net/xdp/xsk.c | 13 +++++++++++--
-> >   1 file changed, 11 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index 3700266..5304250 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -376,13 +376,22 @@ static int xsk_generic_xmit(struct sock *sk)
-> >               skb->destructor = xsk_destruct_skb;
-> >
-> >               err = dev_direct_xmit(skb, xs->queue_id);
-> > -             xskq_cons_release(xs->tx);
-> >               /* Ignore NET_XMIT_CN as packet might have been sent */
-> > -             if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
-> > +             if (err == NET_XMIT_DROP) {
-> >                       /* SKB completed but not sent */
-> > +                     xskq_cons_release(xs->tx);
-> >                       err = -EBUSY;
-> >                       goto out;
-> > +             } else if  (err == NETDEV_TX_BUSY) {
-> > +                     /* QUEUE_STATE_FROZEN, tell application to
-> > +                      * retry sending the packet
-> > +                      */
-> > +                     skb->destructor = NULL;
-> > +                     kfree_skb(skb);
-> > +                     err = -EAGAIN;
-> > +                     goto out;
->
-> Hmm, I'm probably missing something or I should blame my current lack of coffee,
-> but I'll ask anyway.. What is the relation here to the kfree_skb{,_list}() in
-> dev_direct_xmit() when we have NETDEV_TX_BUSY condition? Wouldn't the patch above
-> double-free with NETDEV_TX_BUSY?
+On Thu, Jul 09, 2020 at 11:35:22PM +0200, Michael Walle wrote:
+> This is a resend [now a new v6] of the series because the conversion to the
+> phylink interface will likely take longer:
+> https://lore.kernel.org/netdev/CA+h21hpBodyY8CtNH2ktRdc2FqPi=Fjp94=VVZvzSVbnvnfKVg@mail.gmail.com/
+> Also the discussion in the v3 resend doesn't look like it will be resolved
+> soon :/
+> https://lore.kernel.org/netdev/20200701213433.9217-1-michael@walle.cc/
+> 
+> Unfortunately, we have boards in the wild with a bootloader which doesn't
+> set the PCS up correctly. Thus I'd really see this patches picked up as an
+> intermediate step until the phylink conversion is ready. Vladimir Oltean
+> already offered to convert enetc to phylink when he converts the felix to
+> phylink. After this series the PCS setup of the enetc looks almost the same
+> as the current felix setup. Thus conversion should be easy.
+> 
+> These patches were picked from the following series:
+> https://lore.kernel.org/netdev/1567779344-30965-1-git-send-email-claudiu.manoil@nxp.com/
+> They have never been resent. I've picked them up, addressed Andrews
+> comments, fixed some more bugs and asked Claudiu if I can keep their SOB
+> tags; he agreed. I've tested this on our board which happens to have a
+> bootloader which doesn't do the enetc setup in all cases. Though, only
+> SGMII mode was tested.
+> 
+> changes since v5:
+>  - fixed pcs->autoneg_complete and pcs->link assignment. Thanks Vladimir.
+> 
+> changes since v4:
+>  - moved (and renamed) the USXGMII constants to include/uapi/linux/mdio.h.
+>    Suggested by Russell King.
+> 
+> changes since v3:
+>  - rebased to latest net-next where devm_mdiobus_free() was removed.
+>    replace it by mdiobus_free(). The internal MDIO bus is optional, if
+>    there is any error, we try to run with the bootloader default PCS
+>    settings, thus in the error case, we need to free the mdiobus.
+> 
+> changes since v2:
+>  - removed SOBs from "net: enetc: Initialize SerDes for SGMII and USXGMII
+>    protocols" because almost everything has changed.
+>  - get a phy_device for the internal PCS PHY so we can use the phy_
+>    functions instead of raw mdiobus writes
+>  - reuse macros already defined in fsl_mdio.h, move missing bits from
+>    felix to fsl_mdio.h, because they share the same PCS PHY building
+>    block
+>  - added 2500BaseX mode (based on felix init routine)
+>  - changed xgmii mode to usxgmii mode, because it is actually USXGMII and
+>    felix does the same.
+>  - fixed devad, which is 0x1f (MMD_VEND2)
+> 
+> changes since v1:
+>  - mdiobus id is '"imdio-%s", dev_name(dev)' because the plain dev_name()
+>    is used by the emdio.
+>  - use mdiobus_write() instead of imdio->write(imdio, ..), since this is
+>    already a full featured mdiobus
+>  - set phy_mask to ~0 to avoid scanning the bus
+>  - use phy_interface_mode_is_rgmii(phy_mode) to also include the RGMII
+>    modes with pad delays.
+>  - move enetc_imdio_init() to enetc_pf.c, there shouldn't be any other
+>    users, should it?
+>  - renamed serdes to SerDes
+>  - printing the error code of mdiobus_register() in the error path
+>  - call mdiobus_unregister() on _remove()
+>  - call devm_mdiobus_free() if mdiobus_register() fails, since an
+>    error is not fatal
+> 
+> Alex Marginean (1):
+>   net: enetc: Use DT protocol information to set up the ports
+> 
+> Michael Walle (3):
+>   net: phy: add USXGMII link partner ability constants
+>   net: dsa: felix: (re)use already existing constants
+>   net: enetc: Initialize SerDes for SGMII and USXGMII protocols
+> 
+>  drivers/net/dsa/ocelot/felix_vsc9959.c        |  45 ++---
+>  .../net/ethernet/freescale/enetc/enetc_hw.h   |   3 +
+>  .../net/ethernet/freescale/enetc/enetc_pf.c   | 188 +++++++++++++++---
+>  .../net/ethernet/freescale/enetc/enetc_pf.h   |   5 +
+>  include/uapi/linux/mdio.h                     |  26 +++
+>  5 files changed, 210 insertions(+), 57 deletions(-)
+> 
+> -- 
+> 2.20.1
+> 
 
-I think you are correct even without coffee :-). I misinterpreted the
-following piece of code in dev_direct_xmit():
+I plan to give this series a go on an LS1028A-QDS later today to make
+sure there are no regressions.
 
-if (!dev_xmit_complete(ret))
-     kfree_skb(skb);
-
-If the skb was NOT consumed by the transmit, then it goes and frees
-the skb. NETDEV_TX_BUSY as a return value will make
-dev_xmit_complete() return false which triggers the freeing of the
-skb. So if I now understand dev_direct_xmit() correctly, it will
-always consume the skb, even when NETDEV_TX_BUSY is returned. And this
-is what I would like to avoid. If the skb is freed, the destructor is
-triggered and it will complete the packet to user-space, which is the
-same thing as dropping it, which is what I want to avoid in the first
-place since it is completely unnecessary.
-
-So what would be the best way to solve this? Prefer to share the code
-with AF_PACKET if possible. Introduce a boolean function parameter to
-indicate if it should be freed in this case? Other ideas? Here are the
-users of dev_direct_xmit():
-
-drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-
-line 349
-line 939
-line 1033
-line 1303
-line 1665
-
-include/linux/netdevice.h, line 2719
-net/core/dev.c
-
-line 4095
-line 4132
-
-net/packet/af_packet.c, line 240
-net/xdp/xsk.c, line 425
-
-Thanks: Magnus
-
-> >               }
-> > +             xskq_cons_release(xs->tx);
-> >
-> >               sent_frame = true;
-> >       }
-> >
->
-> Thanks,
-> Daniel
+Thanks,
+-Vladimir
