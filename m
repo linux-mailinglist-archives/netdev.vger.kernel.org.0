@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9353B21C566
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 19:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B448521C57D
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 19:24:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728652AbgGKRDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 13:03:21 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:48806 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728412AbgGKRDV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 13:03:21 -0400
-Received: by mail-il1-f197.google.com with SMTP id q9so5984888ilt.15
-        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 10:03:20 -0700 (PDT)
+        id S1728682AbgGKRYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 13:24:18 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:44615 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728510AbgGKRYS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 13:24:18 -0400
+Received: by mail-il1-f198.google.com with SMTP id x2so5992689ila.11
+        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 10:24:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=zx+wcMN9XwcOE9Jwr6b7EFyTsUN+BF3ioh+EWC9OsoU=;
-        b=ZopZGieKdyJDoyo6ojBfgcg5lSMgonKGjlro8bneqd1Ua+GDvXCV8HpMJkYEmDYwJj
-         /k1xfl6iafVDVN67j8WVIzYyMLZ2wHW06cXaZTZ0/LQNQ3HozyEE6XG+tIM/WHqhS2sO
-         dn5zSMpVhL336p7vujmCWACYNWrM6oWKQLGSPyfJhBskrEtbPE5evfIO01jcRZPoM14r
-         /ORNY1pEakpwY+re/PuNztfvJGRkDIYa0RXVrisqsORyeYqXFIMUjWRvXk2pEGCr2zgZ
-         +sDHWmOF5KYoKD8/+GSjzqlvZ3UQs2pdRQiT4ZPF7EnFc1MBA7jgIcrqkJTR0/BDON6L
-         iZ6Q==
-X-Gm-Message-State: AOAM5325bbe9TElTpZagbUlqqKESQ7X/Nl0W+gVNUIEVSdfAXgbkVK9j
-        etyUYwQM+rXIr6jmmfMo0yDmxXgyYZst32+IUThYKU2Xllbm
-X-Google-Smtp-Source: ABdhPJxCNrQ7mwfVu4cyIs1iVuRfd7CVfH485Y1eSUaP3CBGERIgIgOaI+mZPbaGNgwQVkMDXgoVmaJWisdQH/1M/dyre4UOH0UL
+        bh=IeGXPwtj2lsocZhYj09imRNrIavWv4B/gviXUgmP6a4=;
+        b=uOS+h2GR2WS8xk86mmiF48inCu0IzxxILYtbO23NbhEnowdE8fSFn25HQQ0hU79vZ1
+         OxI6fC2DAec+B/ygN9A95cSSy8j1fg0aFni3gvQ2CvpYwwGbPa2LBS7WiwiC+9oG6JNd
+         HSZ2Xq2Xxk9qPIT87HnYw0Fq0IUYkX8ilV29serUdp9/yxM/WgLyfciIRU4+dlnVmfoc
+         2r3enLho5GWY1i5CIC6dhPq5O4+2tLiIWSc+6MsvzjVxLEm+lQ4tZS097TCWiAkT5qnO
+         OE1Hf3CXTBwz1B+60EPZypUWhxwyNY6bBRs/9wFUoLXUcp0v8sYx4n1ei00n1MiTBdrr
+         nSKg==
+X-Gm-Message-State: AOAM532HZKHxIIqFFbnreHv1mIzZ1iDgkX8EXrYkvFh402KF/FZoEJdP
+        Bbsitkzvx+f815EEmwERsYl86KMALFCyB2O3CjzdIwgGx2xp
+X-Google-Smtp-Source: ABdhPJxaO1pCSySsaIduXc9iXrSEjRgRRv4V2aSfFjff9Q2pVX2H9MA/gZA7sif7lcNU5fsE2CTGnmSeDJcub/k2Df8CHeVubeIF
 MIME-Version: 1.0
-X-Received: by 2002:a5e:9b08:: with SMTP id j8mr6336861iok.116.1594486999819;
- Sat, 11 Jul 2020 10:03:19 -0700 (PDT)
-Date:   Sat, 11 Jul 2020 10:03:19 -0700
+X-Received: by 2002:a92:5fc7:: with SMTP id i68mr16491282ill.126.1594488257247;
+ Sat, 11 Jul 2020 10:24:17 -0700 (PDT)
+Date:   Sat, 11 Jul 2020 10:24:17 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000392a0a05aa2d6faf@google.com>
-Subject: general protection fault in htab_elem_free_rcu
-From:   syzbot <syzbot+a9db0ab6a8e0ca14351d@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Message-ID: <0000000000002c01a305aa2dba34@google.com>
+Subject: INFO: trying to register non-static key in addrconf_notify
+From:   syzbot <syzbot+bf9c23e0afdec81d9470@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -50,87 +48,49 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    d31958b3 Add linux-next specific files for 20200710
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13935857100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3fe4fccb94cbc1a6
-dashboard link: https://syzkaller.appspot.com/bug?extid=a9db0ab6a8e0ca14351d
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=133db22b100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16fe6f1f100000
+HEAD commit:    7cc2a8ea Merge tag 'block-5.8-2020-07-01' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=102d01a3100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=183dd243398ba7ec
+dashboard link: https://syzkaller.appspot.com/bug?extid=bf9c23e0afdec81d9470
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+
+Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+a9db0ab6a8e0ca14351d@syzkaller.appspotmail.com
+Reported-by: syzbot+bf9c23e0afdec81d9470@syzkaller.appspotmail.com
 
-general protection fault, probably for non-canonical address 0xf33bb70012bc003b: 0000 [#1] PREEMPT SMP KASAN
-KASAN: maybe wild-memory-access in range [0x99ddd80095e001d8-0x99ddd80095e001df]
-CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.8.0-rc4-next-20200710-syzkaller #0
+INFO: trying to register non-static key.
+the code is fine but needs lockdep annotation.
+turning off the locking correctness validator.
+CPU: 1 PID: 317 Comm: kworker/u4:6 Not tainted 5.8.0-rc3-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:htab_elem_free kernel/bpf/hashtab.c:769 [inline]
-RIP: 0010:htab_elem_free_rcu+0x4a/0x110 kernel/bpf/hashtab.c:779
-Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 bc 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 6b f8 48 8d 7d 18 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 82 00 00 00 44 8b 65 18 bf 05
-RSP: 0018:ffffc90000007e48 EFLAGS: 00010a03
-RAX: dffffc0000000000 RBX: ffff888084800010 RCX: 0000000000000001
-RDX: 133bbb0012bc003b RSI: ffffffff8186891e RDI: 99ddd80095e001de
-RBP: 99ddd80095e001c6 R08: 0000000000000000 R09: ffffffff8c5b09f7
-R10: fffffbfff18b613e R11: 0000000000000000 R12: ffffc90000007ed8
-R13: ffff888084800000 R14: 0000000000000000 R15: ffffffff89a86580
-FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000004c6368 CR3: 0000000009a79000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Workqueue: netns cleanup_net
 Call Trace:
- <IRQ>
- rcu_do_batch kernel/rcu/tree.c:2418 [inline]
- rcu_core+0x5dc/0x11d0 kernel/rcu/tree.c:2645
- __do_softirq+0x34c/0xa60 kernel/softirq.c:292
- asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:706
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
- do_softirq_own_stack+0x111/0x170 arch/x86/kernel/irq_64.c:77
- invoke_softirq kernel/softirq.c:387 [inline]
- __irq_exit_rcu kernel/softirq.c:417 [inline]
- irq_exit_rcu+0x229/0x270 kernel/softirq.c:429
- sysvec_apic_timer_interrupt+0x54/0x120 arch/x86/kernel/apic/apic.c:1090
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:587
-RIP: 0010:native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:61
-Code: ff 4c 89 ef e8 93 66 c6 f9 e9 8e fe ff ff 48 89 df e8 86 66 c6 f9 eb 8a cc cc cc cc e9 07 00 00 00 0f 00 2d 34 9b 5b 00 fb f4 <c3> 90 e9 07 00 00 00 0f 00 2d 24 9b 5b 00 f4 c3 cc cc 55 53 e8 09
-RSP: 0018:ffffffff89a07c70 EFLAGS: 00000293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffffffff89a86580 RSI: ffffffff87ed2968 RDI: ffffffff87ed293e
-RBP: ffff8880a6a93064 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: ffff8880a6a93064
-R13: 1ffffffff1340f98 R14: ffff8880a6a93065 R15: 0000000000000001
- arch_safe_halt arch/x86/include/asm/paravirt.h:150 [inline]
- acpi_safe_halt+0x8d/0x110 drivers/acpi/processor_idle.c:111
- acpi_idle_do_entry+0x15c/0x1b0 drivers/acpi/processor_idle.c:525
- acpi_idle_enter+0x3f9/0xab0 drivers/acpi/processor_idle.c:651
- cpuidle_enter_state+0xff/0x960 drivers/cpuidle/cpuidle.c:235
- cpuidle_enter+0x4a/0xa0 drivers/cpuidle/cpuidle.c:346
- call_cpuidle kernel/sched/idle.c:126 [inline]
- cpuidle_idle_call kernel/sched/idle.c:214 [inline]
- do_idle+0x431/0x6d0 kernel/sched/idle.c:276
- cpu_startup_entry+0x14/0x20 kernel/sched/idle.c:372
- start_kernel+0x9cb/0xa06 init/main.c:1045
- secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:243
-Modules linked in:
----[ end trace 5ce7b44eaacf6c96 ]---
-RIP: 0010:htab_elem_free kernel/bpf/hashtab.c:769 [inline]
-RIP: 0010:htab_elem_free_rcu+0x4a/0x110 kernel/bpf/hashtab.c:779
-Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 bc 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 6b f8 48 8d 7d 18 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 82 00 00 00 44 8b 65 18 bf 05
-RSP: 0018:ffffc90000007e48 EFLAGS: 00010a03
-RAX: dffffc0000000000 RBX: ffff888084800010 RCX: 0000000000000001
-RDX: 133bbb0012bc003b RSI: ffffffff8186891e RDI: 99ddd80095e001de
-RBP: 99ddd80095e001c6 R08: 0000000000000000 R09: ffffffff8c5b09f7
-R10: fffffbfff18b613e R11: 0000000000000000 R12: ffffc90000007ed8
-R13: ffff888084800000 R14: 0000000000000000 R15: ffffffff89a86580
-FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000004c6368 CR3: 0000000009a79000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1f0/0x31e lib/dump_stack.c:118
+ register_lock_class+0xf06/0x1520 kernel/locking/lockdep.c:893
+ __lock_acquire+0x102/0x2c30 kernel/locking/lockdep.c:4259
+ lock_acquire+0x160/0x720 kernel/locking/lockdep.c:4959
+ __raw_write_lock_bh include/linux/rwlock_api_smp.h:203 [inline]
+ _raw_write_lock_bh+0x31/0x40 kernel/locking/spinlock.c:319
+ addrconf_ifdown+0x5f8/0x1670 net/ipv6/addrconf.c:3734
+ addrconf_notify+0x3f9/0x3a60 net/ipv6/addrconf.c:3602
+ notifier_call_chain kernel/notifier.c:83 [inline]
+ __raw_notifier_call_chain kernel/notifier.c:361 [inline]
+ raw_notifier_call_chain+0xe7/0x170 kernel/notifier.c:368
+ call_netdevice_notifiers_info net/core/dev.c:2027 [inline]
+ call_netdevice_notifiers_extack net/core/dev.c:2039 [inline]
+ call_netdevice_notifiers net/core/dev.c:2053 [inline]
+ rollback_registered_many+0xbe3/0x14a0 net/core/dev.c:8968
+ unregister_netdevice_many+0x46/0x260 net/core/dev.c:10113
+ ip6gre_exit_batch_net+0x435/0x460 net/ipv6/ip6_gre.c:1608
+ ops_exit_list net/core/net_namespace.c:189 [inline]
+ cleanup_net+0x79c/0xba0 net/core/net_namespace.c:603
+ process_one_work+0x789/0xfc0 kernel/workqueue.c:2269
+ worker_thread+0xaa4/0x1460 kernel/workqueue.c:2415
+ kthread+0x37e/0x3a0 drivers/block/aoe/aoecmd.c:1234
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
 
 
 ---
@@ -140,5 +100,3 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this bug report. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
