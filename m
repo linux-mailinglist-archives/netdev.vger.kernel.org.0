@@ -2,49 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67D4B21C667
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 23:21:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F263A21C669
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 23:26:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728094AbgGKVVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 17:21:03 -0400
-Received: from smtprelay0158.hostedemail.com ([216.40.44.158]:46756 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726779AbgGKVVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 17:21:02 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay08.hostedemail.com (Postfix) with ESMTP id C1C09182CED34;
-        Sat, 11 Jul 2020 21:21:00 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1515:1516:1518:1533:1534:1536:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3622:3865:3870:4250:4321:5007:10004:10400:10848:11232:11658:11914:12043:12048:12196:12297:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21627:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: cry76_160357c26eda
-X-Filterd-Recvd-Size: 1069
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf01.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 11 Jul 2020 21:20:59 +0000 (UTC)
-Message-ID: <2181026e68d2948c396cc7a7b6bfb7146c1cd5f6.camel@perches.com>
-Subject: Re: [PATCH] net: sky2: switch from 'pci_' to 'dma_' API
-From:   Joe Perches <joe@perches.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        mlindner@marvell.com, stephen@networkplumber.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Date:   Sat, 11 Jul 2020 14:20:58 -0700
-In-Reply-To: <20200711204944.259152-1-christophe.jaillet@wanadoo.fr>
-References: <20200711204944.259152-1-christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1727099AbgGKV0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 17:26:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726779AbgGKV0d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 17:26:33 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4FF1C08C5DD
+        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 14:26:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=HPQn0ck4gm6w0VBTI9pE3A0mzQw+Bw/ePvhwU2qYhwk=; b=lNXdddwMgxoNEGE9jbtjw4t62
+        pWgHma2tqlVaoqmU9UeQ4PrGg/LYWztuoGy6/aGYZ0ioCm8PGPD4zIrIj3Qi+kltcubrZDbloygwI
+        OkWHMt2fxIvKpQwnGB4eGKJeWkqjayT7K+dkthnpHsufLh4yKnR91tCyJuQtn2W38Ppv5CCkpM2zA
+        EvBGDNOMXitCigGKl9/kI1dpVp/82Ir/4Hw7AYe0MrBs9xNIAmbYMbjd3MToBQz8olfsLzozvrLBn
+        pGeLBICgZSbxCClxqWSsS0v/Dzy21bg4fdVKC3Gx/KKNAvbJmF4Mej5haoz9iZN2WFo6MB+DVLoBJ
+        7DaTKLZBw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38288)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1juN0o-0002kL-TS; Sat, 11 Jul 2020 22:26:22 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1juN0k-0004b9-9o; Sat, 11 Jul 2020 22:26:18 +0100
+Date:   Sat, 11 Jul 2020 22:26:18 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Chris Healy <cphealy@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>
+Subject: Re: [PATCH net-next 0/2] Fix MTU warnings for fec/mv886xxx combo
+Message-ID: <20200711212618.GP1551@shell.armlinux.org.uk>
+References: <20200711203206.1110108-1-andrew@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200711203206.1110108-1-andrew@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-07-11 at 22:49 +0200, Christophe JAILLET wrote:
-> The wrappers in include/linux/pci-dma-compat.h should go away.
+On Sat, Jul 11, 2020 at 10:32:04PM +0200, Andrew Lunn wrote:
+> Since changing the MTU of dsa slave interfaces was implemented, the
+> fec/mv88e6xxx combo has been giving warnings:
+> 
+> [    2.275925] mv88e6085 0.2:00: nonfatal error -95 setting MTU on port 9
+> [    2.284306] eth1: mtu greater than device maximum
+> [    2.287759] fec 400d1000.ethernet eth1: error -22 setting MTU to include DSA overhead
+> 
+> This patchset adds support for changing the MTU on mv88e6xxx switches,
+> which do support jumbo frames. And it modifies the FEC driver to
+> support its true MTU range, which is larger than the default Ethernet
+> MTU.
 
-why?
+It's not just the fec/mv88e6xxx combo - I've been getting them on
+Clearfog too.  It just hasn't been important enough to report yet.
 
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
