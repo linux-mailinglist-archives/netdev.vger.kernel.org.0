@@ -2,271 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A11D21C2EE
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 08:57:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5951521C2F1
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 08:58:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728245AbgGKG5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 02:57:01 -0400
-Received: from mail-eopbgr40081.outbound.protection.outlook.com ([40.107.4.81]:13001
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728234AbgGKG5B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Jul 2020 02:57:01 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HeYpRbRGNnIY/kRuBuxEWfaeIEqmoHRUw2O6tDfZKRgkWUhB3NV3EXiYzum0wHsx0cuU610rEbnVUwfSrxR4QcCPHK35Uq8IxpO6Jr2Grc6OLxHtXgqLwzicf/owf79opHpReKweDD2AOtYAaIVytEIhXDEHcCMUv14JOY9a+MR73Y9QgfFNnrhFRiZ9JNF/pb5zjihLhKba8zhw9VTNM0zIHkgogq/431XBEg4yCdjXf8fE/o461Qa6jqY3vU45cbjBxrjCH2AaIz90+oD/yz7G84p7Ih+2C0rgPuHWL/jDkMKVyp8lhbvy41y5Tr8chAEKY8ahte1/ywpEkMdjlQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xBgdmu5fO41p3LivQNJ6elULbbmmy9Ca7KJAMiLfKy0=;
- b=XCCl53HoWwMetsPmQlino4vEbVU0ow6lO6yP/rhX87lBot3fSmbO8TZylcMbnGP7vracqEuzhqa7Y0ZRTZdJuATmlh/F4yzQmxU1p3XnIiNAbmMgwfFi7/GvEr5O6jWPwZftgpqcfktv9fuJBWRte7EeobspDT+UsX5cA+/m3VxMEccJnWoo5ZRk9xHhB84T+3zcUrjIn1aJNtADklCByCLH9fw7TYWyZvx2PaETNAIcC4ZOcsJO1I8rLoYiIDw/a6V+qm5DH97KgxCEx1CWS95VezyEhEwt/uXBe8gXunXvg4DbfINCxCmlG1KTLm9kdMeGujsDF0oVsIWo431e8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xBgdmu5fO41p3LivQNJ6elULbbmmy9Ca7KJAMiLfKy0=;
- b=SpkqwJ1MoJ01hm2WEvxtZ37xf6fr4hUBlWU6jVxT/eHSF/nMCDA5PeLz8oY/5E2sgjMUHP/XOZ2TyN8VsmUFqELW2QodSylmGlvUDqcJA7/jtLaVTZi4ZnzmAPkFgHKD4/KFaIUn8dJKhFdaEVv2OJWRG03G1WUrI5quuJAYeoc=
-Authentication-Results: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB6961.eurprd04.prod.outlook.com (2603:10a6:208:180::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Sat, 11 Jul
- 2020 06:56:54 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::7dda:a30:6b25:4d45]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::7dda:a30:6b25:4d45%7]) with mapi id 15.20.3174.023; Sat, 11 Jul 2020
- 06:56:54 +0000
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Jeremy Linton <jeremy.linton@arm.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>
-Cc:     netdev@vger.kernel.org, linux.cj@gmail.com,
-        linux-acpi@vger.kernel.org,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>
-Subject: [net-next PATCH v6 6/6] net: dpaa2-mac: Add ACPI support for DPAA2 MAC driver
-Date:   Sat, 11 Jul 2020 12:26:00 +0530
-Message-Id: <20200711065600.9448-7-calvin.johnson@oss.nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200711065600.9448-1-calvin.johnson@oss.nxp.com>
-References: <20200711065600.9448-1-calvin.johnson@oss.nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR06CA0132.apcprd06.prod.outlook.com
- (2603:1096:1:1d::34) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+        id S1728234AbgGKG6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 02:58:17 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:53515 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728049AbgGKG6Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 02:58:16 -0400
+Received: by mail-io1-f71.google.com with SMTP id g11so4994491ioc.20
+        for <netdev@vger.kernel.org>; Fri, 10 Jul 2020 23:58:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=AkBx8LTbEovSwhwwJ9FeFsD5TmflPO84M/ic/EDjK1M=;
+        b=MwRMLlHK534c6ZxmW4XS6NTzDnhIE1toa4AMkh15j8rEZ9t5AREABljTzIzMB2btHE
+         1Hg5sTrnQRfpSX5Na2rs/ntIWcMh49d1MQlJBQg8t8Akyhr3C819EOr0JRYtD9pznmB9
+         7N3OAnnnlH+Nqot3+4461scqploh7HbR9MGyDM4q1b8yr3vF/Vy/ey9QoP/oT12G0hgN
+         m65lOrKGPFfvASVu8WyM+8TPzZucyzEmL6ezvFSZ2BV40y7d/64/hCXbF7Xq4cp2mYgu
+         blca2o60HCFwa1keBe/6MKF8NZmRN8O28+n1zB0/+YKuppwUkGc6J/0H8G/KfYIRI06j
+         G+6w==
+X-Gm-Message-State: AOAM531PusrjaMsRgcyS7p2A97B87/6wUKFDpvurEIS2I7Nr35Z8zk5z
+        mKL1dDgACM/OO561eGFeAEZgTBk/3u53gw7yX/nvw2JtESE8
+X-Google-Smtp-Source: ABdhPJyHkFmFk9sP90ajG41S5cTk8F61qKnof5/Gg9oZeuf3WWRrWJgUgUCEGrpP6Ouw4P/GSXLP5u8lRScyMR0/DNxEF9rwqt1D
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR06CA0132.apcprd06.prod.outlook.com (2603:1096:1:1d::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Sat, 11 Jul 2020 06:56:51 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [14.142.151.118]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a35bfa07-e13e-45bd-56ed-08d825679899
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6961:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB6961610181D839A3E3EACCE1D2620@AM0PR04MB6961.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 022s+QQiDwQSXFl9crLTAEN8EHJ95goSz1/VtgKoM6oxjR2K4e8OYS6iQczFcj/HlrSpjrnIJBjFxlQc7hCcpjdSkGEeOyjBjSAyb28TuHmtoWlLj/4y3axM76PDkr2ANga6Kmkm5huQOieDlzxAjUCNoixNYxDL51DGVC9D9lyYeujiZ3xFCBNyrS9GsvDpI6CKfSZIoeIJC3lFNjuQuVFsSuLR+NwxHe+LUtJrSinrPFPxPdFRYO4rGMBmPTszu3TwHsrXTRxGqpZCxwZa+cfG/6u652fQtqcnTKv1zwLXIUNHxAm5NNsVhBAMc8T2c66nMEMElhgFNbohe5NYODROSsbvnxvEj9lyBGeUBfv0MXzhKN1cUJumQtOhgkQQ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(396003)(376002)(366004)(136003)(346002)(26005)(6636002)(16526019)(186003)(110136005)(55236004)(66476007)(44832011)(6666004)(66946007)(66556008)(5660300002)(2616005)(8676002)(52116002)(1006002)(6512007)(316002)(6486002)(6506007)(956004)(1076003)(4326008)(2906002)(83380400001)(478600001)(8936002)(86362001)(110426005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: aTrEPg7CJ9LOGuu2EhTJGOdLbrCN+kx6/Sbv+brENHpj4Dzeaxhsq0Jo6EPJNdRCb24L2nArKNhnVbSzGtLjruANYEV5b9C6eH92nTMOsY3T5eDTwZxP5DFskujCSXTXbDbhgwGAbMRVc8Xb078A0mLgp/ECQtZmW1vI2JSoTNV+IIfma+jCwMT6kt5AtHbcnCCF7Cxoh1aABNu5MpkTSOsW0XurIQlKnfX7JxJxGqogs+u296VmAcNe1XJQJYqJyv4VDv1ajbXAUasb78qxmcnhFOEdaIkluDtK6EjrIvaM3NEy8ElykDkHxZy5UuOpBrEJmLT64UGcQ2iWMUOFWveePQpiIXd+z9KrGXi80eIoW18QrpEg4kpqZ/dWtSvfbD2AjVr+0aXN006bYFVwOE6+lwCBxMyleQNjKiYuyjydGfTbmYuf9UcSRZEFdEAaD0pb10BMAB0jBtgc+IGCJgLGz0su5n5y2TxRb2XN2EU=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a35bfa07-e13e-45bd-56ed-08d825679899
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2020 06:56:54.7169
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: q8qXGulF10GgYNefzGd/f0IOebE0thMIqHWmCng6nnA3Ne8rrCOgdI3+sdMUBsv6uFZCgZtpPVVBySTX9xyToQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6961
+X-Received: by 2002:a05:6e02:c21:: with SMTP id q1mr5169902ilg.28.1594450694903;
+ Fri, 10 Jul 2020 23:58:14 -0700 (PDT)
+Date:   Fri, 10 Jul 2020 23:58:14 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000481e2505aa24fb32@google.com>
+Subject: BUG: stack guard page was hit in __bad_area_nosemaphore
+From:   syzbot <syzbot+89eb3f606b866757455d@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, jeyu@kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@chromium.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modify dpaa2_mac_connect() to support ACPI along with DT.
-Modify dpaa2_mac_get_node() to get the dpmac fwnode from either
-DT or ACPI.
-Replace of_get_phy_mode with fwnode_get_phy_mode to get
-phy-mode for a dpmac_node.
-Define and use helper function find_phy_device() to find phy_dev
-that is later connected to mac->phylink.
+Hello,
 
-Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+syzbot found the following crash on:
+
+HEAD commit:    7cc2a8ea Merge tag 'block-5.8-2020-07-01' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=135403a3100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7be693511b29b338
+dashboard link: https://syzkaller.appspot.com/bug?extid=89eb3f606b866757455d
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+89eb3f606b866757455d@syzkaller.appspotmail.com
+
+BUG: stack guard page was hit at 0000000046f5170d (stack is 00000000087b5eff..00000000b28869c7)
+kernel stack overflow (double-fault): 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 25511 Comm: syz-executor.4 Not tainted 5.8.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__bad_area_nosemaphore+0x15/0x480 arch/x86/mm/fault.c:743
+Code: ff ff 4c 89 ff e8 8b 35 7f 00 e9 0c ff ff ff 66 0f 1f 44 00 00 41 57 41 56 45 89 c6 41 55 49 89 d5 41 54 49 89 f4 55 48 89 fd <53> 4c 8d bd 88 00 00 00 48 83 ec 28 89 4c 24 14 e8 d6 df 3f 00 4c
+RSP: 0018:ffffc90016598000 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffff88804d04c580 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffffc900165980d8
+RBP: ffffc900165980d8 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
+R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000000000
+FS:  00007f2d59c18700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffc90016597ff8 CR3: 00000000599e5000 CR4: 00000000001426f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
+ handle_page_fault arch/x86/mm/fault.c:1365 [inline]
+ exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
+RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
+Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+RSP: 0018:ffffc90016598188 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffffc90016598490 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
+RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
+ search_module_extables+0xce/0x100 kernel/module.c:4422
+ search_exception_tables+0x42/0x50 kernel/extable.c:59
+ fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
+ no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
+ __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
+ do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
+ handle_page_fault arch/x86/mm/fault.c:1365 [inline]
+ exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
+RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
+Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+RSP: 0018:ffffc900165984b8 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffffc900165987c0 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
+RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
+ search_module_extables+0xce/0x100 kernel/module.c:4422
+ search_exception_tables+0x42/0x50 kernel/extable.c:59
+ fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
+ no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
+ __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
+ do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
+ handle_page_fault arch/x86/mm/fault.c:1365 [inline]
+ exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
+RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
+Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+RSP: 0018:ffffc900165987e8 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffffc90016598af0 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
+RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
+ search_module_extables+0xce/0x100 kernel/module.c:4422
+ search_exception_tables+0x42/0x50 kernel/extable.c:59
+ fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
+ no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
+ __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
+ do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
+ handle_page_fault arch/x86/mm/fault.c:1365 [inline]
+ exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
+RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
+Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+RSP: 0018:ffffc90016598b18 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffffc90016598e20 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
+RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
+ search_module_extables+0xce/0x100 kernel/module.c:4422
+ search_exception_tables+0x42/0x50 kernel/extable.c:59
+ fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
+ no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
+ __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
+ do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
+ handle_page_fault arch/x86/mm/fault.c:1365 [inline]
+ exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
+RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
+Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+RSP: 0018:ffffc90016598e48 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffffc90016599150 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
+RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
+ search_module_extables+0xce/0x100 kernel/module.c:4422
+ search_exception_tables+0x42/0x50 kernel/extable.c:59
+ fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
+ no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
+ __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
+ do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
+ handle_page_fault arch/x86/mm/fault.c:1365 [inline]
+ exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
+RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
+Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+RSP: 0018:ffffc90016599178 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffffc90016599480 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff83967dab RDI: 0000000000000001
+RBP: ffffffff810078f7 R08: ffffffff83ad5e30 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 000000000000000e R14: 0000000000000002 R15: 0000000000000000
+ search_module_extables+0xce/0x100 kernel/module.c:4422
+ search_exception_tables+0x42/0x50 kernel/extable.c:59
+ fixup_exception+0x4b/0xca arch/x86/mm/extable.c:161
+ no_context+0xe7/0x9f0 arch/x86/mm/fault.c:599
+ __bad_area_nosemaphore+0xa9/0x480 arch/x86/mm/fault.c:789
+ do_user_addr_fault+0x783/0xd00 arch/x86/mm/fault.c:1171
+ handle_page_fault arch/x86/mm/fault.c:1365 [inline]
+ exc_page_fault+0xab/0x170 arch/x86/mm/fault.c:1418
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:565
+RIP: 0010:preempt_schedule_thunk+0x0/0x18 arch/x86/entry/thunk_64.S:40
+Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+RSP: 0018:ffffc900165994a8 EFLAGS: 00010046
+RAX: 0000000000000000 
+Lost 804 message(s)!
+---[ end trace ffd1ab463dd60bcc ]---
+RIP: 0010:__bad_area_nosemaphore+0x15/0x480 arch/x86/mm/fault.c:743
+Code: ff ff 4c 89 ff e8 8b 35 7f 00 e9 0c ff ff ff 66 0f 1f 44 00 00 41 57 41 56 45 89 c6 41 55 49 89 d5 41 54 49 89 f4 55 48 89 fd <53> 4c 8d bd 88 00 00 00 48 83 ec 28 89 4c 24 14 e8 d6 df 3f 00 4c
+RSP: 0018:ffffc90016598000 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffff88804d04c580 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffffc900165980d8
+RBP: ffffc900165980d8 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
+R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000000000
+FS:  00007f2d59c18700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffc90016597ff8 CR3: 00000000599e5000 CR4: 00000000001426f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
 
 ---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Changes in v6: None
-Changes in v5: None
-Changes in v4:
-- introduce device_mdiobus_register()
-
-Changes in v3:
-- cleanup based on v2 comments
-- move code into phylink_fwnode_phy_connect()
-
-Changes in v2:
-- clean up dpaa2_mac_get_node()
-- introduce find_phy_device()
-- use acpi_find_child_device()
-
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 70 +++++++++++--------
- 1 file changed, 40 insertions(+), 30 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index 3ee236c5fc37..297d2dab9e97 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -1,6 +1,9 @@
- // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
- /* Copyright 2019 NXP */
- 
-+#include <linux/acpi.h>
-+#include <linux/platform_device.h>
-+
- #include "dpaa2-eth.h"
- #include "dpaa2-mac.h"
- 
-@@ -23,38 +26,46 @@ static int phy_mode(enum dpmac_eth_if eth_if, phy_interface_t *if_mode)
- }
- 
- /* Caller must call of_node_put on the returned value */
--static struct device_node *dpaa2_mac_get_node(u16 dpmac_id)
-+static struct fwnode_handle *dpaa2_mac_get_node(struct device *dev,
-+						u16 dpmac_id)
- {
--	struct device_node *dpmacs, *dpmac = NULL;
--	u32 id;
-+	struct fwnode_handle *fsl_mc_fwnode = dev_fwnode(dev->parent->parent);
-+	struct fwnode_handle *dpmacs, *dpmac = NULL;
-+	struct acpi_device *adev;
- 	int err;
-+	u32 id;
- 
--	dpmacs = of_find_node_by_name(NULL, "dpmacs");
--	if (!dpmacs)
--		return NULL;
--
--	while ((dpmac = of_get_next_child(dpmacs, dpmac)) != NULL) {
--		err = of_property_read_u32(dpmac, "reg", &id);
--		if (err)
--			continue;
--		if (id == dpmac_id)
--			break;
-+	if (is_of_node(fsl_mc_fwnode)) {
-+		dpmacs = fwnode_get_named_child_node(fsl_mc_fwnode, "dpmacs");
-+		if (!dpmacs)
-+			return NULL;
-+
-+		while ((dpmac = fwnode_get_next_child_node(dpmacs, dpmac))) {
-+			err = fwnode_property_read_u32(dpmac, "reg", &id);
-+			if (err)
-+				continue;
-+			if (id == dpmac_id)
-+				return dpmac;
-+		}
-+		fwnode_handle_put(dpmacs);
-+	} else if (is_acpi_device_node(fsl_mc_fwnode)) {
-+		adev = acpi_find_child_device(ACPI_COMPANION(dev->parent),
-+					      dpmac_id, false);
-+		if (adev)
-+			return acpi_fwnode_handle(adev);
- 	}
--
--	of_node_put(dpmacs);
--
--	return dpmac;
-+	return NULL;
- }
- 
--static int dpaa2_mac_get_if_mode(struct device_node *node,
-+static int dpaa2_mac_get_if_mode(struct fwnode_handle *dpmac_node,
- 				 struct dpmac_attr attr)
- {
- 	phy_interface_t if_mode;
- 	int err;
- 
--	err = of_get_phy_mode(node, &if_mode);
--	if (!err)
--		return if_mode;
-+	err = fwnode_get_phy_mode(dpmac_node);
-+	if (err > 0)
-+		return err;
- 
- 	err = phy_mode(attr.eth_if, &if_mode);
- 	if (!err)
-@@ -231,7 +242,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- {
- 	struct fsl_mc_device *dpmac_dev = mac->mc_dev;
- 	struct net_device *net_dev = mac->net_dev;
--	struct device_node *dpmac_node;
-+	struct fwnode_handle *dpmac_node = NULL;
- 	struct phylink *phylink;
- 	struct dpmac_attr attr;
- 	int err;
-@@ -251,7 +262,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 
- 	mac->if_link_type = attr.link_type;
- 
--	dpmac_node = dpaa2_mac_get_node(attr.id);
-+	dpmac_node = dpaa2_mac_get_node(&dpmac_dev->dev, attr.id);
- 	if (!dpmac_node) {
- 		netdev_err(net_dev, "No dpmac@%d node found.\n", attr.id);
- 		err = -ENODEV;
-@@ -269,7 +280,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 	 * error out if the interface mode requests them and there is no PHY
- 	 * to act upon them
- 	 */
--	if (of_phy_is_fixed_link(dpmac_node) &&
-+	if (of_phy_is_fixed_link(to_of_node(dpmac_node)) &&
- 	    (mac->if_mode == PHY_INTERFACE_MODE_RGMII_ID ||
- 	     mac->if_mode == PHY_INTERFACE_MODE_RGMII_RXID ||
- 	     mac->if_mode == PHY_INTERFACE_MODE_RGMII_TXID)) {
-@@ -282,7 +293,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 	mac->phylink_config.type = PHYLINK_NETDEV;
- 
- 	phylink = phylink_create(&mac->phylink_config,
--				 of_fwnode_handle(dpmac_node), mac->if_mode,
-+				 dpmac_node, mac->if_mode,
- 				 &dpaa2_mac_phylink_ops);
- 	if (IS_ERR(phylink)) {
- 		err = PTR_ERR(phylink);
-@@ -290,20 +301,19 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 	}
- 	mac->phylink = phylink;
- 
--	err = phylink_of_phy_connect(mac->phylink, dpmac_node, 0);
-+	err = phylink_fwnode_phy_connect(mac->phylink, dpmac_node, 0);
- 	if (err) {
--		netdev_err(net_dev, "phylink_of_phy_connect() = %d\n", err);
-+		netdev_err(net_dev, "phylink_fwnode_phy_connect() = %d\n", err);
- 		goto err_phylink_destroy;
- 	}
- 
--	of_node_put(dpmac_node);
--
-+	fwnode_handle_put(dpmac_node);
- 	return 0;
- 
- err_phylink_destroy:
- 	phylink_destroy(mac->phylink);
- err_put_node:
--	of_node_put(dpmac_node);
-+	fwnode_handle_put(dpmac_node);
- err_close_dpmac:
- 	dpmac_close(mac->mc_io, 0, dpmac_dev->mc_handle);
- 	return err;
--- 
-2.17.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
