@@ -2,57 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 911CD21C553
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 18:42:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2459721C55F
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 18:52:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728520AbgGKQmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 12:42:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58630 "EHLO vps0.lunn.ch"
+        id S1728560AbgGKQwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 12:52:08 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58646 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728412AbgGKQma (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Jul 2020 12:42:30 -0400
+        id S1728412AbgGKQwI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Jul 2020 12:52:08 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1juIa3-004dhU-17; Sat, 11 Jul 2020 18:42:27 +0200
-Date:   Sat, 11 Jul 2020 18:42:27 +0200
+        id 1juIjL-004djd-Mj; Sat, 11 Jul 2020 18:52:03 +0200
+Date:   Sat, 11 Jul 2020 18:52:03 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Kurt Kanzenbach <kurt@linutronix.de>
 Cc:     Rob Herring <robh@kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+        Rob Herring <robh+dt@kernel.org>
 Subject: Re: [PATCH v1 1/1] dt-bindings: net: dsa: Add DSA yaml binding
-Message-ID: <20200711164227.GN1014141@lunn.ch>
+Message-ID: <20200711165203.GO1014141@lunn.ch>
 References: <20200710090618.28945-1-kurt@linutronix.de>
  <20200710090618.28945-2-kurt@linutronix.de>
- <20200710164500.GA2775934@bogus>
- <8c105489-42c5-b4ba-73b6-c3a858f646a6@gmail.com>
- <CAL_Jsq+zP9++MftM+Dh2Fe-OdKq6EiGA_tASEbBwA_jEdwoFCA@mail.gmail.com>
- <871rliw9cq.fsf@kurt>
+ <20200710163940.GA2775145@bogus>
+ <874kqewahb.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <871rliw9cq.fsf@kurt>
+In-Reply-To: <874kqewahb.fsf@kurt>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Though I missed that this is really just a conversion of dsa.txt which
-> > should be removed in this patch. Otherwise, you'll get me re-reviewing
-> > the binding.
+On Sat, Jul 11, 2020 at 01:35:12PM +0200, Kurt Kanzenbach wrote:
+> On Fri Jul 10 2020, Rob Herring wrote:
+> > On Fri, 10 Jul 2020 11:06:18 +0200, Kurt Kanzenbach wrote:
+> >> For future DSA drivers it makes sense to add a generic DSA yaml binding which
+> >> can be used then. This was created using the properties from dsa.txt. It
+> >> includes the ports and the dsa,member property.
+> >> 
+> >> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
+> >> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> >> ---
+> >>  .../devicetree/bindings/net/dsa/dsa.yaml      | 80 +++++++++++++++++++
+> >>  1 file changed, 80 insertions(+)
+> >>  create mode 100644 Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> >> 
+> >
+> >
+> > My bot found errors running 'make dt_binding_check' on your patch:
+> >
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: 'ports' is a required property
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.example.dt.yaml: switch@10: 'ports' is a required property
 > 
-> Yes, it's a conversion of the dsa.txt. I should have stated that more
-> clearly. I didn't remove the .txt file, because it's referenced in all
-> the different switch bindings such as b53.txt, ksz.txt and so on. How to
-> handle that?
+> Okay, the requirement for 'ports' has be to removed.
 
-~/linux$ cat Documentation/devicetree/bindings/net/ethernet.txt 
-This file has moved to ethernet-controller.yaml.
+Hummm....
 
-As an example. Once all the other files which reference it have been
-converted, we can come back and remove the .txt file.
+ti.cpsw is not a DSA switch. So this binding should not apply to
+it. It is a plain switchdev switch.
 
-   Andrew
+The qcom,ipq806 is just an MDIO bus master. The DSA binding might
+apply, for a specific .dts file, if that dts file has a DSA switch on
+the bus. But in general, it should not apply.
+
+So i actually think you need to work out why this binding is being
+applied when it should not be.
+
+I suspect it is the keyword 'switch'. switch does not imply it is a
+DSA switch. There are other sorts of switches as well.
+
+	Andrew
