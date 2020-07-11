@@ -2,80 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A47A21C550
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 18:38:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 911CD21C553
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 18:42:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728651AbgGKQiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 12:38:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58620 "EHLO vps0.lunn.ch"
+        id S1728520AbgGKQmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 12:42:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58630 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728412AbgGKQiM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Jul 2020 12:38:12 -0400
+        id S1728412AbgGKQma (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Jul 2020 12:42:30 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1juIVq-004dfe-Si; Sat, 11 Jul 2020 18:38:06 +0200
-Date:   Sat, 11 Jul 2020 18:38:06 +0200
+        id 1juIa3-004dhU-17; Sat, 11 Jul 2020 18:42:27 +0200
+Date:   Sat, 11 Jul 2020 18:42:27 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, min.li.xe@renesas.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] ptp: add debugfs support for IDT family of
- timing devices
-Message-ID: <20200711163806.GM1014141@lunn.ch>
-References: <1594395685-25199-1-git-send-email-min.li.xe@renesas.com>
- <20200710135844.58d76d44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200711134601.GD20443@hoboy>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Rob Herring <robh@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v1 1/1] dt-bindings: net: dsa: Add DSA yaml binding
+Message-ID: <20200711164227.GN1014141@lunn.ch>
+References: <20200710090618.28945-1-kurt@linutronix.de>
+ <20200710090618.28945-2-kurt@linutronix.de>
+ <20200710164500.GA2775934@bogus>
+ <8c105489-42c5-b4ba-73b6-c3a858f646a6@gmail.com>
+ <CAL_Jsq+zP9++MftM+Dh2Fe-OdKq6EiGA_tASEbBwA_jEdwoFCA@mail.gmail.com>
+ <871rliw9cq.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200711134601.GD20443@hoboy>
+In-Reply-To: <871rliw9cq.fsf@kurt>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 11, 2020 at 06:46:01AM -0700, Richard Cochran wrote:
-> On Fri, Jul 10, 2020 at 01:58:44PM -0700, Jakub Kicinski wrote:
-> > On Fri, 10 Jul 2020 11:41:25 -0400 min.li.xe@renesas.com wrote:
-> > > From: Min Li <min.li.xe@renesas.com>
-> > > 
-> > > This patch is to add debugfs support for ptp_clockmatrix and ptp_idt82p33.
-> > > It will create a debugfs directory called idtptp{x} and x is the ptp index.
-> > > Three inerfaces are present, which are cmd, help and regs. help is read
-> > > only and will display a brief help message. regs is read only amd will show
-> > > all register values. cmd is write only and will accept certain commands.
-> > > Currently, the accepted commands are combomode to set comobo mode and write
-> > > to write up to 4 registers.
-> > > 
-> > > Signed-off-by: Min Li <min.li.xe@renesas.com>
-> > 
-> > No private configuration interfaces in debugfs, please.
+> > Though I missed that this is really just a conversion of dsa.txt which
+> > should be removed in this patch. Otherwise, you'll get me re-reviewing
+> > the binding.
 > 
-> I suggested to Min to use debugfs for device-specific configuration
-> that would be out of place in the generic PTP Hardware Clock
-> interface.
-> 
-> > If what you're exposing is a useful feature it deserves a proper 
-> > uAPI interface.
-> 
-> Can you expand on what you mean by "proper uAPI interface" please?
+> Yes, it's a conversion of the dsa.txt. I should have stated that more
+> clearly. I didn't remove the .txt file, because it's referenced in all
+> the different switch bindings such as b53.txt, ksz.txt and so on. How to
+> handle that?
 
-Hi Richard
+~/linux$ cat Documentation/devicetree/bindings/net/ethernet.txt 
+This file has moved to ethernet-controller.yaml.
 
-Well, one obvious issues is that debugfs it totally optional, and
-often not built. You would not want the correct operation of a device
-to depend something which is optional. debugfs is also unstable. There
-are no ABI rules. So user space cannot rely on the API being the same
-from version to version. Again, not something you want for the correct
-operation of a device.
+As an example. Once all the other files which reference it have been
+converted, we can come back and remove the .txt file.
 
-Allowing registers to be read, is a typical debug operation. So that
-part seems reasonable. A kernel developer/debugger has the skills to
-deal with unstable APIs, and rebuilding the kernel to actually have
-debugfs in the image.
-
-But configuration does not belong in debugfs. It would be good to
-explain what is being configured by these parameters, then we can
-maybe make a suggestion about the correct API to use.
-
-      Andrew
+   Andrew
