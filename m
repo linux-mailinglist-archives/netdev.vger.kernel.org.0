@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4393221C5C6
-	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 20:29:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 873ED21C5CB
+	for <lists+netdev@lfdr.de>; Sat, 11 Jul 2020 20:33:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728706AbgGKS3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 14:29:20 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58694 "EHLO vps0.lunn.ch"
+        id S1728674AbgGKSdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 14:33:50 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58708 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726281AbgGKS3T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Jul 2020 14:29:19 -0400
+        id S1728390AbgGKSdu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Jul 2020 14:33:50 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1juKFM-004eAj-D9; Sat, 11 Jul 2020 20:29:12 +0200
-Date:   Sat, 11 Jul 2020 20:29:12 +0200
+        id 1juKJm-004eCm-TM; Sat, 11 Jul 2020 20:33:46 +0200
+Date:   Sat, 11 Jul 2020 20:33:46 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Oleksij Rempel <o.rempel@pengutronix.de>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -24,7 +24,7 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Philippe Schenker <philippe.schenker@toradex.com>
 Subject: Re: [PATCH net-next v1 5/5] net: phy: micrel: ksz886x/ksz8081: add
  cabletest support
-Message-ID: <20200711182912.GP1014141@lunn.ch>
+Message-ID: <20200711183346.GQ1014141@lunn.ch>
 References: <20200710120851.28984-1-o.rempel@pengutronix.de>
  <20200710120851.28984-6-o.rempel@pengutronix.de>
 MIME-Version: 1.0
@@ -62,12 +62,9 @@ On Fri, Jul 10, 2020 at 02:08:51PM +0200, Oleksij Rempel wrote:
 > should be extended to provide proper device tree support for the related
 > PHY nodes. So we can set a DT property to mark the port 1 as affected by
 > the errata.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Hi Oleksij
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Do the PHY register read/writes pass through the DSA driver for the
-8873?  I was wondering if the switch could intercept reads/writes on
-port1 for KSZ8081_LMD and return EOPNOTSUPP? That would be a more
-robust solution than DT properties, which are going to get forgotten.
-
-      Andrew
+    Andrew
