@@ -2,318 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A07921C8A2
-	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 12:55:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BF1E21C955
+	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 15:01:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728711AbgGLKzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 06:55:05 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59428 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728665AbgGLKyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 06:54:02 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from borisp@mellanox.com)
-        with SMTP; 12 Jul 2020 13:53:19 +0300
-Received: from gen-l-vrt-133.mtl.labs.mlnx. (gen-l-vrt-133.mtl.labs.mlnx [10.237.11.160])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 06CArJHc013152;
-        Sun, 12 Jul 2020 13:53:19 +0300
-From:   Boris Pismenny <borisp@mellanox.com>
-To:     kuba@kernel.org, john.fastabend@gmail.com, daniel@iogearbox.net,
-        davem@davemloft.net
-Cc:     borisp@mellanox.com, tariqt@mellanox.com, netdev@vger.kernel.org
-Subject: [PATCH] tls: add zerocopy device sendpage
-Date:   Sun, 12 Jul 2020 13:53:15 +0300
-Message-Id: <1594551195-3579-1-git-send-email-borisp@mellanox.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1728840AbgGLNBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 09:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728735AbgGLNBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 09:01:01 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18CEC061794
+        for <netdev@vger.kernel.org>; Sun, 12 Jul 2020 06:01:00 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id j186so5262131vsd.10
+        for <netdev@vger.kernel.org>; Sun, 12 Jul 2020 06:01:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EoqZ6levth+U1GgQAklrGA1ktkRlSfeyVPRWCIp1zvc=;
+        b=Y0aliTUQQpHYA99NAoe3sxkz+TalU/xx1mN1W2oajAJlE+zWvq7Lkc77F6VRCXyVrI
+         Zea8qhzOoD5E4oaxtrrnS+PVXMcAUEnylNB2lUOjhXvJnZQAXEn6iV15vTJcJo+Er1U3
+         wledBNeQstZGRtbljphVEb3Cl7s4bhpHEJjvFNW08H823YZmRjHfo8tuCzuA9s5dReEh
+         QSCG+qXWpZiTLkORSC5uboBExno11FL18Gp9j5kAxmqwTC9r6bH1FHjCSVU5xX1hLdR/
+         I4dn8u2Z1jH7miCAZ2BxZfeSAZVekdmYvo6qOeMYI9tAsSSOcoH4KGcm7eVxaCXuB016
+         BoxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EoqZ6levth+U1GgQAklrGA1ktkRlSfeyVPRWCIp1zvc=;
+        b=eXv0v/tAkhXLWAJApG3xEGy+4Dp3DwFxzrovfdYteRJs0VI2HplyC2wTTvmKC9lF7B
+         HNibVNQeCltHEeMlkQIGqorpLClkuSd3y2chkXwb9jSYmxP+3dV93Cg9fSVoZr0YrWyx
+         Y3LkJ7Yzqc+F8iPkBJ+TXMf1reB7W/F3VFxvuVBrpuAFT2Eq3kOgHHEj69Q6rnkuBUMg
+         G6YuykJkiHDwoeeP8Kq7XgSq6JC7yoOgsFlCxPYshY2PLxx9ycJqGwEDOmx8tXI2jjLW
+         Ht08yxUQh7/hYEboWTjlr7HRTZ03tWQEFRv1gTrscW8rERcuxKKmDUINvucKT+bOymIa
+         j2kQ==
+X-Gm-Message-State: AOAM532LxBHBYRlbXUNNtubqjzEt5Ja4jhBiMTUPuu/VVgsglZuGFPwS
+        KUMvu2PujlFImaSfEUd7PE9etzehYF0dZpKh7G42Pg==
+X-Google-Smtp-Source: ABdhPJw/5WYmT3dWLgiebSg+T3jhnM3wYUECF9vPlrfWxAnBD3y8mkj1aAb0S81e7eVUz9c/cXHc+Ya+kQb/ustWPGM=
+X-Received: by 2002:a67:6785:: with SMTP id b127mr58056073vsc.186.1594558859923;
+ Sun, 12 Jul 2020 06:00:59 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAOAjy5T63wDzDowikwZXPTC5fCnPL1QbH9P1v+MMOfydegV30w@mail.gmail.com>
+ <20200711162349.GL1014141@lunn.ch> <20200711192255.GO1551@shell.armlinux.org.uk>
+In-Reply-To: <20200711192255.GO1551@shell.armlinux.org.uk>
+From:   Martin Rowe <martin.p.rowe@gmail.com>
+Date:   Sun, 12 Jul 2020 13:00:48 +0000
+Message-ID: <CAOAjy5TBOhovCRDF7NC-DWemA2k5as93tqq3gOT1chO4O0jpiA@mail.gmail.com>
+Subject: Re: bug: net: dsa: mv88e6xxx: unable to tx or rx with Clearfog GT 8K
+ (with git bisect)
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        davem@davemloft.net, vivien.didelot@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for zerocopy sendfile when using TLS device offload.
-Before this patch, TLS device offload would copy sendfile data to a
-bounce buffer. This can be avoided when the user knows that page cache
-data is not modified. For example, when a serving static files.
-Removing this copy improves performance significaintly, as TLS and TCP
-sendfile perform the same operations, and the only overhead is TLS
-header/trailer insertion.
+On Sat, 11 Jul 2020 at 19:23, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+> On Sat, Jul 11, 2020 at 06:23:49PM +0200, Andrew Lunn wrote:
+> > So i'm guessing it is the connection between the CPU and the switch.
+> > Could you confirm this? Create a bridge, add two ports of the switch
+> > to the bridge, and then see if packets can pass between switch ports.
+> >
+> > If it is the connection between the CPU and the switch, i would then
+> > be thinking about the comphy and the firmware. We have seen issues
+> > where the firmware is too old. That is not something i've debugged
+> > myself, so i don't know where the version information is, or what
+> > version is required.
+>
+> However, in the report, Martin said that reverting the problem commit
+> from April 14th on a kernel from July 6th caused everything to work
+> again.  That is quite conclusive that 34b5e6a33c1a is the cause of
+> the breakage.
 
-This patch adds two configuration knobs to control TLS zerocopy sendfile:
-1) socket option named TLS_TX_ZEROCOPY_SENDFILE that enables
-applications to use zerocopy sendfile on a per-socket basis.
-2) global sysctl named tls_zerocopy_sendfile that defines the default
-for the entire system.
+I tried it anyway and couldn't get any traffic to flow between the
+ports, but I could have configured it wrongly. I gave each port a
+static IP, bridged them (with and without br0 having an IP assigned),
+and tried pinging from one port to the other. I tried with the
+assigned IPs in the same and different subnets, and made sure the
+routes were updated between tests. Tx only, no responses, exactly like
+pinging a remote host.
 
-Non TLS device enabled sockets are not affected by this option,
-and attempts to configure it will fail.
-
-Signed-off-by: Boris Pismenny <borisp@mellanox.com>
----
- include/net/netns/ipv4.h   |  4 ++++
- include/net/tls.h          |  1 +
- include/uapi/linux/tls.h   |  1 +
- net/ipv4/sysctl_net_ipv4.c |  9 +++++++
- net/tls/tls_device.c       | 39 ++++++++++++++++++++++--------
- net/tls/tls_main.c         | 60 ++++++++++++++++++++++++++++++++++++++++++++++
- 6 files changed, 104 insertions(+), 10 deletions(-)
-
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 9e36738c1fe1..bc828d272151 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -196,6 +196,10 @@ struct netns_ipv4 {
- 	int sysctl_igmp_llm_reports;
- 	int sysctl_igmp_qrv;
- 
-+#ifdef CONFIG_TLS_DEVICE
-+	int sysctl_tls_zerocopy_sendfile;
-+#endif
-+
- 	struct ping_group_range ping_group_range;
- 
- 	atomic_t dev_addr_genid;
-diff --git a/include/net/tls.h b/include/net/tls.h
-index e5dac7e74e79..f80985ac55de 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -172,6 +172,7 @@ struct tls_record_info {
- 
- struct tls_offload_context_tx {
- 	struct crypto_aead *aead_send;
-+	bool zerocopy_sendpage;
- 	spinlock_t lock;	/* protects records list */
- 	struct list_head records_list;
- 	struct tls_record_info *open_record;
-diff --git a/include/uapi/linux/tls.h b/include/uapi/linux/tls.h
-index bcd2869ed472..d6f65f5d206f 100644
---- a/include/uapi/linux/tls.h
-+++ b/include/uapi/linux/tls.h
-@@ -39,6 +39,7 @@
- /* TLS socket options */
- #define TLS_TX			1	/* Set transmit parameters */
- #define TLS_RX			2	/* Set receive parameters */
-+#define TLS_TX_ZEROCOPY_SENDFILE	3	/* transmit zerocopy sendfile */
- 
- /* Supported versions */
- #define TLS_VERSION_MINOR(ver)	((ver) & 0xFF)
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 5653e3b011bf..0a0fc29225a2 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -1353,6 +1353,15 @@ static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ONE
- 	},
-+#ifdef CONFIG_TLS_DEVICE
-+	{
-+		.procname	= "tls_zerocopy_sendfile",
-+		.data		= &init_net.ipv4.sysctl_tls_zerocopy_sendfile,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec
-+	},
-+#endif
- 	{ }
- };
- 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index 18fa6067bb7f..092b20428c15 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -413,7 +413,8 @@ static int tls_device_copy_data(void *addr, size_t bytes, struct iov_iter *i)
- static int tls_push_data(struct sock *sk,
- 			 struct iov_iter *msg_iter,
- 			 size_t size, int flags,
--			 unsigned char record_type)
-+			 unsigned char record_type,
-+			 struct page *zc_page)
- {
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct tls_prot_info *prot = &tls_ctx->prot_info;
-@@ -482,11 +483,21 @@ static int tls_push_data(struct sock *sk,
- 		copy = min_t(size_t, size, (pfrag->size - pfrag->offset));
- 		copy = min_t(size_t, copy, (max_open_record_len - record->len));
- 
--		rc = tls_device_copy_data(page_address(pfrag->page) +
--					  pfrag->offset, copy, msg_iter);
--		if (rc)
--			goto handle_error;
--		tls_append_frag(record, pfrag, copy);
-+		if (!zc_page) {
-+			rc = tls_device_copy_data(page_address(pfrag->page) +
-+						  pfrag->offset, copy, msg_iter);
-+			if (rc)
-+				goto handle_error;
-+			tls_append_frag(record, pfrag, copy);
-+		} else {
-+			struct page_frag _pfrag;
-+
-+			copy = min_t(size_t, size, (max_open_record_len - record->len));
-+			_pfrag.page = zc_page;
-+			_pfrag.offset = 0;
-+			_pfrag.size = copy;
-+			tls_append_frag(record, &_pfrag, copy);
-+		}
- 
- 		size -= copy;
- 		if (!size) {
-@@ -548,7 +559,7 @@ int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 	}
- 
- 	rc = tls_push_data(sk, &msg->msg_iter, size,
--			   msg->msg_flags, record_type);
-+			   msg->msg_flags, record_type, NULL);
- 
- out:
- 	release_sock(sk);
-@@ -560,9 +571,10 @@ int tls_device_sendpage(struct sock *sk, struct page *page,
- 			int offset, size_t size, int flags)
- {
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
-+	struct tls_offload_context_tx *ctx = tls_offload_ctx_tx(tls_ctx);
- 	struct iov_iter	msg_iter;
--	char *kaddr = kmap(page);
- 	struct kvec iov;
-+	char *kaddr;
- 	int rc;
- 
- 	if (flags & MSG_SENDPAGE_NOTLAST)
-@@ -576,11 +588,18 @@ int tls_device_sendpage(struct sock *sk, struct page *page,
- 		goto out;
- 	}
- 
-+	if (ctx->zerocopy_sendpage) {
-+		rc = tls_push_data(sk, &msg_iter, size,
-+				   flags, TLS_RECORD_TYPE_DATA, page);
-+		goto out;
-+	}
-+
-+	kaddr = kmap(page);
- 	iov.iov_base = kaddr + offset;
- 	iov.iov_len = size;
- 	iov_iter_kvec(&msg_iter, WRITE, &iov, 1, size);
- 	rc = tls_push_data(sk, &msg_iter, size,
--			   flags, TLS_RECORD_TYPE_DATA);
-+			   flags, TLS_RECORD_TYPE_DATA, NULL);
- 	kunmap(page);
- 
- out:
-@@ -654,7 +673,7 @@ static int tls_device_push_pending_record(struct sock *sk, int flags)
- 	struct iov_iter	msg_iter;
- 
- 	iov_iter_kvec(&msg_iter, WRITE, NULL, 0, 0);
--	return tls_push_data(sk, &msg_iter, 0, flags, TLS_RECORD_TYPE_DATA);
-+	return tls_push_data(sk, &msg_iter, 0, flags, TLS_RECORD_TYPE_DATA, NULL);
- }
- 
- void tls_device_write_space(struct sock *sk, struct tls_context *ctx)
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index ec10041c6b7d..b95437c91339 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -422,6 +422,27 @@ static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
- 	return rc;
- }
- 
-+static int do_tls_getsockopt_tx_zc(struct sock *sk, char __user *optval,
-+				   int __user *optlen)
-+{
-+	struct tls_context *tls_ctx = tls_get_ctx(sk);
-+	struct tls_offload_context_tx *ctx;
-+	int len;
-+
-+	if (get_user(len, optlen))
-+		return -EFAULT;
-+
-+	len = min_t(unsigned int, len, sizeof(int));
-+	if (len < 0)
-+		return -EINVAL;
-+
-+	if (!tls_ctx || tls_ctx->tx_conf != TLS_HW)
-+		return -EBUSY;
-+
-+	ctx = tls_offload_ctx_tx(tls_ctx);
-+	return ctx->zerocopy_sendpage;
-+}
-+
- static int do_tls_getsockopt(struct sock *sk, int optname,
- 			     char __user *optval, int __user *optlen)
- {
-@@ -431,6 +452,9 @@ static int do_tls_getsockopt(struct sock *sk, int optname,
- 	case TLS_TX:
- 		rc = do_tls_getsockopt_tx(sk, optval, optlen);
- 		break;
-+	case TLS_TX_ZEROCOPY_SENDFILE:
-+		rc = do_tls_getsockopt_tx_zc(sk, optval, optlen);
-+		break;
- 	default:
- 		rc = -ENOPROTOOPT;
- 		break;
-@@ -450,6 +474,15 @@ static int tls_getsockopt(struct sock *sk, int level, int optname,
- 	return do_tls_getsockopt(sk, optname, optval, optlen);
- }
- 
-+static void tls_set_tx_zerocopy_sendfile(struct tls_context *tls_ctx,
-+					 int val)
-+{
-+	struct tls_offload_context_tx *ctx;
-+
-+	ctx = tls_offload_ctx_tx(tls_ctx);
-+	ctx->zerocopy_sendpage = val;
-+}
-+
- static int do_tls_setsockopt_conf(struct sock *sk, char __user *optval,
- 				  unsigned int optlen, int tx)
- {
-@@ -533,8 +566,11 @@ static int do_tls_setsockopt_conf(struct sock *sk, char __user *optval,
- 		rc = tls_set_device_offload(sk, ctx);
- 		conf = TLS_HW;
- 		if (!rc) {
-+			int zc = sock_net(sk)->ipv4.sysctl_tls_zerocopy_sendfile;
-+
- 			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSTXDEVICE);
- 			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSCURRTXDEVICE);
-+			tls_set_tx_zerocopy_sendfile(ctx, zc);
- 		} else {
- 			rc = tls_set_sw_offload(sk, ctx, 1);
- 			if (rc)
-@@ -579,6 +615,25 @@ static int do_tls_setsockopt_conf(struct sock *sk, char __user *optval,
- 	return rc;
- }
- 
-+static int do_tls_setsockopt_tx_zc(struct sock *sk, char __user *optval,
-+				   unsigned int optlen)
-+{
-+	struct tls_context *tls_ctx = tls_get_ctx(sk);
-+	int val;
-+
-+	if (!tls_ctx || tls_ctx->tx_conf != TLS_HW)
-+		return -EINVAL;
-+
-+	if (optlen < sizeof(int))
-+		return -EINVAL;
-+
-+	if (get_user(val, (int __user *)optval))
-+		return -EFAULT;
-+
-+	tls_set_tx_zerocopy_sendfile(tls_ctx, val);
-+	return 0;
-+}
-+
- static int do_tls_setsockopt(struct sock *sk, int optname,
- 			     char __user *optval, unsigned int optlen)
- {
-@@ -592,6 +647,11 @@ static int do_tls_setsockopt(struct sock *sk, int optname,
- 					    optname == TLS_TX);
- 		release_sock(sk);
- 		break;
-+	case TLS_TX_ZEROCOPY_SENDFILE:
-+		lock_sock(sk);
-+		rc = do_tls_setsockopt_tx_zc(sk, optval, optlen);
-+		release_sock(sk);
-+		break;
- 	default:
- 		rc = -ENOPROTOOPT;
- 		break;
--- 
-1.8.3.1
-
+I'm now less confident about my git bisect, though, because it appears
+my criteria for verifying if a commit was "good" was not sufficient. I
+was just checking to see if the port could get assigned a DHCP address
+and ping something else, but it appears that (at least on 5.8-rc4 with
+the one revert) the interface "dies" after working for about 30-60
+seconds. Basically the symptoms I described originally, just preceded
+by 30-60 seconds of it working perfectly. I will re-run the bisect to
+figure out what makes it go from "working perfectly" to "working
+perfectly for less than a minute", which will take a few days.
