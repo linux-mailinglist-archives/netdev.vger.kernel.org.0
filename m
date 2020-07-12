@@ -2,410 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1394321CBEA
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 00:37:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FF7821CBED
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 00:38:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728428AbgGLWhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 18:37:03 -0400
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:17625 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728409AbgGLWhC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 18:37:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1594593420; x=1626129420;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=t1e05jQDFpOgtXf2x9i0zcA7CFZSn4kvKomPrtuc1qc=;
-  b=DYAtARx4F+jeff2H9NwXdSWFU4mOr5LTmUbYZH7j+X/6so4RXcMEnQw1
-   z337FdiYdo5RJdQj29bCKmDP9SCPeaY4DZdyvI7PMc5uwUJ3n27G5/+qT
-   c79joLIP5aJREWUs2RuBBAcdQH1pOOD+7yq0ciax7TbyOF8h+sUbdEnVz
-   8=;
-IronPort-SDR: ekgx45oQJqLyjFytxRGNNWwwH3Bwp7gfsTFX43mp9YHu3oja58Iw80v5LJd1JkOkQ6R1BrL1sd
- PktZYGlU+oFQ==
-X-IronPort-AV: E=Sophos;i="5.75,345,1589241600"; 
-   d="scan'208";a="42809001"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-579b7f5b.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 12 Jul 2020 22:36:59 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2c-579b7f5b.us-west-2.amazon.com (Postfix) with ESMTPS id 10797A0693;
-        Sun, 12 Jul 2020 22:36:58 +0000 (UTC)
-Received: from EX13D10UWA002.ant.amazon.com (10.43.160.228) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 12 Jul 2020 22:36:53 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX13D10UWA002.ant.amazon.com (10.43.160.228) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 12 Jul 2020 22:36:53 +0000
-Received: from HFA15-G63729NC.amazon.com (10.1.212.5) by mail-relay.amazon.com
- (10.43.160.118) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 12 Jul 2020 22:36:48 +0000
-From:   <akiyano@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
-        <sameehj@amazon.com>
-Subject: [PATCH V2 net-next 7/7] net: ena: support new LLQ acceleration mode
-Date:   Mon, 13 Jul 2020 01:36:11 +0300
-Message-ID: <1594593371-14045-8-git-send-email-akiyano@amazon.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1594593371-14045-1-git-send-email-akiyano@amazon.com>
-References: <1594593371-14045-1-git-send-email-akiyano@amazon.com>
+        id S1728149AbgGLWim (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 18:38:42 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:54954 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727795AbgGLWim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 18:38:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594593520;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RLUAIQFedM+9pe7Sacd9d/An/VyoXp1EJq3jixSZeYg=;
+        b=YbZL9o2ScxI3dOBe4jTyRQapAgfcL8HW2Ote+ANUbeyWd6RMZStEXUV+weWKFFzl6VFJKx
+        e7hN8whAyzSqznd8S1mvNWqK3B8+5wBDhYw4VTm1xQJ3bUp0JQYYKkR303cdwL+4Y1lZl0
+        3hAJW1EP15e94BLWN8UUyra+ojXms3Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-51-TYT9WdHQMZC0mrUgmd8jQw-1; Sun, 12 Jul 2020 18:38:25 -0400
+X-MC-Unique: TYT9WdHQMZC0mrUgmd8jQw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4D6EA106B245;
+        Sun, 12 Jul 2020 22:38:24 +0000 (UTC)
+Received: from elisabeth (unknown [10.36.110.62])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 30EAD5D9EF;
+        Sun, 12 Jul 2020 22:38:21 +0000 (UTC)
+Date:   Mon, 13 Jul 2020 00:38:13 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     <netdev@vger.kernel.org>, aconole@redhat.com
+Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
+ discovery on encap sockets
+Message-ID: <20200713003813.01f2d5d3@elisabeth>
+In-Reply-To: <20200712200705.9796-2-fw@strlen.de>
+References: <20200712200705.9796-1-fw@strlen.de>
+        <20200712200705.9796-2-fw@strlen.de>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+Hi,
 
-New devices add a new hardware acceleration engine, which adds some
-restrictions to the driver.
-Metadata descriptor must be present for each packet and the maximum
-burst size between two doorbells is now limited to a number
-advertised by the device.
+On Sun, 12 Jul 2020 22:07:03 +0200
+Florian Westphal <fw@strlen.de> wrote:
 
-This patch adds:
-1. A handshake protocol between the driver and the device, so the
-device will enable the accelerated queues only when both sides
-support it.
+> vxlan and geneve take the to-be-transmitted skb, prepend the
+> encapsulation header and send the result.
+> 
+> Neither vxlan nor geneve can do anything about a lowered path mtu
+> except notifying the peer/upper dst entry.
 
-2. The driver support for the new acceleration engine:
-2.1. Send metadata descriptor for each Tx packet.
-2.2. Limit the number of packets sent between doorbells.(*)
+It could, and I think it should, update its MTU, though. I didn't
+include this in the original implementation of PMTU discovery for UDP
+tunnels as it worked just fine for locally generated and routed
+traffic, but here we go.
 
-(*) A previous driver implementation of this feature was comitted in
-commit 05d62ca218f8 ("net: ena: add handling of llq max tx burst size")
-however the design of the interface between the driver and device
-changed since then. This change is reflected in this commit.
+As PMTU discovery happens, we have a route exception on the lower
+layer for the given path, and we know that VXLAN will use that path,
+so we also know there's no point in having a higher MTU on the VXLAN
+device, it's really the maximum packet size we can use.
 
-Signed-off-by: Netanel Belgazal <netanel@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+See the change to vxlan_xmit_one() in the sketch patch below.
+
+> In routed setups, vxlan takes the updated pmtu from the encap sockets'
+> dst entry and will notify/update the dst entry of the current skb.
+> 
+> Some setups, however, will use vxlan as a bridge port (or openvs vport).
+
+And, on top of that, I think what we're missing on the bridge is to
+update the MTU when a port lowers its MTU. The MTU is changed only as
+interfaces are added, which feels like a bug. We could use the lower
+layer notifier to fix this.
+
+In the sketch below, I'm changing a few lines to adjust the MTU to the
+lowest MTU value between all ports, for testing purposes.
+
+I tried to represent the issue you're hitting with a new test case in
+the pmtu.sh selftest, also included in the diff. Would that work for
+Open vSwitch?
+
+If OVS queries the MTU of VXLAN devices, I guess that should be enough.
+I'm not sure it does that though. The changes to the bridge wouldn't
+even be needed, but I think it's something we should also fix
+eventually.
+
 ---
- .../net/ethernet/amazon/ena/ena_admin_defs.h  | 39 ++++++++++++--
- drivers/net/ethernet/amazon/ena/ena_com.c     | 19 ++++++-
- drivers/net/ethernet/amazon/ena/ena_com.h     |  3 ++
- drivers/net/ethernet/amazon/ena/ena_eth_com.c | 51 +++++++++++++------
- drivers/net/ethernet/amazon/ena/ena_eth_com.h |  3 +-
- drivers/net/ethernet/amazon/ena/ena_netdev.c  | 16 ++++--
- drivers/net/ethernet/amazon/ena/ena_netdev.h  |  2 +
- 7 files changed, 109 insertions(+), 24 deletions(-)
+ drivers/net/vxlan.c                 |   13 +++++++++++++
+ net/bridge/br_if.c                  |    8 +++++---
+ net/bridge/br_input.c               |    6 ++++++
+ tools/testing/selftests/net/pmtu.sh |   17 ++++++++++++++++-
+ 4 files changed, 40 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-index afe87ff09b20..190dbbde379c 100644
---- a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-@@ -491,6 +491,36 @@ enum ena_admin_llq_stride_ctrl {
- 	ENA_ADMIN_MULTIPLE_DESCS_PER_ENTRY          = 2,
- };
- 
-+enum ena_admin_accel_mode_feat {
-+	ENA_ADMIN_DISABLE_META_CACHING              = 0,
-+	ENA_ADMIN_LIMIT_TX_BURST                    = 1,
-+};
-+
-+struct ena_admin_accel_mode_get {
-+	/* bit field of enum ena_admin_accel_mode_feat */
-+	u16 supported_flags;
-+
-+	/* maximum burst size between two doorbells. The size is in bytes */
-+	u16 max_tx_burst_size;
-+};
-+
-+struct ena_admin_accel_mode_set {
-+	/* bit field of enum ena_admin_accel_mode_feat */
-+	u16 enabled_flags;
-+
-+	u16 reserved;
-+};
-+
-+struct ena_admin_accel_mode_req {
-+	union {
-+		u32 raw[2];
-+
-+		struct ena_admin_accel_mode_get get;
-+
-+		struct ena_admin_accel_mode_set set;
-+	} u;
-+};
-+
- struct ena_admin_feature_llq_desc {
- 	u32 max_llq_num;
- 
-@@ -536,10 +566,13 @@ struct ena_admin_feature_llq_desc {
- 	/* the stride control the driver selected to use */
- 	u16 descriptors_stride_ctrl_enabled;
- 
--	/* Maximum size in bytes taken by llq entries in a single tx burst.
--	 * Set to 0 when there is no such limit.
-+	/* reserved */
-+	u32 reserved1;
-+
-+	/* accelerated low latency queues requirement. driver needs to
-+	 * support those requirements in order to use accelerated llq
- 	 */
--	u32 max_tx_burst_size;
-+	struct ena_admin_accel_mode_req accel_mode;
- };
- 
- struct ena_admin_queue_ext_feature_fields {
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index 432f143559a1..435bf05a853c 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -403,6 +403,8 @@ static int ena_com_init_io_sq(struct ena_com_dev *ena_dev,
- 		       0x0, io_sq->llq_info.desc_list_entry_size);
- 		io_sq->llq_buf_ctrl.descs_left_in_line =
- 			io_sq->llq_info.descs_num_before_header;
-+		io_sq->disable_meta_caching =
-+			io_sq->llq_info.disable_meta_caching;
- 
- 		if (io_sq->llq_info.max_entries_in_tx_burst > 0)
- 			io_sq->entries_in_tx_burst_left =
-@@ -626,6 +628,10 @@ static int ena_com_set_llq(struct ena_com_dev *ena_dev)
- 	cmd.u.llq.desc_num_before_header_enabled = llq_info->descs_num_before_header;
- 	cmd.u.llq.descriptors_stride_ctrl_enabled = llq_info->desc_stride_ctrl;
- 
-+	cmd.u.llq.accel_mode.u.set.enabled_flags =
-+		BIT(ENA_ADMIN_DISABLE_META_CACHING) |
-+		BIT(ENA_ADMIN_LIMIT_TX_BURST);
-+
- 	ret = ena_com_execute_admin_command(admin_queue,
- 					    (struct ena_admin_aq_entry *)&cmd,
- 					    sizeof(cmd),
-@@ -643,6 +649,7 @@ static int ena_com_config_llq_info(struct ena_com_dev *ena_dev,
- 				   struct ena_llq_configurations *llq_default_cfg)
- {
- 	struct ena_com_llq_info *llq_info = &ena_dev->llq_info;
-+	struct ena_admin_accel_mode_get llq_accel_mode_get;
- 	u16 supported_feat;
- 	int rc;
- 
-@@ -742,9 +749,17 @@ static int ena_com_config_llq_info(struct ena_com_dev *ena_dev,
- 		       llq_default_cfg->llq_num_decs_before_header,
- 		       supported_feat, llq_info->descs_num_before_header);
- 	}
-+	/* Check for accelerated queue supported */
-+	llq_accel_mode_get = llq_features->accel_mode.u.get;
-+
-+	llq_info->disable_meta_caching =
-+		!!(llq_accel_mode_get.supported_flags &
-+		   BIT(ENA_ADMIN_DISABLE_META_CACHING));
- 
--	llq_info->max_entries_in_tx_burst =
--		(u16)(llq_features->max_tx_burst_size /	llq_default_cfg->llq_ring_entry_size_value);
-+	if (llq_accel_mode_get.supported_flags & BIT(ENA_ADMIN_LIMIT_TX_BURST))
-+		llq_info->max_entries_in_tx_burst =
-+			llq_accel_mode_get.max_tx_burst_size /
-+			llq_default_cfg->llq_ring_entry_size_value;
- 
- 	rc = ena_com_set_llq(ena_dev);
- 	if (rc)
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h b/drivers/net/ethernet/amazon/ena/ena_com.h
-index 4c98f6f07882..4287d47b2b0b 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.h
-@@ -127,6 +127,7 @@ struct ena_com_llq_info {
- 	u16 descs_num_before_header;
- 	u16 descs_per_entry;
- 	u16 max_entries_in_tx_burst;
-+	bool disable_meta_caching;
- };
- 
- struct ena_com_io_cq {
-@@ -189,6 +190,8 @@ struct ena_com_io_sq {
- 	enum queue_direction direction;
- 	enum ena_admin_placement_policy_type mem_queue_type;
- 
-+	bool disable_meta_caching;
-+
- 	u32 msix_vector;
- 	struct ena_com_tx_meta cached_tx_meta;
- 	struct ena_com_llq_info llq_info;
-diff --git a/drivers/net/ethernet/amazon/ena/ena_eth_com.c b/drivers/net/ethernet/amazon/ena/ena_eth_com.c
-index ec8ea25e988d..ccd440589565 100644
---- a/drivers/net/ethernet/amazon/ena/ena_eth_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_eth_com.c
-@@ -285,11 +285,10 @@ static u16 ena_com_cdesc_rx_pkt_get(struct ena_com_io_cq *io_cq,
- 	return count;
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 5bb448ae6c9c..2e051b7366bf 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -2580,6 +2580,7 @@ static int encap_bypass_if_local(struct sk_buff *skb, struct net_device *dev,
+ 	return 0;
  }
  
--static int ena_com_create_and_store_tx_meta_desc(struct ena_com_io_sq *io_sq,
--							struct ena_com_tx_ctx *ena_tx_ctx)
-+static int ena_com_create_meta(struct ena_com_io_sq *io_sq,
-+			       struct ena_com_tx_meta *ena_meta)
- {
- 	struct ena_eth_io_tx_meta_desc *meta_desc = NULL;
--	struct ena_com_tx_meta *ena_meta = &ena_tx_ctx->ena_meta;
++static int vxlan_change_mtu(struct net_device *dev, int new_mtu);
+ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 			   __be32 default_vni, struct vxlan_rdst *rdst,
+ 			   bool did_rsc)
+@@ -2714,6 +2715,18 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 		ndst = &rt->dst;
+ 		skb_tunnel_check_pmtu(skb, ndst, VXLAN_HEADROOM);
  
- 	meta_desc = get_sq_desc(io_sq);
- 	memset(meta_desc, 0x0, sizeof(struct ena_eth_io_tx_meta_desc));
-@@ -309,12 +308,13 @@ static int ena_com_create_and_store_tx_meta_desc(struct ena_com_io_sq *io_sq,
- 
- 	/* Extended meta desc */
- 	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_ETH_META_TYPE_MASK;
--	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_META_STORE_MASK;
- 	meta_desc->len_ctrl |= (io_sq->phase <<
- 		ENA_ETH_IO_TX_META_DESC_PHASE_SHIFT) &
- 		ENA_ETH_IO_TX_META_DESC_PHASE_MASK;
- 
- 	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_FIRST_MASK;
-+	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_META_STORE_MASK;
++		/* TODO: doesn't conflict with RFC 7348, RFC 1191, but not ideal
++		 * as we can't track PMTU increases:
++		 * - use a notifier on route cache and add a configuration field
++		 *   to track user changes
++		 * - embed logic from skb_tunnel_check_pmtu() and get this fixed
++		 *   for free for all the tunnels
++		 */
++		if (skb->len > dst_mtu(ndst) - VXLAN_HEADROOM) {
++			vxlan_change_mtu(vxlan->dev,
++					 dst_mtu(ndst) - VXLAN_HEADROOM);
++		}
 +
- 	meta_desc->word2 |= ena_meta->l3_hdr_len &
- 		ENA_ETH_IO_TX_META_DESC_L3_HDR_LEN_MASK;
- 	meta_desc->word2 |= (ena_meta->l3_hdr_offset <<
-@@ -325,13 +325,36 @@ static int ena_com_create_and_store_tx_meta_desc(struct ena_com_io_sq *io_sq,
- 		ENA_ETH_IO_TX_META_DESC_L4_HDR_LEN_IN_WORDS_SHIFT) &
- 		ENA_ETH_IO_TX_META_DESC_L4_HDR_LEN_IN_WORDS_MASK;
+ 		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
+ 		ttl = ttl ? : ip4_dst_hoplimit(&rt->dst);
+ 		err = vxlan_build_skb(skb, ndst, sizeof(struct iphdr),
+diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
+index a0e9a7937412..6253b6d40d43 100644
+--- a/net/bridge/br_if.c
++++ b/net/bridge/br_if.c
+@@ -505,9 +505,11 @@ void br_mtu_auto_adjust(struct net_bridge *br)
+ {
+ 	ASSERT_RTNL();
  
--	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_META_STORE_MASK;
-+	return ena_com_sq_update_tail(io_sq);
+-	/* if the bridge MTU was manually configured don't mess with it */
+-	if (br_opt_get(br, BROPT_MTU_SET_BY_USER))
+-		return;
++	/* TODO: if (br_opt_get(br, BROPT_MTU_SET_BY_USER)), we should not
++	 * increase the MTU, but skipping decreases breaks functionality:
++	 * - add an 'opt' to track the set value and allow the user to decrease
++	 *   the MTU arbitrarily
++	 */
+ 
+ 	/* change to the minimum MTU and clear the flag which was set by
+ 	 * the bridge ndo_change_mtu callback
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 59a318b9f646..2429f70ce4ee 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -283,6 +283,12 @@ static rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
+ 			goto drop;
+ 	}
+ 
++	/* TODO: use lower layer notifier instead. Some tunnels implement this
++	 * properly (see e.g. vti6 and pmtu_vti6_link_change_mtu selftest in
++	 * net/pmtu.sh)
++	 */
++	br_mtu_auto_adjust(p->br);
++
+ 	if (unlikely(is_link_local_ether_addr(dest))) {
+ 		u16 fwd_mask = p->br->group_fwd_mask_required;
+ 
+diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
+index 77c09cd339c3..09731d9ea11a 100755
+--- a/tools/testing/selftests/net/pmtu.sh
++++ b/tools/testing/selftests/net/pmtu.sh
+@@ -169,7 +169,8 @@ tests="
+ 	cleanup_ipv4_exception		ipv4: cleanup of cached exceptions	1
+ 	cleanup_ipv6_exception		ipv6: cleanup of cached exceptions	1
+ 	list_flush_ipv4_exception	ipv4: list and flush cached exceptions	1
+-	list_flush_ipv6_exception	ipv6: list and flush cached exceptions	1"
++	list_flush_ipv6_exception	ipv6: list and flush cached exceptions	1
++	pmtu_ipv4_vxlan4_exception_bridge	IPv4 over vxlan4 with bridge		1"
+ 
+ NS_A="ns-A"
+ NS_B="ns-B"
+@@ -864,6 +865,20 @@ test_pmtu_ipv4_vxlan4_exception() {
+ 	test_pmtu_ipvX_over_vxlanY_or_geneveY_exception vxlan  4 4
+ }
+ 
++test_pmtu_ipv4_vxlan4_exception_bridge() {
++	test_pmtu_ipvX_over_vxlanY_or_geneveY_exception vxlan  4 4
++
++	ip -n ns-A link add br0 type bridge
++	ip -n ns-A link set br0 up
++	ip -n ns-A link set dev br0 mtu 5000
++	ip -n ns-A link set vxlan_a master br0
++
++	ip -n ns-A addr del 192.168.2.1/24 dev vxlan_a
++	ip -n ns-A addr add 192.168.2.1/24 dev br0
++
++	ping -c 1 -w 2 -M want -s 5000 192.168.2.2
 +}
 +
-+static int ena_com_create_and_store_tx_meta_desc(struct ena_com_io_sq *io_sq,
-+						 struct ena_com_tx_ctx *ena_tx_ctx,
-+						 bool *have_meta)
-+{
-+	struct ena_com_tx_meta *ena_meta = &ena_tx_ctx->ena_meta;
- 
--	/* Cached the meta desc */
--	memcpy(&io_sq->cached_tx_meta, ena_meta,
--	       sizeof(struct ena_com_tx_meta));
-+	/* When disable meta caching is set, don't bother to save the meta and
-+	 * compare it to the stored version, just create the meta
-+	 */
-+	if (io_sq->disable_meta_caching) {
-+		if (unlikely(!ena_tx_ctx->meta_valid))
-+			return -EINVAL;
- 
--	return ena_com_sq_update_tail(io_sq);
-+		*have_meta = true;
-+		return ena_com_create_meta(io_sq, ena_meta);
-+	}
-+
-+	if (ena_com_meta_desc_changed(io_sq, ena_tx_ctx)) {
-+		*have_meta = true;
-+		/* Cache the meta desc */
-+		memcpy(&io_sq->cached_tx_meta, ena_meta,
-+		       sizeof(struct ena_com_tx_meta));
-+		return ena_com_create_meta(io_sq, ena_meta);
-+	}
-+
-+	*have_meta = false;
-+	return 0;
+ test_pmtu_ipv6_vxlan4_exception() {
+ 	test_pmtu_ipvX_over_vxlanY_or_geneveY_exception vxlan  6 4
  }
- 
- static void ena_com_rx_set_flags(struct ena_com_rx_ctx *ena_rx_ctx,
-@@ -402,12 +425,10 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
- 	if (unlikely(rc))
- 		return rc;
- 
--	have_meta = ena_tx_ctx->meta_valid && ena_com_meta_desc_changed(io_sq,
--			ena_tx_ctx);
--	if (have_meta) {
--		rc = ena_com_create_and_store_tx_meta_desc(io_sq, ena_tx_ctx);
--		if (unlikely(rc))
--			return rc;
-+	rc = ena_com_create_and_store_tx_meta_desc(io_sq, ena_tx_ctx, &have_meta);
-+	if (unlikely(rc)) {
-+		pr_err("failed to create and store tx meta desc\n");
-+		return rc;
- 	}
- 
- 	/* If the caller doesn't want to send packets */
-diff --git a/drivers/net/ethernet/amazon/ena/ena_eth_com.h b/drivers/net/ethernet/amazon/ena/ena_eth_com.h
-index 8b1afd3b32f2..b6592cb93b04 100644
---- a/drivers/net/ethernet/amazon/ena/ena_eth_com.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_eth_com.h
-@@ -157,7 +157,8 @@ static inline bool ena_com_is_doorbell_needed(struct ena_com_io_sq *io_sq,
- 	llq_info = &io_sq->llq_info;
- 	num_descs = ena_tx_ctx->num_bufs;
- 
--	if (unlikely(ena_com_meta_desc_changed(io_sq, ena_tx_ctx)))
-+	if (llq_info->disable_meta_caching ||
-+	    unlikely(ena_com_meta_desc_changed(io_sq, ena_tx_ctx)))
- 		++num_descs;
- 
- 	if (num_descs > llq_info->descs_num_before_header) {
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 7b8301bac1ce..455fb4c6b4cf 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -655,6 +655,7 @@ static void ena_init_io_rings(struct ena_adapter *adapter,
- 		txr->sgl_size = adapter->max_tx_sgl_size;
- 		txr->smoothed_interval =
- 			ena_com_get_nonadaptive_moderation_interval_tx(ena_dev);
-+		txr->disable_meta_caching = adapter->disable_meta_caching;
- 
- 		/* Don't init RX queues for xdp queues */
- 		if (!ENA_IS_XDP_INDEX(adapter, i)) {
-@@ -2783,7 +2784,9 @@ int ena_update_queue_count(struct ena_adapter *adapter, u32 new_channel_count)
- 	return dev_was_up ? ena_open(adapter->netdev) : 0;
- }
- 
--static void ena_tx_csum(struct ena_com_tx_ctx *ena_tx_ctx, struct sk_buff *skb)
-+static void ena_tx_csum(struct ena_com_tx_ctx *ena_tx_ctx,
-+			struct sk_buff *skb,
-+			bool disable_meta_caching)
- {
- 	u32 mss = skb_shinfo(skb)->gso_size;
- 	struct ena_com_tx_meta *ena_meta = &ena_tx_ctx->ena_meta;
-@@ -2827,7 +2830,9 @@ static void ena_tx_csum(struct ena_com_tx_ctx *ena_tx_ctx, struct sk_buff *skb)
- 		ena_meta->l3_hdr_len = skb_network_header_len(skb);
- 		ena_meta->l3_hdr_offset = skb_network_offset(skb);
- 		ena_tx_ctx->meta_valid = 1;
--
-+	} else if (disable_meta_caching) {
-+		memset(ena_meta, 0, sizeof(*ena_meta));
-+		ena_tx_ctx->meta_valid = 1;
- 	} else {
- 		ena_tx_ctx->meta_valid = 0;
- 	}
-@@ -3011,7 +3016,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	ena_tx_ctx.header_len = header_len;
- 
- 	/* set flags and meta data */
--	ena_tx_csum(&ena_tx_ctx, skb);
-+	ena_tx_csum(&ena_tx_ctx, skb, tx_ring->disable_meta_caching);
- 
- 	rc = ena_xmit_common(dev,
- 			     tx_ring,
-@@ -4259,6 +4264,11 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	adapter->xdp_num_queues = 0;
- 
- 	adapter->rx_copybreak = ENA_DEFAULT_RX_COPYBREAK;
-+	if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
-+		adapter->disable_meta_caching =
-+			!!(get_feat_ctx.llq.accel_mode.u.get.supported_flags &
-+			   BIT(ENA_ADMIN_DISABLE_META_CACHING));
-+
- 	adapter->wd_state = wd_state;
- 
- 	snprintf(adapter->name, ENA_NAME_MAX_LEN, "ena_%d", adapters_found);
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index 89304b403995..0c8504006247 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -298,6 +298,7 @@ struct ena_ring {
- 	u8 tx_max_header_size;
- 
- 	bool first_interrupt;
-+	bool disable_meta_caching;
- 	u16 no_interrupt_event_cnt;
- 
- 	/* cpu for TPH */
-@@ -399,6 +400,7 @@ struct ena_adapter {
- 
- 	bool wd_state;
- 	bool dev_up_before_reset;
-+	bool disable_meta_caching;
- 	unsigned long last_keep_alive_jiffies;
- 
- 	struct u64_stats_sync syncp;
+
+
 -- 
-2.23.1
+Stefano
 
