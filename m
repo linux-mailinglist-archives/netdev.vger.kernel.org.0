@@ -2,24 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D1F621CC09
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 01:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2199C21CC1B
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 01:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728788AbgGLXPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 19:15:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59634 "EHLO vps0.lunn.ch"
+        id S1728946AbgGLXQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 19:16:10 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59590 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728594AbgGLXPd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Jul 2020 19:15:33 -0400
+        id S1728479AbgGLXPb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Jul 2020 19:15:31 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1julBu-004mPb-1J; Mon, 13 Jul 2020 01:15:26 +0200
+        id 1julBu-004mPe-5W; Mon, 13 Jul 2020 01:15:26 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next 12/20] net: nfc: kerneldoc fixes
-Date:   Mon, 13 Jul 2020 01:15:08 +0200
-Message-Id: <20200712231516.1139335-13-andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Pravin B Shelar <pshelar@ovn.org>
+Subject: [PATCH net-next 13/20] net: openvswitch: kerneldoc fixes
+Date:   Mon, 13 Jul 2020 01:15:09 +0200
+Message-Id: <20200712231516.1139335-14-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200712231516.1139335-1-andrew@lunn.ch>
 References: <20200712231516.1139335-1-andrew@lunn.ch>
@@ -32,55 +33,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Simple fixes which require no deep knowledge of the code.
 
+Cc: Pravin B Shelar <pshelar@ovn.org>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- net/nfc/core.c     | 3 +--
- net/nfc/nci/core.c | 4 ++--
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ net/openvswitch/flow_netlink.c | 6 +++---
+ net/openvswitch/vport.c        | 3 ++-
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/net/nfc/core.c b/net/nfc/core.c
-index c5f9c3ee82f8..eb377f87bcae 100644
---- a/net/nfc/core.c
-+++ b/net/nfc/core.c
-@@ -704,7 +704,6 @@ EXPORT_SYMBOL(nfc_tm_deactivated);
-  * nfc_alloc_send_skb - allocate a skb for data exchange responses
-  *
-  * @size: size to allocate
-- * @gfp: gfp flags
-  */
- struct sk_buff *nfc_alloc_send_skb(struct nfc_dev *dev, struct sock *sk,
- 				   unsigned int flags, unsigned int size,
-@@ -749,7 +748,7 @@ EXPORT_SYMBOL(nfc_alloc_recv_skb);
-  *
-  * @dev: The nfc device that found the targets
-  * @targets: array of nfc targets found
-- * @ntargets: targets array size
-+ * @n_targets: targets array size
-  *
-  * The device driver must call this function when one or many nfc targets
-  * are found. After calling this function, the device driver must stop
-diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
-index 7cd524884304..f7b7dc5fe84a 100644
---- a/net/nfc/nci/core.c
-+++ b/net/nfc/nci/core.c
-@@ -1182,7 +1182,7 @@ EXPORT_SYMBOL(nci_free_device);
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index 79252d4887ff..9d3e50c4d29f 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -1763,11 +1763,11 @@ static void mask_set_nlattr(struct nlattr *attr, u8 val)
+  * does not include any don't care bit.
+  * @net: Used to determine per-namespace field support.
+  * @match: receives the extracted flow match information.
+- * @key: Netlink attribute holding nested %OVS_KEY_ATTR_* Netlink attribute
++ * @nla_key: Netlink attribute holding nested %OVS_KEY_ATTR_* Netlink attribute
+  * sequence. The fields should of the packet that triggered the creation
+  * of this flow.
+- * @mask: Optional. Netlink attribute holding nested %OVS_KEY_ATTR_* Netlink
+- * attribute specifies the mask field of the wildcarded flow.
++ * @nla_mask: Optional. Netlink attribute holding nested %OVS_KEY_ATTR_*
++ * Netlink attribute specifies the mask field of the wildcarded flow.
+  * @log: Boolean to allow kernel error logging.  Normally true, but when
+  * probing for feature compatibility this should be passed in as false to
+  * suppress unnecessary error logging.
+diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
+index 47febb4504f0..0d44c5c013fa 100644
+--- a/net/openvswitch/vport.c
++++ b/net/openvswitch/vport.c
+@@ -87,6 +87,7 @@ EXPORT_SYMBOL_GPL(ovs_vport_ops_unregister);
  /**
-  * nci_register_device - register a nci device in the nfc subsystem
+  *	ovs_vport_locate - find a port that has already been created
   *
-- * @dev: The nci device to register
-+ * @ndev: The nci device to register
-  */
- int nci_register_device(struct nci_dev *ndev)
- {
-@@ -1246,7 +1246,7 @@ EXPORT_SYMBOL(nci_register_device);
- /**
-  * nci_unregister_device - unregister a nci device in the nfc subsystem
++ * @net: network namespace
+  * @name: name of port to find
   *
-- * @dev: The nci device to unregister
-+ * @ndev: The nci device to unregister
-  */
- void nci_unregister_device(struct nci_dev *ndev)
- {
+  * Must be called with ovs or RCU read lock.
+@@ -418,7 +419,7 @@ u32 ovs_vport_find_upcall_portid(const struct vport *vport, struct sk_buff *skb)
+  *
+  * @vport: vport that received the packet
+  * @skb: skb that was received
+- * @tun_key: tunnel (if any) that carried packet
++ * @tun_info: tunnel (if any) that carried packet
+  *
+  * Must be called with rcu_read_lock.  The packet cannot be shared and
+  * skb->data should point to the Ethernet header.
 -- 
 2.27.0.rc2
 
