@@ -2,25 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F7DD21CC04
+	by mail.lfdr.de (Postfix) with ESMTP id F101121CC06
 	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 01:15:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728516AbgGLXPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 19:15:30 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59556 "EHLO vps0.lunn.ch"
+        id S1728730AbgGLXPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 19:15:34 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59586 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727932AbgGLXP2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Jul 2020 19:15:28 -0400
+        id S1728454AbgGLXPa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Jul 2020 19:15:30 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1julBt-004mP8-FM; Mon, 13 Jul 2020 01:15:25 +0200
+        id 1julBt-004mPA-GY; Mon, 13 Jul 2020 01:15:25 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next 00/20] net simple kerneldoc fixes
-Date:   Mon, 13 Jul 2020 01:14:56 +0200
-Message-Id: <20200712231516.1139335-1-andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>
+Subject: [PATCH net-next 01/20] net: 9p: kerneldoc fixes
+Date:   Mon, 13 Jul 2020 01:14:57 +0200
+Message-Id: <20200712231516.1139335-2-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20200712231516.1139335-1-andrew@lunn.ch>
+References: <20200712231516.1139335-1-andrew@lunn.ch>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -28,84 +33,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a collection of simple kerneldoc fixes. They are all low
-hanging fruit, were not real understanding of the code was needed.
+Simple fixes which require no deep knowledge of the code.
 
-Andrew Lunn (20):
-  net: 9p: kerneldoc fixes
-  net: can: kerneldoc fixes
-  net: core: kerneldoc fixes
-  net: dccp: kerneldoc fixes
-  net: decnet: kerneldoc fixes
-  net: ipv4: kerneldoc fixes
-  net: ipv6: kerneldoc fixes
-  net: llc: kerneldoc fixes
-  net: mac80211: kerneldoc fixes
-  net: netfilter: kerneldoc fixes
-  net: netlabel: kerneldoc fixes
-  net: nfc: kerneldoc fixes
-  net: openvswitch: kerneldoc fixes
-  net: rxrpc: kerneldoc fixes
-  net: sched: kerneldoc fixes
-  net: socket: Move kerneldoc next to function it documents
-  net: switchdev: kerneldoc fixes
-  net: tipc: kerneldoc fixes
-  net: wireless: kerneldoc fixes
-  net: x25: kerneldoc fixes
+Cc: Eric Van Hensbergen <ericvh@gmail.com>
+Cc: Latchesar Ionkov <lucho@ionkov.net>
+Cc: Dominique Martinet <asmadeus@codewreck.org>
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+---
+ net/9p/client.c     | 2 +-
+ net/9p/trans_rdma.c | 7 ++++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
- net/9p/client.c                     |  2 +-
- net/9p/trans_rdma.c                 |  7 ++++---
- net/can/af_can.c                    |  2 ++
- net/core/dev.c                      |  1 +
- net/dccp/ccids/lib/packet_history.c |  2 ++
- net/dccp/feat.c                     |  6 ++++++
- net/dccp/input.c                    |  1 +
- net/dccp/ipv4.c                     |  2 ++
- net/dccp/options.c                  |  4 ++++
- net/dccp/timer.c                    |  2 ++
- net/decnet/dn_route.c               |  2 ++
- net/ipv4/cipso_ipv4.c               |  6 ++++--
- net/ipv4/ipmr.c                     |  3 +++
- net/ipv4/tcp_input.c                |  1 -
- net/ipv4/tcp_output.c               |  2 ++
- net/ipv4/tcp_timer.c                |  2 +-
- net/ipv4/udp.c                      |  6 +++---
- net/ipv6/exthdrs.c                  |  1 -
- net/ipv6/ip6_output.c               |  6 ++++--
- net/ipv6/ip6_tunnel.c               | 10 ++++++----
- net/ipv6/udp.c                      |  3 +++
- net/llc/af_llc.c                    |  1 -
- net/llc/llc_conn.c                  |  7 ++++---
- net/llc/llc_input.c                 |  1 +
- net/llc/llc_pdu.c                   |  2 +-
- net/llc/llc_sap.c                   |  3 +++
- net/mac80211/mesh_pathtbl.c         |  4 +---
- net/netfilter/nf_conntrack_core.c   |  2 +-
- net/netfilter/nf_tables_api.c       |  8 ++++----
- net/netfilter/nft_set_pipapo.c      |  8 ++++----
- net/netlabel/netlabel_domainhash.c  |  2 +-
- net/nfc/core.c                      |  3 +--
- net/nfc/nci/core.c                  |  4 ++--
- net/openvswitch/flow_netlink.c      |  6 +++---
- net/openvswitch/vport.c             |  3 ++-
- net/rxrpc/af_rxrpc.c                |  2 +-
- net/sched/em_canid.c                |  1 +
- net/sched/ematch.c                  |  3 +--
- net/socket.c                        | 17 ++++++++---------
- net/switchdev/switchdev.c           |  3 +--
- net/tipc/bearer.c                   |  2 +-
- net/tipc/discover.c                 |  5 ++---
- net/tipc/link.c                     |  6 +++---
- net/tipc/msg.c                      |  2 +-
- net/tipc/node.c                     |  4 ++--
- net/tipc/socket.c                   |  8 +++-----
- net/tipc/udp_media.c                |  2 +-
- net/wireless/reg.c                  |  4 +++-
- net/wireless/wext-compat.c          |  1 -
- net/x25/x25_link.c                  |  2 +-
- net/x25/x25_route.c                 |  2 +-
- 51 files changed, 111 insertions(+), 78 deletions(-)
-
+diff --git a/net/9p/client.c b/net/9p/client.c
+index fc1f3635e5dd..09f1ec589b80 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -811,7 +811,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+  * @uodata: source for zero copy write
+  * @inlen: read buffer size
+  * @olen: write buffer size
+- * @hdrlen: reader header size, This is the size of response protocol data
++ * @in_hdrlen: reader header size, This is the size of response protocol data
+  * @fmt: protocol format string (see protocol.c)
+  *
+  * Returns request structure (which client must free using p9_tag_remove)
+diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
+index b21c3c209815..2885ff9c76f0 100644
+--- a/net/9p/trans_rdma.c
++++ b/net/9p/trans_rdma.c
+@@ -94,14 +94,15 @@ struct p9_trans_rdma {
+ 	struct completion cm_done;
+ };
+ 
++struct p9_rdma_req;
++
+ /**
+- * p9_rdma_context - Keeps track of in-process WR
++ * struct p9_rdma_context - Keeps track of in-process WR
+  *
+  * @busa: Bus address to unmap when the WR completes
+  * @req: Keeps track of requests (send)
+  * @rc: Keepts track of replies (receive)
+  */
+-struct p9_rdma_req;
+ struct p9_rdma_context {
+ 	struct ib_cqe cqe;
+ 	dma_addr_t busa;
+@@ -112,7 +113,7 @@ struct p9_rdma_context {
+ };
+ 
+ /**
+- * p9_rdma_opts - Collection of mount options
++ * struct p9_rdma_opts - Collection of mount options
+  * @port: port of connection
+  * @sq_depth: The requested depth of the SQ. This really doesn't need
+  * to be any deeper than the number of threads used in the client
 -- 
 2.27.0.rc2
 
