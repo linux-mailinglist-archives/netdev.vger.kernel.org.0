@@ -2,112 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 669D521C6DE
-	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 02:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 249DA21C6F5
+	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 03:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728057AbgGLAtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 20:49:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49104 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726948AbgGLAtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 20:49:03 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48C0C08C5DD
-        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 17:49:03 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id d4so4383515pgk.4
-        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 17:49:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=BYAcNbqomnLFwA+FOyL5j2aMBZflPQaTZWKnNjVgt7A=;
-        b=GWJhfLvYFgpWldS65Z2+YzC34867Goxs/9O9+iGl5e9RGdfHV0HCorJvnlzUsCZwGQ
-         lMfoWHX4qsWj1ED8EA8M32gJlAziEHuqsQIUcWUlVrE5bgNXHVuFgD1uZh0WsKW9HlSa
-         NMJQCoovvoZIlb/sWSi2vSPIgrH124QeE1JnE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=BYAcNbqomnLFwA+FOyL5j2aMBZflPQaTZWKnNjVgt7A=;
-        b=g26gfWIGtLqkCxHD6F5tylpVGBUz/ba3mD5F7q27QscBM7gGEUaTrXj9okpq4ooBmg
-         JVp1wp01+XXRJTfM6xS5Ea0RqjuesU7tNNChSGuGXbmxHACXHdDvNjehS0vjqRyopy3E
-         kwX4w74MGbxgE04fNcw+Cl2XXzWMwXsvDAISS99SgRLjStHiSYDysweRcE11js5c+L4H
-         M+5+at1+cZEF0gK54BBV2vp79NymExdBQh8nquhOvlN+fuN51YR2THyIF7PVrPM8sGkZ
-         6r7XZrtvCBqW7YCwj3yoG+XHmWZiceWgsXBl3VNa1kCCOYwhSCpFFKwQYNpwZxdliNFL
-         3rmg==
-X-Gm-Message-State: AOAM530EjzRk31oP0Pnaia+YcIAx3wM/ka69GHV6JlzXf87rvJyXtWUl
-        EGKdhThnbhRFfGB2GBkUBGkIEQ==
-X-Google-Smtp-Source: ABdhPJy9LT9OEsQRn4emZYagizEEoEL2apKuBH1Z2+BxlpYPA5bgEYpHw5Wf5uJs6i6e9LKByjAHsA==
-X-Received: by 2002:a63:ea02:: with SMTP id c2mr63996156pgi.66.1594514943358;
-        Sat, 11 Jul 2020 17:49:03 -0700 (PDT)
-Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q6sm10157589pfg.76.2020.07.11.17.49.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 11 Jul 2020 17:49:02 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 3/3] bnxt_en: Fix completion ring sizing with TPA enabled.
-Date:   Sat, 11 Jul 2020 20:48:25 -0400
-Message-Id: <1594514905-688-4-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1594514905-688-1-git-send-email-michael.chan@broadcom.com>
-References: <1594514905-688-1-git-send-email-michael.chan@broadcom.com>
+        id S1727793AbgGLBkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 21:40:07 -0400
+Received: from smtp.netregistry.net ([202.124.241.204]:55158 "EHLO
+        smtp.netregistry.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726779AbgGLBkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 21:40:07 -0400
+Received: from pa49-197-151-134.pa.qld.optusnet.com.au ([49.197.151.134]:25673 helo=localhost)
+        by smtp-1.servers.netregistry.net protocol: esmtpa (Exim 4.84_2 #1 (Debian))
+        id 1juQyJ-0001vL-3R; Sun, 12 Jul 2020 11:40:05 +1000
+Date:   Sun, 12 Jul 2020 11:40:01 +1000
+From:   Russell Strong <russell@strong.id.au>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: amplifying qdisc
+Message-ID: <20200712114001.27b6399c@strong.id.au>
+In-Reply-To: <20200708232634.0fa0ca19@hermes.lan>
+References: <20200709161034.71bf8e09@strong.id.au>
+        <20200708232634.0fa0ca19@hermes.lan>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Authenticated-User: russell@strong.id.au
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current completion ring sizing formula is wrong with TPA enabled.
-The formula assumes that the number of TPA completions are bound by the
-RX ring size, but that's not true.  TPA_START completions are immediately
-recycled so they are not bound by the RX ring size.  We must add
-bp->max_tpa to the worst case maximum RX and TPA completions.
+On Wed, 8 Jul 2020 23:26:34 -0700
+Stephen Hemminger <stephen@networkplumber.org> wrote:
 
-The completion ring can overflow because of this mistake.  This will
-cause hardware to disable the completion ring when this happens,
-leading to RX and TX traffic to stall on that ring.  This issue is
-generally exposed only when the RX ring size is set very small.
+> On Thu, 9 Jul 2020 16:10:34 +1000
+> Russell Strong <russell@strong.id.au> wrote:
+> 
+> > Hi,
+> > 
+> > I'm attempting to fill a link with background traffic that is sent
+> > whenever the link is idle.  To do this I've creates a qdisc that
+> > will repeat the last packet in the queue for a defined number of
+> > times (possibly infinite in the future). I am able to control the
+> > contents of the fill traffic by sending the occasional packet
+> > through this qdisc.
+> > 
+> > This is works as the root qdisc and below a TBF.  When I try it as a
+> > leaf of HTB unexpected behaviour ensues.  I suspect my approach is
+> > violating some rules for qdiscs?  Any help/ideas/pointers would be
+> > appreciated.  
+> 
+> Netem can already do things like this. Why not add to that
+> 
 
-Fix the formula by adding bp->max_tpa to the number of RX completions
-if TPA is enabled.
+Hi,
 
-Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.");
-Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+Tried doing this within netem as follows; but run into similar
+problems.  Works as the root qdisc (except for "Route cache is full:
+consider increasing sysctl net.ipv[4|6].route.max_size.") but not under
+htb.  I am attempting to duplicate at dequeue, rather than enqueue to
+get an infinite stream of packets rather than a fixed number of
+duplicates. Is this possible?
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 28147e4..7463a18 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3418,7 +3418,7 @@ void bnxt_set_tpa_flags(struct bnxt *bp)
-  */
- void bnxt_set_ring_params(struct bnxt *bp)
- {
--	u32 ring_size, rx_size, rx_space;
-+	u32 ring_size, rx_size, rx_space, max_rx_cmpl;
- 	u32 agg_factor = 0, agg_ring_size = 0;
+Thanks
+Russell
+
+
+diff --git a/sch_netem.c b/sch_netem.c
+index 42e557d..9a674df 100644
+--- a/sch_netem.c
++++ b/sch_netem.c
+@@ -98,6 +98,7 @@ struct netem_sched_data {
+        u32 cell_size;
+        struct reciprocal_value cell_size_reciprocal;
+        s32 cell_overhead;
++       u32 repeat_last;
  
- 	/* 8 for CRC and VLAN */
-@@ -3474,7 +3474,15 @@ void bnxt_set_ring_params(struct bnxt *bp)
- 	bp->tx_nr_pages = bnxt_calc_nr_ring_pages(ring_size, TX_DESC_CNT);
- 	bp->tx_ring_mask = (bp->tx_nr_pages * TX_DESC_CNT) - 1;
+        struct crndstate {
+                u32 last;
+@@ -697,9 +698,13 @@ deliver:
+                        get_slot_next(q, now);
  
--	ring_size = bp->rx_ring_size * (2 + agg_factor) + bp->tx_ring_size;
-+	max_rx_cmpl = bp->rx_ring_size;
-+	/* MAX TPA needs to be added because TPA_START completions are
-+	 * immediately recycled, so the TPA completions are not bound by
-+	 * the RX ring size.
-+	 */
-+	if (bp->flags & BNXT_FLAG_TPA)
-+		max_rx_cmpl += bp->max_tpa;
-+	/* RX and TPA completions are 32-byte, all others are 16-byte */
-+	ring_size = max_rx_cmpl * 2 + agg_ring_size + bp->tx_ring_size;
- 	bp->cp_ring_size = ring_size;
+                if (time_to_send <= now && q->slot.slot_next <= now) {
+-                       netem_erase_head(q, skb);
+-                       sch->q.qlen--;
+-                       qdisc_qstats_backlog_dec(sch, skb);
++                       if (sch->q.qlen == 1 && q->repeat_last)
++                               skb = skb_clone(skb, GFP_ATOMIC);
++                       else {
++                               netem_erase_head(q, skb);
++                               sch->q.qlen--;
++                               qdisc_qstats_backlog_dec(sch, skb);
++                       }
+                        skb->next = NULL;
+                        skb->prev = NULL;
+                        /* skb->dev shares skb->rbnode area,
+@@ -1061,6 +1066,7 @@ static int netem_init(struct Qdisc *sch, struct
+nlattr *opt, return -EINVAL;
  
- 	bp->cp_nr_pages = bnxt_calc_nr_ring_pages(ring_size, CP_DESC_CNT);
--- 
-1.8.3.1
-
+        q->loss_model = CLG_RANDOM;
++       q->repeat_last = 1;
+        ret = netem_change(sch, opt, extack);
+        if (ret)
+                pr_info("netem: change failed\n");
