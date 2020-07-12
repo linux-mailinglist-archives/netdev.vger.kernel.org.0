@@ -2,75 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8485821C6C1
-	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 01:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12F0D21C6DB
+	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 02:49:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbgGKXwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jul 2020 19:52:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58968 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726939AbgGKXwm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Jul 2020 19:52:42 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1juPIJ-004g65-5r; Sun, 12 Jul 2020 01:52:35 +0200
-Date:   Sun, 12 Jul 2020 01:52:35 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Chris Healy <cphealy@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>
-Subject: Re: [PATCH net-next 1/2] net: dsa: mv88e6xxx: Implement MTU change
-Message-ID: <20200711235235.GB1110701@lunn.ch>
-References: <20200711203206.1110108-1-andrew@lunn.ch>
- <20200711203206.1110108-2-andrew@lunn.ch>
- <20200712012944.1541b078@nic.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200712012944.1541b078@nic.cz>
+        id S1727777AbgGLAs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jul 2020 20:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49078 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726948AbgGLAs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jul 2020 20:48:56 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF086C08C5DD
+        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 17:48:55 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id w17so3908192ply.11
+        for <netdev@vger.kernel.org>; Sat, 11 Jul 2020 17:48:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=bEyMXhX7K1Q9tWRRAML9qpm1JKkh/GXCO0/4u1LgwZo=;
+        b=GXRwiMPzKLbQTxiC0+GctNb+cbGm6S4/1BoBKgg45s7pcmstXInY0wuifdSWTn1Px4
+         Iz2tlWChDuNQ/frl0xZKGwm31D62Yyed21gBdKtZL9JHeRpM0LXLADXPsda8khIq8Vqa
+         3HLzBWjgMku1iN6xlknNwXF9US3pBaf1bKmSE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bEyMXhX7K1Q9tWRRAML9qpm1JKkh/GXCO0/4u1LgwZo=;
+        b=dhJXv983Ttif69pjNh/tHBJ2h0pqdYCdHqGuw3uOfc9uugR2QlLj5oqglOs7P7WMOg
+         o7kMrdqNLbE2rBDUDQZhgGlWf1ehoR3iHfSM/NVPjsyBOn/7PpmudCor4NZcoFoNfkm7
+         PPL152lyBZiO/8oKwP4cjUWoB7v/IQqgYpj5uKcidmrY8j3KaVbi2YmI4285Q5ITw1MD
+         RCvw3uBZ0qPEcM/4L8xDocSVDlFyZL9D+Ll5Wr+hYP4vYEV7NqyWKzOyYu2NAcrViKvv
+         pCkxwAWI5erZzCrWukM3AY8L1ORe86q8GrGk96ubabk3+vrN+Tlnf4JuYEcRcGMNeotQ
+         f2UQ==
+X-Gm-Message-State: AOAM5306lRUkpi/fdstR81UnEhdc+sqlCZisivM1dU2wxOKQWjpJ0zV7
+        yyoaFwR38xTY0O++kyEt7/LY990EZZM=
+X-Google-Smtp-Source: ABdhPJzvwsrPiIErmWhwPcVam3TAw8M9bZ1u6qj+cC0YOi8NrJ6KBYzEu29Nbfcia01DUZxw/jjG5g==
+X-Received: by 2002:a17:902:7008:: with SMTP id y8mr32148278plk.85.1594514935058;
+        Sat, 11 Jul 2020 17:48:55 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q6sm10157589pfg.76.2020.07.11.17.48.52
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 11 Jul 2020 17:48:54 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 0/3] bnxt_en: 3 bug fixes.
+Date:   Sat, 11 Jul 2020 20:48:22 -0400
+Message-Id: <1594514905-688-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 12, 2020 at 01:29:44AM +0200, Marek Behun wrote:
-> On Sat, 11 Jul 2020 22:32:05 +0200
-> Andrew Lunn <andrew@lunn.ch> wrote:
-> 
-> > The Marvell Switches support jumbo packages. So implement the
-> > callbacks needed for changing the MTU.
-> > 
-> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> 
-> Hi Andrew,
-> 
-> maybe this could be sent to net, not only net-next. Or maybe even
-> better, with a Fixes tag to some commit - DSA now prints warnings on
-> some systems when initializing switch interfaces, that MTU cannot be
-> changed, so maybe we could look at this patch as a fix and get it
-> backported...
+2 Fixes related to PHY/link settings.  The last one fixes the sizing of
+the completion ring.
 
-Hi Marek
+Please also queue for -stable.  Thanks.
 
-It does not really 'fix' anything. The warning clearly says it is nonfatal
+Michael Chan (1):
+  bnxt_en: Fix completion ring sizing with TPA enabled.
 
-[    2.091447] mv88e6085 0.1:00: nonfatal error -95 setting MTU on port 1
-[    2.123378] mv88e6085 0.1:00: nonfatal error -95 setting MTU on port 2
-[    2.144035] mv88e6085 0.1:00: nonfatal error -95 setting MTU on port 3
-[    2.165546] mv88e6085 0.1:00: nonfatal error -95 setting MTU on port 4
-[    2.189840] mv88e6085 0.2:00: nonfatal error -95 setting MTU on port 1
-[    2.213373] mv88e6085 0.2:00: nonfatal error -95 setting MTU on port 2
-[    2.232762] mv88e6085 0.2:00: nonfatal error -95 setting MTU on port 3
-[    2.253840] mv88e6085 0.2:00: nonfatal error -95 setting MTU on port 4
-[    2.275925] mv88e6085 0.2:00: nonfatal error -95 setting MTU on port 9
+Vasundhara Volam (2):
+  bnxt_en: Fix race when modifying pause settings.
+  bnxt_en: Init ethtool link settings after reading updated PHY
+    configuration.
 
-and the switch works as before. As such, i don't think this patch
-meets the requirements of stable:
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 22 +++++++++++++++-------
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  5 ++++-
+ 2 files changed, 19 insertions(+), 8 deletions(-)
 
-Documentation/process/stable-kernel-rules.rst
+-- 
+1.8.3.1
 
-	Andrew
