@@ -2,25 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AEA421CC0B
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 01:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC8C221CC16
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 01:16:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728652AbgGLXPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 19:15:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59594 "EHLO vps0.lunn.ch"
+        id S1728929AbgGLXQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 19:16:06 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59584 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728484AbgGLXPa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Jul 2020 19:15:30 -0400
+        id S1728411AbgGLXPb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Jul 2020 19:15:31 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1julBt-004mPT-Rj; Mon, 13 Jul 2020 01:15:25 +0200
+        id 1julBt-004mPW-TT; Mon, 13 Jul 2020 01:15:25 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Johannes Berg <johannes@sipsolutions.net>
-Subject: [PATCH net-next 09/20] net: mac80211: kerneldoc fixes
-Date:   Mon, 13 Jul 2020 01:15:05 +0200
-Message-Id: <20200712231516.1139335-10-andrew@lunn.ch>
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH net-next 10/20] net: netfilter: kerneldoc fixes
+Date:   Mon, 13 Jul 2020 01:15:06 +0200
+Message-Id: <20200712231516.1139335-11-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200712231516.1139335-1-andrew@lunn.ch>
 References: <20200712231516.1139335-1-andrew@lunn.ch>
@@ -33,41 +35,109 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Simple fixes which require no deep knowledge of the code.
 
-Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc: Florian Westphal <fw@strlen.de>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- net/mac80211/mesh_pathtbl.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/netfilter/nf_conntrack_core.c | 2 +-
+ net/netfilter/nf_tables_api.c     | 8 ++++----
+ net/netfilter/nft_set_pipapo.c    | 8 ++++----
+ 3 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/net/mac80211/mesh_pathtbl.c b/net/mac80211/mesh_pathtbl.c
-index 117519bf33d6..fe4e853c61f4 100644
---- a/net/mac80211/mesh_pathtbl.c
-+++ b/net/mac80211/mesh_pathtbl.c
-@@ -72,7 +72,6 @@ static void mesh_table_free(struct mesh_table *tbl)
- }
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 79cd9dde457b..cb83a1f8badd 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -1006,7 +1006,7 @@ static int nf_ct_resolve_clash_harder(struct sk_buff *skb, u32 repl_idx)
+  *
+  * @skb: skb that causes the clash
+  * @h: tuplehash of the clashing entry already in table
+- * @hash_reply: hash slot for reply direction
++ * @reply_hash: hash slot for reply direction
+  *
+  * A conntrack entry can be inserted to the connection tracking table
+  * if there is no existing entry with an identical tuple.
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index f96785586f64..6708a4f2eec8 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2375,7 +2375,7 @@ static int nf_tables_delchain(struct net *net, struct sock *nlsk,
  
  /**
-- *
-  * mesh_path_assign_nexthop - update mesh path next hop
+  *	nft_register_expr - register nf_tables expr type
+- *	@ops: expr type
++ *	@type: expr type
   *
-  * @mpath: mesh path to update
-@@ -140,7 +139,6 @@ static void prepare_for_gate(struct sk_buff *skb, char *dst_addr,
- }
+  *	Registers the expr type for use with nf_tables. Returns zero on
+  *	success or a negative errno code otherwise.
+@@ -2394,7 +2394,7 @@ EXPORT_SYMBOL_GPL(nft_register_expr);
  
  /**
-- *
-  * mesh_path_move_to_queue - Move or copy frames from one mpath queue to another
+  *	nft_unregister_expr - unregister nf_tables expr type
+- *	@ops: expr type
++ *	@type: expr type
   *
-  * This function is used to transfer or copy frames from an unresolved mpath to
-@@ -152,7 +150,7 @@ static void prepare_for_gate(struct sk_buff *skb, char *dst_addr,
+  * 	Unregisters the expr typefor use with nf_tables.
+  */
+@@ -5595,7 +5595,7 @@ struct nft_set_gc_batch *nft_set_gc_batch_alloc(const struct nft_set *set,
+ 
+ /**
+  *	nft_register_obj- register nf_tables stateful object type
+- *	@obj: object type
++ *	@obj_type: object type
   *
-  * The gate mpath must be an active mpath with a valid mpath->next_hop.
+  *	Registers the object type for use with nf_tables. Returns zero on
+  *	success or a negative errno code otherwise.
+@@ -5614,7 +5614,7 @@ EXPORT_SYMBOL_GPL(nft_register_obj);
+ 
+ /**
+  *	nft_unregister_obj - unregister nf_tables object type
+- *	@obj: object type
++ *	@obj_type: object type
   *
-- * @mpath: An active mpath the frames will be sent to (i.e. the gate)
-+ * @gate_mpath: An active mpath the frames will be sent to (i.e. the gate)
-  * @from_mpath: The failed mpath
-  * @copy: When true, copy all the frames to the new mpath queue.  When false,
-  * move them.
+  * 	Unregisters the object type for use with nf_tables.
+  */
+diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
+index 313de1d73168..cc6082a5f7ad 100644
+--- a/net/netfilter/nft_set_pipapo.c
++++ b/net/netfilter/nft_set_pipapo.c
+@@ -401,7 +401,7 @@ int pipapo_refill(unsigned long *map, int len, int rules, unsigned long *dst,
+  * nft_pipapo_lookup() - Lookup function
+  * @net:	Network namespace
+  * @set:	nftables API set representation
+- * @elem:	nftables API element representation containing key data
++ * @key:	nftables API element representation containing key data
+  * @ext:	nftables API extension pointer, filled with matching reference
+  *
+  * For more details, see DOC: Theory of Operation.
+@@ -1075,7 +1075,7 @@ static int pipapo_expand(struct nft_pipapo_field *f,
+  * @m:		Matching data, including mapping table
+  * @map:	Table of rule maps: array of first rule and amount of rules
+  *		in next field a given rule maps to, for each field
+- * @ext:	For last field, nft_set_ext pointer matching rules map to
++ * @e:		For last field, nft_set_ext pointer matching rules map to
+  */
+ static void pipapo_map(struct nft_pipapo_match *m,
+ 		       union nft_pipapo_map_bucket map[NFT_PIPAPO_MAX_FIELDS],
+@@ -1099,7 +1099,7 @@ static void pipapo_map(struct nft_pipapo_match *m,
+ /**
+  * pipapo_realloc_scratch() - Reallocate scratch maps for partial match results
+  * @clone:	Copy of matching data with pending insertions and deletions
+- * @bsize_max	Maximum bucket size, scratch maps cover two buckets
++ * @bsize_max:	Maximum bucket size, scratch maps cover two buckets
+  *
+  * Return: 0 on success, -ENOMEM on failure.
+  */
+@@ -1447,7 +1447,7 @@ static void pipapo_unmap(union nft_pipapo_map_bucket *mt, int rules,
+ /**
+  * pipapo_drop() - Delete entry from lookup and mapping tables, given rule map
+  * @m:		Matching data
+- * @rulemap	Table of rule maps, arrays of first rule and amount of rules
++ * @rulemap:	Table of rule maps, arrays of first rule and amount of rules
+  *		in next field a given entry maps to, for each field
+  *
+  * For each rule in lookup table buckets mapping to this set of rules, drop
 -- 
 2.27.0.rc2
 
