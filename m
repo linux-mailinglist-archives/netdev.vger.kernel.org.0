@@ -2,87 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6539A21C9E4
-	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 16:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84B6D21C9E3
+	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 16:55:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729034AbgGLOzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 10:55:47 -0400
-Received: from mga07.intel.com ([134.134.136.100]:60123 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728826AbgGLOzr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Jul 2020 10:55:47 -0400
-IronPort-SDR: yCrpzf0qMUXqg2i2NTUwpah9v1fYbVJJXuwmgZBB+q976M1ZmLSEr0Cc5ctEdpHNZ+LkqdQVyy
- 4WUcB7YsVGEA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9680"; a="213353168"
-X-IronPort-AV: E=Sophos;i="5.75,344,1589266800"; 
-   d="scan'208";a="213353168"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2020 07:55:45 -0700
-IronPort-SDR: gJUXCmTd5tVBqS1SWc31K3wrUNzDbB8JPFF94ZwPVZGGFmccLuA+fmw8xBgYMHJv5pZgTaYA7e
- ui5+SOPZuJUQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,343,1589266800"; 
-   d="scan'208";a="458977463"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.131])
-  by orsmga005.jf.intel.com with ESMTP; 12 Jul 2020 07:55:42 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com,
-        pbonzini@redhat.com, sean.j.christopherson@intel.com,
-        wanpengli@tencent.com
-Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH 0/7] *** IRQ offloading for vDPA ***
-Date:   Sun, 12 Jul 2020 22:52:04 +0800
-Message-Id: <1594565524-3394-1-git-send-email-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1729002AbgGLOzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 10:55:14 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36342 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728882AbgGLOzN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 10:55:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594565711;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=6nL6kDn6HMgn8sx0okC7YwBl7oR6NlWE67Kvx5ek+uw=;
+        b=ezjziVssR4bm/MxYrwc1izd/WzS5nzuobW5RQyLimkibtSZ3z7FsdZVU+BgE/sqjB7fmle
+        NX/11ykQfeeAypD4JWsWkVIMvTsfZN+l2jQiznjLxDmRs6W45bkWnwFWG+Nr5BNcTZ1+gS
+        8/axs4z+7aqyoJQI1heNVB9lYPCgcbA=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-265-8bCrrj4OMx2oNltvnKjA5g-1; Sun, 12 Jul 2020 10:55:10 -0400
+X-MC-Unique: 8bCrrj4OMx2oNltvnKjA5g-1
+Received: by mail-wr1-f72.google.com with SMTP id j5so14171768wro.6
+        for <netdev@vger.kernel.org>; Sun, 12 Jul 2020 07:55:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=6nL6kDn6HMgn8sx0okC7YwBl7oR6NlWE67Kvx5ek+uw=;
+        b=nVu0kMu75oTpR1ct2bWVKQ2DwfZx3jcLRn1JESKZrhwCeiedZ/R5U2gAjpdiAcDHYw
+         qUpSMcGidUrH0auJeLwOB3xPVCmrKQp8JO8Um9ZTnfW0kPJK6WxsWZG5J07CKJ+1z08F
+         E3upP0cDQ3KktLF+Z3adU0J9WYxTv5Dc4kXvH0rGqnm4S+MU+ZFwC867nFWOBOd7jptJ
+         AaBS2MS2F4QyZufaUkhnrCCKv6wmMBd05YF9QRkYIF3NA0paSMtudZokFTSgULYOL7YZ
+         piB56zWTk/4XRPRPCusKRvVNsrcRdWtBh/CqaZUUugTkSMShDPGanD0uokw3gkQ21c1g
+         pVzA==
+X-Gm-Message-State: AOAM532Ne/GvGOVHotp0/f/t7UrmilOiyc45Bzbt64Zx53YPq5gt+2K3
+        e7OBtvE9RUlOVXHY4IPbTzA+EJ0X0CYeKvl9+okRfezjBURP3/WQtvMgCQkjy1MEBWJZwH04ZKA
+        PcWJBW4luZZHhCKZc
+X-Received: by 2002:a05:600c:2dc1:: with SMTP id e1mr13878935wmh.108.1594565707259;
+        Sun, 12 Jul 2020 07:55:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwk680C1Rkd/fNGPOmQc3S/qzMmIRqDIOQYMsKgiZpDsxSuaZsrQGI5EyVxtpuoVK3n/aNrsg==
+X-Received: by 2002:a05:600c:2dc1:: with SMTP id e1mr13878912wmh.108.1594565706989;
+        Sun, 12 Jul 2020 07:55:06 -0700 (PDT)
+Received: from redhat.com (bzq-79-182-31-92.red.bezeqint.net. [79.182.31.92])
+        by smtp.gmail.com with ESMTPSA id u186sm19324768wmu.10.2020.07.12.07.55.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Jul 2020 07:55:06 -0700 (PDT)
+Date:   Sun, 12 Jul 2020 10:55:03 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     netdev@vger.kernel.org, dwoods@mellanox.com, lsun@mellanox.com
+Cc:     Darren Hart <dvhart@infradead.org>,
+        Vadim Pasternak <vadimp@mellanox.com>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>
+Subject: [PATCH] mlxbf-tmfifo: endian-ness wrappers for config access
+Message-ID: <20200712102743-mutt-send-email-mst@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
+Hello!
+While working out some endian-ness issues with virtio,
+I noticed that the following driver:
 
-This series intends to implement IRQ offloading for
-vhost_vdpa.
+drivers/platform/mellanox/mlxbf-tmfifo.c
 
-By the feat of irq forwarding facilities like posted
-interrupt on X86, irq bypass can  help deliver
-interrupts to vCPU directly.
+seems to access virtio net config directly.
+E.g.:
 
-vDPA devices have dedicated hardware backends like VFIO
-pass-throughed devices. So it would be possible to setup
-irq offloading(irq bypass) for vDPA devices and gain
-performance improvements.
+                        if (ntohs(hdr.len) > config->mtu +
+                            MLXBF_TMFIFO_NET_L2_OVERHEAD)
+                                return;
 
-In my testing, with this feature, we can save 0.1ms
-in a ping between two VFs on average.
+This is not incorrect in that the specific device is at the
+moment always legacy (no virtio 1).
 
+However this throws up sparse warnings as the structure
+is shared with modern devices which need the tagging for
+correct virtio 1 endian-ness.
 
-Zhu Lingshan (7):
-  vhost: introduce vhost_call_ctx
-  kvm/vfio: detect assigned device via irqbypass manager
-  vhost_vdpa: implement IRQ offloading functions in vhost_vdpa
-  vDPA: implement IRQ offloading helpers in vDPA core
-  virtio_vdpa: init IRQ offloading function pointers to NULL.
-  ifcvf: replace irq_request/free with helpers in vDPA core.
-  irqbypass: do not start consumer or producer when failed to connect
+Using correct conversions will also allow virtio 1 support
+in this driver down the road.
 
- arch/x86/kvm/x86.c              | 10 ++++--
- drivers/vdpa/ifcvf/ifcvf_main.c | 11 +++---
- drivers/vdpa/vdpa.c             | 46 +++++++++++++++++++++++++
- drivers/vhost/Kconfig           |  1 +
- drivers/vhost/vdpa.c            | 75 +++++++++++++++++++++++++++++++++++++++--
- drivers/vhost/vhost.c           | 22 ++++++++----
- drivers/vhost/vhost.h           |  9 ++++-
- drivers/virtio/virtio_vdpa.c    |  2 ++
- include/linux/vdpa.h            | 11 ++++++
- virt/kvm/vfio.c                 |  2 --
- virt/lib/irqbypass.c            | 16 +++++----
- 11 files changed, 181 insertions(+), 24 deletions(-)
+I'd like to merge the following patch. It's on top of
+a branch config-endian in my tree which includes
+the endian-ness tagging.
 
+Would appreciate acks from relevant maintainers.
+I also note that the console config field seems to be unused.
+Would appreciate a confirmation.
+Thanks!
+
+--
+
+mlxbf-tmfifo: endian-ness wrappers for config access
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+-->
+
+diff --git a/drivers/platform/mellanox/mlxbf-tmfifo.c b/drivers/platform/mellanox/mlxbf-tmfifo.c
+index 5739a9669b29..b1484206429f 100644
+--- a/drivers/platform/mellanox/mlxbf-tmfifo.c
++++ b/drivers/platform/mellanox/mlxbf-tmfifo.c
+@@ -608,6 +608,7 @@ static void mlxbf_tmfifo_rxtx_header(struct mlxbf_tmfifo_vring *vring,
+ {
+ 	struct mlxbf_tmfifo *fifo = vring->fifo;
+ 	struct virtio_net_config *config;
++	struct virtio_device *vdev;
+ 	struct mlxbf_tmfifo_msg_hdr hdr;
+ 	int vdev_id, hdr_len;
+ 
+@@ -625,7 +626,8 @@ static void mlxbf_tmfifo_rxtx_header(struct mlxbf_tmfifo_vring *vring,
+ 			vdev_id = VIRTIO_ID_NET;
+ 			hdr_len = sizeof(struct virtio_net_hdr);
+ 			config = &fifo->vdev[vdev_id]->config.net;
+-			if (ntohs(hdr.len) > config->mtu +
++			vdev = &fifo->vdev[vdev_id]->vdev;
++			if (ntohs(hdr.len) > virtio16_to_cpu(vdev, config->mtu) +
+ 			    MLXBF_TMFIFO_NET_L2_OVERHEAD)
+ 				return;
+ 		} else {
+@@ -1231,8 +1233,14 @@ static int mlxbf_tmfifo_probe(struct platform_device *pdev)
+ 
+ 	/* Create the network vdev. */
+ 	memset(&net_config, 0, sizeof(net_config));
+-	net_config.mtu = ETH_DATA_LEN;
+-	net_config.status = VIRTIO_NET_S_LINK_UP;
++
++#defined MLXBF_TMFIFO_LITTLE_ENDIAN (virtio_legacy_is_little_endian() ||
++			(MLXBF_TMFIFO_NET_FEATURES & (1ULL << VIRTIO_F_VERSION_1)))
++
++	net_config.mtu = __cpu_to_virtio16(MLXBF_TMFIFO_LITTLE_ENDIAN,
++					   ETH_DATA_LEN);
++	net_config.status = __cpu_to_virtio16(MLXBF_TMFIFO_LITTLE_ENDIAN,
++					      VIRTIO_NET_S_LINK_UP);
+ 	mlxbf_tmfifo_get_cfg_mac(net_config.mac);
+ 	rc = mlxbf_tmfifo_create_vdev(dev, fifo, VIRTIO_ID_NET,
+ 				      MLXBF_TMFIFO_NET_FEATURES, &net_config,
 -- 
-1.8.3.1
+MST
 
