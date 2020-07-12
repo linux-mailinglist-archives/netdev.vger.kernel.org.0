@@ -2,122 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 158CD21C79D
-	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 07:07:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 422AA21C7BD
+	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 08:32:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728112AbgGLFG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 01:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725765AbgGLFG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 01:06:58 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2148C08C5DD;
-        Sat, 11 Jul 2020 22:06:57 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id j80so9280713qke.0;
-        Sat, 11 Jul 2020 22:06:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QAuIgUlyx0NcAgvFi4UCXRdkXlOyU9Eym+vjtofH6xc=;
-        b=NKU6jc9/eBK/JAe1uymTij9SwQNxCDVEKCiWujObLWCE44KEcDWFCMzs+e03rupU0E
-         7RID5Bp39ayXrgYWUdDN4pvGjiaukNoXk5+fd8aE6CuEpmQUsiy9U4bB9xSYO6hNBRlo
-         rIqp2xFOm7a/gzmLwjw9UFgTs4pRONzYa0Hk6StbWyim4CznqAPbG856BkMS1t7hdQSS
-         VFWVp2JhfN6j+rsnID7ZtBlbUlVokau75PzUtecZJt+ijrZnJa5nvAuvWg8O8IN2riPo
-         xyH7sAAFZpXtWoyWWU1ZMmVIcMW+H9eyf1Xm4E1cwlRFdo+1OFhzR3dLFQKCsvnX7faK
-         y0ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QAuIgUlyx0NcAgvFi4UCXRdkXlOyU9Eym+vjtofH6xc=;
-        b=NU1hRDFqZzHc4YY8SWzp7HB3FfBsdiGmJ8Bb0U2Ih9R6f6EAMxeCiRsFOtF79731kM
-         BJLzJ+gWafGFfSwRU0orKgAKiqSMolPjB+n2CRPeV2Q5Tj8XyoyK0+YRPvEpzeuny1R9
-         zTMnlgICQ/PFNUbYi8NtHDdZbsBAuvtnUqVGLO3cHOgJTzfgeJEbYg7ZC1d9I1UA8W4s
-         445CGydcJSJNIoi9b5xBASX2ZMABFCRXz0e/a1WukOAutjwMF5d8cSxgi9kSpokWKCu4
-         g6idMxTg8UQaOEgWpeAXdK4oAgz2JK8iGPMftRGBH026U1TD3UoUN2rl1cjP3e1rqxGf
-         6wTQ==
-X-Gm-Message-State: AOAM531DZFP4KtBkRk5pUt28iq4As8gcDW/zeZFUNL2lE+PccxE9pFnF
-        s1ODyIwsqOjcVIXNFMEv1Z9qp8Awh+bFs096Oq4=
-X-Google-Smtp-Source: ABdhPJzf/ifl2V0QHB4AVv/RcZCgAOwMyXpCjJUPLxlKuEGK/PBSadlSUeVbyxb8wVW2Ol0W7Ahi5HlEQB11hHF6wqY=
-X-Received: by 2002:a05:620a:1666:: with SMTP id d6mr78293499qko.449.1594530416664;
- Sat, 11 Jul 2020 22:06:56 -0700 (PDT)
+        id S1728302AbgGLGct (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 02:32:49 -0400
+Received: from smtprelay0115.hostedemail.com ([216.40.44.115]:54016 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727777AbgGLGct (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 02:32:49 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 84F7C837F24A;
+        Sun, 12 Jul 2020 06:32:48 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:196:355:379:599:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1538:1567:1593:1594:1622:1711:1714:1730:1747:1777:1792:2393:2525:2560:2563:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3622:3865:3870:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:5007:6119:6671:7903:9025:10004:10400:10848:11232:11658:11914:12043:12048:12297:12555:12740:12895:12986:13007:13069:13161:13229:13311:13357:13439:13894:14181:14659:14721:21080:21627:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: bead16_0f1504526edd
+X-Filterd-Recvd-Size: 1575
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf09.hostedemail.com (Postfix) with ESMTPA;
+        Sun, 12 Jul 2020 06:32:47 +0000 (UTC)
+Message-ID: <866325009f9ae73b3a563dd745f901260a372242.camel@perches.com>
+Subject: Re: [PATCH] net: sky2: switch from 'pci_' to 'dma_' API
+From:   Joe Perches <joe@perches.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        mlindner@marvell.com, stephen@networkplumber.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Date:   Sat, 11 Jul 2020 23:32:45 -0700
+In-Reply-To: <8a3e5514-9cc9-18f3-9a98-81007419a20a@wanadoo.fr>
+References: <20200711204944.259152-1-christophe.jaillet@wanadoo.fr>
+         <2181026e68d2948c396cc7a7b6bfb7146c1cd5f6.camel@perches.com>
+         <8a3e5514-9cc9-18f3-9a98-81007419a20a@wanadoo.fr>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
 MIME-Version: 1.0
-References: <20200711012639.3429622-1-songliubraving@fb.com>
- <20200711012639.3429622-2-songliubraving@fb.com> <CAEf4BzaHAFNdEPp38ZnKOYTy3CfRCwaxDykS_Xir_VqDm0Kiug@mail.gmail.com>
- <DEF050B0-E423-4442-9C95-02FB20F6BA57@fb.com>
-In-Reply-To: <DEF050B0-E423-4442-9C95-02FB20F6BA57@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 11 Jul 2020 22:06:45 -0700
-Message-ID: <CAEf4Bzbur1KBM3aPMMtQmsYXbHTfwsx4ULbNxpzR-DF7g=HDeA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/5] bpf: block bpf_get_[stack|stackid] on
- perf_event with PEBS entries
-To:     Song Liu <songliubraving@fb.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Peter Ziljstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 11:28 PM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On Jul 10, 2020, at 8:53 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Fri, Jul 10, 2020 at 6:30 PM Song Liu <songliubraving@fb.com> wrote:
-> >>
-> >> Calling get_perf_callchain() on perf_events from PEBS entries may cause
-> >> unwinder errors. To fix this issue, the callchain is fetched early. Such
-> >> perf_events are marked with __PERF_SAMPLE_CALLCHAIN_EARLY.
-> >>
-> >> Similarly, calling bpf_get_[stack|stackid] on perf_events from PEBS may
-> >> also cause unwinder errors. To fix this, block bpf_get_[stack|stackid] on
-> >> these perf_events. Unfortunately, bpf verifier cannot tell whether the
-> >> program will be attached to perf_event with PEBS entries. Therefore,
-> >> block such programs during ioctl(PERF_EVENT_IOC_SET_BPF).
-> >>
-> >> Signed-off-by: Song Liu <songliubraving@fb.com>
-> >> ---
-> >
-> > Perhaps it's a stupid question, but why bpf_get_stack/bpf_get_stackid
-> > can't figure out automatically that they are called from
-> > __PERF_SAMPLE_CALLCHAIN_EARLY perf event and use different callchain,
-> > if necessary?
-> >
-> > It is quite suboptimal from a user experience point of view to require
-> > two different BPF helpers depending on PEBS or non-PEBS perf events.
->
-> I am not aware of an easy way to tell the difference in bpf_get_stack.
-> But I do agree that would be much better.
->
+On Sun, 2020-07-12 at 08:29 +0200, Christophe JAILLET wrote:
+> Le 11/07/2020 à 23:20, Joe Perches a écrit :
+> > On Sat, 2020-07-11 at 22:49 +0200, Christophe JAILLET wrote:
+> > > The wrappers in include/linux/pci-dma-compat.h should go away.
+> > why?
+> > 
+> > 
+>  From Christoph Hellwig 
+> https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
 
-Hm... Looking a bit more how all this is tied together in the kernel,
-I think it's actually quite easy. So, for perf_event BPF program type:
+There's no why there.
+There's just an assertion a wrapper should "go away".
 
-1. return a special prototype for bpf_get_stack/bpf_get_stackid, which
-will have this extra bit of logic for callchain. All other program
-types with access to bpf_get_stack/bpf_get_stackid should use the
-current one, probably.
-2. For that special program, just like for bpf_read_branch_records(),
-we know that context is actually `struct bpf_perf_event_data_kern *`,
-and it has pt_regs, perf_sample_data and perf_event itself.
-3. With that, it seems like you'll have everything you need to
-automatically choose a proper callchain.
+"the wrappers in include/linux/pci-dma-compat.h should go away"
 
-All this absolutely transparently to the BPF program.
+wrappers aren't all bad.
 
-Am I missing something?
-
-> Thanks,
-> Song
