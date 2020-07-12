@@ -2,148 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B6D21C9E3
-	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 16:55:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD7CD21C9EA
+	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 17:02:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729002AbgGLOzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 10:55:14 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36342 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728882AbgGLOzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 10:55:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594565711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=6nL6kDn6HMgn8sx0okC7YwBl7oR6NlWE67Kvx5ek+uw=;
-        b=ezjziVssR4bm/MxYrwc1izd/WzS5nzuobW5RQyLimkibtSZ3z7FsdZVU+BgE/sqjB7fmle
-        NX/11ykQfeeAypD4JWsWkVIMvTsfZN+l2jQiznjLxDmRs6W45bkWnwFWG+Nr5BNcTZ1+gS
-        8/axs4z+7aqyoJQI1heNVB9lYPCgcbA=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-265-8bCrrj4OMx2oNltvnKjA5g-1; Sun, 12 Jul 2020 10:55:10 -0400
-X-MC-Unique: 8bCrrj4OMx2oNltvnKjA5g-1
-Received: by mail-wr1-f72.google.com with SMTP id j5so14171768wro.6
-        for <netdev@vger.kernel.org>; Sun, 12 Jul 2020 07:55:09 -0700 (PDT)
+        id S1728890AbgGLPB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 11:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728786AbgGLPBz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 11:01:55 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7CDC061794;
+        Sun, 12 Jul 2020 08:01:55 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id a1so11398416ejg.12;
+        Sun, 12 Jul 2020 08:01:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lgNUnkTyeGBs+S6AQcsSeWMybtOFf3sw9okmc9BlVSI=;
+        b=Kily82oybKD/xxOI35j/aOshNnJvbkhdUu8acB9DWvUQ81xe9rwFkQQIXCD89XtMBb
+         dSCb3ldF2ytwEGOSU4lFw69UueID2G4wXljWstYJ27nBN1onLbOxwzOwiDmDkPcmVwou
+         72Fg1j5iDZ5/uQFrtzSqUDfDnySMn3Hajf+4RhMuSU/Dgnb1+Ew+T5lHh/dT/21FWj1I
+         Enu2OnU8YdChx/YJjeNNASvEyHRnivLKLnY0rfEIMH9aMx/8SvEfa06FUFD+f1sMeeON
+         cA6kkUX2zvJAI3YmzjlA5w95uHBvCOz1EZj7JZh51ftxpO3J7IMcvoLIfGXsClZKBRsG
+         FeZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=6nL6kDn6HMgn8sx0okC7YwBl7oR6NlWE67Kvx5ek+uw=;
-        b=nVu0kMu75oTpR1ct2bWVKQ2DwfZx3jcLRn1JESKZrhwCeiedZ/R5U2gAjpdiAcDHYw
-         qUpSMcGidUrH0auJeLwOB3xPVCmrKQp8JO8Um9ZTnfW0kPJK6WxsWZG5J07CKJ+1z08F
-         E3upP0cDQ3KktLF+Z3adU0J9WYxTv5Dc4kXvH0rGqnm4S+MU+ZFwC867nFWOBOd7jptJ
-         AaBS2MS2F4QyZufaUkhnrCCKv6wmMBd05YF9QRkYIF3NA0paSMtudZokFTSgULYOL7YZ
-         piB56zWTk/4XRPRPCusKRvVNsrcRdWtBh/CqaZUUugTkSMShDPGanD0uokw3gkQ21c1g
-         pVzA==
-X-Gm-Message-State: AOAM532Ne/GvGOVHotp0/f/t7UrmilOiyc45Bzbt64Zx53YPq5gt+2K3
-        e7OBtvE9RUlOVXHY4IPbTzA+EJ0X0CYeKvl9+okRfezjBURP3/WQtvMgCQkjy1MEBWJZwH04ZKA
-        PcWJBW4luZZHhCKZc
-X-Received: by 2002:a05:600c:2dc1:: with SMTP id e1mr13878935wmh.108.1594565707259;
-        Sun, 12 Jul 2020 07:55:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwk680C1Rkd/fNGPOmQc3S/qzMmIRqDIOQYMsKgiZpDsxSuaZsrQGI5EyVxtpuoVK3n/aNrsg==
-X-Received: by 2002:a05:600c:2dc1:: with SMTP id e1mr13878912wmh.108.1594565706989;
-        Sun, 12 Jul 2020 07:55:06 -0700 (PDT)
-Received: from redhat.com (bzq-79-182-31-92.red.bezeqint.net. [79.182.31.92])
-        by smtp.gmail.com with ESMTPSA id u186sm19324768wmu.10.2020.07.12.07.55.04
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lgNUnkTyeGBs+S6AQcsSeWMybtOFf3sw9okmc9BlVSI=;
+        b=WH4+pPmPaaCzX2KVh4DR3veFb9aWm+IACJoUzMTtaXFrMnKUYDWAbHBhJz6lFzRJQi
+         3BdA5kTYcRUGYCMi2zOP1Dh51ucyrLdY4EfD5I39XnmAKf1aWMzXTkmz/y15HwDGvrfy
+         ZstJ7TjwWW36oV0VWzHqj/AeL39TU9Ze2MbuyEj2PjPKzEdsuoGYiF/zN7VhH2u3SGbk
+         4Z/dN+H5R+qzn8ZIZHtEGI85BhyYvTiK6zq6Dq0xY0QGS02yrC/Py5U1dXtz2vNFS38w
+         hUh4oCv2lQziec6wZsueMId10zwyxbiSVvSVUkYUEs9IDIspxkYrX6fqKZeEwbHe+q6t
+         O3+w==
+X-Gm-Message-State: AOAM530O0+x+j5mDSHGXINtHqed2dxU2HEB+fdLm7ihuzSsEJtgspGps
+        3btV5LjEznprHL4ogGorq/U=
+X-Google-Smtp-Source: ABdhPJz6yVjS5VEog+aHysyHOtEc2rc0ATbXdP9hF4bOZaEIB8tHm7ZsgmdHLO0tEeyV0VSCbm6FGQ==
+X-Received: by 2002:a17:906:f98e:: with SMTP id li14mr69419503ejb.174.1594566113955;
+        Sun, 12 Jul 2020 08:01:53 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id ay27sm9436171edb.81.2020.07.12.08.01.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jul 2020 07:55:06 -0700 (PDT)
-Date:   Sun, 12 Jul 2020 10:55:03 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     netdev@vger.kernel.org, dwoods@mellanox.com, lsun@mellanox.com
-Cc:     Darren Hart <dvhart@infradead.org>,
-        Vadim Pasternak <vadimp@mellanox.com>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
-Subject: [PATCH] mlxbf-tmfifo: endian-ness wrappers for config access
-Message-ID: <20200712102743-mutt-send-email-mst@kernel.org>
+        Sun, 12 Jul 2020 08:01:53 -0700 (PDT)
+Date:   Sun, 12 Jul 2020 18:01:51 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sergey Organov <sorganov@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH v2 net] net: fec: fix hardware time stamping by external
+ devices
+Message-ID: <20200712150151.55jttxaf4emgqcpc@skbuf>
+References: <20200706142616.25192-1-sorganov@gmail.com>
+ <20200711120842.2631-1-sorganov@gmail.com>
+ <20200711231937.wu2zrm5spn7a6u2o@skbuf>
+ <87wo387r8n.fsf@osv.gnss.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <87wo387r8n.fsf@osv.gnss.ru>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
-While working out some endian-ness issues with virtio,
-I noticed that the following driver:
+On Sun, Jul 12, 2020 at 05:16:56PM +0300, Sergey Organov wrote:
+> Vladimir Oltean <olteanv@gmail.com> writes:
+> 
+> > Hi Sergey,
+> >
+> > On Sat, Jul 11, 2020 at 03:08:42PM +0300, Sergey Organov wrote:
+> >> Fix support for external PTP-aware devices such as DSA or PTP PHY:
+> >> 
+> >> Make sure we never time stamp tx packets when hardware time stamping
+> >> is disabled.
+> >> 
+> >> Check for PTP PHY being in use and then pass ioctls related to time
+> >> stamping of Ethernet packets to the PTP PHY rather than handle them
+> >> ourselves. In addition, disable our own hardware time stamping in this
+> >> case.
+> >> 
+> >> Fixes: 6605b73 ("FEC: Add time stamping code and a PTP hardware clock")
+> >
+> > Please use a 12-character sha1sum. Try to use the "pretty" format
+> > specifier I gave you in the original thread, it saves you from
+> > counting,
+> 
+> I did as you suggested:
+> 
+> [pretty]
+>         fixes = Fixes: %h (\"%s\")
+> [alias]
+> 	fixes = show --no-patch --pretty='Fixes: %h (\"%s\")'
+> 
+> And that's what it gave me. Dunno, maybe its Git version that is
+> responsible?
+> 
+> I now tried to find a way to specify the number of digits in the
+> abbreviated hash in the format, but failed. There is likely some global
+> setting for minimum number of digits, but I'm yet to find it. Any idea?
+> 
 
-drivers/platform/mellanox/mlxbf-tmfifo.c
+Sorry, my fault. I gave you only partial settings. Use this:
 
-seems to access virtio net config directly.
-E.g.:
+[core]
+	abbrev = 12
+[pretty]
+	fixes = Fixes: %h (\"%s\")
 
-                        if (ntohs(hdr.len) > config->mtu +
-                            MLXBF_TMFIFO_NET_L2_OVERHEAD)
-                                return;
+> > and also from people complaining once it gets merged:
+> >
+> > https://www.google.com/search?q=stephen+rothwell+%22fixes+tag+needs+some+work%22
+> >
+> >> Signed-off-by: Sergey Organov <sorganov@gmail.com>
+> >> ---
+> >> 
+> >> v2:
+> >>   - Extracted from larger patch series
+> >>   - Description/comments updated according to discussions
+> >>   - Added Fixes: tag
+> >> 
+> >>  drivers/net/ethernet/freescale/fec.h      |  1 +
+> >>  drivers/net/ethernet/freescale/fec_main.c | 23 +++++++++++++++++------
+> >>  drivers/net/ethernet/freescale/fec_ptp.c  | 12 ++++++++++++
+> >>  3 files changed, 30 insertions(+), 6 deletions(-)
+> >> 
+> >> diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+> >> index d8d76da..832a217 100644
+> >> --- a/drivers/net/ethernet/freescale/fec.h
+> >> +++ b/drivers/net/ethernet/freescale/fec.h
+> >> @@ -590,6 +590,7 @@ struct fec_enet_private {
+> >>  void fec_ptp_init(struct platform_device *pdev, int irq_idx);
+> >>  void fec_ptp_stop(struct platform_device *pdev);
+> >>  void fec_ptp_start_cyclecounter(struct net_device *ndev);
+> >> +void fec_ptp_disable_hwts(struct net_device *ndev);
+> >>  int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr);
+> >>  int fec_ptp_get(struct net_device *ndev, struct ifreq *ifr);
+> >>  
+> >> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> >> index 3982285..cc7fbfc 100644
+> >> --- a/drivers/net/ethernet/freescale/fec_main.c
+> >> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> >> @@ -1294,8 +1294,13 @@ fec_enet_tx_queue(struct net_device *ndev, u16 queue_id)
+> >>  			ndev->stats.tx_bytes += skb->len;
+> >>  		}
+> >>  
+> >> -		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS) &&
+> >> -			fep->bufdesc_ex) {
+> >> +		/* NOTE: SKBTX_IN_PROGRESS being set does not imply it's we who
+> >> +		 * are to time stamp the packet, so we still need to check time
+> >> +		 * stamping enabled flag.
+> >> +		 */
+> >> +		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS &&
+> >> +			     fep->hwts_tx_en) &&
+> >> +		    fep->bufdesc_ex) {
+> >>  			struct skb_shared_hwtstamps shhwtstamps;
+> >>  			struct bufdesc_ex *ebdp = (struct bufdesc_ex *)bdp;
+> >>  
+> >> @@ -2723,10 +2728,16 @@ static int fec_enet_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
+> >>  		return -ENODEV;
+> >>  
+> >>  	if (fep->bufdesc_ex) {
+> >> -		if (cmd == SIOCSHWTSTAMP)
+> >> -			return fec_ptp_set(ndev, rq);
+> >> -		if (cmd == SIOCGHWTSTAMP)
+> >> -			return fec_ptp_get(ndev, rq);
+> >> +		bool use_fec_hwts = !phy_has_hwtstamp(phydev);
+> >
+> > I thought we were in agreement that FEC does not support PHY
+> > timestamping at this point, and this patch would only be fixing DSA
+> > switches (even though PHYs would need this fixed too, when support is
+> > added for them)? I would definitely not introduce support (and
+> > incomplete, at that) for a new feature in a bugfix patch.
+> >
+> > But it looks like we aren't.
+> 
+> We were indeed, and, honestly, I did prepare the split version of the
+> changes. But then I felt uneasy describing these commits, as I realized
+> that I fix single source file and single original commit by adding
+> proper support for a single feature that is described in your (single)
+> recent document, but with 2 separate commits, each of which solves only
+> half of the problem. I felt I need to somehow explain why could somebody
+> want half a fix, and didn't know how, so I've merged them back into
+> single commit.
+> 
 
-This is not incorrect in that the specific device is at the
-moment always legacy (no virtio 1).
+Right now there are 2 mainline DSA timestamping drivers that could be
+paired with the FEC driver: mv88e6xxx and sja1105 (there is a third one,
+felix, which is an embedded L2 switch, so its DSA master is known and
+fixed, and it's not FEC). In practice, there are boards out there that
+use FEC in conjunction with both these DSA switch families.
 
-However this throws up sparse warnings as the structure
-is shared with modern devices which need the tagging for
-correct virtio 1 endian-ness.
+As far as I understand. the reason why SKBTX_IN_PROGRESS exists is for
+skb_tx_timestamp() to only provide a software timestamp if the hardware
+timestamping isn't going to. So hardware timestamping logic must signal
+its intention. With SO_TIMESTAMPING, this should not be strictly
+necessary, as this UAPI supports multiple sources of timestamping
+(including software and hardware together), but I think
+SKBTX_IN_PROGRESS predates this UAPI and timestamping should continue to
+work with older socket options.
 
-Using correct conversions will also allow virtio 1 support
-in this driver down the road.
+Now, out of the 2 mainline DSA drivers, 1 of them isn't setting
+SKBTX_IN_PROGRESS, and that is mv88e6xxx. So mv88e6xxx isn't triggerring
+this bug. I'm not sure why it isn't setting the flag. It might very well
+be that the author of the patch had a board with a FEC DSA master, and
+setting this flag made bad things happen, so he just left it unset.
+Doesn't really matter.
+But sja1105 is setting the flag:
 
-I'd like to merge the following patch. It's on top of
-a branch config-endian in my tree which includes
-the endian-ness tagging.
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/sja1105/sja1105_ptp.c#n890
 
-Would appreciate acks from relevant maintainers.
-I also note that the console config field seems to be unused.
-Would appreciate a confirmation.
-Thanks!
+So, at the very least, you are fixing PTP on DSA setups with FEC as
+master and sja1105 as switch. Boards like that do exist.
 
---
+> In case you insist they are to be separate, I do keep the split version
+> in my git tree, but to finish it that way, I'd like to clarify a few
+> details:
+> 
+> 1. Should it be patch series with 2 commits, or 2 entirely separate
+> patches?
+> 
 
-mlxbf-tmfifo: endian-ness wrappers for config access
+Entirely separate.
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> 2. If patch series, which change should go first? Here please notice
+> that ioctl() change makes no sense without SKBTX fix unconditionally,
+> while SKBTX fix makes no sense without ioctl() fix for PTP PHY users
+> only.
+> 
 
--->
+Please look at the SKBTX fix from the perspective of code that currently
+exists in mainline, and not from the perspective of what you have in
+mind.
 
-diff --git a/drivers/platform/mellanox/mlxbf-tmfifo.c b/drivers/platform/mellanox/mlxbf-tmfifo.c
-index 5739a9669b29..b1484206429f 100644
---- a/drivers/platform/mellanox/mlxbf-tmfifo.c
-+++ b/drivers/platform/mellanox/mlxbf-tmfifo.c
-@@ -608,6 +608,7 @@ static void mlxbf_tmfifo_rxtx_header(struct mlxbf_tmfifo_vring *vring,
- {
- 	struct mlxbf_tmfifo *fifo = vring->fifo;
- 	struct virtio_net_config *config;
-+	struct virtio_device *vdev;
- 	struct mlxbf_tmfifo_msg_hdr hdr;
- 	int vdev_id, hdr_len;
- 
-@@ -625,7 +626,8 @@ static void mlxbf_tmfifo_rxtx_header(struct mlxbf_tmfifo_vring *vring,
- 			vdev_id = VIRTIO_ID_NET;
- 			hdr_len = sizeof(struct virtio_net_hdr);
- 			config = &fifo->vdev[vdev_id]->config.net;
--			if (ntohs(hdr.len) > config->mtu +
-+			vdev = &fifo->vdev[vdev_id]->vdev;
-+			if (ntohs(hdr.len) > virtio16_to_cpu(vdev, config->mtu) +
- 			    MLXBF_TMFIFO_NET_L2_OVERHEAD)
- 				return;
- 		} else {
-@@ -1231,8 +1233,14 @@ static int mlxbf_tmfifo_probe(struct platform_device *pdev)
- 
- 	/* Create the network vdev. */
- 	memset(&net_config, 0, sizeof(net_config));
--	net_config.mtu = ETH_DATA_LEN;
--	net_config.status = VIRTIO_NET_S_LINK_UP;
-+
-+#defined MLXBF_TMFIFO_LITTLE_ENDIAN (virtio_legacy_is_little_endian() ||
-+			(MLXBF_TMFIFO_NET_FEATURES & (1ULL << VIRTIO_F_VERSION_1)))
-+
-+	net_config.mtu = __cpu_to_virtio16(MLXBF_TMFIFO_LITTLE_ENDIAN,
-+					   ETH_DATA_LEN);
-+	net_config.status = __cpu_to_virtio16(MLXBF_TMFIFO_LITTLE_ENDIAN,
-+					      VIRTIO_NET_S_LINK_UP);
- 	mlxbf_tmfifo_get_cfg_mac(net_config.mac);
- 	rc = mlxbf_tmfifo_create_vdev(dev, fifo, VIRTIO_ID_NET,
- 				      MLXBF_TMFIFO_NET_FEATURES, &net_config,
--- 
-MST
+> 3. If entirely separate patches, should I somehow refer to SKBTX patch in
+> ioctl() one (and/or vice versa), to make it explicit they are
+> (inter)dependent? 
+> 
 
+Nope. The PHY timestamping support will go to David's net-next, this
+common PHY/DSA bugfix to net, and they'll meet sooner rather than later.
+
+> 4. How/if should I explain why anybody would benefit from applying
+> SKBTX patch, yet be in trouble applying ioctl() one? 
+> 
+
+Could you please rephrase? I don't understand the part about being in
+trouble for applying the ioctl patch.
+
+Thanks,
+-Vladimir
