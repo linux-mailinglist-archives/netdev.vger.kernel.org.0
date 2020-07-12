@@ -2,121 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFC2921C9C4
-	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 16:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BDA321C9D4
+	for <lists+netdev@lfdr.de>; Sun, 12 Jul 2020 16:17:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729167AbgGLOJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 10:09:58 -0400
-Received: from esa4.microchip.iphmx.com ([68.232.154.123]:17433 "EHLO
-        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729147AbgGLOJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 10:09:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1594562995; x=1626098995;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BPXYksHE/6skyxwfmW3layVz9HGsj0QnR14maadzSj4=;
-  b=MVO/tVV9jln+/Ulx/N+LYbvN6dIJNAie0mzA/JDLcOvDPS8chmsNo+sJ
-   zS/PIceP21Ik657fHi0XR+jT8/ceTtTK5iPwIJjix3GMbKAZmjroO2BeH
-   V4WJOF9I/clC7PNLKZj12WTkdYp3BzmVDpsRnl0PR5nBrk7/U1xBQ274G
-   dTaQHj7qLbQGL2+2YNsUbshQ4rRd6VKORqoUxBdE18+PDsF5zEqbWiAo6
-   jog35zG/AkKCwgzacw0FLBdDtg0/eo/ZKxXoGr93x1L/pPX/LrVajpTWt
-   0FWpc6WdwgDTxnJAZD9pDh57GAN7vS/aUU4r6NeUMgV/H4/l9tNs1tape
-   w==;
-IronPort-SDR: BEtuzvHiir74LdaccL6nV/76IIORNNt2+xcTOjMu1C3EA62CXF6eQnECVQn+kPJfL0VWvFU5v4
- Ke8n+dpgQbk9xfhXD9uy+VhThWUeSspPVoLVX+8NgOxuUvwwbavcIg1gNmwWfl2nyad1s30kDp
- U2KXY47Vrs7FNZk3aW0ivKbf6P820SQCQGywVqsLr6Bdrd78mUiiL9J+fPupOrFLR/kptE9iqi
- DvvQPqW7NRIRLuS0CLSPCTLIjH+7Mz34adS8a8E2UToq6cfLXToipRxIDLIZVUyoG4KOTgHyVf
- +mc=
-X-IronPort-AV: E=Sophos;i="5.75,343,1589266800"; 
-   d="scan'208";a="79604287"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jul 2020 07:09:55 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Sun, 12 Jul 2020 07:09:54 -0700
-Received: from soft-dev3.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Sun, 12 Jul 2020 07:09:23 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <jiri@resnulli.us>,
-        <ivecera@redhat.com>, <andrew@lunn.ch>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v3 12/12] net: bridge: Add port attribute IFLA_BRPORT_MRP_IN_OPEN
-Date:   Sun, 12 Jul 2020 16:05:56 +0200
-Message-ID: <20200712140556.1758725-13-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200712140556.1758725-1-horatiu.vultur@microchip.com>
-References: <20200712140556.1758725-1-horatiu.vultur@microchip.com>
+        id S1728868AbgGLORB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 10:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59416 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728786AbgGLORA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 10:17:00 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28940C061794;
+        Sun, 12 Jul 2020 07:17:00 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id g139so5728191lfd.10;
+        Sun, 12 Jul 2020 07:17:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=LPicycpnJM7sePx564IeqVZ6I+CMVvaKcxYO2z8udBg=;
+        b=Slh8i6rWfCSu8Etyr9vJgSl9OIt4jq+3ChiZdQMOIsGs/QaJxOMU2XEtJVrGh06ijK
+         2ME1xstG0fk31vdT65SKUn32ZZK6hV7qONLIiezstOTuGvy/NdQzOh+1J+IKNxrfXKi6
+         gIjjObDw8c7nrayAgr5/oMSqlC2pYrH8ECKM71AdVe6dKu8MmkoJZdd6ez3INtxsDBxv
+         h1yVdWkSeP6208/P0oEHWKdbat6Q/W0iLlAWi6FzQjJV1STitdj96lj+rw7k6/0i03gS
+         52PYcQ2I4u4HdSnfntdvyUi889FNP440uyDSWFCyLM0YIKrhnaWEgObmTP7MMxAg9m50
+         n+fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=LPicycpnJM7sePx564IeqVZ6I+CMVvaKcxYO2z8udBg=;
+        b=ZSfn5PG0zsC+Qcivwh1aHDTH+MASfmg1UiiRyslE0NH1gUI9VzFEUYlYYHP9RGYT34
+         MpW+wztvyCcJy9NmU0bCVuM7dOjGHEA6hgrWN6YcIFNMIwD2+u1kdqI2Z7kFKCjI8Ofv
+         p3jMxBh+IVxxV/0hZuiQAUvgXSniM2128P4pTK53qHIqBI6Ir7QyFLO6hrKjzf/+O/nr
+         fWi24B6W3/NB1laTv+NJ5/WMPsJMzLIRSGrrzCVfBTuVSJkTAZu/aXyVd5Lz5AgWtLd9
+         z+A1ABo6NcjczOx5axfveQG30TBybvu1zytwivEywd9ah5ZYEt5rP7dLHXqmjCqzIOyt
+         ozxg==
+X-Gm-Message-State: AOAM533tmZFzB03ZaAYR2z0/zIv5Cz050VQdtpauoKlCSh5mp5Rx0HpP
+        tThqm3GtWN92S+WnkBNjDKY=
+X-Google-Smtp-Source: ABdhPJwGyatVg8ctVtcmFui3wxaiJwMBbgFahj1dAWOsI9tMQNaGR5/UMhOeTGjD+j28v0O1B+Wm1g==
+X-Received: by 2002:a19:c389:: with SMTP id t131mr36107606lff.130.1594563418310;
+        Sun, 12 Jul 2020 07:16:58 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id v11sm3508198ljh.119.2020.07.12.07.16.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Jul 2020 07:16:57 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH v2 net] net: fec: fix hardware time stamping by external
+ devices
+References: <20200706142616.25192-1-sorganov@gmail.com>
+        <20200711120842.2631-1-sorganov@gmail.com>
+        <20200711231937.wu2zrm5spn7a6u2o@skbuf>
+Date:   Sun, 12 Jul 2020 17:16:56 +0300
+In-Reply-To: <20200711231937.wu2zrm5spn7a6u2o@skbuf> (Vladimir Oltean's
+        message of "Sun, 12 Jul 2020 02:19:37 +0300")
+Message-ID: <87wo387r8n.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new port attribute, IFLA_BRPORT_MRP_IN_OPEN, which
-allows to notify the userspace when the node lost the contiuity of
-MRP_InTest frames.
+Vladimir Oltean <olteanv@gmail.com> writes:
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- include/uapi/linux/if_link.h       | 1 +
- net/bridge/br_netlink.c            | 3 +++
- tools/include/uapi/linux/if_link.h | 1 +
- 3 files changed, 5 insertions(+)
+> Hi Sergey,
+>
+> On Sat, Jul 11, 2020 at 03:08:42PM +0300, Sergey Organov wrote:
+>> Fix support for external PTP-aware devices such as DSA or PTP PHY:
+>> 
+>> Make sure we never time stamp tx packets when hardware time stamping
+>> is disabled.
+>> 
+>> Check for PTP PHY being in use and then pass ioctls related to time
+>> stamping of Ethernet packets to the PTP PHY rather than handle them
+>> ourselves. In addition, disable our own hardware time stamping in this
+>> case.
+>> 
+>> Fixes: 6605b73 ("FEC: Add time stamping code and a PTP hardware clock")
+>
+> Please use a 12-character sha1sum. Try to use the "pretty" format
+> specifier I gave you in the original thread, it saves you from
+> counting,
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index cc185a007ade8..26842ffd0501d 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -344,6 +344,7 @@ enum {
- 	IFLA_BRPORT_ISOLATED,
- 	IFLA_BRPORT_BACKUP_PORT,
- 	IFLA_BRPORT_MRP_RING_OPEN,
-+	IFLA_BRPORT_MRP_IN_OPEN,
- 	__IFLA_BRPORT_MAX
- };
- #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index c532fa65c9834..147d52596e174 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -152,6 +152,7 @@ static inline size_t br_port_info_size(void)
- #endif
- 		+ nla_total_size(sizeof(u16))	/* IFLA_BRPORT_GROUP_FWD_MASK */
- 		+ nla_total_size(sizeof(u8))	/* IFLA_BRPORT_MRP_RING_OPEN */
-+		+ nla_total_size(sizeof(u8))	/* IFLA_BRPORT_MRP_IN_OPEN */
- 		+ 0;
- }
- 
-@@ -216,6 +217,8 @@ static int br_port_fill_attrs(struct sk_buff *skb,
- 		       !!(p->flags & BR_NEIGH_SUPPRESS)) ||
- 	    nla_put_u8(skb, IFLA_BRPORT_MRP_RING_OPEN, !!(p->flags &
- 							  BR_MRP_LOST_CONT)) ||
-+	    nla_put_u8(skb, IFLA_BRPORT_MRP_IN_OPEN,
-+		       !!(p->flags & BR_MRP_LOST_IN_CONT)) ||
- 	    nla_put_u8(skb, IFLA_BRPORT_ISOLATED, !!(p->flags & BR_ISOLATED)))
- 		return -EMSGSIZE;
- 
-diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
-index cafedbbfefbe9..781e482dc499f 100644
---- a/tools/include/uapi/linux/if_link.h
-+++ b/tools/include/uapi/linux/if_link.h
-@@ -344,6 +344,7 @@ enum {
- 	IFLA_BRPORT_ISOLATED,
- 	IFLA_BRPORT_BACKUP_PORT,
- 	IFLA_BRPORT_MRP_RING_OPEN,
-+	IFLA_BRPORT_MRP_IN_OPEN,
- 	__IFLA_BRPORT_MAX
- };
- #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
--- 
-2.27.0
+I did as you suggested:
 
+[pretty]
+        fixes = Fixes: %h (\"%s\")
+[alias]
+	fixes = show --no-patch --pretty='Fixes: %h (\"%s\")'
+
+And that's what it gave me. Dunno, maybe its Git version that is
+responsible?
+
+I now tried to find a way to specify the number of digits in the
+abbreviated hash in the format, but failed. There is likely some global
+setting for minimum number of digits, but I'm yet to find it. Any idea?
+
+> and also from people complaining once it gets merged:
+>
+> https://www.google.com/search?q=stephen+rothwell+%22fixes+tag+needs+some+work%22
+>
+>> Signed-off-by: Sergey Organov <sorganov@gmail.com>
+>> ---
+>> 
+>> v2:
+>>   - Extracted from larger patch series
+>>   - Description/comments updated according to discussions
+>>   - Added Fixes: tag
+>> 
+>>  drivers/net/ethernet/freescale/fec.h      |  1 +
+>>  drivers/net/ethernet/freescale/fec_main.c | 23 +++++++++++++++++------
+>>  drivers/net/ethernet/freescale/fec_ptp.c  | 12 ++++++++++++
+>>  3 files changed, 30 insertions(+), 6 deletions(-)
+>> 
+>> diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+>> index d8d76da..832a217 100644
+>> --- a/drivers/net/ethernet/freescale/fec.h
+>> +++ b/drivers/net/ethernet/freescale/fec.h
+>> @@ -590,6 +590,7 @@ struct fec_enet_private {
+>>  void fec_ptp_init(struct platform_device *pdev, int irq_idx);
+>>  void fec_ptp_stop(struct platform_device *pdev);
+>>  void fec_ptp_start_cyclecounter(struct net_device *ndev);
+>> +void fec_ptp_disable_hwts(struct net_device *ndev);
+>>  int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr);
+>>  int fec_ptp_get(struct net_device *ndev, struct ifreq *ifr);
+>>  
+>> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+>> index 3982285..cc7fbfc 100644
+>> --- a/drivers/net/ethernet/freescale/fec_main.c
+>> +++ b/drivers/net/ethernet/freescale/fec_main.c
+>> @@ -1294,8 +1294,13 @@ fec_enet_tx_queue(struct net_device *ndev, u16 queue_id)
+>>  			ndev->stats.tx_bytes += skb->len;
+>>  		}
+>>  
+>> -		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS) &&
+>> -			fep->bufdesc_ex) {
+>> +		/* NOTE: SKBTX_IN_PROGRESS being set does not imply it's we who
+>> +		 * are to time stamp the packet, so we still need to check time
+>> +		 * stamping enabled flag.
+>> +		 */
+>> +		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS &&
+>> +			     fep->hwts_tx_en) &&
+>> +		    fep->bufdesc_ex) {
+>>  			struct skb_shared_hwtstamps shhwtstamps;
+>>  			struct bufdesc_ex *ebdp = (struct bufdesc_ex *)bdp;
+>>  
+>> @@ -2723,10 +2728,16 @@ static int fec_enet_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
+>>  		return -ENODEV;
+>>  
+>>  	if (fep->bufdesc_ex) {
+>> -		if (cmd == SIOCSHWTSTAMP)
+>> -			return fec_ptp_set(ndev, rq);
+>> -		if (cmd == SIOCGHWTSTAMP)
+>> -			return fec_ptp_get(ndev, rq);
+>> +		bool use_fec_hwts = !phy_has_hwtstamp(phydev);
+>
+> I thought we were in agreement that FEC does not support PHY
+> timestamping at this point, and this patch would only be fixing DSA
+> switches (even though PHYs would need this fixed too, when support is
+> added for them)? I would definitely not introduce support (and
+> incomplete, at that) for a new feature in a bugfix patch.
+>
+> But it looks like we aren't.
+
+We were indeed, and, honestly, I did prepare the split version of the
+changes. But then I felt uneasy describing these commits, as I realized
+that I fix single source file and single original commit by adding
+proper support for a single feature that is described in your (single)
+recent document, but with 2 separate commits, each of which solves only
+half of the problem. I felt I need to somehow explain why could somebody
+want half a fix, and didn't know how, so I've merged them back into
+single commit.
+
+In case you insist they are to be separate, I do keep the split version
+in my git tree, but to finish it that way, I'd like to clarify a few
+details:
+
+1. Should it be patch series with 2 commits, or 2 entirely separate
+patches?
+
+2. If patch series, which change should go first? Here please notice
+that ioctl() change makes no sense without SKBTX fix unconditionally,
+while SKBTX fix makes no sense without ioctl() fix for PTP PHY users
+only.
+
+3. If entirely separate patches, should I somehow refer to SKBTX patch in
+ioctl() one (and/or vice versa), to make it explicit they are
+(inter)dependent? 
+
+4. How/if should I explain why anybody would benefit from applying
+SKBTX patch, yet be in trouble applying ioctl() one? 
+
+>
+>> +
+>> +		if (cmd == SIOCSHWTSTAMP) {
+>> +			if (use_fec_hwts)
+>> +				return fec_ptp_set(ndev, rq);
+>> +			fec_ptp_disable_hwts(ndev);
+>> +		} else if (cmd == SIOCGHWTSTAMP) {
+>> +			if (use_fec_hwts)
+>> +				return fec_ptp_get(ndev, rq);
+>> +		}
+>>  	}
+>>  
+>>  	return phy_mii_ioctl(phydev, rq, cmd);
+>> diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+>> index 945643c..f8a592c 100644
+>> --- a/drivers/net/ethernet/freescale/fec_ptp.c
+>> +++ b/drivers/net/ethernet/freescale/fec_ptp.c
+>> @@ -452,6 +452,18 @@ static int fec_ptp_enable(struct ptp_clock_info *ptp,
+>>  	return -EOPNOTSUPP;
+>>  }
+>>  
+>> +/**
+>> + * fec_ptp_disable_hwts - disable hardware time stamping
+>> + * @ndev: pointer to net_device
+>> + */
+>> +void fec_ptp_disable_hwts(struct net_device *ndev)
+>
+> This is not really needed, is it?
+> - PHY ability of hwtstamping does not change across the runtime of the
+>   kernel (or do you have a "special" one where it does?)
+> - The initial values for hwts_tx_en and hwts_rx_en are already 0
+> - There is no code path for which it is possible for hwts_tx_en or
+>   hwts_rx_en to have been non-zero prior to this call making them
+>   zero.
+
+If everybody agree it is not needed, I'm fine getting it out of the
+patch, but please consider my worries below.
+
+I'm afraid your third statement might happen to be not exactly true.
+It's due to this same path the hwts_tx_en could end-up being set, as we
+have if() on phy_has_hwtstamp(phydev), so the path can set hwts_xx_en if
+this code gets somehow run when phydev->phy is set to 0, or attached PHY
+is not yet has PTP property.
+
+I'm not sure it can happen, but essential thing here is that I have no
+evidence it can't, and another place to ensure hwts_xx_en fields are
+cleared would be at the time of attachment of PTP-aware PHY, by check
+and clear and that time, yet even here it'd rely on PTP-awareness being
+already established at the moment.
+
+The second variant is harder for me to figure, yet is less reliable, so,
+overall, I preferred to keep the proposed solution that I believe should
+work no matter what, and let somebody who is more fluid in the code-base
+to get responsibility to remove it. For example, I didn't want to even
+start to consider how all this behaves on cable connect/disconnect, if
+up/down, or over hibernation.
+
+>
+> It is just "to be sure", in a very non-necessary way.
+
+It is "to be sure", without "just", as I tried to explain above. If it
+were my own code, I'd ask for an evidence that this part is not needed,
+before getting rid of this safety belt.
+
+>
+> But nonetheless, it shouldn't be present in this patch either way, due
+> to the fact that one patch should have one topic only, and the topic of
+> this patch should be solving a clearly defined bug.
+
+I actually don't care either way, but to be picky, the answer depends on
+particular definition of the bug, and the bug I have chased, and its
+definition I've used, even in the original series, requires simultaneous
+fixes in 2 places of the code.
+
+You have yet another bug in mind that part of my original patch happens
+to solve, yes, but that, by itself, doesn't necessarily mean the patch
+should be split. Nevertheless, I honestly tried to split it, according
+to our agreement, but failed, see above, and I still willing to try
+again, provided somebody actually needs it.
+
+Thanks,
+-- Sergey
