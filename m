@@ -2,26 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA8C321CC08
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 01:15:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DFB521CC05
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 01:15:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728770AbgGLXPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 19:15:36 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59668 "EHLO vps0.lunn.ch"
+        id S1728578AbgGLXPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 19:15:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59574 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728706AbgGLXPe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Jul 2020 19:15:34 -0400
+        id S1728256AbgGLXPa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Jul 2020 19:15:30 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1julBt-004mPP-P3; Mon, 13 Jul 2020 01:15:25 +0200
+        id 1julBt-004mPR-QP; Mon, 13 Jul 2020 01:15:25 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: [PATCH net-next 07/20] net: ipv6: kerneldoc fixes
-Date:   Mon, 13 Jul 2020 01:15:03 +0200
-Message-Id: <20200712231516.1139335-8-andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next 08/20] net: llc: kerneldoc fixes
+Date:   Mon, 13 Jul 2020 01:15:04 +0200
+Message-Id: <20200712231516.1139335-9-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200712231516.1139335-1-andrew@lunn.ch>
 References: <20200712231516.1139335-1-andrew@lunn.ch>
@@ -34,121 +32,112 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Simple fixes which require no deep knowledge of the code.
 
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- net/ipv6/exthdrs.c    |  1 -
- net/ipv6/ip6_output.c |  6 ++++--
- net/ipv6/ip6_tunnel.c | 10 ++++++----
- net/ipv6/udp.c        |  3 +++
- 4 files changed, 13 insertions(+), 7 deletions(-)
+ net/llc/af_llc.c    | 1 -
+ net/llc/llc_conn.c  | 7 ++++---
+ net/llc/llc_input.c | 1 +
+ net/llc/llc_pdu.c   | 2 +-
+ net/llc/llc_sap.c   | 3 +++
+ 5 files changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index e9b366994475..374105e4394f 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -1232,7 +1232,6 @@ static void ipv6_renew_option(int renewtype,
-  * @opt: original options
-  * @newtype: option type to replace in @opt
-  * @newopt: new option of type @newtype to replace (user-mem)
-- * @newoptlen: length of @newopt
+diff --git a/net/llc/af_llc.c b/net/llc/af_llc.c
+index 54fb8d452a7b..a7e5d23df5e7 100644
+--- a/net/llc/af_llc.c
++++ b/net/llc/af_llc.c
+@@ -980,7 +980,6 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+  *	llc_ui_getname - return the address info of a socket
+  *	@sock: Socket to get address of.
+  *	@uaddr: Address structure to return information.
+- *	@uaddrlen: Length of address structure.
+  *	@peer: Does user want local or remote address information.
   *
-  * Returns a new set of options which is a copy of @opt with the
-  * option type @newtype replaced with @newopt.
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 8a8c2d0cfcc8..c78e67d7747f 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1118,6 +1118,7 @@ static int ip6_dst_lookup_tail(struct net *net, const struct sock *sk,
- 
+  *	Return the address information of a socket.
+diff --git a/net/llc/llc_conn.c b/net/llc/llc_conn.c
+index 7b620acaca9e..1144cda2a0fc 100644
+--- a/net/llc/llc_conn.c
++++ b/net/llc/llc_conn.c
+@@ -284,8 +284,8 @@ out:;
  /**
-  *	ip6_dst_lookup - perform route lookup on flow
-+ *	@net: Network namespace to perform lookup in
-  *	@sk: socket which provides route info
-  *	@dst: pointer to dst_entry * for result
-  *	@fl6: flow to lookup
-@@ -1136,6 +1137,7 @@ EXPORT_SYMBOL_GPL(ip6_dst_lookup);
- 
- /**
-  *	ip6_dst_lookup_flow - perform route lookup on flow with ipsec
-+ *	@net: Network namespace to perform lookup in
-  *	@sk: socket which provides route info
-  *	@fl6: flow to lookup
-  *	@final_dst: final destination address for ipsec lookup
-@@ -1202,11 +1204,11 @@ EXPORT_SYMBOL_GPL(ip6_sk_dst_lookup_flow);
-  *      @skb: Packet for which lookup is done
-  *      @dev: Tunnel device
-  *      @net: Network namespace of tunnel device
-- *      @sk: Socket which provides route info
-+ *      @sock: Socket which provides route info
-  *      @saddr: Memory to store the src ip address
-  *      @info: Tunnel information
-  *      @protocol: IP protocol
-- *      @use_cahce: Flag to enable cache usage
-+ *      @use_cache: Flag to enable cache usage
-  *      This function performs a route lookup on a tunnel
+  *	llc_conn_remove_acked_pdus - Removes acknowledged pdus from tx queue
+  *	@sk: active connection
+- *	nr: NR
+- *	how_many_unacked: size of pdu_unack_q after removing acked pdus
++ *	@nr: NR
++ *	@how_many_unacked: size of pdu_unack_q after removing acked pdus
   *
-  *      It returns a valid dst pointer and stores src address to be used in
-diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-index 821d96c720b9..f973344fcd85 100644
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -124,8 +124,12 @@ static struct net_device_stats *ip6_get_stats(struct net_device *dev)
- 	return &dev->stats;
- }
- 
-+#define for_each_ip6_tunnel_rcu(start) \
-+	for (t = rcu_dereference(start); t; t = rcu_dereference(t->next))
-+
- /**
-  * ip6_tnl_lookup - fetch tunnel matching the end-point addresses
-+ *   @net: network namespace
-  *   @link: ifindex of underlying interface
-  *   @remote: the address of the tunnel exit-point
-  *   @local: the address of the tunnel entry-point
-@@ -136,9 +140,6 @@ static struct net_device_stats *ip6_get_stats(struct net_device *dev)
-  *   else %NULL
-  **/
- 
--#define for_each_ip6_tunnel_rcu(start) \
--	for (t = rcu_dereference(start); t; t = rcu_dereference(t->next))
--
- static struct ip6_tnl *
- ip6_tnl_lookup(struct net *net, int link,
- 	       const struct in6_addr *remote, const struct in6_addr *local)
-@@ -302,8 +303,8 @@ static int ip6_tnl_create2(struct net_device *dev)
+  *	Removes acknowledged pdus from transmit queue (pdu_unack_q). Returns
+  *	the number of pdus that removed from queue.
+@@ -906,6 +906,7 @@ static void llc_sk_init(struct sock *sk)
  
  /**
-  * ip6_tnl_create - create a new tunnel
-+ *   @net: network namespace
-  *   @p: tunnel parameters
-- *   @pt: pointer to new tunnel
+  *	llc_sk_alloc - Allocates LLC sock
++ *	@net: network namespace
+  *	@family: upper layer protocol family
+  *	@priority: for allocation (%GFP_KERNEL, %GFP_ATOMIC, etc)
   *
-  * Description:
-  *   Create tunnel matching given parameters.
-@@ -351,6 +352,7 @@ static struct ip6_tnl *ip6_tnl_create(struct net *net, struct __ip6_tnl_parm *p)
+@@ -951,7 +952,7 @@ void llc_sk_stop_all_timers(struct sock *sk, bool sync)
  
  /**
-  * ip6_tnl_locate - find or create tunnel matching given parameters
-+ *   @net: network namespace
-  *   @p: tunnel parameters
-  *   @create: != 0 if allowed to create new tunnel if no match found
+  *	llc_sk_free - Frees a LLC socket
+- *	@sk - socket to free
++ *	@sk: - socket to free
   *
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 7d4151747340..38c0d9350c6b 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1059,6 +1059,9 @@ static int udpv6_pre_connect(struct sock *sk, struct sockaddr *uaddr,
-  *	@sk:	socket we are sending on
-  *	@skb:	sk_buff containing the filled-in UDP header
-  *		(checksum field must be zeroed out)
-+ *	@saddr: source address
-+ *	@daddr: destination address
-+ *	@len:	length of packet
+  *	Frees a LLC socket
   */
- static void udp6_hwcsum_outgoing(struct sock *sk, struct sk_buff *skb,
- 				 const struct in6_addr *saddr,
+diff --git a/net/llc/llc_input.c b/net/llc/llc_input.c
+index 82cb93f66b9b..c309b72a5877 100644
+--- a/net/llc/llc_input.c
++++ b/net/llc/llc_input.c
+@@ -144,6 +144,7 @@ static inline int llc_fixup_skb(struct sk_buff *skb)
+  *	@skb: received pdu
+  *	@dev: device that receive pdu
+  *	@pt: packet type
++ *	@orig_dev: the original receive net device
+  *
+  *	When the system receives a 802.2 frame this function is called. It
+  *	checks SAP and connection of received pdu and passes frame to
+diff --git a/net/llc/llc_pdu.c b/net/llc/llc_pdu.c
+index 2e6cb79196bb..792d195c8bae 100644
+--- a/net/llc/llc_pdu.c
++++ b/net/llc/llc_pdu.c
+@@ -25,7 +25,7 @@ void llc_pdu_set_cmd_rsp(struct sk_buff *skb, u8 pdu_type)
+ 
+ /**
+  *	pdu_set_pf_bit - sets poll/final bit in LLC header
+- *	@pdu_frame: input frame that p/f bit must be set into it.
++ *	@skb: Frame to set bit in
+  *	@bit_value: poll/final bit (0 or 1).
+  *
+  *	This function sets poll/final bit in LLC header (based on type of PDU).
+diff --git a/net/llc/llc_sap.c b/net/llc/llc_sap.c
+index be419062e19a..6805ce43a055 100644
+--- a/net/llc/llc_sap.c
++++ b/net/llc/llc_sap.c
+@@ -37,6 +37,7 @@ static int llc_mac_header_len(unsigned short devtype)
+ 
+ /**
+  *	llc_alloc_frame - allocates sk_buff for frame
++ *	@sk:  socket to allocate frame to
+  *	@dev: network device this skb will be sent over
+  *	@type: pdu type to allocate
+  *	@data_size: data size to allocate
+@@ -273,6 +274,7 @@ void llc_build_and_send_xid_pkt(struct llc_sap *sap, struct sk_buff *skb,
+  *	llc_sap_rcv - sends received pdus to the sap state machine
+  *	@sap: current sap component structure.
+  *	@skb: received frame.
++ *	@sk:  socket to associate to frame
+  *
+  *	Sends received pdus to the sap state machine.
+  */
+@@ -379,6 +381,7 @@ static void llc_do_mcast(struct llc_sap *sap, struct sk_buff *skb,
+  * 	llc_sap_mcast - Deliver multicast PDU's to all matching datagram sockets.
+  *	@sap: SAP
+  *	@laddr: address of local LLC (MAC + SAP)
++ *	@skb: PDU to deliver
+  *
+  *	Search socket list of the SAP and finds connections with same sap.
+  *	Deliver clone to each.
 -- 
 2.27.0.rc2
 
