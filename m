@@ -2,26 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7345221CC07
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 01:15:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6393521CC0D
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 01:15:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728745AbgGLXPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 19:15:35 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59656 "EHLO vps0.lunn.ch"
+        id S1728829AbgGLXPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jul 2020 19:15:45 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59618 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728622AbgGLXPe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Jul 2020 19:15:34 -0400
+        id S1728547AbgGLXPc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Jul 2020 19:15:32 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1julBu-004mQx-Mc; Mon, 13 Jul 2020 01:15:26 +0200
+        id 1julBu-004mRA-Qz; Mon, 13 Jul 2020 01:15:26 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>
-Subject: [PATCH net-next 18/20] net: tipc: kerneldoc fixes
-Date:   Mon, 13 Jul 2020 01:15:14 +0200
-Message-Id: <20200712231516.1139335-19-andrew@lunn.ch>
+        Johannes Berg <johannes@sipsolutions.net>
+Subject: [PATCH net-next 19/20] net: wireless: kerneldoc fixes
+Date:   Mon, 13 Jul 2020 01:15:15 +0200
+Message-Id: <20200712231516.1139335-20-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200712231516.1139335-1-andrew@lunn.ch>
 References: <20200712231516.1139335-1-andrew@lunn.ch>
@@ -34,188 +33,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Simple fixes which require no deep knowledge of the code.
 
-Cc: Jon Maloy <jmaloy@redhat.com>
-Cc: Ying Xue <ying.xue@windriver.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- net/tipc/bearer.c    | 2 +-
- net/tipc/discover.c  | 5 ++---
- net/tipc/link.c      | 6 +++---
- net/tipc/msg.c       | 2 +-
- net/tipc/node.c      | 4 ++--
- net/tipc/socket.c    | 8 +++-----
- net/tipc/udp_media.c | 2 +-
- 7 files changed, 13 insertions(+), 16 deletions(-)
+ net/wireless/reg.c         | 4 +++-
+ net/wireless/wext-compat.c | 1 -
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
-index e366ec9a7e4d..808b147df7d5 100644
---- a/net/tipc/bearer.c
-+++ b/net/tipc/bearer.c
-@@ -595,7 +595,7 @@ void tipc_bearer_bc_xmit(struct net *net, u32 bearer_id,
+diff --git a/net/wireless/reg.c b/net/wireless/reg.c
+index 0d74a31ef0ab..35b8847a2f6d 100644
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -2384,7 +2384,7 @@ static void reg_set_request_processed(void)
  
  /**
-  * tipc_l2_rcv_msg - handle incoming TIPC message from an interface
-- * @buf: the received packet
-+ * @skb: the received message
-  * @dev: the net device that the packet was received on
-  * @pt: the packet_type structure which was used to register this handler
-  * @orig_dev: the original receive net device in case the device is a bond
-diff --git a/net/tipc/discover.c b/net/tipc/discover.c
-index bfe43da127c0..d4ecacddb40c 100644
---- a/net/tipc/discover.c
-+++ b/net/tipc/discover.c
-@@ -74,7 +74,7 @@ struct tipc_discoverer {
- /**
-  * tipc_disc_init_msg - initialize a link setup message
-  * @net: the applicable net namespace
-- * @type: message type (request or response)
-+ * @mtyp: message type (request or response)
-  * @b: ptr to bearer issuing message
-  */
- static void tipc_disc_init_msg(struct net *net, struct sk_buff *skb,
-@@ -339,7 +339,7 @@ static void tipc_disc_timeout(struct timer_list *t)
-  * @net: the applicable net namespace
-  * @b: ptr to bearer issuing requests
-  * @dest: destination address for request messages
-- * @dest_domain: network domain to which links can be established
-+ * @skb: pointer to created frame
+  * reg_process_hint_core - process core regulatory requests
+- * @pending_request: a pending core regulatory request
++ * @core_request: a pending core regulatory request
   *
-  * Returns 0 if successful, otherwise -errno.
-  */
-@@ -393,7 +393,6 @@ void tipc_disc_delete(struct tipc_discoverer *d)
-  * tipc_disc_reset - reset object to send periodic link setup requests
-  * @net: the applicable net namespace
-  * @b: ptr to bearer issuing requests
-- * @dest_domain: network domain to which links can be established
-  */
- void tipc_disc_reset(struct net *net, struct tipc_bearer *b)
- {
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index 1c579357ccdf..6aca0ebb391a 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -445,7 +445,7 @@ u32 tipc_link_state(struct tipc_link *l)
+  * The wireless subsystem can use this function to process
+  * a regulatory request issued by the regulatory core.
+@@ -2493,6 +2493,7 @@ __reg_process_hint_driver(struct regulatory_request *driver_request)
  
  /**
-  * tipc_link_create - create a new link
-- * @n: pointer to associated node
-+ * @net: pointer to associated network namespace
-  * @if_name: associated interface name
-  * @bearer_id: id (index) of associated bearer
-  * @tolerance: link tolerance to be used by link
-@@ -530,7 +530,7 @@ bool tipc_link_create(struct net *net, char *if_name, int bearer_id,
+  * reg_process_hint_driver - process driver regulatory requests
++ * @wiphy: the wireless device for the regulatory request
+  * @driver_request: a pending driver regulatory request
+  *
+  * The wireless subsystem can use this function to process
+@@ -2593,6 +2594,7 @@ __reg_process_hint_country_ie(struct wiphy *wiphy,
  
  /**
-  * tipc_link_bc_create - create new link to be used for broadcast
-- * @n: pointer to associated node
-+ * @net: pointer to associated network namespace
-  * @mtu: mtu to be used initially if no peers
-  * @window: send window to be used
-  * @inputq: queue to put messages ready for delivery
-@@ -974,7 +974,7 @@ void tipc_link_reset(struct tipc_link *l)
+  * reg_process_hint_country_ie - process regulatory requests from country IEs
++ * @wiphy: the wireless device for the regulatory request
+  * @country_ie_request: a regulatory request from a country IE
+  *
+  * The wireless subsystem can use this function to process
+diff --git a/net/wireless/wext-compat.c b/net/wireless/wext-compat.c
+index cac9e28d852b..aa918d7ff6bd 100644
+--- a/net/wireless/wext-compat.c
++++ b/net/wireless/wext-compat.c
+@@ -220,7 +220,6 @@ EXPORT_WEXT_HANDLER(cfg80211_wext_giwrange);
  
  /**
-  * tipc_link_xmit(): enqueue buffer list according to queue situation
-- * @link: link to use
-+ * @l: link to use
-  * @list: chain of buffers containing message
-  * @xmitq: returned list of packets to be sent by caller
+  * cfg80211_wext_freq - get wext frequency for non-"auto"
+- * @dev: the net device
+  * @freq: the wext freq encoding
   *
-diff --git a/net/tipc/msg.c b/net/tipc/msg.c
-index 01b64869a173..848fae674532 100644
---- a/net/tipc/msg.c
-+++ b/net/tipc/msg.c
-@@ -202,7 +202,7 @@ int tipc_buf_append(struct sk_buff **headbuf, struct sk_buff **buf)
- 
- /**
-  * tipc_msg_append(): Append data to tail of an existing buffer queue
-- * @hdr: header to be used
-+ * @_hdr: header to be used
-  * @m: the data to be appended
-  * @mss: max allowable size of buffer
-  * @dlen: size of data to be appended
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 030a51c4d1fa..4edcee3088da 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -1515,7 +1515,7 @@ static void node_lost_contact(struct tipc_node *n,
-  * tipc_node_get_linkname - get the name of a link
-  *
-  * @bearer_id: id of the bearer
-- * @node: peer node address
-+ * @addr: peer node address
-  * @linkname: link name output buffer
-  *
-  * Returns 0 on success
-@@ -2022,7 +2022,7 @@ static bool tipc_node_check_state(struct tipc_node *n, struct sk_buff *skb,
-  * tipc_rcv - process TIPC packets/messages arriving from off-node
-  * @net: the applicable net namespace
-  * @skb: TIPC packet
-- * @bearer: pointer to bearer message arrived on
-+ * @b: pointer to bearer message arrived on
-  *
-  * Invoked with no locks held. Bearer pointer must point to a valid bearer
-  * structure (i.e. cannot be NULL), but bearer can be inactive.
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index a94f38333698..fc388cef6471 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -711,7 +711,6 @@ static int tipc_bind(struct socket *sock, struct sockaddr *uaddr,
-  * tipc_getname - get port ID of socket or peer socket
-  * @sock: socket structure
-  * @uaddr: area for returned socket address
-- * @uaddr_len: area for returned length of socket address
-  * @peer: 0 = own ID, 1 = current peer ID, 2 = current/former peer ID
-  *
-  * Returns 0 on success, errno otherwise
-@@ -1053,7 +1052,7 @@ static int tipc_send_group_anycast(struct socket *sock, struct msghdr *m,
- 
- /**
-  * tipc_send_group_bcast - send message to all members in communication group
-- * @sk: socket structure
-+ * @sock: socket structure
-  * @m: message to send
-  * @dlen: total length of message data
-  * @timeout: timeout to wait for wakeup
-@@ -1673,7 +1672,7 @@ static void tipc_sk_finish_conn(struct tipc_sock *tsk, u32 peer_port,
- /**
-  * tipc_sk_set_orig_addr - capture sender's address for received message
-  * @m: descriptor for message info
-- * @hdr: received message header
-+ * @skb: received message
-  *
-  * Note: Address is not captured if not requested by receiver.
-  */
-@@ -2095,7 +2094,6 @@ static void tipc_write_space(struct sock *sk)
- /**
-  * tipc_data_ready - wake up threads to indicate messages have been received
-  * @sk: socket
-- * @len: the length of messages
-  */
- static void tipc_data_ready(struct sock *sk)
- {
-@@ -2677,7 +2675,7 @@ static int tipc_wait_for_accept(struct socket *sock, long timeo)
- /**
-  * tipc_accept - wait for connection request
-  * @sock: listening socket
-- * @newsock: new socket that is to be connected
-+ * @new_sock: new socket that is to be connected
-  * @flags: file-related flags associated with socket
-  *
-  * Returns 0 on success, errno otherwise
-diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c
-index 28a283f26a8d..d91b7c543e39 100644
---- a/net/tipc/udp_media.c
-+++ b/net/tipc/udp_media.c
-@@ -565,7 +565,7 @@ int tipc_udp_nl_add_bearer_data(struct tipc_nl_msg *msg, struct tipc_bearer *b)
- 
- /**
-  * tipc_parse_udp_addr - build udp media address from netlink data
-- * @nlattr:	netlink attribute containing sockaddr storage aligned address
-+ * @nla:	netlink attribute containing sockaddr storage aligned address
-  * @addr:	tipc media address to fill with address, port and protocol type
-  * @scope_id:	IPv6 scope id pointer, not NULL indicates it's required
-  */
+  * Returns a frequency, or a negative error code, or 0 for auto.
 -- 
 2.27.0.rc2
 
