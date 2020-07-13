@@ -2,116 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4E8621DAE9
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 17:57:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9B0121DAFB
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 17:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729875AbgGMP5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 11:57:19 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:37670 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729027AbgGMP5T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 11:57:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594655838;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9agit9Hk8Ibvc41tafUahWhQoZ1IHe/7Cad1XBFMFPw=;
-        b=M9sd3YL0jwbA5G5NBvfq/LE8Jlydarz7aCJW2T6x8/FehItClpEbSuqY/tV5nX1jtBakhC
-        +U5Ot9YSi/S5DnR+DFMYGuQzwl9L8tVssXlEJ1+Ltr/zNL7UjFnku4LjR7zSAltALAnd7T
-        Q2UGKeW3Vrn3DZluZFhGYQYECDR6iZk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-149-hTI4dtDmM7Ss70xHD-wUqQ-1; Mon, 13 Jul 2020 11:57:15 -0400
-X-MC-Unique: hTI4dtDmM7Ss70xHD-wUqQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C5C871085;
-        Mon, 13 Jul 2020 15:57:14 +0000 (UTC)
-Received: from localhost (unknown [10.36.110.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6889E6FEDF;
-        Mon, 13 Jul 2020 15:57:13 +0000 (UTC)
-Date:   Mon, 13 Jul 2020 17:57:09 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        aconole@redhat.com
-Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
- discovery on encap sockets
-Message-ID: <20200713175709.2a547d7c@redhat.com>
-In-Reply-To: <20200713145911.GN32005@breakpoint.cc>
-References: <20200712200705.9796-1-fw@strlen.de>
-        <20200712200705.9796-2-fw@strlen.de>
-        <20200713003813.01f2d5d3@elisabeth>
-        <20200713080413.GL32005@breakpoint.cc>
-        <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
-        <20200713140219.GM32005@breakpoint.cc>
-        <a6821eac-82f8-0d9e-6388-ea6c9f5535d1@gmail.com>
-        <20200713145911.GN32005@breakpoint.cc>
-Organization: Red Hat
+        id S1730204AbgGMP7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 11:59:25 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:34232 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729027AbgGMP7X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 11:59:23 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 5DC39D54C4F417C8F8CB;
+        Mon, 13 Jul 2020 23:56:14 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 13 Jul 2020 23:56:04 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     <hulkci@huawei.com>, Eric Dumazet <eric.dumazet@gmail.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        "Hideaki YOSHIFUJI" <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>
+Subject: [PATCH] ip6_gre: fix null-ptr-deref in ip6gre_init_net()
+Date:   Mon, 13 Jul 2020 23:59:50 +0800
+Message-ID: <20200713155950.71793-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Jul 2020 16:59:11 +0200
-Florian Westphal <fw@strlen.de> wrote:
+KASAN report null-ptr-deref error when register_netdev() failed:
 
-> Its configured properly:
-> 
-> ovs bridge mtu: 1450
-> vxlan device mtu: 1450
-> physical link: 1500
+KASAN: null-ptr-deref in range [0x00000000000003c0-0x00000000000003c7]
+CPU: 2 PID: 422 Comm: ip Not tainted 5.8.0-rc4+ #12
+Call Trace:
+ ip6gre_init_net+0x4ab/0x580
+ ? ip6gre_tunnel_uninit+0x3f0/0x3f0
+ ops_init+0xa8/0x3c0
+ setup_net+0x2de/0x7e0
+ ? rcu_read_lock_bh_held+0xb0/0xb0
+ ? ops_init+0x3c0/0x3c0
+ ? kasan_unpoison_shadow+0x33/0x40
+ ? __kasan_kmalloc.constprop.0+0xc2/0xd0
+ copy_net_ns+0x27d/0x530
+ create_new_namespaces+0x382/0xa30
+ unshare_nsproxy_namespaces+0xa1/0x1d0
+ ksys_unshare+0x39c/0x780
+ ? walk_process_tree+0x2a0/0x2a0
+ ? trace_hardirqs_on+0x4a/0x1b0
+ ? _raw_spin_unlock_irq+0x1f/0x30
+ ? syscall_trace_enter+0x1a7/0x330
+ ? do_syscall_64+0x1c/0xa0
+ __x64_sys_unshare+0x2d/0x40
+ do_syscall_64+0x56/0xa0
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Okay, so my proposal to reflect the discovered PMTU on the MTU of the
-VXLAN device won't help in your case.
+ip6gre_tunnel_uninit() has set 'ign->fb_tunnel_dev' to NULL, later
+access to ign->fb_tunnel_dev cause null-ptr-deref. Fix it by saving
+'ign->fb_tunnel_dev' to local variable ndev.
 
-In the test case I drafted, configuring bridge and VXLAN with those
-MTUs (by means of PMTU discovery) is enough for the sender to adjust
-packet size and MTU-sized packets go through. I guess the OVS case is
-not equivalent to it, then.
+Fixes: dafabb6590cb ("ip6_gre: fix use-after-free in ip6gre_tunnel_lookup()")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 
-> so, packets coming in on the bridge (local tx or from remote bridge port)
-> can have the enap header (50 bytes) prepended without exceeding the
-> physical link mtu.
-> 
-> When the vxlan driver calls the ip output path, this line:
-> 
->         mtu = ip_skb_dst_mtu(sk, skb);
-> 
-> in __ip_finish_output() will fetch the MTU based of the encap socket,
-> which will now be 1450 due to that route exception.
-> 
-> So this will behave as if someone had lowered the physical link mtu to 1450:
-> IP stack drops the packet and sends an icmp error (fragmentation needed,
-> MTU 1450).  The MTU of the VXLAN port is already at 1450.
-
-It's not clear to me why the behaviour on this path is different from
-routed traffic. I understand the impact of bridged traffic on error
-reporting, but not here.
-
-Does it have something to do with metadata-based tunnels? Should we omit
-the call to skb_tunnel_check_pmtu() call in vxlan_xmit_one() in that
-case (if (info)) because the dst is not the same dst?
-
-> [...]
->
-> I don't think this patch is enough to resolve PMTU in general of course,
-> after all the VXLAN peer might be unable to receive packets larger than
-> what the ICMP error announces.  But I do not know how to resolve this
-> in the general case as everyone has a differnt opinion on how (and where)
-> this needs to be handled.
-
-The sender here is sending packets matching the MTU, interface MTUs are
-correct, so we wouldn't benefit from "extending" PMTU discovery for
-this specific problem and we can let that topic aside for now, correct?
-
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 6532bde82b40..3a57fb9ce049 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -1562,17 +1562,18 @@ static void ip6gre_destroy_tunnels(struct net *net, struct list_head *head)
+ static int __net_init ip6gre_init_net(struct net *net)
+ {
+ 	struct ip6gre_net *ign = net_generic(net, ip6gre_net_id);
++	struct net_device *ndev;
+ 	int err;
+ 
+ 	if (!net_has_fallback_tunnels(net))
+ 		return 0;
+-	ign->fb_tunnel_dev = alloc_netdev(sizeof(struct ip6_tnl), "ip6gre0",
+-					  NET_NAME_UNKNOWN,
+-					  ip6gre_tunnel_setup);
+-	if (!ign->fb_tunnel_dev) {
++	ndev = alloc_netdev(sizeof(struct ip6_tnl), "ip6gre0",
++			    NET_NAME_UNKNOWN, ip6gre_tunnel_setup);
++	if (!ndev) {
+ 		err = -ENOMEM;
+ 		goto err_alloc_dev;
+ 	}
++	ign->fb_tunnel_dev = ndev;
+ 	dev_net_set(ign->fb_tunnel_dev, net);
+ 	/* FB netdevice is special: we have one, and only one per netns.
+ 	 * Allowing to move it to another netns is clearly unsafe.
+@@ -1592,7 +1593,7 @@ static int __net_init ip6gre_init_net(struct net *net)
+ 	return 0;
+ 
+ err_reg_dev:
+-	free_netdev(ign->fb_tunnel_dev);
++	free_netdev(ndev);
+ err_alloc_dev:
+ 	return err;
+ }
 -- 
-Stefano
+2.25.1
 
