@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3711421DC9E
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0B4221DCBD
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:34:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730622AbgGMQd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 12:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48818 "EHLO
+        id S1730423AbgGMQeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 12:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730194AbgGMQd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 12:33:26 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD270C061755;
-        Mon, 13 Jul 2020 09:33:25 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id n26so17964616ejx.0;
-        Mon, 13 Jul 2020 09:33:25 -0700 (PDT)
+        with ESMTP id S1730098AbgGMQeU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 12:34:20 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB8FC061755;
+        Mon, 13 Jul 2020 09:34:20 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id g20so14250772edm.4;
+        Mon, 13 Jul 2020 09:34:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=ychIRptdstMkkJKoImCG9Y7RbnRSRh80JgCAkhzxkSs=;
-        b=OZCc5S23rCiTeSjlJXE1Zr5xv8geoZGQiPcazXiStEmJciJGyFZuujbONmZ3eE0/yk
-         V0lzBVL8NIyYEkb7SAMZpfEnf7sTKf4DLFxBJ7OLNmrY1etyRaEBwjNcmDsXxY8Cfab+
-         rNRR1C1+z4pzFUP4TQtAveMJVitxjXixlNS6LLEjMNlgujXunkHJZSkfBYCCeOJMwZtK
-         m6ZBZBdY+qDby1eTiToaaOtZ5qFFdvxb0J9ABu90d3KW1MdTazoBMHStsfUn5uvQDsCw
-         5EOTaAzN13f5DRFeZgMfqqirSX6odtRME5I9rSBA9NxZSAWcmTUWo+kekD5BQkfh0VxX
-         j2cg==
+        bh=V6b1O4MyWF2YQ9VWkwh6P/hFU91Nmi+FIyFbjRLkhJI=;
+        b=cFumKTxl7VcmaHbAmDbBuCFeyS5aaYGlic1hGm6OQg2qB3yegdxJsgVF0Od3kh35LV
+         SHFqfesglpBzFaNn6nxDG1W75nr6xkpXL/IBk5XRCppee6h1j6w7w+I3gcp2BiHlZqtD
+         h5qHVPpH6TN63txgza3zdYKERIwME3ryejipcwnPQ3RuVJrktXl32qr03GMqf6cxoIdo
+         B+6j1DKD6rcmpzv75ZIMO09KLU3m2PFGg7GUN5zPRlp0VinPJrLE6RKKjh/ELGR5c0Mn
+         8eM5aPDoBHuhT1s6k/8pciqXW/+VrFUjpF1j0mEAHJa2PhNeA2C1aVClOjo/jGxU64m3
+         iMow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ychIRptdstMkkJKoImCG9Y7RbnRSRh80JgCAkhzxkSs=;
-        b=NHjsbgRoVRvC8I4XEcGA3h+O0gkhGlEGEFbz4lA97UQ1k4gjHhUdhEkxSYYpXnS+Ma
-         GFQU/+HMdgrjK5bPo599puXBYy7BYaeSUwpBJeE4D50e2x3GDjrKxpSd/Yb7DIiYBGbB
-         O/yC3d0oQhqivVfY49SV7gYBkts3WrBqIyZqYBUUcePpI9mtcqjS7RKjkm5Es7H90t6m
-         uPrmGkaN3X0iVGyTWj8G2F+jWUjW/Z5keYRZPUlVXL6Fn7rb0nDXD2cvYmMOfvbe/I6v
-         BUIXGCSF3fK2YH/ZNVSw1mOwOoxWyMNIegz9a3PFt+X49NijeqygmGfQEslZxNQnXCHI
-         0fKA==
-X-Gm-Message-State: AOAM533r0zeDSGFT46rJIhvkpk3V5/T8uLVWxuvyF0Xm6tXJuRNurlts
-        Z/gZtBShY8uPMIITzSEsQ/U=
-X-Google-Smtp-Source: ABdhPJwYdQKIRCnUaToJoITFPULDi1TRTE2JaB0aezgBFQuz8Mzxvf0JB0NOlhphjV+sHd9wcQGjfg==
-X-Received: by 2002:a17:906:538a:: with SMTP id g10mr599771ejo.354.1594658004599;
-        Mon, 13 Jul 2020 09:33:24 -0700 (PDT)
+        bh=V6b1O4MyWF2YQ9VWkwh6P/hFU91Nmi+FIyFbjRLkhJI=;
+        b=RdUms0Bgslslpqw7OxNFmFUyUc/SJks2EC+9NjHXHzoXWKwvSqwdZBcL0iUuN/yzVu
+         /CI/s+G0cSbjeMSaN2TDty0P0jGphTsi4z+n+r65fdBh7v8nYcini+FEicTLyePU6y9d
+         f3QgX55tsjDCTwz+WEY+Mq9yeIUfepawWC0QXLkuoTOWqqt9Ng/USw4xPQ42Q7Zbhjsh
+         mg3fdIpEzRv1D4OAOQg3/nCbRUGbr8qLU5bjVApgDOgloOQUoEw8RkvajOalKYDYi2+F
+         E2m3mjuzRwAEGEYD/6Icn8nPJC0D6E17c/YK1fxQ644iCqH9Jias0ZHUazVTYiHsEyZf
+         wMvw==
+X-Gm-Message-State: AOAM53324OJKTkzfi/QNVHdWD1R9WBHnEudFQkGyOFm5L2jzvHoA4/79
+        HpPkp4kk91g8s+Ks6AcSfIE=
+X-Google-Smtp-Source: ABdhPJyyyZn1l+Y7K+tZsJbus/U2Qm7dTtd/iJwlnnpbKEDamQ3eqqvII8Uhw9ahUjrQQi0gZ1800A==
+X-Received: by 2002:aa7:cf94:: with SMTP id z20mr283749edx.82.1594658059250;
+        Mon, 13 Jul 2020 09:34:19 -0700 (PDT)
 Received: from skbuf ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id v19sm12145888eda.70.2020.07.13.09.33.23
+        by smtp.gmail.com with ESMTPSA id yj16sm9653772ejb.122.2020.07.13.09.34.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2020 09:33:24 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 19:33:21 +0300
+        Mon, 13 Jul 2020 09:34:18 -0700 (PDT)
+Date:   Mon, 13 Jul 2020 19:34:16 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Michael Walle <michael@walle.cc>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -59,135 +59,68 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next v6 2/4] net: dsa: felix: (re)use already
- existing constants
-Message-ID: <20200713163321.5mvc7k6td3t7b4qo@skbuf>
+Subject: Re: [PATCH net-next v6 1/4] net: phy: add USXGMII link partner
+ ability constants
+Message-ID: <20200713163416.3fegjdbrp6ccoqdm@skbuf>
 References: <20200709213526.21972-1-michael@walle.cc>
- <20200709213526.21972-3-michael@walle.cc>
+ <20200709213526.21972-2-michael@walle.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200709213526.21972-3-michael@walle.cc>
+In-Reply-To: <20200709213526.21972-2-michael@walle.cc>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 09, 2020 at 11:35:24PM +0200, Michael Walle wrote:
-> Now that there are USXGMII constants available, drop the old definitions
-> and reuse the generic ones.
+On Thu, Jul 09, 2020 at 11:35:23PM +0200, Michael Walle wrote:
+> The constants are taken from the USXGMII Singleport Copper Interface
+> specification. The naming are based on the SGMII ones, but with an MDIO_
+> prefix.
 > 
 > Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
 
-I did regression-testing of this on an LS1028A-QDS with SerDes protocol
-0x13bb.
+Somebody would need to review this patch, as it is introducing UAPI.
 
-Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-There was a regression, but it wasn't caused by you.
-
->  drivers/net/dsa/ocelot/felix_vsc9959.c | 45 +++++++-------------------
->  1 file changed, 12 insertions(+), 33 deletions(-)
+>  include/uapi/linux/mdio.h | 26 ++++++++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
 > 
-> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> index 19614537b1ba..a3ddb1394540 100644
-> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> @@ -10,35 +10,15 @@
->  #include <soc/mscc/ocelot.h>
->  #include <net/pkt_sched.h>
->  #include <linux/iopoll.h>
-> +#include <linux/mdio.h>
->  #include <linux/pci.h>
->  #include "felix.h"
->  
->  #define VSC9959_VCAP_IS2_CNT		1024
->  #define VSC9959_VCAP_IS2_ENTRY_WIDTH	376
->  #define VSC9959_VCAP_PORT_CNT		6
-> -
-> -/* TODO: should find a better place for these */
-> -#define USXGMII_BMCR_RESET		BIT(15)
-> -#define USXGMII_BMCR_AN_EN		BIT(12)
-> -#define USXGMII_BMCR_RST_AN		BIT(9)
-> -#define USXGMII_BMSR_LNKS(status)	(((status) & GENMASK(2, 2)) >> 2)
-> -#define USXGMII_BMSR_AN_CMPL(status)	(((status) & GENMASK(5, 5)) >> 5)
-> -#define USXGMII_ADVERTISE_LNKS(x)	(((x) << 15) & BIT(15))
-> -#define USXGMII_ADVERTISE_FDX		BIT(12)
-> -#define USXGMII_ADVERTISE_SPEED(x)	(((x) << 9) & GENMASK(11, 9))
-> -#define USXGMII_LPA_LNKS(lpa)		((lpa) >> 15)
-> -#define USXGMII_LPA_DUPLEX(lpa)		(((lpa) & GENMASK(12, 12)) >> 12)
-> -#define USXGMII_LPA_SPEED(lpa)		(((lpa) & GENMASK(11, 9)) >> 9)
-> -
->  #define VSC9959_TAS_GCL_ENTRY_MAX	63
->  
-> -enum usxgmii_speed {
-> -	USXGMII_SPEED_10	= 0,
-> -	USXGMII_SPEED_100	= 1,
-> -	USXGMII_SPEED_1000	= 2,
-> -	USXGMII_SPEED_2500	= 4,
-> -};
-> -
->  static const u32 vsc9959_ana_regmap[] = {
->  	REG(ANA_ADVLEARN,			0x0089a0),
->  	REG(ANA_VLANMASK,			0x0089a4),
-> @@ -787,11 +767,10 @@ static void vsc9959_pcs_config_usxgmii(struct phy_device *pcs,
->  {
->  	/* Configure device ability for the USXGMII Replicator */
->  	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_ADVERTISE,
-> -		      USXGMII_ADVERTISE_SPEED(USXGMII_SPEED_2500) |
-> -		      USXGMII_ADVERTISE_LNKS(1) |
-> +		      MDIO_LPA_USXGMII_2500FULL |
-> +		      MDIO_LPA_USXGMII_LINK |
->  		      ADVERTISE_SGMII |
-> -		      ADVERTISE_LPACK |
-> -		      USXGMII_ADVERTISE_FDX);
-> +		      ADVERTISE_LPACK);
+> diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
+> index 4bcb41c71b8c..784723072578 100644
+> --- a/include/uapi/linux/mdio.h
+> +++ b/include/uapi/linux/mdio.h
+> @@ -324,4 +324,30 @@ static inline __u16 mdio_phy_id_c45(int prtad, int devad)
+>  	return MDIO_PHY_ID_C45 | (prtad << 5) | devad;
 >  }
 >  
->  static void vsc9959_pcs_config(struct ocelot *ocelot, int port,
-> @@ -1005,8 +984,8 @@ static void vsc9959_pcs_link_state_usxgmii(struct phy_device *pcs,
->  		return;
->  
->  	pcs->autoneg = true;
-> -	pcs->autoneg_complete = USXGMII_BMSR_AN_CMPL(status);
-> -	pcs->link = USXGMII_BMSR_LNKS(status);
-> +	pcs->autoneg_complete = !!(status & BMSR_ANEGCOMPLETE);
-> +	pcs->link = !!(status & BMSR_LSTATUS);
->  
->  	if (!pcs->link || !pcs->autoneg_complete)
->  		return;
-> @@ -1015,24 +994,24 @@ static void vsc9959_pcs_link_state_usxgmii(struct phy_device *pcs,
->  	if (lpa < 0)
->  		return;
->  
-> -	switch (USXGMII_LPA_SPEED(lpa)) {
-> -	case USXGMII_SPEED_10:
-> +	switch (lpa & MDIO_LPA_USXGMII_SPD_MASK) {
-> +	case MDIO_LPA_USXGMII_10:
->  		pcs->speed = SPEED_10;
->  		break;
-> -	case USXGMII_SPEED_100:
-> +	case MDIO_LPA_USXGMII_100:
->  		pcs->speed = SPEED_100;
->  		break;
-> -	case USXGMII_SPEED_1000:
-> +	case MDIO_LPA_USXGMII_1000:
->  		pcs->speed = SPEED_1000;
->  		break;
-> -	case USXGMII_SPEED_2500:
-> +	case MDIO_LPA_USXGMII_2500:
->  		pcs->speed = SPEED_2500;
->  		break;
->  	default:
->  		break;
->  	}
->  
-> -	if (USXGMII_LPA_DUPLEX(lpa))
-> +	if (lpa & MDIO_LPA_USXGMII_FULL_DUPLEX)
->  		pcs->duplex = DUPLEX_FULL;
->  	else
->  		pcs->duplex = DUPLEX_HALF;
+> +/* UsxgmiiChannelInfo[15:0] for USXGMII in-band auto-negotiation.*/
+> +#define MDIO_LPA_USXGMII_EEE_CLK_STP	0x0080	/* EEE clock stop supported */
+> +#define MDIO_LPA_USXGMII_EEE		0x0100	/* EEE supported */
+> +#define MDIO_LPA_USXGMII_SPD_MASK	0x0e00	/* USXGMII speed mask */
+> +#define MDIO_LPA_USXGMII_FULL_DUPLEX	0x1000	/* USXGMII full duplex */
+> +#define MDIO_LPA_USXGMII_DPX_SPD_MASK	0x1e00	/* USXGMII duplex and speed bits */
+> +#define MDIO_LPA_USXGMII_10		0x0000	/* 10Mbps */
+> +#define MDIO_LPA_USXGMII_10HALF		0x0000	/* 10Mbps half-duplex */
+> +#define MDIO_LPA_USXGMII_10FULL		0x1000	/* 10Mbps full-duplex */
+> +#define MDIO_LPA_USXGMII_100		0x0200	/* 100Mbps */
+> +#define MDIO_LPA_USXGMII_100HALF	0x0200	/* 100Mbps half-duplex */
+> +#define MDIO_LPA_USXGMII_100FULL	0x1200	/* 100Mbps full-duplex */
+> +#define MDIO_LPA_USXGMII_1000		0x0400	/* 1000Mbps */
+> +#define MDIO_LPA_USXGMII_1000HALF	0x0400	/* 1000Mbps half-duplex */
+> +#define MDIO_LPA_USXGMII_1000FULL	0x1400	/* 1000Mbps full-duplex */
+> +#define MDIO_LPA_USXGMII_10G		0x0600	/* 10Gbps */
+> +#define MDIO_LPA_USXGMII_10GHALF	0x0600	/* 10Gbps half-duplex */
+> +#define MDIO_LPA_USXGMII_10GFULL	0x1600	/* 10Gbps full-duplex */
+> +#define MDIO_LPA_USXGMII_2500		0x0800	/* 2500Mbps */
+> +#define MDIO_LPA_USXGMII_2500HALF	0x0800	/* 2500Mbps half-duplex */
+> +#define MDIO_LPA_USXGMII_2500FULL	0x1800	/* 2500Mbps full-duplex */
+> +#define MDIO_LPA_USXGMII_5000		0x0a00	/* 5000Mbps */
+> +#define MDIO_LPA_USXGMII_5000HALF	0x0a00	/* 5000Mbps half-duplex */
+> +#define MDIO_LPA_USXGMII_5000FULL	0x1a00	/* 5000Mbps full-duplex */
+> +#define MDIO_LPA_USXGMII_LINK		0x8000	/* PHY link with copper-side partner */
+> +
+>  #endif /* _UAPI__LINUX_MDIO_H__ */
 > -- 
 > 2.20.1
 > 
