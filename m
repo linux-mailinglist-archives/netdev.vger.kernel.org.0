@@ -2,113 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBBCC21E282
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 23:37:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC5021E2C1
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727898AbgGMVgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 17:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727888AbgGMVgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 17:36:16 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB01C061755
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 14:36:15 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id w17so6093228ply.11
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 14:36:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=tf3aKP5xFXm+vtojuHJF42JOCJu7ZH0+iBonKIfwMQk=;
-        b=jnM2aEhGiWk7atj84BaidjHdFf+1nZzK7lUnzb8/8HhhToIqwLfgB05aDJ0Bjt+vHr
-         gxnCMfU8SXCw9J+MVk6tJgjMGosUmfGdNreEhE7u4xYT3Pw7+G7rbesIQzcdkMuzksSH
-         0dcXr5L4vCA3WIuCHsCA9XQMoIHF1hvdBs/RQ3tXJq2SDMnWnChKOvD5NSZlW7UqUxn9
-         9RfBHL1HRLXqqiHwmBWQkJ3Zy/M1tTTYqQvw6QlPzbm/fXCvyU1GTpwrdoXcI5rMxyCe
-         DyySjcDGZpAu+2f5Cb6G7LLIma6qFPGZ4PIInXiRscbQSRtJ49xqfS2jds1TvSBAReYD
-         1t0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tf3aKP5xFXm+vtojuHJF42JOCJu7ZH0+iBonKIfwMQk=;
-        b=AgljKsZLilWbqGACjZA89OujPlxp9x9Yzh7A0I8RiXs/nGAOrghnSohghJwwWgQSqc
-         5vjv10w8ypyCyL3mIAgC6bF73c1v8slxi2OjesznqP7aOSNHIpByAButj/1jITjZGOn9
-         IkYvhvwm8n4sGfQRwnAz03aongmXYH0sKba8Tsl+BUHlbZ6149bS5+3/P9I6/y3UD+RW
-         fFdPENsS/kLCjIi5oOtdQFRuc2ADeSVNnssWf7avmwPTZ8RpRJU43zhHlFxtpWU+9v/N
-         r0LZeWD3rQ1UYqu0e9i7BhIORByvifQwWdQ0/jFVnbc6pU1B56ajI2nrYaFAMryIuBqU
-         H2fw==
-X-Gm-Message-State: AOAM530EpulAcI7i9HOnS+M2nVZjkSVnbqP+CKk2MwJXUGp/4ZajlEAO
-        taTEOfemh+EI27gGo0KVPcFy+Hft
-X-Google-Smtp-Source: ABdhPJzWtb9xbMKzxquswbynGv21PBnf0J1asD+yWY0MruMPLpKI2DlawOt9pKTyklkwpz1Zjom88A==
-X-Received: by 2002:a17:90b:3c1:: with SMTP id go1mr1297473pjb.129.1594676173098;
-        Mon, 13 Jul 2020 14:36:13 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id x13sm9492856pfj.122.2020.07.13.14.36.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jul 2020 14:36:12 -0700 (PDT)
+        id S1726670AbgGMWAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 18:00:18 -0400
+Received: from mx2.suse.de ([195.135.220.15]:36290 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726150AbgGMWAS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 18:00:18 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 1E6AEB5DD;
+        Mon, 13 Jul 2020 22:00:19 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id AB5DE604B9; Tue, 14 Jul 2020 00:00:16 +0200 (CEST)
+Date:   Tue, 14 Jul 2020 00:00:16 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jarod Wilson <jarod@redhat.com>
 Subject: Re: [RFC] bonding driver terminology change proposal
-To:     Jarod Wilson <jarod@redhat.com>, Netdev <netdev@vger.kernel.org>
+Message-ID: <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
 References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <7fb02008-e469-38b7-735b-6bfb8beab414@gmail.com>
-Date:   Mon, 13 Jul 2020 14:36:11 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/13/20 11:51 AM, Jarod Wilson wrote:
-> As part of an effort to help enact social change, Red Hat is
-> committing to efforts to eliminate any problematic terminology from
-> any of the software that it ships and supports. Front and center for
-> me personally in that effort is the bonding driver's use of the terms
-> master and slave, and to a lesser extent, bond and bonding, due to
-> bondage being another term for slavery. Most people in computer
-> science understand these terms aren't intended to be offensive or
-> oppressive, and have well understood meanings in computing, but
-> nonetheless, they still present an open wound, and a barrier for
-> participation and inclusion to some.
-> 
+On Mon, Jul 13, 2020 at 02:51:39PM -0400, Jarod Wilson wrote:
 > To start out with, I'd like to attempt to eliminate as much of the use
 > of master and slave in the bonding driver as possible. For the most
 > part, I think this can be done without breaking UAPI, but may require
 > changes to anything accessing bond info via proc or sysfs.
-> 
-> My initial thought was to rename master to aggregator and slaves to
-> ports, but... that gets really messy with the existing 802.3ad bonding
-> code using both extensively already. I've given thought to a number of
-> other possible combinations, but the one that I'm liking the most is
-> master -> bundle and slave -> cable, for a number of reasons. I'd
-> considered cable and wire, as a cable is a grouping of individual
-> wires, but we're grouping together cables, really -- each bonded
-> ethernet interface has a cable connected, so a bundle of cables makes
-> sense visually and figuratively. Additionally, it's a swap made easier
-> in the codebase by master and bundle and slave and cable having the
-> same number of characters, respectively. Granted though, "bundle"
-> doesn't suggest "runs the show" the way "master" or something like
-> maybe "director" or "parent" does, but those lack the visual aspect
-> present with a bundle of cables. Using parent/child could work too
-> though, it's perhaps closer to the master/slave terminology currently
-> in use as far as literal meaning.
-> 
-> So... Thoughts?
-> 
 
-So you considered : aggregator/ports, bundle/cable.
+Could we, please, avoid breaking existing userspace tools and scripts?
+Massive code churn is one thing and we could certainly bite the bullet
+and live with it (even if I'm still not convinced it would be as great
+idea as some present it) but trading theoretical offense for real and
+palpable harm to existing users is something completely different.
 
-I thought about cord/strand, since this is less likely to be used already in networking land
-(like worker, thread, fiber, or wire ...)
+Or is "don't break userspace" no longer the "first commandment" of linux
+kernel development?
 
-Although a cord with two strands is probably not very common :/
-
+Michal Kubecek
