@@ -2,56 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1531721D3A9
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 12:19:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1095B21D3B2
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 12:24:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729543AbgGMKSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 06:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729492AbgGMKSo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 06:18:44 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFF1C061755;
-        Mon, 13 Jul 2020 03:18:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=0o9oacOGT+yOP9IRqdUPc2s8dF57vl7CrgaxsIQm6kY=; b=WuQ0kxda7+r8HBqZI0FTm2qhm+
-        5A9vgpkAf8rH1wmYr9cGGMxCB9LiUQKW0DN9hpk5Oh4UK/n9SNW5Wulb0Pt0qfbYfyeBv7Za3kMMm
-        hPYnPgMcWIVNDuCYT443bmjIgq8Ca3Rgo55/ecfAP9NTnGSoG/65q+OjIfCA4bvkRurASiiBCjs4F
-        Z1aw3KpdXkUMypAla0yUfu60Y20JM4i36X5ivA4NLys3HN2y/+F18dk31OdpI1A2fSJet0cEQ4XXS
-        TUenmlDt7ff0mPmWSDxtFbrzMxjay79EfqNOcFxVm4NO3MI+hKwsLn2HoaeqnCKgudpp1fV/A1BAk
-        UjLSA/Bw==;
-Received: from hch by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1juvXg-0000B0-6d; Mon, 13 Jul 2020 10:18:36 +0000
-Date:   Mon, 13 Jul 2020 11:18:36 +0100
-From:   Christoph Hellwig <hch@infradead.org>
-To:     syzbot <syzbot+4c50ac32e5b10e4133e1@syzkaller.appspotmail.com>
-Cc:     andriin@fb.com, ast@kernel.org, axboe@kernel.dk,
-        bpf@vger.kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Subject: Re: WARNING in submit_bio_checks
-Message-ID: <20200713101836.GA536@infradead.org>
-References: <00000000000029663005aa23cff4@google.com>
+        id S1729027AbgGMKY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 06:24:29 -0400
+Received: from smtp.al2klimov.de ([78.46.175.9]:45180 "EHLO smtp.al2klimov.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727035AbgGMKY3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 06:24:29 -0400
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by smtp.al2klimov.de (Postfix) with ESMTPA id C3EE4BC0E4;
+        Mon, 13 Jul 2020 10:24:25 +0000 (UTC)
+From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
+To:     3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Subject: [PATCH] atm: Replace HTTP links with HTTPS ones
+Date:   Mon, 13 Jul 2020 12:24:18 +0200
+Message-Id: <20200713102418.33201-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00000000000029663005aa23cff4@google.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Authentication-Results: smtp.al2klimov.de;
+        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+X-Spamd-Bar: /
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 10, 2020 at 10:34:19PM -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
+Rationale:
+Reduces attack surface on kernel devs opening the links for MITM
+as HTTPS traffic is much harder to manipulate.
 
-This is not a crash, but a WARN_ONCE.  A pre-existing one that just
-slightly changed the printed message recently.
+Deterministic algorithm:
+For each file:
+  If not .svg:
+    For each line:
+      If doesn't contain `\bxmlns\b`:
+        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
+	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
+            If both the HTTP and HTTPS versions
+            return 200 OK and serve the same content:
+              Replace HTTP with HTTPS.
+
+Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+---
+ Continuing my work started at 93431e0607e5.
+ See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
+ (Actually letting a shell for loop submit all this stuff for me.)
+
+ If there are any URLs to be removed completely or at least not just HTTPSified:
+ Just clearly say so and I'll *undo my change*.
+ See also: https://lkml.org/lkml/2020/6/27/64
+
+ If there are any valid, but yet not changed URLs:
+ See: https://lkml.org/lkml/2020/6/26/837
+
+ If you apply the patch, please let me know.
+
+ Sorry again to all maintainers who complained about subject lines.
+ Now I realized that you want an actually perfect prefixes,
+ not just subsystem ones.
+ I tried my best...
+ And yes, *I could* (at least half-)automate it.
+ Impossible is nothing! :)
+
+
+ drivers/atm/solos-pci.c     | 2 +-
+ include/uapi/linux/atmioc.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/atm/solos-pci.c b/drivers/atm/solos-pci.c
+index c32f7dd9879a..b7646ae55942 100644
+--- a/drivers/atm/solos-pci.c
++++ b/drivers/atm/solos-pci.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Driver for the Solos PCI ADSL2+ card, designed to support Linux by
+- *  Traverse Technologies -- http://www.traverse.com.au/
++ *  Traverse Technologies -- https://www.traverse.com.au/
+  *  Xrio Limited          -- http://www.xrio.com/
+  *
+  * Copyright © 2008 Traverse Technologies
+diff --git a/include/uapi/linux/atmioc.h b/include/uapi/linux/atmioc.h
+index cd7655e40c77..a9030bcc8d56 100644
+--- a/include/uapi/linux/atmioc.h
++++ b/include/uapi/linux/atmioc.h
+@@ -5,7 +5,7 @@
+ 
+ 
+ /*
+- * See http://icawww1.epfl.ch/linux-atm/magic.html for the complete list of
++ * See https://icawww1.epfl.ch/linux-atm/magic.html for the complete list of
+  * "magic" ioctl numbers.
+  */
+ 
+-- 
+2.27.0
+
