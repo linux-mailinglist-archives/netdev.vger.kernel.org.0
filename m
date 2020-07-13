@@ -2,91 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12DDC21DAC1
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 17:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A016C21DAC4
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 17:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729990AbgGMPuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 11:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729644AbgGMPuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 11:50:18 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B34BC061755
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 08:50:18 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id s10so17026499wrw.12
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 08:50:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FV3TlvetHfiODgbo1tETv6lN+AjF+4eaqfiBuIZr0Ys=;
-        b=BlLd4ljj6DCcC23q7F7riZ81sqaWHjr8yZNaCG7KDjqAfbLDOvTWROcFOhnsyWADzs
-         YJqOvG0D7rM+bPjyrdez9Kfwk5JIhhSKCXEpLJXYLMergRLOrWgQAjjBkdNdBMUvcrvT
-         RxZwVHLCGm7j/gNorVup9J6OoYnmxu1Ari2GVU+Cp6QUzTVfqvOVdDN3vC/mUxQdnJjg
-         SmYZdiH3/6E5EcEWfhYFy0j6g+yGDlJEKurT1cqJpFOf0QgWdxnUQvol0Ks4pypvyeYc
-         iPinkHhDLuyymMIni34BIazDKXY2WNa/vkZroB1R6iOmHJDQVuvQsrXiq+clafXNu1xb
-         fOxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FV3TlvetHfiODgbo1tETv6lN+AjF+4eaqfiBuIZr0Ys=;
-        b=fjLauDHoVb5RSMaYmbjnwQKmCjM9BZwuap6jhzxVRtsXeMYEn6I8Z8BP4CnSL9IYGZ
-         4rRiyE2gBPZ3prfh0UHawRZlL7v1Fwa9oXaEbbwj/6RXYAzgHZRj2DmP+hM7eZFWVp3+
-         lioh9zcuhVwYJkrrxXOkSUxxZDr7rQ27RjrbGyEGbgepuEwDPLz8JXK++YpqfrsgHr+d
-         JGycR0vH1Wf3bjBRMTRPW1kFmWe6wD51Z10qMrOdVBLbLGADxIRhjTfbR4sa6WvOtMmI
-         l86kfvLrmJ4nLD/zvrOMSmUIUu4bULNj6k1px1OFYp769MRnlkZKzn0ncaVAJfy33P2D
-         zTzA==
-X-Gm-Message-State: AOAM533qd/WdZ+mBLwIlQf9AMTJrkBsfGKbt56+mD/0NUz8Mko+Olg01
-        OaRbp6YnEytlWZ7SbvsT4qHKMLm1vlqcfDOZuns=
-X-Google-Smtp-Source: ABdhPJwRG3yo7Gt4x+K5AIxtES2KfgT4ADbmMuIxuHwIKu9tlFjPhJG8c4d7Sg+/N8bi24ObQPwBiIHil1cOXk8eGCg=
-X-Received: by 2002:a5d:4c91:: with SMTP id z17mr44211222wrs.267.1594655417430;
- Mon, 13 Jul 2020 08:50:17 -0700 (PDT)
+        id S1730039AbgGMPum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 11:50:42 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:55690 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729644AbgGMPum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 11:50:42 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06DFoZm7040441;
+        Mon, 13 Jul 2020 10:50:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1594655435;
+        bh=UP8gUaK9xzAkhH7w+bk3utyGDEWK8nP4G8Haxvi0cTQ=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=ScekaUzrbaORIdLjpDoS6wmlw8wwWpYf5PkR1593q1pOSxRxSLV8RebfwBfG+M3rN
+         6kktOvbB18iFIb1WbfbJNgT8JMRw1AERIHqvEdeDjTsECzwbqL7RwSGJVwCeBWEfgL
+         OdbvaRJDU+NjbL3KwgND66BmtcfiAbj+O0ofVvL8=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06DFoZtf074057
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 13 Jul 2020 10:50:35 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 13
+ Jul 2020 10:50:35 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 13 Jul 2020 10:50:34 -0500
+Received: from [10.250.32.229] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06DFoYKa042533;
+        Mon, 13 Jul 2020 10:50:34 -0500
+Subject: Re: [PATCH net-next v2 2/2] net: phy: DP83822: Add ability to
+ advertise Fiber connection
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <robh@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+References: <20200710143733.30751-1-dmurphy@ti.com>
+ <20200710143733.30751-3-dmurphy@ti.com> <20200711185421.GS1014141@lunn.ch>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <2d1d297c-e252-98df-bf96-d6630dd9a423@ti.com>
+Date:   Mon, 13 Jul 2020 10:50:29 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <1594301221-3731-1-git-send-email-sundeep.lkml@gmail.com>
- <1594301221-3731-4-git-send-email-sundeep.lkml@gmail.com> <20200709160156.GC7904@hoboy>
- <CALHRZuoVtuHLFjwW_bJsWxVFYN=PYxwsj+YabNH4p=v82u-MVA@mail.gmail.com> <20200713132557.GA27934@hoboy>
-In-Reply-To: <20200713132557.GA27934@hoboy>
-From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Date:   Mon, 13 Jul 2020 21:20:06 +0530
-Message-ID: <CA+sq2CcS3Purx+E0duOMHpMt2EwD=d3ViryvwiH1RjX89M2LLw@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 3/3] octeontx2-pf: Add support for PTP clock
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     sundeep subbaraya <sundeep.lkml@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Aleksey Makarov <amakarov@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200711185421.GS1014141@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 6:57 PM Richard Cochran
-<richardcochran@gmail.com> wrote:
->
-> On Mon, Jul 13, 2020 at 11:40:34AM +0530, sundeep subbaraya wrote:
-> > > > +static int otx2_ioctl(struct net_device *netdev, struct ifreq *req, int cmd)
-> > > > +{
-> > > > +     struct otx2_nic *pfvf = netdev_priv(netdev);
-> > > > +     struct hwtstamp_config *cfg = &pfvf->tstamp;
-> > > > +
-> > >
-> > > Need to test phy_has_hwtstamp() here and pass ioctl to PHY if true.
-> > >
-> > For this platform PHY is taken care of by firmware hence it is not
-> > possible.
->
-> This has nothing to do with the FW.  The HW design might include a PHY
-> or MII time stamping device.
+Andrew
 
-In our HW, ingress timestamping is done by CGX device which is a MAC.
-Wrt PHY,  the serdes, PHY etc are managed by firmware. So no 'phydev'
-available in kernel.
+On 7/11/20 1:54 PM, Andrew Lunn wrote:
+>> @@ -302,6 +357,48 @@ static int dp83822_config_init(struct phy_device *phydev)
+>>   		}
+>>   	}
+>>   
+>> +	if (dp83822->fx_enabled) {
+>> +		err = phy_modify(phydev, MII_DP83822_CTRL_2,
+>> +				 DP83822_FX_ENABLE, 1);
+>> +		if (err < 0)
+>> +			return err;
+>> +
+>> +		linkmode_set_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
+>> +				 phydev->supported);
+>> +		linkmode_set_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
+>> +				 phydev->advertising);
+>> +
+>> +		/* Auto neg is not supported in fiber mode */
+>> +		bmcr = phy_read(phydev, MII_BMCR);
+>> +		if (bmcr < 0)
+>> +			return bmcr;
+>> +
+>> +		if (bmcr & BMCR_ANENABLE) {
+>> +			err =  phy_modify(phydev, MII_BMCR, BMCR_ANENABLE, 0);
+>> +			if (err < 0)
+>> +				return err;
+>> +		}
+>> +		phydev->autoneg = AUTONEG_DISABLE;
+> You should also be removing ETHTOOL_LINK_MODE_Autoneg_BIT from
+> phydev->supported, to make it clear autoneg is not supported. Assuming
+> genphy_read_abilities() cannot figure this out for itself.
 
-Thanks,
-Sunil.
+In our testing we are finding that it cannot determine that for itself 
+so I will have to clear the bit.
+
+Dan
+
