@@ -2,73 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE68921D846
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 16:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 360D621D856
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 16:25:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730106AbgGMOVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 10:21:15 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7298 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729695AbgGMOVO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 10:21:14 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id BE2266CF58AA731207E5;
-        Mon, 13 Jul 2020 22:13:47 +0800 (CST)
-Received: from kernelci-master.huawei.com (10.175.101.6) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 13 Jul 2020 22:13:40 +0800
-From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     Hulk Robot <hulkci@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Jesper Dangaard Brouer" <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Taehee Yoo" <ap420073@gmail.com>
-CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>
-Subject: [PATCH net-next v2] net: make symbol 'flush_works' static
-Date:   Mon, 13 Jul 2020 22:23:44 +0800
-Message-ID: <20200713142344.50110-1-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1729835AbgGMOZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 10:25:04 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60864 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729776AbgGMOZD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 10:25:03 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1juzO8-004sIR-MW; Mon, 13 Jul 2020 16:25:00 +0200
+Date:   Mon, 13 Jul 2020 16:25:00 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next 01/10] net: atlantic: media detect
+Message-ID: <20200713142500.GB1078057@lunn.ch>
+References: <20200713114233.436-1-irusskikh@marvell.com>
+ <20200713114233.436-2-irusskikh@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.175.101.6]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200713114233.436-2-irusskikh@marvell.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The sparse tool complains as follows:
+On Mon, Jul 13, 2020 at 02:42:24PM +0300, Igor Russkikh wrote:
+> This patch adds support for low-power autoneg in PHY (media detect).
+> This is a custom feature of AQC107 builtin PHY, but configuration is only
+> done through MAC management firmware.
 
-net/core/dev.c:5594:1: warning:
- symbol '__pcpu_scope_flush_works' was not declared. Should it be static?
+Hi Igor
 
-'flush_works' is not used outside of dev.c, so marks
-it static.
+Do the standalone PHYs also support this? It would be nice to have the
+same user space API for both.
 
-Fixes: 41852497a9205 ("net: batch calls to flush_all_backlogs()")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
-v1 - > v2: add fixes tag
----
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+There is no reason why phy tuneables cannot be implemented by the MAC
+driver. It just needs another ethtool op and some plumbing in
+net/ethtool. That would give a more uniform solution.
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index eab4ebe3c21c..b61075828358 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5591,7 +5591,7 @@ void netif_receive_skb_list(struct list_head *head)
- }
- EXPORT_SYMBOL(netif_receive_skb_list);
- 
--DEFINE_PER_CPU(struct work_struct, flush_works);
-+static DEFINE_PER_CPU(struct work_struct, flush_works);
- 
- /* Network device is going away, flush any packets still pending */
- static void flush_backlog(struct work_struct *work)
-
+	     Andrew
