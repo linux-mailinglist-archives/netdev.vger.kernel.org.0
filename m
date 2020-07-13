@@ -2,150 +2,351 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A440021E0F4
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 21:47:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB24321E106
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 21:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbgGMTqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 15:46:43 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:48556 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726150AbgGMTqm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 15:46:42 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06DJgqUw018314;
-        Mon, 13 Jul 2020 19:45:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=/NOAgD8eugJROilkvt1yb3FiBOxsBZAAo+loaRjbXIQ=;
- b=lxUjQUezzTHbjv2PKH7fkacbn0jBsQ+PeCiUU88pjX3DXY3oSg9AApLFZGiJ+Dl+1gqB
- oMv2nSC+u/kZF++mLtmdHz7E4CLjaS9QXG8MyyQEyRDrLZ7AJZ4x17LszrhITiCS0UpT
- u9cksQmygGs+Ft0/I3SlnEdA9vCZMlfzf8UuvpflCVLvmUDOWpzN9fjPfATNGEl0EfMS
- 6QgvfTeC3qcYajz5+Ts5BKihav9cS+RfK+qCzzYf6KR0PRWM6uSNpdJGDIcahQNUjxIC
- z0BnZIJwFMjVMfp1cZydZ88AsiUW6Dtra2C2hIDleRZhrNPqkMHrOgstLdLnR5rpN7BD 0Q== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 32762n91gc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 13 Jul 2020 19:45:49 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06DJgcft104509;
-        Mon, 13 Jul 2020 19:43:49 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 327qbw4gh2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 13 Jul 2020 19:43:49 +0000
-Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 06DJhdle025941;
-        Mon, 13 Jul 2020 19:43:39 GMT
-Received: from [10.39.206.45] (/10.39.206.45)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 13 Jul 2020 12:43:38 -0700
-Subject: Re: [PATCH v2 00/11] Fix PM hibernation in Xen guests
-To:     "Agarwal, Anchal" <anchalag@amazon.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "roger.pau@citrix.com" <roger.pau@citrix.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "pavel@ucw.cz" <pavel@ucw.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
-References: <cover.1593665947.git.anchalag@amazon.com>
- <324020A7-996F-4CF8-A2F4-46957CEA5F0C@amazon.com>
-From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
- 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
- Jg6OxFYd01z+a+oL
-Message-ID: <c6688a0c-7fec-97d2-3dcc-e160e97206e6@oracle.com>
-Date:   Mon, 13 Jul 2020 15:43:33 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726775AbgGMTzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 15:55:16 -0400
+Received: from smtp11.smtpout.orange.fr ([80.12.242.133]:51104 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726332AbgGMTzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 15:55:16 -0400
+Received: from localhost.localdomain ([93.22.151.12])
+        by mwinf5d22 with ME
+        id 2jv52300C0GHuWt03jv6A5; Mon, 13 Jul 2020 21:55:10 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 13 Jul 2020 21:55:10 +0200
+X-ME-IP: 93.22.151.12
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     davem@davemloft.net, kuba@kernel.org, leon@kernel.org,
+        natechancellor@gmail.com, snelson@pensando.io,
+        vaibhavgupta40@gmail.com, mst@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] amd8111e: switch from 'pci_' to 'dma_' API
+Date:   Mon, 13 Jul 2020 21:55:03 +0200
+Message-Id: <20200713195503.281339-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <324020A7-996F-4CF8-A2F4-46957CEA5F0C@amazon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9681 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0
- mlxlogscore=999 bulkscore=0 malwarescore=0 mlxscore=0 phishscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007130141
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9681 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 spamscore=0
- clxscore=1015 priorityscore=1501 mlxlogscore=999 lowpriorityscore=0
- bulkscore=0 suspectscore=0 phishscore=0 adultscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007130141
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/10/20 2:17 PM, Agarwal, Anchal wrote:
-> Gentle ping on this series. 
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GPF_ with a correct flag.
+It has been compile tested.
 
-Have you tested save/restore?
+When memory is allocated in 'amd8111e_init_ring()', GFP_ATOMIC must be used
+because a spin_lock is hold.
+One of the call chains is:
+   amd8111e_open
+   ** spin_lock_irq(&lp->lock);
+   --> amd8111e_restart
+      --> amd8111e_init_ring
+   ** spin_unlock_irq(&lp->lock);
 
+The rest of the patch is produced by coccinelle with a few adjustments to
+please checkpatch.pl.
 
--bois
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
 
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
 
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/amd/amd8111e.c | 81 ++++++++++++++++-------------
+ 1 file changed, 44 insertions(+), 37 deletions(-)
+
+diff --git a/drivers/net/ethernet/amd/amd8111e.c b/drivers/net/ethernet/amd/amd8111e.c
+index 5d389a984394..b6c43b58ed3d 100644
+--- a/drivers/net/ethernet/amd/amd8111e.c
++++ b/drivers/net/ethernet/amd/amd8111e.c
+@@ -226,7 +226,9 @@ static int amd8111e_free_skbs(struct net_device *dev)
+ 	/* Freeing transmit skbs */
+ 	for(i = 0; i < NUM_TX_BUFFERS; i++){
+ 		if(lp->tx_skbuff[i]){
+-			pci_unmap_single(lp->pci_dev,lp->tx_dma_addr[i],					lp->tx_skbuff[i]->len,PCI_DMA_TODEVICE);
++			dma_unmap_single(&lp->pci_dev->dev,
++					 lp->tx_dma_addr[i],
++					 lp->tx_skbuff[i]->len, DMA_TO_DEVICE);
+ 			dev_kfree_skb (lp->tx_skbuff[i]);
+ 			lp->tx_skbuff[i] = NULL;
+ 			lp->tx_dma_addr[i] = 0;
+@@ -236,8 +238,9 @@ static int amd8111e_free_skbs(struct net_device *dev)
+ 	for (i = 0; i < NUM_RX_BUFFERS; i++){
+ 		rx_skbuff = lp->rx_skbuff[i];
+ 		if(rx_skbuff != NULL){
+-			pci_unmap_single(lp->pci_dev,lp->rx_dma_addr[i],
+-				  lp->rx_buff_len - 2,PCI_DMA_FROMDEVICE);
++			dma_unmap_single(&lp->pci_dev->dev,
++					 lp->rx_dma_addr[i],
++					 lp->rx_buff_len - 2, DMA_FROM_DEVICE);
+ 			dev_kfree_skb(lp->rx_skbuff[i]);
+ 			lp->rx_skbuff[i] = NULL;
+ 			lp->rx_dma_addr[i] = 0;
+@@ -287,20 +290,20 @@ static int amd8111e_init_ring(struct net_device *dev)
+ 		amd8111e_free_skbs(dev);
+ 
+ 	else{
+-		 /* allocate the tx and rx descriptors */
+-	     	if((lp->tx_ring = pci_alloc_consistent(lp->pci_dev,
+-			sizeof(struct amd8111e_tx_dr)*NUM_TX_RING_DR,
+-			&lp->tx_ring_dma_addr)) == NULL)
+-
++		/* allocate the tx and rx descriptors */
++		lp->tx_ring = dma_alloc_coherent(&lp->pci_dev->dev,
++			sizeof(struct amd8111e_tx_dr) * NUM_TX_RING_DR,
++			&lp->tx_ring_dma_addr, GFP_ATOMIC);
++		if (!lp->tx_ring)
+ 			goto err_no_mem;
+ 
+-	     	if((lp->rx_ring = pci_alloc_consistent(lp->pci_dev,
+-			sizeof(struct amd8111e_rx_dr)*NUM_RX_RING_DR,
+-			&lp->rx_ring_dma_addr)) == NULL)
+-
++		lp->rx_ring = dma_alloc_coherent(&lp->pci_dev->dev,
++			sizeof(struct amd8111e_rx_dr) * NUM_RX_RING_DR,
++			&lp->rx_ring_dma_addr, GFP_ATOMIC);
++		if (!lp->rx_ring)
+ 			goto err_free_tx_ring;
+-
+ 	}
++
+ 	/* Set new receive buff size */
+ 	amd8111e_set_rx_buff_len(dev);
+ 
+@@ -318,8 +321,10 @@ static int amd8111e_init_ring(struct net_device *dev)
+ 	}
+         /* Initilaizing receive descriptors */
+ 	for (i = 0; i < NUM_RX_BUFFERS; i++) {
+-		lp->rx_dma_addr[i] = pci_map_single(lp->pci_dev,
+-			lp->rx_skbuff[i]->data,lp->rx_buff_len-2, PCI_DMA_FROMDEVICE);
++		lp->rx_dma_addr[i] = dma_map_single(&lp->pci_dev->dev,
++						    lp->rx_skbuff[i]->data,
++						    lp->rx_buff_len - 2,
++						    DMA_FROM_DEVICE);
+ 
+ 		lp->rx_ring[i].buff_phy_addr = cpu_to_le32(lp->rx_dma_addr[i]);
+ 		lp->rx_ring[i].buff_count = cpu_to_le16(lp->rx_buff_len-2);
+@@ -338,15 +343,15 @@ static int amd8111e_init_ring(struct net_device *dev)
+ 
+ err_free_rx_ring:
+ 
+-	pci_free_consistent(lp->pci_dev,
+-		sizeof(struct amd8111e_rx_dr)*NUM_RX_RING_DR,lp->rx_ring,
+-		lp->rx_ring_dma_addr);
++	dma_free_coherent(&lp->pci_dev->dev,
++			  sizeof(struct amd8111e_rx_dr) * NUM_RX_RING_DR,
++			  lp->rx_ring, lp->rx_ring_dma_addr);
+ 
+ err_free_tx_ring:
+ 
+-	pci_free_consistent(lp->pci_dev,
+-		 sizeof(struct amd8111e_tx_dr)*NUM_TX_RING_DR,lp->tx_ring,
+-		 lp->tx_ring_dma_addr);
++	dma_free_coherent(&lp->pci_dev->dev,
++			  sizeof(struct amd8111e_tx_dr) * NUM_TX_RING_DR,
++			  lp->tx_ring, lp->tx_ring_dma_addr);
+ 
+ err_no_mem:
+ 	return -ENOMEM;
+@@ -612,16 +617,16 @@ static void amd8111e_free_ring(struct amd8111e_priv *lp)
+ {
+ 	/* Free transmit and receive descriptor rings */
+ 	if(lp->rx_ring){
+-		pci_free_consistent(lp->pci_dev,
+-			sizeof(struct amd8111e_rx_dr)*NUM_RX_RING_DR,
+-			lp->rx_ring, lp->rx_ring_dma_addr);
++		dma_free_coherent(&lp->pci_dev->dev,
++				  sizeof(struct amd8111e_rx_dr) * NUM_RX_RING_DR,
++				  lp->rx_ring, lp->rx_ring_dma_addr);
+ 		lp->rx_ring = NULL;
+ 	}
+ 
+ 	if(lp->tx_ring){
+-		pci_free_consistent(lp->pci_dev,
+-			sizeof(struct amd8111e_tx_dr)*NUM_TX_RING_DR,
+-			lp->tx_ring, lp->tx_ring_dma_addr);
++		dma_free_coherent(&lp->pci_dev->dev,
++				  sizeof(struct amd8111e_tx_dr) * NUM_TX_RING_DR,
++				  lp->tx_ring, lp->tx_ring_dma_addr);
+ 
+ 		lp->tx_ring = NULL;
+ 	}
+@@ -649,9 +654,10 @@ static int amd8111e_tx(struct net_device *dev)
+ 
+ 		/* We must free the original skb */
+ 		if (lp->tx_skbuff[tx_index]) {
+-			pci_unmap_single(lp->pci_dev, lp->tx_dma_addr[tx_index],
+-				  	lp->tx_skbuff[tx_index]->len,
+-					PCI_DMA_TODEVICE);
++			dma_unmap_single(&lp->pci_dev->dev,
++					 lp->tx_dma_addr[tx_index],
++					 lp->tx_skbuff[tx_index]->len,
++					 DMA_TO_DEVICE);
+ 			dev_consume_skb_irq(lp->tx_skbuff[tx_index]);
+ 			lp->tx_skbuff[tx_index] = NULL;
+ 			lp->tx_dma_addr[tx_index] = 0;
+@@ -737,14 +743,14 @@ static int amd8111e_rx_poll(struct napi_struct *napi, int budget)
+ 
+ 		skb_reserve(new_skb, 2);
+ 		skb = lp->rx_skbuff[rx_index];
+-		pci_unmap_single(lp->pci_dev,lp->rx_dma_addr[rx_index],
+-				 lp->rx_buff_len-2, PCI_DMA_FROMDEVICE);
++		dma_unmap_single(&lp->pci_dev->dev, lp->rx_dma_addr[rx_index],
++				 lp->rx_buff_len - 2, DMA_FROM_DEVICE);
+ 		skb_put(skb, pkt_len);
+ 		lp->rx_skbuff[rx_index] = new_skb;
+-		lp->rx_dma_addr[rx_index] = pci_map_single(lp->pci_dev,
++		lp->rx_dma_addr[rx_index] = dma_map_single(&lp->pci_dev->dev,
+ 							   new_skb->data,
+-							   lp->rx_buff_len-2,
+-							   PCI_DMA_FROMDEVICE);
++							   lp->rx_buff_len - 2,
++							   DMA_FROM_DEVICE);
+ 
+ 		skb->protocol = eth_type_trans(skb, dev);
+ 
+@@ -1270,7 +1276,8 @@ static netdev_tx_t amd8111e_start_xmit(struct sk_buff *skb,
+ 	}
+ #endif
+ 	lp->tx_dma_addr[tx_index] =
+-	    pci_map_single(lp->pci_dev, skb->data, skb->len, PCI_DMA_TODEVICE);
++	    dma_map_single(&lp->pci_dev->dev, skb->data, skb->len,
++			   DMA_TO_DEVICE);
+ 	lp->tx_ring[tx_index].buff_phy_addr =
+ 	    cpu_to_le32(lp->tx_dma_addr[tx_index]);
+ 
+@@ -1773,7 +1780,7 @@ static int amd8111e_probe_one(struct pci_dev *pdev,
+ 	}
+ 
+ 	/* Initialize DMA */
+-	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) < 0) {
++	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32)) < 0) {
+ 		dev_err(&pdev->dev, "DMA not supported\n");
+ 		err = -ENODEV;
+ 		goto err_free_reg;
+-- 
+2.25.1
 
