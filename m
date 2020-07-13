@@ -2,104 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FBC521CDEE
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 06:02:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A38FF21CE03
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 06:11:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgGMECm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 00:02:42 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:37043 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725554AbgGMECm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 00:02:42 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4B4qjp6mDkz9sR4;
-        Mon, 13 Jul 2020 14:02:38 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1594612959;
-        bh=vWeQzD85atpg+LjMgT4McIZoQRyk/+HkVAXmS4w/2c0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Rr2m+A6YFY7yH7vjsBrmHnpkNQ2Pw/szNrPHXda2KEkIAbCML+ZoPE4Cs/l85Yyh4
-         F4tIdB4UcV5S3rNa9sbeTXB29a+n1uGqn510Za7aMK/h/eIafM32XNggwG/1V5nz/J
-         BoGwmHFbAEjhs1Exrv4g//EY5PJ4FNyD3UM8gvWz5wJhmnrTep54XfdDojC3/HYH5O
-         wtvCg7CXvrxW18YbtC+/0NS0ABznm/LEJsBZCwc195wEcjKL6q+6OmG9fS4HU0HVYF
-         EFxtvV/8HkDdAYgS14yup5Iv0ir3n5/GW1yV3IgBWNjt08KFu3cK7OTll1N0OTLWft
-         TJD4wRChymSxw==
-Date:   Mon, 13 Jul 2020 14:02:38 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-next@vger.kernel.org, mhocko@suse.cz,
-        mm-commits@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: Re: mmotm 2020-07-09-21-00 uploaded
- (drivers/net/ethernet/mellanox/mlx5/core/en_main.c)
-Message-ID: <20200713140238.72649525@canb.auug.org.au>
-In-Reply-To: <8a6f8902-c36c-b46c-8e6f-05ae612d25ea@infradead.org>
-References: <20200710040047.md-jEb0TK%akpm@linux-foundation.org>
-        <8a6f8902-c36c-b46c-8e6f-05ae612d25ea@infradead.org>
+        id S1726684AbgGMELl convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 13 Jul 2020 00:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725554AbgGMELl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 00:11:41 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3669C061794
+        for <netdev@vger.kernel.org>; Sun, 12 Jul 2020 21:11:40 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jupoT-0000BJ-TV; Mon, 13 Jul 2020 06:11:33 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jupoQ-0006je-1S; Mon, 13 Jul 2020 06:11:30 +0200
+Date:   Mon, 13 Jul 2020 06:11:30 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Philippe Schenker <philippe.schenker@toradex.com>
+Subject: Re: [PATCH net-next v1 5/5] net: phy: micrel: ksz886x/ksz8081: add
+ cabletest support
+Message-ID: <20200713041129.gyoldkmsti4vl4m2@pengutronix.de>
+References: <20200710120851.28984-1-o.rempel@pengutronix.de>
+ <20200710120851.28984-6-o.rempel@pengutronix.de>
+ <20200711182912.GP1014141@lunn.ch>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/a.F=98_FQpFriK6K_UyZ8YF";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200711182912.GP1014141@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 06:05:48 up 240 days, 19:24, 229 users,  load average: 0.17, 0.13,
+ 0.05
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/a.F=98_FQpFriK6K_UyZ8YF
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Sat, Jul 11, 2020 at 08:29:12PM +0200, Andrew Lunn wrote:
+> On Fri, Jul 10, 2020 at 02:08:51PM +0200, Oleksij Rempel wrote:
+> > This patch support for cable test for the ksz886x switches and the
+> > ksz8081 PHY.
+> > 
+> > The patch was tested on a KSZ8873RLL switch with following results:
+> > 
+> > - port 1:
+> >   - cannot detect any distance
+> >   - provides inverted values
+> >     (Errata: DS80000830A: "LinkMD does not work on Port 1",
+> >      http://ww1.microchip.com/downloads/en/DeviceDoc/KSZ8873-Errata-DS80000830A.pdf)
+> >     - Reports "short" on open or ok.
+> >     - Reports "ok" on short.
+> > 
+> > - port 2:
+> >   - can detect distance
+> >   - can detect open on each wire of pair A (wire 1 and 2)
+> >   - can detect open only on one wire of pair B (only wire 3)
+> >   - can detect short between wires of a pair (wires 1 + 2 or 3 + 6)
+> >   - short between pairs is detected as open.
+> >     For example short between wires 2 + 3 is detected as open.
+> > 
+> > In order to work around the errata for port 1, the ksz8795 switch driver
+> > should be extended to provide proper device tree support for the related
+> > PHY nodes. So we can set a DT property to mark the port 1 as affected by
+> > the errata.
 
-Hi Randy,
+Hi Andrew,
+ 
+> Hi Oleksij
+> 
+> Do the PHY register read/writes pass through the DSA driver for the
+> 8873?  I was wondering if the switch could intercept reads/writes on
+> port1 for KSZ8081_LMD and return EOPNOTSUPP? That would be a more
+> robust solution than DT properties, which are going to get forgotten.
 
-On Fri, 10 Jul 2020 10:40:29 -0700 Randy Dunlap <rdunlap@infradead.org> wro=
-te:
->
-> on i386:
->=20
-> In file included from ../drivers/net/ethernet/mellanox/mlx5/core/en_main.=
-c:49:0:
-> ../drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h: In functi=
-on =E2=80=98mlx5e_accel_sk_get_rxq=E2=80=99:
-> ../drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h:153:12: er=
-ror: implicit declaration of function =E2=80=98sk_rx_queue_get=E2=80=99; di=
-d you mean =E2=80=98sk_rx_queue_set=E2=80=99? [-Werror=3Dimplicit-function-=
-declaration]
->   int rxq =3D sk_rx_queue_get(sk);
->             ^~~~~~~~~~~~~~~
->             sk_rx_queue_set
+Yes, it was my first idea as well. But this switch allows direct MDIO
+access to the PHYs and this PHY driver could be used without DSA driver.
+Not sure if we should support both variants?
 
-Caused by commit
+Beside, the Port 1 need at least one more quirk. The pause souport is
+announced but is not working. Should we some how clear Puase bit in the PHY and
+tell PHY framework to not use it? What is the best way to do it?
 
-  1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
-
-from the net-next tree.  Presumably CONFIG_XPS is not set.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/a.F=98_FQpFriK6K_UyZ8YF
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8L3N4ACgkQAVBC80lX
-0GxeJQf/f6Wyg7WRuxi4cpGEg9Z6M6hlgGSMFlkj3ZiCJ+L9O0HC3d21ZBJm8oOS
-PQBMbSZI8KnWqWIlIW922w82Wz3plpENMPiQZFo7rqAev47OHt/6ICuHLBcVyvVk
-REoOq5rp4cAIVrynBaOpldxRfiA+ympEdq8Mefz3/LYB60FRAoXIHe2G1xbXiv/x
-v9TPVFNef5TOurprjSmv4UkBz2myohPfn5m57Ps9veUrZldgB49eoTUTIOwrLUGz
-alWdiIW5hCAXttqNqnpMhtQJUNLxuR52gIxOBhPgm7f+8J0BT2lqvFtLGLghFVkg
-9VjdxhP5ut4zxxHzMzurJuSAR/XvHA==
-=M9pq
------END PGP SIGNATURE-----
-
---Sig_/a.F=98_FQpFriK6K_UyZ8YF--
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
