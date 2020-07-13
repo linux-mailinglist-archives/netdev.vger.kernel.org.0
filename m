@@ -2,128 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 301A021D1C7
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 10:33:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B16721D238
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 10:50:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725969AbgGMIdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 04:33:40 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:47098 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725818AbgGMIdk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 04:33:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594629218;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DCiSRLXUu39mIr1R5zRpea/rVokQzTpo+LOH6ciVFpc=;
-        b=NQeZVZrRiptyT4duYzN2mjQEKZqk67mouYPHVyzTzDIqffQsLsAvAQx2oaOuWyayw0uTrC
-        LfuN4OCn/YvmrwjFi147PTyy6AXnrar4bzqDjk6zVE+ZJ6uSoc9cf2O0YhSK7fwTpaWLR1
-        iEu29XvARWggzZ3j/SKRIOM4Op39zQI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-401-VVmudf3GOjqQ7yUL6O-LdQ-1; Mon, 13 Jul 2020 04:33:37 -0400
-X-MC-Unique: VVmudf3GOjqQ7yUL6O-LdQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CA05C19057A1;
-        Mon, 13 Jul 2020 08:33:35 +0000 (UTC)
-Received: from [10.72.13.177] (ovpn-13-177.pek2.redhat.com [10.72.13.177])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1864A1002396;
-        Mon, 13 Jul 2020 08:33:25 +0000 (UTC)
-Subject: Re: [PATCH 6/7] ifcvf: replace irq_request/free with helpers in vDPA
- core.
-To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
-        alex.williamson@redhat.com, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, wanpengli@tencent.com
-Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, dan.daly@intel.com
-References: <1594565366-3195-1-git-send-email-lingshan.zhu@intel.com>
- <1594565366-3195-6-git-send-email-lingshan.zhu@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c7d4eca1-b65a-b795-dfa6-fe7658716cb1@redhat.com>
-Date:   Mon, 13 Jul 2020 16:33:24 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1729048AbgGMIux convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 13 Jul 2020 04:50:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725830AbgGMIuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 04:50:51 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACD3C061755
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 01:50:51 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1juuAh-0004be-G8; Mon, 13 Jul 2020 10:50:47 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1juuAc-00038J-QU; Mon, 13 Jul 2020 10:50:42 +0200
+Date:   Mon, 13 Jul 2020 10:50:42 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Philippe Schenker <philippe.schenker@toradex.com>
+Subject: Re: [PATCH net-next v1 5/5] net: phy: micrel: ksz886x/ksz8081: add
+ cabletest support
+Message-ID: <20200713085042.6t3b6svujwxpc5ez@pengutronix.de>
+References: <20200710120851.28984-1-o.rempel@pengutronix.de>
+ <20200710120851.28984-6-o.rempel@pengutronix.de>
+ <20200711182912.GP1014141@lunn.ch>
+ <20200713041129.gyoldkmsti4vl4m2@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <1594565366-3195-6-git-send-email-lingshan.zhu@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200713041129.gyoldkmsti4vl4m2@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:47:55 up 241 days, 6 min, 248 users,  load average: 0.06, 0.14,
+ 0.20
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jul 13, 2020 at 06:11:30AM +0200, Oleksij Rempel wrote:
+> On Sat, Jul 11, 2020 at 08:29:12PM +0200, Andrew Lunn wrote:
+> > On Fri, Jul 10, 2020 at 02:08:51PM +0200, Oleksij Rempel wrote:
+> > > This patch support for cable test for the ksz886x switches and the
+> > > ksz8081 PHY.
+> > > 
+> > > The patch was tested on a KSZ8873RLL switch with following results:
+> > > 
+> > > - port 1:
+> > >   - cannot detect any distance
+> > >   - provides inverted values
+> > >     (Errata: DS80000830A: "LinkMD does not work on Port 1",
+> > >      http://ww1.microchip.com/downloads/en/DeviceDoc/KSZ8873-Errata-DS80000830A.pdf)
+> > >     - Reports "short" on open or ok.
+> > >     - Reports "ok" on short.
+> > > 
+> > > - port 2:
+> > >   - can detect distance
+> > >   - can detect open on each wire of pair A (wire 1 and 2)
+> > >   - can detect open only on one wire of pair B (only wire 3)
+> > >   - can detect short between wires of a pair (wires 1 + 2 or 3 + 6)
+> > >   - short between pairs is detected as open.
+> > >     For example short between wires 2 + 3 is detected as open.
+> > > 
+> > > In order to work around the errata for port 1, the ksz8795 switch driver
+> > > should be extended to provide proper device tree support for the related
+> > > PHY nodes. So we can set a DT property to mark the port 1 as affected by
+> > > the errata.
+> 
+> Hi Andrew,
+>  
+> > Hi Oleksij
+> > 
+> > Do the PHY register read/writes pass through the DSA driver for the
+> > 8873?  I was wondering if the switch could intercept reads/writes on
+> > port1 for KSZ8081_LMD and return EOPNOTSUPP? That would be a more
+> > robust solution than DT properties, which are going to get forgotten.
+> 
+> Yes, it was my first idea as well. But this switch allows direct MDIO
+> access to the PHYs and this PHY driver could be used without DSA driver.
+> Not sure if we should support both variants?
+> 
+> Beside, the Port 1 need at least one more quirk. The pause souport is
+> announced but is not working. Should we some how clear Puase bit in the PHY and
+> tell PHY framework to not use it? What is the best way to do it?
 
-On 2020/7/12 下午10:49, Zhu Lingshan wrote:
-> This commit replaced irq_request/free() with helpers in vDPA
-> core, so that it can request/free irq and setup irq offloading
-> on order.
->
-> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> ---
->   drivers/vdpa/ifcvf/ifcvf_main.c | 11 ++++++-----
->   1 file changed, 6 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-> index f5a60c1..65b84e1 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> @@ -47,11 +47,12 @@ static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
->   {
->   	struct pci_dev *pdev = adapter->pdev;
->   	struct ifcvf_hw *vf = &adapter->vf;
-> +	struct vdpa_device *vdpa = &adapter->vdpa;
->   	int i;
->   
->   
->   	for (i = 0; i < queues; i++)
-> -		devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
-> +		vdpa_free_vq_irq(&pdev->dev, vdpa, vf->vring[i].irq, i, &vf->vring[i]);
->   
->   	ifcvf_free_irq_vectors(pdev);
->   }
-> @@ -60,6 +61,7 @@ static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
->   {
->   	struct pci_dev *pdev = adapter->pdev;
->   	struct ifcvf_hw *vf = &adapter->vf;
-> +	struct vdpa_device *vdpa = &adapter->vdpa;
->   	int vector, i, ret, irq;
->   
->   	ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
-> @@ -73,6 +75,7 @@ static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
->   		 pci_name(pdev));
->   	vector = 0;
->   	irq = pci_irq_vector(pdev, vector);
-> +	/* config interrupt */
+On other hand, if adding this quirks in to switch driver is acceptable
+way, i'll be happy with this as well.
 
-
-Unnecessary changes.
-
-Thanks
-
-
->   	ret = devm_request_irq(&pdev->dev, irq,
->   			       ifcvf_config_changed, 0,
->   			       vf->config_msix_name, vf);
-> @@ -82,13 +85,11 @@ static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
->   			 pci_name(pdev), i);
->   		vector = i + IFCVF_MSI_QUEUE_OFF;
->   		irq = pci_irq_vector(pdev, vector);
-> -		ret = devm_request_irq(&pdev->dev, irq,
-> +		ret = vdpa_alloc_vq_irq(&pdev->dev, vdpa, irq,
->   				       ifcvf_intr_handler, 0,
->   				       vf->vring[i].msix_name,
-> -				       &vf->vring[i]);
-> +				       &vf->vring[i], i);
->   		if (ret) {
-> -			IFCVF_ERR(pdev,
-> -				  "Failed to request irq for vq %d\n", i);
->   			ifcvf_free_irq(adapter, i);
->   
->   			return ret;
-
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
