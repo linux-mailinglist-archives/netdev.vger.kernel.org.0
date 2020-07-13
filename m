@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B06C621DDB2
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82DDC21DDD2
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:47:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730596AbgGMQmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 12:42:10 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:42089 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729751AbgGMQmE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 12:42:04 -0400
-Received: from marcel-macbook.fritz.box (p5b3d2638.dip0.t-ipconnect.de [91.61.38.56])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 581A5CECCA;
-        Mon, 13 Jul 2020 18:52:00 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [Linux-kernel-mentees] [PATCH 2/2] net/bluetooth: Prevent
- out-of-bounds read in hci_inquiry_result_with_rssi_evt()
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <82c4e719b7615f5333444bdc2b5cc243a693eeb1.1594414498.git.yepeilin.cs@gmail.com>
-Date:   Mon, 13 Jul 2020 18:42:02 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Bluetooth Kernel Mailing List 
-        <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <1B0C88A5-05B1-49FB-9B8C-8D833BA51AD9@holtmann.org>
-References: <3f69f09d6eb0bc1430cae2894c635252a1cb09e1.1594414498.git.yepeilin.cs@gmail.com>
- <82c4e719b7615f5333444bdc2b5cc243a693eeb1.1594414498.git.yepeilin.cs@gmail.com>
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1729854AbgGMQrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 12:47:32 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33008 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729687AbgGMQrc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 12:47:32 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jv1c0-004tPm-Cx; Mon, 13 Jul 2020 18:47:28 +0200
+Date:   Mon, 13 Jul 2020 18:47:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, xiyou.wangcong@gmail.com,
+        ap420073@gmail.com
+Subject: Re: [PATCH net] net: dsa: link interfaces with the DSA master to get
+ rid of lockdep warnings
+Message-ID: <20200713164728.GH1078057@lunn.ch>
+References: <20200713162443.2510682-1-olteanv@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200713162443.2510682-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Peilin,
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index 743caabeaaa6..a951b2a7d79a 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -1994,6 +1994,13 @@ int dsa_slave_create(struct dsa_port *port)
+>  			   ret, slave_dev->name);
+>  		goto out_phy;
+>  	}
+> +	rtnl_lock();
+> +	ret = netdev_upper_dev_link(master, slave_dev, NULL);
+> +	rtnl_unlock();
+> +	if (ret) {
+> +		unregister_netdevice(slave_dev);
+> +		goto out_phy;
+> +	}
 
-> Check `num_rsp` before using it as for-loop counter. Add `unlock` label.
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
-> ---
-> net/bluetooth/hci_event.c | 7 +++++++
-> 1 file changed, 7 insertions(+)
+Hi Vladimir
 
-patch has been applied to bluetooth-next tree.
+A common pattern we see in bugs is that the driver sets up something
+critical after calling register_netdev(), not realising that that call
+can go off and really start using the interface before it returns. So
+in general, i like to have register_netdev() last, nothing after it.
 
-Regards
+Please could you move this before register_netdev().
 
-Marcel
-
+Thanks
+	Andrew
