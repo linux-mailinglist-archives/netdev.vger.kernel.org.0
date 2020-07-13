@@ -2,239 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EB5621DF9B
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 20:25:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 985AE21DFDA
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 20:38:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726771AbgGMSZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 14:25:40 -0400
-Received: from forwardcorp1p.mail.yandex.net ([77.88.29.217]:50848 "EHLO
-        forwardcorp1p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726396AbgGMSZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 14:25:38 -0400
-Received: from iva8-d077482f1536.qloud-c.yandex.net (iva8-d077482f1536.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:2f26:0:640:d077:482f])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id E8D1B2E1520;
-        Mon, 13 Jul 2020 21:25:34 +0300 (MSK)
-Received: from iva8-88b7aa9dc799.qloud-c.yandex.net (iva8-88b7aa9dc799.qloud-c.yandex.net [2a02:6b8:c0c:77a0:0:640:88b7:aa9d])
-        by iva8-d077482f1536.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id Ax2rUDHLt3-PYs0WUrW;
-        Mon, 13 Jul 2020 21:25:34 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1594664734; bh=jFK3JKbc4DJ8+menrIhytuE5eis3Psm77MfgY58tsR4=;
-        h=In-Reply-To:Message-Id:References:Date:Subject:To:From:Cc;
-        b=yte1IYclYTmOnUM3Cqq7JboWJpU8hegKSzGzpypxendTJQIkd5yG3kZ4o+aZS3QBE
-         9N7dpPG9af+mADVvsJX05n2+6UUaDHN8ATWxtyYD9sXBH7/XGbslW2/LtzSM7pg9jT
-         151qWuj0W2fKFonM4X++OF+di0Zg4XeiM22gULTY=
-Authentication-Results: iva8-d077482f1536.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from 37.9.72.97-iva.dhcp.yndx.net (37.9.72.97-iva.dhcp.yndx.net [37.9.72.97])
-        by iva8-88b7aa9dc799.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id liA4tjrt5e-PYjqepNP;
-        Mon, 13 Jul 2020 21:25:34 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     sdf@google.com
-Subject: [PATCH bpf-next 4/4] bpf: try to use existing cgroup storage in bpf_prog_test_run_skb
-Date:   Mon, 13 Jul 2020 21:25:20 +0300
-Message-Id: <20200713182520.97606-5-zeil@yandex-team.ru>
-In-Reply-To: <20200713182520.97606-1-zeil@yandex-team.ru>
-References: <20200713182520.97606-1-zeil@yandex-team.ru>
+        id S1726852AbgGMShb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 14:37:31 -0400
+Received: from out01.mta.xmission.com ([166.70.13.231]:35728 "EHLO
+        out01.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726306AbgGMSh1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 14:37:27 -0400
+Received: from in02.mta.xmission.com ([166.70.13.52])
+        by out01.mta.xmission.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.90_1)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1jv3KN-000360-Ra; Mon, 13 Jul 2020 12:37:23 -0600
+Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=x220.xmission.com)
+        by in02.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.87)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1jv3KM-000346-KJ; Mon, 13 Jul 2020 12:37:23 -0600
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     Matt Bennett <Matt.Bennett@alliedtelesis.co.nz>
+Cc:     "christian.brauner\@ubuntu.com" <christian.brauner@ubuntu.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "containers\@lists.linux-foundation.org" 
+        <containers@lists.linux-foundation.org>,
+        "zbr\@ioremap.net" <zbr@ioremap.net>
+References: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz>
+        <87h7uqukct.fsf@x220.int.ebiederm.org>
+        <20200702191025.bqxqwsm6kwnhm2p7@wittgenstein>
+        <2ab92386ce5293e423aa3f117572200239a7228b.camel@alliedtelesis.co.nz>
+Date:   Mon, 13 Jul 2020 13:34:34 -0500
+In-Reply-To: <2ab92386ce5293e423aa3f117572200239a7228b.camel@alliedtelesis.co.nz>
+        (Matt Bennett's message of "Sun, 5 Jul 2020 22:32:06 +0000")
+Message-ID: <87tuyb9scl.fsf@x220.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1jv3KM-000346-KJ;;;mid=<87tuyb9scl.fsf@x220.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX19QCjJNh46OkUrfqmfDg7PJNrfXqRLKuLI=
+X-SA-Exim-Connect-IP: 68.227.160.95
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa07.xmission.com
+X-Spam-Level: **
+X-Spam-Status: No, score=2.2 required=8.0 tests=ALL_TRUSTED,BAYES_20,
+        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,XMNoVowels,XMSubLong,
+        XM_B_SpammyTLD autolearn=disabled version=3.4.2
+X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+        * -0.0 BAYES_20 BODY: Bayes spam probability is 5 to 20%
+        *      [score: 0.1519]
+        *  0.7 XMSubLong Long Subject
+        *  1.5 XMNoVowels Alpha-numberic number with no vowels
+        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
+        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
+        *      [sa07 0; Body=1 Fuz1=1 Fuz2=1]
+        *  1.0 XM_B_SpammyTLD Contains uncommon/spammy TLD
+X-Spam-DCC: ; sa07 0; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: **;Matt Bennett <Matt.Bennett@alliedtelesis.co.nz>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 834 ms - load_scoreonly_sql: 0.12 (0.0%),
+        signal_user_changed: 13 (1.6%), b_tie_ro: 11 (1.3%), parse: 1.96
+        (0.2%), extract_message_metadata: 17 (2.1%), get_uri_detail_list: 2.1
+        (0.3%), tests_pri_-1000: 7 (0.9%), tests_pri_-950: 1.37 (0.2%),
+        tests_pri_-900: 1.02 (0.1%), tests_pri_-90: 320 (38.4%), check_bayes:
+        310 (37.2%), b_tokenize: 8 (1.0%), b_tok_get_all: 178 (21.4%),
+        b_comp_prob: 3.9 (0.5%), b_tok_touch_all: 115 (13.8%), b_finish: 1.06
+        (0.1%), tests_pri_0: 430 (51.6%), check_dkim_signature: 1.82 (0.2%),
+        check_dkim_adsp: 2.9 (0.4%), poll_dns_idle: 17 (2.0%), tests_pri_10:
+        3.6 (0.4%), tests_pri_500: 32 (3.9%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH 0/5] RFC: connector: Add network namespace awareness
+X-Spam-Flag: No
+X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now we cannot check results in cgroup storage after running
-BPF_PROG_TEST_RUN command because it allocates dummy cgroup storage
-during test. This patch implements simple logic for searching already
-allocated cgroup storage through iterating effective programs of current
-cgroup and finding the first match. If match is not found fallback to
-temporary storage is happened.
+Matt Bennett <Matt.Bennett@alliedtelesis.co.nz> writes:
 
-Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
----
- net/bpf/test_run.c                                 | 53 ++++++++++++++-
- .../selftests/bpf/prog_tests/cgroup_skb_prog_run.c | 78 ++++++++++++++++++++++
- 2 files changed, 128 insertions(+), 3 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_skb_prog_run.c
+> On Thu, 2020-07-02 at 21:10 +0200, Christian Brauner wrote:
+>> On Thu, Jul 02, 2020 at 08:17:38AM -0500, Eric W. Biederman wrote:
+>> > Matt Bennett <matt.bennett@alliedtelesis.co.nz> writes:
+>> > 
+>> > > Previously the connector functionality could only be used by processes running in the
+>> > > default network namespace. This meant that any process that uses the connector functionality
+>> > > could not operate correctly when run inside a container. This is a draft patch series that
+>> > > attempts to now allow this functionality outside of the default network namespace.
+>> > > 
+>> > > I see this has been discussed previously [1], but am not sure how my changes relate to all
+>> > > of the topics discussed there and/or if there are any unintended side effects from my draft
+>> > > changes.
+>> > 
+>> > Is there a piece of software that uses connector that you want to get
+>> > working in containers?
+>
+> We have an IPC system [1] where processes can register their socket
+> details (unix, tcp, tipc, ...) to a 'monitor' process. Processes can
+> then get notified when other processes they are interested in
+> start/stop their servers and use the registered details to connect to
+> them. Everything works unless a process crashes, in which case the
+> monitoring process never removes their details. Therefore the
+> monitoring process uses the connector functionality with
+> PROC_EVENT_EXIT to detect when a process crashes and removes the
+> details if it is a previously registered PID.
+>
+> This was working for us until we tried to run our system in a container.
+>
+>> > 
+>> > I am curious what the motivation is because up until now there has been
+>> > nothing very interesting using this functionality.  So it hasn't been
+>> > worth anyone's time to make the necessary changes to the code.
+>> 
+>> Imho, we should just state once and for all that the proc connector will
+>> not be namespaced. This is such a corner-case thing and has been
+>> non-namespaced for such a long time without consistent push for it to be
+>> namespaced combined with the fact that this needs quite some code to
+>> make it work correctly that I fear we end up buying more bugs than we're
+>> selling features. And realistically, you and I will end up maintaining
+>> this and I feel this is not worth the time(?). Maybe I'm being too
+>> pessimistic though.
+>> 
+>
+> Fair enough. I can certainly look for another way to detect process
+> crashes. Interestingly I found a patch set [2] on the mailing list
+> that attempts to solve the problem I wish to solve, but it doesn't
+> look like the patches were ever developed further. From reading the
+> discussion thread on that patch set it appears that I should be doing
+> some form of polling on the /proc files.
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 5c4835c..16808cb 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -15,15 +15,56 @@
- #define CREATE_TRACE_POINTS
- #include <trace/events/bpf_test_run.h>
- 
-+static struct bpf_prog_array_item *bpf_prog_find_active(struct bpf_prog *prog,
-+							struct bpf_prog_array *effective)
-+{
-+	struct bpf_prog_array_item *item;
-+	struct bpf_prog_array *array;
-+	struct bpf_prog *p;
-+
-+	array = rcu_dereference(effective);
-+	if (!array)
-+		return NULL;
-+
-+	item = &array->items[0];
-+	while ((p = READ_ONCE(item->prog))) {
-+		if (p == prog)
-+			return item;
-+		item++;
-+	}
-+
-+	return NULL;
-+}
-+
-+static struct bpf_cgroup_storage **bpf_prog_find_active_storage(struct bpf_prog *prog)
-+{
-+	struct bpf_prog_array_item *item;
-+	struct cgroup *cgrp;
-+
-+	if (prog->type != BPF_PROG_TYPE_CGROUP_SKB)
-+		return NULL;
-+
-+	cgrp = task_dfl_cgroup(current);
-+
-+	item = bpf_prog_find_active(prog,
-+				    cgrp->bpf.effective[BPF_CGROUP_INET_INGRESS]);
-+	if (!item)
-+		item = bpf_prog_find_active(prog,
-+					    cgrp->bpf.effective[BPF_CGROUP_INET_EGRESS]);
-+
-+	return item ? item->cgroup_storage : NULL;
-+}
-+
- static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
- 			u32 *retval, u32 *time, bool xdp)
- {
--	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = { NULL };
-+	struct bpf_cgroup_storage *dummy_storage[MAX_BPF_CGROUP_STORAGE_TYPE] = { NULL };
-+	struct bpf_cgroup_storage **storage = dummy_storage;
- 	u64 time_start, time_spent = 0;
- 	int ret = 0;
- 	u32 i;
- 
--	ret = bpf_cgroup_storages_alloc(storage, prog);
-+	ret = bpf_cgroup_storages_alloc(dummy_storage, prog);
- 	if (ret)
- 		return ret;
- 
-@@ -31,6 +72,9 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
- 		repeat = 1;
- 
- 	rcu_read_lock();
-+	storage = bpf_prog_find_active_storage(prog);
-+	if (!storage)
-+		storage = dummy_storage;
- 	migrate_disable();
- 	time_start = ktime_get_ns();
- 	for (i = 0; i < repeat; i++) {
-@@ -54,6 +98,9 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
- 			cond_resched();
- 
- 			rcu_read_lock();
-+			storage = bpf_prog_find_active_storage(prog);
-+			if (!storage)
-+				storage = dummy_storage;
- 			migrate_disable();
- 			time_start = ktime_get_ns();
- 		}
-@@ -65,7 +112,7 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
- 	do_div(time_spent, repeat);
- 	*time = time_spent > U32_MAX ? U32_MAX : (u32)time_spent;
- 
--	bpf_cgroup_storages_free(storage);
-+	bpf_cgroup_storages_free(dummy_storage);
- 
- 	return ret;
- }
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_skb_prog_run.c b/tools/testing/selftests/bpf/prog_tests/cgroup_skb_prog_run.c
-new file mode 100644
-index 0000000..12ca881
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_skb_prog_run.c
-@@ -0,0 +1,78 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <test_progs.h>
-+
-+#include "cgroup_helpers.h"
-+#include "network_helpers.h"
-+
-+static char bpf_log_buf[BPF_LOG_BUF_SIZE];
-+
-+void test_cgroup_skb_prog_run(void)
-+{
-+	struct bpf_insn prog[] = {
-+		BPF_LD_MAP_FD(BPF_REG_1, 0), /* map fd */
-+		BPF_MOV64_IMM(BPF_REG_2, 0), /* flags, not used */
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_local_storage),
-+		BPF_MOV64_IMM(BPF_REG_1, 1),
-+		BPF_RAW_INSN(BPF_STX | BPF_XADD | BPF_W, BPF_REG_0, BPF_REG_1, 0, 0),
-+
-+		BPF_MOV64_IMM(BPF_REG_0, 1), /* r0 = 1 */
-+		BPF_EXIT_INSN(),
-+	};
-+	size_t insns_cnt = sizeof(prog) / sizeof(struct bpf_insn);
-+	int storage_fd = -1, prog_fd = -1, cg_fd = -1;
-+	struct bpf_cgroup_storage_key key;
-+	__u32 duration, retval, size;
-+	char buf[128];
-+	__u64 value;
-+	int err;
-+
-+	storage_fd = bpf_create_map(BPF_MAP_TYPE_CGROUP_STORAGE,
-+				    sizeof(struct bpf_cgroup_storage_key),
-+				    8, 0, 0);
-+	if (CHECK(storage_fd < 0, "create_map", "%s\n", strerror(errno)))
-+		goto out;
-+
-+	prog[0].imm = storage_fd;
-+
-+	prog_fd = bpf_load_program(BPF_PROG_TYPE_CGROUP_SKB,
-+				   prog, insns_cnt, "GPL", 0,
-+				   bpf_log_buf, BPF_LOG_BUF_SIZE);
-+	if (CHECK(prog_fd < 0, "prog_load",
-+		  "verifier output:\n%s\n-------\n", bpf_log_buf))
-+		goto out;
-+
-+	if (CHECK_FAIL(setup_cgroup_environment()))
-+		goto out;
-+
-+	cg_fd = create_and_get_cgroup("/cg");
-+	if (CHECK_FAIL(cg_fd < 0))
-+		goto out;
-+
-+	if (CHECK_FAIL(join_cgroup("/cg")))
-+		goto out;
-+
-+	if (CHECK(bpf_prog_attach(prog_fd, cg_fd, BPF_CGROUP_INET_EGRESS, 0),
-+		  "prog_attach", "%s\n", strerror(errno)))
-+		goto out;
-+
-+	err = bpf_prog_test_run(prog_fd, NUM_ITER, &pkt_v4, sizeof(pkt_v4),
-+				buf, &size, &retval, &duration);
-+	CHECK(err || retval != 1, "prog_test_run",
-+	      "err %d errno %d retval %d\n", err, errno, retval);
-+
-+	/* check that cgroup storage results are available after test run */
-+
-+	err = bpf_map_get_next_key(storage_fd, NULL, &key);
-+	CHECK(err, "map_get_next_key", "%s\n", strerror(errno));
-+
-+	err = bpf_map_lookup_elem(storage_fd, &key, &value);
-+	CHECK(err || value != NUM_ITER,
-+	      "map_lookup_elem",
-+	      "err %d errno %d cnt %lld(%d)\n", err, errno, value, NUM_ITER);
-+out:
-+	close(storage_fd);
-+	close(prog_fd);
-+	close(cg_fd);
-+	cleanup_cgroup_environment();
-+}
--- 
-2.7.4
+Recently Christian Brauner implemented pidfd complete with a poll
+operation that reports when a process terminates.
 
+If you are willing to change your userspace code switching to pidfd
+should be all that you need.
+
+Eric
