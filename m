@@ -2,230 +2,923 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1618C21D33B
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 11:55:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE53E21D344
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 11:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729307AbgGMJy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 05:54:57 -0400
-Received: from smtp45.i.mail.ru ([94.100.177.105]:38316 "EHLO smtp45.i.mail.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726523AbgGMJy5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 05:54:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:Message-ID:Subject:From:Cc:To; bh=Tz2Qp/k2yRLW1PddCeZm683FHMKBRrIZ0QGM7LM4HSU=;
-        b=ABpJa4pawqjd4XoNQSZ2xJZiL67SzLyJkLLaImWn6XqFuEyoShr+k6Gp1etz0/LqJtO1ZNzo5v53KI7QApXx1W51CuV4LqEtrzxZ0SaNwx0j23bUtepnlVQgHokhGrs2HdrRNdI6iAaFGaV9j8xsq+gx+OR5hBx03778bDXAvMA=;
-Received: by smtp45.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1juvAg-0000AF-Qm; Mon, 13 Jul 2020 12:54:51 +0300
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     vivien.didelot@gmail.com, claudiu.manoil@nxp.com,
-        f.fainelli@gmail.com, netdev@vger.kernel.org
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-Subject: 88E6176 dsa switch on ls1021a (GIANFAR)
-Message-ID: <5a1a2fac-7d16-afed-173b-54483a3faa6d@inbox.ru>
-Date:   Mon, 13 Jul 2020 12:54:58 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728833AbgGMJ5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 05:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726725AbgGMJ5F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 05:57:05 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DABAC061755;
+        Mon, 13 Jul 2020 02:57:05 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id g20so12830676edm.4;
+        Mon, 13 Jul 2020 02:57:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IHDr0i61dEoNYKywbfuNQGC80X6fvMrVj0nQHT1B3yg=;
+        b=MY5MgBgM36eM7b6yMUFVGlvsd5bQyyY0x8WiP0Aep7LsrPlBxfPIq9y/LWat9D0qEF
+         JD72EuJtd769vPzvKb49qoJtbNvgS3tS5tyAjtVSC9UUsxa2TqnIseNjM3ss8ec9E+EB
+         /6qRS0gYOaoiKlAgrn5mncuwrf5oIMi6k2Yv2xYr+FOkPuNkyNd04xwPB+2Wjc4BnGYM
+         hTEC1XQyvBtQsLOXyopDryYCL74eANzMGTRhn1XTKyXID+5xRooqkV/FxaBAaQmAKSaN
+         JLgPJFBiWIN64qTNndqX2ub7YdXfUCT6IrGoQj6mPiZsPCfGiLbUFgx0mL4QxUVi5B9G
+         YINQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IHDr0i61dEoNYKywbfuNQGC80X6fvMrVj0nQHT1B3yg=;
+        b=MBDWTqsbxLBA44hELWxAWxWNBWdSJhN9y9cXqQfSakcV7R4RK5tMaOzBnux+7u6+W9
+         ZQkPIC3Q1PEc8I8hEAVX2VSw/N0AG80xNiexAl0h7HVC1ehSNI9ypeNcSyCxMG1CX70R
+         2d+I7W4DCxrnbszUNMr0Ucu4YNm4L84lPjuvxzb6VwJLzZ4bs4NkgLSz+n1j9YQs2xtx
+         g2MsDlmhxGpR6odbHUDixgeDDwOYsipQmlNVd/2qnQKG9HH2ucMM1UuixfW5e+IR+YPj
+         l6OnehXrDJbuBJ9C3bYDsVWqI8Kbc7uja0wiAOL196wfVbr+QejGLDyyR/3xhh8XVgV7
+         O0YA==
+X-Gm-Message-State: AOAM531f/zC+HBhXalOCUKKONsZh9KghmjCTuaJ/6yGUVaMcctEXBmif
+        uvs0J/OW0W+zvvEiJsXE6yY=
+X-Google-Smtp-Source: ABdhPJx4U5zrZdkrnu3uPQOmvb9QcnJoKcxVSKHsLwlIz0ko4Y4Y3kJIM198WtyhH+jBJbqVBDEr8A==
+X-Received: by 2002:aa7:d8cf:: with SMTP id k15mr87604422eds.250.1594634223347;
+        Mon, 13 Jul 2020 02:57:03 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id be2sm10942773edb.92.2020.07.13.02.57.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jul 2020 02:57:02 -0700 (PDT)
+Date:   Mon, 13 Jul 2020 12:57:00 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH v1 4/8] net: dsa: hellcreek: Add support for hardware
+ timestamping
+Message-ID: <20200713095700.rd4u4t6thkzfnlll@skbuf>
+References: <20200710113611.3398-1-kurt@linutronix.de>
+ <20200710113611.3398-5-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Authentication-Results: smtp45.i.mail.ru; auth=pass smtp.auth=fido_max@inbox.ru smtp.mailfrom=fido_max@inbox.ru
-X-7564579A: 646B95376F6C166E
-X-77F55803: 4F1203BC0FB41BD9BB76C036EA8E79ACD8892A7C49526C615EDCB82F0F92FEA4182A05F53808504010F3AE380B44568FB43C45C2B72F52C434831B0BE96377A3370D9A5FF93AB5CC
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE708661B9CC72D936EEA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637D59CDB32E2D1ED2AEA1F7E6F0F101C674E70A05D1297E1BBC6CDE5D1141D2B1CDC3A8225D7281D0CDD1D31D0289DC6EB857490055563565F9FA2833FD35BB23D9E625A9149C048EE33AC447995A7AD18CB629EEF1311BF91D2E47CDBA5A96583BD4B6F7A4D31EC0BB23A54CFFDBC96A8389733CBF5DBD5E9D5E8D9A59859A8B6957A4DEDD2346B42CC7F00164DA146DA6F5DAA56C3B73B23E7DDDDC251EA7DABD81D268191BDAD3DC09775C1D3CA48CFCB56C4F5857C67B9BA3038C0950A5D36C8A9BA7A39EFB76633AA9177FDEE801FBA3038C0950A5D36D5E8D9A59859A8B6091938966D39094376E601842F6C81A1F004C90652538430FAAB00FBE355B82D93EC92FD9297F6718AA50765F79006377AA2284B41911753A7F4EDE966BC389F395957E7521B51C24C7702A67D5C33162DBA43225CD8A89F83C798A30B85E16B57739F23D657EF2BB5C8C57E37DE458B4C7702A67D5C3316FA3894348FB808DBA1CE242F1348D5363B503F486389A921A5CC5B56E945C8DA
-X-C8649E89: 86AC083BACC31EE7DF04ADE4C76764E09D69B0687DD6549BDC40724EB7B885FA8861F0797B99BC7D9F595CEF8576C34B
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj7M7hD4t88wl+Obham0QTAg==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24D910E2FDD919D1FD6FD5F3F218613788348EC3D22628D65AEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200710113611.3398-5-kurt@linutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I connected 88E6176 switch to ls1021a based board.
-DSA works fine.
-But I found a problem.
-1) Set IP on lan0 (switch port 0).
-2) Create bridge br0.
-3) Add lan3 (switch port3) to br0.
-4) Set lan3 up.
-5) Set IP on br0.
-------------------------------------------------------------------------
-[ 1530.972078] mv88e6085 mdio@2d24000:0c lan3: configuring for phy/ link 
-mode
-[ 1531.022737] mv88e6085 mdio@2d24000:0c lan3: Link is Up - 100Mbps/Full 
-- flow control off
-[ 3648.512947] mv88e6085 mdio@2d24000:0c lan3: Link is Down
-[ 3686.413791] br0: port 1(lan3) entered blocking state
-[ 3686.413809] br0: port 1(lan3) entered disabled state
-[ 3686.414836] device lan3 entered promiscuous mode
-[ 3716.124830] device eth0 entered promiscuous mode
-[ 3716.124987] mv88e6085 mdio@2d24000:0c lan3: configuring for phy/ link 
-mode
-[ 3718.888113] mv88e6085 mdio@2d24000:0c lan3: Link is Up - 100Mbps/Full 
-- flow control off
-[ 3718.888168] br0: port 1(lan3) entered blocking state
-[ 3718.888178] br0: port 1(lan3) entered forwarding state
-[ 3725.587161] BUG: scheduling while atomic: mdio@2d24000:0c/257/0x00000100
-[ 3725.587170] Modules linked in: sctp libcrc32c tag_edsa marvell 
-mv88e6xxx dsa_core phylink bridge stp ntc_thermistor llc dwc3 roles 
-ucc_tdm(C) ina2xx_adc ina2xx mux_gpio iio_mux mux_core iio_rescale 
-spidev spi_fsl_dspi lm75 lm90 gpio_pca953x iio_hwmon ti_ads1015 
-industrialio_triggered_buffer kfifo_buf industrialio at24 i2c_dev
-[ 3725.587244] CPU: 0 PID: 257 Comm: mdio@2d24000:0c Tainted: G 
-C        5.7.0.3 #1
-[ 3725.587247] Hardware name: Freescale LS1021A
-[ 3725.587252] Backtrace:
-[ 3725.587275] [] (dump_backtrace) from [] (show_stack+0x18/0x1c)
-[ 3725.587285]  r7:c0a40cc0 r6:60080113 r5:00000000 r4:c0c11c90
-[ 3725.587297] [] (show_stack) from [] (dump_stack+0xbc/0xd8)
-[ 3725.587310] [] (dump_stack) from [] (__schedule_bug+0x60/0x80)
-[ 3725.587319]  r7:c0a40cc0 r6:00000000 r5:ef5cdcc0 r4:00000000
-[ 3725.587334] [] (__schedule_bug) from [] (__schedule+0x5c/0x34c)
-[ 3725.587340]  r5:ef5cdcc0 r4:eaf7af40
-[ 3725.587350] [] (__schedule) from [] (schedule+0x9c/0xe0)
-[ 3725.587361]  r10:e9495a24 r9:bf109b6c r8:00000002 r7:eae4e04c 
-r6:00000000 r5:e9494000
-[ 3725.587365]  r4:eaf7af40
-[ 3725.587377] [] (schedule) from [] (schedule_preempt_disabled+0x10/0x14)
-[ 3725.587383]  r5:e9494000 r4:eae4e04c
-[ 3725.587395] [] (schedule_preempt_disabled) from [] 
-(__mutex_lock.constprop.0+0xb0/0x2c8)
-[ 3725.587407] [] (__mutex_lock.constprop.0) from [] 
-(__mutex_lock_slowpath+0x14/0x18)
-[ 3725.587418]  r10:e9495a24 r9:bf109b6c r8:eae4e040 r7:eae4e04c 
-r6:00000000 r5:e968b860
-[ 3725.587423]  r4:eae4e04c
-[ 3725.587434] [] (__mutex_lock_slowpath) from [] (mutex_lock+0x54/0x78)
-[ 3725.587515] [] (mutex_lock) from [] (mv88e6xxx_port_fdb_add+0x2c/0x60 
-[mv88e6xxx])
-[ 3725.587520]  r4:00000003
-[ 3725.587588] [] (mv88e6xxx_port_fdb_add [mv88e6xxx]) from [] 
-(dsa_switch_event+0x298/0x630 [dsa_core])
-[ 3725.587598]  r8:00000000 r7:00000000 r6:e94e4040 r5:bf114ef8 r4:e94959d4
-[ 3725.587623] [] (dsa_switch_event [dsa_core]) from [] 
-(notifier_call_chain+0x48/0x6c)
-[ 3725.587632]  r8:00000000 r7:00000000 r6:e94959d4 r5:00000003 r4:ffffffff
-[ 3725.587642] [] (notifier_call_chain) from [] 
-(raw_notifier_call_chain+0x20/0x28)
-[ 3725.587652]  r9:00000000 r8:e968b860 r7:eafc7a00 r6:ea976500 
-r5:eae47500 r4:bf107720
-[ 3725.587676] [] (raw_notifier_call_chain) from [] 
-(dsa_port_notify+0x1c/0x30 [dsa_core])
-[ 3725.587713] [] (dsa_port_notify [dsa_core]) from [] 
-(dsa_port_fdb_add+0x48/0x6c [dsa_core])
-[ 3725.587750] [] (dsa_port_fdb_add [dsa_core]) from [] 
-(dsa_legacy_fdb_add+0x20/0x24 [dsa_core])
-[ 3725.587871] [] (dsa_legacy_fdb_add [dsa_core]) from [] 
-(br_fdb_update+0x190/0x200 [bridge])
-[ 3725.587984] [] (br_fdb_update [bridge]) from [] 
-(br_handle_frame_finish+0xb4/0x314 [bridge])
-[ 3725.587996]  r10:c0c05a5c r9:00000001 r8:0000005a r7:eafc7a00 
-r6:00000000 r5:eae47500
-[ 3725.588000]  r4:e9177300
-[ 3725.588111] [] (br_handle_frame_finish [bridge]) from [] 
-(br_handle_frame+0x148/0x1c4 [bridge])
-[ 3725.588122]  r9:e968b800 r8:0000005a r7:e968b85a r6:e9495aec 
-r5:eafc7a00 r4:e9177300
-[ 3725.588184] [] (br_handle_frame [bridge]) from [] 
-(__netif_receive_skb_core+0x2c0/0x4fc)
-[ 3725.588195]  r9:c0a41598 r8:00000000 r7:bf0e4f20 r6:00000000 
-r5:eae45000 r4:00000001
-[ 3725.588206] [] (__netif_receive_skb_core) from [] 
-(__netif_receive_skb_one_core+0x3c/0x80)
-[ 3725.588217]  r10:eaa3c608 r9:eaa3c000 r8:eadb5c00 r7:bf10c098 
-r6:e9495c04 r5:eae45000
-[ 3725.588221]  r4:e9177300
-[ 3725.588230] [] (__netif_receive_skb_one_core) from [] 
-(__netif_receive_skb+0x60/0x68)
-[ 3725.588236]  r5:eae45000 r4:e9177300
-[ 3725.588246] [] (__netif_receive_skb) from [] 
-(netif_receive_skb+0x64/0xc0)
-[ 3725.588251]  r5:eae45000 r4:e9177300
-[ 3725.588277] [] (netif_receive_skb) from [] 
-(dsa_switch_rcv+0x150/0x154 [dsa_core])
-[ 3725.588282]  r4:e9177300
-[ 3725.588308] [] (dsa_switch_rcv [dsa_core]) from [] 
-(__netif_receive_skb_list_ptype+0x64/0x70)
-[ 3725.588319]  r9:eaa3c000 r8:bf10436c r7:eaa3c000 r6:e9495c04 
-r5:bf10c098 r4:e9495c04
-[ 3725.588331] [] (__netif_receive_skb_list_ptype) from [] 
-(__netif_receive_skb_list_core+0x64/0x104)
-[ 3725.588341]  r9:eaa3c000 r8:00000000 r7:eaa3c608 r6:bf10c098 
-r5:eaa3c000 r4:e9495c04
-[ 3725.588352] [] (__netif_receive_skb_list_core) from [] 
-(netif_receive_skb_list_internal+0x108/0x234)
-[ 3725.588363]  r10:ef5ce580 r9:eaa3c588 r8:e9177300 r7:ffffe000 
-r6:00000000 r5:00000000
-[ 3725.588367]  r4:eaa3c608
-[ 3725.588377] [] (netif_receive_skb_list_internal) from [] 
-(gro_normal_list+0x28/0x3c)
-[ 3725.588386]  r8:e9495d04 r7:00000040 r6:f086e000 r5:eaa3c608 r4:eaa3c588
-[ 3725.588396] [] (gro_normal_list) from [] (napi_complete_done+0x78/0xe4)
-[ 3725.588401]  r5:00000000 r4:eaa3c588
-[ 3725.588415] [] (napi_complete_done) from [] (gfar_poll_rx_sq+0x4c/0x94)
-[ 3725.588422]  r6:f086e000 r5:00000001 r4:eaa3c588
-[ 3725.588432] [] (gfar_poll_rx_sq) from [] (net_rx_action+0x10c/0x2c0)
-[ 3725.588441]  r7:e9495cfc r6:c0538ca0 r5:2eb8d000 r4:c0a41580
-[ 3725.588451] [] (net_rx_action) from [] (__do_softirq+0x198/0x1fc)
-[ 3725.588462]  r10:c0c03080 r9:00000100 r8:c0c03080 r7:e9495d40 
-r6:00000008 r5:c0c0308c
-[ 3725.588466]  r4:e9494000
-[ 3725.588478] [] (__do_softirq) from [] (irq_exit+0x6c/0xcc)
-[ 3725.588489]  r10:eafe7edc r9:e9494000 r8:bf11b814 r7:00000001 
-r6:ea810000 r5:00000000
-[ 3725.588493]  r4:00000000
-[ 3725.588506] [] (irq_exit) from [] (__handle_domain_irq+0x7c/0xa8)
-[ 3725.588511]  r5:00000000 r4:00000000
-[ 3725.588524] [] (__handle_domain_irq) from [] (gic_handle_irq+0x54/0x80)
-[ 3725.588532]  r7:f0803000 r6:c0c0503c r5:f0802000 r4:e9495df8
-[ 3725.588542] [] (gic_handle_irq) from [] (__irq_svc+0x58/0x74)
-[ 3725.588548] Exception stack(0xe9495df8 to 0xe9495e40)
-[ 3725.588554] 5de0: 
-   ea84c000 0000000c
-[ 3725.588564] 5e00: 01000000 0000039a 010c0000 f08a4520 0000000c 
-00000001 bf11b814 c0233fec
-[ 3725.588574] 5e20: eafe7edc e9495e64 e9495e48 e9495e48 c0535570 
-c0535580 20080013 ffffffff
-[ 3725.588583]  r7:e9495e2c r6:ffffffff r5:20080013 r4:c0535580
-[ 3725.588595] [] (fsl_pq_mdio_read) from [] (__mdiobus_read+0x38/0x5c)
-[ 3725.588603]  r7:00000001 r6:00000001 r5:ea84c000 r4:0000000c
-[ 3725.588613] [] (__mdiobus_read) from [] (mdiobus_read+0x5c/0x74)
-[ 3725.588621]  r7:00000001 r6:0000000c r5:ea84c558 r4:ea84c000
-[ 3725.588666] [] (mdiobus_read) from [] 
-(mv88e6xxx_smi_direct_read+0x18/0x28 [mv88e6xxx])
-[ 3725.588675]  r7:0000001b r6:e9495f18 r5:00000000 r4:e9495f18
-[ 3725.588745] [] (mv88e6xxx_smi_direct_read [mv88e6xxx]) from [] 
-(mv88e6xxx_smi_indirect_read+0x78/0x7c [mv88e6xxx])
-[ 3725.588751]  r5:00000000 r4:eae4e040
-[ 3725.588819] [] (mv88e6xxx_smi_indirect_read [mv88e6xxx]) from [] 
-(mv88e6xxx_read+0x4c/0x58 [mv88e6xxx])
-[ 3725.588827]  r7:e9495f18 r6:00000000 r5:0000001b r4:eae4e040
-[ 3725.588896] [] (mv88e6xxx_read [mv88e6xxx]) from [] 
-(mv88e6xxx_g1_read+0x20/0x24 [mv88e6xxx])
-[ 3725.588907]  r9:c0233fec r8:eafecd00 r7:eae4e04c r6:eae4e040 
-r5:00000000 r4:00000000
-[ 3725.588976] [] (mv88e6xxx_g1_read [mv88e6xxx]) from [] 
-(mv88e6xxx_g1_irq_thread_work+0x98/0x128 [mv88e6xxx])
-[ 3725.589045] [] (mv88e6xxx_g1_irq_thread_work [mv88e6xxx]) from [] 
-(mv88e6xxx_irq_poll+0x18/0x2c [mv88e6xxx])
-[ 3725.589054]  r7:ffffe000 r6:e9494000 r5:eafecd00 r4:eae4e374
-[ 3725.589097] [] (mv88e6xxx_irq_poll [mv88e6xxx]) from [] 
-(kthread_worker_fn+0x12c/0x198)
-[ 3725.589103]  r5:eafecd00 r4:c0c478e0
-[ 3725.589114] [] (kthread_worker_fn) from [] (kthread+0xec/0xf8)
-[ 3725.589122]  r7:e9595b4c r6:ffffe000 r5:eafecd40 r4:eafe7ec0
-[ 3725.589132] [] (kthread) from [] (ret_from_fork+0x14/0x3c)
-[ 3725.589137] Exception stack(0xe9495fb0 to 0xe9495ff8)
-[ 3725.589144] 5fa0:                                     00000000 
-00000000 00000000 00000000
-[ 3725.589153] 5fc0: 00000000 00000000 00000000 00000000 00000000 
-00000000 00000000 00000000
-[ 3725.589161] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-[ 3725.589171]  r10:00000000 r9:00000000 r8:00000000 r7:00000000 
-r6:00000000 r5:c02339b0
-[ 3725.589176]  r4:eafecd40 r3:00000001
---------------------------------------------------------------------------------
-mv88e6xxx_port_fdb_add is trying to lock busy mutex, but it is called 
-from napi_complete_done, which is called from gfar_poll_rx_sq which is 
-software irq context and cannot sleep on mutex_lock.
+Hi Kurt,
+
+On Fri, Jul 10, 2020 at 01:36:07PM +0200, Kurt Kanzenbach wrote:
+> From: Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
+> 
+> The switch has the ability to take hardware generated time stamps per port for
+> PTPv2 event messages in Rx and Tx direction. That is useful for achieving needed
+> time synchronization precision for TSN devices/switches. So add support for it.
+> 
+> There are two directions:
+> 
+>  * RX
+> 
+>    The switch has a single register per port to capture a timestamp. That
+>    mechanism is not used due to correlation problems. If the software processing
+>    is too slow and a PTPv2 event message is received before the previous one has
+>    been processed, false timestamps will be captured. Therefore, the switch can
+>    do "inline" timestamping which means it can insert the nanoseconds part of
+>    the timestamp directly into the PTPv2 event message. The reserved field (4
+>    bytes) is leveraged for that. This might not be in accordance with (older)
+>    PTP standards, but is the only way to get reliable results.
+> 
+>  * TX
+> 
+>    In Tx direction there is no correlation problem, because the software and the
+>    driver has to ensure that only one event message is "on the fly". However,
+>    the switch provides also a mechanism to check whether a timestamp is
+>    lost. That can only happen when a timestamp is read and at this point another
+>    message is timestamped. So, that lost bit is checked just in case to indicate
+>    to the user that the driver or the software is somewhat buggy.
+> 
+> Signed-off-by: Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> ---
+>  drivers/net/dsa/hirschmann/Makefile           |   1 +
+>  drivers/net/dsa/hirschmann/hellcreek.c        |  15 +
+>  drivers/net/dsa/hirschmann/hellcreek.h        |  25 +
+>  .../net/dsa/hirschmann/hellcreek_hwtstamp.c   | 498 ++++++++++++++++++
+>  .../net/dsa/hirschmann/hellcreek_hwtstamp.h   |  58 ++
+>  drivers/net/dsa/hirschmann/hellcreek_ptp.c    |  48 +-
+>  drivers/net/dsa/hirschmann/hellcreek_ptp.h    |   4 +
+>  7 files changed, 635 insertions(+), 14 deletions(-)
+>  create mode 100644 drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c
+>  create mode 100644 drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h
+> 
+> diff --git a/drivers/net/dsa/hirschmann/Makefile b/drivers/net/dsa/hirschmann/Makefile
+> index 39de02a03640..f4075c2998b5 100644
+> --- a/drivers/net/dsa/hirschmann/Makefile
+> +++ b/drivers/net/dsa/hirschmann/Makefile
+> @@ -2,3 +2,4 @@
+>  obj-$(CONFIG_NET_DSA_HIRSCHMANN_HELLCREEK)	+= hellcreek_sw.o
+>  hellcreek_sw-objs := hellcreek.o
+>  hellcreek_sw-objs += hellcreek_ptp.o
+> +hellcreek_sw-objs += hellcreek_hwtstamp.o
+> diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+> index 9901d6435d97..3941a9a3252d 100644
+> --- a/drivers/net/dsa/hirschmann/hellcreek.c
+> +++ b/drivers/net/dsa/hirschmann/hellcreek.c
+> @@ -26,6 +26,7 @@
+>  
+>  #include "hellcreek.h"
+>  #include "hellcreek_ptp.h"
+> +#include "hellcreek_hwtstamp.h"
+>  
+>  static const struct hellcreek_counter hellcreek_counter[] = {
+>  	{ 0x00, "RxFiltered", },
+> @@ -1103,6 +1104,11 @@ static const struct dsa_switch_ops hellcreek_ds_ops = {
+>  	.port_bridge_leave   = hellcreek_port_bridge_leave,
+>  	.port_stp_state_set  = hellcreek_port_stp_state_set,
+>  	.phylink_validate    = hellcreek_phylink_validate,
+> +	.port_hwtstamp_set   = hellcreek_port_hwtstamp_set,
+> +	.port_hwtstamp_get   = hellcreek_port_hwtstamp_get,
+> +	.port_txtstamp	     = hellcreek_port_txtstamp,
+> +	.port_rxtstamp	     = hellcreek_port_rxtstamp,
+> +	.get_ts_info	     = hellcreek_get_ts_info,
+>  };
+>  
+>  static int hellcreek_probe(struct platform_device *pdev)
+> @@ -1202,10 +1208,18 @@ static int hellcreek_probe(struct platform_device *pdev)
+>  		goto err_ptp_setup;
+>  	}
+>  
+> +	ret = hellcreek_hwtstamp_setup(hellcreek);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to setup hardware timestamping!\n");
+> +		goto err_tstamp_setup;
+> +	}
+> +
+>  	platform_set_drvdata(pdev, hellcreek);
+>  
+>  	return 0;
+>  
+> +err_tstamp_setup:
+> +	hellcreek_ptp_free(hellcreek);
+>  err_ptp_setup:
+>  	dsa_unregister_switch(hellcreek->ds);
+>  
+> @@ -1216,6 +1230,7 @@ static int hellcreek_remove(struct platform_device *pdev)
+>  {
+>  	struct hellcreek *hellcreek = platform_get_drvdata(pdev);
+>  
+> +	hellcreek_hwtstamp_free(hellcreek);
+>  	hellcreek_ptp_free(hellcreek);
+>  	dsa_unregister_switch(hellcreek->ds);
+>  	platform_set_drvdata(pdev, NULL);
+> diff --git a/drivers/net/dsa/hirschmann/hellcreek.h b/drivers/net/dsa/hirschmann/hellcreek.h
+> index 2d4422fd2567..1d3de72a48a5 100644
+> --- a/drivers/net/dsa/hirschmann/hellcreek.h
+> +++ b/drivers/net/dsa/hirschmann/hellcreek.h
+> @@ -212,11 +212,36 @@ struct hellcreek_counter {
+>  
+>  struct hellcreek;
+>  
+> +/* State flags for hellcreek_port_hwtstamp::state */
+> +enum {
+> +	HELLCREEK_HWTSTAMP_ENABLED,
+> +	HELLCREEK_HWTSTAMP_TX_IN_PROGRESS,
+> +};
+> +
+> +/* A structure to hold hardware timestamping information per port */
+> +struct hellcreek_port_hwtstamp {
+> +	/* Timestamping state */
+> +	unsigned long state;
+> +
+> +	/* Resources for receive timestamping */
+> +	struct sk_buff_head rx_queue; /* For synchronization messages */
+> +
+> +	/* Resources for transmit timestamping */
+> +	unsigned long tx_tstamp_start;
+> +	struct sk_buff *tx_skb;
+> +
+> +	/* Current timestamp configuration */
+> +	struct hwtstamp_config tstamp_config;
+> +};
+> +
+>  struct hellcreek_port {
+>  	struct hellcreek *hellcreek;
+>  	int port;
+>  	u16 ptcfg;		/* ptcfg shadow */
+>  	u64 *counter_values;
+> +
+> +	/* Per-port timestamping resources */
+> +	struct hellcreek_port_hwtstamp port_hwtstamp;
+>  };
+>  
+>  struct hellcreek_fdb_entry {
+> diff --git a/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c b/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c
+> new file mode 100644
+> index 000000000000..dc0ab75d099b
+> --- /dev/null
+> +++ b/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c
+> @@ -0,0 +1,498 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/*
+> + * DSA driver for:
+> + * Hirschmann Hellcreek TSN switch.
+> + *
+> + * Copyright (C) 2019,2020 Hochschule Offenburg
+> + * Copyright (C) 2019,2020 Linutronix GmbH
+> + * Authors: Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
+> + *	    Kurt Kanzenbach <kurt@linutronix.de>
+> + */
+> +
+> +#include <linux/ptp_classify.h>
+> +
+> +#include "hellcreek.h"
+> +#include "hellcreek_hwtstamp.h"
+> +#include "hellcreek_ptp.h"
+> +
+> +int hellcreek_get_ts_info(struct dsa_switch *ds, int port,
+> +			  struct ethtool_ts_info *info)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +
+> +	info->phc_index = hellcreek->ptp_clock ?
+> +		ptp_clock_index(hellcreek->ptp_clock) : -1;
+> +	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
+> +		SOF_TIMESTAMPING_RX_HARDWARE |
+> +		SOF_TIMESTAMPING_RAW_HARDWARE;
+> +
+> +	/* enabled tx timestamping */
+> +	info->tx_types = BIT(HWTSTAMP_TX_ON);
+> +
+> +	/* L2 & L4 PTPv2 event rx messages are timestamped */
+> +	info->rx_filters = BIT(HWTSTAMP_FILTER_PTP_V2_EVENT);
+> +
+> +	return 0;
+> +}
+> +
+> +/* Enabling/disabling TX and RX HW timestamping for different PTP messages is
+> + * not available in the switch. Thus, this function only serves as a check if
+> + * the user requested what is actually available or not
+> + */
+> +static int hellcreek_set_hwtstamp_config(struct hellcreek *hellcreek, int port,
+> +					 struct hwtstamp_config *config)
+> +{
+> +	struct hellcreek_port_hwtstamp *ps =
+> +		&hellcreek->ports[port].port_hwtstamp;
+> +	bool tx_tstamp_enable = false;
+> +	bool rx_tstamp_enable = false;
+> +
+> +	/* Interaction with the timestamp hardware is prevented here.  It is
+> +	 * enabled when this config function ends successfully
+> +	 */
+> +	clear_bit_unlock(HELLCREEK_HWTSTAMP_ENABLED, &ps->state);
+> +
+> +	/* Reserved for future extensions */
+> +	if (config->flags)
+> +		return -EINVAL;
+> +
+> +	switch (config->tx_type) {
+> +	case HWTSTAMP_TX_ON:
+> +		tx_tstamp_enable = true;
+> +		break;
+> +
+> +	/* TX HW timestamping can't be disabled on the switch */
+> +	case HWTSTAMP_TX_OFF:
+> +		config->tx_type = HWTSTAMP_TX_ON;
+> +		break;
+> +
+> +	default:
+> +		return -ERANGE;
+> +	}
+> +
+> +	switch (config->rx_filter) {
+> +	/* RX HW timestamping can't be disabled on the switch */
+> +	case HWTSTAMP_FILTER_NONE:
+> +		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
+> +		break;
+> +
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
+> +	case HWTSTAMP_FILTER_PTP_V2_EVENT:
+> +	case HWTSTAMP_FILTER_PTP_V2_SYNC:
+> +	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
+> +		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
+> +		rx_tstamp_enable = true;
+> +		break;
+> +
+> +	/* RX HW timestamping can't be enabled for all messages on the switch */
+> +	case HWTSTAMP_FILTER_ALL:
+> +		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
+> +		break;
+> +
+> +	default:
+> +		return -ERANGE;
+> +	}
+> +
+> +	if (!tx_tstamp_enable)
+> +		return -ERANGE;
+> +
+> +	if (!rx_tstamp_enable)
+> +		return -ERANGE;
+> +
+> +	/* If this point is reached, then the requested hwtstamp config is
+> +	 * compatible with the hwtstamp offered by the switch.  Therefore,
+> +	 * enable the interaction with the HW timestamping
+> +	 */
+> +	set_bit(HELLCREEK_HWTSTAMP_ENABLED, &ps->state);
+> +
+> +	return 0;
+> +}
+> +
+> +int hellcreek_port_hwtstamp_set(struct dsa_switch *ds, int port,
+> +				struct ifreq *ifr)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +	struct hellcreek_port_hwtstamp *ps;
+> +	struct hwtstamp_config config;
+> +	int err;
+> +
+> +	ps = &hellcreek->ports[port].port_hwtstamp;
+> +
+> +	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
+> +		return -EFAULT;
+> +
+> +	err = hellcreek_set_hwtstamp_config(hellcreek, port, &config);
+> +	if (err)
+> +		return err;
+> +
+> +	/* Save the chosen configuration to be returned later */
+> +	memcpy(&ps->tstamp_config, &config, sizeof(config));
+> +
+> +	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ?
+> +		-EFAULT : 0;
+> +}
+> +
+> +int hellcreek_port_hwtstamp_get(struct dsa_switch *ds, int port,
+> +				struct ifreq *ifr)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +	struct hellcreek_port_hwtstamp *ps;
+> +	struct hwtstamp_config *config;
+> +
+> +	ps = &hellcreek->ports[port].port_hwtstamp;
+> +	config = &ps->tstamp_config;
+> +
+> +	return copy_to_user(ifr->ifr_data, config, sizeof(*config)) ?
+> +		-EFAULT : 0;
+> +}
+> +
+> +/* Get a pointer to the PTP header in this skb */
+> +static u8 *parse_ptp_header(struct sk_buff *skb, unsigned int type)
+
+Maybe this and the function from mv88e6xxx could share the same
+implementation somehow.
+
+> +{
+> +	u8 *data = skb_mac_header(skb);
+> +	unsigned int offset = 0;
+> +
+> +	if (type & PTP_CLASS_VLAN)
+> +		offset += VLAN_HLEN;
+> +
+> +	switch (type & PTP_CLASS_PMASK) {
+> +	case PTP_CLASS_IPV4:
+> +		offset += ETH_HLEN + IPV4_HLEN(data + offset) + UDP_HLEN;
+> +		break;
+> +	case PTP_CLASS_IPV6:
+> +		offset += ETH_HLEN + IP6_HLEN + UDP_HLEN;
+> +		break;
+> +	case PTP_CLASS_L2:
+> +		offset += ETH_HLEN;
+> +		break;
+> +	default:
+> +		return NULL;
+> +	}
+> +
+> +	/* Ensure that the entire header is present in this packet. */
+> +	if (skb->len + ETH_HLEN < offset + 34)
+> +		return NULL;
+> +
+> +	return data + offset;
+> +}
+> +
+> +/* Returns a pointer to the PTP header if the caller should time stamp, or NULL
+> + * if the caller should not.
+> + */
+> +static u8 *hellcreek_should_tstamp(struct hellcreek *hellcreek, int port,
+> +				   struct sk_buff *skb, unsigned int type)
+> +{
+> +	struct hellcreek_port_hwtstamp *ps =
+> +		&hellcreek->ports[port].port_hwtstamp;
+> +	u8 *hdr;
+> +
+> +	hdr = parse_ptp_header(skb, type);
+> +	if (!hdr)
+> +		return NULL;
+> +
+> +	if (!test_bit(HELLCREEK_HWTSTAMP_ENABLED, &ps->state))
+> +		return NULL;
+> +
+> +	return hdr;
+> +}
+> +
+> +static u64 hellcreek_get_reserved_field(u8 *ptp_hdr)
+> +{
+> +	__be32 *ts;
+> +
+> +	/* length is checked by parse_ptp_header() */
+> +	ts = (__force __be32 *)&ptp_hdr[16];
+> +
+> +	return be32_to_cpup(ts);
+> +}
+> +
+> +static int hellcreek_ptp_hwtstamp_available(struct hellcreek *hellcreek,
+> +					    unsigned int ts_reg)
+> +{
+> +	u16 status;
+> +
+> +	status = hellcreek_ptp_read(hellcreek, ts_reg);
+> +
+> +	if (status & PR_TS_STATUS_TS_LOST)
+> +		dev_err(hellcreek->dev,
+> +			"Tx time stamp lost! This should never happen!\n");
+> +
+> +	/* If hwtstamp is not available, this means the previous hwtstamp was
+> +	 * successfully read, and the one we need is not yet available
+> +	 */
+> +	return (status & PR_TS_STATUS_TS_AVAIL) ? 1 : 0;
+> +}
+> +
+> +/* Get nanoseconds timestamp from timestamping unit */
+> +static u64 hellcreek_ptp_hwtstamp_read(struct hellcreek *hellcreek,
+> +				       unsigned int ts_reg)
+> +{
+> +	u16 nsl, nsh;
+> +
+> +	nsh = hellcreek_ptp_read(hellcreek, ts_reg);
+> +	nsh = hellcreek_ptp_read(hellcreek, ts_reg);
+> +	nsh = hellcreek_ptp_read(hellcreek, ts_reg);
+> +	nsh = hellcreek_ptp_read(hellcreek, ts_reg);
+> +	nsl = hellcreek_ptp_read(hellcreek, ts_reg);
+> +
+> +	return (u64)nsl | ((u64)nsh << 16);
+> +}
+> +
+> +static int hellcreek_txtstamp_work(struct hellcreek *hellcreek,
+> +				   struct hellcreek_port_hwtstamp *ps, int port)
+> +{
+> +	struct skb_shared_hwtstamps shhwtstamps;
+> +	unsigned int status_reg, data_reg;
+> +	struct sk_buff *tmp_skb;
+> +	int ts_status;
+> +	u64 ns = 0;
+> +
+> +	if (!ps->tx_skb)
+> +		return 0;
+> +
+> +	switch (port) {
+> +	case 2:
+> +		status_reg = PR_TS_TX_P1_STATUS_C;
+> +		data_reg   = PR_TS_TX_P1_DATA_C;
+> +		break;
+> +	case 3:
+> +		status_reg = PR_TS_TX_P2_STATUS_C;
+> +		data_reg   = PR_TS_TX_P2_DATA_C;
+> +		break;
+> +	default:
+> +		dev_err(hellcreek->dev, "Wrong port for timestamping!\n");
+> +		return 0;
+> +	}
+> +
+> +	ts_status = hellcreek_ptp_hwtstamp_available(hellcreek, status_reg);
+> +
+> +	/* Not available yet? */
+> +	if (ts_status == 0) {
+> +		/* Check whether the operation of reading the tx timestamp has
+> +		 * exceeded its allowed period
+> +		 */
+> +		if (time_is_before_jiffies(ps->tx_tstamp_start +
+> +					   TX_TSTAMP_TIMEOUT)) {
+> +			dev_err(hellcreek->dev,
+> +				"Timeout while waiting for Tx timestamp!\n");
+> +			goto free_and_clear_skb;
+> +		}
+> +
+> +		/* The timestamp should be available quickly, while getting it
+> +		 * in high priority. Restart the work
+> +		 */
+> +		return 1;
+> +	}
+> +
+> +	spin_lock(&hellcreek->ptp_lock);
+> +	ns  = hellcreek_ptp_hwtstamp_read(hellcreek, data_reg);
+> +	ns += hellcreek_ptp_gettime_seconds(hellcreek, ns);
+> +	spin_unlock(&hellcreek->ptp_lock);
+> +
+> +	/* Now we have the timestamp in nanoseconds, store it in the correct
+> +	 * structure in order to send it to the user
+> +	 */
+> +	memset(&shhwtstamps, 0, sizeof(shhwtstamps));
+> +	shhwtstamps.hwtstamp = ns_to_ktime(ns);
+> +
+> +	tmp_skb = ps->tx_skb;
+> +	ps->tx_skb = NULL;
+> +
+> +	/* skb_complete_tx_timestamp() frees up the client to make another
+> +	 * timestampable transmit.  We have to be ready for it by clearing the
+> +	 * ps->tx_skb "flag" beforehand
+> +	 */
+> +	clear_bit_unlock(HELLCREEK_HWTSTAMP_TX_IN_PROGRESS, &ps->state);
+> +
+> +	/* Deliver a clone of the original outgoing tx_skb with tx hwtstamp */
+> +	skb_complete_tx_timestamp(tmp_skb, &shhwtstamps);
+> +
+> +	return 0;
+> +
+> +free_and_clear_skb:
+> +	dev_kfree_skb_any(ps->tx_skb);
+> +	ps->tx_skb = NULL;
+> +	clear_bit_unlock(HELLCREEK_HWTSTAMP_TX_IN_PROGRESS, &ps->state);
+> +
+> +	return 0;
+> +}
+> +
+> +static void hellcreek_get_rxts(struct hellcreek *hellcreek,
+> +			       struct hellcreek_port_hwtstamp *ps,
+> +			       struct sk_buff *skb, struct sk_buff_head *rxq,
+> +			       int port)
+> +{
+> +	struct skb_shared_hwtstamps *shwt;
+> +	struct sk_buff_head received;
+> +	unsigned long flags;
+> +
+> +	/* The latched timestamp belongs to one of the received frames. */
+> +	__skb_queue_head_init(&received);
+> +
+> +	/* Lock & disable interrupts */
+> +	spin_lock_irqsave(&rxq->lock, flags);
+> +
+> +	/* Add the reception queue "rxq" to the "received" queue an reintialize
+> +	 * "rxq".  From now on, we deal with "received" not with "rxq"
+> +	 */
+> +	skb_queue_splice_tail_init(rxq, &received);
+> +
+> +	spin_unlock_irqrestore(&rxq->lock, flags);
+> +
+> +	for (; skb; skb = __skb_dequeue(&received)) {
+> +		unsigned int type;
+> +		u8 *hdr;
+> +		u64 ns;
+> +
+> +		/* Get nanoseconds from ptp packet */
+> +		type = SKB_PTP_TYPE(skb);
+> +		hdr  = parse_ptp_header(skb, type);
+> +		ns   = hellcreek_get_reserved_field(hdr);
+> +
+> +		/* Add seconds part */
+> +		spin_lock(&hellcreek->ptp_lock);
+> +		ns += hellcreek_ptp_gettime_seconds(hellcreek, ns);
+> +		spin_unlock(&hellcreek->ptp_lock);
+> +
+> +		/* Save time stamp */
+> +		shwt = skb_hwtstamps(skb);
+> +		memset(shwt, 0, sizeof(*shwt));
+> +		shwt->hwtstamp = ns_to_ktime(ns);
+> +		netif_rx_ni(skb);
+> +	}
+> +}
+> +
+> +static void hellcreek_rxtstamp_work(struct hellcreek *hellcreek,
+> +				    struct hellcreek_port_hwtstamp *ps,
+> +				    int port)
+> +{
+> +	struct sk_buff *skb;
+> +
+> +	skb = skb_dequeue(&ps->rx_queue);
+> +	if (skb)
+> +		hellcreek_get_rxts(hellcreek, ps, skb, &ps->rx_queue, port);
+> +}
+> +
+> +long hellcreek_hwtstamp_work(struct ptp_clock_info *ptp)
+> +{
+> +	struct hellcreek *hellcreek = ptp_to_hellcreek(ptp);
+> +	struct dsa_switch *ds = hellcreek->ds;
+> +	struct hellcreek_port_hwtstamp *ps;
+> +	int i, restart = 0;
+> +
+> +	for (i = 2; i < ds->num_ports; i++) {
+> +		ps = &hellcreek->ports[i].port_hwtstamp;
+> +
+> +		if (test_bit(HELLCREEK_HWTSTAMP_TX_IN_PROGRESS, &ps->state))
+> +			restart |= hellcreek_txtstamp_work(hellcreek, ps, i);
+> +
+> +		hellcreek_rxtstamp_work(hellcreek, ps, i);
+> +	}
+> +
+> +	return restart ? 1 : -1;
+> +}
+> +
+> +bool hellcreek_port_txtstamp(struct dsa_switch *ds, int port,
+> +			     struct sk_buff *clone, unsigned int type)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +	struct hellcreek_port_hwtstamp *ps;
+> +	u8 *hdr;
+> +
+> +	ps = &hellcreek->ports[port].port_hwtstamp;
+> +
+> +	/* Check if the driver is expected to do HW timestamping */
+> +	if (!(skb_shinfo(clone)->tx_flags & SKBTX_HW_TSTAMP))
+> +		return false;
+> +
+
+I would like to get some clarification on whether "SKBTX_IN_PROGRESS"
+should be set in shtx->tx_flags or not. On one hand, it's asking for
+trouble, on the other hand, it's kind of required for proper compliance
+to API pre-SO_TIMESTAMPING...
+
+> +	/* Make sure the message is a PTP message that needs to be timestamped
+> +	 * and the interaction with the HW timestamping is enabled. If not, stop
+> +	 * here
+> +	 */
+> +	hdr = hellcreek_should_tstamp(hellcreek, port, clone, type);
+> +	if (!hdr)
+> +		return false;
+> +
+> +	if (test_and_set_bit_lock(HELLCREEK_HWTSTAMP_TX_IN_PROGRESS,
+> +				  &ps->state))
+> +		return false;
+> +
+> +	ps->tx_skb = clone;
+> +
+> +	/* store the number of ticks occurred since system start-up till this
+> +	 * moment
+> +	 */
+> +	ps->tx_tstamp_start = jiffies;
+> +
+> +	ptp_schedule_worker(hellcreek->ptp_clock, 0);
+> +
+> +	return true;
+> +}
+> +
+> +bool hellcreek_port_rxtstamp(struct dsa_switch *ds, int port,
+> +			     struct sk_buff *skb, unsigned int type)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +	struct hellcreek_port_hwtstamp *ps;
+> +	u8 *hdr;
+> +
+> +	ps = &hellcreek->ports[port].port_hwtstamp;
+> +
+> +	/* This check only fails if the user did not initialize hardware
+> +	 * timestamping beforehand.
+> +	 */
+> +	if (ps->tstamp_config.rx_filter != HWTSTAMP_FILTER_PTP_V2_EVENT)
+> +		return false;
+> +
+> +	/* Make sure the message is a PTP message that needs to be timestamped
+> +	 * and the interaction with the HW timestamping is enabled. If not, stop
+> +	 * here
+> +	 */
+> +	hdr = hellcreek_should_tstamp(hellcreek, port, skb, type);
+> +	if (!hdr)
+> +		return false;
+> +
+> +	SKB_PTP_TYPE(skb) = type;
+> +
+> +	skb_queue_tail(&ps->rx_queue, skb);
+> +
+> +	ptp_schedule_worker(hellcreek->ptp_clock, 0);
+> +
+> +	return true;
+> +}
+> +
+> +static void hellcreek_hwtstamp_port_setup(struct hellcreek *hellcreek, int port)
+> +{
+> +	struct hellcreek_port_hwtstamp *ps =
+> +		&hellcreek->ports[port].port_hwtstamp;
+> +
+> +	skb_queue_head_init(&ps->rx_queue);
+> +}
+> +
+> +int hellcreek_hwtstamp_setup(struct hellcreek *hellcreek)
+> +{
+> +	int i;
+> +
+> +	/* Initialize timestamping ports. */
+> +	for (i = 2; i < NUM_PORTS; ++i)
+> +		hellcreek_hwtstamp_port_setup(hellcreek, i);
+> +
+
+Would something like this work better instead?
+
+	for (port = 0; port < ds->num_ports; port++) {
+		if (!dsa_is_user_port(ds, port))
+			continue;
+
+		hellcreek_hwtstamp_port_setup(hellcreek, port);
+	}
+
+It is easier to follow for the non-expert reviewer (the information that
+port 0 is CPU and port 1 is "tunnel port" is not immediately findable)
+and (I don't know if this is going to be true or not) in the long term,
+you'd need to do less driver rework when this switch IP is instantiated
+in other chips that will have a different port layout.
+
+> +	/* Select the synchronized clock as the source timekeeper for the
+> +	 * timestamps and enable inline timestamping.
+> +	 */
+> +	hellcreek_ptp_write(hellcreek, PR_SETTINGS_C_TS_SRC_TK_MASK |
+> +			    PR_SETTINGS_C_RES3TS,
+> +			    PR_SETTINGS_C);
+> +
+> +	return 0;
+> +}
+> +
+> +void hellcreek_hwtstamp_free(struct hellcreek *hellcreek)
+> +{
+> +	/* Nothing todo */
+> +}
+> diff --git a/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h b/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h
+> new file mode 100644
+> index 000000000000..c0745ffa1ebb
+> --- /dev/null
+> +++ b/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h
+> @@ -0,0 +1,58 @@
+> +/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
+> +/*
+> + * DSA driver for:
+> + * Hirschmann Hellcreek TSN switch.
+> + *
+> + * Copyright (C) 2019,2020 Hochschule Offenburg
+> + * Copyright (C) 2019,2020 Linutronix GmbH
+> + * Authors: Kurt Kanzenbach <kurt@linutronix.de>
+> + *	    Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
+> + */
+> +
+> +#ifndef _HELLCREEK_HWTSTAMP_H_
+> +#define _HELLCREEK_HWTSTAMP_H_
+> +
+> +#include <net/dsa.h>
+> +#include "hellcreek.h"
+> +
+> +/* Timestamp Register */
+> +#define PR_TS_RX_P1_STATUS_C	(0x1d * 2)
+> +#define PR_TS_RX_P1_DATA_C	(0x1e * 2)
+> +#define PR_TS_TX_P1_STATUS_C	(0x1f * 2)
+> +#define PR_TS_TX_P1_DATA_C	(0x20 * 2)
+> +#define PR_TS_RX_P2_STATUS_C	(0x25 * 2)
+> +#define PR_TS_RX_P2_DATA_C	(0x26 * 2)
+> +#define PR_TS_TX_P2_STATUS_C	(0x27 * 2)
+> +#define PR_TS_TX_P2_DATA_C	(0x28 * 2)
+> +
+> +#define PR_TS_STATUS_TS_AVAIL	BIT(2)
+> +#define PR_TS_STATUS_TS_LOST	BIT(3)
+> +
+> +#define SKB_PTP_TYPE(__skb) (*(unsigned int *)((__skb)->cb))
+> +
+
+Since mv88e6xxx also uses this, maybe we could consider adding it to
+DSA_SKB_CB.
+
+> +/* TX_TSTAMP_TIMEOUT: This limits the time spent polling for a TX
+> + * timestamp. When working properly, hardware will produce a timestamp
+> + * within 1ms. Software may enounter delays, so the timeout is set
+> + * accordingly.
+> + */
+> +#define TX_TSTAMP_TIMEOUT	msecs_to_jiffies(40)
+> +
+> +int hellcreek_port_hwtstamp_set(struct dsa_switch *ds, int port,
+> +				struct ifreq *ifr);
+> +int hellcreek_port_hwtstamp_get(struct dsa_switch *ds, int port,
+> +				struct ifreq *ifr);
+> +
+> +bool hellcreek_port_rxtstamp(struct dsa_switch *ds, int port,
+> +			     struct sk_buff *clone, unsigned int type);
+> +bool hellcreek_port_txtstamp(struct dsa_switch *ds, int port,
+> +			     struct sk_buff *clone, unsigned int type);
+> +
+> +int hellcreek_get_ts_info(struct dsa_switch *ds, int port,
+> +			  struct ethtool_ts_info *info);
+> +
+> +long hellcreek_hwtstamp_work(struct ptp_clock_info *ptp);
+> +
+> +int hellcreek_hwtstamp_setup(struct hellcreek *chip);
+> +void hellcreek_hwtstamp_free(struct hellcreek *chip);
+> +
+> +#endif /* _HELLCREEK_HWTSTAMP_H_ */
+> diff --git a/drivers/net/dsa/hirschmann/hellcreek_ptp.c b/drivers/net/dsa/hirschmann/hellcreek_ptp.c
+> index c606a26a130e..8c2cef2b60fb 100644
+> --- a/drivers/net/dsa/hirschmann/hellcreek_ptp.c
+> +++ b/drivers/net/dsa/hirschmann/hellcreek_ptp.c
+> @@ -12,14 +12,15 @@
+>  #include <linux/ptp_clock_kernel.h>
+>  #include "hellcreek.h"
+>  #include "hellcreek_ptp.h"
+> +#include "hellcreek_hwtstamp.h"
+>  
+> -static u16 hellcreek_ptp_read(struct hellcreek *hellcreek, unsigned int offset)
+> +u16 hellcreek_ptp_read(struct hellcreek *hellcreek, unsigned int offset)
+>  {
+>  	return readw(hellcreek->ptp_base + offset);
+>  }
+>  
+> -static void hellcreek_ptp_write(struct hellcreek *hellcreek, u16 data,
+> -				unsigned int offset)
+> +void hellcreek_ptp_write(struct hellcreek *hellcreek, u16 data,
+> +			 unsigned int offset)
+>  {
+>  	writew(data, hellcreek->ptp_base + offset);
+>  }
+> @@ -61,6 +62,24 @@ static u64 __hellcreek_ptp_gettime(struct hellcreek *hellcreek)
+>  	return ns;
+>  }
+>  
+> +/* Retrieve the seconds parts in nanoseconds for a packet timestamped with @ns.
+> + * There has to be a check whether an overflow occurred between the packet
+> + * arrival and now. If so use the correct seconds (-1) for calculating the
+> + * packet arrival time.
+> + */
+> +u64 hellcreek_ptp_gettime_seconds(struct hellcreek *hellcreek, u64 ns)
+> +{
+> +	u64 s;
+> +
+> +	__hellcreek_ptp_gettime(hellcreek);
+> +	if (hellcreek->last_ts > ns)
+> +		s = hellcreek->seconds * NSEC_PER_SEC;
+> +	else
+> +		s = (hellcreek->seconds - 1) * NSEC_PER_SEC;
+> +
+> +	return s;
+> +}
+> +
+>  static int hellcreek_ptp_gettime(struct ptp_clock_info *ptp,
+>  				 struct timespec64 *ts)
+>  {
+> @@ -238,17 +257,18 @@ int hellcreek_ptp_setup(struct hellcreek *hellcreek)
+>  	 * accumulator_overflow_rate shall not exceed 62.5 MHz (which adjusts
+>  	 * the nominal frequency by 6.25%)
+>  	 */
+> -	hellcreek->ptp_clock_info.max_adj   = 62500000;
+> -	hellcreek->ptp_clock_info.n_alarm   = 0;
+> -	hellcreek->ptp_clock_info.n_pins    = 0;
+> -	hellcreek->ptp_clock_info.n_ext_ts  = 0;
+> -	hellcreek->ptp_clock_info.n_per_out = 0;
+> -	hellcreek->ptp_clock_info.pps	    = 0;
+> -	hellcreek->ptp_clock_info.adjfine   = hellcreek_ptp_adjfine;
+> -	hellcreek->ptp_clock_info.adjtime   = hellcreek_ptp_adjtime;
+> -	hellcreek->ptp_clock_info.gettime64 = hellcreek_ptp_gettime;
+> -	hellcreek->ptp_clock_info.settime64 = hellcreek_ptp_settime;
+> -	hellcreek->ptp_clock_info.enable    = hellcreek_ptp_enable;
+> +	hellcreek->ptp_clock_info.max_adj     = 62500000;
+> +	hellcreek->ptp_clock_info.n_alarm     = 0;
+> +	hellcreek->ptp_clock_info.n_pins      = 0;
+> +	hellcreek->ptp_clock_info.n_ext_ts    = 0;
+> +	hellcreek->ptp_clock_info.n_per_out   = 0;
+> +	hellcreek->ptp_clock_info.pps	      = 0;
+> +	hellcreek->ptp_clock_info.adjfine     = hellcreek_ptp_adjfine;
+> +	hellcreek->ptp_clock_info.adjtime     = hellcreek_ptp_adjtime;
+> +	hellcreek->ptp_clock_info.gettime64   = hellcreek_ptp_gettime;
+> +	hellcreek->ptp_clock_info.settime64   = hellcreek_ptp_settime;
+> +	hellcreek->ptp_clock_info.enable      = hellcreek_ptp_enable;
+> +	hellcreek->ptp_clock_info.do_aux_work = hellcreek_hwtstamp_work;
+>  
+
+Could you minimize the diff here by indenting these assignments properly
+in the first place, to avoid reindenting them later? It's hard to follow
+what changed. There are also some tabs vs spaces inconsistencies.
+
+>  	hellcreek->ptp_clock = ptp_clock_register(&hellcreek->ptp_clock_info,
+>  						  hellcreek->dev);
+> diff --git a/drivers/net/dsa/hirschmann/hellcreek_ptp.h b/drivers/net/dsa/hirschmann/hellcreek_ptp.h
+> index 2dd8aaa532d0..e0eca1f4a494 100644
+> --- a/drivers/net/dsa/hirschmann/hellcreek_ptp.h
+> +++ b/drivers/net/dsa/hirschmann/hellcreek_ptp.h
+> @@ -59,6 +59,10 @@
+>  
+>  int hellcreek_ptp_setup(struct hellcreek *hellcreek);
+>  void hellcreek_ptp_free(struct hellcreek *hellcreek);
+> +u16 hellcreek_ptp_read(struct hellcreek *hellcreek, unsigned int offset);
+> +void hellcreek_ptp_write(struct hellcreek *hellcreek, u16 data,
+> +			 unsigned int offset);
+> +u64 hellcreek_ptp_gettime_seconds(struct hellcreek *hellcreek, u64 ns);
+>  
+>  #define ptp_to_hellcreek(ptp)					\
+>  	container_of(ptp, struct hellcreek, ptp_clock_info)
+> -- 
+> 2.20.1
+> 
+
+Thanks,
+-Vladimir
