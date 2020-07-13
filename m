@@ -2,103 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98E8721D776
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 15:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CEFA21D7B6
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 16:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729907AbgGMNpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 09:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
+        id S1730007AbgGMOBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 10:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729873AbgGMNpi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 09:45:38 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89652C061755;
-        Mon, 13 Jul 2020 06:45:38 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id n2so13738111edr.5;
-        Mon, 13 Jul 2020 06:45:38 -0700 (PDT)
+        with ESMTP id S1729695AbgGMOBW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 10:01:22 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEF9C061755;
+        Mon, 13 Jul 2020 07:01:22 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id i14so6030034pfu.13;
+        Mon, 13 Jul 2020 07:01:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qhevLNzqIY18aN/wr6u6dhwAFYFM0C8iq2L8OEb+kGs=;
-        b=Zco6WLh1gHLq9ofieCcTsVnVgxGxMSvX5PMVP8dScAEfSEcZIM6fzvoI2YCUiTr953
-         E0+6tQCtFpYLamgC7BJpN1bH4rJWf2vFJ/hN+z5CkAd5wN78F9Ug5OUX+zTkdJOYoQ/W
-         r4gk2qpTW2sV0FeMHlTZS/uid7ltOJpq9BGS3MfLJPIpMz2ZPRRd7NXz9yFkXihCPo9x
-         Q009oqUiWBL24xy3wxUGX7NjLj9TJAgokQ/XlNj8QZs2zGDv9kL5ScadFMWXfPBnHzKu
-         7r/5BVy/aiMJJuytWkgd8QvxYC3afecfyvK1UM3OnbnG1Ixkw4tuzppAF7x4Dr3GD/31
-         JDcg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=cCXKJLHZKOo9WepEq5/xoL1jF7eCdGbwLR/OdmMlRgE=;
+        b=UcZcvj6tdkMVOyI3IFIQG/8vSKdQqFGSaN+JmaVwOF9GbrNpDl52u97EGTC6WttrCB
+         +uq4lGa7Ki8pWAqvg/EdWy7KqgMrlKQb9DCYCLI4okUb/lbc0AbiuAYzQZyWERS/Ckhy
+         3bA943nAcgAIsMRA48e1dvIRLkAF//62qJ44RIuEj9mEbYNQu/+REF5b4paeoqxnWzsR
+         JU4I1Qr4GfVS0ABjiDG+geZ+1TySNVXkqMCwta91/jegJF/Qo3NHN25Rpf/QJZgo8aRD
+         FPpraNnOvK59kpPviG/wb9PTg4tt56zP1uY5XGqWGzYJzZTI5ADqEqk5TATkUz0ZUOJW
+         IdSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qhevLNzqIY18aN/wr6u6dhwAFYFM0C8iq2L8OEb+kGs=;
-        b=aNvJcNAHZTZuqeC5d79R+CiP6MFm/q78/ofy+wViO3u7H5voz54ZvacXO90eT6H6zT
-         fDfLnzpjftsPvG5fe69Ln6buZy/g1mA/MrRlL4B1oDK2pJdkSzkE10kvj1wrUEIgz4ZT
-         +QUdntPFWf0VKczssj+ri8x689ZzYEqAgut9QQ5u0HQlUgt72hphhsocgiTFhd/DlpYY
-         r8QRzkgmxfiyhtc5k8tDmd2oJel3EwU6vHHs24C9/jd5JHldCf8b4IA46/iwK+eJ3LV1
-         +zmpRRvK1OFrUYqpd+dow94Ea95cahMOdjCitxVTu647ANRIIJq5qVfcCrP7r/PHXi47
-         OHmA==
-X-Gm-Message-State: AOAM5336MKzbYFjpFEsJKEjRpZBAIpuA7KdBzHhixySW+G5XuZMIKmCM
-        1MrtDrSlUI9DVJuA4CDWu+i9fuGZoA8=
-X-Google-Smtp-Source: ABdhPJw8tcl7JEi/xxx+7c1G1kruZxLTgevyq466t9suOvpPgeEnjCnFABfVtglpp72QMrlY9qInqQ==
-X-Received: by 2002:a05:6402:b4c:: with SMTP id bx12mr33646902edb.157.1594647937071;
-        Mon, 13 Jul 2020 06:45:37 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:d1f7:b47e:ecba:b607? (p200300ea8f235700d1f7b47eecbab607.dip0.t-ipconnect.de. [2003:ea:8f23:5700:d1f7:b47e:ecba:b607])
-        by smtp.googlemail.com with ESMTPSA id gr15sm9522994ejb.84.2020.07.13.06.45.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jul 2020 06:45:36 -0700 (PDT)
-Subject: Re: [RFC PATCH 12/35] r8169: Tidy Success/Failure checks
-To:     "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
-        helgaas@kernel.org,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=cCXKJLHZKOo9WepEq5/xoL1jF7eCdGbwLR/OdmMlRgE=;
+        b=XEm0ssD7Bz3C7mCOhEE50wSF+TLY3bDYUqKA8BdWsDZIW+wFJmYxroaA7jq6uUZDiQ
+         7ona2cXC34rWsduehv7fsX6dmViaFNMC9o+38PbPqScctVBooMg/ZaQii0hzkKjbVxDm
+         lp3dbOBdImfret99P4PTJeIy7q/YyeKiGHqTWjazdMH1jVmPVNmCM4B5qLXpPzGPpwL7
+         tRdAGplN0JvGm2+lsxcFvCCXvcWicjinLbiTQI8cB3M1xJkQQW2A38l+1qSKWJwJ7M4A
+         WUisQhY9FMV2VCrnRnGUMRsGRcOqB/F+YTtO4o/vQ8Ytqx5YAsUYOieU8f7MgCr+JAz/
+         3ahQ==
+X-Gm-Message-State: AOAM533/juXgaFY0L55WjPmdXLifoZ9cwyL7BdAGm94MNHV3mVzadMtR
+        m3wlIwcZ3acQtJXlzEEwoZCn7rKF
+X-Google-Smtp-Source: ABdhPJxqegTpxm4H1FI4lALz8ckkFIs7OKoYhLjveV0eADTl4m+2jIxGOwdCniuKxIKUeAb3ineT9w==
+X-Received: by 2002:a63:7c4d:: with SMTP id l13mr69353235pgn.12.1594648881800;
+        Mon, 13 Jul 2020 07:01:21 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id r2sm14185798pfh.106.2020.07.13.07.01.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jul 2020 07:01:20 -0700 (PDT)
+Date:   Mon, 13 Jul 2020 07:01:12 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     bjorn@helgaas.com, skhan@linuxfoundation.org,
-        linux-pci@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20200713122247.10985-1-refactormyself@gmail.com>
- <20200713122247.10985-13-refactormyself@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <e6610668-4d16-cbaa-8513-9ca335b06225@gmail.com>
-Date:   Mon, 13 Jul 2020 15:45:26 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH v1 4/8] net: dsa: hellcreek: Add support for hardware
+ timestamping
+Message-ID: <20200713140112.GB27934@hoboy>
+References: <20200710113611.3398-1-kurt@linutronix.de>
+ <20200710113611.3398-5-kurt@linutronix.de>
+ <20200713095700.rd4u4t6thkzfnlll@skbuf>
+ <87k0z7n0m9.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <20200713122247.10985-13-refactormyself@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87k0z7n0m9.fsf@kurt>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13.07.2020 14:22, Saheed O. Bolarinwa wrote:
-> Remove unnecessary check for 0.
+On Mon, Jul 13, 2020 at 12:57:34PM +0200, Kurt Kanzenbach wrote:
+> Hi Vladimir,
 > 
-> Signed-off-by: "Saheed O. Bolarinwa" <refactormyself@gmail.com>
-> ---
-> This patch depends on PATCH 11/35
+> On Mon Jul 13 2020, Vladimir Oltean wrote:
+> >> +/* Get a pointer to the PTP header in this skb */
+> >> +static u8 *parse_ptp_header(struct sk_buff *skb, unsigned int type)
+> >
+> > Maybe this and the function from mv88e6xxx could share the same
+> > implementation somehow.
 > 
->  drivers/net/ethernet/realtek/r8169_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Actually both functions are identical. Should it be moved to the ptp
+> core, maybe? Then, all drivers could use that. I guess we should also
+> define a PTP offset for the reserved field which is accessed in
+> hellcreek_get_reserved_field() just with 16 instead of a proper macro
+> constant.
+
+I support re-factoring the code that parses the PTP header.  Last time
+I looked, each driver needed slightly different fields, and I didn't
+see an easy way to accommodate them all.
+
+> > I would like to get some clarification on whether "SKBTX_IN_PROGRESS"
+> > should be set in shtx->tx_flags or not. On one hand, it's asking for
+> > trouble, on the other hand, it's kind of required for proper compliance
+> > to API pre-SO_TIMESTAMPING...
 > 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 206dac958cb2..79edbc0c4476 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -2656,7 +2656,7 @@ static void rtl_csi_access_enable(struct rtl8169_private *tp, u8 val)
->  	 * first and if it fails fall back to CSI.
->  	 */
->  	if (pdev->cfg_size > 0x070f &&
-> -	    pci_write_config_byte(pdev, 0x070f, val) == 0)
-> +	    !pci_write_config_byte(pdev, 0x070f, val))
->  		return;
->  
->  	netdev_notice_once(tp->dev,
-> 
-Patches 11 and 12 are both trivial, wouldn't it make sense to merge them?
-Apart from that: Acked-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Hm. We actually oriented our code on the mv88e6xxx time stamping code base.
+
+Where in mv88e6xxx does the driver set SKBTX_IN_PROGRESS?
+
+I don't think it makes sense for DSA drivers to set this bit, as it
+serves no purpose in the DSA context.
+
+Thanks,
+Richard
