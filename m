@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55AD921D52B
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 13:42:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A00621D52D
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 13:43:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729679AbgGMLm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 07:42:56 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:21888 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729656AbgGMLmx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 07:42:53 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06DBeR2A024163;
-        Mon, 13 Jul 2020 04:42:51 -0700
+        id S1729703AbgGMLnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 07:43:00 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:58170 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729656AbgGMLm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 07:42:59 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06DBfkde014165;
+        Mon, 13 Jul 2020 04:42:55 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=uqwusWC8s3pP191wMT7vxM8Te4lnusx5hn4UId8eeoE=;
- b=hYQtJb67/MDzP0SzXAKSsCusuhtbTR7W6+b6EXei5tHNk5KzOa1/9sxw3RUj6kgevnBr
- vWnsDUX3IiZlcSXICNZE4pFtL/xJjQlSMhRDQRw+llmlhjzJdI1M52fjssRkTQMGo8va
- PA27MiDllDLJIqqU9CxXVUN8rSN3QMt/UD2+sMbRVD7PRv+dvZJEwg4X3qDd2naBqHAr
- /ytBCix3lABOsQV/XC7gZc3rQTzTDNZw60EOcqCF+Tv2rMGI7VmrKHZKAQw4KbowU+eM
- lujmYw2D+ru2XwGxQQrdadnSXyfplZXIve5n3Z3bMnRDWKn/84OtG6t1bteWvqe4nyOe eA== 
+ content-type; s=pfpt0818; bh=uyYjnS08/yCOGn9SqYhZDK2a+b4UovgRkdvZp3eZlR0=;
+ b=OTd/u5mvSHhniVQkuiQHolrp0c5LBXOUROZkuDuShJ/thkiv6gfbAZUjRGhXzwE35bMP
+ 9/eGdwvl5ivlNY+VUU8cUXqTqY+JyoeArsRZaihyARKEhLlnYQ1WhJksqp80t4SKVZxL
+ FB4JH9B94BMdIMPo/JH6oZGa5ukjvNkpAXPmoIw/m1Z7CrJDhBEhRDy9E+HAmKfxT6na
+ JF1+fCErSvMq0YdQCCL8UUhRpoqaFNJgLzm4GBQujU4PTb4jijD3UXVksDB5GPCJD9o4
+ GrBck8HeSvFhPN4UvOGhZEZH9VYjjjPjrSpvIt3Pdp+J3bTAgxynbZ6Lgkz8N2JFZhLL /g== 
 Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 327asn76m9-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 328mmhgfgv-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 13 Jul 2020 04:42:51 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
+        Mon, 13 Jul 2020 04:42:55 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
  (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 13 Jul
- 2020 04:42:49 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 13 Jul 2020 04:42:50 -0700
+ 2020 04:42:53 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 13 Jul 2020 04:42:53 -0700
 Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.6.200.41])
-        by maili.marvell.com (Postfix) with ESMTP id C6F913F703F;
-        Mon, 13 Jul 2020 04:42:47 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id BC46B3F703F;
+        Mon, 13 Jul 2020 04:42:50 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Mark Starovoytov <mstarovoitov@marvell.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>,
         Igor Russkikh <irusskikh@marvell.com>
-Subject: [PATCH net-next 02/10] net: atlantic: move FRAC_PER_NS to aq_hw.h
-Date:   Mon, 13 Jul 2020 14:42:25 +0300
-Message-ID: <20200713114233.436-3-irusskikh@marvell.com>
+Subject: [PATCH net-next 03/10] net: atlantic: additional per-queue stats
+Date:   Mon, 13 Jul 2020 14:42:26 +0300
+Message-ID: <20200713114233.436-4-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200713114233.436-1-irusskikh@marvell.com>
 References: <20200713114233.436-1-irusskikh@marvell.com>
@@ -56,85 +57,310 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Starovoytov <mstarovoitov@marvell.com>
+From: Dmitry Bogdanov <dbogdanov@marvell.com>
 
-This patch moves FRAC_PER_NS to aq_hw.h so that it can be used in both
-hw_atl (A1) and hw_atl2 (A2) in the future.
+This patch adds additional per-queue stats, these could
+be useful for debugging and diagnostics.
 
+Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
 Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- .../net/ethernet/aquantia/atlantic/aq_hw.h    |  2 ++
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 20 +++++++++----------
- 2 files changed, 11 insertions(+), 11 deletions(-)
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   |  4 ++
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   | 43 ++++++++++++++++-
+ .../net/ethernet/aquantia/atlantic/aq_nic.h   |  6 +++
+ .../net/ethernet/aquantia/atlantic/aq_ring.c  |  4 ++
+ .../net/ethernet/aquantia/atlantic/aq_ring.h  | 11 +++--
+ .../net/ethernet/aquantia/atlantic/aq_vec.c   | 48 ++++++-------------
+ .../net/ethernet/aquantia/atlantic/aq_vec.h   | 14 ++++--
+ 7 files changed, 86 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-index 6358bed3d64e..9505918f252c 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-@@ -36,6 +36,8 @@ enum aq_tc_mode {
- 			(AQ_RX_LAST_LOC_FVLANID - AQ_RX_FIRST_LOC_FVLANID + 1U)
- #define AQ_RX_QUEUE_NOT_ASSIGNED   0xFFU
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
+index d36afeaae525..44f2ddfcd202 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
+@@ -96,6 +96,10 @@ static const char * const aq_ethtool_queue_stat_names[] = {
+ 	"%sQueue[%d] InJumboPackets",
+ 	"%sQueue[%d] InLroPackets",
+ 	"%sQueue[%d] InErrors",
++	"%sQueue[%d] AllocFails",
++	"%sQueue[%d] SkbAllocFails",
++	"%sQueue[%d] Polls",
++	"%sQueue[%d] Irqs",
+ };
  
-+#define AQ_FRAC_PER_NS 0x100000000LL
-+
- /* Used for rate to Mbps conversion */
- #define AQ_MBPS_DIVISOR         125000 /* 1000000 / 8 */
- 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index b023c3324a59..97672ff142a8 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -54,8 +54,6 @@
- 	.mac_regs_count = 88,		  \
- 	.hw_alive_check_addr = 0x10U
- 
--#define FRAC_PER_NS 0x100000000LL
--
- const struct aq_hw_caps_s hw_atl_b0_caps_aqc100 = {
- 	DEFAULT_B0_BOARD_BASIC_CAPABILITIES,
- 	.media_type = AQ_HW_MEDIA_TYPE_FIBRE,
-@@ -1233,7 +1231,7 @@ static void hw_atl_b0_adj_params_get(u64 freq, s64 adj, u32 *ns, u32 *fns)
- 	if (base_ns != nsi * NSEC_PER_SEC) {
- 		s64 divisor = div64_s64((s64)NSEC_PER_SEC * NSEC_PER_SEC,
- 					base_ns - nsi * NSEC_PER_SEC);
--		nsi_frac = div64_s64(FRAC_PER_NS * NSEC_PER_SEC, divisor);
-+		nsi_frac = div64_s64(AQ_FRAC_PER_NS * NSEC_PER_SEC, divisor);
- 	}
- 
- 	*ns = (u32)nsi;
-@@ -1246,23 +1244,23 @@ hw_atl_b0_mac_adj_param_calc(struct hw_fw_request_ptp_adj_freq *ptp_adj_freq,
- {
- 	s64 adj_fns_val;
- 	s64 fns_in_sec_phy = phyfreq * (ptp_adj_freq->fns_phy +
--					FRAC_PER_NS * ptp_adj_freq->ns_phy);
-+					AQ_FRAC_PER_NS * ptp_adj_freq->ns_phy);
- 	s64 fns_in_sec_mac = macfreq * (ptp_adj_freq->fns_mac +
--					FRAC_PER_NS * ptp_adj_freq->ns_mac);
--	s64 fault_in_sec_phy = FRAC_PER_NS * NSEC_PER_SEC - fns_in_sec_phy;
--	s64 fault_in_sec_mac = FRAC_PER_NS * NSEC_PER_SEC - fns_in_sec_mac;
-+					AQ_FRAC_PER_NS * ptp_adj_freq->ns_mac);
-+	s64 fault_in_sec_phy = AQ_FRAC_PER_NS * NSEC_PER_SEC - fns_in_sec_phy;
-+	s64 fault_in_sec_mac = AQ_FRAC_PER_NS * NSEC_PER_SEC - fns_in_sec_mac;
- 	/* MAC MCP counter freq is macfreq / 4 */
- 	s64 diff_in_mcp_overflow = (fault_in_sec_mac - fault_in_sec_phy) *
--				   4 * FRAC_PER_NS;
-+				   4 * AQ_FRAC_PER_NS;
- 
- 	diff_in_mcp_overflow = div64_s64(diff_in_mcp_overflow,
- 					 AQ_HW_MAC_COUNTER_HZ);
--	adj_fns_val = (ptp_adj_freq->fns_mac + FRAC_PER_NS *
-+	adj_fns_val = (ptp_adj_freq->fns_mac + AQ_FRAC_PER_NS *
- 		       ptp_adj_freq->ns_mac) + diff_in_mcp_overflow;
- 
--	ptp_adj_freq->mac_ns_adj = div64_s64(adj_fns_val, FRAC_PER_NS);
-+	ptp_adj_freq->mac_ns_adj = div64_s64(adj_fns_val, AQ_FRAC_PER_NS);
- 	ptp_adj_freq->mac_fns_adj = adj_fns_val - ptp_adj_freq->mac_ns_adj *
--				    FRAC_PER_NS;
-+				    AQ_FRAC_PER_NS;
+ #if IS_ENABLED(CONFIG_MACSEC)
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index f2f02908109e..f4c0aa818916 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -858,6 +858,20 @@ int aq_nic_get_regs_count(struct aq_nic_s *self)
+ 	return self->aq_nic_cfg.aq_hw_caps->mac_regs_count;
  }
  
- static int hw_atl_b0_adj_sys_clock(struct aq_hw_s *self, s64 delta)
++static int aq_nic_get_tc_stats(struct aq_vec_s *vec, const unsigned int tc,
++			       u64 *data, unsigned int *p_count)
++{
++	struct aq_ring_stats_rx_s stats_rx;
++	struct aq_ring_stats_tx_s stats_tx;
++
++	memset(&stats_rx, 0U, sizeof(struct aq_ring_stats_rx_s));
++	memset(&stats_tx, 0U, sizeof(struct aq_ring_stats_tx_s));
++
++	aq_vec_add_stats(vec, tc, &stats_rx, &stats_tx);
++
++	return aq_nic_fill_stats_data(&stats_rx, &stats_tx, data, p_count);
++}
++
+ u64 *aq_nic_get_stats(struct aq_nic_s *self, u64 *data)
+ {
+ 	struct aq_vec_s *aq_vec = NULL;
+@@ -908,13 +922,13 @@ u64 *aq_nic_get_stats(struct aq_nic_s *self, u64 *data)
+ 		     aq_vec && self->aq_vecs > i;
+ 		     ++i, aq_vec = self->aq_vec[i]) {
+ 			data += count;
+-			aq_vec_get_sw_stats(aq_vec, tc, data, &count);
++			aq_nic_get_tc_stats(aq_vec, tc, data, &count);
+ 		}
+ 	}
+ 
+ 	data += count;
+ 
+-err_exit:;
++err_exit:
+ 	return data;
+ }
+ 
+@@ -933,6 +947,31 @@ static void aq_nic_update_ndev_stats(struct aq_nic_s *self)
+ 	ndev->stats.multicast = stats->mprc;
+ }
+ 
++int aq_nic_fill_stats_data(struct aq_ring_stats_rx_s *stats_rx,
++			   struct aq_ring_stats_tx_s *stats_tx,
++			   u64 *data,
++			   unsigned int *p_count)
++{
++	unsigned int count = 0U;
++	/* This data should mimic aq_ethtool_queue_stat_names structure
++	 */
++	data[count] += stats_rx->packets;
++	data[++count] += stats_tx->packets;
++	data[++count] += stats_tx->queue_restarts;
++	data[++count] += stats_rx->jumbo_packets;
++	data[++count] += stats_rx->lro_packets;
++	data[++count] += stats_rx->errors;
++	data[++count] += stats_rx->alloc_fails;
++	data[++count] += stats_rx->skb_alloc_fails;
++	data[++count] += stats_rx->polls;
++	data[++count] += stats_rx->irqs;
++
++	if (p_count)
++		*p_count = ++count;
++
++	return 0;
++}
++
+ void aq_nic_get_link_ksettings(struct aq_nic_s *self,
+ 			       struct ethtool_link_ksettings *cmd)
+ {
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
+index b1e4a5b5284a..6740f4e22393 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
+@@ -15,6 +15,8 @@
+ #include "aq_hw.h"
+ 
+ struct aq_ring_s;
++struct aq_ring_stats_rx_s;
++struct aq_ring_stats_tx_s;
+ struct aq_hw_ops;
+ struct aq_fw_s;
+ struct aq_vec_s;
+@@ -175,6 +177,10 @@ int aq_nic_xmit(struct aq_nic_s *self, struct sk_buff *skb);
+ int aq_nic_get_regs(struct aq_nic_s *self, struct ethtool_regs *regs, void *p);
+ int aq_nic_get_regs_count(struct aq_nic_s *self);
+ u64 *aq_nic_get_stats(struct aq_nic_s *self, u64 *data);
++int aq_nic_fill_stats_data(struct aq_ring_stats_rx_s *stats_rx,
++			   struct aq_ring_stats_tx_s *stats_tx,
++			   u64 *data,
++			   unsigned int *p_count);
+ int aq_nic_stop(struct aq_nic_s *self);
+ void aq_nic_deinit(struct aq_nic_s *self, bool link_down);
+ void aq_nic_set_power(struct aq_nic_s *self);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+index 8dd59e9fc3aa..20b606aa7974 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -88,6 +88,8 @@ static int aq_get_rxpages(struct aq_ring_s *self, struct aq_ring_buff_s *rxbuf,
+ 	if (!rxbuf->rxdata.page) {
+ 		ret = aq_get_rxpage(&rxbuf->rxdata, order,
+ 				    aq_nic_get_dev(self->aq_nic));
++		if (ret)
++			self->stats.rx.alloc_fails++;
+ 		return ret;
+ 	}
+ 
+@@ -392,6 +394,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 			skb = build_skb(aq_buf_vaddr(&buff->rxdata),
+ 					AQ_CFG_RX_FRAME_MAX);
+ 			if (unlikely(!skb)) {
++				self->stats.rx.skb_alloc_fails++;
+ 				err = -ENOMEM;
+ 				goto err_exit;
+ 			}
+@@ -405,6 +408,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		} else {
+ 			skb = napi_alloc_skb(napi, AQ_CFG_RX_HDR_SIZE);
+ 			if (unlikely(!skb)) {
++				self->stats.rx.skb_alloc_fails++;
+ 				err = -ENOMEM;
+ 				goto err_exit;
+ 			}
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
+index 2c96f20f6289..c31d4642d280 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
+@@ -1,7 +1,8 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * aQuantia Corporation Network Driver
+- * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
++/* Atlantic Network Driver
++ *
++ * Copyright (C) 2014-2019 aQuantia Corporation
++ * Copyright (C) 2019-2020 Marvell International Ltd.
+  */
+ 
+ /* File aq_ring.h: Declaration of functions for Rx/Tx rings. */
+@@ -93,6 +94,10 @@ struct aq_ring_stats_rx_s {
+ 	u64 bytes;
+ 	u64 lro_packets;
+ 	u64 jumbo_packets;
++	u64 alloc_fails;
++	u64 skb_alloc_fails;
++	u64 polls;
++	u64 irqs;
+ 	u64 pg_losts;
+ 	u64 pg_flips;
+ 	u64 pg_reuses;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+index d1d43c8ce400..c2db4d242690 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+@@ -1,7 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+-/*
+- * aQuantia Corporation Network Driver
+- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
++/* Atlantic Network Driver
++ *
++ * Copyright (C) 2014-2019 aQuantia Corporation
++ * Copyright (C) 2019-2020 Marvell International Ltd.
+  */
+ 
+ /* File aq_vec.c: Definition of common structure for vector of Rx and Tx rings.
+@@ -44,6 +45,7 @@ static int aq_vec_poll(struct napi_struct *napi, int budget)
+ 	} else {
+ 		for (i = 0U, ring = self->ring[0];
+ 			self->tx_rings > i; ++i, ring = self->ring[i]) {
++			ring[AQ_VEC_RX_ID].stats.rx.polls++;
+ 			if (self->aq_hw_ops->hw_ring_tx_head_update) {
+ 				err = self->aq_hw_ops->hw_ring_tx_head_update(
+ 							self->aq_hw,
+@@ -314,6 +316,7 @@ irqreturn_t aq_vec_isr(int irq, void *private)
+ 		err = -EINVAL;
+ 		goto err_exit;
+ 	}
++	self->ring[0][AQ_VEC_RX_ID].stats.rx.irqs++;
+ 	napi_schedule(&self->napi);
+ 
+ err_exit:
+@@ -349,10 +352,10 @@ cpumask_t *aq_vec_get_affinity_mask(struct aq_vec_s *self)
+ 	return &self->aq_ring_param.affinity_mask;
+ }
+ 
+-static void aq_vec_add_stats(struct aq_vec_s *self,
+-			     const unsigned int tc,
+-			     struct aq_ring_stats_rx_s *stats_rx,
+-			     struct aq_ring_stats_tx_s *stats_tx)
++void aq_vec_add_stats(struct aq_vec_s *self,
++		      const unsigned int tc,
++		      struct aq_ring_stats_rx_s *stats_rx,
++		      struct aq_ring_stats_tx_s *stats_tx)
+ {
+ 	struct aq_ring_s *ring = self->ring[tc];
+ 
+@@ -364,6 +367,10 @@ static void aq_vec_add_stats(struct aq_vec_s *self,
+ 		stats_rx->errors += rx->errors;
+ 		stats_rx->jumbo_packets += rx->jumbo_packets;
+ 		stats_rx->lro_packets += rx->lro_packets;
++		stats_rx->alloc_fails += rx->alloc_fails;
++		stats_rx->skb_alloc_fails += rx->skb_alloc_fails;
++		stats_rx->polls += rx->polls;
++		stats_rx->irqs += rx->irqs;
+ 		stats_rx->pg_losts += rx->pg_losts;
+ 		stats_rx->pg_flips += rx->pg_flips;
+ 		stats_rx->pg_reuses += rx->pg_reuses;
+@@ -378,30 +385,3 @@ static void aq_vec_add_stats(struct aq_vec_s *self,
+ 		stats_tx->queue_restarts += tx->queue_restarts;
+ 	}
+ }
+-
+-int aq_vec_get_sw_stats(struct aq_vec_s *self, const unsigned int tc, u64 *data,
+-			unsigned int *p_count)
+-{
+-	struct aq_ring_stats_rx_s stats_rx;
+-	struct aq_ring_stats_tx_s stats_tx;
+-	unsigned int count = 0U;
+-
+-	memset(&stats_rx, 0U, sizeof(struct aq_ring_stats_rx_s));
+-	memset(&stats_tx, 0U, sizeof(struct aq_ring_stats_tx_s));
+-
+-	aq_vec_add_stats(self, tc, &stats_rx, &stats_tx);
+-
+-	/* This data should mimic aq_ethtool_queue_stat_names structure
+-	 */
+-	data[count] += stats_rx.packets;
+-	data[++count] += stats_tx.packets;
+-	data[++count] += stats_tx.queue_restarts;
+-	data[++count] += stats_rx.jumbo_packets;
+-	data[++count] += stats_rx.lro_packets;
+-	data[++count] += stats_rx.errors;
+-
+-	if (p_count)
+-		*p_count = ++count;
+-
+-	return 0;
+-}
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.h b/drivers/net/ethernet/aquantia/atlantic/aq_vec.h
+index 541af85e6510..876781a1e2b3 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.h
+@@ -1,7 +1,8 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * aQuantia Corporation Network Driver
+- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
++/* Atlantic Network Driver
++ *
++ * Copyright (C) 2014-2019 aQuantia Corporation
++ * Copyright (C) 2019-2020 Marvell International Ltd.
+  */
+ 
+ /* File aq_vec.h: Definition of common structures for vector of Rx and Tx rings.
+@@ -35,7 +36,10 @@ void aq_vec_ring_free(struct aq_vec_s *self);
+ int aq_vec_start(struct aq_vec_s *self);
+ void aq_vec_stop(struct aq_vec_s *self);
+ cpumask_t *aq_vec_get_affinity_mask(struct aq_vec_s *self);
+-int aq_vec_get_sw_stats(struct aq_vec_s *self, const unsigned int tc, u64 *data,
+-			unsigned int *p_count);
++
++void aq_vec_add_stats(struct aq_vec_s *self,
++		      const unsigned int tc,
++		      struct aq_ring_stats_rx_s *stats_rx,
++		      struct aq_ring_stats_tx_s *stats_tx);
+ 
+ #endif /* AQ_VEC_H */
 -- 
 2.17.1
 
