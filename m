@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E768321DE07
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:59:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FF6321DE09
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730132AbgGMQ7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 12:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52854 "EHLO
+        id S1730291AbgGMQ7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 12:59:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730000AbgGMQ66 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 12:58:58 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30471C061755
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 09:58:58 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id dp18so18009738ejc.8
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 09:58:58 -0700 (PDT)
+        with ESMTP id S1730061AbgGMQ67 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 12:58:59 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601FEC061794
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 09:58:59 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id o18so18023988eje.7
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 09:58:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DKAslmIb+Cb31EoG8ENNk8xfrUVjfPS4CwWKf7KQDZA=;
-        b=p23pAfU5b6MG28p1EFxm/ZH6MX9oQzESlmoBzhmiu3N0E7cHHxGNbL4U4C8ghbbL6V
-         ov6QgoSAqr0rucKvhu4ZYkJKMjCG2M9koicmIKuMjzA26xq91zTHmtNIYdEsxgXwSbsR
-         jP4T+f96TAsW1IKryqMP3C5cEE00GuVfoslKm/aWry1uloEKBDnahnmZuMpO++0EO0L/
-         iSDqo2og7gC43zaGAj2aSHu/pzjd3oiC8XvEx+q2qpryhjVq4lbI92RAi/ivxLRm2q6P
-         TmYhLgfItF875D/Sc5dhcx3/nA+UfbLwEYwpo1VFOr1UqqscG1b6KtfcR60mallp/1us
-         96kg==
+        bh=linjx8X31u6pUxwsDE1XQj0eBE+GWDbUDTjY/8gm9pI=;
+        b=RhK9wvCYYjZ9CBYxCYCWVcgse+/pP8ajUxXlcFX/fAfm5r+8KtNEMPOZmNVZP5YYqQ
+         c8dCa9uxgYODPWwwdrXztO2cxWm4pL4f8Fu5PfftXw8AskcDvy/ikeqDVLvDrZz2A1wg
+         vsjLV/f3oKBYqwzkLClw+IPE7C+SXR1trQccFVM1K01GKjJestnr78AVY2MO0Dgg3MNp
+         vK7nkdZOSrWn3sLGYIo93Jv6N7h6QNvgaa2i2SC5Qsyh+vu2FUlpB8hiAp3MrD2CTdSc
+         rN+VwYVCCZMaB7HePDm7agZvvCHixN9cZOEM1P7HCUOEdFXfuj1sTOYrkkB+XfEZ6FG8
+         lNGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DKAslmIb+Cb31EoG8ENNk8xfrUVjfPS4CwWKf7KQDZA=;
-        b=Kvnv/u0KjUlJ+wHOvAZUtWOv7ZV6zRgnhSfug3y/+FJHiFBJ1yWg3B48X84TNIvAFp
-         g8RZ7kzad0ewQfhoozFj3LBCxoOhEf63NzDiFySGnOtPJU+RzLKz1beK16vCQqSqnDwu
-         T4VnnGQlhlUuxLoZsMHZ7cy+v2B6rDyRGWtN/1NIEVdOwFvR7mPqU3jgB5aX5W+6JFof
-         xvvBBv6eP+KtdV4T7qS781ypgL8qrZEGzVrV4wFyntr7ZAZi1IioQPSHFzpjeDMSZ8JU
-         15KpxerH6I8cu6fukkHnwkFu27E/3QdlVkQa1ISuqCzOzslAs4Jo+w9kAkaULnT0LHOG
-         8D1w==
-X-Gm-Message-State: AOAM5307d124buJjXLEtQjxoy0AHs8wThVv9xP/mVtJORDE1+Pir372s
-        hTQBmbgbkBzg8A9aBd26EhA=
-X-Google-Smtp-Source: ABdhPJyTQkxr2w8KdJNiLUQcDqK+qnc5nTEEKneeSMVPITQvsp6G009q30n45TfrkKgy4NGcxcCUsg==
-X-Received: by 2002:a17:906:cecf:: with SMTP id si15mr621983ejb.508.1594659536789;
-        Mon, 13 Jul 2020 09:58:56 -0700 (PDT)
+        bh=linjx8X31u6pUxwsDE1XQj0eBE+GWDbUDTjY/8gm9pI=;
+        b=bRSDZJCNv1pd9otBRHk0b4io3OG7QSOho2wbkL09ZMZriJnPrTG46hxK/jBYzV0+m6
+         7YZvXfFIa7l+KVplSfZsw6HpjdIMcWn9uriCIs4mQrFUXhOT6Rj3s61EpD/bJALgJ4j2
+         OAm8mUAfwiRAb1b4DGGLXPMYnBEPDP4vKlC9ZpsvGVqihsz1W7tjpZuw+jmRzr/BO/nn
+         xJ79oIR4ySzMlTadzLPw0ZlPedsG5X2oe5BxbY9TDt6VhgY3ySmmNDgVg1yhfXLhGdnD
+         chnNsYquNvzEawp8/AHY89SAgomPZBI/Q419lTL0M6hLhV/W1L1Xw7HejTjYVT7avIk6
+         /vxA==
+X-Gm-Message-State: AOAM530OAzrPwbZNt+vSmjT+KjAbHOgHFwdUSDaiXbPhU0ZXXMHMoGFz
+        e8Tc+7XR3SurEl7MsiHu9kA=
+X-Google-Smtp-Source: ABdhPJxmphL/5bbOqIJlWYeSqguqbD4lSHoIqbw2oTdPh4KhFUjxr68xFg8fugrz5IyIWNaKU3dqXg==
+X-Received: by 2002:a17:906:57c6:: with SMTP id u6mr664550ejr.194.1594659538056;
+        Mon, 13 Jul 2020 09:58:58 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id y1sm12986732ede.7.2020.07.13.09.58.55
+        by smtp.gmail.com with ESMTPSA id y1sm12986732ede.7.2020.07.13.09.58.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2020 09:58:56 -0700 (PDT)
+        Mon, 13 Jul 2020 09:58:57 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
@@ -55,9 +55,9 @@ Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
         madalin.bucur@oss.nxp.com, radu-andrei.bulie@nxp.com,
         fido_max@inbox.ru
-Subject: [PATCH v4 net-next 03/11] net: mscc: ocelot: convert QSYS_SWITCH_PORT_MODE and SYS_PORT_MODE to regfields
-Date:   Mon, 13 Jul 2020 19:57:03 +0300
-Message-Id: <20200713165711.2518150-4-olteanv@gmail.com>
+Subject: [PATCH v4 net-next 04/11] net: dsa: felix: create a template for the DSA tags on xmit
+Date:   Mon, 13 Jul 2020 19:57:04 +0300
+Message-Id: <20200713165711.2518150-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200713165711.2518150-1-olteanv@gmail.com>
 References: <20200713165711.2518150-1-olteanv@gmail.com>
@@ -70,310 +70,202 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Currently Felix and Ocelot share the same bit layout in these per-port
-registers, but Seville does not. So we need reg_fields for that.
+With this patch we try to kill 2 birds with 1 stone.
 
-Actually since these are per-port registers, we need to also specify the
-number of ports, and register size per port, and use the regmap API for
-multiple ports.
+First of all, some switches that use tag_ocelot.c don't have the exact
+same bitfield layout for the DSA tags. The destination ports field is
+different for Seville VSC9953 for example. So the choices are to either
+duplicate tag_ocelot.c into a new tag_seville.c (sub-optimal) or somehow
+take into account a supposed ocelot->dest_ports_offset when packing this
+field into the DSA injection header (again not ideal).
 
-There's a more subtle point to be made about the other 2 register
-fields:
-- QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG
-- QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE
-which we are not writing any longer, for 2 reasons:
-- Using the previous API (ocelot_write_rix), we were only writing 1 for
-  Felix and Ocelot, which was their hardware-default value, and which
-  there wasn't any intention in changing.
-- In the case of SCH_NEXT_CFG, in fact Seville does not have this
-  register field at all, and therefore, if we want to have common code
-  we would be required to not write to it.
+Secondly, tag_ocelot.c already needs to memset a 128-bit area to zero
+and call some packing() functions of dubious performance in the
+fastpath. And most of the values it needs to pack are pretty much
+constant (BYPASS=1, SRC_PORT=CPU, DEST=port index). So it would be good
+if we could improve that.
+
+The proposed solution is to allocate a memory area per port at probe
+time, initialize that with the statically defined bits as per chip
+hardware revision, and just perform a simpler memcpy in the fastpath.
+
+Other alternatives have been analyzed, such as:
+- Create a separate tag_seville.c: too much code duplication for just 1
+  bit field difference.
+- Create a separate DSA_TAG_PROTO_SEVILLE under tag_ocelot.c, just like
+  tag_brcm.c, which would have a separate .xmit function. Again, too
+  much code duplication for just 1 bit field difference.
+- Allocate the template from the init function of the tag_ocelot.c
+  module, instead of from the driver: couldn't figure out a method of
+  accessing the correct port template corresponding to the correct
+  tagger in the .xmit function.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v4:
-- Rebased on top of patch "net: mscc: ocelot: move ocelot_regs.c into
-  ocelot_vsc7514.c" which was merged since last submission.
-- Actually stopped doing any more extraneous writes to anything except
-  QSYS_SWITCH_PORT_MODE_PORT_ENA.
-
-Changes in v3:
-Clarified in the commit message why we're no longer writing to the
-QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG register field.
-
-Changes in v2:
 None.
 
- drivers/net/dsa/ocelot/felix.c             |  9 ++----
- drivers/net/dsa/ocelot/felix_vsc9959.c     | 11 +++++++
- drivers/net/ethernet/mscc/ocelot.c         | 36 +++++++++-------------
- drivers/net/ethernet/mscc/ocelot.h         |  6 ----
- drivers/net/ethernet/mscc/ocelot_io.c      |  2 ++
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 11 +++++++
- include/soc/mscc/ocelot.h                  | 15 +++++++++
- include/soc/mscc/ocelot_qsys.h             | 13 --------
- include/soc/mscc/ocelot_sys.h              | 13 --------
- 9 files changed, 56 insertions(+), 60 deletions(-)
+Changes in v3:
+None.
+
+Changes in v2:
+Created a function pointer such that Seville could reuse more code.
+
+ drivers/net/dsa/ocelot/felix.c         | 13 +++++++++++++
+ drivers/net/dsa/ocelot/felix.h         |  1 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 20 ++++++++++++++++++++
+ include/soc/mscc/ocelot.h              |  2 ++
+ net/dsa/tag_ocelot.c                   | 21 ++++++++-------------
+ 5 files changed, 44 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index bf0bd5c7b12c..4b255ed614e4 100644
+index 4b255ed614e4..b9981d8c4c98 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -249,8 +249,7 @@ static void felix_phylink_mac_link_down(struct dsa_switch *ds, int port,
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+@@ -522,6 +522,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	for (port = 0; port < num_phys_ports; port++) {
+ 		struct ocelot_port *ocelot_port;
+ 		struct regmap *target;
++		u8 *template;
  
- 	ocelot_port_writel(ocelot_port, 0, DEV_MAC_ENA_CFG);
--	ocelot_rmw_rix(ocelot, 0, QSYS_SWITCH_PORT_MODE_PORT_ENA,
--		       QSYS_SWITCH_PORT_MODE, port);
-+	ocelot_fields_write(ocelot, port, QSYS_SWITCH_PORT_MODE_PORT_ENA, 0);
- }
+ 		ocelot_port = devm_kzalloc(ocelot->dev,
+ 					   sizeof(struct ocelot_port),
+@@ -547,10 +548,22 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 			return PTR_ERR(target);
+ 		}
  
- static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
-@@ -326,10 +325,8 @@ static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
- 			 ANA_PORT_PORT_CFG, port);
- 
- 	/* Core: Enable port for frame transfer */
--	ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
--			 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
--			 QSYS_SWITCH_PORT_MODE_PORT_ENA,
--			 QSYS_SWITCH_PORT_MODE, port);
-+	ocelot_fields_write(ocelot, port,
-+			    QSYS_SWITCH_PORT_MODE_PORT_ENA, 1);
- 
- 	if (felix->info->pcs_link_up)
- 		felix->info->pcs_link_up(ocelot, port, link_an_mode, interface,
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index b97c12a783eb..efbfbdccb2b6 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -503,6 +503,17 @@ static const struct reg_field vsc9959_regfields[REGFIELD_MAX] = {
- 	[ANA_TABLES_MACTINDX_M_INDEX] = REG_FIELD(ANA_TABLES_MACTINDX, 0, 10),
- 	[SYS_RESET_CFG_CORE_ENA] = REG_FIELD(SYS_RESET_CFG, 0, 0),
- 	[GCB_SOFT_RST_SWC_RST] = REG_FIELD(GCB_SOFT_RST, 0, 0),
-+	/* Replicated per number of ports (7), register size 4 per port */
-+	[QSYS_SWITCH_PORT_MODE_PORT_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 14, 14, 7, 4),
-+	[QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 11, 13, 7, 4),
-+	[QSYS_SWITCH_PORT_MODE_YEL_RSRVD] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 10, 10, 7, 4),
-+	[QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 9, 9, 7, 4),
-+	[QSYS_SWITCH_PORT_MODE_TX_PFC_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 1, 8, 7, 4),
-+	[QSYS_SWITCH_PORT_MODE_TX_PFC_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 0, 0, 7, 4),
-+	[SYS_PORT_MODE_DATA_WO_TS] = REG_FIELD_ID(SYS_PORT_MODE, 5, 6, 7, 4),
-+	[SYS_PORT_MODE_INCL_INJ_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 3, 4, 7, 4),
-+	[SYS_PORT_MODE_INCL_XTR_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 1, 2, 7, 4),
-+	[SYS_PORT_MODE_INCL_HDR_ERR] = REG_FIELD_ID(SYS_PORT_MODE, 0, 0, 7, 4),
- };
- 
- static const struct ocelot_stat_layout vsc9959_stats_layout[] = {
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index e815aad8d85e..36986fccedf4 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -389,10 +389,8 @@ void ocelot_adjust_link(struct ocelot *ocelot, int port,
- 			 ANA_PFC_PFC_CFG, port);
- 
- 	/* Core: Enable port for frame transfer */
--	ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
--			 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
--			 QSYS_SWITCH_PORT_MODE_PORT_ENA,
--			 QSYS_SWITCH_PORT_MODE, port);
-+	ocelot_fields_write(ocelot, port,
-+			    QSYS_SWITCH_PORT_MODE_PORT_ENA, 1);
- 
- 	/* Flow control */
- 	ocelot_write_rix(ocelot, SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
-@@ -423,8 +421,7 @@ void ocelot_port_disable(struct ocelot *ocelot, int port)
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 
- 	ocelot_port_writel(ocelot_port, 0, DEV_MAC_ENA_CFG);
--	ocelot_rmw_rix(ocelot, 0, QSYS_SWITCH_PORT_MODE_PORT_ENA,
--		       QSYS_SWITCH_PORT_MODE, port);
-+	ocelot_fields_write(ocelot, port, QSYS_SWITCH_PORT_MODE_PORT_ENA, 0);
- }
- EXPORT_SYMBOL(ocelot_port_disable);
- 
-@@ -1392,27 +1389,22 @@ void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
- 			     QSYS_EXT_CPU_CFG);
- 
- 		/* Enable NPI port */
--		ocelot_write_rix(ocelot,
--				 QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
--				 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
--				 QSYS_SWITCH_PORT_MODE_PORT_ENA,
--				 QSYS_SWITCH_PORT_MODE, npi);
-+		ocelot_fields_write(ocelot, npi,
-+				    QSYS_SWITCH_PORT_MODE_PORT_ENA, 1);
- 		/* NPI port Injection/Extraction configuration */
--		ocelot_write_rix(ocelot,
--				 SYS_PORT_MODE_INCL_XTR_HDR(extraction) |
--				 SYS_PORT_MODE_INCL_INJ_HDR(injection),
--				 SYS_PORT_MODE, npi);
-+		ocelot_fields_write(ocelot, npi, SYS_PORT_MODE_INCL_XTR_HDR,
-+				    extraction);
-+		ocelot_fields_write(ocelot, npi, SYS_PORT_MODE_INCL_INJ_HDR,
-+				    injection);
++		template = devm_kzalloc(ocelot->dev, OCELOT_TAG_LEN,
++					GFP_KERNEL);
++		if (!template) {
++			dev_err(ocelot->dev,
++				"Failed to allocate memory for DSA tag\n");
++			kfree(port_phy_modes);
++			return -ENOMEM;
++		}
++
+ 		ocelot_port->phy_mode = port_phy_modes[port];
+ 		ocelot_port->ocelot = ocelot;
+ 		ocelot_port->target = target;
++		ocelot_port->xmit_template = template;
+ 		ocelot->ports[port] = ocelot_port;
++
++		felix->info->xmit_template_populate(ocelot, port);
  	}
  
- 	/* Enable CPU port module */
--	ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
--			 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
--			 QSYS_SWITCH_PORT_MODE_PORT_ENA,
--			 QSYS_SWITCH_PORT_MODE, cpu);
-+	ocelot_fields_write(ocelot, cpu, QSYS_SWITCH_PORT_MODE_PORT_ENA, 1);
- 	/* CPU port Injection/Extraction configuration */
--	ocelot_write_rix(ocelot, SYS_PORT_MODE_INCL_XTR_HDR(extraction) |
--			 SYS_PORT_MODE_INCL_INJ_HDR(injection),
--			 SYS_PORT_MODE, cpu);
-+	ocelot_fields_write(ocelot, cpu, SYS_PORT_MODE_INCL_XTR_HDR,
-+			    extraction);
-+	ocelot_fields_write(ocelot, cpu, SYS_PORT_MODE_INCL_INJ_HDR,
-+			    injection);
- 
- 	/* Configure the CPU port to be VLAN aware */
- 	ocelot_write_gix(ocelot, ANA_PORT_VLAN_CFG_VLAN_VID(0) |
-diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index 814b09dd2c11..dc29e05103a1 100644
---- a/drivers/net/ethernet/mscc/ocelot.h
-+++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -102,9 +102,6 @@ void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
- u32 ocelot_port_readl(struct ocelot_port *port, u32 reg);
- void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg);
- 
--#define ocelot_field_write(ocelot, reg, val) regmap_field_write((ocelot)->regfields[(reg)], (val))
--#define ocelot_field_read(ocelot, reg, val) regmap_field_read((ocelot)->regfields[(reg)], (val))
--
- int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
- 		      struct phy_device *phy);
- 
-@@ -116,7 +113,4 @@ extern struct notifier_block ocelot_netdevice_nb;
- extern struct notifier_block ocelot_switchdev_nb;
- extern struct notifier_block ocelot_switchdev_blocking_nb;
- 
--#define ocelot_field_write(ocelot, reg, val) regmap_field_write((ocelot)->regfields[(reg)], (val))
--#define ocelot_field_read(ocelot, reg, val) regmap_field_read((ocelot)->regfields[(reg)], (val))
--
- #endif
-diff --git a/drivers/net/ethernet/mscc/ocelot_io.c b/drivers/net/ethernet/mscc/ocelot_io.c
-index 741f653bc85b..d22711282183 100644
---- a/drivers/net/ethernet/mscc/ocelot_io.c
-+++ b/drivers/net/ethernet/mscc/ocelot_io.c
-@@ -89,6 +89,8 @@ int ocelot_regfields_init(struct ocelot *ocelot,
- 		regfield.reg = ocelot->map[target][reg & REG_MASK];
- 		regfield.lsb = regfields[i].lsb;
- 		regfield.msb = regfields[i].msb;
-+		regfield.id_size = regfields[i].id_size;
-+		regfield.id_offset = regfields[i].id_offset;
- 
- 		ocelot->regfields[i] =
- 		devm_regmap_field_alloc(ocelot->dev,
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 83c17c689641..9c6a9d44871d 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -358,6 +358,17 @@ static const struct reg_field ocelot_regfields[REGFIELD_MAX] = {
- 	[SYS_RESET_CFG_CORE_ENA] = REG_FIELD(SYS_RESET_CFG, 2, 2),
- 	[SYS_RESET_CFG_MEM_ENA] = REG_FIELD(SYS_RESET_CFG, 1, 1),
- 	[SYS_RESET_CFG_MEM_INIT] = REG_FIELD(SYS_RESET_CFG, 0, 0),
-+	/* Replicated per number of ports (11), register size 4 per port */
-+	[QSYS_SWITCH_PORT_MODE_PORT_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 14, 14, 11, 4),
-+	[QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 11, 13, 11, 4),
-+	[QSYS_SWITCH_PORT_MODE_YEL_RSRVD] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 10, 10, 11, 4),
-+	[QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 9, 9, 11, 4),
-+	[QSYS_SWITCH_PORT_MODE_TX_PFC_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 1, 8, 11, 4),
-+	[QSYS_SWITCH_PORT_MODE_TX_PFC_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 0, 0, 11, 4),
-+	[SYS_PORT_MODE_DATA_WO_TS] = REG_FIELD_ID(SYS_PORT_MODE, 5, 6, 11, 4),
-+	[SYS_PORT_MODE_INCL_INJ_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 3, 4, 11, 4),
-+	[SYS_PORT_MODE_INCL_XTR_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 1, 2, 11, 4),
-+	[SYS_PORT_MODE_INCL_HDR_ERR] = REG_FIELD_ID(SYS_PORT_MODE, 0, 0, 11, 4),
+ 	kfree(port_phy_modes);
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index 00137b64132b..a85631d716b9 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -43,6 +43,7 @@ struct felix_info {
+ 				 enum tc_setup_type type, void *type_data);
+ 	void	(*port_sched_speed_set)(struct ocelot *ocelot, int port,
+ 					u32 speed);
++	void	(*xmit_template_populate)(struct ocelot *ocelot, int port);
  };
  
- static const struct ocelot_stat_layout ocelot_stats_layout[] = {
+ extern struct felix_info		felix_info_vsc9959;
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index efbfbdccb2b6..d640146acc3d 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -8,6 +8,7 @@
+ #include <soc/mscc/ocelot_ptp.h>
+ #include <soc/mscc/ocelot_sys.h>
+ #include <soc/mscc/ocelot.h>
++#include <linux/packing.h>
+ #include <net/pkt_sched.h>
+ #include <linux/iopoll.h>
+ #include <linux/pci.h>
+@@ -1432,6 +1433,24 @@ static int vsc9959_port_setup_tc(struct dsa_switch *ds, int port,
+ 	}
+ }
+ 
++static void vsc9959_xmit_template_populate(struct ocelot *ocelot, int port)
++{
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	u8 *template = ocelot_port->xmit_template;
++	u64 bypass, dest, src;
++
++	/* Set the source port as the CPU port module and not the
++	 * NPI port
++	 */
++	src = ocelot->num_phys_ports;
++	dest = BIT(port);
++	bypass = true;
++
++	packing(template, &bypass, 127, 127, OCELOT_TAG_LEN, PACK, 0);
++	packing(template, &dest,    68,  56, OCELOT_TAG_LEN, PACK, 0);
++	packing(template, &src,     46,  43, OCELOT_TAG_LEN, PACK, 0);
++}
++
+ struct felix_info felix_info_vsc9959 = {
+ 	.target_io_res		= vsc9959_target_io_res,
+ 	.port_io_res		= vsc9959_port_io_res,
+@@ -1458,4 +1477,5 @@ struct felix_info felix_info_vsc9959 = {
+ 	.prevalidate_phy_mode	= vsc9959_prevalidate_phy_mode,
+ 	.port_setup_tc          = vsc9959_port_setup_tc,
+ 	.port_sched_speed_set   = vsc9959_sched_speed_set,
++	.xmit_template_populate	= vsc9959_xmit_template_populate,
+ };
 diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 348fa26a349c..19d97585345a 100644
+index 19d97585345a..6cfbace57770 100644
 --- a/include/soc/mscc/ocelot.h
 +++ b/include/soc/mscc/ocelot.h
-@@ -490,11 +490,21 @@ enum ocelot_regfield {
- 	ANA_TABLES_MACACCESS_B_DOM,
- 	ANA_TABLES_MACTINDX_BUCKET,
- 	ANA_TABLES_MACTINDX_M_INDEX,
-+	QSYS_SWITCH_PORT_MODE_PORT_ENA,
-+	QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG,
-+	QSYS_SWITCH_PORT_MODE_YEL_RSRVD,
-+	QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE,
-+	QSYS_SWITCH_PORT_MODE_TX_PFC_ENA,
-+	QSYS_SWITCH_PORT_MODE_TX_PFC_MODE,
- 	QSYS_TIMED_FRAME_ENTRY_TFRM_VLD,
- 	QSYS_TIMED_FRAME_ENTRY_TFRM_FP,
- 	QSYS_TIMED_FRAME_ENTRY_TFRM_PORTNO,
- 	QSYS_TIMED_FRAME_ENTRY_TFRM_TM_SEL,
- 	QSYS_TIMED_FRAME_ENTRY_TFRM_TM_T,
-+	SYS_PORT_MODE_DATA_WO_TS,
-+	SYS_PORT_MODE_INCL_INJ_HDR,
-+	SYS_PORT_MODE_INCL_XTR_HDR,
-+	SYS_PORT_MODE_INCL_HDR_ERR,
- 	SYS_RESET_CFG_CORE_ENA,
- 	SYS_RESET_CFG_MEM_ENA,
- 	SYS_RESET_CFG_MEM_INIT,
-@@ -638,6 +648,11 @@ struct ocelot_policer {
- #define ocelot_rmw_rix(ocelot, val, m, reg, ri) __ocelot_rmw_ix(ocelot, val, m, reg, reg##_RSZ * (ri))
- #define ocelot_rmw(ocelot, val, m, reg) __ocelot_rmw_ix(ocelot, val, m, reg, 0)
+@@ -564,6 +564,8 @@ struct ocelot_port {
+ 	u8				ts_id;
  
-+#define ocelot_field_write(ocelot, reg, val) regmap_field_write((ocelot)->regfields[(reg)], (val))
-+#define ocelot_field_read(ocelot, reg, val) regmap_field_read((ocelot)->regfields[(reg)], (val))
-+#define ocelot_fields_write(ocelot, id, reg, val) regmap_fields_write((ocelot)->regfields[(reg)], (id), (val))
-+#define ocelot_fields_read(ocelot, id, reg, val) regmap_fields_read((ocelot)->regfields[(reg)], (id), (val))
+ 	phy_interface_t			phy_mode;
 +
- /* I/O */
- u32 ocelot_port_readl(struct ocelot_port *port, u32 reg);
- void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg);
-diff --git a/include/soc/mscc/ocelot_qsys.h b/include/soc/mscc/ocelot_qsys.h
-index d8c63aa761be..a814bc2017d8 100644
---- a/include/soc/mscc/ocelot_qsys.h
-+++ b/include/soc/mscc/ocelot_qsys.h
-@@ -13,19 +13,6 @@
- #define QSYS_PORT_MODE_DEQUEUE_DIS                        BIT(1)
- #define QSYS_PORT_MODE_DEQUEUE_LATE                       BIT(0)
++	u8				*xmit_template;
+ };
  
--#define QSYS_SWITCH_PORT_MODE_RSZ                         0x4
--
--#define QSYS_SWITCH_PORT_MODE_PORT_ENA                    BIT(14)
--#define QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(x)             (((x) << 11) & GENMASK(13, 11))
--#define QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG_M              GENMASK(13, 11)
--#define QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG_X(x)           (((x) & GENMASK(13, 11)) >> 11)
--#define QSYS_SWITCH_PORT_MODE_YEL_RSRVD                   BIT(10)
--#define QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE           BIT(9)
--#define QSYS_SWITCH_PORT_MODE_TX_PFC_ENA(x)               (((x) << 1) & GENMASK(8, 1))
--#define QSYS_SWITCH_PORT_MODE_TX_PFC_ENA_M                GENMASK(8, 1)
--#define QSYS_SWITCH_PORT_MODE_TX_PFC_ENA_X(x)             (((x) & GENMASK(8, 1)) >> 1)
--#define QSYS_SWITCH_PORT_MODE_TX_PFC_MODE                 BIT(0)
--
- #define QSYS_STAT_CNT_CFG_TX_GREEN_CNT_MODE               BIT(5)
- #define QSYS_STAT_CNT_CFG_TX_YELLOW_CNT_MODE              BIT(4)
- #define QSYS_STAT_CNT_CFG_DROP_GREEN_CNT_MODE             BIT(3)
-diff --git a/include/soc/mscc/ocelot_sys.h b/include/soc/mscc/ocelot_sys.h
-index 16f91e172bcb..8a95fc93fde5 100644
---- a/include/soc/mscc/ocelot_sys.h
-+++ b/include/soc/mscc/ocelot_sys.h
-@@ -12,19 +12,6 @@
+ struct ocelot {
+diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
+index b0c98ee4e13b..42f327c06dca 100644
+--- a/net/dsa/tag_ocelot.c
++++ b/net/dsa/tag_ocelot.c
+@@ -137,11 +137,10 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
+ 				   struct net_device *netdev)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(netdev);
+-	u64 bypass, dest, src, qos_class, rew_op;
+ 	struct dsa_switch *ds = dp->ds;
+-	int port = dp->index;
+ 	struct ocelot *ocelot = ds->priv;
+-	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	struct ocelot_port *ocelot_port;
++	u64 qos_class, rew_op;
+ 	u8 *injection;
  
- #define SYS_COUNT_TX_OCTETS_RSZ                           0x4
+ 	if (unlikely(skb_cow_head(skb, OCELOT_TAG_LEN) < 0)) {
+@@ -149,19 +148,15 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
+ 		return NULL;
+ 	}
  
--#define SYS_PORT_MODE_RSZ                                 0x4
--
--#define SYS_PORT_MODE_DATA_WO_TS(x)                       (((x) << 5) & GENMASK(6, 5))
--#define SYS_PORT_MODE_DATA_WO_TS_M                        GENMASK(6, 5)
--#define SYS_PORT_MODE_DATA_WO_TS_X(x)                     (((x) & GENMASK(6, 5)) >> 5)
--#define SYS_PORT_MODE_INCL_INJ_HDR(x)                     (((x) << 3) & GENMASK(4, 3))
--#define SYS_PORT_MODE_INCL_INJ_HDR_M                      GENMASK(4, 3)
--#define SYS_PORT_MODE_INCL_INJ_HDR_X(x)                   (((x) & GENMASK(4, 3)) >> 3)
--#define SYS_PORT_MODE_INCL_XTR_HDR(x)                     (((x) << 1) & GENMASK(2, 1))
--#define SYS_PORT_MODE_INCL_XTR_HDR_M                      GENMASK(2, 1)
--#define SYS_PORT_MODE_INCL_XTR_HDR_X(x)                   (((x) & GENMASK(2, 1)) >> 1)
--#define SYS_PORT_MODE_INJ_HDR_ERR                         BIT(0)
--
- #define SYS_FRONT_PORT_MODE_RSZ                           0x4
+-	injection = skb_push(skb, OCELOT_TAG_LEN);
++	ocelot_port = ocelot->ports[dp->index];
  
- #define SYS_FRONT_PORT_MODE_HDX_MODE                      BIT(0)
+-	memset(injection, 0, OCELOT_TAG_LEN);
++	injection = skb_push(skb, OCELOT_TAG_LEN);
+ 
+-	/* Set the source port as the CPU port module and not the NPI port */
+-	src = ocelot->num_phys_ports;
+-	dest = BIT(port);
+-	bypass = true;
++	memcpy(injection, ocelot_port->xmit_template, OCELOT_TAG_LEN);
++	/* Fix up the fields which are not statically determined
++	 * in the template
++	 */
+ 	qos_class = skb->priority;
+-
+-	packing(injection, &bypass,   127, 127, OCELOT_TAG_LEN, PACK, 0);
+-	packing(injection, &dest,      68,  56, OCELOT_TAG_LEN, PACK, 0);
+-	packing(injection, &src,       46,  43, OCELOT_TAG_LEN, PACK, 0);
+ 	packing(injection, &qos_class, 19,  17, OCELOT_TAG_LEN, PACK, 0);
+ 
+ 	if (ocelot->ptp && (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
 -- 
 2.25.1
 
