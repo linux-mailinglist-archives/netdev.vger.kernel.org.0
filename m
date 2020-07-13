@@ -2,241 +2,517 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B214521CF21
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 08:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0480021CF67
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 08:11:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728945AbgGMGEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 02:04:33 -0400
-Received: from mail-eopbgr130041.outbound.protection.outlook.com ([40.107.13.41]:28389
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726380AbgGMGEc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 02:04:32 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lBURrvCb463kVdOqbpUE+9uh6G7qp0Cnbu4iCQ1BvTKRVoKBtMGWiCWrpfPjyRrh7GyWeKYV8SMpiUI5mGzvNpkezTcv29mGQoMoq8vViTZrUMDRe3IzMbXFXC059LdNnLDwPG3lqMztbiE8Q+wMWCHIX2yAnxRejI3fkaH8w76b6FkInqsdNwJmz5nZ2jQez85YhAlkM4Dyk+23uLpbT9xuPXuLMpdDFYjqBeqEJgSoNDm4GIC7VNdkOwVHaIhAXA1M3EQa2yOeBq7R9/TQMHwm4yJ4jKEUZ9qpjT3Cxol1PmTXGiEId4IiJJ5KZateI1xwcs15o7fqouL7aWumLQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GdUKU5BfOm+YOTTOGhGwkBXhDhlc11mu+NPdAyYsMEE=;
- b=Lu+hWISQfB9v6GryhDKXSTKePLyzkwqB0rlhyTd3XNATAX2Fg9X1Mha5inqTGp2GA4f2znGiAAroAefidWO3kFPcQZDX6j+1jEs7NXM3iVObkaJ5GkUFs/jNefkxrkFv4bg0rrIVAuDp3P9G80PN32F/vMbAh/Gi18PHSAUEoGHmjiaMGiiaSHVNprtqZZf47yp0ja4J38cNq5fWl28n2mJqE+c7gQSsDLhxZhyTBZyOdMUIKyehu6OSq8iYe7s3bu4vKJ0DwlQs2Sm8AzSBh5imMaenqM8sxCB90arWxePEtGloP7K2oSwcnvX9ZgqX9c3Pd97unWBVardVcPfB9w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GdUKU5BfOm+YOTTOGhGwkBXhDhlc11mu+NPdAyYsMEE=;
- b=JCUpCBrBc5njvzC+mNNfj/bb45kYFIONqYeacBRqn2Ud2j5GfEj9A+vO+gODKhYn+hYrD74BS3mQEKB3vsKg7zZKO0zbzt+v7nSuVyC5MehKjG1i7tvZJaeXs/FAENIM6t8U1Gf80ZTVWaJT9bJyLok4O4Mlt5PX1PdrGN9r2CE=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB3954.eurprd04.prod.outlook.com (2603:10a6:208:63::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Mon, 13 Jul
- 2020 06:04:27 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::7dda:a30:6b25:4d45]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::7dda:a30:6b25:4d45%7]) with mapi id 15.20.3174.025; Mon, 13 Jul 2020
- 06:04:27 +0000
-Date:   Mon, 13 Jul 2020 11:34:16 +0530
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev@vger.kernel.org, linux.cj@gmail.com,
-        linux-acpi@vger.kernel.org
-Subject: Re: [net-next PATCH v6 4/6] net: phy: introduce
- phy_find_by_mdio_handle()
-Message-ID: <20200713060416.GB2540@lsv03152.swis.in-blr01.nxp.com>
-References: <20200711065600.9448-1-calvin.johnson@oss.nxp.com>
- <20200711065600.9448-5-calvin.johnson@oss.nxp.com>
- <931b7557-fefb-52c5-61dd-6ab13f7b5396@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <931b7557-fefb-52c5-61dd-6ab13f7b5396@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: SG2PR0401CA0014.apcprd04.prod.outlook.com
- (2603:1096:3:1::24) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+        id S1729445AbgGMGKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 02:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35556 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729021AbgGMGKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 02:10:47 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A86C061794
+        for <netdev@vger.kernel.org>; Sun, 12 Jul 2020 23:10:47 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id k23so12190049iom.10
+        for <netdev@vger.kernel.org>; Sun, 12 Jul 2020 23:10:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y44HJ/5Naind8aqlTewSONd87bABThK4TcBzrQm+pMI=;
+        b=gyD37dhHZVdbKc+LhHZa2v9ZAqIwP4/CcEghnaVOaN3ltn6KsR35qp0yCwbRYQe/5y
+         hMRj3NFPzSIJmuPb7Wye+QTPkzQfgspFUbTs2RXtKaKD1zkyN0JZriAZ6pzsRmBs88Iu
+         nbnWhRIKdEHR5ODbfSQtC4wTrjmPxETWNoA4cB1+Yjl5PVn0gjj3K9GrtownJ5tvKCx1
+         9ywumy6l4oMi24/FDO/5y0TxCeF+Wiy+HkgXM5uo3GBYvXR70zpkNbZODb73wKZyyNd7
+         TZLIywy9jApqouVaKf7rGLiohigs8/WbTlWDQz+CWFJSLdErDfzhnr/dFuiqq3BsgDrU
+         nkeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y44HJ/5Naind8aqlTewSONd87bABThK4TcBzrQm+pMI=;
+        b=fIrRI7dHUnVosyL/ZIVQ/frL0amLxbQxd1gpwgmMI/+3ummA4cY6oaPKlMPGQvzdT7
+         7p804i1CmEMjk1J3XpcpB9muX5xWI1x8ASXmVnlEwgZUlEbSuFJ9lo0s37aBE56NT0Gf
+         6uSYrxahoBvijKD/bI+7/bcrA774rI50v6ChBYXRZHo0Dksg6nobxo3Bq/JXmIB/n0Ge
+         bSRZjcjdJeUDItqhNT8rroNIzJ7vuHIaykrkax2qla///DZE9WRKeJKvkCcohGjVe8BB
+         I1No1U2rbdhYpRO+93040D/vwQ+pSmuSKe7kvaosXIUewbxQgvJyvAG71FpPNb33gUx/
+         x40Q==
+X-Gm-Message-State: AOAM532195gULjG36oEiiY2r2KNSJPf1gYA2lOChtMM0BJs+IciQPXJU
+        hpABGnDpwMnphQTgbRAgtQWH6PvFGvahwELmUog=
+X-Google-Smtp-Source: ABdhPJxYW6nX4BebofNXygs9zFMR3bnOEWF/NXRB9Ub9+MaRoaV59HRnYhaUsj9CmJfFoChZ8/uTa6URBpGW+LMKnpw=
+X-Received: by 2002:a02:5a08:: with SMTP id v8mr93524012jaa.142.1594620646420;
+ Sun, 12 Jul 2020 23:10:46 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR0401CA0014.apcprd04.prod.outlook.com (2603:1096:3:1::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20 via Frontend Transport; Mon, 13 Jul 2020 06:04:23 +0000
-X-Originating-IP: [14.142.151.118]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 723e9926-2dc3-476b-b1df-08d826f29922
-X-MS-TrafficTypeDiagnostic: AM0PR04MB3954:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB3954380675E4474AB82ED1B9D2600@AM0PR04MB3954.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PvolySeHe+drU1GOACfQmOXFypyKffq6YjsLfN1NHfCzubyJ4GvGWzg1sVxUHEJuLOPqLKw2LfMEQSSzaTB66oKKil3oJdfrBDHLyXnlIyaBhM7pzplCIQ/3ycXlD4aWHF6xLk5q1TgtLzRRggL4mA7finsykKDXrpyBoudZ7EVBT/nm/PyKn1JpIr3ZYTglY26Nl6cuRKVKSbNEzuiQYRUafsbc4tfq5sQsAXuOjbNuaXOCVcejjYY/j30puHCdk7R+ZK7rvQbNyMJI+ka1YpaIEECkAVoHlqqhTwsWe/pbOPKWdaMxsVZTsKrYTIg9RGuAgyJEAuUs3GF5PHqbSygDLgQEpuSyAZBmvneqdF5Y9OjFvM0q39prVWbRWAn3
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(39860400002)(346002)(136003)(396003)(9686003)(6506007)(55016002)(1076003)(5660300002)(316002)(66946007)(66556008)(52116002)(55236004)(66476007)(8936002)(86362001)(44832011)(7696005)(2906002)(8676002)(33656002)(956004)(53546011)(6916009)(478600001)(16526019)(26005)(1006002)(186003)(54906003)(4326008)(6666004)(110426005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: C36lfb+NWLUTTV2pOP21C7rbCA+G2ZClKxhYB9aR1S9BYYSnbZuQIKcHtHWKvT6bvhBnhuh2QobEJUhvmYumpqHzJAyInG51SMtXllKtuzM4SkM2HExbSMduDEahXn624nuG3glRNXS6u6qcOyRSbxLEZth0HafirfRxB140Ke3Jb9PPyUh8cLtiO6tAHhdU8ZqlQe9jyCXGIWDAre8J+YIdJ06if7S98KtJ2/iBaOZGSglfXJhjXyom3ts4e3CV7ald8c3N23Prs2ch4lVkDKLobdZql98E+19u2WqJ4bHIT4TC9c9SyiL7m0W21wYN8iwio6g413FztTKKQFZFQGGkrFoZiodvNiKogs8+4b9cX3wMlM6+MpUb/U5k6IaLgvWQgTNT9U0dg6JmCl9tfvJtixW+C4sjPtwYRg7tzkYv8nWnCu1c/kiALJCZaRVwQ4sZZfwEgbh0/hTxcbu2SbYa9r60TSj2CjUqbFP166/zkQCmx7lKOTyBUAWmttDt
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 723e9926-2dc3-476b-b1df-08d826f29922
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2020 06:04:26.9642
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5hgMRy3zRycHc5vu+jS3MRXXgqrpyr7rQcVtp4zQv0se59aEN1dtxtD1KcaOLW6FBhsgaJF6SYwD9v2ZDXJH9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB3954
+References: <1594301221-3731-1-git-send-email-sundeep.lkml@gmail.com>
+ <1594301221-3731-4-git-send-email-sundeep.lkml@gmail.com> <20200709160156.GC7904@hoboy>
+In-Reply-To: <20200709160156.GC7904@hoboy>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Mon, 13 Jul 2020 11:40:34 +0530
+Message-ID: <CALHRZuoVtuHLFjwW_bJsWxVFYN=PYxwsj+YabNH4p=v82u-MVA@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 3/3] octeontx2-pf: Add support for PTP clock
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        sgoutham@marvell.com, Subbaraya Sundeep <sbhatta@marvell.com>,
+        Aleksey Makarov <amakarov@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 11, 2020 at 02:41:12PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 7/10/2020 11:55 PM, Calvin Johnson wrote:
-> > The PHYs on an mdiobus are probed and registered using mdiobus_register().
-> > Later, for connecting these PHYs to MAC, the PHYs registered on the
-> > mdiobus have to be referenced.
-> > 
-> > For each MAC node, a property "mdio-handle" is used to reference the
-> > MDIO bus on which the PHYs are registered. On getting hold of the MDIO
-> > bus, use phy_find_by_fwnode() to get the PHY connected to the MAC.
-> > 
-> > Introduce fwnode_mdio_find_bus() to find the mii_bus that corresponds
-> > to given mii_bus fwnode.
-> > 
-> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-> > 
-> > ---
-> > 
-> > Changes in v6: None
-> > Changes in v5:
-> > - rename phy_find_by_fwnode() to phy_find_by_mdio_handle()
-> > - add docment for phy_find_by_mdio_handle()
-> > - error out DT in phy_find_by_mdio_handle()
-> > - clean up err return
-> > 
-> > Changes in v4:
-> > - release fwnode_mdio after use
-> > - return ERR_PTR instead of NULL
-> > 
-> > Changes in v3:
-> > - introduce fwnode_mdio_find_bus()
-> > - renamed and improved phy_find_by_fwnode()
-> > 
-> > Changes in v2: None
-> > 
-> >  drivers/net/phy/mdio_bus.c   | 25 ++++++++++++++++++++++
-> >  drivers/net/phy/phy_device.c | 40 ++++++++++++++++++++++++++++++++++++
-> >  include/linux/phy.h          |  2 ++
-> >  3 files changed, 67 insertions(+)
-> > 
-> > diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> > index 8610f938f81f..d9597c5b55ae 100644
-> > --- a/drivers/net/phy/mdio_bus.c
-> > +++ b/drivers/net/phy/mdio_bus.c
-> > @@ -435,6 +435,31 @@ struct mii_bus *of_mdio_find_bus(struct device_node *mdio_bus_np)
+Hi Richard,
+
+On Thu, Jul 9, 2020 at 9:32 PM Richard Cochran <richardcochran@gmail.com> wrote:
+>
+> On Thu, Jul 09, 2020 at 06:57:01PM +0530, sundeep.lkml@gmail.com wrote:
+>
+> > @@ -1736,6 +1751,143 @@ static void otx2_reset_task(struct work_struct *work)
+> >       netif_trans_update(pf->netdev);
 > >  }
-> >  EXPORT_SYMBOL(of_mdio_find_bus);
-> >  
-> > +/**
-> > + * fwnode_mdio_find_bus - Given an mii_bus fwnode, find the mii_bus.
-> > + * @mdio_bus_fwnode: fwnode of the mii_bus.
-> > + *
-> > + * Returns a reference to the mii_bus, or NULL if none found.  The
-> > + * embedded struct device will have its reference count incremented,
-> > + * and this must be put once the bus is finished with.
-> > + *
-> > + * Because the association of a fwnode and mii_bus is made via
-> > + * mdiobus_register(), the mii_bus cannot be found before it is
-> > + * registered with mdiobus_register().
-> > + *
-> > + */
-> > +struct mii_bus *fwnode_mdio_find_bus(struct fwnode_handle *mdio_bus_fwnode)
+> >
+> > +static int otx2_config_hw_rx_tstamp(struct otx2_nic *pfvf, bool enable)
 > > +{
-> > +	struct device *d;
+> > +     struct msg_req *req;
+> > +     int err;
 > > +
-> > +	if (!mdio_bus_fwnode)
-> > +		return NULL;
+> > +     if (pfvf->flags & OTX2_FLAG_RX_TSTAMP_ENABLED && enable)
+> > +             return 0;
+>
+> It appears that nothing protects pfvf->flags from concurrent access.
+> Please double check and correct if needed.
+>
+Please correct me if am wrong ndo_open, ndo_close and ndo_ioctl are
+protected by rtnl lock so it is okay here. But there is a reset task
+in the driver
+which accesses this flag too hence lock is required b/w those. I will fix this.
+
+> > +     mutex_lock(&pfvf->mbox.lock);
+> > +     if (enable)
+> > +             req = otx2_mbox_alloc_msg_cgx_ptp_rx_enable(&pfvf->mbox);
+> > +     else
+> > +             req = otx2_mbox_alloc_msg_cgx_ptp_rx_disable(&pfvf->mbox);
+> > +     if (!req) {
+> > +             mutex_unlock(&pfvf->mbox.lock);
+> > +             return -ENOMEM;
+> > +     }
 > > +
-> > +	d = class_find_device_by_fwnode(&mdio_bus_class, mdio_bus_fwnode);
-> > +	return d ? to_mii_bus(d) : NULL;
+> > +     err = otx2_sync_mbox_msg(&pfvf->mbox);
+> > +     if (err) {
+> > +             mutex_unlock(&pfvf->mbox.lock);
+> > +             return err;
+> > +     }
+> > +
+> > +     mutex_unlock(&pfvf->mbox.lock);
+> > +     if (enable)
+> > +             pfvf->flags |= OTX2_FLAG_RX_TSTAMP_ENABLED;
+> > +     else
+> > +             pfvf->flags &= ~OTX2_FLAG_RX_TSTAMP_ENABLED;
+> > +     return 0;
 > > +}
-> > +EXPORT_SYMBOL(fwnode_mdio_find_bus);
 > > +
-> >  /* Walk the list of subnodes of a mdio bus and look for a node that
-> >   * matches the mdio device's address with its 'reg' property. If
-> >   * found, set the of_node pointer for the mdio device. This allows
-> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> > index 7cda95330aea..00b2ade9714f 100644
-> > --- a/drivers/net/phy/phy_device.c
-> > +++ b/drivers/net/phy/phy_device.c
-> > @@ -23,8 +23,10 @@
-> >  #include <linux/mm.h>
-> >  #include <linux/module.h>
-> >  #include <linux/netdevice.h>
-> > +#include <linux/of.h>
-> >  #include <linux/phy.h>
-> >  #include <linux/phy_led_triggers.h>
-> > +#include <linux/platform_device.h>
-> >  #include <linux/property.h>
-> >  #include <linux/sfp.h>
-> >  #include <linux/skbuff.h>
-> > @@ -964,6 +966,44 @@ struct phy_device *phy_find_first(struct mii_bus *bus)
-> >  }
-> >  EXPORT_SYMBOL(phy_find_first);
-> >  
-> > +/**
-> > + * phy_find_by_mdio_handle - get phy device from mdio-handle and phy-channel
-> > + * @fwnode: a pointer to a &struct fwnode_handle  to get mdio-handle and
-> > + * phy-channel
-> > + *
-> > + * Find fwnode_mdio using mdio-handle reference. Using fwnode_mdio get the
-> > + * mdio bus. Property phy-channel provides the phy address on the mdio bus.
-> > + * Pass mdio bus and phy address to mdiobus_get_phy() and get corresponding
-> > + * phy_device. This method is used for ACPI and not for DT.
-> > + *
-> > + * Returns pointer to the phy device on success, else ERR_PTR.
-> > + */
-> > +struct phy_device *phy_find_by_mdio_handle(struct fwnode_handle *fwnode)
+> > +static int otx2_config_hw_tx_tstamp(struct otx2_nic *pfvf, bool enable)
 > > +{
-> > +	struct fwnode_handle *fwnode_mdio;
-> > +	struct mii_bus *mdio;
-> > +	int addr;
-> > +	int err;
+> > +     struct msg_req *req;
+> > +     int err;
 > > +
-> > +	if (is_of_node(fwnode))
-> > +		return ERR_PTR(-EINVAL);
+> > +     if (pfvf->flags & OTX2_FLAG_TX_TSTAMP_ENABLED && enable)
+> > +             return 0;
+>
+> Again, please check concurrency here.
+>
 > > +
-> > +	fwnode_mdio = fwnode_find_reference(fwnode, "mdio-handle", 0);
-> 
-> I would export the positional argument here to phy_find_by_mdio_handle()
-> but have no strong opinion if this is not done right now and punted to
-> when another users comes in.
-
-Sorry, I didn't get you. Can you please elaborate?
-
-> 
-> > +	mdio = fwnode_mdio_find_bus(fwnode_mdio);
-> > +	fwnode_handle_put(fwnode_mdio);
-> > +	if (!mdio)
-> > +		return ERR_PTR(-ENODEV);
+> > +     mutex_lock(&pfvf->mbox.lock);
+> > +     if (enable)
+> > +             req = otx2_mbox_alloc_msg_nix_lf_ptp_tx_enable(&pfvf->mbox);
+> > +     else
+> > +             req = otx2_mbox_alloc_msg_nix_lf_ptp_tx_disable(&pfvf->mbox);
+> > +     if (!req) {
+> > +             mutex_unlock(&pfvf->mbox.lock);
+> > +             return -ENOMEM;
+> > +     }
 > > +
-> > +	err = fwnode_property_read_u32(fwnode, "phy-channel", &addr);
-> > +	if (err)
-> > +		return ERR_PTR(err);
-> > +	if (addr < 0 || addr >= PHY_MAX_ADDR)
-> 
-> Can an u32 ever be < 0?
+> > +     err = otx2_sync_mbox_msg(&pfvf->mbox);
+> > +     if (err) {
+> > +             mutex_unlock(&pfvf->mbox.lock);
+> > +             return err;
+> > +     }
+> > +
+> > +     mutex_unlock(&pfvf->mbox.lock);
+> > +     if (enable)
+> > +             pfvf->flags |= OTX2_FLAG_TX_TSTAMP_ENABLED;
+> > +     else
+> > +             pfvf->flags &= ~OTX2_FLAG_TX_TSTAMP_ENABLED;
+> > +     return 0;
+> > +}
+> > +
+> > +static int otx2_config_hwtstamp(struct net_device *netdev, struct ifreq *ifr)
+> > +{
+> > +     struct otx2_nic *pfvf = netdev_priv(netdev);
+> > +     struct hwtstamp_config config;
+> > +
+> > +     if (!pfvf->ptp)
+> > +             return -ENODEV;
+> > +
+> > +     if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
+> > +             return -EFAULT;
+> > +
+> > +     /* reserved for future extensions */
+> > +     if (config.flags)
+> > +             return -EINVAL;
+> > +
+> > +     switch (config.tx_type) {
+> > +     case HWTSTAMP_TX_OFF:
+> > +             otx2_config_hw_tx_tstamp(pfvf, false);
+> > +             break;
+> > +     case HWTSTAMP_TX_ON:
+> > +             otx2_config_hw_tx_tstamp(pfvf, true);
+> > +             break;
+> > +     default:
+> > +             return -ERANGE;
+> > +     }
+> > +
+> > +     switch (config.rx_filter) {
+> > +     case HWTSTAMP_FILTER_NONE:
+> > +             otx2_config_hw_rx_tstamp(pfvf, false);
+> > +             break;
+> > +     case HWTSTAMP_FILTER_ALL:
+> > +     case HWTSTAMP_FILTER_SOME:
+> > +     case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
+> > +     case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
+> > +     case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
+> > +     case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
+> > +     case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
+> > +     case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
+> > +     case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
+> > +     case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
+> > +     case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
+> > +     case HWTSTAMP_FILTER_PTP_V2_EVENT:
+> > +     case HWTSTAMP_FILTER_PTP_V2_SYNC:
+> > +     case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
+> > +             otx2_config_hw_rx_tstamp(pfvf, true);
+> > +             config.rx_filter = HWTSTAMP_FILTER_ALL;
+> > +             break;
+> > +     default:
+> > +             return -ERANGE;
+> > +     }
+> > +
+> > +     memcpy(&pfvf->tstamp, &config, sizeof(config));
+> > +
+> > +     return copy_to_user(ifr->ifr_data, &config,
+> > +                         sizeof(config)) ? -EFAULT : 0;
+> > +}
+> > +
+> > +static int otx2_ioctl(struct net_device *netdev, struct ifreq *req, int cmd)
+> > +{
+> > +     struct otx2_nic *pfvf = netdev_priv(netdev);
+> > +     struct hwtstamp_config *cfg = &pfvf->tstamp;
+> > +
+>
+> Need to test phy_has_hwtstamp() here and pass ioctl to PHY if true.
+>
+For this platform PHY is taken care of by firmware hence it is not
+possible.
 
-Will remove it.
+> > +     switch (cmd) {
+> > +     case SIOCSHWTSTAMP:
+> > +             return otx2_config_hwtstamp(netdev, req);
+> > +     case SIOCGHWTSTAMP:
+> > +             return copy_to_user(req->ifr_data, cfg,
+> > +                                 sizeof(*cfg)) ? -EFAULT : 0;
+> > +     default:
+> > +             return -EOPNOTSUPP;
+> > +     }
+> > +}
+> > +
+> >  static const struct net_device_ops otx2_netdev_ops = {
+> >       .ndo_open               = otx2_open,
+> >       .ndo_stop               = otx2_stop,
+>
+>
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c
+> > new file mode 100644
+> > index 0000000..28058bd
+> > --- /dev/null
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c
+> > @@ -0,0 +1,208 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* Marvell OcteonTx2 PTP support for ethernet driver */
+> > +
+> > +#include "otx2_common.h"
+> > +#include "otx2_ptp.h"
+> > +
+> > +static int otx2_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
+> > +{
+> > +     struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
+> > +                                         ptp_info);
+> > +     struct ptp_req *req;
+> > +     int err;
+> > +
+> > +     if (!ptp->nic)
+> > +             return -ENODEV;
+> > +
+> > +     req = otx2_mbox_alloc_msg_ptp_op(&ptp->nic->mbox);
+> > +     if (!req)
+> > +             return -ENOMEM;
+> > +
+> > +     req->op = PTP_OP_ADJFINE;
+> > +     req->scaled_ppm = scaled_ppm;
+> > +
+> > +     err = otx2_sync_mbox_msg(&ptp->nic->mbox);
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static u64 ptp_cc_read(const struct cyclecounter *cc)
+> > +{
+> > +     struct otx2_ptp *ptp = container_of(cc, struct otx2_ptp, cycle_counter);
+> > +     struct ptp_req *req;
+> > +     struct ptp_rsp *rsp;
+> > +     int err;
+> > +
+> > +     if (!ptp->nic)
+> > +             return 0;
+> > +
+> > +     req = otx2_mbox_alloc_msg_ptp_op(&ptp->nic->mbox);
+> > +     if (!req)
+> > +             return 0;
+> > +
+> > +     req->op = PTP_OP_GET_CLOCK;
+> > +
+> > +     err = otx2_sync_mbox_msg(&ptp->nic->mbox);
+> > +     if (err)
+> > +             return 0;
+> > +
+> > +     rsp = (struct ptp_rsp *)otx2_mbox_get_rsp(&ptp->nic->mbox.mbox, 0,
+> > +                                               &req->hdr);
+> > +     if (IS_ERR(rsp))
+> > +             return 0;
+> > +
+> > +     return rsp->clk;
+> > +}
+> > +
+> > +static int otx2_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
+> > +{
+> > +     struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
+> > +                                         ptp_info);
+> > +     struct otx2_nic *pfvf = ptp->nic;
+> > +
+> > +     mutex_lock(&pfvf->mbox.lock);
+> > +     timecounter_adjtime(&ptp->time_counter, delta);
+> > +     mutex_unlock(&pfvf->mbox.lock);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int otx2_ptp_gettime(struct ptp_clock_info *ptp_info,
+> > +                         struct timespec64 *ts)
+> > +{
+> > +     struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
+> > +                                         ptp_info);
+> > +     struct otx2_nic *pfvf = ptp->nic;
+> > +     u64 nsec;
+> > +
+> > +     mutex_lock(&pfvf->mbox.lock);
+> > +     nsec = timecounter_read(&ptp->time_counter);
+> > +     mutex_unlock(&pfvf->mbox.lock);
+> > +
+> > +     *ts = ns_to_timespec64(nsec);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int otx2_ptp_settime(struct ptp_clock_info *ptp_info,
+> > +                         const struct timespec64 *ts)
+> > +{
+> > +     struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
+> > +                                         ptp_info);
+> > +     struct otx2_nic *pfvf = ptp->nic;
+> > +     u64 nsec;
+> > +
+> > +     nsec = timespec64_to_ns(ts);
+> > +
+> > +     mutex_lock(&pfvf->mbox.lock);
+> > +     timecounter_init(&ptp->time_counter, &ptp->cycle_counter, nsec);
+> > +     mutex_unlock(&pfvf->mbox.lock);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int otx2_ptp_enable(struct ptp_clock_info *ptp_info,
+> > +                        struct ptp_clock_request *rq, int on)
+> > +{
+> > +     return -EOPNOTSUPP;
+> > +}
+> > +
+> > +int otx2_ptp_init(struct otx2_nic *pfvf)
+> > +{
+> > +     struct otx2_ptp *ptp_ptr;
+> > +     struct cyclecounter *cc;
+> > +     struct ptp_req *req;
+> > +     int err;
+> > +
+> > +     mutex_lock(&pfvf->mbox.lock);
+> > +     /* check if PTP block is available */
+> > +     req = otx2_mbox_alloc_msg_ptp_op(&pfvf->mbox);
+> > +     if (!req) {
+> > +             mutex_unlock(&pfvf->mbox.lock);
+> > +             return -ENOMEM;
+> > +     }
+> > +
+> > +     req->op = PTP_OP_GET_CLOCK;
+> > +
+> > +     err = otx2_sync_mbox_msg(&pfvf->mbox);
+> > +     if (err) {
+> > +             mutex_unlock(&pfvf->mbox.lock);
+> > +             return err;
+> > +     }
+> > +     mutex_unlock(&pfvf->mbox.lock);
+> > +
+> > +     ptp_ptr = kzalloc(sizeof(*ptp_ptr), GFP_KERNEL);
+> > +     if (!ptp_ptr) {
+> > +             err = -ENOMEM;
+> > +             goto error;
+> > +     }
+> > +
+> > +     ptp_ptr->nic = pfvf;
+> > +
+> > +     cc = &ptp_ptr->cycle_counter;
+> > +     cc->read = ptp_cc_read;
+> > +     cc->mask = CYCLECOUNTER_MASK(64);
+> > +     cc->mult = 1;
+> > +     cc->shift = 0;
+> > +
+> > +     timecounter_init(&ptp_ptr->time_counter, &ptp_ptr->cycle_counter,
+> > +                      ktime_to_ns(ktime_get_real()));
+> > +
+> > +     ptp_ptr->ptp_info = (struct ptp_clock_info) {
+> > +             .owner          = THIS_MODULE,
+> > +             .name           = "OcteonTX2 PTP",
+> > +             .max_adj        = 1000000000ull,
+> > +             .n_ext_ts       = 0,
+> > +             .n_pins         = 0,
+> > +             .pps            = 0,
+> > +             .adjfine        = otx2_ptp_adjfine,
+> > +             .adjtime        = otx2_ptp_adjtime,
+> > +             .gettime64      = otx2_ptp_gettime,
+> > +             .settime64      = otx2_ptp_settime,
+> > +             .enable         = otx2_ptp_enable,
+> > +     };
+> > +
+> > +     ptp_ptr->ptp_clock = ptp_clock_register(&ptp_ptr->ptp_info, pfvf->dev);
+> > +     if (IS_ERR(ptp_ptr->ptp_clock)) {
+> > +             err = PTR_ERR(ptp_ptr->ptp_clock);
+> > +             kfree(ptp_ptr);
+> > +             goto error;
+> > +     }
+>
+> You need to handle NULL here.
+>
+>  * ptp_clock_register() - register a PTP hardware clock driver
+>  *
+>  * @info:   Structure describing the new clock.
+>  * @parent: Pointer to the parent device of the new clock.
+>  *
+>  * Returns a valid pointer on success or PTR_ERR on failure.  If PHC
+>  * support is missing at the configuration level, this function
+>  * returns NULL, and drivers are expected to gracefully handle that
+>  * case separately.
+>
+Okay. Will fix it.
+> > +
+> > +     pfvf->ptp = ptp_ptr;
+> > +
+> > +error:
+> > +     return err;
+> > +}
+> > +
+> > +void otx2_ptp_destroy(struct otx2_nic *pfvf)
+> > +{
+> > +     struct otx2_ptp *ptp = pfvf->ptp;
+> > +
+> > +     if (!ptp)
+> > +             return;
+> > +
+> > +     ptp_clock_unregister(ptp->ptp_clock);
+> > +     kfree(ptp);
+> > +     pfvf->ptp = NULL;
+> > +}
+> > +
+> > +int otx2_ptp_clock_index(struct otx2_nic *pfvf)
+> > +{
+> > +     if (!pfvf->ptp)
+> > +             return -ENODEV;
+> > +
+> > +     return ptp_clock_index(pfvf->ptp->ptp_clock);
+> > +}
+> > +
+> > +int otx2_ptp_tstamp2time(struct otx2_nic *pfvf, u64 tstamp, u64 *tsns)
+> > +{
+> > +     if (!pfvf->ptp)
+> > +             return -ENODEV;
+> > +
+> > +     *tsns = timecounter_cyc2time(&pfvf->ptp->time_counter, tstamp);
+> > +
+> > +     return 0;
+> > +}
+>
+>
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+> > index 3a5b34a..1f90426 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+> > @@ -16,6 +16,7 @@
+> >  #include "otx2_common.h"
+> >  #include "otx2_struct.h"
+> >  #include "otx2_txrx.h"
+> > +#include "otx2_ptp.h"
+> >
+> >  #define CQE_ADDR(CQ, idx) ((CQ)->cqe_base + ((CQ)->cqe_size * (idx)))
+> >
+> > @@ -81,8 +82,11 @@ static void otx2_snd_pkt_handler(struct otx2_nic *pfvf,
+> >                                int budget, int *tx_pkts, int *tx_bytes)
+> >  {
+> >       struct nix_send_comp_s *snd_comp = &cqe->comp;
+> > +     struct skb_shared_hwtstamps ts;
+> >       struct sk_buff *skb = NULL;
+> > +     u64 timestamp, tsns;
+> >       struct sg_list *sg;
+> > +     int err;
+> >
+> >       if (unlikely(snd_comp->status) && netif_msg_tx_err(pfvf))
+> >               net_err_ratelimited("%s: TX%d: Error in send CQ status:%x\n",
+> > @@ -94,6 +98,18 @@ static void otx2_snd_pkt_handler(struct otx2_nic *pfvf,
+> >       if (unlikely(!skb))
+> >               return;
+> >
+> > +     if (skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS) {
+>
+> SKBTX_IN_PROGRESS may be set by the PHY, so you need to test whether
+> time stamping is enabled in your MAC driver as well.
+>
+In our case PHY will not set it and the pfvf/MAC driver sets it.
 
-Thanks
-Calvin
+Thanks for review,
+Sundeep
+
+> > +             timestamp = ((u64 *)sq->timestamps->base)[snd_comp->sqe_id];
+> > +             if (timestamp != 1) {
+> > +                     err = otx2_ptp_tstamp2time(pfvf, timestamp, &tsns);
+> > +                     if (!err) {
+> > +                             memset(&ts, 0, sizeof(ts));
+> > +                             ts.hwtstamp = ns_to_ktime(tsns);
+> > +                             skb_tstamp_tx(skb, &ts);
+> > +                     }
+> > +             }
+> > +     }
+> > +
+> >       *tx_bytes += skb->len;
+> >       (*tx_pkts)++;
+> >       otx2_dma_unmap_skb_frags(pfvf, sg);
+>
+> Thanks,
+> Richard
