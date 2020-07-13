@@ -2,60 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A7F21E31F
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:41:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2E1521E324
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:42:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgGMWl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 18:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726347AbgGMWl1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 18:41:27 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A599C061755
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 15:41:27 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id d4so6698113pgk.4
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 15:41:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pbIi0rPOl77gKZJ9HU5CGROiWIzakPURJKpSHfPsjZU=;
-        b=p5wipaCLMO/NUYkykgxUyuVC23Md+i7hh5sCJC/y2vTmD7LOQ8GoMCGCUmA665MsbT
-         uvuBZUTgSBTs0cr+OQLQqN9deAIlUDJud+3L+IFUgEG1eqRhsyveKZ+5RQtfJs79TyEN
-         XYbNi5A+OjKB+OSdSnOrmcJ3bomVmNTF0DnfpN+gGNxR0M8WZ/CiG6J9kWthwWEZ+I7c
-         UyZp+qQKLFeJacXIUJvvfenr8XR/1yClguH4xBBSVaN36zpUePdtxxAMs063f8qAFbg8
-         BT4y+0UwVkMRCIIDG8x6tDfndww8zdKblK6bhOvXTFwsjexh/+NxTPvvXaAOsBwALZgZ
-         g/5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pbIi0rPOl77gKZJ9HU5CGROiWIzakPURJKpSHfPsjZU=;
-        b=jXPggQ+CRvqIXRZ+452ACW6Ctq07T4WTy8geglyjvR1+mmDWmF+a4IHEYTjddnPJIT
-         sL7TxDnJIPfDZGckCuSDDkE5rJQ04wnm/Skc+Oa1n0qvsBoyo4to4Bnm6BiMVI0yMyNT
-         uPbutp3qmUobfhY4o9DNyYurDFxbUhhUL9Ms0oTJmVjd7whP5h8fn32nNAs4GkrLV3Ti
-         iZTF5Vg/RMzp22TdgtjvBtbtSVe8IPr5TE4jp4xxVq25kQU5eN+tNRoqGqxH+8uaTn0p
-         alYpTRGiyoIbmxKq9cqx8tk9tf7HQ9hk8aKDaNy+YH10uUNvqk4UYeN8OCK7wMBPiLUL
-         G0ag==
-X-Gm-Message-State: AOAM530ci9O2JPeYIPtT8FyhkeXdCgv2SS+cp91Aj8wT///FvMFNTvlM
-        c9pR7pwkvXeNDJp+mONSjMWgtg==
-X-Google-Smtp-Source: ABdhPJxehjrxNk5S2TjjmiWOmanu/MM49tMCczTrbr2GPnrGnbb5kU0NVSlo7qCt6xWb8uxDOeGeYA==
-X-Received: by 2002:a62:1801:: with SMTP id 1mr1831676pfy.242.1594680086732;
-        Mon, 13 Jul 2020 15:41:26 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id a17sm13419377pgw.60.2020.07.13.15.41.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2020 15:41:26 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 15:41:18 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, Jarod Wilson <jarod@redhat.com>
-Subject: Re: [RFC] bonding driver terminology change proposal
-Message-ID: <20200713154118.3a1edd66@hermes.lan>
-In-Reply-To: <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
-References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
-        <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
+        id S1726775AbgGMWmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 18:42:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48582 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726150AbgGMWmK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 18:42:10 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D762620DD4;
+        Mon, 13 Jul 2020 22:42:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594680130;
+        bh=JbDCK7D2/GsBT9H83GAKXMujtpxLqJNPChMfE6ajF7E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XMsXBO305T47S20vtjueEv7N4nprQ2ZKXM8/nOJvrIT+gpOjlqxlvae0J9pUxEKvv
+         PGS8DhPhv8PsDLX5bh3RpqUYAhlnAllGzBBXrlpcg0D/fvFsoq45doNQUtKH5J1q3b
+         mw+vL8vouJTWcgPaIQpTpSEptjJWDbbjdNgavvtA=
+Date:   Mon, 13 Jul 2020 15:42:08 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luo bin <luobin9@huawei.com>
+Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
+        <chiqijun@huawei.com>
+Subject: Re: [PATCH net-next v1] hinic: add firmware update support
+Message-ID: <20200713154208.7d123d5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200713140522.14600-1-luobin9@huawei.com>
+References: <20200713140522.14600-1-luobin9@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,31 +42,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Jul 2020 00:00:16 +0200
-Michal Kubecek <mkubecek@suse.cz> wrote:
-
-> On Mon, Jul 13, 2020 at 02:51:39PM -0400, Jarod Wilson wrote:
-> > To start out with, I'd like to attempt to eliminate as much of the use
-> > of master and slave in the bonding driver as possible. For the most
-> > part, I think this can be done without breaking UAPI, but may require
-> > changes to anything accessing bond info via proc or sysfs.  
+On Mon, 13 Jul 2020 22:05:22 +0800 Luo bin wrote:
+> add support to update firmware by the devlink flashing API
 > 
-> Could we, please, avoid breaking existing userspace tools and scripts?
-> Massive code churn is one thing and we could certainly bite the bullet
-> and live with it (even if I'm still not convinced it would be as great
-> idea as some present it) but trading theoretical offense for real and
-> palpable harm to existing users is something completely different.
-> 
-> Or is "don't break userspace" no longer the "first commandment" of linux
-> kernel development?
-> 
-> Michal Kubecek
+> Signed-off-by: Luo bin <luobin9@huawei.com>
+> ---
+> V0~V1: remove the implementation from ethtool to devlink
 
-Please consider using same wording as current standard for link aggregration.
-Current version is 802.1AX and it uses the terms:
-  Multiplexer /  Aggregator
+Thanks!
 
-There are no uses of master or slave in 802.1Ax standard.
+> +static int check_image_device_type(struct hinic_dev *nic_dev,
+> +				   u32 image_device_type)
+> +{
+> +	struct hinic_comm_board_info board_info = {0};
+> +
+> +	if (image_device_type) {
+> +		if (!hinic_get_board_info(nic_dev->hwdev, &board_info)) {
+> +			if (image_device_type == board_info.info.board_type)
+> +				return true;
 
-As far as userspace, maybe keep the old API's but provide deprecation nags.
-And don't document the old API values.
+Please simplify this, you shouldn't need more than 1 indentation level
+here.
+
+> +			dev_err(&nic_dev->hwdev->hwif->pdev->dev, "The device type of upgrade file doesn't match the device type of current firmware, please check the upgrade file\n");
+> +			dev_err(&nic_dev->hwdev->hwif->pdev->dev, "The image device type: 0x%x, firmware device type: 0x%x\n",
+> +				image_device_type, board_info.info.board_type);
+> +
+> +			return false;
+> +		}
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static int hinic_flash_fw(struct hinic_dev *nic_dev, const u8 *data,
+> +			  struct host_image_st *host_image, u32 boot_flag)
+
+You seem to always pass boot_flag = 0, AFAICT, please remove the
+parameter and related code.
+
+> +{
+> +	u32 section_remain_send_len, send_fragment_len, send_pos, up_total_len;
+> +	struct hinic_cmd_update_fw *fw_update_msg = NULL;
+> +	u32 section_type, section_crc, section_version;
+> +	u32 i, len, section_len, section_offset;
+> +	u16 out_size = sizeof(*fw_update_msg);
+> +	int total_len_flag = 0;
+> +	int err;
+
+> +int hinic_devlink_register(struct devlink *devlink, struct device *dev)
+> +{
+> +	int err;
+> +
+> +	err = devlink_register(devlink, dev);
+> +
+> +	return err;
+
+No need for temporary variable.
+
+> +}
+> +
+> +void hinic_devlink_unregister(struct devlink *devlink)
+> +{
+> +	devlink_unregister(devlink);
+> +}
+
+> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+> index 834a20a0043c..1dfa09411590 100644
+> --- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
+> +++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/semaphore.h>
+>  #include <linux/workqueue.h>
+>  #include <net/ip.h>
+> +#include <net/devlink.h>
+>  #include <linux/bitops.h>
+>  #include <linux/bitmap.h>
+>  #include <linux/delay.h>
+> @@ -25,6 +26,7 @@
+>  
+>  #include "hinic_hw_qp.h"
+>  #include "hinic_hw_dev.h"
+> +#include "hinic_devlink.h"
+>  #include "hinic_port.h"
+>  #include "hinic_tx.h"
+>  #include "hinic_rx.h"
+> @@ -1075,9 +1077,11 @@ static int nic_dev_init(struct pci_dev *pdev)
+>  	struct hinic_rx_mode_work *rx_mode_work;
+>  	struct hinic_txq_stats *tx_stats;
+>  	struct hinic_rxq_stats *rx_stats;
+> +	struct hinic_dev *devlink_dev;
+>  	struct hinic_dev *nic_dev;
+>  	struct net_device *netdev;
+>  	struct hinic_hwdev *hwdev;
+> +	struct devlink *devlink;
+>  	int err, num_qps;
+>  
+>  	hwdev = hinic_init_hwdev(pdev);
+> @@ -1086,6 +1090,15 @@ static int nic_dev_init(struct pci_dev *pdev)
+>  		return PTR_ERR(hwdev);
+>  	}
+>  
+> +	devlink = hinic_devlink_alloc();
+> +	if (!devlink) {
+> +		dev_err(&pdev->dev, "Hinic devlink alloc failed\n");
+> +		err = -ENOMEM;
+> +		goto err_devlink_alloc;
+> +	}
+> +
+> +	devlink_dev = devlink_priv(devlink);
+> +
+>  	num_qps = hinic_hwdev_num_qps(hwdev);
+>  	if (num_qps <= 0) {
+>  		dev_err(&pdev->dev, "Invalid number of QPS\n");
+> @@ -1121,6 +1134,7 @@ static int nic_dev_init(struct pci_dev *pdev)
+>  	nic_dev->sriov_info.hwdev = hwdev;
+>  	nic_dev->sriov_info.pdev = pdev;
+>  	nic_dev->max_qps = num_qps;
+> +	nic_dev->devlink = devlink;
+>  
+>  	hinic_set_ethtool_ops(netdev);
+>  
+> @@ -1146,6 +1160,11 @@ static int nic_dev_init(struct pci_dev *pdev)
+>  		goto err_workq;
+>  	}
+>  
+> +	memcpy(devlink_dev, nic_dev, sizeof(*nic_dev));
+
+Please create a separate structure for the devlink-level priv.
+This doesn't look right.
+
+> +	err = hinic_devlink_register(devlink, &pdev->dev);
+> +	if (err)
+> +		goto err_devlink_reg;
+> +
+>  	pci_set_drvdata(pdev, netdev);
+>  
+>  	err = hinic_port_get_mac(nic_dev, netdev->dev_addr);
+
