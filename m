@@ -2,95 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D97BD21D067
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 09:29:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B70F21D085
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 09:38:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729053AbgGMH3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 03:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729027AbgGMH3R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 03:29:17 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F6DC08C5DB
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 00:29:17 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id z15so14544314wrl.8
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 00:29:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4kU8N5DeedpzZY27vYaHJmaCubANM+yECKFDBgJweY4=;
-        b=D7xh6eu++gbVif5cEAGGKdiDsW9xxIY4MmHaAwDepJv1tFzVb7Zi9vbwXIkAq6OSMC
-         ao2hKH3BT4xs6mO1GFJTVEZ+p1It4SRAP0g9VFFPbOgQBlsZOy0TX3yRmAuQxnyUrrNK
-         mtOZKb8/Zj1Qnf2li7fwOFjgLdjMbc1nTKtBc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4kU8N5DeedpzZY27vYaHJmaCubANM+yECKFDBgJweY4=;
-        b=hiRIKWl4a5D5FcFd0DWWa7Gaap+98QtjwrVl7O+RmlIUerxVI3D3+KkOWg6uugOG14
-         p6t8MNxSjKmlrhOzhxOKxfkDpVFr9bXworUt8L6DVE0suQsDOLBdT/R5NVQtBWfU3qMQ
-         BCU0SITk12qth/XA7lqcT8ZfAo49pPDU149pnGsJrv1f8cqwlctRakVhYksjrc0m+eUZ
-         ujFHiFmBBrOvTMhkjcnL26fBOqB1h8k+WIULD41ylklSrLcfmG5zxRRrF4yRY8jvcCHu
-         WOhuIPNSbkE3KDYV1feyGgwHL50PbHo8LvBSD3dyxIqHppupxPUHW/dmDUCK7q6MvLoI
-         Zsow==
-X-Gm-Message-State: AOAM532Q2qzuVGkWugQkbCh1EuZum73htHrmMH/0DA9ZOhOlcgsR0CMI
-        LSmaJXmRSoeZh2Fj90qeMnj14w==
-X-Google-Smtp-Source: ABdhPJyhZaYuvI1VIdHE2m9jwzvJxy3uMEncr3I2/2Fzsq4u4hxVDd97IeUGkvgBxSbMFMvVXofGqA==
-X-Received: by 2002:a5d:43d0:: with SMTP id v16mr82553551wrr.296.1594625355477;
-        Mon, 13 Jul 2020 00:29:15 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id d13sm21582030wrq.89.2020.07.13.00.29.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jul 2020 00:29:14 -0700 (PDT)
-Subject: Re: linux-next: build failure after merge of the net-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20200713115412.28aac287@canb.auug.org.au>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <e1d2b00a-52d4-e36e-317f-314ac3aecca6@cumulusnetworks.com>
-Date:   Mon, 13 Jul 2020 10:29:13 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1726991AbgGMHiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 03:38:10 -0400
+Received: from verein.lst.de ([213.95.11.211]:49118 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725818AbgGMHiK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 03:38:10 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id B741F68B02; Mon, 13 Jul 2020 09:38:06 +0200 (CEST)
+Date:   Mon, 13 Jul 2020 09:38:06 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Doug Nazar <nazard@nazar.ca>, Christoph Hellwig <hch@lst.de>,
+        ericvh@gmail.com, lucho@ionkov.net,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+e6f77e16ff68b2434a2c@syzkaller.appspotmail.com
+Subject: Re: [PATCH] net/9p: validate fds in p9_fd_open
+Message-ID: <20200713073806.GA14676@lst.de>
+References: <20200710085722.435850-1-hch@lst.de> <5bee3e33-2400-2d85-080e-d10cd82b0d85@nazar.ca> <20200711104923.GA6584@nautica>
 MIME-Version: 1.0
-In-Reply-To: <20200713115412.28aac287@canb.auug.org.au>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200711104923.GA6584@nautica>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/07/2020 04:54, Stephen Rothwell wrote:
-> Hi all,
+On Sat, Jul 11, 2020 at 12:49:23PM +0200, Dominique Martinet wrote:
+> > >diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+> > >index 13cd683a658ab6..1cd8ea0e493617 100644
+> > >--- a/net/9p/trans_fd.c
+> > >+++ b/net/9p/trans_fd.c
+> > >@@ -803,20 +803,28 @@ static int p9_fd_open(struct p9_client *client, int rfd, int wfd)
+> > >  		return -ENOMEM;
+> > >  	ts->rd = fget(rfd);
+> > >+	if (!ts->rd)
+> > >+		goto out_free_ts;
+> > >+	if (!(ts->rd->f_mode & FMODE_READ))
+> > >+		goto out_put_wr;
+> > 
+> > 		goto out_put_rd;
+> > 
+> > unless I'm mistaken.
 > 
-> After merging the net-next tree, today's linux-next build (powerpc
-> ppc64_defconfig) failed like this:
-> 
-> net/bridge/br_netlink_tunnel.c: In function '__vlan_tunnel_handle_range':
-> net/bridge/br_netlink_tunnel.c:271:26: error: implicit declaration of function 'br_vlan_can_enter_range'; did you mean 'br_vlan_valid_range'? [-Werror=implicit-function-declaration]
->   271 |  if (v && curr_change && br_vlan_can_enter_range(v, *v_end)) {
->       |                          ^~~~~~~~~~~~~~~~~~~~~~~
->       |                          br_vlan_valid_range
-> 
-> Caused by commit
-> 
->   94339443686b ("net: bridge: notify on vlan tunnel changes done via the old api")
-> 
-> CONFIG_BRIDGE_VLAN_FILTERING is not set for this build.
-> 
-> I have reverted that commit for today.
-> 
+> Good catch, I've amended the commit so feel free to skip resending
+> unless want to change something
+> https://github.com/martinetd/linux/commit/28e987a0dc66744fb119e18150188fd8e3debd40
 
-Oops, sorry that's my bad. I mixed br_netlink_tunnel with br_vlan_tunnel, the latter is compiled only
-when bridge vlan filtering is defined.
-
-Anyway, I'll post a fix ASAP.
-
-Thanks.
+Thanks, this looks good to me.
