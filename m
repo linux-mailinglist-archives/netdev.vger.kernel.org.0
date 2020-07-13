@@ -2,537 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BFAC21D534
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 13:43:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F3D021D538
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 13:46:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729761AbgGMLnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 07:43:23 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:44786 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729252AbgGMLnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 07:43:22 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06DBgkvn015187;
-        Mon, 13 Jul 2020 04:43:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=LD/6I2o8fNwAWw04EHqsVcaPnK0ypIANSBBbjYOo1qM=;
- b=qUuhTCGsF2yjBtocex3FWOC43A6bZ++ux7A+sKDGThhpG8Ozl9yFJlfZDP8uv1n//Sn4
- yWL6ztHRj6U3MH2DXoxPF4u1Mou9ZdkwYIPjXi9Gxri/g1zrCj/4iv9kwUTRgDyY7S3A
- GFrBm09BrL2dlvdjYYihOTdLschSDHlmvmXU2PzxUFK/kd0Zk1tex+dhQ3l2dmRL79QT
- OMwvWxUaBNEaZguIF7KVaiduQeSp17XQzmGlAbaLD+OF6vuQOF+jVXZyRCe43RtMNmIb
- dKBQfF47r6Pc/KmYiXKaKDuF0eduaGwhUWoy0xRhjS4Sss3l177zDdU77QocTPsxiS/H hA== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 328mmhgfj3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 13 Jul 2020 04:43:17 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 13 Jul
- 2020 04:43:15 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 13 Jul 2020 04:43:15 -0700
-Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.6.200.41])
-        by maili.marvell.com (Postfix) with ESMTP id 7C0E13F703F;
-        Mon, 13 Jul 2020 04:43:13 -0700 (PDT)
-From:   Igor Russkikh <irusskikh@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Mark Starovoytov <mstarovoitov@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Igor Russkikh <irusskikh@marvell.com>
-Subject: [PATCH net-next 10/10] net: atlantic: add hwmon getter for MAC temperature
-Date:   Mon, 13 Jul 2020 14:42:33 +0300
-Message-ID: <20200713114233.436-11-irusskikh@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200713114233.436-1-irusskikh@marvell.com>
-References: <20200713114233.436-1-irusskikh@marvell.com>
-MIME-Version: 1.0
+        id S1729510AbgGMLqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 07:46:18 -0400
+Received: from mail-eopbgr00049.outbound.protection.outlook.com ([40.107.0.49]:40182
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727890AbgGMLqS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 07:46:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UsChKgmk7m+IIC+3lkl/o3FY+mkmVlF1+IjTWo9rH0sVSbG85EUTu2h4w+Ldly3mfRe6YzZieKoSQWTwClb3lSt25twVnUYAEaIBOxL4pVUnPvRxRYA4a4BNUgI3W3iuDcMvynNcjFlNPCdjx/fZ5QCQOqspNUr9fQPmvVaGRAFEQ6KJRbUYX9AIWUVAndTvmPmREtmlYwue1vcQjpYvFqXVFISquNml1Uw7v+cg8HByuWiW+n94Z7FgXg4s6ZbLMitK8nL9nzAeJNE+xklpyFz/T6auDqFRI/myCr/q0Geeeet/qUfe2Tgs3DG28thfZiuzi7kXP2Mi1gK+fCZWYw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pW6s9+HQ1YR43nqHa8HUXhZeHTP1SaBUXoK2RzoSxlo=;
+ b=jpPUyU5/DjwE9VrESWoFp4ePFEQrDx1H5PLLwYSuHSb9IUMExI05C8KrtMNJeHbGLnSkf2JiHsQOG4NkstENvzuKNgBnyR29Joxk0qjRrTqYTwcRHEqXoqbpMPPO9h0r0qguJNlbS4Mwm9yhN4wiTb49q59e5y5500eINriikhwiZsfutRW7Gw4NSrataV2HMpanNZd41DO7SFiP5J93BY4Gx4oOmMzieuTemNz/sdZI3gdBd+HMUGS5Z5LXs9U8M/ycLyMy2Z2LsZCCaz/EobtDUNNSC2W3NMYA6NStm/k7LOEQl1tJ6K/0taZl1kWjxkxAXYZvs9RcjYZq+/ppew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pW6s9+HQ1YR43nqHa8HUXhZeHTP1SaBUXoK2RzoSxlo=;
+ b=RcKTLUUOpk1PnIH4Us+u8L3KX6KnIX6mp0koYepGzfai5yxXe9BGRiRjFF13204IDpiw18Q/M51+/30KkimK1ncJp65ODl0WiqN4sycxwV5abN9527TRkB+fHZmZ9rREE4Jx1MDuopy5G4HKmeAPY1Cm9s7hAdFIn3Ia0wjFWa8=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
+ HE1PR05MB4651.eurprd05.prod.outlook.com (2603:10a6:7:a2::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3174.22; Mon, 13 Jul 2020 11:46:12 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::78f6:fb7a:ea76:c2d6]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::78f6:fb7a:ea76:c2d6%7]) with mapi id 15.20.3174.025; Mon, 13 Jul 2020
+ 11:46:12 +0000
+References: <cover.1594416408.git.petrm@mellanox.com> <a5a3ccf7bf3a097c6400d64f617ee7ee9fc6156c.1594416408.git.petrm@mellanox.com> <20200711112256.4153f2d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
+        michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
+        kadlec@netfilter.org, fw@strlen.de, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, simon.horman@netronome.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next v2 01/13] net: sched: Pass qdisc reference in struct flow_block_offload
+In-reply-to: <20200711112256.4153f2d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Mon, 13 Jul 2020 13:46:08 +0200
+Message-ID: <87k0z7fxj3.fsf@mellanox.com>
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-13_10:2020-07-13,2020-07-13 signatures=0
+X-ClientProxiedBy: AM4PR0302CA0015.eurprd03.prod.outlook.com
+ (2603:10a6:205:2::28) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (213.220.234.169) by AM4PR0302CA0015.eurprd03.prod.outlook.com (2603:10a6:205:2::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Mon, 13 Jul 2020 11:46:10 +0000
+X-Originating-IP: [213.220.234.169]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: c2d7c07a-63f9-429c-bf0d-08d827225708
+X-MS-TrafficTypeDiagnostic: HE1PR05MB4651:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR05MB4651DEFF8764776C20C94580DB600@HE1PR05MB4651.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: erTKiwcBGcYeFUaqeO5rOdhPhxHa0w2+GUUX5OErCYyKjRLZz3CFccMWazM50AYzplFQfeX2nzT+EhwTNRaBlDtXj9WEhvBGTulw1hUki7w7bZ5KW2byPH30sLwjPi3Y4lFPMO6Hx4x/x9EdKhZOpsTR3yOTeqKlGJ6zBwhFCC6fmV4aa0PXBqM5OwqE1Yfcoa4YYTKZnfmuaoUxjo1Rer+rFHTpi0iOMMORB0gxDRbV0NMqGlvr8wX6fP4og3MwyZyR2bcEFG20Iv4xFNdv7pnF5prba+Dn+2/ch/w8y53UJwUIdm9bAuhBKF49WsV7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(54906003)(6486002)(83380400001)(6496006)(52116002)(8936002)(16526019)(956004)(316002)(2616005)(186003)(2906002)(7416002)(6916009)(478600001)(66556008)(66476007)(86362001)(26005)(5660300002)(8676002)(4326008)(107886003)(66946007)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: jHK6Hf3si/OQoUWZffE/BvPK1HLNNLMmUO20DmZDnybywJAvwxqXf7r23nGng0V/3HQJaW8TOKZFFOKU+InvbXGjaVQkekQK8GOFBQlS1UzuoZHuY2AP/0mJy9qFlb9ZORS2JcwC7cDwfrZEBdqEqd3a+zsbSqZZAwVmqbD+l5WnmR0P4p7ZYMSOT3HWCg7ufeBdiKl1WeSKeD5pU7QQAgJV/iDDBqEJoZ1AxS6z0uqD9xg7l1cnKP+FKKUUPDuHWtLsHF7JGFETqaG7lgxYhLkhg0zfuBG0J4P5DQg6yeOxWBsuEAQkLtfyMJ6U1xhE71HpKdW+lJWrNCFfqLWRbRlFxMamfdSEQUCc5NTYjxmv7Q1Rn4D7jVWkue8AcK8ujK9gPwDdX3hZ5azyMEi7t5vEtZUy+085ZRVyzc+D+IOTCJiys8otPbJt6ULqM4qQaatS9Fafl43AIbkawzB6MbPZ9U1hgRM6e/337Y/LCtZR59pETGgAe/KcGSSYpiMO
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2d7c07a-63f9-429c-bf0d-08d827225708
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2020 11:46:12.1823
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bjOuMxzFKKCSDzj8ufQWD0n71MN5QWvN3WASiMV76p/ChLbdQWI0ROlg6KSq2ZSh0GUdA7F6UIQ3UtA7Ok9/7Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB4651
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Starovoytov <mstarovoitov@marvell.com>
 
-This patch adds the possibility to obtain MAC temperature via hwmon.
-On A1 there are two separate temperature sensors.
-On A2 there's only one temperature sensor, which is used for reporting
-both MAC and PHY temperature.
+Jakub Kicinski <kuba@kernel.org> writes:
 
-Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
----
- .../ethernet/aquantia/atlantic/aq_drvinfo.c   | 62 ++++++++++++++-----
- .../ethernet/aquantia/atlantic/aq_drvinfo.h   | 10 +--
- .../net/ethernet/aquantia/atlantic/aq_hw.h    |  4 ++
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 44 +++++++++++++
- .../aquantia/atlantic/hw_atl/hw_atl_llh.c     | 51 ++++++++++++++-
- .../aquantia/atlantic/hw_atl/hw_atl_llh.h     | 25 +++++++-
- .../atlantic/hw_atl/hw_atl_llh_internal.h     | 37 ++++++++++-
- .../aquantia/atlantic/hw_atl/hw_atl_utils.c   |  1 +
- .../atlantic/hw_atl/hw_atl_utils_fw2x.c       |  1 +
- .../atlantic/hw_atl2/hw_atl2_utils_fw.c       | 21 +++++++
- 10 files changed, 226 insertions(+), 30 deletions(-)
+> On Sat, 11 Jul 2020 00:55:03 +0300 Petr Machata wrote:
+>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+>> index 0a9a4467d7c7..e82e5cf64d61 100644
+>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c b/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c
-index 6da65099047d..d3526cd38f3d 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c
-@@ -1,5 +1,9 @@
- // SPDX-License-Identifier: GPL-2.0-only
--/* Copyright (C) 2014-2019 aQuantia Corporation. */
-+/* Atlantic Network Driver
-+ *
-+ * Copyright (C) 2014-2019 aQuantia Corporation
-+ * Copyright (C) 2019-2020 Marvell International Ltd.
-+ */
- 
- /* File aq_drvinfo.c: Definition of common code for firmware info in sys.*/
- 
-@@ -12,32 +16,51 @@
- #include <linux/uaccess.h>
- 
- #include "aq_drvinfo.h"
-+#include "aq_nic.h"
- 
- #if IS_REACHABLE(CONFIG_HWMON)
-+static const char * const atl_temp_label[] = {
-+	"PHY Temperature",
-+	"MAC Temperature",
-+};
-+
- static int aq_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
- 			 u32 attr, int channel, long *value)
- {
- 	struct aq_nic_s *aq_nic = dev_get_drvdata(dev);
-+	int err = 0;
- 	int temp;
--	int err;
- 
- 	if (!aq_nic)
- 		return -EIO;
- 
--	if (type != hwmon_temp)
-+	if (type != hwmon_temp || attr != hwmon_temp_input)
- 		return -EOPNOTSUPP;
- 
--	if (!aq_nic->aq_fw_ops->get_phy_temp)
--		return -EOPNOTSUPP;
-+	switch (channel) {
-+	case 0:
-+		if (!aq_nic->aq_fw_ops->get_phy_temp)
-+			return -EOPNOTSUPP;
- 
--	switch (attr) {
--	case hwmon_temp_input:
- 		err = aq_nic->aq_fw_ops->get_phy_temp(aq_nic->aq_hw, &temp);
- 		*value = temp;
--		return err;
-+		break;
-+	case 1:
-+		if (!aq_nic->aq_fw_ops->get_mac_temp &&
-+		    !aq_nic->aq_hw_ops->hw_get_mac_temp)
-+			return -EOPNOTSUPP;
-+
-+		if (aq_nic->aq_fw_ops->get_mac_temp)
-+			err = aq_nic->aq_fw_ops->get_mac_temp(aq_nic->aq_hw, &temp);
-+		else
-+			err = aq_nic->aq_hw_ops->hw_get_mac_temp(aq_nic->aq_hw, &temp);
-+		*value = temp;
-+		break;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-+
-+	return err;
- }
- 
- static int aq_hwmon_read_string(struct device *dev,
-@@ -49,28 +72,32 @@ static int aq_hwmon_read_string(struct device *dev,
- 	if (!aq_nic)
- 		return -EIO;
- 
--	if (type != hwmon_temp)
-+	if (type != hwmon_temp || attr != hwmon_temp_label)
- 		return -EOPNOTSUPP;
- 
--	if (!aq_nic->aq_fw_ops->get_phy_temp)
-+	if (channel < ARRAY_SIZE(atl_temp_label))
-+		*str = atl_temp_label[channel];
-+	else
- 		return -EOPNOTSUPP;
- 
--	switch (attr) {
--	case hwmon_temp_label:
--		*str = "PHY Temperature";
--		return 0;
--	default:
--		return -EOPNOTSUPP;
--	}
-+	return 0;
- }
- 
- static umode_t aq_hwmon_is_visible(const void *data,
- 				   enum hwmon_sensor_types type,
- 				   u32 attr, int channel)
- {
-+	const struct aq_nic_s *nic = data;
-+
- 	if (type != hwmon_temp)
- 		return 0;
- 
-+	if (channel == 0 && !nic->aq_fw_ops->get_phy_temp)
-+		return 0;
-+	else if (channel == 1 && !nic->aq_fw_ops->get_mac_temp &&
-+		 !nic->aq_hw_ops->hw_get_mac_temp)
-+		return 0;
-+
- 	switch (attr) {
- 	case hwmon_temp_input:
- 	case hwmon_temp_label:
-@@ -87,6 +114,7 @@ static const struct hwmon_ops aq_hwmon_ops = {
- };
- 
- static u32 aq_hwmon_temp_config[] = {
-+	HWMON_T_INPUT | HWMON_T_LABEL,
- 	HWMON_T_INPUT | HWMON_T_LABEL,
- 	0,
- };
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.h b/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.h
-index 23a0487893a7..59113a20622a 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.h
-@@ -1,14 +1,16 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
--/* Copyright (C) 2014-2017 aQuantia Corporation. */
-+/* Atlantic Network Driver
-+ *
-+ * Copyright (C) 2014-2019 aQuantia Corporation
-+ * Copyright (C) 2019-2020 Marvell International Ltd.
-+ */
- 
- /* File aq_drvinfo.h: Declaration of common code for firmware info in sys.*/
- 
- #ifndef AQ_DRVINFO_H
- #define AQ_DRVINFO_H
- 
--#include "aq_nic.h"
--#include "aq_hw.h"
--#include "hw_atl/hw_atl_utils.h"
-+struct net_device;
- 
- int aq_drvinfo_init(struct net_device *ndev);
- 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-index 31606f512e05..14733ac2eca1 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-@@ -335,6 +335,8 @@ struct aq_hw_ops {
- 	int (*hw_set_fc)(struct aq_hw_s *self, u32 fc, u32 tc);
- 
- 	int (*hw_set_loopback)(struct aq_hw_s *self, u32 mode, bool enable);
-+
-+	int (*hw_get_mac_temp)(struct aq_hw_s *self, u32 *temp);
- };
- 
- struct aq_fw_ops {
-@@ -357,6 +359,8 @@ struct aq_fw_ops {
- 
- 	int (*update_stats)(struct aq_hw_s *self);
- 
-+	int (*get_mac_temp)(struct aq_hw_s *self, int *temp);
-+
- 	int (*get_phy_temp)(struct aq_hw_s *self, int *temp);
- 
- 	u32 (*get_flow_control)(struct aq_hw_s *self, u32 *fcmode);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index ee74cad4a168..34626eef2909 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -1581,6 +1581,48 @@ int hw_atl_b0_set_loopback(struct aq_hw_s *self, u32 mode, bool enable)
- 	return 0;
- }
- 
-+static u32 hw_atl_b0_ts_ready_and_latch_high_get(struct aq_hw_s *self)
-+{
-+	if (hw_atl_ts_ready_get(self) && hw_atl_ts_ready_latch_high_get(self))
-+		return 1;
-+
-+	return 0;
-+}
-+
-+static int hw_atl_b0_get_mac_temp(struct aq_hw_s *self, u32 *temp)
-+{
-+	bool ts_disabled;
-+	int err;
-+	u32 val;
-+	u32 ts;
-+
-+	ts_disabled = (hw_atl_ts_power_down_get(self) == 1U);
-+
-+	if (ts_disabled) {
-+		// Set AFE Temperature Sensor to on (off by default)
-+		hw_atl_ts_power_down_set(self, 0U);
-+
-+		// Reset internal capacitors, biasing, and counters
-+		hw_atl_ts_reset_set(self, 1);
-+		hw_atl_ts_reset_set(self, 0);
-+	}
-+
-+	err = readx_poll_timeout_atomic(hw_atl_b0_ts_ready_and_latch_high_get,
-+					self, val, val == 1, 10000U, 500000U);
-+	if (err)
-+		return err;
-+
-+	ts = hw_atl_ts_data_get(self);
-+	*temp = ts * ts * 16 / 100000 + 60 * ts - 83410;
-+
-+	if (ts_disabled) {
-+		// Set AFE Temperature Sensor back to off
-+		hw_atl_ts_power_down_set(self, 1U);
-+	}
-+
-+	return 0;
-+}
-+
- const struct aq_hw_ops hw_atl_ops_b0 = {
- 	.hw_soft_reset        = hw_atl_utils_soft_reset,
- 	.hw_prepare           = hw_atl_utils_initfw,
-@@ -1637,4 +1679,6 @@ const struct aq_hw_ops hw_atl_ops_b0 = {
- 	.hw_set_offload          = hw_atl_b0_hw_offload_set,
- 	.hw_set_loopback         = hw_atl_b0_set_loopback,
- 	.hw_set_fc               = hw_atl_b0_set_fc,
-+
-+	.hw_get_mac_temp         = hw_atl_b0_get_mac_temp,
- };
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-index d775b23025c1..745634141f47 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-@@ -1,7 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0-only
--/*
-- * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
-+/* Atlantic Network Driver
-+ *
-+ * Copyright (C) 2014-2019 aQuantia Corporation
-+ * Copyright (C) 2019-2020 Marvell International Ltd.
-  */
- 
- /* File hw_atl_llh.c: Definitions of bitfield and register access functions for
-@@ -12,6 +13,50 @@
- #include "hw_atl_llh_internal.h"
- #include "../aq_hw_utils.h"
- 
-+void hw_atl_ts_reset_set(struct aq_hw_s *aq_hw, u32 val)
-+{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL_TS_RESET_ADR,
-+			    HW_ATL_TS_RESET_MSK,
-+			    HW_ATL_TS_RESET_SHIFT,
-+			    val);
-+}
-+
-+void hw_atl_ts_power_down_set(struct aq_hw_s *aq_hw, u32 val)
-+{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL_TS_POWER_DOWN_ADR,
-+			    HW_ATL_TS_POWER_DOWN_MSK,
-+			    HW_ATL_TS_POWER_DOWN_SHIFT,
-+			    val);
-+}
-+
-+u32 hw_atl_ts_power_down_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg_bit(aq_hw, HW_ATL_TS_POWER_DOWN_ADR,
-+				  HW_ATL_TS_POWER_DOWN_MSK,
-+				  HW_ATL_TS_POWER_DOWN_SHIFT);
-+}
-+
-+u32 hw_atl_ts_ready_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg_bit(aq_hw, HW_ATL_TS_READY_ADR,
-+				  HW_ATL_TS_READY_MSK,
-+				  HW_ATL_TS_READY_SHIFT);
-+}
-+
-+u32 hw_atl_ts_ready_latch_high_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg_bit(aq_hw, HW_ATL_TS_READY_LATCH_HIGH_ADR,
-+				  HW_ATL_TS_READY_LATCH_HIGH_MSK,
-+				  HW_ATL_TS_READY_LATCH_HIGH_SHIFT);
-+}
-+
-+u32 hw_atl_ts_data_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg_bit(aq_hw, HW_ATL_TS_DATA_OUT_ADR,
-+				  HW_ATL_TS_DATA_OUT_MSK,
-+				  HW_ATL_TS_DATA_OUT_SHIFT);
-+}
-+
- /* global */
- void hw_atl_reg_glb_cpu_sem_set(struct aq_hw_s *aq_hw, u32 glb_cpu_sem,
- 				u32 semaphore)
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-index 61a6f70c51cd..ed46f5eaca12 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-@@ -1,7 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
-+/* Atlantic Network Driver
-+ *
-+ * Copyright (C) 2014-2019 aQuantia Corporation
-+ * Copyright (C) 2019-2020 Marvell International Ltd.
-  */
- 
- /* File hw_atl_llh.h: Declarations of bitfield and register access functions for
-@@ -15,6 +16,24 @@
- 
- struct aq_hw_s;
- 
-+/* set temperature sense reset */
-+void hw_atl_ts_reset_set(struct aq_hw_s *aq_hw, u32 val);
-+
-+/* set temperature sense power down */
-+void hw_atl_ts_power_down_set(struct aq_hw_s *aq_hw, u32 val);
-+
-+/* get temperature sense power down */
-+u32 hw_atl_ts_power_down_get(struct aq_hw_s *aq_hw);
-+
-+/* get temperature sense ready */
-+u32 hw_atl_ts_ready_get(struct aq_hw_s *aq_hw);
-+
-+/* get temperature sense ready latch high */
-+u32 hw_atl_ts_ready_latch_high_get(struct aq_hw_s *aq_hw);
-+
-+/* get temperature sense data */
-+u32 hw_atl_ts_data_get(struct aq_hw_s *aq_hw);
-+
- /* global */
- 
- /* set global microprocessor semaphore */
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-index 7430ff025134..c9807afaf0a9 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-@@ -1,7 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
-+/* Atlantic Network Driver
-+ *
-+ * Copyright (C) 2014-2019 aQuantia Corporation
-+ * Copyright (C) 2019-2020 Marvell International Ltd.
-  */
- 
- /* File hw_atl_llh_internal.h: Preprocessor definitions
-@@ -11,6 +12,36 @@
- #ifndef HW_ATL_LLH_INTERNAL_H
- #define HW_ATL_LLH_INTERNAL_H
- 
-+/* COM Temperature Sense Reset Bitfield Definitions */
-+#define HW_ATL_TS_RESET_ADR 0x00003100
-+#define HW_ATL_TS_RESET_MSK 0x00000004
-+#define HW_ATL_TS_RESET_SHIFT 2
-+#define HW_ATL_TS_RESET_WIDTH 1
-+
-+/* COM Temperature Sense Power Down Bitfield Definitions */
-+#define HW_ATL_TS_POWER_DOWN_ADR 0x00003100
-+#define HW_ATL_TS_POWER_DOWN_MSK 0x00000001
-+#define HW_ATL_TS_POWER_DOWN_SHIFT 0
-+#define HW_ATL_TS_POWER_DOWN_WIDTH 1
-+
-+/* COM Temperature Sense Ready Bitfield Definitions */
-+#define HW_ATL_TS_READY_ADR 0x00003120
-+#define HW_ATL_TS_READY_MSK 0x80000000
-+#define HW_ATL_TS_READY_SHIFT 31
-+#define HW_ATL_TS_READY_WIDTH 1
-+
-+/*  COM Temperature Sense Ready Latch High Bitfield Definitions */
-+#define HW_ATL_TS_READY_LATCH_HIGH_ADR 0x00003120
-+#define HW_ATL_TS_READY_LATCH_HIGH_MSK 0x40000000
-+#define HW_ATL_TS_READY_LATCH_HIGH_SHIFT 30
-+#define HW_ATL_TS_READY_LATCH_HIGH_WIDTH 1
-+
-+/* COM Temperature Sense Data Out [B:0] Bitfield Definitions */
-+#define HW_ATL_TS_DATA_OUT_ADR 0x00003120
-+#define HW_ATL_TS_DATA_OUT_MSK 0x00000FFF
-+#define HW_ATL_TS_DATA_OUT_SHIFT 0
-+#define HW_ATL_TS_DATA_OUT_WIDTH 12
-+
- /* global microprocessor semaphore  definitions
-  * base address: 0x000003a0
-  * parameter: semaphore {s} | stride size 0x4 | range [0, 15]
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-index bf4c41cc312b..e0cc6caef6f7 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-@@ -1046,6 +1046,7 @@ const struct aq_fw_ops aq_fw_1x_ops = {
- 	.set_state = hw_atl_utils_mpi_set_state,
- 	.update_link_status = hw_atl_utils_mpi_get_link_status,
- 	.update_stats = hw_atl_utils_update_stats,
-+	.get_mac_temp = NULL,
- 	.get_phy_temp = NULL,
- 	.set_power = aq_fw1x_set_power,
- 	.set_eee_rate = NULL,
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-index 360195b564cf..5e8eb3f6912c 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-@@ -701,6 +701,7 @@ const struct aq_fw_ops aq_fw_2x_ops = {
- 	.set_state          = aq_fw2x_set_state,
- 	.update_link_status = aq_fw2x_update_link_status,
- 	.update_stats       = aq_fw2x_update_stats,
-+	.get_mac_temp       = NULL,
- 	.get_phy_temp       = aq_fw2x_get_phy_temp,
- 	.set_power          = aq_fw2x_set_power,
- 	.set_eee_rate       = aq_fw2x_set_eee_rate,
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
-index a8ce9a2c1c51..85628acbcc1d 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
-@@ -379,6 +379,25 @@ static int aq_a2_fw_update_stats(struct aq_hw_s *self)
- 	return 0;
- }
- 
-+static int aq_a2_fw_get_phy_temp(struct aq_hw_s *self, int *temp)
-+{
-+	struct phy_health_monitor_s phy_health_monitor;
-+
-+	hw_atl2_shared_buffer_read_safe(self, phy_health_monitor,
-+					&phy_health_monitor);
-+
-+	*temp = (int8_t)phy_health_monitor.phy_temperature * 1000;
-+	return 0;
-+}
-+
-+static int aq_a2_fw_get_mac_temp(struct aq_hw_s *self, int *temp)
-+{
-+	/* There's only one temperature sensor on A2, use it for
-+	 * both MAC and PHY.
-+	 */
-+	return aq_a2_fw_get_phy_temp(self, temp);
-+}
-+
- static int aq_a2_fw_set_eee_rate(struct aq_hw_s *self, u32 speed)
- {
- 	struct link_options_s link_options;
-@@ -510,6 +529,8 @@ const struct aq_fw_ops aq_a2_fw_ops = {
- 	.set_state          = aq_a2_fw_set_state,
- 	.update_link_status = aq_a2_fw_update_link_status,
- 	.update_stats       = aq_a2_fw_update_stats,
-+	.get_mac_temp       = aq_a2_fw_get_mac_temp,
-+	.get_phy_temp       = aq_a2_fw_get_phy_temp,
- 	.set_eee_rate       = aq_a2_fw_set_eee_rate,
- 	.get_eee_rate       = aq_a2_fw_get_eee_rate,
- 	.set_flow_control   = aq_a2_fw_set_flow_control,
--- 
-2.17.1
+>> @@ -1911,7 +1911,7 @@ static int bnxt_tc_setup_indr_block(struct net_device *netdev, struct bnxt *bp,
+>>  		block_cb = flow_indr_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
+>>  						    cb_priv, cb_priv,
+>>  						    bnxt_tc_setup_indr_rel, f,
+>> -						    netdev, data, bp, cleanup);
+>> +						    netdev, sch, data, bp, cleanup);
+>
+> nit: the number of arguments is getting out of hand here, perhaps it's
+>      time to pass a structure in.
 
+I would say that adding a distinctly-typed and distinctly-named argument
+does not make the other arguments less clear, or increase the risk of
+mixing them up in a way that the compiler would not catch.
+
+Taken from another angle, the argument list is not passed through layers
+of other functions, so the structure would be assembled in
+bnxt_tc_setup_indr_block() and then unpacked again in
+flow_indr_block_cb_alloc(). Nothing is saved in that regard either.
+
+Also, flow_indr_block_cb_alloc() is a simple function. When a structure
+needs to be introduced to carry the arguments, it might be more
+straightforward to just open-code it.
+
+>>  		if (IS_ERR(block_cb)) {
+>>  			list_del(&cb_priv->list);
+>>  			kfree(cb_priv);
