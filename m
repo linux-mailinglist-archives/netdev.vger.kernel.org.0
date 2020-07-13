@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 342EF21E2CD
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA39521E2D1
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbgGMWE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 18:04:29 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:47911 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726534AbgGMWES (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 18:04:18 -0400
-Received: by mail-il1-f200.google.com with SMTP id o2so10566952ilg.14
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 15:04:17 -0700 (PDT)
+        id S1726864AbgGMWFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 18:05:22 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:36025 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbgGMWFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 18:05:21 -0400
+Received: by mail-il1-f198.google.com with SMTP id t19so10617129ili.3
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 15:05:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=VYaQhK1OFicJIaHCcryGtlpC5pWiSqEfCjBdVZPlxUE=;
-        b=SXkGngfXjhSpXWlU4N8RHHMFT6FAb0NjXifDbiNs6xvlZJQNfad9qsZnldoyYNpL77
-         E54FKhcEPqRhz3DJK754GnDe/5aUzE4ebrRm7JggG4VvE0PIz5ag7W8QB1R3hqwef8Xq
-         2FsEL4EU0heYzd3Mb0v34sF6crSa0G5Xk76AU/7lJTFbTiJvXrBhJzzqUPdde2emqpQ2
-         0DYSDPtX0jOAJMYOavY139D7V8rrLnpXGVIz/zwJLPe9CJVBUxNiusl5gBpyvI8qXayw
-         wwL/buBVNYTx2szHbVMrgvK2m3VKKqvCSoLXGS0AyRqci1YeNJt+wJB62XDAwet3Wyaw
-         koCA==
-X-Gm-Message-State: AOAM5311fopgBGEF4Qtnq9Tw1cDeVFcGcBTcG8rZC3CsUJsWQev0KrTF
-        bB7rLDb86vpoDJKTxqJTZ+876FkGzigdf2Rqgv0674HnMNZV
-X-Google-Smtp-Source: ABdhPJxJFAZDCVUZad9+x2ZMmZk4ywzT3ColQhP/sirBtj7OSntgsxOzALdOnTzjbm03aeNfL336nCDFPMArKlwIe0oDgwcgwb7S
+        bh=/CaBlhXA2yijgvsH3mm3jiuHprEF7nJhVm/YGG9D6E0=;
+        b=oEEDc8Rcke0HO21sRxwdPQEVNtDSikm4lfW7+A/Zo7wIXe/pedm5rB5rPkTwBcX1cb
+         kuFG48oZVhbiUjD39G5Oy/oyIVHXIlqi4Vp3+AL+45R+7VsJRKWS7zskX4zGpaHyH9//
+         1tHdMidsLzltv2//h8K0/+ixfxBWlp4DCvqaQMl0KQ2/nKl+1p2+7tCIWf+9Rngw2mu8
+         fKw6dSroR0Bu2QxwDLs6uCT4aTSLFk/0HZovn8pfkFjwe/AxHW59xffVPM200RKD8orj
+         TQ30hGtiItEAoyFYku3a49j3B/rT4MatlJYZODjTidujzL6GiU6m9JAjopDrcOlLA32p
+         no/Q==
+X-Gm-Message-State: AOAM531zGHfeaHJEE3pvF89x9mNxD1IrSxE3iOqXb8t6px8bV/eb3lPg
+        KwrPNrxE4FvA28nRn1zAR7DZPdeEGWFOSOCFKeQkKu8Z3Yj2
+X-Google-Smtp-Source: ABdhPJxw4I009swN2f78MR3KuA3NZ8gnTQrg86CeBZ+uoVZfurbK5Z5LAwWyL1o8A/PWzhxTCdLnxAUcxHADXOMbSg5vafI5W0xn
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:14b:: with SMTP id y11mr2497565jao.49.1594677857039;
- Mon, 13 Jul 2020 15:04:17 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 15:04:17 -0700
+X-Received: by 2002:a02:7419:: with SMTP id o25mr2436097jac.46.1594677920398;
+ Mon, 13 Jul 2020 15:05:20 -0700 (PDT)
+Date:   Mon, 13 Jul 2020 15:05:20 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000333b4e05aa59df5e@google.com>
-Subject: general protection fault in __xfrm6_tunnel_spi_lookup
-From:   syzbot <syzbot+27016009dfe6ab82bff1@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
-        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, steffen.klassert@secunet.com,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Message-ID: <000000000000fa0ea505aa59e284@google.com>
+Subject: KMSAN: uninit-value in __tipc_nl_compat_dumpit (3)
+From:   syzbot <syzbot+0e7181deafa7e0b79923@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, jmaloy@redhat.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -49,83 +49,94 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    be978f8f Add linux-next specific files for 20200713
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=156005af100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3fe4fccb94cbc1a6
-dashboard link: https://syzkaller.appspot.com/bug?extid=27016009dfe6ab82bff1
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=150269c0900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=164e1d77100000
+HEAD commit:    f0d5ec90 kmsan: apply __no_sanitize_memory to dotraplinkag..
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=1206d73d100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=86e4f8af239686c6
+dashboard link: https://syzkaller.appspot.com/bug?extid=0e7181deafa7e0b79923
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15a6948f100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144e2047100000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+27016009dfe6ab82bff1@syzkaller.appspotmail.com
+Reported-by: syzbot+0e7181deafa7e0b79923@syzkaller.appspotmail.com
 
-general protection fault, probably for non-canonical address 0xdffffc0000000104: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000820-0x0000000000000827]
-CPU: 0 PID: 6792 Comm: syz-executor232 Not tainted 5.8.0-rc4-next-20200713-syzkaller #0
+=====================================================
+BUG: KMSAN: uninit-value in __nlmsg_parse include/net/netlink.h:661 [inline]
+BUG: KMSAN: uninit-value in nlmsg_parse_deprecated include/net/netlink.h:706 [inline]
+BUG: KMSAN: uninit-value in __tipc_nl_compat_dumpit+0x583/0x1290 net/tipc/netlink_compat.c:215
+CPU: 0 PID: 8825 Comm: syz-executor230 Not tainted 5.7.0-rc4-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:ipv6_addr_equal include/net/ipv6.h:579 [inline]
-RIP: 0010:xfrm6_addr_equal include/net/xfrm.h:1699 [inline]
-RIP: 0010:__xfrm6_tunnel_spi_lookup+0x22b/0x3b0 net/ipv6/xfrm6_tunnel.c:82
-Code: 89 e0 48 c1 e8 03 80 3c 28 00 0f 85 5b 01 00 00 4d 8b 24 24 4d 85 e4 74 53 e8 31 fa 7b fa 49 8d 7c 24 20 48 89 f8 48 c1 e8 03 <80> 3c 28 00 0f 85 2d 01 00 00 4d 8b 7c 24 20 49 8d 7c 24 28 48 89
-RSP: 0018:ffffc90001277580 EFLAGS: 00010202
-RAX: 0000000000000104 RBX: ffffffffffffffff RCX: ffffffff86f83788
-RDX: ffff8880947443c0 RSI: ffffffff86f8373f RDI: 0000000000000820
-RBP: dffffc0000000000 R08: 0000000000000001 R09: ffff888094744c90
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000800
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-FS:  000000000162d880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000180 CR3: 0000000098519000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- xfrm6_tunnel_spi_lookup+0x8a/0x1d0 net/ipv6/xfrm6_tunnel.c:95
- ipcomp6_tunnel_attach net/ipv6/ipcomp6.c:119 [inline]
- ipcomp6_init_state net/ipv6/ipcomp6.c:159 [inline]
- ipcomp6_init_state+0x1de/0x700 net/ipv6/ipcomp6.c:139
- __xfrm_init_state+0x9a6/0x14b0 net/xfrm/xfrm_state.c:2498
- xfrm_init_state+0x1a/0x70 net/xfrm/xfrm_state.c:2525
- pfkey_msg2xfrm_state net/key/af_key.c:1291 [inline]
- pfkey_add+0x1a10/0x2b70 net/key/af_key.c:1508
- pfkey_process+0x66d/0x7a0 net/key/af_key.c:2834
- pfkey_sendmsg+0x42d/0x800 net/key/af_key.c:3673
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ __nlmsg_parse include/net/netlink.h:661 [inline]
+ nlmsg_parse_deprecated include/net/netlink.h:706 [inline]
+ __tipc_nl_compat_dumpit+0x583/0x1290 net/tipc/netlink_compat.c:215
+ tipc_nl_compat_dumpit+0x761/0x910 net/tipc/netlink_compat.c:308
+ tipc_nl_compat_handle net/tipc/netlink_compat.c:1272 [inline]
+ tipc_nl_compat_recv+0x1382/0x2940 net/tipc/netlink_compat.c:1311
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:673 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:718 [inline]
+ genl_rcv_msg+0x20dc/0x2480 net/netlink/genetlink.c:735
+ netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2469
+ genl_rcv+0x63/0x80 net/netlink/genetlink.c:746
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1918
  sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x331/0x810 net/socket.c:2363
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2417
- __sys_sendmmsg+0x195/0x480 net/socket.c:2507
- __do_sys_sendmmsg net/socket.c:2536 [inline]
- __se_sys_sendmmsg net/socket.c:2533 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2533
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2362
+ ___sys_sendmsg net/socket.c:2416 [inline]
+ __sys_sendmsg+0x623/0x750 net/socket.c:2449
+ __do_sys_sendmsg net/socket.c:2458 [inline]
+ __se_sys_sendmsg+0x97/0xb0 net/socket.c:2456
+ __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2456
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x4403d9
-Code: Bad RIP value.
-RSP: 002b:00007ffeb96d2058 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004403d9
-RDX: 0000000000000393 RSI: 0000000020000180 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401be0
-R13: 0000000000401c70 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 224ae9c97b2f647b ]---
-RIP: 0010:ipv6_addr_equal include/net/ipv6.h:579 [inline]
-RIP: 0010:xfrm6_addr_equal include/net/xfrm.h:1699 [inline]
-RIP: 0010:__xfrm6_tunnel_spi_lookup+0x22b/0x3b0 net/ipv6/xfrm6_tunnel.c:82
-Code: 89 e0 48 c1 e8 03 80 3c 28 00 0f 85 5b 01 00 00 4d 8b 24 24 4d 85 e4 74 53 e8 31 fa 7b fa 49 8d 7c 24 20 48 89 f8 48 c1 e8 03 <80> 3c 28 00 0f 85 2d 01 00 00 4d 8b 7c 24 20 49 8d 7c 24 28 48 89
-RSP: 0018:ffffc90001277580 EFLAGS: 00010202
-RAX: 0000000000000104 RBX: ffffffffffffffff RCX: ffffffff86f83788
-RDX: ffff8880947443c0 RSI: ffffffff86f8373f RDI: 0000000000000820
-RBP: dffffc0000000000 R08: 0000000000000001 R09: ffff888094744c90
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000800
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-FS:  000000000162d880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000180 CR3: 0000000098519000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+RIP: 0033:0x444219
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b d8 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffded8626b8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002e0 RCX: 0000000000444219
+RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000003
+RBP: 00000000006ce018 R08: 00000000004002e0 R09: 00000000004002e0
+R10: 0000000000001900 R11: 0000000000000246 R12: 0000000000401ec0
+R13: 0000000000401f50 R14: 0000000000000000 R15: 0000000000000000
+
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
+ slab_alloc_node mm/slub.c:2802 [inline]
+ __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4436
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1083 [inline]
+ nlmsg_new include/net/netlink.h:888 [inline]
+ tipc_nl_compat_dumpit+0x6e4/0x910 net/tipc/netlink_compat.c:301
+ tipc_nl_compat_handle net/tipc/netlink_compat.c:1272 [inline]
+ tipc_nl_compat_recv+0x1382/0x2940 net/tipc/netlink_compat.c:1311
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:673 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:718 [inline]
+ genl_rcv_msg+0x20dc/0x2480 net/netlink/genetlink.c:735
+ netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2469
+ genl_rcv+0x63/0x80 net/netlink/genetlink.c:746
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2362
+ ___sys_sendmsg net/socket.c:2416 [inline]
+ __sys_sendmsg+0x623/0x750 net/socket.c:2449
+ __do_sys_sendmsg net/socket.c:2458 [inline]
+ __se_sys_sendmsg+0x97/0xb0 net/socket.c:2456
+ __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2456
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+=====================================================
 
 
 ---
