@@ -2,91 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB58A21E314
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BD8521E31E
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:41:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726376AbgGMWhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 18:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48612 "EHLO
+        id S1726748AbgGMWlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 18:41:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726345AbgGMWhI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 18:37:08 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E747CC061755;
-        Mon, 13 Jul 2020 15:37:07 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id h22so20034701lji.9;
-        Mon, 13 Jul 2020 15:37:07 -0700 (PDT)
+        with ESMTP id S1726347AbgGMWlP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 18:41:15 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E03BC061755;
+        Mon, 13 Jul 2020 15:41:15 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id z63so13886666qkb.8;
+        Mon, 13 Jul 2020 15:41:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=mQ68tEF0aXub5iTkGyZvUgZkxTf5PGYNz+vVCkZeKeA=;
-        b=WLA5fD3mWettYOszNS7xtt9QP1g/9387NvBjxwBoMEXdYnOkYKPhf8mhMrSQg+3gg1
-         r4RaNYM6Mn3vM4dBv9eSLwoHM7l0N5PoIvL1ndEPPBPGRjgSuFfiu+rLh9UlH7fqcMDb
-         wnWQvWSzSEQWaLFq623XuV1p27jWyzjiAUUcB/R66agrHTzLxDoJc9Gkn1xOHyVvkI+e
-         Z3ikYL14FnzdPEe2sP9FXX9JAankXjUcus47BNd6gB/cbiLNc4bqiPW5u7RGuVTcchqV
-         xiMq4BKMEYspn8DTDV80a3wjxhfN6BzAucEv2cQvcvYxQfta3vMz6qk4PEsrszolaIUo
-         mBQg==
+         :cc;
+        bh=c6CanqfySF4iLEaP47cgvG1KOQzCKk6opIIIQMoQVsg=;
+        b=ZRd8MvR8SS3lFEVOG/aW07WLjR3cAtxjYDA4hMSCjN+ZXS0lCldwFbRcrFqsiRk6GX
+         ho95C8CgDTaZS3HFxyHO1aj1z8t4kQYPO7SCtm5VTF6cP3ST3xt+DZf5t8Jrc6yV25K1
+         VCE/LPnhH+7ccs9bzvBISxd8KpVwq44Nk+y0ox/EVGckTXB0KsQlsEu6sCRt+pQshcUy
+         0X50tmL0NgHdDI7/FqC+Fs02WqLh91TeNFyOZ21vUK9qpEm7l/zMQZiDb7yDjzVo3nYr
+         YUVNrCz+EKrDNZYqau6mrhDK74aah9dYJ10IFMpg+r1cREZ5+48xLf9i4bhhfIdgLFDR
+         qnQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=mQ68tEF0aXub5iTkGyZvUgZkxTf5PGYNz+vVCkZeKeA=;
-        b=TDZiquwU0YSsd+ndE7fyw95a9nRl1m6AkSTf0S2YlZGPcO5VCmWhJOtf2FiOY/Svy0
-         OJlqTca493jXMmqXbjf8vCh95FdqsTRQVuxOI772L9JkVMjsJA3THDXW84ZjqXX4KTvr
-         +1tSj01V+QU+nHdhhlJyeskrS18VfUPjwOaiDMSf305toEn10XEhT6XhvWwoRHF7qfv3
-         tpa5ffSVtIMlUa62ShvOsg6p5fjK7R7oLUouf09232o75sFITHbZlDStriqnSKlQoHnU
-         mQB5EGkONNjo/kzWLEu/Y1nzgsmSV2i+r9sA5egmrI7IcXZ70MBs/r/cj+JJwF5QBg8/
-         upXg==
-X-Gm-Message-State: AOAM532aqga5VJoMNdKC3iTc8+Sx6bDj7ND0epolY/VEf6ZlrIuHDLeG
-        cULfqDWeDrmcs49vjmgosk8mCNTp9JfqxB5hGSOx2A==
-X-Google-Smtp-Source: ABdhPJyNmNXA+GXXH9sE4/otEBMaHF8EmiUo3j/qm1ogX7R4s2h82Hmil0zdX5bkeZsjjTN0b5vDQi5o5cwRRKyHrik=
-X-Received: by 2002:a2e:8357:: with SMTP id l23mr783491ljh.290.1594679826037;
- Mon, 13 Jul 2020 15:37:06 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=c6CanqfySF4iLEaP47cgvG1KOQzCKk6opIIIQMoQVsg=;
+        b=eQJxi/u3K6a3kBykEZXug7AeNAb6XZ3Rup9q2NznUn7hzHemKbdWwkC8Th3WbTgh+Q
+         5xqZYr9qIOlKp/EuhQvfqd5YYwLZyzq3i9LGmTJLceMBwHm8yOwvXHmUVDals17Hk085
+         IyJUoW6sA62AA20YvqcD/5HMFQjS1DdGVAT5iHsPAC5Tqd3Z8Qk3NdlLBJrUnWU2yL7b
+         QULSTNmme9AJ+/WCkZgFPeFmP3FPAslyw9jcMldOPe4OMRKybB2GMlWw2COzvMWmb3T6
+         iuA79H26QqUNRabtesFXXJ9BYSIRnGul9Pmg4mL0eVgHJtKCUw1R3O67JNMjP5sR7FBs
+         n3tA==
+X-Gm-Message-State: AOAM530mD+uMtPrbUUw2CC96hkS+xjeccgPachqPYmKj1rVTnTbpCNE7
+        dY5jpEK3b3tTQijwQOn0btg8IR/c5nVRZXkieWs=
+X-Google-Smtp-Source: ABdhPJwX4NcVyxh/LJb6QxgeP4QCz+5nkS+44G1x7ry7/PfTpKSdB3Ph0BYl35dH1XuZfj3hWUNv4C3uMGXTXBrPWDE=
+X-Received: by 2002:a37:270e:: with SMTP id n14mr1859086qkn.92.1594680074412;
+ Mon, 13 Jul 2020 15:41:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200708072835.4427-1-ciara.loftus@intel.com> <e9e077dd-5bb1-dbce-de2e-ed8f46ac9b75@intel.com>
-In-Reply-To: <e9e077dd-5bb1-dbce-de2e-ed8f46ac9b75@intel.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 13 Jul 2020 15:36:54 -0700
-Message-ID: <CAADnVQ+DxfG-Jee0F21-BtDHUQy=jRFWP1eAJPB+FJDKZs1W4A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] xsk: add new statistics
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Cc:     Ciara Loftus <ciara.loftus@intel.com>, bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Network Development <netdev@vger.kernel.org>
+References: <20200710224924.4087399-1-andriin@fb.com> <20200710224924.4087399-5-andriin@fb.com>
+ <7a68d9cc-f8dc-a11f-f1d4-7307519be866@gmail.com>
+In-Reply-To: <7a68d9cc-f8dc-a11f-f1d4-7307519be866@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 13 Jul 2020 15:41:03 -0700
+Message-ID: <CAEf4BzZw_1B8bafnxXThOvaAts5WFbE-mYgzM3f8ZMpwnedvHQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/7] bpf: implement BPF XDP link-specific
+ introspection APIs
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Jakub Kicinski <kicinski@fb.com>, Andrey Ignatov <rdna@fb.com>,
+        Takshak Chahande <ctakshak@fb.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 8, 2020 at 4:20 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com=
-> wrote:
+On Mon, Jul 13, 2020 at 7:32 AM David Ahern <dsahern@gmail.com> wrote:
 >
->
->
-> On 2020-07-08 09:28, Ciara Loftus wrote:
-> > This series introduces new statistics for af_xdp:
-> > 1. drops due to rx ring being full
-> > 2. drops due to fill ring being empty
-> > 3. failures pulling an item from the tx ring
+> On 7/10/20 4:49 PM, Andrii Nakryiko wrote:
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 025687120442..a9c634be8dd7 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -8973,6 +8973,35 @@ static void bpf_xdp_link_dealloc(struct bpf_link *link)
+> >       kfree(xdp_link);
+> >  }
 > >
-> > These statistics should assist users debugging and troubleshooting
-> > peformance issues and packet drops.
-> >
-> > The statistics are made available though the getsockopt and xsk_diag
-> > interfaces, and the ability to dump these extended statistics is made
-> > available in the xdpsock application via the --extra-stats or -x flag.
-> >
-> > A separate patch which will add ss/iproute2 support will follow.
-> >
+> > +static void bpf_xdp_link_show_fdinfo(const struct bpf_link *link,
+> > +                                  struct seq_file *seq)
+> > +{
+> > +     struct bpf_xdp_link *xdp_link = container_of(link, struct bpf_xdp_link, link);
+> > +     u32 ifindex = 0;
+> > +
+> > +     rtnl_lock();
+> > +     if (xdp_link->dev)
+> > +             ifindex = xdp_link->dev->ifindex;
+> > +     rtnl_unlock();
 >
-> +netdev
+> Patch 2 you set dev but don't hold a refcnt on it which is why you need
+> the locking here. How do you know that the dev pointer is even valid here?
 >
-> Thanks for working on this, Ciara!
->
-> For the series:
-> Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> If xdp_link is going to have dev reference you need to take the refcnt
+> and you need to handle NETDEV notifications to cleanup the bpf_link when
+> the device goes away.
 
-Applied. Thanks
+Here I'm following the approach taken for cgroup and netns, where we
+don't want to hold cgroup with extra refcnt (as well as netns for
+bpf_netns_link). The dev is guaranteed to be valid because
+dev_xdp_uninstall() will be called (under rtnl_lock) before net_device
+is removed/destroyed. dev_xdp_uninstall() is the only one that can set
+xdp_link->dev to NULL. So if we got rtnl_lock() and see non-NULL dev
+here, it means that at worst we are waiting on a rtnl lock in
+dev_xdp_uninstall() in a separate thread, and until this thread
+releases that lock, it's ok to query dev.
+
+Even if we do extra refcnt, due to dev_xdp_uninstall() which sets
+xdp_link->dev to NULL, any code (fill_info, show_fdinfo, update, etc)
+that does something with xdp_link->dev will have to take a lock
+anyways.
