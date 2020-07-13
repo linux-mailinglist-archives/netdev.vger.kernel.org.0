@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A404721D5BD
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 14:21:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D39021D5C5
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 14:22:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729657AbgGMMV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 08:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
+        id S1729774AbgGMMWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 08:22:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726586AbgGMMV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 08:21:28 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CFBC061755;
-        Mon, 13 Jul 2020 05:21:27 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id d1so195163plr.8;
-        Mon, 13 Jul 2020 05:21:27 -0700 (PDT)
+        with ESMTP id S1729594AbgGMMWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 08:22:37 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B7EC061755;
+        Mon, 13 Jul 2020 05:22:37 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id l63so5935903pge.12;
+        Mon, 13 Jul 2020 05:22:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=cki76ZmEeDDcGT7rOLoYZ50YvAXxj5RXIQZZO2QF6O4=;
-        b=Ui1qy4dt4DSLu3bIckG7hxqFXy1PzL+ug7fWHvwhMDFAezX4UqKH1diYFKWQ84CnjC
-         YU6uT9z3FFg05i45wRoGddN4yJgIo2l4YnnnzLEr2bxxbw1Pc+4MtJsdObrvlCzXv4eC
-         F5QdElblavwOP/75FdDQg/Lo0YatOB6pN76PYAD1xz7WJ599Gc1zp+OjmrajhZunsn/S
-         xDV6g22Ua2Vy8/c1GU3dQu/8AlMEFkbPhRPq2sjfl64Ks4GS0/fDoSpg1WFqWG5n9FC0
-         xhHxcYcIgrRqnan/yFXY3/T/HPaQTfFZ+xT3J10Fp3ZyNSSQaPUIo27y5gCkGCxHaMpJ
-         L3kg==
+        bh=0RMDbjaPD2Rgozcz6NNzoKM+l4091XQ9SNeTMWL0Djo=;
+        b=ppdYDAQatitZqfG1im4awtx1FD2ZWYLFRQ4caN3iGHDAnmexJuv1UdgtD7sIQ56iig
+         GS/uH9soZQseDl03wLejO4gbd9nP6oTvbTvKbN54kvarJ7E1iVirTNKwOj1t1GjaupEj
+         hVknIgqFmpYo9Ojr5PVhnroM9s39cUtPzXId76W1sJy/sVyKCRPyNv18WIHyEJ0/3vIi
+         7RCo4m1ru+NSmfsoysQT641FbqJnxQ3Z+eg9QLI//y3ihz8zHTfsYtnyk9jw3PT8PB7Z
+         ttolZHnBmeAHYC494ciIuw0GwhFMyWZU6BmUMNxD4bvTB69KMPSTlGU0Z7vuR5IB5Kh/
+         SSqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=cki76ZmEeDDcGT7rOLoYZ50YvAXxj5RXIQZZO2QF6O4=;
-        b=Uwm0e56D/lsMUFns/XsCPH9Q1PGbYMTbZDkX9j/Fn99wm+jxu76qWVecJxJ4GI/eU0
-         y201+8DCyLzGDx3Z+nAuRGJWeJohpstl/wSz/vLX3sBVuTkXrC3eKNHz9VrSSEXxlCWm
-         F6llY27lBGCFVphmyizDEWDB/6q6+P/lfW7JDarIxwo2BsC2p8SNCTNbuad19FRC7CA6
-         hz5YeBVqElhjt/nCqOWeFawGCf4i81ZCQRZuSG6RLfB0vbMTQCrvzJQRDjs71EO/111M
-         XdtobJouu9qzQUYkzeLupcD/35pbPqiNJMqRHZCjioHts0JprSLV93AiPvVlAuCaPcqS
-         VM5Q==
-X-Gm-Message-State: AOAM532JppgAXItoAq7dH9rMPCubQowFEWjRx6aMbAkDiMYxybCn5JX8
-        SUnC61fedXOucvwQ0uxPNXHI3JuEg0kHvg==
-X-Google-Smtp-Source: ABdhPJxWJipx8fidhaPOMIo5epQw8qjFksBqB91xP2EBRad1jlJxdbzfpzn3/HfqmFS5QDZvnre7DA==
-X-Received: by 2002:a17:90a:b901:: with SMTP id p1mr18254452pjr.134.1594642887495;
-        Mon, 13 Jul 2020 05:21:27 -0700 (PDT)
+        bh=0RMDbjaPD2Rgozcz6NNzoKM+l4091XQ9SNeTMWL0Djo=;
+        b=ZFVdQ53uVh7rMJY8Nyi+Q+IYOYNsQ+KuSWzriY2ZkqgoKdEelpBqUkNukvTMw9RWWF
+         FE77sIgaCSkjVCcC9fh/JXJcuoTFMLdGRlMek+URE0AKUH2bSUrR/mPFwKU4fA6xCoAT
+         hrbkRJwAympv/0IDvysWEqgdj395SB96i21CJR8BZ7QEJz/+W158+svj1G37u+bwU1s1
+         1HXJTIjIHYB5LIOrqXZeNotZasZzCEQaELBDoXQMqt6zLmsB+MjsATXyycnGaZXLAg8P
+         yDTagxkzjYYdp9ReJ30g5QjzsA6r3Chw1e9Ys7BuRVCzkARVWkB7yltfiPxfRYUql1xt
+         NDwA==
+X-Gm-Message-State: AOAM5305uigY8zc3DHOc6UhOHc/IqjxH+qIxpeDy14xOtv64vgNgJg9Y
+        EBNd5DYg/agBpiN5MLC0W4Gz01PZvVVBZw==
+X-Google-Smtp-Source: ABdhPJw8t3H2TIVAP/iCVBWVk67F2HutQVfsdtkW++vfH6Goo3lwW01UFXj5eDxTuDeQuD0JRh2yLw==
+X-Received: by 2002:a63:fc43:: with SMTP id r3mr69027673pgk.423.1594642956799;
+        Mon, 13 Jul 2020 05:22:36 -0700 (PDT)
 Received: from blackclown ([103.88.82.220])
-        by smtp.gmail.com with ESMTPSA id n63sm13022690pfd.209.2020.07.13.05.21.24
+        by smtp.gmail.com with ESMTPSA id z11sm14572417pfg.169.2020.07.13.05.22.33
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 13 Jul 2020 05:21:26 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 17:51:13 +0530
+        Mon, 13 Jul 2020 05:22:36 -0700 (PDT)
+Date:   Mon, 13 Jul 2020 17:52:22 +0530
 From:   Suraj Upadhyay <usuraj35@gmail.com>
 To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
         gregkh@linuxfoundation.org
 Cc:     netdev@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 5/6] staging: qlge: qlge_mpi: Simplify while statements.
-Message-ID: <6eb96e8c074bbdee3838b6421d25b50f1faffb3d.1594642213.git.usuraj35@gmail.com>
+Subject: [PATCH 6/6] staging: qlge: qlge_ethtool: Remove one byte memset.
+Message-ID: <b5eb87576cef4bf1b968481d6341013e6c7e9650.1594642213.git.usuraj35@gmail.com>
 References: <cover.1594642213.git.usuraj35@gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="T4sUOijqQbZv57TR"
+        protocol="application/pgp-signature"; boundary="/04w6evG8XlLl3ft"
 Content-Disposition: inline
 In-Reply-To: <cover.1594642213.git.usuraj35@gmail.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
@@ -68,154 +68,62 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---T4sUOijqQbZv57TR
+--/04w6evG8XlLl3ft
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Simplify while loops into more readable and simple for loops.
+Use direct assignment instead of using memset with just one byte as an
+argument.
+Issue found by checkpatch.pl.
 
 Signed-off-by: Suraj Upadhyay <usuraj35@gmail.com>
 ---
- drivers/staging/qlge/qlge_mpi.c | 32 +++++++++++++++-----------------
- 1 file changed, 15 insertions(+), 17 deletions(-)
+Hii Maintainers,
+	Please correct me if I am wrong here.
+---
 
-diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mp=
-i.c
-index fa178fc642a6..3b71e5fc2cd0 100644
---- a/drivers/staging/qlge/qlge_mpi.c
-+++ b/drivers/staging/qlge/qlge_mpi.c
-@@ -17,36 +17,34 @@ int ql_unpause_mpi_risc(struct ql_adapter *qdev)
- int ql_pause_mpi_risc(struct ql_adapter *qdev)
- {
- 	u32 tmp;
--	int count =3D UDELAY_COUNT;
-+	int count;
-=20
- 	/* Pause the RISC */
- 	ql_write32(qdev, CSR, CSR_CMD_SET_PAUSE);
--	do {
-+	for (count =3D UDELAY_COUNT; count; count--) {
- 		tmp =3D ql_read32(qdev, CSR);
- 		if (tmp & CSR_RP)
- 			break;
- 		mdelay(UDELAY_DELAY);
--		count--;
--	} while (count);
-+	}
- 	return (count =3D=3D 0) ? -ETIMEDOUT : 0;
+ drivers/staging/qlge/qlge_ethtool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/qlge/qlge_ethtool.c b/drivers/staging/qlge/qlg=
+e_ethtool.c
+index 16fcdefa9687..d44b2dae9213 100644
+--- a/drivers/staging/qlge/qlge_ethtool.c
++++ b/drivers/staging/qlge/qlge_ethtool.c
+@@ -516,8 +516,8 @@ static void ql_create_lb_frame(struct sk_buff *skb,
+ 	memset(skb->data, 0xFF, frame_size);
+ 	frame_size &=3D ~1;
+ 	memset(&skb->data[frame_size / 2], 0xAA, frame_size / 2 - 1);
+-	memset(&skb->data[frame_size / 2 + 10], 0xBE, 1);
+-	memset(&skb->data[frame_size / 2 + 12], 0xAF, 1);
++	skb->data[frame_size / 2 + 10] =3D (unsigned char)0xBE;
++	skb->data[frame_size / 2 + 12] =3D (unsigned char)0xAF;
  }
 =20
- int ql_hard_reset_mpi_risc(struct ql_adapter *qdev)
- {
- 	u32 tmp;
--	int count =3D UDELAY_COUNT;
-+	int count;
-=20
- 	/* Reset the RISC */
- 	ql_write32(qdev, CSR, CSR_CMD_SET_RST);
--	do {
-+	for (count =3D UDELAY_COUNT; count; count--) {
- 		tmp =3D ql_read32(qdev, CSR);
- 		if (tmp & CSR_RR) {
- 			ql_write32(qdev, CSR, CSR_CMD_CLR_RST);
- 			break;
- 		}
- 		mdelay(UDELAY_DELAY);
--		count--;
--	} while (count);
-+	}
- 	return (count =3D=3D 0) ? -ETIMEDOUT : 0;
- }
-=20
-@@ -147,15 +145,15 @@ static int ql_get_mb_sts(struct ql_adapter *qdev, str=
-uct mbox_params *mbcp)
-  */
- static int ql_wait_mbx_cmd_cmplt(struct ql_adapter *qdev)
- {
--	int count =3D 100;
-+	int count;
- 	u32 value;
-=20
--	do {
-+	for (count =3D 100; count; count--) {
- 		value =3D ql_read32(qdev, STS);
- 		if (value & STS_PI)
- 			return 0;
- 		mdelay(UDELAY_DELAY); /* 100ms */
--	} while (--count);
-+	}
- 	return -ETIMEDOUT;
- }
-=20
-@@ -913,10 +911,10 @@ int ql_mb_wol_set_magic(struct ql_adapter *qdev, u32 =
-enable_wol)
- static int ql_idc_wait(struct ql_adapter *qdev)
- {
- 	int status =3D -ETIMEDOUT;
--	long wait_time =3D 1 * HZ;
- 	struct mbox_params *mbcp =3D &qdev->idc_mbc;
-+	long wait_time;
-=20
--	do {
-+	for (wait_time =3D 1 * HZ; wait_time;) {
- 		/* Wait here for the command to complete
- 		 * via the IDC process.
- 		 */
-@@ -946,7 +944,7 @@ static int ql_idc_wait(struct ql_adapter *qdev)
- 			status =3D -EIO;
- 			break;
- 		}
--	} while (wait_time);
-+	}
-=20
- 	return status;
- }
-@@ -1079,18 +1077,18 @@ static int ql_mb_get_mgmnt_traffic_ctl(struct ql_ad=
-apter *qdev, u32 *control)
-=20
- int ql_wait_fifo_empty(struct ql_adapter *qdev)
- {
--	int count =3D 5;
-+	int count;
- 	u32 mgmnt_fifo_empty;
- 	u32 nic_fifo_empty;
-=20
--	do {
-+	for (count =3D 6; count; count--) {
- 		nic_fifo_empty =3D ql_read32(qdev, STS) & STS_NFE;
- 		ql_mb_get_mgmnt_traffic_ctl(qdev, &mgmnt_fifo_empty);
- 		mgmnt_fifo_empty &=3D MB_GET_MPI_TFK_FIFO_EMPTY;
- 		if (nic_fifo_empty && mgmnt_fifo_empty)
- 			return 0;
- 		msleep(100);
--	} while (count-- > 0);
-+	}
- 	return -ETIMEDOUT;
- }
-=20
+ void ql_check_lb_frame(struct ql_adapter *qdev,
 --=20
 2.17.1
 
 
---T4sUOijqQbZv57TR
+--/04w6evG8XlLl3ft
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEE7AbCa0kOsMJ4cx0j+gRsbIfe744FAl8MUbgACgkQ+gRsbIfe
-744j0BAAml5FSW/ygInduWmN/rnZuspzhKNrOe6M3jiw7lXtwmO1JLGN9oxZWn6+
-aOhiNR1ZL0/DdEESgNtdoOKPsKKX36ozZzvZtwrgH+NBqWzY4FgQqh92uENydYKZ
-vASJbd1WW5MvTl5FlRQJ6/8FQo3ZZZGOkwTXMT2Z+0KgiYoy1YQLIf+0wvU46BZ3
-XL8xl6b4a/OtXFuab0kJfDfa3NFYJQIoJuchs8ryArNPuIMKcNpEdLI1uaxTBPw4
-bCL0syflavmRZ1WrZbG4OPJTGwMiRH7sde9AXuuMXm91fD85zKRgvJ4NrNKL64XQ
-s9UpQSt2v2dRDyRcv4UMgoHTyTv9FTwRm8gHk2CoayFSiQcJqg8M9cPz0oFrmjis
-+8ys9vnr8kQ2C3bgZcf1G7VpwDH8qd9swbLYxPsQIMcTH6QAV4ZvZUB7X8zbwPxw
-p8Dx2xjo5pl3Fk7jt4RhQojPO7A+C2AmJvEbhFbitTEPi0pq+ED99hodaqQ8XFDF
-MX6HIXXq0JKSFv/8N+yzzDdV0pNOo8N0rMfudDYvvmW79kd2Uauu12SaqvWk7b2Y
-meEwJMutjYf/zPl3EEEdup20r/qUBgiITlczoFsBBTLTvtmQEziAGh+yXOXWisDv
-QGht9P45rOsI22yGPXCk7nktUmu6rWxQaNswpGD7tzzASY9uxeA=
-=YpMj
+iQIzBAABCgAdFiEE7AbCa0kOsMJ4cx0j+gRsbIfe744FAl8MUf4ACgkQ+gRsbIfe
+745MeA//eOPYUZZBvikSwuQ7vENTroFg8ffHtqpBbvzHEJA2XVt7DVijXmBYLAaR
+Le2O0Ytq+m5UiqehER9G6cHZaNa0094RPbJN9l/cuRwcdk/C68djuKXHUb4Y7Jbp
+Dq8obmx1k+PvJlxnXVYuT3731oKdVH9nmtOKtVa0np+Kk2qBugL7cxYGpQZdV8dw
+gfqr472+YOhZCfH3yjo2LqUQECmhsJaLLTn5yN7Y9Zok1UhgsBxF0jj7uh+545iW
+zuY/EfWmj2AmDA8YcwuqngQ80z6OFJZuxkRUEDDep860IVhWszgNaWEhVSgV8hb8
+e4ey6AeefyVzEhXg3j/1slrCkt++o0lRCuAEm49H5mMx/1qF3122Y8/OQH2P1RMo
+mK0Kvowu3wlS+pYsSfh8hLtpAcig2/lvuAB/GR9wmsS7uChNguuwtv7u41u2iwNR
+OQ+PJicb+IDOHo7qQ1LN7NHnseeFVwqBfeLfoX6O8zvQ6TpkWI+nfZwidLhWaAIP
+aGPqrA9yS/Bkg/J/uOtnQFNcMBzw36PS78yM/NNBQil6x5cp67zf2Gbjt3//xfmZ
+fT8yx4akaNZDd5lSjLZeN2ruDo65Kodp94ldBTNJm/rnrDzZphkLOlA6nXtzUtfb
+vcBY5NlTXg6nflu3SKQPCT4+mg8CB4MJBjl3Vs1FconaBmZxQGA=
+=DaQ8
 -----END PGP SIGNATURE-----
 
---T4sUOijqQbZv57TR--
+--/04w6evG8XlLl3ft--
