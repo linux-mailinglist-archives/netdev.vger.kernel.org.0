@@ -2,116 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E041F21DDE4
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:53:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B366021DE04
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729982AbgGMQxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 12:53:21 -0400
-Received: from smtp4.emailarray.com ([65.39.216.22]:34691 "EHLO
-        smtp4.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729659AbgGMQxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 12:53:21 -0400
-Received: (qmail 29801 invoked by uid 89); 13 Jul 2020 16:53:18 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
-  by smtp4.emailarray.com with SMTP; 13 Jul 2020 16:53:18 -0000
-Date:   Mon, 13 Jul 2020 09:53:15 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        A.Zema@falconvsystems.com
-Subject: Re: [PATCH bpf v2] xsk: fix memory leak and packet loss in Tx skb
- path
-Message-ID: <20200713165315.bmrvqmiiirtdixct@bsd-mbp>
-References: <1594363554-4076-1-git-send-email-magnus.karlsson@intel.com>
- <3e42533f-fb6e-d6fa-af48-cb7f5c70890b@iogearbox.net>
- <CAJ8uoz3WhJkqN2=D+VP+ikvY2_WTRx7Pcuihr_8qJiYh0DUtog@mail.gmail.com>
+        id S1729849AbgGMQ6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 12:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729644AbgGMQ6t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 12:58:49 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F24DC061755
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 09:58:49 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id o18so18023320eje.7
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 09:58:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3Se+RMC6PBBYO1KiXUzIQNpYowHDNutuTr29Ez5hrrI=;
+        b=VQ2a8g0rqjmUmCHSeyygSlPPNjv8wx3qIdnRZWPdk9YagmVWj1Azy0msQsxv/JGzCZ
+         ld1PGRIytdKtWKE1VtQ0M5YkE7Y4+AvPiaMobzBiqfXOlJnxSv51Zt340quVcBNaqEGC
+         HiS91VxRhoJt9eAkxIGmntlMZltEwp9yjJzYrpcdeH46C/AwnoEe1zykaxjEYd7wEwup
+         IRjzcK+uHLhy6c5q3+SY0//h55CHO+BVpMQQKy8VZdX9R+pjj/qzR1WnnQLjXFfSK48G
+         FJccWnTCrjSkS9djGZCyG0gMKh0iceWuQe0jDzRmrKpQPnFt8pjupnbkwElBvMnZOU6A
+         xykw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3Se+RMC6PBBYO1KiXUzIQNpYowHDNutuTr29Ez5hrrI=;
+        b=APUD/tCtoIu3dSsAXbYsYLHysaXj0OxKk4ad1KLd7z8lPB1IrS+yGziuA7RNq38uC4
+         v5LsWt5RBNQbvGtPmkaieP43hi5vxr5rzMgkT5eiCirNpG3NrZsLqwWzHUf2eh2DEW3o
+         FkIr6LmTyfCevzRfBO4FGHj2I5ORlyXJoPVL2tobjNr3Eaat5eqzDV2uzj8LrHbVv4L7
+         PKYxvQpH3E4QDxuGQUlVuDSxUTH2E7Pu9+CoXQXh6Sp9rGwSTvGSr0AsON2tRV0ck9W1
+         4F8YijOhLAMTo5TGkzU/PTipcf64yNN+zEUYpuZxQkj9QSKVOYCmyVoFkyWaGHO65f5L
+         DWMw==
+X-Gm-Message-State: AOAM533/sJtdeMpIaeVNP6XPAIy9rAp/zOT6RIWAM6syVh5J48jOpG4V
+        qbcE2RKssQyu4aJ1s31tdHRtWj3E
+X-Google-Smtp-Source: ABdhPJz7bo4DoW1/j0IgKtvXzsKNzILuCAnCBiRkBnQwRIqO9twUEmKwL4Ulfs/B/W9ABirbeS9ijQ==
+X-Received: by 2002:a17:906:1499:: with SMTP id x25mr641117ejc.406.1594659528000;
+        Mon, 13 Jul 2020 09:58:48 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id y1sm12986732ede.7.2020.07.13.09.58.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jul 2020 09:58:47 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, antoine.tenart@bootlin.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        madalin.bucur@oss.nxp.com, radu-andrei.bulie@nxp.com,
+        fido_max@inbox.ru
+Subject: [PATCH v4 net-next 00/11] New DSA driver for VSC9953 Seville switch
+Date:   Mon, 13 Jul 2020 19:57:00 +0300
+Message-Id: <20200713165711.2518150-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ8uoz3WhJkqN2=D+VP+ikvY2_WTRx7Pcuihr_8qJiYh0DUtog@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 11, 2020 at 09:39:58AM +0200, Magnus Karlsson wrote:
-> On Sat, Jul 11, 2020 at 1:28 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >
-> > Hi Magnus,
-> >
-> > On 7/10/20 8:45 AM, Magnus Karlsson wrote:
-> > > In the skb Tx path, transmission of a packet is performed with
-> > > dev_direct_xmit(). When QUEUE_STATE_FROZEN is set in the transmit
-> > > routines, it returns NETDEV_TX_BUSY signifying that it was not
-> > > possible to send the packet now, please try later. Unfortunately, the
-> > > xsk transmit code discarded the packet, missed to free the skb, and
-> > > returned EBUSY to the application. Fix this memory leak and
-> > > unnecessary packet loss, by not discarding the packet in the Tx ring,
-> > > freeing the allocated skb, and return EAGAIN. As EAGAIN is returned to the
-> > > application, it can then retry the send operation and the packet will
-> > > finally be sent as we will likely not be in the QUEUE_STATE_FROZEN
-> > > state anymore. So EAGAIN tells the application that the packet was not
-> > > discarded from the Tx ring and that it needs to call send()
-> > > again. EBUSY, on the other hand, signifies that the packet was not
-> > > sent and discarded from the Tx ring. The application needs to put the
-> > > packet on the Tx ring again if it wants it to be sent.
-> > >
-> > > Fixes: 35fcde7f8deb ("xsk: support for Tx")
-> > > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > > Reported-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-> > > Suggested-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-> > > ---
-> > > The v1 of this patch was called "xsk: do not discard packet when
-> > > QUEUE_STATE_FROZEN".
-> > > ---
-> > >   net/xdp/xsk.c | 13 +++++++++++--
-> > >   1 file changed, 11 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > > index 3700266..5304250 100644
-> > > --- a/net/xdp/xsk.c
-> > > +++ b/net/xdp/xsk.c
-> > > @@ -376,13 +376,22 @@ static int xsk_generic_xmit(struct sock *sk)
-> > >               skb->destructor = xsk_destruct_skb;
-> > >
-> > >               err = dev_direct_xmit(skb, xs->queue_id);
-> > > -             xskq_cons_release(xs->tx);
-> > >               /* Ignore NET_XMIT_CN as packet might have been sent */
-> > > -             if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
-> > > +             if (err == NET_XMIT_DROP) {
-> > >                       /* SKB completed but not sent */
-> > > +                     xskq_cons_release(xs->tx);
-> > >                       err = -EBUSY;
-> > >                       goto out;
-> > > +             } else if  (err == NETDEV_TX_BUSY) {
-> > > +                     /* QUEUE_STATE_FROZEN, tell application to
-> > > +                      * retry sending the packet
-> > > +                      */
-> > > +                     skb->destructor = NULL;
-> > > +                     kfree_skb(skb);
-> > > +                     err = -EAGAIN;
-> > > +                     goto out;
-> >
-> > Hmm, I'm probably missing something or I should blame my current lack of coffee,
-> > but I'll ask anyway.. What is the relation here to the kfree_skb{,_list}() in
-> > dev_direct_xmit() when we have NETDEV_TX_BUSY condition? Wouldn't the patch above
-> > double-free with NETDEV_TX_BUSY?
-> 
-> I think you are correct even without coffee :-). I misinterpreted the
-> following piece of code in dev_direct_xmit():
-> 
-> if (!dev_xmit_complete(ret))
->      kfree_skb(skb);
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-I did look carefuly at this, but apparently forgot about the "!" part of
-the conditional while looking at dev_xmit_complete() internals:
+Looking at the Felix and Ocelot drivers, Maxim asked if it would be
+possible to use them as a base for a new driver for the Seville switch
+inside NXP T1040. Turns out, it is! The result is that the mscc_felix
+driver was extended to probe on Seville.
 
-    return (NETDEV_TX_BUSY < NET_XMIT_MASK)
-    return (0x10 < 0x0f)
-    return false;
+The biggest challenge seems to be getting register read/write API
+generic enough to cover such wild bitfield variations between hardware
+generations.
+
+Currently, both felix and seville are built under the same kernel config
+option (NET_DSA_MSCC_FELIX). This has both some advantages (no need to
+duplicate the Lynx PCS code from felix_vsc9959.c) and some disadvantages
+(Seville needs to depend on PCI and on ENETC_MDIO). This will be further
+refined as time progresses.
+
+The driver has been completely reviewed. Previous submission was here,
+it wasn't accepted due to a conflict with Mark Brown's tree, very late
+in the release cycle:
+
+https://patchwork.ozlabs.org/project/netdev/cover/20200531122640.1375715-1-olteanv@gmail.com/
+
+So this is more of a repost, with the only changes being related to
+rebasing on top of the cleanup I had to do in Ocelot.
+
+Maxim Kochetkov (4):
+  soc: mscc: ocelot: add MII registers description
+  net: mscc: ocelot: convert SYS_PAUSE_CFG register access to regfield
+  net: mscc: ocelot: extend watermark encoding function
+  net: dsa: felix: introduce support for Seville VSC9953 switch
+
+Vladimir Oltean (7):
+  net: mscc: ocelot: convert port registers to regmap
+  net: mscc: ocelot: convert QSYS_SWITCH_PORT_MODE and SYS_PORT_MODE to
+    regfields
+  net: dsa: felix: create a template for the DSA tags on xmit
+  net: mscc: ocelot: split writes to pause frame enable bit and to
+    thresholds
+  net: mscc: ocelot: disable flow control on NPI interface
+  net: dsa: felix: move probing to felix_vsc9959.c
+  docs: devicetree: add bindings for Seville DSA switch inside Felix
+    driver
+
+ .../devicetree/bindings/net/dsa/ocelot.txt    |  105 +-
+ drivers/net/dsa/ocelot/Kconfig                |   12 +-
+ drivers/net/dsa/ocelot/Makefile               |    3 +-
+ drivers/net/dsa/ocelot/felix.c                |  232 +---
+ drivers/net/dsa/ocelot/felix.h                |   28 +-
+ drivers/net/dsa/ocelot/felix_vsc9959.c        |  303 ++++-
+ drivers/net/dsa/ocelot/seville_vsc9953.c      | 1104 +++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot.c            |   73 +-
+ drivers/net/ethernet/mscc/ocelot.h            |    9 +-
+ drivers/net/ethernet/mscc/ocelot_io.c         |   18 +-
+ drivers/net/ethernet/mscc/ocelot_net.c        |    5 +-
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c    |   82 +-
+ include/soc/mscc/ocelot.h                     |   68 +-
+ include/soc/mscc/ocelot_dev.h                 |   78 --
+ include/soc/mscc/ocelot_qsys.h                |   13 -
+ include/soc/mscc/ocelot_sys.h                 |   23 -
+ net/dsa/tag_ocelot.c                          |   21 +-
+ 17 files changed, 1767 insertions(+), 410 deletions(-)
+ create mode 100644 drivers/net/dsa/ocelot/seville_vsc9953.c
+
 -- 
-Jonathan
+2.25.1
+
