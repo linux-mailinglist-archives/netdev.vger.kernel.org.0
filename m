@@ -2,78 +2,792 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10EB721D7B8
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 16:02:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A7A521D844
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 16:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729806AbgGMOCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 10:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729659AbgGMOCV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 10:02:21 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336B5C061755
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 07:02:21 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1juz2B-0008E9-C5; Mon, 13 Jul 2020 16:02:19 +0200
-Date:   Mon, 13 Jul 2020 16:02:19 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Stefano Brivio <sbrivio@redhat.com>, netdev@vger.kernel.org,
-        aconole@redhat.com
-Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
- discovery on encap sockets
-Message-ID: <20200713140219.GM32005@breakpoint.cc>
-References: <20200712200705.9796-1-fw@strlen.de>
- <20200712200705.9796-2-fw@strlen.de>
- <20200713003813.01f2d5d3@elisabeth>
- <20200713080413.GL32005@breakpoint.cc>
- <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
+        id S1730117AbgGMOVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 10:21:15 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7297 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729659AbgGMOVN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 10:21:13 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 4FC70808D9BE47FAB2AA;
+        Mon, 13 Jul 2020 22:05:44 +0800 (CST)
+Received: from localhost.localdomain (10.175.118.36) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 13 Jul 2020 22:05:35 +0800
+From:   Luo bin <luobin9@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
+        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>
+Subject: [PATCH net-next v1] hinic: add firmware update support
+Date:   Mon, 13 Jul 2020 22:05:22 +0800
+Message-ID: <20200713140522.14600-1-luobin9@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.175.118.36]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> wrote:
-> On 7/13/20 2:04 AM, Florian Westphal wrote:
-> >> As PMTU discovery happens, we have a route exception on the lower
-> >> layer for the given path, and we know that VXLAN will use that path,
-> >> so we also know there's no point in having a higher MTU on the VXLAN
-> >> device, it's really the maximum packet size we can use.
-> > No, in the setup that prompted this series the route exception is wrong.
-> 
-> Why is the exception wrong and why can't the exception code be fixed to
-> include tunnel headers?
+add support to update firmware by the devlink flashing API
 
-I don't know.  This occurs in a 3rd party (read: "cloud") environment.
-After some days, tcp connections on the overlay network hang.
+Signed-off-by: Luo bin <luobin9@huawei.com>
+---
+V0~V1: remove the implementation from ethtool to devlink
 
-Flushing the route exception in the namespace of the vxlan interface makes
-the traffic flow again, i.e. if the vxlan tunnel would just use the
-physical devices MTU things would be fine.
+ drivers/net/ethernet/huawei/hinic/Makefile    |   2 +-
+ drivers/net/ethernet/huawei/hinic/hinic_dev.h |   1 +
+ .../net/ethernet/huawei/hinic/hinic_devlink.c | 325 ++++++++++++++++++
+ .../net/ethernet/huawei/hinic/hinic_devlink.h | 115 +++++++
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.c  |  28 ++
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.h  |  34 ++
+ .../net/ethernet/huawei/hinic/hinic_hw_mgmt.h |   4 +-
+ .../net/ethernet/huawei/hinic/hinic_main.c    |  28 +-
+ .../net/ethernet/huawei/hinic/hinic_port.h    |  25 ++
+ 9 files changed, 558 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+ create mode 100644 drivers/net/ethernet/huawei/hinic/hinic_devlink.h
 
-I don't know what you mean by 'fix exception code to include tunnel
-headers'.  Can you elaborate?
+diff --git a/drivers/net/ethernet/huawei/hinic/Makefile b/drivers/net/ethernet/huawei/hinic/Makefile
+index 32a011ca44c3..67b59d0ba769 100644
+--- a/drivers/net/ethernet/huawei/hinic/Makefile
++++ b/drivers/net/ethernet/huawei/hinic/Makefile
+@@ -4,4 +4,4 @@ obj-$(CONFIG_HINIC) += hinic.o
+ hinic-y := hinic_main.o hinic_tx.o hinic_rx.o hinic_port.o hinic_hw_dev.o \
+ 	   hinic_hw_io.o hinic_hw_qp.o hinic_hw_cmdq.o hinic_hw_wq.o \
+ 	   hinic_hw_mgmt.o hinic_hw_api_cmd.o hinic_hw_eqs.o hinic_hw_if.o \
+-	   hinic_common.o hinic_ethtool.o hinic_hw_mbox.o hinic_sriov.o
++	   hinic_common.o hinic_ethtool.o hinic_devlink.o hinic_hw_mbox.o hinic_sriov.o
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+index 9adb755f0820..f0b5c2849f7a 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
+@@ -97,6 +97,7 @@ struct hinic_dev {
+ 	int				lb_test_rx_idx;
+ 	int				lb_pkt_len;
+ 	u8				*lb_test_rx_buf;
++	struct devlink			*devlink;
+ };
+ 
+ #endif
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+new file mode 100644
+index 000000000000..21467be61161
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+@@ -0,0 +1,325 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Huawei HiNIC PCI Express Linux driver
++ * Copyright(c) 2017 Huawei Technologies Co., Ltd
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++ * for more details.
++ *
++ */
++#include <linux/netlink.h>
++#include <net/devlink.h>
++#include <linux/firmware.h>
++
++#include "hinic_dev.h"
++#include "hinic_port.h"
++#include "hinic_devlink.h"
++
++static bool check_image_valid(struct hinic_dev *nic_dev, const u8 *buf,
++			      u32 image_size, struct host_image_st *host_image)
++{
++	struct fw_image_st *fw_image = NULL;
++	u32 len = 0;
++	u32 i;
++
++	fw_image = (struct fw_image_st *)buf;
++
++	if (fw_image->fw_magic != HINIC_MAGIC_NUM) {
++		dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Wrong fw_magic read from file, fw_magic: 0x%x\n",
++			fw_image->fw_magic);
++		return false;
++	}
++
++	if (fw_image->fw_info.fw_section_cnt > MAX_FW_TYPE_NUM) {
++		dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Wrong fw_type_num read from file, fw_type_num: 0x%x\n",
++			fw_image->fw_info.fw_section_cnt);
++		return false;
++	}
++
++	for (i = 0; i < fw_image->fw_info.fw_section_cnt; i++) {
++		len += fw_image->fw_section_info[i].fw_section_len;
++		memcpy(&host_image->image_section_info[i],
++		       &fw_image->fw_section_info[i],
++		       sizeof(struct fw_section_info_st));
++	}
++
++	if (len != fw_image->fw_len ||
++	    (fw_image->fw_len + UPDATEFW_IMAGE_HEAD_SIZE) != image_size) {
++		dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Wrong data size read from file\n");
++		return false;
++	}
++
++	host_image->image_info.up_total_len = fw_image->fw_len;
++	host_image->image_info.fw_version = fw_image->fw_version;
++	host_image->section_type_num = fw_image->fw_info.fw_section_cnt;
++	host_image->device_id = fw_image->device_id;
++
++	return true;
++}
++
++static bool check_image_integrity(struct hinic_dev *nic_dev,
++				  struct host_image_st *host_image,
++				  u32 update_type)
++{
++	u32 collect_section_type = 0;
++	u32 i, type;
++
++	for (i = 0; i < host_image->section_type_num; i++) {
++		type = host_image->image_section_info[i].fw_section_type;
++		if (collect_section_type & (1U << type)) {
++			dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Duplicate section type: %u\n",
++				type);
++			return false;
++		}
++		collect_section_type |= (1U << type);
++	}
++
++	if (update_type == FW_UPDATE_COLD &&
++	    (((collect_section_type & _IMAGE_COLD_SUB_MODULES_MUST_IN) ==
++	       _IMAGE_COLD_SUB_MODULES_MUST_IN) ||
++	      collect_section_type == _IMAGE_CFG_SUB_MODULES_MUST_IN))
++		return true;
++
++	if (update_type == FW_UPDATE_HOT &&
++	    (collect_section_type & _IMAGE_HOT_SUB_MODULES_MUST_IN) ==
++	    _IMAGE_HOT_SUB_MODULES_MUST_IN)
++		return true;
++
++	if (update_type == FW_UPDATE_COLD)
++		dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Check file integrity failed, valid: 0x%x or 0x%lx, current: 0x%x\n",
++			_IMAGE_COLD_SUB_MODULES_MUST_IN,
++			_IMAGE_CFG_SUB_MODULES_MUST_IN, collect_section_type);
++	else
++		dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Check file integrity failed, valid:0x%x, current: 0x%x\n",
++			_IMAGE_HOT_SUB_MODULES_MUST_IN, collect_section_type);
++
++	return false;
++}
++
++static int check_image_device_type(struct hinic_dev *nic_dev,
++				   u32 image_device_type)
++{
++	struct hinic_comm_board_info board_info = {0};
++
++	if (image_device_type) {
++		if (!hinic_get_board_info(nic_dev->hwdev, &board_info)) {
++			if (image_device_type == board_info.info.board_type)
++				return true;
++
++			dev_err(&nic_dev->hwdev->hwif->pdev->dev, "The device type of upgrade file doesn't match the device type of current firmware, please check the upgrade file\n");
++			dev_err(&nic_dev->hwdev->hwif->pdev->dev, "The image device type: 0x%x, firmware device type: 0x%x\n",
++				image_device_type, board_info.info.board_type);
++
++			return false;
++		}
++	}
++
++	return false;
++}
++
++static int hinic_flash_fw(struct hinic_dev *nic_dev, const u8 *data,
++			  struct host_image_st *host_image, u32 boot_flag)
++{
++	u32 section_remain_send_len, send_fragment_len, send_pos, up_total_len;
++	struct hinic_cmd_update_fw *fw_update_msg = NULL;
++	u32 section_type, section_crc, section_version;
++	u32 i, len, section_len, section_offset;
++	u16 out_size = sizeof(*fw_update_msg);
++	int total_len_flag = 0;
++	int err;
++
++	fw_update_msg = kzalloc(sizeof(*fw_update_msg), GFP_KERNEL);
++
++	up_total_len = host_image->image_info.up_total_len;
++
++	if (!boot_flag) {
++		for (i = 0; i < host_image->section_type_num; i++) {
++			len = host_image->image_section_info[i].fw_section_len;
++			if (host_image->image_section_info[i].fw_section_type ==
++			    UP_FW_UPDATE_BOOT) {
++				up_total_len = up_total_len - len;
++				break;
++			}
++		}
++	}
++
++	for (i = 0; i < host_image->section_type_num; i++) {
++		section_len =
++			host_image->image_section_info[i].fw_section_len;
++		section_offset =
++			host_image->image_section_info[i].fw_section_offset;
++		section_remain_send_len = section_len;
++		section_type =
++			host_image->image_section_info[i].fw_section_type;
++		section_crc = host_image->image_section_info[i].fw_section_crc;
++		section_version =
++			host_image->image_section_info[i].fw_section_version;
++
++		if (!boot_flag && section_type == UP_FW_UPDATE_BOOT)
++			continue;
++
++		send_fragment_len = 0;
++		send_pos = 0;
++
++		while (section_remain_send_len > 0) {
++			if (!total_len_flag) {
++				fw_update_msg->total_len = up_total_len;
++				total_len_flag = 1;
++			} else {
++				fw_update_msg->total_len = 0;
++			}
++
++			memset(fw_update_msg->data, 0, MAX_FW_FRAGMENT_LEN);
++
++			fw_update_msg->ctl_info.SF =
++				(section_remain_send_len == section_len) ?
++				true : false;
++			fw_update_msg->section_info.FW_section_CRC = section_crc;
++			fw_update_msg->fw_section_version = section_version;
++			fw_update_msg->ctl_info.flag = UP_TYPE_A;
++
++			if (section_type <= UP_FW_UPDATE_UP_DATA_B) {
++				fw_update_msg->section_info.FW_section_type =
++					(section_type % 2) ?
++					UP_FW_UPDATE_UP_DATA :
++					UP_FW_UPDATE_UP_TEXT;
++
++				fw_update_msg->ctl_info.flag = UP_TYPE_B;
++				if (section_type <= UP_FW_UPDATE_UP_DATA_A)
++					fw_update_msg->ctl_info.flag = UP_TYPE_A;
++			} else {
++				fw_update_msg->section_info.FW_section_type =
++					section_type - 0x2;
++			}
++
++			fw_update_msg->setion_total_len = section_len;
++			fw_update_msg->section_offset = send_pos;
++
++			if (section_remain_send_len <= MAX_FW_FRAGMENT_LEN) {
++				fw_update_msg->ctl_info.SL = true;
++				fw_update_msg->ctl_info.fragment_len =
++					section_remain_send_len;
++				send_fragment_len += section_remain_send_len;
++			} else {
++				fw_update_msg->ctl_info.SL = false;
++				fw_update_msg->ctl_info.fragment_len =
++					MAX_FW_FRAGMENT_LEN;
++				send_fragment_len += MAX_FW_FRAGMENT_LEN;
++			}
++
++			memcpy(fw_update_msg->data,
++			       data + UPDATEFW_IMAGE_HEAD_SIZE +
++			       section_offset + send_pos,
++			       fw_update_msg->ctl_info.fragment_len);
++
++			err = hinic_port_msg_cmd(nic_dev->hwdev,
++						 HINIC_PORT_CMD_UPDATE_FW,
++						 fw_update_msg,
++						 sizeof(*fw_update_msg),
++						 fw_update_msg, &out_size);
++			if (err || !out_size || fw_update_msg->status) {
++				dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Failed to update firmware, err: %d, status: 0x%x, out size: 0x%x\n",
++					err, fw_update_msg->status, out_size);
++				err = fw_update_msg->status ?
++					fw_update_msg->status : -EIO;
++				kfree(fw_update_msg);
++				return err;
++			}
++
++			send_pos = send_fragment_len;
++			section_remain_send_len = section_len -
++						  send_fragment_len;
++		}
++	}
++
++	kfree(fw_update_msg);
++
++	return 0;
++}
++
++static int hinic_firmware_update(struct hinic_dev *nic_dev,
++				 const struct firmware *fw)
++{
++	struct host_image_st host_image;
++	int err;
++
++	memset(&host_image, 0, sizeof(struct host_image_st));
++
++	if (!check_image_valid(nic_dev, fw->data, fw->size, &host_image) ||
++	    !check_image_integrity(nic_dev, &host_image, FW_UPDATE_COLD) ||
++	    !check_image_device_type(nic_dev, host_image.device_id))
++		return -EINVAL;
++
++	dev_info(&nic_dev->hwdev->hwif->pdev->dev, "Flash firmware begin\n");
++
++	err = hinic_flash_fw(nic_dev, fw->data, &host_image, 0);
++	if (err) {
++		if (err == HINIC_FW_DISMATCH_ERROR)
++			dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Firmware image doesn't match this card, please use newer image, err: %d\n",
++				err);
++		else
++			dev_err(&nic_dev->hwdev->hwif->pdev->dev, "Send firmware image data failed, err: %d\n",
++				err);
++		return err;
++	}
++
++	dev_info(&nic_dev->hwdev->hwif->pdev->dev, "Flash firmware end\n");
++
++	return 0;
++}
++
++static int hinic_devlink_flash_update(struct devlink *devlink,
++				      const char *file_name,
++				      const char *component,
++				      struct netlink_ext_ack *extack)
++{
++	struct hinic_dev *nic_dev = devlink_priv(devlink);
++	const struct firmware *fw;
++	int err;
++
++	if (component)
++		return -EOPNOTSUPP;
++
++	err = request_firmware_direct(&fw, file_name,
++				      &nic_dev->hwdev->hwif->pdev->dev);
++	if (err)
++		return err;
++
++	err = hinic_firmware_update(nic_dev, fw);
++	release_firmware(fw);
++
++	return err;
++}
++
++static const struct devlink_ops hinic_devlink_ops = {
++	.flash_update = hinic_devlink_flash_update,
++};
++
++struct devlink *hinic_devlink_alloc(void)
++{
++	return devlink_alloc(&hinic_devlink_ops, sizeof(struct hinic_dev));
++}
++
++void hinic_devlink_free(struct devlink *devlink)
++{
++	devlink_free(devlink);
++}
++
++int hinic_devlink_register(struct devlink *devlink, struct device *dev)
++{
++	int err;
++
++	err = devlink_register(devlink, dev);
++
++	return err;
++}
++
++void hinic_devlink_unregister(struct devlink *devlink)
++{
++	devlink_unregister(devlink);
++}
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_devlink.h b/drivers/net/ethernet/huawei/hinic/hinic_devlink.h
+new file mode 100644
+index 000000000000..604e95a7c5ce
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/hinic/hinic_devlink.h
+@@ -0,0 +1,115 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Huawei HiNIC PCI Express Linux driver
++ * Copyright(c) 2017 Huawei Technologies Co., Ltd
++ */
++
++#ifndef __HINIC_DEVLINK_H__
++#define __HINIC_DEVLINK_H__
++
++#include <net/devlink.h>
++
++#define MAX_FW_TYPE_NUM 30
++#define HINIC_MAGIC_NUM 0x18221100
++#define UPDATEFW_IMAGE_HEAD_SIZE 1024
++#define FW_UPDATE_COLD 0
++#define FW_UPDATE_HOT  1
++
++#define UP_TYPE_A 0x0
++#define UP_TYPE_B 0x1
++
++#define MAX_FW_FRAGMENT_LEN 1536
++#define HINIC_FW_DISMATCH_ERROR 10
++
++enum hinic_fw_type {
++	UP_FW_UPDATE_UP_TEXT_A = 0x0,
++	UP_FW_UPDATE_UP_DATA_A,
++	UP_FW_UPDATE_UP_TEXT_B,
++	UP_FW_UPDATE_UP_DATA_B,
++	UP_FW_UPDATE_UP_DICT,
++
++	UP_FW_UPDATE_HLINK_ONE = 0x5,
++	UP_FW_UPDATE_HLINK_TWO,
++	UP_FW_UPDATE_HLINK_THR,
++	UP_FW_UPDATE_PHY,
++	UP_FW_UPDATE_TILE_TEXT,
++
++	UP_FW_UPDATE_TILE_DATA = 0xa,
++	UP_FW_UPDATE_TILE_DICT,
++	UP_FW_UPDATE_PPE_STATE,
++	UP_FW_UPDATE_PPE_BRANCH,
++	UP_FW_UPDATE_PPE_EXTACT,
++
++	UP_FW_UPDATE_CLP_LEGACY = 0xf,
++	UP_FW_UPDATE_PXE_LEGACY,
++	UP_FW_UPDATE_ISCSI_LEGACY,
++	UP_FW_UPDATE_CLP_EFI,
++	UP_FW_UPDATE_PXE_EFI,
++
++	UP_FW_UPDATE_ISCSI_EFI = 0x14,
++	UP_FW_UPDATE_CFG,
++	UP_FW_UPDATE_BOOT,
++	UP_FW_UPDATE_VPD,
++	FILE_TYPE_TOTAL_NUM
++};
++
++#define _IMAGE_UP_ALL_IN ((1 << UP_FW_UPDATE_UP_TEXT_A) | \
++			  (1 << UP_FW_UPDATE_UP_DATA_A) | \
++			  (1 << UP_FW_UPDATE_UP_TEXT_B) | \
++			  (1 << UP_FW_UPDATE_UP_DATA_B) | \
++			  (1 << UP_FW_UPDATE_UP_DICT) | \
++			  (1 << UP_FW_UPDATE_BOOT) | \
++			  (1 << UP_FW_UPDATE_HLINK_ONE) | \
++			  (1 << UP_FW_UPDATE_HLINK_TWO) | \
++			  (1 << UP_FW_UPDATE_HLINK_THR))
++
++#define _IMAGE_UCODE_ALL_IN ((1 << UP_FW_UPDATE_TILE_TEXT) | \
++			     (1 << UP_FW_UPDATE_TILE_DICT) | \
++			     (1 << UP_FW_UPDATE_PPE_STATE) | \
++			     (1 << UP_FW_UPDATE_PPE_BRANCH) | \
++			     (1 << UP_FW_UPDATE_PPE_EXTACT))
++
++#define _IMAGE_COLD_SUB_MODULES_MUST_IN (_IMAGE_UP_ALL_IN | _IMAGE_UCODE_ALL_IN)
++#define _IMAGE_HOT_SUB_MODULES_MUST_IN (_IMAGE_UP_ALL_IN | _IMAGE_UCODE_ALL_IN)
++#define _IMAGE_CFG_SUB_MODULES_MUST_IN BIT(UP_FW_UPDATE_CFG)
++#define UP_FW_UPDATE_UP_TEXT  0x0
++#define UP_FW_UPDATE_UP_DATA  0x1
++#define UP_FW_UPDATE_VPD_B    0x15
++
++struct fw_section_info_st {
++	u32 fw_section_len;
++	u32 fw_section_offset;
++	u32 fw_section_version;
++	u32 fw_section_type;
++	u32 fw_section_crc;
++};
++
++struct fw_image_st {
++	u32 fw_version;
++	u32 fw_len;
++	u32 fw_magic;
++	struct {
++		u32 fw_section_cnt:16;
++		u32 resd:16;
++	} fw_info;
++	struct fw_section_info_st fw_section_info[MAX_FW_TYPE_NUM];
++	u32 device_id;
++	u32 res[101];
++	void *bin_data;
++};
++
++struct host_image_st {
++	struct fw_section_info_st image_section_info[MAX_FW_TYPE_NUM];
++	struct {
++		u32 up_total_len;
++		u32 fw_version;
++	} image_info;
++	u32 section_type_num;
++	u32 device_id;
++};
++
++struct devlink *hinic_devlink_alloc(void);
++void hinic_devlink_free(struct devlink *devlink);
++int hinic_devlink_register(struct devlink *devlink, struct device *dev);
++void hinic_devlink_unregister(struct devlink *devlink);
++
++#endif /* __HINIC_DEVLINK_H__ */
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+index 47c60d9752e4..9831c14324e6 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+@@ -897,6 +897,8 @@ void hinic_free_hwdev(struct hinic_hwdev *hwdev)
+ 
+ 	set_resources_state(hwdev, HINIC_RES_CLEAN);
+ 
++	hinic_vf_func_free(hwdev);
++
+ 	free_pfhwdev(pfhwdev);
+ 
+ 	hinic_aeqs_free(&hwdev->aeqs);
+@@ -1047,3 +1049,29 @@ void hinic_hwdev_set_msix_state(struct hinic_hwdev *hwdev, u16 msix_index,
+ {
+ 	hinic_set_msix_state(hwdev->hwif, msix_index, flag);
+ }
++
++int hinic_get_board_info(struct hinic_hwdev *hwdev,
++			 struct hinic_comm_board_info *board_info)
++{
++	u16 out_size = sizeof(*board_info);
++	struct hinic_pfhwdev *pfhwdev;
++	int err;
++
++	if (!hwdev || !board_info)
++		return -EINVAL;
++
++	pfhwdev = container_of(hwdev, struct hinic_pfhwdev, hwdev);
++
++	err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
++				HINIC_COMM_CMD_GET_BOARD_INFO,
++				board_info, sizeof(*board_info),
++				board_info, &out_size, HINIC_MGMT_MSG_SYNC);
++	if (err || board_info->status || !out_size) {
++		dev_err(&hwdev->hwif->pdev->dev,
++			"Failed to get board info, err: %d, status: 0x%x, out size: 0x%x\n",
++			err, board_info->status, out_size);
++		return -EIO;
++	}
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
+index 958ea1a6a60d..94593a8ad667 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
+@@ -116,6 +116,8 @@ enum hinic_port_cmd {
+ 
+ 	HINIC_PORT_CMD_SET_TSO          = 112,
+ 
++	HINIC_PORT_CMD_UPDATE_FW	= 114,
++
+ 	HINIC_PORT_CMD_SET_RQ_IQ_MAP	= 115,
+ 
+ 	HINIC_PORT_CMD_LINK_STATUS_REPORT = 160,
+@@ -307,6 +309,35 @@ struct hinic_msix_config {
+ 	u8	rsvd1[3];
+ };
+ 
++struct hinic_board_info {
++	u32	board_type;
++	u32	port_num;
++	u32	port_speed;
++	u32	pcie_width;
++	u32	host_num;
++	u32	pf_num;
++	u32	vf_total_num;
++	u32	tile_num;
++	u32	qcm_num;
++	u32	core_num;
++	u32	work_mode;
++	u32	service_mode;
++	u32	pcie_mode;
++	u32	cfg_addr;
++	u32	boot_sel;
++	u32	board_id;
++};
++
++struct hinic_comm_board_info {
++	u8	status;
++	u8	version;
++	u8	rsvd0[6];
++
++	struct hinic_board_info info;
++
++	u32	rsvd1[4];
++};
++
+ struct hinic_hwdev {
+ 	struct hinic_hwif               *hwif;
+ 	struct msix_entry               *msix_entries;
+@@ -407,4 +438,7 @@ int hinic_get_interrupt_cfg(struct hinic_hwdev *hwdev,
+ int hinic_set_interrupt_cfg(struct hinic_hwdev *hwdev,
+ 			    struct hinic_msix_config *interrupt_info);
+ 
++int hinic_get_board_info(struct hinic_hwdev *hwdev,
++			 struct hinic_comm_board_info *board_info);
++
+ #endif
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.h
+index e8a55b53c855..21b93b654d6b 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.h
+@@ -87,7 +87,9 @@ enum hinic_comm_cmd {
+ 
+ 	HINIC_COMM_CMD_PAGESIZE_SET	= 0x50,
+ 
+-	HINIC_COMM_CMD_MAX              = 0x51,
++	HINIC_COMM_CMD_GET_BOARD_INFO	= 0x52,
++
++	HINIC_COMM_CMD_MAX,
+ };
+ 
+ enum hinic_mgmt_cb_state {
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+index 834a20a0043c..1dfa09411590 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+@@ -18,6 +18,7 @@
+ #include <linux/semaphore.h>
+ #include <linux/workqueue.h>
+ #include <net/ip.h>
++#include <net/devlink.h>
+ #include <linux/bitops.h>
+ #include <linux/bitmap.h>
+ #include <linux/delay.h>
+@@ -25,6 +26,7 @@
+ 
+ #include "hinic_hw_qp.h"
+ #include "hinic_hw_dev.h"
++#include "hinic_devlink.h"
+ #include "hinic_port.h"
+ #include "hinic_tx.h"
+ #include "hinic_rx.h"
+@@ -1075,9 +1077,11 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	struct hinic_rx_mode_work *rx_mode_work;
+ 	struct hinic_txq_stats *tx_stats;
+ 	struct hinic_rxq_stats *rx_stats;
++	struct hinic_dev *devlink_dev;
+ 	struct hinic_dev *nic_dev;
+ 	struct net_device *netdev;
+ 	struct hinic_hwdev *hwdev;
++	struct devlink *devlink;
+ 	int err, num_qps;
+ 
+ 	hwdev = hinic_init_hwdev(pdev);
+@@ -1086,6 +1090,15 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 		return PTR_ERR(hwdev);
+ 	}
+ 
++	devlink = hinic_devlink_alloc();
++	if (!devlink) {
++		dev_err(&pdev->dev, "Hinic devlink alloc failed\n");
++		err = -ENOMEM;
++		goto err_devlink_alloc;
++	}
++
++	devlink_dev = devlink_priv(devlink);
++
+ 	num_qps = hinic_hwdev_num_qps(hwdev);
+ 	if (num_qps <= 0) {
+ 		dev_err(&pdev->dev, "Invalid number of QPS\n");
+@@ -1121,6 +1134,7 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	nic_dev->sriov_info.hwdev = hwdev;
+ 	nic_dev->sriov_info.pdev = pdev;
+ 	nic_dev->max_qps = num_qps;
++	nic_dev->devlink = devlink;
+ 
+ 	hinic_set_ethtool_ops(netdev);
+ 
+@@ -1146,6 +1160,11 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 		goto err_workq;
+ 	}
+ 
++	memcpy(devlink_dev, nic_dev, sizeof(*nic_dev));
++	err = hinic_devlink_register(devlink, &pdev->dev);
++	if (err)
++		goto err_devlink_reg;
++
+ 	pci_set_drvdata(pdev, netdev);
+ 
+ 	err = hinic_port_get_mac(nic_dev, netdev->dev_addr);
+@@ -1223,9 +1242,10 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	cancel_work_sync(&rx_mode_work->work);
+ 
+ err_set_mtu:
+-err_get_mac:
+ err_add_mac:
++err_get_mac:
+ 	pci_set_drvdata(pdev, NULL);
++err_devlink_reg:
+ 	destroy_workqueue(nic_dev->workq);
+ 
+ err_workq:
+@@ -1234,6 +1254,7 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 
+ err_alloc_etherdev:
+ err_num_qps:
++err_devlink_alloc:
+ 	hinic_free_hwdev(hwdev);
+ 	return err;
+ }
+@@ -1321,6 +1342,7 @@ static void hinic_remove(struct pci_dev *pdev)
+ {
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+ 	struct hinic_dev *nic_dev = netdev_priv(netdev);
++	struct devlink *devlink = nic_dev->devlink;
+ 	struct hinic_rx_mode_work *rx_mode_work;
+ 
+ 	if (!HINIC_IS_VF(nic_dev->hwdev->hwif)) {
+@@ -1342,9 +1364,11 @@ static void hinic_remove(struct pci_dev *pdev)
+ 
+ 	pci_set_drvdata(pdev, NULL);
+ 
++	hinic_devlink_unregister(devlink);
++
+ 	destroy_workqueue(nic_dev->workq);
+ 
+-	hinic_vf_func_free(nic_dev->hwdev);
++	hinic_devlink_free(devlink);
+ 
+ 	hinic_free_hwdev(nic_dev->hwdev);
+ 
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.h b/drivers/net/ethernet/huawei/hinic/hinic_port.h
+index 0e444d2c02bb..14931adaffb8 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.h
+@@ -703,6 +703,31 @@ struct hinic_cmd_get_std_sfp_info {
+ 	u8 sfp_info[STD_SFP_INFO_MAX_SIZE];
+ };
+ 
++struct hinic_cmd_update_fw {
++	u8 status;
++	u8 version;
++	u8 rsvd0[6];
++
++	struct {
++		u32 SL:1;
++		u32 SF:1;
++		u32 flag:1;
++		u32 reserved:13;
++		u32 fragment_len:16;
++	} ctl_info;
++
++	struct {
++		u32 FW_section_CRC;
++		u32 FW_section_type;
++	} section_info;
++
++	u32 total_len;
++	u32 setion_total_len;
++	u32 fw_section_version;
++	u32 section_offset;
++	u32 data[384];
++};
++
+ int hinic_port_add_mac(struct hinic_dev *nic_dev, const u8 *addr,
+ 		       u16 vlan_id);
+ 
+-- 
+2.17.1
 
-AFAICS everyhing functions as designed, except:
-1. The route exception should not exist in first place in this case
-2. The route exception never times out (gets refreshed every time
-   tunnel tries to send a mtu-sized packet).
-3. The original sender never learns about the pmtu event
-
-Regarding 3) I had cooked up patches to inject a new ICMP error
-into the bridge input path from vxlan_err_lookup() to let the sender
-know the path MTU reduction.
-
-Unfortunately it only works with Linux bridge (openvswitch tosses the
-packet).  Also, too many (internal) reviews told me they consider this
-an ugly hack, so I am not too keen on continuing down that route:
-
-https://git.breakpoint.cc/cgit/fw/net-next.git/commit/?h=udp_tun_pmtud_12&id=ca5b0af203b6f8010f1e585850620db4561baae7
