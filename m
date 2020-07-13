@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02A0821DF9D
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 20:25:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2200A21DF97
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 20:25:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726780AbgGMSZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 14:25:42 -0400
-Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:41136 "EHLO
-        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726758AbgGMSZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 14:25:39 -0400
+        id S1726478AbgGMSZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 14:25:36 -0400
+Received: from forwardcorp1p.mail.yandex.net ([77.88.29.217]:50802 "EHLO
+        forwardcorp1p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726309AbgGMSZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 14:25:35 -0400
 Received: from iva8-d077482f1536.qloud-c.yandex.net (iva8-d077482f1536.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:2f26:0:640:d077:482f])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 9DD552E0906;
-        Mon, 13 Jul 2020 21:25:32 +0300 (MSK)
+        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id 383282E14E8;
+        Mon, 13 Jul 2020 21:25:33 +0300 (MSK)
 Received: from iva8-88b7aa9dc799.qloud-c.yandex.net (iva8-88b7aa9dc799.qloud-c.yandex.net [2a02:6b8:c0c:77a0:0:640:88b7:aa9d])
-        by iva8-d077482f1536.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id IehjKGftm9-PVs0unNT;
-        Mon, 13 Jul 2020 21:25:32 +0300
+        by iva8-d077482f1536.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id lDmw63WbnS-PWs0YY0x;
+        Mon, 13 Jul 2020 21:25:33 +0300
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1594664732; bh=cywGoq2TmkojrQZol7y+3L633j2AT6oJYK8jB49KVOs=;
+        t=1594664733; bh=/X1gyoVSLyvvewERQIpDIhxJ6bTCdcdtv1IWCHjjaxc=;
         h=In-Reply-To:Message-Id:References:Date:Subject:To:From:Cc;
-        b=kNrW8Ghi6BWEW3au2mGPfl2Vu5Wjl1DGIYfwCz+PO6hSEaXfaO0hg1sLFKTXPtF9Y
-         6oWYKnT4EQo57jxeLfDs6P4sG6WeBIvJOXrWJ++4KGq1Ul+lD9EAvREux7ZYkUFx5G
-         k5V5x5a8+qropD9tdUliR8v3LwVYcGfH29FsJwVM=
+        b=LexA0gbkQ7rv4XLR2n+Jjc4XN5uNTyfobnP1v5YxjiYh+SdWGl+nNRCeVRRIuTC1R
+         ggZAKg0ibyYZV6I1qcBEYdUNRXvEi2GGawU0NaGlQCGptpqxYfajLw3hYbu5IOV3vv
+         86T3ZMqpypv566c3kLJY6p65JPXyhuZDPco/vx3o=
 Authentication-Results: iva8-d077482f1536.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
 Received: from 37.9.72.97-iva.dhcp.yndx.net (37.9.72.97-iva.dhcp.yndx.net [37.9.72.97])
-        by iva8-88b7aa9dc799.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id liA4tjrt5e-PVjq9U62;
-        Mon, 13 Jul 2020 21:25:31 +0300
+        by iva8-88b7aa9dc799.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id liA4tjrt5e-PWjqR8Tn;
+        Mon, 13 Jul 2020 21:25:32 +0300
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (Client certificate not present)
 From:   Dmitry Yakunin <zeil@yandex-team.ru>
 To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net,
         netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     sdf@google.com
-Subject: [PATCH bpf-next 1/4] bpf: setup socket family and addresses in bpf_prog_test_run_skb
-Date:   Mon, 13 Jul 2020 21:25:17 +0300
-Message-Id: <20200713182520.97606-2-zeil@yandex-team.ru>
+Subject: [PATCH bpf-next 2/4] bpf: allow to specify ifindex for skb in bpf_prog_test_run_skb
+Date:   Mon, 13 Jul 2020 21:25:18 +0300
+Message-Id: <20200713182520.97606-3-zeil@yandex-team.ru>
 In-Reply-To: <20200713182520.97606-1-zeil@yandex-team.ru>
 References: <20200713182520.97606-1-zeil@yandex-team.ru>
 MIME-Version: 1.0
@@ -45,42 +45,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now it's impossible to test all branches of cgroup_skb bpf program which
-accesses skb->family and skb->{local,remote}_ip{4,6} fields because they
-are zeroed during socket allocation. This commit fills socket family and
-addresses from related fields in constructed skb.
+Now skb->dev is unconditionally set to the loopback device in current net
+namespace. But if we want to test bpf program which contains code branch
+based on ifindex condition (eg filters out localhost packets) it is useful
+to allow specifying of ifindex from userspace. This patch adds such option
+through ctx_in (__sk_buff) parameter.
 
 Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
 ---
- net/bpf/test_run.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ net/bpf/test_run.c                               | 22 ++++++++++++++++++++--
+ tools/testing/selftests/bpf/prog_tests/skb_ctx.c |  5 +++++
+ 2 files changed, 25 insertions(+), 2 deletions(-)
 
 diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index bfd4ccd..a58b399 100644
+index a58b399..1e10a7e 100644
 --- a/net/bpf/test_run.c
 +++ b/net/bpf/test_run.c
-@@ -432,6 +432,21 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 	skb->protocol = eth_type_trans(skb, current->nsproxy->net_ns->loopback_dev);
+@@ -310,6 +310,12 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 	/* priority is allowed */
+ 
+ 	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, priority),
++			   offsetof(struct __sk_buff, ifindex)))
++		return -EINVAL;
++
++	/* ifindex is allowed */
++
++	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, ifindex),
+ 			   offsetof(struct __sk_buff, cb)))
+ 		return -EINVAL;
+ 
+@@ -364,6 +370,7 @@ static void convert_skb_to___skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 
+ 	__skb->mark = skb->mark;
+ 	__skb->priority = skb->priority;
++	__skb->ifindex = skb->dev->ifindex;
+ 	__skb->tstamp = skb->tstamp;
+ 	memcpy(__skb->cb, &cb->data, QDISC_CB_PRIV_LEN);
+ 	__skb->wire_len = cb->pkt_len;
+@@ -374,6 +381,8 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
+ 			  union bpf_attr __user *uattr)
+ {
+ 	bool is_l2 = false, is_direct_pkt_access = false;
++	struct net *net = current->nsproxy->net_ns;
++	struct net_device *dev = net->loopback_dev;
+ 	u32 size = kattr->test.data_size_in;
+ 	u32 repeat = kattr->test.repeat;
+ 	struct __sk_buff *ctx = NULL;
+@@ -415,7 +424,7 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
+ 		kfree(ctx);
+ 		return -ENOMEM;
+ 	}
+-	sock_net_set(sk, current->nsproxy->net_ns);
++	sock_net_set(sk, net);
+ 	sock_init_data(NULL, sk);
+ 
+ 	skb = build_skb(data, 0);
+@@ -429,7 +438,14 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
+ 
+ 	skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
+ 	__skb_put(skb, size);
+-	skb->protocol = eth_type_trans(skb, current->nsproxy->net_ns->loopback_dev);
++	if (ctx && ctx->ifindex > 1) {
++		dev = dev_get_by_index(net, ctx->ifindex);
++		if (!dev) {
++			ret = -ENODEV;
++			goto out;
++		}
++	}
++	skb->protocol = eth_type_trans(skb, dev);
  	skb_reset_network_header(skb);
  
-+	switch (skb->protocol) {
-+	case htons(ETH_P_IP):
-+		sk->sk_family = AF_INET;
-+		sk->sk_rcv_saddr = ip_hdr(skb)->saddr;
-+		sk->sk_daddr = ip_hdr(skb)->daddr;
-+		break;
-+	case htons(ETH_P_IPV6):
-+		sk->sk_family = AF_INET6;
-+		sk->sk_v6_rcv_saddr = ipv6_hdr(skb)->saddr;
-+		sk->sk_v6_daddr = ipv6_hdr(skb)->daddr;
-+		break;
-+	default:
-+		break;
-+	}
-+
- 	if (is_l2)
- 		__skb_push(skb, hh_len);
- 	if (is_direct_pkt_access)
+ 	switch (skb->protocol) {
+@@ -479,6 +495,8 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
+ 		ret = bpf_ctx_finish(kattr, uattr, ctx,
+ 				     sizeof(struct __sk_buff));
+ out:
++	if (dev && dev != net->loopback_dev)
++		dev_put(dev);
+ 	kfree_skb(skb);
+ 	bpf_sk_storage_free(sk);
+ 	kfree(sk);
+diff --git a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+index 7021b92..25de86a 100644
+--- a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
++++ b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+@@ -11,6 +11,7 @@ void test_skb_ctx(void)
+ 		.cb[3] = 4,
+ 		.cb[4] = 5,
+ 		.priority = 6,
++		.ifindex = 1,
+ 		.tstamp = 7,
+ 		.wire_len = 100,
+ 		.gso_segs = 8,
+@@ -92,6 +93,10 @@ void test_skb_ctx(void)
+ 		   "ctx_out_priority",
+ 		   "skb->priority == %d, expected %d\n",
+ 		   skb.priority, 7);
++	CHECK_ATTR(skb.ifindex != 1,
++		   "ctx_out_ifindex",
++		   "skb->ifindex == %d, expected %d\n",
++		   skb.ifindex, 1);
+ 	CHECK_ATTR(skb.tstamp != 8,
+ 		   "ctx_out_tstamp",
+ 		   "skb->tstamp == %lld, expected %d\n",
 -- 
 2.7.4
 
