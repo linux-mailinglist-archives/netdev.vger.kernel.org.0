@@ -2,111 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CEFA21D7B6
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 16:01:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10EB721D7B8
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 16:02:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730007AbgGMOBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 10:01:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53504 "EHLO
+        id S1729806AbgGMOCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 10:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729695AbgGMOBW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 10:01:22 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEF9C061755;
-        Mon, 13 Jul 2020 07:01:22 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id i14so6030034pfu.13;
-        Mon, 13 Jul 2020 07:01:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=cCXKJLHZKOo9WepEq5/xoL1jF7eCdGbwLR/OdmMlRgE=;
-        b=UcZcvj6tdkMVOyI3IFIQG/8vSKdQqFGSaN+JmaVwOF9GbrNpDl52u97EGTC6WttrCB
-         +uq4lGa7Ki8pWAqvg/EdWy7KqgMrlKQb9DCYCLI4okUb/lbc0AbiuAYzQZyWERS/Ckhy
-         3bA943nAcgAIsMRA48e1dvIRLkAF//62qJ44RIuEj9mEbYNQu/+REF5b4paeoqxnWzsR
-         JU4I1Qr4GfVS0ABjiDG+geZ+1TySNVXkqMCwta91/jegJF/Qo3NHN25Rpf/QJZgo8aRD
-         FPpraNnOvK59kpPviG/wb9PTg4tt56zP1uY5XGqWGzYJzZTI5ADqEqk5TATkUz0ZUOJW
-         IdSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=cCXKJLHZKOo9WepEq5/xoL1jF7eCdGbwLR/OdmMlRgE=;
-        b=XEm0ssD7Bz3C7mCOhEE50wSF+TLY3bDYUqKA8BdWsDZIW+wFJmYxroaA7jq6uUZDiQ
-         7ona2cXC34rWsduehv7fsX6dmViaFNMC9o+38PbPqScctVBooMg/ZaQii0hzkKjbVxDm
-         lp3dbOBdImfret99P4PTJeIy7q/YyeKiGHqTWjazdMH1jVmPVNmCM4B5qLXpPzGPpwL7
-         tRdAGplN0JvGm2+lsxcFvCCXvcWicjinLbiTQI8cB3M1xJkQQW2A38l+1qSKWJwJ7M4A
-         WUisQhY9FMV2VCrnRnGUMRsGRcOqB/F+YTtO4o/vQ8Ytqx5YAsUYOieU8f7MgCr+JAz/
-         3ahQ==
-X-Gm-Message-State: AOAM533/juXgaFY0L55WjPmdXLifoZ9cwyL7BdAGm94MNHV3mVzadMtR
-        m3wlIwcZ3acQtJXlzEEwoZCn7rKF
-X-Google-Smtp-Source: ABdhPJxqegTpxm4H1FI4lALz8ckkFIs7OKoYhLjveV0eADTl4m+2jIxGOwdCniuKxIKUeAb3ineT9w==
-X-Received: by 2002:a63:7c4d:: with SMTP id l13mr69353235pgn.12.1594648881800;
-        Mon, 13 Jul 2020 07:01:21 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id r2sm14185798pfh.106.2020.07.13.07.01.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2020 07:01:20 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 07:01:12 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH v1 4/8] net: dsa: hellcreek: Add support for hardware
- timestamping
-Message-ID: <20200713140112.GB27934@hoboy>
-References: <20200710113611.3398-1-kurt@linutronix.de>
- <20200710113611.3398-5-kurt@linutronix.de>
- <20200713095700.rd4u4t6thkzfnlll@skbuf>
- <87k0z7n0m9.fsf@kurt>
+        with ESMTP id S1729659AbgGMOCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 10:02:21 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336B5C061755
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 07:02:21 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1juz2B-0008E9-C5; Mon, 13 Jul 2020 16:02:19 +0200
+Date:   Mon, 13 Jul 2020 16:02:19 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Stefano Brivio <sbrivio@redhat.com>, netdev@vger.kernel.org,
+        aconole@redhat.com
+Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
+ discovery on encap sockets
+Message-ID: <20200713140219.GM32005@breakpoint.cc>
+References: <20200712200705.9796-1-fw@strlen.de>
+ <20200712200705.9796-2-fw@strlen.de>
+ <20200713003813.01f2d5d3@elisabeth>
+ <20200713080413.GL32005@breakpoint.cc>
+ <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87k0z7n0m9.fsf@kurt>
+In-Reply-To: <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 12:57:34PM +0200, Kurt Kanzenbach wrote:
-> Hi Vladimir,
+David Ahern <dsahern@gmail.com> wrote:
+> On 7/13/20 2:04 AM, Florian Westphal wrote:
+> >> As PMTU discovery happens, we have a route exception on the lower
+> >> layer for the given path, and we know that VXLAN will use that path,
+> >> so we also know there's no point in having a higher MTU on the VXLAN
+> >> device, it's really the maximum packet size we can use.
+> > No, in the setup that prompted this series the route exception is wrong.
 > 
-> On Mon Jul 13 2020, Vladimir Oltean wrote:
-> >> +/* Get a pointer to the PTP header in this skb */
-> >> +static u8 *parse_ptp_header(struct sk_buff *skb, unsigned int type)
-> >
-> > Maybe this and the function from mv88e6xxx could share the same
-> > implementation somehow.
-> 
-> Actually both functions are identical. Should it be moved to the ptp
-> core, maybe? Then, all drivers could use that. I guess we should also
-> define a PTP offset for the reserved field which is accessed in
-> hellcreek_get_reserved_field() just with 16 instead of a proper macro
-> constant.
+> Why is the exception wrong and why can't the exception code be fixed to
+> include tunnel headers?
 
-I support re-factoring the code that parses the PTP header.  Last time
-I looked, each driver needed slightly different fields, and I didn't
-see an easy way to accommodate them all.
+I don't know.  This occurs in a 3rd party (read: "cloud") environment.
+After some days, tcp connections on the overlay network hang.
 
-> > I would like to get some clarification on whether "SKBTX_IN_PROGRESS"
-> > should be set in shtx->tx_flags or not. On one hand, it's asking for
-> > trouble, on the other hand, it's kind of required for proper compliance
-> > to API pre-SO_TIMESTAMPING...
-> 
-> Hm. We actually oriented our code on the mv88e6xxx time stamping code base.
+Flushing the route exception in the namespace of the vxlan interface makes
+the traffic flow again, i.e. if the vxlan tunnel would just use the
+physical devices MTU things would be fine.
 
-Where in mv88e6xxx does the driver set SKBTX_IN_PROGRESS?
+I don't know what you mean by 'fix exception code to include tunnel
+headers'.  Can you elaborate?
 
-I don't think it makes sense for DSA drivers to set this bit, as it
-serves no purpose in the DSA context.
+AFAICS everyhing functions as designed, except:
+1. The route exception should not exist in first place in this case
+2. The route exception never times out (gets refreshed every time
+   tunnel tries to send a mtu-sized packet).
+3. The original sender never learns about the pmtu event
 
-Thanks,
-Richard
+Regarding 3) I had cooked up patches to inject a new ICMP error
+into the bridge input path from vxlan_err_lookup() to let the sender
+know the path MTU reduction.
+
+Unfortunately it only works with Linux bridge (openvswitch tosses the
+packet).  Also, too many (internal) reviews told me they consider this
+an ugly hack, so I am not too keen on continuing down that route:
+
+https://git.breakpoint.cc/cgit/fw/net-next.git/commit/?h=udp_tun_pmtud_12&id=ca5b0af203b6f8010f1e585850620db4561baae7
