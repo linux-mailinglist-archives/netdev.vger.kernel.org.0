@@ -2,68 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24B6B21E041
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 20:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C45C221E04C
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 20:59:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726794AbgGMSzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 14:55:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbgGMSzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 14:55:03 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13014C061755;
-        Mon, 13 Jul 2020 11:55:03 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7A2FA1295A400;
-        Mon, 13 Jul 2020 11:55:02 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 11:55:01 -0700 (PDT)
-Message-Id: <20200713.115501.208223024761834676.davem@davemloft.net>
-To:     grandmaster@al2klimov.de
-Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, masahiroy@kernel.org,
-        dccp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [DCCP]: Replace HTTP links with HTTPS ones
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200713075108.32143-1-grandmaster@al2klimov.de>
-References: <20200713075108.32143-1-grandmaster@al2klimov.de>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 13 Jul 2020 11:55:02 -0700 (PDT)
+        id S1726364AbgGMS7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 14:59:39 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33342 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726321AbgGMS7j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 14:59:39 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jv3fr-004uUl-WB; Mon, 13 Jul 2020 20:59:35 +0200
+Date:   Mon, 13 Jul 2020 20:59:35 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, xiyou.wangcong@gmail.com,
+        ap420073@gmail.com
+Subject: Re: [PATCH net] net: dsa: link interfaces with the DSA master to get
+ rid of lockdep warnings
+Message-ID: <20200713185935.GL1078057@lunn.ch>
+References: <20200713162443.2510682-1-olteanv@gmail.com>
+ <20200713164728.GH1078057@lunn.ch>
+ <20200713173049.wzo7e2rpbtfbwdxd@skbuf>
+ <20200713173319.zjmqjzqmjcxw6gyf@skbuf>
+ <20200713174227.p6owrtgyccxfbuj5@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200713174227.p6owrtgyccxfbuj5@skbuf>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Date: Mon, 13 Jul 2020 09:51:08 +0200
+> One difference from VLAN is that in that case, the entire
+> register_vlan_device() function runs under RTNL.
+> When those bugs that you talk about are found, who starts using the
+> network interface too early? User space or someone else? Would RTNL be
+> enough to avoid that?
 
-> Rationale:
-> Reduces attack surface on kernel devs opening the links for MITM
-> as HTTPS traffic is much harder to manipulate.
-> 
-> Deterministic algorithm:
-> For each file:
->   If not .svg:
->     For each line:
->       If doesn't contain `\bxmlns\b`:
->         For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-> 	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
->             If both the HTTP and HTTPS versions
->             return 200 OK and serve the same content:
->               Replace HTTP with HTTPS.
-> 
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+NFS root. Registering the interface causes autoconfig to start,
+sending a DHCP request, or if the IP addresses are fixed, it could
+send an ARP for the NFS server.
 
-Git will remove everything inside of [] brackets, so "[DCCP]" is
-not appropriate.
+It is just nice to have if it is before register_netdev(). I don't
+think there is an actual issues in this case, being able to
+send/receive packets should not depend on the upper/lower linkage for
+DSA.
 
-I changed it to use "dccp: " which is consistent with other recent
-changes to this code when I applied your patch.
-
-Thank you.
+	Andrew
