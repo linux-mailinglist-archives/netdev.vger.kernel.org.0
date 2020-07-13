@@ -2,96 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AB4B21D2CD
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 11:30:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C580621D2DC
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 11:33:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729389AbgGMJ37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 05:29:59 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:58021 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726380AbgGMJ36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 05:29:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594632597;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FkdClRISCLaiArFjVxkA+fHx1NW3jZ3pECNBcgR6TSM=;
-        b=KHA9Q1HXbcVDP+jdS3LTDUkV26jNrcabe/JiBTQdwJgN7Q3RiWHuEod1xP2tJlG7KbSC89
-        gx/cJsmynV7xB7kNdxYiDszTF5De8e9KNf7GgVnJhJxQhi8XRfV3fnRdH50Un8WOjfqjUZ
-        BDun3XPL4EG1cahYpqmmb6JePLlBYcU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-63-wUIIf35hMS-KCLeMBOln2Q-1; Mon, 13 Jul 2020 05:29:55 -0400
-X-MC-Unique: wUIIf35hMS-KCLeMBOln2Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D5AF5107ACCA;
-        Mon, 13 Jul 2020 09:29:53 +0000 (UTC)
-Received: from localhost (ovpn-114-66.ams2.redhat.com [10.36.114.66])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 37CDD74F44;
-        Mon, 13 Jul 2020 09:29:50 +0000 (UTC)
-Date:   Mon, 13 Jul 2020 10:29:49 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] vhost/scsi: fix up req type endian-ness
-Message-ID: <20200713092949.GE28639@stefanha-x1.localdomain>
-References: <20200710104849.406023-1-mst@redhat.com>
+        id S1729352AbgGMJdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 05:33:36 -0400
+Received: from smtp.al2klimov.de ([78.46.175.9]:55354 "EHLO smtp.al2klimov.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726380AbgGMJdg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 05:33:36 -0400
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by smtp.al2klimov.de (Postfix) with ESMTPA id DDA56BC09E;
+        Mon, 13 Jul 2020 09:33:32 +0000 (UTC)
+From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
+To:     khc@pm.waw.pl, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Subject: [PATCH] WAN: Replace HTTP links with HTTPS ones
+Date:   Mon, 13 Jul 2020 11:33:23 +0200
+Message-Id: <20200713093323.32841-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
-In-Reply-To: <20200710104849.406023-1-mst@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=stefanha@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="n+lFg1Zro7sl44OB"
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: +++++
+X-Spam-Level: *****
+Authentication-Results: smtp.al2klimov.de;
+        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---n+lFg1Zro7sl44OB
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Rationale:
+Reduces attack surface on kernel devs opening the links for MITM
+as HTTPS traffic is much harder to manipulate.
 
-On Fri, Jul 10, 2020 at 06:48:51AM -0400, Michael S. Tsirkin wrote:
-> vhost/scsi doesn't handle type conversion correctly
-> for request type when using virtio 1.0 and up for BE,
-> or cross-endian platforms.
->=20
-> Fix it up using vhost_32_to_cpu.
->=20
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  drivers/vhost/scsi.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Deterministic algorithm:
+For each file:
+  If not .svg:
+    For each line:
+      If doesn't contain `\bxmlns\b`:
+        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
+	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
+            If both the HTTP and HTTPS versions
+            return 200 OK and serve the same content:
+              Replace HTTP with HTTPS.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+---
+ Continuing my work started at 93431e0607e5.
+ See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
+ (Actually letting a shell for loop submit all this stuff for me.)
 
---n+lFg1Zro7sl44OB
-Content-Type: application/pgp-signature; name="signature.asc"
+ If there are any URLs to be removed completely or at least not just HTTPSified:
+ Just clearly say so and I'll *undo my change*.
+ See also: https://lkml.org/lkml/2020/6/27/64
 
------BEGIN PGP SIGNATURE-----
+ If there are any valid, but yet not changed URLs:
+ See: https://lkml.org/lkml/2020/6/26/837
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl8MKY0ACgkQnKSrs4Gr
-c8gQOQf+KmgjzVnEXU62hGmZBNsGZ9+2r2VBviBdhlBL0AB0927CK0A8v4HXZ/5+
-8Y6UwKNT0GZnj67/+PBXAVvJm4Jny+4TTgTafuZY0gnlNZKS6PpmSoztnzwjqtgI
-ddm2TVEWDF/lDZNRcWZ1a0cURg8If2ZQPxNepxT3uqa5LnbYXiwuIlnFG6eetsHV
-Cl751SmdjCSXzCDBvEE6eboXtzt3ok1TWIx3L2jU034AyexssehBz6C0G9LVQhau
-pVJs0q2BfsF95xxX6k2Bo/8Paj4EqzUKxG4jEXteR9SIHwZH3anw0PKPygh96FWF
-XrsnZG1MAaXY8ybmuVlQkaJofLFlMA==
-=4fi+
------END PGP SIGNATURE-----
+ If you apply the patch, please let me know.
 
---n+lFg1Zro7sl44OB--
+ Sorry again to all maintainers who complained about subject lines.
+ Now I realized that you want an actually perfect prefixes,
+ not just subsystem ones.
+ I tried my best...
+ And yes, *I could* (at least half-)automate it.
+ Impossible is nothing! :)
+
+
+ drivers/net/wan/c101.c      | 2 +-
+ drivers/net/wan/n2.c        | 2 +-
+ drivers/net/wan/pc300too.c  | 2 +-
+ drivers/net/wan/pci200syn.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/wan/c101.c b/drivers/net/wan/c101.c
+index cb57f9124ab1..c354a5143e99 100644
+--- a/drivers/net/wan/c101.c
++++ b/drivers/net/wan/c101.c
+@@ -4,7 +4,7 @@
+  *
+  * Copyright (C) 2000-2003 Krzysztof Halasa <khc@pm.waw.pl>
+  *
+- * For information see <http://www.kernel.org/pub/linux/utils/net/hdlc/>
++ * For information see <https://www.kernel.org/pub/linux/utils/net/hdlc/>
+  *
+  * Sources of information:
+  *    Hitachi HD64570 SCA User's Manual
+diff --git a/drivers/net/wan/n2.c b/drivers/net/wan/n2.c
+index f9e7fc7e9978..5bf4463873b1 100644
+--- a/drivers/net/wan/n2.c
++++ b/drivers/net/wan/n2.c
+@@ -4,7 +4,7 @@
+  *
+  * Copyright (C) 1998-2003 Krzysztof Halasa <khc@pm.waw.pl>
+  *
+- * For information see <http://www.kernel.org/pub/linux/utils/net/hdlc/>
++ * For information see <https://www.kernel.org/pub/linux/utils/net/hdlc/>
+  *
+  * Note: integrated CSU/DSU/DDS are not supported by this driver
+  *
+diff --git a/drivers/net/wan/pc300too.c b/drivers/net/wan/pc300too.c
+index 190735604b2e..001fd378d417 100644
+--- a/drivers/net/wan/pc300too.c
++++ b/drivers/net/wan/pc300too.c
+@@ -4,7 +4,7 @@
+  *
+  * Copyright (C) 2000-2008 Krzysztof Halasa <khc@pm.waw.pl>
+  *
+- * For information see <http://www.kernel.org/pub/linux/utils/net/hdlc/>.
++ * For information see <https://www.kernel.org/pub/linux/utils/net/hdlc/>.
+  *
+  * Sources of information:
+  *    Hitachi HD64572 SCA-II User's Manual
+diff --git a/drivers/net/wan/pci200syn.c b/drivers/net/wan/pci200syn.c
+index b5f8aaca5f06..d0062224b216 100644
+--- a/drivers/net/wan/pci200syn.c
++++ b/drivers/net/wan/pci200syn.c
+@@ -4,7 +4,7 @@
+  *
+  * Copyright (C) 2002-2008 Krzysztof Halasa <khc@pm.waw.pl>
+  *
+- * For information see <http://www.kernel.org/pub/linux/utils/net/hdlc/>
++ * For information see <https://www.kernel.org/pub/linux/utils/net/hdlc/>
+  *
+  * Sources of information:
+  *    Hitachi HD64572 SCA-II User's Manual
+-- 
+2.27.0
 
