@@ -2,118 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDF5421CEBB
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 07:15:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C8FE21CEEC
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 07:44:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728848AbgGMFO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 01:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
+        id S1728950AbgGMFoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 01:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725804AbgGMFO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 01:14:58 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38958C061794;
-        Sun, 12 Jul 2020 22:14:58 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id b185so11119104qkg.1;
-        Sun, 12 Jul 2020 22:14:58 -0700 (PDT)
+        with ESMTP id S1725804AbgGMFob (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 01:44:31 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA461C061794;
+        Sun, 12 Jul 2020 22:44:31 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id u5so5524273pfn.7;
+        Sun, 12 Jul 2020 22:44:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HJfMKkuixe8TcFmSgPVFQeX2ebVBk2NIfALDJvpOegk=;
-        b=t1YTVsAOG7g2piVPzr9XqfcOnf1nl6fNsrPCzOhU25jJur4I0iJE19KVWcxP9TixlH
-         hA57KrAkQoI5IRkXUIwJDb5X00QSGkNpOaOxcD3Nan/XQTZVduQjrEg9Z14YNRooh0xq
-         YkYJUAB1lMa26uVrPQtmfvx05NKveu8jVXhT7ISzvFaojV/IuhzB9juQsNLM3nZX6QQD
-         /qypLMf6oZvwdlxwTxzwIwzH7E9u7lNMkYjJAceAoVyAthjE9BnK7zA8TE7Rk6oyIh60
-         ynOFniFe80hCUQ6h5+qkWRhJ8BTalGQHjoywwL3/780fkljffvktE9z46d8S7NnRo8NP
-         Pcrg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=uaxK61b6eNFTeIyPEZWODnxtmcqDzzyQf4r5VKLOXqY=;
+        b=V+E3GxcXuiz/woTyBNXb7juJ9L7hVv0pBhu9EPiwKhfi8tdWrO+O71qGQBGqe2qUpP
+         MYOjEPCOaYS7/lQVrl0+kEon4tn7Eydy5gr4AvhaJl7iNmUsA2MKuru25bz+lJsGtL40
+         3BeDmEw1ptfAcOfZcm659AFUpn9yjHD1GMu63AQY4j6OXjghI4lhxuwFDx/QNlQoHZ3d
+         s4OcTrHW1yc7R9xqbfNHzvEKiUd5bECjoO5qFL0FUYpooZm5vFAUc0w0XNEnaeSTBqXt
+         CQyTzqmDUPhUf+GTTAB9kYK3eKnLn7ChbT3VxiEttUHk7/uhTydqtatVqRKC6T2lkZoa
+         ceAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HJfMKkuixe8TcFmSgPVFQeX2ebVBk2NIfALDJvpOegk=;
-        b=RNSKVmAOg6thIvBcvJUq6+3eFdcH5xiFQhlXG6eDRxyKu1jh76dauF/Wcf8Gfr4Szj
-         0mc0eBddzEBohWpVuIgzBXm+J3ucz7Uy/NZYrT3Kak9DHqdXsJ7L5xF+auWrBltrNpJE
-         1ECRdrdmD3ujcWZKz9VC2KX6O7JV2riVu117BsaYF1WXKixyRsO05faBSCspLOjQ7A5W
-         SuaLmRt1j7HQu5N65MUeW/CQOYEIenkt8L7eZPkTlKtf9YERTlTS/+6n/IJYbTaSXOUz
-         QAs3n4P7vSqNjQe569CGCueTbwgqDKnLYUsqKWYmWZ2u702THHU71nTv6wSbEfMzgVeI
-         G/Ew==
-X-Gm-Message-State: AOAM530TRfWQQe0FuEMnTWGtHnCTIpHvAmpfk4oaAuE7NRB7AVjM1dDp
-        rPt0QacZWdkpgA0zh26YNvuW9A2R841sMg9WzhU=
-X-Google-Smtp-Source: ABdhPJzZeRI4Vo+yZmNHHCrZWhnaKiX6BuWRvS5dt2QggK3l73mOoFiEQTzrVHTr+lD9cXIK0pQuLgSHhO8q2rUM2KU=
-X-Received: by 2002:a37:ec7:: with SMTP id 190mr75015576qko.421.1594617297477;
- Sun, 12 Jul 2020 22:14:57 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=uaxK61b6eNFTeIyPEZWODnxtmcqDzzyQf4r5VKLOXqY=;
+        b=uYH08skhe86woMypTW3gq4w1Wy5ABaSd+hXljPZ+9hlzFBzrcLxrINgsRDs/MWxjxT
+         9w0tr71a2Pgk4dRYkIFXpfSPjz67WvBiIkEje6w8HlHgDA/5t5izmt/2Z4Zu+aO8Cxun
+         m9UdXr/2ifryK6oB9v1QPO6CtCtMMjDZIqZ7yuQFsTvSHVaepw3U57Fm8fnIISiTBy7S
+         HlLS4W45fjxsR/oOMLIx/FUxdsvZjMAZlfd2fBEN9p+nbheHUW/oh5ak0ZossqHu0xV5
+         7tyzslixM+R4+GnuShxW21vn9CnpXI5ETWFIlf9M4R+nOwWsCOSTMhs+PgXAfB8ozZWa
+         KMJQ==
+X-Gm-Message-State: AOAM532xiPPR1C2JnNjlcqFcx/2aXeoNf2sq1+3Gb0WXfV+9fGZFl/2R
+        0GaRoIWdtDGILyj2bg/C0VQ=
+X-Google-Smtp-Source: ABdhPJw/12Yazmj19RCOWmGDUqGyyKoudOD7lCbkADDZiDrqZOVC54yhfYS3CM0I5o3CL56JuFLg+Q==
+X-Received: by 2002:a05:6a00:14cf:: with SMTP id w15mr7563038pfu.237.1594619071175;
+        Sun, 12 Jul 2020 22:44:31 -0700 (PDT)
+Received: from blackclown ([103.88.82.220])
+        by smtp.gmail.com with ESMTPSA id s10sm32792311pjf.3.2020.07.12.22.44.28
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 12 Jul 2020 22:44:30 -0700 (PDT)
+Date:   Mon, 13 Jul 2020 11:14:24 +0530
+From:   Suraj Upadhyay <usuraj35@gmail.com>
+To:     Benjamin Poirier <benjamin.poirier@gmail.com>
+Cc:     netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] staging: qlge: Remove pci-dma-compat wrapper APIs.
+Message-ID: <20200713054424.GD12262@blackclown>
+References: <20200711124633.GA16459@blackclown>
+ <20200713045959.GA7563@f3>
 MIME-Version: 1.0
-References: <20200705195110.405139-1-anarsoul@gmail.com> <20200705195110.405139-4-anarsoul@gmail.com>
- <20200706114709.l6poszepqsmg5p5r@gilmour.lan>
-In-Reply-To: <20200706114709.l6poszepqsmg5p5r@gilmour.lan>
-From:   Vasily Khoruzhick <anarsoul@gmail.com>
-Date:   Sun, 12 Jul 2020 22:14:31 -0700
-Message-ID: <CA+E=qVe30AEocwi62sJSX7=tRUJ3LeKdgEwtA8trQN4xtMpgTA@mail.gmail.com>
-Subject: Re: [PATCH 3/3] arm64: allwinner: a64: enable Bluetooth On Pinebook
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-linux <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Ondrej Jirman <megous@megous.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="7DO5AaGCk89r4vaK"
+Content-Disposition: inline
+In-Reply-To: <20200713045959.GA7563@f3>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 6, 2020 at 4:47 AM Maxime Ripard <maxime@cerno.tech> wrote:
->
-> Hi,
->
-> On Sun, Jul 05, 2020 at 12:51:10PM -0700, Vasily Khoruzhick wrote:
-> > Pinebook has an RTL8723CS WiFi + BT chip, BT is connected to UART1
-> > and uses PL5 as device wake GPIO, PL6 as host wake GPIO the I2C
-> > controlling signals are connected to R_I2C bus.
-> >
-> > Enable it in the device tree.
-> >
-> > Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
-> > ---
-> >  .../arm64/boot/dts/allwinner/sun50i-a64-pinebook.dts | 12 ++++++++++++
-> >  1 file changed, 12 insertions(+)
-> >
-> > diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinebook.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinebook.dts
-> > index 64b1c54f87c0..e63ff271be4e 100644
-> > --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinebook.dts
-> > +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinebook.dts
-> > @@ -408,6 +408,18 @@ &uart0 {
-> >       status = "okay";
-> >  };
-> >
-> > +&uart1 {
-> > +     pinctrl-names = "default";
-> > +     pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
-> > +     status = "okay";
->
-> You probably need uart-has-rtscts here
 
-Will add in v2
+--7DO5AaGCk89r4vaK
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > +
-> > +     bluetooth {
-> > +             compatible = "realtek,rtl8723cs-bt";
-> > +             device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_LOW>; /* PL5 */
-> > +             host-wake-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
-> > +     };
->
-> And max-speed I guess?
+On Mon, Jul 13, 2020 at 01:59:59PM +0900, Benjamin Poirier wrote:
+> On 2020-07-11 18:16 +0530, Suraj Upadhyay wrote:
+> > The legacy API wrappers in include/linux/pci-dma-compat.h
+> > should go away as it creates unnecessary midlayering
+> > for include/linux/dma-mapping.h APIs, instead use dma-mapping.h
+> > APIs directly.
+> >=20
+> > The patch has been generated with the coccinelle script below
+> > and compile-tested.
+> >=20
+> [...]
+> >=20
+> > @@ expression E1, E2, E3, E4; @@
+> > - pci_dma_sync_single_for_device(E1, E2, E3, E4)
+> > + dma_sync_single_for_device(&E1->dev, E2, E3, (enum dma_data_direction=
+)E4)
+>=20
+> The qlge driver contains more usages of the deprecated pci_dma_* api
+> than what this diff addresses. In particular, there are some calls to
+> pci_dma_sync_single_for_cpu() which were not changed despite this
+> expression being in the semantic patch.
 
-There's no max-speed in the schema for this bluetooth controller.
-Moreover it reads uart settings from firmware config. See
-btrtl_get_uart_settings() in drivers/bluetooth/btrtl.c
+Hii Ben,
+        I couldn't find any instances of pci_dma_sync_single_for_cpu in
+the drivers/staging/qlge/ driver, I ran a simple `git grep pci_dma_sync_sin=
+gle_for_cpu/device`
+and got nothing.
+If I am wrong, please send the line number of the usages.
 
-> Maxime
-> >
+> Dunno what happened but it should be reviewed. After converting away
+> from all of the old api, the TODO file should also be updated.
+
+Thanks for reminding me this, I would send a follow up patch to remove
+"pci_dma_*" from "avoid legacy/deprecated apis (ex. replace pci_dma_*, repl=
+ace pci_enable_msi,
+  use pci_iomap)".
+
+
+Thanks and Cheers,
+
+Suraj Upadhyay.
+> [...]
+>=20
+> >=20
+> > diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlg=
+e_mpi.c
+> > index fa178fc642a6..16a9bf818346 100644
+> > --- a/drivers/staging/qlge/qlge_mpi.c
+> > +++ b/drivers/staging/qlge/qlge_mpi.c
+> > @@ -788,8 +788,9 @@ int ql_dump_risc_ram_area(struct ql_adapter *qdev, =
+void *buf,
+> >  	char *my_buf;
+> >  	dma_addr_t buf_dma;
+> > =20
+> > -	my_buf =3D pci_alloc_consistent(qdev->pdev, word_count * sizeof(u32),
+> > -				      &buf_dma);
+> > +	my_buf =3D dma_alloc_coherent(&qdev->pdev->dev,
+> > +				    word_count * sizeof(u32), &buf_dma,
+> > +				    GFP_ATOMIC);
+> >  	if (!my_buf)
+> >  		return -EIO;
+> > =20
+> > @@ -797,8 +798,8 @@ int ql_dump_risc_ram_area(struct ql_adapter *qdev, =
+void *buf,
+> >  	if (!status)
+> >  		memcpy(buf, my_buf, word_count * sizeof(u32));
+> > =20
+> > -	pci_free_consistent(qdev->pdev, word_count * sizeof(u32), my_buf,
+> > -			    buf_dma);
+> > +	dma_free_coherent(&qdev->pdev->dev, word_count * sizeof(u32), my_buf,
+> > +			  buf_dma);
+> >  	return status;
+> >  }
+> > =20
+> > --=20
+> > 2.17.1
+> >=20
+>=20
+>=20
+
+
+
+--7DO5AaGCk89r4vaK
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE7AbCa0kOsMJ4cx0j+gRsbIfe744FAl8L9K8ACgkQ+gRsbIfe
+747xhxAApBto7Dbd7UotsciB3ZqhS3Rg74Hrfr/+WoBAk94f18vyobZG69zfN1uO
+i8xzQr4C5LnN2gVr9R2EoOSYxaddNvXmog5evd6nsgW1SboyUUZBBZ9P/OXqrzXr
+GUpbP/aYt0ITuUCoa7zyvnGDom4S+u+/RV4++0fnKU+9iv6KxHUHxO/jQ6uz0eBN
+JlhHTN2i/4ML6j6w97vx4ALqfTxkxAmZMlvvMGboqHbMeQybiPwQ/4qiEBQPexdK
+1YFrORjBseJF9VPK8vbVBB9qBe7bAKvlaETlWHCqsUmjLbf7rwBUu9VeO9AMydZ2
+XwD7OzOv8JLZO/rpAvn1wPWaFUfInUwObgHXTXEYtvs02VrMoODYVJWxCtVK6Ldj
+ESB812VmuqD+ukBzQim1tfzovuFB2tvJH0DwnzZc5e47trUP0Im5E8+nUW9erkrP
+nlpXrH522wnLTMONaKvFIGaa1gzI1056f51OmnSY+iFrQMSnT8LRFPGXB7WrnGqz
+wBz+K7C0+qkuyoIw+D4MfS6X1etpszwkCFFpbQHT5uSM3ce0m8LMUYwIBESWn/Vr
+xn0KQJQc5P8m4v8DRYX0+uIWjsuo2Pev3WciLA6dvrREz6g+gnJE/dZq3W63rLsi
+oLy5hJTjwGfmn9pc7gLC2Ma+8BN7MaRLZvbxT+6IvJUcHhsMF+o=
+=u72M
+-----END PGP SIGNATURE-----
+
+--7DO5AaGCk89r4vaK--
