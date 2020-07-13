@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 315DE21DB8B
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:18:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B665521DB85
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:18:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730300AbgGMQST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 12:18:19 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28290 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730216AbgGMQR5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 12:17:57 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06DGFtOV011432
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 09:17:55 -0700
+        id S1730271AbgGMQSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 12:18:10 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:37942 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730249AbgGMQR7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 12:17:59 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06DFx6BD004753
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 09:17:58 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=uZ5OiSCqD0DmW5Uw4dTL9xAS57xqU6hIJWIb+EQoamQ=;
- b=Bfi0+IVHwfxPCDHWvleSD+1d+4nQRCqe5oAdszxHt57q510MthVocMHQRQEUN1j4RqMN
- 74xC6GYDSm/1jVBiX7Kf2OeomS5wrMpQ14oEGqw8fXkabgFC1oR57PF8Ed+s8jfWCxeb
- 3egvweg/12ogK/tuhwEsJMxjEMq32hsQMCg= 
+ bh=WUegomKQKW2LQVWQsosnuyWh1vLk5gHRniVxWJW7c8g=;
+ b=G4rN0wDQSmTHy+2+wDX/leCcTCqJwVfyP7ckIUJnvt7SrcKzXFBkq1Hsy7TzjXM5p803
+ nLzDGrjNPaOD2S2Hmib9mmDFWI8cjxySEuUIBHXq2Gu0g7xRYieSRQzybAZY7opxA1LV
+ k0nS9fDZpQ2lLNyBUXFNg/YQPo3j7JwRsI4= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 327wppdab5-3
+        by mx0a-00082601.pphosted.com with ESMTP id 327b8hrbkp-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 09:17:55 -0700
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 09:17:58 -0700
 Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1979.3; Mon, 13 Jul 2020 09:17:53 -0700
 Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 0C5963702082; Mon, 13 Jul 2020 09:17:39 -0700 (PDT)
+        id 477823701B4A; Mon, 13 Jul 2020 09:17:41 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Yonghong Song <yhs@fb.com>
 Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         Martin KaFai Lau <kafai@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 01/13] bpf: refactor bpf_iter_reg to have separate seq_info member
-Date:   Mon, 13 Jul 2020 09:17:39 -0700
-Message-ID: <20200713161739.3076375-1-yhs@fb.com>
+Subject: [PATCH bpf-next 02/13] bpf: refactor to provide aux info to bpf_iter_init_seq_priv_t
+Date:   Mon, 13 Jul 2020 09:17:41 -0700
+Message-ID: <20200713161741.3076493-1-yhs@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200713161739.3076283-1-yhs@fb.com>
 References: <20200713161739.3076283-1-yhs@fb.com>
@@ -51,318 +51,174 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-13_15:2020-07-13,2020-07-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- suspectscore=8 phishscore=0 impostorscore=0 malwarescore=0 spamscore=0
- priorityscore=1501 bulkscore=0 adultscore=0 mlxscore=0 mlxlogscore=947
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007130120
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
+ mlxlogscore=928 phishscore=0 impostorscore=0 clxscore=1015 bulkscore=0
+ spamscore=0 adultscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007130119
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no functionality change for this patch.
-Struct bpf_iter_reg is used to register a bpf_iter target,
-which includes information for both prog_load, link_create
-and seq_file creation.
-
-This patch puts fields related seq_file creation into
-a different structure. This will be useful for map
-elements iterator where one iterator covers different
-map types and different map types may have different
-seq_ops, init/fini private_data function and
-private_data size.
+This patch refactored target bpf_iter_init_seq_priv_t callback
+function to accept additional information. This will be needed
+in later patches for map element targets since a particular
+map should be passed to traverse elements for that particular
+map. In the future, other information may be passed to target
+as well, e.g., pid, cgroup id, etc. to customize the iterator.
 
 Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- include/linux/bpf.h      | 17 ++++++++++-------
- kernel/bpf/bpf_iter.c    | 12 ++++++------
- kernel/bpf/map_iter.c    |  8 ++++++--
- kernel/bpf/task_iter.c   | 16 ++++++++++++----
- net/ipv4/tcp_ipv4.c      |  8 ++++++--
- net/ipv4/udp.c           |  8 ++++++--
- net/ipv6/route.c         |  8 ++++++--
- net/netlink/af_netlink.c |  8 ++++++--
- 8 files changed, 58 insertions(+), 27 deletions(-)
+ fs/proc/proc_net.c      | 2 +-
+ include/linux/bpf.h     | 7 ++++++-
+ include/linux/proc_fs.h | 3 ++-
+ kernel/bpf/bpf_iter.c   | 2 +-
+ kernel/bpf/task_iter.c  | 2 +-
+ net/ipv4/tcp_ipv4.c     | 4 ++--
+ net/ipv4/udp.c          | 4 ++--
+ 7 files changed, 15 insertions(+), 9 deletions(-)
 
+diff --git a/fs/proc/proc_net.c b/fs/proc/proc_net.c
+index dba63b2429f0..ed8a6306990c 100644
+--- a/fs/proc/proc_net.c
++++ b/fs/proc/proc_net.c
+@@ -98,7 +98,7 @@ static const struct proc_ops proc_net_seq_ops =3D {
+ 	.proc_release	=3D seq_release_net,
+ };
+=20
+-int bpf_iter_init_seq_net(void *priv_data)
++int bpf_iter_init_seq_net(void *priv_data, struct bpf_iter_aux_info *aux=
+)
+ {
+ #ifdef CONFIG_NET_NS
+ 	struct seq_net_private *p =3D priv_data;
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 0cd7f6884c5c..deb90ec679b5 100644
+index deb90ec679b5..97c6e2605978 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -37,6 +37,15 @@ struct seq_operations;
+@@ -33,11 +33,13 @@ struct btf;
+ struct btf_type;
+ struct exception_table_entry;
+ struct seq_operations;
++struct bpf_iter_aux_info;
+=20
  extern struct idr btf_idr;
  extern spinlock_t btf_idr_lock;
 =20
-+typedef int (*bpf_iter_init_seq_priv_t)(void *private_data);
-+typedef void (*bpf_iter_fini_seq_priv_t)(void *private_data);
-+struct bpf_iter_seq_info {
-+	const struct seq_operations *seq_ops;
-+	bpf_iter_init_seq_priv_t init_seq_private;
-+	bpf_iter_fini_seq_priv_t fini_seq_private;
-+	u32 seq_priv_size;
-+};
-+
- /* map is generic key/value storage optionally accesible by eBPF program=
-s */
- struct bpf_map_ops {
- 	/* funcs callable from userspace (via syscall) */
-@@ -1183,18 +1192,12 @@ int bpf_obj_get_user(const char __user *pathname,=
- int flags);
+-typedef int (*bpf_iter_init_seq_priv_t)(void *private_data);
++typedef int (*bpf_iter_init_seq_priv_t)(void *private_data,
++					struct bpf_iter_aux_info *aux);
+ typedef void (*bpf_iter_fini_seq_priv_t)(void *private_data);
+ struct bpf_iter_seq_info {
+ 	const struct seq_operations *seq_ops;
+@@ -1192,6 +1194,9 @@ int bpf_obj_get_user(const char __user *pathname, i=
+nt flags);
  	extern int bpf_iter_ ## target(args);			\
  	int __init bpf_iter_ ## target(args) { return 0; }
 =20
--typedef int (*bpf_iter_init_seq_priv_t)(void *private_data);
--typedef void (*bpf_iter_fini_seq_priv_t)(void *private_data);
--
++struct bpf_iter_aux_info {
++};
++
  #define BPF_ITER_CTX_ARG_MAX 2
  struct bpf_iter_reg {
  	const char *target;
--	const struct seq_operations *seq_ops;
--	bpf_iter_init_seq_priv_t init_seq_private;
--	bpf_iter_fini_seq_priv_t fini_seq_private;
--	u32 seq_priv_size;
- 	u32 ctx_arg_info_size;
- 	struct bpf_ctx_arg_aux ctx_arg_info[BPF_ITER_CTX_ARG_MAX];
-+	const struct bpf_iter_seq_info *seq_info;
- };
+diff --git a/include/linux/proc_fs.h b/include/linux/proc_fs.h
+index d1eed1b43651..2df965cd0974 100644
+--- a/include/linux/proc_fs.h
++++ b/include/linux/proc_fs.h
+@@ -133,7 +133,8 @@ struct proc_dir_entry *proc_create_net_single_write(c=
+onst char *name, umode_t mo
+ 						    void *data);
+ extern struct pid *tgid_pidfd_to_pid(const struct file *file);
 =20
- struct bpf_iter_meta {
+-extern int bpf_iter_init_seq_net(void *priv_data);
++struct bpf_iter_aux_info;
++extern int bpf_iter_init_seq_net(void *priv_data, struct bpf_iter_aux_in=
+fo *aux);
+ extern void bpf_iter_fini_seq_net(void *priv_data);
+=20
+ #ifdef CONFIG_PROC_PID_ARCH_STATUS
 diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
-index dd612b80b9fe..5b2387d6aa1f 100644
+index 5b2387d6aa1f..8fa94cb1b5a0 100644
 --- a/kernel/bpf/bpf_iter.c
 +++ b/kernel/bpf/bpf_iter.c
-@@ -218,8 +218,8 @@ static int iter_release(struct inode *inode, struct f=
-ile *file)
- 	iter_priv =3D container_of(seq->private, struct bpf_iter_priv_data,
- 				 target_private);
-=20
--	if (iter_priv->tinfo->reg_info->fini_seq_private)
--		iter_priv->tinfo->reg_info->fini_seq_private(seq->private);
-+	if (iter_priv->tinfo->reg_info->seq_info->fini_seq_private)
-+		iter_priv->tinfo->reg_info->seq_info->fini_seq_private(seq->private);
-=20
- 	bpf_prog_put(iter_priv->prog);
- 	seq->private =3D iter_priv;
-@@ -433,16 +433,16 @@ static int prepare_seq_file(struct file *file, stru=
-ct bpf_iter_link *link)
-=20
- 	tinfo =3D link->tinfo;
- 	total_priv_dsize =3D offsetof(struct bpf_iter_priv_data, target_private=
-) +
--			   tinfo->reg_info->seq_priv_size;
--	priv_data =3D __seq_open_private(file, tinfo->reg_info->seq_ops,
-+			   tinfo->reg_info->seq_info->seq_priv_size;
-+	priv_data =3D __seq_open_private(file, tinfo->reg_info->seq_info->seq_o=
-ps,
- 				       total_priv_dsize);
- 	if (!priv_data) {
- 		err =3D -ENOMEM;
- 		goto release_prog;
+@@ -442,7 +442,7 @@ static int prepare_seq_file(struct file *file, struct=
+ bpf_iter_link *link)
  	}
 =20
--	if (tinfo->reg_info->init_seq_private) {
--		err =3D tinfo->reg_info->init_seq_private(priv_data->target_private);
-+	if (tinfo->reg_info->seq_info->init_seq_private) {
-+		err =3D tinfo->reg_info->seq_info->init_seq_private(priv_data->target_=
+ 	if (tinfo->reg_info->seq_info->init_seq_private) {
+-		err =3D tinfo->reg_info->seq_info->init_seq_private(priv_data->target_=
 private);
++		err =3D tinfo->reg_info->seq_info->init_seq_private(priv_data->target_=
+private, NULL);
  		if (err)
  			goto release_seq_file;
  	}
-diff --git a/kernel/bpf/map_iter.c b/kernel/bpf/map_iter.c
-index c69071e334bf..ae18b3a86096 100644
---- a/kernel/bpf/map_iter.c
-+++ b/kernel/bpf/map_iter.c
-@@ -81,17 +81,21 @@ static const struct seq_operations bpf_map_seq_ops =3D=
- {
- 	.show	=3D bpf_map_seq_show,
- };
-=20
--static const struct bpf_iter_reg bpf_map_reg_info =3D {
--	.target			=3D "bpf_map",
-+static const struct bpf_iter_seq_info bpf_map_seq_info =3D {
- 	.seq_ops		=3D &bpf_map_seq_ops,
- 	.init_seq_private	=3D NULL,
- 	.fini_seq_private	=3D NULL,
- 	.seq_priv_size		=3D sizeof(struct bpf_iter_seq_map_info),
-+};
-+
-+static const struct bpf_iter_reg bpf_map_reg_info =3D {
-+	.target			=3D "bpf_map",
- 	.ctx_arg_info_size	=3D 1,
- 	.ctx_arg_info		=3D {
- 		{ offsetof(struct bpf_iter__bpf_map, map),
- 		  PTR_TO_BTF_ID_OR_NULL },
- 	},
-+	.seq_info		=3D &bpf_map_seq_info,
- };
-=20
- static int __init bpf_map_iter_init(void)
 diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-index 4dbf2b6035f8..2b384ccce907 100644
+index 2b384ccce907..76b70946e4cb 100644
 --- a/kernel/bpf/task_iter.c
 +++ b/kernel/bpf/task_iter.c
-@@ -312,25 +312,32 @@ static const struct seq_operations task_file_seq_op=
-s =3D {
- 	.show	=3D task_file_seq_show,
- };
+@@ -290,7 +290,7 @@ static void task_file_seq_stop(struct seq_file *seq, =
+void *v)
+ 	}
+ }
 =20
--static const struct bpf_iter_reg task_reg_info =3D {
--	.target			=3D "task",
-+static const struct bpf_iter_seq_info task_seq_info =3D {
- 	.seq_ops		=3D &task_seq_ops,
- 	.init_seq_private	=3D init_seq_pidns,
- 	.fini_seq_private	=3D fini_seq_pidns,
- 	.seq_priv_size		=3D sizeof(struct bpf_iter_seq_task_info),
-+};
-+
-+static const struct bpf_iter_reg task_reg_info =3D {
-+	.target			=3D "task",
- 	.ctx_arg_info_size	=3D 1,
- 	.ctx_arg_info		=3D {
- 		{ offsetof(struct bpf_iter__task, task),
- 		  PTR_TO_BTF_ID_OR_NULL },
- 	},
-+	.seq_info		=3D &task_seq_info,
- };
-=20
--static const struct bpf_iter_reg task_file_reg_info =3D {
--	.target			=3D "task_file",
-+static const struct bpf_iter_seq_info task_file_seq_info =3D {
- 	.seq_ops		=3D &task_file_seq_ops,
- 	.init_seq_private	=3D init_seq_pidns,
- 	.fini_seq_private	=3D fini_seq_pidns,
- 	.seq_priv_size		=3D sizeof(struct bpf_iter_seq_task_file_info),
-+};
-+
-+static const struct bpf_iter_reg task_file_reg_info =3D {
-+	.target			=3D "task_file",
- 	.ctx_arg_info_size	=3D 2,
- 	.ctx_arg_info		=3D {
- 		{ offsetof(struct bpf_iter__task_file, task),
-@@ -338,6 +345,7 @@ static const struct bpf_iter_reg task_file_reg_info =3D=
+-static int init_seq_pidns(void *priv_data)
++static int init_seq_pidns(void *priv_data, struct bpf_iter_aux_info *aux=
+)
  {
- 		{ offsetof(struct bpf_iter__task_file, file),
- 		  PTR_TO_BTF_ID_OR_NULL },
- 	},
-+	.seq_info		=3D &task_file_seq_info,
- };
+ 	struct bpf_iter_seq_task_common *common =3D priv_data;
 =20
- static int __init task_iter_init(void)
 diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index ea0df9fd7618..d204aaee17ea 100644
+index d204aaee17ea..b6f5fdfca668 100644
 --- a/net/ipv4/tcp_ipv4.c
 +++ b/net/ipv4/tcp_ipv4.c
-@@ -2942,17 +2942,21 @@ static void bpf_iter_fini_tcp(void *priv_data)
- 	bpf_iter_fini_seq_net(priv_data);
- }
+@@ -2916,7 +2916,7 @@ static struct pernet_operations __net_initdata tcp_=
+sk_ops =3D {
+ DEFINE_BPF_ITER_FUNC(tcp, struct bpf_iter_meta *meta,
+ 		     struct sock_common *sk_common, uid_t uid)
 =20
--static const struct bpf_iter_reg tcp_reg_info =3D {
--	.target			=3D "tcp",
-+static const struct bpf_iter_seq_info tcp_seq_info =3D {
- 	.seq_ops		=3D &bpf_iter_tcp_seq_ops,
- 	.init_seq_private	=3D bpf_iter_init_tcp,
- 	.fini_seq_private	=3D bpf_iter_fini_tcp,
- 	.seq_priv_size		=3D sizeof(struct tcp_iter_state),
-+};
-+
-+static const struct bpf_iter_reg tcp_reg_info =3D {
-+	.target			=3D "tcp",
- 	.ctx_arg_info_size	=3D 1,
- 	.ctx_arg_info		=3D {
- 		{ offsetof(struct bpf_iter__tcp, sk_common),
- 		  PTR_TO_BTF_ID_OR_NULL },
- 	},
-+	.seq_info		=3D &tcp_seq_info,
- };
+-static int bpf_iter_init_tcp(void *priv_data)
++static int bpf_iter_init_tcp(void *priv_data, struct bpf_iter_aux_info *=
+aux)
+ {
+ 	struct tcp_iter_state *st =3D priv_data;
+ 	struct tcp_seq_afinfo *afinfo;
+@@ -2928,7 +2928,7 @@ static int bpf_iter_init_tcp(void *priv_data)
 =20
- static void __init bpf_iter_register(void)
+ 	afinfo->family =3D AF_UNSPEC;
+ 	st->bpf_seq_afinfo =3D afinfo;
+-	ret =3D bpf_iter_init_seq_net(priv_data);
++	ret =3D bpf_iter_init_seq_net(priv_data, aux);
+ 	if (ret)
+ 		kfree(afinfo);
+ 	return ret;
 diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 31530129f137..9695756559e1 100644
+index 9695756559e1..5184a517abc1 100644
 --- a/net/ipv4/udp.c
 +++ b/net/ipv4/udp.c
-@@ -3177,17 +3177,21 @@ static void bpf_iter_fini_udp(void *priv_data)
- 	bpf_iter_fini_seq_net(priv_data);
- }
+@@ -3150,7 +3150,7 @@ static struct pernet_operations __net_initdata udp_=
+sysctl_ops =3D {
+ DEFINE_BPF_ITER_FUNC(udp, struct bpf_iter_meta *meta,
+ 		     struct udp_sock *udp_sk, uid_t uid, int bucket)
 =20
--static const struct bpf_iter_reg udp_reg_info =3D {
--	.target			=3D "udp",
-+static const struct bpf_iter_seq_info udp_seq_info =3D {
- 	.seq_ops		=3D &bpf_iter_udp_seq_ops,
- 	.init_seq_private	=3D bpf_iter_init_udp,
- 	.fini_seq_private	=3D bpf_iter_fini_udp,
- 	.seq_priv_size		=3D sizeof(struct udp_iter_state),
-+};
-+
-+static const struct bpf_iter_reg udp_reg_info =3D {
-+	.target			=3D "udp",
- 	.ctx_arg_info_size	=3D 1,
- 	.ctx_arg_info		=3D {
- 		{ offsetof(struct bpf_iter__udp, udp_sk),
- 		  PTR_TO_BTF_ID_OR_NULL },
- 	},
-+	.seq_info		=3D &udp_seq_info,
- };
-=20
- static void __init bpf_iter_register(void)
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 5852039ca9cf..529fe472749e 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -6420,17 +6420,21 @@ void __init ip6_route_init_special_entries(void)
- #if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
- DEFINE_BPF_ITER_FUNC(ipv6_route, struct bpf_iter_meta *meta, struct fib6=
-_info *rt)
-=20
--static const struct bpf_iter_reg ipv6_route_reg_info =3D {
--	.target			=3D "ipv6_route",
-+static const struct bpf_iter_seq_info ipv6_route_seq_info =3D {
- 	.seq_ops		=3D &ipv6_route_seq_ops,
- 	.init_seq_private	=3D bpf_iter_init_seq_net,
- 	.fini_seq_private	=3D bpf_iter_fini_seq_net,
- 	.seq_priv_size		=3D sizeof(struct ipv6_route_iter),
-+};
-+
-+static const struct bpf_iter_reg ipv6_route_reg_info =3D {
-+	.target			=3D "ipv6_route",
- 	.ctx_arg_info_size	=3D 1,
- 	.ctx_arg_info		=3D {
- 		{ offsetof(struct bpf_iter__ipv6_route, rt),
- 		  PTR_TO_BTF_ID_OR_NULL },
- 	},
-+	.seq_info		=3D &ipv6_route_seq_info,
- };
-=20
- static int __init bpf_iter_register(void)
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 4f2c3b14ddbf..e7ab50e035e8 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2803,17 +2803,21 @@ static const struct rhashtable_params netlink_rha=
-shtable_params =3D {
- };
-=20
- #if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
--static const struct bpf_iter_reg netlink_reg_info =3D {
--	.target			=3D "netlink",
-+static const struct bpf_iter_seq_info netlink_seq_info =3D {
- 	.seq_ops		=3D &netlink_seq_ops,
- 	.init_seq_private	=3D bpf_iter_init_seq_net,
- 	.fini_seq_private	=3D bpf_iter_fini_seq_net,
- 	.seq_priv_size		=3D sizeof(struct nl_seq_iter),
-+};
-+
-+static const struct bpf_iter_reg netlink_reg_info =3D {
-+	.target			=3D "netlink",
- 	.ctx_arg_info_size	=3D 1,
- 	.ctx_arg_info		=3D {
- 		{ offsetof(struct bpf_iter__netlink, sk),
- 		  PTR_TO_BTF_ID_OR_NULL },
- 	},
-+	.seq_info		=3D &netlink_seq_info,
- };
-=20
- static int __init bpf_iter_register(void)
+-static int bpf_iter_init_udp(void *priv_data)
++static int bpf_iter_init_udp(void *priv_data, struct bpf_iter_aux_info *=
+aux)
+ {
+ 	struct udp_iter_state *st =3D priv_data;
+ 	struct udp_seq_afinfo *afinfo;
+@@ -3163,7 +3163,7 @@ static int bpf_iter_init_udp(void *priv_data)
+ 	afinfo->family =3D AF_UNSPEC;
+ 	afinfo->udp_table =3D &udp_table;
+ 	st->bpf_seq_afinfo =3D afinfo;
+-	ret =3D bpf_iter_init_seq_net(priv_data);
++	ret =3D bpf_iter_init_seq_net(priv_data, aux);
+ 	if (ret)
+ 		kfree(afinfo);
+ 	return ret;
 --=20
 2.24.1
 
