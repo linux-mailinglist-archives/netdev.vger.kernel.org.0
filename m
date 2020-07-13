@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47FBA21D666
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 14:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A408021D660
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 14:56:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729756AbgGMM4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 08:56:14 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:48690 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729510AbgGMM4N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729729AbgGMM4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 13 Jul 2020 08:56:13 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:48702 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729631AbgGMM4M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 08:56:12 -0400
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 10A29200C60;
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 447C02014F5;
         Mon, 13 Jul 2020 14:56:11 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 0493E200C8C;
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3769F2014F3;
         Mon, 13 Jul 2020 14:56:11 +0200 (CEST)
 Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id D2DC8204BE;
-        Mon, 13 Jul 2020 14:56:10 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 11CB9204BE;
+        Mon, 13 Jul 2020 14:56:11 +0200 (CEST)
 From:   Claudiu Manoil <claudiu.manoil@nxp.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next 2/6] enetc: Factor out the traffic start/stop procedures
-Date:   Mon, 13 Jul 2020 15:56:06 +0300
-Message-Id: <1594644970-13531-3-git-send-email-claudiu.manoil@nxp.com>
+Subject: [PATCH net-next 3/6] enetc: Fix interrupt coalescing register naming
+Date:   Mon, 13 Jul 2020 15:56:07 +0300
+Message-Id: <1594644970-13531-4-git-send-email-claudiu.manoil@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1594644970-13531-1-git-send-email-claudiu.manoil@nxp.com>
 References: <1594644970-13531-1-git-send-email-claudiu.manoil@nxp.com>
@@ -35,172 +35,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A reliable traffic pause (and reconfiguration) procedure
-is needed to be able to safely make h/w configuration
-changes during run-time, like changing the mode in which the
-interrupts are operating (i.e. with or without coalescing),
-as opposed to making on-the-fly register updates that
-may be subject to h/w or s/w concurrency issues.
-To this end, the code responsible of the run-time device
-configurations that basically starts resp. stops the traffic
-flow through the device has been extracted from the
-the enetc_open/_close procedures, to the separate standalone
-enetc_start/_stop procedures. Traffic stop should be as
-graceful as possible, it lets the executing napi threads to
-to finish while the interrupts stay disabled.  But since
-the napi thread will try to re-enable interrupts by clearing
-the device's unmask register, the enable_irq/ disable_irq
-API has been used to avoid this potential concurrency issue
-and make the traffic pause procedure more reliable.
+Interrupt coalescing registers naming in the current revision
+of the Ref Man (RM) is ICR, deprecating the ICIR name used
+in earlier (draft) versions of the RM.
 
 Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc.c | 74 +++++++++++++-------
- 1 file changed, 49 insertions(+), 25 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c         | 4 ++--
+ drivers/net/ethernet/freescale/enetc/enetc_ethtool.c | 2 +-
+ drivers/net/ethernet/freescale/enetc/enetc_hw.h      | 8 ++++----
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index d91e52618681..51a1c97aedac 100644
+index 51a1c97aedac..be594c7af538 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -1264,6 +1264,7 @@ static int enetc_setup_irqs(struct enetc_ndev_priv *priv)
- 			dev_err(priv->dev, "request_irq() failed!\n");
- 			goto irq_err;
- 		}
-+		disable_irq(irq);
+@@ -1140,7 +1140,7 @@ static void enetc_setup_txbdr(struct enetc_hw *hw, struct enetc_bdr *tx_ring)
+ 	tx_ring->next_to_clean = enetc_txbdr_rd(hw, idx, ENETC_TBCIR);
  
- 		v->tbier_base = hw->reg + ENETC_BDR(TX, 0, ENETC_TBIER);
- 		v->rbier = hw->reg + ENETC_BDR(RX, i, ENETC_RBIER);
-@@ -1306,7 +1307,7 @@ static void enetc_free_irqs(struct enetc_ndev_priv *priv)
- 	}
- }
+ 	/* enable Tx ints by setting pkt thr to 1 */
+-	enetc_txbdr_wr(hw, idx, ENETC_TBICIR0, ENETC_TBICIR0_ICEN | 0x1);
++	enetc_txbdr_wr(hw, idx, ENETC_TBICR0, ENETC_TBICR0_ICEN | 0x1);
  
--static void enetc_enable_interrupts(struct enetc_ndev_priv *priv)
-+static void enetc_setup_interrupts(struct enetc_ndev_priv *priv)
- {
- 	int i;
+ 	tbmr = ENETC_TBMR_EN;
+ 	if (tx_ring->ndev->features & NETIF_F_HW_VLAN_CTAG_TX)
+@@ -1174,7 +1174,7 @@ static void enetc_setup_rxbdr(struct enetc_hw *hw, struct enetc_bdr *rx_ring)
+ 	enetc_rxbdr_wr(hw, idx, ENETC_RBPIR, 0);
  
-@@ -1322,7 +1323,7 @@ static void enetc_enable_interrupts(struct enetc_ndev_priv *priv)
- 	}
- }
+ 	/* enable Rx ints by setting pkt thr to 1 */
+-	enetc_rxbdr_wr(hw, idx, ENETC_RBICIR0, ENETC_RBICIR0_ICEN | 0x1);
++	enetc_rxbdr_wr(hw, idx, ENETC_RBICR0, ENETC_RBICR0_ICEN | 0x1);
  
--static void enetc_disable_interrupts(struct enetc_ndev_priv *priv)
-+static void enetc_clear_interrupts(struct enetc_ndev_priv *priv)
- {
- 	int i;
+ 	rbmr = ENETC_RBMR_EN;
  
-@@ -1369,10 +1370,33 @@ static int enetc_phy_connect(struct net_device *ndev)
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+index 34bd1f3fb415..8aeaa3de0012 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+@@ -19,7 +19,7 @@ static const u32 enetc_txbdr_regs[] = {
  
-+static void enetc_start(struct net_device *ndev)
-+{
-+	struct enetc_ndev_priv *priv = netdev_priv(ndev);
-+	int i;
-+
-+	enetc_setup_interrupts(priv);
-+
-+	for (i = 0; i < priv->bdr_int_num; i++) {
-+		int irq = pci_irq_vector(priv->si->pdev,
-+					 ENETC_BDR_INT_BASE_IDX + i);
-+
-+		napi_enable(&priv->int_vector[i]->napi);
-+		enable_irq(irq);
-+	}
-+
-+	if (ndev->phydev)
-+		phy_start(ndev->phydev);
-+	else
-+		netif_carrier_on(ndev);
-+
-+	netif_tx_start_all_queues(ndev);
-+}
-+
- int enetc_open(struct net_device *ndev)
- {
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
--	int i, err;
-+	int err;
+ static const u32 enetc_rxbdr_regs[] = {
+ 	ENETC_RBMR, ENETC_RBSR, ENETC_RBBSR, ENETC_RBCIR, ENETC_RBBAR0,
+-	ENETC_RBBAR1, ENETC_RBPIR, ENETC_RBLENR, ENETC_RBICIR0, ENETC_RBIER
++	ENETC_RBBAR1, ENETC_RBPIR, ENETC_RBLENR, ENETC_RBICR0, ENETC_RBIER
+ };
  
- 	err = enetc_setup_irqs(priv);
- 	if (err)
-@@ -1390,8 +1414,6 @@ int enetc_open(struct net_device *ndev)
- 	if (err)
- 		goto err_alloc_rx;
+ static const u32 enetc_port_regs[] = {
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+index fc357bc56835..05bb4c525897 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
++++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+@@ -121,8 +121,8 @@ enum enetc_bdr_type {TX, RX};
+ #define ENETC_RBIER	0xa0
+ #define ENETC_RBIER_RXTIE	BIT(0)
+ #define ENETC_RBIDR	0xa4
+-#define ENETC_RBICIR0	0xa8
+-#define ENETC_RBICIR0_ICEN	BIT(31)
++#define ENETC_RBICR0	0xa8
++#define ENETC_RBICR0_ICEN	BIT(31)
  
--	enetc_setup_bdrs(priv);
--
- 	err = netif_set_real_num_tx_queues(ndev, priv->num_tx_rings);
- 	if (err)
- 		goto err_set_queues;
-@@ -1400,17 +1422,8 @@ int enetc_open(struct net_device *ndev)
- 	if (err)
- 		goto err_set_queues;
+ /* TX BDR reg offsets */
+ #define ENETC_TBMR	0
+@@ -141,8 +141,8 @@ enum enetc_bdr_type {TX, RX};
+ #define ENETC_TBIER	0xa0
+ #define ENETC_TBIER_TXTIE	BIT(0)
+ #define ENETC_TBIDR	0xa4
+-#define ENETC_TBICIR0	0xa8
+-#define ENETC_TBICIR0_ICEN	BIT(31)
++#define ENETC_TBICR0	0xa8
++#define ENETC_TBICR0_ICEN	BIT(31)
  
--	for (i = 0; i < priv->bdr_int_num; i++)
--		napi_enable(&priv->int_vector[i]->napi);
--
--	enetc_enable_interrupts(priv);
--
--	if (ndev->phydev)
--		phy_start(ndev->phydev);
--	else
--		netif_carrier_on(ndev);
--
--	netif_tx_start_all_queues(ndev);
-+	enetc_setup_bdrs(priv);
-+	enetc_start(ndev);
+ #define ENETC_RTBLENR_LEN(n)	((n) & ~0x7)
  
- 	return 0;
- 
-@@ -1427,28 +1440,39 @@ int enetc_open(struct net_device *ndev)
- 	return err;
- }
- 
--int enetc_close(struct net_device *ndev)
-+static void enetc_stop(struct net_device *ndev)
- {
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
- 	int i;
- 
- 	netif_tx_stop_all_queues(ndev);
- 
--	if (ndev->phydev) {
--		phy_stop(ndev->phydev);
--		phy_disconnect(ndev->phydev);
--	} else {
--		netif_carrier_off(ndev);
--	}
--
- 	for (i = 0; i < priv->bdr_int_num; i++) {
-+		int irq = pci_irq_vector(priv->si->pdev,
-+					 ENETC_BDR_INT_BASE_IDX + i);
-+
-+		disable_irq(irq);
- 		napi_synchronize(&priv->int_vector[i]->napi);
- 		napi_disable(&priv->int_vector[i]->napi);
- 	}
- 
--	enetc_disable_interrupts(priv);
-+	if (ndev->phydev)
-+		phy_stop(ndev->phydev);
-+	else
-+		netif_carrier_off(ndev);
-+
-+	enetc_clear_interrupts(priv);
-+}
-+
-+int enetc_close(struct net_device *ndev)
-+{
-+	struct enetc_ndev_priv *priv = netdev_priv(ndev);
-+
-+	enetc_stop(ndev);
- 	enetc_clear_bdrs(priv);
- 
-+	if (ndev->phydev)
-+		phy_disconnect(ndev->phydev);
- 	enetc_free_rxtx_rings(priv);
- 	enetc_free_rx_resources(priv);
- 	enetc_free_tx_resources(priv);
 -- 
 2.17.1
 
