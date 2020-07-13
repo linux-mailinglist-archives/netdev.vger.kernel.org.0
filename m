@@ -2,106 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CC3E21D050
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 09:19:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D97BD21D067
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 09:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726725AbgGMHTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 03:19:24 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:44532 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725830AbgGMHTX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 03:19:23 -0400
-Received: by mail-io1-f72.google.com with SMTP id h15so7514024ioj.11
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 00:19:23 -0700 (PDT)
+        id S1729053AbgGMH3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 03:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729027AbgGMH3R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 03:29:17 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F6DC08C5DB
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 00:29:17 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id z15so14544314wrl.8
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 00:29:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4kU8N5DeedpzZY27vYaHJmaCubANM+yECKFDBgJweY4=;
+        b=D7xh6eu++gbVif5cEAGGKdiDsW9xxIY4MmHaAwDepJv1tFzVb7Zi9vbwXIkAq6OSMC
+         ao2hKH3BT4xs6mO1GFJTVEZ+p1It4SRAP0g9VFFPbOgQBlsZOy0TX3yRmAuQxnyUrrNK
+         mtOZKb8/Zj1Qnf2li7fwOFjgLdjMbc1nTKtBc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=DuS2m7AaNNqeN+BW2KHPwRy6Q7htpIhCPiO8CjPBJI4=;
-        b=Va1ViqCXEeLiw56dwdb3AYWaq+E6JdgEy3HOnLSs6rAew4QTbaO8N8huHdT7OQJUIK
-         HxOsjS/IHsMDRSSMnpE6pdFLodTkLXPLL/ZYzJ1qTEoWdvWecYxUaroM/eJWcgmaFLd0
-         nZeX8v/jrImUCKFBt86kJG8oJgFuLHGv0hQptZzqY5Go6I0ZGVOW6aC8kvZ2zImu2Rzf
-         omhmE30zeYcQisjoe3nxGJ/JLELOffpDiHdaOLs7bvwtZggrPL3oBAA+baYQ2ySkfFog
-         qKnlfHcgDANdpYx+evjVCDuMOovSk3zW+SLLZdLIhEWy653ue52Rdch08mANKnkxrQ4L
-         OX1A==
-X-Gm-Message-State: AOAM530Juzp5SwTu2ZfHm77pJ6xcWTTQwiAE5fyW+Qemtik6xKprysSm
-        IXxmTFCXQgLLyf/ixkDS/TA9Jbae+hgoUTv2ou8wWrqgMamm
-X-Google-Smtp-Source: ABdhPJy1Clq0TTXREAVhPodq6tA7Lm+VrI5p0EFOIAJ4aL6belWUAkEtfRVWBLNeXNY791qLas1idj86XtfvSMn69MViZ7c004hf
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4kU8N5DeedpzZY27vYaHJmaCubANM+yECKFDBgJweY4=;
+        b=hiRIKWl4a5D5FcFd0DWWa7Gaap+98QtjwrVl7O+RmlIUerxVI3D3+KkOWg6uugOG14
+         p6t8MNxSjKmlrhOzhxOKxfkDpVFr9bXworUt8L6DVE0suQsDOLBdT/R5NVQtBWfU3qMQ
+         BCU0SITk12qth/XA7lqcT8ZfAo49pPDU149pnGsJrv1f8cqwlctRakVhYksjrc0m+eUZ
+         ujFHiFmBBrOvTMhkjcnL26fBOqB1h8k+WIULD41ylklSrLcfmG5zxRRrF4yRY8jvcCHu
+         WOhuIPNSbkE3KDYV1feyGgwHL50PbHo8LvBSD3dyxIqHppupxPUHW/dmDUCK7q6MvLoI
+         Zsow==
+X-Gm-Message-State: AOAM532Q2qzuVGkWugQkbCh1EuZum73htHrmMH/0DA9ZOhOlcgsR0CMI
+        LSmaJXmRSoeZh2Fj90qeMnj14w==
+X-Google-Smtp-Source: ABdhPJyhZaYuvI1VIdHE2m9jwzvJxy3uMEncr3I2/2Fzsq4u4hxVDd97IeUGkvgBxSbMFMvVXofGqA==
+X-Received: by 2002:a5d:43d0:: with SMTP id v16mr82553551wrr.296.1594625355477;
+        Mon, 13 Jul 2020 00:29:15 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id d13sm21582030wrq.89.2020.07.13.00.29.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jul 2020 00:29:14 -0700 (PDT)
+Subject: Re: linux-next: build failure after merge of the net-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20200713115412.28aac287@canb.auug.org.au>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <e1d2b00a-52d4-e36e-317f-314ac3aecca6@cumulusnetworks.com>
+Date:   Mon, 13 Jul 2020 10:29:13 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:b684:: with SMTP id m4mr62449401ill.153.1594624762684;
- Mon, 13 Jul 2020 00:19:22 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 00:19:22 -0700
-In-Reply-To: <000000000000cbef4a05a8ffc4ef@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000087abf205aa4d82f0@google.com>
-Subject: Re: BUG: using smp_processor_id() in preemptible code in tipc_crypto_xmit
-From:   syzbot <syzbot+263f8c0d007dc09b2dda@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200713115412.28aac287@canb.auug.org.au>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+On 13/07/2020 04:54, Stephen Rothwell wrote:
+> Hi all,
+> 
+> After merging the net-next tree, today's linux-next build (powerpc
+> ppc64_defconfig) failed like this:
+> 
+> net/bridge/br_netlink_tunnel.c: In function '__vlan_tunnel_handle_range':
+> net/bridge/br_netlink_tunnel.c:271:26: error: implicit declaration of function 'br_vlan_can_enter_range'; did you mean 'br_vlan_valid_range'? [-Werror=implicit-function-declaration]
+>   271 |  if (v && curr_change && br_vlan_can_enter_range(v, *v_end)) {
+>       |                          ^~~~~~~~~~~~~~~~~~~~~~~
+>       |                          br_vlan_valid_range
+> 
+> Caused by commit
+> 
+>   94339443686b ("net: bridge: notify on vlan tunnel changes done via the old api")
+> 
+> CONFIG_BRIDGE_VLAN_FILTERING is not set for this build.
+> 
+> I have reverted that commit for today.
+> 
 
-HEAD commit:    4437dd6e Merge tag 'io_uring-5.8-2020-07-12' of git://git...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13a4773f100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=66ad203c2bb6d8b
-dashboard link: https://syzkaller.appspot.com/bug?extid=263f8c0d007dc09b2dda
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=132d41c0900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147f114f100000
+Oops, sorry that's my bad. I mixed br_netlink_tunnel with br_vlan_tunnel, the latter is compiled only
+when bridge vlan filtering is defined.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+263f8c0d007dc09b2dda@syzkaller.appspotmail.com
+Anyway, I'll post a fix ASAP.
 
-tipc: Started in network mode
-tipc: Own node identity aaaaaaaaaa3a, cluster identity 4711
-tipc: Enabled bearer <eth:macsec0>, priority 0
-tipc: TX(aaaaaaaaaa3a): key initiating, rc 1!
-BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor201/6801
-caller is tipc_aead_tfm_next net/tipc/crypto.c:402 [inline]
-caller is tipc_aead_encrypt net/tipc/crypto.c:639 [inline]
-caller is tipc_crypto_xmit+0x80a/0x2790 net/tipc/crypto.c:1605
-CPU: 0 PID: 6801 Comm: syz-executor201 Not tainted 5.8.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- check_preemption_disabled+0x128/0x130 lib/smp_processor_id.c:48
- tipc_aead_tfm_next net/tipc/crypto.c:402 [inline]
- tipc_aead_encrypt net/tipc/crypto.c:639 [inline]
- tipc_crypto_xmit+0x80a/0x2790 net/tipc/crypto.c:1605
- tipc_bearer_xmit_skb+0x180/0x3f0 net/tipc/bearer.c:523
- tipc_enable_bearer+0xb1d/0xdc0 net/tipc/bearer.c:331
- __tipc_nl_bearer_enable+0x2bf/0x390 net/tipc/bearer.c:995
- __tipc_nl_compat_doit net/tipc/netlink_compat.c:361 [inline]
- tipc_nl_compat_doit+0x440/0x640 net/tipc/netlink_compat.c:383
- tipc_nl_compat_handle net/tipc/netlink_compat.c:1268 [inline]
- tipc_nl_compat_recv+0x4ef/0xb40 net/tipc/netlink_compat.c:1311
- genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
- genl_rcv_msg+0x61d/0x980 net/netlink/genetlink.c:731
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:742
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x4476a9
-Code: Bad RIP value.
-RSP: 002b:00007fff2b6d5168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000000
-
+Thanks.
