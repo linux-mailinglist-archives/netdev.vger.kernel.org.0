@@ -2,50 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FC5021E2C1
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6066721E2C6
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:03:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726670AbgGMWAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 18:00:18 -0400
-Received: from mx2.suse.de ([195.135.220.15]:36290 "EHLO mx2.suse.de"
+        id S1726750AbgGMWD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 18:03:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726150AbgGMWAS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 18:00:18 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 1E6AEB5DD;
-        Mon, 13 Jul 2020 22:00:19 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id AB5DE604B9; Tue, 14 Jul 2020 00:00:16 +0200 (CEST)
-Date:   Tue, 14 Jul 2020 00:00:16 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>
-Subject: Re: [RFC] bonding driver terminology change proposal
-Message-ID: <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
-References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
+        id S1726150AbgGMWDZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 18:03:25 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BC60920890;
+        Mon, 13 Jul 2020 22:03:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594677805;
+        bh=N/YyzRx6PFN4ZtWqPXnSIwKQIR1UnjhVILtxnxuJVPI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=flwUTacRh8OWdCsGUr0xCeSVjj8E9DjgS3CXuHsxxqsJ/Tr8onM85jLCea47RZLhz
+         x+dLJa6hPdUO5cwWXrpHXSakXvxSuvohwM4zU940G8Vq6pUn5n6o6ZvUrqdI7cBW8u
+         d1uRmFu2/Y4Yau+CsKN7GWR81uW4XALKfTeOOhBQ=
+Date:   Mon, 13 Jul 2020 15:03:23 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>
+Subject: Re: [PATCH net-next 03/10] net: atlantic: additional per-queue
+ stats
+Message-ID: <20200713150323.2a924a86@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200713114233.436-4-irusskikh@marvell.com>
+References: <20200713114233.436-1-irusskikh@marvell.com>
+        <20200713114233.436-4-irusskikh@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 02:51:39PM -0400, Jarod Wilson wrote:
-> To start out with, I'd like to attempt to eliminate as much of the use
-> of master and slave in the bonding driver as possible. For the most
-> part, I think this can be done without breaking UAPI, but may require
-> changes to anything accessing bond info via proc or sysfs.
+On Mon, 13 Jul 2020 14:42:26 +0300 Igor Russkikh wrote:
+> From: Dmitry Bogdanov <dbogdanov@marvell.com>
+> 
+> This patch adds additional per-queue stats, these could
+> be useful for debugging and diagnostics.
+> 
+> Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
+> Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
+> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 
-Could we, please, avoid breaking existing userspace tools and scripts?
-Massive code churn is one thing and we could certainly bite the bullet
-and live with it (even if I'm still not convinced it would be as great
-idea as some present it) but trading theoretical offense for real and
-palpable harm to existing users is something completely different.
+> diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
+> index 2c96f20f6289..c31d4642d280 100644
+> --- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
+> +++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
+> @@ -1,7 +1,8 @@
+>  /* SPDX-License-Identifier: GPL-2.0-only */
+> -/*
+> - * aQuantia Corporation Network Driver
+> - * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
+> +/* Atlantic Network Driver
+> + *
+> + * Copyright (C) 2014-2019 aQuantia Corporation
+> + * Copyright (C) 2019-2020 Marvell International Ltd.
+>   */
+>  
+>  /* File aq_ring.h: Declaration of functions for Rx/Tx rings. */
+> @@ -93,6 +94,10 @@ struct aq_ring_stats_rx_s {
+>  	u64 bytes;
+>  	u64 lro_packets;
+>  	u64 jumbo_packets;
+> +	u64 alloc_fails;
+> +	u64 skb_alloc_fails;
+> +	u64 polls;
+> +	u64 irqs;
+>  	u64 pg_losts;
+>  	u64 pg_flips;
+>  	u64 pg_reuses;
 
-Or is "don't break userspace" no longer the "first commandment" of linux
-kernel development?
+> @@ -44,6 +45,7 @@ static int aq_vec_poll(struct napi_struct *napi, int budget)
+>  	} else {
+>  		for (i = 0U, ring = self->ring[0];
+>  			self->tx_rings > i; ++i, ring = self->ring[i]) {
+> +			ring[AQ_VEC_RX_ID].stats.rx.polls++;
 
-Michal Kubecek
+You need to use the u64_stats_update_* infrastructure or make these
+stats smaller than u64, cause on non-64bit machines where the stats
+will be updated 32bit-by-32bit meaning readers can see a half-updated
+counter..
+
+>  			if (self->aq_hw_ops->hw_ring_tx_head_update) {
+>  				err = self->aq_hw_ops->hw_ring_tx_head_update(
+>  							self->aq_hw,
+> @@ -314,6 +316,7 @@ irqreturn_t aq_vec_isr(int irq, void *private)
+>  		err = -EINVAL;
+>  		goto err_exit;
+>  	}
+> +	self->ring[0][AQ_VEC_RX_ID].stats.rx.irqs++;
+
+Why do you need this? Every IRQ has a firing counter in
+/proc/interrupts.
+
+>  	napi_schedule(&self->napi);
+>  
+>  err_exit:
