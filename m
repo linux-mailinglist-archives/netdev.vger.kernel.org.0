@@ -2,112 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9B0121DAFB
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 17:59:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A52621DB11
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 18:00:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730204AbgGMP7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 11:59:25 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:34232 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729027AbgGMP7X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 11:59:23 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 5DC39D54C4F417C8F8CB;
-        Mon, 13 Jul 2020 23:56:14 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 13 Jul 2020 23:56:04 +0800
-From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     <hulkci@huawei.com>, Eric Dumazet <eric.dumazet@gmail.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        "Hideaki YOSHIFUJI" <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>
-Subject: [PATCH] ip6_gre: fix null-ptr-deref in ip6gre_init_net()
-Date:   Mon, 13 Jul 2020 23:59:50 +0800
-Message-ID: <20200713155950.71793-1-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1730362AbgGMQAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 12:00:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730258AbgGMQAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 12:00:38 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE214C061755;
+        Mon, 13 Jul 2020 09:00:38 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id b4so12647255qkn.11;
+        Mon, 13 Jul 2020 09:00:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1ojmtWuhoXE+10Oa37xZFid38Sh0C/r73ASNaf7SWHQ=;
+        b=BcFsCnGYuhwgC0vVkdD/AnoRcC7YBT5Yjs0ZBhG9O2O/o2aF4ReqQps/ZfiOOvBgqA
+         7TdbWPHptfqtgF9lXpYr4UxcFudH5gBaIH/lvw9V3sn3BS+xUBL02sVcjXSB2YuZKw4L
+         Qg3Brl1eV+oFR0a/Suuw6b7G80waQicfv/86XRVeTZxW+RLHsvp0kR5BvFzhduGoQP4y
+         DfgQ0jH1/4ZG5a8Rosa40+gmhV1/SyAP869DHnNzsAM6MKWO4WJlgqklInJV7BNe/yBt
+         HaTlBYiY64hQcsMNoCWwXEJW8X72aeF7M4Dx9PXWA6r29kq2Of84dHw49ndrZklGetjK
+         FQZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1ojmtWuhoXE+10Oa37xZFid38Sh0C/r73ASNaf7SWHQ=;
+        b=sEHoXYHv084Pfzm1OaO/tPXb/S3puYfaR90/KmWbfABztkS5ZvUnUIIMlUvc9nvVMt
+         XS+aPRgjYM9fvwabgwEq7/ckaLIWihTxqSsQ7LnjzOzjxnP3qkTSTBCEkUQP4Esoivc1
+         VBGMp27D8ZnPVpWc8OWafBglZY6mmHAKI15wFQTcTQ9OUD82eqgFFgZwhesrfHm/Yz5p
+         yY4WxlUpMPbA1xzUqUkHXqRwfOaMyp/SmXU52z2ujBo8FwM2BuQKP5XA9TFyMjpYAWAt
+         uyZt2aALJ12xVKlRLeEXC+VxLHfkDgVNtIyr8wJQWMDieJwU32OJ4LWgYBLt41bXKanA
+         T32w==
+X-Gm-Message-State: AOAM5330HL44k6df1aB1NoqtVzW9ZIoZ8/k/wdWNakwC1V136TAAR4nl
+        j2dxxm0G+YbHkDFM00JzpR8pGSMqg4eCwJrDZqw=
+X-Google-Smtp-Source: ABdhPJwhM3ZE0lj3C9bvbV7DNY7AXaVeMAwiOMd7/7ldDQfk666wq76gTljckR5j86QwsbuotoGufWvliS8VdCV7FaY=
+X-Received: by 2002:a05:620a:1674:: with SMTP id d20mr248343qko.131.1594656038015;
+ Mon, 13 Jul 2020 09:00:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+References: <20200705195110.405139-1-anarsoul@gmail.com> <20200705195110.405139-2-anarsoul@gmail.com>
+ <DF6CC01A-0282-45E2-A437-2E3E58CC2883@holtmann.org> <CA+E=qVeYT41Wpp4wHgoVFMa9ty-FPsxxvUB-DJDnj07SpWhpjQ@mail.gmail.com>
+ <70578F86-20D3-41C7-A968-83B0605D3526@holtmann.org>
+In-Reply-To: <70578F86-20D3-41C7-A968-83B0605D3526@holtmann.org>
+From:   Vasily Khoruzhick <anarsoul@gmail.com>
+Date:   Mon, 13 Jul 2020 09:00:11 -0700
+Message-ID: <CA+E=qVf_8-nXP=nSbtb49bF8SxF6P_A+5ntsUHKKmONccwkSwA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] Bluetooth: Add new quirk for broken local ext
+ features max_page
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-linux <linux-arm-kernel@lists.infradead.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Ondrej Jirman <megous@megous.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KASAN report null-ptr-deref error when register_netdev() failed:
+On Sun, Jul 12, 2020 at 11:28 PM Marcel Holtmann <marcel@holtmann.org> wrote:
 
-KASAN: null-ptr-deref in range [0x00000000000003c0-0x00000000000003c7]
-CPU: 2 PID: 422 Comm: ip Not tainted 5.8.0-rc4+ #12
-Call Trace:
- ip6gre_init_net+0x4ab/0x580
- ? ip6gre_tunnel_uninit+0x3f0/0x3f0
- ops_init+0xa8/0x3c0
- setup_net+0x2de/0x7e0
- ? rcu_read_lock_bh_held+0xb0/0xb0
- ? ops_init+0x3c0/0x3c0
- ? kasan_unpoison_shadow+0x33/0x40
- ? __kasan_kmalloc.constprop.0+0xc2/0xd0
- copy_net_ns+0x27d/0x530
- create_new_namespaces+0x382/0xa30
- unshare_nsproxy_namespaces+0xa1/0x1d0
- ksys_unshare+0x39c/0x780
- ? walk_process_tree+0x2a0/0x2a0
- ? trace_hardirqs_on+0x4a/0x1b0
- ? _raw_spin_unlock_irq+0x1f/0x30
- ? syscall_trace_enter+0x1a7/0x330
- ? do_syscall_64+0x1c/0xa0
- __x64_sys_unshare+0x2d/0x40
- do_syscall_64+0x56/0xa0
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Hi Marcel,
 
-ip6gre_tunnel_uninit() has set 'ign->fb_tunnel_dev' to NULL, later
-access to ign->fb_tunnel_dev cause null-ptr-deref. Fix it by saving
-'ign->fb_tunnel_dev' to local variable ndev.
+> maybe just the read sync train params command is broken? Can you change the init code and not send it and see if the rest of the init phase proceeds. I would rather have the secure connections actually tested before dismissing it altogether.
 
-Fixes: dafabb6590cb ("ip6_gre: fix use-after-free in ip6gre_tunnel_lookup()")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+I don't think that I have any devices that support secure connections
+to test, I've got only a bluetooth mouse and headphones, both are from
+the 2.0 era.
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 6532bde82b40..3a57fb9ce049 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -1562,17 +1562,18 @@ static void ip6gre_destroy_tunnels(struct net *net, struct list_head *head)
- static int __net_init ip6gre_init_net(struct net *net)
- {
- 	struct ip6gre_net *ign = net_generic(net, ip6gre_net_id);
-+	struct net_device *ndev;
- 	int err;
- 
- 	if (!net_has_fallback_tunnels(net))
- 		return 0;
--	ign->fb_tunnel_dev = alloc_netdev(sizeof(struct ip6_tnl), "ip6gre0",
--					  NET_NAME_UNKNOWN,
--					  ip6gre_tunnel_setup);
--	if (!ign->fb_tunnel_dev) {
-+	ndev = alloc_netdev(sizeof(struct ip6_tnl), "ip6gre0",
-+			    NET_NAME_UNKNOWN, ip6gre_tunnel_setup);
-+	if (!ndev) {
- 		err = -ENOMEM;
- 		goto err_alloc_dev;
- 	}
-+	ign->fb_tunnel_dev = ndev;
- 	dev_net_set(ign->fb_tunnel_dev, net);
- 	/* FB netdevice is special: we have one, and only one per netns.
- 	 * Allowing to move it to another netns is clearly unsafe.
-@@ -1592,7 +1593,7 @@ static int __net_init ip6gre_init_net(struct net *net)
- 	return 0;
- 
- err_reg_dev:
--	free_netdev(ign->fb_tunnel_dev);
-+	free_netdev(ndev);
- err_alloc_dev:
- 	return err;
- }
--- 
-2.25.1
+FWIW unofficial recommendation from Realtek to Pine64 was to avoid
+using any 4.1+ features on this chip. Unfortunately I don't have any
+contacts with Realtek, so I can't confirm that.
 
+> Mind you, there were broken Broadcom implementation of connectionless slave broadcast as well. Maybe this is similar.
+
+I'd prefer to stick to what works unless there's some comprehensive
+test that can figure out what's broken.
+
+Regards,
+Vasily
