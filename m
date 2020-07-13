@@ -2,108 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6066721E2C6
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2595F21E2CC
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 00:04:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbgGMWD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 18:03:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37576 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726150AbgGMWDZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 18:03:25 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BC60920890;
-        Mon, 13 Jul 2020 22:03:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594677805;
-        bh=N/YyzRx6PFN4ZtWqPXnSIwKQIR1UnjhVILtxnxuJVPI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=flwUTacRh8OWdCsGUr0xCeSVjj8E9DjgS3CXuHsxxqsJ/Tr8onM85jLCea47RZLhz
-         x+dLJa6hPdUO5cwWXrpHXSakXvxSuvohwM4zU940G8Vq6pUn5n6o6ZvUrqdI7cBW8u
-         d1uRmFu2/Y4Yau+CsKN7GWR81uW4XALKfTeOOhBQ=
-Date:   Mon, 13 Jul 2020 15:03:23 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        Mark Starovoytov <mstarovoitov@marvell.com>,
-        Dmitry Bogdanov <dbogdanov@marvell.com>
-Subject: Re: [PATCH net-next 03/10] net: atlantic: additional per-queue
- stats
-Message-ID: <20200713150323.2a924a86@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200713114233.436-4-irusskikh@marvell.com>
-References: <20200713114233.436-1-irusskikh@marvell.com>
-        <20200713114233.436-4-irusskikh@marvell.com>
+        id S1726828AbgGMWEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 18:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726150AbgGMWEV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 18:04:21 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29E9C061755
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 15:04:21 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id c16so15199799ioi.9
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 15:04:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pHoQprPw2aCIr6HyWCFN0TjDMXJaJOp3hVYtxTCpWZ4=;
+        b=g8V6jT6ehdpue4fseVB3XNPEKXDkBMjFZnqw1BwRhzquTVHxrQThIyJurltuj73TpU
+         Wn415CT3ymnISgfUuemRvYtsBibWThvHV1dcLLwk7VSLHNiu7phKLFWobkChbrqapkPr
+         OixVkzAZB1YQqZRPzCEXIRNJLxzhWOuPHIELTfy9c4NnFhhCiCKH2CCGzJfsRgb370Vb
+         Rck2S4/jlyDQAP5MBdiA3Bv2lSiQLbOU1JQXDwIoHgYCSJ5SWPs0xyfDk9GyN3+h93FZ
+         NH6kFUsR1lK1OFZ3Rl+oe7f8uRr7l6Yp1Sc1xlAAzZUeb810ncCzklLvphrpJq8UqgNw
+         yBVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pHoQprPw2aCIr6HyWCFN0TjDMXJaJOp3hVYtxTCpWZ4=;
+        b=liK4NoGAy+65pL1b0h3dfKyuz1MZMUs7FPaYo0iUUZdnOBNPrbvI5cmVchRhA5ud/M
+         AxSLwP0xL8WVc27Wn1Yj3OQQP/mH79pC1TmxcCHArz20i8QO76ABbwwsUUIsKL9eSBuO
+         kIpgssTvE9QKo8VMMEIm6q6wqTXo6AOg9b0yDn+fyHDLdT3qnXbVLAjUEkyR5Rlr2ZG3
+         K0KN0HiSCf6ttLDsURu9dUOBEcMdAe+py9KYAWX19u3523BRJx3Fz2nHktd/B/+hn8+u
+         D2j0tyFpg8/fqZcbQHBo4demPdDxVBULJWbixdE3lQcS8Ajt1+jd/pDyAutgzpMtWdTx
+         caog==
+X-Gm-Message-State: AOAM533XT9Y7lCEPBy1IUhUnexCxaH5V9nAjNgBf93Z7ba3AXFGPF0hy
+        Rqe0FLzKa2z1RG1PGa1vJNmO8MR9nGMPGzkifxw=
+X-Google-Smtp-Source: ABdhPJyhqUc0cyk1UrAtA1R2SD3BqOioT9oW8b5XMWorM1VxejizvbuP17nfPnLyBOGt55kYciNYCCXh8Cr4nyquqkA=
+X-Received: by 2002:a05:6602:1581:: with SMTP id e1mr1997838iow.44.1594677861063;
+ Mon, 13 Jul 2020 15:04:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200711212848.20914-1-lariel@mellanox.com> <20200711212848.20914-3-lariel@mellanox.com>
+In-Reply-To: <20200711212848.20914-3-lariel@mellanox.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 13 Jul 2020 15:04:10 -0700
+Message-ID: <CAM_iQpXy-_qVUangkd-V8V_shLRMjRNUpJkrWTZ=xv3sYzzaKQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/4] net/sched: Introduce action hash
+To:     Ariel Levkovich <lariel@mellanox.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Pirko <jiri@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Jul 2020 14:42:26 +0300 Igor Russkikh wrote:
-> From: Dmitry Bogdanov <dbogdanov@marvell.com>
-> 
-> This patch adds additional per-queue stats, these could
-> be useful for debugging and diagnostics.
-> 
-> Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
-> Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
-> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+On Sat, Jul 11, 2020 at 2:28 PM Ariel Levkovich <lariel@mellanox.com> wrote:
+>
+> Allow user to set a packet's hash value using a bpf program.
+>
+> The user provided BPF program is required to compute and return
+> a hash value for the packet which is then stored in skb->hash.
 
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-> index 2c96f20f6289..c31d4642d280 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-> +++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-> @@ -1,7 +1,8 @@
->  /* SPDX-License-Identifier: GPL-2.0-only */
-> -/*
-> - * aQuantia Corporation Network Driver
-> - * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
-> +/* Atlantic Network Driver
-> + *
-> + * Copyright (C) 2014-2019 aQuantia Corporation
-> + * Copyright (C) 2019-2020 Marvell International Ltd.
->   */
->  
->  /* File aq_ring.h: Declaration of functions for Rx/Tx rings. */
-> @@ -93,6 +94,10 @@ struct aq_ring_stats_rx_s {
->  	u64 bytes;
->  	u64 lro_packets;
->  	u64 jumbo_packets;
-> +	u64 alloc_fails;
-> +	u64 skb_alloc_fails;
-> +	u64 polls;
-> +	u64 irqs;
->  	u64 pg_losts;
->  	u64 pg_flips;
->  	u64 pg_reuses;
+Can be done by act_bpf, right?
 
-> @@ -44,6 +45,7 @@ static int aq_vec_poll(struct napi_struct *napi, int budget)
->  	} else {
->  		for (i = 0U, ring = self->ring[0];
->  			self->tx_rings > i; ++i, ring = self->ring[i]) {
-> +			ring[AQ_VEC_RX_ID].stats.rx.polls++;
+>
+> Using this action to set the skb->hash is an alternative to setting
+> it with act_skbedit and can be useful for future HW offload support
+> when the HW hash function is different then the kernel's hash
+> function.
+> By using a bpg program that emulates the HW hash function user
+> can ensure hash consistency between the SW and the HW.
 
-You need to use the u64_stats_update_* infrastructure or make these
-stats smaller than u64, cause on non-64bit machines where the stats
-will be updated 32bit-by-32bit meaning readers can see a half-updated
-counter..
+It sounds weird that the sole reason to add a new action is
+because of HW offloading. What prevents us extending the
+existing actions to support HW offloading?
 
->  			if (self->aq_hw_ops->hw_ring_tx_head_update) {
->  				err = self->aq_hw_ops->hw_ring_tx_head_update(
->  							self->aq_hw,
-> @@ -314,6 +316,7 @@ irqreturn_t aq_vec_isr(int irq, void *private)
->  		err = -EINVAL;
->  		goto err_exit;
->  	}
-> +	self->ring[0][AQ_VEC_RX_ID].stats.rx.irqs++;
-
-Why do you need this? Every IRQ has a firing counter in
-/proc/interrupts.
-
->  	napi_schedule(&self->napi);
->  
->  err_exit:
+Thanks.
