@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6332E21E24A
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 23:36:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D932721E24F
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 23:36:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726782AbgGMVf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 17:35:28 -0400
+        id S1726850AbgGMVfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 17:35:32 -0400
 Received: from relmlor2.renesas.com ([210.160.252.172]:43762 "EHLO
         relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726150AbgGMVf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 17:35:28 -0400
+        by vger.kernel.org with ESMTP id S1726150AbgGMVfb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 17:35:31 -0400
 X-IronPort-AV: E=Sophos;i="5.75,348,1589209200"; 
-   d="scan'208";a="51803346"
+   d="scan'208";a="51803351"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 14 Jul 2020 06:35:26 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 14 Jul 2020 06:35:30 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8094940F7FC8;
-        Tue, 14 Jul 2020 06:35:22 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id A2E5E40F7FC8;
+        Tue, 14 Jul 2020 06:35:26 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Vinod Koul <vkoul@kernel.org>,
@@ -35,44 +35,36 @@ Cc:     Magnus Damm <magnus.damm@gmail.com>,
         netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>
-Subject: [PATCH 0/9] R8A774E1 SoC enable support for IPMMU, DMAC, GPIO and AVB
-Date:   Mon, 13 Jul 2020 22:35:11 +0100
-Message-Id: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 1/9] dt-bindings: iommu: renesas,ipmmu-vmsa: Add r8a774e1 support
+Date:   Mon, 13 Jul 2020 22:35:12 +0100
+Message-Id: <1594676120-5862-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
+Document RZ/G2H (R8A774E1) SoC bindings.
 
-This patch series adds device nodes for IPMMU, DMAC, GPIO
-and AVB nodes for RZ/G2H (R8A774E1) SoC.
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Cheers,
-Prabhakar
-
-Lad Prabhakar (3):
-  dt-bindings: iommu: renesas,ipmmu-vmsa: Add r8a774e1 support
-  dt-bindings: dma: renesas,rcar-dmac: Document R8A774E1 bindings
-  dt-bindings: gpio: renesas,rcar-gpio: Add r8a774e1 support
-
-Marian-Cristian Rotariu (6):
-  iommu/ipmmu-vmsa: Hook up R8A774E1 DT matching code
-  arm64: dts: renesas: r8a774e1: Add IPMMU device nodes
-  arm64: dts: renesas: r8a774e1: Add SYS-DMAC device nodes
-  arm64: dts: renesas: r8a774e1: Add GPIO device nodes
-  dt-bindings: net: renesas,ravb: Add support for r8a774e1 SoC
-  arm64: dts: renesas: r8a774e1: Add Ethernet AVB node
-
- .../bindings/dma/renesas,rcar-dmac.yaml       |   1 +
- .../bindings/gpio/renesas,rcar-gpio.yaml      |   1 +
- .../bindings/iommu/renesas,ipmmu-vmsa.yaml    |   1 +
- .../devicetree/bindings/net/renesas,ravb.txt  |   1 +
- arch/arm64/boot/dts/renesas/r8a774e1.dtsi     | 361 +++++++++++++++++-
- drivers/iommu/ipmmu-vmsa.c                    |   4 +
- 6 files changed, 350 insertions(+), 19 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+index e9d28a4060fa..6bfa090fd73a 100644
+--- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
++++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+@@ -32,6 +32,7 @@ properties:
+           - enum:
+               - renesas,ipmmu-r8a774a1 # RZ/G2M
+               - renesas,ipmmu-r8a774b1 # RZ/G2N
++              - renesas,ipmmu-r8a774e1 # RZ/G2H
+               - renesas,ipmmu-r8a774c0 # RZ/G2E
+               - renesas,ipmmu-r8a7795  # R-Car H3
+               - renesas,ipmmu-r8a7796  # R-Car M3-W
 -- 
 2.17.1
 
