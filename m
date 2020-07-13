@@ -2,123 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F3D021D538
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 13:46:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 589A121D545
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 13:52:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729510AbgGMLqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 07:46:18 -0400
-Received: from mail-eopbgr00049.outbound.protection.outlook.com ([40.107.0.49]:40182
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727890AbgGMLqS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 07:46:18 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UsChKgmk7m+IIC+3lkl/o3FY+mkmVlF1+IjTWo9rH0sVSbG85EUTu2h4w+Ldly3mfRe6YzZieKoSQWTwClb3lSt25twVnUYAEaIBOxL4pVUnPvRxRYA4a4BNUgI3W3iuDcMvynNcjFlNPCdjx/fZ5QCQOqspNUr9fQPmvVaGRAFEQ6KJRbUYX9AIWUVAndTvmPmREtmlYwue1vcQjpYvFqXVFISquNml1Uw7v+cg8HByuWiW+n94Z7FgXg4s6ZbLMitK8nL9nzAeJNE+xklpyFz/T6auDqFRI/myCr/q0Geeeet/qUfe2Tgs3DG28thfZiuzi7kXP2Mi1gK+fCZWYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pW6s9+HQ1YR43nqHa8HUXhZeHTP1SaBUXoK2RzoSxlo=;
- b=jpPUyU5/DjwE9VrESWoFp4ePFEQrDx1H5PLLwYSuHSb9IUMExI05C8KrtMNJeHbGLnSkf2JiHsQOG4NkstENvzuKNgBnyR29Joxk0qjRrTqYTwcRHEqXoqbpMPPO9h0r0qguJNlbS4Mwm9yhN4wiTb49q59e5y5500eINriikhwiZsfutRW7Gw4NSrataV2HMpanNZd41DO7SFiP5J93BY4Gx4oOmMzieuTemNz/sdZI3gdBd+HMUGS5Z5LXs9U8M/ycLyMy2Z2LsZCCaz/EobtDUNNSC2W3NMYA6NStm/k7LOEQl1tJ6K/0taZl1kWjxkxAXYZvs9RcjYZq+/ppew==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pW6s9+HQ1YR43nqHa8HUXhZeHTP1SaBUXoK2RzoSxlo=;
- b=RcKTLUUOpk1PnIH4Us+u8L3KX6KnIX6mp0koYepGzfai5yxXe9BGRiRjFF13204IDpiw18Q/M51+/30KkimK1ncJp65ODl0WiqN4sycxwV5abN9527TRkB+fHZmZ9rREE4Jx1MDuopy5G4HKmeAPY1Cm9s7hAdFIn3Ia0wjFWa8=
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR05MB4651.eurprd05.prod.outlook.com (2603:10a6:7:a2::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3174.22; Mon, 13 Jul 2020 11:46:12 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6%7]) with mapi id 15.20.3174.025; Mon, 13 Jul 2020
- 11:46:12 +0000
-References: <cover.1594416408.git.petrm@mellanox.com> <a5a3ccf7bf3a097c6400d64f617ee7ee9fc6156c.1594416408.git.petrm@mellanox.com> <20200711112256.4153f2d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@mellanox.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
-        kadlec@netfilter.org, fw@strlen.de, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, simon.horman@netronome.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next v2 01/13] net: sched: Pass qdisc reference in struct flow_block_offload
-In-reply-to: <20200711112256.4153f2d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Mon, 13 Jul 2020 13:46:08 +0200
-Message-ID: <87k0z7fxj3.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: AM4PR0302CA0015.eurprd03.prod.outlook.com
- (2603:10a6:205:2::28) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+        id S1729646AbgGMLwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 07:52:03 -0400
+Received: from fallback23.m.smailru.net ([94.100.187.222]:43438 "EHLO
+        fallback23.mail.ru" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728714AbgGMLwD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 07:52:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=MqvX9aAlrUTaAO8+73cywVuZ/xTvzKMVWJwgmVfO3zA=;
+        b=oxxda1LXXTi0BVZXe9DXfuU7wdGZyCQ+F5032aAcmuuiC9G/sCDJ69SE4cRivtVNgj9r4nWXEjB059ZFu6a5sbW8os5TRlnyDBicIxIsKR3YFxmMl9yiCrqVB7RoCEjioAuUfx2KcTWYYNyXPuyHNwVpkiQiMSOV0j/3qTkgskY=;
+Received: from [10.161.22.25] (port=60744 helo=smtp55.i.mail.ru)
+        by fallback23.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
+        id 1jux03-0002Nk-S1
+        for netdev@vger.kernel.org; Mon, 13 Jul 2020 14:52:00 +0300
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=MqvX9aAlrUTaAO8+73cywVuZ/xTvzKMVWJwgmVfO3zA=;
+        b=oxxda1LXXTi0BVZXe9DXfuU7wdGZyCQ+F5032aAcmuuiC9G/sCDJ69SE4cRivtVNgj9r4nWXEjB059ZFu6a5sbW8os5TRlnyDBicIxIsKR3YFxmMl9yiCrqVB7RoCEjioAuUfx2KcTWYYNyXPuyHNwVpkiQiMSOV0j/3qTkgskY=;
+Received: by smtp55.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1jux00-0007uh-6O; Mon, 13 Jul 2020 14:51:56 +0300
+Subject: Re: 88E6176 dsa switch on ls1021a (GIANFAR)
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, vivien.didelot@gmail.com,
+        claudiu.manoil@nxp.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+References: <5a1a2fac-7d16-afed-173b-54483a3faa6d@inbox.ru>
+ <20200713112040.zn4fmuuttwqier5j@skbuf>
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+Message-ID: <aa7fcc92-691a-0aad-c77e-f1a9a10f3468@inbox.ru>
+Date:   Mon, 13 Jul 2020 14:52:03 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yaviefel (213.220.234.169) by AM4PR0302CA0015.eurprd03.prod.outlook.com (2603:10a6:205:2::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Mon, 13 Jul 2020 11:46:10 +0000
-X-Originating-IP: [213.220.234.169]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: c2d7c07a-63f9-429c-bf0d-08d827225708
-X-MS-TrafficTypeDiagnostic: HE1PR05MB4651:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB4651DEFF8764776C20C94580DB600@HE1PR05MB4651.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: erTKiwcBGcYeFUaqeO5rOdhPhxHa0w2+GUUX5OErCYyKjRLZz3CFccMWazM50AYzplFQfeX2nzT+EhwTNRaBlDtXj9WEhvBGTulw1hUki7w7bZ5KW2byPH30sLwjPi3Y4lFPMO6Hx4x/x9EdKhZOpsTR3yOTeqKlGJ6zBwhFCC6fmV4aa0PXBqM5OwqE1Yfcoa4YYTKZnfmuaoUxjo1Rer+rFHTpi0iOMMORB0gxDRbV0NMqGlvr8wX6fP4og3MwyZyR2bcEFG20Iv4xFNdv7pnF5prba+Dn+2/ch/w8y53UJwUIdm9bAuhBKF49WsV7
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(54906003)(6486002)(83380400001)(6496006)(52116002)(8936002)(16526019)(956004)(316002)(2616005)(186003)(2906002)(7416002)(6916009)(478600001)(66556008)(66476007)(86362001)(26005)(5660300002)(8676002)(4326008)(107886003)(66946007)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: jHK6Hf3si/OQoUWZffE/BvPK1HLNNLMmUO20DmZDnybywJAvwxqXf7r23nGng0V/3HQJaW8TOKZFFOKU+InvbXGjaVQkekQK8GOFBQlS1UzuoZHuY2AP/0mJy9qFlb9ZORS2JcwC7cDwfrZEBdqEqd3a+zsbSqZZAwVmqbD+l5WnmR0P4p7ZYMSOT3HWCg7ufeBdiKl1WeSKeD5pU7QQAgJV/iDDBqEJoZ1AxS6z0uqD9xg7l1cnKP+FKKUUPDuHWtLsHF7JGFETqaG7lgxYhLkhg0zfuBG0J4P5DQg6yeOxWBsuEAQkLtfyMJ6U1xhE71HpKdW+lJWrNCFfqLWRbRlFxMamfdSEQUCc5NTYjxmv7Q1Rn4D7jVWkue8AcK8ujK9gPwDdX3hZ5azyMEi7t5vEtZUy+085ZRVyzc+D+IOTCJiys8otPbJt6ULqM4qQaatS9Fafl43AIbkawzB6MbPZ9U1hgRM6e/337Y/LCtZR59pETGgAe/KcGSSYpiMO
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2d7c07a-63f9-429c-bf0d-08d827225708
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2020 11:46:12.1823
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bjOuMxzFKKCSDzj8ufQWD0n71MN5QWvN3WASiMV76p/ChLbdQWI0ROlg6KSq2ZSh0GUdA7F6UIQ3UtA7Ok9/7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB4651
+In-Reply-To: <20200713112040.zn4fmuuttwqier5j@skbuf>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-7564579A: 646B95376F6C166E
+X-77F55803: 4F1203BC0FB41BD9BB76C036EA8E79AC8C6DDDA81CAC925A1649AE829B35E875182A05F53808504014136CDFAEB6F0429008FCCD64761BF9D169A057409F0299B8F172AD25D79349
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE742D9BD90C58D50E0EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F790063764345650F0BBEB0B8638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC849E690DF94222958BF8762A2BB20EAEC74EDEA4237FD13B389733CBF5DBD5E913377AFFFEAFD269A417C69337E82CC2CC7F00164DA146DAFE8445B8C89999725571747095F342E8C26CFBAC0749D213D2E47CDBA5A9658378DA827A17800CE71AE4D56B06699BBC9FA2833FD35BB23DF004C906525384303BDABC7E18AA350CD8FC6C240DEA76428AA50765F79006376B2A5A78A5033ED5D81D268191BDAD3DBD4B6F7A4D31EC0B6941894150739B64D81D268191BDAD3D78DA827A17800CE73745307B7F32D572EC76A7562686271E8729DE7A884B61D135872C767BF85DA29E625A9149C048EE0A3850AC1BE2E735F43AACC0BCEB26324AD6D5ED66289B524E70A05D1297E1BB35872C767BF85DA227C277FBC8AE2E8BDC0F6C5B2EEF3D0C75ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC85D9B7C4F32B44FF57D4B828FA1BC0F1ACBD9CCCA9EDD067B1EDA766A37F9254B7
+X-C8649E89: 03B5A06965EEB2FCF0915AD629F2D5C16609545E7255F8ED8BB08C2AC31CB249D3E2DAE159112E89
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj7M7hD4t88wmq3IzfvVkVOA==
+X-Mailru-Internal-Actual: A:0.81533550405406
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24645FFAADE84442EFA0F701A19C72954853CEA972955351DDEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
+X-7564579A: EEAE043A70213CC8
+X-77F55803: 5241C2F38277A35D7F9F52485CB584D7271FD7DF62800FDC9F2D7B4A14931CDD2EE5A146B8BF9D69D7BD7AC3C1E3BAA50340E953943B63F1
+X-7FA49CB5: 0D63561A33F958A532362D71624E998FE90454761E8E0B8567CDFC33E31574E38941B15DA834481FA18204E546F3947CEDCF5861DED71B2F389733CBF5DBD5E9C8A9BA7A39EFB7666BA297DBC24807EA117882F44604297287769387670735209ECD01F8117BC8BEA471835C12D1D977C4224003CC8364767815B9869FA544D8D32BA5DBAC0009BE9E8FC8737B5C22498E169FBA46AE3C8776E601842F6C81A12EF20D2F80756B5F13660E01DFBDB6B6089D37D7C0E48F6CA18204E546F3947C83C798A30B85E16B156CCFE7AF13BCA4C8A9BA7A39EFB7666BA297DBC24807EA089D37D7C0E48F6C8AA50765F7900637AF8E4F18C523FAA9EFF80C71ABB335746BA297DBC24807EA27F269C8F02392CDC58410348177836EABEDDA51113D120200306258E7E6ABB4E4A6367B16DE6309
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj7M7hD4t88wn/KB+kSQ35Bw==
+X-Mailru-MI: 800
+X-Mailru-Sender: A5480F10D64C9005EBA3FDA8F7473FBDD3FF6759766530632EE5A146B8BF9D69EFAC7B9FAC0FB745C099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
+X-Mras: Ok
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Sorry that was my mistake. That was my own custom patch for bridge (for 
+some old board).
+Thank you very much!
 
-Jakub Kicinski <kuba@kernel.org> writes:
-
-> On Sat, 11 Jul 2020 00:55:03 +0300 Petr Machata wrote:
->> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
->> index 0a9a4467d7c7..e82e5cf64d61 100644
->> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
->> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-
->> @@ -1911,7 +1911,7 @@ static int bnxt_tc_setup_indr_block(struct net_device *netdev, struct bnxt *bp,
->>  		block_cb = flow_indr_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
->>  						    cb_priv, cb_priv,
->>  						    bnxt_tc_setup_indr_rel, f,
->> -						    netdev, data, bp, cleanup);
->> +						    netdev, sch, data, bp, cleanup);
->
-> nit: the number of arguments is getting out of hand here, perhaps it's
->      time to pass a structure in.
-
-I would say that adding a distinctly-typed and distinctly-named argument
-does not make the other arguments less clear, or increase the risk of
-mixing them up in a way that the compiler would not catch.
-
-Taken from another angle, the argument list is not passed through layers
-of other functions, so the structure would be assembled in
-bnxt_tc_setup_indr_block() and then unpacked again in
-flow_indr_block_cb_alloc(). Nothing is saved in that regard either.
-
-Also, flow_indr_block_cb_alloc() is a simple function. When a structure
-needs to be introduced to carry the arguments, it might be more
-straightforward to just open-code it.
-
->>  		if (IS_ERR(block_cb)) {
->>  			list_del(&cb_priv->list);
->>  			kfree(cb_priv);
+13.07.2020 14:20, Vladimir Oltean wrote:
+> This call path is interesting. How does br_fdb_update() end up calling
+> dsa_legacy_fdb_add(), which is only accessible through .ndo_fdb_add? The
+> only call path I see in the mainline kernel for .ndo_fdb_add() is from
+> rtnl_fdb_add(), which seems to not be called here.
