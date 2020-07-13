@@ -2,124 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77C8F21D940
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 16:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD36321D94C
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 16:59:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729695AbgGMOyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 10:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33608 "EHLO
+        id S1729895AbgGMO7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 10:59:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729523AbgGMOyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 10:54:54 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50846C061755
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 07:54:54 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id q17so6102339pfu.8
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 07:54:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cE8GTdGbJXQCBR6G3zTTxCnILfR4iaZdypgqRySEWvE=;
-        b=WJvzCU60eG4WPdQ9oNQG5fQnEGn6071vhh+YkPGN1dzuQgtUKNLF35yu9gp6/0bgTq
-         mU64JAc1ZN4lGfz9WHFcME5J2IEUvwQrs8Q865OE1XmUS17A3V/WyabNOHPTn9+JFqoL
-         UZc/Zgv3AqZ9EPtMOOnxki9XjJXeXRlhS2GULucU6O75Ed+Npv2LhHoP08WdiqyvWHmE
-         CRadIFjTqKOIDe5uXMN8J+GMKpggmth4IUUGlS0YEcha55kWjkcx0TNi4pJmAAf9yIo/
-         fAW+/U+UMOHrhZOgg0wbKq5MshxHbVB/IZq4RYwPWoNBUu8aqySUNYVg38WYa9kMAo0P
-         cgYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cE8GTdGbJXQCBR6G3zTTxCnILfR4iaZdypgqRySEWvE=;
-        b=ks564LsYPwx0QDm5i9+4vqJQTIsmgsphgHDEa9tDeBzZJ/sJGX7q+xwsnCHdL7J1s7
-         i+Nl56Kd5AZTbZPgr/lbAIHzxw1xi7MVmuRPjBmH0UWaGg1ruHDcL2IpwdYPRsuMenKk
-         ubervcBecfs175qKjPPA9Dv0fEKDcOdTxCtoV81uqshlo4BZgrvhtQvrugMl56S0nMoI
-         AeTklvrSYwaSuYO1CCC2sXQNRV9+q6Ah4CR1Y/IVXyJs6pP8Q5sFwLe7fgg3DSdhlYV+
-         +IoOzFdwtQiQcKod3kA6HeAvEaBflFZWsbCelg5bqkVkjyqWW3zi7VbJR+/Y9qSZ2t9R
-         knMw==
-X-Gm-Message-State: AOAM5338CHMef1Ah6GLYUjKHtyqd1FwlRbo/wm6O0iCld62HdGeSKXzg
-        xYvOaXygEio0uCfuF8aHIg2BmA==
-X-Google-Smtp-Source: ABdhPJyFSKiOZV27ihnH/3wqp8V8lFsoNhgGEy3UXkrgIUHl6xphksom4sv8dgmNvl3kSkmXKIecYA==
-X-Received: by 2002:a63:5863:: with SMTP id i35mr64699166pgm.390.1594652093815;
-        Mon, 13 Jul 2020 07:54:53 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id b21sm14789530pfp.172.2020.07.13.07.54.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2020 07:54:53 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 07:54:45 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Julien Fortin <julien@cumulusnetworks.com>
-Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        dsahern@gmail.com
-Subject: Re: [PATCH iproute2-next master] bridge: fdb show: fix fdb entry
- state output for json context
-Message-ID: <20200713075445.33aca679@hermes.lan>
-In-Reply-To: <20200710005055.8439-1-julien@cumulusnetworks.com>
-References: <20200710005055.8439-1-julien@cumulusnetworks.com>
+        with ESMTP id S1729649AbgGMO7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 10:59:13 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01514C061755
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 07:59:13 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1juzvD-0000DW-Bb; Mon, 13 Jul 2020 16:59:11 +0200
+Date:   Mon, 13 Jul 2020 16:59:11 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Stefano Brivio <sbrivio@redhat.com>, netdev@vger.kernel.org,
+        aconole@redhat.com
+Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
+ discovery on encap sockets
+Message-ID: <20200713145911.GN32005@breakpoint.cc>
+References: <20200712200705.9796-1-fw@strlen.de>
+ <20200712200705.9796-2-fw@strlen.de>
+ <20200713003813.01f2d5d3@elisabeth>
+ <20200713080413.GL32005@breakpoint.cc>
+ <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
+ <20200713140219.GM32005@breakpoint.cc>
+ <a6821eac-82f8-0d9e-6388-ea6c9f5535d1@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a6821eac-82f8-0d9e-6388-ea6c9f5535d1@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Jul 2020 02:50:55 +0200
-Julien Fortin <julien@cumulusnetworks.com> wrote:
-
-> From: Julien Fortin <julien@cumulusnetworks.com>
+David Ahern <dsahern@gmail.com> wrote:
+> On 7/13/20 8:02 AM, Florian Westphal wrote:
+> > David Ahern <dsahern@gmail.com> wrote:
+> >> On 7/13/20 2:04 AM, Florian Westphal wrote:
+> >>>> As PMTU discovery happens, we have a route exception on the lower
+> >>>> layer for the given path, and we know that VXLAN will use that path,
+> >>>> so we also know there's no point in having a higher MTU on the VXLAN
+> >>>> device, it's really the maximum packet size we can use.
+> >>> No, in the setup that prompted this series the route exception is wrong.
+> >>
+> >> Why is the exception wrong and why can't the exception code be fixed to
+> >> include tunnel headers?
+> > 
+> > I don't know.  This occurs in a 3rd party (read: "cloud") environment.
+> > After some days, tcp connections on the overlay network hang.
+> > 
+> > Flushing the route exception in the namespace of the vxlan interface makes
+> > the traffic flow again, i.e. if the vxlan tunnel would just use the
+> > physical devices MTU things would be fine.
+> > 
+> > I don't know what you mean by 'fix exception code to include tunnel
+> > headers'.  Can you elaborate?
 > 
-> bridge json fdb show is printing an incorrect / non-machine readable
-> value, when using -j (json output) we are expecting machine readable
-> data that shouldn't require special handling/parsing.
+> lwtunnel has lwtunnel_headroom which allows ipv4_mtu to accommodate the
+> space needed for the encap header. Can something similar be adapted for
+> the device based tunnels?
+
+I don't see how it would help for this particular problem.
+
+> > AFAICS everyhing functions as designed, except:
+> > 1. The route exception should not exist in first place in this case
+> > 2. The route exception never times out (gets refreshed every time
+> >    tunnel tries to send a mtu-sized packet).
+> > 3. The original sender never learns about the pmtu event
 > 
-> $ bridge -j fdb show | \
-> python -c \
-> 'import sys,json;print(json.dumps(json.loads(sys.stdin.read()),indent=4))'
-> [
->     {
->         "master": "br0",
->         "mac": "56:23:28:4f:4f:e5",
->         "flags": [],
->         "ifname": "vx0",
->         "state": "state=0x80"  <<<<<<<<< with the patch: "state": "0x80"
->     }
-> ]
-> 
-> Fixes: c7c1a1ef51aea7c ("bridge: colorize output and use JSON print library")
-> Signed-off-by: Julien Fortin <julien@cumulusnetworks.com>
-> ---
->  bridge/fdb.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/bridge/fdb.c b/bridge/fdb.c
-> index d2247e80..198c51d1 100644
-> --- a/bridge/fdb.c
-> +++ b/bridge/fdb.c
-> @@ -62,7 +62,10 @@ static const char *state_n2a(unsigned int s)
->  	if (s & NUD_REACHABLE)
->  		return "";
->  
-> -	sprintf(buf, "state=%#x", s);
-> +	if (is_json_context())
-> +		sprintf(buf, "%#x", s);
-> +	else
-> +		sprintf(buf, "state=%#x", s);
->  	return buf;
->  }
->  
+> meaning the VM / container? ie., this is a VPC using VxLAN in the host
+> to send packets to another hypervisor. If that is the case why isn't the
+> underlay MTU bumped to handle the encap header, or the VMs MTU lowered
+> to handle the encap header? seems like a config problem.
 
-Printing in non JSON case was also wrong.
-i.e.
-              ...  state state=0x80
-should be:
-	      ... state 0x80
+Its configured properly:
 
-Let's do that.
+ovs bridge mtu: 1450
+vxlan device mtu: 1450
+physical link: 1500
 
+so, packets coming in on the bridge (local tx or from remote bridge port)
+can have the enap header (50 bytes) prepended without exceeding the
+physical link mtu.
 
-The state=xxx value only shows up if the FDB entry has a value bridge command
-doesn't understand. The bridge command needs to be able to display the new flag values.
+When the vxlan driver calls the ip output path, this line:
 
-Please fixup the two patches and resubmit to iproute2
+        mtu = ip_skb_dst_mtu(sk, skb);
+
+in __ip_finish_output() will fetch the MTU based of the encap socket,
+which will now be 1450 due to that route exception.
+
+So this will behave as if someone had lowered the physical link mtu to 1450:
+IP stack drops the packet and sends an icmp error (fragmentation needed,
+MTU 1450).  The MTU of the VXLAN port is already at 1450.
+
+I could make a patch that lowers the vxlan port MTU to 1450 - 50 (encap
+overhead) automatically, but I don't think making such change
+automatically is a good idea.
+
+With this proposed patch, the MTU retrieved would always be the link
+MTU.
+
+I don't think this patch is enough to resolve PMTU in general of course,
+after all the VXLAN peer might be unable to receive packets larger than
+what the ICMP error announces.  But I do not know how to resolve this
+in the general case as everyone has a differnt opinion on how (and where)
+this needs to be handled.
