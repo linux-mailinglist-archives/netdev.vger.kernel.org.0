@@ -2,65 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AD1B21E1FB
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 23:20:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC31721E1FD
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 23:21:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbgGMVUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 17:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36756 "EHLO
+        id S1726545AbgGMVVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 17:21:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726416AbgGMVUI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 17:20:08 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFD6C061755
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 14:20:07 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id g75so1463260wme.5
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 14:20:07 -0700 (PDT)
+        with ESMTP id S1726416AbgGMVVW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 17:21:22 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542E1C061755;
+        Mon, 13 Jul 2020 14:21:22 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id j19so6592707pgm.11;
+        Mon, 13 Jul 2020 14:21:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=a59aUXCAB+LV+EKJ5CJnnsTyTeBIVtWXfFDQmrllEZg=;
-        b=j7E+BTK81RVmFJA5whgac7TGPbDzI7j4jBMtgW3xmRIV1dUO/NAJHxMJZxc9YwTq0B
-         qoiSviQCjDJ3PFUa3mixASPkkzOYiiDLUeyrQy3K9URxEZy7PXQKn1N0HULzksn1gkNY
-         MamAlL4N1C6v29uyBXiSJsDR8hqqEeUJqNz74rk4kgHdOWDFLrOWG9OepXwNBjYFLkCc
-         cwDSYOroSr7wGj7klgEYR9anoYRciVyJg1bnCUWkAndUu6jLKw2ZnI/06dUWfDpKPipF
-         2EjKYhl29+YGpQYdNgBet1Nm2vhHe5I+G9u3GKQi6jgKi6Rj0mnWsOaF0cZmNOCqZe86
-         MQZw==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=ABF/kSJ7GZyTbibG8EMm3ujzxwiwSYQQuEfE9U6jw1s=;
+        b=A6Qz9He4HdllJ76p8Kxuf4DBMs2r3GvMpumwrMS+pZrhuZ6g8wVMoM69tEhPKoW3V7
+         hy9eQvvd41eylP67IxVGu3V5VvRzmGUx+87y+F9PoaMWCjUh7UEOTU4RxBbeXSoDEgYQ
+         fTbzLQ/4rHvU9sgjghxvXUBeu32kcRSmPFWkx1VrDSPlG9jS8T1xkDal0sn90ERqcblm
+         8gXQMA0f6gpQADh+9AXZNd3YQ4oapp6tB/Gal1K7cw6+fduWn2f6lW3sdAcAkcwo1nQt
+         CncVIAkv9WSH4E/xWXyqdhJf3BABXCFYHd8lyoOr4Q5CSGVXioGxZs9NaFi0AkZjk9UD
+         ZU/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=a59aUXCAB+LV+EKJ5CJnnsTyTeBIVtWXfFDQmrllEZg=;
-        b=ZFXOew6/mGHkmigN3b4opJpBKrhT7k71YzisevSvhIIGbxfcndKKmZCyCAcJ181+Rd
-         nXA+LBR3VjUbtmTODGQe7A8av8Z+HvXTe8RrY9UvuTxSrFYypa0a+AGyijJf0Vkg3BMm
-         sFnPj7uwKfpB1AqWmRtaH7aNhmtGNRirFydRm8TKj3zp0JpEwPACq0t3/IUU9euL94k4
-         1gvkfXSKlFDey2ErgU08IK/eJnLx4VKBq+41RAiwvLCpt0FwovdGxijn1lfl3eGHbqK0
-         Xbo609yjjXKfKL7ARhgihd0qriir5daq160SdV++bF8w0E/qUKijQ5UzY93t4JPuLamQ
-         2Ksw==
-X-Gm-Message-State: AOAM531pWyVx8X31sOVrN7LshWT7YWQnlai+WEIGQ28u2mut1QMPPmyP
-        EoRgwzcJoN/VO2gjgUo1/wYVlh3F
-X-Google-Smtp-Source: ABdhPJwmW34x2etR5ybcjGAK+XP20bzBnkFXwvJYw1y/XzCrxAchfgNluEhn6yHnolJv+KmH+vxDMQ==
-X-Received: by 2002:a05:600c:21ca:: with SMTP id x10mr1210574wmj.63.1594675206074;
-        Mon, 13 Jul 2020 14:20:06 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id q1sm25488837wro.82.2020.07.13.14.20.03
+        bh=ABF/kSJ7GZyTbibG8EMm3ujzxwiwSYQQuEfE9U6jw1s=;
+        b=PxYqrieRb3OJPEYeNUlhte5O91QwueYwHQhyEyYKLi+qhI5YAZpBNMAQPEHNi4UBxW
+         lRRoJL7AjfiW1dSUD9eG6xEFJjtPQ6TdJJkDVdPu+nEwpGItecVXjkdwyNsrgpsA9VGg
+         NiWaXntkySCmdIj5T2WeGFTYlPwybHfsYKQF8o/lBo+UoGLFUZRT+elQjnfO/SVFNgfr
+         VxhzqrNFhXVhKV/RjJcZ7fulA7P4iXLimjRZlWjpQgjwJjPf3xz4VUnpPRDyBwELz0FR
+         t64VJPhzBwfkAUaJszuE9tWNUVTcsMFYce9iBT3mTqDP4Cl62gJtIMpux2vXKYBpVmgQ
+         QbNA==
+X-Gm-Message-State: AOAM533FMvNvZbkhGaEg0UwnQ1I7MTbYtUQpBMo7isuOeajEnhxJIPZW
+        Xy7uSuAqeTsIwpkOuNxZ5K1tcQdZ
+X-Google-Smtp-Source: ABdhPJwNAx6zk/9vxInegSvSaW/luicXQSuqpwuYJGgMYuomcZ6hjq9GhwPrDxBRXRzOPXmOG5qTZg==
+X-Received: by 2002:aa7:9155:: with SMTP id 21mr1466155pfi.306.1594675281319;
+        Mon, 13 Jul 2020 14:21:21 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id bx18sm436031pjb.49.2020.07.13.14.21.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jul 2020 14:20:05 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/3] net: Preserve netdev_ops equality tests
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        mkubecek@suse.cz, davem@davemloft.net
-References: <20200712221625.287763-1-f.fainelli@gmail.com>
- <20200713130929.0fc74fa1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <22f861f0-39f0-8c26-6571-d10903f53297@gmail.com>
-Date:   Mon, 13 Jul 2020 14:20:01 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.10.0
+        Mon, 13 Jul 2020 14:21:20 -0700 (PDT)
+Subject: Re: [PATCH] drivers/net/wan/x25_asy: Fix to make it work
+To:     Xie He <xie.he.0141@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Martin Habets <mhabets@solarflare.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
+References: <20200708043754.46554-1-xie.he.0141@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <4b46b0f6-8424-5a6e-a4ae-3729f54c5d4b@gmail.com>
+Date:   Mon, 13 Jul 2020 14:21:18 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <20200713130929.0fc74fa1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200708043754.46554-1-xie.he.0141@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,49 +75,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 7/13/2020 1:09 PM, Jakub Kicinski wrote:
-> On Sun, 12 Jul 2020 15:16:22 -0700 Florian Fainelli wrote:
->> Hi David, Jakub,
->>
->> This patch series addresses a long standing with no known impact today
->> with the overloading of netdev_ops done by the DSA layer.
+On 7/7/20 9:37 PM, Xie He wrote:
+> This driver is not working because of problems of its receiving code.
+> This patch fixes it to make it work.
 > 
-> Do you plan to make use of this comparison? Or trying to protect the
-> MAC driver from misbehaving because it's unaware the DSA may replace
-> its ops? For non-DSA experts I think it may be worth stating :)
-
-We have at least one network device driver that is always used in a DSA
-set-up (bcmsysport.c) which does check DSA notifiers against its own
-netdev_ops, however this happens before the mangling of DSA netdev_ops
-is done, so the check is not defeated there.
-
+> When the driver receives an LAPB frame, it should first pass the frame
+> to the LAPB module to process. After processing, the LAPB module passes
+> the data (the packet) back to the driver, the driver should then add a
+> one-byte pseudo header and pass the data to upper layers.
 > 
->> First we introduce a ndo_equal netdev_ops function pointer, then we have
->> DSA utilize it, and finally all in tree users are converted to using
->> either netdev_ops_equal() or __netdev_ops_equal() (for const struct
->> net_device reference).
+> The changes to the "x25_asy_bump" function and the
+> "x25_asy_data_indication" function are to correctly implement this
+> procedure.
 > 
-> The experience with TCP ULPs made me dislike hijacking ops :( 
-> Maybe it's just my limited capability to comprehend complex systems
-> but the moment there is more than one entity that tries to insert
-> itself as a proxy, ordering etc. gets quite hairy.. Perhaps we 
-> have some well understood rules for ndo replacement but if that's not
-> the case I prefer the interception to be done explicitly in the caller.
-> (e.g. add separate dsa_ops to struct net_device and call that prior to/
-> /instead of calling the ndo).
+> Also, the "x25_asy_unesc" function ignores any frame that is shorter
+> than 3 bytes. However the shortest frames are 2-byte long. So we need
+> to change it to allow 2-byte frames to pass.
 > 
-> At the very least I'd think it's better to create an explicit hierarchy
-> of the ops by linking them (add "const struct net_device_ops *base_ops"
-> to ndos) rather than one-off callback for comparisons.
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+> ---
+>  drivers/net/wan/x25_asy.c | 16 +++++++++-------
+>  1 file changed, 9 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/wan/x25_asy.c b/drivers/net/wan/x25_asy.c
+> index 69773d228ec1..3fd8938e591b 100644
+> --- a/drivers/net/wan/x25_asy.c
+> +++ b/drivers/net/wan/x25_asy.c
+> @@ -183,7 +183,7 @@ static inline void x25_asy_unlock(struct x25_asy *sl)
+>  	netif_wake_queue(sl->dev);
+>  }
+>  
+> -/* Send one completely decapsulated IP datagram to the IP layer. */
+> +/* Send an LAPB frame to the LAPB module to process. */
+>  
+>  static void x25_asy_bump(struct x25_asy *sl)
+>  {
+> @@ -195,13 +195,12 @@ static void x25_asy_bump(struct x25_asy *sl)
+>  	count = sl->rcount;
+>  	dev->stats.rx_bytes += count;
+>  
+> -	skb = dev_alloc_skb(count+1);
+> +	skb = dev_alloc_skb(count);
+>  	if (skb == NULL) {
+>  		netdev_warn(sl->dev, "memory squeeze, dropping packet\n");
+>  		dev->stats.rx_dropped++;
+>  		return;
+>  	}
+> -	skb_push(skb, 1);	/* LAPB internal control */
+>  	skb_put_data(skb, sl->rbuff, count);
+>  	skb->protocol = x25_type_trans(skb, sl->dev);
+>  	err = lapb_data_received(skb->dev, skb);
+> @@ -209,7 +208,6 @@ static void x25_asy_bump(struct x25_asy *sl)
+>  		kfree_skb(skb);
+>  		printk(KERN_DEBUG "x25_asy: data received err - %d\n", err);
+>  	} else {
+> -		netif_rx(skb);
+>  		dev->stats.rx_packets++;
+>  	}
+>  }
+> @@ -356,12 +354,16 @@ static netdev_tx_t x25_asy_xmit(struct sk_buff *skb,
+>   */
+>  
+>  /*
+> - *	Called when I frame data arrives. We did the work above - throw it
+> - *	at the net layer.
+> + *	Called when I frame data arrives. We add a pseudo header for upper
+> + *	layers and pass it to upper layers.
+>   */
+>  
+>  static int x25_asy_data_indication(struct net_device *dev, struct sk_buff *skb)
+>  {
 
-Initially I was going to introduce a way to do recursive operations, but
-the problem with that approach is that you need to impose an ordering
-within the core about how operations are invoked.
+It is not clear to me what guarantee we have to have one byte of headroom in the skb
+at this point.
 
-The idea to add dsa_ops as a singleton that DSA would provide (very much
-like the recent ethtool_phy_ops introduction) is probably the sanest
-approach.
+You might add to be safe : (as done in lapbeth_data_indication(), but after the skb_push() which seems wrong)
 
-Thanks for the suggestions and review Jakub!
--- 
-Florian
+      if (skb_cow(skb, 1)) {
+            kfree_skb(skb); /* This line I am not sure, but looking at
+                             * lapb_data_indication() this might be needed.
+                             */
+	    return NET_RX_DROP;
+      }
+
+> +	skb_push(skb, 1);
+> +	skb->data[0] = X25_IFACE_DATA;
+> +	skb->protocol = x25_type_trans(skb, dev);
+> +
+>  	return netif_rx(skb);
+>  }
+>  
+> @@ -657,7 +659,7 @@ static void x25_asy_unesc(struct x25_asy *sl, unsigned char s)
+>  	switch (s) {
+>  	case X25_END:
+>  		if (!test_and_clear_bit(SLF_ERROR, &sl->flags) &&
+> -		    sl->rcount > 2)
+> +		    sl->rcount >= 2)
+>  			x25_asy_bump(sl);
+>  		clear_bit(SLF_ESCAPE, &sl->flags);
+>  		sl->rcount = 0;
+> 
