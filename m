@@ -2,89 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDAAA21CDC4
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 05:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FBC521CDEE
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 06:02:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728783AbgGMDb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jul 2020 23:31:59 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:46777 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726491AbgGMDb7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jul 2020 23:31:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594611117;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fyZHuYtJrGj2meth1Sm/wJxgmzcWzcHt3+2ZKG1/cLQ=;
-        b=LZ6xsInsUKdXrdg9pOpQgApxG7dqEqgfNN0KrGu0jPbnfoG+iWvQFeZSkS+NlietsAfhRR
-        EFR5w+HlyK/pOPsh1ZzgLiNpLnngDwV/1dftVhLZhxU16nW8HXiCmkcRYUW84Zlpv8WMfN
-        l077Ej5+cXoZL2jA18Xq4z1v3DzPgi8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-145-nd3WMGC_Mj-Yat-odoEbZw-1; Sun, 12 Jul 2020 23:31:54 -0400
-X-MC-Unique: nd3WMGC_Mj-Yat-odoEbZw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726380AbgGMECm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 00:02:42 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:37043 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725554AbgGMECm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 00:02:42 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C5A41800597;
-        Mon, 13 Jul 2020 03:31:52 +0000 (UTC)
-Received: from [10.72.13.177] (ovpn-13-177.pek2.redhat.com [10.72.13.177])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5EDFF5C6C0;
-        Mon, 13 Jul 2020 03:31:44 +0000 (UTC)
-Subject: Re: [PATCH] vhost/scsi: fix up req type endian-ness
-To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20200710104849.406023-1-mst@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <8acbce23-275a-141a-0bfb-1535c6edcbb4@redhat.com>
-Date:   Mon, 13 Jul 2020 11:31:42 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4B4qjp6mDkz9sR4;
+        Mon, 13 Jul 2020 14:02:38 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1594612959;
+        bh=vWeQzD85atpg+LjMgT4McIZoQRyk/+HkVAXmS4w/2c0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Rr2m+A6YFY7yH7vjsBrmHnpkNQ2Pw/szNrPHXda2KEkIAbCML+ZoPE4Cs/l85Yyh4
+         F4tIdB4UcV5S3rNa9sbeTXB29a+n1uGqn510Za7aMK/h/eIafM32XNggwG/1V5nz/J
+         BoGwmHFbAEjhs1Exrv4g//EY5PJ4FNyD3UM8gvWz5wJhmnrTep54XfdDojC3/HYH5O
+         wtvCg7CXvrxW18YbtC+/0NS0ABznm/LEJsBZCwc195wEcjKL6q+6OmG9fS4HU0HVYF
+         EFxtvV/8HkDdAYgS14yup5Iv0ir3n5/GW1yV3IgBWNjt08KFu3cK7OTll1N0OTLWft
+         TJD4wRChymSxw==
+Date:   Mon, 13 Jul 2020 14:02:38 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-next@vger.kernel.org, mhocko@suse.cz,
+        mm-commits@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: mmotm 2020-07-09-21-00 uploaded
+ (drivers/net/ethernet/mellanox/mlx5/core/en_main.c)
+Message-ID: <20200713140238.72649525@canb.auug.org.au>
+In-Reply-To: <8a6f8902-c36c-b46c-8e6f-05ae612d25ea@infradead.org>
+References: <20200710040047.md-jEb0TK%akpm@linux-foundation.org>
+        <8a6f8902-c36c-b46c-8e6f-05ae612d25ea@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <20200710104849.406023-1-mst@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: multipart/signed; boundary="Sig_/a.F=98_FQpFriK6K_UyZ8YF";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/a.F=98_FQpFriK6K_UyZ8YF
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 2020/7/10 下午6:48, Michael S. Tsirkin wrote:
-> vhost/scsi doesn't handle type conversion correctly
-> for request type when using virtio 1.0 and up for BE,
-> or cross-endian platforms.
+Hi Randy,
+
+On Fri, 10 Jul 2020 10:40:29 -0700 Randy Dunlap <rdunlap@infradead.org> wro=
+te:
 >
-> Fix it up using vhost_32_to_cpu.
->
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->   drivers/vhost/scsi.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
-> index 6fb4d7ecfa19..b22adf03f584 100644
-> --- a/drivers/vhost/scsi.c
-> +++ b/drivers/vhost/scsi.c
-> @@ -1215,7 +1215,7 @@ vhost_scsi_ctl_handle_vq(struct vhost_scsi *vs, struct vhost_virtqueue *vq)
->   			continue;
->   		}
->   
-> -		switch (v_req.type) {
-> +		switch (vhost32_to_cpu(vq, v_req.type)) {
->   		case VIRTIO_SCSI_T_TMF:
->   			vc.req = &v_req.tmf;
->   			vc.req_size = sizeof(struct virtio_scsi_ctrl_tmf_req);
+> on i386:
+>=20
+> In file included from ../drivers/net/ethernet/mellanox/mlx5/core/en_main.=
+c:49:0:
+> ../drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h: In functi=
+on =E2=80=98mlx5e_accel_sk_get_rxq=E2=80=99:
+> ../drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h:153:12: er=
+ror: implicit declaration of function =E2=80=98sk_rx_queue_get=E2=80=99; di=
+d you mean =E2=80=98sk_rx_queue_set=E2=80=99? [-Werror=3Dimplicit-function-=
+declaration]
+>   int rxq =3D sk_rx_queue_get(sk);
+>             ^~~~~~~~~~~~~~~
+>             sk_rx_queue_set
 
+Caused by commit
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+  1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
 
+from the net-next tree.  Presumably CONFIG_XPS is not set.
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/a.F=98_FQpFriK6K_UyZ8YF
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8L3N4ACgkQAVBC80lX
+0GxeJQf/f6Wyg7WRuxi4cpGEg9Z6M6hlgGSMFlkj3ZiCJ+L9O0HC3d21ZBJm8oOS
+PQBMbSZI8KnWqWIlIW922w82Wz3plpENMPiQZFo7rqAev47OHt/6ICuHLBcVyvVk
+REoOq5rp4cAIVrynBaOpldxRfiA+ympEdq8Mefz3/LYB60FRAoXIHe2G1xbXiv/x
+v9TPVFNef5TOurprjSmv4UkBz2myohPfn5m57Ps9veUrZldgB49eoTUTIOwrLUGz
+alWdiIW5hCAXttqNqnpMhtQJUNLxuR52gIxOBhPgm7f+8J0BT2lqvFtLGLghFVkg
+9VjdxhP5ut4zxxHzMzurJuSAR/XvHA==
+=M9pq
+-----END PGP SIGNATURE-----
+
+--Sig_/a.F=98_FQpFriK6K_UyZ8YF--
