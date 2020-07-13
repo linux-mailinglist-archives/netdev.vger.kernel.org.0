@@ -2,102 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5783B21E192
-	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 22:41:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7F3F21E194
+	for <lists+netdev@lfdr.de>; Mon, 13 Jul 2020 22:41:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726602AbgGMUlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 16:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbgGMUlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 16:41:00 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85817C061755
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 13:41:00 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id m9so6561081pfh.0
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 13:41:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VMfnNtLZskdCKqJCdG7DfgA/yN7X5Z0A/OIBzjkNtuE=;
-        b=eIvnl7tbT2LcxRNUCsg929CZnaHFYzrbhfAwT9yc32hJwNwYr/+GobS6fN7JcjXLbW
-         F9QH0SUvcfB454uv/opktfHgwhysYYm4IsdQWIp9F3eDUkIbJI0fXRPdgmOFlYX4T+hP
-         oh1SqwGwl+lsturxeThLfEGQS9VAUNGlgtkztCSEerJz69+ETiVObfmjIJDNN+tJDcnj
-         dYlZ6IJQ3zkBSYDX+Pg/A+Ic+QVFpiwXuXzRzUGZ9D7poxYVVH+QksExuZ5Ive+thL1D
-         hjqYyU0FrePlfd+s9p+6KXO0ft3OGm5F82TUIukaAXwChE6bT9wown7zod/agTz7TEOV
-         c4Iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=VMfnNtLZskdCKqJCdG7DfgA/yN7X5Z0A/OIBzjkNtuE=;
-        b=N0USKehnT2X0J4w6TxRJThmzTRS5TCtb+xv2QESsuO8mMybpi1ED+pmkPeGQfx6Q67
-         S3Hr+67jjHFmB2qCZ2c0Uu0eBgmGym+kbnNzniH1N2Cr0SWe0mvZogoU5F1M8xB9PL+G
-         +BM4pJU3/1KFJ6buf0z7BzMbtZHN8vPYE0nKJiEY9rAH72/44M+Wst/pppFC3ymyQteu
-         LKtBfCYqmTE+e2R+ogt7I3ow0yXQGJET3QJvzu4ZzTROSjV6PLyf2eDsYCPIJ8agYpv1
-         Y3FFzdQE/XPM9iXvsVAMn3yEB8guj202YAHt4akRHC0AGynVmLwQWaC/w1TkWwJGLUyZ
-         qLqA==
-X-Gm-Message-State: AOAM530FvQ9Xlgivwo8kKLqIjqqJtCMeV/3kfCDSOU6lWOW36NjQ596Y
-        8TsExfbmoPBPdQhiGNwjW1A=
-X-Google-Smtp-Source: ABdhPJwMTEIpxv5B+MOW9XYWrsfY/U4YeGHK7ko83QKV2BD3npx1a1AfmkNlaGveyTBlxeyUNw/k/A==
-X-Received: by 2002:a62:19c9:: with SMTP id 192mr1429325pfz.138.1594672860110;
-        Mon, 13 Jul 2020 13:41:00 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id r2sm14713196pfh.106.2020.07.13.13.40.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jul 2020 13:40:59 -0700 (PDT)
-Subject: Re: [PATCH V2 net-next 1/7] net: ena: avoid unnecessary rearming of
- interrupt vector when busy-polling
-To:     Shay Agroskin <shayagr@amazon.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     akiyano@amazon.com, davem@davemloft.net, netdev@vger.kernel.org,
-        dwmw@amazon.com, zorik@amazon.com, matua@amazon.com,
-        saeedb@amazon.com, msw@amazon.com, aliguori@amazon.com,
-        nafea@amazon.com, gtzalik@amazon.com, netanel@amazon.com,
-        alisaidi@amazon.com, benh@amazon.com, ndagan@amazon.com,
-        sameehj@amazon.com
-References: <1594593371-14045-1-git-send-email-akiyano@amazon.com>
- <1594593371-14045-2-git-send-email-akiyano@amazon.com>
- <3f3cc8e6-a5fd-44f7-7a86-8862e296c40c@gmail.com>
- <pj41zlk0z7rypx.fsf@ua97a68a4e7db56.ant.amazon.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <6be7744e-a54b-b668-f2a6-3d1dfdd63414@gmail.com>
-Date:   Mon, 13 Jul 2020 13:40:57 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1726762AbgGMUld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 16:41:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43538 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726338AbgGMUld (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 16:41:33 -0400
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7191620809;
+        Mon, 13 Jul 2020 20:41:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594672892;
+        bh=uV+upRMNLN0EEuKpXARG/DTjrTmb62mp8f5waKgSwKs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=tTrpToElmLFk95o6tIA/bXsi6XkiViEnF+lQAUv/JsX+DeLOlPklLPUFi5eVpRVsc
+         6nD2H7teYX9p6EjLo7BJsVgy3x+4Bv2EZhjypsC9sNh8XmMs+teZ55fPEZROhxpwBQ
+         9jV2wKsuXd/bQnyeezRt+K9u0f/33NQMF7N2k0lE=
+Received: by mail-oi1-f169.google.com with SMTP id r8so12124937oij.5;
+        Mon, 13 Jul 2020 13:41:32 -0700 (PDT)
+X-Gm-Message-State: AOAM531bZ5pdGkWbNRzaN3GpLHV5H/Ggxz2E1AkliN2jVp9SC3TcXw45
+        UdJy4cfzMaYafLl2rO7+GC+MBWnktobFA7Fo2A==
+X-Google-Smtp-Source: ABdhPJz0d2q53KND1DSgvXo0raYHu0/zzAI/J9tprS2P2vpfElz3BlccN7l8cimXpHSNuzUXT1YJPVWqTw0K+ZCwTXQ=
+X-Received: by 2002:aca:bb82:: with SMTP id l124mr1109702oif.106.1594672891731;
+ Mon, 13 Jul 2020 13:41:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <pj41zlk0z7rypx.fsf@ua97a68a4e7db56.ant.amazon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200710090618.28945-1-kurt@linutronix.de> <20200710090618.28945-2-kurt@linutronix.de>
+ <20200710164500.GA2775934@bogus> <8c105489-42c5-b4ba-73b6-c3a858f646a6@gmail.com>
+ <CAL_Jsq+zP9++MftM+Dh2Fe-OdKq6EiGA_tASEbBwA_jEdwoFCA@mail.gmail.com> <871rliw9cq.fsf@kurt>
+In-Reply-To: <871rliw9cq.fsf@kurt>
+From:   Rob Herring <robh@kernel.org>
+Date:   Mon, 13 Jul 2020 14:41:19 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJjjSCmijJsN5wH4VgmDCQdDhe7N3tWgzzS7oeqzZjzug@mail.gmail.com>
+Message-ID: <CAL_JsqJjjSCmijJsN5wH4VgmDCQdDhe7N3tWgzzS7oeqzZjzug@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] dt-bindings: net: dsa: Add DSA yaml binding
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jul 11, 2020 at 5:59 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
+>
+> Hi,
+>
+> On Fri Jul 10 2020, Rob Herring wrote:
+> > On Fri, Jul 10, 2020 at 11:20 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
+> >>
+> >>
+> >>
+> >> On 7/10/2020 9:45 AM, Rob Herring wrote:
+> >> > On Fri, Jul 10, 2020 at 11:06:18AM +0200, Kurt Kanzenbach wrote:
+> >> >> For future DSA drivers it makes sense to add a generic DSA yaml binding which
+> >> >> can be used then. This was created using the properties from dsa.txt. It
+> >> >> includes the ports and the dsa,member property.
+> >> >>
+> >> >> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
+> >> >> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> >> >> ---
+> >> >>  .../devicetree/bindings/net/dsa/dsa.yaml      | 80 +++++++++++++++++++
+> >> >>  1 file changed, 80 insertions(+)
+> >> >>  create mode 100644 Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> >> >>
+> >> >> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> >> >> new file mode 100644
+> >> >> index 000000000000..bec257231bf8
+> >> >> --- /dev/null
+> >> >> +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> >> >> @@ -0,0 +1,80 @@
+> >> >> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >> >> +%YAML 1.2
+> >> >> +---
+> >> >> +$id: http://devicetree.org/schemas/net/dsa/dsa.yaml#
+> >> >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >> >> +
+> >> >> +title: Distributed Switch Architecture Device Tree Bindings
+> >> >
+> >> > DSA is a Linuxism, right?
+> >>
+> >> Not really, it is a Marvell term that describes their proprietary
+> >> switching protocol. Since then DSA within Linux expands well beyond just
+> >> Marvell switches, so the terms have been blurred a little bit.
+> >
+> > Either way, sounds like the terminology here should be more general.
+>
+> How?
 
+I don't know, just call it 'ethernet switch' binding or something.
+>
+> >
+> > Though I missed that this is really just a conversion of dsa.txt which
+> > should be removed in this patch. Otherwise, you'll get me re-reviewing
+> > the binding.
+>
+> Yes, it's a conversion of the dsa.txt. I should have stated that more
+> clearly. I didn't remove the .txt file, because it's referenced in all
+> the different switch bindings such as b53.txt, ksz.txt and so on. How to
+> handle that?
 
-On 7/13/20 12:39 PM, Shay Agroskin wrote:
-> 
-> Eric Dumazet <eric.dumazet@gmail.com> writes:
-> 
+Either update them if not many, or make dsa.txt just point to dsa.yaml
+as Andrew mentioned. I haven't looked, but seems like this would be a
+small number.
 
->>> +     WRITE_ONCE(ena_napi->interrupts_masked, true);
->>> +     smp_wmb(); /* write interrupts_masked before calling napi */
->>
->> It is not clear where is the paired smp_wmb()
->>
-> Can you please explain what you mean ? The idea of adding the store barrier here is to ensure that the WRITE_ONCE(…) invocation is executed before
-> invoking the napi soft irq. From what I gathered using this command would result in compiler barrier (which would prevent it from executing the bool store after napi scheduling) on x86
-> and a memory barrier on ARM64 machines which have a weaker consistency model.
+Updating all the users to schema is also welcome. :)
 
-Every time you add a smp_wmb() somewhere, the question is raised where the opposite barrier (usually smp_rmb())
-is used.
+> >> >> +
+> >> >> +maintainers:
+> >> >> +  - Andrew Lunn <andrew@lunn.ch>
+> >> >> +  - Florian Fainelli <f.fainelli@gmail.com>
+> >> >> +  - Vivien Didelot <vivien.didelot@gmail.com>
+> >> >> +
+> >> >> +description:
+> >> >> +  Switches are true Linux devices and can be probed by any means. Once probed,
+> >> >
+> >> > Bindings are OS independent.
+>
+> OK.
+>
+> >> >
+> >> >> +  they register to the DSA framework, passing a node pointer. This node is
+> >> >> +  expected to fulfil the following binding, and may contain additional
+> >> >> +  properties as required by the device it is embedded within.
+> >> >
+> >> > Describe what type of h/w should use this binding.
+>
+> I took the description from the dsa.txt. However, it makes sense to
+> adjust that description. Basically all Ethernet switches with a
+> dedicated CPU port should use DSA and this binding.
+>
+> >> >
+> >> >> +
+> >> >> +properties:
+> >> >> +  $nodename:
+> >> >> +    pattern: "^switch(@.*)?$"
+> >> >> +
+> >> >> +  dsa,member:
+> >> >> +    minItems: 2
+> >> >> +    maxItems: 2
+> >> >> +    description:
+> >> >> +      A two element list indicates which DSA cluster, and position within the
+> >> >> +      cluster a switch takes. <0 0> is cluster 0, switch 0. <0 1> is cluster 0,
+> >> >> +      switch 1. <1 0> is cluster 1, switch 0. A switch not part of any cluster
+> >> >> +      (single device hanging off a CPU port) must not specify this property
+> >> >> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> >> >> +
+> >> >> +  ports:
+> >> >> +    type: object
+> >> >> +    properties:
+> >> >> +      '#address-cells':
+> >> >> +        const: 1
+> >> >> +      '#size-cells':
+> >> >> +        const: 0
+> >> >> +
+> >> >> +    patternProperties:
+> >> >> +      "^port@[0-9]+$":
+> >> >
+> >> > As ports and port are OF graph nodes, it would be better if we
+> >> > standardized on a different name for these. I think we've used
+> >> > 'ethernet-port' some.
+> >>
+> >> Yes we did talk about that before, however when the original DSA binding
+> >> was introduced about 7 years ago (or maybe more recently, my memory
+> >> fails me now), "ports" was chosen as the encapsulating node. We should
+> >> be accepting both ethernet-ports and ports.
+> >
+> > Yes, I'm aware of the history. Back then it was a free-for-all on node
+> > names. Now we're trying to be more disciplined. Ideally, we pick
+> > something unique to standardize on and fix the dts files to match as
+> > long as the node name is generally a don't care for the OS.
+> >
+> > The schema says only port/ports is allowed,
+>
+> Yes, it does.
+>
+> > so at a minimum
+> > ethernet-port/ethernet-ports needs to be added here.
+>
+> Just to be sure. Instead of
+>
+>   ports {
+>     port@1 {
+>       ...
+>     }
+>   }
+>
+> The following should be possible as well?
+>
+>   ethernet-ports {
+>     port@1 {
 
-You should document this, pointing where is the opposite smp_rmb()
+Yes, but probably 'ethernet-port@1' here. Or both can be allowed.
 
-If you can not find it (READ_ONCE() has no implied smp_rmb()), then
-something might be wrong in your patch.
+>       ...
+>     }
+>   }
+>
+> Is there an easy way to add that alternative to the schema? Or does the
+> ethernet-ports property has to be defined as well?
 
+You need a pattern like:
+
+patternProperties:
+  "^(ethernet-)?ports$":
+    ...
+
+You could also make one property a $ref to another, but I prefer the above.
+
+Rob
