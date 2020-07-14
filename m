@@ -2,92 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2284F21EAC9
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 10:00:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F5D621EAD0
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 10:01:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726437AbgGNIAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 04:00:53 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:48822 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725816AbgGNIAx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 04:00:53 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06E7vXl2177462;
-        Tue, 14 Jul 2020 08:00:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=C9ONEvJcEuBYJCXRgpHShvymZKUc+CA90dBt/Q2+rs8=;
- b=I9od1WDDxaSyifltzGam/113d6WpJ2gzMwEICdAcRiPqP/ENodFW1X7eCuFgtEldT5yo
- ZjAkQm3MALHDGgGfoZs/mKrcj+s4OF42VDON58y81A4R4/ZXaL4Z6UBXOqjyCC2g73S/
- qKss54/GIWBRAB0V2429zO68bFfHPBfiqK0P2nHSeYoF/lL12wPQMes4OCZny6RMT2ZP
- MMLMzivW+XUwdiwKAjb2SEIuyWc4FjaRfSIDJuMUU6htqs2A23C2lly+LJrPD0qyFVp9
- +YmBxAZPiWSc+7unswhgoK3AFbhY+cwPaFkhsjtifHt518vpINsXXzv50ZAGXhazfG9I Xg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 3275cm3s05-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 14 Jul 2020 08:00:47 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06E7qcqd119837;
-        Tue, 14 Jul 2020 08:00:46 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 327qbx4bfk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Jul 2020 08:00:46 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 06E80jox000463;
-        Tue, 14 Jul 2020 08:00:45 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 14 Jul 2020 01:00:44 -0700
-Date:   Tue, 14 Jul 2020 11:00:38 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     george.kennedy@oracle.com, kuba@kernel.org,
-        dhaval.giani@oracle.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] ax88172a: fix ax88172a_unbind() failures
-Message-ID: <20200714080038.GX2571@kadam>
-References: <1594641537-1288-1-git-send-email-george.kennedy@oracle.com>
- <20200713.170859.794084104671494668.davem@davemloft.net>
+        id S1726827AbgGNIBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 04:01:45 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:40395 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbgGNIBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 04:01:45 -0400
+Received: by mail-oi1-f195.google.com with SMTP id t198so13241269oie.7;
+        Tue, 14 Jul 2020 01:01:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gr/9MPACjcXFT200AbtYNpFbRXhHlr2mT2NBQiQX2q0=;
+        b=GJB3CYih7xT3IlYFa7400ocVQ2KeusdMh9yAPhscWmL1A/WIx/bWVv/0ArpDtMkhDj
+         1hA1rMKmTbD0Sr/I/chUjWGc/Tn3v3wsLsUMIwMoHY3R8JsScqIJdr//c7fHKdrTUv9h
+         NKRhTxJvBw+6sNrrd1kZhr5TW5A2L9ui/nM/dW9xy/5Gj6E2dV696gfEw06v5fuaekKk
+         aw2aNfDnSfghUWwWWgRaZUDZGLaVNeTogfiV7IhtcBDTI7RKC9I4I4l0kBhmFA3UcgX8
+         BVflkxBPWciufeEazXOxthOvShvyILsMMaLo3O+DEVl174mYmhPdnCvmJxlwCyR8pBwn
+         IQhw==
+X-Gm-Message-State: AOAM530x5CCU5uwQKC2utfMDbvA8Mfh6h6lEogUufZlecrQZ3HttpmIN
+        luHCFSqa/cIQN2bnP7v6GCac7msoEtQKObmYBqA=
+X-Google-Smtp-Source: ABdhPJy7kkdABSF7lhv0xD5jUKEhCpyXc6ADui6HtYdgbv0IJdB1SlTSer1oVhB10kFqgYGdnLSY0z0w3jWdAStYu0g=
+X-Received: by 2002:a05:6808:64a:: with SMTP id z10mr2727113oih.54.1594713703757;
+ Tue, 14 Jul 2020 01:01:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200713.170859.794084104671494668.davem@davemloft.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9681 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 spamscore=0
- mlxlogscore=999 bulkscore=0 malwarescore=0 mlxscore=0 phishscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007140061
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9681 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 priorityscore=1501
- bulkscore=0 adultscore=0 lowpriorityscore=0 phishscore=0 spamscore=0
- impostorscore=0 malwarescore=0 mlxlogscore=999 clxscore=1015 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007140061
+References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594676120-5862-9-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594676120-5862-9-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 14 Jul 2020 10:01:32 +0200
+Message-ID: <CAMuHMdXV65Nmq8263LE-006gBeKErktAt0Fmrsurm+dLZxQs1Q@mail.gmail.com>
+Subject: Re: [PATCH 8/9] dt-bindings: net: renesas,ravb: Add support for
+ r8a774e1 SoC
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        dmaengine <dmaengine@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 05:08:59PM -0700, David Miller wrote:
-> From: George Kennedy <george.kennedy@oracle.com>
-> Date: Mon, 13 Jul 2020 07:58:57 -0400
-> 
-> > @@ -237,6 +237,8 @@ static int ax88172a_bind(struct usbnet *dev, struct usb_interface *intf)
-> >  
-> >  free:
-> >  	kfree(priv);
-> > +	if (ret >= 0)
-> > +		ret = -EIO;
-> >  	return ret;
-> 
-> Success paths reach here, so ">= 0" is not appropriate.  Maybe you
-> meant "> 0"?
+On Mon, Jul 13, 2020 at 11:36 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+>
+> Document RZ/G2H (R8A774E1) SoC bindings.
+>
+> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-No, the success path is the "return 0;" one line before the start of the
-diff.  This is always a failure path.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-regards,
-dan carpenter
+Gr{oetje,eeting}s,
 
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
