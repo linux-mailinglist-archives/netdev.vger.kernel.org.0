@@ -2,69 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD4921FF8B
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 23:03:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC1CA21FF91
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 23:07:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726965AbgGNVDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 17:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
+        id S1728051AbgGNVHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 17:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726795AbgGNVDY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 17:03:24 -0400
+        with ESMTP id S1727813AbgGNVHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 17:07:12 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C84DC061755
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 14:03:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A661AC061755
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 14:07:12 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B20B115E2C7DC;
-        Tue, 14 Jul 2020 14:03:23 -0700 (PDT)
-Date:   Tue, 14 Jul 2020 14:03:23 -0700 (PDT)
-Message-Id: <20200714.140323.590389609923321569.davem@davemloft.net>
-To:     dan.carpenter@oracle.com
-Cc:     george.kennedy@oracle.com, kuba@kernel.org,
-        dhaval.giani@oracle.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] ax88172a: fix ax88172a_unbind() failures
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A64B815E2C7F7;
+        Tue, 14 Jul 2020 14:07:11 -0700 (PDT)
+Date:   Tue, 14 Jul 2020 14:07:10 -0700 (PDT)
+Message-Id: <20200714.140710.213288407914809619.davem@davemloft.net>
+To:     helmut.grohne@intenta.de
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, kuba@kernel.org, netdev@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        vivien.didelot@gmail.com
+Subject: Re: [PATCH] net: phy: phy_remove_link_mode should not advertise
+ new modes
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200714080038.GX2571@kadam>
-References: <1594641537-1288-1-git-send-email-george.kennedy@oracle.com>
-        <20200713.170859.794084104671494668.davem@davemloft.net>
-        <20200714080038.GX2571@kadam>
+In-Reply-To: <20200714082540.GA31028@laureti-dev>
+References: <20200714082540.GA31028@laureti-dev>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 14 Jul 2020 14:03:23 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 14 Jul 2020 14:07:12 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Date: Tue, 14 Jul 2020 11:00:38 +0300
+From: Helmut Grohne <helmut.grohne@intenta.de>
+Date: Tue, 14 Jul 2020 10:25:42 +0200
 
-> On Mon, Jul 13, 2020 at 05:08:59PM -0700, David Miller wrote:
->> From: George Kennedy <george.kennedy@oracle.com>
->> Date: Mon, 13 Jul 2020 07:58:57 -0400
->> 
->> > @@ -237,6 +237,8 @@ static int ax88172a_bind(struct usbnet *dev, struct usb_interface *intf)
->> >  
->> >  free:
->> >  	kfree(priv);
->> > +	if (ret >= 0)
->> > +		ret = -EIO;
->> >  	return ret;
->> 
->> Success paths reach here, so ">= 0" is not appropriate.  Maybe you
->> meant "> 0"?
+> When doing "ip link set dev ... up" for a ksz9477 backed link,
+> ksz9477_phy_setup is called and it calls phy_remove_link_mode to remove
+> 1000baseT HDX. During phy_remove_link_mode, phy_advertise_supported is
+> called.
 > 
-> No, the success path is the "return 0;" one line before the start of the
-> diff.  This is always a failure path.
+> If one wants to advertise fewer modes than the supported ones, one
+> usually reduces the advertised link modes before upping the link (e.g.
+> by passing an appropriate .link file to udev).  However upping
+> overrwrites the advertised link modes due to the call to
+> phy_advertise_supported reverting to the supported link modes.
+> 
+> It seems unintentional to have phy_remove_link_mode enable advertising
+> bits and it does not match its description in any way. Instead of
+> calling phy_advertise_supported, we should simply clear the link mode to
+> be removed from both supported and advertising.
+> 
+> Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
+> Fixes: 41124fa64d4b29 ("net: ethernet: Add helper to remove a supported link mode")
 
-Is zero ever a possibility, therefore?
+The problem is that we can't allow the advertised setting to exceed
+what is in the supported list.
 
-You have two cases, one with an explicit -EIO and another which jumps
-here "if (ret)"
-
-So it seems the answer is no.
+That's why this helper is coded this way from day one.
