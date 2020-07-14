@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A2E221EC8C
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:20:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88D4B21ECC4
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:27:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726828AbgGNJUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 05:20:02 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:32899 "EHLO
+        id S1726986AbgGNJ1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 05:27:45 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:34690 "EHLO
         mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726352AbgGNJUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:20:00 -0400
-Received: by mail-ot1-f66.google.com with SMTP id h13so12557339otr.0;
-        Tue, 14 Jul 2020 02:19:59 -0700 (PDT)
+        with ESMTP id S1726928AbgGNJ1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:27:40 -0400
+Received: by mail-ot1-f66.google.com with SMTP id e90so12567039ote.1;
+        Tue, 14 Jul 2020 02:27:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lr6ehkiA+wQTlVbgKUBtfLmjH6B35ZHI7I1BOUE7Afo=;
-        b=t3icOm9FBPBdB2+Fp9LxU1YRusbuEdz/FTmz/ZCHqoWOaIJToTAFWFvq4MrZip0sfH
-         ZMtC7It3CW5yQfa+pssA3AAvkW3IT/HAKF9jU9QOqBDbtczWUxPw2zg9yYD4ca6Ul4sl
-         /L66+Puw1yhpyMFAYHctjn/9JMtvwjGQOhwXjUmKFPj+4BXAEOdElceJkVwCZ3vD2DV4
-         6mPyNtQKIQTP4I5SDmy554m65nHLOAj8u2Xe5fzFUs2h5vfCqgzKejrdtXFcL1NzO5FH
-         ahkSm4JZ3HVGo4amx+d+pM7QHf93Xjbja0YndPyvwUfMNB+c/Hz6xoivmRvkKdgT6mlX
-         nG5w==
-X-Gm-Message-State: AOAM530SPu3PO0/rLqk3e50aJcENKQN27GqjkgC2Nmc6KZhzPu/yN/3/
-        8vjI8IOk+xylsKRYGi/+YRDRYz+09eZiiomFn94=
-X-Google-Smtp-Source: ABdhPJymM3jUthOU7MUC7BJJVYVEZLSfzetmtXN1UCJV7+dkv0NdChE4LhYysx3KVtt2ozOxEExy7AyZyfrvt66ViT4=
-X-Received: by 2002:a9d:2646:: with SMTP id a64mr3032121otb.107.1594718399477;
- Tue, 14 Jul 2020 02:19:59 -0700 (PDT)
+        bh=BcBgAiY71PDQb9AkYuorOFzEG6DsDrsVIbYaSy+JPpU=;
+        b=pDU7cxAc/8nVkIufip2sEC2iLfXpU+AebYUtWaIjKn0H4iq0NLO7N6MB0OcR9+kSha
+         KY2zU8joPjZ2EKi0eYLTmo3ZeenCLr+AYFDMjL65EvmWaREKe+qhfbLeWxl17vWIVPCM
+         tGAnMmQn39DcvDBWNMzSkKb2dGk7JbmLMU5uS8ggmlrcAYjOg7CVTGFWJRcKn2EjcpIV
+         FJhSulPblSS14bH2a6IXyWD7TDb8BL967V7GPJeCpZUdcRSy3MnJbtkX8KAUelPDJzdZ
+         IDZrh2UlEtFH2Fo+FwBxPZvyiti5IGgBYPDCsCHPYHRV0vb/ysm5yL6RlI7e4USxHy8i
+         ouqA==
+X-Gm-Message-State: AOAM530wME3BivjMGco+shebmbV/DUUFaVg48ToLehLsX8d9EOapnRGu
+        86wSIXgt4oz0ZST/gAnVE1l8mK7ZsWjXQ93m7lI=
+X-Google-Smtp-Source: ABdhPJyrhaG/SeR+X/25sxkP2ucHSApSaY4senOI3s6UTaENULowX/uuQANaV67djcwX6YA422EQ4z2isefIpnp0WQk=
+X-Received: by 2002:a05:6830:1451:: with SMTP id w17mr3264761otp.250.1594718859452;
+ Tue, 14 Jul 2020 02:27:39 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200714122247.797cf01e@canb.auug.org.au> <20200714061654.GE183694@krava>
- <20200714083133.GF183694@krava>
-In-Reply-To: <20200714083133.GF183694@krava>
+References: <20200714121608.58962d66@canb.auug.org.au> <20200714090048.GG183694@krava>
+In-Reply-To: <20200714090048.GG183694@krava>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 14 Jul 2020 11:19:47 +0200
-Message-ID: <CAMuHMdVjyHAJJNNUwva=RnyLxV--kVpgSWAic7WoJMgf_Ri+NQ@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the bpf-next tree
+Date:   Tue, 14 Jul 2020 11:27:28 +0200
+Message-ID: <CAMuHMdWznwG3dSFDM=iGX7OU9o95ChdnhbdJBZ27zFNQip8C3w@mail.gmail.com>
+Subject: Re: linux-next: build warning after merge of the bpf-next tree
 To:     Jiri Olsa <jolsa@redhat.com>
 Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -51,35 +50,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiri,
-
-On Tue, Jul 14, 2020 at 10:33 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> On Tue, Jul 14, 2020 at 08:16:54AM +0200, Jiri Olsa wrote:
-> > On Tue, Jul 14, 2020 at 12:22:47PM +1000, Stephen Rothwell wrote:
-> > > After merging the bpf-next tree, today's linux-next build (arm
-> > > multi_v7_defconfig) failed like this:
-> > >
-> > > tmp/ccsqpVCY.s: Assembler messages:
-> > > tmp/ccsqpVCY.s:78: Error: unrecognized symbol type ""
-> > > tmp/ccsqpVCY.s:91: Error: unrecognized symbol type ""
-> > >
-> > > I don't know what has caused this (I guess maybe the resolve_btfids
-> > > branch).
-> > >
-> > > I have used the bpf-next tree from next-20200713 for today.
-
-Bummer, didn't find this report before I had bisected this to
-c9a0f3b85e09dd16 ("bpf: Resolve BTF IDs in vmlinux image"), and
-investigated the root cause (@object) myself, as the failing file path
-(net/core/filter.o) was not mentioned...
-
-> > ok, trying to reproduce
+On Tue, Jul 14, 2020 at 11:02 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> On Tue, Jul 14, 2020 at 12:16:08PM +1000, Stephen Rothwell wrote:
+> > After merging the bpf-next tree, today's linux-next build (powerpc
+> > ppc64_defconfig) produced this warning:
+> >
+> > ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
+> > ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
+> >
+> > Presumably ntroduced by the merge of the resolve_btfids branch.
 >
-> damn crossbuilds.. change below fixes it for me,
-> will do some more testing and post it today
+> missing one more #ifdef.. chage below fixes it for me,
+> it's squashed with the fix for the arm build, I'll post
+> both fixes today
 
-Thanks, this fixes my (cross)arm32 build, and the (cross)arm64 build
-keeps working, and everything boots, so
+This one works for me, too:
 Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
 Gr{oetje,eeting}s,
