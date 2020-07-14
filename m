@@ -2,94 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 357E621F84D
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 19:34:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A92921F8A7
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 19:58:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728364AbgGNRed (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 13:34:33 -0400
-Received: from pbmsgap02.intersil.com ([192.157.179.202]:60974 "EHLO
-        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726169AbgGNRed (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 13:34:33 -0400
-X-Greylist: delayed 1119 seconds by postgrey-1.27 at vger.kernel.org; Tue, 14 Jul 2020 13:34:32 EDT
-Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
-        by pbmsgap02.intersil.com (8.16.0.27/8.16.0.27) with SMTP id 06EHDIkX023308;
-        Tue, 14 Jul 2020 13:15:50 -0400
-Received: from pbmxdp02.intersil.corp (pbmxdp02.pb.intersil.com [132.158.200.223])
-        by pbmsgap02.intersil.com with ESMTP id 3277kcs6pa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jul 2020 13:15:50 -0400
-Received: from pbmxdp03.intersil.corp (132.158.200.224) by
- pbmxdp02.intersil.corp (132.158.200.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.1979.3; Tue, 14 Jul 2020 13:15:49 -0400
-Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
- (132.158.200.224) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 14 Jul 2020 13:15:48 -0400
-From:   <min.li.xe@renesas.com>
-To:     <richardcochran@gmail.com>, <corbet@lwn.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, Min Li <min.li.xe@renesas.com>
-Subject: [PATCH net 1/1] docs: ptp.rst: add support for Renesas (IDT) ClockMatrix
-Date:   Tue, 14 Jul 2020 13:15:20 -0400
-Message-ID: <1594746920-28760-1-git-send-email-min.li.xe@renesas.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728926AbgGNR6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 13:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58650 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725951AbgGNR6b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 13:58:31 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559E5C061755;
+        Tue, 14 Jul 2020 10:58:31 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id w27so13474680qtb.7;
+        Tue, 14 Jul 2020 10:58:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VuloyCeWpLKC7/IJ8lg+OQA+degQY2LL8KuudGaKn2Y=;
+        b=g3ttcAMQu4oa5NjPnUih+1Jjkthdatih4lPUPBvS/XtkHr4bJMOfl8ZqMDHiUbyGBP
+         dpwA+Hb3y6nI7azU4gS4KIiJJvFCSOJFIenX1eRF9cYoxI8XoXV/HEo8D+ycYbNi1lXE
+         LG6KSIhWe3GR1QwKQnhaaUXxZspzJO/8sMytPUn4WGqMKuLgUXuHFFr7WyFCCtYtdYPo
+         92sm5NJU+UKgSzbb5jQ7ey57CMX8m+ARX6oCqTWtvI/b/PIRZ7Te4wVbOGvh2BJITcW6
+         NkxV3C6wURinS4mkwJ0wWQVFphjHpek502l2aY3gBqhYVCKPyWM263U57KxNa/5HlyY7
+         6mQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VuloyCeWpLKC7/IJ8lg+OQA+degQY2LL8KuudGaKn2Y=;
+        b=VgKdVZKkknzLYTSGh8J7hxKL7pobP7KqZa2LOsxCT/TWAFzaMZbBzC57HdGRcWLcMz
+         I9ZPmcSnvwjrPlwLL2l3OJPaPoHPIOHhqXUI24fANJ/VNUjFKKEMiNSR15wJsXEaK6gO
+         ozNC523gj/oa6g8qsDhq/8G5peuP/6fbSurG/67otBgwLF94FjdvL+uGJ+cVjGZ5EU39
+         rCgmPAltuN9rkCuhCGaeKqR2+Z0JSHJLre/afZ/mQdZzZEE9iWpQ2MPps9ikZ/lmAYua
+         XxDb4W8bF/ZloJms1Avul3gRVpNY4PhqjMZGNdlGoKQdypyafNuAjrtNIsHQGxScMuob
+         VWEQ==
+X-Gm-Message-State: AOAM5300RC0NYbE7LhSHzFnDZdYEBQaA0lnOsEpoPNjq/we9BJIx4F/x
+        N0Yg7ZSFYTXsa7NByurjusfaotof
+X-Google-Smtp-Source: ABdhPJw8e6A6hcQcCsFlZ/G7KYoUjsg50jBLwkeI8JeRsI5Qvax0xbsw4oHxKUTgn6AYYMMvqgruqA==
+X-Received: by 2002:aed:2787:: with SMTP id a7mr6045594qtd.101.1594749510323;
+        Tue, 14 Jul 2020 10:58:30 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:3884:8f6d:6353:cafd? ([2601:282:803:7700:3884:8f6d:6353:cafd])
+        by smtp.googlemail.com with ESMTPSA id v134sm23609627qkb.60.2020.07.14.10.58.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jul 2020 10:58:29 -0700 (PDT)
+Subject: Re: [PATCH] selftests: fib_nexthop_multiprefix: fix cleanup() netns
+ deletion
+To:     Paolo Pisati <paolo.pisati@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Shuah Khan <shuah@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200714154055.68167-1-paolo.pisati@canonical.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <4437df59-b9e3-e52d-8e43-e4dd3eab3c21@gmail.com>
+Date:   Tue, 14 Jul 2020 11:58:28 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-TM-AS-MML: disable
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-14_06:2020-07-14,2020-07-14 signatures=0
-X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 suspectscore=2 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-2006250000 definitions=main-2007140126
-X-Proofpoint-Spam-Reason: mlx
+In-Reply-To: <20200714154055.68167-1-paolo.pisati@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Min Li <min.li.xe@renesas.com>
+On 7/14/20 9:40 AM, Paolo Pisati wrote:
+> During setup():
+> ...
+>         for ns in h0 r1 h1 h2 h3
+>         do
+>                 create_ns ${ns}
+>         done
+> ...
+> 
+> while in cleanup():
+> ...
+>         for n in h1 r1 h2 h3 h4
+>         do
+>                 ip netns del ${n} 2>/dev/null
+>         done
+> ...
+> 
+> and after removing the stderr redirection in cleanup():
+> 
+> $ sudo ./fib_nexthop_multiprefix.sh
+> ...
+> TEST: IPv4: host 0 to host 3, mtu 1400                              [ OK ]
+> TEST: IPv6: host 0 to host 3, mtu 1400                              [ OK ]
+> Cannot remove namespace file "/run/netns/h4": No such file or directory
+> $ echo $?
+> 1
+> 
+> and a non-zero return code, make kselftests fail (even if the test
+> itself is fine):
+> 
+> ...
+> not ok 34 selftests: net: fib_nexthop_multiprefix.sh # exit=1
+> ...
+> 
+> Signed-off-by: Paolo Pisati <paolo.pisati@canonical.com>
+> ---
+>  tools/testing/selftests/net/fib_nexthop_multiprefix.sh | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/net/fib_nexthop_multiprefix.sh b/tools/testing/selftests/net/fib_nexthop_multiprefix.sh
+> index 9dc35a16e415..51df5e305855 100755
+> --- a/tools/testing/selftests/net/fib_nexthop_multiprefix.sh
+> +++ b/tools/testing/selftests/net/fib_nexthop_multiprefix.sh
+> @@ -144,7 +144,7 @@ setup()
+>  
+>  cleanup()
+>  {
+> -	for n in h1 r1 h2 h3 h4
+> +	for n in h0 r1 h1 h2 h3
+>  	do
+>  		ip netns del ${n} 2>/dev/null
+>  	done
+> 
 
-Add below to “Ancillary clock features” section
-  - Low Pass Filter (LPF) access from user space
-
-Add below to list of “Supported hardware” section
-  + Renesas (IDT) ClockMatrix™
-
-Signed-off-by: Min Li <min.li.xe@renesas.com>
----
- Documentation/driver-api/ptp.rst | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/Documentation/driver-api/ptp.rst b/Documentation/driver-api/ptp.rst
-index a15192e..664838a 100644
---- a/Documentation/driver-api/ptp.rst
-+++ b/Documentation/driver-api/ptp.rst
-@@ -23,6 +23,7 @@ PTP hardware clock infrastructure for Linux
-   + Ancillary clock features
-     - Time stamp external events
-     - Period output signals configurable from user space
-+    - Low Pass Filter (LPF) access from user space
-     - Synchronization of the Linux system time via the PPS subsystem
- 
- PTP hardware clock kernel API
-@@ -94,3 +95,14 @@ Supported hardware
- 
-      - Auxiliary Slave/Master Mode Snapshot (optional interrupt)
-      - Target Time (optional interrupt)
-+
-+   * Renesas (IDT) ClockMatrix™
-+
-+     - Up to 4 independent PHC channels
-+     - Integrated low pass filter (LPF), access via .adjPhase (compliant to ITU-T G.8273.2)
-+     - Programmable output periodic signals
-+     - Programmable inputs can time stamp external triggers
-+     - Driver and/or hardware configuration through firmware (idtcm.bin)
-+          - LPF settings (bandwidth, phase limiting, automatic holdover, physical layer assist (per ITU-T G.8273.2))
-+          - Programmable output PTP clocks, any frequency up to 1GHz (to other PHY/MAC time stampers, refclk to ASSPs/SoCs/FPGAs)
-+          - Lock to GNSS input, automatic switching between GNSS and user-space PHC control (optional)
--- 
-2.7.4
-
+Reviewed-by: David Ahern <dsahern@gmail.com>
