@@ -2,124 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 421B621F3CE
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:23:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2998921F3D0
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:23:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728573AbgGNOWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 10:22:04 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:55435 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728478AbgGNOWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:22:02 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id A48BE5C016C;
-        Tue, 14 Jul 2020 10:22:01 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 14 Jul 2020 10:22:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=fgXElEykIDWY+seXoquHxyMTbQX9DBvSDoThC1Gkk70=; b=gZU++pza
-        9X2RaMIb2WtQdEolVg8je+SunRA8DOaXoSa8GWARp6c0WqMMKS0LAn0GAD3K3edw
-        F+P1XQxZ1RKY/aAQXAcIB9SJ3Z25Qn0ZLiawYVJ3SqixG1Z5iIwj1zljs/kBqREq
-        8ZmZ4BkTCmeqj+5GfLegCKCyDrx2eiUKINhAyPk2P/6b5aNxtEuAetDnD/zXnP8e
-        sjSuIKdkbFQ3usE1sXrOd/EI2zJtw7uW7dk3O/SGp9mBG88SV8oJFZKJCwTLLeVj
-        539A+U3AV3GRvyjSdNCOZw2YxE/zwEgSfGZ/8+j58uf6Ciohut7f0UwokHvEBqvC
-        r9Q9SqYKgSjZ3g==
-X-ME-Sender: <xms:ib8NX0kmUovSM2gk2wU5zysquK-k8EGqDaC5vQGOmgFam10VKo533w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedtgdejkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
-    fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieeirdduledrudeffeen
-    ucevlhhushhtvghrufhiiigvpeduvdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:ib8NXz3_oQF6iLlMvsj3LSCiPx3JSoSQIQsKcU3Ztk-LF6j8Pr5xzw>
-    <xmx:ib8NXyrT5ma2vicaKGPexqXucbcbLkAVqnphnHNfpxXDF3I_8tbvzQ>
-    <xmx:ib8NXwkRm42e9KxMXwsP1kreh7Q5cyNp_Iq03MCBJrp47pVy1rBKZw>
-    <xmx:ib8NX3z2HxMpbrw7Vyg9RG2MLI4hiZ_pv1qkaIhOarhVeRoEkpnxtQ>
-Received: from shredder.mtl.com (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E0F7F306005F;
-        Tue, 14 Jul 2020 10:21:59 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
+        id S1728594AbgGNOWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 10:22:19 -0400
+Received: from mail.nic.cz ([217.31.204.67]:53222 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728478AbgGNOWS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 10:22:18 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id 9827413F695;
+        Tue, 14 Jul 2020 16:22:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1594736533; bh=2eEaBlQta2QnkrznkVDQHvNfEW6pZu0OBBRKGsFfQpY=;
+        h=From:To:Date;
+        b=aAJwng1m4nnc0QnJ9tFVfEOpjlRYdB/jUSELvoD4spvliiFrCKYMen1bWvqZDXUqx
+         LDkDTEqGIrxXowlWXRRA26zM7vc7qQBVQiz8PDfEY53tNUYbuCqnbEzfTZeSZaEQGZ
+         gqkMVbA6MDgLlnaqj3twfytcTGg0y1Mg3wdmzDrA=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        petrm@mellanox.com, amitc@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 13/13] mlxsw: core: Use mirror reason during Rx listener lookup
-Date:   Tue, 14 Jul 2020 17:21:06 +0300
-Message-Id: <20200714142106.386354-14-idosch@idosch.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Subject: [PATCH net-next v1 1/2] net: mdiobus: add support to access PHY registers via debugfs
+Date:   Tue, 14 Jul 2020 16:22:12 +0200
+Message-Id: <20200714142213.21365-1-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200714142106.386354-1-idosch@idosch.org>
-References: <20200714142106.386354-1-idosch@idosch.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Spam-Status: No, score=0.00
+X-Spamd-Bar: /
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+This adds config option CONFIG_MDIO_BUS_DEBUGFS which, when enabled,
+adds support to communicate with the devices connected to the MDIO
+via debugfs.
 
-The Rx listener abstraction allows the switch driver (e.g.,
-mlxsw_spectrum) to register a function that is called when a packet is
-received (trapped) for a specific reason.
+For every MDIO bus this creates directory
+  /sys/kernel/debug/mdio_bus/MDIO_BUS_NAME
+with files "addr", "reg" and "val".
+User can write device address to the "addr" file and register number to
+the "reg" file, and then can read the value of the register from the
+"val" file, or can write new value by writing to the "val" file.
 
-Up until now, the Rx listener lookup was solely based on the trap
-identifier. However, when a packet is mirrored to the CPU the trap
-identifier merely indicates that the packet was mirrored, but not why it
-was mirrored. This makes it impossible for the switch driver to register
-different Rx listeners for different mirror reasons.
+This is useful when debugging various PHYs or switches.
 
-Solve this by allowing the switch driver to register a Rx listener with
-a mirror reason and by extending the Rx listener lookup to take the
-mirror reason into account.
-
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Signed-off-by: Marek Behún <marek.behun@nic.cz>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c | 6 ++++--
- drivers/net/ethernet/mellanox/mlxsw/core.h | 1 +
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/phy/Kconfig    |  8 ++++++++
+ drivers/net/phy/Makefile   |  2 ++
+ drivers/net/phy/mdio_bus.c | 31 ++++++++++++++++++++++++++-----
+ include/linux/phy.h        |  5 +++++
+ 4 files changed, 41 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 8b3791d73c99..1363168b3c82 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1524,7 +1524,8 @@ static bool __is_rx_listener_equal(const struct mlxsw_rx_listener *rxl_a,
- {
- 	return (rxl_a->func == rxl_b->func &&
- 		rxl_a->local_port == rxl_b->local_port &&
--		rxl_a->trap_id == rxl_b->trap_id);
-+		rxl_a->trap_id == rxl_b->trap_id &&
-+		rxl_a->mirror_reason == rxl_b->mirror_reason);
- }
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index dd20c2c27c2f..aca4b52225b1 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -24,6 +24,14 @@ if MDIO_BUS
+ config MDIO_DEVRES
+ 	tristate
  
- static struct mlxsw_rx_listener_item *
-@@ -2044,7 +2045,8 @@ void mlxsw_core_skb_receive(struct mlxsw_core *mlxsw_core, struct sk_buff *skb,
- 		rxl = &rxl_item->rxl;
- 		if ((rxl->local_port == MLXSW_PORT_DONT_CARE ||
- 		     rxl->local_port == local_port) &&
--		    rxl->trap_id == rx_info->trap_id) {
-+		    rxl->trap_id == rx_info->trap_id &&
-+		    rxl->mirror_reason == rx_info->mirror_reason) {
- 			if (rxl_item->enabled)
- 				found = true;
- 			break;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index c736b8673791..c1c1e039323a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -61,6 +61,7 @@ void mlxsw_core_ptp_transmitted(struct mlxsw_core *mlxsw_core,
- struct mlxsw_rx_listener {
- 	void (*func)(struct sk_buff *skb, u8 local_port, void *priv);
- 	u8 local_port;
-+	u8 mirror_reason;
- 	u16 trap_id;
++config MDIO_BUS_DEBUGFS
++	bool "MDIO bus debugfs support"
++	depends on DEBUG_FS
++	help
++	  This adds support to communicate via the MDIO bus via files in
++	  debugfs. Note that using this on a PHY device that is being handled by
++	  a driver can break the state of the PHY.
++
+ config MDIO_ASPEED
+ 	tristate "ASPEED MDIO bus controller"
+ 	depends on ARCH_ASPEED || COMPILE_TEST
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index d84bab489a53..4500050faf64 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -5,6 +5,8 @@ libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o \
+ 				   linkmode.o
+ mdio-bus-y			+= mdio_bus.o mdio_device.o
+ 
++obj-$(CONFIG_MDIO_BUS_DEBUGFS)	+= mdio_debugfs.o
++
+ ifdef CONFIG_MDIO_DEVICE
+ obj-y				+= mdio-boardinfo.o
+ endif
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 46b33701ad4b..b31fa70dbd95 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -39,6 +39,7 @@
+ #include <trace/events/mdio.h>
+ 
+ #include "mdio-boardinfo.h"
++#include "mdio_debugfs.h"
+ 
+ static int mdiobus_register_gpiod(struct mdio_device *mdiodev)
+ {
+@@ -576,6 +577,12 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 		}
+ 	}
+ 
++	err = mdiobus_register_debugfs(bus);
++	if (err) {
++		dev_err(&bus->dev, "mii_bus %s couldn't create debugfs entries\n", bus->id);
++		goto error;
++	}
++
+ 	mdiobus_setup_mdiodev_from_board_info(bus, mdiobus_create_device);
+ 
+ 	bus->state = MDIOBUS_REGISTERED;
+@@ -609,6 +616,8 @@ void mdiobus_unregister(struct mii_bus *bus)
+ 	BUG_ON(bus->state != MDIOBUS_REGISTERED);
+ 	bus->state = MDIOBUS_UNREGISTERED;
+ 
++	mdiobus_unregister_debugfs(bus);
++
+ 	for (i = 0; i < PHY_MAX_ADDR; i++) {
+ 		mdiodev = bus->mdio_map[i];
+ 		if (!mdiodev)
+@@ -1005,12 +1014,23 @@ int __init mdio_bus_init(void)
+ 	int ret;
+ 
+ 	ret = class_register(&mdio_bus_class);
+-	if (!ret) {
+-		ret = bus_register(&mdio_bus_type);
+-		if (ret)
+-			class_unregister(&mdio_bus_class);
+-	}
++	if (ret)
++		return ret;
+ 
++	ret = bus_register(&mdio_bus_type);
++	if (ret)
++		goto err_class;
++
++	ret = mdiobus_debugfs_init();
++	if (ret)
++		goto err_bus;
++
++	return 0;
++
++err_bus:
++	bus_unregister(&mdio_bus_type);
++err_class:
++	class_unregister(&mdio_bus_class);
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(mdio_bus_init);
+@@ -1018,6 +1038,7 @@ EXPORT_SYMBOL_GPL(mdio_bus_init);
+ #if IS_ENABLED(CONFIG_PHYLIB)
+ void mdio_bus_exit(void)
+ {
++	mdiobus_debugfs_exit();
+ 	class_unregister(&mdio_bus_class);
+ 	bus_unregister(&mdio_bus_type);
+ }
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 0403eb799913..e281099fb526 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -309,6 +309,11 @@ struct mii_bus {
+ 
+ 	/* shared state across different PHYs */
+ 	struct phy_package_shared *shared[PHY_MAX_ADDR];
++
++#if IS_ENABLED(CONFIG_MDIO_BUS_DEBUGFS)
++	/* address and regnum for debugfs */
++	u32 debug_addr, debug_reg;
++#endif
  };
+ #define to_mii_bus(d) container_of(d, struct mii_bus, dev)
  
 -- 
 2.26.2
