@@ -2,139 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3399221E69B
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 05:56:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D1D21E6A0
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 06:06:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726722AbgGND4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 23:56:23 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:54805 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726510AbgGND4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 23:56:22 -0400
-Received: by mail-io1-f71.google.com with SMTP id q207so9575243iod.21
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 20:56:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=vwdPlU1PrYjkqbfwhsZQcX2BXd1nYCKuk7q1J0ZeKXk=;
-        b=JP1Zq9BxlEqApQMxuLuJxUg5eAlD9eS/A/6buz4AlHCnamw5/Gc8P3aPKAOM2s7LVx
-         YV8Hpf+Y6oToBMR+Y08pexE3ncUu/TE4D/Uaz8pZg7YvY9sNmPn6/3vhipVnBN0Iwaqg
-         mYVFEa4ZO4eENlwAUK+AEDoUBgLdkIl685gl00vRj7oxjh/S8Vy5pcFb7Dsn1Bkbwc/F
-         GAObWN+SMkyJQJZelzanzMeRBe3NYxyhCdeR7YVCEmQYYI5m0P9Ay//riLvJHaTCa04x
-         riXrDtBaLfxX5NoMHZA911tyCUTeJwayaZYpuAi4UD7JuxMkIFE+CGWs5KmAZYjmrdw+
-         AevQ==
-X-Gm-Message-State: AOAM533Z20cRSqkYHWTmDbxH1dU+un5PD4bdWW8BU7NHYN/cyzWY5cKD
-        /19NfyJZMWu3AYcPqoz/n1GDRmCM93UzWajoHqbKds3UVWgt
-X-Google-Smtp-Source: ABdhPJxbtwhnxJQM82iiHLLvQ9pUAKuggv9im1h2ick1MGTTT1OjSazcw29Ym0P0nY2EtFYdPVLRfS/mpaD7RoOoM07zCEITNE2e
+        id S1725778AbgGNEGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 00:06:48 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:61898 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725275AbgGNEGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 00:06:48 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 06E3wpox000442
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 21:06:47 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=G0Rqs4Tre2Rgb0/VKT0JjbbEj5/6FGIgsxAmc7x6dto=;
+ b=Rt21xab75VAOp12a7iNeGO/hVMyI/6XT8VdqQ0ji3+SBnPukYszT1p5RLOsxoWkDYPNa
+ LbCLO3nrVM5yoRSgWAl3WwqphKG8crK/2Nk9otzdxctW+gCGFi1Jnl6CtpEq3zu4V+6C
+ W7jvFy1x4zPcD91GsP6qAH6QQsI187YzL8w= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 32793m3kp1-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 21:06:47 -0700
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 13 Jul 2020 21:06:45 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 6E5022EC402C; Mon, 13 Jul 2020 21:06:44 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <dsahern@gmail.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, Andrey Ignatov <rdna@fb.com>,
+        Takshak Chahande <ctakshak@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 0/8] BPF XDP link
+Date:   Mon, 13 Jul 2020 21:06:35 -0700
+Message-ID: <20200714040643.1135876-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:cf42:: with SMTP id c2mr3141754ilr.13.1594698980928;
- Mon, 13 Jul 2020 20:56:20 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 20:56:20 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000048335c05aa5eca10@google.com>
-Subject: WARNING in __nf_unregister_net_hook (2)
-From:   syzbot <syzbot+2570f2c036e3da5db176@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@blackhole.kfki.hu, kadlec@netfilter.org, kuba@kernel.org,
-        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-13_17:2020-07-13,2020-07-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ malwarescore=0 mlxlogscore=999 lowpriorityscore=0 mlxscore=0 adultscore=0
+ phishscore=0 bulkscore=0 priorityscore=1501 clxscore=1015 suspectscore=8
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007140029
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Following cgroup and netns examples, implement bpf_link support for XDP.
 
-syzbot found the following crash on:
+The semantics is described in patch #2. Program and link attachments are
+mutually exclusive, in the sense that neither link can replace attached
+program nor program can replace attached link. Link can't replace attache=
+d
+link as well, as is the case for any other bpf_link implementation.
 
-HEAD commit:    0aea6d5c Merge tag 'for-linus-5.8b-rc5-tag' of git://git.k..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1646fd67100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b1a5a263f7a540cb
-dashboard link: https://syzkaller.appspot.com/bug?extid=2570f2c036e3da5db176
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1646988b100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132b1263100000
+Patch #1 refactors existing BPF program-based attachment API and centrali=
+zes
+high-level query/attach decisions in generic kernel code, while drivers a=
+re
+kept simple and are instructed with low-level decisions about attaching a=
+nd
+detaching specific bpf_prog. This also makes QUERY command unnecessary, a=
+nd
+patch #8 removes support for it from all kernel drivers. If that's a bad =
+idea,
+we can drop that patch altogether.
 
-The bug was bisected to:
+With refactoring in patch #1, adding bpf_xdp_link is completely transpare=
+nt to
+drivers, they are still functioning at the level of "effective" bpf_prog,=
+ that
+should be called in XDP data path.
 
-commit db8ab38880e06dedbfc879e75f5b0ddc495f4eb6
-Author: Florian Westphal <fw@strlen.de>
-Date:   Thu Feb 28 11:02:52 2019 +0000
+Corresponding libbpf support for BPF XDP link is added in patch #5.
 
-    netfilter: nf_tables: merge ipv4 and ipv6 nat chain types
+v1->v2:
+- fix prog refcounting bug (David);
+- split dev_change_xdp_fd() changes into 2 patches (David);
+- add extack messages to all user-induced errors (David).
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1013e3db100000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=1213e3db100000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1413e3db100000
+Cc: Andrey Ignatov <rdna@fb.com>
+Cc: Takshak Chahande <ctakshak@fb.com>
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+2570f2c036e3da5db176@syzkaller.appspotmail.com
-Fixes: db8ab38880e0 ("netfilter: nf_tables: merge ipv4 and ipv6 nat chain types")
+Andrii Nakryiko (8):
+  bpf, xdp: maintain info on attached XDP BPF programs in net_device
+  bpf, xdp: extract commong XDP program attachment logic
+  bpf, xdp: add bpf_link-based XDP attachment API
+  bpf, xdp: implement LINK_UPDATE for BPF XDP link
+  bpf: implement BPF XDP link-specific introspection APIs
+  libbpf: add support for BPF XDP link
+  selftests/bpf: add BPF XDP link selftests
+  bpf, xdp: remove XDP_QUERY_PROG and XDP_QUERY_PROG_HW XDP commands
 
-------------[ cut here ]------------
-hook not found, pf 2 num 0
-WARNING: CPU: 0 PID: 6775 at net/netfilter/core.c:413 __nf_unregister_net_hook+0x3e6/0x4a0 net/netfilter/core.c:413
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 6775 Comm: syz-executor554 Not tainted 5.8.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1f0/0x31e lib/dump_stack.c:118
- panic+0x264/0x7a0 kernel/panic.c:231
- __warn+0x227/0x250 kernel/panic.c:600
- report_bug+0x1b1/0x2e0 lib/bug.c:198
- handle_bug+0x42/0x80 arch/x86/kernel/traps.c:235
- exc_invalid_op+0x16/0x40 arch/x86/kernel/traps.c:255
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:542
-RIP: 0010:__nf_unregister_net_hook+0x3e6/0x4a0 net/netfilter/core.c:413
-Code: 49 30 c3 02 01 48 8b 44 24 20 42 8a 04 28 84 c0 0f 85 ad 00 00 00 41 8b 14 24 48 c7 c7 78 ad 08 89 89 de 31 c0 e8 6a 5a a0 fa <0f> 0b e9 04 ff ff ff 44 89 e1 80 e1 07 80 c1 03 38 c1 0f 8c 44 fc
-RSP: 0018:ffffc90001277718 EFLAGS: 00010246
-RAX: 08b629c459c08900 RBX: 0000000000000002 RCX: ffff8880941721c0
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: 0000000000000282
-RBP: ffffffff895b8008 R08: dffffc0000000000 R09: fffffbfff16338a7
-R10: fffffbfff16338a7 R11: 0000000000000000 R12: ffff888094f5461c
-R13: dffffc0000000000 R14: 0000000000000050 R15: ffffffff895b7040
- nft_unregister_basechain_hooks net/netfilter/nf_tables_api.c:206 [inline]
- nft_table_disable net/netfilter/nf_tables_api.c:835 [inline]
- nf_tables_table_disable net/netfilter/nf_tables_api.c:868 [inline]
- nf_tables_commit+0x32d3/0x4d70 net/netfilter/nf_tables_api.c:7550
- nfnetlink_rcv_batch net/netfilter/nfnetlink.c:486 [inline]
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:544 [inline]
- nfnetlink_rcv+0x14a5/0x1e50 net/netfilter/nfnetlink.c:562
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
- do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x440709
-Code: Bad RIP value.
-RSP: 002b:00007fff97b1aa78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440709
-RDX: 0000000000000000 RSI: 000000002000c2c0 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
-R10: 0000000000000003 R11: 0000000000000246 R12: 0000000000401f10
-R13: 0000000000401fa0 R14: 0000000000000000 R15: 0000000000000000
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |   6 -
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |   4 -
+ .../net/ethernet/cavium/thunder/nicvf_main.c  |   3 -
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   3 -
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |   3 -
+ drivers/net/ethernet/intel/ice/ice_main.c     |   3 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   4 -
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   6 -
+ drivers/net/ethernet/marvell/mvneta.c         |   5 -
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   3 -
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |  24 -
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  18 -
+ .../ethernet/netronome/nfp/nfp_net_common.c   |   4 -
+ .../net/ethernet/qlogic/qede/qede_filter.c    |   3 -
+ drivers/net/ethernet/sfc/efx.c                |   5 -
+ drivers/net/ethernet/socionext/netsec.c       |   3 -
+ drivers/net/ethernet/ti/cpsw_priv.c           |   3 -
+ drivers/net/hyperv/netvsc_bpf.c               |  21 +-
+ drivers/net/netdevsim/bpf.c                   |   4 -
+ drivers/net/netdevsim/netdevsim.h             |   2 +-
+ drivers/net/tun.c                             |  15 -
+ drivers/net/veth.c                            |  15 -
+ drivers/net/virtio_net.c                      |  17 -
+ drivers/net/xen-netfront.c                    |  21 -
+ include/linux/netdevice.h                     |  29 +-
+ include/net/xdp.h                             |   2 -
+ include/uapi/linux/bpf.h                      |  10 +-
+ kernel/bpf/syscall.c                          |   5 +
+ net/core/dev.c                                | 523 +++++++++++++-----
+ net/core/rtnetlink.c                          |   5 +-
+ net/core/xdp.c                                |   9 -
+ tools/include/uapi/linux/bpf.h                |  10 +-
+ tools/lib/bpf/libbpf.c                        |   9 +-
+ tools/lib/bpf/libbpf.h                        |   2 +
+ tools/lib/bpf/libbpf.map                      |   1 +
+ .../selftests/bpf/prog_tests/section_names.c  |   2 +-
+ .../selftests/bpf/prog_tests/xdp_link.c       | 137 +++++
+ .../selftests/bpf/progs/test_xdp_link.c       |  12 +
+ 38 files changed, 601 insertions(+), 350 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_link.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_link.c
 
+--=20
+2.24.1
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
