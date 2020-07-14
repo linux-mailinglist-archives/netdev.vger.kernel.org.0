@@ -2,119 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A079A21F438
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FAF821F544
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:45:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728243AbgGNOhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 10:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgGNOhd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:37:33 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3514C061755
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 07:37:32 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id e8so23061355ljb.0
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 07:37:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lK9a1yh/EhE3qkm1elmL6lwF7ziT/zqKmAG/PHA6ZOA=;
-        b=Z3NSvmGi1zKUsvgeygynh+ITklJceB1KEnpIldaqI5MEUZy2m/tQgDrFqcbvYfh63r
-         j0VcE1IcdAM6R/CBN1UvvaAk6ARqymw753YL/papmNPPisKpDn86xp0k1KyaKLQ8f4V/
-         PEUDjxMF7d7mAuadqlHJjVMniI6vB1hQKh26CHWGzRmuLOh8Oy64AM5AgRaPXcaGKvxL
-         p9ZRzaowPofuPENecCZDZLN0Tyd75Y2MVb/LLI2VRQtyH60caW51NTdVEWHI6Nxdio1w
-         su/OWOJQzUw5OgjUHHHrvMgRg8z19M5VCXPMBfHCAp8Jz+fwZT7vZX7SGozCDimJJ8DJ
-         G5yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lK9a1yh/EhE3qkm1elmL6lwF7ziT/zqKmAG/PHA6ZOA=;
-        b=uobR6jjvhaLhN8Njaw/lhzqVfYfTY9/oD29tfILkULzVW/yTmIxMhDoQzHUscfCgeN
-         yYH2GtTxs6eEXDmSsVUyd7G2BBYBxnX4hfdJtyp2JHvK0BBmuaj6IwKnV5yIKqwv5ImN
-         T6Hs5jtLTPvBvP+pipIiRSZNa7vor9QHHYx63MwcBZignI14OB9rMqysWicnXn29qzQy
-         OrHtNBG2USCM+80rUFWWqcEqxPZ7H08cupN4OAk4/KHlPzvY+UCIELjn1lZBKambFYp0
-         gra+f+BThBeV32DT1OvLuGq9POFLbRxu8ET2JtwLxSfsUolvegsmVjvvAFrDNBPz42OP
-         NvZw==
-X-Gm-Message-State: AOAM5324lPngv3RkacIeuYsa/eLVicrtlC5mbj6zt+BiilDNn5ftXsyU
-        FTZG9hI1/4HK+IL2fqQg/uj+jx8G7ZapJhlpiCfmrA==
-X-Google-Smtp-Source: ABdhPJzX5dpcaBKDxEYLl0vrwhi8F7+YdV8dkC4BCrbt7sSJP+LG5g2U5WSp4XIU7quRW1BEQAv2maCKFgN7vcoO7KY=
-X-Received: by 2002:a2e:9857:: with SMTP id e23mr2609366ljj.411.1594737451191;
- Tue, 14 Jul 2020 07:37:31 -0700 (PDT)
+        id S1729526AbgGNOpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 10:45:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54158 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728455AbgGNOi5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 10:38:57 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A3926222C8;
+        Tue, 14 Jul 2020 14:38:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594737536;
+        bh=Iwpq0K3LI/457THLc5GqV5NyV/1EOMMNxj0I7YNH3+c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w5jEPgTezU+byQQVS1Me13LKRT5bEOqTVr8LKj2MrZ9V38keHKA89xU8JtYHaSTOw
+         Xyq/5wZnlTG5peDEXtGIotlJEoWudWWKDVhZ2wm3zNlZ1VKoVpaEpdcH/HTfdjPVnA
+         Y5dd7mYhAy53fn2RbF580BeNebw3qJ3JTRHLpyjk=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 05/19] bpf: Set the number of exception entries properly for subprograms
+Date:   Tue, 14 Jul 2020 10:38:35 -0400
+Message-Id: <20200714143849.4035283-5-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200714143849.4035283-1-sashal@kernel.org>
+References: <20200714143849.4035283-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <2fa6dda741a8a315405989bf3276d9158f4d92e2.1594036709.git.lucien.xin@gmail.com>
- <e852e03656d09a9e469c3fe9c04af25a0551075c.1594036709.git.lucien.xin@gmail.com>
- <2a8edf158432201b796f13ccc2e80f2fcafbb8d8.1594036709.git.lucien.xin@gmail.com>
- <b588daa77c6304119b8578d31d3e29fbc8959178.1594036709.git.lucien.xin@gmail.com>
- <cover.1594036709.git.lucien.xin@gmail.com> <97bd8d867973d769486f5a9b98fe6e13ba3fa821.1594036709.git.lucien.xin@gmail.com>
- <a0c059b3690e690248cbbe1130e160b96b30d989.1594036709.git.lucien.xin@gmail.com>
-In-Reply-To: <a0c059b3690e690248cbbe1130e160b96b30d989.1594036709.git.lucien.xin@gmail.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 14 Jul 2020 20:07:19 +0530
-Message-ID: <CA+G9fYv1Zx7ptDDs-WAeJ_rhsUX6ZJ1Kx2Nk=BUt_hjKiKhC+A@mail.gmail.com>
-Subject: Re: [PATCHv3 ipsec-next 06/10] ip6_vti: support IP6IP6 tunnel
- processing with .cb_handler
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        kbuild test robot <lkp@intel.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        lkft-triage@lists.linaro.org,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 Jul 2020 at 17:32, Xin Long <lucien.xin@gmail.com> wrote:
->
-> Similar to IPIP tunnel's processing, this patch is to support
-> IP6IP6 tunnel processing with .cb_handler.
->
-> v1->v2:
->   - no change.
-> v2-v3:
->   - enable it only when CONFIG_INET6_XFRM_TUNNEL is defined, to fix
->     the build error, reported by kbuild test robot.
->
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
->  net/ipv6/ip6_vti.c | 33 +++++++++++++++++++++++++++++++++
->  1 file changed, 33 insertions(+)
->
-> diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
-> index 1147f64..39efe41 100644
-> --- a/net/ipv6/ip6_vti.c
-> +++ b/net/ipv6/ip6_vti.c
-> @@ -1218,6 +1218,26 @@ static struct xfrm6_protocol vti_ipcomp6_protocol __read_mostly = {
->         .priority       =       100,
->  };
->
-> +#if IS_ENABLED(CONFIG_INET6_XFRM_TUNNEL)
-> +static int vti6_rcv_tunnel(struct sk_buff *skb)
-> +{
-> +       const xfrm_address_t *saddr;
-> +       __be32 spi;
-> +
-> +       saddr = (const xfrm_address_t *)&ipv6_hdr(skb)->saddr;
-> +       spi = xfrm6_tunnel_spi_lookup(dev_net(skb->dev), saddr);
+From: Yonghong Song <yhs@fb.com>
 
-arm build failed due this error on linux-next 20200713 and  20200713
-15:51:27 | net/ipv6/ip6_vti.o: In function `vti6_rcv_tunnel':
-15:51:27 | ip6_vti.c:(.text+0x1d20): undefined reference to
-`xfrm6_tunnel_spi_lookup'
+[ Upstream commit c4c0bdc0d2d084ed847c7066bdf59fe2cd25aa17 ]
 
-ref:
-https://ci.linaro.org/view/lkft/job/openembedded-lkft-linux-next/DISTRO=lkft,MACHINE=am57xx-evm,label=docker-lkft/812/consoleText
+Currently, if a bpf program has more than one subprograms, each program will be
+jitted separately. For programs with bpf-to-bpf calls the
+prog->aux->num_exentries is not setup properly. For example, with
+bpf_iter_netlink.c modified to force one function to be not inlined and with
+CONFIG_BPF_JIT_ALWAYS_ON the following error is seen:
+   $ ./test_progs -n 3/3
+   ...
+   libbpf: failed to load program 'iter/netlink'
+   libbpf: failed to load object 'bpf_iter_netlink'
+   libbpf: failed to load BPF skeleton 'bpf_iter_netlink': -4007
+   test_netlink:FAIL:bpf_iter_netlink__open_and_load skeleton open_and_load failed
+   #3/3 netlink:FAIL
+The dmesg shows the following errors:
+   ex gen bug
+which is triggered by the following code in arch/x86/net/bpf_jit_comp.c:
+   if (excnt >= bpf_prog->aux->num_exentries) {
+     pr_err("ex gen bug\n");
+     return -EFAULT;
+   }
 
-config link,
-http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/am57xx-evm/lkft/linux-next/811/config
+This patch fixes the issue by computing proper num_exentries for each
+subprogram before calling JIT.
 
+Signed-off-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/bpf/verifier.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 739d9ba3ba6b7..eebdd5307713b 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -9613,7 +9613,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+ 	int i, j, subprog_start, subprog_end = 0, len, subprog;
+ 	struct bpf_insn *insn;
+ 	void *old_bpf_func;
+-	int err;
++	int err, num_exentries;
+ 
+ 	if (env->subprog_cnt <= 1)
+ 		return 0;
+@@ -9688,6 +9688,14 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+ 		func[i]->aux->nr_linfo = prog->aux->nr_linfo;
+ 		func[i]->aux->jited_linfo = prog->aux->jited_linfo;
+ 		func[i]->aux->linfo_idx = env->subprog_info[i].linfo_idx;
++		num_exentries = 0;
++		insn = func[i]->insnsi;
++		for (j = 0; j < func[i]->len; j++, insn++) {
++			if (BPF_CLASS(insn->code) == BPF_LDX &&
++			    BPF_MODE(insn->code) == BPF_PROBE_MEM)
++				num_exentries++;
++		}
++		func[i]->aux->num_exentries = num_exentries;
+ 		func[i] = bpf_int_jit_compile(func[i]);
+ 		if (!func[i]->jited) {
+ 			err = -ENOTSUPP;
 -- 
-Linaro LKFT
-https://lkft.linaro.org
+2.25.1
+
