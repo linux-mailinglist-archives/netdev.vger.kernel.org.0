@@ -2,114 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A738621FD3C
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 21:22:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB3D021FD44
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 21:24:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729569AbgGNTWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 15:22:11 -0400
-Received: from smtprelay0022.hostedemail.com ([216.40.44.22]:34252 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727930AbgGNTWL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 15:22:11 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 0685B181D337B;
-        Tue, 14 Jul 2020 19:22:08 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1543:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2693:2828:3138:3139:3140:3141:3142:3355:3622:3865:3866:3867:3868:3870:3871:3872:3874:4321:4605:5007:6691:7514:7903:10004:10400:10848:11026:11232:11658:11914:12043:12296:12297:12438:12555:12663:12740:12760:12895:12986:13439:14181:14659:14721:21080:21324:21451:21627:30054:30055:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: turn41_0b16cbc26ef3
-X-Filterd-Recvd-Size: 4228
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf18.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 14 Jul 2020 19:22:06 +0000 (UTC)
-Message-ID: <ce637b26b496dd99be8f272e6ec82333338321dc.camel@perches.com>
-Subject: Re: [PATCH 6/6] staging: qlge: qlge_ethtool: Remove one byte memset.
-From:   Joe Perches <joe@perches.com>
-To:     Suraj Upadhyay <usuraj35@gmail.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 14 Jul 2020 12:22:05 -0700
-In-Reply-To: <20200714190602.GA14742@blackclown>
-References: <cover.1594642213.git.usuraj35@gmail.com>
-         <b5eb87576cef4bf1b968481d6341013e6c7e9650.1594642213.git.usuraj35@gmail.com>
-         <20200713141749.GU2549@kadam>
-         <a323c1e47e8de871ff7bb72289740cb0bc2d27f8.camel@perches.com>
-         <20200714190602.GA14742@blackclown>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1729263AbgGNTYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 15:24:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728985AbgGNTYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 15:24:24 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133DBC061755
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 12:24:23 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id e4so24928511ljn.4
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 12:24:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dhSUkcDXFHLJ78cwrgDtAEOtF6bqawc8CuEoI8WU4Xc=;
+        b=IhZROwhr6+jOB9hWLChPibZRQesaIFxXrrSz/obvCYJoSCNcrr+sPyqUWGJwyZHi+m
+         gjk8L76ZhDX4Np98cCkRk4oNg6QHia7Ic/o+G4HQshP4rx0X5K9/Srxrv26O063f+Mw1
+         kKrrHzgYdWcj/AeOch8sBNNBm2RG0CP4oHhkmNooNOPGnFN/x+KI41aYU6F+VlHve35i
+         nKxroKXKExfNvxoinr6P58uJ9wTiKkN+N/NNCF+ZQuH082ucxRl+Gnr4PkrRxCyq6HkV
+         BKEwqtqx/LpCYsbFwJIWRpyrOGegdS0iQXFHzFULnSDpFinsm6gy7EkAngrf/CRD+Qpu
+         U/pA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dhSUkcDXFHLJ78cwrgDtAEOtF6bqawc8CuEoI8WU4Xc=;
+        b=LHeNVN+paXk3o8msIOcbtLptSL2Sao9TwFN/1ChzvxKpupMYGrIwiW7TwqzdWFAyOW
+         SZSm4RsPcc36s90iM8sxSeeOtqP+zTqU1GkEvVRdtF2V8siYBi06GPUkr43iiG97tpmT
+         U7ugdEyL8A0NaqoB38pJwmnpZgqYzjuJMDOCUqBneRc6Oogtd2f8aGMOhM4NJDkosh7l
+         +ZBBa67ELkNxnIiuINKDO/PVCxF9pWouH+IklGk7dqLYb89T1I4NsFi7PU2rU9oxQjgw
+         njhe194LkOJkCoc99ooGTcvabHGsUetiluAcNQ/5Sq8To/J3RTbMM7J3pRrFrYnTWLf7
+         ixoA==
+X-Gm-Message-State: AOAM530DOab0qAJ8t2t9cnFYQqi2vkpG8jgHsEcfKJVtJ01DV84dtPgi
+        73vdPFGT0oWicrkWYmqiuNu//C3uukYrU1poH9nyGg==
+X-Google-Smtp-Source: ABdhPJybMmSelQLYeMsNoa4bJc3g0P6aBm61Q3lz/Q6ZfbrGmK2i1aKXJtz09tEIFb4qPC6OdkkAEFKigkafDpK0Kpo=
+X-Received: by 2002:a2e:8ec8:: with SMTP id e8mr2846352ljl.51.1594754661571;
+ Tue, 14 Jul 2020 12:24:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20200714191830.694674-1-kuba@kernel.org> <20200714191830.694674-2-kuba@kernel.org>
+In-Reply-To: <20200714191830.694674-2-kuba@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 14 Jul 2020 12:24:10 -0700
+Message-ID: <CAADnVQJYQFy+xdfPY6FSHgUvL-YZy=tZ4w0TU=d4wXCJTU7R1Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 01/12] nfp: convert to new udp_tunnel_nic infra
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        OSS Drivers <oss-drivers@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
+        somnath.kotur@broadcom.com, Tom Lendacky <thomas.lendacky@amd.com>,
+        Ariel Elior <aelior@marvell.com>, skalluru@marvell.com,
+        vishal@chelsio.com, benve@cisco.com, _govind@gmx.com,
+        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        anthony.l.nguyen@intel.com, GR-everest-linux-l2@marvell.com,
+        shshaikh@marvell.com, manishc@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-07-15 at 00:36 +0530, Suraj Upadhyay wrote:
-> On Tue, Jul 14, 2020 at 11:57:23AM -0700, Joe Perches wrote:
-> > On Mon, 2020-07-13 at 17:17 +0300, Dan Carpenter wrote:
-> > > On Mon, Jul 13, 2020 at 05:52:22PM +0530, Suraj Upadhyay wrote:
-> > > > Use direct assignment instead of using memset with just one byte as an
-> > > > argument.
-> > > > Issue found by checkpatch.pl.
-> > > > 
-> > > > Signed-off-by: Suraj Upadhyay <usuraj35@gmail.com>
-> > > > ---
-> > > > Hii Maintainers,
-> > > > 	Please correct me if I am wrong here.
-> > > > ---
-> > > > 
-> > > >  drivers/staging/qlge/qlge_ethtool.c | 4 ++--
-> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/staging/qlge/qlge_ethtool.c b/drivers/staging/qlge/qlge_ethtool.c
-> > > > index 16fcdefa9687..d44b2dae9213 100644
-> > > > --- a/drivers/staging/qlge/qlge_ethtool.c
-> > > > +++ b/drivers/staging/qlge/qlge_ethtool.c
-> > > > @@ -516,8 +516,8 @@ static void ql_create_lb_frame(struct sk_buff *skb,
-> > > >  	memset(skb->data, 0xFF, frame_size);
-> > > >  	frame_size &= ~1;
-> > > >  	memset(&skb->data[frame_size / 2], 0xAA, frame_size / 2 - 1);
-> > > > -	memset(&skb->data[frame_size / 2 + 10], 0xBE, 1);
-> > > > -	memset(&skb->data[frame_size / 2 + 12], 0xAF, 1);
-> > > > +	skb->data[frame_size / 2 + 10] = (unsigned char)0xBE;
-> > > > +	skb->data[frame_size / 2 + 12] = (unsigned char)0xAF;
-> > > 
-> > > Remove the casting.
-> > > 
-> > > I guess this is better than the original because now it looks like
-> > > ql_check_lb_frame().  It's still really weird looking though.
-> > 
-> > There are several of these in the intel drivers too:
-> > 
-> > drivers/net/ethernet/intel/e1000/e1000_ethtool.c:       memset(&skb->data[frame_size / 2 + 10], 0xBE, 1);
-> > drivers/net/ethernet/intel/e1000/e1000_ethtool.c:       memset(&skb->data[frame_size / 2 + 12], 0xAF, 1);
-> > drivers/net/ethernet/intel/e1000e/ethtool.c:    memset(&skb->data[frame_size / 2 + 10], 0xBE, 1);
-> > drivers/net/ethernet/intel/e1000e/ethtool.c:    memset(&skb->data[frame_size / 2 + 12], 0xAF, 1);
-> > drivers/net/ethernet/intel/igb/igb_ethtool.c:   memset(&skb->data[frame_size + 10], 0xBE, 1);
-> > drivers/net/ethernet/intel/igb/igb_ethtool.c:   memset(&skb->data[frame_size + 12], 0xAF, 1);
-> > drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c:       memset(&skb->data[frame_size + 10], 0xBE, 1);
-> > drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c:       memset(&skb->data[frame_size + 12], 0xAF, 1);
-> > drivers/staging/qlge/qlge_ethtool.c:    memset(&skb->data[frame_size / 2 + 10], 0xBE, 1);
-> > drivers/staging/qlge/qlge_ethtool.c:    memset(&skb->data[frame_size / 2 + 12], 0xAF, 1);
-> 
-> Thanks to point this out,
-> 	I will be sending a patchset for that soon.
+On Tue, Jul 14, 2020 at 12:20 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> NFP conversion is pretty straightforward. We want to be able
+> to sleep, and only get callbacks when the device is open.
+>
+> NFP did not ask for port replay when ports were removed, now
+> new infra will provide this feature for free.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Reviewed-by: Simon Horman <simon.horman@netronome.com>
 
-
-It _might_ be useful to create and use a standard
-mechanism for the loopback functions:
-
-	<foo>create_lbtest_frame
-and
-	<foo>check_lbtest_frame
-
-Maybe use something like:
-
-	ether_loopback_frame_create
-and
-	ether_loopback_frame_check
-
-
+I received this patch at least 3 times in the last couple of days.
+Every time gmail marks it as new and I keep archiving it.
+Is it just me  ?
