@@ -2,97 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF14521FE63
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 22:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87CE121FE41
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 22:13:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730404AbgGNUQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 16:16:16 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:20793 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729617AbgGNUQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 16:16:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1594757770;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=GNcdh9hbyCSYCE1dhM3aHIwRYOjxxn/mU4RGqzYVsko=;
-        b=E7TxQwHHGoOz4M/wN/7wYt+c9eSQNjFHntOgBQhstLYB8vdFDCV2wiy4hraXYWEPdw
-        6WdxS/VVPGRuKL8sSAhDEGmucVfgwKxURnaTEcS8ExrVoSF09ZktlQhsGu02w9uqOe35
-        gfARf6R9tOXPHx25fZhpESkMtVg3xx78CbCENdnngQVg7SwIqpvEX/zYbjvNxKyrhPRN
-        WBGA9GJqBu7KSovNTOm4y8Lg358+TNuKOnAeX1k68/yGqnEN7KewnxtkkrSTUhsWZMCv
-        i5/QRfdr3wkLXOIbhhlaHPKUeMtvM8SggKjZhOqu+79aZEl28Uw+NWpNeRcgcY/tDQAs
-        zqYA==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3HMbEWKOdeVTdI="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.50.177]
-        by smtp.strato.de (RZmta 46.10.5 DYNA|AUTH)
-        with ESMTPSA id R09ac6w6EKA9tgs
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Tue, 14 Jul 2020 22:10:09 +0200 (CEST)
-Subject: Re: [PATCH net-next] can: silence remove_proc_entry warning
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>, mkl@pengutronix.de,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1594709090-3203-1-git-send-email-zhangchangzhong@huawei.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <e2344833-b2f4-cc6f-4b6c-868afc3ced6e@hartkopp.net>
-Date:   Tue, 14 Jul 2020 22:10:04 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728672AbgGNUNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 16:13:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726458AbgGNUNA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 16:13:00 -0400
+Received: from forwardcorp1p.mail.yandex.net (forwardcorp1p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b6:217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F2AC061794;
+        Tue, 14 Jul 2020 13:13:00 -0700 (PDT)
+Received: from iva8-d077482f1536.qloud-c.yandex.net (iva8-d077482f1536.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:2f26:0:640:d077:482f])
+        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id 26BC72E153C;
+        Tue, 14 Jul 2020 23:12:56 +0300 (MSK)
+Received: from iva8-88b7aa9dc799.qloud-c.yandex.net (iva8-88b7aa9dc799.qloud-c.yandex.net [2a02:6b8:c0c:77a0:0:640:88b7:aa9d])
+        by iva8-d077482f1536.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id Ihpo24jY5Z-CtsCFCbF;
+        Tue, 14 Jul 2020 23:12:56 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1594757576; bh=8h7YWC395s1JHchUOOnn4Nt4JnQ9iy5aa+WTT7W7ZUM=;
+        h=Message-Id:Date:Subject:To:From:Cc;
+        b=DkvrPfGxFZs6CywZYL/dDNnF3GPXYi6l8ChYku+GLefeydpxUYe9kMbGq7LS3Y84T
+         5O/fcdRwfEj7/x/XoPKla2gu+2hpE8KzQpLAOjpUCt75QBqf35T7OMcR6IvjcIw1FQ
+         qzJ379Bug4dxL+Gr4XHHfNtixu9+5rdsnEaQmwMk=
+Authentication-Results: iva8-d077482f1536.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from 37.9.72.161-iva.dhcp.yndx.net (37.9.72.161-iva.dhcp.yndx.net [37.9.72.161])
+        by iva8-88b7aa9dc799.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id PwhVeBFRq1-CtjCsXHH;
+        Tue, 14 Jul 2020 23:12:55 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+From:   Dmitry Yakunin <zeil@yandex-team.ru>
+To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     sdf@google.com
+Subject: [PATCH bpf-next v2 0/4] bpf: cgroup skb improvements for bpf_prog_test_run
+Date:   Tue, 14 Jul 2020 23:12:41 +0300
+Message-Id: <20200714201245.99528-1-zeil@yandex-team.ru>
 MIME-Version: 1.0
-In-Reply-To: <1594709090-3203-1-git-send-email-zhangchangzhong@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patchset contains some improvements for testing cgroup/skb programs
+through BPF_PROG_TEST_RUN command.
 
+v2:
+  - fix build without CONFIG_CGROUP_BPF (kernel test robot <lkp@intel.com>)
 
-On 14.07.20 08:44, Zhang Changzhong wrote:
-> If can_init_proc() fail to create /proc/net/can directory,
-> can_remove_proc() will trigger a warning:
-> 
-> WARNING: CPU: 6 PID: 7133 at fs/proc/generic.c:672 remove_proc_entry+0x17b0
-> Kernel panic - not syncing: panic_on_warn set ...
-> 
-> Fix to return early from can_remove_proc() if can proc_dir
-> does not exists.
-> 
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+Dmitry Yakunin (4):
+  bpf: setup socket family and addresses in bpf_prog_test_run_skb
+  bpf: allow to specify ifindex for skb in bpf_prog_test_run_skb
+  bpf: export some cgroup storages allocation helpers for reusing
+  bpf: try to use existing cgroup storage in bpf_prog_test_run_skb
 
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+ include/linux/bpf-cgroup.h                         |  36 +++++++
+ kernel/bpf/cgroup.c                                |  25 -----
+ net/bpf/test_run.c                                 | 113 ++++++++++++++++++---
+ .../selftests/bpf/prog_tests/cgroup_skb_prog_run.c |  78 ++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/skb_ctx.c   |   5 +
+ 5 files changed, 217 insertions(+), 40 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_skb_prog_run.c
 
-Thanks!
+-- 
+2.7.4
 
-> ---
->   net/can/proc.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/can/proc.c b/net/can/proc.c
-> index e6881bf..077af42 100644
-> --- a/net/can/proc.c
-> +++ b/net/can/proc.c
-> @@ -471,6 +471,9 @@ void can_init_proc(struct net *net)
->    */
->   void can_remove_proc(struct net *net)
->   {
-> +	if (!net->can.proc_dir)
-> +		return;
-> +
->   	if (net->can.pde_version)
->   		remove_proc_entry(CAN_PROC_VERSION, net->can.proc_dir);
->   
-> @@ -498,6 +501,5 @@ void can_remove_proc(struct net *net)
->   	if (net->can.pde_rcvlist_sff)
->   		remove_proc_entry(CAN_PROC_RCVLIST_SFF, net->can.proc_dir);
->   
-> -	if (net->can.proc_dir)
-> -		remove_proc_entry("can", net->proc_net);
-> +	remove_proc_entry("can", net->proc_net);
->   }
-> 
