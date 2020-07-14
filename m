@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 488D421F7D1
+	by mail.lfdr.de (Postfix) with ESMTP id D6DA821F7D2
 	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 19:04:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728778AbgGNRDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 13:03:30 -0400
-Received: from mail-eopbgr80054.outbound.protection.outlook.com ([40.107.8.54]:28375
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S1728816AbgGNRDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 13:03:33 -0400
+Received: from mail-vi1eur05on2085.outbound.protection.outlook.com ([40.107.21.85]:6178
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728209AbgGNRDa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 13:03:30 -0400
+        id S1728724AbgGNRDc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 13:03:32 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pr+sVXQi67S79m6NADYs72RXNEzWOxNvEeW2nihySCOY2aJTMc31P+3CWAtEqaBXlzVa/jwLi01HtIuGi9fzI06ANFDLp/RMGvRLwemZumB3x3a4d3/w8j2gQZ8Q1Bn4gBTf9etApde6DACor5Tmr1TAwefH7nS3ssg44RcvNAuCOHRPdEOWaO5zPZVUsa46skRba5uJcarGFthpwnuK6jh/c7sOFYVeQP2R29Be0liHcoAkT6DKQPXp9uEuX3xlNYsll9hR+weaVvsSGyxo2R1shaLOOeXEzVIymq9lp+jpjgw1BL8DwCriqetWYwrfsu+fpXEgAwcZ0fI7MEqOwg==
+ b=C/mg9WGtMJnhRxuVkuNozjJLtg63SqiohYMB2UqPlXw6LVFp+EzEzlEX9/4VaDJm0CaHhaZCI7zOzSV0GO2O6nnSDlxygb5wGvIcumYN4YU4N4O7YasS7Bcp8cX4/cgw259b9WU0kWonFAK3hS8IXmPE8CBni7bloSM6blQlHQ798hJlD6n9LER2jSqEixFwMdjLESOvvIHXa4BuOoe1SHEt2RqdxT3yWCiwHIhMfOevz+yRWg0smrFcGZ5eT4UU3p+PZFECgwAabdENGtg5I+C3MRCPqWAWilIUs8rILl8LwgFYyZZFHqQLyNHcDBwwpUz5lCzZinr30HKNQjOLzQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L9R+J4b+Bq+X+MEjAuCM+HHchg37kWNRx+M6OAHx0Lg=;
- b=BIQwn5gXx86hdRTbUXhCQBxYX3LNprkvQe6CtUJciokO5+faALfM+ArZ+Ku6HJ7A+mBms8IhRa5BT1ynfaPX6uBtIMpZskOf8blNRtP4wYrJboSysVQ2A4bW+VB1I/3AJrKN8C4/VxXgGkhnlQCvNybwMGTTOiEuclVQi9HlkdVG5mefIk79qsE2p9lOMoaeTZ0oJunbb1a7dqnpG6z/TKYlQu3tDChrCFiRcggLYvmFwjNss+CMRpisRXZ02QRUD7/I33xZFMiJYgTRor29J0GQXMFkFt9kYpvLTB/90044Kj0JrFGne45Uz73+KOD5CA7jfZjwNg5b2XqsTfkdLw==
+ bh=qZQ59S09mB7DSIz+E96Vtz2ZzY2bF+LJZUvS5UyDe6E=;
+ b=h0UWrK9nfhzczL8RkY0shz+hn9Tm8rP0k9CThWbyUWWTzDaA1RWqK3i7+TFrRkYLbpH4o3MPbQkOZJodBsfG61QmLhRLzIG29UoUiNwE1GuxdObWXKRBtA52Gu+sC8NKEkR8Jyr9ekIrJnWFfB/CKDUsh38ZoVNUwpeKYlPm67wLIzjzozXwMwyfMVMUtLQ5U/Ns6tct/1eEENUMTp7fZw+vt4LqgEZoTgsl22OFGQcoiD23fn+QucQH5JRwujFDYFqBkchSEYbUWR6lo23GwvtIwKrj9dZM0LHegFhTaIVodvFe3Pq9VcLl2Y+FCfIyT7EA4sUcriEPZCwSpQmPlw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L9R+J4b+Bq+X+MEjAuCM+HHchg37kWNRx+M6OAHx0Lg=;
- b=t93Xwo5eMoVe4Vpx67jOMxFyib3QQGGN4Lzcbs0aHdq+mjtOXCZzdAame5pX3yjQMJgFKJC4sc4oU5uQ6X7ka/AUDghx1SwKQul+sIeiQL+Q/rsyium/SoMyCy7MZZo7Wcv6rf0vU33TOZ6QukHi3HGvHULrKnSwnU9MuzdOaws=
+ bh=qZQ59S09mB7DSIz+E96Vtz2ZzY2bF+LJZUvS5UyDe6E=;
+ b=pxLa2/HekTBKHEHDbkP4ELl1kseqFP0KeB88dg6TPKFHkid5YaOzLy1y0L7spPs4RSpaAB4W8HVU6ld71XjXJff0Jg2jxVc8vY0+B00Cuv37T2cb6cL7Hij8sKquY/l7SSCywYsYqqUTBr/j49FrrtvJBohAZ9+F/xMyRCBNe2o=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none
  header.from=mellanox.com;
 Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR05MB3420.eurprd05.prod.outlook.com (2603:10a6:7:30::23) with Microsoft
+ HE1PR0502MB3114.eurprd05.prod.outlook.com (2603:10a6:3:d6::13) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3174.23; Tue, 14 Jul 2020 17:03:26 +0000
+ 15.20.3174.22; Tue, 14 Jul 2020 17:03:27 +0000
 Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
  ([fe80::78f6:fb7a:ea76:c2d6]) by HE1PR05MB4746.eurprd05.prod.outlook.com
  ([fe80::78f6:fb7a:ea76:c2d6%7]) with mapi id 15.20.3174.025; Tue, 14 Jul 2020
- 17:03:26 +0000
+ 17:03:27 +0000
 From:   Petr Machata <petrm@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     David Miller <davem@davemloft.net>,
@@ -47,10 +47,12 @@ Cc:     David Miller <davem@davemloft.net>,
         Jiri Pirko <jiri@mellanox.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         Petr Machata <petrm@mellanox.com>
-Subject: [PATCH net-next v3 0/2] net: sched: Do not drop root lock in tcf_qevent_handle()
-Date:   Tue, 14 Jul 2020 20:03:06 +0300
-Message-Id: <cover.1594746074.git.petrm@mellanox.com>
+Subject: [PATCH net-next v3 1/2] net: sched: Do not drop root lock in tcf_qevent_handle()
+Date:   Tue, 14 Jul 2020 20:03:07 +0300
+Message-Id: <e309e07f9626d3c61b6da446a1273f9e7b7a10db.1594746074.git.petrm@mellanox.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <cover.1594746074.git.petrm@mellanox.com>
+References: <cover.1594746074.git.petrm@mellanox.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: FR2P281CA0028.DEUP281.PROD.OUTLOOK.COM
@@ -58,32 +60,32 @@ X-ClientProxiedBy: FR2P281CA0028.DEUP281.PROD.OUTLOOK.COM
  (2603:10a6:7:a3::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by FR2P281CA0028.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:14::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.9 via Frontend Transport; Tue, 14 Jul 2020 17:03:24 +0000
+Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by FR2P281CA0028.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:14::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.9 via Frontend Transport; Tue, 14 Jul 2020 17:03:26 +0000
 X-Mailer: git-send-email 2.20.1
 X-Originating-IP: [37.142.13.130]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 71726447-716c-47d5-a3a8-08d82817d2a3
-X-MS-TrafficTypeDiagnostic: HE1PR05MB3420:
+X-MS-Office365-Filtering-Correlation-Id: 87322d5c-8ba2-4dd8-dd1e-08d82817d3aa
+X-MS-TrafficTypeDiagnostic: HE1PR0502MB3114:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB3420EAFC2034516272779F27DB610@HE1PR05MB3420.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <HE1PR0502MB311449B9FDD526334A536D26DB610@HE1PR0502MB3114.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: beHXOprcROYOLlWxZvjQyQr1mhBMlnUwJtp7gkRZi14p0uFGKT4OxY9IwOLPaFAmVxbC4N6eI2AtqnERsl7DBoALwlJSaoPrHKGszrAjfQ0hkhlLdjpNZgUBVd1LO18YB5mMOrKWnRNYeSmUVgX9cRHUF7tmqMXfKdmhiuA6LC06iUXkEIqrdbyPhFKDnGN0iNY24f/FevgIc4aAuQNbFKn7l9vsSo257NJSFTvIwBeUGZcNmMH+uIoFniWxPRanHJkWn9RzSj+47hfevi5+37hHyKxE2/pCuY/NWJoHuRqWvdMWh+hWZJRtEIaGJ3rH5krLZAhanpHV+mZWb2pGeA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39850400004)(136003)(376002)(366004)(346002)(396003)(2616005)(4326008)(86362001)(52116002)(956004)(66946007)(6506007)(478600001)(26005)(66476007)(66556008)(16526019)(6486002)(186003)(316002)(107886003)(5660300002)(2906002)(36756003)(54906003)(8936002)(6916009)(6666004)(6512007)(8676002)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: DAModAiys9lIwoXt0jaNDawVvryCUuRH9h1mxUxXRsDU8rKgyvGtnFqVPN7Pycw83ArvKtvnPqfEdgzUg73bw9eTP/p5t7k1Sv+iNSg6459ruZJ918EjxHP4CfNIntdYJJcC/cMcVRNjUDXCR8RDHQIJgAXihogqlgTxZDraZY9qR12ytEvm2TrlV4yrgHRqWZ5wAUxDIVM1M1TrJ9lch3noKYBnqaLT9N+BkNM6TAltMnQTWEK8FiHr2Jw/JB764/fJBWtnjxs6kmZz+QdGB5ja0JsDXTX9sNu3MwJLUFVpw1VZpUAlE+MLHq7SF72cwQwLrITTZ07+Ml09Py1KTHWKifxP9qN8eGKKchUI5RW5Z78iKBsifRvS03hsc3YSzqlh6gUCNo1Ag2VegS47GPf0sUv8jSxhwNZlRYXJu/bS1RURB9PgJYq7lw8zXp28odj3si6KC2kAatt0eltzQMpZ0J53IXbiVA4xjPFzaUY9pDLtuK3DH3ldo8U/+kuR
+X-Microsoft-Antispam-Message-Info: TX8pGMHGqLxHqldQ6BxvxZYTMqhLwpSYDrdlWeL5HXtD2jQGLVwowYenmMeOgxETOt5ug30W4Xn7WcuaMPmEgru+mcpdg+/pRrFsbOyjYC6X0sCs4AYtcmB3GcAmAxsedUz/JbHEzAbdtQBh2w6rIcMhAuSmQq/4bNco3GlS+RZfKM6P6HxjnzXvIumGcFCXCzy6xNGWcd1SWgZFzNHJrErkqFCFbp5nFFuoJEb71zgRCErTCV3Cxt/wVQ975Fncma50dPCfoeyuu3HW8mqDB0S07JchwUR52lAZbOlVlHnr8PpYoJYTF/H3h+JLpU92FroV1L9Umegm73PyDnh+rQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(366004)(346002)(376002)(39850400004)(396003)(66476007)(66946007)(26005)(6666004)(2906002)(316002)(66556008)(52116002)(6486002)(6506007)(83380400001)(186003)(36756003)(16526019)(4326008)(107886003)(6512007)(5660300002)(8936002)(6916009)(54906003)(478600001)(8676002)(2616005)(956004)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: RVirYVObjq1Va/RY75Z1hKNZT3v76qh0XHBWbe8tqfW5yiznNj/CsFO7zXfgmnk156j2URgCpsfWgZurcVyD40MqqpmBtIjOO8GAJ67xvbaC76TbRdOpgoNzcJDVle8HUhKktRdiwEi0ASb7ITCNd6/VllT7SyUF65XZpVdIFNn9/gFOADAQp+2XfIHAV64wkd21XCOTzunO43j9KYCKJnfvVS7AcXk6W1uR4Eoy3P3rSe9nPsMlx4kS8XG/oosyAGgl2qalb4q3oop717900I6l5EC63rZ1SQCslEaxyva4Z8d8MgZpmsrpljmKXsbckU9031C1FKej0ViAhylB8xeYt/7cIGMK84tLWm2ArS2kT9A77+ci0GmGyUOOJXRHbPHQiheUWdEaZOynp+dfwSxHmCcTJcjUia7L7l9VfGdTdUBJxHrKnKWm3JFPzja4wiJXQ1M5N3vtg0NULYhV2tFPalp1yKI6V8WmhodDyRgh8m9h9cspAsyDCLj3rR3w
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71726447-716c-47d5-a3a8-08d82817d2a3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87322d5c-8ba2-4dd8-dd1e-08d82817d3aa
 X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2020 17:03:25.8952
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2020 17:03:27.6262
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uT4RzdTrXhlfymcr9KPFdsbgjAaLaLBxpsM9HUsOwUdNdK8Pduhk6nva6KS2GUPIRTJHnBAEtP+/pNtCB3UHYQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3420
+X-MS-Exchange-CrossTenant-UserPrincipalName: hUF/CLZcUZvNgsFhEglp3UakoEkLwV8Bc4nxsKXsFvgXd5tkoKLZaBYz1zWMpx/Iz6w5GcAiqsbH1A0N1i8VQQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0502MB3114
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -105,60 +107,99 @@ Before the deadlock issues are solved in a way that can be applied across
 many qdiscs reasonably easily, do for qevents what is done for the
 classification blocks and just keep holding the root lock.
 
-That is done in patch #1. Patch #2 then drops the now unnecessary root_lock
-argument from Qdisc_ops.enqueue.
+Signed-off-by: Petr Machata <petrm@mellanox.com>
+---
+ include/net/pkt_cls.h | 4 ++--
+ net/sched/cls_api.c   | 8 +-------
+ net/sched/sch_red.c   | 6 +++---
+ 3 files changed, 6 insertions(+), 12 deletions(-)
 
-v3:
-- Patch #2:
-    - Add a S-o-b.
-
-v2:
-- Patch #2:
-    - Turn this into a proper revert. No actual changes.
-
-Petr Machata (2):
-  net: sched: Do not drop root lock in tcf_qevent_handle()
-  Revert "net: sched: Pass root lock to Qdisc_ops.enqueue"
-
- include/net/pkt_cls.h     |  4 ++--
- include/net/sch_generic.h |  6 ++----
- net/core/dev.c            |  4 ++--
- net/sched/cls_api.c       |  8 +-------
- net/sched/sch_atm.c       |  4 ++--
- net/sched/sch_blackhole.c |  2 +-
- net/sched/sch_cake.c      |  2 +-
- net/sched/sch_cbq.c       |  4 ++--
- net/sched/sch_cbs.c       | 18 +++++++++---------
- net/sched/sch_choke.c     |  2 +-
- net/sched/sch_codel.c     |  2 +-
- net/sched/sch_drr.c       |  4 ++--
- net/sched/sch_dsmark.c    |  4 ++--
- net/sched/sch_etf.c       |  2 +-
- net/sched/sch_ets.c       |  4 ++--
- net/sched/sch_fifo.c      |  6 +++---
- net/sched/sch_fq.c        |  2 +-
- net/sched/sch_fq_codel.c  |  2 +-
- net/sched/sch_fq_pie.c    |  2 +-
- net/sched/sch_generic.c   |  4 ++--
- net/sched/sch_gred.c      |  2 +-
- net/sched/sch_hfsc.c      |  6 +++---
- net/sched/sch_hhf.c       |  2 +-
- net/sched/sch_htb.c       |  4 ++--
- net/sched/sch_multiq.c    |  4 ++--
- net/sched/sch_netem.c     |  8 ++++----
- net/sched/sch_pie.c       |  2 +-
- net/sched/sch_plug.c      |  2 +-
- net/sched/sch_prio.c      |  6 +++---
- net/sched/sch_qfq.c       |  4 ++--
- net/sched/sch_red.c       | 10 +++++-----
- net/sched/sch_sfb.c       |  4 ++--
- net/sched/sch_sfq.c       |  2 +-
- net/sched/sch_skbprio.c   |  2 +-
- net/sched/sch_taprio.c    |  4 ++--
- net/sched/sch_tbf.c       | 10 +++++-----
- net/sched/sch_teql.c      |  4 ++--
- 37 files changed, 77 insertions(+), 85 deletions(-)
-
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index 690a7f49c8f9..d4d461236351 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -568,7 +568,7 @@ void tcf_qevent_destroy(struct tcf_qevent *qe, struct Qdisc *sch);
+ int tcf_qevent_validate_change(struct tcf_qevent *qe, struct nlattr *block_index_attr,
+ 			       struct netlink_ext_ack *extack);
+ struct sk_buff *tcf_qevent_handle(struct tcf_qevent *qe, struct Qdisc *sch, struct sk_buff *skb,
+-				  spinlock_t *root_lock, struct sk_buff **to_free, int *ret);
++				  struct sk_buff **to_free, int *ret);
+ int tcf_qevent_dump(struct sk_buff *skb, int attr_name, struct tcf_qevent *qe);
+ #else
+ static inline int tcf_qevent_init(struct tcf_qevent *qe, struct Qdisc *sch,
+@@ -591,7 +591,7 @@ static inline int tcf_qevent_validate_change(struct tcf_qevent *qe, struct nlatt
+ 
+ static inline struct sk_buff *
+ tcf_qevent_handle(struct tcf_qevent *qe, struct Qdisc *sch, struct sk_buff *skb,
+-		  spinlock_t *root_lock, struct sk_buff **to_free, int *ret)
++		  struct sk_buff **to_free, int *ret)
+ {
+ 	return skb;
+ }
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 322b279154de..b2b7440c2ae7 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3822,7 +3822,7 @@ int tcf_qevent_validate_change(struct tcf_qevent *qe, struct nlattr *block_index
+ EXPORT_SYMBOL(tcf_qevent_validate_change);
+ 
+ struct sk_buff *tcf_qevent_handle(struct tcf_qevent *qe, struct Qdisc *sch, struct sk_buff *skb,
+-				  spinlock_t *root_lock, struct sk_buff **to_free, int *ret)
++				  struct sk_buff **to_free, int *ret)
+ {
+ 	struct tcf_result cl_res;
+ 	struct tcf_proto *fl;
+@@ -3832,9 +3832,6 @@ struct sk_buff *tcf_qevent_handle(struct tcf_qevent *qe, struct Qdisc *sch, stru
+ 
+ 	fl = rcu_dereference_bh(qe->filter_chain);
+ 
+-	if (root_lock)
+-		spin_unlock(root_lock);
+-
+ 	switch (tcf_classify(skb, fl, &cl_res, false)) {
+ 	case TC_ACT_SHOT:
+ 		qdisc_qstats_drop(sch);
+@@ -3853,9 +3850,6 @@ struct sk_buff *tcf_qevent_handle(struct tcf_qevent *qe, struct Qdisc *sch, stru
+ 		return NULL;
+ 	}
+ 
+-	if (root_lock)
+-		spin_lock(root_lock);
+-
+ 	return skb;
+ }
+ EXPORT_SYMBOL(tcf_qevent_handle);
+diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
+index de2be4d04ed6..a79602f7fab8 100644
+--- a/net/sched/sch_red.c
++++ b/net/sched/sch_red.c
+@@ -94,7 +94,7 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch, spinlock_t *root_
+ 
+ 		if (INET_ECN_set_ce(skb)) {
+ 			q->stats.prob_mark++;
+-			skb = tcf_qevent_handle(&q->qe_mark, sch, skb, root_lock, to_free, &ret);
++			skb = tcf_qevent_handle(&q->qe_mark, sch, skb, to_free, &ret);
+ 			if (!skb)
+ 				return NET_XMIT_CN | ret;
+ 		} else if (!red_use_nodrop(q)) {
+@@ -114,7 +114,7 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch, spinlock_t *root_
+ 
+ 		if (INET_ECN_set_ce(skb)) {
+ 			q->stats.forced_mark++;
+-			skb = tcf_qevent_handle(&q->qe_mark, sch, skb, root_lock, to_free, &ret);
++			skb = tcf_qevent_handle(&q->qe_mark, sch, skb, to_free, &ret);
+ 			if (!skb)
+ 				return NET_XMIT_CN | ret;
+ 		} else if (!red_use_nodrop(q)) {
+@@ -137,7 +137,7 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch, spinlock_t *root_
+ 	return ret;
+ 
+ congestion_drop:
+-	skb = tcf_qevent_handle(&q->qe_early_drop, sch, skb, root_lock, to_free, &ret);
++	skb = tcf_qevent_handle(&q->qe_early_drop, sch, skb, to_free, &ret);
+ 	if (!skb)
+ 		return NET_XMIT_CN | ret;
+ 
 -- 
 2.20.1
 
