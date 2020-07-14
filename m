@@ -2,195 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D91721FDEB
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 21:55:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF14521FE63
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 22:17:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729655AbgGNTzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 15:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49110 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729465AbgGNTzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 15:55:03 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20754C061755;
-        Tue, 14 Jul 2020 12:55:03 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id m9so8042681pfh.0;
-        Tue, 14 Jul 2020 12:55:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=JYMRhwsu+Sb7OdIXTr+m2jcY6PaVT0jbYkR2hlBIQac=;
-        b=fs4fvydGVNvlk5nD87KZFP08JqelxL90HPPkjS2E4M1OFRJ8jvE23FFOO6XgUs+EdC
-         zz9EDAHIdKWW9SjezQFxrX2LzMxaOS4r37lvUaibE+hLSWKbTDdQHf1S3c2Rk3Y2aDch
-         +IqWejNVTpOIfjj6tqwlzSI+JD2dkDI93kixcYJznNmSlHmV91Cw93Okv4rBTTW2I0fp
-         9pDNi7fAjNtQfnPsnSaFVAT0D9iS6Af5T/vm+E1a2ZX2rTZiv3AxUGPm2QrOZMM7Grhi
-         OZ0e7UrNfkMAFwrkALZm3hpOPt02D8g6TC9uOoOBDqQIlI8pfED8r5BnDPx3S9CRblfR
-         Oysw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JYMRhwsu+Sb7OdIXTr+m2jcY6PaVT0jbYkR2hlBIQac=;
-        b=e9i+INIaY2rubZ9/4OdgVVqLOdhxecESmOIxQptklGoowMiTN60z0KqwJgwbBVTcwg
-         QRyFkTp9gT876c1O2NhZ40jqeXo7XxuRqMB4Od3H3IR//iiYek6yfN555/jZLYVFRwCh
-         OM8jB9ijI2uwdkBQhCUfnuYGfxAPqf7hqgQh/UKssi89ekKgxEYaUAau3xb/ZLhPMuiD
-         UaDqU/IkzqgcUScuxqDO9JZqBNkciSI9vrpvisjL/k3CxPAfxSPHd/FRsGbJIq3lA+kJ
-         pb8+ACWv+214imWrT+dhHPtTOjcGnf+UBpN0CC3qlfN8fqSc3/Wz2h18jCUZK5ehGxp3
-         swgQ==
-X-Gm-Message-State: AOAM53285KV4RdfCVuv2Pf+lWhHprioMsisrLK+08hAJWKompqngdp5d
-        P/1huMnfNaHNH1KW5zL5ZTIXkJ/A803auQ==
-X-Google-Smtp-Source: ABdhPJw/oO8x2DZghTsWUoMl473fHwCIUH5VYDjbimv6MY0MoeAVVAqLzc8Q/q4VrjOK+4DFIOHUgA==
-X-Received: by 2002:a05:6a00:2292:: with SMTP id f18mr5729482pfe.192.1594756502680;
-        Tue, 14 Jul 2020 12:55:02 -0700 (PDT)
-Received: from blackclown ([103.88.82.145])
-        by smtp.gmail.com with ESMTPSA id e20sm13898pfl.212.2020.07.14.12.54.59
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 14 Jul 2020 12:55:01 -0700 (PDT)
-Date:   Wed, 15 Jul 2020 01:24:56 +0530
-From:   Suraj Upadhyay <usuraj35@gmail.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        GR-Linux-NIC-Dev@marvell.com, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, netdev@vger.kernel.org,
+        id S1730404AbgGNUQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 16:16:16 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:20793 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729617AbgGNUQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 16:16:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1594757770;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=GNcdh9hbyCSYCE1dhM3aHIwRYOjxxn/mU4RGqzYVsko=;
+        b=E7TxQwHHGoOz4M/wN/7wYt+c9eSQNjFHntOgBQhstLYB8vdFDCV2wiy4hraXYWEPdw
+        6WdxS/VVPGRuKL8sSAhDEGmucVfgwKxURnaTEcS8ExrVoSF09ZktlQhsGu02w9uqOe35
+        gfARf6R9tOXPHx25fZhpESkMtVg3xx78CbCENdnngQVg7SwIqpvEX/zYbjvNxKyrhPRN
+        WBGA9GJqBu7KSovNTOm4y8Lg358+TNuKOnAeX1k68/yGqnEN7KewnxtkkrSTUhsWZMCv
+        i5/QRfdr3wkLXOIbhhlaHPKUeMtvM8SggKjZhOqu+79aZEl28Uw+NWpNeRcgcY/tDQAs
+        zqYA==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3HMbEWKOdeVTdI="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+        by smtp.strato.de (RZmta 46.10.5 DYNA|AUTH)
+        with ESMTPSA id R09ac6w6EKA9tgs
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Tue, 14 Jul 2020 22:10:09 +0200 (CEST)
+Subject: Re: [PATCH net-next] can: silence remove_proc_entry warning
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/6] staging: qlge: qlge_ethtool: Remove one byte memset.
-Message-ID: <20200714195456.GB14742@blackclown>
-References: <cover.1594642213.git.usuraj35@gmail.com>
- <b5eb87576cef4bf1b968481d6341013e6c7e9650.1594642213.git.usuraj35@gmail.com>
- <20200713141749.GU2549@kadam>
- <a323c1e47e8de871ff7bb72289740cb0bc2d27f8.camel@perches.com>
- <20200714190602.GA14742@blackclown>
- <ce637b26b496dd99be8f272e6ec82333338321dc.camel@perches.com>
+References: <1594709090-3203-1-git-send-email-zhangchangzhong@huawei.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <e2344833-b2f4-cc6f-4b6c-868afc3ced6e@hartkopp.net>
+Date:   Tue, 14 Jul 2020 22:10:04 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="1LKvkjL3sHcu1TtY"
-Content-Disposition: inline
-In-Reply-To: <ce637b26b496dd99be8f272e6ec82333338321dc.camel@perches.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <1594709090-3203-1-git-send-email-zhangchangzhong@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---1LKvkjL3sHcu1TtY
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 14, 2020 at 12:22:05PM -0700, Joe Perches wrote:
-> On Wed, 2020-07-15 at 00:36 +0530, Suraj Upadhyay wrote:
-> > On Tue, Jul 14, 2020 at 11:57:23AM -0700, Joe Perches wrote:
-> > > On Mon, 2020-07-13 at 17:17 +0300, Dan Carpenter wrote:
-> > > > On Mon, Jul 13, 2020 at 05:52:22PM +0530, Suraj Upadhyay wrote:
-> > > > > Use direct assignment instead of using memset with just one byte =
-as an
-> > > > > argument.
-> > > > > Issue found by checkpatch.pl.
-> > > > >=20
-> > > > > Signed-off-by: Suraj Upadhyay <usuraj35@gmail.com>
-> > > > > ---
-> > > > > Hii Maintainers,
-> > > > > 	Please correct me if I am wrong here.
-> > > > > ---
-> > > > >=20
-> > > > >  drivers/staging/qlge/qlge_ethtool.c | 4 ++--
-> > > > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > > >=20
-> > > > > diff --git a/drivers/staging/qlge/qlge_ethtool.c b/drivers/stagin=
-g/qlge/qlge_ethtool.c
-> > > > > index 16fcdefa9687..d44b2dae9213 100644
-> > > > > --- a/drivers/staging/qlge/qlge_ethtool.c
-> > > > > +++ b/drivers/staging/qlge/qlge_ethtool.c
-> > > > > @@ -516,8 +516,8 @@ static void ql_create_lb_frame(struct sk_buff=
- *skb,
-> > > > >  	memset(skb->data, 0xFF, frame_size);
-> > > > >  	frame_size &=3D ~1;
-> > > > >  	memset(&skb->data[frame_size / 2], 0xAA, frame_size / 2 - 1);
-> > > > > -	memset(&skb->data[frame_size / 2 + 10], 0xBE, 1);
-> > > > > -	memset(&skb->data[frame_size / 2 + 12], 0xAF, 1);
-> > > > > +	skb->data[frame_size / 2 + 10] =3D (unsigned char)0xBE;
-> > > > > +	skb->data[frame_size / 2 + 12] =3D (unsigned char)0xAF;
-> > > >=20
-> > > > Remove the casting.
-> > > >=20
-> > > > I guess this is better than the original because now it looks like
-> > > > ql_check_lb_frame().  It's still really weird looking though.
-> > >=20
-> > > There are several of these in the intel drivers too:
-> > >=20
-> > > drivers/net/ethernet/intel/e1000/e1000_ethtool.c:       memset(&skb->=
-data[frame_size / 2 + 10], 0xBE, 1);
-> > > drivers/net/ethernet/intel/e1000/e1000_ethtool.c:       memset(&skb->=
-data[frame_size / 2 + 12], 0xAF, 1);
-> > > drivers/net/ethernet/intel/e1000e/ethtool.c:    memset(&skb->data[fra=
-me_size / 2 + 10], 0xBE, 1);
-> > > drivers/net/ethernet/intel/e1000e/ethtool.c:    memset(&skb->data[fra=
-me_size / 2 + 12], 0xAF, 1);
-> > > drivers/net/ethernet/intel/igb/igb_ethtool.c:   memset(&skb->data[fra=
-me_size + 10], 0xBE, 1);
-> > > drivers/net/ethernet/intel/igb/igb_ethtool.c:   memset(&skb->data[fra=
-me_size + 12], 0xAF, 1);
-> > > drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c:       memset(&skb->=
-data[frame_size + 10], 0xBE, 1);
-> > > drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c:       memset(&skb->=
-data[frame_size + 12], 0xAF, 1);
-> > > drivers/staging/qlge/qlge_ethtool.c:    memset(&skb->data[frame_size =
-/ 2 + 10], 0xBE, 1);
-> > > drivers/staging/qlge/qlge_ethtool.c:    memset(&skb->data[frame_size =
-/ 2 + 12], 0xAF, 1);
-> >=20
-> > Thanks to point this out,
-> > 	I will be sending a patchset for that soon.
->=20
->=20
-> It _might_ be useful to create and use a standard
-> mechanism for the loopback functions:
->=20
-> 	<foo>create_lbtest_frame
-> and
-> 	<foo>check_lbtest_frame
->=20
-> Maybe use something like:
->=20
-> 	ether_loopback_frame_create
-> and
-> 	ether_loopback_frame_check
->=20
-I thought about it=A0 but then again the fram_size is sometimes divided by =
-two
+On 14.07.20 08:44, Zhang Changzhong wrote:
+> If can_init_proc() fail to create /proc/net/can directory,
+> can_remove_proc() will trigger a warning:
+> 
+> WARNING: CPU: 6 PID: 7133 at fs/proc/generic.c:672 remove_proc_entry+0x17b0
+> Kernel panic - not syncing: panic_on_warn set ...
+> 
+> Fix to return early from can_remove_proc() if can proc_dir
+> does not exists.
+> 
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 
-e.g. `frame_size /=3D 2;` or `frame_size >>=3D 1;`.
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
 
-and sometimes it is subtracted by one. i.e. `frame_size &=3D ~1;`.
+Thanks!
 
-Anyway, I sent my layman patchset to the lkml and intel maintainers.
-
-Forgive my brevity.
-
-Thanks,=A0
-
-Suraj Upadhyay.=20
-
---1LKvkjL3sHcu1TtY
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE7AbCa0kOsMJ4cx0j+gRsbIfe744FAl8ODYgACgkQ+gRsbIfe
-744oCRAAqrqADv/xB4JVPjjXz492plNFNWc8LGb+FfE8WO/fXyAdP6QlihH6yTK/
-wf77xEFSJOao6VFX501O5KqklsWkNZ+FFs49mMcDdo6qXjlezHp0/4J6NFI+bn5g
-OXjshxMZpjyGI4wT03QHxP2dvhIVxEt+2FY44DzOT/vtsVYRKInLK3nTjS4f7Wdp
-yqgSmI831AWcoPYZd3PkZLneXDbFi2CSPBBMREmiP1N735WfXSZqEACPYRtKVj2f
-62QgFz6S8AWb0OYB/I67OUDFDDnufchuGa22SJNmv3HxYbMpF9QlhovCK2XfUT6/
-30UzieYqCPd+IIccn1iWtbFhMl5wa0bTTZRL3D8Zt7P3J7dxrb9wHZyjkt2baqhj
-+n+GW4nfSoCVCDqJMr/AopOfIL0FS2eqvmkVsohOpneuElfYf6M+1AcH0kprADHW
-js9OomrTXRkanNAk1fjxPhItfVqqka8sT+dmYsVmfZMTDuytS6nxx55zwGSFuuzA
-BgTLJ0fNLrS7E7hrPyoc9/O2xktZ4DsWuFZYiB8SMz5F8nH1hG2VGsYOGjs+L7WS
-bFAau0a0f+GNRYj2TztM3Jq2Y393xBNBquUMaOAA6MXNd5InFZBb39L5dGuLmaXQ
-UyObb7g20JD6D8bJCBA+Jx4G4vGR3Qqvu9kbabnC6mINzK1AzyY=
-=iZ2l
------END PGP SIGNATURE-----
-
---1LKvkjL3sHcu1TtY--
+> ---
+>   net/can/proc.c | 6 ++++--
+>   1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/can/proc.c b/net/can/proc.c
+> index e6881bf..077af42 100644
+> --- a/net/can/proc.c
+> +++ b/net/can/proc.c
+> @@ -471,6 +471,9 @@ void can_init_proc(struct net *net)
+>    */
+>   void can_remove_proc(struct net *net)
+>   {
+> +	if (!net->can.proc_dir)
+> +		return;
+> +
+>   	if (net->can.pde_version)
+>   		remove_proc_entry(CAN_PROC_VERSION, net->can.proc_dir);
+>   
+> @@ -498,6 +501,5 @@ void can_remove_proc(struct net *net)
+>   	if (net->can.pde_rcvlist_sff)
+>   		remove_proc_entry(CAN_PROC_RCVLIST_SFF, net->can.proc_dir);
+>   
+> -	if (net->can.proc_dir)
+> -		remove_proc_entry("can", net->proc_net);
+> +	remove_proc_entry("can", net->proc_net);
+>   }
+> 
