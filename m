@@ -2,162 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDF7F21FB6D
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 21:01:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 287EF21FC11
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 21:06:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730984AbgGNTBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 15:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40366 "EHLO
+        id S1731349AbgGNTGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 15:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731129AbgGNS7Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 14:59:24 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EEEC061755;
-        Tue, 14 Jul 2020 11:59:24 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id o38so13687149qtf.6;
-        Tue, 14 Jul 2020 11:59:24 -0700 (PDT)
+        with ESMTP id S1731233AbgGNTGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 15:06:18 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F99CC061755;
+        Tue, 14 Jul 2020 12:06:18 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id l63so7980844pge.12;
+        Tue, 14 Jul 2020 12:06:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=SQZ00sUCFnel9yqqo0aD/Thg+rH2CFzCWvrAhQAmR4Y=;
-        b=pxsPoBRNgvgtzt0s6ir/SJNqIKlL32pzRaRClpSjHM4nIAaK2ja06jP1LvSLIQi/xv
-         KZS+Rq1IJgP1HIQLxH/oi4G59H9yPHrkTkLv/YPxQgHckIqL7fST+TQrlcqqqMms3GNs
-         +FtkdH1QfzAfrVTsnRjWf7UDmdG21GXiPwH1o+Vfl/mpiGhdatCMFNOskh0R0Oy7p1ca
-         RV/QhKvUOynuSoQUY4WKI7KkFv7UFHwltEL5VpESvWioRvaOtCIBMRTpfbz52L/ShLv7
-         HWDJmj20tibJsZhJiPclW80ntkQYKOdfH1z/Nj3CeCOqKdOfu+T7R9IrJ3sUNQNwFcWW
-         0KsA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=dis2Axh8nu/LnXyOn1Ig81p6hiXGxYYhmbDB5/bqa9w=;
+        b=nKnjztoWW4r5dgyFftcVgr2qDuqoyMbVCh+vDcHreHYO05UJkttOF5A7NuNDKpa4C8
+         DSFnU//iJjr828MdzBm0tdpt8Ar6E14VSRAkFkDHiIMH/XuudRk4IcFudlrf6F6PvFTh
+         mkb0GWbhraZTis1rBSs5F4Oe5rDmRopimuXRRqdMsLpsjtB0/tB7wk44dqWI/v/2rZD/
+         jjCStVgn8SH3UaiH1DjAc+oPXR2lRyCpLtWxjnZFifovkQhXEs2keYMSE0diaWCnMoDE
+         TPrNuHxK+7svBNbIN23M47HPiwb3YWj3fyhs/iyHaHZJfxnt24P4enIvQm4a3rsFFiXa
+         o/Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SQZ00sUCFnel9yqqo0aD/Thg+rH2CFzCWvrAhQAmR4Y=;
-        b=OZGeeEZmVdz8WVG90lJnauiExxg+ttvv3umW+FZDU/i6A7B8GeOG+FVerzogFn/5Xd
-         eXEifHbzlC9fAMKOMWE1l/b/fT6ELr1nDtfuA1QaDJRUHkOhAMk5Wv0NPhAf+2HvfaKz
-         e+5tead698VevXrzSXdbT9G/EJGOHvTSyARoFHyLRP8ZBxJYNSNLPF/rc0ECi8ZHyZ81
-         KJLY8HSGiBBFuXVKsYrw4nirCZyOpURUqpoG4Kb+xmecu2QrW5rjWAeXI0K/b3uwTIUs
-         WQup+JRdBUPL2y0w3E/LarDprwA+Zq4dxOF5dF5jpuqABLmQwW3VJJ/hQCD7jLyvGdLy
-         Usiw==
-X-Gm-Message-State: AOAM5338ypG9fx3BR+IpdaI8FsMq5P9QiFti9GYio6YNPIK6lWlA5rJr
-        /bo265nnIcIeBVcU0ECEB6JGJ/252gvpR6YZyUg=
-X-Google-Smtp-Source: ABdhPJwb14USRU4G8ZXT5ZjlT7X1fyeRX3VQtWRTBrwcDqM7dUb+nEpGX+g4bV7Ut4ai9tZApJIN6LtdU1zgMTOdklM=
-X-Received: by 2002:ac8:4714:: with SMTP id f20mr6181861qtp.141.1594753163239;
- Tue, 14 Jul 2020 11:59:23 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=dis2Axh8nu/LnXyOn1Ig81p6hiXGxYYhmbDB5/bqa9w=;
+        b=Y3Sg/MgMRqXLz41Q+eNvUEIYKKMr4+AD+JwSh52iX9lsYQlV7jydh4lMeNAfOyCZdJ
+         QqSy9WviAXjzGf4FB6M/y1c7efomexw7xju8xCr3FdL/G0Zj+08v6pSc+mFkgB9LDQL2
+         o/hXP2KxhdF9FAZ9ZHBHgBJDToUrNNe8IpPDK7bEKwKpssy2cUSClO3cJN0Sqzp0SJWg
+         hzOuJpNdOiBNBgwKg4TVtpU0NDkUM2lFJmV5RiyMrDRPgHUOhF1dWw30/Ng2/WcvdLyc
+         7GeeuHWmo73StXeMIHWxmhlVQgKAlnrNq1AfbDGHr4puwtpsS15a4yhHd1qQ+rxGwm9s
+         wlWA==
+X-Gm-Message-State: AOAM5337tnk6XLBQ54FT8Xma3jtf7pxNC9pQGuVqO5DvBlYoBqPLvJ+2
+        umbxOHghTpOLOypdxgvd0FE=
+X-Google-Smtp-Source: ABdhPJzqOc25KQxV/43xB8LSAgishkvk4CxWlYfUS+MOK2vGNvUKObcXldECjTPHSs23wB/S8JIzuw==
+X-Received: by 2002:a63:1007:: with SMTP id f7mr4428174pgl.147.1594753577662;
+        Tue, 14 Jul 2020 12:06:17 -0700 (PDT)
+Received: from blackclown ([103.88.82.145])
+        by smtp.gmail.com with ESMTPSA id s131sm16775422pgc.30.2020.07.14.12.06.13
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 14 Jul 2020 12:06:16 -0700 (PDT)
+Date:   Wed, 15 Jul 2020 00:36:02 +0530
+From:   Suraj Upadhyay <usuraj35@gmail.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 6/6] staging: qlge: qlge_ethtool: Remove one byte memset.
+Message-ID: <20200714190602.GA14742@blackclown>
+References: <cover.1594642213.git.usuraj35@gmail.com>
+ <b5eb87576cef4bf1b968481d6341013e6c7e9650.1594642213.git.usuraj35@gmail.com>
+ <20200713141749.GU2549@kadam>
+ <a323c1e47e8de871ff7bb72289740cb0bc2d27f8.camel@perches.com>
 MIME-Version: 1.0
-References: <20200710224924.4087399-1-andriin@fb.com> <20200710224924.4087399-3-andriin@fb.com>
- <877dv6gpxd.fsf@toke.dk>
-In-Reply-To: <877dv6gpxd.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 14 Jul 2020 11:59:12 -0700
-Message-ID: <CAEf4BzY7qRsdcdhzf2--Bfgo-GB=ZoKKizOb+OHO7o2PMiNubA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/7] bpf, xdp: add bpf_link-based XDP attachment API
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kicinski@fb.com>, Andrey Ignatov <rdna@fb.com>,
-        Takshak Chahande <ctakshak@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gKMricLos+KVdGMg"
+Content-Disposition: inline
+In-Reply-To: <a323c1e47e8de871ff7bb72289740cb0bc2d27f8.camel@perches.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 6:57 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Andrii Nakryiko <andriin@fb.com> writes:
->
-> > Add bpf_link-based API (bpf_xdp_link) to attach BPF XDP program through
-> > BPF_LINK_CREATE command.
->
-> I'm still not convinced this is a good idea. As far as I can tell, at
-> this point adding this gets you three things:
->
-> 1. The ability to 'lock' an attachment in place.
->
-> 2. Automatic detach on fd close
->
-> 3. API unification with other uses of BPF_LINK_CREATE.
->
->
-> Of those, 1. is certainly useful, but can be trivially achieved with the
-> existing netlink API (add a flag on attach that prevents removal unless
-> the original prog_fd is supplied as EXPECTED_FD).
 
-Given it's trivial to discover attached prog FD on a given ifindex, it
-doesn't add much of a peace of mind to the application that installs
-bpf_link. Any other XDP-enabled program (even some trivial test
-program) can unknowingly break other applications by deciding to
-"auto-cleanup" it's previous instance on restart ("what's my previous
-prog FD? let's replace it with my up-to-date program FD! What do you
-mean it wasn't my prog FD before?). We went over this discussion many
-times already: relying on the correct behavior of *other*
-applications, which you don't necessarily control, is not working well
-in real production use cases.
+--gKMricLos+KVdGMg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->
-> 2. is IMO the wrong model for XDP, as I believe I argued the last time
-> we discussed this :)
-> In particular, in a situation with multiple XDP programs attached
-> through a dispatcher, the 'owner' application of each program don't
-> 'own' the interface attachment anyway, so if using bpf_link for that it
-> would have to be pinned somewhere anyway. So the 'automatic detach'
-> feature is only useful in the "xdpd" deployment scenario, whereas in the
-> common usage model of command-line attachment ('ip link set xdp...') it
-> is something that needs to be worked around.
+On Tue, Jul 14, 2020 at 11:57:23AM -0700, Joe Perches wrote:
+> On Mon, 2020-07-13 at 17:17 +0300, Dan Carpenter wrote:
+> > On Mon, Jul 13, 2020 at 05:52:22PM +0530, Suraj Upadhyay wrote:
+> > > Use direct assignment instead of using memset with just one byte as an
+> > > argument.
+> > > Issue found by checkpatch.pl.
+> > >=20
+> > > Signed-off-by: Suraj Upadhyay <usuraj35@gmail.com>
+> > > ---
+> > > Hii Maintainers,
+> > > 	Please correct me if I am wrong here.
+> > > ---
+> > >=20
+> > >  drivers/staging/qlge/qlge_ethtool.c | 4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > >=20
+> > > diff --git a/drivers/staging/qlge/qlge_ethtool.c b/drivers/staging/ql=
+ge/qlge_ethtool.c
+> > > index 16fcdefa9687..d44b2dae9213 100644
+> > > --- a/drivers/staging/qlge/qlge_ethtool.c
+> > > +++ b/drivers/staging/qlge/qlge_ethtool.c
+> > > @@ -516,8 +516,8 @@ static void ql_create_lb_frame(struct sk_buff *sk=
+b,
+> > >  	memset(skb->data, 0xFF, frame_size);
+> > >  	frame_size &=3D ~1;
+> > >  	memset(&skb->data[frame_size / 2], 0xAA, frame_size / 2 - 1);
+> > > -	memset(&skb->data[frame_size / 2 + 10], 0xBE, 1);
+> > > -	memset(&skb->data[frame_size / 2 + 12], 0xAF, 1);
+> > > +	skb->data[frame_size / 2 + 10] =3D (unsigned char)0xBE;
+> > > +	skb->data[frame_size / 2 + 12] =3D (unsigned char)0xAF;
+> >=20
+> > Remove the casting.
+> >=20
+> > I guess this is better than the original because now it looks like
+> > ql_check_lb_frame().  It's still really weird looking though.
+>=20
+> There are several of these in the intel drivers too:
+>=20
+> drivers/net/ethernet/intel/e1000/e1000_ethtool.c:       memset(&skb->data=
+[frame_size / 2 + 10], 0xBE, 1);
+> drivers/net/ethernet/intel/e1000/e1000_ethtool.c:       memset(&skb->data=
+[frame_size / 2 + 12], 0xAF, 1);
+> drivers/net/ethernet/intel/e1000e/ethtool.c:    memset(&skb->data[frame_s=
+ize / 2 + 10], 0xBE, 1);
+> drivers/net/ethernet/intel/e1000e/ethtool.c:    memset(&skb->data[frame_s=
+ize / 2 + 12], 0xAF, 1);
+> drivers/net/ethernet/intel/igb/igb_ethtool.c:   memset(&skb->data[frame_s=
+ize + 10], 0xBE, 1);
+> drivers/net/ethernet/intel/igb/igb_ethtool.c:   memset(&skb->data[frame_s=
+ize + 12], 0xAF, 1);
+> drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c:       memset(&skb->data=
+[frame_size + 10], 0xBE, 1);
+> drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c:       memset(&skb->data=
+[frame_size + 12], 0xAF, 1);
+> drivers/staging/qlge/qlge_ethtool.c:    memset(&skb->data[frame_size / 2 =
++ 10], 0xBE, 1);
+> drivers/staging/qlge/qlge_ethtool.c:    memset(&skb->data[frame_size / 2 =
++ 12], 0xAF, 1);
 
-Right, nothing changed since we last discussed. There are cases where
-one or another approach is more convenient. Having bpf_link for XDP
-finally gives an option to have an auto-detaching (on last FD close)
-approach, but you still insist there shouldn't be such an option. Why?
+Thanks to point this out,
+	I will be sending a patchset for that soon.
 
->
-> 3. would be kinda nice, I guess, if we were designing the API from
-> scratch. But we already have an existing API, so IMO the cost of
-> duplication outweighs any benefits of API unification.
+Thanks,
 
-Not unification of BPF_LINK_CREATE, but unification of bpf_link
-infrastructure in general, with its introspection and discoverability
-APIs. bpftool can show which programs are attached where and it can
-show PIDs of processes that own the BPF link. With CAP_BPF you have
-also more options now how to control who can mess with your bpf_link.
+Suraj Upadhyay.
 
->
-> So why is XDP worth it? I assume you weigh this differently, but please
-> explain how. Ideally, this should have been in the commit message
-> already...
 
-It's the 6th BPF link class we are implementing, I didn't think I
-needed to go over all the same general points again. I can point to
-patches originally adding BPF link for justification, I suppose.
+--gKMricLos+KVdGMg
+Content-Type: application/pgp-signature; name="signature.asc"
 
->
-> > bpf_xdp_link is mutually exclusive with direct BPF program attachment,
-> > previous BPF program should be detached prior to attempting to create a=
- new
-> > bpf_xdp_link attachment (for a given XDP mode). Once link is attached, =
-it
-> > can't be replaced by other BPF program attachment or link attachment. I=
-t will
-> > be detached only when the last BPF link FD is closed.
->
-> I was under the impression that forcible attachment of bpf_links was
-> already possible, but looking at the code now it doesn't appear to be?
-> Wasn't that the whole point of BPF_LINK_GET_FD_BY_ID? I.e., that a
-> sysadmin with CAP_SYS_ADMIN privs could grab the offending bpf_link FD
-> and force-remove it? I certainly think this should be added before we
-> expand bpf_link usage any more...
+-----BEGIN PGP SIGNATURE-----
 
-I still maintain that killing processes that installed the bpf_link is
-the better approach. Instead of letting the process believe and act as
-if it has an active XDP program, while it doesn't, it's better to
-altogether kill/restart the process.
+iQIzBAABCgAdFiEE7AbCa0kOsMJ4cx0j+gRsbIfe744FAl8OAhIACgkQ+gRsbIfe
+747ELBAAs7FgNTJ7W3h+3hC9u3/hxXbKnaUFn2p3NN9jueyMmRLgluBEOL2QrAg0
+N7P6fqH88bOdPlD/j0qWnQphByOOc2/9JybZX3SSO/3xW8EikjguS51TAvL9KqII
+rq4j9p1YbTkldB/Tv45oi3d1XRG49yKZJVufuMj8IFs7KGaiLpoZORIEeCprPrto
+XGGch3crDCjqqDWf5Fb1EAVpDVvhlvLrBN2N25ZBklJ+45mS0/LlxapYcRX7uuDr
+tqrXRNCjjOmwgBunvdgnmFEtXpcPevtCuSVjOmxH+r416yATcd9aGA1nii6OV1xo
+p+vuoxeKxH0XMuQHkp+dY1pYyQTXrHpag4WnU8kZfVaml1sapsl87EYWM947iRR2
+wILTcwjeTTGfwuVcNCLJx4NbuoEU7NbDJTkfu1FViQjInjBFSd4+jeTiFDxHKwQ+
+J2JnJDRH/qTABra3zFpm4fTcMg6FxkF7MRZvCqtYhX18rVSWT6e8cWxmXiMelAlw
+7RASpBrGF06kcLch/ML9kLdPrcvDMNYUHqPYlQPIfnv2KW2PWOalw1SvvTwwYL86
+JE+AIa8cMVStylKFoEyNdfIadSjBRp5TtZcJpKBBL2A4eUlyF2P0KopArMgEdjVb
+vHZhqJ1Gx3SlYewwRCNo31gxrGy83ol+/+6UsJY/j18ooV3AnQs=
+=ZTrI
+-----END PGP SIGNATURE-----
 
->
-> -Toke
->
+--gKMricLos+KVdGMg--
