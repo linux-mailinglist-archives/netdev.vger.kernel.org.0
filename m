@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7A5D21E487
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:31:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 351BB21E484
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:31:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726855AbgGNAbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726907AbgGNAbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 13 Jul 2020 20:31:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44334 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:44396 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726257AbgGNAbV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 20:31:21 -0400
+        id S1726828AbgGNAbW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 20:31:22 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6FCB52186A;
-        Tue, 14 Jul 2020 00:31:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5E9CB2193E;
+        Tue, 14 Jul 2020 00:31:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594686680;
-        bh=LSgJEMT8zmP8O5qZZLmYtHax7tWSdXnehGgwLQ1m5Ac=;
+        s=default; t=1594686681;
+        bh=TM4Lv5JKzRsrWAB51IvWH1f5wpHaUNUIgOafvsHyZ1k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d22oiq0STV3XxVq7yGEUUJRwngEmw4sFGyb7Z97N10/L/WFymrGbvW7ek/mq3HEYR
-         HVhZS/KMhlP5dLjxsXln0Mr1xZRFjezY+xvk25At2+Zdt1xx5xNSX2OWMR8LIY8yvq
-         eCuaeQ9aDvIP2R17Hj+ojaExxCQ5c230HK/rAnfc=
+        b=WikIvSQ3DpCMyBRJqX6v8uYyn6cpATLWRacKWJLhJrPSP+rZ2530JDu1n+qfzSw41
+         KkAXo4srvIGezV4z60cmjkqrf1XNxaXIpnysFhXuVhO8iw/fRhTPO3NNV/idW2VgIU
+         f8A22sF21scWWyQe2LZfgUld5khkglV1P71198FQ=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -35,9 +35,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
         manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 01/12] nfp: convert to new udp_tunnel_nic infra
-Date:   Mon, 13 Jul 2020 17:30:26 -0700
-Message-Id: <20200714003037.669012-2-kuba@kernel.org>
+Subject: [PATCH net-next 02/12] be2net: convert to new udp_tunnel_nic infra
+Date:   Mon, 13 Jul 2020 17:30:27 -0700
+Message-Id: <20200714003037.669012-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200714003037.669012-1-kuba@kernel.org>
 References: <20200714003037.669012-1-kuba@kernel.org>
@@ -48,203 +48,332 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NFP conversion is pretty straightforward. We want to be able
-to sleep, and only get callbacks when the device is open.
+Convert be2net to new udp_tunnel_nic infra. NIC only takes one VxLAN
+port. Remove the port tracking using a list. The warning in
+be_work_del_vxlan_port() looked suspicious - like the driver expected
+ports to be removed in order of addition.
 
-NFP did not ask for port replay when ports were removed, now
-new infra will provide this feature for free.
+be2net unregisters ports when going down and re-registers them (for
+skyhawk) when coming up, but it never checks if the device is up
+in the add_port / del_port callbacks. Make it use
+UDP_TUNNEL_NIC_INFO_OPEN_ONLY. Sadly this driver calls its own
+open/close functions directly so the udp_tunnel_nic_reset_ntf()
+workaround is needed.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net.h  |   5 -
- .../ethernet/netronome/nfp/nfp_net_common.c   | 126 +++++-------------
- 2 files changed, 34 insertions(+), 97 deletions(-)
+ drivers/net/ethernet/emulex/benet/be.h      |   5 -
+ drivers/net/ethernet/emulex/benet/be_main.c | 198 ++++----------------
+ 2 files changed, 38 insertions(+), 165 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-index ff4438478ea9..df5b748be068 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-@@ -575,8 +575,6 @@ struct nfp_net_dp {
-  * @rx_coalesce_max_frames: RX interrupt moderation frame count parameter
-  * @tx_coalesce_usecs:      TX interrupt moderation usecs delay parameter
-  * @tx_coalesce_max_frames: TX interrupt moderation frame count parameter
-- * @vxlan_ports:	VXLAN ports for RX inner csum offload communicated to HW
-- * @vxlan_usecnt:	IPv4/IPv6 VXLAN port use counts
-  * @qcp_cfg:            Pointer to QCP queue used for configuration notification
-  * @tx_bar:             Pointer to mapped TX queues
-  * @rx_bar:             Pointer to mapped FL/RX queues
-@@ -661,9 +659,6 @@ struct nfp_net {
- 	u32 tx_coalesce_usecs;
- 	u32 tx_coalesce_max_frames;
- 
--	__be16 vxlan_ports[NFP_NET_N_VXLAN_PORTS];
--	u8 vxlan_usecnt[NFP_NET_N_VXLAN_PORTS];
--
- 	u8 __iomem *qcp_cfg;
- 
- 	u8 __iomem *tx_bar;
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index 83ff18140bfe..44608873d3d9 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -2867,15 +2867,6 @@ static int nfp_net_set_config_and_enable(struct nfp_net *nn)
- 	for (r = 0; r < nn->dp.num_rx_rings; r++)
- 		nfp_net_rx_ring_fill_freelist(&nn->dp, &nn->dp.rx_rings[r]);
- 
--	/* Since reconfiguration requests while NFP is down are ignored we
--	 * have to wipe the entire VXLAN configuration and reinitialize it.
--	 */
--	if (nn->dp.ctrl & NFP_NET_CFG_CTRL_VXLAN) {
--		memset(&nn->vxlan_ports, 0, sizeof(nn->vxlan_ports));
--		memset(&nn->vxlan_usecnt, 0, sizeof(nn->vxlan_usecnt));
--		udp_tunnel_get_rx_info(nn->dp.netdev);
--	}
--
- 	return 0;
- }
- 
-@@ -3566,87 +3557,6 @@ nfp_net_get_phys_port_name(struct net_device *netdev, char *name, size_t len)
- 	return 0;
- }
- 
--/**
-- * nfp_net_set_vxlan_port() - set vxlan port in SW and reconfigure HW
-- * @nn:   NFP Net device to reconfigure
-- * @idx:  Index into the port table where new port should be written
-- * @port: UDP port to configure (pass zero to remove VXLAN port)
-- */
--static void nfp_net_set_vxlan_port(struct nfp_net *nn, int idx, __be16 port)
--{
--	int i;
--
--	nn->vxlan_ports[idx] = port;
--
--	if (!(nn->dp.ctrl & NFP_NET_CFG_CTRL_VXLAN))
--		return;
--
--	BUILD_BUG_ON(NFP_NET_N_VXLAN_PORTS & 1);
--	for (i = 0; i < NFP_NET_N_VXLAN_PORTS; i += 2)
--		nn_writel(nn, NFP_NET_CFG_VXLAN_PORT + i * sizeof(port),
--			  be16_to_cpu(nn->vxlan_ports[i + 1]) << 16 |
--			  be16_to_cpu(nn->vxlan_ports[i]));
--
--	nfp_net_reconfig_post(nn, NFP_NET_CFG_UPDATE_VXLAN);
--}
--
--/**
-- * nfp_net_find_vxlan_idx() - find table entry of the port or a free one
-- * @nn:   NFP Network structure
-- * @port: UDP port to look for
-- *
-- * Return: if the port is already in the table -- it's position;
-- *	   if the port is not in the table -- free position to use;
-- *	   if the table is full -- -ENOSPC.
-- */
--static int nfp_net_find_vxlan_idx(struct nfp_net *nn, __be16 port)
--{
--	int i, free_idx = -ENOSPC;
--
--	for (i = 0; i < NFP_NET_N_VXLAN_PORTS; i++) {
--		if (nn->vxlan_ports[i] == port)
--			return i;
--		if (!nn->vxlan_usecnt[i])
--			free_idx = i;
--	}
--
--	return free_idx;
--}
--
--static void nfp_net_add_vxlan_port(struct net_device *netdev,
--				   struct udp_tunnel_info *ti)
--{
--	struct nfp_net *nn = netdev_priv(netdev);
--	int idx;
--
--	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
--		return;
--
--	idx = nfp_net_find_vxlan_idx(nn, ti->port);
--	if (idx == -ENOSPC)
--		return;
--
--	if (!nn->vxlan_usecnt[idx]++)
--		nfp_net_set_vxlan_port(nn, idx, ti->port);
--}
--
--static void nfp_net_del_vxlan_port(struct net_device *netdev,
--				   struct udp_tunnel_info *ti)
--{
--	struct nfp_net *nn = netdev_priv(netdev);
--	int idx;
--
--	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
--		return;
--
--	idx = nfp_net_find_vxlan_idx(nn, ti->port);
--	if (idx == -ENOSPC || !nn->vxlan_usecnt[idx])
--		return;
--
--	if (!--nn->vxlan_usecnt[idx])
--		nfp_net_set_vxlan_port(nn, idx, 0);
--}
--
- static int nfp_net_xdp_setup_drv(struct nfp_net *nn, struct netdev_bpf *bpf)
- {
- 	struct bpf_prog *prog = bpf->prog;
-@@ -3757,12 +3667,43 @@ const struct net_device_ops nfp_net_netdev_ops = {
- 	.ndo_set_features	= nfp_net_set_features,
- 	.ndo_features_check	= nfp_net_features_check,
- 	.ndo_get_phys_port_name	= nfp_net_get_phys_port_name,
--	.ndo_udp_tunnel_add	= nfp_net_add_vxlan_port,
--	.ndo_udp_tunnel_del	= nfp_net_del_vxlan_port,
-+	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
- 	.ndo_bpf		= nfp_net_xdp,
- 	.ndo_get_devlink_port	= nfp_devlink_get_devlink_port,
+diff --git a/drivers/net/ethernet/emulex/benet/be.h b/drivers/net/ethernet/emulex/benet/be.h
+index 6e9022083004..8689d4a51fe5 100644
+--- a/drivers/net/ethernet/emulex/benet/be.h
++++ b/drivers/net/ethernet/emulex/benet/be.h
+@@ -654,8 +654,6 @@ struct be_adapter {
+ 	u8 hba_port_num;
+ 	u16 pvid;
+ 	__be16 vxlan_port;		/* offloaded vxlan port num */
+-	int vxlan_port_count;		/* active vxlan port count */
+-	struct list_head vxlan_port_list;	/* vxlan port list */
+ 	struct phy_info phy;
+ 	u8 wol_cap;
+ 	bool wol_en;
+@@ -679,9 +677,6 @@ struct be_adapter {
+ struct be_cmd_work {
+ 	struct work_struct work;
+ 	struct be_adapter *adapter;
+-	union {
+-		__be16 vxlan_port;
+-	} info;
  };
  
-+static int nfp_udp_tunnel_sync(struct net_device *netdev, unsigned int table)
-+{
-+	struct nfp_net *nn = netdev_priv(netdev);
-+	int i;
+ #define be_physfn(adapter)		(!adapter->virtfn)
+diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
+index e26f59336cfd..676e437d78f6 100644
+--- a/drivers/net/ethernet/emulex/benet/be_main.c
++++ b/drivers/net/ethernet/emulex/benet/be_main.c
+@@ -3829,8 +3829,8 @@ static int be_open(struct net_device *netdev)
+ 		be_link_status_update(adapter, link_status);
+ 
+ 	netif_tx_start_all_queues(netdev);
+-	if (skyhawk_chip(adapter))
+-		udp_tunnel_get_rx_info(netdev);
 +
-+	BUILD_BUG_ON(NFP_NET_N_VXLAN_PORTS & 1);
-+	for (i = 0; i < NFP_NET_N_VXLAN_PORTS; i += 2) {
-+		struct udp_tunnel_info ti0, ti1;
-+
-+		udp_tunnel_nic_get_port(netdev, table, i, &ti0);
-+		udp_tunnel_nic_get_port(netdev, table, i + 1, &ti1);
-+
-+		nn_writel(nn, NFP_NET_CFG_VXLAN_PORT + i * sizeof(ti0.port),
-+			  be16_to_cpu(ti1.port) << 16 | be16_to_cpu(ti0.port));
-+	}
-+
-+	return nfp_net_reconfig(nn, NFP_NET_CFG_UPDATE_VXLAN);
-+}
-+
-+static const struct udp_tunnel_nic_info nfp_udp_tunnels = {
-+	.sync_table     = nfp_udp_tunnel_sync,
-+	.flags          = UDP_TUNNEL_NIC_INFO_MAY_SLEEP |
++	udp_tunnel_nic_reset_ntf(netdev);
+ 
+ 	return 0;
+ err:
+@@ -3967,18 +3967,23 @@ static void be_cancel_err_detection(struct be_adapter *adapter)
+ 	}
+ }
+ 
+-static int be_enable_vxlan_offloads(struct be_adapter *adapter)
++/* VxLAN offload Notes:
++ *
++ * The stack defines tunnel offload flags (hw_enc_features) for IP and doesn't
++ * distinguish various types of transports (VxLAN, GRE, NVGRE ..). So, offload
++ * is expected to work across all types of IP tunnels once exported. Skyhawk
++ * supports offloads for either VxLAN or NVGRE, exclusively. So we export VxLAN
++ * offloads in hw_enc_features only when a VxLAN port is added. If other (non
++ * VxLAN) tunnels are configured while VxLAN offloads are enabled, offloads for
++ * those other tunnels are unexported on the fly through ndo_features_check().
++ */
++static int be_vxlan_set_port(struct net_device *netdev, unsigned int table,
++			     unsigned int entry, struct udp_tunnel_info *ti)
+ {
+-	struct net_device *netdev = adapter->netdev;
++	struct be_adapter *adapter = netdev_priv(netdev);
+ 	struct device *dev = &adapter->pdev->dev;
+-	struct be_vxlan_port *vxlan_port;
+-	__be16 port;
+ 	int status;
+ 
+-	vxlan_port = list_first_entry(&adapter->vxlan_port_list,
+-				      struct be_vxlan_port, list);
+-	port = vxlan_port->port;
+-
+ 	status = be_cmd_manage_iface(adapter, adapter->if_handle,
+ 				     OP_CONVERT_NORMAL_TO_TUNNEL);
+ 	if (status) {
+@@ -3987,25 +3992,26 @@ static int be_enable_vxlan_offloads(struct be_adapter *adapter)
+ 	}
+ 	adapter->flags |= BE_FLAGS_VXLAN_OFFLOADS;
+ 
+-	status = be_cmd_set_vxlan_port(adapter, port);
++	status = be_cmd_set_vxlan_port(adapter, ti->port);
+ 	if (status) {
+ 		dev_warn(dev, "Failed to add VxLAN port\n");
+ 		return status;
+ 	}
+-	adapter->vxlan_port = port;
++	adapter->vxlan_port = ti->port;
+ 
+ 	netdev->hw_enc_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+ 				   NETIF_F_TSO | NETIF_F_TSO6 |
+ 				   NETIF_F_GSO_UDP_TUNNEL;
+ 
+ 	dev_info(dev, "Enabled VxLAN offloads for UDP port %d\n",
+-		 be16_to_cpu(port));
++		 be16_to_cpu(ti->port));
+ 	return 0;
+ }
+ 
+-static void be_disable_vxlan_offloads(struct be_adapter *adapter)
++static int be_vxlan_unset_port(struct net_device *netdev, unsigned int table,
++			       unsigned int entry, struct udp_tunnel_info *ti)
+ {
+-	struct net_device *netdev = adapter->netdev;
++	struct be_adapter *adapter = netdev_priv(netdev);
+ 
+ 	if (adapter->flags & BE_FLAGS_VXLAN_OFFLOADS)
+ 		be_cmd_manage_iface(adapter, adapter->if_handle,
+@@ -4018,8 +4024,19 @@ static void be_disable_vxlan_offloads(struct be_adapter *adapter)
+ 	adapter->vxlan_port = 0;
+ 
+ 	netdev->hw_enc_features = 0;
++	return 0;
+ }
+ 
++static const struct udp_tunnel_nic_info be_udp_tunnels = {
++	.set_port	= be_vxlan_set_port,
++	.unset_port	= be_vxlan_unset_port,
++	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP |
 +			  UDP_TUNNEL_NIC_INFO_OPEN_ONLY,
-+	.tables         = {
-+		{
-+			.n_entries      = NFP_NET_N_VXLAN_PORTS,
-+			.tunnel_types   = UDP_TUNNEL_TYPE_VXLAN,
-+		},
++	.tables		= {
++		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN, },
 +	},
 +};
 +
- /**
-  * nfp_net_info() - Print general info about the NIC
-  * @nn:      NFP Net device to reconfigure
-@@ -4010,6 +3951,7 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
- 	if (nn->cap & NFP_NET_CFG_CTRL_VXLAN) {
- 		if (nn->cap & NFP_NET_CFG_CTRL_LSO)
- 			netdev->hw_features |= NETIF_F_GSO_UDP_TUNNEL;
-+		netdev->udp_tunnel_nic_info = &nfp_udp_tunnels;
- 		nn->dp.ctrl |= NFP_NET_CFG_CTRL_VXLAN;
+ static void be_calculate_vf_res(struct be_adapter *adapter, u16 num_vfs,
+ 				struct be_resources *vft_res)
+ {
+@@ -4135,7 +4152,7 @@ static int be_clear(struct be_adapter *adapter)
+ 					&vft_res);
  	}
- 	if (nn->cap & NFP_NET_CFG_CTRL_NVGRE) {
+ 
+-	be_disable_vxlan_offloads(adapter);
++	be_vxlan_unset_port(adapter->netdev, 0, 0, NULL);
+ 
+ 	be_if_destroy(adapter);
+ 
+@@ -5053,147 +5070,6 @@ static struct be_cmd_work *be_alloc_work(struct be_adapter *adapter,
+ 	return work;
+ }
+ 
+-/* VxLAN offload Notes:
+- *
+- * The stack defines tunnel offload flags (hw_enc_features) for IP and doesn't
+- * distinguish various types of transports (VxLAN, GRE, NVGRE ..). So, offload
+- * is expected to work across all types of IP tunnels once exported. Skyhawk
+- * supports offloads for either VxLAN or NVGRE, exclusively. So we export VxLAN
+- * offloads in hw_enc_features only when a VxLAN port is added. If other (non
+- * VxLAN) tunnels are configured while VxLAN offloads are enabled, offloads for
+- * those other tunnels are unexported on the fly through ndo_features_check().
+- *
+- * Skyhawk supports VxLAN offloads only for one UDP dport. So, if the stack
+- * adds more than one port, disable offloads and re-enable them again when
+- * there's only one port left. We maintain a list of ports for this purpose.
+- */
+-static void be_work_add_vxlan_port(struct work_struct *work)
+-{
+-	struct be_cmd_work *cmd_work =
+-				container_of(work, struct be_cmd_work, work);
+-	struct be_adapter *adapter = cmd_work->adapter;
+-	struct device *dev = &adapter->pdev->dev;
+-	__be16 port = cmd_work->info.vxlan_port;
+-	struct be_vxlan_port *vxlan_port;
+-	int status;
+-
+-	/* Bump up the alias count if it is an existing port */
+-	list_for_each_entry(vxlan_port, &adapter->vxlan_port_list, list) {
+-		if (vxlan_port->port == port) {
+-			vxlan_port->port_aliases++;
+-			goto done;
+-		}
+-	}
+-
+-	/* Add a new port to our list. We don't need a lock here since port
+-	 * add/delete are done only in the context of a single-threaded work
+-	 * queue (be_wq).
+-	 */
+-	vxlan_port = kzalloc(sizeof(*vxlan_port), GFP_KERNEL);
+-	if (!vxlan_port)
+-		goto done;
+-
+-	vxlan_port->port = port;
+-	INIT_LIST_HEAD(&vxlan_port->list);
+-	list_add_tail(&vxlan_port->list, &adapter->vxlan_port_list);
+-	adapter->vxlan_port_count++;
+-
+-	if (adapter->flags & BE_FLAGS_VXLAN_OFFLOADS) {
+-		dev_info(dev,
+-			 "Only one UDP port supported for VxLAN offloads\n");
+-		dev_info(dev, "Disabling VxLAN offloads\n");
+-		goto err;
+-	}
+-
+-	if (adapter->vxlan_port_count > 1)
+-		goto done;
+-
+-	status = be_enable_vxlan_offloads(adapter);
+-	if (!status)
+-		goto done;
+-
+-err:
+-	be_disable_vxlan_offloads(adapter);
+-done:
+-	kfree(cmd_work);
+-	return;
+-}
+-
+-static void be_work_del_vxlan_port(struct work_struct *work)
+-{
+-	struct be_cmd_work *cmd_work =
+-				container_of(work, struct be_cmd_work, work);
+-	struct be_adapter *adapter = cmd_work->adapter;
+-	__be16 port = cmd_work->info.vxlan_port;
+-	struct be_vxlan_port *vxlan_port;
+-
+-	/* Nothing to be done if a port alias is being deleted */
+-	list_for_each_entry(vxlan_port, &adapter->vxlan_port_list, list) {
+-		if (vxlan_port->port == port) {
+-			if (vxlan_port->port_aliases) {
+-				vxlan_port->port_aliases--;
+-				goto done;
+-			}
+-			break;
+-		}
+-	}
+-
+-	/* No port aliases left; delete the port from the list */
+-	list_del(&vxlan_port->list);
+-	adapter->vxlan_port_count--;
+-
+-	/* Disable VxLAN offload if this is the offloaded port */
+-	if (adapter->vxlan_port == vxlan_port->port) {
+-		WARN_ON(adapter->vxlan_port_count);
+-		be_disable_vxlan_offloads(adapter);
+-		dev_info(&adapter->pdev->dev,
+-			 "Disabled VxLAN offloads for UDP port %d\n",
+-			 be16_to_cpu(port));
+-		goto out;
+-	}
+-
+-	/* If only 1 port is left, re-enable VxLAN offload */
+-	if (adapter->vxlan_port_count == 1)
+-		be_enable_vxlan_offloads(adapter);
+-
+-out:
+-	kfree(vxlan_port);
+-done:
+-	kfree(cmd_work);
+-}
+-
+-static void be_cfg_vxlan_port(struct net_device *netdev,
+-			      struct udp_tunnel_info *ti,
+-			      void (*func)(struct work_struct *))
+-{
+-	struct be_adapter *adapter = netdev_priv(netdev);
+-	struct be_cmd_work *cmd_work;
+-
+-	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
+-		return;
+-
+-	if (lancer_chip(adapter) || BEx_chip(adapter) || be_is_mc(adapter))
+-		return;
+-
+-	cmd_work = be_alloc_work(adapter, func);
+-	if (cmd_work) {
+-		cmd_work->info.vxlan_port = ti->port;
+-		queue_work(be_wq, &cmd_work->work);
+-	}
+-}
+-
+-static void be_del_vxlan_port(struct net_device *netdev,
+-			      struct udp_tunnel_info *ti)
+-{
+-	be_cfg_vxlan_port(netdev, ti, be_work_del_vxlan_port);
+-}
+-
+-static void be_add_vxlan_port(struct net_device *netdev,
+-			      struct udp_tunnel_info *ti)
+-{
+-	be_cfg_vxlan_port(netdev, ti, be_work_add_vxlan_port);
+-}
+-
+ static netdev_features_t be_features_check(struct sk_buff *skb,
+ 					   struct net_device *dev,
+ 					   netdev_features_t features)
+@@ -5309,8 +5185,8 @@ static const struct net_device_ops be_netdev_ops = {
+ #endif
+ 	.ndo_bridge_setlink	= be_ndo_bridge_setlink,
+ 	.ndo_bridge_getlink	= be_ndo_bridge_getlink,
+-	.ndo_udp_tunnel_add	= be_add_vxlan_port,
+-	.ndo_udp_tunnel_del	= be_del_vxlan_port,
++	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
++	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
+ 	.ndo_features_check	= be_features_check,
+ 	.ndo_get_phys_port_id   = be_get_phys_port_id,
+ };
+@@ -5342,6 +5218,9 @@ static void be_netdev_init(struct net_device *netdev)
+ 
+ 	netdev->ethtool_ops = &be_ethtool_ops;
+ 
++	if (!lancer_chip(adapter) && !BEx_chip(adapter) && !be_is_mc(adapter))
++		netdev->udp_tunnel_nic_info = &be_udp_tunnels;
++
+ 	/* MTU range: 256 - 9000 */
+ 	netdev->min_mtu = BE_MIN_MTU;
+ 	netdev->max_mtu = BE_MAX_MTU;
+@@ -5819,7 +5698,6 @@ static int be_drv_init(struct be_adapter *adapter)
+ 	/* Must be a power of 2 or else MODULO will BUG_ON */
+ 	adapter->be_get_temp_freq = 64;
+ 
+-	INIT_LIST_HEAD(&adapter->vxlan_port_list);
+ 	return 0;
+ 
+ free_rx_filter:
 -- 
 2.26.2
 
