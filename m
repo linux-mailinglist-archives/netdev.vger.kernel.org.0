@@ -2,102 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1A3F21EA16
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 09:34:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4D8221EA3F
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 09:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbgGNHeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 03:34:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725781AbgGNHeH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 03:34:07 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C67C061755;
-        Tue, 14 Jul 2020 00:34:07 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id t74so10809584lff.2;
-        Tue, 14 Jul 2020 00:34:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vSZCdTeq5IZuIT/5K6A9iU6I7B62mfuU1w1ZeNdxwsA=;
-        b=IaeiwFlo8/BnwFbIg9V+kT/A3MGOXKWrL8aFqD7RmTg7SL/L0Ik13tc0GNKZ+nqBr2
-         n6F22egPYYSTnoei5lFzP64BmWd0JJUHEc7ShDJoqOV3hqZ+5S46F0Q6UWfsyW3oCbWR
-         II4204xpQRJckdYQnNR5iH5fKM8TrMWfCUI9r9unii/uFJIgewAX57yEQnRWe2Nyig1V
-         K3fhA8dFPJoDcAKjTEgfTrlTQTafus7qfE+HvYl8EAzwF2Zd9/T+TFq7NexCd5riqzry
-         aFclxGUkc8bCLkIWlVKylGLHnyGT62Q5XJ/1uH5hsjLSwD0qXzLWrnGYLX3HaTMI7PRJ
-         BmEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=vSZCdTeq5IZuIT/5K6A9iU6I7B62mfuU1w1ZeNdxwsA=;
-        b=Bj3vvvymTk1igm1eEfY5r/uiBTvbAU3e5L6WTZkAT0cJ6tI9LZE3TZ/ikD2WOqZvG8
-         Rk1xvBM8Uv+h+rAJZau6s450J2dO3O8ROrJs5cj7n2y5GLPTOrkl6zQWQrXZkdgcq7eh
-         TGnM7ETTz2uI6onks/WkxAbETqUJ7r/Pp4vS5TR+8VB92F6goueZDnS7g461nrZb1JcV
-         gM4TM6UbPB4bP4+6nfSjIHhRz4rqjQp36/d4RJuMgrGTPeZyY3IBgqTfIFW72/E1RXi+
-         jrDIxZG5bFL1ZL772pY0SMc+xsvlnQ5lNoRu3ztKnGyr3Yzgr+ijOaji0t1LEuP3E+Yv
-         HX2A==
-X-Gm-Message-State: AOAM531GwPFG9sQzmOHxwXUOTSRG/wo/F+cj6vP6y5syVVolIy2ywtbL
-        2Uwtclaq2x2dKZ3y+ELYoXbtQf+mK1U=
-X-Google-Smtp-Source: ABdhPJwKAOzh6OpUd3ef4QZMtDjWIvyqfzukJI4zVQgp0Iw73r7ql8TL8LKN16oTjdOmjeR1GQGBJg==
-X-Received: by 2002:a19:6a02:: with SMTP id u2mr1568163lfu.9.1594712045894;
-        Tue, 14 Jul 2020 00:34:05 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:809:9719:3978:b690:7798:aa4b? ([2a00:1fa0:809:9719:3978:b690:7798:aa4b])
-        by smtp.gmail.com with ESMTPSA id u9sm4468057ljk.44.2020.07.14.00.34.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jul 2020 00:34:05 -0700 (PDT)
-Subject: Re: [PATCH 8/9] dt-bindings: net: renesas,ravb: Add support for
- r8a774e1 SoC
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-gpio@vger.kernel.org, iommu@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>
-References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594676120-5862-9-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Organization: Brain-dead Software
-Message-ID: <db415d4f-e563-81f4-2202-5eea57f91a6d@gmail.com>
-Date:   Tue, 14 Jul 2020 10:34:01 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726766AbgGNHjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 03:39:02 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:50693 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725780AbgGNHjC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 03:39:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1594712341; x=1626248341;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RmNBacgCYC3gH1oQYbu8uXXhpnAXbpfr/5u4Vf38fwA=;
+  b=SBErY5tYVuCSOrLiVekykka18a/e5h1aGjKXLkoZ74ZzbrPYqVMED0J+
+   e1Iz1Cri2cMQxLbVze+okcwON6MSU8FUz0Sx0osysDi6Qq/zwYjE5KUe4
+   jkJhn+kj5c2qL5dSpSOwSawmlkEMnQPhWghkTPMRdPt2UhWOP3ouA+MYw
+   cymK5Q8HZ+MaKnye6Fv8AyH1rC+xE+cTACT0Vruz/ZEytWD4AL6pVAdwf
+   jRwsUx3la29d1IOVK/J+ltXjPSm02r44uFG8gECbDBhPQfJ09WO6UxsEc
+   v0EZnQaLqbR0EzVPOpqU9fqMcuVEzzPlDlEurI+qm/tGISg77NmJ06Nnj
+   g==;
+IronPort-SDR: HP58hKqbjDlFzE95tiB0r0ZXdfNNJKh/ois8JDy4KJFTT2sxTqmQDS2Rat035DHD65ctOEp/sq
+ ZBBJVTMPtdg5+vLcgrHlxzBP+oyMvwf+rIruWEYqIqylvbnNPP/x3MlQOhMRa4eaNxk7+etGaq
+ NHF4Dny1nKipPB7QP/u6/1iWib5eJKYd/BDP5c5RNRVC0d4rwMPAK1FfNfjeiFqWeXzwr0tbfV
+ F4gFA/tdOQPjaEoJDUxIpICaErabvtNSYB/qhJS4qaW21iQb45FQVdGSdzU27W1MZ/4WzRYrFF
+ X9E=
+X-IronPort-AV: E=Sophos;i="5.75,350,1589266800"; 
+   d="scan'208";a="81753242"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jul 2020 00:39:00 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 14 Jul 2020 00:38:28 -0700
+Received: from soft-dev3.localdomain (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Tue, 14 Jul 2020 00:38:58 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <jiri@resnulli.us>,
+        <ivecera@redhat.com>, <andrew@lunn.ch>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v4 00/12] bridge: mrp: Add support for interconnect ring
+Date:   Tue, 14 Jul 2020 09:34:46 +0200
+Message-ID: <20200714073458.1939574-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <1594676120-5862-9-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+This patch series extends existing MRP to add support for interconnect ring.  An
+interconnect ring is a ring that connects 2 rings. In this way is possible to
+connect multiple rings. Each interconnect ring is form of 4 nodes, in which 3
+have the role MIC(Media Redundancy Interconnect Client) and one has the role
+MIM(Media Redundancy Interconnect Manager). All these nodes need to have the
+same ID and the ID needs to be unique between multiple interconnect rings. And 2
+nodes needs to be part of one ring and the other 2 nodes needs to be part of the
+other ring that is connected.
 
-On 14.07.2020 0:35, Lad Prabhakar wrote:
+                 +---------+
+                 |         |
+      +----------|   MRM   |---------------+
+      |          |         |               |
+      |          +---------+               |
+      |                                    |
+      |                                    |
+      |                                    |
++--------------+                  +-----------------+
+|              |                  |                 |
+|  MRC/MIC     |------------------|    MRC/MIM      |
+|              |                  |                 |
++--------------+                  +-----------------+
+      |                                     |
+      |Interconnect port                    |Interconnect port
+      |                                     |
+      |                                     |
++--------------+                  +-----------------+
+|              |                  |                 |
+|  MRC/MIC     |----------------- |   MRC/MIC       |
+|              |                  |                 |
++--------------+                  +-----------------+
+      |                                     |
+      |                                     |
+      |          +---------+                |
+      |          |         |                |
+      +----------|  MRM    |----------------+
+                 |         |
+                 +---------+
 
-> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
-> 
-> Document RZ/G2H (R8A774E1) SoC bindings.
-> 
-> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Each node in a ring needs to have one of the following ring roles, MRM or MRC.
+And it can also have an interconnect role like MIM or MIC if it is part of an
+interconnect ring. In the figure above the MRM doesn't have any interconnect
+role but the MRC from the top ring have the interconnect roles MIC respectively
+MIM. Therefore it is not possible for a node to have only an interconnect role.
 
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+There are 2 ways for interconnect ring to detect when is open or closed:
+1. To use CCM frames on the interconnect port to detect when the interconnect
+   link goes down/up. This mode is called LC-mode.
+2. To send InTest frames on all 3 ports(2 ring ports and 1 interconnect port)
+   and detect when these frames are received back. This mode is called RC-mode.
 
-[...]
+This patch series adds support only for RC-mode. Where MIM sends InTest frames
+on all 3 ports and detects when it receives back the InTest. When it receives
+the InTest it means that the ring is closed so it would set the interconnect
+port in blocking state. If it stops receiving the InTest frames then it would
+set the port in forwarding state and it would send InTopo frames. These InTopo
+frames will be received by MRM nodes and process them. And then the MRM will
+send Topo frames in the rings so each client will clear its FDB.
 
-MBR, Sergei
+v4:
+  - always cancel delay work if the MRP instance is deleted or interconnect role
+    is disabled but allow only to start to send InTest frames only if the role
+    is MIM.
+
+v3:
+  - update 'br_mrp_set_in_role' to stop sending test if the role is disabled
+    and don't allow to set a different interconnect port if there is already
+    one.
+
+v2:
+  - rearrange structures not to contain holes
+  - stop sending MRP_InTest frames when the MRP instance is deleted
+
+Horatiu Vultur (12):
+  switchdev: mrp: Extend switchdev API for MRP Interconnect
+  bridge: uapi: mrp: Extend MRP attributes for MRP interconnect
+  bridge: mrp: Extend bridge interface
+  bridge: mrp: Extend br_mrp for MRP interconnect
+  bridge: mrp: Rename br_mrp_port_open to br_mrp_ring_port_open
+  bridge: mrp: Add br_mrp_in_port_open function
+  bridge: switchdev: mrp: Extend MRP API for switchdev for MRP
+    Interconnect
+  bridge: mrp: Implement the MRP Interconnect API
+  bridge: mrp: Extend MRP netlink interface for configuring MRP
+    interconnect
+  bridge: uapi: mrp: Extend MRP_INFO attributes for interconnect status
+  bridge: mrp: Extend br_mrp_fill_info
+  net: bridge: Add port attribute IFLA_BRPORT_MRP_IN_OPEN
+
+ include/linux/if_bridge.h          |   1 +
+ include/net/switchdev.h            |  38 ++
+ include/uapi/linux/if_bridge.h     |  58 +++
+ include/uapi/linux/if_link.h       |   1 +
+ include/uapi/linux/mrp_bridge.h    |  38 ++
+ net/bridge/br_mrp.c                | 576 +++++++++++++++++++++++++++--
+ net/bridge/br_mrp_netlink.c        | 182 ++++++++-
+ net/bridge/br_mrp_switchdev.c      |  62 ++++
+ net/bridge/br_netlink.c            |   3 +
+ net/bridge/br_private_mrp.h        |  27 +-
+ tools/include/uapi/linux/if_link.h |   1 +
+ 11 files changed, 951 insertions(+), 36 deletions(-)
+
+-- 
+2.27.0
+
