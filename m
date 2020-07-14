@@ -2,82 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E82B21E5B5
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 04:33:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ED8421E5F5
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 04:51:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726545AbgGNCdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 22:33:45 -0400
-Received: from smtp23.cstnet.cn ([159.226.251.23]:42736 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726150AbgGNCdp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 22:33:45 -0400
-Received: from localhost (unknown [159.226.5.99])
-        by APP-03 (Coremail) with SMTP id rQCowAC3vwMJFw1fLmaPAA--.28728S2;
-        Tue, 14 Jul 2020 10:23:06 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     davem@davemloft.net, kuba@kernel.org, michal.simek@xilinx.com,
-        esben@geanix.com, hkallweit1@gmail.com, f.fainelli@gmail.com,
-        vulab@iscas.ac.cn, weiyongjun1@huawei.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] net: xilinx: fix potential NULL dereference in temac_probe()
-Date:   Tue, 14 Jul 2020 02:23:04 +0000
-Message-Id: <20200714022304.4003-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: rQCowAC3vwMJFw1fLmaPAA--.28728S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7GFy7Jr4kAr48AFW7Wr47XFb_yoWkZFgEq3
-        Wj9r4fGrs5ur1FkF48Kr13AayY9Fs29r97Ww47KFWavaykWw1293yUuw4fXFy7Ww1xCFyD
-        JrnrJr4fua4UZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUba8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F
-        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUtVWrXwAv7VC2z280aVAFwI0_Gr1j6F4UJwAm72CE4IkC6x0Yz7
-        v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF
-        7I0E8cxan2IY04v7MxkIecxEwVAFwVW8JwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7x
-        kEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E
-        67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCw
-        CI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E
-        3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcS
-        sGvfC2KfnxnUUI43ZEXa7VUbZ2-5UUUUU==
-X-Originating-IP: [159.226.5.99]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCAsQA18J9fBAqAABsq
+        id S1726782AbgGNCvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 22:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726517AbgGNCvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 22:51:54 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB318C061755
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 19:51:53 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id l17so4262582iok.7
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 19:51:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5ivlusaOq+vggyV8ml7oGcORvDP7HsCxY9Ud2jb0x9U=;
+        b=URANGxWJ/Z+XW4qTLbTD+VzJDev2Xbe62kL5pVBQeAlmM+9vfUn9TojhwTfVF2ZCZ3
+         lIYsV4YvwYr110qNbO66Ekh2OJURRdTkZhzSpQK8gSRn2EEKKwxGO/9lJFwsgPmlL6LR
+         BZH6GuTtLmZOiW7EDp+crfmGmpSmcQvpFUB0EmbsaBAkixqna3bU5vMcA9moNgck3PkJ
+         t4euBBSvn4iPl9CqY8ElBZMHq2l0xtmwfQRIj3ClH1LqkeWl5ArD8AxshJOoqlALMuDA
+         OPIwnUN2vM9Vu5d7KSoG4r4J3os3Y0o/t9SHtylzvyh/H4qW7HKLDY4CJhGMV83HSt/N
+         fuuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5ivlusaOq+vggyV8ml7oGcORvDP7HsCxY9Ud2jb0x9U=;
+        b=TDgmjg/dijhHKY4bZeXqsmnv6vXMYtibt4DEaBEajpJ/SQsBtZ40CggBreICamqrXG
+         HAd6ugvGkztu8A5KXRb/ke7el0LuEA8vyrtIFGMrw261Ev3YrdKDrJy/Jzs8w4Wy+Dxs
+         nXn7C/2rVWmzugSNWQkK440X9s3rV0Qtj+I8y6ai+Y87IkUxqeq21LnNUTy4gWXAa00h
+         5iHBE2HygOZdxrAewcDdvHtGrF5cHn7U1FBQWSWBUwsT0sm0IokGQuFwJqKl0Bv4LWTA
+         /UCLytPmdT8jfbRSnEzgaO0blFUwJ3FHTk9l8BkiquiXFk0Ne/VCjGuhjW9PHF1lgCDf
+         B0dg==
+X-Gm-Message-State: AOAM530czI9sxD2TwAj2FmKOVNIxqgOZWas3jKGJIX+oRwho/hmzPouW
+        JfUhWMJlEij0IxGlbKjru8dXBiDXdvmZXr1YfPg=
+X-Google-Smtp-Source: ABdhPJwfkYS6NodQB4TyquPKLnNQbXsoaXZELmCF1xq96SKeMgauxlYDGaIaYHuB8fT1no5838oA1GsmIUnpqDeWmDU=
+X-Received: by 2002:a05:6602:1581:: with SMTP id e1mr2979187iow.44.1594695112602;
+ Mon, 13 Jul 2020 19:51:52 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1593209494.git.petrm@mellanox.com> <79417f27b7c57da5c0eb54bb6d074d3a472d9ebf.1593209494.git.petrm@mellanox.com>
+ <CAM_iQpXvwPGz=kKBFKQAkoJ0hwijC9M03SV9arC++gYBAU5VKw@mail.gmail.com>
+ <87a70bic3n.fsf@mellanox.com> <CAM_iQpWjod0oLew-jSN+KUXkoPYkJYWyePHsvLyW4f2JbYQFRw@mail.gmail.com>
+ <873662i3rc.fsf@mellanox.com> <CAM_iQpVs_OEBw54qMhn7Tx6_YAGh5PMSApj=RrO0j6ThSXpkcg@mail.gmail.com>
+ <87wo3dhg63.fsf@mellanox.com> <87v9ixh7es.fsf@mellanox.com>
+ <CAM_iQpU-fh9Saaxo+6juONn+Xd891sUhgaaoht0Bkn2ssAEm8A@mail.gmail.com> <875zavh1re.fsf@mellanox.com>
+In-Reply-To: <875zavh1re.fsf@mellanox.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 13 Jul 2020 19:51:41 -0700
+Message-ID: <CAM_iQpUi-aKBLF5MkkSkCBchHeK5a_8OEDw3eXHZ4yPo=_hvsQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 2/5] net: sched: Introduce helpers for qevent blocks
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-platform_get_resource() may return NULL, add proper
-check to avoid potential NULL dereferencing.
+On Fri, Jul 10, 2020 at 7:40 AM Petr Machata <petrm@mellanox.com> wrote:
+>
+>
+> Cong Wang <xiyou.wangcong@gmail.com> writes:
+>
+> > On Wed, Jul 8, 2020 at 5:13 PM Petr Machata <petrm@mellanox.com> wrote:
+> >>
+> >>
+> >> Petr Machata <petrm@mellanox.com> writes:
+> >>
+> >> > Cong Wang <xiyou.wangcong@gmail.com> writes:
+> >> >
+> >> > I'll think about it some more. For now I will at least fix the lack of
+> >> > locking.
+> >>
+> >> I guess I could store smp_processor_id() that acquired the lock in
+> >> struct qdisc_skb_head. Do a trylock instead of lock, and on fail check
+> >> the stored value. I'll need to be careful about the race between
+> >> unsuccessful trylock and the test, and about making sure CPU ID doesn't
+> >> change after it is read. I'll probe this tomorrow.
+> >
+> > Like __netif_tx_lock(), right? Seems doable.
+>
+> Good to see it actually used, I wasn't sure if the idea made sense :)
+>
+> Unfortunately it is not enough.
+>
+> Consider two threads (A, B) and two netdevices (eth0, eth1):
+>
+> - "A" takes eth0's root lock and proceeds to classification
+> - "B" takes eth1's root lock and proceeds to classification
+> - "A" invokes mirror to eth1, waits on lock held by "B"
+> - "B" invakes mirror to eth0, waits on lock held by "A"
+> - Some say they are still waiting to this day.
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
----
- drivers/net/ethernet/xilinx/ll_temac_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Sure, AA or ABBA deadlock.
 
-diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index 929244064abd..85a767fa2ecf 100644
---- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-+++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -1408,6 +1408,8 @@ static int temac_probe(struct platform_device *pdev)
- 
- 	/* map device registers */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -EINVAL;
- 	lp->regs = devm_ioremap(&pdev->dev, res->start,
- 					resource_size(res));
- 	if (!lp->regs) {
-@@ -1503,6 +1505,8 @@ static int temac_probe(struct platform_device *pdev)
- 	} else if (pdata) {
- 		/* 2nd memory resource specifies DMA registers */
- 		res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-+		if (!res)
-+			return -EINVAL;
- 		lp->sdma_regs = devm_ioremap(&pdev->dev, res->start,
- 						     resource_size(res));
- 		if (!lp->sdma_regs) {
--- 
-2.17.1
+>
+> So one option that I see is to just stash the mirrored packet in a queue
+> instead of delivering it right away:
+>
+> - s/netif_receive_skb/netif_rx/ in act_mirred
+>
+> - Reuse the RX queue for TX packets as well, differentiating the two by
+>   a bit in SKB CB. Then process_backlog() would call either
+>   __netif_receive_skb() or dev_queue_transmit().
+>
+> - Drop mirred_rec_level guard.
 
+I don't think I follow you, the root qdisc lock is on egress which has
+nothing to do with ingress, so I don't see how netif_rx() is even involved.
+
+>
+> This seems to work, but I might be missing something non-obvious, such
+> as CB actually being used for something already in that context. I would
+> really rather not introduce a second backlog queue just for mirred
+> though.
+>
+> Since mirred_rec_level does not kick in anymore, the same packet can end
+> up being forwarded from the backlog queue, to the qdisc, and back to the
+> backlog queue, forever. But that seems OK, that's what the admin
+> configured, so that's what's happening.
+>
+> If this is not a good idea for some reason, this might work as well:
+>
+> - Convert the current root lock to an rw lock. Convert all current
+>   lockers to write lock (which should be safe), except of enqueue, which
+>   will take read lock. That will allow many concurrent threads to enter
+>   enqueue, or one thread several times, but it will exclude all other
+>   users.
+
+Are you sure we can parallelize enqueue()? They all need to move
+skb into some queue, which is not able to parallelize with just a read
+lock. Even the "lockless" qdisc takes a spinlock, r->producer_lock,
+for enqueue().
+
+
+>
+>   So this guards configuration access to the qdisc tree, makes sure
+>   qdiscs don't go away from under one's feet.
+>
+> - Introduce another spin lock to guard the private data of the qdisc
+>   tree, counters etc., things that even two concurrent enqueue
+>   operations shouldn't trample on. Enqueue takes this spin lock after
+>   read-locking the root lock. act_mirred drops it before injecting the
+>   packet and takes it again afterwards.
+>
+> Any opinions y'all?
+
+I thought about forbidding mirror/redirecting to the same device,
+but there might be some legitimate use cases of such. So, I don't
+have any other ideas yet, perhaps there is some way to refactor
+dev_queue_xmit() to avoid this deadlock.
+
+Thanks.
