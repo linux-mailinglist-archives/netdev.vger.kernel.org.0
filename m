@@ -2,157 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CF862200D0
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 00:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E47472200E3
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 01:11:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726829AbgGNW6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 18:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49174 "EHLO
+        id S1727034AbgGNXLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 19:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726767AbgGNW6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 18:58:10 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF05C061755;
-        Tue, 14 Jul 2020 15:58:10 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id k5so7675155plk.13;
-        Tue, 14 Jul 2020 15:58:10 -0700 (PDT)
+        with ESMTP id S1726446AbgGNXLi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 19:11:38 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6C7C061755;
+        Tue, 14 Jul 2020 16:11:38 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id 207so5162pfu.3;
+        Tue, 14 Jul 2020 16:11:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=I1LTB4/JS87xoaS8Y+5jv1nPacVU0zDKVQnIOq9GqHU=;
-        b=PtR/9aDSHRqisXvpz9THPGbPPC/BfqwG9sAMCJsi/2n++OEsTVhngabB/cd0mryk31
-         7u71yD3akWQCo3AlmoIQ39eUvMQifVLo96qkut6h4f9MhcRyXVJl1YR1kT/UdKFXHHIs
-         +m4wv2rKat2GnFL3+xfKEUFmVK47j9n1A7ca/sL7fflk9O0VErkOxiEiydXNJH8yzsyr
-         sZY5PJjqKv2j3q2T/h479etk6ycQlwfExXKs3S/0pDrrqgJ9ZIWhCnKiq1bt/MbSlILH
-         Ywn5aQqSjqXPT2FGKZ0jmtAMGZN0OEA/uVXeoe9v3NY2WMSSKG3MyRgiikfNwfXcdtIs
-         Z7tQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=SllDjYCLmSxru1bZOSqBdTXqDffkSwFw792rO8lFa7U=;
+        b=frddsaq1hig30VQdUYXKi9E7qgT+lEklhJOuEVU4cNd+zr/FZ/qJsCtxJmjZ3TUDuE
+         Y4KlconxX1R+1sZBvSaH1Dh6lxYmuayz57ISCG/sKlkew04y43hYdP5ORDidVBVoELSk
+         wh7Nxfb7PxmCHZJCl7hi/1Tzpvpqa6YElJ2h+qtxVg81jnUwvU5bP5Gg6m076Fzftn/W
+         lssPrpDlMohAbG7/hJKo+d3GrXGpDq1KOybxNQbPjnw8uIVnsphjLn+L2xYqtl/7O9hT
+         sb93U/Dq+O41EFbPSnDaQzQYojIMqqvQ/y5087/5kDCmoXsIXPqqj3UROjKOxV2N1GmY
+         BWKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=I1LTB4/JS87xoaS8Y+5jv1nPacVU0zDKVQnIOq9GqHU=;
-        b=eUzZrXf0nUySm18fqRwCv4APPiVmf18eQGlc9WoF3B6k5h4pCPJz3AtW70VhaDKkF6
-         ti6Tw+fsbnNHmxH88+SsnUHOJ8a3+qO/U0TYqeL9dnKhlh+jOupHGd9rctW+HfffRRtm
-         9O+5YzPX3EkTMp7F4JEi0v3TBYw7TZxyxgRDGfp2R4zoUyFvDFemDwS45aHUbNxuV8Jv
-         zBmQt2+PYANXurIU854zclw7dH7CPD0qc1ChxhIa+NfPNPpfQeD1650KlkEiAGRuYqiB
-         zNzn2lBv2+2S1aJWcrgNeJCY8Qm7I1kkZjLX9+2tNjVv5IF/Gq0JFd8JlbpOwLyaFyv2
-         /PWw==
-X-Gm-Message-State: AOAM531yAJAymCb0K+NFSolZ9QJfTerKuW326zy8htHVnO3F8hSFEOKG
-        XcZJTdjjb3cruinr3hVpuLM=
-X-Google-Smtp-Source: ABdhPJw8KrJYQWlSPhRmaRkpSqu2hgI3oVw9bKxrqOzPKFXKXiU9WQ0D7zHv6HsDceX0FXrAEaxqvw==
-X-Received: by 2002:a17:90a:3d0e:: with SMTP id h14mr6525655pjc.184.1594767489640;
-        Tue, 14 Jul 2020 15:58:09 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id k189sm181488pfd.175.2020.07.14.15.58.08
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 Jul 2020 15:58:08 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=SllDjYCLmSxru1bZOSqBdTXqDffkSwFw792rO8lFa7U=;
+        b=BI4Thfy2pNpxiabdP/yYrwKl+R0D4To6VKiBYfB/YJY8ddt+rJ9YeCZoWenyB5udhl
+         SPtin3TaxKBW9zmJUf2Q9h3t27HD2RS4SyiMVwOhs4SqXnqHvqeaTF16RqNHPJ7FCmHy
+         CGlSnJDBhvjO0bIs40FidoSaPrPNotMuji8A1gbXA8YoPaM87n3zvN8PmASDw6UYW0oq
+         Q17dBZ6s8ixNePkprLVkLb8jRDzHZARvKntDfuzoOSCz3RtzsQf1MSVRe0hHznGNqgir
+         1dVDZzFAfp3gkFNMcIjZjmL0qtflI7l4qiuIYofErvm3ausFg8HSnyvQSEN5S22enKCg
+         48lg==
+X-Gm-Message-State: AOAM530Y2c2mw8yRhROhoUanI9fyQBRMR7QpQI1K8R/dQxX/JYa+YzQb
+        Q4ievcleic0LI0yzEi8M2A4=
+X-Google-Smtp-Source: ABdhPJyYtjaUYtUYgzywAr3VtAPeWosHYW2YcCoFtgQUcx6MGlqpQa+aghY4/Kqzpt6cjgrupi2pcg==
+X-Received: by 2002:a63:b18:: with SMTP id 24mr5484616pgl.406.1594768298072;
+        Tue, 14 Jul 2020 16:11:38 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:96f0])
+        by smtp.gmail.com with ESMTPSA id n11sm172491pgm.1.2020.07.14.16.11.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2020 16:11:37 -0700 (PDT)
+Date:   Tue, 14 Jul 2020 16:11:33 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: pull-request: bpf-next 2020-07-14
-Date:   Tue, 14 Jul 2020 15:58:07 -0700
-Message-Id: <20200714225807.56649-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: BPF logging infrastructure. Was: [PATCH bpf-next 4/6] tools: add
+ new members to bpf_attr.raw_tracepoint in bpf.h
+Message-ID: <20200714231133.ap5qnalf6moptvfk@ast-mbp.dhcp.thefacebook.com>
+References: <159467113970.370286.17656404860101110795.stgit@toke.dk>
+ <159467114405.370286.1690821122507970067.stgit@toke.dk>
+ <CAEf4BzZ_-vXP_3hSEjuceW10VX_H+EeuXMiV=_meBPZn7izK8A@mail.gmail.com>
+ <87r1tegusj.fsf@toke.dk>
+ <CAEf4Bzbu1wnwWFOWYA3e6KFeSmfg8oANPWD9LsUMRy2E_zrQ0w@mail.gmail.com>
+ <87pn8xg6x7.fsf@toke.dk>
+ <CAEf4BzYAoetyfyofTX45RQjtz3M-c9=YNeH1uRDbYgK4Ae0TwA@mail.gmail.com>
+ <87d04xg2p4.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87d04xg2p4.fsf@toke.dk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Wed, Jul 15, 2020 at 12:19:03AM +0200, Toke Høiland-Jørgensen wrote:
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> 
+> >> However, assuming it *is* possible, my larger point was that we
+> >> shouldn't add just a 'logging struct', but rather a 'common options
+> >> struct' which can be extended further as needed. And if it is *not*
+> >> possible to add new arguments to a syscall like you're proposing, my
+> >> suggestion above would be a different way to achieve basically the same
+> >> (at the cost of having to specify the maximum reserved space in advance).
+> >>
+> >
+> > yeah-yeah, I agree, it's less a "logging attr", more of "common attr
+> > across all commands".
+> 
+> Right, great. I think we are broadly in agreement with where we want to
+> go with this, actually :)
 
-The following pull-request contains BPF updates for your *net-next* tree.
+I really don't like 'common attr across all commands'.
+Both of you are talking as libbpf developers who occasionally need to
+add printk-s to the kernel. That is not an excuse to bloat api that will be
+useful to two people.
 
-We've added 21 non-merge commits during the last 1 day(s) which contain
-a total of 20 files changed, 308 insertions(+), 279 deletions(-).
+The only reason log_buf sort-of make sense in raw_tp_open is because
+btf comparison is moved from prog_load into raw_tp_open.
+Miscompare of (prog_fd1, btf_id1) vs (prog_fd2, btf_id2) can be easily solved
+by libbpf with as nice and as human friendly message libbpf can do.
 
-The main changes are:
-
-1) Fix selftests/bpf build, from Alexei.
-
-2) Fix resolve_btfids build issues, from Jiri.
-
-3) Pull usermode-driver-cleanup set, from Eric.
-
-4) Two minor fixes to bpfilter, from Alexei and Masahiro.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Alexei Starovoitov, Christian Brauner, Geert Uytterhoeven, Greg 
-Kroah-Hartman, kernel test robot, Michal Kubecek, Stephen Rothwell, 
-Tetsuo Handa
-
-----------------------------------------------------------------
-
-The following changes since commit 07dd1b7e68e4b83a1004b14dffd7e142c0bc79bd:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next (2020-07-13 18:04:05 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
-
-for you to fetch changes up to 9326e0f85bfaf0578d40f5357f8143ec857469f5:
-
-  bpfilter: Allow to build bpfilter_umh as a module without static library (2020-07-14 12:37:06 -0700)
-
-----------------------------------------------------------------
-Alexei Starovoitov (3):
-      selftests/bpf: Fix merge conflict resolution
-      Merge branch 'usermode-driver-cleanup' of git://git.kernel.org/.../ebiederm/user-namespace into bpf-next
-      bpfilter: Initialize pos variable
-
-Eric W. Biederman (17):
-      umh: Capture the pid in umh_pipe_setup
-      umh: Move setting PF_UMH into umh_pipe_setup
-      umh: Rename the user mode driver helpers for clarity
-      umh: Remove call_usermodehelper_setup_file.
-      umh: Separate the user mode driver and the user mode helper support
-      umd: For clarity rename umh_info umd_info
-      umd: Rename umd_info.cmdline umd_info.driver_name
-      umd: Transform fork_usermode_blob into fork_usermode_driver
-      umh: Stop calling do_execve_file
-      exec: Remove do_execve_file
-      bpfilter: Move bpfilter_umh back into init data
-      umd: Track user space drivers with struct pid
-      exit: Factor thread_group_exited out of pidfd_poll
-      bpfilter: Take advantage of the facilities of struct pid
-      umd: Remove exit_umh
-      umd: Stop using split_argv
-      Make the user mode driver code a better citizen
-
-Jiri Olsa (2):
-      bpf: Fix build for disabled CONFIG_DEBUG_INFO_BTF option
-      bpf: Fix cross build for CONFIG_DEBUG_INFO_BTF option
-
-Masahiro Yamada (1):
-      bpfilter: Allow to build bpfilter_umh as a module without static library
-
- fs/exec.c                                          |  38 +----
- include/linux/binfmts.h                            |   1 -
- include/linux/bpfilter.h                           |   7 +-
- include/linux/btf_ids.h                            |  11 +-
- include/linux/sched.h                              |   9 -
- include/linux/sched/signal.h                       |   2 +
- include/linux/umh.h                                |  15 --
- include/linux/usermode_driver.h                    |  18 ++
- kernel/Makefile                                    |   1 +
- kernel/exit.c                                      |  25 ++-
- kernel/fork.c                                      |   6 +-
- kernel/umh.c                                       | 171 +------------------
- kernel/usermode_driver.c                           | 182 +++++++++++++++++++++
- net/bpfilter/Kconfig                               |  10 +-
- net/bpfilter/Makefile                              |   2 +
- net/bpfilter/bpfilter_kern.c                       |  39 ++---
- net/bpfilter/bpfilter_umh_blob.S                   |   2 +-
- net/ipv4/bpfilter/sockopt.c                        |  20 ++-
- tools/bpf/resolve_btfids/Makefile                  |  14 ++
- .../testing/selftests/bpf/progs/bpf_iter_netlink.c |  14 --
- 20 files changed, 308 insertions(+), 279 deletions(-)
- create mode 100644 include/linux/usermode_driver.h
- create mode 100644 kernel/usermode_driver.c
+I'm not convinced yet that it's a kernel job to print it nicely. It certainly can,
+but it's quite a bit different from two existing bpf commands where log_buf is used:
+PROG_LOAD and BTF_LOAD. In these two cases the kernel verifies the program
+and the BTF. raw_tp_open is different, since the kernel needs to compare
+that function signatures (prog_fd1, btf_id1) and (prog_fd2, btf_id2) are
+exactly the same. The kernel can indicate that with single specific errno and
+libbpf can print human friendly function signatures via btf_dump infra for
+humans to see.
+So I really don't see why log_buf is such a necessity for raw_tp_open.
