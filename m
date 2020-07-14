@@ -2,145 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C943E21EF26
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 13:21:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 824F321EF2B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 13:22:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728069AbgGNLUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 07:20:52 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:36541 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727969AbgGNLUu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 07:20:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1594725649; x=1626261649;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version:subject;
-  bh=BqrgoE+puvxQng9cI5qM40hcfRyznkqAUBKrROFub8g=;
-  b=RfwOKrspsMrYz8zMQ+UOmFFA5juF3gVsldzyg29Q5hGgtIsL2Jv8vz3V
-   SvGow9VeJV3C08BMJqW9GK2FXjowYx/KHkH1c7yU/tL3KRT0TvAGn4GPy
-   dJ4HCNfK2VQn3Y6Dk39TY6yVk8GpyyF8WCXR1scfCxCeGDhQIGAJWDVQ8
-   U=;
-IronPort-SDR: Nkec061H2qFSYgB7LLWfkx0Sbx/hNxRyVaBphX7EKcpGa+BJyJO3a8dUJxeoZOZmsBRF7w5lTO
- 9h05RgNnjSAw==
-X-IronPort-AV: E=Sophos;i="5.75,350,1589241600"; 
-   d="scan'208";a="41722551"
-Subject: RE: [PATCH V1 net-next 6/8] net: ena: enable support of rss hash key and
- function changes
-Thread-Topic: [PATCH V1 net-next 6/8] net: ena: enable support of rss hash key and
- function changes
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-98acfc19.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 14 Jul 2020 11:20:48 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-98acfc19.us-east-1.amazon.com (Postfix) with ESMTPS id 15C24A0767;
-        Tue, 14 Jul 2020 11:20:47 +0000 (UTC)
-Received: from EX13D04EUA001.ant.amazon.com (10.43.165.136) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 14 Jul 2020 11:20:46 +0000
-Received: from EX13D22EUA004.ant.amazon.com (10.43.165.129) by
- EX13D04EUA001.ant.amazon.com (10.43.165.136) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 14 Jul 2020 11:20:45 +0000
-Received: from EX13D22EUA004.ant.amazon.com ([10.43.165.129]) by
- EX13D22EUA004.ant.amazon.com ([10.43.165.129]) with mapi id 15.00.1497.006;
- Tue, 14 Jul 2020 11:20:45 +0000
-From:   "Kiyanovski, Arthur" <akiyano@amazon.com>
-To:     "Machulsky, Zorik" <zorik@amazon.com>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Agroskin, Shay" <shayagr@amazon.com>,
-        "Jubran, Samih" <sameehj@amazon.com>
-Thread-Index: AQHWViPyyJqC3qgbbECBf8QdYKAAYKj/sUCAgAGKHACAAAMzgIAAB3oAgAWuarA=
-Date:   Tue, 14 Jul 2020 11:20:27 +0000
-Deferred-Delivery: Tue, 14 Jul 2020 11:20:21 +0000
-Message-ID: <c5274c7769ac48bea39d63063728e695@EX13D22EUA004.ant.amazon.com>
-References: <1594321503-12256-1-git-send-email-akiyano@amazon.com>
- <1594321503-12256-7-git-send-email-akiyano@amazon.com>
- <20200709132311.63720a70@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <53596F13-16F7-4C82-A5BC-5F5DB22C36A4@amazon.com>
- <20200710130513.057a2854@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <C1F3BC8C-AFAD-4AB4-8329-A48F4AD0E60B@amazon.com>
-In-Reply-To: <C1F3BC8C-AFAD-4AB4-8329-A48F4AD0E60B@amazon.com>
+        id S1727901AbgGNLVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 07:21:51 -0400
+Received: from mail-eopbgr80055.outbound.protection.outlook.com ([40.107.8.55]:43265
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726332AbgGNLVu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 07:21:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AYl5NWLP/VgSeFdGO6leCjOBUhOKllFI8zESJodDya312xizmf2N7QN3ln2WLydJelCRxO7keXhhowDCdpXrr6wEA6mCLzNv3s6EHVrgMnf8Wz056WWppms7Nzd1eMMAKi6wccmjMCsf79I3PkIDaZLenARNjJU4D7I724UNbUQrGnqRuL5hQPPrloh9vQEYoZOewsUhZY0Bk6maOOIbtXTVIp8lonSr/OFhR4f2bm84zA3bu1UmmWTz1EcxGt6SEoeN/zrbxG8bP+i3rWT9fHFcEVE5SdSNnn9Sivg0a+B0gNL86sU8zLNXIBNJwN0sNTPhDCGbsKn2EGrmFqL3zg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WU5Wa/2mAYsYvfK3IQXXyyxaPxL6hyhhNvlsp9HXz2s=;
+ b=knmRbrbsRCCWmQdQ8HE4gC/rPb/x8q4a4/CrI+RW9ESW58a1rxUPeNJtbEO+4JYqXhEPy0foQOHsPdw4QAzgpyLjANR8JyfoP7ycQoGURyXU8YzHqvtvObNYiCwFCJ+VwkV7Gq9gy78zfKJ9xrmQiSIG5M6a+/LQqJwITXxZjD1tAlbEo4KCZapeswxRz2/cIra4OlexFsQQHosXjw7W9hJfgHxsmsgi7cMMtZ/oQcyNJCF2bUXueEUJ1vapIU+FuD1II8E3G2q7TSxPu+7l1Vbt2Oae8LPfDfscQHKFassuWHSVo18WKM2iCoGfz8bNgOas4EJl4qiyGJHB+QD9yQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WU5Wa/2mAYsYvfK3IQXXyyxaPxL6hyhhNvlsp9HXz2s=;
+ b=QA1Tzss0aEeoWnD6fRvuXwwYJIC5jt/Gm/o4DD/yFGmkpwSnobKkzvE3ZVNb4H0pi9jWCSciMfN3emPzlrbxuX1ZAwk0GSdC2KC3piJ/XQf2eqDSXaCLtxq7kIFW9Hg7F0ndSDhs2pKpDrIaAB9pO3Opa92CnlEtVffhVEXNJTk=
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
+ by AM0PR0402MB3618.eurprd04.prod.outlook.com (2603:10a6:208:16::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17; Tue, 14 Jul
+ 2020 11:21:46 +0000
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::41d8:c1a9:7e34:9987]) by AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::41d8:c1a9:7e34:9987%3]) with mapi id 15.20.3174.026; Tue, 14 Jul 2020
+ 11:21:46 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next 6/6] enetc: Add adaptive interrupt coalescing
+Thread-Topic: [PATCH net-next 6/6] enetc: Add adaptive interrupt coalescing
+Thread-Index: AQHWWRUEtFwuN/BWrkeUwPH3KcNIEakGGDSAgADPmBA=
+Date:   Tue, 14 Jul 2020 11:21:45 +0000
+Message-ID: <AM0PR04MB675470086CB8131D715D402A96610@AM0PR04MB6754.eurprd04.prod.outlook.com>
+References: <1594644970-13531-1-git-send-email-claudiu.manoil@nxp.com>
+        <1594644970-13531-7-git-send-email-claudiu.manoil@nxp.com>
+ <20200713153017.07caaf73@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200713153017.07caaf73@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.164.8]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.76.66.138]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: cba61f40-1946-4b3b-6c5b-08d827e817f3
+x-ms-traffictypediagnostic: AM0PR0402MB3618:
+x-microsoft-antispam-prvs: <AM0PR0402MB3618CCD1CBCD94D2AA9129F696610@AM0PR0402MB3618.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: jCB8kZqAg2Ehcah5Aki5zDdoXCZUayIjq4SoASSsCoQE3TNlO6peM1TO++5NK9Y6aD73Te1Df6g6Ust1BwG1jv9arZ9LTxHokH9SlzozzqoZ7UDzCWJTagVVGVMoyjM9Yl7zjDx1ajjxtv/zb5N4hWQaX6kq6kpK59/7dRUFdB2Ea8evcwuVRzGQkiA00bgfGRZu3DVAr8bmgbhhvHIPJin1OfAUOq//HtaDE2IkNPZDBv/JZ4FHwgrbAjf71qLgJw+H9/nP+goxbBbBVoxRHZgNprDucIuZmLMxmBwrKqQ4kS0zYYiSmjNk35y0L0E4ig5OEHQKCzgDSHqXDp8Mwg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(346002)(39860400002)(376002)(396003)(136003)(83380400001)(54906003)(316002)(71200400001)(478600001)(55016002)(4326008)(9686003)(6506007)(66556008)(66476007)(76116006)(186003)(6916009)(5660300002)(26005)(7696005)(33656002)(66946007)(52536014)(2906002)(66446008)(64756008)(8676002)(44832011)(8936002)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: ZWl4iqjL6GSmhKdBmoV3KkuJik2x4TTemzaVjmokOK2d4eysnl487N6U4VuA/9Dhy4Iy5zVCAgMya7hdF2ihoHEAu+zCPBq/KVTncHyvrfPWZiURScHDo4VuwTwoCM7IAYvvxQHp2JAfUqQyCHBAWqdZJHe8ee0JG8lsDLBwfiO5ZUhHarVu/clY2Zdk2dAJLI0qtVbEPhkPlUlwNKgCblfgHdz8cinopx4oSh0ea0AlfItbWxvv374glsZ+87+M5e4xLiAwbjM0PpCcfCUiz2iOX6RwezI2ddtEHz94YC0yzZQksM61vdC4kvio46mQgBU9PvEMPZm6ihkVRrib0zRcgt6yXDBevEzuy9ygdl67t2FGdA6H8XQsbvybp3rC7pSJTcwkAzHgJvd/XVAxZQ0wyvjyEJL7dv1oUZVwZI9uSEQHljJnt+hfaKQIoxr/8dKq4jJGBLe8eJLiYm4NZUOJLfIWrOZMpQVnLKr5YaI=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cba61f40-1946-4b3b-6c5b-08d827e817f3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2020 11:21:45.9800
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4mXjgSfEa7i5AarnRioPp/7kxSVZSyGrGpND1iVs3veprbxQKDG4Ndi4hq/S3YPCfXd/p0Hyp1A/d9NEh65Y4A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3618
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWFjaHVsc2t5LCBab3Jp
-ayA8em9yaWtAYW1hem9uLmNvbT4NCj4gU2VudDogRnJpZGF5LCBKdWx5IDEwLCAyMDIwIDExOjMy
-IFBNDQo+IFRvOiBKYWt1YiBLaWNpbnNraSA8a3ViYUBrZXJuZWwub3JnPg0KPiBDYzogS2l5YW5v
-dnNraSwgQXJ0aHVyIDxha2l5YW5vQGFtYXpvbi5jb20+OyBkYXZlbUBkYXZlbWxvZnQubmV0Ow0K
-PiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBXb29kaG91c2UsIERhdmlkIDxkd213QGFtYXpvbi5j
-by51az47DQo+IE1hdHVzaGV2c2t5LCBBbGV4YW5kZXIgPG1hdHVhQGFtYXpvbi5jb20+OyBCc2hh
-cmEsIFNhZWVkDQo+IDxzYWVlZGJAYW1hem9uLmNvbT47IFdpbHNvbiwgTWF0dCA8bXN3QGFtYXpv
-bi5jb20+OyBMaWd1b3JpLCBBbnRob255DQo+IDxhbGlndW9yaUBhbWF6b24uY29tPjsgQnNoYXJh
-LCBOYWZlYSA8bmFmZWFAYW1hem9uLmNvbT47IFR6YWxpaywgR3V5DQo+IDxndHphbGlrQGFtYXpv
-bi5jb20+OyBCZWxnYXphbCwgTmV0YW5lbCA8bmV0YW5lbEBhbWF6b24uY29tPjsgU2FpZGksIEFs
-aQ0KPiA8YWxpc2FpZGlAYW1hem9uLmNvbT47IEhlcnJlbnNjaG1pZHQsIEJlbmphbWluIDxiZW5o
-QGFtYXpvbi5jb20+Ow0KPiBEYWdhbiwgTm9hbSA8bmRhZ2FuQGFtYXpvbi5jb20+OyBBZ3Jvc2tp
-biwgU2hheQ0KPiA8c2hheWFnckBhbWF6b24uY29tPjsgSnVicmFuLCBTYW1paCA8c2FtZWVoakBh
-bWF6b24uY29tPg0KPiBTdWJqZWN0OiBSZTogW0VYVEVSTkFMXSBbUEFUQ0ggVjEgbmV0LW5leHQg
-Ni84XSBuZXQ6IGVuYTogZW5hYmxlIHN1cHBvcnQgb2YgcnNzDQo+IGhhc2gga2V5IGFuZCBmdW5j
-dGlvbiBjaGFuZ2VzDQo+IA0KPiANCj4gDQo+IO+7v09uIDcvMTAvMjAsIDE6MDUgUE0sICJKYWt1
-YiBLaWNpbnNraSIgPGt1YmFAa2VybmVsLm9yZz4gd3JvdGU6DQo+IA0KPiAgICAgT24gRnJpLCAx
-MCBKdWwgMjAyMCAxOTo1Mzo0NiArMDAwMCBNYWNodWxza3ksIFpvcmlrIHdyb3RlOg0KPiAgICAg
-PiBPbiA3LzkvMjAsIDE6MjQgUE0sICJKYWt1YiBLaWNpbnNraSIgPGt1YmFAa2VybmVsLm9yZz4g
-d3JvdGU6DQo+ICAgICA+DQo+ICAgICA+ICAgICBPbiBUaHUsIDkgSnVsIDIwMjAgMjI6MDU6MDEg
-KzAzMDAgYWtpeWFub0BhbWF6b24uY29tIHdyb3RlOg0KPiAgICAgPiAgICAgPiBGcm9tOiBBcnRo
-dXIgS2l5YW5vdnNraSA8YWtpeWFub0BhbWF6b24uY29tPg0KPiAgICAgPiAgICAgPg0KPiAgICAg
-PiAgICAgPiBBZGQgdGhlIHJzc19jb25maWd1cmFibGVfZnVuY3Rpb25fa2V5IGJpdCB0byBkcml2
-ZXJfc3VwcG9ydGVkX2ZlYXR1cmUuDQo+ICAgICA+ICAgICA+DQo+ICAgICA+ICAgICA+IFRoaXMg
-Yml0IHRlbGxzIHRoZSBkZXZpY2UgdGhhdCB0aGUgZHJpdmVyIGluIHF1ZXN0aW9uIHN1cHBvcnRz
-IHRoZQ0KPiAgICAgPiAgICAgPiByZXRyaWV2aW5nIGFuZCB1cGRhdGluZyBvZiBSU1MgZnVuY3Rp
-b24gYW5kIGhhc2gga2V5LCBhbmQgdGhlcmVmb3JlDQo+ICAgICA+ICAgICA+IHRoZSBkZXZpY2Ug
-c2hvdWxkIGFsbG93IFJTUyBmdW5jdGlvbiBhbmQga2V5IG1hbmlwdWxhdGlvbi4NCj4gICAgID4g
-ICAgID4NCj4gICAgID4gICAgID4gU2lnbmVkLW9mZi1ieTogQXJ0aHVyIEtpeWFub3Zza2kgPGFr
-aXlhbm9AYW1hem9uLmNvbT4NCj4gICAgID4NCj4gICAgID4gICAgIElzIHRoaXMgYSBmaXggb2Yg
-dGhlIHByZXZpb3VzIHBhdGNoZXM/IGxvb2tzIHN0cmFuZ2UgdG8ganVzdCBzdGFydA0KPiAgICAg
-PiAgICAgYWR2ZXJ0aXNpbmcgYSBmZWF0dXJlIGJpdCBidXQgbm90IGFkZCBhbnkgY29kZS4uDQo+
-ICAgICA+DQo+ICAgICA+IFRoZSBwcmV2aW91cyByZWxhdGVkIGNvbW1pdHMgd2VyZSBtZXJnZWQg
-YWxyZWFkeToNCj4gICAgID4gMGFmM2M0ZTJlYWI4IG5ldDogZW5hOiBjaGFuZ2VzIHRvIFJTUyBo
-YXNoIGtleSBhbGxvY2F0aW9uDQo+ICAgICA+IGMxYmQxN2U1MWM3MSBuZXQ6IGVuYTogY2hhbmdl
-IGRlZmF1bHQgUlNTIGhhc2ggZnVuY3Rpb24gdG8gVG9lcGxpdHoNCj4gICAgID4gZjY2YzJlYTNi
-MThhIG5ldDogZW5hOiBhbGxvdyBzZXR0aW5nIHRoZSBoYXNoIGZ1bmN0aW9uIHdpdGhvdXQgY2hh
-bmdpbmcNCj4gdGhlIGtleQ0KPiAgICAgPiBlOWExZGUzNzhkZDQgbmV0OiBlbmE6IGZpeCBlcnJv
-ciByZXR1cm5pbmcgaW4gZW5hX2NvbV9nZXRfaGFzaF9mdW5jdGlvbigpDQo+ICAgICA+IDgwZjg0
-NDNmY2RhYSBuZXQ6IGVuYTogYXZvaWQgdW5uZWNlc3NhcnkgYWRtaW4gY29tbWFuZCB3aGVuIFJT
-Uw0KPiBmdW5jdGlvbiBzZXQgZmFpbHMNCj4gICAgID4gNmE0ZjdkYzgyZDFlIG5ldDogZW5hOiBy
-c3M6IGRvIG5vdCBhbGxvY2F0ZSBrZXkgd2hlbiBub3Qgc3VwcG9ydGVkDQo+ICAgICA+IDBkMWMz
-ZGU3YjhjNyBuZXQ6IGVuYTogZml4IGluY29ycmVjdCBkZWZhdWx0IFJTUyBrZXkNCj4gDQo+ICAg
-ICBUaGVzZSBjb21taXRzIGFyZSBpbiBuZXQuDQo+IA0KPiAgICAgPiBUaGlzIGNvbW1pdCB3YXMg
-bm90IGluY2x1ZGVkIGJ5IG1pc3Rha2UsIHNvIHdlIGFyZSBhZGRpbmcgaXQgbm93Lg0KPiANCj4g
-ICAgIFlvdSdyZSBhZGRpbmcgaXQgdG8gbmV0LW5leHQuDQo+IFRoaXMgY29tbWl0IGFjdHVhbGx5
-IGVuYWJsZXMgYSBmZWF0dXJlIGFmdGVyIGl0IHdhcyBmaXhlZCBieSBwcmV2aW91cyBjb21taXRz
-LA0KPiB0aGVyZWZvcmUgd2UgdGhvdWdodCB0aGF0IG5ldC1uZXh0IGNvdWxkIGJlIGEgcmlnaHQg
-cGxhY2UuIEJ1dCBpZiB5b3UgdGhpbmsgaXQNCj4gc2hvdWxkIGdvIHRvIG5ldCwgd2UnbGwgZ28g
-YWhlYWQgYW5kIHJlc3VibWl0IGl0IHRoZXJlLiBUaGFua3MgZm9yIHlvdXINCj4gY29tbWVudHMu
-DQoNCkpha3ViLCANCknigJl2ZSByZW1vdmVkIHRoZSBwYXRjaCBmcm9tIHYyIGJ1dCBpdCBzZWVt
-cyB0byBtZSB0aGVyZSB3YXMgc29tZSBtaXNjb21tdW5pY2F0aW9uIGFuZCBJTU8gdGhlIGNvcnJl
-Y3QgcGxhY2UgZm9yIHRoZSBwYXRjaCBzaG91bGQgYmUgbmV0LW5leHQuIA0KVGhpcyBmZWF0dXJl
-IHdhcyBhY3R1YWxseSB0dXJuZWQgb2ZmIHVudGlsIG5vdywgYW5kIHRoaXMgcGF0Y2ggdHVybnMg
-aXQgb24uIEl0IGlzIG5vdCBhIGJ1ZyBmaXgsIGl0IGlzIGFjdHVhbGx5IGEgZmVhdHVyZS4gRG8g
-eW91IGhhdmUgYW4gb2JqZWN0aW9uIHRvIG1lIHJldHVybmluZyB0aGlzIHBhdGNoICh3aXRoIHRo
-aXMgZXhwbGFuYXRpb24gaW4gdGhlIGNvbW1pdCBtZXNzYWdlKSB0byB0aGlzIHBhdGNoc2V0cyBW
-Mz8NClNvcnJ5IGZvciB0aGUgY29uZnVzaW9uDQpUaGFua3MhDQpBcnRodXINCg0KDQo=
+>-----Original Message-----
+>From: Jakub Kicinski <kuba@kernel.org>
+[...]
+>Subject: Re: [PATCH net-next 6/6] enetc: Add adaptive interrupt coalescing
+>
+>On Mon, 13 Jul 2020 15:56:10 +0300 Claudiu Manoil wrote:
+>> Use the generic dynamic interrupt moderation (dim)
+>> framework to implement adaptive interrupt coalescing
+>> in ENETC.  With the per-packet interrupt scheme, a high
+>> interrupt rate has been noted for moderate traffic flows
+>> leading to high CPU utilization.  The 'dim' scheme
+>> implemented by the current patch addresses this issue
+>> improving CPU utilization while using minimal coalescing
+>> time thresholds in order to preserve a good latency.
+>>
+>> Below are some measurement results for before and after
+>> this patch (and related dependencies) basically, for a
+>> 2 ARM Cortex-A72 @1.3Ghz CPUs system (32 KB L1 data cache),
+>> using netperf @ 1Gbit link (maximum throughput):
+>>
+>> 1) 1 Rx TCP flow, both Rx and Tx processed by the same NAPI
+>> thread on the same CPU:
+>> 	CPU utilization		int rate (ints/sec)
+>> Before:	50%-60% (over 50%)		92k
+>> After:  just under 50%			35k
+>> Comment:  Small CPU utilization improvement for a single flow
+>> 	  Rx TCP flow (i.e. netperf -t TCP_MAERTS) on a single
+>> 	  CPU.
+>>
+>> 2) 1 Rx TCP flow, Rx processing on CPU0, Tx on CPU1:
+>> 	Total CPU utilization	Total int rate (ints/sec)
+>> Before:	60%-70%			85k CPU0 + 42k CPU1
+>> After:  15%			3.5k CPU0 + 3.5k CPU1
+>> Comment:  Huge improvement in total CPU utilization
+>> 	  correlated w/a a huge decrease in interrupt rate.
+>>
+>> 3) 4 Rx TCP flows + 4 Tx TCP flows (+ pings to check the latency):
+>> 	Total CPU utilization	Total int rate (ints/sec)
+>> Before:	~80% (spikes to 90%)		~100k
+>> After:   60% (more steady)		 ~10k
+>> Comment:  Important improvement for this load test, while the
+>> 	  ping test outcome was not impacted.
+>>
+>> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+>
+>Does it really make sense to implement DIM for TX?
+>
+>For TX the only thing we care about is that no queue in the system
+>underflows. So the calculation is simply timeout =3D queue len / speed.
+>The only problem is which queue in the system is the smallest (TX
+>ring, TSQ etc.) but IMHO there's little point in the extra work to
+>calculate the thresholds dynamically. On real life workloads the
+>scheduler overhead the async work structs introduce cause measurable
+>regressions.
+>
+>That's just to share my experience, up to you to decide if you want
+>to keep the TX-side DIM or not :)
+
+Yeah, I'm not happy either with Tx DIM, it seems too much for this device,
+too much overhead.
+But it seemed there's no other option left, because leaving coalescing as
+disabled for Tx is not an option as there are too many Tx interrupts, but
+on the other hand coming up with a single Tx coalescing time threshold to
+cover all the possible cases is not feasible either.  However your suggesti=
+on
+to compute the Tx coalescing values based on link speed, at least that's ho=
+w
+I read it, is worth investigating.  This device is supposed to handle link =
+speeds
+ranging from 10Mbit to 2.5G, so it would be great if TX DIM could be replac=
+ed
+replaced in this case by a set of precomputed values based on link speed.
+I'm going to look into this.  If you have any other suggestion on this pls =
+let me know.
+Thanks.
+Claudiu
