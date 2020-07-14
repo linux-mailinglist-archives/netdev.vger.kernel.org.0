@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA4C821F967
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:29:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3407F21F968
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:29:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729188AbgGNS3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 14:29:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34974 "EHLO mail.kernel.org"
+        id S1729193AbgGNS3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 14:29:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34922 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729168AbgGNS3e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 14:29:34 -0400
+        id S1729177AbgGNS3f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 14:29:35 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C97F6229C6;
-        Tue, 14 Jul 2020 18:29:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BA20A22838;
+        Tue, 14 Jul 2020 18:29:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594751373;
-        bh=5KhzHps90OZiW59uwgfQZrFRCK6z+iTQILci2HcCnGE=;
+        s=default; t=1594751374;
+        bh=TGWoiBGSEmCjN0/5QgJnpG3hpTOlGDa0cg6LV5VFGG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2TtGfdphxXBNEpRVqwezCgv4oDB8xyu18XAqwXdeg9HpNeSZc9mkPqcq/RLVkmWVp
-         gPiJjjRIaHlMutUhObG97NBxqWbmXb0ZHfb1/Oe5UAHcbuLNeNNxFJ0JMnNKmhUgK0
-         8o3eD+K8Ebv5EhxjlUEan3/6LvBxRL1D1StefklM=
+        b=vTFabB9vGJbcRMu39Bt1oi0b0Sg460QBjR0Vu+G5QkwTIGo1PggpGVwScjfDxDmgp
+         WhdQ2AcbKV9rMvh3vtIk91vpzLdM2rUffCTGlM+yT3JRPoVv+I3K2nGKMs/I3aiJ0H
+         XqP6tVdog8yk6Pwf+xtFV62mOQOqrHjn1NUx1GaA=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -35,9 +35,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
         manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 06/12] cxgb4: convert to new udp_tunnel_nic infra
-Date:   Tue, 14 Jul 2020 11:29:02 -0700
-Message-Id: <20200714182908.690108-7-kuba@kernel.org>
+Subject: [PATCH net-next v2 07/12] enic: convert to new udp_tunnel_nic infra
+Date:   Tue, 14 Jul 2020 11:29:03 -0700
+Message-Id: <20200714182908.690108-8-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200714182908.690108-1-kuba@kernel.org>
 References: <20200714182908.690108-1-kuba@kernel.org>
@@ -48,232 +48,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert to new infra, this driver is very simple. The check of
-adapter->rawf_cnt in cxgb_udp_tunnel_unset_port() is kept from
-the old port deletion function but it's dodgy since nothing ever
-updates that member once its set during init. Also .set_port
-callback always adds the raw mac filter..
+Convert to new infra, now the refcounting will be correct,
+and driver gets port replay of other ports when offloaded
+port gets removed.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   2 -
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   | 108 +++++-------------
- 2 files changed, 31 insertions(+), 79 deletions(-)
+ drivers/net/ethernet/cisco/enic/enic_main.c | 105 ++++++++------------
+ 1 file changed, 39 insertions(+), 66 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index ff53c78307c5..c59e9ccc2f18 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -1109,9 +1109,7 @@ struct adapter {
- 
- 	int msg_enable;
- 	__be16 vxlan_port;
--	u8 vxlan_port_cnt;
- 	__be16 geneve_port;
--	u8 geneve_port_cnt;
- 
- 	struct adapter_params params;
- 	struct cxgb4_virt_res vres;
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 0991631f3a91..de078a5bf23e 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -3732,129 +3732,71 @@ static int cxgb_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 	}
+diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethernet/cisco/enic/enic_main.c
+index cd5fe4f6b54c..6bc7e7ba38c3 100644
+--- a/drivers/net/ethernet/cisco/enic/enic_main.c
++++ b/drivers/net/ethernet/cisco/enic/enic_main.c
+@@ -176,50 +176,18 @@ static void enic_unset_affinity_hint(struct enic *enic)
+ 		irq_set_affinity_hint(enic->msix_entry[i].vector, NULL);
  }
  
--static void cxgb_del_udp_tunnel(struct net_device *netdev,
+-static void enic_udp_tunnel_add(struct net_device *netdev,
 -				struct udp_tunnel_info *ti)
-+static int cxgb_udp_tunnel_unset_port(struct net_device *netdev,
-+				      unsigned int table, unsigned int entry,
-+				      struct udp_tunnel_info *ti)
- {
- 	struct port_info *pi = netdev_priv(netdev);
- 	struct adapter *adapter = pi->adapter;
--	unsigned int chip_ver = CHELSIO_CHIP_VERSION(adapter->params.chip);
- 	u8 match_all_mac[] = { 0, 0, 0, 0, 0, 0 };
- 	int ret = 0, i;
- 
--	if (chip_ver < CHELSIO_T6)
--		return;
--
- 	switch (ti->type) {
- 	case UDP_TUNNEL_TYPE_VXLAN:
--		if (!adapter->vxlan_port_cnt ||
--		    adapter->vxlan_port != ti->port)
--			return; /* Invalid VxLAN destination port */
--
--		adapter->vxlan_port_cnt--;
--		if (adapter->vxlan_port_cnt)
--			return;
--
- 		adapter->vxlan_port = 0;
- 		t4_write_reg(adapter, MPS_RX_VXLAN_TYPE_A, 0);
- 		break;
- 	case UDP_TUNNEL_TYPE_GENEVE:
--		if (!adapter->geneve_port_cnt ||
--		    adapter->geneve_port != ti->port)
--			return; /* Invalid GENEVE destination port */
--
--		adapter->geneve_port_cnt--;
--		if (adapter->geneve_port_cnt)
--			return;
--
- 		adapter->geneve_port = 0;
- 		t4_write_reg(adapter, MPS_RX_GENEVE_TYPE_A, 0);
- 		break;
- 	default:
--		return;
-+		return -EINVAL;
- 	}
- 
- 	/* Matchall mac entries can be deleted only after all tunnel ports
- 	 * are brought down or removed.
- 	 */
- 	if (!adapter->rawf_cnt)
--		return;
-+		return 0;
- 	for_each_port(adapter, i) {
- 		pi = adap2pinfo(adapter, i);
- 		ret = t4_free_raw_mac_filt(adapter, pi->viid,
- 					   match_all_mac, match_all_mac,
--					   adapter->rawf_start +
--					    pi->port_id,
-+					   adapter->rawf_start + pi->port_id,
- 					   1, pi->port_id, false);
- 		if (ret < 0) {
- 			netdev_info(netdev, "Failed to free mac filter entry, for port %d\n",
- 				    i);
--			return;
-+			return ret;
- 		}
- 	}
-+
-+	return 0;
- }
- 
--static void cxgb_add_udp_tunnel(struct net_device *netdev,
--				struct udp_tunnel_info *ti)
-+static int cxgb_udp_tunnel_set_port(struct net_device *netdev,
++static int enic_udp_tunnel_set_port(struct net_device *netdev,
 +				    unsigned int table, unsigned int entry,
 +				    struct udp_tunnel_info *ti)
  {
- 	struct port_info *pi = netdev_priv(netdev);
- 	struct adapter *adapter = pi->adapter;
--	unsigned int chip_ver = CHELSIO_CHIP_VERSION(adapter->params.chip);
- 	u8 match_all_mac[] = { 0, 0, 0, 0, 0, 0 };
- 	int i, ret;
+ 	struct enic *enic = netdev_priv(netdev);
+-	__be16 port = ti->port;
+ 	int err;
  
--	if (chip_ver < CHELSIO_T6 || !adapter->rawf_cnt)
--		return;
--
- 	switch (ti->type) {
- 	case UDP_TUNNEL_TYPE_VXLAN:
--		/* Callback for adding vxlan port can be called with the same
--		 * port for both IPv4 and IPv6. We should not disable the
--		 * offloading when the same port for both protocols is added
--		 * and later one of them is removed.
--		 */
--		if (adapter->vxlan_port_cnt &&
--		    adapter->vxlan_port == ti->port) {
--			adapter->vxlan_port_cnt++;
--			return;
--		}
--
--		/* We will support only one VxLAN port */
--		if (adapter->vxlan_port_cnt) {
--			netdev_info(netdev, "UDP port %d already offloaded, not adding port %d\n",
--				    be16_to_cpu(adapter->vxlan_port),
--				    be16_to_cpu(ti->port));
--			return;
--		}
--
- 		adapter->vxlan_port = ti->port;
--		adapter->vxlan_port_cnt = 1;
--
- 		t4_write_reg(adapter, MPS_RX_VXLAN_TYPE_A,
- 			     VXLAN_V(be16_to_cpu(ti->port)) | VXLAN_EN_F);
- 		break;
- 	case UDP_TUNNEL_TYPE_GENEVE:
--		if (adapter->geneve_port_cnt &&
--		    adapter->geneve_port == ti->port) {
--			adapter->geneve_port_cnt++;
--			return;
--		}
--
--		/* We will support only one GENEVE port */
--		if (adapter->geneve_port_cnt) {
--			netdev_info(netdev, "UDP port %d already offloaded, not adding port %d\n",
--				    be16_to_cpu(adapter->geneve_port),
--				    be16_to_cpu(ti->port));
--			return;
--		}
--
- 		adapter->geneve_port = ti->port;
--		adapter->geneve_port_cnt = 1;
--
- 		t4_write_reg(adapter, MPS_RX_GENEVE_TYPE_A,
- 			     GENEVE_V(be16_to_cpu(ti->port)) | GENEVE_EN_F);
- 		break;
- 	default:
--		return;
-+		return -EINVAL;
- 	}
+ 	spin_lock_bh(&enic->devcmd_lock);
  
- 	/* Create a 'match all' mac filter entry for inner mac,
-@@ -3869,18 +3811,27 @@ static void cxgb_add_udp_tunnel(struct net_device *netdev,
- 		ret = t4_alloc_raw_mac_filt(adapter, pi->viid,
- 					    match_all_mac,
- 					    match_all_mac,
--					    adapter->rawf_start +
--					    pi->port_id,
-+					    adapter->rawf_start + pi->port_id,
- 					    1, pi->port_id, false);
- 		if (ret < 0) {
- 			netdev_info(netdev, "Failed to allocate a mac filter entry, not adding port %d\n",
- 				    be16_to_cpu(ti->port));
--			cxgb_del_udp_tunnel(netdev, ti);
--			return;
-+			return ret;
- 		}
- 	}
+-	if (ti->type != UDP_TUNNEL_TYPE_VXLAN) {
+-		netdev_info(netdev, "udp_tnl: only vxlan tunnel offload supported");
+-		goto error;
+-	}
+-
+-	switch (ti->sa_family) {
+-	case AF_INET6:
+-		if (!(enic->vxlan.flags & ENIC_VXLAN_OUTER_IPV6)) {
+-			netdev_info(netdev, "vxlan: only IPv4 offload supported");
+-			goto error;
+-		}
+-		/* Fall through */
+-	case AF_INET:
+-		break;
+-	default:
+-		goto error;
+-	}
+-
+-	if (enic->vxlan.vxlan_udp_port_number) {
+-		if (ntohs(port) == enic->vxlan.vxlan_udp_port_number)
+-			netdev_warn(netdev, "vxlan: udp port already offloaded");
+-		else
+-			netdev_info(netdev, "vxlan: offload supported for only one UDP port");
+-
+-		goto error;
+-	}
+-	if ((vnic_dev_get_res_count(enic->vdev, RES_TYPE_WQ) != 1) &&
+-	    !(enic->vxlan.flags & ENIC_VXLAN_MULTI_WQ)) {
+-		netdev_info(netdev, "vxlan: vxlan offload with multi wq not supported on this adapter");
+-		goto error;
+-	}
+-
+ 	err = vnic_dev_overlay_offload_cfg(enic->vdev,
+ 					   OVERLAY_CFG_VXLAN_PORT_UPDATE,
+-					   ntohs(port));
++					   ntohs(ti->port));
+ 	if (err)
+ 		goto error;
+ 
+@@ -228,52 +196,50 @@ static void enic_udp_tunnel_add(struct net_device *netdev,
+ 	if (err)
+ 		goto error;
+ 
+-	enic->vxlan.vxlan_udp_port_number = ntohs(port);
+-
+-	netdev_info(netdev, "vxlan fw-vers-%d: offload enabled for udp port: %d, sa_family: %d ",
+-		    (int)enic->vxlan.patch_level, ntohs(port), ti->sa_family);
+-
+-	goto unlock;
+-
++	enic->vxlan.vxlan_udp_port_number = ntohs(ti->port);
+ error:
+-	netdev_info(netdev, "failed to offload udp port: %d, sa_family: %d, type: %d",
+-		    ntohs(port), ti->sa_family, ti->type);
+-unlock:
+ 	spin_unlock_bh(&enic->devcmd_lock);
 +
-+	return 0;
++	return err;
  }
  
-+static const struct udp_tunnel_nic_info cxgb_udp_tunnels = {
-+	.set_port	= cxgb_udp_tunnel_set_port,
-+	.unset_port	= cxgb_udp_tunnel_unset_port,
+-static void enic_udp_tunnel_del(struct net_device *netdev,
+-				struct udp_tunnel_info *ti)
++static int enic_udp_tunnel_unset_port(struct net_device *netdev,
++				      unsigned int table, unsigned int entry,
++				      struct udp_tunnel_info *ti)
+ {
+ 	struct enic *enic = netdev_priv(netdev);
+ 	int err;
+ 
+ 	spin_lock_bh(&enic->devcmd_lock);
+ 
+-	if ((ntohs(ti->port) != enic->vxlan.vxlan_udp_port_number) ||
+-	    ti->type != UDP_TUNNEL_TYPE_VXLAN) {
+-		netdev_info(netdev, "udp_tnl: port:%d, sa_family: %d, type: %d not offloaded",
+-			    ntohs(ti->port), ti->sa_family, ti->type);
+-		goto unlock;
+-	}
+-
+ 	err = vnic_dev_overlay_offload_ctrl(enic->vdev, OVERLAY_FEATURE_VXLAN,
+ 					    OVERLAY_OFFLOAD_DISABLE);
+-	if (err) {
+-		netdev_err(netdev, "vxlan: del offload udp port: %d failed",
+-			   ntohs(ti->port));
++	if (err)
+ 		goto unlock;
+-	}
+ 
+ 	enic->vxlan.vxlan_udp_port_number = 0;
+ 
+-	netdev_info(netdev, "vxlan: del offload udp port %d, family %d\n",
+-		    ntohs(ti->port), ti->sa_family);
+-
+ unlock:
+ 	spin_unlock_bh(&enic->devcmd_lock);
++
++	return err;
+ }
+ 
++static const struct udp_tunnel_nic_info enic_udp_tunnels = {
++	.set_port	= enic_udp_tunnel_set_port,
++	.unset_port	= enic_udp_tunnel_unset_port,
 +	.tables		= {
-+		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
-+		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_GENEVE, },
++		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN, },
++	},
++}, enic_udp_tunnels_v4 = {
++	.set_port	= enic_udp_tunnel_set_port,
++	.unset_port	= enic_udp_tunnel_unset_port,
++	.flags		= UDP_TUNNEL_NIC_INFO_IPV4_ONLY,
++	.tables		= {
++		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN, },
 +	},
 +};
 +
- static netdev_features_t cxgb_features_check(struct sk_buff *skb,
+ static netdev_features_t enic_features_check(struct sk_buff *skb,
  					     struct net_device *dev,
  					     netdev_features_t features)
-@@ -3930,8 +3881,8 @@ static const struct net_device_ops cxgb4_netdev_ops = {
- #endif /* CONFIG_CHELSIO_T4_FCOE */
- 	.ndo_set_tx_maxrate   = cxgb_set_tx_maxrate,
- 	.ndo_setup_tc         = cxgb_setup_tc,
--	.ndo_udp_tunnel_add   = cxgb_add_udp_tunnel,
--	.ndo_udp_tunnel_del   = cxgb_del_udp_tunnel,
-+	.ndo_udp_tunnel_add   = udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del   = udp_tunnel_nic_del_port,
- 	.ndo_features_check   = cxgb_features_check,
- 	.ndo_fix_features     = cxgb_fix_features,
+@@ -2526,8 +2492,8 @@ static const struct net_device_ops enic_netdev_dynamic_ops = {
+ #ifdef CONFIG_RFS_ACCEL
+ 	.ndo_rx_flow_steer	= enic_rx_flow_steer,
+ #endif
+-	.ndo_udp_tunnel_add	= enic_udp_tunnel_add,
+-	.ndo_udp_tunnel_del	= enic_udp_tunnel_del,
++	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
++	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
+ 	.ndo_features_check	= enic_features_check,
  };
-@@ -6761,6 +6712,9 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 			netdev->hw_features |= NETIF_F_GSO_UDP_TUNNEL |
- 					       NETIF_F_GSO_UDP_TUNNEL_CSUM |
- 					       NETIF_F_HW_TLS_RECORD;
-+
-+			if (adapter->rawf_cnt)
-+				netdev->udp_tunnel_nic_info = &cxgb_udp_tunnels;
- 		}
  
- 		if (highdma)
+@@ -2552,8 +2518,8 @@ static const struct net_device_ops enic_netdev_ops = {
+ #ifdef CONFIG_RFS_ACCEL
+ 	.ndo_rx_flow_steer	= enic_rx_flow_steer,
+ #endif
+-	.ndo_udp_tunnel_add	= enic_udp_tunnel_add,
+-	.ndo_udp_tunnel_del	= enic_udp_tunnel_del,
++	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
++	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
+ 	.ndo_features_check	= enic_features_check,
+ };
+ 
+@@ -2963,6 +2929,13 @@ static int enic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		patch_level = fls(patch_level);
+ 		patch_level = patch_level ? patch_level - 1 : 0;
+ 		enic->vxlan.patch_level = patch_level;
++
++		if (vnic_dev_get_res_count(enic->vdev, RES_TYPE_WQ) == 1 ||
++		    enic->vxlan.flags & ENIC_VXLAN_MULTI_WQ) {
++			netdev->udp_tunnel_nic_info = &enic_udp_tunnels_v4;
++			if (enic->vxlan.flags & ENIC_VXLAN_OUTER_IPV6)
++				netdev->udp_tunnel_nic_info = &enic_udp_tunnels;
++		}
+ 	}
+ 
+ 	netdev->features |= netdev->hw_features;
 -- 
 2.26.2
 
