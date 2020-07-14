@@ -2,152 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AD4821EBC9
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 10:50:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E64E221EBFD
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:01:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726820AbgGNIuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 04:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725816AbgGNIuD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 04:50:03 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6781C061755
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 01:50:02 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id rk21so20702564ejb.2
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 01:50:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hs1cEnkiT5RwbJT89pv3rbGp2qzB2Ni2oNnspbz8zEE=;
-        b=QeUPyVNplmUXPSP9osqpQYbLFJHNHStj2haODEwFSNRjvCF+lslWyPOzuqvHXIj5oM
-         quMhax9YOl+pUaYQGdLhw4KG9CFFyFISgf6JvvhYhRJKMFlgrV079liFsTI2WyMLyvD7
-         U4UjPO+1EGQ4AHz6e6/+5RgLhjg5oClAkScTlKOkOTGSRLfPNVfF6S+NtDVdrJq3U9pq
-         uNiHz/6DXEbHTlEFC3blOHiGA036d4Ql79110F+tfQ16+KMMkgn3Ba7hV1qqUv8TrsLZ
-         fU6quwj+FMZ34zqZZDaAQg/Ix9iVcpWRKdazv57EyK/WtD+7L07bMRKIcfOLy4dVKCig
-         TM7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hs1cEnkiT5RwbJT89pv3rbGp2qzB2Ni2oNnspbz8zEE=;
-        b=Lladrzs2OEODKOZxXFbcp7JCT0crZgnGuAO6NL7oanCzFSwEn4F2HSGwo97tD4mL2S
-         CE/BbV/bZ/JjRUrVnbYd6vo5WAXNlELs3o+dx+S78781HL6gJPJl7XZBrRTPwGGoXI8K
-         QvYCLP0IBOCDxUcxLCVzl8+unmYHvLCABfTyzCAvYfnkbvHHOJgRhoUDdfuGZFankYlR
-         cYJ6mlu4tsmdcQzY3KqCJhFr12wNM0j5DQanrhjBWIb4SX5KU5CZ158+3CImEy46FWg7
-         u3MeRQ/UrZfd/d/QU05bBLte4anzjvIABPK0h3FcaDIS1iWxN8Z1R1noJOKY3ipVzVrt
-         ctZQ==
-X-Gm-Message-State: AOAM533iW37Joohq3jG32uQcR5VEziCOiFSXbqSLaVeD5ESjvW3Tnf+o
-        pckEOwYtbeLjYnYNuLImcLQ=
-X-Google-Smtp-Source: ABdhPJwdfw6177JgA9hJEzb5y81F8itLHRzzj5JIpngKNmIao8aaD3B396DYurtpl22iuA5GQs5x5A==
-X-Received: by 2002:a17:906:dbed:: with SMTP id yd13mr3388853ejb.419.1594716601462;
-        Tue, 14 Jul 2020 01:50:01 -0700 (PDT)
-Received: from skbuf ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id y7sm11948067ejd.73.2020.07.14.01.50.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2020 01:50:00 -0700 (PDT)
-Date:   Tue, 14 Jul 2020 11:49:58 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "michael@walle.cc" <michael@walle.cc>, netdev@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH RFC net-next 00/13] Phylink PCS updates
-Message-ID: <20200714084958.to4n52cnk32prn4v@skbuf>
-References: <20200630142754.GC1551@shell.armlinux.org.uk>
+        id S1726431AbgGNJBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 05:01:09 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:58003 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725816AbgGNJBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:01:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594717265;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0ed3Xocn2VEJ7JZTYR0y+4DEJWtAkhtN40Gvl92+Xn0=;
+        b=Y3SEIXKmduX/+XYTfpiDX/LuQkCdO38+Xi/MiXEVNDTueGy98byRf9/c9SUzRwGKlR6hpf
+        K0ntKKDXkS8VflKTe6X8JIGQqeJaMO3QURdlg/qINkynSCYEc/IqeEectnynBAZ4por6RC
+        KCEbZ/yplXE/hhFFa+dBDqVhd9gsvHI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-341-eftPBnxdNtuDoNxCfsMStA-1; Tue, 14 Jul 2020 05:01:01 -0400
+X-MC-Unique: eftPBnxdNtuDoNxCfsMStA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0C77D109D;
+        Tue, 14 Jul 2020 09:00:52 +0000 (UTC)
+Received: from krava (unknown [10.40.193.14])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 227AD5C679;
+        Tue, 14 Jul 2020 09:00:49 +0000 (UTC)
+Date:   Tue, 14 Jul 2020 11:00:48 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Subject: Re: linux-next: build warning after merge of the bpf-next tree
+Message-ID: <20200714090048.GG183694@krava>
+References: <20200714121608.58962d66@canb.auug.org.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200630142754.GC1551@shell.armlinux.org.uk>
+In-Reply-To: <20200714121608.58962d66@canb.auug.org.au>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 03:27:54PM +0100, Russell King - ARM Linux admin wrote:
-> Hi,
+On Tue, Jul 14, 2020 at 12:16:08PM +1000, Stephen Rothwell wrote:
+> Hi all,
 > 
-> This series updates the rudimentary phylink PCS support with the
-> results of the last four months of development of that.  Phylink
-> PCS support was initially added back at the end of March, when it
-> became clear that the current approach of treating everything at
-> the MAC end as being part of the MAC was inadequate.
+> After merging the bpf-next tree, today's linux-next build (powerpc
+> ppc64_defconfig) produced this warning:
 > 
-> However, this rudimentary implementation was fine initially for
-> mvneta and similar, but in practice had a fair number of issues,
-> particularly when ethtool interfaces were used to change various
-> link properties.
+> ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
+> ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
 > 
-> It became apparent that relying on the phylink_config structure for
-> the PCS was also bad when it became clear that the same PCS was used
-> in DSA drivers as well as in NXPs other offerings, and there was a
-> desire to re-use that code.
-> 
-> It also became apparent that splitting the "configuration" step on
-> an interface mode configuration between the MAC and PCS using just
-> mac_config() and pcs_config() methods was not sufficient for some
-> setups, as the MAC needed to be "taken down" prior to making changes,
-> and once all settings were complete, the MAC could only then be
-> resumed.
-> 
-> This series addresses these points, progressing PCS support, and
-> has been developed with mvneta and DPAA2 setups, with work on both
-> those drivers to prove this approach.  It has been rigorously tested
-> with mvneta, as that provides the most flexibility for testing the
-> various code paths.
-> 
-> To solve the phylink_config reuse problem, we introduce a struct
-> phylink_pcs, which contains the minimal information necessary, and it
-> is intended that this is embedded in the PCS private data structure.
-> 
-> To solve the interface mode configuration problem, we introduce two
-> new MAC methods, mac_prepare() and mac_finish() which wrap the entire
-> interface mode configuration only.  This has the additional benefit of
-> relieving MAC drivers from working out whether an interface change has
-> occurred, and whether they need to do some major work.
-> 
-> I have not yet updated all the interface documentation for these
-> changes yet, that work remains, but this patch set is provided in the
-> hope that those working on PCS support in NXP will find this useful.
-> 
-> Since there is a lot of change here, this is the reason why I strongly
-> advise that everyone has converted to the mac_link_up() way of
-> configuring the link parameters when the link comes up, rather than
-> the old way of using mac_config() - especially as splitting the PCS
-> changes how and when phylink calls mac_config(). Although no change
-> for existing users is intended, that is something I no longer am able
-> to test.
-> 
->  drivers/net/phy/phylink.c | 365 +++++++++++++++++++++++++++++++---------------
->  include/linux/phylink.h   | 103 ++++++++++---
->  2 files changed, 337 insertions(+), 131 deletions(-)
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> Presumably ntroduced by the merge of the resolve_btfids branch.
 
-Are you going to post a non-RFC version?
+missing one more #ifdef.. chage below fixes it for me,
+it's squashed with the fix for the arm build, I'll post 
+both fixes today
 
-I think this series makes a lot of sense overall and is a good
-consolidation for the type of interfaces that are already established in
-Linux.
+thanks,
+jirka
 
-This changes the landscape of how Linux is dealing with a MAC-side
-clause 37 PCS, and should constitute a workable base even for clause 49
-PCSs when those use a clause 37 auto-negotiation system (like USXGMII
-and its various multi-port variants). Where I have some doubts is a
-clause 49 PCS which uses a clause 73 auto-negotiation system, I would
-like to understand your vision of how deep phylink is going to go into
-the PMD layer, especially where it is not obvious that said layer is
-integrated with the MAC.
 
-Thanks,
--Vladimir
+---
+diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
+index fe019774f8a7..2f9754a4ab2b 100644
+--- a/include/linux/btf_ids.h
++++ b/include/linux/btf_ids.h
+@@ -3,6 +3,8 @@
+ #ifndef _LINUX_BTF_IDS_H
+ #define _LINUX_BTF_IDS_H
+ 
++#ifdef CONFIG_DEBUG_INFO_BTF
++
+ #include <linux/compiler.h> /* for __PASTE */
+ 
+ /*
+@@ -21,7 +23,7 @@
+ asm(							\
+ ".pushsection " BTF_IDS_SECTION ",\"a\";       \n"	\
+ ".local " #symbol " ;                          \n"	\
+-".type  " #symbol ", @object;                  \n"	\
++".type  " #symbol ", STT_OBJECT;               \n"	\
+ ".size  " #symbol ", 4;                        \n"	\
+ #symbol ":                                     \n"	\
+ ".zero 4                                       \n"	\
+@@ -83,5 +85,12 @@ asm(							\
+ ".zero 4                                       \n"	\
+ ".popsection;                                  \n");
+ 
++#else
++
++#define BTF_ID_LIST(name) u32 name[5];
++#define BTF_ID(prefix, name)
++#define BTF_ID_UNUSED
++
++#endif /* CONFIG_DEBUG_INFO_BTF */
+ 
+ #endif
+diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+index 948378ca73d4..a88cd4426398 100644
+--- a/tools/bpf/resolve_btfids/Makefile
++++ b/tools/bpf/resolve_btfids/Makefile
+@@ -16,6 +16,20 @@ else
+   MAKEFLAGS=--no-print-directory
+ endif
+ 
++# always use the host compiler
++ifneq ($(LLVM),)
++HOSTAR  ?= llvm-ar
++HOSTCC  ?= clang
++HOSTLD  ?= ld.lld
++else
++HOSTAR  ?= ar
++HOSTCC  ?= gcc
++HOSTLD  ?= ld
++endif
++AR       = $(HOSTAR)
++CC       = $(HOSTCC)
++LD       = $(HOSTLD)
++
+ OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
+ 
+ LIBBPF_SRC := $(srctree)/tools/lib/bpf/
+
