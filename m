@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D382521F970
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:30:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA4C821F967
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:29:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729227AbgGNS3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 14:29:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34948 "EHLO mail.kernel.org"
+        id S1729188AbgGNS3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 14:29:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34974 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729056AbgGNS3d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 14:29:33 -0400
+        id S1729168AbgGNS3e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 14:29:34 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DD836229CA;
-        Tue, 14 Jul 2020 18:29:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C97F6229C6;
+        Tue, 14 Jul 2020 18:29:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594751372;
-        bh=fpxPYzVVVKebMJ2YG/n0VNddLmyEwgDAeXVQUJ4kMk4=;
+        s=default; t=1594751373;
+        bh=5KhzHps90OZiW59uwgfQZrFRCK6z+iTQILci2HcCnGE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FceOJfNj5yYnxd9yf2VbnVltydH9Jcd83CdLwrAa8vJ02xTFNRruTQGSpbN0xVNi+
-         zNNtnqb5Om8oFEZ8IituVolSeX5P1oqIAn0lz84AIEuopBXYVkgSswxpM3KX3XqXzK
-         2PkVUDLESXcTr5q/t7P0a/VyfJKqhtYst9ju29oE=
+        b=2TtGfdphxXBNEpRVqwezCgv4oDB8xyu18XAqwXdeg9HpNeSZc9mkPqcq/RLVkmWVp
+         gPiJjjRIaHlMutUhObG97NBxqWbmXb0ZHfb1/Oe5UAHcbuLNeNNxFJ0JMnNKmhUgK0
+         8o3eD+K8Ebv5EhxjlUEan3/6LvBxRL1D1StefklM=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -35,9 +35,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
         manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 05/12] bnx2x: convert to new udp_tunnel_nic infra
-Date:   Tue, 14 Jul 2020 11:29:01 -0700
-Message-Id: <20200714182908.690108-6-kuba@kernel.org>
+Subject: [PATCH net-next v2 06/12] cxgb4: convert to new udp_tunnel_nic infra
+Date:   Tue, 14 Jul 2020 11:29:02 -0700
+Message-Id: <20200714182908.690108-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200714182908.690108-1-kuba@kernel.org>
 References: <20200714182908.690108-1-kuba@kernel.org>
@@ -48,269 +48,232 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fairly straightforward conversion - no need to keep track
-of the use count, and replay when ports get removed, also
-callbacks can just sleep.
+Convert to new infra, this driver is very simple. The check of
+adapter->rawf_cnt in cxgb_udp_tunnel_unset_port() is kept from
+the old port deletion function but it's dodgy since nothing ever
+updates that member once its set during init. Also .set_port
+callback always adds the raw mac filter..
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x.h   |   8 +-
- .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.h   |   8 +-
- .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 136 ++++--------------
- 3 files changed, 29 insertions(+), 123 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   2 -
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   | 108 +++++-------------
+ 2 files changed, 31 insertions(+), 79 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-index dee61d96680e..d04994840b87 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-@@ -1287,7 +1287,6 @@ enum sp_rtnl_flag {
- 	BNX2X_SP_RTNL_HYPERVISOR_VLAN,
- 	BNX2X_SP_RTNL_TX_STOP,
- 	BNX2X_SP_RTNL_GET_DRV_VERSION,
--	BNX2X_SP_RTNL_CHANGE_UDP_PORT,
- 	BNX2X_SP_RTNL_UPDATE_SVID,
- };
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+index ff53c78307c5..c59e9ccc2f18 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+@@ -1109,9 +1109,7 @@ struct adapter {
  
-@@ -1343,11 +1342,6 @@ enum bnx2x_udp_port_type {
- 	BNX2X_UDP_PORT_MAX,
- };
+ 	int msg_enable;
+ 	__be16 vxlan_port;
+-	u8 vxlan_port_cnt;
+ 	__be16 geneve_port;
+-	u8 geneve_port_cnt;
  
--struct bnx2x_udp_tunnel {
--	u16 dst_port;
--	u8 count;
--};
--
- struct bnx2x {
- 	/* Fields used in the tx and intr/napi performance paths
- 	 * are grouped together in the beginning of the structure
-@@ -1855,7 +1849,7 @@ struct bnx2x {
- 	bool accept_any_vlan;
- 
- 	/* Vxlan/Geneve related information */
--	struct bnx2x_udp_tunnel udp_tunnel_ports[BNX2X_UDP_PORT_MAX];
-+	u16 udp_tunnel_ports[BNX2X_UDP_PORT_MAX];
- };
- 
- /* Tx queues may be less or equal to Rx queues */
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.h
-index a9817cd283fe..7e4c93be4451 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.h
-@@ -960,12 +960,12 @@ static inline int bnx2x_func_start(struct bnx2x *bp)
- 		start_params->network_cos_mode = STATIC_COS;
- 	else /* CHIP_IS_E1X */
- 		start_params->network_cos_mode = FW_WRR;
--	if (bp->udp_tunnel_ports[BNX2X_UDP_PORT_VXLAN].count) {
--		port = bp->udp_tunnel_ports[BNX2X_UDP_PORT_VXLAN].dst_port;
-+	if (bp->udp_tunnel_ports[BNX2X_UDP_PORT_VXLAN]) {
-+		port = bp->udp_tunnel_ports[BNX2X_UDP_PORT_VXLAN];
- 		start_params->vxlan_dst_port = port;
+ 	struct adapter_params params;
+ 	struct cxgb4_virt_res vres;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index 0991631f3a91..de078a5bf23e 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -3732,129 +3732,71 @@ static int cxgb_setup_tc(struct net_device *dev, enum tc_setup_type type,
  	}
--	if (bp->udp_tunnel_ports[BNX2X_UDP_PORT_GENEVE].count) {
--		port = bp->udp_tunnel_ports[BNX2X_UDP_PORT_GENEVE].dst_port;
-+	if (bp->udp_tunnel_ports[BNX2X_UDP_PORT_GENEVE]) {
-+		port = bp->udp_tunnel_ports[BNX2X_UDP_PORT_GENEVE];
- 		start_params->geneve_dst_port = port;
- 	}
- 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index fd957212bc1b..7f24d2689fdd 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -10152,7 +10152,6 @@ static int bnx2x_udp_port_update(struct bnx2x *bp)
- {
- 	struct bnx2x_func_switch_update_params *switch_update_params;
- 	struct bnx2x_func_state_params func_params = {NULL};
--	struct bnx2x_udp_tunnel *udp_tunnel;
- 	u16 vxlan_port = 0, geneve_port = 0;
- 	int rc;
- 
-@@ -10169,15 +10168,13 @@ static int bnx2x_udp_port_update(struct bnx2x *bp)
- 	__set_bit(BNX2X_F_UPDATE_TUNNEL_CFG_CHNG,
- 		  &switch_update_params->changes);
- 
--	if (bp->udp_tunnel_ports[BNX2X_UDP_PORT_GENEVE].count) {
--		udp_tunnel = &bp->udp_tunnel_ports[BNX2X_UDP_PORT_GENEVE];
--		geneve_port = udp_tunnel->dst_port;
-+	if (bp->udp_tunnel_ports[BNX2X_UDP_PORT_GENEVE]) {
-+		geneve_port = bp->udp_tunnel_ports[BNX2X_UDP_PORT_GENEVE];
- 		switch_update_params->geneve_dst_port = geneve_port;
- 	}
- 
--	if (bp->udp_tunnel_ports[BNX2X_UDP_PORT_VXLAN].count) {
--		udp_tunnel = &bp->udp_tunnel_ports[BNX2X_UDP_PORT_VXLAN];
--		vxlan_port = udp_tunnel->dst_port;
-+	if (bp->udp_tunnel_ports[BNX2X_UDP_PORT_VXLAN]) {
-+		vxlan_port = bp->udp_tunnel_ports[BNX2X_UDP_PORT_VXLAN];
- 		switch_update_params->vxlan_dst_port = vxlan_port;
- 	}
- 
-@@ -10197,94 +10194,27 @@ static int bnx2x_udp_port_update(struct bnx2x *bp)
- 	return rc;
  }
  
--static void __bnx2x_add_udp_port(struct bnx2x *bp, u16 port,
--				 enum bnx2x_udp_port_type type)
--{
--	struct bnx2x_udp_tunnel *udp_port = &bp->udp_tunnel_ports[type];
--
--	if (!netif_running(bp->dev) || !IS_PF(bp) || CHIP_IS_E1x(bp))
--		return;
--
--	if (udp_port->count && udp_port->dst_port == port) {
--		udp_port->count++;
--		return;
--	}
--
--	if (udp_port->count) {
--		DP(BNX2X_MSG_SP,
--		   "UDP tunnel [%d] -  destination port limit reached\n",
--		   type);
--		return;
--	}
--
--	udp_port->dst_port = port;
--	udp_port->count = 1;
--	bnx2x_schedule_sp_rtnl(bp, BNX2X_SP_RTNL_CHANGE_UDP_PORT, 0);
--}
--
--static void __bnx2x_del_udp_port(struct bnx2x *bp, u16 port,
--				 enum bnx2x_udp_port_type type)
--{
--	struct bnx2x_udp_tunnel *udp_port = &bp->udp_tunnel_ports[type];
--
--	if (!IS_PF(bp) || CHIP_IS_E1x(bp))
--		return;
--
--	if (!udp_port->count || udp_port->dst_port != port) {
--		DP(BNX2X_MSG_SP, "Invalid UDP tunnel [%d] port\n",
--		   type);
--		return;
--	}
--
--	/* Remove reference, and make certain it's no longer in use */
--	udp_port->count--;
--	if (udp_port->count)
--		return;
--	udp_port->dst_port = 0;
--
--	if (netif_running(bp->dev))
--		bnx2x_schedule_sp_rtnl(bp, BNX2X_SP_RTNL_CHANGE_UDP_PORT, 0);
--	else
--		DP(BNX2X_MSG_SP, "Deleted UDP tunnel [%d] port %d\n",
--		   type, port);
--}
--
--static void bnx2x_udp_tunnel_add(struct net_device *netdev,
--				 struct udp_tunnel_info *ti)
-+static int bnx2x_udp_tunnel_sync(struct net_device *netdev, unsigned int table)
+-static void cxgb_del_udp_tunnel(struct net_device *netdev,
+-				struct udp_tunnel_info *ti)
++static int cxgb_udp_tunnel_unset_port(struct net_device *netdev,
++				      unsigned int table, unsigned int entry,
++				      struct udp_tunnel_info *ti)
  {
- 	struct bnx2x *bp = netdev_priv(netdev);
--	u16 t_port = ntohs(ti->port);
-+	struct udp_tunnel_info ti;
+ 	struct port_info *pi = netdev_priv(netdev);
+ 	struct adapter *adapter = pi->adapter;
+-	unsigned int chip_ver = CHELSIO_CHIP_VERSION(adapter->params.chip);
+ 	u8 match_all_mac[] = { 0, 0, 0, 0, 0, 0 };
+ 	int ret = 0, i;
  
--	switch (ti->type) {
--	case UDP_TUNNEL_TYPE_VXLAN:
--		__bnx2x_add_udp_port(bp, t_port, BNX2X_UDP_PORT_VXLAN);
--		break;
--	case UDP_TUNNEL_TYPE_GENEVE:
--		__bnx2x_add_udp_port(bp, t_port, BNX2X_UDP_PORT_GENEVE);
--		break;
--	default:
--		break;
--	}
--}
-+	udp_tunnel_nic_get_port(netdev, table, 0, &ti);
-+	bp->udp_tunnel_ports[table] = be16_to_cpu(ti.port);
- 
--static void bnx2x_udp_tunnel_del(struct net_device *netdev,
--				 struct udp_tunnel_info *ti)
--{
--	struct bnx2x *bp = netdev_priv(netdev);
--	u16 t_port = ntohs(ti->port);
+-	if (chip_ver < CHELSIO_T6)
+-		return;
 -
--	switch (ti->type) {
--	case UDP_TUNNEL_TYPE_VXLAN:
--		__bnx2x_del_udp_port(bp, t_port, BNX2X_UDP_PORT_VXLAN);
--		break;
--	case UDP_TUNNEL_TYPE_GENEVE:
--		__bnx2x_del_udp_port(bp, t_port, BNX2X_UDP_PORT_GENEVE);
--		break;
--	default:
--		break;
--	}
-+	return bnx2x_udp_port_update(bp);
+ 	switch (ti->type) {
+ 	case UDP_TUNNEL_TYPE_VXLAN:
+-		if (!adapter->vxlan_port_cnt ||
+-		    adapter->vxlan_port != ti->port)
+-			return; /* Invalid VxLAN destination port */
+-
+-		adapter->vxlan_port_cnt--;
+-		if (adapter->vxlan_port_cnt)
+-			return;
+-
+ 		adapter->vxlan_port = 0;
+ 		t4_write_reg(adapter, MPS_RX_VXLAN_TYPE_A, 0);
+ 		break;
+ 	case UDP_TUNNEL_TYPE_GENEVE:
+-		if (!adapter->geneve_port_cnt ||
+-		    adapter->geneve_port != ti->port)
+-			return; /* Invalid GENEVE destination port */
+-
+-		adapter->geneve_port_cnt--;
+-		if (adapter->geneve_port_cnt)
+-			return;
+-
+ 		adapter->geneve_port = 0;
+ 		t4_write_reg(adapter, MPS_RX_GENEVE_TYPE_A, 0);
+ 		break;
+ 	default:
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	/* Matchall mac entries can be deleted only after all tunnel ports
+ 	 * are brought down or removed.
+ 	 */
+ 	if (!adapter->rawf_cnt)
+-		return;
++		return 0;
+ 	for_each_port(adapter, i) {
+ 		pi = adap2pinfo(adapter, i);
+ 		ret = t4_free_raw_mac_filt(adapter, pi->viid,
+ 					   match_all_mac, match_all_mac,
+-					   adapter->rawf_start +
+-					    pi->port_id,
++					   adapter->rawf_start + pi->port_id,
+ 					   1, pi->port_id, false);
+ 		if (ret < 0) {
+ 			netdev_info(netdev, "Failed to free mac filter entry, for port %d\n",
+ 				    i);
+-			return;
++			return ret;
+ 		}
+ 	}
++
++	return 0;
  }
  
-+static const struct udp_tunnel_nic_info bnx2x_udp_tunnels = {
-+	.sync_table	= bnx2x_udp_tunnel_sync,
-+	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP |
-+			  UDP_TUNNEL_NIC_INFO_OPEN_ONLY,
+-static void cxgb_add_udp_tunnel(struct net_device *netdev,
+-				struct udp_tunnel_info *ti)
++static int cxgb_udp_tunnel_set_port(struct net_device *netdev,
++				    unsigned int table, unsigned int entry,
++				    struct udp_tunnel_info *ti)
+ {
+ 	struct port_info *pi = netdev_priv(netdev);
+ 	struct adapter *adapter = pi->adapter;
+-	unsigned int chip_ver = CHELSIO_CHIP_VERSION(adapter->params.chip);
+ 	u8 match_all_mac[] = { 0, 0, 0, 0, 0, 0 };
+ 	int i, ret;
+ 
+-	if (chip_ver < CHELSIO_T6 || !adapter->rawf_cnt)
+-		return;
+-
+ 	switch (ti->type) {
+ 	case UDP_TUNNEL_TYPE_VXLAN:
+-		/* Callback for adding vxlan port can be called with the same
+-		 * port for both IPv4 and IPv6. We should not disable the
+-		 * offloading when the same port for both protocols is added
+-		 * and later one of them is removed.
+-		 */
+-		if (adapter->vxlan_port_cnt &&
+-		    adapter->vxlan_port == ti->port) {
+-			adapter->vxlan_port_cnt++;
+-			return;
+-		}
+-
+-		/* We will support only one VxLAN port */
+-		if (adapter->vxlan_port_cnt) {
+-			netdev_info(netdev, "UDP port %d already offloaded, not adding port %d\n",
+-				    be16_to_cpu(adapter->vxlan_port),
+-				    be16_to_cpu(ti->port));
+-			return;
+-		}
+-
+ 		adapter->vxlan_port = ti->port;
+-		adapter->vxlan_port_cnt = 1;
+-
+ 		t4_write_reg(adapter, MPS_RX_VXLAN_TYPE_A,
+ 			     VXLAN_V(be16_to_cpu(ti->port)) | VXLAN_EN_F);
+ 		break;
+ 	case UDP_TUNNEL_TYPE_GENEVE:
+-		if (adapter->geneve_port_cnt &&
+-		    adapter->geneve_port == ti->port) {
+-			adapter->geneve_port_cnt++;
+-			return;
+-		}
+-
+-		/* We will support only one GENEVE port */
+-		if (adapter->geneve_port_cnt) {
+-			netdev_info(netdev, "UDP port %d already offloaded, not adding port %d\n",
+-				    be16_to_cpu(adapter->geneve_port),
+-				    be16_to_cpu(ti->port));
+-			return;
+-		}
+-
+ 		adapter->geneve_port = ti->port;
+-		adapter->geneve_port_cnt = 1;
+-
+ 		t4_write_reg(adapter, MPS_RX_GENEVE_TYPE_A,
+ 			     GENEVE_V(be16_to_cpu(ti->port)) | GENEVE_EN_F);
+ 		break;
+ 	default:
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	/* Create a 'match all' mac filter entry for inner mac,
+@@ -3869,18 +3811,27 @@ static void cxgb_add_udp_tunnel(struct net_device *netdev,
+ 		ret = t4_alloc_raw_mac_filt(adapter, pi->viid,
+ 					    match_all_mac,
+ 					    match_all_mac,
+-					    adapter->rawf_start +
+-					    pi->port_id,
++					    adapter->rawf_start + pi->port_id,
+ 					    1, pi->port_id, false);
+ 		if (ret < 0) {
+ 			netdev_info(netdev, "Failed to allocate a mac filter entry, not adding port %d\n",
+ 				    be16_to_cpu(ti->port));
+-			cxgb_del_udp_tunnel(netdev, ti);
+-			return;
++			return ret;
+ 		}
+ 	}
++
++	return 0;
+ }
+ 
++static const struct udp_tunnel_nic_info cxgb_udp_tunnels = {
++	.set_port	= cxgb_udp_tunnel_set_port,
++	.unset_port	= cxgb_udp_tunnel_unset_port,
 +	.tables		= {
 +		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
 +		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_GENEVE, },
 +	},
 +};
 +
- static int bnx2x_close(struct net_device *dev);
- 
- /* bnx2x_nic_unload() flushes the bnx2x_wq, thus reset task is
-@@ -10407,24 +10337,6 @@ static void bnx2x_sp_rtnl_task(struct work_struct *work)
- 	if (test_and_clear_bit(BNX2X_SP_RTNL_UPDATE_SVID, &bp->sp_rtnl_state))
- 		bnx2x_handle_update_svid_cmd(bp);
- 
--	if (test_and_clear_bit(BNX2X_SP_RTNL_CHANGE_UDP_PORT,
--			       &bp->sp_rtnl_state)) {
--		if (bnx2x_udp_port_update(bp)) {
--			/* On error, forget configuration */
--			memset(bp->udp_tunnel_ports, 0,
--			       sizeof(struct bnx2x_udp_tunnel) *
--			       BNX2X_UDP_PORT_MAX);
--		} else {
--			/* Since we don't store additional port information,
--			 * if no ports are configured for any feature ask for
--			 * information about currently configured ports.
--			 */
--			if (!bp->udp_tunnel_ports[BNX2X_UDP_PORT_VXLAN].count &&
--			    !bp->udp_tunnel_ports[BNX2X_UDP_PORT_GENEVE].count)
--				udp_tunnel_get_rx_info(bp->dev);
--		}
--	}
--
- 	/* work which needs rtnl lock not-taken (as it takes the lock itself and
- 	 * can be called from other contexts as well)
- 	 */
-@@ -12620,9 +12532,6 @@ static int bnx2x_open(struct net_device *dev)
- 	if (rc)
- 		return rc;
- 
--	if (IS_PF(bp))
--		udp_tunnel_get_rx_info(dev);
--
- 	return 0;
- }
- 
-@@ -13162,8 +13071,8 @@ static const struct net_device_ops bnx2x_netdev_ops = {
- 	.ndo_get_phys_port_id	= bnx2x_get_phys_port_id,
- 	.ndo_set_vf_link_state	= bnx2x_set_vf_link_state,
- 	.ndo_features_check	= bnx2x_features_check,
--	.ndo_udp_tunnel_add	= bnx2x_udp_tunnel_add,
--	.ndo_udp_tunnel_del	= bnx2x_udp_tunnel_del,
-+	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
+ static netdev_features_t cxgb_features_check(struct sk_buff *skb,
+ 					     struct net_device *dev,
+ 					     netdev_features_t features)
+@@ -3930,8 +3881,8 @@ static const struct net_device_ops cxgb4_netdev_ops = {
+ #endif /* CONFIG_CHELSIO_T4_FCOE */
+ 	.ndo_set_tx_maxrate   = cxgb_set_tx_maxrate,
+ 	.ndo_setup_tc         = cxgb_setup_tc,
+-	.ndo_udp_tunnel_add   = cxgb_add_udp_tunnel,
+-	.ndo_udp_tunnel_del   = cxgb_del_udp_tunnel,
++	.ndo_udp_tunnel_add   = udp_tunnel_nic_add_port,
++	.ndo_udp_tunnel_del   = udp_tunnel_nic_del_port,
+ 	.ndo_features_check   = cxgb_features_check,
+ 	.ndo_fix_features     = cxgb_fix_features,
  };
- 
- static int bnx2x_set_coherency_mask(struct bnx2x *bp)
-@@ -13358,6 +13267,9 @@ static int bnx2x_init_dev(struct bnx2x *bp, struct pci_dev *pdev,
- 
- 		dev->gso_partial_features = NETIF_F_GSO_GRE_CSUM |
- 					    NETIF_F_GSO_UDP_TUNNEL_CSUM;
+@@ -6761,6 +6712,9 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			netdev->hw_features |= NETIF_F_GSO_UDP_TUNNEL |
+ 					       NETIF_F_GSO_UDP_TUNNEL_CSUM |
+ 					       NETIF_F_HW_TLS_RECORD;
 +
-+		if (IS_PF(bp))
-+			dev->udp_tunnel_nic_info = &bnx2x_udp_tunnels;
- 	}
++			if (adapter->rawf_cnt)
++				netdev->udp_tunnel_nic_info = &cxgb_udp_tunnels;
+ 		}
  
- 	dev->vlan_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+ 		if (highdma)
 -- 
 2.26.2
 
