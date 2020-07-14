@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C408E21F3F2
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:24:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7545E21F3EF
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:24:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728822AbgGNOXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 10:23:55 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:31162 "EHLO
+        id S1728847AbgGNOXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 10:23:47 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:26868 "EHLO
         mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725876AbgGNOXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:23:22 -0400
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06EE2jsI183477;
-        Tue, 14 Jul 2020 10:23:20 -0400
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3292umv8h6-1
+        by vger.kernel.org with ESMTP id S1728706AbgGNOXX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:23:23 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06EDZFoF095150;
+        Tue, 14 Jul 2020 10:23:22 -0400
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 328s0dbn3u-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jul 2020 10:23:20 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06EEFiFG015453;
+        Tue, 14 Jul 2020 10:23:21 -0400
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06EEHTvE021600;
         Tue, 14 Jul 2020 14:23:18 GMT
 Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3275283e2y-1
+        by ppma06ams.nl.ibm.com with ESMTP id 3274pgub5h-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Tue, 14 Jul 2020 14:23:18 +0000
 Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06EENFqe61210950
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06EENFst63242558
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Jul 2020 14:23:15 GMT
+        Tue, 14 Jul 2020 14:23:16 GMT
 Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 871264C05C;
+        by IMSVA (Postfix) with ESMTP id D7E324C05A;
         Tue, 14 Jul 2020 14:23:15 +0000 (GMT)
 Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 459284C05E;
+        by IMSVA (Postfix) with ESMTP id 92D6F4C050;
         Tue, 14 Jul 2020 14:23:15 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -47,178 +47,199 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Ursula Braun <ubraun@linux.ibm.com>,
         Karsten Graul <kgraul@linux.ibm.com>,
         Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next 09/10] s390/qeth: unify RX-mode hashtables
-Date:   Tue, 14 Jul 2020 16:23:04 +0200
-Message-Id: <20200714142305.29297-10-jwi@linux.ibm.com>
+Subject: [PATCH net-next 10/10] s390/qeth: constify the MPC initialization data
+Date:   Tue, 14 Jul 2020 16:23:05 +0200
+Message-Id: <20200714142305.29297-11-jwi@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200714142305.29297-1-jwi@linux.ibm.com>
 References: <20200714142305.29297-1-jwi@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-14_04:2020-07-14,2020-07-14 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1015 priorityscore=1501 phishscore=0 adultscore=0 malwarescore=0
- mlxlogscore=999 bulkscore=0 suspectscore=0 impostorscore=0 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
+ suspectscore=0 spamscore=0 malwarescore=0 mlxlogscore=999
+ lowpriorityscore=0 phishscore=0 clxscore=1015 impostorscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2007140104
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To keep track of the addresses programmed from an RX modeset, we have
-two separate hashtables (L2: mac_htable, L3: ip_mc_htable).
-
-These are never used at the same time, so unify them into a single
-rx_mode_addrs hashtable.
+We're not modifying these data blobs, so mark them as constant.
 
 Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
- drivers/s390/net/qeth_core.h      |  3 +--
- drivers/s390/net/qeth_core_main.c |  1 +
- drivers/s390/net/qeth_l2_main.c   |  9 ++++-----
- drivers/s390/net/qeth_l3_main.c   | 13 ++++++-------
- 4 files changed, 12 insertions(+), 14 deletions(-)
+ drivers/s390/net/qeth_core_main.c |  2 +-
+ drivers/s390/net/qeth_core_mpc.c  | 16 ++++++++--------
+ drivers/s390/net/qeth_core_mpc.h  | 17 ++++++++---------
+ 3 files changed, 17 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/s390/net/qeth_core.h b/drivers/s390/net/qeth_core.h
-index c77a87105ea8..3d54c8bbfa86 100644
---- a/drivers/s390/net/qeth_core.h
-+++ b/drivers/s390/net/qeth_core.h
-@@ -803,14 +803,13 @@ struct qeth_card {
- 	struct workqueue_struct *event_wq;
- 	struct workqueue_struct *cmd_wq;
- 	wait_queue_head_t wait_q;
--	DECLARE_HASHTABLE(mac_htable, 4);
- 	DECLARE_HASHTABLE(ip_htable, 4);
- 	DECLARE_HASHTABLE(local_addrs4, 4);
- 	DECLARE_HASHTABLE(local_addrs6, 4);
- 	spinlock_t local_addrs4_lock;
- 	spinlock_t local_addrs6_lock;
- 	struct mutex ip_lock;
--	DECLARE_HASHTABLE(ip_mc_htable, 4);
-+	DECLARE_HASHTABLE(rx_mode_addrs, 4);
- 	struct work_struct rx_mode_work;
- 	struct work_struct kernel_thread_starter;
- 	spinlock_t thread_mask_lock;
 diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 053a25e34e4b..01a280b5e8d2 100644
+index 01a280b5e8d2..8a76022fceda 100644
 --- a/drivers/s390/net/qeth_core_main.c
 +++ b/drivers/s390/net/qeth_core_main.c
-@@ -1647,6 +1647,7 @@ static void qeth_setup_card(struct qeth_card *card)
- 	qeth_init_qdio_info(card);
- 	INIT_DELAYED_WORK(&card->buffer_reclaim_work, qeth_buffer_reclaim_work);
- 	INIT_WORK(&card->close_dev_work, qeth_close_dev_handler);
-+	hash_init(card->rx_mode_addrs);
- 	hash_init(card->local_addrs4);
- 	hash_init(card->local_addrs6);
- 	spin_lock_init(&card->local_addrs4_lock);
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index 2d3bca3c0141..ef7a2db7a724 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -156,7 +156,7 @@ static void qeth_l2_drain_rx_mode_cache(struct qeth_card *card)
- 	struct hlist_node *tmp;
- 	int i;
- 
--	hash_for_each_safe(card->mac_htable, i, tmp, mac, hnode) {
-+	hash_for_each_safe(card->rx_mode_addrs, i, tmp, mac, hnode) {
- 		hash_del(&mac->hnode);
- 		kfree(mac);
- 	}
-@@ -438,7 +438,7 @@ static void qeth_l2_add_mac(struct qeth_card *card, struct netdev_hw_addr *ha)
- 	u32 mac_hash = get_unaligned((u32 *)(&ha->addr[2]));
- 	struct qeth_mac *mac;
- 
--	hash_for_each_possible(card->mac_htable, mac, hnode, mac_hash) {
-+	hash_for_each_possible(card->rx_mode_addrs, mac, hnode, mac_hash) {
- 		if (ether_addr_equal_64bits(ha->addr, mac->mac_addr)) {
- 			mac->disp_flag = QETH_DISP_ADDR_DO_NOTHING;
- 			return;
-@@ -452,7 +452,7 @@ static void qeth_l2_add_mac(struct qeth_card *card, struct netdev_hw_addr *ha)
- 	ether_addr_copy(mac->mac_addr, ha->addr);
- 	mac->disp_flag = QETH_DISP_ADDR_ADD;
- 
--	hash_add(card->mac_htable, &mac->hnode, mac_hash);
-+	hash_add(card->rx_mode_addrs, &mac->hnode, mac_hash);
+@@ -2026,7 +2026,7 @@ static bool qeth_mpc_match_reply(struct qeth_cmd_buffer *iob,
  }
  
- static void qeth_l2_rx_mode_work(struct work_struct *work)
-@@ -475,7 +475,7 @@ static void qeth_l2_rx_mode_work(struct work_struct *work)
- 		qeth_l2_add_mac(card, ha);
- 	netif_addr_unlock_bh(dev);
+ static struct qeth_cmd_buffer *qeth_mpc_alloc_cmd(struct qeth_card *card,
+-						  void *data,
++						  const void *data,
+ 						  unsigned int data_length)
+ {
+ 	struct qeth_cmd_buffer *iob;
+diff --git a/drivers/s390/net/qeth_core_mpc.c b/drivers/s390/net/qeth_core_mpc.c
+index e3f4866c158e..68c2588b9dcc 100644
+--- a/drivers/s390/net/qeth_core_mpc.c
++++ b/drivers/s390/net/qeth_core_mpc.c
+@@ -10,7 +10,7 @@
+ #include <asm/cio.h>
+ #include "qeth_core_mpc.h"
  
--	hash_for_each_safe(card->mac_htable, i, tmp, mac, hnode) {
-+	hash_for_each_safe(card->rx_mode_addrs, i, tmp, mac, hnode) {
- 		switch (mac->disp_flag) {
- 		case QETH_DISP_ADDR_DELETE:
- 			qeth_l2_remove_mac(card, mac->mac_addr);
-@@ -601,7 +601,6 @@ static int qeth_l2_probe_device(struct ccwgroup_device *gdev)
- 			return rc;
- 	}
+-unsigned char IDX_ACTIVATE_READ[] = {
++const unsigned char IDX_ACTIVATE_READ[] = {
+ 	0x00, 0x00, 0x80, 0x00,  0x00, 0x00, 0x00, 0x00,
+ 	0x19, 0x01, 0x01, 0x80,  0x00, 0x00, 0x00, 0x00,
+ 	0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0xc8, 0xc1,
+@@ -18,7 +18,7 @@ unsigned char IDX_ACTIVATE_READ[] = {
+ 	0x00, 0x00
+ };
  
--	hash_init(card->mac_htable);
- 	INIT_WORK(&card->rx_mode_work, qeth_l2_rx_mode_work);
- 	return 0;
- }
-diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-index d4ce653ff111..15a12487ff7a 100644
---- a/drivers/s390/net/qeth_l3_main.c
-+++ b/drivers/s390/net/qeth_l3_main.c
-@@ -58,7 +58,7 @@ static struct qeth_ipaddr *qeth_l3_find_addr_by_ip(struct qeth_card *card,
- 	struct qeth_ipaddr *addr;
+-unsigned char IDX_ACTIVATE_WRITE[] = {
++const unsigned char IDX_ACTIVATE_WRITE[] = {
+ 	0x00, 0x00, 0x80, 0x00,  0x00, 0x00, 0x00, 0x00,
+ 	0x15, 0x01, 0x01, 0x80,  0x00, 0x00, 0x00, 0x00,
+ 	0xff, 0xff, 0x00, 0x00,  0x00, 0x00, 0xc8, 0xc1,
+@@ -26,7 +26,7 @@ unsigned char IDX_ACTIVATE_WRITE[] = {
+ 	0x00, 0x00
+ };
  
- 	if (query->is_multicast) {
--		hash_for_each_possible(card->ip_mc_htable, addr, hnode, key)
-+		hash_for_each_possible(card->rx_mode_addrs, addr, hnode, key)
- 			if (qeth_l3_addr_match_ip(addr, query))
- 				return addr;
- 	} else {
-@@ -239,7 +239,7 @@ static void qeth_l3_drain_rx_mode_cache(struct qeth_card *card)
- 	struct hlist_node *tmp;
- 	int i;
+-unsigned char CM_ENABLE[] = {
++const unsigned char CM_ENABLE[] = {
+ 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x01,
+ 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x63,
+ 	0x10, 0x00, 0x00, 0x01,
+@@ -45,7 +45,7 @@ unsigned char CM_ENABLE[] = {
+ 	0xff, 0xff, 0xff
+ };
  
--	hash_for_each_safe(card->ip_mc_htable, i, tmp, addr, hnode) {
-+	hash_for_each_safe(card->rx_mode_addrs, i, tmp, addr, hnode) {
- 		hash_del(&addr->hnode);
- 		kfree(addr);
- 	}
-@@ -1093,7 +1093,7 @@ static int qeth_l3_add_mcast_rtnl(struct net_device *dev, int vid, void *arg)
- 		if (!ipm)
- 			continue;
+-unsigned char CM_SETUP[] = {
++const unsigned char CM_SETUP[] = {
+ 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x02,
+ 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x64,
+ 	0x10, 0x00, 0x00, 0x01,
+@@ -65,7 +65,7 @@ unsigned char CM_SETUP[] = {
+ 	0x04, 0x06, 0xc8, 0x00
+ };
  
--		hash_add(card->ip_mc_htable, &ipm->hnode,
-+		hash_add(card->rx_mode_addrs, &ipm->hnode,
- 			 qeth_l3_ipaddr_hash(ipm));
- 	}
+-unsigned char ULP_ENABLE[] = {
++const unsigned char ULP_ENABLE[] = {
+ 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x03,
+ 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x6b,
+ 	0x10, 0x00, 0x00, 0x01,
+@@ -85,7 +85,7 @@ unsigned char ULP_ENABLE[] = {
+ 	0xf1, 0x00, 0x00
+ };
  
-@@ -1124,8 +1124,8 @@ static int qeth_l3_add_mcast_rtnl(struct net_device *dev, int vid, void *arg)
- 		if (!ipm)
- 			continue;
+-unsigned char ULP_SETUP[] = {
++const unsigned char ULP_SETUP[] = {
+ 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x04,
+ 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x6c,
+ 	0x10, 0x00, 0x00, 0x01,
+@@ -107,7 +107,7 @@ unsigned char ULP_SETUP[] = {
+ 	0x00, 0x00, 0x00, 0x00
+ };
  
--		hash_add(card->ip_mc_htable,
--				&ipm->hnode, qeth_l3_ipaddr_hash(ipm));
-+		hash_add(card->rx_mode_addrs, &ipm->hnode,
-+			 qeth_l3_ipaddr_hash(ipm));
+-unsigned char DM_ACT[] = {
++const unsigned char DM_ACT[] = {
+ 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x05,
+ 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x55,
+ 	0x10, 0x00, 0x00, 0x01,
+@@ -123,7 +123,7 @@ unsigned char DM_ACT[] = {
+ 	0x05, 0x40, 0x01, 0x01,  0x00
+ };
  
- 	}
- 	read_unlock_bh(&in6_dev->lock);
-@@ -1219,7 +1219,7 @@ static void qeth_l3_rx_mode_work(struct work_struct *work)
- 			vlan_for_each(card->dev, qeth_l3_add_mcast_rtnl, card);
- 		rtnl_unlock();
+-unsigned char IPA_PDU_HEADER[] = {
++const unsigned char IPA_PDU_HEADER[] = {
+ 	0x00, 0xe0, 0x00, 0x00,  0x77, 0x77, 0x77, 0x77,
+ 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x00,
+ 	0x10, 0x00, 0x00, 0x01,  0x00, 0x00, 0x00, 0x00,
+diff --git a/drivers/s390/net/qeth_core_mpc.h b/drivers/s390/net/qeth_core_mpc.h
+index 9d6f39d8f9ab..b459def0fb26 100644
+--- a/drivers/s390/net/qeth_core_mpc.h
++++ b/drivers/s390/net/qeth_core_mpc.h
+@@ -13,13 +13,13 @@
+ #include <uapi/linux/if_ether.h>
+ #include <uapi/linux/in6.h>
  
--		hash_for_each_safe(card->ip_mc_htable, i, tmp, addr, hnode) {
-+		hash_for_each_safe(card->rx_mode_addrs, i, tmp, addr, hnode) {
- 			switch (addr->disp_flag) {
- 			case QETH_DISP_ADDR_DELETE:
- 				rc = qeth_l3_deregister_addr_entry(card, addr);
-@@ -1998,7 +1998,6 @@ static int qeth_l3_probe_device(struct ccwgroup_device *gdev)
- 		}
- 	}
++extern const unsigned char IPA_PDU_HEADER[];
+ #define IPA_PDU_HEADER_SIZE	0x40
+ #define QETH_IPA_PDU_LEN_TOTAL(buffer) (buffer + 0x0e)
+ #define QETH_IPA_PDU_LEN_PDU1(buffer) (buffer + 0x26)
+ #define QETH_IPA_PDU_LEN_PDU2(buffer) (buffer + 0x29)
+ #define QETH_IPA_PDU_LEN_PDU3(buffer) (buffer + 0x3a)
  
--	hash_init(card->ip_mc_htable);
- 	INIT_WORK(&card->rx_mode_work, qeth_l3_rx_mode_work);
- 	return 0;
- }
+-extern unsigned char IPA_PDU_HEADER[];
+ #define QETH_IPA_CMD_DEST_ADDR(buffer) (buffer + 0x2c)
+ 
+ #define QETH_SEQ_NO_LENGTH	4
+@@ -858,7 +858,7 @@ extern const char *qeth_get_ipa_cmd_name(enum qeth_ipa_cmds cmd);
+ /* END OF   IP Assist related definitions                                    */
+ /*****************************************************************************/
+ 
+-extern unsigned char CM_ENABLE[];
++extern const unsigned char CM_ENABLE[];
+ #define CM_ENABLE_SIZE 0x63
+ #define QETH_CM_ENABLE_ISSUER_RM_TOKEN(buffer) (buffer + 0x2c)
+ #define QETH_CM_ENABLE_FILTER_TOKEN(buffer) (buffer + 0x53)
+@@ -868,7 +868,7 @@ extern unsigned char CM_ENABLE[];
+ 		(PDU_ENCAPSULATION(buffer) + 0x13)
+ 
+ 
+-extern unsigned char CM_SETUP[];
++extern const unsigned char CM_SETUP[];
+ #define CM_SETUP_SIZE 0x64
+ #define QETH_CM_SETUP_DEST_ADDR(buffer) (buffer + 0x2c)
+ #define QETH_CM_SETUP_CONNECTION_TOKEN(buffer) (buffer + 0x51)
+@@ -877,7 +877,7 @@ extern unsigned char CM_SETUP[];
+ #define QETH_CM_SETUP_RESP_DEST_ADDR(buffer) \
+ 		(PDU_ENCAPSULATION(buffer) + 0x1a)
+ 
+-extern unsigned char ULP_ENABLE[];
++extern const unsigned char ULP_ENABLE[];
+ #define ULP_ENABLE_SIZE 0x6b
+ #define QETH_ULP_ENABLE_LINKNUM(buffer) (buffer + 0x61)
+ #define QETH_ULP_ENABLE_DEST_ADDR(buffer) (buffer + 0x2c)
+@@ -898,7 +898,7 @@ extern unsigned char ULP_ENABLE[];
+ #define QETH_ULP_ENABLE_PROT_TYPE(buffer) (buffer + 0x50)
+ #define QETH_IPA_CMD_PROT_TYPE(buffer) (buffer + 0x19)
+ 
+-extern unsigned char ULP_SETUP[];
++extern const unsigned char ULP_SETUP[];
+ #define ULP_SETUP_SIZE 0x6c
+ #define QETH_ULP_SETUP_DEST_ADDR(buffer) (buffer + 0x2c)
+ #define QETH_ULP_SETUP_CONNECTION_TOKEN(buffer) (buffer + 0x51)
+@@ -910,7 +910,7 @@ extern unsigned char ULP_SETUP[];
+ 		(PDU_ENCAPSULATION(buffer) + 0x1a)
+ 
+ 
+-extern unsigned char DM_ACT[];
++extern const unsigned char DM_ACT[];
+ #define DM_ACT_SIZE 0x55
+ #define QETH_DM_ACT_DEST_ADDR(buffer) (buffer + 0x2c)
+ #define QETH_DM_ACT_CONNECTION_TOKEN(buffer) (buffer + 0x51)
+@@ -921,9 +921,8 @@ extern unsigned char DM_ACT[];
+ #define QETH_PDU_HEADER_SEQ_NO(buffer) (buffer + 0x1c)
+ #define QETH_PDU_HEADER_ACK_SEQ_NO(buffer) (buffer + 0x20)
+ 
+-extern unsigned char IDX_ACTIVATE_READ[];
+-extern unsigned char IDX_ACTIVATE_WRITE[];
+-
++extern const unsigned char IDX_ACTIVATE_READ[];
++extern const unsigned char IDX_ACTIVATE_WRITE[];
+ #define IDX_ACTIVATE_SIZE	0x22
+ #define QETH_IDX_ACT_PNO(buffer) (buffer+0x0b)
+ #define QETH_IDX_ACT_ISSUER_RM_TOKEN(buffer) (buffer + 0x0c)
 -- 
 2.17.1
 
