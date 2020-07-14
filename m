@@ -2,114 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B5E021F32F
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 15:58:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 601F321F331
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 15:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbgGNNzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 09:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726629AbgGNNzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 09:55:41 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A87C061755
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 06:55:41 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id t15so1548408pjq.5
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 06:55:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=4R6aAP2hnHU5BomscdB2+QQtEfcfOo7mlJFUbwCE+FA=;
-        b=A9bHkLfo4H2ZVElBgw57VyHwEEw+XfzOp3NNrx1mZwtzgzQBHfUNcprjm4OZdvZwtd
-         SjZ10FmvfuB08Eudp0GDzzyqSf4//56rWuh9i4XlDTcCUJ94d0QwU3QAa6GYNFA7my5+
-         uWgcjmtLEekCoiE7VQGer4/E5RCLcAIWUm62w0cRumWUthXcJYX29dcQRBJ5BXhv5ID4
-         uJYfEjNSiJRhKXAWhXxMXvCdxVItP+0OhjFWJ2xaqotUNeF8z/8VXyj3i/KujHyuXZ3Z
-         NXX45ISe+240UUYewPc5ACGhoERmzE5b5iA3N1mcR/I2WwgGly74ZDp5gqjNCF59DfNh
-         vvCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=4R6aAP2hnHU5BomscdB2+QQtEfcfOo7mlJFUbwCE+FA=;
-        b=MlW1ejR7wW4x6VuEnHh8B74KrefkETbFlxnoABMX46ZaRCv6QU2PpEc4JoH60/lX9C
-         kOHeEDaYX853FAwX81YXG3VIvZy2v8lMPQiEK32nwZewYCl7bV8EpFjOlYTxLZHDzAWg
-         IgrMr0225Vv6I9vy8igShUOq32spbVGVQ6FO/BAKbtXFwg8H53N4cvueowEkoM3MAJgS
-         AW6sv2kZD8XXQXNrHkUqHsCdRh14Cry8ZTSSVBwjMgu+jGCrBFxTPkZUuSg9CdqDbvTv
-         eqFy68cD0etL8oqnyA48pBdWSdkV3FzekUaM1cwly6ZosTenanWPMip0Lc/hG02tjqrY
-         7ekA==
-X-Gm-Message-State: AOAM533oWvu0oAxmOknBksSEOwZwZsITuUUnlE+wP475aFPAWlRzGPUj
-        7D0eX00pDqdu+fD2GftfZoE=
-X-Google-Smtp-Source: ABdhPJx2IXeXRE4rtv64EDOZf3FZZeAjczPZCUCXwxWrLa2CHbZRcwdlI3GU0WWMtjTrjjdcDE8ztg==
-X-Received: by 2002:a17:90a:de8d:: with SMTP id n13mr4536985pjv.95.1594734940896;
-        Tue, 14 Jul 2020 06:55:40 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id ga7sm2652322pjb.50.2020.07.14.06.55.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 14 Jul 2020 06:55:39 -0700 (PDT)
-Date:   Tue, 14 Jul 2020 06:55:38 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
-        =?iso-8859-1?Q?Dani=EBl?= Sonck <dsonck92@gmail.com>,
-        Zhang Qiang <qiang.zhang@windriver.com>,
-        Thomas Lamprecht <t.lamprecht@proxmox.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Zefan Li <lizefan@huawei.com>, Tejun Heo <tj@kernel.org>,
-        Roman Gushchin <guro@fb.com>
-Subject: Re: [Patch net v2] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
-Message-ID: <20200714135538.GA56663@roeck-us.net>
-References: <20200702185256.17917-1-xiyou.wangcong@gmail.com>
- <20200708153327.GA193647@roeck-us.net>
- <CAM_iQpWLcbALSZDNkiCm7zKOjMZV8z1XnC5D0vyiYPC6rU3v8A@mail.gmail.com>
- <fe638e54-be0e-d729-a20f-878d017d0da7@roeck-us.net>
- <CAM_iQpWWXmrNzNZc5-N=bXo2_o58V0=3SeFkPzmJaDL3TVUeEA@mail.gmail.com>
- <38f6a432-fadf-54a6-27d0-39d205fba92e@roeck-us.net>
- <CAM_iQpVk=54omCG8rrDn7GDg9KxKATT4fufRHbn=BSDKWyTu7w@mail.gmail.com>
- <CAM_iQpWaWcJYG_JWkHdy__=Y5NYPFaX2T+W-c6MskYoZ8G7rRQ@mail.gmail.com>
+        id S1726364AbgGNN44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 09:56:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34330 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725821AbgGNN44 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 09:56:56 -0400
+Received: from localhost.localdomain.com (unknown [151.48.133.17])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B304B224D3;
+        Tue, 14 Jul 2020 13:56:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594735015;
+        bh=PmqcNVbRV1hgShO+aiRYwgYUAtvDzFkFjMB+4aQ34YI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kb2jtZugOXXoqAuJbzTVF+vko2O324wBqTxt4nAJVPq2jFaTdbs7kTydnEuzJaqJg
+         ESgd97x8tH7W39zPHy3KG5dELXKflBAnK220tJMc2hhLTLC5DtEElcf23+SRqdnB8n
+         PE/dI64PpLpAXNJJeo0/SmSU0hCI3ESSAOo69gYM=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, brouer@redhat.com,
+        daniel@iogearbox.net, toke@redhat.com, lorenzo.bianconi@redhat.com,
+        dsahern@kernel.org, andrii.nakryiko@gmail.com
+Subject: [PATCH v7 bpf-next 0/9] introduce support for XDP programs in CPUMAP
+Date:   Tue, 14 Jul 2020 15:56:33 +0200
+Message-Id: <cover.1594734381.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpWaWcJYG_JWkHdy__=Y5NYPFaX2T+W-c6MskYoZ8G7rRQ@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 09, 2020 at 11:59:09AM -0700, Cong Wang wrote:
-> On Thu, Jul 9, 2020 at 11:51 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Thu, Jul 9, 2020 at 10:10 AM Guenter Roeck <linux@roeck-us.net> wrote:
-> > >
-> > > Something seems fishy with the use of skcd->val on big endian systems.
-> > >
-> > > Some debug output:
-> > >
-> > > [   22.643703] sock: ##### sk_alloc(sk=000000001be28100): Calling cgroup_sk_alloc(000000001be28550)
-> > > [   22.643807] cgroup: ##### cgroup_sk_alloc(skcd=000000001be28550): cgroup_sk_alloc_disabled=0, in_interrupt: 0
-> > > [   22.643886] cgroup:  #### cgroup_sk_alloc(skcd=000000001be28550): cset->dfl_cgrp=0000000001224040, skcd->val=0x1224040
-> > > [   22.643957] cgroup: ###### cgroup_bpf_get(cgrp=0000000001224040)
-> > > [   22.646451] sock: ##### sk_prot_free(sk=000000001be28100): Calling cgroup_sk_free(000000001be28550)
-> > > [   22.646607] cgroup:  #### sock_cgroup_ptr(skcd=000000001be28550) -> 0000000000014040 [v=14040, skcd->val=14040]
-> > > [   22.646632] cgroup: ####### cgroup_sk_free(): skcd=000000001be28550, cgrp=0000000000014040
-> > > [   22.646739] cgroup: ####### cgroup_sk_free(): skcd->no_refcnt=0
-> > > [   22.646814] cgroup: ####### cgroup_sk_free(): Calling cgroup_bpf_put(cgrp=0000000000014040)
-> > > [   22.646886] cgroup: ###### cgroup_bpf_put(cgrp=0000000000014040)
-> >
-> > Excellent debugging! I thought it was a double put, but it seems to
-> > be an endian issue. I didn't realize the bit endian machine actually
-> > packs bitfields in a big endian way too...
-> >
-> > Does the attached patch address this?
-> 
-> Ah, this is too ugly. We just have to always make them the last two bits.
-> 
-> Please test this attached patch instead and ignore the previous one.
-> 
-FWIW: Tested and working.
+Similar to what David Ahern proposed in [1] for DEVMAPs, introduce the
+capability to attach and run a XDP program to CPUMAP entries.
+The idea behind this feature is to add the possibility to define on which CPU
+run the eBPF program if the underlying hw does not support RSS.
+I respin patch 1/6 from a previous series sent by David [2].
+The functionality has been tested on Marvell Espressobin, i40e and mlx5.
+Detailed tests results can be found here:
+https://github.com/xdp-project/xdp-project/blob/master/areas/cpumap/cpumap04-map-xdp-prog.org
 
-Guenter
+Changes since v6:
+- rebase on top of bpf-next
+- move bpf_cpumap_val and bpf_prog in the first bpf_cpu_map_entry cache-line
+
+Changes since v5:
+- move bpf_prog_put() in put_cpu_map_entry()
+- remove READ_ONCE(rcpu->prog) in cpu_map_bpf_prog_run_xdp
+- rely on bpf_prog_get_type() instead of bpf_prog_get_type_dev() in
+  __cpu_map_load_bpf_program()
+
+Changes since v4:
+- move xdp_clear_return_frame_no_direct inside rcu section
+- update David Ahern's email address
+
+Changes since v3:
+- fix typo in commit message
+- fix access to ctx->ingress_ifindex in cpumap bpf selftest
+
+Changes since v2:
+- improved comments
+- fix return value in xdp_convert_buff_to_frame
+- added patch 1/9: "cpumap: use non-locked version __ptr_ring_consume_batched"
+- do not run kmem_cache_alloc_bulk if all frames have been consumed by the XDP
+  program attached to the CPUMAP entry
+- removed bpf_trace_printk in kselftest
+
+Changes since v1:
+- added performance test results
+- added kselftest support
+- fixed memory accounting with page_pool
+- extended xdp_redirect_cpu_user.c to load an external program to perform
+  redirect
+- reported ifindex to attached eBPF program
+- moved bpf_cpumap_val definition to include/uapi/linux/bpf.h
+
+[1] https://patchwork.ozlabs.org/project/netdev/cover/20200529220716.75383-1-dsahern@kernel.org/
+[2] https://patchwork.ozlabs.org/project/netdev/patch/20200513014607.40418-2-dsahern@kernel.org/
+
+David Ahern (1):
+  net: refactor xdp_convert_buff_to_frame
+
+Jesper Dangaard Brouer (1):
+  cpumap: use non-locked version __ptr_ring_consume_batched
+
+Lorenzo Bianconi (7):
+  samples/bpf: xdp_redirect_cpu_user: do not update bpf maps in option
+    loop
+  cpumap: formalize map value as a named struct
+  bpf: cpumap: add the possibility to attach an eBPF program to cpumap
+  bpf: cpumap: implement XDP_REDIRECT for eBPF programs attached to map
+    entries
+  libbpf: add SEC name for xdp programs attached to CPUMAP
+  samples/bpf: xdp_redirect_cpu: load a eBPF program on cpumap
+  selftest: add tests for XDP programs in CPUMAP entries
+
+ include/linux/bpf.h                           |   6 +
+ include/net/xdp.h                             |  41 ++--
+ include/trace/events/xdp.h                    |  16 +-
+ include/uapi/linux/bpf.h                      |  14 ++
+ kernel/bpf/cpumap.c                           | 162 +++++++++++---
+ net/core/dev.c                                |   9 +
+ samples/bpf/xdp_redirect_cpu_kern.c           |  25 ++-
+ samples/bpf/xdp_redirect_cpu_user.c           | 209 ++++++++++++++++--
+ tools/include/uapi/linux/bpf.h                |  14 ++
+ tools/lib/bpf/libbpf.c                        |   2 +
+ .../bpf/prog_tests/xdp_cpumap_attach.c        |  70 ++++++
+ .../bpf/progs/test_xdp_with_cpumap_helpers.c  |  36 +++
+ 12 files changed, 531 insertions(+), 73 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
+
+-- 
+2.26.2
+
