@@ -2,82 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3FB321EAC3
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 10:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6193421EAB8
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 09:57:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726748AbgGNIAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 04:00:18 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:43998 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725816AbgGNIAR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 04:00:17 -0400
-Received: by mail-oi1-f196.google.com with SMTP id x83so13224780oif.10;
-        Tue, 14 Jul 2020 01:00:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QnTe4sZ/BVwx3aWuIY96pK3amPI3OQSt3QidovW9MDg=;
-        b=DVnbWK+//JZKX9DIxxeWG9G3CRQTZot4ixyDa7eabiimpmY8Jmd3b3JcQCLaqJWlLL
-         9cI3Gai+0CZ2a7c99Sw/7/Nz1rdtm7pgVuGqkyh1CAdhfFRi1Y1muUGDx8maCsU1uBKa
-         3d7+RpX2vdD+HjInfwsGg8G++eqfFOt0QcmvJSiWdk6DUevApz1Ew81diTE1mvncr1HF
-         6AwD9O7fZqSu0p7D9TWSMn7aua6H09sDRXAJrrXMBYFbW0InbblFsvW/nP/UXmo3Wx51
-         sP1GaOizDtns1TqUkL77JPBI4JY3cpXiYQh5GSt+VFX+H3c6uETPatGp9gS+x/DOUNjS
-         H4ow==
-X-Gm-Message-State: AOAM532bqYv+p9TB+7+q0mpttynDvxj53q7fymfcDVVYTJ0Wm/VNHlQh
-        I/3tDl7kcBPjP/B44dNqow3JKphhcnKWO4vHy9g=
-X-Google-Smtp-Source: ABdhPJyzIvtstGtIjvnC0xOdHX2BDAwrtjW5pB4zYT3uHZkIF8+JNHYsqpLcM1Tt8jiPySfbt+KukaiWmW7ArIQFH7w=
-X-Received: by 2002:a05:6808:64a:: with SMTP id z10mr2722714oih.54.1594713616158;
- Tue, 14 Jul 2020 01:00:16 -0700 (PDT)
+        id S1726431AbgGNH46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 03:56:58 -0400
+Received: from mail5.windriver.com ([192.103.53.11]:45414 "EHLO mail5.wrs.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725801AbgGNH46 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 03:56:58 -0400
+Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
+        by mail5.wrs.com (8.15.2/8.15.2) with ESMTPS id 06E7sd8g016084
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
+        Tue, 14 Jul 2020 00:54:49 -0700
+Received: from pek-lpg-core1-vm1.wrs.com (128.224.156.106) by
+ ALA-HCA.corp.ad.wrs.com (147.11.189.40) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 14 Jul 2020 00:54:29 -0700
+From:   <qiang.zhang@windriver.com>
+To:     <jmaloy@redhat.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <tuong.t.lien@dektech.com.au>, <eric.dumazet@gmail.com>,
+        <ying.xue@windriver.com>
+CC:     <netdev@vger.kernel.org>, <tipc-discussion@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2] tipc: Don't using smp_processor_id() in preemptible code
+Date:   Tue, 14 Jul 2020 16:05:59 +0800
+Message-ID: <20200714080559.9617-1-qiang.zhang@windriver.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594676120-5862-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594676120-5862-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 14 Jul 2020 10:00:05 +0200
-Message-ID: <CAMuHMdUZx56wWTMdpmXhbvJV6_M=jDhQUVvD6b0-5xU-jrGsAA@mail.gmail.com>
-Subject: Re: [PATCH 6/9] dt-bindings: gpio: renesas,rcar-gpio: Add r8a774e1 support
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 11:35 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Document Renesas RZ/G2H (R8A774E1) GPIO blocks compatibility within the
-> relevant dt-bindings.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Zhang Qiang <qiang.zhang@windriver.com>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+CPU: 0 PID: 6801 Comm: syz-executor201 Not tainted 5.8.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine,
+BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ check_preemption_disabled+0x128/0x130 lib/smp_processor_id.c:48
+ tipc_aead_tfm_next net/tipc/crypto.c:402 [inline]
+ tipc_aead_encrypt net/tipc/crypto.c:639 [inline]
+ tipc_crypto_xmit+0x80a/0x2790 net/tipc/crypto.c:1605
+ tipc_bearer_xmit_skb+0x180/0x3f0 net/tipc/bearer.c:523
+ tipc_enable_bearer+0xb1d/0xdc0 net/tipc/bearer.c:331
+ __tipc_nl_bearer_enable+0x2bf/0x390 net/tipc/bearer.c:995
+ __tipc_nl_compat_doit net/tipc/netlink_compat.c:361 [inline]
+ tipc_nl_compat_doit+0x440/0x640 net/tipc/netlink_compat.c:383
+ tipc_nl_compat_handle net/tipc/netlink_compat.c:1268 [inline]
+ tipc_nl_compat_recv+0x4ef/0xb40 net/tipc/netlink_compat.c:1311
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
+ genl_rcv_msg+0x61d/0x980 net/netlink/genetlink.c:731
+ netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:742
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x4476a9
+Code: Bad RIP value.
+RSP: 002b:00007fff2b6d5168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000000
 
-Gr{oetje,eeting}s,
+Fixes: fc1b6d6de2208 ("tipc: introduce TIPC encryption & authentication")
+Reported-by: syzbot+263f8c0d007dc09b2dda@syzkaller.appspotmail.com
+Signed-off-by: Zhang Qiang <qiang.zhang@windriver.com>
+---
+ v1->v2:
+ add fixes tags.
 
-                        Geert
+ net/tipc/crypto.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+index 8c47ded2edb6..520af0afe1b3 100644
+--- a/net/tipc/crypto.c
++++ b/net/tipc/crypto.c
+@@ -399,9 +399,10 @@ static void tipc_aead_users_set(struct tipc_aead __rcu *aead, int val)
+  */
+ static struct crypto_aead *tipc_aead_tfm_next(struct tipc_aead *aead)
+ {
+-	struct tipc_tfm **tfm_entry = this_cpu_ptr(aead->tfm_entry);
++	struct tipc_tfm **tfm_entry = get_cpu_ptr(aead->tfm_entry);
+ 
+ 	*tfm_entry = list_next_entry(*tfm_entry, list);
++	put_cpu_ptr(tfm_entry);
+ 	return (*tfm_entry)->tfm;
+ }
+ 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.24.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
