@@ -2,119 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CCE321FD88
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 21:40:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B7C921FD8D
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 21:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729982AbgGNTkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 15:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46760 "EHLO
+        id S1730026AbgGNTkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 15:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729946AbgGNTkI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 15:40:08 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A031C08C5C1;
-        Tue, 14 Jul 2020 12:40:08 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id q4so25073469lji.2;
-        Tue, 14 Jul 2020 12:40:07 -0700 (PDT)
+        with ESMTP id S1729266AbgGNTks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 15:40:48 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4B6C061794;
+        Tue, 14 Jul 2020 12:40:48 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id o22so2000715pjw.2;
+        Tue, 14 Jul 2020 12:40:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FaR9w5/0RD2++C/T8Zbo7Hqni0XY/GF9Elz9sYyM4QA=;
-        b=hjQvBK9I2IG6JiGa7EiQ6Qz0aDn+hdJFkfQHw4GebZigj7Et0fJkm6AmUyMa9e+zTF
-         EAb9zOEP6pcg/5xqZD3vm/z0+udCOmrucqQaqr8YOL7W2nwR0eUDyx18hVDtfDUYaVIL
-         uSmTCCTL8F3fB6xO9WyTR3vWZwwLcwIbbgRnnwl9NKzl9nxQAkfNZlBW3IlRBSni2tQm
-         lblvbBDOUW/4J2nSRhhkX59veDVOg/UZbfLQV5JsQkX0EwoH1RI/GK/xPntniu0mUmpK
-         /Bmggco9P3fPMGcDESQ0IXhC9TiNU15shc/4sOMFQgpIQah+PlsEvZqGq6IDJwb6rHGF
-         GJrw==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=wNJ0xqiQMwf9wWolmo2V4dwfmbUBzz5d6DDV7wSVVDU=;
+        b=eP79sZLCqJtSL9WEEFX5EaaYP2heGJfFeAyQ6tvZshn/yxxu+m+xqfmi+SdX3bhtrc
+         RJtmkqNoiZ4yw9eYBsVPjYCkFllcW4K8ObnGQfh/R1lOCK8Su4l5gURpSSiFk2rkmAVJ
+         7RIUwCO6eyIRY6MN4N14tUg+cToCHO7udjv1j2lfp64Qux6zmV1IrlV2PKhQ2I0g5krl
+         RdYNQIyzhUxe3RAnSzwOv3XtTNf1bl4HVYmWCS7DA8imU9NDoGKww0s4k59+gaqSBFAJ
+         qoudDtigrhf+aETbaGdAWu2aDXqH3fGt94qWSFsRDd6YT7essvT/eYq2uRyFJVYdFrxs
+         6XJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FaR9w5/0RD2++C/T8Zbo7Hqni0XY/GF9Elz9sYyM4QA=;
-        b=XtH1UVxzIYw3AfiB//YWX/2Qs8jeq/g96A9TMffn5e4NftZARi/LbefACh7K/18wC9
-         Rgn/uPvPytKVskkwVfSYKW33o5Vy7zaaDI5qO0IraQrNCuSgWnj1g06waAw0FI6zujrp
-         fzeLPq5K80LROS/fyoOqJVSzPFzdnXwNAdXzTpYLsYb+12NMsOSG0fABeHVKMtEH9ZrM
-         3hYi+bIkUdoqEMZ7LlBGVlHa1U/mabp0um3VsczIHq5dIEPr84zmtgn9QkKQ2BL+lH/k
-         rb1rhwLHn9ogXOUVbJ1V85chblFcdDLMfoRFD9tdeEhK2ssy1aALJENjR+xB9jwBjOP+
-         hOpA==
-X-Gm-Message-State: AOAM533aJY+sI5F2HVy2AJ2fScd4wR2uQwln5tHbVenBNI+MxeGbQh+S
-        r4BNST/Y3x4Cj3szNisJL192OjTdJG92Kai0yJQ=
-X-Google-Smtp-Source: ABdhPJyh49hXL2cG/s2k7Rx5OKIncgHt2pUNqas9VkOTV+0gOAczebhhNC16P1x3Aq6Sf3Yhs8IsvDnxbgwi9mpxZPo=
-X-Received: by 2002:a2e:8216:: with SMTP id w22mr3124383ljg.2.1594755606518;
- Tue, 14 Jul 2020 12:40:06 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=wNJ0xqiQMwf9wWolmo2V4dwfmbUBzz5d6DDV7wSVVDU=;
+        b=S99DAi/hco5dTwOffn3aMk69OBd7Tf1EhVaySvxu8MHBqEuntWxKIVYc+AUrlll9YT
+         YDP7x+SrSEfRrQpR4ZAkyoM5tRPHe/mlE1z6cpuilzjRxWPpYWXLDvXnBcuwo9Aymn/x
+         cSLtYCckgtNNWo7SvTu1SzTZoljqFJuW56kEG2I4k+AgGRe3Wrt6OymrxGQB6HZmZ0aZ
+         x/e8pvvASJ0do3y9t9HxaISXJRuxhWEAebeYm81oyIeR4EnwAvjhCy46eMcblRsRPTfi
+         ZqwN8FDGgQMy4wb6HxFzgViTxUTDvPIz72lqT7jxfQONp1rzPu1ipyRCp/Nxp7NBrmxM
+         oywA==
+X-Gm-Message-State: AOAM532uRqLTtTRRL5cjd+3DFtiXqe9t0RX/3FOmpuz08mtAiY4XUWhg
+        ENjSpJo6s8Zsd122JZs5bYc=
+X-Google-Smtp-Source: ABdhPJyyflRxQgKU+fmkrQq4IN69SodmKNRAcSYeuyBMhZoOiLpFcwnXc5U0QG974Y1D0I4womwZ+g==
+X-Received: by 2002:a17:90a:1f81:: with SMTP id x1mr5717456pja.115.1594755648184;
+        Tue, 14 Jul 2020 12:40:48 -0700 (PDT)
+Received: from blackclown ([103.88.82.145])
+        by smtp.gmail.com with ESMTPSA id h23sm5569pfo.166.2020.07.14.12.40.45
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 14 Jul 2020 12:40:47 -0700 (PDT)
+Date:   Wed, 15 Jul 2020 01:10:35 +0530
+From:   Suraj Upadhyay <usuraj35@gmail.com>
+To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, kuba@kernel.org
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH 1/4] e1000/e1000_ethtool.c: Remove unnecessary usages of
+ memset
+Message-ID: <20200714194035.GA21382@blackclown>
 MIME-Version: 1.0
-References: <20200701092644.762234-1-masahiroy@kernel.org> <20200701174609.mw5ovqe7d5o6ptel@ast-mbp.dhcp.thefacebook.com>
- <CAK7LNARTMt8kgRJqgRonaSHROT80yDNAG0wDiLGL=RSEz3CDig@mail.gmail.com>
-In-Reply-To: <CAK7LNARTMt8kgRJqgRonaSHROT80yDNAG0wDiLGL=RSEz3CDig@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 14 Jul 2020 12:39:55 -0700
-Message-ID: <CAADnVQLE+3=k6r3RXR8=n8RUd6uJLN9H80g2i74J9e4QR5LHgA@mail.gmail.com>
-Subject: Re: [PATCH] bpfilter: allow to build bpfilter_umh as a module without
- static library
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Song Liu <songliubraving@fb.com>,
-        =?UTF-8?Q?Valdis_Kl_=C4=93_tnieks?= <valdis.kletnieks@vt.edu>,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="VS++wcV0S1rZb1Fb"
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 1, 2020 at 10:50 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Thu, Jul 2, 2020 at 2:46 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Wed, Jul 01, 2020 at 06:26:44PM +0900, Masahiro Yamada wrote:
-> > > Originally, bpfilter_umh was linked with -static only when
-> > > CONFIG_BPFILTER_UMH=y.
-> > >
-> > > Commit 8a2cc0505cc4 ("bpfilter: use 'userprogs' syntax to build
-> > > bpfilter_umh") silently, accidentally dropped the CONFIG_BPFILTER_UMH=y
-> > > test in the Makefile. Revive it in order to link it dynamically when
-> > > CONFIG_BPFILTER_UMH=m.
-> > >
-> > > Since commit b1183b6dca3e ("bpfilter: check if $(CC) can link static
-> > > libc in Kconfig"), the compiler must be capable of static linking to
-> > > enable CONFIG_BPFILTER_UMH, but it requires more than needed.
-> > >
-> > > To loosen the compiler requirement, I changed the dependency as follows:
-> > >
-> > >     depends on CC_CAN_LINK
-> > >     depends on m || CC_CAN_LINK_STATIC
-> > >
-> > > If CONFIG_CC_CAN_LINK_STATIC in unset, CONFIG_BPFILTER_UMH is restricted
-> > > to 'm' or 'n'.
-> > >
-> > > In theory, CONFIG_CC_CAN_LINK is not required for CONFIG_BPFILTER_UMH=y,
-> > > but I did not come up with a good way to describe it.
-> > >
-> > > Fixes: 8a2cc0505cc4 ("bpfilter: use 'userprogs' syntax to build bpfilter_umh")
-> > > Reported-by: Michal Kubecek <mkubecek@suse.cz>
-> > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> >
-> > lgtm
-> > Do you mind I'll take it into bpf-next tree?
-> > Eric is working on a bunch of patches in this area. I'll take his set
-> > into bpf-next as well and then can apply this patch.
-> > Just to make sure there are no conflicts.
->
-> Please go ahead.
 
-I've merged Eric's set and applied yours on top.
-Thanks
+--VS++wcV0S1rZb1Fb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Replace memsets of 1 byte with simple assignments.
+Issue reported by checkpatch.pl.
+
+Signed-off-by: Suraj Upadhyay <usuraj35@gmail.com>
+---
+ drivers/net/ethernet/intel/e1000/e1000_ethtool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/e1000/e1000_ethtool.c b/drivers/net=
+/ethernet/intel/e1000/e1000_ethtool.c
+index 0b4196d2cdd4..f976e9daa3d8 100644
+--- a/drivers/net/ethernet/intel/e1000/e1000_ethtool.c
++++ b/drivers/net/ethernet/intel/e1000/e1000_ethtool.c
+@@ -1356,8 +1356,8 @@ static void e1000_create_lbtest_frame(struct sk_buff =
+*skb,
+ 	memset(skb->data, 0xFF, frame_size);
+ 	frame_size &=3D ~1;
+ 	memset(&skb->data[frame_size / 2], 0xAA, frame_size / 2 - 1);
+-	memset(&skb->data[frame_size / 2 + 10], 0xBE, 1);
+-	memset(&skb->data[frame_size / 2 + 12], 0xAF, 1);
++	skb->data[frame_size / 2 + 10] =3D 0xBE;
++	skb->data[frame_size / 2 + 12] =3D 0xAF;
+ }
+=20
+ static int e1000_check_lbtest_frame(const unsigned char *data,
+--=20
+2.17.1
+
+
+--VS++wcV0S1rZb1Fb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE7AbCa0kOsMJ4cx0j+gRsbIfe744FAl8OCjIACgkQ+gRsbIfe
+747epg//conbuZWFS5h8Mh9FCzDGo6kg8I5K3s+UtdTWXSIX5OEy34KmJAYx81fw
+qGMZaR4CyF4O/0vI8KxgUMTPGxf77keTsSDQhU4fE9IPPfI0MhGzLM+M5gjUiTfW
+Ireu76SCme6orWv6Z7+q6CVbLFYMIL7hslLgLTFI9+6MbX/IBqEXKPpa3owthbsR
+qHR8u8U2VAR9jEyB9CdND4oCsrF1GabZS/Dx01Uf2+3MQqEe4fdMTwqBkv1v4Nm6
+XDE3FCLqWNWzc4cogFPWpDFGu0esbD7WV3X7pUuiGVIs2HNUslNKKOMyWfDwU9Cz
+qvp8GHUWKARttcEgNUjgVyjtQuLmSWrpFUHFCrulI+8ZKidk7GF0RLZ0MB43ha5u
+/CQWJCSPwuG9mJPrSfekRvv1zd/QvyKqzTY4JHLoCMY5VWM2gZHb7TCZua4ZaAWa
+psq4itAML6IRbO7mQn+W2W8plFxAiBeDvcblH2gJwT9QMi1P16mTm3rZUV4e+0bS
+9MGF3DmKTUY73oeMfkTuKSpuLFjpdTIaupRwN5vxozSRVJSV3vXhjSlwx/Ie0wd/
+t8vO1TIfMYmNmDwxIJ3jnAGaMwDhckg0RjrONCMWZHDkvafftruUDrYvghYDbZDa
+HPZ1+0dcgPi9nATBTZrVeW4ucr9Mb0+v0bH/CmC1Gwx1caoGA24=
+=53mg
+-----END PGP SIGNATURE-----
+
+--VS++wcV0S1rZb1Fb--
