@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D59BF21E48C
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:31:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54FE421E48D
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:31:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727055AbgGNAbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 20:31:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44602 "EHLO mail.kernel.org"
+        id S1727060AbgGNAbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 20:31:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44634 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726973AbgGNAba (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 20:31:30 -0400
+        id S1726974AbgGNAbb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 20:31:31 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BBCBA21835;
-        Tue, 14 Jul 2020 00:31:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A80B221924;
+        Tue, 14 Jul 2020 00:31:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594686689;
-        bh=WB8Cv4RNpsjghADCNiN8s2GY2rN5Uf1Wb5SRBNBT53Q=;
+        s=default; t=1594686690;
+        bh=h2JpwGY9/gWFAW2URUnoWDw+wbo9Eb1ddyIPBP9nnEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xAlai9ZuwSNeomjjmgnATvthWB6HmGe5aqRayds7cKOH5xrG7M5LzR7t0XdQXxLsI
-         r6SlOfpYJM4ZxZJWJ6qHN0oRLGLXeSRlTzzDVD9xQG+frcy0F0KrVkftzZvUDZ3Qyx
-         mvQvJFAspaDE2YTVBTfFCpFHKHv8qybdSMrl0sIU=
+        b=ZSTs8tVpia9N50/mEPQrgIkvetVDlISk0W/Fy/L5Nuc1AI9TnwyiArWaZZQvlBb0y
+         aPy4gPNIwf2Q3SiMiTwfFUcLgIwBEIti18Q8Lk3TIMA9zQ/5nY2wwSOLE0y0L3ZYy+
+         qhETsbbP04kM20ystdmzUZOcdORQsqLSJjjjmb2E=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -35,9 +35,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
         manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 11/12] qede: convert to new udp_tunnel_nic infra
-Date:   Mon, 13 Jul 2020 17:30:36 -0700
-Message-Id: <20200714003037.669012-12-kuba@kernel.org>
+Subject: [PATCH net-next 12/12] qlcnic: convert to new udp_tunnel_nic infra
+Date:   Mon, 13 Jul 2020 17:30:37 -0700
+Message-Id: <20200714003037.669012-13-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200714003037.669012-1-kuba@kernel.org>
 References: <20200714003037.669012-1-kuba@kernel.org>
@@ -48,259 +48,225 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Covert to new infra. Looks like this driver was not doing
-ref counting, and sleeping in the callback.
+Straightforward conversion to new infra, 1 VxLAN port, handler
+may sleep.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qede/qede.h       |   1 +
- .../net/ethernet/qlogic/qede/qede_filter.c    | 142 ++++++------------
- drivers/net/ethernet/qlogic/qede/qede_main.c  |  18 ++-
- 3 files changed, 58 insertions(+), 103 deletions(-)
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic.h   |  7 +-
+ .../ethernet/qlogic/qlcnic/qlcnic_83xx_init.c | 31 ++-------
+ .../net/ethernet/qlogic/qlcnic/qlcnic_main.c  | 64 +++++++------------
+ 3 files changed, 32 insertions(+), 70 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index 591dd4051d06..8adda5dc9e88 100644
---- a/drivers/net/ethernet/qlogic/qede/qede.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -543,6 +543,7 @@ void qede_set_dcbnl_ops(struct net_device *ndev);
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h
+index d838774af5a6..d67f8265724a 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h
+@@ -536,8 +536,6 @@ struct qlcnic_hardware_context {
+ 	u8 extend_lb_time;
+ 	u8 phys_port_id[ETH_ALEN];
+ 	u8 lb_mode;
+-	u8 vxlan_port_count;
+-	u16 vxlan_port;
+ 	struct device *hwmon_dev;
+ 	u32 post_mode;
+ 	bool run_post;
+@@ -1026,9 +1024,6 @@ struct qlcnic_ipaddr {
+ #define QLCNIC_HAS_PHYS_PORT_ID		0x40000
+ #define QLCNIC_TSS_RSS			0x80000
  
- void qede_config_debug(uint debug, u32 *p_dp_module, u8 *p_dp_level);
- void qede_set_ethtool_ops(struct net_device *netdev);
-+void qede_set_udp_tunnels(struct qede_dev *edev);
- void qede_reload(struct qede_dev *edev,
- 		 struct qede_reload_args *args, bool is_locked);
- int qede_change_mtu(struct net_device *dev, int new_mtu);
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-index d8100434e340..bb451c67a6f5 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-@@ -953,115 +953,67 @@ int qede_set_features(struct net_device *dev, netdev_features_t features)
+-#define QLCNIC_ADD_VXLAN_PORT		0x100000
+-#define QLCNIC_DEL_VXLAN_PORT		0x200000
+-
+ #define QLCNIC_VLAN_FILTERING		0x800000
+ 
+ #define QLCNIC_IS_MSI_FAMILY(adapter) \
+@@ -1700,6 +1695,8 @@ int qlcnic_init_pci_info(struct qlcnic_adapter *);
+ int qlcnic_set_default_offload_settings(struct qlcnic_adapter *);
+ int qlcnic_reset_npar_config(struct qlcnic_adapter *);
+ int qlcnic_set_eswitch_port_config(struct qlcnic_adapter *);
++int qlcnic_set_vxlan_port(struct qlcnic_adapter *adapter, u16 port);
++int qlcnic_set_vxlan_parsing(struct qlcnic_adapter *adapter, u16 port);
+ int qlcnic_83xx_configure_opmode(struct qlcnic_adapter *adapter);
+ int qlcnic_read_mac_addr(struct qlcnic_adapter *);
+ int qlcnic_setup_netdev(struct qlcnic_adapter *, struct net_device *, int);
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+index cda5b0a9e948..0e2f2fb6c3a9 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+@@ -1028,9 +1028,8 @@ static int qlcnic_83xx_idc_check_state_validity(struct qlcnic_adapter *adapter,
+ #define QLCNIC_ENABLE_INGRESS_ENCAP_PARSING 1
+ #define QLCNIC_DISABLE_INGRESS_ENCAP_PARSING 0
+ 
+-static int qlcnic_set_vxlan_port(struct qlcnic_adapter *adapter)
++int qlcnic_set_vxlan_port(struct qlcnic_adapter *adapter, u16 port)
+ {
+-	u16 port = adapter->ahw->vxlan_port;
+ 	struct qlcnic_cmd_args cmd;
+ 	int ret = 0;
+ 
+@@ -1057,10 +1056,8 @@ static int qlcnic_set_vxlan_port(struct qlcnic_adapter *adapter)
+ 	return ret;
+ }
+ 
+-static int qlcnic_set_vxlan_parsing(struct qlcnic_adapter *adapter,
+-				    bool state)
++int qlcnic_set_vxlan_parsing(struct qlcnic_adapter *adapter, u16 port)
+ {
+-	u16 vxlan_port = adapter->ahw->vxlan_port;
+ 	struct qlcnic_cmd_args cmd;
+ 	int ret = 0;
+ 
+@@ -1071,18 +1068,18 @@ static int qlcnic_set_vxlan_parsing(struct qlcnic_adapter *adapter,
+ 	if (ret)
+ 		return ret;
+ 
+-	cmd.req.arg[1] = state ? QLCNIC_ENABLE_INGRESS_ENCAP_PARSING :
+-				 QLCNIC_DISABLE_INGRESS_ENCAP_PARSING;
++	cmd.req.arg[1] = port ? QLCNIC_ENABLE_INGRESS_ENCAP_PARSING :
++				QLCNIC_DISABLE_INGRESS_ENCAP_PARSING;
+ 
+ 	ret = qlcnic_issue_cmd(adapter, &cmd);
+ 	if (ret)
+ 		netdev_err(adapter->netdev,
+ 			   "Failed to %s VXLAN parsing for port %d\n",
+-			   state ? "enable" : "disable", vxlan_port);
++			   port ? "enable" : "disable", port);
+ 	else
+ 		netdev_info(adapter->netdev,
+ 			    "%s VXLAN parsing for port %d\n",
+-			    state ? "Enabled" : "Disabled", vxlan_port);
++			    port ? "Enabled" : "Disabled", port);
+ 
+ 	qlcnic_free_mbx_args(&cmd);
+ 
+@@ -1093,22 +1090,6 @@ static void qlcnic_83xx_periodic_tasks(struct qlcnic_adapter *adapter)
+ {
+ 	if (adapter->fhash.fnum)
+ 		qlcnic_prune_lb_filters(adapter);
+-
+-	if (adapter->flags & QLCNIC_ADD_VXLAN_PORT) {
+-		if (qlcnic_set_vxlan_port(adapter))
+-			return;
+-
+-		if (qlcnic_set_vxlan_parsing(adapter, true))
+-			return;
+-
+-		adapter->flags &= ~QLCNIC_ADD_VXLAN_PORT;
+-	} else if (adapter->flags & QLCNIC_DEL_VXLAN_PORT) {
+-		if (qlcnic_set_vxlan_parsing(adapter, false))
+-			return;
+-
+-		adapter->ahw->vxlan_port = 0;
+-		adapter->flags &= ~QLCNIC_DEL_VXLAN_PORT;
+-	}
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+index e52af092a793..173c7300cdf7 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+@@ -471,48 +471,29 @@ static int qlcnic_get_phys_port_id(struct net_device *netdev,
  	return 0;
  }
  
--void qede_udp_tunnel_add(struct net_device *dev, struct udp_tunnel_info *ti)
-+static int qede_udp_tunnel_sync(struct net_device *dev, unsigned int table)
+-static void qlcnic_add_vxlan_port(struct net_device *netdev,
+-				  struct udp_tunnel_info *ti)
++static int qlcnic_udp_tunnel_sync(struct net_device *dev, unsigned int table)
  {
- 	struct qede_dev *edev = netdev_priv(dev);
- 	struct qed_tunn_params tunn_params;
--	u16 t_port = ntohs(ti->port);
-+	struct udp_tunnel_info ti;
-+	u16 *save_port;
- 	int rc;
- 
- 	memset(&tunn_params, 0, sizeof(tunn_params));
- 
--	switch (ti->type) {
--	case UDP_TUNNEL_TYPE_VXLAN:
--		if (!edev->dev_info.common.vxlan_enable)
--			return;
+-	struct qlcnic_adapter *adapter = netdev_priv(netdev);
+-	struct qlcnic_hardware_context *ahw = adapter->ahw;
 -
--		if (edev->vxlan_dst_port)
--			return;
--
-+	udp_tunnel_nic_get_port(dev, table, 0, &ti);
-+	if (ti.type == UDP_TUNNEL_TYPE_VXLAN) {
- 		tunn_params.update_vxlan_port = 1;
--		tunn_params.vxlan_port = t_port;
--
--		__qede_lock(edev);
--		rc = edev->ops->tunn_config(edev->cdev, &tunn_params);
--		__qede_unlock(edev);
--
--		if (!rc) {
--			edev->vxlan_dst_port = t_port;
--			DP_VERBOSE(edev, QED_MSG_DEBUG, "Added vxlan port=%d\n",
--				   t_port);
--		} else {
--			DP_NOTICE(edev, "Failed to add vxlan UDP port=%d\n",
--				  t_port);
--		}
--
--		break;
--	case UDP_TUNNEL_TYPE_GENEVE:
--		if (!edev->dev_info.common.geneve_enable)
--			return;
--
--		if (edev->geneve_dst_port)
--			return;
--
-+		tunn_params.vxlan_port = ntohs(ti.port);
-+		save_port = &edev->vxlan_dst_port;
-+	} else {
- 		tunn_params.update_geneve_port = 1;
--		tunn_params.geneve_port = t_port;
--
--		__qede_lock(edev);
--		rc = edev->ops->tunn_config(edev->cdev, &tunn_params);
--		__qede_unlock(edev);
--
--		if (!rc) {
--			edev->geneve_dst_port = t_port;
--			DP_VERBOSE(edev, QED_MSG_DEBUG,
--				   "Added geneve port=%d\n", t_port);
--		} else {
--			DP_NOTICE(edev, "Failed to add geneve UDP port=%d\n",
--				  t_port);
--		}
--
--		break;
--	default:
+-	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
 -		return;
-+		tunn_params.geneve_port = ntohs(ti.port);
-+		save_port = &edev->geneve_dst_port;
++	struct qlcnic_adapter *adapter = netdev_priv(dev);
++	struct udp_tunnel_info ti;
++	int err;
+ 
+-	/* Adapter supports only one VXLAN port. Use very first port
+-	 * for enabling offload
+-	 */
+-	if (!qlcnic_encap_rx_offload(adapter))
+-		return;
+-	if (!ahw->vxlan_port_count) {
+-		ahw->vxlan_port_count = 1;
+-		ahw->vxlan_port = ntohs(ti->port);
+-		adapter->flags |= QLCNIC_ADD_VXLAN_PORT;
+-		return;
++	udp_tunnel_nic_get_port(dev, table, 0, &ti);
++	if (ti.port) {
++		err = qlcnic_set_vxlan_port(adapter, ntohs(ti.port));
++		if (err)
++			return err;
  	}
--}
--
--void qede_udp_tunnel_del(struct net_device *dev,
--			 struct udp_tunnel_info *ti)
+-	if (ahw->vxlan_port == ntohs(ti->port))
+-		ahw->vxlan_port_count++;
+ 
++	return qlcnic_set_vxlan_parsing(adapter, ntohs(ti.port));
+ }
+ 
+-static void qlcnic_del_vxlan_port(struct net_device *netdev,
+-				  struct udp_tunnel_info *ti)
 -{
--	struct qede_dev *edev = netdev_priv(dev);
--	struct qed_tunn_params tunn_params;
--	u16 t_port = ntohs(ti->port);
- 
--	memset(&tunn_params, 0, sizeof(tunn_params));
+-	struct qlcnic_adapter *adapter = netdev_priv(netdev);
+-	struct qlcnic_hardware_context *ahw = adapter->ahw;
 -
--	switch (ti->type) {
--	case UDP_TUNNEL_TYPE_VXLAN:
--		if (t_port != edev->vxlan_dst_port)
--			return;
+-	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
+-		return;
 -
--		tunn_params.update_vxlan_port = 1;
--		tunn_params.vxlan_port = 0;
+-	if (!qlcnic_encap_rx_offload(adapter) || !ahw->vxlan_port_count ||
+-	    (ahw->vxlan_port != ntohs(ti->port)))
+-		return;
 -
--		__qede_lock(edev);
--		edev->ops->tunn_config(edev->cdev, &tunn_params);
--		__qede_unlock(edev);
--
--		edev->vxlan_dst_port = 0;
--
--		DP_VERBOSE(edev, QED_MSG_DEBUG, "Deleted vxlan port=%d\n",
--			   t_port);
--
--		break;
--	case UDP_TUNNEL_TYPE_GENEVE:
--		if (t_port != edev->geneve_dst_port)
--			return;
--
--		tunn_params.update_geneve_port = 1;
--		tunn_params.geneve_port = 0;
-+	__qede_lock(edev);
-+	rc = edev->ops->tunn_config(edev->cdev, &tunn_params);
-+	__qede_unlock(edev);
-+	if (rc)
-+		return rc;
- 
--		__qede_lock(edev);
--		edev->ops->tunn_config(edev->cdev, &tunn_params);
--		__qede_unlock(edev);
-+	*save_port = ntohs(ti.port);
-+	return 0;
-+}
- 
--		edev->geneve_dst_port = 0;
-+const struct udp_tunnel_nic_info qede_udp_tunnels_both = {
-+	.sync_table	= qede_udp_tunnel_sync,
+-	ahw->vxlan_port_count--;
+-	if (!ahw->vxlan_port_count)
+-		adapter->flags |= QLCNIC_DEL_VXLAN_PORT;
+-}
++static const struct udp_tunnel_nic_info qlcnic_udp_tunnels = {
++	.sync_table	= qlcnic_udp_tunnel_sync,
 +	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP,
 +	.tables		= {
-+		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
-+		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_GENEVE, },
-+	},
-+}, qede_udp_tunnels_vxlan = {
-+	.sync_table	= qede_udp_tunnel_sync,
-+	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP,
-+	.tables		= {
-+		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
-+	},
-+}, qede_udp_tunnels_geneve = {
-+	.sync_table	= qede_udp_tunnel_sync,
-+	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP,
-+	.tables		= {
-+		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_GENEVE, },
++		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN, },
 +	},
 +};
  
--		DP_VERBOSE(edev, QED_MSG_DEBUG, "Deleted geneve port=%d\n",
--			   t_port);
--		break;
--	default:
--		return;
--	}
-+void qede_set_udp_tunnels(struct qede_dev *edev)
-+{
-+	if (edev->dev_info.common.vxlan_enable &&
-+	    edev->dev_info.common.geneve_enable)
-+		edev->ndev->udp_tunnel_nic_info = &qede_udp_tunnels_both;
-+	else if (edev->dev_info.common.vxlan_enable)
-+		edev->ndev->udp_tunnel_nic_info = &qede_udp_tunnels_vxlan;
-+	else if (edev->dev_info.common.geneve_enable)
-+		edev->ndev->udp_tunnel_nic_info = &qede_udp_tunnels_geneve;
- }
+ static netdev_features_t qlcnic_features_check(struct sk_buff *skb,
+ 					       struct net_device *dev,
+@@ -540,8 +521,8 @@ static const struct net_device_ops qlcnic_netdev_ops = {
+ 	.ndo_fdb_del		= qlcnic_fdb_del,
+ 	.ndo_fdb_dump		= qlcnic_fdb_dump,
+ 	.ndo_get_phys_port_id	= qlcnic_get_phys_port_id,
+-	.ndo_udp_tunnel_add	= qlcnic_add_vxlan_port,
+-	.ndo_udp_tunnel_del	= qlcnic_del_vxlan_port,
++	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
++	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
+ 	.ndo_features_check	= qlcnic_features_check,
+ #ifdef CONFIG_QLCNIC_SRIOV
+ 	.ndo_set_vf_mac		= qlcnic_sriov_set_vf_mac,
+@@ -2017,7 +1998,7 @@ qlcnic_attach(struct qlcnic_adapter *adapter)
+ 	qlcnic_create_sysfs_entries(adapter);
  
- static void qede_xdp_reload_func(struct qede_dev *edev,
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 8cd27f8f1b3a..a653dd0e5c22 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -663,8 +663,8 @@ static const struct net_device_ops qede_netdev_ops = {
- 	.ndo_get_vf_config = qede_get_vf_config,
- 	.ndo_set_vf_rate = qede_set_vf_rate,
- #endif
--	.ndo_udp_tunnel_add = qede_udp_tunnel_add,
--	.ndo_udp_tunnel_del = qede_udp_tunnel_del,
-+	.ndo_udp_tunnel_add = udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del = udp_tunnel_nic_del_port,
- 	.ndo_features_check = qede_features_check,
- 	.ndo_bpf = qede_xdp,
- #ifdef CONFIG_RFS_ACCEL
-@@ -687,8 +687,8 @@ static const struct net_device_ops qede_netdev_vf_ops = {
- 	.ndo_fix_features = qede_fix_features,
- 	.ndo_set_features = qede_set_features,
- 	.ndo_get_stats64 = qede_get_stats64,
--	.ndo_udp_tunnel_add = qede_udp_tunnel_add,
--	.ndo_udp_tunnel_del = qede_udp_tunnel_del,
-+	.ndo_udp_tunnel_add = udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del = udp_tunnel_nic_del_port,
- 	.ndo_features_check = qede_features_check,
- };
+ 	if (qlcnic_encap_rx_offload(adapter))
+-		udp_tunnel_get_rx_info(netdev);
++		udp_tunnel_nic_reset_ntf(netdev);
  
-@@ -706,8 +706,8 @@ static const struct net_device_ops qede_netdev_vf_xdp_ops = {
- 	.ndo_fix_features = qede_fix_features,
- 	.ndo_set_features = qede_set_features,
- 	.ndo_get_stats64 = qede_get_stats64,
--	.ndo_udp_tunnel_add = qede_udp_tunnel_add,
--	.ndo_udp_tunnel_del = qede_udp_tunnel_del,
-+	.ndo_udp_tunnel_add = udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del = udp_tunnel_nic_del_port,
- 	.ndo_features_check = qede_features_check,
- 	.ndo_bpf = qede_xdp,
- };
-@@ -822,6 +822,8 @@ static void qede_init_ndev(struct qede_dev *edev)
- 				NETIF_F_GSO_UDP_TUNNEL_CSUM);
- 		ndev->hw_enc_features |= (NETIF_F_GSO_UDP_TUNNEL |
- 					  NETIF_F_GSO_UDP_TUNNEL_CSUM);
+ 	adapter->is_up = QLCNIC_ADAPTER_UP_MAGIC;
+ 	return 0;
+@@ -2335,9 +2316,12 @@ qlcnic_setup_netdev(struct qlcnic_adapter *adapter, struct net_device *netdev,
+ 					  NETIF_F_TSO6;
+ 	}
+ 
+-	if (qlcnic_encap_rx_offload(adapter))
++	if (qlcnic_encap_rx_offload(adapter)) {
+ 		netdev->hw_enc_features |= NETIF_F_RXCSUM;
+ 
++		netdev->udp_tunnel_nic_info = &qlcnic_udp_tunnels;
++	}
 +
-+		qede_set_udp_tunnels(edev);
- 	}
- 
- 	if (edev->dev_info.common.gre_enable) {
-@@ -2421,7 +2423,7 @@ static int qede_open(struct net_device *ndev)
- 	if (rc)
- 		return rc;
- 
--	udp_tunnel_get_rx_info(ndev);
-+	udp_tunnel_nic_reset_ntf(ndev);
- 
- 	edev->ops->common->update_drv_state(edev->cdev, true);
- 
-@@ -2523,7 +2525,7 @@ static void qede_recovery_handler(struct qede_dev *edev)
- 			goto err;
- 
- 		qede_config_rx_mode(edev->ndev);
--		udp_tunnel_get_rx_info(edev->ndev);
-+		udp_tunnel_nic_reset_ntf(edev->ndev);
- 	}
- 
- 	edev->state = curr_state;
+ 	netdev->hw_features = netdev->features;
+ 	netdev->priv_flags |= IFF_UNICAST_FLT;
+ 	netdev->irq = adapter->msix_entries[0].vector;
 -- 
 2.26.2
 
