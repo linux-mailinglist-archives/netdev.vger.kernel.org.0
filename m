@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1611121F3C7
+	by mail.lfdr.de (Postfix) with ESMTP id 8288921F3C8
 	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:23:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728300AbgGNOVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 10:21:48 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:40507 "EHLO
+        id S1728387AbgGNOVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 10:21:51 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:33177 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728208AbgGNOVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:21:46 -0400
+        by vger.kernel.org with ESMTP id S1728297AbgGNOVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:21:49 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id E345F5C010B;
-        Tue, 14 Jul 2020 10:21:45 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 57BA95C00EA;
+        Tue, 14 Jul 2020 10:21:48 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 14 Jul 2020 10:21:45 -0400
+  by compute4.internal (MEProxy); Tue, 14 Jul 2020 10:21:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=DG27DzmaRZq5YjEANqwgczVUAcA55//5XIYXfdgBaq8=; b=fSTSuW5e
-        hYz44P7B3hkextPFqP91Mc3qrfNRTWhgLaUo+hBeG71dYFC+n62Mz+QbqX+SJo3j
-        nvh1so2nZQ2xnGhh2pQbJFQ3PhPuscSTBO74hGdxxhVPJH/4X1xAmJFCR35+U9Pq
-        QPYuGKDlIbk4qrlW8CNlYpn/4kUl/3Ka6SvtrEvZFsi+1kVm5ovunblSaz2oXknT
-        TDgzsDnScxAFzWwqt406RiFPm/xazkgcy2XJaM/qGc+YppuDQbAyvqQNYgkP+Bhi
-        Sb9Lsbg5zaYV1RgaJs5DLQ5R94xC2N/RP2sogbe/njnaZYiKtCbkDz1u+VhIKUyQ
-        GmZSJJOzmsAmhA==
-X-ME-Sender: <xms:eb8NX9hXA4D9tAigA0QyMjKrFDA6wV8GazijIlwKRKmGCLzf3lXKag>
+        fm3; bh=ZelKWlWqEDEskvlC+yDWCcitHfRLoFtvDOoGz/bbbTI=; b=ODRmZi5F
+        Zv5QLZs6nz5nGZmAc77w6vRUcSXaUZ8EPIVGZE1DF9cs7fhZj+j0OFT6WpcdZ5f+
+        kExCRjiRF0FvL5Hnkg25n6ql3W8FVNetEq4tr2R9rAQDOvsl5Xebzse5cmBHbED0
+        pQamiIJuCGysrPhj4JH6fF43ZP/wq8rehiA57Yp0uyBEmACCmmjKRa/ZFLeob/ez
+        m6tTJ4eE2hQoWPjGYcNvZy2tJ2O26/VPPxF2XQRoUVHsQixpjGuRzwhsUKDxClLH
+        PwTjE3aqGueLelyLf9pqEXcJKN0SP8l2kV9irR6b/x1D49ouaLB9F390r8X0rPnL
+        G/B2AMJ29H8JoA==
+X-ME-Sender: <xms:fL8NX61yyaX1QkU6CGcRl59_y9JbwhEhigvBNtKmvtpLL3nx_hjRQw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedtgdejkecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -36,21 +36,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedtgdejkecutefuodetggdote
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieeirdduledrudeffeen
     ucevlhhushhtvghrufhiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:eb8NXyCTbhVilha1mqB-7Tmne9u6mFzga2-4_Tox9haQiDt9uEWwOw>
-    <xmx:eb8NX9G8I9EbuJq6tN7OE4XtH06AHitOOYPeq-UK4vLscOFz72bdsg>
-    <xmx:eb8NXySXarsxifeJTWZVnte8hw6ggGTdIF6KtMOGAGWKsVIk31n_wA>
-    <xmx:eb8NX--0GBexlRsdgyZtvAJx_-KNhfeOZExT5OkCX9FW9F7XUHr_HQ>
+X-ME-Proxy: <xmx:fL8NX9FdP5lecALPG8xdtryFX55Z-iHXgbYoJ8Cr0s1foY-V7w7W9A>
+    <xmx:fL8NXy4QUeAlNxtXLdNsNqayPRC0_RKHZUOsUWEbKQNEBOO86jp4Tg>
+    <xmx:fL8NX72jWGrxxhUQPHN6xF0o-UO9BzhQXxTM52dRN58URodfXvwKjA>
+    <xmx:fL8NX9BQdwW4EB2NLL_c8PGRGxtfKrTXQxSMgpg2YC-8x4-wpDU5eg>
 Received: from shredder.mtl.com (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 9AEF630600A9;
-        Tue, 14 Jul 2020 10:21:43 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 16B8030600A9;
+        Tue, 14 Jul 2020 10:21:45 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         petrm@mellanox.com, amitc@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 06/13] mlxsw: spectrum_span: Add support for mirroring towards CPU port
-Date:   Tue, 14 Jul 2020 17:20:59 +0300
-Message-Id: <20200714142106.386354-7-idosch@idosch.org>
+Subject: [PATCH net-next 07/13] mlxsw: spectrum_span: Allow passing parameters to SPAN agents
+Date:   Tue, 14 Jul 2020 17:21:00 +0300
+Message-Id: <20200714142106.386354-8-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200714142106.386354-1-idosch@idosch.org>
 References: <20200714142106.386354-1-idosch@idosch.org>
@@ -63,155 +63,133 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-The Spectrum-2 and Spectrum-3 ASICs are able to mirror packets towards
-the CPU. These packets are then trapped like any other packet, but with
-a special packet trap and additional metadata such as why the packet was
-mirrored.
+Currently, the only parameter of a SPAN agent is the netdev which
+the SPAN agent should mirror to.
 
-The ability to mirror packets towards the CPU will be utilized by a
-subsequent patch set that will mirror packets that were dropped by the
-ASIC for various buffer-related reasons, such as tail-drop and
-early-drop.
+The next patch will add the ability to request a SPAN agent that mirrors
+to a specific netdev and has a specific policer ID bound to it. This is
+required when mirroring packets to the CPU port.
 
-Add mirroring towards the CPU as a new SPAN agent type and re-use the
-functions that mirror to a physical port where possible.
+Therefore, encapsulate the sole parameter to mlxsw_sp_span_agent_get()
+in a structure, so that it could later be extended with policer
+information.
 
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_span.c   | 88 +++++++++++++++++++
- 1 file changed, 88 insertions(+)
+ .../ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c   | 4 +++-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c   | 6 ++++--
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c      | 5 ++++-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c       | 5 +++--
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h       | 8 ++++++--
+ 5 files changed, 20 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
+index 73d56012654b..0e32123097d8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
+@@ -136,11 +136,13 @@ mlxsw_sp_act_mirror_add(void *priv, u8 local_in_port,
+ 			const struct net_device *out_dev,
+ 			bool ingress, int *p_span_id)
+ {
++	struct mlxsw_sp_span_agent_parms agent_parms;
+ 	struct mlxsw_sp_port *mlxsw_sp_port;
+ 	struct mlxsw_sp *mlxsw_sp = priv;
+ 	int err;
+ 
+-	err = mlxsw_sp_span_agent_get(mlxsw_sp, out_dev, p_span_id);
++	agent_parms.to_dev = out_dev;
++	err = mlxsw_sp_span_agent_get(mlxsw_sp, p_span_id, &agent_parms);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
+index 195e28ab8e65..ab4ec44b566a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
+@@ -27,6 +27,7 @@ mlxsw_sp_mall_port_mirror_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 			      struct mlxsw_sp_mall_entry *mall_entry)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
++	struct mlxsw_sp_span_agent_parms agent_parms;
+ 	struct mlxsw_sp_span_trigger_parms parms;
+ 	enum mlxsw_sp_span_trigger trigger;
+ 	int err;
+@@ -36,8 +37,9 @@ mlxsw_sp_mall_port_mirror_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		return -EINVAL;
+ 	}
+ 
+-	err = mlxsw_sp_span_agent_get(mlxsw_sp, mall_entry->mirror.to_dev,
+-				      &mall_entry->mirror.span_id);
++	agent_parms.to_dev = mall_entry->mirror.to_dev;
++	err = mlxsw_sp_span_agent_get(mlxsw_sp, &mall_entry->mirror.span_id,
++				      &agent_parms);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+index 901acd87353f..a5ce1eec5418 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+@@ -1295,10 +1295,13 @@ static int mlxsw_sp_qevent_mirror_configure(struct mlxsw_sp *mlxsw_sp,
+ {
+ 	struct mlxsw_sp_port *mlxsw_sp_port = qevent_binding->mlxsw_sp_port;
+ 	struct mlxsw_sp_span_trigger_parms trigger_parms = {};
++	struct mlxsw_sp_span_agent_parms agent_parms = {
++		.to_dev = mall_entry->mirror.to_dev,
++	};
+ 	int span_id;
+ 	int err;
+ 
+-	err = mlxsw_sp_span_agent_get(mlxsw_sp, mall_entry->mirror.to_dev, &span_id);
++	err = mlxsw_sp_span_agent_get(mlxsw_sp, &span_id, &agent_parms);
+ 	if (err)
+ 		return err;
+ 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-index 0ef9505d336f..0336edb29cc3 100644
+index 0336edb29cc3..48eb197e649d 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-@@ -128,6 +128,38 @@ void mlxsw_sp_span_fini(struct mlxsw_sp *mlxsw_sp)
- 	kfree(mlxsw_sp->span);
+@@ -1032,9 +1032,10 @@ void mlxsw_sp_span_respin(struct mlxsw_sp *mlxsw_sp)
+ 	mlxsw_core_schedule_work(&mlxsw_sp->span->work);
  }
  
-+static bool mlxsw_sp1_span_cpu_can_handle(const struct net_device *dev)
-+{
-+	return !dev;
-+}
-+
-+static int mlxsw_sp1_span_entry_cpu_parms(struct mlxsw_sp *mlxsw_sp,
-+					  const struct net_device *to_dev,
-+					  struct mlxsw_sp_span_parms *sparmsp)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static int
-+mlxsw_sp1_span_entry_cpu_configure(struct mlxsw_sp_span_entry *span_entry,
-+				   struct mlxsw_sp_span_parms sparms)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static void
-+mlxsw_sp1_span_entry_cpu_deconfigure(struct mlxsw_sp_span_entry *span_entry)
-+{
-+}
-+
-+static const
-+struct mlxsw_sp_span_entry_ops mlxsw_sp1_span_entry_ops_cpu = {
-+	.can_handle = mlxsw_sp1_span_cpu_can_handle,
-+	.parms_set = mlxsw_sp1_span_entry_cpu_parms,
-+	.configure = mlxsw_sp1_span_entry_cpu_configure,
-+	.deconfigure = mlxsw_sp1_span_entry_cpu_deconfigure,
-+};
-+
- static int
- mlxsw_sp_span_entry_phys_parms(struct mlxsw_sp *mlxsw_sp,
- 			       const struct net_device *to_dev,
-@@ -633,6 +665,7 @@ struct mlxsw_sp_span_entry_ops mlxsw_sp_span_entry_ops_vlan = {
- 
- static const
- struct mlxsw_sp_span_entry_ops *mlxsw_sp1_span_entry_ops_arr[] = {
-+	&mlxsw_sp1_span_entry_ops_cpu,
- 	&mlxsw_sp_span_entry_ops_phys,
- #if IS_ENABLED(CONFIG_NET_IPGRE)
- 	&mlxsw_sp_span_entry_ops_gretap4,
-@@ -643,8 +676,49 @@ struct mlxsw_sp_span_entry_ops *mlxsw_sp1_span_entry_ops_arr[] = {
- 	&mlxsw_sp_span_entry_ops_vlan,
+-int mlxsw_sp_span_agent_get(struct mlxsw_sp *mlxsw_sp,
+-			    const struct net_device *to_dev, int *p_span_id)
++int mlxsw_sp_span_agent_get(struct mlxsw_sp *mlxsw_sp, int *p_span_id,
++			    const struct mlxsw_sp_span_agent_parms *parms)
+ {
++	const struct net_device *to_dev = parms->to_dev;
+ 	const struct mlxsw_sp_span_entry_ops *ops;
+ 	struct mlxsw_sp_span_entry *span_entry;
+ 	struct mlxsw_sp_span_parms sparms;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
+index c21d8dfd371b..25f73561a9fe 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
+@@ -35,6 +35,10 @@ struct mlxsw_sp_span_trigger_parms {
+ 	int span_id;
  };
  
-+static bool mlxsw_sp2_span_cpu_can_handle(const struct net_device *dev)
-+{
-+	return !dev;
-+}
-+
-+static int mlxsw_sp2_span_entry_cpu_parms(struct mlxsw_sp *mlxsw_sp,
-+					  const struct net_device *to_dev,
-+					  struct mlxsw_sp_span_parms *sparmsp)
-+{
-+	sparmsp->dest_port = mlxsw_sp->ports[MLXSW_PORT_CPU_PORT];
-+	return 0;
-+}
-+
-+static int
-+mlxsw_sp2_span_entry_cpu_configure(struct mlxsw_sp_span_entry *span_entry,
-+				   struct mlxsw_sp_span_parms sparms)
-+{
-+	/* Mirroring to the CPU port is like mirroring to any other physical
-+	 * port. Its local port is used instead of that of the physical port.
-+	 */
-+	return mlxsw_sp_span_entry_phys_configure(span_entry, sparms);
-+}
-+
-+static void
-+mlxsw_sp2_span_entry_cpu_deconfigure(struct mlxsw_sp_span_entry *span_entry)
-+{
-+	enum mlxsw_reg_mpat_span_type span_type;
-+
-+	span_type = MLXSW_REG_MPAT_SPAN_TYPE_LOCAL_ETH;
-+	mlxsw_sp_span_entry_deconfigure_common(span_entry, span_type);
-+}
-+
-+static const
-+struct mlxsw_sp_span_entry_ops mlxsw_sp2_span_entry_ops_cpu = {
-+	.can_handle = mlxsw_sp2_span_cpu_can_handle,
-+	.parms_set = mlxsw_sp2_span_entry_cpu_parms,
-+	.configure = mlxsw_sp2_span_entry_cpu_configure,
-+	.deconfigure = mlxsw_sp2_span_entry_cpu_deconfigure,
++struct mlxsw_sp_span_agent_parms {
++	const struct net_device *to_dev;
 +};
 +
- static const
- struct mlxsw_sp_span_entry_ops *mlxsw_sp2_span_entry_ops_arr[] = {
-+	&mlxsw_sp2_span_entry_ops_cpu,
- 	&mlxsw_sp_span_entry_ops_phys,
- #if IS_ENABLED(CONFIG_NET_IPGRE)
- 	&mlxsw_sp_span_entry_ops_gretap4,
-@@ -1540,6 +1614,13 @@ static int mlxsw_sp1_span_init(struct mlxsw_sp *mlxsw_sp)
- {
- 	size_t arr_size = ARRAY_SIZE(mlxsw_sp1_span_entry_ops_arr);
+ struct mlxsw_sp_span_entry_ops;
  
-+	/* Must be first to avoid NULL pointer dereference by subsequent
-+	 * can_handle() callbacks.
-+	 */
-+	if (WARN_ON(mlxsw_sp1_span_entry_ops_arr[0] !=
-+		    &mlxsw_sp1_span_entry_ops_cpu))
-+		return -EINVAL;
-+
- 	mlxsw_sp->span->span_trigger_ops_arr = mlxsw_sp1_span_trigger_ops_arr;
- 	mlxsw_sp->span->span_entry_ops_arr = mlxsw_sp1_span_entry_ops_arr;
- 	mlxsw_sp->span->span_entry_ops_arr_size = arr_size;
-@@ -1561,6 +1642,13 @@ static int mlxsw_sp2_span_init(struct mlxsw_sp *mlxsw_sp)
- {
- 	size_t arr_size = ARRAY_SIZE(mlxsw_sp2_span_entry_ops_arr);
+ struct mlxsw_sp_span_ops {
+@@ -74,8 +78,8 @@ void mlxsw_sp_span_entry_invalidate(struct mlxsw_sp *mlxsw_sp,
+ int mlxsw_sp_span_port_mtu_update(struct mlxsw_sp_port *port, u16 mtu);
+ void mlxsw_sp_span_speed_update_work(struct work_struct *work);
  
-+	/* Must be first to avoid NULL pointer dereference by subsequent
-+	 * can_handle() callbacks.
-+	 */
-+	if (WARN_ON(mlxsw_sp2_span_entry_ops_arr[0] !=
-+		    &mlxsw_sp2_span_entry_ops_cpu))
-+		return -EINVAL;
-+
- 	mlxsw_sp->span->span_trigger_ops_arr = mlxsw_sp2_span_trigger_ops_arr;
- 	mlxsw_sp->span->span_entry_ops_arr = mlxsw_sp2_span_entry_ops_arr;
- 	mlxsw_sp->span->span_entry_ops_arr_size = arr_size;
+-int mlxsw_sp_span_agent_get(struct mlxsw_sp *mlxsw_sp,
+-			    const struct net_device *to_dev, int *p_span_id);
++int mlxsw_sp_span_agent_get(struct mlxsw_sp *mlxsw_sp, int *p_span_id,
++			    const struct mlxsw_sp_span_agent_parms *parms);
+ void mlxsw_sp_span_agent_put(struct mlxsw_sp *mlxsw_sp, int span_id);
+ int mlxsw_sp_span_analyzed_port_get(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				    bool ingress);
 -- 
 2.26.2
 
