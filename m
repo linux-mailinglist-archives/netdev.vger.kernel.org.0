@@ -2,45 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64CE421F96F
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:30:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CE9B21F98C
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:36:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729224AbgGNS3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 14:29:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35122 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728364AbgGNS3k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 14:29:40 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 75448229C7;
-        Tue, 14 Jul 2020 18:29:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594751379;
-        bh=h2JpwGY9/gWFAW2URUnoWDw+wbo9Eb1ddyIPBP9nnEU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EdcVvxkf0yJhjFpZf6pxOfy8ksx29Hum12KBT4zYwJe3Po4LlqM6dSWK9Rmlo+BIb
-         bGQBRcDKZ0NZOxWbdw18ch771d9abLhMjwjbmLRYXTaWpKa/KLyuygy4WZZIiPVlj3
-         5C/yvMmBjYR2AJ7hzgNP2Yc8s2k8HjdkAkWSSF58=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        simon.horman@netronome.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        thomas.lendacky@amd.com, aelior@marvell.com, skalluru@marvell.com,
-        vishal@chelsio.com, benve@cisco.com, _govind@gmx.com,
-        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
-        jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
-        GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
-        manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 12/12] qlcnic: convert to new udp_tunnel_nic infra
-Date:   Tue, 14 Jul 2020 11:29:08 -0700
-Message-Id: <20200714182908.690108-13-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200714182908.690108-1-kuba@kernel.org>
-References: <20200714182908.690108-1-kuba@kernel.org>
+        id S1729302AbgGNSff (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 14:35:35 -0400
+Received: from smtp01.smtpout.orange.fr ([80.12.242.123]:32212 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726817AbgGNSff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 14:35:35 -0400
+Received: from localhost.localdomain ([93.23.14.36])
+        by mwinf5d77 with ME
+        id 36bS2300P0mgUh1036bTVi; Tue, 14 Jul 2020 20:35:32 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Tue, 14 Jul 2020 20:35:32 +0200
+X-ME-IP: 93.23.14.36
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     sumit.semwal@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        christian.koenig@amd.com, mhabets@solarflare.com,
+        jwi@linux.ibm.com, zhongjiang@huawei.com, weiyongjun1@huawei.com,
+        vaibhavgupta40@gmail.com
+Cc:     linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] ksz884x: switch from 'pci_' to 'dma_' API
+Date:   Tue, 14 Jul 2020 20:35:01 +0200
+Message-Id: <20200714183501.310949-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -48,225 +38,296 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Straightforward conversion to new infra, 1 VxLAN port, handler
-may sleep.
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
+
+When memory is allocated in 'ksz_alloc_desc()', GFP_KERNEL can be used
+because a few lines below, GFP_KERNEL is also used in the
+'ksz_alloc_soft_desc()' calls.
+
+
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/net/ethernet/qlogic/qlcnic/qlcnic.h   |  7 +-
- .../ethernet/qlogic/qlcnic/qlcnic_83xx_init.c | 31 ++-------
- .../net/ethernet/qlogic/qlcnic/qlcnic_main.c  | 64 +++++++------------
- 3 files changed, 32 insertions(+), 70 deletions(-)
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/micrel/ksz884x.c | 68 ++++++++++++---------------
+ 1 file changed, 30 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h
-index d838774af5a6..d67f8265724a 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h
-@@ -536,8 +536,6 @@ struct qlcnic_hardware_context {
- 	u8 extend_lb_time;
- 	u8 phys_port_id[ETH_ALEN];
- 	u8 lb_mode;
--	u8 vxlan_port_count;
--	u16 vxlan_port;
- 	struct device *hwmon_dev;
- 	u32 post_mode;
- 	bool run_post;
-@@ -1026,9 +1024,6 @@ struct qlcnic_ipaddr {
- #define QLCNIC_HAS_PHYS_PORT_ID		0x40000
- #define QLCNIC_TSS_RSS			0x80000
+diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
+index 2ce7304d3753..bb646b65cc95 100644
+--- a/drivers/net/ethernet/micrel/ksz884x.c
++++ b/drivers/net/ethernet/micrel/ksz884x.c
+@@ -4390,9 +4390,9 @@ static int ksz_alloc_desc(struct dev_info *adapter)
+ 		DESC_ALIGNMENT;
  
--#define QLCNIC_ADD_VXLAN_PORT		0x100000
--#define QLCNIC_DEL_VXLAN_PORT		0x200000
--
- #define QLCNIC_VLAN_FILTERING		0x800000
- 
- #define QLCNIC_IS_MSI_FAMILY(adapter) \
-@@ -1700,6 +1695,8 @@ int qlcnic_init_pci_info(struct qlcnic_adapter *);
- int qlcnic_set_default_offload_settings(struct qlcnic_adapter *);
- int qlcnic_reset_npar_config(struct qlcnic_adapter *);
- int qlcnic_set_eswitch_port_config(struct qlcnic_adapter *);
-+int qlcnic_set_vxlan_port(struct qlcnic_adapter *adapter, u16 port);
-+int qlcnic_set_vxlan_parsing(struct qlcnic_adapter *adapter, u16 port);
- int qlcnic_83xx_configure_opmode(struct qlcnic_adapter *adapter);
- int qlcnic_read_mac_addr(struct qlcnic_adapter *);
- int qlcnic_setup_netdev(struct qlcnic_adapter *, struct net_device *, int);
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-index cda5b0a9e948..0e2f2fb6c3a9 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-@@ -1028,9 +1028,8 @@ static int qlcnic_83xx_idc_check_state_validity(struct qlcnic_adapter *adapter,
- #define QLCNIC_ENABLE_INGRESS_ENCAP_PARSING 1
- #define QLCNIC_DISABLE_INGRESS_ENCAP_PARSING 0
- 
--static int qlcnic_set_vxlan_port(struct qlcnic_adapter *adapter)
-+int qlcnic_set_vxlan_port(struct qlcnic_adapter *adapter, u16 port)
+ 	adapter->desc_pool.alloc_virt =
+-		pci_zalloc_consistent(adapter->pdev,
+-				      adapter->desc_pool.alloc_size,
+-				      &adapter->desc_pool.dma_addr);
++		dma_alloc_coherent(&adapter->pdev->dev,
++				   adapter->desc_pool.alloc_size,
++				   &adapter->desc_pool.dma_addr, GFP_KERNEL);
+ 	if (adapter->desc_pool.alloc_virt == NULL) {
+ 		adapter->desc_pool.alloc_size = 0;
+ 		return 1;
+@@ -4431,7 +4431,8 @@ static int ksz_alloc_desc(struct dev_info *adapter)
+ static void free_dma_buf(struct dev_info *adapter, struct ksz_dma_buf *dma_buf,
+ 	int direction)
  {
--	u16 port = adapter->ahw->vxlan_port;
- 	struct qlcnic_cmd_args cmd;
- 	int ret = 0;
+-	pci_unmap_single(adapter->pdev, dma_buf->dma, dma_buf->len, direction);
++	dma_unmap_single(&adapter->pdev->dev, dma_buf->dma, dma_buf->len,
++			 direction);
+ 	dev_kfree_skb(dma_buf->skb);
+ 	dma_buf->skb = NULL;
+ 	dma_buf->dma = 0;
+@@ -4456,16 +4457,15 @@ static void ksz_init_rx_buffers(struct dev_info *adapter)
  
-@@ -1057,10 +1056,8 @@ static int qlcnic_set_vxlan_port(struct qlcnic_adapter *adapter)
- 	return ret;
- }
+ 		dma_buf = DMA_BUFFER(desc);
+ 		if (dma_buf->skb && dma_buf->len != adapter->mtu)
+-			free_dma_buf(adapter, dma_buf, PCI_DMA_FROMDEVICE);
++			free_dma_buf(adapter, dma_buf, DMA_FROM_DEVICE);
+ 		dma_buf->len = adapter->mtu;
+ 		if (!dma_buf->skb)
+ 			dma_buf->skb = alloc_skb(dma_buf->len, GFP_ATOMIC);
+ 		if (dma_buf->skb && !dma_buf->dma)
+-			dma_buf->dma = pci_map_single(
+-				adapter->pdev,
+-				skb_tail_pointer(dma_buf->skb),
+-				dma_buf->len,
+-				PCI_DMA_FROMDEVICE);
++			dma_buf->dma = dma_map_single(&adapter->pdev->dev,
++						skb_tail_pointer(dma_buf->skb),
++						dma_buf->len,
++						DMA_FROM_DEVICE);
  
--static int qlcnic_set_vxlan_parsing(struct qlcnic_adapter *adapter,
--				    bool state)
-+int qlcnic_set_vxlan_parsing(struct qlcnic_adapter *adapter, u16 port)
+ 		/* Set descriptor. */
+ 		set_rx_buf(desc, dma_buf->dma);
+@@ -4543,11 +4543,10 @@ static void ksz_free_desc(struct dev_info *adapter)
+ 
+ 	/* Free memory. */
+ 	if (adapter->desc_pool.alloc_virt)
+-		pci_free_consistent(
+-			adapter->pdev,
+-			adapter->desc_pool.alloc_size,
+-			adapter->desc_pool.alloc_virt,
+-			adapter->desc_pool.dma_addr);
++		dma_free_coherent(&adapter->pdev->dev,
++				  adapter->desc_pool.alloc_size,
++				  adapter->desc_pool.alloc_virt,
++				  adapter->desc_pool.dma_addr);
+ 
+ 	/* Reset resource pool. */
+ 	adapter->desc_pool.alloc_size = 0;
+@@ -4590,12 +4589,10 @@ static void ksz_free_buffers(struct dev_info *adapter,
+ static void ksz_free_mem(struct dev_info *adapter)
  {
--	u16 vxlan_port = adapter->ahw->vxlan_port;
- 	struct qlcnic_cmd_args cmd;
- 	int ret = 0;
+ 	/* Free transmit buffers. */
+-	ksz_free_buffers(adapter, &adapter->hw.tx_desc_info,
+-		PCI_DMA_TODEVICE);
++	ksz_free_buffers(adapter, &adapter->hw.tx_desc_info, DMA_TO_DEVICE);
  
-@@ -1071,18 +1068,18 @@ static int qlcnic_set_vxlan_parsing(struct qlcnic_adapter *adapter,
- 	if (ret)
- 		return ret;
+ 	/* Free receive buffers. */
+-	ksz_free_buffers(adapter, &adapter->hw.rx_desc_info,
+-		PCI_DMA_FROMDEVICE);
++	ksz_free_buffers(adapter, &adapter->hw.rx_desc_info, DMA_FROM_DEVICE);
  
--	cmd.req.arg[1] = state ? QLCNIC_ENABLE_INGRESS_ENCAP_PARSING :
--				 QLCNIC_DISABLE_INGRESS_ENCAP_PARSING;
-+	cmd.req.arg[1] = port ? QLCNIC_ENABLE_INGRESS_ENCAP_PARSING :
-+				QLCNIC_DISABLE_INGRESS_ENCAP_PARSING;
+ 	/* Free descriptors. */
+ 	ksz_free_desc(adapter);
+@@ -4657,9 +4654,8 @@ static void send_packet(struct sk_buff *skb, struct net_device *dev)
  
- 	ret = qlcnic_issue_cmd(adapter, &cmd);
- 	if (ret)
- 		netdev_err(adapter->netdev,
- 			   "Failed to %s VXLAN parsing for port %d\n",
--			   state ? "enable" : "disable", vxlan_port);
-+			   port ? "enable" : "disable", port);
- 	else
- 		netdev_info(adapter->netdev,
- 			    "%s VXLAN parsing for port %d\n",
--			    state ? "Enabled" : "Disabled", vxlan_port);
-+			    port ? "Enabled" : "Disabled", port);
+ 		dma_buf->len = skb_headlen(skb);
  
- 	qlcnic_free_mbx_args(&cmd);
+-		dma_buf->dma = pci_map_single(
+-			hw_priv->pdev, skb->data, dma_buf->len,
+-			PCI_DMA_TODEVICE);
++		dma_buf->dma = dma_map_single(&hw_priv->pdev->dev, skb->data,
++					      dma_buf->len, DMA_TO_DEVICE);
+ 		set_tx_buf(desc, dma_buf->dma);
+ 		set_tx_len(desc, dma_buf->len);
  
-@@ -1093,22 +1090,6 @@ static void qlcnic_83xx_periodic_tasks(struct qlcnic_adapter *adapter)
- {
- 	if (adapter->fhash.fnum)
- 		qlcnic_prune_lb_filters(adapter);
--
--	if (adapter->flags & QLCNIC_ADD_VXLAN_PORT) {
--		if (qlcnic_set_vxlan_port(adapter))
--			return;
--
--		if (qlcnic_set_vxlan_parsing(adapter, true))
--			return;
--
--		adapter->flags &= ~QLCNIC_ADD_VXLAN_PORT;
--	} else if (adapter->flags & QLCNIC_DEL_VXLAN_PORT) {
--		if (qlcnic_set_vxlan_parsing(adapter, false))
--			return;
--
--		adapter->ahw->vxlan_port = 0;
--		adapter->flags &= ~QLCNIC_DEL_VXLAN_PORT;
--	}
- }
+@@ -4676,11 +4672,10 @@ static void send_packet(struct sk_buff *skb, struct net_device *dev)
+ 			dma_buf = DMA_BUFFER(desc);
+ 			dma_buf->len = skb_frag_size(this_frag);
  
- /**
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-index e52af092a793..173c7300cdf7 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-@@ -471,48 +471,29 @@ static int qlcnic_get_phys_port_id(struct net_device *netdev,
- 	return 0;
- }
+-			dma_buf->dma = pci_map_single(
+-				hw_priv->pdev,
+-				skb_frag_address(this_frag),
+-				dma_buf->len,
+-				PCI_DMA_TODEVICE);
++			dma_buf->dma = dma_map_single(&hw_priv->pdev->dev,
++						      skb_frag_address(this_frag),
++						      dma_buf->len,
++						      DMA_TO_DEVICE);
+ 			set_tx_buf(desc, dma_buf->dma);
+ 			set_tx_len(desc, dma_buf->len);
  
--static void qlcnic_add_vxlan_port(struct net_device *netdev,
--				  struct udp_tunnel_info *ti)
-+static int qlcnic_udp_tunnel_sync(struct net_device *dev, unsigned int table)
- {
--	struct qlcnic_adapter *adapter = netdev_priv(netdev);
--	struct qlcnic_hardware_context *ahw = adapter->ahw;
--
--	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
--		return;
-+	struct qlcnic_adapter *adapter = netdev_priv(dev);
-+	struct udp_tunnel_info ti;
-+	int err;
+@@ -4700,9 +4695,8 @@ static void send_packet(struct sk_buff *skb, struct net_device *dev)
+ 	} else {
+ 		dma_buf->len = len;
  
--	/* Adapter supports only one VXLAN port. Use very first port
--	 * for enabling offload
--	 */
--	if (!qlcnic_encap_rx_offload(adapter))
--		return;
--	if (!ahw->vxlan_port_count) {
--		ahw->vxlan_port_count = 1;
--		ahw->vxlan_port = ntohs(ti->port);
--		adapter->flags |= QLCNIC_ADD_VXLAN_PORT;
--		return;
-+	udp_tunnel_nic_get_port(dev, table, 0, &ti);
-+	if (ti.port) {
-+		err = qlcnic_set_vxlan_port(adapter, ntohs(ti.port));
-+		if (err)
-+			return err;
+-		dma_buf->dma = pci_map_single(
+-			hw_priv->pdev, skb->data, dma_buf->len,
+-			PCI_DMA_TODEVICE);
++		dma_buf->dma = dma_map_single(&hw_priv->pdev->dev, skb->data,
++					      dma_buf->len, DMA_TO_DEVICE);
+ 		set_tx_buf(desc, dma_buf->dma);
+ 		set_tx_len(desc, dma_buf->len);
  	}
--	if (ahw->vxlan_port == ntohs(ti->port))
--		ahw->vxlan_port_count++;
+@@ -4756,9 +4750,8 @@ static void transmit_cleanup(struct dev_info *hw_priv, int normal)
+ 		}
  
-+	return qlcnic_set_vxlan_parsing(adapter, ntohs(ti.port));
- }
+ 		dma_buf = DMA_BUFFER(desc);
+-		pci_unmap_single(
+-			hw_priv->pdev, dma_buf->dma, dma_buf->len,
+-			PCI_DMA_TODEVICE);
++		dma_unmap_single(&hw_priv->pdev->dev, dma_buf->dma,
++				 dma_buf->len, DMA_TO_DEVICE);
  
--static void qlcnic_del_vxlan_port(struct net_device *netdev,
--				  struct udp_tunnel_info *ti)
--{
--	struct qlcnic_adapter *adapter = netdev_priv(netdev);
--	struct qlcnic_hardware_context *ahw = adapter->ahw;
--
--	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
--		return;
--
--	if (!qlcnic_encap_rx_offload(adapter) || !ahw->vxlan_port_count ||
--	    (ahw->vxlan_port != ntohs(ti->port)))
--		return;
--
--	ahw->vxlan_port_count--;
--	if (!ahw->vxlan_port_count)
--		adapter->flags |= QLCNIC_DEL_VXLAN_PORT;
--}
-+static const struct udp_tunnel_nic_info qlcnic_udp_tunnels = {
-+	.sync_table	= qlcnic_udp_tunnel_sync,
-+	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP,
-+	.tables		= {
-+		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN, },
-+	},
-+};
+ 		/* This descriptor contains the last buffer in the packet. */
+ 		if (dma_buf->skb) {
+@@ -4991,9 +4984,8 @@ static inline int rx_proc(struct net_device *dev, struct ksz_hw* hw,
+ 	packet_len = status.rx.frame_len - 4;
  
- static netdev_features_t qlcnic_features_check(struct sk_buff *skb,
- 					       struct net_device *dev,
-@@ -540,8 +521,8 @@ static const struct net_device_ops qlcnic_netdev_ops = {
- 	.ndo_fdb_del		= qlcnic_fdb_del,
- 	.ndo_fdb_dump		= qlcnic_fdb_dump,
- 	.ndo_get_phys_port_id	= qlcnic_get_phys_port_id,
--	.ndo_udp_tunnel_add	= qlcnic_add_vxlan_port,
--	.ndo_udp_tunnel_del	= qlcnic_del_vxlan_port,
-+	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
- 	.ndo_features_check	= qlcnic_features_check,
- #ifdef CONFIG_QLCNIC_SRIOV
- 	.ndo_set_vf_mac		= qlcnic_sriov_set_vf_mac,
-@@ -2017,7 +1998,7 @@ qlcnic_attach(struct qlcnic_adapter *adapter)
- 	qlcnic_create_sysfs_entries(adapter);
+ 	dma_buf = DMA_BUFFER(desc);
+-	pci_dma_sync_single_for_cpu(
+-		hw_priv->pdev, dma_buf->dma, packet_len + 4,
+-		PCI_DMA_FROMDEVICE);
++	dma_sync_single_for_cpu(&hw_priv->pdev->dev, dma_buf->dma,
++				packet_len + 4, DMA_FROM_DEVICE);
  
- 	if (qlcnic_encap_rx_offload(adapter))
--		udp_tunnel_get_rx_info(netdev);
-+		udp_tunnel_nic_reset_ntf(netdev);
+ 	do {
+ 		/* skb->data != skb->head */
+@@ -6935,8 +6927,8 @@ static int pcidev_init(struct pci_dev *pdev, const struct pci_device_id *id)
  
- 	adapter->is_up = QLCNIC_ADAPTER_UP_MAGIC;
- 	return 0;
-@@ -2335,9 +2316,12 @@ qlcnic_setup_netdev(struct qlcnic_adapter *adapter, struct net_device *netdev,
- 					  NETIF_F_TSO6;
- 	}
+ 	result = -ENODEV;
  
--	if (qlcnic_encap_rx_offload(adapter))
-+	if (qlcnic_encap_rx_offload(adapter)) {
- 		netdev->hw_enc_features |= NETIF_F_RXCSUM;
+-	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) ||
+-			pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32)))
++	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32)) ||
++	    dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32)))
+ 		return result;
  
-+		netdev->udp_tunnel_nic_info = &qlcnic_udp_tunnels;
-+	}
-+
- 	netdev->hw_features = netdev->features;
- 	netdev->priv_flags |= IFF_UNICAST_FLT;
- 	netdev->irq = adapter->msix_entries[0].vector;
+ 	reg_base = pci_resource_start(pdev, 0);
 -- 
-2.26.2
+2.25.1
 
