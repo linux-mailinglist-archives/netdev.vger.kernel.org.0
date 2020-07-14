@@ -2,88 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88D4B21ECC4
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:27:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1807321ED02
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:36:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726986AbgGNJ1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 05:27:45 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:34690 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726928AbgGNJ1k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:27:40 -0400
-Received: by mail-ot1-f66.google.com with SMTP id e90so12567039ote.1;
-        Tue, 14 Jul 2020 02:27:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BcBgAiY71PDQb9AkYuorOFzEG6DsDrsVIbYaSy+JPpU=;
-        b=pDU7cxAc/8nVkIufip2sEC2iLfXpU+AebYUtWaIjKn0H4iq0NLO7N6MB0OcR9+kSha
-         KY2zU8joPjZ2EKi0eYLTmo3ZeenCLr+AYFDMjL65EvmWaREKe+qhfbLeWxl17vWIVPCM
-         tGAnMmQn39DcvDBWNMzSkKb2dGk7JbmLMU5uS8ggmlrcAYjOg7CVTGFWJRcKn2EjcpIV
-         FJhSulPblSS14bH2a6IXyWD7TDb8BL967V7GPJeCpZUdcRSy3MnJbtkX8KAUelPDJzdZ
-         IDZrh2UlEtFH2Fo+FwBxPZvyiti5IGgBYPDCsCHPYHRV0vb/ysm5yL6RlI7e4USxHy8i
-         ouqA==
-X-Gm-Message-State: AOAM530wME3BivjMGco+shebmbV/DUUFaVg48ToLehLsX8d9EOapnRGu
-        86wSIXgt4oz0ZST/gAnVE1l8mK7ZsWjXQ93m7lI=
-X-Google-Smtp-Source: ABdhPJyrhaG/SeR+X/25sxkP2ucHSApSaY4senOI3s6UTaENULowX/uuQANaV67djcwX6YA422EQ4z2isefIpnp0WQk=
-X-Received: by 2002:a05:6830:1451:: with SMTP id w17mr3264761otp.250.1594718859452;
- Tue, 14 Jul 2020 02:27:39 -0700 (PDT)
+        id S1726456AbgGNJgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 05:36:33 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:59361 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725816AbgGNJgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:36:33 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 044095C0158;
+        Tue, 14 Jul 2020 05:36:32 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 14 Jul 2020 05:36:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Ikp6IE
+        9N1Xr46q5bU05QaviFnf+U/vK1Pwzbeox1CaY=; b=juo9EVQAOypmGYCFhp1QoT
+        DTEMxgrf4n1cR0nG6Pr+641n41oQYvy5v7/BoUbv7S0E+DZzhILmW0qyO1OE9fXZ
+        uk03BdZ8t+l3aGC6uPt5EGpY2NK5+NG4mFBDXX+EkZ7mWrv0cyXGQG8BuV9VMXtF
+        Re2WNs/i0gKIG2/TdVf4LE9zGa4d8DUSXZZBk90byTZbSBFnYg+5snx2gLLt6zHn
+        2oWPWD642OHJofRXX0/1w4mDTn0ieXeiWXAqIGY1qX8Kj2z5aS0hf3gjZVXk/aBx
+        0F2IA6aqpxsQjEHVI6oFUaXQi0T8LxisvoymoHY2uWPnzWZsKC1OgmF60WKtqfLQ
+        ==
+X-ME-Sender: <xms:n3wNX7QMlr56-Ng-RV56l1s70DxTOZeChbhVfhwEcD3pOubxEL1IEQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedtgddulecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecuogfuuhhsphgvtghtffhomhgrihhnucdlgeelmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhephedutdegkeevveettedvteeuveegjeffteekffffhfdvgedugeejteeuvedvteek
+    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghdprghpphhsphhothdrtghomhenucfkph
+    epuddtledrieeirdduledrudeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgr
+    mhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:n3wNX8w8MwuZU-2v2XiriVvx9wTiOdvxcCi3aTRdUu10QH_fOgQLcQ>
+    <xmx:n3wNXw2D4LiHuUZWz47oQrLJs6y9-mSysHgqk2ayjI-dNYWKNFQufA>
+    <xmx:n3wNX7DmNMgTbJfvOLqkqVHaqcNu8rbFqZwjoCxnkHGzZ4PyhL5Vyg>
+    <xmx:oHwNX3uLMswQwNL0idO_LFJwQ_Ftfmf_0pAlQh_ZhGRDCHlGgDrb5w>
+Received: from localhost (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 311E03280059;
+        Tue, 14 Jul 2020 05:36:31 -0400 (EDT)
+Date:   Tue, 14 Jul 2020 12:36:28 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     syzbot <syzbot+dd0040db0d77d52f98a5@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, jiri@mellanox.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: use-after-free Read in devlink_health_reporter_destroy
+Message-ID: <20200714093628.GA274556@shredder>
+References: <000000000000dd436905aa5a9533@google.com>
 MIME-Version: 1.0
-References: <20200714121608.58962d66@canb.auug.org.au> <20200714090048.GG183694@krava>
-In-Reply-To: <20200714090048.GG183694@krava>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 14 Jul 2020 11:27:28 +0200
-Message-ID: <CAMuHMdWznwG3dSFDM=iGX7OU9o95ChdnhbdJBZ27zFNQip8C3w@mail.gmail.com>
-Subject: Re: linux-next: build warning after merge of the bpf-next tree
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000dd436905aa5a9533@google.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 11:02 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> On Tue, Jul 14, 2020 at 12:16:08PM +1000, Stephen Rothwell wrote:
-> > After merging the bpf-next tree, today's linux-next build (powerpc
-> > ppc64_defconfig) produced this warning:
-> >
-> > ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
-> > ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
-> >
-> > Presumably ntroduced by the merge of the resolve_btfids branch.
->
-> missing one more #ifdef.. chage below fixes it for me,
-> it's squashed with the fix for the arm build, I'll post
-> both fixes today
+On Mon, Jul 13, 2020 at 03:55:21PM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    71930d61 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10c8d157100000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=4c5bc87125719cf4
+> dashboard link: https://syzkaller.appspot.com/bug?extid=dd0040db0d77d52f98a5
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1421cd3f100000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13ccfe4f100000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+dd0040db0d77d52f98a5@syzkaller.appspotmail.com
 
-This one works for me, too:
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+#syz fix: devlink: Fix use-after-free when destroying health reporters
