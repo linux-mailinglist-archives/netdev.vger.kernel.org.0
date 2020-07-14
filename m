@@ -2,81 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1807321ED02
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:36:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6DCE21ED09
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:37:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726456AbgGNJgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 05:36:33 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:59361 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725816AbgGNJgd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:36:33 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 044095C0158;
-        Tue, 14 Jul 2020 05:36:32 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 14 Jul 2020 05:36:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Ikp6IE
-        9N1Xr46q5bU05QaviFnf+U/vK1Pwzbeox1CaY=; b=juo9EVQAOypmGYCFhp1QoT
-        DTEMxgrf4n1cR0nG6Pr+641n41oQYvy5v7/BoUbv7S0E+DZzhILmW0qyO1OE9fXZ
-        uk03BdZ8t+l3aGC6uPt5EGpY2NK5+NG4mFBDXX+EkZ7mWrv0cyXGQG8BuV9VMXtF
-        Re2WNs/i0gKIG2/TdVf4LE9zGa4d8DUSXZZBk90byTZbSBFnYg+5snx2gLLt6zHn
-        2oWPWD642OHJofRXX0/1w4mDTn0ieXeiWXAqIGY1qX8Kj2z5aS0hf3gjZVXk/aBx
-        0F2IA6aqpxsQjEHVI6oFUaXQi0T8LxisvoymoHY2uWPnzWZsKC1OgmF60WKtqfLQ
-        ==
-X-ME-Sender: <xms:n3wNX7QMlr56-Ng-RV56l1s70DxTOZeChbhVfhwEcD3pOubxEL1IEQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedtgddulecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecuogfuuhhsphgvtghtffhomhgrihhnucdlgeelmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnhephedutdegkeevveettedvteeuveegjeffteekffffhfdvgedugeejteeuvedvteek
-    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghdprghpphhsphhothdrtghomhenucfkph
-    epuddtledrieeirdduledrudeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgr
-    mhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:n3wNX8w8MwuZU-2v2XiriVvx9wTiOdvxcCi3aTRdUu10QH_fOgQLcQ>
-    <xmx:n3wNXw2D4LiHuUZWz47oQrLJs6y9-mSysHgqk2ayjI-dNYWKNFQufA>
-    <xmx:n3wNX7DmNMgTbJfvOLqkqVHaqcNu8rbFqZwjoCxnkHGzZ4PyhL5Vyg>
-    <xmx:oHwNX3uLMswQwNL0idO_LFJwQ_Ftfmf_0pAlQh_ZhGRDCHlGgDrb5w>
-Received: from localhost (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 311E03280059;
-        Tue, 14 Jul 2020 05:36:31 -0400 (EDT)
-Date:   Tue, 14 Jul 2020 12:36:28 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     syzbot <syzbot+dd0040db0d77d52f98a5@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, jiri@mellanox.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: use-after-free Read in devlink_health_reporter_destroy
-Message-ID: <20200714093628.GA274556@shredder>
-References: <000000000000dd436905aa5a9533@google.com>
+        id S1727037AbgGNJhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 05:37:31 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:21422 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726375AbgGNJh2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 05:37:28 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1594719448; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=kHP4fewFsWW13Lx02ZIwoFklJ0oLYlVkRTJp91Ke7JM=;
+ b=AVCiL+FRIRJoC8I79F55J5s7kIcFUOxSHSEjTqZ68f3hCsN/Nw3pjjDyemYIpAdVc9Byn+g5
+ r/KmBjkWXXytv+rl4RU2Oc5HUQMS4fnc+bMO/deHYCGrFI5xysOLW40+gKW3VYSafLpvUG5Y
+ JgCYlAlbmUmXT1+89RypHAdcCi4=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n15.prod.us-east-1.postgun.com with SMTP id
+ 5f0d7cc9427cd55766c3c976 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 14 Jul 2020 09:37:13
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 0B0C3C433B2; Tue, 14 Jul 2020 09:37:11 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 24376C433C8;
+        Tue, 14 Jul 2020 09:37:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 24376C433C8
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000dd436905aa5a9533@google.com>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] brcmfmac: expose firmware config files through modinfo
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200701153123.25602-1-matthias.bgg@kernel.org>
+References: <20200701153123.25602-1-matthias.bgg@kernel.org>
+To:     matthias.bgg@kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, hdegoede@redhat.com,
+        =?utf-8?q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Chung-Hsien Hsu <stanley.hsu@cypress.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Double Lo <double.lo@cypress.com>,
+        Frank Kao <frank.kao@cypress.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
+        netdev@vger.kernel.org,
+        =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Matthias Brugger <mbrugger@suse.com>,
+        Saravanan Shanmugham <saravanan.shanmugham@cypress.com>,
+        brcm80211-dev-list@cypress.com, linux-kernel@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Soeren Moch <smoch@web.de>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200714093712.0B0C3C433B2@smtp.codeaurora.org>
+Date:   Tue, 14 Jul 2020 09:37:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 03:55:21PM -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    71930d61 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10c8d157100000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=4c5bc87125719cf4
-> dashboard link: https://syzkaller.appspot.com/bug?extid=dd0040db0d77d52f98a5
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1421cd3f100000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13ccfe4f100000
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+dd0040db0d77d52f98a5@syzkaller.appspotmail.com
+matthias.bgg@kernel.org wrote:
 
-#syz fix: devlink: Fix use-after-free when destroying health reporters
+> From: Matthias Brugger <mbrugger@suse.com>
+> 
+> Apart from a firmware binary the chip needs a config file used by the
+> FW. Add the config files to modinfo so that they can be read by
+> userspace.
+> 
+> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+
+I agree with Hans, this does not look a good solution for the problem.
+
+Patch set to Changes Requested.
+
+-- 
+https://patchwork.kernel.org/patch/11636715/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
