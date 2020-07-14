@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1F2C21F3C2
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:23:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B225F21F3C4
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:23:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbgGNOVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 10:21:38 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:46647 "EHLO
+        id S1727831AbgGNOVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 10:21:41 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:50497 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725803AbgGNOVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:21:36 -0400
+        by vger.kernel.org with ESMTP id S1726914AbgGNOVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:21:38 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id E0A4C5C010B;
-        Tue, 14 Jul 2020 10:21:34 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 4416A5C0182;
+        Tue, 14 Jul 2020 10:21:37 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 14 Jul 2020 10:21:34 -0400
+  by compute4.internal (MEProxy); Tue, 14 Jul 2020 10:21:37 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=jteTrdyBZYS6yybaMocQCb9Cc/PUFSfLG/0GbkzJGAM=; b=ctpl2exB
-        +whHsK6n1t7VwHs5FrzBEvozZ+nkpOfWlJBcHxADfPCMUfhPpHvgwmcIeruZHJtg
-        t+B9+igzsrRZ+U5hy76gWD05ronvuvAP1BbG5078zRf7MLv+9PAz0fnEJQh/Byo+
-        yN2ikmAIY396E7y93Oc72QOcecuVfvEnNljXuDY6P+PxhgpQXi4FUZsPC2TqS2cP
-        VC/3tEZtNCzq9OmR9Hhxza6LHBCDmVbq4SWYwXUUgTxZGChcXHIUMGCe0U76Ez1o
-        Zo83OWTptvQz6IET3YVmlv3K0wOz0dLJxs/enIhdMdGf91PSGEuwKrM5DSY434/A
-        Zr2rd2LcqtSkWg==
-X-ME-Sender: <xms:br8NX3u2mo9KNRMFHcqo3sJy5Kwg36Gwa8Se3o5fVLkJi9P_2GcmRw>
+        fm3; bh=R+glxvPwAFgTYMT6X5KW3SpzXPBJ+hNa3A9lkry5Ctg=; b=UV0pjYzy
+        HtcGFYI2fDhjTCXdzUmVqdcYcBB2gYcSdta2WXrUUYEimJ4fLMSYDY6InlCi70wS
+        OZtWqbwUyc3Gqf9/EW+vLNxBykR5O0x23c7brOhVnPeVO9AWIR7u+Z1+8qcZtoSh
+        6S/dS0sxXt0kHXTIUPqNIFodgSBJkXSe17kpAbQJFQ/qZ+q3dx529FE3oJ+ZPwD9
+        GiTbRq/tkL9rZ/Vwuo4Mw/Oea9uYryp5vMuPV+QfgvKy9nif68d8urQ4L89H4JDG
+        tKVD1tZhIeXEs/QB5xILnQJUi5Sk+wDP2L0rHWjb2oiOmedUBpXxZXgkJNtxjPIi
+        SjewAjnKUUv2lw==
+X-ME-Sender: <xms:cb8NX3gkwEhys6arl75lUDYFWhVgvDHUUiceFbg3DPBkNmskEZ7H6w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedtgdejkecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieeirdduledrudeffeen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    ucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:br8NX4dQLFCPocj9_FwzQUJkMnnbhKbkYGd_InpFV958AFnqJfnm-Q>
-    <xmx:br8NX6zrCznxG_ZYvsPLIFvoI0YK5uuMkFMO6a-YOS_wtjAUMRgK-g>
-    <xmx:br8NX2NMQ6-yfMgo9_sFiqKYkJ_RQTDOx3kIhqvus7KJypJmMI2q-Q>
-    <xmx:br8NX6al1XUMlP6BR7OLJKK5nX6xsYgfkIfxqkMeJFdEaikz3c0Ohw>
+X-ME-Proxy: <xmx:cb8NX0BzKZGbiZZKGdrNDe065u4a3uQe2JuoEHZ899oNu2VttZPWtQ>
+    <xmx:cb8NX3HqkcKs310Eh1bJs3Py3HmLxcTg4-wasI93Q6HROsvLl9uYEg>
+    <xmx:cb8NX0TE0VM-6GaUponTaGHuTf7F2qjR6JW9AI1NyeLsJN68jVhp7Q>
+    <xmx:cb8NXw-b96ISb5EJuGt0HCpuReLK2DETkevIHEYn2sPDBlmuyiPT4A>
 Received: from shredder.mtl.com (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 02E1330600B1;
-        Tue, 14 Jul 2020 10:21:32 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 07DD330600B1;
+        Tue, 14 Jul 2020 10:21:34 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         petrm@mellanox.com, amitc@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 01/13] mlxsw: reg: Add session_id and pid to MPAT register
-Date:   Tue, 14 Jul 2020 17:20:54 +0300
-Message-Id: <20200714142106.386354-2-idosch@idosch.org>
+Subject: [PATCH net-next 02/13] mlxsw: reg: add mirroring_pid_base to MOGCR register
+Date:   Tue, 14 Jul 2020 17:20:55 +0300
+Message-Id: <20200714142106.386354-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200714142106.386354-1-idosch@idosch.org>
 References: <20200714142106.386354-1-idosch@idosch.org>
@@ -63,54 +63,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amitc@mellanox.com>
 
-Allow setting session_id and pid as part of port analyzer
-configurations.
+Allow setting mirroring_pid_base using MOGCR register.
 
 Signed-off-by: Amit Cohen <amitc@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 76f61bef03f8..e460d9d05d81 100644
+index e460d9d05d81..6af44aee501d 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -8662,6 +8662,13 @@ MLXSW_REG_DEFINE(mpat, MLXSW_REG_MPAT_ID, MLXSW_REG_MPAT_LEN);
+@@ -9521,6 +9521,14 @@ MLXSW_ITEM32(reg, mogcr, ptp_iftc, 0x00, 1, 1);
   */
- MLXSW_ITEM32(reg, mpat, pa_id, 0x00, 28, 4);
+ MLXSW_ITEM32(reg, mogcr, ptp_eftc, 0x00, 0, 1);
  
-+/* reg_mpat_session_id
-+ * Mirror Session ID.
-+ * Used for MIRROR_SESSION<i> trap.
++/* reg_mogcr_mirroring_pid_base
++ * Base policer id for mirroring policers.
++ * Must have an even value (e.g. 1000, not 1001).
++ * Reserved when SwitchX/-2, Switch-IB/2, Spectrum-1 and Quantum.
 + * Access: RW
 + */
-+MLXSW_ITEM32(reg, mpat, session_id, 0x00, 24, 4);
++MLXSW_ITEM32(reg, mogcr, mirroring_pid_base, 0x0C, 0, 14);
 +
- /* reg_mpat_system_port
-  * A unique port identifier for the final destination of the packet.
-  * Access: RW
-@@ -8719,6 +8726,18 @@ enum mlxsw_reg_mpat_span_type {
-  */
- MLXSW_ITEM32(reg, mpat, span_type, 0x04, 0, 4);
- 
-+/* reg_mpat_pide
-+ * Policer enable.
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, mpat, pide, 0x0C, 15, 1);
-+
-+/* reg_mpat_pid
-+ * Policer ID.
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, mpat, pid, 0x0C, 0, 14);
-+
- /* Remote SPAN - Ethernet VLAN
-  * - - - - - - - - - - - - - -
-  */
+ /* MPAGR - Monitoring Port Analyzer Global Register
+  * ------------------------------------------------
+  * This register is used for global port analyzer configurations.
 -- 
 2.26.2
 
