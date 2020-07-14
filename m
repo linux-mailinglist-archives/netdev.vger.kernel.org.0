@@ -2,177 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DE6821F246
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 15:16:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25FB321F24F
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 15:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728692AbgGNNQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 09:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42788 "EHLO
+        id S1728269AbgGNNSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 09:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727863AbgGNNQe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 09:16:34 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70AFC061755
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 06:16:33 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id q15so5645969wmj.2
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 06:16:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=nYoU871Umg8pEf23KuBXa9TezOsCAc9WN1U0Sl9RtIM=;
-        b=IKJTtDfzeJQfWdYO3heTD4AUKay2Q9U3WgHKSIs9DMTrGNvvwvNPspmItSSofgH85t
-         DeknG4Z2W7z2mUjqPiyM5SdQ4yzp4iuRqD2aT130/Lfl1oBY4MhW/IAltTMHMHlhtD84
-         YPNNvDxICENWTM3CaBygQGClu7JAVS22NxZPo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nYoU871Umg8pEf23KuBXa9TezOsCAc9WN1U0Sl9RtIM=;
-        b=VFfMJaktflY5zJG+wd81ssCIGAr1aGXTsCb5hEqpinaU/9auk/Y1vm+ueLKVW48yIj
-         +08oNqCEwzZcdVPesaQrCBQuZiGlK7Q82z5r4qV+eLTVsgab6J+HGFEU3Hf6mpnAnyoC
-         NRsAk3fCzxXs0+uhKjPj6GDyk7NqsYCzZgZ/uqiAe/GRXkBBb2M1CrVDu2MEnTqmLmwc
-         fFgyDbYbIwdptoUJpjBsFlL6oxFHfXK3gZRNps/QEKlJsEQcYNCHgY1qyJirelKrqO0k
-         N2AR3xqSFINyo8Npwyb9P3DS5jeMdbSyEtQe2H1yvBH5X1AK+Pem69umnfKTG0peMPJI
-         dkvQ==
-X-Gm-Message-State: AOAM530a1CD1gtsQUMPweiRl5GT6IwCgQo0dFtS3h1sKhG8GZe0zXurS
-        RHnHjIx/oCjAVGaqKQSa0W5u2w==
-X-Google-Smtp-Source: ABdhPJx2+hIbBipTOTBqyZESIrUYMjNFLrUQaLsYApDK0bO3zAQw1RUetedd+46eFbD8/1i6TrTWQw==
-X-Received: by 2002:a1c:80d3:: with SMTP id b202mr4598568wmd.111.1594732592441;
-        Tue, 14 Jul 2020 06:16:32 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id f15sm4364597wmj.44.2020.07.14.06.16.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jul 2020 06:16:31 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 07/12] bridge: switchdev: mrp: Extend MRP API
- for switchdev for MRP Interconnect
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        roopa@cumulusnetworks.com, davem@davemloft.net, kuba@kernel.org,
-        jiri@resnulli.us, ivecera@redhat.com, andrew@lunn.ch,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
-References: <20200714073458.1939574-1-horatiu.vultur@microchip.com>
- <20200714073458.1939574-8-horatiu.vultur@microchip.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <f0c67d68-b181-4a79-9d7c-a8810c3bfd70@cumulusnetworks.com>
-Date:   Tue, 14 Jul 2020 16:16:30 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        with ESMTP id S1728075AbgGNNSn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 09:18:43 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03687C061755
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 06:18:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=WP4jXFL4Jovu0eEUOaEb3UVu8wGCdlZ5tnf9zGVi/iw=; b=Mmx+WuWjtNVcxKRhzkeRk/AFE
+        MtlHZBL2UXqjQfiW9DGfvCYTH035RdcTUUYZfzRLKpsEEvd+OP6gjhH47mLslQtLH9G8acwVlK3te
+        3gc+tUbYzMLqmsbDwc3TjLiIOdUvZ1MatBoytzzs4YEEUmUp4xj9w8hbLjf1hKobQtqQm05uKnmgA
+        DVvDABePYg/N1Qt2Cqc/RKQSxCYxL9UMbtLBPFJCWgcBvn0SnAvQDZFsLScTufSwOAiSCN1iI16tU
+        wLKBk1gGDYsK5Vsg2Qu5/Ij49byoL0EuETnQfr8ewFopyDV9XJ5axapRFOeQTCF0AV05iBX7wdIg6
+        6Rrw77Sug==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39410)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jvKpQ-0005HV-71; Tue, 14 Jul 2020 14:18:36 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jvKpM-0007Ko-6h; Tue, 14 Jul 2020 14:18:32 +0100
+Date:   Tue, 14 Jul 2020 14:18:32 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "michael@walle.cc" <michael@walle.cc>, netdev@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH RFC net-next 00/13] Phylink PCS updates
+Message-ID: <20200714131832.GC1551@shell.armlinux.org.uk>
+References: <20200630142754.GC1551@shell.armlinux.org.uk>
+ <20200714084958.to4n52cnk32prn4v@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20200714073458.1939574-8-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200714084958.to4n52cnk32prn4v@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/07/2020 10:34, Horatiu Vultur wrote:
-> Implement the MRP API for interconnect switchdev. Similar with the other
-> br_mrp_switchdev function, these function will just eventually call the
-> switchdev functions: switchdev_port_obj_add/del.
-> 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  net/bridge/br_mrp_switchdev.c | 62 +++++++++++++++++++++++++++++++++++
->  net/bridge/br_private_mrp.h   |  7 ++++
->  2 files changed, 69 insertions(+)
-> 
+On Tue, Jul 14, 2020 at 11:49:58AM +0300, Vladimir Oltean wrote:
+> Are you going to post a non-RFC version?
 
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+I'm waiting for the remaining patches to be reviewed; Florian reviewed
+the first six patches (which are not the important ones in the series)
+and that seems to be where things have stopped. There has been no
+change, so I don't see there's much point to reposting the series.
 
-> diff --git a/net/bridge/br_mrp_switchdev.c b/net/bridge/br_mrp_switchdev.c
-> index 0da68a0da4b5a..ed547e03ace17 100644
-> --- a/net/bridge/br_mrp_switchdev.c
-> +++ b/net/bridge/br_mrp_switchdev.c
-> @@ -107,6 +107,68 @@ int br_mrp_switchdev_set_ring_state(struct net_bridge *br,
->  	return 0;
->  }
->  
-> +int br_mrp_switchdev_set_in_role(struct net_bridge *br, struct br_mrp *mrp,
-> +				 u16 in_id, u32 ring_id,
-> +				 enum br_mrp_in_role_type role)
-> +{
-> +	struct switchdev_obj_in_role_mrp mrp_role = {
-> +		.obj.orig_dev = br->dev,
-> +		.obj.id = SWITCHDEV_OBJ_ID_IN_ROLE_MRP,
-> +		.in_role = role,
-> +		.in_id = mrp->in_id,
-> +		.ring_id = mrp->ring_id,
-> +		.i_port = rtnl_dereference(mrp->i_port)->dev,
-> +	};
-> +	int err;
-> +
-> +	if (role == BR_MRP_IN_ROLE_DISABLED)
-> +		err = switchdev_port_obj_del(br->dev, &mrp_role.obj);
-> +	else
-> +		err = switchdev_port_obj_add(br->dev, &mrp_role.obj, NULL);
-> +
-> +	return err;
-> +}
-> +
-> +int br_mrp_switchdev_set_in_state(struct net_bridge *br, struct br_mrp *mrp,
-> +				  enum br_mrp_in_state_type state)
-> +{
-> +	struct switchdev_obj_in_state_mrp mrp_state = {
-> +		.obj.orig_dev = br->dev,
-> +		.obj.id = SWITCHDEV_OBJ_ID_IN_STATE_MRP,
-> +		.in_state = state,
-> +		.in_id = mrp->in_id,
-> +	};
-> +	int err;
-> +
-> +	err = switchdev_port_obj_add(br->dev, &mrp_state.obj, NULL);
-> +
-> +	if (err && err != -EOPNOTSUPP)
-> +		return err;
-> +
-> +	return 0;
-> +}
-> +
-> +int br_mrp_switchdev_send_in_test(struct net_bridge *br, struct br_mrp *mrp,
-> +				  u32 interval, u8 max_miss, u32 period)
-> +{
-> +	struct switchdev_obj_in_test_mrp test = {
-> +		.obj.orig_dev = br->dev,
-> +		.obj.id = SWITCHDEV_OBJ_ID_IN_TEST_MRP,
-> +		.interval = interval,
-> +		.max_miss = max_miss,
-> +		.in_id = mrp->in_id,
-> +		.period = period,
-> +	};
-> +	int err;
-> +
-> +	if (interval == 0)
-> +		err = switchdev_port_obj_del(br->dev, &test.obj);
-> +	else
-> +		err = switchdev_port_obj_add(br->dev, &test.obj, NULL);
-> +
-> +	return err;
-> +}
-> +
->  int br_mrp_port_switchdev_set_state(struct net_bridge_port *p,
->  				    enum br_mrp_port_state_type state)
->  {
-> diff --git a/net/bridge/br_private_mrp.h b/net/bridge/br_private_mrp.h
-> index 23da2f956ad0e..0d554ef88db85 100644
-> --- a/net/bridge/br_private_mrp.h
-> +++ b/net/bridge/br_private_mrp.h
-> @@ -72,6 +72,13 @@ int br_mrp_port_switchdev_set_state(struct net_bridge_port *p,
->  				    enum br_mrp_port_state_type state);
->  int br_mrp_port_switchdev_set_role(struct net_bridge_port *p,
->  				   enum br_mrp_port_role_type role);
-> +int br_mrp_switchdev_set_in_role(struct net_bridge *br, struct br_mrp *mrp,
-> +				 u16 in_id, u32 ring_id,
-> +				 enum br_mrp_in_role_type role);
-> +int br_mrp_switchdev_set_in_state(struct net_bridge *br, struct br_mrp *mrp,
-> +				  enum br_mrp_in_state_type state);
-> +int br_mrp_switchdev_send_in_test(struct net_bridge *br, struct br_mrp *mrp,
-> +				  u32 interval, u8 max_miss, u32 period);
->  
->  /* br_mrp_netlink.c  */
->  int br_mrp_ring_port_open(struct net_device *dev, u8 loc);
+I'd actually given up pushing this further; I've seen patches go by that
+purpetuate the idea that the PCS is handled by phylib.  I feel like I'm
+wasting my time with this.
+
+> I think this series makes a lot of sense overall and is a good
+> consolidation for the type of interfaces that are already established in
+> Linux.
 > 
+> This changes the landscape of how Linux is dealing with a MAC-side
+> clause 37 PCS, and should constitute a workable base even for clause 49
+> PCSs when those use a clause 37 auto-negotiation system (like USXGMII
+> and its various multi-port variants).
 
+Yes.
+
+> Where I have some doubts is a
+> clause 49 PCS which uses a clause 73 auto-negotiation system, I would
+> like to understand your vision of how deep phylink is going to go into
+> the PMD layer, especially where it is not obvious that said layer is
+> integrated with the MAC.
+
+I have only considered up to 10GBASE-R based systems as that is the
+limit of what I can practically test here.  I have one system that
+offers a QSFP+ cage, and I have a QSFP+ to 4x SFP+ (10G) splitter
+cable - so that's basically 4x 10GBASE-CR rather than 40GBASE-CR.
+
+I am anticipating that clause 73 will be handled in a very similar way
+to clause 37.  The clause 73 "technology ability" field defines the
+capabilities of the link, but as we are finding with 10GBASE-R based
+setups with copper PHYs, the capabilities of the link may not be what
+we want to report to the user, especially if the copper PHY is capable
+of rate adaption.  Hence, it may be possible to have a backplane link
+that connects to a copper PHY that does rate adaption:
+
+MAC <--> Clause 73 PCS <--backplane--> PHY <--base-T--> remote system
+
+This is entirely possible from what I've seen in one NBASE-T PHY
+datasheet.  The PHY is documented as being capable of negotiating a
+10GBASE-KR link with the host system, while offering 10GBASE-R,
+1000BASE-X, 10GBASE-T, 5GBASE-T, 2.5GBASE-T, 1GBASE-T, 100BASE-T, and
+10BASE-T on the media side.  The follow-on question is whether that
+PHY is likely to be accessible to the system on the other end of the
+backplane link somehow - either through some kind of firmware link
+or direct access.  That is not possible to know without having
+experience with such systems.
+
+That said, with the splitting of the PCS from the MAC in phylink, there
+is the possibility for the PCS to be implemented as an entirely
+separate driver to the MAC driver, although there needs to be some
+infrastructure to make that work sanely.  Right now, it is the MAC
+responsibility to attach the PCS to phylink, which is the right way
+to handle it for setups where the PCS is closely tied to the MAC, such
+as Marvell NETA and PP2 where the PCS is indistinguishable from the
+MAC, and will likely remain so for such setups.  However, if we need
+to also support entirely separate PCS, I don't see any big issues
+with that now that we have this split.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
