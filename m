@@ -2,235 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEFA721FEB6
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 22:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D4CE21FEB7
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 22:38:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727032AbgGNUiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 16:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726456AbgGNUiI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 16:38:08 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C804FC061755;
-        Tue, 14 Jul 2020 13:38:08 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id u12so13917745qth.12;
-        Tue, 14 Jul 2020 13:38:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=5W4uLh+0JPKR52UY5kWlzhxkly9bCF1VKtzxCeK1Xr0=;
-        b=m0td8zdxYplGckJ57KPeOtMrPNPh5MxNEln31JjPRiqSNkvVBPS4HJRaGSHoCTE4OL
-         gfaFRmN7Cg/8XHi3uP9F0JSq/ZORW2h3OaFyBeBhq0EPzmFIQWrOS7aApKPfD/bZkVK4
-         O2+L7YwFDQwwkYd8VKwltdS9zLb9qTE3QS4klCKGC1vGUsSIoXY3wA8JUqfhS8LT8jIa
-         kMRxJqp0KdSwRJofQsU6ko0Np1IvQ7/s38BTRF4vkiv3OHL9hho5MsRliCnnDtm7WfP4
-         O9HP4Edx606jDwWekJfZ4vcm6jLzxMmMrxog5YN2KCAFeTexBwbEjDJNP9ZWXHMRsFgH
-         55lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5W4uLh+0JPKR52UY5kWlzhxkly9bCF1VKtzxCeK1Xr0=;
-        b=RqiXl+k8Pl532QJHIC22zVPaY+jAW66d6HCvwMNxZgGcvTDU8nFIsIv5eVJDmyPjJu
-         qo7tK+N/jx2616mhNeAVgwaOwh/tJz7UygAwVvE9PgNQCE24k6cwC3Km6m0aoY3VRFxK
-         pCNZc0m/aDYoDqy26sk5Fc6/lWFj/wdM/vQCAPL3MJmFlpHcdzFdBVWrb438L+S0w8oW
-         FzyAi7vRkaIAfdqgEqBt1ccoVJISE+n0vn19TPOkSJjQ2C80MTuZFk41sez8S46Vj465
-         VtmfwSFf5WezL20nLl62q8hdaJ2KCdGlyoMEOo1ujs5u2sGc5x843uHobCbEFC7MX1Wu
-         0JQg==
-X-Gm-Message-State: AOAM530u2pVPUm/4AyhPumkt5qCf5NHVvdw3wxDk/tAfVyOHcOaYBNGu
-        QUsZmBv0MWs6w8OeFaqCo2nFb/zun47HkwuuXD4=
-X-Google-Smtp-Source: ABdhPJylAc9TS9wKA4TTDQ5nyZ0Tf6FTjjVMtjWxmk3cObjhdubZFGvH3qGTz07YShnjbJfWP2RDz4lzFdtdfQQPQlM=
-X-Received: by 2002:ac8:19c4:: with SMTP id s4mr6651856qtk.117.1594759087862;
- Tue, 14 Jul 2020 13:38:07 -0700 (PDT)
+        id S1727034AbgGNUio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 16:38:44 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:44389 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725945AbgGNUio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 16:38:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594759121;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yNb2uIG5e0yc5lEtrBjuYQf6eHm1E4llbInW46TvuYw=;
+        b=BGbHEM2dCbGq49KRHl5oEKzu/ESgRaj9NCFaimH4/TS7Y/LWMScixly8IQk2t4AOtuHOCg
+        XPmdxg8DnwthiBHCQ2o/2ZXqnxS346T6GcSO3/ZVIUrl9SVZ5V/wJcZnM1dO3IeWAZHiyg
+        7kZq5Qgp3xShFsgsdyA3ROw0MfZ9EKM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-188-CvdWcVEhPeSAZY1XDfw22A-1; Tue, 14 Jul 2020 16:38:32 -0400
+X-MC-Unique: CvdWcVEhPeSAZY1XDfw22A-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 416BE80183C;
+        Tue, 14 Jul 2020 20:38:31 +0000 (UTC)
+Received: from dhcp-25.97.bos.redhat.com (ovpn-117-20.rdu2.redhat.com [10.10.117.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 958875C679;
+        Tue, 14 Jul 2020 20:38:30 +0000 (UTC)
+From:   Aaron Conole <aconole@redhat.com>
+To:     Numan Siddique <nusiddiq@redhat.com>
+Cc:     Stefano Brivio <sbrivio@redhat.com>,
+        Florian Westphal <fw@strlen.de>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu discovery on encap sockets
+References: <20200712200705.9796-1-fw@strlen.de>
+        <20200712200705.9796-2-fw@strlen.de>
+        <20200713003813.01f2d5d3@elisabeth>
+        <20200713080413.GL32005@breakpoint.cc>
+        <20200713120158.665a6677@elisabeth>
+        <CAH=CPzopMgQ=RU2jCSqDxM3ghtTMGZLBiPoh+3k4wXnGEeC+fw@mail.gmail.com>
+Date:   Tue, 14 Jul 2020 16:38:29 -0400
+In-Reply-To: <CAH=CPzopMgQ=RU2jCSqDxM3ghtTMGZLBiPoh+3k4wXnGEeC+fw@mail.gmail.com>
+        (Numan Siddique's message of "Mon, 13 Jul 2020 16:21:15 +0530")
+Message-ID: <f7timepu916.fsf@dhcp-25.97.bos.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
 MIME-Version: 1.0
-References: <20200710224924.4087399-1-andriin@fb.com> <20200710224924.4087399-3-andriin@fb.com>
- <877dv6gpxd.fsf@toke.dk> <CAEf4BzY7qRsdcdhzf2--Bfgo-GB=ZoKKizOb+OHO7o2PMiNubA@mail.gmail.com>
- <87v9ipg8jd.fsf@toke.dk>
-In-Reply-To: <87v9ipg8jd.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 14 Jul 2020 13:37:56 -0700
-Message-ID: <CAEf4BzYVEqFUJybw3kjG6E6w12ocr2ncRz7j15GNNGG4BXJMTw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/7] bpf, xdp: add bpf_link-based XDP attachment API
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kicinski@fb.com>, Andrey Ignatov <rdna@fb.com>,
-        Takshak Chahande <ctakshak@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 1:13 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->
-> > On Tue, Jul 14, 2020 at 6:57 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
-redhat.com> wrote:
-> >>
-> >> Andrii Nakryiko <andriin@fb.com> writes:
-> >>
-> >> > Add bpf_link-based API (bpf_xdp_link) to attach BPF XDP program thro=
-ugh
-> >> > BPF_LINK_CREATE command.
-> >>
-> >> I'm still not convinced this is a good idea. As far as I can tell, at
-> >> this point adding this gets you three things:
-> >>
-> >> 1. The ability to 'lock' an attachment in place.
-> >>
-> >> 2. Automatic detach on fd close
-> >>
-> >> 3. API unification with other uses of BPF_LINK_CREATE.
-> >>
-> >>
-> >> Of those, 1. is certainly useful, but can be trivially achieved with t=
-he
-> >> existing netlink API (add a flag on attach that prevents removal unles=
-s
-> >> the original prog_fd is supplied as EXPECTED_FD).
-> >
-> > Given it's trivial to discover attached prog FD on a given ifindex, it
-> > doesn't add much of a peace of mind to the application that installs
-> > bpf_link. Any other XDP-enabled program (even some trivial test
-> > program) can unknowingly break other applications by deciding to
-> > "auto-cleanup" it's previous instance on restart ("what's my previous
-> > prog FD? let's replace it with my up-to-date program FD! What do you
-> > mean it wasn't my prog FD before?). We went over this discussion many
-> > times already: relying on the correct behavior of *other*
-> > applications, which you don't necessarily control, is not working well
-> > in real production use cases.
->
-> It's trivial to discover the attached *ID*. But the id-to-fd transition
-> requires CAP_SYS_ADMIN, which presumably you're not granting these
-> not-necessarily-well-behaved programs. Because if you are, what's
-> stopping them from just killing the owner of the bpf_link to clear it
-> ("oh, must be a previous instance of myself that's still running, let's
-> clear that up")? Or what else am I missing here?
+Numan Siddique <nusiddiq@redhat.com> writes:
 
-Well, I actually assumed CAP_SYS_ADMIN, given CAP_BPF is very-very
-fresh. Without it yes, you can't go ID->FD.
-
-But with CAP_SYS_ADMIN, you can't accidentally: 1) discover link ID,
-2) link ID-to-FD 3) query link to discover prog ID 4) prog ID-to-FD 5)
-replace with EXPECTED_FD, because that's not expected flow with link.
-With link you just have to assume that there is nothing attached to
-ifindex, otherwise it's up to admin to "recover".
-
-While with prog FD-based permanent attachment, you assume that you
-have to 1) discover prog ID 2) prog ID-to-FD 3) replace with your new
-prog FD, setting EXPECTED_FD, because you have to assume that if you
-crashed before, your old prog FD is still attached and you have to
-detach/replace it on restart. With such assumption, distinguishing
-"your old BPF prog" vs "someone else's active BPF prog" isn't simple.
-And you might not even think about the latter case.
-
-There is no 100%-fool-proof case, but there are very different flows
-and assumptions, which I, hopefully, outlined above.
-
+> On Mon, Jul 13, 2020 at 3:34 PM Stefano Brivio <sbrivio@redhat.com> wrote:
+>>
+>> On Mon, 13 Jul 2020 10:04:13 +0200
+>> Florian Westphal <fw@strlen.de> wrote:
+>>
+>> > Stefano Brivio <sbrivio@redhat.com> wrote:
+>> > > Hi,
+>> > >
+>> > > On Sun, 12 Jul 2020 22:07:03 +0200
+>> > > Florian Westphal <fw@strlen.de> wrote:
+>> > >
+>> > > > vxlan and geneve take the to-be-transmitted skb, prepend the
+>> > > > encapsulation header and send the result.
+>> > > >
+>> > > > Neither vxlan nor geneve can do anything about a lowered path mtu
+>> > > > except notifying the peer/upper dst entry.
+>> > >
+>> > > It could, and I think it should, update its MTU, though. I didn't
+>> > > include this in the original implementation of PMTU discovery for UDP
+>> > > tunnels as it worked just fine for locally generated and routed
+>> > > traffic, but here we go.
+>> >
+>> > I don't think its a good idea to muck with network config in response
+>> > to untrusted entity.
+>>
+>> I agree that this (changing MTU on VXLAN) looks like a further step,
+>> but the practical effect is zero: we can't send those packets already
+>> today.
+>>
+>> PMTU discovery has security impacts, and they are mentioned in the
+>> RFCs. Also here, we wouldn't increase the MTU as a result, and if the
+>> entity is considered untrusted, considerations from RFC 8201 and RFC
+>> 4890 cover that.
+>>
+>> In practice, we might have broken networks, but at a practical level, I
+>> guess it's enough to not make the situation any worse.
+>>
+>> > > As PMTU discovery happens, we have a route exception on the lower
+>> > > layer for the given path, and we know that VXLAN will use that path,
+>> > > so we also know there's no point in having a higher MTU on the VXLAN
+>> > > device, it's really the maximum packet size we can use.
+>> >
+>> > No, in the setup that prompted this series the route exception is wrong.
+>> > The current "fix" is a shell script that flushes the exception as soon
+>> > as its added to keep the tunnel working...
+>>
+>> Oh, oops.
+>>
+>> Well, as I mentioned, if this is breaking setups and this series is the
+>> only way to fix things, I have nothing against it, we can still work on
+>> a more comprehensive solution (including the bridge) once we have it.
+>>
+>> > > > Some setups, however, will use vxlan as a bridge port (or openvs vport).
+>> > >
+>> > > And, on top of that, I think what we're missing on the bridge is to
+>> > > update the MTU when a port lowers its MTU. The MTU is changed only as
+>> > > interfaces are added, which feels like a bug. We could use the lower
+>> > > layer notifier to fix this.
+>> >
+>> > I will defer to someone who knows bridges better but I think that
+>> > in bridge case we 100% depend on a human to set everything.
+>>
+>> Not entirely, MTU is auto-adjusted when interfaces are added (unless
+>> the user set it explicitly), however:
+>>
+>> > bridge might be forwarding frames of non-ip protocol and I worry that
+>> > this is a self-induced DoS when we start to alter configuration behind
+>> > sysadmins back.
+>>
+>> ...yes, I agree that the matter with the bridge is different. And we
+>> don't know if that fixes anything else than the selftest I showed, so
+>> let's forget about the bridge for a moment.
+>>
+>> > > I tried to represent the issue you're hitting with a new test case in
+>> > > the pmtu.sh selftest, also included in the diff. Would that work for
+>> > > Open vSwitch?
+>> >
+>> > No idea, I don't understand how it can work at all, we can't 'chop
+>> > up'/mangle l2 frame in arbitrary fashion to somehow make them pass to
+>> > the output port.  We also can't influence MTU config of the links peer.
+>>
+>> Sorry I didn't expand right away.
+>>
+>> In the test case I showed, it works because at that point sending
+>> packets to the bridge will result in an error, and the (local) sender
+>> fragments. Let's set this aside together with the bridge affair, though.
+>>
+>> Back to VXLAN and OVS: OVS implements a "check_pkt_len" action, cf.
+>> commit 4d5ec89fc8d1 ("net: openvswitch: Add a new action
+>> check_pkt_len"), that should be used when packets exceed link MTUs:
+>>
+>>   With the help of this action, OVN will check the packet length
+>>   and if it is greater than the MTU size, it will generate an
+>>   ICMP packet (type 3, code 4) and includes the next hop mtu in it
+>>   so that the sender can fragment the packets.
+>>
+>> and my understanding is that this can only work if we reflect the
+>> effective MTU on the device itself (including VXLAN).
+>>
 >
-> >> 2. is IMO the wrong model for XDP, as I believe I argued the last time
-> >> we discussed this :)
-> >> In particular, in a situation with multiple XDP programs attached
-> >> through a dispatcher, the 'owner' application of each program don't
-> >> 'own' the interface attachment anyway, so if using bpf_link for that i=
-t
-> >> would have to be pinned somewhere anyway. So the 'automatic detach'
-> >> feature is only useful in the "xdpd" deployment scenario, whereas in t=
-he
-> >> common usage model of command-line attachment ('ip link set xdp...') i=
-t
-> >> is something that needs to be worked around.
-> >
-> > Right, nothing changed since we last discussed. There are cases where
-> > one or another approach is more convenient. Having bpf_link for XDP
-> > finally gives an option to have an auto-detaching (on last FD close)
-> > approach, but you still insist there shouldn't be such an option. Why?
+> check_pkt_len is OVS datapath action and the corresponding OVS action
+> is  check_pkt_larger.
 >
-> Because the last time we discussed this, it was in the context of me
-> trying to extend the existing API and being told "no, don't do that, use
-> bpf_link instead". So I'm objecting to bpf_link being a *replacement*
-> for the exiting API; if that's not what you're intending, and we can
-> agree to keep both around and actively supported (including things like
-> adding that flag to the netlink API I talked about above), then that's a
-> totally different matter :)
+> Logically It is expected to use this way in the OVS flows- >
+>     reg0[0] = check_pkt_larger(1500);
+>     if reg0[0[ == 1; then take some action.
+>
+> In the case of OVN, if the register reg0[0] bit is set, then we
+> generate ICMP error packet (type 3, code 4).
+>
+> I don't know the requirements or the issue this patch is trying to
+> address. But I think for OVS, there has to be
+> a controller (like OVN) which makes use of the check_pkt_larger action
+> and takes necessary action by adding
+> appropriate OF flows based on the result of check_pkt_larger.
 
-Yes, we didn't want to extend what we still perceive as unsafe
-error-prone API, given we had a better approach in mind. Thus the
-opposition. But you've ultimately got EXPECTED_FD, so hopefully it
-works well for your use cases.
+Hi Numan,
 
-There is no removal of APIs from the kernel. Prog FD attachment for
-XDP is here to stay forever, did anyone ever indicate otherwise?
-bpf_link is an alternative, just like bpf_link for cgroup is an
-alternative to persistent BPF prog FD-based attachments, which we
-can't remove, even if we want to.
+The issue is that a route exception might lower the MTU for the
+destination, and the controller would need to be made aware of that.
 
->
-> >> 3. would be kinda nice, I guess, if we were designing the API from
-> >> scratch. But we already have an existing API, so IMO the cost of
-> >> duplication outweighs any benefits of API unification.
-> >
-> > Not unification of BPF_LINK_CREATE, but unification of bpf_link
-> > infrastructure in general, with its introspection and discoverability
-> > APIs. bpftool can show which programs are attached where and it can
-> > show PIDs of processes that own the BPF link.
->
-> Right, sure, I was using BPF_LINK_CREATE as a shorthand for bpf_link in
-> general.
->
-> > With CAP_BPF you have also more options now how to control who can
-> > mess with your bpf_link.
->
-> What are those, exactly?
+In that case, it could update any check_packet_len rules.  But it's not
+desirable for this type of rules to be explicitly required at all, imo.
+And for setups where user wants to use action=normal, or no openflow
+controller is used (a large number of OvS deployments), I think it will
+still be broken.
 
-I meant ID->FD conversion restrictions flexibility with CAP_BPF. You
-get all of BPF with CAP_BPF, but no ID->FD conversion to mess with
-bpf_link (e.g., to update underlying program).
+I've cooked up a change to OvS to correspond to this series:
 
->
-> [...]
->
-> >> I was under the impression that forcible attachment of bpf_links was
-> >> already possible, but looking at the code now it doesn't appear to be?
-> >> Wasn't that the whole point of BPF_LINK_GET_FD_BY_ID? I.e., that a
-> >> sysadmin with CAP_SYS_ADMIN privs could grab the offending bpf_link FD
-> >> and force-remove it? I certainly think this should be added before we
-> >> expand bpf_link usage any more...
-> >
-> > I still maintain that killing processes that installed the bpf_link is
-> > the better approach. Instead of letting the process believe and act as
-> > if it has an active XDP program, while it doesn't, it's better to
-> > altogether kill/restart the process.
->
-> Killing the process seems like a very blunt tool, though. Say it's a
-> daemon that attaches XDP programs to all available interfaces, but you
-> want to bring down an interface for some one-off maintenance task, but
-> the daemon authors neglected to provide an interface to tell the daemon
-> to detach from specific interfaces. If your only option is to kill the
-> daemon, you can't bring down that interface without disrupting whatever
-> that daemon is doing with XDP on all the other interfaces.
->
+https://github.com/orgcandman/ovs/commit/0c063e4443dda1f62c9310bda7f54140b9dc9c31
 
-I'd rather avoid addressing made up hypothetical cases, really. Get
-better and more flexible daemon? Make it pin links, so you can delete
-them, if necessary? Force-detaching is surely a way to address an
-issue like this, but not necessarily the best or required one.
+(I'm going to additionally modify it to default the pmtudisc=interface
+ by default, and the controller/operator can set it to
+ do/dont/want/etc...)
 
-Killing process is a blunt tool, of course, but one can argue that a
-dead process is better than a misbehaving process. We can keep coming
-up with ever more elaborate hypothetical examples, but I don't see
-much point. This force-detach functionality isn't hard to add, but so
-far we had no real reason to do that. Once we do have such use cases,
-we can add it, if we agree it's still a good idea.
+Maybe I missed something?
 
-> -Toke
+> Thanks
+> Numan
 >
+>>
+>> Side note: I'm not fond of the idea behind that OVS action because I
+>> think it competes with the kernel (and with ICMP itself, or PLPMTUD if
+>> ICMP is not an option) to do PMTU discovery.
+>>
+>> However, if that already works for OVS (I really don't know. Aaron,
+>> Numan?), perhaps you could simply consider going with that solution...
+>>
+>> --
+>> Stefano
+>>
+
