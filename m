@@ -2,61 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 881AA21E4E4
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:56:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38C9821E4EB
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:58:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727103AbgGNA4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 20:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
+        id S1726755AbgGNA62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 20:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726257AbgGNA4a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 20:56:30 -0400
+        with ESMTP id S1726257AbgGNA62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 20:58:28 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC0CC061755;
-        Mon, 13 Jul 2020 17:56:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECC9C061755;
+        Mon, 13 Jul 2020 17:58:28 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9EBFD129877D2;
-        Mon, 13 Jul 2020 17:56:29 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 17:56:29 -0700 (PDT)
-Message-Id: <20200713.175629.850658305876744846.davem@davemloft.net>
-To:     grandmaster@al2klimov.de
-Cc:     kevin.curtis@farsite.co.uk, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] wan: Replace HTTP links with HTTPS ones
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EAF39129877FB;
+        Mon, 13 Jul 2020 17:58:26 -0700 (PDT)
+Date:   Mon, 13 Jul 2020 17:58:25 -0700 (PDT)
+Message-Id: <20200713.175825.1534786004215530376.davem@davemloft.net>
+To:     loberman@redhat.com
+Cc:     linux-scsi@vger.kernel.org, QLogic-Storage-Upstream@cavium.com,
+        netdev@vger.kernel.org, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com
+Subject: Re: [PATCH] iscsi: qedi (qed_int.c) disable "MFW indication via
+ attention" SPAM every 5 minutes
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200713204812.38158-1-grandmaster@al2klimov.de>
-References: <20200713204812.38158-1-grandmaster@al2klimov.de>
+In-Reply-To: <1594674941-32092-1-git-send-email-loberman@redhat.com>
+References: <1594674941-32092-1-git-send-email-loberman@redhat.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 13 Jul 2020 17:56:29 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 13 Jul 2020 17:58:27 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Date: Mon, 13 Jul 2020 22:48:12 +0200
+From: Laurence Oberman <loberman@redhat.com>
+Date: Mon, 13 Jul 2020 17:15:41 -0400
 
-> Rationale:
-> Reduces attack surface on kernel devs opening the links for MITM
-> as HTTPS traffic is much harder to manipulate.
+> This is likely firmware causing this but its starting to annoy customers.
+> Change the message level to verbose to prevent the spam.
 > 
-> Deterministic algorithm:
-> For each file:
->   If not .svg:
->     For each line:
->       If doesn't contain `\bxmlns\b`:
->         For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-> 	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
->             If both the HTTP and HTTPS versions
->             return 200 OK and serve the same content:
->               Replace HTTP with HTTPS.
-> 
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+> Signed-off-by: Laurence Oberman <loberman@redhat.com>
 
-Applied, thank you.
+"iscsi:" doesn't belong in this Subject line.
+
+Please look at recent changes to this driver and what commit header
+line subsystem prefixes and layout is being used.
+
+Thanks.
