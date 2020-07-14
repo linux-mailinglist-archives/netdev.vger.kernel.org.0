@@ -2,90 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D13421F75A
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 18:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2604621F764
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 18:34:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727046AbgGNQaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 12:30:55 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:42379 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgGNQaz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 12:30:55 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 06EGUlQA2026549, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb06.realtek.com.tw[172.21.6.99])
-        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 06EGUlQA2026549
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 15 Jul 2020 00:30:47 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 15 Jul 2020 00:30:46 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMB04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 15 Jul 2020 00:30:46 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::941:6388:7d34:5c44]) by
- RTEXMB04.realtek.com.tw ([fe80::941:6388:7d34:5c44%3]) with mapi id
- 15.01.1779.005; Wed, 15 Jul 2020 00:30:46 +0800
-From:   Hau <hau@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Linux Firmware <linux-firmware@kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] rtl_nic: update firmware for RTL8125B
-Thread-Topic: [PATCH] rtl_nic: update firmware for RTL8125B
-Thread-Index: AQHWWfMUXnupSXfVO06xF89x5MgABKkHQ4iA
-Date:   Tue, 14 Jul 2020 16:30:46 +0000
-Message-ID: <6984bfd1f42242bb852706ef0cb36bc1@realtek.com>
-References: <ec13a841-ad71-dbad-6d1c-60470610cdd5@gmail.com>
-In-Reply-To: <ec13a841-ad71-dbad-6d1c-60470610cdd5@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.157]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728565AbgGNQdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 12:33:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54616 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728087AbgGNQdL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 12:33:11 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9CF4122464;
+        Tue, 14 Jul 2020 16:33:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594744390;
+        bh=IL/q2MikxWSOCHkTue3ZRfLBYvGD19b9OpRaKqZN4HE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aBVNtA92jLN1dzeOkKemXhxadHbEzUZ2eZQ+DKMaB4hnTHe1lAanPjZSKd32VVfl7
+         ihmRRaV1w1vMG9UGMiodLeDtekzPAEmnOQgI2Ke18Hr3Ve9Qkn9pWp74K5rXaCfAfo
+         mEcHTjOxe6f1Lya8oUOKdaDH6WEbyMSC0fnieO3E=
+Date:   Tue, 14 Jul 2020 09:33:08 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edward Cree <ecree@solarflare.com>,
+        "leon@kernel.org" <leon@kernel.org>
+Cc:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 04/16] sfc_ef100: skeleton EF100 PF driver
+Message-ID: <20200714093308.584d69d6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <88664bf2-a0c9-4cb1-b50c-2a5e592fe235@solarflare.com>
+References: <dbd87499-161e-09f3-7dec-8b7c13ad02dd@solarflare.com>
+        <14ffb6fc-d5a2-ce62-c8e7-6cf6e164bf16@solarflare.com>
+        <20200713160200.681db7aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <88664bf2-a0c9-4cb1-b50c-2a5e592fe235@solarflare.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiANCj4gUmVhbHRlayBwcm92aWRlZCB1cGRhdGVkIHZlcnNpb25zIG9mIFJUTDgxMjVCIHJldi5h
-IGFuZCByZXYuYiBmaXJtd2FyZS4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEhlaW5lciBLYWxsd2Vp
-dCA8aGthbGx3ZWl0MUBnbWFpbC5jb20+DQoNClNpZ25lZC1vZmYtYnk6IENodW5oYW8gTGluIDxo
-YXVAcmVhbHRlay5jb20+DQoNCj4gLS0tDQo+ICBXSEVOQ0UgICAgICAgICAgICAgICAgfCAgIDQg
-KystLQ0KPiAgcnRsX25pYy9ydGw4MTI1Yi0xLmZ3IHwgQmluIDk5NTIgLT4gMTAxMjggYnl0ZXMg
-IHJ0bF9uaWMvcnRsODEyNWItMi5mdyB8IEJpbg0KPiAzMjY0IC0+IDMzMjggYnl0ZXMNCj4gIDMg
-ZmlsZXMgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlm
-ZiAtLWdpdCBhL1dIRU5DRSBiL1dIRU5DRQ0KPiBpbmRleCA3NWQzZDVlLi4xYTMzMjRkIDEwMDY0
-NA0KPiAtLS0gYS9XSEVOQ0UNCj4gKysrIGIvV0hFTkNFDQo+IEBAIC0zMDY2LDEwICszMDY2LDEw
-IEBAIEZpbGU6IHJ0bF9uaWMvcnRsODEyNWEtMy5mdw0KPiAgVmVyc2lvbjogMC4wLjENCj4gDQo+
-ICBGaWxlOiBydGxfbmljL3J0bDgxMjViLTEuZncNCj4gLVZlcnNpb246IDAuMC4xDQo+ICtWZXJz
-aW9uOiAwLjAuMg0KPiANCj4gIEZpbGU6IHJ0bF9uaWMvcnRsODEyNWItMi5mdw0KPiAtVmVyc2lv
-bjogMC4wLjENCj4gK1ZlcnNpb246IDAuMC4yDQo+IA0KPiAgTGljZW5jZToNCj4gICAqIENvcHly
-aWdodCDCqSAyMDExLTIwMTMsIFJlYWx0ZWsgU2VtaWNvbmR1Y3RvciBDb3Jwb3JhdGlvbiBkaWZm
-IC0tZ2l0DQo+IGEvcnRsX25pYy9ydGw4MTI1Yi0xLmZ3IGIvcnRsX25pYy9ydGw4MTI1Yi0xLmZ3
-IGluZGV4DQo+IDU3N2UxYmI2MWViOTVkY2VhN2FiOTFkM2MyMGI0YjZjMmFkYmUzYzEuLjkwMTkx
-YWI5YzlmNmViNDE0NGM2OGQ4DQo+IGJlNzExYjdjNjAxYjRkNjM3IDEwMDY0NCBHSVQgYmluYXJ5
-IHBhdGNoIGRlbHRhIDI1Ng0KPiB6Y21hRmhKSGNPPDBTSm1wYXg0c3VPcHxtQzt8PXItXm8kZT8l
-PUhhVF5vPE5hbDBaLVojNzgrOTctDQo+IFQydm5zNkFKDQo+IHpUQTcreTg1dkI+JSZ6fnpFI0pU
-fUxBYiR6MlNfc3JHQkJfKDJtdDg9QW9sOz8zPEBDajRXSnFVMGJ3OChYfUENCj4gSlgNCj4geiZt
-YXohNjk9ampYSkZzfT1AQ0VoMXVRNGJAYyVuVnBEPDhQbjFPKkVCcXd+SjJgbmM3OygqWUIxfjh2
-TnYNCj4gVmY2Kw0KPiBzO1E+Z0BmcV9CNmZxYGozM0lvRmcxX29BeGphT0xJNmt4akV7fEF7VWFL
-TTJKV0lGLT8wSHZmY3ReZmM0DQo+IA0KPiBkZWx0YSA3OQ0KPiB6Y21iUT58Ry16NTBTSm1wYXg0
-c3VPcHxtQzt8PXItXmI4ZFklPThVU15eRldibDBaLQ0KPiBaI0lyZFc3fU9gfm5zNjh5DQo+IGFU
-YllfIW5PSUVCJS0pPkMkZkN5S3okTT1SUVV3NV4jdCllUQ0KPiANCj4gZGlmZiAtLWdpdCBhL3J0
-bF9uaWMvcnRsODEyNWItMi5mdyBiL3J0bF9uaWMvcnRsODEyNWItMi5mdyBpbmRleA0KPiA0NWIw
-NDQzNDI2M2Q2ZDY5YThlNzBlMjdjY2Y0ODQzYmQ1ZjkzOWE0Li5kYzc1M2I1ODdjMzhiMDQ0Nzgy
-MTNlOA0KPiAzYjVkNzIzODA5MjQ4YWIxMSAxMDA2NDQgR0lUIGJpbmFyeSBwYXRjaCBkZWx0YSAx
-NTcNCj4gemNtWD5nKiZ3Q00wMGMhUElUblVTcmIpVStAZGtQWmRQV0tjPUs2LQ0KPiBsYGJHdklO
-Z3laeVZnK1VmMkF6cXpDTEQkcQ0KPiB6UnQ4Ml5oSzN0Nm5WQWZseGFBdWQ3ekJWMmoxRHdfYDN3
-YiYzPTl1SUxKbU5VNGgmMlNRV3pLfUZmZ3poWXwNCj4gZGVGDQo+IFc7OEtDPGRqRnE2MGpUUEww
-fmcyP1F+Jl4rYlEjJEkNCj4gDQo+IGRlbHRhIDkyDQo+IHpjbVpwV0l2fWFiMDBjIVBJVG5VU3Ji
-KVUrQGRrUFpkV0glSFg4TU12YGJHdklOZ3laeVZnWTZiaFYrVEwNCj4gQ0xCaF8NCj4gY1I7RmZG
-cmp7RXNuVkJ9dlZSR09TYXAwMH4wNFlOVDA0OTE0JHA4UVYNCj4gDQo+IC0tDQo+IDIuMjcuMA0K
-PiANCj4gDQo+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQgYmVmb3JlIHBy
-aW50aW5nIHRoaXMgZS1tYWlsLg0K
+On Tue, 14 Jul 2020 10:02:05 +0100 Edward Cree wrote:
+> On 14/07/2020 00:02, Jakub Kicinski wrote:
+> > On Mon, 13 Jul 2020 12:32:16 +0100 Edward Cree wrote: =20
+> >> +MODULE_VERSION(EFX_DRIVER_VERSION); =20
+> > We got rid of driver versions upstream, no? =20
+> The sfc driver still has a MODULE_VERSION(), I just made this do
+> =C2=A0the same.=C2=A0 Should I instead remove the one from sfc as well?
+
+Yes, please.
+
+Leon, I see there's a bunch of MODULE_VERSIONS() still left - are you
+planning to take care of those? Perhaps removing them is a good "intern
+task"?
+
+> I assumed there was some reason why it hadn't been included in
+> =C2=A0the versionectomy so far.
+
+versionectomy :)
