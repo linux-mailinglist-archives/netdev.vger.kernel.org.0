@@ -2,89 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3015021F8BC
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:05:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A0621F8CC
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:10:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727772AbgGNSE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 14:04:58 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:59663 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725906AbgGNSE5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 14:04:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594749894;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+Uy5z+zxEHDM/mc2k96aF628zofsGGjD7E3o182DxAU=;
-        b=Ps8vi/NLmJkjPJGmuaISE9zDSljqs6BG37gelpCJhexsFZVaidClzDMLeVgWVN0zD5YGqC
-        SjKkrY186ztqVGGxXq3u2TEyXzjTXBnSYiaC9rS+pcQT6xvk3cUqogl2W99B90ASXDnh9x
-        u6q4Hug5G08I/Du+ZMkbvEY1IyOI+wk=
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
- [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-365-QX-jTkRYNkmPpp6e0WgnWA-1; Tue, 14 Jul 2020 14:04:52 -0400
-X-MC-Unique: QX-jTkRYNkmPpp6e0WgnWA-1
-Received: by mail-ot1-f69.google.com with SMTP id g70so10103268otg.1
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 11:04:52 -0700 (PDT)
+        id S1728991AbgGNSK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 14:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728301AbgGNSK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 14:10:28 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26A9C061755;
+        Tue, 14 Jul 2020 11:10:27 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id u12so13508019qth.12;
+        Tue, 14 Jul 2020 11:10:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ZX4l9y/mb02MIUOaKSz1lj12ECx0wlEAm51QAfF6o/8=;
+        b=WsiJGXVqDNs9WargJT52mvIz/gaCVCuxb52bFJeFukAYzSUEIh2fdlkQeVqeuWbB0D
+         Bzbqn0r0doaRe/L6ZZIb3zStjHYGZ8RF2beyf9yjYgP8agdHAl0PAiSbAO4euheDv12l
+         8btObml9Y9hX6nYx8w01Xl2cH7DSo25hPOO4FJFsbXHDRP0OEfMtN0dqr2T/CmkEn3QC
+         pOonLTv9BirBHzAunpzAGUXm4OHH4ctLfxxq13swaSMV/LTuMoEKHkYbwWJA0nb4jEM7
+         7Ke2VPeIG86ZGrJ4GX1h39LqB8Ud3pcWPrGhbq8RY+MWZ+rPqXoJNibnsLvzBSqf90bk
+         QeSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+Uy5z+zxEHDM/mc2k96aF628zofsGGjD7E3o182DxAU=;
-        b=jpD1LIx+wCpB+wYBd9yvLKta5UugbCT/ZPRD3xot3s0H8bVF+8OpGdZ47Am6PlUJIl
-         dcvZ8Pqd2uZvg0g92fv0UTP7rPWLwRjZqKk4YOeZVekL95ZAE9ReZOEc37LrWYxi1+uo
-         WbFPChqbKUlmy+UNSryTRuDBQWhVcRnWIYiC7CPhgsGx/CAETT315yA8C+XB+TGzxM2o
-         IPJmK1ttOeNqj5775WOgIstisA5pSEBgSGY6xPwordbK9pxskSws8ekuJ6h1m1upseWF
-         7yOXxXhfSa+1UBd8ML/aAlaFUj4uFT6NJXgBhoQwqb+VZKPG1r4Tnp08JNwKrahC+8ek
-         BgRw==
-X-Gm-Message-State: AOAM531Mqm1aXvaQMU4g3SxlTQznoYK2pPeTOXCXr4wojr1L6CGdgyQ8
-        8+jMc05zq9MJyJHV6bI15v9bPiBkHWiAlu5Ic4jGZhx4ta7K7pvWU3p8SfAMNoLdddG2o/dU0yc
-        fVuA8gU1I46VxsaYeY4a8mdLP3OM6ZA2u
-X-Received: by 2002:a9d:6659:: with SMTP id q25mr4787607otm.330.1594749891606;
-        Tue, 14 Jul 2020 11:04:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxLtIsrXfYU4Yt0qlNhorFSBy9tXwFNDsuTQ3C8thgmpG4m2LzoSruDjlozWrpYiTRKmZ4GAd7jfS8bjbp3d6A=
-X-Received: by 2002:a9d:6659:: with SMTP id q25mr4787593otm.330.1594749891384;
- Tue, 14 Jul 2020 11:04:51 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZX4l9y/mb02MIUOaKSz1lj12ECx0wlEAm51QAfF6o/8=;
+        b=WK71pxN91y9WAgxJ1Gm/yHPuW91KAmwbGJnGDseTNRa445SVDVBhAkkW8sVHRLEuPd
+         SqHZ6F97P7CCk6BtDSbH0NQf04eR3vgRUIbOywAa4pXh1KlQTjkqVGgTpDQbL47RKlvS
+         9RzOi9xVrEuuTtKMQPDlK2j0IXWhn3jId1uOA/im9vxzPpCgEbdBn9EyQ2PVSM0NYpFM
+         e1NDWJVwCouTeWhVbSUOmnx2YFIrBb5U34ntq4uUa8HThl/zddlkzNBSY7zf+cDPwT4e
+         me+k/BLRReO0VbQwlO/VC41qwiRLj2XJFDD1r4a70o8mL8JeMs+DDQ4kMCLIjSJpspk4
+         JCww==
+X-Gm-Message-State: AOAM530SlVMg0pF7ewMbMJLxRkYDhfv+nxzPBG+E1DMbXlbzwSW5RVCB
+        v9i7lTg3ntGGtIix6rhL4w==
+X-Google-Smtp-Source: ABdhPJzIfX8uNaGelEtus3hlnEHUAzJCj9p6MTHvuiHUjgC4AFO0/AIzEJVEUS+Rr3I8EFtZYkxMRQ==
+X-Received: by 2002:ac8:3028:: with SMTP id f37mr5775930qte.351.1594750226967;
+        Tue, 14 Jul 2020 11:10:26 -0700 (PDT)
+Received: from localhost.localdomain ([209.94.141.207])
+        by smtp.gmail.com with ESMTPSA id n64sm22663726qke.77.2020.07.14.11.10.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2020 11:10:26 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [Linux-kernel-mentees] [PATCH v3] bpf: Fix NULL pointer dereference in __btf_resolve_helper_id()
+Date:   Tue, 14 Jul 2020 14:09:04 -0400
+Message-Id: <20200714180904.277512-1-yepeilin.cs@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <CAADnVQ+jUPGJapkvKW=AfXESD6Vz2iuONvJm8eJm5Yd+u9mJ+w@mail.gmail.com>
+References: <CAADnVQ+jUPGJapkvKW=AfXESD6Vz2iuONvJm8eJm5Yd+u9mJ+w@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
- <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
-In-Reply-To: <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Tue, 14 Jul 2020 14:04:40 -0400
-Message-ID: <CAKfmpSfwdAOgXjHwE3bxf7r1oV6XskqMvpTFAk-DMSzt4dH-9g@mail.gmail.com>
-Subject: Re: [RFC] bonding driver terminology change proposal
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 6:00 PM Michal Kubecek <mkubecek@suse.cz> wrote:
->
-> On Mon, Jul 13, 2020 at 02:51:39PM -0400, Jarod Wilson wrote:
-> > To start out with, I'd like to attempt to eliminate as much of the use
-> > of master and slave in the bonding driver as possible. For the most
-> > part, I think this can be done without breaking UAPI, but may require
-> > changes to anything accessing bond info via proc or sysfs.
->
-> Could we, please, avoid breaking existing userspace tools and scripts?
-> Massive code churn is one thing and we could certainly bite the bullet
-> and live with it (even if I'm still not convinced it would be as great
-> idea as some present it) but trading theoretical offense for real and
-> palpable harm to existing users is something completely different.
->
-> Or is "don't break userspace" no longer the "first commandment" of linux
-> kernel development?
+Prevent __btf_resolve_helper_id() from dereferencing `btf_vmlinux`
+as NULL. This patch fixes the following syzbot bug:
 
-Definitely looking to minimize breakage here, and it sounds like it'll
-be to the point of "none", or this won't fly. I think this may require
-having "legacy" aliases for certain interfaces and the like, to both
-provide a less problematic interface name as the new default, but
-prevent breaking any existing setups.
+    https://syzkaller.appspot.com/bug?id=f823224ada908fa5c207902a5a62065e53ca0fcc
 
+Reported-by: syzbot+ee09bda7017345f1fbe6@syzkaller.appspotmail.com
+Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+---
+Sorry, I got the link wrong. Thank you for pointing that out.
+
+Change in v3:
+    - Fix incorrect syzbot dashboard link.
+
+Change in v2:
+    - Split NULL and IS_ERR cases.
+
+ kernel/bpf/btf.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 30721f2c2d10..092116a311f4 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -4088,6 +4088,11 @@ static int __btf_resolve_helper_id(struct bpf_verifier_log *log, void *fn,
+ 	const char *tname, *sym;
+ 	u32 btf_id, i;
+ 
++	if (!btf_vmlinux) {
++		bpf_log(log, "btf_vmlinux doesn't exist\n");
++		return -EINVAL;
++	}
++
+ 	if (IS_ERR(btf_vmlinux)) {
+ 		bpf_log(log, "btf_vmlinux is malformed\n");
+ 		return -EINVAL;
 -- 
-Jarod Wilson
-jarod@redhat.com
+2.25.1
 
