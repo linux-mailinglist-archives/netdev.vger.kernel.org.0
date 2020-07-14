@@ -2,247 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5781E21F010
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 14:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EEE021F06C
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 14:12:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728047AbgGNMIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 08:08:44 -0400
-Received: from mail.intenta.de ([178.249.25.132]:38259 "EHLO mail.intenta.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726041AbgGNMIo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 08:08:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=zln4hxZBPKBJeOUEje0k20V2f5G6rG4rAoe1m3aL+eI=;
-        b=fW+syt96bwKz945+di9iKOrbGSelnfe/4x0AZQedolC13C3jW1Ox9Y7mUAWgYufBbP9HU2LgEX+2TxuVwDa1rKeNACezI+nI+JTUYCaTECJovN2P1YqPtYnfsMtFQwdDu8FiCB1Yb+jHJrxWHNzc8qevCJ+17OoORPyiBfOfZcSggUKIRppqoObnFO6EDdUt3o3hLZG1o0ZMe6Liop12tb2sH7WBuvDT+TX10ajS4hNXakvDbvgwe/77jBCKCVnk3fCoOMq2gFG3GtJmvxs+AUTxCXDyq7q9pEbUzOtEc2R8HjxOcTp2nJZrBTzhc6Ef3cVqm061U3g896pQhV085g==;
-Date:   Tue, 14 Jul 2020 14:08:28 +0200
-From:   Helmut Grohne <helmut.grohne@intenta.de>
-To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH] net: dsa: microchip: look for phy-mode in port nodes
-Message-ID: <20200714120827.GA7939@laureti-dev>
-References: <20200617082235.GA1523@laureti-dev>
+        id S1728766AbgGNMMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 08:12:25 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:25100 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728769AbgGNMMV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 08:12:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594728739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=T/Uhd8kUIGVaFKfJlqqrQidFsSiRXLcUNXdQ5T/zyIQ=;
+        b=B8mZRGUV6KzMfti0uxHILljcP/nwb4ML6w9gm5ObH258tZr9AgiLDcU5/nyvJkmBwYI8Ow
+        6GolTYdJuotnRCobL0B1KSxg1zjv8FZwale88Pqx+DyoNM9BbgMPclQvg0uFLtUhAHOhsh
+        Dgih2OJ3Xxfuv9qLbCgKm3PSF42FNWE=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-450-Xpwzwvh2M129YqVicbbzCw-1; Tue, 14 Jul 2020 08:12:17 -0400
+X-MC-Unique: Xpwzwvh2M129YqVicbbzCw-1
+Received: by mail-qv1-f72.google.com with SMTP id m18so9486331qvt.8
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 05:12:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=T/Uhd8kUIGVaFKfJlqqrQidFsSiRXLcUNXdQ5T/zyIQ=;
+        b=bTUZuF8m6THYRZOKNONV0ShW9sWI0rDTyvp1DLbQqK8Uex1TKkoDQMf1jUFvcrLAJM
+         HXX955olL4M/xsWZJDFahp9ECp59CK+462V1Nd7r8H4TjLpMWV7uUDuts2Wift+zsOQc
+         jIXlPPEjPM8hIpJ/h4uZjNkq2F21jwnp6nCFv+HUTkyp2WcsYPT7LuJt9hTUmWne25bQ
+         u28idMXTbs4/yYpSuOL90kirIZA8zi+U2fVYEQ/uC0f1g/fgK9PaRDnea1pRbV54018U
+         ZGGL20ttZfdOfOP1eQO3AGp/u4FdEP5NL7TB2UHLaCA0KgU1OZpo8D8LqlMgB14ARE6U
+         9gXw==
+X-Gm-Message-State: AOAM5336QBGRTwjSTMFC2Do6oW57EIgAeHjmYIYedsc6goV6BjHbHewe
+        YulTpsxFfh6vfi8Z2ObaMP/esFrymGfl1YFlihYH9qW7664GOx/MYrN7hDhPtI9DvVv+n8EI/hb
+        yLx2HBt1FdFLu9Ku1
+X-Received: by 2002:ac8:1017:: with SMTP id z23mr4211704qti.147.1594728736972;
+        Tue, 14 Jul 2020 05:12:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxSPGpZKO/MnucK03sbLp81g53VnsyNgLsmQQ0Xv+L+2+VWswllr93CSBw6ZziPBPVFsu75Mw==
+X-Received: by 2002:ac8:1017:: with SMTP id z23mr4211678qti.147.1594728736597;
+        Tue, 14 Jul 2020 05:12:16 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id 19sm22323331qke.44.2020.07.14.05.12.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2020 05:12:15 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id CB7EC180653; Tue, 14 Jul 2020 14:12:12 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: BPF logging infrastructure. Was: [PATCH bpf-next 4/6] tools: add new members to bpf_attr.raw_tracepoint in bpf.h
+In-Reply-To: <CAEf4BzZ_-vXP_3hSEjuceW10VX_H+EeuXMiV=_meBPZn7izK8A@mail.gmail.com>
+References: <159467113970.370286.17656404860101110795.stgit@toke.dk> <159467114405.370286.1690821122507970067.stgit@toke.dk> <CAEf4BzZ_-vXP_3hSEjuceW10VX_H+EeuXMiV=_meBPZn7izK8A@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 14 Jul 2020 14:12:12 +0200
+Message-ID: <87r1tegusj.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200617082235.GA1523@laureti-dev>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
- (10.10.16.48)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Documentation/devicetree/bindings/net/dsa/dsa.txt says that the phy-mode
-property should be specified on port nodes. However, the microchip
-drivers read it from the switch node.
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-Let the driver use the per-port property and fall back to the old
-location with a warning.
+> On Mon, Jul 13, 2020 at 1:13 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>
+>> Sync addition of new members from main kernel tree.
+>>
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> ---
+>>  tools/include/uapi/linux/bpf.h |    9 +++++++--
+>>  1 file changed, 7 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/b=
+pf.h
+>> index da9bf35a26f8..662a15e4a1a1 100644
+>> --- a/tools/include/uapi/linux/bpf.h
+>> +++ b/tools/include/uapi/linux/bpf.h
+>> @@ -573,8 +573,13 @@ union bpf_attr {
+>>         } query;
+>>
+>>         struct { /* anonymous struct used by BPF_RAW_TRACEPOINT_OPEN com=
+mand */
+>> -               __u64 name;
+>> -               __u32 prog_fd;
+>> +               __u64           name;
+>> +               __u32           prog_fd;
+>> +               __u32           log_level;      /* verbosity level of lo=
+g */
+>> +               __u32           log_size;       /* size of user buffer */
+>> +               __aligned_u64   log_buf;        /* user supplied buffer =
+*/
+>> +               __u32           tgt_prog_fd;
+>> +               __u32           tgt_btf_id;
+>>         } raw_tracepoint;
+>>
+>>         struct { /* anonymous struct for BPF_BTF_LOAD */
+>>
+>
+> I think BPF syscall would benefit from common/generalized log support
+> across all commands, given how powerful/complex it already is.
+> Sometimes it's literally impossible to understand why one gets -EINVAL
+> without adding printk()s in the kernel.
 
-Fix in-tree users.
+Yes, I agree! This is horrible UI!
 
-Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
-Link: https://lore.kernel.org/netdev/20200617082235.GA1523@laureti-dev/
----
- arch/arm/boot/dts/at91-sama5d2_icp.dts |  2 +-
- drivers/net/dsa/microchip/ksz8795.c    | 17 +++++++++++-----
- drivers/net/dsa/microchip/ksz9477.c    | 28 +++++++++++++++++---------
- drivers/net/dsa/microchip/ksz_common.c | 13 +++++++++++-
- drivers/net/dsa/microchip/ksz_common.h |  3 ++-
- 5 files changed, 45 insertions(+), 18 deletions(-)
+> But it feels wrong to add log_level/log_size/log_buf fields to every
+> section of bpf_attr and require the user to specify it differently for
+> each command. So before we go and start adding per-command fields,
+> let's discuss how we can do this more generically. I wonder if we can
+> come up with a good way to do it in one common way and then gradually
+> support that way throughout all BPF commands.
+>
+> Unfortunately it's too late to just add a few common fields to
+> bpf_attr in front of all other per-command fields, but here's two more
+> ideas just to start discussion. I hope someone can come up with
+> something nicer.
+>
+> 1. Currently bpf syscall accepts 3 input arguments (cmd, uattr, size).
+> We can extend it with two more optional arguments: one for pointer to
+> log-defining attr (for log_buf pointer, log_size, log_level, maybe
+> something more later) and another for the size of that log attr.
+> Beyond that we'd need some way to specify that the user actually meant
+> to provide those 2 optional args. The most straightforward way would
+> be to use the highest bit of cmd argument. So instead of calling bpf()
+> with BPF_MAP_CREATE command, you'd call it with BPF_MAP_CREATE |
+> BPF_LOGGED, where BPF_LOGGED =3D 1<<31.
 
-diff --git a/arch/arm/boot/dts/at91-sama5d2_icp.dts b/arch/arm/boot/dts/at91-sama5d2_icp.dts
-index 8d19925fc09e..6783cf16ff81 100644
---- a/arch/arm/boot/dts/at91-sama5d2_icp.dts
-+++ b/arch/arm/boot/dts/at91-sama5d2_icp.dts
-@@ -116,7 +116,6 @@
- 		switch0: ksz8563@0 {
- 			compatible = "microchip,ksz8563";
- 			reg = <0>;
--			phy-mode = "mii";
- 			reset-gpios = <&pioA PIN_PD4 GPIO_ACTIVE_LOW>;
- 
- 			spi-max-frequency = <500000>;
-@@ -140,6 +139,7 @@
- 					reg = <2>;
- 					label = "cpu";
- 					ethernet = <&macb0>;
-+					phy-mode = "mii";
- 					fixed-link {
- 						speed = <100>;
- 						full-duplex;
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 7c17b0f705ec..01c03205db53 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -941,11 +941,18 @@ static void ksz8795_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 	ksz_port_cfg(dev, port, P_PRIO_CTRL, PORT_802_1P_ENABLE, true);
- 
- 	if (cpu_port) {
-+		if (!p->interface && dev->compat_interface) {
-+			dev_warn(dev->dev,
-+				 "Using legacy switch \"phy-mode\" missing on port %d node. Please update your device tree.\n",
-+				 port);
-+			p->interface = dev->compat_interface;
-+		}
-+
- 		/* Configure MII interface for proper network communication. */
- 		ksz_read8(dev, REG_PORT_5_CTRL_6, &data8);
- 		data8 &= ~PORT_INTERFACE_TYPE;
- 		data8 &= ~PORT_GMII_1GPS_MODE;
--		switch (dev->interface) {
-+		switch (p->interface) {
- 		case PHY_INTERFACE_MODE_MII:
- 			p->phydev.speed = SPEED_100;
- 			break;
-@@ -961,11 +968,11 @@ static void ksz8795_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 		default:
- 			data8 &= ~PORT_RGMII_ID_IN_ENABLE;
- 			data8 &= ~PORT_RGMII_ID_OUT_ENABLE;
--			if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--			    dev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+			    p->interface == PHY_INTERFACE_MODE_RGMII_RXID)
- 				data8 |= PORT_RGMII_ID_IN_ENABLE;
--			if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--			    dev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+			    p->interface == PHY_INTERFACE_MODE_RGMII_TXID)
- 				data8 |= PORT_RGMII_ID_OUT_ENABLE;
- 			data8 |= PORT_GMII_1GPS_MODE;
- 			data8 |= PORT_INTERFACE_RGMII;
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 8d15c3016024..06c76948814b 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1234,7 +1234,7 @@ static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 
- 		/* configure MAC to 1G & RGMII mode */
- 		ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
--		switch (dev->interface) {
-+		switch (p->interface) {
- 		case PHY_INTERFACE_MODE_MII:
- 			ksz9477_set_xmii(dev, 0, &data8);
- 			ksz9477_set_gbit(dev, false, &data8);
-@@ -1255,11 +1255,11 @@ static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 			ksz9477_set_gbit(dev, true, &data8);
- 			data8 &= ~PORT_RGMII_ID_IG_ENABLE;
- 			data8 &= ~PORT_RGMII_ID_EG_ENABLE;
--			if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--			    dev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+			    p->interface == PHY_INTERFACE_MODE_RGMII_RXID)
- 				data8 |= PORT_RGMII_ID_IG_ENABLE;
--			if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--			    dev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+			    p->interface == PHY_INTERFACE_MODE_RGMII_TXID)
- 				data8 |= PORT_RGMII_ID_EG_ENABLE;
- 			p->phydev.speed = SPEED_1000;
- 			break;
-@@ -1303,23 +1303,31 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
- 			dev->cpu_port = i;
- 			dev->host_mask = (1 << dev->cpu_port);
- 			dev->port_mask |= dev->host_mask;
-+			p = &dev->ports[i];
- 
- 			/* Read from XMII register to determine host port
- 			 * interface.  If set specifically in device tree
- 			 * note the difference to help debugging.
- 			 */
- 			interface = ksz9477_get_interface(dev, i);
--			if (!dev->interface)
--				dev->interface = interface;
--			if (interface && interface != dev->interface)
-+			if (!p->interface) {
-+				if (dev->compat_interface) {
-+					dev_warn(dev->dev,
-+						 "Using legacy switch \"phy-mode\" missing on port %d node. Please update your device tree.\n",
-+						 i);
-+					p->interface = dev->compat_interface;
-+				} else {
-+					p->interface = interface;
-+				}
-+			}
-+			if (interface && interface != p->interface)
- 				dev_info(dev->dev,
- 					 "use %s instead of %s\n",
--					  phy_modes(dev->interface),
-+					  phy_modes(p->interface),
- 					  phy_modes(interface));
- 
- 			/* enable cpu port */
- 			ksz9477_port_setup(dev, i, true);
--			p = &dev->ports[dev->cpu_port];
- 			p->vid_member = dev->port_mask;
- 			p->on = 1;
- 		}
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index fd1d6676ae4f..9cb8e04109f4 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -416,6 +416,8 @@ int ksz_switch_register(struct ksz_device *dev,
- {
- 	phy_interface_t interface;
- 	int ret;
-+	struct device_node *port;
-+	unsigned int port_num;
- 
- 	if (dev->pdata)
- 		dev->chip_id = dev->pdata->chip_id;
-@@ -448,10 +450,19 @@ int ksz_switch_register(struct ksz_device *dev,
- 	/* Host port interface will be self detected, or specifically set in
- 	 * device tree.
- 	 */
-+	for (port_num = 0; port_num < dev->port_cnt; ++port_num)
-+		dev->ports[port_num].interface = PHY_INTERFACE_MODE_NA;
- 	if (dev->dev->of_node) {
- 		ret = of_get_phy_mode(dev->dev->of_node, &interface);
- 		if (ret == 0)
--			dev->interface = interface;
-+			dev->compat_interface = interface;
-+		for_each_available_child_of_node(dev->dev->of_node, port) {
-+			if (of_property_read_u32(port, "reg", &port_num))
-+				continue;
-+			if (port_num >= dev->port_cnt)
-+				return -EINVAL;
-+			of_get_phy_mode(port, &dev->ports[port_num].interface);
-+		}
- 		dev->synclko_125 = of_property_read_bool(dev->dev->of_node,
- 							 "microchip,synclko-125");
- 	}
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index f2c9bb68fd33..c0c736aaef61 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -39,6 +39,7 @@ struct ksz_port {
- 	u32 freeze:1;			/* MIB counter freeze is enabled */
- 
- 	struct ksz_port_mib mib;
-+	phy_interface_t interface;
- };
- 
- struct ksz_device {
-@@ -72,7 +73,7 @@ struct ksz_device {
- 	int mib_cnt;
- 	int mib_port_cnt;
- 	int last_port;			/* ports after that not used */
--	phy_interface_t interface;
-+	phy_interface_t compat_interface;
- 	u32 regs_size;
- 	bool phy_errata_9477;
- 	bool synclko_125;
--- 
-2.20.1
+Well, if only we'd had a 'flags' argument to the syscall... I don't
+suppose we want a bpf2()? :)
+
+I like your idea of just using the top bits of the 'cmd' field as flag
+bits, but in that case we should just define this explicitly, say
+'#define BPF_CMD_FLAGS_MASK 0xFFFF0000'?
+
+And instead of adding new arguments, why not just change the meaning of
+the 'attr' argument? Say we define:
+
+struct bpf_extended_attr {
+       __u32 log_level;
+       __u32 log_size;
+       __aligned_u64 log_buf;
+       __u8 reserved[48];
+       union bpf_attr attr;
+};
+
+And then define a new flag BPF_USES_EXTENDED_ATTR which will cause the
+kernel to interpret the second argument of the syscall as a pointer to
+that struct instead of to the bpf_attr union?
+
+> 2. A more "stateful" approach, would be to have an extra BPF command
+> to set log buffer (and level) per thread. And if such a log is set, it
+> would be overwritten with content on each bpf() syscall invocation
+> (i.e., log position would be reset to 0 on each BPF syscall).
+
+I don't think adding something stateful is a good idea; that's bound to
+lead to weird issues when someone messes up the state management in
+userspace.
+
+> Of course, the existing BPF_LOAD_PROG command would keep working with
+> existing log, but could fall back to the "common one", if
+> BPF_LOAD_PROG-specific one is not set.
+>
+> It also doesn't seem to be all that critical to signal when the log
+> buffer is overflown. It's pretty easy to detect from user-space:
+> - either last byte would be non-zero, if we don't care about
+> guaranteeing zero-termination for truncated log;
+> - of second-to-last byte would be non-zero, if BPF syscall will always
+> zero-terminate the log.
+
+I think if we're doing this we should think about making the contents of
+the log machine-readable, so applications can figure out what's going on
+without having to parse the text strings. The simplest would be to make
+this new log buffer use TLV-style messaging, say we define the log
+buffer output to be a series of messages like these:
+
+struct bpf_log_msg {
+       __u16 type;
+       __u32 len;
+       __u8 contents[]; /* of size 'len' */
+} __attribute__((packed));
+
+To begin with we could define two types:
+
+struct bpf_log_msg_string {
+       __u16 type; /* BPF_LOG_MSG_TYPE_STRING */
+       __u32 len;
+       char message[];
+}  __attribute__((packed));
+
+struct bpf_log_msg_end {
+       __u16 type; /* BPF_LOG_MSG_TYPE_END */
+       __u32 len;
+       __u16 num_truncations;
+}  __attribute__((packed));
+
+The TYPE_STRING would just be a wrapper for the existing text-based
+messages, but delimited so userspace can pick them apart. And the second
+one would solve your 'has the log been truncated' issue above; the
+kernel simply always reserves eight bytes at the end of the buffer and
+ends with writing a TYPE_END message with the number of messages that
+were dropped due to lack of space. That would make it trivial for
+userspace to detect truncation.
+
+We could then add new message types later for machine-consumption. Say,
+and extended error code, or offsets into the BTF information, or
+whatever we end up needing. But just wrapping the existing log messages
+in TLVs like the ones above could be fairly straight-forwardly
+implemented with the existing bpf_log() infrastructure in the kernel,
+without having to settle on which machine-readable information is useful
+ahead of time... And the TLV format makes it easy for userspace to just
+skip message types it doesn't understand.
+
+WDYT?
+
+> Of course, if user code cares about such detection of log truncation,
+> it will need to set last/second-to-last bytes to zero before each
+> syscall.
+>
+> Both approaches have their pros/cons, we can dig into those later, but
+> I'd like to start this discussion and see what other people think. I
+> also wonder if there are other syscalls with similarly advanced input
+> arguments (like bpf_attr) and common logging, we could learn from
+> those.
+
+The first one that comes to mind is netlink extacks. Of course it's not
+quite comparable since netlink already has message-based semantics, but
+it does do sorta-kinda the same thing from a user PoV. The TLV format is
+obviously inspired by netlink (or, well, binary networking protocols in
+general).
+
+-Toke
 
