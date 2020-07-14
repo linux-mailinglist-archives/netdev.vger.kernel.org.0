@@ -2,136 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3BBB21F133
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 14:29:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E38DF21F157
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 14:33:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728112AbgGNM3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 08:29:31 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:57876 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726041AbgGNM3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 08:29:30 -0400
+        id S1726041AbgGNMd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 08:33:26 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:51047 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726955AbgGNMdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 08:33:25 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594729768;
+        s=mimecast20190719; t=1594730003;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=M1tJQgrbek3QI28HACPK1H60w+RS294RJhZIW4zv/pw=;
-        b=Fye7uwjGPBQxE0rUR8vSxt8p2zDpDE0fF7M7/dEiXqtL6yP6jzZXRhGXLUwGzIdxsUICqU
-        gDN7SRK8exUXjZlGiKUqwa77FcIlcdU0PcwaxzD2N+0JjsEue4E6BeJNV29pkTMmAft23v
-        PlGWKM7qX0++OM3UT+uMB1DOBz1ktPs=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-514-C5z_ABIeMYW9M0QFNR5iHA-1; Tue, 14 Jul 2020 08:29:25 -0400
-X-MC-Unique: C5z_ABIeMYW9M0QFNR5iHA-1
-Received: by mail-wm1-f70.google.com with SMTP id o13so3722708wmh.9
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 05:29:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=M1tJQgrbek3QI28HACPK1H60w+RS294RJhZIW4zv/pw=;
-        b=Q+D88TFU1yPCDy08hYI8a6LynuzJ90DWqu79Adk+TQS4L4o0cAs9wKJfMXrpcDqpW6
-         E2/diFqqNKqEN2CnXZrumwjpUQ8s05d+dmPB+4hpPTjEXCKQVqCnm9lVGS2x1P5yZvaq
-         0waTjcN4PeQ3wL8UxEllL8z5OUOyFqBT27N851u5VcBW0NG7VsQBQE/3pfHtUMKXig2T
-         tk0qSQwwBne96jhQE7ynUGCME/u3tQ504dqlD/dr+ijvPIfHsrsnhBSt6O5I2WpUPfyg
-         EY7XSUrpLmPHSN7rb0fNrgSD8kjrmfw4VCfqnwzLEPfIEmWLdeNeG30dD25iTYobI02V
-         GmuA==
-X-Gm-Message-State: AOAM532bRzwZ2WXPs06QRa+sz3szrAKELjmDx/3bOTHB9qnKQNFk1NKX
-        aUHtHKDp2vCEXXZzytIK4jVlw3pHLnlMB6SrIkUZ8dpuVwS5ePEig3jLIVsKgBerT74RVG9dB4v
-        hGwzoO88J8AMlgLgN
-X-Received: by 2002:a7b:c8c2:: with SMTP id f2mr4038478wml.57.1594729763849;
-        Tue, 14 Jul 2020 05:29:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwMcLTiDBY47ikR7IpxmOAOaUvTQRyYGGqEG4fWigSZAdh7jGA66uqGW0xExbdW0gzRYc7fhA==
-X-Received: by 2002:a7b:c8c2:: with SMTP id f2mr4038448wml.57.1594729763602;
-        Tue, 14 Jul 2020 05:29:23 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id d18sm29804962wrj.8.2020.07.14.05.29.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2020 05:29:22 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 34607180653; Tue, 14 Jul 2020 14:29:21 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: Re: [PATCHv7 bpf-next 0/3] xdp: add a new helper for dev map multicast support
-In-Reply-To: <20200714063257.1694964-1-liuhangbin@gmail.com>
-References: <20200709013008.3900892-1-liuhangbin@gmail.com> <20200714063257.1694964-1-liuhangbin@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 14 Jul 2020 14:29:21 +0200
-Message-ID: <87imeqgtzy.fsf@toke.dk>
+        bh=C63dF9gfSHVApzJ/jLL1WN7IQ6LQXyPx+6cv2jYh+SQ=;
+        b=Kqs+eAoBFrQxlbfH7FvDV/ByzCJ+ek0lmoiKzIkOXXk61bUJNvMUGu3F/2czwg4jm6koDJ
+        c7BOlWJ91yTd3+di3iafk+85B2hNHUFRz/W1YtZbbKjrL2t2zZpZNQsgP8AvPfIEs+k7xn
+        1++azQylbfHJeZwSZDytL0QJiS0I0lc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-275-zSUdgSAUOSi9PZsJPeIskw-1; Tue, 14 Jul 2020 08:33:19 -0400
+X-MC-Unique: zSUdgSAUOSi9PZsJPeIskw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 815418014D4;
+        Tue, 14 Jul 2020 12:33:18 +0000 (UTC)
+Received: from localhost (unknown [10.36.110.48])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D00CE61983;
+        Tue, 14 Jul 2020 12:33:15 +0000 (UTC)
+Date:   Tue, 14 Jul 2020 14:33:11 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        aconole@redhat.com
+Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
+ discovery on encap sockets
+Message-ID: <20200714143311.0ce8edaa@redhat.com>
+In-Reply-To: <20200713162255.GO32005@breakpoint.cc>
+References: <20200712200705.9796-1-fw@strlen.de>
+        <20200712200705.9796-2-fw@strlen.de>
+        <20200713003813.01f2d5d3@elisabeth>
+        <20200713080413.GL32005@breakpoint.cc>
+        <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
+        <20200713140219.GM32005@breakpoint.cc>
+        <a6821eac-82f8-0d9e-6388-ea6c9f5535d1@gmail.com>
+        <20200713145911.GN32005@breakpoint.cc>
+        <20200713175709.2a547d7c@redhat.com>
+        <20200713162255.GO32005@breakpoint.cc>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> writes:
+On Mon, 13 Jul 2020 18:22:55 +0200
+Florian Westphal <fw@strlen.de> wrote:
 
-> This patch is for xdp multicast support. which has been discussed before[0],
-> The goal is to be able to implement an OVS-like data plane in XDP, i.e.,
-> a software switch that can forward XDP frames to multiple ports.
->
-> To achieve this, an application needs to specify a group of interfaces
-> to forward a packet to. It is also common to want to exclude one or more
-> physical interfaces from the forwarding operation - e.g., to forward a
-> packet to all interfaces in the multicast group except the interface it
-> arrived on. While this could be done simply by adding more groups, this
-> quickly leads to a combinatorial explosion in the number of groups an
-> application has to maintain.
->
-> To avoid the combinatorial explosion, we propose to include the ability
-> to specify an "exclude group" as part of the forwarding operation. This
-> needs to be a group (instead of just a single port index), because there
-> may have multi interfaces you want to exclude.
->
-> Thus, the logical forwarding operation becomes a "set difference"
-> operation, i.e. "forward to all ports in group A that are not also in
-> group B". This series implements such an operation using device maps to
-> represent the groups. This means that the XDP program specifies two
-> device maps, one containing the list of netdevs to redirect to, and the
-> other containing the exclude list.
->
-> To achieve this, I re-implement a new helper bpf_redirect_map_multi()
-> to accept two maps, the forwarding map and exclude map. If user
-> don't want to use exclude map and just want simply stop redirecting back
-> to ingress device, they can use flag BPF_F_EXCLUDE_INGRESS.
->
-> The 2nd and 3rd patches are for usage sample and testing purpose, so there
-> is no effort has been made on performance optimisation. I did same tests
-> with pktgen(pkt size 64) to compire with xdp_redirect_map(). Here is the
-> test result(the veth peer has a dummy xdp program with XDP_DROP directly):
->
-> Version         | Test                                   | Native | Generic
-> 5.8 rc1         | xdp_redirect_map       i40e->i40e      |  10.0M |   1.9M
-> 5.8 rc1         | xdp_redirect_map       i40e->veth      |  12.7M |   1.6M
-> 5.8 rc1 + patch | xdp_redirect_map       i40e->i40e      |  10.0M |   1.9M
-> 5.8 rc1 + patch | xdp_redirect_map       i40e->veth      |  12.3M |   1.6M
-> 5.8 rc1 + patch | xdp_redirect_map_multi i40e->i40e      |   7.2M |   1.5M
-> 5.8 rc1 + patch | xdp_redirect_map_multi i40e->veth      |   8.5M |   1.3M
-> 5.8 rc1 + patch | xdp_redirect_map_multi i40e->i40e+veth |   3.0M |  0.98M
->
-> The bpf_redirect_map_multi() is slower than bpf_redirect_map() as we loop
-> the arrays and do clone skb/xdpf. The native path is slower than generic
-> path as we send skbs by pktgen. So the result looks reasonable.
->
-> Last but not least, thanks a lot to Jiri, Eelco, Toke and Jesper for
-> suggestions and help on implementation.
->
-> [0] https://xdp-project.net/#Handling-multicast
->
-> v7: Fix helper flag check
->     Limit the *ex_map* to use DEVMAP_HASH only and update function
->     dev_in_exclude_map() to get better performance.
+> Stefano Brivio <sbrivio@redhat.com> wrote:
+> > > so, packets coming in on the bridge (local tx or from remote bridge port)
+> > > can have the enap header (50 bytes) prepended without exceeding the
+> > > physical link mtu.
+> > > 
+> > > When the vxlan driver calls the ip output path, this line:
+> > > 
+> > >         mtu = ip_skb_dst_mtu(sk, skb);
+> > > 
+> > > in __ip_finish_output() will fetch the MTU based of the encap socket,
+> > > which will now be 1450 due to that route exception.
+> > > 
+> > > So this will behave as if someone had lowered the physical link mtu to 1450:
+> > > IP stack drops the packet and sends an icmp error (fragmentation needed,
+> > > MTU 1450).  The MTU of the VXLAN port is already at 1450.  
+> > 
+> > It's not clear to me why the behaviour on this path is different from
+> > routed traffic. I understand the impact of bridged traffic on error
+> > reporting, but not here.  
+> 
+> In routing case:
+> 1. pmtu notification is received
+> 2. route exception is added
+> 3. next MTU-sized packet in vxlan triggers the if () condition in
+>    skb_tunnel_check_pmtu()
+> 4. skb_dst_update_pmtu() gets called, new nexthop exception is added
+> 5. packet is dropped in ip_output (too large)
+> 6. next MTU-sized packet to be forwarded triggers PMTU check in
+>    ip_forward()
+> 7. ip_forward drops packet and sends an icmp error for new mtu (1400 in
+>     the example)
+> 8. sender receives+updates path mtu
+> 9. next packet will be small enough
 
-Did it help? The performance numbers in the table above are the same as
-in v6...
+I'm not sure it changes the conclusion or if it affects your problem in
+any way, but what I see in the routing case is a bit different.
 
--Toke
+Running the pmtu_ipv4_vxlan4_exception test from pmtu.sh with 1500 as
+lowest MTU on the path shows effectively a MTU of 1450 on the link
+(1424 bytes of inner IP payload in the first packet going through,
+inner IPv4 total length being 1444).
+
+That's because we already relay an ICMP Fragmentation Needed at step 5,
+and in the next step the packet is small enough.
+
+> In Bridge case, 4) is a noop and even if we had dst entries here,
+> we do not enter ip_forward path for bridged case.
+
+Also not in my test, because:
+
+> [...]
+>
+> > Should we omit
+> > the call to skb_tunnel_check_pmtu() call in vxlan_xmit_one() in that
+> > case (if (info)) because the dst is not the same dst?  
+> 
+> skb_dst_update_pmtu is already omitted in this scenario since dst is NULL.
+
+...skb_dst_update_pmtu(), there, is called with 'ndst' (dst for the
+route returned by vxlan_get_route()), not skb->dst. But yes, as you
+mentioned, we don't hit ip_forward(), so that doesn't matter.
+
+The original problem remains, and unless we find another explanation
+I'd go ahead and start reviewing this series, FWIW.
+
+> > > I don't think this patch is enough to resolve PMTU in general of course,
+> > > after all the VXLAN peer might be unable to receive packets larger than
+> > > what the ICMP error announces.  But I do not know how to resolve this
+> > > in the general case as everyone has a differnt opinion on how (and where)
+> > > this needs to be handled.  
+> > 
+> > The sender here is sending packets matching the MTU, interface MTUs are
+> > correct, so we wouldn't benefit from "extending" PMTU discovery for
+> > this specific problem and we can let that topic aside for now, correct?  
+> 
+> Yes and no.  What the hack patches (not this series, the icmp error
+> injection series for bridge...) does is to inject a new icmp error from
+> the vxlan icmp error processing callback that will report an MTU of
+> 'received mtu - vxlan_overhead' to the sender.
+
+Okay, I see.
+
+> So, the sender receives a PMTU update for 1400 in the given scenario.
+> 
+> Its not nice of course, as sender emitted a MTU-sized packet (1450)
+> to an on-link destination, only to be told by that *alleged* on-link
+> destination (address spoofed by bridge) that it needs to use 1400.
+
+Still, I don't think that we should use 1400, assuming that 1450 is in
+fact the right value.
+
+> I don't see any better solution, since netdev police failed to make
+> such setups illegal 8)
+
+I'll file a complaint :)
+
+-- 
+Stefano
 
