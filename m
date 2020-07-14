@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FAF821F544
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B99921F45B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729526AbgGNOpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 10:45:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54158 "EHLO mail.kernel.org"
+        id S1728656AbgGNOjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 10:39:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54182 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728455AbgGNOi5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 10:38:57 -0400
+        id S1728552AbgGNOi6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 10:38:58 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A3926222C8;
-        Tue, 14 Jul 2020 14:38:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DD03C2067D;
+        Tue, 14 Jul 2020 14:38:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594737536;
-        bh=Iwpq0K3LI/457THLc5GqV5NyV/1EOMMNxj0I7YNH3+c=;
+        s=default; t=1594737537;
+        bh=10DbsIHggpfnX/L/cuS6NGvTsPwVjqJzSZhttOZm9R8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w5jEPgTezU+byQQVS1Me13LKRT5bEOqTVr8LKj2MrZ9V38keHKA89xU8JtYHaSTOw
-         Xyq/5wZnlTG5peDEXtGIotlJEoWudWWKDVhZ2wm3zNlZ1VKoVpaEpdcH/HTfdjPVnA
-         Y5dd7mYhAy53fn2RbF580BeNebw3qJ3JTRHLpyjk=
+        b=sRWSbPsKZNW+q+17x8ivS09UJScGmg9x83avVYpt77UQzMILywW6DkiLDAPTuQEpz
+         umor4d1+rBip/5C9NJI7D6njsV/WeXusWiuojlocSB6JCeg71AlNZXAT42mRHvGDeD
+         e4KKjR2ALuIpPlj/mlSVLepWxatyavXnmQzAH+7I=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 05/19] bpf: Set the number of exception entries properly for subprograms
-Date:   Tue, 14 Jul 2020 10:38:35 -0400
-Message-Id: <20200714143849.4035283-5-sashal@kernel.org>
+Cc:     Markus Theil <markus.theil@tu-ilmenau.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 06/19] mac80211: allow rx of mesh eapol frames with default rx key
+Date:   Tue, 14 Jul 2020 10:38:36 -0400
+Message-Id: <20200714143849.4035283-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200714143849.4035283-1-sashal@kernel.org>
 References: <20200714143849.4035283-1-sashal@kernel.org>
@@ -43,68 +44,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Markus Theil <markus.theil@tu-ilmenau.de>
 
-[ Upstream commit c4c0bdc0d2d084ed847c7066bdf59fe2cd25aa17 ]
+[ Upstream commit 0b467b63870d9c05c81456aa9bfee894ab2db3b6 ]
 
-Currently, if a bpf program has more than one subprograms, each program will be
-jitted separately. For programs with bpf-to-bpf calls the
-prog->aux->num_exentries is not setup properly. For example, with
-bpf_iter_netlink.c modified to force one function to be not inlined and with
-CONFIG_BPF_JIT_ALWAYS_ON the following error is seen:
-   $ ./test_progs -n 3/3
-   ...
-   libbpf: failed to load program 'iter/netlink'
-   libbpf: failed to load object 'bpf_iter_netlink'
-   libbpf: failed to load BPF skeleton 'bpf_iter_netlink': -4007
-   test_netlink:FAIL:bpf_iter_netlink__open_and_load skeleton open_and_load failed
-   #3/3 netlink:FAIL
-The dmesg shows the following errors:
-   ex gen bug
-which is triggered by the following code in arch/x86/net/bpf_jit_comp.c:
-   if (excnt >= bpf_prog->aux->num_exentries) {
-     pr_err("ex gen bug\n");
-     return -EFAULT;
-   }
+Without this patch, eapol frames cannot be received in mesh
+mode, when 802.1X should be used. Initially only a MGTK is
+defined, which is found and set as rx->key, when there are
+no other keys set. ieee80211_drop_unencrypted would then
+drop these eapol frames, as they are data frames without
+encryption and there exists some rx->key.
 
-This patch fixes the issue by computing proper num_exentries for each
-subprogram before calling JIT.
+Fix this by differentiating between mesh eapol frames and
+other data frames with existing rx->key. Allow mesh mesh
+eapol frames only if they are for our vif address.
 
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+With this patch in-place, ieee80211_rx_h_mesh_fwding continues
+after the ieee80211_drop_unencrypted check and notices, that
+these eapol frames have to be delivered locally, as they should.
+
+Signed-off-by: Markus Theil <markus.theil@tu-ilmenau.de>
+Link: https://lore.kernel.org/r/20200625104214.50319-1-markus.theil@tu-ilmenau.de
+[small code cleanups]
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/verifier.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ net/mac80211/rx.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 739d9ba3ba6b7..eebdd5307713b 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -9613,7 +9613,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
- 	int i, j, subprog_start, subprog_end = 0, len, subprog;
- 	struct bpf_insn *insn;
- 	void *old_bpf_func;
--	int err;
-+	int err, num_exentries;
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 91a13aee43784..961f37c0701bc 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -2357,6 +2357,7 @@ static int ieee80211_802_1x_port_control(struct ieee80211_rx_data *rx)
  
- 	if (env->subprog_cnt <= 1)
+ static int ieee80211_drop_unencrypted(struct ieee80211_rx_data *rx, __le16 fc)
+ {
++	struct ieee80211_hdr *hdr = (void *)rx->skb->data;
+ 	struct sk_buff *skb = rx->skb;
+ 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
+ 
+@@ -2367,6 +2368,31 @@ static int ieee80211_drop_unencrypted(struct ieee80211_rx_data *rx, __le16 fc)
+ 	if (status->flag & RX_FLAG_DECRYPTED)
  		return 0;
-@@ -9688,6 +9688,14 @@ static int jit_subprogs(struct bpf_verifier_env *env)
- 		func[i]->aux->nr_linfo = prog->aux->nr_linfo;
- 		func[i]->aux->jited_linfo = prog->aux->jited_linfo;
- 		func[i]->aux->linfo_idx = env->subprog_info[i].linfo_idx;
-+		num_exentries = 0;
-+		insn = func[i]->insnsi;
-+		for (j = 0; j < func[i]->len; j++, insn++) {
-+			if (BPF_CLASS(insn->code) == BPF_LDX &&
-+			    BPF_MODE(insn->code) == BPF_PROBE_MEM)
-+				num_exentries++;
-+		}
-+		func[i]->aux->num_exentries = num_exentries;
- 		func[i] = bpf_int_jit_compile(func[i]);
- 		if (!func[i]->jited) {
- 			err = -ENOTSUPP;
+ 
++	/* check mesh EAPOL frames first */
++	if (unlikely(rx->sta && ieee80211_vif_is_mesh(&rx->sdata->vif) &&
++		     ieee80211_is_data(fc))) {
++		struct ieee80211s_hdr *mesh_hdr;
++		u16 hdr_len = ieee80211_hdrlen(fc);
++		u16 ethertype_offset;
++		__be16 ethertype;
++
++		if (!ether_addr_equal(hdr->addr1, rx->sdata->vif.addr))
++			goto drop_check;
++
++		/* make sure fixed part of mesh header is there, also checks skb len */
++		if (!pskb_may_pull(rx->skb, hdr_len + 6))
++			goto drop_check;
++
++		mesh_hdr = (struct ieee80211s_hdr *)(skb->data + hdr_len);
++		ethertype_offset = hdr_len + ieee80211_get_mesh_hdrlen(mesh_hdr) +
++				   sizeof(rfc1042_header);
++
++		if (skb_copy_bits(rx->skb, ethertype_offset, &ethertype, 2) == 0 &&
++		    ethertype == rx->sdata->control_port_protocol)
++			return 0;
++	}
++
++drop_check:
+ 	/* Drop unencrypted frames if key is set. */
+ 	if (unlikely(!ieee80211_has_protected(fc) &&
+ 		     !ieee80211_is_any_nullfunc(fc) &&
 -- 
 2.25.1
 
