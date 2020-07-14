@@ -2,53 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C90C321E452
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:09:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B9F421E455
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:09:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726435AbgGNAJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 20:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726339AbgGNAJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 20:09:00 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99DAC061755
-        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 17:09:00 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 30E491298136E;
-        Mon, 13 Jul 2020 17:09:00 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 17:08:59 -0700 (PDT)
-Message-Id: <20200713.170859.794084104671494668.davem@davemloft.net>
-To:     george.kennedy@oracle.com
-Cc:     kuba@kernel.org, dan.carpenter@oracle.com, dhaval.giani@oracle.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] ax88172a: fix ax88172a_unbind() failures
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1594641537-1288-1-git-send-email-george.kennedy@oracle.com>
-References: <1594641537-1288-1-git-send-email-george.kennedy@oracle.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 13 Jul 2020 17:09:00 -0700 (PDT)
+        id S1726742AbgGNAJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 20:09:51 -0400
+Received: from mx2.suse.de ([195.135.220.15]:47092 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726150AbgGNAJv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 20:09:51 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 2E860ACFF;
+        Tue, 14 Jul 2020 00:09:52 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 89C46604B9; Tue, 14 Jul 2020 02:09:49 +0200 (CEST)
+Date:   Tue, 14 Jul 2020 02:09:49 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Jarod Wilson <jarod@redhat.com>
+Subject: Re: [RFC] bonding driver terminology change proposal
+Message-ID: <20200714000949.txckjqlp4rzku3q3@lion.mk-sys.cz>
+References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
+ <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
+ <20200713154118.3a1edd66@hermes.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200713154118.3a1edd66@hermes.lan>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: George Kennedy <george.kennedy@oracle.com>
-Date: Mon, 13 Jul 2020 07:58:57 -0400
+On Mon, Jul 13, 2020 at 03:41:18PM -0700, Stephen Hemminger wrote:
+> On Tue, 14 Jul 2020 00:00:16 +0200
+> Michal Kubecek <mkubecek@suse.cz> wrote:
+> 
+> > On Mon, Jul 13, 2020 at 02:51:39PM -0400, Jarod Wilson wrote:
+> > > To start out with, I'd like to attempt to eliminate as much of the use
+> > > of master and slave in the bonding driver as possible. For the most
+> > > part, I think this can be done without breaking UAPI, but may require
+> > > changes to anything accessing bond info via proc or sysfs.  
+> > 
+> > Could we, please, avoid breaking existing userspace tools and scripts?
+> > Massive code churn is one thing and we could certainly bite the bullet
+> > and live with it (even if I'm still not convinced it would be as great
+> > idea as some present it) but trading theoretical offense for real and
+> > palpable harm to existing users is something completely different.
+> > 
+> > Or is "don't break userspace" no longer the "first commandment" of linux
+> > kernel development?
+> > 
+> > Michal Kubecek
+> 
+> Please consider using same wording as current standard for link aggregration.
+> Current version is 802.1AX and it uses the terms:
+>   Multiplexer /  Aggregator
 
-> @@ -237,6 +237,8 @@ static int ax88172a_bind(struct usbnet *dev, struct usb_interface *intf)
->  
->  free:
->  	kfree(priv);
-> +	if (ret >= 0)
-> +		ret = -EIO;
->  	return ret;
+But both of these are replacements for "master", right?
 
-Success paths reach here, so ">= 0" is not appropriate.  Maybe you
-meant "> 0"?
+> As far as userspace, maybe keep the old API's but provide deprecation nags.
+> And don't document the old API values.
+
+I'm not a fan of nagging users. And even less of a fan of undocumented
+keyword and value aliases.
+
+Michal
