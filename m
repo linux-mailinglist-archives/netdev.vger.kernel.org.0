@@ -2,146 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E64E221EBFD
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:01:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CD5821EC09
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:02:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726431AbgGNJBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 05:01:09 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:58003 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725816AbgGNJBH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:01:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594717265;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0ed3Xocn2VEJ7JZTYR0y+4DEJWtAkhtN40Gvl92+Xn0=;
-        b=Y3SEIXKmduX/+XYTfpiDX/LuQkCdO38+Xi/MiXEVNDTueGy98byRf9/c9SUzRwGKlR6hpf
-        K0ntKKDXkS8VflKTe6X8JIGQqeJaMO3QURdlg/qINkynSCYEc/IqeEectnynBAZ4por6RC
-        KCEbZ/yplXE/hhFFa+dBDqVhd9gsvHI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-341-eftPBnxdNtuDoNxCfsMStA-1; Tue, 14 Jul 2020 05:01:01 -0400
-X-MC-Unique: eftPBnxdNtuDoNxCfsMStA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726890AbgGNJCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 05:02:16 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:46118 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726660AbgGNJCQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:02:16 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7244860061;
+        Tue, 14 Jul 2020 09:02:15 +0000 (UTC)
+Received: from us4-mdac16-7.ut7.mdlocal (unknown [10.7.65.75])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 697E42009A;
+        Tue, 14 Jul 2020 09:02:15 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.41])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CE8011C0051;
+        Tue, 14 Jul 2020 09:02:14 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0C77D109D;
-        Tue, 14 Jul 2020 09:00:52 +0000 (UTC)
-Received: from krava (unknown [10.40.193.14])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 227AD5C679;
-        Tue, 14 Jul 2020 09:00:49 +0000 (UTC)
-Date:   Tue, 14 Jul 2020 11:00:48 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>
-Subject: Re: linux-next: build warning after merge of the bpf-next tree
-Message-ID: <20200714090048.GG183694@krava>
-References: <20200714121608.58962d66@canb.auug.org.au>
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 6AAB94C0063;
+        Tue, 14 Jul 2020 09:02:14 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 14 Jul
+ 2020 10:02:09 +0100
+Subject: Re: [PATCH v2 net-next 04/16] sfc_ef100: skeleton EF100 PF driver
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+References: <dbd87499-161e-09f3-7dec-8b7c13ad02dd@solarflare.com>
+ <14ffb6fc-d5a2-ce62-c8e7-6cf6e164bf16@solarflare.com>
+ <20200713160200.681db7aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <88664bf2-a0c9-4cb1-b50c-2a5e592fe235@solarflare.com>
+Date:   Tue, 14 Jul 2020 10:02:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200714121608.58962d66@canb.auug.org.au>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <20200713160200.681db7aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25540.003
+X-TM-AS-Result: No-8.678200-8.000000-10
+X-TMASE-MatchedRID: csPTYAMX1+HmLzc6AOD8DfHkpkyUphL9SeIjeghh/zPLwwwRZ45jJRBj
+        Mu2MryPBPLa1JP0J/BnZe+wUej5wh2UlOh2o2oTO4h8r8l3l4eYO9z+P2gwiBRLf1vz7ecPHX0f
+        XACjD+xM4njG6lOJes6hhqX8wpo7ehmayTFnN39a7B1QwzOcQD7tubiieweWuDO+DX+rUwfb+ez
+        fog1uF01fYfu0J3jY1X7bicKxRIU1mIVC+RmEW7Wrz/G/ZSbVq+gtHj7OwNO0o13+LnQSKDI4R8
+        ku3Af3zZYJ5eKRIyu37NGNoh2a803jE18NzuDeaVlxr1FJij9s=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--8.678200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25540.003
+X-MDID: 1594717335-w4hEB2SiD3yH
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 12:16:08PM +1000, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the bpf-next tree, today's linux-next build (powerpc
-> ppc64_defconfig) produced this warning:
-> 
-> ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `kernel/trace/bpf_trace.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/btf.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `kernel/bpf/stackmap.o' being placed in section `.BTF_ids'
-> ld: warning: orphan section `.BTF_ids' from `net/core/filter.o' being placed in section `.BTF_ids'
-> 
-> Presumably ntroduced by the merge of the resolve_btfids branch.
+On 14/07/2020 00:02, Jakub Kicinski wrote:
+> On Mon, 13 Jul 2020 12:32:16 +0100 Edward Cree wrote:
+>> +MODULE_VERSION(EFX_DRIVER_VERSION);
+> We got rid of driver versions upstream, no?
+The sfc driver still has a MODULE_VERSION(), I just made this do
+ the same.  Should I instead remove the one from sfc as well?
+I assumed there was some reason why it hadn't been included in
+ the versionectomy so far.
 
-missing one more #ifdef.. chage below fixes it for me,
-it's squashed with the fix for the arm build, I'll post 
-both fixes today
+> +static void __exit ef100_exit_module(void)
+> +{
+> +	pr_info("Solarflare EF100 NET driver unloading\n");
+> efx_destroy_reset_workqueue(); ?
+Sounds like a good idea, yes.  Good catch.
 
-thanks,
-jirka
+> Please remove all the uint32_ts
+OK.
 
-
----
-diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
-index fe019774f8a7..2f9754a4ab2b 100644
---- a/include/linux/btf_ids.h
-+++ b/include/linux/btf_ids.h
-@@ -3,6 +3,8 @@
- #ifndef _LINUX_BTF_IDS_H
- #define _LINUX_BTF_IDS_H
- 
-+#ifdef CONFIG_DEBUG_INFO_BTF
-+
- #include <linux/compiler.h> /* for __PASTE */
- 
- /*
-@@ -21,7 +23,7 @@
- asm(							\
- ".pushsection " BTF_IDS_SECTION ",\"a\";       \n"	\
- ".local " #symbol " ;                          \n"	\
--".type  " #symbol ", @object;                  \n"	\
-+".type  " #symbol ", STT_OBJECT;               \n"	\
- ".size  " #symbol ", 4;                        \n"	\
- #symbol ":                                     \n"	\
- ".zero 4                                       \n"	\
-@@ -83,5 +85,12 @@ asm(							\
- ".zero 4                                       \n"	\
- ".popsection;                                  \n");
- 
-+#else
-+
-+#define BTF_ID_LIST(name) u32 name[5];
-+#define BTF_ID(prefix, name)
-+#define BTF_ID_UNUSED
-+
-+#endif /* CONFIG_DEBUG_INFO_BTF */
- 
- #endif
-diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-index 948378ca73d4..a88cd4426398 100644
---- a/tools/bpf/resolve_btfids/Makefile
-+++ b/tools/bpf/resolve_btfids/Makefile
-@@ -16,6 +16,20 @@ else
-   MAKEFLAGS=--no-print-directory
- endif
- 
-+# always use the host compiler
-+ifneq ($(LLVM),)
-+HOSTAR  ?= llvm-ar
-+HOSTCC  ?= clang
-+HOSTLD  ?= ld.lld
-+else
-+HOSTAR  ?= ar
-+HOSTCC  ?= gcc
-+HOSTLD  ?= ld
-+endif
-+AR       = $(HOSTAR)
-+CC       = $(HOSTCC)
-+LD       = $(HOSTLD)
-+
- OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
- 
- LIBBPF_SRC := $(srctree)/tools/lib/bpf/
-
+Thanks for reviewing.
+-ed
