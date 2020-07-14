@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C589621E48E
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D59BF21E48C
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:31:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727078AbgGNAbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 20:31:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44588 "EHLO mail.kernel.org"
+        id S1727055AbgGNAbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 20:31:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44602 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726970AbgGNAb3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 20:31:29 -0400
+        id S1726973AbgGNAba (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 20:31:30 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D000421927;
-        Tue, 14 Jul 2020 00:31:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BBCBA21835;
+        Tue, 14 Jul 2020 00:31:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594686688;
-        bh=ePEhaaEO2PGiDrYSgME/D2Pkt6URFV5jyRtpVsM1YVA=;
+        s=default; t=1594686689;
+        bh=WB8Cv4RNpsjghADCNiN8s2GY2rN5Uf1Wb5SRBNBT53Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uub7RdNtVz/Gv16X0PgVNeNOBV0UVS7GUKzXO8vwVzQOs5Uv8vlJBkpVl083BICid
-         3EkjMh/dQ361myc4RDZrJRklHJ+183MRGd/P/0adXBJa+NWyhKlDyet0jPVWeUcayh
-         2mFMokgXNqTmMnF0JuF5C8zE7PqkWU75YLK/fNYo=
+        b=xAlai9ZuwSNeomjjmgnATvthWB6HmGe5aqRayds7cKOH5xrG7M5LzR7t0XdQXxLsI
+         r6SlOfpYJM4ZxZJWJ6qHN0oRLGLXeSRlTzzDVD9xQG+frcy0F0KrVkftzZvUDZ3Qyx
+         mvQvJFAspaDE2YTVBTfFCpFHKHv8qybdSMrl0sIU=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -35,9 +35,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
         manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 10/12] fm10k: convert to new udp_tunnel_nic infra
-Date:   Mon, 13 Jul 2020 17:30:35 -0700
-Message-Id: <20200714003037.669012-11-kuba@kernel.org>
+Subject: [PATCH net-next 11/12] qede: convert to new udp_tunnel_nic infra
+Date:   Mon, 13 Jul 2020 17:30:36 -0700
+Message-Id: <20200714003037.669012-12-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200714003037.669012-1-kuba@kernel.org>
 References: <20200714003037.669012-1-kuba@kernel.org>
@@ -48,317 +48,259 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Straightforward conversion to new infra. Driver restores info
-after close/open cycle by calling its internal restore function
-so just use that, no need for udp_tunnel_nic_reset_ntf() here.
+Covert to new infra. Looks like this driver was not doing
+ref counting, and sleeping in the callback.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/intel/fm10k/fm10k.h      |  10 +-
- drivers/net/ethernet/intel/fm10k/fm10k_main.c |   9 +-
- .../net/ethernet/intel/fm10k/fm10k_netdev.c   | 164 +++---------------
- drivers/net/ethernet/intel/fm10k/fm10k_pci.c  |   4 -
- 4 files changed, 28 insertions(+), 159 deletions(-)
+ drivers/net/ethernet/qlogic/qede/qede.h       |   1 +
+ .../net/ethernet/qlogic/qede/qede_filter.c    | 142 ++++++------------
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  18 ++-
+ 3 files changed, 58 insertions(+), 103 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k.h b/drivers/net/ethernet/intel/fm10k/fm10k.h
-index f9be10a04dd6..6119a4108838 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k.h
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k.h
-@@ -221,12 +221,6 @@ struct fm10k_iov_data {
- 	struct fm10k_vf_info	vf_info[];
- };
+diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
+index 591dd4051d06..8adda5dc9e88 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede.h
++++ b/drivers/net/ethernet/qlogic/qede/qede.h
+@@ -543,6 +543,7 @@ void qede_set_dcbnl_ops(struct net_device *ndev);
  
--struct fm10k_udp_port {
--	struct list_head	list;
--	sa_family_t		sa_family;
--	__be16			port;
--};
--
- enum fm10k_macvlan_request_type {
- 	FM10K_UC_MAC_REQUEST,
- 	FM10K_MC_MAC_REQUEST,
-@@ -370,8 +364,8 @@ struct fm10k_intfc {
- 	u32 rssrk[FM10K_RSSRK_SIZE];
- 
- 	/* UDP encapsulation port tracking information */
--	struct list_head vxlan_port;
--	struct list_head geneve_port;
-+	__be16 vxlan_port;
-+	__be16 geneve_port;
- 
- 	/* MAC/VLAN update queue */
- 	struct list_head macvlan_requests;
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_main.c b/drivers/net/ethernet/intel/fm10k/fm10k_main.c
-index 34f1f5350f68..d88dd41a9442 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k_main.c
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_main.c
-@@ -635,15 +635,8 @@ static int fm10k_clean_rx_irq(struct fm10k_q_vector *q_vector,
- static struct ethhdr *fm10k_port_is_vxlan(struct sk_buff *skb)
- {
- 	struct fm10k_intfc *interface = netdev_priv(skb->dev);
--	struct fm10k_udp_port *vxlan_port;
- 
--	/* we can only offload a vxlan if we recognize it as such */
--	vxlan_port = list_first_entry_or_null(&interface->vxlan_port,
--					      struct fm10k_udp_port, list);
--
--	if (!vxlan_port)
--		return NULL;
--	if (vxlan_port->port != udp_hdr(skb)->dest)
-+	if (interface->vxlan_port != udp_hdr(skb)->dest)
- 		return NULL;
- 
- 	/* return offset of udp_hdr plus 8 bytes for VXLAN header */
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_netdev.c b/drivers/net/ethernet/intel/fm10k/fm10k_netdev.c
-index 1450a9f98c5a..5c19ff452558 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k_netdev.c
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_netdev.c
-@@ -366,39 +366,6 @@ static void fm10k_request_glort_range(struct fm10k_intfc *interface)
- 	}
+ void qede_config_debug(uint debug, u32 *p_dp_module, u8 *p_dp_level);
+ void qede_set_ethtool_ops(struct net_device *netdev);
++void qede_set_udp_tunnels(struct qede_dev *edev);
+ void qede_reload(struct qede_dev *edev,
+ 		 struct qede_reload_args *args, bool is_locked);
+ int qede_change_mtu(struct net_device *dev, int new_mtu);
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+index d8100434e340..bb451c67a6f5 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+@@ -953,115 +953,67 @@ int qede_set_features(struct net_device *dev, netdev_features_t features)
+ 	return 0;
  }
  
--/**
-- * fm10k_free_udp_port_info
-- * @interface: board private structure
-- *
-- * This function frees both geneve_port and vxlan_port structures
-- **/
--static void fm10k_free_udp_port_info(struct fm10k_intfc *interface)
--{
--	struct fm10k_udp_port *port;
--
--	/* flush all entries from vxlan list */
--	port = list_first_entry_or_null(&interface->vxlan_port,
--					struct fm10k_udp_port, list);
--	while (port) {
--		list_del(&port->list);
--		kfree(port);
--		port = list_first_entry_or_null(&interface->vxlan_port,
--						struct fm10k_udp_port,
--						list);
--	}
--
--	/* flush all entries from geneve list */
--	port = list_first_entry_or_null(&interface->geneve_port,
--					struct fm10k_udp_port, list);
--	while (port) {
--		list_del(&port->list);
--		kfree(port);
--		port = list_first_entry_or_null(&interface->vxlan_port,
--						struct fm10k_udp_port,
--						list);
--	}
--}
--
- /**
-  * fm10k_restore_udp_port_info
-  * @interface: board private structure
-@@ -408,131 +375,52 @@ static void fm10k_free_udp_port_info(struct fm10k_intfc *interface)
- static void fm10k_restore_udp_port_info(struct fm10k_intfc *interface)
+-void qede_udp_tunnel_add(struct net_device *dev, struct udp_tunnel_info *ti)
++static int qede_udp_tunnel_sync(struct net_device *dev, unsigned int table)
  {
- 	struct fm10k_hw *hw = &interface->hw;
--	struct fm10k_udp_port *port;
+ 	struct qede_dev *edev = netdev_priv(dev);
+ 	struct qed_tunn_params tunn_params;
+-	u16 t_port = ntohs(ti->port);
++	struct udp_tunnel_info ti;
++	u16 *save_port;
+ 	int rc;
  
- 	/* only the PF supports configuring tunnels */
- 	if (hw->mac.type != fm10k_mac_pf)
- 		return;
+ 	memset(&tunn_params, 0, sizeof(tunn_params));
  
--	port = list_first_entry_or_null(&interface->vxlan_port,
--					struct fm10k_udp_port, list);
+-	switch (ti->type) {
+-	case UDP_TUNNEL_TYPE_VXLAN:
+-		if (!edev->dev_info.common.vxlan_enable)
+-			return;
 -
- 	/* restore tunnel configuration register */
- 	fm10k_write_reg(hw, FM10K_TUNNEL_CFG,
--			(port ? ntohs(port->port) : 0) |
-+			ntohs(interface->vxlan_port) |
- 			(ETH_P_TEB << FM10K_TUNNEL_CFG_NVGRE_SHIFT));
- 
--	port = list_first_entry_or_null(&interface->geneve_port,
--					struct fm10k_udp_port, list);
+-		if (edev->vxlan_dst_port)
+-			return;
 -
- 	/* restore Geneve tunnel configuration register */
- 	fm10k_write_reg(hw, FM10K_TUNNEL_CFG_GENEVE,
--			(port ? ntohs(port->port) : 0));
++	udp_tunnel_nic_get_port(dev, table, 0, &ti);
++	if (ti.type == UDP_TUNNEL_TYPE_VXLAN) {
+ 		tunn_params.update_vxlan_port = 1;
+-		tunn_params.vxlan_port = t_port;
+-
+-		__qede_lock(edev);
+-		rc = edev->ops->tunn_config(edev->cdev, &tunn_params);
+-		__qede_unlock(edev);
+-
+-		if (!rc) {
+-			edev->vxlan_dst_port = t_port;
+-			DP_VERBOSE(edev, QED_MSG_DEBUG, "Added vxlan port=%d\n",
+-				   t_port);
+-		} else {
+-			DP_NOTICE(edev, "Failed to add vxlan UDP port=%d\n",
+-				  t_port);
+-		}
+-
+-		break;
+-	case UDP_TUNNEL_TYPE_GENEVE:
+-		if (!edev->dev_info.common.geneve_enable)
+-			return;
+-
+-		if (edev->geneve_dst_port)
+-			return;
+-
++		tunn_params.vxlan_port = ntohs(ti.port);
++		save_port = &edev->vxlan_dst_port;
++	} else {
+ 		tunn_params.update_geneve_port = 1;
+-		tunn_params.geneve_port = t_port;
+-
+-		__qede_lock(edev);
+-		rc = edev->ops->tunn_config(edev->cdev, &tunn_params);
+-		__qede_unlock(edev);
+-
+-		if (!rc) {
+-			edev->geneve_dst_port = t_port;
+-			DP_VERBOSE(edev, QED_MSG_DEBUG,
+-				   "Added geneve port=%d\n", t_port);
+-		} else {
+-			DP_NOTICE(edev, "Failed to add geneve UDP port=%d\n",
+-				  t_port);
+-		}
+-
+-		break;
+-	default:
+-		return;
++		tunn_params.geneve_port = ntohs(ti.port);
++		save_port = &edev->geneve_dst_port;
+ 	}
 -}
 -
--static struct fm10k_udp_port *
--fm10k_remove_tunnel_port(struct list_head *ports,
+-void qede_udp_tunnel_del(struct net_device *dev,
 -			 struct udp_tunnel_info *ti)
 -{
--	struct fm10k_udp_port *port;
+-	struct qede_dev *edev = netdev_priv(dev);
+-	struct qed_tunn_params tunn_params;
+-	u16 t_port = ntohs(ti->port);
+ 
+-	memset(&tunn_params, 0, sizeof(tunn_params));
 -
--	list_for_each_entry(port, ports, list) {
--		if ((port->port == ti->port) &&
--		    (port->sa_family == ti->sa_family)) {
--			list_del(&port->list);
--			return port;
--		}
--	}
--
--	return NULL;
--}
--
--static void fm10k_insert_tunnel_port(struct list_head *ports,
--				     struct udp_tunnel_info *ti)
--{
--	struct fm10k_udp_port *port;
--
--	/* remove existing port entry from the list so that the newest items
--	 * are always at the tail of the list.
--	 */
--	port = fm10k_remove_tunnel_port(ports, ti);
--	if (!port) {
--		port = kmalloc(sizeof(*port), GFP_ATOMIC);
--		if  (!port)
+-	switch (ti->type) {
+-	case UDP_TUNNEL_TYPE_VXLAN:
+-		if (t_port != edev->vxlan_dst_port)
 -			return;
--		port->port = ti->port;
--		port->sa_family = ti->sa_family;
--	}
 -
--	list_add_tail(&port->list, ports);
-+			ntohs(interface->geneve_port));
- }
- 
- /**
-- * fm10k_udp_tunnel_add
-+ * fm10k_udp_tunnel_sync - Called when UDP tunnel ports change
-  * @dev: network interface device structure
-- * @ti: Tunnel endpoint information
-+ * @table: Tunnel table (according to tables of @fm10k_udp_tunnels)
-  *
-- * This function is called when a new UDP tunnel port has been added.
-+ * This function is called when a new UDP tunnel port is added or deleted.
-  * Due to hardware restrictions, only one port per type can be offloaded at
-- * once.
-+ * once. Core will send to the driver a port of its choice.
-  **/
--static void fm10k_udp_tunnel_add(struct net_device *dev,
--				 struct udp_tunnel_info *ti)
-+static int fm10k_udp_tunnel_sync(struct net_device *dev, unsigned int table)
- {
- 	struct fm10k_intfc *interface = netdev_priv(dev);
-+	struct udp_tunnel_info ti;
- 
--	/* only the PF supports configuring tunnels */
--	if (interface->hw.mac.type != fm10k_mac_pf)
--		return;
+-		tunn_params.update_vxlan_port = 1;
+-		tunn_params.vxlan_port = 0;
 -
--	switch (ti->type) {
--	case UDP_TUNNEL_TYPE_VXLAN:
--		fm10k_insert_tunnel_port(&interface->vxlan_port, ti);
+-		__qede_lock(edev);
+-		edev->ops->tunn_config(edev->cdev, &tunn_params);
+-		__qede_unlock(edev);
+-
+-		edev->vxlan_dst_port = 0;
+-
+-		DP_VERBOSE(edev, QED_MSG_DEBUG, "Deleted vxlan port=%d\n",
+-			   t_port);
+-
 -		break;
 -	case UDP_TUNNEL_TYPE_GENEVE:
--		fm10k_insert_tunnel_port(&interface->geneve_port, ti);
--		break;
--	default:
--		return;
--	}
-+	udp_tunnel_nic_get_port(dev, table, 0, &ti);
-+	if (!table)
-+		interface->vxlan_port = ti.port;
-+	else
-+		interface->geneve_port = ti.port;
+-		if (t_port != edev->geneve_dst_port)
+-			return;
+-
+-		tunn_params.update_geneve_port = 1;
+-		tunn_params.geneve_port = 0;
++	__qede_lock(edev);
++	rc = edev->ops->tunn_config(edev->cdev, &tunn_params);
++	__qede_unlock(edev);
++	if (rc)
++		return rc;
  
- 	fm10k_restore_udp_port_info(interface);
+-		__qede_lock(edev);
+-		edev->ops->tunn_config(edev->cdev, &tunn_params);
+-		__qede_unlock(edev);
++	*save_port = ntohs(ti.port);
 +	return 0;
- }
++}
  
--/**
-- * fm10k_udp_tunnel_del
-- * @dev: network interface device structure
-- * @ti: Tunnel end point information
-- *
-- * This function is called when a new UDP tunnel port is deleted. The freed
-- * port will be removed from the list, then we reprogram the offloaded port
-- * based on the head of the list.
-- **/
--static void fm10k_udp_tunnel_del(struct net_device *dev,
--				 struct udp_tunnel_info *ti)
--{
--	struct fm10k_intfc *interface = netdev_priv(dev);
--	struct fm10k_udp_port *port = NULL;
--
--	if (interface->hw.mac.type != fm10k_mac_pf)
--		return;
--
--	switch (ti->type) {
--	case UDP_TUNNEL_TYPE_VXLAN:
--		port = fm10k_remove_tunnel_port(&interface->vxlan_port, ti);
--		break;
--	case UDP_TUNNEL_TYPE_GENEVE:
--		port = fm10k_remove_tunnel_port(&interface->geneve_port, ti);
--		break;
--	default:
--		return;
--	}
--
--	/* if we did remove a port we need to free its memory */
--	kfree(port);
--
--	fm10k_restore_udp_port_info(interface);
--}
-+static const struct udp_tunnel_nic_info fm10k_udp_tunnels = {
-+	.sync_table	= fm10k_udp_tunnel_sync,
+-		edev->geneve_dst_port = 0;
++const struct udp_tunnel_nic_info qede_udp_tunnels_both = {
++	.sync_table	= qede_udp_tunnel_sync,
++	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP,
 +	.tables		= {
 +		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
 +		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_GENEVE, },
 +	},
++}, qede_udp_tunnels_vxlan = {
++	.sync_table	= qede_udp_tunnel_sync,
++	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP,
++	.tables		= {
++		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN,  },
++	},
++}, qede_udp_tunnels_geneve = {
++	.sync_table	= qede_udp_tunnel_sync,
++	.flags		= UDP_TUNNEL_NIC_INFO_MAY_SLEEP,
++	.tables		= {
++		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_GENEVE, },
++	},
 +};
  
- /**
-  * fm10k_open - Called when a network interface is made active
-@@ -580,8 +468,6 @@ int fm10k_open(struct net_device *netdev)
- 	if (err)
- 		goto err_set_queues;
+-		DP_VERBOSE(edev, QED_MSG_DEBUG, "Deleted geneve port=%d\n",
+-			   t_port);
+-		break;
+-	default:
+-		return;
+-	}
++void qede_set_udp_tunnels(struct qede_dev *edev)
++{
++	if (edev->dev_info.common.vxlan_enable &&
++	    edev->dev_info.common.geneve_enable)
++		edev->ndev->udp_tunnel_nic_info = &qede_udp_tunnels_both;
++	else if (edev->dev_info.common.vxlan_enable)
++		edev->ndev->udp_tunnel_nic_info = &qede_udp_tunnels_vxlan;
++	else if (edev->dev_info.common.geneve_enable)
++		edev->ndev->udp_tunnel_nic_info = &qede_udp_tunnels_geneve;
+ }
  
--	udp_tunnel_get_rx_info(netdev);
--
- 	fm10k_up(interface);
+ static void qede_xdp_reload_func(struct qede_dev *edev,
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+index 8cd27f8f1b3a..a653dd0e5c22 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_main.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+@@ -663,8 +663,8 @@ static const struct net_device_ops qede_netdev_ops = {
+ 	.ndo_get_vf_config = qede_get_vf_config,
+ 	.ndo_set_vf_rate = qede_set_vf_rate,
+ #endif
+-	.ndo_udp_tunnel_add = qede_udp_tunnel_add,
+-	.ndo_udp_tunnel_del = qede_udp_tunnel_del,
++	.ndo_udp_tunnel_add = udp_tunnel_nic_add_port,
++	.ndo_udp_tunnel_del = udp_tunnel_nic_del_port,
+ 	.ndo_features_check = qede_features_check,
+ 	.ndo_bpf = qede_xdp,
+ #ifdef CONFIG_RFS_ACCEL
+@@ -687,8 +687,8 @@ static const struct net_device_ops qede_netdev_vf_ops = {
+ 	.ndo_fix_features = qede_fix_features,
+ 	.ndo_set_features = qede_set_features,
+ 	.ndo_get_stats64 = qede_get_stats64,
+-	.ndo_udp_tunnel_add = qede_udp_tunnel_add,
+-	.ndo_udp_tunnel_del = qede_udp_tunnel_del,
++	.ndo_udp_tunnel_add = udp_tunnel_nic_add_port,
++	.ndo_udp_tunnel_del = udp_tunnel_nic_del_port,
+ 	.ndo_features_check = qede_features_check,
+ };
  
- 	return 0;
-@@ -615,8 +501,6 @@ int fm10k_close(struct net_device *netdev)
- 
- 	fm10k_qv_free_irq(interface);
- 
--	fm10k_free_udp_port_info(interface);
--
- 	fm10k_free_all_tx_resources(interface);
- 	fm10k_free_all_rx_resources(interface);
- 
-@@ -1647,8 +1531,8 @@ static const struct net_device_ops fm10k_netdev_ops = {
- 	.ndo_set_vf_rate	= fm10k_ndo_set_vf_bw,
- 	.ndo_get_vf_config	= fm10k_ndo_get_vf_config,
- 	.ndo_get_vf_stats	= fm10k_ndo_get_vf_stats,
--	.ndo_udp_tunnel_add	= fm10k_udp_tunnel_add,
--	.ndo_udp_tunnel_del	= fm10k_udp_tunnel_del,
-+	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
-+	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
- 	.ndo_dfwd_add_station	= fm10k_dfwd_add_station,
- 	.ndo_dfwd_del_station	= fm10k_dfwd_del_station,
- 	.ndo_features_check	= fm10k_features_check,
-@@ -1695,6 +1579,8 @@ struct net_device *fm10k_alloc_netdev(const struct fm10k_info *info)
- 				       NETIF_F_SG;
- 
- 		dev->features |= NETIF_F_GSO_UDP_TUNNEL;
+@@ -706,8 +706,8 @@ static const struct net_device_ops qede_netdev_vf_xdp_ops = {
+ 	.ndo_fix_features = qede_fix_features,
+ 	.ndo_set_features = qede_set_features,
+ 	.ndo_get_stats64 = qede_get_stats64,
+-	.ndo_udp_tunnel_add = qede_udp_tunnel_add,
+-	.ndo_udp_tunnel_del = qede_udp_tunnel_del,
++	.ndo_udp_tunnel_add = udp_tunnel_nic_add_port,
++	.ndo_udp_tunnel_del = udp_tunnel_nic_del_port,
+ 	.ndo_features_check = qede_features_check,
+ 	.ndo_bpf = qede_xdp,
+ };
+@@ -822,6 +822,8 @@ static void qede_init_ndev(struct qede_dev *edev)
+ 				NETIF_F_GSO_UDP_TUNNEL_CSUM);
+ 		ndev->hw_enc_features |= (NETIF_F_GSO_UDP_TUNNEL |
+ 					  NETIF_F_GSO_UDP_TUNNEL_CSUM);
 +
-+		dev->udp_tunnel_nic_info = &fm10k_udp_tunnels;
++		qede_set_udp_tunnels(edev);
  	}
  
- 	/* all features defined to this point should be changeable */
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_pci.c b/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
-index d122d0087191..140212bfe08b 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
-@@ -2066,10 +2066,6 @@ static int fm10k_sw_init(struct fm10k_intfc *interface,
- 	interface->tx_itr = FM10K_TX_ITR_DEFAULT;
- 	interface->rx_itr = FM10K_ITR_ADAPTIVE | FM10K_RX_ITR_DEFAULT;
+ 	if (edev->dev_info.common.gre_enable) {
+@@ -2421,7 +2423,7 @@ static int qede_open(struct net_device *ndev)
+ 	if (rc)
+ 		return rc;
  
--	/* initialize udp port lists */
--	INIT_LIST_HEAD(&interface->vxlan_port);
--	INIT_LIST_HEAD(&interface->geneve_port);
--
- 	/* Initialize the MAC/VLAN queue */
- 	INIT_LIST_HEAD(&interface->macvlan_requests);
+-	udp_tunnel_get_rx_info(ndev);
++	udp_tunnel_nic_reset_ntf(ndev);
  
+ 	edev->ops->common->update_drv_state(edev->cdev, true);
+ 
+@@ -2523,7 +2525,7 @@ static void qede_recovery_handler(struct qede_dev *edev)
+ 			goto err;
+ 
+ 		qede_config_rx_mode(edev->ndev);
+-		udp_tunnel_get_rx_info(edev->ndev);
++		udp_tunnel_nic_reset_ntf(edev->ndev);
+ 	}
+ 
+ 	edev->state = curr_state;
 -- 
 2.26.2
 
