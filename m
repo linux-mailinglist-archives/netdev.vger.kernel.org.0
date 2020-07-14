@@ -2,146 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A0E21F8AA
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 19:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0996021F8AF
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729039AbgGNR7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 13:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58820 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729016AbgGNR7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 13:59:19 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14039C061755;
-        Tue, 14 Jul 2020 10:59:19 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id w17so7327043ply.11;
-        Tue, 14 Jul 2020 10:59:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=91FjHag+3XaZgvhfpG7MdugD127Z0nPtRrgH7hl2774=;
-        b=Duuja7Als4Pl6fx9THJSzj2Z8JzD0eHBm2EvpCebLybRTC3v++/qxdEsWyVeA8NZRT
-         75lCIuxEvI0Da0/P0tzwOqdmxGeTSAg/Ozcb4Nil8AW5BEtuMqHLapiFAPD2C2Dz2aSC
-         FOeTZvOnQ1Dou9wsZYWzQ1ni7A/mKbFZ2DYpb9J82BYQDImWC64xAba0qbC3lxvxZNGu
-         DQeVcNzviGI4+PJVjqffY8fBKEvjh4gp6h8YN1kzWkZLC4TJT4Ov8MILwenp7w7/HXkN
-         64lNB92kO0Stl353M5HNXlbxdMQZ+jka1QibslVHl4ZFoN4YB/O6G6Ku8Ci2cgiT/Dup
-         XnRA==
+        id S1729007AbgGNSBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 14:01:23 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:22335 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728358AbgGNSBX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 14:01:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594749682;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6wTiDYzSRRjWEKEHqhDWlOlrN2pjSMlUd39mDOu9uEM=;
+        b=EZLNu0ogRdtpLzOxlzDI169QrXnVunVdKC1pRUcKEjNA+eqcphTw7xD1egLut/gSE3++2d
+        Q5ijpyeBwV/sVrMircKFU/HkkhVVUROdt8tHzQ/KANPv98Z9RQPo98zlCTiYz6Lv48Nl4j
+        gxT2sZkxAaiuwJBAdGCbO4Mncnmip9Q=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-12-L8SC0y6IM7-7wzm9-l4ESA-1; Tue, 14 Jul 2020 14:01:19 -0400
+X-MC-Unique: L8SC0y6IM7-7wzm9-l4ESA-1
+Received: by mail-ot1-f70.google.com with SMTP id p3so10095257ota.0
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 11:01:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=91FjHag+3XaZgvhfpG7MdugD127Z0nPtRrgH7hl2774=;
-        b=k6E7c054NF7pkmbMHwzi0UdkyJ1ijo/f+9OlYPuWMzLzJDi73Qp46YPioAol5zNPxc
-         Y8EUwE/+I20OKVXxNuqwIkBh2ojt/1qbwsHXYHMvc9vwc3r2qxP0IH6m3g5ZbXN4SN6T
-         38RsUNGMvh3ikqPKcKfHDsW/FJfUfKYhvIILDicP+VhFRvV8yZvFwxtW7MhrjGMl/FQj
-         tm0E0lFutIMB1nqDtLbH9stkRvuptNcntVCvkIyb78tXgKcaoxVAh77XjmutFQg5EWgo
-         Q8GD6bRm0Rh2IEFfKdooSVz67CeRINmETr5DPbUvyYZURFYTeFarMAGOfsS/w1cBa0QJ
-         znJg==
-X-Gm-Message-State: AOAM532lXxACg3ut0QtWQNC9LDatbOOJ23xd7S7r4mJpbb71/ZgazdQ2
-        aroKcUSs/zQXOaPE+voC+E8=
-X-Google-Smtp-Source: ABdhPJyuNI2Fb/r4C3Xfff+HqzisTj70HHged34DAGvJEhqaiq1eekjxzrjmnpWtcRoF+NMsSbslkw==
-X-Received: by 2002:a17:902:854c:: with SMTP id d12mr4916916plo.343.1594749558555;
-        Tue, 14 Jul 2020 10:59:18 -0700 (PDT)
-Received: from localhost.localdomain.com ([2605:e000:160b:911f:a2ce:c8ff:fe03:6cb0])
-        by smtp.gmail.com with ESMTPSA id mg17sm3263969pjb.55.2020.07.14.10.59.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2020 10:59:17 -0700 (PDT)
-From:   Chris Healy <cphealy@gmail.com>
-To:     linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Chris Healy <cphealy@gmail.com>
-Subject: [PATCH net-next] net: phy: sfp: Cotsworks SFF module EEPROM fixup
-Date:   Tue, 14 Jul 2020 10:59:10 -0700
-Message-Id: <20200714175910.1358-1-cphealy@gmail.com>
-X-Mailer: git-send-email 2.21.3
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6wTiDYzSRRjWEKEHqhDWlOlrN2pjSMlUd39mDOu9uEM=;
+        b=PUqs/Y8cHqeJgtSNXetirL1Z/JVkSwfyrBimG7OmGgVDzU5AlO5vJIjNCNAhmTCD0b
+         QUupSjwjdL1bKCH6AQXGhp8LQoaDftMamdGCt62HhIxqwatb7PUMD90hm8mRPtBCruuN
+         pTgn/EZ0xiXVxdvhC+GRkxKz3Ozg/0RElZQxgkCLsRWRuWFjQR3pV9aKoNz9CV38NMCz
+         5uQpnymbThF1m5PezLtuJJHIpZ/mF7Ibs0rTuMYR0bhOlBo2cCsRJcNmEvk70rWk/Asm
+         mdwdU3ozSqAP8e2sl/Cup28dlP8eyDNjm24dyR1SE94M+BG0j/DDYnelL7e1NH5H8oVZ
+         aXGQ==
+X-Gm-Message-State: AOAM533hJIQWuk+QoavqcSOQqX6n4doR1KVpbhaldCYPrSNVy8R7M1mi
+        sH5VOYye/YNinBhBZnU4a2wdBwR0jDFCsCT8JpqKvgyk/yyvLIDKWMPl11z2YDm1R0rT+/Q60/Q
+        /EZZuiPqh+tPyu9kDfnLv4330GLTuf3rb
+X-Received: by 2002:aca:ecc7:: with SMTP id k190mr4527058oih.92.1594749678615;
+        Tue, 14 Jul 2020 11:01:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw1r9zZ+XRJlNEp4AH4PLmJ6heTMgpJeMdvPxAeGmj/PDXhWw26bpYDtePSaUSvskgs7H1f2ZDO9uJK/UVF35c=
+X-Received: by 2002:aca:ecc7:: with SMTP id k190mr4527024oih.92.1594749678198;
+ Tue, 14 Jul 2020 11:01:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
+ <7fb02008-e469-38b7-735b-6bfb8beab414@gmail.com>
+In-Reply-To: <7fb02008-e469-38b7-735b-6bfb8beab414@gmail.com>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Tue, 14 Jul 2020 14:01:07 -0400
+Message-ID: <CAKfmpScwe_mv+Tm9sXyJqXk7bs8-ZWbNq0025Lcho_VK6qZNMw@mail.gmail.com>
+Subject: Re: [RFC] bonding driver terminology change proposal
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some Cotsworks SFF have invalid data in the first few bytes of the
-module EEPROM.  This results in these modules not being detected as
-valid modules.
+On Mon, Jul 13, 2020 at 5:36 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> On 7/13/20 11:51 AM, Jarod Wilson wrote:
+> > As part of an effort to help enact social change, Red Hat is
+> > committing to efforts to eliminate any problematic terminology from
+> > any of the software that it ships and supports. Front and center for
+> > me personally in that effort is the bonding driver's use of the terms
+> > master and slave, and to a lesser extent, bond and bonding, due to
+> > bondage being another term for slavery. Most people in computer
+> > science understand these terms aren't intended to be offensive or
+> > oppressive, and have well understood meanings in computing, but
+> > nonetheless, they still present an open wound, and a barrier for
+> > participation and inclusion to some.
+> >
+> > To start out with, I'd like to attempt to eliminate as much of the use
+> > of master and slave in the bonding driver as possible. For the most
+> > part, I think this can be done without breaking UAPI, but may require
+> > changes to anything accessing bond info via proc or sysfs.
+> >
+> > My initial thought was to rename master to aggregator and slaves to
+> > ports, but... that gets really messy with the existing 802.3ad bonding
+> > code using both extensively already. I've given thought to a number of
+> > other possible combinations, but the one that I'm liking the most is
+> > master -> bundle and slave -> cable, for a number of reasons. I'd
+> > considered cable and wire, as a cable is a grouping of individual
+> > wires, but we're grouping together cables, really -- each bonded
+> > ethernet interface has a cable connected, so a bundle of cables makes
+> > sense visually and figuratively. Additionally, it's a swap made easier
+> > in the codebase by master and bundle and slave and cable having the
+> > same number of characters, respectively. Granted though, "bundle"
+> > doesn't suggest "runs the show" the way "master" or something like
+> > maybe "director" or "parent" does, but those lack the visual aspect
+> > present with a bundle of cables. Using parent/child could work too
+> > though, it's perhaps closer to the master/slave terminology currently
+> > in use as far as literal meaning.
+> >
+> > So... Thoughts?
+> >
+>
+> So you considered : aggregator/ports, bundle/cable.
+>
+> I thought about cord/strand, since this is less likely to be used already in networking land
+> (like worker, thread, fiber, or wire ...)
+>
+> Although a cord with two strands is probably not very common :/
 
-Address this by poking the correct EEPROM values into the module
-EEPROM when the model/PN match and the existing module EEPROM contents
-are not correct.
+I'd also thought about cable and wire, since there are multiple
+physical wires inside an ethernet cable, but you typically connect one
+cable per port, so a bundle of cables seemed to make more sense. :) I
+also had a few other ideas I played with, including a bundle of pipes
+and a pipework of pipes (which is apparently a thing, but not very
+common either, outside of maybe plumbers?).
 
-Signed-off-by: Chris Healy <cphealy@gmail.com>
----
- drivers/net/phy/sfp.c | 44 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
-
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 73c2969f11a4..2737d9b6b0ae 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1632,10 +1632,43 @@ static int sfp_sm_mod_hpower(struct sfp *sfp, bool enable)
- 	return 0;
- }
- 
-+static int sfp_cotsworks_fixup_check(struct sfp *sfp, struct sfp_eeprom_id *id)
-+{
-+	u8 check;
-+	int err;
-+
-+	if (id->base.phys_id != SFF8024_ID_SFF_8472 ||
-+	    id->base.phys_ext_id != SFP_PHYS_EXT_ID_SFP ||
-+	    id->base.connector != SFF8024_CONNECTOR_LC) {
-+		dev_warn(sfp->dev, "Rewriting fiber module EEPROM with corrected values\n");
-+		id->base.phys_id = SFF8024_ID_SFF_8472;
-+		id->base.phys_ext_id = SFP_PHYS_EXT_ID_SFP;
-+		id->base.connector = SFF8024_CONNECTOR_LC;
-+		err = sfp_write(sfp, false, SFP_PHYS_ID, &id->base, 3);
-+		if (err != 3) {
-+			dev_err(sfp->dev, "Failed to rewrite module EEPROM: %d\n", err);
-+			return err;
-+		}
-+
-+		/* Cotsworks modules have been found to require a delay between write operations. */
-+		mdelay(50);
-+
-+		/* Update base structure checksum */
-+		check = sfp_check(&id->base, sizeof(id->base) - 1);
-+		err = sfp_write(sfp, false, SFP_CC_BASE, &check, 1);
-+		if (err != 1) {
-+			dev_err(sfp->dev, "Failed to update base structure checksum in fiber module EEPROM: %d\n", err);
-+			return err;
-+		}
-+	}
-+	return 0;
-+}
-+
- static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- {
- 	/* SFP module inserted - read I2C data */
- 	struct sfp_eeprom_id id;
-+	bool cotsworks_sfbg;
- 	bool cotsworks;
- 	u8 check;
- 	int ret;
-@@ -1657,6 +1690,17 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	 * serial number and date code.
- 	 */
- 	cotsworks = !memcmp(id.base.vendor_name, "COTSWORKS       ", 16);
-+	cotsworks_sfbg = !memcmp(id.base.vendor_pn, "SFBG", 4);
-+
-+	/* Cotsworks SFF module EEPROM do not always have valid phys_id,
-+	 * phys_ext_id, and connector bytes.  Rewrite SFF EEPROM bytes if
-+	 * Cotsworks PN matches and bytes are not correct.
-+	 */
-+	if (cotsworks && cotsworks_sfbg) {
-+		ret = sfp_cotsworks_fixup_check(sfp, &id);
-+		if (ret < 0)
-+			return ret;
-+	}
- 
- 	/* Validate the checksum over the base structure */
- 	check = sfp_check(&id.base, sizeof(id.base) - 1);
 -- 
-2.21.3
+Jarod Wilson
+jarod@redhat.com
 
