@@ -2,61 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 267F421E47A
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:25:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03DA721E47B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:26:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbgGNAZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 20:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726345AbgGNAZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 20:25:49 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC415C061755;
-        Mon, 13 Jul 2020 17:25:49 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6618F1298320B;
-        Mon, 13 Jul 2020 17:25:49 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 17:25:48 -0700 (PDT)
-Message-Id: <20200713.172548.1750892409418053803.davem@davemloft.net>
-To:     grandmaster@al2klimov.de
-Cc:     isdn@linux-pingi.de, gregkh@linuxfoundation.org, arnd@arndb.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] isdn/capi: Replace HTTP links with HTTPS ones
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200713143054.34978-1-grandmaster@al2klimov.de>
-References: <20200713143054.34978-1-grandmaster@al2klimov.de>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 13 Jul 2020 17:25:49 -0700 (PDT)
+        id S1726929AbgGNA0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 20:26:11 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33706 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726748AbgGNA0K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 20:26:10 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jv8lt-004xKH-E2; Tue, 14 Jul 2020 02:26:09 +0200
+Date:   Tue, 14 Jul 2020 02:26:09 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jarod Wilson <jarod@redhat.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [RFC] bonding driver terminology change proposal
+Message-ID: <20200714002609.GB1140268@lunn.ch>
+References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
+ <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
+ <20200713154118.3a1edd66@hermes.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200713154118.3a1edd66@hermes.lan>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Date: Mon, 13 Jul 2020 16:30:54 +0200
+Hi Jarod
 
-> Rationale:
-> Reduces attack surface on kernel devs opening the links for MITM
-> as HTTPS traffic is much harder to manipulate.
-> 
-> Deterministic algorithm:
-> For each file:
->   If not .svg:
->     For each line:
->       If doesn't contain `\bxmlns\b`:
->         For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-> 	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
->             If both the HTTP and HTTPS versions
->             return 200 OK and serve the same content:
->               Replace HTTP with HTTPS.
-> 
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+Do you have this change scripted? Could you apply the script to v5.4
+and then cherry-pick the 8 bonding fixes that exist in v5.4.51. How
+many result in conflicts?
 
-Applied.
+Could you do the same with v4.19...v4.19.132, which has 20 fixes.
+
+This will give us an idea of the maintenance overhead such a change is
+going to cause, and how good git is at figuring out this sort of
+thing.
+
+	Andrew
