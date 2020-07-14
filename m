@@ -2,162 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF3082200BE
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 00:34:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CF862200D0
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 00:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728413AbgGNWeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 18:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
+        id S1726829AbgGNW6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 18:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbgGNWeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 18:34:37 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F39C061755;
-        Tue, 14 Jul 2020 15:34:36 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id j11so370127ljo.7;
-        Tue, 14 Jul 2020 15:34:36 -0700 (PDT)
+        with ESMTP id S1726767AbgGNW6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 18:58:10 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF05C061755;
+        Tue, 14 Jul 2020 15:58:10 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id k5so7675155plk.13;
+        Tue, 14 Jul 2020 15:58:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vXZrLQFtz5v2+suQrG5NfcJNsztPODoreKLpAWy6NFg=;
-        b=mtO5P/E9TDnkP6xog0ozP6YVVywTGS7uJuacD8e5+PUdTNBMwjdHZtRWlZ/rRJ25lQ
-         eRKcTR9C5PSB02weeaaDe/h20yWzHKF/xjT5fV8ELPqw7gDnotG0BmHT8PwEzNY2iUWE
-         WYm6O22R/LTkRBETp5jbn5euGUxBuJ2WpsO50FULHnjzdLPyvDvRaj8+H3Hea2tld/BU
-         QafpY5oyOgyY9S1s5ppf+iBxiGVW10/MH0hP6iHzaBX0KfbfOckfdDuS3t1VLxJlswR5
-         Th5tyLTFmTUqXgN/fV4lLBg70ptQNgTndsqhwlKOi9QCyfb4/3LL+MWpBCREwq28cdda
-         wb7Q==
+        h=from:to:cc:subject:date:message-id;
+        bh=I1LTB4/JS87xoaS8Y+5jv1nPacVU0zDKVQnIOq9GqHU=;
+        b=PtR/9aDSHRqisXvpz9THPGbPPC/BfqwG9sAMCJsi/2n++OEsTVhngabB/cd0mryk31
+         7u71yD3akWQCo3AlmoIQ39eUvMQifVLo96qkut6h4f9MhcRyXVJl1YR1kT/UdKFXHHIs
+         +m4wv2rKat2GnFL3+xfKEUFmVK47j9n1A7ca/sL7fflk9O0VErkOxiEiydXNJH8yzsyr
+         sZY5PJjqKv2j3q2T/h479etk6ycQlwfExXKs3S/0pDrrqgJ9ZIWhCnKiq1bt/MbSlILH
+         Ywn5aQqSjqXPT2FGKZ0jmtAMGZN0OEA/uVXeoe9v3NY2WMSSKG3MyRgiikfNwfXcdtIs
+         Z7tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vXZrLQFtz5v2+suQrG5NfcJNsztPODoreKLpAWy6NFg=;
-        b=Wdyp8WlVWrv98JqbNTMO2J6FCYKK8SNEL7dO0jh78aOFRUQktzwfkRnKSEN3Mblg2c
-         ZeKun3SI8Hln61IiKjOeYwbki5DEK5uO/pKvp1pa7+spEmEBQzhViq7srydLGXynJvbQ
-         TO8pOF4H/SnudZ6OVtbifQehqQg1ddUlxTevz0IEwy7LL1dyalmraE7Bp3EELy0dUYOY
-         RlYLk5+/FJQz4cJhoOduDDheFMczFqYANrYnE8F/pjjPdNfncPLCbtfHJ/ZoGxnviChf
-         fe3H/m2p8QMsafA9FkVQ8Z0WX/sDh3nProNLZMBAbOg9ANWMM1+DRnXGauYeaTReN61G
-         qfSw==
-X-Gm-Message-State: AOAM531OVjsXROvfSZZlLOrvFjQCqLArjS9VE6azfN15oJVC9UxdiGws
-        bVDDuAU49KAwj0Pbr/tsj2aKkB35WJBh48ee6uw=
-X-Google-Smtp-Source: ABdhPJw5ZWlAk0dAqCuNvTaOomLn7hq7+QABLIYcmKvdlxNjP1e2Wd7qczdHA1+xTLqF3cBC9Rr5WY3XNvCQwZK96Ok=
-X-Received: by 2002:a2e:8357:: with SMTP id l23mr3098656ljh.290.1594766075296;
- Tue, 14 Jul 2020 15:34:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200702134930.4717-1-maciej.fijalkowski@intel.com>
- <20200702134930.4717-5-maciej.fijalkowski@intel.com> <20200710235632.lhn6edwf4a2l3kiz@ast-mbp.dhcp.thefacebook.com>
- <CAADnVQJhhQnjQdrQgMCsx2EDDwELkCvY7Zpfdi_SJUmH6VzZYw@mail.gmail.com>
- <CAADnVQ+AD0T_xqwk-fhoWV25iANs-FMCMVnn2-PALDxdODfepA@mail.gmail.com>
- <20200714010045.GB2435@ranger.igk.intel.com> <20200714033630.2fw5wzljbkkfle3j@ast-mbp.dhcp.thefacebook.com>
- <20200714205035.GA4423@ranger.igk.intel.com>
-In-Reply-To: <20200714205035.GA4423@ranger.igk.intel.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=I1LTB4/JS87xoaS8Y+5jv1nPacVU0zDKVQnIOq9GqHU=;
+        b=eUzZrXf0nUySm18fqRwCv4APPiVmf18eQGlc9WoF3B6k5h4pCPJz3AtW70VhaDKkF6
+         ti6Tw+fsbnNHmxH88+SsnUHOJ8a3+qO/U0TYqeL9dnKhlh+jOupHGd9rctW+HfffRRtm
+         9O+5YzPX3EkTMp7F4JEi0v3TBYw7TZxyxgRDGfp2R4zoUyFvDFemDwS45aHUbNxuV8Jv
+         zBmQt2+PYANXurIU854zclw7dH7CPD0qc1ChxhIa+NfPNPpfQeD1650KlkEiAGRuYqiB
+         zNzn2lBv2+2S1aJWcrgNeJCY8Qm7I1kkZjLX9+2tNjVv5IF/Gq0JFd8JlbpOwLyaFyv2
+         /PWw==
+X-Gm-Message-State: AOAM531yAJAymCb0K+NFSolZ9QJfTerKuW326zy8htHVnO3F8hSFEOKG
+        XcZJTdjjb3cruinr3hVpuLM=
+X-Google-Smtp-Source: ABdhPJw8KrJYQWlSPhRmaRkpSqu2hgI3oVw9bKxrqOzPKFXKXiU9WQ0D7zHv6HsDceX0FXrAEaxqvw==
+X-Received: by 2002:a17:90a:3d0e:: with SMTP id h14mr6525655pjc.184.1594767489640;
+        Tue, 14 Jul 2020 15:58:09 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([163.114.132.7])
+        by smtp.gmail.com with ESMTPSA id k189sm181488pfd.175.2020.07.14.15.58.08
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 14 Jul 2020 15:58:08 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 14 Jul 2020 15:34:23 -0700
-Message-ID: <CAADnVQ+Fma88nvHuk12UXc9SQGW4BwEe+phjw2B9Up0CgxcV8A@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 4/5] bpf, x64: rework pro/epilogue and
- tailcall handling in JIT
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: pull-request: bpf-next 2020-07-14
+Date:   Tue, 14 Jul 2020 15:58:07 -0700
+Message-Id: <20200714225807.56649-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 1:55 PM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Mon, Jul 13, 2020 at 08:36:30PM -0700, Alexei Starovoitov wrote:
-> > On Tue, Jul 14, 2020 at 03:00:45AM +0200, Maciej Fijalkowski wrote:
-> > > On Fri, Jul 10, 2020 at 08:25:20PM -0700, Alexei Starovoitov wrote:
-> > > > On Fri, Jul 10, 2020 at 8:20 PM Alexei Starovoitov
-> > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > >
-> > > > > Of course you are right.
-> > > > > pop+nop+push is incorrect.
-> > > > >
-> > > > > How about the following instead:
-> > > > > - during JIT:
-> > > > > emit_jump(to_skip_below)  <- poke->tailcall_bypass
-> > >
-> > > That's the jump to the instruction right after the poke->tailcall_target.
-> >
-> > right. Mainly looking for better names than ip and ip_aux.
-> >
-> > > > > pop_callee_regs
-> > > > > emit_jump(to_tailcall_target) <- poke->tailcall_target
-> > >
-> > > During JIT there's no tailcall_target so this will be nop5, right?
-> >
-> > I thought it will be always jmp, but with new info I agree that
-> > it will start with nop.
-> >
-> > >
-> > > > >
-> > > > > - Transition from one target to another:
-> > > > > text_poke(poke->tailcall_target, MOD_JMP, old_jmp, new_jmp)
-> > > > > if (new_jmp != NULL)
-> > > > >   text_poke(poke->tailcall_bypass, MOD jmp into nop);
-> > > > > else
-> > > > >   text_poke(poke->tailcall_bypass, MOD nop into jmp);
-> > > >
-> > > > One more correction. I meant:
-> > > >
-> > > > if (new_jmp != NULL) {
-> > > >   text_poke(poke->tailcall_target, MOD_JMP, old_jmp, new_jmp)
-> > >
-> > > Problem with having the old_jmp here is that you could have the
-> > > tailcall_target removed followed by the new program being inserted. So for
-> > > that case old_jmp is NULL but we decided to not poke the
-> > > poke->tailcall_target when removing the program, only the tailcall_bypass
-> > > is poked back to jmp from nop. IOW old_jmp is not equal to what
-> > > poke->tailcall_target currently stores. This means that
-> > > bpf_arch_text_poke() would not be successful for this update and that is
-> > > the reason of faking it in this patch.
-> >
-> > got it.
-> > I think it can be solved two ways:
-> > 1. add synchronize_rcu() after poking of tailcall_bypass into jmp
-> > and then update tailcall_target into nop.
-> > so the race you've described in cover letter won't happen.
-> > In the future with sleepable progs we'd need to call sync_rcu_tasks_trace too.
-> > Which will make poke_run even slower.
-> >
-> > 2. add a flag to bpf_arch_text_poke() to ignore 5 bytes in there
-> > and update tailcall_target to new jmp.
-> > The speed of poke_run will be faster,
-> > but considering the speed of text_poke_bp() it's starting to feel like
-> > premature optimization.
-> >
-> > I think approach 1 is cleaner.
-> > Then the pseudo code will be:
-> > if (new_jmp != NULL) {
-> >    text_poke(poke->tailcall_target, MOD_JMP, old ? old_jmp : NULL, new_jmp);
-> >    if (!old)
-> >      text_poke(poke->tailcall_bypass, MOD_JMP, bypass_addr, NULL /* into nop */);
-> > } else {
-> >    text_poke(poke->tailcall_bypass, MOD_JMP, NULL /* from nop */, bypass_addr);
-> >    sync_rcu(); /* let progs finish */
-> >    text_poke(poke->tailcall_target, MOD_JMP, old_jmp, NULL /* into nop */)
-> > }
->
-> Seems like this does the job :) clever stuff with sync_rcu.
-> I tried this approach and one last thing that needs to be covered
-> separately is the case of nop->nop update. We should simply avoid poking
-> in this case. With this in place everything is functional.
->
-> I will update the patch and descriptions and send the non-RFC revision, if
-> you don't mind of course.
+Hi David,
 
-Yes. Please. Cannot wait actually :)
+The following pull-request contains BPF updates for your *net-next* tree.
 
-Please think through Daniel's comment in prog_array_map_poke_run().
-Especially points 3 and 4. The new logic will be hitting the same cases,
-but in a more elaborate way.
-That comment also makes clear why memcmp(poke->ip, nop5...);
-was not the correct approach... poke->ip address can be gone at that time.
+We've added 21 non-merge commits during the last 1 day(s) which contain
+a total of 20 files changed, 308 insertions(+), 279 deletions(-).
+
+The main changes are:
+
+1) Fix selftests/bpf build, from Alexei.
+
+2) Fix resolve_btfids build issues, from Jiri.
+
+3) Pull usermode-driver-cleanup set, from Eric.
+
+4) Two minor fixes to bpfilter, from Alexei and Masahiro.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, Christian Brauner, Geert Uytterhoeven, Greg 
+Kroah-Hartman, kernel test robot, Michal Kubecek, Stephen Rothwell, 
+Tetsuo Handa
+
+----------------------------------------------------------------
+
+The following changes since commit 07dd1b7e68e4b83a1004b14dffd7e142c0bc79bd:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next (2020-07-13 18:04:05 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to 9326e0f85bfaf0578d40f5357f8143ec857469f5:
+
+  bpfilter: Allow to build bpfilter_umh as a module without static library (2020-07-14 12:37:06 -0700)
+
+----------------------------------------------------------------
+Alexei Starovoitov (3):
+      selftests/bpf: Fix merge conflict resolution
+      Merge branch 'usermode-driver-cleanup' of git://git.kernel.org/.../ebiederm/user-namespace into bpf-next
+      bpfilter: Initialize pos variable
+
+Eric W. Biederman (17):
+      umh: Capture the pid in umh_pipe_setup
+      umh: Move setting PF_UMH into umh_pipe_setup
+      umh: Rename the user mode driver helpers for clarity
+      umh: Remove call_usermodehelper_setup_file.
+      umh: Separate the user mode driver and the user mode helper support
+      umd: For clarity rename umh_info umd_info
+      umd: Rename umd_info.cmdline umd_info.driver_name
+      umd: Transform fork_usermode_blob into fork_usermode_driver
+      umh: Stop calling do_execve_file
+      exec: Remove do_execve_file
+      bpfilter: Move bpfilter_umh back into init data
+      umd: Track user space drivers with struct pid
+      exit: Factor thread_group_exited out of pidfd_poll
+      bpfilter: Take advantage of the facilities of struct pid
+      umd: Remove exit_umh
+      umd: Stop using split_argv
+      Make the user mode driver code a better citizen
+
+Jiri Olsa (2):
+      bpf: Fix build for disabled CONFIG_DEBUG_INFO_BTF option
+      bpf: Fix cross build for CONFIG_DEBUG_INFO_BTF option
+
+Masahiro Yamada (1):
+      bpfilter: Allow to build bpfilter_umh as a module without static library
+
+ fs/exec.c                                          |  38 +----
+ include/linux/binfmts.h                            |   1 -
+ include/linux/bpfilter.h                           |   7 +-
+ include/linux/btf_ids.h                            |  11 +-
+ include/linux/sched.h                              |   9 -
+ include/linux/sched/signal.h                       |   2 +
+ include/linux/umh.h                                |  15 --
+ include/linux/usermode_driver.h                    |  18 ++
+ kernel/Makefile                                    |   1 +
+ kernel/exit.c                                      |  25 ++-
+ kernel/fork.c                                      |   6 +-
+ kernel/umh.c                                       | 171 +------------------
+ kernel/usermode_driver.c                           | 182 +++++++++++++++++++++
+ net/bpfilter/Kconfig                               |  10 +-
+ net/bpfilter/Makefile                              |   2 +
+ net/bpfilter/bpfilter_kern.c                       |  39 ++---
+ net/bpfilter/bpfilter_umh_blob.S                   |   2 +-
+ net/ipv4/bpfilter/sockopt.c                        |  20 ++-
+ tools/bpf/resolve_btfids/Makefile                  |  14 ++
+ .../testing/selftests/bpf/progs/bpf_iter_netlink.c |  14 --
+ 20 files changed, 308 insertions(+), 279 deletions(-)
+ create mode 100644 include/linux/usermode_driver.h
+ create mode 100644 kernel/usermode_driver.c
