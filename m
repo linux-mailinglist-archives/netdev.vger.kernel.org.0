@@ -2,75 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF60921E87D
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 08:45:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFD8221E885
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 08:47:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726545AbgGNGpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 02:45:13 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:51410 "EHLO huawei.com"
+        id S1726510AbgGNGr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 02:47:26 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:34314 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726375AbgGNGpM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 02:45:12 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id A34E061132CB930F3ED4;
-        Tue, 14 Jul 2020 14:45:08 +0800 (CST)
-Received: from localhost.localdomain (10.175.112.70) by
- DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Tue, 14 Jul 2020 14:45:04 +0800
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     <socketcan@hartkopp.net>, <mkl@pengutronix.de>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] can: silence remove_proc_entry warning
-Date:   Tue, 14 Jul 2020 14:44:50 +0800
-Message-ID: <1594709090-3203-1-git-send-email-zhangchangzhong@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1725778AbgGNGrZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 02:47:25 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id D3538EC20E012F4A524F;
+        Tue, 14 Jul 2020 14:47:14 +0800 (CST)
+Received: from [127.0.0.1] (10.174.177.219) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Tue, 14 Jul 2020
+ 14:47:13 +0800
+Subject: Re: [PATCH net-next] rtnetlink: Fix memory(net_device) leak when
+ ->newlink fails
+To:     David Miller <davem@davemloft.net>
+CC:     <kuba@kernel.org>, <jiri@mellanox.com>, <edumazet@google.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20200713075528.141235-1-chenweilong@huawei.com>
+ <20200713.120206.428449983947812863.davem@davemloft.net>
+From:   Weilong Chen <chenweilong@huawei.com>
+Message-ID: <e2f6d2c4-26e2-7bef-e0b4-1dcb29300d74@huawei.com>
+Date:   Tue, 14 Jul 2020 14:47:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
+In-Reply-To: <20200713.120206.428449983947812863.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.219]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If can_init_proc() fail to create /proc/net/can directory,
-can_remove_proc() will trigger a warning:
-
-WARNING: CPU: 6 PID: 7133 at fs/proc/generic.c:672 remove_proc_entry+0x17b0
-Kernel panic - not syncing: panic_on_warn set ...
-
-Fix to return early from can_remove_proc() if can proc_dir
-does not exists.
-
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
----
- net/can/proc.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/net/can/proc.c b/net/can/proc.c
-index e6881bf..077af42 100644
---- a/net/can/proc.c
-+++ b/net/can/proc.c
-@@ -471,6 +471,9 @@ void can_init_proc(struct net *net)
-  */
- void can_remove_proc(struct net *net)
- {
-+	if (!net->can.proc_dir)
-+		return;
-+
- 	if (net->can.pde_version)
- 		remove_proc_entry(CAN_PROC_VERSION, net->can.proc_dir);
- 
-@@ -498,6 +501,5 @@ void can_remove_proc(struct net *net)
- 	if (net->can.pde_rcvlist_sff)
- 		remove_proc_entry(CAN_PROC_RCVLIST_SFF, net->can.proc_dir);
- 
--	if (net->can.proc_dir)
--		remove_proc_entry("can", net->proc_net);
-+	remove_proc_entry("can", net->proc_net);
- }
--- 
-1.8.3.1
+On 2020/7/14 3:02, David Miller wrote:
+> From: Weilong Chen <chenweilong@huawei.com>
+> Date: Mon, 13 Jul 2020 15:55:28 +0800
+> 
+>> When vlan_newlink call register_vlan_dev fails, it might return error
+>> with dev->reg_state = NETREG_UNREGISTERED. The rtnl_newlink should
+>> free the memory. But currently rtnl_newlink only free the memory which
+>> state is NETREG_UNINITIALIZED.
+>  ...
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Weilong Chen <chenweilong@huawei.com>
+> 
+> This needs a Fixes: tag.
+> 
+> Also, can't this bug happen in mainline too?  It's a bug fix and therefore
+> should target 'net' instead of 'net-next'.
+>> .
+> 
+Yes, it can happend in mainline, I'll send a v2 PATCH.
 
