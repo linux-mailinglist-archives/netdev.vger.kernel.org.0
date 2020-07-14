@@ -2,283 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63AB921EA96
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 09:52:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3FB321EAC3
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 10:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725939AbgGNHwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 03:52:34 -0400
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:16714 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725820AbgGNHwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 03:52:33 -0400
-Received: from localhost.localdomain ([93.22.39.234])
-        by mwinf5d17 with ME
-        id 2vsS2300B537AcD03vsSQz; Tue, 14 Jul 2020 09:52:31 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Tue, 14 Jul 2020 09:52:31 +0200
-X-ME-IP: 93.22.39.234
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, bryan.whitehead@microchip.com,
-        UNGLinuxDriver@microchip.com, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] lan743x: switch from 'pci_' to 'dma_' API
-Date:   Tue, 14 Jul 2020 09:52:24 +0200
-Message-Id: <20200714075224.290759-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1726748AbgGNIAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 04:00:18 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:43998 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbgGNIAR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 04:00:17 -0400
+Received: by mail-oi1-f196.google.com with SMTP id x83so13224780oif.10;
+        Tue, 14 Jul 2020 01:00:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QnTe4sZ/BVwx3aWuIY96pK3amPI3OQSt3QidovW9MDg=;
+        b=DVnbWK+//JZKX9DIxxeWG9G3CRQTZot4ixyDa7eabiimpmY8Jmd3b3JcQCLaqJWlLL
+         9cI3Gai+0CZ2a7c99Sw/7/Nz1rdtm7pgVuGqkyh1CAdhfFRi1Y1muUGDx8maCsU1uBKa
+         3d7+RpX2vdD+HjInfwsGg8G++eqfFOt0QcmvJSiWdk6DUevApz1Ew81diTE1mvncr1HF
+         6AwD9O7fZqSu0p7D9TWSMn7aua6H09sDRXAJrrXMBYFbW0InbblFsvW/nP/UXmo3Wx51
+         sP1GaOizDtns1TqUkL77JPBI4JY3cpXiYQh5GSt+VFX+H3c6uETPatGp9gS+x/DOUNjS
+         H4ow==
+X-Gm-Message-State: AOAM532bqYv+p9TB+7+q0mpttynDvxj53q7fymfcDVVYTJ0Wm/VNHlQh
+        I/3tDl7kcBPjP/B44dNqow3JKphhcnKWO4vHy9g=
+X-Google-Smtp-Source: ABdhPJyzIvtstGtIjvnC0xOdHX2BDAwrtjW5pB4zYT3uHZkIF8+JNHYsqpLcM1Tt8jiPySfbt+KukaiWmW7ArIQFH7w=
+X-Received: by 2002:a05:6808:64a:: with SMTP id z10mr2722714oih.54.1594713616158;
+ Tue, 14 Jul 2020 01:00:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594676120-5862-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594676120-5862-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 14 Jul 2020 10:00:05 +0200
+Message-ID: <CAMuHMdUZx56wWTMdpmXhbvJV6_M=jDhQUVvD6b0-5xU-jrGsAA@mail.gmail.com>
+Subject: Re: [PATCH 6/9] dt-bindings: gpio: renesas,rcar-gpio: Add r8a774e1 support
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        dmaengine <dmaengine@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+On Mon, Jul 13, 2020 at 11:35 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Document Renesas RZ/G2H (R8A774E1) GPIO blocks compatibility within the
+> relevant dt-bindings.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GPF_ with a correct flag.
-It has been compile tested.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-When memory is allocated in 'lan743x_tx_ring_cleanup()' and
-'lan743x_rx_ring_init()', GFP_KERNEL can be used because this flag is
-already used to allocate some memory in these functions.
+Gr{oetje,eeting}s,
 
-While at it, remove a useless (void *) casting in the first hunk in so that
-the code is more consistent.
+                        Geert
 
-
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
-
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/microchip/lan743x_main.c | 46 +++++++++----------
- 1 file changed, 22 insertions(+), 24 deletions(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index 2373e72d2d29..f6479384dc4f 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -1742,10 +1742,9 @@ static int lan743x_tx_napi_poll(struct napi_struct *napi, int weight)
- static void lan743x_tx_ring_cleanup(struct lan743x_tx *tx)
- {
- 	if (tx->head_cpu_ptr) {
--		pci_free_consistent(tx->adapter->pdev,
--				    sizeof(*tx->head_cpu_ptr),
--				    (void *)(tx->head_cpu_ptr),
--				    tx->head_dma_ptr);
-+		dma_free_coherent(&tx->adapter->pdev->dev,
-+				  sizeof(*tx->head_cpu_ptr), tx->head_cpu_ptr,
-+				  tx->head_dma_ptr);
- 		tx->head_cpu_ptr = NULL;
- 		tx->head_dma_ptr = 0;
- 	}
-@@ -1753,10 +1752,9 @@ static void lan743x_tx_ring_cleanup(struct lan743x_tx *tx)
- 	tx->buffer_info = NULL;
- 
- 	if (tx->ring_cpu_ptr) {
--		pci_free_consistent(tx->adapter->pdev,
--				    tx->ring_allocation_size,
--				    tx->ring_cpu_ptr,
--				    tx->ring_dma_ptr);
-+		dma_free_coherent(&tx->adapter->pdev->dev,
-+				  tx->ring_allocation_size, tx->ring_cpu_ptr,
-+				  tx->ring_dma_ptr);
- 		tx->ring_allocation_size = 0;
- 		tx->ring_cpu_ptr = NULL;
- 		tx->ring_dma_ptr = 0;
-@@ -1780,8 +1778,8 @@ static int lan743x_tx_ring_init(struct lan743x_tx *tx)
- 				     sizeof(struct lan743x_tx_descriptor),
- 				     PAGE_SIZE);
- 	dma_ptr = 0;
--	cpu_ptr = pci_zalloc_consistent(tx->adapter->pdev,
--					ring_allocation_size, &dma_ptr);
-+	cpu_ptr = dma_alloc_coherent(&tx->adapter->pdev->dev,
-+				     ring_allocation_size, &dma_ptr, GFP_KERNEL);
- 	if (!cpu_ptr) {
- 		ret = -ENOMEM;
- 		goto cleanup;
-@@ -1798,8 +1796,9 @@ static int lan743x_tx_ring_init(struct lan743x_tx *tx)
- 	}
- 	tx->buffer_info = (struct lan743x_tx_buffer_info *)cpu_ptr;
- 	dma_ptr = 0;
--	cpu_ptr = pci_zalloc_consistent(tx->adapter->pdev,
--					sizeof(*tx->head_cpu_ptr), &dma_ptr);
-+	cpu_ptr = dma_alloc_coherent(&tx->adapter->pdev->dev,
-+				     sizeof(*tx->head_cpu_ptr), &dma_ptr,
-+				     GFP_KERNEL);
- 	if (!cpu_ptr) {
- 		ret = -ENOMEM;
- 		goto cleanup;
-@@ -2281,10 +2280,9 @@ static void lan743x_rx_ring_cleanup(struct lan743x_rx *rx)
- 	}
- 
- 	if (rx->head_cpu_ptr) {
--		pci_free_consistent(rx->adapter->pdev,
--				    sizeof(*rx->head_cpu_ptr),
--				    rx->head_cpu_ptr,
--				    rx->head_dma_ptr);
-+		dma_free_coherent(&rx->adapter->pdev->dev,
-+				  sizeof(*rx->head_cpu_ptr), rx->head_cpu_ptr,
-+				  rx->head_dma_ptr);
- 		rx->head_cpu_ptr = NULL;
- 		rx->head_dma_ptr = 0;
- 	}
-@@ -2293,10 +2291,9 @@ static void lan743x_rx_ring_cleanup(struct lan743x_rx *rx)
- 	rx->buffer_info = NULL;
- 
- 	if (rx->ring_cpu_ptr) {
--		pci_free_consistent(rx->adapter->pdev,
--				    rx->ring_allocation_size,
--				    rx->ring_cpu_ptr,
--				    rx->ring_dma_ptr);
-+		dma_free_coherent(&rx->adapter->pdev->dev,
-+				  rx->ring_allocation_size, rx->ring_cpu_ptr,
-+				  rx->ring_dma_ptr);
- 		rx->ring_allocation_size = 0;
- 		rx->ring_cpu_ptr = NULL;
- 		rx->ring_dma_ptr = 0;
-@@ -2327,8 +2324,8 @@ static int lan743x_rx_ring_init(struct lan743x_rx *rx)
- 				     sizeof(struct lan743x_rx_descriptor),
- 				     PAGE_SIZE);
- 	dma_ptr = 0;
--	cpu_ptr = pci_zalloc_consistent(rx->adapter->pdev,
--					ring_allocation_size, &dma_ptr);
-+	cpu_ptr = dma_alloc_coherent(&rx->adapter->pdev->dev,
-+				     ring_allocation_size, &dma_ptr, GFP_KERNEL);
- 	if (!cpu_ptr) {
- 		ret = -ENOMEM;
- 		goto cleanup;
-@@ -2345,8 +2342,9 @@ static int lan743x_rx_ring_init(struct lan743x_rx *rx)
- 	}
- 	rx->buffer_info = (struct lan743x_rx_buffer_info *)cpu_ptr;
- 	dma_ptr = 0;
--	cpu_ptr = pci_zalloc_consistent(rx->adapter->pdev,
--					sizeof(*rx->head_cpu_ptr), &dma_ptr);
-+	cpu_ptr = dma_alloc_coherent(&rx->adapter->pdev->dev,
-+				     sizeof(*rx->head_cpu_ptr), &dma_ptr,
-+				     GFP_KERNEL);
- 	if (!cpu_ptr) {
- 		ret = -ENOMEM;
- 		goto cleanup;
 -- 
-2.25.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
