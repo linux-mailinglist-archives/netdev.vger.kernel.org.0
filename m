@@ -2,62 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40A1A21F650
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 17:43:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44D4621F65A
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 17:47:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726364AbgGNPn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 11:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37252 "EHLO
+        id S1726478AbgGNPqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 11:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725876AbgGNPn1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 11:43:27 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D01C061755
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 08:43:27 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id dm19so17679515edb.13
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 08:43:27 -0700 (PDT)
+        with ESMTP id S1725280AbgGNPqJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 11:46:09 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D972C061755
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 08:46:09 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id f12so22527496eja.9
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 08:46:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=ZMtm2k+RH0QtwDJJMpHbfgK/NZpbNUg4m9Wi/pu7H4s=;
-        b=uGwBF21ENQCK8mCQxhBm4E27KB9BlFhQTwZDAKEdfo1DC9/AP1a/TcqOgu6CVsE0BM
-         Ar8em78ff1kjePZsgZ6N4DSwieifu+1/cFfILgYRdy8WbIrFQCRKiEm2dx4rkST2wLsa
-         zAAFpdzF/c1LFx6JQdcGwkgJeAYBhCjUMBcn/zG5AHLvSiv14DONJozYSycXzoNmY6KR
-         oJQelBNckVeobQ9SDK6htWWfVaDc0N3B8IxR9IRlRTPK0nB9aX+QemmRcVLTEbOwSi2A
-         I8nAT5+VWTOoOi/Cyk2q6eFjbCH1GJM3krhy+ATNS1fLmD4jO9W69YigcYwHeV2fXSM9
-         0OVw==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dgkFuCXpoImPRRz/Ik94h7JviPPGcigSGHam2ptQZw4=;
+        b=QhRHwsUCrzjFyjvbvKbFkIxKUsJR6dw/a/4SRyeOCBvAs3bv4Zxcq3+XcFtCnyx1L2
+         bWL44LMJKZyRSz+oC30o8kpRfZtd/YyLqSA1LOVvbSFe4fiGXODieOoXCUhdrOBtBDah
+         LhGWIoDRwbqQAfk7FFwA2R+zt6+/AE8NBzPCh9I2NOqwTJS3KEBrJVdX2SMqGgWEpGX/
+         in30tN8Dox3uUwyP1vAdFLHrbaf8tVvGXixsJ0AxfQ6DqzNxh/bQEih7/TJ9PuNgk1La
+         FjhRHio+jiFo6N9mZr34ef7OpBSt/lJRxoZfXO3yScrsrIB5Q/3TP7hkigM4a+N7iRg/
+         ypYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=ZMtm2k+RH0QtwDJJMpHbfgK/NZpbNUg4m9Wi/pu7H4s=;
-        b=q++x+/1W/FxBpr3KNlei8MFi4WyxRWCQ0PQ9/L+Y+K2XQmWWCsbKog/+JGCjJDU9qJ
-         zKBYBTZ3jXopheyMzCrioy7+J+8XkJbfCqaS0tkj0rug8rdCLyKE9WttKdXcHErzl+Vj
-         5LnTRa57B/9YOInwuh6tfCg3QWFPsHC6ZJ4GPWeXhm7addDzMyPbUX9lzyFB7dbumLoX
-         JL5AIGfKG8VT9oPQ48gY+Ezdiz3thaJ453HjZpal2h1CatrYCwoQzEYpaenmx8niw3l4
-         BuKdws/7FmQ15xRyEAFrwEV34q7OlDKJhOJvqQIyFPJPkv+KiKCUBVcinfN8YepGxseF
-         JRPQ==
-X-Gm-Message-State: AOAM530gg6HpRtyHAd1iIzxdag10piAcwYiE7MCjMmyaOa4vz3Gz6abK
-        +AJ80dLEIbeauKNHxcUaTXivEkU+dqs=
-X-Google-Smtp-Source: ABdhPJy/OvqLMvHUP1LTVcI1Vi7vXMx+VEaKsiMSPxDrVCYZblnWpv9tQG2VExgOrvXT0bbFltOKMw==
-X-Received: by 2002:a50:d55b:: with SMTP id f27mr5212296edj.312.1594741405573;
-        Tue, 14 Jul 2020 08:43:25 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dgkFuCXpoImPRRz/Ik94h7JviPPGcigSGHam2ptQZw4=;
+        b=KkWrUc17CzlN9csogG93KZoJ1E7AUHtKfuvUMNTbLxswT6OcohEwjIaFfupX+6ZFGp
+         x4b2RVAv0GLqKCQARp+uVx9AylS6Bfqy/hROMptl7aNcr2eWU+Oef5X65CHU0+T6cIZk
+         n8iCC4h3Z02sZujvSTn9G0kH3w/abkhOgijDSulw0zrCY9Uuueyu0gcwL7PeZw/MXGL+
+         kOKims/y6mNhwLrIeVtpR3x7YtLbaWi2LI8Kmx3++nZOs4CXfzxvkilRotdSJGeSr4gY
+         Jsp4oD/iw5L8RQmHO0KrOy2Dmz5hEZpF5x3j/HGITGTasG4796/jJg3myq7aXSsqK9fv
+         a44g==
+X-Gm-Message-State: AOAM533Z2O1pPC5DsMVARcAPs3H7E81sZviZuA++pGAOJvXWwFKORAKF
+        rwoDo3noeFs8so3u0tpRxIJx/6SeqfE=
+X-Google-Smtp-Source: ABdhPJxQ4k4imulS2z0hCNvC0aNk1pdAVC+hwWsOrRu4RYJ4Jjf/33fMSvEKKPbrW6TkEYwlBRehnw==
+X-Received: by 2002:a17:906:4d4c:: with SMTP id b12mr5021529ejv.506.1594741567743;
+        Tue, 14 Jul 2020 08:46:07 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f23:5700:b47b:7b5:8aff:5077? (p200300ea8f235700b47b07b58aff5077.dip0.t-ipconnect.de. [2003:ea:8f23:5700:b47b:7b5:8aff:5077])
-        by smtp.googlemail.com with ESMTPSA id s13sm12549698ejd.117.2020.07.14.08.43.24
+        by smtp.googlemail.com with ESMTPSA id w8sm12942011ejb.10.2020.07.14.08.46.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jul 2020 08:43:25 -0700 (PDT)
+        Tue, 14 Jul 2020 08:46:07 -0700 (PDT)
+Subject: [PATCH net-next 1/2] net: phy: realtek: add support for
+ RTL8125B-internal PHY
+From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 0/2] r8169: add support for RTL8125B
-Message-ID: <1cf79621-63ab-0886-3a23-2c9b3625c23f@gmail.com>
-Date:   Tue, 14 Jul 2020 17:43:20 +0200
+References: <1cf79621-63ab-0886-3a23-2c9b3625c23f@gmail.com>
+Message-ID: <c1205e46-0705-3cb8-6416-b130b04f8105@gmail.com>
+Date:   Tue, 14 Jul 2020 17:45:03 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <1cf79621-63ab-0886-3a23-2c9b3625c23f@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -66,19 +73,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds support for RTL8125B rev.b.
-Tested with a Delock 89564 PCIe card.
+Realtek assigned a new PHY ID for the RTL8125B-internal PHY.
+It's however compatible with the RTL8125A-internal PHY.
 
-Heiner Kallweit (2):
-  net: phy: realtek: add support for RTL8125B-internal PHY
-  r8169: add support for RTL8125B
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/realtek.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
- drivers/net/ethernet/realtek/r8169.h          |   1 +
- drivers/net/ethernet/realtek/r8169_main.c     | 110 ++++++++++++++----
- .../net/ethernet/realtek/r8169_phy_config.c   |  53 +++++++++
- drivers/net/phy/realtek.c                     |  12 ++
- 4 files changed, 153 insertions(+), 23 deletions(-)
-
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index c7229d022..95dbe5e8e 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -637,6 +637,18 @@ static struct phy_driver realtek_drvs[] = {
+ 		.write_page	= rtl821x_write_page,
+ 		.read_mmd	= rtl8125_read_mmd,
+ 		.write_mmd	= rtl8125_write_mmd,
++	}, {
++		PHY_ID_MATCH_EXACT(0x001cc840),
++		.name		= "RTL8125B 2.5Gbps internal",
++		.get_features	= rtl8125_get_features,
++		.config_aneg	= rtl8125_config_aneg,
++		.read_status	= rtl8125_read_status,
++		.suspend	= genphy_suspend,
++		.resume		= rtlgen_resume,
++		.read_page	= rtl821x_read_page,
++		.write_page	= rtl821x_write_page,
++		.read_mmd	= rtl8125_read_mmd,
++		.write_mmd	= rtl8125_write_mmd,
+ 	}, {
+ 		PHY_ID_MATCH_EXACT(0x001cc961),
+ 		.name		= "RTL8366RB Gigabit Ethernet",
 -- 
 2.27.0
+
 
