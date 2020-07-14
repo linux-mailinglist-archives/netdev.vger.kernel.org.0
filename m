@@ -2,71 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B9F421E455
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:09:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2643E21E459
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:11:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726742AbgGNAJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 20:09:51 -0400
-Received: from mx2.suse.de ([195.135.220.15]:47092 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726150AbgGNAJv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 20:09:51 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 2E860ACFF;
-        Tue, 14 Jul 2020 00:09:52 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 89C46604B9; Tue, 14 Jul 2020 02:09:49 +0200 (CEST)
-Date:   Tue, 14 Jul 2020 02:09:49 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jarod Wilson <jarod@redhat.com>
-Subject: Re: [RFC] bonding driver terminology change proposal
-Message-ID: <20200714000949.txckjqlp4rzku3q3@lion.mk-sys.cz>
-References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
- <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
- <20200713154118.3a1edd66@hermes.lan>
+        id S1726374AbgGNALR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 20:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726150AbgGNALQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 20:11:16 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804FBC061755;
+        Mon, 13 Jul 2020 17:11:16 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id y13so10272580lfe.9;
+        Mon, 13 Jul 2020 17:11:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VP82AmNODkIZDsrJHwS5EQOS87SFzy6wLeqD3456CTo=;
+        b=AleOdpkuAjavnDnuZoBwyuLmopaxMvFxNP1qetXY4FRj7VjcPdJeCto/nLfB2eIDyo
+         XNPxs8Bs5TUmrNDq8Ygk0CW+c7F4st5mjJ6hJZgL+QU2tM5lL/wbA2aZamWoP/525kZM
+         GTzWj32PqggRN2PP2UPh9QaxZBZizrX+ZTGg7Nn/bIg1fW3kfqlMLp3JxO630/FsJw6Z
+         o/yZ/kY1K5zXvlV1r2N+bvU8YifMUFp4L299EaI8aJ694ZsvnlO689dxt0S80WaDbuN1
+         6QtJ7MTYDIRg/LbCpaCZMapqiMnt3UMZBVRBVaBKeEpyOklVz2j7B0rT7JI9O3eIkrs7
+         6q/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VP82AmNODkIZDsrJHwS5EQOS87SFzy6wLeqD3456CTo=;
+        b=hmC4nqxuN/djkZoD+gAiZTNKZ37Nq2sByXuXX6vX8xDYddr7Xl4zj2RuVGSTWIgP+8
+         ZM93c6qw4v3rJcO+kGezYyTrglbqqXljr+gnTTKfwyINhkE1dk3/JT/Zeo+CjsZcZkGB
+         RwL+/lC0A7Dy7ZYJezU+S6fsIP618Mcjs6/zErxn2DMB6O0ML2XZrbKz3Ss2mj2XQHMh
+         /J1WDTue4mdWXjSfSPqw+ekgOJY/08CkYhSSte79d1tYxnib/f9VlxmCbdM7H4t09+14
+         +Xdo9xVxnieKOfSNy+DpzwGBsgenJR1577sOKcxl21iQ/9p4NqSgyHhrK8ewK6Slzput
+         1Oyg==
+X-Gm-Message-State: AOAM533c6ceXdKXyTOTpikwm0aZsd5Pqdw7rv+Kx3HtTjzxlxyvWH7Kz
+        7P3+P74tKL1zY5swioxpgxxizu2vxSJtc8hbWGc=
+X-Google-Smtp-Source: ABdhPJyMA/JsNRIVo/OtHv/pkyeSkMUMJdicN1MguHhO8+QzhLnT/2aezd/gJaZ/bJqyU3qEg7EDGCq8EvdUjWTV4bU=
+X-Received: by 2002:a19:8307:: with SMTP id f7mr779411lfd.174.1594685474877;
+ Mon, 13 Jul 2020 17:11:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200713154118.3a1edd66@hermes.lan>
+References: <20200713232409.3062144-1-andriin@fb.com>
+In-Reply-To: <20200713232409.3062144-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 13 Jul 2020 17:11:03 -0700
+Message-ID: <CAADnVQKOS+kYfQTCyv5ezZFF+K9UZhDcdm9jP94Y4o4C5zzacg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 0/2] Strip away modifiers from BPF skeleton
+ global variables
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Anton Protopopov <a.s.protopopov@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 03:41:18PM -0700, Stephen Hemminger wrote:
-> On Tue, 14 Jul 2020 00:00:16 +0200
-> Michal Kubecek <mkubecek@suse.cz> wrote:
-> 
-> > On Mon, Jul 13, 2020 at 02:51:39PM -0400, Jarod Wilson wrote:
-> > > To start out with, I'd like to attempt to eliminate as much of the use
-> > > of master and slave in the bonding driver as possible. For the most
-> > > part, I think this can be done without breaking UAPI, but may require
-> > > changes to anything accessing bond info via proc or sysfs.  
-> > 
-> > Could we, please, avoid breaking existing userspace tools and scripts?
-> > Massive code churn is one thing and we could certainly bite the bullet
-> > and live with it (even if I'm still not convinced it would be as great
-> > idea as some present it) but trading theoretical offense for real and
-> > palpable harm to existing users is something completely different.
-> > 
-> > Or is "don't break userspace" no longer the "first commandment" of linux
-> > kernel development?
-> > 
-> > Michal Kubecek
-> 
-> Please consider using same wording as current standard for link aggregration.
-> Current version is 802.1AX and it uses the terms:
->   Multiplexer /  Aggregator
+On Mon, Jul 13, 2020 at 4:25 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Fix bpftool logic of stripping away const/volatile modifiers for all global
+> variables during BPF skeleton generation. See patch #1 for details on when
+> existing logic breaks and why it's important. Support special .strip_mods=true
+> mode in btf_dump__emit_type_decl.
+>
+> Recent example of when this has caused problems can be found in [0].
+>
+>   [0] https://github.com/iovisor/bcc/pull/2994#issuecomment-650588533
 
-But both of these are replacements for "master", right?
-
-> As far as userspace, maybe keep the old API's but provide deprecation nags.
-> And don't document the old API values.
-
-I'm not a fan of nagging users. And even less of a fan of undocumented
-keyword and value aliases.
-
-Michal
+Applied. Thanks
