@@ -2,212 +2,419 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63D3F21EC65
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:12:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8F7621EC71
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726479AbgGNJMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 05:12:48 -0400
-Received: from mail-eopbgr80042.outbound.protection.outlook.com ([40.107.8.42]:59520
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725833AbgGNJMr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 05:12:47 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Mnudd7XkrHw4Ij0gDEHwnb7qm6E3Y5hq2K7mDHRWivQrtdR4YON3Y7Zjw2d+3dUGVHe+vMxF8TM60yvZV9tfEaq6tccYZEE6bFgsS7qzupFWpL6o24Jmi6Psdf/3IHbR1E7Un0RZSmLY9+j5Dxzi3uAQiphWM5zVGpadDa83tPTIlwpbS+ExTnH9Cmse5YwdE+OS61RLVsXVg7S3GgMoocdYA/Ks5OYq63FiWvwFKoX1KQct5WcD9zZiuAkRkqmCw7xhn1cqn3uNnVnIXadzyR2uwTm+jrNvTFhU3H0uMHKqxwNBv/IMGGKT0J3t0vQ2mIFx6myPrJFAMRgm1tTVBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=egoU0Gmh4kTppTTE7zSpgYO1OGpgLEvy9ygxMwD52hU=;
- b=XSQy1S8Ivx3HSqnG4XfWX0ngve2PEUWzS8gBiAC3/eGMgAexZQ/UVN8thh7xYj19sbHyTZDNG46QinjU4QF44DgM9Yu1qEy7ZWmk9FK632DMI9pcJIcqTUlp/kmFSawf7/11/umMygSS1eD40zgi+JcO6EskYpiqt3D73syT7MOS0QJWVMw1Pz8rvG7uUAEt+VTXrMeW0dL2AdY+uozqWH6y2Y54PcSk0gx8mGHzVg5YRA424xuVcRXEWAJSzxCIVwKktNQ+3qJEu0ND6gv1PgxAuBD5jbL4ezPDhZHWCMrbe3G/+JvFL1OM5GlVFE8UQ4W5fCd70H4VLtgiXDAu0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=egoU0Gmh4kTppTTE7zSpgYO1OGpgLEvy9ygxMwD52hU=;
- b=SqSsG1Y+2LmfLOfCtW+cwu9k0kPqKD2MU3/GbFNYsgTQtArQPvX4G3iMVUwuwyRk5X+yxLzMFcjxqXhmOZesSmZxfH9DI4QNNsY45AKT4cBW0n+B8Q2U/dsvFmUG3qHwiMt/jTIUMbkoJ5XfJmtSdqvFp6eTrSTJW0rSA+Itggg=
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR0502MB3113.eurprd05.prod.outlook.com (2603:10a6:3:d7::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3174.22; Tue, 14 Jul 2020 09:12:42 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6%7]) with mapi id 15.20.3174.025; Tue, 14 Jul 2020
- 09:12:42 +0000
-References: <cover.1593209494.git.petrm@mellanox.com> <79417f27b7c57da5c0eb54bb6d074d3a472d9ebf.1593209494.git.petrm@mellanox.com> <CAM_iQpXvwPGz=kKBFKQAkoJ0hwijC9M03SV9arC++gYBAU5VKw@mail.gmail.com> <87a70bic3n.fsf@mellanox.com> <CAM_iQpWjod0oLew-jSN+KUXkoPYkJYWyePHsvLyW4f2JbYQFRw@mail.gmail.com> <873662i3rc.fsf@mellanox.com> <CAM_iQpVs_OEBw54qMhn7Tx6_YAGh5PMSApj=RrO0j6ThSXpkcg@mail.gmail.com> <87wo3dhg63.fsf@mellanox.com> <87v9ixh7es.fsf@mellanox.com> <CAM_iQpU-fh9Saaxo+6juONn+Xd891sUhgaaoht0Bkn2ssAEm8A@mail.gmail.com> <875zavh1re.fsf@mellanox.com> <CAM_iQpUi-aKBLF5MkkSkCBchHeK5a_8OEDw3eXHZ4yPo=_hvsQ@mail.gmail.com>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@mellanox.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next v1 2/5] net: sched: Introduce helpers for qevent blocks
-In-reply-to: <CAM_iQpUi-aKBLF5MkkSkCBchHeK5a_8OEDw3eXHZ4yPo=_hvsQ@mail.gmail.com>
-Date:   Tue, 14 Jul 2020 11:12:38 +0200
-Message-ID: <877dv6jw8p.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR02CA0016.eurprd02.prod.outlook.com
- (2603:10a6:208:3e::29) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+        id S1726252AbgGNJOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 05:14:21 -0400
+Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:29977 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725884AbgGNJOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:14:20 -0400
+Received: from localhost.localdomain ([93.22.39.234])
+        by mwinf5d69 with ME
+        id 2xEE23004537AcD03xEEPM; Tue, 14 Jul 2020 11:14:17 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Tue, 14 Jul 2020 11:14:17 +0200
+X-ME-IP: 93.22.39.234
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     davem@davemloft.net, jdmason@kudzu.us, kuba@kernel.org,
+        mhabets@solarflare.com, snelson@pensando.io, mst@redhat.com,
+        vaibhavgupta40@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net: neterion: vxge: switch from 'pci_' to 'dma_' API
+Date:   Tue, 14 Jul 2020 11:14:12 +0200
+Message-Id: <20200714091412.300211-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yaviefel (89.176.246.183) by AM0PR02CA0016.eurprd02.prod.outlook.com (2603:10a6:208:3e::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21 via Frontend Transport; Tue, 14 Jul 2020 09:12:40 +0000
-X-Originating-IP: [89.176.246.183]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: e2c6c325-e1f9-4d21-53b9-08d827d60fbd
-X-MS-TrafficTypeDiagnostic: HE1PR0502MB3113:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR0502MB31139AFD1C5326597C556B89DB610@HE1PR0502MB3113.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hKcXrQFCXzii8OJLQqpvrcJ9dQy2kEgqOpgIVchQ4WFmloreayJnRxhtrLLHhbG5gI/9V7kGv0BZ68bVQaG9AXs/DMvIsg0yT74Y4CwlsWIciqr3n0wlJ6IkG92KIHTzMnkyMhCBrWSqR4xkJ+bpq5mngWnJ2cPUT0muaP3dbyJXaFV1wYS7x5TBKiwgh2z1bA+vz0jwIzfXF0PrELjMs00WXvLWQSPtZKdCLvm2aQEB5Eu8BLsd90TBWsypTbxTSC9bOn3mMAJvefGNzJ9TgJcne7oF035ce59575l0ZysZW7Vs2CiobBgIZr5e46dJ2bLVxw3RDA3ceL+hi3QUiQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(376002)(136003)(396003)(346002)(52116002)(2616005)(66574015)(316002)(2906002)(6486002)(36756003)(4326008)(54906003)(956004)(66556008)(107886003)(6916009)(8936002)(83380400001)(6496006)(66946007)(66476007)(186003)(26005)(86362001)(5660300002)(16526019)(53546011)(8676002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: xaByUJE+1iW1PyQd77x1X4s/K0ePM3ext87x+gIDhs7xLg3cSt3xCwq3iSbZJ+Kqw4ci6CBSr+vFg6RtT6yvlId40/bgx6vp+kz15xi4zFlZW8gE2FFoIFLoTFOgBfIXn1sgGays4lHQNvhxgE9MI6I93F8s6W1U7gJNrUV11T59nS5HOE3zxH1MWaApaL8LYzSCpJNTpLaWO7k77BMiW+5SfRGsgGljZnIij80ByUb1Bn8vrGidHYnyK7XfHZLvbOZXTKqKy9Gq3WGylAwADiWhCNzf85p1noO8mpM/eQ0sTjdBlDLJkTPPdu5CmAW0l2RVEU3PDDeegd/pPkr5TxgsxyXrae1nH/Gj/c9U0ELBRsB9sZgMvghTKMWwpn5NFtYNd8giBIl7igPJ0WNsXh77R+LTgAQp26H6TPjlXFe7T4lDP7lN9EbsYl5Oc4tQjbanRzUcvQC2m4IOW3/ipJYlvIO4PFfoHc4N+RPPOiS5zgdO/OaFcE+tEIq87i13
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2c6c325-e1f9-4d21-53b9-08d827d60fbd
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2020 09:12:42.0521
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: i60PrQZ4vkF6BC2CU8EV8TYlvkioZDiDz60HW0H8kYN0eFiVwTutROvaxi3ADlL4WEix1OI/tnsnDRu6zOJvZA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0502MB3113
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-Cong Wang <xiyou.wangcong@gmail.com> writes:
+The patch has been generated with the coccinelle script below. No GFP_
+flag needs to be corrected.
+It has been compile tested.
 
-> On Fri, Jul 10, 2020 at 7:40 AM Petr Machata <petrm@mellanox.com> wrote:
->>
->>
->> Cong Wang <xiyou.wangcong@gmail.com> writes:
->>
->> > On Wed, Jul 8, 2020 at 5:13 PM Petr Machata <petrm@mellanox.com> wrote:
->> >>
->> >>
->> >> Petr Machata <petrm@mellanox.com> writes:
->> >>
->> >> > Cong Wang <xiyou.wangcong@gmail.com> writes:
->> >> >
->> >> > I'll think about it some more. For now I will at least fix the lack of
->> >> > locking.
->> >>
->> >> I guess I could store smp_processor_id() that acquired the lock in
->> >> struct qdisc_skb_head. Do a trylock instead of lock, and on fail check
->> >> the stored value. I'll need to be careful about the race between
->> >> unsuccessful trylock and the test, and about making sure CPU ID doesn't
->> >> change after it is read. I'll probe this tomorrow.
->> >
->> > Like __netif_tx_lock(), right? Seems doable.
->>
->> Good to see it actually used, I wasn't sure if the idea made sense :)
->>
->> Unfortunately it is not enough.
->>
->> Consider two threads (A, B) and two netdevices (eth0, eth1):
->>
->> - "A" takes eth0's root lock and proceeds to classification
->> - "B" takes eth1's root lock and proceeds to classification
->> - "A" invokes mirror to eth1, waits on lock held by "B"
->> - "B" invakes mirror to eth0, waits on lock held by "A"
->> - Some say they are still waiting to this day.
->
-> Sure, AA or ABBA deadlock.
->
->>
->> So one option that I see is to just stash the mirrored packet in a queue
->> instead of delivering it right away:
->>
->> - s/netif_receive_skb/netif_rx/ in act_mirred
->>
->> - Reuse the RX queue for TX packets as well, differentiating the two by
->>   a bit in SKB CB. Then process_backlog() would call either
->>   __netif_receive_skb() or dev_queue_transmit().
->>
->> - Drop mirred_rec_level guard.
->
-> I don't think I follow you, the root qdisc lock is on egress which has
-> nothing to do with ingress, so I don't see how netif_rx() is even involved.
 
-netif_rx() isn't, but __netif_receive_skb() is, and that can lead to the
-deadlock as well when another mirred redirects it back to the locked
-egress queue.
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
 
-So a way to solve "mirred ingress dev" action deadlock is to
-s/netif_receive_skb/netif_rx/. I.e. don't resolve the mirror right away,
-go through the per-CPU queue.
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
 
-Then "mirred egress dev" could be fixed similarly by repurposing the
-queue for both ingress and egress, differentiating ingress packets from
-egress ones by a bit in SKB CB.
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
 
->>
->> This seems to work, but I might be missing something non-obvious, such
->> as CB actually being used for something already in that context. I would
->> really rather not introduce a second backlog queue just for mirred
->> though.
->>
->> Since mirred_rec_level does not kick in anymore, the same packet can end
->> up being forwarded from the backlog queue, to the qdisc, and back to the
->> backlog queue, forever. But that seems OK, that's what the admin
->> configured, so that's what's happening.
->>
->> If this is not a good idea for some reason, this might work as well:
->>
->> - Convert the current root lock to an rw lock. Convert all current
->>   lockers to write lock (which should be safe), except of enqueue, which
->>   will take read lock. That will allow many concurrent threads to enter
->>   enqueue, or one thread several times, but it will exclude all other
->>   users.
->
-> Are you sure we can parallelize enqueue()? They all need to move
-> skb into some queue, which is not able to parallelize with just a read
-> lock. Even the "lockless" qdisc takes a spinlock, r->producer_lock,
-> for enqueue().
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
 
-That's why the second spin lock is for. In guards private data,
-including the queues.
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
 
->>
->>   So this guards configuration access to the qdisc tree, makes sure
->>   qdiscs don't go away from under one's feet.
->>
->> - Introduce another spin lock to guard the private data of the qdisc
->>   tree, counters etc., things that even two concurrent enqueue
->>   operations shouldn't trample on. Enqueue takes this spin lock after
->>   read-locking the root lock. act_mirred drops it before injecting the
->>   packet and takes it again afterwards.
->>
->> Any opinions y'all?
->
-> I thought about forbidding mirror/redirecting to the same device,
-> but there might be some legitimate use cases of such. So, I don't
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
 
-Yes, and also that's not enough:
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
 
-- A chain of mirreds can achieve the deadlocks as well (i.e. mirror to
-  eth1, redirect back to eth0). Or the ABA case shown above, where it's
-  two actions that don't even work with the same packets causing the
-  deadlock.
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
 
-- I suspect general forwarding could cause this deadlock as well. E.g.
-  redirecting to ingress of a device, where bridge, router take over and
-  bring the packet back to egress. I have not tried reproducing this
-  though, maybe there's a queue or delayed work etc. somewhere in there
-  that makes this not an issue.
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
 
-> have any other ideas yet, perhaps there is some way to refactor
-> dev_queue_xmit() to avoid this deadlock.
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ .../net/ethernet/neterion/vxge/vxge-config.c  | 42 ++++++------
+ .../net/ethernet/neterion/vxge/vxge-main.c    | 64 +++++++++----------
+ 2 files changed, 52 insertions(+), 54 deletions(-)
+
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-config.c b/drivers/net/ethernet/neterion/vxge/vxge-config.c
+index 51cd57ab3d95..4f1f90f5e178 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-config.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-config.c
+@@ -1102,10 +1102,10 @@ static void __vxge_hw_blockpool_destroy(struct __vxge_hw_blockpool *blockpool)
+ 	hldev = blockpool->hldev;
+ 
+ 	list_for_each_safe(p, n, &blockpool->free_block_list) {
+-		pci_unmap_single(hldev->pdev,
+-			((struct __vxge_hw_blockpool_entry *)p)->dma_addr,
+-			((struct __vxge_hw_blockpool_entry *)p)->length,
+-			PCI_DMA_BIDIRECTIONAL);
++		dma_unmap_single(&hldev->pdev->dev,
++				 ((struct __vxge_hw_blockpool_entry *)p)->dma_addr,
++				 ((struct __vxge_hw_blockpool_entry *)p)->length,
++				 DMA_BIDIRECTIONAL);
+ 
+ 		vxge_os_dma_free(hldev->pdev,
+ 			((struct __vxge_hw_blockpool_entry *)p)->memblock,
+@@ -1178,10 +1178,10 @@ __vxge_hw_blockpool_create(struct __vxge_hw_device *hldev,
+ 			goto blockpool_create_exit;
+ 		}
+ 
+-		dma_addr = pci_map_single(hldev->pdev, memblock,
+-				VXGE_HW_BLOCK_SIZE, PCI_DMA_BIDIRECTIONAL);
+-		if (unlikely(pci_dma_mapping_error(hldev->pdev,
+-				dma_addr))) {
++		dma_addr = dma_map_single(&hldev->pdev->dev, memblock,
++					  VXGE_HW_BLOCK_SIZE,
++					  DMA_BIDIRECTIONAL);
++		if (unlikely(dma_mapping_error(&hldev->pdev->dev, dma_addr))) {
+ 			vxge_os_dma_free(hldev->pdev, memblock, &acc_handle);
+ 			__vxge_hw_blockpool_destroy(blockpool);
+ 			status = VXGE_HW_ERR_OUT_OF_MEMORY;
+@@ -2264,10 +2264,10 @@ static void vxge_hw_blockpool_block_add(struct __vxge_hw_device *devh,
+ 		goto exit;
+ 	}
+ 
+-	dma_addr = pci_map_single(devh->pdev, block_addr, length,
+-				PCI_DMA_BIDIRECTIONAL);
++	dma_addr = dma_map_single(&devh->pdev->dev, block_addr, length,
++				  DMA_BIDIRECTIONAL);
+ 
+-	if (unlikely(pci_dma_mapping_error(devh->pdev, dma_addr))) {
++	if (unlikely(dma_mapping_error(&devh->pdev->dev, dma_addr))) {
+ 		vxge_os_dma_free(devh->pdev, block_addr, &acc_handle);
+ 		blockpool->req_out--;
+ 		goto exit;
+@@ -2359,11 +2359,10 @@ static void *__vxge_hw_blockpool_malloc(struct __vxge_hw_device *devh, u32 size,
+ 		if (!memblock)
+ 			goto exit;
+ 
+-		dma_object->addr = pci_map_single(devh->pdev, memblock, size,
+-					PCI_DMA_BIDIRECTIONAL);
++		dma_object->addr = dma_map_single(&devh->pdev->dev, memblock,
++						  size, DMA_BIDIRECTIONAL);
+ 
+-		if (unlikely(pci_dma_mapping_error(devh->pdev,
+-				dma_object->addr))) {
++		if (unlikely(dma_mapping_error(&devh->pdev->dev, dma_object->addr))) {
+ 			vxge_os_dma_free(devh->pdev, memblock,
+ 				&dma_object->acc_handle);
+ 			memblock = NULL;
+@@ -2410,11 +2409,10 @@ __vxge_hw_blockpool_blocks_remove(struct __vxge_hw_blockpool *blockpool)
+ 		if (blockpool->pool_size < blockpool->pool_max)
+ 			break;
+ 
+-		pci_unmap_single(
+-			(blockpool->hldev)->pdev,
+-			((struct __vxge_hw_blockpool_entry *)p)->dma_addr,
+-			((struct __vxge_hw_blockpool_entry *)p)->length,
+-			PCI_DMA_BIDIRECTIONAL);
++		dma_unmap_single(&(blockpool->hldev)->pdev->dev,
++				 ((struct __vxge_hw_blockpool_entry *)p)->dma_addr,
++				 ((struct __vxge_hw_blockpool_entry *)p)->length,
++				 DMA_BIDIRECTIONAL);
+ 
+ 		vxge_os_dma_free(
+ 			(blockpool->hldev)->pdev,
+@@ -2445,8 +2443,8 @@ static void __vxge_hw_blockpool_free(struct __vxge_hw_device *devh,
+ 	blockpool = &devh->block_pool;
+ 
+ 	if (size != blockpool->block_size) {
+-		pci_unmap_single(devh->pdev, dma_object->addr, size,
+-			PCI_DMA_BIDIRECTIONAL);
++		dma_unmap_single(&devh->pdev->dev, dma_object->addr, size,
++				 DMA_BIDIRECTIONAL);
+ 		vxge_os_dma_free(devh->pdev, memblock, &dma_object->acc_handle);
+ 	} else {
+ 
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+index 5de85b9e9e35..b0faa737b817 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+@@ -241,10 +241,10 @@ static int vxge_rx_map(void *dtrh, struct vxge_ring *ring)
+ 	rx_priv = vxge_hw_ring_rxd_private_get(dtrh);
+ 
+ 	rx_priv->skb_data = rx_priv->skb->data;
+-	dma_addr = pci_map_single(ring->pdev, rx_priv->skb_data,
+-				rx_priv->data_size, PCI_DMA_FROMDEVICE);
++	dma_addr = dma_map_single(&ring->pdev->dev, rx_priv->skb_data,
++				  rx_priv->data_size, DMA_FROM_DEVICE);
+ 
+-	if (unlikely(pci_dma_mapping_error(ring->pdev, dma_addr))) {
++	if (unlikely(dma_mapping_error(&ring->pdev->dev, dma_addr))) {
+ 		ring->stats.pci_map_fail++;
+ 		return -EIO;
+ 	}
+@@ -323,8 +323,8 @@ vxge_rx_complete(struct vxge_ring *ring, struct sk_buff *skb, u16 vlan,
+ static inline void vxge_re_pre_post(void *dtr, struct vxge_ring *ring,
+ 				    struct vxge_rx_priv *rx_priv)
+ {
+-	pci_dma_sync_single_for_device(ring->pdev,
+-		rx_priv->data_dma, rx_priv->data_size, PCI_DMA_FROMDEVICE);
++	dma_sync_single_for_device(&ring->pdev->dev, rx_priv->data_dma,
++				   rx_priv->data_size, DMA_FROM_DEVICE);
+ 
+ 	vxge_hw_ring_rxd_1b_set(dtr, rx_priv->data_dma, rx_priv->data_size);
+ 	vxge_hw_ring_rxd_pre_post(ring->handle, dtr);
+@@ -425,8 +425,9 @@ vxge_rx_1b_compl(struct __vxge_hw_ring *ringh, void *dtr,
+ 				if (!vxge_rx_map(dtr, ring)) {
+ 					skb_put(skb, pkt_length);
+ 
+-					pci_unmap_single(ring->pdev, data_dma,
+-						data_size, PCI_DMA_FROMDEVICE);
++					dma_unmap_single(&ring->pdev->dev,
++							 data_dma, data_size,
++							 DMA_FROM_DEVICE);
+ 
+ 					vxge_hw_ring_rxd_pre_post(ringh, dtr);
+ 					vxge_post(&dtr_cnt, &first_dtr, dtr,
+@@ -458,9 +459,9 @@ vxge_rx_1b_compl(struct __vxge_hw_ring *ringh, void *dtr,
+ 				skb_reserve(skb_up,
+ 				    VXGE_HW_HEADER_ETHERNET_II_802_3_ALIGN);
+ 
+-				pci_dma_sync_single_for_cpu(ring->pdev,
+-					data_dma, data_size,
+-					PCI_DMA_FROMDEVICE);
++				dma_sync_single_for_cpu(&ring->pdev->dev,
++							data_dma, data_size,
++							DMA_FROM_DEVICE);
+ 
+ 				vxge_debug_mem(VXGE_TRACE,
+ 					"%s: %s:%d  skb_up = %p",
+@@ -585,13 +586,13 @@ vxge_xmit_compl(struct __vxge_hw_fifo *fifo_hw, void *dtr,
+ 		}
+ 
+ 		/*  for unfragmented skb */
+-		pci_unmap_single(fifo->pdev, txd_priv->dma_buffers[i++],
+-				skb_headlen(skb), PCI_DMA_TODEVICE);
++		dma_unmap_single(&fifo->pdev->dev, txd_priv->dma_buffers[i++],
++				 skb_headlen(skb), DMA_TO_DEVICE);
+ 
+ 		for (j = 0; j < frg_cnt; j++) {
+-			pci_unmap_page(fifo->pdev,
+-					txd_priv->dma_buffers[i++],
+-					skb_frag_size(frag), PCI_DMA_TODEVICE);
++			dma_unmap_page(&fifo->pdev->dev,
++				       txd_priv->dma_buffers[i++],
++				       skb_frag_size(frag), DMA_TO_DEVICE);
+ 			frag += 1;
+ 		}
+ 
+@@ -897,10 +898,10 @@ vxge_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	first_frg_len = skb_headlen(skb);
+ 
+-	dma_pointer = pci_map_single(fifo->pdev, skb->data, first_frg_len,
+-				PCI_DMA_TODEVICE);
++	dma_pointer = dma_map_single(&fifo->pdev->dev, skb->data,
++				     first_frg_len, DMA_TO_DEVICE);
+ 
+-	if (unlikely(pci_dma_mapping_error(fifo->pdev, dma_pointer))) {
++	if (unlikely(dma_mapping_error(&fifo->pdev->dev, dma_pointer))) {
+ 		vxge_hw_fifo_txdl_free(fifo_hw, dtr);
+ 		fifo->stats.pci_map_fail++;
+ 		goto _exit0;
+@@ -977,12 +978,12 @@ vxge_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	j = 0;
+ 	frag = &skb_shinfo(skb)->frags[0];
+ 
+-	pci_unmap_single(fifo->pdev, txdl_priv->dma_buffers[j++],
+-			skb_headlen(skb), PCI_DMA_TODEVICE);
++	dma_unmap_single(&fifo->pdev->dev, txdl_priv->dma_buffers[j++],
++			 skb_headlen(skb), DMA_TO_DEVICE);
+ 
+ 	for (; j < i; j++) {
+-		pci_unmap_page(fifo->pdev, txdl_priv->dma_buffers[j],
+-			skb_frag_size(frag), PCI_DMA_TODEVICE);
++		dma_unmap_page(&fifo->pdev->dev, txdl_priv->dma_buffers[j],
++			       skb_frag_size(frag), DMA_TO_DEVICE);
+ 		frag += 1;
+ 	}
+ 
+@@ -1012,8 +1013,8 @@ vxge_rx_term(void *dtrh, enum vxge_hw_rxd_state state, void *userdata)
+ 	if (state != VXGE_HW_RXD_STATE_POSTED)
+ 		return;
+ 
+-	pci_unmap_single(ring->pdev, rx_priv->data_dma,
+-		rx_priv->data_size, PCI_DMA_FROMDEVICE);
++	dma_unmap_single(&ring->pdev->dev, rx_priv->data_dma,
++			 rx_priv->data_size, DMA_FROM_DEVICE);
+ 
+ 	dev_kfree_skb(rx_priv->skb);
+ 	rx_priv->skb_data = NULL;
+@@ -1048,12 +1049,12 @@ vxge_tx_term(void *dtrh, enum vxge_hw_txdl_state state, void *userdata)
+ 	frag = &skb_shinfo(skb)->frags[0];
+ 
+ 	/*  for unfragmented skb */
+-	pci_unmap_single(fifo->pdev, txd_priv->dma_buffers[i++],
+-		skb_headlen(skb), PCI_DMA_TODEVICE);
++	dma_unmap_single(&fifo->pdev->dev, txd_priv->dma_buffers[i++],
++			 skb_headlen(skb), DMA_TO_DEVICE);
+ 
+ 	for (j = 0; j < frg_cnt; j++) {
+-		pci_unmap_page(fifo->pdev, txd_priv->dma_buffers[i++],
+-			       skb_frag_size(frag), PCI_DMA_TODEVICE);
++		dma_unmap_page(&fifo->pdev->dev, txd_priv->dma_buffers[i++],
++			       skb_frag_size(frag), DMA_TO_DEVICE);
+ 		frag += 1;
+ 	}
+ 
+@@ -4387,21 +4388,20 @@ vxge_probe(struct pci_dev *pdev, const struct pci_device_id *pre)
+ 		goto _exit0;
+ 	}
+ 
+-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
++	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
+ 		vxge_debug_ll_config(VXGE_TRACE,
+ 			"%s : using 64bit DMA", __func__);
+ 
+ 		high_dma = 1;
+ 
+-		if (pci_set_consistent_dma_mask(pdev,
+-						DMA_BIT_MASK(64))) {
++		if (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) {
+ 			vxge_debug_init(VXGE_ERR,
+ 				"%s : unable to obtain 64bit DMA for "
+ 				"consistent allocations", __func__);
+ 			ret = -ENOMEM;
+ 			goto _exit1;
+ 		}
+-	} else if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
++	} else if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
+ 		vxge_debug_ll_config(VXGE_TRACE,
+ 			"%s : using 32bit DMA", __func__);
+ 	} else {
+-- 
+2.25.1
+
