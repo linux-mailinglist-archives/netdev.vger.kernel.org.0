@@ -2,71 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8693D220071
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 00:08:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 870FE220073
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 00:11:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728094AbgGNWIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 18:08:32 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:43213 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726619AbgGNWIa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 18:08:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594764509;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc; bh=Eoga+Mdleam2+PFUQQVvh+tI5hcjfog78flkltDgmv4=;
-        b=C0ppJTCY1NymYDrTPltGfAjsKug+B71A8SyYJffE6DPh8oz8CGqR2h4pHp/WwKipsbZVC6
-        Yx7cyBSq5uXEyz/77n2GtsXg5ToBrghgzaca2Czv4+wjM6r+6Jl1OkvbRlCr5kADL7p5X8
-        mVw9xjNzEKixccy18CWxcCQiVXZ7Nw4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-67-tcRqVYBLNXq9aneVJyXS3Q-1; Tue, 14 Jul 2020 18:08:27 -0400
-X-MC-Unique: tcRqVYBLNXq9aneVJyXS3Q-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 457EC800685;
-        Tue, 14 Jul 2020 22:08:26 +0000 (UTC)
-Received: from loberhel7laptop.redhat.com (ovpn-113-229.phx2.redhat.com [10.3.113.229])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7BC4E1992D;
-        Tue, 14 Jul 2020 22:08:25 +0000 (UTC)
-From:   Laurence Oberman <loberman@redhat.com>
-To:     loberman@redhat.com, linux-scsi@vger.kernel.org,
-        QLogic-Storage-Upstream@cavium.com, netdev@vger.kernel.org,
-        aelior@marvell.com, GR-everest-linux-l2@marvell.com
-Subject: [PATCH net] qed: Disable "MFW indication via attention" SPAM every 5 minutes 
-Date:   Tue, 14 Jul 2020 18:08:05 -0400
-Message-Id: <1594764485-682-1-git-send-email-loberman@redhat.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+        id S1728135AbgGNWKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 18:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41950 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726837AbgGNWKu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 18:10:50 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E5E8C061755
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 15:10:50 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0D13C15E52DD4;
+        Tue, 14 Jul 2020 15:10:50 -0700 (PDT)
+Date:   Tue, 14 Jul 2020 15:10:49 -0700 (PDT)
+Message-Id: <20200714.151049.555696886733080030.davem@davemloft.net>
+To:     hkallweit1@gmail.com
+Cc:     nic_swsd@realtek.com, kuba@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] r8169: add support for RTL8125B
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1cf79621-63ab-0886-3a23-2c9b3625c23f@gmail.com>
+References: <1cf79621-63ab-0886-3a23-2c9b3625c23f@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 14 Jul 2020 15:10:50 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is likely firmware causing this but its starting to annoy customers.
-Change the message level to verbose to prevent the spam.
-Note that this seems to only show up with ISCSI enabled on the HBA via the 
-qedi driver.
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Date: Tue, 14 Jul 2020 17:43:20 +0200
 
-Signed-off-by: Laurence Oberman <loberman@redhat.com>
----
- drivers/net/ethernet/qlogic/qed/qed_int.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> This series adds support for RTL8125B rev.b.
+> Tested with a Delock 89564 PCIe card.
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.c b/drivers/net/ethernet/qlogic/qed/qed_int.c
-index b7b974f..d853eb9 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_int.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_int.c
-@@ -1193,7 +1193,8 @@ static int qed_int_attentions(struct qed_hwfn *p_hwfn)
- 			index, attn_bits, attn_acks, asserted_bits,
- 			deasserted_bits, p_sb_attn_sw->known_attn);
- 	} else if (asserted_bits == 0x100) {
--		DP_INFO(p_hwfn, "MFW indication via attention\n");
-+		DP_VERBOSE(p_hwfn, NETIF_MSG_INTR,
-+			   "MFW indication via attention\n");
- 	} else {
- 		DP_VERBOSE(p_hwfn, NETIF_MSG_INTR,
- 			   "MFW indication [deassertion]\n");
--- 
-1.8.3.1
-
+Series applied, thanks Heiner.
