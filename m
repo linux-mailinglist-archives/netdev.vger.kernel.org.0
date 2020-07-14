@@ -2,90 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FF0621F3F5
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:24:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 684D621F40B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:27:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728178AbgGNOYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 10:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
+        id S1728559AbgGNO1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 10:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725803AbgGNOYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:24:46 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE33C061755
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 07:24:45 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id ls15so1673063pjb.1
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 07:24:45 -0700 (PDT)
+        with ESMTP id S1726187AbgGNO1T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:27:19 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38337C061755;
+        Tue, 14 Jul 2020 07:27:19 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id q7so23013789ljm.1;
+        Tue, 14 Jul 2020 07:27:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xRXcz6lJumCqtAK1sMm3c6pssF2/7Iv7wk3aJ5Rjjjk=;
-        b=nAt+8N9A/QAbk8LT/E9I+bkWDYZR57ldSJsBmsMz9LBZQo7Ct1y3GFw/ad9TySK9yS
-         60MaeYk4B130/uod9gIipMKxpPfFejl39rmduv6vpE/Xd+eCOL/3qKNf0DFuMSBtSmHF
-         XApmoqqsVWuUEKuX+od5MdYpR2cPRe5Rptev2h27A7izJVV3RsegLadPOT+wIINY+5dp
-         uR0hu1DuZPcD5QXHEvcx8mE0XTJ5IMT9n9CbH4skbv4nUYDRea1s0znWfEhc/cYaRMFa
-         Tox5JPzeywVVVucwoyDad8n8+SnNKVt+KIReVqgyKOzNQI5GcJgBXqkFcQx3C6vzIjLp
-         EqDA==
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=p48k422neEowRT4qHhc+RDlrp+EdfHDwdlbp2jQOvCM=;
+        b=jX0/XZi6VM34IzPPqxD6AQZ6S9xG0YSKzYevqp0Oyh2e6rYk+ZlVgm4+SVaheK2FX/
+         V7X1sQsbfcLFq+rhbO8cpW/j554dVaIbbOhlQCC/KyNIxwwjmIJ3gK/AuW1GwnczUR5S
+         hghJpSl5XAjUPn0vEcDvhmCejFtutwkpclYb7aUhffQP8Pw89tAergrGOxyhKgnNxXCe
+         jJJK3CS6+CitgjgzeueHD7Rhkjw/EtGBBMC2TN8JjGx2I/+8JEv+e45SB75nMvcbyLuA
+         18vZFq3ShKkP9MpJp51h5lGt/bG7p/qPvikbsDHAqu6GEhhJkBqWSVPOqaEP8RWtACLx
+         ZAZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xRXcz6lJumCqtAK1sMm3c6pssF2/7Iv7wk3aJ5Rjjjk=;
-        b=MpZeyWXp9P5gTcloaKosFwlkIYDR+lcWlDnLGK5jCgCj9wpBA8y9jLhq3a0L3ziO6J
-         AjkZL9KIT+860JA8Re1fPp0M6qFPLBU+IOY94GbpyySZAAWZED8dv05RATPGsnqTHlod
-         WnvQ+oKzrguXfAvRla84WN8/bDAvwBCZL+WMcvgApq5ohzbLC1jUL0U732lYesv1GgqQ
-         Lv6SC7wfAtGg2gXvgBbKLPTuC7bU+PrOPB5Zc6ts/mP3UFCsZWq8Jyc5sM9H7+p0MuJw
-         L6OzSszqPXn53j4XquknkHEQBsudD8dx1H1irg+g2OBX0gJ/PRE+2UPLwLoS6WL0guxI
-         snPQ==
-X-Gm-Message-State: AOAM533YbyLscRgBMgWpe7X/sA2yhEccE0ycZ8ci1wCjT8yWQKswWyC/
-        MJqJDhzvdCDR3N39tDc+uQA=
-X-Google-Smtp-Source: ABdhPJx+D6k7S7VQPgmJqSi61mmDMFb9pZNcc+TQHRVq2MCWmRZiDNs+VWZUKBIeu04Y4Pqyp4CBGg==
-X-Received: by 2002:a17:902:c389:: with SMTP id g9mr3967929plg.317.1594736685489;
-        Tue, 14 Jul 2020 07:24:45 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id bf11sm2828336pjb.48.2020.07.14.07.24.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jul 2020 07:24:44 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/2] net: sched: Do not pass root lock
- Qdisc_ops.enqueue
-To:     Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=p48k422neEowRT4qHhc+RDlrp+EdfHDwdlbp2jQOvCM=;
+        b=hCp+ic6oElpPHOi8qe25Ew2eqyWZ4WwYdKcsaLbds3tFutTqttYHACXdm3ziIwOHR3
+         MlZeM3qZ3kbHz3axRpOQ6HNLYrRh2e50Cn7ubYwZ0NQhUk8MGEoCbKqFY0ugtTOu0AJ0
+         o1/e9TJ1QUE0RzJMSz2MmCUCn8OPB/5C+5tViKKQ3ddFSmPQqsJnCVwGrif4Q4VcwLZD
+         fM+hoiqLAk8DDM5/8C7blO4CLE8tbP6f8DO/wY10DyVgZqMDXozWe3LhHGY4j2K6bDO8
+         AXgABqFw5DZtIwl/AEalIPxIzizQ6PhJQqdYFohtkq0KYT4BOG9nDmrHFRWydJWNoMIk
+         zVUA==
+X-Gm-Message-State: AOAM533GiVt+v5ZqbVhPQ3t3eezzhEaaPQuSDAqfzP7O8s8Y4kuS7M2G
+        ObIR5uPdxOuoxgEwyt77vn9weL6c
+X-Google-Smtp-Source: ABdhPJyWSAjS90kybSTOTgTjsWUmIwLBT75PxyI5OyD5GedwU0e5KH94rDKYbIs+4ahXHd8fUCLTKw==
+X-Received: by 2002:a05:651c:1183:: with SMTP id w3mr2353696ljo.54.1594736837705;
+        Tue, 14 Jul 2020 07:27:17 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id 190sm4701440ljf.38.2020.07.14.07.27.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2020 07:27:16 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-References: <cover.1594732978.git.petrm@mellanox.com>
- <217e5a6059349f72e82697decc180ed9b46b066a.1594732978.git.petrm@mellanox.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <efa8d345-6457-3bcf-4fc3-f1e5e81f34a6@gmail.com>
-Date:   Tue, 14 Jul 2020 07:24:43 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH v2 net] net: fec: fix hardware time stamping by external
+ devices
+References: <20200706142616.25192-1-sorganov@gmail.com>
+        <20200711120842.2631-1-sorganov@gmail.com>
+        <20200714140134.GA19806@hoboy>
+Date:   Tue, 14 Jul 2020 17:27:16 +0300
+In-Reply-To: <20200714140134.GA19806@hoboy> (Richard Cochran's message of
+        "Tue, 14 Jul 2020 07:01:34 -0700")
+Message-ID: <87o8oidvej.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <217e5a6059349f72e82697decc180ed9b46b066a.1594732978.git.petrm@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Richard Cochran <richardcochran@gmail.com> writes:
 
+> On Sat, Jul 11, 2020 at 03:08:42PM +0300, Sergey Organov wrote:
+>> Fix support for external PTP-aware devices such as DSA or PTP PHY:
+>> 
+>> Make sure we never time stamp tx packets when hardware time stamping
+>> is disabled.
+>> 
+>> Check for PTP PHY being in use and then pass ioctls related to time
+>> stamping of Ethernet packets to the PTP PHY rather than handle them
+>> ourselves. In addition, disable our own hardware time stamping in this
+>> case.
+>> 
+>> Fixes: 6605b73 ("FEC: Add time stamping code and a PTP hardware clock")
+>> Signed-off-by: Sergey Organov <sorganov@gmail.com>
+>> ---
+>> 
+>> v2:
+>>   - Extracted from larger patch series
+>>   - Description/comments updated according to discussions
+>>   - Added Fixes: tag
+>
+> Acked-by: Richard Cochran <richardcochran@gmail.com>
 
-On 7/14/20 6:32 AM, Petr Machata wrote:
-> The reason for this was to make visible the dangerous possibility that
-> enqueue drops the lock. The previous patch undoes the lock dropping, and
-> therefore this patch can be reverted.
-> 
-> Signed-off-by: Petr Machata <petrm@mellanox.com>
+Thanks for reviewing!
 
-Wow, I have not seen that this stuff actually went in net-next.
-
-Please make this a proper revert of
-aebe4426ccaa4838f36ea805cdf7d76503e65117 ("net: sched: Pass root lock to Qdisc_ops.enqueue")
-
-
-git revert aebe4426ccaa4838f36ea805cdf7d76503e65117
+-- Sergey
