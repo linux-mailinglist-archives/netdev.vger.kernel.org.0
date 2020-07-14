@@ -2,332 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CE9B21F98C
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:36:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1074421F990
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:37:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729302AbgGNSff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 14:35:35 -0400
-Received: from smtp01.smtpout.orange.fr ([80.12.242.123]:32212 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726817AbgGNSff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 14:35:35 -0400
-Received: from localhost.localdomain ([93.23.14.36])
-        by mwinf5d77 with ME
-        id 36bS2300P0mgUh1036bTVi; Tue, 14 Jul 2020 20:35:32 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Tue, 14 Jul 2020 20:35:32 +0200
-X-ME-IP: 93.23.14.36
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     sumit.semwal@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        christian.koenig@amd.com, mhabets@solarflare.com,
-        jwi@linux.ibm.com, zhongjiang@huawei.com, weiyongjun1@huawei.com,
-        vaibhavgupta40@gmail.com
-Cc:     linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] ksz884x: switch from 'pci_' to 'dma_' API
-Date:   Tue, 14 Jul 2020 20:35:01 +0200
-Message-Id: <20200714183501.310949-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1729120AbgGNShO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 14:37:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37508 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725951AbgGNShO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 14:37:14 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 47AF02242E;
+        Tue, 14 Jul 2020 18:37:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594751833;
+        bh=BKAb98muHn6GmBF50FO655h4SFC2eTpInAM6XtGNvMQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=z/8VB7+4yVBSumjQdzo5+PFy6GSvnetzXN7yLBLJbxrPW+7vue0AREnv0/u1JI0NJ
+         ZOiE0nCvDeW3mj0AV18u/qvi1rzK2YDyJBEAoWDZLhz+OSCUZH3PClMCMp5LkLnUWu
+         6y21BdwuEYWy9Vfl6xfF+cU/xLsLE8DHg+xOOqRo=
+Date:   Tue, 14 Jul 2020 11:37:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luo bin <luobin9@huawei.com>
+Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
+        <chiqijun@huawei.com>
+Subject: Re: [PATCH net-next v2] hinic: add firmware update support
+Message-ID: <20200714113711.32107a16@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200714125433.18126-1-luobin9@huawei.com>
+References: <20200714125433.18126-1-luobin9@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+On Tue, 14 Jul 2020 20:54:33 +0800 Luo bin wrote:
+> add support to update firmware by the devlink flashing API
+> 
+> Signed-off-by: Luo bin <luobin9@huawei.com>
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
+Minor nits below, otherwise I think this looks good.
 
-When memory is allocated in 'ksz_alloc_desc()', GFP_KERNEL can be used
-because a few lines below, GFP_KERNEL is also used in the
-'ksz_alloc_soft_desc()' calls.
+> +static int hinic_firmware_update(struct hinic_devlink_priv *priv,
+> +				 const struct firmware *fw)
+> +{
+> +	struct host_image_st host_image;
+> +	int err;
+> +
+> +	memset(&host_image, 0, sizeof(struct host_image_st));
+> +
+> +	if (!check_image_valid(priv, fw->data, fw->size, &host_image) ||
+> +	    !check_image_integrity(priv, &host_image, FW_UPDATE_COLD) ||
+> +	    !check_image_device_type(priv, host_image.device_id))
 
+These helpers should also set an appropriate message in extack, so the
+user can see it on the command line / inside their application.
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
+> +		return -EINVAL;
+> +
+> +	dev_info(&priv->hwdev->hwif->pdev->dev, "Flash firmware begin\n");
+> +
+> +	err = hinic_flash_fw(priv, fw->data, &host_image);
+> +	if (err) {
+> +		if (err == HINIC_FW_DISMATCH_ERROR)
+> +			dev_err(&priv->hwdev->hwif->pdev->dev, "Firmware image doesn't match this card, please use newer image, err: %d\n",
 
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
+Here as well - please make sure to return an error messages through
+extack.
 
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
+> +				err);
+> +		else
+> +			dev_err(&priv->hwdev->hwif->pdev->dev, "Send firmware image data failed, err: %d\n",
+> +				err);
+> +		return err;
+> +	}
+> +
+> +	dev_info(&priv->hwdev->hwif->pdev->dev, "Flash firmware end\n");
+> +
+> +	return 0;
+> +}
 
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
+> @@ -1086,6 +1090,17 @@ static int nic_dev_init(struct pci_dev *pdev)
+>  		return PTR_ERR(hwdev);
+>  	}
+>  
+> +	devlink = hinic_devlink_alloc();
+> +	if (!devlink) {
+> +		dev_err(&pdev->dev, "Hinic devlink alloc failed\n");
+> +		err = -ENOMEM;
+> +		goto err_devlink_alloc;
+> +	}
+> +
+> +	priv = devlink_priv(devlink);
+> +	priv->hwdev = hwdev;
+> +	priv->devlink = devlink;
 
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+No need to remember the devlink pointer here, you can use
+priv_to_devlink(priv) to go from priv to devlink.
 
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/micrel/ksz884x.c | 68 ++++++++++++---------------
- 1 file changed, 30 insertions(+), 38 deletions(-)
-
-diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
-index 2ce7304d3753..bb646b65cc95 100644
---- a/drivers/net/ethernet/micrel/ksz884x.c
-+++ b/drivers/net/ethernet/micrel/ksz884x.c
-@@ -4390,9 +4390,9 @@ static int ksz_alloc_desc(struct dev_info *adapter)
- 		DESC_ALIGNMENT;
- 
- 	adapter->desc_pool.alloc_virt =
--		pci_zalloc_consistent(adapter->pdev,
--				      adapter->desc_pool.alloc_size,
--				      &adapter->desc_pool.dma_addr);
-+		dma_alloc_coherent(&adapter->pdev->dev,
-+				   adapter->desc_pool.alloc_size,
-+				   &adapter->desc_pool.dma_addr, GFP_KERNEL);
- 	if (adapter->desc_pool.alloc_virt == NULL) {
- 		adapter->desc_pool.alloc_size = 0;
- 		return 1;
-@@ -4431,7 +4431,8 @@ static int ksz_alloc_desc(struct dev_info *adapter)
- static void free_dma_buf(struct dev_info *adapter, struct ksz_dma_buf *dma_buf,
- 	int direction)
- {
--	pci_unmap_single(adapter->pdev, dma_buf->dma, dma_buf->len, direction);
-+	dma_unmap_single(&adapter->pdev->dev, dma_buf->dma, dma_buf->len,
-+			 direction);
- 	dev_kfree_skb(dma_buf->skb);
- 	dma_buf->skb = NULL;
- 	dma_buf->dma = 0;
-@@ -4456,16 +4457,15 @@ static void ksz_init_rx_buffers(struct dev_info *adapter)
- 
- 		dma_buf = DMA_BUFFER(desc);
- 		if (dma_buf->skb && dma_buf->len != adapter->mtu)
--			free_dma_buf(adapter, dma_buf, PCI_DMA_FROMDEVICE);
-+			free_dma_buf(adapter, dma_buf, DMA_FROM_DEVICE);
- 		dma_buf->len = adapter->mtu;
- 		if (!dma_buf->skb)
- 			dma_buf->skb = alloc_skb(dma_buf->len, GFP_ATOMIC);
- 		if (dma_buf->skb && !dma_buf->dma)
--			dma_buf->dma = pci_map_single(
--				adapter->pdev,
--				skb_tail_pointer(dma_buf->skb),
--				dma_buf->len,
--				PCI_DMA_FROMDEVICE);
-+			dma_buf->dma = dma_map_single(&adapter->pdev->dev,
-+						skb_tail_pointer(dma_buf->skb),
-+						dma_buf->len,
-+						DMA_FROM_DEVICE);
- 
- 		/* Set descriptor. */
- 		set_rx_buf(desc, dma_buf->dma);
-@@ -4543,11 +4543,10 @@ static void ksz_free_desc(struct dev_info *adapter)
- 
- 	/* Free memory. */
- 	if (adapter->desc_pool.alloc_virt)
--		pci_free_consistent(
--			adapter->pdev,
--			adapter->desc_pool.alloc_size,
--			adapter->desc_pool.alloc_virt,
--			adapter->desc_pool.dma_addr);
-+		dma_free_coherent(&adapter->pdev->dev,
-+				  adapter->desc_pool.alloc_size,
-+				  adapter->desc_pool.alloc_virt,
-+				  adapter->desc_pool.dma_addr);
- 
- 	/* Reset resource pool. */
- 	adapter->desc_pool.alloc_size = 0;
-@@ -4590,12 +4589,10 @@ static void ksz_free_buffers(struct dev_info *adapter,
- static void ksz_free_mem(struct dev_info *adapter)
- {
- 	/* Free transmit buffers. */
--	ksz_free_buffers(adapter, &adapter->hw.tx_desc_info,
--		PCI_DMA_TODEVICE);
-+	ksz_free_buffers(adapter, &adapter->hw.tx_desc_info, DMA_TO_DEVICE);
- 
- 	/* Free receive buffers. */
--	ksz_free_buffers(adapter, &adapter->hw.rx_desc_info,
--		PCI_DMA_FROMDEVICE);
-+	ksz_free_buffers(adapter, &adapter->hw.rx_desc_info, DMA_FROM_DEVICE);
- 
- 	/* Free descriptors. */
- 	ksz_free_desc(adapter);
-@@ -4657,9 +4654,8 @@ static void send_packet(struct sk_buff *skb, struct net_device *dev)
- 
- 		dma_buf->len = skb_headlen(skb);
- 
--		dma_buf->dma = pci_map_single(
--			hw_priv->pdev, skb->data, dma_buf->len,
--			PCI_DMA_TODEVICE);
-+		dma_buf->dma = dma_map_single(&hw_priv->pdev->dev, skb->data,
-+					      dma_buf->len, DMA_TO_DEVICE);
- 		set_tx_buf(desc, dma_buf->dma);
- 		set_tx_len(desc, dma_buf->len);
- 
-@@ -4676,11 +4672,10 @@ static void send_packet(struct sk_buff *skb, struct net_device *dev)
- 			dma_buf = DMA_BUFFER(desc);
- 			dma_buf->len = skb_frag_size(this_frag);
- 
--			dma_buf->dma = pci_map_single(
--				hw_priv->pdev,
--				skb_frag_address(this_frag),
--				dma_buf->len,
--				PCI_DMA_TODEVICE);
-+			dma_buf->dma = dma_map_single(&hw_priv->pdev->dev,
-+						      skb_frag_address(this_frag),
-+						      dma_buf->len,
-+						      DMA_TO_DEVICE);
- 			set_tx_buf(desc, dma_buf->dma);
- 			set_tx_len(desc, dma_buf->len);
- 
-@@ -4700,9 +4695,8 @@ static void send_packet(struct sk_buff *skb, struct net_device *dev)
- 	} else {
- 		dma_buf->len = len;
- 
--		dma_buf->dma = pci_map_single(
--			hw_priv->pdev, skb->data, dma_buf->len,
--			PCI_DMA_TODEVICE);
-+		dma_buf->dma = dma_map_single(&hw_priv->pdev->dev, skb->data,
-+					      dma_buf->len, DMA_TO_DEVICE);
- 		set_tx_buf(desc, dma_buf->dma);
- 		set_tx_len(desc, dma_buf->len);
- 	}
-@@ -4756,9 +4750,8 @@ static void transmit_cleanup(struct dev_info *hw_priv, int normal)
- 		}
- 
- 		dma_buf = DMA_BUFFER(desc);
--		pci_unmap_single(
--			hw_priv->pdev, dma_buf->dma, dma_buf->len,
--			PCI_DMA_TODEVICE);
-+		dma_unmap_single(&hw_priv->pdev->dev, dma_buf->dma,
-+				 dma_buf->len, DMA_TO_DEVICE);
- 
- 		/* This descriptor contains the last buffer in the packet. */
- 		if (dma_buf->skb) {
-@@ -4991,9 +4984,8 @@ static inline int rx_proc(struct net_device *dev, struct ksz_hw* hw,
- 	packet_len = status.rx.frame_len - 4;
- 
- 	dma_buf = DMA_BUFFER(desc);
--	pci_dma_sync_single_for_cpu(
--		hw_priv->pdev, dma_buf->dma, packet_len + 4,
--		PCI_DMA_FROMDEVICE);
-+	dma_sync_single_for_cpu(&hw_priv->pdev->dev, dma_buf->dma,
-+				packet_len + 4, DMA_FROM_DEVICE);
- 
- 	do {
- 		/* skb->data != skb->head */
-@@ -6935,8 +6927,8 @@ static int pcidev_init(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	result = -ENODEV;
- 
--	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) ||
--			pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32)))
-+	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32)) ||
-+	    dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32)))
- 		return result;
- 
- 	reg_base = pci_resource_start(pdev, 0);
--- 
-2.25.1
-
+> +
+>  	num_qps = hinic_hwdev_num_qps(hwdev);
+>  	if (num_qps <= 0) {
+>  		dev_err(&pdev->dev, "Invalid number of QPS\n");
