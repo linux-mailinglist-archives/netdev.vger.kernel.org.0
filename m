@@ -2,151 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 074B321EF90
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 13:43:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F06E321EFEA
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 14:01:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727949AbgGNLmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 07:42:20 -0400
-Received: from mail-eopbgr1310139.outbound.protection.outlook.com ([40.107.131.139]:55264
-        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726370AbgGNLmT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 07:42:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cfnCAz8yGyYW+NReN7H9FW5G8IZBREOfIjCRsOv6Sz4PaRaigR7xFmGxsVXwqJGFZzh11KWBeUFI9Mt/75rFOkUbHXfCuZSi0cSifQW0Of9u4hx7G04J5ktDmc5ROJ3KReoQR+eTk/SCAuhoxYOZnyKL845uP247p5djSg591yfY2bDlizMKKYegIPXw+ecvm976dacRjxSL0C7cO3dJ+cWFhHqO2cizjRpSefcTYcMN5TtloHhzL767rnorGQWTKeSKqNFyP4svj70qN9T8C7lSqd404dbiiVh1qScmfCGhRfvdNvcWVSvXHF4Ce50EPil4+tBgkZnHK+f/aE1xnQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EaumU8bjD36B9WihkPMfdgN0iyWNTMYlNLUEJa8aNBo=;
- b=MoSaeaZHisxM7isEIA5jTSe5Z+6SMkcJasTJrKIBqbNMnUwBo3dAHUXigDyTkvzwhPe1SuYvQuhji8zHQdbdFBD/6R3BSytgh5IDzvXHHRvURdymYOwYhrbU8FUzJ9pRKpK5CXxHdSCPEr8iFuHwwftg+O3oXdbMYK+s+CC6c8JPLXcUUrmp941pG1PJSdXdlVm0cXouEjhDC/KkQPklzfkC0RyzkgbPVZxQxW/ELxYUq3ux1D2DPTj/5sP7nKgj2+JOZTzLgk5LAGopFnJ4+asIAp3GjZDPqBqp6yn00HacsJd+/BkQbh9NA19bgxIc6JpJyuCvCSRdoyTSatYuJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EaumU8bjD36B9WihkPMfdgN0iyWNTMYlNLUEJa8aNBo=;
- b=ZGmCD41KWj/Ejcxa4nz8FGKXeEDzsbF8uoBzB5xBMemwKKVy+UoPFAvi6mK+YEZJH5Iyr0PvVo1flN1bDOu59o5aknwNpoTEK6OxWtv1TppidMC7meF4Q58o4Y9ftayvzo80jwfv1xBDj3KMHBhMexW1wVNO/qpgRofiq3XP51M=
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
- by TY2PR01MB4506.jpnprd01.prod.outlook.com (2603:1096:404:119::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21; Tue, 14 Jul
- 2020 11:42:11 +0000
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::9083:6001:8090:9f3]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::9083:6001:8090:9f3%6]) with mapi id 15.20.3174.025; Tue, 14 Jul 2020
- 11:42:11 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-CC:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        id S1727772AbgGNMB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 08:01:27 -0400
+Received: from smtp36.i.mail.ru ([94.100.177.96]:44524 "EHLO smtp36.i.mail.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726352AbgGNMB0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 08:01:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=qbHt0xTQ8gvYX85r2GgVVZNjX4CqlbhbtSIusxndApI=;
+        b=rarA1JVvjcBb5okw+X5zdOWmuf1u5RpupNZRvNSNmIhlP55VbNJytTD7vEJRAIluohnrfqO+kUQbMk8GB3rh9G8v21nA+novJqE2szsk5ZgX+eNqXDkJV0GusgvlOLd9EaE7bs8nRecORAxlOWFWqBsL1BRyNkJbT8IYbUy0LM8=;
+Received: by smtp36.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1jvJch-0003R0-2o; Tue, 14 Jul 2020 15:01:23 +0300
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+Cc:     Maxim Kochetkov <fido_max@inbox.ru>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/9] iommu/ipmmu-vmsa: Hook up R8A774E1 DT matching code
-Thread-Topic: [PATCH 2/9] iommu/ipmmu-vmsa: Hook up R8A774E1 DT matching code
-Thread-Index: AQHWWV2MbTXg+hkXBUeG2IKsFpTIWqkGuXGAgAAF1ACAAAM3gIAALMKg
-Date:   Tue, 14 Jul 2020 11:42:11 +0000
-Message-ID: <TY2PR01MB3692A868DD4E67D770C610E3D8610@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594676120-5862-3-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdV4zzrk_=-2Cmgq8=PKTeU457iveJ58gYekJ-Z8SXqaCQ@mail.gmail.com>
- <CA+V-a8tB0mA17f51GMQQ-Cj_CUXze_JjTahrpoAtmwuOFHQV6g@mail.gmail.com>
- <CAMuHMdXM3qf266exJtJrN0XAogEsJoM-k3FON9CjX+stLpuMFA@mail.gmail.com>
-In-Reply-To: <CAMuHMdXM3qf266exJtJrN0XAogEsJoM-k3FON9CjX+stLpuMFA@mail.gmail.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: linux-m68k.org; dkim=none (message not signed)
- header.d=none;linux-m68k.org; dmarc=none action=none header.from=renesas.com;
-x-originating-ip: [240f:60:5f3e:1:2d25:f7bf:9b71:7e0]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6097b998-8199-4d15-95ad-08d827eaf28c
-x-ms-traffictypediagnostic: TY2PR01MB4506:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <TY2PR01MB450618B750931E3B7AB7CDD0D8610@TY2PR01MB4506.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1923;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: GiDvEhjEHo9m/Mq2c5p/QHtl3xx0GiVkWWCb5AIDS2OlbOmDNeFqLJ/pEjPdo6QpdIyzEudL/lGBSyKxmPXXresq0dm21jFF+d/+lwoV3kOn0cS7FuW4c8QclCLGax6dtzYN9YfyIg5waMMqY28HI+0biG2uC7irj51CuNWIVV0I3sKThsztb89pd50U5+6ucvF6C/zMwrJHMKoKP35zqGATp9we8ShGE6LLCt+mn0nYNh37YdIsVWHh4ZhyVCUvrnNrbY7vOg8wp4n0LYbLcSDwK31yIKyvv58u5mJ1Y5d8VaTt+LVxBUqVCUlb00q0AkotqhQYPFJHa9DGyaFA8l3s/uvb1V1MZWhXA0NG8gTy/7cxyl+WNEZvyIwIT3X/dXOhQSOPHK4aIniBrwKcwQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(66556008)(53546011)(6506007)(64756008)(66446008)(66476007)(86362001)(186003)(71200400001)(7696005)(54906003)(8936002)(110136005)(76116006)(4326008)(66946007)(52536014)(9686003)(2906002)(8676002)(55016002)(5660300002)(33656002)(498600001)(7416002)(83380400001)(52103002)(158003001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: loXaNbR5PEQBHs+48101/R0kj/aaSAkDAlI3RMZyOAL8XTOARGC0TOk58B4Fbz/aWiXDQt6wrKrCn+ATdFMJhNTbTm9etxtmPeqEjUgEOkNVaKBluB5X1dbs9uPJ9YCrrcC1T+t139hYxvNPoAuwxV2tKfXGDkHiazCuba4O/o+kemDRNidnz/6ez0A5khR7d4J54+F7Jc/pDA+KDVpffJ4I0y44BptzVaRRD1B4ymdv6suE8/Z49f687HqhTDemkda6OAOSDgdXBzDTwdWVs+5mI4I1RVDlukugnBG+yLCjJGCN6Kwzsk+aCWjO7gB8DgMTAyiIRpTApDIxrlZbNp+m+DkOCk5brg3bkQ2xOWQZeaaj3jx2lJQAgUMKE77cvYgXpNT7m8HCzXJybB0XxcqPoYcEikWKIHaLr9zi899QuQa0ev/GajUQOxiZspmhIWyDh1aqxu3lcgCw6tEGq17oCEtbmOezEQTddLAKJS8U210fx7dMWeeHAqN1LSnd1ZvWdvSMIqFOq99CRQ4p1L0P0xV3nS+mGWztLpCHiHU=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] gianfar: Use random MAC address when none is given
+Date:   Tue, 14 Jul 2020 15:01:04 +0300
+Message-Id: <20200714120104.257819-1-fido_max@inbox.ru>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6097b998-8199-4d15-95ad-08d827eaf28c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2020 11:42:11.6846
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +ScZmrTio0vecAJe2vVQVEn3xs81LsK5HX1ocHzsHI/1PJ1FoAOqBbJ4vWkLl1H3JNNXTbjQKtb4olM9kL1BfLn5B7LBj94p9rEyb1I3J3MeElL2TKHCqn/CdB4sOS/G
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB4506
+Content-Transfer-Encoding: 8bit
+Authentication-Results: smtp36.i.mail.ru; auth=pass smtp.auth=fido_max@inbox.ru smtp.mailfrom=fido_max@inbox.ru
+X-7564579A: 646B95376F6C166E
+X-77F55803: 4F1203BC0FB41BD9BB76C036EA8E79AC7183BC094B6F439707A04E6D4477B360182A05F538085040FE9E7DC89FC4EB4012E6849F381C3FA7DC809E60F3FC4F0404B695EBED5383FD
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7AED985C8E545F588EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F79006370D3D68FCEFFDD9EA8638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC213B1F18E6357999AC01BF80EEC924F54356B433C02D987D389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C05A64D9A1E9CA65708941B15DA834481FCF19DD082D7633A0E7DDDDC251EA7DABA471835C12D1D977725E5C173C3A84C34964A708C60C975A117882F4460429728AD0CFFFB425014E40A5AABA2AD371193AA81AA40904B5D9A18204E546F3947C724336BCC0EE1BA82D242C3BD2E3F4C64AD6D5ED66289B52C79FDBAFFB82A7259735652A29929C6C725E5C173C3A84C36ED3D2230264E88FBA3038C0950A5D36B5C8C57E37DE458B0B4866841D68ED3567F23339F89546C55F5C1EE8F4F765FC2303E78B907142AC75ECD9A6C639B01BBD4B6F7A4D31EC0BC0CAF46E325F83A522CA9DD8327EE4930A3850AC1BE2E735E4A630A5B664A4FFC4224003CC836476C0CAF46E325F83A50BF2EBBBDD9D6B0F5D41B9178041F3E72623479134186CDE6BA297DBC24807EABDAD6C7F3747799A
+X-C8649E89: 94EF0272A9D89B9EF87A4F89EFDF43799A759607405807F9AD839F8A94B4F7BAC9759BC6ED5F36F0
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojB6ZTT+PDdQTwMtP0u4aUog==
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24DD87BDCA44971A3634F755EE91CABA9A8D65200875EB1684EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogVHVlc2Rh
-eSwgSnVseSAxNCwgMjAyMCA1OjQyIFBNDQo+IA0KPiBIaSBQcmFiaGFrYXIsDQo+IA0KPiBPbiBU
-dWUsIEp1bCAxNCwgMjAyMCBhdCAxMDozMCBBTSBMYWQsIFByYWJoYWthcg0KPiA8cHJhYmhha2Fy
-LmNzZW5nZ0BnbWFpbC5jb20+IHdyb3RlOg0KPiA+IE9uIFR1ZSwgSnVsIDE0LCAyMDIwIGF0IDk6
-MDkgQU0gR2VlcnQgVXl0dGVyaG9ldmVuIDxnZWVydEBsaW51eC1tNjhrLm9yZz4gd3JvdGU6DQo+
-ID4gPiBPbiBNb24sIEp1bCAxMywgMjAyMCBhdCAxMTozNSBQTSBMYWQgUHJhYmhha2FyDQo+ID4g
-PiA8cHJhYmhha2FyLm1haGFkZXYtbGFkLnJqQGJwLnJlbmVzYXMuY29tPiB3cm90ZToNCj4gPiA+
-ID4gRnJvbTogTWFyaWFuLUNyaXN0aWFuIFJvdGFyaXUgPG1hcmlhbi1jcmlzdGlhbi5yb3Rhcml1
-LnJiQGJwLnJlbmVzYXMuY29tPg0KPiA+ID4gPg0KPiA+ID4gPiBBZGQgc3VwcG9ydCBmb3IgUlov
-RzJIIChSOEE3NzRFMSkgU29DIElQTU1Vcy4NCj4gPiA+ID4NCj4gPiA+ID4gU2lnbmVkLW9mZi1i
-eTogTWFyaWFuLUNyaXN0aWFuIFJvdGFyaXUgPG1hcmlhbi1jcmlzdGlhbi5yb3Rhcml1LnJiQGJw
-LnJlbmVzYXMuY29tPg0KPiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBMYWQgUHJhYmhha2FyIDxwcmFi
-aGFrYXIubWFoYWRldi1sYWQucmpAYnAucmVuZXNhcy5jb20+DQo+ID4gPg0KPiA+ID4gVGhhbmtz
-IGZvciB5b3VyIHBhdGNoIQ0KPiA+ID4NCj4gPiA+ID4gLS0tIGEvZHJpdmVycy9pb21tdS9pcG1t
-dS12bXNhLmMNCj4gPiA+ID4gKysrIGIvZHJpdmVycy9pb21tdS9pcG1tdS12bXNhLmMNCj4gPiA+
-ID4gQEAgLTc1MSw2ICs3NTEsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHNvY19kZXZpY2VfYXR0
-cmlidXRlIHNvY19yY2FyX2dlbjNbXSA9IHsNCj4gPiA+ID4gIHN0YXRpYyBjb25zdCBzdHJ1Y3Qg
-c29jX2RldmljZV9hdHRyaWJ1dGUgc29jX3JjYXJfZ2VuM193aGl0ZWxpc3RbXSA9IHsNCj4gPiA+
-ID4gICAgICAgICB7IC5zb2NfaWQgPSAicjhhNzc0YjEiLCB9LA0KPiA+ID4gPiAgICAgICAgIHsg
-LnNvY19pZCA9ICJyOGE3NzRjMCIsIH0sDQo+ID4gPiA+ICsgICAgICAgeyAuc29jX2lkID0gInI4
-YTc3NGUxIiwgfSwNCj4gPiA+DQo+ID4gPiBBZGRpbmcgYW4gZW50cnkgdG8gc29jX3JjYXJfZ2Vu
-M193aGl0ZWxpc3RbXSBkb2Vzbid0IGRvIGFueXRoaW5nLCB1bmxlc3MNCj4gPiA+IHlvdSBhbHNv
-IGFkZCB0aGUgc2FtZSBlbnRyeSB0byBzb2NfcmNhcl9nZW4zW10uDQo+ID4gPg0KPiA+IEkgdGhp
-bmsgdGhlIGNvbW1lbnQgIkZvciBSLUNhciBHZW4zIHVzZSBhIHdoaXRlIGxpc3QgdG8gb3B0LWlu
-IHNsYXZlDQo+ID4gZGV2aWNlcy4iIGlzIG1pc2xlYWRpbmcuICBCb290aW5nIHRocm91Z2ggdGhl
-IGtlcm5lbCBJIGRvIHNlZSBpb21tdQ0KPiA+IGdyb3VwcyAoYXR0YWNoZWQgaXMgdGhlIGxvZ3Mp
-Lg0KPiANCj4gSW5kZWVkLiBXaXRob3V0IGFuIGVudHJ5IGluIHNvY19yY2FyX2dlbjNbXSwgdGhl
-IElQTU1VIGlzIGVuYWJsZWQNCj4gdW5jb25kaXRpb25hbGx5LCBhbmQgc29jX3JjYXJfZ2VuM193
-aGl0ZWxpc3RbXSBpcyBpZ25vcmVkLg0KPiBUaGF0J3Mgd2h5IHlvdSB3YW50IGFuIGVudHJ5IGlu
-IGJvdGgsIHVubGVzcyB5b3UgaGF2ZSBhbiBSLUNhciBHZW4zDQo+IFNvQyB3aGVyZSB0aGUgSVBN
-TVUgd29ya3MgY29ycmVjdGx5IHdpdGggYWxsIHNsYXZlIGRldmljZXMgcHJlc2VudC4NCj4gUGVy
-aGFwcyBzb2NfcmNhcl9nZW4zW10gc2hvdWxkIGJlIHJlbmFtZWQgdG8gc29jX3JjYXJfZ2VuM19n
-cmV5bGlzdFtdDQo+IChvciBzb2NfcmNhcl9nZW4zX21heWJlbGlzdFtdKSB0byBtYWtlIHRoaXMg
-Y2xlYXI/DQoNCkkgdGhpbmsgc28gKHdlIHNob3VsZCByZW5hbWUgaXQpLg0KDQo+ID4gQWxzbyB0
-aGUgcmVjZW50IHBhdGNoIHRvIGFkZA0KPiA+ICJyOGE3Nzk2MSIganVzdCBhZGRzIHRvIHNvY19y
-Y2FyX2dlbjNfd2hpdGVsaXN0Lg0KPiANCj4gT29wcywgY29tbWl0IDE3ZmUxNjE4MTYzOTgwMWIg
-KCJpb21tdS9yZW5lc2FzOiBBZGQgc3VwcG9ydCBmb3IgcjhhNzc5NjEiKQ0KPiBkaWQgaXQgd3Jv
-bmcsIHRvby4NCg0KVGhhbmsgeW91IGZvciB0aGUgcG9pbnQgaXQgb3V0LiBXZSBzaG91bGQgYWRk
-IHI4YTc3OTYxIHRvIHRoZSBzb2NfcmNhcl9nZW4zW10uDQpIb3dldmVyLCBJIGRvbid0IGtub3cg
-d2h5IEkgY291bGQgbm90IHJlYWxpemUgdGhpcyBpc3N1ZS4uLg0KU28sIEkgaW52ZXN0aWdhdGVk
-IHRoaXMgYSBsaXR0bGUgYW5kIHRoZW4sIElJVUMsIGdsb2JfbWF0Y2goKSB3aGljaA0Kc29jX2Rl
-dmljZV9tYXRjaCgpIHVzZXMgc2VlbXMgdG8gcmV0dXJuIHRydWUsIGlmICpwYXQgPSAicjhhNzc5
-NiIgYW5kICpzdHIgPSAicjhhNzc5NjEiLg0KDQpCZXN0IHJlZ2FyZHMsDQpZb3NoaWhpcm8gU2hp
-bW9kYQ0KDQo=
+If there is no valid MAC address in the device tree,
+use a random MAC address.
+
+Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+---
+ drivers/net/ethernet/freescale/gianfar.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+index b3c69e9038ea..b513b8c5c3b5 100644
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -779,8 +779,12 @@ static int gfar_of_init(struct platform_device *ofdev, struct net_device **pdev)
+ 
+ 	mac_addr = of_get_mac_address(np);
+ 
+-	if (!IS_ERR(mac_addr))
++	if (!IS_ERR(mac_addr)) {
+ 		ether_addr_copy(dev->dev_addr, mac_addr);
++	} else {
++		eth_hw_addr_random(dev);
++		dev_info(&ofdev->dev, "Using random MAC address: %pM\n", dev->dev_addr);
++	}
+ 
+ 	if (model && !strcasecmp(model, "TSEC"))
+ 		priv->device_flags |= FSL_GIANFAR_DEV_HAS_GIGABIT |
+-- 
+2.27.0
+
