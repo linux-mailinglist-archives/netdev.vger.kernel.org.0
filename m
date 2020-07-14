@@ -2,81 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4694221F698
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 17:59:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 727AC21F69B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 17:59:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728098AbgGNP64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 11:58:56 -0400
-Received: from mga05.intel.com ([192.55.52.43]:53204 "EHLO mga05.intel.com"
+        id S1728227AbgGNP7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 11:59:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725890AbgGNP6z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 11:58:55 -0400
-IronPort-SDR: mwbo8BbXzNkUhboRXRzMvyJuqYfCmP7s0D9GPRQgGQr5Prr1q033DsMxjrff38CeUxa3fUS/nA
- O5BUWVCbExeQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9681"; a="233807723"
-X-IronPort-AV: E=Sophos;i="5.75,350,1589266800"; 
-   d="scan'208";a="233807723"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2020 08:58:55 -0700
-IronPort-SDR: QKWYwV7G0OGMKoR2zfM+AL0IbLcHgFsPK+dO5sZ1hRpkB5xujimNxEojjMvfjHofvwe/kdJtey
- IZMBv9qdfxRQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,350,1589266800"; 
-   d="scan'208";a="360428112"
-Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
-  by orsmga001.jf.intel.com with ESMTP; 14 Jul 2020 08:58:54 -0700
-Received: from fmsmsx121.amr.corp.intel.com ([169.254.6.72]) by
- FMSMSX105.amr.corp.intel.com ([169.254.4.212]) with mapi id 14.03.0439.000;
- Tue, 14 Jul 2020 08:58:54 -0700
-From:   "Westergreen, Dalon" <dalon.westergreen@intel.com>
-To:     "kuba@kernel.org" <kuba@kernel.org>,
-        "Ooi, Joyce" <joyce.ooi@intel.com>
-CC:     "See, Chin Liang" <chin.liang.see@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Nguyen, Dinh" <dinh.nguyen@intel.com>,
+        id S1727047AbgGNP7V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 11:59:21 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 62A2D223C6;
+        Tue, 14 Jul 2020 15:59:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594742361;
+        bh=3+u1zrLc/VCPEpaP0kAdAA5uhAKmeFvVSxzG4BJM9QE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=w1cEurK1Vw1wJtxuclT0P2lJDueXHD5oZVyHoqJcJejMqzMDzbErZoK7A5wMf73up
+         kOJ0SzrjUrBsHvItK6ozB1vwVlGJbrJ8FUGjP5dmS3HTYW3ma6P6ojmi5uhqjGeqT1
+         g4Ftbh15uecydYG8HmJMi/OJYQLHmWIA/+Fbwf08=
+Date:   Tue, 14 Jul 2020 08:59:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Kiyanovski, Arthur" <akiyano@amazon.com>
+Cc:     "Machulsky, Zorik" <zorik@amazon.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "thor.thayer@linux.intel.com" <thor.thayer@linux.intel.com>,
-        "Tan, Ley Foon" <ley.foon.tan@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v4 09/10] net: eth: altera: add msgdma prefetcher
-Thread-Topic: [PATCH v4 09/10] net: eth: altera: add msgdma prefetcher
-Thread-Index: AQHWWfesVOnA2ZULWEys5PcG6yGprA==
-Date:   Tue, 14 Jul 2020 15:58:53 +0000
-Message-ID: <3bcb9020f0a3836f41036ddc3c8034b96e183197.camel@intel.com>
-References: <20200708072401.169150-1-joyce.ooi@intel.com>
-         <20200708072401.169150-10-joyce.ooi@intel.com>
-         <20200708144900.058a8b25@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <CY4PR11MB12537DA07C73574B82A239BDF2610@CY4PR11MB1253.namprd11.prod.outlook.com>
-         <20200714085526.2bb89dc6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200714085526.2bb89dc6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.3 (3.36.3-1.fc32) 
-x-originating-ip: [10.212.241.105]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BD230C14DD51844EA6E370AB08633EDF@intel.com>
-Content-Transfer-Encoding: base64
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>
+Subject: Re: [PATCH V1 net-next 6/8] net: ena: enable support of rss hash
+ key and function changes
+Message-ID: <20200714085918.5e8f8a97@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <c5274c7769ac48bea39d63063728e695@EX13D22EUA004.ant.amazon.com>
+References: <1594321503-12256-1-git-send-email-akiyano@amazon.com>
+        <1594321503-12256-7-git-send-email-akiyano@amazon.com>
+        <20200709132311.63720a70@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <53596F13-16F7-4C82-A5BC-5F5DB22C36A4@amazon.com>
+        <20200710130513.057a2854@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <C1F3BC8C-AFAD-4AB4-8329-A48F4AD0E60B@amazon.com>
+        <c5274c7769ac48bea39d63063728e695@EX13D22EUA004.ant.amazon.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIFR1ZSwgMjAyMC0wNy0xNCBhdCAwODo1NSAtMDcwMCwgSmFrdWIgS2ljaW5za2kgd3Jv
-dGU6DQo+IE9uIFR1ZSwgMTQgSnVsIDIwMjAgMTQ6MzU6MTYgKzAwMDAgT29pLCBKb3ljZSB3cm90
-ZToNCj4gPiA+IEknbSBubyBkZXZpY2UgdHJlZSBleHBlcnQgYnV0IHRoZXNlIGxvb2sgbGlrZSBj
-b25maWcgb3B0aW9ucyByYXRoZXIgdGhhbg0KPiA+ID4gSFcNCj4gPiA+IGRlc2NyaXB0aW9uLiBU
-aGV5IGFsc28gZG9uJ3QgYXBwZWFyIHRvIGJlIGRvY3VtZW50ZWQgaW4gdGhlIG5leHQgcGF0Y2gu
-ICANCj4gPiANCj4gPiBUaGUgcG9sbF9mcmVxIGFyZSBwYXJ0IG9mIHRoZSBtc2dkbWEgcHJlZmV0
-Y2hlciBJUCwgd2hlcmVieSBpdA0KPiA+IHNwZWNpZmllcyB0aGUgZnJlcXVlbmN5IG9mIGRlc2Ny
-aXB0b3IgcG9sbGluZyBvcGVyYXRpb24uIEkgY2FuIGFkZA0KPiA+IHRoZSBwb2xsX2ZyZXEgZGVz
-Y3JpcHRpb24gaW4gdGhlIG5leHQgcGF0Y2guDQo+IA0KPiBJcyB0aGUgdmFsdWUgZGVjaWRlZCBh
-dCB0aGUgdGltZSBvZiBzeW50aGVzaXMgb3IgY2FuIHRoZSBkcml2ZXIgY2hvb3NlIA0KPiB0aGUg
-dmFsdWUgaXQgd2FudHM/DQoNCkl0IGlzIG5vdCBjb250cm9sbGVkIGF0IHN5bnRoZXNpcywgdGhp
-cyBwYXJhbWV0ZXIgc2hvdWxkIGxpa2VseSBub3QgYmUgYQ0KZGV2aWNldHJlZSBwYXJhbWV0ZXIs
-IHBlcmhhcHMganVzdCBtYWtlIGl0IGEgbW9kdWxlIHBhcmFtZXRlciB3aXRoIGEgZGVmYXVsdA0K
-dmFsdWUuDQoNCi0tZGFsb24NCg==
+On Tue, 14 Jul 2020 11:20:27 +0000 Kiyanovski, Arthur wrote:
+> > This commit actually enables a feature after it was fixed by previous c=
+ommits,
+> > therefore we thought that net-next could be a right place. But if you t=
+hink it
+> > should go to net, we'll go ahead and resubmit it there. Thanks for your
+> > comments. =20
+>=20
+> Jakub,=20
+> I=E2=80=99ve removed the patch from v2 but it seems to me there was some
+> miscommunication and IMO the correct place for the patch should be
+> net-next. This feature was actually turned off until now, and this
+> patch turns it on. It is not a bug fix, it is actually a feature. Do
+> you have an objection to me returning this patch (with this
+> explanation in the commit message) to this patchsets V3?
+
+Sounds good, the commit message makes all the difference.
