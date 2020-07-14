@@ -2,105 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6193421EAB8
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 09:57:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2284F21EAC9
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 10:00:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726431AbgGNH46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 03:56:58 -0400
-Received: from mail5.windriver.com ([192.103.53.11]:45414 "EHLO mail5.wrs.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725801AbgGNH46 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 03:56:58 -0400
-Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
-        by mail5.wrs.com (8.15.2/8.15.2) with ESMTPS id 06E7sd8g016084
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
-        Tue, 14 Jul 2020 00:54:49 -0700
-Received: from pek-lpg-core1-vm1.wrs.com (128.224.156.106) by
- ALA-HCA.corp.ad.wrs.com (147.11.189.40) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 14 Jul 2020 00:54:29 -0700
-From:   <qiang.zhang@windriver.com>
-To:     <jmaloy@redhat.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <tuong.t.lien@dektech.com.au>, <eric.dumazet@gmail.com>,
-        <ying.xue@windriver.com>
-CC:     <netdev@vger.kernel.org>, <tipc-discussion@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] tipc: Don't using smp_processor_id() in preemptible code
-Date:   Tue, 14 Jul 2020 16:05:59 +0800
-Message-ID: <20200714080559.9617-1-qiang.zhang@windriver.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726437AbgGNIAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 04:00:53 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:48822 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbgGNIAx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 04:00:53 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06E7vXl2177462;
+        Tue, 14 Jul 2020 08:00:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=C9ONEvJcEuBYJCXRgpHShvymZKUc+CA90dBt/Q2+rs8=;
+ b=I9od1WDDxaSyifltzGam/113d6WpJ2gzMwEICdAcRiPqP/ENodFW1X7eCuFgtEldT5yo
+ ZjAkQm3MALHDGgGfoZs/mKrcj+s4OF42VDON58y81A4R4/ZXaL4Z6UBXOqjyCC2g73S/
+ qKss54/GIWBRAB0V2429zO68bFfHPBfiqK0P2nHSeYoF/lL12wPQMes4OCZny6RMT2ZP
+ MMLMzivW+XUwdiwKAjb2SEIuyWc4FjaRfSIDJuMUU6htqs2A23C2lly+LJrPD0qyFVp9
+ +YmBxAZPiWSc+7unswhgoK3AFbhY+cwPaFkhsjtifHt518vpINsXXzv50ZAGXhazfG9I Xg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 3275cm3s05-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 14 Jul 2020 08:00:47 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06E7qcqd119837;
+        Tue, 14 Jul 2020 08:00:46 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 327qbx4bfk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 14 Jul 2020 08:00:46 +0000
+Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 06E80jox000463;
+        Tue, 14 Jul 2020 08:00:45 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 14 Jul 2020 01:00:44 -0700
+Date:   Tue, 14 Jul 2020 11:00:38 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     george.kennedy@oracle.com, kuba@kernel.org,
+        dhaval.giani@oracle.com, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/1] ax88172a: fix ax88172a_unbind() failures
+Message-ID: <20200714080038.GX2571@kadam>
+References: <1594641537-1288-1-git-send-email-george.kennedy@oracle.com>
+ <20200713.170859.794084104671494668.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200713.170859.794084104671494668.davem@davemloft.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9681 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 spamscore=0
+ mlxlogscore=999 bulkscore=0 malwarescore=0 mlxscore=0 phishscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007140061
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9681 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 priorityscore=1501
+ bulkscore=0 adultscore=0 lowpriorityscore=0 phishscore=0 spamscore=0
+ impostorscore=0 malwarescore=0 mlxlogscore=999 clxscore=1015 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007140061
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Qiang <qiang.zhang@windriver.com>
+On Mon, Jul 13, 2020 at 05:08:59PM -0700, David Miller wrote:
+> From: George Kennedy <george.kennedy@oracle.com>
+> Date: Mon, 13 Jul 2020 07:58:57 -0400
+> 
+> > @@ -237,6 +237,8 @@ static int ax88172a_bind(struct usbnet *dev, struct usb_interface *intf)
+> >  
+> >  free:
+> >  	kfree(priv);
+> > +	if (ret >= 0)
+> > +		ret = -EIO;
+> >  	return ret;
+> 
+> Success paths reach here, so ">= 0" is not appropriate.  Maybe you
+> meant "> 0"?
 
-CPU: 0 PID: 6801 Comm: syz-executor201 Not tainted 5.8.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine,
-BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- check_preemption_disabled+0x128/0x130 lib/smp_processor_id.c:48
- tipc_aead_tfm_next net/tipc/crypto.c:402 [inline]
- tipc_aead_encrypt net/tipc/crypto.c:639 [inline]
- tipc_crypto_xmit+0x80a/0x2790 net/tipc/crypto.c:1605
- tipc_bearer_xmit_skb+0x180/0x3f0 net/tipc/bearer.c:523
- tipc_enable_bearer+0xb1d/0xdc0 net/tipc/bearer.c:331
- __tipc_nl_bearer_enable+0x2bf/0x390 net/tipc/bearer.c:995
- __tipc_nl_compat_doit net/tipc/netlink_compat.c:361 [inline]
- tipc_nl_compat_doit+0x440/0x640 net/tipc/netlink_compat.c:383
- tipc_nl_compat_handle net/tipc/netlink_compat.c:1268 [inline]
- tipc_nl_compat_recv+0x4ef/0xb40 net/tipc/netlink_compat.c:1311
- genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
- genl_rcv_msg+0x61d/0x980 net/netlink/genetlink.c:731
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:742
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x4476a9
-Code: Bad RIP value.
-RSP: 002b:00007fff2b6d5168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000000
+No, the success path is the "return 0;" one line before the start of the
+diff.  This is always a failure path.
 
-Fixes: fc1b6d6de2208 ("tipc: introduce TIPC encryption & authentication")
-Reported-by: syzbot+263f8c0d007dc09b2dda@syzkaller.appspotmail.com
-Signed-off-by: Zhang Qiang <qiang.zhang@windriver.com>
----
- v1->v2:
- add fixes tags.
-
- net/tipc/crypto.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index 8c47ded2edb6..520af0afe1b3 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -399,9 +399,10 @@ static void tipc_aead_users_set(struct tipc_aead __rcu *aead, int val)
-  */
- static struct crypto_aead *tipc_aead_tfm_next(struct tipc_aead *aead)
- {
--	struct tipc_tfm **tfm_entry = this_cpu_ptr(aead->tfm_entry);
-+	struct tipc_tfm **tfm_entry = get_cpu_ptr(aead->tfm_entry);
- 
- 	*tfm_entry = list_next_entry(*tfm_entry, list);
-+	put_cpu_ptr(tfm_entry);
- 	return (*tfm_entry)->tfm;
- }
- 
--- 
-2.24.1
+regards,
+dan carpenter
 
