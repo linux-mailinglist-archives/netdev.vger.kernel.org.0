@@ -2,79 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 727AC21F69B
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 17:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73F3921F6E3
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 18:14:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728227AbgGNP7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 11:59:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34062 "EHLO mail.kernel.org"
+        id S1728652AbgGNQOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 12:14:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44008 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727047AbgGNP7V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 11:59:21 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        id S1728153AbgGNQOB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 12:14:01 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 62A2D223C6;
-        Tue, 14 Jul 2020 15:59:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D9F92253A;
+        Tue, 14 Jul 2020 16:13:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594742361;
-        bh=3+u1zrLc/VCPEpaP0kAdAA5uhAKmeFvVSxzG4BJM9QE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=w1cEurK1Vw1wJtxuclT0P2lJDueXHD5oZVyHoqJcJejMqzMDzbErZoK7A5wMf73up
-         kOJ0SzrjUrBsHvItK6ozB1vwVlGJbrJ8FUGjP5dmS3HTYW3ma6P6ojmi5uhqjGeqT1
-         g4Ftbh15uecydYG8HmJMi/OJYQLHmWIA/+Fbwf08=
-Date:   Tue, 14 Jul 2020 08:59:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Kiyanovski, Arthur" <akiyano@amazon.com>
-Cc:     "Machulsky, Zorik" <zorik@amazon.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Agroskin, Shay" <shayagr@amazon.com>,
-        "Jubran, Samih" <sameehj@amazon.com>
-Subject: Re: [PATCH V1 net-next 6/8] net: ena: enable support of rss hash
- key and function changes
-Message-ID: <20200714085918.5e8f8a97@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <c5274c7769ac48bea39d63063728e695@EX13D22EUA004.ant.amazon.com>
-References: <1594321503-12256-1-git-send-email-akiyano@amazon.com>
-        <1594321503-12256-7-git-send-email-akiyano@amazon.com>
-        <20200709132311.63720a70@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <53596F13-16F7-4C82-A5BC-5F5DB22C36A4@amazon.com>
-        <20200710130513.057a2854@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <C1F3BC8C-AFAD-4AB4-8329-A48F4AD0E60B@amazon.com>
-        <c5274c7769ac48bea39d63063728e695@EX13D22EUA004.ant.amazon.com>
+        s=default; t=1594743240;
+        bh=z5J+dYoqDiiM1283WkXl2NWoTt/gHF3TppmStMEmZus=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=r2Rf7aOWtfe+SjzHn9XUjkoZ8+11/+EbCZNvqjDYa390dYHN4ljdqsUNhnb9Id+cn
+         0zIof5R64C7rfXmnH2eRlnNyhR6UHtKVrd6FjAArbGG8sUKbIUZ3nMbcvjTMYU56+R
+         WQJFSgG0U6rlyAkjv2EwPJJcuSR9kZ+3hQVXeBiM=
+Date:   Tue, 14 Jul 2020 18:13:57 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     =?iso-8859-1?Q?Wxcaf=E9?= <wxcafe@wxcafe.net>
+Cc:     Miguel =?iso-8859-1?Q?Rodr=EDguez_P=E9rez?= 
+        <miguel@det.uvigo.gal>, oliver@neukum.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] Simplify usbnet_cdc_update_filter
+Message-ID: <20200714161357.GA2091238@kroah.com>
+References: <20180701081550.GA7048@kroah.com>
+ <20180701090553.7776-1-miguel@det.uvigo.gal>
+ <20180701090553.7776-2-miguel@det.uvigo.gal>
+ <b02575d7937188167ed711a403e6d9fa3f80e60d.camel@wxcafe.net>
+ <20200714060628.GC657428@kroah.com>
+ <5c67c82b3988d6423317792e06a3127f97a51ba6.camel@wxcafe.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5c67c82b3988d6423317792e06a3127f97a51ba6.camel@wxcafe.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Jul 2020 11:20:27 +0000 Kiyanovski, Arthur wrote:
-> > This commit actually enables a feature after it was fixed by previous c=
-ommits,
-> > therefore we thought that net-next could be a right place. But if you t=
-hink it
-> > should go to net, we'll go ahead and resubmit it there. Thanks for your
-> > comments. =20
->=20
-> Jakub,=20
-> I=E2=80=99ve removed the patch from v2 but it seems to me there was some
-> miscommunication and IMO the correct place for the patch should be
-> net-next. This feature was actually turned off until now, and this
-> patch turns it on. It is not a bug fix, it is actually a feature. Do
-> you have an objection to me returning this patch (with this
-> explanation in the commit message) to this patchsets V3?
+On Tue, Jul 14, 2020 at 11:13:18AM -0400, Wxcafé wrote:
+> Hi Greg,
+> 
+> Thanks for your feedback! I'm not sure what you mean by "a format they
+> can be applied in", I'm guessing as three emails, with a single patch
+> each?
 
-Sounds good, the commit message makes all the difference.
+We have loads of documentation about how to do this in the kernel tree,
+you might want to read up on it starting at Documentation/process/
+
+thanks!
+
+greg k-h
