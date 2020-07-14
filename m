@@ -2,109 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A410C21E655
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 05:32:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D535B21E65F
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 05:36:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726568AbgGNDc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 23:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37360 "EHLO
+        id S1726778AbgGNDge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 23:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726432AbgGNDc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 23:32:26 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31829C061755;
-        Mon, 13 Jul 2020 20:32:26 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id g67so6979613pgc.8;
-        Mon, 13 Jul 2020 20:32:26 -0700 (PDT)
+        with ESMTP id S1726609AbgGNDge (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 23:36:34 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E538AC061755;
+        Mon, 13 Jul 2020 20:36:33 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id m16so5241222pls.5;
+        Mon, 13 Jul 2020 20:36:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vp2v7K/jVQL/hTXnKmTvc6QUZyaIGxTNQsGNS514dBY=;
-        b=EhaRIst/9s8/73496IxrX3ukNwxDGYHYNp7A8n9b7Wn85bUFYu4mDclfBE+bx38tRb
-         EVSRrwDMBi4h1E5SN9hRGHRgFUXbA8F3/wnzUfhN1Djh9WDw4QnRwHyWR6AovTlKyzvJ
-         Xq88m9aJl+qQCwu7xVQcT5wMI/M5uOohJaoeiYMkVLPOuuCDgq3ZmTL02hnnZ06MbyJO
-         I+fHaJbFOUXN5usf3ckirjeB170OYtdvZFTV3RsStmsRC6d9qx9yhZgT9PhVeXoyyB3I
-         IODf/aE24JYz5jBfsGSToxm9+BJASaWMdDzKRYIeAzy7yF8RsxYUPhLQOxATtV5VZjnQ
-         uceg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4pKtxXD5uW5bqrdDTHd+u/sbZZ6ngHW7Y1Ck/na4mqk=;
+        b=djxbHP+YYSXZr27XXad/vl4SP+097JssZiRic0/vKVqaPPBrMc82mdXZvfkrFZskT/
+         QF9aucsCvGRwOCc9tJXHgdNBIZ68jagxYUwYeRtzyXzT0Ap8u5KrgeRX9cSPWEN6d7n5
+         fIBgIpgBc+oKHUhV8ZQGjvwN19JBoyzOimFJ5CosNPeqrZinbwTrZ+5VBONiIMkbfRaG
+         aGktWcPzRBkU2GCtbufyaZoKZWde4wZvlkrvxY2pl/r7Jvd+sRVfDVGmZf4e0YYvh9g+
+         C9eH8pqKuJsOKZHNmb15wZbZ9SxOeC2FazcsbWzzK7iEmNnP9Mce4b6AL4f5rFDe0a40
+         HSgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vp2v7K/jVQL/hTXnKmTvc6QUZyaIGxTNQsGNS514dBY=;
-        b=Lbraf8dAwIezIStozFsefPOjU7XkxDB/DqeA+fnbFW5SpdC/UqYuHaxolIUI940bZJ
-         55blX7b5UPPzqPo7cz9S1jSZ2KJg9xaYxYSgOqfHvjBRRTRXh7oXtGsonv0wO7UU8QMj
-         uGMgKbXBEmiqdDcsWhfGjFITO23KLaeTbWbXOQXAhRLPBK43n0Zd2iMEnyxjf7GlPu3g
-         ixz6NA/udN1S++uYboAmIyStjXCwXoAraKnQZLIyVNRR6ebOVJoEk8/+6kvMGx9CZPPA
-         GTulLp8jS9My+o4nI7MKulbJL/HPtqyWQmUV1VBTSqQ7gZixoslZ9VKCeBgrUA/p/PUe
-         6ERg==
-X-Gm-Message-State: AOAM532/Q5bx7AoOwGFhCimoFuApYqJ3Gs3P4Q2182bUhnLtT8WqVLIr
-        +JhpUr0F2nhVKmm29LkLeDySOWg6
-X-Google-Smtp-Source: ABdhPJz4ILMyUxmgCof18nPJDV+MwbkqgBGtucF52k2b5Sg2NtCHQxbLc+W+8ruVuJPt9JJG5vWRuA==
-X-Received: by 2002:a62:788d:: with SMTP id t135mr2369420pfc.315.1594697545371;
-        Mon, 13 Jul 2020 20:32:25 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id c1sm852591pje.9.2020.07.13.20.32.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jul 2020 20:32:24 -0700 (PDT)
-Subject: Re: [PATCH] tipc: Don't using smp_processor_id() in preemptible code
-To:     qiang.zhang@windriver.com, jmaloy@redhat.com,
-        ying.xue@windriver.com, davem@davemloft.net, kuba@kernel.org,
-        tuong.t.lien@dektech.com.au
-Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-References: <20200714015341.27446-1-qiang.zhang@windriver.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <5cdd5051-7c7f-6686-88bd-4061f529c064@gmail.com>
-Date:   Mon, 13 Jul 2020 20:32:23 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4pKtxXD5uW5bqrdDTHd+u/sbZZ6ngHW7Y1Ck/na4mqk=;
+        b=SLA2+da1UBqJKLm0dLaGdW5jLJpUI0N5L6J+hqd7xvAxS3U0/go12k0ShJZZJlb26t
+         ki05Ab5Q7po5xbVylyTbDrBk5S5FDoXOGJEKQVRxJpUns4dsYxedd3JBht7gkN69mbZq
+         ipdaEP5lCUOJKNk2WgE5kZIIhXQjOPBthHYLsTrspBo+9sj6tkZ5K+sLwUWv59jIedZs
+         BkdqVqHs+3yy+AKafT8UIV8I/dfRQDVhGtO8nxDTU+71X6xKL3VOWyPv9zrCT/L9iFJn
+         AvaiyCvGECBLgMlez8xqJizaXo7MLLlJLsjlJP9ElL6NFPHQjKIsyJXKtWzcpo02MyY2
+         fA8w==
+X-Gm-Message-State: AOAM531MBke94lW+y1atfcAgVTnrs0IogfzUTJsSL0P7wY95/aMaCZby
+        spKl1i4TAQfNGGFjyOaAvIs=
+X-Google-Smtp-Source: ABdhPJy3R5A353cfZPZeoubFnI09Sx68y7klNumerUxc5EpOMcyJPVQjrjAj12VPdpFoMz7m9eIFMg==
+X-Received: by 2002:a17:90b:300a:: with SMTP id hg10mr2468786pjb.211.1594697793381;
+        Mon, 13 Jul 2020 20:36:33 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:1ca])
+        by smtp.gmail.com with ESMTPSA id a2sm16255442pfg.120.2020.07.13.20.36.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jul 2020 20:36:32 -0700 (PDT)
+Date:   Mon, 13 Jul 2020 20:36:30 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Subject: Re: [RFC PATCH bpf-next 4/5] bpf, x64: rework pro/epilogue and
+ tailcall handling in JIT
+Message-ID: <20200714033630.2fw5wzljbkkfle3j@ast-mbp.dhcp.thefacebook.com>
+References: <20200702134930.4717-1-maciej.fijalkowski@intel.com>
+ <20200702134930.4717-5-maciej.fijalkowski@intel.com>
+ <20200710235632.lhn6edwf4a2l3kiz@ast-mbp.dhcp.thefacebook.com>
+ <CAADnVQJhhQnjQdrQgMCsx2EDDwELkCvY7Zpfdi_SJUmH6VzZYw@mail.gmail.com>
+ <CAADnVQ+AD0T_xqwk-fhoWV25iANs-FMCMVnn2-PALDxdODfepA@mail.gmail.com>
+ <20200714010045.GB2435@ranger.igk.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200714015341.27446-1-qiang.zhang@windriver.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200714010045.GB2435@ranger.igk.intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/13/20 6:53 PM, qiang.zhang@windriver.com wrote:
-> From: Zhang Qiang <qiang.zhang@windriver.com>
+On Tue, Jul 14, 2020 at 03:00:45AM +0200, Maciej Fijalkowski wrote:
+> On Fri, Jul 10, 2020 at 08:25:20PM -0700, Alexei Starovoitov wrote:
+> > On Fri, Jul 10, 2020 at 8:20 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > Of course you are right.
+> > > pop+nop+push is incorrect.
+> > >
+> > > How about the following instead:
+> > > - during JIT:
+> > > emit_jump(to_skip_below)  <- poke->tailcall_bypass
 > 
-> CPU: 0 PID: 6801 Comm: syz-executor201 Not tainted 5.8.0-rc4-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine,
-> BIOS Google 01/01/2011
->
-> Reported-by: syzbot+263f8c0d007dc09b2dda@syzkaller.appspotmail.com
-> Signed-off-by: Zhang Qiang <qiang.zhang@windriver.com>
-> ---
->  net/tipc/crypto.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> That's the jump to the instruction right after the poke->tailcall_target.
+
+right. Mainly looking for better names than ip and ip_aux.
+
+> > > pop_callee_regs
+> > > emit_jump(to_tailcall_target) <- poke->tailcall_target
 > 
-> diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-> index 8c47ded2edb6..520af0afe1b3 100644
-> --- a/net/tipc/crypto.c
-> +++ b/net/tipc/crypto.c
-> @@ -399,9 +399,10 @@ static void tipc_aead_users_set(struct tipc_aead __rcu *aead, int val)
->   */
->  static struct crypto_aead *tipc_aead_tfm_next(struct tipc_aead *aead)
->  {
-> -	struct tipc_tfm **tfm_entry = this_cpu_ptr(aead->tfm_entry);
-> +	struct tipc_tfm **tfm_entry = get_cpu_ptr(aead->tfm_entry);
->  
->  	*tfm_entry = list_next_entry(*tfm_entry, list);
-> +	put_cpu_ptr(tfm_entry);
->  	return (*tfm_entry)->tfm;
->  }
->  
+> During JIT there's no tailcall_target so this will be nop5, right?
+
+I thought it will be always jmp, but with new info I agree that
+it will start with nop.
+
 > 
+> > >
+> > > - Transition from one target to another:
+> > > text_poke(poke->tailcall_target, MOD_JMP, old_jmp, new_jmp)
+> > > if (new_jmp != NULL)
+> > >   text_poke(poke->tailcall_bypass, MOD jmp into nop);
+> > > else
+> > >   text_poke(poke->tailcall_bypass, MOD nop into jmp);
+> > 
+> > One more correction. I meant:
+> > 
+> > if (new_jmp != NULL) {
+> >   text_poke(poke->tailcall_target, MOD_JMP, old_jmp, new_jmp)
+> 
+> Problem with having the old_jmp here is that you could have the
+> tailcall_target removed followed by the new program being inserted. So for
+> that case old_jmp is NULL but we decided to not poke the
+> poke->tailcall_target when removing the program, only the tailcall_bypass
+> is poked back to jmp from nop. IOW old_jmp is not equal to what
+> poke->tailcall_target currently stores. This means that
+> bpf_arch_text_poke() would not be successful for this update and that is
+> the reason of faking it in this patch.
 
-This seems to hide a real bug.
+got it.
+I think it can be solved two ways:
+1. add synchronize_rcu() after poking of tailcall_bypass into jmp
+and then update tailcall_target into nop.
+so the race you've described in cover letter won't happen.
+In the future with sleepable progs we'd need to call sync_rcu_tasks_trace too.
+Which will make poke_run even slower.
 
-Presumably callers of this function should have disable preemption, and maybe interrupts as well.
+2. add a flag to bpf_arch_text_poke() to ignore 5 bytes in there
+and update tailcall_target to new jmp.
+The speed of poke_run will be faster,
+but considering the speed of text_poke_bp() it's starting to feel like
+premature optimization.
 
-In any case, a Fixes: tag would be welcomed.
+I think approach 1 is cleaner.
+Then the pseudo code will be:
+if (new_jmp != NULL) {
+   text_poke(poke->tailcall_target, MOD_JMP, old ? old_jmp : NULL, new_jmp);
+   if (!old)
+     text_poke(poke->tailcall_bypass, MOD_JMP, bypass_addr, NULL /* into nop */);
+} else {
+   text_poke(poke->tailcall_bypass, MOD_JMP, NULL /* from nop */, bypass_addr);
+   sync_rcu(); /* let progs finish */
+   text_poke(poke->tailcall_target, MOD_JMP, old_jmp, NULL /* into nop */)
+}
+
+> 
+> >   text_poke(poke->tailcall_bypass, MOD jmp into nop);
+> > } else {
+> >   text_poke(poke->tailcall_bypass, MOD nop into jmp);
+> > }
+> 
+> I think that's what we currently (mostly) have. map_poke_run() is skipping
+> the poke of poke->tailcall_target if new bpf_prog is NULL, just like
+> you're proposing above. Of course I can rename the members in poke
+> descriptor to names you're suggesting. I also assume that by text_poke you
+> meant the bpf_arch_text_poke?
+
+yep.
+
+> 
+> I've been able to hide the nop5 detection within the bpf_arch_text_poke so
+> map_poke_run() is arch-independent in that approach. My feeling is that
+> we don't need the old bpf_prog at all.
+> 
+> Some bits might change here due to the jump target alignment that I'm
+> trying to introduce.
+
+> Can you explain under what circumstances bpf_jit_binary_alloc() would not
+> use get_random_int() ? Out of curiosity as from a quick look I can't tell
+> when.
+
+I meant when you're doing benchmarking get rid of that randomization
+from bpf_jit_binary_alloc in your test kernel.
+
+> I'm hitting the following check in do_jit():
+
+I think aligning bypass_addr is a bit too much. Let it all be linear for now.
+Since iTLB is sporadic it could be due to randomization and nothing to do
+with additional jmp and unwind that this set is introducing.
