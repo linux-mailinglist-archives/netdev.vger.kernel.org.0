@@ -2,134 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2648221F3EC
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:24:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FF0621F3F5
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:24:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728835AbgGNOXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 10:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53102 "EHLO
+        id S1728178AbgGNOYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 10:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728822AbgGNOXn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:23:43 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E436C061755;
-        Tue, 14 Jul 2020 07:23:43 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id j19so7644512pgm.11;
-        Tue, 14 Jul 2020 07:23:43 -0700 (PDT)
+        with ESMTP id S1725803AbgGNOYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:24:46 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE33C061755
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 07:24:45 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id ls15so1673063pjb.1
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 07:24:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=nUwXDB9+16lCViV2ieb7OxGP/wVfhQrqzyr+DjMiurg=;
-        b=ERtMDsp5uK2mv9o92K1r3JhYGecnI/SKoRHHfjayrcNjsLKiVaQs7NZyiK2Q+10Sht
-         3cK/do2rdzhgu4DUcMdkDErJj5h/+EXadf6SvI/e+sFF+aX9cuggjwjOcZhhbQ1sQrf9
-         i8K1yc6lVGSBdXNBWA08Q7xG+9etQdusW77oOGZJvq8/uYza7GiTPmdar/C4O/xLxVKC
-         0n/ljFtxx5rvyxo7vz2W1DPareso8MxUV5Ahkoveh14+rXzODE9HcnWTUUN+BJwc2uay
-         pKf1gUVDa7onWxWQc37G2GIBIr2qzsPEUjquYd7Po464u5oqynCswcmGLx31KjEVJTbB
-         KRBQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xRXcz6lJumCqtAK1sMm3c6pssF2/7Iv7wk3aJ5Rjjjk=;
+        b=nAt+8N9A/QAbk8LT/E9I+bkWDYZR57ldSJsBmsMz9LBZQo7Ct1y3GFw/ad9TySK9yS
+         60MaeYk4B130/uod9gIipMKxpPfFejl39rmduv6vpE/Xd+eCOL/3qKNf0DFuMSBtSmHF
+         XApmoqqsVWuUEKuX+od5MdYpR2cPRe5Rptev2h27A7izJVV3RsegLadPOT+wIINY+5dp
+         uR0hu1DuZPcD5QXHEvcx8mE0XTJ5IMT9n9CbH4skbv4nUYDRea1s0znWfEhc/cYaRMFa
+         Tox5JPzeywVVVucwoyDad8n8+SnNKVt+KIReVqgyKOzNQI5GcJgBXqkFcQx3C6vzIjLp
+         EqDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=nUwXDB9+16lCViV2ieb7OxGP/wVfhQrqzyr+DjMiurg=;
-        b=J0C2vTCFp52TrtIoJeWbXBCgDLm28Md84WlN3BP3GxlRC5OoinNZbRu7KnkoZD0/JY
-         kbsBYfEYZrMZ0rC9NFLVI3KJxEtfVhrpGrmAq6bfVmdO/6htf3pZ2TO+X7v3HPr1PguN
-         yLogyjuERfP65qF9j6tGn45jPjUjeHI3aTJBOr6XxYs8xARmgo+vynQ/2qin+E3SU3OH
-         rJBSalnJgzUZ+y9Mel8wYNai5sFah+KJM20rZCETNMjaK3HqpaR1OERoysjh+H0yDwRG
-         6TkiF1ZD8JYkNcT2OrrbMpqB6ti21FgT5xokGnM5N06Xy/+r577+sFo2orYnEF6fRdx0
-         o/zg==
-X-Gm-Message-State: AOAM531OXmvA2EZ097dOIjGMVG0DvWaOoL5IKR/GHa3egPcl2CetWmOQ
-        RXEitQtcFYqJsotPFR7PhcM=
-X-Google-Smtp-Source: ABdhPJy66sR518CbHAyLwn4IDyvtCvNiLdLIxfxVc2XMIsw/eLRosLoQPV/oDLfKANqu2pgmoVCSSQ==
-X-Received: by 2002:a65:484c:: with SMTP id i12mr3739341pgs.145.1594736622688;
-        Tue, 14 Jul 2020 07:23:42 -0700 (PDT)
-Received: from blackclown ([103.88.82.145])
-        by smtp.gmail.com with ESMTPSA id y19sm19009750pfc.135.2020.07.14.07.23.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 14 Jul 2020 07:23:41 -0700 (PDT)
-Date:   Tue, 14 Jul 2020 19:53:28 +0530
-From:   Suraj Upadhyay <usuraj35@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH v2] decnet: dn_dev: Remove an unnecessary label.
-Message-ID: <20200714142328.GA4630@blackclown>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xRXcz6lJumCqtAK1sMm3c6pssF2/7Iv7wk3aJ5Rjjjk=;
+        b=MpZeyWXp9P5gTcloaKosFwlkIYDR+lcWlDnLGK5jCgCj9wpBA8y9jLhq3a0L3ziO6J
+         AjkZL9KIT+860JA8Re1fPp0M6qFPLBU+IOY94GbpyySZAAWZED8dv05RATPGsnqTHlod
+         WnvQ+oKzrguXfAvRla84WN8/bDAvwBCZL+WMcvgApq5ohzbLC1jUL0U732lYesv1GgqQ
+         Lv6SC7wfAtGg2gXvgBbKLPTuC7bU+PrOPB5Zc6ts/mP3UFCsZWq8Jyc5sM9H7+p0MuJw
+         L6OzSszqPXn53j4XquknkHEQBsudD8dx1H1irg+g2OBX0gJ/PRE+2UPLwLoS6WL0guxI
+         snPQ==
+X-Gm-Message-State: AOAM533YbyLscRgBMgWpe7X/sA2yhEccE0ycZ8ci1wCjT8yWQKswWyC/
+        MJqJDhzvdCDR3N39tDc+uQA=
+X-Google-Smtp-Source: ABdhPJx+D6k7S7VQPgmJqSi61mmDMFb9pZNcc+TQHRVq2MCWmRZiDNs+VWZUKBIeu04Y4Pqyp4CBGg==
+X-Received: by 2002:a17:902:c389:: with SMTP id g9mr3967929plg.317.1594736685489;
+        Tue, 14 Jul 2020 07:24:45 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id bf11sm2828336pjb.48.2020.07.14.07.24.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jul 2020 07:24:44 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] net: sched: Do not pass root lock
+ Qdisc_ops.enqueue
+To:     Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+References: <cover.1594732978.git.petrm@mellanox.com>
+ <217e5a6059349f72e82697decc180ed9b46b066a.1594732978.git.petrm@mellanox.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <efa8d345-6457-3bcf-4fc3-f1e5e81f34a6@gmail.com>
+Date:   Tue, 14 Jul 2020 07:24:43 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="fUYQa+Pmc3FrFX/N"
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <217e5a6059349f72e82697decc180ed9b46b066a.1594732978.git.petrm@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---fUYQa+Pmc3FrFX/N
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Remove the unnecessary label from dn_dev_ioctl() and make its error
-handling simpler to read.
+On 7/14/20 6:32 AM, Petr Machata wrote:
+> The reason for this was to make visible the dangerous possibility that
+> enqueue drops the lock. The previous patch undoes the lock dropping, and
+> therefore this patch can be reverted.
+> 
+> Signed-off-by: Petr Machata <petrm@mellanox.com>
 
-Signed-off-by: Suraj Upadhyay <usuraj35@gmail.com>
----
-Changes:
-	v2: Fixed indentation of break statement.
-	On Julia's Advise.
+Wow, I have not seen that this stuff actually went in net-next.
 
- net/decnet/dn_dev.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/net/decnet/dn_dev.c b/net/decnet/dn_dev.c
-index 65abcf1b3210..15d42353f1a3 100644
---- a/net/decnet/dn_dev.c
-+++ b/net/decnet/dn_dev.c
-@@ -462,7 +462,9 @@ int dn_dev_ioctl(unsigned int cmd, void __user *arg)
- 	switch (cmd) {
- 	case SIOCGIFADDR:
- 		*((__le16 *)sdn->sdn_nodeaddr) =3D ifa->ifa_local;
--		goto rarok;
-+		if (copy_to_user(arg, ifr, DN_IFREQ_SIZE))
-+			ret =3D -EFAULT;
-+		break;
-=20
- 	case SIOCSIFADDR:
- 		if (!ifa) {
-@@ -485,10 +487,6 @@ int dn_dev_ioctl(unsigned int cmd, void __user *arg)
- 	rtnl_unlock();
-=20
- 	return ret;
--rarok:
--	if (copy_to_user(arg, ifr, DN_IFREQ_SIZE))
--		ret =3D -EFAULT;
--	goto done;
- }
-=20
- struct net_device *dn_dev_get_default(void)
---=20
-2.17.1
+Please make this a proper revert of
+aebe4426ccaa4838f36ea805cdf7d76503e65117 ("net: sched: Pass root lock to Qdisc_ops.enqueue")
 
 
---fUYQa+Pmc3FrFX/N
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE7AbCa0kOsMJ4cx0j+gRsbIfe744FAl8Nv98ACgkQ+gRsbIfe
-744SBw//XXzvT5FeU8+f+Jc8gBRa/b/jUV4iub7AShQVkpcgrPENNYxxGRFIJUe9
-Po8iUt8TiYwo2MhrbbvzLYQ8TxbV9IVNRGqaZepbb0xcNi2Gnu5ni+Lvy/R7xAYT
-rGQxpRw8o/I38zozphH5+nCqMVtNlHRV6VXvWTuqmm+gEuyEnr7PGidDwqcd/2S2
-Dk53cBzq1EF99SrLtRJhTlXHQgZgZqPQvgjH3xbyY/hoix2oSHwZar3h+uHnnUSR
-bd2bvT/1karQCphYX3ZH/r5l0nJECAteb2kCezmb6KVj+7OEVN8jGFNf2QMj6zPb
-q20WePzjcGFnjjwml8SRhTq+LRMjox4NfNQ8LWk77tudYnxww+JLdvJFqeXemXmV
-Ba30Sfvu/yXHFnirAIUzvt9+7ZKyIaFNjBdQE+qdaD+SRX8uRqX/XrMzxKNZuU7M
-ADKBSKWRaKIRISbXdly2exmDC1gpMx3DJLzJs+WpxFpSAGW6+ct1PdnrMPzbCJYx
-pE9MvnSH2yEbll9r/91hjhN/vJR+rsrUXzIFfgs00kpSOznN4nmaOXmz7843HYUF
-ciRMSB+dvZpoKxzGkFRQ2gE6WCP1OCQUh+tCO19CH9mYnu/eVikH971xfo4g/koK
-emUzUBF4WozXlwI2xlZLK4J3SRU3G639DHOAbVsewJzmmMNsLX8=
-=Hjwo
------END PGP SIGNATURE-----
-
---fUYQa+Pmc3FrFX/N--
+git revert aebe4426ccaa4838f36ea805cdf7d76503e65117
