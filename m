@@ -2,182 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D535B21E65F
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 05:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3399221E69B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 05:56:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726778AbgGNDge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 23:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726609AbgGNDge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 23:36:34 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E538AC061755;
-        Mon, 13 Jul 2020 20:36:33 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id m16so5241222pls.5;
-        Mon, 13 Jul 2020 20:36:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4pKtxXD5uW5bqrdDTHd+u/sbZZ6ngHW7Y1Ck/na4mqk=;
-        b=djxbHP+YYSXZr27XXad/vl4SP+097JssZiRic0/vKVqaPPBrMc82mdXZvfkrFZskT/
-         QF9aucsCvGRwOCc9tJXHgdNBIZ68jagxYUwYeRtzyXzT0Ap8u5KrgeRX9cSPWEN6d7n5
-         fIBgIpgBc+oKHUhV8ZQGjvwN19JBoyzOimFJ5CosNPeqrZinbwTrZ+5VBONiIMkbfRaG
-         aGktWcPzRBkU2GCtbufyaZoKZWde4wZvlkrvxY2pl/r7Jvd+sRVfDVGmZf4e0YYvh9g+
-         C9eH8pqKuJsOKZHNmb15wZbZ9SxOeC2FazcsbWzzK7iEmNnP9Mce4b6AL4f5rFDe0a40
-         HSgg==
+        id S1726722AbgGND4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 23:56:23 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:54805 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726510AbgGND4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 23:56:22 -0400
+Received: by mail-io1-f71.google.com with SMTP id q207so9575243iod.21
+        for <netdev@vger.kernel.org>; Mon, 13 Jul 2020 20:56:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4pKtxXD5uW5bqrdDTHd+u/sbZZ6ngHW7Y1Ck/na4mqk=;
-        b=SLA2+da1UBqJKLm0dLaGdW5jLJpUI0N5L6J+hqd7xvAxS3U0/go12k0ShJZZJlb26t
-         ki05Ab5Q7po5xbVylyTbDrBk5S5FDoXOGJEKQVRxJpUns4dsYxedd3JBht7gkN69mbZq
-         ipdaEP5lCUOJKNk2WgE5kZIIhXQjOPBthHYLsTrspBo+9sj6tkZ5K+sLwUWv59jIedZs
-         BkdqVqHs+3yy+AKafT8UIV8I/dfRQDVhGtO8nxDTU+71X6xKL3VOWyPv9zrCT/L9iFJn
-         AvaiyCvGECBLgMlez8xqJizaXo7MLLlJLsjlJP9ElL6NFPHQjKIsyJXKtWzcpo02MyY2
-         fA8w==
-X-Gm-Message-State: AOAM531MBke94lW+y1atfcAgVTnrs0IogfzUTJsSL0P7wY95/aMaCZby
-        spKl1i4TAQfNGGFjyOaAvIs=
-X-Google-Smtp-Source: ABdhPJy3R5A353cfZPZeoubFnI09Sx68y7klNumerUxc5EpOMcyJPVQjrjAj12VPdpFoMz7m9eIFMg==
-X-Received: by 2002:a17:90b:300a:: with SMTP id hg10mr2468786pjb.211.1594697793381;
-        Mon, 13 Jul 2020 20:36:33 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:1ca])
-        by smtp.gmail.com with ESMTPSA id a2sm16255442pfg.120.2020.07.13.20.36.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2020 20:36:32 -0700 (PDT)
-Date:   Mon, 13 Jul 2020 20:36:30 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Subject: Re: [RFC PATCH bpf-next 4/5] bpf, x64: rework pro/epilogue and
- tailcall handling in JIT
-Message-ID: <20200714033630.2fw5wzljbkkfle3j@ast-mbp.dhcp.thefacebook.com>
-References: <20200702134930.4717-1-maciej.fijalkowski@intel.com>
- <20200702134930.4717-5-maciej.fijalkowski@intel.com>
- <20200710235632.lhn6edwf4a2l3kiz@ast-mbp.dhcp.thefacebook.com>
- <CAADnVQJhhQnjQdrQgMCsx2EDDwELkCvY7Zpfdi_SJUmH6VzZYw@mail.gmail.com>
- <CAADnVQ+AD0T_xqwk-fhoWV25iANs-FMCMVnn2-PALDxdODfepA@mail.gmail.com>
- <20200714010045.GB2435@ranger.igk.intel.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=vwdPlU1PrYjkqbfwhsZQcX2BXd1nYCKuk7q1J0ZeKXk=;
+        b=JP1Zq9BxlEqApQMxuLuJxUg5eAlD9eS/A/6buz4AlHCnamw5/Gc8P3aPKAOM2s7LVx
+         YV8Hpf+Y6oToBMR+Y08pexE3ncUu/TE4D/Uaz8pZg7YvY9sNmPn6/3vhipVnBN0Iwaqg
+         mYVFEa4ZO4eENlwAUK+AEDoUBgLdkIl685gl00vRj7oxjh/S8Vy5pcFb7Dsn1Bkbwc/F
+         GAObWN+SMkyJQJZelzanzMeRBe3NYxyhCdeR7YVCEmQYYI5m0P9Ay//riLvJHaTCa04x
+         riXrDtBaLfxX5NoMHZA911tyCUTeJwayaZYpuAi4UD7JuxMkIFE+CGWs5KmAZYjmrdw+
+         AevQ==
+X-Gm-Message-State: AOAM533Z20cRSqkYHWTmDbxH1dU+un5PD4bdWW8BU7NHYN/cyzWY5cKD
+        /19NfyJZMWu3AYcPqoz/n1GDRmCM93UzWajoHqbKds3UVWgt
+X-Google-Smtp-Source: ABdhPJxbtwhnxJQM82iiHLLvQ9pUAKuggv9im1h2ick1MGTTT1OjSazcw29Ym0P0nY2EtFYdPVLRfS/mpaD7RoOoM07zCEITNE2e
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200714010045.GB2435@ranger.igk.intel.com>
+X-Received: by 2002:a92:cf42:: with SMTP id c2mr3141754ilr.13.1594698980928;
+ Mon, 13 Jul 2020 20:56:20 -0700 (PDT)
+Date:   Mon, 13 Jul 2020 20:56:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000048335c05aa5eca10@google.com>
+Subject: WARNING in __nf_unregister_net_hook (2)
+From:   syzbot <syzbot+2570f2c036e3da5db176@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@blackhole.kfki.hu, kadlec@netfilter.org, kuba@kernel.org,
+        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 03:00:45AM +0200, Maciej Fijalkowski wrote:
-> On Fri, Jul 10, 2020 at 08:25:20PM -0700, Alexei Starovoitov wrote:
-> > On Fri, Jul 10, 2020 at 8:20 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > Of course you are right.
-> > > pop+nop+push is incorrect.
-> > >
-> > > How about the following instead:
-> > > - during JIT:
-> > > emit_jump(to_skip_below)  <- poke->tailcall_bypass
-> 
-> That's the jump to the instruction right after the poke->tailcall_target.
+Hello,
 
-right. Mainly looking for better names than ip and ip_aux.
+syzbot found the following crash on:
 
-> > > pop_callee_regs
-> > > emit_jump(to_tailcall_target) <- poke->tailcall_target
-> 
-> During JIT there's no tailcall_target so this will be nop5, right?
+HEAD commit:    0aea6d5c Merge tag 'for-linus-5.8b-rc5-tag' of git://git.k..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1646fd67100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b1a5a263f7a540cb
+dashboard link: https://syzkaller.appspot.com/bug?extid=2570f2c036e3da5db176
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1646988b100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132b1263100000
 
-I thought it will be always jmp, but with new info I agree that
-it will start with nop.
+The bug was bisected to:
 
-> 
-> > >
-> > > - Transition from one target to another:
-> > > text_poke(poke->tailcall_target, MOD_JMP, old_jmp, new_jmp)
-> > > if (new_jmp != NULL)
-> > >   text_poke(poke->tailcall_bypass, MOD jmp into nop);
-> > > else
-> > >   text_poke(poke->tailcall_bypass, MOD nop into jmp);
-> > 
-> > One more correction. I meant:
-> > 
-> > if (new_jmp != NULL) {
-> >   text_poke(poke->tailcall_target, MOD_JMP, old_jmp, new_jmp)
-> 
-> Problem with having the old_jmp here is that you could have the
-> tailcall_target removed followed by the new program being inserted. So for
-> that case old_jmp is NULL but we decided to not poke the
-> poke->tailcall_target when removing the program, only the tailcall_bypass
-> is poked back to jmp from nop. IOW old_jmp is not equal to what
-> poke->tailcall_target currently stores. This means that
-> bpf_arch_text_poke() would not be successful for this update and that is
-> the reason of faking it in this patch.
+commit db8ab38880e06dedbfc879e75f5b0ddc495f4eb6
+Author: Florian Westphal <fw@strlen.de>
+Date:   Thu Feb 28 11:02:52 2019 +0000
 
-got it.
-I think it can be solved two ways:
-1. add synchronize_rcu() after poking of tailcall_bypass into jmp
-and then update tailcall_target into nop.
-so the race you've described in cover letter won't happen.
-In the future with sleepable progs we'd need to call sync_rcu_tasks_trace too.
-Which will make poke_run even slower.
+    netfilter: nf_tables: merge ipv4 and ipv6 nat chain types
 
-2. add a flag to bpf_arch_text_poke() to ignore 5 bytes in there
-and update tailcall_target to new jmp.
-The speed of poke_run will be faster,
-but considering the speed of text_poke_bp() it's starting to feel like
-premature optimization.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1013e3db100000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1213e3db100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1413e3db100000
 
-I think approach 1 is cleaner.
-Then the pseudo code will be:
-if (new_jmp != NULL) {
-   text_poke(poke->tailcall_target, MOD_JMP, old ? old_jmp : NULL, new_jmp);
-   if (!old)
-     text_poke(poke->tailcall_bypass, MOD_JMP, bypass_addr, NULL /* into nop */);
-} else {
-   text_poke(poke->tailcall_bypass, MOD_JMP, NULL /* from nop */, bypass_addr);
-   sync_rcu(); /* let progs finish */
-   text_poke(poke->tailcall_target, MOD_JMP, old_jmp, NULL /* into nop */)
-}
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+2570f2c036e3da5db176@syzkaller.appspotmail.com
+Fixes: db8ab38880e0 ("netfilter: nf_tables: merge ipv4 and ipv6 nat chain types")
 
-> 
-> >   text_poke(poke->tailcall_bypass, MOD jmp into nop);
-> > } else {
-> >   text_poke(poke->tailcall_bypass, MOD nop into jmp);
-> > }
-> 
-> I think that's what we currently (mostly) have. map_poke_run() is skipping
-> the poke of poke->tailcall_target if new bpf_prog is NULL, just like
-> you're proposing above. Of course I can rename the members in poke
-> descriptor to names you're suggesting. I also assume that by text_poke you
-> meant the bpf_arch_text_poke?
+------------[ cut here ]------------
+hook not found, pf 2 num 0
+WARNING: CPU: 0 PID: 6775 at net/netfilter/core.c:413 __nf_unregister_net_hook+0x3e6/0x4a0 net/netfilter/core.c:413
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 6775 Comm: syz-executor554 Not tainted 5.8.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1f0/0x31e lib/dump_stack.c:118
+ panic+0x264/0x7a0 kernel/panic.c:231
+ __warn+0x227/0x250 kernel/panic.c:600
+ report_bug+0x1b1/0x2e0 lib/bug.c:198
+ handle_bug+0x42/0x80 arch/x86/kernel/traps.c:235
+ exc_invalid_op+0x16/0x40 arch/x86/kernel/traps.c:255
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:542
+RIP: 0010:__nf_unregister_net_hook+0x3e6/0x4a0 net/netfilter/core.c:413
+Code: 49 30 c3 02 01 48 8b 44 24 20 42 8a 04 28 84 c0 0f 85 ad 00 00 00 41 8b 14 24 48 c7 c7 78 ad 08 89 89 de 31 c0 e8 6a 5a a0 fa <0f> 0b e9 04 ff ff ff 44 89 e1 80 e1 07 80 c1 03 38 c1 0f 8c 44 fc
+RSP: 0018:ffffc90001277718 EFLAGS: 00010246
+RAX: 08b629c459c08900 RBX: 0000000000000002 RCX: ffff8880941721c0
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: 0000000000000282
+RBP: ffffffff895b8008 R08: dffffc0000000000 R09: fffffbfff16338a7
+R10: fffffbfff16338a7 R11: 0000000000000000 R12: ffff888094f5461c
+R13: dffffc0000000000 R14: 0000000000000050 R15: ffffffff895b7040
+ nft_unregister_basechain_hooks net/netfilter/nf_tables_api.c:206 [inline]
+ nft_table_disable net/netfilter/nf_tables_api.c:835 [inline]
+ nf_tables_table_disable net/netfilter/nf_tables_api.c:868 [inline]
+ nf_tables_commit+0x32d3/0x4d70 net/netfilter/nf_tables_api.c:7550
+ nfnetlink_rcv_batch net/netfilter/nfnetlink.c:486 [inline]
+ nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:544 [inline]
+ nfnetlink_rcv+0x14a5/0x1e50 net/netfilter/nfnetlink.c:562
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x519/0x800 net/socket.c:2352
+ ___sys_sendmsg net/socket.c:2406 [inline]
+ __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
+ do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x440709
+Code: Bad RIP value.
+RSP: 002b:00007fff97b1aa78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440709
+RDX: 0000000000000000 RSI: 000000002000c2c0 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
+R10: 0000000000000003 R11: 0000000000000246 R12: 0000000000401f10
+R13: 0000000000401fa0 R14: 0000000000000000 R15: 0000000000000000
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
-yep.
 
-> 
-> I've been able to hide the nop5 detection within the bpf_arch_text_poke so
-> map_poke_run() is arch-independent in that approach. My feeling is that
-> we don't need the old bpf_prog at all.
-> 
-> Some bits might change here due to the jump target alignment that I'm
-> trying to introduce.
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-> Can you explain under what circumstances bpf_jit_binary_alloc() would not
-> use get_random_int() ? Out of curiosity as from a quick look I can't tell
-> when.
-
-I meant when you're doing benchmarking get rid of that randomization
-from bpf_jit_binary_alloc in your test kernel.
-
-> I'm hitting the following check in do_jit():
-
-I think aligning bypass_addr is a bit too much. Let it all be linear for now.
-Since iTLB is sporadic it could be due to randomization and nothing to do
-with additional jmp and unwind that this set is introducing.
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
