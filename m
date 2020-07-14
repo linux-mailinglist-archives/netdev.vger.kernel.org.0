@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4C3321E485
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:31:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6DD821E48A
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:31:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726935AbgGNAbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 20:31:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44420 "EHLO mail.kernel.org"
+        id S1727019AbgGNAbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 20:31:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44424 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726829AbgGNAbW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jul 2020 20:31:22 -0400
+        id S1726867AbgGNAbX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jul 2020 20:31:23 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 543DF21927;
-        Tue, 14 Jul 2020 00:31:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 42A6F21835;
+        Tue, 14 Jul 2020 00:31:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594686682;
-        bh=0EiG3QGqO7QCfDZ6dIa2qqLC48WhblZk/k5njvsAhR8=;
+        s=default; t=1594686683;
+        bh=UCbaR0sMpGt4q9AWKn8CsVVNYUIpCm8YOYJfvaw10ZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wnWRRxEG0nGmDm61TruUUy/yYxIWFT5nIrNkYWqZF15gUfR2pPEjYl17OR4D8BMFq
-         BpDm9CUDT1KPeeFzD+4DDhktoholp3RUPY+QHEFEPKaPJzAfX6KI8YO6LZJ97brH5P
-         gMP9eGdw4hKh2DyyjxMxTO6bv03P8uw1IixwZuwg=
+        b=W+YayKUIYy+dSq+GIbYpY1F/AgCbZj23AYVnwAWmkl5Axm+/IGGNjZMx4b3rcq+1Q
+         nE2PDKwi/qehLiNizAhzKq5SK+DumfCJIV21pB/lgKS7fmZKXYLnBgOPXrzzfQ1vl5
+         Wyt0L9B3kKNeKBj6TB+hJq2eDLOHlV9Wlzk39gZg=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -35,9 +35,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
         manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 03/12] xgbe: switch to more generic VxLAN detection
-Date:   Mon, 13 Jul 2020 17:30:28 -0700
-Message-Id: <20200714003037.669012-4-kuba@kernel.org>
+Subject: [PATCH net-next 04/12] xgbe: convert to new udp_tunnel_nic infra
+Date:   Mon, 13 Jul 2020 17:30:29 -0700
+Message-Id: <20200714003037.669012-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200714003037.669012-1-kuba@kernel.org>
 References: <20200714003037.669012-1-kuba@kernel.org>
@@ -48,71 +48,422 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of looping though the list of ports just check
-if the geometry of the packet is correct for VxLAN.
-HW most likely doesn't care about the exact port, anyway,
-since only first port is actually offloaded, and this way
-we won't have to maintain the port list at all.
+Make use of the new udp_tunnel_nic infra. Don't clear the features
+when VxLAN port is not present to make all drivers behave the same.
+Driver will now (until we address the problem in the core) leave
+the RX UDP tunnel feature always on, since this is what most drivers
+do.
+
+Remove the list of VxLAN ports, just program the one core told us to.
+
+The driver seem to want to clear the VxLAN ports on close but it
+doesn't seem to flush the port list properly so it'd get wrong
+use counts after close/open. Again since it calls its own open
+handler we need the reset notification hack.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c | 27 +++++++-----------------
- 1 file changed, 8 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c  | 246 +++-------------------
+ drivers/net/ethernet/amd/xgbe/xgbe-main.c |  12 +-
+ drivers/net/ethernet/amd/xgbe/xgbe.h      |  13 +-
+ 3 files changed, 30 insertions(+), 241 deletions(-)
 
 diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-index a87264f95f1a..dfeddf5fbf78 100644
+index dfeddf5fbf78..f2bd4fa28134 100644
 --- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
 +++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-@@ -1773,13 +1773,8 @@ static int xgbe_prep_tso(struct sk_buff *skb, struct xgbe_packet_data *packet)
+@@ -904,114 +904,40 @@ void xgbe_get_all_hw_features(struct xgbe_prv_data *pdata)
+ 	}
+ }
+ 
+-static void xgbe_disable_vxlan_offloads(struct xgbe_prv_data *pdata)
++static int xgbe_vxlan_set_port(struct net_device *netdev, unsigned int table,
++			       unsigned int entry, struct udp_tunnel_info *ti)
+ {
+-	struct net_device *netdev = pdata->netdev;
+-
+-	if (!pdata->vxlan_offloads_set)
+-		return;
+-
+-	netdev_info(netdev, "disabling VXLAN offloads\n");
+-
+-	netdev->hw_enc_features &= ~(NETIF_F_SG |
+-				     NETIF_F_IP_CSUM |
+-				     NETIF_F_IPV6_CSUM |
+-				     NETIF_F_RXCSUM |
+-				     NETIF_F_TSO |
+-				     NETIF_F_TSO6 |
+-				     NETIF_F_GRO |
+-				     NETIF_F_GSO_UDP_TUNNEL |
+-				     NETIF_F_GSO_UDP_TUNNEL_CSUM);
++	struct xgbe_prv_data *pdata = netdev_priv(netdev);
+ 
+-	netdev->features &= ~(NETIF_F_GSO_UDP_TUNNEL |
+-			      NETIF_F_GSO_UDP_TUNNEL_CSUM);
++	pdata->vxlan_port = be16_to_cpu(ti->port);
++	pdata->hw_if.enable_vxlan(pdata);
+ 
+-	pdata->vxlan_offloads_set = 0;
++	return 0;
+ }
+ 
+-static void xgbe_disable_vxlan_hw(struct xgbe_prv_data *pdata)
++static int xgbe_vxlan_unset_port(struct net_device *netdev, unsigned int table,
++				 unsigned int entry, struct udp_tunnel_info *ti)
+ {
+-	if (!pdata->vxlan_port_set)
+-		return;
++	struct xgbe_prv_data *pdata = netdev_priv(netdev);
+ 
+ 	pdata->hw_if.disable_vxlan(pdata);
+-
+-	pdata->vxlan_port_set = 0;
+ 	pdata->vxlan_port = 0;
+-}
+-
+-static void xgbe_disable_vxlan_accel(struct xgbe_prv_data *pdata)
+-{
+-	xgbe_disable_vxlan_offloads(pdata);
+ 
+-	xgbe_disable_vxlan_hw(pdata);
+-}
+-
+-static void xgbe_enable_vxlan_offloads(struct xgbe_prv_data *pdata)
+-{
+-	struct net_device *netdev = pdata->netdev;
+-
+-	if (pdata->vxlan_offloads_set)
+-		return;
+-
+-	netdev_info(netdev, "enabling VXLAN offloads\n");
+-
+-	netdev->hw_enc_features |= NETIF_F_SG |
+-				   NETIF_F_IP_CSUM |
+-				   NETIF_F_IPV6_CSUM |
+-				   NETIF_F_RXCSUM |
+-				   NETIF_F_TSO |
+-				   NETIF_F_TSO6 |
+-				   NETIF_F_GRO |
+-				   pdata->vxlan_features;
+-
+-	netdev->features |= pdata->vxlan_features;
+-
+-	pdata->vxlan_offloads_set = 1;
+-}
+-
+-static void xgbe_enable_vxlan_hw(struct xgbe_prv_data *pdata)
+-{
+-	struct xgbe_vxlan_data *vdata;
+-
+-	if (pdata->vxlan_port_set)
+-		return;
+-
+-	if (list_empty(&pdata->vxlan_ports))
+-		return;
+-
+-	vdata = list_first_entry(&pdata->vxlan_ports,
+-				 struct xgbe_vxlan_data, list);
+-
+-	pdata->vxlan_port_set = 1;
+-	pdata->vxlan_port = be16_to_cpu(vdata->port);
+-
+-	pdata->hw_if.enable_vxlan(pdata);
++	return 0;
+ }
+ 
+-static void xgbe_enable_vxlan_accel(struct xgbe_prv_data *pdata)
+-{
+-	/* VXLAN acceleration desired? */
+-	if (!pdata->vxlan_features)
+-		return;
+-
+-	/* VXLAN acceleration possible? */
+-	if (pdata->vxlan_force_disable)
+-		return;
+-
+-	xgbe_enable_vxlan_hw(pdata);
+-
+-	xgbe_enable_vxlan_offloads(pdata);
+-}
++static const struct udp_tunnel_nic_info xgbe_udp_tunnels = {
++	.set_port	= xgbe_vxlan_set_port,
++	.unset_port	= xgbe_vxlan_unset_port,
++	.flags		= UDP_TUNNEL_NIC_INFO_OPEN_ONLY,
++	.tables		= {
++		{ .n_entries = 1, .tunnel_types = UDP_TUNNEL_TYPE_VXLAN, },
++	},
++};
+ 
+-static void xgbe_reset_vxlan_accel(struct xgbe_prv_data *pdata)
++const struct udp_tunnel_nic_info *xgbe_get_udp_tunnel_info(void)
+ {
+-	xgbe_disable_vxlan_hw(pdata);
+-
+-	if (pdata->vxlan_features)
+-		xgbe_enable_vxlan_offloads(pdata);
+-
+-	pdata->vxlan_force_disable = 0;
++	return &xgbe_udp_tunnels;
+ }
+ 
+ static void xgbe_napi_enable(struct xgbe_prv_data *pdata, unsigned int add)
+@@ -1406,7 +1332,7 @@ static int xgbe_start(struct xgbe_prv_data *pdata)
+ 	hw_if->enable_tx(pdata);
+ 	hw_if->enable_rx(pdata);
+ 
+-	udp_tunnel_get_rx_info(netdev);
++	udp_tunnel_nic_reset_ntf(netdev);
+ 
+ 	netif_tx_start_all_queues(netdev);
+ 
+@@ -1447,7 +1373,7 @@ static void xgbe_stop(struct xgbe_prv_data *pdata)
+ 	xgbe_stop_timers(pdata);
+ 	flush_workqueue(pdata->dev_workqueue);
+ 
+-	xgbe_reset_vxlan_accel(pdata);
++	xgbe_vxlan_unset_port(netdev, 0, 0, NULL);
+ 
+ 	hw_if->disable_tx(pdata);
+ 	hw_if->disable_rx(pdata);
+@@ -2260,23 +2186,12 @@ static netdev_features_t xgbe_fix_features(struct net_device *netdev,
+ 					   netdev_features_t features)
+ {
+ 	struct xgbe_prv_data *pdata = netdev_priv(netdev);
+-	netdev_features_t vxlan_base, vxlan_mask;
++	netdev_features_t vxlan_base;
+ 
+ 	vxlan_base = NETIF_F_GSO_UDP_TUNNEL | NETIF_F_RX_UDP_TUNNEL_PORT;
+-	vxlan_mask = vxlan_base | NETIF_F_GSO_UDP_TUNNEL_CSUM;
+-
+-	pdata->vxlan_features = features & vxlan_mask;
+ 
+-	/* Only fix VXLAN-related features */
+-	if (!pdata->vxlan_features)
+-		return features;
+-
+-	/* If VXLAN isn't supported then clear any features:
+-	 *   This is needed because NETIF_F_RX_UDP_TUNNEL_PORT gets
+-	 *   automatically set if ndo_udp_tunnel_add is set.
+-	 */
+ 	if (!pdata->hw_feat.vxn)
+-		return features & ~vxlan_mask;
++		return features;
+ 
+ 	/* VXLAN CSUM requires VXLAN base */
+ 	if ((features & NETIF_F_GSO_UDP_TUNNEL_CSUM) &&
+@@ -2307,15 +2222,6 @@ static netdev_features_t xgbe_fix_features(struct net_device *netdev,
+ 		}
+ 	}
+ 
+-	pdata->vxlan_features = features & vxlan_mask;
+-
+-	/* Adjust UDP Tunnel based on current state */
+-	if (pdata->vxlan_force_disable) {
+-		netdev_notice(netdev,
+-			      "VXLAN acceleration disabled, turning off udp tunnel features\n");
+-		features &= ~vxlan_mask;
+-	}
+-
+ 	return features;
+ }
+ 
+@@ -2356,11 +2262,6 @@ static int xgbe_set_features(struct net_device *netdev,
+ 	else if (!(features & NETIF_F_HW_VLAN_CTAG_FILTER) && rxvlan_filter)
+ 		hw_if->disable_rx_vlan_filtering(pdata);
+ 
+-	if ((features & NETIF_F_GSO_UDP_TUNNEL) && !udp_tunnel)
+-		xgbe_enable_vxlan_accel(pdata);
+-	else if (!(features & NETIF_F_GSO_UDP_TUNNEL) && udp_tunnel)
+-		xgbe_disable_vxlan_accel(pdata);
+-
+ 	pdata->netdev_features = features;
+ 
+ 	DBGPR("<--xgbe_set_features\n");
+@@ -2368,101 +2269,6 @@ static int xgbe_set_features(struct net_device *netdev,
  	return 0;
  }
  
--static bool xgbe_is_vxlan(struct xgbe_prv_data *pdata, struct sk_buff *skb)
-+static bool xgbe_is_vxlan(struct sk_buff *skb)
- {
+-static void xgbe_udp_tunnel_add(struct net_device *netdev,
+-				struct udp_tunnel_info *ti)
+-{
+-	struct xgbe_prv_data *pdata = netdev_priv(netdev);
 -	struct xgbe_vxlan_data *vdata;
 -
--	if (pdata->vxlan_force_disable)
--		return false;
+-	if (!pdata->hw_feat.vxn)
+-		return;
 -
- 	if (!skb->encapsulation)
- 		return false;
+-	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
+-		return;
+-
+-	pdata->vxlan_port_count++;
+-
+-	netif_dbg(pdata, drv, netdev,
+-		  "adding VXLAN tunnel, family=%hx/port=%hx\n",
+-		  ti->sa_family, be16_to_cpu(ti->port));
+-
+-	if (pdata->vxlan_force_disable)
+-		return;
+-
+-	vdata = kzalloc(sizeof(*vdata), GFP_ATOMIC);
+-	if (!vdata) {
+-		/* Can no longer properly track VXLAN ports */
+-		pdata->vxlan_force_disable = 1;
+-		netif_dbg(pdata, drv, netdev,
+-			  "internal error, disabling VXLAN accelerations\n");
+-
+-		xgbe_disable_vxlan_accel(pdata);
+-
+-		return;
+-	}
+-	vdata->sa_family = ti->sa_family;
+-	vdata->port = ti->port;
+-
+-	list_add_tail(&vdata->list, &pdata->vxlan_ports);
+-
+-	/* First port added? */
+-	if (pdata->vxlan_port_count == 1) {
+-		xgbe_enable_vxlan_accel(pdata);
+-
+-		return;
+-	}
+-}
+-
+-static void xgbe_udp_tunnel_del(struct net_device *netdev,
+-				struct udp_tunnel_info *ti)
+-{
+-	struct xgbe_prv_data *pdata = netdev_priv(netdev);
+-	struct xgbe_vxlan_data *vdata;
+-
+-	if (!pdata->hw_feat.vxn)
+-		return;
+-
+-	if (ti->type != UDP_TUNNEL_TYPE_VXLAN)
+-		return;
+-
+-	netif_dbg(pdata, drv, netdev,
+-		  "deleting VXLAN tunnel, family=%hx/port=%hx\n",
+-		  ti->sa_family, be16_to_cpu(ti->port));
+-
+-	/* Don't need safe version since loop terminates with deletion */
+-	list_for_each_entry(vdata, &pdata->vxlan_ports, list) {
+-		if (vdata->sa_family != ti->sa_family)
+-			continue;
+-
+-		if (vdata->port != ti->port)
+-			continue;
+-
+-		list_del(&vdata->list);
+-		kfree(vdata);
+-
+-		break;
+-	}
+-
+-	pdata->vxlan_port_count--;
+-	if (!pdata->vxlan_port_count) {
+-		xgbe_reset_vxlan_accel(pdata);
+-
+-		return;
+-	}
+-
+-	if (pdata->vxlan_force_disable)
+-		return;
+-
+-	/* See if VXLAN tunnel id needs to be changed */
+-	vdata = list_first_entry(&pdata->vxlan_ports,
+-				 struct xgbe_vxlan_data, list);
+-	if (pdata->vxlan_port == be16_to_cpu(vdata->port))
+-		return;
+-
+-	pdata->vxlan_port = be16_to_cpu(vdata->port);
+-	pdata->hw_if.set_vxlan_id(pdata);
+-}
+-
+ static netdev_features_t xgbe_features_check(struct sk_buff *skb,
+ 					     struct net_device *netdev,
+ 					     netdev_features_t features)
+@@ -2492,8 +2298,8 @@ static const struct net_device_ops xgbe_netdev_ops = {
+ 	.ndo_setup_tc		= xgbe_setup_tc,
+ 	.ndo_fix_features	= xgbe_fix_features,
+ 	.ndo_set_features	= xgbe_set_features,
+-	.ndo_udp_tunnel_add	= xgbe_udp_tunnel_add,
+-	.ndo_udp_tunnel_del	= xgbe_udp_tunnel_del,
++	.ndo_udp_tunnel_add	= udp_tunnel_nic_add_port,
++	.ndo_udp_tunnel_del	= udp_tunnel_nic_del_port,
+ 	.ndo_features_check	= xgbe_features_check,
+ };
  
-@@ -1801,19 +1796,13 @@ static bool xgbe_is_vxlan(struct xgbe_prv_data *pdata, struct sk_buff *skb)
- 		return false;
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-main.c b/drivers/net/ethernet/amd/xgbe/xgbe-main.c
+index 2a70714a791d..a218dc6f2edd 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-main.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-main.c
+@@ -192,7 +192,6 @@ struct xgbe_prv_data *xgbe_alloc_pdata(struct device *dev)
+ 	mutex_init(&pdata->i2c_mutex);
+ 	init_completion(&pdata->i2c_complete);
+ 	init_completion(&pdata->mdio_complete);
+-	INIT_LIST_HEAD(&pdata->vxlan_ports);
+ 
+ 	pdata->msg_enable = netif_msg_init(debug, default_msg_level);
+ 
+@@ -366,17 +365,12 @@ int xgbe_config_netdev(struct xgbe_prv_data *pdata)
+ 					  NETIF_F_TSO6 |
+ 					  NETIF_F_GRO |
+ 					  NETIF_F_GSO_UDP_TUNNEL |
+-					  NETIF_F_GSO_UDP_TUNNEL_CSUM |
+-					  NETIF_F_RX_UDP_TUNNEL_PORT;
++					  NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 
+ 		netdev->hw_features |= NETIF_F_GSO_UDP_TUNNEL |
+-				       NETIF_F_GSO_UDP_TUNNEL_CSUM |
+-				       NETIF_F_RX_UDP_TUNNEL_PORT;
++				       NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 
+-		pdata->vxlan_offloads_set = 1;
+-		pdata->vxlan_features = NETIF_F_GSO_UDP_TUNNEL |
+-					NETIF_F_GSO_UDP_TUNNEL_CSUM |
+-					NETIF_F_RX_UDP_TUNNEL_PORT;
++		netdev->udp_tunnel_nic_info = xgbe_get_udp_tunnel_info();
  	}
  
--	/* See if we have the UDP port in our list */
--	list_for_each_entry(vdata, &pdata->vxlan_ports, list) {
--		if ((skb->protocol == htons(ETH_P_IP)) &&
--		    (vdata->sa_family == AF_INET) &&
--		    (vdata->port == udp_hdr(skb)->dest))
--			return true;
--		else if ((skb->protocol == htons(ETH_P_IPV6)) &&
--			 (vdata->sa_family == AF_INET6) &&
--			 (vdata->port == udp_hdr(skb)->dest))
--			return true;
--	}
-+	if (skb->inner_protocol_type != ENCAP_TYPE_ETHER ||
-+	    skb->inner_protocol != htons(ETH_P_TEB) ||
-+	    (skb_inner_mac_header(skb) - skb_transport_header(skb) !=
-+	     sizeof(struct udphdr) + sizeof(struct vxlanhdr)))
-+		return false;
+ 	netdev->vlan_features |= NETIF_F_SG |
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe.h b/drivers/net/ethernet/amd/xgbe/xgbe.h
+index 5897e46faca5..ba8321ec1ee7 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe.h
++++ b/drivers/net/ethernet/amd/xgbe/xgbe.h
+@@ -1014,12 +1014,6 @@ struct xgbe_version_data {
+ 	unsigned int an_cdr_workaround;
+ };
  
--	return false;
-+	return true;
- }
+-struct xgbe_vxlan_data {
+-	struct list_head list;
+-	sa_family_t sa_family;
+-	__be16 port;
+-};
+-
+ struct xgbe_prv_data {
+ 	struct net_device *netdev;
+ 	struct pci_dev *pcidev;
+@@ -1172,13 +1166,7 @@ struct xgbe_prv_data {
+ 	u32 rss_options;
  
- static int xgbe_is_tso(struct sk_buff *skb)
-@@ -1864,7 +1853,7 @@ static void xgbe_packet_info(struct xgbe_prv_data *pdata,
- 		XGMAC_SET_BITS(packet->attributes, TX_PACKET_ATTRIBUTES,
- 			       CSUM_ENABLE, 1);
+ 	/* VXLAN settings */
+-	unsigned int vxlan_port_set;
+-	unsigned int vxlan_offloads_set;
+-	unsigned int vxlan_force_disable;
+-	unsigned int vxlan_port_count;
+-	struct list_head vxlan_ports;
+ 	u16 vxlan_port;
+-	netdev_features_t vxlan_features;
  
--	if (xgbe_is_vxlan(pdata, skb))
-+	if (xgbe_is_vxlan(skb))
- 		XGMAC_SET_BITS(packet->attributes, TX_PACKET_ATTRIBUTES,
- 			       VXLAN, 1);
+ 	/* Netdev related settings */
+ 	unsigned char mac_addr[ETH_ALEN];
+@@ -1321,6 +1309,7 @@ void xgbe_init_function_ptrs_desc(struct xgbe_desc_if *);
+ void xgbe_init_function_ptrs_i2c(struct xgbe_i2c_if *);
+ const struct net_device_ops *xgbe_get_netdev_ops(void);
+ const struct ethtool_ops *xgbe_get_ethtool_ops(void);
++const struct udp_tunnel_nic_info *xgbe_get_udp_tunnel_info(void);
  
+ #ifdef CONFIG_AMD_XGBE_DCB
+ const struct dcbnl_rtnl_ops *xgbe_get_dcbnl_ops(void);
 -- 
 2.26.2
 
