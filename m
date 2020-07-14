@@ -2,108 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50DE921FD19
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 21:18:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD20B21FD1F
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 21:19:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729275AbgGNTR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 15:17:56 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:51590 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728478AbgGNTR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 15:17:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594754274;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UCZTlcjJ/TMA+FGByze3z0UBYolfq54p/LPGlVDAdBI=;
-        b=V6XADhuHHUKpuJpWX7Pi49OT9lXuqfqy9zaiCCkdVxK7vG3FvNr/sk1KV7wP59cDQwILdc
-        5rmchnyT/nKnnrBvBf2Q+9/hsdus76ygJ4zoxaBPhqsTOG35t+JJ490+fICukqYy4YXMzz
-        UqBTSc+iKlX3c9XP2h0qKSMARVd1POQ=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-83-e3GfBTtcMK2B3X2qJG0Q9w-1; Tue, 14 Jul 2020 15:17:53 -0400
-X-MC-Unique: e3GfBTtcMK2B3X2qJG0Q9w-1
-Received: by mail-qv1-f69.google.com with SMTP id u1so10286903qvu.18
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 12:17:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=UCZTlcjJ/TMA+FGByze3z0UBYolfq54p/LPGlVDAdBI=;
-        b=duhiRONVRsOSzLBV4GUQlCBK8x00rOn0Xt89yHosxcxERz5UNKD0URPMHd77dGoQ5F
-         YMPq/92cdR1IcEI8HUc06ZqviRcvg1C8f6ZRwdCgudzYVu6YWVQXHGm71MHJx42unNx7
-         /9ssHV1THyIKSk8QLKpGaVKVCSE21M36vAXvroapMFRlbuoIXB1eoP2jK3RHd9w93DOI
-         L39LwMulBdzYZ0Tq0DS1a2VaR70U7YhVpsMcPEvLB1mCzgY5J8LkgKtNlAILDYtuEFWt
-         POGFECwhCeClXLQQBPKi9qZAah4Mjx5uiT0fo8GPLQ88eAa5e+5XtWtgATYwz2gE9vy7
-         iJGA==
-X-Gm-Message-State: AOAM531csl98SD2N/6WPPlDYQTmJY7ErClvqKYTdyFSDjik3kizg5K2A
-        R5XXThs1SfCGmPrx4N2hy+uerAUQwPKMt20BGA077lG+L+OkY8DMWf46CHSNSm6O4Ho926xBj7O
-        2zlx0h0k8OveFMQse
-X-Received: by 2002:ad4:5307:: with SMTP id y7mr6259516qvr.63.1594754272453;
-        Tue, 14 Jul 2020 12:17:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwWFBYu+/EuNHh76iAdZFjwyWKLsTSM8QQ6yReICAIn4D1sbpwGfuqgESK0Rh2aC6q5KC13dA==
-X-Received: by 2002:ad4:5307:: with SMTP id y7mr6259398qvr.63.1594754270748;
-        Tue, 14 Jul 2020 12:17:50 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id m7sm24901447qti.6.2020.07.14.12.17.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2020 12:17:49 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 553351804F0; Tue, 14 Jul 2020 21:17:48 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jarod Wilson <jarod@redhat.com>, Netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC] bonding driver terminology change proposal
-In-Reply-To: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
-References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 14 Jul 2020 21:17:48 +0200
-Message-ID: <87y2nlgb37.fsf@toke.dk>
+        id S1729409AbgGNTSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 15:18:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43408 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728370AbgGNTSj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 15:18:39 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5FAD72255F;
+        Tue, 14 Jul 2020 19:18:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594754319;
+        bh=xGtyLqaakgHIblaM05YbgxFoAs/iMGI67uTLQttPMEM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=P0lLqlLwR3p9gw5ZBW2VN7aVm+pEKWQT/3HFulJ6U0yjlIgN7HB70LJLr5knH8tc2
+         LbFqYJE7qme7+l/OBqCx/xVHRNzX70n5aEATnVJIC+6TOdgBaLEwxs6Hxp1FHlJmec
+         3WpeTzMEtNKlq8tE5/82/Ao28HuK+ky37zx3QpzM=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        simon.horman@netronome.com, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
+        thomas.lendacky@amd.com, aelior@marvell.com, skalluru@marvell.com,
+        vishal@chelsio.com, benve@cisco.com, _govind@gmx.com,
+        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
+        jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
+        GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
+        manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v3 00/12] udp_tunnel: NIC RX port offload infrastructure
+Date:   Tue, 14 Jul 2020 12:18:18 -0700
+Message-Id: <20200714191830.694674-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jarod Wilson <jarod@redhat.com> writes:
+Hi!
 
-> As part of an effort to help enact social change, Red Hat is
-> committing to efforts to eliminate any problematic terminology from
-> any of the software that it ships and supports. Front and center for
-> me personally in that effort is the bonding driver's use of the terms
-> master and slave, and to a lesser extent, bond and bonding, due to
-> bondage being another term for slavery. Most people in computer
-> science understand these terms aren't intended to be offensive or
-> oppressive, and have well understood meanings in computing, but
-> nonetheless, they still present an open wound, and a barrier for
-> participation and inclusion to some.
->
-> To start out with, I'd like to attempt to eliminate as much of the use
-> of master and slave in the bonding driver as possible. For the most
-> part, I think this can be done without breaking UAPI, but may require
-> changes to anything accessing bond info via proc or sysfs.
->
-> My initial thought was to rename master to aggregator and slaves to
-> ports, but... that gets really messy with the existing 802.3ad bonding
-> code using both extensively already. I've given thought to a number of
-> other possible combinations, but the one that I'm liking the most is
-> master -> bundle and slave -> cable, for a number of reasons. I'd
-> considered cable and wire, as a cable is a grouping of individual
-> wires, but we're grouping together cables, really -- each bonded
-> ethernet interface has a cable connected, so a bundle of cables makes
-> sense visually and figuratively. Additionally, it's a swap made easier
-> in the codebase by master and bundle and slave and cable having the
-> same number of characters, respectively. Granted though, "bundle"
-> doesn't suggest "runs the show" the way "master" or something like
-> maybe "director" or "parent" does, but those lack the visual aspect
-> present with a bundle of cables. Using parent/child could work too
-> though, it's perhaps closer to the master/slave terminology currently
-> in use as far as literal meaning.
+This set of patches converts further drivers to use the new
+infrastructure to UDP tunnel port offload merged in
+commit 0ea460474d70 ("Merge branch 'udp_tunnel-add-NIC-RX-port-offload-infrastructure'").
 
-I've always thought of it as a "bond device" which has other netdevs as
-"components" (as in 'things that are part of'). So maybe
-"main"/"component" or something to that effect?
+v3:
+ - fix a W=1 build warning in qede.
+v2:
+ - fix a W=1 build warning in xgbe,
+ - expand the size of tables for lio.
 
--Toke
+Jakub Kicinski (12):
+  nfp: convert to new udp_tunnel_nic infra
+  be2net: convert to new udp_tunnel_nic infra
+  xgbe: switch to more generic VxLAN detection
+  xgbe: convert to new udp_tunnel_nic infra
+  bnx2x: convert to new udp_tunnel_nic infra
+  cxgb4: convert to new udp_tunnel_nic infra
+  enic: convert to new udp_tunnel_nic infra
+  liquidio: convert to new udp_tunnel_nic infra
+  liquidio_vf: convert to new udp_tunnel_nic infra
+  fm10k: convert to new udp_tunnel_nic infra
+  qede: convert to new udp_tunnel_nic infra
+  qlcnic: convert to new udp_tunnel_nic infra
+
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c      | 275 +++---------------
+ drivers/net/ethernet/amd/xgbe/xgbe-main.c     |  12 +-
+ drivers/net/ethernet/amd/xgbe/xgbe.h          |  13 +-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x.h   |   8 +-
+ .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.h   |   8 +-
+ .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 136 ++-------
+ .../net/ethernet/cavium/liquidio/lio_main.c   |  59 ++--
+ .../ethernet/cavium/liquidio/lio_vf_main.c    |  59 ++--
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   2 -
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   | 108 ++-----
+ drivers/net/ethernet/cisco/enic/enic_main.c   | 105 +++----
+ drivers/net/ethernet/emulex/benet/be.h        |   5 -
+ drivers/net/ethernet/emulex/benet/be_main.c   | 198 +++----------
+ drivers/net/ethernet/intel/fm10k/fm10k.h      |  10 +-
+ drivers/net/ethernet/intel/fm10k/fm10k_main.c |   9 +-
+ .../net/ethernet/intel/fm10k/fm10k_netdev.c   | 164 ++---------
+ drivers/net/ethernet/intel/fm10k/fm10k_pci.c  |   4 -
+ drivers/net/ethernet/netronome/nfp/nfp_net.h  |   5 -
+ .../ethernet/netronome/nfp/nfp_net_common.c   | 126 +++-----
+ drivers/net/ethernet/qlogic/qede/qede.h       |   1 +
+ .../net/ethernet/qlogic/qede/qede_filter.c    | 142 +++------
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  18 +-
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic.h   |   7 +-
+ .../ethernet/qlogic/qlcnic/qlcnic_83xx_init.c |  31 +-
+ .../net/ethernet/qlogic/qlcnic/qlcnic_main.c  |  64 ++--
+ 25 files changed, 393 insertions(+), 1176 deletions(-)
+
+-- 
+2.26.2
 
