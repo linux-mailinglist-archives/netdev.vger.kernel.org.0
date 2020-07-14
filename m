@@ -2,152 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F08021F8E2
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:15:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1081821F921
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 20:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729056AbgGNSPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 14:15:50 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:44285 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725951AbgGNSPt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 14:15:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594750547;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=win16zJy2MUuNHeRcvO26T6/yRMLB6t6hoKt7xDIubY=;
-        b=cklUsLjqIWt1hZsDYP/H95tji3JyJGzzMoBNu1yO4Akkvpo2iRG5Yvi6+5IYpCGrtuHfMy
-        KBwDw01rd/Mt16ShnCCyVFNcwyNWD9RT1rSeAsTi/GW9j2NVwP/eHU64wntYV9AK7yNFUX
-        e1GJgM3UsIMBttY8cjUIDSqI+LCWo0I=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-445-bFnl3dobPme2LQbj_EDQIg-1; Tue, 14 Jul 2020 14:15:43 -0400
-X-MC-Unique: bFnl3dobPme2LQbj_EDQIg-1
-Received: by mail-oi1-f199.google.com with SMTP id j202so9177924oib.16
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 11:15:42 -0700 (PDT)
+        id S1729098AbgGNSUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 14:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729024AbgGNSUX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 14:20:23 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B75C08C5C1
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 11:20:22 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id f7so23855777wrw.1
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 11:20:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HPlGFdGBPdOOnjWNIrp7n7fX2f6c5N2cri07SgmWmTg=;
+        b=JB+J/nyt6TfGmfP1FNHzDlP0adDJxkUGVFw5/aitKXAyBNMl8DYy62MiTBc8Rk1QD+
+         rm4HViH+6fsIyde6WYByrD91wRfXvfHvxs/vnOJ8wI0lqj0DgxgzvyrBe4aTsR1yCrzx
+         47P82a7vcihTMuj/258naogm0mSiGnyx4C/10=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=win16zJy2MUuNHeRcvO26T6/yRMLB6t6hoKt7xDIubY=;
-        b=g52tMFjVNdh09OEDwMYNNnEKYNUq09hbl5f0dTPlczVGstWMGvjb/pLPSJmZRmk5sx
-         W5Gm2RH98mZKsvjnA90u6M8PnahYkm6hUQPKxmoG3gmNDLWwcHpVXuGj4yNk7t6W9vvp
-         UdxKVyLLUBCMq5H/wBMrLAgXTyVBDlAEGtdMOUXjSZBz7QxUvvfgpvJ9whtzt1c1rqOZ
-         VhoIxRcqX8uSyhxI6oVYXqouaGnXIdsv3RsKCgC1UkCfiJMmAP2+Ygcy5umpb6bDOnnk
-         iraa8ViZfZ41li36L+5hpnv6aufO+deDBOS611+zGXh4eRY7Ow//qpNlLjEjZFoydyAP
-         Ns4Q==
-X-Gm-Message-State: AOAM530XvWrgrOUUOSzsahkVNu/UJ3MGq/j3H4dcfuWdPlO+Gn0+pLHR
-        phkgPFBlFyDgB4H2CLlYDpgy4ZgZlZw97HpScj+fgwynao/3LgkNHj/B97C1QHBASn/ctlh6wes
-        pDViDxTgwtluHzT9SbcOdX5PpqbtEAU4m
-X-Received: by 2002:a9d:600d:: with SMTP id h13mr5330842otj.172.1594750542258;
-        Tue, 14 Jul 2020 11:15:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzBgExS2QXXoi5JIyk/tiwWZUeQp7vxwi1Pu170mv6T8gyXnZ2C86Ws+npqq5ZEWry7y2oOH+Nl++df1XONhjg=
-X-Received: by 2002:a9d:600d:: with SMTP id h13mr5330812otj.172.1594750541934;
- Tue, 14 Jul 2020 11:15:41 -0700 (PDT)
+        bh=HPlGFdGBPdOOnjWNIrp7n7fX2f6c5N2cri07SgmWmTg=;
+        b=oI2vJHxeA/NtbqQRHdagprciugASUdRy6itEtEk+TKVaed9QcDNP4pAlRyzuHTOlg/
+         d/vekH/kja5TzSITNjdrHGk6ub65frsBLfP662spJNS7Z8Bhvi25XNQ9PtBqNEkvQJcl
+         h9NCK67nbzpg7EwK8J39D1cz/+UhHbe8eEhBj7u3Xpoxrqx8kXK2hPrmFEts9oNIvhA6
+         PmQHvOvoKAtSwJEs2IGSGgz84xpj9JT2+Zye+HecRq2F8v8VRBReyz7w6HNWcn5jRn0a
+         jbTu2eSjsHsrTcQaHlZ7qcTtdNV/iPLGTvG4+etS76pGvenfTy85vPYeIKtJas+FBZHT
+         QZuA==
+X-Gm-Message-State: AOAM531gnfLYJ2wUM+wpdwCEapuEiUoBwR7f0/7EuxW1g92PEDpm7dJA
+        XFl0FVYnNzWyn1sHk3egmYJOZCszPZr0CvGskFkCCQ==
+X-Google-Smtp-Source: ABdhPJzTRetuwJgvNgpbAVJcEpxdMAupdArwCBSPE038dmzCtxo8SQiUfeNuFojjgzmNMeBkMFoGBcaYJM2tZf4UVL4=
+X-Received: by 2002:a5d:4a45:: with SMTP id v5mr7440248wrs.228.1594750821121;
+ Tue, 14 Jul 2020 11:20:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
- <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz> <20200713154118.3a1edd66@hermes.lan>
- <24041.1594688115@famine>
-In-Reply-To: <24041.1594688115@famine>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Tue, 14 Jul 2020 14:15:30 -0400
-Message-ID: <CAKfmpSecOTQgCMJkK5r=RDwydVUV9eYqBZ7bV1oWMfOzg_78mA@mail.gmail.com>
-Subject: Re: [RFC] bonding driver terminology change proposal
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Netdev <netdev@vger.kernel.org>
+References: <20200709182642.1773477-1-keescook@chromium.org> <20200709182642.1773477-9-keescook@chromium.org>
+In-Reply-To: <20200709182642.1773477-9-keescook@chromium.org>
+From:   Will Drewry <wad@chromium.org>
+Date:   Tue, 14 Jul 2020 13:20:08 -0500
+Message-ID: <CAAFS_9Gx1=ytAqTPE3ygh6euJqDObcdg70-gzUuq3eHeWHR2HQ@mail.gmail.com>
+Subject: Re: [PATCH v7 8/9] seccomp: Introduce addfd ioctl to seccomp user notifier
+To:     Kees Cook <keescook@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Sargun Dhillon <sargun@sargun.me>,
+        Matt Denton <mpdenton@google.com>,
+        Christian Brauner <christian@brauner.io>,
+        Tycho Andersen <tycho@tycho.ws>,
+        David Laight <David.Laight@aculab.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>, Jann Horn <jannh@google.com>,
+        Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 8:55 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+On Thu, Jul 9, 2020 at 1:26 PM Kees Cook <keescook@chromium.org> wrote:
 >
-> Stephen Hemminger <stephen@networkplumber.org> wrote:
+> From: Sargun Dhillon <sargun@sargun.me>
 >
-> >On Tue, 14 Jul 2020 00:00:16 +0200
-> >Michal Kubecek <mkubecek@suse.cz> wrote:
-> >
-> >> On Mon, Jul 13, 2020 at 02:51:39PM -0400, Jarod Wilson wrote:
-> >> > To start out with, I'd like to attempt to eliminate as much of the use
-> >> > of master and slave in the bonding driver as possible. For the most
-> >> > part, I think this can be done without breaking UAPI, but may require
-> >> > changes to anything accessing bond info via proc or sysfs.
-> >>
-> >> Could we, please, avoid breaking existing userspace tools and scripts?
-> >> Massive code churn is one thing and we could certainly bite the bullet
-> >> and live with it (even if I'm still not convinced it would be as great
-> >> idea as some present it) but trading theoretical offense for real and
-> >> palpable harm to existing users is something completely different.
-> >>
-> >> Or is "don't break userspace" no longer the "first commandment" of linux
-> >> kernel development?
-> >>
-> >> Michal Kubecek
-> >
-> >Please consider using same wording as current standard for link aggregration.
-> >Current version is 802.1AX and it uses the terms:
-> >  Multiplexer /  Aggregator
+> The current SECCOMP_RET_USER_NOTIF API allows for syscall supervision over
+> an fd. It is often used in settings where a supervising task emulates
+> syscalls on behalf of a supervised task in userspace, either to further
+> restrict the supervisee's syscall abilities or to circumvent kernel
+> enforced restrictions the supervisor deems safe to lift (e.g. actually
+> performing a mount(2) for an unprivileged container).
 >
->         Well, 802.1AX only defines LACP, and the bonding driver does
-> more than just LACP.  Also, Multiplexer, in 802.1AX, is a function of
-> various components, e.g., each Aggregator has a Multiplexer, as do other
-> components.
+> While SECCOMP_RET_USER_NOTIF allows for the interception of any syscall,
+> only a certain subset of syscalls could be correctly emulated. Over the
+> last few development cycles, the set of syscalls which can't be emulated
+> has been reduced due to the addition of pidfd_getfd(2). With this we are
+> now able to, for example, intercept syscalls that require the supervisor
+> to operate on file descriptors of the supervisee such as connect(2).
 >
->         As "channel bonding" is a long-established term of art, I don't
-> see an issue with something like "bond" and "port," which parallels the
-> bridge / port terminology.
-
-I did look at aggregator and port as options, but the overlap with the
-bonding 802.3ad code would mean first reworking a bunch of that code
-to free up those terms for more general bonding use. I think "bonding"
-should be okay to keep around as well, and am kind of on the fence
-with "master", since master of ceremonies, masters degress, master
-keys, etc are all similar enough to what a master device in a bond
-represents, and the main objectionable language is primarily "slave".
-
-One option would be to rename "port" to "laggport" or "adport" or
-something like that in the 802.3ad code, and then make use of "port"
-in place of slave (which mirrors what's done in the team driver).
-
-
-> [...]
-> >As far as userspace, maybe keep the old API's but provide deprecation nags.
-> >And don't document the old API values.
+> However, syscalls that cause new file descriptors to be installed can not
+> currently be correctly emulated since there is no way for the supervisor
+> to inject file descriptors into the supervisee. This patch adds a
+> new addfd ioctl to remove this restriction by allowing the supervisor to
+> install file descriptors into the intercepted task. By implementing this
+> feature via seccomp the supervisor effectively instructs the supervisee
+> to install a set of file descriptors into its own file descriptor table
+> during the intercepted syscall. This way it is possible to intercept
+> syscalls such as open() or accept(), and install (or replace, like
+> dup2(2)) the supervisor's resulting fd into the supervisee. One
+> replacement use-case would be to redirect the stdout and stderr of a
+> supervisee into log file descriptors opened by the supervisor.
 >
->         Unless the community stance on not breaking user space has
-> changed, the extant APIs must be maintained.  In the context of bonding,
-> this would include "ip link" command line arguments, sysfs and procsfs
-> interfaces, as well as netlink attribute names.  There are also exported
-> kernel APIs that bonding utilizes, netdev_master_upper_dev_link, et al.
+> The ioctl handling is based on the discussions[1] of how Extensible
+> Arguments should interact with ioctls. Instead of building size into
+> the addfd structure, make it a function of the ioctl command (which
+> is how sizes are normally passed to ioctls). To support forward and
+> backward compatibility, just mask out the direction and size, and match
+> everything. The size (and any future direction) checks are done along
+> with copy_struct_from_user() logic.
+>
+> As a note, the seccomp_notif_addfd structure is laid out based on 8-byte
+> alignment without requiring packing as there have been packing issues
+> with uapi highlighted before[2][3]. Although we could overload the
+> newfd field and use -1 to indicate that it is not to be used, doing
+> so requires changing the size of the fd field, and introduces struct
+> packing complexity.
+>
+> [1]: https://lore.kernel.org/lkml/87o8w9bcaf.fsf@mid.deneb.enyo.de/
+> [2]: https://lore.kernel.org/lkml/a328b91d-fd8f-4f27-b3c2-91a9c45f18c0@rasmusvillemoes.dk/
+> [3]: https://lore.kernel.org/lkml/20200612104629.GA15814@ircssh-2.c.rugged-nimbus-611.internal
+>
+> Suggested-by: Matt Denton <mpdenton@google.com>
+> Link: https://lore.kernel.org/r/20200603011044.7972-4-sargun@sargun.me
+> Signed-off-by: Sargun Dhillon <sargun@sargun.me>
+> Co-developed-by: Kees Cook <keescook@chromium.org>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-To some people, this could be a case that warranted breaking UAPIs. In
-an ideal world, that would be nice, but obviously, breaking the world
-to get there isn't good either, so I think maintaining them all is
-hopefully still understandable.
-
->         Additionally, just to be absolutely clear, is the proposal here
-> intending to undertake a rather significant search and replace of the
-> text strings "master" and "slave" within the bonding driver source?
-> This in addition to whatever API changes end up being done.  If so, then
-> I would also like to know the answer to Andrew's question regarding
-> patch conflicts in order to gauge the future maintenance cost.
-
-Correct, this would be full search-and-replace, with minor tweaks here
-and there -- bond_enslave -> bond_connect or something like that,
-since bond_encable wouldn't make sense, and replacing references to
-ifenslave in the code isn't helpful, since ifenslave is still going to
-be called ifenslave.
-
-As of yet, no, I don't have this scripted, but I can certainly give
-that a go. I'm not terribly familiar with coccinelle, and if that
-would be the way to script it, or if a simple bash/perl/whatever
-script would suffice.
-
---
-Jarod Wilson
-jarod@redhat.com
-
+Reviewed-by: Will Drewry <wad@chromium.org>
