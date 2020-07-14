@@ -2,78 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2643E21E459
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:11:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 222CB21E45B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 02:12:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726374AbgGNALR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jul 2020 20:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
+        id S1726510AbgGNAMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jul 2020 20:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726150AbgGNALQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 20:11:16 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804FBC061755;
-        Mon, 13 Jul 2020 17:11:16 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id y13so10272580lfe.9;
-        Mon, 13 Jul 2020 17:11:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VP82AmNODkIZDsrJHwS5EQOS87SFzy6wLeqD3456CTo=;
-        b=AleOdpkuAjavnDnuZoBwyuLmopaxMvFxNP1qetXY4FRj7VjcPdJeCto/nLfB2eIDyo
-         XNPxs8Bs5TUmrNDq8Ygk0CW+c7F4st5mjJ6hJZgL+QU2tM5lL/wbA2aZamWoP/525kZM
-         GTzWj32PqggRN2PP2UPh9QaxZBZizrX+ZTGg7Nn/bIg1fW3kfqlMLp3JxO630/FsJw6Z
-         o/yZ/kY1K5zXvlV1r2N+bvU8YifMUFp4L299EaI8aJ694ZsvnlO689dxt0S80WaDbuN1
-         6QtJ7MTYDIRg/LbCpaCZMapqiMnt3UMZBVRBVaBKeEpyOklVz2j7B0rT7JI9O3eIkrs7
-         6q/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VP82AmNODkIZDsrJHwS5EQOS87SFzy6wLeqD3456CTo=;
-        b=hmC4nqxuN/djkZoD+gAiZTNKZ37Nq2sByXuXX6vX8xDYddr7Xl4zj2RuVGSTWIgP+8
-         ZM93c6qw4v3rJcO+kGezYyTrglbqqXljr+gnTTKfwyINhkE1dk3/JT/Zeo+CjsZcZkGB
-         RwL+/lC0A7Dy7ZYJezU+S6fsIP618Mcjs6/zErxn2DMB6O0ML2XZrbKz3Ss2mj2XQHMh
-         /J1WDTue4mdWXjSfSPqw+ekgOJY/08CkYhSSte79d1tYxnib/f9VlxmCbdM7H4t09+14
-         +Xdo9xVxnieKOfSNy+DpzwGBsgenJR1577sOKcxl21iQ/9p4NqSgyHhrK8ewK6Slzput
-         1Oyg==
-X-Gm-Message-State: AOAM533c6ceXdKXyTOTpikwm0aZsd5Pqdw7rv+Kx3HtTjzxlxyvWH7Kz
-        7P3+P74tKL1zY5swioxpgxxizu2vxSJtc8hbWGc=
-X-Google-Smtp-Source: ABdhPJyMA/JsNRIVo/OtHv/pkyeSkMUMJdicN1MguHhO8+QzhLnT/2aezd/gJaZ/bJqyU3qEg7EDGCq8EvdUjWTV4bU=
-X-Received: by 2002:a19:8307:: with SMTP id f7mr779411lfd.174.1594685474877;
- Mon, 13 Jul 2020 17:11:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200713232409.3062144-1-andriin@fb.com>
-In-Reply-To: <20200713232409.3062144-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 13 Jul 2020 17:11:03 -0700
-Message-ID: <CAADnVQKOS+kYfQTCyv5ezZFF+K9UZhDcdm9jP94Y4o4C5zzacg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 0/2] Strip away modifiers from BPF skeleton
- global variables
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Anton Protopopov <a.s.protopopov@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1726150AbgGNAMH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jul 2020 20:12:07 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC8BC061755;
+        Mon, 13 Jul 2020 17:12:07 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 01C7512981398;
+        Mon, 13 Jul 2020 17:12:05 -0700 (PDT)
+Date:   Mon, 13 Jul 2020 17:12:05 -0700 (PDT)
+Message-Id: <20200713.171205.730061541247000028.davem@davemloft.net>
+To:     elder@linaro.org
+Cc:     kuba@kernel.org, evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: ipa: fix kerneldoc comments
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200713122418.505734-1-elder@linaro.org>
+References: <20200713122418.505734-1-elder@linaro.org>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 13 Jul 2020 17:12:06 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 4:25 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Fix bpftool logic of stripping away const/volatile modifiers for all global
-> variables during BPF skeleton generation. See patch #1 for details on when
-> existing logic breaks and why it's important. Support special .strip_mods=true
-> mode in btf_dump__emit_type_decl.
->
-> Recent example of when this has caused problems can be found in [0].
->
->   [0] https://github.com/iovisor/bcc/pull/2994#issuecomment-650588533
+From: Alex Elder <elder@linaro.org>
+Date: Mon, 13 Jul 2020 07:24:18 -0500
 
-Applied. Thanks
+> This commit affects comments (and in one case, whitespace) only.
+> 
+> Throughout the IPA code, return statements are documented using
+> "@Return:", whereas they should use "Return:" instead.  Fix these
+> mistakes.
+> 
+> In function definitions, some parameters are missing their comment
+> to describe them.  And in structure definitions, some fields are
+> missing their comment to describe them.  Add these missing
+> descriptions.
+> 
+> Some arguments changed name and type along the way, but their
+> descriptions were not updated (an endpoint pointer is now used in
+> many places that previously used an endpoint ID).  Fix these
+> incorrect parameter descriptions.
+> 
+> In the description for the ipa_clock structure, one field had a
+> semicolon instead of a colon in its description.  Fix this.
+> 
+> Add a missing function description for ipa_gsi_endpoint_data_empty().
+> 
+> All of these issues were identified when building with "W=1".
+> 
+> Signed-off-by: Alex Elder <elder@linaro.org>
+
+Applied, thanks Alex.
