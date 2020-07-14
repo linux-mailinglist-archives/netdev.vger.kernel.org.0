@@ -2,419 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8F7621EC71
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:14:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A2E221EC8C
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 11:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726252AbgGNJOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 05:14:21 -0400
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:29977 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725884AbgGNJOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:14:20 -0400
-Received: from localhost.localdomain ([93.22.39.234])
-        by mwinf5d69 with ME
-        id 2xEE23004537AcD03xEEPM; Tue, 14 Jul 2020 11:14:17 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Tue, 14 Jul 2020 11:14:17 +0200
-X-ME-IP: 93.22.39.234
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, jdmason@kudzu.us, kuba@kernel.org,
-        mhabets@solarflare.com, snelson@pensando.io, mst@redhat.com,
-        vaibhavgupta40@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net: neterion: vxge: switch from 'pci_' to 'dma_' API
-Date:   Tue, 14 Jul 2020 11:14:12 +0200
-Message-Id: <20200714091412.300211-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1726828AbgGNJUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 05:20:02 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:32899 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726352AbgGNJUA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 05:20:00 -0400
+Received: by mail-ot1-f66.google.com with SMTP id h13so12557339otr.0;
+        Tue, 14 Jul 2020 02:19:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lr6ehkiA+wQTlVbgKUBtfLmjH6B35ZHI7I1BOUE7Afo=;
+        b=t3icOm9FBPBdB2+Fp9LxU1YRusbuEdz/FTmz/ZCHqoWOaIJToTAFWFvq4MrZip0sfH
+         ZMtC7It3CW5yQfa+pssA3AAvkW3IT/HAKF9jU9QOqBDbtczWUxPw2zg9yYD4ca6Ul4sl
+         /L66+Puw1yhpyMFAYHctjn/9JMtvwjGQOhwXjUmKFPj+4BXAEOdElceJkVwCZ3vD2DV4
+         6mPyNtQKIQTP4I5SDmy554m65nHLOAj8u2Xe5fzFUs2h5vfCqgzKejrdtXFcL1NzO5FH
+         ahkSm4JZ3HVGo4amx+d+pM7QHf93Xjbja0YndPyvwUfMNB+c/Hz6xoivmRvkKdgT6mlX
+         nG5w==
+X-Gm-Message-State: AOAM530SPu3PO0/rLqk3e50aJcENKQN27GqjkgC2Nmc6KZhzPu/yN/3/
+        8vjI8IOk+xylsKRYGi/+YRDRYz+09eZiiomFn94=
+X-Google-Smtp-Source: ABdhPJymM3jUthOU7MUC7BJJVYVEZLSfzetmtXN1UCJV7+dkv0NdChE4LhYysx3KVtt2ozOxEExy7AyZyfrvt66ViT4=
+X-Received: by 2002:a9d:2646:: with SMTP id a64mr3032121otb.107.1594718399477;
+ Tue, 14 Jul 2020 02:19:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200714122247.797cf01e@canb.auug.org.au> <20200714061654.GE183694@krava>
+ <20200714083133.GF183694@krava>
+In-Reply-To: <20200714083133.GF183694@krava>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 14 Jul 2020 11:19:47 +0200
+Message-ID: <CAMuHMdVjyHAJJNNUwva=RnyLxV--kVpgSWAic7WoJMgf_Ri+NQ@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the bpf-next tree
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+Hi Jiri,
 
-The patch has been generated with the coccinelle script below. No GFP_
-flag needs to be corrected.
-It has been compile tested.
+On Tue, Jul 14, 2020 at 10:33 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> On Tue, Jul 14, 2020 at 08:16:54AM +0200, Jiri Olsa wrote:
+> > On Tue, Jul 14, 2020 at 12:22:47PM +1000, Stephen Rothwell wrote:
+> > > After merging the bpf-next tree, today's linux-next build (arm
+> > > multi_v7_defconfig) failed like this:
+> > >
+> > > tmp/ccsqpVCY.s: Assembler messages:
+> > > tmp/ccsqpVCY.s:78: Error: unrecognized symbol type ""
+> > > tmp/ccsqpVCY.s:91: Error: unrecognized symbol type ""
+> > >
+> > > I don't know what has caused this (I guess maybe the resolve_btfids
+> > > branch).
+> > >
+> > > I have used the bpf-next tree from next-20200713 for today.
 
+Bummer, didn't find this report before I had bisected this to
+c9a0f3b85e09dd16 ("bpf: Resolve BTF IDs in vmlinux image"), and
+investigated the root cause (@object) myself, as the failing file path
+(net/core/filter.o) was not mentioned...
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
+> > ok, trying to reproduce
+>
+> damn crossbuilds.. change below fixes it for me,
+> will do some more testing and post it today
 
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
+Thanks, this fixes my (cross)arm32 build, and the (cross)arm64 build
+keeps working, and everything boots, so
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
+Gr{oetje,eeting}s,
 
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
+                        Geert
 
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- .../net/ethernet/neterion/vxge/vxge-config.c  | 42 ++++++------
- .../net/ethernet/neterion/vxge/vxge-main.c    | 64 +++++++++----------
- 2 files changed, 52 insertions(+), 54 deletions(-)
-
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-config.c b/drivers/net/ethernet/neterion/vxge/vxge-config.c
-index 51cd57ab3d95..4f1f90f5e178 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-config.c
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-config.c
-@@ -1102,10 +1102,10 @@ static void __vxge_hw_blockpool_destroy(struct __vxge_hw_blockpool *blockpool)
- 	hldev = blockpool->hldev;
- 
- 	list_for_each_safe(p, n, &blockpool->free_block_list) {
--		pci_unmap_single(hldev->pdev,
--			((struct __vxge_hw_blockpool_entry *)p)->dma_addr,
--			((struct __vxge_hw_blockpool_entry *)p)->length,
--			PCI_DMA_BIDIRECTIONAL);
-+		dma_unmap_single(&hldev->pdev->dev,
-+				 ((struct __vxge_hw_blockpool_entry *)p)->dma_addr,
-+				 ((struct __vxge_hw_blockpool_entry *)p)->length,
-+				 DMA_BIDIRECTIONAL);
- 
- 		vxge_os_dma_free(hldev->pdev,
- 			((struct __vxge_hw_blockpool_entry *)p)->memblock,
-@@ -1178,10 +1178,10 @@ __vxge_hw_blockpool_create(struct __vxge_hw_device *hldev,
- 			goto blockpool_create_exit;
- 		}
- 
--		dma_addr = pci_map_single(hldev->pdev, memblock,
--				VXGE_HW_BLOCK_SIZE, PCI_DMA_BIDIRECTIONAL);
--		if (unlikely(pci_dma_mapping_error(hldev->pdev,
--				dma_addr))) {
-+		dma_addr = dma_map_single(&hldev->pdev->dev, memblock,
-+					  VXGE_HW_BLOCK_SIZE,
-+					  DMA_BIDIRECTIONAL);
-+		if (unlikely(dma_mapping_error(&hldev->pdev->dev, dma_addr))) {
- 			vxge_os_dma_free(hldev->pdev, memblock, &acc_handle);
- 			__vxge_hw_blockpool_destroy(blockpool);
- 			status = VXGE_HW_ERR_OUT_OF_MEMORY;
-@@ -2264,10 +2264,10 @@ static void vxge_hw_blockpool_block_add(struct __vxge_hw_device *devh,
- 		goto exit;
- 	}
- 
--	dma_addr = pci_map_single(devh->pdev, block_addr, length,
--				PCI_DMA_BIDIRECTIONAL);
-+	dma_addr = dma_map_single(&devh->pdev->dev, block_addr, length,
-+				  DMA_BIDIRECTIONAL);
- 
--	if (unlikely(pci_dma_mapping_error(devh->pdev, dma_addr))) {
-+	if (unlikely(dma_mapping_error(&devh->pdev->dev, dma_addr))) {
- 		vxge_os_dma_free(devh->pdev, block_addr, &acc_handle);
- 		blockpool->req_out--;
- 		goto exit;
-@@ -2359,11 +2359,10 @@ static void *__vxge_hw_blockpool_malloc(struct __vxge_hw_device *devh, u32 size,
- 		if (!memblock)
- 			goto exit;
- 
--		dma_object->addr = pci_map_single(devh->pdev, memblock, size,
--					PCI_DMA_BIDIRECTIONAL);
-+		dma_object->addr = dma_map_single(&devh->pdev->dev, memblock,
-+						  size, DMA_BIDIRECTIONAL);
- 
--		if (unlikely(pci_dma_mapping_error(devh->pdev,
--				dma_object->addr))) {
-+		if (unlikely(dma_mapping_error(&devh->pdev->dev, dma_object->addr))) {
- 			vxge_os_dma_free(devh->pdev, memblock,
- 				&dma_object->acc_handle);
- 			memblock = NULL;
-@@ -2410,11 +2409,10 @@ __vxge_hw_blockpool_blocks_remove(struct __vxge_hw_blockpool *blockpool)
- 		if (blockpool->pool_size < blockpool->pool_max)
- 			break;
- 
--		pci_unmap_single(
--			(blockpool->hldev)->pdev,
--			((struct __vxge_hw_blockpool_entry *)p)->dma_addr,
--			((struct __vxge_hw_blockpool_entry *)p)->length,
--			PCI_DMA_BIDIRECTIONAL);
-+		dma_unmap_single(&(blockpool->hldev)->pdev->dev,
-+				 ((struct __vxge_hw_blockpool_entry *)p)->dma_addr,
-+				 ((struct __vxge_hw_blockpool_entry *)p)->length,
-+				 DMA_BIDIRECTIONAL);
- 
- 		vxge_os_dma_free(
- 			(blockpool->hldev)->pdev,
-@@ -2445,8 +2443,8 @@ static void __vxge_hw_blockpool_free(struct __vxge_hw_device *devh,
- 	blockpool = &devh->block_pool;
- 
- 	if (size != blockpool->block_size) {
--		pci_unmap_single(devh->pdev, dma_object->addr, size,
--			PCI_DMA_BIDIRECTIONAL);
-+		dma_unmap_single(&devh->pdev->dev, dma_object->addr, size,
-+				 DMA_BIDIRECTIONAL);
- 		vxge_os_dma_free(devh->pdev, memblock, &dma_object->acc_handle);
- 	} else {
- 
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-index 5de85b9e9e35..b0faa737b817 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-@@ -241,10 +241,10 @@ static int vxge_rx_map(void *dtrh, struct vxge_ring *ring)
- 	rx_priv = vxge_hw_ring_rxd_private_get(dtrh);
- 
- 	rx_priv->skb_data = rx_priv->skb->data;
--	dma_addr = pci_map_single(ring->pdev, rx_priv->skb_data,
--				rx_priv->data_size, PCI_DMA_FROMDEVICE);
-+	dma_addr = dma_map_single(&ring->pdev->dev, rx_priv->skb_data,
-+				  rx_priv->data_size, DMA_FROM_DEVICE);
- 
--	if (unlikely(pci_dma_mapping_error(ring->pdev, dma_addr))) {
-+	if (unlikely(dma_mapping_error(&ring->pdev->dev, dma_addr))) {
- 		ring->stats.pci_map_fail++;
- 		return -EIO;
- 	}
-@@ -323,8 +323,8 @@ vxge_rx_complete(struct vxge_ring *ring, struct sk_buff *skb, u16 vlan,
- static inline void vxge_re_pre_post(void *dtr, struct vxge_ring *ring,
- 				    struct vxge_rx_priv *rx_priv)
- {
--	pci_dma_sync_single_for_device(ring->pdev,
--		rx_priv->data_dma, rx_priv->data_size, PCI_DMA_FROMDEVICE);
-+	dma_sync_single_for_device(&ring->pdev->dev, rx_priv->data_dma,
-+				   rx_priv->data_size, DMA_FROM_DEVICE);
- 
- 	vxge_hw_ring_rxd_1b_set(dtr, rx_priv->data_dma, rx_priv->data_size);
- 	vxge_hw_ring_rxd_pre_post(ring->handle, dtr);
-@@ -425,8 +425,9 @@ vxge_rx_1b_compl(struct __vxge_hw_ring *ringh, void *dtr,
- 				if (!vxge_rx_map(dtr, ring)) {
- 					skb_put(skb, pkt_length);
- 
--					pci_unmap_single(ring->pdev, data_dma,
--						data_size, PCI_DMA_FROMDEVICE);
-+					dma_unmap_single(&ring->pdev->dev,
-+							 data_dma, data_size,
-+							 DMA_FROM_DEVICE);
- 
- 					vxge_hw_ring_rxd_pre_post(ringh, dtr);
- 					vxge_post(&dtr_cnt, &first_dtr, dtr,
-@@ -458,9 +459,9 @@ vxge_rx_1b_compl(struct __vxge_hw_ring *ringh, void *dtr,
- 				skb_reserve(skb_up,
- 				    VXGE_HW_HEADER_ETHERNET_II_802_3_ALIGN);
- 
--				pci_dma_sync_single_for_cpu(ring->pdev,
--					data_dma, data_size,
--					PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_cpu(&ring->pdev->dev,
-+							data_dma, data_size,
-+							DMA_FROM_DEVICE);
- 
- 				vxge_debug_mem(VXGE_TRACE,
- 					"%s: %s:%d  skb_up = %p",
-@@ -585,13 +586,13 @@ vxge_xmit_compl(struct __vxge_hw_fifo *fifo_hw, void *dtr,
- 		}
- 
- 		/*  for unfragmented skb */
--		pci_unmap_single(fifo->pdev, txd_priv->dma_buffers[i++],
--				skb_headlen(skb), PCI_DMA_TODEVICE);
-+		dma_unmap_single(&fifo->pdev->dev, txd_priv->dma_buffers[i++],
-+				 skb_headlen(skb), DMA_TO_DEVICE);
- 
- 		for (j = 0; j < frg_cnt; j++) {
--			pci_unmap_page(fifo->pdev,
--					txd_priv->dma_buffers[i++],
--					skb_frag_size(frag), PCI_DMA_TODEVICE);
-+			dma_unmap_page(&fifo->pdev->dev,
-+				       txd_priv->dma_buffers[i++],
-+				       skb_frag_size(frag), DMA_TO_DEVICE);
- 			frag += 1;
- 		}
- 
-@@ -897,10 +898,10 @@ vxge_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	first_frg_len = skb_headlen(skb);
- 
--	dma_pointer = pci_map_single(fifo->pdev, skb->data, first_frg_len,
--				PCI_DMA_TODEVICE);
-+	dma_pointer = dma_map_single(&fifo->pdev->dev, skb->data,
-+				     first_frg_len, DMA_TO_DEVICE);
- 
--	if (unlikely(pci_dma_mapping_error(fifo->pdev, dma_pointer))) {
-+	if (unlikely(dma_mapping_error(&fifo->pdev->dev, dma_pointer))) {
- 		vxge_hw_fifo_txdl_free(fifo_hw, dtr);
- 		fifo->stats.pci_map_fail++;
- 		goto _exit0;
-@@ -977,12 +978,12 @@ vxge_xmit(struct sk_buff *skb, struct net_device *dev)
- 	j = 0;
- 	frag = &skb_shinfo(skb)->frags[0];
- 
--	pci_unmap_single(fifo->pdev, txdl_priv->dma_buffers[j++],
--			skb_headlen(skb), PCI_DMA_TODEVICE);
-+	dma_unmap_single(&fifo->pdev->dev, txdl_priv->dma_buffers[j++],
-+			 skb_headlen(skb), DMA_TO_DEVICE);
- 
- 	for (; j < i; j++) {
--		pci_unmap_page(fifo->pdev, txdl_priv->dma_buffers[j],
--			skb_frag_size(frag), PCI_DMA_TODEVICE);
-+		dma_unmap_page(&fifo->pdev->dev, txdl_priv->dma_buffers[j],
-+			       skb_frag_size(frag), DMA_TO_DEVICE);
- 		frag += 1;
- 	}
- 
-@@ -1012,8 +1013,8 @@ vxge_rx_term(void *dtrh, enum vxge_hw_rxd_state state, void *userdata)
- 	if (state != VXGE_HW_RXD_STATE_POSTED)
- 		return;
- 
--	pci_unmap_single(ring->pdev, rx_priv->data_dma,
--		rx_priv->data_size, PCI_DMA_FROMDEVICE);
-+	dma_unmap_single(&ring->pdev->dev, rx_priv->data_dma,
-+			 rx_priv->data_size, DMA_FROM_DEVICE);
- 
- 	dev_kfree_skb(rx_priv->skb);
- 	rx_priv->skb_data = NULL;
-@@ -1048,12 +1049,12 @@ vxge_tx_term(void *dtrh, enum vxge_hw_txdl_state state, void *userdata)
- 	frag = &skb_shinfo(skb)->frags[0];
- 
- 	/*  for unfragmented skb */
--	pci_unmap_single(fifo->pdev, txd_priv->dma_buffers[i++],
--		skb_headlen(skb), PCI_DMA_TODEVICE);
-+	dma_unmap_single(&fifo->pdev->dev, txd_priv->dma_buffers[i++],
-+			 skb_headlen(skb), DMA_TO_DEVICE);
- 
- 	for (j = 0; j < frg_cnt; j++) {
--		pci_unmap_page(fifo->pdev, txd_priv->dma_buffers[i++],
--			       skb_frag_size(frag), PCI_DMA_TODEVICE);
-+		dma_unmap_page(&fifo->pdev->dev, txd_priv->dma_buffers[i++],
-+			       skb_frag_size(frag), DMA_TO_DEVICE);
- 		frag += 1;
- 	}
- 
-@@ -4387,21 +4388,20 @@ vxge_probe(struct pci_dev *pdev, const struct pci_device_id *pre)
- 		goto _exit0;
- 	}
- 
--	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
-+	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
- 		vxge_debug_ll_config(VXGE_TRACE,
- 			"%s : using 64bit DMA", __func__);
- 
- 		high_dma = 1;
- 
--		if (pci_set_consistent_dma_mask(pdev,
--						DMA_BIT_MASK(64))) {
-+		if (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) {
- 			vxge_debug_init(VXGE_ERR,
- 				"%s : unable to obtain 64bit DMA for "
- 				"consistent allocations", __func__);
- 			ret = -ENOMEM;
- 			goto _exit1;
- 		}
--	} else if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
-+	} else if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
- 		vxge_debug_ll_config(VXGE_TRACE,
- 			"%s : using 32bit DMA", __func__);
- 	} else {
 -- 
-2.25.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
