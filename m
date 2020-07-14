@@ -2,244 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7545E21F3EF
-	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:24:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D28F21F3E6
+	for <lists+netdev@lfdr.de>; Tue, 14 Jul 2020 16:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728847AbgGNOXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 10:23:47 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:26868 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728706AbgGNOXX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:23:23 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06EDZFoF095150;
-        Tue, 14 Jul 2020 10:23:22 -0400
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 328s0dbn3u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jul 2020 10:23:21 -0400
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06EEHTvE021600;
-        Tue, 14 Jul 2020 14:23:18 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3274pgub5h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jul 2020 14:23:18 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06EENFst63242558
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Jul 2020 14:23:16 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D7E324C05A;
-        Tue, 14 Jul 2020 14:23:15 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 92D6F4C050;
-        Tue, 14 Jul 2020 14:23:15 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 14 Jul 2020 14:23:15 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next 10/10] s390/qeth: constify the MPC initialization data
-Date:   Tue, 14 Jul 2020 16:23:05 +0200
-Message-Id: <20200714142305.29297-11-jwi@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200714142305.29297-1-jwi@linux.ibm.com>
-References: <20200714142305.29297-1-jwi@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-14_04:2020-07-14,2020-07-14 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
- suspectscore=0 spamscore=0 malwarescore=0 mlxlogscore=999
- lowpriorityscore=0 phishscore=0 clxscore=1015 impostorscore=0 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007140104
+        id S1728787AbgGNOXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 10:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728768AbgGNOX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 10:23:28 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1D4C08C5C1;
+        Tue, 14 Jul 2020 07:23:28 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id e22so17347092edq.8;
+        Tue, 14 Jul 2020 07:23:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Yj4YngiWsS66KFBhHQNvP0iXHHrupb/I73MOX6zQuxI=;
+        b=D0TwkZttUgirge+0ki1rNiGdNAYGRqdzSbECsq6txGeQgcGhjnw6UQbqAvoLBbcvPe
+         4wJHfWUP7VOA4yP70Lu4wyDDAAl4cXxKwwGSJIIK+jTM3Gf3GN/11HXo6++Vssk4flD/
+         7aL5WDx7Tjhpl0snBUJQW/CXOf2owc/FC2LozpGzozta+hSf3AyGBGtHJqMlmrTmuAgX
+         DgI0JfL5j5ESl3tKx/I5Xgryz+zTlAeoj0jJiJ2NicXWbOdlWy7sEbpddusIvX+sefKa
+         Tz1nmFsmPgaf+Fjl9iQdu0ZQPo8Z2hgTJ9bQHaMND4yi0cleXhkOQeHUimgNvhVVcYza
+         Sseg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Yj4YngiWsS66KFBhHQNvP0iXHHrupb/I73MOX6zQuxI=;
+        b=dZGhBlXGx8tN4ywFSkQWbuA+cI1hWVrH11uUjcI2t0K9VCCDVBw1ZCUOLR4AmGMHCd
+         k9kgU8GtmOWIRk80DnuvR3St7XNgv8R8wetyovXOCqxccF3jZL8/BhwZzRNGTyikDb2R
+         Uc6ZMLR7kbZkUgyvwrnzOIVOS/hxo4xrVzHvjpHGwxOfhMINRYzg5hkU99rQnFLSfweB
+         QTcGtMUoSfAT9+4QSoar6Qh0AY71w8sWwKyDrJZ3LY24ydoFoJbhFCW+NaA2q1KnO95y
+         S8+UJqi61SXk3EyH4k1T8BicYeAuvYrzBoP4aXsaAnmCaknMMBHo+sp/feOcO1cqvJDm
+         /Puw==
+X-Gm-Message-State: AOAM532Kl9WfaA2rL+rwxhqgHAPzq7NMAUPHB1AuDw1mmxeDmJAIfjCZ
+        csyyi1QFdXpSBSLwpK8qfPQ=
+X-Google-Smtp-Source: ABdhPJw/mL+XRrYzd+WySm6VWsyTQbtT9aJqxr72L+WpFfCqKQgagxPOQ0I5wkq95e75hBYXmONPVg==
+X-Received: by 2002:a05:6402:1d14:: with SMTP id dg20mr4850520edb.23.1594736607009;
+        Tue, 14 Jul 2020 07:23:27 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id w24sm14543877edt.28.2020.07.14.07.23.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2020 07:23:26 -0700 (PDT)
+Date:   Tue, 14 Jul 2020 17:23:24 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sergey Organov <sorganov@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH v2 net] net: fec: fix hardware time stamping by external
+ devices
+Message-ID: <20200714142324.oq7od3ylwd63ohyj@skbuf>
+References: <20200706142616.25192-1-sorganov@gmail.com>
+ <20200711120842.2631-1-sorganov@gmail.com>
+ <20200711231937.wu2zrm5spn7a6u2o@skbuf>
+ <87wo387r8n.fsf@osv.gnss.ru>
+ <20200712150151.55jttxaf4emgqcpc@skbuf>
+ <87r1tg7ib9.fsf@osv.gnss.ru>
+ <20200712193344.bgd5vpftaikwcptq@skbuf>
+ <87365wgyae.fsf@osv.gnss.ru>
+ <20200712231546.4k6qyaiq2cgok3ep@skbuf>
+ <878sfmcluf.fsf@osv.gnss.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <878sfmcluf.fsf@osv.gnss.ru>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We're not modifying these data blobs, so mark them as constant.
+On Tue, Jul 14, 2020 at 03:39:04PM +0300, Sergey Organov wrote:
+> Vladimir Oltean <olteanv@gmail.com> writes:
+> 
+> > On Mon, Jul 13, 2020 at 01:32:09AM +0300, Sergey Organov wrote:
+> 
+> [...]
+> 
+> >> > From the perspective of the mainline kernel, that can never happen.
+> >>
+> >> Yet in happened to me, and in some way because of the UAPI deficiencies
+> >> I've mentioned, as ethtool has entirely separate code path, that happens
+> >> to be correct for a long time already.
+> >>
+> >
+> > Yup, you are right:
+> >
+> 
+> [...]
+> 
+> > Very bad design choice indeed...
+> > Given the fact that the PHY timestamping needs massaging from MAC driver
+> > for plenty of other reasons, now of all things, ethtool just decided
+> > it's not going to consult the MAC driver about the PHC it intends to
+> > expose to user space, and just say "here's the PHY, deal with it". This
+> > is a structural bug, I would say.
+> >
+> >> > From your perspective as a developer, in your private work tree, where
+> >> > _you_ added the necessary wiring for PHY timestamping, I fully
+> >> > understand that this is exactly what happened _to_you_.
+> >> > I am not saying that PHY timestamping doesn't need this issue fixed. It
+> >> > does, and if it weren't for DSA, it would have simply been a "new
+> >> > feature", and it would have been ok to have everything in the same
+> >> > patch.
+> >>
+> >> Except that it's not a "new feature", but a bug-fix of an existing one,
+> >> as I see it.
+> >>
+> >
+> > See above. It's clear that the intention of the PHY timestamping support
+> > is for MAC drivers to opt-in, otherwise some mechanism would have been
+> > devised such that not every single one of them would need to check for
+> > phy_has_hwtstamp() in .ndo_do_ioctl(). That simply doesn't scale. Also,
+> > it seems that automatically calling phy_ts_info from
+> > __ethtool_get_ts_info is not coherent with that intention.
+> >
+> > I need to think more about this. Anyway, if your aim is to "reduce
+> > confusion" for others walking in your foot steps, I think this is much
+> > worthier of your time: avoiding the inconsistent situation where the MAC
+> > driver is obviously not ready for PHY timestamping, however not all
+> > parts of the kernel are in agreement with that, and tell the user
+> > something else.
+> 
+> You see, I have a problem on kernel 4.9.146. After I apply this patch,
+> the problem goes away, at least for FEC/PHY combo that I care about, and
+> chances are high that for DSA as well, according to your own expertise.
+> Why should I care what is or is not ready for what to get a bug-fix
+> patch into the kernel? Why should I guess some vague "intentions" or
+> spend my time elsewhere?
+> 
+> Also please notice that if, as you suggest, I will propose only half of
+> the patch that will fix DSA only, then I will create confusion for
+> FEC/PHY users that will have no way to figure they need another part of
+> the fix to get their setup to work.
+> 
+> Could we please finally agree that, as what I suggest is indeed a simple
+> bug-fix, we could safely let it into the kernel?
+> 
+> Thanks,
+> -- Sergey
 
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- drivers/s390/net/qeth_core_main.c |  2 +-
- drivers/s390/net/qeth_core_mpc.c  | 16 ++++++++--------
- drivers/s390/net/qeth_core_mpc.h  | 17 ++++++++---------
- 3 files changed, 17 insertions(+), 18 deletions(-)
+I cannot contradict you, you have all the arguments on your side. The
+person who added support for "ethtool -T" in commit c8f3a8c31069
+("ethtool: Introduce a method for getting time stamping capabilities.")
+made a fundamental mistake in that they exposed broken functionality to
+the user, in case CONFIG_NETWORK_PHY_TIMESTAMPING is enabled and the MAC
+driver doesn't fulfill the requirements, be they skb_tx_timestamp(),
+phy_has_hwtstamp() and what not. So, therefore, any patch that is adding
+PHY timestamping compatibility in a MAC driver can rightfully claim that
+it is fixing a bug, a sloppy design. Fair enough.
 
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 01a280b5e8d2..8a76022fceda 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -2026,7 +2026,7 @@ static bool qeth_mpc_match_reply(struct qeth_cmd_buffer *iob,
- }
- 
- static struct qeth_cmd_buffer *qeth_mpc_alloc_cmd(struct qeth_card *card,
--						  void *data,
-+						  const void *data,
- 						  unsigned int data_length)
- {
- 	struct qeth_cmd_buffer *iob;
-diff --git a/drivers/s390/net/qeth_core_mpc.c b/drivers/s390/net/qeth_core_mpc.c
-index e3f4866c158e..68c2588b9dcc 100644
---- a/drivers/s390/net/qeth_core_mpc.c
-+++ b/drivers/s390/net/qeth_core_mpc.c
-@@ -10,7 +10,7 @@
- #include <asm/cio.h>
- #include "qeth_core_mpc.h"
- 
--unsigned char IDX_ACTIVATE_READ[] = {
-+const unsigned char IDX_ACTIVATE_READ[] = {
- 	0x00, 0x00, 0x80, 0x00,  0x00, 0x00, 0x00, 0x00,
- 	0x19, 0x01, 0x01, 0x80,  0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0xc8, 0xc1,
-@@ -18,7 +18,7 @@ unsigned char IDX_ACTIVATE_READ[] = {
- 	0x00, 0x00
- };
- 
--unsigned char IDX_ACTIVATE_WRITE[] = {
-+const unsigned char IDX_ACTIVATE_WRITE[] = {
- 	0x00, 0x00, 0x80, 0x00,  0x00, 0x00, 0x00, 0x00,
- 	0x15, 0x01, 0x01, 0x80,  0x00, 0x00, 0x00, 0x00,
- 	0xff, 0xff, 0x00, 0x00,  0x00, 0x00, 0xc8, 0xc1,
-@@ -26,7 +26,7 @@ unsigned char IDX_ACTIVATE_WRITE[] = {
- 	0x00, 0x00
- };
- 
--unsigned char CM_ENABLE[] = {
-+const unsigned char CM_ENABLE[] = {
- 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x01,
- 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x63,
- 	0x10, 0x00, 0x00, 0x01,
-@@ -45,7 +45,7 @@ unsigned char CM_ENABLE[] = {
- 	0xff, 0xff, 0xff
- };
- 
--unsigned char CM_SETUP[] = {
-+const unsigned char CM_SETUP[] = {
- 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x02,
- 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x64,
- 	0x10, 0x00, 0x00, 0x01,
-@@ -65,7 +65,7 @@ unsigned char CM_SETUP[] = {
- 	0x04, 0x06, 0xc8, 0x00
- };
- 
--unsigned char ULP_ENABLE[] = {
-+const unsigned char ULP_ENABLE[] = {
- 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x03,
- 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x6b,
- 	0x10, 0x00, 0x00, 0x01,
-@@ -85,7 +85,7 @@ unsigned char ULP_ENABLE[] = {
- 	0xf1, 0x00, 0x00
- };
- 
--unsigned char ULP_SETUP[] = {
-+const unsigned char ULP_SETUP[] = {
- 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x04,
- 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x6c,
- 	0x10, 0x00, 0x00, 0x01,
-@@ -107,7 +107,7 @@ unsigned char ULP_SETUP[] = {
- 	0x00, 0x00, 0x00, 0x00
- };
- 
--unsigned char DM_ACT[] = {
-+const unsigned char DM_ACT[] = {
- 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x05,
- 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x55,
- 	0x10, 0x00, 0x00, 0x01,
-@@ -123,7 +123,7 @@ unsigned char DM_ACT[] = {
- 	0x05, 0x40, 0x01, 0x01,  0x00
- };
- 
--unsigned char IPA_PDU_HEADER[] = {
-+const unsigned char IPA_PDU_HEADER[] = {
- 	0x00, 0xe0, 0x00, 0x00,  0x77, 0x77, 0x77, 0x77,
- 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x00,
- 	0x10, 0x00, 0x00, 0x01,  0x00, 0x00, 0x00, 0x00,
-diff --git a/drivers/s390/net/qeth_core_mpc.h b/drivers/s390/net/qeth_core_mpc.h
-index 9d6f39d8f9ab..b459def0fb26 100644
---- a/drivers/s390/net/qeth_core_mpc.h
-+++ b/drivers/s390/net/qeth_core_mpc.h
-@@ -13,13 +13,13 @@
- #include <uapi/linux/if_ether.h>
- #include <uapi/linux/in6.h>
- 
-+extern const unsigned char IPA_PDU_HEADER[];
- #define IPA_PDU_HEADER_SIZE	0x40
- #define QETH_IPA_PDU_LEN_TOTAL(buffer) (buffer + 0x0e)
- #define QETH_IPA_PDU_LEN_PDU1(buffer) (buffer + 0x26)
- #define QETH_IPA_PDU_LEN_PDU2(buffer) (buffer + 0x29)
- #define QETH_IPA_PDU_LEN_PDU3(buffer) (buffer + 0x3a)
- 
--extern unsigned char IPA_PDU_HEADER[];
- #define QETH_IPA_CMD_DEST_ADDR(buffer) (buffer + 0x2c)
- 
- #define QETH_SEQ_NO_LENGTH	4
-@@ -858,7 +858,7 @@ extern const char *qeth_get_ipa_cmd_name(enum qeth_ipa_cmds cmd);
- /* END OF   IP Assist related definitions                                    */
- /*****************************************************************************/
- 
--extern unsigned char CM_ENABLE[];
-+extern const unsigned char CM_ENABLE[];
- #define CM_ENABLE_SIZE 0x63
- #define QETH_CM_ENABLE_ISSUER_RM_TOKEN(buffer) (buffer + 0x2c)
- #define QETH_CM_ENABLE_FILTER_TOKEN(buffer) (buffer + 0x53)
-@@ -868,7 +868,7 @@ extern unsigned char CM_ENABLE[];
- 		(PDU_ENCAPSULATION(buffer) + 0x13)
- 
- 
--extern unsigned char CM_SETUP[];
-+extern const unsigned char CM_SETUP[];
- #define CM_SETUP_SIZE 0x64
- #define QETH_CM_SETUP_DEST_ADDR(buffer) (buffer + 0x2c)
- #define QETH_CM_SETUP_CONNECTION_TOKEN(buffer) (buffer + 0x51)
-@@ -877,7 +877,7 @@ extern unsigned char CM_SETUP[];
- #define QETH_CM_SETUP_RESP_DEST_ADDR(buffer) \
- 		(PDU_ENCAPSULATION(buffer) + 0x1a)
- 
--extern unsigned char ULP_ENABLE[];
-+extern const unsigned char ULP_ENABLE[];
- #define ULP_ENABLE_SIZE 0x6b
- #define QETH_ULP_ENABLE_LINKNUM(buffer) (buffer + 0x61)
- #define QETH_ULP_ENABLE_DEST_ADDR(buffer) (buffer + 0x2c)
-@@ -898,7 +898,7 @@ extern unsigned char ULP_ENABLE[];
- #define QETH_ULP_ENABLE_PROT_TYPE(buffer) (buffer + 0x50)
- #define QETH_IPA_CMD_PROT_TYPE(buffer) (buffer + 0x19)
- 
--extern unsigned char ULP_SETUP[];
-+extern const unsigned char ULP_SETUP[];
- #define ULP_SETUP_SIZE 0x6c
- #define QETH_ULP_SETUP_DEST_ADDR(buffer) (buffer + 0x2c)
- #define QETH_ULP_SETUP_CONNECTION_TOKEN(buffer) (buffer + 0x51)
-@@ -910,7 +910,7 @@ extern unsigned char ULP_SETUP[];
- 		(PDU_ENCAPSULATION(buffer) + 0x1a)
- 
- 
--extern unsigned char DM_ACT[];
-+extern const unsigned char DM_ACT[];
- #define DM_ACT_SIZE 0x55
- #define QETH_DM_ACT_DEST_ADDR(buffer) (buffer + 0x2c)
- #define QETH_DM_ACT_CONNECTION_TOKEN(buffer) (buffer + 0x51)
-@@ -921,9 +921,8 @@ extern unsigned char DM_ACT[];
- #define QETH_PDU_HEADER_SEQ_NO(buffer) (buffer + 0x1c)
- #define QETH_PDU_HEADER_ACK_SEQ_NO(buffer) (buffer + 0x20)
- 
--extern unsigned char IDX_ACTIVATE_READ[];
--extern unsigned char IDX_ACTIVATE_WRITE[];
--
-+extern const unsigned char IDX_ACTIVATE_READ[];
-+extern const unsigned char IDX_ACTIVATE_WRITE[];
- #define IDX_ACTIVATE_SIZE	0x22
- #define QETH_IDX_ACT_PNO(buffer) (buffer+0x0b)
- #define QETH_IDX_ACT_ISSUER_RM_TOKEN(buffer) (buffer + 0x0c)
--- 
-2.17.1
+The only reason why I mentioned about spending your time on useful
+things is because in your previous series you seemed to be concerned
+about that. In retrospect, I believe you agree with me that your
+confusion would have been significantly lower if the output of "ethtool
+-T" was in harmony with the actual source of hardware timestamps.
+Now that we discussed it through and I did see your point, I just
+suggested what I believe to be the fundamental issue here, don't shoot
+the messenger. Of course you are free to spend your time however you
+want to.
 
+Acked-by: Vladimir Oltean <olteanv@gmail.com>
+
+Thanks,
+-Vladimir
