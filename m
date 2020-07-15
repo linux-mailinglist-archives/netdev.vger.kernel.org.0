@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1675F2209B6
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 12:19:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B3932209BB
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 12:19:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730850AbgGOKTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 06:19:11 -0400
-Received: from mail-oo1-f66.google.com ([209.85.161.66]:44296 "EHLO
-        mail-oo1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726998AbgGOKTK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 06:19:10 -0400
-Received: by mail-oo1-f66.google.com with SMTP id o36so350247ooi.11;
-        Wed, 15 Jul 2020 03:19:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NAkHhGCBdih32hqt76V0j8Veg+fQ7FChhZOK219jyyg=;
-        b=HRl5wwAxXD3aa/M3k9gHxLMLja++2JYkfphFhp49MwX5QEZUmB01bmHiL6U3AQQgBp
-         PYp5mlL2JZ7HMDdwcnYGMgzNidvq+hlxlN+KYwRMfYNEK8jRY3kv4uxzLzR6glqm+cjT
-         716mYGZsVXpB/1BPXJQp/GXAdPhQPFPmT7s+PL5g/oOT5/iWo77xm71I25Uon9OS10J8
-         OxvlqgjypZC+KzrPnkceZRtZ0Kck5G73NdRpsz/VX9fqc9kpJPvjBtbGEXLUBmmQTgAz
-         B2Df6nNlqWpjFd3eO+0wEj6MpLlJaQTRYw/JxbJ4HmbZVCLYyh2mHA6G9at/DWYvoIPE
-         pT/g==
-X-Gm-Message-State: AOAM533FxjB8VOE1z/8HBpDOqPY0GWlsiZ2NcMjiGqnlqS6oYrFAmEKQ
-        pQG0hAowT0O/CYR/o7yAxJ6uAdX+Ziuj0EX7jaA=
-X-Google-Smtp-Source: ABdhPJwSAaZJfpGKxkLLTXuhq5d9bq9sTol7NAMegIgcAukEn+36YLrrN0ajD7D+Vfxo36peiJOo78hXGiX/3pGPC7k=
-X-Received: by 2002:a4a:9552:: with SMTP id n18mr8646494ooi.1.1594808349233;
- Wed, 15 Jul 2020 03:19:09 -0700 (PDT)
+        id S1731061AbgGOKTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 06:19:41 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:31863 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726998AbgGOKTl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 06:19:41 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1594808380; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=s+17l8yWmlfyAoaYbRmoSrnduPrEF0i6PsWblwvSjLs=;
+ b=uNjKpddhbXUAlu3dIPk4Q+AMzfhV9ouvhF5SFOMJe9QIBelzMyk7bHtwmnGa4cTwnuA4fqcO
+ 05JI1DxF6DBgzoS3xsXzAxztwdiiiLBn7I2OtAYva4fVxuZhosY3f7cWHSDtVDU6LLclhsbm
+ 3bd7JUwcXTU0Mey+UEhSeoo4S5Y=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n17.prod.us-west-2.postgun.com with SMTP id
+ 5f0ed82975eeb235f665a843 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 15 Jul 2020 10:19:21
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 81C37C433B1; Wed, 15 Jul 2020 10:19:20 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8DA70C43391;
+        Wed, 15 Jul 2020 10:19:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8DA70C43391
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594676120-5862-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594676120-5862-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 15 Jul 2020 12:18:58 +0200
-Message-ID: <CAMuHMdUH4yVek8Fn2z1xneTS0Y_vkMv+w7VwEDJvCUXR9qVQRw@mail.gmail.com>
-Subject: Re: [PATCH 3/9] arm64: dts: renesas: r8a774e1: Add IPMMU device nodes
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 2/9] wireless: fix wiki website url in main Kconfig
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200605154112.16277-3-f.suligoi@asem.it>
+References: <20200605154112.16277-3-f.suligoi@asem.it>
+To:     Flavio Suligoi <f.suligoi@asem.it>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jonathan Corbet <corbet@lwn.net>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Saurav Girepunje <saurav.girepunje@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        <linux-wireless@vger.kernel.org>, <b43-dev@lists.infradead.org>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        <netdev@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Flavio Suligoi <f.suligoi@asem.it>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200715101920.81C37C433B1@smtp.codeaurora.org>
+Date:   Wed, 15 Jul 2020 10:19:20 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 11:35 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
->
-> Add RZ/G2H (R8A774E1) IPMMU nodes.
->
-> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Flavio Suligoi <f.suligoi@asem.it> wrote:
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v5.9.
+> The wiki url is still the old "wireless.kernel.org"
+> instead of the new "wireless.wiki.kernel.org"
+> 
+> Signed-off-by: Flavio Suligoi <f.suligoi@asem.it>
 
-Gr{oetje,eeting}s,
+3 patches applied to wireless-drivers-next.git, thanks.
 
-                        Geert
+0ef2c2d1a9d0 wireless: fix wiki website url in main Kconfig
+eb17a4f9acf1 atmel: fix wiki website url
+8bd4147c4b17 broadcom: fix wiki website url
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+https://patchwork.kernel.org/patch/11589899/
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
