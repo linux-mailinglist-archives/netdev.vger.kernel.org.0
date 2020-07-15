@@ -2,358 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4C1D22030F
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 05:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1BC722031E
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 05:55:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728663AbgGODs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 23:48:59 -0400
-Received: from mga02.intel.com ([134.134.136.20]:58325 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726893AbgGODs6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 23:48:58 -0400
-IronPort-SDR: 7b3x+ftJpeEDpBhz/o0zFc0xJ+IcGsj5V86y4tO0lM1tGYF6iQCAn4ndDltEKuZmumnXSMn7Ul
- i4ahx/KjiJCA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9682"; a="137205626"
-X-IronPort-AV: E=Sophos;i="5.75,353,1589266800"; 
-   d="scan'208";a="137205626"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2020 20:48:57 -0700
-IronPort-SDR: 8fVfawAozvvHwEYzVFCCg67mXvc79ipvk7holK4MDK6+OzYuLhkAra6wFuyjFPy7CilNg0bBbo
- o4NZ+hlVtYLg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,353,1589266800"; 
-   d="scan'208";a="360581282"
-Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
-  by orsmga001.jf.intel.com with ESMTP; 14 Jul 2020 20:48:57 -0700
-Received: from FMSEDG001.ED.cps.intel.com (10.1.192.133) by
- FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 14 Jul 2020 20:48:57 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server (TLS) id
- 14.3.439.0; Tue, 14 Jul 2020 20:48:57 -0700
+        id S1728105AbgGODxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 23:53:51 -0400
+Received: from mail-eopbgr60092.outbound.protection.outlook.com ([40.107.6.92]:18341
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726885AbgGODxu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 23:53:50 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kKsI99gvQz7WvRuq8pyJ3Penw93loAxvadbF4hVZfPSBC6nqVdKe1E2cYdIJGifgJrBs+Kcq/3zDUSprntLMCx7BvBZ7TD/vk06MLNyksCshjXz347R5WpEm4RKl3I3HnEvhghtiGgm0F1Zk8jezKUON8f5O6csyUpxNz84IeQvIoCJutjdsYx5RXJ489fx+IxKo5uzNDCctFU2Pa0AbxgR9cGaHu/9OVng9RH5f4TDnAzIEJB1em5XUJRoCkPNq0m4HtwjUEOSHOGgIRUgRU9r+0E5PBpnE/ssmeWuN/ZfXxd1bTVWW2deyn/3fqZPcRtZvhU/kW42K5GyV8DXP2w==
+ b=U16AdpjhtQo55NmZpLUDgMrCmk1yFTqeAIb2JR24+bQEgoYPfzJUKKil+9pevY6ID1NgrKCg+VpLtLocwKpLu/t/wMqaUs/jZr/cAPySpBYjZmuSLE+F1cppfX9oduPQJGws9Rch18sVG/CSvdLPaP5oqzAf1tJojr830KOuzk5sPZ+ihITg9j67SDbujVWrmZv89pwZouQG1ZcqSwlS0sHyZP9kizrMm1rqz2fkPdl1dzcapt/8bR9O3BJ9dbE2fzmompCOvde3R/mEAv3G8prbnjzLF3aHuhxxCpGA0aRgrTmtpLApjZe2QBpHoNe2ycFkLclDvG+QgH8vldYf2A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zjzzDqlbPGsP0rxkN0BlVBbBeGCK66+4iIaJ4FbARww=;
- b=mAuwFAb5UhBGcvgfxOTEc0/xnb3hVj9w0gVXjrnXmIp+IKXO3Zq2So067EIZ0IY6CTK3kZINaVnstUrFLKSvSUnMrB7AcLHcW7hGzdLznOIgttabbHvXGf/wLKHJw4F3lEcm42zLHj4TRPc5TNGlygAotn/e/IYmumhixhciZz89tDlPTXOalyWuvhQY43vnDwypN/NGOAIWJvqPQjDjdtcus3z6AcoBTXTwst6Nfysec1UMfnXRfLtxRJPWq0CgcscMapbVdQNe5D54+6eHikzdBLPasmPS2gejJIQMcjjxZwTIRe6XOuG03d1goy0BnxzYJ2Dp9PR9x6M8tzWSsQ==
+ bh=HSXBB0uDW0j5u6EjKkAKD03eqOJsmJ1sHlG19P0yaSM=;
+ b=hqIMs5wQKn/XuQd08w7qmwdvxohZanvr/9k6iXrXf/7vg6R++6rTbqY0B4hesngzNRxMjMfPpxJA2eppx4K7QZ4/ygQngI+//RUh/tUZxCAcu6hO2qbNKPpprdRqpPo1vXIsHPfia2oVawPh5CGt+vaj3khxk4hpvD9rSrLrfeSjq6y6lfd7NpDn6a2bJFA52YOsUthNURnWgdxyDMg2A7I8lYYQMTMAidOVvjbk+N5snAiLktUXxCK6QvV6aguK8CgJ30sVcppllLKkESraR4JKMmCYj+CO8Z/tjIyW+WYzgGADAw02g9Yw7/ldBoAGMktt29PQ/noGb8CxBtXBMw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zjzzDqlbPGsP0rxkN0BlVBbBeGCK66+4iIaJ4FbARww=;
- b=sA+2cy/trfn8V2JHzNQeY8Jr6dxdQu6npn1Tn283WxPaZ/W1O9xnet64IhyMQ6/uaCy8TdImBta3BhMBXIa6nlvVAFG9oHhNzLeiSF+g/YwQKy8a/4tXoZsUAo/0avAFk6ryUCGHlEP9Ar4kiyRzLL6jQUh1fuVzVbDumVcI39I=
-Received: from BN6PR11MB1250.namprd11.prod.outlook.com (2603:10b6:404:49::19)
- by BN6PR11MB0019.namprd11.prod.outlook.com (2603:10b6:405:69::11) with
+ bh=HSXBB0uDW0j5u6EjKkAKD03eqOJsmJ1sHlG19P0yaSM=;
+ b=clKOs+S4/+5bBch21+eYVbZIELdejeL7/iQTZCpjLpzz0BJGvQqBZSQ7oznilrijz5gyB6O/9dN+Y2aiQPYgXT9gvPFTdo80tWi8iT7RDtJHJTX5f1kSaFaoVgt8wELDTuMVpuyYa5WxJOCYthz5AmtdENP8Ar0OSR6xraFNNgg=
+Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com (2603:10a6:209:5::28)
+ by AM6PR05MB5973.eurprd05.prod.outlook.com (2603:10a6:20b:af::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21; Wed, 15 Jul
- 2020 03:48:55 +0000
-Received: from BN6PR11MB1250.namprd11.prod.outlook.com
- ([fe80::3d35:f08e:484:1808]) by BN6PR11MB1250.namprd11.prod.outlook.com
- ([fe80::3d35:f08e:484:1808%6]) with mapi id 15.20.3195.017; Wed, 15 Jul 2020
- 03:48:55 +0000
-From:   "Ooi, Joyce" <joyce.ooi@intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     Thor Thayer <thor.thayer@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Dalon Westergreen" <dalon.westergreen@linux.intel.com>,
-        "Tan, Ley Foon" <ley.foon.tan@intel.com>,
-        "See, Chin Liang" <chin.liang.see@intel.com>,
-        "Nguyen, Dinh" <dinh.nguyen@intel.com>,
-        "Westergreen, Dalon" <dalon.westergreen@intel.com>
-Subject: RE: [PATCH v4 08/10] net: eth: altera: add support for ptp and
- timestamping
-Thread-Topic: [PATCH v4 08/10] net: eth: altera: add support for ptp and
- timestamping
-Thread-Index: AQHWVPkJhwESHu7l8k201R4O3olQz6j/HwQAgAjo3OA=
-Date:   Wed, 15 Jul 2020 03:48:55 +0000
-Message-ID: <BN6PR11MB1250550070D2670315283F6DF27E0@BN6PR11MB1250.namprd11.prod.outlook.com>
-References: <20200708072401.169150-1-joyce.ooi@intel.com>
- <20200708072401.169150-9-joyce.ooi@intel.com> <20200709113126.GA776@hoboy>
-In-Reply-To: <20200709113126.GA776@hoboy>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Wed, 15 Jul
+ 2020 03:53:44 +0000
+Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com
+ ([fe80::9d1c:861f:f91e:7e5d]) by AM6PR0502MB3925.eurprd05.prod.outlook.com
+ ([fe80::9d1c:861f:f91e:7e5d%7]) with mapi id 15.20.3195.017; Wed, 15 Jul 2020
+ 03:53:44 +0000
+From:   Tuong Tong Lien <tuong.t.lien@dektech.com.au>
+To:     "Zhang, Qiang" <Qiang.Zhang@windriver.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "jmaloy@redhat.com" <jmaloy@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Xue, Ying" <Ying.Xue@windriver.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2] tipc: Don't using smp_processor_id() in preemptible
+ code
+Thread-Topic: [PATCH v2] tipc: Don't using smp_processor_id() in preemptible
+ code
+Thread-Index: AQHWWbQzmHeVUzT0dUO3ZUB6LP3WYKkHHx8AgADIYYCAABs7AA==
+Date:   Wed, 15 Jul 2020 03:53:43 +0000
+Message-ID: <AM6PR0502MB3925A724B302DE48876AED87E27E0@AM6PR0502MB3925.eurprd05.prod.outlook.com>
+References: <20200714080559.9617-1-qiang.zhang@windriver.com>,<bf395370-219a-7c87-deee-7f3edce8c9dc@gmail.com>
+ <DM6PR11MB2635949FCEAF1EF90B93B5D1FF7E0@DM6PR11MB2635.namprd11.prod.outlook.com>
+In-Reply-To: <DM6PR11MB2635949FCEAF1EF90B93B5D1FF7E0@DM6PR11MB2635.namprd11.prod.outlook.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.2.0.6
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [1.9.122.68]
+authentication-results: windriver.com; dkim=none (message not signed)
+ header.d=none;windriver.com; dmarc=none action=none
+ header.from=dektech.com.au;
+x-originating-ip: [14.161.14.188]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ca2f1d59-567a-4970-7da7-08d82871ff57
-x-ms-traffictypediagnostic: BN6PR11MB0019:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN6PR11MB001989FD463DAAC7BC5F24B8F27E0@BN6PR11MB0019.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-office365-filtering-correlation-id: 898a0766-47bd-443b-82ff-08d82872abd7
+x-ms-traffictypediagnostic: AM6PR05MB5973:
+x-microsoft-antispam-prvs: <AM6PR05MB5973A22FEF58E42F512D1577E27E0@AM6PR05MB5973.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6MfPoFJdskZ1UMCp3FlRWdcGqoCofQR+kBSUdUipjESumMzE72PeL7phNVE+P5w8D7w2FMEmPTdNmPf5FpKGoMbTf2l/uZQQJLNjmbJuwm2W18CcxqMiKDN6k1DTbNT/k20aRNejS3FmJCEdaHqXVV+NqXpIL3JWv4+xzqzgDJ1oeBzQXRhsAkFsaQQ3V2AsHHNSr6eV0U2L71ms9U7zBD1Sfe/HWcTQzTVnboCRasHaqjfG4nVpNLaDZtBTu9BviCPldxL4zv+9DuaxdotH1xzYlnyQ69t23/JzqDqobw3MZ2gJEbA4PiSY2HUNNwL9w3KluK2KLDG8nSrrUlj6Uw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR11MB1250.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(346002)(39860400002)(366004)(376002)(136003)(2906002)(6916009)(316002)(33656002)(4326008)(54906003)(55016002)(9686003)(83380400001)(76116006)(478600001)(52536014)(66946007)(5660300002)(64756008)(66476007)(66556008)(8676002)(8936002)(86362001)(7696005)(6506007)(53546011)(66446008)(71200400001)(186003)(55236004)(26005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: kdmfuObMtBYrL07d78uL+2sOatsqm14cFLxm3FDGgexe3bD9asgBQBxL/qgTOTiDLFK24QaxjYoxDeh/xRM1MoDTpxxXdDvSgQjLtMug9xdR53RRDiL2iPG9HLrhhhRZaz3u2lorAvuYJzkdWF5jzCVFgm6FVF5YDIBRTKwvhTgJ0BMAwdREtL30u6EPYsma8jUsKRtoG/ud47t92oRkZjKbaBKgfAz5f7rfNDDFecvnw7g18CMCRl31OLQIqgfXNomn7BpWEfLV/xL54Mn05MAyYoXxU/7KBU2AZmhlFH/Ck3SFAK++0WVmTndXnOvfLO3y+WCpa59efHDhBsX5AjA6xzrBl+HjD2MDx2KMcIrIKnlwSEQVnK/rUCwRw1qMFSzm7vhFz2s4nC/9mMgf/mkytXhc6qh3g+6ufltiXQ/s3vznSpyQuHw5Y/Y800AJ2ZbGxO59mg34rafs3/RkFPRY905r9i76uMBgOzk0r8I=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: tvUe10eL8+W5OAWcl1NqnXebpU+Jsg3XTZSfzI7GOBUIOh1T0sD8bBImrmFXvoktRwhKmhFj4Tktkt66lJRP67LdtbPZ01Xw+LdDz3l39EBGSZOSSLArfIXRx0bW+s+9I0RKOZk88MPerSxmOwJv1PgxCsWI5KwBO27YXLeBX1PCx+8AFP3XfKqkP9Xe5xt8tzXe8dAuxuIYJba8FBYUAYLq1lHXOG/YO4SwrJN8k/aZeMKJhyrLLKJdq3GFHIsbJgAA4mX3+ERAJm8miAMgO+F8RzqyKBjvF5N70qL8IkcIsS+tSTvLrS64MAI9Oud99cjaB12ZiIH9q/OPYRPpBQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0502MB3925.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39840400004)(396003)(376002)(366004)(346002)(136003)(83380400001)(55016002)(2906002)(53546011)(6506007)(7696005)(86362001)(8676002)(186003)(8936002)(9686003)(508600001)(26005)(71200400001)(33656002)(5660300002)(52536014)(66476007)(76116006)(4326008)(66946007)(66556008)(316002)(66446008)(64756008)(54906003)(110136005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: P3BKnueWKRsRZBA+tKoyJEUJbPIq/LtFbAXAmRQiSfWserVJvlrXhUoNewbkw/7KEldO3WGTF9ki+QLrA3epTu+gMj/n5seR/6LDUkBsAnPm3BHIGc3hvOGIL1PkoQWewyyEB2Ss6UbG9eTS+1VdRZZoQDXop5HylgefnLbs4hUaO5nD3HlzYvaclXVWOYenSxQoDgeLKHLZpN66P8A9uNqxPdJTCUsUpmogsIULo8RjJUqI+SOZqlI8R8RrrqpfaXWc0Av6qBE55BMh7IajWiVVBW8Lzl/QANBk6II0pLKT5tDWT79ZjO6AuRGzalcUGtdYkhcWue0yM8TIdWqOtlRHZQO0TDWL3/P+zNteBADiQY2q7hdnzrw1rXgVqpoqk6Md+FXIGEOWwDfshhTjavG7HCcScp6I8HN0llyJpzSPxv5un9DASIWbcl9uxsdF5ulVu1qOsUUwLP43f5/VvOkf9Y+oCsOtYOLSyGVXBHg=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+X-OriginatorOrg: dektech.com.au
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN6PR11MB1250.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca2f1d59-567a-4970-7da7-08d82871ff57
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jul 2020 03:48:55.0715
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR0502MB3925.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 898a0766-47bd-443b-82ff-08d82872abd7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jul 2020 03:53:44.1718
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iCMABtntKprSiwsAiHWOwesRhTDbR6/czFcapVbseCh6aFb5cwlLMmwNqWqQCqh2N0Uh9/vuWHDz2L/A2xa8Qw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB0019
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-userprincipalname: Dk1VmCvAgNGknMCEDXB81mADKp9fJkkokbxfdZDPBUPY6PyAwUo9iEsO0l+0lpBiTBM31CGpOQ6jOZQb0g0FnABl2lR/PagohufzzRROIig=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5973
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Richard Cochran <richardcochran@gmail.com>
-> Sent: Thursday, July 9, 2020 7:31 PM
-> To: Ooi, Joyce <joyce.ooi@intel.com>
-> Cc: Thor Thayer <thor.thayer@linux.intel.com>; David S . Miller
-> <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>;
-> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Dalon Westergreen
-> <dalon.westergreen@linux.intel.com>; Tan, Ley Foon
-> <ley.foon.tan@intel.com>; See, Chin Liang <chin.liang.see@intel.com>;
-> Nguyen, Dinh <dinh.nguyen@intel.com>; Westergreen, Dalon
-> <dalon.westergreen@intel.com>
-> Subject: Re: [PATCH v4 08/10] net: eth: altera: add support for ptp and
-> timestamping
->=20
-> On Wed, Jul 08, 2020 at 03:23:59PM +0800, Ooi, Joyce wrote:
->=20
-> > @@ -222,6 +223,32 @@ static void tse_get_regs(struct net_device *dev,
-> struct ethtool_regs *regs,
-> >  		buf[i] =3D csrrd32(priv->mac_dev, i * 4);  }
-> >
-> > +static int tse_get_ts_info(struct net_device *dev,
-> > +			   struct ethtool_ts_info *info)
-> > +{
-> > +	struct altera_tse_private *priv =3D netdev_priv(dev);
-> > +
-> > +	if (priv->ptp_enable) {
-> > +		if (priv->ptp_priv.ptp_clock)
-> > +			info->phc_index =3D
-> > +				ptp_clock_index(priv->ptp_priv.ptp_clock);
->=20
-> Need to handle case where priv->ptp_priv.ptp_clock =3D=3D NULL.
-
-Ok, will add a checking if priv->ptp_priv.ptp_clock =3D=3D NULL, it'll retu=
-rn error.
-
->=20
-> > +		info->so_timestamping =3D
-> SOF_TIMESTAMPING_TX_HARDWARE |
-> > +
-> 	SOF_TIMESTAMPING_RX_HARDWARE |
-> > +
-> 	SOF_TIMESTAMPING_RAW_HARDWARE;
-> > +
-> > +		info->tx_types =3D (1 << HWTSTAMP_TX_OFF) |
-> > +						 (1 << HWTSTAMP_TX_ON);
->=20
-> No need to break statement.  This fits nicely on one line.
->=20
-> > +
-> > +		info->rx_filters =3D (1 << HWTSTAMP_FILTER_NONE) |
-> > +						   (1 <<
-> HWTSTAMP_FILTER_ALL);
-> > +
-> > +		return 0;
-> > +	} else {
->=20
-> No need for else block.
-
-Noted, will make the changes.
->=20
-> > +		return ethtool_op_get_ts_info(dev, info);
-> > +	}
-> > +}
-> > +
-> >  static const struct ethtool_ops tse_ethtool_ops =3D {
-> >  	.get_drvinfo =3D tse_get_drvinfo,
-> >  	.get_regs_len =3D tse_reglen,
->=20
->=20
-> > @@ -1309,6 +1324,83 @@ static int tse_shutdown(struct net_device *dev)
-> >  	return 0;
-> >  }
-> >
-> > +/* ioctl to configure timestamping */ static int tse_do_ioctl(struct
-> > +net_device *dev, struct ifreq *ifr, int cmd) {
-> > +	struct altera_tse_private *priv =3D netdev_priv(dev);
-> > +	struct hwtstamp_config config;
->=20
-> Need to check here for phy_has_hwtstamp() and pass through to PHY layer
-> if true.
-
-Ok, will add a phy_has_hwtstamp checking before if (cmd =3D=3D SIOCSHWTSTAM=
-P) and if (cmd =3D=3D SIOCGHWTSTAMP) are called.
->=20
-> > +
-> > +	if (!netif_running(dev))
-> > +		return -EINVAL;
-> > +
-> > +	if (!priv->ptp_enable)	{
-> > +		netdev_alert(priv->dev, "Timestamping not supported");
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	if (cmd =3D=3D SIOCSHWTSTAMP) {
-> > +		if (copy_from_user(&config, ifr->ifr_data,
-> > +				   sizeof(struct hwtstamp_config)))
-> > +			return -EFAULT;
-> > +
-> > +		if (config.flags)
-> > +			return -EINVAL;
-> > +
-> > +		switch (config.tx_type) {
-> > +		case HWTSTAMP_TX_OFF:
-> > +			priv->hwts_tx_en =3D 0;
-> > +			break;
-> > +		case HWTSTAMP_TX_ON:
-> > +			priv->hwts_tx_en =3D 1;
-> > +			break;
-> > +		default:
-> > +			return -ERANGE;
-> > +		}
-> > +
-> > +		switch (config.rx_filter) {
-> > +		case HWTSTAMP_FILTER_NONE:
-> > +			priv->hwts_rx_en =3D 0;
-> > +			config.rx_filter =3D HWTSTAMP_FILTER_NONE;
-> > +			break;
-> > +		default:
-> > +			priv->hwts_rx_en =3D 1;
-> > +			config.rx_filter =3D HWTSTAMP_FILTER_ALL;
-> > +			break;
-> > +		}
-> > +
-> > +		if (copy_to_user(ifr->ifr_data, &config,
-> > +				 sizeof(struct hwtstamp_config)))
-> > +			return -EFAULT;
-> > +		else
-> > +			return 0;
-> > +	}
-> > +
-> > +	if (cmd =3D=3D SIOCGHWTSTAMP) {
-> > +		config.flags =3D 0;
-> > +
-> > +		if (priv->hwts_tx_en)
-> > +			config.tx_type =3D HWTSTAMP_TX_ON;
-> > +		else
-> > +			config.tx_type =3D HWTSTAMP_TX_OFF;
-> > +
-> > +		if (priv->hwts_rx_en)
-> > +			config.rx_filter =3D HWTSTAMP_FILTER_ALL;
-> > +		else
-> > +			config.rx_filter =3D HWTSTAMP_FILTER_NONE;
-> > +
-> > +		if (copy_to_user(ifr->ifr_data, &config,
-> > +				 sizeof(struct hwtstamp_config)))
-> > +			return -EFAULT;
-> > +		else
-> > +			return 0;
-> > +	}
-> > +
-> > +	if (!dev->phydev)
-> > +		return -EINVAL;
-> > +
-> > +	return phy_mii_ioctl(dev->phydev, ifr, cmd); }
-> > +
-> >  static struct net_device_ops altera_tse_netdev_ops =3D {
-> >  	.ndo_open		=3D tse_open,
-> >  	.ndo_stop		=3D tse_shutdown,
->=20
->=20
-> > @@ -1568,6 +1661,27 @@ static int altera_tse_probe(struct
-> platform_device *pdev)
-> >  		netdev_err(ndev, "Cannot attach to PHY (error: %d)\n", ret);
-> >  		goto err_init_phy;
-> >  	}
-> > +
-> > +	priv->ptp_enable =3D of_property_read_bool(pdev->dev.of_node,
-> > +						 "altr,has-ptp");
->=20
-> The name "ptp_enable" is a poor choice.  It sounds like something that ca=
-n
-> be enabled at run time.  Suggest "has_ptp" instead.
-
-Ok, will rename to 'has_ptp'.
->=20
-> > +	dev_info(&pdev->dev, "PTP Enable: %d\n", priv->ptp_enable);
-> > +
-> > +	if (priv->ptp_enable) {
-> > +		/* MAP PTP */
-> > +		ret =3D intel_fpga_tod_probe(pdev, &priv->ptp_priv);
-> > +		if (ret) {
-> > +			dev_err(&pdev->dev, "cannot map PTP\n");
-> > +			goto err_init_phy;
-> > +		}
-> > +		ret =3D intel_fpga_tod_register(&priv->ptp_priv,
-> > +					      priv->device);
-> > +		if (ret) {
-> > +			dev_err(&pdev->dev, "Failed to register PTP
-> clock\n");
-> > +			ret =3D -ENXIO;
-> > +			goto err_init_phy;
-> > +		}
-> > +	}
-> > +
-> >  	return 0;
-> >
-> >  err_init_phy:
->=20
->=20
-> > +/* Initialize PTP control block registers */ int
-> > +intel_fpga_tod_init(struct intel_fpga_tod_private *priv) {
-> > +	struct timespec64 now;
-> > +	int ret =3D 0;
-> > +
-> > +	ret =3D intel_fpga_tod_adjust_fine(&priv->ptp_clock_ops, 0l);
->=20
-> Why clobber a learned frequency offset here?  If user space closes then r=
-e-
-> opens, then it expects the old frequency to be preserved.
->=20
-> It is fine to set this to zero when the driver loads, but not after.
-
-I'll remove this adjust_fine() during init as it'll be called whenever the =
-callback function is called.
->=20
-> > +	if (ret !=3D 0)
-> > +		goto out;
-> > +
-> > +	/* Initialize the hardware clock to the system time */
-> > +	ktime_get_real_ts64(&now);
->=20
-> Please initialize to zero instead, as some people prefer it that way.
->=20
-> (But only the first time when the driver loads!)
-
-Ok sure, I'll initialize the hardware clock to 0.
->=20
-> > +	intel_fpga_tod_set_time(&priv->ptp_clock_ops, &now);
-> > +
-> > +	spin_lock_init(&priv->tod_lock);
-> > +
-> > +out:
-> > +	return ret;
-> > +}
->=20
-> Thanks,
-> Richard
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWmhhbmcsIFFpYW5nIDxR
+aWFuZy5aaGFuZ0B3aW5kcml2ZXIuY29tPg0KPiBTZW50OiBXZWRuZXNkYXksIEp1bHkgMTUsIDIw
+MjAgOToxMyBBTQ0KPiBUbzogRXJpYyBEdW1hemV0IDxlcmljLmR1bWF6ZXRAZ21haWwuY29tPjsg
+am1hbG95QHJlZGhhdC5jb207IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVsLm9yZzsg
+VHVvbmcgVG9uZyBMaWVuDQo+IDx0dW9uZy50LmxpZW5AZGVrdGVjaC5jb20uYXU+OyBYdWUsIFlp
+bmcgPFlpbmcuWHVlQHdpbmRyaXZlci5jb20+DQo+IENjOiBuZXRkZXZAdmdlci5rZXJuZWwub3Jn
+OyB0aXBjLWRpc2N1c3Npb25AbGlzdHMuc291cmNlZm9yZ2UubmV0OyBsaW51eC1rZXJuZWxAdmdl
+ci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IOWbnuWkjTogW1BBVENIIHYyXSB0aXBjOiBEb24ndCB1
+c2luZyBzbXBfcHJvY2Vzc29yX2lkKCkgaW4gcHJlZW1wdGlibGUgY29kZQ0KPiANCj4gDQo+IA0K
+PiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IOWPkeS7tuS6ujog
+RXJpYyBEdW1hemV0IDxlcmljLmR1bWF6ZXRAZ21haWwuY29tPg0KPiDlj5HpgIHml7bpl7Q6IDIw
+MjDlubQ35pyIMTTml6UgMjI6MTUNCj4g5pS25Lu25Lq6OiBaaGFuZywgUWlhbmc7IGptYWxveUBy
+ZWRoYXQuY29tOyBkYXZlbUBkYXZlbWxvZnQubmV0OyBrdWJhQGtlcm5lbC5vcmc7IHR1b25nLnQu
+bGllbkBkZWt0ZWNoLmNvbS5hdTsNCj4gZXJpYy5kdW1hemV0QGdtYWlsLmNvbTsgWHVlLCBZaW5n
+DQo+IOaKhOmAgTogbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgdGlwYy1kaXNjdXNzaW9uQGxpc3Rz
+LnNvdXJjZWZvcmdlLm5ldDsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZw0KPiDkuLvpopg6
+IFJlOiBbUEFUQ0ggdjJdIHRpcGM6IERvbid0IHVzaW5nIHNtcF9wcm9jZXNzb3JfaWQoKSBpbiBw
+cmVlbXB0aWJsZSBjb2RlDQo+IA0KPiANCj4gDQo+IE9uIDcvMTQvMjAgMTowNSBBTSwgcWlhbmcu
+emhhbmdAd2luZHJpdmVyLmNvbSB3cm90ZToNCj4gPiBGcm9tOiBaaGFuZyBRaWFuZyA8cWlhbmcu
+emhhbmdAd2luZHJpdmVyLmNvbT4NCj4gPg0KPiA+IENQVTogMCBQSUQ6IDY4MDEgQ29tbTogc3l6
+LWV4ZWN1dG9yMjAxIE5vdCB0YWludGVkIDUuOC4wLXJjNC1zeXprYWxsZXIgIzANCj4gPiBIYXJk
+d2FyZSBuYW1lOiBHb29nbGUgR29vZ2xlIENvbXB1dGUgRW5naW5lL0dvb2dsZSBDb21wdXRlIEVu
+Z2luZSwNCj4gPiBCSU9TIEdvb2dsZSAwMS8wMS8yMDExDQo+ID4NCj4gPiBGaXhlczogZmMxYjZk
+NmRlMjIwOCAoInRpcGM6IGludHJvZHVjZSBUSVBDIGVuY3J5cHRpb24gJiBhdXRoZW50aWNhdGlv
+biIpDQo+ID4gUmVwb3J0ZWQtYnk6IHN5emJvdCsyNjNmOGMwZDAwN2RjMDliMmRkYUBzeXprYWxs
+ZXIuYXBwc3BvdG1haWwuY29tDQo+ID4gU2lnbmVkLW9mZi1ieTogWmhhbmcgUWlhbmcgPHFpYW5n
+LnpoYW5nQHdpbmRyaXZlci5jb20+DQo+ID4gLS0tDQo+ID4gIHYxLT52MjoNCj4gPiAgYWRkIGZp
+eGVzIHRhZ3MuDQo+ID4NCj4gPiAgbmV0L3RpcGMvY3J5cHRvLmMgfCAzICsrLQ0KPiA+ICAxIGZp
+bGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQo+ID4NCj4gPiBkaWZm
+IC0tZ2l0IGEvbmV0L3RpcGMvY3J5cHRvLmMgYi9uZXQvdGlwYy9jcnlwdG8uYw0KPiA+IGluZGV4
+IDhjNDdkZWQyZWRiNi4uNTIwYWYwYWZlMWIzIDEwMDY0NA0KPiA+IC0tLSBhL25ldC90aXBjL2Ny
+eXB0by5jDQo+ID4gKysrIGIvbmV0L3RpcGMvY3J5cHRvLmMNCj4gPiBAQCAtMzk5LDkgKzM5OSwx
+MCBAQCBzdGF0aWMgdm9pZCB0aXBjX2FlYWRfdXNlcnNfc2V0KHN0cnVjdCB0aXBjX2FlYWQgX19y
+Y3UgKmFlYWQsIGludCB2YWwpDQo+ID4gICAqLw0KPiA+ICBzdGF0aWMgc3RydWN0IGNyeXB0b19h
+ZWFkICp0aXBjX2FlYWRfdGZtX25leHQoc3RydWN0IHRpcGNfYWVhZCAqYWVhZCkNCj4gPiAgew0K
+PiA+IC0gICAgIHN0cnVjdCB0aXBjX3RmbSAqKnRmbV9lbnRyeSA9IHRoaXNfY3B1X3B0cihhZWFk
+LT50Zm1fZW50cnkpOw0KPiA+ICsgICAgIHN0cnVjdCB0aXBjX3RmbSAqKnRmbV9lbnRyeSA9IGdl
+dF9jcHVfcHRyKGFlYWQtPnRmbV9lbnRyeSk7DQo+ID4NCj4gPiAgICAgICAqdGZtX2VudHJ5ID0g
+bGlzdF9uZXh0X2VudHJ5KCp0Zm1fZW50cnksIGxpc3QpOw0KPiA+ICsgICAgIHB1dF9jcHVfcHRy
+KHRmbV9lbnRyeSk7DQo+ID4gICAgICAgcmV0dXJuICgqdGZtX2VudHJ5KS0+dGZtOw0KPiA+ICB9
+DQo+ID4NCj4gPg0KPiANCj4gPiBZb3UgaGF2ZSBub3QgZXhwbGFpbmVkIHdoeSB0aGlzIHdhcyBz
+YWZlLg0KPiA+DQo+ID4gIFRoaXMgc2VlbXMgdG8gaGlkZSBhIHJlYWwgYnVnLg0KPiA+DQo+ID4g
+UHJlc3VtYWJseSBjYWxsZXJzIG9mIHRoaXMgZnVuY3Rpb24gc2hvdWxkIGhhdmUgZGlzYWJsZSBw
+cmVlbXB0aW9uLCBhbmQgbWF5YmUgPiBpbnRlcnJ1cHRzIGFzIHdlbGwuDQo+ID4NCj4gPlJpZ2h0
+IGFmdGVyIHB1dF9jcHVfcHRyKHRmbV9lbnRyeSksIHRoaXMgdGhyZWFkIGNvdWxkIG1pZ3JhdGUg
+dG8gYW5vdGhlciBjcHUsID5hbmQgc3RpbGwgYWNjZXNzDQo+ID5kYXRhIG93bmVkIGJ5IHRoZSBv
+bGQgY3B1Lg0KPiANCj4gVGhhbmtzIGZvciB5b3Ugc3VnZ2VzdCwgSSB3aWxsIGNoZWNrIGNvZGUg
+YWdhaW4uDQo+IA0KDQpBY3R1YWxseSwgbGFzdCB3ZWVrIEkgc2VudCBhIHNpbWlsYXIgcGF0Y2gg
+dG8gdGlwYy1kaXNjdXNzaW9uIHdoaWNoIGNvdmVycyB0aGUNCmNhc2UgYXMgd2VsbCAodGhlcmUg
+aXMgYWxzbyBhbm90aGVyIHBsYWNlIGNhdXNpbmcgdGhlIHNhbWUgaXNzdWUuLi4pLiBJZiB5b3UN
+CmRvbid0IG1pbmQsIHlvdSBjYW4gdGFrZSBhIGxvb2sgYXQgYmVsb3cgKGp1c3QgY29waWVkL3Bh
+c3RlZCkuDQoNCkJSL1R1b25nDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBU
+dW9uZyBUb25nIExpZW4gPHR1b25nLnQubGllbkBkZWt0ZWNoLmNvbS5hdT4gDQpTZW50OiBGcmlk
+YXksIEp1bHkgMTAsIDIwMjAgNToxMSBQTQ0KVG86IGptYWxveUByZWRoYXQuY29tOyBtYWxveUBk
+b25qb25uLmNvbTsgeWluZy54dWVAd2luZHJpdmVyLmNvbTsgdGlwYy1kaXNjdXNzaW9uQGxpc3Rz
+LnNvdXJjZWZvcmdlLm5ldA0KQ2M6IHRpcGMtZGVrIDx0aXBjLWRla0BkZWt0ZWNoLmNvbS5hdT4N
+ClN1YmplY3Q6IFtQQVRDSCBSRkMgMS81XSB0aXBjOiBmaXggdXNpbmcgc21wX3Byb2Nlc3Nvcl9p
+ZCgpIGluIHByZWVtcHRpYmxlDQoNClRoZSAndGhpc19jcHVfcHRyKCknIGlzIHVzZWQgdG8gb2J0
+YWluIHRoZSBBRUFEIGtleScgVEZNIG9uIHRoZSBjdXJyZW50DQpDUFUgZm9yIGVuY3J5cHRpb24s
+IGhvd2V2ZXIgdGhlIGV4ZWN1dGlvbiBjYW4gYmUgcHJlZW1wdGlibGUgc2luY2UgaXQncw0KYWN0
+dWFsbHkgdXNlci1zcGFjZSBjb250ZXh0LCBzbyB0aGUgJ3VzaW5nIHNtcF9wcm9jZXNzb3JfaWQo
+KSBpbg0KcHJlZW1wdGlibGUnIGhhcyBiZWVuIG9ic2VydmVkLg0KDQpXZSBmaXggdGhlIGlzc3Vl
+IGJ5IHVzaW5nIHRoZSAnZ2V0L3B1dF9jcHVfcHRyKCknIEFQSSB3aGljaCBjb25zaXN0cyBvZg0K
+YSAncHJlZW1wdF9kaXNhYmxlKCknIGluc3RlYWQuDQoNClNpZ25lZC1vZmYtYnk6IFR1b25nIExp
+ZW4gPHR1b25nLnQubGllbkBkZWt0ZWNoLmNvbS5hdT4NCi0tLQ0KIG5ldC90aXBjL2NyeXB0by5j
+IHwgMTIgKysrKysrKysrLS0tDQogMSBmaWxlIGNoYW5nZWQsIDkgaW5zZXJ0aW9ucygrKSwgMyBk
+ZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL25ldC90aXBjL2NyeXB0by5jIGIvbmV0L3RpcGMv
+Y3J5cHRvLmMNCmluZGV4IGM4YzQ3ZmM3MjY1My4uMTgyN2NlNGZhYzVkIDEwMDY0NA0KLS0tIGEv
+bmV0L3RpcGMvY3J5cHRvLmMNCisrKyBiL25ldC90aXBjL2NyeXB0by5jDQpAQCAtMzI2LDcgKzMy
+Niw4IEBAIHN0YXRpYyB2b2lkIHRpcGNfYWVhZF9mcmVlKHN0cnVjdCByY3VfaGVhZCAqcnApDQog
+CWlmIChhZWFkLT5jbG9uZWQpIHsNCiAJCXRpcGNfYWVhZF9wdXQoYWVhZC0+Y2xvbmVkKTsNCiAJ
+fSBlbHNlIHsNCi0JCWhlYWQgPSAqdGhpc19jcHVfcHRyKGFlYWQtPnRmbV9lbnRyeSk7DQorCQlo
+ZWFkID0gKmdldF9jcHVfcHRyKGFlYWQtPnRmbV9lbnRyeSk7DQorCQlwdXRfY3B1X3B0cihhZWFk
+LT50Zm1fZW50cnkpOw0KIAkJbGlzdF9mb3JfZWFjaF9lbnRyeV9zYWZlKHRmbV9lbnRyeSwgdG1w
+LCAmaGVhZC0+bGlzdCwgbGlzdCkgew0KIAkJCWNyeXB0b19mcmVlX2FlYWQodGZtX2VudHJ5LT50
+Zm0pOw0KIAkJCWxpc3RfZGVsKCZ0Zm1fZW50cnktPmxpc3QpOw0KQEAgLTM5OSwxMCArNDAwLDE1
+IEBAIHN0YXRpYyB2b2lkIHRpcGNfYWVhZF91c2Vyc19zZXQoc3RydWN0IHRpcGNfYWVhZCBfX3Jj
+dSAqYWVhZCwgaW50IHZhbCkNCiAgKi8NCiBzdGF0aWMgc3RydWN0IGNyeXB0b19hZWFkICp0aXBj
+X2FlYWRfdGZtX25leHQoc3RydWN0IHRpcGNfYWVhZCAqYWVhZCkNCiB7DQotCXN0cnVjdCB0aXBj
+X3RmbSAqKnRmbV9lbnRyeSA9IHRoaXNfY3B1X3B0cihhZWFkLT50Zm1fZW50cnkpOw0KKwlzdHJ1
+Y3QgdGlwY190Zm0gKip0Zm1fZW50cnk7DQorCXN0cnVjdCBjcnlwdG9fYWVhZCAqdGZtOw0KIA0K
+Kwl0Zm1fZW50cnkgPSBnZXRfY3B1X3B0cihhZWFkLT50Zm1fZW50cnkpOw0KIAkqdGZtX2VudHJ5
+ID0gbGlzdF9uZXh0X2VudHJ5KCp0Zm1fZW50cnksIGxpc3QpOw0KLQlyZXR1cm4gKCp0Zm1fZW50
+cnkpLT50Zm07DQorCXRmbSA9ICgqdGZtX2VudHJ5KS0+dGZtOw0KKwlwdXRfY3B1X3B0cih0Zm1f
+ZW50cnkpOw0KKw0KKwlyZXR1cm4gdGZtOw0KIH0NCiANCiAvKioNCi0tIA0KMi4xMy43DQo=
