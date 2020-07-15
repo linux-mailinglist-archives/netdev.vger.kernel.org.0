@@ -2,200 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EF632201AC
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 03:17:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1F3A2201B0
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 03:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727888AbgGOBRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 21:17:31 -0400
-Received: from mga18.intel.com ([134.134.136.126]:22100 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725977AbgGOBRa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 21:17:30 -0400
-IronPort-SDR: MLCUPuwLrtz4ZYbhtBYCN4s+arWVVSXKsE78F9aGbYqj4u25HU9Uqq3iS7rSYv5N533QZYwNuc
- 8uC7m4E9boCg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9682"; a="136516425"
-X-IronPort-AV: E=Sophos;i="5.75,353,1589266800"; 
-   d="scan'208";a="136516425"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2020 18:17:29 -0700
-IronPort-SDR: NdM4J1c5HdqMrgCy4AnPmfTtacmzbSdasmqrx7IdAP/rKcOC34O/W7JPWFWtBRsh+3y92sOZNw
- E56lrRHk7T/A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,353,1589266800"; 
-   d="scan'208";a="326014345"
-Received: from orsmsx109.amr.corp.intel.com ([10.22.240.7])
-  by orsmga007.jf.intel.com with ESMTP; 14 Jul 2020 18:17:29 -0700
-Received: from orsmsx156.amr.corp.intel.com (10.22.240.22) by
- ORSMSX109.amr.corp.intel.com (10.22.240.7) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 14 Jul 2020 18:17:29 -0700
-Received: from ORSEDG002.ED.cps.intel.com (10.7.248.5) by
- ORSMSX156.amr.corp.intel.com (10.22.240.22) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 14 Jul 2020 18:17:28 -0700
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (104.47.44.59) by
- edgegateway.intel.com (134.134.137.101) with Microsoft SMTP Server (TLS) id
- 14.3.439.0; Tue, 14 Jul 2020 18:17:28 -0700
+        id S1727101AbgGOBUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 21:20:51 -0400
+Received: from mail-eopbgr40052.outbound.protection.outlook.com ([40.107.4.52]:60266
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725977AbgGOBUu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 21:20:50 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QEoSsZWivpdNC2em4PY5WC20WIuyDZuBvgttQlWnilfBaUm2iOke2XbtvJeACqUME2GlUXMmzqvGYcQhS1o4HokML4XglczQmKSJ+YiqaR7wAy3lTlLHVfsbNdB9zkq3UhYxylp/XMe6OMMh7JwniTkJUVvg+gIgCKtIidFgUbiwB8+xWR50o1MXEC8kWwwuPJrbnFbXUxdMJHgMrzB0w564dv/Qc8hF7M5c1RgQrYLrYMZj89CVQq1qI7OIp8SPreN8eiUk5xQJXbHhW/F8dWHJ++h7NDwGskPNCvfxkQ8L7DUGxjSJsBY3jLm9qhmosfLO+jUFXgwKfDkcTl24hA==
+ b=Z4Faq2FO0/+KXPgCvFExRw3uo/Rm18hvXWg8xn/tLcgUFB0PaiiiTElcpOzXLrl84W21vdnbOSQrlcqu8mTqBxthmNJVX7tf/p0RHdr77xeeX1l7wuHwr3pPdG10YVyT6MHN5pc/FVanlcFVFG9200mfc3kvp2vPXmaWLAl8Lsx+bDpH/0uUdF1ivvlPMRQC3uaU8kuphllh3zDlGQAQiO4imgIbpZfEqeNvoO9HHIYt4zDPPrn7EX7PyGzYmNwZ/PDM7beftR505nLIbhpm/w1mBicPRj040UCdiHX1fgWXOB2L4t4gtb7I9CB4Bp45SIJtkBGCUna2Th9WWzVpnw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z2CW5q/9O4jXtZb2Ayh+GmWuvuV95EMkxsFKnX3p6W4=;
- b=mU7d6XvNUbaVDMvJKOFk+LvoHtrJGE2+iikhpgaG2FHUBpuuZZkjXGCMO8R6DGooiFsdpVeIOramTjRAxDdhEQ43/YDh731TbA35pauzh0Qsnx2kKwfGSiqm3yHxVvUE9PrIMfNBlRuKxDtlbmPRUWZvgz1LbnUBcnS/gt6Avs9Rrm70IRipy5o+QK3fR9uTKCa996vNM7WGCpa9JTHjqUqoxissiw9NY7m+WMr1MFu6EKexW1imk1m59ntzhQL/DYr1/toS5Xzk8MQcvdlgM5Hpc6sx+BGOPn5RQ9gm1NXprNkMjjEEG7fxvUfRdZoLywg0WKHdyPkJUau+zJNp/w==
+ bh=t/ZfEqCXLnf7p6WY9wr07ZYCSQFmWOAdZiELYHx/hZg=;
+ b=WH9uy28zgHBMbDZ7qlbeuE58mND42ohnwft3nq5jrNZDTU5FmyUh2wl5Ua33YRyigkePL+JuvyqexD0jb9Fcc7VUP5uqIWPFwGuNQ68xILpG0Ge8zMvqbJYiSh8iBz+s8U0WWTrX1VwyCWoU0D55F9kRVFK2RCCjS2UvgXs65ISeo0UCKnEyBd3Ra4Fm+j7y0yWO1jD0Vlm6c9jJSIQvopSzMW+yQqk0L1WtKSNWBV3Um+AMz+3hghg3ZRE5MHyVqy7lLvkUUmmPhn3Kxnvj6LRis9ImUe0EHQPTfv9A5AOGlmZpbN4FCkX0xGd354A2pfT7ZfrpwrMd+PQ7B+l6/Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z2CW5q/9O4jXtZb2Ayh+GmWuvuV95EMkxsFKnX3p6W4=;
- b=FBwZCrRon+H2k4KELl6bSQ40UeBHpiHZKDIqavDKdt/fbU6d4XqmcAS/9cnF2nWaCEmMRuP1i/76m4j7VtX3t97hP+/OTm+yb/alKJjVdX2a4A2mapcT76qjUPsfQeCn/MBIkNNurMNzsqX8DnI0Fvf8yyyTi1EU9+3UYJD5RuE=
-Received: from BN8PR11MB3795.namprd11.prod.outlook.com (2603:10b6:408:82::31)
- by BN7PR11MB2676.namprd11.prod.outlook.com (2603:10b6:406:ac::17) with
+ bh=t/ZfEqCXLnf7p6WY9wr07ZYCSQFmWOAdZiELYHx/hZg=;
+ b=rfk6mY929H2ID/2m80N6hPrcx0rvt24lVQ/0mrWzECJdqIOttwUrLSMF/KHrrSygCMRtKGF2HuBMCz59X9L1rZHoQZje/ok+/3VMfGAfCI3g3r9/1LESy3tjpMTP/KBlU7Ohdnd0tNbnD1SH0Yl/dSFe305rdYe7gDkAKc8aSr4=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB6109.eurprd05.prod.outlook.com (2603:10a6:803:e4::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21; Wed, 15 Jul
- 2020 01:17:26 +0000
-Received: from BN8PR11MB3795.namprd11.prod.outlook.com
- ([fe80::dd0f:7f49:bc5f:2fde]) by BN8PR11MB3795.namprd11.prod.outlook.com
- ([fe80::dd0f:7f49:bc5f:2fde%5]) with mapi id 15.20.3174.025; Wed, 15 Jul 2020
- 01:17:26 +0000
-From:   "Wang, Haiyue" <haiyue.wang@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "Lu, Nannan" <nannan.lu@intel.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>
-Subject: RE: [net-next 1/5] ice: add the virtchnl handler for AdminQ command
-Thread-Topic: [net-next 1/5] ice: add the virtchnl handler for AdminQ command
-Thread-Index: AQHWWT0ppkWffu3OB0+1aq0Sup42gakGHQqAgAAk/NCAASN8gIAAbxpw
-Date:   Wed, 15 Jul 2020 01:17:26 +0000
-Message-ID: <BN8PR11MB3795DABBB0D6A1E08585DF45F77E0@BN8PR11MB3795.namprd11.prod.outlook.com>
-References: <20200713174320.3982049-1-anthony.l.nguyen@intel.com>
-        <20200713174320.3982049-2-anthony.l.nguyen@intel.com>
-        <20200713154843.1009890a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BN8PR11MB37954214B9210253FC020BF6F7610@BN8PR11MB3795.namprd11.prod.outlook.com>
- <20200714112421.06f20c5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200714112421.06f20c5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.102.204.36]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 30f625d3-7bb9-4e3a-4866-08d8285cd5fc
-x-ms-traffictypediagnostic: BN7PR11MB2676:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN7PR11MB26765AAA283E8F3867384CAFF77E0@BN7PR11MB2676.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:565;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: yBJrCCOv0l3QAGqO+GTCYtzPKKPaUtS81gHQBTzi6dfVDIZWLWkutxLe8HM9LXa1OV5sYhzJHFB4aN7AdPuE79CtnJdAHBWBcF9gsl2QPvWV4VuB6oSp6BS4uJi94XtA5fmGLCzvg5cj1sqb3ijv6/rPJfQ0XPdZJcACWBUHBpDo80GXYPydeCxXFd3+XMVh3goa2Lx3OET3+6V6fEUzHH/dwsyNAokmgRWjC+dUDy+OAWNl2UjhX3AcgaUh4crsZqgVqts8D5zt/Jbbn7vt0x9F5ZEXBC3MTOureS2AKtm7r7E48nsFwGrV6iURswm4PyMHLZ+AnX8/qptmBtOmC669jntrT5TaGiEOkswWlDvy5Yd8B6ngE5nozqPpn1jh8zx9zPMQHBLAocqxRlcaC/sQyTnLDjDLZljD+88p0lLD71QQaBZIgjhr/4McLRi7/f8b3q6sst+PTgGiQbhNjRqEkclfXpk2KKmtUeifaJo=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR11MB3795.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(346002)(366004)(396003)(376002)(136003)(186003)(6506007)(53546011)(52536014)(66946007)(54906003)(5660300002)(76116006)(2906002)(83380400001)(26005)(64756008)(966005)(107886003)(55016002)(71200400001)(316002)(86362001)(4326008)(478600001)(66556008)(8936002)(7696005)(19273905006)(33656002)(6916009)(8676002)(9686003)(66476007)(66446008)(562404015)(563064011);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: 7G9vXL3LCqvctAg/ISNKnTXg1GTJ/TOxR2bzvHRjb94t8dG8i5nKeM/Hc9yVDOYkTL/MdhfvBaS5u41DmrhVf3d5OC2xllHmL8UCJH1hKZG34wiRrdJH1V5e9oQkslsbgxlZYjeMIilIY51LWLN9koVuIjlDUVx0JCNu0/3Qr5+Zv3aiZJsuAXPgpCj5VMOX4GqhVdSHCnr0X4iNufTSHPCPXfvxxPauu+gu7b166YaoFMzOFwUGKzAR3RMl4gAWa4z9BrW6jBTqrKpGQCKZvxJIsMTTSDPF1SEhbXgKGrDgG68DD8BTmpfnG3SHXb+p2WynA8sSrQVpR2+Ifs3bqWxoZUDHDLrf3AshJRnOZ1YhgCdDJb0sLTfvbuCxWJisV0KSkfJls2RBk/jXJMmL42C+MP0CNcQh78xN7brnxExhhc2aFY7wVKeNm9A1jTN4aLnQPo0VUXlypEKfFVExHl1Gt4UbcCA3ddYN3BIhyEXDtmR/UpPtCfOwntRE1ZWM
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17; Wed, 15 Jul
+ 2020 01:20:46 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3174.026; Wed, 15 Jul 2020
+ 01:20:46 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH mlx5-next 0/4] mlx5 next updates 2020-07-14
+Date:   Tue, 14 Jul 2020 18:20:07 -0700
+Message-Id: <20200715012007.8790-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.26.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR17CA0043.namprd17.prod.outlook.com
+ (2603:10b6:a03:167::20) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BY5PR17CA0043.namprd17.prod.outlook.com (2603:10b6:a03:167::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17 via Frontend Transport; Wed, 15 Jul 2020 01:20:44 +0000
+X-Mailer: git-send-email 2.26.2
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 0ba0faea-7fd4-4e11-0ed8-08d8285d4cce
+X-MS-TrafficTypeDiagnostic: VI1PR05MB6109:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB6109DD7EF6B20D616CAF9D24BE7E0@VI1PR05MB6109.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: g8IRTymMu95ONcfwMu0gMOTbIVQgKbpMT1DUqP0AAH1+GJl0Xj/yAcU93IkTOHG6e5lxACJKwb5kuQ9M2Zs642oCSQselXyFe3Zceci3J4E4yLK0Jz0WumzS2H+1w+zu6fUyEBIhJhhF5thKV2KbLeNWMUTkU/E6sPP4sDd/BWu+igXJUnyCeAes8uYu31773Qfgtn5FTA5RwWW/Z8sHanbRzgPrjcLGupTDQv+5y1jlzIoxDrKs2avwv3JzJJBaMmKdIcS2iZA+5gPND/9EVrKZbQXkRFeYLW1YOUvqkfWqxLm4EpW0T5zpXKRAP3M9nMUUc8I3pNL1rI051GhI3QHUBHUEZWdQeD/pUJOkXAORSU4BL9ZSwSnE19mKT0EP
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(39860400002)(136003)(366004)(376002)(396003)(8676002)(6512007)(6636002)(6506007)(4326008)(2906002)(1076003)(6666004)(52116002)(478600001)(2616005)(6486002)(956004)(15650500001)(450100002)(66476007)(66556008)(8936002)(86362001)(66946007)(26005)(36756003)(110136005)(186003)(83380400001)(316002)(5660300002)(16526019)(4744005)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: I24LNqO3ukzVGml2YTFmfZTEJEvAGraT223Zuj3qVQ4KTnQ3GgK+KG4GIGL9e7PAVFXCkqBSv0jp/ip3ZenJvnO2gs1uEuO874Bs6kvNEGf1gjk5yVJiHadqngZKWOK4M9f5Mena9cDhCHrv4MWvu6R05i0yMcSi4PZ/XkERzH4kqCjK9sNVDUocMQ+z8RJVnnwxwS1joq5Nexm3NiVg6GXYCuvBTkoDH7QW8UNNHHiCe4nfgX+2LIt1jaQQYuu82OC/1jPmGgxDLWAD4NSkiZnIpCuCMnIf/lnyKdg+OIqm2PWeFJUwno6WlwG11x6XIxB6fBr1rbUwD9hrrsii3SdZgU+hTvNep/sC41M9Y1eC5tFtVv9AxF4XvM54O0S2vWYgoeCmVqJECB/KS7zPSntcbMk8J7xkd77gGvFV0AD3o62Jnw/lxWs3Gbbh18OnrZTj413RiijLzB0/YXYw9nx1YUPJfpcCEyckQVmpFMY=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ba0faea-7fd4-4e11-0ed8-08d8285d4cce
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR11MB3795.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30f625d3-7bb9-4e3a-4866-08d8285cd5fc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jul 2020 01:17:26.2239
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2020 01:20:46.2515
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ah9EuTdupo7md3apETkybk69OfOEEIoSurkVpZCS98abax+z4LK03MKdAdhiLef6zGWGh4Hyj+DURhp6sTdanQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2676
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QaHNZlcKKfT4xYQVZ+5HQRr2DiS/W5iXA5mJHdqdK5vfYAtsV8scUSLNWrDeFZmqC4u0wZk5pwzLmWMw/ube5A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6109
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Wednesday, July 15, 2020 02:24
-> To: Wang, Haiyue <haiyue.wang@intel.com>
-> Cc: Nguyen, Anthony L <anthony.l.nguyen@intel.com>; davem@davemloft.net; =
-netdev@vger.kernel.org;
-> nhorman@redhat.com; sassmann@redhat.com; Kirsher, Jeffrey T <jeffrey.t.ki=
-rsher@intel.com>; Lu, Nannan
-> <nannan.lu@intel.com>; Bowers, AndrewX <andrewx.bowers@intel.com>
-> Subject: Re: [net-next 1/5] ice: add the virtchnl handler for AdminQ comm=
-and
->=20
-> On Tue, 14 Jul 2020 01:29:40 +0000 Wang, Haiyue wrote:
-> > > On Mon, 13 Jul 2020 10:43:16 -0700 Tony Nguyen wrote:
-> > > > From: Haiyue Wang <haiyue.wang@intel.com>
-> > > >
-> > > > The DCF (Device Config Function) is a named trust VF (always with I=
-D 0,
-> > > > single entity per PF port) that can act as a sole controlling entit=
-y to
-> > > > exercise advance functionality such as adding switch rules for the =
-rest
-> > > > of VFs.
-> > >
-> > > But why? This looks like a bifurcated driver to me.
-> >
-> > Yes, like bifurcated about flow control. This expands Intel AVF virtual=
- channel
-> > commands, so that VF can talk to hardware indirectly, which is under co=
-ntrol of
-> > PF. Then VF can set up the flow control for other VFs. This enrich curr=
-ent PF's
-> > Flow Director filter for PF itself only by ethtool.
->=20
-> Could you say a little more about the application and motivation for
-> this?
->=20
+Hi,
 
-Sure, I will try to describe the whole story.
+This patchset introduces some updates to mlx5 next shared branch.
 
-> We are talking about a single control domain here, correct?
+1) Eli Cohen, Adds HW and mlx5_core driver definitions and bits for
+upcoming mlx5 VDPA driver support.
+2) Michael Guralnik Enables count actions for simple allow steering
+rule.
 
-Correct.
+In case of no objections this patchset will be applied to mlx5-next and
+later sent to rdma and net-next trees.
 
-As you know, with the help of vfio-pci kernel module, we can write the user=
- space
-driver for PCI devices, like DPDK. ;-)
+Thanks,
+Saeed.
 
-We have
-  1). user space iavf framework:
-	http://git.dpdk.org/dpdk/tree/drivers/common/iavf
+Eli Cohen (3):
+  net/mlx5: Support setting access rights of dma addresses
+  net/mlx5: Add VDPA interface type to supported enumerations
+  net/mlx5: Add interface changes required for VDPA
 
-  2). user space iavf driver:
-      http://git.dpdk.org/dpdk/tree/drivers/net/iavf
+Michael Guralnik (1):
+  net/mlx5: Enable count action for rules with allow action
 
-  3). user space ice driver with no SR-IOV support:
-      http://git.dpdk.org/dpdk/tree/drivers/net/ice
+ .../net/ethernet/mellanox/mlx5/core/alloc.c   |  11 +-
+ .../net/ethernet/mellanox/mlx5/core/fs_core.c |   1 +
+ include/linux/mlx5/device.h                   |   4 +-
+ include/linux/mlx5/driver.h                   |   2 +
+ include/linux/mlx5/mlx5_ifc.h                 | 118 +++++++++++++++---
+ 5 files changed, 118 insertions(+), 18 deletions(-)
 
-Nowadays, the concept of control path and data path separation is popular, =
-we tried
-to design a software defined control path by the above software portfolio, =
-and the
-scenario is described in:
-      http://doc.dpdk.org/guides/nics/ice.html 23.4.3. Device Config Functi=
-on (DCF)
-
-With the patch in user space ice driver:
-      http://git.dpdk.org/dpdk/commit/?id=3Dc5dccda9f2ae6ecc716892c233a0dad=
-c94e013da
-
-and this patch set in ice kernel driver, we can now promote the VF from iAV=
-F (data
-path we called) to DCF (control path) for each PF device.
-
-
-
+-- 
+2.26.2
 
