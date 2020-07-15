@@ -2,121 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20BA72205B2
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 09:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5A9B2205C3
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 09:03:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728940AbgGOHAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 03:00:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726811AbgGOHAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 03:00:31 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BECC061755;
-        Wed, 15 Jul 2020 00:00:31 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id x72so1684218pfc.6;
-        Wed, 15 Jul 2020 00:00:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1tLcbbH6RQ4c5Lr9zlq+KUv75jPKDDQ19OMIkZpQFbg=;
-        b=hZ9A3V1z4i3XqDgld5h+MHjsd2g6cZ6LkAd/2FLdVm6cZvQV8hLyuFKmjQ0mloxcbA
-         m4CbIJp50LH/fM9H/RWLLQYPJojRbT2mi6js2y5jEDFq74kg3bPlJWJGl3g+i6YN51AU
-         7hW3olZqkFtCBNZgi5dUt2sVb7T4GoV0x5HAf4mklwM50PCridcHTjareE/l7nTLA7eS
-         6vd6wim7EC/TmPYo5gusZG5A9yZxkj0kUrJNKUEgK1XGIoK4KYsbioL1LNSN8xUsrXQ+
-         AAEmDTU9rAwv/6zl4yHyJ8/o3RpBrIb8ppEtzOD31okEBsPcss1b00R+Ppl5hEKNgEba
-         cu8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1tLcbbH6RQ4c5Lr9zlq+KUv75jPKDDQ19OMIkZpQFbg=;
-        b=n3oVk6kLvhI9NLxIP4sNujy4tbA/3uPXRgLvD9FKmGK4s7EydCrQfVjlLM3UoEsA1R
-         KynHijEUMKSKi32srcqtZhOxRBWtP9JVSZPsJHGyABLD1Ya1jnvxvS7nP02G0c/GJTwS
-         GJ6vBVyUj590GKJn4bT+G7feInZDBbF9EgnGr1tumccwxYw0h+3y0i8mGcNzVnmydkXL
-         DKBVBJzN4kkT3C8Huullb0clAES2oEDelpY24pppasctyXnjnXOVJvWnJvNyS3IJI3Qw
-         dkzx42wSDkTuxkvxthbXn0D/nYnwlv+k0kZZL1VLFQ15mVU7Vjq9nxrOyJOGwuSwAGmj
-         CAXQ==
-X-Gm-Message-State: AOAM533KVCsXyEeRp5d/Qn6lBjxPNhPWMlnQS4iYl0OVA7sOYBbTbY8B
-        h5xDTE3yldWssQOon6cMJ0ZekcZk+Vg9lA==
-X-Google-Smtp-Source: ABdhPJww18jqMkURXkuy3Y3PXzxeyzQ/Ts2YDz9OKt/2lcIYp4VW2qVfAdjmhV1XYddK0TDH2dETvw==
-X-Received: by 2002:a63:100b:: with SMTP id f11mr6505902pgl.287.1594796430865;
-        Wed, 15 Jul 2020 00:00:30 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 17sm1020027pjl.30.2020.07.15.00.00.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2020 00:00:30 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH bpf-next] bpf: add a new bpf argument type ARG_CONST_MAP_PTR_OR_NULL
-Date:   Wed, 15 Jul 2020 15:00:01 +0800
-Message-Id: <20200715070001.2048207-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.25.4
+        id S1728978AbgGOHDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 03:03:50 -0400
+Received: from mail.intenta.de ([178.249.25.132]:39950 "EHLO mail.intenta.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726212AbgGOHDt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 03:03:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=ecvwun5iGdLoy5H6QJatU1u1WtuL4e1YyfLzb2c6fJQ=;
+        b=RG18ZcOxX1gVe5c3kThWOfAJLGtzAX9AA3BMdpuAq5HrdZKUDP+8+8tDa6+PqElBb4oJgUjfEXTekI5lcDZRYCsJotCNlUsyMbRIqCbe6CXEg2DutHRcgPpZL9j3t7qYorBXhPq+U3+jarQ02ZalUpxdBb71J3ysK6bQ34a6wSwdUxOuFjTLmJ04aNnyvO0eSUXZIgnmOfKODRpBV7abQMtndmEzK2Qqe7+uOm4QaHYuJOjHgSGvZiWwtl4+VWY/WtRibpJmHW9rommsciUJt9bOHUrcrUHwpr0FQITDmRhvDC3a7lsql3nch4sLxzEj8RAvmD4cJEWhaqxgZWoB3g==;
+Date:   Wed, 15 Jul 2020 09:03:45 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     David Miller <davem@davemloft.net>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "woojung.huh@microchip.com" <woojung.huh@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>
+Subject: Re: [PATCH] net: phy: phy_remove_link_mode should not advertise new
+ modes
+Message-ID: <20200715070345.GA3452@laureti-dev>
+References: <20200714082540.GA31028@laureti-dev>
+ <20200714.140710.213288407914809619.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200714.140710.213288407914809619.davem@davemloft.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new bpf argument type ARG_CONST_MAP_PTR_OR_NULL which could be
-used when we want to allow NULL pointer for map parameter. The bpf helper
-need to take care and check if the map is NULL when use this type.
+On Tue, Jul 14, 2020 at 11:07:10PM +0200, David Miller wrote:
+> From: Helmut Grohne <helmut.grohne@intenta.de>
+> Date: Tue, 14 Jul 2020 10:25:42 +0200
+> 
+> > When doing "ip link set dev ... up" for a ksz9477 backed link,
+> > ksz9477_phy_setup is called and it calls phy_remove_link_mode to remove
+> > 1000baseT HDX. During phy_remove_link_mode, phy_advertise_supported is
+> > called.
+> > 
+> > If one wants to advertise fewer modes than the supported ones, one
+> > usually reduces the advertised link modes before upping the link (e.g.
+> > by passing an appropriate .link file to udev).  However upping
+> > overrwrites the advertised link modes due to the call to
+> > phy_advertise_supported reverting to the supported link modes.
+> > 
+> > It seems unintentional to have phy_remove_link_mode enable advertising
+> > bits and it does not match its description in any way. Instead of
+> > calling phy_advertise_supported, we should simply clear the link mode to
+> > be removed from both supported and advertising.
+> 
+> The problem is that we can't allow the advertised setting to exceed
+> what is in the supported list.
+> 
+> That's why this helper is coded this way from day one.
 
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- include/linux/bpf.h   |  1 +
- kernel/bpf/verifier.c | 11 ++++++++---
- 2 files changed, 9 insertions(+), 3 deletions(-)
+Would you mind going into a little more detail here?
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index c67c88ad35f8..9d4dbef3c943 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -253,6 +253,7 @@ enum bpf_arg_type {
- 	ARG_PTR_TO_ALLOC_MEM,	/* pointer to dynamically allocated memory */
- 	ARG_PTR_TO_ALLOC_MEM_OR_NULL,	/* pointer to dynamically allocated memory or NULL */
- 	ARG_CONST_ALLOC_SIZE_OR_ZERO,	/* number of allocated bytes requested */
-+	ARG_CONST_MAP_PTR_OR_NULL,	/* const argument used as pointer to bpf_map or NULL */
- };
- 
- /* type of values returned from helper functions */
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 3c1efc9d08fd..d3551a19853a 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -3849,9 +3849,13 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
- 		expected_type = SCALAR_VALUE;
- 		if (type != expected_type)
- 			goto err_type;
--	} else if (arg_type == ARG_CONST_MAP_PTR) {
-+	} else if (arg_type == ARG_CONST_MAP_PTR ||
-+		   arg_type == ARG_CONST_MAP_PTR_OR_NULL) {
- 		expected_type = CONST_PTR_TO_MAP;
--		if (type != expected_type)
-+		if (register_is_null(reg) &&
-+		    arg_type == ARG_CONST_MAP_PTR_OR_NULL)
-+			/* final test in check_stack_boundary() */;
-+		else if (type != expected_type)
- 			goto err_type;
- 	} else if (arg_type == ARG_PTR_TO_CTX ||
- 		   arg_type == ARG_PTR_TO_CTX_OR_NULL) {
-@@ -3957,7 +3961,8 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
- 		return -EFAULT;
- 	}
- 
--	if (arg_type == ARG_CONST_MAP_PTR) {
-+	if (arg_type == ARG_CONST_MAP_PTR ||
-+	    (arg_type == ARG_CONST_MAP_PTR_OR_NULL && !register_is_null(reg))) {
- 		/* bpf_map_xxx(map_ptr) call: remember that map_ptr */
- 		meta->map_ptr = reg->map_ptr;
- 	} else if (arg_type == ARG_PTR_TO_MAP_KEY) {
--- 
-2.25.4
+I think you have essentially two possible cases with respect to that
+assertion.
 
+Case A: advertised does not exceed supported before the call to
+        phy_remove_link_mode.
+
+    In this case, the relevant link mode is removed from both supported
+    and advertised after my patch and therefore the requested invariant
+    is still ok.
+
+Case B: advertised exceeds supported prior to the call to
+        phy_remove_link_mode.
+
+    You said that we cannot allow this to happen. So it would seem to be
+    a bug somewhere else. Do you see phy_remove_link_mode as a tool to
+    fix up a violated invariant?
+
+It also is not true that the current code ensures your assertion.
+Specifically, phy_advertise_supported copies the pause bits from the old
+advertised to the new one regardless of whether they're set in
+supported. I believe this is expected, but it means that your invariant
+needs to be:
+
+    We cannot allow advertised to exceed the supported list for
+    non-pause bits.
+
+In any case, having a helper called "phy_remove_link_mode" enable bits
+in the advertised bit field is fairly unexpected. Do you disagree with
+this being a bug?
+
+Helmut
