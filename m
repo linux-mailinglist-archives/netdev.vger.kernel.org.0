@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FD742209D1
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 12:21:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9A362209D9
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 12:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731115AbgGOKU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 06:20:57 -0400
-Received: from mail-oo1-f65.google.com ([209.85.161.65]:42828 "EHLO
-        mail-oo1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728768AbgGOKU4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 06:20:56 -0400
-Received: by mail-oo1-f65.google.com with SMTP id y9so353203oot.9;
-        Wed, 15 Jul 2020 03:20:55 -0700 (PDT)
+        id S1731120AbgGOKVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 06:21:34 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:34546 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726798AbgGOKVd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 06:21:33 -0400
+Received: by mail-oi1-f194.google.com with SMTP id e4so1829623oib.1;
+        Wed, 15 Jul 2020 03:21:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bQ8og4Y29TXoYrT84mpNUb21SIh4pzwr3Vk3bzaUpgw=;
-        b=EDrtqKLUHVML1sA6LFFP5MJ8mIoChGo5GFPqc8ZOaS0WdBMHKDrR85YW7RWoAExsRC
-         QXl00GBCrlXL5UZqSlnx252iAC5fSCmvudbJaIilcbmx2sqhyd0ONPCLWE+qplzJoZ/T
-         yaFToaViut6ifyrZuPCiVIrtBpcEbApmNE2VXHtwguw0gmEnAFitWke3XotOM3iDi+BG
-         vMUomMYhrUCCnzoiV5D8rdNdvt4CNTkiHCmlNBguKmwcL68v+uifgTSk9Tq8h6155wLU
-         BFXf3P9ocqKk0AFFf36tRJEenL7IwMqSHdphYcbVBUc3Qh7mHDc9y8iGFmAp6CdPbjD2
-         Y7CA==
-X-Gm-Message-State: AOAM533cSn8OY79gR2dQuwr31WZqGTb308oKZGtkQz8YEl5DU2cKhtTJ
-        FrY5+9+qkTVbdobn0kGw/xzbwFwSpVyW3UAIXRg=
-X-Google-Smtp-Source: ABdhPJyb4SMwBgCFiNmagYeq0Muv3wO8z33UP0pKZzErUJ07FKnvbqzYlypWRcKQX2l2bgobbQLJvYCZywzLmfV6Mbk=
-X-Received: by 2002:a4a:5209:: with SMTP id d9mr8763133oob.40.1594808455307;
- Wed, 15 Jul 2020 03:20:55 -0700 (PDT)
+        bh=6inM0ocEyZQ5HchWw8zVdrmAmJqjlnWoNUy7SfSkBcE=;
+        b=meIiyqJUcAkSWwdFluY+XPfRnwJBwaOF3Dyr23Cp7d/DzqyOZ791+G2msQQbrlKdxw
+         8NnC5UugtdXi7eSllJn8hQA8BjLIkPDwIHRcDUDVlwerCuXbGuNCnwo+BCcPC1uzdN+l
+         i3jOV4+RzYDvABgeWqggD8nyS3JKhsFdOO7OKanhxNtd1QeVCHSJcXCjTZXe95y53nDN
+         Gbhzua+U99tlCu7d4N0X33rzFMYaAC9YMdhWH1iRe+LLyESberD3/cz+VpJGUuWUyn1L
+         iRObY8oSuxLKvI2nvmO7Zyjcqjf4kwUMm0/8MZJDI8awZMIKBG+90d8JoOi4+GFkKLAq
+         Iing==
+X-Gm-Message-State: AOAM530tYhetsPke71IvK7VC6ff/vsxn8qkUzPkXulsQyN+EPTuFY0vr
+        QoXWvnZRIDCSlIm9aaTCOzq+VdOta7CPAlTuDkE=
+X-Google-Smtp-Source: ABdhPJxYdI5rswCbbqKyGuRp4F+uj/OCEoqH521lJ2O2n+yEpcXSA2cgisjpKCexy5j/wlDx5/JSDUabZJAJaHhTISE=
+X-Received: by 2002:a05:6808:64a:: with SMTP id z10mr7225247oih.54.1594808492194;
+ Wed, 15 Jul 2020 03:21:32 -0700 (PDT)
 MIME-Version: 1.0
 References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594676120-5862-6-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594676120-5862-6-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594676120-5862-8-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594676120-5862-8-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 15 Jul 2020 12:20:44 +0200
-Message-ID: <CAMuHMdVsYmi1ixBrk=gfgnsfC=MHDagXJKUTyGr14xxhHh-Jkg@mail.gmail.com>
-Subject: Re: [PATCH 5/9] arm64: dts: renesas: r8a774e1: Add SYS-DMAC device nodes
+Date:   Wed, 15 Jul 2020 12:21:21 +0200
+Message-ID: <CAMuHMdV4w75-CNiamJo_nxHBA2kugQj58edPYDh_dx-PN4Vx-w@mail.gmail.com>
+Subject: Re: [PATCH 7/9] arm64: dts: renesas: r8a774e1: Add GPIO device nodes
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
@@ -66,7 +66,7 @@ On Mon, Jul 13, 2020 at 11:35 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
 > From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 >
-> Add sys-dmac[0-2] device nodes for RZ/G2H (R8A774E1) SoC.
+> Add GPIO device nodes to the DT of the r8a774e1 SoC.
 >
 > Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
