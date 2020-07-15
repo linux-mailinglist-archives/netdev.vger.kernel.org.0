@@ -2,79 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D06AF2201DA
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 03:28:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD43E22019C
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 03:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727932AbgGOB2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 21:28:08 -0400
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:50963 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727798AbgGOB2I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 21:28:08 -0400
-Received: from cwh (fob.gandi.net [217.70.181.1])
-        (Authenticated sender: wxcafe@wxcafe.net)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id A17A8FF806;
-        Wed, 15 Jul 2020 01:28:05 +0000 (UTC)
-Message-ID: <528220d4c2ab1712c10d86c90eea328ad3446659.camel@wxcafe.net>
-Subject: [PATCH 4/4] cdc_ncm: hook into set_rx_mode to admit multicast
- traffic
-From:   =?ISO-8859-1?Q?Wxcaf=E9?= <wxcafe@wxcafe.net>
-To:     linux-usb@vger.kernel.org
-Cc:     Miguel =?ISO-8859-1?Q?Rodr=EDguez_P=E9rez?= 
-        <miguel@det.uvigo.gal>, oliver@neukum.org, netdev@vger.kernel.org
-Date:   Tue, 14 Jul 2020 21:28:02 -0400
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.3 
+        id S1727810AbgGOBF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 21:05:59 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:42256 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725977AbgGOBF7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 21:05:59 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 8EAD0CC9408669B46A0A;
+        Wed, 15 Jul 2020 09:05:56 +0800 (CST)
+Received: from localhost (10.175.101.6) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Wed, 15 Jul 2020
+ 09:05:47 +0800
+From:   Weilong Chen <chenweilong@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@mellanox.com>,
+        <edumazet@google.com>, <chenweilong@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 net] rtnetlink: Fix memory(net_device) leak when ->newlink fails
+Date:   Wed, 15 Jul 2020 09:49:30 +0800
+Message-ID: <20200715014930.323472-1-chenweilong@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We set set_rx_mode to usbnet_cdc_update_filter provided
-by cdc_ether that simply admits all multicast traffic
-if there is more than one multicast filter configured.
+When vlan_newlink call register_vlan_dev fails, it might return error
+with dev->reg_state = NETREG_UNREGISTERED. The rtnl_newlink should
+free the memory. But currently rtnl_newlink only free the memory which
+state is NETREG_UNINITIALIZED.
 
-Signed-off-by: Miguel Rodríguez Pérez <miguel@det.uvigo.gal>
+BUG: memory leak
+unreferenced object 0xffff8881051de000 (size 4096):
+  comm "syz-executor139", pid 560, jiffies 4294745346 (age 32.445s)
+  hex dump (first 32 bytes):
+    76 6c 61 6e 32 00 00 00 00 00 00 00 00 00 00 00  vlan2...........
+    00 45 28 03 81 88 ff ff 00 00 00 00 00 00 00 00  .E(.............
+  backtrace:
+    [<0000000047527e31>] kmalloc_node include/linux/slab.h:578 [inline]
+    [<0000000047527e31>] kvmalloc_node+0x33/0xd0 mm/util.c:574
+    [<000000002b59e3bc>] kvmalloc include/linux/mm.h:753 [inline]
+    [<000000002b59e3bc>] kvzalloc include/linux/mm.h:761 [inline]
+    [<000000002b59e3bc>] alloc_netdev_mqs+0x83/0xd90 net/core/dev.c:9929
+    [<000000006076752a>] rtnl_create_link+0x2c0/0xa20 net/core/rtnetlink.c:3067
+    [<00000000572b3be5>] __rtnl_newlink+0xc9c/0x1330 net/core/rtnetlink.c:3329
+    [<00000000e84ea553>] rtnl_newlink+0x66/0x90 net/core/rtnetlink.c:3397
+    [<0000000052c7c0a9>] rtnetlink_rcv_msg+0x540/0x990 net/core/rtnetlink.c:5460
+    [<000000004b5cb379>] netlink_rcv_skb+0x12b/0x3a0 net/netlink/af_netlink.c:2469
+    [<00000000c71c20d3>] netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+    [<00000000c71c20d3>] netlink_unicast+0x4c6/0x690 net/netlink/af_netlink.c:1329
+    [<00000000cca72fa9>] netlink_sendmsg+0x735/0xcc0 net/netlink/af_netlink.c:1918
+    [<000000009221ebf7>] sock_sendmsg_nosec net/socket.c:652 [inline]
+    [<000000009221ebf7>] sock_sendmsg+0x109/0x140 net/socket.c:672
+    [<000000001c30ffe4>] ____sys_sendmsg+0x5f5/0x780 net/socket.c:2352
+    [<00000000b71ca6f3>] ___sys_sendmsg+0x11d/0x1a0 net/socket.c:2406
+    [<0000000007297384>] __sys_sendmsg+0xeb/0x1b0 net/socket.c:2439
+    [<000000000eb29b11>] do_syscall_64+0x56/0xa0 arch/x86/entry/common.c:359
+    [<000000006839b4d0>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Fixes: e51fb152318ee6 ("rtnetlink: fix a memory leak when ->newlink fails")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Cc: David S. Miller <davem@davemloft.net>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Weilong Chen <chenweilong@huawei.com>
 ---
- drivers/net/usb/cdc_ncm.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/core/rtnetlink.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index 2abaf5f8b23b..c58aae2c90d1 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -1888,6 +1888,7 @@ static const struct driver_info cdc_ncm_info = {
- 	.status = cdc_ncm_status,
- 	.rx_fixup = cdc_ncm_rx_fixup,
- 	.tx_fixup = cdc_ncm_tx_fixup,
-+	.set_rx_mode = usbnet_cdc_update_filter,
- };
- 
- /* Same as cdc_ncm_info, but with FLAG_WWAN */
-@@ -1901,6 +1902,7 @@ static const struct driver_info wwan_info = {
- 	.status = cdc_ncm_status,
- 	.rx_fixup = cdc_ncm_rx_fixup,
- 	.tx_fixup = cdc_ncm_tx_fixup,
-+	.set_rx_mode = usbnet_cdc_update_filter,
- };
- 
- /* Same as wwan_info, but with FLAG_NOARP  */
-@@ -1914,6 +1916,7 @@ static const struct driver_info wwan_noarp_info = {
- 	.status = cdc_ncm_status,
- 	.rx_fixup = cdc_ncm_rx_fixup,
- 	.tx_fixup = cdc_ncm_tx_fixup,
-+	.set_rx_mode = usbnet_cdc_update_filter,
- };
- 
- static const struct usb_device_id cdc_devs[] = {
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 9aedc15736ad..85a4b0101f76 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3343,7 +3343,8 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		 */
+ 		if (err < 0) {
+ 			/* If device is not registered at all, free it now */
+-			if (dev->reg_state == NETREG_UNINITIALIZED)
++			if (dev->reg_state == NETREG_UNINITIALIZED ||
++			    dev->reg_state == NETREG_UNREGISTERED)
+ 				free_netdev(dev);
+ 			goto out;
+ 		}
 -- 
-2.27.0
-
-
-
-
--- 
-Wxcafé <wxcafe@wxcafe.net>
+2.17.1
 
