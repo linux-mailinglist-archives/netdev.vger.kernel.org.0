@@ -2,77 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7220F220731
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 10:28:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1505B220776
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 10:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727925AbgGOI2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 04:28:33 -0400
-Received: from [195.135.220.15] ([195.135.220.15]:54244 "EHLO mx2.suse.de"
-        rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with ESMTP
-        id S1729989AbgGOI20 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 04:28:26 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 3DCF7AEA7;
-        Wed, 15 Jul 2020 08:28:28 +0000 (UTC)
-Date:   Wed, 15 Jul 2020 10:28:20 +0200
-From:   Petr Tesarik <ptesarik@suse.cz>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: RTL8402 stops working after hibernate/resume
-Message-ID: <20200715102820.7207f2f8@ezekiel.suse.cz>
-Organization: SUSE Linux, s.r.o.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        id S1730214AbgGOIfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 04:35:25 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:12607 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730199AbgGOIfZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:35:25 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1594802124; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=h+ddvCJz2+eIJsGbCmIQ+4rTo2OVcXt1uczscOrvqEg=;
+ b=NQcMffOy/WmElDgdrJppP0tLt/CtPTrBQqxPEvyKVTWqxDzysDYE9iDOmioaUARZX4fKeE4W
+ 3XcrAL18rSy6zsU/p26KNWPcoJUrSa8q0Dn3wYGtrkXmg+5vKmq+ft4cis8IY005SYotuK1B
+ ytfd+esvMCrUuni/YxyLGAAsWJ8=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n14.prod.us-west-2.postgun.com with SMTP id
+ 5f0ebfb7b35196d59d30e7b0 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 15 Jul 2020 08:35:03
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id E84A2C433B1; Wed, 15 Jul 2020 08:35:02 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id ED8CBC433CB;
+        Wed, 15 Jul 2020 08:34:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org ED8CBC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/54tap_mlfzbWJwEAI0YrLuM";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] wlcore: mesh: handle failure case of pm_runtime_get_sync
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200605032733.49846-1-navid.emamdoost@gmail.com>
+References: <20200605032733.49846-1-navid.emamdoost@gmail.com>
+To:     Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hari Nagalla <hnagalla@gmail.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Maital Hahn <maitalm@ti.com>,
+        Fuqian Huang <huangfq.daxian@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, emamd001@umn.edu, wu000273@umn.edu,
+        kjlu@umn.edu, smccaman@umn.edu
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200715083502.E84A2C433B1@smtp.codeaurora.org>
+Date:   Wed, 15 Jul 2020 08:35:02 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/54tap_mlfzbWJwEAI0YrLuM
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Navid Emamdoost <navid.emamdoost@gmail.com> wrote:
 
-Hi all,
+> Calling pm_runtime_get_sync increments the counter even in case of
+> failure, causing incorrect ref count. Call pm_runtime_put if
+> pm_runtime_get_sync fails.
+> 
+> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 
-I've encountered some issues on an Asus laptop. The RTL8402 receive
-queue behaves strangely after suspend to RAM and resume - many incoming
-packets are truncated, but not all and not always to the same length
-(most commonly 60 bytes, but I've also seen 150 bytes and other
-lengths).
+Already fixed by another patch.
 
-Reloading the driver can fix the problem, so I believe we must be
-missing some initialization on resume. I've already done some
-debugging, and the interface is not running when rtl8169_resume() is
-called, so __rtl8169_resume() is skipped, which means that almost
-nothing is done on resume.
+Patch set to Rejected.
 
-Some more information can be found in this openSUSE bug report:
+-- 
+https://patchwork.kernel.org/patch/11588923/
 
-https://bugzilla.opensuse.org/show_bug.cgi?id=3D1174098
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-The laptop is not (yet) in production, so I can do further debugging if
-needed.
-
-Petr T
-
---Sig_/54tap_mlfzbWJwEAI0YrLuM
-Content-Type: application/pgp-signature
-Content-Description: Digitální podpis OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEHl2YIZkIo5VO2MxYqlA7ya4PR6cFAl8OviQACgkQqlA7ya4P
-R6cCjwgAu4KNToCfxJuVVuXL8WgyN+S08ce4GmCu5muk4M14bLqWW4fxWYa6FI6/
-kp2VBoh6LRvch65iqPPzIeVEqnDv0Aadc3NdJitMZf5Nn6VTuVvpK/fjw91BLmVC
-zH0x8Sv1vvXO/vgKW41NFIpT02y3nyLAFuNVnQHJotuygRWW+ANOxloeOnAvky4b
-uVE6kNQRz/9NFT+Z2Qb9ZIKDcFacRyEhFaDUy0EKUoNCaEgno0adPsmGbVVoU+mJ
-LJ0TXZFhuPA4Ls//1I5ipOIMfDlpka6N9egOaG76auOLQs9d435sxUGkrO7VtZrJ
-L6dmdRcOAV5TlTvdzfdIJlJcEu8/FQ==
-=5Yt0
------END PGP SIGNATURE-----
-
---Sig_/54tap_mlfzbWJwEAI0YrLuM--
