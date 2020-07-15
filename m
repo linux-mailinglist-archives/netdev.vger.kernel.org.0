@@ -2,118 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 341FB220905
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 11:43:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 432A222094A
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 11:53:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730700AbgGOJmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 05:42:51 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:58089 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730338AbgGOJmu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 05:42:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594806169;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QVN0SUJiWNQOMGmLO1R6WOiZV8nRybRORnIp3pu3RNw=;
-        b=KmSi0GUntHAji6qNUhz25b1hNpkBd9R6wd1Cbj2P0dDybv5EVcfQn+5YVVjHEfGB5KfUD7
-        qnsRf9A0114NW70+WqCNbRIs2ahVg1CqU0c4QoJ2nzkQh8Ba6sUgL00JxDTX3duECO3rJD
-        LEi11yfGUay3ml6UcIyBWOefp5OUHaI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-368-JARX-4MgPmqeCi7a5jNSaA-1; Wed, 15 Jul 2020 05:42:44 -0400
-X-MC-Unique: JARX-4MgPmqeCi7a5jNSaA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AE7201800D42;
-        Wed, 15 Jul 2020 09:42:42 +0000 (UTC)
-Received: from [10.72.13.230] (ovpn-13-230.pek2.redhat.com [10.72.13.230])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3395310013D0;
-        Wed, 15 Jul 2020 09:42:34 +0000 (UTC)
-Subject: Re: [PATCH 3/7] vhost_vdpa: implement IRQ offloading functions in
- vhost_vdpa
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>, mst@redhat.com,
-        alex.williamson@redhat.com, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, wanpengli@tencent.com
-Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, dan.daly@intel.com
-References: <1594565366-3195-1-git-send-email-lingshan.zhu@intel.com>
- <1594565366-3195-3-git-send-email-lingshan.zhu@intel.com>
- <3fb9ecfc-a325-69b5-f5b7-476a5683a324@redhat.com>
- <e06f9706-441f-0d7a-c8c0-cd43a26c5296@intel.com>
- <f352a1d1-6732-3237-c85e-ffca085195ff@redhat.com>
- <8f52ee3a-7a08-db14-9194-8085432481a4@intel.com>
- <2bd946e3-1524-efa5-df2b-3f6da66d2069@redhat.com>
- <61c1753a-43dc-e448-6ece-13a19058e621@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c9f2ffb0-adc0-8846-9578-1f75a4374df1@redhat.com>
-Date:   Wed, 15 Jul 2020 17:42:33 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1730927AbgGOJxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 05:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37148 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730583AbgGOJxq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 05:53:46 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82257C061755
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 02:53:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=e0XKqJc9GvVeCfRUye3YytvXHPQ31iTc20+UW4fyd4g=; b=GcFzuMbu1a/Uj2vre63xaTuNb
+        QH2/W+vC8Z5V8/2TmZ3w5lMAPzuo6jFDHJsFAYx05r42riRynQLH5PrnLfg8umPmV8FUnHO7thU5z
+        bC+j/Njys9NDoGyoWcycxRb5OGp4MXiJtzNlxZCtu/ngbPidWvjSkLFU47Kk6MIIuWQ/D6ziWu8G2
+        hf81jXBGk1Rj9Cewy4hFuO3vrf6LBsp3j/tQm+jv8diPfw56LCEd6W8XudDffkE1c7FVUaNhXtVFm
+        XvQv73CgGvgGQYXzmoIomDlvIMXCOAZ4XVOgNKukKXbP9DVZaLX9JVXBa+UdKjWreGC2sM9wX5N5e
+        XpuP+LbOQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39762)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jve6X-0006SO-Lo; Wed, 15 Jul 2020 10:53:33 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jve6O-0008DH-Ug; Wed, 15 Jul 2020 10:53:24 +0100
+Date:   Wed, 15 Jul 2020 10:53:24 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "michael@walle.cc" <michael@walle.cc>, netdev@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH RFC net-next 00/13] Phylink PCS updates
+Message-ID: <20200715095324.GF1551@shell.armlinux.org.uk>
+References: <20200630142754.GC1551@shell.armlinux.org.uk>
+ <20200714084958.to4n52cnk32prn4v@skbuf>
+ <20200714131832.GC1551@shell.armlinux.org.uk>
+ <e56160da-9a17-d69b-25f0-b564b5959377@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <61c1753a-43dc-e448-6ece-13a19058e621@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e56160da-9a17-d69b-25f0-b564b5959377@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jul 14, 2020 at 02:22:08PM -0700, Florian Fainelli wrote:
+> 
+> 
+> On 7/14/2020 6:18 AM, Russell King - ARM Linux admin wrote:
+> > On Tue, Jul 14, 2020 at 11:49:58AM +0300, Vladimir Oltean wrote:
+> >> Are you going to post a non-RFC version?
+> > 
+> > I'm waiting for the remaining patches to be reviewed; Florian reviewed
+> > the first six patches (which are not the important ones in the series)
+> > and that seems to be where things have stopped. There has been no
+> > change, so I don't see there's much point to reposting the series.
+> 
+> Sorry for giving an impression that this had stalled, I reviewed the
+> obvious changes and am now reviewing the not so obvious changes, would
+> certainly appreciate if other NXP folks as well as Andrew and Heiner
+> looked at those changes obviously.
 
-On 2020/7/15 下午5:20, Zhu, Lingshan wrote:
->>>>
->>>> I meant something like:
->>>>
->>>> unregister();
->>>> vq->call_ctx.producer.token = ctx;
->>>> register();
->>> This is what we are doing now, or I must missed somethig:
->>> if (ctx && ctx != token) {
->>>     irq_bypass_unregister_producer(&vq->call_ctx.producer);
->>>     vq->call_ctx.producer.token = ctx;
->>>     irq_bypass_register_producer(&vq->call_ctx.producer);
->>>
->>> }
->>>
->>> It just unregister and register.
->>
->>
->> I meant there's probably no need for the check and another check and 
->> unregister before. The whole function is as simple as I suggested above.
->>
->> Thanks
-> IMHO we still need the checks, this function handles three cases:
-> (1)if the ctx == token, we do nothing. For this unregister and register can work, but waste of time.
+Thanks Florian.  Yes, it would be useful to have reviewed-bys or
+acked-bys from those who are using it, and would take some of the
+load off yourself, Andrew and Heiner.
 
+It also makes sense when some of the changes to phylink are made
+in response to improving things for other use cases. For example,
+splitting the PCS in phylink is not something I'm doing for my own
+self-interest (apart from a desire to keep phylink maintainable),
+but is to support NXP's and others platforms where the PCS would
+logically be a separate block of code from the MAC. So, to me it
+would make sense for NXP to get involved with the review of this
+set.
 
-But we have a more simple code and we don't care about the performance 
-here since the operations is rare.
+If anything, splitting the PCS has meant that I've had to go back
+and re-examine Marvell NETA and PP2 (in fact, several times) to
+adapt them to solidly test this approach and make sure I haven't
+missed anything - these two drivers are my main test-bed for
+phylink at the moment, they're also hardware where the PCS is
+completely indistinguishable from the MAC at register level, so
+you can't say "this group of registers are definitely PCS only
+functions".
 
-
-> (2)if token exists but ctx is NULL, this means user space issued an unbind, so we need to only unregister the producer.
-
-
-Note that the register/unregister have a graceful check of whether or 
-not there's a token.
-
-
-> (3)if ctx exists and ctx!=token, this means there is a new ctx, we need to update producer by unregister and register.
->
-> I think we can not simply handle all these cases by "unregister and register".
-
-
-So it looks to me the functions are equivalent.
-
-Thanks
-
-
->
-> Thanks,
-> BR
-> Zhu Lingshan
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
