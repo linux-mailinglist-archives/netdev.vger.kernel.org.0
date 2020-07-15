@@ -2,109 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBDB1220DD9
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 15:18:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F494220DF5
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 15:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731603AbgGONRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 09:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40234 "EHLO
+        id S1731765AbgGONUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 09:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729900AbgGONRg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 09:17:36 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E39C061755
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 06:17:36 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id br7so2122272ejb.5
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 06:17:36 -0700 (PDT)
+        with ESMTP id S1731457AbgGONUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 09:20:31 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8D5C061755
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 06:20:31 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id 1so2082788pfn.9
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 06:20:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=X1n514xL7S/zIAOr27GAOQDXHGcI7OlJSmnbUyL7ORA=;
-        b=bi3lXrlEYdJzaDDnVlYKdHTE4ebkktI4HhlFB+FWueABmXNG3Mf3zXFIAoF96P0QPV
-         p5KWbtGuJ3OGzZS2tKsWFsl6e5JvTiXB+5WO1QiHpVLMH6OBzkKvAFNdwZvZ33DQpI40
-         0I9u15TXWY42GE97GNGna6ZWDuqFwMAQ/qRdndn463ozpqxwigeinleNPT6/hqbX+khl
-         /zAVo1AgCLX5YWBKvPZWcAVGwcD0Vw85ZCBoV/XVNRA/hM5EHOgUDpRRpFQBJxeruxH1
-         Cx0UkJpP6G0A2U5TIHfLa4lwZT4cVppRRYPBtXv2b3umlKv3qEIObPmCqKeJ9MsrijHO
-         XqVQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=AEj+2PMvPQdYUCRcY/OgS/decXq8fZ27/dq14ngPR+8=;
+        b=o1rBG16zvrlOA+i9kAO48FuZ36By75AGThvjxtRP9DE/sVWA6Cgmb2apiXbKv6ioGv
+         s+mLeuL/uArZPDqojjJ5Fkx1LYspIZgNNKUYuTHG+lXqkkDno2pmtztKPmfiUTuPL79w
+         fXi4s3pSUSavS8Rmh6pyKO954AFRLO7cj5NCcPs2XpwPSWma1N+gnv5lxyCofNlbPnUw
+         VCE8uojzqvowz9Iw1OyLRPg4b1oICGqvjwsXgx5qHhMlbsX/PY+Mqxk0uv8Jq9pgxyvD
+         WvPHWLQ5CnRUYZUr0ZgxbiKjHoI6oVDCmZuhuEngNNUgVlAX9J/Mx/QK6hsk2U4WONQ5
+         Ejlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=X1n514xL7S/zIAOr27GAOQDXHGcI7OlJSmnbUyL7ORA=;
-        b=r10GIuz/aGQJV5JFOrJCgTiwGRGs6QK/zsCFuvFzumE5bmziRoYES0SZV9q0CCjLFe
-         uviEY74cuZgk61bGYQBbvM3KFSH8yIftZIbbIhF3AF0pcOuLTgBuzst/nY9dq+gv85k6
-         bBUzJBKVnBVKq80Sy/VaDXMcj/i9dde0z9PMoHviyefZ5rhd/zArcMucfkmsNwVSrkJ+
-         jLES99EE3/NF6N4/Kj9iubWSMkiWTyTbCIBt4B4gHK0DFCizB/Haxu0LvYThct9s0LSx
-         IxmS5SVA78t6nvI+0Aj6hrFaIyxmTsusfKCGUCjOgvfyx1pr/wRwbBXd9F4Xd4Yli3uw
-         /DrQ==
-X-Gm-Message-State: AOAM532U1dfG7yp1kyA7TEFTztzVYmj6BgSlFxzGx8oG6qONQqUh25gG
-        hlcc/AOmH2VnHzbfb+nLjoMB1nH20b8=
-X-Google-Smtp-Source: ABdhPJwV7LrPEq309O9X2T1nG/5acqdCq9r/bC1OmOk22Bll+6IdkCfRQv8WwbTX8nDOVbyOp6ydEQ==
-X-Received: by 2002:a17:906:1ec3:: with SMTP id m3mr9284099ejj.197.1594819053486;
-        Wed, 15 Jul 2020 06:17:33 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:3054:ec52:4d7:b1ab? (p200300ea8f2357003054ec5204d7b1ab.dip0.t-ipconnect.de. [2003:ea:8f23:5700:3054:ec52:4d7:b1ab])
-        by smtp.googlemail.com with ESMTPSA id p4sm2086081eji.123.2020.07.15.06.17.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jul 2020 06:17:32 -0700 (PDT)
-Subject: Re: wake-on-lan
-To:     "Michael J. Baars" <mjbaars1977.netdev@cyberfiber.eu>,
-        Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org
-References: <309b0348938a475f256cbc8afbbc127c285fec69.camel@cyberfiber.eu>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <b8f9ccd2-e56e-0965-3b4a-ff583a88829c@gmail.com>
-Date:   Wed, 15 Jul 2020 15:17:28 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=AEj+2PMvPQdYUCRcY/OgS/decXq8fZ27/dq14ngPR+8=;
+        b=aCAzc43/Uisvn6hqUzTQgCshSUqL2mAtP+lekDi35XPPu1VlFMGhNMY+2/IzMfAEJK
+         CI8J9PC4efMjQTamvHWa+Ue2OVLJB8gywxnac7oGWhCMKh3MRbQiTVJiIe5e2UX4vWhJ
+         silE57wv3IwRCpcV8NL7lx9vDync/vr7c7s/91kzVo73HKGZosnQaD3g+xC4cbgYzTKh
+         XBvJTJJMeRMCxRnW8PpWaMagyKgO9xy9B43tJAdfXC6r/DFsh4MvSs70oyEiwwTiY0Ep
+         6n7AA0Fu6+j7x+QiW55RQrkGen0PYX2E8Lr3HIYmKLEpicrfVmQnOtp/sIrxb78Zhsdy
+         E7BQ==
+X-Gm-Message-State: AOAM531gEulP/RvhQI5jgNIi4/kb8LtjR6RLDCqt8yy+22LUfrgSY/iz
+        hNaSZUSlZzLMBYnsHT+BM4Q=
+X-Google-Smtp-Source: ABdhPJySNtzuuVi4hy0KeXQWkl1gWde39riUe4EsuXUYlTUMBsylhsoCu7n+gx29WQ1DMPrp20RYiA==
+X-Received: by 2002:a62:788d:: with SMTP id t135mr8274147pfc.315.1594819231152;
+        Wed, 15 Jul 2020 06:20:31 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id n2sm2246533pgv.37.2020.07.15.06.20.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2020 06:20:30 -0700 (PDT)
+Date:   Wed, 15 Jul 2020 06:20:28 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Subbaraya Sundeep <sbhatta@marvell.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sgoutham@marvell.com
+Subject: Re: [PATCH v4 net-next 0/3] Add PTP support for Octeontx2
+Message-ID: <20200715132028.GA27070@hoboy>
+References: <1594816689-5935-1-git-send-email-sbhatta@marvell.com>
 MIME-Version: 1.0
-In-Reply-To: <309b0348938a475f256cbc8afbbc127c285fec69.camel@cyberfiber.eu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1594816689-5935-1-git-send-email-sbhatta@marvell.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15.07.2020 11:27, Michael J. Baars wrote:
-> Hi Michal,
+On Wed, Jul 15, 2020 at 06:08:06PM +0530, Subbaraya Sundeep wrote:
+> Hi,
 > 
-> This is my network card:
+> This patchset adds PTP support for Octeontx2 platform.
+> PTP is an independent coprocessor block from which
+> CGX block fetches timestamp and prepends it to the
+> packet before sending to NIX block. Patches are as
+> follows:
 > 
-> 01:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 0c)
-> 	Subsystem: Realtek Semiconductor Co., Ltd. Device 0123
-> 	Kernel driver in use: r8169
+> Patch 1: Patch to enable/disable packet timstamping
+> 	 in CGX upon mailbox request. It also adjusts
+> 	 packet parser (NPC) for the 8 bytes timestamp
+> 	 appearing before the packet.
 > 
-> On the Realtek website (https://www.realtek.com/en/products/communications-network-ics/item/rtl8168e) it says that both wake-on-lan and remote wake-on-lan are
-> supported. I got the wake-on-lan from my local network working, but I have problems getting the remote wake-on-lan to work.
+> Patch 2: Patch adding PTP pci driver which configures
+> 	 the PTP block and hooks up to RVU AF driver.
+> 	 It also exposes a mailbox call to adjust PTP
+> 	 hardware clock.
 > 
-> When I set 'Wake-on' to 'g' and suspend my system, everything works fine (the router does lose the ip address assigned to the mac address of the system). I
-> figured the SecureOn password is meant to forward magic packets to the correct machine when the router does not have an ip address assigned to a mac address,
-> i.e. port-forwarding does not work.
-> 
-> Ethtool 'Supports Wake-on' gives 'pumbg', and when I try to set 'Wake-on' to 's' I get:
-> 
-> netlink error: cannot enable unsupported WoL mode (offset 36)
-> netlink error: Invalid argument
-> 
-> Does this mean that remote wake-on-lan is not supported (according to ethtool)?
-> 
-> ---
-> 
-> I also tried to set 'Wake-on' to 'b' and 'bg' but then the systems turns back on almost immediately for both settings.
-> 
-> ---
-> 
-> Hope you can help getting the remote wake-on-lan to work,
-> 
-> Best regards,
-> Mischa.
+> Patch 3: Patch adding PTP clock driver for PF netdev.
 > 
 > 
+> Aleksey Makarov (2):
+>   octeontx2-af: Add support for Marvell PTP coprocessor
+>   octeontx2-pf: Add support for PTP clock
 > 
-> 
-This isn't really a question to Michal. r8169 supports pumbg as mentioned by you.
-On DASH-capable systems with Windows more may be supported by the vendor driver.
-But Realtek doesn't release any public datasheets, therefore there's no DASH support under Linux.
+> Zyta Szpak (1):
+>   octeontx2-af: Support to enable/disable HW timestamping
+
+Acked-by: Richard Cochran <richardcochran@gmail.com>
