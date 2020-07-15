@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C304C2212D7
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:46:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1AE52212B8
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:43:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726998AbgGOQnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 12:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
+        id S1726843AbgGOQnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 12:43:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726660AbgGOQmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 12:42:55 -0400
+        with ESMTP id S1725831AbgGOQm4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 12:42:56 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 504D6C08C5DB;
-        Wed, 15 Jul 2020 09:42:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC48C08C5DD;
+        Wed, 15 Jul 2020 09:42:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=DOJlt9WwfqvtxRtQsVD4HWEtnnEyii8gz7SD33MqTBM=; b=OPihS1FnhrhLYvowRAiFznnovY
-        0wQD938emlP8/LoTHLK7SiJGGLbcCRwsfOdhQGu90L7/5i3r2V/oWc9FBPVG/R0kU39qfIdDjZkF1
-        kINffO+FPgycao/YhqbxefX3ksmLEh1FCmOBKBuG7nRqTcCiFqGU1tWPzulGiuvzlveAQPUZJ5uEo
-        hUpaxhjj8zNI1VQZk4olLl6kajDteU5DSsKYhObErzdgZDZbHTQr4+TC6VvwrXCFUx7etA1nuzeCK
-        ARIiBN9v9kgAIBcYGp6j8DxTHohceDR1dQMfSzC35xx44TYcEXhsfjayNWjb+g5UeV6/Gh+kG3ftT
-        Tyb4uRJQ==;
+        bh=/ouoRB7+nsyijg9BkaJBjydWt6dQzafFxJ2kXGh69KY=; b=CFNhVPJi1jHu4OVYfeEKjr24lP
+        72L3RqZbhBzLVp9SeHAdUXv1xjBxkw/Yw+X1GCWK2QD+FPKJwHrGPpsOkmE0qrwe4JaN0HHIQhW9K
+        aKKfjI9ZuIUq9wPFwAShsYyb8zYf9LUT++NcYAMAdv7gmkJQ1fuTjb3KaO5LdPyn1WCG6Na0FEcbO
+        FVqK9vW/trEQR05KcyvX4wBYT8zfI8zLPCd8dtq/WrJWO//umwPrUHw+rDasXiCYcLXnQJ59ev2mu
+        L/tdhD7iJgCVQf4XwFs/BXdAaz3inX/LZiMya7M9C1TEu05uOfZNaaIhsvNaSoUlQ/KX4JsG6EHzn
+        XxyxyU1A==;
 Received: from [2601:1c0:6280:3f0::19c2] (helo=smtpauth.infradead.org)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jvkUe-0000Bh-Pn; Wed, 15 Jul 2020 16:42:53 +0000
+        id 1jvkUg-0000Bh-KQ; Wed, 15 Jul 2020 16:42:55 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 2/9 v2 net-next] net: skbuff.h: drop duplicate words in comments
-Date:   Wed, 15 Jul 2020 09:42:39 -0700
-Message-Id: <20200715164246.9054-2-rdunlap@infradead.org>
+Subject: [PATCH 3/9 v2 net-next] net: wimax: fix duplicate words in comments
+Date:   Wed, 15 Jul 2020 09:42:40 -0700
+Message-Id: <20200715164246.9054-3-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200715164246.9054-1-rdunlap@infradead.org>
 References: <20200715164246.9054-1-rdunlap@infradead.org>
@@ -45,7 +45,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drop doubled words in several comments.
+Drop doubled words in two comments.
+Fix a spello/typo.
 
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Cc: "David S. Miller" <davem@davemloft.net>
@@ -54,26 +55,31 @@ Cc: netdev@vger.kernel.org
 ---
 v2: move wireless patches to a separate patch series.
 
- include/linux/skbuff.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/wimax/debug.h |    4 ++--
+ include/net/wimax.h         |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
---- linux-next-20200714.orig/include/linux/skbuff.h
-+++ linux-next-20200714/include/linux/skbuff.h
-@@ -1329,7 +1329,7 @@ void skb_flow_dissect_meta(const struct
- 			   void *target_container);
+--- linux-next-20200714.orig/include/linux/wimax/debug.h
++++ linux-next-20200714/include/linux/wimax/debug.h
+@@ -184,8 +184,8 @@ do {									\
  
- /* Gets a skb connection tracking info, ctinfo map should be a
-- * a map of mapsize to translate enum ip_conntrack_info states
-+ * map of mapsize to translate enum ip_conntrack_info states
-  * to user states.
+ 
+ /*
+- * CPP sintatic sugar to generate A_B like symbol names when one of
+- * the arguments is a a preprocessor #define.
++ * CPP syntatic sugar to generate A_B like symbol names when one of
++ * the arguments is a preprocessor #define.
   */
- void
-@@ -3813,7 +3813,7 @@ static inline bool skb_defer_rx_timestam
-  * must call this function to return the skb back to the stack with a
-  * timestamp.
+ #define __D_PASTE__(varname, modulename) varname##_##modulename
+ #define __D_PASTE(varname, modulename) (__D_PASTE__(varname, modulename))
+--- linux-next-20200714.orig/include/net/wimax.h
++++ linux-next-20200714/include/net/wimax.h
+@@ -28,7 +28,7 @@
   *
-- * @skb: clone of the the original outgoing packet
-+ * @skb: clone of the original outgoing packet
-  * @hwtstamps: hardware time stamps
+  * USAGE
   *
-  */
+- * Embed a `struct wimax_dev` at the beginning of the the device's
++ * Embed a `struct wimax_dev` at the beginning of the device's
+  * private structure, initialize and register it. For details, see
+  * `struct wimax_dev`s documentation.
+  *
