@@ -2,77 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 462FD221245
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:26:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FD2922124C
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727019AbgGOQ0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 12:26:13 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:53067 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725885AbgGOQ0M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 12:26:12 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jvkEO-0008Ht-W3; Wed, 15 Jul 2020 16:26:05 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] xprtrdma: fix incorrect header size calcations
-Date:   Wed, 15 Jul 2020 17:26:04 +0100
-Message-Id: <20200715162604.1080552-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.27.0
+        id S1726431AbgGOQ2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 12:28:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37452 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725770AbgGOQ2B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 12:28:01 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3E7AB2065E;
+        Wed, 15 Jul 2020 16:28:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594830481;
+        bh=XvCTrVWIBy+oK4cNjhoZfjf7CbCz0HoTZM5KptHveMI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q5D5aSNOio+x8pmCwUa1nwM9J4oVlPC8mGUwoXS3NAdUKxEmpG64b1Q20afLh5yPU
+         5mjnVzL+2Y2yuAkalvbR+yMkMz3epCdwO0FZqQHwHp4OEn3QGWmY4vfHIuN2rCES5M
+         8mrgSFd8Ui2Rl+moNeLtrYPc1yTk0Hs5+fm8bg6M=
+Date:   Wed, 15 Jul 2020 09:27:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        johannes@sipsolutions.net
+Subject: Re: [PATCH 01/13 net-next] net: nl80211.h: drop duplicate words in
+ comments
+Message-ID: <20200715092759.590b9143@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <359af6cb-a242-c003-83e1-cca6dd75336f@infradead.org>
+References: <20200715025914.28091-1-rdunlap@infradead.org>
+        <20200715084811.01ba7ffd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <6653f2f65ec4a9cc1024b69ffe97d5dc4c7ff33a.camel@perches.com>
+        <359af6cb-a242-c003-83e1-cca6dd75336f@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Wed, 15 Jul 2020 09:18:40 -0700 Randy Dunlap wrote:
+> On 7/15/20 9:12 AM, Joe Perches wrote:
+> > On Wed, 2020-07-15 at 08:48 -0700, Jakub Kicinski wrote:  
+> >> On Tue, 14 Jul 2020 19:59:02 -0700 Randy Dunlap wrote:  
+> >>> Drop doubled words in several comments.
+> >>>
+> >>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> >>> Cc: "David S. Miller" <davem@davemloft.net>
+> >>> Cc: Jakub Kicinski <kuba@kernel.org>
+> >>> Cc: netdev@vger.kernel.org  
+> >>
+> >> Hi Randy, the WiFi stuff goes through Johannes's mac80211 tree.
+> >>
+> >> Would you mind splitting those 5 patches out to a separate series and
+> >> sending to him?  
+> > 
+> > Do I understand you to want separate patches
+> > for separate sections of individual files?
+> > 
+> > I think that's a bit much...  
+> 
+> I plan to move wireless.h, regulatory.h, nl80211.h,
+> mac80211.h, and cfg80211.h patches to a wireless patch series.
+> 
+> wimax can stay in net?? (I hope.)
 
-Currently the header size calculations are using an assignment
-operator instead of a += operator when accumulating the header
-size leading to incorrect sizes.  Fix this by using the correct
-operator.
-
-Addresses-Coverity: ("Unused value")
-Fixes: 302d3deb2068 ("xprtrdma: Prevent inline overflow")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- net/sunrpc/xprtrdma/rpc_rdma.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma.c
-index 935bbef2f7be..453bacc99907 100644
---- a/net/sunrpc/xprtrdma/rpc_rdma.c
-+++ b/net/sunrpc/xprtrdma/rpc_rdma.c
-@@ -71,7 +71,7 @@ static unsigned int rpcrdma_max_call_header_size(unsigned int maxsegs)
- 	size = RPCRDMA_HDRLEN_MIN;
- 
- 	/* Maximum Read list size */
--	size = maxsegs * rpcrdma_readchunk_maxsz * sizeof(__be32);
-+	size += maxsegs * rpcrdma_readchunk_maxsz * sizeof(__be32);
- 
- 	/* Minimal Read chunk size */
- 	size += sizeof(__be32);	/* segment count */
-@@ -94,7 +94,7 @@ static unsigned int rpcrdma_max_reply_header_size(unsigned int maxsegs)
- 	size = RPCRDMA_HDRLEN_MIN;
- 
- 	/* Maximum Write list size */
--	size = sizeof(__be32);		/* segment count */
-+	size += sizeof(__be32);		/* segment count */
- 	size += maxsegs * rpcrdma_segment_maxsz * sizeof(__be32);
- 	size += sizeof(__be32);	/* list discriminator */
- 
--- 
-2.27.0
-
+Yup! Sounds right, wimax can go to net-next. Thanks for doing this.
