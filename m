@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20AE722072E
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 10:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A885322072D
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 10:28:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730074AbgGOI21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 04:28:27 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:57971 "EHLO
+        id S1730082AbgGOI2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 04:28:23 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:56225 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728282AbgGOI2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:28:18 -0400
+        by vger.kernel.org with ESMTP id S1730074AbgGOI2U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:28:20 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id AD4B25C010B;
-        Wed, 15 Jul 2020 04:28:16 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 956E35C010C;
+        Wed, 15 Jul 2020 04:28:19 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 15 Jul 2020 04:28:16 -0400
+  by compute4.internal (MEProxy); Wed, 15 Jul 2020 04:28:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=RbSZPab4z1R/aVIeYnjibcpuhypT9F/oEl0/1PlIDh8=; b=A7Q+vfSw
-        x/5lZasc8X8qgAwZTUbwkcowKFaSFlD7pstBtnh8XtgFp4ltLSrckSSDsQhq+BNX
-        jHt+mZIaDrCQAaqbgalVSJx4xMAB78Kf4CLB+qIZ8lGsw6D7WuXCpSGZNbhY9GvZ
-        NNWYPGPjf6mEJQRQsTCU1zxXobpwuNSI8L9y9biWVk5fYkzUmQ4KOKs6Zz6pLXmP
-        ocftGB3DoiAduEJdLEAxx4aRsTT5rsbjfuZeU0LCq+2ZHC4WvY5sm9zuLTyQhqiR
-        J3xiJGg+aYts08/smo7L9RliQFI2ghCj4WuqMc9CoLnmhfCoErAEpXluEokKJ2Ko
-        LQGyk2GAXw8uKA==
-X-ME-Sender: <xms:IL4OX3BbHWDccaGlA0CrTlOQ57-0-de5Js6KXXwLB1VKJH-92xlA6Q>
+        fm3; bh=qsz2RcrGanpnMdi4tJlVz+dNEBXLDuLYa2OOwseF4Oo=; b=A/0T7qdf
+        KAcLoCccxtgeoJ0vW3EU+tg9g54JliT6amrfamNjp3FBVRjmo+line1Hu5i8az4y
+        dM+7El7mC6kllraoQUpXF6Ctn3A08Qsm1U65DYksY5Vv6QYyrPv8GlpKDBu16lah
+        h1cJJpRGMI6lkh82XZ/Iy7k4beYepQRGMeNlI1aGbqa5G3kb1AbEeFeZm9RqE+Jm
+        UpecZwh1pgJew47iqWoxKOqIuBlIlWyEEHrHlnYURE8f00GS04v0mlKVJJ16znLW
+        0y3QoxzRAHvuOYVe5jQxhp4i0CnCQKI9fP2MRAtxWa04A2k/Xpro+wusxB20c8Zm
+        ZRMSboUWxNtm9g==
+X-ME-Sender: <xms:I74OX7ZSgtAnjOfCt_8owWEoVtjCUIyz-q8oeMWBhySWvN05wre_RA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedvgddtgecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -36,21 +36,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedvgddtgecutefuodetggdote
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieehrddufeelrddukedt
     necuvehluhhsthgvrhfuihiivgepieenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:IL4OX9iq3P8e56syCcbwJI6Mqh2GMHhWQkxnu1pTzSyz-F6V1R-oTg>
-    <xmx:IL4OXykm8_jPtNsYYcUrY6YV2eVBlh8Kg9BUdba4REZ4n8i5pG-XXA>
-    <xmx:IL4OX5yBf3Spm7fR4D_akSr5AicxzTDhiV5gUZeaHcdb_DqdLMYVvg>
-    <xmx:IL4OX3ddMQBHde0VBSb5GYZNcTSTZJ5UbRT_E_YLAE5CG_Uvfbdo5w>
+X-ME-Proxy: <xmx:I74OX6bXijkvZnCBKcKkfl-1zPCQp76oY4OKwhGo9XsbtyTTqUuMAA>
+    <xmx:I74OX99NRfbpzMYKWPC96pvbpWT8QbjWLg6KPMUZiOiFz17xXnf5Sg>
+    <xmx:I74OXxru74_lK0svm8wLPew3eq5sq7weoY9j58NdwHX9jW4aHRwe3Q>
+    <xmx:I74OX92RvfNOIvjAdK38EsA69a7c7WUTZmqkdBjzlby9U7DhRirYqw>
 Received: from shredder.mtl.com (bzq-109-65-139-180.red.bezeqint.net [109.65.139.180])
-        by mail.messagingengine.com (Postfix) with ESMTPA id DAA473280063;
-        Wed, 15 Jul 2020 04:28:14 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id E46343280063;
+        Wed, 15 Jul 2020 04:28:16 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         petrm@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 07/11] mlxsw: spectrum_acl: Offload FLOW_ACTION_POLICE
-Date:   Wed, 15 Jul 2020 11:27:29 +0300
-Message-Id: <20200715082733.429610-8-idosch@idosch.org>
+Subject: [PATCH net-next 08/11] selftests: forwarding: Add tc-police tests
+Date:   Wed, 15 Jul 2020 11:27:30 +0300
+Message-Id: <20200715082733.429610-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200715082733.429610-1-idosch@idosch.org>
 References: <20200715082733.429610-1-idosch@idosch.org>
@@ -63,257 +63,364 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Offload action police when used with a flower classifier. The number of
-dropped packets is read from the policer and reported to tc.
+Test tc-police action in various scenarios such as Rx policing, Tx
+policing, shared policer and police piped to mirred. The test passes
+with both veth pairs and loopbacked ports.
+
+# ./tc_police.sh
+TEST: police on rx                                                  [ OK ]
+TEST: police on tx                                                  [ OK ]
+TEST: police with shared policer - rx                               [ OK ]
+TEST: police with shared policer - tx                               [ OK ]
+TEST: police rx and mirror                                          [ OK ]
+TEST: police tx and mirror                                          [ OK ]
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Reviewed-by: Petr Machata <petrm@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum.h    | 11 +++++--
- .../ethernet/mellanox/mlxsw/spectrum_acl.c    | 33 ++++++++++++++++++-
- .../mlxsw/spectrum_acl_flex_actions.c         | 27 +++++++++++++++
- .../ethernet/mellanox/mlxsw/spectrum_flower.c | 30 +++++++++++++++--
- 4 files changed, 96 insertions(+), 5 deletions(-)
+ .../selftests/net/forwarding/tc_police.sh     | 333 ++++++++++++++++++
+ 1 file changed, 333 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/tc_police.sh
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index defe1d82d83e..6ab1b6d725af 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -689,8 +689,10 @@ struct mlxsw_sp_acl_rule_info {
- 	u8 action_created:1,
- 	   ingress_bind_blocker:1,
- 	   egress_bind_blocker:1,
--	   counter_valid:1;
-+	   counter_valid:1,
-+	   policer_index_valid:1;
- 	unsigned int counter_index;
-+	u16 policer_index;
- };
- 
- /* spectrum_flow.c */
-@@ -851,6 +853,10 @@ int mlxsw_sp_acl_rulei_act_mangle(struct mlxsw_sp *mlxsw_sp,
- 				  enum flow_action_mangle_base htype,
- 				  u32 offset, u32 mask, u32 val,
- 				  struct netlink_ext_ack *extack);
-+int mlxsw_sp_acl_rulei_act_police(struct mlxsw_sp *mlxsw_sp,
-+				  struct mlxsw_sp_acl_rule_info *rulei,
-+				  u32 index, u64 rate_bytes_ps,
-+				  u32 burst, struct netlink_ext_ack *extack);
- int mlxsw_sp_acl_rulei_act_count(struct mlxsw_sp *mlxsw_sp,
- 				 struct mlxsw_sp_acl_rule_info *rulei,
- 				 struct netlink_ext_ack *extack);
-@@ -883,7 +889,8 @@ struct mlxsw_sp_acl_rule_info *
- mlxsw_sp_acl_rule_rulei(struct mlxsw_sp_acl_rule *rule);
- int mlxsw_sp_acl_rule_get_stats(struct mlxsw_sp *mlxsw_sp,
- 				struct mlxsw_sp_acl_rule *rule,
--				u64 *packets, u64 *bytes, u64 *last_use,
-+				u64 *packets, u64 *bytes, u64 *drops,
-+				u64 *last_use,
- 				enum flow_action_hw_stats *used_hw_stats);
- 
- struct mlxsw_sp_fid *mlxsw_sp_acl_dummy_fid(struct mlxsw_sp *mlxsw_sp);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-index a671156a1428..8cfa03a75374 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-@@ -66,6 +66,7 @@ struct mlxsw_sp_acl_rule {
- 	u64 last_used;
- 	u64 last_packets;
- 	u64 last_bytes;
-+	u64 last_drops;
- 	unsigned long priv[];
- 	/* priv has to be always the last item */
- };
-@@ -648,6 +649,24 @@ int mlxsw_sp_acl_rulei_act_mangle(struct mlxsw_sp *mlxsw_sp,
- 	return -EINVAL;
- }
- 
-+int mlxsw_sp_acl_rulei_act_police(struct mlxsw_sp *mlxsw_sp,
-+				  struct mlxsw_sp_acl_rule_info *rulei,
-+				  u32 index, u64 rate_bytes_ps,
-+				  u32 burst, struct netlink_ext_ack *extack)
+diff --git a/tools/testing/selftests/net/forwarding/tc_police.sh b/tools/testing/selftests/net/forwarding/tc_police.sh
+new file mode 100755
+index 000000000000..160f9cccdfb7
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/tc_police.sh
+@@ -0,0 +1,333 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Test tc-police action.
++#
++# +---------------------------------+
++# | H1 (vrf)                        |
++# |    + $h1                        |
++# |    | 192.0.2.1/24               |
++# |    |                            |
++# |    |  default via 192.0.2.2     |
++# +----|----------------------------+
++#      |
++# +----|----------------------------------------------------------------------+
++# | SW |                                                                      |
++# |    + $rp1                                                                 |
++# |        192.0.2.2/24                                                       |
++# |                                                                           |
++# |        198.51.100.2/24                           203.0.113.2/24           |
++# |    + $rp2                                    + $rp3                       |
++# |    |                                         |                            |
++# +----|-----------------------------------------|----------------------------+
++#      |                                         |
++# +----|----------------------------+       +----|----------------------------+
++# |    |  default via 198.51.100.2  |       |    |  default via 203.0.113.2   |
++# |    |                            |       |    |                            |
++# |    | 198.51.100.1/24            |       |    | 203.0.113.1/24             |
++# |    + $h2                        |       |    + $h3                        |
++# | H2 (vrf)                        |       | H3 (vrf)                        |
++# +---------------------------------+       +---------------------------------+
++
++ALL_TESTS="
++	police_rx_test
++	police_tx_test
++	police_shared_test
++	police_rx_mirror_test
++	police_tx_mirror_test
++"
++NUM_NETIFS=6
++source tc_common.sh
++source lib.sh
++
++h1_create()
 +{
-+	int err;
++	simple_if_init $h1 192.0.2.1/24
 +
-+	err = mlxsw_afa_block_append_police(rulei->act_block, index,
-+					    rate_bytes_ps, burst,
-+					    &rulei->policer_index, extack);
-+	if (err)
-+		return err;
-+
-+	rulei->policer_index_valid = true;
-+
-+	return 0;
++	ip -4 route add default vrf v$h1 nexthop via 192.0.2.2
 +}
 +
- int mlxsw_sp_acl_rulei_act_count(struct mlxsw_sp *mlxsw_sp,
- 				 struct mlxsw_sp_acl_rule_info *rulei,
- 				 struct netlink_ext_ack *extack)
-@@ -868,13 +887,16 @@ static void mlxsw_sp_acl_rule_activity_update_work(struct work_struct *work)
- 
- int mlxsw_sp_acl_rule_get_stats(struct mlxsw_sp *mlxsw_sp,
- 				struct mlxsw_sp_acl_rule *rule,
--				u64 *packets, u64 *bytes, u64 *last_use,
-+				u64 *packets, u64 *bytes, u64 *drops,
-+				u64 *last_use,
- 				enum flow_action_hw_stats *used_hw_stats)
- 
- {
-+	enum mlxsw_sp_policer_type type = MLXSW_SP_POLICER_TYPE_SINGLE_RATE;
- 	struct mlxsw_sp_acl_rule_info *rulei;
- 	u64 current_packets = 0;
- 	u64 current_bytes = 0;
-+	u64 current_drops = 0;
- 	int err;
- 
- 	rulei = mlxsw_sp_acl_rule_rulei(rule);
-@@ -886,12 +908,21 @@ int mlxsw_sp_acl_rule_get_stats(struct mlxsw_sp *mlxsw_sp,
- 			return err;
- 		*used_hw_stats = FLOW_ACTION_HW_STATS_IMMEDIATE;
- 	}
-+	if (rulei->policer_index_valid) {
-+		err = mlxsw_sp_policer_drops_counter_get(mlxsw_sp, type,
-+							 rulei->policer_index,
-+							 &current_drops);
-+		if (err)
-+			return err;
-+	}
- 	*packets = current_packets - rule->last_packets;
- 	*bytes = current_bytes - rule->last_bytes;
-+	*drops = current_drops - rule->last_drops;
- 	*last_use = rule->last_used;
- 
- 	rule->last_bytes = current_bytes;
- 	rule->last_packets = current_packets;
-+	rule->last_drops = current_drops;
- 
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
-index 18444f675100..90372d1c28d4 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_flex_actions.c
-@@ -169,6 +169,29 @@ mlxsw_sp_act_mirror_del(void *priv, u8 local_in_port, int span_id, bool ingress)
- 	mlxsw_sp_span_agent_put(mlxsw_sp, span_id);
- }
- 
-+static int mlxsw_sp_act_policer_add(void *priv, u64 rate_bytes_ps, u32 burst,
-+				    u16 *p_policer_index,
-+				    struct netlink_ext_ack *extack)
++h1_destroy()
 +{
-+	struct mlxsw_sp_policer_params params;
-+	struct mlxsw_sp *mlxsw_sp = priv;
++	ip -4 route del default vrf v$h1 nexthop via 192.0.2.2
 +
-+	params.rate = rate_bytes_ps;
-+	params.burst = burst;
-+	params.bytes = true;
-+	return mlxsw_sp_policer_add(mlxsw_sp,
-+				    MLXSW_SP_POLICER_TYPE_SINGLE_RATE,
-+				    &params, extack, p_policer_index);
++	simple_if_fini $h1 192.0.2.1/24
 +}
 +
-+static void mlxsw_sp_act_policer_del(void *priv, u16 policer_index)
++h2_create()
 +{
-+	struct mlxsw_sp *mlxsw_sp = priv;
++	simple_if_init $h2 198.51.100.1/24
 +
-+	mlxsw_sp_policer_del(mlxsw_sp, MLXSW_SP_POLICER_TYPE_SINGLE_RATE,
-+			     policer_index);
++	ip -4 route add default vrf v$h2 nexthop via 198.51.100.2
++
++	tc qdisc add dev $h2 clsact
 +}
 +
- const struct mlxsw_afa_ops mlxsw_sp1_act_afa_ops = {
- 	.kvdl_set_add		= mlxsw_sp1_act_kvdl_set_add,
- 	.kvdl_set_del		= mlxsw_sp_act_kvdl_set_del,
-@@ -179,6 +202,8 @@ const struct mlxsw_afa_ops mlxsw_sp1_act_afa_ops = {
- 	.counter_index_put	= mlxsw_sp_act_counter_index_put,
- 	.mirror_add		= mlxsw_sp_act_mirror_add,
- 	.mirror_del		= mlxsw_sp_act_mirror_del,
-+	.policer_add		= mlxsw_sp_act_policer_add,
-+	.policer_del		= mlxsw_sp_act_policer_del,
- };
- 
- const struct mlxsw_afa_ops mlxsw_sp2_act_afa_ops = {
-@@ -191,6 +216,8 @@ const struct mlxsw_afa_ops mlxsw_sp2_act_afa_ops = {
- 	.counter_index_put	= mlxsw_sp_act_counter_index_put,
- 	.mirror_add		= mlxsw_sp_act_mirror_add,
- 	.mirror_del		= mlxsw_sp_act_mirror_del,
-+	.policer_add		= mlxsw_sp_act_policer_add,
-+	.policer_del		= mlxsw_sp_act_policer_del,
- 	.dummy_first_set	= true,
- };
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-index 61d21043d83a..41855e58564b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-@@ -4,6 +4,7 @@
- #include <linux/kernel.h>
- #include <linux/errno.h>
- #include <linux/netdevice.h>
-+#include <linux/log2.h>
- #include <net/net_namespace.h>
- #include <net/flow_dissector.h>
- #include <net/pkt_cls.h>
-@@ -22,6 +23,7 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- {
- 	const struct flow_action_entry *act;
- 	int mirror_act_count = 0;
-+	int police_act_count = 0;
- 	int err, i;
- 
- 	if (!flow_action_has_entries(flow_action))
-@@ -180,6 +182,28 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- 				return err;
- 			break;
- 			}
-+		case FLOW_ACTION_POLICE: {
-+			u32 burst;
++h2_destroy()
++{
++	tc qdisc del dev $h2 clsact
 +
-+			if (police_act_count++) {
-+				NL_SET_ERR_MSG_MOD(extack, "Multiple police actions per rule are not supported");
-+				return -EOPNOTSUPP;
-+			}
++	ip -4 route del default vrf v$h2 nexthop via 198.51.100.2
 +
-+			/* The kernel might adjust the requested burst size so
-+			 * that it is not exactly a power of two. Re-adjust it
-+			 * here since the hardware only supports burst sizes
-+			 * that are a power of two.
-+			 */
-+			burst = roundup_pow_of_two(act->police.burst);
-+			err = mlxsw_sp_acl_rulei_act_police(mlxsw_sp, rulei,
-+							    act->police.index,
-+							    act->police.rate_bytes_ps,
-+							    burst, extack);
-+			if (err)
-+				return err;
-+			break;
-+			}
- 		default:
- 			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
- 			dev_err(mlxsw_sp->bus_info->dev, "Unsupported action\n");
-@@ -616,6 +640,7 @@ int mlxsw_sp_flower_stats(struct mlxsw_sp *mlxsw_sp,
- 	u64 packets;
- 	u64 lastuse;
- 	u64 bytes;
-+	u64 drops;
- 	int err;
- 
- 	ruleset = mlxsw_sp_acl_ruleset_get(mlxsw_sp, block,
-@@ -629,11 +654,12 @@ int mlxsw_sp_flower_stats(struct mlxsw_sp *mlxsw_sp,
- 		return -EINVAL;
- 
- 	err = mlxsw_sp_acl_rule_get_stats(mlxsw_sp, rule, &packets, &bytes,
--					  &lastuse, &used_hw_stats);
-+					  &drops, &lastuse, &used_hw_stats);
- 	if (err)
- 		goto err_rule_get_stats;
- 
--	flow_stats_update(&f->stats, bytes, packets, 0, lastuse, used_hw_stats);
-+	flow_stats_update(&f->stats, bytes, packets, drops, lastuse,
-+			  used_hw_stats);
- 
- 	mlxsw_sp_acl_ruleset_put(mlxsw_sp, ruleset);
- 	return 0;
++	simple_if_fini $h2 198.51.100.1/24
++}
++
++h3_create()
++{
++	simple_if_init $h3 203.0.113.1/24
++
++	ip -4 route add default vrf v$h3 nexthop via 203.0.113.2
++
++	tc qdisc add dev $h3 clsact
++}
++
++h3_destroy()
++{
++	tc qdisc del dev $h3 clsact
++
++	ip -4 route del default vrf v$h3 nexthop via 203.0.113.2
++
++	simple_if_fini $h3 203.0.113.1/24
++}
++
++router_create()
++{
++	ip link set dev $rp1 up
++	ip link set dev $rp2 up
++	ip link set dev $rp3 up
++
++	__addr_add_del $rp1 add 192.0.2.2/24
++	__addr_add_del $rp2 add 198.51.100.2/24
++	__addr_add_del $rp3 add 203.0.113.2/24
++
++	tc qdisc add dev $rp1 clsact
++	tc qdisc add dev $rp2 clsact
++}
++
++router_destroy()
++{
++	tc qdisc del dev $rp2 clsact
++	tc qdisc del dev $rp1 clsact
++
++	__addr_add_del $rp3 del 203.0.113.2/24
++	__addr_add_del $rp2 del 198.51.100.2/24
++	__addr_add_del $rp1 del 192.0.2.2/24
++
++	ip link set dev $rp3 down
++	ip link set dev $rp2 down
++	ip link set dev $rp1 down
++}
++
++police_common_test()
++{
++	local test_name=$1; shift
++
++	RET=0
++
++	# Rule to measure bandwidth on ingress of $h2
++	tc filter add dev $h2 ingress protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
++		action drop
++
++	mausezahn $h1 -a own -b $(mac_get $rp1) -A 192.0.2.1 -B 198.51.100.1 \
++		-t udp sp=12345,dp=54321 -p 1000 -c 0 -q &
++
++	local t0=$(tc_rule_stats_get $h2 1 ingress .bytes)
++	sleep 10
++	local t1=$(tc_rule_stats_get $h2 1 ingress .bytes)
++
++	local er=$((80 * 1000 * 1000))
++	local nr=$(rate $t0 $t1 10)
++	local nr_pct=$((100 * (nr - er) / er))
++	((-10 <= nr_pct && nr_pct <= 10))
++	check_err $? "Expected rate $(humanize $er), got $(humanize $nr), which is $nr_pct% off. Required accuracy is +-10%."
++
++	log_test "$test_name"
++
++	{ kill %% && wait %%; } 2>/dev/null
++	tc filter del dev $h2 ingress protocol ip pref 1 handle 101 flower
++}
++
++police_rx_test()
++{
++	# Rule to police traffic destined to $h2 on ingress of $rp1
++	tc filter add dev $rp1 ingress protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
++		action police rate 80mbit burst 16k conform-exceed drop/ok
++
++	police_common_test "police on rx"
++
++	tc filter del dev $rp1 ingress protocol ip pref 1 handle 101 flower
++}
++
++police_tx_test()
++{
++	# Rule to police traffic destined to $h2 on egress of $rp2
++	tc filter add dev $rp2 egress protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
++		action police rate 80mbit burst 16k conform-exceed drop/ok
++
++	police_common_test "police on tx"
++
++	tc filter del dev $rp2 egress protocol ip pref 1 handle 101 flower
++}
++
++police_shared_common_test()
++{
++	local dport=$1; shift
++	local test_name=$1; shift
++
++	RET=0
++
++	mausezahn $h1 -a own -b $(mac_get $rp1) -A 192.0.2.1 -B 198.51.100.1 \
++		-t udp sp=12345,dp=$dport -p 1000 -c 0 -q &
++
++	local t0=$(tc_rule_stats_get $h2 1 ingress .bytes)
++	sleep 10
++	local t1=$(tc_rule_stats_get $h2 1 ingress .bytes)
++
++	local er=$((80 * 1000 * 1000))
++	local nr=$(rate $t0 $t1 10)
++	local nr_pct=$((100 * (nr - er) / er))
++	((-10 <= nr_pct && nr_pct <= 10))
++	check_err $? "Expected rate $(humanize $er), got $(humanize $nr), which is $nr_pct% off. Required accuracy is +-10%."
++
++	log_test "$test_name"
++
++	{ kill %% && wait %%; } 2>/dev/null
++}
++
++police_shared_test()
++{
++	# Rule to measure bandwidth on ingress of $h2
++	tc filter add dev $h2 ingress protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp src_port 12345 \
++		action drop
++
++	# Rule to police traffic destined to $h2 on ingress of $rp1
++	tc filter add dev $rp1 ingress protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
++		action police rate 80mbit burst 16k conform-exceed drop/ok \
++		index 10
++
++	# Rule to police a different flow destined to $h2 on egress of $rp2
++	# using same policer
++	tc filter add dev $rp2 egress protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp dst_port 22222 \
++		action police index 10
++
++	police_shared_common_test 54321 "police with shared policer - rx"
++
++	police_shared_common_test 22222 "police with shared policer - tx"
++
++	tc filter del dev $rp2 egress protocol ip pref 1 handle 101 flower
++	tc filter del dev $rp1 ingress protocol ip pref 1 handle 101 flower
++	tc filter del dev $h2 ingress protocol ip pref 1 handle 101 flower
++}
++
++police_mirror_common_test()
++{
++	local pol_if=$1; shift
++	local dir=$1; shift
++	local test_name=$1; shift
++
++	RET=0
++
++	# Rule to measure bandwidth on ingress of $h2
++	tc filter add dev $h2 ingress protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
++		action drop
++
++	# Rule to measure bandwidth of mirrored traffic on ingress of $h3
++	tc filter add dev $h3 ingress protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
++		action drop
++
++	# Rule to police traffic destined to $h2 and mirror to $h3
++	tc filter add dev $pol_if $dir protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
++		action police rate 80mbit burst 16k conform-exceed drop/pipe \
++		action mirred egress mirror dev $rp3
++
++	mausezahn $h1 -a own -b $(mac_get $rp1) -A 192.0.2.1 -B 198.51.100.1 \
++		-t udp sp=12345,dp=54321 -p 1000 -c 0 -q &
++
++	local t0=$(tc_rule_stats_get $h2 1 ingress .bytes)
++	sleep 10
++	local t1=$(tc_rule_stats_get $h2 1 ingress .bytes)
++
++	local er=$((80 * 1000 * 1000))
++	local nr=$(rate $t0 $t1 10)
++	local nr_pct=$((100 * (nr - er) / er))
++	((-10 <= nr_pct && nr_pct <= 10))
++	check_err $? "Expected rate $(humanize $er), got $(humanize $nr), which is $nr_pct% off. Required accuracy is +-10%."
++
++	local t0=$(tc_rule_stats_get $h3 1 ingress .bytes)
++	sleep 10
++	local t1=$(tc_rule_stats_get $h3 1 ingress .bytes)
++
++	local er=$((80 * 1000 * 1000))
++	local nr=$(rate $t0 $t1 10)
++	local nr_pct=$((100 * (nr - er) / er))
++	((-10 <= nr_pct && nr_pct <= 10))
++	check_err $? "Expected rate $(humanize $er), got $(humanize $nr), which is $nr_pct% off. Required accuracy is +-10%."
++
++	log_test "$test_name"
++
++	{ kill %% && wait %%; } 2>/dev/null
++	tc filter del dev $pol_if $dir protocol ip pref 1 handle 101 flower
++	tc filter del dev $h3 ingress protocol ip pref 1 handle 101 flower
++	tc filter del dev $h2 ingress protocol ip pref 1 handle 101 flower
++}
++
++police_rx_mirror_test()
++{
++	police_mirror_common_test $rp1 ingress "police rx and mirror"
++}
++
++police_tx_mirror_test()
++{
++	police_mirror_common_test $rp2 egress "police tx and mirror"
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	rp1=${NETIFS[p2]}
++
++	rp2=${NETIFS[p3]}
++	h2=${NETIFS[p4]}
++
++	rp3=${NETIFS[p5]}
++	h3=${NETIFS[p6]}
++
++	vrf_prepare
++	forwarding_enable
++
++	h1_create
++	h2_create
++	h3_create
++	router_create
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	router_destroy
++	h3_destroy
++	h2_destroy
++	h1_destroy
++
++	forwarding_restore
++	vrf_cleanup
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++
++tests_run
++
++exit $EXIT_STATUS
 -- 
 2.26.2
 
