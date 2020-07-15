@@ -2,100 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F0CA22129C
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:42:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47E9D2212D8
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:46:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727867AbgGOQkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 12:40:46 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:33599 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727787AbgGOQkg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 12:40:36 -0400
-Received: by mail-ed1-f68.google.com with SMTP id h28so2106348edz.0;
-        Wed, 15 Jul 2020 09:40:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mkYMsiSKEyTRllQWaVCWr/1Tzi9Mh4OsE2TArv0QPE4=;
-        b=GpWMlkg2pG8vm7YvFAaQ5PN9iyjgJxBcHxfNP3RKeR7O6FdGk1AWMu9tK1zV5eem+d
-         +3ywLdxKa2B4/7UcNFoR/rj8856HLeOS7aqKO3rtOUCCJx+VN8gFqLdwyrczkxVvhzMF
-         kUS2AUrtz7GfMWFVDCd+wSk1pdoYBlsDvGuEuKWky/VIMFHcf8DQGye/cvjTHVGtXInc
-         ESF3JIhZWxuvi/EQ510MnBXavtcfz8WWXUh0vcrRsFvMp/02uKdELXy7qCHmqDs85vXg
-         eeZC9uKDLkSgJ59UwzNh9u85l6yjwwDva5mxgFi6hYJayxAMGTXIZcl94LkNhKafxw07
-         S3YA==
-X-Gm-Message-State: AOAM532ucAZU1HpiMKFGguksDMocNJZ/WPlOgDL+tElPcyvcx8WWofbq
-        TTmpCIZAXjgA7SvH5SyFBcNKVoyMcwXSD6gAvU18LA==
-X-Google-Smtp-Source: ABdhPJxL2C4dTVVKrNN4e+F8ARVR16RmQ+W2KY1F0ucI6oh6+0b4B0E4YcDIV44fX0Geoxf4yVkiP3FmOGIrLSi9TeA=
-X-Received: by 2002:a50:ab5c:: with SMTP id t28mr436194edc.209.1594831234383;
- Wed, 15 Jul 2020 09:40:34 -0700 (PDT)
+        id S1727831AbgGOQnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 12:43:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726652AbgGOQmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 12:42:55 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490DBC061755;
+        Wed, 15 Jul 2020 09:42:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=J/Nj7cakMWC9zRzrNKsSvW3BAo+rPjXjpVsN8Iiqtp4=; b=k+zcfuYkUPeXtfLFXqYwbw7ptD
+        9FQm277+V3gwzLMV7wZdJzRX5a7t6yavZSeDUneCwlxaaQDxaNggWJPj5ir6dqJWuAe8j36b4GNaV
+        OpOT3YZxaicF2DEgYwq/K9Xn1cikr9Wt/1hcohGL10i6rLlBNC/R3uaXQ+rzXRmyRVMVBu6x9Pofc
+        crAGSzS6aS7ktqta5ZvGBnygp+fdzl51HcDJnXgSe9ca2yK+9VlgqVXAqAD17InyaTca1l//Xc41g
+        /NJfCqoBzqFPZ7axn5y1desYShbz8j+H7SYbt3Cg82dwSmQToPULODr232A4dCH1bojS3PYtx9Gse
+        bvrbezAg==;
+Received: from [2601:1c0:6280:3f0::19c2] (helo=smtpauth.infradead.org)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jvkUc-0000Bh-Tj; Wed, 15 Jul 2020 16:42:51 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 1/9 v2 net-next] net: qed: drop duplicate words in comments
+Date:   Wed, 15 Jul 2020 09:42:38 -0700
+Message-Id: <20200715164246.9054-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20200715162604.1080552-1-colin.king@canonical.com> <eb5d2ead-807b-3435-5024-b8cc4a1311f3@canonical.com>
-In-Reply-To: <eb5d2ead-807b-3435-5024-b8cc4a1311f3@canonical.com>
-From:   Anna Schumaker <anna.schumaker@netapp.com>
-Date:   Wed, 15 Jul 2020 12:40:18 -0400
-Message-ID: <CAFX2Jfn75a8XENoqvztVnUe0aR9S2KGjpcGp3zyLeFS-h--9ag@mail.gmail.com>
-Subject: Re: [PATCH] xprtrdma: fix incorrect header size calcations
-To:     Colin Ian King <colin.king@canonical.com>
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No need for a v2, I can fix it up!
+Drop doubled word "the" in two comments.
 
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
+---
+v2: move wireless patches to a separate patch series.
 
-On Wed, Jul 15, 2020 at 12:32 PM Colin Ian King
-<colin.king@canonical.com> wrote:
->
-> Bah, $SUBJECT typo "calcations" -> "calculations". can that be fixed up
-> when it's applied, or shall I send a V2?
->
-> On 15/07/2020 17:26, Colin King wrote:
-> > From: Colin Ian King <colin.king@canonical.com>
-> >
-> > Currently the header size calculations are using an assignment
-> > operator instead of a += operator when accumulating the header
-> > size leading to incorrect sizes.  Fix this by using the correct
-> > operator.
-> >
-> > Addresses-Coverity: ("Unused value")
-> > Fixes: 302d3deb2068 ("xprtrdma: Prevent inline overflow")
-> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> > ---
-> >  net/sunrpc/xprtrdma/rpc_rdma.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma.c
-> > index 935bbef2f7be..453bacc99907 100644
-> > --- a/net/sunrpc/xprtrdma/rpc_rdma.c
-> > +++ b/net/sunrpc/xprtrdma/rpc_rdma.c
-> > @@ -71,7 +71,7 @@ static unsigned int rpcrdma_max_call_header_size(unsigned int maxsegs)
-> >       size = RPCRDMA_HDRLEN_MIN;
-> >
-> >       /* Maximum Read list size */
-> > -     size = maxsegs * rpcrdma_readchunk_maxsz * sizeof(__be32);
-> > +     size += maxsegs * rpcrdma_readchunk_maxsz * sizeof(__be32);
-> >
-> >       /* Minimal Read chunk size */
-> >       size += sizeof(__be32); /* segment count */
-> > @@ -94,7 +94,7 @@ static unsigned int rpcrdma_max_reply_header_size(unsigned int maxsegs)
-> >       size = RPCRDMA_HDRLEN_MIN;
-> >
-> >       /* Maximum Write list size */
-> > -     size = sizeof(__be32);          /* segment count */
-> > +     size += sizeof(__be32);         /* segment count */
-> >       size += maxsegs * rpcrdma_segment_maxsz * sizeof(__be32);
-> >       size += sizeof(__be32); /* list discriminator */
-> >
-> >
->
+ include/linux/qed/qed_chain.h |    2 +-
+ include/linux/qed/qed_if.h    |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+--- linux-next-20200714.orig/include/linux/qed/qed_chain.h
++++ linux-next-20200714/include/linux/qed/qed_chain.h
+@@ -130,7 +130,7 @@ struct qed_chain {
+ 	} pbl_sp;
+ 
+ 	/* Address of first page of the chain - the address is required
+-	 * for fastpath operation [consume/produce] but only for the the SINGLE
++	 * for fastpath operation [consume/produce] but only for the SINGLE
+ 	 * flavour which isn't considered fastpath [== SPQ].
+ 	 */
+ 	void *p_virt_addr;
+--- linux-next-20200714.orig/include/linux/qed/qed_if.h
++++ linux-next-20200714/include/linux/qed/qed_if.h
+@@ -498,7 +498,7 @@ struct qed_fcoe_pf_params {
+ 	u8 bdq_pbl_num_entries[2];
+ };
+ 
+-/* Most of the the parameters below are described in the FW iSCSI / TCP HSI */
++/* Most of the parameters below are described in the FW iSCSI / TCP HSI */
+ struct qed_iscsi_pf_params {
+ 	u64 glbl_q_params_addr;
+ 	u64 bdq_pbl_base_addr[3];
