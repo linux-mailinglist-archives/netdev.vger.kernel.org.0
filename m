@@ -2,71 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 486DC221504
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 21:23:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87C01221507
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 21:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbgGOTXa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 15:23:30 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:39560 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726479AbgGOTXa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 15:23:30 -0400
-Received: by mail-io1-f65.google.com with SMTP id f23so3458131iof.6;
-        Wed, 15 Jul 2020 12:23:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gdwKQpu0Px21p6Yo1ji0WQqiSg9ZqCi72tqfSZPNfnE=;
-        b=JDlzrf/iy1rd1hsaXICJVuyZ308k1uDYRYyY3bQxzaJ5ZyotfOT42A0tjXVVsf7Kx7
-         WQn6nEFC0nz2wIMyCwvQNc86pVve7rEzQ7355MJ0Du2ZXM4zQg4XT1x1YpW8l4lazA0H
-         Ab8B442EpS50IBb0ja8b1ojirM4oE9Z0t43GID4o1Rtt80WfRgI5+zkNLzI4kUrtaKPo
-         3/0WCbAIXPO2NBYsMex9DNNxS89TBkJ/eYEW7IXwETxC6K0IQJvzgIdLMWrEzE2QHlAT
-         eWrX6e9Boxfgw2iemgC5kq23BCdPEqgmZ6OBzCHrJLoL81qxgl47cTMvIOODWbI+98cR
-         aoLw==
-X-Gm-Message-State: AOAM531+Y+qDrJfzJJZ88gHTf5128h5u76oeFNDk7I7S1chnADsBHgig
-        +dE8V6vBZJFWzCPNAZvwPw==
-X-Google-Smtp-Source: ABdhPJwbc9mImdlrnoACZBodTTQTYY0dq9F2rd+dhmlIFNlisTAwMXoWbRXWs9vI0WzIlwOnasAcSg==
-X-Received: by 2002:a05:6602:2ac8:: with SMTP id m8mr908011iov.36.1594841009339;
-        Wed, 15 Jul 2020 12:23:29 -0700 (PDT)
-Received: from xps15 ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id x71sm1504496ilk.43.2020.07.15.12.23.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2020 12:23:28 -0700 (PDT)
-Received: (nullmailer pid 677216 invoked by uid 1000);
-        Wed, 15 Jul 2020 19:23:27 -0000
-Date:   Wed, 15 Jul 2020 13:23:27 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: net: renesas,ether: Improve schema
- validation
-Message-ID: <20200715192327.GA677138@bogus>
-References: <20200619151429.14944-1-geert+renesas@glider.be>
+        id S1726873AbgGOTXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 15:23:42 -0400
+Received: from www62.your-server.de ([213.133.104.62]:36888 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726479AbgGOTXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 15:23:42 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jvn0A-0001qF-0g; Wed, 15 Jul 2020 21:23:34 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jvn09-000LxG-P9; Wed, 15 Jul 2020 21:23:33 +0200
+Subject: Re: [PATCH] tools/bpftool: Fix error return code in do_skeleton()
+To:     YueHaibing <yuehaibing@huawei.com>, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200715031353.14692-1-yuehaibing@huawei.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <6cb1dfd7-6456-ef1c-d708-042ab53b3d2c@iogearbox.net>
+Date:   Wed, 15 Jul 2020 21:23:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200619151429.14944-1-geert+renesas@glider.be>
+In-Reply-To: <20200715031353.14692-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25874/Wed Jul 15 16:18:08 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 19 Jun 2020 17:14:29 +0200, Geert Uytterhoeven wrote:
->   - Remove pinctrl consumer properties, as they are handled by core
->     dt-schema,
->   - Document missing properties,
->   - Document missing PHY child node,
->   - Add "additionalProperties: false".
+On 7/15/20 5:13 AM, YueHaibing wrote:
+> The error return code should be PTR_ERR(obj) other than
+> PTR_ERR(NULL).
 > 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Fixes: 5dc7a8b21144 ("bpftool, selftests/bpf: Embed object file inside skeleton")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 > ---
->  .../bindings/net/renesas,ether.yaml           | 22 +++++++++++++------
->  1 file changed, 15 insertions(+), 7 deletions(-)
+>   tools/bpf/bpftool/gen.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+> index 10de76b296ba..35f62273cdbd 100644
+> --- a/tools/bpf/bpftool/gen.c
+> +++ b/tools/bpf/bpftool/gen.c
+> @@ -305,8 +305,9 @@ static int do_skeleton(int argc, char **argv)
+>   	opts.object_name = obj_name;
+>   	obj = bpf_object__open_mem(obj_data, file_sz, &opts);
+>   	if (IS_ERR(obj)) {
+> +		err = PTR_ERR(obj);
+> +		p_err("failed to open BPF object file: %ld", err);
+>   		obj = NULL;
+> -		p_err("failed to open BPF object file: %ld", PTR_ERR(obj));
+>   		goto out;
+
+Instead of just the error number, could we dump something useful to the user here
+via libbpf_strerror() given you touch this line? Also, I think the convention in
+do_skeleton() is to just return {0,-1} given this is propagated as return code
+for bpftool.
+
+>   	}
+>   
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
