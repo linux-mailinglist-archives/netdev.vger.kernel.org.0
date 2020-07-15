@@ -2,62 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33C3B22013C
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 02:06:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89F5522018F
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 03:01:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbgGOAGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 20:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726450AbgGOAGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 20:06:31 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329A2C061755
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 17:06:31 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2E17915E4595A;
-        Tue, 14 Jul 2020 17:06:29 -0700 (PDT)
-Date:   Tue, 14 Jul 2020 17:06:27 -0700 (PDT)
-Message-Id: <20200714.170627.380704065491369242.davem@davemloft.net>
-To:     kuba@kernel.org
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        simon.horman@netronome.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        thomas.lendacky@amd.com, aelior@marvell.com, skalluru@marvell.com,
-        vishal@chelsio.com, benve@cisco.com, _govind@gmx.com,
-        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
-        jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
-        GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
-        manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com
-Subject: Re: [PATCH net-next v3 00/12] udp_tunnel: NIC RX port offload
- infrastructure
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200714191830.694674-1-kuba@kernel.org>
-References: <20200714191830.694674-1-kuba@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726767AbgGOBAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 21:00:48 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:2541 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726356AbgGOBAr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 21:00:47 -0400
+Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.55])
+        by Forcepoint Email with ESMTP id D712171674DF9AAF01CF;
+        Wed, 15 Jul 2020 09:00:45 +0800 (CST)
+Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
+ DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Wed, 15 Jul 2020 09:00:45 +0800
+Received: from [10.174.61.242] (10.174.61.242) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Wed, 15 Jul 2020 09:00:44 +0800
+Subject: Re: [PATCH net-next v2] hinic: add firmware update support
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
+        <chiqijun@huawei.com>
+References: <20200714125433.18126-1-luobin9@huawei.com>
+ <20200714113711.32107a16@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "luobin (L)" <luobin9@huawei.com>
+Message-ID: <0025d09b-589e-a68e-7e17-a3c5558e0565@huawei.com>
+Date:   Wed, 15 Jul 2020 09:00:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
+MIME-Version: 1.0
+In-Reply-To: <20200714113711.32107a16@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 14 Jul 2020 17:06:30 -0700 (PDT)
+X-Originating-IP: [10.174.61.242]
+X-ClientProxiedBy: dggeme708-chm.china.huawei.com (10.1.199.104) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Tue, 14 Jul 2020 12:18:18 -0700
-
-> This set of patches converts further drivers to use the new
-> infrastructure to UDP tunnel port offload merged in
-> commit 0ea460474d70 ("Merge branch 'udp_tunnel-add-NIC-RX-port-offload-infrastructure'").
+On 2020/7/15 2:37, Jakub Kicinski wrote:
+> On Tue, 14 Jul 2020 20:54:33 +0800 Luo bin wrote:
+>> add support to update firmware by the devlink flashing API
+>>
+>> Signed-off-by: Luo bin <luobin9@huawei.com>
 > 
-> v3:
->  - fix a W=1 build warning in qede.
-> v2:
->  - fix a W=1 build warning in xgbe,
->  - expand the size of tables for lio.
-
-Series applied, thanks.
+> Minor nits below, otherwise I think this looks good.
+> 
+>> +static int hinic_firmware_update(struct hinic_devlink_priv *priv,
+>> +				 const struct firmware *fw)
+>> +{
+>> +	struct host_image_st host_image;
+>> +	int err;
+>> +
+>> +	memset(&host_image, 0, sizeof(struct host_image_st));
+>> +
+>> +	if (!check_image_valid(priv, fw->data, fw->size, &host_image) ||
+>> +	    !check_image_integrity(priv, &host_image, FW_UPDATE_COLD) ||
+>> +	    !check_image_device_type(priv, host_image.device_id))
+> 
+> These helpers should also set an appropriate message in extack, so the
+> user can see it on the command line / inside their application.
+> 
+>> +		return -EINVAL;
+>> +
+>> +	dev_info(&priv->hwdev->hwif->pdev->dev, "Flash firmware begin\n");
+>> +
+>> +	err = hinic_flash_fw(priv, fw->data, &host_image);
+>> +	if (err) {
+>> +		if (err == HINIC_FW_DISMATCH_ERROR)
+>> +			dev_err(&priv->hwdev->hwif->pdev->dev, "Firmware image doesn't match this card, please use newer image, err: %d\n",
+> 
+> Here as well - please make sure to return an error messages through
+> extack.
+> 
+>> +				err);
+>> +		else
+>> +			dev_err(&priv->hwdev->hwif->pdev->dev, "Send firmware image data failed, err: %d\n",
+>> +				err);
+>> +		return err;
+>> +	}
+>> +
+>> +	dev_info(&priv->hwdev->hwif->pdev->dev, "Flash firmware end\n");
+>> +
+>> +	return 0;
+>> +}
+> 
+>> @@ -1086,6 +1090,17 @@ static int nic_dev_init(struct pci_dev *pdev)
+>>  		return PTR_ERR(hwdev);
+>>  	}
+>>  
+>> +	devlink = hinic_devlink_alloc();
+>> +	if (!devlink) {
+>> +		dev_err(&pdev->dev, "Hinic devlink alloc failed\n");
+>> +		err = -ENOMEM;
+>> +		goto err_devlink_alloc;
+>> +	}
+>> +
+>> +	priv = devlink_priv(devlink);
+>> +	priv->hwdev = hwdev;
+>> +	priv->devlink = devlink;
+> 
+> No need to remember the devlink pointer here, you can use
+> priv_to_devlink(priv) to go from priv to devlink.
+> 
+>> +
+>>  	num_qps = hinic_hwdev_num_qps(hwdev);
+>>  	if (num_qps <= 0) {
+>>  		dev_err(&pdev->dev, "Invalid number of QPS\n");
+> .
+> 
+Will fix all. Thanks for your review.
