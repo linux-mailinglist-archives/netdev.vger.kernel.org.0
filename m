@@ -2,192 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC50D22045B
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 07:27:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A159D220460
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 07:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728413AbgGOF1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 01:27:09 -0400
-Received: from mail-bn7nam10on2043.outbound.protection.outlook.com ([40.107.92.43]:25441
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726928AbgGOF1J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 01:27:09 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oBO1/oBXY5OaJLFudfiOCN8i7sE5eHWVfnlqqHSfmKrKt6aK/ByWVP7DxFC7NFxoYUOxityKjxQHsylAET7JM8zz39KQTbFCv8PcKvpi3lid9f45AFstLyRVdeGl2dxOb5pGvLfbPt7FDNKsI5gZ+WFnt9n+TVs4N1W45xZF50b9RZDf9EANiSKAYPzAct9vKpahcmP9+iNbkHyRCDnhCf/CQDlhPD8aGT5ELyI1zFU/yVdF62NJsGs9EGQyzz8UuzTs398fx+VpdsAj+6EbTVumT75Jl8INVdTLUk0tby5OcECG4uoJu1+J8HzAvmvDxtDRc5r1DK6cfT2dXgq/iA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NhgPb5IWKrTod3mNpvQTxSIZz1CebYLNzZ3y/w61jtk=;
- b=oWmTIZA9uZQIdZEmCluz3LC8kqNuSCzEkNwkfKcta22MuuFPcFiyJinpfe6nHZoJJuQ8vlyV9PEoncYr6S6a11Q+tOztPREg6rqkPH8sGMZBo5PLq5YfIobCRz7N5kJspF9DDtJKilZIy1xEzGcdW48gvZDL9+1x2k3Z64RXHi8HsvwjxTpAk6zxZ0XciUoT544ACXaasldUoXTCHQvkpq0PD3Q9UG0RXrAwmLyg3mlQi5UajDh1Y5VPTVUCeZ870vrEaVqeMdbvME3oqxp1raA1QhbTgLH8QjLjXlJKhewHUHu/XGit0uVthcxnML1d7blvLFfL9jKeJWq4nUbnHw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=windriversystems.onmicrosoft.com;
- s=selector2-windriversystems-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NhgPb5IWKrTod3mNpvQTxSIZz1CebYLNzZ3y/w61jtk=;
- b=iEOQr5/lTOFnB5lT2O53mbTvnDXzH9K2RmF8bjg3CTGC1SIdOdhks/0903sNHTIjEtqMRONnkbQvlZQ0Tv1a1SGOh5iEWYViNXo5hdCZWRRmR6BWK+2Fw97+zMCuNacoQE21Mddz5kuTbCPaKr60DUPrg25ypjpwxTmJTdf0V6g=
-Received: from DM6PR11MB2635.namprd11.prod.outlook.com (2603:10b6:5:c5::29) by
- DM6PR11MB4185.namprd11.prod.outlook.com (2603:10b6:5:195::29) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3174.24; Wed, 15 Jul 2020 05:27:04 +0000
-Received: from DM6PR11MB2635.namprd11.prod.outlook.com
- ([fe80::74cd:7ab:7255:2e90]) by DM6PR11MB2635.namprd11.prod.outlook.com
- ([fe80::74cd:7ab:7255:2e90%3]) with mapi id 15.20.3174.026; Wed, 15 Jul 2020
- 05:27:04 +0000
-From:   "Zhang, Qiang" <Qiang.Zhang@windriver.com>
-To:     Tuong Tong Lien <tuong.t.lien@dektech.com.au>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "jmaloy@redhat.com" <jmaloy@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Xue, Ying" <Ying.Xue@windriver.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: =?gb2312?B?u9i4tDogW1BBVENIIHYyXSB0aXBjOiBEb24ndCB1c2luZyBzbXBfcHJvY2Vz?=
- =?gb2312?Q?sor=5Fid()_in_preemptible_code?=
-Thread-Topic: [PATCH v2] tipc: Don't using smp_processor_id() in preemptible
- code
-Thread-Index: AQHWWbRfIzSLUoSFxESt6m2E0WcCo6kHHx8AgADHpzaAABzhgIAAFzS7
-Date:   Wed, 15 Jul 2020 05:27:04 +0000
-Message-ID: <DM6PR11MB2635C35B64D62A7B21AC0962FF7E0@DM6PR11MB2635.namprd11.prod.outlook.com>
-References: <20200714080559.9617-1-qiang.zhang@windriver.com>,<bf395370-219a-7c87-deee-7f3edce8c9dc@gmail.com>
- <DM6PR11MB2635949FCEAF1EF90B93B5D1FF7E0@DM6PR11MB2635.namprd11.prod.outlook.com>,<AM6PR0502MB3925A724B302DE48876AED87E27E0@AM6PR0502MB3925.eurprd05.prod.outlook.com>
-In-Reply-To: <AM6PR0502MB3925A724B302DE48876AED87E27E0@AM6PR0502MB3925.eurprd05.prod.outlook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dektech.com.au; dkim=none (message not signed)
- header.d=none;dektech.com.au; dmarc=none action=none
- header.from=windriver.com;
-x-originating-ip: [60.247.85.82]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 83f57e00-c952-4588-9c84-08d8287fb590
-x-ms-traffictypediagnostic: DM6PR11MB4185:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB418519A5C8C1F69DEC4CCBEAFF7E0@DM6PR11MB4185.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VzaSE6nTTEgExXaT89KCgk/Cv4snSrvHzYzCyPz9Sssp4jg4cb9e67R5C7nrcC9tmZ9wmGiRwvmFvgV32cQj/a5NMUTtGG4Lylb7QhgH/RvFB5ZRs7cxWIoKG4vfevPI/ZIqTLnIKCJpq7U+I9M5N+z+SpK99Eccpebz7ducuGTEOsyVFZMKEOO28LdV1rOBjkoqDarvP5IKIph0jMoYx2LPhK8TT+rmQVhMIzT/NB78dBtYPQeim9wPtTZsxt0OuYY48C4na0E2QAS+6q8UZfMYlGjOGmYWrKaiLgIkoNMhw/PpHId7/DLwfge7BuK+X2CeSC5oQ7omnIkEqUyUeg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2635.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(366004)(396003)(39850400004)(376002)(346002)(52536014)(86362001)(7696005)(224303003)(316002)(110136005)(54906003)(71200400001)(6506007)(5660300002)(53546011)(6636002)(478600001)(66476007)(64756008)(8936002)(66556008)(66946007)(66446008)(4326008)(76116006)(91956017)(9686003)(2906002)(55016002)(186003)(33656002)(83380400001)(26005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 6hUKAFJtq4Q9VTZkFuDorDO6B72QFp5/5B/cWpzzOPk4tJKJus4c2LYD6ZMaTrsgv3VJwaRdFwmFAk7c4qELgQHYfAxaLLeUJku6KLWf95AAJPQN1dokKEXlNlh3q+C1fUxVjavbveGcgVFKfK8Bq9A65yZloVu5FlDvF/hmOoe2ZBoB8YguVQAmKV/lsroFTnBNMQu4krdmbBJkeriz5CCnH3pgQ/u/EFpdeesrC0Du8wRf67Rb8aVDUVwOZ3ZVWWAff2w7hIOoxcUrPFe1XEfdFca195MURmEQaa6a7crugWjYulMqckCsTQcSDguycr8qVe2OrtiERARs13WmGV6KKtIM0xDN80vEvnklSIS6fZ+SF3UPR37k9JCTYijbaxVfB56/JLSRlyG4IylS79R1Hw5fWzTVT4Gb4D3L7P5LDfObieHT6T5Sy7A8zZCCl8KwtXudMYEnDRCiEkacsRdhsP5vc9ziKeJZ8mo4LHg=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1728485AbgGOF3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 01:29:17 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:34702 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728390AbgGOF3Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 01:29:16 -0400
+Received: by mail-io1-f72.google.com with SMTP id b133so721188iof.1
+        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 22:29:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=hV6gDoNEujJXR09Xve4tPCYU9mNFTuJaaSa8jwnMPP0=;
+        b=Hx5Ju2ExBkEqVGSNONr4ScPXPPsNnBavFEkUuxjLDLxnbYrLeh/7secS6/nR/xwqOV
+         KA9037Thj5J35nLmYxes9ONYP+dNaJYLIGgbQyPdoY0FcwbbfBZ7UW+zNYaSCEpffcmk
+         EJfmgQlEs6FdjYL+7uzi7PI9DiPz3hA89irJlismlhzQYTHXek8ihw16yaKxT1paIncc
+         osMi0jecpx1DGhPIXUbTGyFgGY0JQbsn0c/USdtUSKAC7jROI4jfRF2/KqFTMLrfbT+t
+         xpIrX9Xe6yWPtQ3D6W8GtxrRD16tsIu7DEcCpohIbT2gIT5GuXRUAUbkxHh2BjqoNGx6
+         GLEA==
+X-Gm-Message-State: AOAM532hHqLNFZrOP9ZJhkFL4ainuE/X4tiFxFTkTzukH5ScBrON8DAY
+        VKBOZ2/4a3DPUCCl7ld+GwcNgNv/rxWMQGTouXh50FYrAmk+
+X-Google-Smtp-Source: ABdhPJyTwqmwwekbwNS1ArF4gR9aG13eAzwOXh/BLbfLQMb1otJ/DIiHulDT7EDtpVqpYAxo8Zpq2cQ9vOf5cYOuSHGjUAHzE9gs
 MIME-Version: 1.0
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2635.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83f57e00-c952-4588-9c84-08d8287fb590
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jul 2020 05:27:04.4606
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cf2EG1uVr8s4VBET3ziOCVYIAWgqU/eguUMG2jFgrxK6DXiT+/ItvTVloAe8CrjA4vQa3HqVLrUKo74cukaM8myl2eZU4X7YdEiweksObC4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4185
+X-Received: by 2002:a02:30c4:: with SMTP id q187mr9630643jaq.102.1594790955573;
+ Tue, 14 Jul 2020 22:29:15 -0700 (PDT)
+Date:   Tue, 14 Jul 2020 22:29:15 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000065e73d05aa743471@google.com>
+Subject: INFO: rcu detected stall in __do_sys_clock_adjtime
+From:   syzbot <syzbot+587a843fe6b38420a209@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCreivP7IyzogVHVvbmcg
-VG9uZyBMaWVuIDx0dW9uZy50LmxpZW5AZGVrdGVjaC5jb20uYXU+Creiy83KsbzkOiAyMDIwxOo3
-1MIxNcjVIDExOjUzCsrVvP7IyzogWmhhbmcsIFFpYW5nOyBFcmljIER1bWF6ZXQ7IGptYWxveUBy
-ZWRoYXQuY29tOyBkYXZlbUBkYXZlbWxvZnQubmV0OyBrdWJhQGtlcm5lbC5vcmc7IFh1ZSwgWWlu
-ZwqzrcvNOiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyB0aXBjLWRpc2N1c3Npb25AbGlzdHMuc291
-cmNlZm9yZ2UubmV0OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnCtb3zOI6IFJFOiBbUEFU
-Q0ggdjJdIHRpcGM6IERvbid0IHVzaW5nIHNtcF9wcm9jZXNzb3JfaWQoKSBpbiBwcmVlbXB0aWJs
-ZSBjb2RlCgoKCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0KPiBGcm9tOiBaaGFuZywgUWlh
-bmcgPFFpYW5nLlpoYW5nQHdpbmRyaXZlci5jb20+Cj4gU2VudDogV2VkbmVzZGF5LCBKdWx5IDE1
-LCAyMDIwIDk6MTMgQU0KPiBUbzogRXJpYyBEdW1hemV0IDxlcmljLmR1bWF6ZXRAZ21haWwuY29t
-Pjsgam1hbG95QHJlZGhhdC5jb207IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVsLm9y
-ZzsgVHVvbmcgVG9uZyBMaWVuCj4gPHR1b25nLnQubGllbkBkZWt0ZWNoLmNvbS5hdT47IFh1ZSwg
-WWluZyA8WWluZy5YdWVAd2luZHJpdmVyLmNvbT4KPiBDYzogbmV0ZGV2QHZnZXIua2VybmVsLm9y
-ZzsgdGlwYy1kaXNjdXNzaW9uQGxpc3RzLnNvdXJjZWZvcmdlLm5ldDsgbGludXgta2VybmVsQHZn
-ZXIua2VybmVsLm9yZwo+IFN1YmplY3Q6ILvYuLQ6IFtQQVRDSCB2Ml0gdGlwYzogRG9uJ3QgdXNp
-bmcgc21wX3Byb2Nlc3Nvcl9pZCgpIGluIHByZWVtcHRpYmxlIGNvZGUKPgo+Cj4KPiBfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gt6K8/sjLOiBFcmljIER1bWF6ZXQg
-PGVyaWMuZHVtYXpldEBnbWFpbC5jb20+Cj4gt6LLzcqxvOQ6IDIwMjDE6jfUwjE0yNUgMjI6MTUK
-PiDK1bz+yMs6IFpoYW5nLCBRaWFuZzsgam1hbG95QHJlZGhhdC5jb207IGRhdmVtQGRhdmVtbG9m
-dC5uZXQ7IGt1YmFAa2VybmVsLm9yZzsgdHVvbmcudC5saWVuQGRla3RlY2guY29tLmF1Owo+IGVy
-aWMuZHVtYXpldEBnbWFpbC5jb207IFh1ZSwgWWluZwo+ILOty806IG5ldGRldkB2Z2VyLmtlcm5l
-bC5vcmc7IHRpcGMtZGlzY3Vzc2lvbkBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ7IGxpbnV4LWtlcm5l
-bEB2Z2VyLmtlcm5lbC5vcmcKPiDW98ziOiBSZTogW1BBVENIIHYyXSB0aXBjOiBEb24ndCB1c2lu
-ZyBzbXBfcHJvY2Vzc29yX2lkKCkgaW4gcHJlZW1wdGlibGUgY29kZQo+Cj4KPgo+IE9uIDcvMTQv
-MjAgMTowNSBBTSwgcWlhbmcuemhhbmdAd2luZHJpdmVyLmNvbSB3cm90ZToKPiA+IEZyb206IFpo
-YW5nIFFpYW5nIDxxaWFuZy56aGFuZ0B3aW5kcml2ZXIuY29tPgo+ID4KPiA+IENQVTogMCBQSUQ6
-IDY4MDEgQ29tbTogc3l6LWV4ZWN1dG9yMjAxIE5vdCB0YWludGVkIDUuOC4wLXJjNC1zeXprYWxs
-ZXIgIzAKPiA+IEhhcmR3YXJlIG5hbWU6IEdvb2dsZSBHb29nbGUgQ29tcHV0ZSBFbmdpbmUvR29v
-Z2xlIENvbXB1dGUgRW5naW5lLAo+ID4gQklPUyBHb29nbGUgMDEvMDEvMjAxMQo+ID4KPiA+IEZp
-eGVzOiBmYzFiNmQ2ZGUyMjA4ICgidGlwYzogaW50cm9kdWNlIFRJUEMgZW5jcnlwdGlvbiAmIGF1
-dGhlbnRpY2F0aW9uIikKPiA+IFJlcG9ydGVkLWJ5OiBzeXpib3QrMjYzZjhjMGQwMDdkYzA5YjJk
-ZGFAc3l6a2FsbGVyLmFwcHNwb3RtYWlsLmNvbQo+ID4gU2lnbmVkLW9mZi1ieTogWmhhbmcgUWlh
-bmcgPHFpYW5nLnpoYW5nQHdpbmRyaXZlci5jb20+Cj4gPiAtLS0KPiA+ICB2MS0+djI6Cj4gPiAg
-YWRkIGZpeGVzIHRhZ3MuCj4gPgo+ID4gIG5ldC90aXBjL2NyeXB0by5jIHwgMyArKy0KPiA+ICAx
-IGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4gPgo+ID4gZGlm
-ZiAtLWdpdCBhL25ldC90aXBjL2NyeXB0by5jIGIvbmV0L3RpcGMvY3J5cHRvLmMKPiA+IGluZGV4
-IDhjNDdkZWQyZWRiNi4uNTIwYWYwYWZlMWIzIDEwMDY0NAo+ID4gLS0tIGEvbmV0L3RpcGMvY3J5
-cHRvLmMKPiA+ICsrKyBiL25ldC90aXBjL2NyeXB0by5jCj4gPiBAQCAtMzk5LDkgKzM5OSwxMCBA
-QCBzdGF0aWMgdm9pZCB0aXBjX2FlYWRfdXNlcnNfc2V0KHN0cnVjdCB0aXBjX2FlYWQgX19yY3Ug
-KmFlYWQsIGludCB2YWwpCj4gPiAgICovCj4gPiAgc3RhdGljIHN0cnVjdCBjcnlwdG9fYWVhZCAq
-dGlwY19hZWFkX3RmbV9uZXh0KHN0cnVjdCB0aXBjX2FlYWQgKmFlYWQpCj4gPiAgewo+ID4gLSAg
-ICAgc3RydWN0IHRpcGNfdGZtICoqdGZtX2VudHJ5ID0gdGhpc19jcHVfcHRyKGFlYWQtPnRmbV9l
-bnRyeSk7Cj4gPiArICAgICBzdHJ1Y3QgdGlwY190Zm0gKip0Zm1fZW50cnkgPSBnZXRfY3B1X3B0
-cihhZWFkLT50Zm1fZW50cnkpOwo+ID4KPiA+ICAgICAgICp0Zm1fZW50cnkgPSBsaXN0X25leHRf
-ZW50cnkoKnRmbV9lbnRyeSwgbGlzdCk7Cj4gPiArICAgICBwdXRfY3B1X3B0cih0Zm1fZW50cnkp
-Owo+ID4gICAgICAgcmV0dXJuICgqdGZtX2VudHJ5KS0+dGZtOwo+ID4gIH0KPiA+Cj4gPgo+Cj4g
-PiBZb3UgaGF2ZSBub3QgZXhwbGFpbmVkIHdoeSB0aGlzIHdhcyBzYWZlLgo+ID4KPiA+ICBUaGlz
-IHNlZW1zIHRvIGhpZGUgYSByZWFsIGJ1Zy4KPiA+Cj4gPiBQcmVzdW1hYmx5IGNhbGxlcnMgb2Yg
-dGhpcyBmdW5jdGlvbiBzaG91bGQgaGF2ZSBkaXNhYmxlIHByZWVtcHRpb24sIGFuZCBtYXliZSA+
-IGludGVycnVwdHMgYXMgd2VsbC4KPiA+Cj4gPlJpZ2h0IGFmdGVyIHB1dF9jcHVfcHRyKHRmbV9l
-bnRyeSksIHRoaXMgdGhyZWFkIGNvdWxkIG1pZ3JhdGUgdG8gYW5vdGhlciBjcHUsID5hbmQgc3Rp
-bGwgYWNjZXNzCj4gPmRhdGEgb3duZWQgYnkgdGhlIG9sZCBjcHUuCj4KPiBUaGFua3MgZm9yIHlv
-dSBzdWdnZXN0LCBJIHdpbGwgY2hlY2sgY29kZSBhZ2Fpbi4KPgoKPkFjdHVhbGx5LCBsYXN0IHdl
-ZWsgSSBzZW50IGEgc2ltaWxhciBwYXRjaCB0byB0aXBjLWRpc2N1c3Npb24gd2hpY2ggY292ZXJz
-IHRoZQo+Y2FzZSBhcyB3ZWxsICh0aGVyZSBpcyBhbHNvIGFub3RoZXIgcGxhY2UgY2F1c2luZyB0
-aGUgc2FtZSBpc3N1ZS4uLikuIElmIHlvdQo+ZG9uJ3QgbWluZCwgeW91IGNhbiB0YWtlIGEgbG9v
-ayBhdCBiZWxvdyAoanVzdCBjb3BpZWQvcGFzdGVkKS4KCj5CUi9UdW9uZwoKCkhpIFR1b25nIFRv
-bmcgTGllbgoKVGhlIHRpcGNfYWVhZF9mcmVlIGlzIFJDVSBjYWxsYmFjaywgdGhpcyBmdW5jIGlz
-IGNhbGxlZCBpbiBzb2Z0aXJxIGNvbnRleHQgd2hpY2ggCnByZWVtcHRpb24gaGFzIGJlZW4gYmFu
-bmVkCnNvIHNob3VsZCBub3QgYWRkIHByZWVtcHRfZGlzYWJsZS9lbmFibGUuCgp0aGFua3MKWmhh
-bmcgUWlhbmcKCgo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0KPkZyb206IFR1b25nIFRvbmcg
-TGllbiA8dHVvbmcudC5saWVuQGRla3RlY2guY29tLmF1Pgo+U2VudDogRnJpZGF5LCBKdWx5IDEw
-LCAyMDIwIDU6MTEgUE0KPlRvOiBqbWFsb3lAcmVkaGF0LmNvbTsgbWFsb3lAZG9uam9ubi5jb207
-IHlpbmcueHVlQHdpbmRyaXZlci5jb207IHRpcGMtZGlzY3Vzc2lvbkBsaXN0cy5zb3VyY2Vmb3Jn
-ZS5uZXQKPkNjOiB0aXBjLWRlayA8dGlwYy1kZWtAZGVrdGVjaC5jb20uYXU+ClN1YmplY3Q6IFtQ
-QVRDSCBSRkMgMS81XSB0aXBjOiBmaXggdXNpbmcgc21wX3Byb2Nlc3Nvcl9pZCgpIGluIHByZWVt
-cHRpYmxlCj4KPlRoZSAndGhpc19jcHVfcHRyKCknIGlzIHVzZWQgdG8gb2J0YWluIHRoZSBBRUFE
-IGtleScgVEZNIG9uIHRoZSBjdXJyZW50CkNQVSBmb3IgZW5jcnlwdGlvbiwgaG93ZXZlciB0aGUg
-ZXhlY3V0aW9uIGNhbiBiZSBwcmVlbXB0aWJsZSBzaW5jZSBpdCdzCmFjdHVhbGx5IHVzZXItc3Bh
-Y2UgY29udGV4dCwgc28gdGhlICd1c2luZyBzbXBfcHJvY2Vzc29yX2lkKCkgaW4KcHJlZW1wdGli
-bGUnIGhhcyBiZWVuIG9ic2VydmVkLgoKV2UgZml4IHRoZSBpc3N1ZSBieSB1c2luZyB0aGUgJ2dl
-dC9wdXRfY3B1X3B0cigpJyBBUEkgd2hpY2ggY29uc2lzdHMgb2YKYSAncHJlZW1wdF9kaXNhYmxl
-KCknIGluc3RlYWQuCgpTaWduZWQtb2ZmLWJ5OiBUdW9uZyBMaWVuIDx0dW9uZy50LmxpZW5AZGVr
-dGVjaC5jb20uYXU+Ci0tLQogbmV0L3RpcGMvY3J5cHRvLmMgfCAxMiArKysrKysrKystLS0KIDEg
-ZmlsZSBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0
-IGEvbmV0L3RpcGMvY3J5cHRvLmMgYi9uZXQvdGlwYy9jcnlwdG8uYwppbmRleCBjOGM0N2ZjNzI2
-NTMuLjE4MjdjZTRmYWM1ZCAxMDA2NDQKLS0tIGEvbmV0L3RpcGMvY3J5cHRvLmMKKysrIGIvbmV0
-L3RpcGMvY3J5cHRvLmMKQEAgLTMyNiw3ICszMjYsOCBAQCBzdGF0aWMgdm9pZCB0aXBjX2FlYWRf
-ZnJlZShzdHJ1Y3QgcmN1X2hlYWQgKnJwKQogICAgICAgIGlmIChhZWFkLT5jbG9uZWQpIHsKICAg
-ICAgICAgICAgICAgIHRpcGNfYWVhZF9wdXQoYWVhZC0+Y2xvbmVkKTsKICAgICAgICB9IGVsc2Ug
-ewotICAgICAgICAgICAgICAgaGVhZCA9ICp0aGlzX2NwdV9wdHIoYWVhZC0+dGZtX2VudHJ5KTsK
-KyAgICAgICAgICAgICAgIGhlYWQgPSAqZ2V0X2NwdV9wdHIoYWVhZC0+dGZtX2VudHJ5KTsKKyAg
-ICAgICAgICAgICAgIHB1dF9jcHVfcHRyKGFlYWQtPnRmbV9lbnRyeSk7CiAgICAgICAgICAgICAg
-ICBsaXN0X2Zvcl9lYWNoX2VudHJ5X3NhZmUodGZtX2VudHJ5LCB0bXAsICZoZWFkLT5saXN0LCBs
-aXN0KSB7CiAgICAgICAgICAgICAgICAgICAgICAgIGNyeXB0b19mcmVlX2FlYWQodGZtX2VudHJ5
-LT50Zm0pOwogICAgICAgICAgICAgICAgICAgICAgICBsaXN0X2RlbCgmdGZtX2VudHJ5LT5saXN0
-KTsKQEAgLTM5OSwxMCArNDAwLDE1IEBAIHN0YXRpYyB2b2lkIHRpcGNfYWVhZF91c2Vyc19zZXQo
-c3RydWN0IHRpcGNfYWVhZCBfX3JjdSAqYWVhZCwgaW50IHZhbCkKICAqLwogc3RhdGljIHN0cnVj
-dCBjcnlwdG9fYWVhZCAqdGlwY19hZWFkX3RmbV9uZXh0KHN0cnVjdCB0aXBjX2FlYWQgKmFlYWQp
-CiB7Ci0gICAgICAgc3RydWN0IHRpcGNfdGZtICoqdGZtX2VudHJ5ID0gdGhpc19jcHVfcHRyKGFl
-YWQtPnRmbV9lbnRyeSk7CisgICAgICAgc3RydWN0IHRpcGNfdGZtICoqdGZtX2VudHJ5OworICAg
-ICAgIHN0cnVjdCBjcnlwdG9fYWVhZCAqdGZtOwoKKyAgICAgICB0Zm1fZW50cnkgPSBnZXRfY3B1
-X3B0cihhZWFkLT50Zm1fZW50cnkpOwogICAgICAgICp0Zm1fZW50cnkgPSBsaXN0X25leHRfZW50
-cnkoKnRmbV9lbnRyeSwgbGlzdCk7Ci0gICAgICAgcmV0dXJuICgqdGZtX2VudHJ5KS0+dGZtOwor
-ICAgICAgIHRmbSA9ICgqdGZtX2VudHJ5KS0+dGZtOworICAgICAgIHB1dF9jcHVfcHRyKHRmbV9l
-bnRyeSk7CisKKyAgICAgICByZXR1cm4gdGZtOwogfQoKIC8qKgotLQoyLjEzLjcK
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    a581387e Merge tag 'io_uring-5.8-2020-07-10' of git://git...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1312c277100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=66ad203c2bb6d8b
+dashboard link: https://syzkaller.appspot.com/bug?extid=587a843fe6b38420a209
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14778a77100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15150e13100000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+587a843fe6b38420a209@syzkaller.appspotmail.com
+
+rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+rcu: 	0-...0: (1 GPs behind) idle=c22/1/0x4000000000000000 softirq=10714/10715 fqs=5249 
+	(detected by 1, t=10502 jiffies, g=10189, q=4119)
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0
+CPU: 0 PID: 6820 Comm: syz-executor767 Not tainted 5.8.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:should_restart_cycle net/sched/sch_taprio.c:647 [inline]
+RIP: 0010:advance_sched+0x236/0x990 net/sched/sch_taprio.c:723
+Code: 00 0f 85 d1 06 00 00 48 8d 7d 28 4d 8b 65 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 cf 06 00 00 <4c> 39 64 24 20 4c 8b 7d 28 0f 84 3c 03 00 00 e8 26 aa 11 fb 4c 89
+RSP: 0018:ffffc90000007d78 EFLAGS: 00000046
+RAX: dffffc0000000000 RBX: ffff8880a0d9db40 RCX: ffffffff86620d01
+RDX: 1ffff11013ee0ae5 RSI: ffffffff86620d0f RDI: ffff88809f705728
+RBP: ffff88809f705700 R08: 0000000000000001 R09: 0000000000000003
+R10: 17432cbe2e86597c R11: 0000000000000000 R12: ffff88809f705710
+R13: ffff888094684700 R14: 17432cbe2e86597c R15: dffffc0000000000
+FS:  0000000001fb4880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000610 CR3: 000000009e890000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ __run_hrtimer kernel/time/hrtimer.c:1520 [inline]
+ __hrtimer_run_queues+0x6a9/0xfc0 kernel/time/hrtimer.c:1584
+ hrtimer_interrupt+0x32a/0x930 kernel/time/hrtimer.c:1646
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1080 [inline]
+ __sysvec_apic_timer_interrupt+0x142/0x5e0 arch/x86/kernel/apic/apic.c:1097
+ asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
+ </IRQ>
+ __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
+ run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
+ sysvec_apic_timer_interrupt+0xe0/0x120 arch/x86/kernel/apic/apic.c:1091
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:587
+RIP: 0010:arch_local_irq_restore arch/x86/include/asm/paravirt.h:765 [inline]
+RIP: 0010:on_each_cpu+0x149/0x240 kernel/smp.c:702
+Code: 00 fc ff df 48 c1 e8 03 80 3c 10 00 0f 85 e6 00 00 00 48 83 3d 97 12 4c 08 00 0f 84 af 00 00 00 e8 9c e9 0a 00 48 89 df 57 9d <0f> 1f 44 00 00 e8 8d e9 0a 00 bf 01 00 00 00 e8 83 a4 e6 ff 31 ff
+RSP: 0018:ffffc900017f7b68 EFLAGS: 00000293
+RAX: 0000000000000000 RBX: 0000000000000293 RCX: 0000000000000000
+RDX: ffff88809e192500 RSI: ffffffff8168cdf4 RDI: 0000000000000293
+RBP: 0000000000000200 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
+R13: 001e89e9b1852336 R14: 003b9aca00000000 R15: 0000000000000000
+ clock_was_set+0x18/0x20 kernel/time/hrtimer.c:872
+ timekeeping_inject_offset+0x3e9/0x4d0 kernel/time/timekeeping.c:1305
+ do_adjtimex+0x28f/0x990 kernel/time/timekeeping.c:2332
+ do_clock_adjtime kernel/time/posix-timers.c:1109 [inline]
+ __do_sys_clock_adjtime+0x155/0x250 kernel/time/posix-timers.c:1121
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x443949
+Code: Bad RIP value.
+RSP: 002b:00007ffef6e7f668 EFLAGS: 00000246 ORIG_RAX: 0000000000000131
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443949
+RDX: 0000000000443949 RSI: 0000000020000300 RDI: 0000000000000000
+RBP: 00007ffef6e7f670 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
+R10: 0000000001bbbbbb R11: 0000000000000246 R12: 00007ffef6e7f680
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 0.000 msecs
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
