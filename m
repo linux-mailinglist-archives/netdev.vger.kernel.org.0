@@ -2,96 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B71962209C3
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 12:20:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FD742209D1
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 12:21:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731080AbgGOKU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 06:20:29 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:35484 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728683AbgGOKU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 06:20:29 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1594808428; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=KTzJMBs9HCG+sSAIrBVz5xZyu4LzPrPBKllsE/vh7ds=;
- b=V/jhTGBSVU5BLFL/pvIYYbyATkB7qF+q9tN8xEVxl+ucKX17okYRWD0GZzce8kKIEdtbucji
- gxCSKg2xhXpENuNyeIo0Tw3O8V5j3VriaqNVp0ihAIHyVq4F0eIHpsea/CaBY1Sn9o1uWp4a
- EJPJtg9bO1ecAiwqYOfQyt+knpM=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 5f0ed85c1012768490cdfcde (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 15 Jul 2020 10:20:12
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6B907C433CA; Wed, 15 Jul 2020 10:20:12 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 61DF2C433C9;
-        Wed, 15 Jul 2020 10:20:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 61DF2C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1731115AbgGOKU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 06:20:57 -0400
+Received: from mail-oo1-f65.google.com ([209.85.161.65]:42828 "EHLO
+        mail-oo1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728768AbgGOKU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 06:20:56 -0400
+Received: by mail-oo1-f65.google.com with SMTP id y9so353203oot.9;
+        Wed, 15 Jul 2020 03:20:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bQ8og4Y29TXoYrT84mpNUb21SIh4pzwr3Vk3bzaUpgw=;
+        b=EDrtqKLUHVML1sA6LFFP5MJ8mIoChGo5GFPqc8ZOaS0WdBMHKDrR85YW7RWoAExsRC
+         QXl00GBCrlXL5UZqSlnx252iAC5fSCmvudbJaIilcbmx2sqhyd0ONPCLWE+qplzJoZ/T
+         yaFToaViut6ifyrZuPCiVIrtBpcEbApmNE2VXHtwguw0gmEnAFitWke3XotOM3iDi+BG
+         vMUomMYhrUCCnzoiV5D8rdNdvt4CNTkiHCmlNBguKmwcL68v+uifgTSk9Tq8h6155wLU
+         BFXf3P9ocqKk0AFFf36tRJEenL7IwMqSHdphYcbVBUc3Qh7mHDc9y8iGFmAp6CdPbjD2
+         Y7CA==
+X-Gm-Message-State: AOAM533cSn8OY79gR2dQuwr31WZqGTb308oKZGtkQz8YEl5DU2cKhtTJ
+        FrY5+9+qkTVbdobn0kGw/xzbwFwSpVyW3UAIXRg=
+X-Google-Smtp-Source: ABdhPJyb4SMwBgCFiNmagYeq0Muv3wO8z33UP0pKZzErUJ07FKnvbqzYlypWRcKQX2l2bgobbQLJvYCZywzLmfV6Mbk=
+X-Received: by 2002:a4a:5209:: with SMTP id d9mr8763133oob.40.1594808455307;
+ Wed, 15 Jul 2020 03:20:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 7/9] intersil: fix wiki website url
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200605154112.16277-8-f.suligoi@asem.it>
-References: <20200605154112.16277-8-f.suligoi@asem.it>
-To:     Flavio Suligoi <f.suligoi@asem.it>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594676120-5862-6-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594676120-5862-6-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 15 Jul 2020 12:20:44 +0200
+Message-ID: <CAMuHMdVsYmi1ixBrk=gfgnsfC=MHDagXJKUTyGr14xxhHh-Jkg@mail.gmail.com>
+Subject: Re: [PATCH 5/9] arm64: dts: renesas: r8a774e1: Add SYS-DMAC device nodes
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Johan Hovold <johan@kernel.org>,
-        Saurav Girepunje <saurav.girepunje@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        <linux-wireless@vger.kernel.org>, <b43-dev@lists.infradead.org>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        <netdev@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Flavio Suligoi <f.suligoi@asem.it>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200715102012.6B907C433CA@smtp.codeaurora.org>
-Date:   Wed, 15 Jul 2020 10:20:12 +0000 (UTC)
+        Magnus Damm <magnus.damm@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        dmaengine <dmaengine@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Flavio Suligoi <f.suligoi@asem.it> wrote:
+On Mon, Jul 13, 2020 at 11:35 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+>
+> Add sys-dmac[0-2] device nodes for RZ/G2H (R8A774E1) SoC.
+>
+> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-> In some Intesil files, the wiki url is still the old
-> "wireless.kernel.org" instead of the new
-> "wireless.wiki.kernel.org"
-> 
-> Signed-off-by: Flavio Suligoi <f.suligoi@asem.it>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v5.9.
 
-Fails to apply:
+Gr{oetje,eeting}s,
 
-fatal: corrupt patch at line 97
-error: could not build fake ancestor
-Applying: intersil: fix wiki website url
-Patch failed at 0001 intersil: fix wiki website url
-The copy of the patch that failed is found in: .git/rebase-apply/patch
-
-Patch set to Changes Requested.
+                        Geert
 
 -- 
-https://patchwork.kernel.org/patch/11589909/
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
