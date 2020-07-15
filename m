@@ -2,70 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D53C522151F
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 21:29:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74BB8221586
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 21:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726758AbgGOT3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 15:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726634AbgGOT3J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 15:29:09 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F72C061755;
-        Wed, 15 Jul 2020 12:29:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Cs+ssoFPiLBwIp06S37VFrgawBn4e+6j6l0HBWQmAdY=; b=tar9bucyRxAn9AAKh1yN1PgZKq
-        mvuXTee+3CtsvjN2QrZ6uAZUmKRp9r8l03IT3TBo9cKDfPsoGRs0TD6HI7kq5iSe9xtqSH3jFVEHt
-        QPjSWH28IIADjliW3RqGwxb4pyh0M13eJxgI1QW8EQGUdLYg9bMoXYLjL1Vxob7OGs8GObMdYsVoV
-        yHBDZp+Osrq711dqxAFMf0zlSvMAxrD/+lqnphy5UbDVlUEAP5EPqt9qv/sXw5IAIqYcQQkxoCvGL
-        gDPHE+H9gLCCHNdLroOpJQX/WhGkXnoR+MA2WKDKBXO3usXCu7G1cwHKj3siXvCw4+UFSC4nmlBAO
-        Tojpr0xA==;
-Received: from willy by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jvn5Q-0008M6-NV; Wed, 15 Jul 2020 19:29:00 +0000
-Date:   Wed, 15 Jul 2020 20:29:00 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        davem@davemloft.net, richardcochran@gmail.com, sorganov@gmail.com,
-        andrew@lunn.ch, linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next] docs: networking: timestamping: replace tabs
- with spaces in code blocks
-Message-ID: <20200715192900.GH12769@casper.infradead.org>
-References: <20200709202210.72985-1-olteanv@gmail.com>
- <20200715121717.41aaff49@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1727975AbgGOTuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 15:50:07 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:25772 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727118AbgGOTuE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 15:50:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1594842604; x=1626378604;
+  h=date:from:to:cc:message-id:references:mime-version:
+   in-reply-to:subject;
+  bh=99ygPzuHwg4Q3YW9N+NvtkYNtktLaI4YT2h/lpn7jBQ=;
+  b=UFnWsfiuKcYxKApwDqwbO4JuWJM9eKqMvcjYfa7ae83L+E3IOktXwAD5
+   1wHHvVKUrgAus7aPNrkORvrLyZLqsnyIeTugQzQrucQe/iiX/JBzJmcBU
+   KA+7Qe+7VED+J/xRZLe/xhq02bb//HcCqu8K5r42HbhhM5tMMZznPTi66
+   w=;
+IronPort-SDR: KVs3TTCGlt4jbzRtfh8Z1F2oZ0rdfRw93Xpe0nJRsHl/jLIcyO7oUiuuap5BxGwGfPqm/SHJu5
+ uUVJci5HS3mg==
+X-IronPort-AV: E=Sophos;i="5.75,356,1589241600"; 
+   d="scan'208";a="42072089"
+Subject: Re: [PATCH v2 00/11] Fix PM hibernation in Xen guests
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 15 Jul 2020 19:50:03 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com (Postfix) with ESMTPS id 3C48DA216B;
+        Wed, 15 Jul 2020 19:49:55 +0000 (UTC)
+Received: from EX13D08UEB004.ant.amazon.com (10.43.60.142) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 15 Jul 2020 19:49:34 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
+ EX13D08UEB004.ant.amazon.com (10.43.60.142) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 15 Jul 2020 19:49:33 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Wed, 15 Jul 2020 19:49:33 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id 60CEF4E7C7; Wed, 15 Jul 2020 19:49:33 +0000 (UTC)
+Date:   Wed, 15 Jul 2020 19:49:33 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>
+CC:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "roger.pau@citrix.com" <roger.pau@citrix.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
+Message-ID: <20200715194933.GA17938@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <cover.1593665947.git.anchalag@amazon.com>
+ <324020A7-996F-4CF8-A2F4-46957CEA5F0C@amazon.com>
+ <c6688a0c-7fec-97d2-3dcc-e160e97206e6@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20200715121717.41aaff49@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <c6688a0c-7fec-97d2-3dcc-e160e97206e6@oracle.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 15, 2020 at 12:17:17PM -0700, Jakub Kicinski wrote:
-> On Thu,  9 Jul 2020 23:22:10 +0300 Vladimir Oltean wrote:
-> > Reading the document in vim is currently not a pleasant experience. Its
-> > rst syntax highlighting is confused by the "*/" sequences which it's not
-> > interpreting as part of the code blocks for some reason.
-> > 
-> > Replace the tabs with spaces, so that syntax highlighters (at least the
-> > one in vim) have a better idea where code blocks start and where they
-> > end.
-> > 
-> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+On Mon, Jul 13, 2020 at 03:43:33PM -0400, Boris Ostrovsky wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
 > 
-> Dunno about this change, there seems to be plenty examples of using
-> tabs for indentation of code block :(
 > 
-> Jon, any guidance? It seems to me the document renders correctly [1],
-> so the onus is on the editor to fix the RST highlight..
+> 
+> On 7/10/20 2:17 PM, Agarwal, Anchal wrote:
+> > Gentle ping on this series.
+> 
+> 
+> Have you tested save/restore?
+>
+No, not with the last few series. But a good point, I will test that and get
+back to you. Do you see anything specific in the series that suggests otherwise?
 
-vim's rst mode really really really wants to use spaces instead of tabs.
-It's screwed me over a bunch of times, so I eventually just disabled it.
-I think we should probably stop fighting it and use spaces in rst files
-instead of tabs, but that's not my call to make.
+Thanks,
+Anchal
+> 
+> -bois
+> 
+> 
+> 
