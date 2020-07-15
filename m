@@ -2,68 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78461221427
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 20:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBFC7221429
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 20:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726796AbgGOSTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 14:19:54 -0400
-Received: from verein.lst.de ([213.95.11.211]:60094 "EHLO verein.lst.de"
+        id S1725866AbgGOSUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 14:20:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42088 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725861AbgGOSTx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 14:19:53 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 254CC68AFE; Wed, 15 Jul 2020 20:19:50 +0200 (CEST)
-Date:   Wed, 15 Jul 2020 20:19:49 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Christoph Hellwig <hch@lst.de>, Doug Nazar <nazard@nazar.ca>,
-        ericvh@gmail.com, lucho@ionkov.net,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+e6f77e16ff68b2434a2c@syzkaller.appspotmail.com
-Subject: Re: [PATCH] net/9p: validate fds in p9_fd_open
-Message-ID: <20200715181949.GA31172@lst.de>
-References: <20200710085722.435850-1-hch@lst.de> <5bee3e33-2400-2d85-080e-d10cd82b0d85@nazar.ca> <20200711104923.GA6584@nautica> <20200715073715.GA22899@lst.de> <20200715134756.GB22828@nautica>
+        id S1725861AbgGOSUe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 14:20:34 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1D0982065F;
+        Wed, 15 Jul 2020 18:20:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594837233;
+        bh=3/Z3Mi8qumJrJ6bPUtIb0B3JTYDfBb5mkmzFb5NOrn0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Quoaf+E/YW++Z8JpGEAkALrI+aaGyIBB5jCPBc3XZ/9ye/jwE+N+Q+GFlsBC7HXIk
+         gSuJPWxJNSpcc7448T58gcyUDGvPlWIKPAdgTfi7zPSNoOI8wYU/tqdf2dKXldkCB4
+         i0tMHJKlu4padBJDwTc0iL7q5mR6UUUhRcS32yKM=
+Date:   Wed, 15 Jul 2020 11:20:31 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Helmut Grohne <helmut.grohne@intenta.de>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "woojung.huh@microchip.com" <woojung.huh@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>
+Subject: Re: [PATCH] net: phy: phy_remove_link_mode should not advertise new
+ modes
+Message-ID: <20200715112031.24c2d8ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200715070345.GA3452@laureti-dev>
+References: <20200714082540.GA31028@laureti-dev>
+        <20200714.140710.213288407914809619.davem@davemloft.net>
+        <20200715070345.GA3452@laureti-dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200715134756.GB22828@nautica>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 15, 2020 at 03:47:56PM +0200, Dominique Martinet wrote:
-> Christoph Hellwig wrote on Wed, Jul 15, 2020:
-> > FYI, this is now generating daily syzbot reports, so I'd love to see
-> > the fix going into Linus' tree ASAP..
+On Wed, 15 Jul 2020 09:03:45 +0200 Helmut Grohne wrote:
+> On Tue, Jul 14, 2020 at 11:07:10PM +0200, David Miller wrote:
+> > From: Helmut Grohne <helmut.grohne@intenta.de>
+> > Date: Tue, 14 Jul 2020 10:25:42 +0200
+> >   
+> > > When doing "ip link set dev ... up" for a ksz9477 backed link,
+> > > ksz9477_phy_setup is called and it calls phy_remove_link_mode to remove
+> > > 1000baseT HDX. During phy_remove_link_mode, phy_advertise_supported is
+> > > called.
+> > > 
+> > > If one wants to advertise fewer modes than the supported ones, one
+> > > usually reduces the advertised link modes before upping the link (e.g.
+> > > by passing an appropriate .link file to udev).  However upping
+> > > overrwrites the advertised link modes due to the call to
+> > > phy_advertise_supported reverting to the supported link modes.
+> > > 
+> > > It seems unintentional to have phy_remove_link_mode enable advertising
+> > > bits and it does not match its description in any way. Instead of
+> > > calling phy_advertise_supported, we should simply clear the link mode to
+> > > be removed from both supported and advertising.  
+> > 
+> > The problem is that we can't allow the advertised setting to exceed
+> > what is in the supported list.
+> > 
+> > That's why this helper is coded this way from day one.  
 > 
-> Yes, I'm getting some syzbot warnings as well now.
+> Would you mind going into a little more detail here?
 > 
-> I had however only planned to get this in linux-next, since that is what
-> the syzbot mails were complaining about, but I see this got into -rc5...
+> I think you have essentially two possible cases with respect to that
+> assertion.
 > 
+> Case A: advertised does not exceed supported before the call to
+>         phy_remove_link_mode.
 > 
-> It's honestly just a warn on something that would fail anyway so I'd
-> rather let it live in -next first, I don't get why syzbot is so verbose
-> about this - it sent a mail when it found a c repro and one more once it
-> bisected the commit yesterday but it should not be sending more?
+>     In this case, the relevant link mode is removed from both supported
+>     and advertised after my patch and therefore the requested invariant
+>     is still ok.
+> 
+> Case B: advertised exceeds supported prior to the call to
+>         phy_remove_link_mode.
+> 
+>     You said that we cannot allow this to happen. So it would seem to be
+>     a bug somewhere else. Do you see phy_remove_link_mode as a tool to
+>     fix up a violated invariant?
 
-Yes, I agree that this is just a warning on existing behavior.  But then
-again these constant syzbot reports are pretty annoying..
+Is 
 
-> (likewise it should pick up the fix tag even if it only gets in -next,
-> or would it keep being noisy unless this gets merged to mainline?)
+Case C: driver does not initialize advertised at all and depends on
+        phy_remove_link_mode() to do it
+
+possible?
+
+> It also is not true that the current code ensures your assertion.
+> Specifically, phy_advertise_supported copies the pause bits from the old
+> advertised to the new one regardless of whether they're set in
+> supported. I believe this is expected, but it means that your invariant
+> needs to be:
 > 
+>     We cannot allow advertised to exceed the supported list for
+>     non-pause bits.
 > 
-> FWIW this is along with the 5 other patches I have queued for 5.9
-> waiting for my tests as my infra is still down, I've stopped trying to
-> make promises, but I could push at least just this one to -next if that
-> really helps.
-> Sorry for that, things should be smoother once I've taken the time to
-> put things back in place.
+> In any case, having a helper called "phy_remove_link_mode" enable bits
+> in the advertised bit field is fairly unexpected. Do you disagree with
+> this being a bug?
 
-No need to be sorry, just through it might be worth to ping you.
+Hm. I think it's clear that the change may uncover other bugs, but
+perhaps indeed those should be addressed elsewhere.
 
-Thanks for all your help!
+Andrew, WDYT?
