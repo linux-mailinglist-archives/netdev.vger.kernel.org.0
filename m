@@ -2,83 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 219812212F9
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:49:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D274822131C
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 19:03:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbgGOQtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 12:49:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44928 "EHLO
+        id S1726670AbgGORC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 13:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726742AbgGOQtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 12:49:08 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D87C061755
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 09:49:07 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id b6so3386922wrs.11
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 09:49:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hUz/UVXmFj5gZkksWixwGiXAm29+FzSoDE9Tp4/NL1g=;
-        b=XrZxDHa2amTrRfCa2T5Rp/q84MXJ1I7b+U90J1WhsNps3hWZdjZbsa02bucGaUTHBg
-         mEU3a1Bw6aEH6emRRQ8GFwROQJTPl18NYZKVKG9O2Mw9qhF596sToQvTQ0L2BvkL3uVn
-         Av2PBRokopzC+dq6d/9GEbgbYI+2m6Aj+xV0cLwOciEG9+R9cfDxT+AzOEFO2v+Z16df
-         9S5Q+yIWynYnu/0krW4BKngKk9I1xFRVrMBT00E2a90hfYYq2f1TahWze3GSwQ1f4FUK
-         iV/w0R6LawIh0SjtOOBoLF+67ZkBN43rOWo7Sxh/hwYqhKrCMNSZqOdtA+OXKSUqryCc
-         fomw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hUz/UVXmFj5gZkksWixwGiXAm29+FzSoDE9Tp4/NL1g=;
-        b=coQ1upYpI96WPNWfBoNN2W3eEmPfMOyujYelvmDu1ALqScxRXvNzNMq8SuRXWBubzC
-         150eyqIrmhjeUODjz+PioZsHinj25RhDVFKEvx1v81A0RsA048VQS+MC/AQsJDBUvM29
-         LzxjzVPq4YjQUXb+WRLQCZODMDjJ0xhR2wDyWYHCIVLSf88Jpbb0iMYzWA5RaJ1AajVz
-         AEBE+q9Lht8CmiDKc4dw/pkhWKXIfJdLfKrO6o3l28Nfb66PgIE5V3dGc1Sa9PQ4sj4p
-         paXZqqqqxNy+/+X9pCFEO4DnG9EQjeIoqeWEKpUy2EwtMnVYzZEsZTcctFspM5K+CGjU
-         fg6A==
-X-Gm-Message-State: AOAM530C0qKF4INIrcjpXV4OkrS12FdiNZETwh9gPGCKTPFymAQ1LX1E
-        lg0sk/fC6mRIedozh6LYBZI6bw==
-X-Google-Smtp-Source: ABdhPJz20Mxi0oSIWkoJNQFwJ7mmOvvCgI7hszvgLA57LfanXcsC/k6Sp0CzUZdQool/5nzby8X8DA==
-X-Received: by 2002:a5d:408c:: with SMTP id o12mr271208wrp.412.1594831745783;
-        Wed, 15 Jul 2020 09:49:05 -0700 (PDT)
-Received: from [192.168.1.12] ([194.35.117.124])
-        by smtp.gmail.com with ESMTPSA id f15sm4170272wmj.44.2020.07.15.09.49.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jul 2020 09:49:05 -0700 (PDT)
-Subject: Re: [PATCH] tools/bpftool: Fix error return code in do_skeleton()
-To:     YueHaibing <yuehaibing@huawei.com>, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andriin@fb.com, john.fastabend@gmail.com,
-        kpsingh@chromium.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200715031353.14692-1-yuehaibing@huawei.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <51033bf4-c718-2939-cf18-e5e219e7beb1@isovalent.com>
-Date:   Wed, 15 Jul 2020 17:49:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S1725798AbgGORC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 13:02:58 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8704CC061755
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 10:02:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=a2CRZXPeJvwwZak9RXKz3QEP0FS12tt7oHoepp2RUsA=; b=uSt71JaMRHCsBlCVNIdmAGmHk
+        hUsGVzr9rvbgcXCDCcgqdHVSGA+Otf0xf6xzc9+f+1LHvE4cfLrcl1FyGQlodk9UaLv5dWwJIcPE2
+        C2BvzXKzunbPLp5rdG88xeFtmbnprsKBSld/OcLY+hW0d+FwNpG+VFRnetQXDt27HWwbWOM3BT049
+        WOjwLu3NBriEitKQI3Oz6JuKQ3m1JZBxGTEsyx1UIpnRk9pOoWQ2MUNXdRfYF2gu3wTOcIr33Z3zF
+        19L/O382q1kmbgKKeJi/GMJu1dVJQIdIiP0j2cKb338dSd4J4MxTm9cUF/MF/23e7Ro8P+5X0GEjY
+        0pLWxPnFQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39892)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jvknx-0006wM-Kz; Wed, 15 Jul 2020 18:02:49 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jvknt-0008Sl-IH; Wed, 15 Jul 2020 18:02:45 +0100
+Date:   Wed, 15 Jul 2020 18:02:45 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "michael@walle.cc" <michael@walle.cc>, netdev@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH RFC net-next 00/13] Phylink PCS updates
+Message-ID: <20200715170245.GH1551@shell.armlinux.org.uk>
+References: <20200630142754.GC1551@shell.armlinux.org.uk>
+ <20200714084958.to4n52cnk32prn4v@skbuf>
+ <20200714131832.GC1551@shell.armlinux.org.uk>
+ <20200714234652.w2pw3osynbuqw3m4@skbuf>
+ <20200715112100.GG1551@shell.armlinux.org.uk>
+ <20200715113441.GR1605@shell.armlinux.org.uk>
+ <20200715123153.vvvnx6rwgzl5ejuo@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20200715031353.14692-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200715123153.vvvnx6rwgzl5ejuo@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020-07-15 11:13 UTC+0800 ~ YueHaibing <yuehaibing@huawei.com>
-> The error return code should be PTR_ERR(obj) other than
-> PTR_ERR(NULL).
+On Wed, Jul 15, 2020 at 03:31:53PM +0300, Vladimir Oltean wrote:
+> On Wed, Jul 15, 2020 at 12:21:01PM +0100, Russell King - ARM Linux admin wrote:
+> > On Wed, Jul 15, 2020 at 02:46:52AM +0300, Vladimir Oltean wrote:
+> > > By this I think you are aiming squarely at "[PATCH net-next v3 0/9] net:
+> > > ethernet backplane support on DPAA1". If I understand you correctly, you
+> > > are saying that because of the non-phylink models used to represent that
+> > > system comprised of a clause 49 PCS + clause 72 PMD + clause 73 AN/LT,
+> > > it is not worth pursuing this phylink-based representation of a clause
+> > > 37 PCS.
+> > 
+> > Actually, that is not what I was aiming that comment at - that is not
+> > something that has been posted recently.  I'm not going to explicitly
+> > point at a patch set.
+> > 
 > 
-> Fixes: 5dc7a8b21144 ("bpftool, selftests/bpf: Embed object file inside skeleton")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> You are making it unnecessarily difficult to have a meaningful
+> conversation.
 
+Sorry, but no, I really don't have time to spend hours writing endless
+replies to you explaining in great detail about every minute issue.
+I spent an hour and a half on that email, and quite frankly, you've
+used your quota of my time for today.
 
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+Life is already difficult enough during this time of Covid 19, I
+really do not need extra pressure from people who need minute detail
+in every email.
 
-Thanks!
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
