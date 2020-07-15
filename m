@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EED82221165
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 17:44:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1878221167
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 17:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726742AbgGOPnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 11:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34654 "EHLO
+        id S1726851AbgGOPnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 11:43:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726023AbgGOPnI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 11:43:08 -0400
+        with ESMTP id S1726782AbgGOPnJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 11:43:09 -0400
 Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25A4C061755;
-        Wed, 15 Jul 2020 08:43:07 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id y18so1302692lfh.11;
-        Wed, 15 Jul 2020 08:43:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F56C061755;
+        Wed, 15 Jul 2020 08:43:09 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id t9so1313516lfl.5;
+        Wed, 15 Jul 2020 08:43:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=M5ULyzdtP/gpM8jSAC401vPHxbT9Qpm6n9VXueGgwlc=;
-        b=C0Pg1lgwzXeHao1SbuzJo78AD2H02WFXgwwCYHBOYIt5QuVf5+NS4PyfNfTDk+kvXr
-         i9iBby/yON+10+AyBk+8mbIszDILlxEQvzkMivTqhZxHV03P9Wm3/df1ce34+atSE0pw
-         SYc/IM9HewITQjPMnbAF3k2HgSDWzX1QFgUYeKF6O32rLylcbcgXlg8o2JGKpbBuTCrl
-         QkThW3uy2nyi+Lh7vK8AXq7HbPyBf4gBN2eBOgtrQ1KzYh1kuCenvKS62nbIOC5Z15+v
-         bbloZyJ26jp42I8t1PQ4mvDX3O+2yBCH0LudRhjXqWS5S7ZwlPTeKm/p6lMWKq9B0Nx3
-         Z9CA==
+        bh=1aHu1Z5oC5ObOqs/+6g63oI0o5o93R9RpXFU6u5G/HM=;
+        b=ZhuvGLSWsiH2pw+v4+oVujCGhm89HXMlPDUbPQ9wUjGrthgFMyt0zt1I2iEdBEMhXV
+         yg5GL+cryij6SoQ5ikSpzX4c8pwy8AL5mvHANN0Z4rmT+dy51QlXOaTEwv6svhFF8R2A
+         e6iJCqHprGbwYuh1u1I7ycYALuI/jk4sZvgHqHfsNSMnrUjAUZAveYMdQKi/4KkjxN1g
+         brexi5Yl1gOkSwpxrxl8rk9jeBbwdiKRPGfkGAc0TBEwljomxblr1MlxZK7rf1UTwhBq
+         OO5RsN3h/T77YaY5voKZ6Y7Qj2JAdSKJ+6BuGvVqYEf9ig5u1uA/NB4y3mzH3+7g1mFb
+         q21Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=M5ULyzdtP/gpM8jSAC401vPHxbT9Qpm6n9VXueGgwlc=;
-        b=uQi+7QTCrQPJoDVYZSwazquN/C3p4J8kr3aY58XFdCmkCpBRkzRWl9A40xnAeKF4tL
-         xd/LI874dwBMzdYixVqcelFDtM40XhkrqlDRyJqw1+qDGujlf8UmHsY7xUupTMvBg1oU
-         egz2zfGr03ofva3zbWzl7L3sQaCdyJnSi060RKZt+P+ry4mQduZOMDz0LMmOFtL/53eO
-         qfugDko8i54GMbXigcQj6wNMatZw55MyHnoZvPYTdePbaBzg/2AEwI33ttVgpN7tbboU
-         n7gvdeli5AiAMIihM+z1slm/rDi0w4AMa4wAeRARTBSHSeYlQLy1V1XjiZGTSBRXFSAZ
-         1pog==
-X-Gm-Message-State: AOAM533y+OmBtaNhfgxwDG6VRxy4YzuISjjHUikJplcyNFsEZhtRwLd2
-        874Xe3m7XazLiBOQLb4JWnQCnE8p
-X-Google-Smtp-Source: ABdhPJzltRTXqk6cMCCJeIvQexBXVOL0y34EIn0ZoltM3BSXJWzUivQIowoecW92rpi8s13+IEthCA==
-X-Received: by 2002:a19:c886:: with SMTP id y128mr4991345lff.98.1594827785900;
-        Wed, 15 Jul 2020 08:43:05 -0700 (PDT)
+        bh=1aHu1Z5oC5ObOqs/+6g63oI0o5o93R9RpXFU6u5G/HM=;
+        b=XGeoQRSPK3r9jkqv2lv7NGLoI1n1pFGRRT/6FeHe26DPvGMXEaTY8xRiu3mBYJ7erm
+         4mC4BfmfgViopFY1R+bWRQp7addaXHwqrWGGsBaigGApIhHYyQ2SZ0Bdp2aMx0G+/rE6
+         NmfEHI/2Zw/KmBiSXOCXZBXvxpUfD/S3s0TWMn06zv6YMqPsbOOx9uw4pA3SZtR5Eytm
+         yxiVVWplTinUyPT1viVevsbhWYF/0HyPPwLe+NP/+rz8AhRwo+uUtldHa5ZM454NokZY
+         7D/kxTpNOrhTC8u+ymwHocgOsO7oSyqMm1fsfvFlpz7lj+K8lVQqFElCwsNbemPsndgR
+         rY1g==
+X-Gm-Message-State: AOAM533Ri4AD02y6RisrEM9QBAh2uNrgcMGofQYTxD8XmYzFHxalIsuu
+        1UsEtrpVDQLi2hMrCO8LFqYVdhVD
+X-Google-Smtp-Source: ABdhPJzKwvJ4zlI/+N/diNAQxT0W1RRuu+6jSnRydOQl4XxFD6fO69JzKQPe4moJxrxaxwyTreUqDw==
+X-Received: by 2002:ac2:52af:: with SMTP id r15mr5087333lfm.24.1594827787270;
+        Wed, 15 Jul 2020 08:43:07 -0700 (PDT)
 Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id c6sm563955lff.77.2020.07.15.08.43.04
+        by smtp.gmail.com with ESMTPSA id c6sm563955lff.77.2020.07.15.08.43.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2020 08:43:05 -0700 (PDT)
+        Wed, 15 Jul 2020 08:43:06 -0700 (PDT)
 From:   Sergey Organov <sorganov@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
@@ -55,12 +55,13 @@ Cc:     linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH net-next v2 0/4]  net: fec: a few improvements
-Date:   Wed, 15 Jul 2020 18:42:56 +0300
-Message-Id: <20200715154300.13933-1-sorganov@gmail.com>
+Subject: [PATCH net-next v2 1/4] net: fec: enable to use PPS feature without time stamping
+Date:   Wed, 15 Jul 2020 18:42:57 +0300
+Message-Id: <20200715154300.13933-2-sorganov@gmail.com>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200706142616.25192-1-sorganov@gmail.com>
+In-Reply-To: <20200715154300.13933-1-sorganov@gmail.com>
 References: <20200706142616.25192-1-sorganov@gmail.com>
+ <20200715154300.13933-1-sorganov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -68,29 +69,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a collection of simple improvements that reduce and/or
-simplify code. They got developed out of attempt to use DP83640 PTP
-PHY connected to built-in FEC (that has its own PTP support) of the
-iMX 6SX micro-controller. The primary bug-fix was now submitted
-separately, and this is the rest of the changes.
+PPS feature could be useful even when hardware time stamping
+of network packets is not in use, so remove offending check
+for this condition from fec_ptp_enable_pps().
 
-NOTE: the patches are developed and tested on 4.9.146, and rebased on
-top of recent 'net-next/master', where, besides visual inspection, I
-only tested that they do compile.
+Signed-off-by: Sergey Organov <sorganov@gmail.com>
+---
+ drivers/net/ethernet/freescale/fec_ptp.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-Sergey Organov (4):
-  net: fec: enable to use PPS feature without time stamping
-  net: fec: initialize clock with 0 rather than current kernel time
-  net: fec: get rid of redundant code in fec_ptp_set()
-  net: fec: replace snprintf() with strlcpy() in fec_ptp_init()
-
-v2:
-  - bug-fix patch from original series submitted separately
-  - added Acked-by: where applicable
-  
- drivers/net/ethernet/freescale/fec_ptp.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
-
+diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+index 945643c02615..fda306b3e21f 100644
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -103,11 +103,6 @@ static int fec_ptp_enable_pps(struct fec_enet_private *fep, uint enable)
+ 	u64 ns;
+ 	val = 0;
+ 
+-	if (!(fep->hwts_tx_en || fep->hwts_rx_en)) {
+-		dev_err(&fep->pdev->dev, "No ptp stack is running\n");
+-		return -EINVAL;
+-	}
+-
+ 	if (fep->pps_enable == enable)
+ 		return 0;
+ 
 -- 
 2.10.0.1.g57b01a3
 
