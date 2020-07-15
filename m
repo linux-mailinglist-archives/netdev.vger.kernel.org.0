@@ -2,79 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBAE1220A4C
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 12:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AE92220AC4
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 13:09:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731267AbgGOKkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 06:40:40 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:57675 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731196AbgGOKkk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 06:40:40 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1594809639; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=sLdqw6vO/Dx5gVEAynTfPJwz0Jq0muScd1+nrlQdM8c=;
- b=ArzoTwlpQEAxCDcCi2x/6QXPXLZXLf4PHPY3BnFUtwJ9IgnyXXrSrOHjZ0twhysquqE8SBgY
- tEhJjwQq59ZVteAyyt09i443h7gAXY/7yheJz2Y6VEYt3KYYlGiX50QBaSVoPiOJdcXpWdpp
- ify0vr8XqdZbuvDMwXm8+TIxfWs=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 5f0edd27e3bee12510d09f72 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 15 Jul 2020 10:40:39
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 7B85BC433C9; Wed, 15 Jul 2020 10:40:38 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 728C1C433CB;
-        Wed, 15 Jul 2020 10:40:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 728C1C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] airo: use set_current_state macro
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200702015701.8606-1-vulab@iscas.ac.cn>
-References: <20200702015701.8606-1-vulab@iscas.ac.cn>
-To:     Xu Wang <vulab@iscas.ac.cn>
-Cc:     davem@davemloft.net, kuba@kernel.org, mpe@ellerman.id.au,
-        akpm@linux-foundation.org, wenwen@cs.uga.edu, adobriyan@gmail.com,
-        dan.carpenter@oracle.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xu Wang <vulab@iscas.ac.cn>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200715104038.7B85BC433C9@smtp.codeaurora.org>
-Date:   Wed, 15 Jul 2020 10:40:38 +0000 (UTC)
+        id S1731423AbgGOLJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 07:09:19 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:37974 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729356AbgGOLJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 07:09:19 -0400
+X-IronPort-AV: E=Sophos;i="5.75,355,1589209200"; 
+   d="scan'208";a="52194034"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 15 Jul 2020 20:09:16 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 8A99F4006CDA;
+        Wed, 15 Jul 2020 20:09:11 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Niklas <niklas.soderlund@ragnatech.se>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Magnus Damm <magnus.damm@gmail.com>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 00/20] Add support for [H]SCIF/TMU/CMT/THS/SDHI/MSIOF/CAN[FD]/I2C/IIC/RWDT on R8A774E1
+Date:   Wed, 15 Jul 2020 12:08:50 +0100
+Message-Id: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xu Wang <vulab@iscas.ac.cn> wrote:
+Hi All,
 
-> Use set_current_state macro instead of current->state = TASK_RUNNING.
-> 
-> Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+This patch series enables support for following on RZ/G2H SoC,
+* CPU OPP
+* THS
+* CMT/TMU
+* I2C/IIC
+* MSIOF
+* RWDT
+* SDHI
+* SCIF/HSCIF
+* CAN/CANFD
 
-Patch applied to wireless-drivers-next.git, thanks.
+Cheers,
+Prabhakar
 
-b28bd97c1c19 airo: use set_current_state macro
+Lad Prabhakar (14):
+  dt-bindings: thermal: rcar-gen3-thermal: Add r8a774e1 support
+  dt-bindings: timer: renesas,cmt: Document r8a774e1 CMT support
+  arm64: dts: renesas: r8a774e1: Add SCIF and HSCIF nodes
+  arm64: dts: renesas: r8a774e1: Add SDHI nodes
+  dt-bindings: i2c: renesas,i2c: Document r8a774e1 support
+  dt-bindings: i2c: renesas,iic: Document r8a774e1 support
+  arm64: dts: renesas: r8a774e1: Add I2C and IIC-DVFS support
+  dt-bindings: spi: renesas,sh-msiof: Add r8a774e1 support
+  arm64: dts: renesas: r8a774e1: Add MSIOF nodes
+  dt-bindings: watchdog: renesas,wdt: Document r8a774e1 support
+  arm64: dts: renesas: r8a774e1: Add RWDT node
+  dt-bindings: can: rcar_can: Document r8a774e1 support
+  dt-bindings: can: rcar_canfd: Document r8a774e1 support
+  arm64: dts: renesas: r8a774e1: Add CAN[FD] support
+
+Marian-Cristian Rotariu (6):
+  arm64: dts: renesas: r8a774e1: Add operating points
+  thermal: rcar_gen3_thermal: Add r8a774e1 support
+  arm64: dts: renesas: r8a774e1: Add RZ/G2H thermal support
+  arm64: dts: renesas: r8a774e1: Add CMT device nodes
+  dt-bindings: timer: renesas,tmu: Document r8a774e1 bindings
+  arm64: dts: renesas: r8a774e1: Add TMU device nodes
+
+ .../devicetree/bindings/i2c/renesas,i2c.txt   |   1 +
+ .../devicetree/bindings/i2c/renesas,iic.txt   |   1 +
+ .../devicetree/bindings/net/can/rcar_can.txt  |   1 +
+ .../bindings/net/can/rcar_canfd.txt           |   1 +
+ .../bindings/spi/renesas,sh-msiof.yaml        |   1 +
+ .../bindings/thermal/rcar-gen3-thermal.yaml   |   1 +
+ .../bindings/timer/renesas,cmt.yaml           |   2 +
+ .../devicetree/bindings/timer/renesas,tmu.txt |   1 +
+ .../bindings/watchdog/renesas,wdt.yaml        |   1 +
+ arch/arm64/boot/dts/renesas/r8a774e1.dtsi     | 713 +++++++++++++++++-
+ drivers/thermal/rcar_gen3_thermal.c           |   4 +
+ 11 files changed, 715 insertions(+), 12 deletions(-)
 
 -- 
-https://patchwork.kernel.org/patch/11637715/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.17.1
 
