@@ -2,90 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 744712205F8
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 09:16:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8D4220600
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 09:16:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729168AbgGOHPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 03:15:51 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:60043 "EHLO
+        id S1729223AbgGOHQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 03:16:21 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:55417 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728883AbgGOHPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 03:15:50 -0400
+        by vger.kernel.org with ESMTP id S1728883AbgGOHQV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 03:16:21 -0400
 Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id BCA5B5C017C;
-        Wed, 15 Jul 2020 03:15:48 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 123E25C003D;
+        Wed, 15 Jul 2020 03:16:20 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Wed, 15 Jul 2020 03:15:48 -0400
+  by compute1.internal (MEProxy); Wed, 15 Jul 2020 03:16:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
         date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:content-transfer-encoding:in-reply-to; s=fm1; bh=I
-        dzXeh2RWKYdW8XCq4OrPX8o7m+00s9GheuDMfhvZ/Y=; b=hnDjX/GBxPowfNxSZ
-        pW2w1tj0ZzZkUqqCNe6rMhlcUDZKbGw144OHNVMrkl3Kbu5z3jMp0nLbKk0hv/5l
-        97VDOhWleqfPiqZpPnWWXSRGo1mF9mk8XSY+5Jm2D6wNP78scp8Ljqef8IBgBRRV
-        VCB0alxM033faF9FP5845sPkHKnBOmlBwQHUojLf6I2Z2oQyIeNNFzdogVAvfDih
-        HViCZxbKCPzbZOC079jCbQP4z1BYO79RkKSriIOxzYcW07RN5aNOq0glIIUfMaxC
-        7y6+J+ruNZg5nPQ8B/RMwIZ5oerrPDGALDShCNmpWIPnU5IYqgnrHgHOSAi406pl
-        hiNOg==
+        :content-type:content-transfer-encoding:in-reply-to; s=fm1; bh=s
+        cNPZaie3mZkWaCFW1bBIfFa4ifRY2lMsxABYKuY/Wo=; b=rIWaNGQ8oNEfWo6Vy
+        Ow7QGW3GuZ5nt5VGDzDifFRccA5GZw6s3o0uuNfRmIkCzPE8b/cKbZe+lXoAJbS/
+        9+UK9HbSg4L0BT4yzgkgGo6x5JiIoUaj2nGqNnIJBROlE0NIapK7iGIIxcqPQ+oh
+        6ieYdeeRZGGBRuDPx0yYtgQ7RbURMUJbtFQmgrZDfxYcXxUlN5235ld/A3XrHi2+
+        oVSBWhMH3qCvLtDpv1Z7r7wDYuud6opCiT0PJZ85mQz7LnLlk8HYzQfNl5xcWf5N
+        kmj/1sJBJD9wXBnYivLrutN63l60jU54RxNZXiJ4sq/L7ddLHAejAQvNJhk+dc04
+        ZTysg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:content-type
         :date:from:in-reply-to:message-id:mime-version:references
         :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=IdzXeh2RWKYdW8XCq4OrPX8o7m+00s9GheuDMfhvZ
-        /Y=; b=OpwC+p0a2XX4L+2ZPQYf9alSwv5o6HabIMO9tk9u6HqUCKgCcz22Iia9v
-        0DQ6PAvkc0UBYspkd72kD8nanLcVO/UDLOWz6dPXwByrX+Rq3Ke3kZwvBourJfb0
-        epRU2k7Pm7R3E4Giszqa6eP2MojlvnhMNSmguDYgBfdnZA8l5WBfAKFxbDWDVQpu
-        nongQ6VuclqWYow4uTMklgG7JKegvOvqs155Zoeyvv7mVbWLiC/tbZLZosUKOtvv
-        Ez69y0qKrncpffWna2XmsHpxm1Max1XAZ1oI6jm0vVGmWQ4rY+HptP2o85M06im8
-        CePdtqdCzdtRj8GP0ZvmcZwTOPJig==
-X-ME-Sender: <xms:JK0OXz2Q8Alts9rqL07C3OVOSIsBC2_oFHRLcIzbuBcmmyUVxf1Nyw>
+        :x-sasl-enc; s=fm3; bh=scNPZaie3mZkWaCFW1bBIfFa4ifRY2lMsxABYKuY/
+        Wo=; b=nDjikQMx+OeNIPUIzwJ5EmhXXNr5sQ4X1Yq98QOMd12+QDEd10qFV7VYA
+        pZ+OqV4COcAzgajUTZ22DOfeHs0/8n6eKtK9UhL3DJ2bSh2crDYhn6TQI/OGJkOZ
+        6sL1bj1XTa7KbIpCCHded3YiqlU0vegCVdFnI1loUGA3bHsq1m+ZCOXG7IP6EBBy
+        kkw4i/tB+ChCc3eMwm5ELfuf9FA6SdAHWdZ55fN1k05A8mtSe1aGIOuXRGNqtMqd
+        /tdlURxsLxtzdQdjMWoH0t9qCvHUd0M/YvhAob/nqRTGi/F1qO09z/kko91M4aZT
+        oiziXIhK5PGiSld2NSGO7Rk/8yzYQ==
+X-ME-Sender: <xms:Q60OX62ZxIxhjUXEbk6f7wvN19yiZ9IveNAf6qtd4cdTjeUvGu2Biw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedugdduudejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtudenucfhrhhomhepifhrvghg
     ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepvedtie
     elueetgeeggfeufefhvefgtdetgfetgfdtvdegjeehieduvddtkeffheffnecukfhppeek
-    fedrkeeirdekledruddtjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
+    fedrkeeirdekledruddtjeenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
-X-ME-Proxy: <xmx:JK0OXyFUNoMeYT-Wy49o8df9IjvquJ-nT5uSNbOj2zkB9vbmI9wb0g>
-    <xmx:JK0OXz7Qg9HKPpbbDT80p4cFDXclNuwm05Z9Q4fKI-s6-MWQljaZxw>
-    <xmx:JK0OX43KQqR4-9BgYz1vaIT7NWBdirPpuMvJ01KtLH6jV3DtbNmD2w>
-    <xmx:JK0OX4O6IZ0zZubZUbk4k49SxlX1o1UShUafmQYQjt63tUTaP62wpw>
+X-ME-Proxy: <xmx:Q60OX9H4OIuaSHJtEUuR5CrInRfwmTQsaNIEExsg4Nfv-4bFA7Y8gQ>
+    <xmx:Q60OXy4P2gyNlMZrsAXmuHF-v2VfWz90hTyR7y1HKp96T8InJJ1Q5Q>
+    <xmx:Q60OX702x4m4BnPwAFehs9uwgafRNAVJrduU0Q9Fp0KXWjWzNQX_Ig>
+    <xmx:RK0OX7N8VeVHcLKqTeD928vWazM4kacdIqR08olfem4r7FltfJXjng>
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C9C0F30600A6;
-        Wed, 15 Jul 2020 03:15:47 -0400 (EDT)
-Date:   Wed, 15 Jul 2020 09:15:43 +0200
+        by mail.messagingengine.com (Postfix) with ESMTPA id A385030600A3;
+        Wed, 15 Jul 2020 03:16:19 -0400 (EDT)
+Date:   Wed, 15 Jul 2020 09:16:17 +0200
 From:   Greg KH <greg@kroah.com>
 To:     =?iso-8859-1?Q?Wxcaf=E9?= <wxcafe@wxcafe.net>
 Cc:     linux-usb@vger.kernel.org,
         Miguel =?iso-8859-1?Q?Rodr=EDguez_P=E9rez?= 
         <miguel@det.uvigo.gal>, oliver@neukum.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 2/4] cdc_ether: use dev->intf to get interface information
-Message-ID: <20200715071543.GA2305231@kroah.com>
+Subject: Re: [PATCH 2/4] cdc_ether: export usbnet_cdc_update_filter
+Message-ID: <20200715071617.GB2305231@kroah.com>
 References: <0202c34b1b335d8d8fcdd5406f5e8178b4c198ec.camel@wxcafe.net>
+ <7dbc46a51a7a2b8318418a0d40af3353b8f812c2.camel@wxcafe.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <0202c34b1b335d8d8fcdd5406f5e8178b4c198ec.camel@wxcafe.net>
+In-Reply-To: <7dbc46a51a7a2b8318418a0d40af3353b8f812c2.camel@wxcafe.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 09:25:13PM -0400, Wxcafé wrote:
-> This makes the function available to other drivers, like cdn_ncm.
-> 
-> Signed-off-by: Miguel Rodríguez Pérez <miguel@det.uvigo.gal>
+On Tue, Jul 14, 2020 at 09:32:12PM -0400, Wxcafé wrote:
+> Fixed the title, sorry
 
-The subject line does not match the patch :(
-
-Also, when sending on patches from others, you too have to sign off on
-it.
-
-And, set the proper From: line in the body of the email, like the
-documentation says to do, otherwise you loose the original authorship
-information.
-
-thanks,
-
-greg k-h
+That did nothing for us, you have to send a new patch series, we can not
+hand-edit each patch for stuff like this :(
