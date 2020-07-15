@@ -2,109 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35774220CCF
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 14:19:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BA24220CE0
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 14:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730054AbgGOMS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 08:18:59 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7858 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725924AbgGOMS7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 08:18:59 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id DF9B9D68CA06003E39EA;
-        Wed, 15 Jul 2020 20:18:56 +0800 (CST)
-Received: from huawei.com (10.164.155.96) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Wed, 15 Jul 2020
- 20:18:46 +0800
-From:   zhouxudong199 <zhouxudong8@huawei.com>
-To:     <wensong@linux-vs.org>, <horms@verge.net.au>
-CC:     <netdev@vger.kernel.org>, <lvs-devel@vger.kernel.org>,
-        <zhouxudong8@huawei.com>, <rose.chen@huawei.com>
-Subject: [PATCH] ipvs:clean code for ip_vs_sync.c
-Date:   Wed, 15 Jul 2020 12:18:39 +0000
-Message-ID: <1594815519-37044-1-git-send-email-zhouxudong8@huawei.com>
-X-Mailer: git-send-email 2.6.1.windows.1
+        id S1730344AbgGOMZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 08:25:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729198AbgGOMZ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 08:25:27 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E553C061755;
+        Wed, 15 Jul 2020 05:25:27 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id n5so2999989pgf.7;
+        Wed, 15 Jul 2020 05:25:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=TI7B6uM5uAGiHWQ7sW+RUED1scSbU7lrfz9lYsJ7uGo=;
+        b=ZZOSLzlcXTNm4W3OZMnWVr1+NbaMIUUE5yV17q0Y4hA0+t/z3V/DgbwxNjZOanbfyT
+         P15BKhmOYeyEwe470CDsq1Gmh6KVZS/rD5dYEZuEMdGlTgsy6fo7YM200mud4SzH0dKV
+         Twpms/NYERwpRJ6Ld0N5HYqT1I6kHrXeygLJDKG2Q8CELbHJQV2VnDQAeVhue0RIsuat
+         RwI94CIbd26kZyjPO5k3PiVHO9N2kVxFvayyhowf1O+k+27pYy67195muiwxWYZ9bJT/
+         1LHiFDhF4SsTASoAzJLfMth+rvMP+4v18E1coy83mkD42/yd8buYrKmlRZ9NdRpeyVSC
+         y/xQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=TI7B6uM5uAGiHWQ7sW+RUED1scSbU7lrfz9lYsJ7uGo=;
+        b=gBGGk3SSV1ZL3UwRXAbvPs+VkvSLphAreun5o0HKKdEHcs2Vs32Eh7YEW8laEhDRSR
+         /eIHj3hDBwUMYW4afeAQ5GuXhi7UvsW/dkmxX71dZPs77mO4YRF9+xLmtkbG8LoBXY2d
+         QPzCzgmKRq9hYiIUKLSDZVfsDnDo5NBoPYwZ+1JTI4fZowdkDvhtzx5RPlku7DMxk7w6
+         dfjvhzHoRDM6S5soeIpNmqKl8IrVy2M6BSvHsVy8xysU6usURVug2iXWNcK66DL5yW7f
+         O5mz11rby7cenWdI3sfcUUSPU+qhrzdha4ICiK6XCrdiH1GcVdMTpdwO3rLfkWcMUX+B
+         /yxA==
+X-Gm-Message-State: AOAM533kjgi999nYml5/rSTUTrJ9gwAxuwdq55aIuDf2hgv5i2nFUhOs
+        ZIgOsa3AtsrC1xailftjwCs=
+X-Google-Smtp-Source: ABdhPJy7yjmLA5XbVF7NyUuQoRirQ+f/S9NyKNnFW9PIFnpMFMxa9S5xH582iGEeSOVO1gAN4T5gDw==
+X-Received: by 2002:a63:b18:: with SMTP id 24mr8235755pgl.406.1594815926662;
+        Wed, 15 Jul 2020 05:25:26 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id o2sm2121381pfh.160.2020.07.15.05.25.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2020 05:25:25 -0700 (PDT)
+Date:   Wed, 15 Jul 2020 20:25:14 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Subject: Re: [PATCHv7 bpf-next 1/3] xdp: add a new helper for dev map
+ multicast support
+Message-ID: <20200715122514.GG2531@dhcp-12-153.nay.redhat.com>
+References: <20200709013008.3900892-1-liuhangbin@gmail.com>
+ <20200714063257.1694964-1-liuhangbin@gmail.com>
+ <20200714063257.1694964-2-liuhangbin@gmail.com>
+ <87imepg3xt.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.164.155.96]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87imepg3xt.fsf@toke.dk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jul 14, 2020 at 11:52:14PM +0200, Toke Høiland-Jørgensen wrote:
+> > +bool dev_in_exclude_map(struct bpf_dtab_netdev *obj, struct bpf_map *map,
+> > +			int exclude_ifindex)
+> > +{
+> > +	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
+> > +	struct bpf_dtab_netdev *dev;
+> > +	struct hlist_head *head;
+> > +	int i = 0;
+> > +
+> > +	if (obj->dev->ifindex == exclude_ifindex)
+> > +		return true;
+> > +
+> > +	if (!map || map->map_type != BPF_MAP_TYPE_DEVMAP_HASH)
+> > +		return false;
+> 
+> The map type should probably be checked earlier and the whole operation
+> aborted if it is wrong...
 
-Signed-off-by:zhouxudong199 <zhouxudong8@huawei.com>
----
- net/netfilter/ipvs/ip_vs_sync.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+Yes, I have already checked it in the helper, there should no need to double
+check. I will remove this check.
 
-diff --git a/net/netfilter/ipvs/ip_vs_sync.c b/net/netfilter/ipvs/ip_vs_sync.c
-index 605e0f6..885bab4 100644
---- a/net/netfilter/ipvs/ip_vs_sync.c
-+++ b/net/netfilter/ipvs/ip_vs_sync.c
-@@ -1077,10 +1077,10 @@ static inline int ip_vs_proc_sync_conn(struct netns_ipvs *ipvs, __u8 *p, __u8 *m
- 	struct ip_vs_protocol *pp;
- 	struct ip_vs_conn_param param;
- 	__u32 flags;
--	unsigned int af, state, pe_data_len=0, pe_name_len=0;
--	__u8 *pe_data=NULL, *pe_name=NULL;
--	__u32 opt_flags=0;
--	int retc=0;
-+	unsigned int af, state, pe_data_len = 0, pe_name_len = 0;
-+	__u8 *pe_data = NULL, *pe_name = NULL;
-+	__u32 opt_flags = 0;
-+	int retc = 0;
- 
- 	s = (union ip_vs_sync_conn *) p;
- 
-@@ -1089,7 +1089,7 @@ static inline int ip_vs_proc_sync_conn(struct netns_ipvs *ipvs, __u8 *p, __u8 *m
- 		af = AF_INET6;
- 		p += sizeof(struct ip_vs_sync_v6);
- #else
--		IP_VS_DBG(3,"BACKUP, IPv6 msg received, and IPVS is not compiled for IPv6\n");
-+		IP_VS_DBG(3, "BACKUP, IPv6 msg received, and IPVS is not compiled for IPv6\n");
- 		retc = 10;
- 		goto out;
- #endif
-@@ -1129,7 +1129,7 @@ static inline int ip_vs_proc_sync_conn(struct netns_ipvs *ipvs, __u8 *p, __u8 *m
- 			break;
- 
- 		case IPVS_OPT_PE_NAME:
--			if (ip_vs_proc_str(p, plen,&pe_name_len, &pe_name,
-+			if (ip_vs_proc_str(p, plen, &pe_name_len, &pe_name,
- 					   IP_VS_PENAME_MAXLEN, &opt_flags,
- 					   IPVS_OPT_F_PE_NAME))
- 				return -70;
-@@ -1155,7 +1155,7 @@ static inline int ip_vs_proc_sync_conn(struct netns_ipvs *ipvs, __u8 *p, __u8 *m
- 	if (!(flags & IP_VS_CONN_F_TEMPLATE)) {
- 		pp = ip_vs_proto_get(s->v4.protocol);
- 		if (!pp) {
--			IP_VS_DBG(3,"BACKUP, Unsupported protocol %u\n",
-+			IP_VS_DBG(3, "BACKUP, Unsupported protocol %u\n",
- 				s->v4.protocol);
- 			retc = 30;
- 			goto out;
-@@ -1232,7 +1232,7 @@ static void ip_vs_process_message(struct netns_ipvs *ipvs, __u8 *buffer,
- 		msg_end = buffer + sizeof(struct ip_vs_sync_mesg);
- 		nr_conns = m2->nr_conns;
- 
--		for (i=0; i<nr_conns; i++) {
-+		for (i=0; i < nr_conns; i++) {
- 			union ip_vs_sync_conn *s;
- 			unsigned int size;
- 			int retc;
-@@ -1444,7 +1444,7 @@ static int bind_mcastif_addr(struct socket *sock, struct net_device *dev)
- 	sin.sin_addr.s_addr  = addr;
- 	sin.sin_port         = 0;
- 
--	return sock->ops->bind(sock, (struct sockaddr*)&sin, sizeof(sin));
-+	return sock->ops->bind(sock, (struct sockaddr *)&sin, sizeof(sin));
- }
- 
- static void get_mcast_sockaddr(union ipvs_sockaddr *sa, int *salen,
--- 
-2.6.1.windows.1
+> 
+> > +
+> > +	for (; i < dtab->n_buckets; i++) {
+> > +		head = dev_map_index_hash(dtab, i);
+> > +
+> > +		dev = hlist_entry_safe(rcu_dereference_raw(hlist_first_rcu(head)),
+> > +					    struct bpf_dtab_netdev,
+> > +					    index_hlist);
+> > +
+> > +		if (dev && dev->idx == exclude_ifindex)
+> > +			return true;
+> > +	}
+> 
+> This looks broken; why are you iterating through the buckets? Shouldn't
+> this just be something like:
+> 
+> return __dev_map_hash_lookup_elem(map, obj->dev->ifindex) != NULL;
 
+Ah, yes, I forgot this. I will update the code.
 
+Thanks
+Hangbin
