@@ -2,107 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 602DB221391
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 19:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54882221389
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 19:35:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbgGORg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 13:36:26 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:59332 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726722AbgGORgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 13:36:25 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 06FHZgoI007525;
-        Wed, 15 Jul 2020 20:35:44 +0300
-Date:   Wed, 15 Jul 2020 20:35:42 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     guodeqing <geffrey.guo@huawei.com>
-cc:     wensong@linux-vs.org, horms@verge.net.au, pablo@netfilter.org,
-        kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH] ipvs: fix the connection sync failed in some cases
-In-Reply-To: <1594796027-66136-1-git-send-email-geffrey.guo@huawei.com>
-Message-ID: <alpine.LFD.2.23.451.2007152016420.6034@ja.home.ssi.bg>
-References: <1594796027-66136-1-git-send-email-geffrey.guo@huawei.com>
+        id S1726442AbgGORft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 13:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725907AbgGORfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 13:35:48 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E204C061755
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 10:35:48 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id o8so6356423wmh.4
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 10:35:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Q65viUzdrydGJbsUBZqfq3TsrTZ1vpIGmSYJcwDvo4I=;
+        b=WT0ynYvujO8rhdkbtlk6GTCwf4wFQxxdoFjz4smc2tzHQx0crhb+FClHGm/gXS8pQF
+         +Zekcogtx3fRG3NuSAL9SstXPfXWRrhfCfuufqJnkt5S73Ow2Dq1V9hG/XyOc+vo2/2u
+         i8XL4ZFJ2EEHatMIsqh2BlCfTsF+rv7XhC1BBXh9ZG+Ty6hEWy3bdkdw0ejKAvD5s7ZV
+         J36sDlSXh5TPmLtYIU9id1bzU+Mx7yymzCqiQPPiOpBEf2gOMM2INnLRKxZFZlaPv7d/
+         HcxsH6zy1EtynjCDoH6qPDTE3EbOy5sZRayEDBLSdt3L5AV/hEQvzCn5J1v9oSjFLpC9
+         DG/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Q65viUzdrydGJbsUBZqfq3TsrTZ1vpIGmSYJcwDvo4I=;
+        b=ijvZxS6/iCiWKToWkzYAGfJBXmH9BT8iZppqqTRA2UZv7D8k5/MnPswFQLMQwaTOUy
+         x74PhTbv7CjZmFEsQxoJVCqtDaOQDxAhRj4V9ihUiyoYSOmcNmfpfh6BZC290AzBdWf0
+         ZGqximGNZxbC66jLLk51eGhG7sw6A6VAfkKwPtDDISRwxgalWERg9Tj1/8/CXpGO9Wos
+         ez4LYcXT9fr+zw/AJ0qEQAbmNGL33QkR6j7FK3aGNcQ8Ng4bkibI4lpUY161Y91xCNjR
+         ew6n6AKJVXW4cwa4eMy3YqKRfPoTFKwEOUu7GvXu04K4X23pB2uiysnPVupQWddiCeQw
+         Qd8A==
+X-Gm-Message-State: AOAM530DDjYj+s45ow/uY+d+cIiQNcRccEcxvz281fnDnyMTocW2wGB2
+        qB3i79pS2RZjqyexEPYuif2kROLPR0CJL/W/
+X-Google-Smtp-Source: ABdhPJwX2QGERZOZRB/kcqI5fGr2YfV9UaZcTQLs9XThkVw5+jnwFt+apC6qOm03RkYoP90nxubgWQ==
+X-Received: by 2002:a1c:e908:: with SMTP id q8mr524283wmc.59.1594834547085;
+        Wed, 15 Jul 2020 10:35:47 -0700 (PDT)
+Received: from [192.168.1.12] ([194.35.117.104])
+        by smtp.gmail.com with ESMTPSA id d132sm4259736wmd.35.2020.07.15.10.35.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jul 2020 10:35:46 -0700 (PDT)
+Subject: Re: [PATCH bpf-next] bpftool: use only nftw for file tree parsing
+To:     Tony Ambardar <tony.ambardar@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20200715051214.28099-1-Tony.Ambardar@gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <58fadc96-2083-a043-9ef3-da72ad792324@isovalent.com>
+Date:   Wed, 15 Jul 2020 18:35:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200715051214.28099-1-Tony.Ambardar@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-	Hello,
-
-On Wed, 15 Jul 2020, guodeqing wrote:
-
-> The sync_thread_backup only checks sk_receive_queue is empty or not,
-> there is a situation which cannot sync the connection entries when
-> sk_receive_queue is empty and sk_rmem_alloc is larger than sk_rcvbuf,
-> the sync packets are dropped in __udp_enqueue_schedule_skb, this is
-> because the packets in reader_queue is not read, so the rmem is
-> not reclaimed.
-
-	Good catch. We missed this change in UDP...
-
-> Here I add the check of whether the reader_queue of the udp sock is
-> empty or not to solve this problem.
+2020-07-14 22:12 UTC-0700 ~ Tony Ambardar <tony.ambardar@gmail.com>
+> The bpftool sources include code to walk file trees, but use multiple
+> frameworks to do so: nftw and fts. While nftw conforms to POSIX/SUSv3 and
+> is widely available, fts is not conformant and less common, especially on
+> non-glibc systems. The inconsistent framework usage hampers maintenance
+> and portability of bpftool, in particular for embedded systems.
 > 
-> Fixes: 7c13f97ffde6 ("udp: do fwd memory scheduling on dequeue")
-
-	Why this commit and not 2276f58ac589 which adds
-reader_queue to udp_poll() ? May be both?
-
-> Reported-by: zhouxudong <zhouxudong8@huawei.com>
-> Signed-off-by: guodeqing <geffrey.guo@huawei.com>
-> ---
->  net/netfilter/ipvs/ip_vs_sync.c | 12 ++++++++----
->  1 file changed, 8 insertions(+), 4 deletions(-)
+> Standardize usage by rewriting one fts-based function to use nftw. This
+> change allows building bpftool against musl for OpenWrt.
 > 
-> diff --git a/net/netfilter/ipvs/ip_vs_sync.c b/net/netfilter/ipvs/ip_vs_sync.c
-> index 605e0f6..abe8d63 100644
-> --- a/net/netfilter/ipvs/ip_vs_sync.c
-> +++ b/net/netfilter/ipvs/ip_vs_sync.c
-> @@ -1717,6 +1717,8 @@ static int sync_thread_backup(void *data)
+> Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+
+Thanks!
+
+I tested your set, and bpftool does not compile on my setup. The
+definitions from <ftw.h> are not picked up by gcc, common.c should have
+a "#define _GNU_SOURCE" above its list of includes for this to work
+(like perf.c has).
+
+I also get a warning on this line:
+
+
+> +static int do_build_table_cb(const char *fpath, const struct stat *sb,
+> +			    int typeflag, struct FTW *ftwbuf)
 >  {
->  	struct ip_vs_sync_thread_data *tinfo = data;
->  	struct netns_ipvs *ipvs = tinfo->ipvs;
-> +	struct sock *sk = tinfo->sock->sk;
-> +	struct udp_sock *up = udp_sk(sk);
->  	int len;
->  
->  	pr_info("sync thread started: state = BACKUP, mcast_ifn = %s, "
-> @@ -1724,12 +1726,14 @@ static int sync_thread_backup(void *data)
->  		ipvs->bcfg.mcast_ifn, ipvs->bcfg.syncid, tinfo->id);
->  
->  	while (!kthread_should_stop()) {
-> -		wait_event_interruptible(*sk_sleep(tinfo->sock->sk),
-> -			 !skb_queue_empty(&tinfo->sock->sk->sk_receive_queue)
-> -			 || kthread_should_stop());
-> +		wait_event_interruptible(*sk_sleep(sk),
-> +					 !skb_queue_empty(&sk->sk_receive_queue) ||
-> +					 !skb_queue_empty(&up->reader_queue) ||
 
-	May be we should use skb_queue_empty_lockless for 5.4+
-and skb_queue_empty() for backports to 4.14 and 4.19...
+Because passing fptath to open_obj_pinned() below discards the "const"
+qualifier:
 
-> +					 kthread_should_stop());
->  
->  		/* do we have data now? */
-> -		while (!skb_queue_empty(&(tinfo->sock->sk->sk_receive_queue))) {
-> +		while (!skb_queue_empty(&sk->sk_receive_queue) ||
-> +		       !skb_queue_empty(&up->reader_queue)) {
+> +	fd = open_obj_pinned(fpath, true);
 
-	Here too
+Fixed by having simply "char *fpath" as the first argument for
+do_build_table_cb().
 
->  			len = ip_vs_receive(tinfo->sock, tinfo->buf,
->  					ipvs->bcfg.sync_maxlen);
->  			if (len <= 0) {
-> -- 
-> 2.7.4
+With those two modifications, bpftool compiles fine and listing objects
+with the "-f" option works as expected.
 
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+Regards,
+Quentin
