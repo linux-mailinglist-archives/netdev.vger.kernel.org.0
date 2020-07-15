@@ -2,63 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6915221633
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 22:27:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED2F1221638
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 22:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727787AbgGOU1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 16:27:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33572 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727037AbgGOU1B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 16:27:01 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727826AbgGOU1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 16:27:32 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:36705 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725917AbgGOU1a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 16:27:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594844849;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=IltLClpxgs4K5MYmfJWYiZjllfQyoqFX5PLfjzR2ttA=;
+        b=RSv0vtZq7thX2mfZtLU+zlqnYkWDsIHz0rk8a3yN7GN6AN9xqfeJwaUVTg6SknVbZcEfuH
+        UCZafGofuOAVD0TfBfYeKRKBcWO7iVic5KqmeTj0q+q38u9TRz4ArE/5+FVifUPCbtYkDr
+        /OL/yn1eFzHEinZmJotcx1MTHenb8xI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-380-rw7XNDciOGutg97xuADnDA-1; Wed, 15 Jul 2020 16:27:23 -0400
+X-MC-Unique: rw7XNDciOGutg97xuADnDA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 49ED220672;
-        Wed, 15 Jul 2020 20:27:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594844821;
-        bh=Pp8UvZbpzEoLiSxnR7HhTqdL2JabHToZeJceQvZNvFI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=srIkbJEMEv9tUrgK3P9cRDD5YGT3p6kHaoDAuGMcTS9xRDMgdpPWWOe4h+a0osETL
-         hQl62ZmZKpvbPhBl9go0ZxUK5Ln+xRgy8aG/+jV6l7QWWbvpusWT0oeFKt5Hunt2O3
-         26JtYXv3DA7bcSb65J0fAKryJIIdL1AT1kHDLgHc=
-Date:   Wed, 15 Jul 2020 13:26:59 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     wenxu@ucloud.cn
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        fw@strlen.de, Cong Wang <xiyou.wangcong@gmail.com>
-Subject: Re: [PATCH net-next v2 0/3] make nf_ct_frag/6_gather elide the skb
- CB clear
-Message-ID: <20200715132659.34fa0e14@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1594097711-9365-1-git-send-email-wenxu@ucloud.cn>
-References: <1594097711-9365-1-git-send-email-wenxu@ucloud.cn>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0ADC180BCAC;
+        Wed, 15 Jul 2020 20:27:22 +0000 (UTC)
+Received: from new-host-6.redhat.com (unknown [10.40.192.109])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 56C1879D10;
+        Wed, 15 Jul 2020 20:27:20 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        mptcp@lists.01.org
+Subject: [PATCH net-next] mptcp: silence warning in subflow_data_ready()
+Date:   Wed, 15 Jul 2020 22:27:05 +0200
+Message-Id: <87f4954cfd7eacd6e220ab60d61e09f35ed32252.1594844608.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  7 Jul 2020 12:55:08 +0800 wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
-> 
-> Add nf_ct_frag_gather and Make nf_ct_frag6_gather elide the CB clear 
-> when packets are defragmented by connection tracking. This can make
-> each subsystem such as br_netfilter, openvswitch, act_ct do defrag
-> without restore the CB. 
-> This also avoid serious crashes and problems in  ct subsystem.
-> Because Some packet schedulers store pointers in the qdisc CB private
-> area and parallel accesses to the SKB.
-> 
-> This series following up
-> http://patchwork.ozlabs.org/project/netdev/patch/1593422178-26949-1-git-send-email-wenxu@ucloud.cn/
-> 
-> patch1: add nf_ct_frag_gather elide the CB clear
-> patch2: make nf_ct_frag6_gather elide the CB clear
-> patch3: fix clobber qdisc_skb_cb in act_ct with defrag
-> 
-> v2: resue some ip_defrag function in patch1
+since commit d47a72152097 ("mptcp: fix race in subflow_data_ready()"), it
+is possible to observe a regression in MP_JOIN kselftests. For sockets in
+TCP_CLOSE state, it's not sufficient to just wake up the main socket: we
+also need to ensure that received data are made available to the reader.
+Silence the WARN_ON_ONCE() in these cases: it preserves the syzkaller fix
+and restores kselftests	when they are ran as follows:
 
-Florian, Cong - are you willing to venture an ack on these? Anyone?
+  # while true; do
+  > make KBUILD_OUTPUT=/tmp/kselftest TARGETS=net/mptcp kselftest
+  > done
+
+Reported-by: Florian Westphal <fw@strlen.de>
+Fixes: d47a72152097 ("mptcp: fix race in subflow_data_ready()")
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/47
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ net/mptcp/subflow.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 9f7f3772c13c..519122e66f17 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -869,18 +869,19 @@ void mptcp_space(const struct sock *ssk, int *space, int *full_space)
+ static void subflow_data_ready(struct sock *sk)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
++	u16 state = 1 << inet_sk_state_load(sk);
+ 	struct sock *parent = subflow->conn;
+ 	struct mptcp_sock *msk;
+ 
+ 	msk = mptcp_sk(parent);
+-	if ((1 << inet_sk_state_load(sk)) & (TCPF_LISTEN | TCPF_CLOSE)) {
++	if (state & TCPF_LISTEN) {
+ 		set_bit(MPTCP_DATA_READY, &msk->flags);
+ 		parent->sk_data_ready(parent);
+ 		return;
+ 	}
+ 
+ 	WARN_ON_ONCE(!__mptcp_check_fallback(msk) && !subflow->mp_capable &&
+-		     !subflow->mp_join);
++		     !subflow->mp_join && !(state & TCPF_CLOSE));
+ 
+ 	if (mptcp_subflow_data_available(sk))
+ 		mptcp_data_ready(parent, sk);
+-- 
+2.26.2
+
