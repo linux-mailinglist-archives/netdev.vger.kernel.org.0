@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17202220AFD
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 13:10:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 607AD220B02
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 13:10:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731634AbgGOLKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 07:10:20 -0400
+        id S1731659AbgGOLK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 07:10:27 -0400
 Received: from relmlor2.renesas.com ([210.160.252.172]:14909 "EHLO
         relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731618AbgGOLKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 07:10:17 -0400
+        by vger.kernel.org with ESMTP id S1731639AbgGOLKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 07:10:23 -0400
 X-IronPort-AV: E=Sophos;i="5.75,355,1589209200"; 
-   d="scan'208";a="51981942"
+   d="scan'208";a="51981949"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 15 Jul 2020 20:10:15 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 15 Jul 2020 20:10:21 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id D61D34006DF5;
-        Wed, 15 Jul 2020 20:10:09 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id ADA474006DF5;
+        Wed, 15 Jul 2020 20:10:15 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Wolfram Sang <wsa+renesas@sang-engineering.com>,
@@ -43,9 +43,9 @@ Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
         linux-watchdog@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 10/20] arm64: dts: renesas: r8a774e1: Add SDHI nodes
-Date:   Wed, 15 Jul 2020 12:09:00 +0100
-Message-Id: <1594811350-14066-11-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 11/20] dt-bindings: i2c: renesas,i2c: Document r8a774e1 support
+Date:   Wed, 15 Jul 2020 12:09:01 +0100
+Message-Id: <1594811350-14066-12-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -54,72 +54,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add SDHI[0-2] device nodes to R8A774E1 SoC.
+Document i2c controller for RZ/G2H (R8A774E1) SoC, which is compatible
+with R-Car Gen3 SoC family.
 
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 ---
- arch/arm64/boot/dts/renesas/r8a774e1.dtsi | 32 ++++++++++++++++++++---
- 1 file changed, 29 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/i2c/renesas,i2c.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-index 6ed97187106a..7650152b695b 100644
---- a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-@@ -1219,17 +1219,42 @@
- 		};
- 
- 		sdhi0: sd@ee100000 {
-+			compatible = "renesas,sdhi-r8a774e1",
-+				     "renesas,rcar-gen3-sdhi";
- 			reg = <0 0xee100000 0 0x2000>;
-+			interrupts = <GIC_SPI 165 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 314>;
-+			max-frequency = <200000000>;
-+			power-domains = <&sysc R8A774E1_PD_ALWAYS_ON>;
-+			resets = <&cpg 314>;
-+			iommus = <&ipmmu_ds1 32>;
- 			status = "disabled";
-+		};
- 
--			/* placeholder */
-+		sdhi1: sd@ee120000 {
-+			compatible = "renesas,sdhi-r8a774e1",
-+				     "renesas,rcar-gen3-sdhi";
-+			reg = <0 0xee120000 0 0x2000>;
-+			interrupts = <GIC_SPI 166 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 313>;
-+			max-frequency = <200000000>;
-+			power-domains = <&sysc R8A774E1_PD_ALWAYS_ON>;
-+			resets = <&cpg 313>;
-+			iommus = <&ipmmu_ds1 33>;
-+			status = "disabled";
- 		};
- 
- 		sdhi2: sd@ee140000 {
-+			compatible = "renesas,sdhi-r8a774e1",
-+				     "renesas,rcar-gen3-sdhi";
- 			reg = <0 0xee140000 0 0x2000>;
-+			interrupts = <GIC_SPI 167 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 312>;
-+			max-frequency = <200000000>;
-+			power-domains = <&sysc R8A774E1_PD_ALWAYS_ON>;
-+			resets = <&cpg 312>;
-+			iommus = <&ipmmu_ds1 34>;
- 			status = "disabled";
--
--			/* placeholder */
- 		};
- 
- 		sdhi3: sd@ee160000 {
-@@ -1241,6 +1266,7 @@
- 			max-frequency = <200000000>;
- 			power-domains = <&sysc R8A774E1_PD_ALWAYS_ON>;
- 			resets = <&cpg 311>;
-+			iommus = <&ipmmu_ds1 35>;
- 			status = "disabled";
- 		};
- 
+diff --git a/Documentation/devicetree/bindings/i2c/renesas,i2c.txt b/Documentation/devicetree/bindings/i2c/renesas,i2c.txt
+index a03f9f5cb378..96d869ac3839 100644
+--- a/Documentation/devicetree/bindings/i2c/renesas,i2c.txt
++++ b/Documentation/devicetree/bindings/i2c/renesas,i2c.txt
+@@ -10,6 +10,7 @@ Required properties:
+ 	"renesas,i2c-r8a774a1" if the device is a part of a R8A774A1 SoC.
+ 	"renesas,i2c-r8a774b1" if the device is a part of a R8A774B1 SoC.
+ 	"renesas,i2c-r8a774c0" if the device is a part of a R8A774C0 SoC.
++	"renesas,i2c-r8a774e1" if the device is a part of a R8A774E1 SoC.
+ 	"renesas,i2c-r8a7778" if the device is a part of a R8A7778 SoC.
+ 	"renesas,i2c-r8a7779" if the device is a part of a R8A7779 SoC.
+ 	"renesas,i2c-r8a7790" if the device is a part of a R8A7790 SoC.
 -- 
 2.17.1
 
