@@ -2,97 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED2F1221638
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 22:27:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7F73221641
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 22:32:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727826AbgGOU1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 16:27:32 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:36705 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725917AbgGOU1a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 16:27:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594844849;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=IltLClpxgs4K5MYmfJWYiZjllfQyoqFX5PLfjzR2ttA=;
-        b=RSv0vtZq7thX2mfZtLU+zlqnYkWDsIHz0rk8a3yN7GN6AN9xqfeJwaUVTg6SknVbZcEfuH
-        UCZafGofuOAVD0TfBfYeKRKBcWO7iVic5KqmeTj0q+q38u9TRz4ArE/5+FVifUPCbtYkDr
-        /OL/yn1eFzHEinZmJotcx1MTHenb8xI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-380-rw7XNDciOGutg97xuADnDA-1; Wed, 15 Jul 2020 16:27:23 -0400
-X-MC-Unique: rw7XNDciOGutg97xuADnDA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726742AbgGOUbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 16:31:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34908 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725917AbgGOUbi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 16:31:38 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0ADC180BCAC;
-        Wed, 15 Jul 2020 20:27:22 +0000 (UTC)
-Received: from new-host-6.redhat.com (unknown [10.40.192.109])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 56C1879D10;
-        Wed, 15 Jul 2020 20:27:20 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        mptcp@lists.01.org
-Subject: [PATCH net-next] mptcp: silence warning in subflow_data_ready()
-Date:   Wed, 15 Jul 2020 22:27:05 +0200
-Message-Id: <87f4954cfd7eacd6e220ab60d61e09f35ed32252.1594844608.git.dcaratti@redhat.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 205AD20657;
+        Wed, 15 Jul 2020 20:31:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594845098;
+        bh=so0mjZo5EN3Fs3hltCxxYnhvqCY33YwzANRxSMGZ/mg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K50rbXvzgwYZE8UcvdbShAbebDj0NSPl3KfvpM/rT4c8JrrZhGlhNvKHhowjNXuy3
+         zclU8EQCz01RBzGp9HLHR+eKJRkzlaEBA9VQvJh8sV96ATyhXMPCy+/l5FPDvQwM5m
+         GKc6Forf1P7Cox0k6xQJ+2Ppsj7VW/03/7Lgj6XQ=
+Date:   Wed, 15 Jul 2020 13:31:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ian Kumlien <ian.kumlien@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org
+Subject: Re: NAT performance issue 944mbit -> ~40mbit
+Message-ID: <20200715133136.5f63360c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAA85sZua6Q8UR7TfCGO0bV=VU0gKtqj-8o_mqH38RpKrwYZGtg@mail.gmail.com>
+References: <CAA85sZvKNXCo5bB5a6kKmsOUAiw+_daAVaSYqNW6QbSBJ0TcyQ@mail.gmail.com>
+        <CAA85sZua6Q8UR7TfCGO0bV=VU0gKtqj-8o_mqH38RpKrwYZGtg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-since commit d47a72152097 ("mptcp: fix race in subflow_data_ready()"), it
-is possible to observe a regression in MP_JOIN kselftests. For sockets in
-TCP_CLOSE state, it's not sufficient to just wake up the main socket: we
-also need to ensure that received data are made available to the reader.
-Silence the WARN_ON_ONCE() in these cases: it preserves the syzkaller fix
-and restores kselftests	when they are ran as follows:
+On Wed, 15 Jul 2020 22:05:58 +0200 Ian Kumlien wrote:
+> After a  lot of debugging it turns out that the bug is in igb...
+> 
+> driver: igb
+> version: 5.6.0-k
+> firmware-version:  0. 6-1
+> 
+> 03:00.0 Ethernet controller: Intel Corporation I211 Gigabit Network
+> Connection (rev 03)
 
-  # while true; do
-  > make KBUILD_OUTPUT=/tmp/kselftest TARGETS=net/mptcp kselftest
-  > done
+Unclear to me what you're actually reporting. Is this a regression
+after a kernel upgrade? Compared to no NAT?
 
-Reported-by: Florian Westphal <fw@strlen.de>
-Fixes: d47a72152097 ("mptcp: fix race in subflow_data_ready()")
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/47
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/mptcp/subflow.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+> It's interesting that it only seems to happen on longer links... Any clues?
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 9f7f3772c13c..519122e66f17 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -869,18 +869,19 @@ void mptcp_space(const struct sock *ssk, int *space, int *full_space)
- static void subflow_data_ready(struct sock *sk)
- {
- 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
-+	u16 state = 1 << inet_sk_state_load(sk);
- 	struct sock *parent = subflow->conn;
- 	struct mptcp_sock *msk;
- 
- 	msk = mptcp_sk(parent);
--	if ((1 << inet_sk_state_load(sk)) & (TCPF_LISTEN | TCPF_CLOSE)) {
-+	if (state & TCPF_LISTEN) {
- 		set_bit(MPTCP_DATA_READY, &msk->flags);
- 		parent->sk_data_ready(parent);
- 		return;
- 	}
- 
- 	WARN_ON_ONCE(!__mptcp_check_fallback(msk) && !subflow->mp_capable &&
--		     !subflow->mp_join);
-+		     !subflow->mp_join && !(state & TCPF_CLOSE));
- 
- 	if (mptcp_subflow_data_available(sk))
- 		mptcp_data_ready(parent, sk);
--- 
-2.26.2
-
+Links as in with longer cables?
