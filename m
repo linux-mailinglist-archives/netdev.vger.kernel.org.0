@@ -2,140 +2,292 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22F7B221281
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:42:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6B6C22128A
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:42:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726437AbgGOQkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 12:40:08 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:42748 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725991AbgGOQkI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 12:40:08 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06FGSbYv028465;
-        Wed, 15 Jul 2020 16:39:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2020-01-29; bh=k5zSAo+DYmjFyDq68+jvxd9Dt4r7usycofHJ4FxGsj0=;
- b=iJ+X+zEEPIgVZc2AkcyIn43zzb23xgQjntkuFE0A0WoQvjZhL+rjDVz81aSqYF/8Bm0L
- KQWUZ6SnInwMQT3gxrANrGXjhG/wlq2vQbj7yV4Re4MGYihN+IQ9Uykn2venSiByOgPY
- CXgpAoBTwoamCDXTbdgi/tVYMC/IGHXiWKQhgkyUPjAoAfjBrW688jgrUOYffIkxeIJW
- s+o1AHbpZeogNaXAmn791ynPZXzvRmDUmbzwZpy58Ajq9woy64GzOBTW1Pyy1VzEZjVv
- ctL/8gp532Re6au6ejWLvmXv1WJd9wLCXSlD47pmsQYzrONiBuvAzJED5HqiSwTO+NHn Ng== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 3274urcjsw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 15 Jul 2020 16:39:55 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06FGNdxH046871;
-        Wed, 15 Jul 2020 16:39:54 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 327qb847t5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Jul 2020 16:39:54 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 06FGdlwv006212;
-        Wed, 15 Jul 2020 16:39:47 GMT
-Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 15 Jul 2020 09:39:47 -0700
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH] xprtrdma: fix incorrect header size calcations
-From:   Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <eb5d2ead-807b-3435-5024-b8cc4a1311f3@canonical.com>
-Date:   Wed, 15 Jul 2020 12:39:46 -0400
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Bruce Fields <bfields@fieldses.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <20DD16C5-2A91-4B3A-9879-D381EE40AF1A@oracle.com>
-References: <20200715162604.1080552-1-colin.king@canonical.com>
- <eb5d2ead-807b-3435-5024-b8cc4a1311f3@canonical.com>
-To:     Colin Ian King <colin.king@canonical.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 malwarescore=0
- mlxscore=0 spamscore=0 phishscore=0 suspectscore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007150129
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 impostorscore=0
- suspectscore=0 phishscore=0 spamscore=0 mlxlogscore=999 malwarescore=0
- mlxscore=0 priorityscore=1501 adultscore=0 bulkscore=0 clxscore=1011
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007150129
+        id S1726778AbgGOQkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 12:40:22 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:42632 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726201AbgGOQkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 12:40:20 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06FGeEsQ003823;
+        Wed, 15 Jul 2020 11:40:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1594831214;
+        bh=5U8UJfyTqeBVpWibUKBKOhz4olHWn1ZzMuaFV0s5GFw=;
+        h=From:To:Subject:Date;
+        b=nZpur1VnmR49AAlgR4K59WKt038wndiaEkZHi8F9ctlnOMCjE9wpsVlt2l7dVU6gc
+         959+W3Ae0kfmJkTMx25THjdIl6w/UGDyHjcjtzBIi8MCjUuzVqSuoH0RV/5njBvxR1
+         nNPPnfSHx1z2ndQgLnFjy8vkVPwgrTvpZxBmures=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06FGeEqv102646
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 15 Jul 2020 11:40:14 -0500
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 15
+ Jul 2020 11:40:14 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 15 Jul 2020 11:40:14 -0500
+Received: from uda0868495.fios-router.home (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06FGeCvY081717;
+        Wed, 15 Jul 2020 11:40:13 -0500
+From:   Murali Karicheri <m-karicheri2@ti.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
+        <nsekhar@ti.com>, <grygorii.strashko@ti.com>,
+        <vinicius.gomes@intel.com>
+Subject: [net-next PATCH v2 0/9] Add PRP driver and bug fixes
+Date:   Wed, 15 Jul 2020 12:40:01 -0400
+Message-ID: <20200715164012.1222-1-m-karicheri2@ti.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+This series adds support for Parallel Redundancy Protocol (PRP)
+in the Linux HSR driver as defined in IEC-62439-3. PRP Uses a
+Redundancy Control Trailer (RCT) the format of which is
+similar to HSR Tag. This is used for implementing redundancy.
+RCT consists of 6 bytes similar to HSR tag and contain following
+fields:-
+
+- 16-bit sequence number (SeqNr);
+- 4-bit LAN identifier (LanId);
+- 12 bit frame size (LSDUsize);
+- 16-bit suffix (PRPsuffix). 
+
+The PRPsuffix identifies PRP frames and distinguishes PRP frames
+from other protocols that also append a trailer to their useful
+data. The LSDUsize field allows the receiver to distinguish PRP
+frames from random, nonredundant frames as an additional check.
+LSDUsize is the size of the Ethernet payload inclusive of the
+RCT. Sequence number along with LanId is used for duplicate
+detection and discard.
+
+PRP node is also known as Dual Attached Node (DAN-P) since it
+is typically attached to two different LAN for redundancy.
+DAN-P duplicates each of L2 frames and send it over the two
+Ethernet links. Each outgoing frame is appended with RCT.
+Unlike HSR, these are added to the end of L2 frame and will be
+treated as pad by bridges and therefore would be work with
+traditional bridges or switches, where as HSR wouldn't as Tag
+is prefixed to the Ethenet frame. At the remote end, these are
+received and the duplicate frame is discarded before the stripped
+frame is send up the networking stack. Like HSR, PRP also sends
+periodic Supervision frames to the network. These frames are
+received and MAC address from the SV frames are populated in a
+database called Node Table. The above functions are grouped into
+a block called Link Redundancy Entity (LRE) in the IEC spec.
+
+As there are many similarities between HSR and PRP protocols,
+this patch re-uses the code from HSR driver to implement PRP
+driver. As per feedback from the RFC series, the implementation
+uses the existing HSR Netlink socket interface to create the
+PRP interface by adding a new proto parameter to the ip link
+command to identify the PRP protocol. iproute2 is enhanced to
+implement this new parameter. The hsr_netlink.c is enhanced
+to handle the new proto parameter. As suggested during the RFC
+review, the driver introduced a proto_ops structure to hold
+protocol specfic functions to handle HSR and PRP specific
+function pointers and use them in the code based on the
+protocol to handle protocol specific part differently in the
+driver.
+
+Please review this and provide me feedback so that I can work to
+incorporate them and spin the next version if needed.
+
+The patch was tested using two TI AM57x IDK boards for PRP which
+are connected back to back over two CPSW Ethernet ports. 
+
+PRP Test setup
+---------------
+
+--------eth0             eth0 --------
+|AM572x|----------------------|AM572x|
+|      |----------------------|      |
+--------eth1             eth1 --------
 
 
-> On Jul 15, 2020, at 12:31 PM, Colin Ian King =
-<colin.king@canonical.com> wrote:
->=20
-> Bah, $SUBJECT typo "calcations" -> "calculations". can that be fixed =
-up
-> when it's applied, or shall I send a V2?
+To build, enable CONFIG_HSR=y or m
+make omap2plus_defconfig
+make zImage; make modules; make dtbs 
+Copy the zImage and dtb files to the file system on SD card
+and power on the AM572x boards. 
+This can be tested on any platforms with 2 Ethernet interfaces.
+So will appreciate if you can give it a try and provide your
+Tested-by.
 
-Anna's preference.
+Command to create PRP interface
+-------------------------------
+ifconfig eth0 0.0.0.0 down
+ifconfig eth1 0.0.0.0 down
+ifconfig eth0 hw ether 70:FF:76:1C:0E:8C
+ifconfig eth1 hw ether 70:FF:76:1C:0E:8C
+ifconfig eth0 up
+ifconfig eth1 up
+ip link add name prp0 type hsr slave1 eth0 slave2 eth1 supervision 45 proto 1 
+ifconfig prp0 192.168.2.10
 
-Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
+ifconfig eth0 0.0.0.0 down
+ifconfig eth1 0.0.0.0 down
+ifconfig eth0 hw ether 70:FF:76:1C:0E:8D
+ifconfig eth1 hw ether 70:FF:76:1C:0E:8D
+ifconfig eth0 up
+ifconfig eth1 up
+ip link add name prp0 type hsr slave1 eth0 slave2 eth1 supervision 45 proto 1
+ifconfig prp0 192.168.2.20
 
+command to show node table
+----------------------------
+Ping the peer board after the prp0 interface is up.
 
-> On 15/07/2020 17:26, Colin King wrote:
->> From: Colin Ian King <colin.king@canonical.com>
->>=20
->> Currently the header size calculations are using an assignment
->> operator instead of a +=3D operator when accumulating the header
->> size leading to incorrect sizes.  Fix this by using the correct
->> operator.
->>=20
->> Addresses-Coverity: ("Unused value")
->> Fixes: 302d3deb2068 ("xprtrdma: Prevent inline overflow")
->> Signed-off-by: Colin Ian King <colin.king@canonical.com>
->> ---
->> net/sunrpc/xprtrdma/rpc_rdma.c | 4 ++--
->> 1 file changed, 2 insertions(+), 2 deletions(-)
->>=20
->> diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c =
-b/net/sunrpc/xprtrdma/rpc_rdma.c
->> index 935bbef2f7be..453bacc99907 100644
->> --- a/net/sunrpc/xprtrdma/rpc_rdma.c
->> +++ b/net/sunrpc/xprtrdma/rpc_rdma.c
->> @@ -71,7 +71,7 @@ static unsigned int =
-rpcrdma_max_call_header_size(unsigned int maxsegs)
->> 	size =3D RPCRDMA_HDRLEN_MIN;
->>=20
->> 	/* Maximum Read list size */
->> -	size =3D maxsegs * rpcrdma_readchunk_maxsz * sizeof(__be32);
->> +	size +=3D maxsegs * rpcrdma_readchunk_maxsz * sizeof(__be32);
->>=20
->> 	/* Minimal Read chunk size */
->> 	size +=3D sizeof(__be32);	/* segment count */
->> @@ -94,7 +94,7 @@ static unsigned int =
-rpcrdma_max_reply_header_size(unsigned int maxsegs)
->> 	size =3D RPCRDMA_HDRLEN_MIN;
->>=20
->> 	/* Maximum Write list size */
->> -	size =3D sizeof(__be32);		/* segment count */
->> +	size +=3D sizeof(__be32);		/* segment count */
->> 	size +=3D maxsegs * rpcrdma_segment_maxsz * sizeof(__be32);
->> 	size +=3D sizeof(__be32);	/* list discriminator */
->>=20
->>=20
->=20
+The remote node (DAN-P) will be shown in the node table as below.
 
---
-Chuck Lever
+root@am57xx-evm:~# cat /sys/kernel/debug/hsr/prp0/node_table                                                
+Node Table entries for (PRP) device                                                                         
+MAC-Address-A,    MAC-Address-B,    time_in[A], time_in[B], Address-B port, SAN-A, SAN-B, DAN-P 
+70:ff:76:1c:0e:8c 00:00:00:00:00:00   ffffe83f,   ffffe83f,              0,     0,     0,     1
 
+Try to capture the raw PRP frames at the eth0 interface as
+tcpdump -i eth0 -xxx
 
+Sample Supervision frames and ARP frames shown below.
+
+==================================================================================
+Successive Supervision frames captured with tcpdump (with RCT at the end):
+
+03:43:29.500999 70:ff:76:1c:0e:8d (oui Unknown) > 01:15:4e:00:01:2d (oui Unknown), ethertype Unknown (0x88f 
+        0x0000:  0115 4e00 012d 70ff 761c 0e8d 88fb 0001                                                    
+        0x0010:  7e0a 1406 70ff 761c 0e8d 0000 0000 0000                                                    
+        0x0020:  0000 0000 0000 0000 0000 0000 0000 0000                                                    
+        0x0030:  0000 0000 0000 0000 0000 0000 fc2b a034                                                    
+        0x0040:  88fb         
+                   
+03:43:31.581025 70:ff:76:1c:0e:8d (oui Unknown) > 01:15:4e:00:01:2d (oui Unknown), ethertype Unknown (0x88f 
+        0x0000:  0115 4e00 012d 70ff 761c 0e8d 88fb 0001                                                    
+        0x0010:  7e0b 1406 70ff 761c 0e8d 0000 0000 0000                                                    
+        0x0020:  0000 0000 0000 0000 0000 0000 0000 0000                                                    
+        0x0030:  0000 0000 0000 0000 0000 0000 fc2c a034                                                    
+        0x0040:  88fb                                                                                       
+
+ICMP Echo request frame with RCT
+03:43:33.805354 IP 192.168.2.20 > 192.168.2.10: ICMP echo request, id 63748, seq 1, length 64               
+        0x0000:  70ff 761c 0e8c 70ff 761c 0e8d 0800 4500                                                    
+        0x0010:  0054 26a4 4000 4001 8e96 c0a8 0214 c0a8                                                    
+        0x0020:  020a 0800 c28e f904 0001 202e 1c3d 0000                                                    
+        0x0030:  0000 0000 0000 0000 0000 0000 0000 0000                                                    
+        0x0040:  0000 0000 0000 0000 0000 0000 0000 0000                                                    
+        0x0050:  0000 0000 0000 0000 0000 0000 0000 0000                                                    
+        0x0060:  0000 fc31 a05a 88fb                                      
+==================================================================================
+The iperf3 traffic test logs can be accessed at the links below.
+DUT-1: https://pastebin.ubuntu.com/p/8SkQzWJMn8/
+DUT-2: https://pastebin.ubuntu.com/p/j2BZvvs7p4/
+
+Other tests done.
+ - Connect a SAN (eth0 and eth1 without prp interface) and
+   do ping test from eth0 (192.168.2.40) to prp0 (192.168.2.10)
+   verify the SAN node shows at the correct link A and B as shown
+   in the node table dump
+ - Regress HSR interface using 3 nodes connected in a ring topology.
+   create hsr link version 0. Do iperf3 test between all nodes
+   create hsr link version 1. Do iperf3 test between all nodes.
+
+         --------eth0             eth1 --------eth0      eth1-------|
+         |AM572x|----------------------|AM572x|--------------|AM572x|
+         |      |                      |      |        ------|      |
+         --------eth1---|               -------        | eth0 ------- 
+                        |-------------------------------
+
+   command used for HSR interface
+
+   HSR V0
+
+   ifconfig eth0 0.0.0.0 down
+   ifconfig eth1 0.0.0.0 down
+   ifconfig eth0 hw ether 70:FF:76:1C:0E:8C
+   ifconfig eth1 hw ether 70:FF:76:1C:0E:8C
+   ifconfig eth0 up
+   ifconfig eth1 up
+   ip link add name hsr0 type hsr slave1 eth0 slave2 eth1 supervision 45 version 0
+   ifconfig hsr0 192.168.2.10
+
+   HSR V1
+
+   ifconfig eth0 0.0.0.0 down
+   ifconfig eth1 0.0.0.0 down
+   ifconfig eth0 hw ether 70:FF:76:1C:0E:8C
+   ifconfig eth1 hw ether 70:FF:76:1C:0E:8C
+   ifconfig eth0 up
+   ifconfig eth1 up
+   ip link add name hsr0 type hsr slave1 eth0 slave2 eth1 supervision 45 version 1
+   ifconfig hsr0 192.168.2.10
+
+   Logs at
+   DUT-1 : https://pastebin.ubuntu.com/p/6PSJbZwQ6y/
+   DUT-2 : https://pastebin.ubuntu.com/p/T8TqJsPRHc/
+   DUT-3 : https://pastebin.ubuntu.com/p/VNzpv6HzKj/
+ - Build tests :-
+   Build with CONFIG_HSR=m
+   allmodconfig build
+   build with CONFIG_HSR=y and rebuild with sparse checker
+   make C=1 zImage; make modules
+
+Version history:
+
+  v2 : updated comments on RFC. Following are the main changes:-
+       - Removed the hsr_prp prefix
+       - Added PRP information in header files to indicate 
+         the support for PRP explicitely
+       - Re-use netlink socket interface with an added 
+         parameter proto for identifying PRP.
+       - Use function pointers using a proto_ops struct
+         to do things differently for PRP vs HSR.
+
+   RFC: initial version posted and discussed at 
+       https://www.spinics.net/lists/netdev/msg656229.html
+
+Murali Karicheri (9):
+  net: hsr: fix incorrect lsdu size in the tag of HSR frames for small
+    frames
+  net: hsr/prp: validate address B before copying to skb
+  hsr: enhance netlink socket interface to support PRP
+  net: hsr: introduce common code for skb initialization
+  net: hsr: introduce protocol specific function pointers
+  net: prp: add supervision frame generation utility function
+  net: hsr: define and use proto_ops ptrs to handle hsr specific frames
+  net: prp: add packet handling support
+  net: prp: enhance debugfs to display PRP info
+
+ include/uapi/linux/hsr_netlink.h |   2 +-
+ include/uapi/linux/if_link.h     |  12 +-
+ net/hsr/Kconfig                  |  37 ++--
+ net/hsr/hsr_debugfs.c            |  33 +++-
+ net/hsr/hsr_device.c             | 181 ++++++++++++++----
+ net/hsr/hsr_device.h             |   2 +
+ net/hsr/hsr_forward.c            | 308 ++++++++++++++++++++++++-------
+ net/hsr/hsr_forward.h            |  16 +-
+ net/hsr/hsr_framereg.c           | 100 ++++++++--
+ net/hsr/hsr_framereg.h           |  31 +++-
+ net/hsr/hsr_main.c               |   2 +
+ net/hsr/hsr_main.h               | 120 +++++++++++-
+ net/hsr/hsr_netlink.c            |  38 +++-
+ net/hsr/hsr_netlink.h            |   2 +
+ net/hsr/hsr_slave.c              |  26 ++-
+ net/hsr/hsr_slave.h              |   4 +
+ 16 files changed, 745 insertions(+), 169 deletions(-)
+
+-- 
+2.17.1
 
