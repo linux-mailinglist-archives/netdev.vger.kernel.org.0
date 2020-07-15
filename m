@@ -2,127 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5052220E44
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 15:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E53C5220E53
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 15:39:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731746AbgGONgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 09:36:11 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:25744 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731174AbgGONgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 09:36:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594820169;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UTACMbg6xiT/eo4PUaXGXyO7+chCMqLXhN9wZB3njxA=;
-        b=CxWXnGjNMKvxMjlQCVWWkXlttHc2+vYXWyerzUnMjcrh3JiEsPpgWDwvehvpNbHWIbfJAg
-        yygjGiY3pm6t3Y9oI1g+iGbYtUStWfy7kpO1HbWt4s29H1mKsBMXss3G6lzgzjMiEGypTp
-        sIGNQsd24nh7HVqgVQJZCb5P1YhkqjI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-247-cPCbOoFrNfKFGSx2rHvThw-1; Wed, 15 Jul 2020 09:36:06 -0400
-X-MC-Unique: cPCbOoFrNfKFGSx2rHvThw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EBF20107ACCA;
-        Wed, 15 Jul 2020 13:36:04 +0000 (UTC)
-Received: from elisabeth (unknown [10.36.110.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2462C72E53;
-        Wed, 15 Jul 2020 13:36:02 +0000 (UTC)
-Date:   Wed, 15 Jul 2020 15:35:47 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        aconole@redhat.com
-Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
- discovery on encap sockets
-Message-ID: <20200715153547.77dbaf82@elisabeth>
-In-Reply-To: <20200715124258.GP32005@breakpoint.cc>
-References: <20200712200705.9796-1-fw@strlen.de>
-        <20200712200705.9796-2-fw@strlen.de>
-        <20200713003813.01f2d5d3@elisabeth>
-        <20200713080413.GL32005@breakpoint.cc>
-        <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
-        <20200713140219.GM32005@breakpoint.cc>
-        <20200714143327.2d5b8581@redhat.com>
-        <20200715124258.GP32005@breakpoint.cc>
-Organization: Red Hat
+        id S1731844AbgGONjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 09:39:24 -0400
+Received: from [195.135.220.15] ([195.135.220.15]:57050 "EHLO mx2.suse.de"
+        rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with ESMTP
+        id S1730872AbgGONjY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 09:39:24 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 1814DADB3;
+        Wed, 15 Jul 2020 13:39:26 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 9DF9560302; Wed, 15 Jul 2020 15:39:22 +0200 (CEST)
+Date:   Wed, 15 Jul 2020 15:39:22 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     "Michael J. Baars" <mjbaars1977.netdev@cyberfiber.eu>
+Cc:     netdev@vger.kernel.org
+Subject: Re: wake-on-lan
+Message-ID: <20200715133922.tu2ptsfeu25fnuwe@lion.mk-sys.cz>
+References: <309b0348938a475f256cbc8afbbc127c285fec69.camel@cyberfiber.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <309b0348938a475f256cbc8afbbc127c285fec69.camel@cyberfiber.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jul 2020 14:42:58 +0200
-Florian Westphal <fw@strlen.de> wrote:
-
-> Stefano Brivio <sbrivio@redhat.com> wrote:
-> > I would still like the idea I proposed better (updating MTUs down the
-> > chain), it's simpler and we don't have to duplicate existing
-> > functionality (generating additional ICMP messages).  
+On Wed, Jul 15, 2020 at 11:27:20AM +0200, Michael J. Baars wrote:
+> Hi Michal,
 > 
-> It doesn't make this work though.
+> This is my network card:
+> 
+> 01:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 0c)
+> 	Subsystem: Realtek Semiconductor Co., Ltd. Device 0123
+> 	Kernel driver in use: r8169
+> 
+> On the Realtek website
+> (https://www.realtek.com/en/products/communications-network-ics/item/rtl8168e)
+> it says that both wake-on-lan and remote wake-on-lan are supported. I
+> got the wake-on-lan from my local network working, but I have problems
+> getting the remote wake-on-lan to work.
+> 
+> When I set 'Wake-on' to 'g' and suspend my system, everything works
+> fine (the router does lose the ip address assigned to the mac address
+> of the system). I figured the SecureOn password is meant to forward
+> magic packets to the correct machine when the router does not have an
+> ip address assigned to a mac address, i.e. port-forwarding does not
+> work.
+> 
+> Ethtool 'Supports Wake-on' gives 'pumbg', and when I try to set 'Wake-on' to 's' I get:
+> 
+> netlink error: cannot enable unsupported WoL mode (offset 36)
+> netlink error: Invalid argument
+> 
+> Does this mean that remote wake-on-lan is not supported (according to
+> ethtool)?
 
-Yeah, not knowing exactly what needs to work, that just fixes the two
-cases you describe.
+"MagicPacket" ('g') means that the NIC would wake on reception of packet
+containing specific pattern described e.g. here:
 
-I thought that would be enough for Open vSwitch, but apparently it's
-not (you mentioned the problem appeared with MTUs already set to
-correct values). And also your (bulletproof, I thought) ICMP errors
-don't work with it. :/
+  https://en.wikipedia.org/wiki/Wake-on-LAN#Magic_packet
 
-Anyway, about the Linux bridge:
+This is the most frequently used wake on LAN mode and, in my experience,
+what most people mean when they say "enable wake on LAN".
 
-> With your skeleton patch, br0 updates MTU, but the sender still
-> won't know that unless input traffic to br0 is routed (or locally
-> generated).
+The "SecureOn(tm) mode" ('s') is an extension of this which seems to be
+supported only by a handful of drivers; it involves a "password" (48-bit
+value set by sopass parameter of ethtool) which is appended to the
+MagicPacket.
 
-To let the sender know, I still think it's a bit simpler with this
-approach, we don't have to do all the peeling. In br_handle_frame(), we
-would need to add *something like*:
+I'm not sure how is the remote wake-on-lan supposed to work but
+technically you need to get _any_ packet with the "magic" pattern to the
+NIC.
 
-	if (skb->len > p->br->dev->mtu) {
-		memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
-		icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
-			  htonl(p->br->dev->mtu));
-		goto drop;
-	}
+> I also tried to set 'Wake-on' to 'b' and 'bg' but then the systems
+> turns back on almost immediately for both settings.
 
-just like IP tunnels do, see tnl_update_pmtu().
+This is not surprising as enabling "b" should wake the system upon
+reception of any broadcast which means e.g. any ARP request. Enabling
+multiple modes wakes the system on a packet matching any of them.
 
-Note that this doesn't work as it is because of a number of reasons
-(skb doesn't have a dst, pkt_type is not PACKET_HOST), and perhaps we
-shouldn't be using icmp_send(), but at a glance that looks simpler.
-
-Another slight preference I have towards this idea is that the only
-known way we can break PMTU discovery right now is by using a bridge,
-so fixing the problem there looks more future-proof than addressing any
-kind of tunnel with this problem. I think FoU and GUE would hit the
-same problem, I don't know about IP tunnels, sticking that selftest
-snippet to whatever other test in pmtu.sh should tell.
-
-I might be wrong of course as I haven't tried to implement this bit,
-and if this turns out to be just moving the problem without making it
-simpler, then sure, I'd rather stick to your approach.
-
-> Furthermore, such MTU reduction would require a mechanism to
-> auto-reconfig every device in the same linklevel broadcast domain,
-> and I am not aware of any such mechanism.
-
-You mean for other ports connected to the same bridge? They would then
-get ICMP errors as well, no?
-
-If you refer to other drivers that need to adjust the MTU, instead,
-that's why I would use skb_tunnel_check_pmtu() for that, to avoid
-implementing the same logic in every driver.
-
--- 
-Stefano
-
+Michal
