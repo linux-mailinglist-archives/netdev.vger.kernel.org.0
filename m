@@ -2,248 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E84C22169A
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 22:51:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1201C2216A5
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 22:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726917AbgGOUu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 16:50:58 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:35636 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725917AbgGOUuz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 16:50:55 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06FKWKj1066227;
-        Wed, 15 Jul 2020 20:50:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=JvYRaru1KyYvRqOyLFyBN0GUWD3NhbyrMdaoHytyByQ=;
- b=BtYr5FPVDBA0xZ3ZC5s7rA9zlu4IMZKwCOpKP8o4mKoCgEhKuDLX+jys8JSOT68qZ706
- e0aIdV9/NT5XqvrPwVWccCbGkewNxOMAdYI/TH7IY6/G7LEI5z3VsGkRmOpPtowp/s4Y
- y0BzoU7Sbhe1/BHk5LNpq/isGw/ELrGnOdPTb/QpfqpIIVwesbt6kZr7I8Ne1Ha8kw/l
- n1lp7ZG3rP9nSczU7NwVmYUB+bde3OmiHxgAqlyR778p8tTKC2+V9g5KEIs4qA+qVi42
- e5vbUn2XZWYPeOC+N1WZHY1brO5USwU8uSsr4nqBpxEz2HfZL9qJLCKw+Z+nV0vX5gCn gg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 3274urdt23-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 15 Jul 2020 20:50:15 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06FKXeaD171549;
-        Wed, 15 Jul 2020 20:50:14 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 327q0ryurw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Jul 2020 20:50:14 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 06FKo8kx002016;
-        Wed, 15 Jul 2020 20:50:08 GMT
-Received: from [10.39.217.130] (/10.39.217.130)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 15 Jul 2020 13:50:08 -0700
-Subject: Re: [PATCH v2 00/11] Fix PM hibernation in Xen guests
-To:     Anchal Agarwal <anchalag@amazon.com>
-Cc:     "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "roger.pau@citrix.com" <roger.pau@citrix.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "pavel@ucw.cz" <pavel@ucw.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
-References: <cover.1593665947.git.anchalag@amazon.com>
- <324020A7-996F-4CF8-A2F4-46957CEA5F0C@amazon.com>
- <c6688a0c-7fec-97d2-3dcc-e160e97206e6@oracle.com>
- <20200715194933.GA17938@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Autocrypt: addr=boris.ostrovsky@oracle.com; keydata=
- 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
- Jg6OxFYd01z+a+oL
-Message-ID: <6145a0d9-fd4e-a739-407e-97f7261eecd8@oracle.com>
-Date:   Wed, 15 Jul 2020 16:49:57 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726863AbgGOUyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 16:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726356AbgGOUyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 16:54:43 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F731C061755;
+        Wed, 15 Jul 2020 13:54:43 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id k18so3276279qke.4;
+        Wed, 15 Jul 2020 13:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lAjVKcvIk+tDIWEArAlFDV7549bVLGJFEAvtfK0+OSE=;
+        b=lRwdnyL+PJDLdJyKeLZIMpxN+TOAENa29U6L0RE/z2CsbF5FajTFsZx0Ozxj1vSbel
+         AX/3Bm1feFBwycnnyz6KIUnlXxLkF0LHXCV+fAL21ccjgVXLrXR5DPj7M7hsqzLhR5ew
+         +cTm7SmL2w4Ou/TjQYO7lDNzNpqe+MkgiEmTHyomU9sRRzla3MlGMMe4F9bEakiFIKW0
+         eUpLUDCos8i6DxlW4OzTOAoyyHsk1rqkqyJeJ9rLbAgcwfLaOshrja+iwlBUn0kp55z4
+         JXDRDpyXOlorzA+OUbUXjA6TVfC1BMU8VuBtoosE4GGJ5/Bxzp5lm3vsxz7NUlsnMOnV
+         mW7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lAjVKcvIk+tDIWEArAlFDV7549bVLGJFEAvtfK0+OSE=;
+        b=rPAQPPlIBrP1jf/2jLoBVU/WWu04PtU92mMOKBiMjQvbYNo8bQEIO6MsVsg2MIgPyr
+         O3TgzOmuLYbSilWeD9K/X1maoRPqP6yyzQKub7DfUQgycdD6nIuxz9gUBLh0KnzfL+3h
+         XhkzJnXgfClJHXRNwPFMIDEljyf5W6nercdHb+0Uq8ZtKLONPMYoNm4jB2IPKM4s9Ntp
+         vhOVFr7Sxpry3C4FG9NBWWtatIBszz21lET/fYXufn9N8NLh/bikDUMtiMRlbutP0sWU
+         fcGjEO5cRStFty1rt/jWRZuu6oTJtOBCaosVGkqavPqYITOH/UFEMa5F40srkFldPyrR
+         L04w==
+X-Gm-Message-State: AOAM530TNe1rsQV0Qtz47fNLoJ4Df6iXpA3lYuz/E7aRrD1QQNeV/SVl
+        F5RJtIT4wVStDXXw81T9Mvp3YpZzBB/LxNKuT4mzzFYv
+X-Google-Smtp-Source: ABdhPJwwKChtJpIvv1HUyTPOeD1tq7z0pgc7oErUq5MLoeMt3vL6v4MIVPIVJgLygTi22BDrEBCsF9Pv1Uy38lvckwY=
+X-Received: by 2002:ae9:f002:: with SMTP id l2mr939290qkg.437.1594846482401;
+ Wed, 15 Jul 2020 13:54:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200715194933.GA17938@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-Content-Type: text/plain; charset=utf-8
+References: <20200710224924.4087399-1-andriin@fb.com> <20200710224924.4087399-3-andriin@fb.com>
+ <877dv6gpxd.fsf@toke.dk> <CAEf4BzY7qRsdcdhzf2--Bfgo-GB=ZoKKizOb+OHO7o2PMiNubA@mail.gmail.com>
+ <87v9ipg8jd.fsf@toke.dk> <CAEf4BzYVEqFUJybw3kjG6E6w12ocr2ncRz7j15GNNGG4BXJMTw@mail.gmail.com>
+ <87lfjlg4fg.fsf@toke.dk> <CAEf4BzYMaKgJOA3koGkcThXriTGAOKGxjhQXYSNT9sVEFbS7ig@mail.gmail.com>
+ <87y2nkeq4s.fsf@toke.dk>
+In-Reply-To: <87y2nkeq4s.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 15 Jul 2020 13:54:31 -0700
+Message-ID: <CAEf4BzbgPqN8xKX5xpHBRMJSZkhz_BBzBg7r_FPRo=j3ZmLNUQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/7] bpf, xdp: add bpf_link-based XDP attachment API
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kicinski@fb.com>, Andrey Ignatov <rdna@fb.com>,
+        Takshak Chahande <ctakshak@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 spamscore=0
- mlxlogscore=999 bulkscore=0 adultscore=0 phishscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007150158
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 impostorscore=0
- suspectscore=0 phishscore=0 spamscore=0 mlxlogscore=999 malwarescore=0
- mlxscore=0 priorityscore=1501 adultscore=0 bulkscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007150158
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/15/20 3:49 PM, Anchal Agarwal wrote:
-> On Mon, Jul 13, 2020 at 03:43:33PM -0400, Boris Ostrovsky wrote:
->> CAUTION: This email originated from outside of the organization. Do no=
-t click links or open attachments unless you can confirm the sender and k=
-now the content is safe.
->>
->>
->>
->> On 7/10/20 2:17 PM, Agarwal, Anchal wrote:
->>> Gentle ping on this series.
->>
->> Have you tested save/restore?
->>
-> No, not with the last few series. But a good point, I will test that an=
-d get
-> back to you. Do you see anything specific in the series that suggests o=
-therwise?
+On Wed, Jul 15, 2020 at 8:48 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>
+> >> Yup, that was helpful, thanks! I think our difference of opinion on th=
+is
+> >> stems from the same place as our disagreement about point 2.: You are
+> >> assuming that an application that uses XDP sticks around and holds on =
+to
+> >> its bpf_link, while I'm assuming it doesn't (and so has to rely on
+> >> pinning for any persistence). In the latter case you don't really gain
+> >> much from the bpf_link auto-cleanup, and whether it's a prog fd or a
+> >> link fd you go find in your bpffs doesn't make that much difference...
+> >
+> > Right. But if I had to pick just one implementation (prog fd-based vs
+> > bpf_link), I'd stick with bpf_link because it is flexible enough to
+> > "emulate" prog fd attachment (through BPF FS), but the same isn't true
+> > about prog fd attachment emulating bpf_link. That's it. I really don't
+> > enjoy harping on that point, but it feels to be silently dismissed all
+> > the time based on one particular arrangement for particular existing
+> > XDP flow.
+>
+> It can; kinda. But you introduce a dependency on bpffs that wasn't there
+> before, and you end up with resources that are kept around in the kernel
+> if the interface disappears (because they are still pinned). So I
+> consider it a poor emulation.
 
+Yes, it's not exactly 100% the same semantics.
+It is possible with slight additions to API to support essentially
+exactly the same semantics you want with prog attachment. E.g., we can
+either have a flag at LINK_CREATE time, or a separate command (e.g.,
+LINK_PIN or something), that would mark bpf_link as "sticky", bump
+it's refcnt. What happens then is that even if last FD is closed,
+there is still refcnt 1 there, and then there are two ways to detach
+that link:
 
-root@ovs104> xl save pvh saved
-Saving to saved new xl format (info 0x3/0x0/1699)
-xc: info: Saving domain 3, type x86 HVM
-xc: Frames: 1044480/1044480=C2=A0 100%
-xc: End of stream: 0/0=C2=A0=C2=A0=C2=A0 0%
-root@ovs104> xl restore saved
-Loading new save file saved (new xl fmt info 0x3/0x0/1699)
-=C2=A0Savefile contains xl domain config in JSON format
-Parsing config from <saved>
-xc: info: Found x86 HVM domain from Xen 4.13
-xc: info: Restoring domain
-xc: info: Restore successful
-xc: info: XenStore: mfn 0xfeffc, dom 0, evt 1
-xc: info: Console: mfn 0xfefff, dom 0, evt 2
-root@ovs104> xl console pvh
-[=C2=A0 139.943872] ------------[ cut here ]------------
-[=C2=A0 139.943872] kernel BUG at arch/x86/xen/enlighten.c:205!
-[=C2=A0 139.943872] invalid opcode: 0000 [#1] SMP PTI
-[=C2=A0 139.943872] CPU: 0 PID: 11 Comm: migration/0 Not tainted 5.8.0-rc=
-5 #26
-[=C2=A0 139.943872] RIP: 0010:xen_vcpu_setup+0x16d/0x180
-[=C2=A0 139.943872] Code: 4a 8b 14 f5 40 c9 1b 82 48 89 d8 48 89 2c 02 8b=
- 05
-a4 d4 40 01 85 c0 0f 85 15 ff ff ff 4a 8b 04 f5 40 c9 1b 82 e9 f4 fe ff
-ff <0f> 0b b8 ed ff ff ff e9 14 ff ff ff e8 12 4f 86 00 66 90 66 66 66
-[=C2=A0 139.943872] RSP: 0018:ffffc9000006bdb0 EFLAGS: 00010046
-[=C2=A0 139.943872] RAX: 0000000000000000 RBX: ffffc9000014fe00 RCX:
-0000000000000000
-[=C2=A0 139.943872] RDX: ffff88803fc00000 RSI: 0000000000016128 RDI:
-0000000000000000
-[=C2=A0 139.943872] RBP: 0000000000000000 R08: 0000000000000000 R09:
-0000000000000000
-[=C2=A0 139.943872] R10: ffffffff826174a0 R11: ffffc9000006bcb4 R12:
-0000000000016120
-[=C2=A0 139.943872] R13: 0000000000016120 R14: 0000000000016128 R15:
-0000000000000000
-[=C2=A0 139.943872] FS:=C2=A0 0000000000000000(0000) GS:ffff88803fc00000(=
-0000)
-knlGS:0000000000000000
-[=C2=A0 139.943872] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 000000008005003=
-3
-[=C2=A0 139.943872] CR2: 00007f704be8b000 CR3: 000000003901a004 CR4:
-00000000000606f0
-[=C2=A0 139.943872] Call Trace:
-[=C2=A0 139.943872]=C2=A0 ? __kmalloc+0x167/0x260
-[=C2=A0 139.943872]=C2=A0 ? xen_manage_runstate_time+0x14a/0x170
-[=C2=A0 139.943872]=C2=A0 xen_vcpu_restore+0x134/0x170
-[=C2=A0 139.943872]=C2=A0 xen_hvm_post_suspend+0x1d/0x30
-[=C2=A0 139.943872]=C2=A0 xen_arch_post_suspend+0x13/0x30
-[=C2=A0 139.943872]=C2=A0 xen_suspend+0x87/0x190
-[=C2=A0 139.943872]=C2=A0 multi_cpu_stop+0x6d/0x110
-[=C2=A0 139.943872]=C2=A0 ? stop_machine_yield+0x10/0x10
-[=C2=A0 139.943872]=C2=A0 cpu_stopper_thread+0x47/0x100
-[=C2=A0 139.943872]=C2=A0 smpboot_thread_fn+0xc5/0x160
-[=C2=A0 139.943872]=C2=A0 ? sort_range+0x20/0x20
-[=C2=A0 139.943872]=C2=A0 kthread+0xfe/0x140
-[=C2=A0 139.943872]=C2=A0 ? kthread_park+0x90/0x90
-[=C2=A0 139.943872]=C2=A0 ret_from_fork+0x22/0x30
-[=C2=A0 139.943872] Modules linked in:
-[=C2=A0 139.943872] ---[ end trace 74716859a6b4f0a8 ]---
-[=C2=A0 139.943872] RIP: 0010:xen_vcpu_setup+0x16d/0x180
-[=C2=A0 139.943872] Code: 4a 8b 14 f5 40 c9 1b 82 48 89 d8 48 89 2c 02 8b=
- 05
-a4 d4 40 01 85 c0 0f 85 15 ff ff ff 4a 8b 04 f5 40 c9 1b 82 e9 f4 fe ff
-ff <0f> 0b b8 ed ff ff ff e9 14 ff ff ff e8 12 4f 86 00 66 90 66 66 66
-[=C2=A0 139.943872] RSP: 0018:ffffc9000006bdb0 EFLAGS: 00010046
-[=C2=A0 139.943872] RAX: 0000000000000000 RBX: ffffc9000014fe00 RCX:
-0000000000000000
-[=C2=A0 139.943872] RDX: ffff88803fc00000 RSI: 0000000000016128 RDI:
-0000000000000000
-[=C2=A0 139.943872] RBP: 0000000000000000 R08: 0000000000000000 R09:
-0000000000000000
-[=C2=A0 139.943872] R10: ffffffff826174a0 R11: ffffc9000006bcb4 R12:
-0000000000016120
-[=C2=A0 139.943872] R13: 0000000000016120 R14: 0000000000016128 R15:
-0000000000000000
-[=C2=A0 139.943872] FS:=C2=A0 0000000000000000(0000) GS:ffff88803fc00000(=
-0000)
-knlGS:0000000000000000
-[=C2=A0 139.943872] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 000000008005003=
-3
-[=C2=A0 139.943872] CR2: 00007f704be8b000 CR3: 000000003901a004 CR4:
-00000000000606f0
-[=C2=A0 139.943872] Kernel panic - not syncing: Fatal exception
-[=C2=A0 139.943872] Shutting down cpus with NMI
-[=C2=A0 143.927559] Kernel Offset: disabled
-root@ovs104>
+1) interface/cgroup/whatever is destroyed and bpf_link is
+auto-detached. At that point auto-detach handler will see that it's a
+"sticky" bpf_link, will decrement refcnt and subsequently free
+bpf_link kernel object (unless some application still has FD open, of
+course).
 
+2) a new LINK_DESTROY BPF command will be introduced, which will only
+work with "sticky" bpf_links. It will decrement refcnt and do the same
+stuff as the auto-detach handler does today (so bpf_link->dev =3D NULL,
+for XDP link).
+
+I don't mind this, as long as this is not a default semantics and
+require conscious opt-in from whoever creates the link.
+
+>
+> >> >> >> I was under the impression that forcible attachment of bpf_links=
+ was
+> >> >> >> already possible, but looking at the code now it doesn't appear =
+to be?
+> >> >> >> Wasn't that the whole point of BPF_LINK_GET_FD_BY_ID? I.e., that=
+ a
+> >> >> >> sysadmin with CAP_SYS_ADMIN privs could grab the offending bpf_l=
+ink FD
+> >> >> >> and force-remove it? I certainly think this should be added befo=
+re we
+> >> >> >> expand bpf_link usage any more...
+> >> >> >
+> >> >> > I still maintain that killing processes that installed the bpf_li=
+nk is
+> >> >> > the better approach. Instead of letting the process believe and a=
+ct as
+> >> >> > if it has an active XDP program, while it doesn't, it's better to
+> >> >> > altogether kill/restart the process.
+> >> >>
+> >> >> Killing the process seems like a very blunt tool, though. Say it's =
+a
+> >> >> daemon that attaches XDP programs to all available interfaces, but =
+you
+> >> >> want to bring down an interface for some one-off maintenance task, =
+but
+> >> >> the daemon authors neglected to provide an interface to tell the da=
+emon
+> >> >> to detach from specific interfaces. If your only option is to kill =
+the
+> >> >> daemon, you can't bring down that interface without disrupting what=
+ever
+> >> >> that daemon is doing with XDP on all the other interfaces.
+> >> >>
+> >> >
+> >> > I'd rather avoid addressing made up hypothetical cases, really. Get
+> >> > better and more flexible daemon?
+> >>
+> >> I know you guys don't consider an issue to be real until it has alread=
+y
+> >> crashed something in production. But some of us don't have the luxury =
+of
+> >> your fast issue-discovered-to-fix-shipped turnaround times; so instead
+> >> we have to go with the old-fashioned way of thinking about how things
+> >> can go wrong ahead of time, and making sure we're prepared to handle
+> >> issues if (or, all too often, when) they occur. And it's frankly
+> >> tiresome to have all such efforts be dismissed as "made up
+> >> hypotheticals". Please consider that the whole world does not operate
+> >> like your org, and that there may be legitimate reasons to do things
+> >> differently.
+> >>
+> >
+> > Having something that breaks production is a very hard evidence of a
+> > problem and makes it easier to better understand a **real** issue well
+> > and argue why something has to be solved or prevented. But it's not a
+> > necessary condition, of course. It's just that made up hypotheticals
+> > aren't necessarily good ways to motivate a feature, because all too
+> > often it turns out to be just that, hypothetical issue, while the real
+> > issue is different enough to warrant a different and better solution.
+> > By being conservative with adding features, we are trying to not make
+> > unnecessary design and API mistakes, because in the kernel they are
+> > here to stay forever.
+>
+> I do appreciate the need to be conservative with the interfaces we add,
+> and I am aware of the maintenance burden. And it's not like I want
+> contingencies for any hypothetical I can think of put into the kernel
+> ahead of time (talk about a never-ending process :)). What I'm asking
+> for is just that something be argued on its merits, instead of
+> *automatically* being dismissed as "hypothetical". I.e., the difference
+> between "that can be handled by..." or "that is not likely to occur
+> because...", as opposed to "that has not happened yet, so come back when
+> it does".
+>
+> > In your example, I'd argue that the design of that daemon is bad if it
+> > doesn't allow you to control what's attached where, and how to detach
+> > it without breaking completely independent network interfaces. That
+> > should be the problem that has to be solved first, IMO. And just
+> > because in some scenarios it might be **convenient** to force-detach
+> > bpf_link, is in no way a good justification (in my book) to add that
+> > feature, especially if there are other (and arguably safer) ways to
+> > achieve the same **troubleshooting** effect.
+>
+> See this is actually what was I asking for - considering a question on
+> its merits; so thank you!
+
+Honestly, I was hoping this is more or less obvious, which is why I
+didn't go into a lengthy explanation originally. There is only so much
+time in a day, unfortunately. So "hypothetical" example was more of
+"it doesn't happen today, but when it happens, it should be solved
+differently", in my opinion, of course. But anyways, as you say, we
+can leave this aside, no need to waste more time on this.
+
+> And yeah, it would be a poorly designed
+> daemon, but I'm not quite convinced that such daemons won't show up and
+> be put into production by, say, someone running an enterprise operating
+> system :)
+>
+> Anyway, let's leave that particular issue aside for now, and I'll circle
+> back to adding the force-remove if needed once I've thought this over a
+> bit more.
+>
+> >> That being said...
+> >>
+> >> > This force-detach functionality isn't hard to add, but so far we had
+> >> > no real reason to do that. Once we do have such use cases, we can ad=
+d
+> >> > it, if we agree it's still a good idea.
+> >>
+> >> ...this is fair enough, and I guess I should just put this on my list =
+of
+> >> things to add. I was just somehow under the impression that this had
+> >> already been added.
+> >>
+> >
+> > So, overall, do I understand correctly that you are in principle not
+> > opposed to adding BPF XDP link, or you still have some concerns that
+> > were not addressed?
+>
+> Broadly speaking yeah, I am OK with adding this as a second interface. I
+> am still concerned about the "locking in place" issued we discussed
+> above, but that can be addressed later. I am also a little concerned
+
+Right, see above the "extensions" I outlined to make those bpf_links
+have auto-cleanup semantics, similar to prog attachment today.
+
+> about adding a second interface for configuring an interface that has to
+> take the RTNL lock etc; but those are mostly details, I suppose.
+>
+> Unfortunately I won't have to review the latest version of your patch
+> set to look at those details before I go on vacation (sorry about that :/=
+).
+> I guess I'll just have to leave that to you guys to take care of...
+>
+
+Sure, thanks, enjoy your vacation! I'll post v3 then with build fixes
+I have so far.
+
+> -Toke
+>
