@@ -2,109 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54882221389
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 19:35:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDDB62213C3
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 19:53:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbgGORft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 13:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52124 "EHLO
+        id S1725993AbgGORxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 13:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725907AbgGORfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 13:35:48 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E204C061755
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 10:35:48 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id o8so6356423wmh.4
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 10:35:48 -0700 (PDT)
+        with ESMTP id S1725861AbgGORxD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 13:53:03 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9304CC061755;
+        Wed, 15 Jul 2020 10:53:03 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id g139so1543123lfd.10;
+        Wed, 15 Jul 2020 10:53:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Q65viUzdrydGJbsUBZqfq3TsrTZ1vpIGmSYJcwDvo4I=;
-        b=WT0ynYvujO8rhdkbtlk6GTCwf4wFQxxdoFjz4smc2tzHQx0crhb+FClHGm/gXS8pQF
-         +Zekcogtx3fRG3NuSAL9SstXPfXWRrhfCfuufqJnkt5S73Ow2Dq1V9hG/XyOc+vo2/2u
-         i8XL4ZFJ2EEHatMIsqh2BlCfTsF+rv7XhC1BBXh9ZG+Ty6hEWy3bdkdw0ejKAvD5s7ZV
-         J36sDlSXh5TPmLtYIU9id1bzU+Mx7yymzCqiQPPiOpBEf2gOMM2INnLRKxZFZlaPv7d/
-         HcxsH6zy1EtynjCDoH6qPDTE3EbOy5sZRayEDBLSdt3L5AV/hEQvzCn5J1v9oSjFLpC9
-         DG/w==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kzxx9RCldh3DF2JWeX19dZw4RjKkD4KoJuSfX3PHNJQ=;
+        b=qW5AXC2Yja3W1A52gYUqCskX1FKrCdiGVWVNMlxPUBjnPRwxvtff4mZwg1L9SpEveC
+         Qd9WuJkImx2UkE9WoLAeC/xt90kYdvlnYqJ85anwQek1YJ+HMuh8AvJE2oOgnltweKGf
+         X4uU8Uok/qkEv5fs9u8TvLfuzCfyXt2XGj/VMCmAuc9UuGVpH5+Dih9Bnpp19w3jZotM
+         OonXlr/J4Nt3RxxEKTSmqbnuI6NvRcY/NVEKtt22KilDY0pzxGRnQkashBBjJ7puNLYR
+         xM9Bb/+hNPuUFtrBVnPZlSiurBb5NxGOUvgo1U8//1obKXoZ5mZIjb2gaIQsPxvMbJrb
+         FxOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Q65viUzdrydGJbsUBZqfq3TsrTZ1vpIGmSYJcwDvo4I=;
-        b=ijvZxS6/iCiWKToWkzYAGfJBXmH9BT8iZppqqTRA2UZv7D8k5/MnPswFQLMQwaTOUy
-         x74PhTbv7CjZmFEsQxoJVCqtDaOQDxAhRj4V9ihUiyoYSOmcNmfpfh6BZC290AzBdWf0
-         ZGqximGNZxbC66jLLk51eGhG7sw6A6VAfkKwPtDDISRwxgalWERg9Tj1/8/CXpGO9Wos
-         ez4LYcXT9fr+zw/AJ0qEQAbmNGL33QkR6j7FK3aGNcQ8Ng4bkibI4lpUY161Y91xCNjR
-         ew6n6AKJVXW4cwa4eMy3YqKRfPoTFKwEOUu7GvXu04K4X23pB2uiysnPVupQWddiCeQw
-         Qd8A==
-X-Gm-Message-State: AOAM530DDjYj+s45ow/uY+d+cIiQNcRccEcxvz281fnDnyMTocW2wGB2
-        qB3i79pS2RZjqyexEPYuif2kROLPR0CJL/W/
-X-Google-Smtp-Source: ABdhPJwX2QGERZOZRB/kcqI5fGr2YfV9UaZcTQLs9XThkVw5+jnwFt+apC6qOm03RkYoP90nxubgWQ==
-X-Received: by 2002:a1c:e908:: with SMTP id q8mr524283wmc.59.1594834547085;
-        Wed, 15 Jul 2020 10:35:47 -0700 (PDT)
-Received: from [192.168.1.12] ([194.35.117.104])
-        by smtp.gmail.com with ESMTPSA id d132sm4259736wmd.35.2020.07.15.10.35.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jul 2020 10:35:46 -0700 (PDT)
-Subject: Re: [PATCH bpf-next] bpftool: use only nftw for file tree parsing
-To:     Tony Ambardar <tony.ambardar@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20200715051214.28099-1-Tony.Ambardar@gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <58fadc96-2083-a043-9ef3-da72ad792324@isovalent.com>
-Date:   Wed, 15 Jul 2020 18:35:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kzxx9RCldh3DF2JWeX19dZw4RjKkD4KoJuSfX3PHNJQ=;
+        b=kmVgpxXRDg6JTAKKo3Z7V8Jk7zxbStQXLql0YKqPGVN4oAgX+yJB3dxsXnRCQrQr5Y
+         n9ZRPsBDfM+KjZIwOE4MoyQfBYivVMZHezBmWl864Q5OfnBKI4nQFe8jmToCzk7UA3Cm
+         JCVAGg1gX/dzFDxXf+LX9rcfUGT/L1sii+FCcPjEAKPNwBUos1lMRvAomHPgjTXz5y1y
+         JJ/s1uKKiouyzmYRFJXsC8/kn6Y8OAsEgfH8bZWbtKaIrDTlgiG99ykIHC8mitWv6K0t
+         WP1hNXRS/t67YzUPSQYLU2tEgKMWhhkxjn9fdBag1lfmqbS3yPMJzSELf2mo1VeKyRmj
+         xoQQ==
+X-Gm-Message-State: AOAM531jtRKfa3/hVUKoVCO21zUAzcGLnilV7TSKNVCsK2KQtKGAj1rw
+        oC+Ddep/z7OCnM3k+XvhoJceAyZ7J9GwtHP+WaI=
+X-Google-Smtp-Source: ABdhPJxeXRyiSlooQK4CZ0BwYELn9wcNO6PMpKVr0ehAqhKnTARZVOCc3oCHuE2p+cWx+UVz2bWL8Vck7IoMJMq4LDY=
+X-Received: by 2002:a19:a95:: with SMTP id 143mr109682lfk.174.1594835581993;
+ Wed, 15 Jul 2020 10:53:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200715051214.28099-1-Tony.Ambardar@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <20200713161739.3076283-1-yhs@fb.com> <20200713161742.3076597-1-yhs@fb.com>
+ <20200713232545.mmocpqgqpiapcdvg@ast-mbp.dhcp.thefacebook.com> <2b641c41-fd6e-b1fa-4043-02b92776140e@fb.com>
+In-Reply-To: <2b641c41-fd6e-b1fa-4043-02b92776140e@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 15 Jul 2020 10:52:50 -0700
+Message-ID: <CAADnVQKYGF+KY5LTq-OAdWNmGc5dw1=BmftkP8n++pfEMyNWMg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 03/13] bpf: support readonly buffer in verifier
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020-07-14 22:12 UTC-0700 ~ Tony Ambardar <tony.ambardar@gmail.com>
-> The bpftool sources include code to walk file trees, but use multiple
-> frameworks to do so: nftw and fts. While nftw conforms to POSIX/SUSv3 and
-> is widely available, fts is not conformant and less common, especially on
-> non-glibc systems. The inconsistent framework usage hampers maintenance
-> and portability of bpftool, in particular for embedded systems.
-> 
-> Standardize usage by rewriting one fts-based function to use nftw. This
-> change allows building bpftool against musl for OpenWrt.
-> 
-> Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+On Wed, Jul 15, 2020 at 10:48 AM Yonghong Song <yhs@fb.com> wrote:
+>
+> > PTR_TO_TP_BUFFER was a quick hack for tiny scratch area.
+> > Here I think the verifier should be smart from the start. >
+> > The next patch populates bpf_ctx_arg_aux with hardcoded 0 and 1.
+> > imo that's too hacky. Helper definitions shouldn't be in business
+> > of poking into such verifier internals.
+>
+> The reason I am using 0/1 so later on I can easily correlate
+> which rdonly_buf access size corresponds to key or value. I guess
+> I can have a verifier callback to given an ctx argument index to
+> get the access size.
 
-Thanks!
-
-I tested your set, and bpftool does not compile on my setup. The
-definitions from <ftw.h> are not picked up by gcc, common.c should have
-a "#define _GNU_SOURCE" above its list of includes for this to work
-(like perf.c has).
-
-I also get a warning on this line:
-
-
-> +static int do_build_table_cb(const char *fpath, const struct stat *sb,
-> +			    int typeflag, struct FTW *ftwbuf)
->  {
-
-Because passing fptath to open_obj_pinned() below discards the "const"
-qualifier:
-
-> +	fd = open_obj_pinned(fpath, true);
-
-Fixed by having simply "char *fpath" as the first argument for
-do_build_table_cb().
-
-With those two modifications, bpftool compiles fine and listing objects
-with the "-f" option works as expected.
-
-Regards,
-Quentin
+I see. Hardcoding key vs value in some way is necessary, of course.
+Some #define for that with clear name would be good.
+I was pointing out that 0/1 were used beyond that need.
