@@ -2,102 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5A9B2205C3
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 09:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A96D2205ED
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 09:12:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728978AbgGOHDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 03:03:50 -0400
-Received: from mail.intenta.de ([178.249.25.132]:39950 "EHLO mail.intenta.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726212AbgGOHDt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 03:03:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=ecvwun5iGdLoy5H6QJatU1u1WtuL4e1YyfLzb2c6fJQ=;
-        b=RG18ZcOxX1gVe5c3kThWOfAJLGtzAX9AA3BMdpuAq5HrdZKUDP+8+8tDa6+PqElBb4oJgUjfEXTekI5lcDZRYCsJotCNlUsyMbRIqCbe6CXEg2DutHRcgPpZL9j3t7qYorBXhPq+U3+jarQ02ZalUpxdBb71J3ysK6bQ34a6wSwdUxOuFjTLmJ04aNnyvO0eSUXZIgnmOfKODRpBV7abQMtndmEzK2Qqe7+uOm4QaHYuJOjHgSGvZiWwtl4+VWY/WtRibpJmHW9rommsciUJt9bOHUrcrUHwpr0FQITDmRhvDC3a7lsql3nch4sLxzEj8RAvmD4cJEWhaqxgZWoB3g==;
-Date:   Wed, 15 Jul 2020 09:03:45 +0200
-From:   Helmut Grohne <helmut.grohne@intenta.de>
-To:     David Miller <davem@davemloft.net>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "woojung.huh@microchip.com" <woojung.huh@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>
-Subject: Re: [PATCH] net: phy: phy_remove_link_mode should not advertise new
- modes
-Message-ID: <20200715070345.GA3452@laureti-dev>
-References: <20200714082540.GA31028@laureti-dev>
- <20200714.140710.213288407914809619.davem@davemloft.net>
+        id S1729037AbgGOHMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 03:12:10 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7316 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725852AbgGOHMK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 03:12:10 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 61AE4A5AF7F51AD256AB;
+        Wed, 15 Jul 2020 15:12:02 +0800 (CST)
+Received: from [127.0.0.1] (10.174.177.219) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Wed, 15 Jul 2020
+ 15:11:57 +0800
+Subject: Re: [PATCH v4 net] rtnetlink: Fix memory(net_device) leak when
+ ->newlink fails
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Jiri Pirko" <jiri@mellanox.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20200715014930.323472-1-chenweilong@huawei.com>
+ <CAM_iQpUgkVnYh=ETvbqEiXSD8kS22Xc10JA6HU5W9nXNMzaJJg@mail.gmail.com>
+From:   Weilong Chen <chenweilong@huawei.com>
+Message-ID: <1b62058a-8f49-bb5e-685f-48da16f1fb1e@huawei.com>
+Date:   Wed, 15 Jul 2020 15:11:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200714.140710.213288407914809619.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
- (10.10.16.48)
+In-Reply-To: <CAM_iQpUgkVnYh=ETvbqEiXSD8kS22Xc10JA6HU5W9nXNMzaJJg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.219]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 11:07:10PM +0200, David Miller wrote:
-> From: Helmut Grohne <helmut.grohne@intenta.de>
-> Date: Tue, 14 Jul 2020 10:25:42 +0200
+On 2020/7/15 13:45, Cong Wang wrote:
+> On Tue, Jul 14, 2020 at 6:27 PM Weilong Chen <chenweilong@huawei.com> wrote:
+>>
+>> When vlan_newlink call register_vlan_dev fails, it might return error
+>> with dev->reg_state = NETREG_UNREGISTERED. The rtnl_newlink should
+>> free the memory. But currently rtnl_newlink only free the memory which
+>> state is NETREG_UNINITIALIZED.
+>>
+>> BUG: memory leak
+>> unreferenced object 0xffff8881051de000 (size 4096):
+>>   comm "syz-executor139", pid 560, jiffies 4294745346 (age 32.445s)
+>>   hex dump (first 32 bytes):
+>>     76 6c 61 6e 32 00 00 00 00 00 00 00 00 00 00 00  vlan2...........
+>>     00 45 28 03 81 88 ff ff 00 00 00 00 00 00 00 00  .E(.............
+>>   backtrace:
+>>     [<0000000047527e31>] kmalloc_node include/linux/slab.h:578 [inline]
+>>     [<0000000047527e31>] kvmalloc_node+0x33/0xd0 mm/util.c:574
+>>     [<000000002b59e3bc>] kvmalloc include/linux/mm.h:753 [inline]
+>>     [<000000002b59e3bc>] kvzalloc include/linux/mm.h:761 [inline]
+>>     [<000000002b59e3bc>] alloc_netdev_mqs+0x83/0xd90 net/core/dev.c:9929
+>>     [<000000006076752a>] rtnl_create_link+0x2c0/0xa20 net/core/rtnetlink.c:3067
+>>     [<00000000572b3be5>] __rtnl_newlink+0xc9c/0x1330 net/core/rtnetlink.c:3329
+>>     [<00000000e84ea553>] rtnl_newlink+0x66/0x90 net/core/rtnetlink.c:3397
+>>     [<0000000052c7c0a9>] rtnetlink_rcv_msg+0x540/0x990 net/core/rtnetlink.c:5460
+>>     [<000000004b5cb379>] netlink_rcv_skb+0x12b/0x3a0 net/netlink/af_netlink.c:2469
+>>     [<00000000c71c20d3>] netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+>>     [<00000000c71c20d3>] netlink_unicast+0x4c6/0x690 net/netlink/af_netlink.c:1329
+>>     [<00000000cca72fa9>] netlink_sendmsg+0x735/0xcc0 net/netlink/af_netlink.c:1918
+>>     [<000000009221ebf7>] sock_sendmsg_nosec net/socket.c:652 [inline]
+>>     [<000000009221ebf7>] sock_sendmsg+0x109/0x140 net/socket.c:672
+>>     [<000000001c30ffe4>] ____sys_sendmsg+0x5f5/0x780 net/socket.c:2352
+>>     [<00000000b71ca6f3>] ___sys_sendmsg+0x11d/0x1a0 net/socket.c:2406
+>>     [<0000000007297384>] __sys_sendmsg+0xeb/0x1b0 net/socket.c:2439
+>>     [<000000000eb29b11>] do_syscall_64+0x56/0xa0 arch/x86/entry/common.c:359
+>>     [<000000006839b4d0>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>
+>> Fixes: e51fb152318ee6 ("rtnetlink: fix a memory leak when ->newlink fails")
 > 
-> > When doing "ip link set dev ... up" for a ksz9477 backed link,
-> > ksz9477_phy_setup is called and it calls phy_remove_link_mode to remove
-> > 1000baseT HDX. During phy_remove_link_mode, phy_advertise_supported is
-> > called.
-> > 
-> > If one wants to advertise fewer modes than the supported ones, one
-> > usually reduces the advertised link modes before upping the link (e.g.
-> > by passing an appropriate .link file to udev).  However upping
-> > overrwrites the advertised link modes due to the call to
-> > phy_advertise_supported reverting to the supported link modes.
-> > 
-> > It seems unintentional to have phy_remove_link_mode enable advertising
-> > bits and it does not match its description in any way. Instead of
-> > calling phy_advertise_supported, we should simply clear the link mode to
-> > be removed from both supported and advertising.
+> This bug is apparently not introduced by my commit above.
 > 
-> The problem is that we can't allow the advertised setting to exceed
-> what is in the supported list.
+> It should be commit cb626bf566eb4433318d35681286c494f0,
+> right? That commit introduced NETREG_UNREGISTERED on the path.
 > 
-> That's why this helper is coded this way from day one.
+Yes, you'er right, I'll resubmit.
+Thanks.
+> .
+> 
 
-Would you mind going into a little more detail here?
-
-I think you have essentially two possible cases with respect to that
-assertion.
-
-Case A: advertised does not exceed supported before the call to
-        phy_remove_link_mode.
-
-    In this case, the relevant link mode is removed from both supported
-    and advertised after my patch and therefore the requested invariant
-    is still ok.
-
-Case B: advertised exceeds supported prior to the call to
-        phy_remove_link_mode.
-
-    You said that we cannot allow this to happen. So it would seem to be
-    a bug somewhere else. Do you see phy_remove_link_mode as a tool to
-    fix up a violated invariant?
-
-It also is not true that the current code ensures your assertion.
-Specifically, phy_advertise_supported copies the pause bits from the old
-advertised to the new one regardless of whether they're set in
-supported. I believe this is expected, but it means that your invariant
-needs to be:
-
-    We cannot allow advertised to exceed the supported list for
-    non-pause bits.
-
-In any case, having a helper called "phy_remove_link_mode" enable bits
-in the advertised bit field is fairly unexpected. Do you disagree with
-this being a bug?
-
-Helmut
