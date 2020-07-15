@@ -2,210 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56BE122188C
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 01:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0851221882
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 01:41:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727788AbgGOXlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 19:41:49 -0400
-Received: from mga06.intel.com ([134.134.136.31]:52537 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727114AbgGOXls (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 19:41:48 -0400
-IronPort-SDR: qdOKp5mOq79kyIvAOqNtZgeSe85lBMABwHnZ0+rX9NX4AR6/3fvAxSzQFrVKqYc/PUv0Q/8wUD
- 2VYs8ILBnOpQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9683"; a="210823671"
-X-IronPort-AV: E=Sophos;i="5.75,357,1589266800"; 
-   d="scan'208";a="210823671"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2020 16:41:48 -0700
-IronPort-SDR: lxDrqOEyVXCgEjk6kzEUufp93S3XQdgvTnLdxEGgGmZTQc0BPlK11RTaoTjydXgGNn0dnUHSK3
- aFiRGwE3+fvA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,357,1589266800"; 
-   d="scan'208";a="390935600"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Jul 2020 16:41:46 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     ast@kernel.org, daniel@iogearbox.net
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH bpf-next 5/5] selftests: bpf: add dummy prog for bpf2bpf with tailcall
-Date:   Thu, 16 Jul 2020 01:36:34 +0200
-Message-Id: <20200715233634.3868-6-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200715233634.3868-1-maciej.fijalkowski@intel.com>
-References: <20200715233634.3868-1-maciej.fijalkowski@intel.com>
+        id S1726863AbgGOXla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 19:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726770AbgGOXla (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 19:41:30 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEFB7C061755;
+        Wed, 15 Jul 2020 16:41:29 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id k27so3891513pgm.2;
+        Wed, 15 Jul 2020 16:41:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=f83y13vnbncbn4bwggM6ZpiVTNiEH8paTQB0tVuqG24=;
+        b=Bq1MgkoM2AIWtV0BvVz6hWTWOZlRvtQ1ECih+co+RT5+++eVAs1CQ2glxr2+7liFJv
+         slLUx5nT6GW+bbxRfZ1lqC32/nSsjeohcazz4Cjq7kIxWJysyss4QzPFzgjZCLVUl65Z
+         GEhTDACHkaPqKdGwr9clWGeA7CSSxU2oUu9+/n1U9cEUnyBcElYWXnpoSS7PHQc9BVAj
+         5BPBOuwS7jmQUr5hMniOykgQ37xlvHDnJb9mNjxK7C1Z8fHpnmXEOjYjOWWuTm/W4ZWQ
+         JaSefH1Y40CeJvkHsjsENwCeNrnn1ndfHbpJr0T1ZOdRg2Ja0jCtTsiuIIz2RyJxyWOb
+         6x5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=f83y13vnbncbn4bwggM6ZpiVTNiEH8paTQB0tVuqG24=;
+        b=LJ+JcArMBop1QWOdr4TtR3BwU/jfVK7m3InbuD9ntxoU1ZuLmw6dtLhxeLSR1Dwvp+
+         TFkNfs8aBlfG97YtV3mKKbTuolEx4fecYfQerxRYn9EJglKhfKLKnbM2rjTteZlra+Cd
+         K3IgvqpsQAUQnNidJyL5W5u+9vGsqNWhzBcavf9BTc9Pqj1C8JFQ8r6ZcZH32h/pTxjf
+         ER+Jy01aIHRBxjuxfFu8XAT4Ftfdo4FPkQYIR37hN+WqeFGAXyYACWqxsIy5d5F8q/Nl
+         TH9PZy+zHC3cPCrDE5Jv54HsUjN9gcpBSK2+ldLNwl+seCqlJMHN8+RKoAwaxnihTth3
+         H99w==
+X-Gm-Message-State: AOAM5336baklrU9Ql1CSmSRvzBYAU/Q0q+f9LJRlhHkJfH6US5UWu4UT
+        uWWDwSWgnGVgfQx6h5aB//Y=
+X-Google-Smtp-Source: ABdhPJwBy5sczSDoS1nv7raxGOXqFi/XXrBi99ZfiJ/WtLAULMs5q1lfvVLW60z0ilxF6eK59zEWRA==
+X-Received: by 2002:a05:6a00:2257:: with SMTP id i23mr1334489pfu.25.1594856488276;
+        Wed, 15 Jul 2020 16:41:28 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:96f0])
+        by smtp.gmail.com with ESMTPSA id e5sm3042099pjy.26.2020.07.15.16.41.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2020 16:41:27 -0700 (PDT)
+Date:   Wed, 15 Jul 2020 16:41:23 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: BPF logging infrastructure. Was: [PATCH bpf-next 4/6] tools: add
+ new members to bpf_attr.raw_tracepoint in bpf.h
+Message-ID: <20200715234123.rr7oj74t5hflzmsn@ast-mbp.dhcp.thefacebook.com>
+References: <159467113970.370286.17656404860101110795.stgit@toke.dk>
+ <159467114405.370286.1690821122507970067.stgit@toke.dk>
+ <CAEf4BzZ_-vXP_3hSEjuceW10VX_H+EeuXMiV=_meBPZn7izK8A@mail.gmail.com>
+ <87r1tegusj.fsf@toke.dk>
+ <CAEf4Bzbu1wnwWFOWYA3e6KFeSmfg8oANPWD9LsUMRy2E_zrQ0w@mail.gmail.com>
+ <87pn8xg6x7.fsf@toke.dk>
+ <CAEf4BzYAoetyfyofTX45RQjtz3M-c9=YNeH1uRDbYgK4Ae0TwA@mail.gmail.com>
+ <87d04xg2p4.fsf@toke.dk>
+ <20200714231133.ap5qnalf6moptvfk@ast-mbp.dhcp.thefacebook.com>
+ <874kq9ey2j.fsf@toke.dk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <874kq9ey2j.fsf@toke.dk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce 6th test to taicalls kselftest that checks if tailcall can be
-correctly executed from the BPF subprogram.
+On Wed, Jul 15, 2020 at 02:56:36PM +0200, Toke Høiland-Jørgensen wrote:
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> 
+> > On Wed, Jul 15, 2020 at 12:19:03AM +0200, Toke HÃƒÂ¸iland-JÃƒÂ¸rgensen wrote:
+> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> >> 
+> >> >> However, assuming it *is* possible, my larger point was that we
+> >> >> shouldn't add just a 'logging struct', but rather a 'common options
+> >> >> struct' which can be extended further as needed. And if it is *not*
+> >> >> possible to add new arguments to a syscall like you're proposing, my
+> >> >> suggestion above would be a different way to achieve basically the same
+> >> >> (at the cost of having to specify the maximum reserved space in advance).
+> >> >>
+> >> >
+> >> > yeah-yeah, I agree, it's less a "logging attr", more of "common attr
+> >> > across all commands".
+> >> 
+> >> Right, great. I think we are broadly in agreement with where we want to
+> >> go with this, actually :)
+> >
+> > I really don't like 'common attr across all commands'.
+> > Both of you are talking as libbpf developers who occasionally need to
+> > add printk-s to the kernel. That is not an excuse to bloat api that will be
+> > useful to two people.
+> 
+> What? No, this is about making error messages comprehensible to people
+> who *can't* just go around adding printks. "Guess the source of the
+> EINVAL" is a really bad user experience!
+> 
+> > The only reason log_buf sort-of make sense in raw_tp_open is because
+> > btf comparison is moved from prog_load into raw_tp_open.
+> > Miscompare of (prog_fd1, btf_id1) vs (prog_fd2, btf_id2) can be easily solved
+> > by libbpf with as nice and as human friendly message libbpf can do.
+> 
+> So userspace is supposed to replicate all the checks done by the kernel
+> because we can't be bothered to add proper error messages? Really?
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- .../selftests/bpf/prog_tests/tailcalls.c      | 85 +++++++++++++++++++
- tools/testing/selftests/bpf/progs/tailcall6.c | 38 +++++++++
- 2 files changed, 123 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/tailcall6.c
+That's not what I said. The kernel can report unique errno for miscompare
+and all nice messages can and _should be_ be printed by libbpf.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-index bb8fe646dd9f..192c94896809 100644
---- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- /* test_tailcall_1 checks basic functionality by patching multiple locations
-  * in a single program for a single tail call slot with nop->jmp, jmp->nop
-@@ -472,6 +473,88 @@ static void test_tailcall_5(void)
- 	bpf_object__close(obj);
- }
- 
-+/* test_tailcall_6 purpose is to make sure that tailcalls are working
-+ * correctly in correlation with BPF subprograms
-+ */
-+static void test_tailcall_6(void)
-+{
-+	int err, map_fd, prog_fd, main_fd, i;
-+	struct bpf_map *prog_array;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	__u32 retval, duration;
-+	char prog_name[32];
-+
-+	err = bpf_prog_load("tailcall6.o", BPF_PROG_TYPE_SCHED_CLS, &obj,
-+			    &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	prog = bpf_object__find_program_by_title(obj, "classifier");
-+	if (CHECK_FAIL(!prog))
-+		goto out;
-+
-+	main_fd = bpf_program__fd(prog);
-+	if (CHECK_FAIL(main_fd < 0))
-+		goto out;
-+
-+	prog_array = bpf_object__find_map_by_name(obj, "jmp_table");
-+	if (CHECK_FAIL(!prog_array))
-+		goto out;
-+
-+	map_fd = bpf_map__fd(prog_array);
-+	if (CHECK_FAIL(map_fd < 0))
-+		goto out;
-+
-+	/* nop -> jmp */
-+	for (i = 0; i < bpf_map__def(prog_array)->max_entries; i++) {
-+		snprintf(prog_name, sizeof(prog_name), "classifier/%i", i);
-+
-+		prog = bpf_object__find_program_by_title(obj, prog_name);
-+		if (CHECK_FAIL(!prog))
-+			goto out;
-+
-+		prog_fd = bpf_program__fd(prog);
-+		if (CHECK_FAIL(prog_fd < 0))
-+			goto out;
-+
-+		err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
-+		if (CHECK_FAIL(err))
-+			goto out;
-+	}
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				0, &retval, &duration);
-+	CHECK(err || retval != 1, "tailcall",
-+	      "err %d errno %d retval %d\n", err, errno, retval);
-+
-+	/* jmp -> nop, call subprog that will do tailcall */
-+	i = 1;
-+	err = bpf_map_delete_elem(map_fd, &i);
-+	if (CHECK_FAIL(err))
-+		goto out;
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				0, &retval, &duration);
-+	CHECK(err || retval != 0, "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+
-+	/* make sure that subprog can access ctx and entry prog that
-+	 * called this subprog can properly return
-+	 */
-+	i = 0;
-+	err = bpf_map_delete_elem(map_fd, &i);
-+	if (CHECK_FAIL(err))
-+		goto out;
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				0, &retval, &duration);
-+	CHECK(err || retval != 108, "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+out:
-+	bpf_object__close(obj);
-+}
-+
- void test_tailcalls(void)
- {
- 	if (test__start_subtest("tailcall_1"))
-@@ -484,4 +567,6 @@ void test_tailcalls(void)
- 		test_tailcall_4();
- 	if (test__start_subtest("tailcall_5"))
- 		test_tailcall_5();
-+	if (test__start_subtest("tailcall_6"))
-+		test_tailcall_6();
- }
-diff --git a/tools/testing/selftests/bpf/progs/tailcall6.c b/tools/testing/selftests/bpf/progs/tailcall6.c
-new file mode 100644
-index 000000000000..e72ca5869b58
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/tailcall6.c
-@@ -0,0 +1,38 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-+	__uint(max_entries, 2);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u32));
-+} jmp_table SEC(".maps");
-+
-+#define TAIL_FUNC(x) 				\
-+	SEC("classifier/" #x)			\
-+	int bpf_func_##x(struct __sk_buff *skb)	\
-+	{					\
-+		return x;			\
-+	}
-+TAIL_FUNC(0)
-+TAIL_FUNC(1)
-+
-+static __attribute__ ((noinline))
-+int subprog_tail(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 0);
-+
-+	return skb->len * 2;
-+}
-+
-+SEC("classifier")
-+int entry(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 1);
-+
-+	return subprog_tail(skb);
-+}
-+
-+char __license[] SEC("license") = "GPL";
-+int _version SEC("version") = 1;
--- 
-2.20.1
 
+On Wed, Jul 15, 2020, Andrii Nakryiko wrote:
+>
+> Inability to figure out what's wrong when using BPF is at the top of
+> complaints from many users, together with hard to understand logs from
+> verifier.
+
+Only the second part is true. All users are complaining about the verifier.
+No one is complaing that failed prog attach is somehow lacking string message.
+The users are also complaing about libbpf being too verbose.
+Yet you've refused to address the verbosity where it should be reduced and
+now refusing to add it where it's needed.
+It's libbpf job to explain users kernel errors.
+
+The same thing is happening with perf_event_open syscall.
+Every one who's trying to code it directly complaining about the kernel. But
+not a single user is complaing about perf syscall when they use libraries and
+tools. Same thing with bpf syscall. libbpf is the interface. It needs to clear
+and to the point. Right now it's not doing it well. elf dump is too verbose and
+unnecessary whereas in other places it says nothing informative where it
+could have printed human hint.
+
+libbpf's pr_perm_msg() hint is the only one where libbpf cares about its users.
+All other messages are useful to libbpf developers and not its users.
+
+The kernel verifier messages suck as well. They need to be improved.
+But this thread 'lets add strings everywhere and users will be happy' is
+completely missing the mark.
