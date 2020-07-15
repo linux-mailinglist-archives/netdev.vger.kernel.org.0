@@ -2,57 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 125B1220D30
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 14:43:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8543C220D42
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 14:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728861AbgGOMnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 08:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34876 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbgGOMnA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 08:43:00 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37C5C061755
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 05:43:00 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1jvgkU-0001R5-TJ; Wed, 15 Jul 2020 14:42:58 +0200
-Date:   Wed, 15 Jul 2020 14:42:58 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Stefano Brivio <sbrivio@redhat.com>
-Cc:     Florian Westphal <fw@strlen.de>, David Ahern <dsahern@gmail.com>,
-        netdev@vger.kernel.org, aconole@redhat.com
-Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
- discovery on encap sockets
-Message-ID: <20200715124258.GP32005@breakpoint.cc>
-References: <20200712200705.9796-1-fw@strlen.de>
- <20200712200705.9796-2-fw@strlen.de>
- <20200713003813.01f2d5d3@elisabeth>
- <20200713080413.GL32005@breakpoint.cc>
- <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
- <20200713140219.GM32005@breakpoint.cc>
- <20200714143327.2d5b8581@redhat.com>
+        id S1731163AbgGOMqJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 15 Jul 2020 08:46:09 -0400
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:57763 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729900AbgGOMqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 08:46:08 -0400
+Received: from sogo10.sd4.0x35.net (sogo10.sd4.0x35.net [10.200.201.60])
+        (Authenticated sender: pbl@bestov.io)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPA id B21E72000B
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 12:46:06 +0000 (UTC)
+From:   =?utf-8?q?pbl=40bestov=2Eio?= <pbl@bestov.io>
+To:     netdev@vger.kernel.org
+User-Agent: SOGoMail 4.3.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200714143327.2d5b8581@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Date:   Wed, 15 Jul 2020 14:46:06 +0200
+Subject: Bonding driver unexpected behaviour
+Message-ID: <6a31-5f0efa80-3d-68593a00@242352203>
+X-Forward: 127.0.0.1
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stefano Brivio <sbrivio@redhat.com> wrote:
-> I would still like the idea I proposed better (updating MTUs down the
-> chain), it's simpler and we don't have to duplicate existing
-> functionality (generating additional ICMP messages).
+I'm attempting to set up the bonding driver on two gretap interfaces, gretap15 and gretap16
+but I'm observing unexpected (to me) behaviour.
+The underlying interfaces for those two are respectively intra15 (ipv4: 10.88.15.100/24) and
+intra16 (ipv4: 10.88.16.100/24). These two are e1000 virtual network cards, connected through
+virtual cables. As such, I would exclude any hardware issues. As a peer, I have another Linux
+system configured similarly (ipv4s: 10.88.15.200 on intra15, 10.88.16.200 on intra16).
 
-It doesn't make this work though.
+The gretap tunnels work as expected. They have the following ipv4 addresses:
+          host           peer
+gretap15  10.188.15.100  10.188.15.200
+gretap16  10.188.16.100  10.188.16.200
 
-With your skeleton patch, br0 updates MTU, but the sender still
-won't know that unless input traffic to br0 is routed (or locally
-generated).
+When not enslaved by the bond interface, I'm able to exchange packets in the tunnel using the
+internal ip addresses.
 
-Furthermore, such MTU reduction would require a mechanism to
-auto-reconfig every device in the same linklevel broadcast domain,
-and I am not aware of any such mechanism.
+I then set up the bonding driver as follows:
+# ip link add bond-15-16 type bond
+# ip link set bond-15-16 type bond mode active-backup
+# ip link set gretap15 down
+# ip link set gretap16 down
+# ip link set gretap15 master bond-15-16
+# ip link set gretap16 master bond-15-16
+# ip link set bond-15-16 mtu 1462
+# ip addr add 10.42.42.100/24 dev bond-15-16
+# ip link set bond-15-16 type bond arp_interval 100 arp_ip_target 10.42.42.200
+# ip link set bond-15-16 up
+
+I do the same on the peer system, inverting the interface and ARP target IP addresses.
+
+At this point, IP communication using the addresses on the bond interfaces works as expected.
+E.g.
+# ping 10.24.24.200
+gets responses from the other peer.
+Using tcpdump on the other peer shows the GRE packets coming into intra15, and identical ICMP
+packets coming through gretap15 and bond-15-16.
+
+If I then disconnect the (virtual) network cable of intra15, the bonding driver switches to
+intra16, as the GRE tunnel can no longer pass packets. However, despite having primary_reselect=0,
+when I reconnect the network cable of intra15, the driver doesn't switch back to gretap15. In fact,
+it doesn't even attempt sending any probes through it.
+
+Fiddling with the cables (e.g. reconnecting intra15 and then disconnecting intra16) and/or bringing
+the bond interface down and up usually results in the driver ping-ponging a bit between gretap15
+and gretap16, before usually settling on gretap16 (but never on gretap15, it seems). Or,
+sometimes, it results in the driver marking both slaves down and not doing anything ever again
+until manual intervention (e.g. manually selecting a new active_slave, or down -> up).
+
+Trying to ping the gretap15 address of the peer (10.188.15.200) from the host while gretap16 is the
+active slave results in ARP traffic being temporarily exchanged on gretap15. I'm not sure whether
+it originates from the bonding driver, as it seems like the generated requests are the cartesian
+product of all address couples on the network segments of gretap15 and bond-15-16 (e.g. who-has
+10.188.15.100 tell 10.188.15.100, who-has 10.188.15.100 tell 10.188.15.200, ..., who-hash
+10.42.42.200 tell 10.42.42.200).
+
+uname -a:
+Linux fo-gw 4.19.0-9-amd64 #1 SMP Debian 4.19.118-2+deb10u1 (2020-06-07) x86_64 GNU/Linux
+(same on peer system)
+
+Am I misunderstanding how the driver works? Have I made any mistakes in the configuration?
+
+Best regards,
+Riccardo P. Bestetti
+
