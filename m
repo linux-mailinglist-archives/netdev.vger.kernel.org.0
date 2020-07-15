@@ -2,140 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE107220D80
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 14:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F7E220D81
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 14:57:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731320AbgGOM4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 08:56:43 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38774 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1731193AbgGOM4m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 08:56:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594817800;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Tyd1Oecq7g1QXX9O1jumuiUNfYulTKddz2EK0Kq40kI=;
-        b=SwpvpRFvIwRIsMvushWBhBISWoIzunz5DnpHKPeYMX2sBawCqQbn4dx1ObiYH0ynMn5Uz6
-        MihlfF4Rgclp+tP4OPIc4i+9akzFfdKnES1y/8vRtHu8gfgCCF7EyOpF8exyDhVNu+x2rr
-        kU75TbSUos5q7sQZZ8oD9HRCYNLG+N8=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-79-EMKKXO0QNeSFFrQ62UdeoQ-1; Wed, 15 Jul 2020 08:56:39 -0400
-X-MC-Unique: EMKKXO0QNeSFFrQ62UdeoQ-1
-Received: by mail-qv1-f69.google.com with SMTP id cv20so1247628qvb.12
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 05:56:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Tyd1Oecq7g1QXX9O1jumuiUNfYulTKddz2EK0Kq40kI=;
-        b=aK1bTL6VrwXpxxhlYxKdwFzb927JhEbHMEI+UZka9qM76jZqhNEqsst81JXcf1IzH0
-         9HHGvQ0l2oawwet+rMcd8aPu+dgvNndztplCuFDmlSRASCqUEuiRptWJgeFOohRIjkZO
-         N/vB0Jmj1l+i3Zb0663zj0Jg2g+q+eZnTYamtvt3Wng/snffJwDObTH9Tg/DyIGusiRh
-         vTZVs/7Dj5gjM6L4zsgQ9i7ZZurN+ygSJmIrMctZniqO80gDhzDItuLfF4AUNGew53wn
-         66avl7uZiekY1y8BOduOG3eYrjLJeM7cC9BCkQ7yblNWX5zgFAEmk2vAT6t5HP6gQU5a
-         Nfdw==
-X-Gm-Message-State: AOAM532QD/g35vfUTN/GX8dO02wTFf+RuKmgGqULv77eQDXUDBhWiTbh
-        khJ8j4pCV4ruuRKZ/8mVHGUvvVPEPe6UxdifluGay/aA4bC4dYARJz92hQHtjEzP/jOndrB7Wbt
-        qQaaLSHX8jjZjgaiZ
-X-Received: by 2002:a05:620a:50:: with SMTP id t16mr9959751qkt.82.1594817798858;
-        Wed, 15 Jul 2020 05:56:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz+A3C8RwmR0b6EoC8M456I6cc7OaR/Q+zLW6AypTd3nNdtFt5RUnmdON6og7oyAeS3BHZRoQ==
-X-Received: by 2002:a05:620a:50:: with SMTP id t16mr9959728qkt.82.1594817798605;
-        Wed, 15 Jul 2020 05:56:38 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id b10sm2070996qkh.124.2020.07.15.05.56.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2020 05:56:37 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 16E3C1804F0; Wed, 15 Jul 2020 14:56:36 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: BPF logging infrastructure. Was: [PATCH bpf-next 4/6] tools: add new members to bpf_attr.raw_tracepoint in bpf.h
-In-Reply-To: <20200714231133.ap5qnalf6moptvfk@ast-mbp.dhcp.thefacebook.com>
-References: <159467113970.370286.17656404860101110795.stgit@toke.dk> <159467114405.370286.1690821122507970067.stgit@toke.dk> <CAEf4BzZ_-vXP_3hSEjuceW10VX_H+EeuXMiV=_meBPZn7izK8A@mail.gmail.com> <87r1tegusj.fsf@toke.dk> <CAEf4Bzbu1wnwWFOWYA3e6KFeSmfg8oANPWD9LsUMRy2E_zrQ0w@mail.gmail.com> <87pn8xg6x7.fsf@toke.dk> <CAEf4BzYAoetyfyofTX45RQjtz3M-c9=YNeH1uRDbYgK4Ae0TwA@mail.gmail.com> <87d04xg2p4.fsf@toke.dk> <20200714231133.ap5qnalf6moptvfk@ast-mbp.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 15 Jul 2020 14:56:36 +0200
-Message-ID: <874kq9ey2j.fsf@toke.dk>
+        id S1731344AbgGOM5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 08:57:05 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:47314 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731193AbgGOM5E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 08:57:04 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id DAC7860054;
+        Wed, 15 Jul 2020 12:57:03 +0000 (UTC)
+Received: from us4-mdac16-19.ut7.mdlocal (unknown [10.7.65.243])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D8E312009B;
+        Wed, 15 Jul 2020 12:57:03 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.199])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 428AB220059;
+        Wed, 15 Jul 2020 12:57:03 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id AE4BA18005C;
+        Wed, 15 Jul 2020 12:57:02 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 15 Jul
+ 2020 13:56:57 +0100
+Subject: Re: [RFC] bonding driver terminology change proposal
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Michal Kubecek <mkubecek@suse.cz>
+CC:     <netdev@vger.kernel.org>, Jarod Wilson <jarod@redhat.com>
+References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
+ <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
+ <20200713154118.3a1edd66@hermes.lan>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <e515b840-c6f1-bc07-9369-c95e352573b2@solarflare.com>
+Date:   Wed, 15 Jul 2020 13:56:54 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200713154118.3a1edd66@hermes.lan>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25542.003
+X-TM-AS-Result: No-0.579800-8.000000-10
+X-TMASE-MatchedRID: 0dFPYP4mu5RqJ1y0VLNhDudNi+0D4LmKiqCjW9swDxLk1kyQDpEj8AQ9
+        n8U23GDfKUwQqjfwoPu3U0269csg/M3FNToAKymtZdorcofH/GkZSo6PM4LsipTEsxwAmHMKMFd
+        dv+pLbrc5NGlKD0XZ6yRPmj8a2XhZ5Wx142l2+L/TzWmGCXkX+X01kx2nmbm+5y4de7Rh0xqjCB
+        cNmUxr3E6SiAvF+7NDxOXIQGXwOUSg55FxP4iWsVD5LQ3Tl9H7jIW07F8rFN+AOGCpibw+mGeOl
+        PXKNa/qLdzlgoDRKkiIRuUyGe19WjyiuyvdUmaIndu3heVAxaPcKg1KuXSMccBIEjzZTOUNiYOY
+        r0xK836s/AATyx6tAPj+q43GrOGitCUKfxFPSAUsisyWO3dp28iRuLC8ilKQe7ijHq7g9oYIT9S
+        GkZdz8KgtFVlNkavT4fVLSna0NDsiDrsceLMV4W/cQcw0FIMYfS0Ip2eEHnzWRN8STJpl3PoLR4
+        +zsDTtF/a6QWbgQ22X2Ke7NbrCuRuXcQ8/x31RI3HdRysKG7QlGPhOmoCyyHnljlE6tMY7G45pe
+        6ddGMbkq5r9MqSaJNanJqzpETIz6uGEplOoFRtR029mOM6P0LrcE8xytxC5d5hZXZFoB8P6SR/o
+        eE+wFw==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--0.579800-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25542.003
+X-MDID: 1594817823-uq1VMsMk8s5O
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+Once again, the opinions below are my own and definitely do not
+ represent anything my employer would be seen dead in the same
+ room as.
 
-> On Wed, Jul 15, 2020 at 12:19:03AM +0200, Toke H=C3=83=C6=92=C3=82=C2=B8i=
-land-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
->> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>=20
->> >> However, assuming it *is* possible, my larger point was that we
->> >> shouldn't add just a 'logging struct', but rather a 'common options
->> >> struct' which can be extended further as needed. And if it is *not*
->> >> possible to add new arguments to a syscall like you're proposing, my
->> >> suggestion above would be a different way to achieve basically the sa=
-me
->> >> (at the cost of having to specify the maximum reserved space in advan=
-ce).
->> >>
->> >
->> > yeah-yeah, I agree, it's less a "logging attr", more of "common attr
->> > across all commands".
->>=20
->> Right, great. I think we are broadly in agreement with where we want to
->> go with this, actually :)
->
-> I really don't like 'common attr across all commands'.
-> Both of you are talking as libbpf developers who occasionally need to
-> add printk-s to the kernel. That is not an excuse to bloat api that will =
-be
-> useful to two people.
+On 13/07/2020 23:41, Stephen Hemminger wrote:
+> As far as userspace, maybe keep the old API's but provide deprecation nags.
+Why would you need to deprecate the old APIs?
+If the user echoes 'slave' into some sysfs file (or whatever), that
+ indicates that they don't have any problem with using the word.
+So there's no reason toever remove that support — its _mere
+ existence_ isn't problematic for anyone not actively seeking to be
+ offended.
+Which I think is more evidence that this change is not motivated by
+ practical concerns but by a kind of performative ritual purity.
 
-What? No, this is about making error messages comprehensible to people
-who *can't* just go around adding printks. "Guess the source of the
-EINVAL" is a really bad user experience!
+This is dumb.  I suspect you all, including Jarod, know that this
+ is dumb, but you're either going along with it or keeping your
+ head down in the hope that it will all blow over and you can go
+ back to normal.  Unfortunately, it doesn't work like that; the
+ activists who push this stuff are never satisfied; making
+ concessions to them results not in peace but in further demands;
+ and just as the corporations today are caving to the current
+ demands for fear of being singled out by the mob, so they will
+ cave again to the next round of demands, and you'll be back in
+ the same position, trying to deal with bosses wanting you to
+ break uAPI without even a technical reason.
+And next time around, the mob will be bolder and the bosses more
+ pliant, because by giving in this time we'll have signalled that
+ we're weak and easily dominated.  I would advise anyone still in
+ doubt of this point to read Kipling's poem "Dane-geld".
+And we'll all be left wondering why kernel development is so
+ soulless and joyless that no-one, of _any_ colour, aspires to
+ become a kernel hacker any more.
 
-> The only reason log_buf sort-of make sense in raw_tp_open is because
-> btf comparison is moved from prog_load into raw_tp_open.
-> Miscompare of (prog_fd1, btf_id1) vs (prog_fd2, btf_id2) can be easily so=
-lved
-> by libbpf with as nice and as human friendly message libbpf can do.
+It's not too late to stop the crazy, if we all just stop
+ pretending it's sane.
 
-So userspace is supposed to replicate all the checks done by the kernel
-because we can't be bothered to add proper error messages? Really?
-
-> I'm not convinced yet that it's a kernel job to print it nicely. It certa=
-inly can,
-> but it's quite a bit different from two existing bpf commands where log_b=
-uf is used:
-> PROG_LOAD and BTF_LOAD. In these two cases the kernel verifies the program
-> and the BTF. raw_tp_open is different, since the kernel needs to compare
-> that function signatures (prog_fd1, btf_id1) and (prog_fd2, btf_id2) are
-> exactly the same. The kernel can indicate that with single specific errno=
- and
-> libbpf can print human friendly function signatures via btf_dump infra for
-> humans to see.
-> So I really don't see why log_buf is such a necessity for raw_tp_open.
-
-I'll drop them from raw_tp_open for this series, but I still think they
-should be added globally (or something like it). Returning a
-user-friendly error message should be the absolute minimum we do. Just
-like extack does for netlink.
-
--Toke
-
+-ed
