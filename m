@@ -2,94 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD43E22019C
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 03:06:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4C232201E4
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 03:32:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727810AbgGOBF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 21:05:59 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:42256 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725977AbgGOBF7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 21:05:59 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 8EAD0CC9408669B46A0A;
-        Wed, 15 Jul 2020 09:05:56 +0800 (CST)
-Received: from localhost (10.175.101.6) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Wed, 15 Jul 2020
- 09:05:47 +0800
-From:   Weilong Chen <chenweilong@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@mellanox.com>,
-        <edumazet@google.com>, <chenweilong@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 net] rtnetlink: Fix memory(net_device) leak when ->newlink fails
-Date:   Wed, 15 Jul 2020 09:49:30 +0800
-Message-ID: <20200715014930.323472-1-chenweilong@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726893AbgGOBcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 21:32:17 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:53131 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726456AbgGOBcR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 21:32:17 -0400
+Received: from cwh (fob.gandi.net [217.70.181.1])
+        (Authenticated sender: wxcafe@wxcafe.net)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 69093E0007;
+        Wed, 15 Jul 2020 01:32:15 +0000 (UTC)
+Message-ID: <7dbc46a51a7a2b8318418a0d40af3353b8f812c2.camel@wxcafe.net>
+Subject: [PATCH 2/4] cdc_ether: export usbnet_cdc_update_filter
+From:   =?ISO-8859-1?Q?Wxcaf=E9?= <wxcafe@wxcafe.net>
+To:     linux-usb@vger.kernel.org
+Cc:     Miguel =?ISO-8859-1?Q?Rodr=EDguez_P=E9rez?= 
+        <miguel@det.uvigo.gal>, oliver@neukum.org, netdev@vger.kernel.org
+Date:   Tue, 14 Jul 2020 21:32:12 -0400
+In-Reply-To: <0202c34b1b335d8d8fcdd5406f5e8178b4c198ec.camel@wxcafe.net>
+References: <0202c34b1b335d8d8fcdd5406f5e8178b4c198ec.camel@wxcafe.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.3 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When vlan_newlink call register_vlan_dev fails, it might return error
-with dev->reg_state = NETREG_UNREGISTERED. The rtnl_newlink should
-free the memory. But currently rtnl_newlink only free the memory which
-state is NETREG_UNINITIALIZED.
+Fixed the title, sorry
 
-BUG: memory leak
-unreferenced object 0xffff8881051de000 (size 4096):
-  comm "syz-executor139", pid 560, jiffies 4294745346 (age 32.445s)
-  hex dump (first 32 bytes):
-    76 6c 61 6e 32 00 00 00 00 00 00 00 00 00 00 00  vlan2...........
-    00 45 28 03 81 88 ff ff 00 00 00 00 00 00 00 00  .E(.............
-  backtrace:
-    [<0000000047527e31>] kmalloc_node include/linux/slab.h:578 [inline]
-    [<0000000047527e31>] kvmalloc_node+0x33/0xd0 mm/util.c:574
-    [<000000002b59e3bc>] kvmalloc include/linux/mm.h:753 [inline]
-    [<000000002b59e3bc>] kvzalloc include/linux/mm.h:761 [inline]
-    [<000000002b59e3bc>] alloc_netdev_mqs+0x83/0xd90 net/core/dev.c:9929
-    [<000000006076752a>] rtnl_create_link+0x2c0/0xa20 net/core/rtnetlink.c:3067
-    [<00000000572b3be5>] __rtnl_newlink+0xc9c/0x1330 net/core/rtnetlink.c:3329
-    [<00000000e84ea553>] rtnl_newlink+0x66/0x90 net/core/rtnetlink.c:3397
-    [<0000000052c7c0a9>] rtnetlink_rcv_msg+0x540/0x990 net/core/rtnetlink.c:5460
-    [<000000004b5cb379>] netlink_rcv_skb+0x12b/0x3a0 net/netlink/af_netlink.c:2469
-    [<00000000c71c20d3>] netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
-    [<00000000c71c20d3>] netlink_unicast+0x4c6/0x690 net/netlink/af_netlink.c:1329
-    [<00000000cca72fa9>] netlink_sendmsg+0x735/0xcc0 net/netlink/af_netlink.c:1918
-    [<000000009221ebf7>] sock_sendmsg_nosec net/socket.c:652 [inline]
-    [<000000009221ebf7>] sock_sendmsg+0x109/0x140 net/socket.c:672
-    [<000000001c30ffe4>] ____sys_sendmsg+0x5f5/0x780 net/socket.c:2352
-    [<00000000b71ca6f3>] ___sys_sendmsg+0x11d/0x1a0 net/socket.c:2406
-    [<0000000007297384>] __sys_sendmsg+0xeb/0x1b0 net/socket.c:2439
-    [<000000000eb29b11>] do_syscall_64+0x56/0xa0 arch/x86/entry/common.c:359
-    [<000000006839b4d0>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Fixes: e51fb152318ee6 ("rtnetlink: fix a memory leak when ->newlink fails")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Weilong Chen <chenweilong@huawei.com>
----
- net/core/rtnetlink.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 9aedc15736ad..85a4b0101f76 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3343,7 +3343,8 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		 */
- 		if (err < 0) {
- 			/* If device is not registered at all, free it now */
--			if (dev->reg_state == NETREG_UNINITIALIZED)
-+			if (dev->reg_state == NETREG_UNINITIALIZED ||
-+			    dev->reg_state == NETREG_UNREGISTERED)
- 				free_netdev(dev);
- 			goto out;
- 		}
 -- 
-2.17.1
+Wxcafé <wxcafe@wxcafe.net>
+
+On Tue, 2020-07-14 at 21:25 -0400, Wxcafé wrote:
+> This makes the function available to other drivers, like cdn_ncm.
+> 
+> Signed-off-by: Miguel Rodríguez Pérez <miguel@det.uvigo.gal>
+> ---
+>  drivers/net/usb/cdc_ether.c | 3 ++-
+>  include/linux/usb/usbnet.h  | 1 +
+>  2 files changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/usb/cdc_ether.c
+> b/drivers/net/usb/cdc_ether.c
+> index 2afe258e3648..8c1d61c2cbac 100644
+> --- a/drivers/net/usb/cdc_ether.c
+> +++ b/drivers/net/usb/cdc_ether.c
+> @@ -63,7 +63,7 @@ static const u8 mbm_guid[16] = {
+>  	0xa6, 0x07, 0xc0, 0xff, 0xcb, 0x7e, 0x39, 0x2a,
+>  };
+>  
+> -static void usbnet_cdc_update_filter(struct usbnet *dev)
+> +void usbnet_cdc_update_filter(struct usbnet *dev)
+>  {
+>  	struct net_device	*net = dev->net;
+>  
+> @@ -90,6 +90,7 @@ static void usbnet_cdc_update_filter(struct usbnet
+> *dev)
+>  			USB_CTRL_SET_TIMEOUT
+>  		);
+>  }
+> +EXPORT_SYMBOL_GPL(usbnet_cdc_update_filter);
+>  
+>  /* probes control interface, claims data interface, collects the
+> bulk
+>   * endpoints, activates data interface (if needed), maybe sets MTU.
+> diff --git a/include/linux/usb/usbnet.h b/include/linux/usb/usbnet.h
+> index b0bff3083278..33e7803b85af 100644
+> --- a/include/linux/usb/usbnet.h
+> +++ b/include/linux/usb/usbnet.h
+> @@ -286,4 +286,5 @@ extern void usbnet_update_max_qlen(struct usbnet
+> *dev);
+>  extern void usbnet_get_stats64(struct net_device *dev,
+>  			       struct rtnl_link_stats64 *stats);
+>  
+> +extern void usbnet_cdc_update_filter(struct usbnet *);
+>  #endif /* __LINUX_USB_USBNET_H */
+> -- 
+> 2.27.0
+> 
 
