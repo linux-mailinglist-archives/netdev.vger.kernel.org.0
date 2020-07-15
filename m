@@ -2,112 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E7AB2216CD
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 23:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4549A2216D3
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 23:12:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbgGOVHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 17:07:25 -0400
-Received: from www62.your-server.de ([213.133.104.62]:51196 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725917AbgGOVHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 17:07:24 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jvocY-0003ol-AP; Wed, 15 Jul 2020 23:07:18 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jvocY-000Rp7-0q; Wed, 15 Jul 2020 23:07:18 +0200
-Subject: Re: [Linux-kernel-mentees] [PATCH v3] bpf: Fix NULL pointer
- dereference in __btf_resolve_helper_id()
-To:     Peilin Ye <yepeilin.cs@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-References: <CAADnVQ+jUPGJapkvKW=AfXESD6Vz2iuONvJm8eJm5Yd+u9mJ+w@mail.gmail.com>
- <20200714180904.277512-1-yepeilin.cs@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3b97c5bf-9f07-0353-ea4d-f90574fbcdc0@iogearbox.net>
-Date:   Wed, 15 Jul 2020 23:07:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726670AbgGOVMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 17:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725917AbgGOVMg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 17:12:36 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482D2C061755
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 14:12:36 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id i3so2972866qtq.13
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 14:12:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ugnd0TD/Wl8NWEtJPlvFS8k7ARKLAYTngfNEZV+I5ag=;
+        b=e3md1I053z8dnwg5KFnxqhvQ1WiUUnbJdwyDyZIkB2AgxHabMHn9dj0iSMqQg56+P2
+         mV1ri6BWkqC2e4y2J5NPsaVGqrDXgj6Aeu2xB9FfOHqI5+yQqydngRTc2Q6pB6GyvvpE
+         yeQQsT05Rhpkb01fGLIANje8GJRc+QqxqQ4efrCDCXMj5+iq5azSyrje59WfAUxqJ9UV
+         4dIM27bq6SU7UCXFlaE5pGYz5MwrxdT2tU17y0Jxemwgc3n18SLyX5Tcke7fjGbJw4xb
+         tHSobEE92h7ttBbDSd8phFYTr1QPJFPHpNHCbibHIH8laQEFUj+VZTAn+aOCdi7jXC/G
+         hwnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ugnd0TD/Wl8NWEtJPlvFS8k7ARKLAYTngfNEZV+I5ag=;
+        b=ELARvN2tyAl2ZXbf5+aynzlOmHEPsysy0gooULC0/7t6aPch/ri5skIbGULixx5I0q
+         PjV7ZWDBtFfbKMwE1hi4jAsc9HrtT4yvep2R/5o4JA12TRShLNxnHPCaWGFD+JjFSm8Z
+         LDMOm8wyuLlbz/Szr7lmiPQsgtE1NZnqc0xjhJlQ7ljUSpsW8JrhKwaXmnZ+2V8szJn0
+         1CJUv+ascCxqcPjfGVGbCSZwNq6HA2CKSgcU+zvrQ10mP1O/r4aa2I9A+Ma+CBfaRYjD
+         fPCaCTUpb+88OXx5MhX4Z1DfSlzNzUqDQ7IsCeOU6c8L3AZHTk47zEZprAF2oqJhkT60
+         r82g==
+X-Gm-Message-State: AOAM531w49PrRJN7y2eke+yriKMx+tmoe6Q4opfb3NxADjD1vtoVTG4I
+        701JkimsCjuLM0gXZ3KKcRGsKi5HvN8JsLHLgXc=
+X-Google-Smtp-Source: ABdhPJzaG2j3u5HOq/5VT7IEEeRrfIHhN5avB0/42NLmHg5ZXy/jW2SUd+/bfNiLVKPX9lyEfrDq0boR0FEuzfQdY3Y=
+X-Received: by 2002:ac8:346c:: with SMTP id v41mr1917214qtb.262.1594847555211;
+ Wed, 15 Jul 2020 14:12:35 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200714180904.277512-1-yepeilin.cs@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25874/Wed Jul 15 16:18:08 2020)
+References: <CAA85sZvKNXCo5bB5a6kKmsOUAiw+_daAVaSYqNW6QbSBJ0TcyQ@mail.gmail.com>
+ <CAA85sZua6Q8UR7TfCGO0bV=VU0gKtqj-8o_mqH38RpKrwYZGtg@mail.gmail.com>
+ <20200715133136.5f63360c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAA85sZu09Z4gydJ8rAO_Ey0zqx-8Lg28=fBJ=FxFnp6cetNd3g@mail.gmail.com>
+In-Reply-To: <CAA85sZu09Z4gydJ8rAO_Ey0zqx-8Lg28=fBJ=FxFnp6cetNd3g@mail.gmail.com>
+From:   Ian Kumlien <ian.kumlien@gmail.com>
+Date:   Wed, 15 Jul 2020 23:12:23 +0200
+Message-ID: <CAA85sZtjCW2Yg+tXPgYyoFA5BKAVZC8kVKG=6SiR64c8ur8UcQ@mail.gmail.com>
+Subject: Re: NAT performance issue 944mbit -> ~40mbit
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/14/20 8:09 PM, Peilin Ye wrote:
-> Prevent __btf_resolve_helper_id() from dereferencing `btf_vmlinux`
-> as NULL. This patch fixes the following syzbot bug:
-> 
->      https://syzkaller.appspot.com/bug?id=f823224ada908fa5c207902a5a62065e53ca0fcc
-> 
-> Reported-by: syzbot+ee09bda7017345f1fbe6@syzkaller.appspotmail.com
-> Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+On Wed, Jul 15, 2020 at 11:02 PM Ian Kumlien <ian.kumlien@gmail.com> wrote:
+> On Wed, Jul 15, 2020 at 10:31 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Wed, 15 Jul 2020 22:05:58 +0200 Ian Kumlien wrote:
+> > > After a  lot of debugging it turns out that the bug is in igb...
+> > >
+> > > driver: igb
+> > > version: 5.6.0-k
+> > > firmware-version:  0. 6-1
+> > >
+> > > 03:00.0 Ethernet controller: Intel Corporation I211 Gigabit Network
+> > > Connection (rev 03)
+> >
+> > Unclear to me what you're actually reporting. Is this a regression
+> > after a kernel upgrade? Compared to no NAT?
+>
+> It only happens on "internet links"
+>
+> Lets say that A is client with ibg driver, B is a firewall running NAT
+> with ixgbe drivers, C is another local node with igb and
+> D is a remote node with a bridge backed by a bnx2 interface.
+>
+> A -> B -> C is ok (B and C is on the same switch)
+>
+> A -> B -> D -- 32-40mbit
+>
+> B -> D 944 mbit
+> C -> D 944 mbit
+>
+> A' -> D ~933 mbit (A with realtek nic -- also link is not idle atm)
 
-Looks good, applied, thanks! As far as I can tell all the other occurrences are
-gated behind btf_parse_vmlinux() where we also init struct_opts, etc.
+This should of course be A' -> B -> D
 
-So for bpf-next this would then end up looking like ...
+Sorry, I've been scratching my head for about a week...
 
-int btf_resolve_helper_id(struct bpf_verifier_log *log,
-                           const struct bpf_func_proto *fn, int arg)
-{
-         int id;
-
-         if (fn->arg_type[arg] != ARG_PTR_TO_BTF_ID)
-                 return -EINVAL;
-         id = fn->btf_id[arg];
-         if (!id || !btf_vmlinux || id > btf_vmlinux->nr_types)
-                 return -EINVAL;
-         return id;
-}
-
-> ---
-> Sorry, I got the link wrong. Thank you for pointing that out.
-> 
-> Change in v3:
->      - Fix incorrect syzbot dashboard link.
-> 
-> Change in v2:
->      - Split NULL and IS_ERR cases.
-> 
->   kernel/bpf/btf.c | 5 +++++
->   1 file changed, 5 insertions(+)
-> 
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index 30721f2c2d10..092116a311f4 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -4088,6 +4088,11 @@ static int __btf_resolve_helper_id(struct bpf_verifier_log *log, void *fn,
->   	const char *tname, *sym;
->   	u32 btf_id, i;
->   
-> +	if (!btf_vmlinux) {
-> +		bpf_log(log, "btf_vmlinux doesn't exist\n");
-> +		return -EINVAL;
-> +	}
-> +
->   	if (IS_ERR(btf_vmlinux)) {
->   		bpf_log(log, "btf_vmlinux is malformed\n");
->   		return -EINVAL;
-> 
-
+> Can it be a timing issue? this is on a AMD Ryzen 9 system - I have
+> tcpdumps but i doubt that they'll help...
+>
+> > > It's interesting that it only seems to happen on longer links... Any clues?
+> >
+> > Links as in with longer cables?
+>
+> Longer links, as in more hops and unknown (in this case Juniper) switches/boxes
