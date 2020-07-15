@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58982221198
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 17:50:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EAC022119A
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 17:50:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727851AbgGOPtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 11:49:15 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:27358 "EHLO
+        id S1727867AbgGOPtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 11:49:17 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:56316 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727849AbgGOPtN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 11:49:13 -0400
+        by vger.kernel.org with ESMTP id S1727863AbgGOPtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 11:49:16 -0400
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06FFf2DS032718;
-        Wed, 15 Jul 2020 08:49:12 -0700
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06FFf2Lg032730;
+        Wed, 15 Jul 2020 08:49:15 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=cjfNL3jkm4f2F8+BJmRw6FzoN3HCXduCVHArcBM2Wj4=;
- b=fMzq9X7CY11yNxEeej73zO38BlbpS7fCsWuTR0raSUthacjc4ZMgtp4AxU96ODirPuPn
- L4YfZPdy0Ih6jYFOPtD1QcLxc6x9UCoARj56OG6ZQS+68kxP5McAYQKsVaEzASTcuwje
- D18SRM+Ye/0HyMYYbv7K+wlTU4xUzg0RFwWz++QjIIFQyS6E3vcZbMOu0sJf7PEzv4vV
- s2iuQLtF8l9tLM9jG8y1ZE6nSsAOpVSgh4yXoijLscOu1xqujHPeIYBB9n1RSeKLgGMc
- versDu/58L0hgqvD9UJueDirvU9Gtxj9cYiKMvUk1FYifF3afxHG92tzbA4AhbcLAjHQ 1g== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 327asnja6b-1
+ content-type; s=pfpt0818; bh=MB42ydB4c+ulpjTV6xX8pgW2EJVA3Y0r0e2P76f5ZnI=;
+ b=VHceRx0KczkvkGWV04AxGnwpSbvWizsIaEVH4lj4ItPFFXcYO90ioZHijmT0pSZ7VN4k
+ ZrLJ5TjbCwSpdyRRLG4m1uRPgNNn3Ueh5KPen2DSgN88AI4sWRyCSEe6PuEKuDK0dQ7j
+ 9s7pOCqcUpDVqqg5zRo542/w+yoRHRHr4bcYOAeSmnf8qh45U2nIBSf1vILRgCVsSO9S
+ UMIAyT3t1KPwxy2SJx3tnKe4yU363P0dNgBmmMVe1JpL3rJCDPeNmxQvSrUobWj35DtR
+ +2izqQmCIvRKzIK7TXfIWTX0BmWWG3CQo2+WPQPIHTApRXnzKSpPjug5IwIqtpjhHV68 eQ== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 327asnja6j-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 15 Jul 2020 08:49:12 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 15 Jul
- 2020 08:49:11 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 15 Jul 2020 08:49:11 -0700
+        Wed, 15 Jul 2020 08:49:15 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 15 Jul
+ 2020 08:49:14 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 15 Jul
+ 2020 08:49:13 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 15 Jul 2020 08:49:13 -0700
 Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.193.54.28])
-        by maili.marvell.com (Postfix) with ESMTP id 845C33F703F;
-        Wed, 15 Jul 2020 08:49:09 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id C7BAB3F703F;
+        Wed, 15 Jul 2020 08:49:11 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Mark Starovoytov <mstarovoitov@marvell.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Pavel Belous <pbelous@marvell.com>,
         Igor Russkikh <irusskikh@marvell.com>
-Subject: [PATCH v2 net-next 06/10] net: atlantic: add support for 64-bit reads/writes
-Date:   Wed, 15 Jul 2020 18:48:38 +0300
-Message-ID: <20200715154842.305-7-irusskikh@marvell.com>
+Subject: [PATCH v2 net-next 07/10] net: atlantic: use U32_MAX in aq_hw_utils.c
+Date:   Wed, 15 Jul 2020 18:48:39 +0300
+Message-ID: <20200715154842.305-8-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200715154842.305-1-irusskikh@marvell.com>
 References: <20200715154842.305-1-irusskikh@marvell.com>
@@ -57,152 +59,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pavel Belous <pbelous@marvell.com>
+From: Mark Starovoytov <mstarovoitov@marvell.com>
 
-This patch adds support for 64-bit reads/writes where applicable, e.g.
-A2 supports them.
+This patch replaces magic constant ~0U usage with U32_MAX in aq_hw_utils.c
 
-Signed-off-by: Pavel Belous <pbelous@marvell.com>
 Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- .../net/ethernet/aquantia/atlantic/aq_hw.h    |  1 +
- .../ethernet/aquantia/atlantic/aq_hw_utils.c  | 29 +++++++++++++++----
- .../ethernet/aquantia/atlantic/aq_hw_utils.h  |  8 +++--
- .../aquantia/atlantic/hw_atl/hw_atl_a0.c      |  1 +
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |  1 +
- .../aquantia/atlantic/hw_atl2/hw_atl2.c       |  1 +
- 6 files changed, 33 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-index 284ea943e8cd..96d59ee3eb70 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-@@ -67,6 +67,7 @@ struct aq_hw_caps_s {
- 	u8 rx_rings;
- 	bool flow_control;
- 	bool is_64_dma;
-+	bool op64bit;
- 	u32 priv_data_len;
- };
- 
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.c b/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.c
-index 342c5179f846..ae85c0a7d238 100644
+index ae85c0a7d238..1921741f7311 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.c
-@@ -1,7 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0-only
--/*
-- * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
-+/* Atlantic Network Driver
-+ *
-+ * Copyright (C) 2014-2019 aQuantia Corporation
-+ * Copyright (C) 2019-2020 Marvell International Ltd.
-  */
- 
- /* File aq_hw_utils.c: Definitions of helper functions used across
-@@ -9,6 +10,9 @@
-  */
- 
- #include "aq_hw_utils.h"
-+
-+#include <linux/io-64-nonatomic-lo-hi.h>
-+
- #include "aq_hw.h"
- #include "aq_nic.h"
- 
-@@ -56,13 +60,28 @@ void aq_hw_write_reg(struct aq_hw_s *hw, u32 reg, u32 value)
-  */
- u64 aq_hw_read_reg64(struct aq_hw_s *hw, u32 reg)
+@@ -41,9 +41,8 @@ u32 aq_hw_read_reg(struct aq_hw_s *hw, u32 reg)
  {
--	u64 value = aq_hw_read_reg(hw, reg);
-+	u64 value = U64_MAX;
+ 	u32 value = readl(hw->mmio + reg);
  
--	value |= (u64)aq_hw_read_reg(hw, reg + 4) << 32;
-+	if (hw->aq_nic_cfg->aq_hw_caps->op64bit)
-+		value = readq(hw->mmio + reg);
-+	else
-+		value = lo_hi_readq(hw->mmio + reg);
-+
-+	if (value == U64_MAX &&
+-	if ((~0U) == value &&
+-	    (~0U) == readl(hw->mmio +
+-			   hw->aq_nic_cfg->aq_hw_caps->hw_alive_check_addr))
++	if (value == U32_MAX &&
 +	    readl(hw->mmio + hw->aq_nic_cfg->aq_hw_caps->hw_alive_check_addr) == U32_MAX)
-+		aq_utils_obj_set(&hw->flags, AQ_HW_FLAG_ERR_UNPLUG);
+ 		aq_utils_obj_set(&hw->flags, AQ_HW_FLAG_ERR_UNPLUG);
  
  	return value;
- }
- 
-+void aq_hw_write_reg64(struct aq_hw_s *hw, u32 reg, u64 value)
-+{
-+	if (hw->aq_nic_cfg->aq_hw_caps->op64bit)
-+		writeq(value, hw->mmio + reg);
-+	else
-+		lo_hi_writeq(value, hw->mmio + reg);
-+}
-+
- int aq_hw_err_from_flags(struct aq_hw_s *hw)
- {
- 	int err = 0;
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.h b/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.h
-index 32aa5f2fb840..ffa6e4067c21 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.h
-@@ -1,7 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
-+/* Atlantic Network Driver
-+ *
-+ * Copyright (C) 2014-2019 aQuantia Corporation
-+ * Copyright (C) 2019-2020 Marvell International Ltd.
-  */
- 
- /* File aq_hw_utils.h: Declaration of helper functions used across hardware
-@@ -33,6 +34,7 @@ u32 aq_hw_read_reg_bit(struct aq_hw_s *aq_hw, u32 addr, u32 msk, u32 shift);
- u32 aq_hw_read_reg(struct aq_hw_s *hw, u32 reg);
- void aq_hw_write_reg(struct aq_hw_s *hw, u32 reg, u32 value);
- u64 aq_hw_read_reg64(struct aq_hw_s *hw, u32 reg);
-+void aq_hw_write_reg64(struct aq_hw_s *hw, u32 reg, u64 value);
- int aq_hw_err_from_flags(struct aq_hw_s *hw);
- int aq_hw_num_tcs(struct aq_hw_s *hw);
- int aq_hw_q_per_tc(struct aq_hw_s *hw);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-index a312864969af..8f8b90436ced 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-@@ -18,6 +18,7 @@
- 
- #define DEFAULT_A0_BOARD_BASIC_CAPABILITIES \
- 	.is_64_dma = true,		  \
-+	.op64bit = false,		  \
- 	.msix_irqs = 4U,		  \
- 	.irq_mask = ~0U,		  \
- 	.vecs = HW_ATL_A0_RSS_MAX,	  \
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 51c8962b7a0e..ee74cad4a168 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -20,6 +20,7 @@
- 
- #define DEFAULT_B0_BOARD_BASIC_CAPABILITIES \
- 	.is_64_dma = true,		  \
-+	.op64bit = false,		  \
- 	.msix_irqs = 8U,		  \
- 	.irq_mask = ~0U,		  \
- 	.vecs = HW_ATL_B0_RSS_MAX,	  \
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
-index c65e6daad0e5..92f64048bf69 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
-@@ -21,6 +21,7 @@ static int hw_atl2_act_rslvr_table_set(struct aq_hw_s *self, u8 location,
- 
- #define DEFAULT_BOARD_BASIC_CAPABILITIES \
- 	.is_64_dma = true,		  \
-+	.op64bit = true,		  \
- 	.msix_irqs = 8U,		  \
- 	.irq_mask = ~0U,		  \
- 	.vecs = HW_ATL2_RSS_MAX,	  \
 -- 
 2.25.1
 
