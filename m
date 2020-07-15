@@ -2,178 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94B302217D3
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 00:35:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1A942217E6
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 00:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbgGOWfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 18:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41832 "EHLO
+        id S1726996AbgGOWlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 18:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726479AbgGOWfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 18:35:40 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778CEC061755
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 15:35:40 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id w27so3231233qtb.7
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 15:35:40 -0700 (PDT)
+        with ESMTP id S1726770AbgGOWlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 18:41:10 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6737EC08C5CE
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 15:41:10 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id z7so4809296ybz.1
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 15:41:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Awkw/2JAwqx0ybW5si+vH0X/DyLIxSnakUSW3oK3Jgw=;
-        b=LOUa04qKaz/Ofcf+7hmtIod7M0nu+L4V6ALEKBSnPvwBrpWstPGKol0ZoZ7CpCc4ho
-         8f+vAm4TlU9Q94isUQSM1oijBsrajq+4IyMT7YJJomWLl0icFaFnaE1UNK47LN/Uoe2v
-         XsEom275tqbMGnLrmD8dw5eHCIgEwvlDWPvwpkcORZ1I6y8KVPFbmB46kuquSC92PW++
-         f71PG3hbwn9P4Y50EpDPpobD/JvOqU/Ml0egLRtlu96Lxo0l3zPvNGxGRW23xOoMnkiO
-         U5qU/fTViZtlUS6YBZ0ADkCNxrX/17d9N5ASPEj0q7T43QbfM2jrtT0HGJXV3m5pERr5
-         SbIA==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=aSU4Bs0Q2l7iGfbtpqfDDGNT0dqQhvTHqnXOF17Zkrk=;
+        b=F7SPEUohE3HsmFaoxDiGmdi7AvIDvxiDvnfQu1nMBZkwP0p/6CQ2/BVoazmn3S+2Jq
+         r4Fh7ph8qwysbFPPElb2XoBx+YMa4WjzjL+E/twPtyVuIFGkaEiAV9w9cCHTz+JWATdh
+         0t1qL0cfGQUuGWwmzrWZWIsyl8xv1DJ3urC3QfmiDvZIWn1nA7LA4dgubvylQ3Kkf2k/
+         nR8yofojpGihaPy4N6wr5S63MZBX7r4OH6XXm4b7SYvd9jQeQR6euGwfdtSLjag9F6dY
+         6ITKL8l9DM2HC1OB52HIYJ6bEnUdBD36jcDJGePBscLpO1OLBJ7PCqfwDQ1gyEMzAQMR
+         SNKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Awkw/2JAwqx0ybW5si+vH0X/DyLIxSnakUSW3oK3Jgw=;
-        b=f+b4dzcPjU1c0AN4MR+7vOSW4M6ywIeHKIpEQcm42jp+xhOBfDtrVc5QFVqK+WUoxm
-         hDL69ZnnvePDh7sbhWt8Lh8irN1b0NojJ4A0pCZ6KI3aNRs6WPcevwb1lvJNqegNkP+4
-         xnAoYQ2qYx88Hyg+ZltvnTn+xXDdhCEF1JXhtjpTqBby9G4xdBrKmswKRLuHNwATvFUa
-         tjV+brzjDsNn0puNXX2jSLVifA7YG8DFvWEGyOs8cYndjTHbptRJgUHbQPG2t6RFRigq
-         Pyp5zNxpcvzQ7XDPtZP7Mngd+oO8BPo+AOaNG2jUrHmCvB2dSVqhqofAb3S2fRckNWNk
-         994g==
-X-Gm-Message-State: AOAM530uRR5bIwjilrjh/euPR77iQ7CdV+wMRCoVCblTeypw+LkI+nED
-        eotTVTMWfY57e6LDk4wO0aqFPX4t
-X-Google-Smtp-Source: ABdhPJy+JgYtlovhWgGDDXl65nYANtNBXtDzqPgcz9AGYyyGJWvb3X9VPUlGfapjJIZ1rEMmRnZ66A==
-X-Received: by 2002:ac8:4c88:: with SMTP id j8mr2128030qtv.57.1594852539284;
-        Wed, 15 Jul 2020 15:35:39 -0700 (PDT)
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
-        by smtp.gmail.com with ESMTPSA id s128sm4352048qkd.108.2020.07.15.15.35.38
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jul 2020 15:35:38 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id a15so1899375ybs.8
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 15:35:38 -0700 (PDT)
-X-Received: by 2002:a25:df81:: with SMTP id w123mr2058601ybg.428.1594852537696;
- Wed, 15 Jul 2020 15:35:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200707152204.10314-1-john.ogness@linutronix.de> <20200715132141.2c72ae75@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200715132141.2c72ae75@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 15 Jul 2020 18:35:00 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe1WXLGKd2zNLmQiKTZeNN64R-vGJTNMuVD_4VA8AN5Fg@mail.gmail.com>
-Message-ID: <CA+FuTSe1WXLGKd2zNLmQiKTZeNN64R-vGJTNMuVD_4VA8AN5Fg@mail.gmail.com>
-Subject: Re: [PATCH] af_packet: TPACKET_V3: replace busy-wait loop
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=aSU4Bs0Q2l7iGfbtpqfDDGNT0dqQhvTHqnXOF17Zkrk=;
+        b=a1JVR0PEzrimOUMabK/qyIRfr9UUKoNPEOKgp7XkYa3ji1m+FpaYJ6KaskW+6hpSAB
+         TOpq7RRG2zJ7TxDBIHZ+Cb08amAyp5MfaPHWny8NWsggwiYmfqh8TBYXO9AFEMxOQL7e
+         xFG0+m0r+xc3KJo4BlkNZRGSEYWe82PEeC0lW6qYBABYyk0FjoYw7Ej9sQEzQSRcBNby
+         Od0QuDysOWKiyu3qfyBe/3ARvvxjVMOJq8Xx7ohfz4fuG9hiRLBSVxww62M1XRt0W/ZB
+         MqJWqm4oE26eIKGvso2KeKLjJUbUWEY10NX7HeJ6ZlLssESOdagJRZuBIXbypK+yjMUF
+         wQTw==
+X-Gm-Message-State: AOAM532bR+FaW9H8pXzUhY70tJI6cP6Rj12QMPF5zMTNraDk0aKa8K1s
+        jF85OGQyhOZNenl0hF3BvyFJsl7AYLfp8VtiSL9YHQMRH9jA05MX65Ew65rYVrVa6KB1Vfw8HT5
+        GvcAZZCyWhVSl47QSvTTn1cdmVq+GkBm6xf78m9ou93RZqIRuad/63Q==
+X-Google-Smtp-Source: ABdhPJyC3Gfw5x0x2bT4vx1BrrDQUHAjHWVkvT7gYBWbFuIUvf4eH5pg15CftZTfweshiZ+U2jFCllo=
+X-Received: by 2002:a25:4246:: with SMTP id p67mr2083832yba.385.1594852869523;
+ Wed, 15 Jul 2020 15:41:09 -0700 (PDT)
+Date:   Wed, 15 Jul 2020 15:41:07 -0700
+Message-Id: <20200715224107.3591967-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.389.gc38d7665816-goog
+Subject: [PATCH bpf-next] selftests/bpf: fix possible hang in sockopt_inherit
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrii Nakryiko <andriin@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 15, 2020 at 4:21 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue,  7 Jul 2020 17:28:04 +0206 John Ogness wrote:
-> > A busy-wait loop is used to implement waiting for bits to be copied
-> > from the skb to the kernel buffer before retiring a block. This is
-> > a problem on PREEMPT_RT because the copying task could be preempted
-> > by the busy-waiting task and thus live lock in the busy-wait loop.
-> >
-> > Replace the busy-wait logic with an rwlock_t. This provides lockdep
-> > coverage and makes the code RT ready.
-> >
-> > Signed-off-by: John Ogness <john.ogness@linutronix.de>
->
-> Is taking a lock and immediately releasing it better than a completion?
-> Seems like the lock is guaranteed to dirty a cache line, which would
-> otherwise be avoided here.
->
-> Willem, would you be able to take a look as well? Is this path
-> performance sensitive in real life?
+Andrii reported that sockopt_inherit occasionally hangs up on 5.5 kernel [0].
+This can happen if server_thread runs faster than the main thread.
+In that case, pthread_cond_wait will wait forever because
+pthread_cond_signal was executed before the main thread was blocking.
+Let's move pthread_mutex_lock up a bit to make sure server_thread
+runs strictly after the main thread goes to sleep.
 
-No objections from me.
+(Not sure why this is 5.5 specific, maybe scheduling is less
+deterministic? But I was able to confirm that it does indeed
+happen in a VM.)
 
-I guess this resolves the issue on preempt_rt, because the spinlocks act as
-mutexes. It will still spin on write_lock otherwise, no huge difference from
-existing logic.
+[0] https://lore.kernel.org/bpf/CAEf4BzY0-bVNHmCkMFPgObs=isUAyg-dFzGDY7QWYkmm7rmTSg@mail.gmail.com/
 
+Reported-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
+diff --git a/tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c b/tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c
+index 8547ecbdc61f..ec281b0363b8 100644
+--- a/tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c
++++ b/tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c
+@@ -193,11 +193,10 @@ static void run_test(int cgroup_fd)
+ 	if (CHECK_FAIL(server_fd < 0))
+ 		goto close_bpf_object;
+ 
++	pthread_mutex_lock(&server_started_mtx);
+ 	if (CHECK_FAIL(pthread_create(&tid, NULL, server_thread,
+ 				      (void *)&server_fd)))
+ 		goto close_server_fd;
+-
+-	pthread_mutex_lock(&server_started_mtx);
+ 	pthread_cond_wait(&server_started, &server_started_mtx);
+ 	pthread_mutex_unlock(&server_started_mtx);
+ 
+-- 
+2.27.0.389.gc38d7665816-goog
 
-
-
->
-> > diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> > index 29bd405adbbd..dd1eec2dd6ef 100644
-> > --- a/net/packet/af_packet.c
-> > +++ b/net/packet/af_packet.c
-> > @@ -593,6 +593,7 @@ static void init_prb_bdqc(struct packet_sock *po,
-> >                                               req_u->req3.tp_block_size);
-> >       p1->tov_in_jiffies = msecs_to_jiffies(p1->retire_blk_tov);
-> >       p1->blk_sizeof_priv = req_u->req3.tp_sizeof_priv;
-> > +     rwlock_init(&p1->blk_fill_in_prog_lock);
-> >
-> >       p1->max_frame_len = p1->kblk_size - BLK_PLUS_PRIV(p1->blk_sizeof_priv);
-> >       prb_init_ft_ops(p1, req_u);
-> > @@ -659,10 +660,9 @@ static void prb_retire_rx_blk_timer_expired(struct timer_list *t)
-> >        *
-> >        */
-> >       if (BLOCK_NUM_PKTS(pbd)) {
-> > -             while (atomic_read(&pkc->blk_fill_in_prog)) {
-> > -                     /* Waiting for skb_copy_bits to finish... */
-> > -                     cpu_relax();
-> > -             }
-> > +             /* Waiting for skb_copy_bits to finish... */
-> > +             write_lock(&pkc->blk_fill_in_prog_lock);
-> > +             write_unlock(&pkc->blk_fill_in_prog_lock);
-> >       }
-> >
-> >       if (pkc->last_kactive_blk_num == pkc->kactive_blk_num) {
-> > @@ -921,10 +921,9 @@ static void prb_retire_current_block(struct tpacket_kbdq_core *pkc,
-> >                * the timer-handler already handled this case.
-> >                */
-> >               if (!(status & TP_STATUS_BLK_TMO)) {
-> > -                     while (atomic_read(&pkc->blk_fill_in_prog)) {
-> > -                             /* Waiting for skb_copy_bits to finish... */
-> > -                             cpu_relax();
-> > -                     }
-> > +                     /* Waiting for skb_copy_bits to finish... */
-> > +                     write_lock(&pkc->blk_fill_in_prog_lock);
-> > +                     write_unlock(&pkc->blk_fill_in_prog_lock);
-> >               }
-> >               prb_close_block(pkc, pbd, po, status);
-> >               return;
-> > @@ -944,7 +943,8 @@ static int prb_queue_frozen(struct tpacket_kbdq_core *pkc)
-> >  static void prb_clear_blk_fill_status(struct packet_ring_buffer *rb)
-> >  {
-> >       struct tpacket_kbdq_core *pkc  = GET_PBDQC_FROM_RB(rb);
-> > -     atomic_dec(&pkc->blk_fill_in_prog);
-> > +
-> > +     read_unlock(&pkc->blk_fill_in_prog_lock);
-> >  }
-> >
-> >  static void prb_fill_rxhash(struct tpacket_kbdq_core *pkc,
-> > @@ -998,7 +998,7 @@ static void prb_fill_curr_block(char *curr,
-> >       pkc->nxt_offset += TOTAL_PKT_LEN_INCL_ALIGN(len);
-> >       BLOCK_LEN(pbd) += TOTAL_PKT_LEN_INCL_ALIGN(len);
-> >       BLOCK_NUM_PKTS(pbd) += 1;
-> > -     atomic_inc(&pkc->blk_fill_in_prog);
-> > +     read_lock(&pkc->blk_fill_in_prog_lock);
-> >       prb_run_all_ft_ops(pkc, ppd);
-> >  }
-> >
-> > diff --git a/net/packet/internal.h b/net/packet/internal.h
-> > index 907f4cd2a718..fd41ecb7f605 100644
-> > --- a/net/packet/internal.h
-> > +++ b/net/packet/internal.h
-> > @@ -39,7 +39,7 @@ struct tpacket_kbdq_core {
-> >       char            *nxt_offset;
-> >       struct sk_buff  *skb;
-> >
-> > -     atomic_t        blk_fill_in_prog;
-> > +     rwlock_t        blk_fill_in_prog_lock;
-> >
-> >       /* Default is set to 8ms */
-> >  #define DEFAULT_PRB_RETIRE_TOV       (8)
->
