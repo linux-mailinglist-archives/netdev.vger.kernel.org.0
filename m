@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72CA9220728
+	by mail.lfdr.de (Postfix) with ESMTP id DF3A5220729
 	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 10:28:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730055AbgGOI2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 04:28:14 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:55911 "EHLO
+        id S1730063AbgGOI2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 04:28:16 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:39503 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730047AbgGOI2M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:28:12 -0400
+        by vger.kernel.org with ESMTP id S1728282AbgGOI2O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:28:14 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 7B0F65C013E;
-        Wed, 15 Jul 2020 04:28:10 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 842885C018E;
+        Wed, 15 Jul 2020 04:28:12 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 15 Jul 2020 04:28:10 -0400
+  by compute4.internal (MEProxy); Wed, 15 Jul 2020 04:28:12 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=dqRa5IzjOLAmalr3b6EARGESHCkXJYChxR2tWJPao20=; b=br0j7hTO
-        PGpHm0FnS8wjcG8lCr847/mC/g0lXZpIih+ARXLZ9zlF4MpfY237qiKYsMEfEoTr
-        1dU0sJAL8CSWS9k/K9zSBBd/UZB8jRq7Fp0D9KBFzRM1n719osxvS7st//3ryJIt
-        dHRZShOXEEYjYI9u5YX1thgHUge8ggUqsQK50p+6diQDporql6xjdv60Gow6JHx3
-        RgIbpiHV9YqRR6cfKw38td+fZ6kOo6J2GZp8g3NH/k2pzFtTlX3eAmR6vBDP91zp
-        oXJynWZIgOHPPzWVLcb1SrekedeDN0dKWXfmjQcCHSzAIe8eLChz0ODyWh75v7AI
-        oCesgJj4P6g0+g==
-X-ME-Sender: <xms:Gr4OX1RO52wAGEc9Jm7iLrFk7Vf2WReGO6cwZ5zNmAFdgp97srxr3g>
+        fm3; bh=oqL9Hdk4JBuTvOByVKi3TzjHsfMon9izb556kDb8m9I=; b=mrozotMU
+        lyy2V9fAklr9YipTTm2agVIefB+e03QE0/R0W09mfGZMzwr8AvS1bUjulFHyLQhy
+        yO0O3a3zxTL24BLTlXenpodmTmYnC2aCpveGVTaHihDkENKawcCNZLCklAHPamWz
+        7E9sW5qMNJx3skxc9juD26wRjolUIfemc5oXQY2Ql9KTU7FX6A8cErRnVKr97mpb
+        Pym6d4JWyWJHw/p2oXvBxuW2mLy/1cs0J1s54YEf5V+h0C4+YUk2W6n7B1Ep40gj
+        HXJftd4TGwyJ8MER9DFAtsTU6YMqhPWUp0YOLA4Rb3mezXuJPHmr8WMj/eRtckuU
+        SLSbQyUj6HuWiQ==
+X-ME-Sender: <xms:HL4OX9t6wBWc93qXXRdzQaf0hIk3qU-YdVPoLfLfhoBwTJdyWlCF2A>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedvgddtgecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -36,21 +36,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedvgddtgecutefuodetggdote
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieehrddufeelrddukedt
     necuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:Gr4OX-ztQYRDXlQVMbknCY5e0nYVAunCdqkBZYSaccgIs2MPZTwxFg>
-    <xmx:Gr4OX62txICisKGkYgx5GqUpMp4kqshg7s6Ecm0h7qh0Y1FyCA43Hg>
-    <xmx:Gr4OX9DMJu7slDWmvIb-Vmz4fztqIW6gFMYFweblkvDVoU6lw5-pTg>
-    <xmx:Gr4OXxsbEorMew0Vz54dwkNf4hEgfs2UgFU_THp4822-Y1SBrYqVwg>
+X-ME-Proxy: <xmx:HL4OX2ctL6UZWmVaQ3eiwV5EqpDG4Wpn54qD1DNQ5gbvuaay08EwNA>
+    <xmx:HL4OXww3NdzSZBvJeZLz_1ou_GNK0yg0vh8UXGUF8YLhaxP89wzmpg>
+    <xmx:HL4OX0OkEP47C00xwFbhAY60hLoFRDdS35HLuvfvOXByYltmDx0PgQ>
+    <xmx:HL4OX_JQWZXGGIBoD9tHcUWec9Zr7h6ocf22hfuynG7mrTJlevA8FA>
 Received: from shredder.mtl.com (bzq-109-65-139-180.red.bezeqint.net [109.65.139.180])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 82FE43280064;
-        Wed, 15 Jul 2020 04:28:08 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 963C83280063;
+        Wed, 15 Jul 2020 04:28:10 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         petrm@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 04/11] mlxsw: spectrum_policer: Add devlink resource support
-Date:   Wed, 15 Jul 2020 11:27:26 +0300
-Message-Id: <20200715082733.429610-5-idosch@idosch.org>
+Subject: [PATCH net-next 05/11] mlxsw: core_acl_flex_actions: Work around hardware limitation
+Date:   Wed, 15 Jul 2020 11:27:27 +0300
+Message-Id: <20200715082733.429610-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200715082733.429610-1-idosch@idosch.org>
 References: <20200715082733.429610-1-idosch@idosch.org>
@@ -63,198 +63,206 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Expose via devlink-resource the maximum number of single-rate policers
-and their current occupancy. Example:
+In the policy engine, each ACL rule points to an action block where the
+ACL actions are stored. Each action block consists of one or more action
+sets. Each action set holds one or more individual actions, up to a
+maximum queried from the device. For example:
 
-$ devlink resource show pci/0000:01:00.0
-...
-  name global_policers size 1000 unit entry dpipe_tables none
-    resources:
-      name single_rate_policers size 968 occ 0 unit entry dpipe_tables none
+                        Action set #1               Action set #2
+
++----------+          +--------------+            +--------------+
+| ACL rule +---------->  Action #1   |      +----->  Action #4   |
++----------+          +--------------+      |     +--------------+
+                      |  Action #2   |      |     |  Action #5   |
+                      +--------------+      |     +--------------+
+                      |  Action #3   +------+     |              |
+                      +--------------+            +--------------+
+
+                      <---------+ Action block +----------------->
+
+The hardware has a limitation that prevents a policing action
+(MLXSW_AFA_POLCNT_CODE when used with a policer, not a counter) from
+being configured in the same action set with a trap action (i.e.,
+MLXSW_AFA_TRAP_CODE or MLXSW_AFA_TRAPWU_CODE). Note that the latter used
+to implement multiple actions: 'trap', 'mirred', 'drop'.
+
+Work around this limitation by teaching mlxsw_afa_block_append_action()
+to create a new action set not only when there is no more room left in
+the current set, but also when there is a conflict between previously
+mentioned actions.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Reviewed-by: Petr Machata <petrm@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  8 +++
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  3 +
- .../mellanox/mlxsw/spectrum_policer.c         | 65 +++++++++++++++++++
- 3 files changed, 76 insertions(+)
+ .../mellanox/mlxsw/core_acl_flex_actions.c    | 87 +++++++++++++++----
+ 1 file changed, 71 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index c6ab61818800..519eb44e4097 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3352,6 +3352,10 @@ static int mlxsw_sp1_resources_register(struct mlxsw_core *mlxsw_core)
- 	if (err)
- 		goto err_resources_counter_register;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
+index 30a7d5afdec7..06a43913b9ce 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
+@@ -88,9 +88,11 @@ struct mlxsw_afa_set {
+ 	struct rhash_head ht_node;
+ 	struct mlxsw_afa_set_ht_key ht_key;
+ 	u32 kvdl_index;
+-	bool shared; /* Inserted in hashtable (doesn't mean that
++	u8 shared:1, /* Inserted in hashtable (doesn't mean that
+ 		      * kvdl_index is valid).
+ 		      */
++	   has_trap:1,
++	   has_police:1;
+ 	unsigned int ref_count;
+ 	struct mlxsw_afa_set *next; /* Pointer to the next set. */
+ 	struct mlxsw_afa_set *prev; /* Pointer to the previous set,
+@@ -839,16 +841,38 @@ mlxsw_afa_cookie_ref_create(struct mlxsw_afa_block *block,
+ #define MLXSW_AFA_ONE_ACTION_LEN 32
+ #define MLXSW_AFA_PAYLOAD_OFFSET 4
  
-+	err = mlxsw_sp_policer_resources_register(mlxsw_core);
-+	if (err)
-+		goto err_resources_counter_register;
+-static char *mlxsw_afa_block_append_action(struct mlxsw_afa_block *block,
+-					   u8 action_code, u8 action_size)
++enum mlxsw_afa_action_type {
++	MLXSW_AFA_ACTION_TYPE_TRAP,
++	MLXSW_AFA_ACTION_TYPE_POLICE,
++	MLXSW_AFA_ACTION_TYPE_OTHER,
++};
 +
- 	return 0;
- 
- err_resources_counter_register:
-@@ -3376,6 +3380,10 @@ static int mlxsw_sp2_resources_register(struct mlxsw_core *mlxsw_core)
- 	if (err)
- 		goto err_resources_counter_register;
- 
-+	err = mlxsw_sp_policer_resources_register(mlxsw_core);
-+	if (err)
-+		goto err_resources_counter_register;
-+
- 	return 0;
- 
- err_resources_counter_register:
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index 82227e87ef7c..defe1d82d83e 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -62,6 +62,8 @@ enum mlxsw_sp_resource_id {
- 	MLXSW_SP_RESOURCE_COUNTERS,
- 	MLXSW_SP_RESOURCE_COUNTERS_FLOW,
- 	MLXSW_SP_RESOURCE_COUNTERS_RIF,
-+	MLXSW_SP_RESOURCE_GLOBAL_POLICERS,
-+	MLXSW_SP_RESOURCE_SINGLE_RATE_POLICERS,
- };
- 
- struct mlxsw_sp_port;
-@@ -1227,5 +1229,6 @@ int mlxsw_sp_policer_drops_counter_get(struct mlxsw_sp *mlxsw_sp,
- 				       u16 policer_index, u64 *p_drops);
- int mlxsw_sp_policers_init(struct mlxsw_sp *mlxsw_sp);
- void mlxsw_sp_policers_fini(struct mlxsw_sp *mlxsw_sp);
-+int mlxsw_sp_policer_resources_register(struct mlxsw_core *mlxsw_core);
- 
- #endif
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c
-index 74766e936e0a..39052e5c12fd 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c
-@@ -5,6 +5,7 @@
- #include <linux/log2.h>
- #include <linux/mutex.h>
- #include <linux/netlink.h>
-+#include <net/devlink.h>
- 
- #include "spectrum.h"
- 
-@@ -16,6 +17,7 @@ struct mlxsw_sp_policer_family {
- 	u16 end_index; /* Exclusive */
- 	struct idr policer_idr;
- 	struct mutex lock; /* Protects policer_idr */
-+	atomic_t policers_count;
- 	const struct mlxsw_sp_policer_family_ops *ops;
- };
- 
-@@ -67,10 +69,18 @@ static u8 mlxsw_sp_policer_burst_bytes_hw_units(u64 burst_bytes)
- 	return fls64(bs512) - 1;
- }
- 
-+static u64 mlxsw_sp_policer_single_rate_occ_get(void *priv)
++static bool
++mlxsw_afa_block_need_split(const struct mlxsw_afa_block *block,
++			   enum mlxsw_afa_action_type type)
 +{
-+	struct mlxsw_sp_policer_family *family = priv;
++	struct mlxsw_afa_set *cur_set = block->cur_set;
 +
-+	return atomic_read(&family->policers_count);
++	/* Due to a hardware limitation, police action cannot be in the same
++	 * action set with MLXSW_AFA_TRAP_CODE or MLXSW_AFA_TRAPWU_CODE
++	 * actions. Work around this limitation by creating a new action set
++	 * and place the new action there.
++	 */
++	return (cur_set->has_trap && type == MLXSW_AFA_ACTION_TYPE_POLICE) ||
++	       (cur_set->has_police && type == MLXSW_AFA_ACTION_TYPE_TRAP);
 +}
 +
- static int
- mlxsw_sp_policer_single_rate_family_init(struct mlxsw_sp_policer_family *family)
++static char *mlxsw_afa_block_append_action_ext(struct mlxsw_afa_block *block,
++					       u8 action_code, u8 action_size,
++					       enum mlxsw_afa_action_type type)
  {
- 	struct mlxsw_core *core = family->mlxsw_sp->core;
-+	struct devlink *devlink;
+ 	char *oneact;
+ 	char *actions;
  
- 	/* CPU policers are allocated from the first N policers in the global
- 	 * range, so skip them.
-@@ -82,12 +92,24 @@ mlxsw_sp_policer_single_rate_family_init(struct mlxsw_sp_policer_family *family)
- 	family->start_index = MLXSW_CORE_RES_GET(core, MAX_CPU_POLICERS);
- 	family->end_index = MLXSW_CORE_RES_GET(core, MAX_GLOBAL_POLICERS);
+ 	if (block->finished)
+ 		return ERR_PTR(-EINVAL);
+-	if (block->cur_act_index + action_size >
+-	    block->afa->max_acts_per_set) {
++	if (block->cur_act_index + action_size > block->afa->max_acts_per_set ||
++	    mlxsw_afa_block_need_split(block, type)) {
+ 		struct mlxsw_afa_set *set;
  
-+	atomic_set(&family->policers_count, 0);
-+	devlink = priv_to_devlink(core);
-+	devlink_resource_occ_get_register(devlink,
-+					  MLXSW_SP_RESOURCE_SINGLE_RATE_POLICERS,
-+					  mlxsw_sp_policer_single_rate_occ_get,
-+					  family);
+ 		/* The appended action won't fit into the current action set,
+@@ -863,6 +887,17 @@ static char *mlxsw_afa_block_append_action(struct mlxsw_afa_block *block,
+ 		block->cur_set = set;
+ 	}
+ 
++	switch (type) {
++	case MLXSW_AFA_ACTION_TYPE_TRAP:
++		block->cur_set->has_trap = true;
++		break;
++	case MLXSW_AFA_ACTION_TYPE_POLICE:
++		block->cur_set->has_police = true;
++		break;
++	default:
++		break;
++	}
 +
- 	return 0;
+ 	actions = block->cur_set->ht_key.enc_actions;
+ 	oneact = actions + block->cur_act_index * MLXSW_AFA_ONE_ACTION_LEN;
+ 	block->cur_act_index += action_size;
+@@ -870,6 +905,14 @@ static char *mlxsw_afa_block_append_action(struct mlxsw_afa_block *block,
+ 	return oneact + MLXSW_AFA_PAYLOAD_OFFSET;
  }
  
- static void
- mlxsw_sp_policer_single_rate_family_fini(struct mlxsw_sp_policer_family *family)
- {
-+	struct devlink *devlink = priv_to_devlink(family->mlxsw_sp->core);
-+
-+	devlink_resource_occ_get_unregister(devlink,
-+					    MLXSW_SP_RESOURCE_SINGLE_RATE_POLICERS);
-+	WARN_ON(atomic_read(&family->policers_count) != 0);
- }
- 
- static int
-@@ -104,6 +126,7 @@ mlxsw_sp_policer_single_rate_index_alloc(struct mlxsw_sp_policer_family *family,
- 	if (id < 0)
- 		return id;
- 
-+	atomic_inc(&family->policers_count);
- 	policer->index = id;
- 
- 	return 0;
-@@ -115,6 +138,8 @@ mlxsw_sp_policer_single_rate_index_free(struct mlxsw_sp_policer_family *family,
- {
- 	struct mlxsw_sp_policer *policer;
- 
-+	atomic_dec(&family->policers_count);
-+
- 	mutex_lock(&family->lock);
- 	policer = idr_remove(&family->policer_idr, policer_index);
- 	mutex_unlock(&family->lock);
-@@ -376,6 +401,46 @@ void mlxsw_sp_policers_fini(struct mlxsw_sp *mlxsw_sp)
- 	kfree(mlxsw_sp->policer_core);
- }
- 
-+int mlxsw_sp_policer_resources_register(struct mlxsw_core *mlxsw_core)
++static char *mlxsw_afa_block_append_action(struct mlxsw_afa_block *block,
++					   u8 action_code, u8 action_size)
 +{
-+	u64 global_policers, cpu_policers, single_rate_policers;
-+	struct devlink *devlink = priv_to_devlink(mlxsw_core);
-+	struct devlink_resource_size_params size_params;
-+	int err;
-+
-+	if (!MLXSW_CORE_RES_VALID(mlxsw_core, MAX_GLOBAL_POLICERS) ||
-+	    !MLXSW_CORE_RES_VALID(mlxsw_core, MAX_CPU_POLICERS))
-+		return -EIO;
-+
-+	global_policers = MLXSW_CORE_RES_GET(mlxsw_core, MAX_GLOBAL_POLICERS);
-+	cpu_policers = MLXSW_CORE_RES_GET(mlxsw_core, MAX_CPU_POLICERS);
-+	single_rate_policers = global_policers - cpu_policers;
-+
-+	devlink_resource_size_params_init(&size_params, global_policers,
-+					  global_policers, 1,
-+					  DEVLINK_RESOURCE_UNIT_ENTRY);
-+	err = devlink_resource_register(devlink, "global_policers",
-+					global_policers,
-+					MLXSW_SP_RESOURCE_GLOBAL_POLICERS,
-+					DEVLINK_RESOURCE_ID_PARENT_TOP,
-+					&size_params);
-+	if (err)
-+		return err;
-+
-+	devlink_resource_size_params_init(&size_params, single_rate_policers,
-+					  single_rate_policers, 1,
-+					  DEVLINK_RESOURCE_UNIT_ENTRY);
-+	err = devlink_resource_register(devlink, "single_rate_policers",
-+					single_rate_policers,
-+					MLXSW_SP_RESOURCE_SINGLE_RATE_POLICERS,
-+					MLXSW_SP_RESOURCE_GLOBAL_POLICERS,
-+					&size_params);
-+	if (err)
-+		return err;
-+
-+	return 0;
++	return mlxsw_afa_block_append_action_ext(block, action_code,
++						 action_size,
++						 MLXSW_AFA_ACTION_TYPE_OTHER);
 +}
 +
- static int
- mlxsw_sp1_policer_core_init(struct mlxsw_sp_policer_core *policer_core)
+ /* VLAN Action
+  * -----------
+  * VLAN action is used for manipulating VLANs. It can be used to implement QinQ,
+@@ -1048,11 +1091,20 @@ mlxsw_afa_trap_mirror_pack(char *payload, bool mirror_enable,
+ 	mlxsw_afa_trap_mirror_agent_set(payload, mirror_agent);
+ }
+ 
++static char *mlxsw_afa_block_append_action_trap(struct mlxsw_afa_block *block,
++						u8 action_code, u8 action_size)
++{
++	return mlxsw_afa_block_append_action_ext(block, action_code,
++						 action_size,
++						 MLXSW_AFA_ACTION_TYPE_TRAP);
++}
++
+ static int mlxsw_afa_block_append_drop_plain(struct mlxsw_afa_block *block,
+ 					     bool ingress)
  {
+-	char *act = mlxsw_afa_block_append_action(block, MLXSW_AFA_TRAP_CODE,
+-						  MLXSW_AFA_TRAP_SIZE);
++	char *act = mlxsw_afa_block_append_action_trap(block,
++						       MLXSW_AFA_TRAP_CODE,
++						       MLXSW_AFA_TRAP_SIZE);
+ 
+ 	if (IS_ERR(act))
+ 		return PTR_ERR(act);
+@@ -1081,8 +1133,8 @@ mlxsw_afa_block_append_drop_with_cookie(struct mlxsw_afa_block *block,
+ 	}
+ 	cookie_index = cookie_ref->cookie->cookie_index;
+ 
+-	act = mlxsw_afa_block_append_action(block, MLXSW_AFA_TRAPWU_CODE,
+-					    MLXSW_AFA_TRAPWU_SIZE);
++	act = mlxsw_afa_block_append_action_trap(block, MLXSW_AFA_TRAPWU_CODE,
++						 MLXSW_AFA_TRAPWU_SIZE);
+ 	if (IS_ERR(act)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Cannot append drop with cookie action");
+ 		err = PTR_ERR(act);
+@@ -1113,8 +1165,9 @@ EXPORT_SYMBOL(mlxsw_afa_block_append_drop);
+ 
+ int mlxsw_afa_block_append_trap(struct mlxsw_afa_block *block, u16 trap_id)
+ {
+-	char *act = mlxsw_afa_block_append_action(block, MLXSW_AFA_TRAP_CODE,
+-						  MLXSW_AFA_TRAP_SIZE);
++	char *act = mlxsw_afa_block_append_action_trap(block,
++						       MLXSW_AFA_TRAP_CODE,
++						       MLXSW_AFA_TRAP_SIZE);
+ 
+ 	if (IS_ERR(act))
+ 		return PTR_ERR(act);
+@@ -1127,8 +1180,9 @@ EXPORT_SYMBOL(mlxsw_afa_block_append_trap);
+ int mlxsw_afa_block_append_trap_and_forward(struct mlxsw_afa_block *block,
+ 					    u16 trap_id)
+ {
+-	char *act = mlxsw_afa_block_append_action(block, MLXSW_AFA_TRAP_CODE,
+-						  MLXSW_AFA_TRAP_SIZE);
++	char *act = mlxsw_afa_block_append_action_trap(block,
++						       MLXSW_AFA_TRAP_CODE,
++						       MLXSW_AFA_TRAP_SIZE);
+ 
+ 	if (IS_ERR(act))
+ 		return PTR_ERR(act);
+@@ -1199,9 +1253,10 @@ static int
+ mlxsw_afa_block_append_allocated_mirror(struct mlxsw_afa_block *block,
+ 					u8 mirror_agent)
+ {
+-	char *act = mlxsw_afa_block_append_action(block,
+-						  MLXSW_AFA_TRAP_CODE,
+-						  MLXSW_AFA_TRAP_SIZE);
++	char *act = mlxsw_afa_block_append_action_trap(block,
++						       MLXSW_AFA_TRAP_CODE,
++						       MLXSW_AFA_TRAP_SIZE);
++
+ 	if (IS_ERR(act))
+ 		return PTR_ERR(act);
+ 	mlxsw_afa_trap_pack(act, MLXSW_AFA_TRAP_TRAP_ACTION_NOP,
 -- 
 2.26.2
 
