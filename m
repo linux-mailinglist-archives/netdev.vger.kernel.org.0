@@ -2,28 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF16220259
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 04:31:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3AA322026A
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 04:36:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727891AbgGOCbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 22:31:36 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:52448 "EHLO huawei.com"
+        id S1728261AbgGOCgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 22:36:33 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7311 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726933AbgGOCbg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Jul 2020 22:31:36 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 663955E75DFDB15AD290;
-        Wed, 15 Jul 2020 10:31:33 +0800 (CST)
-Received: from localhost (10.174.179.108) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Wed, 15 Jul 2020
- 10:31:24 +0800
+        id S1726396AbgGOCgc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 22:36:32 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 61C1CC4947A849700C36;
+        Wed, 15 Jul 2020 10:36:30 +0800 (CST)
+Received: from localhost (10.174.179.108) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Wed, 15 Jul 2020
+ 10:36:23 +0800
 From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <yuehaibing@huawei.com>,
-        <fw@strlen.de>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net: flow: Remove unused inline function
-Date:   Wed, 15 Jul 2020 10:31:19 +0800
-Message-ID: <20200715023119.22108-1-yuehaibing@huawei.com>
+To:     <mathew.j.martineau@linux.intel.com>,
+        <matthieu.baerts@tessares.net>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <mptcp@lists.01.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] mptcp: Remove unused inline function mptcp_rcv_synsent()
+Date:   Wed, 15 Jul 2020 10:36:13 +0800
+Message-ID: <20200715023613.9492-1-yuehaibing@huawei.com>
 X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -34,42 +36,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is not used since commit 09c7570480f7 ("xfrm: remove flow cache")
+commit 263e1201a2c3 ("mptcp: consolidate synack processing.")
+left behind this, remove it.
 
 Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- include/net/flow.h | 18 ------------------
- 1 file changed, 18 deletions(-)
+ include/net/mptcp.h | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/include/net/flow.h b/include/net/flow.h
-index a50fb77a0b27..929d3ca614d0 100644
---- a/include/net/flow.h
-+++ b/include/net/flow.h
-@@ -204,24 +204,6 @@ static inline struct flowi *flowidn_to_flowi(struct flowidn *fldn)
- 	return container_of(fldn, struct flowi, u.dn);
+diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+index 46d0487d2b22..02158c257bd4 100644
+--- a/include/net/mptcp.h
++++ b/include/net/mptcp.h
+@@ -164,10 +164,6 @@ static inline bool mptcp_syn_options(struct sock *sk, const struct sk_buff *skb,
+ 	return false;
  }
  
--typedef unsigned long flow_compare_t;
--
--static inline unsigned int flow_key_size(u16 family)
+-static inline void mptcp_rcv_synsent(struct sock *sk)
 -{
--	switch (family) {
--	case AF_INET:
--		BUILD_BUG_ON(sizeof(struct flowi4) % sizeof(flow_compare_t));
--		return sizeof(struct flowi4) / sizeof(flow_compare_t);
--	case AF_INET6:
--		BUILD_BUG_ON(sizeof(struct flowi6) % sizeof(flow_compare_t));
--		return sizeof(struct flowi6) / sizeof(flow_compare_t);
--	case AF_DECnet:
--		BUILD_BUG_ON(sizeof(struct flowidn) % sizeof(flow_compare_t));
--		return sizeof(struct flowidn) / sizeof(flow_compare_t);
--	}
--	return 0;
 -}
 -
- __u32 __get_hash_from_flowi6(const struct flowi6 *fl6, struct flow_keys *keys);
- 
- #endif
+ static inline bool mptcp_synack_options(const struct request_sock *req,
+ 					unsigned int *size,
+ 					struct mptcp_out_options *opts)
 -- 
 2.17.1
 
