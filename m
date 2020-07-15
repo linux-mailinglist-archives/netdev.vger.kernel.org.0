@@ -2,139 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA00B22173C
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 23:44:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA48322174B
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 23:47:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727814AbgGOVnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 17:43:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727851AbgGOVna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 17:43:30 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75F3C08C5DD
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 14:43:29 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id r17so4559613ybj.22
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 14:43:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=ml+sd9PV8EvUQ7KhKL77+R7Whg5aSMZ83owFPqGx5e8=;
-        b=M/9Hf/LTNpql/NGtl2rSNbltCgdU1qoTHNtmZZUDdz0zlA0Aa06tg9Kkwk7FHflyJS
-         isS2O8ZMpKycgy1QcsYrUqiI3Zdb/BQOQ7t+hVTG+qAOzNUZAE6SqqIm2r+qfLtDrHYN
-         qPgIK0EKZdOrAewBpkokymRzmBm16vTyias/uArmk+hlpgIqB8JLMDvW3TsA3/URW4Ip
-         JlkT8QPtzTuvT6ZhsQiWisV5ujGrv6bNErH1zNUaaAef9VaC04g91+QgZ+C85PDs+U12
-         xZ0fvZGtpFoI4O95ol4TMYUTXzjYDAtvJyKg43cqjVvlZPCxHJzMAhTiVZW8lOdlA9w5
-         YVoQ==
+        id S1727798AbgGOVq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 17:46:57 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:43205 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726370AbgGOVq4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 17:46:56 -0400
+Received: by mail-io1-f67.google.com with SMTP id k23so3870427iom.10;
+        Wed, 15 Jul 2020 14:46:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=ml+sd9PV8EvUQ7KhKL77+R7Whg5aSMZ83owFPqGx5e8=;
-        b=ZxBCy1Jgs+8zAbplTfGySATeCLbL52cErtR/UZpeSA7oBLb/RWwp9eDkKHCSJK8lO8
-         TxozNFnX+0HeEpnYaJ2P+tlmYmYJoNucKe6ryPCKPudLLRTxNDc3lf+aXNJnB5yJMtjh
-         OtYhft/5G55KYP4Z5BKQlpe2LqYdM80cZpUYDFhqO3lSUmXt7SiwDQfTohHMxB4v+dkS
-         SZK42DTUPLzCwTuTlo/DPZEFPP3DdCpEQh/5rd8+XX6lAIOki2jqz+wGf9CZxs/gtMR7
-         jPdNOMPTnUaX9HY4H8nN+vQHLTjSr7IIqWURJ0Js1qitZk7hCiD4k3T+HuqdBjFiYnZH
-         e0tQ==
-X-Gm-Message-State: AOAM531GOpIaCNolmPT2TYxkrtDMOtUolDSNtb4gfa3ZOr+XzqyKAPaG
-        LUbe7F23skAwqbeRzpLFMfZTw0w9sRVSlwsYa0bO4iMzlunzQLG5++cfddlA/8io+CZ+apX6RIT
-        0rnBKB9a9AxPvFV6VyDiwCUTP9ubyMXQdob0y91bSrJjUP1qR9XAeIyX3iKZLSQ==
-X-Google-Smtp-Source: ABdhPJynHiusihyK/x2cYRfD3Qc6KyMIcpBUhTWUSKqKGSV5IUy21FYmh6OBCc+FPihODrmESwIwn7GbZ8k=
-X-Received: by 2002:a25:ac02:: with SMTP id w2mr1734259ybi.57.1594849408882;
- Wed, 15 Jul 2020 14:43:28 -0700 (PDT)
-Date:   Wed, 15 Jul 2020 14:43:12 -0700
-In-Reply-To: <20200715214312.2266839-1-haoluo@google.com>
-Message-Id: <20200715214312.2266839-3-haoluo@google.com>
-Mime-Version: 1.0
-References: <20200715214312.2266839-1-haoluo@google.com>
-X-Mailer: git-send-email 2.27.0.389.gc38d7665816-goog
-Subject: [RFC PATCH bpf-next 2/2] selftests/bpf: Test __ksym externs with BTF
-From:   Hao Luo <haoluo@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8X1vTbH+xw2rCtV8oFWi4+4P5U4mLPjeUc+S5jha1dI=;
+        b=CD0MBXrfyiYFyvNMEbpo9r3X2YxyYRGnfjENQSg+aWtRe5RYuOBYFkL5roTO1vZ0DA
+         Aj7b1PfQEag/VmLmzf160N/gUvsd9aOFMHzDulN3kXoLcFsUQCMtKfLmAkRzcculn2Mo
+         Aua/QpxG9dFpIK7vunXLNfXCKrOuwI3MFZO5YBAJ+8P0pSBV9DwdkD3NNvWQ43zaqsx7
+         Cz5Xd5dEMr1UZtKFnvbLRJbqug4AJj6MXpYFiKE/9Ya6v9hM3iqdRMbGTcAG36NDMNqF
+         uLDRzc6QmivlYuTpeF/g8DLryuZFW9K2pveZi5BconobU7r29BWGFSxdT8sgAuwVajJL
+         5akg==
+X-Gm-Message-State: AOAM531ceMbADn/buTtlUA72v2bUZn80bHF87Jtw+O8U5w1v46qxFK5H
+        pafhPUUq/6qkdTDz8RHdQA==
+X-Google-Smtp-Source: ABdhPJyzuv6RdWuDkioL49WymJzxtFy1VHPX3fMw2CtZy0VDQtTxfVBdWTwCsbTEYs0hrDISr0c6PQ==
+X-Received: by 2002:a6b:3f57:: with SMTP id m84mr1241019ioa.99.1594849615577;
+        Wed, 15 Jul 2020 14:46:55 -0700 (PDT)
+Received: from xps15 ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id c14sm1623116ild.41.2020.07.15.14.46.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2020 14:46:55 -0700 (PDT)
+Received: (nullmailer pid 872990 invoked by uid 1000);
+        Wed, 15 Jul 2020 21:46:53 -0000
+Date:   Wed, 15 Jul 2020 15:46:53 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Cc:     robh+dt@kernel.org, leon@kernel.org, wg@grandegger.com,
+        mkl@pengutronix.de, kuba@kernel.org, dmurphy@ti.com,
+        krzk@kernel.org, masahiroy@kernel.org, linux-can@vger.kernel.org,
+        sriram.dash@samsung.com, netdev@vger.kernel.org,
+        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
+        hpeter@gmail.com, devicetree@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH] Replace HTTP links with HTTPS ones: CAN network drivers
+Message-ID: <20200715214653.GA872937@bogus>
+References: <20200705075606.22802-1-grandmaster@al2klimov.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200705075606.22802-1-grandmaster@al2klimov.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend ksyms.c selftest to make sure BTF enables direct loads of ksyms.
+On Sun, 05 Jul 2020 09:56:06 +0200, Alexander A. Klimov wrote:
+> Rationale:
+> Reduces attack surface on kernel devs opening the links for MITM
+> as HTTPS traffic is much harder to manipulate.
+> 
+> Deterministic algorithm:
+> For each file:
+>   If not .svg:
+>     For each line:
+>       If doesn't contain `\bxmlns\b`:
+>         For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
+>           If both the HTTP and HTTPS versions
+>           return 200 OK and serve the same content:
+>             Replace HTTP with HTTPS.
+> 
+> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+> ---
+>  Continuing my work started at 93431e0607e5.
+> 
+>  If there are any URLs to be removed completely or at least not HTTPSified:
+>  Just clearly say so and I'll *undo my change*.
+>  See also https://lkml.org/lkml/2020/6/27/64
+> 
+>  If there are any valid, but yet not changed URLs:
+>  See https://lkml.org/lkml/2020/6/26/837
+> 
+>  Documentation/devicetree/bindings/net/can/grcan.txt |  2 +-
+>  drivers/net/can/grcan.c                             |  2 +-
+>  drivers/net/can/m_can/m_can.c                       |  2 +-
+>  drivers/net/can/m_can/m_can.h                       |  2 +-
+>  drivers/net/can/m_can/m_can_platform.c              |  2 +-
+>  drivers/net/can/m_can/tcan4x5x.c                    |  2 +-
+>  drivers/net/can/sja1000/Kconfig                     | 12 ++++++------
+>  drivers/net/can/sja1000/tscan1.c                    |  2 +-
+>  drivers/net/can/slcan.c                             |  2 +-
+>  drivers/net/can/ti_hecc.c                           |  4 ++--
+>  drivers/net/can/usb/Kconfig                         |  6 +++---
+>  11 files changed, 19 insertions(+), 19 deletions(-)
+> 
 
-Note that test is done against the kernel btf extended with kernel VARs.
-
-Signed-off-by: Hao Luo <haoluo@google.com>
----
- tools/testing/selftests/bpf/prog_tests/ksyms.c |  2 ++
- tools/testing/selftests/bpf/progs/test_ksyms.c | 14 ++++++++++++++
- 2 files changed, 16 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms.c b/tools/testing/selftests/bpf/prog_tests/ksyms.c
-index e3d6777226a8..0e7f3bc3b0ae 100644
---- a/tools/testing/selftests/bpf/prog_tests/ksyms.c
-+++ b/tools/testing/selftests/bpf/prog_tests/ksyms.c
-@@ -65,6 +65,8 @@ void test_ksyms(void)
- 	      "got %llu, exp %llu\n", data->out__btf_size, btf_size);
- 	CHECK(data->out__per_cpu_start != 0, "__per_cpu_start",
- 	      "got %llu, exp %llu\n", data->out__per_cpu_start, (__u64)0);
-+	CHECK(data->out__rq_cpu != 0, "rq_cpu",
-+	      "got %llu, exp %llu\n", data->out__rq_cpu, (__u64)0);
- 
- cleanup:
- 	test_ksyms__destroy(skel);
-diff --git a/tools/testing/selftests/bpf/progs/test_ksyms.c b/tools/testing/selftests/bpf/progs/test_ksyms.c
-index 6c9cbb5a3bdf..e777603757e5 100644
---- a/tools/testing/selftests/bpf/progs/test_ksyms.c
-+++ b/tools/testing/selftests/bpf/progs/test_ksyms.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2019 Facebook */
- 
-+#include "vmlinux.h"
- #include <stdbool.h>
- #include <linux/bpf.h>
- #include <bpf/bpf_helpers.h>
-@@ -9,11 +10,13 @@ __u64 out__bpf_link_fops = -1;
- __u64 out__bpf_link_fops1 = -1;
- __u64 out__btf_size = -1;
- __u64 out__per_cpu_start = -1;
-+__u64 out__rq_cpu = -1;
- 
- extern const void bpf_link_fops __ksym;
- extern const void __start_BTF __ksym;
- extern const void __stop_BTF __ksym;
- extern const void __per_cpu_start __ksym;
-+extern const void runqueues __ksym;
- /* non-existing symbol, weak, default to zero */
- extern const void bpf_link_fops1 __ksym __weak;
- 
-@@ -29,4 +32,15 @@ int handler(const void *ctx)
- 	return 0;
- }
- 
-+SEC("tp_btf/sys_enter")
-+int handler_tp_btf(const void *ctx)
-+{
-+	const struct rq *rq = &runqueues;
-+
-+	/* rq now points to the runqueue of cpu 0. */
-+	out__rq_cpu = rq->cpu;
-+
-+	return 0;
-+}
-+
- char _license[] SEC("license") = "GPL";
--- 
-2.27.0.389.gc38d7665816-goog
-
+Acked-by: Rob Herring <robh@kernel.org>
