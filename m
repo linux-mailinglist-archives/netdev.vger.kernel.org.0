@@ -2,77 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD363220253
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 04:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF16220259
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 04:31:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbgGOC20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jul 2020 22:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53132 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725977AbgGOC2Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jul 2020 22:28:25 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C961C061755
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 19:28:25 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id a1so432629edt.10
-        for <netdev@vger.kernel.org>; Tue, 14 Jul 2020 19:28:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NzQjEy96mwvK5RqK1HselxgI2oA5I911Qdx2GNiQhg0=;
-        b=pd8yJsIzUV+lmtpXyBfCDr7n3+H80zSFriHlcIPUQEshJKvvGy7eE8F14z2Me5kfma
-         VchPpX69Esx3VqPLBaPtWBzKR87WMmuAAWVk6Zxbb59t8akiJqxXSK2gY6bFjn29yKdB
-         u5gQKb2NXD0jidguQUC5MRpGj0zHsrpcgQuBsGynE5bZ8s9cVj6Q8jAbJceW4ZopqgQo
-         IvkF1Gx536gA5Y4BkC0O7XTgAUc4PVIK4icnKvo1lQlDCDz3x4NjAf2shtmOTNMFbH8c
-         +IGUMuuj3R2wNaCqM1RuDMeE1vo+SB1yNukyNP1BaeyfimEuy9EkvDvAtPydf4lgXJ5S
-         7CCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NzQjEy96mwvK5RqK1HselxgI2oA5I911Qdx2GNiQhg0=;
-        b=srPGkpUPI3xfNCiJRUra+5gs/p3DLZ50ZWHhNOSa5YSgS6/Nzq+P7+MIFj37kantaw
-         wEvKHnmore55vLuTUrVYmWsaEqHtyfUHTjX9KU4Gdaown3przv14dzJGvgO3CvGZQ+1Y
-         /Mh9Z/SHDrN1CwBURU5dN4vl421Iq04B3Y+n/NaMaV3OI8a041601MzEGchoTxEbOJod
-         t9GBd9KhjFxAnHF/JzSd1sMX6xUovcACLxD5xL3Lmz5MWW7FucKTvre0yPfLMIqyyxUT
-         Xmgv99K6kCsJjKQDk0vz0pxB1+NvWbl+r/ioJWnfuyuP7+iFTH4I7ua/U5Pl0DxzpgX/
-         qO/w==
-X-Gm-Message-State: AOAM532EUozt3SjO/01oEQl2DHLIsGqBkeJj2sN2QSqKiYZ7CMlgs8IH
-        Z8uLAGp/yNKVH1yaDaCk83aLwVntMhiGJ4uBtAqt
-X-Google-Smtp-Source: ABdhPJwC+iS+MYu3jbSKussTXFfhjkiopLyiCmfWTihVgPblMmDRROS4S+1ydwyZ0bTIgA2yjuH02BgGUJUMI4Q0zDU=
-X-Received: by 2002:a05:6402:742:: with SMTP id p2mr7142885edy.135.1594780103839;
- Tue, 14 Jul 2020 19:28:23 -0700 (PDT)
+        id S1727891AbgGOCbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jul 2020 22:31:36 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:52448 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726933AbgGOCbg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Jul 2020 22:31:36 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 663955E75DFDB15AD290;
+        Wed, 15 Jul 2020 10:31:33 +0800 (CST)
+Received: from localhost (10.174.179.108) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Wed, 15 Jul 2020
+ 10:31:24 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <yuehaibing@huawei.com>,
+        <fw@strlen.de>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] net: flow: Remove unused inline function
+Date:   Wed, 15 Jul 2020 10:31:19 +0800
+Message-ID: <20200715023119.22108-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-References: <20200715021846.34096-1-yuehaibing@huawei.com>
-In-Reply-To: <20200715021846.34096-1-yuehaibing@huawei.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 14 Jul 2020 22:28:12 -0400
-Message-ID: <CAHC9VhTPhtx-t7_WucUyKg=y1g_0OiFFs1RdvfuixOUoytWmvA@mail.gmail.com>
-Subject: Re: [PATCH net-next] cipso: Remove unused inline functions
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.108]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 10:21 PM YueHaibing <yuehaibing@huawei.com> wrote:
->
-> They are not used any more since commit b1edeb102397 ("netlabel: Replace
-> protocol/NetLabel linking with refrerence counts")
->
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  include/net/cipso_ipv4.h | 12 ------------
->  1 file changed, 12 deletions(-)
+It is not used since commit 09c7570480f7 ("xfrm: remove flow cache")
 
-Looks good to me, thanks for the patch.
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ include/net/flow.h | 18 ------------------
+ 1 file changed, 18 deletions(-)
 
-Acked-by: Paul Moore <paul@paul-moore.com>
-
+diff --git a/include/net/flow.h b/include/net/flow.h
+index a50fb77a0b27..929d3ca614d0 100644
+--- a/include/net/flow.h
++++ b/include/net/flow.h
+@@ -204,24 +204,6 @@ static inline struct flowi *flowidn_to_flowi(struct flowidn *fldn)
+ 	return container_of(fldn, struct flowi, u.dn);
+ }
+ 
+-typedef unsigned long flow_compare_t;
+-
+-static inline unsigned int flow_key_size(u16 family)
+-{
+-	switch (family) {
+-	case AF_INET:
+-		BUILD_BUG_ON(sizeof(struct flowi4) % sizeof(flow_compare_t));
+-		return sizeof(struct flowi4) / sizeof(flow_compare_t);
+-	case AF_INET6:
+-		BUILD_BUG_ON(sizeof(struct flowi6) % sizeof(flow_compare_t));
+-		return sizeof(struct flowi6) / sizeof(flow_compare_t);
+-	case AF_DECnet:
+-		BUILD_BUG_ON(sizeof(struct flowidn) % sizeof(flow_compare_t));
+-		return sizeof(struct flowidn) / sizeof(flow_compare_t);
+-	}
+-	return 0;
+-}
+-
+ __u32 __get_hash_from_flowi6(const struct flowi6 *fl6, struct flow_keys *keys);
+ 
+ #endif
 -- 
-paul moore
-www.paul-moore.com
+2.17.1
+
+
