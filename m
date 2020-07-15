@@ -2,121 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75499220F68
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 16:34:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F9F220F6D
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 16:35:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728769AbgGOOd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 10:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726828AbgGOOd6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 10:33:58 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA1BFC061755
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 07:33:57 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1jviTs-00027q-Bn; Wed, 15 Jul 2020 16:33:56 +0200
-Date:   Wed, 15 Jul 2020 16:33:56 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Stefano Brivio <sbrivio@redhat.com>
-Cc:     Florian Westphal <fw@strlen.de>, David Ahern <dsahern@gmail.com>,
-        netdev@vger.kernel.org, aconole@redhat.com
-Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
- discovery on encap sockets
-Message-ID: <20200715143356.GQ32005@breakpoint.cc>
-References: <20200712200705.9796-1-fw@strlen.de>
- <20200712200705.9796-2-fw@strlen.de>
- <20200713003813.01f2d5d3@elisabeth>
- <20200713080413.GL32005@breakpoint.cc>
- <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
- <20200713140219.GM32005@breakpoint.cc>
- <20200714143327.2d5b8581@redhat.com>
- <20200715124258.GP32005@breakpoint.cc>
- <20200715153547.77dbaf82@elisabeth>
+        id S1728818AbgGOOe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 10:34:57 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:44397 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726568AbgGOOe4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 10:34:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594823694;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gDUnF1gX4Wln5UGQpyw0DsCZrmXKbH1BJblX2g4HkKY=;
+        b=f4y0MJ3byWsV/c4dAXaj0GExpxt5+5duSytOqyGeKX81CrDbxYHEgsCJKlhVLIiY5repuM
+        tyPsJieTetq38kzbJphGXoiQU/TOUJLab9kMaCkFuvePxux1RDhT5Jnjwp64ck1emlaNeZ
+        plbHhPoIRGMOaayDZxYSAG/FqKXS/Io=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-149-uOKKWGzNNi2ZNUwIRH-lcQ-1; Wed, 15 Jul 2020 10:34:52 -0400
+X-MC-Unique: uOKKWGzNNi2ZNUwIRH-lcQ-1
+Received: by mail-wm1-f71.google.com with SMTP id e15so1279485wme.8
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 07:34:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gDUnF1gX4Wln5UGQpyw0DsCZrmXKbH1BJblX2g4HkKY=;
+        b=oDy21Ib05R+5B7GUZkFQRmXP/ty4wtyX3tV5Q2gh/oC6+F6BWJ7oqTKtZJh2QW0ZQM
+         5V5TgnRIW4uCIQ4kxwL+X+TDCKkfdhy+dMu+0J3wSMze+UxkdE2ns3/ekC1YoLrCrISV
+         sagjf8sEPelLSO+s86W1tKzGN+wmHwJsjtp3uW33j/UKHU+VJAcHy5bK1vQ/8IDyceKu
+         eYEzjdxmWKkOBEMrE75poGPUNd8l/Lm5qDF8kWWN76udhQjkZ69mPf310PgGP43YQdRz
+         X0gQVGep8dbxBEX8WyZwBLJOqkj8DQXhyi1TerMjk1BZztvsLvwFbuwDWVm8UcgsJ38l
+         vgeg==
+X-Gm-Message-State: AOAM530xFQvr81UGlmGtgjKhl0YEvT5NL5LNdc9cxP398sg3p970PUrh
+        wG2M2gNNkqrFRetkajG+Q+Dm+hyDf8aOU4ys0dq3RCf2VQnnvvYsJmYlk2vGrHu3Q75UIujxmxs
+        3qaKbCdx2yizwkPfU
+X-Received: by 2002:a5d:6987:: with SMTP id g7mr11513368wru.79.1594823691730;
+        Wed, 15 Jul 2020 07:34:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzoUwaGmSvRQhzNykS+/dS1cmb21BRdb+HUz8NopOX7oAtNCENF0Kaaj4WsT5RV7bERzyNJsQ==
+X-Received: by 2002:a5d:6987:: with SMTP id g7mr11513341wru.79.1594823691514;
+        Wed, 15 Jul 2020 07:34:51 -0700 (PDT)
+Received: from steredhat ([5.180.207.22])
+        by smtp.gmail.com with ESMTPSA id e8sm3600980wrp.26.2020.07.15.07.34.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2020 07:34:50 -0700 (PDT)
+Date:   Wed, 15 Jul 2020 16:34:46 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>, davem@davemloft.net
+Cc:     davem@davemloft.net, Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org
+Subject: Re: [PATCH] vsock/virtio: annotate 'the_virtio_vsock' RCU pointer
+Message-ID: <20200715143446.kfl3zb4vwkk4ic4r@steredhat>
+References: <20200710121243.120096-1-sgarzare@redhat.com>
+ <20200713065423-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200715153547.77dbaf82@elisabeth>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200713065423-mutt-send-email-mst@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stefano Brivio <sbrivio@redhat.com> wrote:
-> On Wed, 15 Jul 2020 14:42:58 +0200
-> Florian Westphal <fw@strlen.de> wrote:
-> > With your skeleton patch, br0 updates MTU, but the sender still
-> > won't know that unless input traffic to br0 is routed (or locally
-> > generated).
+On Mon, Jul 13, 2020 at 06:54:43AM -0400, Michael S. Tsirkin wrote:
+> On Fri, Jul 10, 2020 at 02:12:43PM +0200, Stefano Garzarella wrote:
+> > Commit 0deab087b16a ("vsock/virtio: use RCU to avoid use-after-free
+> > on the_virtio_vsock") starts to use RCU to protect 'the_virtio_vsock'
+> > pointer, but we forgot to annotate it.
+> > 
+> > This patch adds the annotation to fix the following sparse errors:
+> > 
+> >     net/vmw_vsock/virtio_transport.c:73:17: error: incompatible types in comparison expression (different address spaces):
+> >     net/vmw_vsock/virtio_transport.c:73:17:    struct virtio_vsock [noderef] __rcu *
+> >     net/vmw_vsock/virtio_transport.c:73:17:    struct virtio_vsock *
+> >     net/vmw_vsock/virtio_transport.c:171:17: error: incompatible types in comparison expression (different address spaces):
+> >     net/vmw_vsock/virtio_transport.c:171:17:    struct virtio_vsock [noderef] __rcu *
+> >     net/vmw_vsock/virtio_transport.c:171:17:    struct virtio_vsock *
+> >     net/vmw_vsock/virtio_transport.c:207:17: error: incompatible types in comparison expression (different address spaces):
+> >     net/vmw_vsock/virtio_transport.c:207:17:    struct virtio_vsock [noderef] __rcu *
+> >     net/vmw_vsock/virtio_transport.c:207:17:    struct virtio_vsock *
+> >     net/vmw_vsock/virtio_transport.c:561:13: error: incompatible types in comparison expression (different address spaces):
+> >     net/vmw_vsock/virtio_transport.c:561:13:    struct virtio_vsock [noderef] __rcu *
+> >     net/vmw_vsock/virtio_transport.c:561:13:    struct virtio_vsock *
+> >     net/vmw_vsock/virtio_transport.c:612:9: error: incompatible types in comparison expression (different address spaces):
+> >     net/vmw_vsock/virtio_transport.c:612:9:    struct virtio_vsock [noderef] __rcu *
+> >     net/vmw_vsock/virtio_transport.c:612:9:    struct virtio_vsock *
+> >     net/vmw_vsock/virtio_transport.c:631:9: error: incompatible types in comparison expression (different address spaces):
+> >     net/vmw_vsock/virtio_transport.c:631:9:    struct virtio_vsock [noderef] __rcu *
+> >     net/vmw_vsock/virtio_transport.c:631:9:    struct virtio_vsock *
+> > 
+> > Fixes: 0deab087b16a ("vsock/virtio: use RCU to avoid use-after-free on the_virtio_vsock")
+> > Reported-by: Michael S. Tsirkin <mst@redhat.com>
+> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 > 
-> To let the sender know, I still think it's a bit simpler with this
-> approach, we don't have to do all the peeling. In br_handle_frame(), we
-> would need to add *something like*:
 > 
-> 	if (skb->len > p->br->dev->mtu) {
-> 		memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
-> 		icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
-> 			  htonl(p->br->dev->mtu));
-> 		goto drop;
-> 	}
+> Acked-by: Michael S. Tsirkin <mst@redhat.com>
 > 
-> just like IP tunnels do, see tnl_update_pmtu().
+> who's merging this? Dave?
 
-Yes, but the caveat here is that a bridge might be transporting
-non-IP protocol too.
+I think so, but I forgot the 'net' tag :-(
 
-So, MTU-reduction+ICMP won't help for them.
-I would try to avoid mixing IP functionality into the bridge,
-its a slippery slope (look at bridge netfilter for an example).
+I'll wait to see if Dave will queue this, otherwise I'll resend with
+the 'net' tag.
 
-I agree that for a 'ip only' bridge that might work indeed.
+Thanks,
+Stefano
 
-> Note that this doesn't work as it is because of a number of reasons
-> (skb doesn't have a dst, pkt_type is not PACKET_HOST), and perhaps we
-> shouldn't be using icmp_send(), but at a glance that looks simpler.
-
-Yes, it also requires that the bridge has IP connectivity
-to reach the inner ip, which might not be the case.
-
-> Another slight preference I have towards this idea is that the only
-> known way we can break PMTU discovery right now is by using a bridge,
-> so fixing the problem there looks more future-proof than addressing any
-> kind of tunnel with this problem. I think FoU and GUE would hit the
-> same problem, I don't know about IP tunnels, sticking that selftest
-> snippet to whatever other test in pmtu.sh should tell.
-
-Every type of bridge port that needs to add additional header on egress
-has this problem in the bridge scenario once the peer of the IP tunnel
-signals a PMTU event.
-
-I agree that excess copy&paste should be avoided, but at this point
-I don't see an easy solution.
-
-> I might be wrong of course as I haven't tried to implement this bit,
-> and if this turns out to be just moving the problem without making it
-> simpler, then sure, I'd rather stick to your approach.
-> 
-> > Furthermore, such MTU reduction would require a mechanism to
-> > auto-reconfig every device in the same linklevel broadcast domain,
-> > and I am not aware of any such mechanism.
-> 
-> You mean for other ports connected to the same bridge? They would then
-> get ICMP errors as well, no?
-
-Yes, if you don't do that then we have devices with MTU X hooked to
-a bridge with MTU Y, where X > Y.  I don't see how this could work.
-
-> If you refer to other drivers that need to adjust the MTU, instead,
-> that's why I would use skb_tunnel_check_pmtu() for that, to avoid
-> implementing the same logic in every driver.
-
-Yes, it might be possible to move the proposed icmp inject into
-skb_tunnel_check_pmtu() -- it gets the needed headroom passed as arg,
-it could detect when device driver is in a bridge and it already knows
-when skb has no dst entry that it a pmtu change could be propagated to.
-
-Given the affected setups all use ovs I think it makes sense to make
-sure the intended solution would work for ovs too, bridge seems more
-like a nice-to-have thing at the moment.
