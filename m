@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7D25220723
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 10:28:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 622D5220724
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 10:28:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730039AbgGOI2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 04:28:03 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:49499 "EHLO
+        id S1730044AbgGOI2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 04:28:06 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:58439 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726396AbgGOI2D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:28:03 -0400
+        by vger.kernel.org with ESMTP id S1726396AbgGOI2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:28:05 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id E4C235C013E;
-        Wed, 15 Jul 2020 04:28:01 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id CE6C85C00D7;
+        Wed, 15 Jul 2020 04:28:03 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 15 Jul 2020 04:28:01 -0400
+  by compute4.internal (MEProxy); Wed, 15 Jul 2020 04:28:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=cm28tMqjKiS5lyYL7
-        4tjxvF1/kZhdWjB9haVRuB6gzo=; b=sIoh8GdRCYTAFF6iVU5XXOm2+/P6asPnh
-        RqGvf1/0WrAX6X26INjl99FDT278ADMsaYzY8gD75MrYoY1itfdUbae7CZ7ieXY8
-        4s2XGnDNec72gqih74YolLrdcBuRrITgZwfutdOfxTNSPFMCZetb2SemPdBcPgrX
-        Ih62ABFIFvhYdDNwB7QYe+zzi4zE1w8sws3gT41rCBLhO0+a7vNd0mqfj5uhUpI9
-        8BS3SlCagz5eq0ISx8ENTy7mmV8Ff1ASMrBoAIwrscffr5U5Iiqk+H1DKM5/zv6/
-        v9BcbqaIJRlfmmod0z7v7LOS75HM16T8kLEnbuuu2lmDcDBYmwr3A==
-X-ME-Sender: <xms:Eb4OXxUqEQ7yXxxUwo72AK0v7ISZJHhF_UaJUDbmA2v2J5WmBCbJEA>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=CLWycuEyKRHMOkKULr2Z+uYd0c/1e24k00mP4j9PPs0=; b=LSMr5kEs
+        Oy7Wb2CiO1vDszv4rzHPpLEc3dgTZg3G8xb2tPgjOVkYENPrk+RBcgeM7HvuDOU8
+        NoDvKWqFkHB3vR2iDoWdCAZCPg0JYxBqmSykLM+Y+2IWduettkfhdmXU6Af/v2Sw
+        FO7IyEBue4jpumwxPZzQSkWp7jJ7ufhQ05OY001zQkW+lGowjOy9bgeB0YQeW8Ml
+        hADs27eicUdBKbyoA9gIZJ8/yrvC4fFBgqlOJbayfYYkmxQQjKNB+MqjUq4D+bsL
+        vxScUrZZ9tiJP+SOSabiqVUOMmpWE2h4mFqll1+1avlpd4nFWM2P0C4s0MLgAcLt
+        lavB232vetMEPw==
+X-ME-Sender: <xms:E74OX2evzx_1qUuy8DBLBGd2SeX8X5oKFhGWOCTCjEscz1-xzHlAnw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedvgddtgecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
-    ffieekgeehveefvdegledvffduhfenucfkphepuddtledrieehrddufeelrddukedtnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:Eb4OXxnlb7KBI4jNDTYCmQ_-xvSHLyLrLr3Pcx3JrqKarxqUTjMPEQ>
-    <xmx:Eb4OX9ZZ5VnKn0vJEfPGf8uSY93sckigGqaYiKbOy8NbGuXrKTEi5Q>
-    <xmx:Eb4OX0XwiP-sNCn18n_D3AbQLHJ4JfrazzRAhydKvj09gLFpQtBkow>
-    <xmx:Eb4OXwz72a_pISefpbmrJ4HGEnQP5buj2dmF2cyIu6tW7noA8w292Q>
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
+    fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieehrddufeelrddukedt
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:E74OXwNV7m-24Tn6B0_VaG_vDY_qoJAk2U3icLWJv3wsuU1VXHsZxA>
+    <xmx:E74OX3g8_7jjz6JriqT74QgoK2HpobOjlFoCOHOR9nrIWNNyx7e_kQ>
+    <xmx:E74OXz_7gyhWaIUZaRK0OH6ij68apWsYrDUFWmnmuImsLwWj_886uw>
+    <xmx:E74OX74flPt5LKRVR7H6OlxBaByS1VUN03p-SlWxziy-4haMMHOWIw>
 Received: from shredder.mtl.com (bzq-109-65-139-180.red.bezeqint.net [109.65.139.180])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 096743280063;
-        Wed, 15 Jul 2020 04:27:59 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id EFF71328005A;
+        Wed, 15 Jul 2020 04:28:01 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         petrm@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 00/11] mlxsw: Offload tc police action
-Date:   Wed, 15 Jul 2020 11:27:22 +0300
-Message-Id: <20200715082733.429610-1-idosch@idosch.org>
+Subject: [PATCH net-next 01/11] mlxsw: reg: Add policer bandwidth limits
+Date:   Wed, 15 Jul 2020 11:27:23 +0300
+Message-Id: <20200715082733.429610-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200715082733.429610-1-idosch@idosch.org>
+References: <20200715082733.429610-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -60,70 +63,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-This patch set adds support for tc police action in mlxsw.
+Add policer bandwidth limits for both rate and burst size so that they
+could be enforced by a later patch.
 
-Patches #1-#2 add defines for policer bandwidth limits and resource
-identifiers (e.g., maximum number of policers).
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Reviewed-by: Petr Machata <petrm@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Patch #3 adds a common policer core in mlxsw. Currently it is only used
-by the policy engine, but future patch sets will use it for trap
-policers and storm control policers. The common core allows us to share
-common logic between all policer types and abstract certain details from
-the various users in mlxsw.
-
-Patch #4 exposes the maximum number of supported policers and their
-current usage to user space via devlink-resource. This provides better
-visibility and also used for selftests purposes.
-
-Patches #5-#7 gradually add support for tc police action in the policy
-engine by calling into previously mentioned policer core.
-
-Patch #8 adds a generic selftest for tc-police that can be used with
-veth pairs or physical loopbacks.
-
-Patches #9-#11 add mlxsw-specific selftests.
-
-Ido Schimmel (11):
-  mlxsw: reg: Add policer bandwidth limits
-  mlxsw: resources: Add resource identifier for global policers
-  mlxsw: spectrum_policer: Add policer core
-  mlxsw: spectrum_policer: Add devlink resource support
-  mlxsw: core_acl_flex_actions: Work around hardware limitation
-  mlxsw: core_acl_flex_actions: Add police action
-  mlxsw: spectrum_acl: Offload FLOW_ACTION_POLICE
-  selftests: forwarding: Add tc-police tests
-  selftests: mlxsw: tc_restrictions: Test tc-police restrictions
-  selftests: mlxsw: Add scale test for tc-police
-  selftests: mlxsw: Test policers' occupancy
-
- drivers/net/ethernet/mellanox/mlxsw/Makefile  |   2 +-
- .../mellanox/mlxsw/core_acl_flex_actions.c    | 304 +++++++++++-
- .../mellanox/mlxsw/core_acl_flex_actions.h    |   8 +
- drivers/net/ethernet/mellanox/mlxsw/reg.h     |   9 +
- .../net/ethernet/mellanox/mlxsw/resources.h   |   2 +
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  20 +
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  46 +-
- .../ethernet/mellanox/mlxsw/spectrum_acl.c    |  33 +-
- .../mlxsw/spectrum_acl_flex_actions.c         |  27 +
- .../ethernet/mellanox/mlxsw/spectrum_flower.c |  30 +-
- .../mellanox/mlxsw/spectrum_policer.c         | 468 ++++++++++++++++++
- .../net/mlxsw/spectrum-2/resource_scale.sh    |   2 +-
- .../net/mlxsw/spectrum-2/tc_police_scale.sh   |  16 +
- .../net/mlxsw/spectrum/resource_scale.sh      |   2 +-
- .../net/mlxsw/spectrum/tc_police_scale.sh     |  16 +
- .../drivers/net/mlxsw/tc_police_occ.sh        | 108 ++++
- .../drivers/net/mlxsw/tc_police_scale.sh      |  92 ++++
- .../drivers/net/mlxsw/tc_restrictions.sh      |  76 +++
- .../selftests/net/forwarding/devlink_lib.sh   |   5 +
- .../selftests/net/forwarding/tc_police.sh     | 333 +++++++++++++
- 20 files changed, 1575 insertions(+), 24 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c
- create mode 100644 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/tc_police_scale.sh
- create mode 100644 tools/testing/selftests/drivers/net/mlxsw/spectrum/tc_police_scale.sh
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/tc_police_occ.sh
- create mode 100644 tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
- create mode 100755 tools/testing/selftests/net/forwarding/tc_police.sh
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index 408003520602..3c5b25495751 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -3405,11 +3405,20 @@ MLXSW_ITEM32(reg, qpcr, violate_action, 0x18, 0, 4);
+  */
+ MLXSW_ITEM64(reg, qpcr, violate_count, 0x20, 0, 64);
+ 
++/* Packets */
+ #define MLXSW_REG_QPCR_LOWEST_CIR	1
+ #define MLXSW_REG_QPCR_HIGHEST_CIR	(2 * 1000 * 1000 * 1000) /* 2Gpps */
+ #define MLXSW_REG_QPCR_LOWEST_CBS	4
+ #define MLXSW_REG_QPCR_HIGHEST_CBS	24
+ 
++/* Bandwidth */
++#define MLXSW_REG_QPCR_LOWEST_CIR_BITS		1024 /* bps */
++#define MLXSW_REG_QPCR_HIGHEST_CIR_BITS		2000000000000ULL /* 2Tbps */
++#define MLXSW_REG_QPCR_LOWEST_CBS_BITS_SP1	4
++#define MLXSW_REG_QPCR_LOWEST_CBS_BITS_SP2	4
++#define MLXSW_REG_QPCR_HIGHEST_CBS_BITS_SP1	25
++#define MLXSW_REG_QPCR_HIGHEST_CBS_BITS_SP2	31
++
+ static inline void mlxsw_reg_qpcr_pack(char *payload, u16 pid,
+ 				       enum mlxsw_reg_qpcr_ir_units ir_units,
+ 				       bool bytes, u32 cir, u16 cbs)
 -- 
 2.26.2
 
