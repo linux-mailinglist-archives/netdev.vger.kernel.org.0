@@ -2,114 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26F9F220F6D
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 16:35:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71E5C220FA0
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 16:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728818AbgGOOe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 10:34:57 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:44397 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726568AbgGOOe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 10:34:56 -0400
+        id S1728956AbgGOOiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 10:38:16 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:39543 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727044AbgGOOiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 10:38:16 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594823694;
+        s=mimecast20190719; t=1594823895;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gDUnF1gX4Wln5UGQpyw0DsCZrmXKbH1BJblX2g4HkKY=;
-        b=f4y0MJ3byWsV/c4dAXaj0GExpxt5+5duSytOqyGeKX81CrDbxYHEgsCJKlhVLIiY5repuM
-        tyPsJieTetq38kzbJphGXoiQU/TOUJLab9kMaCkFuvePxux1RDhT5Jnjwp64ck1emlaNeZ
-        plbHhPoIRGMOaayDZxYSAG/FqKXS/Io=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-149-uOKKWGzNNi2ZNUwIRH-lcQ-1; Wed, 15 Jul 2020 10:34:52 -0400
-X-MC-Unique: uOKKWGzNNi2ZNUwIRH-lcQ-1
-Received: by mail-wm1-f71.google.com with SMTP id e15so1279485wme.8
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 07:34:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gDUnF1gX4Wln5UGQpyw0DsCZrmXKbH1BJblX2g4HkKY=;
-        b=oDy21Ib05R+5B7GUZkFQRmXP/ty4wtyX3tV5Q2gh/oC6+F6BWJ7oqTKtZJh2QW0ZQM
-         5V5TgnRIW4uCIQ4kxwL+X+TDCKkfdhy+dMu+0J3wSMze+UxkdE2ns3/ekC1YoLrCrISV
-         sagjf8sEPelLSO+s86W1tKzGN+wmHwJsjtp3uW33j/UKHU+VJAcHy5bK1vQ/8IDyceKu
-         eYEzjdxmWKkOBEMrE75poGPUNd8l/Lm5qDF8kWWN76udhQjkZ69mPf310PgGP43YQdRz
-         X0gQVGep8dbxBEX8WyZwBLJOqkj8DQXhyi1TerMjk1BZztvsLvwFbuwDWVm8UcgsJ38l
-         vgeg==
-X-Gm-Message-State: AOAM530xFQvr81UGlmGtgjKhl0YEvT5NL5LNdc9cxP398sg3p970PUrh
-        wG2M2gNNkqrFRetkajG+Q+Dm+hyDf8aOU4ys0dq3RCf2VQnnvvYsJmYlk2vGrHu3Q75UIujxmxs
-        3qaKbCdx2yizwkPfU
-X-Received: by 2002:a5d:6987:: with SMTP id g7mr11513368wru.79.1594823691730;
-        Wed, 15 Jul 2020 07:34:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzoUwaGmSvRQhzNykS+/dS1cmb21BRdb+HUz8NopOX7oAtNCENF0Kaaj4WsT5RV7bERzyNJsQ==
-X-Received: by 2002:a5d:6987:: with SMTP id g7mr11513341wru.79.1594823691514;
-        Wed, 15 Jul 2020 07:34:51 -0700 (PDT)
-Received: from steredhat ([5.180.207.22])
-        by smtp.gmail.com with ESMTPSA id e8sm3600980wrp.26.2020.07.15.07.34.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2020 07:34:50 -0700 (PDT)
-Date:   Wed, 15 Jul 2020 16:34:46 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>, davem@davemloft.net
-Cc:     davem@davemloft.net, Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org
-Subject: Re: [PATCH] vsock/virtio: annotate 'the_virtio_vsock' RCU pointer
-Message-ID: <20200715143446.kfl3zb4vwkk4ic4r@steredhat>
-References: <20200710121243.120096-1-sgarzare@redhat.com>
- <20200713065423-mutt-send-email-mst@kernel.org>
+        bh=RNcA+TtqSKkcqFrFQ/lXwvp66Zlvrn9XWdE3nzqpNYU=;
+        b=Yufw22oLE5tcxKmCugmpnMZIKsMkmFEHZhoOtU43iS6tZqgF7okrLktAWc1ok5QWZrfMGx
+        XEdEmdWbMSitbnCD9LvTurvt3nwKcC5WQxFqzgb/U7siTUeDi7nKtJcVSglYzOIifxWkOv
+        1f29A3sYT0xGJl8Mhr5LoKPSY9fc3Ng=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-498-M4DACBRPMhqs1pW_uStGhg-1; Wed, 15 Jul 2020 10:38:13 -0400
+X-MC-Unique: M4DACBRPMhqs1pW_uStGhg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3FE2215642;
+        Wed, 15 Jul 2020 14:37:44 +0000 (UTC)
+Received: from ovpn-114-12.ams2.redhat.com (ovpn-114-12.ams2.redhat.com [10.36.114.12])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A08B60BF4;
+        Wed, 15 Jul 2020 14:37:42 +0000 (UTC)
+Message-ID: <b9274778380debaacd8f31d7720df5c48457c0c7.camel@redhat.com>
+Subject: Re: [PATCH net-next] net: openvswitch: reorder masks array based on
+ usage
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eelco Chaudron <echaudro@redhat.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org,
+        pshelar@ovn.org
+Date:   Wed, 15 Jul 2020 16:37:41 +0200
+In-Reply-To: <159481496860.37198.8385493040681064040.stgit@ebuild>
+References: <159481496860.37198.8385493040681064040.stgit@ebuild>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.3 (3.36.3-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200713065423-mutt-send-email-mst@kernel.org>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 06:54:43AM -0400, Michael S. Tsirkin wrote:
-> On Fri, Jul 10, 2020 at 02:12:43PM +0200, Stefano Garzarella wrote:
-> > Commit 0deab087b16a ("vsock/virtio: use RCU to avoid use-after-free
-> > on the_virtio_vsock") starts to use RCU to protect 'the_virtio_vsock'
-> > pointer, but we forgot to annotate it.
-> > 
-> > This patch adds the annotation to fix the following sparse errors:
-> > 
-> >     net/vmw_vsock/virtio_transport.c:73:17: error: incompatible types in comparison expression (different address spaces):
-> >     net/vmw_vsock/virtio_transport.c:73:17:    struct virtio_vsock [noderef] __rcu *
-> >     net/vmw_vsock/virtio_transport.c:73:17:    struct virtio_vsock *
-> >     net/vmw_vsock/virtio_transport.c:171:17: error: incompatible types in comparison expression (different address spaces):
-> >     net/vmw_vsock/virtio_transport.c:171:17:    struct virtio_vsock [noderef] __rcu *
-> >     net/vmw_vsock/virtio_transport.c:171:17:    struct virtio_vsock *
-> >     net/vmw_vsock/virtio_transport.c:207:17: error: incompatible types in comparison expression (different address spaces):
-> >     net/vmw_vsock/virtio_transport.c:207:17:    struct virtio_vsock [noderef] __rcu *
-> >     net/vmw_vsock/virtio_transport.c:207:17:    struct virtio_vsock *
-> >     net/vmw_vsock/virtio_transport.c:561:13: error: incompatible types in comparison expression (different address spaces):
-> >     net/vmw_vsock/virtio_transport.c:561:13:    struct virtio_vsock [noderef] __rcu *
-> >     net/vmw_vsock/virtio_transport.c:561:13:    struct virtio_vsock *
-> >     net/vmw_vsock/virtio_transport.c:612:9: error: incompatible types in comparison expression (different address spaces):
-> >     net/vmw_vsock/virtio_transport.c:612:9:    struct virtio_vsock [noderef] __rcu *
-> >     net/vmw_vsock/virtio_transport.c:612:9:    struct virtio_vsock *
-> >     net/vmw_vsock/virtio_transport.c:631:9: error: incompatible types in comparison expression (different address spaces):
-> >     net/vmw_vsock/virtio_transport.c:631:9:    struct virtio_vsock [noderef] __rcu *
-> >     net/vmw_vsock/virtio_transport.c:631:9:    struct virtio_vsock *
-> > 
-> > Fixes: 0deab087b16a ("vsock/virtio: use RCU to avoid use-after-free on the_virtio_vsock")
-> > Reported-by: Michael S. Tsirkin <mst@redhat.com>
-> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+On Wed, 2020-07-15 at 14:09 +0200, Eelco Chaudron wrote:
+> This patch reorders the masks array every 4 seconds based on their
+> usage count. This greatly reduces the masks per packet hit, and
+> hence the overall performance. Especially in the OVS/OVN case for
+> OpenShift.
 > 
+> Here are some results from the OVS/OVN OpenShift test, which use
+> 8 pods, each pod having 512 uperf connections, each connection
+> sends a 64-byte request and gets a 1024-byte response (TCP).
+> All uperf clients are on 1 worker node while all uperf servers are
+> on the other worker node.
 > 
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
+> Kernel without this patch     :  7.71 Gbps
+> Kernel with this patch applied: 14.52 Gbps
 > 
-> who's merging this? Dave?
+> We also run some tests to verify the rebalance activity does not
+> lower the flow insertion rate, which does not.
+> 
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> Tested-by: Andrew Theurer <atheurer@redhat.com>
 
-I think so, but I forgot the 'net' tag :-(
+Reviewed-by: Paolo Abeni <pabeni@redhat.com>
 
-I'll wait to see if Dave will queue this, otherwise I'll resend with
-the 'net' tag.
-
-Thanks,
-Stefano
+/P
 
