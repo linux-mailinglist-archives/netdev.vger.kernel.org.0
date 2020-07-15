@@ -2,135 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FB39221176
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 17:45:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9FEE221132
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 17:35:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726132AbgGOPp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 11:45:27 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:50996 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725798AbgGOPp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 11:45:27 -0400
-X-Greylist: delayed 1710 seconds by postgrey-1.27 at vger.kernel.org; Wed, 15 Jul 2020 11:45:26 EDT
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06FF1rhZ064552;
-        Wed, 15 Jul 2020 15:16:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2020-01-29; bh=dE2+XAhVZ3ELSojoIO+9JYurWJh0dM6wVluR2D7xeL4=;
- b=O0ngZE5YBhuV8ifHX7+fJJrWxHZHX60tohL8NZE8Gw9kTS/8ztKLV2AUKFf3rTftVeXm
- nLeiZGtY4hjs4vrEzrryGEmHgNNyn6gi4i4mHh73tT+1slLnkWIyd4HpQoej3VRQ4aQC
- BFHSQo+QWGCYApQoer0un93OBxcFjIDsIOevbJWiqw2qFBMu9oZGuD9sVFR01KEjLiMj
- YwnpX92Qo6999waUfjgcRRRg3HuPEVkISagfmc1y5OrJUgZ4rTk73RqFjgVzZLPYx5aa
- Sc2UwL3DDk+4ed5NsuwM1494Ucy8NzLzeG6whjj1TqZYI1Sf1Pr0IJV0pfBWK9ZfsOPA 3g== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2130.oracle.com with ESMTP id 327s65j9y0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 15 Jul 2020 15:16:54 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06FF3fw8011650;
-        Wed, 15 Jul 2020 15:14:54 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 327q0rdww0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Jul 2020 15:14:54 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 06FFErBA030894;
-        Wed, 15 Jul 2020 15:14:53 GMT
-Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 15 Jul 2020 08:14:53 -0700
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [Regression] "SUNRPC: Add "@len" parameter to gss_unwrap()"
- breaks NFS Kerberos on upstream stable 5.4.y
-From:   Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <6E0D09F1-601B-432B-81EE-9858EC1AF1DE@canonical.com>
-Date:   Wed, 15 Jul 2020 11:14:52 -0400
-Cc:     matthew.ruffell@canonical.com,
-        linux-stable <stable@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <7042081C-27B3-4024-BA34-7146B459F8B4@oracle.com>
-References: <309E203B-8818-4E33-87F0-017E127788E2@canonical.com>
- <424D9E36-C51B-46E8-9A07-D329821F2647@oracle.com>
- <6E0D09F1-601B-432B-81EE-9858EC1AF1DE@canonical.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 spamscore=0
- mlxlogscore=999 bulkscore=0 adultscore=0 phishscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007150124
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
- phishscore=0 mlxscore=0 priorityscore=1501 lowpriorityscore=0 spamscore=0
- clxscore=1015 bulkscore=0 mlxlogscore=999 impostorscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007150124
+        id S1726603AbgGOPem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 11:34:42 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:8224 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725835AbgGOPem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 11:34:42 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06FFFWO9026423;
+        Wed, 15 Jul 2020 08:34:38 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pfpt0818;
+ bh=JOR9fsRi64kPhWe5EibwX6nTXHXPXpaID/ygz7u91DE=;
+ b=xusDJ8fIs2DESSA6Awv/Qt2LzwCc7odyTmsSolcK3hhGN5OTo+j4phEyKWVhxVDCxSQ4
+ gA8dofmIDmINYdsahOYHjsXNuvYUPRmrzIHrpq+FwAjkU2d1uTx2pUfm5aQTCuBpSRlE
+ +jtRYmkUDsIXw07OIZ0Pqv8eJJ/H6CLcSr33AXbfCtkxDwiSSfvx+XUkoGKd8wlhVZsI
+ rjsthL2bv5RiX3v84MCDplBn8nRskrMCBf8uUyAibMlc/DZKiz/oaIGx8K8J0R+Nj0m/
+ vmfd/tkCMaG0c8oMNj7rZBd9bWPAFJEbWb3onIYm/0fFYKs/WEGyQp73miQM1iBy2G4g Pg== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 327asnj7ya-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 15 Jul 2020 08:34:38 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 15 Jul
+ 2020 08:34:37 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 15 Jul 2020 08:34:37 -0700
+Received: from [10.193.54.28] (NN-LT0019.marvell.com [10.193.54.28])
+        by maili.marvell.com (Postfix) with ESMTP id 925CE3F703F;
+        Wed, 15 Jul 2020 08:34:33 -0700 (PDT)
+Subject: Re: [EXT] Re: [PATCH] net: atlantic: Add support for firmware v4
+To:     David Miller <davem@davemloft.net>,
+        Alexander Lobakin <alobakin@marvell.com>
+CC:     <kai.heng.feng@canonical.com>, <anthony.wong@canonical.com>,
+        <kuba@kernel.org>, Nikita Danilov <ndanilov@marvell.com>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Dmitry Bezrukov <dbezrukov@marvell.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20200707063830.15645-1-kai.heng.feng@canonical.com>
+ <20200707084657.205-1-alobakin@marvell.com>
+ <20200707.125624.2030141794702878802.davem@davemloft.net>
+From:   Igor Russkikh <irusskikh@marvell.com>
+Message-ID: <226601b2-562c-ae59-ee0d-51b130255c18@marvell.com>
+Date:   Wed, 15 Jul 2020 18:34:31 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.0
+MIME-Version: 1.0
+In-Reply-To: <20200707.125624.2030141794702878802.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-15_12:2020-07-15,2020-07-15 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+>>> We have a new ethernet card that is supported by the atlantic driver:
+>>> 01:00.0 Ethernet controller [0200]: Aquantia Corp. AQC107 NBase-T/IEEE
+> 802.3bz Ethernet Controller [AQtion] [1d6a:07b1] (rev 02)
+>>>
+>>> But the driver failed to probe the device:
+>>> kernel: atlantic: Bad FW version detected: 400001e
+>>> kernel: atlantic: probe of 0000:01:00.0 failed with error -95
+>>>
+>>> As a pure guesswork, simply adding the firmware version to the driver
+>>
+>> Please don't send "pure guessworks" to net-fixes tree. You should have
+>> reported this as a bug to LKML and/or atlantic team, so we could issue
+>> it.
+> 
+> Production hardware is shipping to customers and the driver
+> maintainers didn't add support for this ID yet?  What is that
+> "atlantic team" waiting for?
+> 
+> Honestly I don't blame someone for posting a patch like this to get it
+> to work.
 
-> On Jul 15, 2020, at 11:08 AM, Kai-Heng Feng =
-<kai.heng.feng@canonical.com> wrote:
->=20
->> On Jul 15, 2020, at 23:02, Chuck Lever <chuck.lever@oracle.com> =
-wrote:
->>=20
->>> On Jul 15, 2020, at 10:48 AM, Kai-Heng Feng =
-<kai.heng.feng@canonical.com> wrote:
->>>=20
->>> Hi,
->>>=20
->>> Multiple users reported NFS causes NULL pointer dereference [1] on =
-Ubuntu, due to commit "SUNRPC: Add "@len" parameter to gss_unwrap()" and =
-commit "SUNRPC: Fix GSS privacy computation of auth->au_ralign".
->>>=20
->>> The same issue happens on upstream stable 5.4.y branch.
->>> The mainline kernel doesn't have this issue though.
->>>=20
->>> Should we revert them? Or is there any missing commits need to be =
-backported to v5.4?
->>>=20
->>> [1] https://bugs.launchpad.net/bugs/1886277
->>>=20
->>> Kai-Heng
->>=20
->> 31c9590ae468 ("SUNRPC: Add "@len" parameter to gss_unwrap()") is a =
-refactoring
->> change. It shouldn't have introduced any behavior difference. But in =
-theory,
->> practice and theory should be the same...
->>=20
->> Check if 0a8e7b7d0846 ("SUNRPC: Revert 241b1f419f0e ("SUNRPC: Remove =
-xdr_buf_trim()")")
->> is also applied to 5.4.0-40-generic.
->=20
-> Yes, it's included. The commit is part of upstream stable 5.4.
->=20
->>=20
->> It would help to know if v5.5 stable is working for you. I haven't =
-had any
->> problems with it.
->=20
-> I'll ask users to test it out.=20
-> Thanks for you quick reply!
+Me too ;)
 
-Another thought: Please ask what encryption type is in use. The
-kerberos_v1 enctypes might exercise a code path I wasn't able to
-test.
+We've discussed this with Kai Heng internally, that was really an engineering
+sample.
 
+We'll repost this patch soon with some more changes required for that new FW.
 
---
-Chuck Lever
-
-
-
+Thanks,
+  Igor
