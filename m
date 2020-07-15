@@ -2,118 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BA24220CE0
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 14:25:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6CC8220CC5
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 14:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730344AbgGOMZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 08:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729198AbgGOMZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 08:25:27 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E553C061755;
-        Wed, 15 Jul 2020 05:25:27 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id n5so2999989pgf.7;
-        Wed, 15 Jul 2020 05:25:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=TI7B6uM5uAGiHWQ7sW+RUED1scSbU7lrfz9lYsJ7uGo=;
-        b=ZZOSLzlcXTNm4W3OZMnWVr1+NbaMIUUE5yV17q0Y4hA0+t/z3V/DgbwxNjZOanbfyT
-         P15BKhmOYeyEwe470CDsq1Gmh6KVZS/rD5dYEZuEMdGlTgsy6fo7YM200mud4SzH0dKV
-         Twpms/NYERwpRJ6Ld0N5HYqT1I6kHrXeygLJDKG2Q8CELbHJQV2VnDQAeVhue0RIsuat
-         RwI94CIbd26kZyjPO5k3PiVHO9N2kVxFvayyhowf1O+k+27pYy67195muiwxWYZ9bJT/
-         1LHiFDhF4SsTASoAzJLfMth+rvMP+4v18E1coy83mkD42/yd8buYrKmlRZ9NdRpeyVSC
-         y/xQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=TI7B6uM5uAGiHWQ7sW+RUED1scSbU7lrfz9lYsJ7uGo=;
-        b=gBGGk3SSV1ZL3UwRXAbvPs+VkvSLphAreun5o0HKKdEHcs2Vs32Eh7YEW8laEhDRSR
-         /eIHj3hDBwUMYW4afeAQ5GuXhi7UvsW/dkmxX71dZPs77mO4YRF9+xLmtkbG8LoBXY2d
-         QPzCzgmKRq9hYiIUKLSDZVfsDnDo5NBoPYwZ+1JTI4fZowdkDvhtzx5RPlku7DMxk7w6
-         dfjvhzHoRDM6S5soeIpNmqKl8IrVy2M6BSvHsVy8xysU6usURVug2iXWNcK66DL5yW7f
-         O5mz11rby7cenWdI3sfcUUSPU+qhrzdha4ICiK6XCrdiH1GcVdMTpdwO3rLfkWcMUX+B
-         /yxA==
-X-Gm-Message-State: AOAM533kjgi999nYml5/rSTUTrJ9gwAxuwdq55aIuDf2hgv5i2nFUhOs
-        ZIgOsa3AtsrC1xailftjwCs=
-X-Google-Smtp-Source: ABdhPJy7yjmLA5XbVF7NyUuQoRirQ+f/S9NyKNnFW9PIFnpMFMxa9S5xH582iGEeSOVO1gAN4T5gDw==
-X-Received: by 2002:a63:b18:: with SMTP id 24mr8235755pgl.406.1594815926662;
-        Wed, 15 Jul 2020 05:25:26 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o2sm2121381pfh.160.2020.07.15.05.25.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2020 05:25:25 -0700 (PDT)
-Date:   Wed, 15 Jul 2020 20:25:14 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCHv7 bpf-next 1/3] xdp: add a new helper for dev map
- multicast support
-Message-ID: <20200715122514.GG2531@dhcp-12-153.nay.redhat.com>
-References: <20200709013008.3900892-1-liuhangbin@gmail.com>
- <20200714063257.1694964-1-liuhangbin@gmail.com>
- <20200714063257.1694964-2-liuhangbin@gmail.com>
- <87imepg3xt.fsf@toke.dk>
+        id S1730759AbgGOMOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 08:14:37 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:46038 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728866AbgGOMOg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 08:14:36 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 63CC3A091324B8FB5E4A;
+        Wed, 15 Jul 2020 20:14:33 +0800 (CST)
+Received: from localhost (10.175.101.6) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Wed, 15 Jul 2020
+ 20:14:27 +0800
+From:   Weilong Chen <chenweilong@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@mellanox.com>,
+        <edumazet@google.com>, <chenweilong@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 net] rtnetlink: Fix memory(net_device) leak when ->newlink fails
+Date:   Wed, 15 Jul 2020 20:58:10 +0800
+Message-ID: <20200715125810.59760-1-chenweilong@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87imepg3xt.fsf@toke.dk>
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 11:52:14PM +0200, Toke Høiland-Jørgensen wrote:
-> > +bool dev_in_exclude_map(struct bpf_dtab_netdev *obj, struct bpf_map *map,
-> > +			int exclude_ifindex)
-> > +{
-> > +	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
-> > +	struct bpf_dtab_netdev *dev;
-> > +	struct hlist_head *head;
-> > +	int i = 0;
-> > +
-> > +	if (obj->dev->ifindex == exclude_ifindex)
-> > +		return true;
-> > +
-> > +	if (!map || map->map_type != BPF_MAP_TYPE_DEVMAP_HASH)
-> > +		return false;
-> 
-> The map type should probably be checked earlier and the whole operation
-> aborted if it is wrong...
+When vlan_newlink call register_vlan_dev fails, it might return error
+with dev->reg_state = NETREG_UNREGISTERED. The rtnl_newlink should
+free the memory. But currently rtnl_newlink only free the memory which
+state is NETREG_UNINITIALIZED.
 
-Yes, I have already checked it in the helper, there should no need to double
-check. I will remove this check.
+BUG: memory leak
+unreferenced object 0xffff8881051de000 (size 4096):
+  comm "syz-executor139", pid 560, jiffies 4294745346 (age 32.445s)
+  hex dump (first 32 bytes):
+    76 6c 61 6e 32 00 00 00 00 00 00 00 00 00 00 00  vlan2...........
+    00 45 28 03 81 88 ff ff 00 00 00 00 00 00 00 00  .E(.............
+  backtrace:
+    [<0000000047527e31>] kmalloc_node include/linux/slab.h:578 [inline]
+    [<0000000047527e31>] kvmalloc_node+0x33/0xd0 mm/util.c:574
+    [<000000002b59e3bc>] kvmalloc include/linux/mm.h:753 [inline]
+    [<000000002b59e3bc>] kvzalloc include/linux/mm.h:761 [inline]
+    [<000000002b59e3bc>] alloc_netdev_mqs+0x83/0xd90 net/core/dev.c:9929
+    [<000000006076752a>] rtnl_create_link+0x2c0/0xa20 net/core/rtnetlink.c:3067
+    [<00000000572b3be5>] __rtnl_newlink+0xc9c/0x1330 net/core/rtnetlink.c:3329
+    [<00000000e84ea553>] rtnl_newlink+0x66/0x90 net/core/rtnetlink.c:3397
+    [<0000000052c7c0a9>] rtnetlink_rcv_msg+0x540/0x990 net/core/rtnetlink.c:5460
+    [<000000004b5cb379>] netlink_rcv_skb+0x12b/0x3a0 net/netlink/af_netlink.c:2469
+    [<00000000c71c20d3>] netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+    [<00000000c71c20d3>] netlink_unicast+0x4c6/0x690 net/netlink/af_netlink.c:1329
+    [<00000000cca72fa9>] netlink_sendmsg+0x735/0xcc0 net/netlink/af_netlink.c:1918
+    [<000000009221ebf7>] sock_sendmsg_nosec net/socket.c:652 [inline]
+    [<000000009221ebf7>] sock_sendmsg+0x109/0x140 net/socket.c:672
+    [<000000001c30ffe4>] ____sys_sendmsg+0x5f5/0x780 net/socket.c:2352
+    [<00000000b71ca6f3>] ___sys_sendmsg+0x11d/0x1a0 net/socket.c:2406
+    [<0000000007297384>] __sys_sendmsg+0xeb/0x1b0 net/socket.c:2439
+    [<000000000eb29b11>] do_syscall_64+0x56/0xa0 arch/x86/entry/common.c:359
+    [<000000006839b4d0>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-> 
-> > +
-> > +	for (; i < dtab->n_buckets; i++) {
-> > +		head = dev_map_index_hash(dtab, i);
-> > +
-> > +		dev = hlist_entry_safe(rcu_dereference_raw(hlist_first_rcu(head)),
-> > +					    struct bpf_dtab_netdev,
-> > +					    index_hlist);
-> > +
-> > +		if (dev && dev->idx == exclude_ifindex)
-> > +			return true;
-> > +	}
-> 
-> This looks broken; why are you iterating through the buckets? Shouldn't
-> this just be something like:
-> 
-> return __dev_map_hash_lookup_elem(map, obj->dev->ifindex) != NULL;
+Fixes: cb626bf566eb ("net-sysfs: Fix reference count leak")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Weilong Chen <chenweilong@huawei.com>
+---
+ net/core/rtnetlink.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Ah, yes, I forgot this. I will update the code.
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 9aedc15736ad..85a4b0101f76 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3343,7 +3343,8 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		 */
+ 		if (err < 0) {
+ 			/* If device is not registered at all, free it now */
+-			if (dev->reg_state == NETREG_UNINITIALIZED)
++			if (dev->reg_state == NETREG_UNINITIALIZED ||
++			    dev->reg_state == NETREG_UNREGISTERED)
+ 				free_netdev(dev);
+ 			goto out;
+ 		}
+-- 
+2.17.1
 
-Thanks
-Hangbin
