@@ -2,154 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3C442214BD
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 20:55:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A84F2214C2
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 20:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726803AbgGOSyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 14:54:37 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:51412 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726491AbgGOSyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 14:54:36 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06FIpufU015158;
-        Wed, 15 Jul 2020 18:54:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2020-01-29; bh=8nMMglpPtmSbuRefk5IkxI40fcsel9sw4WlVCU3Fnfg=;
- b=Suf3P2jxUi0QTi7RwFtfQiTN1r7HSXl1/QC/gCvYi2GQ2SS7Qx96u+jeCEUwcCRMVXfp
- q7bqx/X5wqqsobRSUILsRmGJ2zi5UTETwwPVmeYgiopiqpM0iKtElDc7VkhT7YdDPfMd
- kX/PAQV+gZfjCKxfhZ3oyniQtlr0xur5+O79NIjkpst7tbWptrYp0vbvfuyqI1cdg2ks
- j8grbl8y8SXAGuLyTYMBMnngMvoiCM/EKehs0ECypGz7DPBG5js7SCLbSwVFAxHSXfTY
- 41DVqVyDqLe2v5NOJJFQPpg6QQlDOHytfNiPuacg5awNJbveQdkWG4FTArAuOkYICXAM SA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2130.oracle.com with ESMTP id 327s65kfhm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 15 Jul 2020 18:54:34 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06FImgC2056404;
-        Wed, 15 Jul 2020 18:54:33 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 327qc1gxmg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Jul 2020 18:54:33 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 06FIsWWg026388;
-        Wed, 15 Jul 2020 18:54:32 GMT
-Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 15 Jul 2020 11:54:32 -0700
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [Regression] "SUNRPC: Add "@len" parameter to gss_unwrap()"
- breaks NFS Kerberos on upstream stable 5.4.y
-From:   Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <7042081C-27B3-4024-BA34-7146B459F8B4@oracle.com>
-Date:   Wed, 15 Jul 2020 14:54:30 -0400
-Cc:     matthew.ruffell@canonical.com,
-        linux-stable <stable@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <3884DFB0-D276-442D-8199-8FC77A40F1E5@oracle.com>
-References: <309E203B-8818-4E33-87F0-017E127788E2@canonical.com>
- <424D9E36-C51B-46E8-9A07-D329821F2647@oracle.com>
- <6E0D09F1-601B-432B-81EE-9858EC1AF1DE@canonical.com>
- <7042081C-27B3-4024-BA34-7146B459F8B4@oracle.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0
- mlxlogscore=999 bulkscore=0 malwarescore=0 mlxscore=0 phishscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007150145
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
- phishscore=0 mlxscore=0 priorityscore=1501 lowpriorityscore=0 spamscore=0
- clxscore=1015 bulkscore=0 mlxlogscore=999 impostorscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007150145
+        id S1726650AbgGOS4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 14:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726086AbgGOS4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 14:56:24 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA37C061755
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 11:56:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=/SSHnZg91H7jMA6mqU4gHGofRZ5/+Ew4PIvFSdPWxv0=; b=WEMIRJYHo5PtYb1jGH0wlPBGz
+        m9W+YGFs3E/Gzqdqzf4bgNvcWv/UloVKbnxK2oefoLeYz11wt6hUAb98lMacplF97uxrVtQkFbKHn
+        PvUAa2h2rwIRy/bUfAaEnGuYOqhupLs4Np/iMb51wjC6O+JxS3OC4ejY7SkVLCbH5RoC+pYqZFqUm
+        yajG+Bmk36eYq9+Ie877frkvzY4EKw4I+F6R71uQPpnr5lu+ZfewV0xetn+IobkcdhwKvEdmi3+BY
+        bCni54kdcBnFl8q5LXFf7J6qu+Uci62iu8HSc/qCYf5BmWou9F0eHwAJGPkolbJqKYdV84l3l55og
+        Hnjy7wxdA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39924)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jvmZo-00071Y-8X; Wed, 15 Jul 2020 19:56:21 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jvmZn-00005o-Ng; Wed, 15 Jul 2020 19:56:19 +0100
+Date:   Wed, 15 Jul 2020 19:56:19 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+Message-ID: <20200715185619.GJ1551@shell.armlinux.org.uk>
+References: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
+ <20200715183843.GA1256692@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200715183843.GA1256692@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 15, 2020 at 08:38:43PM +0200, Andrew Lunn wrote:
+> > Getting the Kconfig for this correct has been a struggle - particularly
+> > the combination where PTP support is modular.  It's rather odd to have
+> > the Marvell PTP support asked before the Marvell PHY support.  I
+> > couldn't work out any other reasonable way to ensure that we always
+> > have a valid configuration, without leading to stupidities such as
+> > having the PTP and Marvell PTP support modular, but non-functional
+> > because Marvell PHY is built-in.
+> 
+> Hi Russell
+> 
+> How much object code is this adding? All the other PHYs which support
+> PTP just make it part of the PHY driver, not a standalone module. That
+> i guess simplifies the conditions. 
 
+Taking an arm64 build, the PHY driver is 16k and the PTP driver comes
+in just under 8k.
 
-> On Jul 15, 2020, at 11:14 AM, Chuck Lever <chuck.lever@oracle.com> =
-wrote:
->=20
->=20
->=20
->> On Jul 15, 2020, at 11:08 AM, Kai-Heng Feng =
-<kai.heng.feng@canonical.com> wrote:
->>=20
->>> On Jul 15, 2020, at 23:02, Chuck Lever <chuck.lever@oracle.com> =
-wrote:
->>>=20
->>>> On Jul 15, 2020, at 10:48 AM, Kai-Heng Feng =
-<kai.heng.feng@canonical.com> wrote:
->>>>=20
->>>> Hi,
->>>>=20
->>>> Multiple users reported NFS causes NULL pointer dereference [1] on =
-Ubuntu, due to commit "SUNRPC: Add "@len" parameter to gss_unwrap()" and =
-commit "SUNRPC: Fix GSS privacy computation of auth->au_ralign".
->>>>=20
->>>> The same issue happens on upstream stable 5.4.y branch.
->>>> The mainline kernel doesn't have this issue though.
->>>>=20
->>>> Should we revert them? Or is there any missing commits need to be =
-backported to v5.4?
->>>>=20
->>>> [1] https://bugs.launchpad.net/bugs/1886277
->>>>=20
->>>> Kai-Heng
->>>=20
->>> 31c9590ae468 ("SUNRPC: Add "@len" parameter to gss_unwrap()") is a =
-refactoring
->>> change. It shouldn't have introduced any behavior difference. But in =
-theory,
->>> practice and theory should be the same...
->>>=20
->>> Check if 0a8e7b7d0846 ("SUNRPC: Revert 241b1f419f0e ("SUNRPC: Remove =
-xdr_buf_trim()")")
->>> is also applied to 5.4.0-40-generic.
->>=20
->> Yes, it's included. The commit is part of upstream stable 5.4.
->>=20
->>>=20
->>> It would help to know if v5.5 stable is working for you. I haven't =
-had any
->>> problems with it.
->>=20
->> I'll ask users to test it out.=20
->> Thanks for you quick reply!
->=20
-> Another thought: Please ask what encryption type is in use. The
-> kerberos_v1 enctypes might exercise a code path I wasn't able to
-> test.
+> Looking at DSDT, it lists
+> 
+>         case MAD_88E1340S:
+>         case MAD_88E1340:
+>         case MAD_88E1340M:
+>         case MAD_SWG65G : 
+> 	case MAD_88E151x:
+> 
+> as being MAD_PHY_PTP_TAI_CAPABLE;
+> 
+> and
+> 
+> 	case MAD_88E1548
+>         case MAD_88E1680:
+>         case MAD_88E1680M:
+> 
+> as MAD_PHY_1STEP_PTP_CAPABLE;
+> 
+> So maybe we can wire this up to a few more PHYs to 'lower' the
+> overhead a bit?
 
-OK.
+That's interesting, the 1548 information (covering 1543 and 1545 as
+well) I have doesn't mention anything about PTP.
 
-v5.4.40 does not have 31c9590ae468 and friends, but the claim is this
-one crashes?
+> > It seems that the Marvell PHY PTP is very similar to that found in
+> > their DSA chips, which suggests maybe we should share the code, but
+> > different access methods would be required.
+> 
+> That makes the Kconfig even more complex :-(
 
-And v5.4.51 has those three and 89a3c9f5b9f0, which Pierre claims fixes
-the problem for him; but another commenter says v5.4.51 still crashes.
+We already have that complexity due to the fact that we are interacting
+with two subsystems.  The 88e6xxx Kconfig entry has:
 
-So we're getting inconsistent problem reports.
+config NET_DSA_MV88E6XXX_PTP
+        bool "PTP support for Marvell 88E6xxx"
+        default n
+        depends on NET_DSA_MV88E6XXX_GLOBAL2
+        depends on PTP_1588_CLOCK
+        imply NETWORK_PHY_TIMESTAMPING
 
-Have the testers enable memory debugging : KASAN or SLUB debugging
-might provide more information. I might have some time later this week
-to try reproducing on upstream stable, but no guarantees.
+and I've been wondering what that means when PTP_1588_CLOCK=m while
+NET_DSA_MV88E6XXX_GLOBAL2=y and NET_DSA_MV88E6XXX=y.  If this is
+selectable, then it seems to be misleading the user - you can't have
+the PTP subsystem modular, and have PTP drivers built-in to the
+kernel.
 
+Yes, we have the inteligence to be able to make the various PTP calls
+be basically no-ops, but it's not nice.
 
---
-Chuck Lever
-
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
