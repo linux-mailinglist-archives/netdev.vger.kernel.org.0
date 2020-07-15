@@ -2,90 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1505B220776
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 10:35:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE09A220790
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 10:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730214AbgGOIfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 04:35:25 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:12607 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730199AbgGOIfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:35:25 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1594802124; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=h+ddvCJz2+eIJsGbCmIQ+4rTo2OVcXt1uczscOrvqEg=;
- b=NQcMffOy/WmElDgdrJppP0tLt/CtPTrBQqxPEvyKVTWqxDzysDYE9iDOmioaUARZX4fKeE4W
- 3XcrAL18rSy6zsU/p26KNWPcoJUrSa8q0Dn3wYGtrkXmg+5vKmq+ft4cis8IY005SYotuK1B
- ytfd+esvMCrUuni/YxyLGAAsWJ8=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n14.prod.us-west-2.postgun.com with SMTP id
- 5f0ebfb7b35196d59d30e7b0 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 15 Jul 2020 08:35:03
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E84A2C433B1; Wed, 15 Jul 2020 08:35:02 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1730306AbgGOIkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 04:40:36 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:38273 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729373AbgGOIkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:40:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594802434;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/F7UB0C20VNqw+FeXrj3A9Z7I7KbYpRyx/C6DjbnOzc=;
+        b=Q3FnEqywEU8RdMNsW7Yr4SsSZbTX4gRLH9Cq62Stiedz/UC+jjbIHW5rUGwxZNbYg43rba
+        ebZK6ehpPmOJ4J4RiyPGus22UuL37whOnBZPR3kUAmQ4k+qu/fluAaMsujPmG59cFTo6Qg
+        KH/dhLPDyw81ne2TprKJLMrt5A/wI8Y=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-242-O8TVwaXDN4uNsMsEh9Ji-w-1; Wed, 15 Jul 2020 04:40:30 -0400
+X-MC-Unique: O8TVwaXDN4uNsMsEh9Ji-w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id ED8CBC433CB;
-        Wed, 15 Jul 2020 08:34:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org ED8CBC433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C046410CE780;
+        Wed, 15 Jul 2020 08:40:28 +0000 (UTC)
+Received: from [10.72.13.230] (ovpn-13-230.pek2.redhat.com [10.72.13.230])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9A7B372E63;
+        Wed, 15 Jul 2020 08:40:18 +0000 (UTC)
+Subject: Re: [PATCH 6/7] ifcvf: replace irq_request/free with helpers in vDPA
+ core.
+To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>, mst@redhat.com,
+        alex.williamson@redhat.com, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, wanpengli@tencent.com
+Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, dan.daly@intel.com
+References: <1594565366-3195-1-git-send-email-lingshan.zhu@intel.com>
+ <1594565366-3195-6-git-send-email-lingshan.zhu@intel.com>
+ <c7d4eca1-b65a-b795-dfa6-fe7658716cb1@redhat.com>
+ <f6fc09e2-7a45-aaa5-2b4a-f1f963c5ce2c@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <09e67c20-dda1-97a2-1858-6a543c64fba6@redhat.com>
+Date:   Wed, 15 Jul 2020 16:40:17 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wlcore: mesh: handle failure case of pm_runtime_get_sync
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200605032733.49846-1-navid.emamdoost@gmail.com>
-References: <20200605032733.49846-1-navid.emamdoost@gmail.com>
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hari Nagalla <hnagalla@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maital Hahn <maitalm@ti.com>,
-        Fuqian Huang <huangfq.daxian@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Navid Emamdoost <navid.emamdoost@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, emamd001@umn.edu, wu000273@umn.edu,
-        kjlu@umn.edu, smccaman@umn.edu
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200715083502.E84A2C433B1@smtp.codeaurora.org>
-Date:   Wed, 15 Jul 2020 08:35:02 +0000 (UTC)
+In-Reply-To: <f6fc09e2-7a45-aaa5-2b4a-f1f963c5ce2c@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Navid Emamdoost <navid.emamdoost@gmail.com> wrote:
 
-> Calling pm_runtime_get_sync increments the counter even in case of
-> failure, causing incorrect ref count. Call pm_runtime_put if
-> pm_runtime_get_sync fails.
-> 
-> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+On 2020/7/13 下午6:22, Zhu, Lingshan wrote:
+>
+>
+> On 7/13/2020 4:33 PM, Jason Wang wrote:
+>>
+>> On 2020/7/12 下午10:49, Zhu Lingshan wrote:
+>>> This commit replaced irq_request/free() with helpers in vDPA
+>>> core, so that it can request/free irq and setup irq offloading
+>>> on order.
+>>>
+>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>> ---
+>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 11 ++++++-----
+>>>   1 file changed, 6 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>> index f5a60c1..65b84e1 100644
+>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>> @@ -47,11 +47,12 @@ static void ifcvf_free_irq(struct ifcvf_adapter 
+>>> *adapter, int queues)
+>>>   {
+>>>       struct pci_dev *pdev = adapter->pdev;
+>>>       struct ifcvf_hw *vf = &adapter->vf;
+>>> +    struct vdpa_device *vdpa = &adapter->vdpa;
+>>>       int i;
+>>>           for (i = 0; i < queues; i++)
+>>> -        devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
+>>> +        vdpa_free_vq_irq(&pdev->dev, vdpa, vf->vring[i].irq, i, 
+>>> &vf->vring[i]);
+>>>         ifcvf_free_irq_vectors(pdev);
+>>>   }
+>>> @@ -60,6 +61,7 @@ static int ifcvf_request_irq(struct ifcvf_adapter 
+>>> *adapter)
+>>>   {
+>>>       struct pci_dev *pdev = adapter->pdev;
+>>>       struct ifcvf_hw *vf = &adapter->vf;
+>>> +    struct vdpa_device *vdpa = &adapter->vdpa;
+>>>       int vector, i, ret, irq;
+>>>         ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
+>>> @@ -73,6 +75,7 @@ static int ifcvf_request_irq(struct ifcvf_adapter 
+>>> *adapter)
+>>>            pci_name(pdev));
+>>>       vector = 0;
+>>>       irq = pci_irq_vector(pdev, vector);
+>>> +    /* config interrupt */
+>>
+>>
+>> Unnecessary changes.
+> This is to show we did not setup this irq offloading for config 
+> interrupt, only setup irq offloading for data vq. But can remove this 
+> since we have config_msix_name in code to show what it is
 
-Already fixed by another patch.
 
-Patch set to Rejected.
+Btw, any reason for not making config interrupt work for irq offloading? 
+I don't see any thing that blocks this.
 
--- 
-https://patchwork.kernel.org/patch/11588923/
+Thanks
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
+> Thanks BR Zhu Lingshan
+>>
 
