@@ -2,107 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 483FA221518
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 21:27:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D53C522151F
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 21:29:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726803AbgGOT11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 15:27:27 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37474 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726491AbgGOT11 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 15:27:27 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jvn3q-005HpK-JP; Wed, 15 Jul 2020 21:27:22 +0200
-Date:   Wed, 15 Jul 2020 21:27:22 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Helmut Grohne <helmut.grohne@intenta.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH] net: phy: phy_remove_link_mode should not advertise new
- modes
-Message-ID: <20200715192722.GD1256692@lunn.ch>
-References: <20200714082540.GA31028@laureti-dev>
+        id S1726758AbgGOT3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 15:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726634AbgGOT3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 15:29:09 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F72C061755;
+        Wed, 15 Jul 2020 12:29:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Cs+ssoFPiLBwIp06S37VFrgawBn4e+6j6l0HBWQmAdY=; b=tar9bucyRxAn9AAKh1yN1PgZKq
+        mvuXTee+3CtsvjN2QrZ6uAZUmKRp9r8l03IT3TBo9cKDfPsoGRs0TD6HI7kq5iSe9xtqSH3jFVEHt
+        QPjSWH28IIADjliW3RqGwxb4pyh0M13eJxgI1QW8EQGUdLYg9bMoXYLjL1Vxob7OGs8GObMdYsVoV
+        yHBDZp+Osrq711dqxAFMf0zlSvMAxrD/+lqnphy5UbDVlUEAP5EPqt9qv/sXw5IAIqYcQQkxoCvGL
+        gDPHE+H9gLCCHNdLroOpJQX/WhGkXnoR+MA2WKDKBXO3usXCu7G1cwHKj3siXvCw4+UFSC4nmlBAO
+        Tojpr0xA==;
+Received: from willy by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jvn5Q-0008M6-NV; Wed, 15 Jul 2020 19:29:00 +0000
+Date:   Wed, 15 Jul 2020 20:29:00 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        davem@davemloft.net, richardcochran@gmail.com, sorganov@gmail.com,
+        andrew@lunn.ch, linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next] docs: networking: timestamping: replace tabs
+ with spaces in code blocks
+Message-ID: <20200715192900.GH12769@casper.infradead.org>
+References: <20200709202210.72985-1-olteanv@gmail.com>
+ <20200715121717.41aaff49@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200714082540.GA31028@laureti-dev>
+In-Reply-To: <20200715121717.41aaff49@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 10:25:42AM +0200, Helmut Grohne wrote:
-> When doing "ip link set dev ... up" for a ksz9477 backed link,
-> ksz9477_phy_setup is called and it calls phy_remove_link_mode to remove
-> 1000baseT HDX. During phy_remove_link_mode, phy_advertise_supported is
-> called.
+On Wed, Jul 15, 2020 at 12:17:17PM -0700, Jakub Kicinski wrote:
+> On Thu,  9 Jul 2020 23:22:10 +0300 Vladimir Oltean wrote:
+> > Reading the document in vim is currently not a pleasant experience. Its
+> > rst syntax highlighting is confused by the "*/" sequences which it's not
+> > interpreting as part of the code blocks for some reason.
+> > 
+> > Replace the tabs with spaces, so that syntax highlighters (at least the
+> > one in vim) have a better idea where code blocks start and where they
+> > end.
+> > 
+> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 > 
-> If one wants to advertise fewer modes than the supported ones, one
-> usually reduces the advertised link modes before upping the link (e.g.
-> by passing an appropriate .link file to udev).  However upping
-> overrwrites the advertised link modes due to the call to
-> phy_advertise_supported reverting to the supported link modes.
+> Dunno about this change, there seems to be plenty examples of using
+> tabs for indentation of code block :(
 > 
-> It seems unintentional to have phy_remove_link_mode enable advertising
-> bits and it does not match its description in any way. Instead of
-> calling phy_advertise_supported, we should simply clear the link mode to
-> be removed from both supported and advertising.
+> Jon, any guidance? It seems to me the document renders correctly [1],
+> so the onus is on the editor to fix the RST highlight..
 
-We have two different reasons for removing link modes.
-
-1) The PHY cannot support a link mode. E.g.
-
-static int bcm84881_get_features(struct phy_device *phydev)
-{
-        int ret;
-
-        ret = genphy_c45_pma_read_abilities(phydev);
-        if (ret)
-                return ret;
-
-        /* Although the PHY sets bit 1.11.8, it does not support 10M modes */
-        linkmode_clear_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT,
-                           phydev->supported);
-        linkmode_clear_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT,
-                           phydev->supported);
-
-        return 0;
-}
-
-This is done very early on, as part of probing the PHY. This is done
-before supported is copied into advertised towards the end of the PHYs
-probe.
-
-2) The MAC does not support a link mode. It uses
-phy_remove_link_mode() to remove a link mode. There are two different
-times this can be done:
-
-a) As part of open(), the PHY is connected to the MAC. Since the PHY
-is not connected to the MAC until you open it, you cannot use ethtool
-to change the advertised modes until you have opened it. Hence user
-space cannot of removed anything and you don't need to worry about
-this copy.
-
-b) As part of the MAC drivers probe, the PHY is connected to the MAC.
-In this case, ethtool can be used by userspace to remove link
-modes. But the MAC driver should of already removed the modes it does
-not support, directly after connecting the PHY to the MAC in its probe
-function. So advertising and supported at the same already.
-
-The key point here is ksz9477_phy_setup(), and how it breaks this
-model. It is called from ksz_enable_port(). That is called via
-dsa_port_enable() in dsa_slave_open(). But the PHY was connected to
-the MAC during probe of the MAC. So we have a bad mix of a) and b),
-which is leading to your problem. You need to fix the switch driver so
-it cleanly does b), removes the link mode early on before the user has
-chance to use ethtool.
-
-       Andrew
-
+vim's rst mode really really really wants to use spaces instead of tabs.
+It's screwed me over a bunch of times, so I eventually just disabled it.
+I think we should probably stop fighting it and use spaces in rst files
+instead of tabs, but that's not my call to make.
