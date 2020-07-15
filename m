@@ -2,101 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F9B2210E2
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 17:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FB39221176
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 17:45:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbgGOP1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 11:27:16 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:23355 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725792AbgGOP1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 11:27:15 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1594826835; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=OS9jfqCnxLfBYtRX/l34nJHSA0Qibt4senv0rOAx718=; b=RCbJcu1qj3ZqZZImlhDi/8sVe4EChlTyI6bSky/Nweqs5lZ/YTbNfKoeBoj+ftQOoIqMxSIf
- IQtiItQ2i7KHJ1Tfbb43VGKvJHMz+uF6x1+CvtpaMX/2HKcwzH85EGSVDDVT5wTqpurHRj0p
- w+e8uezY5G7glhVFKsT4BndPItE=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 5f0f2046f9ca681bd0a4dd9e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 15 Jul 2020 15:27:02
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id B13B4C43391; Wed, 15 Jul 2020 15:27:01 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 080D3C433C9;
-        Wed, 15 Jul 2020 15:26:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 080D3C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Zekun Shen <bruceshenzk@gmail.com>
-Cc:     security@kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] net: ath10k: fix OOB: __ath10k_htt_rx_ring_fill_n
-References: <20200623221105.3486-1-bruceshenzk@gmail.com>
-Date:   Wed, 15 Jul 2020 18:26:56 +0300
-In-Reply-To: <20200623221105.3486-1-bruceshenzk@gmail.com> (Zekun Shen's
-        message of "Tue, 23 Jun 2020 18:11:05 -0400")
-Message-ID: <87mu4094u7.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1726132AbgGOPp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 11:45:27 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:50996 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725798AbgGOPp1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 11:45:27 -0400
+X-Greylist: delayed 1710 seconds by postgrey-1.27 at vger.kernel.org; Wed, 15 Jul 2020 11:45:26 EDT
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06FF1rhZ064552;
+        Wed, 15 Jul 2020 15:16:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=dE2+XAhVZ3ELSojoIO+9JYurWJh0dM6wVluR2D7xeL4=;
+ b=O0ngZE5YBhuV8ifHX7+fJJrWxHZHX60tohL8NZE8Gw9kTS/8ztKLV2AUKFf3rTftVeXm
+ nLeiZGtY4hjs4vrEzrryGEmHgNNyn6gi4i4mHh73tT+1slLnkWIyd4HpQoej3VRQ4aQC
+ BFHSQo+QWGCYApQoer0un93OBxcFjIDsIOevbJWiqw2qFBMu9oZGuD9sVFR01KEjLiMj
+ YwnpX92Qo6999waUfjgcRRRg3HuPEVkISagfmc1y5OrJUgZ4rTk73RqFjgVzZLPYx5aa
+ Sc2UwL3DDk+4ed5NsuwM1494Ucy8NzLzeG6whjj1TqZYI1Sf1Pr0IJV0pfBWK9ZfsOPA 3g== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 327s65j9y0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 15 Jul 2020 15:16:54 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06FF3fw8011650;
+        Wed, 15 Jul 2020 15:14:54 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 327q0rdww0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 15 Jul 2020 15:14:54 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 06FFErBA030894;
+        Wed, 15 Jul 2020 15:14:53 GMT
+Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 15 Jul 2020 08:14:53 -0700
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [Regression] "SUNRPC: Add "@len" parameter to gss_unwrap()"
+ breaks NFS Kerberos on upstream stable 5.4.y
+From:   Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <6E0D09F1-601B-432B-81EE-9858EC1AF1DE@canonical.com>
+Date:   Wed, 15 Jul 2020 11:14:52 -0400
+Cc:     matthew.ruffell@canonical.com,
+        linux-stable <stable@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <7042081C-27B3-4024-BA34-7146B459F8B4@oracle.com>
+References: <309E203B-8818-4E33-87F0-017E127788E2@canonical.com>
+ <424D9E36-C51B-46E8-9A07-D329821F2647@oracle.com>
+ <6E0D09F1-601B-432B-81EE-9858EC1AF1DE@canonical.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 spamscore=0
+ mlxlogscore=999 bulkscore=0 adultscore=0 phishscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007150124
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
+ phishscore=0 mlxscore=0 priorityscore=1501 lowpriorityscore=0 spamscore=0
+ clxscore=1015 bulkscore=0 mlxlogscore=999 impostorscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007150124
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zekun Shen <bruceshenzk@gmail.com> writes:
 
-> The idx in __ath10k_htt_rx_ring_fill_n function lives in
-> consistent dma region writable by the device. Malfunctional
-> or malicious device could manipulate such idx to have a OOB
-> write. Either by
->     htt->rx_ring.netbufs_ring[idx] = skb;
-> or by
->     ath10k_htt_set_paddrs_ring(htt, paddr, idx);
->
-> The idx can also be negative as it's signed, giving a large
-> memory space to write to.
->
-> It's possibly exploitable by corruptting a legit pointer with
-> a skb pointer. And then fill skb with payload as rougue object.
->
-> Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-> ---
-> Part of the log here. Sometimes it appears as UAF when writing 
-> to a freed memory by chance.
->
->  [   15.594376] BUG: unable to handle page fault for address: ffff887f5c1804f0
->  [   15.595483] #PF: supervisor write access in kernel mode
->  [   15.596250] #PF: error_code(0x0002) - not-present page
->  [   15.597013] PGD 0 P4D 0
->  [   15.597395] Oops: 0002 [#1] SMP KASAN PTI
->  [   15.597967] CPU: 0 PID: 82 Comm: kworker/u2:2 Not tainted 5.6.0 #69
->  [   15.598843] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), 
->  BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
->  [   15.600438] Workqueue: ath10k_wq ath10k_core_register_work [ath10k_core]
->  [   15.601389] RIP: 0010:__ath10k_htt_rx_ring_fill_n 
->  (linux/drivers/net/wireless/ath/ath10k/htt_rx.c:173) ath10k_core
 
-I added the log to the commit log as it looks useful.
+> On Jul 15, 2020, at 11:08 AM, Kai-Heng Feng =
+<kai.heng.feng@canonical.com> wrote:
+>=20
+>> On Jul 15, 2020, at 23:02, Chuck Lever <chuck.lever@oracle.com> =
+wrote:
+>>=20
+>>> On Jul 15, 2020, at 10:48 AM, Kai-Heng Feng =
+<kai.heng.feng@canonical.com> wrote:
+>>>=20
+>>> Hi,
+>>>=20
+>>> Multiple users reported NFS causes NULL pointer dereference [1] on =
+Ubuntu, due to commit "SUNRPC: Add "@len" parameter to gss_unwrap()" and =
+commit "SUNRPC: Fix GSS privacy computation of auth->au_ralign".
+>>>=20
+>>> The same issue happens on upstream stable 5.4.y branch.
+>>> The mainline kernel doesn't have this issue though.
+>>>=20
+>>> Should we revert them? Or is there any missing commits need to be =
+backported to v5.4?
+>>>=20
+>>> [1] https://bugs.launchpad.net/bugs/1886277
+>>>=20
+>>> Kai-Heng
+>>=20
+>> 31c9590ae468 ("SUNRPC: Add "@len" parameter to gss_unwrap()") is a =
+refactoring
+>> change. It shouldn't have introduced any behavior difference. But in =
+theory,
+>> practice and theory should be the same...
+>>=20
+>> Check if 0a8e7b7d0846 ("SUNRPC: Revert 241b1f419f0e ("SUNRPC: Remove =
+xdr_buf_trim()")")
+>> is also applied to 5.4.0-40-generic.
+>=20
+> Yes, it's included. The commit is part of upstream stable 5.4.
+>=20
+>>=20
+>> It would help to know if v5.5 stable is working for you. I haven't =
+had any
+>> problems with it.
+>=20
+> I'll ask users to test it out.=20
+> Thanks for you quick reply!
 
-Also I made minor changes to the title and to the error message.
+Another thought: Please ask what encryption type is in use. The
+kerberos_v1 enctypes might exercise a code path I wasn't able to
+test.
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
+--
+Chuck Lever
+
+
+
