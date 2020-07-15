@@ -2,140 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E00842214D2
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 21:02:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 434752214F9
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 21:17:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726843AbgGOTCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 15:02:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37288 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726472AbgGOTCw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 15:02:52 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71FF4C061755;
-        Wed, 15 Jul 2020 12:02:52 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id e3so1392961qvo.10;
-        Wed, 15 Jul 2020 12:02:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=VyAVcQaNINAmdgfn3DeUKsJSMWboAnsYMQn078/0TbU=;
-        b=V7iBTIjCkRQ75iJPpcfF9bhlaL0i6on8F00Ql0ckjQGg4TTGW+i5+lcqrkQJ0aosW5
-         dnHgZqQxgKJbBFtx0l6hcaurgOamtArgyKFDiS+hx5TUNLP5uO9DpfA4yqwqbfoXgBlk
-         DdGNOoxLRIRHV0W8zbK0HoAo9vCUjgTC9TfNFntKAGW1sXZ7ID9kztFdJJ+gJqBqPm+d
-         ECTaONlytDJywHk9/FPdIP0Bed6wGzKsMUmQchPH+TOgVNY0Y0Rmo6svR6YR/IOz5SaQ
-         fbPNP+PbCXTX2j5LAPFQPkmyV3SMHBkhbJJNsmJHt2tn8/47Z7gLrAAFEHDm2qcO1WDE
-         6TRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VyAVcQaNINAmdgfn3DeUKsJSMWboAnsYMQn078/0TbU=;
-        b=oUMO7PNQc1z6kytbMYO2NO60itk3MHEiVz1OcZ3yzfPFffYSBsbKEJ8JjgPmZLh9G3
-         Huau63vef+gFfr5g0ioIcEub0gXMpHskjhzUxyD4Bm6KpEVDmIydNemufYcPxUh9dn6m
-         YEJk42IqFGSBlKs0T7PdUWMZ5LhHZxpOP6ug7CU4ssJkVpX/8PmCydJtYDlJDco22z6V
-         LJQFPiDs86ZoeS3T4Y09oTDVgPyXWflTNVp/w+MhJO6w2Fb2tOeMREOM3/QRVRj+qkOf
-         T8sFmOh8Xj3lVu1GpICYdHERL2YleDGs3VIeQninGA3znaO5QxO+hi0QupR3K8vIrpzc
-         A7BA==
-X-Gm-Message-State: AOAM530A8lF45PD0rn/klzmcpfPRjuWKLYC1JFGMbXqw2tAtfD1bhkC7
-        K0axadrrMIpb0t7LmhaHeLTibkCWIphN9DZzPHk=
-X-Google-Smtp-Source: ABdhPJy27YVBp0SNnFfNG4y5YiuduvE8GtodUbjCDZeFeNn8OuYiZWGyaXKhlEoufyYGNwILWx73q2xY8SX+h/XSLE0=
-X-Received: by 2002:a0c:9ae2:: with SMTP id k34mr707485qvf.247.1594839771625;
- Wed, 15 Jul 2020 12:02:51 -0700 (PDT)
+        id S1726942AbgGOTRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 15:17:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42630 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726722AbgGOTRU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 15:17:20 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4AF832076C;
+        Wed, 15 Jul 2020 19:17:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594840639;
+        bh=x3XkBZKKmpZo/K5hL/TFryLVZ2vrqSWHl2APl+XqCNY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hN5bjlmLUrQOXgaC1ls9K7/2944oPb6yzNjnFLIIN2LX4Zt9SDpuGOuM2SROWpY3a
+         cweN5ibLfZQtkY3JfurJWMru1hLEn6VKGyTeY195JDIQdcw6nqZSDoJ1csi2O+eytm
+         Szqffwn98KFGPcUqCUJ4cvhs8uFzjEzci9yKs1tA=
+Date:   Wed, 15 Jul 2020 12:17:17 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        richardcochran@gmail.com, sorganov@gmail.com, andrew@lunn.ch,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next] docs: networking: timestamping: replace tabs
+ with spaces in code blocks
+Message-ID: <20200715121717.41aaff49@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200709202210.72985-1-olteanv@gmail.com>
+References: <20200709202210.72985-1-olteanv@gmail.com>
 MIME-Version: 1.0
-References: <159467113970.370286.17656404860101110795.stgit@toke.dk>
- <159467114405.370286.1690821122507970067.stgit@toke.dk> <CAEf4BzZ_-vXP_3hSEjuceW10VX_H+EeuXMiV=_meBPZn7izK8A@mail.gmail.com>
- <87r1tegusj.fsf@toke.dk> <CAEf4Bzbu1wnwWFOWYA3e6KFeSmfg8oANPWD9LsUMRy2E_zrQ0w@mail.gmail.com>
- <87pn8xg6x7.fsf@toke.dk> <CAEf4BzYAoetyfyofTX45RQjtz3M-c9=YNeH1uRDbYgK4Ae0TwA@mail.gmail.com>
- <87d04xg2p4.fsf@toke.dk> <20200714231133.ap5qnalf6moptvfk@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200714231133.ap5qnalf6moptvfk@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 15 Jul 2020 12:02:40 -0700
-Message-ID: <CAEf4Bzbqh=G5B=JwG4115icvX=Ryd_KvYcSt=GRUqfJLPiNC8A@mail.gmail.com>
-Subject: Re: BPF logging infrastructure. Was: [PATCH bpf-next 4/6] tools: add
- new members to bpf_attr.raw_tracepoint in bpf.h
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 4:11 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Jul 15, 2020 at 12:19:03AM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
-> > Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-> >
-> > >> However, assuming it *is* possible, my larger point was that we
-> > >> shouldn't add just a 'logging struct', but rather a 'common options
-> > >> struct' which can be extended further as needed. And if it is *not*
-> > >> possible to add new arguments to a syscall like you're proposing, my
-> > >> suggestion above would be a different way to achieve basically the s=
-ame
-> > >> (at the cost of having to specify the maximum reserved space in adva=
-nce).
-> > >>
-> > >
-> > > yeah-yeah, I agree, it's less a "logging attr", more of "common attr
-> > > across all commands".
-> >
-> > Right, great. I think we are broadly in agreement with where we want to
-> > go with this, actually :)
->
-> I really don't like 'common attr across all commands'.
-> Both of you are talking as libbpf developers who occasionally need to
-> add printk-s to the kernel.
+On Thu,  9 Jul 2020 23:22:10 +0300 Vladimir Oltean wrote:
+> Reading the document in vim is currently not a pleasant experience. Its
+> rst syntax highlighting is confused by the "*/" sequences which it's not
+> interpreting as part of the code blocks for some reason.
+> 
+> Replace the tabs with spaces, so that syntax highlighters (at least the
+> one in vim) have a better idea where code blocks start and where they
+> end.
+> 
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
-How did you come to this conclusion?
+Dunno about this change, there seems to be plenty examples of using
+tabs for indentation of code block :(
 
-Inability to figure out what's wrong when using BPF is at the top of
-complaints from many users, together with hard to understand logs from
-verifier.
+Jon, any guidance? It seems to me the document renders correctly [1],
+so the onus is on the editor to fix the RST highlight..
 
-> That is not an excuse to bloat api that will be
-> useful to two people.
+[1] https://www.kernel.org/doc/html/latest/networking/timestamping.html 
 
-What do you mean specifically by bloat in API? I could understand how
-it would bloat the API if we were to add log-related fields into every
-part of bpf_attr, one for each type of commands. But that's exactly
-what I advocate to not do.
+> diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
+> index 03f7beade470..5fa4e2274dd9 100644
+> --- a/Documentation/networking/timestamping.rst
+> +++ b/Documentation/networking/timestamping.rst
+> @@ -257,13 +257,13 @@ setsockopt::
+>  
+>    struct msghdr *msg;
+>    ...
+> -  cmsg			       = CMSG_FIRSTHDR(msg);
+> -  cmsg->cmsg_level	       = SOL_SOCKET;
+> -  cmsg->cmsg_type	       = SO_TIMESTAMPING;
+> -  cmsg->cmsg_len	       = CMSG_LEN(sizeof(__u32));
+> +  cmsg                         = CMSG_FIRSTHDR(msg);
+> +  cmsg->cmsg_level             = SOL_SOCKET;
+> +  cmsg->cmsg_type              = SO_TIMESTAMPING;
+> +  cmsg->cmsg_len               = CMSG_LEN(sizeof(__u32));
+>    *((__u32 *) CMSG_DATA(cmsg)) = SOF_TIMESTAMPING_TX_SCHED |
+> -				 SOF_TIMESTAMPING_TX_SOFTWARE |
+> -				 SOF_TIMESTAMPING_TX_ACK;
+> +                                 SOF_TIMESTAMPING_TX_SOFTWARE |
+> +                                 SOF_TIMESTAMPING_TX_ACK;
+>    err = sendmsg(fd, msg, 0);
+>  
+>  The SOF_TIMESTAMPING_TX_* flags set via cmsg will override
+> @@ -273,7 +273,7 @@ Moreover, applications must still enable timestamp reporting via
+>  setsockopt to receive timestamps::
+>  
+>    __u32 val = SOF_TIMESTAMPING_SOFTWARE |
+> -	      SOF_TIMESTAMPING_OPT_ID /* or any other flag */;
+> +              SOF_TIMESTAMPING_OPT_ID /* or any other flag */;
+>    err = setsockopt(fd, SOL_SOCKET, SO_TIMESTAMPING, &val, sizeof(val));
+>  
+>  
+> @@ -354,14 +354,14 @@ SOL_SOCKET, cmsg_type SCM_TIMESTAMPING, and payload of type
+>  
+>  For SO_TIMESTAMPING_OLD::
+>  
+> -	struct scm_timestamping {
+> -		struct timespec ts[3];
+> -	};
+> +        struct scm_timestamping {
+> +                struct timespec ts[3];
+> +        };
+>  
+>  For SO_TIMESTAMPING_NEW::
+>  
+> -	struct scm_timestamping64 {
+> -		struct __kernel_timespec ts[3];
+> +        struct scm_timestamping64 {
+> +                struct __kernel_timespec ts[3];
+>  
+>  Always use SO_TIMESTAMPING_NEW timestamp to always get timestamp in
+>  struct scm_timestamping64 format.
+> @@ -468,11 +468,11 @@ Hardware time stamping must also be initialized for each device driver
+>  that is expected to do hardware time stamping. The parameter is defined in
+>  include/uapi/linux/net_tstamp.h as::
+>  
+> -	struct hwtstamp_config {
+> -		int flags;	/* no flags defined right now, must be zero */
+> -		int tx_type;	/* HWTSTAMP_TX_* */
+> -		int rx_filter;	/* HWTSTAMP_FILTER_* */
+> -	};
+> +        struct hwtstamp_config {
+> +                int flags;      /* no flags defined right now, must be zero */
+> +                int tx_type;    /* HWTSTAMP_TX_* */
+> +                int rx_filter;  /* HWTSTAMP_FILTER_* */
+> +        };
+>  
+>  Desired behavior is passed into the kernel and to a specific device by
+>  calling ioctl(SIOCSHWTSTAMP) with a pointer to a struct ifreq whose
+> @@ -505,42 +505,42 @@ not been implemented in all drivers.
+>  
+>  ::
+>  
+> -    /* possible values for hwtstamp_config->tx_type */
+> -    enum {
+> -	    /*
+> -	    * no outgoing packet will need hardware time stamping;
+> -	    * should a packet arrive which asks for it, no hardware
+> -	    * time stamping will be done
+> -	    */
+> -	    HWTSTAMP_TX_OFF,
+> -
+> -	    /*
+> -	    * enables hardware time stamping for outgoing packets;
+> -	    * the sender of the packet decides which are to be
+> -	    * time stamped by setting SOF_TIMESTAMPING_TX_SOFTWARE
+> -	    * before sending the packet
+> -	    */
+> -	    HWTSTAMP_TX_ON,
+> -    };
+> -
+> -    /* possible values for hwtstamp_config->rx_filter */
+> -    enum {
+> -	    /* time stamp no incoming packet at all */
+> -	    HWTSTAMP_FILTER_NONE,
+> -
+> -	    /* time stamp any incoming packet */
+> -	    HWTSTAMP_FILTER_ALL,
+> -
+> -	    /* return value: time stamp all packets requested plus some others */
+> -	    HWTSTAMP_FILTER_SOME,
+> -
+> -	    /* PTP v1, UDP, any kind of event packet */
+> -	    HWTSTAMP_FILTER_PTP_V1_L4_EVENT,
+> -
+> -	    /* for the complete list of values, please check
+> -	    * the include file include/uapi/linux/net_tstamp.h
+> -	    */
+> -    };
+> +   /* possible values for hwtstamp_config->tx_type */
+> +   enum {
+> +           /*
+> +           * no outgoing packet will need hardware time stamping;
+> +           * should a packet arrive which asks for it, no hardware
+> +           * time stamping will be done
+> +           */
+> +           HWTSTAMP_TX_OFF,
+> +
+> +           /*
+> +           * enables hardware time stamping for outgoing packets;
+> +           * the sender of the packet decides which are to be
+> +           * time stamped by setting SOF_TIMESTAMPING_TX_SOFTWARE
+> +           * before sending the packet
+> +           */
+> +           HWTSTAMP_TX_ON,
+> +   };
+> +
+> +   /* possible values for hwtstamp_config->rx_filter */
+> +   enum {
+> +           /* time stamp no incoming packet at all */
+> +           HWTSTAMP_FILTER_NONE,
+> +
+> +           /* time stamp any incoming packet */
+> +           HWTSTAMP_FILTER_ALL,
+> +
+> +           /* return value: time stamp all packets requested plus some others */
+> +           HWTSTAMP_FILTER_SOME,
+> +
+> +           /* PTP v1, UDP, any kind of event packet */
+> +           HWTSTAMP_FILTER_PTP_V1_L4_EVENT,
+> +
+> +           /* for the complete list of values, please check
+> +           * the include file include/uapi/linux/net_tstamp.h
+> +           */
+> +   };
+>  
+>  3.1 Hardware Timestamping Implementation: Device Drivers
+>  --------------------------------------------------------
+> @@ -555,10 +555,10 @@ to the shared time stamp structure of the skb call skb_hwtstamps(). Then
+>  set the time stamps in the structure::
+>  
+>      struct skb_shared_hwtstamps {
+> -	    /* hardware time stamp transformed into duration
+> -	    * since arbitrary point in time
+> -	    */
+> -	    ktime_t	hwtstamp;
+> +            /* hardware time stamp transformed into duration
+> +            * since arbitrary point in time
+> +            */
+> +            ktime_t     hwtstamp;
+>      };
+>  
+>  Time stamps for outgoing packets are to be generated as follows:
 
-But having even a slight improvement of error reporting, beyond
-current -EINVAL, -E2BIG, etc, would improve experience immensely for
-*all* BPF users.
-
->
-> The only reason log_buf sort-of make sense in raw_tp_open is because
-> btf comparison is moved from prog_load into raw_tp_open.
-> Miscompare of (prog_fd1, btf_id1) vs (prog_fd2, btf_id2) can be easily so=
-lved
-> by libbpf with as nice and as human friendly message libbpf can do.
->
-> I'm not convinced yet that it's a kernel job to print it nicely. It certa=
-inly can,
-> but it's quite a bit different from two existing bpf commands where log_b=
-uf is used:
-> PROG_LOAD and BTF_LOAD. In these two cases the kernel verifies the progra=
-m
-> and the BTF. raw_tp_open is different, since the kernel needs to compare
-> that function signatures (prog_fd1, btf_id1) and (prog_fd2, btf_id2) are
-> exactly the same. The kernel can indicate that with single specific errno=
- and
-> libbpf can print human friendly function signatures via btf_dump infra fo=
-r
-> humans to see.
-> So I really don't see why log_buf is such a necessity for raw_tp_open.
