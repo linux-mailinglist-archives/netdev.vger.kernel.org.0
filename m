@@ -2,159 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F6E2211FC
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3692221209
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 18:12:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726878AbgGOQIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 12:08:54 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:52206 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726828AbgGOQIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 12:08:47 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jvjwM-0004dH-NA; Wed, 15 Jul 2020 16:07:26 +0000
-Subject: Re: xprtrdma: Prevent inline overflow
-To:     Chuck Lever <chuck.lever@oracle.com>
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Bruce Fields <bfields@fieldses.org>,
+        id S1726786AbgGOQLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 12:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726742AbgGOQLt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 12:11:49 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7793C061755;
+        Wed, 15 Jul 2020 09:11:48 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id f5so3184337ljj.10;
+        Wed, 15 Jul 2020 09:11:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EMJ3AmxIrJx//PWnt8IhX2NqkDjePQpD0K9qH5qgQmc=;
+        b=J68iVBHrak/jiQALSLVnH0yu9VJWfTPzLP4EhZrF1tqAqwoo53hNWuiSMjszPnZtlm
+         Ui7yapN1No5fNK55QiRgbxzqMarjEIzpYcdldh4P0f/4gSweR5Hn2IBwq2V/uFziyXYA
+         8IOSopB/0Ce9jvbn3gzvD9eQkDw+g7mPx1NQqFQNd67asBxA0leZug0/ZIYih+/8K0v/
+         zMFnrG15WUg4qWekNEkV45ZgXzO2KLwLlSsgMhqnQHJO6orDVqfQDRSygYAnt+FqZItq
+         91kSjSyAKonRVALVgwv0qee/qu7m/QK+28EnHC626/V1HmpkPcRlpP3FORSSC75tHGcL
+         x7FA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EMJ3AmxIrJx//PWnt8IhX2NqkDjePQpD0K9qH5qgQmc=;
+        b=Pr/pIWBJMz81FLEpVoE6aM4mIX+kekwufxltN278FT/IwEGYV1VAfhA1Ld4ExQRXAM
+         bXDk6zqndy4mT5TMca32GC1xMQOLvYUCIoWEBp6x8nH6OBRjLNPz1ckcQ/CT6pv/ffB4
+         Iy2207tP+EWxl9y0+HzgTWzpYXOOv3rf3gcsRUjuklnf1Rnv1doKMGspCrDrfdwnrqsG
+         lXBKHvtndn0gACV9HHeOQPtfnM2yDDlWh3vivAXC2KCMKy5I00xPdE4KMYNWipLz10ea
+         ANiW3l3XpQ+gwjtWFxVYaprZHcwnw86AwAQcBBe5OHZHfTRZ4hUhvI0QCfes3JIBnmA8
+         B3UQ==
+X-Gm-Message-State: AOAM530mYRfTyiRxmiC3dG/WLdTLjSfyyjSfFBylbziZGbNz7g0d6yKi
+        w5C1AxZZCGwluIRXoz/Gq6iSvXZl
+X-Google-Smtp-Source: ABdhPJydnXBv8tnPjJ+RIFdr8QWTZT8KPQU25hJ48hxf7F5gnZjJyS5XV/68WcJzz9+1e5pHdQaqNQ==
+X-Received: by 2002:a2e:3619:: with SMTP id d25mr5103685lja.204.1594829506977;
+        Wed, 15 Jul 2020 09:11:46 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id e29sm577097lfc.51.2020.07.15.09.11.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2020 09:11:45 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <ac00f855-e67c-b3d5-2be8-a18b07fcc8f8@canonical.com>
- <239E2F87-E595-4132-B133-504EFF9103B8@oracle.com>
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <2e64a42f-9e0d-9086-3279-d32aaad4f57c@canonical.com>
-Date:   Wed, 15 Jul 2020 17:07:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        John Stultz <john.stultz@linaro.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Sergey Organov <sorganov@gmail.com>
+Subject: [PATCH net] net: dp83640: fix SIOCSHWTSTAMP to update the struct with actual configuration
+Date:   Wed, 15 Jul 2020 19:10:00 +0300
+Message-Id: <20200715161000.14158-1-sorganov@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <239E2F87-E595-4132-B133-504EFF9103B8@oracle.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/07/2020 17:05, Chuck Lever wrote:
-> 
-> 
->> On Jul 15, 2020, at 11:56 AM, Colin Ian King <colin.king@canonical.com> wrote:
->>
->> Hi,
->>
->> Static analysis with Coverity has found a potential issue with the
->> header size calculations in source net/sunrpc/xprtrdma/rpc_rdma.c in
->> functions rpcrdma_max_call_header_size and rpcrdma_max_reply_header_size.
->>
->> The commit in question is relatively old:
->>
->> commit 302d3deb20682a076e1ab551821cacfdc81c5e4f
->> Author: Chuck Lever <chuck.lever@oracle.com>
->> Date:   Mon May 2 14:41:05 2016 -0400
->>
->>    xprtrdma: Prevent inline overflow
->>
->> The two issues are as follows:
->>
->> Issue #1:
->>
->> 66 static unsigned int rpcrdma_max_call_header_size(unsigned int maxsegs)
->> 67 {
->> 68        unsigned int size;
->> 69
->> 70        /* Fixed header fields and list discriminators */
->>
->> Unused value (UNUSED_VALUE)
->>
->> 71        size = RPCRDMA_HDRLEN_MIN;
->> 72
->> 73        /* Maximum Read list size */
->> 74        size = maxsegs * rpcrdma_readchunk_maxsz * sizeof(__be32);
->> 75
->>
->> should the size assignment on line 74 be instead:
->>
->> 	size += maxsegs * rpcrdma_readchunk_maxsz * sizeof(__be32);
->>
->>
->> Issue #2:
->>
->> 89 static unsigned int rpcrdma_max_reply_header_size(unsigned int maxsegs)
->> 90 {
->> 91        unsigned int size;
->> 92
->> 93        /* Fixed header fields and list discriminators */
->>
->> Unused value (UNUSED_VALUE)
->>
->> 94        size = RPCRDMA_HDRLEN_MIN;
->> 95
->> 96        /* Maximum Write list size */
->> 97        size = sizeof(__be32);          /* segment count */
->>
->> should the size assignment in line 97 be instead:
->>
->> 	size += sizeof(__be32)?
-> 
-> Colin, Yes to both questions. Can you send a fix to Anna?
+From Documentation/networking/timestamping.txt:
 
-OK, thanks for confirming. Will send a fix in the next hour or so.
+  A driver which supports hardware time stamping shall update the
+  struct with the actual, possibly more permissive configuration.
 
-Colin
-> 
-> --
-> Chuck Lever
-> 
-> 
-> 
+Do update the struct passed when we upscale the requested time
+stamping mode.
+
+Fixes: cb646e2b02b2 ("ptp: Added a clock driver for the National Semiconductor PHYTER.")
+Signed-off-by: Sergey Organov <sorganov@gmail.com>
+---
+ drivers/net/phy/dp83640.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
+index ecbd5e0d685c..acb0aae60755 100644
+--- a/drivers/net/phy/dp83640.c
++++ b/drivers/net/phy/dp83640.c
+@@ -1260,6 +1260,7 @@ static int dp83640_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
+ 		dp83640->hwts_rx_en = 1;
+ 		dp83640->layer = PTP_CLASS_L4;
+ 		dp83640->version = PTP_CLASS_V1;
++		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V1_L4_EVENT;
+ 		break;
+ 	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
+ 	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
+@@ -1267,6 +1268,7 @@ static int dp83640_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
+ 		dp83640->hwts_rx_en = 1;
+ 		dp83640->layer = PTP_CLASS_L4;
+ 		dp83640->version = PTP_CLASS_V2;
++		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
+ 		break;
+ 	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
+ 	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
+@@ -1274,6 +1276,7 @@ static int dp83640_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
+ 		dp83640->hwts_rx_en = 1;
+ 		dp83640->layer = PTP_CLASS_L2;
+ 		dp83640->version = PTP_CLASS_V2;
++		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
+ 		break;
+ 	case HWTSTAMP_FILTER_PTP_V2_EVENT:
+ 	case HWTSTAMP_FILTER_PTP_V2_SYNC:
+@@ -1281,6 +1284,7 @@ static int dp83640_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
+ 		dp83640->hwts_rx_en = 1;
+ 		dp83640->layer = PTP_CLASS_L4 | PTP_CLASS_L2;
+ 		dp83640->version = PTP_CLASS_V2;
++		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
+ 		break;
+ 	default:
+ 		return -ERANGE;
+-- 
+2.10.0.1.g57b01a3
 
