@@ -2,77 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 835E122145F
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 20:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03410221465
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 20:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbgGOSiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 14:38:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37358 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726465AbgGOSiv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 14:38:51 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jvmIl-005HNy-E8; Wed, 15 Jul 2020 20:38:43 +0200
-Date:   Wed, 15 Jul 2020 20:38:43 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
-Message-ID: <20200715183843.GA1256692@lunn.ch>
-References: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
+        id S1726998AbgGOSl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 14:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726722AbgGOSlZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 14:41:25 -0400
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214B0C08C5DB;
+        Wed, 15 Jul 2020 11:41:24 -0700 (PDT)
+Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 06FIfHQs016674
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Wed, 15 Jul 2020 20:41:17 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1594838478; bh=XO4cHZWyZMEn/b68HAWj2tkmcP8C5MGEAPzztaFclIA=;
+        h=From:To:Cc:Subject:Date:Message-Id:From;
+        b=GeIgA4jvbQ2um49AnyFSyNGUdmFkhMpKUx+RW9xEPEDnLhT936CzemKxiNKC4k6wI
+         udnhvwmCubDqrKzEB3Uezxu5obsSQHAlL1QH3cYisXfBUSmrLgJOjgfWuvhQ+Pwbee
+         wZH5aYYVt/5Rqc5LzhAdWYLBPpUNfzoqorA0FRp8=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
+        (envelope-from <bjorn@miraculix.mork.no>)
+        id 1jvmLF-000SSQ-39; Wed, 15 Jul 2020 20:41:17 +0200
+From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+To:     netdev@vger.kernel.org
+Cc:     linux-usb@vger.kernel.org, wxcafe@wxcafe.net, oliver@neukum.org,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+Subject: [PATCH v5 net-next 0/5] usbnet: multicast filter support for cdc ncm devices
+Date:   Wed, 15 Jul 2020 20:40:55 +0200
+Message-Id: <20200715184100.109349-1-bjorn@mork.no>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.102.2 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Getting the Kconfig for this correct has been a struggle - particularly
-> the combination where PTP support is modular.  It's rather odd to have
-> the Marvell PTP support asked before the Marvell PHY support.  I
-> couldn't work out any other reasonable way to ensure that we always
-> have a valid configuration, without leading to stupidities such as
-> having the PTP and Marvell PTP support modular, but non-functional
-> because Marvell PHY is built-in.
+This revives a 2 year old patch set from Miguel Rodríguez
+Pérez, which appears to have been lost somewhere along the
+way.  I've based it on the last version I found (v4), and
+added one patch which I believe must have been missing in
+the original.
 
-Hi Russell
+I kept Oliver's ack on one of the patches, since both the patch and
+the motivation still is the same.  Hope this is OK..
 
-How much object code is this adding? All the other PHYs which support
-PTP just make it part of the PHY driver, not a standalone module. That
-i guess simplifies the conditions. 
+Thanks to the anonymous user <wxcafe@wxcafe.net> for bringing up this
+problem in https://bugs.debian.org/965074
 
-Looking at DSDT, it lists
+This is only build and load tested by me.  I don't have any device
+where I can test the actual functionality.
 
-        case MAD_88E1340S:
-        case MAD_88E1340:
-        case MAD_88E1340M:
-        case MAD_SWG65G : 
-	case MAD_88E151x:
 
-as being MAD_PHY_PTP_TAI_CAPABLE;
+Changes v5:
+ - added missing symbol export
+ - formatted patch subjects with subsystem
 
-and
 
-	case MAD_88E1548
-        case MAD_88E1680:
-        case MAD_88E1680M:
+Bjørn Mork (1):
+  net: usbnet: export usbnet_set_rx_mode()
 
-as MAD_PHY_1STEP_PTP_CAPABLE;
+Miguel Rodríguez Pérez (4):
+  net: cdc_ether: use dev->intf to get interface information
+  net: cdc_ether: export usbnet_cdc_update_filter
+  net: cdc_ncm: add .ndo_set_rx_mode to cdc_ncm_netdev_ops
+  net: cdc_ncm: hook into set_rx_mode to admit multicast traffic
 
-So maybe we can wire this up to a few more PHYs to 'lower' the
-overhead a bit?
+ drivers/net/usb/cdc_ether.c | 7 +++----
+ drivers/net/usb/cdc_ncm.c   | 4 ++++
+ drivers/net/usb/usbnet.c    | 3 ++-
+ include/linux/usb/usbnet.h  | 2 ++
+ 4 files changed, 11 insertions(+), 5 deletions(-)
 
-> It seems that the Marvell PHY PTP is very similar to that found in
-> their DSA chips, which suggests maybe we should share the code, but
-> different access methods would be required.
+-- 
+2.27.0
 
-That makes the Kconfig even more complex :-(
-
-     Andrew
