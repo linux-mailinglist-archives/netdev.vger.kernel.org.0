@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0035220732
+	by mail.lfdr.de (Postfix) with ESMTP id 059CA220730
 	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 10:28:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730092AbgGOI2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 04:28:35 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:39105 "EHLO
+        id S1726034AbgGOI2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 04:28:31 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:35611 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730058AbgGOI2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:28:22 -0400
+        by vger.kernel.org with ESMTP id S1730083AbgGOI2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 04:28:24 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 7E16E5C0186;
-        Wed, 15 Jul 2020 04:28:21 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 7EFB05C00D7;
+        Wed, 15 Jul 2020 04:28:23 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 15 Jul 2020 04:28:21 -0400
+  by compute4.internal (MEProxy); Wed, 15 Jul 2020 04:28:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=Chksc6joR66Qc75I6nvCWHxKi0LExhOzdGT3jMub3s8=; b=Dvf09pvq
-        1TuNGlBT9Zh1/5DtDV1LV8oyYlVAmgHfvlUfUZsCqbk7PdfBQqZAnuMT8IsesJhj
-        vnWNJ9tHZ8inDUDslfDqdJj5bbSRSonTsYpc78JHgmo5HtVUNcYDVpUQIsCUCL2A
-        rkQp83TXIgVwI2uTa/YXje3GAPRF7jAHxJghHCrQxfJoNCH4/01CIBv9cgFBWbZP
-        sWgtY4twzEVFFde7y9D3ZDzC37oVGA5lzTlsIUgIoWJDESYRljtYBDynSMc/0QTt
-        5i3LK+D4mOrdZm2ky0TAWY1bE7eUO68sMqnuYnLRJcoZAFMINlXKORYlOVPnG+Pr
-        mQLu8GEIkj7xyQ==
-X-ME-Sender: <xms:Jb4OXzkFdRlfFcRCSQosJINMIgLq0Sec9Pd14ExgEllR8o-fpUHaBg>
+        fm3; bh=7TI0o1o7/3GGLZWv59loyzmAPUtXFViRmUtGGLaNtBM=; b=HAl3mo5/
+        zoM9iIPMgEbznt93vCtrD0/TV9oixyab8iIkxxfvszx+RfyLDW22EKZnU/0DrLZG
+        7cl3/tf2l/f1l/MfJzDnU/AVxNBPlbCB/ANDACMBgLFJnVenecYFTzu4IThcJ8D/
+        C/smMVySjb9E0Q8CWkAnLb3uXxMZxoMbFdOTTCaeI8ke4G7FQHI8V4Zvtl6LGA8a
+        j/feMGNWB/cT9pcbSYVW+doXBTi5Ypd0CyFMfvpjt04u+A3UnaCSn7Ok2xNib3lx
+        ck+2H4Pk1p/qE4k6AOAwJFe11P5jcEBXZNo8pEepMLqYjdtAIuiZRFIQkryvVdcL
+        y7lUgRR5DqeG+A==
+X-ME-Sender: <xms:J74OX0aNPgLg6QoLTVAHJxvT-f-3tn_0gnLW310UKi-HtmBHCUnkrw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedvgddtgecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -36,21 +36,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrfedvgddtgecutefuodetggdote
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieehrddufeelrddukedt
     necuvehluhhsthgvrhfuihiivgepkeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:Jb4OX22LBoDMjGj4T7atbwaDofZWO-tHdKGLpDRZoT2xp2ObaX6Hlg>
-    <xmx:Jb4OX5qj6WlfaiHSghKxW0HHmFqsAl6Ngg1AXCn5KkBn4QhO0gzPoA>
-    <xmx:Jb4OX7lwUqQeUI6Q5FxfDUqTd6wdhYhJsAfNKKpfgbJ5zYQI6fb6ww>
-    <xmx:Jb4OX_As5M8VeYcJqkGRGyRiZO0buMYT-_a06J8a5g9iYB6r0lSocg>
+X-ME-Proxy: <xmx:J74OX_YmDWAEOi4Vx40QD0qVMWiGd440kDEbJm9DNRm8mri0IKzUTw>
+    <xmx:J74OX-_ywuze_BHLlAOqmVmuc4h80ZzQEounG_mU8bqWM7cayA91hA>
+    <xmx:J74OX-qVe3DxBCUXNaTz-PorTxhTjUMCYR26Kc6xwd0ENxDo9d_kpg>
+    <xmx:J74OX23H2beS06l4e_3XWErUa4omXPtotenA3EIWnknQXjXhSAWq4w>
 Received: from shredder.mtl.com (bzq-109-65-139-180.red.bezeqint.net [109.65.139.180])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C3A6B3280063;
-        Wed, 15 Jul 2020 04:28:19 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 9D0CC3280063;
+        Wed, 15 Jul 2020 04:28:21 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         petrm@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 09/11] selftests: mlxsw: tc_restrictions: Test tc-police restrictions
-Date:   Wed, 15 Jul 2020 11:27:31 +0300
-Message-Id: <20200715082733.429610-10-idosch@idosch.org>
+Subject: [PATCH net-next 10/11] selftests: mlxsw: Add scale test for tc-police
+Date:   Wed, 15 Jul 2020 11:27:32 +0300
+Message-Id: <20200715082733.429610-11-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200715082733.429610-1-idosch@idosch.org>
 References: <20200715082733.429610-1-idosch@idosch.org>
@@ -63,109 +63,192 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Test that upper and lower limits on rate and burst size imposed by the
-device are rejected by the kernel.
+Query the maximum number of supported policers using devlink-resource
+and test that this number can be reached by configuring tc filters with
+police action. Test that an error is returned in case the maximum number
+is exceeded.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Petr Machata <petrm@mellanox.com>
 ---
- .../drivers/net/mlxsw/tc_restrictions.sh      | 76 +++++++++++++++++++
- 1 file changed, 76 insertions(+)
+ .../net/mlxsw/spectrum-2/resource_scale.sh    |  2 +-
+ .../net/mlxsw/spectrum-2/tc_police_scale.sh   | 16 ++++
+ .../net/mlxsw/spectrum/resource_scale.sh      |  2 +-
+ .../net/mlxsw/spectrum/tc_police_scale.sh     | 16 ++++
+ .../drivers/net/mlxsw/tc_police_scale.sh      | 92 +++++++++++++++++++
+ 5 files changed, 126 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/tc_police_scale.sh
+ create mode 100644 tools/testing/selftests/drivers/net/mlxsw/spectrum/tc_police_scale.sh
+ create mode 100644 tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_restrictions.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_restrictions.sh
-index 9241250c5921..553cb9fad508 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/tc_restrictions.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/tc_restrictions.sh
-@@ -11,6 +11,8 @@ ALL_TESTS="
- 	matchall_mirror_behind_flower_ingress_test
- 	matchall_sample_behind_flower_ingress_test
- 	matchall_mirror_behind_flower_egress_test
-+	police_limits_test
-+	multi_police_test
- "
- NUM_NETIFS=2
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
+index fd583a171db7..d7cf33a3f18d 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
+@@ -28,7 +28,7 @@ cleanup()
  
-@@ -287,6 +289,80 @@ matchall_mirror_behind_flower_egress_test()
- 	matchall_behind_flower_egress_test "mirror" "mirred egress mirror dev $swp2"
- }
+ trap cleanup EXIT
  
-+police_limits_test()
+-ALL_TESTS="router tc_flower mirror_gre"
++ALL_TESTS="router tc_flower mirror_gre tc_police"
+ for current_test in ${TESTS:-$ALL_TESTS}; do
+ 	source ${current_test}_scale.sh
+ 
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/tc_police_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/tc_police_scale.sh
+new file mode 100644
+index 000000000000..e79ac0dad1f4
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/tc_police_scale.sh
+@@ -0,0 +1,16 @@
++# SPDX-License-Identifier: GPL-2.0
++source ../tc_police_scale.sh
++
++tc_police_get_target()
 +{
-+	RET=0
++	local should_fail=$1; shift
++	local target
 +
-+	tc qdisc add dev $swp1 clsact
++	target=$(devlink_resource_size_get global_policers single_rate_policers)
 +
-+	tc filter add dev $swp1 ingress pref 1 proto ip handle 101 \
-+		flower skip_sw \
-+		action police rate 0.5kbit burst 1m conform-exceed drop/ok
-+	check_fail $? "Incorrect success to add police action with too low rate"
++	if ((! should_fail)); then
++		echo $target
++	else
++		echo $((target + 1))
++	fi
++}
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
+index 43ba1b438f6d..43f662401bc3 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
+@@ -22,7 +22,7 @@ cleanup()
+ devlink_sp_read_kvd_defaults
+ trap cleanup EXIT
+ 
+-ALL_TESTS="router tc_flower mirror_gre"
++ALL_TESTS="router tc_flower mirror_gre tc_police"
+ for current_test in ${TESTS:-$ALL_TESTS}; do
+ 	source ${current_test}_scale.sh
+ 
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum/tc_police_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum/tc_police_scale.sh
+new file mode 100644
+index 000000000000..e79ac0dad1f4
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum/tc_police_scale.sh
+@@ -0,0 +1,16 @@
++# SPDX-License-Identifier: GPL-2.0
++source ../tc_police_scale.sh
 +
-+	tc filter add dev $swp1 ingress pref 1 proto ip handle 101 \
-+		flower skip_sw \
-+		action police rate 2.5tbit burst 1g conform-exceed drop/ok
-+	check_fail $? "Incorrect success to add police action with too high rate"
++tc_police_get_target()
++{
++	local should_fail=$1; shift
++	local target
 +
-+	tc filter add dev $swp1 ingress pref 1 proto ip handle 101 \
-+		flower skip_sw \
-+		action police rate 1.5kbit burst 1m conform-exceed drop/ok
-+	check_err $? "Failed to add police action with low rate"
++	target=$(devlink_resource_size_get global_policers single_rate_policers)
 +
-+	tc filter del dev $swp1 ingress protocol ip pref 1 handle 101 flower
++	if ((! should_fail)); then
++		echo $target
++	else
++		echo $((target + 1))
++	fi
++}
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
+new file mode 100644
+index 000000000000..4b96561c462f
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
+@@ -0,0 +1,92 @@
++# SPDX-License-Identifier: GPL-2.0
 +
-+	tc filter add dev $swp1 ingress pref 1 proto ip handle 101 \
-+		flower skip_sw \
-+		action police rate 1.9tbit burst 1g conform-exceed drop/ok
-+	check_err $? "Failed to add police action with high rate"
++TC_POLICE_NUM_NETIFS=2
 +
-+	tc filter del dev $swp1 ingress protocol ip pref 1 handle 101 flower
-+
-+	tc filter add dev $swp1 ingress pref 1 proto ip handle 101 \
-+		flower skip_sw \
-+		action police rate 1.5kbit burst 512b conform-exceed drop/ok
-+	check_fail $? "Incorrect success to add police action with too low burst size"
-+
-+	tc filter add dev $swp1 ingress pref 1 proto ip handle 101 \
-+		flower skip_sw \
-+		action police rate 1.5kbit burst 2k conform-exceed drop/ok
-+	check_err $? "Failed to add police action with low burst size"
-+
-+	tc filter del dev $swp1 ingress protocol ip pref 1 handle 101 flower
-+
-+	tc qdisc del dev $swp1 clsact
-+
-+	log_test "police rate and burst limits"
++tc_police_h1_create()
++{
++	simple_if_init $h1
 +}
 +
-+multi_police_test()
++tc_police_h1_destroy()
 +{
-+	RET=0
-+
-+	# It is forbidden in mlxsw driver to have multiple police
-+	# actions in a single rule.
-+
-+	tc qdisc add dev $swp1 clsact
-+
-+	tc filter add dev $swp1 ingress protocol ip pref 1 handle 101 \
-+		flower skip_sw \
-+		action police rate 100mbit burst 100k conform-exceed drop/ok
-+	check_err $? "Failed to add rule with single police action"
-+
-+	tc filter del dev $swp1 ingress protocol ip pref 1 handle 101 flower
-+
-+	tc filter add dev $swp1 ingress protocol ip pref 1 handle 101 \
-+		flower skip_sw \
-+		action police rate 100mbit burst 100k conform-exceed drop/pipe \
-+		action police rate 200mbit burst 200k conform-exceed drop/ok
-+	check_fail $? "Incorrect success to add rule with two police actions"
-+
-+	tc qdisc del dev $swp1 clsact
-+
-+	log_test "multi police"
++	simple_if_fini $h1
 +}
 +
- setup_prepare()
- {
- 	swp1=${NETIFS[p1]}
++tc_police_switch_create()
++{
++	simple_if_init $swp1
++	tc qdisc add dev $swp1 clsact
++}
++
++tc_police_switch_destroy()
++{
++	tc qdisc del dev $swp1 clsact
++	simple_if_fini $swp1
++}
++
++tc_police_rules_create()
++{
++	local count=$1; shift
++	local should_fail=$1; shift
++
++	TC_POLICE_BATCH_FILE="$(mktemp)"
++
++	for ((i = 0; i < count; ++i)); do
++		cat >> $TC_POLICE_BATCH_FILE <<-EOF
++			filter add dev $swp1 ingress \
++				prot ip \
++				flower skip_sw \
++				action police rate 10mbit burst 100k \
++				conform-exceed drop/ok
++		EOF
++	done
++
++	tc -b $TC_POLICE_BATCH_FILE
++	check_err_fail $should_fail $? "Rule insertion"
++}
++
++__tc_police_test()
++{
++	local count=$1; shift
++	local should_fail=$1; shift
++
++	tc_police_rules_create $count $should_fail
++
++	offload_count=$(tc filter show dev $swp1 ingress | grep in_hw | wc -l)
++	((offload_count == count))
++	check_err_fail $should_fail $? "tc police offload count"
++}
++
++tc_police_test()
++{
++	local count=$1; shift
++	local should_fail=$1; shift
++
++	if ! tc_offload_check $TC_POLICE_NUM_NETIFS; then
++		check_err 1 "Could not test offloaded functionality"
++		return
++	fi
++
++	__tc_police_test $count $should_fail
++}
++
++tc_police_setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	swp1=${NETIFS[p2]}
++
++	vrf_prepare
++
++	tc_police_h1_create
++	tc_police_switch_create
++}
++
++tc_police_cleanup()
++{
++	pre_cleanup
++
++	tc_police_switch_destroy
++	tc_police_h1_destroy
++
++	vrf_cleanup
++}
 -- 
 2.26.2
 
