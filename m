@@ -2,27 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5028F220CC1
-	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 14:14:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35774220CCF
+	for <lists+netdev@lfdr.de>; Wed, 15 Jul 2020 14:19:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729490AbgGOMOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 08:14:06 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:40954 "EHLO huawei.com"
+        id S1730054AbgGOMS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 08:18:59 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7858 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728866AbgGOMOG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 08:14:06 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 31E22B5155CD029ABD06;
-        Wed, 15 Jul 2020 20:14:01 +0800 (CST)
-Received: from huawei.com (10.164.155.96) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Wed, 15 Jul 2020
- 20:13:58 +0800
+        id S1725924AbgGOMS7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 08:18:59 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id DF9B9D68CA06003E39EA;
+        Wed, 15 Jul 2020 20:18:56 +0800 (CST)
+Received: from huawei.com (10.164.155.96) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Wed, 15 Jul 2020
+ 20:18:46 +0800
 From:   zhouxudong199 <zhouxudong8@huawei.com>
 To:     <wensong@linux-vs.org>, <horms@verge.net.au>
-CC:     <netdev@vger.kernel.org>, <lvs-devel@vger.kernel.org>
+CC:     <netdev@vger.kernel.org>, <lvs-devel@vger.kernel.org>,
+        <zhouxudong8@huawei.com>, <rose.chen@huawei.com>
 Subject: [PATCH] ipvs:clean code for ip_vs_sync.c
-Date:   Wed, 15 Jul 2020 12:13:46 +0000
-Message-ID: <1594815226-9768-1-git-send-email-zhouxudong8@huawei.com>
+Date:   Wed, 15 Jul 2020 12:18:39 +0000
+Message-ID: <1594815519-37044-1-git-send-email-zhouxudong8@huawei.com>
 X-Mailer: git-send-email 2.6.1.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain
