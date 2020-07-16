@@ -2,212 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEDFC22246A
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 15:56:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10B902224E1
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 16:10:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728930AbgGPN4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 09:56:09 -0400
-Received: from nat-hk.nvidia.com ([203.18.50.4]:43763 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728805AbgGPN4I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 09:56:08 -0400
-Received: from hkpgpgate102.nvidia.com (Not Verified[10.18.92.100]) by nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f105c750000>; Thu, 16 Jul 2020 21:56:05 +0800
-Received: from HKMAIL102.nvidia.com ([10.18.16.11])
-  by hkpgpgate102.nvidia.com (PGP Universal service);
-  Thu, 16 Jul 2020 06:56:05 -0700
-X-PGP-Universal: processed;
-        by hkpgpgate102.nvidia.com on Thu, 16 Jul 2020 06:56:05 -0700
-Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL102.nvidia.com
- (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 16 Jul
- 2020 13:55:55 +0000
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
- by HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Thu, 16 Jul 2020 13:55:55 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dGQNLPKbJLhdAhxcKOHFmFzxsze0BGyg9O4HdBJ93Yy/iX67MphGheJRkTzE4hE0m+tBtg9AD6s8xZXkaA+LwKwbZtrpoHc1gxqs8qEwBqtWe8/ZWy/fU472iBK7lMU6eAvd1lUSfMm09u4xg8Qa0HMSrZQ7AG7EoRaQ+LV0x3KmpFT6dyhH4eqptAqewHuRdMs3WFWnpRhBJgTfrclyZvKQ1get8e5QyQ6grlM0sPDuIFH0robEtRJwYBClc+xrlRu7Ax+j5zWXNM9D+tokxXMjGBKu5jMevkpnbv7H36jhDZqpO6ORaJQNcDsDu6oj4SAFQsmdL056pSLMQ8G3XA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=336705n8xlNAOqHqrLLikuac5iYOyEydNTzJmJw3ED0=;
- b=GILwstrdvme6QBlMcgQamGwJjSGjNvl6wht8Y85U6p+inpVcl1wDjZ0rlSGOM506OPnGqA8+Pk0HCmwG93hRRYLUbw+X7TUv7vqVOZvE9sUE73srASC9sbfZ9wqqz4Tprsf8IU8oQ0dx5VHNMnvvejG3RjiXypxj0Jz+jZeVNcM1tNrnTt5HnRDB/OrdpHNM1HthP1uO5oFPpn9elquZe0TFkaIbNMNDBSpWaoquWoyf/l11eeySxXurPrFa0jy4upFYmJ/39bY5gp7Miql0dQCYFCn8fOLVQQ1Il7fczTgzH/98Fws7nqx9VoATpKv4kBiGlyNj61f1cMa+4PSgHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM5PR12MB1514.namprd12.prod.outlook.com (2603:10b6:4:f::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3195.17; Thu, 16 Jul 2020 13:55:53 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1d53:7cb4:c3d7:2b54]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1d53:7cb4:c3d7:2b54%6]) with mapi id 15.20.3174.026; Thu, 16 Jul 2020
- 13:55:53 +0000
-Date:   Thu, 16 Jul 2020 10:55:50 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Doug Ledford <dledford@redhat.com>,
-        Maor Gottlieb <maorg@mellanox.com>,
-        Alexei Starovoitov <ast@kernel.org>, <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-rc] RDMA/cm: Protect access to remote_sidr_table
-Message-ID: <20200716135550.GB2626442@nvidia.com>
-References: <20200716105519.1424266-1-leon@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200716105519.1424266-1-leon@kernel.org>
-X-ClientProxiedBy: YT1PR01CA0087.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2d::26) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1728455AbgGPOKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 10:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727044AbgGPOKD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 10:10:03 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424C4C061755
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 07:10:03 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id j10so4922154qtq.11
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 07:10:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4457RnLNJcPLsjYWaJwh5rhYWqg1UZ+xbz9duTTC7U0=;
+        b=Dh497KqMbv4PehHU2s8NsZ9WG2YpATiOsl17lPd0nO9gfavq3UlKgdpVxGLcl8fgQk
+         KrCCIQ49IJcvTdp+PVqTlK2kkyJEJ+OXbT+zUdbRzccRobsxqOCUbLokjr/8meorwLZC
+         rMn062rsZHaBpIaXajYvckMMil4sF9S2AoALgAGbIS80CI4bCPkYb/FCc3Td//wFhMIH
+         WLPfQib/NcO751cNgn0Qu0unthlweBrHy0VDJzNN+Skh6Hn6oaDDjjsm1sJCj2JbnXxe
+         vn+1IZz9mv53e64HzLVYFyxVc5QnFAfe/cu0nl0PZeJRZ7BuSgo8JWsS1Ld5CQoYuCbu
+         NAqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4457RnLNJcPLsjYWaJwh5rhYWqg1UZ+xbz9duTTC7U0=;
+        b=DnGjQF9wBf+r3fLB2EUYU5xSJwYG4+/5IAfjOhaIjU8X8AapYiYEcTlE+Sfq6t1UQs
+         kFyWAYT4hbVO+l1qoXwLndXhcsGc4hHO6t9EdGxqMUBy1i2ML+ThIKt8LeMYJT4QULdZ
+         qqM1PPu739nuiNPEiu5WDeTx0nYEPzfFucgEgC/KD14u7JlgS/8xO0V9xwMEd5qGdAqy
+         lW3GwyyIS9Ng4RGZFJM0XzvRUTw8zuvcYAnANObDUMopCtGG5nGk9OOn354ujU/WvVHn
+         sziIY0zWiGpHOQ4TglVX0CL1KZLWovyxf6USJrpIYTXj5g3Eq1IjVMOE+TJB2OYPzBlK
+         W0AA==
+X-Gm-Message-State: AOAM5315N2PdWpU1Kx32bBvvkG5n2+8Ev+AJa1OXJzZ9Z+ARN1ThcbD2
+        5HtoKc0K0679wxzbwcr2OVHOWkuI
+X-Google-Smtp-Source: ABdhPJxS4Mo4HDyw+ELrnEEptJ3+014iKaVk+sqA+QHc7jA2V51kMIjuHPGTAbzTdMAcYm7X33qNVQ==
+X-Received: by 2002:ac8:3fcb:: with SMTP id v11mr5440148qtk.348.1594908600580;
+        Thu, 16 Jul 2020 07:10:00 -0700 (PDT)
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
+        by smtp.gmail.com with ESMTPSA id b7sm6874771qkl.18.2020.07.16.07.09.59
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jul 2020 07:09:59 -0700 (PDT)
+Received: by mail-yb1-f176.google.com with SMTP id g6so2894478ybo.11
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 07:09:59 -0700 (PDT)
+X-Received: by 2002:a25:cc4e:: with SMTP id l75mr6919139ybf.165.1594908598533;
+ Thu, 16 Jul 2020 07:09:58 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (206.223.160.26) by YT1PR01CA0087.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:2d::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17 via Frontend Transport; Thu, 16 Jul 2020 13:55:52 +0000
-Received: from jgg by mlx with local (Exim 4.93)        (envelope-from <jgg@nvidia.com>)        id 1jw4MY-00B1Hk-O4; Thu, 16 Jul 2020 10:55:50 -0300
-X-Originating-IP: [206.223.160.26]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b047f3a9-86b1-4a14-06bb-08d8298ff431
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1514:
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1514F7AA775A3830535A3905C27F0@DM5PR12MB1514.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: P7ZBjmrWtdpgHsuEQQFpg2kNhzqrJmMqyt0FvI8JohXxabGPpQtuXNUVavzcmBLrFv77QN/jpHcCym8MLIWkgotiUO1R6Snm8NcEukNGFOmDwjD/Zfd4GpSotAk7m0rUit44hs78jrBCG1u9qVwbvBzC4RDRdHSmiO1LLB1VIXndPJA7XMxZoEmVzx2MyzLib3kUDL/vUbcjfRiz2QI5c/yoV5E1pqZnYiH4Y+cls5LJS+JFZ6ACYGjlCSZHZ6oftnxWszA4MyK/yQYzEm5xFzachAblz3XIJCK4RCuhQhipezqokmcJk+3zr7uJPPMpN4bg5mGv4FYnKWnAOVhwSQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(396003)(136003)(366004)(39860400002)(376002)(8936002)(36756003)(2616005)(45080400002)(478600001)(66946007)(26005)(186003)(66476007)(54906003)(9746002)(426003)(316002)(33656002)(66556008)(9786002)(2906002)(86362001)(83380400001)(6916009)(4326008)(5660300002)(1076003)(8676002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: oS+l73UD4GScq3kE77vaxeDYBlV6dss0rNlSX+cEcYMva2G4jLS97OeQNpRFmQT/yG8r7FRS7X2f6gEcl1Pyi23yVEnCyivbKweBxew+N9fUWLYbegtnwZDYN456OHqJwHrUdzvKyn1uDdlWfnHy8vfoqvGPz7T99WOK5kmwx/+GwVCxORNFZpOI+3ZPAokraU+y63GhMGeshdhCwD7CWcsRA43eBMfYifExpaHzdHtkbhBEF6Ip7faXJFVP59IILeAY2JI5ZQ/+TKnxgmfgtxPta2pHTG2b+iiIAfxBuCiJl6O2jTtp4oHWSQBtEds9TTyHp5SohA6SBVyN2YAz8LM2meTcgSXfImF5o17xVjr5Hh/06bA2RqlENmVnYt0RNIH9xksMCOmRCh9BYh8Lw0P8p4lKUz8FsfurZVeG+BJ2b3XRV19zdjDTNWPcZAY2p/ItQ80lyFLra76AGKjfctscH4056WsCt3d2pUFh2c9JjmmvPvwCKjfAD3jumgWP
-X-MS-Exchange-CrossTenant-Network-Message-Id: b047f3a9-86b1-4a14-06bb-08d8298ff431
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2020 13:55:52.8350
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zMaORyYmpKaaPf/QSO4HEtAuy+ad0AM7f4zELAH7akWesBpjgZaA3f7ZgnezREA3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1514
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1594907765; bh=336705n8xlNAOqHqrLLikuac5iYOyEydNTzJmJw3ED0=;
-        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
-         ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
-         Subject:Message-ID:References:Content-Type:Content-Disposition:
-         In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
-         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
-         X-MS-TrafficTypeDiagnostic:X-Microsoft-Antispam-PRVS:
-         X-MS-Oob-TLC-OOBClassifiers:X-MS-Exchange-SenderADCheck:
-         X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-         X-Forefront-Antispam-Report:X-MS-Exchange-AntiSpam-MessageData:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-         X-MS-Exchange-CrossTenant-FromEntityHeader:
-         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-         X-MS-Exchange-CrossTenant-UserPrincipalName:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=pW5gHE9B5g9f2RBq+xzhpFMcTqC7bgtwVVgiYr7VqCTL79ZMw2uWD7AEImGz8CqE5
-         5ZDCF5/fA9YRvEHtq1oMJd0Wg3qywRYrx4J8S5dtwaIMy4hlIrpI5EbbLB+McFDWNh
-         3cSEIlulbRHU4qmSqq89ckhJbg13s2xuDHJacKLuux7FmtKPd98cF3iLhGty8VdUGG
-         0+a/kCaqVEeGvCzwqosOJyq12fD+xI883+g1AXCWXNZO/aXEvoFSsYskOe6zu4Okdk
-         ntFge17x+HNEHbR3G4UGQif674nvepvdqjr5KH6cwWTjX8XAlPkMmFfNqher2QqvpJ
-         OtD3llocWO+FA==
+References: <20200710132902.1957784-1-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20200710132902.1957784-1-willemdebruijn.kernel@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 16 Jul 2020 10:09:20 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdOHYF-7rcjuuSraJjnAhcToV+tTvvj=JGCN0v6HZu_Kw@mail.gmail.com>
+Message-ID: <CA+FuTSdOHYF-7rcjuuSraJjnAhcToV+tTvvj=JGCN0v6HZu_Kw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] icmp: support rfc 4884
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Tom Herbert <tom@herbertland.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 16, 2020 at 01:55:19PM +0300, Leon Romanovsky wrote:
-> From: Maor Gottlieb <maorg@mellanox.com>
-> 
-> cm.lock must be held while access to remote_sidr_table.
-> This fix the below NULL pointer dereference.
-> 
->  [ 2666.146138] BUG: kernel NULL pointer dereference, address: 0000000000000000
->  [ 2666.151565] #PF: supervisor write access in kernel mode
->  [ 2666.152896] #PF: error_code(0x0002) - not-present page
->  [ 2666.154184] PGD 0 P4D 0
->  [ 2666.154911] Oops: 0002 [#1] SMP PTI
->  [ 2666.155859] CPU: 2 PID: 7288 Comm: udaddy Not tainted 5.7.0_for_upstream_perf_2020_06_09_15_14_20_38 #1
->  [ 2666.158123] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
->  [ 2666.161909] RIP: 0010:rb_erase+0x10d/0x360
->  [ 2666.163549] Code: 00 00 00 48 89 c1 48 89 d0 48 8b 50 08 48 39 ca 74 48 f6 02 01 75 af 48 8b
-> 7a 10 48 89 c1 48 83 c9 01 48 89 78 08 48 89 42 10 <48> 89 0f 48 8b 08 48 89 0a 48 83 e1 fc 48
->  89 10 0f 84 b1 00 00 00
->  [ 2666.169743] RSP: 0018:ffffc90000f77c30 EFLAGS: 00010086
->  [ 2666.171646] RAX: ffff8883df27d458 RBX: ffff8883df27da58 RCX: ffff8883df27d459
->  [ 2666.174026] RDX: ffff8883d183fa58 RSI: ffffffffa01e8d00 RDI: 0000000000000000
->  [ 2666.176325] RBP: ffff8883d62ac800 R08: 0000000000000000 R09: 00000000000000ce
->  [ 2666.178618] R10: 000000000000000a R11: 0000000000000000 R12: ffff8883df27da00
->  [ 2666.180919] R13: ffffc90000f77c98 R14: 0000000000000130 R15: 0000000000000000
->  [ 2666.183197] FS:  00007f009f877740(0000) GS:ffff8883f1a00000(0000) knlGS:0000000000000000
->  [ 2666.186318] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->  [ 2666.188293] CR2: 0000000000000000 CR3: 00000003d467e003 CR4: 0000000000160ee0
->  [ 2666.190614] Call Trace:
->  [ 2666.191896]  cm_send_sidr_rep_locked+0x15a/0x1a0 [ib_cm]
->  [ 2666.193902]  ib_send_cm_sidr_rep+0x2b/0x50 [ib_cm]
->  [ 2666.195695]  cma_send_sidr_rep+0x8b/0xe0 [rdma_cm]
->  [ 2666.197559]  __rdma_accept+0x21d/0x2b0 [rdma_cm]
->  [ 2666.199335]  ? ucma_get_ctx+0x2b/0xe0 [rdma_ucm]
->  [ 2666.201105]  ? _copy_from_user+0x30/0x60
->  [ 2666.202741]  ucma_accept+0x13e/0x1e0 [rdma_ucm]
->  [ 2666.204549]  ucma_write+0xb4/0x130 [rdma_ucm]
->  [ 2666.206306]  vfs_write+0xad/0x1a0
->  [ 2666.207780]  ksys_write+0x9d/0xb0
->  [ 2666.209316]  do_syscall_64+0x48/0x130
->  [ 2666.210915]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->  [ 2666.212810] RIP: 0033:0x7f009ef60924
->  [ 2666.214354] Code: 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 80 00 00 00 00 8b
-> 05 2a ef 2c 00 48 63 ff 85 c0 75 13 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 54 f3 c3
->  66 90 55 53 48 89 d5 48 89 f3 48 83
->  [ 2666.220512] RSP: 002b:00007fff843edf38 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
->  [ 2666.223546] RAX: ffffffffffffffda RBX: 000055743042e1d0 RCX: 00007f009ef60924
->  [ 2666.225889] RDX: 0000000000000130 RSI: 00007fff843edf40 RDI: 0000000000000003
->  [ 2666.228228] RBP: 00007fff843ee0e0 R08: 0000000000000000 R09: 0000557430433090
->  [ 2666.230572] R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000000000
->  [ 2666.232931] R13: 00007fff843edf40 R14: 000000000000038c R15: 00000000ffffff00
->  [ 2666.235272] Modules linked in: nfsv3 nfs_acl rpcsec_gss_krb5
-> auth_rpcgss nfsv4 dns_resolver nfs lockd grace fscache xt_MASQUERADE
-> mlx5_ib nf_conntrack_netlink nfnetlink iptable_nat xt_addrtype
-> iptable_filter bpfilter xt_conntrack br_netfilter bridge stp llc overlay
-> rpcrdma ib_isert iscsi_target_mod ib_iser ib_srpt target_core_mod ib_srp
-> ib_ipoib rdma_ucm ib_uverbs sb_edac mlx5_core kvm_intel iTCO_wdt
-> iTCO_vendor_support kvm ib_umad mlxfw pci_hyperv_intf act_ct
-> nf_flow_table irqbypass nf_nat rdma_cm crc32_pclmul rfkill nf_conntrack
-> crc32c_intel ghash_clmulni_intel virtio_net ib_cm i2c_i801 pcspkr
-> nf_defrag_ipv6 net_failover failover nf_defrag_ipv4 ptp i2c_core lpc_ich
-> iw_cm pps_core mfd_core ib_core sunrpc sch_fq_codel ip_tables serio_raw
->  [ 2666.258905] CR2: 0000000000000000
->  [ 2666.260386] ---[ end trace 92a3d3f267f6faa3 ]---
->  [ 2666.262174] RIP: 0010:rb_erase+0x10d/0x360
->  [ 2666.263781] Code: 00 00 00 48 89 c1 48 89 d0 48 8b 50 08 48 39 ca 74
-> 48 f6 02 01 75 af 48 8b 7a 10 48 89 c1 48 83 c9 01 48 89 78 08 48 89 42
->    10 <48> 89 0f 48 8b 08 48 89 0a 48 83 e1 fc 48 89 10 0f 84 b1 00 00
->       00
->  [ 2666.269994] RSP: 0018:ffffc90000f77c30 EFLAGS: 00010086
->  [ 2666.272008] RAX: ffff8883df27d458 RBX: ffff8883df27da58 RCX: ffff8883df27d459
->  [ 2666.274465] RDX: ffff8883d183fa58 RSI: ffffffffa01e8d00 RDI: 0000000000000000
->  [ 2666.276978] RBP: ffff8883d62ac800 R08: 0000000000000000 R09: 00000000000000ce
->  [ 2666.279437] R10: 000000000000000a R11: 0000000000000000 R12: ffff8883df27da00
->  [ 2666.281941] R13: ffffc90000f77c98 R14: 0000000000000130 R15: 0000000000000000
->  [ 2666.284397] FS:  00007f009f877740(0000) GS:ffff8883f1a00000(0000) knlGS:0000000000000000
->  [ 2666.287708] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->  [ 2666.289817] CR2: 0000000000000000 CR3: 00000003d467e003 CR4: 0000000000160ee0
->  [ 2666.292274] Kernel panic - not syncing: Fatal exception
->  [ 2666.294689] Kernel Offset: disabled
->  [ 2666.296253] ---[ end Kernel panic - not syncing: Fatal exception]---
+On Fri, Jul 10, 2020 at 9:29 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> From: Willem de Bruijn <willemb@google.com>
+>
+> Add setsockopt SOL_IP/IP_RECVERR_4884 to return the offset to an
+> extension struct if present.
+>
+> ICMP messages may include an extension structure after the original
+> datagram. RFC 4884 standardized this behavior. It stores the offset
+> in words to the extension header in u8 icmphdr.un.reserved[1].
+>
+> The field is valid only for ICMP types destination unreachable, time
+> exceeded and parameter problem, if length is at least 128 bytes and
+> entire packet does not exceed 576 bytes.
+>
+> Return the offset to the start of the extension struct when reading an
+> ICMP error from the error queue, if it matches the above constraints.
+>
+> Do not return the raw u8 field. Return the offset from the start of
+> the user buffer, in bytes. The kernel does not return the network and
+> transport headers, so subtract those.
+>
+> Also validate the headers. Return the offset regardless of validation,
+> as an invalid extension must still not be misinterpreted as part of
+> the original datagram. Note that !invalid does not imply valid. If
+> the extension version does not match, no validation can take place,
+> for instance.
+>
+> For backward compatibility, make this optional, set by setsockopt
+> SOL_IP/IP_RECVERR_RFC4884. For API example and feature test, see
+> github.com/wdebruij/kerneltools/blob/master/tests/recv_icmp_v2.c
+>
+> For forward compatibility, reserve only setsockopt value 1, leaving
+> other bits for additional icmp extensions.
+>
+> Changes
+>   v1->v2:
+>   - convert word offset to byte offset from start of user buffer
+>     - return in ee_data as u8 may be insufficient
+>   - define extension struct and object header structs
+>   - return len only if constraints met
+>   - if returning len, also validate
+>
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
 
-Don't word wrap oops reports, and I prefer the timestamp is stripped out
+Tom, Eric, does this address your concerns from v1?
 
-> Fixes: 6a8824a74bc9 ("RDMA/cm: Allow ib_send_cm_sidr_rep() to be done under lock")
-> Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> ---
->  drivers/infiniband/core/cm.c | 2 ++
->  1 file changed, 2 insertions(+)
+To summarize:
 
-Applied to for-rc
+- cleaner api
+    - only return offset if rfc 4884 constraints met
+    - return as byte offset from start of user buffer, not raw packet off
+    - define self-describing new union in sock_extended_err
+    - define rfc 4884 extension struct and objects in uapi
 
-Thanks,
-Jason
+- validate
+    - verify checksum
+    - verify object boundaries
+
+Does not
+
+- validate individual users from subsequent RFCs: a number of classes
+and subtypes are defined in an IANA registry [1]. But unlike rfc 4884
+those are at best proposed standards, some not updated since 2015. I
+don't think those are mature enough to encode in the kernel ABI.
+
+- truncate packet for socket matching: I think that should be a
+separate (stable) commit if a real issue. Personally, I'm not
+convinced yet that it is. The 128B original datagram + outer header
+minimum offset concerns IPv4, where packet is at most 576B. For IPv6,
+which has the extension header issue, the relevant rfc 4443 states
+that that the length should be 1280. More importantly, it would take a
+malicious/buggy sender to craft a packet with an extension header that
+overlaps the headers. But it does not need to mess with the extension
+header offset field to create such a payload to begin with.
+
+[1] https://www.iana.org/assignments/icmp-parameters/icmp-parameters.xhtml#icmp-parameters-ext-classes
