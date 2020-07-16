@@ -2,305 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7EB222A85
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 19:56:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7918222A99
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 20:05:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729082AbgGPR4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 13:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51518 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727844AbgGPR4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 13:56:17 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C90BC061755
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 10:56:17 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id o13so5227550pgf.0
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 10:56:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=St5IW/0RJx7awbUedzsjjleKKmGVsmjKbIso6cGl3+k=;
-        b=kQCbJuk+QWBc0C2RQp/NyGF9ZRke9KZWwSTRHex+HLevzwUV7qn8qV5r85Xj/UItTb
-         AaIgDfjsp2pkdtktisdnHT2ZGjJJ94EBuFm29ZeL6Hv1JVMEJOM23FTRkimkqxX56V2+
-         9mtUwaTWHsnEgJLcoT4otx/ceSYVunLUcPn3HRcXvfK1B2eXTWLMumyj/Su7u70qKDKh
-         gD1BLCeliG5hrGHMIG96elYBpkyRhrj4t1tMrFqBK3AyPs1Nv9KMg+PReT3LZz5u04fZ
-         HSZN2Kk6/Lj9WWy4/9clkVQsXbhRX7qNdbb3WErDbEw/epnOCYwf9O53JqqBjryc8k1J
-         ObIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=St5IW/0RJx7awbUedzsjjleKKmGVsmjKbIso6cGl3+k=;
-        b=Dc5cHZ7VZ4au/viPvsFGncMm/GiDDl5gKx1dWUk4Z9Oo1uz/bPe1hACu7VEy2QsoeA
-         Jx40LZ1ICSNuEdy6iWag+vM3p1ckI4o3N1b7dVP4PG7oj+lG+3ftdSv/DwPqF/0Cy43P
-         wCRg2V3Bef4lXVWM+0gVaItTDHKCyZ3xRC4IKZMEXtQ0DTtmGmKfeIV4dU03MoHszGYh
-         AyH87FXO++P6gQqM9jMde2Gs47YqSwed+qHSSpbFI6w3zoHIV8bP7BHBOqxa5OsaF77s
-         2rnBadX24aKUE/jyeFdLgfgzFo5ehKm8HVdXlb+jt7kkHzfvo7P+APAU4m3vNZ/ExIIP
-         wvGg==
-X-Gm-Message-State: AOAM531UKwmcJ4AtMdEFoLC3r8+U9sWKGaydr1FtbrlxXnCA0KGrMD3i
-        pAzia6DZKH/krWYmyF/I6TM=
-X-Google-Smtp-Source: ABdhPJyXhGyfXfgkUFH22ABEF8smBWr57zS+8gPxoBoIw1e2p7y70Jbq5cf8aQJCapYjjnANRDb5Aw==
-X-Received: by 2002:a63:e018:: with SMTP id e24mr5123235pgh.175.1594922176413;
-        Thu, 16 Jul 2020 10:56:16 -0700 (PDT)
-Received: from localhost.localdomain.com ([2605:e000:160b:911f:a2ce:c8ff:fe03:6cb0])
-        by smtp.gmail.com with ESMTPSA id o42sm684571pje.10.2020.07.16.10.56.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2020 10:56:15 -0700 (PDT)
-From:   Chris Healy <cphealy@gmail.com>
-To:     mkubecek@suse.cz, netdev@vger.kernel.org, vivien.didelot@gmail.com
-Cc:     Andrew Lunn <andrew@lunn.ch>, Chris Healy <cphealy@gmail.com>
-Subject: [PATCH] ethtool: dsa: mv88e6xxx: add pretty dump for 88E6352 SERDES
-Date:   Thu, 16 Jul 2020 10:55:26 -0700
-Message-Id: <20200716175526.14005-1-cphealy@gmail.com>
-X-Mailer: git-send-email 2.21.3
+        id S1729397AbgGPSFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 14:05:14 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:34918 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727844AbgGPSFO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 14:05:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594922712;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bid2o9xhItv8ji/omqfjaS5XC1iUfTcX7qDylksvkag=;
+        b=ftQOUQs5M7bf5HDPv5kkva6f/FIHXxXCFVTCyA1WE07HGq6xBnIkt+zAP8I0edD+mGCrU4
+        SeaxIlPXV2VZPIOChGK2vpU4b37SP+RmNUq3UXPkGM1hKNb/3Zy4o+rA7ntMHbj8H4VI/L
+        vIukWfK+Scgb6gU5H5vXMZsgI13p9cI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-493-pKAFVRVJPHa_-99xo-LAlQ-1; Thu, 16 Jul 2020 14:05:08 -0400
+X-MC-Unique: pKAFVRVJPHa_-99xo-LAlQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C72D88014D4;
+        Thu, 16 Jul 2020 18:05:06 +0000 (UTC)
+Received: from starship (unknown [10.35.206.36])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A29F761982;
+        Thu, 16 Jul 2020 18:05:04 +0000 (UTC)
+Message-ID: <616736b7d9433625a429bc37f0c5120115d02f44.camel@redhat.com>
+Subject: Re: Commit 'Bluetooth: Consolidate encryption handling in
+ hci_encrypt_cfm' broke my JBL TUNE500BT headphones
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Luiz Augusto Von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Date:   Thu, 16 Jul 2020 21:05:03 +0300
+In-Reply-To: <CABBYNZ+YOJQi9a=pU2cc9czH1VoL04SdaXfnDksakCCfxx-skA@mail.gmail.com>
+References: <3635193ecd8c6034731387404825e998df2fd788.camel@redhat.com>
+         <CABBYNZ+YOJQi9a=pU2cc9czH1VoL04SdaXfnDksakCCfxx-skA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.3 (3.36.3-1.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+On Thu, 2020-07-16 at 09:16 -0700, Luiz Augusto von Dentz wrote:
+> Hi Maxim,
+> 
+> On Thu, Jul 16, 2020 at 1:29 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
+> > Hi,
+> > 
+> > Few days ago I bisected a recent regression in the 5.8 kernel:
+> > 
+> > git bisect start
+> > # good: [3d77e6a8804abcc0504c904bd6e5cdf3a5cf8162] Linux 5.7
+> > git bisect good 3d77e6a8804abcc0504c904bd6e5cdf3a5cf8162
+> > # bad: [dcde237b9b0eb1d19306e6f48c0a4e058907619f] Merge tag 'perf-tools-fixes-2020-07-07' of git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux
+> > git bisect bad dcde237b9b0eb1d19306e6f48c0a4e058907619f
+> > # bad: [a0a4d17e02a80a74a63c7cbb7bc8cea2f0b7d8b1] Merge branch 'pcmcia-next' of git://git.kernel.org/pub/scm/linux/kernel/git/brodo/linux
+> > git bisect bad a0a4d17e02a80a74a63c7cbb7bc8cea2f0b7d8b1
+> > # good: [09587a09ada2ed7c39aedfa2681152b5ac5641ee] arm64: mm: use ARCH_HAS_DEBUG_WX instead of arch defined
+> > git bisect good 09587a09ada2ed7c39aedfa2681152b5ac5641ee
+> > # good: [3248044ecf9f91900be5678919966715f1fb8834] Merge tag 'wireless-drivers-next-2020-05-25' of git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next
+> > git bisect good 3248044ecf9f91900be5678919966715f1fb8834
+> > # bad: [cb8e59cc87201af93dfbb6c3dccc8fcad72a09c2] Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next
+> > git bisect bad cb8e59cc87201af93dfbb6c3dccc8fcad72a09c2
+> > # bad: [b8215dce7dfd817ca38807f55165bf502146cd68] selftests/bpf, flow_dissector: Close TAP device FD after the test
+> > git bisect bad b8215dce7dfd817ca38807f55165bf502146cd68
+> > # good: [b8ded9de8db34dd209a3dece94cf54fc414e78f7] net/smc: pre-fetch send buffer outside of send_lock
+> > git bisect good b8ded9de8db34dd209a3dece94cf54fc414e78f7
+> > # good: [1079a34c56c535c3e27df8def0d3c5069d2de129] Merge tag 'mac80211-next-for-davem-2020-05-31' of git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next
+> > git bisect good 1079a34c56c535c3e27df8def0d3c5069d2de129
+> > # bad: [f395b69f40f580491ef56f2395a98e3189baa53c] dpaa2-eth: Add PFC support through DCB ops
+> > git bisect bad f395b69f40f580491ef56f2395a98e3189baa53c
+> > # bad: [a74d19ba7c41b6c1e424ef4fb7d4600f43ff75e5] net: fec: disable correct clk in the err path of fec_enet_clk_enable
+> > git bisect bad a74d19ba7c41b6c1e424ef4fb7d4600f43ff75e5
+> > # bad: [dafe2078a75af1abe4780313ef8dd8491ba8598f] ipv4: nexthop: Fix deadcode issue by performing a proper NULL check
+> > git bisect bad dafe2078a75af1abe4780313ef8dd8491ba8598f
+> > # bad: [feac90d756c03b03b83fabe83571bd88ecc96b78] Bluetooth: hci_qca: Fix suspend/resume functionality failure
+> > git bisect bad feac90d756c03b03b83fabe83571bd88ecc96b78
+> > # good: [a228f7a410290d836f3a9f9b1ed5aef1aab25cc7] Bluetooth: hci_qca: Enable WBS support for wcn3991
+> > git bisect good a228f7a410290d836f3a9f9b1ed5aef1aab25cc7
+> > # bad: [755dfcbca83710fa967d0efa7c5bb601f871a747] Bluetooth: Fix assuming EIR flags can result in SSP authentication
+> > git bisect bad 755dfcbca83710fa967d0efa7c5bb601f871a747
+> > # bad: [3ca44c16b0dcc764b641ee4ac226909f5c421aa3] Bluetooth: Consolidate encryption handling in hci_encrypt_cfm
+> > git bisect bad 3ca44c16b0dcc764b641ee4ac226909f5c421aa3
+> > # first bad commit: [3ca44c16b0dcc764b641ee4ac226909f5c421aa3] Bluetooth: Consolidate encryption handling in hci_encrypt_cfm
+> 
+> We just merged a fix for that:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/?id=339ddaa626995bc6218972ca241471f3717cc5f4
 
-In addition to the port registers, the device can provide the
-SERDES/PCS registers. Dump these, and for a few of the important
-SGMII/1000Base-X registers decode the bits.
+Perfect. I tested the fix and it works well.
+Do you plan to send this for inclusion to 5.8 kernel?
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Chris Healy <cphealy@gmail.com>
----
- dsa.c | 196 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 195 insertions(+), 1 deletion(-)
+Best regards,
+	Maxim Levitsky
 
-diff --git a/dsa.c b/dsa.c
-index 50a171b..a5045fc 100644
---- a/dsa.c
-+++ b/dsa.c
-@@ -405,21 +405,204 @@ static void dsa_mv88e6352(int reg, u16 val)
- 	case 19:
- 		REG(reg, "Rx Frame Counter", val);
- 		break;
-+	case 20 ... 21:
-+		REG(reg, "Reserved", val);
-+		break;
- 	case 22:
- 		REG(reg, "LED Control", val);
- 		break;
-+	case 23:
-+		REG(reg, "Reserved", val);
-+		break;
- 	case 24:
- 		REG(reg, "Tag Remap 0-3", val);
- 		break;
- 	case 25:
- 		REG(reg, "Tag Remap 4-7", val);
- 		break;
-+	case 26:
-+		REG(reg, "Reserved", val);
-+		break;
- 	case 27:
- 		REG(reg, "Queue Counters", val);
- 		break;
--	default:
-+	case 28 ... 31:
- 		REG(reg, "Reserved", val);
- 		break;
-+	case 32 + 0:
-+		REG(reg - 32, "Fiber Control", val);
-+		FIELD("Fiber Reset", "%u", !!(val & 0x8000));
-+		FIELD("Loopback", "%u", !!(val & 0x4000));
-+		FIELD("Speed", "%s",
-+		      (val & (0x2000 | 0x0040)) == 0x0000 ? "10 Mbps" :
-+		      (val & (0x2000 | 0x0040)) == 0x2000 ? "100 Mbps" :
-+		      (val & (0x2000 | 0x0040)) == 0x0040 ? "1000 Mbps" :
-+		      (val & (0x2000 | 0x0040)) == (0x2000 | 0x0040) ?
-+		      "Reserved" : "?");
-+		FIELD("Autoneg Enable", "%u", !!(val & 0x1000));
-+		FIELD("Power down", "%u", !!(val & 0x0800));
-+		FIELD("Isolate", "%u", !!(val & 0x0400));
-+		FIELD("Restart Autoneg", "%u", !!(val & 0x0200));
-+		FIELD("Duplex", "%s", val & 0x0100 ? "Full" : "Half");
-+		break;
-+	case 32 + 1:
-+		REG(reg - 32, "Fiber Status", val);
-+		FIELD("100Base-X FD",  "%u", !!(val & 0x4000));
-+		FIELD("100Base-X HD",  "%u", !!(val & 0x2000));
-+		FIELD("Autoneg Complete", "%u", !!(val & 0x0020));
-+		FIELD("Remote Fault", "%u", !!(val & 0x0010));
-+		FIELD("Autoneg Ability", "%u", !!(val & 0x0008));
-+		FIELD("Link Status", "%s", val & 0x0004 ? "Up" : "Down");
-+		break;
-+	case 32 + 2:
-+		REG(reg - 32, "PHY ID 1", val);
-+		break;
-+	case 32 + 3:
-+		REG(reg - 32, "PHY ID 2", val);
-+		break;
-+	case 32 + 4:
-+		REG(reg - 32, "Fiber Autoneg Advertisement", val);
-+		FIELD("Remote Fault", "%s",
-+		      (val & 0x3000) == 0x0000 ? "No error, link OK" :
-+		      (val & 0x3000) == 0x1000 ? "Link failure" :
-+		      (val & 0x3000) == 0x2000 ? "Offline" :
-+		      (val & 0x3000) == 0x3000 ? "Autoneg Error" : "?");
-+		FIELD("Pause", "%s",
-+		      (val & 0x0180) == 0x0000 ? "No Pause" :
-+		      (val & 0x0180) == 0x0080 ? "Symmetric Pause" :
-+		      (val & 0x0180) == 0x0100 ? "Asymmetric Pause" :
-+		      (val & 0x0180) == 0x0180 ? "Symmetric & Asymmetric Pause" :
-+		      "?");
-+		FIELD("1000BaseX HD", "%u", !!(val & 0x0040));
-+		FIELD("1000BaseX FD", "%u", !!(val & 0x0020));
-+		break;
-+	case 32 + 5:
-+		REG(reg - 32, "Fiber Link Autoneg Ability", val);
-+		FIELD("Acknowledge", "%u", !!(val & 0x4000));
-+		FIELD("Remote Fault", "%s",
-+		      (val & 0x3000) == 0x0000 ? "No error, link OK" :
-+		      (val & 0x3000) == 0x1000 ? "Link failure" :
-+		      (val & 0x3000) == 0x2000 ? "Offline" :
-+		      (val & 0x3000) == 0x3000 ? "Autoneg Error" : "?");
-+		FIELD("Pause", "%s",
-+		      (val & 0x0180) == 0x0000 ? "No Pause" :
-+		      (val & 0x0180) == 0x0080 ? "Symmetric Pause" :
-+		      (val & 0x0180) == 0x0100 ? "Asymmetric Pause" :
-+		      (val & 0x0180) == 0x0180 ? "Symmetric & Asymmetric Pause" :
-+		      "?");
-+		FIELD("1000BaseX HD", "%u", !!(val & 0x0040));
-+		FIELD("1000BaseX FD", "%u", !!(val & 0x0020));
-+		break;
-+	case 32 + 6:
-+		REG(reg - 32, "Fiber Autoneg Expansion", val);
-+		FIELD("Link Partner Next Page Ability", "%u", !!(val & 0x0008));
-+		FIELD("Page Received", "%u", !!(val & 0x0002));
-+		FIELD("Link Partner Autoneg Ability", "%u", !!(val & 0x0001));
-+		break;
-+	case 32 + 7:
-+		REG(reg - 32, "Fiber Next Page Transmit", val);
-+		break;
-+	case 32 + 8:
-+		REG(reg - 32, "Fiber Link Partner Next Page", val);
-+		break;
-+	case 32 + 9 ... 32 + 14:
-+		REG(reg - 32, "Reserved", val);
-+		break;
-+	case 32 + 15:
-+		REG(reg - 32, "Extended Status", val);
-+		break;
-+	case 32 + 16:
-+		REG(reg - 32, "Fiber Specific Control", val);
-+		FIELD("Fiber Transmit FIFO Depth", "%s",
-+		      (val & 0xc000) == 0x0000 ? "16 Bits" :
-+		      (val & 0xc000) == 0x4000 ? "24 Bits" :
-+		      (val & 0xc000) == 0x8000 ? "32 Bits" :
-+		      (val & 0xc000) == 0xc000 ? "40 Bits" : "?");
-+		FIELD("SERDES Loopback", "%u", !!(val & 0x1000));
-+		FIELD("Force Link Good", "%u", !!(val & 0x0400));
-+		FIELD("MAC Interface Power Down", "%u", !!(val & 0x0008));
-+		FIELD("Mode", "%s",
-+		      (val & 0x0003) == 0x0000 ? "100BaseFX" :
-+		      (val & 0x0003) == 0x0001 ? "1000BaseX" :
-+		      (val & 0x0003) == 0x0002 ? "SGMII System" :
-+		      (val & 0x0003) == 0x0003 ? "SGMII Media" : "?");
-+		break;
-+	case 32 + 17:
-+		REG(reg - 32, "Fiber Specific Status", val);
-+		FIELD("Speed", "%s",
-+		      (val & 0xc000) == 0x0000 ? "10 Mbps" :
-+		      (val & 0xc000) == 0x4000 ? "100 Mbps" :
-+		      (val & 0xc000) == 0x8000 ? "1000 Mbps" :
-+		      (val & 0xc000) == 0xc000 ? "Reserved" : "?");
-+		FIELD("Duplex", "%s", val & 0x2000 ? "Full" : "Half");
-+		FIELD("Page Received", "%u", !!(val & 0x1000));
-+		FIELD("Speed/Duplex Resolved", "%u", !!(val & 0x0800));
-+		FIELD("Link", "%s", val & 0x0400 ? "Up" : "Down");
-+		FIELD("Sync", "%u", !!(val & 0x0020));
-+		FIELD("Energy Detect", "%s", val & 0x010 ? "False" : "True");
-+		FIELD("Transmit Pause", "%u", !!(val & 0x0008));
-+		FIELD("Receive Pause", "%u", !!(val & 0x00004));
-+		break;
-+	case 32 + 18:
-+		REG(reg - 32, "Fiber Interrupt Enable", val);
-+		FIELD("Speed Changed", "%u", !!(val & 0x4000));
-+		FIELD("Duplex Changed", "%u", !!(val & 0x2000));
-+		FIELD("Page Received", "%u", !!(val & 0x1000));
-+		FIELD("Autoneg Complete", "%u", !!(val & 0x0800));
-+		FIELD("Link Status Change", "%u", !!(val & 0x0400));
-+		FIELD("Symbol Error", "%u", !!(val & 0x0200));
-+		FIELD("False Carrier", "%u", !!(val & 0x0100));
-+		FIELD("Energy Detect", "%u", !!(val & 0x0010));
-+		break;
-+	case 32 + 19:
-+		REG(reg - 32, "Fiber Interrupt Status", val);
-+		FIELD("Speed Changed", "%u", !!(val & 0x4000));
-+		FIELD("Duplex Changed", "%u", !!(val & 0x2000));
-+		FIELD("Page Received", "%u", !!(val & 0x1000));
-+		FIELD("Autoneg Complete", "%u", !!(val & 0x0800));
-+		FIELD("Link Status Change", "%u", !!(val & 0x0400));
-+		FIELD("Symbol Error", "%u", !!(val & 0x0200));
-+		FIELD("False Carrier", "%u", !!(val & 0x0100));
-+		FIELD("Energy Detect", "%u", !!(val & 0x0010));
-+		break;
-+	case 32 + 20:
-+		REG(reg - 32, "Reserved", val);
-+		break;
-+	case 32 + 21:
-+		REG(reg - 32, "Fiber Receive Error Counter", val);
-+		break;
-+	case 32 + 22:
-+		REG(reg - 32, "Reserved", val);
-+		break;
-+	case 32 + 23:
-+		REG(reg - 32, "PRBS Control", val);
-+		break;
-+	case 32 + 24:
-+		REG(reg - 32, "PRBS Error Counter LSB", val);
-+		break;
-+	case 32 + 25:
-+		REG(reg - 32, "PRBS Error Counter MSB", val);
-+		break;
-+	case 32 + 26:
-+		REG(reg - 32, "Fiber Specific Control 2", val);
-+		FIELD("1000BaseX Noise Filtering", "%u", !!(val & 0x4000));
-+		FIELD("1000BaseFX Noise Filtering", "%u", !!(val & 0x2000));
-+		FIELD("SERDES Autoneg Bypass Enable", "%u", !!(val & 0x0040));
-+		FIELD("SERDES Autoneg Bypass Status", "%u", !!(val & 0x0020));
-+		FIELD("Fiber Transmitter Disable", "%u", !!(val & 0x0008));
-+		FIELD("SGMII/Fiber Output Amplitude", "%s",
-+		      (val & 0x0007) == 0x0000 ? "14mV" :
-+		      (val & 0x0007) == 0x0001 ? "112mV" :
-+		      (val & 0x0007) == 0x0002 ? "210mV" :
-+		      (val & 0x0007) == 0x0003 ? "308mV" :
-+		      (val & 0x0007) == 0x0004 ? "406mV" :
-+		      (val & 0x0007) == 0x0005 ? "504mV" :
-+		      (val & 0x0007) == 0x0006 ? "602mV" :
-+		      (val & 0x0007) == 0x0007 ? "700mV" : "?");
-+		break;
-+	default:
-+		REG(reg - 32, "Reserved", val);
-+		break;
- 	}
- };
- 
-@@ -667,6 +850,17 @@ static int dsa_mv88e6xxx_dump_regs(struct ethtool_regs *regs)
- 		else
- 			REG(i, "", data[i]);
- 
-+	/* Dump the SERDES registers, if provided */
-+	if (regs->len > 32 * 2) {
-+		printf("\n%s Switch Port SERDES Registers\n", sw->name);
-+		printf("-------------------------------------\n");
-+		for (i = 32; i < regs->len / 2; i++)
-+			if (sw->dump)
-+				sw->dump(i, data[i]);
-+			else
-+				REG(i, "", data[i]);
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.21.3
+
+> 
+> > The sympthoms are that I am unable to pair the headphones, and even if I use an older kernel
+> > to pair them, and then switch to the new kernel, the connection is established only sometimes.
+> > 
+> > Without this commit, I can pair the headphones 100% of the time.
+> > 
+> > I am not familiar with bluetooth debugging but I am willing to provide
+> > any logs, do tests and try patches.
+> > 
+> > I am running fedora 32 on the affected system which has built-in intel wireless/bluetooth card,
+> > 
+> > PCI (wifi) part:
+> > 47:00.0 Network controller: Intel Corporation Wi-Fi 6 AX200 (rev 1a)
+> > 
+> > USB (bluetooth) parrt:
+> > Bus 011 Device 004: ID 8087:0029 Intel Corp.
+> > 
+> > My .config attached (custom built kernel)
+> > 
+> > Best regards,
+> >         Maxim Levitsky
+> > 
+> 
+> 
+
 
