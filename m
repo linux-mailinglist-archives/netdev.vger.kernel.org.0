@@ -2,65 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E39222CE2
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 22:32:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E618222D23
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 22:41:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbgGPUcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 16:32:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39408 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725921AbgGPUcG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 16:32:06 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5D23D207E8;
-        Thu, 16 Jul 2020 20:32:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594931526;
-        bh=Nqxulrodxo8eOevLZn2HwsAISOP60thSdFpkTzjHl1c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cH1b0WZXXlqv/IqmIu/n/UBktooOBSfIG9m2vop4KbpespzV/W2T/ehiaxmj9JUg9
-         VxNDMKimDmjtZle3uDOyH349zcEXT9hXK0vlRLqQ6ZM7lffxf175iWlO4jslFBYEzJ
-         4PR5uaDaJLwyAUkGG3R+OUYtlQ67rXQPrFzrKj2I=
-Date:   Thu, 16 Jul 2020 13:32:02 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Sergey Organov <sorganov@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        id S1726668AbgGPUlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 16:41:49 -0400
+Received: from mxout04.lancloud.ru ([89.108.124.63]:49028 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725926AbgGPUls (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 16:41:48 -0400
+X-Greylist: delayed 484 seconds by postgrey-1.27 at vger.kernel.org; Thu, 16 Jul 2020 16:41:47 EDT
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru A7CC920F54B3
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH RFC] bluetooth: add support for some old headsets
+To:     Marcel Holtmann <marcel@holtmann.org>
+CC:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Bluetooth Kernel Mailing List 
+        <linux-bluetooth@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        John Stultz <john.stultz@linaro.org>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net] net: dp83640: fix SIOCSHWTSTAMP to update the
- struct with actual configuration
-Message-ID: <20200716133202.24b1b5d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200716185650.GA1074@hoboy>
-References: <20200715161000.14158-1-sorganov@gmail.com>
-        <20200716185650.GA1074@hoboy>
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
+References: <6f461412-a6c0-aa53-5e74-394e278ee9b1@omprussia.ru>
+ <1834765D-52E6-45B8-9923-778C9182CFA9@holtmann.org>
+From:   Sergey Shtylyov <s.shtylyov@omprussia.ru>
+Organization: Open Mobile Platform, LLC
+Message-ID: <e9f32310-2728-60a2-adc7-3a7418ce54e3@omprussia.ru>
+Date:   Thu, 16 Jul 2020 23:33:40 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <1834765D-52E6-45B8-9923-778C9182CFA9@holtmann.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [213.87.162.122]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1908.lancloud.ru (fd00:f066::208)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Jul 2020 11:56:50 -0700 Richard Cochran wrote:
-> On Wed, Jul 15, 2020 at 07:10:00PM +0300, Sergey Organov wrote:
-> > From Documentation/networking/timestamping.txt:
-> > 
-> >   A driver which supports hardware time stamping shall update the
-> >   struct with the actual, possibly more permissive configuration.
-> > 
-> > Do update the struct passed when we upscale the requested time
-> > stamping mode.
-> > 
-> > Fixes: cb646e2b02b2 ("ptp: Added a clock driver for the National Semiconductor PHYTER.")
-> > Signed-off-by: Sergey Organov <sorganov@gmail.com>  
-> 
-> Acked-by: Richard Cochran <richardcochran@gmail.com>
+Hello!
 
-Applied, thank you!
+On 7/16/20 4:14 PM, Marcel Holtmann wrote:
+
+>> The MediaTek Bluetooth platform (MT6630 etc.) has a peculiar implementation
+>> for the eSCO/SCO connection via BT/EDR: the host controller returns error
+>> code 0x20 (LMP feature not supported) for HCI_Setup_Synchronous_Connection
+>> (0x0028) command without actually trying to setup connection with a remote
+>> device in case such device (like Digma BT-14 headset) didn't advertise its
+>> supported features.  Even though this doesn't break compatibility with the
+>> Bluetooth standard it breaks the compatibility with the Hands-Free Profile
+>> (HFP).
+>>
+>> This patch returns the compatibility with the HFP profile and actually
+>> tries to check all available connection parameters despite of the specific
+>> MediaTek implementation. Without it one was unable to establish eSCO/SCO
+>> connection with some headsets.
+> 
+> please include the parts of btmon output that show this issue.
+
+   Funny, I had removed that part from the original patch. Here's that log:
+
+< HCI Command: Setup Synchronous Connection (0x01|0x0028) plen 17                                  #1 [hci0] 6.705320
+        Handle: 50
+        Transmit bandwidth: 8000
+        Receive bandwidth: 8000
+        Max latency: 10
+        Setting: 0x0060
+          Input Coding: Linear
+          Input Data Format: 2's complement
+          Input Sample Size: 16-bit
+            of bits padding at MSB: 0
+          Air Coding Format: CVSD
+        Retransmission effort: Optimize for power consumption (0x01)
+        Packet type: 0x0380
+          3-EV3 may not be used
+          2-EV5 may not be used
+          3-EV5 may not be used
+> HCI Event: Command Status (0x0f) plen 4                                                          #2 [hci0] 6.719598
+      Setup Synchronous Connection (0x01|0x0028) ncmd 1
+        Status: Unsupported LMP Parameter Value / Unsupported LL Parameter Value (0x20)
+
+>> Based on the patch by Ildar Kamaletdinov <i.kamaletdinov@omprussia.ru>.
+>>
+>> Signed-off-by: Sergey Shtylyov <s.shtylyov@omprussia.ru>
+>>
+>> ---
+>> This patch is against the 'bluetooth-next.git' repo.
+>>
+>> net/bluetooth/hci_event.c |    8 ++++++++
+>> 1 file changed, 8 insertions(+)
+>>
+>> Index: bluetooth-next/net/bluetooth/hci_event.c
+>> ===================================================================
+>> --- bluetooth-next.orig/net/bluetooth/hci_event.c
+>> +++ bluetooth-next/net/bluetooth/hci_event.c
+>> @@ -2187,6 +2187,13 @@ static void hci_cs_setup_sync_conn(struc
+>> 	if (acl) {
+>> 		sco = acl->link;
+>> 		if (sco) {
+>> +			if (status == 0x20 && /* Unsupported LMP Parameter value */
+>> +			    sco->out) {
+>> +				sco->pkt_type = (hdev->esco_type & SCO_ESCO_MASK) |
+>> +						(hdev->esco_type & EDR_ESCO_MASK);
+>> +				if (hci_setup_sync(sco, sco->link->handle))
+>> +					goto unlock;
+>> +			}
+>> 			sco->state = BT_CLOSED;
+> 
+> since this is the command status event, I doubt that sco->out check is needed.
+
+   Can't comment oin this, my BT fu is too weak... 
+
+> And I would start with a switch statement right away.
+
+   Funny, I had removed the *switch* statement from the original patch... :-)
+
+> I also think that we need to re-structure this hci_cs_setup_sync_conn function a little to avoid the deep indentation.
+> Make it look more like hci_sync_conn_complete_evt also use a switch statement even if right now we only have one 
+> entry.
+
+    Indeed, done now. :-)
+ 
+> Regards
+> 
+> Marcel
+
+MBR, Sergey
