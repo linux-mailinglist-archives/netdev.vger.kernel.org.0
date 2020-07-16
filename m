@@ -2,42 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6376A222512
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 16:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78600222560
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 16:26:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729035AbgGPORa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 10:17:30 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:36367 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727044AbgGPOR2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 10:17:28 -0400
-Received: by mail-ot1-f65.google.com with SMTP id 72so4316466otc.3;
-        Thu, 16 Jul 2020 07:17:27 -0700 (PDT)
+        id S1728997AbgGPOYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 10:24:47 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:46266 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728054AbgGPOYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 10:24:43 -0400
+Received: by mail-oi1-f194.google.com with SMTP id l63so5186168oih.13;
+        Thu, 16 Jul 2020 07:24:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DrqiNMBsGi/HNN30jDiwSUWwg4kVmwk2J9s//T7Tkvc=;
-        b=o0ZmdxGftDltEpTsSh4Iw525OSEItnyKIMx+JPw0wH4MaQ3KXvgP3WyzsSvkul31xu
-         KIYgJ8Fz9gLDHn/pjWLgl9t2vA8JV4ArjFZKy6MzLzPyelzFVPxqK0D43xPXWMTtG8pX
-         yXQLUaV1H29wL7tBdJJaHavS7mSCBRbvm+cLxdPQwv6ePQB7OFkNd8H+493N9tZOM6iW
-         FOaj1cKRqpiSv/rExBHEeFZ1HkpcRSG8dw85Sg59PUPvLOzVGwN6ZivsojTVYItBSY6p
-         04YHyzgh+qzNiLRl/W5mByUGUxNjAxV25dyrG/Vr9Pyr4ZWxbC84JYQMMRXL92v1V2d0
-         pyBA==
-X-Gm-Message-State: AOAM531gWj5C1OZTRDsypkR1QtWHpabeB5G6NB6O3JLYVygxXas0bs4u
-        5ngHC+IL6TrV3doR5nVtaqi4CTWKW3xoEXd3WI6BgtMDhYU=
-X-Google-Smtp-Source: ABdhPJy2q/OwGoev25fZLTs7zrm9JHf5kK23kuRHKHfyjw1GYLKUOQGfPvXJjeNkx35UdWecOAFaFYoc2Wk4VzMvvtA=
-X-Received: by 2002:a9d:1b0d:: with SMTP id l13mr4539438otl.145.1594909047078;
- Thu, 16 Jul 2020 07:17:27 -0700 (PDT)
+        bh=nnjKMypguJ4/5J3zi+nKWFTG5kpjunUyDYMlZ/jwgmI=;
+        b=fljkMAfPrYpQHm6VSG9c4mw47QxwvwLX2xcyThbqNeOX0Ub890r4mKq2raSy+Kjumi
+         e0Po3Gz2uX5SmyqxQW/kbWsJe0LqKwty9vaTTM11BcgfEuRbPa0zrrJQajz2bOx8DJYE
+         sk4ZkXDuySgxHZ+4Epfturpaq0V4TDSr0RwKEgJc1hIY6kkgADcUl2Ve62C2XnZwPI6l
+         zx3hgZ1W4qPut0+6muJG3AfHCzujDD4T645a3zmslqib4BQ+y5qFrOyZ31IppDOzloGa
+         i7d3y4W/PK+KgRNhYbo9X/AMK52ztH2DArl0MCYzIL3AiIIxeCF7+p5aiLF1NPXx4E0k
+         8dXQ==
+X-Gm-Message-State: AOAM531CnzAXl+i/5IvbH6pGr5FJz0BHKzCVGeSI9CLIuAZ1JWn2aec6
+        5IWqNAGLiYIe2an6uI+ysih/OhzilYaBUW3c9oc=
+X-Google-Smtp-Source: ABdhPJyuNSqQvBAEiTGasOgiHD3JNckbgGTJFnCjccv3IdfLUIQhxKYJFQ1pLgsPHo273k3ak0/gYQzGEMNEPFjDFtA=
+X-Received: by 2002:aca:5c41:: with SMTP id q62mr3871180oib.148.1594909482264;
+ Thu, 16 Jul 2020 07:24:42 -0700 (PDT)
 MIME-Version: 1.0
 References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594811350-14066-6-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594811350-14066-6-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-8-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594811350-14066-8-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 16 Jul 2020 16:17:16 +0200
-Message-ID: <CAMuHMdVs0AjatSHVuz8E1TeAFG5eu9jrjOKyKjHjY79K_OrviQ@mail.gmail.com>
-Subject: Re: [PATCH 05/20] dt-bindings: timer: renesas,cmt: Document r8a774e1
- CMT support
+Date:   Thu, 16 Jul 2020 16:24:27 +0200
+Message-ID: <CAMuHMdXJFkWn--wvuxG_o4THHiq5jtnLjNc_4LUWUSMF2mSdEQ@mail.gmail.com>
+Subject: Re: [PATCH 07/20] dt-bindings: timer: renesas,tmu: Document r8a774e1 bindings
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -71,13 +70,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 15, 2020 at 1:09 PM Lad Prabhakar
+On Wed, Jul 15, 2020 at 1:10 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Document SoC specific bindings for RZ/G2H (r8a774e1) SoC.
+> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 >
+> Document RZ/G2H (R8A774E1) SoC in the Renesas TMU bindings.
+>
+> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+> ---
+>  Documentation/devicetree/bindings/timer/renesas,tmu.txt | 1 +
+
+Daniel: looks like "[PATCH v3] dt-bindings: timer: renesas: tmu: Convert
+to json-schema"[1] hasn't made it into linux-next yet?
+
+[1] https://lore.kernel.org/r/20200518081506.23423-1-geert+renesas@glider.be
 
 Gr{oetje,eeting}s,
 
