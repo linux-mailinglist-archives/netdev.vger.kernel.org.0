@@ -2,135 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0013221B6E
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 06:36:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E601B221B74
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 06:39:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725933AbgGPEgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 00:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40650 "EHLO
+        id S1725928AbgGPEja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 00:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725844AbgGPEf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 00:35:59 -0400
-Received: from mail-vk1-xa43.google.com (mail-vk1-xa43.google.com [IPv6:2607:f8b0:4864:20::a43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4531C061755;
-        Wed, 15 Jul 2020 21:35:59 -0700 (PDT)
-Received: by mail-vk1-xa43.google.com with SMTP id h190so1003279vkh.6;
-        Wed, 15 Jul 2020 21:35:59 -0700 (PDT)
+        with ESMTP id S1725270AbgGPEj3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 00:39:29 -0400
+Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 746ACC061755
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 21:39:29 -0700 (PDT)
+Received: by mail-vs1-xe29.google.com with SMTP id a17so2289927vsq.6
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 21:39:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Md0I7qZUYOfItQaUHXL1L1O2AfGxevzdjkYatV5C7vg=;
-        b=DdAtg4lH9GsswCGXo+CgsHouaJ+G2eQj2PNUfdZtyKsoLsveH+Bbuo9XsFV3cJbc7U
-         DYSTA19WVwP3ufiG0oQwyUmSJ+zBcxaRAnThPGRPLo8SE+R1fAIGLdoDUTa+UPEVo0l7
-         F86F+wyBfldj6LcJ68x+7pisJ61vn5aqsl9QJQGCMlctYlw69JuKXrBI1GJHp8hUnHXe
-         ur/2FkT+CWEpMKbrBI9fQvZy2H7zJzLbbq04tkEI3A/eTnfGWW+sUN9+F7a6CCvwgrXS
-         el2RlkK2dWd5R2dyj4cTPicvkX88Sm5L8qaqVzbn0KOdhBrRogi9UFuOPErgJmYr/u8a
-         gosw==
+         :cc:content-transfer-encoding;
+        bh=A0ekUFjcERHJPPW8HrmDlsvidqbHD3DiKBNeYrFpKfE=;
+        b=k+O7x3KYzyHO09DuKILUXHtfIrxTzPLdI32853eDisjGI1+U2/wMOB2HoKp+y1Y4Ws
+         +fOEHFf2KlpGDL0HsKFzzCxREYckhu1+xCjBQSfEaxSw3sKKGkLwBfnsZTWbDzNTkMaj
+         bzYJz/sX9PHq9FRk5G8ZNeSjsdNaNQpGR2JMv3Ad3/e0guAR4EJgECmVcSRYEYfieAFc
+         zgeRlFZ9+jCQlfM8xuMzLZ5s8kblZMGySiDtpNBnAj0Gj11wf13Lx+DndcYmJoZxhGP8
+         BIh1vKK/8RY6rZC54W0BhovmYoDO0Hlba3kogF8LhMXY9KnHZMvjnorBNvFB2FMeSLBm
+         S1oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Md0I7qZUYOfItQaUHXL1L1O2AfGxevzdjkYatV5C7vg=;
-        b=OO94qFxho1sM8npYIRapPYvy3EM1nXFQxUDfPCJfycdDZg6GuLsQcgOPm/MfsPIqyt
-         xb9dbxhf1snmB9uWwMTG510u5b9jXUL6a1eWTRT9Q6uLA67kdhPNHgwelMfiAwcIaZLG
-         vJx7jR0iPjhoM7b+wWYIzDh5lIbFOSE/Yq6QWPK+1OmpJgwHAHyafjeXhQEZjpZLFglD
-         AVVv7CuR8qf1vAEwEG4EQWWq/KL/WZYBdJ+GaaVIYhAcWxn49vKtIBsHMhGzqnHu1R0d
-         vszZ9Tx+zYxK4MzdT5YOp0bng7noLB9/cyhQsWSOuTnyuQ8ogYs3cHGHwb4y4gDhbXBr
-         YbzA==
-X-Gm-Message-State: AOAM531hrJ60KxNl9a0UKJzT1eNOQrklAfzBadV0/TCSMwwZ8nELgidc
-        Qm6972cNpvVWfH0xBA+nJxdTtojBl6Teqozc+xw=
-X-Google-Smtp-Source: ABdhPJyFs2cS92i9MiT7gqX1V1cUi1wRjFNO4OQ4Npy0TolsLKqhQAKSEn7ByGbBynG2Gk0l80P+PLhknyYnz93yAys=
-X-Received: by 2002:a1f:418f:: with SMTP id o137mr1743334vka.25.1594874158827;
- Wed, 15 Jul 2020 21:35:58 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=A0ekUFjcERHJPPW8HrmDlsvidqbHD3DiKBNeYrFpKfE=;
+        b=OiO+/JDtr3PUunpqQRQdLzBZ/Kz9SIsXTm+VTguZ5gIuueUHErkbqd457hcSuMI3Yo
+         H6vw2QycNbKtQS9J28l4L9KxDQy2RjuIRiqKfD8mvapi2POe8eqvOgHkqhQiDExb1w5g
+         zGD2VTDoUSGXpPKcDV9zGA0Aw0pDyX7+zg5bf7exsDo9+nUPWTmuj6GZx2ObxHZmgZ/e
+         j1JDgIQS8ILi4u1y2Cb9dhWryGpoAMLU+WWQVIn81atUbvTHj695kUEraD3a0/iYaNnT
+         ixAongTFAcr8KDYRVOQg5AqrrFujxX4Keoa55zGOnArFoDKC379bRRCig3dOxE0Sn9Hx
+         davg==
+X-Gm-Message-State: AOAM530qZl4W+0w5ZAoWZOxhpFGWyL873Scfzz14hNINyGykAfxoDzf/
+        /ZYEARFZau1Qk50TkGLfUDTrCJpZjx9afZCqo598Y7pWD1I9Vw==
+X-Google-Smtp-Source: ABdhPJwVCBIFQpf6VxtKKBuMdwSlFwo5K5gHOOjllRteuKAKYlLoAKLDiSVGF/WLCh6WOsU7fWtpftM8g3rwh5rZ04M=
+X-Received: by 2002:a05:6102:830:: with SMTP id k16mr1840918vsb.182.1594874368719;
+ Wed, 15 Jul 2020 21:39:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <1594390602-7635-1-git-send-email-magnus.karlsson@intel.com>
- <1594390602-7635-12-git-send-email-magnus.karlsson@intel.com> <fc6e254c-5153-aa72-77d1-693e24b49848@mellanox.com>
-In-Reply-To: <fc6e254c-5153-aa72-77d1-693e24b49848@mellanox.com>
+References: <2863b548da1d4c369bbd9d6ceb337a24@baidu.com> <CAJ8uoz08pyWR43K_zhp6PsDLi0KE=y_4QTs-a7kBA-jkRQksaw@mail.gmail.com>
+ <7aac955840df438e99e6681b0ae5b5b8@baidu.com>
+In-Reply-To: <7aac955840df438e99e6681b0ae5b5b8@baidu.com>
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 16 Jul 2020 06:35:48 +0200
-Message-ID: <CAJ8uoz30f_jbtH4bM-YAxyPq2+zqC1CC3c+eQFg-ECwgkOfzSw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 11/14] xsk: add shared umem support between devices
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+Date:   Thu, 16 Jul 2020 06:39:20 +0200
+Message-ID: <CAJ8uoz3Qrh7gTtsOPiz=Z_vHEk+ZoC35cEZ1audDNu5G5pogZg@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [bug ?] i40e_rx_buffer_flip should not be
+ called for redirected xsk copy mode
+To:     "Li,Rongqing" <lirongqing@baidu.com>
+Cc:     intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
         =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>, jeffrey.t.kirsher@intel.com,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        cristian.dumitrescu@intel.com
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 12:18 PM Maxim Mikityanskiy
-<maximmi@mellanox.com> wrote:
+On Tue, Jul 14, 2020 at 1:05 PM Li,Rongqing <lirongqing@baidu.com> wrote:
 >
-> On 2020-07-10 17:16, Magnus Karlsson wrote:
-> > Add support to share a umem between different devices. This mode
-> > can be invoked with the XDP_SHARED_UMEM bind flag. Previously,
-> > sharing was only supported within the same device. Note that when
-> > sharing a umem between devices, just as in the case of sharing a
-> > umem between queue ids, you need to create a fill ring and a
-> > completion ring and tie them to the socket (with two setsockopts,
-> > one for each ring) before you do the bind with the
-> > XDP_SHARED_UMEM flag. This so that the single-producer
-> > single-consumer semantics of the rings can be upheld.
 >
-> I'm not sure if you saw my comment under v1 asking about performance.
-> Could you share what performance numbers (packet rate) you see when
-> doing forwarding with xsk_fwd? I'm interested in:
 >
-> 1. Forwarding between two queues of the same netdev.
+> > -----=E9=82=AE=E4=BB=B6=E5=8E=9F=E4=BB=B6-----
+> > =E5=8F=91=E4=BB=B6=E4=BA=BA: Li,Rongqing
+> > =E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B47=E6=9C=886=E6=97=A5=
+ 14:38
+> > =E6=94=B6=E4=BB=B6=E4=BA=BA: 'Magnus Karlsson' <magnus.karlsson@gmail.c=
+om>
+> > =E6=8A=84=E9=80=81: intel-wired-lan <intel-wired-lan@lists.osuosl.org>;=
+ Bj=C3=B6rn T=C3=B6pel
+> > <bjorn.topel@intel.com>; Karlsson, Magnus <magnus.karlsson@intel.com>;
+> > Netdev <netdev@vger.kernel.org>
+> > =E4=B8=BB=E9=A2=98: =E7=AD=94=E5=A4=8D: [Intel-wired-lan] [bug ?] i40e_=
+rx_buffer_flip should not be called
+> > for redirected xsk copy mode
+> >
+> >
+> >
+> > > -----=E9=82=AE=E4=BB=B6=E5=8E=9F=E4=BB=B6-----
+> > > =E5=8F=91=E4=BB=B6=E4=BA=BA: Magnus Karlsson [mailto:magnus.karlsson@=
+gmail.com]
+> > > =E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B47=E6=9C=886=E6=97=
+=A5 14:13
+> > > =E6=94=B6=E4=BB=B6=E4=BA=BA: Li,Rongqing <lirongqing@baidu.com>
+> > > =E6=8A=84=E9=80=81: intel-wired-lan <intel-wired-lan@lists.osuosl.org=
+>; Bj=C3=B6rn T=C3=B6pel
+> > > <bjorn.topel@intel.com>; Karlsson, Magnus <magnus.karlsson@intel.com>=
+;
+> > > Netdev <netdev@vger.kernel.org>
+> > > =E4=B8=BB=E9=A2=98: Re: [Intel-wired-lan] [bug ?] i40e_rx_buffer_flip=
+ should not be
+> > > called for redirected xsk copy mode
+> > >
+> > > Thank you RongQing for reporting this. I will take a look at it and
+> > > produce a patch.
+> > >
+> > > /Magnus
+> >
 >
-> 2. Forwarding between two netdevs.
->
-> 3. xdpsock -l as the baseline.
+> Ping
 
-Sorry for the delay Max, but it is all due to vacation. I will provide
-you with the numbers once the weather turns sour and/or the family
-gets tired of me ;-). From what I can remember, it did not scale
-perfectly linearly, instead it hit some other bottleneck, though I did
-not examine what at that time.
+My apologies RongQing, but it is taking longer than expected due to
+key people being on vacation during this summer period. We are
+debating weather the simple fix you provided covers all cases.
+Hopefully it does, but we just want to make sure. The fix is needed in
+four drivers: the ones you mention plus ice.
 
 /Magnus
 
-> Thanks,
-> Max
 >
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >   net/xdp/xsk.c | 11 ++++-------
-> >   1 file changed, 4 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index 05fadd9..4bf47d3 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -695,14 +695,11 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
-> >                       sockfd_put(sock);
-> >                       goto out_unlock;
-> >               }
-> > -             if (umem_xs->dev != dev) {
-> > -                     err = -EINVAL;
-> > -                     sockfd_put(sock);
-> > -                     goto out_unlock;
-> > -             }
-> >
-> > -             if (umem_xs->queue_id != qid) {
-> > -                     /* Share the umem with another socket on another qid */
-> > +             if (umem_xs->queue_id != qid || umem_xs->dev != dev) {
-> > +                     /* Share the umem with another socket on another qid
-> > +                      * and/or device.
-> > +                      */
-> >                       xs->pool = xp_create_and_assign_umem(xs,
-> >                                                            umem_xs->umem);
-> >                       if (!xs->pool) {
-> >
->
+> -Li
