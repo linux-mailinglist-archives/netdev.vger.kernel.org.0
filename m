@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55A4A222EBF
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 01:10:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B74C222EB1
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 01:10:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728174AbgGPXKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 19:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43428 "EHLO
+        id S1728142AbgGPXJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 19:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727969AbgGPXJU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 19:09:20 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D142BC08C5F5
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 15:47:46 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id e22so6047639edq.8
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 15:47:46 -0700 (PDT)
+        with ESMTP id S1727927AbgGPXJV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 19:09:21 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157EAC08C5F6
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 15:47:48 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id n22so5559203ejy.3
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 15:47:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=F1Xv8EY4tr8na6kuaCtWsilvcGZDDfcaRiEZknYzr2s=;
-        b=DFAUs8siVRJi3XqhS3gg8rNZ1kItgpkM/D0I0UewdzkiVky+dygCCfJFmb9e93dins
-         59IPr6RKe5I6Eerunt9zesLxo44/E/c9ecWpZX8k0K7avoGI1pYxmV5R6EHJbRwqYLUK
-         6tAaAwYlwHwevrpGhqpEfzYiL8tNcExQm8wq/Zc8BNCLzzTYdoYT2cEn5IbYIi71X+Yt
-         rVBUMyIaCpLw7sP1bJ20ZJ+nAzoU+/MEUorEy17C76/qWH/KtffC7zScO+J1HBKxje6V
-         /uYNz8tTE/XB2m0OrPwGQGyb0Cgk09OkW3kn2cK0YAQI4o1BuZiEmZOrzs+YZjzKfXFN
-         aAyA==
+        bh=gVZr11T9TES+/flLKY6HHJmHetSXp+ij4Gmzdm/bTEU=;
+        b=H2f18hPYex1vHPHSPceTtYajJWk45mFiu8FgbKWtCyXB/6KSkf8pR14c/hesx+A6Th
+         xihqX1eeDoWCWrMKzxLwzIuo2g8Le+yxk9CAXGCr4Apk+uQsSSUIr7XAwqi4LphQyl1l
+         yXj5MkDStv5wAdDbz46IrICiCS4h3T4UpStd0kvAPH1/qrrGmDFje5r3awBFx3AbGZln
+         qc02qrCYxVPxucIeNXeGF6CgwkeEppMPFRFmed9oI4Dbbj+l9RuNo8CjqfOeYFSGiN6d
+         YT+Se4hHB4k2YBhykT2j0w/FxKQ6bQglOKx7C2pLMVrOZEVgpZ8LCyt+lLFmEQ4flZ2g
+         0Rkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=F1Xv8EY4tr8na6kuaCtWsilvcGZDDfcaRiEZknYzr2s=;
-        b=ksId5q6xXJ/vW+GUSj6bsOuio1UOjOnE7QHWvbvLuDPANMpoJ/e0eGrjy2s9qJGOrR
-         fhmywuFs0kzfszR/Q8uJ86aC98Asld5nJWQVcVnffr0fvADfd3vKQ2UjJ1EAp7dpvONf
-         X8WSFPQvsPNSr03Ffr5dOgPADu78EFFWfRqQqCzJTll2gMUqa1uVEj1JEehbty2R5fYO
-         D6VIF59lHLjWWawppCsDNS5W2G3L1+pMUn+vO57FpbrqgZrFPx9F/l3JpJ4s9laohYb/
-         IecrxKQADtpQPl6IOSQYsuQaKRDaJcudWB5h6x6ODx2SigZ2W5CuMdtILubwaAfObN0s
-         E6Aw==
-X-Gm-Message-State: AOAM533VahtolqrpxefM3a0WHKH8Jmzs7V3slReIbaS/VwoZATHgNTkr
-        +LU4Y42knVVWA1Nwnmz7ZWdsfHPV
-X-Google-Smtp-Source: ABdhPJy1R/mX8bB2hFzgRW07oU0zN+RLeO/30aUEEiuO/nahp9XJtCnpIR1ha+MXWQ/dKlOPb0n4xA==
-X-Received: by 2002:a05:6402:1250:: with SMTP id l16mr6713331edw.362.1594939665533;
-        Thu, 16 Jul 2020 15:47:45 -0700 (PDT)
+        bh=gVZr11T9TES+/flLKY6HHJmHetSXp+ij4Gmzdm/bTEU=;
+        b=NH7woGpdrnWKcknZC7mnNhJKlFQIq0ncqCHaInJqeRRCF5gRTRCt5u7U/dJ8Qz24GE
+         qWcRvYpjid4pHdz0Q7LDN0z2FuxoBgEVdKy8zHNo5ws1C/j4ctQKwt8/amzpI/Xt8udN
+         eq+9qiTr4arxIaDfwqIfEkRw4TZgUBsNLoNuxIWa5axBycXZ5+q5oSXTB94qHP74IKUs
+         vzZHxJL2GIQ2ZHsKyFsckBt0SV2OZbJhK0YVSKmXZJXT+E3q3LSvKboMAMFDj1XO4FYG
+         ebrn87C0a9b3NTJVIJj7pJzSVV8EWvn6uJotnLd4q2WjBlTwLbHegsQ37Bf2or2LR2mz
+         okHw==
+X-Gm-Message-State: AOAM530ye4Dw3U1RMQJtJ12WEqr/29ni+DO+65uDqqhJuwzHWn3DOpFk
+        LTm74FSKU0XhPp/xx7wdczb8ofMl
+X-Google-Smtp-Source: ABdhPJy14tk5Xqf2SSDTAZZ0BPPHcb9YT7PU9m6YJFk7dB+BCq7PBb6DAWLKCXqbnkelj3znmPl50Q==
+X-Received: by 2002:a17:906:408c:: with SMTP id u12mr5762361ejj.162.1594939666633;
+        Thu, 16 Jul 2020 15:47:46 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id ce15sm6285512ejc.86.2020.07.16.15.47.44
+        by smtp.gmail.com with ESMTPSA id ce15sm6285512ejc.86.2020.07.16.15.47.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2020 15:47:45 -0700 (PDT)
+        Thu, 16 Jul 2020 15:47:46 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
 Cc:     richardcochran@gmail.com, jacob.e.keller@intel.com,
         yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com, po.liu@nxp.com,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v2 net-next 2/3] ptp: introduce a phase offset in the periodic output request
-Date:   Fri, 17 Jul 2020 01:45:30 +0300
-Message-Id: <20200716224531.1040140-3-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 3/3] net: mscc: ocelot: add support for PTP waveform configuration
+Date:   Fri, 17 Jul 2020 01:45:31 +0300
+Message-Id: <20200716224531.1040140-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200716224531.1040140-1-olteanv@gmail.com>
 References: <20200716224531.1040140-1-olteanv@gmail.com>
@@ -65,94 +65,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some PHCs like the ocelot/felix switch cannot emit generic periodic
-output, but just PPS (pulse per second) signals, which:
-- don't start from arbitrary absolute times, but are rather
-  phase-aligned to the beginning of [the closest next] second.
-- have an optional phase offset relative to that beginning of the
-  second.
+For PPS output (perout period is 1.000000000), accept the new "phase"
+parameter from the periodic output request structure.
 
-For those, it was initially established that they should reject any
-other absolute time for the PTP_PEROUT_REQUEST than 0.000000000 [1].
+For both PPS and freeform output, accept the new "on" argument for
+specifying the duty cycle of the generated signal. Preserve the old
+defaults for this "on" time: 1 us for PPS, and half the period for
+freeform output.
 
-But when it actually came to writing an application [2] that makes use
-of this functionality, we realized that we can't really deal generically
-with PHCs that support absolute start time, and with PHCs that don't,
-without an explicit interface. Namely, in an ideal world, PHC drivers
-would ensure that the "perout.start" value written to hardware will
-result in a functional output. This means that if the PTP time has
-become in the past of this PHC's current time, it should be
-automatically fast-forwarded by the driver into a close enough future
-time that is known to work (note: this is necessary only if the hardware
-doesn't do this fast-forward by itself). But we don't really know what
-is the status for PHC drivers in use today, so in the general sense,
-user space would be risking to have a non-functional periodic output if
-it simply asked for a start time of 0.000000000.
-
-So let's introduce a flag for this type of reduced-functionality
-hardware, named PTP_PEROUT_PHASE. The start time is just "soon", the
-only thing we know for sure about this signal is that its rising edge
-events, Rn, occur at:
-
-Rn = perout.phase + n * perout.period
-
-The "phase" in the periodic output structure is simply an alias to the
-"start" time, since both cannot logically be specified at the same time.
-Therefore, the binary layout of the structure is not affected.
-
-[1]: https://patchwork.ozlabs.org/project/netdev/patch/20200320103726.32559-7-yangbo.lu@nxp.com/
-[2]: https://www.mail-archive.com/linuxptp-devel@lists.sourceforge.net/msg04142.html
+Also preserve the old behavior that accepted the "phase" via the "start"
+argument.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
 Changes in v2:
-Typo in commit message: period -> perout
+Made sure it applies to net-next.
 
- include/uapi/linux/ptp_clock.h | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_ptp.c | 74 +++++++++++++++++---------
+ 1 file changed, 50 insertions(+), 24 deletions(-)
 
-diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
-index 1d2841155f7d..1d108d597f66 100644
---- a/include/uapi/linux/ptp_clock.h
-+++ b/include/uapi/linux/ptp_clock.h
-@@ -55,12 +55,14 @@
-  */
- #define PTP_PEROUT_ONE_SHOT		(1<<0)
- #define PTP_PEROUT_DUTY_CYCLE		(1<<1)
-+#define PTP_PEROUT_PHASE		(1<<2)
+diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.c b/drivers/net/ethernet/mscc/ocelot_ptp.c
+index a3088a1676ed..1e08fe4daaef 100644
+--- a/drivers/net/ethernet/mscc/ocelot_ptp.c
++++ b/drivers/net/ethernet/mscc/ocelot_ptp.c
+@@ -184,18 +184,20 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
+ 		      struct ptp_clock_request *rq, int on)
+ {
+ 	struct ocelot *ocelot = container_of(ptp, struct ocelot, ptp_info);
+-	struct timespec64 ts_start, ts_period;
++	struct timespec64 ts_phase, ts_period;
+ 	enum ocelot_ptp_pins ptp_pin;
+ 	unsigned long flags;
+ 	bool pps = false;
+ 	int pin = -1;
++	s64 wf_high;
++	s64 wf_low;
+ 	u32 val;
+-	s64 ns;
  
- /*
-  * flag fields valid for the new PTP_PEROUT_REQUEST2 ioctl.
-  */
- #define PTP_PEROUT_VALID_FLAGS		(PTP_PEROUT_ONE_SHOT | \
--					 PTP_PEROUT_DUTY_CYCLE)
-+					 PTP_PEROUT_DUTY_CYCLE | \
-+					 PTP_PEROUT_PHASE)
+ 	switch (rq->type) {
+ 	case PTP_CLK_REQ_PEROUT:
+ 		/* Reject requests with unsupported flags */
+-		if (rq->perout.flags)
++		if (rq->perout.flags & ~(PTP_PEROUT_DUTY_CYCLE |
++					 PTP_PEROUT_PHASE))
+ 			return -EOPNOTSUPP;
  
- /*
-  * No flags are valid for the original PTP_PEROUT_REQUEST ioctl
-@@ -103,7 +105,20 @@ struct ptp_extts_request {
- };
+ 		pin = ptp_find_pin(ocelot->ptp_clock, PTP_PF_PEROUT,
+@@ -211,22 +213,12 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
+ 		else
+ 			return -EBUSY;
  
- struct ptp_perout_request {
--	struct ptp_clock_time start;  /* Absolute start time. */
-+	union {
-+		/*
-+		 * Absolute start time.
-+		 * Valid only if (flags & PTP_PEROUT_PHASE) is unset.
-+		 */
-+		struct ptp_clock_time start;
-+		/*
-+		 * Phase offset. The signal should start toggling at an
-+		 * unspecified integer multiple of the period, plus this value.
-+		 * The start time should be "as soon as possible".
-+		 * Valid only if (flags & PTP_PEROUT_PHASE) is set.
-+		 */
-+		struct ptp_clock_time phase;
-+	};
- 	struct ptp_clock_time period; /* Desired period, zero means disable. */
- 	unsigned int index;           /* Which channel to configure. */
- 	unsigned int flags;
+-		ts_start.tv_sec = rq->perout.start.sec;
+-		ts_start.tv_nsec = rq->perout.start.nsec;
+ 		ts_period.tv_sec = rq->perout.period.sec;
+ 		ts_period.tv_nsec = rq->perout.period.nsec;
+ 
+ 		if (ts_period.tv_sec == 1 && ts_period.tv_nsec == 0)
+ 			pps = true;
+ 
+-		if (ts_start.tv_sec || (ts_start.tv_nsec && !pps)) {
+-			dev_warn(ocelot->dev,
+-				 "Absolute start time not supported!\n");
+-			dev_warn(ocelot->dev,
+-				 "Accept nsec for PPS phase adjustment, otherwise start time should be 0 0.\n");
+-			return -EINVAL;
+-		}
+-
+ 		/* Handle turning off */
+ 		if (!on) {
+ 			spin_lock_irqsave(&ocelot->ptp_clock_lock, flags);
+@@ -236,16 +228,48 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
+ 			break;
+ 		}
+ 
++		if (rq->perout.flags & PTP_PEROUT_PHASE) {
++			ts_phase.tv_sec = rq->perout.phase.sec;
++			ts_phase.tv_nsec = rq->perout.phase.nsec;
++		} else {
++			/* Compatibility */
++			ts_phase.tv_sec = rq->perout.start.sec;
++			ts_phase.tv_nsec = rq->perout.start.nsec;
++		}
++		if (ts_phase.tv_sec || (ts_phase.tv_nsec && !pps)) {
++			dev_warn(ocelot->dev,
++				 "Absolute start time not supported!\n");
++			dev_warn(ocelot->dev,
++				 "Accept nsec for PPS phase adjustment, otherwise start time should be 0 0.\n");
++			return -EINVAL;
++		}
++
++		/* Calculate waveform high and low times */
++		if (rq->perout.flags & PTP_PEROUT_DUTY_CYCLE) {
++			struct timespec64 ts_on;
++
++			ts_on.tv_sec = rq->perout.on.sec;
++			ts_on.tv_nsec = rq->perout.on.nsec;
++
++			wf_high = timespec64_to_ns(&ts_on);
++		} else {
++			if (pps) {
++				wf_high = 1000;
++			} else {
++				wf_high = timespec64_to_ns(&ts_period);
++				wf_high = div_s64(wf_high, 2);
++			}
++		}
++
++		wf_low = timespec64_to_ns(&ts_period);
++		wf_low -= wf_high;
++
+ 		/* Handle PPS request */
+ 		if (pps) {
+ 			spin_lock_irqsave(&ocelot->ptp_clock_lock, flags);
+-			/* Pulse generated perout.start.nsec after TOD has
+-			 * increased seconds.
+-			 * Pulse width is set to 1us.
+-			 */
+-			ocelot_write_rix(ocelot, ts_start.tv_nsec,
++			ocelot_write_rix(ocelot, ts_phase.tv_nsec,
+ 					 PTP_PIN_WF_LOW_PERIOD, ptp_pin);
+-			ocelot_write_rix(ocelot, 1000,
++			ocelot_write_rix(ocelot, wf_high,
+ 					 PTP_PIN_WF_HIGH_PERIOD, ptp_pin);
+ 			val = PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_CLOCK);
+ 			val |= PTP_PIN_CFG_SYNC;
+@@ -255,14 +279,16 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
+ 		}
+ 
+ 		/* Handle periodic clock */
+-		ns = timespec64_to_ns(&ts_period);
+-		ns = ns >> 1;
+-		if (ns > 0x3fffffff || ns <= 0x6)
++		if (wf_high > 0x3fffffff || wf_high <= 0x6)
++			return -EINVAL;
++		if (wf_low > 0x3fffffff || wf_low <= 0x6)
+ 			return -EINVAL;
+ 
+ 		spin_lock_irqsave(&ocelot->ptp_clock_lock, flags);
+-		ocelot_write_rix(ocelot, ns, PTP_PIN_WF_LOW_PERIOD, ptp_pin);
+-		ocelot_write_rix(ocelot, ns, PTP_PIN_WF_HIGH_PERIOD, ptp_pin);
++		ocelot_write_rix(ocelot, wf_low, PTP_PIN_WF_LOW_PERIOD,
++				 ptp_pin);
++		ocelot_write_rix(ocelot, wf_high, PTP_PIN_WF_HIGH_PERIOD,
++				 ptp_pin);
+ 		val = PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_CLOCK);
+ 		ocelot_write_rix(ocelot, val, PTP_PIN_CFG, ptp_pin);
+ 		spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
 -- 
 2.25.1
 
