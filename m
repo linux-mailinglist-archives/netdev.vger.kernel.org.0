@@ -2,27 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9F072228D7
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 19:18:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 402692228CF
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 19:17:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729227AbgGPRRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 13:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45520 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728885AbgGPRRd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 13:17:33 -0400
-Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5846BC061755;
-        Thu, 16 Jul 2020 10:17:33 -0700 (PDT)
+        id S1729087AbgGPRRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 13:17:35 -0400
+Received: from mail.nic.cz ([217.31.204.67]:53292 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727844AbgGPRRd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jul 2020 13:17:33 -0400
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id E1900140A85;
-        Thu, 16 Jul 2020 19:17:30 +0200 (CEST)
+        by mail.nic.cz (Postfix) with ESMTP id 15E24140A88;
+        Thu, 16 Jul 2020 19:17:31 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1594919851; bh=XOAfNxH04Dfv8nWGDodRl3W9aRo3avZUgZgHgn5hpn4=;
+        t=1594919851; bh=J5jzELM/OTNfIr+ix5KDxNNLPfsFIRMv3tJh8oyvZlU=;
         h=From:To:Date;
-        b=kUvNiNFvr235PstZgBkhO+fqGWxiiaUdRMn8KfQa9MBotIBOF1KG4SkdDmJV7Xjqq
-         HySlUuwxNcos160kngDFQyR17PehN9c1BI+5pLbwFNt+EpxA6Jn58IvUIdwexb1X17
-         PONsZn+A/BZ4Tk+f5C5cxDFWOC2watM+/tMrR13I=
+        b=btRxgrzUg921ZHzJKUrYMVPbiLzT5KjtLBS/fOPmiTs7H1GQd2kCd3PK31KQwBMIu
+         u8ZYsjRB9c44apXYEzxdrPxHgoc8pkwOusq+EWsU2eBv0v0be5eIOeOoLPqJ2NDhMm
+         mg4gCXstgldPh4vuxynaX+bHTW4BKvovf8T1vrj8=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     linux-leds@vger.kernel.org
 Cc:     Pavel Machek <pavel@ucw.cz>, jacek.anaszewski@gmail.com,
@@ -33,10 +30,12 @@ Cc:     Pavel Machek <pavel@ucw.cz>, jacek.anaszewski@gmail.com,
         Gregory Clement <gregory.clement@bootlin.com>,
         Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH RFC leds + net-next 0/3] Add support for LEDs on Marvell PHYs
-Date:   Thu, 16 Jul 2020 19:17:27 +0200
-Message-Id: <20200716171730.13227-1-marek.behun@nic.cz>
+Subject: [PATCH RFC leds + net-next 1/3] leds: trigger: add support for LED-private device triggers
+Date:   Thu, 16 Jul 2020 19:17:28 +0200
+Message-Id: <20200716171730.13227-2-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200716171730.13227-1-marek.behun@nic.cz>
+References: <20200716171730.13227-1-marek.behun@nic.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,77 +49,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Some LED controllers may come with an internal HW triggering mechanism
+for the LED and the ability to switch between SW control and the
+internal HW control. This includes most PHYs, various ethernet switches,
+the Turris Omnia LED controller or AXP20X PMIC.
 
-this RFC series should apply on both net-next/master and Pavel's
-linux-leds/for-master tree.
+This adds support for registering such triggers.
 
-This adds support for LED's connected to some Marvell PHYs.
+This code is based on work by Pavel Machek <pavel@ucw.cz> and
+Ondřej Jirman <megous@megous.com>.
 
-LEDs are specified via device-tree. Example:
+Signed-off-by: Marek Behún <marek.behun@nic.cz>
+---
+ drivers/leds/led-triggers.c | 26 ++++++++++++++++++++------
+ include/linux/leds.h        | 10 ++++++++++
+ 2 files changed, 30 insertions(+), 6 deletions(-)
 
-ethernet-phy@1 {
-	reg = <1>;
-
-	leds {
-		led@0 {
-			reg = <0>;
-			color = <LED_COLOR_ID_GREEN>;
-			function = LED_FUNCTION_LINK;
-			linux,default-trigger = "hw:1000/100/10/nolink";
-		};
-
-		led@1 {
-			reg = <1>;
-			color = <LED_COLOR_ID_YELLOW>;
-			function = LED_FUNCTION_ACTIVITY;
-			linux,default-trigger = "hw:act/noact";
-		};
-	};
-};
-
-Since Marvell PHYs can control the LEDs themselves in various modes,
-we need to be able to switch between them or disable them.
-
-This is achieved by extending the LED trigger API with LED-private triggers.
-The proposal for this is based on work by Ondrej and Pavel, but after writing
-this support for Marvell PHYs I am not very happy how this turned out:
-- this LED-private triggers API works by registering triggers with specific
-  private trigger type. If this trigger type is defined for a trigger, only
-  those LEDs will be able to set this trigger which also have this trigger type.
-  (Both structs led_classdev and led_trigger have member trigger_type)
-- on Marvell PHYs each LED can have up to 8 different triggers
-- currently the driver supports up to 6 LEDs, since at least 88E1340 support
-  6 LEDs
-- almost every LED supports some mode which is not supported by at least one
-  other LED
-- this leads to the following dillema:
-  1. either we support one trigger type across the driver, but then the
-     /sys/class/leds/<LED>/trigger file will also list HW triggers not
-     supported by this specific LED,
-  2. or we add 6 trigger types, each different one LED, and register up to
-     8 HW triggers for each trigger type, which results in up to 48 triggers
-     per this driver.
-  In this proposal alternative 1 is taken and when unsupported HW trigger
-  is requested by writing to /sys/class/leds/<LED>/trigger file, the write
-  system call returns -EOPNOTSUPP.
-- therefore I think that this is not the correct way how to implement
-  LED-private triggers, and instead an approach as desribed in [1].
-  What do you people think?
-
-Marek
-
-Marek Behún (3):
-  leds: trigger: add support for LED-private device triggers
-  leds: trigger: return error value if .activate() failed
-  net: phy: marvell: add support for PHY LEDs via LED class
-
- drivers/leds/led-triggers.c |  32 ++--
- drivers/net/phy/Kconfig     |   7 +
- drivers/net/phy/marvell.c   | 307 +++++++++++++++++++++++++++++++++++-
- include/linux/leds.h        |  10 ++
- 4 files changed, 346 insertions(+), 10 deletions(-)
-
+diff --git a/drivers/leds/led-triggers.c b/drivers/leds/led-triggers.c
+index 79e30d2cb7a5..81e758d5a048 100644
+--- a/drivers/leds/led-triggers.c
++++ b/drivers/leds/led-triggers.c
+@@ -27,6 +27,12 @@ LIST_HEAD(trigger_list);
+ 
+  /* Used by LED Class */
+ 
++static inline bool
++trigger_relevant(struct led_classdev *led_cdev, struct led_trigger *trig)
++{
++	return !trig->trigger_type || trig->trigger_type == led_cdev->trigger_type;
++}
++
+ ssize_t led_trigger_write(struct file *filp, struct kobject *kobj,
+ 			  struct bin_attribute *bin_attr, char *buf,
+ 			  loff_t pos, size_t count)
+@@ -50,7 +56,7 @@ ssize_t led_trigger_write(struct file *filp, struct kobject *kobj,
+ 
+ 	down_read(&triggers_list_lock);
+ 	list_for_each_entry(trig, &trigger_list, next_trig) {
+-		if (sysfs_streq(buf, trig->name)) {
++		if (sysfs_streq(buf, trig->name) && trigger_relevant(led_cdev, trig)) {
+ 			down_write(&led_cdev->trigger_lock);
+ 			led_trigger_set(led_cdev, trig);
+ 			up_write(&led_cdev->trigger_lock);
+@@ -93,8 +99,12 @@ static int led_trigger_format(char *buf, size_t size,
+ 				       led_cdev->trigger ? "none" : "[none]");
+ 
+ 	list_for_each_entry(trig, &trigger_list, next_trig) {
+-		bool hit = led_cdev->trigger &&
+-			!strcmp(led_cdev->trigger->name, trig->name);
++		bool hit;
++
++		if (!trigger_relevant(led_cdev, trig))
++			continue;
++
++		hit = led_cdev->trigger && !strcmp(led_cdev->trigger->name, trig->name);
+ 
+ 		len += led_trigger_snprintf(buf + len, size - len,
+ 					    " %s%s%s", hit ? "[" : "",
+@@ -243,7 +253,8 @@ void led_trigger_set_default(struct led_classdev *led_cdev)
+ 	down_read(&triggers_list_lock);
+ 	down_write(&led_cdev->trigger_lock);
+ 	list_for_each_entry(trig, &trigger_list, next_trig) {
+-		if (!strcmp(led_cdev->default_trigger, trig->name)) {
++		if (!strcmp(led_cdev->default_trigger, trig->name) &&
++		    trigger_relevant(led_cdev, trig)) {
+ 			led_cdev->flags |= LED_INIT_DEFAULT_TRIGGER;
+ 			led_trigger_set(led_cdev, trig);
+ 			break;
+@@ -280,7 +291,9 @@ int led_trigger_register(struct led_trigger *trig)
+ 	down_write(&triggers_list_lock);
+ 	/* Make sure the trigger's name isn't already in use */
+ 	list_for_each_entry(_trig, &trigger_list, next_trig) {
+-		if (!strcmp(_trig->name, trig->name)) {
++		if (!strcmp(_trig->name, trig->name) &&
++		    (trig->trigger_type == _trig->trigger_type ||
++		     !trig->trigger_type || !_trig->trigger_type)) {
+ 			up_write(&triggers_list_lock);
+ 			return -EEXIST;
+ 		}
+@@ -294,7 +307,8 @@ int led_trigger_register(struct led_trigger *trig)
+ 	list_for_each_entry(led_cdev, &leds_list, node) {
+ 		down_write(&led_cdev->trigger_lock);
+ 		if (!led_cdev->trigger && led_cdev->default_trigger &&
+-			    !strcmp(led_cdev->default_trigger, trig->name)) {
++		    !strcmp(led_cdev->default_trigger, trig->name) &&
++		    trigger_relevant(led_cdev, trig)) {
+ 			led_cdev->flags |= LED_INIT_DEFAULT_TRIGGER;
+ 			led_trigger_set(led_cdev, trig);
+ 		}
+diff --git a/include/linux/leds.h b/include/linux/leds.h
+index 2451962d1ec5..6a8d6409c993 100644
+--- a/include/linux/leds.h
++++ b/include/linux/leds.h
+@@ -57,6 +57,10 @@ struct led_init_data {
+ 	bool devname_mandatory;
+ };
+ 
++struct led_hw_trigger_type {
++	int dummy;
++};
++
+ struct led_classdev {
+ 	const char		*name;
+ 	enum led_brightness	 brightness;
+@@ -141,6 +145,9 @@ struct led_classdev {
+ 	void			*trigger_data;
+ 	/* true if activated - deactivate routine uses it to do cleanup */
+ 	bool			activated;
++
++	/* LEDs that have private triggers have this set */
++	struct led_hw_trigger_type	*trigger_type;
+ #endif
+ 
+ #ifdef CONFIG_LEDS_BRIGHTNESS_HW_CHANGED
+@@ -345,6 +352,9 @@ struct led_trigger {
+ 	int		(*activate)(struct led_classdev *led_cdev);
+ 	void		(*deactivate)(struct led_classdev *led_cdev);
+ 
++	/* LED-private triggers have this set */
++	struct led_hw_trigger_type *trigger_type;
++
+ 	/* LEDs under control by this trigger (for simple triggers) */
+ 	rwlock_t	  leddev_list_lock;
+ 	struct list_head  led_cdevs;
 -- 
 2.26.2
 
