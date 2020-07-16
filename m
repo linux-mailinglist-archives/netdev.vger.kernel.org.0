@@ -2,87 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56C55222EC1
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 01:10:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52747222E9B
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 01:09:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728162AbgGPXKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 19:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
+        id S1727861AbgGPXJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 19:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727951AbgGPXJU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 19:09:20 -0400
-Received: from www62.your-server.de (www62.your-server.de [IPv6:2a01:4f8:d0a:276a::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09ED7C08C5EF;
-        Thu, 16 Jul 2020 15:46:29 -0700 (PDT)
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jwCdw-000733-Q9; Fri, 17 Jul 2020 00:46:20 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jwCdw-000PAw-Jp; Fri, 17 Jul 2020 00:46:20 +0200
-Subject: Re: [PATCH bpf-next 2/5] bpf: allow for tailcalls in BPF subprograms
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>, ast@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com
-References: <20200715233634.3868-1-maciej.fijalkowski@intel.com>
- <20200715233634.3868-3-maciej.fijalkowski@intel.com>
- <912b5e97-1951-5a7c-e3c1-41bc3bf4b58a@iogearbox.net>
-Message-ID: <d12561c3-23c6-3f48-611f-868be990e1a2@iogearbox.net>
-Date:   Fri, 17 Jul 2020 00:46:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S1727820AbgGPXI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 19:08:58 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678DBC08C5FC
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 16:02:02 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id mn17so5569023pjb.4
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 16:02:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=o34IXxwMd0vyXPXKCO7aCODA+f7Id4gHfhq7U+7jaNk=;
+        b=WjdQTm8aSPxAFIR1XHrtKEUFFYCsb8iNysoyMIb2C3cyrJ2fqOEBDlvq7qfcClRVBm
+         TKexTWb8BM589sBcA1WM7s42f8yW/+LGJQ2wH1ggnP1RVW6z8A/v2Kxg3SSqH7pa0eAc
+         TedlideckLVfO4AhX/ICm7Tb70/aQsOlapT6XDamb+4uvMLE3ZAkfsKchXx6aaDtwiME
+         QPnfuwA2JbU5uTv8WYbrAPxIMed6rg3ILUw3IqUI34V2pCyex9Vm7Nl7ceisF20a40wr
+         dyJZqKbujVMxlAD8u/YsZodFc67acY0eLIOOPYi2a3quD+PJuVk5aysfayT0MuKJnOLa
+         pF4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=o34IXxwMd0vyXPXKCO7aCODA+f7Id4gHfhq7U+7jaNk=;
+        b=FL959isPbElT03NMzLCU3gD3d9VcEgDZMyFQWoabsxPVhSda765MlXEh1ctKNMINt9
+         uiAdwXF+pb28TaIFvA6614vp7yB30P81D7xADodqX/AVkt0UFpX7xg9aSSN1ldn0clcg
+         6RiwojuaCtkz0sTZJo8NOrdU7HDHPQecFmrbWQaMYaqTXYSd4vFJp+4+rdiaJYgP4snd
+         CqxXQPo57YACenXBVT7NXqmd9AiZgT0DOn2r5jBVB/ketqYzhMO7EWRmKvQC2KSNBy1v
+         DM8ozGDqVMzVXyLPpOM1nNvgKjgHMrsWgQWE/vX/pWO6+DghwMGuhGGpUVWq9NQl1RRY
+         kwgQ==
+X-Gm-Message-State: AOAM531pP7WB2tw43PKut3LT6zTi3HLsA2J6q3MBsAE8fzWDmCntOIlk
+        /C4yKuGF8RqFa40Bvv6ZS1tTiA==
+X-Google-Smtp-Source: ABdhPJzmGDjORCq/34Hb1CaobVrLOJSw2mr3H9dugsf1kG/3uduTIiE1l8i9bOvSVafhFohCwcc8MA==
+X-Received: by 2002:a17:902:7005:: with SMTP id y5mr4906865plk.342.1594940521833;
+        Thu, 16 Jul 2020 16:02:01 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id y9sm885015pju.37.2020.07.16.16.02.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2020 16:02:01 -0700 (PDT)
+Date:   Thu, 16 Jul 2020 16:01:52 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     jarod@redhat.com, mkubecek@suse.cz, netdev@vger.kernel.org
+Subject: Re: [RFC] bonding driver terminology change proposal
+Message-ID: <20200716160152.026ace81@hermes.lan>
+In-Reply-To: <20200716.115947.741360685940124518.davem@davemloft.net>
+References: <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz>
+        <20200713.180030.118342049848300015.davem@davemloft.net>
+        <CAKfmpSeqqD_RQwdFwsZG212tbNF0E__83xKWT44nGYs4AOjDJw@mail.gmail.com>
+        <20200716.115947.741360685940124518.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <912b5e97-1951-5a7c-e3c1-41bc3bf4b58a@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25875/Thu Jul 16 16:46:30 2020)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/16/20 11:29 PM, Daniel Borkmann wrote:
-> On 7/16/20 1:36 AM, Maciej Fijalkowski wrote:
->> Relax verifier's restriction that was meant to forbid tailcall usage
->> when subprog count was higher than 1.
->>
->> Also, do not max out the stack depth of program that utilizes tailcalls.
->>
->> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
->> ---
->>   kernel/bpf/verifier.c | 5 -----
->>   1 file changed, 5 deletions(-)
->>
->> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->> index 3c1efc9d08fd..6481342b31ba 100644
->> --- a/kernel/bpf/verifier.c
->> +++ b/kernel/bpf/verifier.c
->> @@ -4172,10 +4172,6 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
->>       case BPF_FUNC_tail_call:
->>           if (map->map_type != BPF_MAP_TYPE_PROG_ARRAY)
->>               goto error;
->> -        if (env->subprog_cnt > 1) {
->> -            verbose(env, "tail_calls are not allowed in programs with bpf-to-bpf calls\n");
->> -            return -EINVAL;
->> -        }
->>           break;
->>       case BPF_FUNC_perf_event_read:
->>       case BPF_FUNC_perf_event_output:
->> @@ -10252,7 +10248,6 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
->>                * the program array.
->>                */
->>               prog->cb_access = 1;
->> -            env->prog->aux->stack_depth = MAX_BPF_STACK;
->>               env->prog->aux->max_pkt_offset = MAX_PACKET_OFF;
->>               /* mark bpf_tail_call as different opcode to avoid
-> 
-> Also, isn't this broken when JIT is not used (as in stack oob access)?
+On Thu, 16 Jul 2020 11:59:47 -0700 (PDT)
+David Miller <davem@davemloft.net> wrote:
 
-(Similarly for non-x86 archs after this set.)
+> From: Jarod Wilson <jarod@redhat.com>
+> Date: Wed, 15 Jul 2020 23:06:55 -0400
+> 
+> > On Mon, Jul 13, 2020 at 9:00 PM David Miller <davem@davemloft.net> wrote:  
+> >>
+> >> From: Michal Kubecek <mkubecek@suse.cz>
+> >> Date: Tue, 14 Jul 2020 00:00:16 +0200
+> >>  
+> >> > Could we, please, avoid breaking existing userspace tools and scripts?  
+> >>
+> >> I will not let UAPI breakage, don't worry.  
+> > 
+> > Seeking some clarification here. Does the output of
+> > /proc/net/bonding/<bond> fall under that umbrella as well?  
+> 
+> Yes, anything user facing must not break.
+> 
+
+For iproute2, would like better wording on the command
+parameters (but accept the old names so as not to break scripts).
+The old names can be highlighted as for compatibility only
+or removed from the usage manual and usage.
+
+Internally, variable names and function names can change iproute2
+since the internal API's are not considered part of user API.
