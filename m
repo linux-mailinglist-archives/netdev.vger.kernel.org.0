@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A2C22204E
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 12:11:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0F3F22205E
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 12:15:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726233AbgGPKL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 06:11:27 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:44230 "EHLO
+        id S1726710AbgGPKPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 06:15:30 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:46988 "EHLO
         userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725996AbgGPKL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 06:11:26 -0400
+        with ESMTP id S1726027AbgGPKP3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 06:15:29 -0400
 Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06GA8CWP058821;
-        Thu, 16 Jul 2020 10:10:58 GMT
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06GACAkT062333;
+        Thu, 16 Jul 2020 10:15:00 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
  : subject : message-id : mime-version : content-type :
  content-transfer-encoding : in-reply-to; s=corp-2020-01-29;
- bh=tKlmF/UrVxL2x/FGxL8YSH9/5p/LNU7eSptx9CfRehA=;
- b=ljCdLRH9TmhjvUYiJ09R2KoNRuzlfIoNLaqgV3IqVC6Ac95U8sSj02yBdE2c2lhgeLDc
- mJU0B4899T5X8fynzsnx9np6VFtZSMqzZQfqlN3CO7Ehds+XEeT0JkqVGsxGtpLZUkGH
- 0trLyRfqvy7kASpgfqHU6lm7z5d3amXt9aNhOo2bBUnE3zcik8EmxKqPhpk8knhCbZCZ
- MgHq/L+01+hphPgE/Y3ascjYJ7mwMVRFkAXJnJuYWzTF5wzleLZlcw2fJ+xRYtzrQDKW
- bnN7VR2WnQwmgBKWg5HaIwi/ILYpK+17n/SBNCF4ZUfSKcGIVu4xvK4A8bguClCXGf0P fg== 
+ bh=D1YNey4erLUjspVs0fIMxXLMplDmIknnIWDD9zp0gR0=;
+ b=ELvcLAEmbyDJcO07eWyRSK/wryY5DwPcyudcQ4lwysCMI9otg803dSAW4Xxd/9mqHcKo
+ 4MxV08V8F9+KjwUpqYpxueRf6Ugg+oIaZ7ABE8NK2ADFws/dE4pTlMiW1HwMXhGXZgDu
+ P5VbNIK5sn0YADWALKeLy20QFVSSNbkCeAc6c6Y3rAuQqxTpgz39n1YkrtSgnwErqsWo
+ Dtnz1bIFM8UJdqZ7XKRPPKAjiOrxGcIeRS83B5eRxxezjropLU4ni9Wl4pEEhrhpToFJ
+ tOnVw3R6UC0anhGQOwVnnz2K2kNd/B90xvvGOgACKgq0I4mnVLjh8j21SPRKRjdqEjN9 fg== 
 Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 3274urggvf-1
+        by userp2130.oracle.com with ESMTP id 3274urghg8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 16 Jul 2020 10:10:57 +0000
+        Thu, 16 Jul 2020 10:15:00 +0000
 Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06GA7i1k049201;
-        Thu, 16 Jul 2020 10:10:57 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 327qbasp77-1
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06GADg6W077702;
+        Thu, 16 Jul 2020 10:14:59 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 327qbat6p8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Jul 2020 10:10:56 +0000
-Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 06GAAsWl007102;
-        Thu, 16 Jul 2020 10:10:54 GMT
+        Thu, 16 Jul 2020 10:14:59 +0000
+Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 06GAEvD7004529;
+        Thu, 16 Jul 2020 10:14:57 GMT
 Received: from kadam (/41.57.98.10)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 16 Jul 2020 03:10:52 -0700
-Date:   Thu, 16 Jul 2020 13:10:42 +0300
+        with ESMTP ; Thu, 16 Jul 2020 03:14:54 -0700
+Date:   Thu, 16 Jul 2020 13:14:41 +0300
 From:   Dan Carpenter <dan.carpenter@oracle.com>
 To:     kbuild@lists.01.org,
         Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
@@ -53,33 +53,33 @@ Cc:     lkp@intel.com, kbuild-all@lists.01.org,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 1/6] bpf: change logging calls from verbose()
- to bpf_log() and use log pointer
-Message-ID: <20200716101042.GA2549@kadam>
+Subject: Re: [PATCH bpf-next v2 3/6] bpf: support attaching freplace programs
+ to multiple attach points
+Message-ID: <20200716101441.GB2549@kadam>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="Cf/4ySkkvY6jtT1l"
+Content-Type: multipart/mixed; boundary="1VtFtf1bAEcuptAG"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <159481854034.454654.14793846101394162640.stgit@toke.dk>
+In-Reply-To: <159481854255.454654.15065796817034016611.stgit@toke.dk>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 malwarescore=0
  mlxscore=0 spamscore=0 phishscore=0 suspectscore=0 bulkscore=0
  adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007160079
+ engine=8.12.0-2006250000 definitions=main-2007160080
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9683 signatures=668680
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 impostorscore=0
  suspectscore=0 phishscore=0 spamscore=0 mlxlogscore=999 malwarescore=0
- mlxscore=0 priorityscore=1501 adultscore=0 bulkscore=0 clxscore=1011
+ mlxscore=0 priorityscore=1501 adultscore=0 bulkscore=0 clxscore=1015
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007160079
+ definitions=main-2007160080
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---Cf/4ySkkvY6jtT1l
+--1VtFtf1bAEcuptAG
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
@@ -95,40 +95,236 @@ If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-smatch warnings:
-include/linux/bpf_verifier.h:351 bpf_verifier_log_needed() error: we previously assumed 'log' could be null (see line 350)
+New smatch warnings:
+kernel/bpf/verifier.c:10900 bpf_check_attach_target() error: we previously assumed 'tgt_prog' could be null (see line 10772)
+
+Old smatch warnings:
 include/linux/bpf_verifier.h:351 bpf_verifier_log_needed() error: we previously assumed 'log' could be null (see line 350)
 
-# https://github.com/0day-ci/linux/commit/e33243ff1dd2cbb3628e4044dd9e00a6abf99c7e
+# https://github.com/0day-ci/linux/commit/cc8571ec751a3a6065838e0b15105f8be0ced6fe
 git remote add linux-review https://github.com/0day-ci/linux
 git remote update linux-review
-git checkout e33243ff1dd2cbb3628e4044dd9e00a6abf99c7e
-vim +/log +351 include/linux/bpf_verifier.h
+git checkout cc8571ec751a3a6065838e0b15105f8be0ced6fe
+vim +/tgt_prog +10900 kernel/bpf/verifier.c
 
-06ee7115b0d174 Alexei Starovoitov     2019-04-01  347  
-77d2e05abd4588 Martin KaFai Lau       2018-03-24  348  static inline bool bpf_verifier_log_needed(const struct bpf_verifier_log *log)
-77d2e05abd4588 Martin KaFai Lau       2018-03-24  349  {
-e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15 @350  	return (log && log->level && log->ubuf && !bpf_verifier_log_full(log)) ||
-                                                                ^^^
-If "log" is NULL
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10734  int bpf_check_attach_target(struct bpf_verifier_log *log,
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10735  			    const struct bpf_prog *prog,
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10736  			    const struct bpf_prog *tgt_prog,
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10737  			    u32 btf_id,
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10738  			    struct btf_func_model *fmodel,
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10739  			    long *tgt_addr,
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10740  			    const char **tgt_name,
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10741  			    const struct btf_type **tgt_type)
+38207291604401 Martin KaFai Lau       2019-10-24  10742  {
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10743  	bool prog_extension = prog->type == BPF_PROG_TYPE_EXT;
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10744  	const char prefix[] = "btf_trace_";
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10745  	int ret = 0, subprog = -1, i;
+38207291604401 Martin KaFai Lau       2019-10-24  10746  	const struct btf_type *t;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10747  	bool conservative = true;
+38207291604401 Martin KaFai Lau       2019-10-24  10748  	const char *tname;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10749  	struct btf *btf;
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10750  	long addr = 0;
+38207291604401 Martin KaFai Lau       2019-10-24  10751  
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10752  	if (!btf_id) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10753  		bpf_log(log, "Tracing programs must provide btf_id\n");
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10754  		return -EINVAL;
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10755  	}
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10756  	btf = bpf_prog_get_target_btf(prog);
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10757  	if (!btf) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10758  		bpf_log(log,
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10759  			"FENTRY/FEXIT program can only be attached to another program annotated with BTF\n");
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10760  		return -EINVAL;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10761  	}
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10762  	t = btf_type_by_id(btf, btf_id);
+38207291604401 Martin KaFai Lau       2019-10-24  10763  	if (!t) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10764  		bpf_log(log, "attach_btf_id %u is invalid\n", btf_id);
+38207291604401 Martin KaFai Lau       2019-10-24  10765  		return -EINVAL;
+38207291604401 Martin KaFai Lau       2019-10-24  10766  	}
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10767  	tname = btf_name_by_offset(btf, t->name_off);
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10768  	if (!tname) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10769  		bpf_log(log, "attach_btf_id %u doesn't have a name\n", btf_id);
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10770  		return -EINVAL;
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10771  	}
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14 @10772  	if (tgt_prog) {
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10773  		struct bpf_prog_aux *aux = tgt_prog->aux;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10774  
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10775  		for (i = 0; i < aux->func_info_cnt; i++)
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10776  			if (aux->func_info[i].type_id == btf_id) {
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10777  				subprog = i;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10778  				break;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10779  			}
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10780  		if (subprog == -1) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10781  			bpf_log(log, "Subprog %s doesn't exist\n", tname);
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10782  			return -EINVAL;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10783  		}
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10784  		conservative = aux->func_info_aux[subprog].unreliable;
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10785  		if (prog_extension) {
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10786  			if (conservative) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10787  				bpf_log(log,
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10788  					"Cannot replace static functions\n");
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10789  				return -EINVAL;
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10790  			}
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10791  			if (!prog->jit_requested) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10792  				bpf_log(log,
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10793  					"Extension programs should be JITed\n");
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10794  				return -EINVAL;
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10795  			}
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10796  		}
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10797  		if (!tgt_prog->jited) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10798  			bpf_log(log, "Can attach to only JITed progs\n");
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10799  			return -EINVAL;
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10800  		}
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10801  		if (tgt_prog->type == prog->type) {
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10802  			/* Cannot fentry/fexit another fentry/fexit program.
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10803  			 * Cannot attach program extension to another extension.
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10804  			 * It's ok to attach fentry/fexit to extension program.
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10805  			 */
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10806  			bpf_log(log, "Cannot recursively attach\n");
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10807  			return -EINVAL;
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10808  		}
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10809  		if (tgt_prog->type == BPF_PROG_TYPE_TRACING &&
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10810  		    prog_extension &&
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10811  		    (tgt_prog->expected_attach_type == BPF_TRACE_FENTRY ||
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10812  		     tgt_prog->expected_attach_type == BPF_TRACE_FEXIT)) {
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10813  			/* Program extensions can extend all program types
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10814  			 * except fentry/fexit. The reason is the following.
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10815  			 * The fentry/fexit programs are used for performance
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10816  			 * analysis, stats and can be attached to any program
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10817  			 * type except themselves. When extension program is
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10818  			 * replacing XDP function it is necessary to allow
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10819  			 * performance analysis of all functions. Both original
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10820  			 * XDP program and its program extension. Hence
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10821  			 * attaching fentry/fexit to BPF_PROG_TYPE_EXT is
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10822  			 * allowed. If extending of fentry/fexit was allowed it
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10823  			 * would be possible to create long call chain
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10824  			 * fentry->extension->fentry->extension beyond
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10825  			 * reasonable stack size. Hence extending fentry is not
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10826  			 * allowed.
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10827  			 */
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10828  			bpf_log(log, "Cannot extend fentry/fexit\n");
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10829  			return -EINVAL;
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10830  		}
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10831  	} else {
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10832  		if (prog_extension) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10833  			bpf_log(log, "Cannot replace kernel functions\n");
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10834  			return -EINVAL;
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10835  		}
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10836  	}
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10837  
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10838  	switch (prog->expected_attach_type) {
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10839  	case BPF_TRACE_RAW_TP:
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10840  		if (tgt_prog) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10841  			bpf_log(log,
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10842  				"Only FENTRY/FEXIT progs are attachable to another BPF prog\n");
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10843  			return -EINVAL;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10844  		}
+38207291604401 Martin KaFai Lau       2019-10-24  10845  		if (!btf_type_is_typedef(t)) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10846  			bpf_log(log, "attach_btf_id %u is not a typedef\n",
+38207291604401 Martin KaFai Lau       2019-10-24  10847  				btf_id);
+38207291604401 Martin KaFai Lau       2019-10-24  10848  			return -EINVAL;
+38207291604401 Martin KaFai Lau       2019-10-24  10849  		}
+f1b9509c2fb0ef Alexei Starovoitov     2019-10-30  10850  		if (strncmp(prefix, tname, sizeof(prefix) - 1)) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10851  			bpf_log(log, "attach_btf_id %u points to wrong type name %s\n",
+38207291604401 Martin KaFai Lau       2019-10-24  10852  				btf_id, tname);
+38207291604401 Martin KaFai Lau       2019-10-24  10853  			return -EINVAL;
+38207291604401 Martin KaFai Lau       2019-10-24  10854  		}
+38207291604401 Martin KaFai Lau       2019-10-24  10855  		tname += sizeof(prefix) - 1;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10856  		t = btf_type_by_id(btf, t->type);
+38207291604401 Martin KaFai Lau       2019-10-24  10857  		if (!btf_type_is_ptr(t))
+38207291604401 Martin KaFai Lau       2019-10-24  10858  			/* should never happen in valid vmlinux build */
+38207291604401 Martin KaFai Lau       2019-10-24  10859  			return -EINVAL;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10860  		t = btf_type_by_id(btf, t->type);
+38207291604401 Martin KaFai Lau       2019-10-24  10861  		if (!btf_type_is_func_proto(t))
+38207291604401 Martin KaFai Lau       2019-10-24  10862  			/* should never happen in valid vmlinux build */
+38207291604401 Martin KaFai Lau       2019-10-24  10863  			return -EINVAL;
+38207291604401 Martin KaFai Lau       2019-10-24  10864  
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10865  		break;
+15d83c4d7cef5c Yonghong Song          2020-05-09  10866  	case BPF_TRACE_ITER:
+15d83c4d7cef5c Yonghong Song          2020-05-09  10867  		if (!btf_type_is_func(t)) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10868  			bpf_log(log, "attach_btf_id %u is not a function\n",
+15d83c4d7cef5c Yonghong Song          2020-05-09  10869  				btf_id);
+15d83c4d7cef5c Yonghong Song          2020-05-09  10870  			return -EINVAL;
+15d83c4d7cef5c Yonghong Song          2020-05-09  10871  		}
+15d83c4d7cef5c Yonghong Song          2020-05-09  10872  		t = btf_type_by_id(btf, t->type);
+15d83c4d7cef5c Yonghong Song          2020-05-09  10873  		if (!btf_type_is_func_proto(t))
+15d83c4d7cef5c Yonghong Song          2020-05-09  10874  			return -EINVAL;
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10875  		ret = btf_distill_func_proto(log, btf, t, tname, fmodel);
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10876  		if (ret)
+15d83c4d7cef5c Yonghong Song          2020-05-09  10877  			return ret;
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10878  		break;
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10879  	default:
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10880  		if (!prog_extension)
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10881  			return -EINVAL;
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10882  		/* fallthrough */
+ae24082331d9bb KP Singh               2020-03-04  10883  	case BPF_MODIFY_RETURN:
+9e4e01dfd3254c KP Singh               2020-03-29  10884  	case BPF_LSM_MAC:
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10885  	case BPF_TRACE_FENTRY:
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10886  	case BPF_TRACE_FEXIT:
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10887  		if (!btf_type_is_func(t)) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10888  			bpf_log(log, "attach_btf_id %u is not a function\n",
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10889  				btf_id);
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10890  			return -EINVAL;
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10891  		}
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10892  		if (prog_extension &&
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10893  		    btf_check_type_match(log, prog, btf, t))
+be8704ff07d237 Alexei Starovoitov     2020-01-20  10894  			return -EINVAL;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10895  		t = btf_type_by_id(btf, t->type);
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10896  		if (!btf_type_is_func_proto(t))
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10897  			return -EINVAL;
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10898  
+cc8571ec751a3a Toke Høiland-Jørgensen 2020-07-15  10899  		if ((prog->aux->tgt_prog_type &&
+cc8571ec751a3a Toke Høiland-Jørgensen 2020-07-15 @10900  		     prog->aux->tgt_prog_type != tgt_prog->type) ||
+                                                                                                         ^^^^^^^^^^^^^^
 
-8580ac9404f624 Alexei Starovoitov     2019-10-15 @351  		log->level == BPF_LOG_KERNEL;
-                                                                ^^^^^^^^^^
-then we are toasted.
+cc8571ec751a3a Toke Høiland-Jørgensen 2020-07-15  10901  		    (prog->aux->tgt_attach_type &&
+cc8571ec751a3a Toke Høiland-Jørgensen 2020-07-15  10902  		     prog->aux->tgt_attach_type != tgt_prog->expected_attach_type))
+                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Not checked.
 
-77d2e05abd4588 Martin KaFai Lau       2018-03-24  352  }
-77d2e05abd4588 Martin KaFai Lau       2018-03-24  353  
+cc8571ec751a3a Toke Høiland-Jørgensen 2020-07-15  10903  			return -EINVAL;
+cc8571ec751a3a Toke Høiland-Jørgensen 2020-07-15  10904  
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10905  		if (tgt_prog && conservative)
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10906  			t = NULL;
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10907  
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10908  		ret = btf_distill_func_proto(log, btf, t, tname, fmodel);
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10909  		if (ret < 0)
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10910  			return ret;
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10911  
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10912  		if (tgt_prog) {
+e9eeec58c992c4 Yonghong Song          2019-12-04  10913  			if (subprog == 0)
+e9eeec58c992c4 Yonghong Song          2019-12-04  10914  				addr = (long) tgt_prog->bpf_func;
+e9eeec58c992c4 Yonghong Song          2019-12-04  10915  			else
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10916  				addr = (long) tgt_prog->aux->func[subprog]->bpf_func;
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10917  		} else {
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10918  			addr = kallsyms_lookup_name(tname);
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10919  			if (!addr) {
+e33243ff1dd2cb Toke Høiland-Jørgensen 2020-07-15  10920  				bpf_log(log,
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10921  					"The address of function %s cannot be found\n",
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10922  					tname);
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10923  				return -ENOENT;
+fec56f5890d93f Alexei Starovoitov     2019-11-14  10924  			}
+5b92a28aae4dd0 Alexei Starovoitov     2019-11-14  10925  		}
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10926  		break;
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10927  	}
+18644cec714aab Alexei Starovoitov     2020-05-28  10928  
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10929  	*tgt_addr = addr;
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10930  	if (tgt_name)
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10931  		*tgt_name = tname;
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10932  	if (tgt_type)
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10933  		*tgt_type = t;
+c2d0f6ffe7709e Toke Høiland-Jørgensen 2020-07-15  10934  	return 0;
+18644cec714aab Alexei Starovoitov     2020-05-28  10935  }
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
 https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
---Cf/4ySkkvY6jtT1l
+--1VtFtf1bAEcuptAG
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICOdMD18AAy5jb25maWcAjFxLd9w2st7nV/RxNsnCGUmWdZ1zjxZoEuxGmiRoAOyHNjiK
+H4sICJFnD18AAy5jb25maWcAjFxLd9w2st7nV/RxNsnCGUmWdZ1zjxZoEuxGmiRoAOyHNjiK
 3PbojCzl6jGx//2tAvgAwKKcWWTcqAIIFApVXxUK+vmnnxfs5fnh6/Xz7c313d33xZfj/fHx
 +vn4afH59u74v4tcLmppFjwX5jdgLm/vX77969uHC3txvnj/24ffTt4+3pwvNsfH++PdInu4
 /3z75QX63z7c//TzT5msC7GyWWa3XGkha2v43ly++XJz8/b3xS/58c/b6/vF77+9g2FOz3/1
@@ -817,4 +1013,4 @@ zDl4yxW9sgKz9ZAdO6uNV/blUJOk2mJKYL/hineDlkh0Z12WdD90xbModOKEzvESnd3aPK3z
 tagnpkzm1Z34rOHLdrUMKRFLMF8NEVm3BxNMI8kjUC4mtwb51AbkN91IkABw/t60c3/wx6aX
 IES6VvwfOMdy4bZHAgA=
 
---Cf/4ySkkvY6jtT1l--
+--1VtFtf1bAEcuptAG--
