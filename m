@@ -2,96 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FECA222736
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:38:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90911222739
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:38:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729226AbgGPPiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 11:38:21 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:18162 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729130AbgGPPiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:38:06 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06GFX3k8139370;
-        Thu, 16 Jul 2020 11:38:06 -0400
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 32afv0km8k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jul 2020 11:38:05 -0400
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06GFZMgZ009781;
-        Thu, 16 Jul 2020 15:38:03 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma05fra.de.ibm.com with ESMTP id 327q2y2jkj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jul 2020 15:38:03 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06GFbw9D61407502
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Jul 2020 15:37:58 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EEA2B42047;
-        Thu, 16 Jul 2020 15:37:57 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A4E2042041;
-        Thu, 16 Jul 2020 15:37:57 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 16 Jul 2020 15:37:57 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net 10/10] net/smc: fix restoring of fallback changes
-Date:   Thu, 16 Jul 2020 17:37:46 +0200
-Message-Id: <20200716153746.77303-11-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200716153746.77303-1-kgraul@linux.ibm.com>
-References: <20200716153746.77303-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-16_07:2020-07-16,2020-07-16 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
- clxscore=1015 mlxscore=0 priorityscore=1501 impostorscore=0
- mlxlogscore=846 lowpriorityscore=0 malwarescore=0 suspectscore=1
- adultscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007160114
+        id S1729240AbgGPPiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 11:38:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50014 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729174AbgGPPiq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jul 2020 11:38:46 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DF3A32076A;
+        Thu, 16 Jul 2020 15:38:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594913926;
+        bh=G8Zl9gleHNiBCu55Nq4ydnX8h6+TThG4FtYGk0/Xj8U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=zR+wH+XyGZYssehv5cG3L1nwEl/PJKISzTBnO/FYkqMvB9AgrnkVqacAuCefaVdIN
+         RDbERc5UG8g+AGV5vMsmpaOQ4IDzndQw/z1JsGW/R+3loRuvhSEyiFvWvCGThsYZbc
+         ZPTa/gSkzJZAwyVBUQZoV1jcUUHR+QRL1hI96+t4=
+Date:   Thu, 16 Jul 2020 08:38:44 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Paolo Pisati <paolo.pisati@canonical.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] selftests: net: ip_defrag: modprobe missing
+ nf_defrag_ipv6 support
+Message-ID: <20200716083844.709bad58@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAMsH0TQLKba_6G5CDpY4pDpr_PWVu0yE_c+LKoa+2fm2f4bjBQ@mail.gmail.com>
+References: <20200714124032.49133-1-paolo.pisati@canonical.com>
+        <20200715180144.02b83ed5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAMsH0TQLKba_6G5CDpY4pDpr_PWVu0yE_c+LKoa+2fm2f4bjBQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a listen socket is closed then all non-accepted sockets in its
-accept queue are to be released. Inside __smc_release() the helper
-smc_restore_fallback_changes() restores the changes done to the socket
-without to check if the clcsocket has a file set. This can result in
-a crash. Fix this by checking the file pointer first.
+On Thu, 16 Jul 2020 09:23:12 +0200 Paolo Pisati wrote:
+> On Thu, Jul 16, 2020 at 3:01 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > Any reason you add this command before set -e ?
+> >
+> > It seems we want the script to fail if module can't be loaded.  
+> 
+> Cause if CONFIG_NF_DEFRAG_IPV6=y, the script would unnecessarily fail.
 
-Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
-Fixes: f536dffc0b79 ("net/smc: fix closing of fallback SMC sockets")
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/af_smc.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+I don't think modprobe fails when code is built in.
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index d091509b5982..1163d51196da 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -126,8 +126,10 @@ EXPORT_SYMBOL_GPL(smc_proto6);
- 
- static void smc_restore_fallback_changes(struct smc_sock *smc)
- {
--	smc->clcsock->file->private_data = smc->sk.sk_socket;
--	smc->clcsock->file = NULL;
-+	if (smc->clcsock->file) { /* non-accepted sockets have no file yet */
-+		smc->clcsock->file->private_data = smc->sk.sk_socket;
-+		smc->clcsock->file = NULL;
-+	}
- }
- 
- static int __smc_release(struct smc_sock *smc)
--- 
-2.17.1
-
+$ sudo modprobe pstore
+$ echo $?
+0
+$ grep CONFIG_PSTORE= /boot/config-5.7.8-200.fc32.x86_64
+CONFIG_PSTORE=y
+$ lsmod | grep pstore
+$
