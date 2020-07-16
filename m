@@ -2,147 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11C8A222E19
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 23:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B505222E1A
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 23:42:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726104AbgGPVkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 17:40:24 -0400
-Received: from mga05.intel.com ([192.55.52.43]:5957 "EHLO mga05.intel.com"
+        id S1726189AbgGPVmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 17:42:19 -0400
+Received: from mx3.wp.pl ([212.77.101.9]:22753 "EHLO mx3.wp.pl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726002AbgGPVkX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 17:40:23 -0400
-IronPort-SDR: GaiQBUIirQ0SJOqhEWAM+UCDiKHBFvnZkuDpaxZgAUDJLxNe3ul5PMwnat0l/Z6PBMNO9nCNNn
- vwGMzEM2bgSg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9684"; a="234349687"
-X-IronPort-AV: E=Sophos;i="5.75,360,1589266800"; 
-   d="scan'208";a="234349687"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2020 14:40:22 -0700
-IronPort-SDR: YOcnpLsEce4HoiCqBcGLHH3CpnM2wsji0kCJGI3UyDfzMA1ytrEsbQ8UQ/9d6rGAZAN8KSY6Z6
- TdWzD5G1CewA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,360,1589266800"; 
-   d="scan'208";a="361164988"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.123.234]) ([10.209.123.234])
-  by orsmga001.jf.intel.com with ESMTP; 16 Jul 2020 14:40:22 -0700
-Subject: Re: [PATCH net-next 2/3] ptp: introduce a phase offset in the
- periodic output request
-To:     Vladimir Oltean <olteanv@gmail.com>, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org
-Cc:     richardcochran@gmail.com, yangbo.lu@nxp.com,
-        xiaoliang.yang_1@nxp.com, po.liu@nxp.com,
-        UNGLinuxDriver@microchip.com
-References: <20200716212032.1024188-1-olteanv@gmail.com>
- <20200716212032.1024188-3-olteanv@gmail.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <8e487020-7879-e08b-f1fc-a0ebd368a300@intel.com>
-Date:   Thu, 16 Jul 2020 14:40:22 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726002AbgGPVmT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jul 2020 17:42:19 -0400
+Received: (wp-smtpd smtp.wp.pl 25735 invoked from network); 16 Jul 2020 23:42:15 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1594935735; bh=lREl+mR8j/fmAa9cMi/EQg6a3B93xZKTLaXTrhEChOA=;
+          h=From:To:Cc:Subject;
+          b=yiLitJayDlXSZiGFVrCAmgeXRtusjTtxPRqMkDOKt8n3/3ST37thA/iQtUR85gTfr
+           t52LG5LNhV2ThDSm6/FyN3KIAv7dqxX+AuRm2ZDO7XKX8VlkhZt86XCoLffges+r+3
+           mhjUqTa54A82tlnIOJJs6hNFt+hAd7NsLKoxRqHE=
+Received: from unknown (HELO kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com) (kubakici@wp.pl@[163.114.132.6])
+          (envelope-sender <kubakici@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <jacob.e.keller@intel.com>; 16 Jul 2020 23:42:15 +0200
+Date:   Thu, 16 Jul 2020 14:42:08 -0700
+From:   Jakub Kicinski <kubakici@wp.pl>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tom Herbert <tom@herbertland.com>
+Subject: Re: [RFC PATCH net-next 6/6] ice: implement devlink parameters to
+ control flash update
+Message-ID: <20200716144208.4e602320@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <58840317-e818-af52-352a-19008b89bee7@intel.com>
+References: <20200709212652.2785924-1-jacob.e.keller@intel.com>
+        <20200709212652.2785924-7-jacob.e.keller@intel.com>
+        <20200709171913.5b779cc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <ee8fc0a5-6cea-2689-372c-4e733cc06056@intel.com>
+        <20200710132516.24994a33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <0a12dbf7-58be-b0ad-53d7-61748b081b38@intel.com>
+        <4c6a39f4-5ff2-b889-086a-f7c99990bd4c@intel.com>
+        <20200715162329.4224fa6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <d8f88c91-57fa-9ca4-1838-5f63b6613c59@intel.com>
+        <58840317-e818-af52-352a-19008b89bee7@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200716212032.1024188-3-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-WP-MailID: 2ef46fabbc34132a88281f22736e370c
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000004 [0bey]                               
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 16 Jul 2020 14:29:40 -0700 Jacob Keller wrote:
+> On 7/15/2020 5:21 PM, Jacob Keller wrote:
+> > Ok, that seems reasonable. Ofcourse we'll need to find something generic
+> > enough that it can be re-used and isn't driver specific.
+> 
+> Hi Jakub,
+> 
+> I think I have something that will be more clear and will be sending a
+> new RFC with the change this afternoon:
+> 
+> an extension to the DEVLINK_CMD_FLASH_UPDATE with a new parameter,
+> "overwrite" with these values:
+> 
+> a) "nothing" (or maybe, "firmware-only" or "binary-only"?, need a way to
+> clarify difference between settings/vital data and firmware program
+> binary) will request that we do not overwrite any settings or fields.
+> This is equivalent to the "PRESERVE_ALL" I had in the original proposal,
+> where we will maintain all settings and all vital data, but update the
+> firmware binary.
+> 
+> b) "settings" will request that the firmware overwrite all the settings
+> fields with the contents from the new image. However, vital data such as
+> the PCI Serial ID, VPD section, MAC Addresses, and similar "static" data
+> will be kept (not overwritten). This is the same as the
+> "PRESERVE_LIMITED" option I had in the original proposal
+> 
+> c) "all" or "everything" will request that firmware overwrite all
+> contents of the image. This means all settings and all vital data will
+> be overwritten by the contents in the new image.
 
+Sorry but I'm still not 100% sure of what the use for this option is
+beyond an OEM. Is it possible to reset the VPD, board serial, MAC
+address etc. while flashing a FW image downloaded from a support site?
+Would that mean that if I flash a rack with one FW image all NICs will
+start reporting the same serial numbers and use the same MACs?
 
-On 7/16/2020 2:20 PM, Vladimir Oltean wrote:
-> Some PHCs like the ocelot/felix switch cannot emit generic periodic
-> output, but just PPS (pulse per second) signals, which:
-> - don't start from arbitrary absolute times, but are rather
->   phase-aligned to the beginning of [the closest next] second.
-> - have an optional phase offset relative to that beginning of the
->   second.
-> 
-> For those, it was initially established that they should reject any
-> other absolute time for the PTP_PEROUT_REQUEST than 0.000000000 [1].
-> 
-> But when it actually came to writing an application [2] that makes use
-> of this functionality, we realized that we can't really deal generically
-> with PHCs that support absolute start time, and with PHCs that don't,
-> without an explicit interface. Namely, in an ideal world, PHC drivers
-> would ensure that the "perout.start" value written to hardware will
-> result in a functional output. This means that if the PTP time has
-> become in the past of this PHC's current time, it should be
-> automatically fast-forwarded by the driver into a close enough future
-> time that is known to work (note: this is necessary only if the hardware
-> doesn't do this fast-forward by itself). But we don't really know what
-> is the status for PHC drivers in use today, so in the general sense,
-> user space would be risking to have a non-functional periodic output if
-> it simply asked for a start time of 0.000000000.
-> 
-> So let's introduce a flag for this type of reduced-functionality
-> hardware, named PTP_PEROUT_PHASE. The start time is just "soon", the
-> only thing we know for sure about this signal is that its rising edge
-> events, Rn, occur at:
-> 
-> Rn = period.phase + n * perout.period
-> 
-> The "phase" in the periodic output structure is simply an alias to the
-> "start" time, since both cannot logically be specified at the same time.
-> Therefore, the binary layout of the structure is not affected.
-> 
-> [1]: https://patchwork.ozlabs.org/project/netdev/patch/20200320103726.32559-7-yangbo.lu@nxp.com/
-> [2]: https://www.mail-archive.com/linuxptp-devel@lists.sourceforge.net/msg04142.html
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
->  include/uapi/linux/ptp_clock.h | 19 +++++++++++++++++--
->  1 file changed, 17 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
-> index 1d2841155f7d..1d108d597f66 100644
-> --- a/include/uapi/linux/ptp_clock.h
-> +++ b/include/uapi/linux/ptp_clock.h
-> @@ -55,12 +55,14 @@
->   */
->  #define PTP_PEROUT_ONE_SHOT		(1<<0)
->  #define PTP_PEROUT_DUTY_CYCLE		(1<<1)
-> +#define PTP_PEROUT_PHASE		(1<<2)
->  
->  /*
->   * flag fields valid for the new PTP_PEROUT_REQUEST2 ioctl.
->   */
->  #define PTP_PEROUT_VALID_FLAGS		(PTP_PEROUT_ONE_SHOT | \
-> -					 PTP_PEROUT_DUTY_CYCLE)
-> +					 PTP_PEROUT_DUTY_CYCLE | \
-> +					 PTP_PEROUT_PHASE)
->  
->  /*
->   * No flags are valid for the original PTP_PEROUT_REQUEST ioctl
-> @@ -103,7 +105,20 @@ struct ptp_extts_request {
->  };
->  
->  struct ptp_perout_request {
-> -	struct ptp_clock_time start;  /* Absolute start time. */
-> +	union {
-> +		/*
-> +		 * Absolute start time.
-> +		 * Valid only if (flags & PTP_PEROUT_PHASE) is unset.
-> +		 */
-> +		struct ptp_clock_time start;
-> +		/*
-> +		 * Phase offset. The signal should start toggling at an
-> +		 * unspecified integer multiple of the period, plus this value.
-> +		 * The start time should be "as soon as possible".
-> +		 * Valid only if (flags & PTP_PEROUT_PHASE) is set.
-> +		 */
-> +		struct ptp_clock_time phase;
-> +	};
+> d) if we need it, a "default" that would be the current behavior of
+> doing whatever the driver default is? (since it's not clear to me what
+> other implementations do but perhaps they all behavior as either
+> "nothing" or "all"?
 
-Ok. Since when using the PHASE mode the start time is "meaningless" we
-can re-use it for this purpose without breaking the binary structure.
-Makes sense.
+As a user I'd expect "nothing" to be the default. Same as your OS
+update does not wipe out your settings. I think it's also better 
+if the default is decided by Linux, not the drivers.
 
->  	struct ptp_clock_time period; /* Desired period, zero means disable. */
->  	unsigned int index;           /* Which channel to configure. */
->  	unsigned int flags;
+> I think I agree that "factory" settings doesn't really belong here, and
+> I will try to push for finding an alternative way to allow access to
+> that behavior. If we wanted it we could use "from_factory" to request
+> that we overwrite the settings and  vital data "from" the factory
+> portion, but I think that is pushing the boundary here a bit...
 > 
+> I am aiming to have a new patch up with this proposal
+
+Probably best if we understand the use case more clearly, too. Since
+you have this implemented in your tooling what are the scenarios where
+factory is expected to be preferred over FW default?
