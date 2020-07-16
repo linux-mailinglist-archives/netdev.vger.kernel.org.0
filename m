@@ -2,90 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52895221974
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 03:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C3C22197D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 03:30:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728030AbgGPB3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 21:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
+        id S1728108AbgGPBaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 21:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727948AbgGPB3S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 21:29:18 -0400
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8AFCC061755;
-        Wed, 15 Jul 2020 18:29:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        MIME-Version:Date:Message-ID:To:Subject:From:Sender:Reply-To:Cc:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=CrygVX3V43OAJ4sE1y0sg4RxWnuXxdlG8xSoTRQ5Ri0=; b=BRh4aWqm/wvU7K5bIYiAnGvViw
-        jukuwuqr6gZUDLFhINHUWN1IN5XndGlSgUkl2qRLQd/lW/1jyoqZj25VfJ+w7sZA7AN24OFowzkFy
-        avRRysSv2uLnwTm+kQLPEKmxtTkig3tEzRBa+tv2Qmso/CN/233E9EaH3uhZSwEejQrdiWWQHq1Fl
-        tmetnRBUTguZSJuc1OWDmQhtdHZUYLTF6AqYyl1NKGSyyLrI6IpH3SC47cMoLAuY/hMRdTKvj6lL1
-        y2KyRRPP5MojX+vnlxUA//zM0AAPtO+ew/215fzbjduNnFKuIrxj9OLVVUzUryfZjpykNGN+oMyTp
-        /owMXAnw==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jvsi2-0000Pj-D1; Thu, 16 Jul 2020 01:29:14 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH] bpf: bpf.h: drop duplicated words in comments
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <6b9f71ae-4f8e-0259-2c5d-187ddaefe6eb@infradead.org>
-Date:   Wed, 15 Jul 2020 18:29:11 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        with ESMTP id S1727105AbgGPBaC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 21:30:02 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F9E6C061755
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 18:30:02 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7053C1274BDCC;
+        Wed, 15 Jul 2020 18:29:59 -0700 (PDT)
+Date:   Wed, 15 Jul 2020 18:29:56 -0700 (PDT)
+Message-Id: <20200715.182956.490791427431304861.davem@davemloft.net>
+To:     kuba@kernel.org
+Cc:     tlfalcon@linux.ibm.com, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, drt@linux.ibm.com
+Subject: Re: [PATCH net-next] ibmvnic: Increase driver logging
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200715170632.11f0bf19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <1594857115-22380-1-git-send-email-tlfalcon@linux.ibm.com>
+        <20200715170632.11f0bf19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 15 Jul 2020 18:29:59 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Wed, 15 Jul 2020 17:06:32 -0700
 
-Drop doubled words "will" and "attach".
+> On Wed, 15 Jul 2020 18:51:55 -0500 Thomas Falcon wrote:
+>>  	free_netdev(netdev);
+>>  	dev_set_drvdata(&dev->dev, NULL);
+>> +	netdev_info(netdev, "VNIC client device has been successfully removed.\n");
+> 
+> A step too far, perhaps.
+> 
+> In general this patch looks a little questionable IMHO, this amount of
+> logging output is not commonly seen in drivers. All the the info
+> messages are just static text, not even carrying any extra information.
+> In an era of ftrace, and bpftrace, do we really need this?
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
----
- include/uapi/linux/bpf.h |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
---- linux-next-20200714.orig/include/uapi/linux/bpf.h
-+++ linux-next-20200714/include/uapi/linux/bpf.h
-@@ -2419,7 +2419,7 @@ union bpf_attr {
-  *			Look for an IPv6 socket.
-  *
-  *		If the *netns* is a negative signed 32-bit integer, then the
-- *		socket lookup table in the netns associated with the *ctx* will
-+ *		socket lookup table in the netns associated with the *ctx*
-  *		will be used. For the TC hooks, this is the netns of the device
-  *		in the skb. For socket hooks, this is the netns of the socket.
-  *		If *netns* is any other signed 32-bit value greater than or
-@@ -2456,7 +2456,7 @@ union bpf_attr {
-  *			Look for an IPv6 socket.
-  *
-  *		If the *netns* is a negative signed 32-bit integer, then the
-- *		socket lookup table in the netns associated with the *ctx* will
-+ *		socket lookup table in the netns associated with the *ctx*
-  *		will be used. For the TC hooks, this is the netns of the device
-  *		in the skb. For socket hooks, this is the netns of the socket.
-  *		If *netns* is any other signed 32-bit value greater than or
-@@ -3986,7 +3986,7 @@ struct bpf_link_info {
- 
- /* User bpf_sock_addr struct to access socket fields and sockaddr struct passed
-  * by user and intended to be used by socket (e.g. to bind to, depends on
-- * attach attach type).
-+ * attach type).
-  */
- struct bpf_sock_addr {
- 	__u32 user_family;	/* Allows 4-byte read, but no write. */
-
-
+Agreed, this is too much.  This is debugging, and thus suitable for tracing
+facilities, at best.
