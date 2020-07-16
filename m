@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8397122278B
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE4B0222755
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:39:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729547AbgGPPkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 11:40:15 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:46425 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729329AbgGPPjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:39:10 -0400
-Received: by mail-ot1-f68.google.com with SMTP id n24so4515631otr.13;
-        Thu, 16 Jul 2020 08:39:10 -0700 (PDT)
+        id S1729388AbgGPPjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 11:39:17 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:39637 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729354AbgGPPjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:39:14 -0400
+Received: by mail-ot1-f65.google.com with SMTP id 18so4534548otv.6;
+        Thu, 16 Jul 2020 08:39:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4gq7GSJniVhk8mm4mZz3V7JCAZZ3pZpPkZrxw8za4mc=;
-        b=NZzBcnUC2a7Qq6ZQDGTOGbXD95yf/rvUCYCqqo6EvZa53Xrh27YM91SCTkgxfjZpOX
-         V9oO6AXIvUEuY82q/AcGDRKcG7GVqJLO/Y5Bjp6JlmK1eSwP15wQDVvwtyn6uaHWZOLN
-         rdElXeD7rh8DFDMuDf3yhIpCKZPgBRn5gjS/z90URHfyQm4YrYVS+0wlA/XsrbTlGVes
-         kSJsdtPEMX0qubNpfUcS1JE0d86EpeyOFo1bBKveQpKvSRVoQrii6p43PRsFBtVWfuyA
-         kc2Nq+s7H2bpDDIR7APWXnXzEh9DbZE34rzikiOwdZiLYyhGl0I4g31vhjUmyhYaVSnH
-         S2vQ==
-X-Gm-Message-State: AOAM530X3j5rABiZGBQqS+ek0M7ZJg9zaH4Dd7VGlv+UVKljUvKGJwFQ
-        9Rpl1jeBfN8zICGWA3EFKXEbeeHrvZoFEhrP/xI=
-X-Google-Smtp-Source: ABdhPJzjcaNBJZkFuzlxl1kgGoNgVPmT0sGhCGl7NN8SpKXFUUYP81EmP822HK0iYVLU0ZlFzTKnLFvhsjQGBidhSag=
-X-Received: by 2002:a9d:2646:: with SMTP id a64mr4730882otb.107.1594913949510;
- Thu, 16 Jul 2020 08:39:09 -0700 (PDT)
+        bh=QUEyDKlDZNvRoiU1fFM07SvFHaZIbC8OgvI/9CGbWN4=;
+        b=OgKBM4FLsld0wj/83VYVcyHx1Xna13S3NY76Jg7gTq+OthhJWGcdQjnxyIKZOJDMFO
+         0i16PFFVN7pQpR4SC51djDOEpK3LRk90Hylwtxhmms/G6YdeNfbUFEFuhFoZQ1z3OxT9
+         WX7FUh54jJkBoDMQrteiQDuWAqtU1uOI+ew34TA9OZSZPYmJaNQYhJFnygHdjiBOX4zw
+         oExa/LjCpZ6CeQQ4C6vk9IEqQP/2qoyO/KcVRnkDybsAvfJBZQQPtqPkDixgqErJCXbt
+         YS1z+LaF2dv0Wv6ArCYCMbJBISXo6xfN2SqtHDNVoz5utuUspa8NAbXBqt0ww3Gz4CK8
+         A8TQ==
+X-Gm-Message-State: AOAM531uzML0+SIVbGb8ekjOKds5oHOIToZ8tClZCxOLCeVyLuAbmjRy
+        f4Mdg6N7gJ9nQbtdrHgEErZO7XiO/tha1YuCJms=
+X-Google-Smtp-Source: ABdhPJxO13GvpQ5DwTMOvoE8Qpm+751RgACNt3acgLGDelMbxf0nO5oqfl8C3y4iF9T2pIScvbkcfebiQYM3NK52iIw=
+X-Received: by 2002:a9d:1b0d:: with SMTP id l13mr4903038otl.145.1594913952905;
+ Thu, 16 Jul 2020 08:39:12 -0700 (PDT)
 MIME-Version: 1.0
 References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594811350-14066-10-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594811350-14066-10-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-11-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594811350-14066-11-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 16 Jul 2020 17:38:58 +0200
-Message-ID: <CAMuHMdXuo_yjb+SsvLYQHKVkHcPPVmu+3Whtj0XNiWaLZ+QMng@mail.gmail.com>
-Subject: Re: [PATCH 09/20] arm64: dts: renesas: r8a774e1: Add SCIF and HSCIF nodes
+Date:   Thu, 16 Jul 2020 17:39:01 +0200
+Message-ID: <CAMuHMdVcraSYGg29XkEPM52UuKq5be34CsKyFzSLQfCAYQOaKg@mail.gmail.com>
+Subject: Re: [PATCH 10/20] arm64: dts: renesas: r8a774e1: Add SDHI nodes
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -72,8 +72,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Jul 15, 2020 at 1:10 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add the device nodes for RZ/G2H SCIF and HSCIF serial ports,
-> including clocks, power domains and DMAs.
+> Add SDHI[0-2] device nodes to R8A774E1 SoC.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
