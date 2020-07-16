@@ -2,58 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C3C22197D
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 03:30:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CE35221981
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 03:30:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728108AbgGPBaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 21:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727105AbgGPBaC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 21:30:02 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F9E6C061755
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 18:30:02 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7053C1274BDCC;
-        Wed, 15 Jul 2020 18:29:59 -0700 (PDT)
-Date:   Wed, 15 Jul 2020 18:29:56 -0700 (PDT)
-Message-Id: <20200715.182956.490791427431304861.davem@davemloft.net>
-To:     kuba@kernel.org
-Cc:     tlfalcon@linux.ibm.com, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, drt@linux.ibm.com
-Subject: Re: [PATCH net-next] ibmvnic: Increase driver logging
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200715170632.11f0bf19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <1594857115-22380-1-git-send-email-tlfalcon@linux.ibm.com>
-        <20200715170632.11f0bf19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727940AbgGPBad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 21:30:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47428 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726785AbgGPBad (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 21:30:33 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B393820775;
+        Thu, 16 Jul 2020 01:30:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594863033;
+        bh=w+5YDpmBV5hsDA41hu/bxWekpuOh9C51n3tOoSOHeAQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Dl9vftBLxwkwkeMdyy2KGb0sqw6oRViawwqSAfR0Tlxnd8piIkXLzJN7yOG29IIs0
+         uoNQVHetCxkhkOdxzw57RdSs+kDRsTBk4esMxVi37WoQuSYpOYZ9TVE1F84DBm99vC
+         dIkwlpUDvfKGwgkMTF4JxlzDA/tqwf/KAagVWmAQ=
+Date:   Wed, 15 Jul 2020 18:30:31 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     George Kennedy <george.kennedy@oracle.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        dan.carpenter@oracle.com, dhaval.giani@oracle.com
+Subject: Re: [PATCH v2 1/1] ax88172a: fix ax88172a_unbind() failures
+Message-ID: <20200715183031.78c184ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1594821571-17833-1-git-send-email-george.kennedy@oracle.com>
+References: <1594821571-17833-1-git-send-email-george.kennedy@oracle.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 15 Jul 2020 18:29:59 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Wed, 15 Jul 2020 17:06:32 -0700
-
-> On Wed, 15 Jul 2020 18:51:55 -0500 Thomas Falcon wrote:
->>  	free_netdev(netdev);
->>  	dev_set_drvdata(&dev->dev, NULL);
->> +	netdev_info(netdev, "VNIC client device has been successfully removed.\n");
+On Wed, 15 Jul 2020 09:59:31 -0400 George Kennedy wrote:
+> If ax88172a_unbind() fails, make sure that the return code is
+> less than zero so that cleanup is done properly and avoid UAF.
 > 
-> A step too far, perhaps.
-> 
-> In general this patch looks a little questionable IMHO, this amount of
-> logging output is not commonly seen in drivers. All the the info
-> messages are just static text, not even carrying any extra information.
-> In an era of ftrace, and bpftrace, do we really need this?
+> Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+> Reported-by: syzbot+4cd84f527bf4a10fc9c1@syzkaller.appspotmail.com
 
-Agreed, this is too much.  This is debugging, and thus suitable for tracing
-facilities, at best.
+Fixes: a9a51bd727d1 ("ax88172a: fix information leak on short answers")
+
+Applied, thanks!
