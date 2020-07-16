@@ -2,197 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F9AE222258
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 14:28:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ACD422225D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 14:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728404AbgGPM1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 08:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56914 "EHLO
+        id S1728447AbgGPMcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 08:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727081AbgGPM1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 08:27:21 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B86C061755
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 05:27:21 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id q5so6854864wru.6
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 05:27:21 -0700 (PDT)
+        with ESMTP id S1727844AbgGPMcu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 08:32:50 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE3DC061755
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 05:32:49 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id r19so6866552ljn.12
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 05:32:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=E5mKoH+WtXzfWR5Xhxnh1G5NKbjF/Rhn/M2OwOM4u6g=;
-        b=qYuEXloj8mv7XsWkclCibA/LjsaBR0V8oZlBX31f3dBDrJIAxD7mOu25QTdstjsGG/
-         GWzo6dqAXeJndHYsEj/7Ln/MxGK0PTVlplCgcsO3wLFkk0qi+HHCryNsopELX3cwepIo
-         ocLA96wA8IWG1OxejGiin2gUVkYiixwEzl8GqXR6/QiAXQrva4Nr4QI+2HCulNPcDE7w
-         E9L8Zm2oSxIdGhHC+E84WSd1Ixt8GtXsdDoMxGqJY7YDhL0xeLw5EE1AFD17rd2UMIhU
-         f0bjKouNg2c0L26EptPlBvbB/6a03YgBEXsthWgsW2CqdHd2MOlj4UkBJuD6Z/SEZgi9
-         mtfw==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=21RA+e4Ong/tEdD67nzo1deHFqPTX09b755P7erQrVw=;
+        b=q5JqW/m2Mm0DQZPnCTMK4hceDumfvX36K/sUPOlIJ3Ztu0krN7gT98EVc9kWyZFlgi
+         WcRA30uFbFfvJ4keeMcS54Qf7G6rHBEO000FyaVf+9QGPcu+Q6GmsLDHTY3rRVQtqpem
+         6NcCwGBjVNgV1I48rk4K+7z5oQRxWXTZU/Swo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=E5mKoH+WtXzfWR5Xhxnh1G5NKbjF/Rhn/M2OwOM4u6g=;
-        b=MXOiccEhOh+pY5ElRLSGrgMc3e2vtEgGck/KIt4T4hJNKKWE2KKrszPsz9m8eq0xI0
-         QS5X9qOhszhOvbOk4lwdsctm6ZzofVRqYEEHsxURv1Alp6DGWBy99QCgtqGnkuscSIDP
-         N170G3GmHXMQB7t/sJR0qw+7E6WvMApygg9BanniBZaZjlB3HSIamt3XYEwWKoL87O+I
-         GQhDl475uSfEOlQ3H1gHYS/wjyKmo5f9xvvnuRQDhnlwNArPHh5XJWLCbCFZyirsuoBe
-         oPIF4V3hF7O0rOklrBaK1TcOnTKDnELjfpUNsdETpyDvUeuN4u9aN1O62iH29ScxRTt3
-         IGEg==
-X-Gm-Message-State: AOAM531zDP59+k5QFEHqlILs394cg7JNgUrgDX5IXkSYqGvIam/omyNv
-        hFhPv2Ox89eaJJQuOJG5xT/i8Q==
-X-Google-Smtp-Source: ABdhPJw6efLULXoG3ylWTlvPqXpdDukClcbMGUEaZTtCIIIwEuuysXdRpfsguLnHCxfPsIJQ567kUg==
-X-Received: by 2002:a5d:42c8:: with SMTP id t8mr4668419wrr.23.1594902439823;
-        Thu, 16 Jul 2020 05:27:19 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id 51sm9116238wrc.44.2020.07.16.05.27.19
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=21RA+e4Ong/tEdD67nzo1deHFqPTX09b755P7erQrVw=;
+        b=JEJl/LKoJrAI/ZuZGKDi4s0ndjyH07SWoaIY7RmHBFq+gjlYxeKB8BKCC/dQWJVwyr
+         Mcwk7AbLlTnZ5v0vxV3j3ZY8nsmKVEJpDuOvJJhkSAKiZfxvDh9ouC4c2OEsBw4bp3gv
+         MjEBonS26Pu3hjcr0qca7hSMFu4twyL/FmrU4zI+mlXunNd2RB9WhNCunhS8vphjfKat
+         P9ukRs4Y499CUWbKq4sX9Z9GpQ9EYAPl2Er+4VGOZ01dH9oN23WR9ocUtElcYSz/8jrL
+         YqUAycihgUnkPNqG3dmCQoa1dugKT3WhXdb36c8w47d4raUNJs+AYdo0DCIdeW0NCBqh
+         td7g==
+X-Gm-Message-State: AOAM531sr5ewIDjnGdsWaidUmbJ7SUr4eYQ7J1n+KPwcc3B446RD0+FY
+        c1cDsziJtV5JyIPP43yrRIwNMA==
+X-Google-Smtp-Source: ABdhPJwQVq+YukWG7I51hGixTG2HbtBNWskpJWU/vmOkgH8wJskFdoy3gEPPbm8BLGClETOJ/bWeFQ==
+X-Received: by 2002:a2e:9f4d:: with SMTP id v13mr1872162ljk.122.1594902767506;
+        Thu, 16 Jul 2020 05:32:47 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id i10sm1017855ljg.80.2020.07.16.05.32.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2020 05:27:19 -0700 (PDT)
-Date:   Thu, 16 Jul 2020 14:27:18 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH iproute2-next 1/2] tc: Look for blocks in qevents
-Message-ID: <20200716122718.GA23663@nanopsycho.orion>
-References: <cover.1594896187.git.petrm@mellanox.com>
- <bcc2005258f2453a788af112eb574d40c58890ab.1594896187.git.petrm@mellanox.com>
+        Thu, 16 Jul 2020 05:32:46 -0700 (PDT)
+References: <20200713174654.642628-1-jakub@cloudflare.com> <20200713174654.642628-5-jakub@cloudflare.com> <CAEf4BzY0Gc_FH=KUWY3xz6qG8yk+0U0mjXcAx7+39tWt_kQnGQ@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>
+Subject: Re: [PATCH bpf-next v4 04/16] inet: Run SK_LOOKUP BPF program on socket lookup
+In-reply-to: <CAEf4BzY0Gc_FH=KUWY3xz6qG8yk+0U0mjXcAx7+39tWt_kQnGQ@mail.gmail.com>
+Date:   Thu, 16 Jul 2020 14:32:45 +0200
+Message-ID: <875zany70y.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bcc2005258f2453a788af112eb574d40c58890ab.1594896187.git.petrm@mellanox.com>
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 16, 2020 at 12:47:59PM CEST, petrm@mellanox.com wrote:
->When a list of filters at a given block is requested, tc first validates
->that the block exists before doing the filter query. Currently the
->validation routine checks ingress and egress blocks. But now that blocks
->can be bound to qevents as well, qevent blocks should be looked for as
->well.
+On Thu, Jul 16, 2020 at 04:23 AM CEST, Andrii Nakryiko wrote:
+> On Mon, Jul 13, 2020 at 10:47 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> Run a BPF program before looking up a listening socket on the receive path.
+>> Program selects a listening socket to yield as result of socket lookup by
+>> calling bpf_sk_assign() helper and returning SK_PASS code. Program can
+>> revert its decision by assigning a NULL socket with bpf_sk_assign().
+>>
+>> Alternatively, BPF program can also fail the lookup by returning with
+>> SK_DROP, or let the lookup continue as usual with SK_PASS on return, when
+>> no socket has not been selected with bpf_sk_assign(). Other return values
 >
->In order to support that, extend struct qdisc_util with a new callback,
->has_block. That should report whether, give the attributes in TCA_OPTIONS,
->a blocks with a given number is bound to a qevent. In
->tc_qdisc_block_exists_cb(), invoke that callback when set.
+> you probably meant "no socket has been selected"?
+
+Yes, a typo. Will fix.
+
 >
->Add a helper to the tc_qevent module that walks the list of qevents and
->looks for a given block. This is meant to be used by the individual qdiscs.
+>> are treated the same as SK_DROP.
 >
->Signed-off-by: Petr Machata <petrm@mellanox.com>
->---
-> tc/tc_qdisc.c  | 10 ++++++++++
-> tc/tc_qevent.c | 15 +++++++++++++++
-> tc/tc_qevent.h |  2 ++
-> tc/tc_util.h   |  2 ++
-> 4 files changed, 29 insertions(+)
 >
->diff --git a/tc/tc_qdisc.c b/tc/tc_qdisc.c
->index 8eb08c34..bea8d3c0 100644
->--- a/tc/tc_qdisc.c
->+++ b/tc/tc_qdisc.c
->@@ -477,7 +477,9 @@ static int tc_qdisc_block_exists_cb(struct nlmsghdr *n, void *arg)
-> 	struct tc_qdisc_block_exists_ctx *ctx = arg;
-> 	struct tcmsg *t = NLMSG_DATA(n);
-> 	struct rtattr *tb[TCA_MAX+1];
->+	struct qdisc_util *q = NULL;
+> Why not enforce it instead? Check check_return_code() in verifier.c,
+> it's trivial to do it for SK_LOOKUP.
 
-Pointless initialization.
+That's a game changer D-: Thank you. This will simplify the prog
+runners.
 
-
-> 	int len = n->nlmsg_len;
->+	const char *kind;
-> 
-> 	if (n->nlmsg_type != RTM_NEWQDISC)
-> 		return 0;
->@@ -506,6 +508,14 @@ static int tc_qdisc_block_exists_cb(struct nlmsghdr *n, void *arg)
-> 		if (block == ctx->block_index)
-> 			ctx->found = true;
-> 	}
->+
->+	kind = rta_getattr_str(tb[TCA_KIND]);
->+	q = get_qdisc_kind(kind);
->+	if (!q)
->+		return -1;
->+	if (q->has_block)
->+		q->has_block(q, tb[TCA_OPTIONS], ctx->block_index, &ctx->found);
-
-Op returns int yet you don't use it. Perhaps it can directly return
-bool?
-
-
->+
-> 	return 0;
-> }
-> 
->diff --git a/tc/tc_qevent.c b/tc/tc_qevent.c
->index 1f8e6506..2c010fcf 100644
->--- a/tc/tc_qevent.c
->+++ b/tc/tc_qevent.c
->@@ -92,6 +92,21 @@ void qevents_print(struct qevent_util *qevents, FILE *f)
-> 		close_json_array(PRINT_ANY, "");
-> }
-> 
->+bool qevents_have_block(struct qevent_util *qevents, __u32 block_idx)
->+{
->+	if (!qevents)
->+		return false;
->+
->+	for (; qevents->id; qevents++) {
->+		struct qevent_base *qeb = qevents->data;
->+
->+		if (qeb->block_idx == block_idx)
->+			return true;
->+	}
->+
->+	return false;
->+}
->+
-> int qevents_dump(struct qevent_util *qevents, struct nlmsghdr *n)
-> {
-> 	int err;
->diff --git a/tc/tc_qevent.h b/tc/tc_qevent.h
->index 574e7cff..d60c3f75 100644
->--- a/tc/tc_qevent.h
->+++ b/tc/tc_qevent.h
->@@ -2,6 +2,7 @@
-> #ifndef _TC_QEVENT_H_
-> #define _TC_QEVENT_H_
-> 
->+#include <stdbool.h>
-> #include <linux/types.h>
-> #include <libnetlink.h>
-> 
->@@ -37,6 +38,7 @@ int qevent_parse(struct qevent_util *qevents, int *p_argc, char ***p_argv);
-> int qevents_read(struct qevent_util *qevents, struct rtattr **tb);
-> int qevents_dump(struct qevent_util *qevents, struct nlmsghdr *n);
-> void qevents_print(struct qevent_util *qevents, FILE *f);
->+bool qevents_have_block(struct qevent_util *qevents, __u32 block_idx);
-> 
-> struct qevent_plain {
-> 	struct qevent_base base;
->diff --git a/tc/tc_util.h b/tc/tc_util.h
->index edc39138..c8af4e95 100644
->--- a/tc/tc_util.h
->+++ b/tc/tc_util.h
->@@ -5,6 +5,7 @@
-> #define MAX_MSG 16384
-> #include <limits.h>
-> #include <linux/if.h>
->+#include <stdbool.h>
-> 
-> #include <linux/pkt_sched.h>
-> #include <linux/pkt_cls.h>
->@@ -40,6 +41,7 @@ struct qdisc_util {
-> 	int (*parse_copt)(struct qdisc_util *qu, int argc,
-> 			  char **argv, struct nlmsghdr *n, const char *dev);
-> 	int (*print_copt)(struct qdisc_util *qu, FILE *f, struct rtattr *opt);
->+	int (*has_block)(struct qdisc_util *qu, struct rtattr *opt, __u32 block_idx, bool *p_has);
-> };
-> 
-> extern __u16 f_proto;
->-- 
->2.20.1
 >
+>
+>>
+>> This lets the user match packets with listening sockets freely at the last
+>> possible point on the receive path, where we know that packets are destined
+>> for local delivery after undergoing policing, filtering, and routing.
+>>
+>> With BPF code selecting the socket, directing packets destined to an IP
+>> range or to a port range to a single socket becomes possible.
+>>
+>> In case multiple programs are attached, they are run in series in the order
+>> in which they were attached. The end result is determined from return codes
+>> of all the programs according to following rules:
+>>
+>>  1. If any program returned SK_PASS and selected a valid socket, the socket
+>>     is used as result of socket lookup.
+>>  2. If more than one program returned SK_PASS and selected a socket,
+>>     last selection takes effect.
+>>  3. If any program returned SK_DROP or an invalid return code, and no
+>>     program returned SK_PASS and selected a socket, socket lookup fails
+>>     with -ECONNREFUSED.
+>>  4. If all programs returned SK_PASS and none of them selected a socket,
+>>     socket lookup continues to htable-based lookup.
+>>
+>> Suggested-by: Marek Majkowski <marek@cloudflare.com>
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>>
+>> Notes:
+>>     v4:
+>>     - Reduce BPF sk_lookup prog return codes to SK_PASS/SK_DROP. (Lorenz)
+>
+> your description above still assumes prog can return something besides
+> SK_PASS and SK_DROP?
+
+I should have written 'reduce allowed prog return codes'.
+
+>
+>>     - Default to drop & warn on illegal return value from BPF prog. (Lorenz)
+>>     - Rename netns_bpf_attach_type_enable/disable to _need/unneed. (Lorenz)
+>>     - Export bpf_sk_lookup_enabled symbol for CONFIG_IPV6=m (kernel test robot)
+>>     - Invert return value from bpf_sk_lookup_run_v4 to true on skip reuseport.
+>>     - Move dedicated prog_array runner close to its callers in filter.h.
+>>
+>>     v3:
+>>     - Use a static_key to minimize the hook overhead when not used. (Alexei)
+>>     - Adapt for running an array of attached programs. (Alexei)
+>>     - Adapt for optionally skipping reuseport selection. (Martin)
+>>
+>>  include/linux/filter.h     | 102 +++++++++++++++++++++++++++++++++++++
+>>  kernel/bpf/net_namespace.c |  32 +++++++++++-
+>>  net/core/filter.c          |   3 ++
+>>  net/ipv4/inet_hashtables.c |  31 +++++++++++
+>>  4 files changed, 167 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/linux/filter.h b/include/linux/filter.h
+>> index 380746f47fa1..b9ad0fdabca5 100644
+>> --- a/include/linux/filter.h
+>> +++ b/include/linux/filter.h
+>> @@ -1295,4 +1295,106 @@ struct bpf_sk_lookup_kern {
+>>         bool            no_reuseport;
+>>  };
+>>
+>> +extern struct static_key_false bpf_sk_lookup_enabled;
+>> +
+>> +/* Runners for BPF_SK_LOOKUP programs to invoke on socket lookup.
+>> + *
+>> + * Allowed return values for a BPF SK_LOOKUP program are SK_PASS and
+>> + * SK_DROP. Any other return value is treated as SK_DROP. Their
+>> + * meaning is as follows:
+>> + *
+>> + *  SK_PASS && ctx.selected_sk != NULL: use selected_sk as lookup result
+>> + *  SK_PASS && ctx.selected_sk == NULL: continue to htable-based socket lookup
+>> + *  SK_DROP                           : terminate lookup with -ECONNREFUSED
+>> + *
+>> + * This macro aggregates return values and selected sockets from
+>> + * multiple BPF programs according to following rules:
+>> + *
+>> + *  1. If any program returned SK_PASS and a non-NULL ctx.selected_sk,
+>> + *     macro result is SK_PASS and last ctx.selected_sk is used.
+>> + *  2. If any program returned non-SK_PASS return value,
+>> + *     macro result is the last non-SK_PASS return value.
+>> + *  3. Otherwise result is SK_PASS and ctx.selected_sk is NULL.
+>> + *
+>> + * Caller must ensure that the prog array is non-NULL, and that the
+>> + * array as well as the programs it contains remain valid.
+>> + */
+>> +#define BPF_PROG_SK_LOOKUP_RUN_ARRAY(array, ctx, func)                 \
+>> +       ({                                                              \
+>> +               struct bpf_sk_lookup_kern *_ctx = &(ctx);               \
+>> +               struct bpf_prog_array_item *_item;                      \
+>> +               struct sock *_selected_sk;                              \
+>> +               struct bpf_prog *_prog;                                 \
+>> +               u32 _ret, _last_ret;                                    \
+>> +               bool _no_reuseport;                                     \
+>> +                                                                       \
+>> +               migrate_disable();                                      \
+>> +               _last_ret = SK_PASS;                                    \
+>> +               _selected_sk = NULL;                                    \
+>> +               _no_reuseport = false;                                  \
+>
+> these three could be moved before migrate_disable(), or even better
+> just initialize corresponding variables above?
+
+I was torn between keeping all info needed to read through the loop
+close to it and keeping the critical section tight. I can move it up.
+
+>
+>
+>> +               _item = &(array)->items[0];                             \
+>> +               while ((_prog = READ_ONCE(_item->prog))) {              \
+>> +                       /* restore most recent selection */             \
+>> +                       _ctx->selected_sk = _selected_sk;               \
+>> +                       _ctx->no_reuseport = _no_reuseport;             \
+>> +                                                                       \
+>> +                       _ret = func(_prog, _ctx);                       \
+>> +                       if (_ret == SK_PASS) {                          \
+>> +                               /* remember last non-NULL socket */     \
+>> +                               if (_ctx->selected_sk) {                \
+>> +                                       _selected_sk = _ctx->selected_sk;       \
+>> +                                       _no_reuseport = _ctx->no_reuseport;     \
+>> +                               }                                       \
+>> +                       } else {                                        \
+>> +                               /* remember last non-PASS ret code */   \
+>> +                               _last_ret = _ret;                       \
+>> +                       }                                               \
+>> +                       _item++;                                        \
+>> +               }                                                       \
+>> +               _ctx->selected_sk = _selected_sk;                       \
+>> +               _ctx->no_reuseport = _no_reuseport;                     \
+>> +               migrate_enable();                                       \
+>> +               _ctx->selected_sk ? SK_PASS : _last_ret;                \
+>> +        })
+>> +
+>
+> [...]
