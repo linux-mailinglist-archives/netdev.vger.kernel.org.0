@@ -2,64 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90911222739
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:38:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8956022273F
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:39:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729240AbgGPPiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 11:38:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50014 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729174AbgGPPiq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 11:38:46 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DF3A32076A;
-        Thu, 16 Jul 2020 15:38:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594913926;
-        bh=G8Zl9gleHNiBCu55Nq4ydnX8h6+TThG4FtYGk0/Xj8U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=zR+wH+XyGZYssehv5cG3L1nwEl/PJKISzTBnO/FYkqMvB9AgrnkVqacAuCefaVdIN
-         RDbERc5UG8g+AGV5vMsmpaOQ4IDzndQw/z1JsGW/R+3loRuvhSEyiFvWvCGThsYZbc
-         ZPTa/gSkzJZAwyVBUQZoV1jcUUHR+QRL1hI96+t4=
-Date:   Thu, 16 Jul 2020 08:38:44 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paolo Pisati <paolo.pisati@canonical.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] selftests: net: ip_defrag: modprobe missing
- nf_defrag_ipv6 support
-Message-ID: <20200716083844.709bad58@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAMsH0TQLKba_6G5CDpY4pDpr_PWVu0yE_c+LKoa+2fm2f4bjBQ@mail.gmail.com>
-References: <20200714124032.49133-1-paolo.pisati@canonical.com>
-        <20200715180144.02b83ed5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAMsH0TQLKba_6G5CDpY4pDpr_PWVu0yE_c+LKoa+2fm2f4bjBQ@mail.gmail.com>
+        id S1729261AbgGPPi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 11:38:57 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:45742 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728967AbgGPPi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:38:56 -0400
+Received: by mail-ot1-f65.google.com with SMTP id h1so4524111otq.12;
+        Thu, 16 Jul 2020 08:38:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U90hHEc54jdrWNma8Ae66aUnovbTk060PhIZQuQR+QY=;
+        b=Byt9bKj4gM5ybZPk/tMcE2C+FKnbynrlDnBkbpp8R1bgpyMEkhAptqZutYQ2IrV1oX
+         V1NwkwizhYquGkzMpAv1dgDr4pguOftRFEU1V2QAs6QeZFpwk+bSgQUgEZaLUeiQ0axc
+         zSnBxbwct4Dr6c2lA9K7fN6Xe2kRCbPzrNCJioVEixDMPvB0N3zfBoW5hk5zEJMpXglY
+         J3rZQX+e0KO3MuMxHr5Tpi16xyrGlpxIXH7fLQDQux01lZzPfUt7FezhWnY+2e3TaIT9
+         H9YN8X0iMCr9T6t66f2F83c31V6djPGtkpJq377twI+uxy0LT0uC2DlbmGQsLLU1tzwL
+         o/mQ==
+X-Gm-Message-State: AOAM533lbWJfcbW8dyfxqWJRCwbclNkPqkaXs5wUvyc9OEVSiBoQLXpQ
+        nLfH0g2C3ZOK/d0df2h1V+pJRntyddOx5q6SiqQ=
+X-Google-Smtp-Source: ABdhPJwZ5OQQ9EGRyQ3xUMXe0z77A9hIeMmqlCkxDKaqcv1Z/fgnXN/N+/X37FauDrLUuxCrtlxdJJObhqTJMAWoTSQ=
+X-Received: by 2002:a05:6830:1451:: with SMTP id w17mr5037827otp.250.1594913935397;
+ Thu, 16 Jul 2020 08:38:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594811350-14066-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 16 Jul 2020 17:38:44 +0200
+Message-ID: <CAMuHMdWH2y6p3J4S3qeZNFN6v=_Rnz_zg0etG7DzcQ+NhS9RHA@mail.gmail.com>
+Subject: Re: [PATCH 01/20] arm64: dts: renesas: r8a774e1: Add operating points
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Niklas <niklas.soderlund@ragnatech.se>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, linux-can@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Jul 2020 09:23:12 +0200 Paolo Pisati wrote:
-> On Thu, Jul 16, 2020 at 3:01 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > Any reason you add this command before set -e ?
-> >
-> > It seems we want the script to fail if module can't be loaded.  
-> 
-> Cause if CONFIG_NF_DEFRAG_IPV6=y, the script would unnecessarily fail.
+Hi Prabhakar,
 
-I don't think modprobe fails when code is built in.
+On Wed, Jul 15, 2020 at 1:09 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+>
+> The RZ/G2H (r8a774e1) comes with two clusters of processors, similarly to
+> the r8a774a1. The first cluster is made of A57s, the second cluster is made
+> of A53s.
+>
+> The operating points for the cluster with the A57s are:
+>
+> Frequency | Voltage
+> ----------|---------
+> 500 MHz   | 0.82V
+> 1.0 GHz   | 0.82V
+> 1.5 GHz   | 0.82V
+>
+> The operating points for the cluster with the A53s are:
+>
+> Frequency | Voltage
+> ----------|---------
+> 800 MHz   | 0.82V
+> 1.0 GHz   | 0.82V
+> 1.2 GHz   | 0.82V
 
-$ sudo modprobe pstore
-$ echo $?
-0
-$ grep CONFIG_PSTORE= /boot/config-5.7.8-200.fc32.x86_64
-CONFIG_PSTORE=y
-$ lsmod | grep pstore
-$
+I trust you on the actual values...
+
+>
+> This patch adds the definitions for the operating points to the SoC
+> specific DT.
+>
+> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v5.9.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
