@@ -2,72 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5B42220EC
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 12:50:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C231C2220F1
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 12:52:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727946AbgGPKuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 06:50:14 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:41499 "EHLO
+        id S1726894AbgGPKwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 06:52:39 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:27505 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726898AbgGPKuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 06:50:12 -0400
+        by vger.kernel.org with ESMTP id S1726350AbgGPKwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 06:52:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594896611;
+        s=mimecast20190719; t=1594896757;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=b1gMoXuEBwCohMO/2xIeqx9uuqCaWy4LMCiJ13+Zc+8=;
-        b=En3j60pUOqqf/m2Y7sU6w2irpnZGJohxzf/bi6+b68ejMFiURp/sDBumSKTn+qBBFcw9UL
-        g0aMsm3wOSaQzlaxWwJiDQwJDVVE4M0EdDOGa7Q05qS45hjRXcgJvKmibqKOP1IeSOWj12
-        yC9fMSqv1X64f/4sEk7tu50Ma11SfIs=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-200-MJTnF7H6N8GTCAfw2oXYzw-1; Thu, 16 Jul 2020 06:50:09 -0400
-X-MC-Unique: MJTnF7H6N8GTCAfw2oXYzw-1
-Received: by mail-io1-f69.google.com with SMTP id z65so3331121iof.13
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 03:50:09 -0700 (PDT)
+        bh=u0emrD91l1z5XCWO1WKDj+Gw8G208dDDkOGJ49Qf5lQ=;
+        b=eSX9IqAzTsf4aMRNFjDEw9z4bjIeb444x15LwjBB3L0AC76QAYE5b6IIfx2niem+agq4M3
+        IhQS8Kh+qR8lItRYuStIV52UCdXY1In4NI6lBJvirL/xCfMGHofkws5HDct/Sf5iskVxRn
+        oW+6trZFKsy77hSxiM6+buSuvC97HN4=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-354-sAVup4auNlaPejJH24yjSQ-1; Thu, 16 Jul 2020 06:52:35 -0400
+X-MC-Unique: sAVup4auNlaPejJH24yjSQ-1
+Received: by mail-qv1-f70.google.com with SMTP id w18so3149032qvd.16
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 03:52:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version:content-transfer-encoding;
-        bh=b1gMoXuEBwCohMO/2xIeqx9uuqCaWy4LMCiJ13+Zc+8=;
-        b=H4fz4op/Ut7i/amFc3dHhlVzCvcQLo15ZHJRe7q6/yzTGONVSInPUWQkPPmCc+lEgP
-         Xqu+7IWQO8DcCFVwP+kgPITXup7LcHPQhmkXqg4PrV8I5m9/TlZVMqgDPDKtID8wldvP
-         pHwFfMUpDVsRgyrxeOPbVIdbzD7fsIgM97S9UFslf7scZfiO0quzyUPubKTCQwlll97I
-         lcNYXVPfJSm1B6X233/2AAu/KOlgy2FS1cKPIAzfxei2XC1A5g7wlZK6x4ZmoILkeSs6
-         AKWHQBQBqxNhRd0XihqaBpWiW7tCwlGchCt+d+HmFjMY4kZi5ILVWMccCA0tt2MZBKo+
-         p8aw==
-X-Gm-Message-State: AOAM530Hx061a8xxEiLBsFJyqpdD0yV8aIJVTYl2YWu051/RhKYxdk8q
-        a/bnb3rF45sCd5eu19laFoyK2osq52kwHdMSkewSctguWbJQKiXuMOxY52Dt5rnzthsjIppbquI
-        Lmb0MHdZutyCTlYMj
-X-Received: by 2002:a92:c689:: with SMTP id o9mr4016034ilg.302.1594896608909;
-        Thu, 16 Jul 2020 03:50:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy1zLNYUo4Wd4ijr45ZomUI+kOWdjdW1J1naK8ousx3hWzgKatPBp0on0UpzHek3akYBNABZg==
-X-Received: by 2002:a92:c689:: with SMTP id o9mr4016010ilg.302.1594896608606;
-        Thu, 16 Jul 2020 03:50:08 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id m2sm2506893iln.1.2020.07.16.03.50.07
+        bh=u0emrD91l1z5XCWO1WKDj+Gw8G208dDDkOGJ49Qf5lQ=;
+        b=n3mZ3E8sv57ONw9N7bC3rNDJ2zwDdUMj4CqT2w/m8v3hFBwyOd6ZT7Fs32B0o8kHCC
+         7L9RrEwy5FqQXCUFDUYWQ0bzcBVOxnZSNj1x3TyAA1/rx+VjK1UTY63IifgYHR35kEhJ
+         kPfZRRbvI8OH3xCzrWA6fwwGqzUmWtJz0hXvAZs4a6mKxPkj3qp5L9Bezl/pamdt70O6
+         Tz86Z1vTepkq2uZCYfmHcuVKmevacf6MSsBzcJLD2G5EdYV9DeBmp6szcVn/nCzqVG1c
+         DqiebDoNYQI3yFH43y6F9lGIQHGXTkH64FKj5hKjMpLVhNvhXUb/BjrD2AgFSzQC6JQa
+         V9IA==
+X-Gm-Message-State: AOAM530xfof0OIasOYZ8w4Qrsv6kmiTqv8afHI4+la8Nks4Zg5GptCKk
+        KUMLkOf0qUaW13FzNC4QNz7fAYaH5nJdcsdP4XHuybs2bLyHhnP1Iho1gt0WSw5cOQcLv14Gmys
+        OhzXrRLBroyYnqWOh
+X-Received: by 2002:a37:9bc9:: with SMTP id d192mr3240106qke.409.1594896754844;
+        Thu, 16 Jul 2020 03:52:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwpWSsFvzAOLhwSiN5YNalt/1wgOF4BWd5F3Gjz+Ywb4DPSf5HiZyVcULexRdRVCD6eV4oG2g==
+X-Received: by 2002:a37:9bc9:: with SMTP id d192mr3240085qke.409.1594896754606;
+        Thu, 16 Jul 2020 03:52:34 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id u5sm6661991qke.32.2020.07.16.03.52.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2020 03:50:07 -0700 (PDT)
+        Thu, 16 Jul 2020 03:52:33 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 302EC1804F0; Thu, 16 Jul 2020 12:50:05 +0200 (CEST)
+        id 53F0C1804F0; Thu, 16 Jul 2020 12:52:32 +0200 (CEST)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 3/6] bpf: support attaching freplace programs to multiple attach points
-In-Reply-To: <20200715204406.vt64vgvzsbr6kolm@ast-mbp.dhcp.thefacebook.com>
-References: <159481853923.454654.12184603524310603480.stgit@toke.dk> <159481854255.454654.15065796817034016611.stgit@toke.dk> <20200715204406.vt64vgvzsbr6kolm@ast-mbp.dhcp.thefacebook.com>
+        Kernel Team <kernel-team@fb.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kicinski@fb.com>, Andrey Ignatov <rdna@fb.com>,
+        Takshak Chahande <ctakshak@fb.com>
+Subject: Re: [PATCH bpf-next 2/7] bpf, xdp: add bpf_link-based XDP attachment API
+In-Reply-To: <CAEf4BzbgPqN8xKX5xpHBRMJSZkhz_BBzBg7r_FPRo=j3ZmLNUQ@mail.gmail.com>
+References: <20200710224924.4087399-1-andriin@fb.com> <20200710224924.4087399-3-andriin@fb.com> <877dv6gpxd.fsf@toke.dk> <CAEf4BzY7qRsdcdhzf2--Bfgo-GB=ZoKKizOb+OHO7o2PMiNubA@mail.gmail.com> <87v9ipg8jd.fsf@toke.dk> <CAEf4BzYVEqFUJybw3kjG6E6w12ocr2ncRz7j15GNNGG4BXJMTw@mail.gmail.com> <87lfjlg4fg.fsf@toke.dk> <CAEf4BzYMaKgJOA3koGkcThXriTGAOKGxjhQXYSNT9sVEFbS7ig@mail.gmail.com> <87y2nkeq4s.fsf@toke.dk> <CAEf4BzbgPqN8xKX5xpHBRMJSZkhz_BBzBg7r_FPRo=j3ZmLNUQ@mail.gmail.com>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 16 Jul 2020 12:50:05 +0200
-Message-ID: <87mu3zentu.fsf@toke.dk>
+Date:   Thu, 16 Jul 2020 12:52:32 +0200
+Message-ID: <87k0z3enpr.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -76,76 +76,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-> On Wed, Jul 15, 2020 at 03:09:02PM +0200, Toke H=C3=83=C6=92=C3=82=C2=B8i=
-land-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
->>=20=20
->> +	if (tgt_prog_fd) {
->> +		/* For now we only allow new targets for BPF_PROG_TYPE_EXT */
->> +		if (prog->type !=3D BPF_PROG_TYPE_EXT ||
->> +		    !btf_id) {
->> +			err =3D -EINVAL;
->> +			goto out_put_prog;
->> +		}
->> +		tgt_prog =3D bpf_prog_get(tgt_prog_fd);
->> +		if (IS_ERR(tgt_prog)) {
->> +			err =3D PTR_ERR(tgt_prog);
->> +			tgt_prog =3D NULL;
->> +			goto out_put_prog;
->> +		}
->> +
->> +	} else if (btf_id) {
->> +		err =3D -EINVAL;
->> +		goto out_put_prog;
->> +	} else {
->> +		btf_id =3D prog->aux->attach_btf_id;
->> +		tgt_prog =3D prog->aux->linked_prog;
->> +		if (tgt_prog)
->> +			bpf_prog_inc(tgt_prog); /* we call bpf_prog_put() on link release */
+> On Wed, Jul 15, 2020 at 8:48 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> >> Yup, that was helpful, thanks! I think our difference of opinion on t=
+his
+>> >> stems from the same place as our disagreement about point 2.: You are
+>> >> assuming that an application that uses XDP sticks around and holds on=
+ to
+>> >> its bpf_link, while I'm assuming it doesn't (and so has to rely on
+>> >> pinning for any persistence). In the latter case you don't really gain
+>> >> much from the bpf_link auto-cleanup, and whether it's a prog fd or a
+>> >> link fd you go find in your bpffs doesn't make that much difference...
+>> >
+>> > Right. But if I had to pick just one implementation (prog fd-based vs
+>> > bpf_link), I'd stick with bpf_link because it is flexible enough to
+>> > "emulate" prog fd attachment (through BPF FS), but the same isn't true
+>> > about prog fd attachment emulating bpf_link. That's it. I really don't
+>> > enjoy harping on that point, but it feels to be silently dismissed all
+>> > the time based on one particular arrangement for particular existing
+>> > XDP flow.
+>>
+>> It can; kinda. But you introduce a dependency on bpffs that wasn't there
+>> before, and you end up with resources that are kept around in the kernel
+>> if the interface disappears (because they are still pinned). So I
+>> consider it a poor emulation.
 >
-> so the first prog_load cmd will beholding the first target prog?
-> This is complete non starter.
-> You didn't mention such decision anywhere.
-> The first ext prog will attach to the first dispatcher xdp prog,
-> then that ext prog will multi attach to second dispatcher xdp prog and
-> the first dispatcher prog will live in the kernel forever.
-
-Huh, yeah, you're right that's no good. Missing that was a think-o on my
-part, sorry about that :/
-
-> That's not what we discussed back in April.
-
-No, you mentioned turning aux->linked_prog into a list. However once I
-started looking at it I figured it was better to actually have all this
-(the trampoline and ref) as part of the bpf_link structure, since
-logically they're related.
-
-But as you pointed out, the original reference sticks. So either that
-needs to be removed, or I need to go back to the 'aux->linked_progs as a
-list' idea. Any preference?
-
->> +	}
->> +	err =3D bpf_check_attach_target(NULL, prog, tgt_prog, btf_id,
->> +				      &fmodel, &addr, NULL, NULL);
+> Yes, it's not exactly 100% the same semantics.
+> It is possible with slight additions to API to support essentially
+> exactly the same semantics you want with prog attachment. E.g., we can
+> either have a flag at LINK_CREATE time, or a separate command (e.g.,
+> LINK_PIN or something), that would mark bpf_link as "sticky", bump
+> it's refcnt. What happens then is that even if last FD is closed,
+> there is still refcnt 1 there, and then there are two ways to detach
+> that link:
 >
-> This is a second check for btf id match?
-> What's the point? The first one was done at load time.
-> When tgt_prog_fd/tgt_btf_id are zero there is no need to recheck.
+> 1) interface/cgroup/whatever is destroyed and bpf_link is
+> auto-detached. At that point auto-detach handler will see that it's a
+> "sticky" bpf_link, will decrement refcnt and subsequently free
+> bpf_link kernel object (unless some application still has FD open, of
+> course).
+>
+> 2) a new LINK_DESTROY BPF command will be introduced, which will only
+> work with "sticky" bpf_links. It will decrement refcnt and do the same
+> stuff as the auto-detach handler does today (so bpf_link->dev =3D NULL,
+> for XDP link).
+>
+> I don't mind this, as long as this is not a default semantics and
+> require conscious opt-in from whoever creates the link.
 
-It's not strictly needed if tgt_prog/btf_id is not set, but it doesn't
-hurt either; and it was convenient to reuse it to resolve the func addr
-for the trampoline + it means everything goes through the same code path.
+Now *this* I would like to see! I have the issue with component progs of
+the multiprog dispatcher being pinned and making everything stick
+around.
 
-> I really hope I'm misreading these patches, because they look very raw.
+[...]
 
-I don't think you are. I'll admit to them being a bit raw, but this was
-as far as I got and since I'll be away for three weeks I figured it was
-better to post them in case anyone else was interested in playing with
-it.
+> Sure, thanks, enjoy your vacation! I'll post v3 then with build fixes
+> I have so far.
 
-So if anyone wants to pick these patches up while I'm gone, feel free;
-otherwise, I'll get back to it after my vacation :)
+Thanks! :)
 
 -Toke
 
