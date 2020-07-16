@@ -2,98 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 707D4221A87
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 05:06:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 160F8221A88
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 05:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728057AbgGPDGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 23:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726770AbgGPDGR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 23:06:17 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E50C061755;
-        Wed, 15 Jul 2020 20:06:15 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id n22so1955618ejy.3;
-        Wed, 15 Jul 2020 20:06:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yQDsOYz1dvFgi775kGKyitJeopMyY0R0FVXEBIxbvLk=;
-        b=MkBY8UQ/2RfDFsP+/15qNt/vl5jl4/VAISyY4B7FVuUv0djI+jd8WY2bhsQ88oS6W8
-         I54Y9TofPGLt7wo4xjFL82LNBE0pGok/Is4fv04nJOhmjPs4jo8nm9RyyaPTRMgWR/8Q
-         dSSuDtCa+sUMCQGhftpkIdvPjezmOKzmvRE4xyLX84iOB5Ri1+RuQH6VAzsZliUBPExI
-         Z1ZynN3a4Jow1eW9o2Ehg8m7bE7+n+e9Qi5PfV7CfVq2rJ1UuqZIpI/mK2SpfqzPL0/4
-         LytujLrmCm3Ui80yJD0MgqE+a99tUjGlvayYSL3gzHlRiC8iOlpTQlu6K9C+77D1g+lv
-         pcgA==
+        id S1727075AbgGPDHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 23:07:10 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:55412 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726770AbgGPDHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 23:07:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594868828;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Dyjbv015TKmCzPaPw/0NvH4rVIk+vvfPLdP5HvX3BsY=;
+        b=Krdv3QHLBFAItBphMmUlujKR+n6dfLNpEu3UhMtWdXXRh7s3bl2aHwJ+5cnNOyaBBvPFhV
+        bkvR9ivwNV8DHzxM6Ef0xqv90VP3wrtsFt+foP2d7jyxIILGUF/chqxR23HHCWtf3v53/w
+        IjnyT2onmpH9MZHa0UiZIka91zl0qnQ=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-409-XnIdwGh8NRKTMKhRn-IV_w-1; Wed, 15 Jul 2020 23:07:07 -0400
+X-MC-Unique: XnIdwGh8NRKTMKhRn-IV_w-1
+Received: by mail-oo1-f71.google.com with SMTP id e19so2024025oob.8
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 20:07:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yQDsOYz1dvFgi775kGKyitJeopMyY0R0FVXEBIxbvLk=;
-        b=gTynI6Zj6rDk7mXjp6MmKchxfh56RxBIK1sYohqAtjHPVOEzYpqq24h+C2q4RGxFO1
-         vFcttwUXZop0gB8JD0tlxwD/lyF025YCWNnXSNkA/YmfMvZlnXSS6zhpfnngCideTuOl
-         8Z7LMzcasEIdGhrB8FijdVQOU/PodIzA2qyWNdvfXWDu8JCz7BU4DuwZb7sIm2kV4CZy
-         NCBd2EDdnsVc8HthzQOXQ79MbmNyPudn5VCLD+HevrbMs5xwF72uYgea62RcmCy3fS/J
-         Grv+vJhzhRQf06j7nXYuV9s5QT+Tz1tGMEm1fhsZN9PRe2yda5EkxinDl9fP8Z9DWYGJ
-         cIww==
-X-Gm-Message-State: AOAM531a4Ib+UHkX7dZdeJmOhuiOtzttxRMEGttIZWX7fAjBUHwbNOaC
-        WW1vo4MpTLn2OPWF3hobHhZyxqW+
-X-Google-Smtp-Source: ABdhPJxNJi7ZFagWNLSMaFWAXrZ4Bb+vx1dUgF/4uhN68rNo4HCj8iUCXgWlOMBoqtlqmlHAagqL2A==
-X-Received: by 2002:a17:906:1c05:: with SMTP id k5mr1810965ejg.320.1594868774206;
-        Wed, 15 Jul 2020 20:06:14 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id v11sm3730242eja.113.2020.07.15.20.06.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jul 2020 20:06:13 -0700 (PDT)
-Subject: Re: [net-next PATCH v7 4/6] net: phy: introduce
- phy_find_by_mdio_handle()
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>
-Cc:     netdev@vger.kernel.org, linux.cj@gmail.com,
-        linux-acpi@vger.kernel.org
-References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
- <20200715090400.4733-5-calvin.johnson@oss.nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <0a40b93a-3bbc-2936-75e0-9006067a176a@gmail.com>
-Date:   Wed, 15 Jul 2020 20:06:09 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dyjbv015TKmCzPaPw/0NvH4rVIk+vvfPLdP5HvX3BsY=;
+        b=X0Zk9BV3XuYNuf1w+Xl0Bg1j+POj/F+u/qr9m95MZJdrU6Ygyvlqu9e25R3+kag0iS
+         ucOFCAmVOTFbtZBvU/RX+ylbBo9/HHD2YJPY7F9QfdRbkY3WWIcR1gym6MbWvWZ+WIiN
+         ZE3g3twqDI4XXzQu/Sn2vuoqV+6/9V0p8Xn6Emxs3lh2E7rLNCPlUsNJFCr37Z1L/mds
+         OZfgz9WFm50ReCQzHtejs6Em+yuhCnQtEZoJlQotLCdrclbqwxd/RIt9sYqXWQGVKWW9
+         MxpURILJHJai+I7gTDHwRzwbCX3l3po134QVUveU7q/9GqWvVTaAtEFrcyXShWFMmUKP
+         YzYQ==
+X-Gm-Message-State: AOAM531VB/+dQORot0slxdFSgMsO02KkQiGwmEncMOSrdo5jQTFBmZOx
+        9EIjztuLLE7mjvXeMsiz/XDIQdSTua6rKTdSDOQn6UEJgq5QFrNVnItJViUOrGwVH62nKKDpspr
+        1ODmvEeaHwMqNFs3r+9a0Si+9OSlTyv3n
+X-Received: by 2002:a4a:2f15:: with SMTP id p21mr2291640oop.20.1594868826250;
+        Wed, 15 Jul 2020 20:07:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxDHsWqEH2UNfR+NwcoA8IhhYtHj3Np+Pgr0MWAcs9ZbRsVQrYUsznUxAaHRsgrYQmY/Dp7UY2adnEPvBiBZK8=
+X-Received: by 2002:a4a:2f15:: with SMTP id p21mr2291624oop.20.1594868826039;
+ Wed, 15 Jul 2020 20:07:06 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200715090400.4733-5-calvin.johnson@oss.nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
+ <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz> <20200713.180030.118342049848300015.davem@davemloft.net>
+In-Reply-To: <20200713.180030.118342049848300015.davem@davemloft.net>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Wed, 15 Jul 2020 23:06:55 -0400
+Message-ID: <CAKfmpSeqqD_RQwdFwsZG212tbNF0E__83xKWT44nGYs4AOjDJw@mail.gmail.com>
+Subject: Re: [RFC] bonding driver terminology change proposal
+To:     David Miller <davem@davemloft.net>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jul 13, 2020 at 9:00 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Michal Kubecek <mkubecek@suse.cz>
+> Date: Tue, 14 Jul 2020 00:00:16 +0200
+>
+> > Could we, please, avoid breaking existing userspace tools and scripts?
+>
+> I will not let UAPI breakage, don't worry.
 
+Seeking some clarification here. Does the output of
+/proc/net/bonding/<bond> fall under that umbrella as well? I'm sure
+there are people that do parse it for monitoring, and thus I assume
+that it does, but want to be certain. I think this is the only
+remaining thing I need to address in a local test conversion build.
 
-On 7/15/2020 2:03 AM, Calvin Johnson wrote:
-> The PHYs on an mdiobus are probed and registered using mdiobus_register().
-> Later, for connecting these PHYs to MAC, the PHYs registered on the
-> mdiobus have to be referenced.
-> 
-> For each MAC node, a property "mdio-handle" is used to reference the
-> MDIO bus on which the PHYs are registered. On getting hold of the MDIO
-> bus, use phy_find_by_fwnode() to get the PHY connected to the MAC.
-> 
-> Introduce fwnode_mdio_find_bus() to find the mii_bus that corresponds
-> to given mii_bus fwnode.
-> 
-> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Florian
+Jarod Wilson
+jarod@redhat.com
+
