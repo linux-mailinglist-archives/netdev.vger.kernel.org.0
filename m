@@ -2,86 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B249222894
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 18:52:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61E3D2228A3
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 19:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728642AbgGPQwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 12:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41578 "EHLO
+        id S1728415AbgGPRAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 13:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728182AbgGPQwG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 12:52:06 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70940C061755
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 09:52:06 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id s10so7742926wrw.12
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 09:52:06 -0700 (PDT)
+        with ESMTP id S1725867AbgGPRAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 13:00:16 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE87C061755;
+        Thu, 16 Jul 2020 10:00:15 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id c139so6152699qkg.12;
+        Thu, 16 Jul 2020 10:00:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=f2qUng5HF9NW+OotedZU8QElatY7609gFS7Ok3Iu3Lo=;
-        b=PLUrTwNEGjZAxVnDXucir6yf3HPZyS7Re2k/EUqQy48zljWN2k1Jbqi4C4TMvV4x32
-         nAzQVwF5k5V4YL8SsoeJ3kPPDyplut/uX7GU/tI3acjmFn4lXAYE5zKV2oJWUVn7c4EN
-         AauG7HORNSsn2ohVwS/hLs5cbj2/JeKcrLNY2thaDQ2KKSjNOF+ARdwEQgbVfy1ZoPe3
-         j2kPSVyVAbWMBLV8R6vkXE9cF0kKpJCGh4nOAFr//n+akjlkIEH1axkj3+wBBVyD4XZw
-         MBIUXOjBw9uggGkFPbkurTml1KzHMVJ5ohhCkYenqzLFMJR97WWglXrzIGFqPxQy+haq
-         KDIg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=xFnhvo+oT7GkUt0UP+3Y7RXHPYTZ7W0L8kttJ5pOMG0=;
+        b=uc8tm4PfXmj/nu0p0WWHr51Owa30uzDsIaHZCBWMKUFn403QuwcVj+FilVdCYDqYEO
+         lyu7O0/4ytK7ZYoQmb3SkChV67Fq8RFsJMjsD5MRi0032LGRz19re/y4aXDWR3SqLriQ
+         FzGQ7dRkaG+oy6QHkzzuK5TPSuiKId0XzpAo6wFxVKetEpwzYXz6DEAh5yV82Rq01X8v
+         MLEHtHm0QQ5uWKPsFTAIQBf0AV8qolmtvSIokRopzZznaT62MH2MISURh52Gr0+CMqeZ
+         i9LPqY5gMGt+Xslo2lmhLrXqvcd/Kqn/oTtMs7adM3Z/TptovmCjL5sp56Q+UXEIY1Oq
+         4QIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f2qUng5HF9NW+OotedZU8QElatY7609gFS7Ok3Iu3Lo=;
-        b=AiEbocjN1dEkgX6Pjnx5RRfwqcU/NxImrloguyJK5Xym6eJhTVmImjvG16k3ddImIP
-         8vUNnyaWb7Tr3r7v+M29A8IdefEdiB/bUpqjJUcRqiymHKa2h1Iq7TTKWDtJY65B+TVL
-         kpZh3r8n0k1/rtYji6hA6J4q/txMDBiNT84I+JQ+TkfV7HJB3FzmC0NjkA27C4ItpE20
-         A9ix147o2nI2IFZdH3x+kjVglq1kMmuUyQHESjzh+/UFjpnXH0srRtcu//XU7RzIDMVM
-         rKLUUS6M3Y3i51C5gS/K8KETBgVqr1/4+RouFZjZoDaBHEU8h9BgcEbwqJLVfQ1rheSH
-         zjWw==
-X-Gm-Message-State: AOAM532CxTUf/QJqFcQyfMjvG/v2cdmPDWF1XIZS2USx8nOND6Q47D8q
-        9GOCXM4mbSOiPHh8mKrQnxTZew==
-X-Google-Smtp-Source: ABdhPJw+i+SrqYv9HrIY5Uu1HeTMSKZ1aEdQrD5nvBBoSUT/DunETqxnGtcYK2x+MFy2C9DMIaoJxQ==
-X-Received: by 2002:adf:f984:: with SMTP id f4mr5818808wrr.221.1594918325247;
-        Thu, 16 Jul 2020 09:52:05 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id s10sm9737503wme.31.2020.07.16.09.52.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2020 09:52:04 -0700 (PDT)
-Date:   Thu, 16 Jul 2020 18:52:03 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH iproute2-next v2 2/2] tc: q_red: Implement has_block for
- RED
-Message-ID: <20200716165203.GD23663@nanopsycho.orion>
-References: <cover.1594914405.git.petrm@mellanox.com>
- <18f80c432a0d278d32711bdafdd9d2376028ad50.1594914405.git.petrm@mellanox.com>
- <20200716160729.GC23663@nanopsycho.orion>
- <87mu3zifgd.fsf@mellanox.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=xFnhvo+oT7GkUt0UP+3Y7RXHPYTZ7W0L8kttJ5pOMG0=;
+        b=QA1LiV6Jeq8drrFveQjtp57teCZ8e0zqcKT0qYGWN2n3FjmEcz/jrmrflSlU1vZCnc
+         DSX2QsjXWarziM8vlyi19KSpkZk9gBXzmCuppf6FFft1h7b01KL1Madel0jgFAVwL5BD
+         8Q4WUyv0Ay0F8gwUnNQlYwc39QjeDLDquSCIKOCxrPK/BmPxb//dBKNwzAZTFhf0j5xG
+         ovdbQS0eR6X0WzmPhZc+E/qew3jjXI1MS4Ij1Hi4GN5qRT0Wk+6LmmND+u1mRPPIMMvp
+         HRzV1UMaH2WUvWvbG9LGoh3IAJTZiY8/k91pZIy8L0259GRWdpULxiGyuVyS3Racfb/v
+         YoRw==
+X-Gm-Message-State: AOAM5324cvqEn5orRD2WYp5cCH7AS2FMK5HGwNlorxxQGjtYqjsM8Chn
+        OyrKj8AXKQwNthpKgbU0LBKC6o3VSNw74QHCyGA=
+X-Google-Smtp-Source: ABdhPJz0HV6BSIemzLDmEKsM1PULchEXNXJBIS75Wg4fCq+tO+eyPBKyWbeRI4EsBpNwLS+Kl4UtttMZynpqfeSNl74=
+X-Received: by 2002:a37:270e:: with SMTP id n14mr4889742qkn.92.1594918814827;
+ Thu, 16 Jul 2020 10:00:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87mu3zifgd.fsf@mellanox.com>
+References: <20200716045602.3896926-1-andriin@fb.com> <20200716045602.3896926-10-andriin@fb.com>
+ <20200716082259.40600e03@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200716082259.40600e03@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 16 Jul 2020 10:00:03 -0700
+Message-ID: <CAEf4Bza_Sr6XcFQpP5jgYLt03CDVXR7zUv2cjNBMSWFqaWZDGQ@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 9/9] bpf, xdp: remove XDP_QUERY_PROG and
+ XDP_QUERY_PROG_HW XDP commands
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Ahern <dsahern@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 16, 2020 at 06:37:22PM CEST, petrm@mellanox.com wrote:
+On Thu, Jul 16, 2020 at 8:23 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
->Jiri Pirko <jiri@resnulli.us> writes:
+> On Wed, 15 Jul 2020 21:56:01 -0700 Andrii Nakryiko wrote:
+> > Now that BPF program/link management is centralized in generic net_devi=
+ce
+> > code, kernel code never queries program id from drivers, so
+> > XDP_QUERY_PROG/XDP_QUERY_PROG_HW commands are unnecessary.
+> >
+> > This patch removes all the implementations of those commands in kernel,=
+ along
+> > the xdp_attachment_query().
+> >
+> > This patch was compile-tested on allyesconfig.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 >
->> Thu, Jul 16, 2020 at 05:49:46PM CEST, petrm@mellanox.com wrote:
->>>In order for "tc filter show block X" to find a given block, implement the
->>>has_block callback.
->>>
->>>Signed-off-by: Petr Machata <petrm@mellanox.com>
->>
->> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c: In function =E2=80=98dp=
+aa2_eth_xdp=E2=80=99:
+> drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c:2079:25: warning: unused=
+ variable =E2=80=98priv=E2=80=99 [-Wunused-variable]
+>  2079 |  struct dpaa2_eth_priv *priv =3D netdev_priv(dev);
+>       |                         ^~~~
 >
->Actually it's broken. When there are several qdiscs, the latter one's
->result overwrites the previous one.
 
-:/
+Oh, I've fixed a few such warnings already, but apparently missed the
+last one. It's hard to notice those in allyesconfig build. I've
+double-checked the build log with grep now, it seems like there are no
+more warnings anymore, thanks!
