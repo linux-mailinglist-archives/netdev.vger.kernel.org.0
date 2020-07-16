@@ -2,88 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBBED222840
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 18:27:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E67D222846
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 18:29:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729236AbgGPQ1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 12:27:24 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:27966 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729178AbgGPQ1Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 12:27:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594916840;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JrkquwroxjkpMb9/0BTHyV8FI0xapwa83ZyOdmeOgjE=;
-        b=DCh/J0GZNQPnL23gk1IE4TrJd+GzresIeyQIN3djNZZaj9tKvxh9Wix4WDdryyT+ZUSbHQ
-        Q05mwQ7qbEmnViEz39ey5Iu2OHFSVsuDQKNswryrDlKd4gtxSP+7NJDG9Ny62Jjd3hO1C+
-        79jm2TaedGbEZgs9TMB3pLeCf00ffG4=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-495-C0AJjB53Oe6ciEWhYNK3Pw-1; Thu, 16 Jul 2020 12:27:18 -0400
-X-MC-Unique: C0AJjB53Oe6ciEWhYNK3Pw-1
-Received: by mail-wm1-f70.google.com with SMTP id b13so5414443wme.9
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 09:27:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JrkquwroxjkpMb9/0BTHyV8FI0xapwa83ZyOdmeOgjE=;
-        b=br8r0AdUlK5dX+VORT3vY2QzGEQtQDuG9G/QMPlqM8Hah/N8/l4Qs4jk00ueS+jIgX
-         bInh6GTWROsC6X78CWQbRgYsF+zUeJwVje9nhZVEC8BmjsuT4QTUTgeIZlJKbxGpqfBC
-         obYryvRkur+BelEpQwNYHayZnUTOrzDhrOrMmCHtib6kHDPfazbA07KU+PWha+LDjRmQ
-         yrh8NUNjjyJDQdv3nXtwQ8ghOYzAd+6YZtnkpusikeMjJkwRl0XzGoYANYHL51Ll8AKR
-         kql0yJfwkldwAu9UQkCD1AtHdghf32n0YzsmrQb8amO6VgxrQuKAo2kdWt2f1u8pB/s/
-         VyuA==
-X-Gm-Message-State: AOAM532iGsy6Qfjl5+PQNkF+BhuM5eYLxDrbdjNPwOD1HtrJwE7U7UOL
-        0iF2tVhKwXnBXkaa+iMLFSd9XgHuKuyQ4y63U1XwW4FlLgyuwb2MmKusr8avsNZ/9kLnHssEgJV
-        rEzcAt0vawyfZw+yC
-X-Received: by 2002:adf:edc6:: with SMTP id v6mr5826601wro.413.1594916837663;
-        Thu, 16 Jul 2020 09:27:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJydSdGffa57FIvjoq5iBYLfouUGxx7T6LYklRMaFS9nUyxqNKCEZG7oB4u6C/qeNJs3frRJHA==
-X-Received: by 2002:adf:edc6:: with SMTP id v6mr5826584wro.413.1594916837393;
-        Thu, 16 Jul 2020 09:27:17 -0700 (PDT)
-Received: from pc-2.home (2a01cb058529bf0075b0798a7f5975cb.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:bf00:75b0:798a:7f59:75cb])
-        by smtp.gmail.com with ESMTPSA id c15sm9240956wme.23.2020.07.16.09.27.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2020 09:27:16 -0700 (PDT)
-Date:   Thu, 16 Jul 2020 18:27:15 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Martin Varghese <martin.varghese@nokia.com>
-Subject: Re: [PATCH net-next v2] bareudp: Reverted support to enable &
- disable rx metadata collection
-Message-ID: <20200716162715.GB30783@pc-2.home>
-References: <1594915134-3530-1-git-send-email-martinvarghesenokia@gmail.com>
+        id S1729257AbgGPQ3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 12:29:09 -0400
+Received: from mga05.intel.com ([192.55.52.43]:35621 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728845AbgGPQ3I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jul 2020 12:29:08 -0400
+IronPort-SDR: JmVOYr2Ka0wOxCC1OClse1Vp4g1mr8dIvNevBrot2EHibBa5KQa+ZtU5QfgL1TcNaJGYHmfONM
+ vrm4M+uAc9pA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9684"; a="234285576"
+X-IronPort-AV: E=Sophos;i="5.75,360,1589266800"; 
+   d="scan'208";a="234285576"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2020 09:29:07 -0700
+IronPort-SDR: jVayiEFqbp2750im/htz5hT5AFKhoNCXs9RNDhLQ0oKLziiHP1ztfXWKy4FWsWUDyjU51Mt+qx
+ /r4ub4vJDnLg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,360,1589266800"; 
+   d="scan'208";a="326574290"
+Received: from hmehl-mobl2.ger.corp.intel.com (HELO [10.254.156.209]) ([10.254.156.209])
+  by orsmga007.jf.intel.com with ESMTP; 16 Jul 2020 09:29:04 -0700
+Subject: Re: [Intel-wired-lan] [PATCH] igc: Do not use link uninitialized in
+ igc_check_for_copper_link
+To:     Nathan Chancellor <natechancellor@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Lifshits, Vitaly" <vitaly.lifshits@intel.com>,
+        "Neftin, Sasha" <sasha.neftin@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+References: <20200716044934.152364-1-natechancellor@gmail.com>
+From:   "Neftin, Sasha" <sasha.neftin@intel.com>
+Message-ID: <cdfec63a-e51f-e1a6-aa60-6ca949338306@intel.com>
+Date:   Thu, 16 Jul 2020 19:29:03 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1594915134-3530-1-git-send-email-martinvarghesenokia@gmail.com>
+In-Reply-To: <20200716044934.152364-1-natechancellor@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 16, 2020 at 09:28:54PM +0530, Martin Varghese wrote:
-> From: Martin Varghese <martin.varghese@nokia.com>
+On 7/16/2020 07:49, Nathan Chancellor wrote:
+> Clang warns:
 > 
-> The commit fe80536acf83 ("bareudp: Added attribute to enable & disable
-> rx metadata collection") breaks the the original(5.7) default behavior of
-> bareudp module to collect RX metadadata at the receive. It was added to
-> avoid the crash at the kernel neighbour subsytem when packet with metadata
-> from bareudp is processed. But it is no more needed as the
-> commit 394de110a733 ("net: Added pointer check for
-> dst->ops->neigh_lookup in dst_neigh_lookup_skb") solves this crash.
-
-This patch looks like a complete revert of fe80536acf83, but with a
-missing chunk (the rx_collect_metadata field in include/net/bareudp.h).
-
-Why not generating this patch with "git revert fe80536acf83", instead
-of doing it manually?. That'd make sure that no chunk is forgotten.
-
-> Fixes: fe80536acf83 ("bareudp: Added attribute to enable & disable rx metadata collection")
-> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-
+Hello Nathan,
+Thanks for tracking our code.Please, look at 
+https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20200709073416.14126-1-sasha.neftin@intel.com/ 
+- I hope this patch already address this Clang warns - please, let me know.
+> drivers/net/ethernet/intel/igc/igc_mac.c:374:6: warning: variable 'link'
+> is used uninitialized whenever 'if' condition is true
+> [-Wsometimes-uninitialized]
+>          if (!mac->get_link_status) {
+>              ^~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/intel/igc/igc_mac.c:424:33: note: uninitialized use
+> occurs here
+>          ret_val = igc_set_ltr_i225(hw, link);
+>                                         ^~~~
+> drivers/net/ethernet/intel/igc/igc_mac.c:374:2: note: remove the 'if' if
+> its condition is always false
+>          if (!mac->get_link_status) {
+>          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/intel/igc/igc_mac.c:367:11: note: initialize the
+> variable 'link' to silence this warning
+>          bool link;
+>                   ^
+>                    = 0
+> 1 warning generated.
+> 
+> It is not wrong, link is only uninitialized after this through
+> igc_phy_has_link. Presumably, if we skip the majority of this function
+> when get_link_status is false, we should skip calling igc_set_ltr_i225
+> as well. Just directly return 0 in this case, rather than bothering with
+> adding another label or initializing link in the if statement.
+> 
+> Fixes: 707abf069548 ("igc: Add initial LTR support")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1095
+> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> ---
+>   drivers/net/ethernet/intel/igc/igc_mac.c | 6 ++----
+>   1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/igc/igc_mac.c b/drivers/net/ethernet/intel/igc/igc_mac.c
+> index b47e7b0a6398..26e3c56a4a8b 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_mac.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_mac.c
+> @@ -371,10 +371,8 @@ s32 igc_check_for_copper_link(struct igc_hw *hw)
+>   	 * get_link_status flag is set upon receiving a Link Status
+>   	 * Change or Rx Sequence Error interrupt.
+>   	 */
+> -	if (!mac->get_link_status) {
+> -		ret_val = 0;
+> -		goto out;
+> -	}
+> +	if (!mac->get_link_status)
+> +		return 0;
+>   
+>   	/* First we want to see if the MII Status Register reports
+>   	 * link.  If so, then we want to get the current speed/duplex
+> 
+> base-commit: ca0e494af5edb59002665bf12871e94b4163a257
+> 
+Thanks,
+Sasha
