@@ -2,121 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88491222EA9
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 01:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3100E222ED3
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 01:14:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728075AbgGPXJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 19:09:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43412 "EHLO
+        id S1727094AbgGPXN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 19:13:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728031AbgGPXJX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 19:09:23 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on0612.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0d::612])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3976FC08E6DC
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 16:07:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KwoHrZcvJYDTsPJdn9W4GsHDThi8YnqNeQ3t3BH9lLjDaMBSsASs2KJG13XnzoSqaidc6xkgCRKZT6oy6fVd3Ga578JcqiKktNnqkM+9BVUM35fkScVTTvjm/ZUpduQgAt2sZxRRXMN+eF4WoZLSV1+U/lE9D6u6nmLqBkDvAGkhyhYrrIa9ca3QmQfEYPHBJvEx1PGV+suG9a5jdG3yokItRbEKEbWM90Oh5dk5w0zCTmLMiNDf0Eale8K3Gq8C5H4TcCsaB7NJS3byneLgxPvwR55+HXNlKQuC2UKkgC87toUotVpbVT/2bAwonMwOMg3APigtKdfGIH4TvKZcRw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AYhIgkm3FKQc8kxM1KqVMvzGulw12ELkkvAMGnss1as=;
- b=ZzVbhdTxgHQ7lizekARLJK8GV8sFXBTlqV9rrigipM0qXXdirN+Lj0CrUHDqmbXfQPgAtbPyb98KXpOKXtYt6tCuA7HtPFn/vpuLe5pqRZoSGV3CX+gzyfHL79UmnWrY+BIcC4HNjWzDLH2/kXgevKWTl/KR7ko5jdNga5S8pQ7+bLtZLTgM+RQ6op2NEzWj/2T0SGAE5MefiB5px27C4zwtLJQuLQHwk12wsiO2bMtkv581BCzauDiFqsX5yu+wP6CL8yS75z9hmCjCewPO3ZChmzB3VZebcNdkYf9D1lymqAvki68efJIrRb+A7QdU90HnSuG2wjrNmXMQqT7e6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AYhIgkm3FKQc8kxM1KqVMvzGulw12ELkkvAMGnss1as=;
- b=Nn+iNYGQaY8o3fs6YEnVwNs1JBWPxBLNNLxi6qCFeHdN/I3tKJTqYpjt4i3+rxdrC9wuG2ggb+mf8W0ZgW6B0ILhUzEjgWjtOUo4UWDUNlvsoU3FnycXqkNq3J6dluMk4TRvNMctmFksJBMm6yCa85D9UbsLln/PdPLqDJ3rEVo=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB6014.eurprd05.prod.outlook.com (2603:10a6:803:ed::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20; Thu, 16 Jul
- 2020 23:07:06 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3174.027; Thu, 16 Jul 2020
- 23:07:06 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "kuba@kernel.org" <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-Subject: Re: [net-next 12/15] net/mlx5e: XDP, Avoid indirect call in TX flow
-Thread-Topic: [net-next 12/15] net/mlx5e: XDP, Avoid indirect call in TX flow
-Thread-Index: AQHWW7jWOrwCkzU3x0eOOAUc34bUT6kKyNaAgAALWwA=
-Date:   Thu, 16 Jul 2020 23:07:06 +0000
-Message-ID: <bebe16b8ddc64d75c62ae49c03624ea3ef1cb677.camel@mellanox.com>
-References: <20200716213321.29468-1-saeedm@mellanox.com>
-         <20200716213321.29468-13-saeedm@mellanox.com>
-         <20200716152625.01651110@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200716152625.01651110@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.3 (3.36.3-1.fc32) 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 29b4ae0f-5c48-4799-98f8-08d829dcf587
-x-ms-traffictypediagnostic: VI1PR05MB6014:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB60149188DBBA4CD68603849ABE7F0@VI1PR05MB6014.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:215;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nB2c1RYawm4zVOlJRqVsAd1V3SMCDewLnVqowtmzhqp0U04MyNf1Lf2/nPFiUxJlZi+hrK3QTI/u2sl0DZz2vU4/IMUIT5x5EY8kOq0U0NLbAOykc0zYLdfaW7AHPAFk2NJ0punov0b4asLzGYCkBgW9q/5/qG4hHyt+lHc2laku/PSb7PEnirzw0KzTnLJTREeXehgHlDH9U84laeuGh57Dv4ul5Pc3BIsEd18/GP0j/25gCHVSSmcR+pYzeGlqkgM/3tJ/rnZFMlSiCiXOXUXSWYCrDBB0bzE3Xi1DuwSFMPaUUERnlEJSb78Qfz28805G/NZ7xGlH9Gvc7P7RxA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(396003)(346002)(376002)(366004)(107886003)(4326008)(2906002)(76116006)(316002)(186003)(26005)(6506007)(6486002)(2616005)(8936002)(91956017)(6916009)(36756003)(5660300002)(64756008)(54906003)(66476007)(83380400001)(71200400001)(6512007)(478600001)(66556008)(66946007)(86362001)(66446008)(8676002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: t2p8JeJLzTyqr5PmbdrMN+dytz64SivvKScPDR3wHWu7L0bD3HuckC+Tar0bVTw/jWku9VR/okrIGDaApTxkmIrTcuqyYJduLXlRoDBBD96PR82MyraE3KTd31ZJ0gsuPQnhWEhA9uhC6YlZ8CUh5cfhyIi5QBLQbNypggVVJPNtdcZ7k7vlbg8Bq0qIk/QOUfNXmCSfFXNl8a93tHh05kPN+OqsJDJHXQE3Q/IzEwozC+XvmtJm3w2PJuROXJ1lyfsUt3c9KkJXqMbh+clm+kpbYVkFDwKdV3nggt/kfokpm5HzjwCJGaUx7+u/zWVnNUkMikgNEszJ1AyxIpz6eK7mG93Mjs4Z3S0QetJXEHF1+VPwLGpbkYkhNV7EapPIy9j1Gw4Qotw3G2Hi0vWQk87cArd4jKAUOca9yOR5Zq/EA6w5T/cKrGaB8S0y6Kml9DZiZQdL7Z7YKFlSYg0GttnpJxg0lGup2KKNwKrGqAg=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <908958F031ADF041A217350E50143408@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S1726007AbgGPXN1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 19:13:27 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995B5C061755
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 16:13:26 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id lx13so8602110ejb.4
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 16:13:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=u7YjX47hqArFZji3f4cV31EtG37Xc315+j3Qqp1cu58=;
+        b=IeLCFeWjf91VKxdfOiQYJjVA2U5jqN/0a5eVkz/+OcD2icCWdjs6pFbsNQm0zkVXUG
+         jP0paov4rc5VtTaJyhCQBBnO9Z9tyyn8B88WUc/Q5lqxLilrfRiU4Il91F8Sdp0i+8dv
+         HJ6xFrDH4WVMkgCL5luPabjPEsbMMn/mIEiUQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=u7YjX47hqArFZji3f4cV31EtG37Xc315+j3Qqp1cu58=;
+        b=SxuS7FEagkJtZDZngtq5XYG2pyt65jbikwDK4nZVTeeVM54oCsjCoicS+35wCQ0C2k
+         cxh/m7KWc4J9toVTaCqpgzg/TVRqi4XDmx5qcb0+1LvycAkMvUKxgiMKrpmje1vZSj8Y
+         5+nBieDpvYTHxTGBV11T5JDkRDtErUsKWkwoIhf4zm73zbLgIYkmrcEQHJBdOLBuFjby
+         t0B8H3io13XATAUFyEP89EwtARKYg9IAszB/rqtuMXs2j1EBe5fj9279n42tFSKa3rnG
+         MmKGjN5+xFPrE58WkM/cDqJLjmOLPyc9JjCAPXwk8Yxo4lF+dKrANBvjAjbQmR4l853U
+         H9SA==
+X-Gm-Message-State: AOAM530xLvxRxi6S+5EzfDDWPRd5gehSulVhPa/d4cwoOTktiFekt+3o
+        71EThmwkBaDGHBS/2TaGxL/ISw==
+X-Google-Smtp-Source: ABdhPJxUp694icLygoJQSEf16T0WOGqwjy/PheU82RUTBt1VX5M87ottP5NFpnR2N+nlpflESt/J/w==
+X-Received: by 2002:a17:906:c150:: with SMTP id dp16mr5911917ejc.536.1594941205113;
+        Thu, 16 Jul 2020 16:13:25 -0700 (PDT)
+Received: from [192.168.2.66] ([81.6.44.51])
+        by smtp.gmail.com with ESMTPSA id c10sm6608208edt.22.2020.07.16.16.13.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jul 2020 16:13:24 -0700 (PDT)
+Subject: Re: [PATCH v4 bpf-next 10/14] bpf: Add d_path helper
+To:     Jiri Olsa <jolsa@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Florent Revest <revest@chromium.org>
+References: <20200625221304.2817194-1-jolsa@kernel.org>
+ <20200625221304.2817194-11-jolsa@kernel.org>
+ <CAEf4BzY4EqkbB7Ob9EZAJrWdBRtH_k3sL=4JZzAiqkMXjYjNKA@mail.gmail.com>
+ <20200628194242.GB2988321@krava>
+From:   KP Singh <kpsingh@chromium.org>
+Message-ID: <6f3fd6b0-cc3d-57e7-0444-dcaf399e6abd@chromium.org>
+Date:   Fri, 17 Jul 2020 01:13:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 29b4ae0f-5c48-4799-98f8-08d829dcf587
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jul 2020 23:07:06.0324
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GKJkcxEoBcnGZ1/35wgan8Gcpm6DCK7pBwJDHTyyP+8n/2RhwH615gRtgHC/pUDVDOOuJLNNDOGiJ3dv0thl3A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6014
+In-Reply-To: <20200628194242.GB2988321@krava>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTA3LTE2IGF0IDE1OjI2IC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
-Cj4gT24gVGh1LCAxNiBKdWwgMjAyMCAxNDozMzoxOCAtMDcwMCBTYWVlZCBNYWhhbWVlZCB3cm90
-ZToNCj4gPiBGcm9tOiBUYXJpcSBUb3VrYW4gPHRhcmlxdEBtZWxsYW5veC5jb20+DQo+ID4gDQo+
-ID4gVXNlIElORElSRUNUX0NBTExfMigpIGhlbHBlciB0byBhdm9pZCB0aGUgY29zdCBvZiB0aGUg
-aW5kaXJlY3QgY2FsbA0KPiA+IHdoZW4vaWYgQ09ORklHX1JFVFBPTElORT15Lg0KPiA+IA0KPiA+
-IFNpZ25lZC1vZmYtYnk6IFRhcmlxIFRvdWthbiA8dGFyaXF0QG1lbGxhbm94LmNvbT4NCj4gPiBS
-ZXZpZXdlZC1ieTogTWF4aW0gTWlraXR5YW5za2l5IDxtYXhpbW1pQG1lbGxhbm94LmNvbT4NCj4g
-PiBTaWduZWQtb2ZmLWJ5OiBTYWVlZCBNYWhhbWVlZCA8c2FlZWRtQG1lbGxhbm94LmNvbT4NCj4g
-DQo+IEFyZSB0aGVzZSBleHBlY3RlZD8NCj4gDQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxh
-bm94L21seDUvY29yZS9lbi94ZHAuYzoyNTE6Mjk6IHdhcm5pbmc6DQo+IHN5bWJvbCAnbWx4NWVf
-eG1pdF94ZHBfZnJhbWVfY2hlY2tfbXB3cWUnIHdhcyBub3QgZGVjbGFyZWQuIFNob3VsZCBpdA0K
-PiBiZSBzdGF0aWM/DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9l
-bi94ZHAuYzozMDY6Mjk6IHdhcm5pbmc6DQo+IHN5bWJvbCAnbWx4NWVfeG1pdF94ZHBfZnJhbWVf
-Y2hlY2snIHdhcyBub3QgZGVjbGFyZWQuIFNob3VsZCBpdCBiZQ0KPiBzdGF0aWM/DQo+IGRyaXZl
-cnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi94ZHAuYzoyNTE6Mjk6IHdhcm5p
-bmc6IG5vDQo+IHByZXZpb3VzIHByb3RvdHlwZSBmb3Ig4oCYbWx4NWVfeG1pdF94ZHBfZnJhbWVf
-Y2hlY2tfbXB3cWXigJkgWy1XbWlzc2luZy0NCj4gcHJvdG90eXBlc10NCj4gICAyNTEgfCBJTkRJ
-UkVDVF9DQUxMQUJMRV9TQ09QRSBpbnQNCj4gbWx4NWVfeG1pdF94ZHBfZnJhbWVfY2hlY2tfbXB3
-cWUoc3RydWN0IG1seDVlX3hkcHNxICpzcSkNCj4gICAgICAgfCAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgXn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4NCj4gZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuL3hkcC5jOjMwNjoyOTogd2FybmluZzogbm8N
-Cj4gcHJldmlvdXMgcHJvdG90eXBlIGZvciDigJhtbHg1ZV94bWl0X3hkcF9mcmFtZV9jaGVja+KA
-mSBbLVdtaXNzaW5nLQ0KPiBwcm90b3R5cGVzXQ0KPiAgIDMwNiB8IElORElSRUNUX0NBTExBQkxF
-X1NDT1BFIGludCBtbHg1ZV94bWl0X3hkcF9mcmFtZV9jaGVjayhzdHJ1Y3QNCj4gbWx4NWVfeGRw
-c3EgKnNxKQ0KPiAgICAgICB8ICAgICAgICAgDQoNCk5vLCBtaXNzaW5nIElORElSRUNUX0NBTExB
-QkxFX0RFQ0xBUkUoKSBJIGd1ZXNzLCB3aWxsIGZpeCB0aGlzIHVwLg0KDQpUaGFua3MgZm9yZSB0
-aGUgcmVwb3J0Lg0KDQo=
+
+
+On 6/28/20 9:42 PM, Jiri Olsa wrote:
+> On Fri, Jun 26, 2020 at 01:38:27PM -0700, Andrii Nakryiko wrote:
+>> On Thu, Jun 25, 2020 at 4:49 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>>>
+>>> Adding d_path helper function that returns full path
+>>> for give 'struct path' object, which needs to be the
+>>> kernel BTF 'path' object.
+>>>
+>>> The helper calls directly d_path function.
+>>>
+>>> Updating also bpf.h tools uapi header and adding
+>>> 'path' to bpf_helpers_doc.py script.
+>>>
+>>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+>>> ---
+>>>  include/uapi/linux/bpf.h       | 14 +++++++++-
+>>>  kernel/trace/bpf_trace.c       | 47 ++++++++++++++++++++++++++++++++++
+>>>  scripts/bpf_helpers_doc.py     |  2 ++
+>>>  tools/include/uapi/linux/bpf.h | 14 +++++++++-
+>>>  4 files changed, 75 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>>> index 0cb8ec948816..23274c81f244 100644
+>>> --- a/include/uapi/linux/bpf.h
+>>> +++ b/include/uapi/linux/bpf.h
+>>> @@ -3285,6 +3285,17 @@ union bpf_attr {
+>>>   *             Dynamically cast a *sk* pointer to a *udp6_sock* pointer.
+>>>   *     Return
+>>>   *             *sk* if casting is valid, or NULL otherwise.
+>>> + *
+>>> + * int bpf_d_path(struct path *path, char *buf, u32 sz)
+>>> + *     Description
+>>> + *             Return full path for given 'struct path' object, which
+>>> + *             needs to be the kernel BTF 'path' object. The path is
+>>> + *             returned in buffer provided 'buf' of size 'sz'.
+>>> + *
+>>> + *     Return
+>>> + *             length of returned string on success, or a negative
+>>> + *             error in case of failure
+>>
+>> It's important to note whether string is always zero-terminated (I'm
+>> guessing it is, right?).
+> 
+> right, will add
+
+Also note that bpf_probe_read_{kernel, user}_str return the length including
+the NUL byte:
+
+ * 	Return
+ * 		On success, the strictly positive length of the string,
+ * 		including the trailing NUL character. On error, a negative
+ * 		value.
+
+It would be good to keep this uniform. So you will need a len += 1 here as well.
+
+- KP
+
+> 
+>>
+>>> + *
+>>>   */
+>>>  #define __BPF_FUNC_MAPPER(FN)          \
+>>>         FN(unspec),                     \
+>>> @@ -3427,7 +3438,8 @@ union bpf_attr {
+>>>         FN(skc_to_tcp_sock),            \
+>>>         FN(skc_to_tcp_timewait_sock),   \
+>>>         FN(skc_to_tcp_request_sock),    \
+>>> -       FN(skc_to_udp6_sock),
+>>> +       FN(skc_to_udp6_sock),           \
+>>> +       FN(d_path),
+>>>
+>>>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>>>   * function eBPF program intends to call
+>>> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+>>> index b124d468688c..6f31e21565b6 100644
+>>> --- a/kernel/trace/bpf_trace.c
+>>> +++ b/kernel/trace/bpf_trace.c
+>>> @@ -1060,6 +1060,51 @@ static const struct bpf_func_proto bpf_send_signal_thread_proto = {
+>>>         .arg1_type      = ARG_ANYTHING,
+>>>  };
+>>>
+>>> +BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
+>>> +{
+>>> +       char *p = d_path(path, buf, sz - 1);
+>>> +       int len;
+>>> +
+>>> +       if (IS_ERR(p)) {
+>>> +               len = PTR_ERR(p);
+>>> +       } else {
+>>> +               len = strlen(p);
+>>> +               if (len && p != buf) {
+>>> +                       memmove(buf, p, len);
+>>> +                       buf[len] = 0;
+>>
+>> if len above is zero, you won't zero-terminate it, so probably better
+>> to move buf[len] = 0 out of if to do unconditionally
+> 
+> good catch, will change
+> 
+>>
+>>> +               }
+>>> +       }
+>>> +
+>>> +       return len;
+>>> +}
+>>> +
+>>> +BTF_SET_START(btf_whitelist_d_path)
+>>> +BTF_ID(func, vfs_truncate)
+>>> +BTF_ID(func, vfs_fallocate)
+>>> +BTF_ID(func, dentry_open)
+>>> +BTF_ID(func, vfs_getattr)
+>>> +BTF_ID(func, filp_close)
+>>> +BTF_SET_END(btf_whitelist_d_path)
+>>> +
+>>> +static bool bpf_d_path_allowed(const struct bpf_prog *prog)
+>>> +{
+>>> +       return btf_id_set_contains(&btf_whitelist_d_path, prog->aux->attach_btf_id);
+>>> +}
+>>> +
+>>
+>> This looks pretty great and clean, considering what's happening under
+>> the covers. Nice work, thanks a lot!
+>>
+>>> +BTF_ID_LIST(bpf_d_path_btf_ids)
+>>> +BTF_ID(struct, path)
+>>
+>> this is a bit more confusing to read and error-prone, but I couldn't
+>> come up with any better way to do this... Still better than
+>> alternatives.
+>>
+>>> +
+>>> +static const struct bpf_func_proto bpf_d_path_proto = {
+>>> +       .func           = bpf_d_path,
+>>> +       .gpl_only       = true,
+>>
+>> Does it have to be GPL-only? What's the criteria? Sorry if this was
+>> brought up previously.
+> 
+> I don't think it's needed to be gpl_only, I'll set it to false
+> 
+> thanks,
+> jirka
+> 
