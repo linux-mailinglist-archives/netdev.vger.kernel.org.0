@@ -2,256 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A91E2221AC
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 13:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BD6D2221B2
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 13:51:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727963AbgGPLsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 07:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50930 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726506AbgGPLsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 07:48:13 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CA5C061755
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 04:48:13 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id d17so6823932ljl.3
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 04:48:13 -0700 (PDT)
+        id S1728238AbgGPLte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 07:49:34 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:10284 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726383AbgGPLtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 07:49:33 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06GBnENs005129;
+        Thu, 16 Jul 2020 04:49:29 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=fGa6LwtAu+Q29WATQLJQpSz9yiO8r5niblyGghNLZkY=;
+ b=DAKYLKDTSCwlZaZHZT+dUJ0JfgKDq1/ubK6DhGWiyi9Up+85FFTd6rGoRZm8iHvx1+Iy
+ QTiKAVnUf7huS0bLMDDb++TX4OEij5uy7EYybnFOqjQmA2eyH5wJtkgEzdiPCHYlidQ9
+ ayvhAJXAvYbJWQLRYfDh64LcOrYP1k3FxkcRxHXDZfnT0w00Gz3D3q7AnL9HUYNhA/zX
+ cpiEPeqS36q3maiqinO9PYdQVJGhiyc9BsbGnflAc8Tf8Q9zwDEZWSNrzeIFXRQExAJJ
+ p3XTz5lWyY4lG5m7kckAwL+Ae6E8Fsxz0JGe6Q6ycPkXoT0bbD94AoGqR9zP6LtSHIgi Ew== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 328mmhyfbk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 16 Jul 2020 04:49:29 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 16 Jul
+ 2020 04:49:27 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.168)
+ by SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Thu, 16 Jul 2020 04:49:27 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jjE0ADSmAG6PTMZ4PSaR2T/SeEXwvSXXHG0Wz1Kyb9O7MZSxDMlfHUpGeKvZjmdmkjyFgOctaHz+/bR83g8NRaMCxRAKww+9xuNXoEKyGehJSBMHUeelWEjM9JLaXDQEU/GZ2uNdPkmsfm3LOCV/1kGK8DaZdxessugRERbgmuvXTZmiL0rfS51l5Lj7nzMaqYeCFOI/M2BymBMKFTnv+VmrzBEKZMfu7u9BFhrSkxDl5VgnehtPJcsMU6eUsb+F+KGZC4dUAZaa4vuOG+i4xiRATv3WI62T6Lyyb0zm4O69WK47BVXhlKsJ1FJwlOUqpQuaAjhc1I9IjeMRmnKtwQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fGa6LwtAu+Q29WATQLJQpSz9yiO8r5niblyGghNLZkY=;
+ b=k0oXsI5fL3LhIpPrMHAQf3SdBLw3Dhya/Yt0QsJXHUV9hQVDsTEqss6dHWlH3uWtqWU6WEWLpawRYgbDZ+EPEtf+YQwwkzSw9XXqb/KX28mQOPzTF2ZsIS/oFvXU/tUvxWJLHj5aM75BhNxqAm5ingGHT42hZcC1vLjD576VZ2OJWdKf1BKb/l+ga3/cPKYJ8ruVSjpPiU3IF9dj5wh19e4cPwKoUxODHsk1HOMNg27lFIvHfiA9slXgsxNsQC1tMQUpSV8CD20Bi9Hqs36o8VeCe9rmy2YI4NG/aAi7Pbog6rXsMZx8jkTeCaAZCoOhzGGNsA+RhjxyEND5ZwiRtg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=/GvE5mLubde7FdkABAeWnyMsWpw4xjTaM1e3k7MWqIA=;
-        b=jg7ezTaJ0octejEhVxfpChAgTaEQI6MYYALNlnfRCxmAkRsEg6EMtaFNCKAX4GM8+J
-         biXYT+/h29AZtBgXvf2R572PzXzkhsFxo/Fs3nKykp4dsekjR+Yc1LPDKNKw7OGjGbkX
-         zwUROrUeShTrB27hdQsclp3ww/Slcm2l3wsCk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=/GvE5mLubde7FdkABAeWnyMsWpw4xjTaM1e3k7MWqIA=;
-        b=o7tNrRALJiU/uQWbwePMjIGB6AXWx96mKv2Du/qPJW3bBfUsCwuwjicjQ8X8zqOtsJ
-         s944fH5VIJ3RKDxanx2rjhOK9rZVHm7e+BLD5Beexo90ePQq+qBH+iYPsVmQ0BwvOyJN
-         9IVVBCZZtI9k/CU8VXywIxJlmvinUAPq4pEZcjomuTixjfvebtaEj4PW8saBB3mEgWPp
-         DS2S5fif2OIU2HuQD1kz8XykFH8WFqT4j+Ldnnq4z2UPKRGPuwEWeu7mA3Y4W5g2BqA7
-         C/yjOdQAjH0SNiAC6npFPVzdVk9ZGaptx3asOp01a7hrNc86C9akl5Npb1UMNQ9/9scK
-         nenw==
-X-Gm-Message-State: AOAM532MnVGMjIHAXQmWKP9Wy4fkGpzdW2Y+hXjyF6gCJyUluQNTI2Td
-        rBOzqyxS/AdV7tIx9uFyiYOeicmnjU+zeg==
-X-Google-Smtp-Source: ABdhPJxVQNiZterynrx2heHWJx0H3l7YAy9VRzzb1g5CjHd3YIGbnALJxgXOhIhiLFfYFwbDZlFTrw==
-X-Received: by 2002:a2e:9ac4:: with SMTP id p4mr1929744ljj.143.1594900091536;
-        Thu, 16 Jul 2020 04:48:11 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id d22sm340396lfs.26.2020.07.16.04.48.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2020 04:48:10 -0700 (PDT)
-References: <20200710173123.427983-1-jakub@cloudflare.com> <c98aaa5e-9347-c23f-cfa6-e267f2485c5b@fb.com> <87a700y3yb.fsf@cloudflare.com> <7c27726c-9bba-8d7c-55b4-69d7af287382@fb.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf] bpf: Shift and mask loads narrower than context field size
-In-reply-to: <7c27726c-9bba-8d7c-55b4-69d7af287382@fb.com>
-Date:   Thu, 16 Jul 2020 13:48:09 +0200
-Message-ID: <878sfjy93a.fsf@cloudflare.com>
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fGa6LwtAu+Q29WATQLJQpSz9yiO8r5niblyGghNLZkY=;
+ b=rHii9h1HLTNBQ5JCS1zqADfWkWvUmkhwWzgEB1RrbizYla7I0QqdbvnW6oRhP3UAo4C1uOsuGAF2LJwyUMA9sOGU2UdbHnaxDfZsptCMss1wofjASU/C+M+s+E090xnuNLOEoo6VL7AaG5dM8vv2qiDHaet70Bu4ko6JvMZK62I=
+Received: from CH2PR18MB3238.namprd18.prod.outlook.com (2603:10b6:610:28::12)
+ by CH2PR18MB3208.namprd18.prod.outlook.com (2603:10b6:610:15::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21; Thu, 16 Jul
+ 2020 11:49:25 +0000
+Received: from CH2PR18MB3238.namprd18.prod.outlook.com
+ ([fe80::8ac:a709:c804:631c]) by CH2PR18MB3238.namprd18.prod.outlook.com
+ ([fe80::8ac:a709:c804:631c%6]) with mapi id 15.20.3174.026; Thu, 16 Jul 2020
+ 11:49:25 +0000
+From:   Mark Starovoytov <mstarovoitov@marvell.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: RE: [EXT] Re: [PATCH v2 net-next 02/10] net: atlantic: additional
+ per-queue stats
+Thread-Topic: [EXT] Re: [PATCH v2 net-next 02/10] net: atlantic: additional
+ per-queue stats
+Thread-Index: AQHWWr95QE9f+pmAo0i36aaYnt/lB6kJTk4AgADJtWA=
+Date:   Thu, 16 Jul 2020 11:49:25 +0000
+Message-ID: <CH2PR18MB32389D98739CE4A126F2DDE0D37F0@CH2PR18MB3238.namprd18.prod.outlook.com>
+References: <20200715154842.305-1-irusskikh@marvell.com>
+        <20200715154842.305-3-irusskikh@marvell.com>
+ <20200715164438.7cedb552@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200715164438.7cedb552@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [95.161.223.64]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b26bbe89-9587-4ec4-f1bd-08d8297e4a0a
+x-ms-traffictypediagnostic: CH2PR18MB3208:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH2PR18MB32081B30035DB5D5F52DA4A0D37F0@CH2PR18MB3208.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2958;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3a7/xlRSJ10wdDicprIARSjoJaRd9IqKJwpnvBxxNesaG+CIrpMXuOOG1oa9mlmE0an1+MBj+z/PZpG1R7wtxOukY6SymfbsGRQ8SZXt151HLtHino709LgY0NjidPpDD55vUfhdU3676Nx1/x1Xmc6WUzf2q4E8ZOLAz7Zld1dbcRC0oBvvzWvbM1sbrFhPoeL8yGtxdgNAtzv6wlb/SJn1mX9AjSy2RebqH5i2JNP0BooDHf02xWc02yy14OYMB8s4eTZkVsMvDkKA4JdRkVBp9jsmsFHsMYTAWWozikq/WWnMTbFaJbM10tB24yaI
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR18MB3238.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(396003)(39860400002)(136003)(376002)(366004)(66476007)(76116006)(66556008)(55016002)(8676002)(186003)(64756008)(66946007)(4326008)(26005)(86362001)(66446008)(478600001)(9686003)(7696005)(316002)(83380400001)(52536014)(33656002)(2906002)(8936002)(71200400001)(54906003)(6916009)(107886003)(5660300002)(6506007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: pACPJBcSINs/JFSvx2hFnPifLT2ePUcdNVcPpfqmK718dbiZU8bN4TJKq6EQ4HIkYJB9KHMPMaMSzVlCLssb/5fGRHWcFY4KJ68/dimDOe1RSAmrwXkEKCMnqdkOfBo6/SbAEN/R+PvvnV6t6NgfAZcr8TwZg0iwmMn8I/hb5sYge+RlZ1YxjXx8VG+7isz7HeTGUlUV94owC4VaPbuFTU47MazeX6EUzSXTY2D0XtM/tIuozEEu0eCmd+fW78mtZXydfLQZdAjT0MjjrXcaau/TcgmMj/c0GjOrlac/a+j/uAtFCoX1C8mifKV/c9O+IBI8SxP0Taaseu76tmcc1NfjDX7kN/h2yWFnz2R1LEIk+uYoOL8UWPOo3bz8J4TMmSoUXwINakeIjkegfSpkphE/7KiImIoepKmjv7HiSMcnIHwd7Zfz5KiqInma/+ljtp0Jy19PPpJ8nK0aBEbDZTs0uQmuOx0cvn+I1IeMKhc=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR18MB3238.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b26bbe89-9587-4ec4-f1bd-08d8297e4a0a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jul 2020 11:49:25.5915
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ibhdl+54Co3sFVRJ8TAfqhaAOGwiVjB527d0Tf8eDbJMdh/GJ9y2VCZjP0WdcKKvTzfmE3OZzUdV6orwcsVywuVG0MpdKbe3ZIDjIylc1qo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR18MB3208
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-16_05:2020-07-16,2020-07-16 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 15, 2020 at 10:59 PM CEST, Yonghong Song wrote:
-> On 7/15/20 12:26 PM, Jakub Sitnicki wrote:
->> On Wed, Jul 15, 2020 at 08:44 AM CEST, Yonghong Song wrote:
->>> On 7/10/20 10:31 AM, Jakub Sitnicki wrote:
 
-[...]
+>> +int aq_nic_fill_stats_data(struct aq_ring_stats_rx_s *stats_rx,
+>> +			   struct aq_ring_stats_tx_s *stats_tx,
+>> +			   u64 *data,
+>> +			   unsigned int *p_count)
+>> +{
+>> +	unsigned int count =3D 0U;
+>> +	/* This data should mimic aq_ethtool_queue_stat_names structure
+>> +	 */
+>> +	data[count] +=3D stats_rx->packets;
+>> +	data[++count] +=3D stats_tx->packets;
+>> +	data[++count] +=3D stats_tx->queue_restarts;
+>> +	data[++count] +=3D stats_rx->jumbo_packets;
+>> +	data[++count] +=3D stats_rx->lro_packets;
+>> +	data[++count] +=3D stats_rx->errors;
+>> +	data[++count] +=3D stats_rx->alloc_fails;
+>> +	data[++count] +=3D stats_rx->skb_alloc_fails;
+>> +	data[++count] +=3D stats_rx->polls;
+>> +
+>> +	if (p_count)
+>> +		*p_count =3D ++count;
+>> +
+>> +	return 0;
+>> +}
+>=20
+> I don't see this function being taken care of in the following patch intr=
+oducing
+> the u64_stats_update_* use.
 
->>>> The "size < target_size" check is left in place to cover the case when a
->>>> context field is narrower than its target field, even if we might not have
->>>> such case now. (It would have to be a u32 context field backed by a u64
->>>> target field, with context fields all being 4-bytes or wider.)
->>>>
->>>> Going back to the example, with the fix in place, the upper half load from
->>>> ctx->ip_protocol yields zero:
->>>>
->>>>     int reuseport_narrow_half(struct sk_reuseport_md * ctx):
->>>>     ; int reuseport_narrow_half(struct sk_reuseport_md *ctx)
->>>>        0: (b4) w0 = 0
->>>>     ; if (half[0] == 0xaaaa)
->>>>        1: (79) r2 = *(u64 *)(r1 +8)
->>>>        2: (69) r2 = *(u16 *)(r2 +924)
->>>>        3: (54) w2 &= 65535
->>>>     ; if (half[0] == 0xaaaa)
->>>>        4: (16) if w2 == 0xaaaa goto pc+7
->>>>     ; if (half[1] == 0xbbbb)
->>>>        5: (79) r1 = *(u64 *)(r1 +8)
->>>>        6: (69) r1 = *(u16 *)(r1 +924)
->>>
->>> The load is still from offset 0, 2 bytes with upper 48 bits as 0.
->>
->> Yes, this is how narrow loads currently work, right? It is not specific
->> to the case I'm fixing.
->>
->> To give an example - if you do a 1-byte load at offset 1, it will load
->> the value from offset 0, and shift it right by 1 byte. So it is expected
->> that the load is always from offset 0 with current implementation.
->
-> Yes, the load is always from offset 0. The confusion part is
-> it load offset 0 with 2 bytes and then right shifting 2 bytes
-> to get 0...
+My bad, I totally missed this function somehow. Thanks for reporting.
 
-Right, I see how silly is the generated instruction sequence. I guess
-I've accepted how <prog_type>_convert_ctx_access functions emit loads
-and didn't stop and question this part before.
+> For review it'd be easier to get the existing problems fixed first.
 
->> SEC("sk_reuseport/narrow_byte")
->> int reuseport_narrow_byte(struct sk_reuseport_md *ctx)
->> {
->> 	__u8 *byte;
->>
->> 	byte = (__u8 *)&ctx->ip_protocol;
->> 	if (byte[0] == 0xaa)
->> 		return SK_DROP;
->> 	if (byte[1] == 0xbb)
->> 		return SK_DROP;
->> 	if (byte[2] == 0xcc)
->> 		return SK_DROP;
->> 	if (byte[3] == 0xdd)
->> 		return SK_DROP;
->> 	return SK_PASS;
->> }
->>
->> int reuseport_narrow_byte(struct sk_reuseport_md * ctx):
->> ; int reuseport_narrow_byte(struct sk_reuseport_md *ctx)
->>     0: (b4) w0 = 0
->> ; if (byte[0] == 0xaa)
->>     1: (79) r2 = *(u64 *)(r1 +8)
->>     2: (69) r2 = *(u16 *)(r2 +924)
->>     3: (54) w2 &= 255
->> ; if (byte[0] == 0xaa)
->>     4: (16) if w2 == 0xaa goto pc+17
->> ; if (byte[1] == 0xbb)
->>     5: (79) r2 = *(u64 *)(r1 +8)
->>     6: (69) r2 = *(u16 *)(r2 +924)
->>     7: (74) w2 >>= 8
->>     8: (54) w2 &= 255
->> ; if (byte[1] == 0xbb)
->>     9: (16) if w2 == 0xbb goto pc+12
->> ; if (byte[2] == 0xcc)
->>    10: (79) r2 = *(u64 *)(r1 +8)
->>    11: (69) r2 = *(u16 *)(r2 +924)
->>    12: (74) w2 >>= 16
->>    13: (54) w2 &= 255
->> ; if (byte[2] == 0xcc)
->>    14: (16) if w2 == 0xcc goto pc+7
->> ; if (byte[3] == 0xdd)
->>    15: (79) r1 = *(u64 *)(r1 +8)
->>    16: (69) r1 = *(u16 *)(r1 +924)
->>    17: (74) w1 >>= 24
->>    18: (54) w1 &= 255
->>    19: (b4) w0 = 1
->> ; if (byte[3] == 0xdd)
->>    20: (56) if w1 != 0xdd goto pc+1
->>    21: (b4) w0 = 0
->> ; }
->>    22: (95) exit
->>
->>>
->>>>        7: (74) w1 >>= 16
->>>
->>> w1 will be 0 now. so this will work.
->>>
->>>>        8: (54) w1 &= 65535
->>>
->>> For the above insns 5-8, verifier, based on target information can
->>> directly generate w1 = 0 since:
->>>    . target kernel field size is 2, ctx field size is 4.
->>>    . user tries to access offset 2 size 2.
->>>
->>> Here, we need to decide whether we permits user to do partial read beyond of
->>> kernel narrow field or not (e.g., this example)? I would
->>> say yes, but Daniel or Alexei can provide additional comments.
->>>
->>> If we allow such accesses, I would like verifier to generate better
->>> code as I illustrated in the above. This can be implemented in
->>> verifier itself with target passing additional kernel field size
->>> to the verifier. The target already passed the ctx field size back
->>> to the verifier.
->>
->> Keep in mind that the BPF user is writing their code under the
->> assumption that the context field has 4 bytes. IMHO it's reasonable to
->> expect that I can load 2 bytes at offset of 2 from a 4 byte field.
->>
->> Restricting it now to loads below the target field size, which is
->> unknown to the user, would mean rejecting programs that are working
->> today. Even if they are getting funny values.
->>
->> I think implementing what you suggest is doable without major
->> changes. We have load size, target field size, and context field size at
->> hand in convert_ctx_accesses(), so it seems like a matter of adding an
->> 'if' branch to handle better the case when we know the end result must
->> be 0. I'll give it a try.
->
-> Sounds good. The target_size is returned in convert_ctx_access(), which
-> is too late as the verifier already generated load instructions. You need to get
-> it earlier in is_valid_access().
+> Also since this function always returns 0 please make it void.
 
-I have a feeling that I'm not following what you have in mind.
+Will do.
 
-True, target_size is only known after convert_ctx_access generated
-instructions. At this point, if we want to optimize the narrow loads
-that must return 0, we can pop however many instructions
-convert_ctx_access appended to insn_buf and emit BPF_MOV32/64_IMM.
-
-However, it sounds a bit more complex than what I hoped for initially,
-so I'm starting to doubt the value. Considering that narrow loads at an
-offset that matches or exceeds target field size must be a corner case,
-if the current "broken" behavior went unnoticed so far.
-
-I'll need to play with the code and see how it turns out. But for the
-moment please consider acking/nacking this one, as a simple way to fix
-the issue targeted at 'bpf' branch and stable kernels.
-
->
->>
->> But I do want to empahsize that I still think the fix in current form is
->> correct, or at least not worse than what we have already in place narrow
->> loads.
->
-> I did agree that the fix in this patch is correct. It is just that we
-> could do better to fix this problem.
-
-I agree with your sentiment. Sorry if I got too defensive there.
-
->
->>
->>>
->>>>        9: (b4) w0 = 1
->>>>     ; if (half[1] == 0xbbbb)
->>>>       10: (56) if w1 != 0xbbbb goto pc+1
->>>>       11: (b4) w0 = 0
->>>>     ; }
->>>>       12: (95) exit
->>>>
->>>> Fixes: f96da09473b5 ("bpf: simplify narrower ctx access")
->>>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->>>> ---
->>>>    kernel/bpf/verifier.c | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->>>> index 94cead5a43e5..1c4d0e24a5a2 100644
->>>> --- a/kernel/bpf/verifier.c
->>>> +++ b/kernel/bpf/verifier.c
->>>> @@ -9760,7 +9760,7 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
->>>>    			return -EINVAL;
->>>>    		}
->>>>    -		if (is_narrower_load && size < target_size) {
->>>> +		if (is_narrower_load || size < target_size) {
->>>>    			u8 shift = bpf_ctx_narrow_access_offset(
->>>>    				off, size, size_default) * 8;
->>>>    			if (ctx_field_size <= 4) {
->>>>
+Best regards,
+Mark.
