@@ -2,114 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64636221E06
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 10:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BB81221E16
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 10:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbgGPIQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 04:16:45 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2580 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725867AbgGPIQp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 04:16:45 -0400
-Received: from nkgeml708-chm.china.huawei.com (unknown [172.30.72.54])
-        by Forcepoint Email with ESMTP id DE94255744157899DEBE;
-        Thu, 16 Jul 2020 16:16:41 +0800 (CST)
-Received: from nkgeml708-chm.china.huawei.com (10.98.57.160) by
- nkgeml708-chm.china.huawei.com (10.98.57.160) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1913.5; Thu, 16 Jul 2020 16:16:41 +0800
-Received: from nkgeml708-chm.china.huawei.com ([10.98.57.160]) by
- nkgeml708-chm.china.huawei.com ([10.98.57.160]) with mapi id 15.01.1913.007;
- Thu, 16 Jul 2020 16:16:41 +0800
-From:   "Guodeqing (A)" <geffrey.guo@huawei.com>
-To:     Julian Anastasov <ja@ssi.bg>
-CC:     "wensong@linux-vs.org" <wensong@linux-vs.org>,
-        "horms@verge.net.au" <horms@verge.net.au>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "kadlec@netfilter.org" <kadlec@netfilter.org>,
-        "fw@strlen.de" <fw@strlen.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBpcHZzOiBmaXggdGhlIGNvbm5lY3Rpb24gc3luYyBm?=
- =?gb2312?Q?ailed_in_some_cases?=
-Thread-Topic: [PATCH] ipvs: fix the connection sync failed in some cases
-Thread-Index: AQHWWnVcQeKvQJuISkaQl2jKbtaPdKkIYbIAgAFkcQA=
-Date:   Thu, 16 Jul 2020 08:16:41 +0000
-Message-ID: <4b51941de0ab441385c356cccfee7370@huawei.com>
-References: <1594796027-66136-1-git-send-email-geffrey.guo@huawei.com>
- <alpine.LFD.2.23.451.2007152016420.6034@ja.home.ssi.bg>
-In-Reply-To: <alpine.LFD.2.23.451.2007152016420.6034@ja.home.ssi.bg>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.164.122.165]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1726386AbgGPIUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 04:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725867AbgGPIUF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 04:20:05 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408B6C061755;
+        Thu, 16 Jul 2020 01:20:05 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id k15so2829983lfc.4;
+        Thu, 16 Jul 2020 01:20:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mz30pS9nuWD5vYzRoE6sn37W/RWl4qEdurv/5wWXpsA=;
+        b=tWXeV08xIDH5mo3BHwWVQQPgIPC8FLW3QYQqYh3Z1s9vxZB22Rv/By4ahoAVgUImwI
+         WNtv1xht/klcqHZt958pemGcTDDIZhQtrZ290hDYIEbgykwrrkcWoTkffRzR8wIVH1bt
+         i9RaK+DyNUxBVc3xQNV8QweyNWFNo2DMT4XvzFp22dyVuSGASMFutNWkGZGF2gO2jpZw
+         KgASta8rv3o4qVuYqL6PwfxRGjQaQn8Si3iwG0Kr1ONB766pcizeTA7XOS1ROnTEyb8s
+         xyKEl9ysTMAUGzX7GlLj86m6LL7VlNo3bRXztRaxcuG8IFC7cVrOMxX/hIE4WzFcJEad
+         TFnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=mz30pS9nuWD5vYzRoE6sn37W/RWl4qEdurv/5wWXpsA=;
+        b=B61nsE7mzlr04Ymt1Ta4i55+rT48+C7o+RHc2WsGE0tgRSMmWgE5SO+JXWJJEEos9V
+         4ywYCu46iLahHiXxr2pOZm4/y6aLz+I5BCRk1K9PciB1WquklfsEKLGztr0SxaRIRI3Y
+         6Y+JmKXZ/eq8e0dw5bXo6Z+yZFnOAMUk53UL0n2CD2rFdW6Obu8K1AkSsImFY3AHxUY5
+         SQZUq2+Y/9emJK2/yMKEGIteex0Qt3cjVn49oBPKNxc1GOm6bAhydFSYWfL4EWU+Ga+7
+         F59AutfwO4VzAIcJTYzYTH4LZ49/I7OnykCj16mFpAl+kUToOhesacygzLW81gmIEe6P
+         XXoQ==
+X-Gm-Message-State: AOAM531ezLkWO/bdcJiBLHwWR5+ZaD/8o1r3/f+ALq74se8hV198D7Xq
+        HilR9okN/kamudDzdEEy45nzrQjC9uU=
+X-Google-Smtp-Source: ABdhPJxoShNW+1nwmDHdli9/hEpTeonEHue/Vq5kDk20T5a5m/nKCansNBawju9h60BKAwWgU+aH6A==
+X-Received: by 2002:a19:c886:: with SMTP id y128mr1520323lff.98.1594887603491;
+        Thu, 16 Jul 2020 01:20:03 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:23b:3385:c538:1113:7a4f:71ec? ([2a00:1fa0:23b:3385:c538:1113:7a4f:71ec])
+        by smtp.gmail.com with ESMTPSA id b11sm1023669lfa.50.2020.07.16.01.20.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jul 2020 01:20:03 -0700 (PDT)
+Subject: Re: [PATCH 3/4] cdc_ncm: replace the way cdc_ncm hooks into
+To:     =?UTF-8?Q?Wxcaf=c3=a9?= <wxcafe@wxcafe.net>,
+        linux-usb@vger.kernel.org
+Cc:     =?UTF-8?Q?Miguel_Rodr=c3=adguez_P=c3=a9rez?= <miguel@det.uvigo.gal>,
+        oliver@neukum.org, netdev@vger.kernel.org
+References: <ba544d6d55f72040b70f041911199e693f7855f7.camel@wxcafe.net>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Organization: Brain-dead Software
+Message-ID: <b9219015-6157-495f-0cbc-08cb078aab78@gmail.com>
+Date:   Thu, 16 Jul 2020 11:19:54 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+In-Reply-To: <ba544d6d55f72040b70f041911199e693f7855f7.camel@wxcafe.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SSBkbyBhIGlwdnMgY29ubmVjdGlvbiBzeW5jIHRlc3QgaW4gYSAzLjEwIHZlcnNpb24ga2VybmVs
-IHdoaWNoIGhhcyB0aGUgN2MxM2Y5N2ZmZGU2IGNvbW1pdCB3aGljaCBzdWNjZWVkLiBJIHdpbGwg
-bW9kaWZ5IHRoZSBmaXhlcyBpbmZvcm1hdGlvbiBvZiB0aGUgcGF0Y2ggYW5kIHJlcGxhY2UgdGhl
-IHNrYl9xdWV1ZV9lbXB0eSB3aXRoIHNrYl9xdWV1ZV9lbXB0eV9sb2NrbGVzcy4NClRoYW5rcy4N
-Cg0KLS0tLS3Tyrz+1K28/i0tLS0tDQq3orz+yMs6IEp1bGlhbiBBbmFzdGFzb3YgW21haWx0bzpq
-YUBzc2kuYmddIA0Kt6LLzcqxvOQ6IFRodXJzZGF5LCBKdWx5IDE2LCAyMDIwIDE6MzYNCsrVvP7I
-yzogR3VvZGVxaW5nIChBKSA8Z2VmZnJleS5ndW9AaHVhd2VpLmNvbT4NCrOty806IHdlbnNvbmdA
-bGludXgtdnMub3JnOyBob3Jtc0B2ZXJnZS5uZXQuYXU7IHBhYmxvQG5ldGZpbHRlci5vcmc7IGth
-ZGxlY0BuZXRmaWx0ZXIub3JnOyBmd0BzdHJsZW4uZGU7IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1
-YmFAa2VybmVsLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbHZzLWRldmVsQHZnZXIua2Vy
-bmVsLm9yZzsgbmV0ZmlsdGVyLWRldmVsQHZnZXIua2VybmVsLm9yZw0K1vfM4jogUmU6IFtQQVRD
-SF0gaXB2czogZml4IHRoZSBjb25uZWN0aW9uIHN5bmMgZmFpbGVkIGluIHNvbWUgY2FzZXMNCg0K
-DQoJSGVsbG8sDQoNCk9uIFdlZCwgMTUgSnVsIDIwMjAsIGd1b2RlcWluZyB3cm90ZToNCg0KPiBU
-aGUgc3luY190aHJlYWRfYmFja3VwIG9ubHkgY2hlY2tzIHNrX3JlY2VpdmVfcXVldWUgaXMgZW1w
-dHkgb3Igbm90LCANCj4gdGhlcmUgaXMgYSBzaXR1YXRpb24gd2hpY2ggY2Fubm90IHN5bmMgdGhl
-IGNvbm5lY3Rpb24gZW50cmllcyB3aGVuIA0KPiBza19yZWNlaXZlX3F1ZXVlIGlzIGVtcHR5IGFu
-ZCBza19ybWVtX2FsbG9jIGlzIGxhcmdlciB0aGFuIHNrX3JjdmJ1ZiwgDQo+IHRoZSBzeW5jIHBh
-Y2tldHMgYXJlIGRyb3BwZWQgaW4gX191ZHBfZW5xdWV1ZV9zY2hlZHVsZV9za2IsIHRoaXMgaXMg
-DQo+IGJlY2F1c2UgdGhlIHBhY2tldHMgaW4gcmVhZGVyX3F1ZXVlIGlzIG5vdCByZWFkLCBzbyB0
-aGUgcm1lbSBpcyBub3QgDQo+IHJlY2xhaW1lZC4NCg0KCUdvb2QgY2F0Y2guIFdlIG1pc3NlZCB0
-aGlzIGNoYW5nZSBpbiBVRFAuLi4NCg0KPiBIZXJlIEkgYWRkIHRoZSBjaGVjayBvZiB3aGV0aGVy
-IHRoZSByZWFkZXJfcXVldWUgb2YgdGhlIHVkcCBzb2NrIGlzIA0KPiBlbXB0eSBvciBub3QgdG8g
-c29sdmUgdGhpcyBwcm9ibGVtLg0KPiANCj4gRml4ZXM6IDdjMTNmOTdmZmRlNiAoInVkcDogZG8g
-ZndkIG1lbW9yeSBzY2hlZHVsaW5nIG9uIGRlcXVldWUiKQ0KDQoJV2h5IHRoaXMgY29tbWl0IGFu
-ZCBub3QgMjI3NmY1OGFjNTg5IHdoaWNoIGFkZHMgcmVhZGVyX3F1ZXVlIHRvIHVkcF9wb2xsKCkg
-PyBNYXkgYmUgYm90aD8NCg0KPiBSZXBvcnRlZC1ieTogemhvdXh1ZG9uZyA8emhvdXh1ZG9uZzhA
-aHVhd2VpLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogZ3VvZGVxaW5nIDxnZWZmcmV5Lmd1b0BodWF3
-ZWkuY29tPg0KPiAtLS0NCj4gIG5ldC9uZXRmaWx0ZXIvaXB2cy9pcF92c19zeW5jLmMgfCAxMiAr
-KysrKysrKy0tLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCA4IGluc2VydGlvbnMoKyksIDQgZGVsZXRp
-b25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvbmV0L25ldGZpbHRlci9pcHZzL2lwX3ZzX3N5bmMu
-YyANCj4gYi9uZXQvbmV0ZmlsdGVyL2lwdnMvaXBfdnNfc3luYy5jIGluZGV4IDYwNWUwZjYuLmFi
-ZThkNjMgMTAwNjQ0DQo+IC0tLSBhL25ldC9uZXRmaWx0ZXIvaXB2cy9pcF92c19zeW5jLmMNCj4g
-KysrIGIvbmV0L25ldGZpbHRlci9pcHZzL2lwX3ZzX3N5bmMuYw0KPiBAQCAtMTcxNyw2ICsxNzE3
-LDggQEAgc3RhdGljIGludCBzeW5jX3RocmVhZF9iYWNrdXAodm9pZCAqZGF0YSkgIHsNCj4gIAlz
-dHJ1Y3QgaXBfdnNfc3luY190aHJlYWRfZGF0YSAqdGluZm8gPSBkYXRhOw0KPiAgCXN0cnVjdCBu
-ZXRuc19pcHZzICppcHZzID0gdGluZm8tPmlwdnM7DQo+ICsJc3RydWN0IHNvY2sgKnNrID0gdGlu
-Zm8tPnNvY2stPnNrOw0KPiArCXN0cnVjdCB1ZHBfc29jayAqdXAgPSB1ZHBfc2soc2spOw0KPiAg
-CWludCBsZW47DQo+ICANCj4gIAlwcl9pbmZvKCJzeW5jIHRocmVhZCBzdGFydGVkOiBzdGF0ZSA9
-IEJBQ0tVUCwgbWNhc3RfaWZuID0gJXMsICINCj4gQEAgLTE3MjQsMTIgKzE3MjYsMTQgQEAgc3Rh
-dGljIGludCBzeW5jX3RocmVhZF9iYWNrdXAodm9pZCAqZGF0YSkNCj4gIAkJaXB2cy0+YmNmZy5t
-Y2FzdF9pZm4sIGlwdnMtPmJjZmcuc3luY2lkLCB0aW5mby0+aWQpOw0KPiAgDQo+ICAJd2hpbGUg
-KCFrdGhyZWFkX3Nob3VsZF9zdG9wKCkpIHsNCj4gLQkJd2FpdF9ldmVudF9pbnRlcnJ1cHRpYmxl
-KCpza19zbGVlcCh0aW5mby0+c29jay0+c2spLA0KPiAtCQkJICFza2JfcXVldWVfZW1wdHkoJnRp
-bmZvLT5zb2NrLT5zay0+c2tfcmVjZWl2ZV9xdWV1ZSkNCj4gLQkJCSB8fCBrdGhyZWFkX3Nob3Vs
-ZF9zdG9wKCkpOw0KPiArCQl3YWl0X2V2ZW50X2ludGVycnVwdGlibGUoKnNrX3NsZWVwKHNrKSwN
-Cj4gKwkJCQkJICFza2JfcXVldWVfZW1wdHkoJnNrLT5za19yZWNlaXZlX3F1ZXVlKSB8fA0KPiAr
-CQkJCQkgIXNrYl9xdWV1ZV9lbXB0eSgmdXAtPnJlYWRlcl9xdWV1ZSkgfHwNCg0KCU1heSBiZSB3
-ZSBzaG91bGQgdXNlIHNrYl9xdWV1ZV9lbXB0eV9sb2NrbGVzcyBmb3IgNS40KyBhbmQgc2tiX3F1
-ZXVlX2VtcHR5KCkgZm9yIGJhY2twb3J0cyB0byA0LjE0IGFuZCA0LjE5Li4uDQoNCj4gKwkJCQkJ
-IGt0aHJlYWRfc2hvdWxkX3N0b3AoKSk7DQo+ICANCj4gIAkJLyogZG8gd2UgaGF2ZSBkYXRhIG5v
-dz8gKi8NCj4gLQkJd2hpbGUgKCFza2JfcXVldWVfZW1wdHkoJih0aW5mby0+c29jay0+c2stPnNr
-X3JlY2VpdmVfcXVldWUpKSkgew0KPiArCQl3aGlsZSAoIXNrYl9xdWV1ZV9lbXB0eSgmc2stPnNr
-X3JlY2VpdmVfcXVldWUpIHx8DQo+ICsJCSAgICAgICAhc2tiX3F1ZXVlX2VtcHR5KCZ1cC0+cmVh
-ZGVyX3F1ZXVlKSkgew0KDQoJSGVyZSB0b28NCg0KPiAgCQkJbGVuID0gaXBfdnNfcmVjZWl2ZSh0
-aW5mby0+c29jaywgdGluZm8tPmJ1ZiwNCj4gIAkJCQkJaXB2cy0+YmNmZy5zeW5jX21heGxlbik7
-DQo+ICAJCQlpZiAobGVuIDw9IDApIHsNCj4gLS0NCj4gMi43LjQNCg0KUmVnYXJkcw0KDQotLQ0K
-SnVsaWFuIEFuYXN0YXNvdiA8amFAc3NpLmJnPg0K
+Hello!
+
+On 15.07.2020 18:56, Wxcafé wrote:
+
+>  From 352445fcbac243b8f10e1840726d67b41a45853d Mon Sep 17 00:00:00 2001
+> From: =?UTF-8?q?Miguel Rodr=C3=ADguez P=C3=A9rez? <miguel@det.uvigo.gal>
+
+   Something went wrong
+
+> Date: Tue, 14 Jul 2020 18:10:34 -0400
+> Subject: [PATCH 3/4] cdc_ncm: replace the way cdc_ncm hooks into
+>   usbnet_change_mtu
+
+    You don't need the above, except for From:...
+
+> Previously cdc_ncm overwrited netdev_ops used by usbnet
+
+    Overwrote.
+
+> thus preventing hooking into set_rx_mode. This patch
+> preserves usbnet hooks into netdev_ops, and add an
+> additional one for change_mtu needed by cdc_ncm.
+> 
+> Signed-off-by: Miguel Rodríguez Pérez <miguel@det.uvigo.gal>
+> Signed-off-by: Wxcafé <wxcafe@wxcafe.net>
+[...]
+
+MBR, Sergei
