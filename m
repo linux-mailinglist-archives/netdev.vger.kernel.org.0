@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BCB8222B66
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 21:03:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE13E222B68
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 21:03:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729284AbgGPTCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 15:02:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39346 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726986AbgGPTCu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 15:02:50 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jw99a-005UZz-NH; Thu, 16 Jul 2020 21:02:46 +0200
-Date:   Thu, 16 Jul 2020 21:02:46 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Jeroen Baten <jbaten@i2rs.nl>, netdev@vger.kernel.org
-Subject: Re: newbie question on networking kernel panics.
-Message-ID: <20200716190246.GB1308244@lunn.ch>
-References: <49a5eb70-3596-26b5-37bb-285bbdc75a95@i2rs.nl>
- <20200716164012.GB22540@1wt.eu>
+        id S1729526AbgGPTDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 15:03:15 -0400
+Received: from www62.your-server.de ([213.133.104.62]:36614 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729496AbgGPTDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 15:03:13 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jw99q-0007tR-2w; Thu, 16 Jul 2020 21:03:02 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jw99p-000PJA-TM; Thu, 16 Jul 2020 21:03:01 +0200
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix possible hang in
+ sockopt_inherit
+To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org,
+        Andrii Nakryiko <andriin@fb.com>
+References: <20200715224107.3591967-1-sdf@google.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c63f1825-bea8-b59c-20fe-e5717aae15c7@iogearbox.net>
+Date:   Thu, 16 Jul 2020 21:02:55 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200716164012.GB22540@1wt.eu>
+In-Reply-To: <20200715224107.3591967-1-sdf@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25875/Thu Jul 16 16:46:30 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 16, 2020 at 06:40:12PM +0200, Willy Tarreau wrote:
-> Hi Jeroen,
+On 7/16/20 12:41 AM, Stanislav Fomichev wrote:
+> Andrii reported that sockopt_inherit occasionally hangs up on 5.5 kernel [0].
+> This can happen if server_thread runs faster than the main thread.
+> In that case, pthread_cond_wait will wait forever because
+> pthread_cond_signal was executed before the main thread was blocking.
+> Let's move pthread_mutex_lock up a bit to make sure server_thread
+> runs strictly after the main thread goes to sleep.
 > 
-> On Thu, Jul 16, 2020 at 05:38:57PM +0200, Jeroen Baten wrote:
-> > Hi,
-> > 
-> > I have been working on a Linux desktop for the last 20 odd years.
-> > Currently running Ubuntu 20.04.
-> > 
-> > Yesterday I enabled the option "Flow control" on my TP-Link TL-SG1024DE.
-> > 
-> > Subsequently I was forced to enjoy 3 kernel panics in the timespan of 18
-> > hours.
-> > 
-> > After disabling the "Flow control" option my system seems to be stable
-> > again.
-> > 
-> > I do have 3 sets of "cut here" text if somebody would be interested.
-> > 
-> > Please let me know if this information is of interest to someone or if I
-> > am barking up the wrong majordomo tree.
-> > 
-> > Kind regards and thanks to all here for your immensely valuable work,
+> (Not sure why this is 5.5 specific, maybe scheduling is less
+> deterministic? But I was able to confirm that it does indeed
+> happen in a VM.)
 > 
-> Since distro kernels contain some extra patches, may miss a significant
-> number of fixes, or even rely on different driver sources, you really
-> need to report this issue to your distro, who will ask for your exact
-> kernel version. It may be that this issue also affects the vanilla
-> kernel in the end, but in this case it will be reported by the distro's
-> maintainers once they've verified that it's not related to their kernel's
-> differences.
+> [0] https://lore.kernel.org/bpf/CAEf4BzY0-bVNHmCkMFPgObs=isUAyg-dFzGDY7QWYkmm7rmTSg@mail.gmail.com/
+> 
+> Reported-by: Andrii Nakryiko <andriin@fb.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
 
-Hi Jeroen
-
-If you are up for building your own kernel, you can build something
-like mainline 5.8-rc5 and see if you can reproduce it. If you can
-reproduce it with plain mainline, we would be interested in the "cut
-here" text.
-
-      Andrew
+Applied, thanks!
