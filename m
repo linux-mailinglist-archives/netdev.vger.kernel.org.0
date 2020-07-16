@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79F46222E0F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 23:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E17B222E11
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 23:34:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbgGPVeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 17:34:20 -0400
-Received: from mail-eopbgr150049.outbound.protection.outlook.com ([40.107.15.49]:49391
+        id S1727876AbgGPVeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 17:34:23 -0400
+Received: from mail-eopbgr150051.outbound.protection.outlook.com ([40.107.15.51]:32841
         "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727825AbgGPVeR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 17:34:17 -0400
+        id S1727101AbgGPVeV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jul 2020 17:34:21 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kf5kDIJi++uXtK9bQUiFyDfd7Ir71zvjoJTjpEyYsZwCXCINGpvFChUtjKTcN2FeFCo2lPktpJjrNjjd8IFD8bjvT5Ke1hShcgoT7rSkX1Z1UG1gOt3uGBhfYZErdM+F6SwG0mMxU8M3cahOdb3XFmxJFqh+Mf3Aia9nIjG/4MpnYN9n4jv9zoLZQsi24Ee5EWf3uL3gpPw/nrbFyPSsLNg1nX2mu5RSqxUZMcx8V1q0ObO1Br0Nz8epCIpaRwnhl4ShKUS9Z5Ar0HyI0lzYDEiYCDQkGzBoWvYU9P/RRCUmbscQRIjCgsef4oBHEKbPeHKxtpd2aOcS8haaeQkf+w==
+ b=Tm6LGT47tDccl0WRQSoQs3yiN/wNQ6Hl9t4i6FVstJ4AwxsFxXO4k3VYjViKfmJegU5i0uHZB5NFygwVSnmSuPwZyhJmg2NpHARPTBzKCZx98g08W2bgk7JHQ/6sbPxppUmZu5xnjsTuQnERyq6x2UjwDnCNKPh4X/TjcxRExmywIysRgnVx89oH7+Sh5RvHNRTT+4HqwkJ67/9yxT3v+SOhMNTWEvBNWL5zL9Ti9D2CfWaMOtd1k3Na1X9ww9NDqiYhihS/SEQjdjt9sLxTfpC4pFBprI8CJn+LqsiYpXscRS1Zc56mGaj+GKjisHTeYhHLQtvvPadW+osUyWhAcw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DEnplcrX6lx9vgRdLRs1MWeqDSoOn6KwsfPDviYXWb8=;
- b=d8fjPs3N8IJXwPjDlr0r8TIVWSU59llizR/7aiRaYkh5NpVlARAcoLEsCOAMWkBlYJgA8jx+t3OgMBxXSMSCzu1TT/1qlbkR1iR4U5vkzBO4mAwIYyY+9OA6jD5p3sDTDqGNOky/jOS6RCuEbRaB0qLMNwFPK36teCq0a1y75BHXC5CYtKw45/Tz0XIBtSB0VymWiBN1CZMXV4k4W+wwNr0ZGNXnm443+YVUKQISrSMvabx07Vio24CGsN7PRUk8m6A8CNruoLyqUxBe1gXyEh6R5ORQjKqkcVSbdkKkuJGyXuwi2ud+AGhzAIgwwmh+Hi6Q8LXnZuwPqRSNMVHpBA==
+ bh=YS8o16qP/Gh7NWN46bmIiEPYAcbL7f0pdUgm2S5EZbA=;
+ b=TDusiObkaq3U5+SXoN1MSFwbY9iH69/CmjPn+hrZWEjqOnnCBR4NSjdIsRYy9qH3HeH3dlvRXjQDlIiRM6mR8v5ulNY8LgVLGL+qqEJk3YxUWoUHrDx6HUobozfpwPmg89KId+Em/gKRTvbm2WEbDDxcrMDARXzglxpTjVc6VhlGrwj8lQjCN0sfufRxSAvI6fQKBhhqR370auXSNoqEqeSZuJ5nIRKTFBnXgD8ywUt7CBQBxweZG+qUHjxwx2GkSk6RK8PuhIqZw0Nik8mohQgpNn7RAlQaY/4qNNc6wLL8MKn/zISpnDalZ3udu6pePgfxhWOqsTOMglM4RX3zjw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DEnplcrX6lx9vgRdLRs1MWeqDSoOn6KwsfPDviYXWb8=;
- b=QcdsN1VTIuzN2ar83yjaO3yalEjRSy8IAdgkzA3sLj3X8O/BhlRl9v+K088PKbKgfdavZRzGlLNIpg7He9o8u3tmgz7JvSCAieAFKMekfb20Sd0znS/JuNSQBmd6YIRZZ2tIytUK9DeZPXvine6KWJo+byjRGrQpGWM9Dv9P9C8=
+ bh=YS8o16qP/Gh7NWN46bmIiEPYAcbL7f0pdUgm2S5EZbA=;
+ b=P7ae8hosjWL14xmLgPngnPkfNOKDdCwhldOT70aRmHM/OkPzz+f+7n8qpDG4F9WRSeaXzldyH7GHAk+i/peaoPu0xW4DWeBoNWgH+xMTItcAhFcxwPQGNiNwyj/gHN/ZH8X2C/3PCrwmx+v5+PpC7l536nTEmx33MCVbApYAI9E=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR0502MB2992.eurprd05.prod.outlook.com (2603:10a6:800:b0::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17; Thu, 16 Jul
- 2020 21:34:04 +0000
+ 2020 21:34:06 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3174.027; Thu, 16 Jul 2020
- 21:34:04 +0000
+ 21:34:06 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Raed Salem <raeds@mellanox.com>,
         Boris Pismenny <borisp@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 10/15] net/mlx5e: IPsec: Add Connect-X IPsec Rx data path offload
-Date:   Thu, 16 Jul 2020 14:33:16 -0700
-Message-Id: <20200716213321.29468-11-saeedm@mellanox.com>
+Subject: [net-next 11/15] net/mlx5e: IPsec: Add Connect-X IPsec ESN update offload support
+Date:   Thu, 16 Jul 2020 14:33:17 -0700
+Message-Id: <20200716213321.29468-12-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200716213321.29468-1-saeedm@mellanox.com>
 References: <20200716213321.29468-1-saeedm@mellanox.com>
@@ -58,31 +57,31 @@ X-ClientProxiedBy: BYAPR21CA0028.namprd21.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR21CA0028.namprd21.prod.outlook.com (2603:10b6:a03:114::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.7 via Frontend Transport; Thu, 16 Jul 2020 21:34:02 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR21CA0028.namprd21.prod.outlook.com (2603:10b6:a03:114::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.7 via Frontend Transport; Thu, 16 Jul 2020 21:34:04 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: f2d84dc2-61db-4741-389f-08d829cff676
+X-MS-Office365-Filtering-Correlation-Id: 995f37d1-9c31-48e3-a4e3-08d829cff7ab
 X-MS-TrafficTypeDiagnostic: VI1PR0502MB2992:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0502MB299272B6A55BCA9ED4FEA2B3BE7F0@VI1PR0502MB2992.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-Microsoft-Antispam-PRVS: <VI1PR0502MB29927EE501D3CB9146CCABABBE7F0@VI1PR0502MB2992.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:820;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nrxysbeCF6jZgZlxvV4AwLJEI4k9Yxn8lQ5SXyrhh/rLLurRmqWakmn7aYXRE56qAUEUWzXwmNt/xmfBoTvoN391C7fYn/e+Xus7gc6WhfhStfzPbL3FBGae0DD2umE8sTSR92EVcBm81fCHPi2NFcy0/gauhmd9+i2tbxzGHwog0GndyOTJVAfaiIoNzZy6RYLFpMNmcP2BEiz3+2xSAK88ymaafs6UU6FuCGm7msvfSS3aLx7jG5mWLs0ZUvdQP6KyCnhTSNRxQnUYW/8rCzqxbioOTfoyxnt45eVuzFVxfZJ6FYlq2f2KKssHXbdZ6rHHWamPtYxlOVWdgeohxdxqfev61LdbGEBtpw3M3gABeEGZKwH2HqIKLLkfyO2C
+X-Microsoft-Antispam-Message-Info: HwO40H6qNaEp8xzUIodkZ6hJNbJ60pHt733R66BRANPNwDS3n0F7ht4WPRP3rfYOoGx+CLjVNSkXP8/e21oi2GsMkSevT4RZsLDlMjW8HbRBR9+mx9uZm9lMjUgIAywYw9kzMrOxEF0eXk7WocjBkEzkveSSJepLXHHi5CH4OLDInn3yoS9BlRxuoi77BtC5q93ekpdVcthCi+jl4//CUBCmKnNZSW1sIjZ4YpHGzS96OYxPYgbgquK4ceAOUlFyr17xlNeC8fnwi133joFNG8EWr87tFgYLRGBKB+hf/yrO5Oi4HNb7OUo725AzilIo7lJVz0Ljg+uKXk/6zZAHKlqHRn5axdEw/yX60BdtAmNHbwN/o4MjiEKzvJCbbB6I
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(136003)(346002)(366004)(396003)(376002)(86362001)(66556008)(66946007)(66476007)(478600001)(8936002)(107886003)(186003)(6512007)(16526019)(956004)(52116002)(2616005)(4326008)(8676002)(6486002)(6666004)(36756003)(1076003)(6506007)(26005)(5660300002)(54906003)(316002)(83380400001)(110136005)(2906002)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Cq5bXFFlHxAiyNSPoZ4y6RiGCXBf3w/yiKxWsygdFJPDEj8jpsFtJbCUlKypxxaBHtwLDJqKbyzs5mPL/yJohPn1mu/8mRH4Z4JV63Dm5tW/8b9WCvtgyoUFlTgGPJaQjTDXYwUMitUl8QB8FkW+QZy9iwHv6aQu7erkL7L06webvoBCcLJAeE38XilRvVvyMbOc4U8Uc4hxDNexUCA2/Fa2MUCas8OgaLbBrEWaNLgRJxfNw8jI28+0hvr0ZNRpYdcBOHgiZOMFt0qcPtJZFeYupWHCexDoeuNv88Yu+vF5I+NjmfXE7c1rfhA+s4TmvpwPONpbpu1zOcm6tHEJuMtEIAossjzISIySdNXMYJ5+BWgxc/5jadOWvqWlq9XBKKFnJ4frgFzqiaP7KGI2p5po8m/RuZZr1mTR6pXSm7dndDlGBKKsDPf7YCuU6X7qz3vVpUOetuGpXjVz2yULIzRmLzut1gA8Tba3Zrtf+Lw=
+X-MS-Exchange-AntiSpam-MessageData: GGv0li/sW6mPJnKbGTZAlJCWLFTjgiQ9QDsDUzCPpa2ojLqTgYlP2W6EKjfW2WtCx1nL/r1dZISj/oV8lsK+7hFMeyEGOTbRlxkmxxyQX3CjOGVinKbkH9tBZkyBVOvaA5hyd20SqTj/EOoBkTxd2DeuK3uYYDQX7LcFGrBU2+lo+drDzrOg5y0CplmOjrFD+nC1t2JJTN61QC3XC89IpEtkV33YAs5PwASHV80UNJ+nMQNmpzDfwasPmaG1Q+SUnubL3d44kaOp5zMQd7g8N1McANm+eA4HUatZDh9Pi7HPFy+mzTe40sZJhinsA0f3RVNJcpwpxbbbLE0OB74Kt4t4HdUboy7nYGpYgJdrQWU9iMdOwOngsg1jY7/9S8Zm2IKWj46WLnzl/zi0hFZc/dzXvFAw50ihjzQ0F0YFxWBFOfyZZ1Q8K5v6IBV+vL2YrspEcA3aT/MVuJCW2ptQStbLoH5Gtbl3MbAIdTnAv30=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f2d84dc2-61db-4741-389f-08d829cff676
+X-MS-Exchange-CrossTenant-Network-Message-Id: 995f37d1-9c31-48e3-a4e3-08d829cff7ab
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2020 21:34:04.4945
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2020 21:34:06.5284
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ipX7X7JuepH269mbMXLm0ZJupsi6butgHbn5K+UMFQWLrqqmqAEqFuTgrQLLMF/qTV63LJw+EUgZ2l+CGB3EAQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: UV71jKKdD8r+Zp5ycvTEd3SKel0BTgdISVtzhMSeS6iAi/sDWtALYSy+VbhzgUG24i7lB0jlK0TS22pDWDuQQg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0502MB2992
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -91,210 +90,122 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Raed Salem <raeds@mellanox.com>
 
-On receive flow inspect received packets for IPsec offload indication
-using the cqe, for IPsec offloaded packets propagate offload status
-and stack handle to stack for further processing.
-
-Supported statuses:
-- Offload ok.
-- Authentication failure.
-- Bad trailer indication.
-
-Connect-X IPsec does not use mlx5e_ipsec_handle_rx_cqe.
-
-For RX only offload, we see the BW gain. Below is the iperf3
-performance report on two server of 24 cores Intel(R) Xeon(R)
-CPU E5-2620 v3 @ 2.40GHz with ConnectX6-DX.
-We use one thread per IPsec tunnel.
-
----------------------------------------------------------------------
-Mode          |  Num tunnel | BW     | Send CPU util | Recv CPU util
-              |             | (Gbps) | (Average %)   | (Average %)
----------------------------------------------------------------------
-Cryto offload | 1           | 4.6    | 4.2           | 14.5
----------------------------------------------------------------------
-Cryto offload | 24          | 38     | 73            | 63
----------------------------------------------------------------------
-Non-offload   | 1           | 4      | 4             | 13
----------------------------------------------------------------------
-Non-offload   | 24          | 23     | 52            | 67
+Synchronize offloading device ESN with xfrm received SN
+by updating an existing IPsec HW context with the new SN.
 
 Signed-off-by: Raed Salem <raeds@mellanox.com>
 Reviewed-by: Boris Pismenny <borisp@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c  | 56 +++++++++++++++++++
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h  | 22 +++++++-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  4 +-
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 10 +++-
- 4 files changed, 88 insertions(+), 4 deletions(-)
+ .../mellanox/mlx5/core/accel/ipsec_offload.c  | 88 +++++++++++++++++++
+ 1 file changed, 88 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-index 824b87ac8f9ee..93a8d68815ade 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-@@ -360,6 +360,62 @@ struct sk_buff *mlx5e_ipsec_handle_rx_skb(struct net_device *netdev,
- 	return skb;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
+index c49699d580fff..2f13a250aab3e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
+@@ -279,6 +279,93 @@ static int mlx5_ipsec_offload_init(struct mlx5_core_dev *mdev)
+ 	return 0;
  }
  
-+enum {
-+	MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_DECRYPTED,
-+	MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_AUTH_FAILED,
-+	MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_BAD_TRAILER,
-+};
-+
-+void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
-+				       struct sk_buff *skb,
-+				       struct mlx5_cqe64 *cqe)
++static int mlx5_modify_ipsec_obj(struct mlx5_core_dev *mdev,
++				 struct mlx5_ipsec_obj_attrs *attrs,
++				 u32 ipsec_id)
 +{
-+	u32 ipsec_meta_data = be32_to_cpu(cqe->ft_metadata);
-+	u8 ipsec_syndrome = ipsec_meta_data & 0xFF;
-+	struct mlx5e_priv *priv;
-+	struct xfrm_offload *xo;
-+	struct xfrm_state *xs;
-+	struct sec_path *sp;
-+	u32  sa_handle;
++	u32 in[MLX5_ST_SZ_DW(modify_ipsec_obj_in)] = {};
++	u32 out[MLX5_ST_SZ_DW(query_ipsec_obj_out)];
++	u64 modify_field_select = 0;
++	u64 general_obj_types;
++	void *obj;
++	int err;
 +
-+	sa_handle = MLX5_IPSEC_METADATA_HANDLE(ipsec_meta_data);
-+	priv = netdev_priv(netdev);
-+	sp = secpath_set(skb);
-+	if (unlikely(!sp)) {
-+		atomic64_inc(&priv->ipsec->sw_stats.ipsec_rx_drop_sp_alloc);
-+		return;
++	if (!(attrs->accel_flags & MLX5_ACCEL_ESP_FLAGS_ESN_TRIGGERED))
++		return 0;
++
++	general_obj_types = MLX5_CAP_GEN_64(mdev, general_obj_types);
++	if (!(general_obj_types & MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC))
++		return -EINVAL;
++
++	/* general object fields set */
++	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_QUERY_GENERAL_OBJECT);
++	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_IPSEC);
++	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, ipsec_id);
++	err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++	if (err) {
++		mlx5_core_err(mdev, "Query IPsec object failed (Object id %d), err = %d\n",
++			      ipsec_id, err);
++		return err;
 +	}
 +
-+	xs = mlx5e_ipsec_sadb_rx_lookup(priv->ipsec, sa_handle);
-+	if (unlikely(!xs)) {
-+		atomic64_inc(&priv->ipsec->sw_stats.ipsec_rx_drop_sadb_miss);
-+		return;
-+	}
++	obj = MLX5_ADDR_OF(query_ipsec_obj_out, out, ipsec_object);
++	modify_field_select = MLX5_GET64(ipsec_obj, obj, modify_field_select);
 +
-+	sp = skb_sec_path(skb);
-+	sp->xvec[sp->len++] = xs;
-+	sp->olen++;
++	/* esn */
++	if (!(modify_field_select & MLX5_MODIFY_IPSEC_BITMASK_ESN_OVERLAP) ||
++	    !(modify_field_select & MLX5_MODIFY_IPSEC_BITMASK_ESN_MSB))
++		return -EOPNOTSUPP;
 +
-+	xo = xfrm_offload(skb);
-+	xo->flags = CRYPTO_DONE;
++	obj = MLX5_ADDR_OF(modify_ipsec_obj_in, in, ipsec_object);
++	MLX5_SET(ipsec_obj, obj, esn_msb, attrs->esn_msb);
++	if (attrs->accel_flags & MLX5_ACCEL_ESP_FLAGS_ESN_STATE_OVERLAP)
++		MLX5_SET(ipsec_obj, obj, esn_overlap, 1);
 +
-+	switch (ipsec_syndrome & MLX5_IPSEC_METADATA_SYNDROM_MASK) {
-+	case MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_DECRYPTED:
-+		xo->status = CRYPTO_SUCCESS;
-+		if (WARN_ON_ONCE(priv->ipsec->no_trailer))
-+			xo->flags |= XFRM_ESP_NO_TRAILER;
-+		break;
-+	case MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_AUTH_FAILED:
-+		xo->status = CRYPTO_TUNNEL_ESP_AUTH_FAILED;
-+		break;
-+	case MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_BAD_TRAILER:
-+		xo->status = CRYPTO_INVALID_PACKET_SYNTAX;
-+		break;
-+	default:
-+		atomic64_inc(&priv->ipsec->sw_stats.ipsec_rx_drop_syndrome);
-+	}
++	/* general object fields set */
++	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_MODIFY_GENERAL_OBJECT);
++
++	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
 +}
 +
- bool mlx5e_ipsec_feature_check(struct sk_buff *skb, struct net_device *netdev,
- 			       netdev_features_t features)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-index ba02643586a54..2a47673da5a4e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-@@ -34,13 +34,17 @@
- #ifndef __MLX5E_IPSEC_RXTX_H__
- #define __MLX5E_IPSEC_RXTX_H__
- 
--#ifdef CONFIG_MLX5_EN_IPSEC
--
- #include <linux/skbuff.h>
- #include <net/xfrm.h>
- #include "en.h"
- #include "en/txrx.h"
- 
-+#define MLX5_IPSEC_METADATA_MARKER_MASK      (0x80)
-+#define MLX5_IPSEC_METADATA_SYNDROM_MASK     (0x7F)
-+#define MLX5_IPSEC_METADATA_HANDLE(metadata) (((metadata) >> 8) & 0xFF)
-+
-+#ifdef CONFIG_MLX5_EN_IPSEC
-+
- struct sk_buff *mlx5e_ipsec_handle_rx_skb(struct net_device *netdev,
- 					  struct sk_buff *skb, u32 *cqe_bcnt);
- void mlx5e_ipsec_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
-@@ -55,7 +59,21 @@ void mlx5e_ipsec_set_iv(struct sk_buff *skb, struct xfrm_state *x,
- bool mlx5e_ipsec_handle_tx_skb(struct mlx5e_priv *priv,
- 			       struct mlx5_wqe_eth_seg *eseg,
- 			       struct sk_buff *skb);
-+void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
-+				       struct sk_buff *skb,
-+				       struct mlx5_cqe64 *cqe);
-+static inline bool mlx5_ipsec_is_rx_flow(struct mlx5_cqe64 *cqe)
++static int mlx5_ipsec_offload_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
++					      const struct mlx5_accel_esp_xfrm_attrs *attrs)
 +{
-+	return !!(MLX5_IPSEC_METADATA_MARKER_MASK & be32_to_cpu(cqe->ft_metadata));
++	struct mlx5_ipsec_obj_attrs ipsec_attrs = {};
++	struct mlx5_core_dev *mdev = xfrm->mdev;
++	struct mlx5_ipsec_esp_xfrm *mxfrm;
++
++	int err = 0;
++
++	if (!memcmp(&xfrm->attrs, attrs, sizeof(xfrm->attrs)))
++		return 0;
++
++	if (mlx5_ipsec_offload_esp_validate_xfrm_attrs(mdev, attrs))
++		return -EOPNOTSUPP;
++
++	mxfrm = container_of(xfrm, struct mlx5_ipsec_esp_xfrm, accel_xfrm);
++
++	mutex_lock(&mxfrm->lock);
++
++	if (!mxfrm->sa_ctx)
++		/* Not bound xfrm, change only sw attrs */
++		goto change_sw_xfrm_attrs;
++
++	/* need to add find and replace in ipsec_rhash_sa the sa_ctx */
++	/* modify device with new hw_sa */
++	ipsec_attrs.accel_flags = attrs->flags;
++	ipsec_attrs.esn_msb = attrs->esn;
++	err = mlx5_modify_ipsec_obj(mdev,
++				    &ipsec_attrs,
++				    mxfrm->sa_ctx->ipsec_obj_id);
++
++change_sw_xfrm_attrs:
++	if (!err)
++		memcpy(&xfrm->attrs, attrs, sizeof(xfrm->attrs));
++
++	mutex_unlock(&mxfrm->lock);
++	return err;
 +}
-+#else
-+static inline
-+void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
-+				       struct sk_buff *skb,
-+				       struct mlx5_cqe64 *cqe)
-+{}
- 
-+static inline bool mlx5_ipsec_is_rx_flow(struct mlx5_cqe64 *cqe) { return false; }
- #endif /* CONFIG_MLX5_EN_IPSEC */
- 
- #endif /* __MLX5E_IPSEC_RXTX_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 4e5d83f6334a4..88ea1908cb14a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -65,6 +65,7 @@
- #include "en/hv_vhca_stats.h"
- #include "en/devlink.h"
- #include "lib/mlx5.h"
-+#include "fpga/ipsec.h"
- 
- bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev)
- {
-@@ -496,7 +497,8 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
- 		rq->dealloc_wqe = mlx5e_dealloc_rx_wqe;
- 
- #ifdef CONFIG_MLX5_EN_IPSEC
--		if (c->priv->ipsec)
-+		if ((mlx5_fpga_ipsec_device_caps(mdev) & MLX5_ACCEL_IPSEC_CAP_DEVICE) &&
-+		    c->priv->ipsec)
- 			rq->handle_rx_cqe = mlx5e_ipsec_handle_rx_cqe;
- 		else
- #endif
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 350f9c54e508f..8b24e44f860a8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -973,9 +973,14 @@ static inline void mlx5e_handle_csum(struct net_device *netdev,
- 		goto csum_unnecessary;
- 
- 	if (likely(is_last_ethertype_ip(skb, &network_depth, &proto))) {
--		if (unlikely(get_ip_proto(skb, network_depth, proto) == IPPROTO_SCTP))
-+		u8 ipproto = get_ip_proto(skb, network_depth, proto);
 +
-+		if (unlikely(ipproto == IPPROTO_SCTP))
- 			goto csum_unnecessary;
+ static const struct mlx5_accel_ipsec_ops ipsec_offload_ops = {
+ 	.device_caps = mlx5_ipsec_offload_device_caps,
+ 	.create_hw_context = mlx5_ipsec_offload_create_sa_ctx,
+@@ -286,6 +373,7 @@ static const struct mlx5_accel_ipsec_ops ipsec_offload_ops = {
+ 	.init = mlx5_ipsec_offload_init,
+ 	.esp_create_xfrm = mlx5_ipsec_offload_esp_create_xfrm,
+ 	.esp_destroy_xfrm = mlx5_ipsec_offload_esp_destroy_xfrm,
++	.esp_modify_xfrm = mlx5_ipsec_offload_esp_modify_xfrm,
+ };
  
-+		if (unlikely(mlx5_ipsec_is_rx_flow(cqe)))
-+			goto csum_none;
-+
- 		stats->csum_complete++;
- 		skb->ip_summed = CHECKSUM_COMPLETE;
- 		skb->csum = csum_unfold((__force __sum16)cqe->check_sum);
-@@ -1021,6 +1026,9 @@ static inline void mlx5e_build_rx_skb(struct mlx5_cqe64 *cqe,
- 
- 	mlx5e_tls_handle_rx_skb(rq, skb, cqe, &cqe_bcnt);
- 
-+	if (unlikely(mlx5_ipsec_is_rx_flow(cqe)))
-+		mlx5e_ipsec_offload_handle_rx_skb(netdev, skb, cqe);
-+
- 	if (lro_num_seg > 1) {
- 		mlx5e_lro_update_hdr(skb, cqe, cqe_bcnt);
- 		skb_shinfo(skb)->gso_size = DIV_ROUND_UP(cqe_bcnt, lro_num_seg);
+ const struct mlx5_accel_ipsec_ops *mlx5_ipsec_offload_ops(struct mlx5_core_dev *mdev)
 -- 
 2.26.2
 
