@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75DF3222569
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 16:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2211A222581
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 16:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729046AbgGPOZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 10:25:39 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:37951 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728054AbgGPOZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 10:25:38 -0400
-Received: by mail-oi1-f195.google.com with SMTP id r8so5216728oij.5;
-        Thu, 16 Jul 2020 07:25:37 -0700 (PDT)
+        id S1728871AbgGPO3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 10:29:12 -0400
+Received: from mail-oo1-f68.google.com ([209.85.161.68]:45704 "EHLO
+        mail-oo1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728054AbgGPO3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 10:29:11 -0400
+Received: by mail-oo1-f68.google.com with SMTP id a9so1202769oof.12;
+        Thu, 16 Jul 2020 07:29:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=91Je2qAcGCzgn2zcz7wtNREQl6Cl2nhLo4wLUfE5WtI=;
-        b=XtMOE0v7nHTx/6b7/1J2cqW3bb+rQgO8WrZycFFizVY8G0VWj7k6Hk/nX4/vFmTG+e
-         d4ad+Z1hNI+lcgFLyZNDbb+Bg38U/k/gTBknid7klI7DBz4zRBsBtY1J0E57KsPan4Vk
-         gqOWtWadqrArSikc+d2xJQT6KDDGuGTknIwmGUwOdC3dXtI+oDz2QnAY7eCYsKUsGua9
-         tz8vGAlvjagXZDyd9BXzPO0dV8UlKJ7tq9Z7vrPo9m/Hj0xWisr3g/N4ztIKPMKf0FAI
-         r0OwhcbdfecTnfIIvII0hjXZp98Vp7Q2SzwnvEvavAYH/RJ4Csi3rytoHdQ/ru5m/kt8
-         ic1w==
-X-Gm-Message-State: AOAM532DMv9PZHY1VYU2JDTNpz6cRSh/6iochJyLoORTEEvb2cKqWP6M
-        bWtpmwRyGGzHBO/S+xjhENl8a7ND7A56ao7nOWI=
-X-Google-Smtp-Source: ABdhPJwIAN8f7bRLJuYAyK2do3tAZg+scN8MvNy6h4Jd28iwoL68rvxkRime7NVAhQfqpWkxvClPG0FKsK2Ss5qAiXM=
-X-Received: by 2002:a05:6808:64a:: with SMTP id z10mr4044483oih.54.1594909536875;
- Thu, 16 Jul 2020 07:25:36 -0700 (PDT)
+        bh=wbLycxU+N0h95t3MHG+c9KvWEt/sZuHeu2nuR80b1nw=;
+        b=oZMPHTGFougK3XHEVEJsQOPHwbzAVzBWgBgrTp4zBnNtvFdsay3DqSKBul2w+0OG+8
+         d0VxTy17fqju2Pp2W4zKOWw4pliJyfVPNu8QjJnYdWgrU+1CVhSfERYyZPVLMO7NmCa3
+         SfMdkgWicxijikkANBhBq6XQq1YundO38mv86zwTCcSdayzjfPoBQvdgFllc1HKYyAVX
+         fqfsritQivsJWCVs0xnr8hl7GMU1zVrEMZq+mJRAtl6qcWX3epcOMAe81kawYf/GkeaJ
+         6rEZoniARpMXV/x8lAmpFsbTK6xKaY87tt5Yz8dZHCnBRoc2R2tDA8xCf3HF+XrPaWIT
+         moEA==
+X-Gm-Message-State: AOAM530zmC6Gow7Bxi83DikDdF0iGR0mr3QR+ob+SAC+W1PwI8DdeMCw
+        95GSvuA7RZnzCln84ICwDkDQPsE7Dm6Rmm8o09k=
+X-Google-Smtp-Source: ABdhPJxgpqG3VxzPzTYPatOvZfYeSh1wMMWCs1sv4nhFJKhZhzppSv70Xifb8MB7fpIeWUkupymjehrXXlJuOxdCMU0=
+X-Received: by 2002:a4a:675a:: with SMTP id j26mr1440477oof.1.1594909750520;
+ Thu, 16 Jul 2020 07:29:10 -0700 (PDT)
 MIME-Version: 1.0
 References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594811350-14066-12-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594811350-14066-12-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-13-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594811350-14066-13-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 16 Jul 2020 16:25:25 +0200
-Message-ID: <CAMuHMdWqmVSgUu6N8vBA8fRwwP0jhFCLBHN+AL4YoHn4yejn3A@mail.gmail.com>
-Subject: Re: [PATCH 11/20] dt-bindings: i2c: renesas,i2c: Document r8a774e1 support
+Date:   Thu, 16 Jul 2020 16:28:59 +0200
+Message-ID: <CAMuHMdUsVKLABUYgG1EBtXHdg-PTuBfntvN8hw_PDLj+ybufmQ@mail.gmail.com>
+Subject: Re: [PATCH 12/20] dt-bindings: i2c: renesas,iic: Document r8a774e1 support
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -72,7 +72,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Jul 15, 2020 at 1:10 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Document i2c controller for RZ/G2H (R8A774E1) SoC, which is compatible
+> Document IIC controller for RZ/G2H (R8A774E1) SoC, which is compatible
 > with R-Car Gen3 SoC family.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
