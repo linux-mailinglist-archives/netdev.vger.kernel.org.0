@@ -2,145 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70E6A221A7A
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 05:03:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B684221A7D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 05:04:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727927AbgGPDDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 23:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727034AbgGPDDH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 23:03:07 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECADC061755;
-        Wed, 15 Jul 2020 20:03:07 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id o3so3806088ilo.12;
-        Wed, 15 Jul 2020 20:03:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=t+Wlsj1C9vRBcKrQbvPaRIrUEHfK7a1ao3aLrAXTh/w=;
-        b=s20nivLlSY95WcxuyJxRdfKwLKTl3k6wFTw6Uyx+GAPhASxCKSxkFi79eP207h30kt
-         f984HzvnURD8itmAG0AoCFGR/NQciB6sXve2O4eUnj27GpzMvXQH1qcCCDkxtQ9+6XHb
-         lIHwC8iAhf8owfKJ5o/DgGrx43dqYEDB21CjOcN+M/GOpNL9A0HQqXfqqhcyyYwSBONU
-         On22jPOcfmOx6h4yhrOKr8KHOzrik1/5OysRquTGlqgz7RJXBfPny15eERpjkKUxIzAM
-         NSwTZPHW7UmQHFbnfkzsJVaGE60RblAGujZPGbTnJtQrxSMNeZDnyhuuWKvOiROp6Uju
-         9L3w==
+        id S1728066AbgGPDEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 23:04:31 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:49507 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727034AbgGPDEb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 23:04:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594868670;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=u3cJpUTzqg4XsvEigkP0qRKjmpXxEBPnj3YxAag4kA8=;
+        b=IInjob76lLvJlsaEAu2G8J8eVYUFOZm8bDkmGOVPRURNoVoasGT0/4F5XYu6l/Igsxpngx
+        4ZSF4kqiz0mXm8qfTgBDHN6Y6VnyX7ZrAEYJSSL9N+bCdWbCuKtNBRymmQYPOCZ1fRrla8
+        ybA+pADt9GEKKUwpT+rv+JCCegF4JoU=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-151-uOrmqPp_NIqU0AUyoNyISQ-1; Wed, 15 Jul 2020 23:04:28 -0400
+X-MC-Unique: uOrmqPp_NIqU0AUyoNyISQ-1
+Received: by mail-ot1-f69.google.com with SMTP id 10so1992428otp.20
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 20:04:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=t+Wlsj1C9vRBcKrQbvPaRIrUEHfK7a1ao3aLrAXTh/w=;
-        b=MxoDI9zXRLd21aU+mbvP0WsmIqOMAbpoj2NrMpshpeLcSM9icasR3dOnjIVhKYVsb7
-         nDUsey+O48TfhMsYvnczkZgf7LAU6xmb7giBkgBUK3GVMHKwNpTf6eTRByJR8rP1jN7V
-         u9xOukrNrlrsRX9OR2LW3+KP8G5Jm1VrggD1JC2QOnRZ4xpxnpnnYFijH8ivCgUJboPz
-         Su4pvQThDAU3wxukLCjsQbYThp5xaxiJ37NqUys3bdBrl/I3DKPTLyItljIh/xewMOwq
-         wi+p9/vJzYQ1zcHubMeyIYD1U2qrj5PB2Y2tDXGaDuKqWNzblW3RHaWLIujQ+82DlIx8
-         CJYA==
-X-Gm-Message-State: AOAM530USrxWlEN0BsugfO+I765hDb4NEIHQ2E8J64UHq8mEG9plNAFt
-        n2ctBu/UKeimHy4T7M1U5PEXnXJArlXp56LWQ7s=
-X-Google-Smtp-Source: ABdhPJyf7yVwHxVF9WfRgDUm24zkGcJOdZ7B98X8cDav/AVzEfZPS4Dd2dULBymJw2SpBCoUyzCg2BxUFbhh9PSfNKA=
-X-Received: by 2002:a92:2802:: with SMTP id l2mr2545080ilf.169.1594868586798;
- Wed, 15 Jul 2020 20:03:06 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=u3cJpUTzqg4XsvEigkP0qRKjmpXxEBPnj3YxAag4kA8=;
+        b=fRkbPLj6i68I7fpLiSAMLP0UxeHaZr2Ri8no0EUfDTpqeDnxOjtGl7SFdbwhNlix/m
+         iJT16Jy8WLSn+nQnOvPMcfQYWxf9RsPj2fK6ES4/O9hXSWiJYdsHHd47bmBod39NAC2z
+         6HPifnos1sGfkGVI3C8FHuefGPSGFvMrgrvX2QrVjHBv5LewVq7SIht8slMrqpafv191
+         xQxnHHYjv/micoSB1R6uRg4ggbuWrrgfXw2sAvFRPrn5OWgKvhS9ld7QlHsvcNIbIth+
+         8j9grZOTJLMvpRMMlWYITORrKkwd7p9vUd6LXC7fQSalK2lE4aJ5EIE957al7q1Auktq
+         7Mdw==
+X-Gm-Message-State: AOAM5333qzaButOVPXbw/rSP8hdYC5YTIhI9XSU1Yq+eAg6NXaDzfD97
+        4oKjzqrSqKC13xsRYqa+vDkL6QjfvBjnvh2wrEJ9YLVqYPm+Is6gLZZCdhPzrmLzwDOT2A4LRtp
+        DGefC9SJm3p3/fgly5XRCxoK7HzlVCnDo
+X-Received: by 2002:aca:ecc7:: with SMTP id k190mr2276114oih.92.1594868667432;
+        Wed, 15 Jul 2020 20:04:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyVFY9rpnyGirb4EfBOCbtJU0RrgfyKdCwmYw8wx20p10MV5trASOJ1b7kYhaS7omzicZKghG1A2DDyhyZ+u7M=
+X-Received: by 2002:aca:ecc7:: with SMTP id k190mr2276101oih.92.1594868667181;
+ Wed, 15 Jul 2020 20:04:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200715051214.28099-1-Tony.Ambardar@gmail.com> <58fadc96-2083-a043-9ef3-da72ad792324@isovalent.com>
-In-Reply-To: <58fadc96-2083-a043-9ef3-da72ad792324@isovalent.com>
-From:   Tony Ambardar <tony.ambardar@gmail.com>
-Date:   Wed, 15 Jul 2020 20:02:55 -0700
-Message-ID: <CAPGftE86utvC+J+yoXCNU56ibJ03HwV60p0opTkxY7qN5Gtk+Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpftool: use only nftw for file tree parsing
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
+References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
+ <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz> <20200713154118.3a1edd66@hermes.lan>
+ <20200714002609.GB1140268@lunn.ch>
+In-Reply-To: <20200714002609.GB1140268@lunn.ch>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Wed, 15 Jul 2020 23:04:16 -0400
+Message-ID: <CAKfmpSdD2bupC=N8LnK_Uq7wtv+Ms6=e1kk-veeD24EVkMH7wA@mail.gmail.com>
+Subject: Re: [RFC] bonding driver terminology change proposal
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jul 2020 at 10:35, Quentin Monnet <quentin@isovalent.com> wrote:
+On Mon, Jul 13, 2020 at 8:26 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> 2020-07-14 22:12 UTC-0700 ~ Tony Ambardar <tony.ambardar@gmail.com>
-> > The bpftool sources include code to walk file trees, but use multiple
-> > frameworks to do so: nftw and fts. While nftw conforms to POSIX/SUSv3 a=
-nd
-> > is widely available, fts is not conformant and less common, especially =
-on
-> > non-glibc systems. The inconsistent framework usage hampers maintenance
-> > and portability of bpftool, in particular for embedded systems.
-> >
-> > Standardize usage by rewriting one fts-based function to use nftw. This
-> > change allows building bpftool against musl for OpenWrt.
-> >
-> > Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+> Hi Jarod
 >
-> Thanks!
+> Do you have this change scripted? Could you apply the script to v5.4
+> and then cherry-pick the 8 bonding fixes that exist in v5.4.51. How
+> many result in conflicts?
 >
-
-Thanks for your feedback and testing, Quentin, I really appreciate it.
-
-> I tested your set, and bpftool does not compile on my setup. The
-> definitions from <ftw.h> are not picked up by gcc, common.c should have
-> a "#define _GNU_SOURCE" above its list of includes for this to work
-> (like perf.c has).
+> Could you do the same with v4.19...v4.19.132, which has 20 fixes.
 >
+> This will give us an idea of the maintenance overhead such a change is
+> going to cause, and how good git is at figuring out this sort of
+> thing.
 
-OK, I see what happened. I omitted a required "#define _XOPEN_SOURCE
-..." (like in cgroup.c).  Strictly speaking, "_GNU_SOURCE" is only
-needed for a nftw() GNU extension not used in common.c or cgroup.c
-(but used perf.c). It turns out there are still problems with missing
-definitions for getpagesize() and getline(), which are most easily
-pulled in with "_GNU_SOURCE". Will update as you suggest.
+Okay, I have some fugly bash scripts that use sed to do the majority
+of the work here, save some manual bits done to add duplicate
+interfaces w/new names and some aliases, and everything is compiling
+and functions in a basic smoke test here.
 
-> I also get a warning on this line:
->
->
-> > +static int do_build_table_cb(const char *fpath, const struct stat *sb,
-> > +                         int typeflag, struct FTW *ftwbuf)
-> >  {
->
-> Because passing fptath to open_obj_pinned() below discards the "const"
-> qualifier:
->
-> > +     fd =3D open_obj_pinned(fpath, true);
->
-> Fixed by having simply "char *fpath" as the first argument for
-> do_build_table_cb().
+Summary on the 5.4 git cherry-pick conflict resolution after applying
+changes: not that good. 7 of the 8 bonding fixes in the 5.4 stable
+branch required fixing when straight cherry-picking. Dumping the
+patches, running a sed script over them, and then git am'ing them
+works pretty well though. I didn't try 4.19 (yet?), I assume it'll
+just be more of the same.
 
-Hmm, that only shifts the warning, since the cb function signature for
-nftw still specifies "const char":
+-- 
+Jarod Wilson
+jarod@redhat.com
 
-> common.c: In function =E2=80=98build_pinned_obj_table=E2=80=99:
-> common.c:438:18: warning: passing argument 2 of =E2=80=98nftw=E2=80=99 fr=
-om incompatible pointer type [-Wincompatible-pointer-types]
->    if (nftw(path, do_build_table_cb, nopenfd, flags) =3D=3D -1)
->                   ^~~~~~~~~~~~~~~~~
-> In file included from common.c:9:0:
-> /usr/include/ftw.h:158:12: note: expected =E2=80=98__nftw_func_t {aka int=
- (*)(const char *, const struct stat *, int,  struct FTW *)}=E2=80=99 but a=
-rgument is of type =E2=80=98int (*)(char *, const struct stat *, int,  stru=
-ct FTW *)=E2=80=99
->  extern int nftw (const char *__dir, __nftw_func_t __func, int __descript=
-ors,
->             ^~~~
-
-Wouldn't it be better/safer in general to constify the passed char to
-'open_obj_pinned' and 'open_obj_pinned_any'?  However, doing so
-revealed a problem in open_obj_pinned(), where dirname() is called
-directly on the passed string. This could be dangerous since some
-dirname() implementations may modify the string. Let's copy the string
-instead (same approach in tools/lib/bpf/libbpf.c).
-
-> With those two modifications, bpftool compiles fine and listing objects
-> with the "-f" option works as expected.
->
-> Regards,
-> Quentin
-
-Let me make these changes and see what you think.
-
-Best regards,
-Tony
