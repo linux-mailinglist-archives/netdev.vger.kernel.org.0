@@ -2,100 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85FC9222CA7
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 22:22:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FB42222CDE
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 22:32:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726007AbgGPUWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 16:22:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60890 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725844AbgGPUWD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 16:22:03 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 88247207E8;
-        Thu, 16 Jul 2020 20:22:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594930923;
-        bh=lQnOz2T3QCHaK6UF7S1d7Qs0hGwqgBqz68lRqr564Q0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KLQQplKfA+NxUh+JpUeyJiJAnN52TP3b4UWJGR5wAgqeK58SdOgIK3lPFET+4pS0c
-         ZkpllacXbfFMcTVMsGo1YejtdZEKpY/i+1zBDJfBSpldarLXselgIwp8T3mTkWIkij
-         vJGykErjJBUv1/s4xfKaq6zWabUTAhvNle2M8UnU=
-Date:   Thu, 16 Jul 2020 13:22:00 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michal =?UTF-8?B?U3VjaMOhbmVr?= <msuchanek@suse.de>
-Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
-        David Miller <davem@davemloft.net>, drt@linux.ibm.com,
-        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH net-next] ibmvnic: Increase driver logging
-Message-ID: <20200716132200.37934905@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200716160736.GI32107@kitsune.suse.cz>
-References: <1594857115-22380-1-git-send-email-tlfalcon@linux.ibm.com>
-        <20200715170632.11f0bf19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200715.182956.490791427431304861.davem@davemloft.net>
-        <9c9d6e46-240b-8513-08e4-e1c7556cb3c8@linux.ibm.com>
-        <20200716160736.GI32107@kitsune.suse.cz>
+        id S1726550AbgGPUb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 16:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47258 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725921AbgGPUb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 16:31:28 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCE9C061755;
+        Thu, 16 Jul 2020 13:31:28 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id w34so6027805qte.1;
+        Thu, 16 Jul 2020 13:31:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Q7fkaWy5BOtDK66VES6I+b2FcjwYtxNfF67s5vYVVds=;
+        b=TQVqXQTlQbyDYaO4gsISTQQfQmiO2VHodzKgRjm2AkLSVfH/bscXy/M4ukmL9Dww7Y
+         eu8Z1in18q8ssuF3uzYwVS6PLbdDkBKZgLDh5X1puh7JtVSquD0cHoSFxtnLozraH94X
+         8m5y4dQrec6fV+nnoXL/15UiOVn5CpFTeyPEHLv32yYLwfhODOPiAkGeug/VfRYC6bdv
+         O4+HwIvwKgGKG8T6IK1oAmXdAEFd47BxI7X24GNtVVWDakotZ8v/NeDJlXhAt3SBWjc0
+         RAZlgTUV0yCzKMCf76Jaf8IBgBnI2LBP3hFkZ4FQEdSTsbQ+LFd9viXkrXm0tk7IT2qo
+         fIrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Q7fkaWy5BOtDK66VES6I+b2FcjwYtxNfF67s5vYVVds=;
+        b=WrZLd7PiS0CGLA8yZMUyebwuBa20ieHRKvooI9XvsdrifLMIx4443bcYAHfpcUCz6k
+         14ANP+qBASbL535bo/4shx7MGPO8c37ON8wtkbMVp0l6OZ0OZNUf5N8mHKzRPc49LaPg
+         QG3hxRIBPLjOUdLid4PoX50AvylZSwxjhnxrQVYTuIZJsjDpHOavPSUPWxDMxXy5uAKO
+         BvlrIkL0Xms5KdGvAJrdLlHo18Nlpb1CSWwKdRdnL4/uvGyzv+2sqU6iLCYyjI2GhkhQ
+         rSXpGN5wjMwoIWlzpchiPR7rWEWv8OaYjAq6hWctj5krVUz3x9Cr2ouAlfS9NSSIt23X
+         Efqg==
+X-Gm-Message-State: AOAM533uu7ZdouVsq/pMgI+9cGJF4Ae4xmWdt0/Z5fdMwZLPX3mYCKCd
+        waF0bWVYeERrOL4TDvxlrlODyBcNPXG9GgdfurQ=
+X-Google-Smtp-Source: ABdhPJxApln5rpI1d+//DgIRGwBSpTw1+8LsChc+F4EET3NnZ2MTL43y1VVVDJTX4QYXOm0DEF0u2ClJp6p9RiXGDSk=
+X-Received: by 2002:ac8:345c:: with SMTP id v28mr6996098qtb.171.1594931487933;
+ Thu, 16 Jul 2020 13:31:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20200716045602.3896926-1-andriin@fb.com> <20200716045602.3896926-3-andriin@fb.com>
+ <4cffee3d-6af9-57e6-a2d5-202925ee8e77@gmail.com>
+In-Reply-To: <4cffee3d-6af9-57e6-a2d5-202925ee8e77@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 16 Jul 2020 13:31:17 -0700
+Message-ID: <CAEf4BzZVxTGM9mDoHMv478vQjV6Hmf_ts50=ABXkP4GxAG85eg@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 2/9] bpf, xdp: maintain info on attached XDP
+ BPF programs in net_device
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Jul 2020 18:07:37 +0200 Michal Such=C3=A1nek wrote:
-> On Thu, Jul 16, 2020 at 10:59:58AM -0500, Thomas Falcon wrote:
-> > On 7/15/20 8:29 PM, David Miller wrote: =20
-> > > From: Jakub Kicinski <kuba@kernel.org>
-> > > Date: Wed, 15 Jul 2020 17:06:32 -0700
-> > >  =20
-> > > > On Wed, 15 Jul 2020 18:51:55 -0500 Thomas Falcon wrote: =20
-> > > > >   	free_netdev(netdev);
-> > > > >   	dev_set_drvdata(&dev->dev, NULL);
-> > > > > +	netdev_info(netdev, "VNIC client device has been successfully r=
-emoved.\n"); =20
-> > > > A step too far, perhaps.
-> > > >=20
-> > > > In general this patch looks a little questionable IMHO, this amount=
- of
-> > > > logging output is not commonly seen in drivers. All the the info
-> > > > messages are just static text, not even carrying any extra informat=
-ion.
-> > > > In an era of ftrace, and bpftrace, do we really need this? =20
-> > > Agreed, this is too much.  This is debugging, and thus suitable for t=
-racing
-> > > facilities, at best. =20
-> >=20
-> > Thanks for your feedback. I see now that I was overly aggressive with t=
-his
-> > patch to be sure, but it would help with narrowing down problems at a f=
-irst
-> > glance, should they arise. The driver in its current state logs very li=
-ttle
-> > of what is it doing without the use of additional debugging or tracing
-> > facilities. Would it be worth it to pursue a less aggressive version or
-> > would that be dead on arrival? What are acceptable driver operations to=
- log
-> > at this level? =20
+On Thu, Jul 16, 2020 at 12:01 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 7/15/20 10:55 PM, Andrii Nakryiko wrote:
+> > Instead of delegating to drivers, maintain information about which BPF
+> > programs are attached in which XDP modes (generic/skb, driver, or hardware)
+> > locally in net_device. This effectively obsoletes XDP_QUERY_PROG command.
+> >
+> > Such re-organization simplifies existing code already. But it also allows to
+> > further add bpf_link-based XDP attachments without drivers having to know
+> > about any of this at all, which seems like a good setup.
+> > XDP_SETUP_PROG/XDP_SETUP_PROG_HW are just low-level commands to driver to
+> > install/uninstall active BPF program. All the higher-level concerns about
+> > prog/link interaction will be contained within generic driver-agnostic logic.
+> >
+> > All the XDP_QUERY_PROG calls to driver in dev_xdp_uninstall() were removed.
+> > It's not clear for me why dev_xdp_uninstall() were passing previous prog_flags
+> > when resetting installed programs. That seems unnecessary, plus most drivers
+> > don't populate prog_flags anyways. Having XDP_SETUP_PROG vs XDP_SETUP_PROG_HW
+> > should be enough of an indicator of what is required of driver to correctly
+> > reset active BPF program. dev_xdp_uninstall() is also generalized as an
+> > iteration over all three supported mode.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  include/linux/netdevice.h |  17 +++-
+> >  net/core/dev.c            | 158 +++++++++++++++++++++-----------------
+>
+> Similar to my comment on a v1 patch, this change is doing multiple
+> things that really should be split into 2 patches - one moving code
+> around and the second making the change you want. As is the patch is
+> difficult to properly review.
+>
 
-Sadly it's much more of an art than hard science. Most networking
-drivers will print identifying information when they probe the device
-and then only about major config changes or when link comes up or goes
-down. And obviously when anything unexpected, like an error happens,
-that's key.
+You mean xdp_uninstall? In patch 1 leave it as three separate
+sections, but switch to different querying. And then in a separate
+patch do a loop?
 
-You seem to be adding start / end information for each driver init /
-deinit stage. I'd say try to focus on the actual errors you're trying
-to catch.
+Alright, I'll split that up as well. But otherwise I don't really see
+much more opportunities to split it.
 
-> Also would it be advisable to add the messages as pr_dbg to be enabled on=
- demand?
-
-I personally have had a pretty poor experience with pr_debug() because
-CONFIG_DYNAMIC_DEBUG is not always enabled. Since you're just printing
-static text there shouldn't be much difference between pr_debug and
-ftrace and/or bpftrace, honestly.
-
-Again, slightly hard to advise not knowing what you're trying to catch.
+> Given that you need a v4 anyways, can you split this patch into 2?
