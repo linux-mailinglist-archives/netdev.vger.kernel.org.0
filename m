@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60410221BB1
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 06:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 061A9221BA6
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 06:56:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726231AbgGPE5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 00:57:25 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:45204 "EHLO
+        id S1726580AbgGPE4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 00:56:23 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:12350 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725913AbgGPE5Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 00:57:25 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06G4uIwj013474
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 21:57:24 -0700
+        by vger.kernel.org with ESMTP id S1726537AbgGPE4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 00:56:20 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06G4sZW8001738
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 21:56:19 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=/zbODb/YH1jOdAZL55iyKGaFJ0W1VBwuoHDCNgwwrQ8=;
- b=hwbRcGrxYMradKuAzVsX/J62SCU7w1aCTQit6MJMx82UiNEm/tipk1zkacpIcYlcA8Zi
- 8T4J1R22gVzHefB5Qmdrajty+QRP9isKZZ6ph/j/JfSsmivdr1q+VR0LSrTTbEXT1ddD
- UNNrW3mtNEuXMfPnJwN95BoD9ktfWu3WEf8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32a7fpt5tu-1
+ bh=fxl9Q/jibi9OE9yhTPTPNC+CT4j9PkuJ0A84B5E7ytc=;
+ b=pkOisfKV08W8UPGb9oIKM5qo7xHIKXEY3U8LxiOjRvyNNPTnG+ZVvLEF67x3AyZwpsFi
+ Hfenpj1oyIOrTyo262M3qGx2dLZPNI3AICseDkKkmIi8gxwedr0zTMUTo0Ln/9Dv24bj
+ 6WBKWzaLvKVjJLDc57KH3nkhRAfdAWeffx4= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 327wdrud3f-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 21:57:24 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 21:56:19 -0700
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 15 Jul 2020 21:56:17 -0700
+ 15.1.1979.3; Wed, 15 Jul 2020 21:56:18 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id CD9132EC422D; Wed, 15 Jul 2020 21:56:14 -0700 (PDT)
+        id 022E52EC422D; Wed, 15 Jul 2020 21:56:16 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -39,9 +39,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 5/9] bpf, xdp: implement LINK_UPDATE for BPF XDP link
-Date:   Wed, 15 Jul 2020 21:55:57 -0700
-Message-ID: <20200716045602.3896926-6-andriin@fb.com>
+Subject: [PATCH v3 bpf-next 6/9] bpf: implement BPF XDP link-specific introspection APIs
+Date:   Wed, 15 Jul 2020 21:55:58 -0700
+Message-ID: <20200716045602.3896926-7-andriin@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200716045602.3896926-1-andriin@fb.com>
 References: <20200716045602.3896926-1-andriin@fb.com>
@@ -51,86 +51,93 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-15_12:2020-07-15,2020-07-15 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 phishscore=0
- impostorscore=0 mlxlogscore=707 malwarescore=0 spamscore=0
- lowpriorityscore=0 suspectscore=8 clxscore=1015 priorityscore=1501
- bulkscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007160037
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 mlxscore=0
+ malwarescore=0 phishscore=0 clxscore=1015 impostorscore=0 suspectscore=8
+ adultscore=0 spamscore=0 lowpriorityscore=0 priorityscore=1501
+ mlxlogscore=905 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007160036
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for LINK_UPDATE command for BPF XDP link to enable reliable
-replacement of underlying BPF program.
+Implement XDP link-specific show_fdinfo and link_info to emit ifindex.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- net/core/dev.c | 43 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ include/uapi/linux/bpf.h |  3 +++
+ net/core/dev.c           | 31 +++++++++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+)
 
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index b4385e516aeb..441cd5044835 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3986,6 +3986,9 @@ struct bpf_link_info {
+ 			__u32 netns_ino;
+ 			__u32 attach_type;
+ 		} netns;
++		struct {
++			__u32 ifindex;
++		} xdp;
+ 	};
+ } __attribute__((aligned(8)));
+=20
 diff --git a/net/core/dev.c b/net/core/dev.c
-index ba50f68a6121..8b085dbe3cf1 100644
+index 8b085dbe3cf1..662e62c8c267 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -8990,9 +8990,52 @@ static void bpf_xdp_link_dealloc(struct bpf_link *=
+@@ -8990,6 +8990,35 @@ static void bpf_xdp_link_dealloc(struct bpf_link *=
 link)
  	kfree(xdp_link);
  }
 =20
-+static int bpf_xdp_link_update(struct bpf_link *link, struct bpf_prog *n=
-ew_prog,
-+			       struct bpf_prog *old_prog)
++static void bpf_xdp_link_show_fdinfo(const struct bpf_link *link,
++				     struct seq_file *seq)
 +{
 +	struct bpf_xdp_link *xdp_link =3D container_of(link, struct bpf_xdp_lin=
 k, link);
-+	enum bpf_xdp_mode mode;
-+	bpf_op_t bpf_op;
-+	int err =3D 0;
++	u32 ifindex =3D 0;
 +
 +	rtnl_lock();
-+
-+	/* link might have been auto-released already, so fail */
-+	if (!xdp_link->dev) {
-+		err =3D -ENOLINK;
-+		goto out_unlock;
-+	}
-+
-+	if (old_prog && link->prog !=3D old_prog) {
-+		err =3D -EPERM;
-+		goto out_unlock;
-+	}
-+	old_prog =3D link->prog;
-+	if (old_prog =3D=3D new_prog) {
-+		/* no-op, don't disturb drivers */
-+		bpf_prog_put(new_prog);
-+		goto out_unlock;
-+	}
-+
-+	mode =3D dev_xdp_mode(xdp_link->flags);
-+	bpf_op =3D dev_xdp_bpf_op(xdp_link->dev, mode);
-+	err =3D dev_xdp_install(xdp_link->dev, mode, bpf_op, NULL,
-+			      xdp_link->flags, new_prog);
-+	if (err)
-+		goto out_unlock;
-+
-+	old_prog =3D xchg(&link->prog, new_prog);
-+	bpf_prog_put(old_prog);
-+
-+out_unlock:
++	if (xdp_link->dev)
++		ifindex =3D xdp_link->dev->ifindex;
 +	rtnl_unlock();
-+	return err;
++
++	seq_printf(seq, "ifindex:\t%u\n", ifindex);
 +}
 +
++static int bpf_xdp_link_fill_link_info(const struct bpf_link *link,
++				       struct bpf_link_info *info)
++{
++	struct bpf_xdp_link *xdp_link =3D container_of(link, struct bpf_xdp_lin=
+k, link);
++	u32 ifindex =3D 0;
++
++	rtnl_lock();
++	if (xdp_link->dev)
++		ifindex =3D xdp_link->dev->ifindex;
++	rtnl_unlock();
++
++	info->xdp.ifindex =3D ifindex;
++	return 0;
++}
++
+ static int bpf_xdp_link_update(struct bpf_link *link, struct bpf_prog *n=
+ew_prog,
+ 			       struct bpf_prog *old_prog)
+ {
+@@ -9035,6 +9064,8 @@ static int bpf_xdp_link_update(struct bpf_link *lin=
+k, struct bpf_prog *new_prog,
  static const struct bpf_link_ops bpf_xdp_link_lops =3D {
  	.release =3D bpf_xdp_link_release,
  	.dealloc =3D bpf_xdp_link_dealloc,
-+	.update_prog =3D bpf_xdp_link_update,
++	.show_fdinfo =3D bpf_xdp_link_show_fdinfo,
++	.fill_link_info =3D bpf_xdp_link_fill_link_info,
+ 	.update_prog =3D bpf_xdp_link_update,
  };
 =20
- int bpf_xdp_link_attach(const union bpf_attr *attr, struct bpf_prog *pro=
-g)
 --=20
 2.24.1
 
