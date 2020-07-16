@@ -2,41 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 117A1221911
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 02:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 532BB22191E
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 02:53:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727829AbgGPAty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 20:49:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34700 "EHLO mail.kernel.org"
+        id S1726908AbgGPAxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 20:53:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35450 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726479AbgGPAty (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 20:49:54 -0400
+        id S1726479AbgGPAxy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 20:53:54 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 995B320714;
-        Thu, 16 Jul 2020 00:49:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BE5E520658;
+        Thu, 16 Jul 2020 00:53:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594860593;
-        bh=xtI9o2lqHt5Ccrnbi17Hnwy+IYNicxUrMPOA/qoreVM=;
+        s=default; t=1594860834;
+        bh=5SfCsBhyh5PKiykxkZLei29fsfceunyloFYOBrhtjsM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AfMKIgbJ+kGK6ru9hOKz+UxF9xVNm3URi6D128F+AlNu8jGMrG6Nghy7/+obPEoiM
-         +F52eXereqYeNgk+c3CEKCWQNC0Va0u/gGTcR9AdDgWPP3R9Ou0P2Wic5fWa8jRhkq
-         NwpgE2PFzoO4HzYzupQ4dupVdmFpngyse61td1P8=
-Date:   Wed, 15 Jul 2020 17:49:51 -0700
+        b=cYv56p7Bxny0O7PoNFhQ8XDqOjTviIN1L118CGFdkC7VN9nrym45kPOHNgRH1hkbf
+         rRDQEAmXTxzKRwaT5v8Kfh0doBYxFhuVI7h511xvZSLvOskEJnTAsiYCwVlsvDuBX6
+         B9YJQYZdwgKZQn9QO1YvFhMTw1MqifOLA2cPb61I=
+Date:   Wed, 15 Jul 2020 17:53:52 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, davem@davemloft.net,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [PATCH] vsock/virtio: annotate 'the_virtio_vsock' RCU pointer
-Message-ID: <20200715174951.0c4e5bca@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200715143446.kfl3zb4vwkk4ic4r@steredhat>
-References: <20200710121243.120096-1-sgarzare@redhat.com>
-        <20200713065423-mutt-send-email-mst@kernel.org>
-        <20200715143446.kfl3zb4vwkk4ic4r@steredhat>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        richardcochran@gmail.com, sorganov@gmail.com, andrew@lunn.ch
+Subject: Re: [PATCH v2 net-next] docs: networking: timestamping: add section
+ for stacked PHC devices
+Message-ID: <20200715175352.51f9df14@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200709201733.71874-1-olteanv@gmail.com>
+References: <20200709201733.71874-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -45,14 +41,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jul 2020 16:34:46 +0200 Stefano Garzarella wrote:
-> > Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> > 
-> > who's merging this? Dave?  
+On Thu,  9 Jul 2020 23:17:33 +0300 Vladimir Oltean wrote:
+> The concept of timestamping DSA switches / Ethernet PHYs is becoming
+> more and more popular, however the Linux kernel timestamping code has
+> evolved quite organically and there's layers upon layers of new and old
+> code that need to work together for things to behave as expected.
 > 
-> I think so, but I forgot the 'net' tag :-(
+> Add this chapter to explain what the overall goals are.
 > 
-> I'll wait to see if Dave will queue this, otherwise I'll resend with
-> the 'net' tag.
+> Loosely based upon this email discussion plus some more info:
+> https://lkml.org/lkml/2020/7/6/481
+> 
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> Reviewed-by: Richard Cochran <richardcochran@gmail.com>
 
-Applied to net now, thanks!
+Applied, thanks!
