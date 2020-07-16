@@ -2,123 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F9422222E
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 14:07:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE4C22223E
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 14:17:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728236AbgGPMHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 08:07:20 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:47758 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727844AbgGPMHT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 08:07:19 -0400
-Received: by mail-io1-f70.google.com with SMTP id d22so3449525iom.14
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 05:07:18 -0700 (PDT)
+        id S1728175AbgGPMRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 08:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726515AbgGPMRi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 08:17:38 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72218C061755
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 05:17:38 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id s9so6849302ljm.11
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 05:17:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=tscWjFcr/AdRUQgnIH2j5TMqV/ph1Tniwa7qjpNU7zU=;
+        b=yW3vYZAvEURuyXC+7AoFhhYT8ibwcm5EmWW9YQW0IIzF9V9RCC06cY4p8l5oVCI3J6
+         rV54te2CZsxX0GcqSmtZi30tbp2g38+FaRrMrs9Us5bnOdNzQObPEnPFTNlYZnsaxV+b
+         UVC8fWrzXZ5VSMSWy5+Ww6wdHdlHSmsS/3i1Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=t9ueKYwuAsIH4rYDj3ZAOiWwulEOYI3pILFlxCZZO1M=;
-        b=cv8l/WoeFuSOUDkUOgDRV2TMAhB+Y1VFMQeLdw1ZnTbrCbICSLNBXDJrmFv5MC0djJ
-         Gb0EAlvj+fatWjMakx5/X9CI5OWKmKIZc4NxgKnL2bWL7PlbJM1jYlIdPoAuEigSKy81
-         zQuEYjfpXQAiGwJMjOp56WEpQx1z9OJphwS4NTzJfztIolkq2NrNNR4soYHkcvL49ksA
-         Wvf87FdDRYbssdUCrOeFJKr+NCpyMCBARWL8as/2i1HtGwd5U3Y46MxYDxzFXNqveUWU
-         gxnwRmqmJDeUDv8omg97q9zk+g0TBcfdvQGscCp3pDbU5D51qkyu4hXRIiST2vn/AcuI
-         h17w==
-X-Gm-Message-State: AOAM530ZVSKe1px30yMJDDloRmc+nxbeM23HgmDuxd3vTXXaoLTxxePL
-        y8pdgjW8DpaS2/ZlZLbANd9nvSOl5NCrWIw8uMnAfFLHx5ag
-X-Google-Smtp-Source: ABdhPJyBXJd+D/Vcvpx21xayAwbWoK3JT2IJ6ASU6HmVW17IPdSHEdHUNHbKm3neXWfLOm8OZfhHLefuefkNcAB54+0WWaCuGRm+
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=tscWjFcr/AdRUQgnIH2j5TMqV/ph1Tniwa7qjpNU7zU=;
+        b=JRTDfXI1raymDWgh8zJqyVqmb+UId3JHfcAjeoxojPvRRb5lMinytiU6Vt5fzfd95G
+         ZweAePUuZzArFWK5TRfuEJKRyU2KNl2MZKAvsp1Bv5fVZXSNgRtuSptQ2BzbJ2piiPtS
+         oYIgVsuy0B09BzfSKxuB6elqEFxB0glPy+/YBAqC0vX3ZhB9KccOrYw4KOgH8Ih0S6pg
+         FwxUfqqkcYGAa1AZ3GM+f2zNmcKZjq0vqLlw+iTkxmJNWQldU04YSDDHuQYu5ObW5lmH
+         BJ4pOzFsUmyk1xYEZTc18z/gHNrLKTyttj+Vx9atY1wmRCB+lM+Ym/0GCw28vSen6ivZ
+         5jAQ==
+X-Gm-Message-State: AOAM530HrO6X38I8Sd2k4WjXwl5AInc57j7ztLpxGZNqOgAJTWjQOCk0
+        G2WQrNQVly70BnunJyO+ezaHbQ==
+X-Google-Smtp-Source: ABdhPJxqWgGyQoj+nCEkyDTqOzwSP09fMuf9WwjDRBm3afE6PoJaTuGhPMHsGh3o0//OnnSg7UOhzw==
+X-Received: by 2002:a2e:780e:: with SMTP id t14mr2000146ljc.444.1594901856795;
+        Thu, 16 Jul 2020 05:17:36 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id y26sm1017207ljk.26.2020.07.16.05.17.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2020 05:17:36 -0700 (PDT)
+References: <20200713174654.642628-1-jakub@cloudflare.com> <20200713174654.642628-3-jakub@cloudflare.com> <CAEf4BzZd30RmiZaGvDju9X0jybkcdhgOk71fbcdySeJdPzmrAQ@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>
+Subject: Re: [PATCH bpf-next v4 02/16] bpf: Introduce SK_LOOKUP program type with a dedicated attach point
+In-reply-to: <CAEf4BzZd30RmiZaGvDju9X0jybkcdhgOk71fbcdySeJdPzmrAQ@mail.gmail.com>
+Date:   Thu, 16 Jul 2020 14:17:35 +0200
+Message-ID: <877dv3y7q8.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:3ac6:: with SMTP id h189mr4102202ioa.78.1594901238306;
- Thu, 16 Jul 2020 05:07:18 -0700 (PDT)
-Date:   Thu, 16 Jul 2020 05:07:18 -0700
-In-Reply-To: <000000000000ba65ba05a2fd48d9@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c2de7705aa8de1eb@google.com>
-Subject: Re: kernel BUG at net/core/dev.c:LINE! (3)
-From:   syzbot <syzbot+af23e7f3e0a7e10c8b67@syzkaller.appspotmail.com>
-To:     andy@greyhouse.net, davem@davemloft.net, j.vosburgh@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        vfalico@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Thu, Jul 16, 2020 at 03:41 AM CEST, Andrii Nakryiko wrote:
+> On Mon, Jul 13, 2020 at 10:47 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> Add a new program type BPF_PROG_TYPE_SK_LOOKUP with a dedicated attach type
+>> BPF_SK_LOOKUP. The new program kind is to be invoked by the transport layer
+>> when looking up a listening socket for a new connection request for
+>> connection oriented protocols, or when looking up an unconnected socket for
+>> a packet for connection-less protocols.
+>>
+>> When called, SK_LOOKUP BPF program can select a socket that will receive
+>> the packet. This serves as a mechanism to overcome the limits of what
+>> bind() API allows to express. Two use-cases driving this work are:
+>>
+>>  (1) steer packets destined to an IP range, on fixed port to a socket
+>>
+>>      192.0.2.0/24, port 80 -> NGINX socket
+>>
+>>  (2) steer packets destined to an IP address, on any port to a socket
+>>
+>>      198.51.100.1, any port -> L7 proxy socket
+>>
+>> In its run-time context program receives information about the packet that
+>> triggered the socket lookup. Namely IP version, L4 protocol identifier, and
+>> address 4-tuple. Context can be further extended to include ingress
+>> interface identifier.
+>>
+>> To select a socket BPF program fetches it from a map holding socket
+>> references, like SOCKMAP or SOCKHASH, and calls bpf_sk_assign(ctx, sk, ...)
+>> helper to record the selection. Transport layer then uses the selected
+>> socket as a result of socket lookup.
+>>
+>> This patch only enables the user to attach an SK_LOOKUP program to a
+>> network namespace. Subsequent patches hook it up to run on local delivery
+>> path in ipv4 and ipv6 stacks.
+>>
+>> Suggested-by: Marek Majkowski <marek@cloudflare.com>
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>>
+>> Notes:
+>>     v4:
+>>     - Reintroduce narrow load support for most BPF context fields. (Yonghong)
+>>     - Fix null-ptr-deref in BPF context access when IPv6 address not set.
+>>     - Unpack v4/v6 IP address union in bpf_sk_lookup context type.
+>>     - Add verifier support for ARG_PTR_TO_SOCKET_OR_NULL.
+>>     - Allow resetting socket selection with bpf_sk_assign(ctx, NULL).
+>>     - Document that bpf_sk_assign accepts a NULL socket.
+>>
+>>     v3:
+>>     - Allow bpf_sk_assign helper to replace previously selected socket only
+>>       when BPF_SK_LOOKUP_F_REPLACE flag is set, as a precaution for multiple
+>>       programs running in series to accidentally override each other's verdict.
+>>     - Let BPF program decide that load-balancing within a reuseport socket group
+>>       should be skipped for the socket selected with bpf_sk_assign() by passing
+>>       BPF_SK_LOOKUP_F_NO_REUSEPORT flag. (Martin)
+>>     - Extend struct bpf_sk_lookup program context with an 'sk' field containing
+>>       the selected socket with an intention for multiple attached program
+>>       running in series to see each other's choices. However, currently the
+>>       verifier doesn't allow checking if pointer is set.
+>>     - Use bpf-netns infra for link-based multi-program attachment. (Alexei)
+>>     - Get rid of macros in convert_ctx_access to make it easier to read.
+>>     - Disallow 1-,2-byte access to context fields containing IP addresses.
+>>
+>>     v2:
+>>     - Make bpf_sk_assign reject sockets that don't use RCU freeing.
+>>       Update bpf_sk_assign docs accordingly. (Martin)
+>>     - Change bpf_sk_assign proto to take PTR_TO_SOCKET as argument. (Martin)
+>>     - Fix broken build when CONFIG_INET is not selected. (Martin)
+>>     - Rename bpf_sk_lookup{} src_/dst_* fields remote_/local_*. (Martin)
+>>     - Enforce BPF_SK_LOOKUP attach point on load & attach. (Martin)
+>>
+>>  include/linux/bpf-netns.h  |   3 +
+>>  include/linux/bpf.h        |   1 +
+>>  include/linux/bpf_types.h  |   2 +
+>>  include/linux/filter.h     |  17 ++++
+>>  include/uapi/linux/bpf.h   |  77 ++++++++++++++++
+>>  kernel/bpf/net_namespace.c |   5 ++
+>>  kernel/bpf/syscall.c       |   9 ++
+>>  kernel/bpf/verifier.c      |  10 ++-
+>>  net/core/filter.c          | 179 +++++++++++++++++++++++++++++++++++++
+>>  scripts/bpf_helpers_doc.py |   9 +-
+>>  10 files changed, 308 insertions(+), 4 deletions(-)
+>>
+>
+> Looks good, two suggestions below.
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>
+> [...]
+>
+>> +
+>> +static const struct bpf_func_proto *
+>> +sk_lookup_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>> +{
+>> +       switch (func_id) {
+>> +       case BPF_FUNC_sk_assign:
+>> +               return &bpf_sk_lookup_assign_proto;
+>> +       case BPF_FUNC_sk_release:
+>> +               return &bpf_sk_release_proto;
+>> +       default:
+>
+> Wouldn't it be useful to have functions like
+> get_current_comm/get_current_pid_tgid/perf_event_output as well?
+> Similarly how they were added to a bunch of other socket-related BPF
+> program types recently?
 
-HEAD commit:    ca0e494a Add linux-next specific files for 20200715
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=11daec20900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2c76d72659687242
-dashboard link: https://syzkaller.appspot.com/bug?extid=af23e7f3e0a7e10c8b67
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12dd73bf100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17a466b3100000
+I can certainly see value in perf_event_output as a way to log/trace
+prog decisions. Less so for helpers that provide access to current task,
+as the prog usually will be called in softirq context.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+af23e7f3e0a7e10c8b67@syzkaller.appspotmail.com
+bpf_get_socket_cookie and bpf_get_netns_cookie have been on my mind, but
+first they need to be taught to accept ARG_PTR_TO_SOCKET.
 
-bond0 (unregistering): (slave wireguard2): Releasing backup interface
-bond0 (unregistering): (slave wireguard1): Releasing backup interface
-bond0 (unregistering): (slave wireguard0): Releasing backup interface
-device wireguard0 left promiscuous mode
-bond0 (unregistering): Destroying bond
-------------[ cut here ]------------
-kernel BUG at net/core/dev.c:8948!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 21 Comm: kworker/u4:1 Not tainted 5.8.0-rc5-next-20200715-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-RIP: 0010:rollback_registered_many+0x2be/0xf60 net/core/dev.c:8948
-Code: 4c 89 e8 48 c1 e8 03 42 80 3c 20 00 0f 85 91 0c 00 00 48 b8 22 01 00 00 00 00 ad de 48 89 43 70 e9 b9 fe ff ff e8 f2 77 39 fb <0f> 0b 4c 8d 7b 68 4c 8d 6b 70 eb a5 e8 e1 77 39 fb 48 8b 74 24 10
-RSP: 0018:ffffc90000dd76b0 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffff888097a94000 RCX: ffffffff863ab928
-RDX: ffff8880a97a8580 RSI: ffffffff863aba7e RDI: 0000000000000001
-RBP: ffffc90000dd7770 R08: 0000000000000000 R09: ffffffff8a854947
-R10: 0000000000000001 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffff888097a94068 R14: ffffc90000dd7718 R15: 0000000000000002
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fa85f1dee78 CR3: 000000009e4d2000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- rollback_registered net/core/dev.c:9022 [inline]
- unregister_netdevice_queue+0x2dd/0x570 net/core/dev.c:10103
- unregister_netdevice include/linux/netdevice.h:2764 [inline]
- bond_release_and_destroy drivers/net/bonding/bond_main.c:2212 [inline]
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3285 [inline]
- bond_netdev_event.cold+0xc1/0x10e drivers/net/bonding/bond_main.c:3398
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
- call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
- call_netdevice_notifiers net/core/dev.c:2059 [inline]
- rollback_registered_many+0x665/0xf60 net/core/dev.c:8977
- unregister_netdevice_many.part.0+0x1a/0x2f0 net/core/dev.c:10122
- unregister_netdevice_many net/core/dev.c:10121 [inline]
- default_device_exit_batch+0x30c/0x3d0 net/core/dev.c:10605
- ops_exit_list+0x10d/0x160 net/core/net_namespace.c:189
- cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:603
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Modules linked in:
----[ end trace d02cbf494c57b1f4 ]---
-RIP: 0010:rollback_registered_many+0x2be/0xf60 net/core/dev.c:8948
-Code: 4c 89 e8 48 c1 e8 03 42 80 3c 20 00 0f 85 91 0c 00 00 48 b8 22 01 00 00 00 00 ad de 48 89 43 70 e9 b9 fe ff ff e8 f2 77 39 fb <0f> 0b 4c 8d 7b 68 4c 8d 6b 70 eb a5 e8 e1 77 39 fb 48 8b 74 24 10
-RSP: 0018:ffffc90000dd76b0 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffff888097a94000 RCX: ffffffff863ab928
-RDX: ffff8880a97a8580 RSI: ffffffff863aba7e RDI: 0000000000000001
-RBP: ffffc90000dd7770 R08: 0000000000000000 R09: ffffffff8a854947
-R10: 0000000000000001 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffff888097a94068 R14: ffffc90000dd7718 R15: 0000000000000002
-FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f5f78695000 CR3: 000000008e0d9000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+That is to say, I expected the list of allowed helpers to grow.
 
+>
+>
+>> +               return bpf_base_func_proto(func_id);
+>> +       }
+>> +}
+>> +
+>
+> [...]
+>
+>> +       case offsetof(struct bpf_sk_lookup, local_ip4):
+>> +               *insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->src_reg,
+>> +                                     bpf_target_off(struct bpf_sk_lookup_kern,
+>> +                                                    v4.daddr, 4, target_size));
+>> +               break;
+>> +
+>> +       case bpf_ctx_range_till(struct bpf_sk_lookup,
+>> +                               remote_ip6[0], remote_ip6[3]):
+>> +#if IS_ENABLED(CONFIG_IPV6)
+>
+> nit: if you added {} to this case block, you could have combined the
+> above `int off` section with this one.
+
+Nifty. Thanks.
+
+>
+>> +               off = si->off;
+>> +               off -= offsetof(struct bpf_sk_lookup, remote_ip6[0]);
+>> +               off += bpf_target_off(struct in6_addr, s6_addr32[0], 4, target_size);
+>> +               *insn++ = BPF_LDX_MEM(BPF_SIZEOF(void *), si->dst_reg, si->src_reg,
+>> +                                     offsetof(struct bpf_sk_lookup_kern, v6.saddr));
+>> +               *insn++ = BPF_JMP_IMM(BPF_JEQ, si->dst_reg, 0, 1);
+>> +               *insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->dst_reg, off);
+>> +#else
+>> +               *insn++ = BPF_MOV32_IMM(si->dst_reg, 0);
+>> +#endif
+>> +               break;
+>> +
+>
+> [...]
