@@ -2,166 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E038D222320
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 14:57:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB80F22232D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 14:58:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728890AbgGPM5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 08:57:32 -0400
-Received: from mail.intenta.de ([178.249.25.132]:25402 "EHLO mail.intenta.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728237AbgGPM5c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 08:57:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=gudRPqr44+yWiceu3720gjTJW9r40JZdwXJJJsQgkYI=;
-        b=u7MuXtIFS3AygaKkSSliNwDsHCKQRSQqqpMtGRFeEMe5+1ILpQuRLI0rwuNaq4kfyP1JXkmzuQhYbgsoJTDTO5e8TsDqwKpEHs1dJhLJHrJXnje9kJ6K0/lV0CMetsxxN7igqojADmADn2xaL9af9e8XOFOnf0xztytBOcxjc15OsDD/Y7DxsN1jbJuwPpbHIHEB1eMRXT2nZ5N0FPU5wHy7XltNKo3yRJSoL6zKhEawUe73VCnKaiK483DHJ0kxjBr7asGpN7l5TveB4PpDLOyG0yLYr/7p+9H10kAchnUBEyNneiVa2AYiE/pQ4Lu71rZmg0NTnDYIPyGj4kMzwA==;
-Date:   Thu, 16 Jul 2020 14:57:24 +0200
-From:   Helmut Grohne <helmut.grohne@intenta.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>
-Subject: [PATCH v2] net: dsa: microchip: call phy_remove_link_mode during
- probe
-Message-ID: <20200716125723.GA19500@laureti-dev>
-References: <20200715192722.GD1256692@lunn.ch>
+        id S1728913AbgGPM57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 08:57:59 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:46426 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728439AbgGPM56 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 08:57:58 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id F3E1520064;
+        Thu, 16 Jul 2020 12:57:56 +0000 (UTC)
+Received: from us4-mdac16-3.at1.mdlocal (unknown [10.110.49.149])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id AFA4B800BF;
+        Thu, 16 Jul 2020 12:57:55 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.48.234])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id F1AD7100078;
+        Thu, 16 Jul 2020 12:57:54 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8E43778006E;
+        Thu, 16 Jul 2020 12:57:54 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 16 Jul
+ 2020 13:57:49 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH v3 net-next 00/16] sfc_ef100: driver for EF100 family NICs,
+ part 1
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+Message-ID: <7bb4f1f4-c67f-8c7b-86ba-7bf9f74ffc28@solarflare.com>
+Date:   Thu, 16 Jul 2020 13:57:45 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200715192722.GD1256692@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
- (10.10.16.48)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25544.003
+X-TM-AS-Result: No-4.853300-8.000000-10
+X-TMASE-MatchedRID: DiHRf6dPkZR09yt1Yp3gn7bQFsbjObJeLozI+rhNYbklbkXtj2kSO1uE
+        36pB6+0bYaPW10smdgxbySY0nZFbI6goXj9BWHh3fid4LSHtIANF/jSlPtma/lcn81OBopCmafh
+        2zcspPYf4Joz2NytzcuVuCjs/RbkA+QvYK6q8ktQ+NrfDUTEXxACm784gsJu4FujNgNeS9UCzSv
+        2lTjNjblk3JPfs2OJdnVTw5qrBKfd2UQRibUa5VElABXpquwdlMVx/3ZYby784WKr1PmPdtWSdt
+        4cH6MkbHk4iXRkjz1r88is6fjZv9v24TWyiNqkGdhnFihmbnwW+6m15psHd9Sx+EMR7nLceWyX9
+        o2JyEnMzNhvZcetROYDlFhTekDhf7OETrB2x4moBnSWdyp4eoS9wqaqMRxjezVgwP7ZMYf+Pvz7
+        W6xxPku28kzgoqBIIuhsUugxdrYlyygkjCrPFdyT9vTe4FHdQlHLUcNM85drg9GtYPBPdS1B1eq
+        TYlYh0O8cuRdzSJk+1+hkpRLKlA4zQp7mciZRIimHWEC28pk16i696PjRPiB3RY4pGTCyHsSAf9
+        uUaPflKNUgU7kTjgNNQkwj8EMZJGAdnzrnkM485f9Xw/xqKXXJnzNw42kCxxEHRux+uk8hxKpvE
+        GAbTDrjYPuwCW3Yar53hpev3bmKrvCg51T0eBI+FO1xHEP7gn6Ifh93DzLRSRKuWisRbzWmDcrp
+        ewkhjGV3IyUotQcjvrr3GWueC8xoQVhcDKUH1JRIzmbBpwaQgJCm6ypGLZ4kFmqDGAwWm
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--4.853300-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25544.003
+X-MDID: 1594904275-CcSW0nGtXP9E
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When doing "ip link set dev ... up" for a ksz9477 backed link,
-ksz9477_phy_setup is called and it calls phy_remove_link_mode to remove
-1000baseT HDX. During phy_remove_link_mode, phy_advertise_supported is
-called. Doing so reverts any previous change to advertised link modes
-e.g. using a udevd .link file.
+EF100 is a new NIC architecture under development at Xilinx, based
+ partly on existing Solarflare technology.  As many of the hardware
+ interfaces resemble EF10, the driver is implemented largely through
+ libraries of code from the 'sfc' driver, which previous patch series
+ "commonised" for this purpose.
+The new driver is called 'sfc_ef100'.
 
-phy_remove_link_mode is not meant to be used while opening a link and
-should be called during phy probe when the link is not yet available to
-userspace.
+In order to maintain bisectability while splitting into patches of a
+ reasonable size, I had to do a certain amount of back-and-forth with
+ stubs for things that the common code may try to call, mainly because
+ we can't do them until we've set up MCDI, but we can't set up MCDI
+ without probing the event queues, at which point a lot of the common
+ machinery becomes reachable from event handlers.
+Consequently, this first series doesn't get as far as actually sending
+ and receiving packets.  I have a second series ready to follow it
+ which implements the datapath (and a few other things like ethtool).
 
-Therefore move the phy_remove_link_mode calls into ksz9477_setup. This
-is called during dsa_switch_register and thus comes after
-ksz9477_switch_detect, which initializes dev->features.
+Changes from v2:
+ * remove MODULE_VERSION.
+ * call efx_destroy_reset_workqueue() from ef100_exit_module().
+ * correct uint32_ts to u32s.  While I was at it, I fixed a bunch of
+   other style issues in the function-control-window code.
+All in patch #4.
 
-Remove phy_setup from ksz_dev_ops as no users remain.
+Changes from v1:
+ * kernel test robot spotted a link error when sfc_ef100 was built
+   without mdio.  It turns out the thing we were trying to link to
+   was a bogus thing to do on anything but Falcon, so new patch #1
+   removes it from this driver.
+ * fix undeclared symbols in patch #4 by shuffling around prototypes
+   and #includes and adding 'static' where appropriate.
+ * fix uninitialised variable 'rc2' in patch #7.
 
-Link: https://lore.kernel.org/netdev/20200715192722.GD1256692@lunn.ch/
-Fixes: 42fc6a4c613019 ("net: dsa: microchip: prepare PHY for proper advertisement")
-Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
----
- drivers/net/dsa/microchip/ksz9477.c    | 31 ++++++++++----------------
- drivers/net/dsa/microchip/ksz_common.c |  2 --
- drivers/net/dsa/microchip/ksz_common.h |  2 --
- 3 files changed, 12 insertions(+), 23 deletions(-)
+Edward Cree (16):
+  sfc: remove efx_ethtool_nway_reset()
+  sfc_ef100: add EF100 register definitions
+  sfc_ef100: register accesses on EF100
+  sfc_ef100: skeleton EF100 PF driver
+  sfc_ef100: reset-handling stub
+  sfc_ef100: PHY probe stub
+  sfc_ef100: don't call efx_reset_down()/up() on EF100
+  sfc_ef100: implement MCDI transport
+  sfc_ef100: implement ndo_open/close and EVQ probing
+  sfc_ef100: process events for MCDI completions
+  sfc_ef100: read datapath caps, implement check_caps
+  sfc_ef100: extend ef100_check_caps to cover datapath_caps3
+  sfc_ef100: actually perform resets
+  sfc_ef100: probe the PHY and configure the MAC
+  sfc_ef100: read device MAC address at probe time
+  sfc_ef100: implement ndo_get_phys_port_{id,name}
 
-changes since v1:
- * Don't change phy_remove_link_mode. Instead, call it at the right
-   time. Thanks to Andrew Lunn for the detailed explanation.
-
-Helmut
-
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 8d15c3016024..d0023916e1e8 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -974,23 +974,6 @@ static void ksz9477_port_mirror_del(struct dsa_switch *ds, int port,
- 			     PORT_MIRROR_SNIFFER, false);
- }
- 
--static void ksz9477_phy_setup(struct ksz_device *dev, int port,
--			      struct phy_device *phy)
--{
--	/* Only apply to port with PHY. */
--	if (port >= dev->phy_port_cnt)
--		return;
--
--	/* The MAC actually cannot run in 1000 half-duplex mode. */
--	phy_remove_link_mode(phy,
--			     ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
--
--	/* PHY does not support gigabit. */
--	if (!(dev->features & GBIT_SUPPORT))
--		phy_remove_link_mode(phy,
--				     ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
--}
--
- static bool ksz9477_get_gbit(struct ksz_device *dev, u8 data)
- {
- 	bool gbit;
-@@ -1353,7 +1336,7 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
- static int ksz9477_setup(struct dsa_switch *ds)
- {
- 	struct ksz_device *dev = ds->priv;
--	int ret = 0;
-+	int ret = 0, i;
- 
- 	dev->vlan_cache = devm_kcalloc(dev->dev, sizeof(struct vlan_table),
- 				       dev->num_vlans, GFP_KERNEL);
-@@ -1391,6 +1374,17 @@ static int ksz9477_setup(struct dsa_switch *ds)
- 
- 	ksz_init_mib_timer(dev);
- 
-+	for (i = 0; i < dev->phy_port_cnt; ++i) {
-+		/* The MAC actually cannot run in 1000 half-duplex mode. */
-+		phy_remove_link_mode(&dev->ports[i].phydev,
-+				     ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-+
-+		/* PHY does not support gigabit. */
-+		if (!(dev->features & GBIT_SUPPORT))
-+			phy_remove_link_mode(&dev->ports[i].phydev,
-+					     ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
-+	}
-+
- 	return 0;
- }
- 
-@@ -1603,7 +1597,6 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.get_port_addr = ksz9477_get_port_addr,
- 	.cfg_port_member = ksz9477_cfg_port_member,
- 	.flush_dyn_mac_table = ksz9477_flush_dyn_mac_table,
--	.phy_setup = ksz9477_phy_setup,
- 	.port_setup = ksz9477_port_setup,
- 	.r_mib_cnt = ksz9477_r_mib_cnt,
- 	.r_mib_pkt = ksz9477_r_mib_pkt,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index fd1d6676ae4f..7b6c0dce7536 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -358,8 +358,6 @@ int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
- 
- 	/* setup slave port */
- 	dev->dev_ops->port_setup(dev, port, false);
--	if (dev->dev_ops->phy_setup)
--		dev->dev_ops->phy_setup(dev, port, phy);
- 
- 	/* port_stp_state_set() will be called after to enable the port so
- 	 * there is no need to do anything.
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index f2c9bb68fd33..7d11dd32ec0d 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -119,8 +119,6 @@ struct ksz_dev_ops {
- 	u32 (*get_port_addr)(int port, int offset);
- 	void (*cfg_port_member)(struct ksz_device *dev, int port, u8 member);
- 	void (*flush_dyn_mac_table)(struct ksz_device *dev, int port);
--	void (*phy_setup)(struct ksz_device *dev, int port,
--			  struct phy_device *phy);
- 	void (*port_cleanup)(struct ksz_device *dev, int port);
- 	void (*port_setup)(struct ksz_device *dev, int port, bool cpu_port);
- 	void (*r_phy)(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
--- 
-2.20.1
+ drivers/net/ethernet/sfc/Kconfig          |  10 +
+ drivers/net/ethernet/sfc/Makefile         |   8 +
+ drivers/net/ethernet/sfc/ef10.c           |   1 +
+ drivers/net/ethernet/sfc/ef100.c          | 577 ++++++++++++++++++
+ drivers/net/ethernet/sfc/ef100_ethtool.c  |  26 +
+ drivers/net/ethernet/sfc/ef100_ethtool.h  |  12 +
+ drivers/net/ethernet/sfc/ef100_netdev.c   | 280 +++++++++
+ drivers/net/ethernet/sfc/ef100_netdev.h   |  17 +
+ drivers/net/ethernet/sfc/ef100_nic.c      | 620 +++++++++++++++++++
+ drivers/net/ethernet/sfc/ef100_nic.h      |  32 +
+ drivers/net/ethernet/sfc/ef100_regs.h     | 693 ++++++++++++++++++++++
+ drivers/net/ethernet/sfc/ef100_rx.c       |  31 +
+ drivers/net/ethernet/sfc/ef100_rx.h       |  19 +
+ drivers/net/ethernet/sfc/ef100_tx.c       |  63 ++
+ drivers/net/ethernet/sfc/ef100_tx.h       |  22 +
+ drivers/net/ethernet/sfc/efx.h            |   1 -
+ drivers/net/ethernet/sfc/efx_common.c     |  11 +-
+ drivers/net/ethernet/sfc/ethtool.c        |   1 -
+ drivers/net/ethernet/sfc/ethtool_common.c |   8 -
+ drivers/net/ethernet/sfc/ethtool_common.h |   1 -
+ drivers/net/ethernet/sfc/io.h             |  16 +-
+ drivers/net/ethernet/sfc/mcdi.h           |   4 +-
+ drivers/net/ethernet/sfc/net_driver.h     |  14 +-
+ drivers/net/ethernet/sfc/tx_common.h      |   2 +
+ 24 files changed, 2449 insertions(+), 20 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/ef100.c
+ create mode 100644 drivers/net/ethernet/sfc/ef100_ethtool.c
+ create mode 100644 drivers/net/ethernet/sfc/ef100_ethtool.h
+ create mode 100644 drivers/net/ethernet/sfc/ef100_netdev.c
+ create mode 100644 drivers/net/ethernet/sfc/ef100_netdev.h
+ create mode 100644 drivers/net/ethernet/sfc/ef100_nic.c
+ create mode 100644 drivers/net/ethernet/sfc/ef100_nic.h
+ create mode 100644 drivers/net/ethernet/sfc/ef100_regs.h
+ create mode 100644 drivers/net/ethernet/sfc/ef100_rx.c
+ create mode 100644 drivers/net/ethernet/sfc/ef100_rx.h
+ create mode 100644 drivers/net/ethernet/sfc/ef100_tx.c
+ create mode 100644 drivers/net/ethernet/sfc/ef100_tx.h
 
