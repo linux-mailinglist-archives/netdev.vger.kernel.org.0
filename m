@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 475902219C2
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 04:13:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 679A22219C9
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 04:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727108AbgGPCNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 22:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46934 "EHLO
+        id S1727094AbgGPCTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 22:19:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726908AbgGPCNl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 22:13:41 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7397EC061755;
-        Wed, 15 Jul 2020 19:13:41 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id j80so4129967qke.0;
-        Wed, 15 Jul 2020 19:13:41 -0700 (PDT)
+        with ESMTP id S1726770AbgGPCTu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 22:19:50 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DD2C061755;
+        Wed, 15 Jul 2020 19:19:50 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id b4so4101121qkn.11;
+        Wed, 15 Jul 2020 19:19:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7E9BVMX3xbajDKW8TkzON6bpuLq1w2FgoL2inn/V9dU=;
-        b=DXe4Ex1q0x0bWrktr+uWtNgh+8pRvGvrgvHdpFt68WrdJUs5Dps41xSc7q3CZpNb0w
-         kxo58EUgLADrgphNqPaiPj8hsI7BCrO7HXAU+MSpImNveVwmoO3dHfKGTG4/Y25sQOfq
-         IiITwKlzPx4FHu2G7IRFzUncWDMmkjV/tgbOSq0XV/zr0oTuEddes9gLV/WWy+cYauP5
-         lthf/Au4aM8iyVyDLZD8/qMT5/or9Lz9dV0+4zqiA6TA79JVHDl0/1dvBk8rkwvWOEdN
-         1+rNGvgMMno1CMqTCqHIMt+2Bf/58SOX9Tr3thvFI+nWJk0x9MY3/HQcDlatM8w/IjFX
-         pHUQ==
+        bh=529eT/i/WJuLhFmUkFuyxkO48c99UyjFqkTt/oa7tJg=;
+        b=N10qrTj3n2eNBsRJZ/ARMifpBeg4AEtSXSGkijPXsZ8aV7nwiyRpVAp1ZiVrIp3iSW
+         94WBh3lzqOQUPKtqJkiJocrJ7atY/Zhe0k0LvzPNocj72A1mfOFy/onmXUrlEtWHV5su
+         ZecG931BFzHqnXCpgr2J5RKHAc9w5s0tbJSNW+gXZT5VhMnJeVuGoyLxuPrcTub/W+rb
+         k66HbsCAB9m6wGmc2MH9hNV8Dhy3wM8SQ3jxToo2zL2aBkpySpxm6blvT3yr4WkA0yxy
+         G283C6T9ntmzmBxAmhkO0FmXxpOdPa9ebNe+I1+UBUCmJIRCVAix97yHH0kyA0IM8w7Q
+         YoSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7E9BVMX3xbajDKW8TkzON6bpuLq1w2FgoL2inn/V9dU=;
-        b=nr8iH0ZQXvTe7OuCTh+LfwQZbYy5fm+gmN7m6EENFfAV7k6/+hc8NBVL2UlyxzGX89
-         YAJip5cxYPsq7PjuRKR70alWXZ2COJG9p7EGC7dNnfWhbLN4kOPKHms5LeiK0ZvPx/WY
-         j6TQ41Eh17ZSf8jlw9O6btx6JTSdhXX96gTXbab6o9Ry3QIKC7Iu2zqjcZrWv4GUUWR4
-         lkzb/PzYlNhPNy/MEyrZ7qpjRusW049YXcHT+eDFeddHr3W2mOX+LOZ08mN6s4a1x1xA
-         ljGgJAI1xSMX2Mm+vdDalAUGVxdPeydQi36ArNuaOaSJJYcEajMnqIEffSGc+R8N9cxk
-         4wsg==
-X-Gm-Message-State: AOAM532wWJc6DDU8q+HdbCgXYU4mkLIAiiE4gH46s1atAyvZrkSWzTB8
-        eyR5y8brcI5BwJuwTVNbgH5hSSYfZe7iXAQEXB8=
-X-Google-Smtp-Source: ABdhPJzI36myxb64lOG91jGFwO1yx6VQ4i4ii39aR188oxAsMkYIKn3BcGI7rbOdeNyzkt7tBUX3vWKG8lmb2aRD8io=
-X-Received: by 2002:a05:620a:2409:: with SMTP id d9mr2013211qkn.36.1594865620585;
- Wed, 15 Jul 2020 19:13:40 -0700 (PDT)
+        bh=529eT/i/WJuLhFmUkFuyxkO48c99UyjFqkTt/oa7tJg=;
+        b=VUlZl/iKKRVuHS/kWqlK4OmvMrLHIEaj4a0UPqiWxAqtonGPVE2tpH0gBVURGYVJ8z
+         ycLjwgUrFoXSW08tH4NWolK7/9wTOYw4nUqbgEPkOx6hMA44YrXIdd7awNdjxLRh8hga
+         M4GtmXbloF7NbC52W2Cmijv0vt6YHJJqG+hGwja5FujgMOoeLyrF2TE9jFt9jlS2kZrM
+         cfIk2vKcgZwqLjFT39XZG3MBhTD0v6fdkVZifkvIKcUGshZvhz46qIyR1T+hDADpESEp
+         8eDsKUcjVbB5jUUvw5wDFwyjNRRnbZpyoOSOVXFZoxwFDE8Gt3PeFQZHjAR+llojpVsg
+         bS8w==
+X-Gm-Message-State: AOAM533Dn1+08jb/5YqK710UlljwRys+Z5H0zL9glAnv9M13UzSmYMtr
+        CPRDna0lL9ltOgOT5LoSfWBPvJAnZPrUFiebEbHe1sJ6
+X-Google-Smtp-Source: ABdhPJy5voGj/Qe4PfXrmen0FZXKM38fE5qw95dBb6AC0Mxf4ur6dtBUaXUxqFtpt3Op9DiSRnUmJOaT575GilcqmKc=
+X-Received: by 2002:a05:620a:2409:: with SMTP id d9mr2029658qkn.36.1594865989876;
+ Wed, 15 Jul 2020 19:19:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200713174654.642628-1-jakub@cloudflare.com> <20200713174654.642628-15-jakub@cloudflare.com>
-In-Reply-To: <20200713174654.642628-15-jakub@cloudflare.com>
+References: <20200713174654.642628-1-jakub@cloudflare.com> <20200713174654.642628-17-jakub@cloudflare.com>
+In-Reply-To: <20200713174654.642628-17-jakub@cloudflare.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 15 Jul 2020 19:13:29 -0700
-Message-ID: <CAEf4Bzamw5ENe8dL1w0uLY9ggdu0cB7B9HDgxcQiFfyYf4ErMw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 14/16] selftests/bpf: Add verifier tests for
- bpf_sk_lookup context access
+Date:   Wed, 15 Jul 2020 19:19:39 -0700
+Message-ID: <CAEf4BzYPk5kNJb61ceWG-22hu47MBuAcMt=itU+xX0mju22NmA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 16/16] selftests/bpf: Tests for BPF_SK_LOOKUP
+ attach point
 To:     Jakub Sitnicki <jakub@cloudflare.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         kernel-team <kernel-team@cloudflare.com>,
@@ -66,80 +66,69 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Jul 13, 2020 at 10:48 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
 >
-> Exercise verifier access checks for bpf_sk_lookup context fields.
+> Add tests to test_progs that exercise:
+>
+>  - attaching/detaching/querying programs to BPF_SK_LOOKUP hook,
+>  - redirecting socket lookup to a socket selected by BPF program,
+>  - failing a socket lookup on BPF program's request,
+>  - error scenarios for selecting a socket from BPF program,
+>  - accessing BPF program context,
+>  - attaching and running multiple BPF programs.
+>
+> Run log:
+>
+>   # ./test_progs -n 69
+>   #69/1 query lookup prog:OK
+>   #69/2 TCP IPv4 redir port:OK
+
+[...]
+
+>   #69/42 multi prog - drop, redir:OK
+>   #69/43 multi prog - redir, drop:OK
+>   #69/44 multi prog - redir, redir:OK
+>   #69 sk_lookup:OK
+>   Summary: 1/44 PASSED, 0 SKIPPED, 0 FAILED
 >
 > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 > ---
 >
 
-LGTM.
+nit: It's not universal, unfortunately, but the typical naming pattern
+for selftest are: progs/test_<something>.c for BPF part, and
+prog_tests/<something>.c for user-space part. Just FYI for the future.
+
+But looks good to me either way.
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
 > Notes:
 >     v4:
->     - Bring back tests for narrow loads.
+>     - Remove system("bpftool ...") call left over from debugging. (Lorenz)
+>     - Dedup BPF code that selects a socket. (Lorenz)
+>     - Switch from CHECK_FAIL to CHECK macro. (Andrii)
+>     - Extract a network_helper that wraps inet_pton.
+>     - Don't restore netns now that test_progs does it.
+>     - Cover bpf_sk_assign(ctx, NULL) in tests.
+>     - Cover narrow loads in tests.
+>     - Cover NULL ctx->sk access attempts in tests.
+>     - Cover accessing IPv6 ctx fields on IPv4 lookup.
 >
 >     v3:
->     - Consolidate ACCEPT tests into one.
->     - Deduplicate REJECT tests and arrange them into logical groups.
->     - Add tests for out-of-bounds and unaligned access.
->     - Cover access to newly introduced 'sk' field.
+>     - Extend tests to cover new functionality in v3:
+>       - multi-prog attachments (query, running, verdict precedence)
+>       - socket selecting for the second time with bpf_sk_assign
+>       - skipping over reuseport load-balancing
 >
 >     v2:
 >      - Adjust for fields renames in struct bpf_sk_lookup.
 >
->  .../selftests/bpf/verifier/ctx_sk_lookup.c    | 471 ++++++++++++++++++
->  1 file changed, 471 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/verifier/ctx_sk_lookup.c
+>  tools/testing/selftests/bpf/network_helpers.c |   58 +-
+>  tools/testing/selftests/bpf/network_helpers.h |    2 +
+>  .../selftests/bpf/prog_tests/sk_lookup.c      | 1282 +++++++++++++++++
+>  .../selftests/bpf/progs/test_sk_lookup_kern.c |  639 ++++++++
+>  4 files changed, 1958 insertions(+), 23 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/sk_lookup.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_sk_lookup_kern.c
 >
-
-[...]
-
-> +               /* 1-byte read from local_port field */
-> +               BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-> +                           offsetof(struct bpf_sk_lookup, local_port)),
-> +               BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-> +                           offsetof(struct bpf_sk_lookup, local_port) + 1),
-> +               BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-> +                           offsetof(struct bpf_sk_lookup, local_port) + 2),
-> +               BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-> +                           offsetof(struct bpf_sk_lookup, local_port) + 3),
-> +               /* 2-byte read from local_port field */
-> +               BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-> +                           offsetof(struct bpf_sk_lookup, local_port)),
-> +               BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-> +                           offsetof(struct bpf_sk_lookup, local_port) + 2),
-> +               /* 4-byte read from local_port field */
-> +               BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-> +                           offsetof(struct bpf_sk_lookup, local_port)),
-> +
-> +               /* 8-byte read from sk field */
-> +               BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
-> +                           offsetof(struct bpf_sk_lookup, sk)),
-> +               BPF_EXIT_INSN(),
-> +       },
-> +       .result = ACCEPT,
-> +       .prog_type = BPF_PROG_TYPE_SK_LOOKUP,
-> +       .expected_attach_type = BPF_SK_LOOKUP,
-> +},
-
-This looks like a common class of tests which can be auto-generated
-just from the list of fields and their sizes. Something for someone's
-wishlist, though.
-
-> +/* invalid 8-byte reads from a 4-byte fields in bpf_sk_lookup */
-> +{
-> +       "invalid 8-byte read from bpf_sk_lookup family field",
-> +       .insns = {
-> +               BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
-> +                           offsetof(struct bpf_sk_lookup, family)),
-> +               BPF_EXIT_INSN(),
-> +       },
-> +       .errstr = "invalid bpf_context access",
-> +       .result = REJECT,
-> +       .prog_type = BPF_PROG_TYPE_SK_LOOKUP,
-> +       .expected_attach_type = BPF_SK_LOOKUP,
-> +},
 
 [...]
