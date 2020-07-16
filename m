@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8956022273F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:39:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CDF3222745
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729261AbgGPPi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 11:38:57 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:45742 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728967AbgGPPi4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:38:56 -0400
-Received: by mail-ot1-f65.google.com with SMTP id h1so4524111otq.12;
-        Thu, 16 Jul 2020 08:38:55 -0700 (PDT)
+        id S1729291AbgGPPjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 11:39:03 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:46969 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728967AbgGPPjA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:39:00 -0400
+Received: by mail-oi1-f195.google.com with SMTP id l63so5391650oih.13;
+        Thu, 16 Jul 2020 08:38:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=U90hHEc54jdrWNma8Ae66aUnovbTk060PhIZQuQR+QY=;
-        b=Byt9bKj4gM5ybZPk/tMcE2C+FKnbynrlDnBkbpp8R1bgpyMEkhAptqZutYQ2IrV1oX
-         V1NwkwizhYquGkzMpAv1dgDr4pguOftRFEU1V2QAs6QeZFpwk+bSgQUgEZaLUeiQ0axc
-         zSnBxbwct4Dr6c2lA9K7fN6Xe2kRCbPzrNCJioVEixDMPvB0N3zfBoW5hk5zEJMpXglY
-         J3rZQX+e0KO3MuMxHr5Tpi16xyrGlpxIXH7fLQDQux01lZzPfUt7FezhWnY+2e3TaIT9
-         H9YN8X0iMCr9T6t66f2F83c31V6djPGtkpJq377twI+uxy0LT0uC2DlbmGQsLLU1tzwL
-         o/mQ==
-X-Gm-Message-State: AOAM533lbWJfcbW8dyfxqWJRCwbclNkPqkaXs5wUvyc9OEVSiBoQLXpQ
-        nLfH0g2C3ZOK/d0df2h1V+pJRntyddOx5q6SiqQ=
-X-Google-Smtp-Source: ABdhPJwZ5OQQ9EGRyQ3xUMXe0z77A9hIeMmqlCkxDKaqcv1Z/fgnXN/N+/X37FauDrLUuxCrtlxdJJObhqTJMAWoTSQ=
-X-Received: by 2002:a05:6830:1451:: with SMTP id w17mr5037827otp.250.1594913935397;
- Thu, 16 Jul 2020 08:38:55 -0700 (PDT)
+        bh=55jfOQrsK0L1I5YXuMIdr4caeEX2QkxMqO7QLDfDfTE=;
+        b=OJNb/3CZdDYdzXBR/FZKOEH1E8x79ukV4KlNK0I9Zvjqcqi8GBZ5P5/mE/v+JZd5y8
+         7YGhcalW3migO5YLoZaShePGFX5HXO70CZx1ETbjY6bnN9Dw/rQNXrN1KstprIMB816z
+         MeTHoQtCjomtjtYza/aPBsYwUu1v81D44wHqHG0PNxCEAbsrbsm2XKr0l2QwSky7O/UZ
+         6YWEu5ock0X31HkwIPBNx0PaLsDo1QwBDokzZjptSOVvocCyOqcC97Wu1IhzAgoZwhl9
+         eb+j4W9YRxSfPzF4kRmC5N5VnOC4E0TiAadRJnxcT5RAZQGVXoNNuFtQXbYXHFlWzGuY
+         BgHQ==
+X-Gm-Message-State: AOAM530c0ORPjHgy3yWtYRoUSRQGvXpJ99Z/Ct60n0oosGCuQgtDXAfO
+        Q1OCL7fVxXxbxlawi9KKm5eGOYkZpkrGmyjsISk=
+X-Google-Smtp-Source: ABdhPJxlQJRAKwt8VHHL6j/C+ElgfmWMk9g6riN/0HgdloQA+L26Uh68R5kB11G1HZGjTIU8odcycK0XWy9zO26BCZA=
+X-Received: by 2002:aca:5c41:: with SMTP id q62mr4141682oib.148.1594913939213;
+ Thu, 16 Jul 2020 08:38:59 -0700 (PDT)
 MIME-Version: 1.0
 References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594811350-14066-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594811350-14066-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-5-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594811350-14066-5-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 16 Jul 2020 17:38:44 +0200
-Message-ID: <CAMuHMdWH2y6p3J4S3qeZNFN6v=_Rnz_zg0etG7DzcQ+NhS9RHA@mail.gmail.com>
-Subject: Re: [PATCH 01/20] arm64: dts: renesas: r8a774e1: Add operating points
+Date:   Thu, 16 Jul 2020 17:38:48 +0200
+Message-ID: <CAMuHMdXRHOqtFWgExiksemXXQzxbokbT_nZDp4o4UzOD_gB5yQ@mail.gmail.com>
+Subject: Re: [PATCH 04/20] arm64: dts: renesas: r8a774e1: Add RZ/G2H thermal support
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -70,37 +70,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Prabhakar,
-
 On Wed, Jul 15, 2020 at 1:09 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
 > From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 >
-> The RZ/G2H (r8a774e1) comes with two clusters of processors, similarly to
-> the r8a774a1. The first cluster is made of A57s, the second cluster is made
-> of A53s.
+> Add thermal support for R8A774E1 (RZ/G2H) SoC.
 >
-> The operating points for the cluster with the A57s are:
->
-> Frequency | Voltage
-> ----------|---------
-> 500 MHz   | 0.82V
-> 1.0 GHz   | 0.82V
-> 1.5 GHz   | 0.82V
->
-> The operating points for the cluster with the A53s are:
->
-> Frequency | Voltage
-> ----------|---------
-> 800 MHz   | 0.82V
-> 1.0 GHz   | 0.82V
-> 1.2 GHz   | 0.82V
-
-I trust you on the actual values...
-
->
-> This patch adds the definitions for the operating points to the SoC
-> specific DT.
+> Based on the work done for r8a774a1 SoC.
 >
 > Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
