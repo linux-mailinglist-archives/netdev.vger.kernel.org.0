@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E17B222E11
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 23:34:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2125F222E13
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 23:34:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbgGPVeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 17:34:23 -0400
-Received: from mail-eopbgr150051.outbound.protection.outlook.com ([40.107.15.51]:32841
+        id S1726070AbgGPVeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 17:34:31 -0400
+Received: from mail-eopbgr150042.outbound.protection.outlook.com ([40.107.15.42]:23206
         "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727101AbgGPVeV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 17:34:21 -0400
+        id S1727825AbgGPVeZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jul 2020 17:34:25 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Tm6LGT47tDccl0WRQSoQs3yiN/wNQ6Hl9t4i6FVstJ4AwxsFxXO4k3VYjViKfmJegU5i0uHZB5NFygwVSnmSuPwZyhJmg2NpHARPTBzKCZx98g08W2bgk7JHQ/6sbPxppUmZu5xnjsTuQnERyq6x2UjwDnCNKPh4X/TjcxRExmywIysRgnVx89oH7+Sh5RvHNRTT+4HqwkJ67/9yxT3v+SOhMNTWEvBNWL5zL9Ti9D2CfWaMOtd1k3Na1X9ww9NDqiYhihS/SEQjdjt9sLxTfpC4pFBprI8CJn+LqsiYpXscRS1Zc56mGaj+GKjisHTeYhHLQtvvPadW+osUyWhAcw==
+ b=ejBYcJvnGTcRA7Az1ZdSaNP3ow6RSai5R/VopVEPCDYdFtpMJfzW5eRiS2ItA3QsKRZLK0MsgQSWk1OXrv0L1daDsnwnD3GEPLksNPgEtG7B/XZDtVu68OKEgpZeIVZLtR5bo4/HcxOLpr5iTONTfqjn26v9EAq1zMDkygoxl2P85mGCRUnk2d7AHYSMfKXcOWVytAoDJrCzeIyyJRNEV73dULReceVkK9zCffGL2wmQ8aNa4E+r1Mh0jYIoQf0lSS3eIrxFmc01ogcAoiJBH8TP7WWkkG5304uHFcQFSJfG+a30cQIEawfF2WupprA3Jdnw0j8UVPXSmUb4D5VDtQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YS8o16qP/Gh7NWN46bmIiEPYAcbL7f0pdUgm2S5EZbA=;
- b=TDusiObkaq3U5+SXoN1MSFwbY9iH69/CmjPn+hrZWEjqOnnCBR4NSjdIsRYy9qH3HeH3dlvRXjQDlIiRM6mR8v5ulNY8LgVLGL+qqEJk3YxUWoUHrDx6HUobozfpwPmg89KId+Em/gKRTvbm2WEbDDxcrMDARXzglxpTjVc6VhlGrwj8lQjCN0sfufRxSAvI6fQKBhhqR370auXSNoqEqeSZuJ5nIRKTFBnXgD8ywUt7CBQBxweZG+qUHjxwx2GkSk6RK8PuhIqZw0Nik8mohQgpNn7RAlQaY/4qNNc6wLL8MKn/zISpnDalZ3udu6pePgfxhWOqsTOMglM4RX3zjw==
+ bh=QzD4OMaAjDbyoApvCJI+q5KHIE5FfzAANgPBt5e6i5Q=;
+ b=bmJsP0gPMhRaOD4wJS/3ImXBIS0B4vCynOetHIzYrFOHe2Udeyy8qsaStaP28ns1clKwZLDwjqlzOFxAidAeI4Hq19/cm5ckxK8ZCxnj36ut6tNqoszSKUcE71KnWI+YdZ9d4kLh+2RXpzL5Gy2Pk6PVR+5M3nKIqly6VJ8p59oMeIzg8ux9I3jhJDLFRQTexNapU9T4H8OjF6zu1cuTLFjHM4CZ5OdHNPKW/y+cL/iDjcWGgjaysqbM9HBAcQSrBBc6gEp04yQyPZ0GFIDY9xd7AJSgaJB0c6qyJCm+NQsPrAB/ixdLYOE+8Coe5bbcJU9bWDUOgexat67o4xOBfg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YS8o16qP/Gh7NWN46bmIiEPYAcbL7f0pdUgm2S5EZbA=;
- b=P7ae8hosjWL14xmLgPngnPkfNOKDdCwhldOT70aRmHM/OkPzz+f+7n8qpDG4F9WRSeaXzldyH7GHAk+i/peaoPu0xW4DWeBoNWgH+xMTItcAhFcxwPQGNiNwyj/gHN/ZH8X2C/3PCrwmx+v5+PpC7l536nTEmx33MCVbApYAI9E=
+ bh=QzD4OMaAjDbyoApvCJI+q5KHIE5FfzAANgPBt5e6i5Q=;
+ b=tEb0OYDc23pNArHen3G/pIff8+aRTlfk+sH5zje93VNth9ojI/VRPRnfiViqJ5/R56rGzSKJg5GYH8VzNXXdo6YdofkyHFPtbsAjmHMlLQ2VdcJ93jOY8fezR/RUvOrM5n5LHKZWPRVL28BUpmuufwbKBaS/CUaKEyrMBL0Iiz0=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR0502MB2992.eurprd05.prod.outlook.com (2603:10a6:800:b0::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17; Thu, 16 Jul
- 2020 21:34:06 +0000
+ 2020 21:34:08 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3174.027; Thu, 16 Jul 2020
- 21:34:06 +0000
+ 21:34:08 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Raed Salem <raeds@mellanox.com>,
-        Boris Pismenny <borisp@mellanox.com>,
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 11/15] net/mlx5e: IPsec: Add Connect-X IPsec ESN update offload support
-Date:   Thu, 16 Jul 2020 14:33:17 -0700
-Message-Id: <20200716213321.29468-12-saeedm@mellanox.com>
+Subject: [net-next 12/15] net/mlx5e: XDP, Avoid indirect call in TX flow
+Date:   Thu, 16 Jul 2020 14:33:18 -0700
+Message-Id: <20200716213321.29468-13-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200716213321.29468-1-saeedm@mellanox.com>
 References: <20200716213321.29468-1-saeedm@mellanox.com>
@@ -57,155 +57,208 @@ X-ClientProxiedBy: BYAPR21CA0028.namprd21.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR21CA0028.namprd21.prod.outlook.com (2603:10b6:a03:114::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.7 via Frontend Transport; Thu, 16 Jul 2020 21:34:04 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR21CA0028.namprd21.prod.outlook.com (2603:10b6:a03:114::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.7 via Frontend Transport; Thu, 16 Jul 2020 21:34:06 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 995f37d1-9c31-48e3-a4e3-08d829cff7ab
+X-MS-Office365-Filtering-Correlation-Id: 9eb5e8aa-0955-4996-5985-08d829cff8f5
 X-MS-TrafficTypeDiagnostic: VI1PR0502MB2992:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0502MB29927EE501D3CB9146CCABABBE7F0@VI1PR0502MB2992.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:820;
+X-Microsoft-Antispam-PRVS: <VI1PR0502MB2992524CBDB9C6CAE986275ABE7F0@VI1PR0502MB2992.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2043;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HwO40H6qNaEp8xzUIodkZ6hJNbJ60pHt733R66BRANPNwDS3n0F7ht4WPRP3rfYOoGx+CLjVNSkXP8/e21oi2GsMkSevT4RZsLDlMjW8HbRBR9+mx9uZm9lMjUgIAywYw9kzMrOxEF0eXk7WocjBkEzkveSSJepLXHHi5CH4OLDInn3yoS9BlRxuoi77BtC5q93ekpdVcthCi+jl4//CUBCmKnNZSW1sIjZ4YpHGzS96OYxPYgbgquK4ceAOUlFyr17xlNeC8fnwi133joFNG8EWr87tFgYLRGBKB+hf/yrO5Oi4HNb7OUo725AzilIo7lJVz0Ljg+uKXk/6zZAHKlqHRn5axdEw/yX60BdtAmNHbwN/o4MjiEKzvJCbbB6I
+X-Microsoft-Antispam-Message-Info: ypPVTJgVwv7TRr6q/cQhZGYOA6+wNLtu76JelnLv9zh5R+Hbix568hp/mABKxDYikMEkyLfOwS/i1o4Ktfis+q16K4GBnjFI4d1u3cZqdx8ajdjTZfKr1j88f5vyaomVJrkvSAcm5YhmxPlr7g1xS9qSN99AqnjNp3BtviFoFClmVVgEOMWw47pLNQI0TFk1f1LB7A0YmM2ghs2rjeOT5vRQ+Z/Boh7rDhy/M6kYS58H69KxefoGzg1utBE23zSGfCs+sb/gLlybr0EI2KApStvT5OlZCDPcYC2Gc5KB0GqkaD2ymEEusCSdAwK0ypW2PZWJRYdL8nV0WI6NxidJ4dRvAiUpq3ZZ8H+SRNSqoxWHpcoxeHGoSA40+geR3elo
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(136003)(346002)(366004)(396003)(376002)(86362001)(66556008)(66946007)(66476007)(478600001)(8936002)(107886003)(186003)(6512007)(16526019)(956004)(52116002)(2616005)(4326008)(8676002)(6486002)(6666004)(36756003)(1076003)(6506007)(26005)(5660300002)(54906003)(316002)(83380400001)(110136005)(2906002)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: GGv0li/sW6mPJnKbGTZAlJCWLFTjgiQ9QDsDUzCPpa2ojLqTgYlP2W6EKjfW2WtCx1nL/r1dZISj/oV8lsK+7hFMeyEGOTbRlxkmxxyQX3CjOGVinKbkH9tBZkyBVOvaA5hyd20SqTj/EOoBkTxd2DeuK3uYYDQX7LcFGrBU2+lo+drDzrOg5y0CplmOjrFD+nC1t2JJTN61QC3XC89IpEtkV33YAs5PwASHV80UNJ+nMQNmpzDfwasPmaG1Q+SUnubL3d44kaOp5zMQd7g8N1McANm+eA4HUatZDh9Pi7HPFy+mzTe40sZJhinsA0f3RVNJcpwpxbbbLE0OB74Kt4t4HdUboy7nYGpYgJdrQWU9iMdOwOngsg1jY7/9S8Zm2IKWj46WLnzl/zi0hFZc/dzXvFAw50ihjzQ0F0YFxWBFOfyZZ1Q8K5v6IBV+vL2YrspEcA3aT/MVuJCW2ptQStbLoH5Gtbl3MbAIdTnAv30=
+X-MS-Exchange-AntiSpam-MessageData: XFTVJfUKKxSyR38DQccYikCTfO1mODSWbK2C9zxUQtoNFBQsFbebsu4zNIj1kT9fC8iiXjAZDSQrk9Z1sRSC8Ks2af1DoD9WXSFiBZnLU37VKFrC8oVMsH9jxz8SPYrS9/jkL7S7y35AxnZsrtkmMktVtAjR0m+Nh13uTSd9Uk2w2TYHX+AXzrDcqMeSVkO2eetNEla54v2v+LcCXnLBNEC9a7jAuhp41wK9mHh1r82dqMnf27cvOwHAx8tA1LSSQASa8YTwpPGnKNhaeNmJcWm3B5tAD8THAxeLV+ZeVfpD0G9Y+UUd0g6N7kCP3JeFStkdjhrZJFoSAty8GaRMV0FkEIRH3l6sZLRKqlr+0NYQpuSUINFuIDwCwBUzMsqevSXW9xKkXAGH8mY32d+Poezz3f5+HVMbyNojQCNrHgxUFoVp3FYSxoSfOqgQCcZBUGZeeuIcjKd9Yf97x8z2R03F4I7DUHS+LTQ/4u3VGLM=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 995f37d1-9c31-48e3-a4e3-08d829cff7ab
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9eb5e8aa-0955-4996-5985-08d829cff8f5
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2020 21:34:06.5284
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2020 21:34:08.6821
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UV71jKKdD8r+Zp5ycvTEd3SKel0BTgdISVtzhMSeS6iAi/sDWtALYSy+VbhzgUG24i7lB0jlK0TS22pDWDuQQg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: pgACK5Am2A31l4jvEdeJG/eU785t8m+C+PUtmBzhtPnAmU9QEhGx14eMSAQmsUh2nG4y0wUNZgA5W5tSXXmRZQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0502MB2992
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Raed Salem <raeds@mellanox.com>
+From: Tariq Toukan <tariqt@mellanox.com>
 
-Synchronize offloading device ESN with xfrm received SN
-by updating an existing IPsec HW context with the new SN.
+Use INDIRECT_CALL_2() helper to avoid the cost of the indirect call
+when/if CONFIG_RETPOLINE=y.
 
-Signed-off-by: Raed Salem <raeds@mellanox.com>
-Reviewed-by: Boris Pismenny <borisp@mellanox.com>
+Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../mellanox/mlx5/core/accel/ipsec_offload.c  | 88 +++++++++++++++++++
- 1 file changed, 88 insertions(+)
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 36 ++++++++++++-------
+ .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   | 22 ++++++++++--
+ 2 files changed, 44 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
-index c49699d580fff..2f13a250aab3e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
-@@ -279,6 +279,93 @@ static int mlx5_ipsec_offload_init(struct mlx5_core_dev *mdev)
- 	return 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+index c9d308e919655..3514208111555 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+@@ -34,6 +34,7 @@
+ #include <net/xdp_sock_drv.h>
+ #include "en/xdp.h"
+ #include "en/params.h"
++#include <linux/indirect_call_wrapper.h>
+ 
+ int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk)
+ {
+@@ -55,6 +56,15 @@ int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk)
+ 	return MLX5E_HW2SW_MTU(params, SKB_MAX_HEAD(hr));
  }
  
-+static int mlx5_modify_ipsec_obj(struct mlx5_core_dev *mdev,
-+				 struct mlx5_ipsec_obj_attrs *attrs,
-+				 u32 ipsec_id)
-+{
-+	u32 in[MLX5_ST_SZ_DW(modify_ipsec_obj_in)] = {};
-+	u32 out[MLX5_ST_SZ_DW(query_ipsec_obj_out)];
-+	u64 modify_field_select = 0;
-+	u64 general_obj_types;
-+	void *obj;
-+	int err;
++INDIRECT_CALLABLE_DECLARE(bool mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq,
++							  struct mlx5e_xdp_xmit_data *xdptxd,
++							  struct mlx5e_xdp_info *xdpi,
++							  int check_result));
++INDIRECT_CALLABLE_DECLARE(bool mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq,
++						    struct mlx5e_xdp_xmit_data *xdptxd,
++						    struct mlx5e_xdp_info *xdpi,
++						    int check_result));
 +
-+	if (!(attrs->accel_flags & MLX5_ACCEL_ESP_FLAGS_ESN_TRIGGERED))
-+		return 0;
-+
-+	general_obj_types = MLX5_CAP_GEN_64(mdev, general_obj_types);
-+	if (!(general_obj_types & MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC))
-+		return -EINVAL;
-+
-+	/* general object fields set */
-+	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_QUERY_GENERAL_OBJECT);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_IPSEC);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, ipsec_id);
-+	err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+	if (err) {
-+		mlx5_core_err(mdev, "Query IPsec object failed (Object id %d), err = %d\n",
-+			      ipsec_id, err);
-+		return err;
-+	}
-+
-+	obj = MLX5_ADDR_OF(query_ipsec_obj_out, out, ipsec_object);
-+	modify_field_select = MLX5_GET64(ipsec_obj, obj, modify_field_select);
-+
-+	/* esn */
-+	if (!(modify_field_select & MLX5_MODIFY_IPSEC_BITMASK_ESN_OVERLAP) ||
-+	    !(modify_field_select & MLX5_MODIFY_IPSEC_BITMASK_ESN_MSB))
-+		return -EOPNOTSUPP;
-+
-+	obj = MLX5_ADDR_OF(modify_ipsec_obj_in, in, ipsec_object);
-+	MLX5_SET(ipsec_obj, obj, esn_msb, attrs->esn_msb);
-+	if (attrs->accel_flags & MLX5_ACCEL_ESP_FLAGS_ESN_STATE_OVERLAP)
-+		MLX5_SET(ipsec_obj, obj, esn_overlap, 1);
-+
-+	/* general object fields set */
-+	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_MODIFY_GENERAL_OBJECT);
-+
-+	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+}
-+
-+static int mlx5_ipsec_offload_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
-+					      const struct mlx5_accel_esp_xfrm_attrs *attrs)
-+{
-+	struct mlx5_ipsec_obj_attrs ipsec_attrs = {};
-+	struct mlx5_core_dev *mdev = xfrm->mdev;
-+	struct mlx5_ipsec_esp_xfrm *mxfrm;
-+
-+	int err = 0;
-+
-+	if (!memcmp(&xfrm->attrs, attrs, sizeof(xfrm->attrs)))
-+		return 0;
-+
-+	if (mlx5_ipsec_offload_esp_validate_xfrm_attrs(mdev, attrs))
-+		return -EOPNOTSUPP;
-+
-+	mxfrm = container_of(xfrm, struct mlx5_ipsec_esp_xfrm, accel_xfrm);
-+
-+	mutex_lock(&mxfrm->lock);
-+
-+	if (!mxfrm->sa_ctx)
-+		/* Not bound xfrm, change only sw attrs */
-+		goto change_sw_xfrm_attrs;
-+
-+	/* need to add find and replace in ipsec_rhash_sa the sa_ctx */
-+	/* modify device with new hw_sa */
-+	ipsec_attrs.accel_flags = attrs->flags;
-+	ipsec_attrs.esn_msb = attrs->esn;
-+	err = mlx5_modify_ipsec_obj(mdev,
-+				    &ipsec_attrs,
-+				    mxfrm->sa_ctx->ipsec_obj_id);
-+
-+change_sw_xfrm_attrs:
-+	if (!err)
-+		memcpy(&xfrm->attrs, attrs, sizeof(xfrm->attrs));
-+
-+	mutex_unlock(&mxfrm->lock);
-+	return err;
-+}
-+
- static const struct mlx5_accel_ipsec_ops ipsec_offload_ops = {
- 	.device_caps = mlx5_ipsec_offload_device_caps,
- 	.create_hw_context = mlx5_ipsec_offload_create_sa_ctx,
-@@ -286,6 +373,7 @@ static const struct mlx5_accel_ipsec_ops ipsec_offload_ops = {
- 	.init = mlx5_ipsec_offload_init,
- 	.esp_create_xfrm = mlx5_ipsec_offload_esp_create_xfrm,
- 	.esp_destroy_xfrm = mlx5_ipsec_offload_esp_destroy_xfrm,
-+	.esp_modify_xfrm = mlx5_ipsec_offload_esp_modify_xfrm,
+ static inline bool
+ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+ 		    struct mlx5e_dma_info *di, struct xdp_buff *xdp)
+@@ -114,7 +124,8 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+ 		xdpi.page.di    = *di;
+ 	}
+ 
+-	return sq->xmit_xdp_frame(sq, &xdptxd, &xdpi, 0);
++	return INDIRECT_CALL_2(sq->xmit_xdp_frame, mlx5e_xmit_xdp_frame_mpwqe,
++			       mlx5e_xmit_xdp_frame, sq, &xdptxd, &xdpi, 0);
+ }
+ 
+ /* returns true if packet was consumed by xdp */
+@@ -237,7 +248,7 @@ enum {
+ 	MLX5E_XDP_CHECK_START_MPWQE = 2,
  };
  
- const struct mlx5_accel_ipsec_ops *mlx5_ipsec_offload_ops(struct mlx5_core_dev *mdev)
+-static int mlx5e_xmit_xdp_frame_check_mpwqe(struct mlx5e_xdpsq *sq)
++INDIRECT_CALLABLE_SCOPE int mlx5e_xmit_xdp_frame_check_mpwqe(struct mlx5e_xdpsq *sq)
+ {
+ 	if (unlikely(!sq->mpwqe.wqe)) {
+ 		const u16 stop_room = mlx5e_stop_room_for_wqe(MLX5_SEND_WQE_MAX_WQEBBS);
+@@ -256,10 +267,9 @@ static int mlx5e_xmit_xdp_frame_check_mpwqe(struct mlx5e_xdpsq *sq)
+ 	return MLX5E_XDP_CHECK_OK;
+ }
+ 
+-static bool mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq,
+-				       struct mlx5e_xdp_xmit_data *xdptxd,
+-				       struct mlx5e_xdp_info *xdpi,
+-				       int check_result)
++INDIRECT_CALLABLE_SCOPE bool
++mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq, struct mlx5e_xdp_xmit_data *xdptxd,
++			   struct mlx5e_xdp_info *xdpi, int check_result)
+ {
+ 	struct mlx5e_xdp_mpwqe *session = &sq->mpwqe;
+ 	struct mlx5e_xdpsq_stats *stats = sq->stats;
+@@ -293,7 +303,7 @@ static bool mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq,
+ 	return true;
+ }
+ 
+-static int mlx5e_xmit_xdp_frame_check(struct mlx5e_xdpsq *sq)
++INDIRECT_CALLABLE_SCOPE int mlx5e_xmit_xdp_frame_check(struct mlx5e_xdpsq *sq)
+ {
+ 	if (unlikely(!mlx5e_wqc_has_room_for(&sq->wq, sq->cc, sq->pc, 1))) {
+ 		/* SQ is full, ring doorbell */
+@@ -305,10 +315,9 @@ static int mlx5e_xmit_xdp_frame_check(struct mlx5e_xdpsq *sq)
+ 	return MLX5E_XDP_CHECK_OK;
+ }
+ 
+-static bool mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq,
+-				 struct mlx5e_xdp_xmit_data *xdptxd,
+-				 struct mlx5e_xdp_info *xdpi,
+-				 int check_result)
++INDIRECT_CALLABLE_SCOPE bool
++mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq, struct mlx5e_xdp_xmit_data *xdptxd,
++		     struct mlx5e_xdp_info *xdpi, int check_result)
+ {
+ 	struct mlx5_wq_cyc       *wq   = &sq->wq;
+ 	u16                       pi   = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
+@@ -506,6 +515,7 @@ int mlx5e_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
+ 		struct xdp_frame *xdpf = frames[i];
+ 		struct mlx5e_xdp_xmit_data xdptxd;
+ 		struct mlx5e_xdp_info xdpi;
++		bool ret;
+ 
+ 		xdptxd.data = xdpf->data;
+ 		xdptxd.len = xdpf->len;
+@@ -522,7 +532,9 @@ int mlx5e_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
+ 		xdpi.frame.xdpf     = xdpf;
+ 		xdpi.frame.dma_addr = xdptxd.dma_addr;
+ 
+-		if (unlikely(!sq->xmit_xdp_frame(sq, &xdptxd, &xdpi, 0))) {
++		ret = INDIRECT_CALL_2(sq->xmit_xdp_frame, mlx5e_xmit_xdp_frame_mpwqe,
++				      mlx5e_xmit_xdp_frame, sq, &xdptxd, &xdpi, 0);
++		if (unlikely(!ret)) {
+ 			dma_unmap_single(sq->pdev, xdptxd.dma_addr,
+ 					 xdptxd.len, DMA_TO_DEVICE);
+ 			xdp_return_frame_rx_napi(xdpf);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
+index e0b3c61af93ea..44f2d7bcf4bb2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
+@@ -6,6 +6,7 @@
+ #include "en/xdp.h"
+ #include "en/params.h"
+ #include <net/xdp_sock_drv.h>
++#include <linux/indirect_call_wrapper.h>
+ 
+ int mlx5e_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags)
+ {
+@@ -64,6 +65,17 @@ static void mlx5e_xsk_tx_post_err(struct mlx5e_xdpsq *sq,
+ 	sq->doorbell_cseg = &nopwqe->ctrl;
+ }
+ 
++INDIRECT_CALLABLE_DECLARE(bool mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq,
++							  struct mlx5e_xdp_xmit_data *xdptxd,
++							  struct mlx5e_xdp_info *xdpi,
++							  int check_result));
++INDIRECT_CALLABLE_DECLARE(bool mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq,
++						    struct mlx5e_xdp_xmit_data *xdptxd,
++						    struct mlx5e_xdp_info *xdpi,
++						    int check_result));
++INDIRECT_CALLABLE_DECLARE(int mlx5e_xmit_xdp_frame_check_mpwqe(struct mlx5e_xdpsq *sq));
++INDIRECT_CALLABLE_DECLARE(int mlx5e_xmit_xdp_frame_check(struct mlx5e_xdpsq *sq));
++
+ bool mlx5e_xsk_tx(struct mlx5e_xdpsq *sq, unsigned int budget)
+ {
+ 	struct xdp_umem *umem = sq->umem;
+@@ -75,8 +87,12 @@ bool mlx5e_xsk_tx(struct mlx5e_xdpsq *sq, unsigned int budget)
+ 	xdpi.mode = MLX5E_XDP_XMIT_MODE_XSK;
+ 
+ 	for (; budget; budget--) {
+-		int check_result = sq->xmit_xdp_frame_check(sq);
++		int check_result = INDIRECT_CALL_2(sq->xmit_xdp_frame_check,
++						   mlx5e_xmit_xdp_frame_check_mpwqe,
++						   mlx5e_xmit_xdp_frame_check,
++						   sq);
+ 		struct xdp_desc desc;
++		bool ret;
+ 
+ 		if (unlikely(check_result < 0)) {
+ 			work_done = false;
+@@ -98,7 +114,9 @@ bool mlx5e_xsk_tx(struct mlx5e_xdpsq *sq, unsigned int budget)
+ 
+ 		xsk_buff_raw_dma_sync_for_device(umem, xdptxd.dma_addr, xdptxd.len);
+ 
+-		if (unlikely(!sq->xmit_xdp_frame(sq, &xdptxd, &xdpi, check_result))) {
++		ret = INDIRECT_CALL_2(sq->xmit_xdp_frame, mlx5e_xmit_xdp_frame_mpwqe,
++				      mlx5e_xmit_xdp_frame, sq, &xdptxd, &xdpi, check_result);
++		if (unlikely(!ret)) {
+ 			if (sq->mpwqe.wqe)
+ 				mlx5e_xdp_mpwqe_complete(sq);
+ 
 -- 
 2.26.2
 
