@@ -2,158 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49D0F221B83
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 06:43:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AC0E221B8D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 06:50:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725959AbgGPEn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 00:43:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41812 "EHLO
+        id S1726167AbgGPEto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 00:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725268AbgGPEn2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 00:43:28 -0400
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB90C061755
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 21:43:27 -0700 (PDT)
-Received: by mail-vs1-xe44.google.com with SMTP id b77so2296918vsd.8
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 21:43:27 -0700 (PDT)
+        with ESMTP id S1725268AbgGPEto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 00:49:44 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B693C061755;
+        Wed, 15 Jul 2020 21:49:44 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id e13so4403368qkg.5;
+        Wed, 15 Jul 2020 21:49:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N7a4guMlCO2EYx8RCRVOVcAZ+5T9NCs+hZCZ6UdU2j0=;
-        b=cMp5PM2i/9Bdsie6eN2jYLJAGVo8tdq9scOCWtqkdX8ICBJx4zFxYoOZExL9B6i0kE
-         6E4tk+2FlFvDLAcPVXSKIEY600RNujf22T2g1vGpH0Yb/lUrSmVDvGwoJHS9CSqDeTr2
-         DzA8Nwj7G29jEnsY2dPZt0ygY1Pqvt3MADcYBnhDlUI2mcnalPvg0/xwDyybdiVAzyed
-         9JJnrJAyFmuvhE2cWP2u+bfa13JPnm970y0T6cvEIcOhZdRUOHzHehzNiCdvgiLZiKZI
-         s+WqkZGuCLbpfzwg9EfmI38cmnEs7RyR1F5mVw9hQ+B2myg/ze8y+Bd/eqfZxpFyXCar
-         j9wQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=n811LGQ+Fs+fBe93hqpRgAF7EkTTe3DB3wlxhpthHDw=;
+        b=SN1EWsentgIHscCjmZscmE4hUCVQR/1YxFOEaA2X4eJyYCgfDw76RB4yTMxi1W8jHk
+         tVP1TH55qedN4ibmS3LTkcIguB97sohxrNr7aJ8i5Skd8MGRMvtbsA4qvfH9yjsoxMY2
+         BslrqZzF7cvqBNWz+ym7AASewM3JMVymzxgwMiZiwfLTaEop5kzr3kRal3cbWIwxUFQz
+         ED7ZgyiI9scdVeqLvZWEZe/dpojv8rszJv6NRUlGBP7ZaPqLpelGMlvNV+YBESb1h1jk
+         qxbatPUQkxME556vz4b9YinXKvUniS8GTOcZLo0Z+/dy3wr7nMOkf6eE4asa3vcI38x0
+         Tu9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N7a4guMlCO2EYx8RCRVOVcAZ+5T9NCs+hZCZ6UdU2j0=;
-        b=ST5D66O16mvMsVE4qWNVaBjjvI/bTrmSNrMbqWNYTEkxgu1qfOMgRx+fHQNamZ5whd
-         18hJS5zraUoMIrcmDonzrpXgdJ/Nb7rDydLtImSnPVvSRHn7Gy3c0IeHtKC7GlJZFhmh
-         74Gs3UhuZZXUp8R5tOhyXAaN5n1dDZGXDWLwA/C1OTZPjvJ6f0X1EBQzkt1Akizu6lEE
-         EnHN0VhU7jjsk6QOz/q27odHstxLzSxfZQxXli3DdB724eOtKG3S/aswib5yNwoixtN/
-         T73rakdOTtLoatVyUb1cW4evfoFCp7d/E79OAH+ZKaq4kttp11ULh0/2UKMEtBkAT3lw
-         1aQw==
-X-Gm-Message-State: AOAM533gzpJnymSBdO+43zWPOUzW6uipDqd1+HEJC9lcmsK78V0QLiPw
-        LCL1f8aIRBflqb1OZUvY8U4Bqoz0gbYD0VB5ajonrXVyWG5+kQ==
-X-Google-Smtp-Source: ABdhPJwQjjIw23evLmY0UYiKdzMtiHJ7uLBcy8FlNWe+de7Srka2Ji7lM6IMigp1MryXCwzkQ8sMqxm4s6nCJkxed+E=
-X-Received: by 2002:a67:ed59:: with SMTP id m25mr1872194vsp.218.1594874606851;
- Wed, 15 Jul 2020 21:43:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=n811LGQ+Fs+fBe93hqpRgAF7EkTTe3DB3wlxhpthHDw=;
+        b=Kut/rofbK8eSKLkVApYjgcIffayywrri3hb2+baK3rq01g7QjCNZJ5J4Uizj99nvkx
+         blvk94eg1FVLv2EiRoSpKvrO8WqmqxMlsNqGWKFpf/DGkVS9Xdr8KMJL+UGisNTuBT6V
+         5a+wzu+7yofP+ik3VFqQsm4l2bGIdm4fySLOg0QIJX04VUmggGx9SbjqAApVqU+Tbish
+         qX6JAEm2w5qJ4ACfQkPSYQ3hm3rHhiKsrQSDlD3MuVH9tWKA2F/118tBvxjXPY8jQd5i
+         Lici08hHmzQJgrUq0/abn8aWJ+Ni6qXYR8//gGo7fXkVTQBHEGXJH8BQ1a5d6drSzvWP
+         wTtw==
+X-Gm-Message-State: AOAM531JHzBS4e7IfYEKz8G5quFowDArR535AMZq2djZ56fbGI2/otAJ
+        Tbhk4NJIcrY3DrTmqQT3r35Kkdu17Zk=
+X-Google-Smtp-Source: ABdhPJxBhHumFvG6aGwTPxpSidimNXkf7fv044wp4/GTzx2Yec4tK844YQU6nCh0L0QPTxx2qBsEow==
+X-Received: by 2002:a05:620a:91b:: with SMTP id v27mr2143475qkv.499.1594874983094;
+        Wed, 15 Jul 2020 21:49:43 -0700 (PDT)
+Received: from localhost.localdomain ([2604:1380:45d1:2600::1])
+        by smtp.gmail.com with ESMTPSA id 16sm5606381qkn.106.2020.07.15.21.49.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2020 21:49:42 -0700 (PDT)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] igc: Do not use link uninitialized in igc_check_for_copper_link
+Date:   Wed, 15 Jul 2020 21:49:34 -0700
+Message-Id: <20200716044934.152364-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.28.0.rc0
 MIME-Version: 1.0
-References: <1594363554-4076-1-git-send-email-magnus.karlsson@intel.com>
- <3e42533f-fb6e-d6fa-af48-cb7f5c70890b@iogearbox.net> <CAJ8uoz3WhJkqN2=D+VP+ikvY2_WTRx7Pcuihr_8qJiYh0DUtog@mail.gmail.com>
- <a6bee4f6-10a9-abbd-1b90-bf4a7c82dacc@iogearbox.net>
-In-Reply-To: <a6bee4f6-10a9-abbd-1b90-bf4a7c82dacc@iogearbox.net>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 16 Jul 2020 06:43:18 +0200
-Message-ID: <CAJ8uoz28bxEPYvZW_QPh1TagphKcB5knztE7sC1L+j1Y1eDrJg@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] xsk: fix memory leak and packet loss in Tx skb path
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        A.Zema@falconvsystems.com
-Content-Type: text/plain; charset="UTF-8"
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 15, 2020 at 8:36 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 7/11/20 9:39 AM, Magnus Karlsson wrote:
-> > On Sat, Jul 11, 2020 at 1:28 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >> On 7/10/20 8:45 AM, Magnus Karlsson wrote:
-> >>> In the skb Tx path, transmission of a packet is performed with
-> >>> dev_direct_xmit(). When QUEUE_STATE_FROZEN is set in the transmit
-> >>> routines, it returns NETDEV_TX_BUSY signifying that it was not
-> >>> possible to send the packet now, please try later. Unfortunately, the
-> >>> xsk transmit code discarded the packet, missed to free the skb, and
-> >>> returned EBUSY to the application. Fix this memory leak and
-> >>> unnecessary packet loss, by not discarding the packet in the Tx ring,
-> >>> freeing the allocated skb, and return EAGAIN. As EAGAIN is returned to the
-> >>> application, it can then retry the send operation and the packet will
-> >>> finally be sent as we will likely not be in the QUEUE_STATE_FROZEN
-> >>> state anymore. So EAGAIN tells the application that the packet was not
-> >>> discarded from the Tx ring and that it needs to call send()
-> >>> again. EBUSY, on the other hand, signifies that the packet was not
-> >>> sent and discarded from the Tx ring. The application needs to put the
-> >>> packet on the Tx ring again if it wants it to be sent.
-> >>>
-> >>> Fixes: 35fcde7f8deb ("xsk: support for Tx")
-> >>> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> >>> Reported-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-> >>> Suggested-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
-> >>> ---
-> >>> The v1 of this patch was called "xsk: do not discard packet when
-> >>> QUEUE_STATE_FROZEN".
-> >>> ---
-> >>>    net/xdp/xsk.c | 13 +++++++++++--
-> >>>    1 file changed, 11 insertions(+), 2 deletions(-)
-> >>>
-> >>> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> >>> index 3700266..5304250 100644
-> >>> --- a/net/xdp/xsk.c
-> >>> +++ b/net/xdp/xsk.c
-> >>> @@ -376,13 +376,22 @@ static int xsk_generic_xmit(struct sock *sk)
-> >>>                skb->destructor = xsk_destruct_skb;
-> >>>
-> >>>                err = dev_direct_xmit(skb, xs->queue_id);
-> >>> -             xskq_cons_release(xs->tx);
-> >>>                /* Ignore NET_XMIT_CN as packet might have been sent */
-> >>> -             if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
-> >>> +             if (err == NET_XMIT_DROP) {
-> >>>                        /* SKB completed but not sent */
-> >>> +                     xskq_cons_release(xs->tx);
-> >>>                        err = -EBUSY;
-> >>>                        goto out;
-> >>> +             } else if  (err == NETDEV_TX_BUSY) {
-> >>> +                     /* QUEUE_STATE_FROZEN, tell application to
-> >>> +                      * retry sending the packet
-> >>> +                      */
-> >>> +                     skb->destructor = NULL;
-> >>> +                     kfree_skb(skb);
-> >>> +                     err = -EAGAIN;
-> >>> +                     goto out;
-> >>
-> >> Hmm, I'm probably missing something or I should blame my current lack of coffee,
-> >> but I'll ask anyway.. What is the relation here to the kfree_skb{,_list}() in
-> >> dev_direct_xmit() when we have NETDEV_TX_BUSY condition? Wouldn't the patch above
-> >> double-free with NETDEV_TX_BUSY?
-> >
-> > I think you are correct even without coffee :-). I misinterpreted the
-> > following piece of code in dev_direct_xmit():
-> >
-> > if (!dev_xmit_complete(ret))
-> >       kfree_skb(skb);
-> >
-> > If the skb was NOT consumed by the transmit, then it goes and frees
-> > the skb. NETDEV_TX_BUSY as a return value will make
-> > dev_xmit_complete() return false which triggers the freeing of the
-> > skb. So if I now understand dev_direct_xmit() correctly, it will
-> > always consume the skb, even when NETDEV_TX_BUSY is returned. And this
-> > is what I would like to avoid. If the skb is freed, the destructor is
-> > triggered and it will complete the packet to user-space, which is the
-> > same thing as dropping it, which is what I want to avoid in the first
-> > place since it is completely unnecessary.
-> >
-> > So what would be the best way to solve this? Prefer to share the code
-> > with AF_PACKET if possible. Introduce a boolean function parameter to
-> > indicate if it should be freed in this case? Other ideas? Here are the
-> > users of dev_direct_xmit():
->
-> Another option could be looking at pktgen which mangles skb->users to keep
-> the skb alive.
+Clang warns:
 
-Thanks. Will take a look at that and give it a try.
+drivers/net/ethernet/intel/igc/igc_mac.c:374:6: warning: variable 'link'
+is used uninitialized whenever 'if' condition is true
+[-Wsometimes-uninitialized]
+        if (!mac->get_link_status) {
+            ^~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/intel/igc/igc_mac.c:424:33: note: uninitialized use
+occurs here
+        ret_val = igc_set_ltr_i225(hw, link);
+                                       ^~~~
+drivers/net/ethernet/intel/igc/igc_mac.c:374:2: note: remove the 'if' if
+its condition is always false
+        if (!mac->get_link_status) {
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/intel/igc/igc_mac.c:367:11: note: initialize the
+variable 'link' to silence this warning
+        bool link;
+                 ^
+                  = 0
+1 warning generated.
 
-/Magnus
+It is not wrong, link is only uninitialized after this through
+igc_phy_has_link. Presumably, if we skip the majority of this function
+when get_link_status is false, we should skip calling igc_set_ltr_i225
+as well. Just directly return 0 in this case, rather than bothering with
+adding another label or initializing link in the if statement.
 
-> Thanks,
-> Daniel
+Fixes: 707abf069548 ("igc: Add initial LTR support")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1095
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ drivers/net/ethernet/intel/igc/igc_mac.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igc/igc_mac.c b/drivers/net/ethernet/intel/igc/igc_mac.c
+index b47e7b0a6398..26e3c56a4a8b 100644
+--- a/drivers/net/ethernet/intel/igc/igc_mac.c
++++ b/drivers/net/ethernet/intel/igc/igc_mac.c
+@@ -371,10 +371,8 @@ s32 igc_check_for_copper_link(struct igc_hw *hw)
+ 	 * get_link_status flag is set upon receiving a Link Status
+ 	 * Change or Rx Sequence Error interrupt.
+ 	 */
+-	if (!mac->get_link_status) {
+-		ret_val = 0;
+-		goto out;
+-	}
++	if (!mac->get_link_status)
++		return 0;
+ 
+ 	/* First we want to see if the MII Status Register reports
+ 	 * link.  If so, then we want to get the current speed/duplex
+
+base-commit: ca0e494af5edb59002665bf12871e94b4163a257
+-- 
+2.28.0.rc0
+
