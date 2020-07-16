@@ -2,64 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90B382226E0
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA7312226E6
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:24:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729009AbgGPPXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 11:23:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43670 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728150AbgGPPXB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 11:23:01 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6DAEB2063A;
-        Thu, 16 Jul 2020 15:23:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594912980;
-        bh=0KOsAGDlyjL10nw8GkoXdEM39Y7GR/xzRunce7+0ZM0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CalCSH68LxHalcZAFoeaS74Nol1NtkkX8+dmN1mffM92qmH13dMeQk/cvuRdVdv4S
-         +PKtlwY+7VigrcBMItAaAVzOlnUG3uw+6jq1OqmU5RVJdaM3viMTuDwmeVyXYNKib9
-         tEmj7rIH6JvrmJ3Ujf6TbyZcZgTzDtU0qrlHTgLo=
-Date:   Thu, 16 Jul 2020 08:22:59 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <dsahern@gmail.com>,
-        <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>
-Subject: Re: [PATCH v3 bpf-next 9/9] bpf, xdp: remove XDP_QUERY_PROG and
- XDP_QUERY_PROG_HW XDP commands
-Message-ID: <20200716082259.40600e03@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200716045602.3896926-10-andriin@fb.com>
-References: <20200716045602.3896926-1-andriin@fb.com>
-        <20200716045602.3896926-10-andriin@fb.com>
+        id S1729186AbgGPPXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 11:23:12 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:59838 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729169AbgGPPXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:23:11 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <seth.forshee@canonical.com>)
+        id 1jw5j3-0003HU-5p
+        for netdev@vger.kernel.org; Thu, 16 Jul 2020 15:23:09 +0000
+Received: by mail-il1-f198.google.com with SMTP id v12so3927811ilg.2
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 08:23:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=1/qolDFvhpKVU/laUVqhlu2vl5yv7xqj8R5RCMHuoAE=;
+        b=ltjNcmg1fLNwMokpnHoDx2bqoZyjmz0s6Akqi3dXR29oh7YzL4cEAAgoojQxsWJwrn
+         LaUYykJbQx2NoBX8cvqSLFnMBWMuixiE+m8AeIMi+Sf04l15m62JjOn3jNKK/ALnUCmV
+         33vSziirt7RbBkWGAxvvmi9dKOiwRpAVooO/9CDsNIwLvnmXWPC2+fCFkmP6i6C5mE81
+         yD5SkhU3LquXoeKUvzYhgicaFBmWDd39zskv/dMAS2Oww9JDYqjxh2v+DD7monKH05fq
+         s1ILQKJe/i7GVx5tGI62pAJbd3f5m9HE4l68nMmVmR/DlXGX6t1Gs43qbSuPmQoUpqHZ
+         VrBQ==
+X-Gm-Message-State: AOAM5339kkA4VrXcbJFozegQVv2uzcm6Q1Sn2kjd/bCou67gnSt3ENNg
+        cD/05SlxyIM+IV23riDgcwstbIWE7iUX1OufLex0NSQ8RdVji5rShS7hEZWTL3bisiha61kAF64
+        fMDmE90CZE6iVM9p60BWMlMtfG9OcKoX9qQ==
+X-Received: by 2002:a92:9144:: with SMTP id t65mr4972490ild.157.1594912987980;
+        Thu, 16 Jul 2020 08:23:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzrcNPFqPdPzXrKIfmDcBgzmn7KYvCBmjSXDPrxbfaGjS57nLBMFDU5BF5DLJu0FIUjZaBEMA==
+X-Received: by 2002:a92:9144:: with SMTP id t65mr4972471ild.157.1594912987705;
+        Thu, 16 Jul 2020 08:23:07 -0700 (PDT)
+Received: from localhost ([2605:a601:ac0f:820:90fa:132a:bf3e:99a1])
+        by smtp.gmail.com with ESMTPSA id o67sm2764824ila.25.2020.07.16.08.23.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2020 08:23:07 -0700 (PDT)
+Date:   Thu, 16 Jul 2020 10:23:06 -0500
+From:   seth.forshee@canonical.com
+To:     Ilya Leoshkevich <iii@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: test_bpf regressions on s390 since 5.4
+Message-ID: <20200716152306.GH3644@ubuntu-x1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jul 2020 21:56:01 -0700 Andrii Nakryiko wrote:
-> Now that BPF program/link management is centralized in generic net_device
-> code, kernel code never queries program id from drivers, so
-> XDP_QUERY_PROG/XDP_QUERY_PROG_HW commands are unnecessary.
->=20
-> This patch removes all the implementations of those commands in kernel, a=
-long
-> the xdp_attachment_query().
->=20
-> This patch was compile-tested on allyesconfig.
->=20
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+The tests in lib/test_bpf.c were all passing in 5.4 when using the JIT,
+but some are failing in 5.7/5.8. Some of the failures are due to the
+removal of BPF_SIZE_MAX causing some expected failures to pass, which I
+have already send a patch for [1]. The remaining failures appear to be
+regressions. I haven't tried 5.5 or 5.6, so I'm not sure exactly when
+they first appeared.
 
-drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c: In function =E2=80=98dpaa=
-2_eth_xdp=E2=80=99:
-drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c:2079:25: warning: unused v=
-ariable =E2=80=98priv=E2=80=99 [-Wunused-variable]
- 2079 |  struct dpaa2_eth_priv *priv =3D netdev_priv(dev);
-      |                         ^~~~
+These are the tests which currently fail:
 
+ test_bpf: #37 INT: MUL_X jited:1 ret -1 != 1 FAIL (1 times)
+ test_bpf: #42 INT: SUB jited:1 ret -55 != 11 FAIL (1 times)
+ test_bpf: #44 INT: MUL jited:1 ret 439084800 != 903446258 FAIL (1 times)
+ test_bpf: #49 INT: shifts by register jited:1 ret -617 != -1 FAIL (1 times)
+ test_bpf: #371 JNE signed compare, test 1 jited:1 ret 2 != 1 FAIL (1 times)
+ test_bpf: #372 JNE signed compare, test 2 jited:1 ret 2 != 1 FAIL (1 times)
+ test_bpf: #374 JNE signed compare, test 4 jited:1 ret 1 != 2 FAIL (1 times)
+ test_bpf: #375 JNE signed compare, test 5 jited:1 ret 2 != 1 FAIL (1 times)
+
+Thanks,
+Seth
+
+[1] https://lore.kernel.org/lkml/20200716143931.330122-1-seth.forshee@canonical.com/
