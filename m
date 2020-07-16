@@ -2,49 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD938221CA2
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 08:32:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43405221CA5
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 08:33:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbgGPGca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 02:32:30 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:39208 "EHLO a.mx.secunet.com"
+        id S1728069AbgGPGds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 02:33:48 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:39252 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726141AbgGPGca (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 02:32:30 -0400
+        id S1726069AbgGPGds (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jul 2020 02:33:48 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id EFF1E20536;
-        Thu, 16 Jul 2020 08:32:28 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id BB275200A7;
+        Thu, 16 Jul 2020 08:33:46 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id WFxsQhpiM24I; Thu, 16 Jul 2020 08:32:28 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        with ESMTP id XQqA6EdDHMjd; Thu, 16 Jul 2020 08:33:46 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 8DC6D200A7;
-        Thu, 16 Jul 2020 08:32:28 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 58F5220536;
+        Thu, 16 Jul 2020 08:33:46 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Thu, 16 Jul 2020 08:32:28 +0200
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 16 Jul 2020 08:33:46 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Thu, 16 Jul
- 2020 08:32:28 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id E19D93180222;
- Thu, 16 Jul 2020 08:32:27 +0200 (CEST)
-Date:   Thu, 16 Jul 2020 08:32:27 +0200
+ 2020 08:33:45 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id A01DD3180222; Thu, 16 Jul 2020 08:33:45 +0200 (CEST)
+Date:   Thu, 16 Jul 2020 08:33:45 +0200
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     Xin Long <lucien.xin@gmail.com>
-CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        "Sabrina Dubroca" <sd@queasysnail.net>
-Subject: Re: [PATCH ipsec-next 0/3] xfrm: not register one xfrm(6)_tunnel
- object twice
-Message-ID: <20200716063227.GW20687@gauss3.secunet.de>
-References: <cover.1594625993.git.lucien.xin@gmail.com>
+CC:     syzbot <syzbot+ea9832f8ae588deb0205@syzkaller.appspotmail.com>,
+        davem <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jakub Kicinski" <kuba@kernel.org>, kuznet <kuznet@ms2.inr.ac.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        yoshfuji <yoshfuji@linux-ipv6.org>
+Subject: Re: KASAN: slab-out-of-bounds Read in __xfrm6_tunnel_spi_lookup
+Message-ID: <20200716063345.GX20687@gauss3.secunet.de>
+References: <0000000000003011fb05aa59df1e@google.com>
+ <20200714093718.GQ20687@gauss3.secunet.de>
+ <CADvbK_c3AGXDUr5_h5-JzcMowUJ4SZ5euyneAebssHjaKVx50A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <cover.1594625993.git.lucien.xin@gmail.com>
+In-Reply-To: <CADvbK_c3AGXDUr5_h5-JzcMowUJ4SZ5euyneAebssHjaKVx50A@mail.gmail.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
  mbx-essen-01.secunet.de (10.53.40.197)
@@ -54,23 +62,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 03:42:35PM +0800, Xin Long wrote:
-> Now in ip(6)_vti and xfrm interface tunnel support, it uses the
-> same xfrm(6)_tunnel object to handle for AF_NET and AF_INET6 by
-> registering it twice.
+On Wed, Jul 15, 2020 at 05:18:36PM +0800, Xin Long wrote:
+> Hi, Steffen,
 > 
-> However the xfrm(6)_tunnel object is linked into a list with its
-> 'next' pointer. The second registering will cause its 'next'
-> pointer to be overwritten, and break the list.
+> I've confirmed the patchset I posted yesterday would fix this:
 > 
-> So this patchset is to add a new xfrm(6)_tunnel object for each
-> of them and register it, although its members are the same with
-> the old one.
-> 
-> Xin Long (3):
->   ip_vti: not register vti_ipip_handler twice
->   ip6_vti: not register vti_ipv6_handler twice
->   xfrm: interface: not xfrmi_ipv6/ipip_handler twice
+> [PATCH ipsec-next 0/3] xfrm: not register one xfrm(6)_tunnel object twice
 
-
-Applied, thanks Xin!
+Thanks for the confirmation! That patchset is now applied
+to ipsec-next.
