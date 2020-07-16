@@ -2,96 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FA6E2219B1
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 04:00:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA3602219D6
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 04:25:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727999AbgGPCAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 22:00:02 -0400
-Received: from ozlabs.org ([203.11.71.1]:50913 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726796AbgGPCAC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 22:00:02 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4B6crv0v0Bz9sRK;
-        Thu, 16 Jul 2020 11:59:58 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1594864799;
-        bh=c8eJ93BkoRLM1MOs0ataOo/6OZXZDMFWZwOhmRDFsvM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=NmtJMFH3kuR2PU2MyT0aOJJfLmeCuJCLZTrhDANmFJ1KgPtQRkvnRW0N4iX1pbtXE
-         y0vUZm+zOFVDJw8CLQecH7F19ZWu7M8p0j+WnnJ/tplxO7SEfz4wnGUjIlltYpRctU
-         J9XKotNklF5smaGNLoe0ozwOv59aRRi1bXkUUxNSBzDEjOFGMNIJuBzHBjiJuB7giS
-         oivgL/qWMXK2TVkvr2aGVLxbq5st8LBlLOquXLbIJmI1kPmQVHsiCNxxoTjBK3xA5J
-         UMzeMrnsKVtnZoCvsCN25+Zfo5810strd4VN47h/8pLCdnuDSXrMPTjgJTNbuv9G4u
-         YN6GnewtpBfAg==
-Date:   Thu, 16 Jul 2020 11:59:44 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peilin Ye <yepeilin.cs@gmail.com>, Jiri Olsa <jolsa@kernel.org>
-Subject: linux-next: manual merge of the net-next tree with the bpf tree
-Message-ID: <20200716115944.7bc6de65@canb.auug.org.au>
+        id S1726960AbgGPCZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 22:25:27 -0400
+Received: from mail.jomapeks.com ([89.216.99.123]:59330 "EHLO
+        mail.jomapeks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726479AbgGPCZ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 22:25:26 -0400
+X-Greylist: delayed 6663 seconds by postgrey-1.27 at vger.kernel.org; Wed, 15 Jul 2020 22:25:25 EDT
+Received: from [127.0.0.1] (helo=mail.jomapeks.com)
+        by mail.jomapeks.com with esmtp (Exim 4.89)
+        (envelope-from <vincent.vn345@gmail.com>)
+        id 1jvrqc-0002fb-Kb; Thu, 16 Jul 2020 02:34:02 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/K18_nA4PJr651BLxjBLrA22";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Thu, 16 Jul 2020 08:34:02 +0800
+From:   Vincent Brooks <vincent.vn345@gmail.com>
+To:     undisclosed-recipients:;
+Subject: Vincent Brooks
+Reply-To: vincent.brooks4578@gmail.com
+Mail-Reply-To: vincent.brooks4578@gmail.com
+Message-ID: <808e9f8af7674f544abf5d66f5e862a1@gmail.com>
+X-Sender: vincent.vn345@gmail.com
+User-Agent: Roundcube Webmail/1.3.8
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/K18_nA4PJr651BLxjBLrA22
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Majoittaja: Vincent Brooks
+Rakas ystävä.
 
-Hi all,
+Olen Vincent Brooks Brondesburysta, Luoteis-Lontoosta, täältä 
+Englannista. Työskentelen UBS INVESTMENT Bank London -konttorissa. 
+Kirjoitan teille toimistostani, josta on valtava hyöty molemmille. Oman 
+osastoni ryhmän toimeenpanokomitean jäsenenä ja riskien pääjohtajana 
+(Suur-Lontoon aluetoimisto) löysin hylätyn 15 miljoonan punnan summan 
+Ison-Britannian puntan (viidentoista miljoonan Ison Britannian punnan) 
+summan yhdelle kuuluvalle tilille. ulkomaisista asiakkaistamme myöhässä 
+herra Steve Allen, joka valitettavasti menetti henkensä 
+auto-onnettomuudessa, mukaan lukien vaimo ja ainoa tytär.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+Valinta ottaa sinuun yhteyttä johtuu asuinpaikan maantieteellisestä 
+luonteesta, etenkin tämän tapahtuman herkkyyden vuoksi. Pankin 
+virkamiehet ovat odottaneet, että joku sukulaisista tulee esittämään 
+tätä vaatimusta, mutta kukaan ei ole tehnyt sitä. Olen 
+henkilökohtaisesti epäonnistunut paikallistamaan sukulaisia. Pyydän 
+suostumustasi esitellä sinua seuraavana sukulaisina / saajaina tämän 
+rahaston kuolleelle, jotta tämän tilin tuotot, joiden arvo on 15 
+miljoonaa puntaa, siirretään pankkiisi. tili seuraavana sukulaisena 
+myöhäiselle herra Steve Allenille.
 
-  kernel/bpf/btf.c
+Se maksetaan tai jaetaan näissä prosentteissa, 60% minulle ja 40% 
+sinulle. Olen turvannut kaikki tarvittavat oikeudelliset asiakirjat, 
+joita käytetään tämän vaatimuksen varmuuskopiointiin. Ainoa mitä minun 
+on tehtävä, on täyttää nimesi asiakirjoihin ja laillistaa se täällä 
+tuomioistuimessa todistaaksesi sinut rahaston laillisena edunsaajana.
 
-between commit:
+Tarvitsen nyt vain rehellistä yhteistyötä, luottamuksellisuutta ja 
+luottamusta, jotta voimme nähdä tämän tapahtuman. Takaan, että tämä 
+toteutetaan laillisella järjestelyllä, joka suojaa sinua kaikilta lakien 
+rikkomuksilta. Haluan sinun ymmärtävän, että olen työskennellyt tässä 
+pankissa 17 vuotta ja olen voinut suojata kaikki lailliset asiakirjat, 
+jotta voit periä tämän rahaston
 
-  5b801dfb7feb ("bpf: Fix NULL pointer dereference in __btf_resolve_helper_=
-id()")
+Antakaa minulle seuraava: Koska meillä on muutama päivä kestää se läpi, 
+tämä on erittäin kiireellistä.
 
-from the bpf tree and commit:
+1. Koko nimi
+2. Suora matkapuhelinnumerosi
+3. Olet yhteysosoite
+4. Syntymäaika
 
-  138b9a0511c7 ("bpf: Remove btf_id helpers resolving")
+Tutkittuani metodisen haun päätin ottaa sinuun yhteyttä toivoen, että 
+löydät tämän kaupan mielenkiintoiseksi. Antakaa sinulle lisätietoja, kun 
+vahvistat tämän viestin ja ilmoitat kiinnostuksestasi. Yritä ilmoittaa 
+päätöksestäsi mahdollisimman pian.
 
-from the net-next tree.
-
-I fixed it up (the latter removed the code fixed by the former) and can
-carry the fix as necessary. This is now fixed as far as linux-next is
-concerned, but any non trivial conflicts should be mentioned to your
-upstream maintainer when your tree is submitted for merging.  You may
-also want to consider cooperating with the maintainer of the conflicting
-tree to minimise any particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/K18_nA4PJr651BLxjBLrA22
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8PtJAACgkQAVBC80lX
-0GywBwf/cZS3079nf4TL7JtjJvgYvGBdvf/Y/dB7yCe14m553Hjur4mzZ9tjLIgB
-puUnxaC4aUxR/Wju3BhGV2vmFaHd7IukkzagntLloawDXXmQtJL++iWV4NpasaO+
-BR/px/3OqeOZNaVh0UEx8BBhuGgnt/zVzfGQyIzdgdjwi7lfxQP9Wz8msbkFUmnw
-fjqw63m4q7Ut0T9QLOdphxPwWON01wBZZ2OxH1Oq2ZzVKU1n8REHepmIBfE5BYIV
-E8UvIHl//PVyfl3UyyJcaCq+LvKU8CTSaIi+xqLEnxTt88RQLxN9CjuBcG6fxUdJ
-Bq4DJwW4sLTU2zlM2bvW4xj5uWDgXQ==
-=hvLL
------END PGP SIGNATURE-----
-
---Sig_/K18_nA4PJr651BLxjBLrA22--
+Parhain terveisin,
+Vincent Brooks
