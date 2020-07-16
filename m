@@ -2,56 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16AA42226F2
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:27:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 154F2222765
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:39:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728980AbgGPP1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 11:27:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44700 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728150AbgGPP1N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 11:27:13 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 88F9A2065F;
-        Thu, 16 Jul 2020 15:27:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594913232;
-        bh=HF59HhfAxezQDwn4F6WlpCVWM4NEHEuz/Hbn96vSJQ8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hHunC/3Bn6ikzPz93QBo3Z+rR5FUz50/isQUSN8mCNHNh9TcS0C9+yxAIsxnE2h7P
-         gaWn02IWJg/nviHEUXNLwf4ho2qjSLAzAYOFPXf4BnOFmtjsIMGqMtOH4P4inF7W/0
-         rRWASga/M7kzHPMJyegfS34x9OfELgicZ84sYJmo=
-Date:   Thu, 16 Jul 2020 08:27:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luo bin <luobin9@huawei.com>
-Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
-        <chiqijun@huawei.com>
-Subject: Re: [PATCH net-next 2/2] hinic: add log in exception handling
- processes
-Message-ID: <20200716082710.22dd7c97@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200716125056.27160-3-luobin9@huawei.com>
-References: <20200716125056.27160-1-luobin9@huawei.com>
-        <20200716125056.27160-3-luobin9@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1729436AbgGPPj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 11:39:26 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:49466 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729368AbgGPPjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:39:16 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06GFXYAM012255;
+        Thu, 16 Jul 2020 11:39:14 -0400
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 32afvmc4sp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 16 Jul 2020 11:39:14 -0400
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06GFZdBQ023539;
+        Thu, 16 Jul 2020 15:39:12 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma02fra.de.ibm.com with ESMTP id 327527wwdh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 16 Jul 2020 15:39:12 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06GFbs8s18743796
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 16 Jul 2020 15:37:54 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 96DE442045;
+        Thu, 16 Jul 2020 15:37:54 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4C9A742041;
+        Thu, 16 Jul 2020 15:37:54 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 16 Jul 2020 15:37:54 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net 00/10] net/smc: fixes 2020-07-16
+Date:   Thu, 16 Jul 2020 17:37:36 +0200
+Message-Id: <20200716153746.77303-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-16_07:2020-07-16,2020-07-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=549
+ bulkscore=0 clxscore=1015 spamscore=0 adultscore=0 mlxscore=0
+ lowpriorityscore=0 suspectscore=1 malwarescore=0 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007160114
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Jul 2020 20:50:56 +0800 Luo bin wrote:
-> improve the error message when functions return failure and dump
-> relevant registers in some exception handling processes
-> 
-> Signed-off-by: Luo bin <luobin9@huawei.com>
+Please apply the following patch series for smc to netdev's net tree.
 
-For kernel builds with W=1 C=1 flags this patch adds 12 warnings to
-drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c and 39 warnings to 
-drivers/net/ethernet/huawei/hinic/hinic_hw_if.h.
+The patches address problems caused by late or unexpected link layer
+control packets, dma sync calls for unmapped memory, freed buffers
+that are not removed from the buffer list and a possible null pointer
+access that results in a crash.
 
-It seems like you're missing byte swaps.
+Thanks,
+Karsten
+
+Karsten Graul (10):
+  net/smc: handle unexpected response types for confirm link
+  net/smc: clear link during SMC client link down processing
+  net/smc: fix link lookup for new rdma connections
+  net/smc: protect smc ib device initialization
+  net/smc: drop out-of-flow llc response messages
+  net/smc: move add link processing for new device into llc layer
+  net/smc: fix handling of delete link requests
+  net/smc: do not call dma sync for unmapped memory
+  net/smc: remove freed buffer from list
+  net/smc: fix restoring of fallback changes
+
+ net/smc/af_smc.c   |  12 +++--
+ net/smc/smc_core.c | 105 ++++++++-----------------------------
+ net/smc/smc_core.h |   5 ++
+ net/smc/smc_ib.c   |  16 ++++--
+ net/smc/smc_ib.h   |   1 +
+ net/smc/smc_llc.c  | 127 ++++++++++++++++++++++++++++++---------------
+ net/smc/smc_llc.h  |   2 +-
+ 7 files changed, 135 insertions(+), 133 deletions(-)
+
+-- 
+2.17.1
+
