@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B2A7222C85
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 22:12:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C1A9222C8C
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 22:13:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729730AbgGPUMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 16:12:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39450 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728907AbgGPUMM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 16:12:12 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jwAEk-005V6X-1F; Thu, 16 Jul 2020 22:12:10 +0200
-Date:   Thu, 16 Jul 2020 22:12:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, ioana.ciornei@nxp.com,
-        michael@walle.cc
-Subject: Re: [PATCH net-next] net: phy: continue searching for C45 MMDs even
- if first returned ffff:ffff
-Message-ID: <20200716201210.GE1308244@lunn.ch>
-References: <20200712164815.1763532-1-olteanv@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200712164815.1763532-1-olteanv@gmail.com>
+        id S1729681AbgGPUNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 16:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44520 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728788AbgGPUNp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 16:13:45 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9F7C061755;
+        Thu, 16 Jul 2020 13:13:45 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E8E8011E4591F;
+        Thu, 16 Jul 2020 13:13:43 -0700 (PDT)
+Date:   Thu, 16 Jul 2020 13:13:41 -0700 (PDT)
+Message-Id: <20200716.131341.1043144835432437801.davem@davemloft.net>
+To:     asmadeus@codewreck.org
+Cc:     hch@lst.de, nazard@nazar.ca, ericvh@gmail.com, lucho@ionkov.net,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+e6f77e16ff68b2434a2c@syzkaller.appspotmail.com
+Subject: Re: [PATCH] net/9p: validate fds in p9_fd_open
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200716075820.GA3720@nautica>
+References: <20200715134756.GB22828@nautica>
+        <20200715.142459.1215411672362681844.davem@davemloft.net>
+        <20200716075820.GA3720@nautica>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 16 Jul 2020 13:13:44 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Then the rest of the code just carried on thinking "ok, MMD 1 (PMA/PMD)
-> says that there are 31 devices in that package, each having a device id
-> of ffff:ffff, that's perfectly fine, let's go ahead and probe this PHY
-> device".
 
-With a device ID of ffff:ffff, what PHY driver was getting loaded?
+The amount of time you used to compose this email exceeds by several
+orders of magnitude the amount of effort it would have taken to merge
+the fix to Linus, calm the syzbot warnings, and make those warnings
+therefore more useful for people doing active development.
 
-> - MDIO_DEVS1=0x008a, MDIO_DEVS2=0x0000,
-> - MDIO_DEVID1=0x0083, MDIO_DEVID2=0xe400
+I think your priorities are kinda off, but we can agree to disagree
+I guess.
 
-Now that we have valid IDs, is the same driver getting loaded? Do this
-ID adding somewhere?
-
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Thank you.
