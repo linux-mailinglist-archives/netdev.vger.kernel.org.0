@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE4B0222755
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:39:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B903222764
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:39:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729388AbgGPPjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 11:39:17 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:39637 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729354AbgGPPjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:39:14 -0400
-Received: by mail-ot1-f65.google.com with SMTP id 18so4534548otv.6;
-        Thu, 16 Jul 2020 08:39:13 -0700 (PDT)
+        id S1729421AbgGPPjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 11:39:24 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:43672 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729366AbgGPPjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:39:16 -0400
+Received: by mail-oi1-f194.google.com with SMTP id x83so5402233oif.10;
+        Thu, 16 Jul 2020 08:39:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QUEyDKlDZNvRoiU1fFM07SvFHaZIbC8OgvI/9CGbWN4=;
-        b=OgKBM4FLsld0wj/83VYVcyHx1Xna13S3NY76Jg7gTq+OthhJWGcdQjnxyIKZOJDMFO
-         0i16PFFVN7pQpR4SC51djDOEpK3LRk90Hylwtxhmms/G6YdeNfbUFEFuhFoZQ1z3OxT9
-         WX7FUh54jJkBoDMQrteiQDuWAqtU1uOI+ew34TA9OZSZPYmJaNQYhJFnygHdjiBOX4zw
-         oExa/LjCpZ6CeQQ4C6vk9IEqQP/2qoyO/KcVRnkDybsAvfJBZQQPtqPkDixgqErJCXbt
-         YS1z+LaF2dv0Wv6ArCYCMbJBISXo6xfN2SqtHDNVoz5utuUspa8NAbXBqt0ww3Gz4CK8
-         A8TQ==
-X-Gm-Message-State: AOAM531uzML0+SIVbGb8ekjOKds5oHOIToZ8tClZCxOLCeVyLuAbmjRy
-        f4Mdg6N7gJ9nQbtdrHgEErZO7XiO/tha1YuCJms=
-X-Google-Smtp-Source: ABdhPJxO13GvpQ5DwTMOvoE8Qpm+751RgACNt3acgLGDelMbxf0nO5oqfl8C3y4iF9T2pIScvbkcfebiQYM3NK52iIw=
-X-Received: by 2002:a9d:1b0d:: with SMTP id l13mr4903038otl.145.1594913952905;
- Thu, 16 Jul 2020 08:39:12 -0700 (PDT)
+        bh=ABlALKobOQOce18O21B/ci3oKkHtUakyJEO3uiaKWF0=;
+        b=m0shfbOA/wP7FaAIFeUBUiXc40l1OjklIsxI9L1NFPaLs4k6Dtw1ZWad+52pgOZbBF
+         Qb6ctIxwtHb9QqVGT+MjoU8glWqsSlae9eYEyEXWT9tHogPpaGtIRm/shhdf9IJ40jtO
+         n5k2Acb37NdWA9iGGYopIU67CXwQphFJHHWnSWYvyc8/Y+t8SD4JYxjl21ZW3SMshom+
+         EdjvdFWkN8Z0wiavfpfOdiF6M1i6CDxMKD3gyy7rbf5NC+PAIKad4cn0vTN0aK3+uhJa
+         SoTOvQC/un4pLsM+xlsJXlhSlDuvy+bF1RD4TGkDEuq3OyIPsFaPAoLa+Ho+H6MA0e42
+         BEZw==
+X-Gm-Message-State: AOAM533cqFfR6inpFp1+jNUOqR63RbHfo7qqLdnPZoDqX4qy+TbvB+2u
+        knNXJ3ll5eySRGkN4/osyn8sA/uWG1apmRYseGs=
+X-Google-Smtp-Source: ABdhPJxxNcLqwe5ufrWrQfAi+rKNQXGnyYM6euVeBGvLki0QvAmsckab6v2wnNPU7hNWmHJbgs4v5qJfwJwZm050ooc=
+X-Received: by 2002:aca:ac10:: with SMTP id v16mr4083776oie.153.1594913955522;
+ Thu, 16 Jul 2020 08:39:15 -0700 (PDT)
 MIME-Version: 1.0
 References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594811350-14066-11-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594811350-14066-11-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-14-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594811350-14066-14-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 16 Jul 2020 17:39:01 +0200
-Message-ID: <CAMuHMdVcraSYGg29XkEPM52UuKq5be34CsKyFzSLQfCAYQOaKg@mail.gmail.com>
-Subject: Re: [PATCH 10/20] arm64: dts: renesas: r8a774e1: Add SDHI nodes
+Date:   Thu, 16 Jul 2020 17:39:04 +0200
+Message-ID: <CAMuHMdWBAmCLzfiKzqKzbQ_gi4DpLdMg4JqhxkHCEMbOMg7eUg@mail.gmail.com>
+Subject: Re: [PATCH 13/20] arm64: dts: renesas: r8a774e1: Add I2C and IIC-DVFS support
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -72,7 +72,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Jul 15, 2020 at 1:10 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add SDHI[0-2] device nodes to R8A774E1 SoC.
+> Add the I2C[0-6] and IIC Bus Interface for DVFS (IIC for DVFS)
+> devices nodes to the r8a774e1 device tree.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
