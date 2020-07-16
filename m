@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01853222778
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:40:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DD8522276C
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 17:39:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729520AbgGPPkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 11:40:00 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:42150 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729092AbgGPPjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:39:19 -0400
-Received: by mail-oi1-f194.google.com with SMTP id t4so5402620oij.9;
-        Thu, 16 Jul 2020 08:39:19 -0700 (PDT)
+        id S1729499AbgGPPjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 11:39:49 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:45808 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729405AbgGPPjX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 11:39:23 -0400
+Received: by mail-ot1-f68.google.com with SMTP id h1so4525494otq.12;
+        Thu, 16 Jul 2020 08:39:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZVj26A778u/qkFwzHHNVLFw5OBJX9iW8thLNG7CeK8M=;
-        b=YEaPUOJqazZIklJvpjKAB8p0kk+syFx/25gzwKd7IPQn9/713qqumwYu1FLsBq08BO
-         RskCtxSFIOW50fP1gdVps+/4Ao1jgMcGbQRERMaA3YlxZXppCzdgb31zjfj4BNvnpodW
-         PnFOuZVlS0CTs25ZeNV9+qOSszDzA6Z3kl+XrNzkGCAEk8too5IvwAfzAeP2WS3hgQHa
-         +XOt9BywS2CjzSwCTh0DJYCcGjxZW3FizYwlAHPYdaLbGb3D9P1FRq0QpaGZ97MApsoe
-         XkE25X6vm6lOH7M1xz00/7rXtnBnsAmhXZ4xxZ20k4yhS0/bXJZqDc/ctwKKE3D3jKk/
-         FBtg==
-X-Gm-Message-State: AOAM533cbyGLJRI/TVUPFeKF6Iuuf6Ko7kbuRyxHUSL/OStuHV5xvlsg
-        zy5bOzWNVGJNP0QEXSKbwOBVTHjgHz4R52KaMC8=
-X-Google-Smtp-Source: ABdhPJy4WUbUbrXDMyLOMudXcFJZ2Xc6Htuh8Qdks0vx0aIZnAn3UtVk52VOzIh1G265cl2z9rT1cE/EmCqOEcmzlzs=
-X-Received: by 2002:aca:5c41:: with SMTP id q62mr4142704oib.148.1594913958746;
- Thu, 16 Jul 2020 08:39:18 -0700 (PDT)
+        bh=GVpF1JP7hmfmz8dV9xIo0IRiEFUiASMPHRs8ERMCI/0=;
+        b=jEfQZ/A1ENoCdtdmpDIJV24oe3OmnZ2A77vUGNS0RR/lFrIoaBxkEZuKJEPaDcugdF
+         R25j4dPwli9+VMGm6rZi9srKY05czjsLEzfJe4xV1IY05f628IDGinkG+M1Im84agvcs
+         TxTmy7swx57GWGDMzoLP4PGT2leQpYelTUMU2g+HNBvYIItNrZSUuUVvxn4xyuEXeQL9
+         hvEQ8pkNyrNqRzkPJtgxquVCO5pez9M2HSQzo/AJvsbu3vfs6VlnFX+k8L0ev/mZ28HC
+         354OTSrn7G3Ceetf5xgG1fHJ7RXmdku/qgGjtaQCxEiwdI4T5t+7fQ2Q8aTcsdQsfX23
+         XiIw==
+X-Gm-Message-State: AOAM531oA7OuuPuuvSWrzw/STLM0FloiMXf0D0T98VTx/cMN8DuD+wPj
+        ceU3E0IZfVNlkldUK++QLL2NgA/5Q8fKbgu7zck=
+X-Google-Smtp-Source: ABdhPJyYR9Hs8SoWN/IY/0wckPT+vzl0qEobKceTMx04PH/pxyrMFIwTwh4FW2EGxXgrpDS62tEG0eweHhoR/N7SO9U=
+X-Received: by 2002:a05:6830:1451:: with SMTP id w17mr5040038otp.250.1594913961982;
+ Thu, 16 Jul 2020 08:39:21 -0700 (PDT)
 MIME-Version: 1.0
 References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594811350-14066-16-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594811350-14066-16-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-18-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594811350-14066-18-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 16 Jul 2020 17:39:07 +0200
-Message-ID: <CAMuHMdUBMTM2VmVb9EbtVP6Qszi-BH71gCqQs3Z6UrbwTmdhdQ@mail.gmail.com>
-Subject: Re: [PATCH 15/20] arm64: dts: renesas: r8a774e1: Add MSIOF nodes
+Date:   Thu, 16 Jul 2020 17:39:10 +0200
+Message-ID: <CAMuHMdXgU3qCjsXWqiNM=OGrG6jMytZxij7SkesDo+2u==J7GQ@mail.gmail.com>
+Subject: Re: [PATCH 17/20] arm64: dts: renesas: r8a774e1: Add RWDT node
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -72,7 +72,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Jul 15, 2020 at 1:10 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add the DT nodes needed by MSIOF[0123] interfaces to the SoC dtsi.
+> Add a device node for the Watchdog Timer (RWDT) controller on the Renesas
+> RZ/G2H (r8a774e1) SoC.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
