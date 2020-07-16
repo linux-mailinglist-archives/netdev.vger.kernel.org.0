@@ -2,125 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 343F8222BA9
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 21:13:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 853C4222BA0
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 21:13:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729579AbgGPTNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 15:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729559AbgGPTNW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 15:13:22 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5935C061755
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 12:13:21 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id u64so8259421ybf.13
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 12:13:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=nFMCtn098IcULXSJHiBPEQBTf/ynF8gSOHqB6sVU7Ec=;
-        b=Z5EocIjSzxivXninZfT/6zso67b3CcNqRo1nGJ1zMXmBfd7na9d48WtIQcqdrjYiaF
-         mcJ+iZGt8Z8lPULQ+nJm8tPAC2eDw8rYG0qbiPmdcNLteZRTue07q5PsFfsX/SxUY2Ek
-         YlKWl7GtXKB5HD/Ik9R3i0VsWAACrdGyPE1SfAtZFPCT6l42fQINlzjaVxNBP2gzJfW0
-         PvRaJEC/CLp/scq+3IHmsY6Lg5a6zxfvIEFbcntap0FGzONUUbXNFDsjXpXkX/rNfXeK
-         jeSFe2KFqew0al/ul3cMr/alWhoWFXG3n6rQdt6YlLUmxfEgHr1HO8NkaC1LAHLp2FjK
-         +NOg==
+        id S1729489AbgGPTNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 15:13:04 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:22839 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728374AbgGPTNE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 15:13:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594926782;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Typg0prut+UBd62a+6lGuGYW0kgoqEQ0hjc0jEFMbb0=;
+        b=GtD0nAzo9yDXJPS4ZHWoyetY0XDEtYXzftJdhATW+EqGWQvfDGTEfJVF93gsyg62DxNb1W
+        GH9X7wo5CCSqNj4tLasspRJwBxMayL4SEVfpt/bBb5QDYI6aKXg99Oih73MiMea63Veoar
+        YMszbb6Dvata83sjw5yyg0JTW2ZBEXQ=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-148-BBuVZnHtN9aYS2XDx7VGaw-1; Thu, 16 Jul 2020 15:12:57 -0400
+X-MC-Unique: BBuVZnHtN9aYS2XDx7VGaw-1
+Received: by mail-wm1-f71.google.com with SMTP id q20so5609418wme.3
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 12:12:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=nFMCtn098IcULXSJHiBPEQBTf/ynF8gSOHqB6sVU7Ec=;
-        b=b8tgAO/WkkonBCWJkQkTb2yheC4YNeNeQggsnr3ml0lU0ERIj8ocpXe8iBdeRDE340
-         5YUD0Jv7LIs20lr6o2TKK5Q/4aldXCpOXxHQyALNnOFe20mCbnFreab0hY/BIwHwkhDo
-         kN94U+zt/+5ToxYoyjLzYxK9YkOcKR6tSDJYNXlJpMwIeTccmnHJJIa9cfNP5H8kpCpV
-         0NAyAnVeq78OwcAZUTVxq+mG2dEgl4tLXCP5vqtql/3ZQCysI/RwvQaQNOBWfj/klA3d
-         PGfao1xK17XjzM4JZO48rGtGsGK3Sdoe+x72Ofyn2/wE3L82cRsrodLqwKhTs6LMn9bN
-         5AjQ==
-X-Gm-Message-State: AOAM533cpM7jUhMTT5Oqg4S+ptkzzIoB45MhlT2fNYm93x2c8cxhyBUg
-        LBYJc5Di65tW750zCEjGyzLX9+M8WVOFWp4=
-X-Google-Smtp-Source: ABdhPJxNYHYJUe5n5Cn3L1TclMUTU0rRXPkxr3SK3C36S0lhL2s0Wxhg0vOP8cqmgDeV2oEqNFkZTmmM3Mfu/fQ=
-X-Received: by 2002:a25:e812:: with SMTP id k18mr7987500ybd.62.1594926800980;
- Thu, 16 Jul 2020 12:13:20 -0700 (PDT)
-Date:   Thu, 16 Jul 2020 12:12:35 -0700
-In-Reply-To: <20200716191235.1556723-1-priyarjha@google.com>
-Message-Id: <20200716191235.1556723-3-priyarjha@google.com>
-Mime-Version: 1.0
-References: <20200716191235.1556723-1-priyarjha@google.com>
-X-Mailer: git-send-email 2.28.0.rc0.105.gf9edc3c819-goog
-Subject: [PATCH net-next 2/2] tcp: add SNMP counter for no. of duplicate
- segments reported by DSACK
-From:   Priyaranjan Jha <priyarjha@google.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Priyaranjan Jha <priyarjha@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Typg0prut+UBd62a+6lGuGYW0kgoqEQ0hjc0jEFMbb0=;
+        b=ZKMxSRwyLJ2OaycQah+9Fr3E6pw7QIPQzeRDgB4/GZKK0dhU/T/aJTRlb7qZl+55Q1
+         VoGqLeZK7vqMQvVxp8d/zttByUYTy7T9dUg+u9EngwIsrRyXep0HpCSkfYOlMaIhOXsw
+         2MK2P/A3rQTIos68dOcIOWQ3BVQwS2BSfwzzQ4EmBMCR0l6xCo0zABHFMCt75Y4BpeaG
+         sLtX49FNR1S0CF8r0q0wT6mRtjAbXJQMKFcoNotEBf+K7OFLlp+Mb1B+ZQDaLYwz1XFu
+         19Eom4ztnWrJkBrPQ4dXzZuLfGhYH5lMlqpUc+paowS+hRXN44bpVzRoFpEMNs7u6Y2k
+         Ytuw==
+X-Gm-Message-State: AOAM533vQhKXoAFF0kJxiNWUg7JzYVskcvFwp18cPExVlIZDV7TeZEtE
+        eHnC9gdwKPwNtw/Rx/aDWCojYfPsWA4onMe1zJroKHBgq2ObKE9kfau5zOjsuBfH050rP9CRRwO
+        vhx2mWI8Riv1SjbhV
+X-Received: by 2002:a7b:c92e:: with SMTP id h14mr5423923wml.36.1594926776523;
+        Thu, 16 Jul 2020 12:12:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwNgdIIeS8zEiH608NBKn1aPtmMjKUFjxYAD179Q3Ej5z/QUnThzpjtc5zDkHM6IkR/xCAulw==
+X-Received: by 2002:a7b:c92e:: with SMTP id h14mr5423899wml.36.1594926776242;
+        Thu, 16 Jul 2020 12:12:56 -0700 (PDT)
+Received: from localhost ([151.48.133.17])
+        by smtp.gmail.com with ESMTPSA id u186sm10046512wmu.10.2020.07.16.12.12.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2020 12:12:55 -0700 (PDT)
+Date:   Thu, 16 Jul 2020 21:12:51 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, bpf@vger.kernel.org,
+        ilias.apalodimas@linaro.org, brouer@redhat.com,
+        echaudro@redhat.com, sameehj@amazon.com
+Subject: Re: [PATCH 2/6] net: mvneta: move skb build after descriptors
+ processing
+Message-ID: <20200716191251.GH2174@localhost.localdomain>
+References: <cover.1594309075.git.lorenzo@kernel.org>
+ <f5e95c08e22113d21e86662f1cf5ccce16ccbfca.1594309075.git.lorenzo@kernel.org>
+ <20200715125844.567e5795@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="N8ia4yKhAKKETby7"
+Content-Disposition: inline
+In-Reply-To: <20200715125844.567e5795@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two existing SNMP counters, TCPDSACKRecv and TCPDSACKOfoRecv,
-which are incremented depending on whether the DSACKed range is below
-the cumulative ACK sequence number or not. Unfortunately, these both
-implicitly assume each DSACK covers only one segment. This makes these
-counters unusable for estimating spurious retransmit rates,
-or real/non-spurious loss rate.
 
-This patch introduces a new SNMP counter, TCPDSACKRecvSegs, which tracks
-the estimated number of duplicate segments based on:
-(DSACKed sequence range) / MSS. This counter is usable for estimating
-spurious retransmit rates, or real/non-spurious loss rate.
+--N8ia4yKhAKKETby7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Priyaranjan Jha <priyarjha@google.com>
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
-Signed-off-by: Yuchung Cheng <ycheng@google.com>
-Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
----
- include/uapi/linux/snmp.h | 1 +
- net/ipv4/proc.c           | 1 +
- net/ipv4/tcp_input.c      | 1 +
- 3 files changed, 3 insertions(+)
+> On Thu,  9 Jul 2020 17:57:19 +0200 Lorenzo Bianconi wrote:
+> > +		frag->bv_offset =3D pp->rx_offset_correction;
+> > +		skb_frag_size_set(frag, data_len);
+> > +		frag->bv_page =3D page;
+> > +		sinfo->nr_frags++;
+>=20
+> nit: please use the skb_frag_* helpers, in case we have to rename those
+>      fields again. You should also consider adding a helper for the
+>      operation of appending a frag, I bet most drivers will needs this.
 
-diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-index 7d91f4debc48..cee9f8e6fce3 100644
---- a/include/uapi/linux/snmp.h
-+++ b/include/uapi/linux/snmp.h
-@@ -287,6 +287,7 @@ enum
- 	LINUX_MIB_TCPFASTOPENPASSIVEALTKEY,	/* TCPFastOpenPassiveAltKey */
- 	LINUX_MIB_TCPTIMEOUTREHASH,		/* TCPTimeoutRehash */
- 	LINUX_MIB_TCPDUPLICATEDATAREHASH,	/* TCPDuplicateDataRehash */
-+	LINUX_MIB_TCPDSACKRECVSEGS,		/* TCPDSACKRecvSegs */
- 	__LINUX_MIB_MAX
- };
- 
-diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-index 75545a829a2b..1074df726ec0 100644
---- a/net/ipv4/proc.c
-+++ b/net/ipv4/proc.c
-@@ -292,6 +292,7 @@ static const struct snmp_mib snmp4_net_list[] = {
- 	SNMP_MIB_ITEM("TCPFastOpenPassiveAltKey", LINUX_MIB_TCPFASTOPENPASSIVEALTKEY),
- 	SNMP_MIB_ITEM("TcpTimeoutRehash", LINUX_MIB_TCPTIMEOUTREHASH),
- 	SNMP_MIB_ITEM("TcpDuplicateDataRehash", LINUX_MIB_TCPDUPLICATEDATAREHASH),
-+	SNMP_MIB_ITEM("TCPDSACKRecvSegs", LINUX_MIB_TCPDSACKRECVSEGS),
- 	SNMP_MIB_SENTINEL
- };
- 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 5d6bbcb1e570..82906deb7874 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -1153,6 +1153,7 @@ static bool tcp_check_dsack(struct sock *sk, const struct sk_buff *ack_skb,
- 	}
- 
- 	dup_segs = tcp_dsack_seen(tp, start_seq_0, end_seq_0, state);
-+	NET_ADD_STATS(sock_net(sk), LINUX_MIB_TCPDSACKRECVSEGS, dup_segs);
- 
- 	/* D-SACK for already forgotten data... Do dumb counting. */
- 	if (tp->undo_marker && tp->undo_retrans > 0 &&
--- 
-2.27.0.389.gc38d7665816-goog
+Hi Jakub,
+
+thx for the review. Ack, I will fix them in v2.
+
+>=20
+> > +static struct sk_buff *
+> > +mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *=
+rxq,
+> > +		      struct xdp_buff *xdp, u32 desc_status)
+> > +{
+> > +	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xdp);
+> > +	int i, num_frags =3D sinfo->nr_frags;
+> > +	skb_frag_t frags[MAX_SKB_FRAGS];
+> > +	struct sk_buff *skb;
+> > +
+> > +	memcpy(frags, sinfo->frags, sizeof(skb_frag_t) * num_frags);
+> > +
+> > +	skb =3D build_skb(xdp->data_hard_start, PAGE_SIZE);
+> > +	if (!skb)
+> > +		return ERR_PTR(-ENOMEM);
+> > +
+> > +	page_pool_release_page(rxq->page_pool, virt_to_page(xdp->data));
+> > +
+> > +	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+> > +	skb_put(skb, xdp->data_end - xdp->data);
+> > +	mvneta_rx_csum(pp, desc_status, skb);
+> > +
+> > +	for (i =3D 0; i < num_frags; i++) {
+> > +		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+> > +				frags[i].bv_page, frags[i].bv_offset,
+> > +				skb_frag_size(&frags[i]), PAGE_SIZE);
+> > +		page_pool_release_page(rxq->page_pool, frags[i].bv_page);
+> > +	}
+> > +
+> > +	return skb;
+> > +}
+>=20
+> Here as well - is the plan to turn more of this function into common
+> code later on? Looks like most of this is not really driver specific.
+
+I agree. What about adding it when other drivers will add multi-buff suppor=
+t?
+(here we have even page_pool dependency)
+
+Regards,
+Lorenzo
+
+>=20
+
+--N8ia4yKhAKKETby7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXxCmsAAKCRA6cBh0uS2t
+rNBEAQCQ8OYOoFKohD+CxSij8yI2WUCcLGFWMdiR2GEMZMMALwD8DCCMbVRT3xn/
+vTLa/NxDMa8qxBomWKomWWxN/pchwwM=
+=J16m
+-----END PGP SIGNATURE-----
+
+--N8ia4yKhAKKETby7--
 
