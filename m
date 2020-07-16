@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 645A222258F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 16:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9669F222599
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 16:31:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728956AbgGPOaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 10:30:13 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:36575 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbgGPOaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 10:30:12 -0400
-Received: by mail-ot1-f65.google.com with SMTP id 72so4350314otc.3;
-        Thu, 16 Jul 2020 07:30:11 -0700 (PDT)
+        id S1728983AbgGPObH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 10:31:07 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:38773 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728385AbgGPObG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 10:31:06 -0400
+Received: by mail-oi1-f195.google.com with SMTP id r8so5232172oij.5;
+        Thu, 16 Jul 2020 07:31:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=115VeKAeRymHtgOQWn1MnLlYGAIf+NEanOtmy9E1NN8=;
-        b=nYuz5J1Kfo368fK+VhW9JrZmzZK5Jekhob4cCdtfd0MBi9hXcTbRNx1hsKhLuBDPTr
-         OMD8RfG3thdBWOUUJqTuMerOgVGke0LrtlZYwWr4aNH0ZIgtJeEdLFChXJDkBRig+RDX
-         PGOesR1HmMpsgz37srN5WhwnVE845ys9EmvsaT4LtipZL+IavQUNqRhRw6c3oLKp8Ye4
-         R8gPZJt3oRSKxz0O9U2nwvcx/Kq3Eo3qedeSNlIXVDVmMyGRQttu3BdJ+XW+aDi9AAcM
-         k8BwSvYyPjTTeW/VXUlbhD3BPZnmW/Ilo6CiwOqT3i0U1ps3Wksu5lljf9BqqR7swRnS
-         VZQQ==
-X-Gm-Message-State: AOAM532AXXOuO8EvjVKbnbTBuYIpdny/ArT+r+AwExvbdh85DoxFEoTA
-        6CjK6KBcmjK7D0/rkiRZYX+MHEsFO1wIKgI74e0=
-X-Google-Smtp-Source: ABdhPJxK8dOUoCV8I3G+DI8G7gXsWY2eAVqdrfu3jQheAGdSQy7ope5CwfXoQmCSabfMV6DABVOZpG+50JDpVWtvhRI=
-X-Received: by 2002:a05:6830:1451:: with SMTP id w17mr4722284otp.250.1594909810889;
- Thu, 16 Jul 2020 07:30:10 -0700 (PDT)
+        bh=WqlrFbvqA9D4cngrjrCPvsg/0myDvo5cshnJ/d0TFXI=;
+        b=N/9cddSZbnceQfrngHWhiUQlCApV8XCmMZ8USLE7o7mCIHijhBXTVwq6xQtQ8rGUDB
+         +jNjeRmweOC0Sn1+swo1xK5GLGhDckJj25r7ll4R7LL70ofguzjXJ6lTgj2imPJRUCmC
+         mKFCJwu3otrF79rIqKPynFw/4L9oiS2vrKeCkJz04Q4gvalldDUyTmCVdYLMb3qPqyT4
+         b2ZRIKiFkDHyVd5A5+aQQ3LY3kFFkbIxFLOZdfheqoVI0tpdMWYP/RPjbPqNs6ToT9SH
+         GAC2StOIiDSBa3UjBTGTsxFqEXbC+7frtiwDS83+g6h/8L5RTgDNNP1aa3wh3ayei1fB
+         3jGA==
+X-Gm-Message-State: AOAM533z3wAh0d3Bih9JqpqgZrVm566mFIA3jUmv+OP8dRT0bvDdVPoW
+        7LzMwzJH4Dul43igV4n4UP3C4X4Qzp9pwxbHLDI=
+X-Google-Smtp-Source: ABdhPJzDN7cqk3Qhxsw+uqLdV1Ci8OAOQAFFwq8FXnP/ri1XttXWiaSPIkPG+85MGZsFvOFdldBbU8wmQ942oYe18UY=
+X-Received: by 2002:aca:5c41:: with SMTP id q62mr3892778oib.148.1594909865066;
+ Thu, 16 Jul 2020 07:31:05 -0700 (PDT)
 MIME-Version: 1.0
 References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594811350-14066-15-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594811350-14066-15-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-17-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594811350-14066-17-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 16 Jul 2020 16:29:59 +0200
-Message-ID: <CAMuHMdW-uX6cSjhy159-EG3N+GD6MZABJbuSXgbvzDPybwNNfw@mail.gmail.com>
-Subject: Re: [PATCH 14/20] dt-bindings: spi: renesas,sh-msiof: Add r8a774e1 support
+Date:   Thu, 16 Jul 2020 16:30:53 +0200
+Message-ID: <CAMuHMdUj=VSZ1n6pbiizdm1cnsDk+c=4LbAvPXg259OAtFz0qw@mail.gmail.com>
+Subject: Re: [PATCH 16/20] dt-bindings: watchdog: renesas,wdt: Document
+ r8a774e1 support
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -72,10 +73,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Jul 15, 2020 at 1:10 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Document RZ/G2H (R8A774E1) SoC bindings.
+> RZ/G2H (a.k.a. R8A774E1) watchdog implementation is compatible
+> with R-Car Gen3, therefore add the relevant documentation.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
