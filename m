@@ -2,167 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3660222A80
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 19:54:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C7EB222A85
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 19:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729334AbgGPRyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 13:54:07 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:4852 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727844AbgGPRyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 13:54:06 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06GHWA58140286;
-        Thu, 16 Jul 2020 13:53:52 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 32afv0qk1f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jul 2020 13:53:51 -0400
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 06GHXYJd144707;
-        Thu, 16 Jul 2020 13:53:51 -0400
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 32afv0qk02-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jul 2020 13:53:51 -0400
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06GHpJdk003707;
-        Thu, 16 Jul 2020 17:53:48 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3274pgwntf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jul 2020 17:53:48 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06GHrk6V62915054
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Jul 2020 17:53:46 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 89AB6AE055;
-        Thu, 16 Jul 2020 17:53:46 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C3117AE051;
-        Thu, 16 Jul 2020 17:53:45 +0000 (GMT)
-Received: from sig-9-145-186-215.de.ibm.com (unknown [9.145.186.215])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 16 Jul 2020 17:53:45 +0000 (GMT)
-Message-ID: <4e0c4f3f6278617dc54fc755d899dbbab396f24d.camel@linux.ibm.com>
-Subject: Re: [PATCH] Revert "test_bpf: flag tests that cannot be jited on
- s390"
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     Seth Forshee <seth.forshee@canonical.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 16 Jul 2020 19:53:45 +0200
-In-Reply-To: <20200716143931.330122-1-seth.forshee@canonical.com>
-References: <20200716143931.330122-1-seth.forshee@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+        id S1729082AbgGPR4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 13:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51518 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727844AbgGPR4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 13:56:17 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C90BC061755
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 10:56:17 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id o13so5227550pgf.0
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 10:56:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=St5IW/0RJx7awbUedzsjjleKKmGVsmjKbIso6cGl3+k=;
+        b=kQCbJuk+QWBc0C2RQp/NyGF9ZRke9KZWwSTRHex+HLevzwUV7qn8qV5r85Xj/UItTb
+         AaIgDfjsp2pkdtktisdnHT2ZGjJJ94EBuFm29ZeL6Hv1JVMEJOM23FTRkimkqxX56V2+
+         9mtUwaTWHsnEgJLcoT4otx/ceSYVunLUcPn3HRcXvfK1B2eXTWLMumyj/Su7u70qKDKh
+         gD1BLCeliG5hrGHMIG96elYBpkyRhrj4t1tMrFqBK3AyPs1Nv9KMg+PReT3LZz5u04fZ
+         HSZN2Kk6/Lj9WWy4/9clkVQsXbhRX7qNdbb3WErDbEw/epnOCYwf9O53JqqBjryc8k1J
+         ObIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=St5IW/0RJx7awbUedzsjjleKKmGVsmjKbIso6cGl3+k=;
+        b=Dc5cHZ7VZ4au/viPvsFGncMm/GiDDl5gKx1dWUk4Z9Oo1uz/bPe1hACu7VEy2QsoeA
+         Jx40LZ1ICSNuEdy6iWag+vM3p1ckI4o3N1b7dVP4PG7oj+lG+3ftdSv/DwPqF/0Cy43P
+         wCRg2V3Bef4lXVWM+0gVaItTDHKCyZ3xRC4IKZMEXtQ0DTtmGmKfeIV4dU03MoHszGYh
+         AyH87FXO++P6gQqM9jMde2Gs47YqSwed+qHSSpbFI6w3zoHIV8bP7BHBOqxa5OsaF77s
+         2rnBadX24aKUE/jyeFdLgfgzFo5ehKm8HVdXlb+jt7kkHzfvo7P+APAU4m3vNZ/ExIIP
+         wvGg==
+X-Gm-Message-State: AOAM531UKwmcJ4AtMdEFoLC3r8+U9sWKGaydr1FtbrlxXnCA0KGrMD3i
+        pAzia6DZKH/krWYmyF/I6TM=
+X-Google-Smtp-Source: ABdhPJyXhGyfXfgkUFH22ABEF8smBWr57zS+8gPxoBoIw1e2p7y70Jbq5cf8aQJCapYjjnANRDb5Aw==
+X-Received: by 2002:a63:e018:: with SMTP id e24mr5123235pgh.175.1594922176413;
+        Thu, 16 Jul 2020 10:56:16 -0700 (PDT)
+Received: from localhost.localdomain.com ([2605:e000:160b:911f:a2ce:c8ff:fe03:6cb0])
+        by smtp.gmail.com with ESMTPSA id o42sm684571pje.10.2020.07.16.10.56.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2020 10:56:15 -0700 (PDT)
+From:   Chris Healy <cphealy@gmail.com>
+To:     mkubecek@suse.cz, netdev@vger.kernel.org, vivien.didelot@gmail.com
+Cc:     Andrew Lunn <andrew@lunn.ch>, Chris Healy <cphealy@gmail.com>
+Subject: [PATCH] ethtool: dsa: mv88e6xxx: add pretty dump for 88E6352 SERDES
+Date:   Thu, 16 Jul 2020 10:55:26 -0700
+Message-Id: <20200716175526.14005-1-cphealy@gmail.com>
+X-Mailer: git-send-email 2.21.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-16_07:2020-07-16,2020-07-16 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
- clxscore=1011 mlxscore=0 priorityscore=1501 impostorscore=0
- mlxlogscore=999 lowpriorityscore=0 malwarescore=0 suspectscore=3
- adultscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007160125
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-07-16 at 09:39 -0500, Seth Forshee wrote:
-> This reverts commit 3203c9010060806ff88c9989aeab4dc8d9a474dc.
-> 
-> The s390 bpf JIT previously had a restriction on the maximum
-> program size, which required some tests in test_bpf to be flagged
-> as expected failures. The program size limitation has been removed,
-> and the tests now pass, so these tests should no longer be flagged.
-> 
-> Fixes: d1242b10ff03 ("s390/bpf: Remove JITed image size limitations")
-> Signed-off-by: Seth Forshee <seth.forshee@canonical.com>
-> ---
->  lib/test_bpf.c | 20 --------------------
->  1 file changed, 20 deletions(-)
-> 
-> diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-> index a5fddf9ebcb7..ca7d635bccd9 100644
-> --- a/lib/test_bpf.c
-> +++ b/lib/test_bpf.c
-> @@ -5275,31 +5275,21 @@ static struct bpf_test tests[] = {
->  	{	/* Mainly checking JIT here. */
->  		"BPF_MAXINSNS: Ctx heavy transformations",
->  		{ },
-> -#if defined(CONFIG_BPF_JIT_ALWAYS_ON) && defined(CONFIG_S390)
-> -		CLASSIC | FLAG_EXPECTED_FAIL,
-> -#else
->  		CLASSIC,
-> -#endif
->  		{ },
->  		{
->  			{  1, SKB_VLAN_PRESENT },
->  			{ 10, SKB_VLAN_PRESENT }
->  		},
->  		.fill_helper = bpf_fill_maxinsns6,
-> -		.expected_errcode = -ENOTSUPP,
->  	},
->  	{	/* Mainly checking JIT here. */
->  		"BPF_MAXINSNS: Call heavy transformations",
->  		{ },
-> -#if defined(CONFIG_BPF_JIT_ALWAYS_ON) && defined(CONFIG_S390)
-> -		CLASSIC | FLAG_NO_DATA | FLAG_EXPECTED_FAIL,
-> -#else
->  		CLASSIC | FLAG_NO_DATA,
-> -#endif
->  		{ },
->  		{ { 1, 0 }, { 10, 0 } },
->  		.fill_helper = bpf_fill_maxinsns7,
-> -		.expected_errcode = -ENOTSUPP,
->  	},
->  	{	/* Mainly checking JIT here. */
->  		"BPF_MAXINSNS: Jump heavy test",
-> @@ -5350,28 +5340,18 @@ static struct bpf_test tests[] = {
->  	{
->  		"BPF_MAXINSNS: exec all MSH",
->  		{ },
-> -#if defined(CONFIG_BPF_JIT_ALWAYS_ON) && defined(CONFIG_S390)
-> -		CLASSIC | FLAG_EXPECTED_FAIL,
-> -#else
->  		CLASSIC,
-> -#endif
->  		{ 0xfa, 0xfb, 0xfc, 0xfd, },
->  		{ { 4, 0xababab83 } },
->  		.fill_helper = bpf_fill_maxinsns13,
-> -		.expected_errcode = -ENOTSUPP,
->  	},
->  	{
->  		"BPF_MAXINSNS: ld_abs+get_processor_id",
->  		{ },
-> -#if defined(CONFIG_BPF_JIT_ALWAYS_ON) && defined(CONFIG_S390)
-> -		CLASSIC | FLAG_EXPECTED_FAIL,
-> -#else
->  		CLASSIC,
-> -#endif
->  		{ },
->  		{ { 1, 0xbee } },
->  		.fill_helper = bpf_fill_ld_abs_get_processor_id,
-> -		.expected_errcode = -ENOTSUPP,
->  	},
->  	/*
->  	 * LD_IND / LD_ABS on fragmented SKBs
+From: Andrew Lunn <andrew@lunn.ch>
 
-Thank you for the fix!
-I tested it and it indeed fixes these 4 failures.
+In addition to the port registers, the device can provide the
+SERDES/PCS registers. Dump these, and for a few of the important
+SGMII/1000Base-X registers decode the bits.
 
-I will have a look at the remaining 8 tomorrow.
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Chris Healy <cphealy@gmail.com>
+---
+ dsa.c | 196 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 195 insertions(+), 1 deletion(-)
 
-Reviewed-by: Ilya Leoshkevich <iii@linux.ibm.com>
+diff --git a/dsa.c b/dsa.c
+index 50a171b..a5045fc 100644
+--- a/dsa.c
++++ b/dsa.c
+@@ -405,21 +405,204 @@ static void dsa_mv88e6352(int reg, u16 val)
+ 	case 19:
+ 		REG(reg, "Rx Frame Counter", val);
+ 		break;
++	case 20 ... 21:
++		REG(reg, "Reserved", val);
++		break;
+ 	case 22:
+ 		REG(reg, "LED Control", val);
+ 		break;
++	case 23:
++		REG(reg, "Reserved", val);
++		break;
+ 	case 24:
+ 		REG(reg, "Tag Remap 0-3", val);
+ 		break;
+ 	case 25:
+ 		REG(reg, "Tag Remap 4-7", val);
+ 		break;
++	case 26:
++		REG(reg, "Reserved", val);
++		break;
+ 	case 27:
+ 		REG(reg, "Queue Counters", val);
+ 		break;
+-	default:
++	case 28 ... 31:
+ 		REG(reg, "Reserved", val);
+ 		break;
++	case 32 + 0:
++		REG(reg - 32, "Fiber Control", val);
++		FIELD("Fiber Reset", "%u", !!(val & 0x8000));
++		FIELD("Loopback", "%u", !!(val & 0x4000));
++		FIELD("Speed", "%s",
++		      (val & (0x2000 | 0x0040)) == 0x0000 ? "10 Mbps" :
++		      (val & (0x2000 | 0x0040)) == 0x2000 ? "100 Mbps" :
++		      (val & (0x2000 | 0x0040)) == 0x0040 ? "1000 Mbps" :
++		      (val & (0x2000 | 0x0040)) == (0x2000 | 0x0040) ?
++		      "Reserved" : "?");
++		FIELD("Autoneg Enable", "%u", !!(val & 0x1000));
++		FIELD("Power down", "%u", !!(val & 0x0800));
++		FIELD("Isolate", "%u", !!(val & 0x0400));
++		FIELD("Restart Autoneg", "%u", !!(val & 0x0200));
++		FIELD("Duplex", "%s", val & 0x0100 ? "Full" : "Half");
++		break;
++	case 32 + 1:
++		REG(reg - 32, "Fiber Status", val);
++		FIELD("100Base-X FD",  "%u", !!(val & 0x4000));
++		FIELD("100Base-X HD",  "%u", !!(val & 0x2000));
++		FIELD("Autoneg Complete", "%u", !!(val & 0x0020));
++		FIELD("Remote Fault", "%u", !!(val & 0x0010));
++		FIELD("Autoneg Ability", "%u", !!(val & 0x0008));
++		FIELD("Link Status", "%s", val & 0x0004 ? "Up" : "Down");
++		break;
++	case 32 + 2:
++		REG(reg - 32, "PHY ID 1", val);
++		break;
++	case 32 + 3:
++		REG(reg - 32, "PHY ID 2", val);
++		break;
++	case 32 + 4:
++		REG(reg - 32, "Fiber Autoneg Advertisement", val);
++		FIELD("Remote Fault", "%s",
++		      (val & 0x3000) == 0x0000 ? "No error, link OK" :
++		      (val & 0x3000) == 0x1000 ? "Link failure" :
++		      (val & 0x3000) == 0x2000 ? "Offline" :
++		      (val & 0x3000) == 0x3000 ? "Autoneg Error" : "?");
++		FIELD("Pause", "%s",
++		      (val & 0x0180) == 0x0000 ? "No Pause" :
++		      (val & 0x0180) == 0x0080 ? "Symmetric Pause" :
++		      (val & 0x0180) == 0x0100 ? "Asymmetric Pause" :
++		      (val & 0x0180) == 0x0180 ? "Symmetric & Asymmetric Pause" :
++		      "?");
++		FIELD("1000BaseX HD", "%u", !!(val & 0x0040));
++		FIELD("1000BaseX FD", "%u", !!(val & 0x0020));
++		break;
++	case 32 + 5:
++		REG(reg - 32, "Fiber Link Autoneg Ability", val);
++		FIELD("Acknowledge", "%u", !!(val & 0x4000));
++		FIELD("Remote Fault", "%s",
++		      (val & 0x3000) == 0x0000 ? "No error, link OK" :
++		      (val & 0x3000) == 0x1000 ? "Link failure" :
++		      (val & 0x3000) == 0x2000 ? "Offline" :
++		      (val & 0x3000) == 0x3000 ? "Autoneg Error" : "?");
++		FIELD("Pause", "%s",
++		      (val & 0x0180) == 0x0000 ? "No Pause" :
++		      (val & 0x0180) == 0x0080 ? "Symmetric Pause" :
++		      (val & 0x0180) == 0x0100 ? "Asymmetric Pause" :
++		      (val & 0x0180) == 0x0180 ? "Symmetric & Asymmetric Pause" :
++		      "?");
++		FIELD("1000BaseX HD", "%u", !!(val & 0x0040));
++		FIELD("1000BaseX FD", "%u", !!(val & 0x0020));
++		break;
++	case 32 + 6:
++		REG(reg - 32, "Fiber Autoneg Expansion", val);
++		FIELD("Link Partner Next Page Ability", "%u", !!(val & 0x0008));
++		FIELD("Page Received", "%u", !!(val & 0x0002));
++		FIELD("Link Partner Autoneg Ability", "%u", !!(val & 0x0001));
++		break;
++	case 32 + 7:
++		REG(reg - 32, "Fiber Next Page Transmit", val);
++		break;
++	case 32 + 8:
++		REG(reg - 32, "Fiber Link Partner Next Page", val);
++		break;
++	case 32 + 9 ... 32 + 14:
++		REG(reg - 32, "Reserved", val);
++		break;
++	case 32 + 15:
++		REG(reg - 32, "Extended Status", val);
++		break;
++	case 32 + 16:
++		REG(reg - 32, "Fiber Specific Control", val);
++		FIELD("Fiber Transmit FIFO Depth", "%s",
++		      (val & 0xc000) == 0x0000 ? "16 Bits" :
++		      (val & 0xc000) == 0x4000 ? "24 Bits" :
++		      (val & 0xc000) == 0x8000 ? "32 Bits" :
++		      (val & 0xc000) == 0xc000 ? "40 Bits" : "?");
++		FIELD("SERDES Loopback", "%u", !!(val & 0x1000));
++		FIELD("Force Link Good", "%u", !!(val & 0x0400));
++		FIELD("MAC Interface Power Down", "%u", !!(val & 0x0008));
++		FIELD("Mode", "%s",
++		      (val & 0x0003) == 0x0000 ? "100BaseFX" :
++		      (val & 0x0003) == 0x0001 ? "1000BaseX" :
++		      (val & 0x0003) == 0x0002 ? "SGMII System" :
++		      (val & 0x0003) == 0x0003 ? "SGMII Media" : "?");
++		break;
++	case 32 + 17:
++		REG(reg - 32, "Fiber Specific Status", val);
++		FIELD("Speed", "%s",
++		      (val & 0xc000) == 0x0000 ? "10 Mbps" :
++		      (val & 0xc000) == 0x4000 ? "100 Mbps" :
++		      (val & 0xc000) == 0x8000 ? "1000 Mbps" :
++		      (val & 0xc000) == 0xc000 ? "Reserved" : "?");
++		FIELD("Duplex", "%s", val & 0x2000 ? "Full" : "Half");
++		FIELD("Page Received", "%u", !!(val & 0x1000));
++		FIELD("Speed/Duplex Resolved", "%u", !!(val & 0x0800));
++		FIELD("Link", "%s", val & 0x0400 ? "Up" : "Down");
++		FIELD("Sync", "%u", !!(val & 0x0020));
++		FIELD("Energy Detect", "%s", val & 0x010 ? "False" : "True");
++		FIELD("Transmit Pause", "%u", !!(val & 0x0008));
++		FIELD("Receive Pause", "%u", !!(val & 0x00004));
++		break;
++	case 32 + 18:
++		REG(reg - 32, "Fiber Interrupt Enable", val);
++		FIELD("Speed Changed", "%u", !!(val & 0x4000));
++		FIELD("Duplex Changed", "%u", !!(val & 0x2000));
++		FIELD("Page Received", "%u", !!(val & 0x1000));
++		FIELD("Autoneg Complete", "%u", !!(val & 0x0800));
++		FIELD("Link Status Change", "%u", !!(val & 0x0400));
++		FIELD("Symbol Error", "%u", !!(val & 0x0200));
++		FIELD("False Carrier", "%u", !!(val & 0x0100));
++		FIELD("Energy Detect", "%u", !!(val & 0x0010));
++		break;
++	case 32 + 19:
++		REG(reg - 32, "Fiber Interrupt Status", val);
++		FIELD("Speed Changed", "%u", !!(val & 0x4000));
++		FIELD("Duplex Changed", "%u", !!(val & 0x2000));
++		FIELD("Page Received", "%u", !!(val & 0x1000));
++		FIELD("Autoneg Complete", "%u", !!(val & 0x0800));
++		FIELD("Link Status Change", "%u", !!(val & 0x0400));
++		FIELD("Symbol Error", "%u", !!(val & 0x0200));
++		FIELD("False Carrier", "%u", !!(val & 0x0100));
++		FIELD("Energy Detect", "%u", !!(val & 0x0010));
++		break;
++	case 32 + 20:
++		REG(reg - 32, "Reserved", val);
++		break;
++	case 32 + 21:
++		REG(reg - 32, "Fiber Receive Error Counter", val);
++		break;
++	case 32 + 22:
++		REG(reg - 32, "Reserved", val);
++		break;
++	case 32 + 23:
++		REG(reg - 32, "PRBS Control", val);
++		break;
++	case 32 + 24:
++		REG(reg - 32, "PRBS Error Counter LSB", val);
++		break;
++	case 32 + 25:
++		REG(reg - 32, "PRBS Error Counter MSB", val);
++		break;
++	case 32 + 26:
++		REG(reg - 32, "Fiber Specific Control 2", val);
++		FIELD("1000BaseX Noise Filtering", "%u", !!(val & 0x4000));
++		FIELD("1000BaseFX Noise Filtering", "%u", !!(val & 0x2000));
++		FIELD("SERDES Autoneg Bypass Enable", "%u", !!(val & 0x0040));
++		FIELD("SERDES Autoneg Bypass Status", "%u", !!(val & 0x0020));
++		FIELD("Fiber Transmitter Disable", "%u", !!(val & 0x0008));
++		FIELD("SGMII/Fiber Output Amplitude", "%s",
++		      (val & 0x0007) == 0x0000 ? "14mV" :
++		      (val & 0x0007) == 0x0001 ? "112mV" :
++		      (val & 0x0007) == 0x0002 ? "210mV" :
++		      (val & 0x0007) == 0x0003 ? "308mV" :
++		      (val & 0x0007) == 0x0004 ? "406mV" :
++		      (val & 0x0007) == 0x0005 ? "504mV" :
++		      (val & 0x0007) == 0x0006 ? "602mV" :
++		      (val & 0x0007) == 0x0007 ? "700mV" : "?");
++		break;
++	default:
++		REG(reg - 32, "Reserved", val);
++		break;
+ 	}
+ };
+ 
+@@ -667,6 +850,17 @@ static int dsa_mv88e6xxx_dump_regs(struct ethtool_regs *regs)
+ 		else
+ 			REG(i, "", data[i]);
+ 
++	/* Dump the SERDES registers, if provided */
++	if (regs->len > 32 * 2) {
++		printf("\n%s Switch Port SERDES Registers\n", sw->name);
++		printf("-------------------------------------\n");
++		for (i = 32; i < regs->len / 2; i++)
++			if (sw->dump)
++				sw->dump(i, data[i]);
++			else
++				REG(i, "", data[i]);
++	}
++
+ 	return 0;
+ }
+ 
+-- 
+2.21.3
 
