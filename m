@@ -2,198 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9178221AE4
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 05:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F2FC221AE5
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 05:41:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728200AbgGPDhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 23:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
+        id S1727105AbgGPDlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 23:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727034AbgGPDhU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 23:37:20 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D63AC061755;
-        Wed, 15 Jul 2020 20:37:19 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id p20so4933912ejd.13;
-        Wed, 15 Jul 2020 20:37:19 -0700 (PDT)
+        with ESMTP id S1726905AbgGPDlN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 23:41:13 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BD6C061755
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 20:41:13 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id 5so3131298oty.11
+        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 20:41:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Kc//SU1WBHhArSL1EGBi4pEoU7QX9fzfoco4jF4NECA=;
-        b=hMBKIE+08titO1+wUAD1fBaPjySkW4PCfyXYqVoByjYlCt/Q5ukUSTsQ7Rcy0XpL0v
-         zZP5HJ/mbdJ3YHdYZZOX03rJc8doGVUPKywLLYBLgcwF/7DUALms5zU/u7akrmLHnA3K
-         ycir1wt+lBaksn0+ZOB6+MNHD4KzDjzoCArkCtRwbMgX1Q95XzJI/1hBG1zVF4GVsS96
-         w6x0DW1mtBi6pWkwHUHF8U5RY3aDlA2RYHRNT05pGaNesymVOssTaKG0bdbhl18lr5yC
-         asXJ3biFEFtZb8ih+CbEoeo44oTZaRJ+dqPWS21m71BoBMFv76A0zFxTgbdrtqOkXROs
-         qjxg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FQ0M73wEPTnTu2JJVlbKLC6O8iQNMw8waRsk63jGz3k=;
+        b=iOr19jSJ0Bi6kqTerHRodA60mW2hZxTdvpN6onEzb1/HkbnE8HxK0NpxDwmJ4q4wSN
+         SQUY3b19Lq3ZWvwqcQDyueyveNAvEnk4L6PG30zlwvabtoc8bz/sjqLfN4pVqsnK2OdQ
+         KAjfFT9ztbHZnC3H1JecbgIhvfY1UUKm2cjPiWcWaNDC7YQ2syYK8LHcC9eqafPdhqim
+         Kezw4gBOMSTZxj4+trj8d+hoS46VnU85EKiHKRYuRnVFPjhTEjwIXtruVKhf2ZOUO87Y
+         nwDYLUpMXWvTmToXIBGWkNnzoLckKOV2gBJwch3TIpDw+u4eYWNZxSX8kJBkCQpUX91G
+         z85A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Kc//SU1WBHhArSL1EGBi4pEoU7QX9fzfoco4jF4NECA=;
-        b=gWC4SU/mm5pVSkUc92F36Ymak9jiBJlf6XI8BzcPdcQJ6yjsTgdUjge6uXFv3NaOfq
-         P4vWTNVQjEx1cZo5/vCIWNDB6/Lr2z86s3erOV9a9podUm8/s8pLWnxQKKTe1Mfes1FB
-         6/rSH63dF1p0/tBVMhPZsitehKJqDpqEA1dhsvVa72KQwSR7PtnSVWOdN8cQQEctBFfA
-         ZzRUTK74Uv9D4ZMw7w+XqGhjsyU59xF2ci2bWh2Y6eLd+3nPvgtCI4W5Sfn4oZM7WPu3
-         sEXXyOIadv4q3CTNo8npelX73blalFFDnXQ3ln7eYBCJ1eQanqGO6XmGkq7DuFqGW4W/
-         /pCQ==
-X-Gm-Message-State: AOAM531x0YQ8t3roHiw/rqOtgNiZBcJvVj7/8zz+dFK8IsZI2qcQ3u0l
-        cFh2K5dXdwOhWfb5mYbeKI95nBgU
-X-Google-Smtp-Source: ABdhPJwdONK+qy2MT9KLEAxSUz4V9y7aLuTT4UKFuaCjkCr8Kdd7HJZ7jRZBnRwqUiBiF8XVKITycw==
-X-Received: by 2002:a17:906:c56:: with SMTP id t22mr2068168ejf.50.1594870637956;
-        Wed, 15 Jul 2020 20:37:17 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id ce12sm4030826edb.4.2020.07.15.20.37.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jul 2020 20:37:17 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: phy: sfp: Cotsworks SFF module EEPROM fixup
-To:     Chris Healy <cphealy@gmail.com>
-Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20200714175910.1358-1-cphealy@gmail.com>
- <be18cbb8-4deb-ebdc-1097-7b1453bcf86e@gmail.com>
- <CAFXsbZpHH3rFbxG1-bGOErQZS+_3Xo8rAKDSWwgH3M7Bgj_sGw@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <0116ffea-0048-5a85-da09-fbac248b30ba@gmail.com>
-Date:   Wed, 15 Jul 2020 20:37:13 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FQ0M73wEPTnTu2JJVlbKLC6O8iQNMw8waRsk63jGz3k=;
+        b=aL1K/es1h2RwsO9qByqJt0p7W0oQjCA1ezMdfne1d6ob3mCD3Q6EJppvHF4kzDBP3G
+         yJ1QvjL+thxKQ5oHseG6xVs5UPCmbICKbFWM19F6dCuI96Htjs7DdQdj0zlqNua+YVY7
+         onNn4ukor3ZFVI1T/+vn73nrWTss4842sGlGQlN9dkMERpyckUqn+Qr1KIWhkFqUnjSq
+         tBmkmzkwWmphoI0WjL+ZKplbx+ezMqe1CBYrLgvVxRu6w5QV+SmyDH2/Ky5q7YU0HB/R
+         q2ezUQ+pW390aWrVwgRS3jaGh9q5KOY7LHnCKSxM0b4obkwRHh10J4nL1/bQe5rl1nUF
+         gPTA==
+X-Gm-Message-State: AOAM5305TIx4/0zr3WAfa4XTn2PzP26R6Ix/05Y19Z7619AwyW2jV2gi
+        A7gx1hjwDyTgf5TvH1+uNousWz6fQer/HviJlhGdHjtn4e0=
+X-Google-Smtp-Source: ABdhPJzl372zK3SnJmwLceEJqDWUfHiB4n774UEGcDsdL6KTeTkPqC+7dH2J6jXjwAK7m8tuiD2OouTAQdJOR02CjPk=
+X-Received: by 2002:a9d:4e82:: with SMTP id v2mr2739156otk.278.1594870872729;
+ Wed, 15 Jul 2020 20:41:12 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAFXsbZpHH3rFbxG1-bGOErQZS+_3Xo8rAKDSWwgH3M7Bgj_sGw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <6a31-5f0efa80-3d-68593a00@242352203>
+In-Reply-To: <6a31-5f0efa80-3d-68593a00@242352203>
+From:   Zhu Yanjun <zyjzyj2000@gmail.com>
+Date:   Thu, 16 Jul 2020 11:41:01 +0800
+Message-ID: <CAD=hENcYJwkL-mjgJd5OZ0B4tHz2Q9kuqQ8iHid=9TWgyvR=+Q@mail.gmail.com>
+Subject: Re: Bonding driver unexpected behaviour
+To:     "pbl@bestov.io" <pbl@bestov.io>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 15, 2020 at 8:49 PM pbl@bestov.io <pbl@bestov.io> wrote:
+>
+> I'm attempting to set up the bonding driver on two gretap interfaces, gretap15 and gretap16
+> but I'm observing unexpected (to me) behaviour.
+> The underlying interfaces for those two are respectively intra15 (ipv4: 10.88.15.100/24) and
+> intra16 (ipv4: 10.88.16.100/24). These two are e1000 virtual network cards, connected through
+> virtual cables. As such, I would exclude any hardware issues. As a peer, I have another Linux
+> system configured similarly (ipv4s: 10.88.15.200 on intra15, 10.88.16.200 on intra16).
+>
+> The gretap tunnels work as expected. They have the following ipv4 addresses:
+>           host           peer
+> gretap15  10.188.15.100  10.188.15.200
+> gretap16  10.188.16.100  10.188.16.200
+>
+> When not enslaved by the bond interface, I'm able to exchange packets in the tunnel using the
+> internal ip addresses.
+>
+> I then set up the bonding driver as follows:
+> # ip link add bond-15-16 type bond
+> # ip link set bond-15-16 type bond mode active-backup
+> # ip link set gretap15 down
+> # ip link set gretap16 down
+> # ip link set gretap15 master bond-15-16
+> # ip link set gretap16 master bond-15-16
+> # ip link set bond-15-16 mtu 1462
+> # ip addr add 10.42.42.100/24 dev bond-15-16
+> # ip link set bond-15-16 type bond arp_interval 100 arp_ip_target 10.42.42.200
+> # ip link set bond-15-16 up
+>
+> I do the same on the peer system, inverting the interface and ARP target IP addresses.
+>
+> At this point, IP communication using the addresses on the bond interfaces works as expected.
+> E.g.
+> # ping 10.24.24.200
+> gets responses from the other peer.
+> Using tcpdump on the other peer shows the GRE packets coming into intra15, and identical ICMP
+> packets coming through gretap15 and bond-15-16.
+>
+> If I then disconnect the (virtual) network cable of intra15, the bonding driver switches to
+> intra16, as the GRE tunnel can no longer pass packets. However, despite having primary_reselect=0,
+> when I reconnect the network cable of intra15, the driver doesn't switch back to gretap15. In fact,
+> it doesn't even attempt sending any probes through it.
+>
+> Fiddling with the cables (e.g. reconnecting intra15 and then disconnecting intra16) and/or bringing
+> the bond interface down and up usually results in the driver ping-ponging a bit between gretap15
+> and gretap16, before usually settling on gretap16 (but never on gretap15, it seems). Or,
+> sometimes, it results in the driver marking both slaves down and not doing anything ever again
+> until manual intervention (e.g. manually selecting a new active_slave, or down -> up).
+>
+> Trying to ping the gretap15 address of the peer (10.188.15.200) from the host while gretap16 is the
+> active slave results in ARP traffic being temporarily exchanged on gretap15. I'm not sure whether
+> it originates from the bonding driver, as it seems like the generated requests are the cartesian
+> product of all address couples on the network segments of gretap15 and bond-15-16 (e.g. who-has
+> 10.188.15.100 tell 10.188.15.100, who-has 10.188.15.100 tell 10.188.15.200, ..., who-hash
+> 10.42.42.200 tell 10.42.42.200).
 
+Please check this
+https://developers.redhat.com/blog/2019/05/17/an-introduction-to-linux-virtual-interfaces-tunnels/#gre
 
-On 7/15/2020 8:32 PM, Chris Healy wrote:
-> 
-> 
-> On Wed, Jul 15, 2020 at 8:10 PM Florian Fainelli <f.fainelli@gmail.com
-> <mailto:f.fainelli@gmail.com>> wrote:
-> 
-> 
-> 
->     On 7/14/2020 10:59 AM, Chris Healy wrote:
->     > Some Cotsworks SFF have invalid data in the first few bytes of the
->     > module EEPROM.  This results in these modules not being detected as
->     > valid modules.
->     >
->     > Address this by poking the correct EEPROM values into the module
->     > EEPROM when the model/PN match and the existing module EEPROM contents
->     > are not correct.
->     >
->     > Signed-off-by: Chris Healy <cphealy@gmail.com
->     <mailto:cphealy@gmail.com>>
->     > ---
->     >  drivers/net/phy/sfp.c | 44
->     +++++++++++++++++++++++++++++++++++++++++++
->     >  1 file changed, 44 insertions(+)
->     >
->     > diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
->     > index 73c2969f11a4..2737d9b6b0ae 100644
->     > --- a/drivers/net/phy/sfp.c
->     > +++ b/drivers/net/phy/sfp.c
->     > @@ -1632,10 +1632,43 @@ static int sfp_sm_mod_hpower(struct sfp
->     *sfp, bool enable)
->     >       return 0;
->     >  }
->     > 
->     > +static int sfp_cotsworks_fixup_check(struct sfp *sfp, struct
->     sfp_eeprom_id *id)
->     > +{
->     > +     u8 check;
->     > +     int err;
->     > +
->     > +     if (id->base.phys_id != SFF8024_ID_SFF_8472 ||
->     > +         id->base.phys_ext_id != SFP_PHYS_EXT_ID_SFP ||
->     > +         id->base.connector != SFF8024_CONNECTOR_LC) {
->     > +             dev_warn(sfp->dev, "Rewriting fiber module EEPROM
->     with corrected values\n");
->     > +             id->base.phys_id = SFF8024_ID_SFF_8472;
->     > +             id->base.phys_ext_id = SFP_PHYS_EXT_ID_SFP;
->     > +             id->base.connector = SFF8024_CONNECTOR_LC;
->     > +             err = sfp_write(sfp, false, SFP_PHYS_ID, &id->base, 3);
->     > +             if (err != 3) {
->     > +                     dev_err(sfp->dev, "Failed to rewrite module
->     EEPROM: %d\n", err);
->     > +                     return err;
->     > +             }
->     > +
->     > +             /* Cotsworks modules have been found to require a
->     delay between write operations. */
->     > +             mdelay(50);
->     > +
->     > +             /* Update base structure checksum */
->     > +             check = sfp_check(&id->base, sizeof(id->base) - 1);
->     > +             err = sfp_write(sfp, false, SFP_CC_BASE, &check, 1);
->     > +             if (err != 1) {
->     > +                     dev_err(sfp->dev, "Failed to update base
->     structure checksum in fiber module EEPROM: %d\n", err);
->     > +                     return err;
->     > +             }
->     > +     }
->     > +     return 0;
->     > +}
->     > +
->     >  static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
->     >  {
->     >       /* SFP module inserted - read I2C data */
->     >       struct sfp_eeprom_id id;
->     > +     bool cotsworks_sfbg;
->     >       bool cotsworks;
->     >       u8 check;
->     >       int ret;
->     > @@ -1657,6 +1690,17 @@ static int sfp_sm_mod_probe(struct sfp
->     *sfp, bool report)
->     >        * serial number and date code.
->     >        */
->     >       cotsworks = !memcmp(id.base.vendor_name, "COTSWORKS       ",
->     16);
->     > +     cotsworks_sfbg = !memcmp(id.base.vendor_pn, "SFBG", 4);
->     > +
->     > +     /* Cotsworks SFF module EEPROM do not always have valid phys_id,
->     > +      * phys_ext_id, and connector bytes.  Rewrite SFF EEPROM
->     bytes if
->     > +      * Cotsworks PN matches and bytes are not correct.
->     > +      */
->     > +     if (cotsworks && cotsworks_sfbg) {
->     > +             ret = sfp_cotsworks_fixup_check(sfp, &id);
->     > +             if (ret < 0)
->     > +                     return ret;
->     > +     }
-> 
->     So with the fixup you introduce, should we ever go into a situation
->     where:
-> 
->     EPROM extended structure checksum failure
-> 
->     is printed?
-> 
-> 
-> From what I've been told, Cotsworks had an ordering problem where both
-> the base and extended checksums were being programmed before other
-> fields were programmed during manufacturing resulting in both the base
-> and extended checksums being incorrect.  (I've also heard that Cotsworks
-> has resolved this issue late last year for all new units but units
-> manufactured before late last year will have incorrect checksums.)
-> 
-> Given that I was touching the base structure in this patch, I felt that
-> updating the base checksum was warranted.  I did not consider updating
-> the extended structure checksum as I wasn't changing anything else with
-> the extended structure.  As such, we would still have an invalid
-> extended structure checksum and get the associated error message.
+Perhaps gretap only forwards ip (with L2 header) packets.
 
-That makes sense and thanks for providing the context here!
--- 
-Florian
+Possibly "arp -s" could help to workaround this.
+
+Zhu Yanjun
+>
+> uname -a:
+> Linux fo-gw 4.19.0-9-amd64 #1 SMP Debian 4.19.118-2+deb10u1 (2020-06-07) x86_64 GNU/Linux
+> (same on peer system)
+>
+> Am I misunderstanding how the driver works? Have I made any mistakes in the configuration?
+>
+> Best regards,
+> Riccardo P. Bestetti
+>
