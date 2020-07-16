@@ -2,131 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 268C62220E7
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 12:48:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA5B42220EC
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 12:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727993AbgGPKse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 06:48:34 -0400
-Received: from mail-db8eur05on2081.outbound.protection.outlook.com ([40.107.20.81]:6113
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727940AbgGPKsd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 06:48:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PoaAKhTOToZbHJLavwVjJQvRfy3SqE9HBTBOz8PzHeL4+VcqDQonocY0eyBREDvRW8rJjVRJDqmX/MJRqwnWRCeqX+JwYtgUnEAT6dG4KsdexunIeuqpqGh4uRlZAHo4WD5owGrtd+UbkhDUqwh+iyJHUA9ROjFc7l5L/Y+nBtEZpqiiA8vxlejlge6r6+a3RMuHJbvbbvktfSr8kQqNA8HBe5RLbmJakSxV7mhdo2825rb2jcr/dK+GyDNisb2wVcX04hyY+IRe2DYTuTeaV5dB9xukBwsSV5ODK1APQchBqEXhPBq37yyF7XZ+/+jJrAup1bXTipWjAWijFsAYtQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d5AVaPYZQix8buqzjKHVhrZMLtnw8psXz7HPinnZZMY=;
- b=Ggfhk7+WwHJos3I0FV/xkpskhv7wKowIBouiR7iNvkcsnt66EhwbXW6k+ox2Xchl+GThsaTnjiEkBuR4Gsjf3dcK+me0wzcffvoMtv0/7YnncA1Io2Aen5A80n7Dfax6XYz+L8DB0H5ZY09Ltv5Y8KowxlRuXBF3OFcNrjH0TKCNbJFLNiRwfRMcuwptC3kmlKYVxIbaGgbqqIzk1nf3D5yYxB5EEuGzglEQmrqNE4UZmo1ApJtBds2okfUhCbf1pQTk8Qbmy0UMqzxDM4jPBNQ+CVXL//WOZGnMfdM/Klo4tXlfGah+izOJtGHG0qbewhEsVZvVw7V6+h/5OaqFYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d5AVaPYZQix8buqzjKHVhrZMLtnw8psXz7HPinnZZMY=;
- b=kUa+Oxghjptbq97bG6JtXfOidCC5EAr6uZ409S/hK7GU8QygdtyOckTYBR6gbROqf4gXRqmKeJESEnK4z+hkHQLm3KLtOspz+q/WsIsni9nR7tH4CS0+IQrYArutQbb8X9waeGf4540PBKiM4EbTEmlxozROfEs+sMpH672Ua38=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR0502MB2940.eurprd05.prod.outlook.com (2603:10a6:3:e0::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3174.22; Thu, 16 Jul 2020 10:48:26 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6%7]) with mapi id 15.20.3174.026; Thu, 16 Jul 2020
- 10:48:26 +0000
-From:   Petr Machata <petrm@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Petr Machata <petrm@mellanox.com>
-Subject: [PATCH iproute2-next 2/2] tc: q_red: Implement has_block for RED
-Date:   Thu, 16 Jul 2020 13:48:00 +0300
-Message-Id: <fec7e409f07da9e90423135ed6679d2481235d59.1594896187.git.petrm@mellanox.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1594896187.git.petrm@mellanox.com>
-References: <cover.1594896187.git.petrm@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR03CA0046.eurprd03.prod.outlook.com (2603:10a6:208::23)
- To HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22)
+        id S1727946AbgGPKuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 06:50:14 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:41499 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726898AbgGPKuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 06:50:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594896611;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b1gMoXuEBwCohMO/2xIeqx9uuqCaWy4LMCiJ13+Zc+8=;
+        b=En3j60pUOqqf/m2Y7sU6w2irpnZGJohxzf/bi6+b68ejMFiURp/sDBumSKTn+qBBFcw9UL
+        g0aMsm3wOSaQzlaxWwJiDQwJDVVE4M0EdDOGa7Q05qS45hjRXcgJvKmibqKOP1IeSOWj12
+        yC9fMSqv1X64f/4sEk7tu50Ma11SfIs=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-200-MJTnF7H6N8GTCAfw2oXYzw-1; Thu, 16 Jul 2020 06:50:09 -0400
+X-MC-Unique: MJTnF7H6N8GTCAfw2oXYzw-1
+Received: by mail-io1-f69.google.com with SMTP id z65so3331121iof.13
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 03:50:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=b1gMoXuEBwCohMO/2xIeqx9uuqCaWy4LMCiJ13+Zc+8=;
+        b=H4fz4op/Ut7i/amFc3dHhlVzCvcQLo15ZHJRe7q6/yzTGONVSInPUWQkPPmCc+lEgP
+         Xqu+7IWQO8DcCFVwP+kgPITXup7LcHPQhmkXqg4PrV8I5m9/TlZVMqgDPDKtID8wldvP
+         pHwFfMUpDVsRgyrxeOPbVIdbzD7fsIgM97S9UFslf7scZfiO0quzyUPubKTCQwlll97I
+         lcNYXVPfJSm1B6X233/2AAu/KOlgy2FS1cKPIAzfxei2XC1A5g7wlZK6x4ZmoILkeSs6
+         AKWHQBQBqxNhRd0XihqaBpWiW7tCwlGchCt+d+HmFjMY4kZi5ILVWMccCA0tt2MZBKo+
+         p8aw==
+X-Gm-Message-State: AOAM530Hx061a8xxEiLBsFJyqpdD0yV8aIJVTYl2YWu051/RhKYxdk8q
+        a/bnb3rF45sCd5eu19laFoyK2osq52kwHdMSkewSctguWbJQKiXuMOxY52Dt5rnzthsjIppbquI
+        Lmb0MHdZutyCTlYMj
+X-Received: by 2002:a92:c689:: with SMTP id o9mr4016034ilg.302.1594896608909;
+        Thu, 16 Jul 2020 03:50:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy1zLNYUo4Wd4ijr45ZomUI+kOWdjdW1J1naK8ousx3hWzgKatPBp0on0UpzHek3akYBNABZg==
+X-Received: by 2002:a92:c689:: with SMTP id o9mr4016010ilg.302.1594896608606;
+        Thu, 16 Jul 2020 03:50:08 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id m2sm2506893iln.1.2020.07.16.03.50.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2020 03:50:07 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 302EC1804F0; Thu, 16 Jul 2020 12:50:05 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 3/6] bpf: support attaching freplace programs to multiple attach points
+In-Reply-To: <20200715204406.vt64vgvzsbr6kolm@ast-mbp.dhcp.thefacebook.com>
+References: <159481853923.454654.12184603524310603480.stgit@toke.dk> <159481854255.454654.15065796817034016611.stgit@toke.dk> <20200715204406.vt64vgvzsbr6kolm@ast-mbp.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 16 Jul 2020 12:50:05 +0200
+Message-ID: <87mu3zentu.fsf@toke.dk>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by AM0PR03CA0046.eurprd03.prod.outlook.com (2603:10a6:208::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17 via Frontend Transport; Thu, 16 Jul 2020 10:48:25 +0000
-X-Mailer: git-send-email 2.20.1
-X-Originating-IP: [37.142.13.130]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 2f19ae18-86a5-4ef4-6c64-08d82975c49a
-X-MS-TrafficTypeDiagnostic: HE1PR0502MB2940:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR0502MB294043AE3CEC93BF2AD7F1F4DB7F0@HE1PR0502MB2940.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2733;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QEamh4VJbKsk2gHqME/XNbKecreZ4soFEaQEuxhhiYzMS1S0HQJ2qZCuTJniMUtJYo8p8RtJ/My/eyTvAavGxo/0O4QRkgBAcdD6M2WUQvAh84Nk2Ck0dKG74WF62uNLLfP+CxR8eut621jYnS6GoiZij/dyvza7JHHjD1K0VqHKNieNiO+llRk84LB9JW+qjB85duyLsmAZhdpgnJwZclnwsJx6+fLTX6MfPYPDhrn/mhFlcnpL0tR2NlauDY+BOjd2FAwYG8v8cMkUuEeFzoJQPXhDUFUB/QcL/Brr4dkFKbB2Ei1Wn9YTJxQ7EW7ITbqmqlpKrNKDmpozL5iRYw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(136003)(346002)(396003)(39860400002)(4744005)(83380400001)(6916009)(4326008)(5660300002)(8936002)(478600001)(66556008)(6486002)(16526019)(52116002)(6666004)(36756003)(66946007)(86362001)(8676002)(6506007)(107886003)(186003)(2616005)(66476007)(26005)(2906002)(6512007)(54906003)(956004)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: k6MSUkui5net9ZtaNpnNQLAVH8KxgSbyt7V01hF9mqC0mPTsnr434AUU2jklDIpo+gxLXFAxcFEQbePpFzT6ZL2JzCiYTx7m07CtpHmkaBHUEEi5lRSPrYqTlYoMHeCVSvmr2GaYguxqMXrOwB1qjsyKSzTir/THzprzDYjsNXBRVOgDJ+ebjOm+sRw0D6J3F5IeYHfAXZ6Il4Td8JByUxveYncgct5SpSMG3XLVr7NBQ78bIOL9ahbIEOhUPzPX+Q8D7+gxz/PebdeuYEgSgExXWxY1gFF6PsKXyl/jxB4+ADU+IXjCtPGDg0tAsoQnIFcaysTw7sUW2D1lkg2noCYr6QnpweSwkzwpeb9deo7f00hI/RdrUvNnV8mEB7mnsZQaYrh31bVBoy7faTOdi7WF+lA+dHJRWrRlXdY69OGGj1lLVHfS6FPduHDui65KDhpXjpgr58Q/ybadqNMY0O4s7ziJDalzb5Pw6fGoZHzQpoCc0kBawnYvktPnPdwF
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f19ae18-86a5-4ef4-6c64-08d82975c49a
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2020 10:48:26.2780
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tOApMwC2vAVCsmw3eUp75KjLuIBwtH7O50yjbQOH83lcxTfCZ6UVFA1PaD/ymPfNbP9fJVoXzM8OF/1rJjT3nw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0502MB2940
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order for "tc filter show block X" to find a given block, implement the
-has_block callback.
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-Signed-off-by: Petr Machata <petrm@mellanox.com>
----
- tc/q_red.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+> On Wed, Jul 15, 2020 at 03:09:02PM +0200, Toke H=C3=83=C6=92=C3=82=C2=B8i=
+land-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
+>>=20=20
+>> +	if (tgt_prog_fd) {
+>> +		/* For now we only allow new targets for BPF_PROG_TYPE_EXT */
+>> +		if (prog->type !=3D BPF_PROG_TYPE_EXT ||
+>> +		    !btf_id) {
+>> +			err =3D -EINVAL;
+>> +			goto out_put_prog;
+>> +		}
+>> +		tgt_prog =3D bpf_prog_get(tgt_prog_fd);
+>> +		if (IS_ERR(tgt_prog)) {
+>> +			err =3D PTR_ERR(tgt_prog);
+>> +			tgt_prog =3D NULL;
+>> +			goto out_put_prog;
+>> +		}
+>> +
+>> +	} else if (btf_id) {
+>> +		err =3D -EINVAL;
+>> +		goto out_put_prog;
+>> +	} else {
+>> +		btf_id =3D prog->aux->attach_btf_id;
+>> +		tgt_prog =3D prog->aux->linked_prog;
+>> +		if (tgt_prog)
+>> +			bpf_prog_inc(tgt_prog); /* we call bpf_prog_put() on link release */
+>
+> so the first prog_load cmd will beholding the first target prog?
+> This is complete non starter.
+> You didn't mention such decision anywhere.
+> The first ext prog will attach to the first dispatcher xdp prog,
+> then that ext prog will multi attach to second dispatcher xdp prog and
+> the first dispatcher prog will live in the kernel forever.
 
-diff --git a/tc/q_red.c b/tc/q_red.c
-index 97856f03..dfef1bf8 100644
---- a/tc/q_red.c
-+++ b/tc/q_red.c
-@@ -264,10 +264,27 @@ static int red_print_xstats(struct qdisc_util *qu, FILE *f, struct rtattr *xstat
- 	return 0;
- }
- 
-+static int red_has_block(struct qdisc_util *qu, struct rtattr *opt, __u32 block_idx, bool *p_has)
-+{
-+	struct rtattr *tb[TCA_RED_MAX + 1];
-+
-+	if (opt == NULL)
-+		return 0;
-+
-+	parse_rtattr_nested(tb, TCA_RED_MAX, opt);
-+
-+	qevents_init(qevents);
-+	if (qevents_read(qevents, tb))
-+		return -1;
-+
-+	*p_has = qevents_have_block(qevents, block_idx);
-+	return 0;
-+}
- 
- struct qdisc_util red_qdisc_util = {
- 	.id		= "red",
- 	.parse_qopt	= red_parse_opt,
- 	.print_qopt	= red_print_opt,
- 	.print_xstats	= red_print_xstats,
-+	.has_block	= red_has_block,
- };
--- 
-2.20.1
+Huh, yeah, you're right that's no good. Missing that was a think-o on my
+part, sorry about that :/
+
+> That's not what we discussed back in April.
+
+No, you mentioned turning aux->linked_prog into a list. However once I
+started looking at it I figured it was better to actually have all this
+(the trampoline and ref) as part of the bpf_link structure, since
+logically they're related.
+
+But as you pointed out, the original reference sticks. So either that
+needs to be removed, or I need to go back to the 'aux->linked_progs as a
+list' idea. Any preference?
+
+>> +	}
+>> +	err =3D bpf_check_attach_target(NULL, prog, tgt_prog, btf_id,
+>> +				      &fmodel, &addr, NULL, NULL);
+>
+> This is a second check for btf id match?
+> What's the point? The first one was done at load time.
+> When tgt_prog_fd/tgt_btf_id are zero there is no need to recheck.
+
+It's not strictly needed if tgt_prog/btf_id is not set, but it doesn't
+hurt either; and it was convenient to reuse it to resolve the func addr
+for the trampoline + it means everything goes through the same code path.
+
+> I really hope I'm misreading these patches, because they look very raw.
+
+I don't think you are. I'll admit to them being a bit raw, but this was
+as far as I got and since I'll be away for three weeks I figured it was
+better to post them in case anyone else was interested in playing with
+it.
+
+So if anyone wants to pick these patches up while I'm gone, feel free;
+otherwise, I'll get back to it after my vacation :)
+
+-Toke
 
