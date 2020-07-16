@@ -2,144 +2,398 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57FD7221B7E
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 06:42:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96D3E221B82
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 06:42:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726125AbgGPEm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 00:42:28 -0400
-Received: from mail-eopbgr1410107.outbound.protection.outlook.com ([40.107.141.107]:19595
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725844AbgGPEm0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 00:42:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SIjgIw/++zk6fGfjfHjnVdbXDgM+cmAh4vG/wTAApGZLquU+42lwKEdgdRsrqqhjCBueLq/erWhX0IzePddeMwbSiEKt6q+JpPztSdJA3+ViBmJNvKmLkiUHZ+Rgk6eBvK929gwHyC5SD3krDq4Srjh9yQ/3AGIaGMgzIdXzxjTfMYqon1KQ9wvgGIuhHv4d+Q/oNJWOQMLullok+f+qhgJlp+JqVJY0veuB/QxboozvRCunWuMO37IaAJFWIPmlslx+XiV6n/CxuVbVPfRqUV1H3Zmvw6iJc46eJwXeyeA9TeQ6bwINo3R7N0hOPZuVCaADsx7Pv/pacRoNxOJldw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7DVXuK7GGEsLWJlaOFlMVK7TjEgvAtSeGuZSvF7Sxeo=;
- b=fVUBFBXDvZ+zsperyvp9sRIkTCCLjcd1Tor9JQQ6j2T8WqjYcUcBQVLhzwImphhHR0dLOcGSRoxl3rVGPRiM8OLIzXlmzFTGs2rfsN7W37JYyhqWev4y68qAkSQvi4jrG/YYaz5vz4Q03eM7xGIDVrfC4LKjdH6d10jxBmG+m6tccNJ9jw9cEV7sPhERFQYO0I0OFajvs46p/2upeAu51pHdCkMxFeaFLUS9TCVrZshAUIDPvpmnm8YeTJSMC9zbp0azY8cZcUaaaagaCMh+a+VBCUCGuvzVTas/L8HeQEdHoPHUULpMfjXRy7x/QO/olMxAp1p8dNgCEZR75IzQkA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
+        id S1726210AbgGPEmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 00:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725270AbgGPEmx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 00:42:53 -0400
+Received: from mail-vk1-xa43.google.com (mail-vk1-xa43.google.com [IPv6:2607:f8b0:4864:20::a43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16D3C061755;
+        Wed, 15 Jul 2020 21:42:53 -0700 (PDT)
+Received: by mail-vk1-xa43.google.com with SMTP id s192so1013517vkh.3;
+        Wed, 15 Jul 2020 21:42:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7DVXuK7GGEsLWJlaOFlMVK7TjEgvAtSeGuZSvF7Sxeo=;
- b=KEtm/NyGi5hK2HI9ojd+4gDXDjKMIKzBX9A6TTFPNS2MJFutbsUn8J1ixbc6kGNnXLoH1mg6zj/fzUEvgY6zidBeBv29UfIZ4n5HmLq8Q+Y7g0jsuLeLoed9tqcPP1v2fcqFAhzfR7+MT7OYuhkgvNSRcMIkF+6FCgkYKuIT8Hw=
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
- by TYAPR01MB2671.jpnprd01.prod.outlook.com (2603:1096:404:8d::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Thu, 16 Jul
- 2020 04:42:21 +0000
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::9083:6001:8090:9f3]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::9083:6001:8090:9f3%6]) with mapi id 15.20.3195.017; Thu, 16 Jul 2020
- 04:42:21 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/9] iommu/ipmmu-vmsa: Hook up R8A774E1 DT matching code
-Thread-Topic: [PATCH 2/9] iommu/ipmmu-vmsa: Hook up R8A774E1 DT matching code
-Thread-Index: AQHWWV2MbTXg+hkXBUeG2IKsFpTIWqkGuXGAgAAF1ACAAAM3gIAALMKggAAVtICAAp3DYA==
-Date:   Thu, 16 Jul 2020 04:42:21 +0000
-Message-ID: <TY2PR01MB3692CFA8B51F91FB9735026FD87F0@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594676120-5862-3-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdV4zzrk_=-2Cmgq8=PKTeU457iveJ58gYekJ-Z8SXqaCQ@mail.gmail.com>
- <CA+V-a8tB0mA17f51GMQQ-Cj_CUXze_JjTahrpoAtmwuOFHQV6g@mail.gmail.com>
- <CAMuHMdXM3qf266exJtJrN0XAogEsJoM-k3FON9CjX+stLpuMFA@mail.gmail.com>
- <TY2PR01MB3692A868DD4E67D770C610E3D8610@TY2PR01MB3692.jpnprd01.prod.outlook.com>
- <CAMuHMdUry12MnLvVgmd7NJ+Gv4mA86qKKfsQobP1o-ohzKm=RQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdUry12MnLvVgmd7NJ+Gv4mA86qKKfsQobP1o-ohzKm=RQ@mail.gmail.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: linux-m68k.org; dkim=none (message not signed)
- header.d=none;linux-m68k.org; dmarc=none action=none header.from=renesas.com;
-x-originating-ip: [240f:60:5f3e:1:999:df6f:dcad:bd95]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 86c67283-184a-47a2-e326-08d82942a0aa
-x-ms-traffictypediagnostic: TYAPR01MB2671:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <TYAPR01MB26710915A5EDF2C69467A2FBD87F0@TYAPR01MB2671.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1169;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: M4RkfSw2dSVC0Ylu4gbH8smqKZ1JZ5nYHnfx1DAInZC9j4sYADG5ObrAdZAMl3mtRkvB7OprMG3AJKRWYCSPyQ76yK9OCIEOOlbiYIOrq89jGyYAy/jhjFq2FXw0Y5HLUBvQcsPZ/mYMRGLiT46/sfCYFcll+3Gubt0TmwmaB2aGu/S0XpTlg0RhgJ7Rb1TdK3TI418OVdYSeJ5R8KucXEsBTBqlayvpdE+ZZoc7Qa8buA03KhcTTppzm2WnfGi5oXIg2sKr1F5lrMuvWH5v6V8zKkJ/WgfQt3E40jcDGXOz2iKZgN6XI6kqGMn78a3uE4d0EKM+7u+Z/+OOusn5GfT1zcfL5ijZuG/mREODedYd6NLBAdpzpma+L/m39peEmYPJaiub+wHgYbhjLKyW3A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(136003)(396003)(366004)(376002)(346002)(316002)(6916009)(76116006)(86362001)(66946007)(66446008)(71200400001)(7416002)(2906002)(66556008)(9686003)(54906003)(55016002)(64756008)(66476007)(8676002)(7696005)(4326008)(33656002)(5660300002)(52536014)(6506007)(53546011)(186003)(8936002)(478600001)(52103002)(158003001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: BZQ062kPob81tYpmM06yPo4OBfHiNnEJ8giVl1UFBgDYuTwdu7M5YZDWvNT5KJeG6pXVCLn55g5mkAYx36RmQ7E3Gjx0OnEPMaRdS0prhfvpi0cgwdSaiEVWnAC4QTLXzKh26CxPzOli4cH3RtaNZdNwfe+npuKrsc06/RtMLsQR4kwvpf2toLSEOcDp5moi0OQtvgABmYWwofNEgMXYEF/oYpnzfV09YU9ZZEukQ6T/6g6iuHLIHt5QzMXKrLXpvmnTfQ8tN4am/H9U7lLW/hjrsdZV36OrXh4G0AcTPjUY5d/TPBjG2cgkknHTbITbejmpl82xQAXVtMSnMuQA3WiLE3bIFbixhQkOIzZu9POrgGan7bls5VRycI3Q4itPixUwerBT064vBVH33/bSjNMwhaX3LJFXuRihuu86Ugr+FoBp+MqV90ODVcSmB2p6PV0SqVX9n8xy6+xOWDIvAAgjJPP0AqjrKgMJ2aTEhjmriXq/GH+8rMFedIHReEj5RQV62ow+H7Q9pvp1xFO06bTOo1sRUn5qDkbQS6GdVTE=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=C90Ld5hDn2UDc5lBFaloxSrsSLODHsNCzSpkpNrIeCE=;
+        b=gBAb3yq7VpvF5+C/ITm0DeWw3h4XOUUiUTUb6E5/d/KK/8GbWUW5TQgPArmcjGH2Hm
+         7/qtMWIlBKpUusJoV7VFrIXZRUQ2sURK4j8dWOvEHwsUMJBhTUlozrxe1vXgcy8ulOa0
+         Wk0EDRKMu+kH/rZ99irhk0tGbazPiVBdWnl78Ors6YMHvqlOMbfAaAKlrAFQHPih8lfp
+         1TjB2cnRG3g5HnsHuZ3rJ7ddvoV/7sJ+Z5jiD/Iy55C2dHOH+CmqW8Wc3FLGZHYYBu/A
+         UDMGLcLU92yz3t0XUqjS9MZ90Vp8vOSlKL/L4+MJy0wmOQbUsgkJBJoQM1v0gOtBT5cA
+         SgyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=C90Ld5hDn2UDc5lBFaloxSrsSLODHsNCzSpkpNrIeCE=;
+        b=ec41sXBlN+EYnE3FKX06rENuONH6vCVLQx+fcvUjqGymUtE+1jXSyUW5iglMJCYSLR
+         L9bsGaAzgfTn/ZWVYODJbrbsAp3D1ZC0RiNjH1rHTrTA01A9T2ojhAzWPiN6R/pPwPVC
+         sR72HabJFvBigaTvNCMiOi8HNeCaxkisbkOOopOX4fIcR6g+QOh8CaQx1L7t4jidSi7Z
+         b/7PLz6+cozqWe+7Q44xDqYIlHvyBkaRbJgBMHXCfSISeaXg4rZYSDVFe2Cix3l6SlKV
+         E5QxvdLjuUuWpmLarz6IyKYb+EF7I8JAqPaRkwsQaMLO0cwGwG2CHJuuLpg8Fn6nQ6LN
+         ms0Q==
+X-Gm-Message-State: AOAM530m/KRJSZY4dSkZSoeKGVfvxwhnr2xxkCClPM6cEYgw+96EYGmG
+        dkiggWKkzgIQqrRs7+igY4qk90xlD6YDmvs8WhS+k82/MmlnFg==
+X-Google-Smtp-Source: ABdhPJwny27/b/zWAAAzFYMp7mrI6fupUD4JNJOacgoqcnT1lvvb3f1fRCrcOewFPd26cPb2kMmBX5tw8UIXq+bC0zY=
+X-Received: by 2002:a1f:e2c4:: with SMTP id z187mr1926904vkg.14.1594874572737;
+ Wed, 15 Jul 2020 21:42:52 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86c67283-184a-47a2-e326-08d82942a0aa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jul 2020 04:42:21.1420
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7z1K7SMbli5BPYc4Xt56Di64XGWfm2KzcRHuABMz1c2N0cl7vXzA/k6lasM5dL9KvKFVlSeE6tSb//WFbZoNg66zzlUpdTVp/8P+GlxDkXtAc3LE6MB0kjUCd+65XFIQ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB2671
+References: <1594390602-7635-1-git-send-email-magnus.karlsson@intel.com>
+ <1594390602-7635-5-git-send-email-magnus.karlsson@intel.com> <0f2ff47a-d1ce-78d3-bb96-6e5bc60dc04f@mellanox.com>
+In-Reply-To: <0f2ff47a-d1ce-78d3-bb96-6e5bc60dc04f@mellanox.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Thu, 16 Jul 2020 06:42:44 +0200
+Message-ID: <CAJ8uoz2BqQQMfz1Q=1CHxx7DS1RkYM0REp4kaTsq4mftq7L-eQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 04/14] xsk: move fill and completion rings to
+ buffer pool
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>, jeffrey.t.kirsher@intel.com,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        cristian.dumitrescu@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogVHVlc2Rh
-eSwgSnVseSAxNCwgMjAyMCA5OjQwIFBNDQo+IA0KPiBIaSBTaGltb2RhLXNhbiwNCj4gDQo+IE9u
-IFR1ZSwgSnVsIDE0LCAyMDIwIGF0IDE6NDIgUE0gWW9zaGloaXJvIFNoaW1vZGENCj4gPHlvc2hp
-aGlyby5zaGltb2RhLnVoQHJlbmVzYXMuY29tPiB3cm90ZToNCj4gPiA+IEZyb206IEdlZXJ0IFV5
-dHRlcmhvZXZlbiwgU2VudDogVHVlc2RheSwgSnVseSAxNCwgMjAyMCA1OjQyIFBNDQo+ID4gPiBP
-biBUdWUsIEp1bCAxNCwgMjAyMCBhdCAxMDozMCBBTSBMYWQsIFByYWJoYWthcg0KPiA+ID4gPHBy
-YWJoYWthci5jc2VuZ2dAZ21haWwuY29tPiB3cm90ZToNCj4gPiA+ID4gT24gVHVlLCBKdWwgMTQs
-IDIwMjAgYXQgOTowOSBBTSBHZWVydCBVeXR0ZXJob2V2ZW4gPGdlZXJ0QGxpbnV4LW02OGsub3Jn
-PiB3cm90ZToNCj4gPiA+ID4gPiBPbiBNb24sIEp1bCAxMywgMjAyMCBhdCAxMTozNSBQTSBMYWQg
-UHJhYmhha2FyDQo+ID4gPiA+IEFsc28gdGhlIHJlY2VudCBwYXRjaCB0byBhZGQNCj4gPiA+ID4g
-InI4YTc3OTYxIiBqdXN0IGFkZHMgdG8gc29jX3JjYXJfZ2VuM193aGl0ZWxpc3QuDQo+ID4gPg0K
-PiA+ID4gT29wcywgY29tbWl0IDE3ZmUxNjE4MTYzOTgwMWIgKCJpb21tdS9yZW5lc2FzOiBBZGQg
-c3VwcG9ydCBmb3IgcjhhNzc5NjEiKQ0KPiA+ID4gZGlkIGl0IHdyb25nLCB0b28uDQo+ID4NCj4g
-PiBUaGFuayB5b3UgZm9yIHRoZSBwb2ludCBpdCBvdXQuIFdlIHNob3VsZCBhZGQgcjhhNzc5NjEg
-dG8gdGhlIHNvY19yY2FyX2dlbjNbXS4NCj4gPiBIb3dldmVyLCBJIGRvbid0IGtub3cgd2h5IEkg
-Y291bGQgbm90IHJlYWxpemUgdGhpcyBpc3N1ZS4uLg0KPiA+IFNvLCBJIGludmVzdGlnYXRlZCB0
-aGlzIGEgbGl0dGxlIGFuZCB0aGVuLCBJSVVDLCBnbG9iX21hdGNoKCkgd2hpY2gNCj4gPiBzb2Nf
-ZGV2aWNlX21hdGNoKCkgdXNlcyBzZWVtcyB0byByZXR1cm4gdHJ1ZSwgaWYgKnBhdCA9ICJyOGE3
-Nzk2IiBhbmQgKnN0ciA9ICJyOGE3Nzk2MSIuDQo+IA0KPiBBcmUgeW91IHN1cmUgYWJvdXQgdGhp
-cz8NCg0KSSdtIHZlcnkgc29ycnkuIEkgY29tcGxldGVseSBtaXN1bmRlcnN0b29kIHRoZSBnbG9i
-X21hdGNoKCkgYmVoYXZpb3IuDQpBbmQsIG5vdyBJIHVuZGVyc3Rvb2Qgd2h5IHRoZSBjdXJyZW50
-IGNvZGUgY2FuIHVzZSBJUE1NVSBvbiByOGE3Nzk2MS4uLg0KIyBTaW5jZSB0aGUgZmlyc3Qgc29j
-X2RldmljZV9tYXRjaCgpIHdpbGwgcmV0dXJuIGZhbHNlLCBpcG1tdV9zbGF2ZV93aGl0ZWxpc3Qo
-KQ0KIyB3aWxsIHJldHVybiB0cnVlIGFuZCB0aGVuIHRoZSBpcG1tdV9vZl94bGF0ZSgpIHdpbGwg
-YmUgc3VjY2VlZGVkLg0KDQo+IEkgZW5hYmxlZCBDT05GSUdfR0xPQl9TRUxGVEVTVCwgYW5kIGds
-b2J0ZXN0IHN1Y2NlZWRlZC4NCj4gSXQgZG9lcyB0ZXN0IGdsb2JfbWF0Y2goImEiLCAiYWEiKSwg
-d2hpY2ggaXMgYSBzaW1pbGFyIHRlc3QuDQo+IA0KPiBUbyBiZSAxMDAlIHN1cmUsIEkgYWRkZWQ6
-DQo+IA0KPiAtLS0gYS9saWIvZ2xvYnRlc3QuYw0KPiArKysgYi9saWIvZ2xvYnRlc3QuYw0KPiBA
-QCAtNTksNiArNTksNyBAQCBzdGF0aWMgY2hhciBjb25zdCBnbG9iX3Rlc3RzW10gX19pbml0Y29u
-c3QgPQ0KPiAgICAgICAgICIxIiAiYVwwIiAiYVwwIg0KPiAgICAgICAgICIwIiAiYVwwIiAiYlww
-Ig0KPiAgICAgICAgICIwIiAiYVwwIiAiYWFcMCINCj4gKyAgICAgICAiMCIgInI4YTc3OTZcMCIg
-InI4YTc3OTYxXDAiDQo+ICAgICAgICAgIjAiICJhXDAiICJcMCINCj4gICAgICAgICAiMSIgIlww
-IiAiXDAiDQo+ICAgICAgICAgIjAiICJcMCIgImFcMCINCj4gDQo+IGFuZCBpdCBzdGlsbCBzdWNj
-ZWVkZWQuDQoNCkknbSB2ZXJ5IHNvcnJ5IHRvIHdhc3RlIHlvdXIgdGltZSBhYm91dCB0aGlzLi4u
-DQoNCkJlc3QgcmVnYXJkcywNCllvc2hpaGlybyBTaGltb2RhDQoNCg==
+On Wed, Jul 15, 2020 at 11:29 AM Maxim Mikityanskiy
+<maximmi@mellanox.com> wrote:
+>
+> On 2020-07-10 17:16, Magnus Karlsson wrote:
+> > Move the fill and completion rings from the umem to the buffer
+> > pool. This so that we in a later commit can share the umem
+> > between multiple HW queue ids. In this case, we need one fill and
+> > completion ring per queue id. As the buffer pool is per queue id
+> > and napi id this is a natural place for it and one umem
+> > struture can be shared between these buffer pools.
+> >
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > ---
+> >   include/net/xdp_sock.h      |  4 ++--
+> >   include/net/xsk_buff_pool.h |  2 +-
+> >   net/xdp/xdp_umem.c          | 15 ---------------
+> >   net/xdp/xsk.c               | 44 ++++++++++++++++++++++++--------------------
+> >   net/xdp/xsk_buff_pool.c     | 20 +++++++++++++++-----
+> >   net/xdp/xsk_diag.c          | 10 ++++++----
+> >   6 files changed, 48 insertions(+), 47 deletions(-)
+> >
+> > diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+> > index b9bb118..5eb59b7 100644
+> > --- a/include/net/xdp_sock.h
+> > +++ b/include/net/xdp_sock.h
+> > @@ -18,8 +18,6 @@ struct xsk_queue;
+> >   struct xdp_buff;
+> >
+> >   struct xdp_umem {
+> > -     struct xsk_queue *fq;
+> > -     struct xsk_queue *cq;
+> >       u64 size;
+> >       u32 headroom;
+> >       u32 chunk_size;
+> > @@ -73,6 +71,8 @@ struct xdp_sock {
+> >       struct list_head map_list;
+> >       /* Protects map_list */
+> >       spinlock_t map_list_lock;
+> > +     struct xsk_queue *fq_tmp; /* Only as tmp storage before bind */
+> > +     struct xsk_queue *cq_tmp; /* Only as tmp storage before bind */
+> >   };
+> >
+> >   #ifdef CONFIG_XDP_SOCKETS
+> > diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+> > index ff8592d5..0423303 100644
+> > --- a/include/net/xsk_buff_pool.h
+> > +++ b/include/net/xsk_buff_pool.h
+> > @@ -30,6 +30,7 @@ struct xdp_buff_xsk {
+> >
+> >   struct xsk_buff_pool {
+> >       struct xsk_queue *fq;
+> > +     struct xsk_queue *cq;
+> >       struct list_head free_list;
+> >       dma_addr_t *dma_pages;
+> >       struct xdp_buff_xsk *heads;
+> > @@ -57,7 +58,6 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+> >                                               struct xdp_umem *umem);
+> >   int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
+> >                 u16 queue_id, u16 flags);
+> > -void xp_set_fq(struct xsk_buff_pool *pool, struct xsk_queue *fq);
+> >   void xp_destroy(struct xsk_buff_pool *pool);
+> >   void xp_release(struct xdp_buff_xsk *xskb);
+> >   void xp_get_pool(struct xsk_buff_pool *pool);
+> > diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+> > index f290345..7d86a63 100644
+> > --- a/net/xdp/xdp_umem.c
+> > +++ b/net/xdp/xdp_umem.c
+> > @@ -85,16 +85,6 @@ static void xdp_umem_release(struct xdp_umem *umem)
+> >
+> >       ida_simple_remove(&umem_ida, umem->id);
+> >
+> > -     if (umem->fq) {
+> > -             xskq_destroy(umem->fq);
+> > -             umem->fq = NULL;
+> > -     }
+> > -
+> > -     if (umem->cq) {
+> > -             xskq_destroy(umem->cq);
+> > -             umem->cq = NULL;
+> > -     }
+> > -
+> >       xdp_umem_unpin_pages(umem);
+> >
+> >       xdp_umem_unaccount_pages(umem);
+> > @@ -278,8 +268,3 @@ struct xdp_umem *xdp_umem_create(struct xdp_umem_reg *mr)
+> >
+> >       return umem;
+> >   }
+> > -
+> > -bool xdp_umem_validate_queues(struct xdp_umem *umem)
+> > -{
+> > -     return umem->fq && umem->cq;
+> > -}
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index caaf298..b44b150 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -36,7 +36,7 @@ static DEFINE_PER_CPU(struct list_head, xskmap_flush_list);
+> >   bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs)
+> >   {
+> >       return READ_ONCE(xs->rx) &&  READ_ONCE(xs->umem) &&
+> > -             READ_ONCE(xs->umem->fq);
+> > +             (xs->pool->fq || READ_ONCE(xs->fq_tmp));
+> >   }
+> >
+> >   void xsk_set_rx_need_wakeup(struct xsk_buff_pool *pool)
+> > @@ -46,7 +46,7 @@ void xsk_set_rx_need_wakeup(struct xsk_buff_pool *pool)
+> >       if (umem->need_wakeup & XDP_WAKEUP_RX)
+> >               return;
+> >
+> > -     umem->fq->ring->flags |= XDP_RING_NEED_WAKEUP;
+> > +     pool->fq->ring->flags |= XDP_RING_NEED_WAKEUP;
+> >       umem->need_wakeup |= XDP_WAKEUP_RX;
+> >   }
+> >   EXPORT_SYMBOL(xsk_set_rx_need_wakeup);
+> > @@ -76,7 +76,7 @@ void xsk_clear_rx_need_wakeup(struct xsk_buff_pool *pool)
+> >       if (!(umem->need_wakeup & XDP_WAKEUP_RX))
+> >               return;
+> >
+> > -     umem->fq->ring->flags &= ~XDP_RING_NEED_WAKEUP;
+> > +     pool->fq->ring->flags &= ~XDP_RING_NEED_WAKEUP;
+> >       umem->need_wakeup &= ~XDP_WAKEUP_RX;
+> >   }
+> >   EXPORT_SYMBOL(xsk_clear_rx_need_wakeup);
+> > @@ -254,7 +254,7 @@ static int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp,
+> >   static void xsk_flush(struct xdp_sock *xs)
+> >   {
+> >       xskq_prod_submit(xs->rx);
+> > -     __xskq_cons_release(xs->umem->fq);
+> > +     __xskq_cons_release(xs->pool->fq);
+> >       sock_def_readable(&xs->sk);
+> >   }
+> >
+> > @@ -297,7 +297,7 @@ void __xsk_map_flush(void)
+> >
+> >   void xsk_tx_completed(struct xsk_buff_pool *pool, u32 nb_entries)
+> >   {
+> > -     xskq_prod_submit_n(pool->umem->cq, nb_entries);
+> > +     xskq_prod_submit_n(pool->cq, nb_entries);
+> >   }
+> >   EXPORT_SYMBOL(xsk_tx_completed);
+> >
+> > @@ -329,7 +329,7 @@ bool xsk_tx_peek_desc(struct xsk_buff_pool *pool, struct xdp_desc *desc)
+> >                * if there is space in it. This avoids having to implement
+> >                * any buffering in the Tx path.
+> >                */
+> > -             if (xskq_prod_reserve_addr(umem->cq, desc->addr))
+> > +             if (xskq_prod_reserve_addr(pool->cq, desc->addr))
+> >                       goto out;
+> >
+> >               xskq_cons_release(xs->tx);
+> > @@ -367,7 +367,7 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+> >       unsigned long flags;
+> >
+> >       spin_lock_irqsave(&xs->tx_completion_lock, flags);
+> > -     xskq_prod_submit_addr(xs->umem->cq, addr);
+> > +     xskq_prod_submit_addr(xs->pool->cq, addr);
+> >       spin_unlock_irqrestore(&xs->tx_completion_lock, flags);
+> >
+> >       sock_wfree(skb);
+> > @@ -411,7 +411,7 @@ static int xsk_generic_xmit(struct sock *sk)
+> >                * if there is space in it. This avoids having to implement
+> >                * any buffering in the Tx path.
+> >                */
+> > -             if (unlikely(err) || xskq_prod_reserve(xs->umem->cq)) {
+> > +             if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+> >                       kfree_skb(skb);
+> >                       goto out;
+> >               }
+> > @@ -629,6 +629,11 @@ static struct socket *xsk_lookup_xsk_from_fd(int fd)
+> >       return sock;
+> >   }
+> >
+> > +static bool xsk_validate_queues(struct xdp_sock *xs)
+> > +{
+> > +     return xs->fq_tmp && xs->cq_tmp;
+> > +}
+> > +
+> >   static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+> >   {
+> >       struct sockaddr_xdp *sxdp = (struct sockaddr_xdp *)addr;
+> > @@ -685,6 +690,12 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+> >                       goto out_unlock;
+> >               }
+> >
+> > +             if (xs->fq_tmp || xs->cq_tmp) {
+> > +                     /* Do not allow setting your own fq or cq. */
+> > +                     err = -EINVAL;
+> > +                     goto out_unlock;
+> > +             }
+> > +
+> >               sock = xsk_lookup_xsk_from_fd(sxdp->sxdp_shared_umem_fd);
+> >               if (IS_ERR(sock)) {
+> >                       err = PTR_ERR(sock);
+> > @@ -709,7 +720,7 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+> >               xdp_get_umem(umem_xs->umem);
+> >               WRITE_ONCE(xs->umem, umem_xs->umem);
+> >               sockfd_put(sock);
+> > -     } else if (!xs->umem || !xdp_umem_validate_queues(xs->umem)) {
+> > +     } else if (!xs->umem || !xsk_validate_queues(xs)) {
+> >               err = -EINVAL;
+> >               goto out_unlock;
+> >       } else {
+> > @@ -844,11 +855,9 @@ static int xsk_setsockopt(struct socket *sock, int level, int optname,
+> >                       return -EINVAL;
+> >               }
+> >
+> > -             q = (optname == XDP_UMEM_FILL_RING) ? &xs->umem->fq :
+> > -                     &xs->umem->cq;
+> > +             q = (optname == XDP_UMEM_FILL_RING) ? &xs->fq_tmp :
+> > +                     &xs->cq_tmp;
+> >               err = xsk_init_queue(entries, q, true);
+> > -             if (optname == XDP_UMEM_FILL_RING)
+> > -                     xp_set_fq(xs->pool, *q);
+> >               mutex_unlock(&xs->mutex);
+> >               return err;
+> >       }
+> > @@ -995,7 +1004,6 @@ static int xsk_mmap(struct file *file, struct socket *sock,
+> >       unsigned long size = vma->vm_end - vma->vm_start;
+> >       struct xdp_sock *xs = xdp_sk(sock->sk);
+> >       struct xsk_queue *q = NULL;
+> > -     struct xdp_umem *umem;
+> >       unsigned long pfn;
+> >       struct page *qpg;
+> >
+> > @@ -1007,16 +1015,12 @@ static int xsk_mmap(struct file *file, struct socket *sock,
+> >       } else if (offset == XDP_PGOFF_TX_RING) {
+> >               q = READ_ONCE(xs->tx);
+> >       } else {
+> > -             umem = READ_ONCE(xs->umem);
+> > -             if (!umem)
+> > -                     return -EINVAL;
+> > -
+> >               /* Matches the smp_wmb() in XDP_UMEM_REG */
+> >               smp_rmb();
+> >               if (offset == XDP_UMEM_PGOFF_FILL_RING)
+> > -                     q = READ_ONCE(umem->fq);
+> > +                     q = READ_ONCE(xs->fq_tmp);
+> >               else if (offset == XDP_UMEM_PGOFF_COMPLETION_RING)
+> > -                     q = READ_ONCE(umem->cq);
+> > +                     q = READ_ONCE(xs->cq_tmp);
+> >       }
+> >
+> >       if (!q)
+> > diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+> > index d450fb7..32720f2 100644
+> > --- a/net/xdp/xsk_buff_pool.c
+> > +++ b/net/xdp/xsk_buff_pool.c
+> > @@ -66,6 +66,11 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+> >       INIT_LIST_HEAD(&pool->free_list);
+> >       refcount_set(&pool->users, 1);
+> >
+> > +     pool->fq = xs->fq_tmp;
+> > +     pool->cq = xs->cq_tmp;
+> > +     xs->fq_tmp = NULL;
+> > +     xs->cq_tmp = NULL;
+> > +
+> >       for (i = 0; i < pool->free_heads_cnt; i++) {
+> >               xskb = &pool->heads[i];
+> >               xskb->pool = pool;
+> > @@ -82,11 +87,6 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+> >       return NULL;
+> >   }
+> >
+> > -void xp_set_fq(struct xsk_buff_pool *pool, struct xsk_queue *fq)
+> > -{
+> > -     pool->fq = fq;
+> > -}
+> > -
+> >   void xp_set_rxq_info(struct xsk_buff_pool *pool, struct xdp_rxq_info *rxq)
+> >   {
+> >       u32 i;
+> > @@ -190,6 +190,16 @@ static void xp_release_deferred(struct work_struct *work)
+> >       xp_clear_dev(pool);
+> >       rtnl_unlock();
+> >
+> > +     if (pool->fq) {
+> > +             xskq_destroy(pool->fq);
+> > +             pool->fq = NULL;
+> > +     }
+> > +
+> > +     if (pool->cq) {
+> > +             xskq_destroy(pool->cq);
+> > +             pool->cq = NULL;
+> > +     }
+> > +
+>
+> It looks like xskq_destroy is missing for fq_tmp and cq_tmp, which is
+> needed in some cases, e.g., if bind() wasn't called at all, or if
+> xsk_bind failed with EINVAL.
+
+Thanks Max. Will spin a v3.
+
+/Magnus
+
+> >       xdp_put_umem(pool->umem);
+> >       xp_destroy(pool);
+> >   }
+> > diff --git a/net/xdp/xsk_diag.c b/net/xdp/xsk_diag.c
+> > index 0163b26..1936423 100644
+> > --- a/net/xdp/xsk_diag.c
+> > +++ b/net/xdp/xsk_diag.c
+> > @@ -46,6 +46,7 @@ static int xsk_diag_put_rings_cfg(const struct xdp_sock *xs,
+> >
+> >   static int xsk_diag_put_umem(const struct xdp_sock *xs, struct sk_buff *nlskb)
+> >   {
+> > +     struct xsk_buff_pool *pool = xs->pool;
+> >       struct xdp_umem *umem = xs->umem;
+> >       struct xdp_diag_umem du = {};
+> >       int err;
+> > @@ -67,10 +68,11 @@ static int xsk_diag_put_umem(const struct xdp_sock *xs, struct sk_buff *nlskb)
+> >
+> >       err = nla_put(nlskb, XDP_DIAG_UMEM, sizeof(du), &du);
+> >
+> > -     if (!err && umem->fq)
+> > -             err = xsk_diag_put_ring(umem->fq, XDP_DIAG_UMEM_FILL_RING, nlskb);
+> > -     if (!err && umem->cq) {
+> > -             err = xsk_diag_put_ring(umem->cq, XDP_DIAG_UMEM_COMPLETION_RING,
+> > +     if (!err && pool->fq)
+> > +             err = xsk_diag_put_ring(pool->fq,
+> > +                                     XDP_DIAG_UMEM_FILL_RING, nlskb);
+> > +     if (!err && pool->cq) {
+> > +             err = xsk_diag_put_ring(pool->cq, XDP_DIAG_UMEM_COMPLETION_RING,
+> >                                       nlskb);
+> >       }
+> >       return err;
+> >
+>
