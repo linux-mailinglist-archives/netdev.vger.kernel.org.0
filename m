@@ -2,80 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CD0F221FB6
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 11:31:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 710C0222043
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 12:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727032AbgGPJbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 05:31:19 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:51958 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726769AbgGPJbS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 05:31:18 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 8601BF5814DDACD0A27C;
-        Thu, 16 Jul 2020 17:31:15 +0800 (CST)
-Received: from huawei.com (10.174.28.241) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Thu, 16 Jul 2020
- 17:31:09 +0800
-From:   Bixuan Cui <cuibixuan@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-next@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <jdmason@kudzu.us>, <christophe.jaillet@wanadoo.fr>,
-        <john.wanghui@huawei.com>
-Subject: [PATCH] net: neterion: vxge: reduce stack usage in VXGE_COMPLETE_VPATH_TX
-Date:   Thu, 16 Jul 2020 17:32:47 +0000
-Message-ID: <20200716173247.78912-1-cuibixuan@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727114AbgGPKGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 06:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35064 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbgGPKGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 06:06:19 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C106C061755;
+        Thu, 16 Jul 2020 03:06:19 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1594893977;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BMbqYGokbYrWYQCKCQhi6GP/hhiQLqCSaGXZcbfEaDQ=;
+        b=xepg9aIwWA349TVA8NJuVWIT0sHXzOg3sRkcbaQNTPmfVVCHMdop/CsQCjlkKawPg7ULDV
+        UYsvK1eXe2Iuao6kVxnrn+mTQ/lqFHAH83WMaVKfIW9Y3Q4z+jNV+veKVMQmM5EDPXiBkr
+        2p61p9ZrliXW58aLNRevVTfMJn9ep4vq6n8DssOHtXZU3NSnTXggu0dypsC3KDaNYL+637
+        pXpGl3+dkQn0os/ABP3gEUWtgDTOG8VqSYbOhqrhr6knDp91fW97E7gw6qvu/BmHMRMScH
+        bH0bfj+74eZcs4AEq4BXOPhXdQ6PgUyoTZItZBICjRWzavdJzfc6SwINWYH+BA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1594893977;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BMbqYGokbYrWYQCKCQhi6GP/hhiQLqCSaGXZcbfEaDQ=;
+        b=Uyl275Hwl9eTMks7AqpAcj7t5k4R+dDlGwFRfyLQD4rt40MhZsk8aFdfTL95Z2uuEsmhTN
+        BY6QquKFw7MZXMAA==
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH v1 2/8] net: dsa: Add DSA driver for Hirschmann Hellcreek switches
+In-Reply-To: <20200716093924.ueszkwokaer42vjh@skbuf>
+References: <20200710113611.3398-1-kurt@linutronix.de> <20200710113611.3398-3-kurt@linutronix.de> <def49ff6-72fe-7ca0-9e00-863c314c1c3d@gmail.com> <87v9islyf2.fsf@kurt> <20200716082935.snokd33kn52ixk5h@skbuf> <87h7u7x181.fsf@kurt> <20200716093924.ueszkwokaer42vjh@skbuf>
+Date:   Thu, 16 Jul 2020 12:06:16 +0200
+Message-ID: <87eepbwz8n.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.28.241]
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the warning: [-Werror=-Wframe-larger-than=]
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-drivers/net/ethernet/neterion/vxge/vxge-main.c:
-In function'VXGE_COMPLETE_VPATH_TX.isra.37':
-drivers/net/ethernet/neterion/vxge/vxge-main.c:119:1:
-warning: the frame size of 1056 bytes is larger than 1024 bytes
+On Thu Jul 16 2020, Vladimir Oltean wrote:
+> On Thu, Jul 16, 2020 at 11:23:26AM +0200, Kurt Kanzenbach wrote:
+>>=20
+>> As far as I know there is no port forwarding matrix. Traffic is
+>> forwarded between the ports when they're members of the same
+>> vlan. That's why I created them by default.
+>>=20
+>
+> And your hardware doesn't have ACL support, does it (from the fact
+> that you're installing PTP traps via the FDB, I would say no)?  You
+> could have added a match-all entry on all traffic coming from a
+> certain source port, and a 'redirect-to-cpu' action. This would have
+> also achieved port separation in standalone mode.
 
-Signed-off-by: Bixuan Cui <cuibixuan@huawei.com>
----
- drivers/net/ethernet/neterion/vxge/vxge-main.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Yeah, that'd have worked. But, there is no ACL support.
 
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-index b0faa737b817..97ddfc9debd4 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-@@ -100,8 +100,14 @@ static inline void VXGE_COMPLETE_VPATH_TX(struct vxge_fifo *fifo)
- 	struct sk_buff **temp;
- #define NR_SKB_COMPLETED 128
- 	struct sk_buff *completed[NR_SKB_COMPLETED];
-+	struct sk_buff **completed;
- 	int more;
+Thanks,
+Kurt
 
-+	completed = kcalloc(NR_SKB_COMPLETED, sizeof(*completed),
-+			    GFP_KERNEL);
-+	if (!completed)
-+		return;
-+
- 	do {
- 		more = 0;
- 		skb_ptr = completed;
-@@ -116,6 +122,8 @@ static inline void VXGE_COMPLETE_VPATH_TX(struct vxge_fifo *fifo)
- 		for (temp = completed; temp != skb_ptr; temp++)
- 			dev_consume_skb_irq(*temp);
- 	} while (more);
-+
-+	free(completed);
- }
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
- static inline void VXGE_COMPLETE_ALL_TX(struct vxgedev *vdev)
---
-2.17.1
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8QJpgACgkQeSpbgcuY
+8KbvExAAoE5iqojJzMxtwV/XHHZQar9n10rmGjL27OcwRUVgYstNB3oloeLq9LK1
+1NoUomRcOTtkrdRVJkOSe4PfSBw+YOOxlu4qkQjG3X9yaK0ggRrm0jRxGIWUHRi2
+cpxpAsHmXLGSftql+nKG3o/tiHUCXA1n3c/ccfNMcw8DDgFwyArfWPkjx22ZNw7N
+YXNinh0Fa/b23v5gJVnKyuQA0UWLdu04MWDq5W3apAJgGMwPJhOUErnr7+xOy6b8
+0hFovUeM25pOEsgSVxFDWq41WhAODEo8NBNnDLXWPdWt0olb4Ef7Yxb4C0AFIgLm
+9f4wA+Ha6Fs7cDOsqrUP3JyOtqgY/cRUFFrZuJGQFadGg5I052R9aeseqhBN9RGp
+pyCtQrFgTqsxUusRe7YX+f3C5xvCcw2KFcOiCUVaoRP9Tdru5LTS9xjWJ0NgAzxg
+M4BP0UhpuH2yjKxWDQGyvd2zVBcTzKhUeyuRrJU7k6TIUTi/mjNdaceQ1UVep5Jy
+VUfF3G/JENp+Y5Ehz8BWPr7e2qlOtLe3rzMim0vuIBGdIicVH3iACbZPVKbwA1AJ
+iDH/VIaoDCm1xcS3m6EXs9L+lG73YY23pLqMd7AX+fCgvNhqlT4Ic1iP1T4cMawr
+liqKFVdjrujBGzXX4xyWjdWiDs94NpofjzRDo121SbiB1UZegpw=
+=szY+
+-----END PGP SIGNATURE-----
+--=-=-=--
