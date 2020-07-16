@@ -2,60 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9518221B0C
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 05:50:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E8A3221B12
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 05:52:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728001AbgGPDui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 23:50:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53250 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726770AbgGPDui (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Jul 2020 23:50:38 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E64692071B;
-        Thu, 16 Jul 2020 03:50:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594871438;
-        bh=0bDASk0781jq/cji5sUbOq/NcKI50JUK8aOvo76NM1A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oogYGLGg0wKaXDpiEPMy1C41qPf1XwXf75ZyM6sPozBFOEfZLOmH1H3ACsugiBw4D
-         xQmkE5O0d+/WUca5QU/EybTHyZ2vzR8gomP1mVuR2rWfVW4rg1PEi8y49sXdFPqxO9
-         lNFpbIavUtYET351S/KiGjPIo8O5wj5qv5X6mchI=
-Date:   Wed, 15 Jul 2020 20:50:36 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH 3/9 v2 net-next] net: wimax: fix duplicate words in
- comments
-Message-ID: <20200715205036.551e0486@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <50300854-3b28-3bab-dcf8-4dd49efebf86@infradead.org>
-References: <20200715164246.9054-1-rdunlap@infradead.org>
-        <20200715164246.9054-3-rdunlap@infradead.org>
-        <20200715203453.4781ddee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <50300854-3b28-3bab-dcf8-4dd49efebf86@infradead.org>
+        id S1728220AbgGPDwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 23:52:06 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:55772 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726776AbgGPDwF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Jul 2020 23:52:05 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 3485F2FA021D15DE2CCB;
+        Thu, 16 Jul 2020 11:52:03 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Thu, 16 Jul 2020
+ 11:51:59 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <nico@fluxnic.net>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <mst@redhat.com>, <hkallweit1@gmail.com>, <snelson@pensando.io>,
+        <elfring@users.sourceforge.net>, <dmitry.torokhov@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wanghai26@huawei.com>
+Subject: [PATCH] net: smc91x: Fix possible memory leak in smc_drv_probe()
+Date:   Thu, 16 Jul 2020 11:50:38 +0800
+Message-ID: <20200716035038.19207-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jul 2020 20:35:34 -0700 Randy Dunlap wrote:
-> On 7/15/20 8:34 PM, Jakub Kicinski wrote:
-> > On Wed, 15 Jul 2020 09:42:40 -0700 Randy Dunlap wrote:  
-> >>  /*
-> >> - * CPP sintatic sugar to generate A_B like symbol names when one of
-> >> - * the arguments is a a preprocessor #define.
-> >> + * CPP syntatic sugar to generate A_B like symbol names when one of  
-> > 
-> > synta*c*tic
-> > 
-> > Let me fix that up before applying.  
-> 
-> eww. Thanks.
+If try_toggle_control_gpio() failed in smc_drv_probe(), free_netdev(ndev)
+should be called to free the ndev created earlier. Otherwise, a memleak
+will occur.
 
-Applied, pushed. Thanks!
+Fixes: 7d2911c43815 ("net: smc91x: Fix gpios for device tree based booting")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ drivers/net/ethernet/smsc/smc91x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/smsc/smc91x.c b/drivers/net/ethernet/smsc/smc91x.c
+index 90410f9d3b1a..1c4fea9c3ec4 100644
+--- a/drivers/net/ethernet/smsc/smc91x.c
++++ b/drivers/net/ethernet/smsc/smc91x.c
+@@ -2274,7 +2274,7 @@ static int smc_drv_probe(struct platform_device *pdev)
+ 		ret = try_toggle_control_gpio(&pdev->dev, &lp->power_gpio,
+ 					      "power", 0, 0, 100);
+ 		if (ret)
+-			return ret;
++			goto out_free_netdev;
+ 
+ 		/*
+ 		 * Optional reset GPIO configured? Minimum 100 ns reset needed
+@@ -2283,7 +2283,7 @@ static int smc_drv_probe(struct platform_device *pdev)
+ 		ret = try_toggle_control_gpio(&pdev->dev, &lp->reset_gpio,
+ 					      "reset", 0, 0, 100);
+ 		if (ret)
+-			return ret;
++			goto out_free_netdev;
+ 
+ 		/*
+ 		 * Need to wait for optional EEPROM to load, max 750 us according
+-- 
+2.17.1
+
