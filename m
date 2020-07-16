@@ -2,111 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1972C221F29
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 10:58:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 254DA221F14
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 10:55:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727095AbgGPI6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 04:58:38 -0400
-Received: from mx2.suse.de ([195.135.220.15]:55378 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725867AbgGPI6i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 04:58:38 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 59B24AF21;
-        Thu, 16 Jul 2020 08:58:40 +0000 (UTC)
-Date:   Thu, 16 Jul 2020 10:58:35 +0200
-From:   Petr Tesarik <ptesarik@suse.cz>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        netdev@vger.kernel.org
-Subject: Re: RTL8402 stops working after hibernate/resume
-Message-ID: <20200716105835.32852035@ezekiel.suse.cz>
-In-Reply-To: <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
-References: <20200715102820.7207f2f8@ezekiel.suse.cz>
-        <d742082e-42a1-d904-8a8f-4583944e88e1@gmail.com>
-Organization: SUSE Linux, s.r.o.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+        id S1728149AbgGPIzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 04:55:14 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:35396 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726013AbgGPIzN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jul 2020 04:55:13 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id DCD12226F6AA503A777A;
+        Thu, 16 Jul 2020 16:55:08 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 16 Jul 2020 16:55:03 +0800
+From:   Qinglang Miao <miaoqinglang@huawei.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] dpaa2-eth: Convert to DEFINE_SHOW_ATTRIBUTE
+Date:   Thu, 16 Jul 2020 16:58:59 +0800
+Message-ID: <20200716085859.11635-1-miaoqinglang@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Heiner,
+From: Yongqiang Liu <liuyongqiang13@huawei.com>
 
-first, thank you for looking into this!
+Use DEFINE_SHOW_ATTRIBUTE macro to simplify the code.
 
-On Wed, 15 Jul 2020 17:22:35 +0200
-Heiner Kallweit <hkallweit1@gmail.com> wrote:
+Signed-off-by: Yongqiang Liu <liuyongqiang13@huawei.com>
+---
+ .../freescale/dpaa2/dpaa2-eth-debugfs.c       | 63 ++-----------------
+ 1 file changed, 6 insertions(+), 57 deletions(-)
 
-> On 15.07.2020 10:28, Petr Tesarik wrote:
-> > Hi all,
-> > 
-> > I've encountered some issues on an Asus laptop. The RTL8402 receive
-> > queue behaves strangely after suspend to RAM and resume - many incoming
-> > packets are truncated, but not all and not always to the same length
-> > (most commonly 60 bytes, but I've also seen 150 bytes and other
-> > lengths).
-> > 
-> > Reloading the driver can fix the problem, so I believe we must be
-> > missing some initialization on resume. I've already done some
-> > debugging, and the interface is not running when rtl8169_resume() is
-> > called, so __rtl8169_resume() is skipped, which means that almost
-> > nothing is done on resume.
-> >   
-> The dmesg log part in the opensuse bug report indicates that a userspace
-> tool (e.g. NetworkManager) brings down the interface on suspend.
-> On resume the interface is brought up again, and PHY driver is loaded.
-> Therefore it's ok that rtl8169_resume() is a no-op.
-> 
-> The bug report mentions that the link was down before suspending.
-> Does the issue also happen if the link is up when suspending?
-
-I have tried, and it makes no difference.
-
-> Interesting would also be a test w/o a network manager.
-> Means the interface stays up during suspend/resume cycle.
-
-I have stopped NetworkManager and configured a static IP address for
-the interface. Still the same result.
-
-I have verified that the firmware is loaded, both before suspend and
-after resume:
-
-zabulon:~ # ethtool -i eth0 
-driver: r8169
-version: 5.7.7-1-default
-firmware-version: rtl8402-1_0.0.1 10/26/11
-expansion-rom-version: 
-bus-info: 0000:03:00.2
-supports-statistics: yes
-supports-test: no
-supports-eeprom-access: no
-supports-register-dump: yes
-supports-priv-flags: no
-
-> Unfortunately it's not known whether it's a regression, and I have no
-> test hw with this chip version.
-> 
-> Also you could test whether the same happens with the r8101 vendor driver.
-
-I was not aware of this alternative driver... Anyway, I have built
-r8101 from git (v1.035.03) for kernel 5.7.7. When loaded, it hangs the
-machine hard. I mean like not even SysRq+B works...
-
-Petr T
-
-> > Some more information can be found in this openSUSE bug report:
-> > 
-> > https://bugzilla.opensuse.org/show_bug.cgi?id=1174098
-> > 
-> > The laptop is not (yet) in production, so I can do further debugging if
-> > needed.
-> > 
-> > Petr T
-> >   
-> Heiner
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
+index f80f94e1e..b87db0846 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
+@@ -42,24 +42,7 @@ static int dpaa2_dbg_cpu_show(struct seq_file *file, void *offset)
+ 	return 0;
+ }
+ 
+-static int dpaa2_dbg_cpu_open(struct inode *inode, struct file *file)
+-{
+-	int err;
+-	struct dpaa2_eth_priv *priv = (struct dpaa2_eth_priv *)inode->i_private;
+-
+-	err = single_open(file, dpaa2_dbg_cpu_show, priv);
+-	if (err < 0)
+-		netdev_err(priv->net_dev, "single_open() failed\n");
+-
+-	return err;
+-}
+-
+-static const struct file_operations dpaa2_dbg_cpu_ops = {
+-	.open = dpaa2_dbg_cpu_open,
+-	.read_iter = seq_read_iter,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
++DEFINE_SHOW_ATTRIBUTE(dpaa2_dbg_cpu);
+ 
+ static char *fq_type_to_str(struct dpaa2_eth_fq *fq)
+ {
+@@ -106,24 +89,7 @@ static int dpaa2_dbg_fqs_show(struct seq_file *file, void *offset)
+ 	return 0;
+ }
+ 
+-static int dpaa2_dbg_fqs_open(struct inode *inode, struct file *file)
+-{
+-	int err;
+-	struct dpaa2_eth_priv *priv = (struct dpaa2_eth_priv *)inode->i_private;
+-
+-	err = single_open(file, dpaa2_dbg_fqs_show, priv);
+-	if (err < 0)
+-		netdev_err(priv->net_dev, "single_open() failed\n");
+-
+-	return err;
+-}
+-
+-static const struct file_operations dpaa2_dbg_fq_ops = {
+-	.open = dpaa2_dbg_fqs_open,
+-	.read_iter = seq_read_iter,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
++DEFINE_SHOW_ATTRIBUTE(dpaa2_dbg_fqs);
+ 
+ static int dpaa2_dbg_ch_show(struct seq_file *file, void *offset)
+ {
+@@ -151,24 +117,7 @@ static int dpaa2_dbg_ch_show(struct seq_file *file, void *offset)
+ 	return 0;
+ }
+ 
+-static int dpaa2_dbg_ch_open(struct inode *inode, struct file *file)
+-{
+-	int err;
+-	struct dpaa2_eth_priv *priv = (struct dpaa2_eth_priv *)inode->i_private;
+-
+-	err = single_open(file, dpaa2_dbg_ch_show, priv);
+-	if (err < 0)
+-		netdev_err(priv->net_dev, "single_open() failed\n");
+-
+-	return err;
+-}
+-
+-static const struct file_operations dpaa2_dbg_ch_ops = {
+-	.open = dpaa2_dbg_ch_open,
+-	.read_iter = seq_read_iter,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
++DEFINE_SHOW_ATTRIBUTE(dpaa2_dbg_ch);
+ 
+ void dpaa2_dbg_add(struct dpaa2_eth_priv *priv)
+ {
+@@ -179,13 +128,13 @@ void dpaa2_dbg_add(struct dpaa2_eth_priv *priv)
+ 	priv->dbg.dir = dir;
+ 
+ 	/* per-cpu stats file */
+-	debugfs_create_file("cpu_stats", 0444, dir, priv, &dpaa2_dbg_cpu_ops);
++	debugfs_create_file("cpu_stats", 0444, dir, priv, &dpaa2_dbg_cpu_fops);
+ 
+ 	/* per-fq stats file */
+-	debugfs_create_file("fq_stats", 0444, dir, priv, &dpaa2_dbg_fq_ops);
++	debugfs_create_file("fq_stats", 0444, dir, priv, &dpaa2_dbg_fqs_fops);
+ 
+ 	/* per-fq stats file */
+-	debugfs_create_file("ch_stats", 0444, dir, priv, &dpaa2_dbg_ch_ops);
++	debugfs_create_file("ch_stats", 0444, dir, priv, &dpaa2_dbg_ch_fops);
+ }
+ 
+ void dpaa2_dbg_remove(struct dpaa2_eth_priv *priv)
+-- 
+2.17.1
 
