@@ -2,160 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90010222187
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 13:34:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A91E2221AC
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 13:48:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728030AbgGPLeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 07:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48790 "EHLO
+        id S1727963AbgGPLsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 07:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726350AbgGPLeK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 07:34:10 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D688C061755
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 04:34:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=4gC+5JZbxr+9/x+Relkjytf4FXot8UzGGi8EDDLGMi8=; b=oQhuZqXyeL22pDnQHS43wOQgJ
-        RT4/gvHwGMjNh2h2kx1iCPY1n9LkwnPCGn65KECjXnI8nVTeGGrWpFlrhlSrICMRDwSgIdlhf1jCm
-        KUknZzEYr30xYxNF4LUK+8xrTwfmfzcn9ous7PhTOSkje1jAeIzM8GHh3fDQn7Ff+Y1rg5OISIZJy
-        hnVVY6zGSFP5degPT+UCO4M969uYuafNAdbxqkdVu0SuG8JxWzEvBRR7o995cswSeLWyX0B0pbNuu
-        5noTX/BHdEMkfjzUmWq7nbPH1lIFbDS0ZRO/8tuQLRkqcKzTqS0jfrMl6HWZuH5/n3X96vkS3XwjD
-        fa51aptew==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40212)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jw29G-0007qF-An; Thu, 16 Jul 2020 12:33:58 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jw29C-0000qr-Sf; Thu, 16 Jul 2020 12:33:54 +0100
-Date:   Thu, 16 Jul 2020 12:33:54 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
-Message-ID: <20200716113354.GS1605@shell.armlinux.org.uk>
-References: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
- <20200715183843.GA1256692@lunn.ch>
- <20200715185619.GJ1551@shell.armlinux.org.uk>
+        with ESMTP id S1726506AbgGPLsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 07:48:13 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CA5C061755
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 04:48:13 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id d17so6823932ljl.3
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 04:48:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=/GvE5mLubde7FdkABAeWnyMsWpw4xjTaM1e3k7MWqIA=;
+        b=jg7ezTaJ0octejEhVxfpChAgTaEQI6MYYALNlnfRCxmAkRsEg6EMtaFNCKAX4GM8+J
+         biXYT+/h29AZtBgXvf2R572PzXzkhsFxo/Fs3nKykp4dsekjR+Yc1LPDKNKw7OGjGbkX
+         zwUROrUeShTrB27hdQsclp3ww/Slcm2l3wsCk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=/GvE5mLubde7FdkABAeWnyMsWpw4xjTaM1e3k7MWqIA=;
+        b=o7tNrRALJiU/uQWbwePMjIGB6AXWx96mKv2Du/qPJW3bBfUsCwuwjicjQ8X8zqOtsJ
+         s944fH5VIJ3RKDxanx2rjhOK9rZVHm7e+BLD5Beexo90ePQq+qBH+iYPsVmQ0BwvOyJN
+         9IVVBCZZtI9k/CU8VXywIxJlmvinUAPq4pEZcjomuTixjfvebtaEj4PW8saBB3mEgWPp
+         DS2S5fif2OIU2HuQD1kz8XykFH8WFqT4j+Ldnnq4z2UPKRGPuwEWeu7mA3Y4W5g2BqA7
+         C/yjOdQAjH0SNiAC6npFPVzdVk9ZGaptx3asOp01a7hrNc86C9akl5Npb1UMNQ9/9scK
+         nenw==
+X-Gm-Message-State: AOAM532MnVGMjIHAXQmWKP9Wy4fkGpzdW2Y+hXjyF6gCJyUluQNTI2Td
+        rBOzqyxS/AdV7tIx9uFyiYOeicmnjU+zeg==
+X-Google-Smtp-Source: ABdhPJxVQNiZterynrx2heHWJx0H3l7YAy9VRzzb1g5CjHd3YIGbnALJxgXOhIhiLFfYFwbDZlFTrw==
+X-Received: by 2002:a2e:9ac4:: with SMTP id p4mr1929744ljj.143.1594900091536;
+        Thu, 16 Jul 2020 04:48:11 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id d22sm340396lfs.26.2020.07.16.04.48.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2020 04:48:10 -0700 (PDT)
+References: <20200710173123.427983-1-jakub@cloudflare.com> <c98aaa5e-9347-c23f-cfa6-e267f2485c5b@fb.com> <87a700y3yb.fsf@cloudflare.com> <7c27726c-9bba-8d7c-55b4-69d7af287382@fb.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf] bpf: Shift and mask loads narrower than context field size
+In-reply-to: <7c27726c-9bba-8d7c-55b4-69d7af287382@fb.com>
+Date:   Thu, 16 Jul 2020 13:48:09 +0200
+Message-ID: <878sfjy93a.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200715185619.GJ1551@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 15, 2020 at 07:56:19PM +0100, Russell King - ARM Linux admin wrote:
-> On Wed, Jul 15, 2020 at 08:38:43PM +0200, Andrew Lunn wrote:
-> > > Getting the Kconfig for this correct has been a struggle - particularly
-> > > the combination where PTP support is modular.  It's rather odd to have
-> > > the Marvell PTP support asked before the Marvell PHY support.  I
-> > > couldn't work out any other reasonable way to ensure that we always
-> > > have a valid configuration, without leading to stupidities such as
-> > > having the PTP and Marvell PTP support modular, but non-functional
-> > > because Marvell PHY is built-in.
-> > 
-> > Hi Russell
-> > 
-> > How much object code is this adding? All the other PHYs which support
-> > PTP just make it part of the PHY driver, not a standalone module. That
-> > i guess simplifies the conditions. 
-> 
-> Taking an arm64 build, the PHY driver is 16k and the PTP driver comes
-> in just under 8k.
-> 
-> > Looking at DSDT, it lists
-> > 
-> >         case MAD_88E1340S:
-> >         case MAD_88E1340:
-> >         case MAD_88E1340M:
-> >         case MAD_SWG65G : 
-> > 	case MAD_88E151x:
-> > 
-> > as being MAD_PHY_PTP_TAI_CAPABLE;
-> > 
-> > and
-> > 
-> > 	case MAD_88E1548
-> >         case MAD_88E1680:
-> >         case MAD_88E1680M:
-> > 
-> > as MAD_PHY_1STEP_PTP_CAPABLE;
-> > 
-> > So maybe we can wire this up to a few more PHYs to 'lower' the
-> > overhead a bit?
-> 
-> That's interesting, the 1548 information (covering 1543 and 1545 as
-> well) I have doesn't mention anything about PTP.
-> 
-> > > It seems that the Marvell PHY PTP is very similar to that found in
-> > > their DSA chips, which suggests maybe we should share the code, but
-> > > different access methods would be required.
-> > 
-> > That makes the Kconfig even more complex :-(
-> 
-> We already have that complexity due to the fact that we are interacting
-> with two subsystems.  The 88e6xxx Kconfig entry has:
-> 
-> config NET_DSA_MV88E6XXX_PTP
->         bool "PTP support for Marvell 88E6xxx"
->         default n
->         depends on NET_DSA_MV88E6XXX_GLOBAL2
->         depends on PTP_1588_CLOCK
->         imply NETWORK_PHY_TIMESTAMPING
-> 
-> and I've been wondering what that means when PTP_1588_CLOCK=m while
-> NET_DSA_MV88E6XXX_GLOBAL2=y and NET_DSA_MV88E6XXX=y.  If this is
-> selectable, then it seems to be misleading the user - you can't have
-> the PTP subsystem modular, and have PTP drivers built-in to the
-> kernel.
-> 
-> Yes, we have the inteligence to be able to make the various PTP calls
-> be basically no-ops, but it's not nice.
+On Wed, Jul 15, 2020 at 10:59 PM CEST, Yonghong Song wrote:
+> On 7/15/20 12:26 PM, Jakub Sitnicki wrote:
+>> On Wed, Jul 15, 2020 at 08:44 AM CEST, Yonghong Song wrote:
+>>> On 7/10/20 10:31 AM, Jakub Sitnicki wrote:
 
-Sure enough:
+[...]
 
-CONFIG_NET_DSA_MV88E6XXX=y
-CONFIG_NET_DSA_MV88E6XXX_GLOBAL2=y
-CONFIG_NET_DSA_MV88E6XXX_PTP=y
-CONFIG_PTP_1588_CLOCK=m
+>>>> The "size < target_size" check is left in place to cover the case when a
+>>>> context field is narrower than its target field, even if we might not have
+>>>> such case now. (It would have to be a u32 context field backed by a u64
+>>>> target field, with context fields all being 4-bytes or wider.)
+>>>>
+>>>> Going back to the example, with the fix in place, the upper half load from
+>>>> ctx->ip_protocol yields zero:
+>>>>
+>>>>     int reuseport_narrow_half(struct sk_reuseport_md * ctx):
+>>>>     ; int reuseport_narrow_half(struct sk_reuseport_md *ctx)
+>>>>        0: (b4) w0 = 0
+>>>>     ; if (half[0] == 0xaaaa)
+>>>>        1: (79) r2 = *(u64 *)(r1 +8)
+>>>>        2: (69) r2 = *(u16 *)(r2 +924)
+>>>>        3: (54) w2 &= 65535
+>>>>     ; if (half[0] == 0xaaaa)
+>>>>        4: (16) if w2 == 0xaaaa goto pc+7
+>>>>     ; if (half[1] == 0xbbbb)
+>>>>        5: (79) r1 = *(u64 *)(r1 +8)
+>>>>        6: (69) r1 = *(u16 *)(r1 +924)
+>>>
+>>> The load is still from offset 0, 2 bytes with upper 48 bits as 0.
+>>
+>> Yes, this is how narrow loads currently work, right? It is not specific
+>> to the case I'm fixing.
+>>
+>> To give an example - if you do a 1-byte load at offset 1, it will load
+>> the value from offset 0, and shift it right by 1 byte. So it is expected
+>> that the load is always from offset 0 with current implementation.
+>
+> Yes, the load is always from offset 0. The confusion part is
+> it load offset 0 with 2 bytes and then right shifting 2 bytes
+> to get 0...
 
-is a possible configuration, but all the PTP calls from mv88e6xxx are
-stubbed out (since the IS_REACHABLE() in linux/ptp_clock_kernel.h is
-false.)
+Right, I see how silly is the generated instruction sequence. I guess
+I've accepted how <prog_type>_convert_ctx_access functions emit loads
+and didn't stop and question this part before.
 
-The DP83640 PHY works around this by introducing a hard dependency on
-PTP:
+>> SEC("sk_reuseport/narrow_byte")
+>> int reuseport_narrow_byte(struct sk_reuseport_md *ctx)
+>> {
+>> 	__u8 *byte;
+>>
+>> 	byte = (__u8 *)&ctx->ip_protocol;
+>> 	if (byte[0] == 0xaa)
+>> 		return SK_DROP;
+>> 	if (byte[1] == 0xbb)
+>> 		return SK_DROP;
+>> 	if (byte[2] == 0xcc)
+>> 		return SK_DROP;
+>> 	if (byte[3] == 0xdd)
+>> 		return SK_DROP;
+>> 	return SK_PASS;
+>> }
+>>
+>> int reuseport_narrow_byte(struct sk_reuseport_md * ctx):
+>> ; int reuseport_narrow_byte(struct sk_reuseport_md *ctx)
+>>     0: (b4) w0 = 0
+>> ; if (byte[0] == 0xaa)
+>>     1: (79) r2 = *(u64 *)(r1 +8)
+>>     2: (69) r2 = *(u16 *)(r2 +924)
+>>     3: (54) w2 &= 255
+>> ; if (byte[0] == 0xaa)
+>>     4: (16) if w2 == 0xaa goto pc+17
+>> ; if (byte[1] == 0xbb)
+>>     5: (79) r2 = *(u64 *)(r1 +8)
+>>     6: (69) r2 = *(u16 *)(r2 +924)
+>>     7: (74) w2 >>= 8
+>>     8: (54) w2 &= 255
+>> ; if (byte[1] == 0xbb)
+>>     9: (16) if w2 == 0xbb goto pc+12
+>> ; if (byte[2] == 0xcc)
+>>    10: (79) r2 = *(u64 *)(r1 +8)
+>>    11: (69) r2 = *(u16 *)(r2 +924)
+>>    12: (74) w2 >>= 16
+>>    13: (54) w2 &= 255
+>> ; if (byte[2] == 0xcc)
+>>    14: (16) if w2 == 0xcc goto pc+7
+>> ; if (byte[3] == 0xdd)
+>>    15: (79) r1 = *(u64 *)(r1 +8)
+>>    16: (69) r1 = *(u16 *)(r1 +924)
+>>    17: (74) w1 >>= 24
+>>    18: (54) w1 &= 255
+>>    19: (b4) w0 = 1
+>> ; if (byte[3] == 0xdd)
+>>    20: (56) if w1 != 0xdd goto pc+1
+>>    21: (b4) w0 = 0
+>> ; }
+>>    22: (95) exit
+>>
+>>>
+>>>>        7: (74) w1 >>= 16
+>>>
+>>> w1 will be 0 now. so this will work.
+>>>
+>>>>        8: (54) w1 &= 65535
+>>>
+>>> For the above insns 5-8, verifier, based on target information can
+>>> directly generate w1 = 0 since:
+>>>    . target kernel field size is 2, ctx field size is 4.
+>>>    . user tries to access offset 2 size 2.
+>>>
+>>> Here, we need to decide whether we permits user to do partial read beyond of
+>>> kernel narrow field or not (e.g., this example)? I would
+>>> say yes, but Daniel or Alexei can provide additional comments.
+>>>
+>>> If we allow such accesses, I would like verifier to generate better
+>>> code as I illustrated in the above. This can be implemented in
+>>> verifier itself with target passing additional kernel field size
+>>> to the verifier. The target already passed the ctx field size back
+>>> to the verifier.
+>>
+>> Keep in mind that the BPF user is writing their code under the
+>> assumption that the context field has 4 bytes. IMHO it's reasonable to
+>> expect that I can load 2 bytes at offset of 2 from a 4 byte field.
+>>
+>> Restricting it now to loads below the target field size, which is
+>> unknown to the user, would mean rejecting programs that are working
+>> today. Even if they are getting funny values.
+>>
+>> I think implementing what you suggest is doable without major
+>> changes. We have load size, target field size, and context field size at
+>> hand in convert_ctx_accesses(), so it seems like a matter of adding an
+>> 'if' branch to handle better the case when we know the end result must
+>> be 0. I'll give it a try.
+>
+> Sounds good. The target_size is returned in convert_ctx_access(), which
+> is too late as the verifier already generated load instructions. You need to get
+> it earlier in is_valid_access().
 
-config DP83640_PHY
-	tristate "Driver for the National Semiconductor DP83640 PHYTER"
-	depends on NETWORK_PHY_TIMESTAMPING
-	depends on PHYLIB
-	depends on PTP_1588_CLOCK
+I have a feeling that I'm not following what you have in mind.
 
-A possible solution to this would be for the PTP core code to be a
-separate Kconfig symbol that is not offered to the user, but is
-selected by the various drivers and Kconfig entries that need that
-support.  That way, it would automatically be modular or built-in
-as required by its users.
+True, target_size is only known after convert_ctx_access generated
+instructions. At this point, if we want to optimize the narrow loads
+that must return 0, we can pop however many instructions
+convert_ctx_access appended to insn_buf and emit BPF_MOV32/64_IMM.
 
-PTP_1588_CLOCK could then be used as a global enable for PTP support
-where appropriate.  We can also avoid all the Kconfig complexity
-introduced by having two independent subsystems either of which could
-be modular.
+However, it sounds a bit more complex than what I hoped for initially,
+so I'm starting to doubt the value. Considering that narrow loads at an
+offset that matches or exceeds target field size must be a corner case,
+if the current "broken" behavior went unnoticed so far.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I'll need to play with the code and see how it turns out. But for the
+moment please consider acking/nacking this one, as a simple way to fix
+the issue targeted at 'bpf' branch and stable kernels.
+
+>
+>>
+>> But I do want to empahsize that I still think the fix in current form is
+>> correct, or at least not worse than what we have already in place narrow
+>> loads.
+>
+> I did agree that the fix in this patch is correct. It is just that we
+> could do better to fix this problem.
+
+I agree with your sentiment. Sorry if I got too defensive there.
+
+>
+>>
+>>>
+>>>>        9: (b4) w0 = 1
+>>>>     ; if (half[1] == 0xbbbb)
+>>>>       10: (56) if w1 != 0xbbbb goto pc+1
+>>>>       11: (b4) w0 = 0
+>>>>     ; }
+>>>>       12: (95) exit
+>>>>
+>>>> Fixes: f96da09473b5 ("bpf: simplify narrower ctx access")
+>>>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>>>> ---
+>>>>    kernel/bpf/verifier.c | 2 +-
+>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+>>>> index 94cead5a43e5..1c4d0e24a5a2 100644
+>>>> --- a/kernel/bpf/verifier.c
+>>>> +++ b/kernel/bpf/verifier.c
+>>>> @@ -9760,7 +9760,7 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
+>>>>    			return -EINVAL;
+>>>>    		}
+>>>>    -		if (is_narrower_load && size < target_size) {
+>>>> +		if (is_narrower_load || size < target_size) {
+>>>>    			u8 shift = bpf_ctx_narrow_access_offset(
+>>>>    				off, size, size_default) * 8;
+>>>>    			if (ctx_field_size <= 4) {
+>>>>
