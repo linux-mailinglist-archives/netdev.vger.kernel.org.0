@@ -2,63 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C1D0221FFF
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 11:47:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B66C2222002
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 11:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727090AbgGPJq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 05:46:58 -0400
-Received: from smtprelay0186.hostedemail.com ([216.40.44.186]:39450 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726105AbgGPJq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 05:46:58 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 3F00D837F24D;
-        Thu, 16 Jul 2020 09:46:57 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1568:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:2904:3138:3139:3140:3141:3142:3622:3865:3871:4321:5007:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12048:12114:12296:12297:12438:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21451:21627:30046:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: mind98_58102b926f01
-X-Filterd-Recvd-Size: 1571
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf03.hostedemail.com (Postfix) with ESMTPA;
-        Thu, 16 Jul 2020 09:46:55 +0000 (UTC)
-Message-ID: <687734b1623965b154752252968adeca35740c88.camel@perches.com>
-Subject: Re: [PATCH] net: neterion: vxge: reduce stack usage in
- VXGE_COMPLETE_VPATH_TX
-From:   Joe Perches <joe@perches.com>
-To:     Bixuan Cui <cuibixuan@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org, linux-next@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jdmason@kudzu.us, christophe.jaillet@wanadoo.fr,
-        john.wanghui@huawei.com
-Date:   Thu, 16 Jul 2020 02:46:54 -0700
-In-Reply-To: <20200716173247.78912-1-cuibixuan@huawei.com>
-References: <20200716173247.78912-1-cuibixuan@huawei.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1726201AbgGPJwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 05:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726027AbgGPJws (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 05:52:48 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737B3C061755
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 02:52:48 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id by13so4286045edb.11
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 02:52:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IDNFH61MgsyQc4A0NihqCrubQBd5FqjGzTiMwsHyeso=;
+        b=VKUxwCrZf8OgIJTUNegVFuDaAA6MpR8oVFcDY5vOCnRzH0WCu+lyXC7i53TNJK5pio
+         FIQC+2bZyjSAt4gA6+ZSoGR2Nlsc8RNjpxyYYNEqplUFQxTcskrd20yj9Oh64F8F225l
+         s0UZcCBXV7hUlDHw7qfTGJ6eZNbpJFm4VKM+p2yfbni114S/Xa2+gox5NnUIdQ+xC0Pg
+         ZGi3Da/49kmG39hOLDy8+Jviq/dD5QP0dD0gkTVmWsolYpJD5vGCyAhuKl51gyGZ18fS
+         DPmfSxUcnqXXCtxNYRMm5e4WUurekrthNiEye7nsNgnc35ikULwaIUaLpqdUwPKNGF1w
+         g7RA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IDNFH61MgsyQc4A0NihqCrubQBd5FqjGzTiMwsHyeso=;
+        b=Tu7ROSDj5kj31ycUAi4xaSzSzsuEQi6i5+jLoJ0aZcBJ/YoY/8ECTs4GsZgzzgO9qb
+         U8sAMGvDEkgRYe9YCwD8BQBQo9p/CGW8znjsJzhSOqa/z80PbBGRWQ1HRVp+Ys5Tpct+
+         zZ/fpAeupRNmKBbxE9uX7E1l/DmiycwqTrlkwmLLBq3zL0rzNGkbly7uMqQTXaj4y1bl
+         DRNL8jgPLVfT/HrEfRluu1ncrKKvlNibfrJ/QlJw3i7qlQEf347FOddWiM3aMJnel2kX
+         AAS6P0qZZaAXA8vsIkTl04mTXVc8xWpKQ4k5GdorInntgwNl2IMTwnOGeAJmHOCn57Fj
+         YN5Q==
+X-Gm-Message-State: AOAM532bp6N0jokEmVPbpzphV7AGklpRNC0q/WwJlJESUuldTFtaZNx0
+        rh5Wk7CeHTIJtXbRazLeX6q9szzY+kM=
+X-Google-Smtp-Source: ABdhPJxQi4b5q5o+zT+UyCaW9drGrNuvWkv0GP5PNHZ1+sqUIjkZ/zikrqdF3BsaORl3DuW0/2112w==
+X-Received: by 2002:aa7:c3d6:: with SMTP id l22mr3660113edr.148.1594893166901;
+        Thu, 16 Jul 2020 02:52:46 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([79.132.248.22])
+        by smtp.gmail.com with ESMTPSA id q17sm4551207ejd.20.2020.07.16.02.52.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jul 2020 02:52:46 -0700 (PDT)
+Subject: Re: [PATCH net-next] mptcp: silence warning in subflow_data_ready()
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        mptcp@lists.01.org
+References: <87f4954cfd7eacd6e220ab60d61e09f35ed32252.1594844608.git.dcaratti@redhat.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <3e97692a-4fa2-9b39-e31a-96deae6f5a57@tessares.net>
+Date:   Thu, 16 Jul 2020 11:52:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <87f4954cfd7eacd6e220ab60d61e09f35ed32252.1594844608.git.dcaratti@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-07-16 at 17:32 +0000, Bixuan Cui wrote:
-> Fix the warning: [-Werror=-Wframe-larger-than=]
-[]
-> diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-[]
-> @@ -100,8 +100,14 @@ static inline void VXGE_COMPLETE_VPATH_TX(struct vxge_fifo *fifo)
->  	struct sk_buff **temp;
->  #define NR_SKB_COMPLETED 128
->  	struct sk_buff *completed[NR_SKB_COMPLETED];
-> +	struct sk_buff **completed;
->  	int more;
+Hi Davide,
+
+On 15/07/2020 22:27, Davide Caratti wrote:
+> since commit d47a72152097 ("mptcp: fix race in subflow_data_ready()"), it
+> is possible to observe a regression in MP_JOIN kselftests. For sockets in
+> TCP_CLOSE state, it's not sufficient to just wake up the main socket: we
+> also need to ensure that received data are made available to the reader.
+> Silence the WARN_ON_ONCE() in these cases: it preserves the syzkaller fix
+> and restores kselftests	when they are ran as follows:
 > 
-> +	completed = kcalloc(NR_SKB_COMPLETED, sizeof(*completed),
-> +			    GFP_KERNEL);
+>    # while true; do
+>    > make KBUILD_OUTPUT=/tmp/kselftest TARGETS=net/mptcp kselftest
+>    > done
+> 
+> Reported-by: Florian Westphal <fw@strlen.de>
+> Fixes: d47a72152097 ("mptcp: fix race in subflow_data_ready()")
+> Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/47
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 
-I doubt this is a good idea.
-Check the callers interrupt status.
+Thank you for the patch!
+It looks good to me and it fixes the kselftests on my side as well!
 
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
