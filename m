@@ -2,93 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B684221A7D
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 05:04:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA0D6221A7F
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 05:04:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728066AbgGPDEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jul 2020 23:04:31 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:49507 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727034AbgGPDEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 23:04:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594868670;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=u3cJpUTzqg4XsvEigkP0qRKjmpXxEBPnj3YxAag4kA8=;
-        b=IInjob76lLvJlsaEAu2G8J8eVYUFOZm8bDkmGOVPRURNoVoasGT0/4F5XYu6l/Igsxpngx
-        4ZSF4kqiz0mXm8qfTgBDHN6Y6VnyX7ZrAEYJSSL9N+bCdWbCuKtNBRymmQYPOCZ1fRrla8
-        ybA+pADt9GEKKUwpT+rv+JCCegF4JoU=
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
- [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-151-uOrmqPp_NIqU0AUyoNyISQ-1; Wed, 15 Jul 2020 23:04:28 -0400
-X-MC-Unique: uOrmqPp_NIqU0AUyoNyISQ-1
-Received: by mail-ot1-f69.google.com with SMTP id 10so1992428otp.20
-        for <netdev@vger.kernel.org>; Wed, 15 Jul 2020 20:04:28 -0700 (PDT)
+        id S1728106AbgGPDEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jul 2020 23:04:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727034AbgGPDEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jul 2020 23:04:46 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5169CC061755;
+        Wed, 15 Jul 2020 20:04:46 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id a14so3012050pfi.2;
+        Wed, 15 Jul 2020 20:04:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=b1/J03KgFHpPtRfMDaSZSE2XRpRA4E0Gmujh6HvBzkE=;
+        b=rn91M+nIEakUqiUciisLcH1MenR7mS9GDonjEK3HFqrRnJcBxUH74295Wx9A1w6hjy
+         CaYY0kC8IHsTSEthPrOWRbeqv2a5azikLT5/BtLEcN4NqiEGwtnFTn/L2Wq0T4xrBAmu
+         Vo4wAMMAvvtGOQOOxZ/+4gy1vl87JgDn//zzY6fQn3h6nIxp4aHwySWqmLyMM13B1iVr
+         em2BicO1LTQD+AFypt4r/P1AiUw3AeceddJwZEqMM8EUOtA3gRNwF/4/vnjmAlO3ugCo
+         PhuyBen/kPHNFoCjVj8Af/jw86czRiW9GAt9YlVhcpXvNooJwBbGskMAkkvrx2QMDgm2
+         v+ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u3cJpUTzqg4XsvEigkP0qRKjmpXxEBPnj3YxAag4kA8=;
-        b=fRkbPLj6i68I7fpLiSAMLP0UxeHaZr2Ri8no0EUfDTpqeDnxOjtGl7SFdbwhNlix/m
-         iJT16Jy8WLSn+nQnOvPMcfQYWxf9RsPj2fK6ES4/O9hXSWiJYdsHHd47bmBod39NAC2z
-         6HPifnos1sGfkGVI3C8FHuefGPSGFvMrgrvX2QrVjHBv5LewVq7SIht8slMrqpafv191
-         xQxnHHYjv/micoSB1R6uRg4ggbuWrrgfXw2sAvFRPrn5OWgKvhS9ld7QlHsvcNIbIth+
-         8j9grZOTJLMvpRMMlWYITORrKkwd7p9vUd6LXC7fQSalK2lE4aJ5EIE957al7q1Auktq
-         7Mdw==
-X-Gm-Message-State: AOAM5333qzaButOVPXbw/rSP8hdYC5YTIhI9XSU1Yq+eAg6NXaDzfD97
-        4oKjzqrSqKC13xsRYqa+vDkL6QjfvBjnvh2wrEJ9YLVqYPm+Is6gLZZCdhPzrmLzwDOT2A4LRtp
-        DGefC9SJm3p3/fgly5XRCxoK7HzlVCnDo
-X-Received: by 2002:aca:ecc7:: with SMTP id k190mr2276114oih.92.1594868667432;
-        Wed, 15 Jul 2020 20:04:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyVFY9rpnyGirb4EfBOCbtJU0RrgfyKdCwmYw8wx20p10MV5trASOJ1b7kYhaS7omzicZKghG1A2DDyhyZ+u7M=
-X-Received: by 2002:aca:ecc7:: with SMTP id k190mr2276101oih.92.1594868667181;
- Wed, 15 Jul 2020 20:04:27 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=b1/J03KgFHpPtRfMDaSZSE2XRpRA4E0Gmujh6HvBzkE=;
+        b=bRcJxs+oTJvKNkoqCg/aMIweXSTTki1NH9kYd5ILDOPJQq1GDlpu6RcxWvM54vDwE1
+         Mqbyr8J+7lx/LkvoccIrOsyQIuTlQFqoCgEUL+xd2MS0L1TjWUlcnXafSxAGcXwpk1wT
+         emsACX5DSJsan3DMY3DlxMpCLuNOOgttLbOPI0QAWZCB0DnWoUwzTVKuUbSyhATaKGvO
+         393tnAFOlxi7R2FSvSPQjEmy7hD5nIvemqp4Z1w+HfwfLycYZ7NwA33rjZnr4y+RbsrU
+         sWHpP/BJte3rUncDnB57qU3gbYD4NS41yCNCBi69y16Rs/JRFAOxy/3SOzkwSpKN9U41
+         0t2A==
+X-Gm-Message-State: AOAM533zdUcbhFyLPf6s4EiSYRBvClS70a8fwcDzDwB2xbSrLP8KbC12
+        JWNYGXb1dn1Gq/K/j1XstTz8pjJ6
+X-Google-Smtp-Source: ABdhPJwE3iRm0v+5k4sHXBKvLKvy+t62zTK4hr+qN6LqMWICohQCKBgVVTl5prDkvw0phjYD8p9Rig==
+X-Received: by 2002:a62:545:: with SMTP id 66mr1820117pff.311.1594868685417;
+        Wed, 15 Jul 2020 20:04:45 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y8sm3323136pju.49.2020.07.15.20.04.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jul 2020 20:04:44 -0700 (PDT)
+Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO
+ PHY
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>
+Cc:     netdev@vger.kernel.org, linux.cj@gmail.com,
+        linux-acpi@vger.kernel.org
+References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
+ <20200715090400.4733-2-calvin.johnson@oss.nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <633212c6-8cb4-9599-0086-8a8de5c45172@gmail.com>
+Date:   Wed, 15 Jul 2020 20:04:36 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
- <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz> <20200713154118.3a1edd66@hermes.lan>
- <20200714002609.GB1140268@lunn.ch>
-In-Reply-To: <20200714002609.GB1140268@lunn.ch>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Wed, 15 Jul 2020 23:04:16 -0400
-Message-ID: <CAKfmpSdD2bupC=N8LnK_Uq7wtv+Ms6=e1kk-veeD24EVkMH7wA@mail.gmail.com>
-Subject: Re: [RFC] bonding driver terminology change proposal
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200715090400.4733-2-calvin.johnson@oss.nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 13, 2020 at 8:26 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> Hi Jarod
->
-> Do you have this change scripted? Could you apply the script to v5.4
-> and then cherry-pick the 8 bonding fixes that exist in v5.4.51. How
-> many result in conflicts?
->
-> Could you do the same with v4.19...v4.19.132, which has 20 fixes.
->
-> This will give us an idea of the maintenance overhead such a change is
-> going to cause, and how good git is at figuring out this sort of
-> thing.
 
-Okay, I have some fugly bash scripts that use sed to do the majority
-of the work here, save some manual bits done to add duplicate
-interfaces w/new names and some aliases, and everything is compiling
-and functions in a basic smoke test here.
 
-Summary on the 5.4 git cherry-pick conflict resolution after applying
-changes: not that good. 7 of the 8 bonding fixes in the 5.4 stable
-branch required fixing when straight cherry-picking. Dumping the
-patches, running a sed script over them, and then git am'ing them
-works pretty well though. I didn't try 4.19 (yet?), I assume it'll
-just be more of the same.
+On 7/15/2020 2:03 AM, Calvin Johnson wrote:
+> Introduce ACPI mechanism to get PHYs registered on a MDIO bus and
+> provide them to be connected to MAC.
+> 
+> An ACPI node property "mdio-handle" is introduced to reference the
+> MDIO bus on which PHYs are registered with autoprobing method used
+> by mdiobus_register().
+> 
+> Describe properties "phy-channel" and "phy-mode"
+> 
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+You would probably want to submit an update to the PHY LIBRARY section
+of the MAINTAINERS file to add this PHY DSD documentation, can be done
+when this series gets merged.
 -- 
-Jarod Wilson
-jarod@redhat.com
-
+Florian
