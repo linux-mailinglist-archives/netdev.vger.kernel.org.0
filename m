@@ -2,207 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F39C9221C33
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 07:56:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80A25221C46
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 08:01:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726525AbgGPFz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 01:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52880 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725844AbgGPFz3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 01:55:29 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033E6C061755;
-        Wed, 15 Jul 2020 22:55:28 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id x62so4048100qtd.3;
-        Wed, 15 Jul 2020 22:55:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ygm0p5seVyBaEJSzhwmf20urAR1vL+SuzaS+13AqEL4=;
-        b=FrcKzyDepgtIrowX3sWcJXXVW3Rj9INeqiJHLRjN6YeVmDDK4aMjBCFXyMgVCNBrbX
-         SkcGtHKxnEE5ejzYFZ7enkLcL0XLG9SMGB4eJPM6Atf0ZSId4ckHDDu1RTBHRm/DmLlN
-         JhZSHRLiM8KTUpMtANJjR7C23PgWCzwayM5hmVRzgD2LlJxQT6oJsKP6fPgKUfuG93P5
-         3PQgM5aO29SWLCIhqfXFZg1NLwb5m+S+v3RSoBDH68KPubJHsdV13Wnf6E1Mg4AN3bMD
-         6Q0TaHksY9TVWrXtNxAQqRWBxlh51yo+3PCWzCHMINnckcE8KkmE73aPbsqhpiNTtCXO
-         h2Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ygm0p5seVyBaEJSzhwmf20urAR1vL+SuzaS+13AqEL4=;
-        b=d23AYhUfWyBwaNB49m6SEKvZbrinZP0IkWbpajGGrDqbRPaWIhPK38rNVbdpgyc6Mp
-         nDouFCPEWg34KlwPnfEbwxyohK9oGD7hrGIr4X2UY2etc9wctZ7+UHE6Pl5f+RgYdLMc
-         wvq1s+EAPF/ZDGQqOvgPaObJco38NNJKAyGOO4Dza/QTgOUGE3Qok9UVZ9HWxF03zn2H
-         SxnxozGL0Vw9CcY2C6jCPi0HskQlgu2ECbRz+9DKP/MTdeDT3JBimWJiZDZe27sJVd7z
-         8s1L43lKO/5iW3tTk4E6QJYcuN4tQT3O8RbJLAor0DSk1zt3wbldVc4wTmM7PU8uwRnk
-         QF4A==
-X-Gm-Message-State: AOAM5328EiN391geTR9YLkzGKRJUzeLBALIp4n8HZieKXrnnJWw7DVVH
-        gEJelqhhFNeOJWaz6Ok9DZMdZfa/s6VYsBh8JGw=
-X-Google-Smtp-Source: ABdhPJxxfXcyvMx66ER9SoxtYcgYPSNZ/dWNh1B0GkeMT9u38VfvVFoEru6UiYlLoD2UH6qldfo0PK2TMEBF2Kelu4U=
-X-Received: by 2002:aed:2cc5:: with SMTP id g63mr3434892qtd.59.1594878927213;
- Wed, 15 Jul 2020 22:55:27 -0700 (PDT)
+        id S1726337AbgGPGBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 02:01:25 -0400
+Received: from mail-eopbgr80083.outbound.protection.outlook.com ([40.107.8.83]:26278
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725844AbgGPGBZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jul 2020 02:01:25 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XnvJk3ObGSJkaoJWoIXy9gAYYUsyEnbY33JqNSyzXWtBmMncWPcfWJWetLzB8DMxzWS43z2cX1fvrCj5IZIjpjnspGCsPwNRhfAcQPnOYi79tmbmrMDnJlIwz/7IuWp+vehMW/QXlPd/6r6TAArKxN7DuQ+eIb7Di+CsceL2FfHInQud789QT2SOat2Df7wQujwCwJ9JT1kEir/lLNk36Tt6JeskfK1cewLgVZieOGRsRkk4ySgWrOb6iNgWezHjXxIGP6+S1deRyJyex1hOU9Qf+92f+J1iTWSIMcDFV2DYlpBBGPwzNN7e9pmIHdnaurSE8tSDJoebbbLYeQrfbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/lX2UurhWesNLGlg85VW0kMeRsJLvWuz5+aU1v/JBto=;
+ b=HJYFxIYKbsGtB7UIe9+lcPASPlQSHuoKN3NZMTs55qK96ZGdasuBulDgsHFH1EzYLSvxT6refzN7peB3BUur8awQP+KX1eLBB0XQKOLjUfhMcEFcTEM+AFSNyOPGcvSbA11Tx6zYCDyac7euxmQQZ3O+v8zFcfhGPt9UZN8xEvh9NvfOfnP707/TnHPYpk6gW/fDvoaqc0NURiX3QF2+haeDfzpJfS9BsPAsWzNsF5QPRwH9uVmi8TKTPS2xJZ1Q1RDGM7Mqi4Mw0XamrGUXm1nY3amIeoGSjkiPl84KrU/q0+9fvxjceC0Jlq1WEjJmbkIboJEq53cD+Q7HVQcH0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/lX2UurhWesNLGlg85VW0kMeRsJLvWuz5+aU1v/JBto=;
+ b=WIvfgjxe1XUqgoTmHEzO2n1ocVHeviEgAmZ3ypr0Px3NQ2JGwHNvnZuTRglU0TkIePQ1xwUCNNlTKBYbH+7LgjS5fQdfKkytKcqBh4CxGVAnlaKANYtGwP+OLEl8y0XxWF0p8eRzKquwXRTOscWMciXlmt8CM5xnjdcob5/WZwU=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR0502MB3712.eurprd05.prod.outlook.com (2603:10a6:803:2::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Thu, 16 Jul
+ 2020 06:01:22 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3174.027; Thu, 16 Jul 2020
+ 06:01:22 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Leon Romanovsky <leonro@mellanox.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH mlx5-next 0/4] mlx5 next updates 2020-07-14
+Thread-Topic: [PATCH mlx5-next 0/4] mlx5 next updates 2020-07-14
+Thread-Index: AQHWWmB048u9+Gh8gESepMJyS0cOA6kJuEuA
+Date:   Thu, 16 Jul 2020 06:01:22 +0000
+Message-ID: <4d50b2dffcf28c470410e4644b62ed6d666df85c.camel@mellanox.com>
+References: <20200715042835.32851-1-saeedm@mellanox.com>
+In-Reply-To: <20200715042835.32851-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+authentication-results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+x-originating-ip: [73.15.39.150]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 2e92adaa-4496-4565-4e19-08d8294daa8a
+x-ms-traffictypediagnostic: VI1PR0502MB3712:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0502MB37120F19EE8BCC4EB1D901E5BE7F0@VI1PR0502MB3712.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: G1ifBMu2lM9y1m1cb0pPeNQjkZlh30/Z0rzPmV6h7IJ8DAxoTB/nYvlMt9TycuRnXR0wUA5Rdx/9USdIpLGexlzB1ZcitYsEr5i8gN7e7FyHjlf4+XyaSJkRF6hRZ2XooeheEqNe+XVhjcUKCLkZEPJMzgEz200BUrGd9um0cGKc56wFe92cxWReVhPYXlkpH53skuv5t/S/7cu3v9UUjwHlAL84IX6JGFWX308Sp/nvC9kSiMhX9yIigKUxeS8xUdiNCmMSl+cokPRt8D6EkwhkGUkKE1sAh3sXrcTM1jEZ1T6zRBhyflqbIUvVx3UwPOWiwr7FLa73B0I+aEHS0g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(396003)(136003)(366004)(39860400002)(4326008)(450100002)(2616005)(15650500001)(8676002)(8936002)(6862004)(36756003)(6486002)(478600001)(83380400001)(186003)(26005)(71200400001)(5660300002)(4744005)(86362001)(6512007)(54906003)(66446008)(64756008)(2906002)(66556008)(76116006)(91956017)(37006003)(6636002)(66946007)(316002)(6506007)(66476007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: +nwN/MBc6M2cdF4wz4jXT07aq/hM3dpmjEfARIusxKhb+LmADbpUwVsF2TnIpX1JH25BiN6GiT+YaqDZE4ZJXZ8SGNJvIr4AqiQALenOVfIXa3jAygAcSS4ZHCBjGaTLvoerFdtwH2dNa5AW8Ov3e9/amiR7KMerkpnUi1YrttySKyEF2uvX7Fhr3z2Wn4pTABZgr5OUdK7ikx+1mlpDckpiRsEUzvIHnQP9jEwcrokH4JLF2k4ZVjIfPRz9L6TLBy2S/Rc67gbze1GFVp/NCDTOEup5W2aSHfHfBLuIeRGHd+B7IDoevmYAykcuzb5k3xHEt6F4vNx45ClefDojZ7QE+VyeSb0imjclru1IHglHfdSrC6mL0+sjkYhbe3esssbuSi8kImi7BvuF59ohGdwrQuIgV0NoNuJ9QW1Sp3aB5lsRFwJP9trv1cUZ/CIaH3alfOQRQmvret+DHhKGbIEzlXV+3JdI+5iA5qqSa+U=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <60B82108A225FE45901210003D841B3E@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200715052601.2404533-1-songliubraving@fb.com> <20200715052601.2404533-2-songliubraving@fb.com>
-In-Reply-To: <20200715052601.2404533-2-songliubraving@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 15 Jul 2020 22:55:16 -0700
-Message-ID: <CAEf4BzZTYVq=oct0rUg5Y+wOc07k2Pcz-66M-NtjRFJTez0AvA@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/2] bpf: separate bpf_get_[stack|stackid] for
- perf events BPF
-To:     Song Liu <songliubraving@fb.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Peter Ziljstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e92adaa-4496-4565-4e19-08d8294daa8a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jul 2020 06:01:22.0877
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ulV79uwi+TPUP3cYreIxLmTiZ2bUSIp6Rd8sToUX4R+Uo+03Wm9llwaUemlIQZJQTYF5dOkX91JScc7mBsBCCQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0502MB3712
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 11:08 PM Song Liu <songliubraving@fb.com> wrote:
->
-> Calling get_perf_callchain() on perf_events from PEBS entries may cause
-> unwinder errors. To fix this issue, the callchain is fetched early. Such
-> perf_events are marked with __PERF_SAMPLE_CALLCHAIN_EARLY.
->
-> Similarly, calling bpf_get_[stack|stackid] on perf_events from PEBS may
-> also cause unwinder errors. To fix this, add separate version of these
-> two helpers, bpf_get_[stack|stackid]_pe. These two hepers use callchain in
-> bpf_perf_event_data_kern->data->callchain.
->
-> Signed-off-by: Song Liu <songliubraving@fb.com>
-> ---
->  include/linux/bpf.h      |   2 +
->  kernel/bpf/stackmap.c    | 204 +++++++++++++++++++++++++++++++++++----
->  kernel/trace/bpf_trace.c |   4 +-
->  3 files changed, 190 insertions(+), 20 deletions(-)
->
-
-Glad this approach worked out! Few minor bugs below, though.
-
-[...]
-
-> +       if (unlikely(flags & ~(BPF_F_SKIP_FIELD_MASK | BPF_F_USER_STACK |
-> +                              BPF_F_FAST_STACK_CMP | BPF_F_REUSE_STACKID)))
-> +               return -EINVAL;
-> +
-> +       user = flags & BPF_F_USER_STACK;
-> +       kernel = !user;
-> +
-> +       has_kernel = !event->attr.exclude_callchain_kernel;
-> +       has_user = !event->attr.exclude_callchain_user;
-> +
-> +       if ((kernel && !has_kernel) || (user && !has_user))
-> +               return -EINVAL;
-> +
-> +       trace = ctx->data->callchain;
-> +       if (!trace || (!has_kernel && !has_user))
-
-(!has_kernel && !has_user) can never happen, it's checked by if above
-(one of kernel or user is always true => one of has_user or has_kernel
-is always true).
-
-> +               return -EFAULT;
-> +
-> +       if (has_kernel && has_user) {
-> +               __u64 nr_kernel = count_kernel_ip(trace);
-> +               int ret;
-> +
-> +               if (kernel) {
-> +                       __u64 nr = trace->nr;
-> +
-> +                       trace->nr = nr_kernel;
-> +                       ret = __bpf_get_stackid(map, trace, flags);
-> +
-> +                       /* restore nr */
-> +                       trace->nr = nr;
-> +               } else { /* user */
-> +                       u64 skip = flags & BPF_F_SKIP_FIELD_MASK;
-> +
-> +                       skip += nr_kernel;
-> +                       if (skip > ~BPF_F_SKIP_FIELD_MASK)
-
-something fishy here: ~BPF_F_SKIP_FIELD_MASK is a really big number,
-were you going to check that skip is not bigger than 255 (i.e., fits
-within BPF_F_SKIP_FIELD_MASK)?
-
-> +                               return -EFAULT;
-> +
-> +                       flags = (flags & ~BPF_F_SKIP_FIELD_MASK) |
-> +                               (skip  & BPF_F_SKIP_FIELD_MASK);
-> +                       ret = __bpf_get_stackid(map, trace, flags);
-> +               }
-> +               return ret;
-> +       }
-> +       return __bpf_get_stackid(map, trace, flags);
-> +}
-> +
-
-[...]
-
-> +
-> +       has_kernel = !event->attr.exclude_callchain_kernel;
-> +       has_user = !event->attr.exclude_callchain_user;
-> +
-> +       if ((kernel && !has_kernel) || (user && !has_user))
-> +               goto clear;
-> +
-> +       err = -EFAULT;
-> +       trace = ctx->data->callchain;
-> +       if (!trace || (!has_kernel && !has_user))
-> +               goto clear;
-
-same as above for bpf_get_stackid, probably can be simplified
-
-> +
-> +       if (has_kernel && has_user) {
-> +               __u64 nr_kernel = count_kernel_ip(trace);
-> +               int ret;
-> +
-> +               if (kernel) {
-> +                       __u64 nr = trace->nr;
-> +
-> +                       trace->nr = nr_kernel;
-> +                       ret = __bpf_get_stack(ctx->regs, NULL, trace, buf,
-> +                                             size, flags);
-> +
-> +                       /* restore nr */
-> +                       trace->nr = nr;
-> +               } else { /* user */
-> +                       u64 skip = flags & BPF_F_SKIP_FIELD_MASK;
-> +
-> +                       skip += nr_kernel;
-> +                       if (skip > ~BPF_F_SKIP_FIELD_MASK)
-> +                               goto clear;
-> +
-
-and here
-
-> +                       flags = (flags & ~BPF_F_SKIP_FIELD_MASK) |
-> +                               (skip  & BPF_F_SKIP_FIELD_MASK);
-
-actually if you check that skip <= BPF_F_SKIP_FIELD_MASK, you don't
-need to mask it here, just `| skip`
-
-> +                       ret = __bpf_get_stack(ctx->regs, NULL, trace, buf,
-> +                                             size, flags);
-> +               }
-> +               return ret;
-> +       }
-> +       return __bpf_get_stack(ctx->regs, NULL, trace, buf, size, flags);
-> +clear:
-> +       memset(buf, 0, size);
-> +       return err;
-> +
-> +}
-> +
-
-[...]
+T24gVHVlLCAyMDIwLTA3LTE0IGF0IDIxOjI4IC0wNzAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToN
+Cj4gSGksDQo+IA0KPiBUaGlzIHBhdGNoc2V0IGludHJvZHVjZXMgc29tZSB1cGRhdGVzIHRvIG1s
+eDUgbmV4dCBzaGFyZWQgYnJhbmNoLg0KPiANCj4gMSkgRWxpIENvaGVuLCBBZGRzIEhXIGFuZCBt
+bHg1X2NvcmUgZHJpdmVyIGRlZmluaXRpb25zIGFuZCBiaXRzIGZvcg0KPiB1cGNvbWluZyBtbHg1
+IFZEUEEgZHJpdmVyIHN1cHBvcnQuDQo+IDIpIE1pY2hhZWwgR3VyYWxuaWsgRW5hYmxlcyBjb3Vu
+dCBhY3Rpb25zIGZvciBzaW1wbGUgYWxsb3cgc3RlZXJpbmcNCj4gcnVsZS4NCj4gDQo+IEluIGNh
+c2Ugb2Ygbm8gb2JqZWN0aW9ucyB0aGlzIHBhdGNoc2V0IHdpbGwgYmUgYXBwbGllZCB0byBtbHg1
+LW5leHQNCj4gYW5kDQo+IGxhdGVyIHNlbnQgdG8gcmRtYSBhbmQgbmV0LW5leHQgdHJlZXMuDQoN
+ClBhdGNoZXMgYXBwbGllZCB0byBtbHg1LW5leHQuDQpUaGFua3MgIQ0KDQo=
