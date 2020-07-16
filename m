@@ -2,99 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C964F2227EE
-	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 18:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E9E222800
+	for <lists+netdev@lfdr.de>; Thu, 16 Jul 2020 18:07:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728911AbgGPQAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 12:00:15 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:23948 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728126AbgGPQAO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 12:00:14 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06GFWxH3110454;
-        Thu, 16 Jul 2020 12:00:05 -0400
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 327u1ktp3s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jul 2020 12:00:04 -0400
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06GG02eq017976;
-        Thu, 16 Jul 2020 16:00:02 GMT
-Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-        by ppma03dal.us.ibm.com with ESMTP id 327529mdpa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jul 2020 16:00:02 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06GFxwt061145592
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Jul 2020 15:59:58 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DBC506A05D;
-        Thu, 16 Jul 2020 16:00:00 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D44FC6A04D;
-        Thu, 16 Jul 2020 15:59:59 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.160.26.83])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 16 Jul 2020 15:59:59 +0000 (GMT)
-Subject: Re: [PATCH net-next] ibmvnic: Increase driver logging
-To:     David Miller <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        drt@linux.ibm.com
-References: <1594857115-22380-1-git-send-email-tlfalcon@linux.ibm.com>
- <20200715170632.11f0bf19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200715.182956.490791427431304861.davem@davemloft.net>
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-Message-ID: <9c9d6e46-240b-8513-08e4-e1c7556cb3c8@linux.ibm.com>
-Date:   Thu, 16 Jul 2020 10:59:58 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1729084AbgGPQHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 12:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34596 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728374AbgGPQHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 12:07:08 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FFFC061755
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 09:07:08 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id z15so7610896wrl.8
+        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 09:07:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5WuKZaiLzVoCG4+51nhsl4nIS0Ta+YQ9r4oS74n3K68=;
+        b=xW2/GTVV3gHhczMsS0qzeR1UL80EwacVAPU6shdvXaYuKaS2uLyBn0avnXn/eA+k48
+         /Un/3Q80vgR397rVKA3/8rYHPQKeTnnrHkv6PejACqJPtU8oBjG9njTmK6Dz+lewya9d
+         BoENhl11SHosFatWrZm9iMCbsWqQ3D8gR3LPzrNht6AWKQT2VfivveOADe/WeIOhdvQS
+         d2Z5RO3lTTOMGWao4e2Yn/NkwjkS9dqudNxzVbi3GsZHKQQGMbrqQNINaYjxNsFMGarj
+         p/niQL+rrEYnbfqvM9TzbA3oY4GFNgidoSzTh2vMUZ/7r3yn5MkAIs7+FXvuZXSa1sSe
+         Ga7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5WuKZaiLzVoCG4+51nhsl4nIS0Ta+YQ9r4oS74n3K68=;
+        b=eh4ohZpeFRVfa0O+/mrun7ITgs7gsaf2YI3PDsrecz7Bbva0X4Wz4j79438X6j7WrR
+         TAXl1RYi1prJ0uAmLZaDhVcJW+auYDxWkS4a1+ZOKry+E9useV+nuY4cAuCAJ4jhuTps
+         osSywszePTmS0xZSTjlbYO9MiNMWiwEng/A//nbo+e0nWxRNzySzCAF55Qn5VbJ+vVpP
+         o3Diq00hvUyHEV3sVPtWnVujUZaSE6PuRYmhGvDqRWHZ0V2eCpHW6VJE5zA+BBY8iknM
+         qa9DutwTpMcL57cII6D/syU3XOk4BeStFdWfPigS2j/KqPo10S0J2IMNjOG/Ip6wxOVh
+         ea6Q==
+X-Gm-Message-State: AOAM5303cNip9mkTcRxl4ZT96DOIaBsc4oOOEektgrXHkdDetzmJ3nuQ
+        F/5LLPofnLKbe/sa8sJoI8poE89+NLI=
+X-Google-Smtp-Source: ABdhPJwbEOhhW9ltdXKbS2VzfM7KaM0zkoObA7wkS8w8TtPNM5Y00HzGwOaCzyw3dDSzfgKQ1KBv7A==
+X-Received: by 2002:a5d:4751:: with SMTP id o17mr5842107wrs.345.1594915626072;
+        Thu, 16 Jul 2020 09:07:06 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id q7sm10073725wra.56.2020.07.16.09.07.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2020 09:07:05 -0700 (PDT)
+Date:   Thu, 16 Jul 2020 18:07:04 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH iproute2-next v2 1/2] tc: Look for blocks in qevents
+Message-ID: <20200716160704.GB23663@nanopsycho.orion>
+References: <cover.1594914405.git.petrm@mellanox.com>
+ <7c8ba84ef268fd03e849829278db891a855f4c8e.1594914405.git.petrm@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20200715.182956.490791427431304861.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-16_07:2020-07-16,2020-07-16 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 malwarescore=0
- spamscore=0 priorityscore=1501 clxscore=1011 mlxlogscore=999
- suspectscore=2 phishscore=0 bulkscore=0 impostorscore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007160114
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7c8ba84ef268fd03e849829278db891a855f4c8e.1594914405.git.petrm@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 7/15/20 8:29 PM, David Miller wrote:
-> From: Jakub Kicinski <kuba@kernel.org>
-> Date: Wed, 15 Jul 2020 17:06:32 -0700
+Thu, Jul 16, 2020 at 05:49:45PM CEST, petrm@mellanox.com wrote:
+>When a list of filters at a given block is requested, tc first validates
+>that the block exists before doing the filter query. Currently the
+>validation routine checks ingress and egress blocks. But now that blocks
+>can be bound to qevents as well, qevent blocks should be looked for as
+>well.
 >
->> On Wed, 15 Jul 2020 18:51:55 -0500 Thomas Falcon wrote:
->>>   	free_netdev(netdev);
->>>   	dev_set_drvdata(&dev->dev, NULL);
->>> +	netdev_info(netdev, "VNIC client device has been successfully removed.\n");
->> A step too far, perhaps.
->>
->> In general this patch looks a little questionable IMHO, this amount of
->> logging output is not commonly seen in drivers. All the the info
->> messages are just static text, not even carrying any extra information.
->> In an era of ftrace, and bpftrace, do we really need this?
-> Agreed, this is too much.  This is debugging, and thus suitable for tracing
-> facilities, at best.
+>In order to support that, extend struct qdisc_util with a new callback,
+>has_block. That should report whether, give the attributes in TCA_OPTIONS,
+>a blocks with a given number is bound to a qevent. In
+>tc_qdisc_block_exists_cb(), invoke that callback when set.
+>
+>Add a helper to the tc_qevent module that walks the list of qevents and
+>looks for a given block. This is meant to be used by the individual qdiscs.
+>
+>Signed-off-by: Petr Machata <petrm@mellanox.com>
 
-Thanks for your feedback. I see now that I was overly aggressive with 
-this patch to be sure, but it would help with narrowing down problems at 
-a first glance, should they arise. The driver in its current state logs 
-very little of what is it doing without the use of additional debugging 
-or tracing facilities. Would it be worth it to pursue a less aggressive 
-version or would that be dead on arrival? What are acceptable driver 
-operations to log at this level?
-
-Thanks,
-
-Tom
-
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
