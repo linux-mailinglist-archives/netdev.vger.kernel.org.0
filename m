@@ -2,53 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA57A2244BE
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 22:00:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9E12244C0
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 22:00:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728672AbgGQT6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 15:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728224AbgGQT6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 15:58:14 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDF1C0619D2;
-        Fri, 17 Jul 2020 12:58:14 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3A78A11E4592D;
-        Fri, 17 Jul 2020 12:58:14 -0700 (PDT)
-Date:   Fri, 17 Jul 2020 12:58:13 -0700 (PDT)
-Message-Id: <20200717.125813.340020422201202187.davem@davemloft.net>
-To:     christophe.jaillet@wanadoo.fr
-Cc:     kuba@kernel.org, jes@trained-monkey.org, linux-acenic@sunsite.dk,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] net: alteon: Avoid some useless memset
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200716205242.326486-1-christophe.jaillet@wanadoo.fr>
-References: <20200716205242.326486-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1728254AbgGQT6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 15:58:37 -0400
+Received: from mx3.wp.pl ([212.77.101.10]:31022 "EHLO mx3.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726771AbgGQT6h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 15:58:37 -0400
+Received: (wp-smtpd smtp.wp.pl 3755 invoked from network); 17 Jul 2020 21:58:34 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1595015914; bh=plQfnxetZpE336xJnFbaJlHfbP2EsFoOwqdsfCYe7zc=;
+          h=From:To:Cc:Subject;
+          b=ZKx5AQJCcNLhzs2wESn5jIpm/94yVougdy/7s3/53JQKnjHfWH/GjzmQUG3cgmyK7
+           DqmME0W1EqqqKy5AMeXtwfhgAoKM5BpgTilIzeiP0iJlV+RZI11j8wKXUHwtmKFPWy
+           NbmHj7YnbVrnW8Lniv6yUZ1tMllAf9PhYKvR3szY=
+Received: from unknown (HELO kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com) (kubakici@wp.pl@[163.114.132.7])
+          (envelope-sender <kubakici@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <jacob.e.keller@intel.com>; 17 Jul 2020 21:58:34 +0200
+Date:   Fri, 17 Jul 2020 12:58:26 -0700
+From:   Jakub Kicinski <kubakici@wp.pl>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
+        Tom Herbert <tom@herbertland.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+Subject: Re: [RFC PATCH net-next v2 0/6] introduce PLDM firmware update
+ library
+Message-ID: <20200717125826.1f0b3fbb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200717183541.797878-1-jacob.e.keller@intel.com>
+References: <20200717183541.797878-1-jacob.e.keller@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 17 Jul 2020 12:58:14 -0700 (PDT)
+X-WP-MailID: b19d5611600ed5037fc867882e2452e7
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000003 [8WDS]                               
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Date: Thu, 16 Jul 2020 22:52:42 +0200
+On Fri, 17 Jul 2020 11:35:35 -0700 Jacob Keller wrote:
+> This series goal is to enable support for updating the ice hardware flash
+> using the devlink flash command.
 
-> Avoid a memset after a call to 'dma_alloc_coherent()'.
-> This is useless since
-> commit 518a2f1925c3 ("dma-mapping: zero memory returned from dma_alloc_*")
-> 
-> Replace a kmalloc+memset with a corresponding kzalloc.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Looks reasonable.
 
-Applied.
+You have some left over references to ignore_pending_flash_update in
+comments, and you should use NLA_POLICY_RANGE() for the new attr.
+
+Taking and releasing the FW lock may be fun for multi-host devices if
+you ever support those.
