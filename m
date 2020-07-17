@@ -2,127 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF0012241C5
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:28:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAE952241D8
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727883AbgGQR1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 13:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726668AbgGQR1Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:27:25 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99941C0619D2;
-        Fri, 17 Jul 2020 10:27:24 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id f2so11959893wrp.7;
-        Fri, 17 Jul 2020 10:27:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Uv/mehhqSy3DaoKMUHPQC+Xg+wYizrO+P1oEDPd1R5Y=;
-        b=kVZwjpajXWhE3Tq9GOL4jqxnYJRO/FK2GgA1oiuf6uPwe3ilTYUd/lypogr2w1FeTh
-         7CKsOxRqgLV+9kX3EcRSUAt30lIVsC8Q80ilT6qsf/dlwYx6FO0/j571sY+82fx/LrN1
-         mN9i4tfWOkCKpg7CBEhefo/WM8z0K0pOQV4ugNnzGILBtnLPn4/kWKHdxk73vDRTuJiH
-         BIOK/Mtfnjndb2DLRmo8K23JCcDwWm/4u/Wdn95S34wRy/DpoDTle3nRWcglWq+JPLtw
-         nAmHPjjQNRrFDjZPYrs0NWyLbin3Ex8oRhyKG578JBjetfCFHetuWZ7v9cxWcOKXzwk2
-         8aAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Uv/mehhqSy3DaoKMUHPQC+Xg+wYizrO+P1oEDPd1R5Y=;
-        b=hg30df7w1A1OCWOjvBQBlc8Fma1UDkYTKcq2D1cF6ECwOJsKUtjjqIsX+qwP5jpIHi
-         1oH7BMyZtqYPeN1QTw+jeCIv7iLLsN8SvEUbVzHBtJPUPkgDDVpqotzfCrf4feKq1CAN
-         rAsPHWM+ACLLN/WGIYrwJ7daqELO1Q6juqH7bfmwYGB5EZKR2lx6oD0H2V4yQ2tOfVGA
-         Zx2Xjb9WYnx0of3glS2fjSeoY1xn+sCPzuXfhX4NdsBmVdNyMGJqHNw0RDBuKXizMEre
-         ppa92HHA9RD8OFgjZ/HrbyglJ6k3C18pEgvm9ANGxSh6pOEolAmLvVScRGnNVXl2cO/8
-         b66w==
-X-Gm-Message-State: AOAM532uQQeoWOLaFbEO4Xqko8M3fHYpoYFZkBaDY3+9ZyxgaKaj+bNW
-        VjwOmdSBc0yINqivsvJp1neiJ4l3tkQ=
-X-Google-Smtp-Source: ABdhPJzuWUhay96eHMlekR318s1wqVyttXpYIA4Tx9T9DkN1wUZXOq9L0CiquPlDvdCkiIjEj26QoQ==
-X-Received: by 2002:adf:e801:: with SMTP id o1mr11618071wrm.54.1595006843074;
-        Fri, 17 Jul 2020 10:27:23 -0700 (PDT)
-Received: from [10.230.191.242] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 33sm17001764wri.16.2020.07.17.10.27.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jul 2020 10:27:22 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: bcmgenet: fix error returns in
- bcmgenet_probe()
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1594973982-27988-1-git-send-email-zhangchangzhong@huawei.com>
-From:   Doug Berger <opendmb@gmail.com>
-Message-ID: <8bdd1465-fcaf-4946-3ee9-baeec765247d@gmail.com>
-Date:   Fri, 17 Jul 2020 10:30:18 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <1594973982-27988-1-git-send-email-zhangchangzhong@huawei.com>
-Content-Type: text/plain; charset=utf-8
+        id S1726442AbgGQRdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 13:33:18 -0400
+Received: from mail-dm6nam11on2132.outbound.protection.outlook.com ([40.107.223.132]:53011
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726090AbgGQRdR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 13:33:17 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Hgym1Qo+1/ba/dsg9RLQFeVrk+dwaVGK8+dlWulWrCDDfmjKIyAIreZIGhlmHbulOhu5C3L5gRd2XYfvnpiTdgCS55LtuVgUBUY7Hta07gYg5Kxah6jZADDIF5Rt+p9NnLA76GxmPVTsSFO85Pe0lyRSQeXmxAHb4YJ3HWoEH4N+gq5UYONgIIBkjwryA4Z9Pn4JgBnb6ej9XypJ3fAd4BbSLqxV2NRZHGhgdf/2pTNodCXOi8ME309pHY2qw8+Kvg3Y3ijhPaLJ6XXvC/ZG8EylU+AwcINFQsEzzRaWWAcnzEdHjLFreLuXwE9g3fAJVJUcz28GrWG9UnFUDDRV9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iNMzJDxwcwAthU7J4GppMMAYF8dMWAcftzoiC2kJZ1I=;
+ b=oEADTyeB603hnTyxNjPU7QQMS1xYWpWHQ8Ln6zJ4Athvmu24iVSTQOUMyVeIdPxcio2F5BAwcxOx5cF0+PYmQVPL5owpE4FIlf89C1bx95PG0aB21Thw+0L+enZczsviNUfIZxqpusIqHkXFpwFNll+GyyF84IiZZT1fEGJZ7MZ18g/WRy4HGf2EJ8LYGAh/vD//0qkI9rMsTa55uzyGI+xNsgO/BOCHQSdRi+dBAK1H0NA8lxcr5+BTbkWfoSRP1VhH9/DV8j6iKsCq04jbRMrWpGf0Y0JVtpiOvz7PFfWECqwbigjq/0/r75IhyIC6cxKtnU3tpU7MLMqgOB993Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iNMzJDxwcwAthU7J4GppMMAYF8dMWAcftzoiC2kJZ1I=;
+ b=Mkxw5LhlcyQ3JUtN1o9ZQ1E6YpZemtW5brJAslCSYjsHvbBIXt5xJ1KkOTS+F5QQtRleLHZIN7gKBQ+zOOReSAQIBWNEECsgohDtCe37LTYcb21yAVVI1twiqhesi5VE4cP9i0No682Gjwm4h+TA08jbORfUtNnGpskOHRa4osQ=
+Received: from DM5PR2101MB0934.namprd21.prod.outlook.com (2603:10b6:4:a5::36)
+ by DM6PR21MB1225.namprd21.prod.outlook.com (2603:10b6:5:167::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.7; Fri, 17 Jul
+ 2020 17:33:15 +0000
+Received: from DM5PR2101MB0934.namprd21.prod.outlook.com
+ ([fe80::88cd:6c37:e0f5:2743]) by DM5PR2101MB0934.namprd21.prod.outlook.com
+ ([fe80::88cd:6c37:e0f5:2743%3]) with mapi id 15.20.3195.019; Fri, 17 Jul 2020
+ 17:33:15 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Miller <davem@davemloft.net>
+CC:     Chi Song <Song.Chi@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>, "andriin@fb.com" <andriin@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@chromium.org" <kpsingh@chromium.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next] net: hyperv: Add attributes to show RX/TX
+ indirection table
+Thread-Topic: [PATCH net-next] net: hyperv: Add attributes to show RX/TX
+ indirection table
+Thread-Index: AdZb/5iAkDMuWyahRIOBehKiULg7mgATtGGAAAFgBuAAAcsygAAAsQeAAACKiOA=
+Date:   Fri, 17 Jul 2020 17:33:15 +0000
+Message-ID: <DM5PR2101MB09345765A15DC9F03AADB7B6CA7C0@DM5PR2101MB0934.namprd21.prod.outlook.com>
+References: <HK0P153MB027502644323A21B09F6DA60987C0@HK0P153MB0275.APCP153.PROD.OUTLOOK.COM>
+        <20200717082451.00c59b42@hermes.lan>
+        <DM5PR2101MB09344BA75F08EC926E31E040CA7C0@DM5PR2101MB0934.namprd21.prod.outlook.com>
+        <20200717.095535.195550343235350259.davem@davemloft.net>
+ <20200717101523.6573061b@hermes.lan>
+In-Reply-To: <20200717101523.6573061b@hermes.lan>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-07-17T17:33:13Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=c806d5b1-7276-4183-aff1-a0e05585cc2b;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
+authentication-results: networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=none action=none
+ header.from=microsoft.com;
+x-originating-ip: [75.100.88.238]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 117819bf-de4f-41af-daeb-08d82a777ca4
+x-ms-traffictypediagnostic: DM6PR21MB1225:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR21MB1225BDA193D1095B038B2FCECA7C0@DM6PR21MB1225.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5AfwNNgeztAZdeI9OC4j8WwMtFV0veZGXWolbJn2vSpcj7FQKGn0NPl8HdyF9euIdeGdIz+EpK9dAAYmJ36u1n7QW00nDvF4Dc1P0m58uAn/ACgJ5Ok1by0XoS6PLEqWQfu9YUs4C84mtU+D4f237DMtzkuALrWFVM1dLVszP7Qg5SNnSrtPtstxN2XACj+2EJRjdP3QiMinpFwMpzP0dyVbghxPH180QbOZBwlRwmn7l82jQZo67ZEvZDaqm0aUs8nR6vdMbKt8OVRX6nNUQFQQ3lyIWqNL1CIttnmWkE78fz+oxOsTyu/bpks0EWjzGnegVjgYq/QPo9eS1sQFAQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR2101MB0934.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(376002)(346002)(136003)(396003)(71200400001)(76116006)(66446008)(8990500004)(66476007)(66556008)(66946007)(7696005)(6506007)(186003)(33656002)(53546011)(26005)(316002)(83380400001)(54906003)(86362001)(55016002)(7416002)(110136005)(52536014)(2906002)(82960400001)(9686003)(10290500003)(64756008)(8936002)(8676002)(82950400001)(4326008)(478600001)(5660300002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: ONWJ3pNHMyuoRR1iEzO/TnZ3BO3TNFkJBn8RxItzDyZ1ik1XKgrQ3z8Snt4b53S7rIUo8kssxf3FCyeP5CVSLzKSdkkXngESzUfZpFW5yfjy2EXZvp1fb7Cm3E3KPXHv42nMFStPIsw420aVn8v02QwOaxFlNWS4qHwuPrxpPQDN7K5tTEYQMTO9h8iYSe8Jl0tlIyo0990Pcc0zz/vn9kJaXk7m6qKAwf0qlm9dwSNjN1GbrB4QLY25v3O59xJ5tEjwY3NqEU8t9T+jRGHNkTDeOoe594J7c8czV1hlSQd8UNR61tPgh2NJ5DMB5snHjWk5M5x0nsHGiyH/6E3aLa6nPJvkqCp/hBHf2/zKNChjrXtCjHF0W2MpyJQeLHBCT9y6U7cGhdbCQ83evsifRo+s9eFSJQF0V56Wk3q8YyTeJlcl/OMclBKWTfXy9Csbh2KvoOCTfzozZLcaXOYx8JiYvAY9agJY4q9qtnq8RG4=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR2101MB0934.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 117819bf-de4f-41af-daeb-08d82a777ca4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2020 17:33:15.2709
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: P8uR5xew2FFuEWkNSBfGIbpUwl8XETgOlg6uDuR7OUZbbZg7ZDb9uApEaqYrzF6+4MDUeRq3fMUpVFRTjP/i+w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1225
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/17/2020 1:19 AM, Zhang Changzhong wrote:
-> The driver forgets to call clk_disable_unprepare() in error path after
-> a success calling for clk_prepare_enable().
-> 
-> Fix to goto err_clk_disable if clk_prepare_enable() is successful.
-> 
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> ---
->  drivers/net/ethernet/broadcom/genet/bcmgenet.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index ee84a26..23df6f2 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -4016,7 +4016,7 @@ static int bcmgenet_probe(struct platform_device *pdev)
->  	if (err)
->  		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
->  	if (err)
-> -		goto err;
-> +		goto err_clk_disable;
-Please split this clause out as a separate pull-request with this fixes tag:
-Fixes: 99d55638d4b0 ("net: bcmgenet: enable NETIF_F_HIGHDMA flag")
 
->  
->  	/* Mii wait queue */
->  	init_waitqueue_head(&priv->wq);
-> @@ -4028,14 +4028,14 @@ static int bcmgenet_probe(struct platform_device *pdev)
->  	if (IS_ERR(priv->clk_wol)) {
->  		dev_dbg(&priv->pdev->dev, "failed to get enet-wol clock\n");
->  		err = PTR_ERR(priv->clk_wol);
-> -		goto err;
-> +		goto err_clk_disable;
->  	}
->  
->  	priv->clk_eee = devm_clk_get_optional(&priv->pdev->dev, "enet-eee");
->  	if (IS_ERR(priv->clk_eee)) {
->  		dev_dbg(&priv->pdev->dev, "failed to get enet-eee clock\n");
->  		err = PTR_ERR(priv->clk_eee);
-> -		goto err;
-> +		goto err_clk_disable;
->  	}
->  
->  	/* If this is an internal GPHY, power it on now, before UniMAC is
-> 
-Please split these changes into a pull-request with fixes tag:
-Fixes: c80d36ff63a5 ("net: bcmgenet: Use devm_clk_get_optional() to get
-the clocks")
 
-Resubmit the pull-requests with [PATCH net].
-That will make them easier to apply to stable branches.
+> -----Original Message-----
+> From: Stephen Hemminger <stephen@networkplumber.org>
+> Sent: Friday, July 17, 2020 1:15 PM
+> To: David Miller <davem@davemloft.net>
+> Cc: Haiyang Zhang <haiyangz@microsoft.com>; Chi Song
+> <Song.Chi@microsoft.com>; KY Srinivasan <kys@microsoft.com>; Stephen
+> Hemminger <sthemmin@microsoft.com>; wei.liu@kernel.org;
+> kuba@kernel.org; ast@kernel.org; daniel@iogearbox.net; kafai@fb.com;
+> songliubraving@fb.com; yhs@fb.com; andriin@fb.com;
+> john.fastabend@gmail.com; kpsingh@chromium.org; linux-
+> hyperv@vger.kernel.org; netdev@vger.kernel.org
+> Subject: Re: [PATCH net-next] net: hyperv: Add attributes to show RX/TX
+> indirection table
+>=20
+> On Fri, 17 Jul 2020 09:55:35 -0700 (PDT) David Miller <davem@davemloft.ne=
+t>
+> wrote:
+>=20
+> > From: Haiyang Zhang <haiyangz@microsoft.com>
+> > Date: Fri, 17 Jul 2020 16:18:11 +0000
+> >
+> > > Also in some minimal installation, "ethtool" may not always be
+> > > installed.
+> >
+> > This is never an argument against using the most well suited API for
+> > exporting information to the user.
+> >
+> > You can write "minimal" tools that just perform the ethtool netlink
+> > operations you require for information retrieval, you don't have to
+> > have the ethtool utility installed.
+>=20
+> Would it be better in the long term to make the transmit indirection tabl=
+e
+> available under the new rt_netlink based API's for ethtool?
+>=20
+> I can imagine that other hardware or hypervisors might have the same kind=
+ of
+> transmit mapping.
 
-Otherwise:
-Acked-by: Doug Berger <opendmb@gmail.com>
+I think it should be a good long term plan, if going forward more NIC=20
+drivers start to use TX table in the future.
 
-Thanks!
+Thanks,
+- Haiyang
