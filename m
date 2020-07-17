@@ -2,76 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B579B22353F
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 09:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ACAC2235D7
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 09:23:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726775AbgGQHNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 03:13:43 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:40618 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726101AbgGQHNn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jul 2020 03:13:43 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 08372C15F50A8CB3C10F;
-        Fri, 17 Jul 2020 15:13:41 +0800 (CST)
-Received: from [127.0.0.1] (10.174.179.81) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Fri, 17 Jul 2020
- 15:13:37 +0800
-Subject: Re: [PATCH] net: cxgb3: add missed destroy_workqueue in
- nci_register_device
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <sameo@linux.intel.com>,
-        <cuissard@marvell.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200717061854.7765-1-wanghai38@huawei.com>
-From:   "wanghai (M)" <wanghai38@huawei.com>
-Message-ID: <61a6ea2c-035d-555e-4af8-5415390eff0e@huawei.com>
-Date:   Fri, 17 Jul 2020 15:13:37 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20200717061854.7765-1-wanghai38@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.81]
-X-CFilter-Loop: Reflected
+        id S1728049AbgGQHX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 03:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725995AbgGQHXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 03:23:25 -0400
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8D8C061755
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 00:23:24 -0700 (PDT)
+Received: by mail-qk1-x74a.google.com with SMTP id 13so5447490qks.11
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 00:23:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=5JEHKtkNKwD/IFM6abRMVdLiY/nHNFDRNsJu7Y4oxIQ=;
+        b=EVLuhEDfl6DZfCFR93tOM8LMOcPSAmqarvN0/aeKDzhjJYsPnD9A76hKAwYn5U+vLl
+         X7nj7aHYzY4TzVwkilEoKwV6Ns3VmLifEJtEfuWg4vHnd7VPvumlPkpdZuLPeWo7GOqU
+         lQPQp4w1EtYwsS98PsELQYO2qF7wd2VRo8EVI9Z0Al/Xcu5hYNIAKOuoz2TmrKsO3Bom
+         Za8jUnqGG5TpaxAA+3Dx3imqKnHPD92aJfjs0uLieGleb+sD5faOWhZhW8Nr8aNfKal+
+         cN8+7hatUtaeN8yo4AdOrjYVoUwqzEh2h6vBq9KCZZCNZkNNrQUtF/Ze7TFtOY1nATBk
+         4B2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=5JEHKtkNKwD/IFM6abRMVdLiY/nHNFDRNsJu7Y4oxIQ=;
+        b=hSy8FMoWlO6PEJNDDxQURtVYPnrSOJr3dvNj9l+7tj219CfhGTad8XZ1In7ZxkdB3U
+         lk/MbHl7ILLPT+IRwXalYEiAar15VtcjBeVBpkrRe0yiI2um0ycixFUDKK2ja5Y9Yh4Y
+         3vr6tIsIU8sMlpcFW8Ug+CIDZc3tErrQMKUrKhlUn6P1dUBUjSkwL0AVI8B/PERIYHxm
+         yvoesjItwM1FyKte8WtLfuA5YNKxwj8qPN0NPyzbGHLhAO5glAn9WrT3P32GoaCa6es7
+         g/v+aCvi6yZ23b0EfJ221eiTB7FF0SEU65+4V1FZgEZBcueVahCs4/5kjve1YKmm7cEB
+         e3Rw==
+X-Gm-Message-State: AOAM5329124TlWSjyM1KMZf//ovBmQ4/NgHxEfQeTMCblDUdfF9b74kn
+        RilSlgnYZaaSRmC3KEE1VbabYYOyBWLf
+X-Google-Smtp-Source: ABdhPJyu6o/+eHADGbRiTA6nJ9eXX4wP+XlVH17O9nWIVLs4cg1HQkJTLuqrw9yZ/ysh1FWVtnVwOREcvew3
+X-Received: by 2002:a0c:e747:: with SMTP id g7mr7589622qvn.77.1594970603845;
+ Fri, 17 Jul 2020 00:23:23 -0700 (PDT)
+Date:   Fri, 17 Jul 2020 00:23:19 -0700
+Message-Id: <20200717072319.101302-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.rc0.105.gf9edc3c819-goog
+Subject: [PATCH] libbpf bpf_helpers: Use __builtin_offsetof for offsetof if available
+From:   Ian Rogers <irogers@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-subject msg was wrong. "net: cxgb3:" should be "nfc: nci:".  v2 patch 
-has been sent.
+The non-builtin route for offsetof has a dependency on size_t from
+stdlib.h/stdint.h that is undeclared and may break targets.
+The offsetof macro in bpf_helpers may disable the same macro in other
+headers that have a #ifdef offsetof guard. Rather than add additional
+dependencies improve the offsetof macro declared here to use the
+builtin if available.
 
-("[PATCH v2] nfc: nci: add missed destroy_workqueue in nci_register_device")
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/lib/bpf/bpf_helpers.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-在 2020/7/17 14:18, Wang Hai 写道:
-> When nfc_register_device fails in nci_register_device,
-> destroy_workqueue() shouled be called to destroy ndev->tx_wq.
->
-> Fixes: 3c1c0f5dc80b ("NFC: NCI: Fix nci_register_device init sequence")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> ---
->   net/nfc/nci/core.c | 5 ++++-
->   1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
-> index 7cd524884304..78ea8c94dcba 100644
-> --- a/net/nfc/nci/core.c
-> +++ b/net/nfc/nci/core.c
-> @@ -1228,10 +1228,13 @@ int nci_register_device(struct nci_dev *ndev)
->   
->   	rc = nfc_register_device(ndev->nfc_dev);
->   	if (rc)
-> -		goto destroy_rx_wq_exit;
-> +		goto destroy_tx_wq_exit;
->   
->   	goto exit;
->   
-> +destroy_tx_wq_exit:
-> +	destroy_workqueue(ndev->tx_wq);
-> +
->   destroy_rx_wq_exit:
->   	destroy_workqueue(ndev->rx_wq);
->   
+diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+index a510d8ed716f..ed2ac74fc515 100644
+--- a/tools/lib/bpf/bpf_helpers.h
++++ b/tools/lib/bpf/bpf_helpers.h
+@@ -40,8 +40,12 @@
+  * Helper macro to manipulate data structures
+  */
+ #ifndef offsetof
++#if __has_builtin(__builtin_offsetof)
++#define offsetof(TYPE, MEMBER)  __builtin_offsetof(TYPE, MEMBER)
++#else
+ #define offsetof(TYPE, MEMBER)  ((size_t)&((TYPE *)0)->MEMBER)
+ #endif
++#endif
+ #ifndef container_of
+ #define container_of(ptr, type, member)				\
+ 	({							\
+-- 
+2.28.0.rc0.105.gf9edc3c819-goog
 
