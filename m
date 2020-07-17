@@ -2,168 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42BF4223E5B
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 16:40:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42EB0223E81
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 16:45:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726873AbgGQOj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 10:39:56 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:34358 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726736AbgGQOjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 10:39:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594996794;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=jQ1u8/99K/G1qNvXcgWcYBuy43JIq/zexiQg5fz1KLE=;
-        b=eNwdgTsxaWqmxqZdlSts5vFH5hlLNQZVIkLQZm/EITZb5tS6I15pBWD/hG+WSt51XeK9ZX
-        IMgA5heSrYUj2LaYOMzuoi0O4Vupo+x6FRMNIw0v8nG08hAOyU1OWv+IHRlsNIVFvjK29m
-        9H8BhXwHL5A0oAyRI2khXUY7oJ4OJhs=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-131-otNMfD_TNxmwTsi8BcGCKw-1; Fri, 17 Jul 2020 10:39:50 -0400
-X-MC-Unique: otNMfD_TNxmwTsi8BcGCKw-1
-Received: by mail-wm1-f70.google.com with SMTP id y204so9173613wmd.2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 07:39:50 -0700 (PDT)
+        id S1726530AbgGQOpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 10:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46542 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726198AbgGQOpG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 10:45:06 -0400
+Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD99BC0619D2
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 07:45:05 -0700 (PDT)
+Received: by mail-vs1-xe44.google.com with SMTP id d11so4979212vsq.3
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 07:45:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YUU+l/uugMm05I2TDTU4x3lCFRy5lxHAsg55wxkbx7k=;
+        b=WL38k5Hbtl/qknAsRuM4lkja5dGLEVx6l52pRHq6owLQ8UupcFU0aVR0IokgqHDZ16
+         fx4zVT6gmPE8s42LSrXJ9t5Wjw1VysRi+eP3IGWUVIGuHuKXon2gFeQPwWaB2IqAsck0
+         E583jKf/4xtKAQBJO4G5Bvf6+vrEwTDZF7uB+LnJK25ZjItbThpxSUWRJ3uiNzpdiznY
+         3rVgcvpZg4xM3UyVynufmZZra+3eJwOYETvpFkQippGl6dW/ncZezgtUw8Nns7UnkZZW
+         k327rI1t7br4YHlZyz+XJ6G/aK9X/o7cD3cC0ZD1P1hKT2+s1mYGD5hVXcBh8uEfbuxV
+         JRsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=jQ1u8/99K/G1qNvXcgWcYBuy43JIq/zexiQg5fz1KLE=;
-        b=WdbZh1Ge1QfbVHi/AuXpHPXUYa/03B+eP4zzC3XrNrU2RuEFPmHtqubPbC1l+h6r+O
-         CetkgA7lB5KxpX3+TEPpMeSTnhYtTYPRKuv6NAXSi2qwtepXH7tujMe1UryIZhBC2GZM
-         u7JlwtNR3j9HfQD+HUPOIoeIHua0sBmMbhwilxAtxia388E9CBWP/S/HwkIyfo5pjvxm
-         EZfqqcOfwogn/O8GQXfeYgNbPR/P+ug7b2P0FW+LZNtDyvJzyCTawqlTOlVZcPjYhBcK
-         v97bFVPDcZ2HaHwD4I+jtw/YXCTnTE2XVEHAl9wY+hBYhq8r3DRKvqo+vidz0Es+wFsH
-         t8kg==
-X-Gm-Message-State: AOAM533VxMvcG7E5EQDxPcxn2zUJCQ0+OsYkfZeSGzp7FRQgDF4Z7QDv
-        K+NDXBlqTlsWG3803lnlLMc/ATSJv2unNbZl44i/1FA1hCwZUpjWMkF/IhgQ4gSj/4WxlkG0xi7
-        HrbU/Q8zDWEEs4O6y
-X-Received: by 2002:a5d:420e:: with SMTP id n14mr11360721wrq.164.1594996789271;
-        Fri, 17 Jul 2020 07:39:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy6uWks+wjVqhCWhjct4DyaIj5qS+V6EY7W0MT1BPE0LDhsi471XwBLnVY2OdDq1GT2XhKRdQ==
-X-Received: by 2002:a5d:420e:: with SMTP id n14mr11360685wrq.164.1594996788881;
-        Fri, 17 Jul 2020 07:39:48 -0700 (PDT)
-Received: from pc-2.home (2a01cb058529bf0075b0798a7f5975cb.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:bf00:75b0:798a:7f59:75cb])
-        by smtp.gmail.com with ESMTPSA id g195sm14303495wme.38.2020.07.17.07.39.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 07:39:48 -0700 (PDT)
-Date:   Fri, 17 Jul 2020 16:39:46 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org,
-        Martin Varghese <martinvarghesenokia@gmail.com>
-Subject: [PATCH iproute2] testsuite: Add tests for bareudp tunnels
-Message-ID: <2e407fe6bd0983d7c9d98793273b839f2afe7811.1594996695.git.gnault@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YUU+l/uugMm05I2TDTU4x3lCFRy5lxHAsg55wxkbx7k=;
+        b=ucQ/Cfaa8aP6/kdHUSSiU9FxUWDHy9Xq1ocw4rSmoMp4lledqQepviPFtIcXdhxweE
+         7Dtr2iho0O17c75u37yexAYT51TFcOh3tHn6HNzUkfQQEcOFAGK/fwxnxaYjo5QcweJ9
+         fsEuqRBLZIqzOlDejyuqvb8sMZZgcX0MJGMtUxxPkyGYxSUUOsYUR8MMMPIdpEoPMlO7
+         aRBtgkKxRBrK+JS0txIUl/5zNWTcaFORTDJN9EGdvmzfnuxcn0delnWzX0FqclO5TJYP
+         nOAwNOyVrNAz0Ofwiowp9Z90yMA9xdm6ocpVUKP1AqaWc9kQzGJ1EuN5M9k7sbB4I19s
+         nR1w==
+X-Gm-Message-State: AOAM530DN5VxDf1ALz/BqDKbWuTBQ8hyeqkjWkufgR2z18m7i1uZEhvt
+        uhOLnVmBSC6UmIf4csV4u/6xRtnQSNERg95aEBc2Lw==
+X-Google-Smtp-Source: ABdhPJy8ShFuoC6t0O8FYtZkHIPqF4iIyWQIjnRkfdvEERvVKHI7hLe5OYr0HFUhXmsTqMlbceujZRc/pvi1yYYekro=
+X-Received: by 2002:a67:cf88:: with SMTP id g8mr7074120vsm.25.1594997104396;
+ Fri, 17 Jul 2020 07:45:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <66945532-2470-4240-b213-bc36791b934b@huawei.com>
+In-Reply-To: <66945532-2470-4240-b213-bc36791b934b@huawei.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Fri, 17 Jul 2020 10:44:47 -0400
+Message-ID: <CADVnQyksf4Nt2hHsWaAs3wLOK+rDp79ph5TZywMqfEAPOVgzww@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: Optimize the recovery of tcp when lack of SACK
+To:     hujunwei <hujunwei4@huawei.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>, wangxiaogang3@huawei.com,
+        jinyiting@huawei.com, xuhanbing@huawei.com, zhengshaoyu@huawei.com,
+        Yuchung Cheng <ycheng@google.com>,
+        Ilpo Jarvinen <ilpo.jarvinen@cs.helsinki.fi>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test the plain MPLS (unicast and multicast) and IP (v4 and v6) modes.
-Also test the multiproto option for MPLS and for IP.
+On Fri, Jul 17, 2020 at 7:43 AM hujunwei <hujunwei4@huawei.com> wrote:
+>
+> From: Junwei Hu <hujunwei4@huawei.com>
+>
+> In the document of RFC2582(https://tools.ietf.org/html/rfc2582)
+> introduced two separate scenarios for tcp congestion control:
+> There are two separate scenarios in which the TCP sender could
+> receive three duplicate acknowledgements acknowledging "send_high"
+> but no more than "send_high".  One scenario would be that the data
+> sender transmitted four packets with sequence numbers higher than
+> "send_high", that the first packet was dropped in the network, and
+> the following three packets triggered three duplicate
+> acknowledgements acknowledging "send_high".  The second scenario
+> would be that the sender unnecessarily retransmitted three packets
+> below "send_high", and that these three packets triggered three
+> duplicate acknowledgements acknowledging "send_high".  In the absence
+> of SACK, the TCP sender in unable to distinguish between these two
+> scenarios.
+>
+> We encountered the second scenario when the third-party switches
+> does not support SACK, and I use kprobes to find that tcp kept in
+> CA_Loss state when high_seq equal to snd_nxt.
+>
+> All of the packets is acked if high_seq equal to snd_nxt, the TCP
+> sender is able to distinguish between these two scenarios in
+> described RFC2582. So the current state can be switched.
 
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- testsuite/tests/ip/link/add_type_bareudp.t | 86 ++++++++++++++++++++++
- 1 file changed, 86 insertions(+)
- create mode 100755 testsuite/tests/ip/link/add_type_bareudp.t
+Can you please elaborate on how the sender is able to distinguish
+between the two scenarios, after your patch?
 
-diff --git a/testsuite/tests/ip/link/add_type_bareudp.t b/testsuite/tests/ip/link/add_type_bareudp.t
-new file mode 100755
-index 00000000..8a2a1edf
---- /dev/null
-+++ b/testsuite/tests/ip/link/add_type_bareudp.t
-@@ -0,0 +1,86 @@
-+#!/bin/sh
-+
-+. lib/generic.sh
-+
-+ts_log "[Testing Add BareUDP interface (unicast MPLS)]"
-+NEW_DEV="$(rand_dev)"
-+
-+ts_ip "$0" "Add $NEW_DEV BareUDP interface (unicast MPLS)" link add dev $NEW_DEV type bareudp dstport 6635 ethertype mpls_uc
-+
-+ts_ip "$0" "Show $NEW_DEV BareUDP interface (unicast MPLS)" -d link show dev $NEW_DEV
-+test_on "$NEW_DEV"
-+test_on "dstport 6635"
-+test_on "ethertype mpls_uc"
-+test_on "nomultiproto"
-+
-+ts_ip "$0" "Del $NEW_DEV BareUDP interface (unicast MPLS)" link del dev $NEW_DEV
-+
-+
-+ts_log "[Testing Add BareUDP interface (multicast MPLS)]"
-+NEW_DEV="$(rand_dev)"
-+
-+ts_ip "$0" "Add $NEW_DEV BareUDP interface (multicast MPLS)" link add dev $NEW_DEV type bareudp dstport 6635 ethertype mpls_mc
-+
-+ts_ip "$0" "Show $NEW_DEV BareUDP interface (multicast MPLS)" -d link show dev $NEW_DEV
-+test_on "$NEW_DEV"
-+test_on "dstport 6635"
-+test_on "ethertype mpls_mc"
-+test_on "nomultiproto"
-+
-+ts_ip "$0" "Del $NEW_DEV BareUDP interface (multicast MPLS)" link del dev $NEW_DEV
-+
-+
-+ts_log "[Testing Add BareUDP interface (unicast and multicast MPLS)]"
-+NEW_DEV="$(rand_dev)"
-+
-+ts_ip "$0" "Add $NEW_DEV BareUDP interface (unicast and multicast MPLS)" link add dev $NEW_DEV type bareudp dstport 6635 ethertype mpls_uc multiproto
-+
-+ts_ip "$0" "Show $NEW_DEV BareUDP interface (unicast and multicast MPLS)" -d link show dev $NEW_DEV
-+test_on "$NEW_DEV"
-+test_on "dstport 6635"
-+test_on "ethertype mpls_uc"
-+test_on "multiproto"
-+
-+ts_ip "$0" "Del $NEW_DEV BareUDP interface (unicast and multicast MPLS)" link del dev $NEW_DEV
-+
-+
-+ts_log "[Testing Add BareUDP interface (IPv4)]"
-+NEW_DEV="$(rand_dev)"
-+
-+ts_ip "$0" "Add $NEW_DEV BareUDP interface (IPv4)" link add dev $NEW_DEV type bareudp dstport 6635 ethertype ipv4
-+
-+ts_ip "$0" "Show $NEW_DEV BareUDP interface (IPv4)" -d link show dev $NEW_DEV
-+test_on "$NEW_DEV"
-+test_on "dstport 6635"
-+test_on "ethertype ip"
-+test_on "nomultiproto"
-+
-+ts_ip "$0" "Del $NEW_DEV BareUDP interface (IPv4)" link del dev $NEW_DEV
-+
-+
-+ts_log "[Testing Add BareUDP interface (IPv6)]"
-+NEW_DEV="$(rand_dev)"
-+
-+ts_ip "$0" "Add $NEW_DEV BareUDP interface (IPv6)" link add dev $NEW_DEV type bareudp dstport 6635 ethertype ipv6
-+
-+ts_ip "$0" "Show $NEW_DEV BareUDP interface (IPv6)" -d link show dev $NEW_DEV
-+test_on "$NEW_DEV"
-+test_on "dstport 6635"
-+test_on "ethertype ipv6"
-+test_on "nomultiproto"
-+
-+ts_ip "$0" "Del $NEW_DEV BareUDP interface (IPv6)" link del dev $NEW_DEV
-+
-+
-+ts_log "[Testing Add BareUDP interface (IPv4 and IPv6)]"
-+NEW_DEV="$(rand_dev)"
-+
-+ts_ip "$0" "Add $NEW_DEV BareUDP interface (IPv4 and IPv6)" link add dev $NEW_DEV type bareudp dstport 6635 ethertype ipv4 multiproto
-+
-+ts_ip "$0" "Show $NEW_DEV BareUDP interface (IPv4 and IPv6)" -d link show dev $NEW_DEV
-+test_on "$NEW_DEV"
-+test_on "dstport 6635"
-+test_on "ethertype ip"
-+test_on "multiproto"
-+
-+ts_ip "$0" "Del $NEW_DEV BareUDP interface (IPv4 and IPv6)" link del dev $NEW_DEV
--- 
-2.21.3
+It seems to me that with this proposed patch, there is the risk of
+spurious fast recoveries due to 3 dupacks in the second second
+scenario (the sender unnecessarily retransmitted three packets below
+"send_high"). Can you please post a packetdrill test to demonstrate
+that with this patch the TCP sender does not spuriously enter fast
+recovery in such a scenario?
 
+> This patch enhance the TCP congestion control algorithm for lack
+> of SACK.
+
+You describe this as an enhancement. Can you please elaborate on the
+drawback/downside of staying in CA_Loss in this case you are
+describing (where you used kprobes to find that TCP stayed in CA_Loss
+state when high_seq was equal to snd_nxt)?
+
+> Signed-off-by: Junwei Hu <hujunwei4@huawei.com>
+> Reviewed-by: XiaoGang Wang <wangxiaogang3@huawei.com>
+> Reviewed-by: Yiting Jin <jinyiting@huawei.com>
+> ---
+>  net/ipv4/tcp_input.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 9615e72..d5573123 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -2385,7 +2385,8 @@ static bool tcp_try_undo_recovery(struct sock *sk)
+>         } else if (tp->rack.reo_wnd_persist) {
+>                 tp->rack.reo_wnd_persist--;
+>         }
+> -       if (tp->snd_una == tp->high_seq && tcp_is_reno(tp)) {
+> +       if (tp->snd_una == tp->high_seq &&
+> +           tcp_is_reno(tp) && tp->snd_nxt > tp->high_seq) {
+
+To deal with sequence number wrap-around, sequence number comparisons
+in TCP need to use the before() and after() helpers, rather than
+comparison operators. Here it seems the patch should use after()
+rather than >. However,  I think the larger concern is the concern
+mentioned above.
+
+best,
+neal
