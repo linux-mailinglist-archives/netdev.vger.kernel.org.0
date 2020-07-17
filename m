@@ -2,199 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B45422435F
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 20:54:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 134B3224367
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 20:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728274AbgGQSxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 14:53:14 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:9478 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726205AbgGQSxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 14:53:14 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06HIZ9SF030836;
-        Fri, 17 Jul 2020 11:53:00 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=a59wO4L262LnLMSRi2DHtdAMFkNo0WC7nKFiMRcM5Ew=;
- b=fqAcVbVhZJLS+gLZ6+AIFwuKe9xslrqj/iAgh90V0VWur9/WFg8EvSuplYIVCMiBI/lb
- AwtbrB54uVAvisuZoAaREMOcrnn3UYzf9J5BBSXXH75Wq1anqYixs3haffiPHQTLkOx1
- desNxAGU+jwJPbkTcgwxaXDFDGy+7GAul1M= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 32a7x7tq9p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 17 Jul 2020 11:53:00 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 17 Jul 2020 11:52:59 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bvw/unoezXQ88UukbMFKslaEH0/nUGEIuG1c/EXH7DxcegiKGnx06KS8U1Z7pD48/kBLA8U8zGiOy5aKcf8MTXn9pyIqjdvm7Fl+9HO1Um2TGK/AaLTV7E7G9DoLuOJNaGWbiuP2axO3zasHHN+hkD4HyHdE8JAP5g45Qr2SEiObUOs0OqWZpoJrbunBYS7wkFc4fab8LpnzZuqWugR8rRP/Ad1sR+59l6BJtQIpNa1D3lOyG+g9k4v3TGBUSkEW1qUYO2zgcL0UGpczfLMijKYN0ZkNsGUgtl2X93X2CtubVJEUAdXN0YSay8ybjMQdUi6gvIGw/a3lceH7WnhnFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a59wO4L262LnLMSRi2DHtdAMFkNo0WC7nKFiMRcM5Ew=;
- b=bN/VaojjEOzqigvQtQ5QeaFhmk4OA1hiN6keAIcMhw767FitUUe5421TtiI3X9rqPzQZgZSLEVdRufaehUBBn/ZpNtFMO2agb/BDs5lMXGqwnfkm6uLCUrera4+xXLBTEMWbVl4bRRUr9SEhkLzvRW1ypCSxQMI2FFJ3DokyVxuStCDK6EGn2eA+Yhe4ifN8Et8NYlRZlyk+vUce0zgWm8ClZfFvlFUD1bEiy1/Y8DIDHluRGwI9/uW5hiHNZUJykUXCacNtY+/FRmyU7Xv5XMweE/7I9IIgncchwI1ZNyMBxK65/jvrtPTxBNjOB/Z9fZIancTn03nOtY9L1hYiMg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a59wO4L262LnLMSRi2DHtdAMFkNo0WC7nKFiMRcM5Ew=;
- b=QR/WRarVaDcUOFUtfyQFYUeHX9XSZU/3htA6SatmEloiZnDrkIkTf56OszKNn2eKS+vZ7fccnl6BO73EKyY+NhqveB3ThmgnvTAaz3MzEYamnElp5fnPHzvt0IO8LAZmOzVXfQ9/HauV4hLIEXmvaaEKQRTY9lnSnce0V2wqS1s=
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2246.namprd15.prod.outlook.com (2603:10b6:a02:8d::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Fri, 17 Jul
- 2020 18:52:58 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3174.026; Fri, 17 Jul 2020
- 18:52:58 +0000
-Subject: Re: [PATCH bpf-next 09/13] tools/bpftool: add bpftool support for bpf
- map element iterator
-To:     Quentin Monnet <quentin@isovalent.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>
-References: <20200713161739.3076283-1-yhs@fb.com>
- <20200713161749.3077526-1-yhs@fb.com>
- <9f865c02-291c-8622-b601-f4613356a469@isovalent.com>
- <c70ebb0a-538c-a84f-f606-1d08af426fde@fb.com>
- <b845b429-0b9b-72cd-eaf4-3e621055fe71@isovalent.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <2712b760-f203-564a-c559-f1b7546a0e83@fb.com>
-Date:   Fri, 17 Jul 2020 11:52:57 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.10.0
-In-Reply-To: <b845b429-0b9b-72cd-eaf4-3e621055fe71@isovalent.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BYAPR07CA0037.namprd07.prod.outlook.com
- (2603:10b6:a03:60::14) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1728194AbgGQS4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 14:56:18 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:50157 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726205AbgGQS4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 14:56:17 -0400
+Received: by mail-io1-f69.google.com with SMTP id l7so7088494ioq.16
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 11:56:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=/eE1uWfIufW8vQMws/6jTiBN48Hy0hA3uku2kspGanw=;
+        b=tO/XOr223LASNZleHhbKcGirllr1YZnpUxLmG/FObWiCKi057ul7U6o5jbAWu/8B6o
+         GRm0LoZEiYgA5Waji6s4SNraHBOLrB1nd3JcnLdoHQvQSBtkLkmb9r5kMTjVIZMXy8D0
+         NRy/0QjDwHivyp5aOQ9UYOVIAwDPjiSYU7Jk4EJVuMOcu9dlbhU+OelnTQ1Hy1DQ0Zuw
+         5e1PDczpBXRWGYIDuZXB1vM1ocyud3+hqa5dgeeBeIzmvhRR+MXIrFUqXimgjhNQ/gF8
+         29i3TtND5wFXFYdhIqPBsIoMI6qnSjtlPrPVYv2xFTW1s7xcbBfujldA2Kh8zJ4nHEWe
+         XePA==
+X-Gm-Message-State: AOAM533YIzfuvHgP4p9ruT1YGqC+CDIlpUeeBZzVsQIUKHyxWLUlZPam
+        yabTJbGDJAl6k2htuqRUKyU3BYNmwRB14fKRYmnrUTxRKHRo
+X-Google-Smtp-Source: ABdhPJw1KdtA5u31Fl/CNv94wwk5X2Mpayq9H7dYSjQoKDiYimMRrexaFHuYHOiZGYWJ4jbuCnTIrXYo/uhswzv7ZNO6SlvEqSxj
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21cf::1160] (2620:10d:c090:400::5:32be) by BYAPR07CA0037.namprd07.prod.outlook.com (2603:10b6:a03:60::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.18 via Frontend Transport; Fri, 17 Jul 2020 18:52:57 +0000
-X-Originating-IP: [2620:10d:c090:400::5:32be]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6ee54a41-4f65-43b4-a038-08d82a829f57
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2246:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB224648B4F3E91C228B0FAC1ED37C0@BYAPR15MB2246.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PP8OV8qkqd5NCbc2Qc3rbfSdDEVl/bD2qX4ABIYYsDjCyE/U71pdiS8DJ/1FMJ9Bwt71rIXSMTSsxxFv5L+n2GdtX4L6PrOWu1keyIjSfXr0VH9dFEqq7zI4j4NZt2x+hogLaRB8gzfQPBjeCXWrX0enl8C8upaXlG33+VIV1xf2og6KutZo55ocDTsE/nm8CzRJdYKjOYT0H90YJdAR30tIBnNrO5P1xsFWy1dTfeyqfy6NIr26jdOvefT2f2Zn/7T+h3pcd74VXdi703B4+7EhB3ON6oJS4Vk2ejUsNy5p2PdhUd8vOlJQPZ8tsCi19i5ocHTV90lAqAxwrd6NW5FulYYHYQzNqWqt3Wk03i25am43MLlHG8AwofxS0ND8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39860400002)(366004)(136003)(396003)(376002)(346002)(31696002)(86362001)(66476007)(5660300002)(8676002)(66946007)(52116002)(66556008)(83380400001)(36756003)(478600001)(6486002)(16526019)(31686004)(186003)(53546011)(2906002)(8936002)(2616005)(4326008)(316002)(54906003)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: iHFCDfYXbeitSWl0HY63xZatH0CgkksWxu+rqrXrg8NexfiPfXUdnFsdpYQBZgsONTVt2vNgNVX8IQcBVibXAjSg5EVe08VqlNIJmW11tirfBqQp8a/mSEjlAvG13lD69Sf1b1L8JImJyjZzTkGGwsFieoYu93YoiX3COf30iK1U3LBbbJFA8p/iT8QTLBZGLH2Bodhmn04RGAXDqmfd6iMajBfaP4zNqLvVTP4QvCJkIVphUeNHV666lFyHoVo4mfH3RDQBHckulRc5RmZ0kq6TSEHbRDoL5CwTz3gKMsS2WIYU7ClzMbjS1knKgAxiD2WnYVTqdcrbYXC3LOdozbPZFY87UYuyqGKvGqiXIDnBJqizP/h0rU2jq/exG5Ys6x8I9hQj9PjTbF6UClo2qY6HsYWEXra9HO2Myu6cHOiY94WQsYnB7g1GzdGMbFvf2lQwRgrHIobiEmWvbikYKsGPDPqOT0Ck015ancTKvp11MyZY28NRqR/O57Kie98+ZSFJw5i6r0HN+E7VyoR8Hg==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ee54a41-4f65-43b4-a038-08d82a829f57
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2020 18:52:58.2259
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cK3MqtjkCQR7T3tvyB91oqzZy8WHo/CplekfY4BcstsGui27UAKlSGZa7NYVa0zd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2246
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-17_09:2020-07-17,2020-07-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- priorityscore=1501 bulkscore=0 impostorscore=0 lowpriorityscore=0
- suspectscore=0 clxscore=1015 mlxlogscore=999 malwarescore=0 mlxscore=0
- adultscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007170130
-X-FB-Internal: deliver
+X-Received: by 2002:a92:1bdb:: with SMTP id f88mr11577720ill.233.1595012176420;
+ Fri, 17 Jul 2020 11:56:16 -0700 (PDT)
+Date:   Fri, 17 Jul 2020 11:56:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000030271005aaa7b603@google.com>
+Subject: general protection fault in ath9k_hif_usb_rx_cb (2)
+From:   syzbot <syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, ath9k-devel@qca.qualcomm.com,
+        davem@davemloft.net, kuba@kernel.org, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    313da01a usb: misc: sisusbvga: Move static const tables ou..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+console output: https://syzkaller.appspot.com/x/log.txt?x=14226dd0900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=999be4eb2478ffa5
+dashboard link: https://syzkaller.appspot.com/bug?extid=c6dde1f690b60e0b9fbe
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc00000001f2: 0000 [#1] SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000f90-0x0000000000000f97]
+CPU: 1 PID: 356 Comm: syz-executor.1 Not tainted 5.8.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:627 [inline]
+RIP: 0010:ath9k_hif_usb_rx_cb+0x843/0xf80 drivers/net/wireless/ath/ath9k/hif_usb.c:671
+Code: 00 00 00 49 8d 7f 08 48 89 f8 48 c1 e8 03 80 3c 28 00 0f 85 51 05 00 00 4d 8b 7f 08 49 8d bf 90 0f 00 00 48 89 f8 48 c1 e8 03 <0f> b6 04 28 84 c0 74 08 3c 03 0f 8e 25 05 00 00 48 8b 44 24 30 0f
+RSP: 0018:ffff8881db309920 EFLAGS: 00010002
+RAX: 00000000000001f2 RBX: 0000000000000c05 RCX: ffffc900006a8000
+RDX: 0000000000040000 RSI: ffffffff82e1f88b RDI: 0000000000000f90
+RBP: dffffc0000000000 R08: 0000000000000001 R09: ffff8881c3e144a3
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000c05 R14: ffff8881d9babb40 R15: 0000000000000000
+FS:  0000000002773940(0000) GS:ffff8881db300000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f052251e740 CR3: 00000001ad63e000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ __usb_hcd_giveback_urb+0x32d/0x560 drivers/usb/core/hcd.c:1650
+ usb_hcd_giveback_urb+0x367/0x410 drivers/usb/core/hcd.c:1716
+ dummy_timer+0x11f2/0x3240 drivers/usb/gadget/udc/dummy_hcd.c:1967
+ call_timer_fn+0x1ac/0x6e0 kernel/time/timer.c:1404
+ expire_timers kernel/time/timer.c:1449 [inline]
+ __run_timers.part.0+0x54c/0x9e0 kernel/time/timer.c:1773
+ __run_timers kernel/time/timer.c:1745 [inline]
+ run_timer_softirq+0x80/0x120 kernel/time/timer.c:1786
+ __do_softirq+0x222/0x95b kernel/softirq.c:292
+ asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
+ </IRQ>
+ __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
+ run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
+ do_softirq_own_stack+0xed/0x140 arch/x86/kernel/irq_64.c:77
+ invoke_softirq kernel/softirq.c:387 [inline]
+ __irq_exit_rcu kernel/softirq.c:417 [inline]
+ irq_exit_rcu+0x150/0x1f0 kernel/softirq.c:429
+ sysvec_apic_timer_interrupt+0x49/0xc0 arch/x86/kernel/apic/apic.c:1091
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:596
+RIP: 0010:arch_local_irq_restore arch/x86/include/asm/irqflags.h:85 [inline]
+RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:160 [inline]
+RIP: 0010:_raw_spin_unlock_irqrestore+0x3b/0x40 kernel/locking/spinlock.c:191
+Code: e8 ca b5 76 fb 48 89 ef e8 62 a2 77 fb f6 c7 02 75 11 53 9d e8 16 46 95 fb 65 ff 0d cf 0d 52 7a 5b 5d c3 e8 f7 4b 95 fb 53 9d <eb> ed 0f 1f 00 55 48 89 fd 65 ff 05 b5 0d 52 7a 45 31 c9 41 b8 01
+RSP: 0018:ffff8881ad7b7c30 EFLAGS: 00000292
+RAX: 0000000000243e09 RBX: 0000000000000292 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff85afe139
+RBP: ffff8881d57fd4a0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff8881c6e14b00 R14: 0000000000000000 R15: ffff8881c6e14fd8
+ do_wait+0x42e/0x9b0 kernel/exit.c:1473
+ kernel_wait4+0x14c/0x260 kernel/exit.c:1621
+ __do_sys_wait4+0x13f/0x150 kernel/exit.c:1633
+ do_syscall_64+0x50/0x90 arch/x86/entry/common.c:359
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x415ffa
+Code: Bad RIP value.
+RSP: 002b:00007ffd2403c368 EFLAGS: 00000246 ORIG_RAX: 000000000000003d
+RAX: ffffffffffffffda RBX: 0000000000023821 RCX: 0000000000415ffa
+RDX: 0000000040000001 RSI: 00007ffd2403c3a0 RDI: ffffffffffffffff
+RBP: 0000000000000060 R08: 0000000000000001 R09: 0000000002773940
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffd2403c3a0 R14: 0000000000023821 R15: 00007ffd2403c3b0
+Modules linked in:
+---[ end trace 1a7827ecbdcfd2ad ]---
+RIP: 0010:ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:627 [inline]
+RIP: 0010:ath9k_hif_usb_rx_cb+0x843/0xf80 drivers/net/wireless/ath/ath9k/hif_usb.c:671
+Code: 00 00 00 49 8d 7f 08 48 89 f8 48 c1 e8 03 80 3c 28 00 0f 85 51 05 00 00 4d 8b 7f 08 49 8d bf 90 0f 00 00 48 89 f8 48 c1 e8 03 <0f> b6 04 28 84 c0 74 08 3c 03 0f 8e 25 05 00 00 48 8b 44 24 30 0f
+RSP: 0018:ffff8881db309920 EFLAGS: 00010002
+RAX: 00000000000001f2 RBX: 0000000000000c05 RCX: ffffc900006a8000
+RDX: 0000000000040000 RSI: ffffffff82e1f88b RDI: 0000000000000f90
+RBP: dffffc0000000000 R08: 0000000000000001 R09: ffff8881c3e144a3
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000c05 R14: ffff8881d9babb40 R15: 0000000000000000
+FS:  0000000002773940(0000) GS:ffff8881db300000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f052251e740 CR3: 00000001ad63e000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
-On 7/17/20 5:57 AM, Quentin Monnet wrote:
-> 2020-07-16 10:42 UTC-0700 ~ Yonghong Song <yhs@fb.com>
->>
->>
->> On 7/16/20 9:39 AM, Quentin Monnet wrote:
->>> 2020-07-13 09:17 UTC-0700 ~ Yonghong Song <yhs@fb.com>
-> 
-> [...]
-> 
->>> Could you please also update the bash completion?
->>
->> This is always my hardest part! In this case it is
->>    bpftool iter pin <filedir> <filedir> [map MAP]
->>
->> Any particular existing bpftool implementation I can imitate?
-> 
-> I would say the closest/easiest to reuse we have would be
-> completion for the MAP part in either
-> 
-> 	bpftool prog attach PROG ATTACH_TYPE [MAP]
-> 
-> or
-> 
-> 	bpftool map pin MAP FILE
-> 
-> But I'll save you some time, I gave it a go and this is what
-> I came up with:
-> 
-> ------
-> diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-> index 25b25aca1112..6640e18096a8 100644
-> --- a/tools/bpf/bpftool/bash-completion/bpftool
-> +++ b/tools/bpf/bpftool/bash-completion/bpftool
-> @@ -613,9 +613,26 @@ _bpftool()
->               esac
->               ;;
->           iter)
-> +            local MAP_TYPE='id pinned name'
->               case $command in
->                   pin)
-> -                    _filedir
-> +                    case $prev in
-> +                        $command)
-> +                            _filedir
-> +                            ;;
-> +                        id)
-> +                            _bpftool_get_map_ids
-> +                            ;;
-> +                        name)
-> +                            _bpftool_get_map_names
-> +                            ;;
-> +                        pinned)
-> +                            _filedir
-> +                            ;;
-> +                        *)
-> +                            _bpftool_one_of_list $MAP_TYPE
-> +                            ;;
-> +                    esac
->                       return 0
->                       ;;
->                   *)
-> ------
-> 
-> So if we complete "bpftool iter pin", if we're right after "pin"
-> we still complete with file names (for the object file to pin).
-> If we're after one of the map keywords (id|name|pinned), complete
-> with map ids or map names or file names, depending on the case.
-> For other cases (i.e. after object file to pin), offer the map
-> keywords (id|name|pinned).
-> 
-> Feel free to reuse.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Thanks a lot! Will reuse and mention your suggestion of this code
-in commit message.
-
-> 
-> Best,
-> Quentin
-> 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
