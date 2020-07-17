@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41108222FA9
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 02:05:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E69B222FAB
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 02:05:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726344AbgGQAFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 20:05:00 -0400
-Received: from mail-eopbgr80071.outbound.protection.outlook.com ([40.107.8.71]:33630
+        id S1726440AbgGQAFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 20:05:04 -0400
+Received: from mail-eopbgr80054.outbound.protection.outlook.com ([40.107.8.54]:58740
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726221AbgGQAE5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Jul 2020 20:04:57 -0400
+        id S1726233AbgGQAE7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Jul 2020 20:04:59 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Km8ormHRCyxqtdTGw36vrf1Ac1ZdIW3lLFGXChmJf1AdU8W4tfExYJv5Qbv+D/pA/2L5xk9t/6JmTy4qfcoGsPNjx0voZ3cXxwoy8zQpN2YfaXYkZUfGfJ+Y7QAIhmU7xOPsgeQ4Fo1WsASL+rLtb7uCIPkakNF8em4/HIM/HbTwt5AnABY7gh4LFnyyKgjgkzV8QONOBMOpT2JLQZ7FVnZUCuoBSebAC6plO0FAk+wU4SRZ1nvCX88nX5K3U9fLr8OsRVLsi7BTOfBa5jsyt7NtAt1gZy8QkJ+eKiguA5LjNG2hPU1tGju5GguKpQ/VP307mXXOMTp1PS9i2FEFZA==
+ b=Fy0a43P/Ome7yjgnsBFvybbmPL7sVen75PcxfR3EPPqa69saRoF9iLSoKaVFgpqy0Mm/HIfomJaxW7NdX2I5PkmaVve+t8pBNaH7sJPR3vVqU2LEmxFtEk/rSXNDUyOH6Ris/+UU2vzkwkq1ZAGHaTm2n6cdDq13ugmiVWD2g60QjQUAF7ifOr+oFDfO2kQeboww1V/kjLF/GaglwA/ln/BGOuszQ0eIEGc6QP1Uwp2gk6Xw+HlR5N0Aq4XajbFFTGn21zkbFsFc35fjWslSXMmqj25fdJPu0dFF1LJkgmTF/HajtxWsDu4TUJJAaARSCrmSghL1UFHd3Wph9IPvkw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NEQnCybcx0O4HW0gje45jrCze7DDb257wOGboIPi0L0=;
- b=ic8nOqmvM8DJG537XnRYS11cpur3txchZ9meEDMqgZM7GEyeCzpxZG1mD9vCNpWyx4aiKsSqxaYE/H93HwvD0rRvVtEZcF2t8CGxwUDC2PQvOYV0YyiAUYeNCaitlKdd7coHaEy3xFYjgmFVtMG8qLoEXcmzFJqCDGobs5YDGiA4jgbGjJeERayatJP3EjqaKQ4TJWkMO/TtAGlTX0lrv0I+Z9NAGUPZ/0lC00+dXAOyobUhmbFVh3qOuxhz83NPKM8Q/GOHJHD+c4dvr/xHVtnP6J8xEQivLPeOg8tMXav68AAKbjeOQqicmtLL8MoN/j/8AOwBc0TnPfPWdPCHhQ==
+ bh=lkuEasTvbOWdFjnnQycRuYQ2olNopUTxJjis8ntnMvE=;
+ b=LzLCIJipJn6kYhtfQbuE0DK1BrOS2q6jPei6uQokDJ+OzeVoHMo+SRAm6EzRtxW65moLto0/gYlClN3ABVprUG8wh42SkSDTb7iIFFVL+/wEG/NZVKlsAWKgi7k4WA07tKs6qMyghDdER6HjUyA630YxlvmNGKOe5UNkofw/LvnkqwaAAzwA0o8+yIlkkYRAemILIoaFVWHJ4lU13fyuXpWGaINrqxYnT3bckWCtXpnNnainbyFb7NKLaz0FO9MkO84RqrckuD7g7AI4pFMYxgaDIRGsWdT259NRYp7m84u3AXtoqatOJyoSU2OZp390yOIodwFOVszW7ZaCIELGmg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NEQnCybcx0O4HW0gje45jrCze7DDb257wOGboIPi0L0=;
- b=KK8frs1NQaILBougyAn/6YRAbxcnT7gWI5tBiQ62JtsoLEfBuKPJujqI2tVfxXURq0aBdItP+ZSHqmFgYLQ3foxzdNxRBKshf5Ymmhe4XjMQ8bwgmPXY/MPsOdGpL4u+dBAL6RjJdFc6itrrFzBOSanyoqDV3x/2dtpYHDpd1zM=
+ bh=lkuEasTvbOWdFjnnQycRuYQ2olNopUTxJjis8ntnMvE=;
+ b=jAq3D8Pto3yoDVUVR2q5wO/HgwDejt9sjcwJz7fxkYE7eFKQlAc3Kiv95/ZlVmXY3J12Kdb78p5IxOmVC8habpLnsO/QzsGzSvK3dz4mgNpw0O3Dtuujm1kaI5+DRoqPMq17+51NnE1lv4Q+ci6rrkncwcM6XCT2q+oH+AdGYFc=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR0501MB2448.eurprd05.prod.outlook.com (2603:10a6:800:68::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21; Fri, 17 Jul
- 2020 00:04:44 +0000
+ 2020 00:04:47 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3174.027; Fri, 17 Jul 2020
- 00:04:44 +0000
+ 00:04:47 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Raed Salem <raeds@mellanox.com>,
+        Huy Nguyen <huyn@mellanox.com>,
         Tariq Toukan <tariqt@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next V2 06/15] net/mlx5: Accel, Add core IPsec support for the Connect-X family
-Date:   Thu, 16 Jul 2020 17:04:01 -0700
-Message-Id: <20200717000410.55600-7-saeedm@mellanox.com>
+Subject: [net-next V2 07/15] net/mlx5: IPsec: Add HW crypto offload support
+Date:   Thu, 16 Jul 2020 17:04:02 -0700
+Message-Id: <20200717000410.55600-8-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200717000410.55600-1-saeedm@mellanox.com>
 References: <20200717000410.55600-1-saeedm@mellanox.com>
@@ -57,31 +58,31 @@ X-ClientProxiedBy: BYAPR05CA0008.namprd05.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR05CA0008.namprd05.prod.outlook.com (2603:10b6:a03:c0::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.9 via Frontend Transport; Fri, 17 Jul 2020 00:04:42 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR05CA0008.namprd05.prod.outlook.com (2603:10b6:a03:c0::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.9 via Frontend Transport; Fri, 17 Jul 2020 00:04:44 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: dd4df321-b211-41a4-b381-08d829e502a4
+X-MS-Office365-Filtering-Correlation-Id: 09efac84-e020-4c15-eb15-08d829e5041c
 X-MS-TrafficTypeDiagnostic: VI1PR0501MB2448:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0501MB24482406121255A1D28C56C4BE7C0@VI1PR0501MB2448.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:758;
+X-Microsoft-Antispam-PRVS: <VI1PR0501MB244858798BA93FEFDB22AEAABE7C0@VI1PR0501MB2448.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: H0A1BCuHQ8QooeTIl+TbVdyNxUYP9AdrRBHqhEyySrCVff5E5YSAc39SrAQFA02+tDOID5Ft8XWLJ4Ld7KPF/bWeNCfqt8Jy46egjmRYriSwCbkxnJydBu9FjFDW2w1k3SQokCBfZNDr0KnuO/fA3wfsW/RIF0HMrDyf8ATIxEZR0uKFIXyZ60703HkSkPIuu1VVsSdoTfEbI6X49PP7gJwddb9b+dX6shcSV2pNVs6zqusRFA7pc/p6p4ul3R/IQXn0bS3JbFymoDi0SLn6UU6BgiQZgS8zocL4xmrN6vc8wYH8FWI5tbDBDFqoLx2N22rARNMBTvucTRGOldCAGj06chRPahY6tjQIL7D6BUc2CyhtgiSkAw57Ky+TuOFH
+X-Microsoft-Antispam-Message-Info: LJEl8oB3tGamXJi9moYIKu+UI06rA1g9rt0TKoNMxgAK4Vz/pwt+5lXHdiUUi24qsLIaHaujR63Sb+T/Ct3wbgaR3CY6zAdxgygvA3aaappeC8eonxEV3/ZNRwH37lsUxx1CaSxG6PYni+gD38q0O90GDnYew9t92wqq/V2MehjjpDxFRSFrhgk7lRkGeWpXGEUC2UEWOMKdMMVNPcrYVq3fPMI6jjvF+kUcvhg17nHi99DDmGSnT3ekvJNCMsny22IEbqvJNtJKu1P8zK1AHSRkRl4K8bwtd42o4AV3AjIjXrVUZr3/md1GDHt6GCOlG9LO07HWniQq7G+WO+QKEvbbMbBKRocSDr9/+ywIqWxhgeydh4FWPdMaaaCeN9w3
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(136003)(39860400002)(376002)(346002)(6506007)(66476007)(316002)(66946007)(66556008)(6512007)(107886003)(4326008)(2906002)(478600001)(86362001)(956004)(83380400001)(2616005)(30864003)(36756003)(6666004)(52116002)(8676002)(26005)(5660300002)(16526019)(8936002)(1076003)(110136005)(6486002)(54906003)(186003)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: mp2Iol3v4ZMJa6TCc4NMFd/tVkPrUk/oQ0X2I//V5y0SO507QNDwftNfiQAtl3/4/+fIOqjKM78WP2ZCu8zDo9Cwpi++Vv4P5/MXrnc89qp8xmjp+qPRpH6ignYw9GtyArLLawPW3EUmn5/UBD7EpjS7hwdOwNBt6owzzQwEwwtLcORq1lgoq0Uu8uU9ltua4krVi60Ay1oztKuYmfPpJ1ghUf+K/Q40xMpBEMJs2b0gfnczJZG91ordrO+T0vNtbDikQCP6BxuqXzhzEXRJTyzKR430cZfg2HbeHXLfD3pjfByqPbsF11M412qdMKZTzIahc2o7j8ltQ8kO82m+mWtXAwRu/YzsR83GqrmqrV1iHwrqbnEOUtoP7+xCE+dHyYps3kTd7/VzWIbzGx1K8fFs04GeLiswIwkllAMtRg0MIWMwkXeAWtboMZ+V0Ago+AygeYidSSZ+ccR5Tg6aa2fPNXKqeCt7IyiD4lKJmxg=
+X-MS-Exchange-AntiSpam-MessageData: WHG3WvvH1kAA0WEXItThOsRFlZJOFCLbJusIBsyHbzVkj+N1enNAfU7e3cTGN1IzzE5T/KXHxzrXGMoFYiVLlCexLpc8n+IR6zsSliIluZNdqHfITaEly+abZdwrkqDymFwtRvTgUQLASXYmn3Lmgjnk6tFmoo/vDVrR/m6j8ryryp0fJD2HZ1j4XD0vSlV7pc3TUWkwYsiVE6evFMs9mKADESIH3CbuOaH3TvJlCZdt2zi5M+XW+jkcRZ+fNrS6VNXJQvo2yfeu+m59HY88/rHb7dt30aomUVfr4JMBDfhhsZLNusbwWxgIban+UAHTKPSFiNLHzHVBL5r7BToWIq+wzlhsNnp6UiN3dV6PAw8PVV4Lr9zP3ExrRk7oIBt526PawP639H3NR46xdtjHb9FdX2MM4UGdHJ1Iw6pwQN3FZNyxcAoTLFQ1ms94q9HAS/dXsdLa3rIQNf/FvkTG6qM7UNU1sxCMmPcMPRXA8g8=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd4df321-b211-41a4-b381-08d829e502a4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 09efac84-e020-4c15-eb15-08d829e5041c
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2020 00:04:44.5610
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2020 00:04:46.8727
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VzqRGI/jVWKHUe0Ejhf9nzY1z/bCdYDqS5ZJ6thEohWqge1erxr2z4jvkAjVD6MGuSqQHETpc/gb3AYckHdAAA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: PHY7SlGOv4q8lWJP0Ai45zCJAkcu73hKdAMMljJVEEwGKx/zwrWzmtzYoYQn2DJ3AOG5VVy936v/TqbL6Wpe9w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2448
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -90,546 +91,555 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Raed Salem <raeds@mellanox.com>
 
-This to set the base for downstream patches to support
-the new IPsec implementation of the Connect-X family.
+This patch adds support for Connect-X IPsec crypto offload
+by implementing the IPsec acceleration layer needed routines,
+which delegates IPsec offloads to Connect-X routines.
 
-Following modifications made:
-- Remove accel layer dependency from MLX5_FPGA_IPSEC.
-- Introduce accel_ipsec_ops, each IPsec device will
-  have to support these ops.
+In Connect-X IPsec, a Security Association (SA) is added or deleted
+via allocating a HW context of an encryption/decryption key and
+a HW context of a matching SA (IPsec object).
+The Security Policy (SP) is added or deleted by creating matching Tx/Rx
+steering rules whith an action of encryption/decryption respectively,
+executed using the previously allocated SA HW context.
+
+When new xfrm state (SA) is added:
+- Use a separate crypto key HW context.
+- Create a separate IPsec context in HW to inlcude the SA properties:
+ - aes-gcm salt.
+ - ICV properties (ICV length, implicit IV).
+ - on supported devices also update ESN.
+ - associate the allocated crypto key with this IPsec context.
+
+Introduce a new compilation flag MLX5_IPSEC for it.
+
+Downstream patches will implement the Rx,Tx steering
+and will add the update esn.
 
 Signed-off-by: Raed Salem <raeds@mellanox.com>
+Signed-off-by: Huy Nguyen <huyn@mellanox.com>
 Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/accel/ipsec.c | 103 +++++++++++++-----
- .../ethernet/mellanox/mlx5/core/accel/ipsec.h |  45 ++++----
- .../mellanox/mlx5/core/en_accel/ipsec.c       |   4 +-
- .../ethernet/mellanox/mlx5/core/fpga/ipsec.c  |  51 ++++++---
- .../ethernet/mellanox/mlx5/core/fpga/ipsec.h  |  37 ++-----
- .../net/ethernet/mellanox/mlx5/core/main.c    |   9 +-
- include/linux/mlx5/accel.h                    |   6 +-
- include/linux/mlx5/driver.h                   |   3 +
- 8 files changed, 154 insertions(+), 104 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/Kconfig   |  15 +-
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   1 +
+ .../ethernet/mellanox/mlx5/core/accel/ipsec.c |   7 +-
+ .../mellanox/mlx5/core/accel/ipsec_offload.c  | 291 ++++++++++++++++++
+ .../mellanox/mlx5/core/accel/ipsec_offload.h  |  38 +++
+ .../ethernet/mellanox/mlx5/core/accel/tls.c   |   4 +-
+ .../mellanox/mlx5/core/en_accel/ipsec.c       |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c  |   6 +
+ .../ethernet/mellanox/mlx5/core/lib/crypto.c  |   5 +-
+ .../ethernet/mellanox/mlx5/core/lib/mlx5.h    |   8 +-
+ 10 files changed, 372 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+index 7d7148c9b7440..99f1ec3b2575b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+@@ -134,12 +134,25 @@ config MLX5_FPGA_IPSEC
+ 	mlx5_core driver will include the Innova FPGA core and allow building
+ 	sandbox-specific client drivers.
+ 
++config MLX5_IPSEC
++	bool "Mellanox Technologies IPsec Connect-X support"
++	depends on MLX5_CORE_EN
++	depends on XFRM_OFFLOAD
++	depends on INET_ESP_OFFLOAD || INET6_ESP_OFFLOAD
++	select MLX5_ACCEL
++	default n
++	help
++	Build IPsec support for the Connect-X family of network cards by Mellanox
++	Technologies.
++	Note: If you select this option, the mlx5_core driver will include
++	IPsec support for the Connect-X family.
++
+ config MLX5_EN_IPSEC
+ 	bool "IPSec XFRM cryptography-offload accelaration"
+ 	depends on MLX5_CORE_EN
+ 	depends on XFRM_OFFLOAD
+ 	depends on INET_ESP_OFFLOAD || INET6_ESP_OFFLOAD
+-	depends on MLX5_FPGA_IPSEC
++	depends on MLX5_FPGA_IPSEC || MLX5_IPSEC
+ 	default n
+ 	help
+ 	  Build support for IPsec cryptography-offload accelaration in the NIC.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+index 124caec65a347..375c8a2d42fa8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+@@ -64,6 +64,7 @@ mlx5_core-$(CONFIG_MLX5_CORE_IPOIB) += ipoib/ipoib.o ipoib/ethtool.o ipoib/ipoib
+ #
+ # Accelerations & FPGA
+ #
++mlx5_core-$(CONFIG_MLX5_IPSEC) += accel/ipsec_offload.o
+ mlx5_core-$(CONFIG_MLX5_FPGA_IPSEC) += fpga/ipsec.o
+ mlx5_core-$(CONFIG_MLX5_FPGA_TLS)   += fpga/tls.o
+ mlx5_core-$(CONFIG_MLX5_ACCEL)      += lib/crypto.o accel/tls.o accel/ipsec.o
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.c
-index 8a4985d8cbfe5..628c8887f0869 100644
+index 628c8887f0869..09f5ce97af46b 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.c
-@@ -31,37 +31,83 @@
-  *
-  */
- 
--#ifdef CONFIG_MLX5_FPGA_IPSEC
--
- #include <linux/mlx5/device.h>
- 
+@@ -36,12 +36,17 @@
  #include "accel/ipsec.h"
  #include "mlx5_core.h"
  #include "fpga/ipsec.h"
++#include "accel/ipsec_offload.h"
  
-+void mlx5_accel_ipsec_init(struct mlx5_core_dev *mdev)
-+{
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops = mlx5_fpga_ipsec_ops(mdev);
-+	int err = 0;
-+
-+	if (!ipsec_ops || !ipsec_ops->init) {
-+		mlx5_core_dbg(mdev, "IPsec ops is not supported\n");
-+		return;
-+	}
-+
-+	err = ipsec_ops->init(mdev);
-+	if (err) {
-+		mlx5_core_warn_once(mdev, "Failed to start IPsec device, err = %d\n", err);
-+		return;
-+	}
-+
-+	mdev->ipsec_ops = ipsec_ops;
-+}
-+
-+void mlx5_accel_ipsec_cleanup(struct mlx5_core_dev *mdev)
-+{
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops = mdev->ipsec_ops;
-+
-+	if (!ipsec_ops || !ipsec_ops->cleanup)
-+		return;
-+
-+	ipsec_ops->cleanup(mdev);
-+}
-+
- u32 mlx5_accel_ipsec_device_caps(struct mlx5_core_dev *mdev)
+ void mlx5_accel_ipsec_init(struct mlx5_core_dev *mdev)
  {
--	return mlx5_fpga_ipsec_device_caps(mdev);
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops = mdev->ipsec_ops;
+-	const struct mlx5_accel_ipsec_ops *ipsec_ops = mlx5_fpga_ipsec_ops(mdev);
++	const struct mlx5_accel_ipsec_ops *ipsec_ops;
+ 	int err = 0;
+ 
++	ipsec_ops = (mlx5_ipsec_offload_ops(mdev)) ?
++		     mlx5_ipsec_offload_ops(mdev) :
++		     mlx5_fpga_ipsec_ops(mdev);
 +
-+	if (!ipsec_ops || !ipsec_ops->device_caps)
-+		return 0;
+ 	if (!ipsec_ops || !ipsec_ops->init) {
+ 		mlx5_core_dbg(mdev, "IPsec ops is not supported\n");
+ 		return;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
+new file mode 100644
+index 0000000000000..1c8923f42b093
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
+@@ -0,0 +1,291 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIBt
++/* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
 +
-+	return ipsec_ops->device_caps(mdev);
- }
- EXPORT_SYMBOL_GPL(mlx5_accel_ipsec_device_caps);
- 
- unsigned int mlx5_accel_ipsec_counters_count(struct mlx5_core_dev *mdev)
- {
--	return mlx5_fpga_ipsec_counters_count(mdev);
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops = mdev->ipsec_ops;
++#include "mlx5_core.h"
++#include "ipsec_offload.h"
++#include "lib/mlx5.h"
 +
-+	if (!ipsec_ops || !ipsec_ops->counters_count)
-+		return -EOPNOTSUPP;
-+
-+	return ipsec_ops->counters_count(mdev);
- }
- 
- int mlx5_accel_ipsec_counters_read(struct mlx5_core_dev *mdev, u64 *counters,
- 				   unsigned int count)
- {
--	return mlx5_fpga_ipsec_counters_read(mdev, counters, count);
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops = mdev->ipsec_ops;
-+
-+	if (!ipsec_ops || !ipsec_ops->counters_read)
-+		return -EOPNOTSUPP;
-+
-+	return ipsec_ops->counters_read(mdev, counters, count);
- }
- 
- void *mlx5_accel_esp_create_hw_context(struct mlx5_core_dev *mdev,
- 				       struct mlx5_accel_esp_xfrm *xfrm,
- 				       u32 *sa_handle)
- {
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops = mdev->ipsec_ops;
- 	__be32 saddr[4] = {}, daddr[4] = {};
- 
-+	if (!ipsec_ops || !ipsec_ops->create_hw_context)
-+		return  ERR_PTR(-EOPNOTSUPP);
-+
- 	if (!xfrm->attrs.is_ipv6) {
- 		saddr[3] = xfrm->attrs.saddr.a4;
- 		daddr[3] = xfrm->attrs.daddr.a4;
-@@ -70,29 +116,18 @@ void *mlx5_accel_esp_create_hw_context(struct mlx5_core_dev *mdev,
- 		memcpy(daddr, xfrm->attrs.daddr.a6, sizeof(daddr));
- 	}
- 
--	return mlx5_fpga_ipsec_create_sa_ctx(mdev, xfrm, saddr,
--					     daddr, xfrm->attrs.spi,
--					     xfrm->attrs.is_ipv6, sa_handle);
-+	return ipsec_ops->create_hw_context(mdev, xfrm, saddr, daddr, xfrm->attrs.spi,
-+					    xfrm->attrs.is_ipv6, sa_handle);
- }
- 
--void mlx5_accel_esp_free_hw_context(void *context)
-+void mlx5_accel_esp_free_hw_context(struct mlx5_core_dev *mdev, void *context)
- {
--	mlx5_fpga_ipsec_delete_sa_ctx(context);
--}
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops = mdev->ipsec_ops;
- 
--int mlx5_accel_ipsec_init(struct mlx5_core_dev *mdev)
--{
--	return mlx5_fpga_ipsec_init(mdev);
--}
--
--void mlx5_accel_ipsec_build_fs_cmds(void)
--{
--	mlx5_fpga_ipsec_build_fs_cmds();
--}
-+	if (!ipsec_ops || !ipsec_ops->free_hw_context)
-+		return;
- 
--void mlx5_accel_ipsec_cleanup(struct mlx5_core_dev *mdev)
--{
--	mlx5_fpga_ipsec_cleanup(mdev);
-+	ipsec_ops->free_hw_context(context);
- }
- 
- struct mlx5_accel_esp_xfrm *
-@@ -100,9 +135,13 @@ mlx5_accel_esp_create_xfrm(struct mlx5_core_dev *mdev,
- 			   const struct mlx5_accel_esp_xfrm_attrs *attrs,
- 			   u32 flags)
- {
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops = mdev->ipsec_ops;
- 	struct mlx5_accel_esp_xfrm *xfrm;
- 
--	xfrm = mlx5_fpga_esp_create_xfrm(mdev, attrs, flags);
-+	if (!ipsec_ops || !ipsec_ops->esp_create_xfrm)
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	xfrm = ipsec_ops->esp_create_xfrm(mdev, attrs, flags);
- 	if (IS_ERR(xfrm))
- 		return xfrm;
- 
-@@ -113,15 +152,23 @@ EXPORT_SYMBOL_GPL(mlx5_accel_esp_create_xfrm);
- 
- void mlx5_accel_esp_destroy_xfrm(struct mlx5_accel_esp_xfrm *xfrm)
- {
--	mlx5_fpga_esp_destroy_xfrm(xfrm);
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops = xfrm->mdev->ipsec_ops;
-+
-+	if (!ipsec_ops || !ipsec_ops->esp_destroy_xfrm)
-+		return;
-+
-+	ipsec_ops->esp_destroy_xfrm(xfrm);
- }
- EXPORT_SYMBOL_GPL(mlx5_accel_esp_destroy_xfrm);
- 
- int mlx5_accel_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
- 			       const struct mlx5_accel_esp_xfrm_attrs *attrs)
- {
--	return mlx5_fpga_esp_modify_xfrm(xfrm, attrs);
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops = xfrm->mdev->ipsec_ops;
-+
-+	if (!ipsec_ops || !ipsec_ops->esp_modify_xfrm)
-+		return -EOPNOTSUPP;
-+
-+	return ipsec_ops->esp_modify_xfrm(xfrm, attrs);
- }
- EXPORT_SYMBOL_GPL(mlx5_accel_esp_modify_xfrm);
--
--#endif
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.h
-index e89747674712c..fbb9c5415d539 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.h
-@@ -37,7 +37,7 @@
- #include <linux/mlx5/driver.h>
- #include <linux/mlx5/accel.h>
- 
--#ifdef CONFIG_MLX5_FPGA_IPSEC
-+#ifdef CONFIG_MLX5_ACCEL
- 
- #define MLX5_IPSEC_DEV(mdev) (mlx5_accel_ipsec_device_caps(mdev) & \
- 			      MLX5_ACCEL_IPSEC_CAP_DEVICE)
-@@ -49,12 +49,30 @@ int mlx5_accel_ipsec_counters_read(struct mlx5_core_dev *mdev, u64 *counters,
- void *mlx5_accel_esp_create_hw_context(struct mlx5_core_dev *mdev,
- 				       struct mlx5_accel_esp_xfrm *xfrm,
- 				       u32 *sa_handle);
--void mlx5_accel_esp_free_hw_context(void *context);
-+void mlx5_accel_esp_free_hw_context(struct mlx5_core_dev *mdev, void *context);
- 
--int mlx5_accel_ipsec_init(struct mlx5_core_dev *mdev);
--void mlx5_accel_ipsec_build_fs_cmds(void);
-+void mlx5_accel_ipsec_init(struct mlx5_core_dev *mdev);
- void mlx5_accel_ipsec_cleanup(struct mlx5_core_dev *mdev);
- 
-+struct mlx5_accel_ipsec_ops {
-+	u32 (*device_caps)(struct mlx5_core_dev *mdev);
-+	unsigned int (*counters_count)(struct mlx5_core_dev *mdev);
-+	int (*counters_read)(struct mlx5_core_dev *mdev, u64 *counters, unsigned int count);
-+	void* (*create_hw_context)(struct mlx5_core_dev *mdev,
-+				   struct mlx5_accel_esp_xfrm *xfrm,
-+				   const __be32 saddr[4], const __be32 daddr[4],
-+				   const __be32 spi, bool is_ipv6, u32 *sa_handle);
-+	void (*free_hw_context)(void *context);
-+	int (*init)(struct mlx5_core_dev *mdev);
-+	void (*cleanup)(struct mlx5_core_dev *mdev);
-+	struct mlx5_accel_esp_xfrm* (*esp_create_xfrm)(struct mlx5_core_dev *mdev,
-+						       const struct mlx5_accel_esp_xfrm_attrs *attrs,
-+						       u32 flags);
-+	int (*esp_modify_xfrm)(struct mlx5_accel_esp_xfrm *xfrm,
-+			       const struct mlx5_accel_esp_xfrm_attrs *attrs);
-+	void (*esp_destroy_xfrm)(struct mlx5_accel_esp_xfrm *xfrm);
++#define MLX5_IPSEC_DEV_BASIC_CAPS (MLX5_ACCEL_IPSEC_CAP_DEVICE | MLX5_ACCEL_IPSEC_CAP_IPV6 | \
++				   MLX5_ACCEL_IPSEC_CAP_LSO)
++struct mlx5_ipsec_sa_ctx {
++	struct rhash_head hash;
++	u32 enc_key_id;
++	u32 ipsec_obj_id;
++	/* hw ctx */
++	struct mlx5_core_dev *dev;
++	struct mlx5_ipsec_esp_xfrm *mxfrm;
 +};
 +
- #else
++struct mlx5_ipsec_esp_xfrm {
++	/* reference counter of SA ctx */
++	struct mlx5_ipsec_sa_ctx *sa_ctx;
++	struct mutex lock; /* protects mlx5_ipsec_esp_xfrm */
++	struct mlx5_accel_esp_xfrm accel_xfrm;
++};
++
++static u32 mlx5_ipsec_offload_device_caps(struct mlx5_core_dev *mdev)
++{
++	u32 caps = MLX5_IPSEC_DEV_BASIC_CAPS;
++
++	if (!mlx5_is_ipsec_device(mdev))
++		return 0;
++
++	if (MLX5_CAP_IPSEC(mdev, ipsec_crypto_esp_aes_gcm_128_encrypt) &&
++	    MLX5_CAP_IPSEC(mdev, ipsec_crypto_esp_aes_gcm_128_decrypt))
++		caps |= MLX5_ACCEL_IPSEC_CAP_ESP;
++
++	if (MLX5_CAP_IPSEC(mdev, ipsec_esn)) {
++		caps |= MLX5_ACCEL_IPSEC_CAP_ESN;
++		caps |= MLX5_ACCEL_IPSEC_CAP_TX_IV_IS_ESN;
++	}
++
++	/* We can accommodate up to 2^24 different IPsec objects
++	 * because we use up to 24 bit in flow table metadata
++	 * to hold the IPsec Object unique handle.
++	 */
++	WARN_ON_ONCE(MLX5_CAP_IPSEC(mdev, log_max_ipsec_offload) > 24);
++	return caps;
++}
++
++static int
++mlx5_ipsec_offload_esp_validate_xfrm_attrs(struct mlx5_core_dev *mdev,
++					   const struct mlx5_accel_esp_xfrm_attrs *attrs)
++{
++	if (attrs->replay_type != MLX5_ACCEL_ESP_REPLAY_NONE) {
++		mlx5_core_err(mdev, "Cannot offload xfrm states with anti replay (replay_type = %d)\n",
++			      attrs->replay_type);
++		return -EOPNOTSUPP;
++	}
++
++	if (attrs->keymat_type != MLX5_ACCEL_ESP_KEYMAT_AES_GCM) {
++		mlx5_core_err(mdev, "Only aes gcm keymat is supported (keymat_type = %d)\n",
++			      attrs->keymat_type);
++		return -EOPNOTSUPP;
++	}
++
++	if (attrs->keymat.aes_gcm.iv_algo !=
++	    MLX5_ACCEL_ESP_AES_GCM_IV_ALGO_SEQ) {
++		mlx5_core_err(mdev, "Only iv sequence algo is supported (iv_algo = %d)\n",
++			      attrs->keymat.aes_gcm.iv_algo);
++		return -EOPNOTSUPP;
++	}
++
++	if (attrs->keymat.aes_gcm.key_len != 128 &&
++	    attrs->keymat.aes_gcm.key_len != 256) {
++		mlx5_core_err(mdev, "Cannot offload xfrm states with key length other than 128/256 bit (key length = %d)\n",
++			      attrs->keymat.aes_gcm.key_len);
++		return -EOPNOTSUPP;
++	}
++
++	if ((attrs->flags & MLX5_ACCEL_ESP_FLAGS_ESN_TRIGGERED) &&
++	    !MLX5_CAP_IPSEC(mdev, ipsec_esn)) {
++		mlx5_core_err(mdev, "Cannot offload xfrm states with ESN triggered\n");
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
++static struct mlx5_accel_esp_xfrm *
++mlx5_ipsec_offload_esp_create_xfrm(struct mlx5_core_dev *mdev,
++				   const struct mlx5_accel_esp_xfrm_attrs *attrs,
++				   u32 flags)
++{
++	struct mlx5_ipsec_esp_xfrm *mxfrm;
++	int err = 0;
++
++	err = mlx5_ipsec_offload_esp_validate_xfrm_attrs(mdev, attrs);
++	if (err)
++		return ERR_PTR(err);
++
++	mxfrm = kzalloc(sizeof(*mxfrm), GFP_KERNEL);
++	if (!mxfrm)
++		return ERR_PTR(-ENOMEM);
++
++	mutex_init(&mxfrm->lock);
++	memcpy(&mxfrm->accel_xfrm.attrs, attrs,
++	       sizeof(mxfrm->accel_xfrm.attrs));
++
++	return &mxfrm->accel_xfrm;
++}
++
++static void mlx5_ipsec_offload_esp_destroy_xfrm(struct mlx5_accel_esp_xfrm *xfrm)
++{
++	struct mlx5_ipsec_esp_xfrm *mxfrm = container_of(xfrm, struct mlx5_ipsec_esp_xfrm,
++							 accel_xfrm);
++
++	/* assuming no sa_ctx are connected to this xfrm_ctx */
++	WARN_ON(mxfrm->sa_ctx);
++	kfree(mxfrm);
++}
++
++struct mlx5_ipsec_obj_attrs {
++	const struct aes_gcm_keymat *aes_gcm;
++	u32 accel_flags;
++	u32 esn_msb;
++	u32 enc_key_id;
++};
++
++static int mlx5_create_ipsec_obj(struct mlx5_core_dev *mdev,
++				 struct mlx5_ipsec_obj_attrs *attrs,
++				 u32 *ipsec_id)
++{
++	const struct aes_gcm_keymat *aes_gcm = attrs->aes_gcm;
++	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
++	u32 in[MLX5_ST_SZ_DW(create_ipsec_obj_in)] = {};
++	void *obj, *salt_p, *salt_iv_p;
++	int err;
++
++	obj = MLX5_ADDR_OF(create_ipsec_obj_in, in, ipsec_object);
++
++	/* salt and seq_iv */
++	salt_p = MLX5_ADDR_OF(ipsec_obj, obj, salt);
++	memcpy(salt_p, &aes_gcm->salt, sizeof(aes_gcm->salt));
++
++	switch (aes_gcm->icv_len) {
++	case 64:
++		MLX5_SET(ipsec_obj, obj, icv_length,
++			 MLX5_IPSEC_OBJECT_ICV_LEN_8B);
++		break;
++	case 96:
++		MLX5_SET(ipsec_obj, obj, icv_length,
++			 MLX5_IPSEC_OBJECT_ICV_LEN_12B);
++		break;
++	case 128:
++		MLX5_SET(ipsec_obj, obj, icv_length,
++			 MLX5_IPSEC_OBJECT_ICV_LEN_16B);
++		break;
++	default:
++		return -EINVAL;
++	}
++	salt_iv_p = MLX5_ADDR_OF(ipsec_obj, obj, implicit_iv);
++	memcpy(salt_iv_p, &aes_gcm->seq_iv, sizeof(aes_gcm->seq_iv));
++	/* esn */
++	if (attrs->accel_flags & MLX5_ACCEL_ESP_FLAGS_ESN_TRIGGERED) {
++		MLX5_SET(ipsec_obj, obj, esn_en, 1);
++		MLX5_SET(ipsec_obj, obj, esn_msb, attrs->esn_msb);
++		if (attrs->accel_flags & MLX5_ACCEL_ESP_FLAGS_ESN_STATE_OVERLAP)
++			MLX5_SET(ipsec_obj, obj, esn_overlap, 1);
++	}
++
++	MLX5_SET(ipsec_obj, obj, dekn, attrs->enc_key_id);
++
++	/* general object fields set */
++	MLX5_SET(general_obj_in_cmd_hdr, in, opcode,
++		 MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
++	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type,
++		 MLX5_GENERAL_OBJECT_TYPES_IPSEC);
++
++	err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++	if (!err)
++		*ipsec_id = MLX5_GET(general_obj_out_cmd_hdr, out, obj_id);
++
++	return err;
++}
++
++static void mlx5_destroy_ipsec_obj(struct mlx5_core_dev *mdev, u32 ipsec_id)
++{
++	u32 in[MLX5_ST_SZ_DW(general_obj_in_cmd_hdr)] = {};
++	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
++
++	MLX5_SET(general_obj_in_cmd_hdr, in, opcode,
++		 MLX5_CMD_OP_DESTROY_GENERAL_OBJECT);
++	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type,
++		 MLX5_GENERAL_OBJECT_TYPES_IPSEC);
++	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, ipsec_id);
++
++	mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++}
++
++static void *mlx5_ipsec_offload_create_sa_ctx(struct mlx5_core_dev *mdev,
++					      struct mlx5_accel_esp_xfrm *accel_xfrm,
++					      const __be32 saddr[4], const __be32 daddr[4],
++					      const __be32 spi, bool is_ipv6, u32 *hw_handle)
++{
++	struct mlx5_accel_esp_xfrm_attrs *xfrm_attrs = &accel_xfrm->attrs;
++	struct aes_gcm_keymat *aes_gcm = &xfrm_attrs->keymat.aes_gcm;
++	struct mlx5_ipsec_obj_attrs ipsec_attrs = {};
++	struct mlx5_ipsec_esp_xfrm *mxfrm;
++	struct mlx5_ipsec_sa_ctx *sa_ctx;
++	int err;
++
++	/* alloc SA context */
++	sa_ctx = kzalloc(sizeof(*sa_ctx), GFP_KERNEL);
++	if (!sa_ctx)
++		return ERR_PTR(-ENOMEM);
++
++	sa_ctx->dev = mdev;
++
++	mxfrm = container_of(accel_xfrm, struct mlx5_ipsec_esp_xfrm, accel_xfrm);
++	mutex_lock(&mxfrm->lock);
++	sa_ctx->mxfrm = mxfrm;
++
++	/* key */
++	err = mlx5_create_encryption_key(mdev, aes_gcm->aes_key,
++					 aes_gcm->key_len / BITS_PER_BYTE,
++					 MLX5_ACCEL_OBJ_IPSEC_KEY,
++					 &sa_ctx->enc_key_id);
++	if (err) {
++		mlx5_core_dbg(mdev, "Failed to create encryption key (err = %d)\n", err);
++		goto err_sa_ctx;
++	}
++
++	ipsec_attrs.aes_gcm = aes_gcm;
++	ipsec_attrs.accel_flags = accel_xfrm->attrs.flags;
++	ipsec_attrs.esn_msb = accel_xfrm->attrs.esn;
++	ipsec_attrs.enc_key_id = sa_ctx->enc_key_id;
++	err = mlx5_create_ipsec_obj(mdev, &ipsec_attrs,
++				    &sa_ctx->ipsec_obj_id);
++	if (err) {
++		mlx5_core_dbg(mdev, "Failed to create IPsec object (err = %d)\n", err);
++		goto err_enc_key;
++	}
++
++	*hw_handle = sa_ctx->ipsec_obj_id;
++	mxfrm->sa_ctx = sa_ctx;
++	mutex_unlock(&mxfrm->lock);
++
++	return sa_ctx;
++
++err_enc_key:
++	mlx5_destroy_encryption_key(mdev, sa_ctx->enc_key_id);
++err_sa_ctx:
++	mutex_unlock(&mxfrm->lock);
++	kfree(sa_ctx);
++	return ERR_PTR(err);
++}
++
++static void mlx5_ipsec_offload_delete_sa_ctx(void *context)
++{
++	struct mlx5_ipsec_sa_ctx *sa_ctx = (struct mlx5_ipsec_sa_ctx *)context;
++	struct mlx5_ipsec_esp_xfrm *mxfrm = sa_ctx->mxfrm;
++
++	mutex_lock(&mxfrm->lock);
++	mlx5_destroy_ipsec_obj(sa_ctx->dev, sa_ctx->ipsec_obj_id);
++	mlx5_destroy_encryption_key(sa_ctx->dev, sa_ctx->enc_key_id);
++	kfree(sa_ctx);
++	mxfrm->sa_ctx = NULL;
++	mutex_unlock(&mxfrm->lock);
++}
++
++static int mlx5_ipsec_offload_init(struct mlx5_core_dev *mdev)
++{
++	return 0;
++}
++
++static const struct mlx5_accel_ipsec_ops ipsec_offload_ops = {
++	.device_caps = mlx5_ipsec_offload_device_caps,
++	.create_hw_context = mlx5_ipsec_offload_create_sa_ctx,
++	.free_hw_context = mlx5_ipsec_offload_delete_sa_ctx,
++	.init = mlx5_ipsec_offload_init,
++	.esp_create_xfrm = mlx5_ipsec_offload_esp_create_xfrm,
++	.esp_destroy_xfrm = mlx5_ipsec_offload_esp_destroy_xfrm,
++};
++
++const struct mlx5_accel_ipsec_ops *mlx5_ipsec_offload_ops(struct mlx5_core_dev *mdev)
++{
++	if (!mlx5_ipsec_offload_device_caps(mdev))
++		return NULL;
++
++	return &ipsec_offload_ops;
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h
+new file mode 100644
+index 0000000000000..970c66d19c1dc
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
++
++#ifndef __MLX5_IPSEC_OFFLOAD_H__
++#define __MLX5_IPSEC_OFFLOAD_H__
++
++#include <linux/mlx5/driver.h>
++#include "accel/ipsec.h"
++
++#ifdef CONFIG_MLX5_IPSEC
++
++const struct mlx5_accel_ipsec_ops *mlx5_ipsec_offload_ops(struct mlx5_core_dev *mdev);
++static inline bool mlx5_is_ipsec_device(struct mlx5_core_dev *mdev)
++{
++	if (!MLX5_CAP_GEN(mdev, ipsec_offload))
++		return false;
++
++	if (!MLX5_CAP_GEN(mdev, log_max_dek))
++		return false;
++
++	if (!(MLX5_CAP_GEN_64(mdev, general_obj_types) &
++	    MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC))
++		return false;
++
++	return MLX5_CAP_IPSEC(mdev, ipsec_crypto_offload) &&
++		MLX5_CAP_ETH(mdev, insert_trailer);
++}
++
++#else
++static inline const struct mlx5_accel_ipsec_ops *
++mlx5_ipsec_offload_ops(struct mlx5_core_dev *mdev) { return NULL; }
++static inline bool mlx5_is_ipsec_device(struct mlx5_core_dev *mdev)
++{
++	return false;
++}
++
++#endif /* CONFIG_MLX5_IPSEC */
++#endif /* __MLX5_IPSEC_OFFLOAD_H__ */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/tls.c b/drivers/net/ethernet/mellanox/mlx5/core/accel/tls.c
+index cbf3d76c05a88..6c2b86a26863b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/accel/tls.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/accel/tls.c
+@@ -113,7 +113,9 @@ int mlx5_ktls_create_key(struct mlx5_core_dev *mdev,
+ 		return -EINVAL;
+ 	}
  
- #define MLX5_IPSEC_DEV(mdev) false
-@@ -67,23 +85,12 @@ mlx5_accel_esp_create_hw_context(struct mlx5_core_dev *mdev,
- 	return NULL;
+-	return mlx5_create_encryption_key(mdev, key, sz_bytes, p_key_id);
++	return mlx5_create_encryption_key(mdev, key, sz_bytes,
++					  MLX5_ACCEL_OBJ_TLS_KEY,
++					  p_key_id);
  }
  
--static inline void mlx5_accel_esp_free_hw_context(void *context)
--{
--}
--
--static inline int mlx5_accel_ipsec_init(struct mlx5_core_dev *mdev)
--{
--	return 0;
--}
-+static inline void mlx5_accel_esp_free_hw_context(struct mlx5_core_dev *mdev, void *context) {}
- 
--static inline void mlx5_accel_ipsec_build_fs_cmds(void)
--{
--}
-+static inline void mlx5_accel_ipsec_init(struct mlx5_core_dev *mdev) {}
- 
--static inline void mlx5_accel_ipsec_cleanup(struct mlx5_core_dev *mdev)
--{
--}
-+static inline void mlx5_accel_ipsec_cleanup(struct mlx5_core_dev *mdev) {}
- 
--#endif
-+#endif /* CONFIG_MLX5_ACCEL */
- 
- #endif	/* __MLX5_ACCEL_IPSEC_H__ */
+ void mlx5_ktls_destroy_key(struct mlx5_core_dev *mdev, u32 key_id)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index bc55c82b55ba8..8d797cd56e264 100644
+index 8d797cd56e264..147191b7a98a6 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -342,7 +342,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x)
- 	goto out;
+@@ -111,7 +111,7 @@ static void mlx5e_ipsec_sadb_rx_del(struct mlx5e_ipsec_sa_entry *sa_entry)
+ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
+ {
+ 	struct xfrm_replay_state_esn *replay_esn;
+-	u32 seq_bottom;
++	u32 seq_bottom = 0;
+ 	u8 overlap;
+ 	u32 *esn;
  
- err_hw_ctx:
--	mlx5_accel_esp_free_hw_context(sa_entry->hw_context);
-+	mlx5_accel_esp_free_hw_context(priv->mdev, sa_entry->hw_context);
- err_xfrm:
- 	mlx5_accel_esp_destroy_xfrm(sa_entry->xfrm);
- err_sa_entry:
-@@ -372,7 +372,7 @@ static void mlx5e_xfrm_free_state(struct xfrm_state *x)
- 
- 	if (sa_entry->hw_context) {
- 		flush_workqueue(sa_entry->ipsec->wq);
--		mlx5_accel_esp_free_hw_context(sa_entry->hw_context);
-+		mlx5_accel_esp_free_hw_context(sa_entry->xfrm->mdev, sa_entry->hw_context);
- 		mlx5_accel_esp_destroy_xfrm(sa_entry->xfrm);
+@@ -121,7 +121,9 @@ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
  	}
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c
-index b463787d6ca16..cc67366495b09 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c
-@@ -359,7 +359,7 @@ u32 mlx5_fpga_ipsec_device_caps(struct mlx5_core_dev *mdev)
- 	return ret;
- }
+ 	replay_esn = sa_entry->x->replay_esn;
+-	seq_bottom = replay_esn->seq - replay_esn->replay_window + 1;
++	if (replay_esn->seq >= replay_esn->replay_window)
++		seq_bottom = replay_esn->seq - replay_esn->replay_window + 1;
++
+ 	overlap = sa_entry->esn_state.overlap;
  
--unsigned int mlx5_fpga_ipsec_counters_count(struct mlx5_core_dev *mdev)
-+static unsigned int mlx5_fpga_ipsec_counters_count(struct mlx5_core_dev *mdev)
- {
- 	struct mlx5_fpga_device *fdev = mdev->fpga;
- 
-@@ -370,8 +370,8 @@ unsigned int mlx5_fpga_ipsec_counters_count(struct mlx5_core_dev *mdev)
- 			number_of_ipsec_counters);
- }
- 
--int mlx5_fpga_ipsec_counters_read(struct mlx5_core_dev *mdev, u64 *counters,
--				  unsigned int counters_count)
-+static int mlx5_fpga_ipsec_counters_read(struct mlx5_core_dev *mdev, u64 *counters,
-+					 unsigned int counters_count)
- {
- 	struct mlx5_fpga_device *fdev = mdev->fpga;
- 	unsigned int i;
-@@ -665,12 +665,10 @@ static bool mlx5_is_fpga_egress_ipsec_rule(struct mlx5_core_dev *dev,
- 	return true;
- }
- 
--void *mlx5_fpga_ipsec_create_sa_ctx(struct mlx5_core_dev *mdev,
--				    struct mlx5_accel_esp_xfrm *accel_xfrm,
--				    const __be32 saddr[4],
--				    const __be32 daddr[4],
--				    const __be32 spi, bool is_ipv6,
--				    u32 *sa_handle)
-+static void *mlx5_fpga_ipsec_create_sa_ctx(struct mlx5_core_dev *mdev,
-+					   struct mlx5_accel_esp_xfrm *accel_xfrm,
-+					   const __be32 saddr[4], const __be32 daddr[4],
-+					   const __be32 spi, bool is_ipv6, u32 *sa_handle)
- {
- 	struct mlx5_fpga_ipsec_sa_ctx *sa_ctx;
- 	struct mlx5_fpga_esp_xfrm *fpga_xfrm =
-@@ -862,7 +860,7 @@ mlx5_fpga_ipsec_release_sa_ctx(struct mlx5_fpga_ipsec_sa_ctx *sa_ctx)
- 	mutex_unlock(&fipsec->sa_hash_lock);
- }
- 
--void mlx5_fpga_ipsec_delete_sa_ctx(void *context)
-+static void mlx5_fpga_ipsec_delete_sa_ctx(void *context)
- {
- 	struct mlx5_fpga_esp_xfrm *fpga_xfrm =
- 			((struct mlx5_fpga_ipsec_sa_ctx *)context)->fpga_xfrm;
-@@ -1264,7 +1262,7 @@ const struct mlx5_flow_cmds *mlx5_fs_cmd_get_default_ipsec_fpga_cmds(enum fs_flo
+ 	sa_entry->esn_state.esn = xfrm_replay_seqhi(sa_entry->x,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+index c3095863372cd..02558ac2ace69 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+@@ -250,6 +250,12 @@ int mlx5_query_hca_caps(struct mlx5_core_dev *dev)
+ 			return err;
  	}
- }
  
--int mlx5_fpga_ipsec_init(struct mlx5_core_dev *mdev)
-+static int mlx5_fpga_ipsec_init(struct mlx5_core_dev *mdev)
- {
- 	struct mlx5_fpga_conn_attr init_attr = {0};
- 	struct mlx5_fpga_device *fdev = mdev->fpga;
-@@ -1346,7 +1344,7 @@ static void destroy_rules_rb(struct rb_root *root)
- 	}
- }
- 
--void mlx5_fpga_ipsec_cleanup(struct mlx5_core_dev *mdev)
-+static void mlx5_fpga_ipsec_cleanup(struct mlx5_core_dev *mdev)
- {
- 	struct mlx5_fpga_device *fdev = mdev->fpga;
- 
-@@ -1451,7 +1449,7 @@ mlx5_fpga_esp_validate_xfrm_attrs(struct mlx5_core_dev *mdev,
++	if (MLX5_CAP_GEN(dev, ipsec_offload)) {
++		err = mlx5_core_get_caps(dev, MLX5_CAP_IPSEC);
++		if (err)
++			return err;
++	}
++
  	return 0;
  }
  
--struct mlx5_accel_esp_xfrm *
-+static struct mlx5_accel_esp_xfrm *
- mlx5_fpga_esp_create_xfrm(struct mlx5_core_dev *mdev,
- 			  const struct mlx5_accel_esp_xfrm_attrs *attrs,
- 			  u32 flags)
-@@ -1479,7 +1477,7 @@ mlx5_fpga_esp_create_xfrm(struct mlx5_core_dev *mdev,
- 	return &fpga_xfrm->accel_xfrm;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/crypto.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/crypto.c
+index dcea87ec59770..57eb91bcbca79 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/crypto.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/crypto.c
+@@ -6,7 +6,7 @@
  
--void mlx5_fpga_esp_destroy_xfrm(struct mlx5_accel_esp_xfrm *xfrm)
-+static void mlx5_fpga_esp_destroy_xfrm(struct mlx5_accel_esp_xfrm *xfrm)
+ int mlx5_create_encryption_key(struct mlx5_core_dev *mdev,
+ 			       void *key, u32 sz_bytes,
+-			       u32 *p_key_id)
++			       u32 key_type, u32 *p_key_id)
  {
- 	struct mlx5_fpga_esp_xfrm *fpga_xfrm =
- 			container_of(xfrm, struct mlx5_fpga_esp_xfrm,
-@@ -1488,8 +1486,8 @@ void mlx5_fpga_esp_destroy_xfrm(struct mlx5_accel_esp_xfrm *xfrm)
- 	kfree(fpga_xfrm);
- }
+ 	u32 in[MLX5_ST_SZ_DW(create_encryption_key_in)] = {};
+ 	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
+@@ -41,8 +41,7 @@ int mlx5_create_encryption_key(struct mlx5_core_dev *mdev,
+ 	memcpy(key_p, key, sz_bytes);
  
--int mlx5_fpga_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
--			      const struct mlx5_accel_esp_xfrm_attrs *attrs)
-+static int mlx5_fpga_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
-+				     const struct mlx5_accel_esp_xfrm_attrs *attrs)
- {
- 	struct mlx5_core_dev *mdev = xfrm->mdev;
- 	struct mlx5_fpga_device *fdev = mdev->fpga;
-@@ -1560,3 +1558,24 @@ int mlx5_fpga_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
- 	mutex_unlock(&fpga_xfrm->lock);
- 	return err;
- }
-+
-+static const struct mlx5_accel_ipsec_ops fpga_ipsec_ops = {
-+	.device_caps = mlx5_fpga_ipsec_device_caps,
-+	.counters_count = mlx5_fpga_ipsec_counters_count,
-+	.counters_read = mlx5_fpga_ipsec_counters_read,
-+	.create_hw_context = mlx5_fpga_ipsec_create_sa_ctx,
-+	.free_hw_context = mlx5_fpga_ipsec_delete_sa_ctx,
-+	.init = mlx5_fpga_ipsec_init,
-+	.cleanup = mlx5_fpga_ipsec_cleanup,
-+	.esp_create_xfrm = mlx5_fpga_esp_create_xfrm,
-+	.esp_modify_xfrm = mlx5_fpga_esp_modify_xfrm,
-+	.esp_destroy_xfrm = mlx5_fpga_esp_destroy_xfrm,
+ 	MLX5_SET(encryption_key_obj, obj, key_size, general_obj_key_size);
+-	MLX5_SET(encryption_key_obj, obj, key_type,
+-		 MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_TLS);
++	MLX5_SET(encryption_key_obj, obj, key_type, key_type);
+ 	MLX5_SET(general_obj_in_cmd_hdr, in, opcode,
+ 		 MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
+ 	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
+index 249539247e2e7..d046db7bb047d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
+@@ -80,8 +80,14 @@ void mlx5_get_pme_stats(struct mlx5_core_dev *dev, struct mlx5_pme_stats *stats)
+ int mlx5_notifier_call_chain(struct mlx5_events *events, unsigned int event, void *data);
+ 
+ /* Crypto */
++enum {
++	MLX5_ACCEL_OBJ_TLS_KEY = MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_TLS,
++	MLX5_ACCEL_OBJ_IPSEC_KEY = MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_IPSEC,
 +};
 +
-+const struct mlx5_accel_ipsec_ops *mlx5_fpga_ipsec_ops(struct mlx5_core_dev *mdev)
-+{
-+	if (!mlx5_fpga_is_ipsec_device(mdev))
-+		return NULL;
-+
-+	return &fpga_ipsec_ops;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.h
-index 9ba637f0f0f27..db88eb4c49e34 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.h
-@@ -38,44 +38,23 @@
- #include "fs_cmd.h"
+ int mlx5_create_encryption_key(struct mlx5_core_dev *mdev,
+-			       void *key, u32 sz_bytes, u32 *p_key_id);
++			       void *key, u32 sz_bytes,
++			       u32 key_type, u32 *p_key_id);
+ void mlx5_destroy_encryption_key(struct mlx5_core_dev *mdev, u32 key_id);
  
- #ifdef CONFIG_MLX5_FPGA_IPSEC
-+const struct mlx5_accel_ipsec_ops *mlx5_fpga_ipsec_ops(struct mlx5_core_dev *mdev);
- u32 mlx5_fpga_ipsec_device_caps(struct mlx5_core_dev *mdev);
--unsigned int mlx5_fpga_ipsec_counters_count(struct mlx5_core_dev *mdev);
--int mlx5_fpga_ipsec_counters_read(struct mlx5_core_dev *mdev, u64 *counters,
--				  unsigned int counters_count);
--
--void *mlx5_fpga_ipsec_create_sa_ctx(struct mlx5_core_dev *mdev,
--				    struct mlx5_accel_esp_xfrm *accel_xfrm,
--				    const __be32 saddr[4],
--				    const __be32 daddr[4],
--				    const __be32 spi, bool is_ipv6,
--				    u32 *sa_handle);
--void mlx5_fpga_ipsec_delete_sa_ctx(void *context);
--
--int mlx5_fpga_ipsec_init(struct mlx5_core_dev *mdev);
--void mlx5_fpga_ipsec_cleanup(struct mlx5_core_dev *mdev);
--void mlx5_fpga_ipsec_build_fs_cmds(void);
--
--struct mlx5_accel_esp_xfrm *
--mlx5_fpga_esp_create_xfrm(struct mlx5_core_dev *mdev,
--			  const struct mlx5_accel_esp_xfrm_attrs *attrs,
--			  u32 flags);
--void mlx5_fpga_esp_destroy_xfrm(struct mlx5_accel_esp_xfrm *xfrm);
--int mlx5_fpga_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
--			      const struct mlx5_accel_esp_xfrm_attrs *attrs);
--
- const struct mlx5_flow_cmds *
- mlx5_fs_cmd_get_default_ipsec_fpga_cmds(enum fs_flow_table_type type);
-+void mlx5_fpga_ipsec_build_fs_cmds(void);
- #else
--static inline u32 mlx5_fpga_ipsec_device_caps(struct mlx5_core_dev *mdev)
--{
--	return 0;
--}
--
-+static inline
-+const struct mlx5_accel_ipsec_ops *mlx5_fpga_ipsec_ops(struct mlx5_core_dev *mdev)
-+{ return NULL; }
-+static inline u32 mlx5_fpga_ipsec_device_caps(struct mlx5_core_dev *mdev) { return 0; }
- static inline const struct mlx5_flow_cmds *
- mlx5_fs_cmd_get_default_ipsec_fpga_cmds(enum fs_flow_table_type type)
- {
- 	return mlx5_fs_cmd_get_default(type);
- }
- 
-+static inline void mlx5_fpga_ipsec_build_fs_cmds(void) {};
-+
- #endif /* CONFIG_MLX5_FPGA_IPSEC */
- #endif	/* __MLX5_FPGA_IPSEC_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 8b658908f0442..e32d46c337011 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1089,11 +1089,7 @@ static int mlx5_load(struct mlx5_core_dev *dev)
- 		goto err_fpga_start;
- 	}
- 
--	err = mlx5_accel_ipsec_init(dev);
--	if (err) {
--		mlx5_core_err(dev, "IPSec device start failed %d\n", err);
--		goto err_ipsec_start;
--	}
-+	mlx5_accel_ipsec_init(dev);
- 
- 	err = mlx5_accel_tls_init(dev);
- 	if (err) {
-@@ -1135,7 +1131,6 @@ static int mlx5_load(struct mlx5_core_dev *dev)
- 	mlx5_accel_tls_cleanup(dev);
- err_tls_start:
- 	mlx5_accel_ipsec_cleanup(dev);
--err_ipsec_start:
- 	mlx5_fpga_device_stop(dev);
- err_fpga_start:
- 	mlx5_rsc_dump_cleanup(dev);
-@@ -1628,7 +1623,7 @@ static int __init init(void)
- 	get_random_bytes(&sw_owner_id, sizeof(sw_owner_id));
- 
- 	mlx5_core_verify_params();
--	mlx5_accel_ipsec_build_fs_cmds();
-+	mlx5_fpga_ipsec_build_fs_cmds();
- 	mlx5_register_debugfs();
- 
- 	err = pci_register_driver(&mlx5_core_driver);
-diff --git a/include/linux/mlx5/accel.h b/include/linux/mlx5/accel.h
-index 96ebaa94a92e5..dacf69516002e 100644
---- a/include/linux/mlx5/accel.h
-+++ b/include/linux/mlx5/accel.h
-@@ -126,7 +126,7 @@ enum mlx5_accel_ipsec_cap {
- 	MLX5_ACCEL_IPSEC_CAP_TX_IV_IS_ESN	= 1 << 7,
- };
- 
--#ifdef CONFIG_MLX5_FPGA_IPSEC
-+#ifdef CONFIG_MLX5_ACCEL
- 
- u32 mlx5_accel_ipsec_device_caps(struct mlx5_core_dev *mdev);
- 
-@@ -152,5 +152,5 @@ static inline int
- mlx5_accel_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
- 			   const struct mlx5_accel_esp_xfrm_attrs *attrs) { return -EOPNOTSUPP; }
- 
--#endif
--#endif
-+#endif /* CONFIG_MLX5_ACCEL */
-+#endif /* __MLX5_ACCEL_H__ */
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 1e6ca716635a9..6a97ad601991e 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -707,6 +707,9 @@ struct mlx5_core_dev {
- 	} roce;
- #ifdef CONFIG_MLX5_FPGA
- 	struct mlx5_fpga_device *fpga;
-+#endif
-+#ifdef CONFIG_MLX5_ACCEL
-+	const struct mlx5_accel_ipsec_ops *ipsec_ops;
- #endif
- 	struct mlx5_clock        clock;
- 	struct mlx5_ib_clock_info  *clock_info;
+ static inline struct net *mlx5_core_net(struct mlx5_core_dev *dev)
 -- 
 2.26.2
 
