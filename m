@@ -2,92 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1CD722428E
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C09F022429C
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:54:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727946AbgGQRsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 13:48:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
+        id S1727940AbgGQRv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 13:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727847AbgGQRs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:48:29 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8D4C0619D2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:48:29 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id g75so16205583wme.5
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:48:29 -0700 (PDT)
+        with ESMTP id S1726627AbgGQRv6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:51:58 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C73C0619D2
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:51:57 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id b6so12003770wrs.11
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:51:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5cA5RUvmio3ClfgI8pU8wP7vKSaKk9ymiyczHiblSGI=;
-        b=UJ82aaZ4PJK8DnGxDFuapcONUWsOBY4gwWplow/60/Zk2yXslUz9HCaPjWO+Km5nKC
-         27vfnD952Rb/9LSYSZOL02rQnrSnJaK1IwSwmE/rX2/ln1d4/fFEbSNhxTiC+EOs1ncU
-         NnK44j2uDxeNyoYTQtYB2cZqLPuF4QPR7Bg7vkLkr2yoZvhMNf+wTLkojOlmr+xcWTVn
-         ZdgntFQnkGBIBWbSnwueqHT4tjrr8V+jnPTtwx3QRfyvEutVRHQcaXCxGJH1NSc5s6iy
-         BntSWida+dRK+0gBvTvmEQ1apQxLxX653kDCCWPaLlix1Twrr2qLZuUNhb4tkFfX6Cxp
-         HVnQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=IE32Y40SA5j515K0SV4oNXBQe+0QT1TftVMsK6XHxDc=;
+        b=mLcJ5OJxRTFA6j+0yBkhtP5kp1FLRoCUtYhwYI1g6jxd2to2FYnu1JZ+U4wtYdhLvU
+         YxGduSNrmv2U6kWm8eStvAOxyhOI1AJfy2BQ+mrQU/SK3xpQYIBQ1bRfx6uM5BXTym0i
+         wyCla90ZwOiapKbGMqHizdkJNlU0ffRV8arOLx+81icb/RTrfwXorhABL0fbggTZKpKH
+         Ra0SSKaLOB/CFc2oZSkgeVSPTVvMizbmcwDQ0Hayp2wYU0ud2ylL7DHZDFcmNXIGop2y
+         F703XEvsKiO43PzQPOUBg2tvCRESXVgPCJwu6xQN4gaJpxa4CrB5quFap0yJeTw4OtBc
+         aAKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5cA5RUvmio3ClfgI8pU8wP7vKSaKk9ymiyczHiblSGI=;
-        b=fPSF7GFs34V8p3ORFXQ8qkzUTUTGrePQtgLv/+uHb1/qoQmlF26P8GnjVJdZ8FM6UI
-         IucD0Nfq7jGA4A2orgk5OtzSNlySpoeQaE11SowO9s/2h3DqH3YffRqG97wfOH0Zsl6j
-         AbdlCGedTE4ihookh5ejfysm89v4vvVy12oZ+DQ/h8hmmOa5XV4ZkEj+eHq0jjm1SuqN
-         +DHrjDCXX8IqYPRiDZvhM+3uPZWOsp5+z4KyUMapjylbuOZhs0PZtu3XSyExFIxA0B+f
-         +xH/SK5C9iXTibfy3M3f3OWBj9FdzIsWPpZL2t7I7wezO/CBODSfluHNjnxPzuwrkfzP
-         BAmg==
-X-Gm-Message-State: AOAM533Db0hsz95jEw4c0LijGKTkyflraE27QejE8yUvAyMZC2+QdmFP
-        5iz474Pc/DT0dtsPfHH6Y+4BKmzspmU=
-X-Google-Smtp-Source: ABdhPJyWMku0BhtQCMKfPdwWx2yy2ByNeIqXqO791I/1KbbAS5AmVGrTO2Xbjy3zaxaCCCEHxjDZ+g==
-X-Received: by 2002:a05:600c:2511:: with SMTP id d17mr10745367wma.127.1595008108118;
-        Fri, 17 Jul 2020 10:48:28 -0700 (PDT)
-Received: from ?IPv6:2a01:e34:ed2f:f020:45c9:b95c:ccef:aae6? ([2a01:e34:ed2f:f020:45c9:b95c:ccef:aae6])
-        by smtp.googlemail.com with ESMTPSA id l15sm15314927wro.33.2020.07.17.10.48.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jul 2020 10:48:27 -0700 (PDT)
-Subject: Re: [PATCH] net: genetlink: Move initialization to core_initcall
-To:     David Miller <davem@davemloft.net>
-Cc:     kuba@kernel.org, jiri@mellanox.com, xiyou.wangcong@gmail.com,
-        johannes.berg@intel.com, mkubecek@suse.cz, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200715074120.8768-1-daniel.lezcano@linaro.org>
- <3ab741d2-2d44-fbcb-709d-c89d2b0c3649@linaro.org>
- <20200717.103439.774880145467935567.davem@davemloft.net>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <059ad7df-b555-a08d-1f81-5fcb31e2e21e@linaro.org>
-Date:   Fri, 17 Jul 2020 19:48:26 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=IE32Y40SA5j515K0SV4oNXBQe+0QT1TftVMsK6XHxDc=;
+        b=a9XdMiNm0cKaeZdyt6cnIWQ2DbWnauIe4zAp+hvTxa2hO8Bs340lRNrWuyrbEWsG/Q
+         XmfbYBOIhzuMlHHQoJyif0L0RUBTKg66kMLxacpGxb+EtAjhGJUzu7SrSuOyQ817IT6x
+         PjV7YUAT14mrfggAuzv3jpPxYxRWuaabAccfsHEiIHhUJOOFpa8Z6ICKyT3L0Vbb+z5A
+         aAEz9MNOO7JsfW7F6EN3nW+dstnw8qm6XtATx1y1QBsXk40qousQBZGZeVyrO45HRvnE
+         OqTnyA7ixkGcwLAXe8tqjJnhV2RmKWescucN/xxXmGVuADRZmL/GtRzt0ZRvUnvaVCqd
+         9Quw==
+X-Gm-Message-State: AOAM532SuLcp1yqgircLQGwrmJyZi2J94goJNCo2Go8CFWzZ7m+Cj7/I
+        vQwVHJKpgcqNSMU6X3cD2BlUA5EvbqXZolZ/fUerWpVeisE=
+X-Google-Smtp-Source: ABdhPJwxxkTisAJvaOexyfxhlH2DXxfOvsNGFiq3fZt0TUl5kPHBtEygmy6WGiyS9DtMypU+Ri9hU9jOG5BoiH77Eaw=
+X-Received: by 2002:adf:f083:: with SMTP id n3mr11470936wro.297.1595008314890;
+ Fri, 17 Jul 2020 10:51:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200717.103439.774880145467935567.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From:   Matt Sandy <mooseboys@gmail.com>
+Date:   Fri, 17 Jul 2020 10:51:43 -0700
+Message-ID: <CAPGpzNf5oRy7Vuesi2Y_aVj_B66ZUsQRKk+yQAF9g8TbASj=3Q@mail.gmail.com>
+Subject: Unexpected PACKET_TX_TIMESTAMP Messages
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/07/2020 19:34, David Miller wrote:
-> From: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Date: Wed, 15 Jul 2020 09:43:00 +0200
-> 
->> if you agree with this change, is it possible I merge it through the
->> thermal tree in order to fix the issue ?
-> 
-> No problem:
-> 
-> Acked-by: David S. Miller <davem@davemloft.net>
+I've been playing around with raw sockets and timestamps, but seem to
+be getting strange timestamp data back on the errqueue. Specifically,
+if I am creating a socket(AF_PACKET, SOCK_RAW, htons(ETH_P_IP)) and
+requesting SO_TIMESTAMPING_NEW with options 0x4DF. I am not modifying
+the flags with control messages.
 
-Thanks!
+On both send and receive, I get the expected
+SOL_SOCKET/SO_TIMESTAMPING_NEW cmsg (in errqueue on send, in the
+message itself on receive), and it contains what appears to be valid
+timestamps in the ts[0] field. On send, however, I receive an
+additional cmsg with level = SOL_PACKET/PACKET_TX_TIMESTAMP, whose
+content is just the fixed value `char[16] { 42, 0, 0, 0, 4, <zeros>
+}`.
 
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Any ideas why I'd be getting the SOL_PACKET message on transmit, and
+why its payload is clearly not a valid timestamp? In case it matters,
+this is on an Intel I210 nic using the igb driver.
