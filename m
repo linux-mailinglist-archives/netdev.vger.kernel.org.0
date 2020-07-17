@@ -2,116 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 825902246B3
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 01:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9F072246D3
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 01:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728425AbgGQXKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 19:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728383AbgGQXK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 19:10:27 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F7EC0619D2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 16:10:27 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id h22so14502512lji.9
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 16:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FmUurtNr8DsvIpsatQ0QZyiVO7vjkVTvgORSNA0VraU=;
-        b=lfiFnDf5/hcNt4iNktxDTmBsFCUZHL+MYzpIy6YNbC7QlUQM6TakFJr+XrIzoNORkW
-         8bmsLA3Oq27caiG0e1TMNOoCcIVS4Tb72dSY7RCl1FF7MIGsm/fFV605IUaObL4EcZt3
-         elb6TRQJKRqg2Fd8aruQ1TrqlQsCQXoU0U9rAQPp93E9u0boxAPvyUzHnVwSN17g/zTJ
-         oOgAiaPAN2sfkTG6KMPsu262V+0oxoemiJMnmKXOnaRuvVOdx4wkl9qWw97Y8YLmD4Ns
-         cDtvEaVHQiO5i4j70j5qwCqwgnFUf7Eb/04zpIMGgGROC6T30AuKqOKg2OpAY4gmSVff
-         7qpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FmUurtNr8DsvIpsatQ0QZyiVO7vjkVTvgORSNA0VraU=;
-        b=Fg9oVychsP7kOYC9mHoxmk1NFMV7Mq1sru2farIr1JxlxM/1laa/cr6/OflbNTZZz5
-         ZgpbDGGymdlyN7HqcWvFzutsJzYILUcgVfOB4+2LZFFKNcR5mD/6fORE2jjhpumD0gTR
-         ZhpYE4tO3aYWe3vutrNZCD6KTV+BgU9cU0eAZznUeufMnoX6aXlZCxXrH3JhgFLPJu20
-         cOV0yfhOxb3yrewbGLWO5+92ioaxRWLcMGHEPGCF1I+BDtxc/CGjnQ6f1CO/YLwAfqoY
-         +lnT2dOrj9Zm7Vc9c7FBP3rdRKm6W9VJxysoZY9NrJFtdTe4YghjNCYV6d2qcHhLOzp9
-         A2Mg==
-X-Gm-Message-State: AOAM533M39CxSaJ8MDsw0xtRon+o5gesCHbKskJRCjTIpRqmM+Pk17Ov
-        dU3vbc8b2yz2/Lv9WF8/pBCbVw==
-X-Google-Smtp-Source: ABdhPJxFWdc1CHNgacIHbLK/JJTWJWTShV9FV/auq+6FQoYOgSaMz+P+4z+UfxI/oCDgLUPopItmAA==
-X-Received: by 2002:a2e:3316:: with SMTP id d22mr5578396ljc.18.1595027425548;
-        Fri, 17 Jul 2020 16:10:25 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id i8sm1880972ljg.57.2020.07.17.16.10.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 16:10:24 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id EA54F10216B; Sat, 18 Jul 2020 02:10:23 +0300 (+03)
-Date:   Sat, 18 Jul 2020 02:10:23 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     syzbot <syzbot+ed318e8b790ca72c5ad0@syzkaller.appspotmail.com>
-Cc:     akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        torvalds@linux-foundation.org, william.kucharski@oracle.com,
-        yang.shi@linux.alibaba.com, ziy@nvidia.com
-Subject: Re: general protection fault in khugepaged
-Message-ID: <20200717231023.tawtcmpwwqi2qsni@box>
-References: <000000000000358aec05a9fc8aa8@google.com>
- <0000000000008ad07505aaaad631@google.com>
+        id S1728105AbgGQXMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 19:12:09 -0400
+Received: from mga06.intel.com ([134.134.136.31]:16431 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726204AbgGQXMJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 19:12:09 -0400
+IronPort-SDR: 9lRTACR2e57CYWiL2YvNST/uX7QYQa2DrnRebV0iRznLPYNbKXnznifgklxcRxHZknaxRr7rxd
+ i/9Slf1ZpMIQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9685"; a="211237203"
+X-IronPort-AV: E=Sophos;i="5.75,364,1589266800"; 
+   d="scan'208";a="211237203"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2020 16:12:08 -0700
+IronPort-SDR: r3Pv3y1pRRzb7HrJkL66EuGBr77zpSXrIYXL4aC35HMHvuPk8EnNn9b4muA30qMOhEpbESHRBl
+ Vu3QUXTCprxw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,364,1589266800"; 
+   d="scan'208";a="461014472"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.94.160]) ([10.212.94.160])
+  by orsmga005.jf.intel.com with ESMTP; 17 Jul 2020 16:12:07 -0700
+Subject: Re: [PATCH net-next 3/3] docs: networking: timestamping: add a set of
+ frequently asked questions
+To:     Vladimir Oltean <olteanv@gmail.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org
+Cc:     richardcochran@gmail.com, sorganov@gmail.com,
+        linux-doc@vger.kernel.org
+References: <20200717161027.1408240-1-olteanv@gmail.com>
+ <20200717161027.1408240-4-olteanv@gmail.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <e6b6f240-c2b2-b57c-7334-4762f034aae3@intel.com>
+Date:   Fri, 17 Jul 2020 16:12:07 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000008ad07505aaaad631@google.com>
+In-Reply-To: <20200717161027.1408240-4-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 17, 2020 at 03:40:04PM -0700, syzbot wrote:
-> syzbot has bisected this issue to:
+
+
+On 7/17/2020 9:10 AM, Vladimir Oltean wrote:
+> These are some questions I had while trying to explain the behavior of
+> some drivers with respect to software timestamping. Answered with the
+> help of Richard Cochran.
 > 
-> commit ffe945e633b527d5a4577b42cbadec3c7cbcf096
-> Author: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> Date:   Wed Jun 3 23:00:09 2020 +0000
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> ---
+>  Documentation/networking/timestamping.rst | 26 +++++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
 > 
->     khugepaged: do not stop collapse if less than half PTEs are referenced
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17356c2f100000
-> start commit:   e44f65fd xen-netfront: remove redundant assignment to vari..
-> git tree:       net-next
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=14b56c2f100000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10b56c2f100000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=829871134ca5e230
-> dashboard link: https://syzkaller.appspot.com/bug?extid=ed318e8b790ca72c5ad0
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=113406a7100000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=175597d3100000
-> 
-> Reported-by: syzbot+ed318e8b790ca72c5ad0@syzkaller.appspotmail.com
-> Fixes: ffe945e633b5 ("khugepaged: do not stop collapse if less than half PTEs are referenced")
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
+> index 4004c5d2771d..e01ec01179fe 100644
+> --- a/Documentation/networking/timestamping.rst
+> +++ b/Documentation/networking/timestamping.rst
+> @@ -791,3 +791,29 @@ The correct solution to this problem is to implement the PHY timestamping
+>  requirements in the MAC driver found broken, and submit as a bug fix patch to
+>  netdev@vger.kernel.org. See :ref:`Documentation/process/stable-kernel-rules.rst
+>  <stable_kernel_rules>` for more details.
+> +
+> +3.4 Frequently asked questions
+> +------------------------------
+> +
+> +Q: When should drivers set SKBTX_IN_PROGRESS?
+> +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> +
+> +When the interface they represent offers both ``SOF_TIMESTAMPING_TX_HARDWARE``
+> +and ``SOF_TIMESTAMPING_TX_SOFTWARE``.
+> +Originally, the network stack could deliver either a hardware or a software
+> +time stamp, but not both. This flag prevents software timestamp delivery.
+> +This restriction was eventually lifted via the ``SOF_TIMESTAMPING_OPT_TX_SWHW``
+> +option, but still the original behavior is preserved as the default.
+> +
+
+So, this implies that we set this only if both are supported? I thought
+the intention was to set this flag whenever we start a HW timestamp.
+
+> +Q: Should drivers that don't offer SOF_TIMESTAMPING_TX_SOFTWARE call skb_tx_timestamp()?
+> +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> +
+> +The ``skb_clone_tx_timestamp()`` function from its body helps with propagation
+> +of TX timestamps from PTP PHYs, and the required placement of this call is the
+> +same as for software TX timestamping.
+> +Additionally, since PTP is broken on ports with timestamping PHYs and unmet
+> +requirements, the consequence is that any driver which may be ever coupled to
+> +a timestamping-capable PHY in ``netdev->phydev`` should call at least
+> +``skb_clone_tx_timestamp()``. However, calling the higher-level
+> +``skb_tx_timestamp()`` instead achieves the same purpose, but also offers
+> +additional compliance to ``SOF_TIMESTAMPING_TX_SOFTWARE``.
 > 
 
-My guess is that anonymous VMA got replaced by file VMA under us.
+This makes sense.
 
-Could you reproduce the issue with the patch below? I have hard time
-triggering it myself.
-
-diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-index b043c40a21d4..f8ec58a1e72b 100644
---- a/mm/khugepaged.c
-+++ b/mm/khugepaged.c
-@@ -1107,6 +1107,8 @@ static void collapse_huge_page(struct mm_struct *mm,
- 	if (mm_find_pmd(mm, address) != pmd)
- 		goto out;
- 
-+	if (!vma->anon_vma)
-+		dump_vma(vma);
- 	anon_vma_lock_write(vma->anon_vma);
- 
- 	mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, NULL, mm,
--- 
- Kirill A. Shutemov
+Thanks,
+Jake
