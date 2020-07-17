@@ -2,58 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91115224175
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:08:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A982F224196
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:15:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbgGQRIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 13:08:46 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41442 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726439AbgGQRIp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jul 2020 13:08:45 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jwTql-005dMj-Gy; Fri, 17 Jul 2020 19:08:43 +0200
-Date:   Fri, 17 Jul 2020 19:08:43 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Re: Assigning MAC addrs to PCI based NIC's
-Message-ID: <20200717170843.GB1339445@lunn.ch>
-References: <CAJ+vNU30cU36bvgoyKFMzB4z3PAhEPB7OX_ikRQeCZPhSCZztQ@mail.gmail.com>
+        id S1726901AbgGQRPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 13:15:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726837AbgGQRPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:15:32 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A35C0619D2
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:15:32 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id j20so5723426pfe.5
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:15:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=S5C1kGzcRMh5s/xY35azbfaECu6ziYdmjWrDYnFfJwo=;
+        b=O3U9cXdhHUGlStVnak0/NAZMRb2ktBQVCGkUKQpZK+CvTlV0dHTZ2devvh1Ckwie8a
+         78dPQ8dMBho4ThvDyK7I5Ipqz5GTIcOzB3yp1u7cyYjWbqM3wPSnU/197PJYnz8CMHrf
+         gaEsnu8SzPBrY8Syh9dkwlYsvL16rLoBN9P96aSv5cc2oE3mATK++CrDXygbfMbT2hVf
+         Lf0GdXh7QnS6WWHqz6GUgAsa/1ylTnSBW1fs2ydRokEPJuW1sx0iwlAYMGvVO/MTo2ae
+         XrCaVJjy1l8OSbLlzc//UBrNu5dkUAvWFdz7IEvVhsMULRQziBh5n7c0vHqGwd/ups59
+         paqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=S5C1kGzcRMh5s/xY35azbfaECu6ziYdmjWrDYnFfJwo=;
+        b=ud3dw823NxEbUhpWv/jAtQflqOv8tSrDJAHvp8jfJu6frbhmDthV1SYIEc6MYO7cCd
+         nYHpujQIPSTRGq18F46zGL6EZO9mV7AtOKRgtGZsa3/s+PWcIl1PZ5SMPeds6CzpeJfM
+         4nCVj4qiU0mA3JMY8QJ60BZenesSQcrG7WTAUReh+MOZr/eh5ksxUtwtwkKGGrLpwrMz
+         NZl7HJNH8rPqDjwq9WCbgrhAh1ZgIzqaz6cVJnozHjWvEa+eSVvHfpTl5BETv2Cec8sr
+         o2wTBf8wTsR82FO5QPEKZhyOYo+XLhS0q5433ksK3ltCRuuSEMTqbM9V3ckjhcX3zzfK
+         1RQQ==
+X-Gm-Message-State: AOAM532Q+0opC48xBFGwqdw5hnw1YjXzaFMT/VmqObfphWq2IuNeEXTY
+        7MJql2mb15P5uMIb3urXzqzq/A==
+X-Google-Smtp-Source: ABdhPJyvFL0kYbKEv0lMOW8F4w+Qc9Y8qj8kBRC1EnjD51+LqQyMvBntqEKUB+MgAxFyS0wTKc/IEw==
+X-Received: by 2002:aa7:84d3:: with SMTP id x19mr9208993pfn.155.1595006131819;
+        Fri, 17 Jul 2020 10:15:31 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id nk22sm3297605pjb.51.2020.07.17.10.15.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jul 2020 10:15:31 -0700 (PDT)
+Date:   Fri, 17 Jul 2020 10:15:23 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     haiyangz@microsoft.com, Song.Chi@microsoft.com, kys@microsoft.com,
+        sthemmin@microsoft.com, wei.liu@kernel.org, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: hyperv: Add attributes to show RX/TX
+ indirection table
+Message-ID: <20200717101523.6573061b@hermes.lan>
+In-Reply-To: <20200717.095535.195550343235350259.davem@davemloft.net>
+References: <HK0P153MB027502644323A21B09F6DA60987C0@HK0P153MB0275.APCP153.PROD.OUTLOOK.COM>
+        <20200717082451.00c59b42@hermes.lan>
+        <DM5PR2101MB09344BA75F08EC926E31E040CA7C0@DM5PR2101MB0934.namprd21.prod.outlook.com>
+        <20200717.095535.195550343235350259.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ+vNU30cU36bvgoyKFMzB4z3PAhEPB7OX_ikRQeCZPhSCZztQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 17, 2020 at 08:58:26AM -0700, Tim Harvey wrote:
-> Greetings,
+On Fri, 17 Jul 2020 09:55:35 -0700 (PDT)
+David Miller <davem@davemloft.net> wrote:
+
+> From: Haiyang Zhang <haiyangz@microsoft.com>
+> Date: Fri, 17 Jul 2020 16:18:11 +0000
 > 
-> We make embedded boards that often have on-board PCIe based NIC's that
-> have MAC addresses stored in an EEPROM (not within NIC's NVRAM). I've
-> struggled with a way to have boot firmware assign the mac's via
-> device-tree and I find that only some drivers support getting the MAC
-> from device-tree anyway.
+> > Also in some minimal installation, "ethtool" may not always be
+> > installed.  
 > 
-> What is the appropriate way to assign vendor MAC's to a NIC from boot
-> firmware, or even in userspace?
+> This is never an argument against using the most well suited API for
+> exporting information to the user.
+> 
+> You can write "minimal" tools that just perform the ethtool netlink
+> operations you require for information retrieval, you don't have to
+> have the ethtool utility installed.
 
-Hi Tim
+Would it be better in the long term to make the transmit indirection
+table available under the new rt_netlink based API's for ethtool?
 
-From user space you can always use
+I can imagine that other hardware or hypervisors might have the
+same kind of transmit mapping.
 
-ip link set address XX:XX:XX:XX:XX:XX dev enp42s0
-
-But that assumes the MAC driver actually supports setting its MAC
-address. As with getting the MAC address from DT, this is also
-optional in the driver. But i guess it is more often implemented.
-
-I don't know of any universal method. So i think you probably do need
-to work on each of the MAC drivers you are interested in, and add DT
-support.
-
-	Andrew
+Alternatively, the hyperv network driver could integrate/replace the
+indirection table with something based on current receive flow steering.
