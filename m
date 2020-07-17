@@ -2,76 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF773224624
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 00:07:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ECD222466B
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 00:40:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727919AbgGQWF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 18:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727105AbgGQWF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 18:05:56 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B94C0619D2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 15:05:53 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id z63so10155808qkb.8
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 15:05:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pcRLyIOuohgTZcHiW+G/hiOFzvQq7PxrG+wiAhJhvbI=;
-        b=TtEd10LZJc+geLCqW7r7/Z+B1am62JXY0IERsARY6S5awC00yyTCDcoja7D7w8RVX1
-         W2e1W68XJQjh6GE9RGFXFt+YnOzZ/DoQIHekv/WJKvRJdOwhxkX+XvOtfcNnzi7WoJ03
-         TBF0ggLzYS43DfN11+rBdAaUq/pJGW77826vQ=
+        id S1727043AbgGQWkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 18:40:05 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:46502 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726204AbgGQWkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 18:40:04 -0400
+Received: by mail-io1-f70.google.com with SMTP id z65so7456830iof.13
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 15:40:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pcRLyIOuohgTZcHiW+G/hiOFzvQq7PxrG+wiAhJhvbI=;
-        b=leEvqY4R25IBsIAwhJrmcuFEixGEulsCryaKIzQrRW+4wAHfi9Msdm53jPmtvcejK5
-         NTg5DU5XVOQMYuNH33VIk15hSUzPGeYzrHumoJwqvekvM5q99tpIcKl/g9UqGUd5Yvli
-         K080Smn0rehZnIzB2iy16GzrQV1CvwLIpTPzRDHZ2AAEOhlTdMDr+RiR4xohql0N+NCL
-         +PbPamWauPA7BMp73W+P9qHFCh+9Jyp+WE4AWwVlR2iL0MAwd2Ht+B4WCWNP8/RmK2MX
-         B336Ynr0U0d+/Kzpqqu2fmR9ncd3W63MDtjs4hp5bfOfe1FFpplpcvAh6UovRb5T8uC9
-         zOHg==
-X-Gm-Message-State: AOAM533Nn/jqliGyQRWNL1szipGReR+btgiZlQQPVGldv8bImSzV3VmM
-        xVUZz/Tp4OrpoCxRHXWV8rkP9Y6iPvNC0NgVg7VJt2vf
-X-Google-Smtp-Source: ABdhPJxQoxdDkrLXxe93gNGX9hf26R2R85uWTeyeVjJBPhpZFsXXbsoPQKXoRf9rd9XqHZUE/YliYoJGjhlOURN45Ko=
-X-Received: by 2002:a37:4050:: with SMTP id n77mr10914898qka.431.1595023552837;
- Fri, 17 Jul 2020 15:05:52 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=bZyN/zZkAna3AuJV7mJCywjPBma23V/L6XGmPytQX3g=;
+        b=ceihZpbk215dOrpQZPu7jsoc9yf5laf5Rx33nbjdRkG+JtSpg1Xb98WxazX1mMn1Zj
+         wq5uZdW5A8zSN6lAaWdrfRss4K4S9kfU7iw+1OiQyCSTKnHznbmv+trv2ATiufaTRpAf
+         iAPl2NIOetKZc/gtho+RqPXXRWVpo1lGgJSpXz/pz/5kJhK51kACLNPpyNRePdtlZJn3
+         sCyvjHmwd7yWM/5obkFZu926syimswtiYSPXJAg6YvNgOVQ/B0o7+ekCfqTmOcLcqsRL
+         BbkH5YbSIvdSsDhUwdnEvcoEezvoSbDxpD6+UoQ1fex6T4ybaQ15laIYuBgmWpiHcXvL
+         lU/w==
+X-Gm-Message-State: AOAM530SL50QMB307TvUJ2jZA61y0emEVu79Pj1rud1z3gN+cOEoF8ev
+        /qjK86quw5hijwrgitOB5tMuClkBPwR3oyPRmJiMHBjfSEsg
+X-Google-Smtp-Source: ABdhPJxLi7/gPDf4MlcBV9h1ItF5n6fCkgiWG0/+rbnSHUtonUG5WWXjJHmQs62JK8/EaZk4B+A2cmhJTAcbiYpEg6/zYnrU6Ale
 MIME-Version: 1.0
-References: <20200717205958.163031-1-kuba@kernel.org>
-In-Reply-To: <20200717205958.163031-1-kuba@kernel.org>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Fri, 17 Jul 2020 15:05:41 -0700
-Message-ID: <CACKFLimsi2do2pzYqtZjm20jRa=L9nBeNFjgJBGz8ea5h-ecNg@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: bnxt: don't complain if TC flower can't be supported
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+X-Received: by 2002:a05:6638:dcf:: with SMTP id m15mr13454918jaj.86.1595025604135;
+ Fri, 17 Jul 2020 15:40:04 -0700 (PDT)
+Date:   Fri, 17 Jul 2020 15:40:04 -0700
+In-Reply-To: <000000000000358aec05a9fc8aa8@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008ad07505aaaad631@google.com>
+Subject: Re: general protection fault in khugepaged
+From:   syzbot <syzbot+ed318e8b790ca72c5ad0@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        torvalds@linux-foundation.org, william.kucharski@oracle.com,
+        yang.shi@linux.alibaba.com, ziy@nvidia.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 17, 2020 at 2:00 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> The fact that NETIF_F_HW_TC is not set should be a sufficient
-> indication to the user that TC offloads are not supported.
-> No need to bother users of older firmware versions with
-> pointless warnings on every boot.
->
-> Also, since the support is optional, bnxt_init_tc() should not
-> return an error in case FW is old, similarly to how error
-> is not returned when CONFIG_BNXT_FLOWER_OFFLOAD is not set.
->
-> With that we can add an error message to the caller, to warn
-> about actual unexpected failures.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+syzbot has bisected this issue to:
 
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+commit ffe945e633b527d5a4577b42cbadec3c7cbcf096
+Author: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Date:   Wed Jun 3 23:00:09 2020 +0000
 
-Thanks.
+    khugepaged: do not stop collapse if less than half PTEs are referenced
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17356c2f100000
+start commit:   e44f65fd xen-netfront: remove redundant assignment to vari..
+git tree:       net-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=14b56c2f100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10b56c2f100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=829871134ca5e230
+dashboard link: https://syzkaller.appspot.com/bug?extid=ed318e8b790ca72c5ad0
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=113406a7100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=175597d3100000
+
+Reported-by: syzbot+ed318e8b790ca72c5ad0@syzkaller.appspotmail.com
+Fixes: ffe945e633b5 ("khugepaged: do not stop collapse if less than half PTEs are referenced")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
