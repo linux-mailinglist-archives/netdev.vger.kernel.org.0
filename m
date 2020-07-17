@@ -2,51 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A3D12241DD
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:34:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DE9B2241F2
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbgGQRel (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 13:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbgGQRel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:34:41 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFF1C0619D2;
-        Fri, 17 Jul 2020 10:34:41 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 84A6F135E9FFA;
-        Fri, 17 Jul 2020 10:34:40 -0700 (PDT)
-Date:   Fri, 17 Jul 2020 10:34:39 -0700 (PDT)
-Message-Id: <20200717.103439.774880145467935567.davem@davemloft.net>
-To:     daniel.lezcano@linaro.org
-Cc:     kuba@kernel.org, jiri@mellanox.com, xiyou.wangcong@gmail.com,
-        johannes.berg@intel.com, mkubecek@suse.cz, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: genetlink: Move initialization to core_initcall
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <3ab741d2-2d44-fbcb-709d-c89d2b0c3649@linaro.org>
-References: <20200715074120.8768-1-daniel.lezcano@linaro.org>
-        <3ab741d2-2d44-fbcb-709d-c89d2b0c3649@linaro.org>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 17 Jul 2020 10:34:40 -0700 (PDT)
+        id S1727940AbgGQRhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 13:37:14 -0400
+Received: from ja.ssi.bg ([178.16.129.10]:49496 "EHLO ja.ssi.bg"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726232AbgGQRhN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 13:37:13 -0400
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 06HHaalC011654;
+        Fri, 17 Jul 2020 20:36:36 +0300
+Date:   Fri, 17 Jul 2020 20:36:36 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Andrew Sy Kim <kim.andrewsy@gmail.com>
+cc:     Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH] ipvs: add missing struct name in ip_vs_enqueue_expire_nodest_conns
+ when CONFIG_SYSCTL is disabled
+In-Reply-To: <20200717162450.1049-1-kim.andrewsy@gmail.com>
+Message-ID: <alpine.LFD.2.23.451.2007172032370.4536@ja.home.ssi.bg>
+References: <20200717162450.1049-1-kim.andrewsy@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Date: Wed, 15 Jul 2020 09:43:00 +0200
 
-> if you agree with this change, is it possible I merge it through the
-> thermal tree in order to fix the issue ?
+	Hello,
 
-No problem:
+On Fri, 17 Jul 2020, Andrew Sy Kim wrote:
 
-Acked-by: David S. Miller <davem@davemloft.net>
+> Adds missing "*ipvs" to ip_vs_enqueue_expire_nodest_conns when
+> CONFIG_SYSCTL is disabled
+> 
+> Signed-off-by: Andrew Sy Kim <kim.andrewsy@gmail.com>
+
+Acked-by: Julian Anastasov <ja@ssi.bg>
+
+	Pablo, please apply this too.
+
+> ---
+>  include/net/ip_vs.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+> index 91a9e1d590a6..9a59a33787cb 100644
+> --- a/include/net/ip_vs.h
+> +++ b/include/net/ip_vs.h
+> @@ -1533,7 +1533,7 @@ static inline void ip_vs_enqueue_expire_nodest_conns(struct netns_ipvs *ipvs)
+>  
+>  void ip_vs_expire_nodest_conn_flush(struct netns_ipvs *ipvs);
+>  #else
+> -static inline void ip_vs_enqueue_expire_nodest_conns(struct netns_ipvs) {}
+> +static inline void ip_vs_enqueue_expire_nodest_conns(struct netns_ipvs *ipvs) {}
+>  #endif
+>  
+>  #define IP_VS_DFWD_METHOD(dest) (atomic_read(&(dest)->conn_flags) & \
+> -- 
+> 2.20.1
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
