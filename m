@@ -2,68 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A44B224004
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 17:58:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39751224033
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 18:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726775AbgGQP6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 11:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
+        id S1726852AbgGQQKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 12:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbgGQP6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 11:58:39 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D42C0619D2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 08:58:39 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id g37so7196739otb.9
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 08:58:39 -0700 (PDT)
+        with ESMTP id S1726256AbgGQQKo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 12:10:44 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB148C0619D2;
+        Fri, 17 Jul 2020 09:10:43 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id d18so8133593edv.6;
+        Fri, 17 Jul 2020 09:10:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gateworks-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=+X2fBFm7EKPHv9ldvbj4jWNT1jxd0TKQ3j84DfPBXGI=;
-        b=MRYsF2hAblnKzKefmIq/897AZMLmW+iaBPtoF3ui+JeadHE5Vtjb4fK7Kd78wEMW3K
-         ia7Nf5omcSjTnowvtjynawX5enbsOZj8Gk8fAwyQU9EiIDj+dIU25FYRIcZvzftpCIF+
-         dTaZOBy/Zz+DcmM3DAQ6FM1LfqPM/JTWe74vgenk8N3mObz07N2sJ5nPWRa6ZS3zguNM
-         ADq+VuSOvrtzzaAPkQz3kPNiqiBFFIHgWIILVWgXs72ymWVOoyWm7nvzwq+rq0OUUCSF
-         +cu4/zmEvDjhfOs1riXdQJTFHZlbBVSu3cvZF6DiQlu8U3PEwcJLTQmHxspdTa4I3NMR
-         e2PQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=13hxd0qOeoNdKjzcW9Md9uf34H7KfIzZmbYDIbjslco=;
+        b=kGm+4R9RBKT3+pxDXJ+fUhHfC/ZCSQpJtGDb2BKfxiypUkQYD4l+vz7VJjv3wAWlnf
+         5pelvJhK1w/AMqVFl1Bfts5qJ1OQ8ak4DrxJxa5hTGoDN5yvwmbUsA95zoa3MWoSQPzi
+         DbnSXlhD2UcEMdbYD2qqDZwYPveqLTT7v63IQqFh4wjBXiCxhNif5kWeyoqWfu3Y1GGA
+         UhlA0bPq2k5R/xtR1PuRVvqJHoJaoJpnOuDp3WW5ZM1m+2iSyYsG46FRpMJ4CnQBwX1R
+         nI3UbIOWFIhteZBDZpgg8JQtWtoo0UzA14rt8PyFR8OFfRki69za+BjITZHNA4DxwnOV
+         ledw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=+X2fBFm7EKPHv9ldvbj4jWNT1jxd0TKQ3j84DfPBXGI=;
-        b=B/aRE11TSGQgGacKC/YLvj4YSEeF6DXHOI78ria8Ooh/burDdAeu13AQucY1ZlllnA
-         988CByjTqbFQ4jNFjTF4fQQAToWMHUdbOqVFM4SkhX3e+VuTWGrs+VQONxGigwxINjiZ
-         v5cLZTCJSAfLL8nsuqInIpDbjkjQ8NTGlvjWStWdkjL1Z2qpvglL+abJ7Fm995Tr1i5I
-         TZtrIYe4lP+gUCGreEz99fpS41Mb//vuEwCgKbAVwwUP0Aj1SwHDPXHsgCBupvB/UarO
-         grVL0ypMkNPHF162oITKSgVw1c4Utx/kadzMEflb/FStP9FzROAtY9+5ecqOVABlvaWo
-         CZgg==
-X-Gm-Message-State: AOAM531xPN0dSM1iZ9DVuwJevgzijPU69mCZe0P2TSgJitfAPwDgD9uT
-        fexHX/1kSZeFe9xUy2Rz1hLezyZ6xEDq5DUilMbtJYaoIow=
-X-Google-Smtp-Source: ABdhPJwiHl5Hhzgd5mpORZjPrZNMZ+sWTdg8cWCYXjwlQ26iVA9y1IoTO8KKoWm6XimzuTpTGav/hLlIOO2A4vXhMfU=
-X-Received: by 2002:a05:6830:45a:: with SMTP id d26mr8767758otc.252.1595001518238;
- Fri, 17 Jul 2020 08:58:38 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=13hxd0qOeoNdKjzcW9Md9uf34H7KfIzZmbYDIbjslco=;
+        b=bYR7p9gNq43Q6Xfs42OqsAU0cSPypvgI5KF+vTxdJJ8lrJEnhu4E8SJSmgnT7Y9ysd
+         XcduNQK8864FdJmNYRAWXkA6PRKpfWyOSOXr8oYy4wnDJQoVH9CU1a/aKfL6zukuCZWa
+         O5teiUOvnXbsXL8fNNwYJYQbnu7Rxa85mtt3E2+bPPSlqhbcCQaNthu5rITMd1ySJf80
+         HzFZXfuwvTD1qlL4S2eX4uqimn50NNPnEgBg9d74IE/qB56C7nveXB2LwxxscBRaa7OH
+         IL8QqjK9M4w0fpltICUWEiAod+oZblgLMC9ATPUSB+SboZ49k+4D8Gh8LK++VwZ6CTp0
+         vd0Q==
+X-Gm-Message-State: AOAM532MrFL3kvAyGw6tmwzTe6XSyhhdqVPWpPthLd5XqWUxI/9N0oOC
+        cgquRlPQM9djRyNP4rNjj+M=
+X-Google-Smtp-Source: ABdhPJzE5phYPHsYA7TMXWDz7V/lNvaTuFbMYH/m+NdYA2LmFyivgWr7CcDvYjCfNvM3UcmoK9s9Hw==
+X-Received: by 2002:a50:eac5:: with SMTP id u5mr10238807edp.6.1595002242563;
+        Fri, 17 Jul 2020 09:10:42 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id bc23sm8578253edb.90.2020.07.17.09.10.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jul 2020 09:10:42 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
+Cc:     richardcochran@gmail.com, sorganov@gmail.com,
+        linux-doc@vger.kernel.org
+Subject: [PATCH net-next 0/3] Document more PTP timestamping known quirks
+Date:   Fri, 17 Jul 2020 19:10:24 +0300
+Message-Id: <20200717161027.1408240-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-From:   Tim Harvey <tharvey@gateworks.com>
-Date:   Fri, 17 Jul 2020 08:58:26 -0700
-Message-ID: <CAJ+vNU30cU36bvgoyKFMzB4z3PAhEPB7OX_ikRQeCZPhSCZztQ@mail.gmail.com>
-Subject: Assigning MAC addrs to PCI based NIC's
-To:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings,
+I've tried to collect and summarize the conclusions of these discussions:
+https://patchwork.ozlabs.org/project/netdev/patch/20200711120842.2631-1-sorganov@gmail.com/
+https://patchwork.ozlabs.org/project/netdev/patch/20200710113611.3398-5-kurt@linutronix.de/
+which were a bit surprising to me. Make sure they are present in the
+documentation.
 
-We make embedded boards that often have on-board PCIe based NIC's that
-have MAC addresses stored in an EEPROM (not within NIC's NVRAM). I've
-struggled with a way to have boot firmware assign the mac's via
-device-tree and I find that only some drivers support getting the MAC
-from device-tree anyway.
+Vladimir Oltean (3):
+  docs: networking: timestamping: rename last section to "Known bugs".
+  docs: networking: timestamping: add one more known issue
+  docs: networking: timestamping: add a set of frequently asked
+    questions
 
-What is the appropriate way to assign vendor MAC's to a NIC from boot
-firmware, or even in userspace?
+ Documentation/networking/timestamping.rst | 77 ++++++++++++++++++++---
+ 1 file changed, 70 insertions(+), 7 deletions(-)
 
-Best regards,
+-- 
+2.25.1
 
-Tim
