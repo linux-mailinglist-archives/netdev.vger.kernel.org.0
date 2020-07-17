@@ -2,103 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61AE822452D
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 22:28:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A7C0224536
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 22:30:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728285AbgGQU2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 16:28:30 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:27071 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726492AbgGQU2a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 16:28:30 -0400
+        id S1728793AbgGQU35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 16:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728202AbgGQU34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 16:29:56 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5AEC0619D2;
+        Fri, 17 Jul 2020 13:29:56 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id w3so18915104wmi.4;
+        Fri, 17 Jul 2020 13:29:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1595017709; x=1626553709;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-id:content-transfer-encoding:mime-version:subject;
-  bh=78T8he2hHw6LRwqOxbB7Gva5ys5JWsIzevpTIjiRTqU=;
-  b=XqHoVwXWeAK9p51uvtqTBW3zIkqGfivlwVGEV405k83R6rn+mM5sErUx
-   52NbkVVD2AidLouIRMiAZenbKRfDEe0KFj53CVX/wA4X0/ff5KP6rO4eS
-   6mIArSDobo8poHdTe2d1mHRasATJC8yXURlbekAWnXAKDlke0+or+CYF1
-   U=;
-IronPort-SDR: 45VENFweVllkOl2Ujz/d9w/Yy2SVMzonrgLDhg6Y6wvc9dy8rB/xvC4e288DrTShpTxLh7eiXs
- iknZQaZ8d3HQ==
-X-IronPort-AV: E=Sophos;i="5.75,364,1589241600"; 
-   d="scan'208";a="60701036"
-Subject: Re: [PATCH V3 net-next 1/8] net: ena: avoid unnecessary rearming of
- interrupt vector when busy-polling
-Thread-Topic: [PATCH V3 net-next 1/8] net: ena: avoid unnecessary rearming of interrupt
- vector when busy-polling
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-53356bf6.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 17 Jul 2020 20:28:21 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-53356bf6.us-west-2.amazon.com (Postfix) with ESMTPS id ECE34A2903;
-        Fri, 17 Jul 2020 20:28:20 +0000 (UTC)
-Received: from EX13D17EUB001.ant.amazon.com (10.43.166.85) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 17 Jul 2020 20:28:20 +0000
-Received: from EX13D04EUB002.ant.amazon.com (10.43.166.51) by
- EX13D17EUB001.ant.amazon.com (10.43.166.85) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 17 Jul 2020 20:28:19 +0000
-Received: from EX13D04EUB002.ant.amazon.com ([10.43.166.51]) by
- EX13D04EUB002.ant.amazon.com ([10.43.166.51]) with mapi id 15.00.1497.006;
- Fri, 17 Jul 2020 20:28:19 +0000
-From:   "Bshara, Nafea" <nafea@amazon.com>
-To:     David Miller <davem@davemloft.net>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Agroskin, Shay" <shayagr@amazon.com>,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>
-Thread-Index: AQHWW5xyTj44yofdT0yfVp5o0hgOr6kMMF+A//+UqIA=
-Date:   Fri, 17 Jul 2020 20:28:18 +0000
-Message-ID: <097BE2F6-0737-4658-B2EA-4760643BCBB1@amazon.com>
-References: <1594923010-6234-1-git-send-email-akiyano@amazon.com>
- <1594923010-6234-2-git-send-email-akiyano@amazon.com>
- <20200717.125227.55028219209538840.davem@davemloft.net>
-In-Reply-To: <20200717.125227.55028219209538840.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Microsoft-MacOutlook/16.38.20061401
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.164.8]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <53C01EECA3DE174C989EDD5F046D5EE8@amazon.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PbAhWdHvHt7m/jshBgagWE4qFwSSRbIkuO8Zm6625xg=;
+        b=j3DfUaLet+tHGz5hwEy+Q6N/qNE83K8LycMg9sAkknQavrG97fRmH48OmDkieMMD4j
+         xX0/yFqjEopZOkjggRblpPB467oQ91UurwE2yOG8j9e6EawOy5/dbLx1ZfSZAZtX9V/L
+         Ic58XGDzWmw9D/xMpWPoozjOTN7ff4FqrWfYtXluBDsVO17HXV9eh/pAVdQaeyAZfa9S
+         CNNvw6DwVKrWcovRhY4wRmA4S8sQERVG9k5u00reQ+gJtHZdm+Tun/RGAWsma/vb0yMC
+         XVPhnmOEN2uIy9JzswXwLUcm5kyUsfJdqDZUrbHhcxvaZ8nHa4yWYpk9/y/HZegAv0sn
+         4jzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PbAhWdHvHt7m/jshBgagWE4qFwSSRbIkuO8Zm6625xg=;
+        b=LU2L6EUcF+dIVKa+KFasx5+0TpUVR2SMSsQceJ3tA1sCwc3+lcpEVdSnoHmMIdeD+7
+         2suaTPNaucBAlhFGR3IshjsJWrB59pnL9mWKNY6mcsWzBdxpe9szc9Rg8mMGiomPDUNe
+         LPWmLRCFTqxbQzTnb+TYx1NRe52QLFIxsEJSqQ2kOCGdOExIZmdIpFkAigQSZ1awb9vo
+         DbtmQvqZOwpDDB4PISn8YqHCRiQO4ajr3ZJpQVE5JHmI17irSbP5PRQiubX0TVAsOzyw
+         TCPL8JvMCCMJK94mpdQaYTz1BJFHE0vjP7azD//q5mwX819ysoQeq7XRz/+L4O6twQDc
+         lSOA==
+X-Gm-Message-State: AOAM531BBY9t+jrGoOBurEMwS3OAE99Gm3z0l5xQYO1SruVFkGEObrj8
+        Y1CoxgwQ6jARTx6V/pQ0HZquMnXo
+X-Google-Smtp-Source: ABdhPJzkYlnuEDFV3LA4qfCwsWwGo6wVIh3H5YCJznl7WxPJ/vK9QnXRAOkfWdj67bX9Yzp8nmUfzw==
+X-Received: by 2002:a1c:7402:: with SMTP id p2mr11065874wmc.117.1595017794784;
+        Fri, 17 Jul 2020 13:29:54 -0700 (PDT)
+Received: from localhost.localdomain (haganm.plus.com. [212.159.108.31])
+        by smtp.gmail.com with ESMTPSA id t14sm4490141wrv.14.2020.07.17.13.29.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jul 2020 13:29:54 -0700 (PDT)
+Subject: Re: [PATCH 2/2] dt-bindings: net: dsa: qca8k: Add PORT0_PAD_CTRL
+ properties
+To:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        John Crispin <john@phrozen.org>,
+        Jonathan McDowell <noodles@earth.li>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+References: <2e1776f997441792a44cd35a16f1e69f848816ce.1594668793.git.mnhagan88@gmail.com>
+ <ea0a35ed686e6dace77e25cb70a8f39fdd1ea8ad.1594668793.git.mnhagan88@gmail.com>
+ <20200716150925.0f3e01b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Matthew Hagan <mnhagan88@gmail.com>
+Message-ID: <ac7f5f39-9f83-64c0-d8d5-9ea059619f67@gmail.com>
+Date:   Fri, 17 Jul 2020 21:29:53 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20200716150925.0f3e01b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCu+7v09uIDcvMTcvMjAsIDEyOjUzIFBNLCAiRGF2aWQgTWlsbGVyIiA8ZGF2ZW1AZGF2ZW1s
-b2Z0Lm5ldD4gd3JvdGU6DQoNCiAgICBDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJv
-bSBvdXRzaWRlIG9mIHRoZSBvcmdhbml6YXRpb24uIERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVu
-IGF0dGFjaG1lbnRzIHVubGVzcyB5b3UgY2FuIGNvbmZpcm0gdGhlIHNlbmRlciBhbmQga25vdyB0
-aGUgY29udGVudCBpcyBzYWZlLg0KDQoNCg0KICAgIEZyb206IDxha2l5YW5vQGFtYXpvbi5jb20+
-DQogICAgRGF0ZTogVGh1LCAxNiBKdWwgMjAyMCAyMToxMDowMyArMDMwMA0KDQogICAgPiBUbyB0
-aGUgYmVzdCBvZiBteSBrbm93bGVkZ2UgdGhpcyBhc3N1bXB0aW9uIGhvbGRzIGZvciBBUk02NCBh
-bmQgeDg2XzY0DQogICAgPiBhcmNoaXRlY3R1cmUgd2hpY2ggdXNlIGEgTUVTSSBsaWtlIGNhY2hl
-IGNvaGVyZW5jeSBtb2RlbC4NCg0KICAgIFVzZSB0aGUgd2VsbCBkZWZpbmVkIGtlcm5lbCBtZW1v
-cnkgbW9kZWwgY29ycmVjdGx5IHBsZWFzZS4NCg0KICAgIFRoaXMgaXMgbm8gcGxhY2UgZm9yIGFy
-Y2hpdGVjdHVyYWwgYXNzdW1wdGlvbnMuICBUaGUgbWVtb3J5IG1vZGVsIG9mDQogICAgdGhlIGtl
-cm5lbCBkZWZpbmVzIHRoZSBydWxlcywgYW5kIGluIHdoYXQgbG9jYXRpb25zIHZhcmlvdXMgbWVt
-b3J5DQogICAgYmFycmllcnMgYXJlIHJlcXVpcmVkIGZvciBjb3JyZWN0IG9wZXJhdGlvbi4NCg0K
-ICAgIFRoYW5rIHlvdS4NCg0KVHJ1ZSBhbmQgd2Ugd2lsbCBhZGQgc21wX3JtYigpDQpBbmQgSSB3
-b3VsZG7igJl0IHdvcnJ5IGFib3V0IHRoZSBwZXJmIGhpdCBoZXJlLCBib3RoIHg4NiBhbmQgbW9k
-ZXJuIGFybSB2OCAoc3BlY2lmaWNhbGx5IHRoZSBHcmF2aXRvbjIgdGhhdCB1c2VzIEVOQSkgYXJl
-IHByZXR0eSBlZmZpY2llbnQgYW5kIGNsb3NlIGVub3VnaCB0byBuby1vcA0KDQoNCg==
+
+
+On 16/07/2020 23:09, Jakub Kicinski wrote:
+> On Mon, 13 Jul 2020 21:50:26 +0100 Matthew Hagan wrote:
+>> Add names and decriptions of additional PORT0_PAD_CTRL properties.
+>>
+>> Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
+>> ---
+>>  Documentation/devicetree/bindings/net/dsa/qca8k.txt | 8 ++++++++
+>>  1 file changed, 8 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+>> index ccbc6d89325d..3d34c4f2e891 100644
+>> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+>> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+>> @@ -13,6 +13,14 @@ Optional properties:
+>>  
+>>  - reset-gpios: GPIO to be used to reset the whole device
+>>  
+>> +Optional MAC configuration properties:
+>> +
+>> +- qca,exchange-mac0-mac6:	If present, internally swaps MAC0 and MAC6.
+> 
+> Perhaps we can say a little more here?
+> 
+From John's patch:
+"The switch allows us to swap the internal wirering of the two cpu ports.
+For the HW offloading to work the ethernet MAC conencting to the LAN
+ports must be wired to cpu port 0. There is HW in the wild that does not
+fulfill this requirement. On these boards we need to swap the cpu ports."
+
+This option is somewhat linked to instances where both MAC0 and MAC6 are
+used as CPU ports. I may omit this for now since support for this hasn't
+been added and MAC0 is hard-coded as the CPU port. The initial intention
+here was to cover options commonly set by OpenWrt devices, based upon
+their ar8327-initvals, to allow migration to qca8k.
+
+
+>> +- qca,sgmii-rxclk-falling-edge:	If present, sets receive clock phase to
+>> +				falling edge.
+>> +- qca,sgmii-txclk-falling-edge:	If present, sets transmit clock phase to
+>> +				falling edge.
+> 
+> These are not something that other vendors may implement and therefore
+> something we may want to make generic? Andrew?
+> 
+>>  Subnodes:
+>>  
+>>  The integrated switch subnode should be specified according to the binding
+> 
+Matthew
