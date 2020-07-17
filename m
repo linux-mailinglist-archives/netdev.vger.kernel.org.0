@@ -2,128 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7F292242A5
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:56:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15AF02242BC
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 20:02:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbgGQR4T convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 17 Jul 2020 13:56:19 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:42739 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726351AbgGQR4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:56:18 -0400
-Received: from mail-pf1-f199.google.com ([209.85.210.199])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1jwUal-0003bk-GR
-        for netdev@vger.kernel.org; Fri, 17 Jul 2020 17:56:15 +0000
-Received: by mail-pf1-f199.google.com with SMTP id 75so7379699pfb.21
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:56:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=DJeYw43KCdF1n+mtxqHrWGu9uDmkgMx6dDVvN1r/iUI=;
-        b=Q0m9V+of3K7l2y79MHR2gECntzAeDWrHIWtGCRrPzPcxU5rGP5GQB7F27STeZakCkr
-         JFiqJ4NDOu/zkbI/LAqYZXiHz1cCc7Ukf0Bw6iNugqeDcg2BYw0CRFQ84a/a5JOoDEkf
-         SYK9ItcD4yOMgJX7AapNCwKxuikd2nbHtLWsEmOLPikxui1hP+OmdUoJ4ymSkP79IFFC
-         aRlvQUpTBgOVZ0/BcGdZb67awDB3eM6EPiV4fz3EfTQ9I0geXVQWgmPJMy+xjvAkWePU
-         b7Jg45WvBc+kZydjdUCJZb4pKySGdpFZ//UdhIGpuYGM0hS4NA8+4Mk+4INAHd/bRAc7
-         nAig==
-X-Gm-Message-State: AOAM533yeqvmCtUr8tueC01nF4l4mqOlrVVNx0QCb1nU5rKhoPI5cilb
-        TnVvhrrjWRyDXrnO6CsufFNh1iyMoNoqrE53r8SGqebt0dFWtOIEpsqv6Ag+r+weHwP5DAZ6tGl
-        TP+risKDYnmQJuMWLYvX7j3P3OGKcL9yaPQ==
-X-Received: by 2002:a17:902:a412:: with SMTP id p18mr8397699plq.283.1595008574083;
-        Fri, 17 Jul 2020 10:56:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyfTo9D7lyFkDMei5LDbgFf/qwVM6msV/kFw7ZA8SiHACyAuV9cXxTJL0fSYj34hSeq6uLdww==
-X-Received: by 2002:a17:902:a412:: with SMTP id p18mr8397678plq.283.1595008573667;
-        Fri, 17 Jul 2020 10:56:13 -0700 (PDT)
-Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
-        by smtp.gmail.com with ESMTPSA id b18sm3514062pju.10.2020.07.17.10.56.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 Jul 2020 10:56:13 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [Regression] "SUNRPC: Add "@len" parameter to gss_unwrap()"
- breaks NFS Kerberos on upstream stable 5.4.y
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-In-Reply-To: <650B6279-9550-4844-9375-280F11C3DC4B@oracle.com>
-Date:   Sat, 18 Jul 2020 01:56:09 +0800
-Cc:     Pierre Sauter <pierre.sauter@stwm.de>,
-        matthew.ruffell@canonical.com,
-        linux-stable <stable@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-kernel-owner@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <CCF13E29-7B8B-47B3-A8D0-1A6E0E626BA6@canonical.com>
-References: <309E203B-8818-4E33-87F0-017E127788E2@canonical.com>
- <5619613.lOV4Wx5bFT@keks.as.studentenwerk.mhn.de>
- <0885F62B-F9D2-4248-9313-70DAA1A1DE71@oracle.com>
- <4546230.GXAFRqVoOG@keks.as.studentenwerk.mhn.de>
- <650B6279-9550-4844-9375-280F11C3DC4B@oracle.com>
-To:     Chuck Lever <chuck.lever@oracle.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1727999AbgGQSCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 14:02:09 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:52952 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726232AbgGQSCJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 14:02:09 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06HHw42u010563;
+        Fri, 17 Jul 2020 11:02:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0818; bh=ogSuBGYi+u47nbiXlf4DsRkCC38ZzT0iyKLh55Qc6t4=;
+ b=jChLjwChfLHkXwG/boCV/44u9iiUp9barFLDYG/xXcdG1R7KMALHJSg/bfjCiC8f2Nhb
+ aSneVThcmybdzrdBhc/hygJzSQ1TMbhNmNlHlWXzwrtWHuvcuX7LNjJWSoNLQcW6EuLd
+ ytwRDVZX7cNdzcPSzoozQ8+6U0MQAGU1MOl4PGsiCWgLm/u1ymEyFIABfbku2me7bl3v
+ JcxkosvVdlBwrWc3zO4uvr8RO422QWYNO1Nm+pYHN34ls1/JJq0qtZV3Ui2YRlx0Jl0f
+ TJZsz6Ys9a3+BTNj9gtpQC/Vp/4yaGQtAHjrtUv2Fu2ibtLFKLoyXpvlCycyklDOfwXf 1g== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 328mmj5hgc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 17 Jul 2020 11:02:05 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 17 Jul
+ 2020 11:02:04 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 17 Jul
+ 2020 11:02:03 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 17 Jul 2020 11:02:03 -0700
+Received: from NN-LT0044.marvell.com (unknown [10.193.54.8])
+        by maili.marvell.com (Postfix) with ESMTP id 042F93F7041;
+        Fri, 17 Jul 2020 11:02:00 -0700 (PDT)
+From:   Mark Starovoytov <mstarovoitov@marvell.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Igor Russkikh <irusskikh@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Mark Starovoytov <mstarovoitov@marvell.com>
+Subject: [PATCH net-next 0/2] net: atlantic: add support for FW 4.x
+Date:   Fri, 17 Jul 2020 21:01:45 +0300
+Message-ID: <20200717180147.8854-1-mstarovoitov@marvell.com>
+X-Mailer: git-send-email 2.26.2.windows.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-17_09:2020-07-17,2020-07-17 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch set adds support for FW 4.x, which is about to get into the
+production for some products.
+4.x is mostly compatible with 3.x, save for soft reset, which requires
+the acquisition of 2 additional semaphores.
+Other differences (e.g. absence of PTP support) are handled via
+capabilities.
 
+Note: 4.x targets specific products only. 3.x is still the main firmware
+branch, which should be used by most users (at least for now).
 
-> On Jul 18, 2020, at 01:34, Chuck Lever <chuck.lever@oracle.com> wrote:
-> 
-> 
-> 
->> On Jul 17, 2020, at 1:29 PM, Pierre Sauter <pierre.sauter@stwm.de> wrote:
->> 
->> Hi Chuck,
->> 
->> Am Donnerstag, 16. Juli 2020, 21:25:40 CEST schrieb Chuck Lever:
->>> So this makes me think there's a possibility you are not using upstream
->>> stable kernels. I can't help if I don't know what source code and commit
->>> stream you are using. It also makes me question the bisect result.
->> 
->> Yes you are right, I was referring to Ubuntu kernels 5.4.0-XX. From the
->> discussion in the Ubuntu bugtracker I got the impression that Ubuntu kernels
->> 5.4.0-XX and upstream 5.4.XX are closely related, obviously they are not. The
->> bisection was done by the original bug reporter and also refers to the Ubuntu
->> kernel.
->> 
->> In the meantime I tested v5.4.51 upstream, which shows no problems. Sorry for
->> the bother.
-> 
-> Pierre, thanks for confirming!
-> 
-> Kai-Heng suspected an upstream stable commit that is missing in 5.4.0-40,
-> but I don't have any good suggestions.
+Dmitry Bogdanov (1):
+  net: atlantic: add support for FW 4.x
 
-Well, Ubuntu's 5.4 kernel is based on upstream stable v5.4, so I asked users to test stable v5.4.51, however the feedback was negative, and that's the reason why I raised the issue here.
+Mark Starovoytov (1):
+  net: atlantic: align return value of ver_match function with function
+    name
 
-Anyway, good to know that it's fixed in upstream stable, everything's good now!
-Thanks for your effort Chuck.
+ .../aquantia/atlantic/hw_atl/hw_atl_llh.c     | 17 +++++-
+ .../aquantia/atlantic/hw_atl/hw_atl_llh.h     | 10 +++-
+ .../atlantic/hw_atl/hw_atl_llh_internal.h     | 11 +++-
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.c   | 58 +++++++++++++------
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.h   |  2 +-
+ .../aquantia/atlantic/hw_atl2/hw_atl2_utils.c |  3 +-
+ 6 files changed, 70 insertions(+), 31 deletions(-)
 
-Kai-Heng
-
-
-> 
-> 
->>>> My krb5 etype is aes256-cts-hmac-sha1-96.
->>> 
->>> Thanks! And what is your NFS server and filesystem? It's possible that the
->>> client is not estimating the size of the reply correctly. Variables include
->>> the size of file handles, MIC verifiers, and wrap tokens.
->> 
->> The server is Debian with v4.19.130 upstream, filesystem ext4.
->> 
->>> You might try:
->>> 
->>> e8d70b321ecc ("SUNRPC: Fix another issue with MIC buffer space")
->> 
->> That one is actually in Ubuntus 5.4.0-40, from looking at the code.
-> 
-> --
-> Chuck Lever
+-- 
+2.25.1
 
