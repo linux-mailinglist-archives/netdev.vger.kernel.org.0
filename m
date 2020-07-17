@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D33122344B
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 08:26:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80FF622342C
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 08:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728250AbgGQG04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 02:26:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53908 "EHLO
+        id S1727029AbgGQGYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 02:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726665AbgGQGYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 02:24:12 -0400
+        with ESMTP id S1726944AbgGQGYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 02:24:17 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3AA5C08C5DD;
-        Thu, 16 Jul 2020 23:24:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B5EC061755;
+        Thu, 16 Jul 2020 23:24:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=n2ODUYKF6/KbpzWzYvYsX0GmzUVJvLLKJNQfebeWuwA=; b=lXo2xnKUT2Zz9SodyFhrLMjmwS
-        VsBB6iza3jroWdP5Sn+p2coUEpc32Tto0/NdonV2GZjjjUJnZLETAW3WTnagM/jxob5TZcgU+hzbC
-        HBISjz1Y5i4/wF0ozC7HeooMkN7FAMd0Y4jhnbjoPpt4Ogg8KV+nfXWVILf8I4xn/BdcvhbNjRsu1
-        cPnwWdGNBM1POBS/rtQa/muCTLCz27XU1JsRtKuKYcIuY5l4x10POJ5OPwtPvqn58fQvtcxG+pzZJ
-        As7pZmVBUqITScc1cuBvkoDpFDT3bNTUTeT2PRKmG/D9lFTHcT++szLQhUxkig3T6vQrGWEmS+ybo
-        /sfdf1DA==;
+        bh=VxyQD+hRQLQr4UhdB5aW45Kx+pCOC8uUSj3q2fzaJeo=; b=kuLOak4LimTxHkua24j0bXUJDB
+        aupbdH01Cd+p3yeUiP4wPe4e2tI60umZ1RqNsAXS0Yqs6sE+5Z93ZJ22Wlm9k/GVDzO1XWklnaNTs
+        fhzGZpl1jAYWvgzVqo8CZbTXRXIYMQyYuA7OC4MStaVdtPF15ztFgdPijNSi4Fzd+Ic211S7X8S5G
+        D7szhFcFC2FgHYRyhkCQYXrSwGn432EckjZYIxk5iN44Bp9GEvktSSzvSrUSibHyhxbTqqh/GE39E
+        BxUK6VK6HTha1JRSeEMkANJ5fVU2BUKx1qifozT+dnmpeF6pMhjBjhOL7RDJ5vefZISGMspeIZaSA
+        /SAEjDmQ==;
 Received: from [2001:4bb8:105:4a81:3772:912d:640:e6c6] (helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jwJmq-00052J-2X; Fri, 17 Jul 2020 06:24:01 +0000
+        id 1jwJms-00052U-8q; Fri, 17 Jul 2020 06:24:04 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -43,9 +43,9 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         linux-bluetooth@vger.kernel.org, bridge@lists.linux-foundation.org,
         linux-can@vger.kernel.org, dccp@vger.kernel.org,
         linux-wpan@vger.kernel.org, mptcp@lists.01.org
-Subject: [PATCH 05/22] net: remove compat_sock_common_{get,set}sockopt
-Date:   Fri, 17 Jul 2020 08:23:14 +0200
-Message-Id: <20200717062331.691152-6-hch@lst.de>
+Subject: [PATCH 06/22] net: remove compat_sys_{get,set}sockopt
+Date:   Fri, 17 Jul 2020 08:23:15 +0200
+Message-Id: <20200717062331.691152-7-hch@lst.de>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200717062331.691152-1-hch@lst.de>
 References: <20200717062331.691152-1-hch@lst.de>
@@ -57,378 +57,509 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the compat handling to sock_common_{get,set}sockopt instead,
-keyed of in_compat_syscall().  This allow to remove the now unused
-->compat_{get,set}sockopt methods from struct proto_ops.
+Now that the ->compat_{get,set}sockopt proto_ops methods are gone
+there is no good reason left to keep the compat syscalls separate.
+
+This fixes the odd use of unsigned int for the compat_setsockopt
+optlen and the missing sock_use_custom_sol_socket.
+
+It would also easily allow running the eBPF hooks for the compat
+syscalls, but such a large change in behavior does not belong into
+a consolidation patch like this one.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/net.h      |  6 ------
- include/net/sock.h       |  4 ----
- net/core/sock.c          | 30 ++++++------------------------
- net/dccp/ipv4.c          |  4 ----
- net/dccp/ipv6.c          |  2 --
- net/ieee802154/socket.c  |  8 --------
- net/ipv4/af_inet.c       |  6 ------
- net/ipv6/af_inet6.c      |  4 ----
- net/ipv6/ipv6_sockglue.c | 12 ++----------
- net/ipv6/raw.c           |  2 --
- net/l2tp/l2tp_ip.c       |  4 ----
- net/l2tp/l2tp_ip6.c      |  2 --
- net/mptcp/protocol.c     |  6 ------
- net/phonet/socket.c      |  8 --------
- net/sctp/ipv6.c          |  2 --
- net/sctp/protocol.c      |  4 ----
- 16 files changed, 8 insertions(+), 96 deletions(-)
+ arch/arm64/include/asm/unistd32.h             |  4 +-
+ arch/mips/kernel/syscalls/syscall_n32.tbl     |  4 +-
+ arch/mips/kernel/syscalls/syscall_o32.tbl     |  4 +-
+ arch/parisc/kernel/syscalls/syscall.tbl       |  4 +-
+ arch/powerpc/kernel/syscalls/syscall.tbl      |  4 +-
+ arch/s390/kernel/syscalls/syscall.tbl         |  4 +-
+ arch/sparc/kernel/sys32.S                     | 12 +--
+ arch/sparc/kernel/syscalls/syscall.tbl        |  4 +-
+ arch/x86/entry/syscall_x32.c                  |  7 ++
+ arch/x86/entry/syscalls/syscall_32.tbl        |  4 +-
+ arch/x86/entry/syscalls/syscall_64.tbl        |  4 +-
+ include/linux/compat.h                        |  4 -
+ include/linux/syscalls.h                      |  4 +
+ include/uapi/asm-generic/unistd.h             |  4 +-
+ net/compat.c                                  | 79 +------------------
+ net/socket.c                                  | 25 +++---
+ tools/include/uapi/asm-generic/unistd.h       |  4 +-
+ .../arch/powerpc/entry/syscalls/syscall.tbl   |  4 +-
+ .../perf/arch/s390/entry/syscalls/syscall.tbl |  4 +-
+ .../arch/x86/entry/syscalls/syscall_64.tbl    |  4 +-
+ 20 files changed, 62 insertions(+), 125 deletions(-)
 
-diff --git a/include/linux/net.h b/include/linux/net.h
-index 016a9c5faa3479..858ff1d981540d 100644
---- a/include/linux/net.h
-+++ b/include/linux/net.h
-@@ -165,12 +165,6 @@ struct proto_ops {
- 				      int optname, char __user *optval, unsigned int optlen);
- 	int		(*getsockopt)(struct socket *sock, int level,
- 				      int optname, char __user *optval, int __user *optlen);
--#ifdef CONFIG_COMPAT
--	int		(*compat_setsockopt)(struct socket *sock, int level,
--				      int optname, char __user *optval, unsigned int optlen);
--	int		(*compat_getsockopt)(struct socket *sock, int level,
--				      int optname, char __user *optval, int __user *optlen);
--#endif
- 	void		(*show_fdinfo)(struct seq_file *m, struct socket *sock);
- 	int		(*sendmsg)   (struct socket *sock, struct msghdr *m,
- 				      size_t total_len);
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 4bf8841651486d..1fd7cf5fc7516c 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1744,10 +1744,6 @@ int sock_common_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 			int flags);
- int sock_common_setsockopt(struct socket *sock, int level, int optname,
- 				  char __user *optval, unsigned int optlen);
--int compat_sock_common_getsockopt(struct socket *sock, int level,
--		int optname, char __user *optval, int __user *optlen);
--int compat_sock_common_setsockopt(struct socket *sock, int level,
--		int optname, char __user *optval, unsigned int optlen);
+diff --git a/arch/arm64/include/asm/unistd32.h b/arch/arm64/include/asm/unistd32.h
+index 6d95d0c8bf2f47..166e369031108a 100644
+--- a/arch/arm64/include/asm/unistd32.h
++++ b/arch/arm64/include/asm/unistd32.h
+@@ -599,9 +599,9 @@ __SYSCALL(__NR_recvfrom, compat_sys_recvfrom)
+ #define __NR_shutdown 293
+ __SYSCALL(__NR_shutdown, sys_shutdown)
+ #define __NR_setsockopt 294
+-__SYSCALL(__NR_setsockopt, compat_sys_setsockopt)
++__SYSCALL(__NR_setsockopt, sys_setsockopt)
+ #define __NR_getsockopt 295
+-__SYSCALL(__NR_getsockopt, compat_sys_getsockopt)
++__SYSCALL(__NR_getsockopt, sys_getsockopt)
+ #define __NR_sendmsg 296
+ __SYSCALL(__NR_sendmsg, compat_sys_sendmsg)
+ #define __NR_recvmsg 297
+diff --git a/arch/mips/kernel/syscalls/syscall_n32.tbl b/arch/mips/kernel/syscalls/syscall_n32.tbl
+index f777141f52568f..8488b0d0a99e2a 100644
+--- a/arch/mips/kernel/syscalls/syscall_n32.tbl
++++ b/arch/mips/kernel/syscalls/syscall_n32.tbl
+@@ -60,8 +60,8 @@
+ 50	n32	getsockname			sys_getsockname
+ 51	n32	getpeername			sys_getpeername
+ 52	n32	socketpair			sys_socketpair
+-53	n32	setsockopt			compat_sys_setsockopt
+-54	n32	getsockopt			compat_sys_getsockopt
++53	n32	setsockopt			sys_setsockopt
++54	n32	getsockopt			sys_getsockopt
+ 55	n32	clone				__sys_clone
+ 56	n32	fork				__sys_fork
+ 57	n32	execve				compat_sys_execve
+diff --git a/arch/mips/kernel/syscalls/syscall_o32.tbl b/arch/mips/kernel/syscalls/syscall_o32.tbl
+index 13280625d312e9..b20522f813f9d7 100644
+--- a/arch/mips/kernel/syscalls/syscall_o32.tbl
++++ b/arch/mips/kernel/syscalls/syscall_o32.tbl
+@@ -184,7 +184,7 @@
+ 170	o32	connect				sys_connect
+ 171	o32	getpeername			sys_getpeername
+ 172	o32	getsockname			sys_getsockname
+-173	o32	getsockopt			sys_getsockopt			compat_sys_getsockopt
++173	o32	getsockopt			sys_getsockopt			sys_getsockopt
+ 174	o32	listen				sys_listen
+ 175	o32	recv				sys_recv			compat_sys_recv
+ 176	o32	recvfrom			sys_recvfrom			compat_sys_recvfrom
+@@ -192,7 +192,7 @@
+ 178	o32	send				sys_send
+ 179	o32	sendmsg				sys_sendmsg			compat_sys_sendmsg
+ 180	o32	sendto				sys_sendto
+-181	o32	setsockopt			sys_setsockopt			compat_sys_setsockopt
++181	o32	setsockopt			sys_setsockopt			sys_setsockopt
+ 182	o32	shutdown			sys_shutdown
+ 183	o32	socket				sys_socket
+ 184	o32	socketpair			sys_socketpair
+diff --git a/arch/parisc/kernel/syscalls/syscall.tbl b/arch/parisc/kernel/syscalls/syscall.tbl
+index 5a758fa6ec5242..3494e4fa1a1768 100644
+--- a/arch/parisc/kernel/syscalls/syscall.tbl
++++ b/arch/parisc/kernel/syscalls/syscall.tbl
+@@ -198,8 +198,8 @@
+ 178	common	rt_sigqueueinfo		sys_rt_sigqueueinfo		compat_sys_rt_sigqueueinfo
+ 179	common	rt_sigsuspend		sys_rt_sigsuspend		compat_sys_rt_sigsuspend
+ 180	common	chown			sys_chown
+-181	common	setsockopt		sys_setsockopt			compat_sys_setsockopt
+-182	common	getsockopt		sys_getsockopt			compat_sys_getsockopt
++181	common	setsockopt		sys_setsockopt			sys_setsockopt
++182	common	getsockopt		sys_getsockopt			sys_getsockopt
+ 183	common	sendmsg			sys_sendmsg			compat_sys_sendmsg
+ 184	common	recvmsg			sys_recvmsg			compat_sys_recvmsg
+ 185	common	semop			sys_semop
+diff --git a/arch/powerpc/kernel/syscalls/syscall.tbl b/arch/powerpc/kernel/syscalls/syscall.tbl
+index f833a319082247..94eb5b27ef65e3 100644
+--- a/arch/powerpc/kernel/syscalls/syscall.tbl
++++ b/arch/powerpc/kernel/syscalls/syscall.tbl
+@@ -433,8 +433,8 @@
+ 336	common	recv				sys_recv			compat_sys_recv
+ 337	common	recvfrom			sys_recvfrom			compat_sys_recvfrom
+ 338	common	shutdown			sys_shutdown
+-339	common	setsockopt			sys_setsockopt			compat_sys_setsockopt
+-340	common	getsockopt			sys_getsockopt			compat_sys_getsockopt
++339	common	setsockopt			sys_setsockopt			sys_setsockopt
++340	common	getsockopt			sys_getsockopt			sys_getsockopt
+ 341	common	sendmsg				sys_sendmsg			compat_sys_sendmsg
+ 342	common	recvmsg				sys_recvmsg			compat_sys_recvmsg
+ 343	32	recvmmsg			sys_recvmmsg_time32		compat_sys_recvmmsg_time32
+diff --git a/arch/s390/kernel/syscalls/syscall.tbl b/arch/s390/kernel/syscalls/syscall.tbl
+index bfdcb763395735..0d63c71fc54440 100644
+--- a/arch/s390/kernel/syscalls/syscall.tbl
++++ b/arch/s390/kernel/syscalls/syscall.tbl
+@@ -372,8 +372,8 @@
+ 362  common	connect			sys_connect			sys_connect
+ 363  common	listen			sys_listen			sys_listen
+ 364  common	accept4			sys_accept4			sys_accept4
+-365  common	getsockopt		sys_getsockopt			compat_sys_getsockopt
+-366  common	setsockopt		sys_setsockopt			compat_sys_setsockopt
++365  common	getsockopt		sys_getsockopt			sys_getsockopt
++366  common	setsockopt		sys_setsockopt			sys_setsockopt
+ 367  common	getsockname		sys_getsockname			sys_getsockname
+ 368  common	getpeername		sys_getpeername			sys_getpeername
+ 369  common	sendto			sys_sendto			sys_sendto
+diff --git a/arch/sparc/kernel/sys32.S b/arch/sparc/kernel/sys32.S
+index 489ffab918a835..a45f0f31fe51ab 100644
+--- a/arch/sparc/kernel/sys32.S
++++ b/arch/sparc/kernel/sys32.S
+@@ -157,22 +157,22 @@ do_sys_shutdown: /* sys_shutdown(int, int) */
+ 	nop
+ 	nop
+ 	nop
+-do_sys_setsockopt: /* compat_sys_setsockopt(int, int, int, char *, int) */
++do_sys_setsockopt: /* sys_setsockopt(int, int, int, char *, int) */
+ 47:	ldswa		[%o1 + 0x0] %asi, %o0
+-	sethi		%hi(compat_sys_setsockopt), %g1
++	sethi		%hi(sys_setsockopt), %g1
+ 48:	ldswa		[%o1 + 0x8] %asi, %o2
+ 49:	lduwa		[%o1 + 0xc] %asi, %o3
+ 50:	ldswa		[%o1 + 0x10] %asi, %o4
+-	jmpl		%g1 + %lo(compat_sys_setsockopt), %g0
++	jmpl		%g1 + %lo(sys_setsockopt), %g0
+ 51:	 ldswa		[%o1 + 0x4] %asi, %o1
+ 	nop
+-do_sys_getsockopt: /* compat_sys_getsockopt(int, int, int, u32, u32) */
++do_sys_getsockopt: /* sys_getsockopt(int, int, int, u32, u32) */
+ 52:	ldswa		[%o1 + 0x0] %asi, %o0
+-	sethi		%hi(compat_sys_getsockopt), %g1
++	sethi		%hi(sys_getsockopt), %g1
+ 53:	ldswa		[%o1 + 0x8] %asi, %o2
+ 54:	lduwa		[%o1 + 0xc] %asi, %o3
+ 55:	lduwa		[%o1 + 0x10] %asi, %o4
+-	jmpl		%g1 + %lo(compat_sys_getsockopt), %g0
++	jmpl		%g1 + %lo(sys_getsockopt), %g0
+ 56:	 ldswa		[%o1 + 0x4] %asi, %o1
+ 	nop
+ do_sys_sendmsg: /* compat_sys_sendmsg(int, struct compat_msghdr *, unsigned int) */
+diff --git a/arch/sparc/kernel/syscalls/syscall.tbl b/arch/sparc/kernel/syscalls/syscall.tbl
+index 8004a276cb74be..c59b37965add7e 100644
+--- a/arch/sparc/kernel/syscalls/syscall.tbl
++++ b/arch/sparc/kernel/syscalls/syscall.tbl
+@@ -147,7 +147,7 @@
+ 115	32	getgroups32		sys_getgroups
+ 116	common	gettimeofday		sys_gettimeofday		compat_sys_gettimeofday
+ 117	common	getrusage		sys_getrusage			compat_sys_getrusage
+-118	common	getsockopt		sys_getsockopt			compat_sys_getsockopt
++118	common	getsockopt		sys_getsockopt			sys_getsockopt
+ 119	common	getcwd			sys_getcwd
+ 120	common	readv			sys_readv			compat_sys_readv
+ 121	common	writev			sys_writev			compat_sys_writev
+@@ -425,7 +425,7 @@
+ 352	common	userfaultfd		sys_userfaultfd
+ 353	common	bind			sys_bind
+ 354	common	listen			sys_listen
+-355	common	setsockopt		sys_setsockopt			compat_sys_setsockopt
++355	common	setsockopt		sys_setsockopt			sys_setsockopt
+ 356	common	mlock2			sys_mlock2
+ 357	common	copy_file_range		sys_copy_file_range
+ 358	common	preadv2			sys_preadv2			compat_sys_preadv2
+diff --git a/arch/x86/entry/syscall_x32.c b/arch/x86/entry/syscall_x32.c
+index 3d8d70d3896c87..1583831f61a9df 100644
+--- a/arch/x86/entry/syscall_x32.c
++++ b/arch/x86/entry/syscall_x32.c
+@@ -8,6 +8,13 @@
+ #include <asm/unistd.h>
+ #include <asm/syscall.h>
  
- void sk_common_release(struct sock *sk);
++/*
++ * Reuse the 64-bit entry points for the x32 versions that occupy different
++ * slots in the syscall table.
++ */
++#define __x32_sys_getsockopt	__x64_sys_getsockopt
++#define __x32_sys_setsockopt	__x64_sys_setsockopt
++
+ #define __SYSCALL_64(nr, sym)
  
-diff --git a/net/core/sock.c b/net/core/sock.c
-index e085df79482520..018404d1762682 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -3199,23 +3199,14 @@ int sock_common_getsockopt(struct socket *sock, int level, int optname,
- {
- 	struct sock *sk = sock->sk;
+ #define __SYSCALL_X32(nr, sym) extern long __x32_##sym(const struct pt_regs *);
+diff --git a/arch/x86/entry/syscalls/syscall_32.tbl b/arch/x86/entry/syscalls/syscall_32.tbl
+index d8f8a1a69ed11f..43742a69dba13a 100644
+--- a/arch/x86/entry/syscalls/syscall_32.tbl
++++ b/arch/x86/entry/syscalls/syscall_32.tbl
+@@ -376,8 +376,8 @@
+ 362	i386	connect			sys_connect
+ 363	i386	listen			sys_listen
+ 364	i386	accept4			sys_accept4
+-365	i386	getsockopt		sys_getsockopt			compat_sys_getsockopt
+-366	i386	setsockopt		sys_setsockopt			compat_sys_setsockopt
++365	i386	getsockopt		sys_getsockopt			sys_getsockopt
++366	i386	setsockopt		sys_setsockopt			sys_setsockopt
+ 367	i386	getsockname		sys_getsockname
+ 368	i386	getpeername		sys_getpeername
+ 369	i386	sendto			sys_sendto
+diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
+index 78847b32e1370f..e008d638e6417f 100644
+--- a/arch/x86/entry/syscalls/syscall_64.tbl
++++ b/arch/x86/entry/syscalls/syscall_64.tbl
+@@ -396,8 +396,8 @@
+ 538	x32	sendmmsg		compat_sys_sendmmsg
+ 539	x32	process_vm_readv	compat_sys_process_vm_readv
+ 540	x32	process_vm_writev	compat_sys_process_vm_writev
+-541	x32	setsockopt		compat_sys_setsockopt
+-542	x32	getsockopt		compat_sys_getsockopt
++541	x32	setsockopt		sys_setsockopt
++542	x32	getsockopt		sys_getsockopt
+ 543	x32	io_setup		compat_sys_io_setup
+ 544	x32	io_submit		compat_sys_io_submit
+ 545	x32	execveat		compat_sys_execveat
+diff --git a/include/linux/compat.h b/include/linux/compat.h
+index e90100c0de72e4..c4255d8a4a8aea 100644
+--- a/include/linux/compat.h
++++ b/include/linux/compat.h
+@@ -737,10 +737,6 @@ asmlinkage long compat_sys_shmat(int shmid, compat_uptr_t shmaddr, int shmflg);
+ asmlinkage long compat_sys_recvfrom(int fd, void __user *buf, compat_size_t len,
+ 			    unsigned flags, struct sockaddr __user *addr,
+ 			    int __user *addrlen);
+-asmlinkage long compat_sys_setsockopt(int fd, int level, int optname,
+-				      char __user *optval, unsigned int optlen);
+-asmlinkage long compat_sys_getsockopt(int fd, int level, int optname,
+-				      char __user *optval, int __user *optlen);
+ asmlinkage long compat_sys_sendmsg(int fd, struct compat_msghdr __user *msg,
+ 				   unsigned flags);
+ asmlinkage long compat_sys_recvmsg(int fd, struct compat_msghdr __user *msg,
+diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
+index b951a87da9877c..aa46825c6f9d78 100644
+--- a/include/linux/syscalls.h
++++ b/include/linux/syscalls.h
+@@ -1424,4 +1424,8 @@ long compat_ksys_semtimedop(int semid, struct sembuf __user *tsems,
+ 			    unsigned int nsops,
+ 			    const struct old_timespec32 __user *timeout);
  
--	return sk->sk_prot->getsockopt(sk, level, optname, optval, optlen);
--}
--EXPORT_SYMBOL(sock_common_getsockopt);
--
- #ifdef CONFIG_COMPAT
--int compat_sock_common_getsockopt(struct socket *sock, int level, int optname,
--				  char __user *optval, int __user *optlen)
--{
--	struct sock *sk = sock->sk;
--
--	if (sk->sk_prot->compat_getsockopt != NULL)
-+	if (in_compat_syscal() && sk->sk_prot->compat_getsockopt)
- 		return sk->sk_prot->compat_getsockopt(sk, level, optname,
- 						      optval, optlen);
-+#endif
- 	return sk->sk_prot->getsockopt(sk, level, optname, optval, optlen);
++int __sys_getsockopt(int fd, int level, int optname, char __user *optval,
++		int __user *optlen);
++int __sys_setsockopt(int fd, int level, int optname, char __user *optval,
++		int optlen);
+ #endif
+diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
+index f4a01305d9a65c..c8c189a5f0a6bd 100644
+--- a/include/uapi/asm-generic/unistd.h
++++ b/include/uapi/asm-generic/unistd.h
+@@ -606,9 +606,9 @@ __SYSCALL(__NR_sendto, sys_sendto)
+ #define __NR_recvfrom 207
+ __SC_COMP(__NR_recvfrom, sys_recvfrom, compat_sys_recvfrom)
+ #define __NR_setsockopt 208
+-__SC_COMP(__NR_setsockopt, sys_setsockopt, compat_sys_setsockopt)
++__SC_COMP(__NR_setsockopt, sys_setsockopt, sys_setsockopt)
+ #define __NR_getsockopt 209
+-__SC_COMP(__NR_getsockopt, sys_getsockopt, compat_sys_getsockopt)
++__SC_COMP(__NR_getsockopt, sys_getsockopt, sys_getsockopt)
+ #define __NR_shutdown 210
+ __SYSCALL(__NR_shutdown, sys_shutdown)
+ #define __NR_sendmsg 211
+diff --git a/net/compat.c b/net/compat.c
+index 3e6c2c5ff2609c..091875bd621048 100644
+--- a/net/compat.c
++++ b/net/compat.c
+@@ -335,77 +335,6 @@ void scm_detach_fds_compat(struct msghdr *kmsg, struct scm_cookie *scm)
+ 	__scm_destroy(scm);
  }
--EXPORT_SYMBOL(compat_sock_common_getsockopt);
--#endif
-+EXPORT_SYMBOL(sock_common_getsockopt);
  
- int sock_common_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 			int flags)
-@@ -3240,23 +3231,14 @@ int sock_common_setsockopt(struct socket *sock, int level, int optname,
- {
- 	struct sock *sk = sock->sk;
- 
--	return sk->sk_prot->setsockopt(sk, level, optname, optval, optlen);
--}
--EXPORT_SYMBOL(sock_common_setsockopt);
--
- #ifdef CONFIG_COMPAT
--int compat_sock_common_setsockopt(struct socket *sock, int level, int optname,
--				  char __user *optval, unsigned int optlen)
+-static int __compat_sys_setsockopt(int fd, int level, int optname,
+-				   char __user *optval, unsigned int optlen)
 -{
--	struct sock *sk = sock->sk;
+-	int err;
+-	struct socket *sock;
 -
--	if (sk->sk_prot->compat_setsockopt != NULL)
-+	if (in_compat_syscall() && sk->sk_prot->compat_setsockopt)
- 		return sk->sk_prot->compat_setsockopt(sk, level, optname,
- 						      optval, optlen);
-+#endif
- 	return sk->sk_prot->setsockopt(sk, level, optname, optval, optlen);
- }
--EXPORT_SYMBOL(compat_sock_common_setsockopt);
--#endif
-+EXPORT_SYMBOL(sock_common_setsockopt);
- 
- void sk_common_release(struct sock *sk)
- {
-diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-index a7e989919c5307..316cc5ac0da72b 100644
---- a/net/dccp/ipv4.c
-+++ b/net/dccp/ipv4.c
-@@ -999,10 +999,6 @@ static const struct proto_ops inet_dccp_ops = {
- 	.recvmsg	   = sock_common_recvmsg,
- 	.mmap		   = sock_no_mmap,
- 	.sendpage	   = sock_no_sendpage,
--#ifdef CONFIG_COMPAT
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
--#endif
- };
- 
- static struct inet_protosw dccp_v4_protosw = {
-diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-index 650187d688519c..b50f85a72cd5fc 100644
---- a/net/dccp/ipv6.c
-+++ b/net/dccp/ipv6.c
-@@ -1083,8 +1083,6 @@ static const struct proto_ops inet6_dccp_ops = {
- 	.sendpage	   = sock_no_sendpage,
- #ifdef CONFIG_COMPAT
- 	.compat_ioctl	   = inet6_compat_ioctl,
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
- #endif
- };
- 
-diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
-index d93d4531aa9bc5..94ae9662133e30 100644
---- a/net/ieee802154/socket.c
-+++ b/net/ieee802154/socket.c
-@@ -423,10 +423,6 @@ static const struct proto_ops ieee802154_raw_ops = {
- 	.recvmsg	   = sock_common_recvmsg,
- 	.mmap		   = sock_no_mmap,
- 	.sendpage	   = sock_no_sendpage,
--#ifdef CONFIG_COMPAT
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
--#endif
- };
- 
- /* DGRAM Sockets (802.15.4 dataframes) */
-@@ -986,10 +982,6 @@ static const struct proto_ops ieee802154_dgram_ops = {
- 	.recvmsg	   = sock_common_recvmsg,
- 	.mmap		   = sock_no_mmap,
- 	.sendpage	   = sock_no_sendpage,
--#ifdef CONFIG_COMPAT
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
--#endif
- };
- 
- /* Create a socket. Initialise the socket, blank the addresses
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index ff141d630bdf09..4307503a6f0b41 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1043,8 +1043,6 @@ const struct proto_ops inet_stream_ops = {
- 	.sendpage_locked   = tcp_sendpage_locked,
- 	.peek_len	   = tcp_peek_len,
- #ifdef CONFIG_COMPAT
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
- 	.compat_ioctl	   = inet_compat_ioctl,
- #endif
- 	.set_rcvlowat	   = tcp_set_rcvlowat,
-@@ -1073,8 +1071,6 @@ const struct proto_ops inet_dgram_ops = {
- 	.sendpage	   = inet_sendpage,
- 	.set_peek_off	   = sk_set_peek_off,
- #ifdef CONFIG_COMPAT
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
- 	.compat_ioctl	   = inet_compat_ioctl,
- #endif
- };
-@@ -1105,8 +1101,6 @@ static const struct proto_ops inet_sockraw_ops = {
- 	.mmap		   = sock_no_mmap,
- 	.sendpage	   = inet_sendpage,
- #ifdef CONFIG_COMPAT
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
- 	.compat_ioctl	   = inet_compat_ioctl,
- #endif
- };
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index b304b882e0312f..0306509ab06374 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -688,8 +688,6 @@ const struct proto_ops inet6_stream_ops = {
- 	.peek_len	   = tcp_peek_len,
- #ifdef CONFIG_COMPAT
- 	.compat_ioctl	   = inet6_compat_ioctl,
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
- #endif
- 	.set_rcvlowat	   = tcp_set_rcvlowat,
- };
-@@ -717,8 +715,6 @@ const struct proto_ops inet6_dgram_ops = {
- 	.set_peek_off	   = sk_set_peek_off,
- #ifdef CONFIG_COMPAT
- 	.compat_ioctl	   = inet6_compat_ioctl,
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
- #endif
- };
- 
-diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index 20576e87a5f7e8..6ab44ec2c369da 100644
---- a/net/ipv6/ipv6_sockglue.c
-+++ b/net/ipv6/ipv6_sockglue.c
-@@ -914,12 +914,8 @@ int compat_ipv6_setsockopt(struct sock *sk, int level, int optname,
- {
- 	int err;
- 
--	if (level == SOL_IP && sk->sk_type != SOCK_RAW) {
--		if (udp_prot.compat_setsockopt != NULL)
--			return udp_prot.compat_setsockopt(sk, level, optname,
--							  optval, optlen);
-+	if (level == SOL_IP && sk->sk_type != SOCK_RAW)
- 		return udp_prot.setsockopt(sk, level, optname, optval, optlen);
+-	if (optlen > INT_MAX)
+-		return -EINVAL;
+-
+-	sock = sockfd_lookup(fd, &err);
+-	if (sock) {
+-		err = security_socket_setsockopt(sock, level, optname);
+-		if (err) {
+-			sockfd_put(sock);
+-			return err;
+-		}
+-
+-		if (level == SOL_SOCKET)
+-			err = sock_setsockopt(sock, level,
+-					optname, optval, optlen);
+-		else if (sock->ops->compat_setsockopt)
+-			err = sock->ops->compat_setsockopt(sock, level,
+-					optname, optval, optlen);
+-		else
+-			err = sock->ops->setsockopt(sock, level,
+-					optname, optval, optlen);
+-		sockfd_put(sock);
 -	}
- 
- 	if (level != SOL_IPV6)
- 		return -ENOPROTOOPT;
-@@ -1480,12 +1476,8 @@ int compat_ipv6_getsockopt(struct sock *sk, int level, int optname,
- {
- 	int err;
- 
--	if (level == SOL_IP && sk->sk_type != SOCK_RAW) {
--		if (udp_prot.compat_getsockopt != NULL)
--			return udp_prot.compat_getsockopt(sk, level, optname,
--							  optval, optlen);
-+	if (level == SOL_IP && sk->sk_type != SOCK_RAW)
- 		return udp_prot.getsockopt(sk, level, optname, optval, optlen);
+-	return err;
+-}
+-
+-COMPAT_SYSCALL_DEFINE5(setsockopt, int, fd, int, level, int, optname,
+-		       char __user *, optval, unsigned int, optlen)
+-{
+-	return __compat_sys_setsockopt(fd, level, optname, optval, optlen);
+-}
+-
+-static int __compat_sys_getsockopt(int fd, int level, int optname,
+-				   char __user *optval,
+-				   int __user *optlen)
+-{
+-	int err;
+-	struct socket *sock = sockfd_lookup(fd, &err);
+-
+-	if (sock) {
+-		err = security_socket_getsockopt(sock, level, optname);
+-		if (err) {
+-			sockfd_put(sock);
+-			return err;
+-		}
+-
+-		if (level == SOL_SOCKET)
+-			err = sock_getsockopt(sock, level,
+-					optname, optval, optlen);
+-		else if (sock->ops->compat_getsockopt)
+-			err = sock->ops->compat_getsockopt(sock, level,
+-					optname, optval, optlen);
+-		else
+-			err = sock->ops->getsockopt(sock, level,
+-					optname, optval, optlen);
+-		sockfd_put(sock);
 -	}
+-	return err;
+-}
+-
+-COMPAT_SYSCALL_DEFINE5(getsockopt, int, fd, int, level, int, optname,
+-		       char __user *, optval, int __user *, optlen)
+-{
+-	return __compat_sys_getsockopt(fd, level, optname, optval, optlen);
+-}
+-
+ /* Argument list sizes for compat_sys_socketcall */
+ #define AL(x) ((x) * sizeof(u32))
+ static unsigned char nas[21] = {
+@@ -565,13 +494,11 @@ COMPAT_SYSCALL_DEFINE2(socketcall, int, call, u32 __user *, args)
+ 		ret = __sys_shutdown(a0, a1);
+ 		break;
+ 	case SYS_SETSOCKOPT:
+-		ret = __compat_sys_setsockopt(a0, a1, a[2],
+-					      compat_ptr(a[3]), a[4]);
++		ret = __sys_setsockopt(a0, a1, a[2], compat_ptr(a[3]), a[4]);
+ 		break;
+ 	case SYS_GETSOCKOPT:
+-		ret = __compat_sys_getsockopt(a0, a1, a[2],
+-					      compat_ptr(a[3]),
+-					      compat_ptr(a[4]));
++		ret = __sys_getsockopt(a0, a1, a[2], compat_ptr(a[3]),
++				       compat_ptr(a[4]));
+ 		break;
+ 	case SYS_SENDMSG:
+ 		ret = __compat_sys_sendmsg(a0, compat_ptr(a1), a[2]);
+diff --git a/net/socket.c b/net/socket.c
+index b79376b17b45b7..dec345982abbb6 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -2094,9 +2094,8 @@ static bool sock_use_custom_sol_socket(const struct socket *sock)
+  *	Set a socket option. Because we don't know the option lengths we have
+  *	to pass the user mode parameter for the protocols to sort out.
+  */
+-
+-static int __sys_setsockopt(int fd, int level, int optname,
+-			    char __user *optval, int optlen)
++int __sys_setsockopt(int fd, int level, int optname, char __user *optval,
++		int optlen)
+ {
+ 	mm_segment_t oldfs = get_fs();
+ 	char *kernel_optval = NULL;
+@@ -2114,8 +2113,10 @@ static int __sys_setsockopt(int fd, int level, int optname,
+ 	if (err)
+ 		goto out_put;
  
- 	if (level != SOL_IPV6)
- 		return -ENOPROTOOPT;
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 8ef5a7b30524fd..e23c6b46175870 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -1378,8 +1378,6 @@ const struct proto_ops inet6_sockraw_ops = {
- 	.sendpage	   = sock_no_sendpage,
- #ifdef CONFIG_COMPAT
- 	.compat_ioctl	   = inet6_compat_ioctl,
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
- #endif
- };
+-	err = BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock->sk, &level, &optname,
+-					     optval, &optlen, &kernel_optval);
++	if (!in_compat_syscall())
++		err = BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock->sk, &level, &optname,
++						     optval, &optlen,
++						     &kernel_optval);
+ 	if (err < 0)
+ 		goto out_put;
+ 	if (err > 0) {
+@@ -2154,9 +2155,8 @@ SYSCALL_DEFINE5(setsockopt, int, fd, int, level, int, optname,
+  *	Get a socket option. Because we don't know the option lengths we have
+  *	to pass a user mode parameter for the protocols to sort out.
+  */
+-
+-static int __sys_getsockopt(int fd, int level, int optname,
+-			    char __user *optval, int __user *optlen)
++int __sys_getsockopt(int fd, int level, int optname, char __user *optval,
++		int __user *optlen)
+ {
+ 	int err, fput_needed;
+ 	struct socket *sock;
+@@ -2170,7 +2170,8 @@ static int __sys_getsockopt(int fd, int level, int optname,
+ 	if (err)
+ 		goto out_put;
  
-diff --git a/net/l2tp/l2tp_ip.c b/net/l2tp/l2tp_ip.c
-index 955662a6dee754..f8d7412cfb3d37 100644
---- a/net/l2tp/l2tp_ip.c
-+++ b/net/l2tp/l2tp_ip.c
-@@ -638,10 +638,6 @@ static const struct proto_ops l2tp_ip_ops = {
- 	.recvmsg	   = sock_common_recvmsg,
- 	.mmap		   = sock_no_mmap,
- 	.sendpage	   = sock_no_sendpage,
--#ifdef CONFIG_COMPAT
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
--#endif
- };
+-	max_optlen = BPF_CGROUP_GETSOCKOPT_MAX_OPTLEN(optlen);
++	if (!in_compat_syscall())
++		max_optlen = BPF_CGROUP_GETSOCKOPT_MAX_OPTLEN(optlen);
  
- static struct inet_protosw l2tp_ip_protosw = {
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index 526ed2c24dd5e0..2cdc0b7a7a43c3 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -773,8 +773,6 @@ static const struct proto_ops l2tp_ip6_ops = {
- 	.sendpage	   = sock_no_sendpage,
- #ifdef CONFIG_COMPAT
- 	.compat_ioctl	   = inet6_compat_ioctl,
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
- #endif
- };
+ 	if (level == SOL_SOCKET)
+ 		err = sock_getsockopt(sock, level, optname, optval, optlen);
+@@ -2178,8 +2179,10 @@ static int __sys_getsockopt(int fd, int level, int optname,
+ 		err = sock->ops->getsockopt(sock, level, optname, optval,
+ 					    optlen);
  
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index dbe43e0cd734e4..f0b0b503c2628d 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -2166,10 +2166,6 @@ static const struct proto_ops mptcp_stream_ops = {
- 	.recvmsg	   = inet_recvmsg,
- 	.mmap		   = sock_no_mmap,
- 	.sendpage	   = inet_sendpage,
--#ifdef CONFIG_COMPAT
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
--#endif
- };
- 
- static struct inet_protosw mptcp_protosw = {
-@@ -2222,8 +2218,6 @@ static const struct proto_ops mptcp_v6_stream_ops = {
- 	.sendpage	   = inet_sendpage,
- #ifdef CONFIG_COMPAT
- 	.compat_ioctl	   = inet6_compat_ioctl,
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
- #endif
- };
- 
-diff --git a/net/phonet/socket.c b/net/phonet/socket.c
-index 76d499f6af9ab3..87c60f83c18061 100644
---- a/net/phonet/socket.c
-+++ b/net/phonet/socket.c
-@@ -441,10 +441,6 @@ const struct proto_ops phonet_dgram_ops = {
- 	.shutdown	= sock_no_shutdown,
- 	.setsockopt	= sock_no_setsockopt,
- 	.getsockopt	= sock_no_getsockopt,
--#ifdef CONFIG_COMPAT
--	.compat_setsockopt = sock_no_setsockopt,
--	.compat_getsockopt = sock_no_getsockopt,
--#endif
- 	.sendmsg	= pn_socket_sendmsg,
- 	.recvmsg	= sock_common_recvmsg,
- 	.mmap		= sock_no_mmap,
-@@ -466,10 +462,6 @@ const struct proto_ops phonet_stream_ops = {
- 	.shutdown	= sock_no_shutdown,
- 	.setsockopt	= sock_common_setsockopt,
- 	.getsockopt	= sock_common_getsockopt,
--#ifdef CONFIG_COMPAT
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
--#endif
- 	.sendmsg	= pn_socket_sendmsg,
- 	.recvmsg	= sock_common_recvmsg,
- 	.mmap		= sock_no_mmap,
-diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
-index ccfa0ab3e7f481..ebda31b7747d08 100644
---- a/net/sctp/ipv6.c
-+++ b/net/sctp/ipv6.c
-@@ -1033,8 +1033,6 @@ static const struct proto_ops inet6_seqpacket_ops = {
- 	.mmap		   = sock_no_mmap,
- #ifdef CONFIG_COMPAT
- 	.compat_ioctl	   = inet6_compat_ioctl,
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
- #endif
- };
- 
-diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
-index cde29f3c7fb3c4..8d25cc464efdf3 100644
---- a/net/sctp/protocol.c
-+++ b/net/sctp/protocol.c
-@@ -1036,10 +1036,6 @@ static const struct proto_ops inet_seqpacket_ops = {
- 	.recvmsg	   = inet_recvmsg,
- 	.mmap		   = sock_no_mmap,
- 	.sendpage	   = sock_no_sendpage,
--#ifdef CONFIG_COMPAT
--	.compat_setsockopt = compat_sock_common_setsockopt,
--	.compat_getsockopt = compat_sock_common_getsockopt,
--#endif
- };
- 
- /* Registration with AF_INET family.  */
+-	err = BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock->sk, level, optname, optval,
+-					     optlen, max_optlen, err);
++	if (!in_compat_syscall())
++		err = BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock->sk, level, optname,
++						     optval, optlen, max_optlen,
++						     err);
+ out_put:
+ 	fput_light(sock->file, fput_needed);
+ 	return err;
+diff --git a/tools/include/uapi/asm-generic/unistd.h b/tools/include/uapi/asm-generic/unistd.h
+index f4a01305d9a65c..c8c189a5f0a6bd 100644
+--- a/tools/include/uapi/asm-generic/unistd.h
++++ b/tools/include/uapi/asm-generic/unistd.h
+@@ -606,9 +606,9 @@ __SYSCALL(__NR_sendto, sys_sendto)
+ #define __NR_recvfrom 207
+ __SC_COMP(__NR_recvfrom, sys_recvfrom, compat_sys_recvfrom)
+ #define __NR_setsockopt 208
+-__SC_COMP(__NR_setsockopt, sys_setsockopt, compat_sys_setsockopt)
++__SC_COMP(__NR_setsockopt, sys_setsockopt, sys_setsockopt)
+ #define __NR_getsockopt 209
+-__SC_COMP(__NR_getsockopt, sys_getsockopt, compat_sys_getsockopt)
++__SC_COMP(__NR_getsockopt, sys_getsockopt, sys_getsockopt)
+ #define __NR_shutdown 210
+ __SYSCALL(__NR_shutdown, sys_shutdown)
+ #define __NR_sendmsg 211
+diff --git a/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl b/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl
+index 35b61bfc1b1ae9..b190f2eb2611b3 100644
+--- a/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl
++++ b/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl
+@@ -427,8 +427,8 @@
+ 336	common	recv				sys_recv			compat_sys_recv
+ 337	common	recvfrom			sys_recvfrom			compat_sys_recvfrom
+ 338	common	shutdown			sys_shutdown
+-339	common	setsockopt			sys_setsockopt			compat_sys_setsockopt
+-340	common	getsockopt			sys_getsockopt			compat_sys_getsockopt
++339	common	setsockopt			sys_setsockopt			sys_setsockopt
++340	common	getsockopt			sys_getsockopt			sys_getsockopt
+ 341	common	sendmsg				sys_sendmsg			compat_sys_sendmsg
+ 342	common	recvmsg				sys_recvmsg			compat_sys_recvmsg
+ 343	32	recvmmsg			sys_recvmmsg_time32		compat_sys_recvmmsg_time32
+diff --git a/tools/perf/arch/s390/entry/syscalls/syscall.tbl b/tools/perf/arch/s390/entry/syscalls/syscall.tbl
+index b38d48464368dc..56ae24b6e4be6e 100644
+--- a/tools/perf/arch/s390/entry/syscalls/syscall.tbl
++++ b/tools/perf/arch/s390/entry/syscalls/syscall.tbl
+@@ -372,8 +372,8 @@
+ 362  common	connect			sys_connect			compat_sys_connect
+ 363  common	listen			sys_listen			sys_listen
+ 364  common	accept4			sys_accept4			compat_sys_accept4
+-365  common	getsockopt		sys_getsockopt			compat_sys_getsockopt
+-366  common	setsockopt		sys_setsockopt			compat_sys_setsockopt
++365  common	getsockopt		sys_getsockopt			sys_getsockopt
++366  common	setsockopt		sys_setsockopt			sys_setsockopt
+ 367  common	getsockname		sys_getsockname			compat_sys_getsockname
+ 368  common	getpeername		sys_getpeername			compat_sys_getpeername
+ 369  common	sendto			sys_sendto			compat_sys_sendto
+diff --git a/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl b/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
+index 78847b32e1370f..e008d638e6417f 100644
+--- a/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
++++ b/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
+@@ -396,8 +396,8 @@
+ 538	x32	sendmmsg		compat_sys_sendmmsg
+ 539	x32	process_vm_readv	compat_sys_process_vm_readv
+ 540	x32	process_vm_writev	compat_sys_process_vm_writev
+-541	x32	setsockopt		compat_sys_setsockopt
+-542	x32	getsockopt		compat_sys_getsockopt
++541	x32	setsockopt		sys_setsockopt
++542	x32	getsockopt		sys_getsockopt
+ 543	x32	io_setup		compat_sys_io_setup
+ 544	x32	io_submit		compat_sys_io_submit
+ 545	x32	execveat		compat_sys_execveat
 -- 
 2.27.0
 
