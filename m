@@ -2,105 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D29F12239B3
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 12:49:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 655E82239C5
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 12:54:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726256AbgGQKtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 06:49:43 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:13406 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725912AbgGQKtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 06:49:42 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06HAgfch010272;
-        Fri, 17 Jul 2020 03:49:39 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0818;
- bh=LI15vtc1sBeo327JWQg5OChc27nKdjqnS+CvYVaEkSI=;
- b=RC/p++b7vs/nXZkKXSTqs4tbnWek2/uCjopTPXaUIqUoTA53FqZuxC1ZQfrdOlCQQLJO
- vo6KuivqdPbfVWmmBB1r2Rk45bHKyVGbN5C++65f4dbvbRE3UN3/3wDzpI3o0LSdCjyT
- TLQlst4pYryyh7C0CwMHCPUBoNkv0qog9kftWoIK5Y61+WvImWhWs3EL3ZinzYH/2QsJ
- CgomND5vicxMogd6qyrhI9wNNysNfgGkVhrLZbLQQ87Hla7VR1LEAZz9r6eSyjM4Xvza
- TSXtJm9siMq4e+oy6EyOKvGRgvLsgXpVA7bw/wQB1cEQNPsG1gGZ2lHycy0p6WiXAiIF yw== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 32ap7vcw11-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 17 Jul 2020 03:49:39 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 17 Jul
- 2020 03:49:38 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 17 Jul 2020 03:49:38 -0700
-Received: from [10.193.54.28] (NN-LT0019.marvell.com [10.193.54.28])
-        by maili.marvell.com (Postfix) with ESMTP id 8D2FC3F7041;
-        Fri, 17 Jul 2020 03:49:34 -0700 (PDT)
-Subject: Re: [EXT] Re: [PATCH net-next 10/13] qed: add support for new port
- modes
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Alexander Lobakin <alobakin@marvell.com>,
-        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Denis Bolotin <dbolotin@marvell.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
-        <QLogic-Storage-Upstream@cavium.com>, <netdev@vger.kernel.org>
-References: <20200716115446.994-1-alobakin@marvell.com>
- <20200716115446.994-11-alobakin@marvell.com>
- <20200716181853.502dd619@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-Message-ID: <27939848-7e83-2897-36f9-44f47d1bfb9c@marvell.com>
-Date:   Fri, 17 Jul 2020 13:49:33 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.0
+        id S1726000AbgGQKwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 06:52:22 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:55897 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726079AbgGQKwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 06:52:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594983139;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=16V5pZxosMoRpIebeUEyRPYvMH0eT20D9HNI4XJmraA=;
+        b=RXmp07NnD72PV6MuI/bmpDTj2qNLc01xrpbL+LW5M7pK0+pY3CPrxgiBXqrQJi74FAfzV7
+        1xTo/zrM9j00dANFTHndg8MP7jOs3HhboVo0H4KP1w6ctHmHX6kCYBjqwt8+231h+8EW90
+        +gZ05vzegPSAZPLng+zvbnfrpYEfeJE=
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
+ [209.85.210.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-477-WGpwTsSNOXm1d287pXGF7w-1; Fri, 17 Jul 2020 06:52:17 -0400
+X-MC-Unique: WGpwTsSNOXm1d287pXGF7w-1
+Received: by mail-pf1-f198.google.com with SMTP id r12so6613303pfr.16
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 03:52:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=16V5pZxosMoRpIebeUEyRPYvMH0eT20D9HNI4XJmraA=;
+        b=Z530vDd3Ly/3OkEp3tI2AK5AUOWkAuydx+dnTWL1IpCxOxKsPkL+JZwrfk7A46RUqL
+         ik+2a3PRDaufnbyKhlDIT+K0Xa1R6eSHzEL47dzOZXI1xUOQqtSky3RGflsrPCk5wGjm
+         H0H9UryRWMettGZIE54P2QKLP/JZ5ClZmYPq8EsudXRtVQ/XeY6DLvm9mR1HlbfU1/p6
+         WHs5Oo7vxtLP9HEVsJFqGAeW8Rx6BDztsKGyDGzIkZ80cy106I0CvV1lw9U6ia0Tzg89
+         GjZTUdMD0KFKjhZcSRKtySg7XhW1C48wE89lHywaFZDqB76D/nvNpDCbPC1DF6OiTzfF
+         KBrA==
+X-Gm-Message-State: AOAM5307OwHA/+wO9nKwIxO97kbhUifdEC7AnWYlgFmSSP93JOUcI1vU
+        jioKQt0oI4aZ8EIBpj846ddnrtP3MG62ewis2//whPTQso7BeP/qowZRa07DlJBuplwvOhJ2NYv
+        lnLpKLOIym5cq6IAL
+X-Received: by 2002:a62:192:: with SMTP id 140mr7198213pfb.53.1594983136803;
+        Fri, 17 Jul 2020 03:52:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzMNBLksGWOFuqtvhb1wh4/OHOEr/22oo8ePdVCsHNAmsFpR5amjVqNHDPQc5W1uRpQiJNTwg==
+X-Received: by 2002:a62:192:: with SMTP id 140mr7198194pfb.53.1594983136268;
+        Fri, 17 Jul 2020 03:52:16 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id w1sm7351225pfc.55.2020.07.17.03.52.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jul 2020 03:52:15 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 65BFA181719; Fri, 17 Jul 2020 12:52:10 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 3/6] bpf: support attaching freplace programs to multiple attach points
+In-Reply-To: <20200717020507.jpxxe4dbc2watsfh@ast-mbp.dhcp.thefacebook.com>
+References: <159481853923.454654.12184603524310603480.stgit@toke.dk> <159481854255.454654.15065796817034016611.stgit@toke.dk> <20200715204406.vt64vgvzsbr6kolm@ast-mbp.dhcp.thefacebook.com> <87mu3zentu.fsf@toke.dk> <20200717020507.jpxxe4dbc2watsfh@ast-mbp.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 17 Jul 2020 12:52:10 +0200
+Message-ID: <87imemct2d.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200716181853.502dd619@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-17_06:2020-07-17,2020-07-17 signatures=0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
+> On Thu, Jul 16, 2020 at 12:50:05PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>=20
+>> > On Wed, Jul 15, 2020 at 03:09:02PM +0200, Toke H=C3=83=C6=92=C3=82=C2=
+=B8iland-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
+>> >>=20=20
+>> >> +	if (tgt_prog_fd) {
+>> >> +		/* For now we only allow new targets for BPF_PROG_TYPE_EXT */
+>> >> +		if (prog->type !=3D BPF_PROG_TYPE_EXT ||
+>> >> +		    !btf_id) {
+>> >> +			err =3D -EINVAL;
+>> >> +			goto out_put_prog;
+>> >> +		}
+>> >> +		tgt_prog =3D bpf_prog_get(tgt_prog_fd);
+>> >> +		if (IS_ERR(tgt_prog)) {
+>> >> +			err =3D PTR_ERR(tgt_prog);
+>> >> +			tgt_prog =3D NULL;
+>> >> +			goto out_put_prog;
+>> >> +		}
+>> >> +
+>> >> +	} else if (btf_id) {
+>> >> +		err =3D -EINVAL;
+>> >> +		goto out_put_prog;
+>> >> +	} else {
+>> >> +		btf_id =3D prog->aux->attach_btf_id;
+>> >> +		tgt_prog =3D prog->aux->linked_prog;
+>> >> +		if (tgt_prog)
+>> >> +			bpf_prog_inc(tgt_prog); /* we call bpf_prog_put() on link release=
+ */
+>> >
+>> > so the first prog_load cmd will beholding the first target prog?
+>> > This is complete non starter.
+>> > You didn't mention such decision anywhere.
+>> > The first ext prog will attach to the first dispatcher xdp prog,
+>> > then that ext prog will multi attach to second dispatcher xdp prog and
+>> > the first dispatcher prog will live in the kernel forever.
+>>=20
+>> Huh, yeah, you're right that's no good. Missing that was a think-o on my
+>> part, sorry about that :/
+>>=20
+>> > That's not what we discussed back in April.
+>>=20
+>> No, you mentioned turning aux->linked_prog into a list. However once I
+>> started looking at it I figured it was better to actually have all this
+>> (the trampoline and ref) as part of the bpf_link structure, since
+>> logically they're related.
+>>=20
+>> But as you pointed out, the original reference sticks. So either that
+>> needs to be removed, or I need to go back to the 'aux->linked_progs as a
+>> list' idea. Any preference?
+>
+> Good question. Back then I was thinking about converting linked_prog into=
+ link
+> list, since standalone single linked_prog is quite odd, because attaching=
+ ext
+> prog to multiple tgt progs should have equivalent properties across all
+> attachments.
+> Back then bpf_link wasn't quite developed.
+> Now I feel moving into bpf_tracing_link is better.
+> I guess a link list of bpf_tracing_link-s from 'struct bpf_prog' might wo=
+rk.
+> At prog load time we can do bpf_link_init() only (without doing bpf_link_=
+prime)
+> and keep this pre-populated bpf_link with target bpf prog and trampoline
+> in a link list accessed from 'struct bpf_prog'.
+> Then bpf_tracing_prog_attach() without extra tgt_prog_fd/btf_id would com=
+plete
+> that bpf_tracing_link by calling bpf_link_prime() and bpf_link_settle()
+> without allocating new one.
+> Something like:
+> struct bpf_tracing_link {
+>         struct bpf_link link;  /* ext prog pointer is hidding in there */
+>         enum bpf_attach_type attach_type;
+>         struct bpf_trampoline *tr;
+>         struct bpf_prog *tgt_prog; /* old aux->linked_prog */
+> };
+>
+> ext prog -> aux -> link list of above bpf_tracing_link-s
 
-> ----------------------------------------------------------------------
-> On Thu, 16 Jul 2020 14:54:43 +0300 Alexander Lobakin wrote:
->> These ports ship on new boards revisions and are supported by newer
->> firmware versions.
->>
->> Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
->> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-> 
-> What is the driver actually doing with them, tho?
-> 
-> Looks like you translate some firmware specific field to a driver
-> specific field, but I can't figure out what part of the code cares
-> about hw_info.port_mode
+Yeah, I thought along these lines as well (was thinking a new struct
+referenced from bpf_tracing_link, but sure, why not just stick the whole
+thing into aux?).
 
-Hi Jakub,
+> It's a circular reference, obviously.
+> Need to think through the complications and locking.
 
-You are right, this info is never used/reported.
+Yup, will do so when I get back to this. One other implication of this
+change: If we make the linked_prog completely dynamic you can no longer
+do:
 
-Alexander is extending already existing non used field with new values from
-our latest hardware revisions.
+link_fd =3D bpf_raw_tracepoint_open(prog);
+close(link_fd);
+link_fd =3D bpf_raw_tracepoint_open(prog):
 
-I thought devlink info could be a good place to output such kind of information.
+since after that close(), the original linked_prog will be gone. Unless
+we always leave at least one linked_prog alive? But then we can't
+guarantee that it's the target that was supplied on program load if it
+was reattached. Is that acceptable?
 
-Thats basically a layout of *Physical* ports on device - quite useful info I
-think.
+>> I don't think you are. I'll admit to them being a bit raw, but this was
+>> as far as I got and since I'll be away for three weeks I figured it was
+>> better to post them in case anyone else was interested in playing with
+>> it.
+>
+> Since it was v2 I figured you want it to land and it's ready.
+> Next time please mention the state of patches.
+> It's absolutely fine to post raw patches. It's fine to post stuff
+> that doesn't compile. But please explain the state in commit logs or cove=
+r.
 
-Important thing is these ports may not be directly mapped to PCI PFs. So
-reading `ethtool eth*` may not explain you the real device capabilities.
+Right, sorry that was not clear; will make sure to spell it out next
+time.
 
-Do you think it makes sense adding such info to `devlink info` then?
+-Toke
 
-Thanks
-  Igor
