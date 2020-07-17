@@ -2,71 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C09F022429C
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:54:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7F292242A5
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:56:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbgGQRv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 13:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726627AbgGQRv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:51:58 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C73C0619D2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:51:57 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id b6so12003770wrs.11
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:51:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=IE32Y40SA5j515K0SV4oNXBQe+0QT1TftVMsK6XHxDc=;
-        b=mLcJ5OJxRTFA6j+0yBkhtP5kp1FLRoCUtYhwYI1g6jxd2to2FYnu1JZ+U4wtYdhLvU
-         YxGduSNrmv2U6kWm8eStvAOxyhOI1AJfy2BQ+mrQU/SK3xpQYIBQ1bRfx6uM5BXTym0i
-         wyCla90ZwOiapKbGMqHizdkJNlU0ffRV8arOLx+81icb/RTrfwXorhABL0fbggTZKpKH
-         Ra0SSKaLOB/CFc2oZSkgeVSPTVvMizbmcwDQ0Hayp2wYU0ud2ylL7DHZDFcmNXIGop2y
-         F703XEvsKiO43PzQPOUBg2tvCRESXVgPCJwu6xQN4gaJpxa4CrB5quFap0yJeTw4OtBc
-         aAKQ==
+        id S1726359AbgGQR4T convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 17 Jul 2020 13:56:19 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:42739 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726351AbgGQR4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:56:18 -0400
+Received: from mail-pf1-f199.google.com ([209.85.210.199])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1jwUal-0003bk-GR
+        for netdev@vger.kernel.org; Fri, 17 Jul 2020 17:56:15 +0000
+Received: by mail-pf1-f199.google.com with SMTP id 75so7379699pfb.21
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:56:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=IE32Y40SA5j515K0SV4oNXBQe+0QT1TftVMsK6XHxDc=;
-        b=a9XdMiNm0cKaeZdyt6cnIWQ2DbWnauIe4zAp+hvTxa2hO8Bs340lRNrWuyrbEWsG/Q
-         XmfbYBOIhzuMlHHQoJyif0L0RUBTKg66kMLxacpGxb+EtAjhGJUzu7SrSuOyQ817IT6x
-         PjV7YUAT14mrfggAuzv3jpPxYxRWuaabAccfsHEiIHhUJOOFpa8Z6ICKyT3L0Vbb+z5A
-         aAEz9MNOO7JsfW7F6EN3nW+dstnw8qm6XtATx1y1QBsXk40qousQBZGZeVyrO45HRvnE
-         OqTnyA7ixkGcwLAXe8tqjJnhV2RmKWescucN/xxXmGVuADRZmL/GtRzt0ZRvUnvaVCqd
-         9Quw==
-X-Gm-Message-State: AOAM532SuLcp1yqgircLQGwrmJyZi2J94goJNCo2Go8CFWzZ7m+Cj7/I
-        vQwVHJKpgcqNSMU6X3cD2BlUA5EvbqXZolZ/fUerWpVeisE=
-X-Google-Smtp-Source: ABdhPJwxxkTisAJvaOexyfxhlH2DXxfOvsNGFiq3fZt0TUl5kPHBtEygmy6WGiyS9DtMypU+Ri9hU9jOG5BoiH77Eaw=
-X-Received: by 2002:adf:f083:: with SMTP id n3mr11470936wro.297.1595008314890;
- Fri, 17 Jul 2020 10:51:54 -0700 (PDT)
-MIME-Version: 1.0
-From:   Matt Sandy <mooseboys@gmail.com>
-Date:   Fri, 17 Jul 2020 10:51:43 -0700
-Message-ID: <CAPGpzNf5oRy7Vuesi2Y_aVj_B66ZUsQRKk+yQAF9g8TbASj=3Q@mail.gmail.com>
-Subject: Unexpected PACKET_TX_TIMESTAMP Messages
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=DJeYw43KCdF1n+mtxqHrWGu9uDmkgMx6dDVvN1r/iUI=;
+        b=Q0m9V+of3K7l2y79MHR2gECntzAeDWrHIWtGCRrPzPcxU5rGP5GQB7F27STeZakCkr
+         JFiqJ4NDOu/zkbI/LAqYZXiHz1cCc7Ukf0Bw6iNugqeDcg2BYw0CRFQ84a/a5JOoDEkf
+         SYK9ItcD4yOMgJX7AapNCwKxuikd2nbHtLWsEmOLPikxui1hP+OmdUoJ4ymSkP79IFFC
+         aRlvQUpTBgOVZ0/BcGdZb67awDB3eM6EPiV4fz3EfTQ9I0geXVQWgmPJMy+xjvAkWePU
+         b7Jg45WvBc+kZydjdUCJZb4pKySGdpFZ//UdhIGpuYGM0hS4NA8+4Mk+4INAHd/bRAc7
+         nAig==
+X-Gm-Message-State: AOAM533yeqvmCtUr8tueC01nF4l4mqOlrVVNx0QCb1nU5rKhoPI5cilb
+        TnVvhrrjWRyDXrnO6CsufFNh1iyMoNoqrE53r8SGqebt0dFWtOIEpsqv6Ag+r+weHwP5DAZ6tGl
+        TP+risKDYnmQJuMWLYvX7j3P3OGKcL9yaPQ==
+X-Received: by 2002:a17:902:a412:: with SMTP id p18mr8397699plq.283.1595008574083;
+        Fri, 17 Jul 2020 10:56:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyfTo9D7lyFkDMei5LDbgFf/qwVM6msV/kFw7ZA8SiHACyAuV9cXxTJL0fSYj34hSeq6uLdww==
+X-Received: by 2002:a17:902:a412:: with SMTP id p18mr8397678plq.283.1595008573667;
+        Fri, 17 Jul 2020 10:56:13 -0700 (PDT)
+Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
+        by smtp.gmail.com with ESMTPSA id b18sm3514062pju.10.2020.07.17.10.56.11
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 Jul 2020 10:56:13 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [Regression] "SUNRPC: Add "@len" parameter to gss_unwrap()"
+ breaks NFS Kerberos on upstream stable 5.4.y
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <650B6279-9550-4844-9375-280F11C3DC4B@oracle.com>
+Date:   Sat, 18 Jul 2020 01:56:09 +0800
+Cc:     Pierre Sauter <pierre.sauter@stwm.de>,
+        matthew.ruffell@canonical.com,
+        linux-stable <stable@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-kernel-owner@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <CCF13E29-7B8B-47B3-A8D0-1A6E0E626BA6@canonical.com>
+References: <309E203B-8818-4E33-87F0-017E127788E2@canonical.com>
+ <5619613.lOV4Wx5bFT@keks.as.studentenwerk.mhn.de>
+ <0885F62B-F9D2-4248-9313-70DAA1A1DE71@oracle.com>
+ <4546230.GXAFRqVoOG@keks.as.studentenwerk.mhn.de>
+ <650B6279-9550-4844-9375-280F11C3DC4B@oracle.com>
+To:     Chuck Lever <chuck.lever@oracle.com>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've been playing around with raw sockets and timestamps, but seem to
-be getting strange timestamp data back on the errqueue. Specifically,
-if I am creating a socket(AF_PACKET, SOCK_RAW, htons(ETH_P_IP)) and
-requesting SO_TIMESTAMPING_NEW with options 0x4DF. I am not modifying
-the flags with control messages.
 
-On both send and receive, I get the expected
-SOL_SOCKET/SO_TIMESTAMPING_NEW cmsg (in errqueue on send, in the
-message itself on receive), and it contains what appears to be valid
-timestamps in the ts[0] field. On send, however, I receive an
-additional cmsg with level = SOL_PACKET/PACKET_TX_TIMESTAMP, whose
-content is just the fixed value `char[16] { 42, 0, 0, 0, 4, <zeros>
-}`.
 
-Any ideas why I'd be getting the SOL_PACKET message on transmit, and
-why its payload is clearly not a valid timestamp? In case it matters,
-this is on an Intel I210 nic using the igb driver.
+> On Jul 18, 2020, at 01:34, Chuck Lever <chuck.lever@oracle.com> wrote:
+> 
+> 
+> 
+>> On Jul 17, 2020, at 1:29 PM, Pierre Sauter <pierre.sauter@stwm.de> wrote:
+>> 
+>> Hi Chuck,
+>> 
+>> Am Donnerstag, 16. Juli 2020, 21:25:40 CEST schrieb Chuck Lever:
+>>> So this makes me think there's a possibility you are not using upstream
+>>> stable kernels. I can't help if I don't know what source code and commit
+>>> stream you are using. It also makes me question the bisect result.
+>> 
+>> Yes you are right, I was referring to Ubuntu kernels 5.4.0-XX. From the
+>> discussion in the Ubuntu bugtracker I got the impression that Ubuntu kernels
+>> 5.4.0-XX and upstream 5.4.XX are closely related, obviously they are not. The
+>> bisection was done by the original bug reporter and also refers to the Ubuntu
+>> kernel.
+>> 
+>> In the meantime I tested v5.4.51 upstream, which shows no problems. Sorry for
+>> the bother.
+> 
+> Pierre, thanks for confirming!
+> 
+> Kai-Heng suspected an upstream stable commit that is missing in 5.4.0-40,
+> but I don't have any good suggestions.
+
+Well, Ubuntu's 5.4 kernel is based on upstream stable v5.4, so I asked users to test stable v5.4.51, however the feedback was negative, and that's the reason why I raised the issue here.
+
+Anyway, good to know that it's fixed in upstream stable, everything's good now!
+Thanks for your effort Chuck.
+
+Kai-Heng
+
+
+> 
+> 
+>>>> My krb5 etype is aes256-cts-hmac-sha1-96.
+>>> 
+>>> Thanks! And what is your NFS server and filesystem? It's possible that the
+>>> client is not estimating the size of the reply correctly. Variables include
+>>> the size of file handles, MIC verifiers, and wrap tokens.
+>> 
+>> The server is Debian with v4.19.130 upstream, filesystem ext4.
+>> 
+>>> You might try:
+>>> 
+>>> e8d70b321ecc ("SUNRPC: Fix another issue with MIC buffer space")
+>> 
+>> That one is actually in Ubuntus 5.4.0-40, from looking at the code.
+> 
+> --
+> Chuck Lever
+
