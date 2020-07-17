@@ -2,105 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE36522459A
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 23:09:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F13A2245A4
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 23:14:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726755AbgGQVIF convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 17 Jul 2020 17:08:05 -0400
-Received: from mga18.intel.com ([134.134.136.126]:24077 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726399AbgGQVIE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jul 2020 17:08:04 -0400
-IronPort-SDR: xMQLkbb3CCQoxdxb7Yz0LDZ7ZwmWm7oscUxEMK2QBk/NA42JP6BJ+WsaRI0iS2VU1IigDhqAHx
- rGzQNQeb16Sg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9685"; a="137146868"
-X-IronPort-AV: E=Sophos;i="5.75,364,1589266800"; 
-   d="scan'208";a="137146868"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2020 14:08:04 -0700
-IronPort-SDR: xG6r19f/uWWCTGmYOgGHysekqhnQDu8RWyq4WjriYk8Ah6ob3DoQpjMSQZyeTuF4wJxixi7g6X
- ZeVyrIuJcVyQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,364,1589266800"; 
-   d="scan'208";a="391500138"
-Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
-  by fmsmga001.fm.intel.com with ESMTP; 17 Jul 2020 14:08:03 -0700
-Received: from orsmsx161.amr.corp.intel.com (10.22.240.84) by
- ORSMSX104.amr.corp.intel.com (10.22.225.131) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 17 Jul 2020 14:08:03 -0700
-Received: from orsmsx151.amr.corp.intel.com ([169.254.7.24]) by
- ORSMSX161.amr.corp.intel.com ([169.254.4.100]) with mapi id 14.03.0439.000;
- Fri, 17 Jul 2020 14:08:03 -0700
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Jakub Kicinski <kubakici@wp.pl>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Tom Herbert <tom@herbertland.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>
-Subject: RE: [RFC PATCH net-next v2 0/6] introduce PLDM firmware update
- library
-Thread-Topic: [RFC PATCH net-next v2 0/6] introduce PLDM firmware update
- library
-Thread-Index: AQHWXGkVCyNxIZF1QUWKu5DGKx31NqkMpcoA//+d8vA=
-Date:   Fri, 17 Jul 2020 21:08:02 +0000
-Message-ID: <02874ECE860811409154E81DA85FBB58C8ABAA13@ORSMSX151.amr.corp.intel.com>
-References: <20200717183541.797878-1-jacob.e.keller@intel.com>
- <20200717125826.1f0b3fbb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200717125826.1f0b3fbb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.138]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726546AbgGQVNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 17:13:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726205AbgGQVNq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 17:13:46 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE34C0619D2;
+        Fri, 17 Jul 2020 14:13:46 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id q7so14233401ljm.1;
+        Fri, 17 Jul 2020 14:13:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=1d3lxx3KtSFah+0xpHy/GLRMEx2gCAuDBaifp0MIvAY=;
+        b=b8qnYAZWPECX1sBySPzW41/Z88W3Z2cxq2cUrdUtQAl3DVVBuEz5eN1UYlosLWCHpl
+         cRPruwsnOvPEvhVYpFqaKSQE0OqsOdlnC77BRQ/qc4ggysT4OWLbEwOMXH52yxotyyO3
+         XNHkCC/VPzP1/3PM3xy9LsavwlxKfjDj4w/Ya3Ku/69PnUZTJNbDu6Tk1Odnw5vWpRqd
+         TOR0QJ76VwSPvQhPsYcPmiL/3n0mFnLS7ZpHLp/dNBo09YlLajphVcAqcfKtcmvLHMsT
+         boLHme7ygbJuaCZjsEhemWQJL/3IUYtzTVbAN30cHIDrzU49UVSxNWtL3c18praKWCOm
+         HBZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=1d3lxx3KtSFah+0xpHy/GLRMEx2gCAuDBaifp0MIvAY=;
+        b=DIF2emtJEnh3Tp1M9CX/PirM2VBkwFXZqikymYAoU+7nRqERusaZI0ahdPACMZYVNm
+         B3WW/MGQKhhJQhkbKn1FOER18e90/SKcmZPBOUYF6fXzRxR2AAqeWq3VddZM8lIpgfjs
+         xoUH/XcWEltKNHRDHQj3hdcxMa0QKRDLvtQF+d6+JLKFEs2HDs9HR1qXrEnF7tXWYfpG
+         fvVwPF9TC+TY6v3+nmyBqgwxZrMxQELBYIMPrwxc2mQ0CLsGlhk+TKVVD4h+LYWV9Mp/
+         4XvQ9qdVMSbHiYvQS8K1Jp0CkIwV/kNjHbHJq84G8ywPfAYETE22Mo9TpWlW0oSp1SQt
+         UK4Q==
+X-Gm-Message-State: AOAM532fGpLZWGscepFJ1nSeTOcd7QYDbZ5QA/K0HRvjFNsL6iXJ4xoe
+        aew6CcxIRvBXGOaKZvi4+Rnkv46/
+X-Google-Smtp-Source: ABdhPJz/U2IbiS4qPHdn0La8QfmEM3TBOYev8V9bhpoSncA+pu/MKhhFybtTNm8ZoGoc6yK0h+ZPDw==
+X-Received: by 2002:a2e:9207:: with SMTP id k7mr5167811ljg.120.1595020424389;
+        Fri, 17 Jul 2020 14:13:44 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id v5sm1834099lji.75.2020.07.17.14.13.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jul 2020 14:13:43 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        richardcochran@gmail.com, linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next 0/3] Document more PTP timestamping known quirks
+References: <20200717161027.1408240-1-olteanv@gmail.com>
+Date:   Sat, 18 Jul 2020 00:13:42 +0300
+In-Reply-To: <20200717161027.1408240-1-olteanv@gmail.com> (Vladimir Oltean's
+        message of "Fri, 17 Jul 2020 19:10:24 +0300")
+Message-ID: <87imelj14p.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Vladimir Oltean <olteanv@gmail.com> writes:
 
+> I've tried to collect and summarize the conclusions of these discussions:
+> https://patchwork.ozlabs.org/project/netdev/patch/20200711120842.2631-1-sorganov@gmail.com/
+> https://patchwork.ozlabs.org/project/netdev/patch/20200710113611.3398-5-kurt@linutronix.de/
+> which were a bit surprising to me. Make sure they are present in the
+> documentation.
 
-> -----Original Message-----
-> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> Behalf Of Jakub Kicinski
-> Sent: Friday, July 17, 2020 12:58 PM
-> To: Keller, Jacob E <jacob.e.keller@intel.com>
-> Cc: netdev@vger.kernel.org; Jiri Pirko <jiri@resnulli.us>; Tom Herbert
-> <tom@herbertland.com>; Jiri Pirko <jiri@mellanox.com>; Jakub Kicinski
-> <kuba@kernel.org>; Jonathan Corbet <corbet@lwn.net>; Michael Chan
-> <michael.chan@broadcom.com>; Bin Luo <luobin9@huawei.com>; Saeed
-> Mahameed <saeedm@mellanox.com>; Leon Romanovsky <leon@kernel.org>;
-> Ido Schimmel <idosch@mellanox.com>; Danielle Ratson
-> <danieller@mellanox.com>
-> Subject: Re: [RFC PATCH net-next v2 0/6] introduce PLDM firmware update
-> library
-> 
-> On Fri, 17 Jul 2020 11:35:35 -0700 Jacob Keller wrote:
-> > This series goal is to enable support for updating the ice hardware flash
-> > using the devlink flash command.
-> 
-> Looks reasonable.
-> 
-> You have some left over references to ignore_pending_flash_update in
-> comments, and you should use NLA_POLICY_RANGE() for the new attr.
-> 
+As one of participants of these discussions, I'm afraid I incline to
+alternative approach to solving the issues current design has than the one
+you advocate in these patch series.
 
-Since the minimum value is zero, I switched the code to use NLA_POLICY_MAX.
+I believe its upper-level that should enforce common policies like
+handling hw time stamping at outermost capable device, not random MAC
+driver out there.
+
+I'd argue that it's then upper-level that should check PHY features, and
+then do not bother MAC with ioctl() requests that MAC should not handle
+in given configuration. This way, the checks for phy_has_hwtstamp()
+won't be spread over multiple MAC drivers and will happily sit in the
+upper-level ioctl() handler.
+
+In other words, I mean that it's approach taken in ethtool that I tend
+to consider being the right one.
 
 Thanks,
-Jake
+-- Sergey
