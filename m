@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94895224036
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 18:10:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08A5B224039
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 18:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726928AbgGQQKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 12:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59694 "EHLO
+        id S1726104AbgGQQKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 12:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726858AbgGQQKq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 12:10:46 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD76C0619D3;
-        Fri, 17 Jul 2020 09:10:45 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id d16so8102309edz.12;
-        Fri, 17 Jul 2020 09:10:45 -0700 (PDT)
+        with ESMTP id S1726322AbgGQQKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 12:10:47 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E37C0619D4;
+        Fri, 17 Jul 2020 09:10:46 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id e22so8130124edq.8;
+        Fri, 17 Jul 2020 09:10:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9HvSYMPMl6zuTZ43Xfw2roBTeaFPyRGcOh3uQhjnEB8=;
-        b=qOaf9qP9tLJQhFlr/TKIlVzwt0WhRF7dvQaVE6bX6myavpI24A8xPv1sCdqh7FFB2S
-         Nt14IecLp3k9oszHIwOpU1Vk2DNnRXlDkyGRsPSDC13EVJFP2L3yoSomts7uwas9KWJQ
-         XFRHVlgWl8y7S7gnXxmnDyu4wTeYBcq3bpIxK6E0wcqlzgq8JYGGeATcMkB4OAycT0Wr
-         0ZzNFx+tY8nhPTFoObnBAN1UCP2rlq6dZlO8PwbPtiOil/Qggraf08VroWos/hZTc65I
-         K9CsZl0P8Y4g3QrhCBEy3O42t6AwM5Yt/jaCmuJrlw480dhBAf0JaseYiXNXhv+l4jbT
-         aqlg==
+        bh=K4sG738MbURXIMMMIi7Zp6H9aMqQB1Y7Bdr3nf17Kdk=;
+        b=J5JChlwHPZAM4iIWaf1qXMMQS+Qh/XSGCaDJNUskE0aIw7hlxsSkaggbhpF4IXcpW6
+         vTxF0rWXsK5Q8oQKsnvMf0qCgWOewdbUkJ93wO7JIw0qnD76KtxduZqWi0isskpt7Xx6
+         cJhzg3bJpfUpEP3jioWZhDe1doATxlA4/TaVudRhdaYSp8CQink+v3zTqtcxd5HYvqNx
+         1T/DXPVYJ2kafol29iGG6sVJ7X5ubQzLKB1SEr5u/UBc3qyWZVTU+7iTlXsFf44IaOwv
+         yKHKuU/q7uNRHv/mSUKWHTb9D21dhs0erJRAAb2oQjJay7Lgev9gvQUp20jciqPhYWca
+         89ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9HvSYMPMl6zuTZ43Xfw2roBTeaFPyRGcOh3uQhjnEB8=;
-        b=hw7ujsGDtsspjtIhUXnaUoGtreYxruRxr73hCkLqaiFbSfK77j0VYUUOXz5YFhNwB6
-         TblBB7yZbL0tZ66oMBuijaYwNuLGK3vBsH410r0b+VLyDfvjlD3OQppwi9OBG7jXJiYK
-         KxFV23bEVndQSmBBvVEkeFQ+lBvBMNBVBZ6020E/bn/QZmVygYbVRGuA3260MYKFEyE2
-         2EGLeS/ALQs28pdTW5rIQGaLnpMC77Jg3G4Kur8jV13HbxK5p9EejDoPqHcLDVTAwRcO
-         9uxbEtrWD5WqJZ90wwg9KrLfU7Wil1DNjrcybJl4s4azfBTEZv4tZplQd6iJaj4esKN3
-         pmFg==
-X-Gm-Message-State: AOAM531WKt6RBPaeKMebCjUtOXTn/5qgmmyxQ8NTD0fZODbcxR7tCdcZ
-        bTgYlj4QiedY+C5XHFKw7UY=
-X-Google-Smtp-Source: ABdhPJyWjH5SXTBmFGYLAeJjntVedCIsDZKXevys5+TocHM+hr4S0InSf9CFSxLiRLG8f5n+wce5xQ==
-X-Received: by 2002:aa7:dad6:: with SMTP id x22mr9715396eds.310.1595002244579;
-        Fri, 17 Jul 2020 09:10:44 -0700 (PDT)
+        bh=K4sG738MbURXIMMMIi7Zp6H9aMqQB1Y7Bdr3nf17Kdk=;
+        b=ccRSlIj3sjY0O9IMD0FPNZG2hmaoMoCEH3GDhNSn2swGCDuVZO+6nIRAQeUmK4K2ZJ
+         mFddm5gKyF7ZslVxO82qj1jK+ICINgtXrtTwlGLSXtF02T7lnGnJj2ajydGGH8aU91kt
+         23Hs1/9LxP1zk9cv335bSS8DUrk82Wg15y3jhKanQBr7ZeaC8knKFtMAiJgYMOye9fts
+         Qf6JkXBl3NV5k83uva/PdcNl8nZ2K/R2tFjyfzpEun/loxaQbqLsEPykt5MeGYkGUWVh
+         GZA6cW7oB0LXnqGSsMSmGga1+AcnJoJMnuIDeDFP+m/hMB3g3bTsP6aHybW8jLS4Do3T
+         E2kA==
+X-Gm-Message-State: AOAM533jD0RCq8qpDzlFeCr6SepW9aStEmN9Gjb4d5tX5kA3ei45l8sb
+        QfdLoZRG6y6Ar3IEAsHTeeE=
+X-Google-Smtp-Source: ABdhPJwyjyGYXQ8dAmACicqp1imUPUmH4GWUq+zskNgcEvFNHDBMZYxJDzYEnCBRSoVzW1lnU4NaSQ==
+X-Received: by 2002:a05:6402:203c:: with SMTP id ay28mr10258244edb.271.1595002245476;
+        Fri, 17 Jul 2020 09:10:45 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id bc23sm8578253edb.90.2020.07.17.09.10.43
+        by smtp.gmail.com with ESMTPSA id bc23sm8578253edb.90.2020.07.17.09.10.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 09:10:44 -0700 (PDT)
+        Fri, 17 Jul 2020 09:10:45 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
 Cc:     richardcochran@gmail.com, sorganov@gmail.com,
         linux-doc@vger.kernel.org
-Subject: [PATCH net-next 2/3] docs: networking: timestamping: add one more known issue
-Date:   Fri, 17 Jul 2020 19:10:26 +0300
-Message-Id: <20200717161027.1408240-3-olteanv@gmail.com>
+Subject: [PATCH net-next 3/3] docs: networking: timestamping: add a set of frequently asked questions
+Date:   Fri, 17 Jul 2020 19:10:27 +0300
+Message-Id: <20200717161027.1408240-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200717161027.1408240-1-olteanv@gmail.com>
 References: <20200717161027.1408240-1-olteanv@gmail.com>
@@ -64,68 +64,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document the fact that Ethernet PHY timestamping has a fundamentally
-flawed corner case (which in fact hits the majority of networking
-drivers): a PHY for which its host MAC driver doesn't forward the
-phy_mii_ioctl for timestamping is still going to be presented to user
-space as functional.
-
-Fixing this inconsistency would require moving the phy_has_tsinfo()
-check inside all MAC drivers which are capable of PHY timestamping, to
-be in harmony with the existing design for phy_has_hwtstamp() checks.
-Instead of doing that, document the preferable solution which is that
-offending MAC drivers be fixed instead.
+These are some questions I had while trying to explain the behavior of
+some drivers with respect to software timestamping. Answered with the
+help of Richard Cochran.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- Documentation/networking/timestamping.rst | 37 +++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+ Documentation/networking/timestamping.rst | 26 +++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
 diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
-index 9a1f4cb4ce9e..4004c5d2771d 100644
+index 4004c5d2771d..e01ec01179fe 100644
 --- a/Documentation/networking/timestamping.rst
 +++ b/Documentation/networking/timestamping.rst
-@@ -754,3 +754,40 @@ check in their "TX confirmation" portion, not only for
- that PTP timestamping is not enabled for anything other than the outermost PHC,
- this enhanced check will avoid delivering a duplicated TX timestamp to user
- space.
+@@ -791,3 +791,29 @@ The correct solution to this problem is to implement the PHY timestamping
+ requirements in the MAC driver found broken, and submit as a bug fix patch to
+ netdev@vger.kernel.org. See :ref:`Documentation/process/stable-kernel-rules.rst
+ <stable_kernel_rules>` for more details.
 +
-+Another known limitation is the design of the ``__ethtool_get_ts_info``
-+function::
++3.4 Frequently asked questions
++------------------------------
 +
-+  int __ethtool_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info)
-+  {
-+          const struct ethtool_ops *ops = dev->ethtool_ops;
-+          struct phy_device *phydev = dev->phydev;
++Q: When should drivers set SKBTX_IN_PROGRESS?
++^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 +
-+          memset(info, 0, sizeof(*info));
-+          info->cmd = ETHTOOL_GET_TS_INFO;
++When the interface they represent offers both ``SOF_TIMESTAMPING_TX_HARDWARE``
++and ``SOF_TIMESTAMPING_TX_SOFTWARE``.
++Originally, the network stack could deliver either a hardware or a software
++time stamp, but not both. This flag prevents software timestamp delivery.
++This restriction was eventually lifted via the ``SOF_TIMESTAMPING_OPT_TX_SWHW``
++option, but still the original behavior is preserved as the default.
 +
-+          if (phy_has_tsinfo(phydev))
-+                  return phy_ts_info(phydev, info);
-+          if (ops->get_ts_info)
-+                  return ops->get_ts_info(dev, info);
++Q: Should drivers that don't offer SOF_TIMESTAMPING_TX_SOFTWARE call skb_tx_timestamp()?
++^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 +
-+          info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
-+                                  SOF_TIMESTAMPING_SOFTWARE;
-+          info->phc_index = -1;
-+
-+          return 0;
-+  }
-+
-+Because the generic function searches first for the timestamping capabilities
-+of the attached PHY, and returns them directly without consulting the MAC
-+driver, no checking is being done whether the requirements described in `3.2.2
-+Ethernet PHYs`_ are implemented or not. Therefore, if the MAC driver does not
-+satisfy the requirements for PHY timestamping, and
-+``CONFIG_NETWORK_PHY_TIMESTAMPING`` is enabled, then a non-functional PHC index
-+(the one corresponding to the PHY) will be reported to user space, via
-+``ethtool -T``.
-+
-+The correct solution to this problem is to implement the PHY timestamping
-+requirements in the MAC driver found broken, and submit as a bug fix patch to
-+netdev@vger.kernel.org. See :ref:`Documentation/process/stable-kernel-rules.rst
-+<stable_kernel_rules>` for more details.
++The ``skb_clone_tx_timestamp()`` function from its body helps with propagation
++of TX timestamps from PTP PHYs, and the required placement of this call is the
++same as for software TX timestamping.
++Additionally, since PTP is broken on ports with timestamping PHYs and unmet
++requirements, the consequence is that any driver which may be ever coupled to
++a timestamping-capable PHY in ``netdev->phydev`` should call at least
++``skb_clone_tx_timestamp()``. However, calling the higher-level
++``skb_tx_timestamp()`` instead achieves the same purpose, but also offers
++additional compliance to ``SOF_TIMESTAMPING_TX_SOFTWARE``.
 -- 
 2.25.1
 
