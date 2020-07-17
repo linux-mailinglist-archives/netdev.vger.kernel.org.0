@@ -2,110 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20076223B4E
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 14:22:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 549EF223B5D
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 14:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726811AbgGQMWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 08:22:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34602 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726104AbgGQMWV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jul 2020 08:22:21 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726550AbgGQM2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 08:28:11 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:49340 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726056AbgGQM2L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 08:28:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594988889;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=d9VptYIcHjd8g/lwaqmm7CWe7E022P/W0I2N017WoIw=;
+        b=Vdh8wbpPn0WScxHr4WyEfGARwQIxrqLSYo8Q/pad8NkDNSO17RJhh1Rkn4Dw42+KmC3/MB
+        zJ0j+UbOJGO+B3Knn4l5eddN5guM8cik4/cdC8DPPIDVjocrXp4zSKCncf8mKRklxjrX0c
+        IE5ahiC4gp+jgyNNto3c1MgJwYqnNLc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-296-wI1UCqOCNqKlqV3Yi0DAkA-1; Fri, 17 Jul 2020 08:28:05 -0400
+X-MC-Unique: wI1UCqOCNqKlqV3Yi0DAkA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CB91820684;
-        Fri, 17 Jul 2020 12:22:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594988540;
-        bh=J1Qt3Lw28H9tRlMCjTFWuJ09Pp5bPH/VYq8pbZMeEGk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LZg5ba3M7HTo/BL5R2W6pSAW7PllQcfqW8aFdAOarRZ7DLNXyk5Oj0PHLN+VCQX2h
-         q3uf68VE9AUxzajSmsN202GOx4mTbFJmPs5YIy9ULnckxHYoKrFfB3QD4iuNza9Ben
-         A8KTxVxAzC3bjpYziEm0coq8ezKTAhI/fuiSabdk=
-Date:   Fri, 17 Jul 2020 13:22:09 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Niklas <niklas.soderlund@ragnatech.se>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, linux-can@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>
-Subject: Re: [PATCH 14/20] dt-bindings: spi: renesas,sh-msiof: Add r8a774e1
- support
-Message-ID: <20200717122209.GF4316@sirena.org.uk>
-References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594811350-14066-15-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20200717115915.GD4316@sirena.org.uk>
- <CA+V-a8sxtan=8NCpEryT9NzOqkPRyQBa-ozYNHvi8goaOJQ24w@mail.gmail.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B2FDB800463;
+        Fri, 17 Jul 2020 12:28:04 +0000 (UTC)
+Received: from elisabeth (unknown [10.36.110.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 785A219C58;
+        Fri, 17 Jul 2020 12:28:01 +0000 (UTC)
+Date:   Fri, 17 Jul 2020 14:27:43 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        aconole@redhat.com
+Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
+ discovery on encap sockets
+Message-ID: <20200717142743.6d05d3ae@elisabeth>
+In-Reply-To: <20200715143356.GQ32005@breakpoint.cc>
+References: <20200712200705.9796-1-fw@strlen.de>
+        <20200712200705.9796-2-fw@strlen.de>
+        <20200713003813.01f2d5d3@elisabeth>
+        <20200713080413.GL32005@breakpoint.cc>
+        <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
+        <20200713140219.GM32005@breakpoint.cc>
+        <20200714143327.2d5b8581@redhat.com>
+        <20200715124258.GP32005@breakpoint.cc>
+        <20200715153547.77dbaf82@elisabeth>
+        <20200715143356.GQ32005@breakpoint.cc>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3yNHWXBV/QO9xKNm"
-Content-Disposition: inline
-In-Reply-To: <CA+V-a8sxtan=8NCpEryT9NzOqkPRyQBa-ozYNHvi8goaOJQ24w@mail.gmail.com>
-X-Cookie: No other warranty expressed or implied.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 15 Jul 2020 16:33:56 +0200
+Florian Westphal <fw@strlen.de> wrote:
 
---3yNHWXBV/QO9xKNm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> Stefano Brivio <sbrivio@redhat.com> wrote:
+> > On Wed, 15 Jul 2020 14:42:58 +0200
+> > Florian Westphal <fw@strlen.de> wrote:  
+> > > With your skeleton patch, br0 updates MTU, but the sender still
+> > > won't know that unless input traffic to br0 is routed (or locally
+> > > generated).  
+> > 
+> > To let the sender know, I still think it's a bit simpler with this
+> > approach, we don't have to do all the peeling. In br_handle_frame(), we
+> > would need to add *something like*:
+> > 
+> > 	if (skb->len > p->br->dev->mtu) {
+> > 		memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
+> > 		icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
+> > 			  htonl(p->br->dev->mtu));
+> > 		goto drop;
+> > 	}
+> > 
+> > just like IP tunnels do, see tnl_update_pmtu().  
+> 
+> Yes, but the caveat here is that a bridge might be transporting
+> non-IP protocol too.
+> 
+> So, MTU-reduction+ICMP won't help for them.
 
-On Fri, Jul 17, 2020 at 01:15:13PM +0100, Lad, Prabhakar wrote:
-> On Fri, Jul 17, 2020 at 12:59 PM Mark Brown <broonie@kernel.org> wrote:
+Well, it doesn't need to, PMTU discovery is only implemented for IP,
+so, to handle this, we can just check if the frame contains an IP
+packet. The kind of check (skb->protocol == htons(ETH_P_...)) is
+already there on all sorts of paths in the bridge.
 
-> > On Wed, Jul 15, 2020 at 12:09:04PM +0100, Lad Prabhakar wrote:
-> > > Document RZ/G2H (R8A774E1) SoC bindings.
+However,
 
-> > Please in future could you split things like this up into per subsystem
-> > serieses?  That's a more normal approach and avoids the huge threads and
-> > CC lists.
+> I would try to avoid mixing IP functionality into the bridge,
 
-> Sorry for doing this, In future I shall keep that in mind. (Wanted to
-> get in most patches for RZ/G2H in V5.9 window)
+if we stick to the fact the bridge is a L2 device, sure, we should drop
+packets silently. The problem is that bridging an UDP tunnel forces the
+combination to become a router.
 
-If anything sending things as a big series touching lots of subsystems
-can slow things down as people figure out dependencies and who's going
-to actually apply things.
+So, either we forbid that, or I guess it's acceptable to have (even
+further) L3 functionality implemented in the bridge.
 
---3yNHWXBV/QO9xKNm
-Content-Type: application/pgp-signature; name="signature.asc"
+> its a slippery slope (look at bridge netfilter for an example).
 
------BEGIN PGP SIGNATURE-----
+Oops, I was taking it as a positive example :)
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl8Rl/AACgkQJNaLcl1U
-h9DhTAgAgzuxfwIeWNm0FDyt+K9Mfz5di6xytCvItNaaahcI/Ct9HEQCGPpgG+SN
-OegozumTbxf+HvdgEgg2JsMqKfoCid7/F/M/ywb24/SqHnpgIIKBA7U6bRF2PGMW
-JHXG/oHSBd5yyV6xurj6YfaJidh9KJO5afRb8yisffI8ge1n+X7F2GQZyWke45cp
-Ojag6elp7xYrRwC3ylAp2exRsoSw5SXYwqM4CNkrDEiXq1dKeePsm2vuxf6FmE4n
-WclrCd+/9oWAk7dIoJTBX4BxBudcZlk25Y55Q6GyA/bbGMBWef1vWvUNasjQef0d
-e/mSTsDdN+0RD9lg1rJ0RqtyHnDPhw==
-=mPyM
------END PGP SIGNATURE-----
+> I agree that for a 'ip only' bridge that might work indeed.
+> 
+> > Note that this doesn't work as it is because of a number of reasons
+> > (skb doesn't have a dst, pkt_type is not PACKET_HOST), and perhaps we
+> > shouldn't be using icmp_send(), but at a glance that looks simpler.  
+> 
+> Yes, it also requires that the bridge has IP connectivity
+> to reach the inner ip, which might not be the case.
 
---3yNHWXBV/QO9xKNm--
+If the VXLAN endpoint is a port of the bridge, that needs to be the
+case, right? Otherwise the VXLAN endpoint can't be reached.
+
+> > Another slight preference I have towards this idea is that the only
+> > known way we can break PMTU discovery right now is by using a bridge,
+> > so fixing the problem there looks more future-proof than addressing any
+> > kind of tunnel with this problem. I think FoU and GUE would hit the
+> > same problem, I don't know about IP tunnels, sticking that selftest
+> > snippet to whatever other test in pmtu.sh should tell.  
+> 
+> Every type of bridge port that needs to add additional header on egress
+> has this problem in the bridge scenario once the peer of the IP tunnel
+> signals a PMTU event.
+
+Yes :(
+
+> I agree that excess copy&paste should be avoided, but at this point
+> I don't see an easy solution.
+
+I think what you mention below is way more acceptable.
+
+> > I might be wrong of course as I haven't tried to implement this bit,
+> > and if this turns out to be just moving the problem without making it
+> > simpler, then sure, I'd rather stick to your approach.
+> >   
+> > > Furthermore, such MTU reduction would require a mechanism to
+> > > auto-reconfig every device in the same linklevel broadcast domain,
+> > > and I am not aware of any such mechanism.  
+> > 
+> > You mean for other ports connected to the same bridge? They would then
+> > get ICMP errors as well, no?  
+> 
+> Yes, if you don't do that then we have devices with MTU X hooked to
+> a bridge with MTU Y, where X > Y.  I don't see how this could work.
+
+Yes, I see, and my point is: they would get ICMP errors from the
+bridge, and that would create route exceptions.
+
+> > If you refer to other drivers that need to adjust the MTU, instead,
+> > that's why I would use skb_tunnel_check_pmtu() for that, to avoid
+> > implementing the same logic in every driver.  
+> 
+> Yes, it might be possible to move the proposed icmp inject into
+> skb_tunnel_check_pmtu() -- it gets the needed headroom passed as arg,
+> it could detect when device driver is in a bridge and it already knows
+> when skb has no dst entry that it a pmtu change could be propagated to.
+
+I didn't mean to move the ICMP injection there, I meant we could
+override the MTU there.
+
+Moving the ICMP injection there: I think that would be totally
+reasonable, it comes with none of the issues of the solution I proposed
+and with almost none of the issues I raised about your idea.
+
+> Given the affected setups all use ovs I think it makes sense to make
+> sure the intended solution would work for ovs too, bridge seems more
+> like a nice-to-have thing at the moment.
+
+Yes, agreed.
+
+As I see it, we don't know what the problem is there, we might even
+have to do absolutely nothing in kernel. I guess we should know before
+trying to hack up something.
+
+-- 
+Stefano
+
