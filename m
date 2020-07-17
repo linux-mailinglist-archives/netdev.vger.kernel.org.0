@@ -2,144 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E8A1223BB1
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 14:50:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2CB0223BC9
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 14:57:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726424AbgGQMuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 08:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56888 "EHLO
+        id S1726996AbgGQM5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 08:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726056AbgGQMuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 08:50:20 -0400
-Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B45C061755
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 05:50:20 -0700 (PDT)
-Received: by mail-vs1-xe31.google.com with SMTP id x13so4744512vsx.13
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 05:50:20 -0700 (PDT)
+        with ESMTP id S1726335AbgGQM51 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 08:57:27 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC2CC08C5DB
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 05:57:26 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id f2so10966382wrp.7
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 05:57:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZnPJAnA3DP5OlSmqrsdGzJVINqJx7/prUrXzRyKeRSg=;
-        b=OVUlXeBiQZbXbcKV6f451hDmrNU2ZzTkOqlqhVtLxZ5MfXpuq4uFK3ac4j9/8caIoD
-         E8jDyk9sfqHBS997bOnYTs5sOpNzOar2Rchs6c/ZYD1pdbP3LgWf3OLe+wCojop8LaNc
-         4X/CdWN+wrxgMvOPS8EOqFTkflOs2GwM3/fLJlNAqFUUYj8u98IXFT2WJF/aSuvnRFAw
-         ycrTgYGAd7o+vTJ5Jb/xsSX2J0rw4ZJrVZE2g1pszX6opNA9GaE3EGBW8fnhCQBSbRKL
-         d8Yu4dheovXpju9GRKCdBXCyMSRPf8ndUEEhyhwBFWaEE6Of/LO641i0FrkHLy1Kll+T
-         KYRg==
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ERus8fzJ5R62NsLoNGm20p6xoPRFac3PIzhWkEbAo+w=;
+        b=lW84lRKAVIr9Fxp6UZcmVAnb+SWK36KcRe2odHnFanXN1oZRrDY6JzC1MLtnjGqe2s
+         Db6TSRoG1opsbs6Ywi74Egwi+5i1I2IfxVQEB+inghPbhENMgqS1jfi9umSEohiX0Zfz
+         crcIT3Dk9b6yqxJ2FO1zOG6Kc9+9+Ju/3j+bf4AtANStX/5mjcHMUqObxNdkqJfpaBMQ
+         VbL2O7IETlXohrwtdFRJFCl+/uwgwE52AmNqObW30xVPh1RxacSu9/sPR+WplJ+xkekb
+         bhI2bX3PA+7jYxi5lY6V2NooDqEvs4KiSNH4hCw8jsna0LHeaePrfaMNejiZ0dMaoilZ
+         n2KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZnPJAnA3DP5OlSmqrsdGzJVINqJx7/prUrXzRyKeRSg=;
-        b=QsGJUPvwtZALWdCVTjpghvXTa3PDD9zf59nYuWpE5M7zdKab3TnYAh7jeATfIfQZPC
-         9OJGQ32lDShdzEExk0ckQ6/9QisAlxQFloZHuxSIOKgpddho9nyjnWGnWnvjD3evt+kt
-         rQFhJ+aHWudnoIZyvGhph9mWNpnj2xcD49bkQ8SnU6/cJNgNViQTPVzeUCMwRsP7CTbu
-         LCC/UyCzingXYspft11iQeYpTdWJ/bULlUnui1+aab5cnPnJ+r8QW5ZKrKPaFfdkmN+P
-         +9xthbrvvCI52kDgTb3kXldWH1LSebhW0v8h5nAePzeyH4BMCU271y2bPJEWsvfLj/rl
-         5jGw==
-X-Gm-Message-State: AOAM5325Y79T+PvIzmxD4ymG4TF52voNB70I1gKh2SCDu7FemFcxLL0P
-        k2nlyokDdF7WlXNEIiLNNudLOfVB2Z+LVL2GvKs=
-X-Google-Smtp-Source: ABdhPJwsZcGdR2t65PDxC9pIY82gf3FpXqpH6wAsXxUk+tJ+G08Y9a4mgMfvDQNchBryeqSoqyOJ3UWmJ7Kv1P1SNyQ=
-X-Received: by 2002:a67:7ccd:: with SMTP id x196mr7111359vsc.224.1594990219191;
- Fri, 17 Jul 2020 05:50:19 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ERus8fzJ5R62NsLoNGm20p6xoPRFac3PIzhWkEbAo+w=;
+        b=fc/xqz11sv2UIXAlrpNUeMdJ0NTloJLPLWhkTZIxzhdST1doHEcUaKFUuvyAsKIrUY
+         EE+fpwzAhomB3hX4Teh1YscIO5+1kLW2pzWRTwJOEOoQSFmS2yJvEB6jCpTzC0aOSex3
+         LvJcpZDR0rND3LfWliB4L3sE2oh7IPZA4qKU2z+K0FtXeJ/+MsS14W5kRrEjt2M7vNRr
+         DGFW/9MZonxmo9A7RifKbzu+DE21EhIpJgGVxqR746OJUAsb99B+Mob8ssRj/5hSldIS
+         FN8rNFBpJEucgPLrqf34tlPZNPQBtcInOHgxuxvPdMeHx5dG8sy6i+R6ZR116UdVfBBW
+         xuiw==
+X-Gm-Message-State: AOAM530JpX8PG/H7WJJaKkDpKnE20R4tathQ5ibDVSAKdr1ZxLgC2uZ4
+        cxhaqzz9eJQFnoCwSVeGEc/Inw==
+X-Google-Smtp-Source: ABdhPJw9wK67gBrxddm9kpw+jfyaFWJYcfeYa/vhr3AJ6eAu3tNq5H7jsWkSc2ylc0bXNe5kTQaIOw==
+X-Received: by 2002:adf:fa10:: with SMTP id m16mr9676787wrr.134.1594990645566;
+        Fri, 17 Jul 2020 05:57:25 -0700 (PDT)
+Received: from [192.168.1.12] ([194.35.117.41])
+        by smtp.gmail.com with ESMTPSA id i67sm13828628wma.12.2020.07.17.05.57.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jul 2020 05:57:24 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 09/13] tools/bpftool: add bpftool support for bpf
+ map element iterator
+To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
+        Martin KaFai Lau <kafai@fb.com>
+References: <20200713161739.3076283-1-yhs@fb.com>
+ <20200713161749.3077526-1-yhs@fb.com>
+ <9f865c02-291c-8622-b601-f4613356a469@isovalent.com>
+ <c70ebb0a-538c-a84f-f606-1d08af426fde@fb.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <b845b429-0b9b-72cd-eaf4-3e621055fe71@isovalent.com>
+Date:   Fri, 17 Jul 2020 13:57:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <CAOAjy5T63wDzDowikwZXPTC5fCnPL1QbH9P1v+MMOfydegV30w@mail.gmail.com>
- <20200711162349.GL1014141@lunn.ch> <20200711192255.GO1551@shell.armlinux.org.uk>
- <CAOAjy5TBOhovCRDF7NC-DWemA2k5as93tqq3gOT1chO4O0jpiA@mail.gmail.com>
- <20200712132554.GS1551@shell.armlinux.org.uk> <CAOAjy5T0oNJBsjru9r7MPu_oO8TSpY4PKDg7whq4yBJE12mPaA@mail.gmail.com>
- <20200717092153.GK1551@shell.armlinux.org.uk>
-In-Reply-To: <20200717092153.GK1551@shell.armlinux.org.uk>
-From:   Martin Rowe <martin.p.rowe@gmail.com>
-Date:   Fri, 17 Jul 2020 12:50:07 +0000
-Message-ID: <CAOAjy5RNz8mGi4XjP_8x-aZo5VhXRFF446R7NgcQGEKWVpUV1Q@mail.gmail.com>
-Subject: Re: bug: net: dsa: mv88e6xxx: unable to tx or rx with Clearfog GT 8K
- (with git bisect)
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        davem@davemloft.net, vivien.didelot@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <c70ebb0a-538c-a84f-f606-1d08af426fde@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Jul 2020 at 09:22, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
-> The key file is /sys/kernel/debug/mv88e6xxx.0/regs - please send the
-> contents of that file.
+2020-07-16 10:42 UTC-0700 ~ Yonghong Song <yhs@fb.com>
+> 
+> 
+> On 7/16/20 9:39 AM, Quentin Monnet wrote:
+>> 2020-07-13 09:17 UTC-0700 ~ Yonghong Song <yhs@fb.com>
 
-$ cat regs.broken
-    GLOBAL GLOBAL2 SERDES     0    1    2    3    4    5
- 0:  c800       0    ffff  9e07 9e4f 100f 100f 9e4f 170b
- 1:     0    803e    ffff     3    3    3    3    3 201f
- 2:     0       0    ffff  ff00    0    0    0    0    0
- 3:     0       0    ffff  3400 3400 3400 3400 3400 3400
- 4:  40a8     258    ffff    7c  43f  43c  43c  43f 373f
- 5:  1000     4f0    ffff     0    0    0    0    0    0
- 6:     0    1f0f    ffff    7e   7c   7a   76   6e   5f
- 7:     0    703f    ffff     1    0    0    0    0    0
- 8:     0    7800    ffff  2080 2080 2080 2080 2080 2080
- 9:     0    1500    ffff     1    1    1    1    1    1
- a:   509       0    ffff  8000    0    0    0    0    0
- b:  3000    31ff    ffff     1    2    4    8   10    0
- c:   207       0    ffff     0    0    0    0    0    0
- d:  3333     50f    ffff     0    0    0    0    0    0
- e:     1       4    ffff     0    0    0    0    0    0
- f:     3     f00    ffff  9100 9100 9100 9100 9100 dada
-10:     0       0    ffff     0    0    0    0    0    0
-11:     0       0    ffff     0    0    0    0    0    0
-12:  5555       0    ffff     0    0    0    0    0    0
-13:  5555     300    ffff     0    0    0    0    0    0
-14:  aaaa       0    ffff     0    0    0    0    0    0
-15:  aaaa       0    ffff     0    0    0    0    0    0
-16:  ffff       0       0     0   33   33   33   33    0
-17:  ffff       0    ffff     0    0    0    0    0    0
-18:  fa41    15f6    ffff  3210 3210 3210 3210 3210 3210
-19:     0       0    ffff  7654 7654 7654 7654 7654 7654
-1a:   3ff       0    ffff     0    0    0    0 1ea0 a100
-1b:   1fc    110f    ffff  8000 8000 8000 8000 8000 8000
-1c:   7c0       0    ffff     0    0    0    0    0    0
-1d:  1400       0    ffff     0    0    0    0    0    0
-1e:     0       0    ffff  f000 f000 f000 f000 f000 f000
-1f:     0       0    ffff     0   2f    0    0   2e    1
+[...]
 
-$ cat regs.reverted
-    GLOBAL GLOBAL2 SERDES     0    1    2    3    4    5
- 0:  c800       0    ffff  9e07 9e4f 100f 100f 9e4f 1f0b
- 1:     0    803e    ffff     3    3    3    3    3 203f
- 2:     0       0    ffff  ff00    0    0    0    0    0
- 3:     0       0    ffff  3400 3400 3400 3400 3400 3400
- 4:  40a8     258    ffff    7c  43d  43c  43c  43f 373f
- 5:  1000     4f0    ffff     0    0    0    0    0    0
- 6:     0    1f0f    ffff    7e   7c   7a   76   6e   5f
- 7:     0    703f    ffff     1    0    0    0    0    0
- 8:     0    7800    ffff  2080 2080 2080 2080 2080 2080
- 9:     0    1500    ffff     1    1    1    1    1    1
- a:   509       0    ffff  8000    0    0    0    0    0
- b:  3000    31ff    ffff     1    2    4    8   10    0
- c:   207       0    ffff     0    0    0    0    0    0
- d:  3333     58b    ffff     0    0    0    0    0    0
- e:     1       4    ffff     0    0    0    0    0    0
- f:     3     f00    ffff  9100 9100 9100 9100 9100 dada
-10:     0       0    ffff     0    0    0    0    0    0
-11:     0       0    ffff     0    0    0    0    0    0
-12:  5555       0    ffff     0    0    0    0    0    0
-13:  5555     300    ffff     0    0    0    0    0    0
-14:  aaaa       0    ffff     0    0    0    0    0    0
-15:  aaaa       0    ffff     0    0    0    0    0    0
-16:  ffff       0       0     0   33   33   33   33    0
-17:  ffff       0    ffff     0    0    0    0    0    0
-18:  fa41    15f6    ffff  3210 3210 3210 3210 3210 3210
-19:     0       0    ffff  7654 7654 7654 7654 7654 7654
-1a:   3ff       0    ffff     0    0    0    0 1ea0 a100
-1b:   1fc    110f    ffff  8000 8000 8000 8000 8000 8000
-1c:   7c0       0    ffff     0    0    0    0    0    0
-1d:  1400       0    ffff     0    0    0    0    0    0
-1e:     0       0    ffff  f000 f000 f000 f000 f000 f000
-1f:     0       0    ffff     0   91    0    0   7b   34
+>> Could you please also update the bash completion?
+> 
+> This is always my hardest part! In this case it is
+>   bpftool iter pin <filedir> <filedir> [map MAP]
+> 
+> Any particular existing bpftool implementation I can imitate?
 
-Both with 5.8.0-rc4, broken is just mainline, reverted has the one
-commit reverted.
+I would say the closest/easiest to reuse we have would be
+completion for the MAP part in either
 
-Martin
+	bpftool prog attach PROG ATTACH_TYPE [MAP]
+
+or
+
+	bpftool map pin MAP FILE
+
+But I'll save you some time, I gave it a go and this is what
+I came up with:
+
+------
+diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+index 25b25aca1112..6640e18096a8 100644
+--- a/tools/bpf/bpftool/bash-completion/bpftool
++++ b/tools/bpf/bpftool/bash-completion/bpftool
+@@ -613,9 +613,26 @@ _bpftool()
+             esac
+             ;;
+         iter)
++            local MAP_TYPE='id pinned name'
+             case $command in
+                 pin)
+-                    _filedir
++                    case $prev in
++                        $command)
++                            _filedir
++                            ;;
++                        id)
++                            _bpftool_get_map_ids
++                            ;;
++                        name)
++                            _bpftool_get_map_names
++                            ;;
++                        pinned)
++                            _filedir
++                            ;;
++                        *)
++                            _bpftool_one_of_list $MAP_TYPE
++                            ;;
++                    esac
+                     return 0
+                     ;;
+                 *)
+------
+
+So if we complete "bpftool iter pin", if we're right after "pin"
+we still complete with file names (for the object file to pin).
+If we're after one of the map keywords (id|name|pinned), complete
+with map ids or map names or file names, depending on the case.
+For other cases (i.e. after object file to pin), offer the map
+keywords (id|name|pinned).
+
+Feel free to reuse.
+
+Best,
+Quentin
