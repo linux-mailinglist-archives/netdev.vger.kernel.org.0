@@ -2,76 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD5F222428C
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:50:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1CD722428E
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:50:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727883AbgGQRsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 13:48:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60482 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726232AbgGQRsP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jul 2020 13:48:15 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 89C2920717;
-        Fri, 17 Jul 2020 17:48:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595008094;
-        bh=uoiokff59xFPLkXusc+64l//B+85ty086CC39zSRRlU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VAWg/nBl1KGiSpAxteRppIAadqPMYCq7K0n1TR0AK21AKSZ/1eRT81+B9A/YdrVKz
-         slrsVR3lhsW9tmkjBb2ahbelKtTeE9yQ/amYsoXvbp4m+Wy1dfiCiM7vLmc+18Da2h
-         8vxGt7VPl63sn9IQBAm+iLjVK5O233FDNoCsfSYQ=
-Date:   Fri, 17 Jul 2020 10:48:12 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     sundeep subbaraya <sundeep.lkml@gmail.com>
-Cc:     Subbaraya Sundeep <sbhatta@marvell.com>,
-        David Miller <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, sgoutham@marvell.com,
-        Aleksey Makarov <amakarov@marvell.com>
-Subject: Re: [PATCH v4 net-next 3/3] octeontx2-pf: Add support for PTP clock
-Message-ID: <20200717104812.1a92abcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CALHRZupxX5Cbvb03s-xxA7gobjwo8cM7n4_-U6oGysU3R18-Bw@mail.gmail.com>
-References: <1594816689-5935-1-git-send-email-sbhatta@marvell.com>
-        <1594816689-5935-4-git-send-email-sbhatta@marvell.com>
-        <20200716171109.7d8c6d17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CALHRZupxX5Cbvb03s-xxA7gobjwo8cM7n4_-U6oGysU3R18-Bw@mail.gmail.com>
+        id S1727946AbgGQRsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 13:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727847AbgGQRs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:48:29 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8D4C0619D2
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:48:29 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id g75so16205583wme.5
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:48:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5cA5RUvmio3ClfgI8pU8wP7vKSaKk9ymiyczHiblSGI=;
+        b=UJ82aaZ4PJK8DnGxDFuapcONUWsOBY4gwWplow/60/Zk2yXslUz9HCaPjWO+Km5nKC
+         27vfnD952Rb/9LSYSZOL02rQnrSnJaK1IwSwmE/rX2/ln1d4/fFEbSNhxTiC+EOs1ncU
+         NnK44j2uDxeNyoYTQtYB2cZqLPuF4QPR7Bg7vkLkr2yoZvhMNf+wTLkojOlmr+xcWTVn
+         ZdgntFQnkGBIBWbSnwueqHT4tjrr8V+jnPTtwx3QRfyvEutVRHQcaXCxGJH1NSc5s6iy
+         BntSWida+dRK+0gBvTvmEQ1apQxLxX653kDCCWPaLlix1Twrr2qLZuUNhb4tkFfX6Cxp
+         HVnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5cA5RUvmio3ClfgI8pU8wP7vKSaKk9ymiyczHiblSGI=;
+        b=fPSF7GFs34V8p3ORFXQ8qkzUTUTGrePQtgLv/+uHb1/qoQmlF26P8GnjVJdZ8FM6UI
+         IucD0Nfq7jGA4A2orgk5OtzSNlySpoeQaE11SowO9s/2h3DqH3YffRqG97wfOH0Zsl6j
+         AbdlCGedTE4ihookh5ejfysm89v4vvVy12oZ+DQ/h8hmmOa5XV4ZkEj+eHq0jjm1SuqN
+         +DHrjDCXX8IqYPRiDZvhM+3uPZWOsp5+z4KyUMapjylbuOZhs0PZtu3XSyExFIxA0B+f
+         +xH/SK5C9iXTibfy3M3f3OWBj9FdzIsWPpZL2t7I7wezO/CBODSfluHNjnxPzuwrkfzP
+         BAmg==
+X-Gm-Message-State: AOAM533Db0hsz95jEw4c0LijGKTkyflraE27QejE8yUvAyMZC2+QdmFP
+        5iz474Pc/DT0dtsPfHH6Y+4BKmzspmU=
+X-Google-Smtp-Source: ABdhPJyWMku0BhtQCMKfPdwWx2yy2ByNeIqXqO791I/1KbbAS5AmVGrTO2Xbjy3zaxaCCCEHxjDZ+g==
+X-Received: by 2002:a05:600c:2511:: with SMTP id d17mr10745367wma.127.1595008108118;
+        Fri, 17 Jul 2020 10:48:28 -0700 (PDT)
+Received: from ?IPv6:2a01:e34:ed2f:f020:45c9:b95c:ccef:aae6? ([2a01:e34:ed2f:f020:45c9:b95c:ccef:aae6])
+        by smtp.googlemail.com with ESMTPSA id l15sm15314927wro.33.2020.07.17.10.48.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jul 2020 10:48:27 -0700 (PDT)
+Subject: Re: [PATCH] net: genetlink: Move initialization to core_initcall
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, jiri@mellanox.com, xiyou.wangcong@gmail.com,
+        johannes.berg@intel.com, mkubecek@suse.cz, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200715074120.8768-1-daniel.lezcano@linaro.org>
+ <3ab741d2-2d44-fbcb-709d-c89d2b0c3649@linaro.org>
+ <20200717.103439.774880145467935567.davem@davemloft.net>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <059ad7df-b555-a08d-1f81-5fcb31e2e21e@linaro.org>
+Date:   Fri, 17 Jul 2020 19:48:26 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200717.103439.774880145467935567.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Jul 2020 10:41:49 +0530 sundeep subbaraya wrote:
-> On Fri, Jul 17, 2020 at 5:41 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Wed, 15 Jul 2020 18:08:09 +0530 Subbaraya Sundeep wrote:  
-> > > @@ -1730,10 +1745,149 @@ static void otx2_reset_task(struct work_struct *work)
-> > >       if (!netif_running(pf->netdev))
-> > >               return;
-> > >
-> > > +     rtnl_lock();
-> > >       otx2_stop(pf->netdev);
-> > >       pf->reset_count++;
-> > >       otx2_open(pf->netdev);
-> > >       netif_trans_update(pf->netdev);
-> > > +     rtnl_unlock();
-> > > +}
-> >
-> > This looks unrelated, otherwise for the patches:  
->
-> You mean the lock/unlock logic with this patch?
+On 17/07/2020 19:34, David Miller wrote:
+> From: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Date: Wed, 15 Jul 2020 09:43:00 +0200
+> 
+>> if you agree with this change, is it possible I merge it through the
+>> thermal tree in order to fix the issue ?
+> 
+> No problem:
+> 
+> Acked-by: David S. Miller <davem@davemloft.net>
 
-Looks very much like a bug independent of the PTP support.
+Thanks!
 
-Also 
-$ git grep reset_task drivers/net/ethernet/marvell/octeontx2/
-Doesn't reveal any place where you would flush or cancel that work.
 
-> I can separate this out and put in another patch #4 if you insist.
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
-Does someone need to insist for you to fix your bugs in the current
-release cycle? That's a basic part of the kernel release process :/
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
