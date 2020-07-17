@@ -2,85 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5290F223B41
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 14:19:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20076223B4E
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 14:22:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726381AbgGQMTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 08:19:46 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:50790 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726113AbgGQMTp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 08:19:45 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06HCJfM3094214;
-        Fri, 17 Jul 2020 07:19:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1594988381;
-        bh=zxUFAurYBZuCopybPJy1heOrkqjSKewqf4SLYr/5yD0=;
-        h=From:To:CC:Subject:Date;
-        b=MjrmpHf/wJxoWyDYF8L53tUsNvFQhztbQTI0TOeNNdd3WASCWpb+i+o2b5c7q79ZW
-         il7awPzmpZ86+kKIfvrqOsofuR4UHrX/SsilOHCUtUFgU/yxM72dM8aYtXoKaRB2ez
-         Qk44/y8fWI2/0bDhuGbrWM6VFu4+NUHK7jRLIVKg=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06HCJf5a009074
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 17 Jul 2020 07:19:41 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 17
- Jul 2020 07:19:40 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 17 Jul 2020 07:19:40 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06HCJd5q077284;
-        Fri, 17 Jul 2020 07:19:40 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Murali Karicheri <m-karicheri2@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH] net: ethernet: ti: add NETIF_F_HW_TC hw feature flag for taprio offload
-Date:   Fri, 17 Jul 2020 15:19:32 +0300
-Message-ID: <20200717121932.26649-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726811AbgGQMWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 08:22:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34602 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726104AbgGQMWV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 08:22:21 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CB91820684;
+        Fri, 17 Jul 2020 12:22:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594988540;
+        bh=J1Qt3Lw28H9tRlMCjTFWuJ09Pp5bPH/VYq8pbZMeEGk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LZg5ba3M7HTo/BL5R2W6pSAW7PllQcfqW8aFdAOarRZ7DLNXyk5Oj0PHLN+VCQX2h
+         q3uf68VE9AUxzajSmsN202GOx4mTbFJmPs5YIy9ULnckxHYoKrFfB3QD4iuNza9Ben
+         A8KTxVxAzC3bjpYziEm0coq8ezKTAhI/fuiSabdk=
+Date:   Fri, 17 Jul 2020 13:22:09 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Niklas <niklas.soderlund@ragnatech.se>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, linux-can@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>
+Subject: Re: [PATCH 14/20] dt-bindings: spi: renesas,sh-msiof: Add r8a774e1
+ support
+Message-ID: <20200717122209.GF4316@sirena.org.uk>
+References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-15-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20200717115915.GD4316@sirena.org.uk>
+ <CA+V-a8sxtan=8NCpEryT9NzOqkPRyQBa-ozYNHvi8goaOJQ24w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3yNHWXBV/QO9xKNm"
+Content-Disposition: inline
+In-Reply-To: <CA+V-a8sxtan=8NCpEryT9NzOqkPRyQBa-ozYNHvi8goaOJQ24w@mail.gmail.com>
+X-Cookie: No other warranty expressed or implied.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Murali Karicheri <m-karicheri2@ti.com>
 
-Currently drive supports taprio offload which is a tc feature offloaded
-to cpsw hardware. So driver has to set the hw feature flag, NETIF_F_HW_TC
-in the net device to be compliant. This patch adds the flag.
+--3yNHWXBV/QO9xKNm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Fixes: 8127224c2708 ("ethernet: ti: am65-cpsw-qos: add TAPRIO offload support")
-Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On Fri, Jul 17, 2020 at 01:15:13PM +0100, Lad, Prabhakar wrote:
+> On Fri, Jul 17, 2020 at 12:59 PM Mark Brown <broonie@kernel.org> wrote:
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 1492648247d9..6d778bc3d012 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -1850,7 +1850,8 @@ static int am65_cpsw_nuss_init_ndev_2g(struct am65_cpsw_common *common)
- 	port->ndev->max_mtu = AM65_CPSW_MAX_PACKET_SIZE;
- 	port->ndev->hw_features = NETIF_F_SG |
- 				  NETIF_F_RXCSUM |
--				  NETIF_F_HW_CSUM;
-+				  NETIF_F_HW_CSUM |
-+				  NETIF_F_HW_TC;
- 	port->ndev->features = port->ndev->hw_features |
- 			       NETIF_F_HW_VLAN_CTAG_FILTER;
- 	port->ndev->vlan_features |=  NETIF_F_SG;
--- 
-2.17.1
+> > On Wed, Jul 15, 2020 at 12:09:04PM +0100, Lad Prabhakar wrote:
+> > > Document RZ/G2H (R8A774E1) SoC bindings.
 
+> > Please in future could you split things like this up into per subsystem
+> > serieses?  That's a more normal approach and avoids the huge threads and
+> > CC lists.
+
+> Sorry for doing this, In future I shall keep that in mind. (Wanted to
+> get in most patches for RZ/G2H in V5.9 window)
+
+If anything sending things as a big series touching lots of subsystems
+can slow things down as people figure out dependencies and who's going
+to actually apply things.
+
+--3yNHWXBV/QO9xKNm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl8Rl/AACgkQJNaLcl1U
+h9DhTAgAgzuxfwIeWNm0FDyt+K9Mfz5di6xytCvItNaaahcI/Ct9HEQCGPpgG+SN
+OegozumTbxf+HvdgEgg2JsMqKfoCid7/F/M/ywb24/SqHnpgIIKBA7U6bRF2PGMW
+JHXG/oHSBd5yyV6xurj6YfaJidh9KJO5afRb8yisffI8ge1n+X7F2GQZyWke45cp
+Ojag6elp7xYrRwC3ylAp2exRsoSw5SXYwqM4CNkrDEiXq1dKeePsm2vuxf6FmE4n
+WclrCd+/9oWAk7dIoJTBX4BxBudcZlk25Y55Q6GyA/bbGMBWef1vWvUNasjQef0d
+e/mSTsDdN+0RD9lg1rJ0RqtyHnDPhw==
+=mPyM
+-----END PGP SIGNATURE-----
+
+--3yNHWXBV/QO9xKNm--
