@@ -2,188 +2,308 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C2E32245D2
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 23:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1C61224609
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 23:55:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbgGQV0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 17:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726204AbgGQV0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 17:26:11 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE0CC0619D2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 14:26:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=gEFphdCL42n8bbkybedKWhFQY8U80WEnIYyFDmvTZ3E=; b=0m1trrAvUZnMRxMAy3xFnBkVt
-        tETfnoKoKPmMiswcWymU8ijv0xGtUDBlUGBOErziXuUXNvhMbFzvyn+27TO0bhejmPzBGycBhYR3W
-        h0AJx+Xy30dHil/qrXcnU8WwJThu19utTvSVqtrdA5VHpEdwuJSdoDlKn7ZR4KY58FBbXoOJeSyr7
-        nfD3orEwXpTUwA3X11vD5/L9+GQpDpfwLX0rj4L5rkplmmDwyJNHAKvNUik2z3mujh/T0dIIFML/t
-        v1WsNsaj8iAxN3m+8U2jSID83L2CYLMlKmvUpR86pktlxlXDCc2EKbzkBBH7KlL4LkaBG2m1jWoTb
-        3d4jkTQjA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40788)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jwXrr-00016D-S1; Fri, 17 Jul 2020 22:26:07 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jwXrp-0002EK-I3; Fri, 17 Jul 2020 22:26:05 +0100
-Date:   Fri, 17 Jul 2020 22:26:05 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>, Martin Rowe <martin.p.rowe@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        vivien.didelot@gmail.com
-Subject: Re: bug: net: dsa: mv88e6xxx: unable to tx or rx with Clearfog GT 8K
- (with git bisect)
-Message-ID: <20200717212605.GM1551@shell.armlinux.org.uk>
-References: <CAOAjy5T63wDzDowikwZXPTC5fCnPL1QbH9P1v+MMOfydegV30w@mail.gmail.com>
- <20200711162349.GL1014141@lunn.ch>
- <20200711192255.GO1551@shell.armlinux.org.uk>
- <CAOAjy5TBOhovCRDF7NC-DWemA2k5as93tqq3gOT1chO4O0jpiA@mail.gmail.com>
- <20200712132554.GS1551@shell.armlinux.org.uk>
- <CAOAjy5T0oNJBsjru9r7MPu_oO8TSpY4PKDg7whq4yBJE12mPaA@mail.gmail.com>
- <20200717092153.GK1551@shell.armlinux.org.uk>
- <CAOAjy5RNz8mGi4XjP_8x-aZo5VhXRFF446R7NgcQGEKWVpUV1Q@mail.gmail.com>
- <20200717185119.GL1551@shell.armlinux.org.uk>
- <20200717194237.GE1339445@lunn.ch>
+        id S1727820AbgGQVzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 17:55:31 -0400
+Received: from rcdn-iport-2.cisco.com ([173.37.86.73]:25675 "EHLO
+        rcdn-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726885AbgGQVzb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 17:55:31 -0400
+X-Greylist: delayed 424 seconds by postgrey-1.27 at vger.kernel.org; Fri, 17 Jul 2020 17:55:30 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=6644; q=dns/txt; s=iport;
+  t=1595022930; x=1596232530;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9kSJBds2DDDGebVXH9u64o5y5h3vbGFTZTvbzw4NBUg=;
+  b=Vz2YnahlNKwug1TqYk52s3VZ0QKXBnYxoqSTiKtTBHvgYfPS/rAtbKdd
+   aCHc50yFTAKUU77ZqDZ1VFDx0FWxUIZulMLXgkBvq5lAxIykNBaJdlfzR
+   fci2qdSpXRVhL9ibPRMxg8HzWcKwSDLp53tLsbWDHmQFpEHkbDC7igggu
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.75,364,1589241600"; 
+   d="scan'208";a="802975393"
+Received: from rcdn-core-9.cisco.com ([173.37.93.145])
+  by rcdn-iport-2.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 17 Jul 2020 21:48:25 +0000
+Received: from 240m5avmarch.cisco.com (240m5avmarch.cisco.com [10.193.164.12])
+        (authenticated bits=0)
+        by rcdn-core-9.cisco.com (8.15.2/8.15.2) with ESMTPSA id 06HLmKnV030142
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
+        Fri, 17 Jul 2020 21:48:25 GMT
+From:   Govindarajulu Varadarajan <gvaradar@cisco.com>
+To:     netdev@vger.kernel.org, edumazet@google.com,
+        linville@tuxdriver.com, mkubecek@suse.cz
+Cc:     govind.varadar@gmail.com, benve@cisco.com,
+        Govindarajulu Varadarajan <gvaradar@cisco.com>
+Subject: [PATCH ethtool v2 1/2] ethtool: add support for get/set ethtool_tunable
+Date:   Fri, 17 Jul 2020 07:59:49 -0700
+Message-Id: <20200717145950.327680-1-gvaradar@cisco.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200717194237.GE1339445@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Authenticated-User: gvaradar@cisco.com
+X-Outbound-SMTP-Client: 10.193.164.12, 240m5avmarch.cisco.com
+X-Outbound-Node: rcdn-core-9.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 17, 2020 at 09:42:37PM +0200, Andrew Lunn wrote:
-> On Fri, Jul 17, 2020 at 07:51:19PM +0100, Russell King - ARM Linux admin wrote:
-> > On Fri, Jul 17, 2020 at 12:50:07PM +0000, Martin Rowe wrote:
-> > > On Fri, 17 Jul 2020 at 09:22, Russell King - ARM Linux admin
-> > > <linux@armlinux.org.uk> wrote:
-> > > > The key file is /sys/kernel/debug/mv88e6xxx.0/regs - please send the
-> > > > contents of that file.
-> > > 
-> > > $ cat regs.broken
-> > >     GLOBAL GLOBAL2 SERDES     0    1    2    3    4    5
-> > >  0:  c800       0    ffff  9e07 9e4f 100f 100f 9e4f 170b
-> > >  1:     0    803e    ffff     3    3    3    3    3 201f
-> >                                                       ^^^^
-> > This is where the problem is.
-> > 
-> > >  1:     0    803e    ffff     3    3    3    3    3 203f
-> >                                                       ^^^^
-> > 
-> > In the broken case, the link is forced down, in the working case, the
-> > link is forced up.
-> > 
-> > What seems to be happening is:
-> > 
-> > dsa_port_link_register_of() gets called, and we do this:
-> > 
-> >                 phy_np = of_parse_phandle(dp->dn, "phy-handle", 0);
-> >                 if (of_phy_is_fixed_link(dp->dn) || phy_np) {
-> >                         if (ds->ops->phylink_mac_link_down)
-> >                                 ds->ops->phylink_mac_link_down(ds, port,
-> >                                         MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
-> >                         return dsa_port_phylink_register(dp);
-> > 
-> > which forces the link down, and for some reason the link never comes
-> > back up.
-> >
-> > One of the issues here is of_phy_is_fixed_link() - it is dangerous.
-> > The function name leads you astray - it suggests that if it returns
-> > true, then you have a fixed link, but it also returns true of you
-> > have managed!="auto" in DT, so it's actually fixed-or-inband-link.
-> > 
-> > Andrew, any thoughts?
-> 
-> 
-> Hi Russell
-> 
-> I think that is my change, if i remember correctly. Something to do
-> with phylink assuming all interfaces are down to begin with. But DSA
-> and CPU links were defaulting to up. When phylink later finds the
-> fixed-link it then configures the interface up again, and because the
-> interface is up, nothing actually happens, or it ends up in the wrong
-> mode. So i think my intention was, if there is a fixed link in DT,
-> down the interface before registering it with phylink, so its
-> assumptions are true, and it will later be correctly configured up.
-> 
-> So in this case, do you think we are falling into the trap of
-> managed!="auto" ?
+Add support for ETHTOOL_GTUNABLE and ETHTOOL_STUNABLE options.
 
-Yes, it looks that way to me.  The DT description for the port is:
+Tested rx-copybreak on enic driver. Tested ETHTOOL_TUNNABLE_STRING
+options with test/debug changes in kernel.
 
-                        port@5 {
-                                reg = <5>;
-                                label = "cpu";
-                                ethernet = <&cp1_eth2>;
-                                phy-mode = "2500base-x";
-                                managed = "in-band-status";
-                        };
+Signed-off-by: Govindarajulu Varadarajan <gvaradar@cisco.com>
+---
+v2:
+* Fix alignments and braces.
+* Move union definition outside struct.
+* Make seen type int.
+* Use uniform C90 types in union.
+* Remove NULL assignment and memset to 0.
+* Change variable name from tinfo to tunables_info.
+* Use ethtool_tunable_info_val in print_tunable()
+* Remove one-letter command line option.
+* Use PRI* for int type in print_tunable().
 
-So, of_phy_is_fixed_link() will return true, but as far as phylink is
-concerned, it's in in-band status mode rather than fixed-link mode.
-Hmm.
+ ethtool.c | 208 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 208 insertions(+)
 
-Digging out the serdes PHY status on my GT8k (C45 address 21, PHYXS):
-
- 2000  1140 0145 0141 0c00 00a0 0000 0004 2001
- 2008  0000 0000 0000 0000 0000 0000 0000 8000
-...
- a000  2000 0600 0000 a420 5100 2000 0000 0000
-
-Remembering that it's a C22 register layout for this PHY starting at
-0x2000, with the Marvell status register at 0xa003.
-
-BMCR = 0x1140 = BMCR_ANENABLE | BMCR_FULLDPLX | BMCR_SPEED1000
-BMSR = 0x0145 = BMSR_ESTATEN | reserved_bit(6) | BMSR_LSTATUS | BMSR_ERCAP
-Status = 0xa420 = MV88E6390_SGMII_PHY_STATUS_SPEED_1000 |
-		  MV88E6390_SGMII_PHY_STATUS_DUPLEX_FULL |
-		  MV88E6390_SGMII_PHY_STATUS_LINK |
-		  bit(5)
-
-Note that MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID is missing, so the
-results of the speed, duplex and pause are not valid.  The only reason
-the link is up is because we're forcing it up.
-
-The other end of the link is not allowing the BASE-X configuration to
-complete, which is not that surprising when you notice it is:
-
-&cp1_eth2 {
-        status = "okay";
-        phy-mode = "2500base-x";
-        phys = <&cp1_comphy5 2>;
-        fixed-link {
-                speed = <2500>;
-                full-duplex;
-        };
-};
-
-in fixed-link mode rather than in-band mode.
-
-So, each end of the link has been configured differently in DT.  One
-end has been told to use in-band AN, whereas the other end has been
-told not to, which means when we start interpreting in-band correctly
-in DSA, this dis-similar setup breaks.
-
-Both ends really need to agree, and I'd suggest cp1_eth2 needs to drop
-the fixed-link stanza and instead use ``managed = "in-band";'' to be
-in agreement with the configuration at the switch.
-
-Martin, can you modify
-arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts to test
-that please?
-
-Thanks.
-
+diff --git a/ethtool.c b/ethtool.c
+index 021f528..0a12699 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -40,6 +40,7 @@
+ #include <sys/utsname.h>
+ #include <limits.h>
+ #include <ctype.h>
++#include <inttypes.h>
+ 
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+@@ -4685,6 +4686,197 @@ static int do_seee(struct cmd_context *ctx)
+ 	return 0;
+ }
+ 
++/* copy of net/ethtool/common.c */
++char
++tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
++	[ETHTOOL_ID_UNSPEC]		= "Unspec",
++	[ETHTOOL_RX_COPYBREAK]		= "rx-copybreak",
++	[ETHTOOL_TX_COPYBREAK]		= "tx-copybreak",
++	[ETHTOOL_PFC_PREVENTION_TOUT]	= "pfc-prevention-tout",
++};
++
++union ethtool_tunable_info_val {
++	uint8_t u8;
++	uint16_t u16;
++	uint32_t u32;
++	uint64_t u64;
++	int8_t s8;
++	int16_t s16;
++	int32_t s32;
++	int64_t s64;
++	char *str;
++};
++
++struct ethtool_tunable_info {
++	enum tunable_id t_id;
++	enum tunable_type_id t_type_id;
++	size_t size;
++	cmdline_type_t type;
++	union ethtool_tunable_info_val wanted;
++	int seen;
++};
++
++static struct ethtool_tunable_info tunables_info[] = {
++	{ .t_id		= ETHTOOL_RX_COPYBREAK,
++	  .t_type_id	= ETHTOOL_TUNABLE_U32,
++	  .size		= sizeof(u32),
++	  .type		= CMDL_U32,
++	},
++	{ .t_id		= ETHTOOL_TX_COPYBREAK,
++	  .t_type_id	= ETHTOOL_TUNABLE_U32,
++	  .size		= sizeof(u32),
++	  .type		= CMDL_U32,
++	},
++	{ .t_id		= ETHTOOL_PFC_PREVENTION_TOUT,
++	  .t_type_id	= ETHTOOL_TUNABLE_U16,
++	  .size		= sizeof(u16),
++	  .type		= CMDL_U16,
++	},
++};
++#define TUNABLES_INFO_SIZE	ARRAY_SIZE(tunables_info)
++
++static int do_stunable(struct cmd_context *ctx)
++{
++	struct cmdline_info cmdline_tunable[TUNABLES_INFO_SIZE];
++	struct ethtool_tunable_info *tinfo = tunables_info;
++	int changed = 0;
++	int i;
++
++	for (i = 0; i < TUNABLES_INFO_SIZE; i++) {
++		cmdline_tunable[i].name = tunable_strings[tinfo[i].t_id];
++		cmdline_tunable[i].type = tinfo[i].type;
++		cmdline_tunable[i].wanted_val = &tinfo[i].wanted;
++		cmdline_tunable[i].seen_val = &tinfo[i].seen;
++	}
++
++	parse_generic_cmdline(ctx, &changed, cmdline_tunable, TUNABLES_INFO_SIZE);
++	if (!changed)
++		exit_bad_args();
++
++	for (i = 0; i < TUNABLES_INFO_SIZE; i++) {
++		char **val = (char **)&tinfo[i].wanted;
++		struct ethtool_tunable *tuna;
++		size_t size;
++		int ret;
++
++		if (!tinfo[i].seen)
++			continue;
++
++		size = sizeof(*tuna);
++		if (tinfo[i].type == CMDL_STR)
++			size +=  strlen(*val) + 1;
++		else
++			size += tinfo[i].size;
++		tuna = calloc(1, size);
++		if (!tuna) {
++			perror(tunable_strings[tinfo[i].t_id]);
++			return 1;
++		}
++		tuna->cmd = ETHTOOL_STUNABLE;
++		tuna->id = tinfo[i].t_id;
++		tuna->type_id = tinfo[i].t_type_id;
++		if (tinfo[i].type == CMDL_STR) {
++			tuna->len = strlen(*val) + 1;
++			memcpy(tuna->data, *val, strlen(*val) + 1);
++		} else {
++			tuna->len = tinfo[i].size;
++			memcpy(tuna->data, &tinfo[i].wanted, tuna->len);
++		}
++		ret = send_ioctl(ctx, tuna);
++		if (ret) {
++			perror(tunable_strings[tuna->id]);
++			return ret;
++		}
++		free(tuna);
++	}
++	return 0;
++}
++
++static void print_tunable(struct ethtool_tunable *tuna)
++{
++	char *name = tunable_strings[tuna->id];
++	union ethtool_tunable_info_val *val;
++
++	val = (union ethtool_tunable_info_val *)tuna->data;
++	switch (tuna->type_id) {
++	case ETHTOOL_TUNABLE_U8:
++		fprintf(stdout, "%s: %" PRIu8 "\n", name, val->u8);
++		break;
++	case ETHTOOL_TUNABLE_U16:
++		fprintf(stdout, "%s: %" PRIu16 "\n", name, val->u16);
++		break;
++	case ETHTOOL_TUNABLE_U32:
++		fprintf(stdout, "%s: %" PRIu32 "\n", name, val->u32);
++		break;
++	case ETHTOOL_TUNABLE_U64:
++		fprintf(stdout, "%s: %" PRIu64 "\n", name, val->u64);
++		break;
++	case ETHTOOL_TUNABLE_S8:
++		fprintf(stdout, "%s: %" PRId8 "\n", name, val->s8);
++		break;
++	case ETHTOOL_TUNABLE_S16:
++		fprintf(stdout, "%s: %" PRId16 "\n", name, val->s16);
++		break;
++	case ETHTOOL_TUNABLE_S32:
++		fprintf(stdout, "%s: %" PRId32 "\n", name, val->s32);
++		break;
++	case ETHTOOL_TUNABLE_S64:
++		fprintf(stdout, "%s: %" PRId64 "\n", name, val->s64);
++		break;
++	case ETHTOOL_TUNABLE_STRING:
++		fprintf(stdout, "%s: %s\n", name, val->str);
++		break;
++	default:
++		fprintf(stdout, "%s: Unknown format\n", name);
++	}
++}
++
++static int do_gtunable(struct cmd_context *ctx)
++{
++	struct ethtool_tunable_info *tinfo = tunables_info;
++	char **argp = ctx->argp;
++	int argc = ctx->argc;
++	int i;
++	int j;
++
++	if (argc < 1)
++		exit_bad_args();
++
++	for (i = 0; i < argc; i++) {
++		int valid = 0;
++
++		for (j = 0; j < TUNABLES_INFO_SIZE; j++) {
++			char *ts = tunable_strings[tinfo[j].t_id];
++			struct ethtool_tunable *tuna;
++			int ret;
++
++			if (strcmp(argp[i], ts))
++				continue;
++			valid = 1;
++
++			tuna = calloc(1, sizeof(*tuna) + tinfo[j].size);
++			if (!tuna) {
++				perror(ts);
++				return 1;
++			}
++			tuna->cmd = ETHTOOL_GTUNABLE;
++			tuna->id = tinfo[j].t_id;
++			tuna->type_id = tinfo[j].t_type_id;
++			tuna->len = tinfo[j].size;
++			ret = send_ioctl(ctx, tuna);
++			if (ret) {
++				fprintf(stderr, "%s: Cannot get tunable\n", ts);
++				return ret;
++			}
++			print_tunable(tuna);
++			free(tuna);
++		}
++		if (!valid)
++			exit_bad_args();
++	}
++	return 0;
++}
++
+ static int do_get_phy_tunable(struct cmd_context *ctx)
+ {
+ 	int argc = ctx->argc;
+@@ -5438,6 +5630,22 @@ static const struct option args[] = {
+ 			  "		[ fast-link-down ]\n"
+ 			  "		[ energy-detect-power-down ]\n"
+ 	},
++	{
++		.opts	= "--get-tunable",
++		.func	= do_gtunable,
++		.help	= "Get tunable",
++		.xhelp	= "		[ rx-copybreak ]\n"
++			  "		[ tx-copybreak ]\n"
++			  "		[ pfc-precention-tout ]\n"
++	},
++	{
++		.opts	= "--set-tunable",
++		.func	= do_stunable,
++		.help	= "Set tunable",
++		.xhelp	= "		[ rx-copybreak N]\n"
++			  "		[ tx-copybreak N]\n"
++			  "		[ pfc-precention-tout N]\n"
++	},
+ 	{
+ 		.opts	= "--reset",
+ 		.func	= do_reset,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.27.0
+
