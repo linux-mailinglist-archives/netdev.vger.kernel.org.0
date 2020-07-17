@@ -2,195 +2,482 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 655E82239C5
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 12:54:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89AAB2239EC
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 13:02:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726000AbgGQKwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 06:52:22 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:55897 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726079AbgGQKwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 06:52:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594983139;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=16V5pZxosMoRpIebeUEyRPYvMH0eT20D9HNI4XJmraA=;
-        b=RXmp07NnD72PV6MuI/bmpDTj2qNLc01xrpbL+LW5M7pK0+pY3CPrxgiBXqrQJi74FAfzV7
-        1xTo/zrM9j00dANFTHndg8MP7jOs3HhboVo0H4KP1w6ctHmHX6kCYBjqwt8+231h+8EW90
-        +gZ05vzegPSAZPLng+zvbnfrpYEfeJE=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-477-WGpwTsSNOXm1d287pXGF7w-1; Fri, 17 Jul 2020 06:52:17 -0400
-X-MC-Unique: WGpwTsSNOXm1d287pXGF7w-1
-Received: by mail-pf1-f198.google.com with SMTP id r12so6613303pfr.16
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 03:52:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=16V5pZxosMoRpIebeUEyRPYvMH0eT20D9HNI4XJmraA=;
-        b=Z530vDd3Ly/3OkEp3tI2AK5AUOWkAuydx+dnTWL1IpCxOxKsPkL+JZwrfk7A46RUqL
-         ik+2a3PRDaufnbyKhlDIT+K0Xa1R6eSHzEL47dzOZXI1xUOQqtSky3RGflsrPCk5wGjm
-         H0H9UryRWMettGZIE54P2QKLP/JZ5ClZmYPq8EsudXRtVQ/XeY6DLvm9mR1HlbfU1/p6
-         WHs5Oo7vxtLP9HEVsJFqGAeW8Rx6BDztsKGyDGzIkZ80cy106I0CvV1lw9U6ia0Tzg89
-         GjZTUdMD0KFKjhZcSRKtySg7XhW1C48wE89lHywaFZDqB76D/nvNpDCbPC1DF6OiTzfF
-         KBrA==
-X-Gm-Message-State: AOAM5307OwHA/+wO9nKwIxO97kbhUifdEC7AnWYlgFmSSP93JOUcI1vU
-        jioKQt0oI4aZ8EIBpj846ddnrtP3MG62ewis2//whPTQso7BeP/qowZRa07DlJBuplwvOhJ2NYv
-        lnLpKLOIym5cq6IAL
-X-Received: by 2002:a62:192:: with SMTP id 140mr7198213pfb.53.1594983136803;
-        Fri, 17 Jul 2020 03:52:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzMNBLksGWOFuqtvhb1wh4/OHOEr/22oo8ePdVCsHNAmsFpR5amjVqNHDPQc5W1uRpQiJNTwg==
-X-Received: by 2002:a62:192:: with SMTP id 140mr7198194pfb.53.1594983136268;
-        Fri, 17 Jul 2020 03:52:16 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id w1sm7351225pfc.55.2020.07.17.03.52.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 03:52:15 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 65BFA181719; Fri, 17 Jul 2020 12:52:10 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 3/6] bpf: support attaching freplace programs to multiple attach points
-In-Reply-To: <20200717020507.jpxxe4dbc2watsfh@ast-mbp.dhcp.thefacebook.com>
-References: <159481853923.454654.12184603524310603480.stgit@toke.dk> <159481854255.454654.15065796817034016611.stgit@toke.dk> <20200715204406.vt64vgvzsbr6kolm@ast-mbp.dhcp.thefacebook.com> <87mu3zentu.fsf@toke.dk> <20200717020507.jpxxe4dbc2watsfh@ast-mbp.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 17 Jul 2020 12:52:10 +0200
-Message-ID: <87imemct2d.fsf@toke.dk>
+        id S1726381AbgGQLCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 07:02:50 -0400
+Received: from mga11.intel.com ([192.55.52.93]:33551 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725912AbgGQLCu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 07:02:50 -0400
+IronPort-SDR: UbzkZFD1gchp0gkVTzSiUVBpcGbItVSswFRhjiQ3hR+JnYsjNMfI7L/tTIDNmKK1S67yIbpDok
+ 0PYOkQe9hE8Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9684"; a="147555190"
+X-IronPort-AV: E=Sophos;i="5.75,362,1589266800"; 
+   d="scan'208";a="147555190"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2020 03:57:47 -0700
+IronPort-SDR: yiYljeuoq+213VRiqNuEMCCUR+9/4/2PSuVeKsiXCTdxY6zXOzSKDy1T/AuLwM8LKPRwkBJYrb
+ 6N+5tkCR77yg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,362,1589266800"; 
+   d="scan'208";a="486929814"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga005.fm.intel.com with ESMTP; 17 Jul 2020 03:57:45 -0700
+Date:   Fri, 17 Jul 2020 12:52:55 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     ast@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com
+Subject: Re: [PATCH bpf-next 4/5] bpf, x64: rework pro/epilogue and tailcall
+ handling in JIT
+Message-ID: <20200717105255.GA11239@ranger.igk.intel.com>
+References: <20200715233634.3868-1-maciej.fijalkowski@intel.com>
+ <20200715233634.3868-5-maciej.fijalkowski@intel.com>
+ <932141f5-7abb-1c01-111d-a64baf187a40@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <932141f5-7abb-1c01-111d-a64baf187a40@iogearbox.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+On Fri, Jul 17, 2020 at 01:06:07AM +0200, Daniel Borkmann wrote:
+> On 7/16/20 1:36 AM, Maciej Fijalkowski wrote:
+> > This commit serves two things:
+> > 1) it optimizes BPF prologue/epilogue generation
+> > 2) it makes possible to have tailcalls within BPF subprogram
+> > 
+> > Both points are related to each other since without 1), 2) could not be
+> > achieved.
+> > 
+> > In [1], Alexei says:
+> > "The prologue will look like:
+> > nop5
+> > xor eax,eax  // two new bytes if bpf_tail_call() is used in this
+> >               // function
+> > push rbp
+> > mov rbp, rsp
+> > sub rsp, rounded_stack_depth
+> > push rax // zero init tail_call counter
+> > variable number of push rbx,r13,r14,r15
+> > 
+> > Then bpf_tail_call will pop variable number rbx,..
+> > and final 'pop rax'
+> > Then 'add rsp, size_of_current_stack_frame'
+> > jmp to next function and skip over 'nop5; xor eax,eax; push rpb; mov
+> > rbp, rsp'
+> > 
+> > This way new function will set its own stack size and will init tail
+> > call
+> > counter with whatever value the parent had.
+> > 
+> > If next function doesn't use bpf_tail_call it won't have 'xor eax,eax'.
+> > Instead it would need to have 'nop2' in there."
+> > 
+> > Implement that suggestion.
+> > 
+> > Since the layout of stack is changed, tail call counter handling can not
+> > rely anymore on popping it to rbx just like it have been handled for
+> > constant prologue case and later overwrite of rbx with actual value of
+> > rbx pushed to stack. Therefore, let's use one of the register (%rcx) that
+> > is considered to be volatile/caller-saved and pop the value of tail call
+> > counter in there in the epilogue.
+> > 
+> > Drop the BUILD_BUG_ON in emit_prologue and in
+> > emit_bpf_tail_call_indirect where instruction layout is not constant
+> > anymore.
+> > 
+> > Introduce new poke target, 'tailcall_bypass' to poke descriptor that is
+> > dedicated for skipping the register pops and stack unwind that are
+> > generated right before the actual jump to target program. Reflect also
+> > the actual purpose of poke->ip and rename it to poke->tailcall_target so
+> > that it will not the be confused with the poke target that is being
+> > introduced here.
+> > For case when the target program is not present, BPF program will skip
+> > the pop instructions and nop5 dedicated for jmpq $target. An example of
+> > such state when only R6 of callee saved registers is used by program:
+> > 
+> > ffffffffc0513aa1:       e9 0e 00 00 00          jmpq   0xffffffffc0513ab4
+> > ffffffffc0513aa6:       5b                      pop    %rbx
+> > ffffffffc0513aa7:       58                      pop    %rax
+> > ffffffffc0513aa8:       48 81 c4 00 00 00 00    add    $0x0,%rsp
+> > ffffffffc0513aaf:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
+> > ffffffffc0513ab4:       48 89 df                mov    %rbx,%rdi
+> > 
+> > When target program is inserted, the jump that was there to skip
+> > pops/nop5 will become the nop5, so CPU will go over pops and do the
+> > actual tailcall.
+> > 
+> > One might ask why there simply can not be pushes after the nop5?
+> > In the following example snippet:
+> > 
+> > ffffffffc037030c:       48 89 fb                mov    %rdi,%rbx
+> > (...)
+> > ffffffffc0370332:       5b                      pop    %rbx
+> > ffffffffc0370333:       58                      pop    %rax
+> > ffffffffc0370334:       48 81 c4 00 00 00 00    add    $0x0,%rsp
+> > ffffffffc037033b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
+> > ffffffffc0370340:       48 81 ec 00 00 00 00    sub    $0x0,%rsp
+> > ffffffffc0370347:       50                      push   %rax
+> > ffffffffc0370348:       53                      push   %rbx
+> > ffffffffc0370349:       48 89 df                mov    %rbx,%rdi
+> > ffffffffc037034c:       e8 f7 21 00 00          callq  0xffffffffc0372548
+> > 
+> > There is the bpf2bpf call (at ffffffffc037034c) right after the tailcall
+> > and jump target is not present. ctx is in %rbx register and BPF
+> > subprogram that we will call into on ffffffffc037034c is relying on it,
+> > e.g. it will pick ctx from there. Such code layout is therefore broken
+> > as we would overwrite the content of %rbx with the value that was pushed
+> > on the prologue. That is the reason for the 'bypass' approach.
+> > 
+> > Special care needs to be taken during the install/update/remove of
+> > tailcall target. In case when target program is not present, the CPU
+> > must not execute the pop instructions that precede the tailcall.
+> > 
+> > To address that, the following states can be defined:
+> > A nop, unwind, nop
+> > B nop, unwind, tail
+> > C skip, unwind, nop
+> > D skip, unwind, tail
+> > 
+> > A is forbidden (lead to incorrectness). The state transitions between
+> > tailcall install/update/remove will work as follows:
+> > 
+> > First install tail call f: C->D->B(f)
+> >   * poke the tailcall, after that get rid of the skip
+> > Update tail call f to f': B(f)->B(f')
+> >   * poke the tailcall (poke->tailcall_target) and do NOT touch the
+> >     poke->tailcall_bypass
+> > Remove tail call: B(f')->C(f')
+> >   * poke->tailcall_bypass is poked back to jump, then we wait the RCU
+> >     grace period so that other programs will finish its execution and
+> >     after that we are safe to remove the poke->tailcall_target
+> > Install new tail call (f''): C(f')->D(f'')->B(f'').
+> >   * same as first step
+> > 
+> > This way CPU can never be exposed to "unwind, tail" state.
+> > 
+> > For regression checks, 'tailcalls' kselftest was executed:
+> > $ sudo ./test_progs -t tailcalls
+> >   #64/1 tailcall_1:OK
+> >   #64/2 tailcall_2:OK
+> >   #64/3 tailcall_3:OK
+> >   #64/4 tailcall_4:OK
+> >   #64/5 tailcall_5:OK
+> >   #64 tailcalls:OK
+> > Summary: 1/5 PASSED, 0 SKIPPED, 0 FAILED
+> > 
+> > Tail call related cases from test_verifier kselftest are also working
+> > fine. Sample BPF programs that utilize tail calls (sockex3, tracex5)
+> > work properly as well.
+> > 
+> > [1]: https://lore.kernel.org/bpf/20200517043227.2gpq22ifoq37ogst@ast-mbp.dhcp.thefacebook.com/
+> > 
+> > Suggested-by: Alexei Starovoitov <ast@kernel.org>
+> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> 
+> Overall approach looks reasonable to me. The patch here could still be cleaned up a
+> bit further, still very rough. Just minor comments below:
 
-> On Thu, Jul 16, 2020 at 12:50:05PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>=20
->> > On Wed, Jul 15, 2020 at 03:09:02PM +0200, Toke H=C3=83=C6=92=C3=82=C2=
-=B8iland-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
->> >>=20=20
->> >> +	if (tgt_prog_fd) {
->> >> +		/* For now we only allow new targets for BPF_PROG_TYPE_EXT */
->> >> +		if (prog->type !=3D BPF_PROG_TYPE_EXT ||
->> >> +		    !btf_id) {
->> >> +			err =3D -EINVAL;
->> >> +			goto out_put_prog;
->> >> +		}
->> >> +		tgt_prog =3D bpf_prog_get(tgt_prog_fd);
->> >> +		if (IS_ERR(tgt_prog)) {
->> >> +			err =3D PTR_ERR(tgt_prog);
->> >> +			tgt_prog =3D NULL;
->> >> +			goto out_put_prog;
->> >> +		}
->> >> +
->> >> +	} else if (btf_id) {
->> >> +		err =3D -EINVAL;
->> >> +		goto out_put_prog;
->> >> +	} else {
->> >> +		btf_id =3D prog->aux->attach_btf_id;
->> >> +		tgt_prog =3D prog->aux->linked_prog;
->> >> +		if (tgt_prog)
->> >> +			bpf_prog_inc(tgt_prog); /* we call bpf_prog_put() on link release=
- */
->> >
->> > so the first prog_load cmd will beholding the first target prog?
->> > This is complete non starter.
->> > You didn't mention such decision anywhere.
->> > The first ext prog will attach to the first dispatcher xdp prog,
->> > then that ext prog will multi attach to second dispatcher xdp prog and
->> > the first dispatcher prog will live in the kernel forever.
->>=20
->> Huh, yeah, you're right that's no good. Missing that was a think-o on my
->> part, sorry about that :/
->>=20
->> > That's not what we discussed back in April.
->>=20
->> No, you mentioned turning aux->linked_prog into a list. However once I
->> started looking at it I figured it was better to actually have all this
->> (the trampoline and ref) as part of the bpf_link structure, since
->> logically they're related.
->>=20
->> But as you pointed out, the original reference sticks. So either that
->> needs to be removed, or I need to go back to the 'aux->linked_progs as a
->> list' idea. Any preference?
->
-> Good question. Back then I was thinking about converting linked_prog into=
- link
-> list, since standalone single linked_prog is quite odd, because attaching=
- ext
-> prog to multiple tgt progs should have equivalent properties across all
-> attachments.
-> Back then bpf_link wasn't quite developed.
-> Now I feel moving into bpf_tracing_link is better.
-> I guess a link list of bpf_tracing_link-s from 'struct bpf_prog' might wo=
-rk.
-> At prog load time we can do bpf_link_init() only (without doing bpf_link_=
-prime)
-> and keep this pre-populated bpf_link with target bpf prog and trampoline
-> in a link list accessed from 'struct bpf_prog'.
-> Then bpf_tracing_prog_attach() without extra tgt_prog_fd/btf_id would com=
-plete
-> that bpf_tracing_link by calling bpf_link_prime() and bpf_link_settle()
-> without allocating new one.
-> Something like:
-> struct bpf_tracing_link {
->         struct bpf_link link;  /* ext prog pointer is hidding in there */
->         enum bpf_attach_type attach_type;
->         struct bpf_trampoline *tr;
->         struct bpf_prog *tgt_prog; /* old aux->linked_prog */
-> };
->
-> ext prog -> aux -> link list of above bpf_tracing_link-s
+Thank you for spotting all of the issues. I will provide a v2 on monday as
+from today to sunday I will be out of reach.
 
-Yeah, I thought along these lines as well (was thinking a new struct
-referenced from bpf_tracing_link, but sure, why not just stick the whole
-thing into aux?).
+> 
+> > ---
+> >   arch/x86/net/bpf_jit_comp.c | 241 +++++++++++++++++++++++++++---------
+> >   include/linux/bpf.h         |   8 +-
+> >   kernel/bpf/arraymap.c       |  61 +++++++--
+> >   kernel/bpf/core.c           |   3 +-
+> >   4 files changed, 239 insertions(+), 74 deletions(-)
+> > 
+> [...]
+> >   /*
+> > - * Emit x86-64 prologue code for BPF program and check its size.
+> > + * Emit x86-64 prologue code for BPF program.
+> >    * bpf_tail_call helper will skip it while jumping into another program
+> >    */
+> > -static void emit_prologue(u8 **pprog, u32 stack_depth, bool ebpf_from_cbpf)
+> > +static void emit_prologue(u8 **pprog, u32 stack_depth, bool ebpf_from_cbpf,
+> > +			  bool tail_call)
+> >   {
+> >   	u8 *prog = *pprog;
+> >   	int cnt = X86_PATCH_SIZE;
+> > @@ -238,19 +269,16 @@ static void emit_prologue(u8 **pprog, u32 stack_depth, bool ebpf_from_cbpf)
+> >   	 */
+> >   	memcpy(prog, ideal_nops[NOP_ATOMIC5], cnt);
+> >   	prog += cnt;
+> > +	if (!ebpf_from_cbpf && tail_call)
+> > +		EMIT2(0x31, 0xC0);       /* xor eax, eax */
+> > +	else
+> > +		EMIT2(0x66, 0x90);       /* nop2 */
+> 
+> nit: Why does the ebpf_from_cbpf need the extra nop?
 
-> It's a circular reference, obviously.
-> Need to think through the complications and locking.
+Good catch, it doesn't need it :)
 
-Yup, will do so when I get back to this. One other implication of this
-change: If we make the linked_prog completely dynamic you can no longer
-do:
+> 
+> >   	EMIT1(0x55);             /* push rbp */
+> >   	EMIT3(0x48, 0x89, 0xE5); /* mov rbp, rsp */
+> >   	/* sub rsp, rounded_stack_depth */
+> >   	EMIT3_off32(0x48, 0x81, 0xEC, round_up(stack_depth, 8));
+> > -	EMIT1(0x53);             /* push rbx */
+> > -	EMIT2(0x41, 0x55);       /* push r13 */
+> > -	EMIT2(0x41, 0x56);       /* push r14 */
+> > -	EMIT2(0x41, 0x57);       /* push r15 */
+> > -	if (!ebpf_from_cbpf) {
+> > -		/* zero init tail_call_cnt */
+> > -		EMIT2(0x6a, 0x00);
+> > -		BUILD_BUG_ON(cnt != PROLOGUE_SIZE);
+> > -	}
+> > +	if (!ebpf_from_cbpf && tail_call)
+> > +		EMIT1(0x50);         /* push rax */
+> >   	*pprog = prog;
+> >   }
+> [...]
+> > -static void emit_bpf_tail_call_indirect(u8 **pprog)
+> > +static void emit_bpf_tail_call_indirect(u8 **pprog, bool *callee_regs_used,
+> > +					u32 stack_depth)
+> >   {
+> >   	u8 *prog = *pprog;
+> > -	int label1, label2, label3;
+> > +	int pop_bytes = 0;
+> > +	int off1 = 49;
+> > +	int off2 = 38;
+> > +	int off3 = 16;
+> >   	int cnt = 0;
+> > +	/* count the additional bytes used for popping callee regs from stack
+> > +	 * that need to be taken into account for each of the offsets that
+> > +	 * are used for bailing out of the tail call
+> > +	 */
+> > +	pop_bytes = get_pop_bytes(callee_regs_used);
+> > +	off1 += pop_bytes;
+> > +	off2 += pop_bytes;
+> > +	off3 += pop_bytes;
+> > +
+> >   	/*
+> >   	 * rdi - pointer to ctx
+> >   	 * rsi - pointer to bpf_array
+> > @@ -370,72 +427,108 @@ static void emit_bpf_tail_call_indirect(u8 **pprog)
+> >   	EMIT2(0x89, 0xD2);                        /* mov edx, edx */
+> >   	EMIT3(0x39, 0x56,                         /* cmp dword ptr [rsi + 16], edx */
+> >   	      offsetof(struct bpf_array, map.max_entries));
+> > -#define OFFSET1 (41 + RETPOLINE_RAX_BPF_JIT_SIZE) /* Number of bytes to jump */
+> > +#define OFFSET1 (off1 + RETPOLINE_RCX_BPF_JIT_SIZE) /* Number of bytes to jump */
+> 
+> The whole rename belongs into the first patch to avoid breaking bisectability
+> as mentioned.
 
-link_fd =3D bpf_raw_tracepoint_open(prog);
-close(link_fd);
-link_fd =3D bpf_raw_tracepoint_open(prog):
+Ack.
 
-since after that close(), the original linked_prog will be gone. Unless
-we always leave at least one linked_prog alive? But then we can't
-guarantee that it's the target that was supplied on program load if it
-was reattached. Is that acceptable?
+> 
+> >   	EMIT2(X86_JBE, OFFSET1);                  /* jbe out */
+> > -	label1 = cnt;
+> >   	/*
+> >   	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
+> >   	 *	goto out;
+> >   	 */
+> > -	EMIT2_off32(0x8B, 0x85, -36 - MAX_BPF_STACK); /* mov eax, dword ptr [rbp - 548] */
+> > +	EMIT2_off32(0x8B, 0x85                    /* mov eax, dword ptr [rbp - (4 + sd)] */,
+> > +		    -4 - round_up(stack_depth, 8));
+> >   	EMIT3(0x83, 0xF8, MAX_TAIL_CALL_CNT);     /* cmp eax, MAX_TAIL_CALL_CNT */
+> > -#define OFFSET2 (30 + RETPOLINE_RAX_BPF_JIT_SIZE)
+> > +#define OFFSET2 (off2 + RETPOLINE_RCX_BPF_JIT_SIZE)
+> >   	EMIT2(X86_JA, OFFSET2);                   /* ja out */
+> > -	label2 = cnt;
+> >   	EMIT3(0x83, 0xC0, 0x01);                  /* add eax, 1 */
+> > -	EMIT2_off32(0x89, 0x85, -36 - MAX_BPF_STACK); /* mov dword ptr [rbp -548], eax */
+> > +	EMIT2_off32(0x89, 0x85,                   /* mov dword ptr [rbp - (4 + sd)], eax */
+> > +		    -4 - round_up(stack_depth, 8));
+> 
+> nit: should probably sit in a var
 
->> I don't think you are. I'll admit to them being a bit raw, but this was
->> as far as I got and since I'll be away for three weeks I figured it was
->> better to post them in case anyone else was interested in playing with
->> it.
->
-> Since it was v2 I figured you want it to land and it's ready.
-> Next time please mention the state of patches.
-> It's absolutely fine to post raw patches. It's fine to post stuff
-> that doesn't compile. But please explain the state in commit logs or cove=
-r.
+Sure.
 
-Right, sorry that was not clear; will make sure to spell it out next
-time.
+> 
+> >   	/* prog = array->ptrs[index]; */
+> > -	EMIT4_off32(0x48, 0x8B, 0x84, 0xD6,       /* mov rax, [rsi + rdx * 8 + offsetof(...)] */
+> > +	EMIT4_off32(0x48, 0x8B, 0x8C, 0xD6,        /* mov rcx, [rsi + rdx * 8 + offsetof(...)] */
+> >   		    offsetof(struct bpf_array, ptrs));
+> >   	/*
+> >   	 * if (prog == NULL)
+> >   	 *	goto out;
+> >   	 */
+> > -	EMIT3(0x48, 0x85, 0xC0);		  /* test rax,rax */
+> > -#define OFFSET3 (8 + RETPOLINE_RAX_BPF_JIT_SIZE)
+> > -	EMIT2(X86_JE, OFFSET3);                   /* je out */
+> > -	label3 = cnt;
+> > +	EMIT3(0x48, 0x85, 0xC9);                   /* test rcx,rcx */
+> > +#define OFFSET3 (off3 + RETPOLINE_RCX_BPF_JIT_SIZE)
+> > +	EMIT2(X86_JE, OFFSET3);                    /* je out */
+> [...]
+> 
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index c67c88ad35f8..38897b9c7d61 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -651,14 +651,15 @@ enum bpf_jit_poke_reason {
+> >   /* Descriptor of pokes pointing /into/ the JITed image. */
+> >   struct bpf_jit_poke_descriptor {
+> > -	void *ip;
+> > +	void *tailcall_target;
+> > +	void *tailcall_bypass;
+> >   	union {
+> >   		struct {
+> >   			struct bpf_map *map;
+> >   			u32 key;
+> >   		} tail_call;
+> >   	};
+> > -	bool ip_stable;
+> > +	bool tailcall_target_stable;
+> 
+> Probably makes sense to split off the pure rename into a separate patch to
+> reduce this one slightly.
 
--Toke
+I was thinking of that as well. I will pull out as you're suggesting.
 
+> 
+> >   	u8 adj_off;
+> >   	u16 reason;
+> >   };
+> > @@ -1775,6 +1776,9 @@ enum bpf_text_poke_type {
+> >   	BPF_MOD_JUMP,
+> >   };
+> > +/* Number of bytes emit_patch() needs to generate instructions */
+> > +#define X86_PATCH_SIZE		5
+> 
+> nit: this is arch specific, so should not be exposed in here, neither in
+> arraymap.c below
+
+Okay, so I think that we should add another member to poke descriptor that
+will hold specifically the bypass address so that we wouldn't have to
+calculate it in here. And I think this extension should go to this patch
+whereas the renaming to a separate.
+
+> 
+> >   int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+> >   		       void *addr1, void *addr2);
+> > diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+> > index c66e8273fccd..d15729a3f46c 100644
+> > --- a/kernel/bpf/arraymap.c
+> > +++ b/kernel/bpf/arraymap.c
+> > @@ -750,6 +750,7 @@ static void prog_array_map_poke_run(struct bpf_map *map, u32 key,
+> >   				    struct bpf_prog *old,
+> >   				    struct bpf_prog *new)
+> >   {
+> > +	u8 *bypass_addr, *old_addr, *new_addr;
+> >   	struct prog_poke_elem *elem;
+> >   	struct bpf_array_aux *aux;
+> > @@ -770,12 +771,13 @@ static void prog_array_map_poke_run(struct bpf_map *map, u32 key,
+> >   			 *    there could be danger of use after free otherwise.
+> >   			 * 2) Initially when we start tracking aux, the program
+> >   			 *    is not JITed yet and also does not have a kallsyms
+> > -			 *    entry. We skip these as poke->ip_stable is not
+> > -			 *    active yet. The JIT will do the final fixup before
+> > -			 *    setting it stable. The various poke->ip_stable are
+> > -			 *    successively activated, so tail call updates can
+> > -			 *    arrive from here while JIT is still finishing its
+> > -			 *    final fixup for non-activated poke entries.
+> > +			 *    entry. We skip these as poke->tailcall_target_stable
+> > +			 *    is not active yet. The JIT will do the final fixup
+> > +			 *    before setting it stable. The various
+> > +			 *    poke->tailcall_target_stable are successively activated,
+> > +			 *    so tail call updates can arrive from here while JIT
+> > +			 *    is still finishing its final fixup for non-activated
+> > +			 *    poke entries.
+> >   			 * 3) On program teardown, the program's kallsym entry gets
+> >   			 *    removed out of RCU callback, but we can only untrack
+> >   			 *    from sleepable context, therefore bpf_arch_text_poke()
+> > @@ -792,20 +794,53 @@ static void prog_array_map_poke_run(struct bpf_map *map, u32 key,
+> >   			 * 5) Any other error happening below from bpf_arch_text_poke()
+> >   			 *    is a unexpected bug.
+> >   			 */
+> > -			if (!READ_ONCE(poke->ip_stable))
+> > +			if (!READ_ONCE(poke->tailcall_target_stable))
+> >   				continue;
+> >   			if (poke->reason != BPF_POKE_REASON_TAIL_CALL)
+> >   				continue;
+> >   			if (poke->tail_call.map != map ||
+> >   			    poke->tail_call.key != key)
+> >   				continue;
+> > +			/* protect against un-updated poke descriptors since
+> > +			 * we could fill them from subprog and the same desc
+> > +			 * is present on main's program poke tab
+> > +			 */
+> > +			if (!poke->tailcall_bypass || !poke->tailcall_target)
+> > +				continue;
+> 
+> Can't we avoid copying these descriptors over to the subprog in the first place?
+
+I think we can, but can we consider it as something that we will do as a
+follow-up?
+
+> 
+> > +			if (!old && !new)
+> > +				continue;
+> 
+> Could we avoid this above but instead signal via bpf_arch_text_poke() that nothing
+> had to be patched? Reason is that bpf_arch_text_poke() will still do the sanity
+> check to make sure reality meets expectation wrt current insns (which is also
+> why I didn't add this skip). In that case we could then just avoid the expensive
+> synchronize_rcu().
+
+I was even thinking to have such a check before walking through the poke
+descriptors, so that's the opposite of what you suggest.
+
+If you insist, I can play with this a bit on monday, but I recall that it
+was the only thing that was stopping the Alexei's pseudo-code from being
+fully functional (the nop->nop update).
+
+> 
+> > -			ret = bpf_arch_text_poke(poke->ip, BPF_MOD_JUMP,
+> > -						 old ? (u8 *)old->bpf_func +
+> > -						 poke->adj_off : NULL,
+> > -						 new ? (u8 *)new->bpf_func +
+> > -						 poke->adj_off : NULL);
+> > -			BUG_ON(ret < 0 && ret != -EINVAL);
+> > +			bypass_addr = (u8 *)poke->tailcall_target + X86_PATCH_SIZE;
+> > +			old_addr = old ? (u8 *)old->bpf_func + poke->adj_off : NULL;
+> > +			new_addr = new ? (u8 *)new->bpf_func + poke->adj_off : NULL;
+> > +
+> > +			if (new) {
+> > +				ret = bpf_arch_text_poke(poke->tailcall_target,
+> > +							 BPF_MOD_JUMP,
+> > +							 old_addr, new_addr);
+> > +				BUG_ON(ret < 0 && ret != -EINVAL);
+> > +				if (!old) {
+> > +					ret = bpf_arch_text_poke(poke->tailcall_bypass,
+> > +								 BPF_MOD_JUMP,
+> > +								 bypass_addr, NULL);
+> > +					BUG_ON(ret < 0 && ret != -EINVAL);
+> > +				}
+> > +			} else {
+> > +				ret = bpf_arch_text_poke(poke->tailcall_bypass,
+> > +							 BPF_MOD_JUMP,
+> > +							 NULL, bypass_addr);
+> > +				BUG_ON(ret < 0 && ret != -EINVAL);
+> > +				/* let other CPUs finish the execution of program
+> > +				 * so that it will not possible to expose them
+> > +				 * to invalid nop, stack unwind, nop state
+> > +				 */
+> > +				synchronize_rcu();
+> 
+> Very heavyweight that we need to potentially call this /multiple/ times for just a
+> /single/ map update under poke mutex even ... but agree it's needed here to avoid
+> racing. :(
+> 
+> > +				ret = bpf_arch_text_poke(poke->tailcall_target,
+> > +							 BPF_MOD_JUMP,
+> > +							 old_addr, NULL);
+> > +				BUG_ON(ret < 0 && ret != -EINVAL);
+> > +			}
+> >   		}
+> >   	}
+> >   }
