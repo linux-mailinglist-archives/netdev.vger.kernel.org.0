@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D32FB223275
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 06:40:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA12E223277
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 06:40:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726422AbgGQEkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 00:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
+        id S1726710AbgGQEkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 00:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725300AbgGQEkf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 00:40:35 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7A8C061755;
-        Thu, 16 Jul 2020 21:40:35 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id o22so5796551pjw.2;
-        Thu, 16 Jul 2020 21:40:34 -0700 (PDT)
+        with ESMTP id S1725300AbgGQEkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 00:40:36 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69D8C061755;
+        Thu, 16 Jul 2020 21:40:36 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id d1so4919261plr.8;
+        Thu, 16 Jul 2020 21:40:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=08YuC2rDifkzxvQ6XnG/qWwr4Re412OmRsIG36S8m64=;
-        b=YNzJIzHqrjHB1zA8h+e4M2X7qChJbzJTSaw2wBtQwkB7BUrJOQGonaAqvMZ5IJOw0d
-         /Fsf9Gq58L7uJB25vNP/phaQcFrLnvgfly3ofzVbBV6PdfXICyhhrJ12xGr+5xCYCDm8
-         OEdLQeO0FFFAgaEPb78LApocXh9j43Ofw4EXM4NHoQZdO48q4OOwcLRJ8oG71wfh8l5r
-         70t29m82Cj/WU/PNLdkfsQz++VdjWhG6tzlLmZOxtlfH6Uppf9of2JmAVYTp+ATPmkW4
-         ujP3Idr+NZNIZE+s2rvj12SSLBmrATgnFYf7Hz2N27e9F60hNqXvw8/CxxaWUVCoTnju
-         XXNg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=pokozdlnHNYbQDWcF5MJ4qlGuX8CtKIE8qtwic6TMDk=;
+        b=A/2wug6Xd4Q05AkzWtnmO3Unq/UPp5zMPs9kGl8pzuO18zZnooXyC7MHbB63df90zB
+         bdkI0Q9TD7C17pKSTjBjgAXgnPE1tcSZcvExgrwpSq2cCSE4kI6iHFdw4onYtSpe2lfe
+         5hXAIiKu+iQh7bC7cH2ZTKuYY20KLTOKbmH52G7L8DV/uaNMobWSMf2BaNKQwzH3eyI5
+         Ge8vzunk3b6UbshaGFo8GPB7z5EOQGrsBCSeZvyrEqB1uqAZkEiwfSPGGo32/pLZ1g8/
+         4xSlkdhRyGmJYEp4bQeDh/HCsvwprdIDdawPElZ7GBbLC2bH4Xj8IZekEVgDJoFceOUI
+         C/PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=08YuC2rDifkzxvQ6XnG/qWwr4Re412OmRsIG36S8m64=;
-        b=Xl2sGZ10iAXT8YS23WOvqT7Ck3ayRPBZVbPW2DsMsfKtLgz5KqE7PTjSQe+6WWvN25
-         fz9fmwIMp+m3mrwXSnq9LJR9Y16MYRgpgRLuv4A5Oh6dlxv8W6czTABg5FvGytcRqQLH
-         Yg9KudjA6+HEMDJGa94OILxO1vLw4HohRsDurJY5zm0cjQ9hOOWmoB8Hw2soFxga/BDB
-         M+xX38KXj+6Li00w4dguuN47CN5rPOehXtjdbPXTML5wyOip1Xu6IFwFphoS4BOfQMRJ
-         osb251Vi/RMnBqyk9JM+rkdLKUA+J5Y0XqVxm2KSlThnCWRsFes2njhe87mxQuDRVVJb
-         a09A==
-X-Gm-Message-State: AOAM533ss7mZ8BWTfB4+W9i8pLId2KekxEG+dD9pXhodKLmf2Twer5X1
-        lbbuEySFMOIb7rRCIAptd6BZDtbv
-X-Google-Smtp-Source: ABdhPJw5XaOeA6/z17TqtyKCzOLbsPqsqs95pZtQK5AGTIDq4+BY11hVKfVLNlmTyKlwINAwimfi9w==
-X-Received: by 2002:a17:902:6941:: with SMTP id k1mr6278130plt.270.1594960834220;
-        Thu, 16 Jul 2020 21:40:34 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=pokozdlnHNYbQDWcF5MJ4qlGuX8CtKIE8qtwic6TMDk=;
+        b=e7JDTJi9elHXpz8TrgBUhDLEoLk/HSB7dzmheLhcFhP1a7GPV3UJA8PZrpg57nv+1e
+         oFWkA3tE6N64Sd59LFdoVmG2KnAP5nNl/DYsGhlB/ptDtBez3Cbu4PNy+mpeGUe+3F+N
+         7rlKMehPrS+kZReUILBHzri2/oxDt2WR8e9n8v+9b5hoN8t8WmCR1AAD6HsC8/MNCku1
+         jJ/vEaMuVEMNAxjePBaSv6HQgVbVLI52qLf6KV1FXGLVntPz+/MQRfb1mMewn1FKmPfX
+         EAwwX9DjTcsC88K+O8hKzVDWRujvoCU+6atTBnyqO+hGPlMgSNd3jxxldeBx4JePIYZv
+         CXEg==
+X-Gm-Message-State: AOAM530iu9zVZdQVii5XHAwTCvOYcGkMRsbKAtX/PvYt29dQwbtZzEbq
+        LhI9GDg057IpgcbpjaYWDII=
+X-Google-Smtp-Source: ABdhPJwyKNzIc/Zr/z7ZxkRW4aYZ6FQ/teSkb+fvz0ezxJ39mYiN3V/vrbytTx84k7j4C49WWvjmAA==
+X-Received: by 2002:a17:902:7809:: with SMTP id p9mr5822681pll.96.1594960836152;
+        Thu, 16 Jul 2020 21:40:36 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id e5sm1335389pjy.26.2020.07.16.21.40.32
+        by smtp.gmail.com with ESMTPSA id e5sm1335389pjy.26.2020.07.16.21.40.34
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 Jul 2020 21:40:33 -0700 (PDT)
+        Thu, 16 Jul 2020 21:40:35 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, torvalds@linux-foundation.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v2 bpf-next 0/4] bpf: Populate bpffs with map and prog iterators
-Date:   Thu, 16 Jul 2020 21:40:27 -0700
-Message-Id: <20200717044031.56412-1-alexei.starovoitov@gmail.com>
+Subject: [PATCH v2 bpf-next 1/4] bpf: Add bpf_prog iterator
+Date:   Thu, 16 Jul 2020 21:40:28 -0700
+Message-Id: <20200717044031.56412-2-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
+In-Reply-To: <20200717044031.56412-1-alexei.starovoitov@gmail.com>
+References: <20200717044031.56412-1-alexei.starovoitov@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -60,156 +63,219 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-v1->v2:
-- changed names to 'progs.debug' and 'maps.debug' to hopefully better indicate
-  instability of the text output. Having dot in the name also guarantees
-  that these special files will not conflict with normal bpf objects pinned
-  in bpffs, since dot is disallowed for normal pins.
-- instead of hard coding link_name in the core bpf moved into UMD.
-- cleanedup error handling.
-- addressed review comments from Yonghong and Andrii.
+It's mostly a copy paste of commit 6086d29def80 ("bpf: Add bpf_map iterator")
+that is use to implement bpf_seq_file opreations to traverse all bpf programs.
 
-This patch set is the first real user of user moder driver facility. The
-general use case for user mode driver is to ship vmlinux with preloaded BPF
-programs. In this particular case the user mode driver populates bpffs instance
-with two BPF iterators. In several months BPF_LSM project would need to preload
-the kernel with its own set of BPF programs and attach to LSM hooks instead of
-bpffs. BPF iterators and BPF_LSM are unstable from uapi perspective. They are
-tracing based and peek into arbitrary kernel data structures. One can question
-why a kernel module cannot embed BPF programs inside. The reason is that libbpf
-is necessary to load them. First libbpf loads BPF Type Format, then creates BPF
-maps, populates them. Then it relocates code sections inside BPF programs,
-loads BPF programs, and finally attaches them to events. Theoretically libbpf
-can be rewritten to work in the kernel, but that is massive undertaking. The
-maintenance of in-kernel libbpf and user space libbpf would be another
-challenge. Another obstacle to embedding BPF programs into kernel module is
-sys_bpf api. Loading of programs, BTF, maps goes through the verifier. It
-validates and optimizes the code. It's possible to provide in-kernel api to all
-of sys_bpf commands (load progs, create maps, update maps, load BTF, etc), but
-that is huge amount of work and forever maintenance headache.
-Hence the decision is to ship vmlinux with user mode drivers that load
-BPF programs. Just like kernel modules extend vmlinux BPF programs
-are safe extensions of the kernel and some of them need to ship with vmlinux.
-
-This patch set adds a kernel module with user mode driver that populates bpffs
-with two BPF iterators.
-
-$ mount bpffs /my/bpffs/ -t bpf
-$ ls -la /my/bpffs/
-total 4
-drwxrwxrwt  2 root root    0 Jul  2 00:27 .
-drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
--rw-------  1 root root    0 Jul  2 00:27 maps.debug
--rw-------  1 root root    0 Jul  2 00:27 progs.debug
-
-The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
-maps, load two BPF programs, attach them to BPF iterators, and finally send two
-bpf_link IDs back to the kernel.
-The kernel will pin two bpf_links into newly mounted bpffs instance under
-names "progs.debug" and "maps.debug". These two files become human readable.
-
-$ cat /my/bpffs/progs.debug
-  id name            pages attached
-  11 dump_bpf_map        1 bpf_iter_bpf_map
-  12 dump_bpf_prog       1 bpf_iter_bpf_prog
-  27 test_pkt_access     1
-  32 test_main           1 test_pkt_access test_pkt_access
-  33 test_subprog1       1 test_pkt_access_subprog1 test_pkt_access
-  34 test_subprog2       1 test_pkt_access_subprog2 test_pkt_access
-  35 test_subprog3       1 test_pkt_access_subprog3 test_pkt_access
-  36 new_get_skb_len     1 get_skb_len test_pkt_access
-  37 new_get_skb_ifi     1 get_skb_ifindex test_pkt_access
-  38 new_get_constan     1 get_constant test_pkt_access
-
-The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
-all BPF programs currently loaded in the system. This information is unstable
-and will change from kernel to kernel.
-
-In some sence this output is similar to 'bpftool prog show' that is using
-stable api to retreive information about BPF programs. The BPF subsytems grows
-quickly and there is always demand to show as much info about BPF things as
-possible. But we cannot expose all that info via stable uapi of bpf syscall,
-since the details change so much. Right now a BPF program can be attached to
-only one other BPF program. Folks are working on patches to enable
-multi-attach, but for debugging it's necessary to see the current state. There
-is no uapi for that, but above output shows it:
-  37 new_get_skb_ifi     1 get_skb_ifindex test_pkt_access
-  38 new_get_constan     1 get_constant test_pkt_access
-     [1]                   [2]          [3]
-[1] is the name of BPF prog.
-[2] is the name of function inside target BPF prog.
-[3] is the name of target BPF prog.
-
-[2] and [3] are not exposed via uapi, since they will change from single to
-multi soon. There are many other cases where bpf internals are useful for
-debugging, but shouldn't be exposed via uapi due to high rate of changes.
-
-systemd mounts /sys/fs/bpf at the start, so this kernel module with user mode
-driver needs to be available early. BPF_LSM most likely would need to preload
-BPF programs even earlier.
-
-Few interesting observations:
-- though bpffs comes with two human readble files "progs.debug" and
-  "maps.debug" they can be removed. 'rm -f /sys/fs/bpf/progs.debug' will remove
-  bpf_link and kernel will automatically unload corresponding BPF progs, maps,
-  BTFs. In the future '-o remount' will be able to restore them. This is not
-  implemented yet.
-
-- 'ps aux|grep bpf_preload' shows nothing. User mode driver loaded BPF
-  iterators and exited. Nothing is lingering in user space at this point.
-
-- We can consider giving 0644 permissions to "progs.debug" and "maps.debug"
-  to allow unprivileged users see BPF things loaded in the system.
-  We cannot do so with "bpftool prog show", since it's using cap_sys_admin
-  parts of bpf syscall.
-
-- The functionality split between core kernel, bpf_preload kernel module and
-  user mode driver is very similar to bpfilter style of interaction.
-
-- Similar BPF iterators can be used as unstable extensions to /proc.
-  Like mounting /proc can prepopolate some subdirectory in there with
-  a BPF iterator that will print QUIC sockets instead of tcp and udp.
-
-Alexei Starovoitov (4):
-  bpf: Add bpf_prog iterator
-  bpf: Factor out bpf_link_get_by_id() helper.
-  bpf: Add BPF program and map iterators as built-in BPF programs.
-  bpf: Add kernel module with user mode driver that populates bpffs.
-
- include/linux/bpf.h                           |   2 +
- init/Kconfig                                  |   2 +
- kernel/bpf/Makefile                           |   3 +-
- kernel/bpf/inode.c                            |  86 ++++-
- kernel/bpf/map_iter.c                         |  13 +-
- kernel/bpf/preload/Kconfig                    |  18 +
- kernel/bpf/preload/Makefile                   |  21 +
- kernel/bpf/preload/bpf_preload.h              |  16 +
- kernel/bpf/preload/bpf_preload_kern.c         |  85 +++++
- kernel/bpf/preload/bpf_preload_umd_blob.S     |   7 +
- kernel/bpf/preload/iterators/.gitignore       |   2 +
- kernel/bpf/preload/iterators/Makefile         |  57 +++
- kernel/bpf/preload/iterators/README           |   4 +
- .../preload/iterators/bpf_preload_common.h    |  13 +
- kernel/bpf/preload/iterators/iterators.bpf.c  |  82 ++++
- kernel/bpf/preload/iterators/iterators.c      |  93 +++++
- kernel/bpf/preload/iterators/iterators.skel.h | 360 ++++++++++++++++++
- kernel/bpf/prog_iter.c                        |  97 +++++
- kernel/bpf/syscall.c                          |  65 +++-
- 19 files changed, 995 insertions(+), 31 deletions(-)
- create mode 100644 kernel/bpf/preload/Kconfig
- create mode 100644 kernel/bpf/preload/Makefile
- create mode 100644 kernel/bpf/preload/bpf_preload.h
- create mode 100644 kernel/bpf/preload/bpf_preload_kern.c
- create mode 100644 kernel/bpf/preload/bpf_preload_umd_blob.S
- create mode 100644 kernel/bpf/preload/iterators/.gitignore
- create mode 100644 kernel/bpf/preload/iterators/Makefile
- create mode 100644 kernel/bpf/preload/iterators/README
- create mode 100644 kernel/bpf/preload/iterators/bpf_preload_common.h
- create mode 100644 kernel/bpf/preload/iterators/iterators.bpf.c
- create mode 100644 kernel/bpf/preload/iterators/iterators.c
- create mode 100644 kernel/bpf/preload/iterators/iterators.skel.h
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Yonghong Song <yhs@fb.com>
+---
+ include/linux/bpf.h    |  1 +
+ kernel/bpf/Makefile    |  2 +-
+ kernel/bpf/map_iter.c  | 13 ++----
+ kernel/bpf/prog_iter.c | 97 ++++++++++++++++++++++++++++++++++++++++++
+ kernel/bpf/syscall.c   | 19 +++++++++
+ 5 files changed, 122 insertions(+), 10 deletions(-)
  create mode 100644 kernel/bpf/prog_iter.c
 
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index c67c88ad35f8..4ede2b0298b3 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1112,6 +1112,7 @@ int  generic_map_delete_batch(struct bpf_map *map,
+ 			      const union bpf_attr *attr,
+ 			      union bpf_attr __user *uattr);
+ struct bpf_map *bpf_map_get_curr_or_next(u32 *id);
++struct bpf_prog *bpf_prog_get_curr_or_next(u32 *id);
+ 
+ extern int sysctl_unprivileged_bpf_disabled;
+ 
+diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+index 1131a921e1a6..e6eb9c0402da 100644
+--- a/kernel/bpf/Makefile
++++ b/kernel/bpf/Makefile
+@@ -2,7 +2,7 @@
+ obj-y := core.o
+ CFLAGS_core.o += $(call cc-disable-warning, override-init)
+ 
+-obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o
++obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o prog_iter.o
+ obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o
+ obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o ringbuf.o
+ obj-$(CONFIG_BPF_SYSCALL) += disasm.o
+diff --git a/kernel/bpf/map_iter.c b/kernel/bpf/map_iter.c
+index c69071e334bf..343c1df100cf 100644
+--- a/kernel/bpf/map_iter.c
++++ b/kernel/bpf/map_iter.c
+@@ -6,7 +6,7 @@
+ #include <linux/kernel.h>
+ 
+ struct bpf_iter_seq_map_info {
+-	u32 mid;
++	u32 map_id;
+ };
+ 
+ static void *bpf_map_seq_start(struct seq_file *seq, loff_t *pos)
+@@ -14,7 +14,7 @@ static void *bpf_map_seq_start(struct seq_file *seq, loff_t *pos)
+ 	struct bpf_iter_seq_map_info *info = seq->private;
+ 	struct bpf_map *map;
+ 
+-	map = bpf_map_get_curr_or_next(&info->mid);
++	map = bpf_map_get_curr_or_next(&info->map_id);
+ 	if (!map)
+ 		return NULL;
+ 
+@@ -25,16 +25,11 @@ static void *bpf_map_seq_start(struct seq_file *seq, loff_t *pos)
+ static void *bpf_map_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ {
+ 	struct bpf_iter_seq_map_info *info = seq->private;
+-	struct bpf_map *map;
+ 
+ 	++*pos;
+-	++info->mid;
++	++info->map_id;
+ 	bpf_map_put((struct bpf_map *)v);
+-	map = bpf_map_get_curr_or_next(&info->mid);
+-	if (!map)
+-		return NULL;
+-
+-	return map;
++	return bpf_map_get_curr_or_next(&info->map_id);
+ }
+ 
+ struct bpf_iter__bpf_map {
+diff --git a/kernel/bpf/prog_iter.c b/kernel/bpf/prog_iter.c
+new file mode 100644
+index 000000000000..b5824382eb7d
+--- /dev/null
++++ b/kernel/bpf/prog_iter.c
+@@ -0,0 +1,97 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (c) 2020 Facebook */
++#include <linux/bpf.h>
++#include <linux/fs.h>
++#include <linux/filter.h>
++#include <linux/kernel.h>
++
++struct bpf_iter_seq_prog_info {
++	u32 prog_id;
++};
++
++static void *bpf_prog_seq_start(struct seq_file *seq, loff_t *pos)
++{
++	struct bpf_iter_seq_prog_info *info = seq->private;
++	struct bpf_prog *prog;
++
++	prog = bpf_prog_get_curr_or_next(&info->prog_id);
++	if (!prog)
++		return NULL;
++
++	++*pos;
++	return prog;
++}
++
++static void *bpf_prog_seq_next(struct seq_file *seq, void *v, loff_t *pos)
++{
++	struct bpf_iter_seq_prog_info *info = seq->private;
++
++	++*pos;
++	++info->prog_id;
++	bpf_prog_put((struct bpf_prog *)v);
++	return bpf_prog_get_curr_or_next(&info->prog_id);
++}
++
++struct bpf_iter__bpf_prog {
++	__bpf_md_ptr(struct bpf_iter_meta *, meta);
++	__bpf_md_ptr(struct bpf_prog *, prog);
++};
++
++DEFINE_BPF_ITER_FUNC(bpf_prog, struct bpf_iter_meta *meta, struct bpf_prog *prog)
++
++static int __bpf_prog_seq_show(struct seq_file *seq, void *v, bool in_stop)
++{
++	struct bpf_iter__bpf_prog ctx;
++	struct bpf_iter_meta meta;
++	struct bpf_prog *prog;
++	int ret = 0;
++
++	ctx.meta = &meta;
++	ctx.prog = v;
++	meta.seq = seq;
++	prog = bpf_iter_get_info(&meta, in_stop);
++	if (prog)
++		ret = bpf_iter_run_prog(prog, &ctx);
++
++	return ret;
++}
++
++static int bpf_prog_seq_show(struct seq_file *seq, void *v)
++{
++	return __bpf_prog_seq_show(seq, v, false);
++}
++
++static void bpf_prog_seq_stop(struct seq_file *seq, void *v)
++{
++	if (!v)
++		(void)__bpf_prog_seq_show(seq, v, true);
++	else
++		bpf_prog_put((struct bpf_prog *)v);
++}
++
++static const struct seq_operations bpf_prog_seq_ops = {
++	.start	= bpf_prog_seq_start,
++	.next	= bpf_prog_seq_next,
++	.stop	= bpf_prog_seq_stop,
++	.show	= bpf_prog_seq_show,
++};
++
++static const struct bpf_iter_reg bpf_prog_reg_info = {
++	.target			= "bpf_prog",
++	.seq_ops		= &bpf_prog_seq_ops,
++	.init_seq_private	= NULL,
++	.fini_seq_private	= NULL,
++	.seq_priv_size		= sizeof(struct bpf_iter_seq_prog_info),
++	.ctx_arg_info_size	= 1,
++	.ctx_arg_info		= {
++		{ offsetof(struct bpf_iter__bpf_prog, prog),
++		  PTR_TO_BTF_ID_OR_NULL },
++	},
++};
++
++static int __init bpf_prog_iter_init(void)
++{
++	return bpf_iter_reg_target(&bpf_prog_reg_info);
++}
++
++late_initcall(bpf_prog_iter_init);
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 7ea9dfbebd8c..86df3daa13f6 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -3036,6 +3036,25 @@ struct bpf_map *bpf_map_get_curr_or_next(u32 *id)
+ 	return map;
+ }
+ 
++struct bpf_prog *bpf_prog_get_curr_or_next(u32 *id)
++{
++	struct bpf_prog *prog;
++
++	spin_lock_bh(&prog_idr_lock);
++again:
++	prog = idr_get_next(&prog_idr, id);
++	if (prog) {
++		prog = bpf_prog_inc_not_zero(prog);
++		if (IS_ERR(prog)) {
++			(*id)++;
++			goto again;
++		}
++	}
++	spin_unlock_bh(&prog_idr_lock);
++
++	return prog;
++}
++
+ #define BPF_PROG_GET_FD_BY_ID_LAST_FIELD prog_id
+ 
+ struct bpf_prog *bpf_prog_by_id(u32 id)
 -- 
 2.23.0
 
