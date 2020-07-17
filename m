@@ -2,29 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8F6C223929
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 12:23:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E73A5223959
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 12:34:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726229AbgGQKXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 06:23:14 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:52850 "EHLO huawei.com"
+        id S1726656AbgGQKdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 06:33:38 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:37478 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725864AbgGQKXN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jul 2020 06:23:13 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id CA0E9DFE89BF877B1CE9;
-        Fri, 17 Jul 2020 18:23:11 +0800 (CST)
+        id S1726040AbgGQKdi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 06:33:38 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 286BFE465BD03B9B8474;
+        Fri, 17 Jul 2020 18:33:35 +0800 (CST)
 Received: from localhost.localdomain (10.175.112.70) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Fri, 17 Jul 2020 18:23:10 +0800
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Fri, 17 Jul 2020 18:33:33 +0800
 From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     <rmody@marvell.com>, <skalluru@marvell.com>,
-        <GR-Linux-NIC-Dev@marvell.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
+To:     <mark.einon@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net: bna: Remove unused variable 't'
-Date:   Fri, 17 Jul 2020 18:23:04 +0800
-Message-ID: <1594981384-30489-1-git-send-email-zhangchangzhong@huawei.com>
+Subject: [PATCH net-next] net: ethernet: et131x: Remove unused variable 'pm_csr'
+Date:   Fri, 17 Jul 2020 18:33:30 +0800
+Message-ID: <1594982010-30679-1-git-send-email-zhangchangzhong@huawei.com>
 X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -37,41 +35,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Gcc report warning as follows:
 
-drivers/net/ethernet/brocade/bna/bfa_ioc.c:1538:6: warning:
- variable 't' set but not used [-Wunused-but-set-variable]
- 1538 |  u32 t;
-      |      ^
+drivers/net/ethernet/agere/et131x.c:953:6: warning:
+ variable 'pm_csr' set but not used [-Wunused-but-set-variable]
+  953 |  u32 pm_csr;
+      |      ^~~~~~
+drivers/net/ethernet/agere/et131x.c:1002:6:warning:
+ variable 'pm_csr' set but not used [-Wunused-but-set-variable]
+ 1002 |  u32 pm_csr;
+      |      ^~~~~~
+drivers/net/ethernet/agere/et131x.c:3446:8: warning:
+ variable 'pm_csr' set but not used [-Wunused-but-set-variable]
+ 3446 |    u32 pm_csr;
+      |        ^~~~~~
 
-After commit c107ba171f3d ("bna: Firmware Patch Simplification"),
-'t' is never used, so removing it to avoid build warning.
+After commit 38df6492eb51 ("et131x: Add PCIe gigabit ethernet driver
+et131x to drivers/net"), 'pm_csr' is never used in these functions,
+so removing it to avoid build warning.
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 ---
- drivers/net/ethernet/brocade/bna/bfa_ioc.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/agere/et131x.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_ioc.c b/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-index e17bfc8..49358d4 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-+++ b/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-@@ -1535,7 +1535,6 @@ enum bfa_flash_err {
- bfa_flash_fifo_flush(void __iomem *pci_bar)
- {
- 	u32 i;
--	u32 t;
- 	union bfa_flash_dev_status_reg dev_status;
+diff --git a/drivers/net/ethernet/agere/et131x.c b/drivers/net/ethernet/agere/et131x.c
+index 865892c..8806e1e 100644
+--- a/drivers/net/ethernet/agere/et131x.c
++++ b/drivers/net/ethernet/agere/et131x.c
+@@ -950,7 +950,6 @@ static void et1310_setup_device_for_multicast(struct et131x_adapter *adapter)
+ 	u32 hash2 = 0;
+ 	u32 hash3 = 0;
+ 	u32 hash4 = 0;
+-	u32 pm_csr;
  
- 	dev_status.i = readl(pci_bar + FLI_DEV_STATUS_REG);
-@@ -1545,7 +1544,7 @@ enum bfa_flash_err {
+ 	/* If ET131X_PACKET_TYPE_MULTICAST is specified, then we provision
+ 	 * the multi-cast LIST.  If it is NOT specified, (and "ALL" is not
+@@ -984,7 +983,7 @@ static void et1310_setup_device_for_multicast(struct et131x_adapter *adapter)
+ 	}
  
- 	/* fifo counter in terms of words */
- 	for (i = 0; i < dev_status.r.fifo_cnt; i++)
--		t = readl(pci_bar + FLI_RDDATA_REG);
-+		readl(pci_bar + FLI_RDDATA_REG);
+ 	/* Write out the new hash to the device */
+-	pm_csr = readl(&adapter->regs->global.pm_csr);
++	readl(&adapter->regs->global.pm_csr);
+ 	if (!et1310_in_phy_coma(adapter)) {
+ 		writel(hash1, &rxmac->multi_hash1);
+ 		writel(hash2, &rxmac->multi_hash2);
+@@ -999,7 +998,6 @@ static void et1310_setup_device_for_unicast(struct et131x_adapter *adapter)
+ 	u32 uni_pf1;
+ 	u32 uni_pf2;
+ 	u32 uni_pf3;
+-	u32 pm_csr;
  
- 	/* Check the device status. It may take some time. */
- 	for (i = 0; i < BFA_FLASH_CHECK_MAX; i++) {
+ 	/* Set up unicast packet filter reg 3 to be the first two octets of
+ 	 * the MAC address for both address
+@@ -1025,7 +1023,7 @@ static void et1310_setup_device_for_unicast(struct et131x_adapter *adapter)
+ 		  (adapter->addr[4] << ET_RX_UNI_PF_ADDR1_5_SHIFT) |
+ 		   adapter->addr[5];
+ 
+-	pm_csr = readl(&adapter->regs->global.pm_csr);
++	readl(&adapter->regs->global.pm_csr);
+ 	if (!et1310_in_phy_coma(adapter)) {
+ 		writel(uni_pf1, &rxmac->uni_pf_addr1);
+ 		writel(uni_pf2, &rxmac->uni_pf_addr2);
+@@ -3443,12 +3441,10 @@ static irqreturn_t et131x_isr(int irq, void *dev_id)
+ 		 * send a pause packet, otherwise just exit
+ 		 */
+ 		if (adapter->flow == FLOW_TXONLY || adapter->flow == FLOW_BOTH) {
+-			u32 pm_csr;
+-
+ 			/* Tell the device to send a pause packet via the back
+ 			 * pressure register (bp req and bp xon/xoff)
+ 			 */
+-			pm_csr = readl(&iomem->global.pm_csr);
++			readl(&iomem->global.pm_csr);
+ 			if (!et1310_in_phy_coma(adapter))
+ 				writel(3, &iomem->txmac.bp_ctrl);
+ 		}
 -- 
 1.8.3.1
 
