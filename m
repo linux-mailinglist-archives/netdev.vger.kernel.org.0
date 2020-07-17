@@ -2,91 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3F82232CB
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 07:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAB562232EE
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 07:30:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726198AbgGQFMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 01:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725300AbgGQFMB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 01:12:01 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229F2C061755
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 22:12:01 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id x9so6348784ila.3
-        for <netdev@vger.kernel.org>; Thu, 16 Jul 2020 22:12:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=84WUE6XhfM+S2zXEyhxOAdpt/CWyunQ/iasOyg/SIwg=;
-        b=ieMw8Xd4xqT2y0cnOFU7IwHRD8q7uBnB3AYgwA/o7FDtnX8+RpicYu+3HMA0bw/4bM
-         6rGOATNAUI+9AJ9mn4yZJZH78Y7ve7a2jOWheoBhXvMsNTENab/mHTalPWunr7SSDpIp
-         Et30vffrSmOFZoFPbCkflEk9+4oTXljZlq5ITrqX/BOWa3vq65D9IfDeT5q4Kb7EJZjv
-         VKjoiN7PKoDi7g4L8waPg8fjfbuZeIvkZfA/VO+q1/GQTfBAvxKxbhd+QcJh3bm6ODZz
-         mvocWq8R2vIhed5H1tMfcfUvKeCdLZrEt97qX6N2ujxLU3TKBhE0TCDWtUqa/Zg3w2ak
-         6oeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=84WUE6XhfM+S2zXEyhxOAdpt/CWyunQ/iasOyg/SIwg=;
-        b=PlqqDhRWhnJdzOFht4MaN8aDZn+8io2njeOjSwi/0qx4Mr0iN2FEWCqV64CRrnMsnQ
-         9EacqTq8cCrM0zsVvXY3LbnlJMyEvqcA0XF4QFNM6jTcW0S1uk1dbXLeO9Mu74uc9OkH
-         w7f5xkvtgi8zdqVX/wuMdnBmYB3EyXGpbjS7SW9gL5aMz1rYWAfj5pr7g95h/SOiGEKb
-         eUd701HcPGMo4Lofv4wsDwJdEJKm5JfrGg8wvZ0zKR+wNVIq/PBCqnPNMuo8qm0kkLIN
-         MvtCNKsRpbPcUvZXjccv4knvq3L/o5naVNmKw23AzGZtxwr5OJgDE/orPmMymSuqPa0l
-         ZVtA==
-X-Gm-Message-State: AOAM532sHFkc9q3kr0nKkTazfANokjdef3JTr0DJXFzI+NPFb7kleiOw
-        XumkK8ukhHqzQkz+hJDKkzByPTjtWIsUSNKWWbY=
-X-Google-Smtp-Source: ABdhPJz6zSBBMiXEv3jO9uZ4Sy0byWswVJLj4+FSgeylnkBXMDyiKiLf/hp2mPZWCiunT3PAC6gStkGuOXnCyCkyXlk=
-X-Received: by 2002:a05:6e02:128d:: with SMTP id y13mr7930312ilq.305.1594962720409;
- Thu, 16 Jul 2020 22:12:00 -0700 (PDT)
+        id S1726205AbgGQFab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 01:30:31 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:31795 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725909AbgGQFaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 01:30:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1594963829;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D+wLk/ePgaJoi2FnNGkrLAcPurLKVDi5tXa+03Q0aj4=;
+        b=RN7gvvQ93RBjUvJo5+te7d/Ve1r3nDabLC/HWXmvoye8a2fEm8cnbuppohNdZ+r4BCaSsI
+        vGJxVaT8h/oJXH6T6UXYdfIAbuAKysS0G76TSGq4rzK0CCIjvHUEdb+YbfRlN/fWEUiY0f
+        uKCiMLzdt0SQSwPKiucLV0xYrcYhQ7I=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-280-XCp00DzjMKeWww0JR7yhyw-1; Fri, 17 Jul 2020 01:30:25 -0400
+X-MC-Unique: XCp00DzjMKeWww0JR7yhyw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3BC611800D42;
+        Fri, 17 Jul 2020 05:30:22 +0000 (UTC)
+Received: from [10.72.12.157] (ovpn-12-157.pek2.redhat.com [10.72.12.157])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DF7B378A54;
+        Fri, 17 Jul 2020 05:30:02 +0000 (UTC)
+Subject: Re: [PATCH V2 4/6] vhost_vdpa: implement IRQ offloading in vhost_vdpa
+To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
+        alex.williamson@redhat.com, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, wanpengli@tencent.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <1594898629-18790-1-git-send-email-lingshan.zhu@intel.com>
+ <1594898629-18790-5-git-send-email-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <96df4d83-2297-5f30-b6a3-75a0cdf23a0b@redhat.com>
+Date:   Fri, 17 Jul 2020 13:29:58 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <1594816689-5935-1-git-send-email-sbhatta@marvell.com>
- <1594816689-5935-4-git-send-email-sbhatta@marvell.com> <20200716171109.7d8c6d17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200716171109.7d8c6d17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   sundeep subbaraya <sundeep.lkml@gmail.com>
-Date:   Fri, 17 Jul 2020 10:41:49 +0530
-Message-ID: <CALHRZupxX5Cbvb03s-xxA7gobjwo8cM7n4_-U6oGysU3R18-Bw@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 3/3] octeontx2-pf: Add support for PTP clock
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Subbaraya Sundeep <sbhatta@marvell.com>,
-        David Miller <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, sgoutham@marvell.com,
-        Aleksey Makarov <amakarov@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1594898629-18790-5-git-send-email-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
 
-On Fri, Jul 17, 2020 at 5:41 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On 2020/7/16 下午7:23, Zhu Lingshan wrote:
+> This patch introduce a set of functions for setup/unsetup
+> and update irq offloading respectively by register/unregister
+> and re-register the irq_bypass_producer.
 >
-> On Wed, 15 Jul 2020 18:08:09 +0530 Subbaraya Sundeep wrote:
-> > @@ -1730,10 +1745,149 @@ static void otx2_reset_task(struct work_struct *work)
-> >       if (!netif_running(pf->netdev))
-> >               return;
-> >
-> > +     rtnl_lock();
-> >       otx2_stop(pf->netdev);
-> >       pf->reset_count++;
-> >       otx2_open(pf->netdev);
-> >       netif_trans_update(pf->netdev);
-> > +     rtnl_unlock();
-> > +}
-> > +
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> Suggested-by: Jason Wang <jasowang@redhat.com>
+> ---
+>   drivers/vhost/Kconfig |  1 +
+>   drivers/vhost/vdpa.c  | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
+>   2 files changed, 49 insertions(+)
 >
-> This looks unrelated, otherwise for the patches:
-You mean the lock/unlock logic with this patch?
-I can separate this out and put in another patch #4 if you insist.
+> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+> index d3688c6..587fbae 100644
+> --- a/drivers/vhost/Kconfig
+> +++ b/drivers/vhost/Kconfig
+> @@ -65,6 +65,7 @@ config VHOST_VDPA
+>   	tristate "Vhost driver for vDPA-based backend"
+>   	depends on EVENTFD
+>   	select VHOST
+> +	select IRQ_BYPASS_MANAGER
+>   	depends on VDPA
+>   	help
+>   	  This kernel module can be loaded in host kernel to accelerate
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 2fcc422..b9078d4 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -115,6 +115,43 @@ static irqreturn_t vhost_vdpa_config_cb(void *private)
+>   	return IRQ_HANDLED;
+>   }
+>   
+> +static void vhost_vdpa_setup_vq_irq(struct vdpa_device *dev, int qid, int irq)
+> +{
+> +	struct vhost_vdpa *v = vdpa_get_drvdata(dev);
+> +	struct vhost_virtqueue *vq = &v->vqs[qid];
+> +	int ret;
+> +
+> +	spin_lock(&vq->call_ctx.ctx_lock);
+> +	if (!vq->call_ctx.ctx) {
+> +		spin_unlock(&vq->call_ctx.ctx_lock);
+> +		return;
+> +	}
 
-Thanks,
-Sundeep
 
->
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
+I think we can simply remove this check as what is done in 
+vhost_vdpq_update_vq_irq().
+
+
+> +
+> +	vq->call_ctx.producer.token = vq->call_ctx.ctx;
+> +	vq->call_ctx.producer.irq = irq;
+> +	ret = irq_bypass_register_producer(&vq->call_ctx.producer);
+> +	spin_unlock(&vq->call_ctx.ctx_lock);
+> +}
+> +
+> +static void vhost_vdpa_unsetup_vq_irq(struct vdpa_device *dev, int qid)
+> +{
+> +	struct vhost_vdpa *v = vdpa_get_drvdata(dev);
+> +	struct vhost_virtqueue *vq = &v->vqs[qid];
+> +
+> +	spin_lock(&vq->call_ctx.ctx_lock);
+> +	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+> +	spin_unlock(&vq->call_ctx.ctx_lock);
+> +}
+> +
+> +static void vhost_vdpa_update_vq_irq(struct vhost_virtqueue *vq)
+> +{
+> +	spin_lock(&vq->call_ctx.ctx_lock);
+> +	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+> +	vq->call_ctx.producer.token = vq->call_ctx.ctx;
+> +	irq_bypass_register_producer(&vq->call_ctx.producer);
+> +	spin_unlock(&vq->call_ctx.ctx_lock);
+> +}
+> +
+>   static void vhost_vdpa_reset(struct vhost_vdpa *v)
+>   {
+>   	struct vdpa_device *vdpa = v->vdpa;
+> @@ -332,6 +369,7 @@ static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
+>   
+>   	return 0;
+>   }
+> +
+
+
+If you really want to fix coding style issue, it's better to have 
+another patch.
+
+
+>   static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+>   				   void __user *argp)
+>   {
+> @@ -390,6 +428,14 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+>   			cb.private = NULL;
+>   		}
+>   		ops->set_vq_cb(vdpa, idx, &cb);
+> +		/*
+> +		 * if it has a non-zero irq, means there is a
+> +		 * previsouly registered irq_bypass_producer,
+> +		 * we should update it when ctx (its token)
+> +		 * changes.
+> +		 */
+> +		if (vq->call_ctx.producer.irq)
+> +			vhost_vdpa_update_vq_irq(vq);
+
+
+Is this safe to check producer.irq outside spinlock?
+
+Thanks
+
+
+>   		break;
+>   
+>   	case VHOST_SET_VRING_NUM:
+> @@ -951,6 +997,8 @@ static void vhost_vdpa_remove(struct vdpa_device *vdpa)
+>   	},
+>   	.probe	= vhost_vdpa_probe,
+>   	.remove	= vhost_vdpa_remove,
+> +	.setup_vq_irq = vhost_vdpa_setup_vq_irq,
+> +	.unsetup_vq_irq = vhost_vdpa_unsetup_vq_irq,
+>   };
+>   
+>   static int __init vhost_vdpa_init(void)
+
