@@ -2,97 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A982F224196
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:15:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFD5C2241AA
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:21:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbgGQRPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 13:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726837AbgGQRPc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:15:32 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A35C0619D2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:15:32 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id j20so5723426pfe.5
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 10:15:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=S5C1kGzcRMh5s/xY35azbfaECu6ziYdmjWrDYnFfJwo=;
-        b=O3U9cXdhHUGlStVnak0/NAZMRb2ktBQVCGkUKQpZK+CvTlV0dHTZ2devvh1Ckwie8a
-         78dPQ8dMBho4ThvDyK7I5Ipqz5GTIcOzB3yp1u7cyYjWbqM3wPSnU/197PJYnz8CMHrf
-         gaEsnu8SzPBrY8Syh9dkwlYsvL16rLoBN9P96aSv5cc2oE3mATK++CrDXygbfMbT2hVf
-         Lf0GdXh7QnS6WWHqz6GUgAsa/1ylTnSBW1fs2ydRokEPJuW1sx0iwlAYMGvVO/MTo2ae
-         XrCaVJjy1l8OSbLlzc//UBrNu5dkUAvWFdz7IEvVhsMULRQziBh5n7c0vHqGwd/ups59
-         paqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=S5C1kGzcRMh5s/xY35azbfaECu6ziYdmjWrDYnFfJwo=;
-        b=ud3dw823NxEbUhpWv/jAtQflqOv8tSrDJAHvp8jfJu6frbhmDthV1SYIEc6MYO7cCd
-         nYHpujQIPSTRGq18F46zGL6EZO9mV7AtOKRgtGZsa3/s+PWcIl1PZ5SMPeds6CzpeJfM
-         4nCVj4qiU0mA3JMY8QJ60BZenesSQcrG7WTAUReh+MOZr/eh5ksxUtwtwkKGGrLpwrMz
-         NZl7HJNH8rPqDjwq9WCbgrhAh1ZgIzqaz6cVJnozHjWvEa+eSVvHfpTl5BETv2Cec8sr
-         o2wTBf8wTsR82FO5QPEKZhyOYo+XLhS0q5433ksK3ltCRuuSEMTqbM9V3ckjhcX3zzfK
-         1RQQ==
-X-Gm-Message-State: AOAM532Q+0opC48xBFGwqdw5hnw1YjXzaFMT/VmqObfphWq2IuNeEXTY
-        7MJql2mb15P5uMIb3urXzqzq/A==
-X-Google-Smtp-Source: ABdhPJyvFL0kYbKEv0lMOW8F4w+Qc9Y8qj8kBRC1EnjD51+LqQyMvBntqEKUB+MgAxFyS0wTKc/IEw==
-X-Received: by 2002:aa7:84d3:: with SMTP id x19mr9208993pfn.155.1595006131819;
-        Fri, 17 Jul 2020 10:15:31 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id nk22sm3297605pjb.51.2020.07.17.10.15.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 10:15:31 -0700 (PDT)
-Date:   Fri, 17 Jul 2020 10:15:23 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     haiyangz@microsoft.com, Song.Chi@microsoft.com, kys@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: hyperv: Add attributes to show RX/TX
- indirection table
-Message-ID: <20200717101523.6573061b@hermes.lan>
-In-Reply-To: <20200717.095535.195550343235350259.davem@davemloft.net>
-References: <HK0P153MB027502644323A21B09F6DA60987C0@HK0P153MB0275.APCP153.PROD.OUTLOOK.COM>
-        <20200717082451.00c59b42@hermes.lan>
-        <DM5PR2101MB09344BA75F08EC926E31E040CA7C0@DM5PR2101MB0934.namprd21.prod.outlook.com>
-        <20200717.095535.195550343235350259.davem@davemloft.net>
+        id S1727067AbgGQRVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 13:21:25 -0400
+Received: from mga09.intel.com ([134.134.136.24]:22814 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726293AbgGQRVZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 13:21:25 -0400
+IronPort-SDR: 9lAoy/jO9vNg6lHb7gPgTGVFHtDcKboggP/O6fT7QkVvYu3Ha+mGsF9mGvHipjjyb1+AKGKul8
+ cOFfJbn0uPJw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9685"; a="151015421"
+X-IronPort-AV: E=Sophos;i="5.75,364,1589266800"; 
+   d="scan'208";a="151015421"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2020 10:21:24 -0700
+IronPort-SDR: GEkwdjtfR1h1VNY6Z8O+cbRVYBLKGSZdCnQkLTyrLI8XKMpQb0Al2Fwxfpbv9oVKLvVbl7E/Yy
+ RyaeyXPu0FAg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,364,1589266800"; 
+   d="scan'208";a="326903323"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.94.160]) ([10.212.94.160])
+  by orsmga007.jf.intel.com with ESMTP; 17 Jul 2020 10:21:24 -0700
+Subject: Re: [RFC PATCH net-next 6/6] ice: implement devlink parameters to
+ control flash update
+To:     Jakub Kicinski <kubakici@wp.pl>, Tom Herbert <tom@herbertland.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+References: <20200709212652.2785924-1-jacob.e.keller@intel.com>
+ <20200709212652.2785924-7-jacob.e.keller@intel.com>
+ <20200709171913.5b779cc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <ee8fc0a5-6cea-2689-372c-4e733cc06056@intel.com>
+ <20200710132516.24994a33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <0a12dbf7-58be-b0ad-53d7-61748b081b38@intel.com>
+ <4c6a39f4-5ff2-b889-086a-f7c99990bd4c@intel.com>
+ <20200715162329.4224fa6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <d8f88c91-57fa-9ca4-1838-5f63b6613c59@intel.com>
+ <58840317-e818-af52-352a-19008b89bee7@intel.com>
+ <20200716144208.4e602320@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <2ce3eb56-69e3-91fe-96a2-e5e538846e9f@intel.com>
+ <20200716151833.3b21d277@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <f8723b99-f514-7433-98de-1940dbe5bf8f@intel.com>
+Date:   Fri, 17 Jul 2020 10:21:23 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200716151833.3b21d277@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Jul 2020 09:55:35 -0700 (PDT)
-David Miller <davem@davemloft.net> wrote:
 
-> From: Haiyang Zhang <haiyangz@microsoft.com>
-> Date: Fri, 17 Jul 2020 16:18:11 +0000
+
+On 7/16/2020 3:18 PM, Jakub Kicinski wrote:
+> On Thu, 16 Jul 2020 14:52:15 -0700 Jacob Keller wrote:
+>> On 7/16/2020 2:42 PM, Jakub Kicinski wrote:
+>>> Sorry but I'm still not 100% sure of what the use for this option is
+>>> beyond an OEM. Is it possible to reset the VPD, board serial, MAC
+>>> address etc. while flashing a FW image downloaded from a support site?
+>>> Would that mean that if I flash a rack with one FW image all NICs will
+>>> start reporting the same serial numbers and use the same MACs?
+>>
+>> I think the intent here is for OEMs which would generate/customize the
+>> images, though I've also been told it may be useful to get a card out of
+>> some situation where firmware preservation was broken.. (No, I don't
+>> really have more details on what specifically the situation might be).
+>> Obviously in most update cases I don't think we expect this to be used.
 > 
-> > Also in some minimal installation, "ethtool" may not always be
-> > installed.  
+> What I'm getting at is that this seems to inherently require a special
+> FW image which will carry unique IDs, custom-selected for a particular
+> board. So I was hoping we can infer the setting from the image being
+> flashed. But perhaps that's risky.
 > 
-> This is never an argument against using the most well suited API for
-> exporting information to the user.
+
+
+Hmm. I don't think we have any obvious way to tell this.
+
+> Let's make sure the description of the option captures the fact that
+> this is mostly useful in manufacturing and otherwise very rarely needed.
 > 
-> You can write "minimal" tools that just perform the ethtool netlink
-> operations you require for information retrieval, you don't have to
-> have the ethtool utility installed.
 
-Would it be better in the long term to make the transmit indirection
-table available under the new rt_netlink based API's for ethtool?
+Sure. I'll try to make that clear in the documentation and in the naming.
 
-I can imagine that other hardware or hypervisors might have the
-same kind of transmit mapping.
+>>>> d) if we need it, a "default" that would be the current behavior of
+>>>> doing whatever the driver default is? (since it's not clear to me what
+>>>> other implementations do but perhaps they all behavior as either
+>>>> "nothing" or "all"?  
+>>>
+>>> As a user I'd expect "nothing" to be the default. Same as your OS
+>>> update does not wipe out your settings. I think it's also better 
+>>> if the default is decided by Linux, not the drivers.
+>>
+>> Right, but I wasn't sure what other drivers/devices implement today and
+>> didn't want  to end up in a "well we don't behave that way so you just
+>> changed our behavior"..? Hmm. If they all behave this way today then
+>> it's fine to make "nothing" the default and modify all implementations
+>> to reject other options.
+> 
+> Understood. Let's make things clear in the submission and CC
+> maintainers of all drivers which implement devlink flashing today.
+> Let them complain. If we're too cautious we'll never arrive on sane
+> defaults.
 
-Alternatively, the hyperv network driver could integrate/replace the
-indirection table with something based on current receive flow steering.
+Yep.
+
+I hope to have this out today, I got sidetracked yesterday.
+
+Regards,
+Jake
