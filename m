@@ -2,142 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83CC0224400
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 21:13:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A241E224407
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 21:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728730AbgGQTMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 15:12:16 -0400
-Received: from mxout04.lancloud.ru ([89.108.124.63]:33434 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728706AbgGQTMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 15:12:14 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 688C520F54C0
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH RFC] bluetooth: add support for some old headsets
-To:     Marcel Holtmann <marcel@holtmann.org>
-CC:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Bluetooth Kernel Mailing List 
-        <linux-bluetooth@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        "Ildar Kamaletdinov" <i.kamaletdinov@omprussia.ru>
-References: <6f461412-a6c0-aa53-5e74-394e278ee9b1@omprussia.ru>
- <1834765D-52E6-45B8-9923-778C9182CFA9@holtmann.org>
- <e9f32310-2728-60a2-adc7-3a7418ce54e3@omprussia.ru>
- <848144D3-85F9-47F8-8CDA-02457FA7530F@holtmann.org>
-From:   Sergey Shtylyov <s.shtylyov@omprussia.ru>
-Organization: Open Mobile Platform, LLC
-Message-ID: <0c2a8da1-6071-6597-d0d1-32ce1490aba7@omprussia.ru>
-Date:   Fri, 17 Jul 2020 22:12:09 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728595AbgGQTNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 15:13:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37266 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728183AbgGQTNE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 15:13:04 -0400
+Received: from localhost (unknown [151.48.133.17])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CC4CD2064C;
+        Fri, 17 Jul 2020 19:13:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595013184;
+        bh=wAykMgVs1HLRv17sBu9pt0MpmQPM85Wg6tWWls25qTE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WzvBvnLjB4PJfPfCmT5UGbJFmxzTD6mNzeK5xXsvzz7dSHAlgb3Zp2gtLvmFlvBx+
+         po0Z7bAeWI/5P9pkUfOQF3U8uEjlfGeQEk4xk9xbP0yKDoeGLhMdX/ooyufyMoORY0
+         lBKkM4Gd1Mfy4bWELEh9DZ+fu/LpLvdkgq3q3lS8=
+Date:   Fri, 17 Jul 2020 21:12:59 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
+        brouer@redhat.com, daniel@iogearbox.net, toke@redhat.com,
+        lorenzo.bianconi@redhat.com, dsahern@kernel.org,
+        andrii.nakryiko@gmail.com, bpf@vger.kernel.org
+Subject: Re: [PATCH v7 bpf-next 0/9] introduce support for XDP programs in
+ CPUMAP
+Message-ID: <20200717191259.GB633625@localhost.localdomain>
+References: <cover.1594734381.git.lorenzo@kernel.org>
+ <20200717120013.0926a74e@toad>
+ <20200717110136.GA1683270@localhost.localdomain>
+ <20200717171333.3fe979e6@toad>
 MIME-Version: 1.0
-In-Reply-To: <848144D3-85F9-47F8-8CDA-02457FA7530F@holtmann.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [213.87.156.29]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1908.lancloud.ru (fd00:f066::208)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="FkmkrVfFsRoUs1wW"
+Content-Disposition: inline
+In-Reply-To: <20200717171333.3fe979e6@toad>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/17/20 9:59 AM, Marcel Holtmann wrote:
 
->>>> The MediaTek Bluetooth platform (MT6630 etc.) has a peculiar implementation
->>>> for the eSCO/SCO connection via BT/EDR: the host controller returns error
->>>> code 0x20 (LMP feature not supported) for HCI_Setup_Synchronous_Connection
->>>> (0x0028) command without actually trying to setup connection with a remote
->>>> device in case such device (like Digma BT-14 headset) didn't advertise its
->>>> supported features.  Even though this doesn't break compatibility with the
->>>> Bluetooth standard it breaks the compatibility with the Hands-Free Profile
->>>> (HFP).
->>>>
->>>> This patch returns the compatibility with the HFP profile and actually
->>>> tries to check all available connection parameters despite of the specific
->>>> MediaTek implementation. Without it one was unable to establish eSCO/SCO
->>>> connection with some headsets.
->>>
->>> please include the parts of btmon output that show this issue.
->>
->>   Funny, I had removed that part from the original patch. Here's that log:
->>
->> < HCI Command: Setup Synchronous Connection (0x01|0x0028) plen 17                                  #1 [hci0] 6.705320
->>        Handle: 50
->>        Transmit bandwidth: 8000
->>        Receive bandwidth: 8000
->>        Max latency: 10
->>        Setting: 0x0060
->>          Input Coding: Linear
->>          Input Data Format: 2's complement
->>          Input Sample Size: 16-bit
->>            of bits padding at MSB: 0
->>          Air Coding Format: CVSD
->>        Retransmission effort: Optimize for power consumption (0x01)
->>        Packet type: 0x0380
->>          3-EV3 may not be used
->>          2-EV5 may not be used
->>          3-EV5 may not be used
->>> HCI Event: Command Status (0x0f) plen 4                                                          #2 [hci0] 6.719598
->>      Setup Synchronous Connection (0x01|0x0028) ncmd 1
->>        Status: Unsupported LMP Parameter Value / Unsupported LL Parameter Value (0x20)
- 
-> I double check with the specification and it is not precise that errors should be reported
-> via sync conn complete events. My assumption would be that your headset only supports SCO and
-> thus the controller realizes that eSCO request can not be completed anyway. So the controller
-> opts for quickest path to get out of this.
+--FkmkrVfFsRoUs1wW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->>>> Based on the patch by Ildar Kamaletdinov <i.kamaletdinov@omprussia.ru>.
+> On Fri, 17 Jul 2020 13:01:36 +0200
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>=20
 
-   Adding him to CC...
+[...]
 
->>>>
->>>> Signed-off-by: Sergey Shtylyov <s.shtylyov@omprussia.ru>
->>>>
->>>> ---
->>>> This patch is against the 'bluetooth-next.git' repo.
->>>>
->>>> net/bluetooth/hci_event.c |    8 ++++++++
->>>> 1 file changed, 8 insertions(+)
->>>>
->>>> Index: bluetooth-next/net/bluetooth/hci_event.c
->>>> ===================================================================
->>>> --- bluetooth-next.orig/net/bluetooth/hci_event.c
->>>> +++ bluetooth-next/net/bluetooth/hci_event.c
->>>> @@ -2187,6 +2187,13 @@ static void hci_cs_setup_sync_conn(struc
->>>> 	if (acl) {
->>>> 		sco = acl->link;
->>>> 		if (sco) {
->>>> +			if (status == 0x20 && /* Unsupported LMP Parameter value */
->>>> +			    sco->out) {
+>=20
+> HTH,
+> -jkbs
 
-    Actually, I was expecting that you'd tell me to create a HCI quirk for this situation.
-I have a patch doing that but I haven't been able to locate the driver in which to set this
-quirk flag...
+Hi Jakub,
 
->>>> +				sco->pkt_type = (hdev->esco_type & SCO_ESCO_MASK) |
->>>> +						(hdev->esco_type & EDR_ESCO_MASK);
->>>> +				if (hci_setup_sync(sco, sco->link->handle))
->>>> +					goto unlock;
->>>> +			}
->>>> 			sco->state = BT_CLOSED;
->>>
->>> since this is the command status event, I doubt that sco->out check is needed.
->>
->>   Can't comment oin this, my BT fu is too weak... 
+can you please test the patch below when you have some free cycles? It fixes
+the issue in my setup.
 
-> It is the case. Command status is only local to command we issued and thus in this case it
-> is the connection creation attempt from our side. Meaning it is always outgoing.
+Regards,
+Lorenzo
 
-   Ildar, what do you think?
+diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+index 4c95d0615ca2..f1c46529929b 100644
+--- a/kernel/bpf/cpumap.c
++++ b/kernel/bpf/cpumap.c
+@@ -453,24 +453,27 @@ __cpu_map_entry_alloc(struct bpf_cpumap_val *value, u=
+32 cpu, int map_id)
+ 	rcpu->map_id =3D map_id;
+ 	rcpu->value.qsize  =3D value->qsize;
+=20
++	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, fd))
++		goto free_ptr_ring;
++
+ 	/* Setup kthread */
+ 	rcpu->kthread =3D kthread_create_on_node(cpu_map_kthread_run, rcpu, numa,
+ 					       "cpumap/%d/map:%d", cpu, map_id);
+ 	if (IS_ERR(rcpu->kthread))
+-		goto free_ptr_ring;
++		goto free_prog;
+=20
+ 	get_cpu_map_entry(rcpu); /* 1-refcnt for being in cmap->cpu_map[] */
+ 	get_cpu_map_entry(rcpu); /* 1-refcnt for kthread */
+=20
+-	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, fd))
+-		goto free_ptr_ring;
+-
+ 	/* Make sure kthread runs on a single CPU */
+ 	kthread_bind(rcpu->kthread, cpu);
+ 	wake_up_process(rcpu->kthread);
+=20
+ 	return rcpu;
+=20
++free_prog:
++	if (rcpu->prog)
++		bpf_prog_put(rcpu->prog);
+ free_ptr_ring:
+ 	ptr_ring_cleanup(rcpu->queue, NULL);
+ free_queue:
 
-> Regards
-> 
-> Marcel
+--FkmkrVfFsRoUs1wW
+Content-Type: application/pgp-signature; name="signature.asc"
 
-MBR, Sergei
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXxH4OAAKCRA6cBh0uS2t
+rIv4AP44ZzwGIpA8U8pNJhsgDZ3Av/tSe3uXND4ijzBducFaugD+M+R2XODovdyv
+7Qq68XVFVf7OwZy8+PIsBbvnL3ideQw=
+=kmKz
+-----END PGP SIGNATURE-----
+
+--FkmkrVfFsRoUs1wW--
