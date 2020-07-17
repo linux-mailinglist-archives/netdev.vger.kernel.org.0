@@ -2,509 +2,590 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3954D2238F9
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 12:08:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CFF42238FE
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 12:08:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726079AbgGQKIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 06:08:23 -0400
-Received: from mga12.intel.com ([192.55.52.136]:63356 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725932AbgGQKIX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jul 2020 06:08:23 -0400
-IronPort-SDR: MGtdy2nH6nRADs1x8OUlm7TuTd5RhVw6t+KcMiEMMW5jlJq0YivghBx3QNPc7c/u1mqXa8Hf57
- MZkvgWGWT3QQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9684"; a="129128410"
-X-IronPort-AV: E=Sophos;i="5.75,362,1589266800"; 
-   d="gz'50?scan'50,208,50";a="129128410"
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2020 03:08:17 -0700
-IronPort-SDR: J3d7IYJwiP3yZ+oSpOivso+3nRDaGyLa8Fu8vcBq8lrYfuPykbr7JiSTQjgn6KYOdnyXlikrPL
- t+HAU+uFiRzQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,362,1589266800"; 
-   d="gz'50?scan'50,208,50";a="391352629"
-Received: from lkp-server02.sh.intel.com (HELO 50058c6ee6fc) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 17 Jul 2020 03:08:14 -0700
-Received: from kbuild by 50058c6ee6fc with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1jwNHp-0000Fq-Md; Fri, 17 Jul 2020 10:08:13 +0000
-Date:   Fri, 17 Jul 2020 18:07:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
-        alex.williamson@redhat.com, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, wanpengli@tencent.com,
-        jasowang@redhat.com
-Cc:     kbuild-all@lists.01.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, kvm@vger.kernel.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: Re: [PATCH V2 4/6] vhost_vdpa: implement IRQ offloading in vhost_vdpa
-Message-ID: <202007171710.myLeBJNH%lkp@intel.com>
-References: <1594898629-18790-5-git-send-email-lingshan.zhu@intel.com>
+        id S1726649AbgGQKIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 06:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726351AbgGQKIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 06:08:53 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F83C061755
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 03:08:53 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id h19so11901209ljg.13
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 03:08:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=WkYySlOM+mEtajuAg0eFen2TVQX4VNpKrAS1JNLRmds=;
+        b=E3yQSWSQ0cdUPg3lAilKctURJUBy3sVHTRkGTWI3zaI4L4YJT1r9/ku0pfnaVhD+bu
+         wAMDYzSLDkvuKOIzQmsejHwVF2JzsPQG61mpachjrOSzTyfZGriI0v+YHB6uhkU9psGR
+         WVQ/IqVWJ12SXkMJMoQtNTI/JelHrL1wH7hWc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=WkYySlOM+mEtajuAg0eFen2TVQX4VNpKrAS1JNLRmds=;
+        b=umyWHmUkMmYCMWLdgYVMA2th1EUtVZK64mofgiD3c2WiYW9tx0m7TF6UL+QXCIttMz
+         fgEr0wOjKiNX8Nng2lExXb0mjCWfPaa8w1FgsMeu2hzc4GvYWSis27zN5zFP/9KSLBGl
+         8PKJcHclu+nkw3Ho/EH2CeogFbpv4x636djbyCnRaNL72vrOo42UtF4tWnqWowinyv6E
+         RFTMmOrlY1kHNfWv6CfvDybZa80ZKcNvVhfYaGZvMSp9myZDCdF1C0F3Gh7+td5pSfYk
+         GhFp84ueazikFuK+WiGXs+peFoGGSi1lTTxAU3U0pXljuksPh/zBWLSeLsQIuK1ucrb4
+         VM5w==
+X-Gm-Message-State: AOAM531O0bZbc7O5e4EOwWM16hAECtpH1notazHlgPhd0twr+B9mEfly
+        wZit2+/x31gDOF0SZcRqDki/zA==
+X-Google-Smtp-Source: ABdhPJy023e5UUmvyF1EkPtf4/KUN4xvNxSkAry8qmL0UFNM2o4zlqNqNE7Q8hGRoax00xJAjys4Fw==
+X-Received: by 2002:a2e:a30f:: with SMTP id l15mr4129267lje.228.1594980531100;
+        Fri, 17 Jul 2020 03:08:51 -0700 (PDT)
+Received: from toad ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id m18sm1789329lfr.53.2020.07.17.03.08.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jul 2020 03:08:50 -0700 (PDT)
+Date:   Fri, 17 Jul 2020 12:08:47 +0200
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
+        brouer@redhat.com, daniel@iogearbox.net, toke@redhat.com,
+        lorenzo.bianconi@redhat.com, dsahern@kernel.org,
+        andrii.nakryiko@gmail.com, bpf@vger.kernel.org
+Subject: Re: [PATCH v7 bpf-next 0/9] introduce support for XDP programs in
+ CPUMAP
+Message-ID: <20200717120847.2e4a950a@toad>
+In-Reply-To: <20200717120013.0926a74e@toad>
+References: <cover.1594734381.git.lorenzo@kernel.org>
+        <20200717120013.0926a74e@toad>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="G4iJoqBmSsgzjUCe"
-Content-Disposition: inline
-In-Reply-To: <1594898629-18790-5-git-send-email-lingshan.zhu@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 17 Jul 2020 12:00:13 +0200
+Jakub Sitnicki <jakub@cloudflare.com> wrote:
 
---G4iJoqBmSsgzjUCe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> On Tue, 14 Jul 2020 15:56:33 +0200
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> 
+> > Similar to what David Ahern proposed in [1] for DEVMAPs, introduce the
+> > capability to attach and run a XDP program to CPUMAP entries.
+> > The idea behind this feature is to add the possibility to define on which CPU
+> > run the eBPF program if the underlying hw does not support RSS.
+> > I respin patch 1/6 from a previous series sent by David [2].
+> > The functionality has been tested on Marvell Espressobin, i40e and mlx5.
+> > Detailed tests results can be found here:
+> > https://github.com/xdp-project/xdp-project/blob/master/areas/cpumap/cpumap04-map-xdp-prog.org
+> > 
+> > Changes since v6:
+> > - rebase on top of bpf-next
+> > - move bpf_cpumap_val and bpf_prog in the first bpf_cpu_map_entry cache-line
+> > 
+> > Changes since v5:
+> > - move bpf_prog_put() in put_cpu_map_entry()
+> > - remove READ_ONCE(rcpu->prog) in cpu_map_bpf_prog_run_xdp
+> > - rely on bpf_prog_get_type() instead of bpf_prog_get_type_dev() in
+> >   __cpu_map_load_bpf_program()
+> > 
+> > Changes since v4:
+> > - move xdp_clear_return_frame_no_direct inside rcu section
+> > - update David Ahern's email address
+> > 
+> > Changes since v3:
+> > - fix typo in commit message
+> > - fix access to ctx->ingress_ifindex in cpumap bpf selftest
+> > 
+> > Changes since v2:
+> > - improved comments
+> > - fix return value in xdp_convert_buff_to_frame
+> > - added patch 1/9: "cpumap: use non-locked version __ptr_ring_consume_batched"
+> > - do not run kmem_cache_alloc_bulk if all frames have been consumed by the XDP
+> >   program attached to the CPUMAP entry
+> > - removed bpf_trace_printk in kselftest
+> > 
+> > Changes since v1:
+> > - added performance test results
+> > - added kselftest support
+> > - fixed memory accounting with page_pool
+> > - extended xdp_redirect_cpu_user.c to load an external program to perform
+> >   redirect
+> > - reported ifindex to attached eBPF program
+> > - moved bpf_cpumap_val definition to include/uapi/linux/bpf.h
+> > 
+> > [1] https://patchwork.ozlabs.org/project/netdev/cover/20200529220716.75383-1-dsahern@kernel.org/
+> > [2] https://patchwork.ozlabs.org/project/netdev/patch/20200513014607.40418-2-dsahern@kernel.org/
+> > 
+> > David Ahern (1):
+> >   net: refactor xdp_convert_buff_to_frame
+> > 
+> > Jesper Dangaard Brouer (1):
+> >   cpumap: use non-locked version __ptr_ring_consume_batched
+> > 
+> > Lorenzo Bianconi (7):
+> >   samples/bpf: xdp_redirect_cpu_user: do not update bpf maps in option
+> >     loop
+> >   cpumap: formalize map value as a named struct
+> >   bpf: cpumap: add the possibility to attach an eBPF program to cpumap
+> >   bpf: cpumap: implement XDP_REDIRECT for eBPF programs attached to map
+> >     entries
+> >   libbpf: add SEC name for xdp programs attached to CPUMAP
+> >   samples/bpf: xdp_redirect_cpu: load a eBPF program on cpumap
+> >   selftest: add tests for XDP programs in CPUMAP entries
+> > 
+> >  include/linux/bpf.h                           |   6 +
+> >  include/net/xdp.h                             |  41 ++--
+> >  include/trace/events/xdp.h                    |  16 +-
+> >  include/uapi/linux/bpf.h                      |  14 ++
+> >  kernel/bpf/cpumap.c                           | 162 +++++++++++---
+> >  net/core/dev.c                                |   9 +
+> >  samples/bpf/xdp_redirect_cpu_kern.c           |  25 ++-
+> >  samples/bpf/xdp_redirect_cpu_user.c           | 209 ++++++++++++++++--
+> >  tools/include/uapi/linux/bpf.h                |  14 ++
+> >  tools/lib/bpf/libbpf.c                        |   2 +
+> >  .../bpf/prog_tests/xdp_cpumap_attach.c        |  70 ++++++
+> >  .../bpf/progs/test_xdp_with_cpumap_helpers.c  |  36 +++
+> >  12 files changed, 531 insertions(+), 73 deletions(-)
+> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+> >  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
+> >   
+> 
+> This started showing up with when running ./test_progs from recent
+> bpf-next (bfdfa51702de). Any chance it is related?
+> 
+> [ 2950.440613] =============================================
+> 
+> [ 3073.281578] INFO: task cpumap/0/map:26:536 blocked for more than 860 seconds.
+> [ 3073.285492]       Tainted: G        W         5.8.0-rc4-01471-g15d51f3a516b #814
+> [ 3073.289177] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [ 3073.293021] cpumap/0/map:26 D    0   536      2 0x00004000
+> [ 3073.295755] Call Trace:
+> [ 3073.297143]  __schedule+0x5ad/0xf10
+> [ 3073.299032]  ? pci_mmcfg_check_reserved+0xd0/0xd0
+> [ 3073.301416]  ? static_obj+0x31/0x80
+> [ 3073.303277]  ? mark_held_locks+0x24/0x90
+> [ 3073.305313]  ? cpu_map_update_elem+0x6d0/0x6d0
+> [ 3073.307544]  schedule+0x6f/0x160
+> [ 3073.309282]  schedule_preempt_disabled+0x14/0x20
+> [ 3073.311593]  kthread+0x175/0x240
+> [ 3073.313299]  ? kthread_create_on_node+0xd0/0xd0
+> [ 3073.315106]  ret_from_fork+0x1f/0x30
+> [ 3073.316365]
+>                Showing all locks held in the system:
+> [ 3073.318423] 1 lock held by khungtaskd/33:
+> [ 3073.319642]  #0: ffffffff82d246a0 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x28/0x1c3
+> 
+> [ 3073.322249] =============================================
 
-Hi Zhu,
+'test_maps' looks sad :-( Not sure if related.
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on vhost/linux-next]
-[also build test WARNING on kvm/linux-next linus/master v5.8-rc5 next-20200716]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Zhu-Lingshan/IRQ-offloading-for-vDPA/20200716-192910
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
-config: openrisc-randconfig-r016-20200717 (attached as .config)
-compiler: or1k-linux-gcc (GCC) 9.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # save the attached .config to linux build tree
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=openrisc 
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/vhost/vdpa.c: In function 'vhost_vdpa_setup_vq_irq':
->> drivers/vhost/vdpa.c:122:6: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
-     122 |  int ret;
-         |      ^~~
-
-vim +/ret +122 drivers/vhost/vdpa.c
-
-   117	
-   118	static void vhost_vdpa_setup_vq_irq(struct vdpa_device *dev, int qid, int irq)
-   119	{
-   120		struct vhost_vdpa *v = vdpa_get_drvdata(dev);
-   121		struct vhost_virtqueue *vq = &v->vqs[qid];
- > 122		int ret;
-   123	
-   124		spin_lock(&vq->call_ctx.ctx_lock);
-   125		if (!vq->call_ctx.ctx) {
-   126			spin_unlock(&vq->call_ctx.ctx_lock);
-   127			return;
-   128		}
-   129	
-   130		vq->call_ctx.producer.token = vq->call_ctx.ctx;
-   131		vq->call_ctx.producer.irq = irq;
-   132		ret = irq_bypass_register_producer(&vq->call_ctx.producer);
-   133		spin_unlock(&vq->call_ctx.ctx_lock);
-   134	}
-   135	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
---G4iJoqBmSsgzjUCe
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
-
-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
-
---G4iJoqBmSsgzjUCe--
+bash-5.0# ./test_maps
+Fork 1024 tasks to 'test_update_delete'
+Fork 1024 tasks to 'test_update_delete'
+Fork 100 tasks to 'test_hashmap'
+Fork 100 tasks to 'test_hashmap_percpu'
+Fork 100 tasks to 'test_hashmap_sizes'
+[   66.961150] test_maps invoked oom-killer: gfp_mask=0x100cca(GFP_HIGHUSER_MOVABLE), order=0, oom_score_adj=0
+[   66.962490] CPU: 3 PID: 3263 Comm: test_maps Not tainted 5.8.0-rc4-01471-g15d51f3a516b #814
+[   66.963617] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
+[   66.965958] Call Trace:
+[   66.966404]  dump_stack+0x9e/0xe0
+[   66.966978]  dump_header+0x89/0x49a
+[   66.967624]  oom_kill_process.cold+0xb/0x10
+[   66.968379]  out_of_memory+0x1b1/0x820
+[   66.969060]  ? oom_killer_disable+0x210/0x210
+[   66.969833]  __alloc_pages_slowpath.constprop.0+0x125f/0x1460
+[   66.970852]  ? warn_alloc+0x120/0x120
+[   66.971508]  ? __alloc_pages_nodemask+0x30f/0x5c0
+[   66.972237]  __alloc_pages_nodemask+0x4fd/0x5c0
+[   66.972863]  ? __alloc_pages_slowpath.constprop.0+0x1460/0x1460
+[   66.973681]  ? find_held_lock+0x85/0xa0
+[   66.974223]  ? lock_downgrade+0x360/0x360
+[   66.974760]  ? policy_nodemask+0x19/0x90
+[   66.975266]  ? policy_node+0x56/0x60
+[   66.975719]  pagecache_get_page+0xf7/0x360
+[   66.976259]  filemap_fault+0xe4a/0xfe0
+[   66.976743]  ? read_cache_page_gfp+0x20/0x20
+[   66.977274]  ? find_held_lock+0x85/0xa0
+[   66.977792]  ? filemap_page_mkwrite+0x140/0x140
+[   66.978383]  __do_fault+0x6a/0x1e0
+[   66.978789]  handle_mm_fault+0x16eb/0x1fb0
+[   66.979319]  ? copy_page_range+0xf80/0xf80
+[   66.979755]  ? vmacache_find+0xba/0x100
+[   66.980166]  do_user_addr_fault+0x2ce/0x5ed
+[   66.980625]  exc_page_fault+0x5e/0xc0
+[   66.981005]  ? asm_exc_page_fault+0x8/0x30
+[   66.981445]  asm_exc_page_fault+0x1e/0x30
+[   66.981860] RIP: 0033:0x7f33d40901bd
+[   66.982248] Code: Bad RIP value.
+[   66.982579] RSP: 002b:00007ffe84e1dd18 EFLAGS: 00010202
+[   66.983143] RAX: fffffffffffffff4 RBX: 0000000000000002 RCX: 00007f33d40901bd
+[   66.984038] RDX: 0000000000000078 RSI: 00007ffe84e1dd50 RDI: 0000000000000000
+[   66.984831] RBP: 00007ffe84e1dd30 R08: 00007ffe84e1dd50 R09: 00007ffe84e1dd50
+[   66.985619] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000020000
+[   66.986399] R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000060
+[   66.987656] Mem-Info:
+[   66.987924] active_anon:1424 inactive_anon:126 isolated_anon:0
+[   66.987924]  active_file:53 inactive_file:33 isolated_file:0
+[   66.987924]  unevictable:0 dirty:0 writeback:0
+[   66.987924]  slab_reclaimable:11120 slab_unreclaimable:98031
+[   66.987924]  mapped:88 shmem:137 pagetables:120 bounce:0
+[   66.987924]  free:21175 free_pcp:725 free_cma:0
+[   66.993308] Node 0 active_anon:5696kB inactive_anon:504kB active_file:212kB inactive_file:132kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:352kB dirty:0kB writeback:0kB shmem:548kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB all_unreclaimable? yes
+[   66.997665] Node 0 DMA free:13708kB min:308kB low:384kB high:460kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15992kB managed:15908kB mlocked:0kB kernel_stack:96kB pagetables:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+[   67.002330] lowmem_reserve[]: 0 2925 3354 3354
+[   67.003090] Node 0 DMA32 free:60008kB min:58668kB low:73332kB high:87996kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:3129212kB managed:3001752kB mlocked:0kB kernel_stack:25536kB pagetables:292kB bounce:0kB free_pcp:844kB local_pcp:248kB free_cma:0kB
+[   67.008157] lowmem_reserve[]: 0 0 428 428
+[   67.008843] Node 0 Normal free:9528kB min:8600kB low:10748kB high:12896kB reserved_highatomic:2048KB active_anon:5404kB inactive_anon:504kB active_file:336kB inactive_file:0kB unevictable:0kB writepending:0kB present:1048576kB managed:439260kB mlocked:0kB kernel_stack:5824kB pagetables:128kB bounce:0kB free_pcp:1596kB local_pcp:660kB free_cma:0kB
+[   67.014007] lowmem_reserve[]: 0 0 0 0
+[   67.014673] Node 0 DMA: 1*4kB (U) 1*8kB (U) 2*16kB (UE) 1*32kB (U) 1*64kB (E) 2*128kB (UE) 2*256kB (UE) 1*512kB (E) 2*1024kB (UE) 3*2048kB (UME) 1*4096kB (M) = 13708kB
+[   67.016793] Node 0 DMA32: 8*4kB (UM) 5*8kB (UM) 4*16kB (UME) 8*32kB (UME) 7*64kB (ME) 8*128kB (UME) 6*256kB (UM) 8*512kB (ME) 3*1024kB (M) 2*2048kB (ME) 11*4096kB (M) = 59720kB
+[   67.018915] Node 0 Normal: 256*4kB (UME) 149*8kB (UM) 89*16kB (UM) 41*32kB (UM) 20*64kB (UMH) 8*128kB (UM) 2*256kB (MH) 1*512kB (H) 1*1024kB (H) 0*2048kB 0*4096kB = 9304kB
+[   67.020673] Node 0 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=1048576kB
+[   67.021811] Node 0 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=2048kB
+[   67.022768] 184 total pagecache pages
+[   67.023418] 0 pages in swap cache
+[   67.023912] Swap cache stats: add 0, delete 0, find 0/0
+[   67.024726] Free swap  = 0kB
+[   67.025150] Total swap = 0kB
+[   67.025530] 1048445 pages RAM
+[   67.025865] 0 pages HighMem/MovableOnly
+[   67.026510] 184215 pages reserved
+[   67.027002] 0 pages cma reserved
+[   67.027542] 0 pages hwpoisoned
+[   67.027928] Unreclaimable slab info:
+[   67.028500] Name                      Used          Total
+[   67.029057] 9p-fcall-cache           297KB        445KB
+[   67.029793] 9p-fcall-cache            49KB         49KB
+[   67.030375] 9p-fcall-cache           123KB        272KB
+[   67.030897] 9p-fcall-cache           346KB        495KB
+[   67.031539] p9_req_t                  16KB         16KB
+[   67.032326] fib6_nodes                 4KB          4KB
+[   67.032950] RAWv6                     31KB         31KB
+[   67.033960] mqueue_inode_cache         31KB         31KB
+[   67.034708] ext4_bio_post_read_ctx         15KB         15KB
+[   67.035647] bio-2                      7KB          7KB
+[   67.036471] UNIX                     372KB        372KB
+[   67.037769] tcp_bind_bucket            4KB          4KB
+[   67.038701] ip_fib_trie                4KB          4KB
+[   67.039496] ip_fib_alias               3KB          3KB
+[   67.040414] ip_dst_cache               4KB          4KB
+[   67.041365] RAW                       31KB         31KB
+[   67.042341] UDP                      121KB        121KB
+[   67.043540] tw_sock_TCP                7KB          7KB
+[   67.044491] request_sock_TCP           7KB          7KB
+[   67.045447] TCP                       58KB         58KB
+[   67.046445] hugetlbfs_inode_cache         31KB         31KB
+[   67.047443] bio-1                     15KB         15KB
+[   67.048375] eventpoll_pwq             23KB         23KB
+[   67.049388] eventpoll_epi             35KB         35KB
+[   67.050361] inotify_inode_mark          3KB          3KB
+[   67.051399] request_queue             62KB         62KB
+[   67.052563] blkdev_ioc                 7KB          7KB
+[   67.053623] bio-0                     20KB         20KB
+[   67.054603] biovec-max               327KB        327KB
+[   67.055593] skbuff_fclone_cache         15KB         15KB
+[   67.056627] skbuff_head_cache        281KB        312KB
+[   67.057868] file_lock_cache           31KB         31KB
+[   67.058878] file_lock_ctx             15KB         15KB
+[   67.059874] fsnotify_mark_connector          4KB          4KB
+[   67.060957] task_delay_info          451KB        451KB
+[   67.061644] proc_dir_entry           125KB        125KB
+[   67.062404] pde_opener                59KB         59KB
+[   67.063696] seq_file                 210KB        241KB
+[   67.064759] sigqueue                  19KB         19KB
+[   67.065763] shmem_inode_cache        795KB        795KB
+[   67.066778] kernfs_node_cache       2565KB       2565KB
+[   67.067762] mnt_cache                 31KB         31KB
+[   67.068798] filp                   11820KB      11820KB
+[   67.069807] names_cache              327KB        476KB
+[   67.070795] key_jar                   15KB         15KB
+[   67.071787] nsproxy                    3KB          3KB
+[   67.072802] vm_area_struct          3236KB       3400KB
+[   67.073773] mm_struct                870KB       1154KB
+[   67.074787] fs_cache                 232KB        264KB
+[   67.076008] files_cache              860KB        972KB
+[   67.076969] signal_cache            2626KB       2686KB
+[   67.077911] sighand_cache           2370KB       2405KB
+[   67.078963] task_struct             8564KB       8564KB
+[   67.080472] cred_jar                 392KB        420KB
+[   67.081767] anon_vma_chain          1191KB       1413KB
+[   67.082736] anon_vma                 200KB        220KB
+[   67.083805] pid                      593KB        640KB
+[   67.084733] Acpi-Operand             265KB        308KB
+[   67.085598] Acpi-ParseExt             47KB         47KB
+[   67.086504] Acpi-Parse               189KB        205KB
+[   67.091509] Acpi-State               200KB        216KB
+[   67.092511] Acpi-Namespace            24KB         24KB
+[   67.093388] numa_policy                3KB          3KB
+[   67.094249] trace_event_file         151KB        151KB
+[   67.095076] ftrace_event_field        196KB        196KB
+[   67.099230] pool_workqueue            16KB         16KB
+[   67.100094] vmap_area                567KB        567KB
+[   67.105224] page->ptl                385KB        433KB
+[   67.106079] kmemleak_scan_area        286KB        286KB
+[   67.107190] kmemleak_object       163919KB     168558KB
+[   67.108081] kmalloc-8k             21840KB      21840KB
+[   67.108932] kmalloc-4k             24592KB      24592KB
+[   67.114003] kmalloc-2k             15684KB      15684KB
+[   67.114896] kmalloc-1k             44936KB      44936KB
+[   67.121018] kmalloc-512             4192KB       4192KB
+[   67.122212] kmalloc-256             1128KB       1128KB
+[   67.123089] kmalloc-192             5008KB       5008KB
+[   67.128978] kmalloc-128              356KB        356KB
+[   67.129877] kmalloc-96               145KB        156KB
+[   67.132262] kmalloc-64              1032KB       1032KB
+[   67.133085] kmalloc-32               233KB        244KB
+[   67.138993] kmalloc-16               108KB        108KB
+[   67.139847] kmalloc-8                440KB        533KB
+[   67.142221] kmem_cache_node           43KB         43KB
+[   67.143038] kmem_cache               140KB        140KB
+[   67.149977] Tasks state (memory values in pages):
+[   67.150743] [  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name
+[   67.153263] [    103]     0   103     7766     1042    81920        0         -1000 systemd-udevd
+[   67.157980] [    194]     0   194     1032      136    40960        0             0 bash
+[   67.161986] [    195]     0   195      758       40    45056        0             0 test_maps
+[   67.167074] [   3178]     0  3178      758       39    45056        0             0 test_maps
+[   67.170572] [   3186]     0  3186      758       39    45056        0             0 test_maps
+[   67.172052] [   3205]     0  3205      758       39    45056        0             0 test_maps
+[   67.177580] [   3213]     0  3213      758       39    45056        0             0 test_maps
+[   67.179026] [   3221]     0  3221      758       39    45056        0             0 test_maps
+[   67.184143] [   3222]     0  3222      758       39    45056        0             0 test_maps
+[   67.187571] [   3230]     0  3230      758       39    45056        0             0 test_maps
+[   67.189053] [   3241]     0  3241      758       39    45056        0             0 test_maps
+[   67.194580] [   3243]     0  3243      758       39    45056        0             0 test_maps
+[   67.196058] [   3250]     0  3250      758       39    45056        0             0 test_maps
+[   67.201124] [   3263]     0  3263      758       39    45056        0             0 test_maps
+[   67.206581] [   3298]     0  3298      758       39    45056        0             0 test_maps
+[   67.210563] oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=/,mems_allowed=0,global_oom,task_memcg=/,task=bash,pid=194,uid=0
+[   67.214666] Out of memory: Killed process 194 (bash) total-vm:4128kB, anon-rss:544kB, file-rss:0kB, shmem-rss:0kB, UID:0 pgtables:40kB oom_score_adj:0
+[   67.226601] oom_reaper: reaped process 3298 (test_maps), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+[   67.228355] oom_reaper: reaped process 3178 (test_maps), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+[   67.234148] oom_reaper: reaped process 3222 (test_maps), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+[   67.236873] oom_reaper: reaped process 3213 (test_maps), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+[   67.239028] oom_reaper: reaped process 3186 (test_maps), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+[   67.268146] oom_reaper: reaped process 3221 (test_maps), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+[   67.275959] kthreadd invoked oom-killer: gfp_mask=0x40cc0(GFP_KERNEL|__GFP_COMP), order=1, oom_score_adj=0
+[   67.277227] CPU: 0 PID: 2 Comm: kthreadd Not tainted 5.8.0-rc4-01471-g15d51f3a516b #814
+[   67.278278] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
+[   67.279895] Call Trace:
+[   67.280250]  dump_stack+0x9e/0xe0
+[   67.280674]  dump_header+0x89/0x49a
+[   67.281113]  out_of_memory.cold+0xa/0xbb
+[   67.281608]  ? oom_killer_disable+0x210/0x210
+[   67.282157]  __alloc_pages_slowpath.constprop.0+0x125f/0x1460
+[   67.282894]  ? warn_alloc+0x120/0x120
+[   67.283377]  ? __alloc_pages_nodemask+0x30f/0x5c0
+[   67.283925]  __alloc_pages_nodemask+0x4fd/0x5c0
+[   67.284446]  ? __alloc_pages_slowpath.constprop.0+0x1460/0x1460
+[   67.285146]  alloc_slab_page+0x2e/0x7a0
+[   67.285590]  ? new_slab+0x22e/0x2b0
+[   67.285999]  new_slab+0x276/0x2b0
+[   67.286402]  ___slab_alloc+0x4ba/0x6d0
+[   67.286892]  ? copy_process+0x256d/0x2f80
+[   67.287391]  ? lock_downgrade+0x360/0x360
+[   67.287908]  ? copy_process+0x256d/0x2f80
+[   67.288482]  ? __slab_alloc.isra.0+0x4b/0x90
+[   67.289207]  __slab_alloc.isra.0+0x4b/0x90
+[   67.289874]  ? copy_process+0x256d/0x2f80
+[   67.290565]  kmem_cache_alloc_node+0xb7/0x330
+[   67.291163]  ? trace_hardirqs_on+0x1e/0x130
+[   67.291699]  copy_process+0x256d/0x2f80
+[   67.292231]  ? mark_lock+0x13f/0xc30
+[   67.292746]  ? find_held_lock+0x85/0xa0
+[   67.293314]  ? __cleanup_sighand+0x60/0x60
+[   67.293889]  _do_fork+0xcf/0x840
+[   67.294354]  ? copy_init_mm+0x20/0x20
+[   67.294856]  ? lockdep_hardirqs_on_prepare+0x14c/0x240
+[   67.295530]  ? _raw_spin_unlock_irq+0x24/0x50
+[   67.296036]  ? trace_hardirqs_on+0x1e/0x130
+[   67.296529]  ? preempt_count_sub+0x14/0xc0
+[   67.297010]  ? lock_acquire+0x133/0x4e0
+[   67.297467]  kernel_thread+0xa8/0xe0
+[   67.297886]  ? legacy_clone_args_valid+0x30/0x30
+[   67.298429]  ? kthread_create_on_node+0xd0/0xd0
+[   67.298966]  ? do_raw_spin_unlock+0xa3/0x130
+[   67.299458]  ? preempt_count_sub+0x14/0xc0
+[   67.299907]  kthreadd+0x2be/0x340
+[   67.300290]  ? kthread_create_on_cpu+0x120/0x120
+[   67.300775]  ? lockdep_hardirqs_on_prepare+0x14c/0x240
+[   67.301324]  ? _raw_spin_unlock_irq+0x24/0x50
+[   67.301771]  ? trace_hardirqs_on+0x1e/0x130
+[   67.302206]  ? kthread_create_on_cpu+0x120/0x120
+[   67.302685]  ret_from_fork+0x1f/0x30
+[   67.303234] Mem-Info:
+[   67.303485] active_anon:1210 inactive_anon:126 isolated_anon:0
+[   67.303485]  active_file:5 inactive_file:12 isolated_file:0
+[   67.303485]  unevictable:0 dirty:0 writeback:0
+[   67.303485]  slab_reclaimable:11187 slab_unreclaimable:98423
+[   67.303485]  mapped:12 shmem:137 pagetables:70 bounce:0
+[   67.303485]  free:20722 free_pcp:1 free_cma:0
+[   67.307090] Node 0 active_anon:4840kB inactive_anon:504kB active_file:20kB inactive_file:48kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:48kB dirty:0kB writeback:0kB shmem:548kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB all_unreclaimable? yes
+[   67.309863] Node 0 DMA free:13708kB min:308kB low:384kB high:460kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15992kB managed:15908kB mlocked:0kB kernel_stack:96kB pagetables:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+[   67.312641] lowmem_reserve[]: 0 2925 3354 3354
+[   67.313081] Node 0 DMA32 free:60868kB min:58668kB low:73332kB high:87996kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:3129212kB managed:3001752kB mlocked:0kB kernel_stack:25824kB pagetables:240kB bounce:0kB free_pcp:248kB local_pcp:0kB free_cma:0kB
+[   67.316022] lowmem_reserve[]: 0 0 428 428
+[   67.316560] Node 0 Normal free:8312kB min:8600kB low:10748kB high:12896kB reserved_highatomic:0KB active_anon:4916kB inactive_anon:504kB active_file:308kB inactive_file:32kB unevictable:0kB writepending:0kB present:1048576kB managed:439260kB mlocked:0kB kernel_stack:8192kB pagetables:40kB bounce:0kB free_pcp:392kB local_pcp:0kB free_cma:0kB
+[   67.319987] lowmem_reserve[]: 0 0 0 0
+[   67.320421] Node 0 DMA: 1*4kB (U) 1*8kB (U) 2*16kB (UE) 1*32kB (U) 1*64kB (E) 2*128kB (UE) 2*256kB (UE) 1*512kB (E) 2*1024kB (UE) 3*2048kB (UME) 1*4096kB (M) = 13708kB
+[   67.321913] Node 0 DMA32: 6*4kB (M) 26*8kB (UM) 29*16kB (UM) 11*32kB (UME) 9*64kB (UME) 10*128kB (UME) 6*256kB (UM) 7*512kB (ME) 4*1024kB (M) 2*2048kB (ME) 11*4096kB (M) = 61272kB
+[   67.323562] Node 0 Normal: 488*4kB (UME) 251*8kB (UM) 86*16kB (UM) 37*32kB (UM) 18*64kB (UM) 6*128kB (M) 4*256kB (UM) 0*512kB 0*1024kB 0*2048kB 0*4096kB = 9464kB
+[   67.325773] Node 0 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=1048576kB
+[   67.326999] Node 0 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=2048kB
+[   67.328287] 155 total pagecache pages
+[   67.328836] 0 pages in swap cache
+[   67.329365] Swap cache stats: add 0, delete 0, find 0/0
+[   67.330140] Free swap  = 0kB
+[   67.330596] Total swap = 0kB
+[   67.331043] 1048445 pages RAM
+[   67.331478] 0 pages HighMem/MovableOnly
+[   67.332080] 184215 pages reserved
+[   67.332617] 0 pages cma reserved
+[   67.333114] 0 pages hwpoisoned
+[   67.333816] Unreclaimable slab info:
+[   67.334439] Name                      Used          Total
+[   67.335297] 9p-fcall-cache           297KB        445KB
+[   67.336094] 9p-fcall-cache            49KB         49KB
+[   67.336933] 9p-fcall-cache           123KB        272KB
+[   67.337751] 9p-fcall-cache           445KB        495KB
+[   67.338572] p9_req_t                  16KB         16KB
+[   67.339391] fib6_nodes                 4KB          4KB
+[   67.340229] RAWv6                     31KB         31KB
+[   67.341033] mqueue_inode_cache         31KB         31KB
+[   67.341997] ext4_bio_post_read_ctx         15KB         15KB
+[   67.342835] bio-2                      7KB          7KB
+[   67.343695] UNIX                     372KB        372KB
+[   67.344560] tcp_bind_bucket            4KB          4KB
+[   67.345368] ip_fib_trie                4KB          4KB
+[   67.346190] ip_fib_alias               3KB          3KB
+[   67.346997] ip_dst_cache               4KB          4KB
+[   67.347819] RAW                       31KB         31KB
+[   67.348668] UDP                      121KB        121KB
+[   67.349856] tw_sock_TCP                7KB          7KB
+[   67.350723] request_sock_TCP           7KB          7KB
+[   67.351567] TCP                       58KB         58KB
+[   67.352412] hugetlbfs_inode_cache         31KB         31KB
+[   67.353319] bio-1                     15KB         15KB
+[   67.354116] eventpoll_pwq             23KB         23KB
+[   67.354919] eventpoll_epi             35KB         35KB
+[   67.355735] inotify_inode_mark          3KB          3KB
+[   67.356618] request_queue             62KB         62KB
+[   67.357680] blkdev_ioc                 7KB          7KB
+[   67.358569] bio-0                     20KB         20KB
+[   67.359520] biovec-max               327KB        327KB
+[   67.360396] skbuff_fclone_cache         15KB         15KB
+[   67.361277] skbuff_head_cache        281KB        312KB
+[   67.362116] file_lock_cache           31KB         31KB
+[   67.362967] file_lock_ctx             15KB         15KB
+[   67.363597] fsnotify_mark_connector          4KB          4KB
+[   67.364279] task_delay_info          455KB        455KB
+[   67.364832] proc_dir_entry           125KB        125KB
+[   67.365663] pde_opener                59KB         59KB
+[   67.366265] seq_file                 210KB        241KB
+[   67.366805] sigqueue                  19KB         19KB
+[   67.367386] shmem_inode_cache        795KB        795KB
+[   67.367909] kernfs_node_cache       2565KB       2565KB
+[   67.368489] mnt_cache                 31KB         31KB
+[   67.369014] filp                   11820KB      11820KB
+[   67.369585] names_cache              327KB        476KB
+[   67.370113] key_jar                   15KB         15KB
+[   67.370664] nsproxy                    3KB          3KB
+[   67.371230] vm_area_struct          2870KB       3100KB
+[   67.371754] mm_struct                831KB       1154KB
+[   67.372337] fs_cache                 176KB        212KB
+[   67.372862] files_cache              843KB        956KB
+[   67.373625] signal_cache            2809KB       2809KB
+[   67.374210] sighand_cache           2615KB       2615KB
+[   67.374750] task_struct             9207KB       9207KB
+[   67.375335] cred_jar                 392KB        420KB
+[   67.375856] anon_vma_chain          1058KB       1291KB
+[   67.376437] anon_vma                 144KB        160KB
+[   67.376952] pid                      609KB        640KB
+[   67.377519] Acpi-Operand             265KB        308KB
+[   67.378063] Acpi-ParseExt             47KB         47KB
+[   67.378645] Acpi-Parse               189KB        205KB
+[   67.379216] Acpi-State               200KB        216KB
+[   67.379747] Acpi-Namespace            24KB         24KB
+[   67.380345] numa_policy                3KB          3KB
+[   67.380870] trace_event_file         151KB        151KB
+[   67.381649] ftrace_event_field        196KB        196KB
+[   67.382199] pool_workqueue            16KB         16KB
+[   67.382722] vmap_area                567KB        567KB
+[   67.383261] page->ptl                384KB        429KB
+[   67.383781] kmemleak_scan_area        286KB        286KB
+[   67.384527] kmemleak_object       162939KB     167943KB
+[   67.385080] kmalloc-8k             21840KB      21840KB
+[   67.385618] kmalloc-4k             25736KB      25736KB
+[   67.386158] kmalloc-2k             15684KB      15684KB
+[   67.386679] kmalloc-1k             44936KB      44936KB
+[   67.387208] kmalloc-512             4192KB       4192KB
+[   67.387826] kmalloc-256             1184KB       1184KB
+[   67.388514] kmalloc-192             5032KB       5032KB
+[   67.389397] kmalloc-128              356KB        356KB
+[   67.390100] kmalloc-96               145KB        156KB
+[   67.390775] kmalloc-64              1052KB       1052KB
+[   67.391489] kmalloc-32               233KB        244KB
+[   67.392261] kmalloc-16               108KB        108KB
+[   67.392964] kmalloc-8                440KB        533KB
+[   67.393657] kmem_cache_node           43KB         43KB
+[   67.394424] kmem_cache               140KB        140KB
+[   67.395296] Tasks state (memory values in pages):
+[   67.395889] [  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name
+[   67.397031] [    103]     0   103     7766     1042    81920        0         -1000 systemd-udevd
+[   67.398411] Out of memory and no killable processes...
+[   67.399203] Kernel panic - not syncing: System is deadlocked on memory
+[   67.400146] CPU: 0 PID: 2 Comm: kthreadd Not tainted 5.8.0-rc4-01471-g15d51f3a516b #814
+[   67.401254] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
+[   67.403154] Call Trace:
+[   67.403536]  dump_stack+0x9e/0xe0
+[   67.404021]  panic+0x1ab/0x3ae
+[   67.404497]  ? __warn_printk+0xf3/0xf3
+[   67.405075]  ? __rcu_read_unlock+0x58/0x250
+[   67.405705]  ? out_of_memory.cold+0x2d/0xbb
+[   67.406272]  ? out_of_memory.cold+0x1f/0xbb
+[   67.406910]  out_of_memory.cold+0x45/0xbb
+[   67.407540]  ? oom_killer_disable+0x210/0x210
+[   67.408225]  __alloc_pages_slowpath.constprop.0+0x125f/0x1460
+[   67.409178]  ? warn_alloc+0x120/0x120
+[   67.409849]  ? __alloc_pages_nodemask+0x30f/0x5c0
+[   67.410722]  __alloc_pages_nodemask+0x4fd/0x5c0
+[   67.411533]  ? __alloc_pages_slowpath.constprop.0+0x1460/0x1460
+[   67.412641]  alloc_slab_page+0x2e/0x7a0
+[   67.413345]  ? new_slab+0x22e/0x2b0
+[   67.413883]  new_slab+0x276/0x2b0
+[   67.414534]  ___slab_alloc+0x4ba/0x6d0
+[   67.415221]  ? copy_process+0x256d/0x2f80
+[   67.415930]  ? lock_downgrade+0x360/0x360
+[   67.416659]  ? copy_process+0x256d/0x2f80
+[   67.417390]  ? __slab_alloc.isra.0+0x4b/0x90
+[   67.418171]  __slab_alloc.isra.0+0x4b/0x90
+[   67.418903]  ? copy_process+0x256d/0x2f80
+[   67.419600]  kmem_cache_alloc_node+0xb7/0x330
+[   67.420339]  ? trace_hardirqs_on+0x1e/0x130
+[   67.421078]  copy_process+0x256d/0x2f80
+[   67.421722]  ? mark_lock+0x13f/0xc30
+[   67.422284]  ? find_held_lock+0x85/0xa0
+[   67.422838]  ? __cleanup_sighand+0x60/0x60
+[   67.423515]  _do_fork+0xcf/0x840
+[   67.423978]  ? copy_init_mm+0x20/0x20
+[   67.424496]  ? lockdep_hardirqs_on_prepare+0x14c/0x240
+[   67.425321]  ? _raw_spin_unlock_irq+0x24/0x50
+[   67.426018]  ? trace_hardirqs_on+0x1e/0x130
+[   67.426702]  ? preempt_count_sub+0x14/0xc0
+[   67.427328]  ? lock_acquire+0x133/0x4e0
+[   67.427938]  kernel_thread+0xa8/0xe0
+[   67.428523]  ? legacy_clone_args_valid+0x30/0x30
+[   67.429283]  ? kthread_create_on_node+0xd0/0xd0
+[   67.430026]  ? do_raw_spin_unlock+0xa3/0x130
+[   67.430708]  ? preempt_count_sub+0x14/0xc0
+[   67.431402]  kthreadd+0x2be/0x340
+[   67.431958]  ? kthread_create_on_cpu+0x120/0x120
+[   67.432726]  ? lockdep_hardirqs_on_prepare+0x14c/0x240
+[   67.433575]  ? _raw_spin_unlock_irq+0x24/0x50
+[   67.434288]  ? trace_hardirqs_on+0x1e/0x130
+[   67.434976]  ? kthread_create_on_cpu+0x120/0x120
+[   67.435746]  ret_from_fork+0x1f/0x30
+[   67.436548] Kernel Offset: disabled
