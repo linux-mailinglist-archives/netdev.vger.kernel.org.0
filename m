@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21CBA22396A
+	by mail.lfdr.de (Postfix) with ESMTP id 273BA22396B
 	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 12:36:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726293AbgGQKgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 06:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36202 "EHLO
+        id S1726559AbgGQKgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 06:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726720AbgGQKf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 06:35:59 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F98C061755
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 03:35:58 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id j11so12020730ljo.7
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 03:35:58 -0700 (PDT)
+        with ESMTP id S1726759AbgGQKgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 06:36:00 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A204C061755
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 03:36:00 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id b25so12019079ljp.6
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 03:36:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=X5grnw5yA7a34ptPfpYZRmkNxHU+5rkM7nQ6am7lk8c=;
-        b=XBG78jnwqMDVnAAaKrHTqDPFRvqvWKnPnA+TJDM/54cZRaqb0s/wXUcVGkb08ayXeh
-         7ifzOMA6GOvuQ8qC1D2rDMpMvY8hr1J+aQ+wOcLmjCEdlMEb4+DUvzEDOQZoFg5nU671
-         bFlG7qxR6+79bKKLrfZZOrSrsPJ1owwiVT7eU=
+        bh=eri9q6YTTJuTcDHCnqTQ8a4HARgJ3515jt9CHeDHUoQ=;
+        b=aRfP1xdqjqlWmGbPARg7nbKtz8w2jRhfnEJ2769OvRF3mVJKVSt9U8RkZTxb5BCEHs
+         PGmifqSiM3F6NG0dN7vKOB8Da18wL+ceaOhhXUfoAKFmZvs6exvetnvjusfs+7ivx23v
+         OT//Vp5U/L+tpalwTxkl7mNThAVVEYZGnMTqs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=X5grnw5yA7a34ptPfpYZRmkNxHU+5rkM7nQ6am7lk8c=;
-        b=T3fMUkYjbjD+fOEYuswD02+T7NiX89M+K5ol0203lQ/udv28HqZs9nJmCWP0ePV0Wa
-         bOzhcS5vYpu+RVIT/LtmWlZLeo+7BAah9twXeahEbPRvjxYv3JUYCs85bIPQEt6wLw4k
-         Ywf2cWU3587gYmucJoEKfK9uXHv0XzPvM99J0ZAO5mMYIBse0fM+Cj8yp/KnPX3KNcRn
-         tfjwPTxsvGc8UmiSb2pd/FjMuyfXOK0VAtrYLEw0XgktouPZMhjK/kNPN+FXWCuCnM+5
-         MEjOW3A3ScE7C9fQzDyuY+mMhreN8GRU/pAFpNs/iDVQqyEHUEhZcKUvaJtUdTbH2qeS
-         zXLg==
-X-Gm-Message-State: AOAM532zxUIhoIv0IyxlW9FrWQcjzyRrQsDD+gp0W4j3TF/2tuzRmLgQ
-        1m48ZEs/plYJtmYnHc/8hlqEsGcHxOugFw==
-X-Google-Smtp-Source: ABdhPJwbpEgdIjJeEQGDVqtsZGaOZcSMPRFXls1XxR6F6tVOY2yC89rT9TN9PoOWCbGXWVuZQps03g==
-X-Received: by 2002:a2e:5141:: with SMTP id b1mr3924747lje.336.1594982157197;
-        Fri, 17 Jul 2020 03:35:57 -0700 (PDT)
+        bh=eri9q6YTTJuTcDHCnqTQ8a4HARgJ3515jt9CHeDHUoQ=;
+        b=b9cWIy4fD6jOhAMtHBw7q9eFIiSYw+gOdrJPrkujisNyohq5AV3o1pJVYFmjsT6U1T
+         5ZrovBwN+EeIl2ELo36PIgLpH4w/ajM45IVKsh9qTenkUKHrPV+IetGLANOKA4SYIOdC
+         Y/cMW9GamrkQk3OeMxqrySoa98KMdTRAM5FD1Y1e1lkvDoxB6ZMlZi2wyVSGG6RX6w8L
+         yA+BiTuziwdWaHOWSDN9+wMWXodKjBGa3lXngjAkzdvrpWXIWwzNjN5gxHBASy4HGw48
+         ENTGc2AzIfVjcOdEjV8f/oadkigRfWcIBgHupzt8xuoPeeBijQt8LILSL+4GPoKDmt1/
+         B/0g==
+X-Gm-Message-State: AOAM531YkDT8J/n+f0pEthSYdiOGeS1275aUOLtFgvZJim3BFF/U+yR1
+        wZbyT5eCrzuPTktDhPHbSjDHbwiGDKgvEQ==
+X-Google-Smtp-Source: ABdhPJzAE0yA8Ogvtj+DgtKPwTkF9gZVzpjzcuW3we90NMwts5efYis+psAEeaAW43xqtskOZqlYWQ==
+X-Received: by 2002:a2e:8357:: with SMTP id l23mr3921650ljh.290.1594982158657;
+        Fri, 17 Jul 2020 03:35:58 -0700 (PDT)
 Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id p8sm1871754ljn.117.2020.07.17.03.35.56
+        by smtp.gmail.com with ESMTPSA id 11sm1568806ljw.69.2020.07.17.03.35.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 03:35:56 -0700 (PDT)
+        Fri, 17 Jul 2020 03:35:58 -0700 (PDT)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: [PATCH bpf-next v5 12/15] libbpf: Add support for SK_LOOKUP program type
-Date:   Fri, 17 Jul 2020 12:35:33 +0200
-Message-Id: <20200717103536.397595-13-jakub@cloudflare.com>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH bpf-next v5 13/15] tools/bpftool: Add name mappings for SK_LOOKUP prog and attach type
+Date:   Fri, 17 Jul 2020 12:35:34 +0200
+Message-Id: <20200717103536.397595-14-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200717103536.397595-1-jakub@cloudflare.com>
 References: <20200717103536.397595-1-jakub@cloudflare.com>
@@ -65,98 +64,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make libbpf aware of the newly added program type, and assign it a
-section name.
+Make bpftool show human-friendly identifiers for newly introduced program
+and attach type, BPF_PROG_TYPE_SK_LOOKUP and BPF_SK_LOOKUP, respectively.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Also, add the new prog type bash-completion, man page and help message.
+
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
 
 Notes:
-    v4:
-    - Add trailing slash to section prefix ("sk_lookup/"). (Andrii)
+    v5:
+    - Update prog type list in bash-completion and bpftool-prog man page. (Andrii)
     
     v3:
-    - Move new libbpf symbols to version 0.1.0.
-    - Set expected_attach_type in probe_load for new prog type.
-    
-    v2:
-    - Add new libbpf symbols to version 0.0.9. (Andrii)
+    - New patch in v3.
 
- tools/lib/bpf/libbpf.c        | 3 +++
- tools/lib/bpf/libbpf.h        | 2 ++
- tools/lib/bpf/libbpf.map      | 2 ++
- tools/lib/bpf/libbpf_probes.c | 3 +++
- 4 files changed, 10 insertions(+)
+ tools/bpf/bpftool/Documentation/bpftool-prog.rst | 2 +-
+ tools/bpf/bpftool/bash-completion/bpftool        | 2 +-
+ tools/bpf/bpftool/common.c                       | 1 +
+ tools/bpf/bpftool/prog.c                         | 3 ++-
+ 4 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index f55fd8a5c008..846164c79df1 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -6799,6 +6799,7 @@ BPF_PROG_TYPE_FNS(perf_event, BPF_PROG_TYPE_PERF_EVENT);
- BPF_PROG_TYPE_FNS(tracing, BPF_PROG_TYPE_TRACING);
- BPF_PROG_TYPE_FNS(struct_ops, BPF_PROG_TYPE_STRUCT_OPS);
- BPF_PROG_TYPE_FNS(extension, BPF_PROG_TYPE_EXT);
-+BPF_PROG_TYPE_FNS(sk_lookup, BPF_PROG_TYPE_SK_LOOKUP);
- 
- enum bpf_attach_type
- bpf_program__get_expected_attach_type(struct bpf_program *prog)
-@@ -6981,6 +6982,8 @@ static const struct bpf_sec_def section_defs[] = {
- 	BPF_EAPROG_SEC("cgroup/setsockopt",	BPF_PROG_TYPE_CGROUP_SOCKOPT,
- 						BPF_CGROUP_SETSOCKOPT),
- 	BPF_PROG_SEC("struct_ops",		BPF_PROG_TYPE_STRUCT_OPS),
-+	BPF_EAPROG_SEC("sk_lookup/",		BPF_PROG_TYPE_SK_LOOKUP,
-+						BPF_SK_LOOKUP),
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+index 412ea3d9bf7f..82e356b664e8 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+@@ -45,7 +45,7 @@ PROG COMMANDS
+ |               **cgroup/getsockname4** | **cgroup/getsockname6** | **cgroup/sendmsg4** | **cgroup/sendmsg6** |
+ |		**cgroup/recvmsg4** | **cgroup/recvmsg6** | **cgroup/sysctl** |
+ |		**cgroup/getsockopt** | **cgroup/setsockopt** |
+-|		**struct_ops** | **fentry** | **fexit** | **freplace**
++|		**struct_ops** | **fentry** | **fexit** | **freplace** | **sk_lookup**
+ |	}
+ |       *ATTACH_TYPE* := {
+ |		**msg_verdict** | **stream_verdict** | **stream_parser** | **flow_dissector**
+diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+index 25b25aca1112..7b137264ea3a 100644
+--- a/tools/bpf/bpftool/bash-completion/bpftool
++++ b/tools/bpf/bpftool/bash-completion/bpftool
+@@ -479,7 +479,7 @@ _bpftool()
+                                 cgroup/post_bind4 cgroup/post_bind6 \
+                                 cgroup/sysctl cgroup/getsockopt \
+                                 cgroup/setsockopt struct_ops \
+-                                fentry fexit freplace" -- \
++                                fentry fexit freplace sk_lookup" -- \
+                                                    "$cur" ) )
+                             return 0
+                             ;;
+diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+index 29f4e7611ae8..9b28c69dd8e4 100644
+--- a/tools/bpf/bpftool/common.c
++++ b/tools/bpf/bpftool/common.c
+@@ -64,6 +64,7 @@ const char * const attach_type_name[__MAX_BPF_ATTACH_TYPE] = {
+ 	[BPF_TRACE_FEXIT]		= "fexit",
+ 	[BPF_MODIFY_RETURN]		= "mod_ret",
+ 	[BPF_LSM_MAC]			= "lsm_mac",
++	[BPF_SK_LOOKUP]			= "sk_lookup",
  };
  
- #undef BPF_PROG_SEC_IMPL
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 2335971ed0bd..c2272132e929 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -350,6 +350,7 @@ LIBBPF_API int bpf_program__set_perf_event(struct bpf_program *prog);
- LIBBPF_API int bpf_program__set_tracing(struct bpf_program *prog);
- LIBBPF_API int bpf_program__set_struct_ops(struct bpf_program *prog);
- LIBBPF_API int bpf_program__set_extension(struct bpf_program *prog);
-+LIBBPF_API int bpf_program__set_sk_lookup(struct bpf_program *prog);
+ void p_err(const char *fmt, ...)
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index 6863c57effd0..3e6ecc6332e2 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -59,6 +59,7 @@ const char * const prog_type_name[] = {
+ 	[BPF_PROG_TYPE_TRACING]			= "tracing",
+ 	[BPF_PROG_TYPE_STRUCT_OPS]		= "struct_ops",
+ 	[BPF_PROG_TYPE_EXT]			= "ext",
++	[BPF_PROG_TYPE_SK_LOOKUP]		= "sk_lookup",
+ };
  
- LIBBPF_API enum bpf_prog_type bpf_program__get_type(struct bpf_program *prog);
- LIBBPF_API void bpf_program__set_type(struct bpf_program *prog,
-@@ -377,6 +378,7 @@ LIBBPF_API bool bpf_program__is_perf_event(const struct bpf_program *prog);
- LIBBPF_API bool bpf_program__is_tracing(const struct bpf_program *prog);
- LIBBPF_API bool bpf_program__is_struct_ops(const struct bpf_program *prog);
- LIBBPF_API bool bpf_program__is_extension(const struct bpf_program *prog);
-+LIBBPF_API bool bpf_program__is_sk_lookup(const struct bpf_program *prog);
- 
- /*
-  * No need for __attribute__((packed)), all members of 'bpf_map_def'
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index c5d5c7664c3b..6f0856abe299 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -287,6 +287,8 @@ LIBBPF_0.1.0 {
- 		bpf_map__type;
- 		bpf_map__value_size;
- 		bpf_program__autoload;
-+		bpf_program__is_sk_lookup;
- 		bpf_program__set_autoload;
-+		bpf_program__set_sk_lookup;
- 		btf__set_fd;
- } LIBBPF_0.0.9;
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index 10cd8d1891f5..5a3d3f078408 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -78,6 +78,9 @@ probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
- 	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
- 		xattr.expected_attach_type = BPF_CGROUP_INET4_CONNECT;
- 		break;
-+	case BPF_PROG_TYPE_SK_LOOKUP:
-+		xattr.expected_attach_type = BPF_SK_LOOKUP;
-+		break;
- 	case BPF_PROG_TYPE_KPROBE:
- 		xattr.kern_version = get_kernel_version();
- 		break;
+ const size_t prog_type_name_size = ARRAY_SIZE(prog_type_name);
+@@ -1905,7 +1906,7 @@ static int do_help(int argc, char **argv)
+ 		"                 cgroup/getsockname4 | cgroup/getsockname6 | cgroup/sendmsg4 |\n"
+ 		"                 cgroup/sendmsg6 | cgroup/recvmsg4 | cgroup/recvmsg6 |\n"
+ 		"                 cgroup/getsockopt | cgroup/setsockopt |\n"
+-		"                 struct_ops | fentry | fexit | freplace }\n"
++		"                 struct_ops | fentry | fexit | freplace | sk_lookup }\n"
+ 		"       ATTACH_TYPE := { msg_verdict | stream_verdict | stream_parser |\n"
+ 		"                        flow_dissector }\n"
+ 		"       METRIC := { cycles | instructions | l1d_loads | llc_misses }\n"
 -- 
 2.25.4
 
