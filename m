@@ -2,102 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2868822420B
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:42:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD5F222428C
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 19:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727883AbgGQRkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 13:40:02 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:53002 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726232AbgGQRkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 13:40:01 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06HHdvJr050812;
-        Fri, 17 Jul 2020 12:39:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1595007597;
-        bh=q+uV5H8PhIiItB099rfL6+xnCZi5MWUbsygzwPOLpns=;
-        h=Subject:To:References:From:Date:In-Reply-To;
-        b=ELSpKX3JiFn29aHn8ntqRY7V8tydy4hG0vuz78jLKUnnNA8VVoNIkwv4cmXlbBWWT
-         LEWSymz3xNVsiNgYmsBR0d2N8O31YI/IZUKZpRmaQEOvBnICui7RagiZgZ0hoWj8re
-         88NyRckoKzbpY79bDkB8zeTRDryev4H1gJbbNb8g=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06HHdvQQ061694
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 17 Jul 2020 12:39:57 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 17
- Jul 2020 12:39:57 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 17 Jul 2020 12:39:57 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06HHdsIY017474;
-        Fri, 17 Jul 2020 12:39:55 -0500
-Subject: Re: [PATCH 1/2 v2] net: hsr: fix incorrect lsdu size in the tag of
- HSR frames for small frames
-To:     Murali Karicheri <m-karicheri2@ti.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <nsekhar@ti.com>,
-        <vinicius.gomes@intel.com>
-References: <20200717145510.30433-1-m-karicheri2@ti.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <0e064d93-546d-e999-e36a-499d37137ba4@ti.com>
-Date:   Fri, 17 Jul 2020 20:39:53 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1727883AbgGQRsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 13:48:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60482 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726232AbgGQRsP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 13:48:15 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 89C2920717;
+        Fri, 17 Jul 2020 17:48:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595008094;
+        bh=uoiokff59xFPLkXusc+64l//B+85ty086CC39zSRRlU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VAWg/nBl1KGiSpAxteRppIAadqPMYCq7K0n1TR0AK21AKSZ/1eRT81+B9A/YdrVKz
+         slrsVR3lhsW9tmkjBb2ahbelKtTeE9yQ/amYsoXvbp4m+Wy1dfiCiM7vLmc+18Da2h
+         8vxGt7VPl63sn9IQBAm+iLjVK5O233FDNoCsfSYQ=
+Date:   Fri, 17 Jul 2020 10:48:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     sundeep subbaraya <sundeep.lkml@gmail.com>
+Cc:     Subbaraya Sundeep <sbhatta@marvell.com>,
+        David Miller <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org, sgoutham@marvell.com,
+        Aleksey Makarov <amakarov@marvell.com>
+Subject: Re: [PATCH v4 net-next 3/3] octeontx2-pf: Add support for PTP clock
+Message-ID: <20200717104812.1a92abcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CALHRZupxX5Cbvb03s-xxA7gobjwo8cM7n4_-U6oGysU3R18-Bw@mail.gmail.com>
+References: <1594816689-5935-1-git-send-email-sbhatta@marvell.com>
+        <1594816689-5935-4-git-send-email-sbhatta@marvell.com>
+        <20200716171109.7d8c6d17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CALHRZupxX5Cbvb03s-xxA7gobjwo8cM7n4_-U6oGysU3R18-Bw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200717145510.30433-1-m-karicheri2@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 17 Jul 2020 10:41:49 +0530 sundeep subbaraya wrote:
+> On Fri, Jul 17, 2020 at 5:41 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Wed, 15 Jul 2020 18:08:09 +0530 Subbaraya Sundeep wrote:  
+> > > @@ -1730,10 +1745,149 @@ static void otx2_reset_task(struct work_struct *work)
+> > >       if (!netif_running(pf->netdev))
+> > >               return;
+> > >
+> > > +     rtnl_lock();
+> > >       otx2_stop(pf->netdev);
+> > >       pf->reset_count++;
+> > >       otx2_open(pf->netdev);
+> > >       netif_trans_update(pf->netdev);
+> > > +     rtnl_unlock();
+> > > +}
+> >
+> > This looks unrelated, otherwise for the patches:  
+>
+> You mean the lock/unlock logic with this patch?
 
+Looks very much like a bug independent of the PTP support.
 
-On 17/07/2020 17:55, Murali Karicheri wrote:
-> For small Ethernet frames with size less than minimum size 66 for HSR
-> vs 60 for regular Ethernet frames, hsr driver currently doesn't pad the
-> frame to make it minimum size. This results in incorrect LSDU size being
-> populated in the HSR tag for these frames. Fix this by padding the frame
-> to the minimum size applicable for HSR.
-> 
-> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
-> ---
->   no change from original version
->   Sending this bug fix ahead of PRP patch series as per comment
->   net/hsr/hsr_forward.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
->   Sending this bug fix ahead of PRP patch series as per comment
-> diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-> index ed13760463de..e42fd356f073 100644
-> --- a/net/hsr/hsr_forward.c
-> +++ b/net/hsr/hsr_forward.c
-> @@ -127,6 +127,9 @@ static void hsr_fill_tag(struct sk_buff *skb, struct hsr_frame_info *frame,
->   	int lane_id;
->   	int lsdu_size;
->   
-> +	/* pad to minimum packet size which is 60 + 6 (HSR tag) */
-> +	skb_put_padto(skb, ETH_ZLEN + HSR_HLEN);
+Also 
+$ git grep reset_task drivers/net/ethernet/marvell/octeontx2/
+Doesn't reveal any place where you would flush or cancel that work.
 
-It may fail.
-And i worry that it might be not the right place to do that
-(if packet is small it will be called for every copy of the packet).
-May be it has to be done once when packet enters LRE device?
+> I can separate this out and put in another patch #4 if you insist.
 
-> +
->   	if (port->type == HSR_PT_SLAVE_A)
->   		lane_id = 0;
->   	else
-> 
-
--- 
-Best regards,
-grygorii
+Does someone need to insist for you to fix your bugs in the current
+release cycle? That's a basic part of the kernel release process :/
