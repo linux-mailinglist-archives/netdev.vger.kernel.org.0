@@ -2,216 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4ACA223FF2
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 17:52:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A44B224004
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 17:58:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbgGQPwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 11:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56888 "EHLO
+        id S1726775AbgGQP6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 11:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726393AbgGQPwX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 11:52:23 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5FEC0619D2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 08:52:22 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id e4so13248894ljn.4
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 08:52:22 -0700 (PDT)
+        with ESMTP id S1726381AbgGQP6j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 11:58:39 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D42C0619D2
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 08:58:39 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id g37so7196739otb.9
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 08:58:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/6HnM0rm17Hp6WXcEsIjk3YzzVDb/nE/1mH/ciSCW7w=;
-        b=hD1B+kLPfGOipFnSpqzLH+rKbsvSwd5vFf4VVVt0G/0hMoA0g9RNdPZTwuJT8YML5V
-         rZ598Hnmy92grmSggWgkExsWceCu7y2gkA8QT6jlDRhQToPUJ3+uGkQTWvExXx4dn8Fo
-         HAD919WTFakkaYxOXzXPJxGUyCgobAMUhtBTwwnv2tUb6da+dJ76gbOQ7GdR5IznDBg8
-         4l5j+yFI0OGMuyHcQenz4gClEQJL6UFLJA+Cw4HKTTjplduvLcHzmX+vgcRvdwg0Ayi2
-         mcjuQPps20mlKAw3TKzo7O7MGoKSAzp25+yEa8T0Eug6UKM1KxOa3FBZ5bwPfVaxxu4n
-         iOWQ==
+        d=gateworks-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=+X2fBFm7EKPHv9ldvbj4jWNT1jxd0TKQ3j84DfPBXGI=;
+        b=MRYsF2hAblnKzKefmIq/897AZMLmW+iaBPtoF3ui+JeadHE5Vtjb4fK7Kd78wEMW3K
+         ia7Nf5omcSjTnowvtjynawX5enbsOZj8Gk8fAwyQU9EiIDj+dIU25FYRIcZvzftpCIF+
+         dTaZOBy/Zz+DcmM3DAQ6FM1LfqPM/JTWe74vgenk8N3mObz07N2sJ5nPWRa6ZS3zguNM
+         ADq+VuSOvrtzzaAPkQz3kPNiqiBFFIHgWIILVWgXs72ymWVOoyWm7nvzwq+rq0OUUCSF
+         +cu4/zmEvDjhfOs1riXdQJTFHZlbBVSu3cvZF6DiQlu8U3PEwcJLTQmHxspdTa4I3NMR
+         e2PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/6HnM0rm17Hp6WXcEsIjk3YzzVDb/nE/1mH/ciSCW7w=;
-        b=Lu5GTTC58Dkl3ujxxgdrp8/KGqRytKemrroB1kKO1mIDs/vBwZVT6sW9sHtL+CAmVN
-         QimpHhprXQBLQjx8/RzZN0rfg9P+gwRkXOuPe0X1W+tGgMpCJ3UINnJ20aGVt2VQ/Ps1
-         8xsteHBN/UwZkQLLqW0blbIr601oUjcvX7xyDsAGsXhWlPJgTKjjx0X8njE3D9DkK8Ti
-         r4EK++s5o3k6NEatbUynrSDMU2hyirMiSGUxFkCBJI3V5AfKZkKtxwd7CdaaqES4gQn3
-         c6YY1XUQkBAvZ+FibzUCOtbPnr+YLkUNZZpAhUsI/R0bL0O6amqaJwZxqjTDMDR/3rdk
-         vboQ==
-X-Gm-Message-State: AOAM530iBzmwpRg7ao9HPUe6ybrSZSH0HZvqX/52ZLRsZH9S3SUpN+S9
-        BA7+QSfD4vsIkL5zGOTq8LPg6d5oHyiQdKHdEveav80M
-X-Google-Smtp-Source: ABdhPJwnsIH5nV3seB9F+zMKTG6rEAAHFog2gD+4nxJrJqNNxUk/baStwohSkAwagalmgX+IY4c0psQuolmgiKV6LpU=
-X-Received: by 2002:a2e:808d:: with SMTP id i13mr4939787ljg.452.1595001140080;
- Fri, 17 Jul 2020 08:52:20 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=+X2fBFm7EKPHv9ldvbj4jWNT1jxd0TKQ3j84DfPBXGI=;
+        b=B/aRE11TSGQgGacKC/YLvj4YSEeF6DXHOI78ria8Ooh/burDdAeu13AQucY1ZlllnA
+         988CByjTqbFQ4jNFjTF4fQQAToWMHUdbOqVFM4SkhX3e+VuTWGrs+VQONxGigwxINjiZ
+         v5cLZTCJSAfLL8nsuqInIpDbjkjQ8NTGlvjWStWdkjL1Z2qpvglL+abJ7Fm995Tr1i5I
+         TZtrIYe4lP+gUCGreEz99fpS41Mb//vuEwCgKbAVwwUP0Aj1SwHDPXHsgCBupvB/UarO
+         grVL0ypMkNPHF162oITKSgVw1c4Utx/kadzMEflb/FStP9FzROAtY9+5ecqOVABlvaWo
+         CZgg==
+X-Gm-Message-State: AOAM531xPN0dSM1iZ9DVuwJevgzijPU69mCZe0P2TSgJitfAPwDgD9uT
+        fexHX/1kSZeFe9xUy2Rz1hLezyZ6xEDq5DUilMbtJYaoIow=
+X-Google-Smtp-Source: ABdhPJwiHl5Hhzgd5mpORZjPrZNMZ+sWTdg8cWCYXjwlQ26iVA9y1IoTO8KKoWm6XimzuTpTGav/hLlIOO2A4vXhMfU=
+X-Received: by 2002:a05:6830:45a:: with SMTP id d26mr8767758otc.252.1595001518238;
+ Fri, 17 Jul 2020 08:58:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAH+2xPCzrBgngz5cY9DDDjnFUBNa=NSH3VMchFcnoVbjSm3rEw@mail.gmail.com>
-In-Reply-To: <CAH+2xPCzrBgngz5cY9DDDjnFUBNa=NSH3VMchFcnoVbjSm3rEw@mail.gmail.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Fri, 17 Jul 2020 12:52:08 -0300
-Message-ID: <CAOMZO5DtYDomD8FDCZDwYCSr2AwNT81Ay4==aDxXyBxtyvPiJA@mail.gmail.com>
-Subject: Re: fec: micrel: Ethernet PHY type ID auto-detection issue
-To:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Bruno Thomsen <bth@kamstrup.com>,
-        Lars Alex Pedersen <laa@kamstrup.com>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Fri, 17 Jul 2020 08:58:26 -0700
+Message-ID: <CAJ+vNU30cU36bvgoyKFMzB4z3PAhEPB7OX_ikRQeCZPhSCZztQ@mail.gmail.com>
+Subject: Assigning MAC addrs to PCI based NIC's
+To:     netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bruno,
+Greetings,
 
-Adding netdev and the Ethernet PHY folks.
+We make embedded boards that often have on-board PCIe based NIC's that
+have MAC addresses stored in an EEPROM (not within NIC's NVRAM). I've
+struggled with a way to have boot firmware assign the mac's via
+device-tree and I find that only some drivers support getting the MAC
+from device-tree anyway.
 
+What is the appropriate way to assign vendor MAC's to a NIC from boot
+firmware, or even in userspace?
 
-On Fri, Jul 17, 2020 at 12:48 PM Bruno Thomsen <bruno.thomsen@gmail.com> wrote:
->
-> Hi
->
-> I have been having issues with Ethernet PHY type ID
-> auto-detection when changing from the deprecated fec
-> phy-reset-{gpios,duration,post-delay} properties to the
-> modern mdio reset-{assert-us,deassert-us,gpios}
-> properties in the device tree.
->
-> Hardware:
-> SoC: i.MX7D
-> PHY: Mircrel KSZ8081RNB
-> PHY address: 1
-> RMII clock is generated by the Micrel PHY.
->
-> Micrel pin wiring:
-> CONFIG0: 4k75 PU
-> CONFIG1: 1k PD
-> PHYAD0: 4k75 PU
-> PHYAD1: 1k PD
-> PHYAD2/RXD1: 1k PD
-> REXT: 6k49 PD
-> INTRP: 1k PU
-> XO+XI: 25MHz xtal
->
-> Kernel trace from working (deprecated fec reset):
-> kernel: Micrel KSZ8081 or KSZ8091 30be0000.ethernet-1:01: attached PHY driver
->  [Micrel KSZ8081 or KSZ8091] (mii_bus:phy_addr=30be0000.ethernet-1:01, irq=POLL)
->
-> This way has been working with the mainline kernel 5.2.x-5.7.8.
->
-> Kernel error messages (modem mdio reset):
-> mdio_bus 30be0000.ethernet-1: MDIO device at address 1 is missing.
-> fec 30be0000.ethernet eth0: Unable to connect to phy
->
-> When debugging it I end up with the get_phy_device() call not
-> working inside of_mdiobus_register_phy().
->
-> A known workaround with modern mdio properties is
-> to add "ethernet-phy-id0022.1560" as compatible,
-> but it would be nice to know the root cause of this issue,
-> so I can enable auto PHY id detection again.
->
-> I have inserted snippets of the device tree below.
->
-> DT common pin mux:
-> &iomuxc {
->        pinctrl_enet1: enet1grp {
->                fsl,pins = <
->                        MX7D_PAD_GPIO1_IO10__ENET1_MDIO
-> 0x03 /* X2-48 */
->                        MX7D_PAD_GPIO1_IO11__ENET1_MDC
-> 0x03 /* X2-46 */
->                        MX7D_PAD_ENET1_RGMII_TD0__ENET1_RGMII_TD0
-> 0x71 /* X2-53 */
->                        MX7D_PAD_ENET1_RGMII_TD1__ENET1_RGMII_TD1
-> 0x71 /* X2-55 */
->                        MX7D_PAD_ENET1_RGMII_TX_CTL__ENET1_RGMII_TX_CTL
-> 0x71 /* X2-61 */
->                        MX7D_PAD_ENET1_RGMII_RD0__ENET1_RGMII_RD0
-> 0x79 /* X2-56 */
->                        MX7D_PAD_ENET1_RGMII_RD1__ENET1_RGMII_RD1
-> 0x79 /* X2-58 */
->                        MX7D_PAD_ENET1_RGMII_RX_CTL__ENET1_RGMII_RX_CTL
-> 0x79 /* X2-64 */
->                        MX7D_PAD_ENET1_RGMII_RXC__ENET1_RX_ER
-> 0x73 /* X2-52 */
->                        /* PHY reset: SION, 100kPU, SRE_FAST, DSE_X1 */
->                        MX7D_PAD_ENET1_COL__GPIO7_IO15
-> 0x40000070 /* X1-96 */
->                        /* Clock from PHY to MAC */
->                        MX7D_PAD_GPIO1_IO12__CCM_ENET_REF_CLK1
-> 0x40000073 /* X3-4 */
->                >;
->        };
-> };
->
-> DT working:
-> &fec1 {
->        pinctrl-names = "default";
->        pinctrl-0 = <&pinctrl_enet1>;
->        phy-mode = "rmii";
->        phy-reset-gpios = <&gpio7 15 GPIO_ACTIVE_LOW>;
->        phy-reset-duration = <100>;
->        phy-reset-post-delay = <1000>;
->        phy-handle = <&ethphy>;
->        status = "okay";
->
->        mdio {
->                #address-cells = <1>;
->                #size-cells = <0>;
->                ethphy: ethernet-phy@1 {
->                        compatible = "ethernet-phy-ieee802.3-c22";
->                        reg = <1>;
->                };
->        };
-> };
->
-> DT unable to detect PHY type ID:
-> &fec1 {
->        pinctrl-names = "default";
->        pinctrl-0 = <&pinctrl_enet1>;
->        phy-mode = "rmii";
->        phy-handle = <&ethphy>;
->        status = "okay";
->
->        mdio {
->                #address-cells = <1>;
->                #size-cells = <0>;
->
->                ethphy: ethernet-phy@1 {
->                        compatible = "ethernet-phy-ieee802.3-c22";
->                        reg = <1>;
->                        max-speed = <100>;
->                        reset-assert-us = <100000>;
->                        reset-deassert-us = <1000000>;
->                        reset-gpios = <&gpio7 15 GPIO_ACTIVE_LOW>;
->                };
->        };
-> };
->
-> I had a suspicion that it might be caused by a missing interrupt
-> signal as it runs in poll mode and not irq mode. But fixing that
-> with the following additions did not fix phy id auto-detection.
->
-> ethphy: ethernet-phy@1 {
->        interrupt-parent = <&gpio1>;
->        interrupts = <9 IRQ_TYPE_LEVEL_LOW>;
-> };
->
-> pinctrl_enet1: enet1grp {
->        fsl,pins = <
->               MX7D_PAD_GPIO1_IO09__GPIO1_IO9 0x40000078 /* X1-80 */
->        >;
-> };
->
-> But with the mdio reset workaround from above it now uses irq.
->
-> Kernel trace:
-> kernel: Micrel KSZ8081 or KSZ8091 30be0000.ethernet-1:01: attached PHY driver
->  [Micrel KSZ8081 or KSZ8091] (mii_bus:phy_addr=30be0000.ethernet-1:01, irq=66)
->
-> Any suggestions that could help locate the root cause of the issue?
->
-> Thanks in advance.
->
-> /Bruno
+Best regards,
+
+Tim
