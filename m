@@ -2,74 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BF8B224496
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 21:50:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B729B2244A5
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 21:52:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728417AbgGQTtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 15:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37336 "EHLO
+        id S1728588AbgGQTw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 15:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728022AbgGQTtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 15:49:45 -0400
+        with ESMTP id S1728291AbgGQTw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 15:52:29 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD85C0619D2;
-        Fri, 17 Jul 2020 12:49:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75AB3C0619D2
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 12:52:29 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 81B8A11E45928;
-        Fri, 17 Jul 2020 12:49:44 -0700 (PDT)
-Date:   Fri, 17 Jul 2020 12:49:43 -0700 (PDT)
-Message-Id: <20200717.124943.1418473237939036327.davem@davemloft.net>
-To:     paolo.pisati@canonical.com
-Cc:     kuba@kernel.org, shuah@kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] selftests: net: ip_defrag: modprobe missing
- nf_defrag_ipv6 support
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 926DF11E45928;
+        Fri, 17 Jul 2020 12:52:28 -0700 (PDT)
+Date:   Fri, 17 Jul 2020 12:52:27 -0700 (PDT)
+Message-Id: <20200717.125227.55028219209538840.davem@davemloft.net>
+To:     akiyano@amazon.com
+Cc:     netdev@vger.kernel.org, dwmw@amazon.com, zorik@amazon.com,
+        matua@amazon.com, saeedb@amazon.com, msw@amazon.com,
+        aliguori@amazon.com, nafea@amazon.com, gtzalik@amazon.com,
+        netanel@amazon.com, alisaidi@amazon.com, benh@amazon.com,
+        ndagan@amazon.com, shayagr@amazon.com, sameehj@amazon.com,
+        eric.dumazet@gmail.com
+Subject: Re: [PATCH V3 net-next 1/8] net: ena: avoid unnecessary rearming
+ of interrupt vector when busy-polling
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200716155114.72625-1-paolo.pisati@canonical.com>
-References: <20200716155114.72625-1-paolo.pisati@canonical.com>
+In-Reply-To: <1594923010-6234-2-git-send-email-akiyano@amazon.com>
+References: <1594923010-6234-1-git-send-email-akiyano@amazon.com>
+        <1594923010-6234-2-git-send-email-akiyano@amazon.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 17 Jul 2020 12:49:44 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 17 Jul 2020 12:52:29 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Pisati <paolo.pisati@canonical.com>
-Date: Thu, 16 Jul 2020 17:51:14 +0200
+From: <akiyano@amazon.com>
+Date: Thu, 16 Jul 2020 21:10:03 +0300
 
-> Fix ip_defrag.sh when CONFIG_NF_DEFRAG_IPV6=m:
-> 
-> $ sudo ./ip_defrag.sh
-> + set -e
-> + mktemp -u XXXXXX
-> + readonly NETNS=ns-rGlXcw
-> + trap cleanup EXIT
-> + setup
-> + ip netns add ns-rGlXcw
-> + ip -netns ns-rGlXcw link set lo up
-> + ip netns exec ns-rGlXcw sysctl -w net.ipv4.ipfrag_high_thresh=9000000
-> + ip netns exec ns-rGlXcw sysctl -w net.ipv4.ipfrag_low_thresh=7000000
-> + ip netns exec ns-rGlXcw sysctl -w net.ipv4.ipfrag_time=1
-> + ip netns exec ns-rGlXcw sysctl -w net.ipv6.ip6frag_high_thresh=9000000
-> + ip netns exec ns-rGlXcw sysctl -w net.ipv6.ip6frag_low_thresh=7000000
-> + ip netns exec ns-rGlXcw sysctl -w net.ipv6.ip6frag_time=1
-> + ip netns exec ns-rGlXcw sysctl -w net.netfilter.nf_conntrack_frag6_high_thresh=9000000
-> + cleanup
-> + ip netns del ns-rGlXcw
-> 
-> $ ls -la /proc/sys/net/netfilter/nf_conntrack_frag6_high_thresh
-> ls: cannot access '/proc/sys/net/netfilter/nf_conntrack_frag6_high_thresh': No such file or directory
-> 
-> $ sudo modprobe nf_defrag_ipv6
-> $ ls -la /proc/sys/net/netfilter/nf_conntrack_frag6_high_thresh
-> -rw-r--r-- 1 root root 0 Jul 14 12:34 /proc/sys/net/netfilter/nf_conntrack_frag6_high_thresh
-> 
-> Signed-off-by: Paolo Pisati <paolo.pisati@canonical.com>
+> To the best of my knowledge this assumption holds for ARM64 and x86_64
+> architecture which use a MESI like cache coherency model.
 
-Applied, thanks.
+Use the well defined kernel memory model correctly please.
+
+This is no place for architectural assumptions.  The memory model of
+the kernel defines the rules, and in what locations various memory
+barriers are required for correct operation.
+
+Thank you.
+
