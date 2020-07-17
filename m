@@ -2,94 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67CE3224581
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 23:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F860224586
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 23:02:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726556AbgGQVAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 17:00:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39850 "EHLO mail.kernel.org"
+        id S1726759AbgGQVBM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 17 Jul 2020 17:01:12 -0400
+Received: from mga07.intel.com ([134.134.136.100]:50542 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726393AbgGQVAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jul 2020 17:00:09 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7B74E2070E;
-        Fri, 17 Jul 2020 21:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595019608;
-        bh=4GGEcBUMFBVvOfAhbz86y8ZU1aInuKu/y4RJPLZbyOk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=yCZI5EWHvoOAn9vrb1HtVfrnNtaWPLh0BW+7CIXo992S0FnPk8EJurFyoHXVxaGCG
-         EL9DYddzKNbGm8SPXRE4vi1lxcouRiLkkBZWCQ7UUCb/YkaSjdrB2UceAT06YiZvJR
-         3meAirNEGPbzn0mCbobPWLQNJT35ElZO0hdx3oWI=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
-        michael.chan@broadcom.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: bnxt: don't complain if TC flower can't be supported
-Date:   Fri, 17 Jul 2020 13:59:58 -0700
-Message-Id: <20200717205958.163031-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1726393AbgGQVBM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Jul 2020 17:01:12 -0400
+IronPort-SDR: zZaPwD7TmLIOkDKJR1VGNlTgV2QDWF9BMLusCutdQlEAseAnoF7Xv9oJZuFVqU65eJvZKwPHvH
+ JrBNTrApvh2Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9685"; a="214378917"
+X-IronPort-AV: E=Sophos;i="5.75,364,1589266800"; 
+   d="scan'208";a="214378917"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2020 14:00:58 -0700
+IronPort-SDR: h+HCofEphvJzpxlu7r4qo56jIMl6b0voYXMA+RMyO0GtwtS5Yqv/jLW2xMdR9X2C+sbE1tx07c
+ NrBw2xGnwRUw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,364,1589266800"; 
+   d="scan'208";a="270911646"
+Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
+  by fmsmga008.fm.intel.com with ESMTP; 17 Jul 2020 14:00:58 -0700
+Received: from orsmsx151.amr.corp.intel.com ([169.254.7.24]) by
+ ORSMSX108.amr.corp.intel.com ([169.254.2.169]) with mapi id 14.03.0439.000;
+ Fri, 17 Jul 2020 14:00:57 -0700
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Jakub Kicinski <kubakici@wp.pl>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Tom Herbert <tom@herbertland.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+Subject: RE: [RFC PATCH net-next v2 0/6] introduce PLDM firmware update
+ library
+Thread-Topic: [RFC PATCH net-next v2 0/6] introduce PLDM firmware update
+ library
+Thread-Index: AQHWXGkVCyNxIZF1QUWKu5DGKx31NqkMpcoA//+bkxA=
+Date:   Fri, 17 Jul 2020 21:00:56 +0000
+Message-ID: <02874ECE860811409154E81DA85FBB58C8ABA9D9@ORSMSX151.amr.corp.intel.com>
+References: <20200717183541.797878-1-jacob.e.keller@intel.com>
+ <20200717125826.1f0b3fbb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200717125826.1f0b3fbb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.138]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The fact that NETIF_F_HW_TC is not set should be a sufficient
-indication to the user that TC offloads are not supported.
-No need to bother users of older firmware versions with
-pointless warnings on every boot.
+> -----Original Message-----
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> Behalf Of Jakub Kicinski
+> Sent: Friday, July 17, 2020 12:58 PM
+> To: Keller, Jacob E <jacob.e.keller@intel.com>
+> Cc: netdev@vger.kernel.org; Jiri Pirko <jiri@resnulli.us>; Tom Herbert
+> <tom@herbertland.com>; Jiri Pirko <jiri@mellanox.com>; Jakub Kicinski
+> <kuba@kernel.org>; Jonathan Corbet <corbet@lwn.net>; Michael Chan
+> <michael.chan@broadcom.com>; Bin Luo <luobin9@huawei.com>; Saeed
+> Mahameed <saeedm@mellanox.com>; Leon Romanovsky <leon@kernel.org>;
+> Ido Schimmel <idosch@mellanox.com>; Danielle Ratson
+> <danieller@mellanox.com>
+> Subject: Re: [RFC PATCH net-next v2 0/6] introduce PLDM firmware update
+> library
+> 
+> On Fri, 17 Jul 2020 11:35:35 -0700 Jacob Keller wrote:
+> > This series goal is to enable support for updating the ice hardware flash
+> > using the devlink flash command.
+> 
+> Looks reasonable.
+> 
+> You have some left over references to ignore_pending_flash_update in
+> comments, and you should use NLA_POLICY_RANGE() for the new attr.
+> 
 
-Also, since the support is optional, bnxt_init_tc() should not
-return an error in case FW is old, similarly to how error
-is not returned when CONFIG_BNXT_FLOWER_OFFLOAD is not set.
+Ah, good point I'll make sure to fix those up, and switch the NLA_POLICY_RANGE.
 
-With that we can add an error message to the caller, to warn
-about actual unexpected failures.
+> Taking and releasing the FW lock may be fun for multi-host devices if
+> you ever support those.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c    | 5 ++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | 7 ++-----
- 2 files changed, 6 insertions(+), 6 deletions(-)
+Yea. The lib/pldm stuff assumes the driver will manage the locking. I'm not sure how the resource locks work in a multi-host environment at all..
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 0911eb3b8007..a7e5ebe2d68a 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -12086,7 +12086,10 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 				goto init_err_pci_clean;
- 			}
- 		}
--		bnxt_init_tc(bp);
-+		rc = bnxt_init_tc(bp);
-+		if (rc)
-+			netdev_err(dev, "Failed to initialize TC flower offload, err = %d.\n",
-+				   rc);
- 	}
- 
- 	bnxt_dl_register(bp);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index e82e5cf64d61..5e4429b14b8c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -2000,11 +2000,8 @@ int bnxt_init_tc(struct bnxt *bp)
- 	struct bnxt_tc_info *tc_info;
- 	int rc;
- 
--	if (bp->hwrm_spec_code < 0x10803) {
--		netdev_warn(bp->dev,
--			    "Firmware does not support TC flower offload.\n");
--		return -ENOTSUPP;
--	}
-+	if (bp->hwrm_spec_code < 0x10803)
-+		return 0;
- 
- 	tc_info = kzalloc(sizeof(*tc_info), GFP_KERNEL);
- 	if (!tc_info)
--- 
-2.26.2
-
+Thanks,
+Jake
