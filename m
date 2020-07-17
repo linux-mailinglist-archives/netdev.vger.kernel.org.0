@@ -2,64 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE9E12244C0
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 22:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09F752244D3
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 22:01:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728254AbgGQT6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 15:58:37 -0400
-Received: from mx3.wp.pl ([212.77.101.10]:31022 "EHLO mx3.wp.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726771AbgGQT6h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jul 2020 15:58:37 -0400
-Received: (wp-smtpd smtp.wp.pl 3755 invoked from network); 17 Jul 2020 21:58:34 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1595015914; bh=plQfnxetZpE336xJnFbaJlHfbP2EsFoOwqdsfCYe7zc=;
-          h=From:To:Cc:Subject;
-          b=ZKx5AQJCcNLhzs2wESn5jIpm/94yVougdy/7s3/53JQKnjHfWH/GjzmQUG3cgmyK7
-           DqmME0W1EqqqKy5AMeXtwfhgAoKM5BpgTilIzeiP0iJlV+RZI11j8wKXUHwtmKFPWy
-           NbmHj7YnbVrnW8Lniv6yUZ1tMllAf9PhYKvR3szY=
-Received: from unknown (HELO kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com) (kubakici@wp.pl@[163.114.132.7])
-          (envelope-sender <kubakici@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <jacob.e.keller@intel.com>; 17 Jul 2020 21:58:34 +0200
-Date:   Fri, 17 Jul 2020 12:58:26 -0700
-From:   Jakub Kicinski <kubakici@wp.pl>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
-        Tom Herbert <tom@herbertland.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>
-Subject: Re: [RFC PATCH net-next v2 0/6] introduce PLDM firmware update
- library
-Message-ID: <20200717125826.1f0b3fbb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200717183541.797878-1-jacob.e.keller@intel.com>
-References: <20200717183541.797878-1-jacob.e.keller@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1728890AbgGQUAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 16:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39054 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728878AbgGQUAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 16:00:46 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF326C0619D2;
+        Fri, 17 Jul 2020 13:00:45 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2430411E4592D;
+        Fri, 17 Jul 2020 13:00:45 -0700 (PDT)
+Date:   Fri, 17 Jul 2020 13:00:44 -0700 (PDT)
+Message-Id: <20200717.130044.2129549310998584713.davem@davemloft.net>
+To:     opendmb@gmail.com
+Cc:     f.fainelli@gmail.com, kuba@kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 0/3] net: bcmgenet: fix WAKE_FILTER resume from
+ deep sleep
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1594942697-37954-1-git-send-email-opendmb@gmail.com>
+References: <1594942697-37954-1-git-send-email-opendmb@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-WP-MailID: b19d5611600ed5037fc867882e2452e7
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000003 [8WDS]                               
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 17 Jul 2020 13:00:45 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Jul 2020 11:35:35 -0700 Jacob Keller wrote:
-> This series goal is to enable support for updating the ice hardware flash
-> using the devlink flash command.
+From: Doug Berger <opendmb@gmail.com>
+Date: Thu, 16 Jul 2020 16:38:14 -0700
 
-Looks reasonable.
+> The WAKE_FILTER logic can only wake the system from the standby
+> power state. However, some systems that include the GENET IP
+> support deeper power saving states and the driver should suspend
+> and resume correctly from those states as well.
+> 
+> This commit set squashes a few issues uncovered while testing
+> suspend and resume from these deep sleep states.
 
-You have some left over references to ignore_pending_flash_update in
-comments, and you should use NLA_POLICY_RANGE() for the new attr.
-
-Taking and releasing the FW lock may be fun for multi-host devices if
-you ever support those.
+Series applied, thank you.
