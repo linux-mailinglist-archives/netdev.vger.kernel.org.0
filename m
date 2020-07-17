@@ -2,113 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A432223105
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 04:08:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 970D422310C
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 04:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726386AbgGQCIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jul 2020 22:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42978 "EHLO
+        id S1726316AbgGQCMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jul 2020 22:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726138AbgGQCIt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 22:08:49 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6D5C061755;
-        Thu, 16 Jul 2020 19:08:49 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id ls15so5783325pjb.1;
-        Thu, 16 Jul 2020 19:08:49 -0700 (PDT)
+        with ESMTP id S1726130AbgGQCMi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jul 2020 22:12:38 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86909C061755;
+        Thu, 16 Jul 2020 19:12:38 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id w34so6596688qte.1;
+        Thu, 16 Jul 2020 19:12:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=tq4m4h2a9TL5pXC8bkU2F7Xjx88fuMptJM1ziSfBc+I=;
-        b=BLQpULXQn6FhYgZQFzAkJicFWxLoYxfuqtJ60XvjaNDS6vqkF5ze/GDUMqVkBKseQC
-         sU38qYidKqz1KNn3eEAMZwok5rgEq1ihUyhx1I9w2hd6xxId57+dDrg9RwtRSZco+uDQ
-         UVbb+WTpPjdURlpaIqX50tjui5RVEo5Pb8MvAGybrjKardQxfoNcZOLDFhqDRcBGBZSN
-         DzGa9+DFFdj1dJrJ5pSijMnmlxl2L6VuV7Dc9FLp54AkXV+jAfElNpGSgJlgCgh0r4rP
-         KS0d+SKSvDU/Mp2ppBB4leWNpVn2lo8V/gmb8Q655HQgOgNbh0wmalDpp8yeB1cHB1yz
-         +beg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2to7PZ35DmNzJzcrbrv1v/mw1Q6DUkd154VCyr9iHYM=;
+        b=Z4QPo/np7cP3M1LqYu5EjVw0oGllxD1s2t1KkJVuTCJmjURgb5cyz7yy1NvEhOURrJ
+         9naR0/w2uRgXGnOo8iLGmMc/Sn3ZT1x8giUYE46Q1ibL0fGebeX5c6KQWHGkm7XhTI1A
+         AW0z9ZDFWii9yToprB4nv8HkRM/e9kDdoYI6A3AZwW+tyJ6kcXJsO76DqSBJR/7BeuC+
+         pjtJjqo1OEohXcmCogMcs8aICiLz37X0KVtUfhCt7FUmYxMc1SpNgSqL0y3KpMLFHK1a
+         m5+pLo8gXsKOjPPXxy2euZt5pIVLPtDICiWUCJFta9OYf/ZZqyoszNZlnG52lKUpOFRk
+         DbEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=tq4m4h2a9TL5pXC8bkU2F7Xjx88fuMptJM1ziSfBc+I=;
-        b=EuOPU23Iexc+T1WOqmho47KOj4RfSipD/zEanW0KUIJNIly35AcQ4oPubK65wx4NRG
-         jtpu+gsk1BIBBAm5YPHIGCW5L6rJzxIa3M9b9ku5VO8i7mPvdj7vC3/Nh5tsIgr1/0Kz
-         JnObqbwmPbOzdfXYaTo4+RpHEd4Pv00X2NdExUNJ4+IUoTz56cXKsYiFS/LzbxDb5u38
-         fpzbyKvXcQJUxh73KjiyMvAmLTfzR2N89w/Y146CxN3CD5A+FVzMFO974qjX/Kp+t1Sb
-         J7V29iH77+7vWUStx6pte0e+pxzH542niHCDX1bkYlYOFgz7XqpZNwVZdWnYFzBhDBWB
-         xuVg==
-X-Gm-Message-State: AOAM5322XuYypL7S0cvu2OOQF8H+QmS9gj33EhttTOHv50Y5ZDUsTLhg
-        QGaq4mxkdRihF+hHZljPyVY=
-X-Google-Smtp-Source: ABdhPJx1xFOvDqifGjgy8vUu0iFeypqKlimb/iCgqrKDVMKGCO8pX4GP2UEyFxYkxqrIJSz9nKQE5A==
-X-Received: by 2002:a17:902:788b:: with SMTP id q11mr6116353pll.216.1594951728753;
-        Thu, 16 Jul 2020 19:08:48 -0700 (PDT)
-Received: from vm_111_229_centos ([203.205.141.39])
-        by smtp.gmail.com with ESMTPSA id r25sm1793183pgv.88.2020.07.16.19.08.45
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 Jul 2020 19:08:47 -0700 (PDT)
-Date:   Fri, 17 Jul 2020 10:08:42 +0800
-From:   YangYuxi <yx.atom1@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ebpf: fix parameter naming confusing
-Message-ID: <20200717020842.GA29747@vm_111_229_centos>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2to7PZ35DmNzJzcrbrv1v/mw1Q6DUkd154VCyr9iHYM=;
+        b=nkNsyzg4VL4IzBBXcaWNpAE3T+BqjyVTfLQXfe7615bbwFqzJebGOV0oosmSN1ggsn
+         VQQNgu3/c9pUB4DIFZ4RPUjeOs4Vsl6cxqK3dF6fMUb0bbgyKDNSfyyNfVYzyXzVOhYO
+         TDzBfJztEtKIMqZ2sV2vdt6S3nxO71icwsML0IJJUanoeuN0lIqUdayPgYRkQgLStza+
+         Z/4Ge7Qil/qLrufjXStgavlyruwnL51r+KSlsF+blZfQh+nLucucimNXjcerEroYrYL6
+         8MTuMnt8NmhOT02QMh1qp8QlPxn6P53m/9BwFTUG0xwSQFb5K6LelaN6D9Jgk+zM33JF
+         IEfw==
+X-Gm-Message-State: AOAM532xTSz9t+Y43BqfeXFnJ+5PBVD9WYa0tFEILl/JyG+JjfREG1EP
+        ldkiS12wLGaeZhoO13lSAOg=
+X-Google-Smtp-Source: ABdhPJyL/IPCMF02mbDdmX6L6UIUmDWsfuLL612T41/Tr+CQ6HA3NtNqjsYig6nYlfN8cEZhnO1rvA==
+X-Received: by 2002:aed:2f46:: with SMTP id l64mr8237129qtd.1.1594951957365;
+        Thu, 16 Jul 2020 19:12:37 -0700 (PDT)
+Received: from ubuntu-n2-xlarge-x86 ([2604:1380:45d1:2600::1])
+        by smtp.gmail.com with ESMTPSA id u20sm10432214qtj.39.2020.07.16.19.12.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2020 19:12:36 -0700 (PDT)
+Date:   Thu, 16 Jul 2020 19:12:35 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     "Neftin, Sasha" <sasha.neftin@intel.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Lifshits, Vitaly" <vitaly.lifshits@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Subject: Re: [Intel-wired-lan] [PATCH] igc: Do not use link uninitialized in
+ igc_check_for_copper_link
+Message-ID: <20200717021235.GA4098394@ubuntu-n2-xlarge-x86>
+References: <20200716044934.152364-1-natechancellor@gmail.com>
+ <cdfec63a-e51f-e1a6-aa60-6ca949338306@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <cdfec63a-e51f-e1a6-aa60-6ca949338306@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: YangYuxi <yx.atom1@gmail.com>
----
- kernel/bpf/syscall.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+On Thu, Jul 16, 2020 at 07:29:03PM +0300, Neftin, Sasha wrote:
+> On 7/16/2020 07:49, Nathan Chancellor wrote:
+> > Clang warns:
+> > 
+> Hello Nathan,
+> Thanks for tracking our code.Please, look at https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20200709073416.14126-1-sasha.neftin@intel.com/
+> - I hope this patch already address this Clang warns - please, let me know.
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 0fd80ac81f70..300ae16baffc 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -1881,13 +1881,13 @@ struct bpf_prog *bpf_prog_inc_not_zero(struct bpf_prog *prog)
- EXPORT_SYMBOL_GPL(bpf_prog_inc_not_zero);
- 
- bool bpf_prog_get_ok(struct bpf_prog *prog,
--			    enum bpf_prog_type *attach_type, bool attach_drv)
-+			    enum bpf_prog_type *prog_type, bool attach_drv)
- {
- 	/* not an attachment, just a refcount inc, always allow */
--	if (!attach_type)
-+	if (!prog_type)
- 		return true;
- 
--	if (prog->type != *attach_type)
-+	if (prog->type != *prog_type)
- 		return false;
- 	if (bpf_prog_is_dev_bound(prog->aux) && !attach_drv)
- 		return false;
-@@ -1895,7 +1895,7 @@ bool bpf_prog_get_ok(struct bpf_prog *prog,
- 	return true;
- }
- 
--static struct bpf_prog *__bpf_prog_get(u32 ufd, enum bpf_prog_type *attach_type,
-+static struct bpf_prog *__bpf_prog_get(u32 ufd, enum bpf_prog_type *prog_type,
- 				       bool attach_drv)
- {
- 	struct fd f = fdget(ufd);
-@@ -1904,7 +1904,7 @@ static struct bpf_prog *__bpf_prog_get(u32 ufd, enum bpf_prog_type *attach_type,
- 	prog = ____bpf_prog_get(f);
- 	if (IS_ERR(prog))
- 		return prog;
--	if (!bpf_prog_get_ok(prog, attach_type, attach_drv)) {
-+	if (!bpf_prog_get_ok(prog, prog_type, attach_drv)) {
- 		prog = ERR_PTR(-EINVAL);
- 		goto out;
- 	}
--- 
-1.8.3.1
+I have not explicitly tested it but it seems obvious that it will. Let's
+go with that.
 
+Cheers,
+Nathan
+
+> > drivers/net/ethernet/intel/igc/igc_mac.c:374:6: warning: variable 'link'
+> > is used uninitialized whenever 'if' condition is true
+> > [-Wsometimes-uninitialized]
+> >          if (!mac->get_link_status) {
+> >              ^~~~~~~~~~~~~~~~~~~~~
+> > drivers/net/ethernet/intel/igc/igc_mac.c:424:33: note: uninitialized use
+> > occurs here
+> >          ret_val = igc_set_ltr_i225(hw, link);
+> >                                         ^~~~
+> > drivers/net/ethernet/intel/igc/igc_mac.c:374:2: note: remove the 'if' if
+> > its condition is always false
+> >          if (!mac->get_link_status) {
+> >          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > drivers/net/ethernet/intel/igc/igc_mac.c:367:11: note: initialize the
+> > variable 'link' to silence this warning
+> >          bool link;
+> >                   ^
+> >                    = 0
+> > 1 warning generated.
+> > 
+> > It is not wrong, link is only uninitialized after this through
+> > igc_phy_has_link. Presumably, if we skip the majority of this function
+> > when get_link_status is false, we should skip calling igc_set_ltr_i225
+> > as well. Just directly return 0 in this case, rather than bothering with
+> > adding another label or initializing link in the if statement.
+> > 
+> > Fixes: 707abf069548 ("igc: Add initial LTR support")
+> > Link: https://github.com/ClangBuiltLinux/linux/issues/1095
+> > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> > ---
+> >   drivers/net/ethernet/intel/igc/igc_mac.c | 6 ++----
+> >   1 file changed, 2 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/intel/igc/igc_mac.c b/drivers/net/ethernet/intel/igc/igc_mac.c
+> > index b47e7b0a6398..26e3c56a4a8b 100644
+> > --- a/drivers/net/ethernet/intel/igc/igc_mac.c
+> > +++ b/drivers/net/ethernet/intel/igc/igc_mac.c
+> > @@ -371,10 +371,8 @@ s32 igc_check_for_copper_link(struct igc_hw *hw)
+> >   	 * get_link_status flag is set upon receiving a Link Status
+> >   	 * Change or Rx Sequence Error interrupt.
+> >   	 */
+> > -	if (!mac->get_link_status) {
+> > -		ret_val = 0;
+> > -		goto out;
+> > -	}
+> > +	if (!mac->get_link_status)
+> > +		return 0;
+> >   	/* First we want to see if the MII Status Register reports
+> >   	 * link.  If so, then we want to get the current speed/duplex
+> > 
+> > base-commit: ca0e494af5edb59002665bf12871e94b4163a257
+> > 
+> Thanks,
+> Sasha
