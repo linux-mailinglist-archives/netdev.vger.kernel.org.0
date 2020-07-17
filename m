@@ -2,75 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86734224348
-	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 20:43:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70BDA224352
+	for <lists+netdev@lfdr.de>; Fri, 17 Jul 2020 20:47:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728159AbgGQSnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 14:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726205AbgGQSnH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 14:43:07 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149AEC0619D2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 11:43:07 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1jwVK5-0004ih-IK; Fri, 17 Jul 2020 20:43:05 +0200
-Date:   Fri, 17 Jul 2020 20:43:05 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Stefano Brivio <sbrivio@redhat.com>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        aconole@redhat.com
-Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
- discovery on encap sockets
-Message-ID: <20200717184305.GV32005@breakpoint.cc>
-References: <20200713003813.01f2d5d3@elisabeth>
- <20200713080413.GL32005@breakpoint.cc>
- <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
- <20200713140219.GM32005@breakpoint.cc>
- <20200714143327.2d5b8581@redhat.com>
- <20200715124258.GP32005@breakpoint.cc>
- <20200715153547.77dbaf82@elisabeth>
- <20200715143356.GQ32005@breakpoint.cc>
- <20200717142743.6d05d3ae@elisabeth>
- <89e5ec7b-845f-ab23-5043-73e797a29a14@gmail.com>
+        id S1728233AbgGQSrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 14:47:14 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:13882 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728175AbgGQSrM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 14:47:12 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06HIYaBE025407
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 11:47:12 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=0ztTVug7x2t80UXoWNU42SxtICydLJeqvLLBtfZ/gFo=;
+ b=ZH57aRgNwXUGjsDrOG46XZRwG4YkfTZblDAAgKXIoOF2FxdAOIW/6+7S32Asjvg7BRqx
+ Gpm9T/f/6kK7kv4cZMwKqZp9mf27gBFfcVjN6W9y8RCT3lj4qjiAJBK/vaAeszimInZC
+ DH1Tthv6AzvEbR4kAlC3an6i2wHy+P/t4l8= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 32au0anntc-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 11:47:12 -0700
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 17 Jul 2020 11:47:11 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id 65E193704CE3; Fri, 17 Jul 2020 11:47:06 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 1/2] bpf: change var type of BTF_ID_LIST to static
+Date:   Fri, 17 Jul 2020 11:47:06 -0700
+Message-ID: <20200717184706.3477154-1-yhs@fb.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200717184706.3476992-1-yhs@fb.com>
+References: <20200717184706.3476992-1-yhs@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <89e5ec7b-845f-ab23-5043-73e797a29a14@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-17_09:2020-07-17,2020-07-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 phishscore=0
+ impostorscore=0 bulkscore=0 priorityscore=1501 malwarescore=0 adultscore=0
+ clxscore=1015 lowpriorityscore=0 suspectscore=8 mlxlogscore=806 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007170130
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> wrote:
-> On 7/17/20 6:27 AM, Stefano Brivio wrote:
-> >> Every type of bridge port that needs to add additional header on egress
-> >> has this problem in the bridge scenario once the peer of the IP tunnel
-> >> signals a PMTU event.
-> > 
-> > Yes :(
-> > 
-> 
-> The vxlan/tunnel device knows it is a bridge port, and it knows it is
-> going to push a udp and ip{v6} header. So why not use that information
-> in setting / updating the MTU? That's what I was getting at on Monday
-> with my comment about lwtunnel_headroom equivalent.
+The BTF_ID_LIST macro definition in btf_ids.h:
+   #define BTF_ID_LIST(name)                \
+   __BTF_ID_LIST(name)                      \
+   extern u32 name[];
 
-What action should be taken in the vxlan driver?  Say, here:
+The variable defined in __BTF_ID_LIST has
+".local" directive, which means the variable
+is only available in the current file.
+So change the scope of "name" in the declaration
+from "extern" to "static".
 
-static inline void skb_dst_update_pmtu_no_confirm(struct sk_buff *skb,
-	u32 mtu)
-{
- struct dst_entry *dst = skb_dst(skb);
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ include/linux/btf_ids.h       | 2 +-
+ tools/include/linux/btf_ids.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
- if (dst && dst->ops->update_pmtu)
-    dst->ops->update_pmtu(dst, NULL, skb, mtu, false);
- else
-    /* ??? HERE */
- }
+diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
+index 1cdb56950ffe..cebc9a655959 100644
+--- a/include/linux/btf_ids.h
++++ b/include/linux/btf_ids.h
+@@ -66,7 +66,7 @@ asm(							\
+=20
+ #define BTF_ID_LIST(name)				\
+ __BTF_ID_LIST(name)					\
+-extern u32 name[];
++static u32 name[];
+=20
+ /*
+  * The BTF_ID_UNUSED macro defines 4 zero bytes.
+diff --git a/tools/include/linux/btf_ids.h b/tools/include/linux/btf_ids.=
+h
+index fe019774f8a7..b870776201e5 100644
+--- a/tools/include/linux/btf_ids.h
++++ b/tools/include/linux/btf_ids.h
+@@ -64,7 +64,7 @@ asm(							\
+=20
+ #define BTF_ID_LIST(name)				\
+ __BTF_ID_LIST(name)					\
+-extern u32 name[];
++static u32 name[];
+=20
+ /*
+  * The BTF_ID_UNUSED macro defines 4 zero bytes.
+--=20
+2.24.1
 
-We hit the (non-existent) else branch as skb has no dst entry.
