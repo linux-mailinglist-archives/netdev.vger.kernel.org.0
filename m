@@ -2,104 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E41A224622
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 00:05:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF773224624
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 00:07:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727982AbgGQWFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 18:05:09 -0400
-Received: from mga03.intel.com ([134.134.136.65]:7980 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727105AbgGQWFI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Jul 2020 18:05:08 -0400
-IronPort-SDR: zZsHE0MR7mlUFxfCy4AcNWdexRbx3ceDyRdISc49nhM5lYxE2b4c/AXR//QIrUvPDjShIGSqOb
- nPw99FIUuwxw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9685"; a="149672642"
-X-IronPort-AV: E=Sophos;i="5.75,364,1589266800"; 
-   d="scan'208";a="149672642"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2020 15:05:08 -0700
-IronPort-SDR: aoSwOedjzN+h4QAfwehahZGErEBSzwcnY67T1+hWY1ak0veXEwxed0aPzRKBVjc5mil06a5GA9
- 7CTzQYaWCBsg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,364,1589266800"; 
-   d="scan'208";a="460993570"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.94.160]) ([10.212.94.160])
-  by orsmga005.jf.intel.com with ESMTP; 17 Jul 2020 15:05:07 -0700
-Subject: Re: [PATCH net-next 1/3] docs: networking: timestamping: rename last
- section to "Known bugs".
-To:     Vladimir Oltean <olteanv@gmail.com>, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org
-Cc:     richardcochran@gmail.com, sorganov@gmail.com,
-        linux-doc@vger.kernel.org
-References: <20200717161027.1408240-1-olteanv@gmail.com>
- <20200717161027.1408240-2-olteanv@gmail.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <ba9626e0-e82f-bf6c-25fc-856aedb2a8ec@intel.com>
-Date:   Fri, 17 Jul 2020 15:05:07 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727919AbgGQWF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 18:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58226 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727105AbgGQWF4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 18:05:56 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B94C0619D2
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 15:05:53 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id z63so10155808qkb.8
+        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 15:05:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pcRLyIOuohgTZcHiW+G/hiOFzvQq7PxrG+wiAhJhvbI=;
+        b=TtEd10LZJc+geLCqW7r7/Z+B1am62JXY0IERsARY6S5awC00yyTCDcoja7D7w8RVX1
+         W2e1W68XJQjh6GE9RGFXFt+YnOzZ/DoQIHekv/WJKvRJdOwhxkX+XvOtfcNnzi7WoJ03
+         TBF0ggLzYS43DfN11+rBdAaUq/pJGW77826vQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pcRLyIOuohgTZcHiW+G/hiOFzvQq7PxrG+wiAhJhvbI=;
+        b=leEvqY4R25IBsIAwhJrmcuFEixGEulsCryaKIzQrRW+4wAHfi9Msdm53jPmtvcejK5
+         NTg5DU5XVOQMYuNH33VIk15hSUzPGeYzrHumoJwqvekvM5q99tpIcKl/g9UqGUd5Yvli
+         K080Smn0rehZnIzB2iy16GzrQV1CvwLIpTPzRDHZ2AAEOhlTdMDr+RiR4xohql0N+NCL
+         +PbPamWauPA7BMp73W+P9qHFCh+9Jyp+WE4AWwVlR2iL0MAwd2Ht+B4WCWNP8/RmK2MX
+         B336Ynr0U0d+/Kzpqqu2fmR9ncd3W63MDtjs4hp5bfOfe1FFpplpcvAh6UovRb5T8uC9
+         zOHg==
+X-Gm-Message-State: AOAM533Nn/jqliGyQRWNL1szipGReR+btgiZlQQPVGldv8bImSzV3VmM
+        xVUZz/Tp4OrpoCxRHXWV8rkP9Y6iPvNC0NgVg7VJt2vf
+X-Google-Smtp-Source: ABdhPJxQoxdDkrLXxe93gNGX9hf26R2R85uWTeyeVjJBPhpZFsXXbsoPQKXoRf9rd9XqHZUE/YliYoJGjhlOURN45Ko=
+X-Received: by 2002:a37:4050:: with SMTP id n77mr10914898qka.431.1595023552837;
+ Fri, 17 Jul 2020 15:05:52 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200717161027.1408240-2-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200717205958.163031-1-kuba@kernel.org>
+In-Reply-To: <20200717205958.163031-1-kuba@kernel.org>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Fri, 17 Jul 2020 15:05:41 -0700
+Message-ID: <CACKFLimsi2do2pzYqtZjm20jRa=L9nBeNFjgJBGz8ea5h-ecNg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: bnxt: don't complain if TC flower can't be supported
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jul 17, 2020 at 2:00 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> The fact that NETIF_F_HW_TC is not set should be a sufficient
+> indication to the user that TC offloads are not supported.
+> No need to bother users of older firmware versions with
+> pointless warnings on every boot.
+>
+> Also, since the support is optional, bnxt_init_tc() should not
+> return an error in case FW is old, similarly to how error
+> is not returned when CONFIG_BNXT_FLOWER_OFFLOAD is not set.
+>
+> With that we can add an error message to the caller, to warn
+> about actual unexpected failures.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 
-On 7/17/2020 9:10 AM, Vladimir Oltean wrote:
-> One more quirk of the timestamping infrastructure will be documented
-> shortly. Rename the section from "Other caveats for MAC drivers" to
-> simply "Known bugs". This uncovers some bad phrasing at the beginning of
-> the section, which is now corrected.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
->  Documentation/networking/timestamping.rst | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
-> index 5fa4e2274dd9..9a1f4cb4ce9e 100644
-> --- a/Documentation/networking/timestamping.rst
-> +++ b/Documentation/networking/timestamping.rst
-> @@ -711,14 +711,14 @@ discoverable and attachable to a ``struct phy_device`` through Device Tree, and
->  for the rest, they use the same mii_ts infrastructure as those. See
->  Documentation/devicetree/bindings/ptp/timestamper.txt for more details.
->  
-> -3.2.4 Other caveats for MAC drivers
-> -^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> -
-> -Stacked PHCs, especially DSA (but not only) - since that doesn't require any
-> -modification to MAC drivers, so it is more difficult to ensure correctness of
-> -all possible code paths - is that they uncover bugs which were impossible to
-> -trigger before the existence of stacked PTP clocks.  One example has to do with
-> -this line of code, already presented earlier::
-> +3.2.4 Known bugs
-> +^^^^^^^^^^^^^^^^
-> +
-> +One caveat with stacked PHCs, especially DSA (but not only) - since that
-> +doesn't require any modification to MAC drivers, so it is more difficult to
-> +ensure correctness of all possible code paths - is that they uncover bugs which
-> +were impossible to trigger before the existence of stacked PTP clocks.
-> +One example has to do with this line of code, already presented earlier::
->  
-
-The interjection between - - is really long and made it difficult to
-parse this statement. Maybe re-word it like
-
-One caveat with stacked PHCs is that they uncover bugs which were
-impossible to trigger otherwise, as it is more difficult to ensure
-correctness of all possible code flows. This is especially true of DSA
-since it does not require any modifications to the MAC drivers to setup.
-One example has to do with this line of code, already presented earlier::
-
-
->        skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
->  
-> 
+Thanks.
