@@ -2,95 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB317224D70
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 20:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BF8B224D71
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 20:05:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727771AbgGRSEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 14:04:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726604AbgGRSEa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 14:04:30 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89C1C0619D2
-        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 11:04:29 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id by13so10027041edb.11
-        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 11:04:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uHctHcdFVUIiHBUjUg+99B0uMZplSViClu/YmvfI/yY=;
-        b=WKAExDELAk/K93cvx5Z00s0Em1lWNkt4oconvihAH9QXdPxhndy6B3qhlAWRx0imrS
-         JFSOivXBuQBrIanlc6Qf8ejGeLXPZIk8O9r2QDiZDzqoM8s6BYjdJ5e1fxY3RcBpl5Xh
-         p2jXpvdOUT1rWdqGwghpnOPSAjpHXWtioJZGXjxlDJ1l60z3zQ8hktvaDdBqhaE3YX/A
-         zSB30mWC8U9huvvrt1Gnff8ARTZKth8BY1M++HWhacNzAs+Q/fLg2QkyrKooEo9cCHL+
-         PDl5K+y6SpoIeP23s20SOPLV2pnzIkjejdPDtMC06lOPprn3Y8efDonBKYY+jTXRxZJO
-         g+HQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uHctHcdFVUIiHBUjUg+99B0uMZplSViClu/YmvfI/yY=;
-        b=pHaK1tPK+WfYDg85EM3mmlO4tdH02YLv6GaWe+dGptx14t5WKTIvC5cgtDOw7n7lIb
-         HmvzGFy5oLwBRXeaAZDbyoFKRyH9GjkN0yT2VebymeRr90PRg6owW3Zb8pYKe7GDBSUT
-         ZRyCNP1GbOsp9B0vMDJ/mR1ogYtgfdFclX5CAjEqmE2PfmOzjELQQTcKQB9ZsIrsAQVV
-         /nTqnvEHKzyea0ksAmplPqpWcgvHKmV2qOPCjs+2kAkk7tXTIRwXp2CvtsD+uQ7nRq+D
-         ZK4ufrFVrx7F38WQqKEQMucGrm6bgS3gfBEKWiinY4ec0DoKzSBVmjzKdG80CvBydwKq
-         UqUw==
-X-Gm-Message-State: AOAM533VIvEI2fWc70GLodlC+gBDYVz5tWiwvuVDtpc0T/cRRAC307D2
-        BwD2N6FoQFRSgfuxDvZRLYA=
-X-Google-Smtp-Source: ABdhPJxSSC+FQAq6T3sE/vVesbdc4eMICkFn17zRgWO54YTVD89tPVVyrVVtBaOh9FZoPLqULPxIfw==
-X-Received: by 2002:aa7:c3d8:: with SMTP id l24mr14150437edr.97.1595095468521;
-        Sat, 18 Jul 2020 11:04:28 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id d24sm11132818eje.21.2020.07.18.11.04.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jul 2020 11:04:28 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        noodles@earth.li, mnhagan88@gmail.com
-Subject: [PATCH net-next] net: dsa: use the ETH_MIN_MTU and ETH_DATA_LEN default values
-Date:   Sat, 18 Jul 2020 21:04:18 +0300
-Message-Id: <20200718180418.255098-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727042AbgGRSFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 14:05:12 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:59211 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726155AbgGRSFM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 14:05:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1595095510;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JDQgg0xJVV4G6+TNc5Po/82e3PNoC7eq9+Yb6muktfw=;
+        b=OVlyXInxnKgGWEWjfwI14p+bO9yzrJl85WXIPrlZcTR7aGRY6495NwECCuTL3xUrh4HUAx
+        SvzeuPWGFwiIlxriLF3ZDyR9QVHJc0mZHmwK+UaCqUTE48QiO+bqCjoTrCa8wH11W7vXG4
+        Qwofkad5OTDLU0C9SHFPu1GMCVD1j78=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-138-SUVZV8oFPQ6z3pwczvT7KQ-1; Sat, 18 Jul 2020 14:05:07 -0400
+X-MC-Unique: SUVZV8oFPQ6z3pwczvT7KQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E895C10059B6;
+        Sat, 18 Jul 2020 18:05:06 +0000 (UTC)
+Received: from elisabeth (unknown [10.36.110.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id DEB067C201;
+        Sat, 18 Jul 2020 18:05:04 +0000 (UTC)
+Date:   Sat, 18 Jul 2020 20:04:58 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        aconole@redhat.com
+Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
+ discovery on encap sockets
+Message-ID: <20200718200458.3b869a18@elisabeth>
+In-Reply-To: <20200718195850.61104dd2@elisabeth>
+References: <20200712200705.9796-1-fw@strlen.de>
+        <20200712200705.9796-2-fw@strlen.de>
+        <20200713003813.01f2d5d3@elisabeth>
+        <20200713080413.GL32005@breakpoint.cc>
+        <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
+        <20200713140219.GM32005@breakpoint.cc>
+        <20200714143327.2d5b8581@redhat.com>
+        <20200715124258.GP32005@breakpoint.cc>
+        <20200715153547.77dbaf82@elisabeth>
+        <20200715143356.GQ32005@breakpoint.cc>
+        <20200717142743.6d05d3ae@elisabeth>
+        <89e5ec7b-845f-ab23-5043-73e797a29a14@gmail.com>
+        <20200718085645.7420da02@elisabeth>
+        <9e47f521-b3dc-f116-658b-d6897b0ddf20@gmail.com>
+        <20200718195850.61104dd2@elisabeth>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that DSA supports MTU configuration, undo the effects of commit
-8b1efc0f83f1 ("net: remove MTU limits on a few ether_setup callers") and
-let DSA interfaces use the default min_mtu and max_mtu specified by
-ether_setup(). This is more important for min_mtu: since DSA is
-Ethernet, the minimum MTU is the same as of any other Ethernet
-interface, and definitely not zero. For the max_mtu, we have a callback
-through which drivers can override that, if they want to.
+On Sat, 18 Jul 2020 19:58:50 +0200
+Stefano Brivio <sbrivio@redhat.com> wrote:
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- net/dsa/slave.c | 3 ---
- 1 file changed, 3 deletions(-)
+> On Sat, 18 Jul 2020 11:02:46 -0600
+> David Ahern <dsahern@gmail.com> wrote:
+> 
+> > On 7/18/20 12:56 AM, Stefano Brivio wrote:  
+> > > On Fri, 17 Jul 2020 09:04:51 -0600
+> > > David Ahern <dsahern@gmail.com> wrote:
+> > >     
+> > >> On 7/17/20 6:27 AM, Stefano Brivio wrote:    
+> > >>>>      
+> > >>>>> Note that this doesn't work as it is because of a number of reasons
+> > >>>>> (skb doesn't have a dst, pkt_type is not PACKET_HOST), and perhaps we
+> > >>>>> shouldn't be using icmp_send(), but at a glance that looks simpler.        
+> > >>>>
+> > >>>> Yes, it also requires that the bridge has IP connectivity
+> > >>>> to reach the inner ip, which might not be the case.      
+> > >>>
+> > >>> If the VXLAN endpoint is a port of the bridge, that needs to be the
+> > >>> case, right? Otherwise the VXLAN endpoint can't be reached.
+> > >>>       
+> > >>>>> Another slight preference I have towards this idea is that the only
+> > >>>>> known way we can break PMTU discovery right now is by using a bridge,
+> > >>>>> so fixing the problem there looks more future-proof than addressing any
+> > >>>>> kind of tunnel with this problem. I think FoU and GUE would hit the
+> > >>>>> same problem, I don't know about IP tunnels, sticking that selftest
+> > >>>>> snippet to whatever other test in pmtu.sh should tell.        
+> > >>>>
+> > >>>> Every type of bridge port that needs to add additional header on egress
+> > >>>> has this problem in the bridge scenario once the peer of the IP tunnel
+> > >>>> signals a PMTU event.      
+> > >>>
+> > >>> Yes :(    
+> > >>
+> > >> The vxlan/tunnel device knows it is a bridge port, and it knows it is
+> > >> going to push a udp and ip{v6} header. So why not use that information
+> > >> in setting / updating the MTU? That's what I was getting at on Monday
+> > >> with my comment about lwtunnel_headroom equivalent.    
+> > > 
+> > > If I understand correctly, you're proposing something similar to my
+> > > earlier draft from:
+> > > 
+> > > 	<20200713003813.01f2d5d3@elisabeth>
+> > > 	https://lore.kernel.org/netdev/20200713003813.01f2d5d3@elisabeth/
+> > > 
+> > > the problem with it is that it wouldn't help: the MTU is already set to
+> > > the right value for both port and bridge in the case Florian originally
+> > > reported.    
+> > 
+> > I am definitely hand waving; I have not had time to create a setup
+> > showing the problem. Is there a reproducer using only namespaces?  
+> 
+> And I'm laser pointing: check the bottom of that email ;)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 3856a5788e39..58412a664b98 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1940,11 +1940,8 @@ int dsa_slave_create(struct dsa_port *port)
- 	if (ds->ops->port_fdb_add && ds->ops->port_egress_floods)
- 		slave_dev->priv_flags |= IFF_UNICAST_FLT;
- 	slave_dev->netdev_ops = &dsa_slave_netdev_ops;
--	slave_dev->min_mtu = 0;
- 	if (ds->ops->port_max_mtu)
- 		slave_dev->max_mtu = ds->ops->port_max_mtu(ds, port->index);
--	else
--		slave_dev->max_mtu = ETH_MAX_MTU;
- 	SET_NETDEV_DEVTYPE(slave_dev, &dsa_type);
- 	vlan_dev_ivdf_set(slave_dev, true);
- 
+Oh, if you meant for Open vSwitch: then... I don't know exactly what I
+should be doing. :)
+
 -- 
-2.25.1
+Stefano
 
