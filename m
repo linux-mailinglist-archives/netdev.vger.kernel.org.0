@@ -2,86 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 905F1224961
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 08:49:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D77522496C
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 08:57:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729060AbgGRGti (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 02:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725983AbgGRGti (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 02:49:38 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1833CC0619D2
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 23:49:38 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id u5so6423838pfn.7
-        for <netdev@vger.kernel.org>; Fri, 17 Jul 2020 23:49:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=d/RFFZ2xUY28o7Bo7g0kzJSe1aDQDUlpOouEQqwgzP0=;
-        b=JSTFP6BUryiLeA6T+bN/mMqipYZDSRVNrUsWsWb3kzFvLMpkJlxjPwvfld+va3aXoZ
-         FODbOmimy123lOo6VTy8NiAYMap5ZHL24UgPGUwOHKO4F5D/YGwr5n38Qq3V3rj+9a8c
-         2k5SIvu9nh4m/TbUfnjlW89olL4oZuwN2g0t+swcdn7+1TPUYXTN0rhPXIlhxY+brNHI
-         S4L7hW3oVTFv7CgnzqKUJrEgjRgQP700dRkoK9aGhHpRLv2V447AonN962hAh5Q4aHtj
-         bXSd+12C4YEz155xAKpKOL9LT5c5BZKWQEVa9kmd6mRg9JVA871AZWfqyvqqK6uhmtUg
-         ZBbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=d/RFFZ2xUY28o7Bo7g0kzJSe1aDQDUlpOouEQqwgzP0=;
-        b=QI4TgI8Cd9Enobl3+EkHMwJJU768RIGCbXe7+2tN2W+4UkWSs1c9CKgoBYg5Rn4+JY
-         3m6El46oTm0bJyCeZ28P6gN14/8mApE7N7vIwpS3NKpDIjosGan2z9Il9HDEQM1wKmZq
-         K6pi1Za37CcmoU7uiZmL9Oe/e3TrvPl2mAq/TU01I/8dj5T4PLRMMZCseWFQDLZmwsL2
-         id0D6cvFzG0C8cow2yCqDj6V6watjh7aOjIqKEGPLM87x9lb8Op9rR8FmSEgwGjJrS0L
-         Z4Zikn77zFA8cPHy0gu9IDlEN21hPdPM02c9cBmodUM1VzgSpL5axyLL5K4zwD+AQC97
-         jb8A==
-X-Gm-Message-State: AOAM531pwH8G/NljE0AxZe/TGlCbfflUfgpZxxf22DfGM2wk1eJtzNkq
-        xM8om+ZZiHdAqpFjkJQS3C0=
-X-Google-Smtp-Source: ABdhPJxSgiAwI0UOc05YPU3WAs/VhDcfj3jxbXOFy+MAl+UZxwfvAYWuilLh1L05X1UY83VAfXvXKg==
-X-Received: by 2002:a63:338c:: with SMTP id z134mr11208864pgz.245.1595054977616;
-        Fri, 17 Jul 2020 23:49:37 -0700 (PDT)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id j8sm9827905pfd.145.2020.07.17.23.49.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 23:49:36 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     jiri@mellanox.com, ap420073@gmail.com
-Subject: [PATCH net] netdevsim: fix unbalaced locking in nsim_create()
-Date:   Sat, 18 Jul 2020 06:49:21 +0000
-Message-Id: <20200718064921.9280-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726685AbgGRG5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 02:57:06 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26743 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725983AbgGRG5F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 02:57:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1595055423;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rTVXVg9Iy+utNHgyi7qKG5POUJGJ+x1yg1zUk4MRTvw=;
+        b=ih3CgzGRYb9bS47A6+YEr4sBheN31gbey7e17gjhU/8CXjPlU1TcFvEuDBmv2RmmoSxDeg
+        QVlAWuC5Hi94QjPKQElMlILKCGrY0qMkUpA9DzWe1mFF8Uq56odZU/fxTEaoBu8QwaL3Jj
+        /JKf3yU9ySvrj0C9lhD0wBBOR4ZUSz0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-476-qFMDtgYrM5qwpIxiqOm5gw-1; Sat, 18 Jul 2020 02:56:57 -0400
+X-MC-Unique: qFMDtgYrM5qwpIxiqOm5gw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5BCD7107ACCA;
+        Sat, 18 Jul 2020 06:56:56 +0000 (UTC)
+Received: from elisabeth (unknown [10.36.110.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0B86060E3E;
+        Sat, 18 Jul 2020 06:56:51 +0000 (UTC)
+Date:   Sat, 18 Jul 2020 08:56:45 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        aconole@redhat.com
+Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
+ discovery on encap sockets
+Message-ID: <20200718085645.7420da02@elisabeth>
+In-Reply-To: <89e5ec7b-845f-ab23-5043-73e797a29a14@gmail.com>
+References: <20200712200705.9796-1-fw@strlen.de>
+        <20200712200705.9796-2-fw@strlen.de>
+        <20200713003813.01f2d5d3@elisabeth>
+        <20200713080413.GL32005@breakpoint.cc>
+        <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
+        <20200713140219.GM32005@breakpoint.cc>
+        <20200714143327.2d5b8581@redhat.com>
+        <20200715124258.GP32005@breakpoint.cc>
+        <20200715153547.77dbaf82@elisabeth>
+        <20200715143356.GQ32005@breakpoint.cc>
+        <20200717142743.6d05d3ae@elisabeth>
+        <89e5ec7b-845f-ab23-5043-73e797a29a14@gmail.com>
+Organization: Red Hat
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the nsim_create(), rtnl_lock() is called before nsim_bpf_init().
-If nsim_bpf_init() is failed, rtnl_unlock() should be called,
-but it isn't called.
-So, unbalanced locking would occur.
+On Fri, 17 Jul 2020 09:04:51 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-Fixes: e05b2d141fef ("netdevsim: move netdev creation/destruction to dev probe")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
- drivers/net/netdevsim/netdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On 7/17/20 6:27 AM, Stefano Brivio wrote:
+> >>  
+> >>> Note that this doesn't work as it is because of a number of reasons
+> >>> (skb doesn't have a dst, pkt_type is not PACKET_HOST), and perhaps we
+> >>> shouldn't be using icmp_send(), but at a glance that looks simpler.    
+> >>
+> >> Yes, it also requires that the bridge has IP connectivity
+> >> to reach the inner ip, which might not be the case.  
+> > 
+> > If the VXLAN endpoint is a port of the bridge, that needs to be the
+> > case, right? Otherwise the VXLAN endpoint can't be reached.
+> >   
+> >>> Another slight preference I have towards this idea is that the only
+> >>> known way we can break PMTU discovery right now is by using a bridge,
+> >>> so fixing the problem there looks more future-proof than addressing any
+> >>> kind of tunnel with this problem. I think FoU and GUE would hit the
+> >>> same problem, I don't know about IP tunnels, sticking that selftest
+> >>> snippet to whatever other test in pmtu.sh should tell.    
+> >>
+> >> Every type of bridge port that needs to add additional header on egress
+> >> has this problem in the bridge scenario once the peer of the IP tunnel
+> >> signals a PMTU event.  
+> > 
+> > Yes :(
+> 
+> The vxlan/tunnel device knows it is a bridge port, and it knows it is
+> going to push a udp and ip{v6} header. So why not use that information
+> in setting / updating the MTU? That's what I was getting at on Monday
+> with my comment about lwtunnel_headroom equivalent.
 
-diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
-index 2908e0a0d6e1..b2a67a88b6ee 100644
---- a/drivers/net/netdevsim/netdev.c
-+++ b/drivers/net/netdevsim/netdev.c
-@@ -316,8 +316,8 @@ nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port)
- err_ipsec_teardown:
- 	nsim_ipsec_teardown(ns);
- 	nsim_bpf_uninit(ns);
--	rtnl_unlock();
- err_free_netdev:
-+	rtnl_unlock();
- 	free_netdev(dev);
- 	return ERR_PTR(err);
- }
+If I understand correctly, you're proposing something similar to my
+earlier draft from:
+
+	<20200713003813.01f2d5d3@elisabeth>
+	https://lore.kernel.org/netdev/20200713003813.01f2d5d3@elisabeth/
+
+the problem with it is that it wouldn't help: the MTU is already set to
+the right value for both port and bridge in the case Florian originally
+reported.
+
+Also, given the implications on overriding configured MTUs, and
+introducing (further) IP logic into the bridge, if Florian's idea of
+injecting ICMP messages could be implemented in a generic function:
+
+On Wed, 15 Jul 2020 16:33:56 +0200
+Florian Westphal <fw@strlen.de> wrote:
+
+> Yes, it might be possible to move the proposed icmp inject into
+> skb_tunnel_check_pmtu() -- it gets the needed headroom passed as arg,
+> it could detect when device driver is in a bridge and it already knows
+> when skb has no dst entry that it a pmtu change could be propagated to.
+
+I think that would be preferable: then it's fixed for all tunnels in a
+generic, probably simpler way, without those two issues.
+
+But then again, we're talking about Linux bridge. Unfortunately this
+doesn't fix the problem with Open vSwitch either.
+
 -- 
-2.17.1
+Stefano
 
