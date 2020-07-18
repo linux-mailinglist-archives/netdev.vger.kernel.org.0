@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F67F224838
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 05:07:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4462822483A
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 05:07:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728971AbgGRDFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jul 2020 23:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
+        id S1726262AbgGRDFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jul 2020 23:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726262AbgGRDFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 23:05:49 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF58AC0619D2;
-        Fri, 17 Jul 2020 20:05:49 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id q17so6262124pfu.8;
-        Fri, 17 Jul 2020 20:05:49 -0700 (PDT)
+        with ESMTP id S1728970AbgGRDFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jul 2020 23:05:52 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03172C0619D2;
+        Fri, 17 Jul 2020 20:05:52 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id s26so6266672pfm.4;
+        Fri, 17 Jul 2020 20:05:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=s0bPXMdX/gLeZJkA8kYL9ZRzdQQF5fbDlom5NC+jb10=;
-        b=LyQgXwWeMz66AYtzZPLQN7XJ8zJJ7GIpcEuVShlLxAy10Ovh2OKkzQyq3iE0HcYmFR
-         pArR97N3ZWU2dQDJTd3+LAvkCO7VmsK0QkfQkGQkH7szDiz9nycdZXDBLsRu/MYNtxnu
-         c8uXaYmwVaSj+6+SN66vmBi51raoFnTg3OBezOa2XBPQyappXarOcgnkkL3EI9aDotxk
-         VXXSTO1sBPXqCSiBC5Dndi1h3jfX7tcdPUwVYUvV+qRYwdhLhunNefQ4GrD6DrwnQYG5
-         ua3W03pYYyRawCWfMwWVc3zINk+z03iq6G/U/2hjxjfbda5xaf5sIFQaWYo4thcYGF3E
-         lBuA==
+        bh=IwiSc8ny1eiqFoZFL5UVikvl9/Kv6xkm+XtoA/y4ccI=;
+        b=HoniX5YxiN+/rdvP/6xfbQHUK5ubUPWgsAMQf85wATqoauNmTPR03IkbUsoOFzBxYD
+         6t5VU+ynh6FV7GsLQnDWNBDVKaP+cLk7WBxCATaXLs3t2xTQPq+kDYrrsZU8Kyz3qL90
+         B4C5r4lTH97ibG7tq7dyfCccAtqmTjoeSQDU3DAhoyS4oM337CNWgp++j/P/CYwBOskS
+         5WTsO8xSiVVYXYv5G2fraq0varfzCjmI9RKg17RjXmVr6jCOQd1ADOVEb7tS5kK/LdhD
+         BURun2TKckqhWKHYjsyCIFTxERdTizPTWP/8ExMqi83j/rEHj35z5NbIKn5EJoiKc8Yy
+         y1Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=s0bPXMdX/gLeZJkA8kYL9ZRzdQQF5fbDlom5NC+jb10=;
-        b=pTtKbnNMCfnpQM3zYe7OrAj1wSLSJGLzZ6v7YmTxsJ7wYTvJp8UsrTNazfBRVxshgx
-         LSTFmP/yJzwZ19q1kLvjV2kYz7vXN06No05p2VRKde5W0P8jYNjcD3XMgNqAa5OSDdev
-         7VH1ldEnJnnsU+ASN7VPBRDXdBGXD4NlIbEUOZ82zep7jKusg54vLTip64RSOYA6yYCW
-         dvhgJs1Vpb/13awpRyjBneOKn7lMV41cc39I5I1dVptu3AkU4DHc+eS4/rGBdp9d7hCI
-         zl3v4WhLCqRvaxn6ysNTedsdrGIOwjHYP/7Me6oSdE3vW9SlX5BhOndy0aCiBFIgpAwq
-         b7hQ==
-X-Gm-Message-State: AOAM530N/r+TmKcqVXX1fTUXf9hvCqgMqnZX4vigh0GdW/lF9CeWBXf/
-        UnWWzJsruUDqyxQNVgIkCGtWk4jf
-X-Google-Smtp-Source: ABdhPJxb13oZtxiCIm6ZTbuuVOzEZAb1CZyNjdVipyblB6s1d4r3UsQcVirfl3YtRzRC7mCB7pwcyQ==
-X-Received: by 2002:a62:7e51:: with SMTP id z78mr10587547pfc.3.1595041548972;
-        Fri, 17 Jul 2020 20:05:48 -0700 (PDT)
+        bh=IwiSc8ny1eiqFoZFL5UVikvl9/Kv6xkm+XtoA/y4ccI=;
+        b=KxoJZAldSL8/EylpU7/G30a+nyP+xm94bKivglG8egKDtZFNhiUxqchqlOPilEKOrO
+         wRWPsYK9OHJhjGNFPo06DQNJxUzZDwyRlgKPd4V2zdmdgDgdxuHQH3WU83hfjJltK2Vo
+         EdmKhCm7SwB+7V1MOB0o0FzReDLZWPIVUixU/mHBLcG9+16rjRNQQa10R4pkM804K5ZD
+         b7b1L352u3n5Q1tAIgeDx4OAdjPVqctO8F1OfoExA+rgnfUCMh+Ya6igM+qR+Rn62Vo6
+         wIY6mhEMLpOejbd3T12qalcwc8BRqLP716rMYGgJS8/2EYwBR20NZk7az2Xn+1CIWfTP
+         t8Gw==
+X-Gm-Message-State: AOAM5304NmV8XcBySDTZBxo9QQfMPVhf8Tq6z/cP13oGwwM0UkdSvvyt
+        qNqRaNzCt13lYiIn0F2c9V67R8ME
+X-Google-Smtp-Source: ABdhPJwBSyti78al7Z9WVBUxUhtUwxeX+t2Y91nI/T9uOnPC8zG3je1GXa4klFoyTAE7iTNJoxwmsg==
+X-Received: by 2002:a62:834c:: with SMTP id h73mr10908926pfe.221.1595041551056;
+        Fri, 17 Jul 2020 20:05:51 -0700 (PDT)
 Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id c9sm617331pjr.35.2020.07.17.20.05.47
+        by smtp.gmail.com with ESMTPSA id c9sm617331pjr.35.2020.07.17.20.05.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 20:05:48 -0700 (PDT)
+        Fri, 17 Jul 2020 20:05:50 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -62,9 +62,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Michal Kubecek <mkubecek@suse.cz>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next 3/4] net: Call into DSA netdevice_ops wrappers
-Date:   Fri, 17 Jul 2020 20:05:32 -0700
-Message-Id: <20200718030533.171556-4-f.fainelli@gmail.com>
+Subject: [PATCH net-next 4/4] net: dsa: Setup dsa_netdev_ops
+Date:   Fri, 17 Jul 2020 20:05:33 -0700
+Message-Id: <20200718030533.171556-5-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200718030533.171556-1-f.fainelli@gmail.com>
 References: <20200718030533.171556-1-f.fainelli@gmail.com>
@@ -75,61 +75,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make the core net_device code call into our ndo_do_ioctl() and
-ndo_get_phys_port_name() functions via the wrappers defined previously
+Now that we hav all the infrastructure in place for calling into the
+dsa_ptr->netdev_ops function pointers, install them when we configure
+the DSA CPU/management interface and tear them down. The flow is
+unchanged from before, but now we preserve equality of tests when
+network device drivers do tests like dev->netdev_ops == &foo_ops which
+was not the case before since we were allocating an entirely new
+structure.
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- net/core/dev.c       | 5 +++++
- net/core/dev_ioctl.c | 5 +++++
- 2 files changed, 10 insertions(+)
+ include/net/dsa.h |  1 -
+ net/dsa/master.c  | 52 ++++++++++++-----------------------------------
+ 2 files changed, 13 insertions(+), 40 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 062a00fdca9b..19f1abc26fcd 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -98,6 +98,7 @@
- #include <net/busy_poll.h>
- #include <linux/rtnetlink.h>
- #include <linux/stat.h>
-+#include <net/dsa.h>
- #include <net/dst.h>
- #include <net/dst_metadata.h>
- #include <net/pkt_sched.h>
-@@ -8602,6 +8603,10 @@ int dev_get_phys_port_name(struct net_device *dev,
- 	const struct net_device_ops *ops = dev->netdev_ops;
- 	int err;
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 681ba2752514..c9f350303947 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -230,7 +230,6 @@ struct dsa_port {
+ 	 * Original copy of the master netdev net_device_ops
+ 	 */
+ 	const struct dsa_netdevice_ops *netdev_ops;
+-	const struct net_device_ops *orig_ndo_ops;
  
-+	err  = dsa_ndo_get_phys_port_name(dev, name, len);
-+	if (err == 0 || err != -EOPNOTSUPP)
-+		return err;
+ 	bool setup;
+ };
+diff --git a/net/dsa/master.c b/net/dsa/master.c
+index 480a61460c23..0a90911ae31b 100644
+--- a/net/dsa/master.c
++++ b/net/dsa/master.c
+@@ -220,12 +220,17 @@ static int dsa_master_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 		break;
+ 	}
+ 
+-	if (cpu_dp->orig_ndo_ops && cpu_dp->orig_ndo_ops->ndo_do_ioctl)
+-		err = cpu_dp->orig_ndo_ops->ndo_do_ioctl(dev, ifr, cmd);
++	if (dev->netdev_ops->ndo_do_ioctl)
++		err = dev->netdev_ops->ndo_do_ioctl(dev, ifr, cmd);
+ 
+ 	return err;
+ }
+ 
++static const struct dsa_netdevice_ops dsa_netdev_ops = {
++	.ndo_do_ioctl = dsa_master_ioctl,
++	.ndo_get_phys_port_name = dsa_master_get_phys_port_name,
++};
 +
- 	if (ops->ndo_get_phys_port_name) {
- 		err = ops->ndo_get_phys_port_name(dev, name, len);
- 		if (err != -EOPNOTSUPP)
-diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-index a213c703c90a..b2cf9b7bb7b8 100644
---- a/net/core/dev_ioctl.c
-+++ b/net/core/dev_ioctl.c
-@@ -5,6 +5,7 @@
- #include <linux/rtnetlink.h>
- #include <linux/net_tstamp.h>
- #include <linux/wireless.h>
-+#include <net/dsa.h>
- #include <net/wext.h>
+ static int dsa_master_ethtool_setup(struct net_device *dev)
+ {
+ 	struct dsa_port *cpu_dp = dev->dsa_ptr;
+@@ -260,38 +265,10 @@ static void dsa_master_ethtool_teardown(struct net_device *dev)
+ 	cpu_dp->orig_ethtool_ops = NULL;
+ }
  
- /*
-@@ -231,6 +232,10 @@ static int dev_do_ioctl(struct net_device *dev,
- 	const struct net_device_ops *ops = dev->netdev_ops;
- 	int err = -EOPNOTSUPP;
+-static int dsa_master_ndo_setup(struct net_device *dev)
+-{
+-	struct dsa_port *cpu_dp = dev->dsa_ptr;
+-	struct dsa_switch *ds = cpu_dp->ds;
+-	struct net_device_ops *ops;
+-
+-	if (dev->netdev_ops->ndo_get_phys_port_name)
+-		return 0;
+-
+-	ops = devm_kzalloc(ds->dev, sizeof(*ops), GFP_KERNEL);
+-	if (!ops)
+-		return -ENOMEM;
+-
+-	cpu_dp->orig_ndo_ops = dev->netdev_ops;
+-	if (cpu_dp->orig_ndo_ops)
+-		memcpy(ops, cpu_dp->orig_ndo_ops, sizeof(*ops));
+-
+-	ops->ndo_get_phys_port_name = dsa_master_get_phys_port_name;
+-	ops->ndo_do_ioctl = dsa_master_ioctl;
+-
+-	dev->netdev_ops  = ops;
+-
+-	return 0;
+-}
+-
+-static void dsa_master_ndo_teardown(struct net_device *dev)
++static void dsa_netdev_ops_set(struct net_device *dev,
++			       const struct dsa_netdevice_ops *ops)
+ {
+-	struct dsa_port *cpu_dp = dev->dsa_ptr;
+-
+-	if (cpu_dp->orig_ndo_ops)
+-		dev->netdev_ops = cpu_dp->orig_ndo_ops;
+-	cpu_dp->orig_ndo_ops = NULL;
++	dev->dsa_ptr->netdev_ops = ops;
+ }
  
-+	err = dsa_ndo_do_ioctl(dev, ifr, cmd);
-+	if (err == 0 || err != -EOPNOTSUPP)
-+		return err;
-+
- 	if (ops->ndo_do_ioctl) {
- 		if (netif_device_present(dev))
- 			err = ops->ndo_do_ioctl(dev, ifr, cmd);
+ static ssize_t tagging_show(struct device *d, struct device_attribute *attr,
+@@ -353,9 +330,7 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = dsa_master_ndo_setup(dev);
+-	if (ret)
+-		goto out_err_ethtool_teardown;
++	dsa_netdev_ops_set(dev, &dsa_netdev_ops);
+ 
+ 	ret = sysfs_create_group(&dev->dev.kobj, &dsa_group);
+ 	if (ret)
+@@ -364,8 +339,7 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
+ 	return ret;
+ 
+ out_err_ndo_teardown:
+-	dsa_master_ndo_teardown(dev);
+-out_err_ethtool_teardown:
++	dsa_netdev_ops_set(dev, NULL);
+ 	dsa_master_ethtool_teardown(dev);
+ 	return ret;
+ }
+@@ -373,7 +347,7 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
+ void dsa_master_teardown(struct net_device *dev)
+ {
+ 	sysfs_remove_group(&dev->dev.kobj, &dsa_group);
+-	dsa_master_ndo_teardown(dev);
++	dsa_netdev_ops_set(dev, NULL);
+ 	dsa_master_ethtool_teardown(dev);
+ 	dsa_master_reset_mtu(dev);
+ 
 -- 
 2.25.1
 
