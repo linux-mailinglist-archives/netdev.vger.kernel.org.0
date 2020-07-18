@@ -2,151 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01C01224D15
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 18:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 952C2224D38
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 19:03:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728092AbgGRQcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 12:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57786 "EHLO
+        id S1726798AbgGRRCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 13:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726648AbgGRQcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 12:32:21 -0400
-Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C26DC0619D2;
-        Sat, 18 Jul 2020 09:32:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
-        :To:From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=p0fHr0K6rdHB0oI4+clbEvxqPDehqkunizbx+oh2+FE=; b=vgFNNGIw5hDO9tszONcTVsz0mr
-        HL8bNBHBVC7wnGgRetVWq9UKMUr2t7wGM5a02nqbNfzgoeCnUQ3XI6urrjhR36ldHD6/soq4zQwJJ
-        PUFERU7WcDP4yRsBekucde3q1Lg4btbVR2VwmrItPc5H3JmLo2L/O6w5fjEA9Z/72zvxZrQ/eBVyw
-        atF0TiEkzxTKgwQvi1uS7FMRkBt7Xhwo2NerBiURyuKhGF5k8JIvdBhUyA8aEgOT9lat0aod+8Rnp
-        lXhxpg1exNKsomFrPfagSmgAtc4ZS+uvZM/BOrywvqh72DXSbylMuZ/kmQVHI2MvkVrvmGPPyN2uS
-        b/DVyHsg==;
-Received: from noodles by the.earth.li with local (Exim 4.92)
-        (envelope-from <noodles@earth.li>)
-        id 1jwpl0-0000hS-GD; Sat, 18 Jul 2020 17:32:14 +0100
-Date:   Sat, 18 Jul 2020 17:32:14 +0100
-From:   Jonathan McDowell <noodles@earth.li>
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthew Hagan <mnhagan88@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: dsa: qca8k: implement the port MTU callbacks
-Message-ID: <20200718163214.GA2634@earth.li>
-References: <20200718093555.GA12912@earth.li>
+        with ESMTP id S1726604AbgGRRCu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 13:02:50 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268BFC0619D2
+        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 10:02:50 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id b185so11620837qkg.1
+        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 10:02:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=09wA+GGfZg7jRw4tYhn2ifyWoRW2GDPu42oIB0KGqIw=;
+        b=QhxWqgfP6vfcGtyzTMmeAseTurbDLASvv6vCzfI59tU75N25Nn9r6TpjCxO7flExDB
+         QrLRSyvzyONLIKEOPZLvr/xLXfFa6+hz2ZsRH9N3HVMX5gOplQRJrMQUy/ZgM73mL4QZ
+         9Dosxro1Q/Ec8F1mSYvX4EMl1pJ+oT7ceQ1MFZge0yOmejAKLqAe5wbpKyzc+cmWl7KL
+         mO//w+qwQl63moMKv7Ga3BZh3daK4NW/MXF2RulJFv2YI3CYtKvJDhKRntoc2n/Kp+ct
+         zVnPy4CFXDGey15vl9eC0BrlINFrkvcmWTRUEtGIUUmh61H0WU/35LCom7eDfP6H6smA
+         tK4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=09wA+GGfZg7jRw4tYhn2ifyWoRW2GDPu42oIB0KGqIw=;
+        b=G0LU+ygEDx9w6T07EGVHPtK51/xCvr3bJgvetThbSc7nXQTNeCypFigk1degrxkbUM
+         NqXhw5zdJTOkUItJWBb7ck3XFLFMyJlX93CBEMvOYdGE0BWEtmFw/R2qJRlAFtAjYzWr
+         maG+/CJ/EWCp4uLIf+KBUx3pCFOitxrXzbCKxQEHM2ttUXVwmD13JAG4AsoOEQQei5lZ
+         mEYWfJFS0SmNTnWvaeyoziskQI7Ofk/8vY/RJxBEzvYVHwv+3Y3Sk8EGHhWxm+so+alW
+         xDYLOOjsPJ4fcGtiRZZHrHTKL+rrvmBmYmKiUgAgpnJlfeOi01KCfnoDiX4xfRJjFmVC
+         gMzA==
+X-Gm-Message-State: AOAM53326+ExhfWckewBmuQCSzyDHDwIRgP0ae94+tjCTXgul3p/UQrD
+        4z4agv8gmH1UQ6zT1+QYdnM=
+X-Google-Smtp-Source: ABdhPJxclBSKzY19F/jbnO3f5Hubq0scCu/5m5HFFmXMtcsDRLe8DodrjIi2fJK6KDuhhpXdcsNX2A==
+X-Received: by 2002:a05:620a:15f4:: with SMTP id p20mr13443318qkm.377.1595091769194;
+        Sat, 18 Jul 2020 10:02:49 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:a04e:6ffa:adfd:b8f? ([2601:282:803:7700:a04e:6ffa:adfd:b8f])
+        by smtp.googlemail.com with ESMTPSA id o12sm13929901qtl.48.2020.07.18.10.02.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 18 Jul 2020 10:02:47 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
+ discovery on encap sockets
+To:     Stefano Brivio <sbrivio@redhat.com>
+Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        aconole@redhat.com
+References: <20200712200705.9796-1-fw@strlen.de>
+ <20200712200705.9796-2-fw@strlen.de> <20200713003813.01f2d5d3@elisabeth>
+ <20200713080413.GL32005@breakpoint.cc>
+ <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
+ <20200713140219.GM32005@breakpoint.cc> <20200714143327.2d5b8581@redhat.com>
+ <20200715124258.GP32005@breakpoint.cc> <20200715153547.77dbaf82@elisabeth>
+ <20200715143356.GQ32005@breakpoint.cc> <20200717142743.6d05d3ae@elisabeth>
+ <89e5ec7b-845f-ab23-5043-73e797a29a14@gmail.com>
+ <20200718085645.7420da02@elisabeth>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9e47f521-b3dc-f116-658b-d6897b0ddf20@gmail.com>
+Date:   Sat, 18 Jul 2020 11:02:46 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200718093555.GA12912@earth.li>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200718085645.7420da02@elisabeth>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This switch has a single max frame size configuration register, so we
-track the requested MTU for each port and apply the largest.
+On 7/18/20 12:56 AM, Stefano Brivio wrote:
+> On Fri, 17 Jul 2020 09:04:51 -0600
+> David Ahern <dsahern@gmail.com> wrote:
+> 
+>> On 7/17/20 6:27 AM, Stefano Brivio wrote:
+>>>>  
+>>>>> Note that this doesn't work as it is because of a number of reasons
+>>>>> (skb doesn't have a dst, pkt_type is not PACKET_HOST), and perhaps we
+>>>>> shouldn't be using icmp_send(), but at a glance that looks simpler.    
+>>>>
+>>>> Yes, it also requires that the bridge has IP connectivity
+>>>> to reach the inner ip, which might not be the case.  
+>>>
+>>> If the VXLAN endpoint is a port of the bridge, that needs to be the
+>>> case, right? Otherwise the VXLAN endpoint can't be reached.
+>>>   
+>>>>> Another slight preference I have towards this idea is that the only
+>>>>> known way we can break PMTU discovery right now is by using a bridge,
+>>>>> so fixing the problem there looks more future-proof than addressing any
+>>>>> kind of tunnel with this problem. I think FoU and GUE would hit the
+>>>>> same problem, I don't know about IP tunnels, sticking that selftest
+>>>>> snippet to whatever other test in pmtu.sh should tell.    
+>>>>
+>>>> Every type of bridge port that needs to add additional header on egress
+>>>> has this problem in the bridge scenario once the peer of the IP tunnel
+>>>> signals a PMTU event.  
+>>>
+>>> Yes :(
+>>
+>> The vxlan/tunnel device knows it is a bridge port, and it knows it is
+>> going to push a udp and ip{v6} header. So why not use that information
+>> in setting / updating the MTU? That's what I was getting at on Monday
+>> with my comment about lwtunnel_headroom equivalent.
+> 
+> If I understand correctly, you're proposing something similar to my
+> earlier draft from:
+> 
+> 	<20200713003813.01f2d5d3@elisabeth>
+> 	https://lore.kernel.org/netdev/20200713003813.01f2d5d3@elisabeth/
+> 
+> the problem with it is that it wouldn't help: the MTU is already set to
+> the right value for both port and bridge in the case Florian originally
+> reported.
 
-v2:
-- Address review feedback from Vladimir Oltean
+I am definitely hand waving; I have not had time to create a setup
+showing the problem. Is there a reproducer using only namespaces?
 
-Signed-off-by: Jonathan McDowell <noodles@earth.li>
----
- drivers/net/dsa/qca8k.c | 31 +++++++++++++++++++++++++++++++
- drivers/net/dsa/qca8k.h |  3 +++
- 2 files changed, 34 insertions(+)
+> 
+> Also, given the implications on overriding configured MTUs, and
+> introducing (further) IP logic into the bridge, if Florian's idea of
+> injecting ICMP messages could be implemented in a generic function:
+> 
+> On Wed, 15 Jul 2020 16:33:56 +0200
+> Florian Westphal <fw@strlen.de> wrote:
+> 
+>> Yes, it might be possible to move the proposed icmp inject into
+>> skb_tunnel_check_pmtu() -- it gets the needed headroom passed as arg,
+>> it could detect when device driver is in a bridge and it already knows
+>> when skb has no dst entry that it a pmtu change could be propagated to.
+> 
+> I think that would be preferable: then it's fixed for all tunnels in a
+> generic, probably simpler way, without those two issues.
+> 
+> But then again, we're talking about Linux bridge. Unfortunately this
+> doesn't fix the problem with Open vSwitch either.
+> 
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 4acad5fa0c84..a5566de82853 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -670,6 +670,11 @@ qca8k_setup(struct dsa_switch *ds)
- 		}
- 	}
- 
-+	/* Setup our port MTUs to match power on defaults */
-+	for (i = 0; i < QCA8K_NUM_PORTS; i++)
-+		priv->port_mtu[i] = ETH_FRAME_LEN + ETH_FCS_LEN;
-+	qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, ETH_FRAME_LEN + ETH_FCS_LEN);
-+
- 	/* Flush the FDB table */
- 	qca8k_fdb_flush(priv);
- 
-@@ -1098,6 +1103,30 @@ qca8k_port_disable(struct dsa_switch *ds, int port)
- 	priv->port_sts[port].enabled = 0;
- }
- 
-+static int
-+qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
-+{
-+	struct qca8k_priv *priv = ds->priv;
-+	int i, mtu = 0;
-+
-+	priv->port_mtu[port] = new_mtu;
-+
-+	for (i = 0; i < QCA8K_NUM_PORTS; i++)
-+		if (priv->port_mtu[port] > mtu)
-+			mtu = priv->port_mtu[port];
-+
-+	/* Include L2 header / FCS length */
-+	qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, mtu + ETH_HLEN + ETH_FCS_LEN);
-+
-+	return 0;
-+}
-+
-+static int
-+qca8k_port_max_mtu(struct dsa_switch *ds, int port)
-+{
-+	return QCA8K_MAX_MTU;
-+}
-+
- static int
- qca8k_port_fdb_insert(struct qca8k_priv *priv, const u8 *addr,
- 		      u16 port_mask, u16 vid)
-@@ -1174,6 +1203,8 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.set_mac_eee		= qca8k_set_mac_eee,
- 	.port_enable		= qca8k_port_enable,
- 	.port_disable		= qca8k_port_disable,
-+	.port_change_mtu	= qca8k_port_change_mtu,
-+	.port_max_mtu		= qca8k_port_max_mtu,
- 	.port_stp_state_set	= qca8k_port_stp_state_set,
- 	.port_bridge_join	= qca8k_port_bridge_join,
- 	.port_bridge_leave	= qca8k_port_bridge_leave,
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 10ef2bca2cde..31439396401c 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -13,6 +13,7 @@
- #include <linux/gpio.h>
- 
- #define QCA8K_NUM_PORTS					7
-+#define QCA8K_MAX_MTU					9000
- 
- #define PHY_ID_QCA8337					0x004dd036
- #define QCA8K_ID_QCA8337				0x13
-@@ -58,6 +59,7 @@
- #define   QCA8K_MDIO_MASTER_MAX_REG			32
- #define QCA8K_GOL_MAC_ADDR0				0x60
- #define QCA8K_GOL_MAC_ADDR1				0x64
-+#define QCA8K_MAX_FRAME_SIZE				0x78
- #define QCA8K_REG_PORT_STATUS(_i)			(0x07c + (_i) * 4)
- #define   QCA8K_PORT_STATUS_SPEED			GENMASK(1, 0)
- #define   QCA8K_PORT_STATUS_SPEED_10			0
-@@ -189,6 +191,7 @@ struct qca8k_priv {
- 	struct device *dev;
- 	struct dsa_switch_ops ops;
- 	struct gpio_desc *reset_gpio;
-+	unsigned int port_mtu[QCA8K_NUM_PORTS];
- };
- 
- struct qca8k_mib_desc {
--- 
-2.27.0
-
+Of course. (insert sarcastic jab at ovs here)
