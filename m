@@ -2,115 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE53C224D94
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 21:17:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D1F1224DC5
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 22:08:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727771AbgGRSx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 14:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
+        id S1727943AbgGRUGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 16:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726155AbgGRSx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 14:53:56 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED289C0619D2
-        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 11:53:55 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id a9so2402643pjd.3
-        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 11:53:55 -0700 (PDT)
+        with ESMTP id S1726798AbgGRUGp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 16:06:45 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98622C0619D2
+        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 13:06:45 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id t18so10108100ilh.2
+        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 13:06:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KQ0gu/5Hh5Q+9P9R+O/Myovmxbwkp3lHGHtP06q+gic=;
-        b=k/rCH+bE4VDJdnsnQph887pSuAPa1DklyXIO/nVVTnsJ/bAj3Aey62Zl/cC3QSYV27
-         gDKNV9gZtXVNg/a48K4uWok6wwbLR9VxQdk1unpnGVIXXzXSrSbejEm3RJOWxUr1xcjP
-         7oGpPmm4hQuK3W569hNs5UM8FHKCkFmEpzGpOwHXRS29LpCoThD2xMQDx6iM4Ux82iWn
-         1ZlSoeaFZWuDIWZ6ogolUbF4QIko9m/nvt3S3UG9DayyyGdPdoKXthXLsZRhkY8L8ohO
-         KlHbM/kfzZjwLUj+xo/TgwZCsz7gTQBK1/L9EPbzFFt4LOPYxWoHtWaFo+CKFQCj5TCK
-         3qyA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zdajPHe1Y6e7re7sCeMb0zevby1pvJpN63Ef3zZqwbA=;
+        b=SKAyX9zRqcuGyadMKthXSVDP5Cxz0tEzXO0syLunJFuyqFc9rL9a8HB9UdFSrFxvfq
+         4f5S5W7AKLEeENujbIlVrw6wg8cAHBGAvT5XVe3Ky0UYmM9dLaeujOTvvCege7KCW5us
+         HSLTge7VmzHJgXLrQKs45HlnJ9Eox3zNNuja2tFHcV2rc2u8p6pT+bLB8uBVyQvr5LIp
+         MlaXEMs01cNO8vmT9C0q8L8QtyV83YnMd02FRySamJmi/9W8QJJEaAnpmNT8EAOD0Xux
+         LOXZpZbr9L/K6a7Bi8tDakHDfm0qJgxuIiSa3+2W6WiKoahrcznDDOosSOqVIKLizZHw
+         Gk2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KQ0gu/5Hh5Q+9P9R+O/Myovmxbwkp3lHGHtP06q+gic=;
-        b=hJVetq487hM3V3ahoMgIcWM7/H2c/3rm5+nCcSx0MOBlfYCXtmWXb71zd+7J2GYrT2
-         Csw6bFYJT70l9/pP1m1D8pRqPFNiW+i8jpfbGKLtT0mr/6o/Dj2gv4WWT9hwomeROgK+
-         QENQaNPdNLXNC+O2tDzn9CS+KS7hEdYb4zT16II+9+lIO+VfTDADQC3F/CYm5Ht5rP71
-         eUZWK4s57y1JBf9DkkKXGW0e2WJd0FN+qE3/fstaS1hRrgGUO7d3D3vUi9ZQwFqXLaQ5
-         KUUg7uvKaA0Y+LIfkSahRvdhvO30WRFReiZFwNJgi2QslffyiNqzv4KzngA2QB/uw+P1
-         wxdQ==
-X-Gm-Message-State: AOAM530UiMM5TNWwahzgVQlti/G519bdofCuVsCByrXaZ9Ovu5FrAWrw
-        DRm5NT0+JtvT7YtN45NNQRc=
-X-Google-Smtp-Source: ABdhPJyYUvpgUCAhGyBdNw1j0oD/lFY+5UPxawhwfYC652pWEs7ATpP2r3YFMgr7x+jZXnFfQkL/0A==
-X-Received: by 2002:a17:902:d34a:: with SMTP id l10mr12308013plk.190.1595098435372;
-        Sat, 18 Jul 2020 11:53:55 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id j8sm11572930pfd.145.2020.07.18.11.53.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Jul 2020 11:53:54 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/4] net: dsa: Add wrappers for overloaded
- ndo_ops
-To:     kernel test robot <lkp@intel.com>, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-References: <20200718030533.171556-3-f.fainelli@gmail.com>
- <202007181226.RGMXcERR%lkp@intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <df5b74aa-0b5f-555b-fe96-8db98cd24900@gmail.com>
-Date:   Sat, 18 Jul 2020 11:53:52 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zdajPHe1Y6e7re7sCeMb0zevby1pvJpN63Ef3zZqwbA=;
+        b=ukLede4ILiNh4LjnGsX4o9mwE00MOqvfVN0pdQwN1MJ9bgGBxWOo8CnCQ4G2yr5/qE
+         ijTmQIfGWa6LBNVKrz5yA36MH5VEaaEvMuxZgaYaoyZkyb47WPvyocVJbtVz6deWTMPl
+         8EdxlxOaXIJi9HIKZRDOpQYFJY4AnZMZPEg2oQt9yd2gIRn5Y2XozjJcAOr09MK6Wq0E
+         E2R3WqpZCEJT91kg2BpCENeIJc9kELezfHlw6X4ZyXTWLcwVaom4tiA5SLL1m0IuEPe4
+         ZdgAQCitkddynMW+nD2foSEJ0hwIwUH/Mv1vYayNvrWjbP+jW1HcnP+SkskSDEXIYEX4
+         BKig==
+X-Gm-Message-State: AOAM531nTwQZCY6G1ztd+LcsX+t1eWVLff/Cn3wFUq4APwapdv03WOfb
+        w82RnMS6OKCva+oJii756rM/qc6nR+xrBNu9ao3zzcWMXbE=
+X-Google-Smtp-Source: ABdhPJyF0euK3h9OIUQZ7eIGqexTlTFluKjElFojprKvYKiRzioczweWGqUgy4noF5Ewf03nnMczZfU1n2NB+2dnwaM=
+X-Received: by 2002:a92:5857:: with SMTP id m84mr15461878ilb.144.1595102804787;
+ Sat, 18 Jul 2020 13:06:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <202007181226.RGMXcERR%lkp@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200718071306.9734-1-ap420073@gmail.com>
+In-Reply-To: <20200718071306.9734-1-ap420073@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 18 Jul 2020 13:06:33 -0700
+Message-ID: <CAM_iQpU+ROfk4PAjB4sZawCSb0Q8QSn5kLJ9cczd=L+svx33Hw@mail.gmail.com>
+Subject: Re: [PATCH net] bonding: check error value of register_netdevice() immediately
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        WANG Cong <amwang@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jul 18, 2020 at 12:14 AM Taehee Yoo <ap420073@gmail.com> wrote:
+>
+> If register_netdevice() is failed, net_device should not be used
+> because variables are uninitialized or freed.
+> So, the routine should be stopped immediately.
+> But, bond_create() doesn't check return value of register_netdevice()
+> immediately. That will result in a panic because of using uninitialized
+> or freed memory.
+>
+> Test commands:
+>     modprobe netdev-notifier-error-inject
+>     echo -22 > /sys/kernel/debug/notifier-error-inject/netdev/\
+> actions/NETDEV_REGISTER/error
+>     modprobe bonding max_bonds=3
+>
+> Splat looks like:
+> [  375.028492][  T193] general protection fault, probably for non-canonical address 0x6b6b6b6b6b6b6b6b: 0000 [#1] SMP DEBUG_PAGEALLOC PTI
+> [  375.033207][  T193] CPU: 2 PID: 193 Comm: kworker/2:2 Not tainted 5.8.0-rc4+ #645
+> [  375.036068][  T193] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+> [  375.039673][  T193] Workqueue: events linkwatch_event
+> [  375.041557][  T193] RIP: 0010:dev_activate+0x4a/0x340
+> [  375.043381][  T193] Code: 40 a8 04 0f 85 db 00 00 00 8b 83 08 04 00 00 85 c0 0f 84 0d 01 00 00 31 d2 89 d0 48 8d 04 40 48 c1 e0 07 48 03 83 00 04 00 00 <48> 8b 48 10 f6 41 10 01 75 08 f0 80 a1 a0 01 00 00 fd 48 89 48 08
+> [  375.050267][  T193] RSP: 0018:ffff9f8facfcfdd8 EFLAGS: 00010202
+> [  375.052410][  T193] RAX: 6b6b6b6b6b6b6b6b RBX: ffff9f8fae6ea000 RCX: 0000000000000006
+> [  375.055178][  T193] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff9f8fae6ea000
+> [  375.057762][  T193] RBP: ffff9f8fae6ea000 R08: 0000000000000000 R09: 0000000000000000
+> [  375.059810][  T193] R10: 0000000000000001 R11: 0000000000000000 R12: ffff9f8facfcfe08
+> [  375.061892][  T193] R13: ffffffff883587e0 R14: 0000000000000000 R15: ffff9f8fae6ea580
+> [  375.063931][  T193] FS:  0000000000000000(0000) GS:ffff9f8fbae00000(0000) knlGS:0000000000000000
+> [  375.066239][  T193] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  375.067841][  T193] CR2: 00007f2f542167a0 CR3: 000000012cee6002 CR4: 00000000003606e0
+> [  375.069657][  T193] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [  375.071471][  T193] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [  375.073269][  T193] Call Trace:
+> [  375.074005][  T193]  linkwatch_do_dev+0x4d/0x50
+> [  375.075052][  T193]  __linkwatch_run_queue+0x10b/0x200
+> [  375.076244][  T193]  linkwatch_event+0x21/0x30
+> [  375.077274][  T193]  process_one_work+0x252/0x600
+> [  375.078379][  T193]  ? process_one_work+0x600/0x600
+> [  375.079518][  T193]  worker_thread+0x3c/0x380
+> [  375.080534][  T193]  ? process_one_work+0x600/0x600
+> [  375.081668][  T193]  kthread+0x139/0x150
+> [  375.082567][  T193]  ? kthread_park+0x90/0x90
+> [  375.083567][  T193]  ret_from_fork+0x22/0x30
+>
+> Fixes: 9e2e61fbf8ad ("bonding: fix potential deadlock in bond_uninit()")
 
+I doubt this is the first offending commit. At that time, the only
+thing after register_netdevice() was rtnl_unlock(). I think it is
+commit e826eafa65c6f1f7c8db5a237556cebac57ebcc5 which
+introduced the bug, as it is the first commit puts something between
+register_netdevice() and rtnl_unlock().
 
-On 7/17/2020 9:53 PM, kernel test robot wrote:
-> Hi Florian,
-> 
-> I love your patch! Perhaps something to improve:
-> 
-> [auto build test WARNING on net-next/master]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Florian-Fainelli/net-dsa-Setup-dsa_netdev_ops/20200718-110931
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git dcc82bb0727c08f93a91fa7532b950bafa2598f2
-> config: i386-allyesconfig (attached as .config)
-> compiler: gcc-9 (Debian 9.3.0-14) 9.3.0
-> reproduce (this is a W=1 build):
->         # save the attached .config to linux build tree
->         make W=1 ARCH=i386 
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>):
-> 
->    In file included from drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c:18:
->>> include/net/dsa.h:720:1: warning: 'inline' is not at beginning of declaration [-Wold-style-declaration]
->      720 | dsa_build_ndo_op(ndo_do_ioctl, struct ifreq *, ifr, int, cmd);
->          | ^~~~~~~~~~~~~~~~
->    include/net/dsa.h:721:1: warning: 'inline' is not at beginning of declaration [-Wold-style-declaration]
->      721 | dsa_build_ndo_op(ndo_get_phys_port_name, char *, name, size_t, len);
->          | ^~~~~~~~~~~~~~~~
-> 
-> vim +/inline +720 include/net/dsa.h
+But this patch itself is obviously correct.
 
-This is a macro invocation, not function declaration so I am not exactly
-sure why this is a problem here? I could capitalize the macro name if
-that avoids the compiler thinking this is a function declaration or move
-out the static inline away from the macro invocation.
--- 
-Florian
+Thanks.
