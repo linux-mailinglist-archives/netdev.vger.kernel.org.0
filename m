@@ -2,76 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9603224A86
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 12:03:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18210224A83
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 12:02:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726818AbgGRKDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 06:03:34 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:41372 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726191AbgGRKDd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Jul 2020 06:03:33 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 88E1626DBED3CA935B7C;
-        Sat, 18 Jul 2020 18:03:30 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Sat, 18 Jul 2020
- 18:03:21 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <UNGLinuxDriver@microchip.com>, <vladimir.oltean@nxp.com>,
-        <claudiu.manoil@nxp.com>, <alexandre.belloni@bootlin.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <wanghai38@huawei.com>
-Subject: [PATCH] net: dsa: felix: Make some symbols static
-Date:   Sat, 18 Jul 2020 18:01:58 +0800
-Message-ID: <20200718100158.31878-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726713AbgGRKCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 06:02:51 -0400
+Received: from smtp.al2klimov.de ([78.46.175.9]:59602 "EHLO smtp.al2klimov.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726191AbgGRKCu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Jul 2020 06:02:50 -0400
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by smtp.al2klimov.de (Postfix) with ESMTPA id 7543CBC053;
+        Sat, 18 Jul 2020 10:02:46 +0000 (UTC)
+From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
+To:     stas.yakovlev@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        corbet@lwn.net, kvalo@codeaurora.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Subject: [PATCH] ipw2x00: Replace HTTP links with HTTPS ones
+Date:   Sat, 18 Jul 2020 12:02:40 +0200
+Message-Id: <20200718100240.98593-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++++++
+X-Spam-Level: ******
+Authentication-Results: smtp.al2klimov.de;
+        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix sparse build warning:
+Rationale:
+Reduces attack surface on kernel devs opening the links for MITM
+as HTTPS traffic is much harder to manipulate.
 
-drivers/net/dsa/ocelot/felix_vsc9959.c:560:19: warning:
- symbol 'vsc9959_vcap_is2_keys' was not declared. Should it be static?
-drivers/net/dsa/ocelot/felix_vsc9959.c:640:19: warning:
- symbol 'vsc9959_vcap_is2_actions' was not declared. Should it be static?
+Deterministic algorithm:
+For each file:
+  If not .svg:
+    For each line:
+      If doesn't contain `\bxmlns\b`:
+        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
+	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
+            If both the HTTP and HTTPS versions
+            return 200 OK and serve the same content:
+              Replace HTTP with HTTPS.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Continuing my work started at 93431e0607e5.
+ See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 1dd9e348152d..2067776773f7 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -557,7 +557,7 @@ static const struct ocelot_stat_layout vsc9959_stats_layout[] = {
- 	{ .offset = 0x111,	.name = "drop_green_prio_7", },
- };
+ If there are any URLs to be removed completely
+ or at least not (just) HTTPSified:
+ Just clearly say so and I'll *undo my change*.
+ See also: https://lkml.org/lkml/2020/6/27/64
+
+ If there are any valid, but yet not changed URLs:
+ See: https://lkml.org/lkml/2020/6/26/837
+
+ If you apply the patch, please let me know.
+
+
+ Documentation/networking/device_drivers/intel/ipw2100.rst | 2 +-
+ drivers/net/wireless/intel/ipw2x00/Kconfig                | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/networking/device_drivers/intel/ipw2100.rst b/Documentation/networking/device_drivers/intel/ipw2100.rst
+index d54ad522f937..883e96355799 100644
+--- a/Documentation/networking/device_drivers/intel/ipw2100.rst
++++ b/Documentation/networking/device_drivers/intel/ipw2100.rst
+@@ -78,7 +78,7 @@ such, if you are interested in deploying or shipping a driver as part of
+ solution intended to be used for purposes other than development, please
+ obtain a tested driver from Intel Customer Support at:
  
--struct vcap_field vsc9959_vcap_is2_keys[] = {
-+static struct vcap_field vsc9959_vcap_is2_keys[] = {
- 	/* Common: 41 bits */
- 	[VCAP_IS2_TYPE]				= {  0,   4},
- 	[VCAP_IS2_HK_FIRST]			= {  4,   1},
-@@ -637,7 +637,7 @@ struct vcap_field vsc9959_vcap_is2_keys[] = {
- 	[VCAP_IS2_HK_OAM_IS_Y1731]		= {182,   1},
- };
+-http://www.intel.com/support/wireless/sb/CS-006408.htm
++https://www.intel.com/support/wireless/sb/CS-006408.htm
  
--struct vcap_field vsc9959_vcap_is2_actions[] = {
-+static struct vcap_field vsc9959_vcap_is2_actions[] = {
- 	[VCAP_IS2_ACT_HIT_ME_ONCE]		= {  0,  1},
- 	[VCAP_IS2_ACT_CPU_COPY_ENA]		= {  1,  1},
- 	[VCAP_IS2_ACT_CPU_QU_NUM]		= {  2,  3},
+ 1. Introduction
+ ===============
+diff --git a/drivers/net/wireless/intel/ipw2x00/Kconfig b/drivers/net/wireless/intel/ipw2x00/Kconfig
+index d00386915a9d..f3e09b630d8b 100644
+--- a/drivers/net/wireless/intel/ipw2x00/Kconfig
++++ b/drivers/net/wireless/intel/ipw2x00/Kconfig
+@@ -28,7 +28,7 @@ config IPW2100
+ 	  You will also very likely need the Wireless Tools in order to
+ 	  configure your card:
+ 
+-	  <http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html>.
++	  <https://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html>.
+ 
+ 	  It is recommended that you compile this driver as a module (M)
+ 	  rather than built-in (Y). This driver requires firmware at device
+@@ -90,7 +90,7 @@ config IPW2200
+ 	  You will also very likely need the Wireless Tools in order to
+ 	  configure your card:
+ 
+-	  <http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html>.
++	  <https://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html>.
+ 
+ 	  It is recommended that you compile this driver as a module (M)
+ 	  rather than built-in (Y). This driver requires firmware at device
 -- 
-2.17.1
+2.27.0
 
