@@ -2,103 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CC0B224A90
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 12:13:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C1C224A9D
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 12:30:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726566AbgGRKNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 06:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbgGRKNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 06:13:07 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E3EC0619D2
-        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 03:13:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=bk98XQb9/fe0ROMPSd2CvdtylhQmkJ0bV/NDgJ1V1tM=; b=qzbCzKsPHd5RpJj51GYfXhYFi
-        RKtYOkwo4EaY8G1BiR9wGLp+G73yoMW7fEr+SBCIdmfJ6RxF+54jgEbRM1YrBjyXKDDXsZMki2nIV
-        DlCGRf/bsVM/my0NNEXHiufwh7LyYvse2Zak9+fUvl6EZsCE6YwKy87mmIVO6wM0Mwy7KNwVlBYZw
-        40T50Vxd8tLtNGeHgUkYKNVQhgZyHtM+dZM84YK8JGylVENKhTnYBcJ2lwdzDyfOr0vvaJuGw180S
-        nQICWcPofcX48LLZaMEsmjTMSXhBQgH9dXO+LNRxcMUxLfrVaeb7qYCqDnfES4JE2g3zwmEa31Dt0
-        b/BX6kaNw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41022)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jwjq2-0001WR-Dx; Sat, 18 Jul 2020 11:13:02 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jwjpz-0002rF-Te; Sat, 18 Jul 2020 11:12:59 +0100
-Date:   Sat, 18 Jul 2020 11:12:59 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Martin Rowe <martin.p.rowe@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        davem@davemloft.net, vivien.didelot@gmail.com
-Subject: Re: bug: net: dsa: mv88e6xxx: unable to tx or rx with Clearfog GT 8K
- (with git bisect)
-Message-ID: <20200718101259.GO1551@shell.armlinux.org.uk>
-References: <20200712132554.GS1551@shell.armlinux.org.uk>
- <CAOAjy5T0oNJBsjru9r7MPu_oO8TSpY4PKDg7whq4yBJE12mPaA@mail.gmail.com>
- <20200717092153.GK1551@shell.armlinux.org.uk>
- <CAOAjy5RNz8mGi4XjP_8x-aZo5VhXRFF446R7NgcQGEKWVpUV1Q@mail.gmail.com>
- <20200717185119.GL1551@shell.armlinux.org.uk>
- <20200717194237.GE1339445@lunn.ch>
- <20200717212605.GM1551@shell.armlinux.org.uk>
- <CAOAjy5Q-OdMhSG-EKAnAgwoQzF+C6zuYD9=a9Rm4zVVVWfMf6w@mail.gmail.com>
- <20200718085028.GN1551@shell.armlinux.org.uk>
- <CAOAjy5SewXHQVnywzin-2LiqWyPcjTvG9zzaiVRtwfCG=jU1Kw@mail.gmail.com>
+        id S1726968AbgGRKam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 06:30:42 -0400
+Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:42033 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726962AbgGRKal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 06:30:41 -0400
+Received: from localhost.localdomain ([93.22.37.252])
+        by mwinf5d41 with ME
+        id 4aWa2300L5SQgGV03aWbBS; Sat, 18 Jul 2020 12:30:38 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 18 Jul 2020 12:30:38 +0200
+X-ME-IP: 93.22.37.252
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     isdn@linux-pingi.de, davem@davemloft.net,
+        sergey.senozhatsky@gmail.com, wangkefeng.wang@huawei.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] mISDN: switch from 'pci_' to 'dma_' API
+Date:   Sat, 18 Jul 2020 12:30:33 +0200
+Message-Id: <20200718103033.352247-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOAjy5SewXHQVnywzin-2LiqWyPcjTvG9zzaiVRtwfCG=jU1Kw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 18, 2020 at 09:43:47AM +0000, Martin Rowe wrote:
-> On Sat, 18 Jul 2020 at 08:50, Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> > Sorry, it should have been ``managed = "in-band-status";'' rather than
-> > just "in-band".
-> 
-> Below are the outputs with "in-band-status". It functions the same as
-> not reverting the patch; interface comes up, when bridged the two
-> physical machines connected can ping each other, but nothing can tx or
-> rx from the GT 8K.
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-Okay, on top of those changes, please also add this:
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 17883e8712e0..2e361bbf3b4f 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -676,6 +676,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
- 		return;
+When memory is allocated in 'setup_hw()' (hfcpci.c) GFP_KERNEL can be used
+because it is called from the probe function and no lock is taken.
+The call chain is:
+   hfc_probe()
+   --> setup_card()
+   --> setup_hw()
+
+When memory is allocated in 'inittiger()' (netjet.c) GFP_ATOMIC must be
+used because a spin_lock is taken by the caller (i.e. 'nj_init_card()')
+This is also consistent with the other allocations done in the function.
+
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/isdn/hardware/mISDN/hfcpci.c | 12 +++++++-----
+ drivers/isdn/hardware/mISDN/netjet.c |  8 ++++----
+ 2 files changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware/mISDN/hfcpci.c
+index abdf787c1a71..904a4f4c5ff9 100644
+--- a/drivers/isdn/hardware/mISDN/hfcpci.c
++++ b/drivers/isdn/hardware/mISDN/hfcpci.c
+@@ -158,7 +158,8 @@ release_io_hfcpci(struct hfc_pci *hc)
+ 	/* disable memory mapped ports + busmaster */
+ 	pci_write_config_word(hc->pdev, PCI_COMMAND, 0);
+ 	del_timer(&hc->hw.timer);
+-	pci_free_consistent(hc->pdev, 0x8000, hc->hw.fifos, hc->hw.dmahandle);
++	dma_free_coherent(&hc->pdev->dev, 0x8000, hc->hw.fifos,
++			  hc->hw.dmahandle);
+ 	iounmap(hc->hw.pci_io);
+ }
  
- 	mv88e6xxx_reg_lock(chip);
-+	if (mode == MLO_AN_INBAND && chip->info->ops->port_set_link)
-+		chip->info->ops->port_set_link(chip, port, LINK_FORCED_DOWN);
-+
- 	/* FIXME: should we force the link down here - but if we do, how
- 	 * do we restore the link force/unforce state? The driver layering
- 	 * gets in the way.
-@@ -692,6 +695,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
- 	if (err > 0)
- 		err = 0;
+@@ -2004,8 +2005,9 @@ setup_hw(struct hfc_pci *hc)
+ 	}
+ 	/* Allocate memory for FIFOS */
+ 	/* the memory needs to be on a 32k boundary within the first 4G */
+-	pci_set_dma_mask(hc->pdev, 0xFFFF8000);
+-	buffer = pci_alloc_consistent(hc->pdev, 0x8000, &hc->hw.dmahandle);
++	dma_set_mask(&hc->pdev->dev, 0xFFFF8000);
++	buffer = dma_alloc_coherent(&hc->pdev->dev, 0x8000, &hc->hw.dmahandle,
++				    GFP_KERNEL);
+ 	/* We silently assume the address is okay if nonzero */
+ 	if (!buffer) {
+ 		printk(KERN_WARNING
+@@ -2018,8 +2020,8 @@ setup_hw(struct hfc_pci *hc)
+ 	if (unlikely(!hc->hw.pci_io)) {
+ 		printk(KERN_WARNING
+ 		       "HFC-PCI: Error in ioremap for PCI!\n");
+-		pci_free_consistent(hc->pdev, 0x8000, hc->hw.fifos,
+-				    hc->hw.dmahandle);
++		dma_free_coherent(&hc->pdev->dev, 0x8000, hc->hw.fifos,
++				  hc->hw.dmahandle);
+ 		return 1;
+ 	}
  
-+	if (mode == MLO_AN_INBAND && chip->info->ops->port_set_link)
-+		chip->info->ops->port_set_link(chip, port, LINK_UNFORCED);
-+
- err_unlock:
- 	mv88e6xxx_reg_unlock(chip);
+diff --git a/drivers/isdn/hardware/mISDN/netjet.c b/drivers/isdn/hardware/mISDN/netjet.c
+index 6aae97e827b7..ee925b58bbce 100644
+--- a/drivers/isdn/hardware/mISDN/netjet.c
++++ b/drivers/isdn/hardware/mISDN/netjet.c
+@@ -297,8 +297,8 @@ inittiger(struct tiger_hw *card)
+ {
+ 	int i;
  
+-	card->dma_p = pci_alloc_consistent(card->pdev, NJ_DMA_SIZE,
+-					   &card->dma);
++	card->dma_p = dma_alloc_coherent(&card->pdev->dev, NJ_DMA_SIZE,
++					 &card->dma, GFP_ATOMIC);
+ 	if (!card->dma_p) {
+ 		pr_info("%s: No DMA memory\n", card->name);
+ 		return -ENOMEM;
+@@ -965,8 +965,8 @@ nj_release(struct tiger_hw *card)
+ 		kfree(card->bc[i].hrbuf);
+ 	}
+ 	if (card->dma_p)
+-		pci_free_consistent(card->pdev, NJ_DMA_SIZE,
+-				    card->dma_p, card->dma);
++		dma_free_coherent(&card->pdev->dev, NJ_DMA_SIZE, card->dma_p,
++				  card->dma);
+ 	write_lock_irqsave(&card_lock, flags);
+ 	list_del(&card->list);
+ 	write_unlock_irqrestore(&card_lock, flags);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
