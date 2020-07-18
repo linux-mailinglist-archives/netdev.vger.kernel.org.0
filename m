@@ -2,153 +2,383 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B1C4224AD4
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 12:54:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D419224ADD
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 13:03:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727065AbgGRKyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 06:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726855AbgGRKyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 06:54:16 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E1AC0619D2;
-        Sat, 18 Jul 2020 03:54:16 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id b25so15443775ljp.6;
-        Sat, 18 Jul 2020 03:54:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=4+Us3oPEnWE7fXo4POm7jubr7S3pUf6WNnSSuhIFOYU=;
-        b=ZJEZwKJ6SACK6BlpXIjM3mrudlnE8Febg1rZVWioXZ6IQmaj4huzNHFfML6FAqYiun
-         QeuPublMctEtIBmR6iRRCm4fFOsJmKLeTqf2Md7wPUZDaVcAAjPlVNSN3N3ClQ/Mkr3P
-         hdalbU/fMgqwAhTTuTTKXwbk5R/Wg8ABbn/mmlYxNhBVrE+r4Y1k7jS/I7LmIXUntFdr
-         ve8A4TgcvCjabwIh0u/VvvZGD7ORTxlTJP/j5Jv5JvEKrirQ3B/OkV686ZEHrEbj2XVJ
-         eGB+L6MwAveKdaZyu5BUHKzPIrmh8AYzLqx6NqaTaw0CJG37f1V0wMzsHLSbnmpuwB6N
-         TnAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=4+Us3oPEnWE7fXo4POm7jubr7S3pUf6WNnSSuhIFOYU=;
-        b=bjwy4+Ur1U/viqyh3+RXtg7d7+Nho8ZMlofx0hkxJH9YWi7xwfhO0RFU6zVf00qECI
-         BSiDsZQFjz85p85s+ZsDxCXR+ptw97t7h+Xqv2sNK4qr62ww02jt9+Xd9V/Ze6aQYHea
-         ooEWLCzE8hfLRZBWEjT/RfKwkiuX+Fu0TqD6eWVZZZfXd2X2OdRfg4+R0dHyAlsORhE6
-         UMhOkM1mzCxlVfDN9OegTEVOxubg9cLtY8o49DOimmpdPPQd1yeR9nQ46VQWyDJYwnLT
-         zUT4k0AVKmVZBhfhPLl0IUyC5RdLE0DHVGarQ6/cO3CDpE3O13S5Kt4Mz8xv0lmiLdMx
-         xvEw==
-X-Gm-Message-State: AOAM53022KGH9jr7v2TiJ/XUlGCqY0l8OOSJjp64bSKGxA5G197KubLi
-        TC6rdGUv1OWYM0Ifd/RaIyOs/zLT
-X-Google-Smtp-Source: ABdhPJwMjNbt2whxYPQA2My4WfIF107OMmWcNbvRSwkRKWEnJGyZ0Tyu+jEHadZxnqOyQrY6WX4X0g==
-X-Received: by 2002:a2e:1514:: with SMTP id s20mr6019915ljd.455.1595069654384;
-        Sat, 18 Jul 2020 03:54:14 -0700 (PDT)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id g2sm2511992ljj.90.2020.07.18.03.54.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jul 2020 03:54:13 -0700 (PDT)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        richardcochran@gmail.com, linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next 0/3] Document more PTP timestamping known quirks
-References: <20200717161027.1408240-1-olteanv@gmail.com>
-        <87imelj14p.fsf@osv.gnss.ru> <20200717215719.nhuaak2xu4fwebqp@skbuf>
-Date:   Sat, 18 Jul 2020 13:54:11 +0300
-In-Reply-To: <20200717215719.nhuaak2xu4fwebqp@skbuf> (Vladimir Oltean's
-        message of "Sat, 18 Jul 2020 00:57:19 +0300")
-Message-ID: <878sfh2iwc.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        id S1726945AbgGRLDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 07:03:45 -0400
+Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:26306 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726528AbgGRLDp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 07:03:45 -0400
+Received: from localhost.localdomain ([93.22.37.252])
+        by mwinf5d41 with ME
+        id 4b3f2300S5SQgGV03b3gSr; Sat, 18 Jul 2020 13:03:42 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 18 Jul 2020 13:03:42 +0200
+X-ME-IP: 93.22.37.252
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     kuba@kernel.org, davem@davemloft.net, snelson@pensando.io,
+        leon@kernel.org, mst@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net/fealnx: switch from 'pci_' to 'dma_' API
+Date:   Sat, 18 Jul 2020 13:03:38 +0200
+Message-Id: <20200718110338.355408-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <olteanv@gmail.com> writes:
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-> On Sat, Jul 18, 2020 at 12:13:42AM +0300, Sergey Organov wrote:
->> Vladimir Oltean <olteanv@gmail.com> writes:
->> 
->> > I've tried to collect and summarize the conclusions of these discussions:
->> > https://patchwork.ozlabs.org/project/netdev/patch/20200711120842.2631-1-sorganov@gmail.com/
->> > https://patchwork.ozlabs.org/project/netdev/patch/20200710113611.3398-5-kurt@linutronix.de/
->> > which were a bit surprising to me. Make sure they are present in the
->> > documentation.
->> 
->> As one of participants of these discussions, I'm afraid I incline to
->> alternative approach to solving the issues current design has than the one
->> you advocate in these patch series.
->> 
->> I believe its upper-level that should enforce common policies like
->> handling hw time stamping at outermost capable device, not random MAC
->> driver out there.
->> 
->> I'd argue that it's then upper-level that should check PHY features, and
->> then do not bother MAC with ioctl() requests that MAC should not handle
->> in given configuration. This way, the checks for phy_has_hwtstamp()
->> won't be spread over multiple MAC drivers and will happily sit in the
->> upper-level ioctl() handler.
->> 
->> In other words, I mean that it's approach taken in ethtool that I tend
->> to consider being the right one.
->> 
->> Thanks,
->> -- Sergey
->
-> Concretely speaking, what are you going to do for
-> skb_defer_tx_timestamp() and skb_defer_rx_timestamp()? Not to mention
-> subtle bugs like SKBTX_IN_PROGRESS.
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
 
-I think that we have at least 2 problems here, and what I argue about
-above addresses one of them, while you try to get solution for another
-one.
+When memory is allocated, GFP_KERNEL can be used because it is called from
+the probe function (i.e. 'fealnx_init_one()') and no lock is taken.
 
-> If you don't address those, it's pointless to move the
-> phy_has_hwtstamp() check to net/core/dev_ioctl.c.
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
 
-No, even though solving one problem could be considered pointless
-without solving another, it doesn't mean that solving it is pointless. I
-do hope you will solve another one.
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
 
-I believe that logic in ethtool ioctl handling should be moved to clocks
-subsystem ioctl handling, and then ethtool should simply forward
-relevant calls to clocks subsystem. This will give us single
-implementation point that defines which ioctls go to which clocks, and
-single point where policy decisions are made, that, besides getting rid
-of current inconsistencies, will allow for easier changes of policies in
-the future.
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
 
-That also could be the point that caches time stamping configuration and
-gives it back to user space by ioctl request, freeing each driver from
-implementing it, along with copying request structures to/from user
-space that currently is done in every driver.
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
 
-I believe such changes are valuable despite particular way the
-SKBTX_IN_PROGRESS issue will be resolved.
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
 
-> The only way I see to fix the bug is to introduce a new netdev flag,
-> NETIF_F_PHY_HWTSTAMP or something like that. Then I'd grep for all
-> occurrences of phy_has_hwtstamp() in the kernel (which currently amount
-> to a whopping 2 users, 3 with your FEC "fix"), and declare this
-> netdevice flag in their list of features. Then, phy_has_hwtstamp() and
-> phy_has_tsinfo() and what not can be moved to generic places (or at
-> least, I think they can), and those places could proceed to advertise
-> and enable PHY timestamping only if the MAC declared itself ready. But,
-> it is a bit strange to introduce a netdev flag just to fix a bug, I
-> think.
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
 
-To me this sounds like a plan.
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
 
-In general (please don't take it as direct proposal to fix current
-issues), the most flexible solution would be to allow for user space to
-select which units will be time stamping (kernel clock being simply one
-of them), and to deliver all the time stamps to the user space. This
-will need clock IDs to be delivered along with time stamps (that is a
-nice thing to have by itself, as I already mentioned elsewhere in
-previous discussions.) For now it's just a raw idea, nevertheless to me
-it sounds like a suitable goal for future design.
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
 
-Thanks,
--- Sergey
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/fealnx.c | 91 ++++++++++++++++++++---------------
+ 1 file changed, 53 insertions(+), 38 deletions(-)
+
+diff --git a/drivers/net/ethernet/fealnx.c b/drivers/net/ethernet/fealnx.c
+index 73e896a7d8fd..c696651dd735 100644
+--- a/drivers/net/ethernet/fealnx.c
++++ b/drivers/net/ethernet/fealnx.c
+@@ -543,7 +543,8 @@ static int fealnx_init_one(struct pci_dev *pdev,
+ 	np->mii.phy_id_mask = 0x1f;
+ 	np->mii.reg_num_mask = 0x1f;
+ 
+-	ring_space = pci_alloc_consistent(pdev, RX_TOTAL_SIZE, &ring_dma);
++	ring_space = dma_alloc_coherent(&pdev->dev, RX_TOTAL_SIZE, &ring_dma,
++					GFP_KERNEL);
+ 	if (!ring_space) {
+ 		err = -ENOMEM;
+ 		goto err_out_free_dev;
+@@ -551,7 +552,8 @@ static int fealnx_init_one(struct pci_dev *pdev,
+ 	np->rx_ring = ring_space;
+ 	np->rx_ring_dma = ring_dma;
+ 
+-	ring_space = pci_alloc_consistent(pdev, TX_TOTAL_SIZE, &ring_dma);
++	ring_space = dma_alloc_coherent(&pdev->dev, TX_TOTAL_SIZE, &ring_dma,
++					GFP_KERNEL);
+ 	if (!ring_space) {
+ 		err = -ENOMEM;
+ 		goto err_out_free_rx;
+@@ -656,9 +658,11 @@ static int fealnx_init_one(struct pci_dev *pdev,
+ 	return 0;
+ 
+ err_out_free_tx:
+-	pci_free_consistent(pdev, TX_TOTAL_SIZE, np->tx_ring, np->tx_ring_dma);
++	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
++			  np->tx_ring_dma);
+ err_out_free_rx:
+-	pci_free_consistent(pdev, RX_TOTAL_SIZE, np->rx_ring, np->rx_ring_dma);
++	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, np->rx_ring,
++			  np->rx_ring_dma);
+ err_out_free_dev:
+ 	free_netdev(dev);
+ err_out_unmap:
+@@ -676,10 +680,10 @@ static void fealnx_remove_one(struct pci_dev *pdev)
+ 	if (dev) {
+ 		struct netdev_private *np = netdev_priv(dev);
+ 
+-		pci_free_consistent(pdev, TX_TOTAL_SIZE, np->tx_ring,
+-			np->tx_ring_dma);
+-		pci_free_consistent(pdev, RX_TOTAL_SIZE, np->rx_ring,
+-			np->rx_ring_dma);
++		dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
++				  np->tx_ring_dma);
++		dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, np->rx_ring,
++				  np->rx_ring_dma);
+ 		unregister_netdev(dev);
+ 		pci_iounmap(pdev, np->mem);
+ 		free_netdev(dev);
+@@ -1056,8 +1060,10 @@ static void allocate_rx_buffers(struct net_device *dev)
+ 			np->lack_rxbuf = np->lack_rxbuf->next_desc_logical;
+ 
+ 		np->lack_rxbuf->skbuff = skb;
+-		np->lack_rxbuf->buffer = pci_map_single(np->pci_dev, skb->data,
+-			np->rx_buf_sz, PCI_DMA_FROMDEVICE);
++		np->lack_rxbuf->buffer = dma_map_single(&np->pci_dev->dev,
++							skb->data,
++							np->rx_buf_sz,
++							DMA_FROM_DEVICE);
+ 		np->lack_rxbuf->status = RXOWN;
+ 		++np->really_rx_count;
+ 	}
+@@ -1251,8 +1257,10 @@ static void init_ring(struct net_device *dev)
+ 
+ 		++np->really_rx_count;
+ 		np->rx_ring[i].skbuff = skb;
+-		np->rx_ring[i].buffer = pci_map_single(np->pci_dev, skb->data,
+-			np->rx_buf_sz, PCI_DMA_FROMDEVICE);
++		np->rx_ring[i].buffer = dma_map_single(&np->pci_dev->dev,
++						       skb->data,
++						       np->rx_buf_sz,
++						       DMA_FROM_DEVICE);
+ 		np->rx_ring[i].status = RXOWN;
+ 		np->rx_ring[i].control |= RXIC;
+ 	}
+@@ -1290,8 +1298,8 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
+ #define one_buffer
+ #define BPT 1022
+ #if defined(one_buffer)
+-	np->cur_tx_copy->buffer = pci_map_single(np->pci_dev, skb->data,
+-		skb->len, PCI_DMA_TODEVICE);
++	np->cur_tx_copy->buffer = dma_map_single(&np->pci_dev->dev, skb->data,
++						 skb->len, DMA_TO_DEVICE);
+ 	np->cur_tx_copy->control = TXIC | TXLD | TXFD | CRCEnable | PADEnable;
+ 	np->cur_tx_copy->control |= (skb->len << PKTSShift);	/* pkt size */
+ 	np->cur_tx_copy->control |= (skb->len << TBSShift);	/* buffer size */
+@@ -1306,8 +1314,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
+ 		struct fealnx_desc *next;
+ 
+ 		/* for the first descriptor */
+-		np->cur_tx_copy->buffer = pci_map_single(np->pci_dev, skb->data,
+-			BPT, PCI_DMA_TODEVICE);
++		np->cur_tx_copy->buffer = dma_map_single(&np->pci_dev->dev,
++							 skb->data, BPT,
++							 DMA_TO_DEVICE);
+ 		np->cur_tx_copy->control = TXIC | TXFD | CRCEnable | PADEnable;
+ 		np->cur_tx_copy->control |= (skb->len << PKTSShift);	/* pkt size */
+ 		np->cur_tx_copy->control |= (BPT << TBSShift);	/* buffer size */
+@@ -1321,8 +1330,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
+ // 89/12/29 add,
+ 		if (np->pci_dev->device == 0x891)
+ 			np->cur_tx_copy->control |= ETIControl | RetryTxLC;
+-		next->buffer = pci_map_single(ep->pci_dev, skb->data + BPT,
+-                                skb->len - BPT, PCI_DMA_TODEVICE);
++		next->buffer = dma_map_single(&ep->pci_dev->dev,
++					      skb->data + BPT, skb->len - BPT,
++					      DMA_TO_DEVICE);
+ 
+ 		next->status = TXOWN;
+ 		np->cur_tx_copy->status = TXOWN;
+@@ -1330,8 +1340,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
+ 		np->cur_tx_copy = next->next_desc_logical;
+ 		np->free_tx_count -= 2;
+ 	} else {
+-		np->cur_tx_copy->buffer = pci_map_single(np->pci_dev, skb->data,
+-			skb->len, PCI_DMA_TODEVICE);
++		np->cur_tx_copy->buffer = dma_map_single(&np->pci_dev->dev,
++							 skb->data, skb->len,
++							 DMA_TO_DEVICE);
+ 		np->cur_tx_copy->control = TXIC | TXLD | TXFD | CRCEnable | PADEnable;
+ 		np->cur_tx_copy->control |= (skb->len << PKTSShift);	/* pkt size */
+ 		np->cur_tx_copy->control |= (skb->len << TBSShift);	/* buffer size */
+@@ -1371,8 +1382,8 @@ static void reset_tx_descriptors(struct net_device *dev)
+ 	for (i = 0; i < TX_RING_SIZE; i++) {
+ 		cur = &np->tx_ring[i];
+ 		if (cur->skbuff) {
+-			pci_unmap_single(np->pci_dev, cur->buffer,
+-				cur->skbuff->len, PCI_DMA_TODEVICE);
++			dma_unmap_single(&np->pci_dev->dev, cur->buffer,
++					 cur->skbuff->len, DMA_TO_DEVICE);
+ 			dev_kfree_skb_any(cur->skbuff);
+ 			cur->skbuff = NULL;
+ 		}
+@@ -1515,8 +1526,10 @@ static irqreturn_t intr_handler(int irq, void *dev_instance)
+ 			}
+ 
+ 			/* Free the original skb. */
+-			pci_unmap_single(np->pci_dev, np->cur_tx->buffer,
+-				np->cur_tx->skbuff->len, PCI_DMA_TODEVICE);
++			dma_unmap_single(&np->pci_dev->dev,
++					 np->cur_tx->buffer,
++					 np->cur_tx->skbuff->len,
++					 DMA_TO_DEVICE);
+ 			dev_consume_skb_irq(np->cur_tx->skbuff);
+ 			np->cur_tx->skbuff = NULL;
+ 			--np->really_tx_count;
+@@ -1682,10 +1695,10 @@ static int netdev_rx(struct net_device *dev)
+ 			if (pkt_len < rx_copybreak &&
+ 			    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
+ 				skb_reserve(skb, 2);	/* 16 byte align the IP header */
+-				pci_dma_sync_single_for_cpu(np->pci_dev,
+-							    np->cur_rx->buffer,
+-							    np->rx_buf_sz,
+-							    PCI_DMA_FROMDEVICE);
++				dma_sync_single_for_cpu(&np->pci_dev->dev,
++							np->cur_rx->buffer,
++							np->rx_buf_sz,
++							DMA_FROM_DEVICE);
+ 				/* Call copy + cksum if available. */
+ 
+ #if ! defined(__alpha__)
+@@ -1696,15 +1709,15 @@ static int netdev_rx(struct net_device *dev)
+ 				skb_put_data(skb, np->cur_rx->skbuff->data,
+ 					     pkt_len);
+ #endif
+-				pci_dma_sync_single_for_device(np->pci_dev,
+-							       np->cur_rx->buffer,
+-							       np->rx_buf_sz,
+-							       PCI_DMA_FROMDEVICE);
++				dma_sync_single_for_device(&np->pci_dev->dev,
++							   np->cur_rx->buffer,
++							   np->rx_buf_sz,
++							   DMA_FROM_DEVICE);
+ 			} else {
+-				pci_unmap_single(np->pci_dev,
++				dma_unmap_single(&np->pci_dev->dev,
+ 						 np->cur_rx->buffer,
+ 						 np->rx_buf_sz,
+-						 PCI_DMA_FROMDEVICE);
++						 DMA_FROM_DEVICE);
+ 				skb_put(skb = np->cur_rx->skbuff, pkt_len);
+ 				np->cur_rx->skbuff = NULL;
+ 				--np->really_rx_count;
+@@ -1896,8 +1909,9 @@ static int netdev_close(struct net_device *dev)
+ 
+ 		np->rx_ring[i].status = 0;
+ 		if (skb) {
+-			pci_unmap_single(np->pci_dev, np->rx_ring[i].buffer,
+-				np->rx_buf_sz, PCI_DMA_FROMDEVICE);
++			dma_unmap_single(&np->pci_dev->dev,
++					 np->rx_ring[i].buffer, np->rx_buf_sz,
++					 DMA_FROM_DEVICE);
+ 			dev_kfree_skb(skb);
+ 			np->rx_ring[i].skbuff = NULL;
+ 		}
+@@ -1907,8 +1921,9 @@ static int netdev_close(struct net_device *dev)
+ 		struct sk_buff *skb = np->tx_ring[i].skbuff;
+ 
+ 		if (skb) {
+-			pci_unmap_single(np->pci_dev, np->tx_ring[i].buffer,
+-				skb->len, PCI_DMA_TODEVICE);
++			dma_unmap_single(&np->pci_dev->dev,
++					 np->tx_ring[i].buffer, skb->len,
++					 DMA_TO_DEVICE);
+ 			dev_kfree_skb(skb);
+ 			np->tx_ring[i].skbuff = NULL;
+ 		}
+-- 
+2.25.1
+
