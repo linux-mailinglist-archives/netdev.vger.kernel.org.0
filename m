@@ -2,142 +2,428 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FABC224C01
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 16:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B041D224C03
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 16:49:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbgGROt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 10:49:27 -0400
-Received: from mout.web.de ([212.227.17.12]:58669 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726574AbgGROt1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Jul 2020 10:49:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1595083735;
-        bh=yi6X3Espd5sqSuTZxmewLW+HuDxFJ98WpdvVZq3n+xo=;
-        h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
-        b=oU+m9PD+nRG+MaaKhAGUrVmXlvBn7KIetTTOXuZ6hoFzoz1qRqrpVHQh2iX1N+5Pr
-         hJxehk4LPWQkTcm7a3S5H5DqkOc6ynQh1jwAPSO+iL7mCSWF18hAe2YV8xornUxCJg
-         uWFY1lWfu68qX2P6MlAJdKyN/qpoCSquD6VRs+l4=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.243.120.168]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1MbTL1-1kY3dm2yVd-00bVdw; Sat, 18
- Jul 2020 16:48:55 +0200
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Navid Emamdoost <emamd001@umn.edu>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jakub Kicinski <kubakici@wp.pl>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mt7601u: add missing release on skb in
- mt7601u_mcu_msg_send
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <080cc1d6-cbe2-65c7-fc78-861292bd46b9@web.de>
-Date:   Sat, 18 Jul 2020 16:48:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1727826AbgGROtj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 10:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726574AbgGROti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 10:49:38 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128A7C0619D2
+        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 07:49:38 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id l1so13305698ioh.5
+        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 07:49:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y4qO1TK6O6xuosM4koIKWKbuRFUJib1z+xqR9GC1XEg=;
+        b=onRz0uzmibogZcL94/w4ZYEpWlywfYT2FQDFNtuw1W5h3cQRtyF0iQOERZRxVukFOc
+         vcZrGlAoEnwmKI2w6fMJ2ytZHWAY8swOVFOVNqY8MltrZG/86SfpqJnbwD079wKurARN
+         AoHq9ILGooEB6gb2R7rn5n8QFCKUgkPg+5bphRpzQlIctRmsX3NfWMmKXwVZqO7z9hGF
+         l17v80TiOIZBPTeIMNj2kVE/wqAr04MWOgRPbP3tKPSe41205ebdB2kHxlCj0H73AYcB
+         GOj1VW2jvJOA71/HQiJg/80r20hj23d7jWCp5PATQat4Mzlef41MrswqndlNTi/0fEdg
+         hXIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y4qO1TK6O6xuosM4koIKWKbuRFUJib1z+xqR9GC1XEg=;
+        b=b4iZv/2ONySuBkbRLDlaW4BIAkytOskTR70qpfZBGAXkYWQS+JEI/C5g2x5jm7xkJL
+         0shg43GR03amIKaF3Gbo7dhauzsyNLxY8D/Fwr39KijWcyi2nlVjA2YVN/biBL5mo+kO
+         bamnqxokZ3sqHPb4BC4WXxmZlTjt449rXW7jQI/aiD+bOs5sBJcby+g4Iqes0TNinkgE
+         TviMXGS4F06eBzgBdC5EW6ormrhTXA7adOAJuXviC/AfY8or1S52X+cKjPvBi0rF/FVz
+         D29kZS+huG/56LhIOgeOPTggJ3YEUbJsksqfnF4a1Y1M6GaAAPnJ5BCePvosNMvJvsX+
+         Ygow==
+X-Gm-Message-State: AOAM530bg6x66L12jQ6lHkeoGSJ7jUXBma8/PU35gSPQwwlon6v0EawT
+        xbLjY2in4/6ybHvqehFvIbgWVJdgzGFfVhFYGwYWWhtosKQ=
+X-Google-Smtp-Source: ABdhPJxJn9bdMZIxDEgzrhcikzAtIWGDKvlTWCO7e0mVIn58VAO/73qcLLKPzsemKDOic3y/hqh7PqV7enZeioc+nMM=
+X-Received: by 2002:a5d:9dc4:: with SMTP id 4mr14747541ioo.172.1595083777164;
+ Sat, 18 Jul 2020 07:49:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:xGd5zp427AZNVcvL0N6vop3uRwIGOzf5KsveZJhnWmHKhgAIkQK
- 6FoGgX2XGpgWjbbxfvlxFwEz9IzDY0ue5YQTXPbMJ9aNrrXuM+ucI5oVQ4RE6/wybsu1FaE
- D+LUzkoOv9OFlatbzVFtGNd57az+LbgFQFLc2LtK7HMiYr9GyDPs3+6VcqYBEwmAWTTEN0l
- L4pSOGpiURVIxdwG55FhQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MC+N+UBDk9E=:8iDVDj7jP1s7OiZ2PhbEBO
- zIelheL8VSespmvapmnRtGe5WeHQi2/Xi426hQ3lICgpTAv8Q/9W6N8f8aAZaJporxL284yec
- m7O2LFBMlVWlBxyOIgCcpO3GhX/yl3D6fFRwpPqx50dRULSi7dsWq5NO6BJIdvFEEv0C4nvuF
- twEsyQmzXWKCo1Qx10GUCqEbov2pHB5vLy5NCZIGIITfL2aMS/l6NPTVmg3TVetWqon4prBD8
- iT7zYIQzkbq9AJFEyR4jHrSqjhXmmZMJGrDjJ9OHPXCjGl1Yk3bDuu9X65mMcXa6un7wRExC3
- yiy3MtxvO96dvaJJ+NuTEs1WRDRNGipPe5LWhXRudaW0uAfrpFadn/kDBJnTfdnMA3Y2eGDAv
- 8D+SC3FtZzb1xKUM967wwmwrAzqRSu9XQkDSGIp19jeRljL1EECAlGsPtv1uN/jLhjtQ69Oq1
- 53kvvN9tLAdtUJdYpoS+AeuCKBWXtV6wUAu67Bkp2Sh+9ZW/+fXa/dpvIl1VbMOLRIIAQQYlL
- 3Uy5P8uuTMLNPEddkZrXimWpCqIpMTUs69j/5h7WR4+BxWRDHoQgUdOT3OsDqru3LhJI/Lqjj
- 0KgUgs2dwGFqlS1f+HrMd1izz2rBK5ySxqpeChY3XqJg57vRYzyVHCoifVsCnxf4g4rVQGyMC
- paZ+B8rUpCpH732KXQWTgETVv8dl439I3LNPi9xMJxfHoojkXNmMiBtXCQc/Ju+Z4qH5/Pjhx
- OItC0yTCuAC/OZuXQR39nbCj78kG4gJoo4NCtMBYdixuKKEjvBFwzyLdK531z2DXDfbU2vtIW
- 6QYBZ3HADHr+lsTWCuZCaQtw/xFZ6UfQWYULkJG8GtsyWy90Ligmv3x9C1llgIJQf9YrqjH9Z
- 73Ah2p/AckbRQImTo659ls+GzoqjS2iSSBXoBjIj4TUQAjcOBB5Diq/zcyxp3E8HRwWJYMMgh
- md5mRe6x35pgB+IclfX5/6J1jg57iKhSL7yf/MXYdN0eVWY+8p3UhEdfbGLZds0uU5EkeEVvg
- 5p1ElXiPG/2U1zd9LaMTZQtOiC5HzLbSelVOTbUYC5pgS44X3Vu84gJyxxITiHj7IfUAskVPA
- frWahzqCqBgW+ZTRWfS/zJfliM0xPZ+Koasx2CMmG0rQmEMGkfejYtPVWkusfrkaZ05LKG7I9
- +C45fcowqbn1yEMlBDZ2ScbiSiHj60Qfz4y2Soz0RZ0JcFJTNjLBEZGYfccOaGunIj1m4XGZo
- 5yFlA0hjr5nNAB5Yypn/P3p8UdtvxyO1B+a4abQ==
+References: <CAFXsbZodM0W87aH=qeZCRDSwyNOAXwF=aO8zf1UpkhwNkSAczA@mail.gmail.com>
+ <20200718164239.40ded692@nic.cz>
+In-Reply-To: <20200718164239.40ded692@nic.cz>
+From:   Chris Healy <cphealy@gmail.com>
+Date:   Sat, 18 Jul 2020 07:49:26 -0700
+Message-ID: <CAFXsbZoMcOQTY8HE+E359jT6Vsod3LiovTODpjndHKzhTBZcTg@mail.gmail.com>
+Subject: Re: bug: net: dsa: mv88e6xxx: serdes Unable to communicate on fiber
+ with vf610-zii-dev-rev-c
+To:     Marek Behun <marek.behun@nic.cz>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=E2=80=A6
-> +++ b/drivers/net/wireless/mediatek/mt7601u/mcu.c
-> @@ -116,8 +116,10 @@ mt7601u_mcu_msg_send(struct mt7601u_dev *dev, struc=
-t sk_buff *skb,
->  	int sent, ret;
->  	u8 seq =3D 0;
+On Sat, Jul 18, 2020 at 7:42 AM Marek Behun <marek.behun@nic.cz> wrote:
 >
-> -	if (test_bit(MT7601U_STATE_REMOVED, &dev->state))
-> +	if (test_bit(MT7601U_STATE_REMOVED, &dev->state)) {
-> +		consume_skb(skb);
->  		return 0;
-> +	}
-=E2=80=A6
+> Hmm, nothing sticks out in the register dump.
+>
+> I encountered a similar problem 2 years ago on Topaz SERDES port when
+> the cmode was set to 2500BASE-X but the speed register was set to speed
+> incompatible with 2500BASE-X (I don't remember what, though). This
+> issue was solved by a patch I sent to netdev.
+>
+> Are you sure that your board isn't broken? Maybe the SerDes traces on
+> RX path are damaged...
 
-How do you think about to use the the following statements instead
-in the if branch?
+In my case, both the SERDES and the MAC are inside the switch so I
+don't think it's likely that the SERDES traces are broken in there.
+If you are referring to the traces between the SERDES and the fiber
+module, that doesn't feel likely either as the SERDES appears to be
+reporting successfully received frames:
 
-		ret =3D 0;
-		goto consume_skb;
+From "ethtool -S" after sending 6 packets to the unit:
+serdes_rx_pkts: 6
+serdes_rx_bytes: 384
+serdes_rx_pkts_error: 0
 
+If the traces were broken between the fiber module and the SERDES, I
+should not see these counters incrementing.
 
-Would you like to add the tag =E2=80=9CFixes=E2=80=9D to the commit messag=
-e?
-
-Regards,
-Markus
+>
+> Marek
+>
+> On Sat, 18 Jul 2020 07:27:33 -0700
+> Chris Healy <cphealy@gmail.com> wrote:
+>
+> > I've been trying to get the fiber interface of the vf610-zii-dev-rev-c
+> > board working with net-next to no avail.  This platform utilizes a
+> > Cotsworks SFF attached to port 9 of a Marvell 88E6390X.
+> >
+> > I have fiber link up on port 9 and am able to send packets from the
+> > management CPU of the switch through the switch and out port 9 through
+> > the fiber interface to a fiber link partner successfully.  I'm also
+> > able to send packets from that fiber link partner back (to the point
+> > of the switches SERDES) and am seeing the fiber ports SERDES RX
+> > counters increment for each packet transmitted by the link partner.
+> > The switches port 9 MAC is not showing any RX counters incrementing
+> > though and I do not receive the frames at the management CPU.
+> >
+> > Because the SERDES RX counters are incrementing while the MAC RX
+> > counters are not incrementing, it seems to me that the issue is
+> > between the MAC and SERDES.  This is odd to me given that TX works
+> > fine.
+> >
+> > In support of debugging this issue, I've applied an ethtool patch
+> > which allows decoding the 88E6390X SERDES registers from userspace.
+> > Looking at the register dump, nothing obvious sticks out to me though.
+> >
+> > I'm not sure what the right next steps are and would appreciate any
+> > theories on what to try/test to root cause this issue.
+> >
+> > Below is an ethtool register dump and an ethtool statistics dump from
+> > when the link is up and I have done some attempts at pinging a remote
+> > host over fiber.
+> >
+> > root@(none):~$ ethtool -d sff2
+> > 88E6390X Switch Port Registers
+> > ------------------------------
+> > 00: Port Status                            0xce49
+> >       Transmit Pause Enable bit            1
+> >       Receive Pause Enable bit             1
+> >       802.3 PHY Detected                   0
+> >       Link Status                          Up
+> >       Duplex                               Full
+> >       Speed                                1000 Mbps
+> >       Duplex Fixed                         0
+> >       EEE Enabled                          1
+> >       Transmitter Paused                   0
+> >       Flow Control                         0
+> >       Config Mode                          0x9
+> > 01: Physical Control                       0x203e
+> >       RGMII Receive Timing Control         Default
+> >       RGMII Transmit Timing Control        Default
+> >       Force Speed                          1
+> >       Alternate Speed Mode                 Normal
+> >       MII PHY Mode                         MAC
+> >       EEE force value                      0
+> >       Force EEE                            0
+> >       Link's Forced value                  Up
+> >       Force Link                           1
+> >       Duplex's Forced value                Full
+> >       Force Duplex                         1
+> >       Force Speed                          1000 Mbps
+> > 02: Flow Control                           0x0100
+> > 03: Switch Identifier                      0x0a11
+> > 04: Port Control                           0x0433
+> >       Source Address Filtering controls    Disabled
+> >       Egress Mode                          Unmodified
+> >       Ingress & Egress Header Mode         0
+> >       IGMP and MLD Snooping                1
+> >       Frame Mode                           Normal
+> >       VLAN Tunnel                          0
+> >       TagIfBoth                            0
+> >       Initial Priority assignment          Tag & IP Priority
+> >       Egress Flooding mode                 No unknown DA
+> >       Port State                           Forwarding
+> > 05: Port Control 1                         0x0000
+> >       Message Port                         0
+> >       LAG Port                             0
+> >       VTU Page                             0
+> >       LAG ID                               0
+> >       FID[11:4]                            0x000
+> > 06: Port Base VLAN Map (Header)            0x0400
+> >       FID[3:0]                             0x000
+> >       Force Mapping                        0
+> >       VLANTable                            10
+> > 07: Default VLAN ID & Priority             0x0000
+> >       Default Priority                     0x0
+> >       Force to use Default VID             0
+> >       Default VLAN Identifier              0
+> > 08: Port Control 2                         0x0080
+> >       Force good FCS in the frame          0
+> >       Allow bad FCS                        0
+> >       Jumbo Mode                           1522
+> >       802.1QMode                           Disabled
+> >       Discard Tagged Frames                0
+> >       Discard Untagged Frames              0
+> >       Map using DA hits                    1
+> >       ARP Mirror enable                    0
+> >       Egress Monitor Source Port           0
+> >       Ingress Monitor Source Port          0
+> >       Allow VID of Zero                    0
+> >       Default Queue Priority               0x0
+> > 09: Egress Rate Control                    0x0001
+> > 10: Egress Rate Control 2                  0x0000
+> > 11: Port Association Vector                0x0200
+> > 12: Port ATU Control                       0x0000
+> > 13: Override                               0x0000
+> > 14: Policy Control                         0x0000
+> > 15: Port Ether Type                        0x9100
+> > 16: Reserved                               0x0000
+> > 17: Reserved                               0x0000
+> > 18: Reserved                               0x0000
+> > 19: Reserved                               0x0000
+> > 20: Reserved                               0x0000
+> > 21: Reserved                               0x0000
+> > 22: LED Control                            0x0033
+> > 23: IP Priority Mapping Table              0x0000
+> > 24: IEEE Priority Mapping Table            0x3e07
+> > 25: Port Control 3                         0x0000
+> > 26: Reserved                               0x0000
+> > 27: Queue Counters                         0x8000
+> > 28: Queue Control                          0x0000
+> > 29: Reserved                               0x0000
+> > 30: Cut Through Control                    0x0000
+> > 31: Debug Counters                         0x0000
+> >
+> > 88E6390X Switch Port SERDES Registers
+> > -------------------------------------
+> > f000: Global Clock Configuration 1           0x0000
+> > f001: Global Clock Configuration 2           0x0002
+> > f002: Port Operational Configuration         0x0003
+> > f00a: FIFO and CRC Int Enable                0x0000
+> > f00b: FIFO and CRC Int Status                0x0000
+> > f00c: PPM FIFO Control 1                     0x0000
+> > f00d: PPM FIFO Control 2                     0x0000
+> > f00e: PPM FIFO Status                        0x0000
+> > f010: Packet Generation Control 1            0x0501
+> > f011: Packet Generation Control 2            0x0000
+> > f012: Initial Payload 0-1/Packet Generation  0x0000
+> > f013: Initial Payload 2-3/Packet Generation  0x0000
+> > f016: Packet Generation Length               0x0000
+> > f017: Packet Generation Burst Sequence       0x0000
+> > f018: Packet Generation IPG                  0x0002
+> > f019: Packet Gen_Chkr Clock Control          0x0000
+> > f01a: Transmit Powerdown Delay               0x0032
+> > f01b: Transmit Packet Counter [15:0]         0x0000
+> > f01c: Transmit Packet Counter [31:16]        0x0000
+> > f01d: Transmit Packet Counter [47:32]        0x0000
+> > f01e: Transmit Byte Counter [15:0]           0x0000
+> > f01f: Transmit Byte Counter [31:16]          0x0000
+> > f020: Transmit Byte Counter [47:32]          0x0000
+> > f021: Receive Packet Counter [15:0]          0x0000
+> > f022: Receive Packet Counter [31:16]         0x0000
+> > f023: Receive Packet Counter [47:32]         0x0000
+> > f024: Receive Byte Count [15:0]              0x0000
+> > f025: Receive Byte Count [31:16]             0x0000
+> > f026: Receive Byte Count [47:32]             0x0000
+> > f027: Receive Packet Error Count [15:0]      0x0000
+> > f028: Receive Packet Error Count [31:16]     0x0000
+> > f029: Receive Packet Error Count [47:32]     0x0000
+> > f030: PRBS Control                           0x0200
+> > f031: PRBS Symbol Tx Counter [15:0]          0x0000
+> > f032: PRBS Symbol Tx Counter [31:16]         0x0000
+> > f033: PRBS Symbol Tx Counter [47:32]         0x0000
+> > f034: PRBS Symbol Rx Counter [15:0]          0x0000
+> > f035: PRBS Symbol Rx Counter [31:16]         0x0000
+> > f036: PRBS Symbol RX Counter [47:32]         0x0000
+> > f037: PRBS Error Count [15:0]                0x0000
+> > f038: PRBS Error Count [31:16]               0x0000
+> > f039: PRBS Error Count [47:32]               0x0000
+> > 2000: 1000BASE-X/SGMII Control Register      0x1140
+> >       Reset                                0
+> >       Loopback                             0
+> >       SGMII Speed                          1000 Mbps
+> >       Autoneg Enable                       1
+> >       Power down                           0
+> >       Isolate                              0
+> >       Restart Autonet                      0
+> >       Duplex                               Full
+> > 2001: 1000BASE-X/SGMII Status Register       0x016d
+> >       Autoneg Complete                     1
+> >       Remote Fault                         0
+> >       Link Status                          Up
+> > 2002: PHY Identifier                         0x0141
+> > 2003: PHY Identifier                         0x0c00
+> > 2004: SGMII (Media side) Auto-Negotiation Ad 0x00a0
+> >       Link Status                          Down
+> >       Duplex                               Half
+> >       SGMII Speed                          10 Mbps
+> >       Transmit Pause                       0
+> >       Receive Pause                        0
+> >       Fibre/Copper                         Fibre
+> >       EEE mode                             0
+> >       Clock stopped during LPI             1
+> > 2005: SGMII (Media side) Link Partner Abilit 0x40a0
+> >       Acknowledge                          1
+> > 2006: 1000BASE-X Auto-Negotiation Expansion  0x0007
+> > 2007: 1000BASE-X Next Page Transmit Register 0x2801
+> > 2008: 1000BASE-X Link Partner Next Page Regi 0x0000
+> > 200f: Extended Status Register               0x8000
+> > a000: 1000BASE-X Timer Mode Select Register  0x2000
+> > a001: 1000BASE-X Interrupt Enable Register   0x0600
+> >       Speed Changed                        0
+> >       Duplex Changed                       0
+> >       Page Received                        0
+> >       Autoneg Complete                     0
+> >       Link Up->Link Down                   1
+> >       Link Down->Link Up                   1
+> >       Symbol Error                         0
+> >       False Carrier                        0
+> > a002: 1000BASE-X Interrupt Status Register   0x0000
+> >       Speed Changed                        0
+> >       Duplex Changed                       0
+> >       Page Received                        0
+> >       Autoneg Complete                     0
+> >       Link Up->Link Down                   0
+> >       Link Down->Link Up                   0
+> >       Symbol Error                         0
+> >       False Carrier                        0
+> > a003: 1000BASE-X PHY Specific Status         0xac2c
+> >       Speed                                1000 Mbps
+> >       Duplex                               Full
+> >       Page Received                        0
+> >       Speed/Duplex Resolved                1
+> >       Link                                 Up
+> >       Sync                                 1
+> >       Energy Detect                        0
+> >       Transmit Pause                       0
+> >       Receive Pause                        0
+> > 1000: 10GBASE-X4 PCS Control 1               0x2040
+> > 1001: 10GBASE-X4 PCS Status 1                0x0082
+> > 1002: PCS Device Identifier 1                0x0141
+> > 1003: PCS Device Identifier 2                0x0c00
+> > 1004: PCS Speed Ability                      0x0001
+> > 1005: PCS Devices In Package 1               0x009a
+> > 1006: PCS Devices In Package 2               0x4000
+> > 1007: Reserved                               0x0001
+> > 1008: 10GBASE-X4 PCS Status 2                0x8402
+> > 100e: PCS Package Identifier 1               0x0141
+> > 100f: PCS Package Identifier 2               0x0c00
+> > 1014: PCS EEE Capability Register            0x0000
+> > 1018: 10GBase-X Lane Status                  0x0c01
+> > 1019: 10GBase-X Test Control                 0x0000
+> > 9000: 10GBase-X Control                      0x0001
+> > 9001: 10GBase-X Interrupt Enable 1           0x0000
+> > 9002: 10GBase-X Interrupt Enable 2           0x0000
+> > 9003: 10GBase-X Interrupt Status 1           0x0000
+> > 9004: 10GBase-X Interrupt Status 2           0x00e1
+> > 9006: 10GBase-X Real Time Status             0x0011
+> > 9010: 10GBase-X Random Sequence Control      0x0000
+> > 9011: 10GBase-X Jitter Packet Transmit Count 0x0000
+> > 9012: 10GBase-X Jitter Packet Transmit Count 0x0000
+> > 9013: 10GBase-X Jitter Packet Received Count 0x0000
+> > 9014: 10GBase-X Jitter Packet Received Count 0x0000
+> > 9015: 10GBase-X Jitter Packet Error Counter  0x0000
+> > 9016: 10GBase-X Jitter Packet Error Counter  0x0000
+> > 1020: 10GBASE-R PCS Status 1                 0x0000
+> > 1021: 10GBASE-R PCS Status 2                 0x0000
+> > 1022: 10GBASE-R PCS Test Pattern Seed A 0    0x0000
+> > 1023: 10GBASE-R PCS Test Pattern Seed A 1    0x0000
+> > 1024: 10GBASE-R PCS Test Pattern Seed A 2    0x0000
+> > 1025: 10GBASE-R PCS Test Pattern Seed A 3    0x0000
+> > 1026: 10GBASE-R PCS Test Pattern Seed B 0    0x0000
+> > 1027: 10GBASE-R PCS Test Pattern Seed B 1    0x0000
+> > 1028: 10GBASE-R PCS Test Pattern Seed B 2    0x0000
+> > 1029: 10GBASE-R PCS Test Pattern Seed B 3    0x0000
+> > 102a: 10GBASE-R PCS Test Pattern Control     0x0000
+> > 102b: 10GBASE-R PCS Test Error Counter       0x0000
+> >
+> > root@(none):~$ ethtool -S sff2
+> > NIC statistics:
+> >      tx_packets: 3
+> >      tx_bytes: 126
+> >      rx_packets: 0
+> >      rx_bytes: 0
+> >      in_good_octets: 0
+> >      in_bad_octets: 0
+> >      in_unicast: 0
+> >      in_broadcasts: 0
+> >      in_multicasts: 0
+> >      in_pause: 0
+> >      in_undersize: 0
+> >      in_fragments: 0
+> >      in_oversize: 0
+> >      in_jabber: 0
+> >      in_rx_error: 0
+> >      in_fcs_error: 0
+> >      out_octets: 192
+> >      out_unicast: 0
+> >      out_broadcasts: 3
+> >      out_multicasts: 0
+> >      out_pause: 0
+> >      excessive: 0
+> >      collisions: 0
+> >      deferred: 0
+> >      single: 0
+> >      multiple: 0
+> >      out_fcs_error: 0
+> >      late: 0
+> >      hist_64bytes: 3
+> >      hist_65_127bytes: 0
+> >      hist_128_255bytes: 0
+> >      hist_256_511bytes: 0
+> >      hist_512_1023bytes: 0
+> >      hist_1024_max_bytes: 0
+> >      in_discards: 0
+> >      in_filtered: 0
+> >      in_accepted: 0
+> >      in_bad_accepted: 0
+> >      in_good_avb_class_a: 0
+> >      in_good_avb_class_b: 0
+> >      in_bad_avb_class_a: 0
+> >      in_bad_avb_class_b: 0
+> >      tcam_counter_0: 0
+> >      tcam_counter_1: 0
+> >      tcam_counter_2: 0
+> >      tcam_counter_3: 0
+> >      in_da_unknown: 0
+> >      in_management: 0
+> >      out_queue_0: 3
+> >      out_queue_1: 0
+> >      out_queue_2: 0
+> >      out_queue_3: 0
+> >      out_queue_4: 0
+> >      out_queue_5: 0
+> >      out_queue_6: 0
+> >      out_queue_7: 0
+> >      out_cut_through: 0
+> >      out_octets_a: 0
+> >      out_octets_b: 0
+> >      out_management: 3
+> >      serdes_rx_pkts: 6
+> >      serdes_rx_bytes: 384
+> >      serdes_rx_pkts_error: 0
+> >      atu_member_violation: 0
+> >      atu_miss_violation: 0
+> >      atu_full_violation: 0
+> >      vtu_member_violation: 0
+> >      vtu_miss_violation: 0
+>
