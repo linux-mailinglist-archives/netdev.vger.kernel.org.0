@@ -2,383 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D419224ADD
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 13:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47904224AE9
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 13:21:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726945AbgGRLDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 07:03:45 -0400
-Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:26306 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726528AbgGRLDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 07:03:45 -0400
-Received: from localhost.localdomain ([93.22.37.252])
-        by mwinf5d41 with ME
-        id 4b3f2300S5SQgGV03b3gSr; Sat, 18 Jul 2020 13:03:42 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sat, 18 Jul 2020 13:03:42 +0200
-X-ME-IP: 93.22.37.252
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     kuba@kernel.org, davem@davemloft.net, snelson@pensando.io,
-        leon@kernel.org, mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net/fealnx: switch from 'pci_' to 'dma_' API
-Date:   Sat, 18 Jul 2020 13:03:38 +0200
-Message-Id: <20200718110338.355408-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1726996AbgGRLVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 07:21:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38522 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726566AbgGRLVJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 07:21:09 -0400
+Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3D3C0619D2;
+        Sat, 18 Jul 2020 04:21:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
+         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
+        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=dCGpUxkIfKHHwj840SN3vXyjVZKmEAte11yhOcdbYIQ=; b=QBh0o5M19Sg5kwLfZF8Tu8V+1q
+        clDdPqLY5NqxjFbVdlXuabmV794WIxRhLzfKq7f2iqxw0jTQe2XCFSX5hL0nMOpT0yjYRa6JQamHz
+        xhBGOjACnGy+6pXINNSPNE3JSSf0cm4VpNIjf+nwScop03dsIfFw2n3qJiUyX7ygtbou1Ls+9qhTh
+        pVD2EdjBcrj8eR4ffEEHt7iAf6I6xrmUDLmYfTcnKk1YUee9Clu37bfhuwQisEwxIkbrYkEy1zliI
+        VP9vT93xqOx3hK8rC9wfllZ9EWRCs/bvUAwg7GeXUmFmuvNc7+youc7I4NHT818j6pSqqMqrJ+rKV
+        ywbiWX7A==;
+Received: from noodles by the.earth.li with local (Exim 4.92)
+        (envelope-from <noodles@earth.li>)
+        id 1jwktq-00072H-6H; Sat, 18 Jul 2020 12:21:02 +0100
+Date:   Sat, 18 Jul 2020 12:21:02 +0100
+From:   Jonathan McDowell <noodles@earth.li>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthew Hagan <mnhagan88@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: qca8k: implement the port MTU callbacks
+Message-ID: <20200718112102.GJ23489@earth.li>
+References: <20200718093555.GA12912@earth.li>
+ <20200718103808.6wj5dlwtuxmwjvt5@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200718103808.6wj5dlwtuxmwjvt5@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+On Sat, Jul 18, 2020 at 01:38:08PM +0300, Vladimir Oltean wrote:
+> On Sat, Jul 18, 2020 at 10:35:55AM +0100, Jonathan McDowell wrote:
+> > This switch has a single max frame size configuration register, so we
+> > track the requested MTU for each port and apply the largest.
+> > 
+> > Signed-off-by: Jonathan McDowell <noodles@earth.li>
+> > ---
+> >  drivers/net/dsa/qca8k.c | 38 ++++++++++++++++++++++++++++++++++++++
+> >  drivers/net/dsa/qca8k.h |  3 +++
+> >  2 files changed, 41 insertions(+)
+> > 
+> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> > index 4acad5fa0c84..3690f02aea3a 100644
+> > --- a/drivers/net/dsa/qca8k.c
+> > +++ b/drivers/net/dsa/qca8k.c
+> > @@ -670,6 +670,12 @@ qca8k_setup(struct dsa_switch *ds)
+> >  		}
+> >  	}
+> >  
+> > +	/* Setup our port MTUs to match power on defaults */
+> > +	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
+> > +		priv->port_mtu[i] = ETH_FRAME_LEN + ETH_FCS_LEN;
+> > +	}
+> 
+> I am not quite sure the curly brackets are needed. And nowhere else in
+> qca8k.c is this convention being used.
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
+Good point; force of habit from coding standards elsewhere. Fixed (and
+also the instance below).
 
-When memory is allocated, GFP_KERNEL can be used because it is called from
-the probe function (i.e. 'fealnx_init_one()') and no lock is taken.
+> > +	qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, ETH_FRAME_LEN + ETH_FCS_LEN);
+> > +
+> >  	/* Flush the FDB table */
+> >  	qca8k_fdb_flush(priv);
+> >  
+> > @@ -1098,6 +1104,36 @@ qca8k_port_disable(struct dsa_switch *ds, int port)
+> >  	priv->port_sts[port].enabled = 0;
+> >  }
+> >  
+> > +static int
+> > +qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+> > +{
+> > +	struct qca8k_priv *priv = ds->priv;
+> > +	int i, mtu;
+> > +
+> > +	if ((new_mtu < ETH_MIN_MTU) || (new_mtu > QCA8K_MAX_MTU)) {
+> > +		return -EINVAL;
+> > +	}
+> 
+> I'm pretty sure this check should not be needed.
+> The only reason why slave_dev->min_mtu is 0 seems to be:
+> 
+> commit 8b1efc0f83f1f75b8f85c70d2211007de8fd7633
+> Author: Jarod Wilson <jarod@redhat.com>
+> Date:   Thu Oct 20 23:25:27 2016 -0400
+> 
+>     net: remove MTU limits on a few ether_setup callers
+> 
+>     These few drivers call ether_setup(), but have no ndo_change_mtu, and thus
+>     were overlooked for changes to MTU range checking behavior. They
+>     previously had no range checks, so for feature-parity, set their min_mtu
+>     to 0 and max_mtu to ETH_MAX_MTU (65535), instead of the 68 and 1500
+>     inherited from the ether_setup() changes. Fine-tuning can come after we get
+>     back to full feature-parity here.
+> 
+>     CC: netdev@vger.kernel.org
+>     Reported-by: Asbjoern Sloth Toennesen <asbjorn@asbjorn.st>
+>     CC: Asbjoern Sloth Toennesen <asbjorn@asbjorn.st>
+>     CC: R Parameswaran <parameswaran.r7@gmail.com>
+>     Signed-off-by: Jarod Wilson <jarod@redhat.com>
+>     Signed-off-by: David S. Miller <davem@davemloft.net>
+> 
+> which is an oversight on my part. Since now DSA supports
+> ndo_change_mtu(), the "slave_dev->min_mtu = 0;" line in net/dsa/slave.c
+> can be removed and so can this check.
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
+Ok.
 
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
+> > +
+> > +	priv->port_mtu[port] = new_mtu;
+> > +
+> > +	mtu = 0;
+> 
+> I think it's more typical to initialize mtu to 0 at declaration time.
 
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
+Sure, fixed.
 
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
+> > +	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
+> > +		if (priv->port_mtu[port] > mtu)
+> > +			mtu = priv->port_mtu[port];
+> > +	}
+> 
+> Again, curly brackets are not needed here, although some might feel it
+> aids readability.
+> 
+> > +
+> > +	/* Include L2 header / FCS length */
+> > +	qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, mtu + ETH_HLEN + ETH_FCS_LEN);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int
+> > +qca8k_port_max_mtu(struct dsa_switch *ds, int port)
+> > +{
+> > +	return QCA8K_MAX_MTU;
+> 
+> So what is the maximum value that you can write into
+> QCA8K_MAX_FRAME_SIZE? 9000 or 9018? If it's 9000, you should report a
+> max MTU of 8982, and let the network stack do the range check for you,
+> that's why this callback exists in the first place.
 
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+9018 (including header + fcs), hence returning QCA8K_MAX_MTU here.
 
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+> Do you know how are VLAN tags accounted for (i.e. does iperf3 TCP work
+> over a VLAN sub-interface after your patch)? There are 2 options:
+> - The ports automatically increase the maximum accepted frame size by 4
+>   (or 8, in case of double tag) bytes if they see VLAN tagged traffic.
+>   Case in which you don't need to do anything.
+> - You need to manually account for the possibility that VLAN-tagged
+>   traffic will be received, since the 802.1Q header is not part of the
+>   SDU whose max length is measured by the MTU. So you might want to
+>   write a value to QCA8K_MAX_FRAME_SIZE that is either "mtu +
+>   VLAN_ETH_HLEN + ETH_FCS_LEN", or "mtu + ETH_HLEN + 2 * VLAN_HLEN +
+>   ETH_FCS_LEN", depending on whether you foresee double-tagging being
+>   used.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
+The value is for a normal packet; the switch accounts for VLAN / double
+VLAN / the switch tagging header size itself.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
+> > +}
+> > +
+> >  static int
+> >  qca8k_port_fdb_insert(struct qca8k_priv *priv, const u8 *addr,
+> >  		      u16 port_mask, u16 vid)
+> > @@ -1174,6 +1210,8 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+> >  	.set_mac_eee		= qca8k_set_mac_eee,
+> >  	.port_enable		= qca8k_port_enable,
+> >  	.port_disable		= qca8k_port_disable,
+> > +	.port_change_mtu	= qca8k_port_change_mtu,
+> > +	.port_max_mtu		= qca8k_port_max_mtu,
+> >  	.port_stp_state_set	= qca8k_port_stp_state_set,
+> >  	.port_bridge_join	= qca8k_port_bridge_join,
+> >  	.port_bridge_leave	= qca8k_port_bridge_leave,
+> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> > index 10ef2bca2cde..31439396401c 100644
+> > --- a/drivers/net/dsa/qca8k.h
+> > +++ b/drivers/net/dsa/qca8k.h
+> > @@ -13,6 +13,7 @@
+> >  #include <linux/gpio.h>
+> >  
+> >  #define QCA8K_NUM_PORTS					7
+> > +#define QCA8K_MAX_MTU					9000
+> >  
+> >  #define PHY_ID_QCA8337					0x004dd036
+> >  #define QCA8K_ID_QCA8337				0x13
+> > @@ -58,6 +59,7 @@
+> >  #define   QCA8K_MDIO_MASTER_MAX_REG			32
+> >  #define QCA8K_GOL_MAC_ADDR0				0x60
+> >  #define QCA8K_GOL_MAC_ADDR1				0x64
+> > +#define QCA8K_MAX_FRAME_SIZE				0x78
+> >  #define QCA8K_REG_PORT_STATUS(_i)			(0x07c + (_i) * 4)
+> >  #define   QCA8K_PORT_STATUS_SPEED			GENMASK(1, 0)
+> >  #define   QCA8K_PORT_STATUS_SPEED_10			0
+> > @@ -189,6 +191,7 @@ struct qca8k_priv {
+> >  	struct device *dev;
+> >  	struct dsa_switch_ops ops;
+> >  	struct gpio_desc *reset_gpio;
+> > +	unsigned int port_mtu[QCA8K_NUM_PORTS];
+> >  };
+> >  
+> >  struct qca8k_mib_desc {
+> > -- 
+> > 2.27.0
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
+J.
 
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/fealnx.c | 91 ++++++++++++++++++++---------------
- 1 file changed, 53 insertions(+), 38 deletions(-)
-
-diff --git a/drivers/net/ethernet/fealnx.c b/drivers/net/ethernet/fealnx.c
-index 73e896a7d8fd..c696651dd735 100644
---- a/drivers/net/ethernet/fealnx.c
-+++ b/drivers/net/ethernet/fealnx.c
-@@ -543,7 +543,8 @@ static int fealnx_init_one(struct pci_dev *pdev,
- 	np->mii.phy_id_mask = 0x1f;
- 	np->mii.reg_num_mask = 0x1f;
- 
--	ring_space = pci_alloc_consistent(pdev, RX_TOTAL_SIZE, &ring_dma);
-+	ring_space = dma_alloc_coherent(&pdev->dev, RX_TOTAL_SIZE, &ring_dma,
-+					GFP_KERNEL);
- 	if (!ring_space) {
- 		err = -ENOMEM;
- 		goto err_out_free_dev;
-@@ -551,7 +552,8 @@ static int fealnx_init_one(struct pci_dev *pdev,
- 	np->rx_ring = ring_space;
- 	np->rx_ring_dma = ring_dma;
- 
--	ring_space = pci_alloc_consistent(pdev, TX_TOTAL_SIZE, &ring_dma);
-+	ring_space = dma_alloc_coherent(&pdev->dev, TX_TOTAL_SIZE, &ring_dma,
-+					GFP_KERNEL);
- 	if (!ring_space) {
- 		err = -ENOMEM;
- 		goto err_out_free_rx;
-@@ -656,9 +658,11 @@ static int fealnx_init_one(struct pci_dev *pdev,
- 	return 0;
- 
- err_out_free_tx:
--	pci_free_consistent(pdev, TX_TOTAL_SIZE, np->tx_ring, np->tx_ring_dma);
-+	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
-+			  np->tx_ring_dma);
- err_out_free_rx:
--	pci_free_consistent(pdev, RX_TOTAL_SIZE, np->rx_ring, np->rx_ring_dma);
-+	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, np->rx_ring,
-+			  np->rx_ring_dma);
- err_out_free_dev:
- 	free_netdev(dev);
- err_out_unmap:
-@@ -676,10 +680,10 @@ static void fealnx_remove_one(struct pci_dev *pdev)
- 	if (dev) {
- 		struct netdev_private *np = netdev_priv(dev);
- 
--		pci_free_consistent(pdev, TX_TOTAL_SIZE, np->tx_ring,
--			np->tx_ring_dma);
--		pci_free_consistent(pdev, RX_TOTAL_SIZE, np->rx_ring,
--			np->rx_ring_dma);
-+		dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
-+				  np->tx_ring_dma);
-+		dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, np->rx_ring,
-+				  np->rx_ring_dma);
- 		unregister_netdev(dev);
- 		pci_iounmap(pdev, np->mem);
- 		free_netdev(dev);
-@@ -1056,8 +1060,10 @@ static void allocate_rx_buffers(struct net_device *dev)
- 			np->lack_rxbuf = np->lack_rxbuf->next_desc_logical;
- 
- 		np->lack_rxbuf->skbuff = skb;
--		np->lack_rxbuf->buffer = pci_map_single(np->pci_dev, skb->data,
--			np->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+		np->lack_rxbuf->buffer = dma_map_single(&np->pci_dev->dev,
-+							skb->data,
-+							np->rx_buf_sz,
-+							DMA_FROM_DEVICE);
- 		np->lack_rxbuf->status = RXOWN;
- 		++np->really_rx_count;
- 	}
-@@ -1251,8 +1257,10 @@ static void init_ring(struct net_device *dev)
- 
- 		++np->really_rx_count;
- 		np->rx_ring[i].skbuff = skb;
--		np->rx_ring[i].buffer = pci_map_single(np->pci_dev, skb->data,
--			np->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+		np->rx_ring[i].buffer = dma_map_single(&np->pci_dev->dev,
-+						       skb->data,
-+						       np->rx_buf_sz,
-+						       DMA_FROM_DEVICE);
- 		np->rx_ring[i].status = RXOWN;
- 		np->rx_ring[i].control |= RXIC;
- 	}
-@@ -1290,8 +1298,8 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
- #define one_buffer
- #define BPT 1022
- #if defined(one_buffer)
--	np->cur_tx_copy->buffer = pci_map_single(np->pci_dev, skb->data,
--		skb->len, PCI_DMA_TODEVICE);
-+	np->cur_tx_copy->buffer = dma_map_single(&np->pci_dev->dev, skb->data,
-+						 skb->len, DMA_TO_DEVICE);
- 	np->cur_tx_copy->control = TXIC | TXLD | TXFD | CRCEnable | PADEnable;
- 	np->cur_tx_copy->control |= (skb->len << PKTSShift);	/* pkt size */
- 	np->cur_tx_copy->control |= (skb->len << TBSShift);	/* buffer size */
-@@ -1306,8 +1314,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
- 		struct fealnx_desc *next;
- 
- 		/* for the first descriptor */
--		np->cur_tx_copy->buffer = pci_map_single(np->pci_dev, skb->data,
--			BPT, PCI_DMA_TODEVICE);
-+		np->cur_tx_copy->buffer = dma_map_single(&np->pci_dev->dev,
-+							 skb->data, BPT,
-+							 DMA_TO_DEVICE);
- 		np->cur_tx_copy->control = TXIC | TXFD | CRCEnable | PADEnable;
- 		np->cur_tx_copy->control |= (skb->len << PKTSShift);	/* pkt size */
- 		np->cur_tx_copy->control |= (BPT << TBSShift);	/* buffer size */
-@@ -1321,8 +1330,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
- // 89/12/29 add,
- 		if (np->pci_dev->device == 0x891)
- 			np->cur_tx_copy->control |= ETIControl | RetryTxLC;
--		next->buffer = pci_map_single(ep->pci_dev, skb->data + BPT,
--                                skb->len - BPT, PCI_DMA_TODEVICE);
-+		next->buffer = dma_map_single(&ep->pci_dev->dev,
-+					      skb->data + BPT, skb->len - BPT,
-+					      DMA_TO_DEVICE);
- 
- 		next->status = TXOWN;
- 		np->cur_tx_copy->status = TXOWN;
-@@ -1330,8 +1340,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
- 		np->cur_tx_copy = next->next_desc_logical;
- 		np->free_tx_count -= 2;
- 	} else {
--		np->cur_tx_copy->buffer = pci_map_single(np->pci_dev, skb->data,
--			skb->len, PCI_DMA_TODEVICE);
-+		np->cur_tx_copy->buffer = dma_map_single(&np->pci_dev->dev,
-+							 skb->data, skb->len,
-+							 DMA_TO_DEVICE);
- 		np->cur_tx_copy->control = TXIC | TXLD | TXFD | CRCEnable | PADEnable;
- 		np->cur_tx_copy->control |= (skb->len << PKTSShift);	/* pkt size */
- 		np->cur_tx_copy->control |= (skb->len << TBSShift);	/* buffer size */
-@@ -1371,8 +1382,8 @@ static void reset_tx_descriptors(struct net_device *dev)
- 	for (i = 0; i < TX_RING_SIZE; i++) {
- 		cur = &np->tx_ring[i];
- 		if (cur->skbuff) {
--			pci_unmap_single(np->pci_dev, cur->buffer,
--				cur->skbuff->len, PCI_DMA_TODEVICE);
-+			dma_unmap_single(&np->pci_dev->dev, cur->buffer,
-+					 cur->skbuff->len, DMA_TO_DEVICE);
- 			dev_kfree_skb_any(cur->skbuff);
- 			cur->skbuff = NULL;
- 		}
-@@ -1515,8 +1526,10 @@ static irqreturn_t intr_handler(int irq, void *dev_instance)
- 			}
- 
- 			/* Free the original skb. */
--			pci_unmap_single(np->pci_dev, np->cur_tx->buffer,
--				np->cur_tx->skbuff->len, PCI_DMA_TODEVICE);
-+			dma_unmap_single(&np->pci_dev->dev,
-+					 np->cur_tx->buffer,
-+					 np->cur_tx->skbuff->len,
-+					 DMA_TO_DEVICE);
- 			dev_consume_skb_irq(np->cur_tx->skbuff);
- 			np->cur_tx->skbuff = NULL;
- 			--np->really_tx_count;
-@@ -1682,10 +1695,10 @@ static int netdev_rx(struct net_device *dev)
- 			if (pkt_len < rx_copybreak &&
- 			    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
- 				skb_reserve(skb, 2);	/* 16 byte align the IP header */
--				pci_dma_sync_single_for_cpu(np->pci_dev,
--							    np->cur_rx->buffer,
--							    np->rx_buf_sz,
--							    PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_cpu(&np->pci_dev->dev,
-+							np->cur_rx->buffer,
-+							np->rx_buf_sz,
-+							DMA_FROM_DEVICE);
- 				/* Call copy + cksum if available. */
- 
- #if ! defined(__alpha__)
-@@ -1696,15 +1709,15 @@ static int netdev_rx(struct net_device *dev)
- 				skb_put_data(skb, np->cur_rx->skbuff->data,
- 					     pkt_len);
- #endif
--				pci_dma_sync_single_for_device(np->pci_dev,
--							       np->cur_rx->buffer,
--							       np->rx_buf_sz,
--							       PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_device(&np->pci_dev->dev,
-+							   np->cur_rx->buffer,
-+							   np->rx_buf_sz,
-+							   DMA_FROM_DEVICE);
- 			} else {
--				pci_unmap_single(np->pci_dev,
-+				dma_unmap_single(&np->pci_dev->dev,
- 						 np->cur_rx->buffer,
- 						 np->rx_buf_sz,
--						 PCI_DMA_FROMDEVICE);
-+						 DMA_FROM_DEVICE);
- 				skb_put(skb = np->cur_rx->skbuff, pkt_len);
- 				np->cur_rx->skbuff = NULL;
- 				--np->really_rx_count;
-@@ -1896,8 +1909,9 @@ static int netdev_close(struct net_device *dev)
- 
- 		np->rx_ring[i].status = 0;
- 		if (skb) {
--			pci_unmap_single(np->pci_dev, np->rx_ring[i].buffer,
--				np->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&np->pci_dev->dev,
-+					 np->rx_ring[i].buffer, np->rx_buf_sz,
-+					 DMA_FROM_DEVICE);
- 			dev_kfree_skb(skb);
- 			np->rx_ring[i].skbuff = NULL;
- 		}
-@@ -1907,8 +1921,9 @@ static int netdev_close(struct net_device *dev)
- 		struct sk_buff *skb = np->tx_ring[i].skbuff;
- 
- 		if (skb) {
--			pci_unmap_single(np->pci_dev, np->tx_ring[i].buffer,
--				skb->len, PCI_DMA_TODEVICE);
-+			dma_unmap_single(&np->pci_dev->dev,
-+					 np->tx_ring[i].buffer, skb->len,
-+					 DMA_TO_DEVICE);
- 			dev_kfree_skb(skb);
- 			np->tx_ring[i].skbuff = NULL;
- 		}
 -- 
-2.25.1
-
+/-\                             | 101 things you can't have too much
+|@/  Debian GNU/Linux Developer |       of : 19 - A Good Thing.
+\-                              |
