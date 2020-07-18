@@ -2,129 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 460B4224AB7
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 12:43:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE694224AC4
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 12:49:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726566AbgGRKne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 06:43:34 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:51466 "EHLO huawei.com"
+        id S1726863AbgGRKtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 06:49:18 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:48182 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726490AbgGRKne (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Jul 2020 06:43:34 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id BBB4286EE2B8DA1DFB5D;
-        Sat, 18 Jul 2020 18:43:31 +0800 (CST)
-Received: from [127.0.0.1] (10.174.177.32) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Sat, 18 Jul 2020
- 18:43:25 +0800
-Subject: Re: [PATCH net-next] tcp: Optimize the recovery of tcp when lack of
- SACK
-To:     Neal Cardwell <ncardwell@google.com>
-CC:     Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>, <wangxiaogang3@huawei.com>,
-        <jinyiting@huawei.com>, <xuhanbing@huawei.com>,
-        <zhengshaoyu@huawei.com>, Yuchung Cheng <ycheng@google.com>,
-        Ilpo Jarvinen <ilpo.jarvinen@cs.helsinki.fi>
-References: <66945532-2470-4240-b213-bc36791b934b@huawei.com>
- <CADVnQyksf4Nt2hHsWaAs3wLOK+rDp79ph5TZywMqfEAPOVgzww@mail.gmail.com>
-From:   hujunwei <hujunwei4@huawei.com>
-Message-ID: <0694e7d6-6cb2-d515-0bca-0ae4a3f68dc5@huawei.com>
-Date:   Sat, 18 Jul 2020 18:43:24 +0800
+        id S1726490AbgGRKtR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Jul 2020 06:49:17 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 5AE354AD968F3CDAAEA0;
+        Sat, 18 Jul 2020 18:49:15 +0800 (CST)
+Received: from [127.0.0.1] (10.174.179.81) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Sat, 18 Jul 2020
+ 18:49:12 +0800
+Subject: Re: [PATCH] net: dsa: felix: Make some symbols static
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <UNGLinuxDriver@microchip.com>, <vladimir.oltean@nxp.com>,
+        <claudiu.manoil@nxp.com>, <alexandre.belloni@bootlin.com>,
+        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+References: <20200718100158.31878-1-wanghai38@huawei.com>
+ <20200718104027.ugsdw42jfcpewfl6@skbuf>
+From:   "wanghai (M)" <wanghai38@huawei.com>
+Message-ID: <dea3b332-8af7-b8db-6182-702b91ceeae4@huawei.com>
+Date:   Sat, 18 Jul 2020 18:49:10 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <CADVnQyksf4Nt2hHsWaAs3wLOK+rDp79ph5TZywMqfEAPOVgzww@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.32]
+In-Reply-To: <20200718104027.ugsdw42jfcpewfl6@skbuf>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.81]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thanks for reminding me, I'll do it.
 
-On 2020/7/17 22:44, Neal Cardwell wrote:
-> On Fri, Jul 17, 2020 at 7:43 AM hujunwei <hujunwei4@huawei.com> wrote:
+ÔÚ 2020/7/18 18:40, Vladimir Oltean Ð´µÀ:
+> On Sat, Jul 18, 2020 at 06:01:58PM +0800, Wang Hai wrote:
+>> Fix sparse build warning:
 >>
->> From: Junwei Hu <hujunwei4@huawei.com>
+>> drivers/net/dsa/ocelot/felix_vsc9959.c:560:19: warning:
+>>   symbol 'vsc9959_vcap_is2_keys' was not declared. Should it be static?
+>> drivers/net/dsa/ocelot/felix_vsc9959.c:640:19: warning:
+>>   symbol 'vsc9959_vcap_is2_actions' was not declared. Should it be static?
 >>
->> In the document of RFC2582(https://tools.ietf.org/html/rfc2582)
->> introduced two separate scenarios for tcp congestion control:
-> 
-> Can you please elaborate on how the sender is able to distinguish
-> between the two scenarios, after your patch?
-> 
-> It seems to me that with this proposed patch, there is the risk of
-> spurious fast recoveries due to 3 dupacks in the second second
-> scenario (the sender unnecessarily retransmitted three packets below
-> "send_high"). Can you please post a packetdrill test to demonstrate
-> that with this patch the TCP sender does not spuriously enter fast
-> recovery in such a scenario?
-> 
-Hi neal,
-Thanks for you quick reply!
-What I want to says is when these three numbers: snd_una, high_seq and
-snd_nxt are the same, that means all data outstanding
-when the Loss state began have successfully been acknowledged.
-So the sender is time to exits to the Open state.
-I'm not sure whether my understanding is correct.
-
->> This patch enhance the TCP congestion control algorithm for lack
->> of SACK.
-> 
-> You describe this as an enhancement. Can you please elaborate on the
-> drawback/downside of staying in CA_Loss in this case you are
-> describing (where you used kprobes to find that TCP stayed in CA_Loss
-> state when high_seq was equal to snd_nxt)?
-> 
-I tried, but I can't reproduce it by packetdrill. This problem appeared
-in our production environment. Here is part of the trace message:
-
-First ack:
-#tcp_ack: (tcp_ack+0x0/0x920) skb_tcp_seq=0x1dc21196 skb_tcp_ack_seq=0x9d5e4bcc(3427491485)
-	packets_out=4 retrans_out=1 sacked_out=0 lost_out=4 snd_nxt=3427491485
-	snd_una=3427485917 high_seq=3427491485 reordering=1 mss_cache=1392
-	icsk_ca_state=4 sack_ok=0 undo_retrans=1 snd_cwnd=1
-
-#tcp_fastretrans_alert: (tcp_fastretrans_alert+0x0/0x7b0) prior_snd_una=3427485917
-	num_dupack=0 packets_out=0 retrans_out=0 sacked_out=0 lost_out=0
-	snd_nxt=3427491485 snd_una=3427491485 high_seq=3427491485 reordering=1
-	mss_cache=1392 icsk_ca_state=4 sack_ok=0 undo_retrans=1 snd_cwnd=1
-
-As we can see by func tcp_fastretrans_alert icsk_ca_state remains CA_Loss (4),
-and the numbers: snd_nxt, snd_una and high_seq are the same.
-
-first dup ack:
-#tcp_ack: (tcp_ack+0x0/0x920) skb_tcp_seq=0x1dc21196 skb_tcp_ack_seq=0x9d5e4bcc(3427491485)
-	packets_out=2 retrans_out=0 sacked_out=0 lost_out=0 snd_nxt=3427494269
-	snd_una=3427491485 high_seq=3427491485 reordering=1 mss_cache=1392
-	icsk_ca_state=4 sack_ok=0 undo_retrans=1 snd_cwnd=2
-
-#tcp_fastretrans_alert: (tcp_fastretrans_alert+0x0/0x7b0) num_dupack=1 packets_out=2
-	retrans_out=0 sacked_out=0 lost_out=0 snd_nxt=3427494269 snd_una=3427491485
-	high_seq=3427491485 reordering=1 icsk_ca_state=4 sack_ok=0 undo_retrans=1 snd_cwnd=2
-
-second dup ack:
-#tcp_ack: (tcp_ack+0x0/0x920) skb_tcp_seq=0x1dc21196 skb_tcp_ack_seq=0x9d5e4bcc(3427491485)
-	packets_out=4 retrans_out=0 sacked_out=0 lost_out=0 snd_nxt=3427497053
-	snd_una=3427491485 high_seq=3427491485 reordering=1 mss_cache=1392
-	icsk_ca_state=4 sack_ok=0 undo_retrans=1 snd_cwnd=4
-
-So, I really hope someone can answer whether my understanding is correct.
-
-> To deal with sequence number wrap-around, sequence number comparisons
-> in TCP need to use the before() and after() helpers, rather than
-> comparison operators. Here it seems the patch should use after()
-> rather than >. However,  I think the larger concern is the concern
-> mentioned above.
-> 
-If this patch is useful, I will modify this.
-
-Regards Junwei
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+>> ---
+> Please update your tree.
+>
+> commit 3ab4ceb6e9639e4e42d473e46ae7976c24187876
+> Author: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Date:   Sat Jun 20 18:43:36 2020 +0300
+>
+>      net: dsa: felix: make vcap is2 keys and actions static
+>
+>      Get rid of some sparse warnings.
+>
+>      Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>      Signed-off-by: David S. Miller <davem@davemloft.net>
+>
+>>   drivers/net/dsa/ocelot/felix_vsc9959.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+>> index 1dd9e348152d..2067776773f7 100644
+>> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
+>> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+>> @@ -557,7 +557,7 @@ static const struct ocelot_stat_layout vsc9959_stats_layout[] = {
+>>   	{ .offset = 0x111,	.name = "drop_green_prio_7", },
+>>   };
+>>   
+>> -struct vcap_field vsc9959_vcap_is2_keys[] = {
+>> +static struct vcap_field vsc9959_vcap_is2_keys[] = {
+>>   	/* Common: 41 bits */
+>>   	[VCAP_IS2_TYPE]				= {  0,   4},
+>>   	[VCAP_IS2_HK_FIRST]			= {  4,   1},
+>> @@ -637,7 +637,7 @@ struct vcap_field vsc9959_vcap_is2_keys[] = {
+>>   	[VCAP_IS2_HK_OAM_IS_Y1731]		= {182,   1},
+>>   };
+>>   
+>> -struct vcap_field vsc9959_vcap_is2_actions[] = {
+>> +static struct vcap_field vsc9959_vcap_is2_actions[] = {
+>>   	[VCAP_IS2_ACT_HIT_ME_ONCE]		= {  0,  1},
+>>   	[VCAP_IS2_ACT_CPU_COPY_ENA]		= {  1,  1},
+>>   	[VCAP_IS2_ACT_CPU_QU_NUM]		= {  2,  3},
+>> -- 
+>> 2.17.1
+>>
+> Thanks,
+> -Vladimir
+>
+> .
+>
 
