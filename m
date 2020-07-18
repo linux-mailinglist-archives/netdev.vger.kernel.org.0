@@ -2,66 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38CDE224C35
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 17:05:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7E9224C39
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 17:06:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727866AbgGRPFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 11:05:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42694 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726155AbgGRPFR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Jul 2020 11:05:17 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jwoOo-005m4F-Gv; Sat, 18 Jul 2020 17:05:14 +0200
-Date:   Sat, 18 Jul 2020 17:05:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Chris Healy <cphealy@gmail.com>
-Cc:     Marek Behun <marek.behun@nic.cz>, netdev <netdev@vger.kernel.org>
-Subject: Re: bug: net: dsa: mv88e6xxx: serdes Unable to communicate on fiber
- with vf610-zii-dev-rev-c
-Message-ID: <20200718150514.GC1375379@lunn.ch>
-References: <CAFXsbZodM0W87aH=qeZCRDSwyNOAXwF=aO8zf1UpkhwNkSAczA@mail.gmail.com>
- <20200718164239.40ded692@nic.cz>
- <CAFXsbZoMcOQTY8HE+E359jT6Vsod3LiovTODpjndHKzhTBZcTg@mail.gmail.com>
+        id S1727942AbgGRPGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 11:06:19 -0400
+Received: from smtprelay0163.hostedemail.com ([216.40.44.163]:40920 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726155AbgGRPGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 11:06:19 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 1BCCA180A8CA9;
+        Sat, 18 Jul 2020 15:06:18 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3351:3622:3865:3867:3868:4250:4321:4605:5007:10004:10400:10848:11026:11232:11657:11658:11914:12043:12048:12296:12297:12438:12555:12740:12760:12895:12986:13069:13311:13357:13439:14659:14721:21080:21451:21627:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: fear80_261175726f14
+X-Filterd-Recvd-Size: 2490
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf13.hostedemail.com (Postfix) with ESMTPA;
+        Sat, 18 Jul 2020 15:06:16 +0000 (UTC)
+Message-ID: <3093bc36c2ad86170e2e90a3451e5962d0815122.camel@perches.com>
+Subject: Re: [PATCH -next] net: ena: use NULL instead of zero
+From:   Joe Perches <joe@perches.com>
+To:     Wang Hai <wanghai38@huawei.com>, netanel@amazon.com,
+        akiyano@amazon.com, gtzalik@amazon.com, saeedb@amazon.com,
+        zorik@amazon.com, davem@davemloft.net, kuba@kernel.org,
+        sameehj@amazon.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sat, 18 Jul 2020 08:06:14 -0700
+In-Reply-To: <20200718115633.37464-1-wanghai38@huawei.com>
+References: <20200718115633.37464-1-wanghai38@huawei.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFXsbZoMcOQTY8HE+E359jT6Vsod3LiovTODpjndHKzhTBZcTg@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 18, 2020 at 07:49:26AM -0700, Chris Healy wrote:
-> On Sat, Jul 18, 2020 at 7:42 AM Marek Behun <marek.behun@nic.cz> wrote:
-> >
-> > Hmm, nothing sticks out in the register dump.
-> >
-> > I encountered a similar problem 2 years ago on Topaz SERDES port when
-> > the cmode was set to 2500BASE-X but the speed register was set to speed
-> > incompatible with 2500BASE-X (I don't remember what, though). This
-> > issue was solved by a patch I sent to netdev.
-> >
-> > Are you sure that your board isn't broken? Maybe the SerDes traces on
-> > RX path are damaged...
+On Sat, 2020-07-18 at 19:56 +0800, Wang Hai wrote:
+> Fix sparse build warning:
 > 
-> In my case, both the SERDES and the MAC are inside the switch so I
-> don't think it's likely that the SERDES traces are broken in there.
-> If you are referring to the traces between the SERDES and the fiber
-> module, that doesn't feel likely either as the SERDES appears to be
-> reporting successfully received frames:
-> 
-> >From "ethtool -S" after sending 6 packets to the unit:
-> serdes_rx_pkts: 6
-> serdes_rx_bytes: 384
-> serdes_rx_pkts_error: 0
-> 
-> If the traces were broken between the fiber module and the SERDES, I
-> should not see these counters incrementing.
+> drivers/net/ethernet/amazon/ena/ena_netdev.c:2193:34: warning:
+>  Using plain integer as NULL pointer
 
-Plus it is reproducible on multiple boards, of different designs.
+Better to remove the initialization altogether and
+move the declaration into the loop.
 
-This is somehow specific to the 6390X ports 9 and 10.
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+[]
+> @@ -2190,7 +2190,7 @@ static void ena_del_napi_in_range(struct ena_adapter *adapter,
+>  static void ena_init_napi_in_range(struct ena_adapter *adapter,
+>  				   int first_index, int count)
+>  {
+> -	struct ena_napi *napi = {0};
+> +	struct ena_napi *napi = NULL;
+>  	int i;
+>  
+>  	for (i = first_index; i < first_index + count; i++) {
 
-     Andrew
+---
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 91be3ffa1c5c..470d8f38b824 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -2190,11 +2190,10 @@ static void ena_del_napi_in_range(struct ena_adapter *adapter,
+ static void ena_init_napi_in_range(struct ena_adapter *adapter,
+ 				   int first_index, int count)
+ {
+-	struct ena_napi *napi = {0};
+ 	int i;
+ 
+ 	for (i = first_index; i < first_index + count; i++) {
+-		napi = &adapter->ena_napi[i];
++		struct ena_napi *napi = &adapter->ena_napi[i];
+ 
+ 		netif_napi_add(adapter->netdev,
+ 			       &adapter->ena_napi[i].napi,
+
+
