@@ -2,84 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9234F224905
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 07:32:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72650224912
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 07:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbgGRFcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 01:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41672 "EHLO
+        id S1726672AbgGRFrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 01:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726087AbgGRFcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 01:32:08 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0C6C0619D2;
-        Fri, 17 Jul 2020 22:32:08 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id e18so9086138ilr.7;
-        Fri, 17 Jul 2020 22:32:08 -0700 (PDT)
+        with ESMTP id S1726377AbgGRFri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 01:47:38 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A70C0619D2;
+        Fri, 17 Jul 2020 22:47:38 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id p205so12552554iod.8;
+        Fri, 17 Jul 2020 22:47:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=Q91gtO58hCq0wdQ/qvG+6bdBUzXulWzjoOklqz06aB4=;
-        b=tPI8bHuM7O1/hnnerKenngBwMqp2su1gAdMivuob9EcL4wNLpcBkR2ybiBj0u49weN
-         ZKuNZzV7kJPt4mDVHYB0zb+CPx99m47mddbHkgJLyeQDXhRZJaV/46K8ZpH9SP33Mv7t
-         JjZF0/ZI/5vJVUAo28HEArPh+175VeGJQUGW6Lj3t2Tvl41ZCHq3FTaXThbFcgZZiZqB
-         IUp8dQiKenlN+U4miqSgkLAsdzlVZ2zq8Ew+5qIlPAqzVh4JTAC4bWdHXPp3N++eRTF5
-         J+MV67J+r1lJ/r1R680Cjya6H8eNrU7FVKfmwezPG8T/ZwXY3E8LSxkOFFF3rvRYpqBo
-         sKmg==
+        bh=PfMs+d/8rTE+DczufHJcceGTZEwuJydHZFIhdNSBBA8=;
+        b=tZEuFSnzOKQNapUURfRPWVJlMGLxwDsc4jXnrSjXLGBfCvGcdp02PlJzyzbWL+dF+I
+         E4qVcG/Rlm+QMeRneEgs6jE0OgLfeBw+DVmu5V7PJRgBXw98TjxGLqCppUf95oqhL64E
+         B6ZA7pztL+9zIF8GDAEsm1+20D+2Di3ITfyd9j2FmT9pC/wiBoiMHAxeVhiV2FrjxxPl
+         svTx7ET5DMcSr8rED/xMCU+g6bCm2KDH9HqFQ9VgLt6mwm3SDtQ+Z1qe55mqdYLOS2h9
+         66+7yI/tO3Zxdj7b4byEhSWMEi/2EwOxTAcXbhEUnJejoVHbzlBomcufa2sBoi15m3f7
+         Rnyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Q91gtO58hCq0wdQ/qvG+6bdBUzXulWzjoOklqz06aB4=;
-        b=e790aQ3cn7wavss1AJOa0WGYYK+OnkaYzyrzrFA5IHCl6MnPmcTzAeDyQuq1NLsxSH
-         9VJeXdrWucqfV6XOlvKZlKBWy0oYYfML8l84zTdx81eRYxD8Jfv6+QluX1W4v/o0Svk6
-         1QmR3LUzLsiq7DIwOghoDduzGZBg+4bKKKpmdGiPPVrGt80F1nSKj6GSCiSiwtS7AGoc
-         RFl9KxnIWJoXXI5XdUGzUc6wSU/z3UQciup+PkXhrhut8qqhzDwSznQC/zCqQM/XFTBu
-         XDIjqRz9CBc9csSrb6MhiJxecgLOmCt9LaPK/hkFp3cUu3afLww3iuTg7upeWy9W0cnb
-         KBvA==
-X-Gm-Message-State: AOAM533sDqQdnGHaof8DYOUMU16Kg1jk5xLcPLnxuPJ0zvL770Osweao
-        z1IHA4iz8wi2AkG39bOPZRX98iXc+bs=
-X-Google-Smtp-Source: ABdhPJy3kHWp7oPphW6RdeZY/qdTQ0MDgUPNCS0Bvi4QCg37oB54GPB5SdgAjCgdbL4tohm7nMze8A==
-X-Received: by 2002:a92:db44:: with SMTP id w4mr12509517ilq.306.1595050327391;
-        Fri, 17 Jul 2020 22:32:07 -0700 (PDT)
+        bh=PfMs+d/8rTE+DczufHJcceGTZEwuJydHZFIhdNSBBA8=;
+        b=OInwT7t5/o7BI3xxvsEz4U2mxM3dsQTXRgbIWjggwRzv2SlQxjUjw0WNwXwX/DOQHn
+         VzHopHMvhPisThMPKRy4BoW/vIIfZy+Fe5w0F5NitwJy4TJo9rrlMzqiMo5YvhshmqIY
+         Y0HWhpJ6bC3rIKD1xqtjGgwd/nayKvYyMISaTbSm4aZKSDCAsv/v4tKzkh7f8XTDgQd1
+         pSdaRuifjLebD/8LxMo0BMKT6/wCcwKkIUyTD1c9OVdLid9JeSnzxQ64FbMLmhElWMLG
+         JQcwX4drJB2O2vRJfT2toBNqh/HrCZpDsU7YV4kUJHL8D7l6ufqpDQD4UW1AaZT4VN8I
+         QGSA==
+X-Gm-Message-State: AOAM533e1oODvQ4ty5ApSMZx66GQrNM/X+oVjfxlZ3ucqwmbTHuYGa+A
+        2gL3+KJzPI01mTJCFQyjF1HveFsjYXA=
+X-Google-Smtp-Source: ABdhPJwmz9PHgLFVxAiR8ICQT3HOsuOshxUJ0WFWXkZT30fBjDH8pGlL70enm1kjAc+Wp58AwhZBSg==
+X-Received: by 2002:a6b:f911:: with SMTP id j17mr12389586iog.96.1595051257928;
+        Fri, 17 Jul 2020 22:47:37 -0700 (PDT)
 Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [160.94.145.20])
-        by smtp.googlemail.com with ESMTPSA id t67sm2165163ill.88.2020.07.17.22.32.06
+        by smtp.googlemail.com with ESMTPSA id e16sm5852663iow.37.2020.07.17.22.47.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 22:32:06 -0700 (PDT)
+        Fri, 17 Jul 2020 22:47:37 -0700 (PDT)
 From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-To:     Robert Baldyga <r.baldyga@samsung.com>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+To:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     emamd001@umn.edu, Navid Emamdoost <navid.emamdoost@gmail.com>
-Subject: [PATCH] nfc: s3fwrn5: add missing release on skb in s3fwrn5_recv_frame
-Date:   Sat, 18 Jul 2020 00:31:49 -0500
-Message-Id: <20200718053150.11555-1-navid.emamdoost@gmail.com>
+Subject: [PATCH] mt76: mt76u: add missing release on skb in __mt76x02u_mcu_send_msg
+Date:   Sat, 18 Jul 2020 00:47:26 -0500
+Message-Id: <20200718054727.13009-1-navid.emamdoost@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The implementation of s3fwrn5_recv_frame() is supposed to consume skb on
-all execution paths. Release skb before returning -ENODEV.
+In the implementation of __mt76x02u_mcu_send_msg() the skb is consumed
+all execution paths except one. Release skb before returning if
+test_bit() fails.
 
 Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 ---
- drivers/nfc/s3fwrn5/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nfc/s3fwrn5/core.c b/drivers/nfc/s3fwrn5/core.c
-index 91d4d5b28a7d..ba6c486d6465 100644
---- a/drivers/nfc/s3fwrn5/core.c
-+++ b/drivers/nfc/s3fwrn5/core.c
-@@ -198,6 +198,7 @@ int s3fwrn5_recv_frame(struct nci_dev *ndev, struct sk_buff *skb,
- 	case S3FWRN5_MODE_FW:
- 		return s3fwrn5_fw_recv_frame(ndev, skb);
- 	default:
-+		kfree_skb(skb);
- 		return -ENODEV;
- 	}
- }
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c b/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c
+index a30bb536fc8a..e43d13d7c988 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x02_usb_mcu.c
+@@ -87,8 +87,10 @@ __mt76x02u_mcu_send_msg(struct mt76_dev *dev, struct sk_buff *skb,
+ 	u32 info;
+ 	int ret;
+ 
+-	if (test_bit(MT76_REMOVED, &dev->phy.state))
+-		return 0;
++	if (test_bit(MT76_REMOVED, &dev->phy.state)) {
++		ret = 0;
++		goto out;
++	}
+ 
+ 	if (wait_resp) {
+ 		seq = ++dev->mcu.msg_seq & 0xf;
+@@ -111,6 +113,7 @@ __mt76x02u_mcu_send_msg(struct mt76_dev *dev, struct sk_buff *skb,
+ 	if (wait_resp)
+ 		ret = mt76x02u_mcu_wait_resp(dev, seq);
+ 
++out:
+ 	consume_skb(skb);
+ 
+ 	return ret;
 -- 
 2.17.1
 
