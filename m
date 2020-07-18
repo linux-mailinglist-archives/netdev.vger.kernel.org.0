@@ -2,240 +2,388 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3E25224B98
-	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 15:37:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0983C224BCD
+	for <lists+netdev@lfdr.de>; Sat, 18 Jul 2020 16:27:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727818AbgGRNf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jul 2020 09:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58950 "EHLO
+        id S1727788AbgGRO1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jul 2020 10:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726569AbgGRNf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 09:35:28 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9BBC0619D2;
-        Sat, 18 Jul 2020 06:35:27 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id j11so15691209ljo.7;
-        Sat, 18 Jul 2020 06:35:27 -0700 (PDT)
+        with ESMTP id S1726574AbgGRO1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jul 2020 10:27:44 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538ABC0619D2
+        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 07:27:44 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id c16so13265433ioi.9
+        for <netdev@vger.kernel.org>; Sat, 18 Jul 2020 07:27:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=cszaczazX+nza/wuzwl5vFGOp/ocDHkvRzppDicZINg=;
-        b=umGNSCOfa1EgC0PV9yb2k+sT9qPCDGtVhOG+V/6Grnax89npRY3MGPdkKcDRUxAnXG
-         4EtLb01hWlJpYpnstc51fv72o8J35yC5SLvuCD1pBTM/AIMAghtE+4Ka6REeK0Jyqj4/
-         ZyLkP0ng9u5AVBXZc80+enMJXZ/WS/Cu4Q+W3TW6w44q2vATKQ1dft8MYSnktwM3Txvn
-         2HB7vHxSOD0vSfi1w+Wi3LcZlJSqmdqFotXZ4BGQnsNyzOn/gkKDy+0IfBw8yEMHJM5E
-         Uz5AAjmydeFTfnWHT+bolAfZZS604LtH8g16IstkS7GGdlac1DGkfG9b/K5lkTNwZdQh
-         MxUw==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=2Kg2BXnq5t6JFOTVea2siWLjPummyACDQdIcil/u6eU=;
+        b=BAI0IRUhTDHW2yDBM6vV2ogE3bI7t13O4XsYHTAxHKbP1PO50gm/AUJchZyt/uUZQA
+         vLzAchyF7evFNky37zZ+xanCO79hwKOiCkbKzRrdS4one2JvBEQ+qVbVCDoCgZWQfjwH
+         /M1rW5ytozR1sM18hy5HvvAWhg8mpMwhtrk2hefh8954rs2KNUHPngXoktyyCwnpFgzy
+         h5j8hhfLg5q1rJByJXOHyrvJdM2lBeIKvKJc1WsjdduIfjB7gLZ4YK94qVg2+zf9/3JG
+         sPF6TNPhBiabzO7BB8/7nxAnsbyEIQowHP5FjCyUbsUF0QntPjOtUkePHlPP5sk7keKZ
+         +VRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=cszaczazX+nza/wuzwl5vFGOp/ocDHkvRzppDicZINg=;
-        b=J26VN9aySmslsRnnRlLKUcpt2gTVIfTWfwb+/gW74qxKqC7XiPSN/iBCnz6MAPDBDp
-         NxsOrq14rYQoCCVN8nh6nvFGc51WQQQmRdLCXcxgd7LoBVCTf233Gq2CQ8r5dqXfraLz
-         dhGtWqUhzvekO6VSme4663s2wsGAijrIqcWcTSbOs7LjdKfcOOpzWePWHhPVhL6mE2Vc
-         jSEUww3P3xtMiU5BITL9C8fyw1MjCongrxmKQ/vnSPa3MPZJq+66czVY36+41a2HPh6H
-         AdiLVe6qCApohqmCKShF4x3bx2+03lL7pFc8IgfBoUBfpkwn0W18Zz/CXUCb2OgMw7vQ
-         KjDg==
-X-Gm-Message-State: AOAM531g57vDTFI/39uyUy70W6tA0i+8H5yi0o/eEYdpDgHQMGg0J2PK
-        YnFWT0434DqTTzg2zRnQFz7cn4Sl
-X-Google-Smtp-Source: ABdhPJxlxDE5ruuGyNxobUU/DmGKhkLVkvU5PXpWt8zExf5gnmweM8dq5/weDBQn4cXCWYGtAHQuQg==
-X-Received: by 2002:a2e:3304:: with SMTP id d4mr5876780ljc.115.1595079325671;
-        Sat, 18 Jul 2020 06:35:25 -0700 (PDT)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id w19sm2207131ljh.106.2020.07.18.06.35.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jul 2020 06:35:24 -0700 (PDT)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        richardcochran@gmail.com, linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next 0/3] Document more PTP timestamping known quirks
-References: <20200717161027.1408240-1-olteanv@gmail.com>
-        <87imelj14p.fsf@osv.gnss.ru> <20200717215719.nhuaak2xu4fwebqp@skbuf>
-        <878sfh2iwc.fsf@osv.gnss.ru> <20200718113021.tcdfoatsqffr45f2@skbuf>
-Date:   Sat, 18 Jul 2020 16:35:23 +0300
-In-Reply-To: <20200718113021.tcdfoatsqffr45f2@skbuf> (Vladimir Oltean's
-        message of "Sat, 18 Jul 2020 14:30:21 +0300")
-Message-ID: <871rl90wv8.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=2Kg2BXnq5t6JFOTVea2siWLjPummyACDQdIcil/u6eU=;
+        b=O/R6XqwdEsShPtdWa9qWnwt8BZwKvL2apLJ8TzS19bI4AGvYW5SwiVLMMQaUcemQZz
+         TOYihq4jeahBJE8Xxec1wbZoDhTtEeNRtP9Ztv25dV5ADfnDlKPQn3OXEh8OVDthyjzL
+         lgaYUzjkkcaAsczfQScTc+DrlPsrjifH3nO0z5OSaebN7vPPFjcMI4A4Bc587XHEcIIj
+         c1j6oMOuclGSufH/epbFCT9fSgD9wAnPXNdREDd44C2mA6/05aNrs3ojrr3xjbK83vaL
+         itFCGcZbulvHGfETam943huZMkqVnKamjZNslPSvCFXAvYkmqKWYJmSYX1QYqMFk+U1E
+         hjiA==
+X-Gm-Message-State: AOAM530PVuLuC/OsNMmmFRcyUZk9sY/NMNK35728oUBsBljn6q1JSxvm
+        Q+mxe0sWIlPkO1ZZDyvVgfSr3t97ZlTUJ/bnvlEfdmzZLN8=
+X-Google-Smtp-Source: ABdhPJwG8XgNk6wxYl/6udFPx25WukZathecLNTn+77HHEZ9YWQzkvHO6euzAOYOJ4ZHfJqOswM8OdI+AKZpoSVMq1g=
+X-Received: by 2002:a02:7419:: with SMTP id o25mr16308771jac.4.1595082463307;
+ Sat, 18 Jul 2020 07:27:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+From:   Chris Healy <cphealy@gmail.com>
+Date:   Sat, 18 Jul 2020 07:27:33 -0700
+Message-ID: <CAFXsbZodM0W87aH=qeZCRDSwyNOAXwF=aO8zf1UpkhwNkSAczA@mail.gmail.com>
+Subject: bug: net: dsa: mv88e6xxx: serdes Unable to communicate on fiber with vf610-zii-dev-rev-c
+To:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <olteanv@gmail.com> writes:
+I've been trying to get the fiber interface of the vf610-zii-dev-rev-c
+board working with net-next to no avail.  This platform utilizes a
+Cotsworks SFF attached to port 9 of a Marvell 88E6390X.
 
-> On Sat, Jul 18, 2020 at 01:54:11PM +0300, Sergey Organov wrote:
->> Vladimir Oltean <olteanv@gmail.com> writes:
->>
->> > On Sat, Jul 18, 2020 at 12:13:42AM +0300, Sergey Organov wrote:
->> >> Vladimir Oltean <olteanv@gmail.com> writes:
->> >>
->> >> > I've tried to collect and summarize the conclusions of these
->> >> > discussions:
->> >> > https://patchwork.ozlabs.org/project/netdev/patch/20200711120842.2631-1-sorganov@gmail.com/
->> >> > https://patchwork.ozlabs.org/project/netdev/patch/20200710113611.3398-5-kurt@linutronix.de/
->> >> > which were a bit surprising to me. Make sure they are present in the
->> >> > documentation.
->> >>
->> >> As one of participants of these discussions, I'm afraid I incline to
->> >> alternative approach to solving the issues current design has than the one
->> >> you advocate in these patch series.
->> >>
->> >> I believe its upper-level that should enforce common policies like
->> >> handling hw time stamping at outermost capable device, not random MAC
->> >> driver out there.
->> >>
->> >> I'd argue that it's then upper-level that should check PHY features, and
->> >> then do not bother MAC with ioctl() requests that MAC should not handle
->> >> in given configuration. This way, the checks for phy_has_hwtstamp()
->> >> won't be spread over multiple MAC drivers and will happily sit in the
->> >> upper-level ioctl() handler.
->> >>
->> >> In other words, I mean that it's approach taken in ethtool that I tend
->> >> to consider being the right one.
->> >>
->> >> Thanks,
->> >> -- Sergey
->> >
->> > Concretely speaking, what are you going to do for
->> > skb_defer_tx_timestamp() and skb_defer_rx_timestamp()? Not to mention
->> > subtle bugs like SKBTX_IN_PROGRESS.
->>
->> I think that we have at least 2 problems here, and what I argue about
->> above addresses one of them, while you try to get solution for another
->> one.
->>
->> > If you don't address those, it's pointless to move the
->> > phy_has_hwtstamp() check to net/core/dev_ioctl.c.
->>
->> No, even though solving one problem could be considered pointless
->> without solving another, it doesn't mean that solving it is pointless. I
->> do hope you will solve another one.
->>
->> I believe that logic in ethtool ioctl handling should be moved to clocks
->> subsystem ioctl handling, and then ethtool should simply forward
->> relevant calls to clocks subsystem. This will give us single
->> implementation point that defines which ioctls go to which clocks, and
->> single point where policy decisions are made, that, besides getting rid
->> of current inconsistencies, will allow for easier changes of policies in
->> the future.
->>
->> That also could be the point that caches time stamping configuration and
->> gives it back to user space by ioctl request, freeing each driver from
->> implementing it, along with copying request structures to/from user
->> space that currently is done in every driver.
->>
->> I believe such changes are valuable despite particular way the
->> SKBTX_IN_PROGRESS issue will be resolved.
->>
->> > The only way I see to fix the bug is to introduce a new netdev flag,
->> > NETIF_F_PHY_HWTSTAMP or something like that. Then I'd grep for all
->> > occurrences of phy_has_hwtstamp() in the kernel (which currently amount
->> > to a whopping 2 users, 3 with your FEC "fix"), and declare this
->> > netdevice flag in their list of features. Then, phy_has_hwtstamp() and
->> > phy_has_tsinfo() and what not can be moved to generic places (or at
->> > least, I think they can), and those places could proceed to advertise
->> > and enable PHY timestamping only if the MAC declared itself ready. But,
->> > it is a bit strange to introduce a netdev flag just to fix a bug, I
->> > think.
->>
->> To me this sounds like a plan.
->>
->> In general (please don't take it as direct proposal to fix current
->> issues), the most flexible solution would be to allow for user space to
->> select which units will be time stamping (kernel clock being simply one
->> of them), and to deliver all the time stamps to the user space. This
->> will need clock IDs to be delivered along with time stamps (that is a
->> nice thing to have by itself, as I already mentioned elsewhere in
->> previous discussions.) For now it's just a raw idea, nevertheless to me
->> it sounds like a suitable goal for future design.
->>
->> Thanks,
->> -- Sergey
->
-> To me, there's one big inconsistency I see between your position when
-> you were coming from a 4.9 kernel where you wanted to fix a bug, and
-> your position now.
+I have fiber link up on port 9 and am able to send packets from the
+management CPU of the switch through the switch and out port 9 through
+the fiber interface to a fiber link partner successfully.  I'm also
+able to send packets from that fiber link partner back (to the point
+of the switches SERDES) and am seeing the fiber ports SERDES RX
+counters increment for each packet transmitted by the link partner.
+The switches port 9 MAC is not showing any RX counters incrementing
+though and I do not receive the frames at the management CPU.
 
-[First of all, as it seems there is misunderstanding here, let me say
-right from beginning that I have nothing against documenting current
-status, I'm rather all in favor of it, and I do appreciate your work on
-it very much, and I believe I already said this in a reply to your
-previous documentation patch some time ago.]
+Because the SERDES RX counters are incrementing while the MAC RX
+counters are not incrementing, it seems to me that the issue is
+between the MAC and SERDES.  This is odd to me given that TX works
+fine.
 
-Inconsistency? I don't think so. One thing is to fix a bug within
-current design limitations, and another one -- suggest design
-improvements that should make things better in the future. I just talk
-about different matters.
+In support of debugging this issue, I've applied an ethtool patch
+which allows decoding the 88E6390X SERDES registers from userspace.
+Looking at the register dump, nothing obvious sticks out to me though.
 
->
-> Your position when _you_ wanted to solve a problem for yourself was:
->
->   |You see, I have a problem on kernel 4.9.146. After I apply this patch,
->   |the problem goes away, at least for FEC/PHY combo that I care about, and
->   |chances are high that for DSA as well, according to your own expertise.
->   |Why should I care what is or is not ready for what to get a bug-fix
->   |patch into the kernel? Why should I guess some vague "intentions" or
->   |spend my time elsewhere?
->
-> As I said in that email thread, I can't contradict you.
+I'm not sure what the right next steps are and would appreciate any
+theories on what to try/test to root cause this issue.
 
-I fail to see what this has to do with current discussion. Apparently
-I was not able to make my current intentions clear enough, but I try
-again below.
+Below is an ethtool register dump and an ethtool statistics dump from
+when the link is up and I have done some attempts at pinging a remote
+host over fiber.
 
-> It is a design limitation which right now I am simply documenting.
-> That design limitation is there to stay in stable kernels: I don't
-> think there is any way to backport a new flag to netdev_features_t to
-> kernels as old as 4.9 and such. If you think there is, please say so,
-> that would change things quite a lot.
+root@(none):~$ ethtool -d sff2
+88E6390X Switch Port Registers
+------------------------------
+00: Port Status                            0xce49
+      Transmit Pause Enable bit            1
+      Receive Pause Enable bit             1
+      802.3 PHY Detected                   0
+      Link Status                          Up
+      Duplex                               Full
+      Speed                                1000 Mbps
+      Duplex Fixed                         0
+      EEE Enabled                          1
+      Transmitter Paused                   0
+      Flow Control                         0
+      Config Mode                          0x9
+01: Physical Control                       0x203e
+      RGMII Receive Timing Control         Default
+      RGMII Transmit Timing Control        Default
+      Force Speed                          1
+      Alternate Speed Mode                 Normal
+      MII PHY Mode                         MAC
+      EEE force value                      0
+      Force EEE                            0
+      Link's Forced value                  Up
+      Force Link                           1
+      Duplex's Forced value                Full
+      Force Duplex                         1
+      Force Speed                          1000 Mbps
+02: Flow Control                           0x0100
+03: Switch Identifier                      0x0a11
+04: Port Control                           0x0433
+      Source Address Filtering controls    Disabled
+      Egress Mode                          Unmodified
+      Ingress & Egress Header Mode         0
+      IGMP and MLD Snooping                1
+      Frame Mode                           Normal
+      VLAN Tunnel                          0
+      TagIfBoth                            0
+      Initial Priority assignment          Tag & IP Priority
+      Egress Flooding mode                 No unknown DA
+      Port State                           Forwarding
+05: Port Control 1                         0x0000
+      Message Port                         0
+      LAG Port                             0
+      VTU Page                             0
+      LAG ID                               0
+      FID[11:4]                            0x000
+06: Port Base VLAN Map (Header)            0x0400
+      FID[3:0]                             0x000
+      Force Mapping                        0
+      VLANTable                            10
+07: Default VLAN ID & Priority             0x0000
+      Default Priority                     0x0
+      Force to use Default VID             0
+      Default VLAN Identifier              0
+08: Port Control 2                         0x0080
+      Force good FCS in the frame          0
+      Allow bad FCS                        0
+      Jumbo Mode                           1522
+      802.1QMode                           Disabled
+      Discard Tagged Frames                0
+      Discard Untagged Frames              0
+      Map using DA hits                    1
+      ARP Mirror enable                    0
+      Egress Monitor Source Port           0
+      Ingress Monitor Source Port          0
+      Allow VID of Zero                    0
+      Default Queue Priority               0x0
+09: Egress Rate Control                    0x0001
+10: Egress Rate Control 2                  0x0000
+11: Port Association Vector                0x0200
+12: Port ATU Control                       0x0000
+13: Override                               0x0000
+14: Policy Control                         0x0000
+15: Port Ether Type                        0x9100
+16: Reserved                               0x0000
+17: Reserved                               0x0000
+18: Reserved                               0x0000
+19: Reserved                               0x0000
+20: Reserved                               0x0000
+21: Reserved                               0x0000
+22: LED Control                            0x0033
+23: IP Priority Mapping Table              0x0000
+24: IEEE Priority Mapping Table            0x3e07
+25: Port Control 3                         0x0000
+26: Reserved                               0x0000
+27: Queue Counters                         0x8000
+28: Queue Control                          0x0000
+29: Reserved                               0x0000
+30: Cut Through Control                    0x0000
+31: Debug Counters                         0x0000
 
-I didn't even think about it, sorry, don't know how you figured I have
-an opinion about it.
+88E6390X Switch Port SERDES Registers
+-------------------------------------
+f000: Global Clock Configuration 1           0x0000
+f001: Global Clock Configuration 2           0x0002
+f002: Port Operational Configuration         0x0003
+f00a: FIFO and CRC Int Enable                0x0000
+f00b: FIFO and CRC Int Status                0x0000
+f00c: PPM FIFO Control 1                     0x0000
+f00d: PPM FIFO Control 2                     0x0000
+f00e: PPM FIFO Status                        0x0000
+f010: Packet Generation Control 1            0x0501
+f011: Packet Generation Control 2            0x0000
+f012: Initial Payload 0-1/Packet Generation  0x0000
+f013: Initial Payload 2-3/Packet Generation  0x0000
+f016: Packet Generation Length               0x0000
+f017: Packet Generation Burst Sequence       0x0000
+f018: Packet Generation IPG                  0x0002
+f019: Packet Gen_Chkr Clock Control          0x0000
+f01a: Transmit Powerdown Delay               0x0032
+f01b: Transmit Packet Counter [15:0]         0x0000
+f01c: Transmit Packet Counter [31:16]        0x0000
+f01d: Transmit Packet Counter [47:32]        0x0000
+f01e: Transmit Byte Counter [15:0]           0x0000
+f01f: Transmit Byte Counter [31:16]          0x0000
+f020: Transmit Byte Counter [47:32]          0x0000
+f021: Receive Packet Counter [15:0]          0x0000
+f022: Receive Packet Counter [31:16]         0x0000
+f023: Receive Packet Counter [47:32]         0x0000
+f024: Receive Byte Count [15:0]              0x0000
+f025: Receive Byte Count [31:16]             0x0000
+f026: Receive Byte Count [47:32]             0x0000
+f027: Receive Packet Error Count [15:0]      0x0000
+f028: Receive Packet Error Count [31:16]     0x0000
+f029: Receive Packet Error Count [47:32]     0x0000
+f030: PRBS Control                           0x0200
+f031: PRBS Symbol Tx Counter [15:0]          0x0000
+f032: PRBS Symbol Tx Counter [31:16]         0x0000
+f033: PRBS Symbol Tx Counter [47:32]         0x0000
+f034: PRBS Symbol Rx Counter [15:0]          0x0000
+f035: PRBS Symbol Rx Counter [31:16]         0x0000
+f036: PRBS Symbol RX Counter [47:32]         0x0000
+f037: PRBS Error Count [15:0]                0x0000
+f038: PRBS Error Count [31:16]               0x0000
+f039: PRBS Error Count [47:32]               0x0000
+2000: 1000BASE-X/SGMII Control Register      0x1140
+      Reset                                0
+      Loopback                             0
+      SGMII Speed                          1000 Mbps
+      Autoneg Enable                       1
+      Power down                           0
+      Isolate                              0
+      Restart Autonet                      0
+      Duplex                               Full
+2001: 1000BASE-X/SGMII Status Register       0x016d
+      Autoneg Complete                     1
+      Remote Fault                         0
+      Link Status                          Up
+2002: PHY Identifier                         0x0141
+2003: PHY Identifier                         0x0c00
+2004: SGMII (Media side) Auto-Negotiation Ad 0x00a0
+      Link Status                          Down
+      Duplex                               Half
+      SGMII Speed                          10 Mbps
+      Transmit Pause                       0
+      Receive Pause                        0
+      Fibre/Copper                         Fibre
+      EEE mode                             0
+      Clock stopped during LPI             1
+2005: SGMII (Media side) Link Partner Abilit 0x40a0
+      Acknowledge                          1
+2006: 1000BASE-X Auto-Negotiation Expansion  0x0007
+2007: 1000BASE-X Next Page Transmit Register 0x2801
+2008: 1000BASE-X Link Partner Next Page Regi 0x0000
+200f: Extended Status Register               0x8000
+a000: 1000BASE-X Timer Mode Select Register  0x2000
+a001: 1000BASE-X Interrupt Enable Register   0x0600
+      Speed Changed                        0
+      Duplex Changed                       0
+      Page Received                        0
+      Autoneg Complete                     0
+      Link Up->Link Down                   1
+      Link Down->Link Up                   1
+      Symbol Error                         0
+      False Carrier                        0
+a002: 1000BASE-X Interrupt Status Register   0x0000
+      Speed Changed                        0
+      Duplex Changed                       0
+      Page Received                        0
+      Autoneg Complete                     0
+      Link Up->Link Down                   0
+      Link Down->Link Up                   0
+      Symbol Error                         0
+      False Carrier                        0
+a003: 1000BASE-X PHY Specific Status         0xac2c
+      Speed                                1000 Mbps
+      Duplex                               Full
+      Page Received                        0
+      Speed/Duplex Resolved                1
+      Link                                 Up
+      Sync                                 1
+      Energy Detect                        0
+      Transmit Pause                       0
+      Receive Pause                        0
+1000: 10GBASE-X4 PCS Control 1               0x2040
+1001: 10GBASE-X4 PCS Status 1                0x0082
+1002: PCS Device Identifier 1                0x0141
+1003: PCS Device Identifier 2                0x0c00
+1004: PCS Speed Ability                      0x0001
+1005: PCS Devices In Package 1               0x009a
+1006: PCS Devices In Package 2               0x4000
+1007: Reserved                               0x0001
+1008: 10GBASE-X4 PCS Status 2                0x8402
+100e: PCS Package Identifier 1               0x0141
+100f: PCS Package Identifier 2               0x0c00
+1014: PCS EEE Capability Register            0x0000
+1018: 10GBase-X Lane Status                  0x0c01
+1019: 10GBase-X Test Control                 0x0000
+9000: 10GBase-X Control                      0x0001
+9001: 10GBase-X Interrupt Enable 1           0x0000
+9002: 10GBase-X Interrupt Enable 2           0x0000
+9003: 10GBase-X Interrupt Status 1           0x0000
+9004: 10GBase-X Interrupt Status 2           0x00e1
+9006: 10GBase-X Real Time Status             0x0011
+9010: 10GBase-X Random Sequence Control      0x0000
+9011: 10GBase-X Jitter Packet Transmit Count 0x0000
+9012: 10GBase-X Jitter Packet Transmit Count 0x0000
+9013: 10GBase-X Jitter Packet Received Count 0x0000
+9014: 10GBase-X Jitter Packet Received Count 0x0000
+9015: 10GBase-X Jitter Packet Error Counter  0x0000
+9016: 10GBase-X Jitter Packet Error Counter  0x0000
+1020: 10GBASE-R PCS Status 1                 0x0000
+1021: 10GBASE-R PCS Status 2                 0x0000
+1022: 10GBASE-R PCS Test Pattern Seed A 0    0x0000
+1023: 10GBASE-R PCS Test Pattern Seed A 1    0x0000
+1024: 10GBASE-R PCS Test Pattern Seed A 2    0x0000
+1025: 10GBASE-R PCS Test Pattern Seed A 3    0x0000
+1026: 10GBASE-R PCS Test Pattern Seed B 0    0x0000
+1027: 10GBASE-R PCS Test Pattern Seed B 1    0x0000
+1028: 10GBASE-R PCS Test Pattern Seed B 2    0x0000
+1029: 10GBASE-R PCS Test Pattern Seed B 3    0x0000
+102a: 10GBASE-R PCS Test Pattern Control     0x0000
+102b: 10GBASE-R PCS Test Error Counter       0x0000
 
-> And now, you're arguing that I shouldn't be documenting the design
-> limitation, I should be fixing it.
-
-No, I'm not. In case you just document them, no. If you also suggest
-some road for improvements that I don't agree on, only then I argue.
-
-> Maybe I will, but first of all, you're asking me to effectively close
-> the door for anybody else in your position. On one side you proved
-> that PHY timestamping is something that should have been working, and
-> now you're treating it as something which shouldn't be.
-
-I'm not asking you for anything, no. I just shared my thoughts on the
-issue of proper ways to improve overall design. You are free to disagree
-or even to ignore them.
-
-> You can argue that we can keep accepting bug fixes to this problem for
-> stable kernels, and in that case I don't see why you're arguing that we
-> shouldn't be documenting the design limitation.
-
-You don't see because I'm not. I'm all for documenting.
-
-I just got an impression that you also suggest ways to improve the
-design, and, based on your comment that ethtool way is the bad design as
-it doesn't consult MAC when handling ioctls, I was afraid the design
-might went into direction I don't agree with.
-
-Maybe I got your intentions wrong. Sorry if I did.
-
->
-> Nobody said things are set in stone, I'm simply recording where we are
-> today and I'll be making further changes to the documentation as things
-> progress.
-
-I have absolutely nothing against documenting current status, not at
-all. Moreover, as I think I already said in this thread, your recent
-idea about NETIF_F_PHY_HWTSTAMP seemed sound to me too.
-
-I'm sorry I managed to provoke so much worry on your side!
-
-Thanks,
--- Sergey
+root@(none):~$ ethtool -S sff2
+NIC statistics:
+     tx_packets: 3
+     tx_bytes: 126
+     rx_packets: 0
+     rx_bytes: 0
+     in_good_octets: 0
+     in_bad_octets: 0
+     in_unicast: 0
+     in_broadcasts: 0
+     in_multicasts: 0
+     in_pause: 0
+     in_undersize: 0
+     in_fragments: 0
+     in_oversize: 0
+     in_jabber: 0
+     in_rx_error: 0
+     in_fcs_error: 0
+     out_octets: 192
+     out_unicast: 0
+     out_broadcasts: 3
+     out_multicasts: 0
+     out_pause: 0
+     excessive: 0
+     collisions: 0
+     deferred: 0
+     single: 0
+     multiple: 0
+     out_fcs_error: 0
+     late: 0
+     hist_64bytes: 3
+     hist_65_127bytes: 0
+     hist_128_255bytes: 0
+     hist_256_511bytes: 0
+     hist_512_1023bytes: 0
+     hist_1024_max_bytes: 0
+     in_discards: 0
+     in_filtered: 0
+     in_accepted: 0
+     in_bad_accepted: 0
+     in_good_avb_class_a: 0
+     in_good_avb_class_b: 0
+     in_bad_avb_class_a: 0
+     in_bad_avb_class_b: 0
+     tcam_counter_0: 0
+     tcam_counter_1: 0
+     tcam_counter_2: 0
+     tcam_counter_3: 0
+     in_da_unknown: 0
+     in_management: 0
+     out_queue_0: 3
+     out_queue_1: 0
+     out_queue_2: 0
+     out_queue_3: 0
+     out_queue_4: 0
+     out_queue_5: 0
+     out_queue_6: 0
+     out_queue_7: 0
+     out_cut_through: 0
+     out_octets_a: 0
+     out_octets_b: 0
+     out_management: 3
+     serdes_rx_pkts: 6
+     serdes_rx_bytes: 384
+     serdes_rx_pkts_error: 0
+     atu_member_violation: 0
+     atu_miss_violation: 0
+     atu_full_violation: 0
+     vtu_member_violation: 0
+     vtu_miss_violation: 0
