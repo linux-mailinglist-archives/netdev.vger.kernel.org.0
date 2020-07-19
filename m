@@ -2,32 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B0002251A8
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 13:42:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ACDF2251B9
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 13:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726067AbgGSLmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 07:42:02 -0400
-Received: from smtp.al2klimov.de ([78.46.175.9]:48322 "EHLO smtp.al2klimov.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725988AbgGSLmC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jul 2020 07:42:02 -0400
+        id S1726095AbgGSLwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 07:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725836AbgGSLwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 07:52:13 -0400
+Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F5DC0619D2;
+        Sun, 19 Jul 2020 04:52:13 -0700 (PDT)
 Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id 277D0BC085;
-        Sun, 19 Jul 2020 11:41:58 +0000 (UTC)
+        by smtp.al2klimov.de (Postfix) with ESMTPA id 0C10BBC06E;
+        Sun, 19 Jul 2020 11:52:08 +0000 (UTC)
 From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, kuba@kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org
 Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH for v5.9] net: sched: Replace HTTP links with HTTPS ones
-Date:   Sun, 19 Jul 2020 13:41:51 +0200
-Message-Id: <20200719114151.58369-1-grandmaster@al2klimov.de>
+Subject: [PATCH for v5.9] netfilter: Replace HTTP links with HTTPS ones
+Date:   Sun, 19 Jul 2020 13:52:02 +0200
+Message-Id: <20200719115202.58449-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: +++++
-X-Spam-Level: *****
 Authentication-Results: smtp.al2klimov.de;
         auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+X-Spamd-Bar: /
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -72,50 +77,129 @@ Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
  Impossible is nothing! :)
 
 
- net/sched/Kconfig   | 2 +-
- net/sched/sch_qfq.c | 2 +-
- net/sched/sch_sfb.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ include/uapi/linux/netfilter/xt_connmark.h | 2 +-
+ net/decnet/netfilter/dn_rtmsg.c            | 2 +-
+ net/netfilter/Kconfig                      | 2 +-
+ net/netfilter/nfnetlink_acct.c             | 2 +-
+ net/netfilter/nft_set_pipapo.c             | 4 ++--
+ net/netfilter/xt_connmark.c                | 2 +-
+ net/netfilter/xt_nfacct.c                  | 2 +-
+ net/netfilter/xt_time.c                    | 2 +-
+ 8 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-index 84badf00647e..e0509b4c39e4 100644
---- a/net/sched/Kconfig
-+++ b/net/sched/Kconfig
-@@ -223,7 +223,7 @@ config NET_SCH_DSMARK
- 	  Say Y if you want to schedule packets according to the
- 	  Differentiated Services architecture proposed in RFC 2475.
- 	  Technical information on this method, with pointers to associated
--	  RFCs, is available at <http://www.gta.ufrj.br/diffserv/>.
-+	  RFCs, is available at <https://www.gta.ufrj.br/diffserv/>.
+diff --git a/include/uapi/linux/netfilter/xt_connmark.h b/include/uapi/linux/netfilter/xt_connmark.h
+index 1aa5c955ee1e..f01c19b83a2b 100644
+--- a/include/uapi/linux/netfilter/xt_connmark.h
++++ b/include/uapi/linux/netfilter/xt_connmark.h
+@@ -4,7 +4,7 @@
  
- 	  To compile this code as a module, choose M here: the
- 	  module will be called sch_dsmark.
-diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-index 0b05ac7c848e..191143c35de6 100644
---- a/net/sched/sch_qfq.c
-+++ b/net/sched/sch_qfq.c
-@@ -24,7 +24,7 @@
+ #include <linux/types.h>
  
-     [1] Paolo Valente,
-     "Reducing the Execution Time of Fair-Queueing Schedulers."
--    http://algo.ing.unimo.it/people/paolo/agg-sched/agg-sched.pdf
-+    https://algo.ing.unimo.it/people/paolo/agg-sched/agg-sched.pdf
- 
-     Sources for QFQ:
- 
-diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
-index 4074c50ac3d7..f8fa648988bd 100644
---- a/net/sched/sch_sfb.c
-+++ b/net/sched/sch_sfb.c
-@@ -9,7 +9,7 @@
-  * A New Class of Active Queue Management Algorithms.
-  * U. Michigan CSE-TR-387-99, April 1999.
+-/* Copyright (C) 2002,2004 MARA Systems AB <http://www.marasystems.com>
++/* Copyright (C) 2002,2004 MARA Systems AB <https://www.marasystems.com>
+  * by Henrik Nordstrom <hno@marasystems.com>
   *
-- * http://www.thefengs.com/wuchang/blue/CSE-TR-387-99.pdf
-+ * https://www.thefengs.com/wuchang/blue/CSE-TR-387-99.pdf
+  * This program is free software; you can redistribute it and/or modify
+diff --git a/net/decnet/netfilter/dn_rtmsg.c b/net/decnet/netfilter/dn_rtmsg.c
+index dc705769acc9..26a9193df783 100644
+--- a/net/decnet/netfilter/dn_rtmsg.c
++++ b/net/decnet/netfilter/dn_rtmsg.c
+@@ -6,7 +6,7 @@
+  *
+  *              DECnet Routing Message Grabulator
+  *
+- *              (C) 2000 ChyGwyn Limited  -  http://www.chygwyn.com/
++ *              (C) 2000 ChyGwyn Limited  -  https://www.chygwyn.com/
+  *
+  * Author:      Steven Whitehouse <steve@chygwyn.com>
+  */
+diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
+index 0ffe2b8723c4..25313c29d799 100644
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
+@@ -447,7 +447,7 @@ config NF_TABLES
+ 	  replace the existing {ip,ip6,arp,eb}_tables infrastructure. It
+ 	  provides a pseudo-state machine with an extensible instruction-set
+ 	  (also known as expressions) that the userspace 'nft' utility
+-	  (http://www.netfilter.org/projects/nftables) uses to build the
++	  (https://www.netfilter.org/projects/nftables) uses to build the
+ 	  rule-set. It also comes with the generic set infrastructure that
+ 	  allows you to construct mappings between matchings and actions
+ 	  for performance lookups.
+diff --git a/net/netfilter/nfnetlink_acct.c b/net/netfilter/nfnetlink_acct.c
+index 5827117f2635..5bfec829c12f 100644
+--- a/net/netfilter/nfnetlink_acct.c
++++ b/net/netfilter/nfnetlink_acct.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+  * (C) 2011 Pablo Neira Ayuso <pablo@netfilter.org>
+- * (C) 2011 Intra2net AG <http://www.intra2net.com>
++ * (C) 2011 Intra2net AG <https://www.intra2net.com>
+  */
+ #include <linux/init.h>
+ #include <linux/module.h>
+diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
+index 8c04388296b0..78070aa65f62 100644
+--- a/net/netfilter/nft_set_pipapo.c
++++ b/net/netfilter/nft_set_pipapo.c
+@@ -312,7 +312,7 @@
+  *      Jay Ligatti, Josh Kuhn, and Chris Gage.
+  *      Proceedings of the IEEE International Conference on Computer
+  *      Communication Networks (ICCCN), August 2010.
+- *      http://www.cse.usf.edu/~ligatti/papers/grouper-conf.pdf
++ *      https://www.cse.usf.edu/~ligatti/papers/grouper-conf.pdf
+  *
+  * [Rottenstreich 2010]
+  *      Worst-Case TCAM Rule Expansion
+@@ -325,7 +325,7 @@
+  *      Kirill Kogan, Sergey Nikolenko, Ori Rottenstreich, William Culhane,
+  *      and Patrick Eugster.
+  *      Proceedings of the 2014 ACM conference on SIGCOMM, August 2014.
+- *      http://www.sigcomm.org/sites/default/files/ccr/papers/2014/August/2619239-2626294.pdf
++ *      https://www.sigcomm.org/sites/default/files/ccr/papers/2014/August/2619239-2626294.pdf
   */
  
- #include <linux/module.h>
+ #include <linux/kernel.h>
+diff --git a/net/netfilter/xt_connmark.c b/net/netfilter/xt_connmark.c
+index eec2f3a88d73..e5ebc0810675 100644
+--- a/net/netfilter/xt_connmark.c
++++ b/net/netfilter/xt_connmark.c
+@@ -2,7 +2,7 @@
+ /*
+  *	xt_connmark - Netfilter module to operate on connection marks
+  *
+- *	Copyright (C) 2002,2004 MARA Systems AB <http://www.marasystems.com>
++ *	Copyright (C) 2002,2004 MARA Systems AB <https://www.marasystems.com>
+  *	by Henrik Nordstrom <hno@marasystems.com>
+  *	Copyright © CC Computer Consultants GmbH, 2007 - 2008
+  *	Jan Engelhardt <jengelh@medozas.de>
+diff --git a/net/netfilter/xt_nfacct.c b/net/netfilter/xt_nfacct.c
+index 5aab6df74e0f..a97c2259bbc8 100644
+--- a/net/netfilter/xt_nfacct.c
++++ b/net/netfilter/xt_nfacct.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+  * (C) 2011 Pablo Neira Ayuso <pablo@netfilter.org>
+- * (C) 2011 Intra2net AG <http://www.intra2net.com>
++ * (C) 2011 Intra2net AG <https://www.intra2net.com>
+  */
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ 
+diff --git a/net/netfilter/xt_time.c b/net/netfilter/xt_time.c
+index 67cb98489415..6aa12d0f54e2 100644
+--- a/net/netfilter/xt_time.c
++++ b/net/netfilter/xt_time.c
+@@ -5,7 +5,7 @@
+  *	based on ipt_time by Fabrice MARIE <fabrice@netfilter.org>
+  *	This is a module which is used for time matching
+  *	It is using some modified code from dietlibc (localtime() function)
+- *	that you can find at http://www.fefe.de/dietlibc/
++ *	that you can find at https://www.fefe.de/dietlibc/
+  *	This file is distributed under the terms of the GNU General Public
+  *	License (GPL). Copies of the GPL can be obtained from gnu.org/gpl.
+  */
 -- 
 2.27.0
 
