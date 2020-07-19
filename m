@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1584022545F
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 00:04:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBCCE225457
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 00:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726619AbgGSWDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726755AbgGSWDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 19 Jul 2020 18:03:47 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:38633 "EHLO
+Received: from ssl.serverraum.org ([176.9.125.105]:60503 "EHLO
         ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726126AbgGSWDq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 18:03:46 -0400
+        with ESMTP id S1726159AbgGSWDr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 18:03:47 -0400
 Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id F416E22FEC;
-        Mon, 20 Jul 2020 00:03:42 +0200 (CEST)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 9236B22FF5;
+        Mon, 20 Jul 2020 00:03:44 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
         t=1595196224;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=XKk8+t5MLJEeSzFrY4LraeUIQ/GC5u/mAsRgDMFyZl0=;
-        b=TpXYaQKovs53NDtoQmYHr7/YU9tXAJBw88fwfvXzS9YWgthUsONg9IfGqiDKHIyP+iXhhc
-        2m3QdZkyfygNM6QHV2+7L7kl3Pbn1Nk7qhfc/hhEGOPpOyVZKNssKfxVTx3jHkkRIVvdmd
-        jeIGbh9AOpgh7Q95NiAM1p8EvtiT7Go=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3Az1b75lhKhx+rJxu2wn9x0O+WyFRWLJqCYijLFsh9c=;
+        b=T3ai1ByDnBn+DeYg4J2ikbWrhye40bfL+R6plUXmXkK+k/b22iEKIqxRWjilHFKl00TIvc
+        csI096ZFWpoOHebw6kssgC4tRKSGm2ey76zjcqHkswufAMj7sGZycpeW9uh9Z2oqIvFcV9
+        L4bpiEfqyPh1Y9CHYc4Zx8PjrilXstk=
 From:   Michael Walle <michael@walle.cc>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -37,11 +38,14 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Heiko Thiery <heiko.thiery@gmail.com>,
         Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Subject: [PATCH net-next v7 0/4] net: enetc: remove bootloader dependency
-Date:   Mon, 20 Jul 2020 00:03:32 +0200
-Message-Id: <20200719220336.6919-1-michael@walle.cc>
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH net-next v7 1/4] net: phy: add USXGMII link partner ability constants
+Date:   Mon, 20 Jul 2020 00:03:33 +0200
+Message-Id: <20200719220336.6919-2-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200719220336.6919-1-michael@walle.cc>
+References: <20200719220336.6919-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam: Yes
@@ -50,73 +54,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These patches were picked from the following series:
-https://lore.kernel.org/netdev/1567779344-30965-1-git-send-email-claudiu.manoil@nxp.com/
-They have never been resent. I've picked them up, addressed Andrews
-comments, fixed some more bugs and asked Claudiu if I can keep their SOB
-tags; he agreed. I've tested this on our board which happens to have a
-bootloader which doesn't do the enetc setup in all cases. Though, only
-SGMII mode was tested.
+The constants are taken from the USXGMII Singleport Copper Interface
+specification. The naming are based on the SGMII ones, but with an MDIO_
+prefix.
 
-changes since v6:
- - dropped _LPA_ infix for USXGMII constants
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ include/uapi/linux/mdio.h | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-changes since v5:
- - fixed pcs->autoneg_complete and pcs->link assignment. Thanks Vladimir.
-
-changes since v4:
- - moved (and renamed) the USXGMII constants to include/uapi/linux/mdio.h.
-   Suggested by Russell King.
-
-changes since v3:
- - rebased to latest net-next where devm_mdiobus_free() was removed.
-   replace it by mdiobus_free(). The internal MDIO bus is optional, if
-   there is any error, we try to run with the bootloader default PCS
-   settings, thus in the error case, we need to free the mdiobus.
-
-changes since v2:
- - removed SOBs from "net: enetc: Initialize SerDes for SGMII and USXGMII
-   protocols" because almost everything has changed.
- - get a phy_device for the internal PCS PHY so we can use the phy_
-   functions instead of raw mdiobus writes
- - reuse macros already defined in fsl_mdio.h, move missing bits from
-   felix to fsl_mdio.h, because they share the same PCS PHY building
-   block
- - added 2500BaseX mode (based on felix init routine)
- - changed xgmii mode to usxgmii mode, because it is actually USXGMII and
-   felix does the same.
- - fixed devad, which is 0x1f (MMD_VEND2)
-
-changes since v1:
- - mdiobus id is '"imdio-%s", dev_name(dev)' because the plain dev_name()
-   is used by the emdio.
- - use mdiobus_write() instead of imdio->write(imdio, ..), since this is
-   already a full featured mdiobus
- - set phy_mask to ~0 to avoid scanning the bus
- - use phy_interface_mode_is_rgmii(phy_mode) to also include the RGMII
-   modes with pad delays.
- - move enetc_imdio_init() to enetc_pf.c, there shouldn't be any other
-   users, should it?
- - renamed serdes to SerDes
- - printing the error code of mdiobus_register() in the error path
- - call mdiobus_unregister() on _remove()
- - call devm_mdiobus_free() if mdiobus_register() fails, since an
-   error is not fatal
-Alex Marginean (1):
-  net: enetc: Use DT protocol information to set up the ports
-
-Michael Walle (3):
-  net: phy: add USXGMII link partner ability constants
-  net: dsa: felix: (re)use already existing constants
-  net: enetc: Initialize SerDes for SGMII and USXGMII protocols
-
- drivers/net/dsa/ocelot/felix_vsc9959.c        |  45 ++---
- .../net/ethernet/freescale/enetc/enetc_hw.h   |   3 +
- .../net/ethernet/freescale/enetc/enetc_pf.c   | 188 +++++++++++++++---
- .../net/ethernet/freescale/enetc/enetc_pf.h   |   5 +
- include/uapi/linux/mdio.h                     |  26 +++
- 5 files changed, 210 insertions(+), 57 deletions(-)
-
+diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
+index 4bcb41c71b8c..3f302e2523b2 100644
+--- a/include/uapi/linux/mdio.h
++++ b/include/uapi/linux/mdio.h
+@@ -324,4 +324,30 @@ static inline __u16 mdio_phy_id_c45(int prtad, int devad)
+ 	return MDIO_PHY_ID_C45 | (prtad << 5) | devad;
+ }
+ 
++/* UsxgmiiChannelInfo[15:0] for USXGMII in-band auto-negotiation.*/
++#define MDIO_USXGMII_EEE_CLK_STP	0x0080	/* EEE clock stop supported */
++#define MDIO_USXGMII_EEE		0x0100	/* EEE supported */
++#define MDIO_USXGMII_SPD_MASK		0x0e00	/* USXGMII speed mask */
++#define MDIO_USXGMII_FULL_DUPLEX	0x1000	/* USXGMII full duplex */
++#define MDIO_USXGMII_DPX_SPD_MASK	0x1e00	/* USXGMII duplex and speed bits */
++#define MDIO_USXGMII_10			0x0000	/* 10Mbps */
++#define MDIO_USXGMII_10HALF		0x0000	/* 10Mbps half-duplex */
++#define MDIO_USXGMII_10FULL		0x1000	/* 10Mbps full-duplex */
++#define MDIO_USXGMII_100		0x0200	/* 100Mbps */
++#define MDIO_USXGMII_100HALF		0x0200	/* 100Mbps half-duplex */
++#define MDIO_USXGMII_100FULL		0x1200	/* 100Mbps full-duplex */
++#define MDIO_USXGMII_1000		0x0400	/* 1000Mbps */
++#define MDIO_USXGMII_1000HALF		0x0400	/* 1000Mbps half-duplex */
++#define MDIO_USXGMII_1000FULL		0x1400	/* 1000Mbps full-duplex */
++#define MDIO_USXGMII_10G		0x0600	/* 10Gbps */
++#define MDIO_USXGMII_10GHALF		0x0600	/* 10Gbps half-duplex */
++#define MDIO_USXGMII_10GFULL		0x1600	/* 10Gbps full-duplex */
++#define MDIO_USXGMII_2500		0x0800	/* 2500Mbps */
++#define MDIO_USXGMII_2500HALF		0x0800	/* 2500Mbps half-duplex */
++#define MDIO_USXGMII_2500FULL		0x1800	/* 2500Mbps full-duplex */
++#define MDIO_USXGMII_5000		0x0a00	/* 5000Mbps */
++#define MDIO_USXGMII_5000HALF		0x0a00	/* 5000Mbps half-duplex */
++#define MDIO_USXGMII_5000FULL		0x1a00	/* 5000Mbps full-duplex */
++#define MDIO_USXGMII_LINK		0x8000	/* PHY link with copper-side partner */
++
+ #endif /* _UAPI__LINUX_MDIO_H__ */
 -- 
 2.20.1
 
