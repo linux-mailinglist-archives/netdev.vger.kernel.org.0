@@ -2,189 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91BC4225296
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 17:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 825CD2252A2
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 17:52:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726161AbgGSPsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 11:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726093AbgGSPsq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 11:48:46 -0400
-Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC47EC0619D2;
-        Sun, 19 Jul 2020 08:48:45 -0700 (PDT)
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id 613A3BC062;
-        Sun, 19 Jul 2020 15:48:42 +0000 (UTC)
-From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, kuba@kernel.org,
-        corbet@lwn.net, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH for v5.9] Documentation: intel: Replace HTTP links with HTTPS ones
-Date:   Sun, 19 Jul 2020 17:48:36 +0200
-Message-Id: <20200719154836.59873-1-grandmaster@al2klimov.de>
+        id S1726673AbgGSPwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 11:52:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33900 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726024AbgGSPwy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jul 2020 11:52:54 -0400
+Received: from localhost.localdomain (unknown [151.48.143.159])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 832A8207EA;
+        Sun, 19 Jul 2020 15:52:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595173974;
+        bh=LrxoiroEENFNCeizEzCr/tyUfuQ+rpnoYmHgj4YUMKI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fGYVqLsZEB2JT9aUTmQQmTUe2ige7vWfkAIfL9TcrzDPBHzTjS+lYLoY1D4RFl4uV
+         2X0Qz0zXmB5EDySxAz1aHIEcR/XhyiWU9VYE0XNCt2KLWMnQzzItqy+k7cnEt11tyq
+         VSAMXvbjgcB62l7GGY9C6UUleT0rj/A9I8sBK8H8=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, brouer@redhat.com,
+        daniel@iogearbox.net, lorenzo.bianconi@redhat.com,
+        jakub@cloudflare.com, kuba@kernel.org
+Subject: [PATCH bpf-next] bpf: cpumap: fix possible rcpu kthread hung
+Date:   Sun, 19 Jul 2020 17:52:41 +0200
+Message-Id: <e54f2aabf959f298939e5507b09c48f8c2e380be.1595170625.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: +++++
-X-Spam-Level: *****
-Authentication-Results: smtp.al2klimov.de;
-        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rationale:
-Reduces attack surface on kernel devs opening the links for MITM
-as HTTPS traffic is much harder to manipulate.
+Fix the following cpumap kthread hung. The issue is currently occurring
+when __cpu_map_load_bpf_program fails (e.g if the bpf prog has not
+BPF_XDP_CPUMAP as expected_attach_type)
 
-Deterministic algorithm:
-For each file:
-  If not .svg:
-    For each line:
-      If doesn't contain `\bxmlns\b`:
-        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
-            If both the HTTP and HTTPS versions
-            return 200 OK and serve the same content:
-              Replace HTTP with HTTPS.
+$./test_progs -n 101
+101/1 cpumap_with_progs:OK
+101 xdp_cpumap_attach:OK
+Summary: 1/1 PASSED, 0 SKIPPED, 0 FAILED
+[  369.996478] INFO: task cpumap/0/map:7:205 blocked for more than 122 seconds.
+[  369.998463]       Not tainted 5.8.0-rc4-01472-ge57892f50a07 #212
+[  370.000102] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  370.001918] cpumap/0/map:7  D    0   205      2 0x00004000
+[  370.003228] Call Trace:
+[  370.003930]  __schedule+0x5c7/0xf50
+[  370.004901]  ? io_schedule_timeout+0xb0/0xb0
+[  370.005934]  ? static_obj+0x31/0x80
+[  370.006788]  ? mark_held_locks+0x24/0x90
+[  370.007752]  ? cpu_map_bpf_prog_run_xdp+0x6c0/0x6c0
+[  370.008930]  schedule+0x6f/0x160
+[  370.009728]  schedule_preempt_disabled+0x14/0x20
+[  370.010829]  kthread+0x17b/0x240
+[  370.011433]  ? kthread_create_worker_on_cpu+0xd0/0xd0
+[  370.011944]  ret_from_fork+0x1f/0x30
+[  370.012348]
+               Showing all locks held in the system:
+[  370.013025] 1 lock held by khungtaskd/33:
+[  370.013432]  #0: ffffffff82b24720 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x28/0x1c3
 
-Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+[  370.014461] =============================================
+
+Fixes: 9216477449f3 ("bpf: cpumap: Add the possibility to attach an eBPF program to cpumap")
+Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- Continuing my work started at 93431e0607e5.
- See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
- (Actually letting a shell for loop submit all this stuff for me.)
+ kernel/bpf/cpumap.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
- If there are any URLs to be removed completely
- or at least not (just) HTTPSified:
- Just clearly say so and I'll *undo my change*.
- See also: https://lkml.org/lkml/2020/6/27/64
-
- If there are any valid, but yet not changed URLs:
- See: https://lkml.org/lkml/2020/6/26/837
-
- If you apply the patch, please let me know.
-
- Sorry again to all maintainers who complained about subject lines.
- Now I realized that you want an actually perfect prefixes,
- not just subsystem ones.
- I tried my best...
- And yes, *I could* (at least half-)automate it.
- Impossible is nothing! :)
-
-
- Documentation/networking/device_drivers/intel/e100.rst  | 4 ++--
- Documentation/networking/device_drivers/intel/e1000.rst | 2 +-
- Documentation/networking/device_drivers/intel/fm10k.rst | 2 +-
- Documentation/networking/device_drivers/intel/iavf.rst  | 2 +-
- Documentation/networking/device_drivers/intel/igb.rst   | 2 +-
- Documentation/networking/device_drivers/intel/igbvf.rst | 2 +-
- Documentation/networking/device_drivers/intel/ixgb.rst  | 2 +-
- 7 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/Documentation/networking/device_drivers/intel/e100.rst b/Documentation/networking/device_drivers/intel/e100.rst
-index 3ac21e7119a7..3d4a9ba21946 100644
---- a/Documentation/networking/device_drivers/intel/e100.rst
-+++ b/Documentation/networking/device_drivers/intel/e100.rst
-@@ -41,7 +41,7 @@ Identifying Your Adapter
+diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+index 4c95d0615ca2..f1c46529929b 100644
+--- a/kernel/bpf/cpumap.c
++++ b/kernel/bpf/cpumap.c
+@@ -453,24 +453,27 @@ __cpu_map_entry_alloc(struct bpf_cpumap_val *value, u32 cpu, int map_id)
+ 	rcpu->map_id = map_id;
+ 	rcpu->value.qsize  = value->qsize;
  
- For information on how to identify your adapter, and for the latest Intel
- network drivers, refer to the Intel Support website:
--http://www.intel.com/support
-+https://www.intel.com/support
++	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, fd))
++		goto free_ptr_ring;
++
+ 	/* Setup kthread */
+ 	rcpu->kthread = kthread_create_on_node(cpu_map_kthread_run, rcpu, numa,
+ 					       "cpumap/%d/map:%d", cpu, map_id);
+ 	if (IS_ERR(rcpu->kthread))
+-		goto free_ptr_ring;
++		goto free_prog;
  
- Driver Configuration Parameters
- ===============================
-@@ -179,7 +179,7 @@ filtering by
- Support
- =======
- For general information, go to the Intel support website at:
--http://www.intel.com/support/
-+https://www.intel.com/support/
+ 	get_cpu_map_entry(rcpu); /* 1-refcnt for being in cmap->cpu_map[] */
+ 	get_cpu_map_entry(rcpu); /* 1-refcnt for kthread */
  
- or the Intel Wired Networking project hosted by Sourceforge at:
- http://sourceforge.net/projects/e1000
-diff --git a/Documentation/networking/device_drivers/intel/e1000.rst b/Documentation/networking/device_drivers/intel/e1000.rst
-index 4aaae0f7d6ba..9d99ff15d737 100644
---- a/Documentation/networking/device_drivers/intel/e1000.rst
-+++ b/Documentation/networking/device_drivers/intel/e1000.rst
-@@ -44,7 +44,7 @@ NOTES:
-         For more information about the InterruptThrottleRate,
-         RxIntDelay, TxIntDelay, RxAbsIntDelay, and TxAbsIntDelay
-         parameters, see the application note at:
--        http://www.intel.com/design/network/applnots/ap450.htm
-+        https://www.intel.com/design/network/applnots/ap450.htm
+-	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, fd))
+-		goto free_ptr_ring;
+-
+ 	/* Make sure kthread runs on a single CPU */
+ 	kthread_bind(rcpu->kthread, cpu);
+ 	wake_up_process(rcpu->kthread);
  
- AutoNeg
- -------
-diff --git a/Documentation/networking/device_drivers/intel/fm10k.rst b/Documentation/networking/device_drivers/intel/fm10k.rst
-index 4d279e64e221..9258ef6f515c 100644
---- a/Documentation/networking/device_drivers/intel/fm10k.rst
-+++ b/Documentation/networking/device_drivers/intel/fm10k.rst
-@@ -22,7 +22,7 @@ Ethernet Multi-host Controller.
+ 	return rcpu;
  
- For information on how to identify your adapter, and for the latest Intel
- network drivers, refer to the Intel Support website:
--http://www.intel.com/support
-+https://www.intel.com/support
- 
- 
- Flow Control
-diff --git a/Documentation/networking/device_drivers/intel/iavf.rst b/Documentation/networking/device_drivers/intel/iavf.rst
-index 84ac7e75f363..52e037b11c97 100644
---- a/Documentation/networking/device_drivers/intel/iavf.rst
-+++ b/Documentation/networking/device_drivers/intel/iavf.rst
-@@ -43,7 +43,7 @@ device.
- 
- For information on how to identify your adapter, and for the latest NVM/FW
- images and Intel network drivers, refer to the Intel Support website:
--http://www.intel.com/support
-+https://www.intel.com/support
- 
- 
- Additional Features and Configurations
-diff --git a/Documentation/networking/device_drivers/intel/igb.rst b/Documentation/networking/device_drivers/intel/igb.rst
-index 87e560fe5eaa..d46289e182cf 100644
---- a/Documentation/networking/device_drivers/intel/igb.rst
-+++ b/Documentation/networking/device_drivers/intel/igb.rst
-@@ -20,7 +20,7 @@ Identifying Your Adapter
- ========================
- For information on how to identify your adapter, and for the latest Intel
- network drivers, refer to the Intel Support website:
--http://www.intel.com/support
-+https://www.intel.com/support
- 
- 
- Command Line Parameters
-diff --git a/Documentation/networking/device_drivers/intel/igbvf.rst b/Documentation/networking/device_drivers/intel/igbvf.rst
-index 557fc020ef31..40fa210c5e14 100644
---- a/Documentation/networking/device_drivers/intel/igbvf.rst
-+++ b/Documentation/networking/device_drivers/intel/igbvf.rst
-@@ -35,7 +35,7 @@ Identifying Your Adapter
- ========================
- For information on how to identify your adapter, and for the latest Intel
- network drivers, refer to the Intel Support website:
--http://www.intel.com/support
-+https://www.intel.com/support
- 
- 
- Additional Features and Configurations
-diff --git a/Documentation/networking/device_drivers/intel/ixgb.rst b/Documentation/networking/device_drivers/intel/ixgb.rst
-index ab624f1a44a8..c6a233e68ad6 100644
---- a/Documentation/networking/device_drivers/intel/ixgb.rst
-+++ b/Documentation/networking/device_drivers/intel/ixgb.rst
-@@ -203,7 +203,7 @@ With the 10 Gigabit server adapters, the default Linux configuration will
- very likely limit the total available throughput artificially.  There is a set
- of configuration changes that, when applied together, will increase the ability
- of Linux to transmit and receive data.  The following enhancements were
--originally acquired from settings published at http://www.spec.org/web99/ for
-+originally acquired from settings published at https://www.spec.org/web99/ for
- various submitted results using Linux.
- 
- NOTE:
++free_prog:
++	if (rcpu->prog)
++		bpf_prog_put(rcpu->prog);
+ free_ptr_ring:
+ 	ptr_ring_cleanup(rcpu->queue, NULL);
+ free_queue:
 -- 
-2.27.0
+2.26.2
 
