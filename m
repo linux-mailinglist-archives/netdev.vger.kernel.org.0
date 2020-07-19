@@ -2,37 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA6FD2251A2
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 13:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B0002251A8
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 13:42:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726094AbgGSLbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 07:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726012AbgGSLbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 07:31:52 -0400
-Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A7CC0619D2;
-        Sun, 19 Jul 2020 04:31:51 -0700 (PDT)
+        id S1726067AbgGSLmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 07:42:02 -0400
+Received: from smtp.al2klimov.de ([78.46.175.9]:48322 "EHLO smtp.al2klimov.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725988AbgGSLmC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jul 2020 07:42:02 -0400
 Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id 59B4DBC063;
-        Sun, 19 Jul 2020 11:31:48 +0000 (UTC)
+        by smtp.al2klimov.de (Postfix) with ESMTPA id 277D0BC085;
+        Sun, 19 Jul 2020 11:41:58 +0000 (UTC)
 From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     michael.hennerich@analog.com, alex.aring@gmail.com,
-        stefan@datenfreihafen.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH for v5.9] net: ieee802154: adf7242: Replace HTTP links with HTTPS ones
-Date:   Sun, 19 Jul 2020 13:31:42 +0200
-Message-Id: <20200719113142.58304-1-grandmaster@al2klimov.de>
+Subject: [PATCH for v5.9] net: sched: Replace HTTP links with HTTPS ones
+Date:   Sun, 19 Jul 2020 13:41:51 +0200
+Message-Id: <20200719114151.58369-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: ++++++
-X-Spam-Level: ******
+X-Spamd-Bar: +++++
+X-Spam-Level: *****
 Authentication-Results: smtp.al2klimov.de;
         auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
-X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -77,22 +72,50 @@ Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
  Impossible is nothing! :)
 
 
- drivers/net/ieee802154/adf7242.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sched/Kconfig   | 2 +-
+ net/sched/sch_qfq.c | 2 +-
+ net/sched/sch_sfb.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ieee802154/adf7242.c b/drivers/net/ieee802154/adf7242.c
-index 5a37514e4234..60a016a6806a 100644
---- a/drivers/net/ieee802154/adf7242.c
-+++ b/drivers/net/ieee802154/adf7242.c
-@@ -4,7 +4,7 @@
+diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+index 84badf00647e..e0509b4c39e4 100644
+--- a/net/sched/Kconfig
++++ b/net/sched/Kconfig
+@@ -223,7 +223,7 @@ config NET_SCH_DSMARK
+ 	  Say Y if you want to schedule packets according to the
+ 	  Differentiated Services architecture proposed in RFC 2475.
+ 	  Technical information on this method, with pointers to associated
+-	  RFCs, is available at <http://www.gta.ufrj.br/diffserv/>.
++	  RFCs, is available at <https://www.gta.ufrj.br/diffserv/>.
+ 
+ 	  To compile this code as a module, choose M here: the
+ 	  module will be called sch_dsmark.
+diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
+index 0b05ac7c848e..191143c35de6 100644
+--- a/net/sched/sch_qfq.c
++++ b/net/sched/sch_qfq.c
+@@ -24,7 +24,7 @@
+ 
+     [1] Paolo Valente,
+     "Reducing the Execution Time of Fair-Queueing Schedulers."
+-    http://algo.ing.unimo.it/people/paolo/agg-sched/agg-sched.pdf
++    https://algo.ing.unimo.it/people/paolo/agg-sched/agg-sched.pdf
+ 
+     Sources for QFQ:
+ 
+diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
+index 4074c50ac3d7..f8fa648988bd 100644
+--- a/net/sched/sch_sfb.c
++++ b/net/sched/sch_sfb.c
+@@ -9,7 +9,7 @@
+  * A New Class of Active Queue Management Algorithms.
+  * U. Michigan CSE-TR-387-99, April 1999.
   *
-  * Copyright 2009-2017 Analog Devices Inc.
-  *
-- * http://www.analog.com/ADF7242
-+ * https://www.analog.com/ADF7242
+- * http://www.thefengs.com/wuchang/blue/CSE-TR-387-99.pdf
++ * https://www.thefengs.com/wuchang/blue/CSE-TR-387-99.pdf
   */
  
- #include <linux/kernel.h>
+ #include <linux/module.h>
 -- 
 2.27.0
 
