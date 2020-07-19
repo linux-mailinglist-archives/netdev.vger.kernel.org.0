@@ -2,135 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2D6A225077
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 09:43:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AEC0225080
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 10:05:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726146AbgGSHlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 03:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
+        id S1726073AbgGSIFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 04:05:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725988AbgGSHlu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 03:41:50 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86C4C0619D2
-        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 00:41:49 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id z24so16985860ljn.8
-        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 00:41:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fLlSgU2du9zPWb16ppA5XVZXrlf8UIhSjUtmQ0H+tTI=;
-        b=MpFNLPJ2NKBkQ340R7Y2whTmYg6tFCk6kL/oTHH26Gc/3nyzLqOcIsN7191Xj4OEBd
-         GHs0Vopmx7cpC8OrBVhvu4MlDQ5aD3PB9rqGBC5KSrhQV1Vfw7xxKKYPoN+xFui3UUXX
-         V+85lgRgGDmT1PTB1j4ZqlO6uHfoSI6qWTE+eNNiwHHGXhg2RyhfCchZLMLtnKDapyRF
-         RIsji9mulK7h8TRVfFCPkBW+TLG55LC8LE7rjxP1UxBc7C7Zg6xcZGwspVRJBegsr+em
-         ABVP4kGKI976V04i/8zQfQ9WxZhuBUHM/xr8LTHSmMPJeRysFn0d4iX7X5ANu2CGpCa1
-         S3qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fLlSgU2du9zPWb16ppA5XVZXrlf8UIhSjUtmQ0H+tTI=;
-        b=hASQG+KXtI/IJVeX9pB2ghgjxX+SKbNE5wN4g8i1cCiW0va2VSJlMhn2i9AyUewNpr
-         Xmha+DtNuKN9Le3zZ2DRm0xHXUYM6wK3mySckH8mMwdf8C+hOw+bobdQls2qsskU4hcz
-         19bys6BYtkmcuogZ0avLMl60IXVLbRHwIDH8mEkUtZQlJnEXgUOAr0UU9NWjMTsvHSlL
-         mHlKA2y8w0sbWqHF1dXLEQUktuHUakUpgZOs1OrCseoPZWYUjTE4pG/D89uGRx4LSRF+
-         3Kfi98leCzVGqQT+1t9GbJlaoCRE9QXXBqkGuQICOekB+LItWTEioyuw1OCxLcllXfMW
-         EIYQ==
-X-Gm-Message-State: AOAM532RpwxqqiD+9LX55zIIv6/GOErEb1pZbSfkBBop3CsUDBNaY/Io
-        u8plxQ7/7T0cpS90uvqo3O8jJLGjhje2quh+Niw=
-X-Google-Smtp-Source: ABdhPJz82e279eN1Sq/gDJ7CQI+p3ZcvnAoel0UGKyK1zZr4tVnKNOMZDp4lIkCiQTTAMcFarBM4mh89M+RPdNNSk6s=
-X-Received: by 2002:a2e:a407:: with SMTP id p7mr7364811ljn.440.1595144508305;
- Sun, 19 Jul 2020 00:41:48 -0700 (PDT)
+        with ESMTP id S1726021AbgGSIFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 04:05:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7778CC0619D4
+        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 01:05:43 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jx4KG-0001EV-Ab; Sun, 19 Jul 2020 10:05:36 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jx4KB-0006Mt-J3; Sun, 19 Jul 2020 10:05:31 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH net-next v1] net: phy: at803x: add mdix configuration support for AR9331 and AR8035
+Date:   Sun, 19 Jul 2020 10:05:30 +0200
+Message-Id: <20200719080530.24370-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20200718071306.9734-1-ap420073@gmail.com> <CAM_iQpU+ROfk4PAjB4sZawCSb0Q8QSn5kLJ9cczd=L+svx33Hw@mail.gmail.com>
-In-Reply-To: <CAM_iQpU+ROfk4PAjB4sZawCSb0Q8QSn5kLJ9cczd=L+svx33Hw@mail.gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Sun, 19 Jul 2020 16:41:36 +0900
-Message-ID: <CAMArcTV_uNO29rkaR2kZ-ft035DJSXwmZxpBzTXumOuhhLit9A@mail.gmail.com>
-Subject: Re: [PATCH net] bonding: check error value of register_netdevice() immediately
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 19 Jul 2020 at 05:06, Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
+This patch add MDIX configuration ability for AR9331 and AR8035. Theoretically
+it should work on other Atheros PHYs, but I was able to test only this
+two.
 
-Hi Cong,
-Thanks a lot for your review!
+Since I have no certified reference HW able to detect or configure MDIX, this
+functionality was confirmed by oscilloscope.
 
-> On Sat, Jul 18, 2020 at 12:14 AM Taehee Yoo <ap420073@gmail.com> wrote:
-> >
-> > If register_netdevice() is failed, net_device should not be used
-> > because variables are uninitialized or freed.
-> > So, the routine should be stopped immediately.
-> > But, bond_create() doesn't check return value of register_netdevice()
-> > immediately. That will result in a panic because of using uninitialized
-> > or freed memory.
-> >
-> > Test commands:
-> >     modprobe netdev-notifier-error-inject
-> >     echo -22 > /sys/kernel/debug/notifier-error-inject/netdev/\
-> > actions/NETDEV_REGISTER/error
-> >     modprobe bonding max_bonds=3
-> >
-> > Splat looks like:
-> > [  375.028492][  T193] general protection fault, probably for non-canonical address 0x6b6b6b6b6b6b6b6b: 0000 [#1] SMP DEBUG_PAGEALLOC PTI
-> > [  375.033207][  T193] CPU: 2 PID: 193 Comm: kworker/2:2 Not tainted 5.8.0-rc4+ #645
-> > [  375.036068][  T193] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-> > [  375.039673][  T193] Workqueue: events linkwatch_event
-> > [  375.041557][  T193] RIP: 0010:dev_activate+0x4a/0x340
-> > [  375.043381][  T193] Code: 40 a8 04 0f 85 db 00 00 00 8b 83 08 04 00 00 85 c0 0f 84 0d 01 00 00 31 d2 89 d0 48 8d 04 40 48 c1 e0 07 48 03 83 00 04 00 00 <48> 8b 48 10 f6 41 10 01 75 08 f0 80 a1 a0 01 00 00 fd 48 89 48 08
-> > [  375.050267][  T193] RSP: 0018:ffff9f8facfcfdd8 EFLAGS: 00010202
-> > [  375.052410][  T193] RAX: 6b6b6b6b6b6b6b6b RBX: ffff9f8fae6ea000 RCX: 0000000000000006
-> > [  375.055178][  T193] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff9f8fae6ea000
-> > [  375.057762][  T193] RBP: ffff9f8fae6ea000 R08: 0000000000000000 R09: 0000000000000000
-> > [  375.059810][  T193] R10: 0000000000000001 R11: 0000000000000000 R12: ffff9f8facfcfe08
-> > [  375.061892][  T193] R13: ffffffff883587e0 R14: 0000000000000000 R15: ffff9f8fae6ea580
-> > [  375.063931][  T193] FS:  0000000000000000(0000) GS:ffff9f8fbae00000(0000) knlGS:0000000000000000
-> > [  375.066239][  T193] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [  375.067841][  T193] CR2: 00007f2f542167a0 CR3: 000000012cee6002 CR4: 00000000003606e0
-> > [  375.069657][  T193] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > [  375.071471][  T193] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > [  375.073269][  T193] Call Trace:
-> > [  375.074005][  T193]  linkwatch_do_dev+0x4d/0x50
-> > [  375.075052][  T193]  __linkwatch_run_queue+0x10b/0x200
-> > [  375.076244][  T193]  linkwatch_event+0x21/0x30
-> > [  375.077274][  T193]  process_one_work+0x252/0x600
-> > [  375.078379][  T193]  ? process_one_work+0x600/0x600
-> > [  375.079518][  T193]  worker_thread+0x3c/0x380
-> > [  375.080534][  T193]  ? process_one_work+0x600/0x600
-> > [  375.081668][  T193]  kthread+0x139/0x150
-> > [  375.082567][  T193]  ? kthread_park+0x90/0x90
-> > [  375.083567][  T193]  ret_from_fork+0x22/0x30
-> >
-> > Fixes: 9e2e61fbf8ad ("bonding: fix potential deadlock in bond_uninit()")
->
-> I doubt this is the first offending commit. At that time, the only
-> thing after register_netdevice() was rtnl_unlock(). I think it is
-> commit e826eafa65c6f1f7c8db5a237556cebac57ebcc5 which
-> introduced the bug, as it is the first commit puts something between
-> register_netdevice() and rtnl_unlock().
->
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/phy/at803x.c | 78 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 78 insertions(+)
 
-I checked for it.
-You're right.
-The bug was actually introduced by commit e826eafa65c6.
-So, I will send a v2 patch to change a fixes tag.
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 96c61aa75bd7..101651b2de54 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -21,6 +21,17 @@
+ #include <linux/regulator/consumer.h>
+ #include <dt-bindings/net/qca-ar803x.h>
+ 
++#define AT803X_SPECIFIC_FUNCTION_CONTROL	0x10
++#define AT803X_SFC_ASSERT_CRS			BIT(11)
++#define AT803X_SFC_FORCE_LINK			BIT(10)
++#define AT803X_SFC_MDI_CROSSOVER_MODE_M		GENMASK(6, 5)
++#define AT803X_SFC_AUTOMATIC_CROSSOVER		0x3
++#define AT803X_SFC_MANUAL_MDIX			0x1
++#define AT803X_SFC_MANUAL_MDI			0x0
++#define AT803X_SFC_SQE_TEST			BIT(2)
++#define AT803X_SFC_POLARITY_REVERSAL		BIT(1)
++#define AT803X_SFC_DISABLE_JABBER		BIT(0)
++
+ #define AT803X_SPECIFIC_STATUS			0x11
+ #define AT803X_SS_SPEED_MASK			(3 << 14)
+ #define AT803X_SS_SPEED_1000			(2 << 14)
+@@ -703,6 +714,12 @@ static int at803x_read_status(struct phy_device *phydev)
+ 		return ss;
+ 
+ 	if (ss & AT803X_SS_SPEED_DUPLEX_RESOLVED) {
++		int sfc;
++
++		sfc = phy_read(phydev, AT803X_SPECIFIC_FUNCTION_CONTROL);
++		if (sfc < 0)
++			return sfc;
++
+ 		switch (ss & AT803X_SS_SPEED_MASK) {
+ 		case AT803X_SS_SPEED_10:
+ 			phydev->speed = SPEED_10;
+@@ -718,10 +735,23 @@ static int at803x_read_status(struct phy_device *phydev)
+ 			phydev->duplex = DUPLEX_FULL;
+ 		else
+ 			phydev->duplex = DUPLEX_HALF;
++
+ 		if (ss & AT803X_SS_MDIX)
+ 			phydev->mdix = ETH_TP_MDI_X;
+ 		else
+ 			phydev->mdix = ETH_TP_MDI;
++
++		switch (FIELD_GET(AT803X_SFC_MDI_CROSSOVER_MODE_M, sfc)) {
++		case AT803X_SFC_MANUAL_MDI:
++			phydev->mdix_ctrl = ETH_TP_MDI;
++			break;
++		case AT803X_SFC_MANUAL_MDIX:
++			phydev->mdix_ctrl = ETH_TP_MDI_X;
++			break;
++		case AT803X_SFC_AUTOMATIC_CROSSOVER:
++			phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
++			break;
++		}
+ 	}
+ 
+ 	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete)
+@@ -730,6 +760,50 @@ static int at803x_read_status(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static int at803x_config_mdix(struct phy_device *phydev, u8 ctrl)
++{
++	u16 val;
++
++	switch (ctrl) {
++	case ETH_TP_MDI:
++		val = AT803X_SFC_MANUAL_MDI;
++		break;
++	case ETH_TP_MDI_X:
++		val = AT803X_SFC_MANUAL_MDIX;
++		break;
++	case ETH_TP_MDI_AUTO:
++		val = AT803X_SFC_AUTOMATIC_CROSSOVER;
++		break;
++	default:
++		return 0;
++	}
++
++	return phy_modify_changed(phydev, AT803X_SPECIFIC_FUNCTION_CONTROL,
++			  AT803X_SFC_MDI_CROSSOVER_MODE_M,
++			  FIELD_PREP(AT803X_SFC_MDI_CROSSOVER_MODE_M, val));
++}
++
++static int at803x_config_aneg(struct phy_device *phydev)
++{
++	int ret;
++
++	ret = at803x_config_mdix(phydev, phydev->mdix_ctrl);
++	if (ret < 0)
++		return ret;
++
++	/* Changes of the midx bits are disruptive to the normal operation;
++	 * therefore any changes to these registers must be followed by a
++	 * software reset to take effect.
++	 */
++	if (ret == 1) {
++		ret = genphy_soft_reset(phydev);
++		if (ret < 0)
++			return ret;
++	}
++
++	return genphy_config_aneg(phydev);
++}
++
+ static int at803x_get_downshift(struct phy_device *phydev, u8 *d)
+ {
+ 	int val;
+@@ -979,6 +1053,7 @@ static struct phy_driver at803x_driver[] = {
+ 	.flags			= PHY_POLL_CABLE_TEST,
+ 	.probe			= at803x_probe,
+ 	.remove			= at803x_remove,
++	.config_aneg		= at803x_config_aneg,
+ 	.config_init		= at803x_config_init,
+ 	.soft_reset		= genphy_soft_reset,
+ 	.set_wol		= at803x_set_wol,
+@@ -1061,6 +1136,9 @@ static struct phy_driver at803x_driver[] = {
+ 	.config_intr		= &at803x_config_intr,
+ 	.cable_test_start	= at803x_cable_test_start,
+ 	.cable_test_get_status	= at803x_cable_test_get_status,
++	.read_status		= at803x_read_status,
++	.soft_reset		= genphy_soft_reset,
++	.config_aneg		= at803x_config_aneg,
+ } };
+ 
+ module_phy_driver(at803x_driver);
+-- 
+2.27.0
 
-Thanks a lot!
-Taehee Yoo
-
-> But this patch itself is obviously correct.
->
-> Thanks.
