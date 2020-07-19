@@ -2,126 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC922252C2
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 18:10:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86CA92252D5
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 18:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726403AbgGSQKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 12:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
+        id S1726127AbgGSQj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 12:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726024AbgGSQKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 12:10:49 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F271C0619D2;
-        Sun, 19 Jul 2020 09:10:49 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id 207so7850053pfu.3;
-        Sun, 19 Jul 2020 09:10:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IQJ2lp1aWlzAuTQVmicrunbxGhlr+LmtlAWLDGnu94E=;
-        b=eMD3+YRT3HEcXSwAjmG2pBhJcK64phOCRXKocUN8jVCyY+Yl1RjQMqnCflBxdDtKwr
-         dnWvYBsdatEp6N4hdYsf6qokYLN9Fp6v1khuhSxNwL6OdmNQlYHPV7ieARzag6Zwhnpe
-         kAIgC2ex6QsD6tCu5hy/FIBmJdxAj9U7ZgL/Ic4CLmkLwx/Nahi2ZVj5P1jTfUMSqY8k
-         VhNVmbFfNZ6F0bo+aDpKDEghH1oKtg2xCsbybYnyXBC46r6bFzhC4di7fQzq+ptT0TLJ
-         4kjqQYs98hZswbszwaDWWQqDhoFarnib00F7Zkycvz9u740o/RmtyUmwy1JPNvdnNBzt
-         tUeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=IQJ2lp1aWlzAuTQVmicrunbxGhlr+LmtlAWLDGnu94E=;
-        b=gsxoAhA/RFHO/K/86p28OokFhwAR+WltEywuh8AB6+t4xcMxsKTsZk0GjHovUjYj61
-         52IhQDl72+38UaApPOuShk5Ru4hJU6KJkH6hy9GJJFa02D/waRcEalEj1ZvZqSIPAQhV
-         EQYefYrmz0uaY+cz6qEx5/mkMnUPpu4A0cKJzCiDmG2rWRUsLxmd56lDcVHWVjW21Uqt
-         iaD+dUYQSeg72CUCCCP4H5XVCSCZUyC+TWqU1x0vtNE8i1yJdvjvAB49Nin/4pIG56Cu
-         1vvxSwWAACU3fWI3tx1qIQLv0+oFVLhfEch5NtzZ7D1wJiA17SW1PdRFqX843kHTIw9a
-         079w==
-X-Gm-Message-State: AOAM532mLYCb0LRJkyXKj02frvjV9a+SNjXKmptjZBm9jXqC/UnaGXRK
-        Wgt1YW1B7FeDoO1DU3hLHTHj+Ks3
-X-Google-Smtp-Source: ABdhPJyjAV599gzgfuPVyU0Ji+Oy1DYIgS60m4PG6yOhRzZxuUTjR7zNL/0Ve8HdlduPhQ8roQ2Dhw==
-X-Received: by 2002:aa7:860f:: with SMTP id p15mr16116841pfn.59.1595175048522;
-        Sun, 19 Jul 2020 09:10:48 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id y27sm13494240pgc.56.2020.07.19.09.10.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Jul 2020 09:10:47 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/4] net: dsa: Add wrappers for overloaded
- ndo_ops
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20200718030533.171556-1-f.fainelli@gmail.com>
- <20200718030533.171556-3-f.fainelli@gmail.com>
- <20200719154014.GJ1383417@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <90674456-cacf-09a7-9e0f-fe292e039811@gmail.com>
-Date:   Sun, 19 Jul 2020 09:10:41 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.10.0
+        with ESMTP id S1725783AbgGSQj7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 12:39:59 -0400
+Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3692C0619D2;
+        Sun, 19 Jul 2020 09:39:58 -0700 (PDT)
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by smtp.al2klimov.de (Postfix) with ESMTPA id E2448BC086;
+        Sun, 19 Jul 2020 16:39:54 +0000 (UTC)
+From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
+To:     jreuter@yaina.de, davem@davemloft.net, kuba@kernel.org,
+        corbet@lwn.net, linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Subject: [PATCH for v5.9] ax25: Replace HTTP links with HTTPS ones
+Date:   Sun, 19 Jul 2020 18:39:48 +0200
+Message-Id: <20200719163948.60227-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
-In-Reply-To: <20200719154014.GJ1383417@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: +++++
+X-Spam-Level: *****
+Authentication-Results: smtp.al2klimov.de;
+        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Rationale:
+Reduces attack surface on kernel devs opening the links for MITM
+as HTTPS traffic is much harder to manipulate.
+
+Deterministic algorithm:
+For each file:
+  If not .svg:
+    For each line:
+      If doesn't contain `\bxmlns\b`:
+        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
+	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
+            If both the HTTP and HTTPS versions
+            return 200 OK and serve the same content:
+              Replace HTTP with HTTPS.
+
+Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+---
+ Continuing my work started at 93431e0607e5.
+ See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
+ (Actually letting a shell for loop submit all this stuff for me.)
+
+ If there are any URLs to be removed completely
+ or at least not (just) HTTPSified:
+ Just clearly say so and I'll *undo my change*.
+ See also: https://lkml.org/lkml/2020/6/27/64
+
+ If there are any valid, but yet not changed URLs:
+ See: https://lkml.org/lkml/2020/6/26/837
+
+ If you apply the patch, please let me know.
+
+ Sorry again to all maintainers who complained about subject lines.
+ Now I realized that you want an actually perfect prefixes,
+ not just subsystem ones.
+ I tried my best...
+ And yes, *I could* (at least half-)automate it.
+ Impossible is nothing! :)
 
 
-On 7/19/2020 8:40 AM, Andrew Lunn wrote:
->> +#if IS_ENABLED(CONFIG_NET_DSA)
->> +#define dsa_build_ndo_op(name, arg1_type, arg1_name, arg2_type, arg2_name) \
->> +static int inline dsa_##name(struct net_device *dev, arg1_type arg1_name, \
->> +			     arg2_type arg2_name)	\
->> +{							\
->> +	const struct dsa_netdevice_ops *ops;		\
->> +	int err = -EOPNOTSUPP;				\
->> +							\
->> +	if (!dev->dsa_ptr)				\
->> +		return err;				\
->> +							\
->> +	ops = dev->dsa_ptr->netdev_ops;			\
->> +	if (!ops || !ops->name)				\
->> +		return err;				\
->> +							\
->> +	return ops->name(dev, arg1_name, arg2_name);	\
->> +}
->> +#else
->> +#define dsa_build_ndo_op(name, ...)			\
->> +static inline int dsa_##name(struct net_device *dev, ...) \
->> +{							\
->> +	return -EOPNOTSUPP;				\
->> +}
->> +#endif
->> +
->> +dsa_build_ndo_op(ndo_do_ioctl, struct ifreq *, ifr, int, cmd);
->> +dsa_build_ndo_op(ndo_get_phys_port_name, char *, name, size_t, len);
-> 
-> Hi Florian
-> 
-> I tend to avoid this sort of macro magic. Tools like
-> https://elixir.bootlin.com/ and other cross references have trouble
-> following it. The current macros only handle calls with two
-> parameters. And i doubt it is actually saving many lines of code, if
-> there are only two invocations.
+ Documentation/networking/z8530drv.rst | 4 ++--
+ drivers/net/hamradio/scc.c            | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-It saves about 20 lines of code for each new function that is added.
-Since the boilerplate logic is always the same, if you prefer I could
-provide it as a separate helper function and avoid the macro to generate
-the function body, yes let's do that.
+diff --git a/Documentation/networking/z8530drv.rst b/Documentation/networking/z8530drv.rst
+index d2942760f167..79c7f72f32c8 100644
+--- a/Documentation/networking/z8530drv.rst
++++ b/Documentation/networking/z8530drv.rst
+@@ -18,7 +18,7 @@ Internet:
+ Please note that the information in this document may be hopelessly outdated.
+ A new version of the documentation, along with links to other important
+ Linux Kernel AX.25 documentation and programs, is available on
+-http://yaina.de/jreuter
++https://yaina.de/jreuter
+ 
+ Copyright |copy| 1993,2000 by Joerg Reuter DL1BKE <jreuter@yaina.de>
+ 
+@@ -683,4 +683,4 @@ in the Linux standard distribution and their support.
+ 	Joerg Reuter	ampr-net: dl1bke@db0pra.ampr.org
+ 			AX-25   : DL1BKE @ DB0ABH.#BAY.DEU.EU
+ 			Internet: jreuter@yaina.de
+-			WWW     : http://yaina.de/jreuter
++			WWW     : https://yaina.de/jreuter
+diff --git a/drivers/net/hamradio/scc.c b/drivers/net/hamradio/scc.c
+index 33fdd55c6122..875d9262ef78 100644
+--- a/drivers/net/hamradio/scc.c
++++ b/drivers/net/hamradio/scc.c
+@@ -131,7 +131,7 @@
+    Joerg Reuter	ampr-net: dl1bke@db0pra.ampr.org
+ 		AX-25   : DL1BKE @ DB0ABH.#BAY.DEU.EU
+ 		Internet: jreuter@yaina.de
+-		www     : http://yaina.de/jreuter
++		www     : https://yaina.de/jreuter
+ */
+ 
+ /* ----------------------------------------------------------------------- */
 -- 
-Florian
+2.27.0
+
