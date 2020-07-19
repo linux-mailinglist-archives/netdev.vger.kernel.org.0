@@ -2,115 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86CA92252D5
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 18:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99AEC2252EA
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 19:05:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726127AbgGSQj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 12:39:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52646 "EHLO
+        id S1726416AbgGSRFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 13:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgGSQj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 12:39:59 -0400
-Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3692C0619D2;
-        Sun, 19 Jul 2020 09:39:58 -0700 (PDT)
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id E2448BC086;
-        Sun, 19 Jul 2020 16:39:54 +0000 (UTC)
-From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     jreuter@yaina.de, davem@davemloft.net, kuba@kernel.org,
-        corbet@lwn.net, linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH for v5.9] ax25: Replace HTTP links with HTTPS ones
-Date:   Sun, 19 Jul 2020 18:39:48 +0200
-Message-Id: <20200719163948.60227-1-grandmaster@al2klimov.de>
+        with ESMTP id S1726009AbgGSRFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 13:05:32 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C3DC0619D4
+        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 10:05:32 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id d1so7611739plr.8
+        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 10:05:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Rm+ZUNmz42i49+8HSleDh8syNULnEr9j572afF7Mzjs=;
+        b=c1bkVNtufUQB0LzCaDll0bv4MjFg0PvcgSuzyEv+5TBypThJ9lum4OyWA680pIheuv
+         UfITsozvyM+VMZHLcUzZJMOz/L7+eF0yd5iuo00A7UnHJuBYnmYcMVvIhHiILcYgiCxW
+         mBKhOpL2TylDctbQhl8AWgy9irky3vMLVJjC9BGMgpPox1UNQRvq0Q35WyNbF/yTEc6S
+         to0a3S+WgW9OwiwnEf5gn6yhUnToHyNpV6Er7CRfbwpO42faOCB2ZgWhhrvwrR+7V7lu
+         QOkhZ2ofXtiK/Kf+pmnq973HQMj2djwoX0G7e3qsonDKYnjt97x6uww4IOLkqglCxHbg
+         p5KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Rm+ZUNmz42i49+8HSleDh8syNULnEr9j572afF7Mzjs=;
+        b=PCNYqXhTrGohvmwMj2fqKeQWou2hIHL/ABEqkSkbWSdFmBs8nxhg42L9FSN/dRFqMV
+         7t0AOKP1aqy/+beE1wY/YA4LId1PIaTEv2vhQZBKzivzmtrMwYSycztCo1m7d/iBUD+f
+         +TekYQdHo3wpGofJLO7sqZn8FsGj6BILc2YWGh5k90Vcri94UVL1eEi1HZ7uN4ahBo2O
+         n47hmMBLG7NjgvrCYC4MnjBR62NXQyxsYMFAMFHVx0dVhc7YtFt4jimXoYunA6fJ5ZN6
+         DjTHDRJNqN42tG5Jxhph0gIKdaJSTg06NKI0tcPUHWmkYzA3jtJMR9FPIbmpTgAotHXt
+         K9mw==
+X-Gm-Message-State: AOAM530L9KhB4DCL3Tn4K2WewrclZEe1CGt3nDutRc43CuYMBmm8YVIq
+        YJtJDVqRtRXxPgVTCdQr4dXZTQ==
+X-Google-Smtp-Source: ABdhPJwuULdEXFD36AtFRB/oIPgxUFVcjKoHqbzCbXhGMUrFfqwxUWb2GXc98khAIUzH9T8stRYhWQ==
+X-Received: by 2002:a17:90a:2749:: with SMTP id o67mr19839181pje.183.1595178332191;
+        Sun, 19 Jul 2020 10:05:32 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id t20sm14300845pfc.158.2020.07.19.10.05.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Jul 2020 10:05:31 -0700 (PDT)
+Date:   Sun, 19 Jul 2020 10:05:22 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Bixuan Cui <cuibixuan@huawei.com>
+Cc:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-next@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <jdmason@kudzu.us>,
+        <christophe.jaillet@wanadoo.fr>, <john.wanghui@huawei.com>
+Subject: Re: [PATCH] net: neterion: vxge: reduce stack usage in
+ VXGE_COMPLETE_VPATH_TX
+Message-ID: <20200719100522.220a6f5a@hermes.lan>
+In-Reply-To: <20200716173247.78912-1-cuibixuan@huawei.com>
+References: <20200716173247.78912-1-cuibixuan@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: +++++
-X-Spam-Level: *****
-Authentication-Results: smtp.al2klimov.de;
-        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rationale:
-Reduces attack surface on kernel devs opening the links for MITM
-as HTTPS traffic is much harder to manipulate.
+On Thu, 16 Jul 2020 17:32:47 +0000
+Bixuan Cui <cuibixuan@huawei.com> wrote:
 
-Deterministic algorithm:
-For each file:
-  If not .svg:
-    For each line:
-      If doesn't contain `\bxmlns\b`:
-        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
-            If both the HTTP and HTTPS versions
-            return 200 OK and serve the same content:
-              Replace HTTP with HTTPS.
+> Fix the warning: [-Werror=-Wframe-larger-than=]
+> 
+> drivers/net/ethernet/neterion/vxge/vxge-main.c:
+> In function'VXGE_COMPLETE_VPATH_TX.isra.37':
+> drivers/net/ethernet/neterion/vxge/vxge-main.c:119:1:
+> warning: the frame size of 1056 bytes is larger than 1024 bytes
+> 
+> Signed-off-by: Bixuan Cui <cuibixuan@huawei.com>
 
-Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
----
- Continuing my work started at 93431e0607e5.
- See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
- (Actually letting a shell for loop submit all this stuff for me.)
+Dropping the NR_SKB_COMPLETED to 16 won't have much impact
+on performance, and shrink the size.
 
- If there are any URLs to be removed completely
- or at least not (just) HTTPSified:
- Just clearly say so and I'll *undo my change*.
- See also: https://lkml.org/lkml/2020/6/27/64
-
- If there are any valid, but yet not changed URLs:
- See: https://lkml.org/lkml/2020/6/26/837
-
- If you apply the patch, please let me know.
-
- Sorry again to all maintainers who complained about subject lines.
- Now I realized that you want an actually perfect prefixes,
- not just subsystem ones.
- I tried my best...
- And yes, *I could* (at least half-)automate it.
- Impossible is nothing! :)
-
-
- Documentation/networking/z8530drv.rst | 4 ++--
- drivers/net/hamradio/scc.c            | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/Documentation/networking/z8530drv.rst b/Documentation/networking/z8530drv.rst
-index d2942760f167..79c7f72f32c8 100644
---- a/Documentation/networking/z8530drv.rst
-+++ b/Documentation/networking/z8530drv.rst
-@@ -18,7 +18,7 @@ Internet:
- Please note that the information in this document may be hopelessly outdated.
- A new version of the documentation, along with links to other important
- Linux Kernel AX.25 documentation and programs, is available on
--http://yaina.de/jreuter
-+https://yaina.de/jreuter
- 
- Copyright |copy| 1993,2000 by Joerg Reuter DL1BKE <jreuter@yaina.de>
- 
-@@ -683,4 +683,4 @@ in the Linux standard distribution and their support.
- 	Joerg Reuter	ampr-net: dl1bke@db0pra.ampr.org
- 			AX-25   : DL1BKE @ DB0ABH.#BAY.DEU.EU
- 			Internet: jreuter@yaina.de
--			WWW     : http://yaina.de/jreuter
-+			WWW     : https://yaina.de/jreuter
-diff --git a/drivers/net/hamradio/scc.c b/drivers/net/hamradio/scc.c
-index 33fdd55c6122..875d9262ef78 100644
---- a/drivers/net/hamradio/scc.c
-+++ b/drivers/net/hamradio/scc.c
-@@ -131,7 +131,7 @@
-    Joerg Reuter	ampr-net: dl1bke@db0pra.ampr.org
- 		AX-25   : DL1BKE @ DB0ABH.#BAY.DEU.EU
- 		Internet: jreuter@yaina.de
--		www     : http://yaina.de/jreuter
-+		www     : https://yaina.de/jreuter
- */
- 
- /* ----------------------------------------------------------------------- */
--- 
-2.27.0
+Doing 16 skb's at a time instead of 128 probably costs
+less than one allocation. Especially since it is unlikely
+that the device completed that many transmits at once.
 
