@@ -2,77 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E363722512E
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 12:07:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF2FB225133
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 12:08:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726527AbgGSKHY convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 19 Jul 2020 06:07:24 -0400
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:46495 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726012AbgGSKHX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 06:07:23 -0400
-Received: from sogo10.sd4.0x35.net (sogo10.sd4.0x35.net [10.200.201.60])
-        (Authenticated sender: pbl@bestov.io)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPA id 41EF01C0002;
-        Sun, 19 Jul 2020 10:07:22 +0000 (UTC)
-From:   "Riccardo Paolo Bestetti" <pbl@bestov.io>
-In-Reply-To: <6897.1594914646@famine>
-Content-Type: text/plain; charset="utf-8"
-X-Forward: 127.0.0.1
-Date:   Sun, 19 Jul 2020 12:07:21 +0200
-Cc:     netdev@vger.kernel.org
-To:     "Jay Vosburgh" <jay.vosburgh@canonical.com>
+        id S1726637AbgGSKIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 06:08:51 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:29496 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726012AbgGSKIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 06:08:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1595153331; x=1626689331;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=tcP9glb7MJA5U6uyVkklf1D75ytsFZVBdTt6Qe1lvKE=;
+  b=lNZoRneEuJo02HbofjzWY/wH5sOD6mIP1VMa18yQOx+IuUul2eP5kvWS
+   JROHwtJChKFAna+PXmYz5nlbPxEwIih2neWkyIL9C3/7yo7VwJDEyQZAx
+   k1pZFE/dTOV0FeZbECxqNj/Tgp5W9Es8SN4F0MsrtmKpTHBzauPrDYjX0
+   A=;
+IronPort-SDR: mxDPYRSMy0Bv+96wI9jQ0Mk/1Am/p18JLTb7eSw7YlP9rqLE6x9XVCRlamriV4bx/p2FXW9AUu
+ YAbIW/dhfxOg==
+X-IronPort-AV: E=Sophos;i="5.75,370,1589241600"; 
+   d="scan'208";a="42583767"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 19 Jul 2020 10:08:50 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com (Postfix) with ESMTPS id 5C023A33A1;
+        Sun, 19 Jul 2020 10:08:48 +0000 (UTC)
+Received: from EX13D28EUC001.ant.amazon.com (10.43.164.4) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sun, 19 Jul 2020 10:08:47 +0000
+Received: from ua97a68a4e7db56.ant.amazon.com.amazon.com (10.43.161.146) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sun, 19 Jul 2020 10:08:41 +0000
+References: <20200718115633.37464-1-wanghai38@huawei.com> <3093bc36c2ad86170e2e90a3451e5962d0815122.camel@perches.com>
+User-agent: mu4e 1.4.10; emacs 26.3
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Joe Perches <joe@perches.com>
+CC:     Wang Hai <wanghai38@huawei.com>, <netanel@amazon.com>,
+        <akiyano@amazon.com>, <gtzalik@amazon.com>, <saeedb@amazon.com>,
+        <zorik@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <sameehj@amazon.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH -next] net: ena: use NULL instead of zero
+In-Reply-To: <3093bc36c2ad86170e2e90a3451e5962d0815122.camel@perches.com>
+Date:   Sun, 19 Jul 2020 13:08:35 +0300
+Message-ID: <pj41zlsgdn4y1o.fsf@ua97a68a4e7db56.ant.amazon.com>
 MIME-Version: 1.0
-Message-ID: <7a15-5f141b80-6d-5af71280@110401022>
-Subject: =?utf-8?q?Re=3A?= Bonding driver unexpected behaviour
-User-Agent: SOGoMail 4.3.2
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.161.146]
+X-ClientProxiedBy: EX13D46UWB002.ant.amazon.com (10.43.161.70) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday, July 16, 2020 17:50 CEST, Jay Vosburgh <jay.vosburgh@canonical.com> wrote: 
- 
-> pbl@bestov.io <pbl@bestov.io> wrote:
-> 	[...] I believe the lack of
-> fail-back to gretap15 is the expected behavior.  The primary_reselect
-> value only matters if some interface has been specified as "primary",
-> and your configuration does not do so.  Specifying something like
-> 
-> ip link set bond-15-16 type bond primary gretap15
-> 
-> 	would likely result in the fail-back behavior you describe.
-You are absolutely right! I had assumed that the first device added to the bond would be the primary device, but this is of course not the documented behaviour and a quick read of the source code seems to confirm this. I have now changed this and gretap15 is the primary interface on both hosts.
 
-> >Fiddling with the cables (e.g. reconnecting intra15 and then
-> >disconnecting intra16) and/or bringing the bond interface down and up
-> >usually results in the driver ping-ponging a bit between gretap15 and
-> >gretap16, before usually settling on gretap16 (but never on gretap15,
-> >it seems). Or, sometimes, it results in the driver marking both slaves
-> >down and not doing anything ever again until manual intervention
-> >(e.g. manually selecting a new active_slave, or down -> up).
-> >
-> >Trying to ping the gretap15 address of the peer (10.188.15.200) from
-> >the host while gretap16 is the active slave results in ARP traffic
-> >being temporarily exchanged on gretap15. I'm not sure whether it
-> >originates from the bonding driver, as it seems like the generated
-> >requests are the cartesian product of all address couples on the
-> >network segments of gretap15 and bond-15-16 (e.g. who-has 10.188.15.100
-> >tell 10.188.15.100, who-has 10.188.15.100 tell 10.188.15.200, ...,
-> >who-hash 10.42.42.200 tell 10.42.42.200).
-> 
-> 	Do these ARP requests receive appropriate ARP replies?  Do you
-> see entries for the addresses in the output of "ip neigh show", and are
-> they FAILED or REACHABLE / STALE?
-Yes, it seems that the ARP requests always get a proper replies. This morning, I checked the neighbour table and 10.88.15.200 (gretap15's peer on intra15) was marked as STALE. I assumed it was because no ARP probes were sent over gretap15 by the bonding driver, and thus no ARP probes were sent over intra15 to refresh the table for 10.88.15.200 after the entry got STALE'd.
-My assumption seems to be confirmed: I tried to ping 10.188.15.200 (peer's address inside gretap15) and while it of course didn't respond - as the interface is slaved to bond-15-16 - it did create egress packets over gretap15, which in turn caused routing to send ARP requests over intra15 to 10.88.15.200 to send out the encapsulating GRE packets.
+Joe Perches <joe@perches.com> writes:
 
-Also,
-# arping -I gretap15 10.42.42.200
-gets proper replies and... it causes gretap15 to be immediately reselected. So it does indeed look like the driver is just refusing to send the probes for no proper reason (i.e. if it would do that, it would result in the expected behaviour.)
+> On Sat, 2020-07-18 at 19:56 +0800, Wang Hai wrote:
+>> Fix sparse build warning:
+>> 
+>> drivers/net/ethernet/amazon/ena/ena_netdev.c:2193:34: warning:
+>>  Using plain integer as NULL pointer
+>
+> Better to remove the initialization altogether and
+> move the declaration into the loop.
+>
+>> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
+>> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> []
+>> @@ -2190,7 +2190,7 @@ static void ena_del_napi_in_range(struct 
+>> ena_adapter *adapter,
+>>  static void ena_init_napi_in_range(struct ena_adapter 
+>>  *adapter,
+>>  				   int first_index, int count)
+>>  {
+>> -	struct ena_napi *napi = {0};
+>> +	struct ena_napi *napi = NULL;
+>>  	int i;
+>>  
+>>  	for (i = first_index; i < first_index + count; i++) {
+>
+> ---
+>  drivers/net/ethernet/amazon/ena/ena_netdev.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
+> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> index 91be3ffa1c5c..470d8f38b824 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> @@ -2190,11 +2190,10 @@ static void ena_del_napi_in_range(struct 
+> ena_adapter *adapter,
+>  static void ena_init_napi_in_range(struct ena_adapter *adapter,
+>  				   int first_index, int count)
+>  {
+> -	struct ena_napi *napi = {0};
+>  	int i;
+>  
+>  	for (i = first_index; i < first_index + count; i++) {
+> -		napi = &adapter->ena_napi[i];
+> +		struct ena_napi *napi = &adapter->ena_napi[i];
+>  
+>  		netif_napi_add(adapter->netdev,
+>  			       &adapter->ena_napi[i].napi,
 
-I'm really not set up to dip my nose in the kernel. I would nonetheless like to attempt to do it, and to prepare a patch, if I shall succeed. Could you or anyone with expertise in netdev point me to the right places to look in the source code?
+We prefer the second variant as it improves code readability imo.
+Thank you both for the time you invested in it (:
 
-Riccardo P. Bestetti
+Acked-by: Shay Agroskin <shayagr@amazon.com>
 
