@@ -2,110 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CBF322541E
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 22:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78792225443
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 23:17:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbgGSU0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 16:26:55 -0400
-Received: from smtp.al2klimov.de ([78.46.175.9]:43666 "EHLO smtp.al2klimov.de"
+        id S1726601AbgGSVQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 17:16:57 -0400
+Received: from mx2.suse.de ([195.135.220.15]:59186 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726073AbgGSU0z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jul 2020 16:26:55 -0400
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id 78FF3BC085;
-        Sun, 19 Jul 2020 20:26:50 +0000 (UTC)
-From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     vyasevich@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        corbet@lwn.net, linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH for v5.9] sctp: Replace HTTP links with HTTPS ones
-Date:   Sun, 19 Jul 2020 22:26:44 +0200
-Message-Id: <20200719202644.61663-1-grandmaster@al2klimov.de>
+        id S1726073AbgGSVQ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jul 2020 17:16:56 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 0718CAB7D;
+        Sun, 19 Jul 2020 21:17:01 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id EF302603A9; Sun, 19 Jul 2020 23:16:54 +0200 (CEST)
+Date:   Sun, 19 Jul 2020 23:16:54 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Chris Healy <cphealy@gmail.com>
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH] ethtool: dsa: mv88e6xxx: add pretty dump for 88E6352
+ SERDES
+Message-ID: <20200719211654.hwolppixqqwqz3rx@lion.mk-sys.cz>
+References: <20200716175526.14005-1-cphealy@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: ++++++
-X-Spam-Level: ******
-Authentication-Results: smtp.al2klimov.de;
-        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
-X-Spam: Yes
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="owkpyjjha3e6s24x"
+Content-Disposition: inline
+In-Reply-To: <20200716175526.14005-1-cphealy@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rationale:
-Reduces attack surface on kernel devs opening the links for MITM
-as HTTPS traffic is much harder to manipulate.
 
-Deterministic algorithm:
-For each file:
-  If not .svg:
-    For each line:
-      If doesn't contain `\bxmlns\b`:
-        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
-            If both the HTTP and HTTPS versions
-            return 200 OK and serve the same content:
-              Replace HTTP with HTTPS.
+--owkpyjjha3e6s24x
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
----
- Continuing my work started at 93431e0607e5.
- See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
- (Actually letting a shell for loop submit all this stuff for me.)
+On Thu, Jul 16, 2020 at 10:55:26AM -0700, Chris Healy wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
+>=20
+> In addition to the port registers, the device can provide the
+> SERDES/PCS registers. Dump these, and for a few of the important
+> SGMII/1000Base-X registers decode the bits.
+>=20
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Chris Healy <cphealy@gmail.com>
+> ---
+[...]
+> +	case 32 + 0:
+> +		REG(reg - 32, "Fiber Control", val);
 
- If there are any URLs to be removed completely
- or at least not (just) HTTPSified:
- Just clearly say so and I'll *undo my change*.
- See also: https://lkml.org/lkml/2020/6/27/64
+Could you give these "32" (and similar below) a name?
 
- If there are any valid, but yet not changed URLs:
- See: https://lkml.org/lkml/2020/6/26/837
+[...]
+> @@ -667,6 +850,17 @@ static int dsa_mv88e6xxx_dump_regs(struct ethtool_re=
+gs *regs)
+>  		else
+>  			REG(i, "", data[i]);
+> =20
+> +	/* Dump the SERDES registers, if provided */
+> +	if (regs->len > 32 * 2) {
 
- If you apply the patch, please let me know.
+sizeof(u16) would be easier to read, IMHO
 
- Sorry again to all maintainers who complained about subject lines.
- Now I realized that you want an actually perfect prefixes,
- not just subsystem ones.
- I tried my best...
- And yes, *I could* (at least half-)automate it.
- Impossible is nothing! :)
+> +		printf("\n%s Switch Port SERDES Registers\n", sw->name);
+> +		printf("-------------------------------------\n");
+> +		for (i =3D 32; i < regs->len / 2; i++)
+> +			if (sw->dump)
+> +				sw->dump(i, data[i]);
+> +			else
+> +				REG(i, "", data[i]);
 
+In the dump handler above you subtract 32 (offset of SERDES registers,
+IIUC) from register number but in the generic branch you don't, this
+seems inconsistent.
 
- Documentation/networking/sctp.rst | 4 ++--
- net/sctp/Kconfig                  | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+Michal
 
-diff --git a/Documentation/networking/sctp.rst b/Documentation/networking/sctp.rst
-index 9f4d9c8a925b..e2b9f4d9a8a2 100644
---- a/Documentation/networking/sctp.rst
-+++ b/Documentation/networking/sctp.rst
-@@ -15,8 +15,8 @@ developed the SCTP protocol and later handed the protocol over to the
- Transport Area (TSVWG) working group for the continued evolvement of SCTP as a
- general purpose transport.
- 
--See the IETF website (http://www.ietf.org) for further documents on SCTP.
--See http://www.ietf.org/rfc/rfc2960.txt
-+See the IETF website (https://www.ietf.org) for further documents on SCTP.
-+See https://www.ietf.org/rfc/rfc2960.txt
- 
- The initial project goal is to create an Linux kernel reference implementation
- of SCTP that is RFC 2960 compliant and provides an programming interface
-diff --git a/net/sctp/Kconfig b/net/sctp/Kconfig
-index 39d7fa9569f8..0d4ac89ad695 100644
---- a/net/sctp/Kconfig
-+++ b/net/sctp/Kconfig
-@@ -14,7 +14,7 @@ menuconfig IP_SCTP
- 	help
- 	  Stream Control Transmission Protocol
- 
--	  From RFC 2960 <http://www.ietf.org/rfc/rfc2960.txt>.
-+	  From RFC 2960 <https://www.ietf.org/rfc/rfc2960.txt>.
- 
- 	  "SCTP is a reliable transport protocol operating on top of a
- 	  connectionless packet network such as IP.  It offers the following
--- 
-2.27.0
+> +	}
+> +
+>  	return 0;
+>  }
+> =20
+> --=20
+> 2.21.3
+>=20
 
+--owkpyjjha3e6s24x
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8UuD4ACgkQ538sG/LR
+dpUIHQgAm2psiioOSGnLvKBzhAGL3DFXiuG1RkiC6rar7sHY4slHIkRDtX65/Tdz
+PpAkPoj10XuPzmQ2qDCLPBxBDzmFKLmXr7s3QMl4utfu6TaJ2THB3xUqNJte8GLH
+eZGYMLE+xfn/dho3+VSuSf+juJWdnrGSIOq4Qz45sn/F9D8E9qrArS4+fHS4yYqu
+h46fU2okXCbjDAKrI30kpgsETo4E1b0+h1JdZj9CZRssMz/hdBeZDWGWHxwT95jV
+wrkNoYu89BOzwykhEAXO5+kDTrTZcgD4RIl6q5dq46LciG55azxmctBlmCRfBqLw
+UdwnSc8jYS/DN1Fgl5HxOQpBv2ZcDQ==
+=HQIv
+-----END PGP SIGNATURE-----
+
+--owkpyjjha3e6s24x--
