@@ -2,106 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A91BA2252F2
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 19:08:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 248C8225305
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 19:17:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726097AbgGSRIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 13:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56944 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgGSRIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 13:08:00 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47717C0619D2
-        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 10:08:00 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id t11so7874670pfq.11
-        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 10:08:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sP1D1TouSE8OLaiBgEq8ysO5gk3dgTEKQtRPfEpvJrc=;
-        b=s0fHDGDifHs2yh2TrW415Izc2qFsrEgbBBWpEl31PWJDM9pmuNUOL5mQjDa3mmcE0x
-         /VJLvEMdsuzsszcNMM/KLVlFqs12MDZN6yfreznkj7Ef7VIGUAxq/mFThFwHRkcSHeqe
-         F/NrEyFYhoN5OfkHK7VSqdg2CqCb26nbW452fkUXF0BCZivwF2pJyThm3d/SKuTDwpj5
-         3ixBIUCshz5cy4BEjgGiMOWDEm5blpieqE8Gtix+irG6FTOCcWZdzQasV1Faj852EqPb
-         oYK8WEfqkmrXQlIbfFHJUtInt+6JwNgWqMfVcUp3a98PZkX59Uj4TsRJQ6Z9Y5+ZOl8k
-         zmSA==
+        id S1726508AbgGSRQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 13:16:10 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:38675 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbgGSRQI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 13:16:08 -0400
+Received: by mail-io1-f72.google.com with SMTP id l13so9766871ioj.5
+        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 10:16:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sP1D1TouSE8OLaiBgEq8ysO5gk3dgTEKQtRPfEpvJrc=;
-        b=VxPXGxgtay/QChBQ+FLWN2zsFj+RqaqMKP4RUJQdqYU/E8pJ9JyAKMm6SK61p9amIu
-         xZ0NcbylZA+bZ+QAeayOcsPs5+z0+JXPLvL3ogajNEUkBuJKCF+ioy8oVYUYP6uP1/j6
-         2IhiSZLIse1OmfBlmGjMYp2ldGCiPR5dNYZ11SKqNfnp/nsff320z6bO6/tNvtanKckD
-         9CR5Frv3bFy+prQNauESo3zfv1Q/f7DKwR7Lk9yjio+mFc9l6VlFggvFjP6L/n3i7KXY
-         bOQwmu+4Yn19/+axpt7tETF4nU+zLKEHX2Khn/Kuayc+bVWx4E6T1gZiEm9kRByAzrv2
-         7Kow==
-X-Gm-Message-State: AOAM532RlQoN+K2KxVwPKtO7C4IRL4oZp1TlUOeoBDXPKJov7giHwtHO
-        WRSVFVLS8f09DXRDqzUqBZ/IVtpLpeER2g==
-X-Google-Smtp-Source: ABdhPJzK7NF9hjBYDlIqbN9A5G4w4u2SzNfDv2LxKz5awWU7eiN5f8x7y11CkN+bNlj22hhNkvfWNA==
-X-Received: by 2002:a63:6442:: with SMTP id y63mr15370831pgb.18.1595178479853;
-        Sun, 19 Jul 2020 10:07:59 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id i13sm9009552pjd.33.2020.07.19.10.07.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jul 2020 10:07:59 -0700 (PDT)
-Date:   Sun, 19 Jul 2020 10:07:56 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jamie Gloudon <jamie.gloudon@gmx.fr>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] tc/m_estimator: Print proper value for
- estimator interval in raw.
-Message-ID: <20200719100756.5895a292@hermes.lan>
-In-Reply-To: <20200717150530.GA2987@defense.gouv.fr>
-References: <20200717150530.GA2987@defense.gouv.fr>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=uWsaInl6El+/D5enNDY+jTmOBPyNvNc8dNA1QiA0S0c=;
+        b=PuMYN+xYZM5KUEbT7lac+I6VzBnw4UMnD3JBpvdD89SYRV5gmBP/zjzvj3X4xuVan/
+         DS/8tgrbqjEIGIOAmh4LZCoU2BfGtI4mUSd1+xQ0eTiuzFqy5RmcV5rk3KB8q8PVrY0r
+         z3Ah8U2O5FKePwmj+NUPLCsBs5dJkon2jKJSSd3KsW6eq/plwHgM1thtd67OF+tRnAgc
+         VlIA1MwSNiygOqqJDaWx7tW2j753fRk6dRjjvEaLgMM3TBjbPxBRkS46B1YAgjjhGnqH
+         V830KpJbF21QSm9qEL2hcLGBwhDMbiVYaz+W5wjulypGJEjmhGm1hlENeKxfmaUXby7N
+         IUvg==
+X-Gm-Message-State: AOAM530G9dAztnT5+vHzDYvR4EJ/oNNHPf2rm5fD2xQAfit9xTAcLDP7
+        ZUwcmgcFMxY4cvsWQerPh2dsIG4kV1A1yvvZkz4nf8s3gO77
+X-Google-Smtp-Source: ABdhPJyqtWSRK+J0kwgjyR9dCgOB/4uCy+2pVK5gDCT/d7MyHs2xxFLVTglqQ0deuai/N8yljwZPA1Qoe/b/OkExASNGKUx+4h19
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a92:58d6:: with SMTP id z83mr19077343ilf.186.1595178967166;
+ Sun, 19 Jul 2020 10:16:07 -0700 (PDT)
+Date:   Sun, 19 Jul 2020 10:16:07 -0700
+In-Reply-To: <000000000000418fc105aa4243aa@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b0fb8b05aace8b8e@google.com>
+Subject: Re: INFO: rcu detected stall in sys_clock_settime
+From:   syzbot <syzbot+f3bd350a4124f10acdae@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, davem@davemloft.net, jhs@mojatatu.com,
+        jiri@resnulli.us, linux-kernel@vger.kernel.org, mingo@elte.hu,
+        netdev@vger.kernel.org, peterz@infradead.org,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vinicius.gomes@intel.com, xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Jul 2020 11:05:30 -0400
-Jamie Gloudon <jamie.gloudon@gmx.fr> wrote:
+syzbot has bisected this issue to:
 
-> While looking at the estimator code, I noticed an incorrect interval
-> number printed in raw for the handles. This patch fixes the formatting.
-> 
-> Before patch:
-> 
-> root@bytecenter.fr:~# tc -r filter add dev eth0 ingress estimator
-> 250ms 999ms matchall action police avrate 12mbit conform-exceed drop
-> [estimator i=4294967294 e=2]
-> 
-> After patch:
-> 
-> root@bytecenter.fr:~# tc -r filter add dev eth0 ingress estimator
-> 250ms 999ms matchall action police avrate 12mbit conform-exceed drop
-> [estimator i=-2 e=2]
-> 
-> Signed-off-by: Jamie Gloudon <jamie.gloudon@gmx.fr>
-> ---
->  tc/m_estimator.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tc/m_estimator.c b/tc/m_estimator.c
-> index ef62e1bb..b5f4c860 100644
-> --- a/tc/m_estimator.c
-> +++ b/tc/m_estimator.c
-> @@ -57,7 +57,7 @@ int parse_estimator(int *p_argc, char ***p_argv, struct tc_estimator *est)
->  		return -1;
->  	}
->  	if (show_raw)
-> -		fprintf(stderr, "[estimator i=%u e=%u]\n", est->interval, est->ewma_log);
-> +		fprintf(stderr, "[estimator i=%hhd e=%u]\n", est->interval, est->ewma_log);
->  	*p_argc = argc;
->  	*p_argv = argv;
->  	return 0;
-> --
-> 2.17.5
-> 
+commit 5a781ccbd19e4664babcbe4b4ead7aa2b9283d22
+Author: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Date:   Sat Sep 29 00:59:43 2018 +0000
 
-Looks ok to me. Could you update estimator to print JSON as well?
+    tc: Add support for configuring the taprio scheduler
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=167142f0900000
+start commit:   e9919e11 Merge branch 'for-linus' of git://git.kernel.org/..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=157142f0900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=117142f0900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a160d1053fc89af5
+dashboard link: https://syzkaller.appspot.com/bug?extid=f3bd350a4124f10acdae
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1353c420900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=130f8ef7100000
+
+Reported-by: syzbot+f3bd350a4124f10acdae@syzkaller.appspotmail.com
+Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
