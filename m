@@ -2,36 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB079225412
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 22:16:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CBF322541E
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 22:27:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbgGSUQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 16:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727779AbgGSUQp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 16:16:45 -0400
-Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20B5C0619D2;
-        Sun, 19 Jul 2020 13:16:44 -0700 (PDT)
+        id S1726582AbgGSU0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 16:26:55 -0400
+Received: from smtp.al2klimov.de ([78.46.175.9]:43666 "EHLO smtp.al2klimov.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726073AbgGSU0z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jul 2020 16:26:55 -0400
 Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id 90DEABC064;
-        Sun, 19 Jul 2020 20:16:40 +0000 (UTC)
+        by smtp.al2klimov.de (Postfix) with ESMTPA id 78FF3BC085;
+        Sun, 19 Jul 2020 20:26:50 +0000 (UTC)
 From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     dhowells@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        corbet@lwn.net, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+To:     vyasevich@gmail.com, nhorman@tuxdriver.com,
+        marcelo.leitner@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        corbet@lwn.net, linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH for v5.9] rxrpc: Replace HTTP links with HTTPS ones
-Date:   Sun, 19 Jul 2020 22:16:32 +0200
-Message-Id: <20200719201632.61594-1-grandmaster@al2klimov.de>
+Subject: [PATCH for v5.9] sctp: Replace HTTP links with HTTPS ones
+Date:   Sun, 19 Jul 2020 22:26:44 +0200
+Message-Id: <20200719202644.61663-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: +++++
-X-Spam-Level: *****
+X-Spamd-Bar: ++++++
+X-Spam-Level: ******
 Authentication-Results: smtp.al2klimov.de;
         auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -76,31 +74,38 @@ Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
  Impossible is nothing! :)
 
 
- Documentation/networking/rxrpc.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/networking/sctp.rst | 4 ++--
+ net/sctp/Kconfig                  | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/networking/rxrpc.rst b/Documentation/networking/rxrpc.rst
-index 39c2249c7aa7..2a842d4ee50f 100644
---- a/Documentation/networking/rxrpc.rst
-+++ b/Documentation/networking/rxrpc.rst
-@@ -506,7 +506,7 @@ kaserver or the kerberos server and installed as "rxrpc" type keys.  This is
- normally done using the klog program.  An example simple klog program can be
- found at:
+diff --git a/Documentation/networking/sctp.rst b/Documentation/networking/sctp.rst
+index 9f4d9c8a925b..e2b9f4d9a8a2 100644
+--- a/Documentation/networking/sctp.rst
++++ b/Documentation/networking/sctp.rst
+@@ -15,8 +15,8 @@ developed the SCTP protocol and later handed the protocol over to the
+ Transport Area (TSVWG) working group for the continued evolvement of SCTP as a
+ general purpose transport.
  
--	http://people.redhat.com/~dhowells/rxrpc/klog.c
-+	https://people.redhat.com/~dhowells/rxrpc/klog.c
+-See the IETF website (http://www.ietf.org) for further documents on SCTP.
+-See http://www.ietf.org/rfc/rfc2960.txt
++See the IETF website (https://www.ietf.org) for further documents on SCTP.
++See https://www.ietf.org/rfc/rfc2960.txt
  
- The payload provided to add_key() on the client should be of the following
- form::
-@@ -537,7 +537,7 @@ socket then looks the server secret keys up in this keyring when secure
- incoming connections are made.  This can be seen in an example program that can
- be found at:
+ The initial project goal is to create an Linux kernel reference implementation
+ of SCTP that is RFC 2960 compliant and provides an programming interface
+diff --git a/net/sctp/Kconfig b/net/sctp/Kconfig
+index 39d7fa9569f8..0d4ac89ad695 100644
+--- a/net/sctp/Kconfig
++++ b/net/sctp/Kconfig
+@@ -14,7 +14,7 @@ menuconfig IP_SCTP
+ 	help
+ 	  Stream Control Transmission Protocol
  
--	http://people.redhat.com/~dhowells/rxrpc/listen.c
-+	https://people.redhat.com/~dhowells/rxrpc/listen.c
+-	  From RFC 2960 <http://www.ietf.org/rfc/rfc2960.txt>.
++	  From RFC 2960 <https://www.ietf.org/rfc/rfc2960.txt>.
  
- 
- ====================
+ 	  "SCTP is a reliable transport protocol operating on top of a
+ 	  connectionless packet network such as IP.  It offers the following
 -- 
 2.27.0
 
