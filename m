@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 032F42251FD
+	by mail.lfdr.de (Postfix) with ESMTP id A68872251FE
 	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 15:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726403AbgGSNgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 09:36:51 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40938 "EHLO
+        id S1726436AbgGSNgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 09:36:54 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40939 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726067AbgGSNgt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 09:36:49 -0400
+        with ESMTP id S1725988AbgGSNgw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 09:36:52 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 19 Jul 2020 16:36:40 +0300
+        with SMTP; 19 Jul 2020 16:36:41 +0300
 Received: from vnc1.mtl.labs.mlnx (vnc1.mtl.labs.mlnx [10.7.2.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 06JDaetn018654;
-        Sun, 19 Jul 2020 16:36:40 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 06JDafG4018658;
+        Sun, 19 Jul 2020 16:36:41 +0300
 Received: from vnc1.mtl.labs.mlnx (localhost [127.0.0.1])
-        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4) with ESMTP id 06JDaeE3013805;
+        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4) with ESMTP id 06JDaek2013807;
         Sun, 19 Jul 2020 16:36:40 +0300
 Received: (from moshe@localhost)
-        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4/Submit) id 06JDaena013804;
+        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4/Submit) id 06JDaen9013806;
         Sun, 19 Jul 2020 16:36:40 +0300
 From:   Moshe Shemesh <moshe@mellanox.com>
 To:     Stephen Hemminger <stephen@networkplumber.org>,
@@ -28,9 +28,9 @@ To:     Stephen Hemminger <stephen@networkplumber.org>,
 Cc:     Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
         Moshe Shemesh <moshe@mellanox.com>,
         Vladyslav Tarasiuk <vladyslavt@mellanox.com>
-Subject: [PATCH iproute2-next 2/3] devlink: Add devlink port health command
-Date:   Sun, 19 Jul 2020 16:36:02 +0300
-Message-Id: <1595165763-13657-3-git-send-email-moshe@mellanox.com>
+Subject: [PATCH iproute2-next 3/3] devlink: Update devlink-health and devlink-port manpages
+Date:   Sun, 19 Jul 2020 16:36:03 +0300
+Message-Id: <1595165763-13657-4-git-send-email-moshe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1595165763-13657-1-git-send-email-moshe@mellanox.com>
 References: <1595165763-13657-1-git-send-email-moshe@mellanox.com>
@@ -41,279 +41,278 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladyslav Tarasiuk <vladyslavt@mellanox.com>
 
-Add devlink port health show subcommand which displays information about
-specified port reporter or all present port reporters as in the example.
-Device and port reporters can be distinguished by a handle being used.
-
-Make other devlink-health subcommands be aliased by devlink port health.
-Refactor devlink-health commands for usage of port handles in order to
-interact with port reporters.
-
-Change devlink health show output to dump information about both device
-and port reporters with correct handles.
-
-Example:
-$ devlink health show
-pci/0000:00:0b.0:
-  reporter fw
-    state healthy error 0 recover 0 auto_dump true
-  reporter fw_fatal
-    state healthy error 0 recover 0 grace_period 1200000 auto_recover true auto_dump true
-pci/0000:00:0b.0/1:
-  reporter tx
-    state healthy error 0 recover 0 grace_period 10000 auto_recover true auto_dump true
-  reporter rx
-    state healthy error 0 recover 0 grace_period 10000 auto_recover true auto_dump true
-
-$ devlink health show pci/0000:00:0b.0/1 reporter rx
-Which is equivalent to:
-$ devlink port health show pci/0000:00:0b.0/1 reporter rx
-pci/0000:00:0b.0/1:
-  reporter rx
-    state healthy error 0 recover 0 grace_period 10000 auto_recover true auto_dump true
-
-$ devlink port health show pci/0000:00:0b.0/1 reporter rx -j --pretty
-{
-    "health": {
-         "pci/0000:00:0b.0/1": [ {
-                 "reporter": "rx",
-                 "state": "healthy",
-                 "error": 0,
-                 "recover": 0,
-                 "grace_period": 500,
-                 "auto_recover": true,
-                 "auto_dump": true
-              } ]
-    }
-}
-
-$ devlink health set pci/0000:00:0b.0/1 reporter rx grace_period 5000
-Which is equivalent to:
-$ devlink port health set pci/0000:00:0b.0/1 reporter rx grace_period 5000
-
-$ devlink port health show pci/0000:00:0b.0/1 reporter rx
-pci/0000:00:0b.0/1:
-  reporter rx
-    state healthy error 0 recover 0 grace_period 5000 auto_recover true auto_dump true
+Describe support for per-port reporters in devlink-health and
+devlink-port commands.
 
 Signed-off-by: Vladyslav Tarasiuk <vladyslavt@mellanox.com>
 Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- devlink/devlink.c |   80 +++++++++++++++++++++++++++++++++++++++-------------
- 1 files changed, 60 insertions(+), 20 deletions(-)
+ man/man8/devlink-health.8 |   84 ++++++++++++++++++++++++++++++++-------------
+ man/man8/devlink-port.8   |   19 ++++++++++
+ 2 files changed, 79 insertions(+), 24 deletions(-)
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index bb4588e..7dbe9c7 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -3291,6 +3291,7 @@ static void cmd_port_help(void)
- 	pr_err("       devlink port split DEV/PORT_INDEX count COUNT\n");
- 	pr_err("       devlink port unsplit DEV/PORT_INDEX\n");
- 	pr_err("       devlink port function set DEV/PORT_INDEX [ hw_addr ADDR ]\n");
-+	pr_err("       devlink port health show [ DEV/PORT_INDEX reporter REPORTER_NAME ]\n");
- }
+diff --git a/man/man8/devlink-health.8 b/man/man8/devlink-health.8
+index 215f549..47b9613 100644
+--- a/man/man8/devlink-health.8
++++ b/man/man8/devlink-health.8
+@@ -19,37 +19,37 @@ devlink-health \- devlink health reporting and recovery
  
- static const char *port_type_name(uint32_t type)
-@@ -3540,6 +3541,9 @@ static int cmd_port_function(struct dl *dl)
- 	return -ENOENT;
- }
+ .ti -8
+ .B devlink health show
+-.RI "[ " DEV ""
++.RI "[ { " DEV " | " DEV/PORT_INDEX " }"
+ .B reporter
+ .RI ""REPORTER " ] "
  
-+static int cmd_health(struct dl *dl);
-+static int __cmd_health_show(struct dl *dl, bool show_device, bool show_port);
+ .ti -8
+ .B devlink health recover
+-.RI "" DEV ""
++.RI "{ " DEV " | " DEV/PORT_INDEX " }"
+ .B reporter
+ .RI "" REPORTER ""
+ 
+ .ti -8
+ .B devlink health diagnose
+-.RI "" DEV ""
++.RI "{ " DEV " | " DEV/PORT_INDEX " }"
+ .B reporter
+ .RI "" REPORTER ""
+ 
+ .ti -8
+ .B devlink health dump show
+-.RI "" DEV ""
++.RI "{ " DEV " | " DEV/PORT_INDEX " }"
+ .B  reporter
+ .RI "" REPORTER ""
+ 
+ .ti -8
+ .B devlink health dump clear
+-.RI "" DEV ""
++.RI "{ " DEV " | " DEV/PORT_INDEX " }"
+ .B reporter
+ .RI "" REPORTER ""
+ 
+ .ti -8
+ .B devlink health set
+-.RI "" DEV ""
++.RI "{ " DEV " | " DEV/PORT_INDEX " }"
+ .B reporter
+ .RI "" REPORTER ""
+ [
+@@ -64,15 +64,19 @@ devlink-health \- devlink health reporting and recovery
+ .B devlink health help
+ 
+ .SH "DESCRIPTION"
+-.SS devlink health show - Show status and configuration on all supported reporters on all devlink devices.
++.SS devlink health show - Show status and configuration on all supported reporters.
++Displays info about reporters registered on devlink devices and ports.
+ 
+ .PP
+ .I "DEV"
+ - specifies the devlink device.
++.br
++.I DEV/PORT_INDEX
++- specifies the devlink port.
+ 
+ .PP
+ .I "REPORTER"
+-- specifies the reporter's name registered on the devlink device.
++- specifies the reporter's name registered on specified devlink device or port.
+ 
+ .SS devlink health recover - Initiate a recovery operation on a reporter.
+ This action performs a recovery and increases the recoveries counter on success.
+@@ -80,20 +84,26 @@ This action performs a recovery and increases the recoveries counter on success.
+ .PP
+ .I "DEV"
+ - specifies the devlink device.
++.br
++.I DEV/PORT_INDEX
++- specifies the devlink port.
+ 
+ .PP
+ .I "REPORTER"
+-- specifies the reporter's name registered on the devlink device.
++- specifies the reporter's name registered on specified devlink device or port.
+ 
+ .SS devlink health diagnose - Retrieve diagnostics data on a reporter.
+ 
+ .PP
+-.I "DEV"
++.I DEV
+ - specifies the devlink device.
++.br
++.I DEV/PORT_INDEX
++- specifies the devlink port.
+ 
+ .PP
+ .I "REPORTER"
+-- specifies the reporter's name registered on the devlink device.
++- specifies the reporter's name registered on specified devlink device or port.
+ 
+ .SS devlink health dump show - Display the last saved dump.
+ 
+@@ -111,10 +121,13 @@ reporter reports on an error or manually at the user's request.
+ .PP
+ .I "DEV"
+ - specifies the devlink device.
++.br
++.I DEV/PORT_INDEX
++- specifies the devlink port.
+ 
+ .PP
+ .I "REPORTER"
+-- specifies the reporter's name registered on the devlink device.
++- specifies the reporter's name registered on specified devlink device or port.
+ 
+ .SS devlink health dump clear - Delete the saved dump.
+ Deleting the saved dump enables a generation of a new dump on
+@@ -126,10 +139,13 @@ the next "devlink health dump show" command.
+ .PP
+ .I "DEV"
+ - specifies the devlink device.
++.br
++.I DEV/PORT_INDEX
++- specifies the devlink port.
+ 
+ .PP
+ .I "REPORTER"
+-- specifies the reporter's name registered on the devlink device.
++- specifies the reporter's name registered on specified devlink device or port.
+ 
+ .SS devlink health set - Configure health reporter.
+ Please note that some params are not supported on a reporter which
+@@ -138,10 +154,13 @@ doesn't support a recovery or dump method.
+ .PP
+ .I "DEV"
+ - specifies the devlink device.
++.br
++.I DEV/PORT_INDEX
++- specifies the devlink port.
+ 
+ .PP
+ .I "REPORTER"
+-- specifies the reporter's name registered on the devlink device.
++- specifies the reporter's name registered on specified devlink device or port.
+ 
+ .TP
+ .BI grace_period " MSEC "
+@@ -159,38 +178,55 @@ Indicates whether the devlink should execute automatic dump on error.
+ .PP
+ devlink health show
+ .RS 4
+-List status and configuration of available reporters on devices.
++List status and configuration of available reporters on devices and ports.
++.RE
++.PP
++devlink health show pci/0000:00:09.0/1 reporter tx
++.RS 4
++List status and configuration of tx reporter registered on port on pci/0000:00:09.0/1
+ .RE
+ .PP
+-devlink health recover pci/0000:00:09.0 reporter tx
++devlink health recover pci/0000:00:09.0 reporter fw_fatal
+ .RS 4
+-Initiate recovery on tx reporter registered on pci/0000:00:09.0.
++Initiate recovery on fw_fatal reporter registered on device on pci/0000:00:09.0.
+ .RE
+ .PP
+-devlink health diagnose pci/0000:00:09.0 reporter tx
++devlink health recover pci/0000:00:09.0/1 reporter tx
++.RS 4
++Initiate recovery on tx reporter registered on port on pci/0000:00:09.0/1.
++.RE
++.PP
++devlink health diagnose pci/0000:00:09.0 reporter fw
+ .RS 4
+ List diagnostics data on the specified device and reporter.
+ .RE
+ .PP
+-devlink health dump show pci/0000:00:09.0 reporter tx
++devlink health dump show pci/0000:00:09.0/1 reporter tx
+ .RS 4
+-Display the last saved dump on the specified device and reporter.
++Display the last saved dump on the specified port and reporter.
+ .RE
+ .PP
+-devlink health dump clear pci/0000:00:09.0 reporter tx
++devlink health dump clear pci/0000:00:09.0/1 reporter tx
+ .RS 4
+-Delete saved dump on the specified device and reporter.
++Delete saved dump on the specified port and reporter.
+ .RE
+ .PP
+-devlink health set pci/0000:00:09.0 reporter tx grace_period 3500
++devlink health set pci/0000:00:09.0 reporter fw_fatal grace_period 3500
+ .RS 4
+ Set time interval between auto recoveries to minimum of 3500 msec on
+ the specified device and reporter.
+ .RE
+ .PP
+-devlink health set pci/0000:00:09.0 reporter tx auto_recover false
++devlink health set pci/0000:00:09.0/1 reporter tx grace_period 3500
++.RS 4
++Set time interval between auto recoveries to minimum of 3500 msec on
++the specified port and reporter.
++.RE
++.PP
++devlink health set pci/0000:00:09.0 reporter fw_fatal auto_recover false
+ .RS 4
+ Turn off auto recovery on the specified device and reporter.
 +
- static int cmd_port(struct dl *dl)
- {
- 	if (dl_argv_match(dl, "help")) {
-@@ -3561,6 +3565,15 @@ static int cmd_port(struct dl *dl)
- 	} else if (dl_argv_match(dl, "function")) {
- 		dl_arg_inc(dl);
- 		return cmd_port_function(dl);
-+	} else if (dl_argv_match(dl, "health")) {
-+		dl_arg_inc(dl);
-+		if (dl_argv_match(dl, "list") || dl_no_arg(dl)
-+		    || (dl_argv_match(dl, "show") && dl_argc(dl) == 1)) {
-+			dl_arg_inc(dl);
-+			return __cmd_health_show(dl, false, true);
-+		} else {
-+			return cmd_health(dl);
-+		}
- 	}
- 	pr_err("Command \"%s\" not found\n", dl_argv(dl));
- 	return -ENOENT;
-@@ -4493,7 +4506,8 @@ static void pr_out_flash_update(struct dl *dl, struct nlattr **tb)
- }
+ .RE
+ .SH SEE ALSO
+ .BR devlink (8),
+diff --git a/man/man8/devlink-port.8 b/man/man8/devlink-port.8
+index 188bffb..966faae 100644
+--- a/man/man8/devlink-port.8
++++ b/man/man8/devlink-port.8
+@@ -40,6 +40,10 @@ devlink-port \- devlink port configuration
+ .RI "[ " DEV/PORT_INDEX " ]"
  
- static void pr_out_region(struct dl *dl, struct nlattr **tb);
--static void pr_out_health(struct dl *dl, struct nlattr **tb_health);
-+static void pr_out_health(struct dl *dl, struct nlattr **tb_health,
-+			  bool show_device, bool show_port);
- static void pr_out_trap(struct dl *dl, struct nlattr **tb, bool array);
- static void pr_out_trap_group(struct dl *dl, struct nlattr **tb, bool array);
- static void pr_out_trap_policer(struct dl *dl, struct nlattr **tb, bool array);
-@@ -4572,7 +4586,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 		    !tb[DEVLINK_ATTR_HEALTH_REPORTER])
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
--		pr_out_health(dl, tb);
-+		pr_out_health(dl, tb, true, true);
- 		pr_out_mon_footer();
- 		break;
- 	case DEVLINK_CMD_TRAP_GET: /* fall through */
-@@ -6717,7 +6731,7 @@ static int cmd_health_set_params(struct dl *dl)
- 
- 	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_HEALTH_REPORTER_SET,
- 			       NLM_F_REQUEST | NLM_F_ACK);
--	err = dl_argv_parse(dl, DL_OPT_HANDLE | DL_OPT_HEALTH_REPORTER_NAME,
-+	err = dl_argv_parse(dl, DL_OPT_HANDLE | DL_OPT_HANDLEP | DL_OPT_HEALTH_REPORTER_NAME,
- 			    DL_OPT_HEALTH_REPORTER_GRACEFUL_PERIOD |
- 			    DL_OPT_HEALTH_REPORTER_AUTO_RECOVER |
- 			    DL_OPT_HEALTH_REPORTER_AUTO_DUMP);
-@@ -6737,7 +6751,8 @@ static int cmd_health_dump_clear(struct dl *dl)
- 			       NLM_F_REQUEST | NLM_F_ACK);
- 
- 	err = dl_argv_parse_put(nlh, dl,
--				DL_OPT_HANDLE | DL_OPT_HEALTH_REPORTER_NAME, 0);
-+				DL_OPT_HANDLE | DL_OPT_HANDLEP |
-+				DL_OPT_HEALTH_REPORTER_NAME, 0);
- 	if (err)
- 		return err;
- 
-@@ -6984,7 +6999,8 @@ static int cmd_health_object_common(struct dl *dl, uint8_t cmd, uint16_t flags)
- 	nlh = mnlg_msg_prepare(dl->nlg, cmd, flags | NLM_F_REQUEST | NLM_F_ACK);
- 
- 	err = dl_argv_parse_put(nlh, dl,
--				DL_OPT_HANDLE | DL_OPT_HEALTH_REPORTER_NAME, 0);
-+				DL_OPT_HANDLE | DL_OPT_HANDLEP |
-+				DL_OPT_HEALTH_REPORTER_NAME, 0);
- 	if (err)
- 		return err;
- 
-@@ -7017,7 +7033,8 @@ static int cmd_health_recover(struct dl *dl)
- 			       NLM_F_REQUEST | NLM_F_ACK);
- 
- 	err = dl_argv_parse_put(nlh, dl,
--				DL_OPT_HANDLE | DL_OPT_HEALTH_REPORTER_NAME, 0);
-+				DL_OPT_HANDLE | DL_OPT_HANDLEP |
-+				DL_OPT_HEALTH_REPORTER_NAME, 0);
- 	if (err)
- 		return err;
- 
-@@ -7091,7 +7108,8 @@ static void pr_out_dump_report_timestamp(struct dl *dl, const struct nlattr *att
- 	print_string(PRINT_ANY, "last_dump_time", " last_dump_time %s", dump_time);
- }
- 
--static void pr_out_health(struct dl *dl, struct nlattr **tb_health)
-+static void pr_out_health(struct dl *dl, struct nlattr **tb_health,
-+			  bool print_device, bool print_port)
- {
- 	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
- 	enum devlink_health_reporter_state state;
-@@ -7108,7 +7126,20 @@ static void pr_out_health(struct dl *dl, struct nlattr **tb_health)
- 	    !tb[DEVLINK_ATTR_HEALTH_REPORTER_STATE])
- 		return;
- 
--	pr_out_handle_start_arr(dl, tb_health);
-+	if (!print_device && !print_port)
-+		return;
-+	if (print_port) {
-+		if (!print_device && !tb_health[DEVLINK_ATTR_PORT_INDEX])
-+			return;
-+		else if (tb_health[DEVLINK_ATTR_PORT_INDEX])
-+			pr_out_port_handle_start_arr(dl, tb_health, false);
-+	}
-+	if (print_device) {
-+		if (!print_port && tb_health[DEVLINK_ATTR_PORT_INDEX])
-+			return;
-+		else if (!tb_health[DEVLINK_ATTR_PORT_INDEX])
-+			pr_out_handle_start_arr(dl, tb_health);
-+	}
- 
- 	check_indent_newline(dl);
- 	print_string(PRINT_ANY, "reporter", "reporter %s",
-@@ -7142,25 +7173,33 @@ static void pr_out_health(struct dl *dl, struct nlattr **tb_health)
- 	pr_out_handle_end(dl);
- }
- 
-+struct health_ctx {
-+	struct dl *dl;
-+	bool show_device;
-+	bool show_port;
-+};
+ .ti -8
++.B devlink port health
++.RI "{ " show " | " recover " | " diagnose " | " dump " | " set " }"
 +
- static int cmd_health_show_cb(const struct nlmsghdr *nlh, void *data)
- {
- 	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
- 	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
--	struct dl *dl = data;
-+	struct health_ctx *ctx = data;
-+	struct dl *dl = ctx->dl;
++.ti -8
+ .B devlink port help
  
- 	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
- 	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
- 	    !tb[DEVLINK_ATTR_HEALTH_REPORTER])
- 		return MNL_CB_ERROR;
+ .SH "DESCRIPTION"
+@@ -91,6 +95,10 @@ Could be performed on any split port of the same split group.
+ - specifies the devlink port to show.
+ If this argument is omitted all ports are listed.
  
--	pr_out_health(dl, tb);
-+	pr_out_health(dl, tb, ctx->show_device, ctx->show_port);
++.SS devlink port health - devlink health reporting and recovery
++Is an alias for
++.BR devlink-health (8).
++
+ .SH "EXAMPLES"
+ .PP
+ devlink port show
+@@ -117,12 +125,23 @@ devlink port unsplit pci/0000:01:00.0/1
+ .RS 4
+ Unplit the specified previously split devlink port.
+ .RE
++.PP
++devlink port health show
++.RS 4
++Shows status and configuration of all supported reporters registered on all devlink ports.
++.RE
++.PP
++devlink port health show pci/0000:01:00.0/1 reporter tx
++.RS 4
++Shows status and configuration of tx reporter registered on pci/0000:01:00.0/1 devlink port.
++.RE
  
- 	return MNL_CB_OK;
- }
+ .SH SEE ALSO
+ .BR devlink (8),
+ .BR devlink-dev (8),
+ .BR devlink-sb (8),
+ .BR devlink-monitor (8),
++.BR devlink-health (8),
+ .br
  
--static int cmd_health_show(struct dl *dl)
-+static int __cmd_health_show(struct dl *dl, bool show_device, bool show_port)
- {
- 	struct nlmsghdr *nlh;
-+	struct health_ctx ctx = { dl, show_device, show_port };
- 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
- 	int err;
- 
-@@ -7170,27 +7209,28 @@ static int cmd_health_show(struct dl *dl)
- 			       flags);
- 
- 	if (dl_argc(dl) > 0) {
-+		ctx.show_port = true;
- 		err = dl_argv_parse_put(nlh, dl,
--					DL_OPT_HANDLE |
-+					DL_OPT_HANDLE | DL_OPT_HANDLEP |
- 					DL_OPT_HEALTH_REPORTER_NAME, 0);
- 		if (err)
- 			return err;
- 	}
- 	pr_out_section_start(dl, "health");
- 
--	err = _mnlg_socket_sndrcv(dl->nlg, nlh, cmd_health_show_cb, dl);
-+	err = _mnlg_socket_sndrcv(dl->nlg, nlh, cmd_health_show_cb, &ctx);
- 	pr_out_section_end(dl);
- 	return err;
- }
- 
- static void cmd_health_help(void)
- {
--	pr_err("Usage: devlink health show [ dev DEV reporter REPORTER_NAME ]\n");
--	pr_err("       devlink health recover DEV reporter REPORTER_NAME\n");
--	pr_err("       devlink health diagnose DEV reporter REPORTER_NAME\n");
--	pr_err("       devlink health dump show DEV reporter REPORTER_NAME\n");
--	pr_err("       devlink health dump clear DEV reporter REPORTER_NAME\n");
--	pr_err("       devlink health set DEV reporter REPORTER_NAME\n");
-+	pr_err("Usage: devlink health show [ { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME ]\n");
-+	pr_err("       devlink health recover { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
-+	pr_err("       devlink health diagnose { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
-+	pr_err("       devlink health dump show { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
-+	pr_err("       devlink health dump clear { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
-+	pr_err("       devlink health set { DEV | DEV/PORT_INDEX } reporter REPORTER_NAME\n");
- 	pr_err("                          [ grace_period MSEC ]\n");
- 	pr_err("                          [ auto_recover { true | false } ]\n");
- 	pr_err("                          [ auto_dump    { true | false } ]\n");
-@@ -7204,7 +7244,7 @@ static int cmd_health(struct dl *dl)
- 	} else if (dl_argv_match(dl, "show") ||
- 		   dl_argv_match(dl, "list") || dl_no_arg(dl)) {
- 		dl_arg_inc(dl);
--		return cmd_health_show(dl);
-+		return __cmd_health_show(dl, true, true);
- 	} else if (dl_argv_match(dl, "recover")) {
- 		dl_arg_inc(dl);
- 		return cmd_health_recover(dl);
+ .SH AUTHOR
 -- 
 1.7.1
 
