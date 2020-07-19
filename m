@@ -2,27 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4702251CB
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 14:13:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB5C92251D4
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 14:22:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726266AbgGSMMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 08:12:34 -0400
-Received: from smtp.al2klimov.de ([78.46.175.9]:55526 "EHLO smtp.al2klimov.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725836AbgGSMMe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jul 2020 08:12:34 -0400
+        id S1726219AbgGSMWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 08:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725836AbgGSMWn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 08:22:43 -0400
+Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B09C0619D2;
+        Sun, 19 Jul 2020 05:22:42 -0700 (PDT)
 Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id 6A638BC07E;
-        Sun, 19 Jul 2020 12:12:30 +0000 (UTC)
+        by smtp.al2klimov.de (Postfix) with ESMTPA id F351DBC063;
+        Sun, 19 Jul 2020 12:22:38 +0000 (UTC)
 From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     mcgrof@kernel.org, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org, gustavoars@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+To:     toke@toke.dk, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, kuba@kernel.org,
+        cake@lists.bufferbloat.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH for v5.9] prism54: Replace HTTP links with HTTPS ones
-Date:   Sun, 19 Jul 2020 14:12:24 +0200
-Message-Id: <20200719121224.58581-1-grandmaster@al2klimov.de>
+Subject: [PATCH for v5.9] sch_cake: Replace HTTP links with HTTPS ones
+Date:   Sun, 19 Jul 2020 14:22:32 +0200
+Message-Id: <20200719122232.58647-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spamd-Bar: +++++
@@ -73,22 +76,22 @@ Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
  Impossible is nothing! :)
 
 
- drivers/net/wireless/intersil/prism54/isl_oid.h | 2 +-
+ net/sched/sch_cake.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intersil/prism54/isl_oid.h b/drivers/net/wireless/intersil/prism54/isl_oid.h
-index 1afc2ccf94ca..b889bb73a485 100644
---- a/drivers/net/wireless/intersil/prism54/isl_oid.h
-+++ b/drivers/net/wireless/intersil/prism54/isl_oid.h
-@@ -143,7 +143,7 @@ enum dot11_priv_t {
-  * together with a CSMA contention. Without this all frames are
-  * sent with a CSMA contention.
-  * Bibliography:
-- * http://www.hpl.hp.com/personal/Jean_Tourrilhes/Papers/Packet.Frame.Grouping.html
-+ * https://www.hpl.hp.com/personal/Jean_Tourrilhes/Papers/Packet.Frame.Grouping.html
-  */
- enum dot11_maxframeburst_t {
- 	/* Values for DOT11_OID_MAXFRAMEBURST */
+diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
+index ebaeec1e5c82..2f6c0daa2337 100644
+--- a/net/sched/sch_cake.c
++++ b/net/sched/sch_cake.c
+@@ -363,7 +363,7 @@ static const u8 bulk_order[] = {1, 0, 2, 3};
+ #define REC_INV_SQRT_CACHE (16)
+ static u32 cobalt_rec_inv_sqrt_cache[REC_INV_SQRT_CACHE] = {0};
+ 
+-/* http://en.wikipedia.org/wiki/Methods_of_computing_square_roots
++/* https://en.wikipedia.org/wiki/Methods_of_computing_square_roots
+  * new_invsqrt = (invsqrt / 2) * (3 - count * invsqrt^2)
+  *
+  * Here, invsqrt is a fixed point number (< 1.0), 32bit mantissa, aka Q0.32
 -- 
 2.27.0
 
