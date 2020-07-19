@@ -2,74 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFC85225451
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 23:52:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1584022545F
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 00:04:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726700AbgGSVwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 17:52:04 -0400
-Received: from lists.nic.cz ([217.31.204.67]:35082 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726126AbgGSVwE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jul 2020 17:52:04 -0400
-Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
-        by mail.nic.cz (Postfix) with ESMTPSA id AC0E9140A89;
-        Sun, 19 Jul 2020 23:52:02 +0200 (CEST)
-Date:   Sun, 19 Jul 2020 23:52:02 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Chris Healy <cphealy@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>
-Subject: Re: bug: net: dsa: mv88e6xxx: serdes Unable to communicate on fiber
- with vf610-zii-dev-rev-c
-Message-ID: <20200719235202.6ee120b9@nic.cz>
-In-Reply-To: <CAFXsbZrHRexg5zAsR1cah4p8HAZVc3tjKdMGKWO6Ha4jXux3QA@mail.gmail.com>
-References: <CAFXsbZodM0W87aH=qeZCRDSwyNOAXwF=aO8zf1UpkhwNkSAczA@mail.gmail.com>
-        <20200718164239.40ded692@nic.cz>
-        <CAFXsbZoMcOQTY8HE+E359jT6Vsod3LiovTODpjndHKzhTBZcTg@mail.gmail.com>
-        <20200718150514.GC1375379@lunn.ch>
-        <20200718172244.59576938@nic.cz>
-        <CAFXsbZrHRexg5zAsR1cah4p8HAZVc3tjKdMGKWO6Ha4jXux3QA@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726619AbgGSWDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 18:03:47 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:38633 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726126AbgGSWDq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 18:03:46 -0400
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id F416E22FEC;
+        Mon, 20 Jul 2020 00:03:42 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1595196224;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XKk8+t5MLJEeSzFrY4LraeUIQ/GC5u/mAsRgDMFyZl0=;
+        b=TpXYaQKovs53NDtoQmYHr7/YU9tXAJBw88fwfvXzS9YWgthUsONg9IfGqiDKHIyP+iXhhc
+        2m3QdZkyfygNM6QHV2+7L7kl3Pbn1Nk7qhfc/hhEGOPpOyVZKNssKfxVTx3jHkkRIVvdmd
+        jeIGbh9AOpgh7Q95NiAM1p8EvtiT7Go=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Michael Walle <michael@walle.cc>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: [PATCH net-next v7 0/4] net: enetc: remove bootloader dependency
+Date:   Mon, 20 Jul 2020 00:03:32 +0200
+Message-Id: <20200719220336.6919-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
-        USER_IN_WHITELIST shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 19 Jul 2020 14:43:49 -0700
-Chris Healy <cphealy@gmail.com> wrote:
+These patches were picked from the following series:
+https://lore.kernel.org/netdev/1567779344-30965-1-git-send-email-claudiu.manoil@nxp.com/
+They have never been resent. I've picked them up, addressed Andrews
+comments, fixed some more bugs and asked Claudiu if I can keep their SOB
+tags; he agreed. I've tested this on our board which happens to have a
+bootloader which doesn't do the enetc setup in all cases. Though, only
+SGMII mode was tested.
 
-> > Hmm.
-> >
-> > What about the errata setup?
-> > It says:
-> > /* The 6390 copper ports have an errata which require poking magic
-> >  * values into undocumented hidden registers and then performing a
-> >  * software reset.
-> >  */
-> > But then the port_hidden_write function is called for every port in the
-> > function mv88e6390_setup_errata, not just for copper ports. Maybe Chris
-> > should try to not write this hidden register for SerDes ports.  
-> 
-> I just disabled the mv88e6390_setup_errata all together and this did
-> not result in any different behaviour on this broken fiber port.
+changes since v6:
+ - dropped _LPA_ infix for USXGMII constants
 
-:-( In that case I really have no idea what could be the problem.
+changes since v5:
+ - fixed pcs->autoneg_complete and pcs->link assignment. Thanks Vladimir.
 
-Another thing you could try is resoldering resistors on the board so
-that the switches configure themselves into NOCPU mode and the port you
-are talking about configures itself into the cmode you need
-(was it 1000base-x or sgmii?). Disable DSA, write yourself sysfs API
-via which you can read/write switch registers by yourself. Then you can
-chech if the problem on the RX path occurs. If no, read all the
-registers and compare their values with the ones the mv88e6xxx driver
-configures. If yes, then we know that the problem is there even if the
-switch is NOCPU mode and you can inform Marvell about the bug.
+changes since v4:
+ - moved (and renamed) the USXGMII constants to include/uapi/linux/mdio.h.
+   Suggested by Russell King.
 
-Marek
+changes since v3:
+ - rebased to latest net-next where devm_mdiobus_free() was removed.
+   replace it by mdiobus_free(). The internal MDIO bus is optional, if
+   there is any error, we try to run with the bootloader default PCS
+   settings, thus in the error case, we need to free the mdiobus.
+
+changes since v2:
+ - removed SOBs from "net: enetc: Initialize SerDes for SGMII and USXGMII
+   protocols" because almost everything has changed.
+ - get a phy_device for the internal PCS PHY so we can use the phy_
+   functions instead of raw mdiobus writes
+ - reuse macros already defined in fsl_mdio.h, move missing bits from
+   felix to fsl_mdio.h, because they share the same PCS PHY building
+   block
+ - added 2500BaseX mode (based on felix init routine)
+ - changed xgmii mode to usxgmii mode, because it is actually USXGMII and
+   felix does the same.
+ - fixed devad, which is 0x1f (MMD_VEND2)
+
+changes since v1:
+ - mdiobus id is '"imdio-%s", dev_name(dev)' because the plain dev_name()
+   is used by the emdio.
+ - use mdiobus_write() instead of imdio->write(imdio, ..), since this is
+   already a full featured mdiobus
+ - set phy_mask to ~0 to avoid scanning the bus
+ - use phy_interface_mode_is_rgmii(phy_mode) to also include the RGMII
+   modes with pad delays.
+ - move enetc_imdio_init() to enetc_pf.c, there shouldn't be any other
+   users, should it?
+ - renamed serdes to SerDes
+ - printing the error code of mdiobus_register() in the error path
+ - call mdiobus_unregister() on _remove()
+ - call devm_mdiobus_free() if mdiobus_register() fails, since an
+   error is not fatal
+Alex Marginean (1):
+  net: enetc: Use DT protocol information to set up the ports
+
+Michael Walle (3):
+  net: phy: add USXGMII link partner ability constants
+  net: dsa: felix: (re)use already existing constants
+  net: enetc: Initialize SerDes for SGMII and USXGMII protocols
+
+ drivers/net/dsa/ocelot/felix_vsc9959.c        |  45 ++---
+ .../net/ethernet/freescale/enetc/enetc_hw.h   |   3 +
+ .../net/ethernet/freescale/enetc/enetc_pf.c   | 188 +++++++++++++++---
+ .../net/ethernet/freescale/enetc/enetc_pf.h   |   5 +
+ include/uapi/linux/mdio.h                     |  26 +++
+ 5 files changed, 210 insertions(+), 57 deletions(-)
+
+-- 
+2.20.1
+
