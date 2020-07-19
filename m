@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 486B6225459
+	by mail.lfdr.de (Postfix) with ESMTP id B55AB22545A
 	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 00:04:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726853AbgGSWDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 18:03:50 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:58649 "EHLO
+        id S1726312AbgGSWDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 18:03:51 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:36013 "EHLO
         ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726832AbgGSWDt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 18:03:49 -0400
+        with ESMTP id S1726159AbgGSWDu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 18:03:50 -0400
 Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 5424123076;
-        Mon, 20 Jul 2020 00:03:46 +0200 (CEST)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 0E2D023078;
+        Mon, 20 Jul 2020 00:03:47 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1595196226;
+        t=1595196227;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HrdZODNf3Hj8hzql68Z+L1WApdxHLWKzvBOI9QwOXu0=;
-        b=ZNgREgODrzsyeK21kTwzfIC2MnPMRYhAWHhqnqpBwvLFj5FgfplCDSdNGs+nFsW2tBgSQc
-        rmNygCdFh4dh5/PecasiOo5Rjowc8Hh9gIdo5q2TxbXSVwpyD6+EeZlW1rwcETZeNibZ8M
-        eTkH5t7K+4GazKCyp3D8EGv5Jj840vs=
+        bh=vanIZdxxBCgDihYippLTYRwQoxBMiBwbL2AevUy8LVY=;
+        b=lXJ4bycGTXv6PSm+e4QTHGmtatpWbTl9PvqlifDEOLNjyPIifQ128k00U/JgE8rh/UXUx9
+        Han06LNANKEgEuqEycG+wIukWH2w5al/Kjx5rfjlbCGA7YcqrFB1va7Pw/GuSESnUA9mwF
+        XkDyaOH6nv7qOOCw7E94N6/AIul0v20=
 From:   Michael Walle <michael@walle.cc>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -40,9 +40,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v7 3/4] net: enetc: Initialize SerDes for SGMII and USXGMII protocols
-Date:   Mon, 20 Jul 2020 00:03:35 +0200
-Message-Id: <20200719220336.6919-4-michael@walle.cc>
+Subject: [PATCH net-next v7 4/4] net: enetc: Use DT protocol information to set up the ports
+Date:   Mon, 20 Jul 2020 00:03:36 +0200
+Message-Id: <20200719220336.6919-5-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200719220336.6919-1-michael@walle.cc>
 References: <20200719220336.6919-1-michael@walle.cc>
@@ -54,214 +54,203 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ENETC has ethernet MACs capable of SGMII, 2500BaseX and USXGMII. But in
-order to use these protocols some SerDes configurations need to be
-performed. The SerDes is configurable via an internal PCS PHY which is
-connected to an internal MDIO bus at address 0.
+From: Alex Marginean <alexandru.marginean@nxp.com>
 
-This patch basically removes the dependency on bootloader regarding
-SerDes initialization.
+Use DT information rather than in-band information from bootloader to
+set up MAC for XGMII. For RGMII use the DT indication in addition to
+RGMII defaults in hardware.
+However, this implies that PHY connection information needs to be
+extracted before netdevice creation, when the ENETC Port MAC is
+being configured.
 
+Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
 Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
 Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../net/ethernet/freescale/enetc/enetc_hw.h   |   3 +
- .../net/ethernet/freescale/enetc/enetc_pf.c   | 135 ++++++++++++++++++
- .../net/ethernet/freescale/enetc/enetc_pf.h   |   2 +
- 3 files changed, 140 insertions(+)
+ .../net/ethernet/freescale/enetc/enetc_pf.c   | 57 ++++++++++---------
+ .../net/ethernet/freescale/enetc/enetc_pf.h   |  3 +
+ 2 files changed, 34 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-index fc357bc56835..135bf46354ea 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-@@ -224,6 +224,9 @@ enum enetc_bdr_type {TX, RX};
- #define ENETC_PM0_MAXFRM	0x8014
- #define ENETC_SET_TX_MTU(val)	((val) << 16)
- #define ENETC_SET_MAXFRM(val)	((val) & 0xffff)
-+
-+#define ENETC_PM_IMDIO_BASE	0x8030
-+
- #define ENETC_PM0_IF_MODE	0x8300
- #define ENETC_PMO_IFM_RG	BIT(2)
- #define ENETC_PM0_IFM_RLP	(BIT(5) | BIT(11))
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index 4fac57dbb3c8..3bf345b84b76 100644
+index 3bf345b84b76..5a08f66b123c 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
- /* Copyright 2017-2019 NXP */
- 
-+#include <linux/mdio.h>
- #include <linux/module.h>
- #include <linux/fsl/enetc_mdio.h>
- #include <linux/of_mdio.h>
-@@ -833,6 +834,135 @@ static void enetc_of_put_phy(struct enetc_ndev_priv *priv)
- 		of_node_put(priv->phy_node);
+@@ -482,7 +482,8 @@ static void enetc_port_si_configure(struct enetc_si *si)
+ 	enetc_port_wr(hw, ENETC_PSIVLANFMR, ENETC_PSIVLANFMR_VS);
  }
  
-+static int enetc_imdio_init(struct enetc_pf *pf, bool is_c45)
-+{
-+	struct device *dev = &pf->si->pdev->dev;
-+	struct enetc_mdio_priv *mdio_priv;
-+	struct phy_device *pcs;
-+	struct mii_bus *bus;
-+	int err;
-+
-+	bus = mdiobus_alloc_size(sizeof(*mdio_priv));
-+	if (!bus)
-+		return -ENOMEM;
-+
-+	bus->name = "Freescale ENETC internal MDIO Bus";
-+	bus->read = enetc_mdio_read;
-+	bus->write = enetc_mdio_write;
-+	bus->parent = dev;
-+	bus->phy_mask = ~0;
-+	mdio_priv = bus->priv;
-+	mdio_priv->hw = &pf->si->hw;
-+	mdio_priv->mdio_base = ENETC_PM_IMDIO_BASE;
-+	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-imdio", dev_name(dev));
-+
-+	err = mdiobus_register(bus);
-+	if (err) {
-+		dev_err(dev, "cannot register internal MDIO bus (%d)\n", err);
-+		goto free_mdio_bus;
-+	}
-+
-+	pcs = get_phy_device(bus, 0, is_c45);
-+	if (IS_ERR(pcs)) {
-+		err = PTR_ERR(pcs);
-+		dev_err(dev, "cannot get internal PCS PHY (%d)\n", err);
-+		goto unregister_mdiobus;
-+	}
-+
-+	pf->imdio = bus;
-+	pf->pcs = pcs;
-+
-+	return 0;
-+
-+unregister_mdiobus:
-+	mdiobus_unregister(bus);
-+free_mdio_bus:
-+	mdiobus_free(bus);
-+	return err;
-+}
-+
-+static void enetc_imdio_remove(struct enetc_pf *pf)
-+{
-+	if (pf->pcs)
-+		put_device(&pf->pcs->mdio.dev);
-+	if (pf->imdio) {
-+		mdiobus_unregister(pf->imdio);
-+		mdiobus_free(pf->imdio);
-+	}
-+}
-+
-+static void enetc_configure_sgmii(struct phy_device *pcs)
-+{
-+	/* SGMII spec requires tx_config_Reg[15:0] to be exactly 0x4001
-+	 * for the MAC PCS in order to acknowledge the AN.
-+	 */
-+	phy_write(pcs, MII_ADVERTISE, ADVERTISE_SGMII | ADVERTISE_LPACK);
-+
-+	phy_write(pcs, ENETC_PCS_IF_MODE,
-+		  ENETC_PCS_IF_MODE_SGMII_EN |
-+		  ENETC_PCS_IF_MODE_USE_SGMII_AN);
-+
-+	/* Adjust link timer for SGMII */
-+	phy_write(pcs, ENETC_PCS_LINK_TIMER1, ENETC_PCS_LINK_TIMER1_VAL);
-+	phy_write(pcs, ENETC_PCS_LINK_TIMER2, ENETC_PCS_LINK_TIMER2_VAL);
-+
-+	phy_write(pcs, MII_BMCR, BMCR_ANRESTART | BMCR_ANENABLE);
-+}
-+
-+static void enetc_configure_2500basex(struct phy_device *pcs)
-+{
-+	phy_write(pcs, ENETC_PCS_IF_MODE,
-+		  ENETC_PCS_IF_MODE_SGMII_EN |
-+		  ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500));
-+
-+	phy_write(pcs, MII_BMCR, BMCR_SPEED1000 | BMCR_FULLDPLX | BMCR_RESET);
-+}
-+
-+static void enetc_configure_usxgmii(struct phy_device *pcs)
-+{
-+	/* Configure device ability for the USXGMII Replicator */
-+	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_ADVERTISE,
-+		      ADVERTISE_SGMII | ADVERTISE_LPACK |
-+		      MDIO_USXGMII_FULL_DUPLEX);
-+
-+	/* Restart PCS AN */
-+	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_BMCR,
-+		      BMCR_RESET | BMCR_ANENABLE | BMCR_ANRESTART);
-+}
-+
-+static int enetc_configure_serdes(struct enetc_ndev_priv *priv)
-+{
-+	bool is_c45 = priv->if_mode == PHY_INTERFACE_MODE_USXGMII;
-+	struct enetc_pf *pf = enetc_si_priv(priv->si);
-+	int err;
-+
-+	if (priv->if_mode != PHY_INTERFACE_MODE_SGMII &&
-+	    priv->if_mode != PHY_INTERFACE_MODE_2500BASEX &&
-+	    priv->if_mode != PHY_INTERFACE_MODE_USXGMII)
-+		return 0;
-+
-+	err = enetc_imdio_init(pf, is_c45);
-+	if (err)
-+		return err;
-+
-+	switch (priv->if_mode) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+		enetc_configure_sgmii(pf->pcs);
-+		break;
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		enetc_configure_2500basex(pf->pcs);
-+		break;
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		enetc_configure_usxgmii(pf->pcs);
-+		break;
-+	default:
-+		dev_err(&pf->si->pdev->dev, "Unsupported link mode %s\n",
-+			phy_modes(priv->if_mode));
-+	}
-+
-+	return 0;
-+}
-+
- static int enetc_pf_probe(struct pci_dev *pdev,
- 			  const struct pci_device_id *ent)
+-static void enetc_configure_port_mac(struct enetc_hw *hw)
++static void enetc_configure_port_mac(struct enetc_hw *hw,
++				     phy_interface_t phy_mode)
  {
-@@ -897,6 +1027,10 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 	if (err)
- 		dev_warn(&pdev->dev, "Fallback to PHY-less operation\n");
- 
-+	err = enetc_configure_serdes(priv);
-+	if (err)
-+		dev_warn(&pdev->dev, "Attempted SerDes config but failed\n");
+ 	enetc_port_wr(hw, ENETC_PM0_MAXFRM,
+ 		      ENETC_SET_MAXFRM(ENETC_RX_MAXFRM_SIZE));
+@@ -498,9 +499,11 @@ static void enetc_configure_port_mac(struct enetc_hw *hw)
+ 		      ENETC_PM0_CMD_TXP	| ENETC_PM0_PROMISC |
+ 		      ENETC_PM0_TX_EN | ENETC_PM0_RX_EN);
+ 	/* set auto-speed for RGMII */
+-	if (enetc_port_rd(hw, ENETC_PM0_IF_MODE) & ENETC_PMO_IFM_RG)
++	if (enetc_port_rd(hw, ENETC_PM0_IF_MODE) & ENETC_PMO_IFM_RG ||
++	    phy_interface_mode_is_rgmii(phy_mode))
+ 		enetc_port_wr(hw, ENETC_PM0_IF_MODE, ENETC_PM0_IFM_RGAUTO);
+-	if (enetc_global_rd(hw, ENETC_G_EPFBLPR(1)) == ENETC_G_EPFBLPR1_XGMII)
 +
- 	err = register_netdev(ndev);
- 	if (err)
- 		goto err_reg_netdev;
-@@ -932,6 +1066,7 @@ static void enetc_pf_remove(struct pci_dev *pdev)
- 	priv = netdev_priv(si->ndev);
- 	unregister_netdev(si->ndev);
++	if (phy_mode == PHY_INTERFACE_MODE_USXGMII)
+ 		enetc_port_wr(hw, ENETC_PM0_IF_MODE, ENETC_PM0_IFM_XGMII);
+ }
  
-+	enetc_imdio_remove(pf);
+@@ -524,7 +527,7 @@ static void enetc_configure_port(struct enetc_pf *pf)
+ 
+ 	enetc_configure_port_pmac(hw);
+ 
+-	enetc_configure_port_mac(hw);
++	enetc_configure_port_mac(hw, pf->if_mode);
+ 
+ 	enetc_port_si_configure(pf->si);
+ 
+@@ -776,27 +779,27 @@ static void enetc_mdio_remove(struct enetc_pf *pf)
+ 		mdiobus_unregister(pf->mdio);
+ }
+ 
+-static int enetc_of_get_phy(struct enetc_ndev_priv *priv)
++static int enetc_of_get_phy(struct enetc_pf *pf)
+ {
+-	struct enetc_pf *pf = enetc_si_priv(priv->si);
+-	struct device_node *np = priv->dev->of_node;
++	struct device *dev = &pf->si->pdev->dev;
++	struct device_node *np = dev->of_node;
+ 	struct device_node *mdio_np;
+ 	int err;
+ 
+-	priv->phy_node = of_parse_phandle(np, "phy-handle", 0);
+-	if (!priv->phy_node) {
++	pf->phy_node = of_parse_phandle(np, "phy-handle", 0);
++	if (!pf->phy_node) {
+ 		if (!of_phy_is_fixed_link(np)) {
+-			dev_err(priv->dev, "PHY not specified\n");
++			dev_err(dev, "PHY not specified\n");
+ 			return -ENODEV;
+ 		}
+ 
+ 		err = of_phy_register_fixed_link(np);
+ 		if (err < 0) {
+-			dev_err(priv->dev, "fixed link registration failed\n");
++			dev_err(dev, "fixed link registration failed\n");
+ 			return err;
+ 		}
+ 
+-		priv->phy_node = of_node_get(np);
++		pf->phy_node = of_node_get(np);
+ 	}
+ 
+ 	mdio_np = of_get_child_by_name(np, "mdio");
+@@ -804,15 +807,15 @@ static int enetc_of_get_phy(struct enetc_ndev_priv *priv)
+ 		of_node_put(mdio_np);
+ 		err = enetc_mdio_probe(pf);
+ 		if (err) {
+-			of_node_put(priv->phy_node);
++			of_node_put(pf->phy_node);
+ 			return err;
+ 		}
+ 	}
+ 
+-	err = of_get_phy_mode(np, &priv->if_mode);
++	err = of_get_phy_mode(np, &pf->if_mode);
+ 	if (err) {
+-		dev_err(priv->dev, "missing phy type\n");
+-		of_node_put(priv->phy_node);
++		dev_err(dev, "missing phy type\n");
++		of_node_put(pf->phy_node);
+ 		if (of_phy_is_fixed_link(np))
+ 			of_phy_deregister_fixed_link(np);
+ 		else
+@@ -824,14 +827,14 @@ static int enetc_of_get_phy(struct enetc_ndev_priv *priv)
+ 	return 0;
+ }
+ 
+-static void enetc_of_put_phy(struct enetc_ndev_priv *priv)
++static void enetc_of_put_phy(struct enetc_pf *pf)
+ {
+-	struct device_node *np = priv->dev->of_node;
++	struct device_node *np = pf->si->pdev->dev.of_node;
+ 
+ 	if (np && of_phy_is_fixed_link(np))
+ 		of_phy_deregister_fixed_link(np);
+-	if (priv->phy_node)
+-		of_node_put(priv->phy_node);
++	if (pf->phy_node)
++		of_node_put(pf->phy_node);
+ }
+ 
+ static int enetc_imdio_init(struct enetc_pf *pf, bool is_c45)
+@@ -994,6 +997,10 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 	pf->si = si;
+ 	pf->total_vfs = pci_sriov_get_totalvfs(pdev);
+ 
++	err = enetc_of_get_phy(pf);
++	if (err)
++		dev_warn(&pdev->dev, "Fallback to PHY-less operation\n");
++
+ 	enetc_configure_port(pf);
+ 
+ 	enetc_get_si_caps(si);
+@@ -1008,6 +1015,8 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 	enetc_pf_netdev_setup(si, ndev, &enetc_ndev_ops);
+ 
+ 	priv = netdev_priv(ndev);
++	priv->phy_node = pf->phy_node;
++	priv->if_mode = pf->if_mode;
+ 
+ 	enetc_init_si_rings_params(priv);
+ 
+@@ -1023,10 +1032,6 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 		goto err_alloc_msix;
+ 	}
+ 
+-	err = enetc_of_get_phy(priv);
+-	if (err)
+-		dev_warn(&pdev->dev, "Fallback to PHY-less operation\n");
+-
+ 	err = enetc_configure_serdes(priv);
+ 	if (err)
+ 		dev_warn(&pdev->dev, "Attempted SerDes config but failed\n");
+@@ -1040,7 +1045,6 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 	return 0;
+ 
+ err_reg_netdev:
+-	enetc_of_put_phy(priv);
+ 	enetc_free_msix(priv);
+ err_alloc_msix:
+ 	enetc_free_si_resources(priv);
+@@ -1048,6 +1052,7 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 	si->ndev = NULL;
+ 	free_netdev(ndev);
+ err_alloc_netdev:
++	enetc_of_put_phy(pf);
+ err_map_pf_space:
+ 	enetc_pci_remove(pdev);
+ 
+@@ -1068,7 +1073,7 @@ static void enetc_pf_remove(struct pci_dev *pdev)
+ 
+ 	enetc_imdio_remove(pf);
  	enetc_mdio_remove(pf);
- 	enetc_of_put_phy(priv);
+-	enetc_of_put_phy(priv);
++	enetc_of_put_phy(pf);
+ 
+ 	enetc_free_msix(priv);
  
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.h b/drivers/net/ethernet/freescale/enetc/enetc_pf.h
-index 59e65a6f6c3e..2cb922b59f46 100644
+index 2cb922b59f46..0d0ee91282a5 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.h
 +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.h
-@@ -44,6 +44,8 @@ struct enetc_pf {
- 	DECLARE_BITMAP(active_vlans, VLAN_N_VID);
- 
+@@ -46,6 +46,9 @@ struct enetc_pf {
  	struct mii_bus *mdio; /* saved for cleanup */
-+	struct mii_bus *imdio;
-+	struct phy_device *pcs;
+ 	struct mii_bus *imdio;
+ 	struct phy_device *pcs;
++
++	struct device_node *phy_node;
++	phy_interface_t if_mode;
  };
  
  int enetc_msg_psi_init(struct enetc_pf *pf);
