@@ -2,201 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6088E22518A
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 13:11:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77F7D225194
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 13:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726441AbgGSLLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 07:11:35 -0400
-Received: from smtp.al2klimov.de ([78.46.175.9]:41678 "EHLO smtp.al2klimov.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726021AbgGSLLf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jul 2020 07:11:35 -0400
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id EC2B5BC053;
-        Sun, 19 Jul 2020 11:11:30 +0000 (UTC)
-From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-To:     Larry.Finger@lwfinger.net, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Subject: [PATCH for v5.9] b43legacy: Replace HTTP links with HTTPS ones
-Date:   Sun, 19 Jul 2020 13:11:24 +0200
-Message-Id: <20200719111124.58167-1-grandmaster@al2klimov.de>
+        id S1726284AbgGSLSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 07:18:09 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:35477 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726093AbgGSLSI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 07:18:08 -0400
+Received: by mail-il1-f199.google.com with SMTP id v12so8922414ilg.2
+        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 04:18:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=VyO5STFmnVvO9DvN7eCLqjZBvvoFWMGC3SxiQbso7po=;
+        b=qHizPVQVpjATI+IRUt+kgcqZBsLtwxLZn7PmhwBE0+HERqORLJgycTn5PbInM1tfeF
+         cwvvNRgdNaAUFhFhLmHkjrzJFVJmMhIVO//V/x1ZFSSfWlCM+MzCKGcVLeQIzREnE6ZN
+         dC7MddCoyK+PoM7ntC6rWcpzbz8ZJcJ/TQMgJunrMyyFxjxjlBBS952ISSBunX9MpbzG
+         0GLPqPebZ+2goCpjBDOh9Keiqmq9VlJEUsIB/ZkrmPqsrJ9xKS8vfM2o7wFov84ofHK5
+         tjVtv6zzRyBbuCYtOxaJVaQUH8kSnEdQpzror8m1aTapm+OBQDwVbekK8dEkrYYt7sZV
+         yxcQ==
+X-Gm-Message-State: AOAM531IzCRsADZgZhuey0muYI/NjBqJxaRhGNRUEljejGSMIcpUjZ0J
+        aBG/35yVYqnZi6LioBHl3t4UKIEKwBFo2dbMFfnU8AmvNno1
+X-Google-Smtp-Source: ABdhPJzN017k94AQ4JkwHlIiCPM6i7N8XKcvfwgy3aNk8yE7/wZ8vtYocUkUUv41lSt8g45qQwCeZF6Sahc4C+Lvrm1HNhfd3B+A
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: +++++
-X-Spam-Level: *****
-Authentication-Results: smtp.al2klimov.de;
-        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+X-Received: by 2002:a92:d48a:: with SMTP id p10mr18445285ilg.230.1595157487462;
+ Sun, 19 Jul 2020 04:18:07 -0700 (PDT)
+Date:   Sun, 19 Jul 2020 04:18:07 -0700
+In-Reply-To: <0000000000009f4ecd05a9d4dd9f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000066afb205aac98b9d@google.com>
+Subject: Re: INFO: rcu detected stall in iterate_cleanup_work (2)
+From:   syzbot <syzbot+cc8495ea4052b9b79b72@syzkaller.appspotmail.com>
+To:     Markus.Elfring@web.de, davem@davemloft.net, hdanton@sina.com,
+        jhs@mojatatu.com, jiri@resnulli.us, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, vinicius.gomes@intel.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rationale:
-Reduces attack surface on kernel devs opening the links for MITM
-as HTTPS traffic is much harder to manipulate.
+syzbot has bisected this issue to:
 
-Deterministic algorithm:
-For each file:
-  If not .svg:
-    For each line:
-      If doesn't contain `\bxmlns\b`:
-        For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
-            If both the HTTP and HTTPS versions
-            return 200 OK and serve the same content:
-              Replace HTTP with HTTPS.
+commit 5a781ccbd19e4664babcbe4b4ead7aa2b9283d22
+Author: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Date:   Sat Sep 29 00:59:43 2018 +0000
 
-Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
----
- Continuing my work started at 93431e0607e5.
- See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
- (Actually letting a shell for loop submit all this stuff for me.)
+    tc: Add support for configuring the taprio scheduler
 
- If there are any URLs to be removed completely
- or at least not (just) HTTPSified:
- Just clearly say so and I'll *undo my change*.
- See also: https://lkml.org/lkml/2020/6/27/64
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=141ed087100000
+start commit:   cd77006e Merge tag 'hyperv-fixes-signed' of git://git.kern..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=121ed087100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7be693511b29b338
+dashboard link: https://syzkaller.appspot.com/bug?extid=cc8495ea4052b9b79b72
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12e567e5100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=126ffccd100000
 
- If there are any valid, but yet not changed URLs:
- See: https://lkml.org/lkml/2020/6/26/837
+Reported-by: syzbot+cc8495ea4052b9b79b72@syzkaller.appspotmail.com
+Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
 
- If you apply the patch, please let me know.
-
- Sorry again to all maintainers who complained about subject lines.
- Now I realized that you want an actually perfect prefixes,
- not just subsystem ones.
- I tried my best...
- And yes, *I could* (at least half-)automate it.
- Impossible is nothing! :)
-
-
- drivers/net/wireless/broadcom/b43legacy/main.c  | 8 ++++----
- drivers/net/wireless/broadcom/b43legacy/phy.c   | 8 ++++----
- drivers/net/wireless/broadcom/b43legacy/radio.c | 8 ++++----
- 3 files changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/b43legacy/main.c b/drivers/net/wireless/broadcom/b43legacy/main.c
-index 5208a39fd6f7..177a5d85915f 100644
---- a/drivers/net/wireless/broadcom/b43legacy/main.c
-+++ b/drivers/net/wireless/broadcom/b43legacy/main.c
-@@ -591,7 +591,7 @@ static void b43legacy_synchronize_irq(struct b43legacy_wldev *dev)
- }
- 
- /* DummyTransmission function, as documented on
-- * http://bcm-specs.sipsolutions.net/DummyTransmission
-+ * https://bcm-specs.sipsolutions.net/DummyTransmission
-  */
- void b43legacy_dummy_transmission(struct b43legacy_wldev *dev)
- {
-@@ -1870,7 +1870,7 @@ static int b43legacy_upload_initvals(struct b43legacy_wldev *dev)
- }
- 
- /* Initialize the GPIOs
-- * http://bcm-specs.sipsolutions.net/GPIO
-+ * https://bcm-specs.sipsolutions.net/GPIO
-  */
- static int b43legacy_gpio_init(struct b43legacy_wldev *dev)
- {
-@@ -1960,7 +1960,7 @@ void b43legacy_mac_enable(struct b43legacy_wldev *dev)
- 	}
- }
- 
--/* http://bcm-specs.sipsolutions.net/SuspendMAC */
-+/* https://bcm-specs.sipsolutions.net/SuspendMAC */
- void b43legacy_mac_suspend(struct b43legacy_wldev *dev)
- {
- 	int i;
-@@ -2141,7 +2141,7 @@ static void b43legacy_chip_exit(struct b43legacy_wldev *dev)
- }
- 
- /* Initialize the chip
-- * http://bcm-specs.sipsolutions.net/ChipInit
-+ * https://bcm-specs.sipsolutions.net/ChipInit
-  */
- static int b43legacy_chip_init(struct b43legacy_wldev *dev)
- {
-diff --git a/drivers/net/wireless/broadcom/b43legacy/phy.c b/drivers/net/wireless/broadcom/b43legacy/phy.c
-index a659259bc51a..05404fbd1e70 100644
---- a/drivers/net/wireless/broadcom/b43legacy/phy.c
-+++ b/drivers/net/wireless/broadcom/b43legacy/phy.c
-@@ -129,7 +129,7 @@ void b43legacy_phy_calibrate(struct b43legacy_wldev *dev)
- }
- 
- /* initialize B PHY power control
-- * as described in http://bcm-specs.sipsolutions.net/InitPowerControl
-+ * as described in https://bcm-specs.sipsolutions.net/InitPowerControl
-  */
- static void b43legacy_phy_init_pctl(struct b43legacy_wldev *dev)
- {
-@@ -1461,7 +1461,7 @@ void b43legacy_phy_set_baseband_attenuation(struct b43legacy_wldev *dev,
- 	b43legacy_phy_write(dev, 0x0060, value);
- }
- 
--/* http://bcm-specs.sipsolutions.net/LocalOscillator/Measure */
-+/* https://bcm-specs.sipsolutions.net/LocalOscillator/Measure */
- void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
- {
- 	static const u8 pairorder[10] = { 3, 1, 5, 7, 9, 2, 0, 4, 6, 8 };
-@@ -1721,7 +1721,7 @@ void b43legacy_phy_lo_mark_all_unused(struct b43legacy_wldev *dev)
- 	}
- }
- 
--/* http://bcm-specs.sipsolutions.net/EstimatePowerOut
-+/* https://bcm-specs.sipsolutions.net/EstimatePowerOut
-  * This function converts a TSSI value to dBm in Q5.2
-  */
- static s8 b43legacy_phy_estimate_power_out(struct b43legacy_wldev *dev, s8 tssi)
-@@ -1747,7 +1747,7 @@ static s8 b43legacy_phy_estimate_power_out(struct b43legacy_wldev *dev, s8 tssi)
- 	return dbm;
- }
- 
--/* http://bcm-specs.sipsolutions.net/RecalculateTransmissionPower */
-+/* https://bcm-specs.sipsolutions.net/RecalculateTransmissionPower */
- void b43legacy_phy_xmitpower(struct b43legacy_wldev *dev)
- {
- 	struct b43legacy_phy *phy = &dev->phy;
-diff --git a/drivers/net/wireless/broadcom/b43legacy/radio.c b/drivers/net/wireless/broadcom/b43legacy/radio.c
-index da40d1ca8723..06891b4f837b 100644
---- a/drivers/net/wireless/broadcom/b43legacy/radio.c
-+++ b/drivers/net/wireless/broadcom/b43legacy/radio.c
-@@ -313,14 +313,14 @@ u8 b43legacy_radio_aci_scan(struct b43legacy_wldev *dev)
- 	return ret[channel - 1];
- }
- 
--/* http://bcm-specs.sipsolutions.net/NRSSILookupTable */
-+/* https://bcm-specs.sipsolutions.net/NRSSILookupTable */
- void b43legacy_nrssi_hw_write(struct b43legacy_wldev *dev, u16 offset, s16 val)
- {
- 	b43legacy_phy_write(dev, B43legacy_PHY_NRSSILT_CTRL, offset);
- 	b43legacy_phy_write(dev, B43legacy_PHY_NRSSILT_DATA, (u16)val);
- }
- 
--/* http://bcm-specs.sipsolutions.net/NRSSILookupTable */
-+/* https://bcm-specs.sipsolutions.net/NRSSILookupTable */
- s16 b43legacy_nrssi_hw_read(struct b43legacy_wldev *dev, u16 offset)
- {
- 	u16 val;
-@@ -331,7 +331,7 @@ s16 b43legacy_nrssi_hw_read(struct b43legacy_wldev *dev, u16 offset)
- 	return (s16)val;
- }
- 
--/* http://bcm-specs.sipsolutions.net/NRSSILookupTable */
-+/* https://bcm-specs.sipsolutions.net/NRSSILookupTable */
- void b43legacy_nrssi_hw_update(struct b43legacy_wldev *dev, u16 val)
- {
- 	u16 i;
-@@ -345,7 +345,7 @@ void b43legacy_nrssi_hw_update(struct b43legacy_wldev *dev, u16 val)
- 	}
- }
- 
--/* http://bcm-specs.sipsolutions.net/NRSSILookupTable */
-+/* https://bcm-specs.sipsolutions.net/NRSSILookupTable */
- void b43legacy_nrssi_mem_update(struct b43legacy_wldev *dev)
- {
- 	struct b43legacy_phy *phy = &dev->phy;
--- 
-2.27.0
-
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
