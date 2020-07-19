@@ -2,71 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 248C8225305
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 19:17:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 403C6225316
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 19:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726508AbgGSRQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 13:16:10 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:38675 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgGSRQI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 13:16:08 -0400
-Received: by mail-io1-f72.google.com with SMTP id l13so9766871ioj.5
-        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 10:16:07 -0700 (PDT)
+        id S1726403AbgGSRfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 13:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbgGSRfp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 13:35:45 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF6EC0619D2;
+        Sun, 19 Jul 2020 10:35:45 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id s189so9202584pgc.13;
+        Sun, 19 Jul 2020 10:35:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=q1hm1sNECA9uytNSHgqhyhAHgDexMNtTL9LjjuUPhKA=;
+        b=gFnSTTkwEmitje3dvvITeq7hEI2++5VrfoyF19GJEuXwliXdkWxv5vE/2nD/RUC8YS
+         iumpIqMzhLYTlfbdpDqHeQxklv+ieVmmwE6Htf2XWJz121/p6/wawHhNPi5/dt0sAqCR
+         bTBT0ei7JCRlgWBC0/R/Q2Vo3aXmsLrWf6KpHZTZ71PzVghQJ2NM9+frXxmXAkDyU7z2
+         6gXEHWNzPbW8MwVdXkB2U+HYpju/9jAy5XfRiphp5QeHeNrCq14RxTF4tAaByrUd5rbV
+         XLiG8l6BZNSWTI86/hPpsXCOrnjDAYxbNL9NOfAx9Fsa2hsr9nlgPg1BaizPUOM/AD7Q
+         MKEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=uWsaInl6El+/D5enNDY+jTmOBPyNvNc8dNA1QiA0S0c=;
-        b=PuMYN+xYZM5KUEbT7lac+I6VzBnw4UMnD3JBpvdD89SYRV5gmBP/zjzvj3X4xuVan/
-         DS/8tgrbqjEIGIOAmh4LZCoU2BfGtI4mUSd1+xQ0eTiuzFqy5RmcV5rk3KB8q8PVrY0r
-         z3Ah8U2O5FKePwmj+NUPLCsBs5dJkon2jKJSSd3KsW6eq/plwHgM1thtd67OF+tRnAgc
-         VlIA1MwSNiygOqqJDaWx7tW2j753fRk6dRjjvEaLgMM3TBjbPxBRkS46B1YAgjjhGnqH
-         V830KpJbF21QSm9qEL2hcLGBwhDMbiVYaz+W5wjulypGJEjmhGm1hlENeKxfmaUXby7N
-         IUvg==
-X-Gm-Message-State: AOAM530G9dAztnT5+vHzDYvR4EJ/oNNHPf2rm5fD2xQAfit9xTAcLDP7
-        ZUwcmgcFMxY4cvsWQerPh2dsIG4kV1A1yvvZkz4nf8s3gO77
-X-Google-Smtp-Source: ABdhPJyqtWSRK+J0kwgjyR9dCgOB/4uCy+2pVK5gDCT/d7MyHs2xxFLVTglqQ0deuai/N8yljwZPA1Qoe/b/OkExASNGKUx+4h19
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=q1hm1sNECA9uytNSHgqhyhAHgDexMNtTL9LjjuUPhKA=;
+        b=VdOvCAWaxDWuqCVyXRQ8V74WNWnmJ2MR9b/PUvAf0SWaQIqA73ASMDUEANkjuqWgjf
+         97QLQjliFGVEYNBUaVqA9cQTGulsYkAI9DETFg0Dhm4d1Iokj0Mj6wbat9mVWawPvFq9
+         aZ5pvOWo50+QpytP/tQtk9R2rRcKwjQJqm0oo6ApHRSz1L9xi5nu3DeS4uNJWUhRER1D
+         +UZXZx+8lnVIJ8cU5U4VwxIRfBBo359rGHVhzHyoPPCy00SVxkDoXOYf8Vku45BWkzEY
+         eWf1ziDPfOQ26cKh/QBsPHZREv/y8O6OU1K4qCV/FcNyacf6XDcy8F74DwMXfTekxM4t
+         VVjQ==
+X-Gm-Message-State: AOAM533GiSCmX8PM69BakB7G8cyInHMhuwtfQ8XxnVmcI7oaDrsK1fT0
+        oOFloAll+DmRTO5w7SAb0h0=
+X-Google-Smtp-Source: ABdhPJxB78V7wj2N+mFe4MiOdRkXpeymFq62bnozS6DmMGsrvbb9ndRJmqvs8simQbLVQ2UNJLZarQ==
+X-Received: by 2002:a62:647:: with SMTP id 68mr5391597pfg.45.1595180144520;
+        Sun, 19 Jul 2020 10:35:44 -0700 (PDT)
+Received: from blackclown ([103.88.82.25])
+        by smtp.gmail.com with ESMTPSA id g7sm13830785pfh.210.2020.07.19.10.35.41
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 19 Jul 2020 10:35:43 -0700 (PDT)
+Date:   Sun, 19 Jul 2020 23:05:31 +0530
+From:   Suraj Upadhyay <usuraj35@gmail.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: net: decnet: TODO Items
+Message-ID: <20200719173531.GA8585@blackclown>
+References: <20200717061816.GA12159@blackclown>
+ <20200719100649.3719add8@hermes.lan>
 MIME-Version: 1.0
-X-Received: by 2002:a92:58d6:: with SMTP id z83mr19077343ilf.186.1595178967166;
- Sun, 19 Jul 2020 10:16:07 -0700 (PDT)
-Date:   Sun, 19 Jul 2020 10:16:07 -0700
-In-Reply-To: <000000000000418fc105aa4243aa@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b0fb8b05aace8b8e@google.com>
-Subject: Re: INFO: rcu detected stall in sys_clock_settime
-From:   syzbot <syzbot+f3bd350a4124f10acdae@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, davem@davemloft.net, jhs@mojatatu.com,
-        jiri@resnulli.us, linux-kernel@vger.kernel.org, mingo@elte.hu,
-        netdev@vger.kernel.org, peterz@infradead.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vinicius.gomes@intel.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200719100649.3719add8@hermes.lan>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Sun, Jul 19, 2020 at 10:06:49AM -0700, Stephen Hemminger wrote:
+> On Fri, 17 Jul 2020 11:48:16 +0530
+> Suraj Upadhyay <usuraj35@gmail.com> wrote:
+> 
+> > Hi Maintainers and Developers,
+> > 	I am interested in the DECnet TODO list.
+> > I just need a quick response whether they are worth doing or not
+> > for the amount of development happening in this subsystem is extremely
+> > low and I can't help but question whether I should indulge in any of
+> > the listed works or not.
+> > 
+> > Thanks,
+> > 
+> > Suraj Upadhyay.
+> > 
+> 
+> The was a push to move decnet into staging and kill it.
+> But last time there were still some users.
 
-commit 5a781ccbd19e4664babcbe4b4ead7aa2b9283d22
-Author: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Date:   Sat Sep 29 00:59:43 2018 +0000
+It's understandable that it has grown obsolete now.
 
-    tc: Add support for configuring the taprio scheduler
+Thanks for your response.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=167142f0900000
-start commit:   e9919e11 Merge branch 'for-linus' of git://git.kernel.org/..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=157142f0900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=117142f0900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a160d1053fc89af5
-dashboard link: https://syzkaller.appspot.com/bug?extid=f3bd350a4124f10acdae
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1353c420900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=130f8ef7100000
+Suraj Upadhyay.
 
-Reported-by: syzbot+f3bd350a4124f10acdae@syzkaller.appspotmail.com
-Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
