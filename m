@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0404A225067
-	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 09:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FDCC22501D
+	for <lists+netdev@lfdr.de>; Sun, 19 Jul 2020 09:23:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727073AbgGSHYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 03:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52490 "EHLO
+        id S1726614AbgGSHXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 03:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726486AbgGSHW5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 03:22:57 -0400
+        with ESMTP id S1726510AbgGSHW7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 03:22:59 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCA6C0619D2;
-        Sun, 19 Jul 2020 00:22:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6CEC0619D4;
+        Sun, 19 Jul 2020 00:22:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=1ec3vRpnhKa7ct+IoEvBbNMPDDMUXnzAIik6WdzVJ+0=; b=o9mhekMWa+cOB2n1Nn9sN87TkH
-        tvY0VQaas8ip2ut6FwEluUmTht+zL4gqfICoha/s7KSZyRa99i18msgVXCKcy4WwAe5NkASmVkv89
-        FAD16ZGDhRZ442KDl4b0XmFIr99tvSqkXG/kUnaJzooVbPegiLClqhwZs9O2qeAODw4aLEoCQIaV8
-        pxlvsjOU7Z1FbpRLjyZ/7BplSyO/RGJ2yCI1iu/XyDgyML1x9QGZjeBIh2KauBY2yM5leCowTVTbY
-        X6LiFzqp9YeYGp/Kp4PAulAjHsH26F1kwd7Qdfogcgcop50vYNZ8lIvB6+QzBIM9ZpGC3fJUjG7Qy
-        /z7m1A3w==;
+        bh=wEfli0bKnmMvbqMdIzR/Xxdc4YVX2oyTOBz3cFFmjPM=; b=eQNWVlLigQ8j1rddf3jmicJZx/
+        GtNBrPzTkUM1ooKl/ABnGiwBXTw6+29KnUxFz8TSdzOgVQHsafoNyG4FKcY03h1LkjlCMih8OmYkv
+        bDYT6HIXD1IY24dMuWWe9gvBTwsZvLPiBpoR0JrxwPT4+mGmRXal3CZYsk6yu/Z37IuIDdV8d8w56
+        nNOvzXBx6NWLd5rlnMJaSO+ZqT1HvktbQdIRQXlqfugWgwsqotNL9O1eyo0op36manXnRFG0NGTDw
+        pb9YbF+RJ22+6F3ruXlvsaVi5p5ZJICDtE9ar5FZCdNCTHlV8O8LMmwLEWvDjIKWrTJCNRtwnh0Op
+        j08FGj4Q==;
 Received: from [2001:4bb8:105:4a81:4ef5:9f24:cda4:103f] (helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jx3es-0000Sn-Vi; Sun, 19 Jul 2020 07:22:51 +0000
+        id 1jx3eu-0000Sy-A9; Sun, 19 Jul 2020 07:22:52 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Vlad Yasevich <vyasevich@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>,
@@ -35,9 +35,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         David Laight <David.Laight@ACULAB.COM>,
         linux-sctp@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 16/51] sctp: pass a kernel pointer to sctp_setsockopt_rtoinfo
-Date:   Sun, 19 Jul 2020 09:21:53 +0200
-Message-Id: <20200719072228.112645-17-hch@lst.de>
+Subject: [PATCH 17/51] sctp: pass a kernel pointer to sctp_setsockopt_associnfo
+Date:   Sun, 19 Jul 2020 09:21:54 +0200
+Message-Id: <20200719072228.112645-18-hch@lst.de>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200719072228.112645-1-hch@lst.de>
 References: <20200719072228.112645-1-hch@lst.de>
@@ -54,80 +54,89 @@ directly handling the user pointer.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- net/sctp/socket.c | 26 ++++++++++++--------------
- 1 file changed, 12 insertions(+), 14 deletions(-)
+ net/sctp/socket.c | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index f9fe93e865b970..6339a08b62dd2b 100644
+index 6339a08b62dd2b..2a655c65e2943d 100644
 --- a/net/sctp/socket.c
 +++ b/net/sctp/socket.c
-@@ -3041,9 +3041,10 @@ static int sctp_setsockopt_nodelay(struct sock *sk, int *val,
-  * be changed.
+@@ -3105,26 +3105,25 @@ static int sctp_setsockopt_rtoinfo(struct sock *sk,
+  * See [SCTP] for more information.
   *
   */
--static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigned int optlen)
-+static int sctp_setsockopt_rtoinfo(struct sock *sk,
-+				   struct sctp_rtoinfo *rtoinfo,
-+				   unsigned int optlen)
+-static int sctp_setsockopt_associnfo(struct sock *sk, char __user *optval, unsigned int optlen)
++static int sctp_setsockopt_associnfo(struct sock *sk,
++				     struct sctp_assocparams *assocparams,
++				     unsigned int optlen)
  {
--	struct sctp_rtoinfo rtoinfo;
+ 
+-	struct sctp_assocparams assocparams;
  	struct sctp_association *asoc;
- 	unsigned long rto_min, rto_max;
- 	struct sctp_sock *sp = sctp_sk(sk);
-@@ -3051,18 +3052,15 @@ static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigne
- 	if (optlen != sizeof (struct sctp_rtoinfo))
+ 
+ 	if (optlen != sizeof(struct sctp_assocparams))
  		return -EINVAL;
- 
--	if (copy_from_user(&rtoinfo, optval, optlen))
+-	if (copy_from_user(&assocparams, optval, optlen))
 -		return -EFAULT;
--
--	asoc = sctp_id2assoc(sk, rtoinfo.srto_assoc_id);
-+	asoc = sctp_id2assoc(sk, rtoinfo->srto_assoc_id);
  
- 	/* Set the values to the specific association */
--	if (!asoc && rtoinfo.srto_assoc_id != SCTP_FUTURE_ASSOC &&
-+	if (!asoc && rtoinfo->srto_assoc_id != SCTP_FUTURE_ASSOC &&
+-	asoc = sctp_id2assoc(sk, assocparams.sasoc_assoc_id);
++	asoc = sctp_id2assoc(sk, assocparams->sasoc_assoc_id);
+ 
+-	if (!asoc && assocparams.sasoc_assoc_id != SCTP_FUTURE_ASSOC &&
++	if (!asoc && assocparams->sasoc_assoc_id != SCTP_FUTURE_ASSOC &&
  	    sctp_style(sk, UDP))
  		return -EINVAL;
  
--	rto_max = rtoinfo.srto_max;
--	rto_min = rtoinfo.srto_min;
-+	rto_max = rtoinfo->srto_max;
-+	rto_min = rtoinfo->srto_min;
- 
- 	if (rto_max)
- 		rto_max = asoc ? msecs_to_jiffies(rto_max) : rto_max;
-@@ -3078,17 +3076,17 @@ static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigne
- 		return -EINVAL;
- 
+ 	/* Set the values to the specific association */
  	if (asoc) {
--		if (rtoinfo.srto_initial != 0)
-+		if (rtoinfo->srto_initial != 0)
- 			asoc->rto_initial =
--				msecs_to_jiffies(rtoinfo.srto_initial);
-+				msecs_to_jiffies(rtoinfo->srto_initial);
- 		asoc->rto_max = rto_max;
- 		asoc->rto_min = rto_min;
+-		if (assocparams.sasoc_asocmaxrxt != 0) {
++		if (assocparams->sasoc_asocmaxrxt != 0) {
+ 			__u32 path_sum = 0;
+ 			int   paths = 0;
+ 			struct sctp_transport *peer_addr;
+@@ -3141,24 +3140,25 @@ static int sctp_setsockopt_associnfo(struct sock *sk, char __user *optval, unsig
+ 			 * then one path.
+ 			 */
+ 			if (paths > 1 &&
+-			    assocparams.sasoc_asocmaxrxt > path_sum)
++			    assocparams->sasoc_asocmaxrxt > path_sum)
+ 				return -EINVAL;
+ 
+-			asoc->max_retrans = assocparams.sasoc_asocmaxrxt;
++			asoc->max_retrans = assocparams->sasoc_asocmaxrxt;
+ 		}
+ 
+-		if (assocparams.sasoc_cookie_life != 0)
+-			asoc->cookie_life = ms_to_ktime(assocparams.sasoc_cookie_life);
++		if (assocparams->sasoc_cookie_life != 0)
++			asoc->cookie_life =
++				ms_to_ktime(assocparams->sasoc_cookie_life);
  	} else {
- 		/* If there is no association or the association-id = 0
- 		 * set the values to the endpoint.
- 		 */
--		if (rtoinfo.srto_initial != 0)
--			sp->rtoinfo.srto_initial = rtoinfo.srto_initial;
-+		if (rtoinfo->srto_initial != 0)
-+			sp->rtoinfo.srto_initial = rtoinfo->srto_initial;
- 		sp->rtoinfo.srto_max = rto_max;
- 		sp->rtoinfo.srto_min = rto_min;
+ 		/* Set the values to the endpoint */
+ 		struct sctp_sock *sp = sctp_sk(sk);
+ 
+-		if (assocparams.sasoc_asocmaxrxt != 0)
++		if (assocparams->sasoc_asocmaxrxt != 0)
+ 			sp->assocparams.sasoc_asocmaxrxt =
+-						assocparams.sasoc_asocmaxrxt;
+-		if (assocparams.sasoc_cookie_life != 0)
++						assocparams->sasoc_asocmaxrxt;
++		if (assocparams->sasoc_cookie_life != 0)
+ 			sp->assocparams.sasoc_cookie_life =
+-						assocparams.sasoc_cookie_life;
++						assocparams->sasoc_cookie_life;
  	}
-@@ -4692,7 +4690,7 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
- 		retval = sctp_setsockopt_nodelay(sk, kopt, optlen);
- 		break;
- 	case SCTP_RTOINFO:
--		retval = sctp_setsockopt_rtoinfo(sk, optval, optlen);
-+		retval = sctp_setsockopt_rtoinfo(sk, kopt, optlen);
+ 	return 0;
+ }
+@@ -4693,7 +4693,7 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
+ 		retval = sctp_setsockopt_rtoinfo(sk, kopt, optlen);
  		break;
  	case SCTP_ASSOCINFO:
- 		retval = sctp_setsockopt_associnfo(sk, optval, optlen);
+-		retval = sctp_setsockopt_associnfo(sk, optval, optlen);
++		retval = sctp_setsockopt_associnfo(sk, kopt, optlen);
+ 		break;
+ 	case SCTP_I_WANT_MAPPED_V4_ADDR:
+ 		retval = sctp_setsockopt_mappedv4(sk, optval, optlen);
 -- 
 2.27.0
 
