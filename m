@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FC09225F8E
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 14:51:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36B12225F89
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 14:51:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729458AbgGTMuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 08:50:55 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:57562 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728508AbgGTMum (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 08:50:42 -0400
+        id S1729147AbgGTMuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 08:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728889AbgGTMun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 08:50:43 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C018AC061794;
+        Mon, 20 Jul 2020 05:50:42 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595249440;
+        s=2020; t=1595249441;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=kulnhH+Wp4rDHvCAGfQEYy4bp3CPSW8DxLhT13DzSG8=;
-        b=dc64ernlezMvJDAwK8mW6wWA+vCj45qSoyLT9B6Y0PCV772IwkeLtH+HQq1bjYGISxfs2a
-        2aX0QT+LOw5FRj+SpR7+rSrA45JF+0aQByPCOYPs83qWfaAA0fvjOydyu6i/hD5TxphM31
-        ngWfqu6LPskunKe065H62/N9Mo9F1m0tgQxtMT5AjARLoP4C6XQP4KtBMK1OQ/A9R4hPse
-        M60A4UkwJ/TEUVCftPUCrKWYAPLQGTlwMHPR1f/7tEWhGgDarf1cAMGob740tl3AIp6wS+
-        QmvdhdDDSgUuZ0rMj1h5QdQKOmB7e9iGX5rSEeIkPQntlmKhIdfcyOhtNUI8xg==
+        bh=CB5H/YHGiCyYzTr4iglevitlMOepA1m6Hp8M8xP/Zcw=;
+        b=VNGH+WeW7XyE6iv6uKO8KcHM0OAirZVPw+HHF0T0/bcv48RBO0ckGKlkB5fVhwBXKOtf0g
+        UXpabsT3V+2mNNRhCA6ZoYEOIzHb+F1HcAhgJtneqMMw9aLp50wJpk+yrxczOqbrWjcwrg
+        WgIX7Y6zIUZIGGi9imcUidEtXX4Va4jKsPebO1HVk2Z2PZoTemkklLk48lqI9SERyPoNKH
+        hA4tR5/g7ui5Y22HfVPznJoY/J58YOBFGZXpYf70BLEyYWiMva5yoV2gNcfV1z96Bxki+M
+        9JvV3LDbWM4rADXk8dzUfLeMMDKLuU6H2O/QqGWXsujl9269DjmM3lZFxJGqoQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595249440;
+        s=2020e; t=1595249441;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=kulnhH+Wp4rDHvCAGfQEYy4bp3CPSW8DxLhT13DzSG8=;
-        b=eHHyHpMA5gl7o7yItOR2RwjP5eq1tadpR8WUnmbyLLm7MhdOd6n9X4eHx7FUR2aE8hgoVg
-        vEVbrQVV/JYV2yDQ==
+        bh=CB5H/YHGiCyYzTr4iglevitlMOepA1m6Hp8M8xP/Zcw=;
+        b=rRa5puuGs4dFxAOEOVk4GHxLZc7qyq/7YN4X4YuMJfd5CsjHERs5YaHOxAdaJBOk2clIhj
+        eG5URipdCn60X+Cw==
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -40,9 +43,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v2 2/3] dt-bindings: net: dsa: Let dsa.txt refer to dsa.yaml
-Date:   Mon, 20 Jul 2020 14:49:38 +0200
-Message-Id: <20200720124939.4359-3-kurt@linutronix.de>
+Subject: [PATCH v2 3/3] net: dsa: of: Allow ethernet-ports as encapsulating node
+Date:   Mon, 20 Jul 2020 14:49:39 +0200
+Message-Id: <20200720124939.4359-4-kurt@linutronix.de>
 In-Reply-To: <20200720124939.4359-1-kurt@linutronix.de>
 References: <20200720124939.4359-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -52,280 +55,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DSA bindings have been converted to YAML. Therefore, the old text style
-documentation should refer to that one.
-
-The text file can be removed completely once all the existing DSA switch
-bindings have been converted as well.
+Due to unified Ethernet Switch Device Tree Bindings allow for ethernet-ports as
+encapsulating node as well.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- .../devicetree/bindings/net/dsa/dsa.txt       | 255 +-----------------
- 1 file changed, 1 insertion(+), 254 deletions(-)
+ net/dsa/dsa2.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.txt b/Documentation/devicetree/bindings/net/dsa/dsa.txt
-index f66bb7ecdb82..bf7328aba330 100644
---- a/Documentation/devicetree/bindings/net/dsa/dsa.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/dsa.txt
-@@ -1,257 +1,4 @@
- Distributed Switch Architecture Device Tree Bindings
- ----------------------------------------------------
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index e055efff390b..c0ffc7a2b65f 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -727,8 +727,12 @@ static int dsa_switch_parse_ports_of(struct dsa_switch *ds,
  
--Switches are true Linux devices and can be probed by any means. Once
--probed, they register to the DSA framework, passing a node
--pointer. This node is expected to fulfil the following binding, and
--may contain additional properties as required by the device it is
--embedded within.
--
--Required properties:
--
--- ports		: A container for child nodes representing switch ports.
--
--Optional properties:
--
--- dsa,member	: A two element list indicates which DSA cluster, and position
--		  within the cluster a switch takes. <0 0> is cluster 0,
--		  switch 0. <0 1> is cluster 0, switch 1. <1 0> is cluster 1,
--		  switch 0. A switch not part of any cluster (single device
--		  hanging off a CPU port) must not specify this property
--
--The ports container has the following properties
--
--Required properties:
--
--- #address-cells	: Must be 1
--- #size-cells		: Must be 0
--
--Each port children node must have the following mandatory properties:
--- reg			: Describes the port address in the switch
--
--An uplink/downlink port between switches in the cluster has the following
--mandatory property:
--
--- link			: Should be a list of phandles to other switch's DSA
--			  port. This port is used as the outgoing port
--			  towards the phandle ports. The full routing
--			  information must be given, not just the one hop
--			  routes to neighbouring switches.
--
--A CPU port has the following mandatory property:
--
--- ethernet		: Should be a phandle to a valid Ethernet device node.
--                          This host device is what the switch port is
--			  connected to.
--
--A user port has the following optional property:
--
--- label			: Describes the label associated with this port, which
--                          will become the netdev name.
--
--Port child nodes may also contain the following optional standardised
--properties, described in binding documents:
--
--- phy-handle		: Phandle to a PHY on an MDIO bus. See
--			  Documentation/devicetree/bindings/net/ethernet.txt
--			  for details.
--
--- phy-mode		: See
--			  Documentation/devicetree/bindings/net/ethernet.txt
--			  for details.
--
--- fixed-link		: Fixed-link subnode describing a link to a non-MDIO
--			  managed entity. See
--			  Documentation/devicetree/bindings/net/fixed-link.txt
--			  for details.
--
--The MAC address will be determined using the optional properties
--defined in ethernet.txt.
--
--Example
--
--The following example shows three switches on three MDIO busses,
--linked into one DSA cluster.
--
--&mdio1 {
--	#address-cells = <1>;
--	#size-cells = <0>;
--
--	switch0: switch0@0 {
--		compatible = "marvell,mv88e6085";
--		reg = <0>;
--
--		dsa,member = <0 0>;
--
--		ports {
--			#address-cells = <1>;
--			#size-cells = <0>;
--			port@0 {
--				reg = <0>;
--				label = "lan0";
--			};
--
--			port@1 {
--				reg = <1>;
--				label = "lan1";
--				local-mac-address = [00 00 00 00 00 00];
--			};
--
--			port@2 {
--				reg = <2>;
--				label = "lan2";
--			};
--
--			switch0port5: port@5 {
--				reg = <5>;
--				phy-mode = "rgmii-txid";
--				link = <&switch1port6
--					&switch2port9>;
--				fixed-link {
--					speed = <1000>;
--					full-duplex;
--				};
--			};
--
--			port@6 {
--				reg = <6>;
--				ethernet = <&fec1>;
--				fixed-link {
--					speed = <100>;
--					full-duplex;
--				};
--			};
--		};
--	};
--};
--
--&mdio2 {
--	#address-cells = <1>;
--	#size-cells = <0>;
--
--	switch1: switch1@0 {
--		compatible = "marvell,mv88e6085";
--		reg = <0>;
--
--		dsa,member = <0 1>;
--
--		ports {
--			#address-cells = <1>;
--			#size-cells = <0>;
--			port@0 {
--				reg = <0>;
--				label = "lan3";
--				phy-handle = <&switch1phy0>;
--			};
--
--			port@1 {
--				reg = <1>;
--				label = "lan4";
--				phy-handle = <&switch1phy1>;
--			};
--
--			port@2 {
--				reg = <2>;
--				label = "lan5";
--				phy-handle = <&switch1phy2>;
--			};
--
--			switch1port5: port@5 {
--				reg = <5>;
--				link = <&switch2port9>;
--				phy-mode = "rgmii-txid";
--				fixed-link {
--					speed = <1000>;
--					full-duplex;
--				};
--			};
--
--			switch1port6: port@6 {
--				reg = <6>;
--				phy-mode = "rgmii-txid";
--				link = <&switch0port5>;
--				fixed-link {
--					speed = <1000>;
--					full-duplex;
--				};
--			};
--		};
--		mdio-bus {
--			#address-cells = <1>;
--			#size-cells = <0>;
--			switch1phy0: switch1phy0@0 {
--				reg = <0>;
--			};
--			switch1phy1: switch1phy0@1 {
--				reg = <1>;
--			};
--			switch1phy2: switch1phy0@2 {
--				reg = <2>;
--			};
--		};
--	 };
--};
--
--&mdio4 {
--	#address-cells = <1>;
--	#size-cells = <0>;
--
--	switch2: switch2@0 {
--		compatible = "marvell,mv88e6085";
--		reg = <0>;
--
--		dsa,member = <0 2>;
--
--		ports {
--			#address-cells = <1>;
--			#size-cells = <0>;
--			port@0 {
--				reg = <0>;
--				label = "lan6";
--			};
--
--			port@1 {
--				reg = <1>;
--				label = "lan7";
--			};
--
--			port@2 {
--				reg = <2>;
--				label = "lan8";
--			};
--
--			port@3 {
--				reg = <3>;
--				label = "optical3";
--				fixed-link {
--					speed = <1000>;
--					full-duplex;
--					link-gpios = <&gpio6 2
--					      GPIO_ACTIVE_HIGH>;
--				};
--			};
--
--			port@4 {
--				reg = <4>;
--				label = "optical4";
--				fixed-link {
--					speed = <1000>;
--					full-duplex;
--					link-gpios = <&gpio6 3
--					      GPIO_ACTIVE_HIGH>;
--				};
--			};
--
--			switch2port9: port@9 {
--				reg = <9>;
--				phy-mode = "rgmii-txid";
--				link = <&switch1port5
--					&switch0port5>;
--				fixed-link {
--					speed = <1000>;
--					full-duplex;
--				};
--			};
--		};
--	};
--};
-+See Documentation/devicetree/bindings/net/dsa/dsa.yaml for the documenation.
+ 	ports = of_get_child_by_name(dn, "ports");
+ 	if (!ports) {
+-		dev_err(ds->dev, "no ports child node found\n");
+-		return -EINVAL;
++		/* The second possibility is "ethernet-ports" */
++		ports = of_get_child_by_name(dn, "ethernet-ports");
++		if (!ports) {
++			dev_err(ds->dev, "no ports child node found\n");
++			return -EINVAL;
++		}
+ 	}
+ 
+ 	for_each_available_child_of_node(ports, port) {
 -- 
 2.20.1
 
