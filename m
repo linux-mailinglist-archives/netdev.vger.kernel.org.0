@@ -2,106 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FD4C226FE9
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 22:48:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 320AF227015
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 22:57:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728969AbgGTUsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 16:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
+        id S1726658AbgGTU5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 16:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726012AbgGTUsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 16:48:01 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3549C061794;
-        Mon, 20 Jul 2020 13:48:01 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id md7so536206pjb.1;
-        Mon, 20 Jul 2020 13:48:01 -0700 (PDT)
+        with ESMTP id S1726012AbgGTU47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 16:56:59 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD6DC061794
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 13:56:59 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id gc9so478602pjb.2
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 13:56:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=W3gFxb9MTLvTnCe3A+iabUWXBAu7mA9HyhZHWgTOkUw=;
-        b=OGmrrLECo+9bEWcObjspsB7mZd1Knz6TplGXozOrISTfqD7/NX21SXnbWcSkV3fL4v
-         rTtVk5lWAA2Zu7uZ6u1mrfxhancqzyg3QAj3aPjlEycGVWZJlozkhUGEvXA8Lh3Zhd9y
-         MI2pFWCUVAw0qhoczi2fzDR5o+9jsXf0u50JS+cFIfuTYX6fdThXqy7BkTGCK/dg3wkY
-         mbds6x2z1GfwvAA0D5GwOBd9MLDFeCqWgb4tYptazoXAosQDHX7Ytsgw6xoiVQCij+q6
-         LhYcFToAHR8FWmsf1prWh4sudrDF50FXVoAgPYMNb7eWHKWg9zXFnQitJW8+uw6BZBn8
-         8EhQ==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yJ/tpvydDMz3twTYDJaAWaLUOCGbbQA7F9t0js/9ubo=;
+        b=LMkWN3sMUU3w+Zpa3p4GKsHoJNFENcMaDdvt9aU9XWldoN3wW8WnX1d18uP7IkxXf0
+         8qlyHT8vbm3QGQdwM8TfrYm2M22oH40YkwbbFU0b6Pt/RoLRaPoWrVvVFlo86V5o8lnM
+         B9geSxKFKZ12Yf3/7CadewCiEdVLiGJ7pSvGCY+1QuXpD+Gpt0l+37s0tDGsUE1BTIdJ
+         QejJBGbHYfWXM4f+ewmbGRtT6Z6sYwz5OfTGSfrZvPSc2oL11iiWhynXBbOgdd4Bnnm+
+         AxVMqY54R1kaS6HelhqnNwbfRUZ9d88V/X5h7/LLYjtfcMORcZi/+6kqziOpLF6vLrAB
+         mY9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=W3gFxb9MTLvTnCe3A+iabUWXBAu7mA9HyhZHWgTOkUw=;
-        b=NmiT+9oS9uGFkHRMP8aKc0bdouhlF+z3N5dmTZmMvJTuQlavya2QOjW9QZluOBDMSN
-         Bf8iOVH8ZwsENeYxwjEQZujdZFojbyI5o/gyN8uqRyJGsRUd4CmnulXJhw4+Gy1N/tQM
-         4ju/0yxyaquisGWKaNo8IDmPDegmXL1hE7sGBPd37CAuuHg4bE7IRXJLKd5HezY+6rbI
-         57Abyx0O6OS1c4sJpbqMwZFxec+2L4ngp4CDZv566S1w3ZjoKKvtWYtElQPsITi+GpaX
-         QeoAbDjDDjufLbC3qeDlBil3FMgGdXH7tdt3RJ0ZPfbGcZ8VCfWS6QkfnGtmwRWsDlu/
-         2GXQ==
-X-Gm-Message-State: AOAM532xzswQCE9EmiTk87sBNFqaRV6lXN9+OTa+JTpTX2JXZ3mv7RA8
-        Lqgsib0ge2mJ4jEvgoQdL6o=
-X-Google-Smtp-Source: ABdhPJznKJm/ctwfQ0zEUlKph93VMIYlrMPvmwUzvON4KJd0PPoASWmZCQzIIZBDlRvR10ywRtQVEg==
-X-Received: by 2002:a17:902:a50d:: with SMTP id s13mr19573067plq.149.1595278081037;
-        Mon, 20 Jul 2020 13:48:01 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e3b])
-        by smtp.gmail.com with ESMTPSA id m31sm455776pjb.52.2020.07.20.13.47.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yJ/tpvydDMz3twTYDJaAWaLUOCGbbQA7F9t0js/9ubo=;
+        b=ojiH74VptfaoWoWBXjyU8OY5+QhEz4BkQIs9c0wOzcQuAP0AnaXpMOXEM3WhjT+hmq
+         6Vf8fJIKUYtCHI4lDIvT4AQzoGY+keTPl4kzEDVZphHzpJ6JBy10oWj9uo6E2jfgUsIY
+         xwZ2uwaZExiMMiBEEHkcoJp35n1zh2bHCrpsfpqvpazwLKFoaDZPPiZRyMqFmgTp/6+g
+         z6T/m5xvZqw55vkVlwZdhz1lNq+zGL/1eXjilPogGsSJpaPQgSkTW3xlhRnLFJeI1I1a
+         bvTO3vcaeeef6UExd2Agjt7yo83RDERnyQdgo5tdjYEi3Bxygo7/AFWoVqzZSisKBo23
+         jdsw==
+X-Gm-Message-State: AOAM5333xO6TTQk0HMe2deMrHM6NlrhofyoLuf5WfwtleJL7RC22hHT7
+        aRKC1x3WPqbZ3ezvUM7hNO9Trw==
+X-Google-Smtp-Source: ABdhPJwT+gAR9vIZr/AMDE2WT/mxAc7CINRzqUbjbWq7crAyMx4DmBGZkdkZ/TvJvmiFIEYFa/OJqg==
+X-Received: by 2002:a17:90a:8d12:: with SMTP id c18mr1155557pjo.222.1595278618823;
+        Mon, 20 Jul 2020 13:56:58 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id a30sm18161011pfr.87.2020.07.20.13.56.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 13:47:59 -0700 (PDT)
-Date:   Mon, 20 Jul 2020 13:47:56 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        Mon, 20 Jul 2020 13:56:58 -0700 (PDT)
+Date:   Mon, 20 Jul 2020 13:56:50 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     "Sriram Krishnan (srirakr2)" <srirakr2@cisco.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-sctp@vger.kernel.org, linux-hams@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-can@vger.kernel.org, dccp@vger.kernel.org,
-        linux-decnet-user@lists.sourceforge.net,
-        linux-wpan@vger.kernel.org, linux-s390@vger.kernel.org,
-        mptcp@lists.01.org, lvs-devel@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-afs@lists.infradead.org,
-        tipc-discussion@lists.sourceforge.net, linux-x25@vger.kernel.org
-Subject: Re: get rid of the address_space override in setsockopt
-Message-ID: <20200720204756.iengwcguikj2yrxt@ast-mbp.dhcp.thefacebook.com>
-References: <20200720124737.118617-1-hch@lst.de>
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "Malcolm Bumgardner (mbumgard)" <mbumgard@cisco.com>
+Subject: Re: [PATCH v2] AF_PACKET doesnt strip VLAN information
+Message-ID: <20200720135650.1939665b@hermes.lan>
+In-Reply-To: <CAF=yD-+gCkPVkXwcH6KiKYGV77TvpZiDo=3YyXeuGFk=TR2dcw@mail.gmail.com>
+References: <20200718091732.8761-1-srirakr2@cisco.com>
+        <CA+FuTSdfvctFD3AVMHzQV9efQERcKVE1TcYVD_T84eSgq9x4OA@mail.gmail.com>
+        <CY4PR1101MB21013DCD55B754E29AF4A838907B0@CY4PR1101MB2101.namprd11.prod.outlook.com>
+        <CAF=yD-+gCkPVkXwcH6KiKYGV77TvpZiDo=3YyXeuGFk=TR2dcw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200720124737.118617-1-hch@lst.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 02:47:13PM +0200, Christoph Hellwig wrote:
-> Hi Dave,
-> 
-> setsockopt is the last place in architecture-independ code that still
-> uses set_fs to force the uaccess routines to operate on kernel pointers.
-> 
-> This series adds a new sockptr_t type that can contained either a kernel
-> or user pointer, and which has accessors that do the right thing, and
-> then uses it for setsockopt, starting by refactoring some low-level
-> helpers and moving them over to it before finally doing the main
-> setsockopt method.
-> 
-> Note that I could not get the eBPF selftests to work, so this has been
-> tested with a testing patch that always copies the data first and passes
-> a kernel pointer.  This is something that works for most common sockopts
-> (and is something that the ePBF support relies on), but unfortunately
-> in various corner cases we either don't use the passed in length, or in
-> one case actually copy data back from setsockopt, so we unfortunately
-> can't just always do the copy in the highlevel code, which would have
-> been much nicer.
+On Mon, 20 Jul 2020 09:52:27 -0400
+Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
 
-could you rebase on bpf-next tree and we can route it this way then?
-we'll also test the whole thing before applying.
+> On Mon, Jul 20, 2020 at 12:27 AM Sriram Krishnan (srirakr2)
+> <srirakr2@cisco.com> wrote:
+> >
+> > +Stephen Hemminger
+> >
+> > Hi Willem,
+> > Thanks for looking into the code, I understand that this is more of a generic problem wherein many of the filtering functions assume the vlan tag to be in the skb rather than in the packet. Hence we moved the fix from the driver to the common AF packet that our solution uses.
+> >
+> > I recall from the v1 of the patch you had mentioned other common areas where this fix might be relevant (such as tap/tun), but I'm afraid I cant comprehensively test those patches out. Please let me know your thoughts  
+> 
+> Please use plain text to respond. HTML replies do not reach the list.
+> 
+> Can you be more precise in which other code besides the hyper-v driver
+> is affected? Do you have an example?
+> 
+> This is a resubmit of the original patch. My previous
+> questions/concerns remain valid:
+> 
+> - if the function can now fail, all callers must be updated to detect
+> and handle that
+> 
+> - any solution should probably address all inputs into the tx path:
+> packet sockets, tuntap, virtio-net
+> 
+> - this only addresses packet sockets with ETH_P_ALL/ETH_P_NONE. Not
+> sockets that set ETH_P_8021Q
+> 
+> - which code in the transmit stack requires the tag to be in the skb,
+> and does this problem after this patch still persist for Q-in-Q?
 
-sounds like v2 is needed anyway to address Eric's addr space concern?
+It matters because the problem is generic, not just to the netvsc driver.
+For example, BPF programs and netfilter rules will see different packets
+when send is through AF_PACKET than they would see for sends from the
+kernel stack.
+
+Presenting uniform data to the lower layers makes sense.
