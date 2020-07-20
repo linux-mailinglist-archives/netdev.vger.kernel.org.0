@@ -2,125 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A46372257FC
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 08:48:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCB922257F3
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 08:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbgGTGsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 02:48:03 -0400
-Received: from alln-iport-2.cisco.com ([173.37.142.89]:30118 "EHLO
-        alln-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbgGTGsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 02:48:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=1707; q=dns/txt; s=iport;
-  t=1595227680; x=1596437280;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=byr/MAygEM0MedQECxXtdIpfSxr3lPP0gIf8gclOIBE=;
-  b=iO/Thfgtlv2EyK1VPRJkeMpeOwVeqQW3m2Xa9NX5zWyL+1LwNbU7XmlT
-   kuusBxCOPuQDUPQvxWy1cCddaSNovOCD2CGL3o+7oVUGZJvpuSRCfbtA7
-   Cz+wpoIPFd5qq8VYSF6AxpNXPFKrN79M3RxwISGomjf61u1rUt4MPrK7m
-   c=;
+        id S1726735AbgGTGim (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 02:38:42 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:4452 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726520AbgGTGil (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 02:38:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1595227122; x=1626763122;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=R4jL1jut1jCNCp3l/7tMkBB8YQEOUGJTQevNPAD7i4k=;
+  b=BFCoaiX7WgbVIdrZjbbjCZpkDdsOE5t6XMwpXyoeyK4KhPXl3vXLU2ne
+   pzWEQrbyZXSS5JjtjruOjNh14WJzL11UM7C0V/qAdHhV6EmHlL0yLkF7W
+   40i/SMv4fSxhaeFKH8Zz08Ds23Yh933CKgUYkpHMKIAItcSjIXVKnqRHk
+   g=;
+IronPort-SDR: dtMT/GYKR2F/RvGS/GvaTaC9Rlgl9C1tV0iVshfCmR0b4ZErGPMvd8JgrPDiEYKKfTHGN0oYrR
+ d08AxqErckiw==
 X-IronPort-AV: E=Sophos;i="5.75,374,1589241600"; 
-   d="scan'208";a="532405819"
-Received: from rcdn-core-3.cisco.com ([173.37.93.154])
-  by alln-iport-2.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 20 Jul 2020 06:48:00 +0000
-Received: from 240m5avmarch.cisco.com (240m5avmarch.cisco.com [10.193.164.12])
-        (authenticated bits=0)
-        by rcdn-core-3.cisco.com (8.15.2/8.15.2) with ESMTPSA id 06K6lqaR029533
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
-        Mon, 20 Jul 2020 06:47:59 GMT
-From:   Govindarajulu Varadarajan <gvaradar@cisco.com>
-To:     netdev@vger.kernel.org, edumazet@google.com,
-        linville@tuxdriver.com, mkubecek@suse.cz
-Cc:     govind.varadar@gmail.com, benve@cisco.com,
-        Govindarajulu Varadarajan <gvaradar@cisco.com>
-Subject: [PATCH ethtool v3 2/2] man: add man page for ETHTOOL_GTUNABLE and ETHTOOL_STUNABLE
-Date:   Sun, 19 Jul 2020 16:59:28 -0700
-Message-Id: <20200719235928.336953-2-gvaradar@cisco.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200719235928.336953-1-gvaradar@cisco.com>
-References: <20200719235928.336953-1-gvaradar@cisco.com>
+   d="scan'208";a="59738372"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-cc689b93.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 20 Jul 2020 06:38:39 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2c-cc689b93.us-west-2.amazon.com (Postfix) with ESMTPS id 3EC20120F02;
+        Mon, 20 Jul 2020 06:38:38 +0000 (UTC)
+Received: from EX13D28EUC001.ant.amazon.com (10.43.164.4) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 20 Jul 2020 06:38:37 +0000
+Received: from ua97a68a4e7db56.ant.amazon.com.amazon.com (10.43.162.221) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 20 Jul 2020 06:38:32 +0000
+References: <20200720025309.18597-1-wanghai38@huawei.com> <f31ec3e646c9ba73c09f821a173c20110346deab.camel@perches.com>
+User-agent: mu4e 1.4.10; emacs 26.3
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Joe Perches <joe@perches.com>
+CC:     Wang Hai <wanghai38@huawei.com>, <gtzalik@amazon.com>,
+        <saeedb@amazon.com>, <zorik@amazon.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <sameehj@amazon.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2] net: ena: Fix using plain integer as NULL pointer in ena_init_napi_in_range
+In-Reply-To: <f31ec3e646c9ba73c09f821a173c20110346deab.camel@perches.com>
+Date:   Mon, 20 Jul 2020 09:38:26 +0300
+Message-ID: <pj41zllfjebsil.fsf@ua97a68a4e7db56.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-User: gvaradar@cisco.com
-X-Outbound-SMTP-Client: 10.193.164.12, 240m5avmarch.cisco.com
-X-Outbound-Node: rcdn-core-3.cisco.com
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.162.221]
+X-ClientProxiedBy: EX13D13UWB003.ant.amazon.com (10.43.161.233) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Govindarajulu Varadarajan <gvaradar@cisco.com>
----
-v3:
-Document special values 0 (disabled) and 65535 (auto) for
-pfc-prevention-tout.
 
-v2:
-Add description
+Joe Perches <joe@perches.com> writes:
 
- ethtool.8.in | 40 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 40 insertions(+)
+> On Mon, 2020-07-20 at 10:53 +0800, Wang Hai wrote:
+>> Fix sparse build warning:
+>> 
+>> drivers/net/ethernet/amazon/ena/ena_netdev.c:2193:34: warning:
+>>  Using plain integer as NULL pointer
+> []
+>> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
+>> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> []
+>> @@ -2190,11 +2190,10 @@ static void 
+>> ena_del_napi_in_range(struct ena_adapter *adapter,
+>>  static void ena_init_napi_in_range(struct ena_adapter 
+>>  *adapter,
+>>  				   int first_index, int count)
+>>  {
+>> -	struct ena_napi *napi = {0};
+>>  	int i;
+>>  
+>>  	for (i = first_index; i < first_index + count; i++) {
+>> -		napi = &adapter->ena_napi[i];
+>> +		struct ena_napi *napi = &adapter->ena_napi[i];
+>>  
+>>  		netif_napi_add(adapter->netdev,
+>>  			       &adapter->ena_napi[i].napi,
+>
+> Another possible change is to this statement:
+>
+>  		netif_napi_add(adapter->netdev,
+> 			       &napi->napi,
+> 			       etc...);
 
-diff --git a/ethtool.8.in b/ethtool.8.in
-index 689822e..1c93501 100644
---- a/ethtool.8.in
-+++ b/ethtool.8.in
-@@ -398,6 +398,18 @@ ethtool \- query or control network driver and hardware settings
- .RB [ fast-link-down ]
- .RB [ energy-detect-power-down ]
- .HP
-+.B ethtool \-\-get\-tunable
-+.I devname
-+.RB [ rx-copybreak ]
-+.RB [ tx-copybreak ]
-+.RB [ pfc-prevention-tout ]
-+.HP
-+.B ethtool \-\-set\-tunable
-+.I devname
-+.BN rx\-copybreak
-+.BN tx\-copybreak
-+.BN pfc\-prevention\-tout
-+.HP
- .B ethtool \-\-reset
- .I devname
- .BN flags
-@@ -1211,6 +1223,34 @@ Gets the PHY Fast Link Down status / period.
- .B energy\-detect\-power\-down
- Gets the current configured setting for Energy Detect Power Down (if supported).
- 
-+.RE
-+.TP
-+.B \-\-get\-tunable
-+Get the tunable parameters.
-+.RS 4
-+.TP
-+.B rx\-copybreak
-+Get the current rx copybreak value in bytes.
-+.TP
-+.B tx\-copybreak
-+Get the current tx copybreak value in bytes.
-+.TP
-+.B pfc\-prevention\-tout
-+Get the current pfc prevention timeout value in msecs.
-+.RE
-+.TP
-+.B \-\-set\-tunable
-+Set driver's tunable parameters.
-+.RS 4
-+.TP
-+.BI rx\-copybreak \ N
-+Set the rx copybreak value in bytes.
-+.TP
-+.BI tx\-copybreak \ N
-+Set the tx copybreak value in bytes.
-+.TP
-+.BI pfc\-prevention\-tout \ N
-+Set pfc prevention timeout in msecs. Value of 0 means disable and 65535 means auto.
- .RE
- .TP
- .B \-\-reset
--- 
-2.27.0
+Yup, missed that myself. Wang, if you don't mind please apply 
+Joe's change as well.
 
+Thanks, Shay
