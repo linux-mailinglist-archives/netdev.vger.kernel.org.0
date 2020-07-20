@@ -2,131 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83DE82258F0
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 09:50:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E655225988
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 09:58:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726389AbgGTHuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 03:50:07 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:36313 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725815AbgGTHuH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 03:50:07 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id DF05F5C018D;
-        Mon, 20 Jul 2020 03:50:05 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 20 Jul 2020 03:50:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=OLSM8W
-        H1RpFOpDWh6lkvgoQETXsbuQm9lUlUSotQXIE=; b=JtWv6RawvEWiNGVWAnDglb
-        KH76OaxIlY9xtl3q4OEp7p2n/YJOpw4AuVaKqw7WYqosIZslWJWFAFyCT8ea5nU6
-        SuCeoqUml/K3VasKyxxypCU2ZzVXqwafPBb17MSLzAoWZW+VJYlldC0ZHAHAzXdZ
-        ZXHEVZFcMH5aEnwfdE2n1s1YefKZmPCtBuqs7R6aM0DJ5l2A53IPQOyT8XaEfJcc
-        2t7Nh2HxPwbSYxlIzwx2s8JS+xZapd8BsczPQnIEO53oLsQfrmkPbCq4Xkgzjk2p
-        RRZ39HYpAfVwGwn05x02JJHsrwLhvBtH8ppqMTCLUfRZ6k5ddJaroSSREZo8YN5g
-        ==
-X-ME-Sender: <xms:rUwVX92KlLI8nTwhK-Uoszwi95GS3yyDfKro3EPuUnsReGV-XqtT_A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrgedvgdduudegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepjeelrddukedurdefjedrkedvnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:rUwVX0HKs28KTdL-rCekUOzVJKKnfhSFADYGss1CJwrXDyLc0Rln0A>
-    <xmx:rUwVX97bj-Cqsc-Zy6KvWxpEAYWiKtzIZgRtmmVyYx3018olfEBdCw>
-    <xmx:rUwVX619VVZRglKz6mqj2Ve8wRHagFST7UhZ8SXESdduqp34JtsRBw>
-    <xmx:rUwVX0ASW-IaII8OuEAAO57EpMgjZjP-jyX5LQOkGAqH5uVkoSLNRg>
-Received: from localhost (bzq-79-181-37-82.red.bezeqint.net [79.181.37.82])
-        by mail.messagingengine.com (Postfix) with ESMTPA id EFE52328005E;
-        Mon, 20 Jul 2020 03:50:04 -0400 (EDT)
-Date:   Mon, 20 Jul 2020 10:50:00 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, idosch@mellanox.com,
-        mlxsw@mellanox.com
-Subject: Re: [patch net-next] sched: sch_api: add missing rcu read lock to
- silence the warning
-Message-ID: <20200720075000.GA352399@shredder>
-References: <20200720072248.6184-1-jiri@resnulli.us>
+        id S1727120AbgGTH5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 03:57:53 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7788 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726254AbgGTH5w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 03:57:52 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 09BFAF405D2241A1E172;
+        Mon, 20 Jul 2020 15:57:44 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Mon, 20 Jul 2020
+ 15:57:41 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <joe@perches.com>, <shayagr@amazon.com>, <gtzalik@amazon.com>,
+        <saeedb@amazon.com>, <zorik@amazon.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <sameehj@amazon.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next v3] net: ena: Fix using plain integer as NULL pointer in ena_init_napi_in_range
+Date:   Mon, 20 Jul 2020 15:56:14 +0800
+Message-ID: <20200720075614.35676-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200720072248.6184-1-jiri@resnulli.us>
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 09:22:48AM +0200, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> In case the qdisc_match_from_root function() is called from non-rcu path
-> with rtnl mutex held, a suspiciout rcu usage warning appears:
-> 
-> [  241.504354] =============================
-> [  241.504358] WARNING: suspicious RCU usage
-> [  241.504366] 5.8.0-rc4-custom-01521-g72a7c7d549c3 #32 Not tainted
-> [  241.504370] -----------------------------
-> [  241.504378] net/sched/sch_api.c:270 RCU-list traversed in non-reader section!!
-> [  241.504382]
->                other info that might help us debug this:
-> [  241.504388]
->                rcu_scheduler_active = 2, debug_locks = 1
-> [  241.504394] 1 lock held by tc/1391:
-> [  241.504398]  #0: ffffffff85a27850 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x49a/0xbd0
-> [  241.504431]
->                stack backtrace:
-> [  241.504440] CPU: 0 PID: 1391 Comm: tc Not tainted 5.8.0-rc4-custom-01521-g72a7c7d549c3 #32
-> [  241.504446] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-2.fc32 04/01/2014
-> [  241.504453] Call Trace:
-> [  241.504465]  dump_stack+0x100/0x184
-> [  241.504482]  lockdep_rcu_suspicious+0x153/0x15d
-> [  241.504499]  qdisc_match_from_root+0x293/0x350
-> 
-> Fix this by taking the rcu_lock for qdisc_hash iteration.
-> 
-> Reported-by: Ido Schimmel <idosch@mellanox.com>
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-> ---
->  net/sched/sch_api.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-> index 11ebba60da3b..c7cfd8dc6a77 100644
-> --- a/net/sched/sch_api.c
-> +++ b/net/sched/sch_api.c
-> @@ -267,10 +267,12 @@ static struct Qdisc *qdisc_match_from_root(struct Qdisc *root, u32 handle)
->  	    root->handle == handle)
->  		return root;
->  
-> +	rcu_read_lock();
->  	hash_for_each_possible_rcu(qdisc_dev(root)->qdisc_hash, q, hash, handle) {
->  		if (q->handle == handle)
->  			return q;
+Fix sparse build warning:
 
-You don't unlock here, but I'm not sure it's the best fix. It's weird to
-return an object from an RCU critical section without taking a
-reference. It can also hide a bug if someone calls
-qdisc_match_from_root() without RTNL or RCU.
+drivers/net/ethernet/amazon/ena/ena_netdev.c:2193:34: warning:
+ Using plain integer as NULL pointer
 
-hash_for_each_possible_rcu() is basically hlist_for_each_entry_rcu()
-which already accepts:
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Suggested-by: Joe Perches <joe@perches.com>
+Acked-by: Shay Agroskin <shayagr@amazon.com>
+---
+v1->v2:
+ Improve code readability based on Joe Perches's suggestion 
+v2->v3:
+ Simplify code based on Joe Perches's suggestion
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-@cond:       optional lockdep expression if called from non-RCU protection.
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 91be3ffa1c5c..3eb63b12dd68 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -2190,14 +2190,13 @@ static void ena_del_napi_in_range(struct ena_adapter *adapter,
+ static void ena_init_napi_in_range(struct ena_adapter *adapter,
+ 				   int first_index, int count)
+ {
+-	struct ena_napi *napi = {0};
+ 	int i;
+ 
+ 	for (i = first_index; i < first_index + count; i++) {
+-		napi = &adapter->ena_napi[i];
++		struct ena_napi *napi = &adapter->ena_napi[i];
+ 
+ 		netif_napi_add(adapter->netdev,
+-			       &adapter->ena_napi[i].napi,
++			       &napi->napi,
+ 			       ENA_IS_XDP_INDEX(adapter, i) ? ena_xdp_io_poll : ena_io_poll,
+ 			       ENA_NAPI_BUDGET);
+ 
+-- 
+2.17.1
 
-So maybe extend hash_for_each_possible_rcu() with 'cond' and pass a
-lockdep expression to see if RTNL is held?
-
->  	}
-> +	rcu_read_unlock();
->  	return NULL;
->  }
->  
-> -- 
-> 2.21.3
-> 
