@@ -2,117 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC2622268D3
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 446E2226978
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387481AbgGTQVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 12:21:21 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:44543 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388350AbgGTQVS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:21:18 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jxYXS-0006Tl-9I; Mon, 20 Jul 2020 16:21:14 +0000
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        id S1729925AbgGTQ0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 12:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729911AbgGTQ0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:26:12 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA892C061794
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 09:26:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=RcI3fGc+LFH7IXsg15I/rJUriv3F5gq1TEvrMG1jvIk=; b=BoGClCp+CnfFKjqsu689yqoCz
+        Q3F5pD2wcJUssSSQBQ/+jwFLD675MehyWOIy13NQz2I3OHRrjYWt4sIpxk1Wh/U3kJ/CvBNoWazSC
+        XtWYQ2c2Kp/7kqGZrxbVMyyXio6JJsf+/PvsUSCB6YeF6vlCvz9NYD0Xki44o96yQlmWkX682otTb
+        pDUOCwJgBnyhoRHhIM2nTlet0O4SguI1d6BVVRw86exc8ZidRem93lqgLI1y+M1k4ddqifUrr3Jhq
+        SvUhyptHQ9fFWnY5v5XGi/hVb35inj+ZAoOx6PnKx+BTBYqpjuU6c00IvuUumvqNbgcd0qBskkqtl
+        UI1mM4a0g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41956)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jxYc8-0003KL-6G; Mon, 20 Jul 2020 17:26:04 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jxYc4-00057J-SH; Mon, 20 Jul 2020 17:26:00 +0100
+Date:   Mon, 20 Jul 2020 17:26:00 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- mQINBE6TJCgBEACo6nMNvy06zNKj5tiwDsXXS+LhT+LwtEsy9EnraKYXAf2xwazcICSjX06e
- fanlyhB0figzQO0n/tP7BcfMVNG7n1+DC71mSyRK1ZERcG1523ajvdZOxbBCTvTitYOy3bjs
- +LXKqeVMhK3mRvdTjjmVpWnWqJ1LL+Hn12ysDVVfkbtuIm2NoaSEC8Ae8LSSyCMecd22d9Pn
- LR4UeFgrWEkQsqROq6ZDJT9pBLGe1ZS0pVGhkRyBP9GP65oPev39SmfAx9R92SYJygCy0pPv
- BMWKvEZS/7bpetPNx6l2xu9UvwoeEbpzUvH26PHO3DDAv0ynJugPCoxlGPVf3zcfGQxy3oty
- dNTWkP6Wh3Q85m+AlifgKZudjZLrO6c+fAw/jFu1UMjNuyhgShtFU7NvEzL3RqzFf9O1qM2m
- uj83IeFQ1FZ65QAiCdTa3npz1vHc7N4uEQBUxyXgXfCI+A5yDnjHwzU0Y3RYS52TA3nfa08y
- LGPLTf5wyAREkFYou20vh5vRvPASoXx6auVf1MuxokDShVhxLpryBnlKCobs4voxN54BUO7m
- zuERXN8kadsxGFzItAyfKYzEiJrpUB1yhm78AecDyiPlMjl99xXk0zs9lcKriaByVUv/NsyJ
- FQj/kmdxox3XHi9K29kopFszm1tFiDwCFr/xumbZcMY17Yi2bQARAQABtCVDb2xpbiBLaW5n
- IDxjb2xpbi5raW5nQGNhbm9uaWNhbC5jb20+iQI2BBMBCAAhBQJOkyQoAhsDBQsJCAcDBRUK
- CQgLBRYCAwEAAh4BAheAAAoJEGjCh9/GqAImsBcP9i6C/qLewfi7iVcOwqF9avfGzOPf7CVr
- n8CayQnlWQPchmGKk6W2qgnWI2YLIkADh53TS0VeSQ7Tetj8f1gV75eP0Sr/oT/9ovn38QZ2
- vN8hpZp0GxOUrzkvvPjpH+zdmKSaUsHGp8idfPpZX7XeBO0yojAs669+3BrnBcU5wW45SjSV
- nfmVj1ZZj3/yBunb+hgNH1QRcm8ZPICpjvSsGFClTdB4xu2AR28eMiL/TTg9k8Gt72mOvhf0
- fS0/BUwcP8qp1TdgOFyiYpI8CGyzbfwwuGANPSupGaqtIRVf+/KaOdYUM3dx/wFozZb93Kws
- gXR4z6tyvYCkEg3x0Xl9BoUUyn9Jp5e6FOph2t7TgUvv9dgQOsZ+V9jFJplMhN1HPhuSnkvP
- 5/PrX8hNOIYuT/o1AC7K5KXQmr6hkkxasjx16PnCPLpbCF5pFwcXc907eQ4+b/42k+7E3fDA
- Erm9blEPINtt2yG2UeqEkL+qoebjFJxY9d4r8PFbEUWMT+t3+dmhr/62NfZxrB0nTHxDVIia
- u8xM+23iDRsymnI1w0R78yaa0Eea3+f79QsoRW27Kvu191cU7QdW1eZm05wO8QUvdFagVVdW
- Zg2DE63Fiin1AkGpaeZG9Dw8HL3pJAJiDe0KOpuq9lndHoGHs3MSa3iyQqpQKzxM6sBXWGfk
- EkK5Ag0ETpMkKAEQAMX6HP5zSoXRHnwPCIzwz8+inMW7mJ60GmXSNTOCVoqExkopbuUCvinN
- 4Tg+AnhnBB3R1KTHreFGoz3rcV7fmJeut6CWnBnGBtsaW5Emmh6gZbO5SlcTpl7QDacgIUuT
- v1pgewVHCcrKiX0zQDJkcK8FeLUcB2PXuJd6sJg39kgsPlI7R0OJCXnvT/VGnd3XPSXXoO4K
- cr5fcjsZPxn0HdYCvooJGI/Qau+imPHCSPhnX3WY/9q5/WqlY9cQA8tUC+7mgzt2VMjFft1h
- rp/CVybW6htm+a1d4MS4cndORsWBEetnC6HnQYwuC4bVCOEg9eXMTv88FCzOHnMbE+PxxHzW
- 3Gzor/QYZGcis+EIiU6hNTwv4F6fFkXfW6611JwfDUQCAHoCxF3B13xr0BH5d2EcbNB6XyQb
- IGngwDvnTyKHQv34wE+4KtKxxyPBX36Z+xOzOttmiwiFWkFp4c2tQymHAV70dsZTBB5Lq06v
- 6nJs601Qd6InlpTc2mjd5mRZUZ48/Y7i+vyuNVDXFkwhYDXzFRotO9VJqtXv8iqMtvS4xPPo
- 2DtJx6qOyDE7gnfmk84IbyDLzlOZ3k0p7jorXEaw0bbPN9dDpw2Sh9TJAUZVssK119DJZXv5
- 2BSc6c+GtMqkV8nmWdakunN7Qt/JbTcKlbH3HjIyXBy8gXDaEto5ABEBAAGJAh8EGAEIAAkF
- Ak6TJCgCGwwACgkQaMKH38aoAiZ4lg/+N2mkx5vsBmcsZVd3ys3sIsG18w6RcJZo5SGMxEBj
- t1UgyIXWI9lzpKCKIxKx0bskmEyMy4tPEDSRfZno/T7p1mU7hsM4owi/ic0aGBKP025Iok9G
- LKJcooP/A2c9dUV0FmygecRcbIAUaeJ27gotQkiJKbi0cl2gyTRlolKbC3R23K24LUhYfx4h
- pWj8CHoXEJrOdHO8Y0XH7059xzv5oxnXl2SD1dqA66INnX+vpW4TD2i+eQNPgfkECzKzGj+r
- KRfhdDZFBJj8/e131Y0t5cu+3Vok1FzBwgQqBnkA7dhBsQm3V0R8JTtMAqJGmyOcL+JCJAca
- 3Yi81yLyhmYzcRASLvJmoPTsDp2kZOdGr05Dt8aGPRJL33Jm+igfd8EgcDYtG6+F8MCBOult
- TTAu+QAijRPZv1KhEJXwUSke9HZvzo1tNTlY3h6plBsBufELu0mnqQvHZmfa5Ay99dF+dL1H
- WNp62+mTeHsX6v9EACH4S+Cw9Q1qJElFEu9/1vFNBmGY2vDv14gU2xEiS2eIvKiYl/b5Y85Q
- QLOHWV8up73KK5Qq/6bm4BqVd1rKGI9un8kezUQNGBKre2KKs6wquH8oynDP/baoYxEGMXBg
- GF/qjOC6OY+U7kNUW3N/A7J3M2VdOTLu3hVTzJMZdlMmmsg74azvZDV75dUigqXcwjE=
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: re: net: phy: continue searching for C45 MMDs even if first returned
- ffff:ffff
-Message-ID: <4131864f-9e3e-9814-5f4d-16c93648bce2@canonical.com>
-Date:   Mon, 20 Jul 2020 17:21:13 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH RFC net-next 12/13] net: phylink: add struct phylink_pcs
+Message-ID: <20200720162600.GW1551@shell.armlinux.org.uk>
+References: <20200630142754.GC1551@shell.armlinux.org.uk>
+ <E1jqHGO-0006QN-Hw@rmk-PC.armlinux.org.uk>
+ <VI1PR0402MB3871010E01CD0C6BADC04520E07B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR0402MB3871010E01CD0C6BADC04520E07B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Mon, Jul 20, 2020 at 03:50:57PM +0000, Ioana Ciornei wrote:
+> On 6/30/20 5:29 PM, Russell King wrote:
+> > Add a way for MAC PCS to have private data while keeping independence
+> > from struct phylink_config, which is used for the MAC itself. We need
+> > this independence as we will have stand-alone code for PCS that is
+> > independent of the MAC.  Introduce struct phylink_pcs, which is
+> > designed to be embedded in a driver private data structure.
+> > 
+> > This structure does not include a mdio_device as there are PCS
+> > implementations such as the Marvell DSA and network drivers where this
+> > is not necessary.
+> > 
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> 
+> Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> 
+> I integrated and used the phylink_pcs structure into the Lynx PCS just 
+> to see how everything fits. Pasting below the main parts so that we can 
+> catch early any possible different opinions on how to integrate this:
+> 
+> The basic Lynx structure looks like below and the main idea is just to 
+> encapsulate the phylink_pcs structure and the mdio device (which in some 
+> other cases might not be needed).
+> 
+> struct lynx_pcs {
+>         struct phylink_pcs pcs;
+>         struct mdio_device *mdio;
+>         phy_interface_t interface;
+> };
+> 
+> The lynx_pcs structure is requested by the MAC driver with:
+> 
+> struct lynx_pcs *lynx_pcs_create(struct mdio_device *mdio)
+> {
+> (...)
+>         lynx_pcs->mdio = mdio;
+>         lynx_pcs->pcs.ops = &lynx_pcs_phylink_ops;
+>         lynx_pcs->pcs.poll = true;
+> 
+>         return lynx_pcs;
+> }
+> 
+> And then passed to phylink with something like:
+> 
+> phylink_set_pcs(pl, &lynx_pcs->pcs);
+> 
+> 
+> For DSA it's a bit less straightforward because the .setup() callback 
+> from the dsa_switch_ops is run before any phylink structure has been 
+> created internally. For this, a new DSA helper can be created that just 
+> stores the phylink_pcs structure per port:
+> 
+> void dsa_port_phylink_set_pcs(struct dsa_switch *ds, int port,
+>                               struct phylink_pcs *pcs)
+> {
+>         struct dsa_port *dp = dsa_to_port(ds, port);
+> 
+>         dp->pcs = pcs;                                         but I do
+> }
+> 
+> and at the appropriate time, from dsa_slave_setup, it can really install 
+> the phylink_pcs with phylink_set_pcs.
+> The other option would be to add a new dsa_switch ops that requests the 
+> phylink_pcs for a specific port - something like phylink_get_pcs.
 
-Static analysis by Coverity has found a potential issue with the
-following commit in /drivers/net/phy/phy_device.c:
+It is entirely possible to set the PCS in the mac_prepare() or
+mac_config() callbacks - but DSA doesn't yet support the mac_prepare()
+callback (because it needs to be propagated through the DSA way of
+doing things.)
 
-commit bba238ed037c60242332dd1e4c5778af9eba4d9b
-Author: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date:   Sun Jul 12 19:48:15 2020 +0300
+An example of this can be found at:
 
-    net: phy: continue searching for C45 MMDs even if first returned
-ffff:ffff
+http://git.armlinux.org.uk/cgit/linux-arm.git/commit/?h=mcbin&id=593d56ef8c7f7d395626752f6810210471a5f5c1
 
-The analysis is as follows:
+where we choose between the XLGMAC and GMAC pcs_ops structures
+depending on the interface mode we are configuring for.  Note that
+this is one of the devices that the PCS does not appear as a
+distinctly separate entity in the register set, at least in the
+GMAC side of things.
 
-735         * for 802.3 c45 complied PHYs, so don't probe it at first.
-736         */
-
-dead_error_condition: The condition (devs_in_pkg & 0x1fffffffU) ==
-0x1fffffffU cannot be true.
-
-737        for (i = 1; i < MDIO_MMD_NUM && devs_in_pkg == 0 &&
-
-const: At condition (devs_in_pkg & 0x1fffffffU) == 0x1fffffffU, the
-value of devs_in_pkg must be equal to 0.
-
-738             (devs_in_pkg & 0x1fffffff) == 0x1fffffff; i++) {
-
-Logically dead code (DEADCODE)dead_error_line: Execution cannot reach
-this statement: if (i == 30 || i == 31) {
-
-To summarize, if devs_in_pkg is zero, then (devs_in_pkg & 0x1fffffffU)
-== 0x1fffffffU can never be true, so the loop is never iterated over.
-
-Colin
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
