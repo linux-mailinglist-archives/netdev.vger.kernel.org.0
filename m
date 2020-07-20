@@ -2,80 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB0FB2261A8
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 16:12:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E819B2261B9
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 16:15:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728305AbgGTOLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 10:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725934AbgGTOLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 10:11:52 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5C9C0619D2
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 07:11:52 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id p1so8744136pls.4
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 07:11:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=A726Yr9VsatMyQV/kYLfRoN4wKZEMkU5BbvHaxH3Y1g=;
-        b=TNn4H2SYZUDvgBNteh+4GCRlw+QsoycRFIf7r9Onszr0XDDSS8nM3efH0oB5gY7uU5
-         39GT+YGvgKlA8xlX3FFqBtqZu7iy3CcCx46vfX+bsYMQ0hVSx7WlFC8n+5AQX36Nha3A
-         QeTOzJZcwifotLzPdMvIzh62Yd9Z5kE2JRSMrjFmKcAezdevH28IpgRVgGT2nwXQb9Dv
-         w9eSc3ED2ixVlbYOWarpiHpyqt7wGgkWtDmM+o54dAr1HtRnXesMLD9UKJt7bEA+SaW3
-         If94qNHatzEXzcLL77NZ78UO4RyZ7ypEpJcGTW9nffqdoY/ViIPpg/D5gS9QssmMmkaL
-         xHMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=A726Yr9VsatMyQV/kYLfRoN4wKZEMkU5BbvHaxH3Y1g=;
-        b=DhbSHN6LbK+ZUkeZAHwQWyWU4O/ldOuUEpMiNhs7VEbeDMqr9lmMwHQVt38tjcy8oY
-         WaSG7vi7JeqYfI0CGEZGOKvtcYCBPWsy8xq4QOXQE8dahC2aD6yKPz0HKAsDz08Fryea
-         XEGPPQ8wKR5AK8oW5svq9FvIMwqSLFohrCIdfFl5fuyZXzKpB4LEDAVXJAC+oEMU6egJ
-         N34DGAb0N5f//feZz4zc+CYOehZmQjfvTDHGDCHYdKMBqZBwPF+a7YnM3QIcOUM/Zzw1
-         WirzaZePPjGiJF2vWfQHZ8ULfdOboI5MyHHLnPpAW2Dq8e7fxo//gOauXvvIgPEeWJho
-         jexQ==
-X-Gm-Message-State: AOAM530pzZ7vQAhGylSqNjApM/CaV1dWAUk1uW1DECmJtNbGyQbkldZz
-        PtoBcKsMp+qUv3vUISCpFLk=
-X-Google-Smtp-Source: ABdhPJz9ezoWrx0hcR3y/o8GbZD/TJVJwlMIiB9Y4kAYyJK/V1+YNvKOy554acSZf7Ksb4BK1e8OmQ==
-X-Received: by 2002:a17:90a:22ab:: with SMTP id s40mr25566644pjc.117.1595254312183;
-        Mon, 20 Jul 2020 07:11:52 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id d12sm17122813pfh.196.2020.07.20.07.11.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 07:11:51 -0700 (PDT)
-Date:   Mon, 20 Jul 2020 07:11:49 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        jacob.e.keller@intel.com, yangbo.lu@nxp.com,
-        xiaoliang.yang_1@nxp.com, po.liu@nxp.com,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v2 net-next 0/3] Fully describe the waveform for PTP
- periodic output
-Message-ID: <20200720141149.GA16001@hoboy>
-References: <20200716224531.1040140-1-olteanv@gmail.com>
+        id S1728142AbgGTOP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 10:15:57 -0400
+Received: from proxima.lasnet.de ([78.47.171.185]:47054 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725970AbgGTOP4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 10:15:56 -0400
+Received: from localhost.localdomain (p200300e9d7371614ec13d59c95910a08.dip0.t-ipconnect.de [IPv6:2003:e9:d737:1614:ec13:d59c:9591:a08])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id D8E46C0D06;
+        Mon, 20 Jul 2020 16:15:54 +0200 (CEST)
+Subject: Re: [PATCH v2 net] ieee802154: fix one possible memleak in
+ adf7242_probe
+To:     Liu Jian <liujian56@huawei.com>, michael.hennerich@analog.com,
+        alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        kjlu@umn.edu, netdev@vger.kernel.org
+References: <20200720143001.40194-1-liujian56@huawei.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <3a35ee9a-d10d-96b7-2804-025b00e5bd0d@datenfreihafen.org>
+Date:   Mon, 20 Jul 2020 16:15:55 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200716224531.1040140-1-olteanv@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200720143001.40194-1-liujian56@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 17, 2020 at 01:45:28AM +0300, Vladimir Oltean wrote:
-> With these patches, struct ptp_perout_request now basically describes a
-> general-purpose square wave.
+Hello.
 
-Nice to see kernel support for a frequency output.  Would you be able
-to add this mode into the user space test program, too?
+On 20.07.20 16:30, Liu Jian wrote:
+> When probe fail, we should destroy the workqueue.
+> 
+> Fixes: 2795e8c25161 ("net: ieee802154: fix a potential NULL pointer dereference")
+> Signed-off-by: Liu Jian <liujian56@huawei.com>
+> ---
+> v1->v2:
+> Change targeting from "net-next" to "net"
 
-   tools/testing/selftests/ptp/testptp.c
 
-Thanks,
-Richard
+Before sending a second version make sure you check replies to your 
+patch postings. I already applied the v1 patch to my wpan tree which 
+goes into net.
+
+As v2 it is identical v1 therei s nothing to do here for me.
+
+regards
+Stefan Schmidt
