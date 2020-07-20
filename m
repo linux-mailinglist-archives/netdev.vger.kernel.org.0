@@ -2,162 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 051AF225D49
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 13:23:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD4C225D85
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 13:36:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728524AbgGTLXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 07:23:46 -0400
-Received: from host-88-217-225-28.customer.m-online.net ([88.217.225.28]:38595
-        "EHLO mail.dev.tdt.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728058AbgGTLXq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 07:23:46 -0400
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 8F276203C1;
-        Mon, 20 Jul 2020 11:23:43 +0000 (UTC)
+        id S1728567AbgGTLgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 07:36:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728058AbgGTLgW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 07:36:22 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7E7C061794;
+        Mon, 20 Jul 2020 04:36:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=p0iwoGCkvJZcwbHnFm61xWYRiIRUAJSGvnjR7QZKDdg=; b=ezM213CZTPPS6HSORVwJNY4EKG
+        R/4HU5dBmTi4a8Z3M4lWqQTnzQO28k8rSegjkSH7DjhaNYt/6nGNJ0sFan1bKBkcFNBmWoauJBhCK
+        O8BKmhdD45V/bX8jhr7rmAIv8XF8dgWqr5g9o56j9TiizY70cGoEq+HvKW0aDAIMZPZ156h+CxUOH
+        +daB8llARAezDJhHVA0QdcOVPmUu4dpHZkz0glzWWDgGe4HCN5woZpZuLiqfGYP9RmLx2mg75DxyE
+        9tBhboVY1l26eW0c25T21dAlttlhCALa8CcN9V+RtTR9AxXNIKWlT78Q4Y8yY8i6iF4MVmGn12iGZ
+        IXhipm4w==;
+Received: from [2001:4bb8:105:4a81:ec09:aa20:3c1e:ebea] (helo=localhost)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jxU5Z-0000eP-Pi; Mon, 20 Jul 2020 11:36:10 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     msalter@redhat.com, jacquiot.aurelien@gmail.com,
+        ley.foon.tan@intel.com, arnd@arndb.de
+Cc:     linux-c6x-dev@linux-c6x.org, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] arch, net: remove the last csum_partial_copy() leftovers
+Date:   Mon, 20 Jul 2020 13:36:09 +0200
+Message-Id: <20200720113609.177259-1-hch@lst.de>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 20 Jul 2020 13:23:43 +0200
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
-Subject: Re: [PATCH v2] drivers/net/wan/x25_asy: Fix to make it work
-Organization: TDT AG
-In-Reply-To: <20200716234433.6490-1-xie.he.0141@gmail.com>
-References: <20200716234433.6490-1-xie.he.0141@gmail.com>
-Message-ID: <b2836ae012e0c57ba01ba1dee0a9eacd@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.1.5
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-07-17 01:44, Xie He wrote:
-> This driver is not working because of problems of its receiving code.
-> This patch fixes it to make it work.
-> 
-> When the driver receives an LAPB frame, it should first pass the frame
-> to the LAPB module to process. After processing, the LAPB module passes
-> the data (the packet) back to the driver, the driver should then add a
-> one-byte pseudo header and pass the data to upper layers.
-> 
-> The changes to the "x25_asy_bump" function and the
-> "x25_asy_data_indication" function are to correctly implement this
-> procedure.
-> 
-> Also, the "x25_asy_unesc" function ignores any frame that is shorter
-> than 3 bytes. However the shortest frames are 2-byte long. So we need
-> to change it to allow 2-byte frames to pass.
-> 
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Martin Schiller <ms@dev.tdt.de>
-> Signed-off-by: Xie He <xie.he.0141@gmail.com>
-> ---
-> 
-> Change from v1:
-> Added skb_cow before skb_push to ensure skb_push will succeed
-> according the suggestion of Eric Dumazet.
-> 
-> Hi Eric Dumazet and Martin Schiller,
-> Can you review this patch again and see if it is OK for me to include
-> your names in a "Signed-off-by", "Reviewed-by" or "Acked-by" tag?
-> Thank you!
-> 
-> Hi All,
-> I'm happy to answer any questions you might have and make improvements
-> according to your suggestions. Thanks!
-> 
-> ---
->  drivers/net/wan/x25_asy.c | 21 ++++++++++++++-------
->  1 file changed, 14 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/wan/x25_asy.c b/drivers/net/wan/x25_asy.c
-> index 69773d228ec1..84640a0c13f3 100644
-> --- a/drivers/net/wan/x25_asy.c
-> +++ b/drivers/net/wan/x25_asy.c
-> @@ -183,7 +183,7 @@ static inline void x25_asy_unlock(struct x25_asy 
-> *sl)
->  	netif_wake_queue(sl->dev);
->  }
-> 
-> -/* Send one completely decapsulated IP datagram to the IP layer. */
-> +/* Send an LAPB frame to the LAPB module to process. */
-> 
->  static void x25_asy_bump(struct x25_asy *sl)
->  {
-> @@ -195,13 +195,12 @@ static void x25_asy_bump(struct x25_asy *sl)
->  	count = sl->rcount;
->  	dev->stats.rx_bytes += count;
-> 
-> -	skb = dev_alloc_skb(count+1);
-> +	skb = dev_alloc_skb(count);
->  	if (skb == NULL) {
->  		netdev_warn(sl->dev, "memory squeeze, dropping packet\n");
->  		dev->stats.rx_dropped++;
->  		return;
->  	}
-> -	skb_push(skb, 1);	/* LAPB internal control */
->  	skb_put_data(skb, sl->rbuff, count);
->  	skb->protocol = x25_type_trans(skb, sl->dev);
->  	err = lapb_data_received(skb->dev, skb);
-> @@ -209,7 +208,6 @@ static void x25_asy_bump(struct x25_asy *sl)
->  		kfree_skb(skb);
->  		printk(KERN_DEBUG "x25_asy: data received err - %d\n", err);
->  	} else {
-> -		netif_rx(skb);
->  		dev->stats.rx_packets++;
->  	}
->  }
-> @@ -356,12 +354,21 @@ static netdev_tx_t x25_asy_xmit(struct sk_buff 
-> *skb,
->   */
-> 
->  /*
-> - *	Called when I frame data arrives. We did the work above - throw it
-> - *	at the net layer.
-> + *	Called when I frame data arrive. We add a pseudo header for upper
-> + *	layers and pass it to upper layers.
->   */
-> 
->  static int x25_asy_data_indication(struct net_device *dev, struct 
-> sk_buff *skb)
->  {
-> +	if (skb_cow(skb, 1)) {
-> +		kfree_skb(skb);
-> +		return NET_RX_DROP;
-> +	}
-> +	skb_push(skb, 1);
-> +	skb->data[0] = X25_IFACE_DATA;
-> +
-> +	skb->protocol = x25_type_trans(skb, dev);
-> +
->  	return netif_rx(skb);
->  }
-> 
-> @@ -657,7 +664,7 @@ static void x25_asy_unesc(struct x25_asy *sl,
-> unsigned char s)
->  	switch (s) {
->  	case X25_END:
->  		if (!test_and_clear_bit(SLF_ERROR, &sl->flags) &&
-> -		    sl->rcount > 2)
-> +		    sl->rcount >= 2)
->  			x25_asy_bump(sl);
->  		clear_bit(SLF_ESCAPE, &sl->flags);
->  		sl->rcount = 0;
+Most of the tree only uses and implements csum_partial_copy_nocheck,
+but the c6x and lib/checksum.c implement a csum_partial_copy that
+isn't used anywere except to define csum_partial_copy.  Get rid of
+this pointless alias.
 
-LGTM.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/c6x/lib/checksum.c           | 2 +-
+ arch/c6x/lib/csum_64plus.S        | 8 ++++----
+ arch/nios2/include/asm/checksum.h | 5 ++---
+ include/asm-generic/checksum.h    | 6 ++----
+ lib/checksum.c                    | 4 ++--
+ 5 files changed, 11 insertions(+), 14 deletions(-)
 
-I have never used the driver, but the adjustments look conclusive. The
-functionality is now comparable to the one in the drivers lapbether or
-hdlc_x25.
-
-Reviewed-by: Martin Schiller <ms@dev.tdt.de>
+diff --git a/arch/c6x/lib/checksum.c b/arch/c6x/lib/checksum.c
+index 335ca490080847..dff2e2ec6e6472 100644
+--- a/arch/c6x/lib/checksum.c
++++ b/arch/c6x/lib/checksum.c
+@@ -6,6 +6,6 @@
+ 
+ /* These are from csum_64plus.S */
+ EXPORT_SYMBOL(csum_partial);
+-EXPORT_SYMBOL(csum_partial_copy);
++EXPORT_SYMBOL(csum_partial_copy_nocheck);
+ EXPORT_SYMBOL(ip_compute_csum);
+ EXPORT_SYMBOL(ip_fast_csum);
+diff --git a/arch/c6x/lib/csum_64plus.S b/arch/c6x/lib/csum_64plus.S
+index 8e625a30fd435a..9c07127485d165 100644
+--- a/arch/c6x/lib/csum_64plus.S
++++ b/arch/c6x/lib/csum_64plus.S
+@@ -10,8 +10,8 @@
+ #include <linux/linkage.h>
+ 
+ ;
+-;unsigned int csum_partial_copy(const char *src, char * dst,
+-;				int len, int sum)
++;unsigned int csum_partial_copy_nocheck(const char *src, char * dst,
++;					int len, int sum)
+ ;
+ ; A4:	src
+ ; B4:	dst
+@@ -21,7 +21,7 @@
+ ;
+ 
+ 	.text
+-ENTRY(csum_partial_copy)
++ENTRY(csum_partial_copy_nocheck)
+ 	MVC	.S2	ILC,B30
+ 
+ 	MV	.D1X	B6,A31		; given csum
+@@ -149,7 +149,7 @@ L10:	ADD	.D1	A31,A9,A9
+ 
+ 	BNOP	.S2	B3,4
+ 	MVC	.S2	B30,ILC
+-ENDPROC(csum_partial_copy)
++ENDPROC(csum_partial_copy_nocheck)
+ 
+ ;
+ ;unsigned short
+diff --git a/arch/nios2/include/asm/checksum.h b/arch/nios2/include/asm/checksum.h
+index ec39698d3beac8..b4316c361729f0 100644
+--- a/arch/nios2/include/asm/checksum.h
++++ b/arch/nios2/include/asm/checksum.h
+@@ -12,10 +12,9 @@
+ 
+ /* Take these from lib/checksum.c */
+ extern __wsum csum_partial(const void *buff, int len, __wsum sum);
+-extern __wsum csum_partial_copy(const void *src, void *dst, int len,
++__wsum csum_partial_copy_nocheck(const void *src, void *dst, int len,
+ 				__wsum sum);
+-#define csum_partial_copy_nocheck(src, dst, len, sum)	\
+-	csum_partial_copy((src), (dst), (len), (sum))
++#define csum_partial_copy_nocheck csum_partial_copy_nocheck
+ 
+ extern __sum16 ip_fast_csum(const void *iph, unsigned int ihl);
+ extern __sum16 ip_compute_csum(const void *buff, int len);
+diff --git a/include/asm-generic/checksum.h b/include/asm-generic/checksum.h
+index 5a80f8e543008a..cd8b75aa770d00 100644
+--- a/include/asm-generic/checksum.h
++++ b/include/asm-generic/checksum.h
+@@ -23,11 +23,9 @@ extern __wsum csum_partial(const void *buff, int len, __wsum sum);
+  * here even more important to align src and dst on a 32-bit (or even
+  * better 64-bit) boundary
+  */
+-extern __wsum csum_partial_copy(const void *src, void *dst, int len, __wsum sum);
+-
+ #ifndef csum_partial_copy_nocheck
+-#define csum_partial_copy_nocheck(src, dst, len, sum)	\
+-	csum_partial_copy((src), (dst), (len), (sum))
++__wsum csum_partial_copy_nocheck(const void *src, void *dst, int len,
++		__wsum sum);
+ #endif
+ 
+ #ifndef ip_fast_csum
+diff --git a/lib/checksum.c b/lib/checksum.c
+index 7ac65a0000ff09..c7861e84c5261a 100644
+--- a/lib/checksum.c
++++ b/lib/checksum.c
+@@ -149,12 +149,12 @@ EXPORT_SYMBOL(ip_compute_csum);
+  * copy from ds while checksumming, otherwise like csum_partial
+  */
+ __wsum
+-csum_partial_copy(const void *src, void *dst, int len, __wsum sum)
++csum_partial_copy_nocheck(const void *src, void *dst, int len, __wsum sum)
+ {
+ 	memcpy(dst, src, len);
+ 	return csum_partial(dst, len, sum);
+ }
+-EXPORT_SYMBOL(csum_partial_copy);
++EXPORT_SYMBOL(csum_partial_copy_nocheck);
+ 
+ #ifndef csum_tcpudp_nofold
+ static inline u32 from64to32(u64 x)
+-- 
+2.27.0
 
