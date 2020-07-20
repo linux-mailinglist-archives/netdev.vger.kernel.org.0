@@ -2,329 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FE49226E8D
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:50:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6661D226E92
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:53:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730286AbgGTSuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 14:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729013AbgGTSuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 14:50:15 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257B3C061794
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 11:50:15 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id j19so10694507pgm.11
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 11:50:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BYGyoof3pnw7SE2W8/LyNwkDVI4bLNe2nOaHdbji56w=;
-        b=Nzzh+mfWccAeQxHP1bm3U3VXA+RlJypOX4RhfN0VKU1874hZ9ouASh6SRCyb5HvSAb
-         OUELSw5B/3yfAYLbUtTzR09GT45wfsbZS8fbze9PsJsXWbayI1nDE8OGKPOSDL+nfhP5
-         WeewoEpPjMlBmyk0CdtQ9TlhsrFMu/SrwxuOUCdEe5KupIJnNdjCU8nWg4tc9d7PC5Ij
-         hVXSxXujdGZAd8pvAx8xsRLi0eOW+6fx1XQVrjEeGCqTF1elCeauiC1F26Gs851Fs70I
-         51CLTrXp52RFQBfs7dazbDC2CMGpuNQ0oUAioNi7KhxWNVEPVQpbgdacOC3g0bGv+/27
-         8L7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BYGyoof3pnw7SE2W8/LyNwkDVI4bLNe2nOaHdbji56w=;
-        b=PGRWArYVRA2b0Hj6PNlofk1LHf4nA2OdNWzVFG5ZOqv3/l3C7+SKYHEkRogDa+Pl/g
-         s+vILtuztnEtGBIwMZt+74htorQDc7woUPVaEU0N36Wt4ujOukDL5hJu8DfLdGKv5I/F
-         i9Hna2GLk7TSWbBJ9COeOVsJI/jwIyJPFPlAgvw7lvxqaxT4a4oGL7IxYQkTnngVX9N/
-         uXnL0M6RuYqEvsKJSn5m5m6/hudS1w9tZy3ry80AW+jIMHAkbWsFADhPZSKMDhr9XSOY
-         aOc+9Eg6GhuLezA+fmn2Vxf5nGv2UHcPSup9/2uo6BeRZ+m3JT3PO7UrNI77WtvUcZIl
-         Ry/A==
-X-Gm-Message-State: AOAM530XqvtbiL6g20p0sS14yPLJ2DQaTuB2eq5fP7EMibmDFnXmBy36
-        hABethPbqq2fkNstsFnxBrwpTYnv5F8MlA==
-X-Google-Smtp-Source: ABdhPJxGsBr/WUvbu5MK8YV09luD6G5Fu+8Cz7enab+X2V7qaidjrSCPosft+Yr+z0WoidIokaYnpA==
-X-Received: by 2002:a62:dd91:: with SMTP id w139mr21035749pff.40.1595271014534;
-        Mon, 20 Jul 2020 11:50:14 -0700 (PDT)
-Received: from localhost-live.socal.rr.com ([2605:e000:160b:911f:5d2e:8d6b:6a7a:7a41])
-        by smtp.gmail.com with ESMTPSA id q5sm17796934pfc.130.2020.07.20.11.50.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 11:50:14 -0700 (PDT)
-From:   Chris Healy <cphealy@gmail.com>
-X-Google-Original-From: Chris Healy <cphealy@gmail.com
-To:     mkubecek@suse.cz, netdev@vger.kernel.org, vivien.didelot@gmail.com
-Cc:     Andrew Lunn <andrew@lunn.ch>, Chris Healy <cphealy@gmail.com>
-Subject: [PATCH v2] ethtool: dsa: mv88e6xxx: add pretty dump for 88E6352 SERDES
-Date:   Mon, 20 Jul 2020 11:50:02 -0700
-Message-Id: <20200720185002.158693-1-cphealy@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S1730706AbgGTSxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 14:53:01 -0400
+Received: from mga02.intel.com ([134.134.136.20]:12948 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726506AbgGTSxB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 14:53:01 -0400
+IronPort-SDR: ZxW2PBFkWuve1WYXFdD5NTHW49TbbvsudlbtG1uRrL83k6stMUoSH648aHS/r0/l6fd+TLvRD6
+ PHwP2ppoRAXg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9688"; a="138087494"
+X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; 
+   d="scan'208";a="138087494"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2020 11:52:59 -0700
+IronPort-SDR: cCTUhMqP00i9hnWU91Bqxzc5NEFWmXBZ1a2mvaZAcfV7VCaTlU0Gen9vHJ8vlfhsLLGhX3neyi
+ x0b7YA9H7dtw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; 
+   d="scan'208";a="309951073"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.252.137.6]) ([10.252.137.6])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2020 11:52:58 -0700
+Subject: Re: [RFC PATCH net-next v2 6/6] devlink: add overwrite mode to flash
+ update
+To:     Jakub Kicinski <kubakici@wp.pl>, Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, Tom Herbert <tom@herbertland.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+References: <20200717183541.797878-1-jacob.e.keller@intel.com>
+ <20200717183541.797878-7-jacob.e.keller@intel.com>
+ <20200720100953.GB2235@nanopsycho>
+ <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <078815e8-637c-10d0-b4ec-9485b1be5df0@intel.com>
+Date:   Mon, 20 Jul 2020 11:52:58 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
 
-In addition to the port registers, the device can provide the
-SERDES/PCS registers. Dump these, and for a few of the important
-SGMII/1000Base-X registers decode the bits.
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Chris Healy <cphealy@gmail.com>
----
-v2:
-- Add SERDES_OFFSET define
-- Improve readability of if statement
-- Fix inconsistency in dump handler code
+On 7/20/2020 8:51 AM, Jakub Kicinski wrote:
+> On Mon, 20 Jul 2020 12:09:53 +0200 Jiri Pirko wrote:
+>> This looks odd. You have a single image yet you somehow divide it
+>> into "program" and "config" areas. We already have infra in place to
+>> take care of this. See DEVLINK_ATTR_FLASH_UPDATE_COMPONENT.
+>> You should have 2 components:
+>> 1) "program"
+>> 2) "config"
+>>
 
- dsa.c | 200 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 198 insertions(+), 2 deletions(-)
+First off, unfortunately at least for ice, the "main" section of NVM
+contains both the management firmware as well as config settings. I
+don't really have a way to split it up.
 
-diff --git a/dsa.c b/dsa.c
-index 50a171b..0071769 100644
---- a/dsa.c
-+++ b/dsa.c
-@@ -3,6 +3,8 @@
- 
- #include "internal.h"
- 
-+#define SERDES_OFFSET 32
-+
- /* Macros and dump functions for the 16-bit mv88e6xxx per-port registers */
- 
- #define REG(_reg, _name, _val) \
-@@ -405,21 +407,204 @@ static void dsa_mv88e6352(int reg, u16 val)
- 	case 19:
- 		REG(reg, "Rx Frame Counter", val);
- 		break;
-+	case 20 ... 21:
-+		REG(reg, "Reserved", val);
-+		break;
- 	case 22:
- 		REG(reg, "LED Control", val);
- 		break;
-+	case 23:
-+		REG(reg, "Reserved", val);
-+		break;
- 	case 24:
- 		REG(reg, "Tag Remap 0-3", val);
- 		break;
- 	case 25:
- 		REG(reg, "Tag Remap 4-7", val);
- 		break;
-+	case 26:
-+		REG(reg, "Reserved", val);
-+		break;
- 	case 27:
- 		REG(reg, "Queue Counters", val);
- 		break;
--	default:
-+	case 28 ... 31:
- 		REG(reg, "Reserved", val);
- 		break;
-+	case SERDES_OFFSET + 0:
-+		REG(reg - SERDES_OFFSET, "Fiber Control", val);
-+		FIELD("Fiber Reset", "%u", !!(val & 0x8000));
-+		FIELD("Loopback", "%u", !!(val & 0x4000));
-+		FIELD("Speed", "%s",
-+		      (val & (0x2000 | 0x0040)) == 0x0000 ? "10 Mbps" :
-+		      (val & (0x2000 | 0x0040)) == 0x2000 ? "100 Mbps" :
-+		      (val & (0x2000 | 0x0040)) == 0x0040 ? "1000 Mbps" :
-+		      (val & (0x2000 | 0x0040)) == (0x2000 | 0x0040) ?
-+		      "Reserved" : "?");
-+		FIELD("Autoneg Enable", "%u", !!(val & 0x1000));
-+		FIELD("Power down", "%u", !!(val & 0x0800));
-+		FIELD("Isolate", "%u", !!(val & 0x0400));
-+		FIELD("Restart Autoneg", "%u", !!(val & 0x0200));
-+		FIELD("Duplex", "%s", val & 0x0100 ? "Full" : "Half");
-+		break;
-+	case SERDES_OFFSET + 1:
-+		REG(reg - SERDES_OFFSET, "Fiber Status", val);
-+		FIELD("100Base-X FD",  "%u", !!(val & 0x4000));
-+		FIELD("100Base-X HD",  "%u", !!(val & 0x2000));
-+		FIELD("Autoneg Complete", "%u", !!(val & 0x0020));
-+		FIELD("Remote Fault", "%u", !!(val & 0x0010));
-+		FIELD("Autoneg Ability", "%u", !!(val & 0x0008));
-+		FIELD("Link Status", "%s", val & 0x0004 ? "Up" : "Down");
-+		break;
-+	case SERDES_OFFSET + 2:
-+		REG(reg - SERDES_OFFSET, "PHY ID 1", val);
-+		break;
-+	case SERDES_OFFSET + 3:
-+		REG(reg - SERDES_OFFSET, "PHY ID 2", val);
-+		break;
-+	case SERDES_OFFSET + 4:
-+		REG(reg - SERDES_OFFSET, "Fiber Autoneg Advertisement", val);
-+		FIELD("Remote Fault", "%s",
-+		      (val & 0x3000) == 0x0000 ? "No error, link OK" :
-+		      (val & 0x3000) == 0x1000 ? "Link failure" :
-+		      (val & 0x3000) == 0x2000 ? "Offline" :
-+		      (val & 0x3000) == 0x3000 ? "Autoneg Error" : "?");
-+		FIELD("Pause", "%s",
-+		      (val & 0x0180) == 0x0000 ? "No Pause" :
-+		      (val & 0x0180) == 0x0080 ? "Symmetric Pause" :
-+		      (val & 0x0180) == 0x0100 ? "Asymmetric Pause" :
-+		      (val & 0x0180) == 0x0180 ? "Symmetric & Asymmetric Pause" :
-+		      "?");
-+		FIELD("1000BaseX HD", "%u", !!(val & 0x0040));
-+		FIELD("1000BaseX FD", "%u", !!(val & 0x0020));
-+		break;
-+	case SERDES_OFFSET + 5:
-+		REG(reg - SERDES_OFFSET, "Fiber Link Autoneg Ability", val);
-+		FIELD("Acknowledge", "%u", !!(val & 0x4000));
-+		FIELD("Remote Fault", "%s",
-+		      (val & 0x3000) == 0x0000 ? "No error, link OK" :
-+		      (val & 0x3000) == 0x1000 ? "Link failure" :
-+		      (val & 0x3000) == 0x2000 ? "Offline" :
-+		      (val & 0x3000) == 0x3000 ? "Autoneg Error" : "?");
-+		FIELD("Pause", "%s",
-+		      (val & 0x0180) == 0x0000 ? "No Pause" :
-+		      (val & 0x0180) == 0x0080 ? "Symmetric Pause" :
-+		      (val & 0x0180) == 0x0100 ? "Asymmetric Pause" :
-+		      (val & 0x0180) == 0x0180 ? "Symmetric & Asymmetric Pause" :
-+		      "?");
-+		FIELD("1000BaseX HD", "%u", !!(val & 0x0040));
-+		FIELD("1000BaseX FD", "%u", !!(val & 0x0020));
-+		break;
-+	case SERDES_OFFSET + 6:
-+		REG(reg - SERDES_OFFSET, "Fiber Autoneg Expansion", val);
-+		FIELD("Link Partner Next Page Ability", "%u", !!(val & 0x0008));
-+		FIELD("Page Received", "%u", !!(val & 0x0002));
-+		FIELD("Link Partner Autoneg Ability", "%u", !!(val & 0x0001));
-+		break;
-+	case SERDES_OFFSET + 7:
-+		REG(reg - SERDES_OFFSET, "Fiber Next Page Transmit", val);
-+		break;
-+	case SERDES_OFFSET + 8:
-+		REG(reg - SERDES_OFFSET, "Fiber Link Partner Next Page", val);
-+		break;
-+	case SERDES_OFFSET + 9 ... SERDES_OFFSET + 14:
-+		REG(reg - SERDES_OFFSET, "Reserved", val);
-+		break;
-+	case SERDES_OFFSET + 15:
-+		REG(reg - SERDES_OFFSET, "Extended Status", val);
-+		break;
-+	case SERDES_OFFSET + 16:
-+		REG(reg - SERDES_OFFSET, "Fiber Specific Control", val);
-+		FIELD("Fiber Transmit FIFO Depth", "%s",
-+		      (val & 0xc000) == 0x0000 ? "16 Bits" :
-+		      (val & 0xc000) == 0x4000 ? "24 Bits" :
-+		      (val & 0xc000) == 0x8000 ? "32 Bits" :
-+		      (val & 0xc000) == 0xc000 ? "40 Bits" : "?");
-+		FIELD("SERDES Loopback", "%u", !!(val & 0x1000));
-+		FIELD("Force Link Good", "%u", !!(val & 0x0400));
-+		FIELD("MAC Interface Power Down", "%u", !!(val & 0x0008));
-+		FIELD("Mode", "%s",
-+		      (val & 0x0003) == 0x0000 ? "100BaseFX" :
-+		      (val & 0x0003) == 0x0001 ? "1000BaseX" :
-+		      (val & 0x0003) == 0x0002 ? "SGMII System" :
-+		      (val & 0x0003) == 0x0003 ? "SGMII Media" : "?");
-+		break;
-+	case SERDES_OFFSET + 17:
-+		REG(reg - SERDES_OFFSET, "Fiber Specific Status", val);
-+		FIELD("Speed", "%s",
-+		      (val & 0xc000) == 0x0000 ? "10 Mbps" :
-+		      (val & 0xc000) == 0x4000 ? "100 Mbps" :
-+		      (val & 0xc000) == 0x8000 ? "1000 Mbps" :
-+		      (val & 0xc000) == 0xc000 ? "Reserved" : "?");
-+		FIELD("Duplex", "%s", val & 0x2000 ? "Full" : "Half");
-+		FIELD("Page Received", "%u", !!(val & 0x1000));
-+		FIELD("Speed/Duplex Resolved", "%u", !!(val & 0x0800));
-+		FIELD("Link", "%s", val & 0x0400 ? "Up" : "Down");
-+		FIELD("Sync", "%u", !!(val & 0x0020));
-+		FIELD("Energy Detect", "%s", val & 0x010 ? "False" : "True");
-+		FIELD("Transmit Pause", "%u", !!(val & 0x0008));
-+		FIELD("Receive Pause", "%u", !!(val & 0x00004));
-+		break;
-+	case SERDES_OFFSET + 18:
-+		REG(reg - SERDES_OFFSET, "Fiber Interrupt Enable", val);
-+		FIELD("Speed Changed", "%u", !!(val & 0x4000));
-+		FIELD("Duplex Changed", "%u", !!(val & 0x2000));
-+		FIELD("Page Received", "%u", !!(val & 0x1000));
-+		FIELD("Autoneg Complete", "%u", !!(val & 0x0800));
-+		FIELD("Link Status Change", "%u", !!(val & 0x0400));
-+		FIELD("Symbol Error", "%u", !!(val & 0x0200));
-+		FIELD("False Carrier", "%u", !!(val & 0x0100));
-+		FIELD("Energy Detect", "%u", !!(val & 0x0010));
-+		break;
-+	case SERDES_OFFSET + 19:
-+		REG(reg - SERDES_OFFSET, "Fiber Interrupt Status", val);
-+		FIELD("Speed Changed", "%u", !!(val & 0x4000));
-+		FIELD("Duplex Changed", "%u", !!(val & 0x2000));
-+		FIELD("Page Received", "%u", !!(val & 0x1000));
-+		FIELD("Autoneg Complete", "%u", !!(val & 0x0800));
-+		FIELD("Link Status Change", "%u", !!(val & 0x0400));
-+		FIELD("Symbol Error", "%u", !!(val & 0x0200));
-+		FIELD("False Carrier", "%u", !!(val & 0x0100));
-+		FIELD("Energy Detect", "%u", !!(val & 0x0010));
-+		break;
-+	case SERDES_OFFSET + 20:
-+		REG(reg - SERDES_OFFSET, "Reserved", val);
-+		break;
-+	case SERDES_OFFSET + 21:
-+		REG(reg - SERDES_OFFSET, "Fiber Receive Error Counter", val);
-+		break;
-+	case SERDES_OFFSET + 22:
-+		REG(reg - SERDES_OFFSET, "Reserved", val);
-+		break;
-+	case SERDES_OFFSET + 23:
-+		REG(reg - SERDES_OFFSET, "PRBS Control", val);
-+		break;
-+	case SERDES_OFFSET + 24:
-+		REG(reg - SERDES_OFFSET, "PRBS Error Counter LSB", val);
-+		break;
-+	case SERDES_OFFSET + 25:
-+		REG(reg - SERDES_OFFSET, "PRBS Error Counter MSB", val);
-+		break;
-+	case SERDES_OFFSET + 26:
-+		REG(reg - SERDES_OFFSET, "Fiber Specific Control 2", val);
-+		FIELD("1000BaseX Noise Filtering", "%u", !!(val & 0x4000));
-+		FIELD("1000BaseFX Noise Filtering", "%u", !!(val & 0x2000));
-+		FIELD("SERDES Autoneg Bypass Enable", "%u", !!(val & 0x0040));
-+		FIELD("SERDES Autoneg Bypass Status", "%u", !!(val & 0x0020));
-+		FIELD("Fiber Transmitter Disable", "%u", !!(val & 0x0008));
-+		FIELD("SGMII/Fiber Output Amplitude", "%s",
-+		      (val & 0x0007) == 0x0000 ? "14mV" :
-+		      (val & 0x0007) == 0x0001 ? "112mV" :
-+		      (val & 0x0007) == 0x0002 ? "210mV" :
-+		      (val & 0x0007) == 0x0003 ? "308mV" :
-+		      (val & 0x0007) == 0x0004 ? "406mV" :
-+		      (val & 0x0007) == 0x0005 ? "504mV" :
-+		      (val & 0x0007) == 0x0006 ? "602mV" :
-+		      (val & 0x0007) == 0x0007 ? "700mV" : "?");
-+		break;
-+	default:
-+		REG(reg - SERDES_OFFSET, "Reserved", val);
-+		break;
- 	}
- };
- 
-@@ -643,7 +828,7 @@ static int dsa_mv88e6xxx_dump_regs(struct ethtool_regs *regs)
- 	int i;
- 
- 	/* Marvell chips have 32 per-port 16-bit registers */
--	if (regs->len < 32 * 2)
-+	if (regs->len < 32 * sizeof(u16))
- 		return 1;
- 
- 	id = regs->version & 0xfff0;
-@@ -667,6 +852,17 @@ static int dsa_mv88e6xxx_dump_regs(struct ethtool_regs *regs)
- 		else
- 			REG(i, "", data[i]);
- 
-+	/* Dump the SERDES registers, if provided */
-+	if (regs->len > SERDES_OFFSET * sizeof(u16)) {
-+		printf("\n%s Switch Port SERDES Registers\n", sw->name);
-+		printf("-------------------------------------\n");
-+		for (i = SERDES_OFFSET; i < regs->len / 2; i++)
-+			if (sw->dump)
-+				sw->dump(i, data[i]);
-+			else
-+				REG(i - SERDES_OFFSET, "", data[i]);
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.26.2
+This series includes support for updating the main NVM section
+containing the management firmware (and some config) "fw.mgmt", as well
+as "fw.undi" which contains the OptionROM, and "fw.netlist" which
+contains additional configuration TLVs.
 
+The firmware interface allows me to separate the three components, but
+does not let me separate the "fw binary" from the "config settings" that
+are stored within the main NVM bank. (These fields include other data
+like the device MAC address and VPD area of the device too, so using
+"config" is a bit of a misnomer).
+
+>> Then it is up to the user what he decides to flash.
+> 
+> 99.9% of the time users want to flash "all". To achieve "don't flash
+> config" with current infra users would have to flash each component 
+> one by one and then omit the one(s) which is config (guessing which 
+> one that is based on the name).
+> 
+> Wouldn't this be quite inconvenient?
+> 
+
+I also agree here, I'd like to be able to make the "update with the
+complete file" just work in the most straight forward  way (i.e. without
+erasing stuff by accident) be the default.
+
+The option I'm proposing here is to enable allowing tools to optionally
+specify handling this type of overwrite. The goal is to support these
+use cases:
+
+a) (default) just update the image, but keep the config and vital data
+the same as before the update.
+
+b) overwrite config fields, but keep vital fields the same. Intended to
+allow returning configuration to "image defaults". This mostly is
+intended in case regular update caused some issues like if somehow the
+config preservation didn't work properly.
+
+c) overwrite all fields. The intention here is to allow programming a
+customized image during initial setup that would contain new IDs etc. It
+is not expected to be used in general, as this does overwrite vital data
+like the MAC addresses and such.
+
+So the problem is that the vital data, config data, and firmware
+binaries are stored in the same section, without a good way to separate
+between them. We program all of these together as one chunk to the
+"secondary NVM bank"  and then ask firmware to update. It reads through
+and based on our "preservation" setting will update the binaries and
+merge the configuration sections.
+
+> In case of MLX is PSID considered config?
+> 
