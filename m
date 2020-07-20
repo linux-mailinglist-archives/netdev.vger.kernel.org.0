@@ -2,138 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B55782260C0
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 15:23:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34D092260F7
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 15:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727863AbgGTNXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 09:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726535AbgGTNXj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 09:23:39 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9FC4C061794;
-        Mon, 20 Jul 2020 06:23:38 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id a17so8473291vsq.6;
-        Mon, 20 Jul 2020 06:23:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/6DloG2b0r9CUqLKLWeciEJEXdPx3rqElZz2QEFevOg=;
-        b=Y1lnxgFo9H6d4l4Aqpv9Mcc1TgPSgFIwL5RO7on41cQVl9/DNZMoCpY1On4/1ZymEc
-         AMZHJHw5mNsry96EhHRCHE1velwxCy/+ujwKRpW24S7KPOVqptWZKsl3PVYCnH9oPut8
-         gzlljtBNQIKEwOSUKUFA4ntcDe9RTEql4W6Eq3RE9W7EMnDM78OjxZhbOWz0c/vcsxUs
-         5vlcpOJ8VRmjq7JinFfcmNj8z6ZqRuKdRWrwQpru4SMjqfW1H5WThyxSNqFsV5QGvHhH
-         GQeJtX3rn5m7DdN0mwV5mk3YMr6t8fkrF8zwyLYCo/rV15yeyetADroAK0g8E5LJJerr
-         Mv8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/6DloG2b0r9CUqLKLWeciEJEXdPx3rqElZz2QEFevOg=;
-        b=hZO7D+Wqbefri/hEVAOEjRnSjIYFS5tYLcNuyQCvGc0Ia5Tik6ej4k4Z1rs1YtidbP
-         zt1PR0Vv/GLmVB3jTlNgtsIjIgQuBnUSxZt7qrwAZviJh6LYyWc0e4R/TtsYdmWQScpR
-         x8YC0NSajgoM+NjgUiesc4+rPEhjKkAx4Yx0OUC49pRcyXYOgts0q26loxOOqGIk0uZ2
-         v87Uy3WYFuZNFg+Fn/lAU7DRMkGhz25H9RPup/t/6+ojzZcpC7wjAACSihDyHzCuu5bG
-         CmCztPVQr44qycgy1kFrOjF0gFjOgxx4a0wcW3bfNY9Rwzt78ebapsiNxUVyUPcLwo0S
-         VrSw==
-X-Gm-Message-State: AOAM531B2MitSiyV+F36ovM7WBnubmmrhxE1R/6So9txeYT+gK4lUjYj
-        2gfeor8pp06Eci3iLMdaBMxciBZ2S0NLIRPtbTk=
-X-Google-Smtp-Source: ABdhPJw/DLry+B6SgDHJh8lxN/bTXWUPhnY1HfGc9wOE4MEE0/VuSha/XRneMkeHrshmyziIfD3wX/a9ORHN120Ahpk=
-X-Received: by 2002:a67:ed59:: with SMTP id m25mr16254532vsp.218.1595251418042;
- Mon, 20 Jul 2020 06:23:38 -0700 (PDT)
+        id S1726012AbgGTNf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 09:35:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44842 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725792AbgGTNf6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 09:35:58 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jxVxS-0061nz-Bk; Mon, 20 Jul 2020 15:35:54 +0200
+Date:   Mon, 20 Jul 2020 15:35:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vishal Kulkarni <vishal@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com
+Subject: Re: [PATCH net-next 0/4] cxgb4: add ethtool self_test support
+Message-ID: <20200720133554.GQ1383417@lunn.ch>
+References: <20200717134759.8268-1-vishal@chelsio.com>
+ <20200717180251.GC1339445@lunn.ch>
+ <20200720062837.GA22415@chelsio.com>
 MIME-Version: 1.0
-References: <1595236694-12749-5-git-send-email-magnus.karlsson@intel.com> <202007201930.0SiyJL6b%lkp@intel.com>
-In-Reply-To: <202007201930.0SiyJL6b%lkp@intel.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 20 Jul 2020 15:23:26 +0200
-Message-ID: <CAJ8uoz1ReofjQQRpqKa80P1L93SRsdAPPLcEJsuaOpXzq5_=yg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 04/14] xsk: move fill and completion rings to
- buffer pool
-To:     kernel test robot <lkp@intel.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        kbuild-all@lists.01.org, bpf <bpf@vger.kernel.org>,
-        jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200720062837.GA22415@chelsio.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 2:21 PM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Magnus,
->
-> I love your patch! Yet something to improve:
->
-> [auto build test ERROR on bpf-next/master]
->
-> url:    https://github.com/0day-ci/linux/commits/Magnus-Karlsson/xsk-supp=
-ort-shared-umems-between-devices-and-queues/20200720-180143
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git =
-master
-> config: alpha-allmodconfig (attached as .config)
-> compiler: alpha-linux-gcc (GCC) 9.3.0
-> reproduce (this is a W=3D1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbi=
-n/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-9.3.0 make.cros=
-s ARCH=3Dalpha
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->    net/xdp/xsk_diag.c: In function 'xsk_diag_put_stats':
-> >> net/xdp/xsk_diag.c:88:70: error: 'struct xdp_umem' has no member named=
- 'fq'
->       88 |  du.n_fill_ring_empty =3D xs->umem ? xskq_nb_queue_empty_descs=
-(xs->umem->fq) : 0;
->          |                                                               =
-       ^~
+On Mon, Jul 20, 2020 at 11:58:37AM +0530, Vishal Kulkarni wrote:
+> On Friday, July 07/17/20, 2020 at 20:02:51 +0200, Andrew Lunn wrote:
+> > On Fri, Jul 17, 2020 at 07:17:55PM +0530, Vishal Kulkarni wrote:
+> > > This series of patches add support for below tests.
+> > > 1. Adapter status test
+> > > 2. Link test
+> > > 3. Link speed test
+> > > 4. Loopback test
+> > 
+> > Hi Vishal
+> > 
+> > The loopback test is pretty usual for an ethtool self test. But the
+> > first 3 are rather odd. They don't really seem to be self tests. What
+> > reason do you have for adding these? Are you trying to debug a
+> > specific problem?
+> > 
+> > 	 Andrew
+> Hi Andrew,
+> 
+> Our requirement is to add a list of self tests that can summarize if the adapter is functioning
+> properly in a single command during system init. The above tests are the most common ones run by
+> our on-field diagnostics team. Besides, these tests seem to be the most common among other drivers as well.
+> 
+> Hence we have added
+> 1. Adapter status test: Tests whether the adapter is alive or crashed
+> 2. Link test: Adapter PHY is up or not.
+> 3. Link speed test: Adapter has negotiated link speed correctly or not.
 
-Thank you Mr LKP robot. Yes, bisectability is broken in patch 3. Will spin =
-a v4.
+Hi Vishal
 
-/Magnus
+Knowing that the field team does this is useful. But i still don't see
+these as self tests.
 
-> vim +88 net/xdp/xsk_diag.c
->
-> a36b38aa2af611 Bj=C3=B6rn T=C3=B6pel  2019-01-24  80
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  81  static int xsk_diag_put_stats=
-(const struct xdp_sock *xs, struct sk_buff *nlskb)
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  82  {
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  83      struct xdp_diag_stats du =
-=3D {};
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  84
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  85      du.n_rx_dropped =3D xs->r=
-x_dropped;
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  86      du.n_rx_invalid =3D xskq_=
-nb_invalid_descs(xs->rx);
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  87      du.n_rx_full =3D xs->rx_q=
-ueue_full;
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08 @88      du.n_fill_ring_empty =3D =
-xs->umem ? xskq_nb_queue_empty_descs(xs->umem->fq) : 0;
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  89      du.n_tx_invalid =3D xskq_=
-nb_invalid_descs(xs->tx);
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  90      du.n_tx_ring_empty =3D xs=
-kq_nb_queue_empty_descs(xs->tx);
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  91      return nla_put(nlskb, XDP=
-_DIAG_STATS, sizeof(du), &du);
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  92  }
-> 0d80cb4612aa32 Ciara Loftus 2020-07-08  93
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+From the man page:
+
+       -t --test
+              Executes adapter selftest on the specified network
+	      device. Possible test modes are:
+
+           offline
+                  Perform full set of tests, possibly interrupting normal
+		  operation during the tests,
+
+           online Perform limited set of tests, not interrupting normal
+	   operation,
+
+           external_lb
+                  Perform full set of tests, as for offline, and additionally
+		  an external-loopback test.
+
+
+Maybe a crashed adaptor could be considered a self test, but
+
+1) I expect nearly everything else is failing so it is pretty obvious
+2) devlink health seems like a better API
+
+The PHY is up or not is only partially to do with self. It has a lot
+to do with the link partner and the cable. Plus ip link show will tell
+you this.
+
+3) This actually sounds like a bug. Why would it of negotiated a link
+speed it cannot support? If you have non-overlapping sets of
+advertised link modes, i.e. there is no common mode to select, the
+link should remain down, but this is not an error. You can use ethtool
+to list both the local and peer advertised modes. You could also
+report this via the new link state properties Mellanox just added.
+
+       Andrew
