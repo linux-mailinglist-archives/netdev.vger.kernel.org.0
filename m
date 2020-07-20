@@ -2,111 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5EE226CF4
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:12:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 533EA226CFE
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:15:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732070AbgGTRLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 13:11:43 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:47988 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729853AbgGTRLm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 13:11:42 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1595265102; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=73j4gslEkdDhJgDflelmYGo9052nEeU1c8WAVbCoH1Q=;
- b=BBRVHxKdC+FXZjhSdOZYUJA9MpY0DAOTCdHMSByl2HpbsArPnNwTHm/9X3v4EbrHyI5Teb9p
- ZZGE9Sy3lzRjw1RTiBCIQbxGlCiAoznSDorqLwWRoJQ1p7oQ+vGhYckBlnK7ITow2W+uH15S
- BBVsrs8apZuN23lGRttxFtAKM6E=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n12.prod.us-west-2.postgun.com with SMTP id
- 5f15d00b0cb8533c3b749fa0 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 20 Jul 2020 17:10:35
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 89558C433CB; Mon, 20 Jul 2020 17:10:35 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1A178C433C9;
-        Mon, 20 Jul 2020 17:10:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1A178C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1730464AbgGTROg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 13:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728831AbgGTROf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 13:14:35 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C40C061794;
+        Mon, 20 Jul 2020 10:14:35 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id f5so21056918ljj.10;
+        Mon, 20 Jul 2020 10:14:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zRASbYWI3QCU6glmbpAmqa3993LVW3W4JSyWjFpNXzE=;
+        b=TuYUvW7wDgoLGgvNvoyJZzYvosNMBdw0FJXNNotx5jWagckwqOCpQs/NII3wDvglLT
+         TGOtQcn2qbiEIzVQDg+Ved7KCEL5b8eS4rVOC29geKJ0Ww0ZTD42SSOY83bpCkpTqISD
+         /HbMgdEzQ8pHzyGrgRKrO6FuLQODxeSLZYEiHipz/zYu2vrk5iqX/1y4LtNtr40hUK6f
+         eTQJBzSlapYve9vj4QDameWgqzwBRCm1L2oyTc403d+UjzpH6N3wxKka76vEzuooMRcR
+         ofiLl8g+dpWIacvMhMybme1Yy2DkSGfJCwbkGbhKygfL9Eax9bdcfQJakh4yw5a5xmQ5
+         KKDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zRASbYWI3QCU6glmbpAmqa3993LVW3W4JSyWjFpNXzE=;
+        b=GJCYFhX4/5z5572NTxfhXyLvyGiVEHUGxpouV0Rj2HTn+CWEUJIUDKbmiTtI1NIHs6
+         2xRey9B1YJhUm0OV/c4muAp+uii7fuIE1ILqc1QeZn5IwFK5ZIfSfjKxv/PZIk78pMlH
+         QPwFsJNpRKRIZbsmtzZNzbP92XBeV43MJks7JB+afC/TBUZyrEGb1lSdUCEXLrgGovJA
+         hGURDTMYJDmGDl09BkhFU78RagOKkkFY0iNo1SvzjZw8IQCykan6D03Ed5jdgSas3JHA
+         aXkF+BMssks+tthl8rb7SRwc0BL4AvItf0DnHngQ6WH8giNc6sRCcp5s3kbnZCnVSl/o
+         09YA==
+X-Gm-Message-State: AOAM530kbU5Ct6W6J7jEl+dnjb31qg4Qn6czmmENoz+q6y+N9F/9VL1u
+        oBusU5rJdSkirBiYiCT/4L7Cd/94IqI=
+X-Google-Smtp-Source: ABdhPJwoWCYprZ2pwfnR6mqaEJhhscTDhrWMKtXGm30xJacgJmOtYSZPIUSfU6t2NifNaexznAlbPw==
+X-Received: by 2002:a2e:a373:: with SMTP id i19mr10515397ljn.206.1595265273538;
+        Mon, 20 Jul 2020 10:14:33 -0700 (PDT)
+Received: from wasted.omprussia.ru ([2a00:1fa0:46f5:8d4:6fdd:f49:d446:d065])
+        by smtp.gmail.com with ESMTPSA id w4sm3338334ljw.16.2020.07.20.10.14.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jul 2020 10:14:32 -0700 (PDT)
+Subject: Re: [PATCH/RFC v2] net: ethernet: ravb: exit if hardware is
+ in-progress in tx timeout
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     dirk.behme@de.bosch.com, Shashikant.Suguni@in.bosch.com,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+References: <1595246298-29260-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <7d37c358-fab9-8ec1-6fff-688d33898b09@gmail.com>
+Date:   Mon, 20 Jul 2020 20:14:31 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <1595246298-29260-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] net: ath10k: fix OOB: __ath10k_htt_rx_ring_fill_n
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200623221105.3486-1-bruceshenzk@gmail.com>
-References: <20200623221105.3486-1-bruceshenzk@gmail.com>
-To:     Zekun Shen <bruceshenzk@gmail.com>
-Cc:     unlisted-recipients:; (no To-header on input) security@kernel.org,
-        Zekun Shen <bruceshenzk@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)security@kernel.org
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200720171035.89558C433CB@smtp.codeaurora.org>
-Date:   Mon, 20 Jul 2020 17:10:35 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zekun Shen <bruceshenzk@gmail.com> wrote:
+Hello!
 
-> The idx in __ath10k_htt_rx_ring_fill_n function lives in
-> consistent dma region writable by the device. Malfunctional
-> or malicious device could manipulate such idx to have a OOB
-> write. Either by
->     htt->rx_ring.netbufs_ring[idx] = skb;
-> or by
->     ath10k_htt_set_paddrs_ring(htt, paddr, idx);
-> 
-> The idx can also be negative as it's signed, giving a large
-> memory space to write to.
-> 
-> It's possibly exploitable by corruptting a legit pointer with
-> a skb pointer. And then fill skb with payload as rougue object.
-> 
-> Part of the log here. Sometimes it appears as UAF when writing
-> to a freed memory by chance.
-> 
->  [   15.594376] BUG: unable to handle page fault for address: ffff887f5c1804f0
->  [   15.595483] #PF: supervisor write access in kernel mode
->  [   15.596250] #PF: error_code(0x0002) - not-present page
->  [   15.597013] PGD 0 P4D 0
->  [   15.597395] Oops: 0002 [#1] SMP KASAN PTI
->  [   15.597967] CPU: 0 PID: 82 Comm: kworker/u2:2 Not tainted 5.6.0 #69
->  [   15.598843] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
->  BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
->  [   15.600438] Workqueue: ath10k_wq ath10k_core_register_work [ath10k_core]
->  [   15.601389] RIP: 0010:__ath10k_htt_rx_ring_fill_n
->  (linux/drivers/net/wireless/ath/ath10k/htt_rx.c:173) ath10k_core
-> 
-> Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+On 7/20/20 2:58 PM, Yoshihiro Shimoda wrote:
 
-Patch applied to ath-next branch of ath.git, thanks.
+> According to the report of [1], this driver is possible to cause
+> the following error in ravb_tx_timeout_work().
+> 
+> ravb e6800000.ethernet ethernet: failed to switch device to config mode
 
-bad60b8d1a71 ath10k: check idx validity in __ath10k_htt_rx_ring_fill_n()
+   Hmm, maybe we need a larger timeout there? The current one amounts to only
+~100 ms for all cases (maybe we should parametrize the timeout?)...
+  
+> This error means that the hardware could not change the state
+> from "Operation" to "Configuration" while some tx and/or rx queue
+> are operating. After that, ravb_config() in ravb_dmac_init() will fail,
 
--- 
-https://patchwork.kernel.org/patch/11621899/
+   Are we seeing double messages from ravb_config()? I think we aren't...
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> and then any descriptors will be not allocaled anymore so that NULL
+> pointer dereference happens after that on ravb_start_xmit().
+> 
+> To fix the issue, the ravb_tx_timeout_work() should check
+> the return value of ravb_stop_dma() whether this hardware can be
+> re-initialized or not. If ravb_stop_dma() fails, ravb_tx_timeout_work()
+> re-enables TX and RX and just exits.
+> 
+> [1]
+> https://lore.kernel.org/linux-renesas-soc/20200518045452.2390-1-dirk.behme@de.bosch.com/
+> 
+> Reported-by: Dirk Behme <dirk.behme@de.bosch.com>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+
+   Assuming the comment below is fixed:
+
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+
+> ---
+>  Changes from RFC v1:
+>  - Check the return value of ravb_stop_dma() and exit if the hardware
+>    condition can not be initialized in the tx timeout.
+>  - Update the commit subject and description.
+>  - Fix some typo.
+>  https://patchwork.kernel.org/patch/11570217/
+> 
+>  Unfortunately, I still didn't reproduce the issue yet. So, I still
+>  marked RFC on this patch.
+
+    I think the Bosch people should test this patch, as they reported the kernel oops...
+
+> 
+>  drivers/net/ethernet/renesas/ravb_main.c | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index a442bcf6..500f5c1 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -1458,7 +1458,18 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+>  		ravb_ptp_stop(ndev);
+>  
+>  	/* Wait for DMA stopping */
+> -	ravb_stop_dma(ndev);
+> +	if (ravb_stop_dma(ndev)) {
+> +		/* If ravb_stop_dma() fails, the hardware is still in-progress
+> +		 * as "Operation" mode for TX and/or RX. So, this should not
+
+   s/in-progress as "Operation" mode/operating/.
+
+> +		 * call the following functions because ravb_dmac_init() is
+> +		 * possible to fail too. Also, this should not retry
+> +		 * ravb_stop_dma() again and again here because it's possible
+> +		 * to wait forever. So, this just re-enables the TX and RX and
+> +		 * skip the following re-initialization procedure.
+> +		 */
+> +		ravb_rcv_snd_enable(ndev);
+> +		goto out;
+> +	}
+>  
+>  	ravb_ring_free(ndev, RAVB_BE);
+>  	ravb_ring_free(ndev, RAVB_NC);
+> @@ -1467,6 +1478,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+>  	ravb_dmac_init(ndev);
+
+   BTW, that one also may fail...
+
+>  	ravb_emac_init(ndev);
+>  
+> +out:
+>  	/* Initialise PTP Clock driver */
+>  	if (priv->chip_id == RCAR_GEN2)
+>  		ravb_ptp_init(ndev, priv->pdev);
+> 
 
