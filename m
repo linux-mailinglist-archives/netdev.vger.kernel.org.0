@@ -2,85 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2B4D226DA3
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B0F2226DAE
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:57:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387400AbgGTRzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 13:55:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56244 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726486AbgGTRzq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 13:55:46 -0400
-Received: from gmail.com (unknown [104.132.1.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D81D920709;
-        Mon, 20 Jul 2020 17:55:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595267745;
-        bh=gKIze89vWBzrFx6zTW6q8+6OGOi2eEHSp9M1U5xgK5Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IVyIlrMN24MPKjy4d8SMWaW7uCiUcpLg3yjCC0C2S6ZfKpknKzmS2DwkqaZUR6kcj
-         eH3tVcf8T0FWz3MgsFZPKw/95GZuUU1R6RXP6YgHYNC1Xrh1jm83A8jQXDelAkEKiB
-         ufMchI7Ce61Y9ZnRUJK/bZ/+BU6OKViPemeOOMWQ=
-Date:   Mon, 20 Jul 2020 10:55:43 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-sctp@vger.kernel.org, linux-hams@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-can@vger.kernel.org, dccp@vger.kernel.org,
-        linux-decnet-user@lists.sourceforge.net,
-        linux-wpan@vger.kernel.org, linux-s390@vger.kernel.org,
-        mptcp@lists.01.org, lvs-devel@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-afs@lists.infradead.org,
-        tipc-discussion@lists.sourceforge.net, linux-x25@vger.kernel.org
-Subject: Re: [PATCH 03/24] net: add a new sockptr_t type
-Message-ID: <20200720175543.GF1292162@gmail.com>
-References: <20200720124737.118617-1-hch@lst.de>
- <20200720124737.118617-4-hch@lst.de>
- <20200720163748.GA1292162@gmail.com>
- <20200720174322.GA21785@lst.de>
+        id S1729246AbgGTR4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 13:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60016 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726486AbgGTR4H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 13:56:07 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD41C061794
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 10:56:07 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id ga4so18980737ejb.11
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 10:56:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qSHV8y5hn3Lnoy9++ONiDLzIABrPz7t+jLdeVAdCy6M=;
+        b=CJXV3lydGtSQP6rPPyjDl5OQRj72fLRyc69s5nmX5wqv72rYVaIohlDgdQLnorCHB0
+         NBRO0Q6l2GOVIiMer6j5bX+YOLljhKRoxJSqiMWm4PqO2VPjE04V6BCEedHRC19dWWf/
+         8er/nxg5VT4spllQ4EnsxDH7DzR0YILXKbGh7csufyS5wbLEHjrC3QEpydHYEX676bZQ
+         1bI/ExgB3ZiP+r1oRRiEchZ1LfDaDM4VIJseLB0FQ9yZOamnUxfchlNFvyeOi2ABlYzR
+         5FV+EC7n8YYWNSkO0UyE6ilqrmyRLBIUX764ORjT3iQB7uKctjxU1whZMz29YqyczTqC
+         XOyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qSHV8y5hn3Lnoy9++ONiDLzIABrPz7t+jLdeVAdCy6M=;
+        b=NZ0CmcWX34DCr8tp14YjhIIdkn53abyvCaHRFgxY4La9YoyQW7Iuthvag7QYc7G+u9
+         T9of4ADkobvMkhTtfY8vG65qOGyJJ2ZNmNSpgu0lEKTkvnQR9C/fwwP36OAYjI5alwK8
+         YYJl4auiBPbq0nqP7vWn1o65+y2AP3Ybua7S0L0GlueA/lne7E22LsRCcOxPdYVfsynq
+         7XZ0jatxq9Q6NuCZqe31awEc4Z8G8qOxCx9Z6ToKVFDVeAdWw5n6P/DjZcHfLo55cuqt
+         o2QenZ3oEcwvsmg8JkqfCPccxKFMtQf0VcwZUiNGpbYS0v8t9Gr+5c9ksby1wlnk9Dpe
+         U2Qw==
+X-Gm-Message-State: AOAM532Zt6u/+6NIC7l0eqabso030RP4raxzqYK3XjWEizy08Y0guuh6
+        YmWxJAyr4l2BP3rB3t0bc4o=
+X-Google-Smtp-Source: ABdhPJwIFjU5fINXJMyKsd4E84M9D0YGi3YPqyk+Ki3U6FfVmG7+iv7KFppribnBMc8vg3MNWyrVgw==
+X-Received: by 2002:a17:906:e91:: with SMTP id p17mr20162604ejf.252.1595267766021;
+        Mon, 20 Jul 2020 10:56:06 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id t2sm15750442eds.60.2020.07.20.10.56.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2020 10:56:05 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
+Cc:     richardcochran@gmail.com, jacob.e.keller@intel.com,
+        yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com, po.liu@nxp.com,
+        UNGLinuxDriver@microchip.com
+Subject: [PATCH net-next 0/2] Extend testptp with PTP perout waveform
+Date:   Mon, 20 Jul 2020 20:55:57 +0300
+Message-Id: <20200720175559.1234818-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200720174322.GA21785@lst.de>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 07:43:22PM +0200, Christoph Hellwig wrote:
-> On Mon, Jul 20, 2020 at 09:37:48AM -0700, Eric Biggers wrote:
-> > How does this not introduce a massive security hole when
-> > CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE?
-> > 
-> > AFAICS, userspace can pass in a pointer >= TASK_SIZE,
-> > and this code makes it be treated as a kernel pointer.
-> 
-> Yeah, we'll need to validate that before initializing the pointer.
-> 
-> But thinking this a little further:  doesn't this mean any
-> set_fs(KERNEL_DS) that has other user pointers than the one it is
-> intended for has the same issue?  Pretty much all of these are gone
-> in mainline now, but in older stable kernels there might be some
-> interesting cases, especially in the compat ioctl handlers.
+Demonstrate the usage of the newly introduced flags in the
+PTP_PEROUT_REQUEST2 ioctl:
 
-Yes.  I thought that eliminating that class of bug is one of the main
-motivations for your "remove set_fs" work.  See commit 128394eff343
-("sg_write()/bsg_write() is not fit to be called under KERNEL_DS") for a case
-where this type of bug was fixed.
+https://www.spinics.net/lists/netdev/msg669346.html
 
-Are you aware of any specific cases that weren't already fixed?  If there are
-any, they need to be urgently fixed.
+Vladimir Oltean (2):
+  testptp: promote 'perout' variable to int64_t
+  testptp: add new options for perout phase and pulse width
 
-- Eric
+ tools/testing/selftests/ptp/testptp.c | 51 ++++++++++++++++++++++-----
+ 1 file changed, 43 insertions(+), 8 deletions(-)
+
+-- 
+2.25.1
+
