@@ -2,120 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF5C22567B
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 06:19:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 914CF2256D4
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 06:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726045AbgGTETy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 00:19:54 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:54218 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725774AbgGTETx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 00:19:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595218792;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=04wRZDzfAbjzY24AOQSUyoqCb/wNOPZL7NBzxLPbzVc=;
-        b=Th5aOFzFuuITP3XQy8b+7s/gwxOp6ibKciGcBdhxuaggEZQQIIZ2LvVSBlyk9mb7L3LwMk
-        +LtKXIAnzx2+UUHUn2LCKtxC/u1OwLylpLp8ZC/YeR4gdxjfCVdGrCk3SM+zZ55M62tzAo
-        5Dd8oSA5qMCTdp7oeLthLSl3r+5WyIs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-84-9KzyVAvVO_aogPSdmTB61Q-1; Mon, 20 Jul 2020 00:19:51 -0400
-X-MC-Unique: 9KzyVAvVO_aogPSdmTB61Q-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726016AbgGTE4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 00:56:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38982 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725287AbgGTE4c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 00:56:32 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6FF53107ACCA;
-        Mon, 20 Jul 2020 04:19:49 +0000 (UTC)
-Received: from [10.72.13.139] (ovpn-13-139.pek2.redhat.com [10.72.13.139])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B12925C1B2;
-        Mon, 20 Jul 2020 04:19:38 +0000 (UTC)
-Subject: Re: [PATCH V2 2/6] kvm: detect assigned device via irqbypass manager
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     mst@redhat.com, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, wanpengli@tencent.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org
-References: <1594898629-18790-1-git-send-email-lingshan.zhu@intel.com>
- <1594898629-18790-3-git-send-email-lingshan.zhu@intel.com>
- <20200717120821.3c2a56db@x1.home>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c46dc561-610e-e992-8bb9-e7286a560971@redhat.com>
-Date:   Mon, 20 Jul 2020 12:19:37 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        by mail.kernel.org (Postfix) with ESMTPSA id C620D20758;
+        Mon, 20 Jul 2020 04:56:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595220991;
+        bh=WpIzzTN6scE+2UyxOf2po3oTZMeSCPUMdXbQ6YleutA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ceHbdgk5deba4gxNstdXo0DOLPpRIEt5yb2TkzfUCzLpZcuJJi26TLNNeZ6O1+g7i
+         SVybg+YC7wjkXApW0jXI/mVdHMUTNjj5XCAooiwVJDzIEFyx+jqZ1G4or2+4EzrOT5
+         0bvkNyBGQhjqX7yfB3Km7pW2/V1DmlYJmw5jDBCI=
+Date:   Mon, 20 Jul 2020 07:56:26 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org,
+        corbet@lwn.net, netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH for v5.9] RDS: Replace HTTP links with HTTPS ones
+Message-ID: <20200720045626.GF127306@unreal>
+References: <20200719155845.59947-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
-In-Reply-To: <20200717120821.3c2a56db@x1.home>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <20200719155845.59947-1-grandmaster@al2klimov.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/7/18 上午2:08, Alex Williamson wrote:
-> On Thu, 16 Jul 2020 19:23:45 +0800
-> Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+On Sun, Jul 19, 2020 at 05:58:45PM +0200, Alexander A. Klimov wrote:
+> Rationale:
+> Reduces attack surface on kernel devs opening the links for MITM
+> as HTTPS traffic is much harder to manipulate.
 >
->> vDPA devices has dedicated backed hardware like
->> passthrough-ed devices. Then it is possible to setup irq
->> offloading to vCPU for vDPA devices. Thus this patch tries to
->> manipulated assigned device counters via irqbypass manager.
->>
->> We will increase/decrease the assigned device counter in kvm/x86.
->> Both vDPA and VFIO would go through this code path.
->>
->> This code path only affect x86 for now.
->>
->> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->> Suggested-by: Jason Wang <jasowang@redhat.com>
->> ---
->>   arch/x86/kvm/x86.c | 10 ++++++++--
->>   1 file changed, 8 insertions(+), 2 deletions(-)
->>
->> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
->> index 00c88c2..20c07d3 100644
->> --- a/arch/x86/kvm/x86.c
->> +++ b/arch/x86/kvm/x86.c
->> @@ -10624,11 +10624,17 @@ int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
->>   {
->>   	struct kvm_kernel_irqfd *irqfd =
->>   		container_of(cons, struct kvm_kernel_irqfd, consumer);
->> +	int ret;
->>   
->>   	irqfd->producer = prod;
->> +	kvm_arch_start_assignment(irqfd->kvm);
->> +	ret = kvm_x86_ops.update_pi_irte(irqfd->kvm,
->> +					 prod->irq, irqfd->gsi, 1);
->> +
->> +	if (ret)
->> +		kvm_arch_end_assignment(irqfd->kvm);
->>   
->> -	return kvm_x86_ops.update_pi_irte(irqfd->kvm,
->> -					   prod->irq, irqfd->gsi, 1);
->> +	return ret;
->>   }
->>   
->>   void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+> Deterministic algorithm:
+> For each file:
+>   If not .svg:
+>     For each line:
+>       If doesn't contain `\bxmlns\b`:
+>         For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
+> 	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
+>             If both the HTTP and HTTPS versions
+>             return 200 OK and serve the same content:
+>               Replace HTTP with HTTPS.
 >
-> Why isn't there a matching end-assignment in the del_producer path?  It
-> seems this only goes one-way, what happens when a device is
-> hot-unplugged from the VM or the device interrupt configuration changes.
-> This will still break vfio if it's not guaranteed to be symmetric.
-> Thanks,
+> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+> ---
+>  Continuing my work started at 93431e0607e5.
+>  See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
+>  (Actually letting a shell for loop submit all this stuff for me.)
 >
-> Alex
+>  If there are any URLs to be removed completely
+>  or at least not (just) HTTPSified:
+>  Just clearly say so and I'll *undo my change*.
+>  See also: https://lkml.org/lkml/2020/6/27/64
+>
+>  If there are any valid, but yet not changed URLs:
+>  See: https://lkml.org/lkml/2020/6/26/837
+>
+>  If you apply the patch, please let me know.
+>
+>  Sorry again to all maintainers who complained about subject lines.
+>  Now I realized that you want an actually perfect prefixes,
+>  not just subsystem ones.
+>  I tried my best...
+>  And yes, *I could* (at least half-)automate it.
+>  Impossible is nothing! :)
+>
+>
+>  Documentation/networking/rds.rst | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Why can't it be done in one mega-patch?
+It is insane to see patch for every file/link.
+
+We have more than 4k files with http:// in it.
+
+➜  kernel git:(m/hw-cleanup) git grep -c http: | tr -d ':[:digit:]' | sort | uniq |wc -l
+4292
 
 
-Yes, we need add logic in the del_producer path.
-
-Thanks
-
-
+>
+> diff --git a/Documentation/networking/rds.rst b/Documentation/networking/rds.rst
+> index 44936c27ab3a..c80d832509e2 100644
+> --- a/Documentation/networking/rds.rst
+> +++ b/Documentation/networking/rds.rst
+> @@ -11,7 +11,7 @@ This readme tries to provide some background on the hows and whys of RDS,
+>  and will hopefully help you find your way around the code.
+>
+>  In addition, please see this email about RDS origins:
+> -http://oss.oracle.com/pipermail/rds-devel/2007-November/000228.html
+> +https://oss.oracle.com/pipermail/rds-devel/2007-November/000228.html
+>
+>  RDS Architecture
+>  ================
+> --
+> 2.27.0
+>
