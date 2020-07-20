@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86C57226A71
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6D8C226A74
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:36:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389000AbgGTQeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 12:34:16 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:59584 "EHLO
+        id S2388998AbgGTQeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 12:34:20 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:44244 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388989AbgGTQeM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:34:12 -0400
+        by vger.kernel.org with ESMTP id S2388009AbgGTQeR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:34:17 -0400
 Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06KGY88Z019197
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 09:34:11 -0700
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06KGY1K9019021
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 09:34:16 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=IPGHMB686m/6Ual+13vtkstExaGWgZVIMyQdj6sfna8=;
- b=Q9mXyi7Qs6X75FGvSK0xBcsXmtIa+vjS+KyeTguco9MnvZUS6TEUrLG5IAXSZoK2NLIL
- ksTMyN6SL6M0MLuhg4/Oe2uIyLLYJAsjDsj95dO3Wd12Y5N6pIhBIrFaf4SN5JM9fJIB
- QAkn0DpGleYSQkBArAWsDdi652FDmlu+Jb8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32bxwfqg10-5
+ bh=TjRIkvvgye1YBKEy6oOU7WEjfpv4EQRQNyzQFDrXXCM=;
+ b=SYh4ZkxS7UkefRBmZHkh5TEF2XpHBRyPs8suao8zIsvhnhGTuQtuI+fB39kDYfDMJASd
+ uDhZZTvRW3nFw4oNYprvEsuvH72UhDQomKLlprJ8xcfrPjTAjiw2snrwb/xhm4oUj+BM
+ 4MtvrJl+8tl54EMVuOLMyOoBqP39kgr4BZQ= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 32bxwfqg1h-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 09:34:11 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 09:34:16 -0700
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 20 Jul 2020 09:34:02 -0700
+ 15.1.1979.3; Mon, 20 Jul 2020 09:34:14 -0700
 Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 16705370209A; Mon, 20 Jul 2020 09:34:01 -0700 (PDT)
+        id 4FF5E370209A; Mon, 20 Jul 2020 09:34:02 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Yonghong Song <yhs@fb.com>
 Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jiri Olsa <jolsa@kernel.org>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next v2 3/5] bpf: add BTF_ID_LIST_GLOBAL in btf_ids.h
-Date:   Mon, 20 Jul 2020 09:34:01 -0700
-Message-ID: <20200720163401.1393159-1-yhs@fb.com>
+Subject: [PATCH bpf-next v2 4/5] bpf: make btf_sock_ids global
+Date:   Mon, 20 Jul 2020 09:34:02 -0700
+Message-ID: <20200720163402.1393427-1-yhs@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200720163358.1392964-1-yhs@fb.com>
 References: <20200720163358.1392964-1-yhs@fb.com>
@@ -53,7 +53,7 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-20_09:2020-07-20,2020-07-20 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
  bulkscore=0 spamscore=0 mlxscore=0 malwarescore=0 priorityscore=1501
- mlxlogscore=813 phishscore=0 adultscore=0 impostorscore=0 clxscore=1015
+ mlxlogscore=999 phishscore=0 adultscore=0 impostorscore=0 clxscore=1015
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2007200111
 X-FB-Internal: deliver
@@ -62,159 +62,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Existing BTF_ID_LIST used a local static variable
-to store btf_ids. This patch provided a new macro
-BTF_ID_LIST_GLOBAL to store btf_ids in a global
-variable which can be shared among multiple files.
+tcp and udp bpf_iter can reuse some socket ids in
+btf_sock_ids, so make it global.
 
-The existing BTF_ID_LIST is still retained.
-Two reasons. First, BTF_ID_LIST is also used to build
-btf_ids for helper arguments which typically
-is an array of 5. Since typically different
-helpers have different signature, it makes
-little sense to share them. Second, some
-current computed btf_ids are indeed local.
-If later those btf_ids are shared between
-different files, they can use BTF_ID_LIST_GLOBAL then.
+I put the extern definition in btf_ids.h as a central
+place so it can be easily discovered by developers.
 
 Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- include/linux/btf_ids.h                       | 10 ++++--
- tools/include/linux/btf_ids.h                 | 10 ++++--
- .../selftests/bpf/prog_tests/resolve_btfids.c | 33 ++++++++++++++-----
- 3 files changed, 39 insertions(+), 14 deletions(-)
+ include/linux/btf_ids.h       | 30 ++++++++++++++++++++++++++++++
+ net/core/filter.c             | 30 ++----------------------------
+ tools/include/linux/btf_ids.h | 30 ++++++++++++++++++++++++++++++
+ 3 files changed, 62 insertions(+), 28 deletions(-)
 
 diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
-index 1cdb56950ffe..77ab45baa095 100644
+index 77ab45baa095..4867d549e3c1 100644
 --- a/include/linux/btf_ids.h
 +++ b/include/linux/btf_ids.h
-@@ -57,17 +57,20 @@ asm(							\
-  * .zero 4
-  *
-  */
--#define __BTF_ID_LIST(name)				\
-+#define __BTF_ID_LIST(name, scope)			\
- asm(							\
- ".pushsection " BTF_IDS_SECTION ",\"a\";       \n"	\
--".local " #name ";                             \n"	\
-+"." #scope " " #name ";                        \n"	\
- #name ":;                                      \n"	\
- ".popsection;                                  \n");	\
-=20
- #define BTF_ID_LIST(name)				\
--__BTF_ID_LIST(name)					\
-+__BTF_ID_LIST(name, local)				\
- extern u32 name[];
-=20
-+#define BTF_ID_LIST_GLOBAL(name)			\
-+__BTF_ID_LIST(name, globl)
-+
- /*
-  * The BTF_ID_UNUSED macro defines 4 zero bytes.
-  * It's used when we want to define 'unused' entry
-@@ -90,6 +93,7 @@ asm(							\
- #define BTF_ID_LIST(name) static u32 name[5];
- #define BTF_ID(prefix, name)
- #define BTF_ID_UNUSED
-+#define BTF_ID_LIST_GLOBAL(name) u32 name[1];
+@@ -97,4 +97,34 @@ asm(							\
 =20
  #endif /* CONFIG_DEBUG_INFO_BTF */
 =20
++#ifdef CONFIG_NET
++/* Define a list of socket types which can be the argument for
++ * skc_to_*_sock() helpers. All these sockets should have
++ * sock_common as the first argument in its memory layout.
++ */
++#define BTF_SOCK_TYPE_xxx \
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET, inet_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_CONN, inet_connection_sock)	\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_REQ, inet_request_sock)	\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_TW, inet_timewait_sock)	\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_REQ, request_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_SOCK, sock)				\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_SOCK_COMMON, sock_common)		\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP, tcp_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_REQ, tcp_request_sock)		\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_TW, tcp_timewait_sock)		\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP6, tcp6_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP, udp_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)
++
++enum {
++#define BTF_SOCK_TYPE(name, str) name,
++BTF_SOCK_TYPE_xxx
++#undef BTF_SOCK_TYPE
++MAX_BTF_SOCK_TYPE,
++};
++
++extern u32 btf_sock_ids[];
++#endif
++
+ #endif
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 5a65fb4b95ff..654c346b7d91 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -9421,39 +9421,13 @@ void bpf_prog_change_xdp(struct bpf_prog *prev_pr=
+og, struct bpf_prog *prog)
+ 	bpf_dispatcher_change_prog(BPF_DISPATCHER_PTR(xdp), prev_prog, prog);
+ }
+=20
+-/* Define a list of socket types which can be the argument for
+- * skc_to_*_sock() helpers. All these sockets should have
+- * sock_common as the first argument in its memory layout.
+- */
+-#define BTF_SOCK_TYPE_xxx \
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET, inet_sock)			\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_CONN, inet_connection_sock)	\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_REQ, inet_request_sock)	\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_TW, inet_timewait_sock)	\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_REQ, request_sock)			\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_SOCK, sock)				\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_SOCK_COMMON, sock_common)		\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP, tcp_sock)			\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_REQ, tcp_request_sock)		\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_TW, tcp_timewait_sock)		\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP6, tcp6_sock)			\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP, udp_sock)			\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)
+-
+-enum {
+-#define BTF_SOCK_TYPE(name, str) name,
+-BTF_SOCK_TYPE_xxx
+-#undef BTF_SOCK_TYPE
+-MAX_BTF_SOCK_TYPE,
+-};
+-
+ #ifdef CONFIG_DEBUG_INFO_BTF
+-BTF_ID_LIST(btf_sock_ids)
++BTF_ID_LIST_GLOBAL(btf_sock_ids)
+ #define BTF_SOCK_TYPE(name, type) BTF_ID(struct, type)
+ BTF_SOCK_TYPE_xxx
+ #undef BTF_SOCK_TYPE
+ #else
+-static u32 btf_sock_ids[MAX_BTF_SOCK_TYPE];
++u32 btf_sock_ids[MAX_BTF_SOCK_TYPE];
+ #endif
+=20
+ static bool check_arg_btf_id(u32 btf_id, u32 arg)
 diff --git a/tools/include/linux/btf_ids.h b/tools/include/linux/btf_ids.=
 h
-index 1cdb56950ffe..77ab45baa095 100644
+index 77ab45baa095..4867d549e3c1 100644
 --- a/tools/include/linux/btf_ids.h
 +++ b/tools/include/linux/btf_ids.h
-@@ -57,17 +57,20 @@ asm(							\
-  * .zero 4
-  *
-  */
--#define __BTF_ID_LIST(name)				\
-+#define __BTF_ID_LIST(name, scope)			\
- asm(							\
- ".pushsection " BTF_IDS_SECTION ",\"a\";       \n"	\
--".local " #name ";                             \n"	\
-+"." #scope " " #name ";                        \n"	\
- #name ":;                                      \n"	\
- ".popsection;                                  \n");	\
-=20
- #define BTF_ID_LIST(name)				\
--__BTF_ID_LIST(name)					\
-+__BTF_ID_LIST(name, local)				\
- extern u32 name[];
-=20
-+#define BTF_ID_LIST_GLOBAL(name)			\
-+__BTF_ID_LIST(name, globl)
-+
- /*
-  * The BTF_ID_UNUSED macro defines 4 zero bytes.
-  * It's used when we want to define 'unused' entry
-@@ -90,6 +93,7 @@ asm(							\
- #define BTF_ID_LIST(name) static u32 name[5];
- #define BTF_ID(prefix, name)
- #define BTF_ID_UNUSED
-+#define BTF_ID_LIST_GLOBAL(name) u32 name[1];
+@@ -97,4 +97,34 @@ asm(							\
 =20
  #endif /* CONFIG_DEBUG_INFO_BTF */
 =20
-diff --git a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c b/to=
-ols/testing/selftests/bpf/prog_tests/resolve_btfids.c
-index 22d83bba4e91..3b127cab4864 100644
---- a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-+++ b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-@@ -28,7 +28,17 @@ struct symbol test_symbols[] =3D {
- 	{ "func",    BTF_KIND_FUNC,    -1 },
- };
-=20
--BTF_ID_LIST(test_list)
-+BTF_ID_LIST(test_list_local)
-+BTF_ID_UNUSED
-+BTF_ID(typedef, S)
-+BTF_ID(typedef, T)
-+BTF_ID(typedef, U)
-+BTF_ID(struct,  S)
-+BTF_ID(union,   U)
-+BTF_ID(func,    func)
++#ifdef CONFIG_NET
++/* Define a list of socket types which can be the argument for
++ * skc_to_*_sock() helpers. All these sockets should have
++ * sock_common as the first argument in its memory layout.
++ */
++#define BTF_SOCK_TYPE_xxx \
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET, inet_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_CONN, inet_connection_sock)	\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_REQ, inet_request_sock)	\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_INET_TW, inet_timewait_sock)	\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_REQ, request_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_SOCK, sock)				\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_SOCK_COMMON, sock_common)		\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP, tcp_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_REQ, tcp_request_sock)		\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_TW, tcp_timewait_sock)		\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP6, tcp6_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP, udp_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)
 +
-+extern __u32 test_list_global[];
-+BTF_ID_LIST_GLOBAL(test_list_global)
- BTF_ID_UNUSED
- BTF_ID(typedef, S)
- BTF_ID(typedef, T)
-@@ -94,18 +104,25 @@ static int resolve_symbols(void)
-=20
- int test_resolve_btfids(void)
- {
--	unsigned int i;
-+	__u32 *test_list, *test_lists[] =3D { test_list_local, test_list_global=
- };
-+	unsigned int i, j;
- 	int ret =3D 0;
-=20
- 	if (resolve_symbols())
- 		return -1;
-=20
--	/* Check BTF_ID_LIST(test_list) IDs */
--	for (i =3D 0; i < ARRAY_SIZE(test_symbols) && !ret; i++) {
--		ret =3D CHECK(test_list[i] !=3D test_symbols[i].id,
--			    "id_check",
--			    "wrong ID for %s (%d !=3D %d)\n", test_symbols[i].name,
--			    test_list[i], test_symbols[i].id);
-+	/* Check BTF_ID_LIST(test_list_local) and
-+	 * BTF_ID_LIST_GLOBAL(test_list_global) IDs
-+	 */
-+	for (j =3D 0; j < ARRAY_SIZE(test_lists); j++) {
-+		test_list =3D test_lists[j];
-+		for (i =3D 0; i < ARRAY_SIZE(test_symbols) && !ret; i++) {
-+			ret =3D CHECK(test_list[i] !=3D test_symbols[i].id,
-+				    "id_check",
-+				    "wrong ID for %s (%d !=3D %d)\n",
-+				    test_symbols[i].name,
-+				    test_list[i], test_symbols[i].id);
-+		}
- 	}
-=20
- 	return ret;
++enum {
++#define BTF_SOCK_TYPE(name, str) name,
++BTF_SOCK_TYPE_xxx
++#undef BTF_SOCK_TYPE
++MAX_BTF_SOCK_TYPE,
++};
++
++extern u32 btf_sock_ids[];
++#endif
++
+ #endif
 --=20
 2.24.1
 
