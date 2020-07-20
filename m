@@ -2,84 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61DD4226E94
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:54:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 315F1226EA0
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 21:01:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729811AbgGTSyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 14:54:32 -0400
-Received: from mga12.intel.com ([192.55.52.136]:63968 "EHLO mga12.intel.com"
+        id S1728466AbgGTTBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 15:01:36 -0400
+Received: from mga02.intel.com ([134.134.136.20]:13967 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726506AbgGTSyb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 14:54:31 -0400
-IronPort-SDR: UT2O3PE8gQIy7GYxBHetap2zCtHc3wfzMVqT6cTP3vv6TJN1oi9Ul3TccjJ5iozQVKpYf4G79N
- 5VFnUcFGsZRQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9688"; a="129560750"
+        id S1726012AbgGTTBg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 15:01:36 -0400
+IronPort-SDR: JHHqfMbVK6jhVR+1QHvX+wPALr3rDl5oFXZ5lASsXq3CnlW/SDizsUHkPQ/s/MZIJ7mPw1hZlg
+ 603LboLfcA/w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9688"; a="138089132"
 X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; 
-   d="scan'208";a="129560750"
+   d="scan'208";a="138089132"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2020 11:54:31 -0700
-IronPort-SDR: ZISKvJsPG7t4mbCtgmY/ZuV8UN754XJyY5u6HmECqr4PZhQJ4Yc5kPTWsOFgOAGHFGxZ5OwrF0
- FjIbndAC/pxA==
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2020 12:00:57 -0700
+IronPort-SDR: NSlolG9n3axCEUo09H8b/Em4YqhaDHPcPqjaCROtoJgbX0+OaONurKO3tbXeV8yngYFxsT41zY
+ IdCq5b/9NEvA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; 
-   d="scan'208";a="309951390"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.252.137.6]) ([10.252.137.6])
-  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2020 11:54:31 -0700
-Subject: Re: [PATCH net-next 3/3] docs: networking: timestamping: add a set of
- frequently asked questions
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        richardcochran@gmail.com, sorganov@gmail.com,
-        linux-doc@vger.kernel.org
-References: <20200717161027.1408240-1-olteanv@gmail.com>
- <20200717161027.1408240-4-olteanv@gmail.com>
- <e6b6f240-c2b2-b57c-7334-4762f034aae3@intel.com>
- <20200718113519.htopj6tgfvimaywn@skbuf>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <887fcc0d-4f3d-3cb8-bdea-8144b62c5d85@intel.com>
-Date:   Mon, 20 Jul 2020 11:54:30 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+   d="scan'208";a="319635033"
+Received: from jrmontoy-mobl.amr.corp.intel.com ([10.209.71.203])
+  by fmsmga002.fm.intel.com with ESMTP; 20 Jul 2020 12:00:55 -0700
+From:   Andre Guedes <andre.guedes@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     mkubecek@suse.cz
+Subject: [PATCH ethtool] igc: Fix output values case
+Date:   Mon, 20 Jul 2020 12:00:38 -0700
+Message-Id: <20200720190038.11193-1-andre.guedes@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200718113519.htopj6tgfvimaywn@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/18/2020 4:35 AM, Vladimir Oltean wrote:
-> On Fri, Jul 17, 2020 at 04:12:07PM -0700, Jacob Keller wrote:
->> On 7/17/2020 9:10 AM, Vladimir Oltean wrote:
->>> +When the interface they represent offers both ``SOF_TIMESTAMPING_TX_HARDWARE``
->>> +and ``SOF_TIMESTAMPING_TX_SOFTWARE``.
->>> +Originally, the network stack could deliver either a hardware or a software
->>> +time stamp, but not both. This flag prevents software timestamp delivery.
->>> +This restriction was eventually lifted via the ``SOF_TIMESTAMPING_OPT_TX_SWHW``
->>> +option, but still the original behavior is preserved as the default.
->>> +
->>
->> So, this implies that we set this only if both are supported? I thought
->> the intention was to set this flag whenever we start a HW timestamp.
->>
-> 
-> It's only _required_ when SOF_TIMESTAMPING_TX_SOFTWARE is used, it
-> seems. I had also thought of setting 'SKBTX_IN_PROGRESS' as good
-> practice, but there are many situations where it can do more harm than
-> good.
-> 
+This patch changes the output values to be lowercase and replaces
+"True"/"False" by "yes"/"no" so the output from the IGC driver is
+consistent with other Intel drivers.
 
-I guess I've only ever implemented a driver with software timestamping
-enabled as an option. What sort of issues arise when you have this set?
-I'm guessing that it's some configuration of stacked devices as in the
-other cases? If the issue can't be fixed I'd at least like more
-explanation here, since the prevailing convention is that we set this
-flag, so understanding when and why it's problematic would be useful.
+Signed-off-by: Andre Guedes <andre.guedes@intel.com>
+---
+ igc.c | 36 ++++++++++++++++++------------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
-Thanks,
-Jake
+diff --git a/igc.c b/igc.c
+index 9c0a750..2c4abce 100644
+--- a/igc.c
++++ b/igc.c
+@@ -81,17 +81,17 @@
+ 
+ static const char *bit_to_boolean(u32 val)
+ {
+-	return val ? "True" : "False";
++	return val ? "yes" : "no";
+ }
+ 
+ static const char *bit_to_enable(u32 val)
+ {
+-	return val ? "Enabled" : "Disabled";
++	return val ? "enabled" : "disabled";
+ }
+ 
+ static const char *bit_to_prio(u32 val)
+ {
+-	return val ? "Low" : "High";
++	return val ? "low" : "high";
+ }
+ 
+ int igc_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs)
+@@ -138,23 +138,23 @@ int igc_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs)
+ 	       bit_to_enable(reg & RCTL_LPE),
+ 	       (reg & RCTL_LBM) == RCTL_LBM_PHY ? "PHY" :
+ 	       (reg & RCTL_LBM) == RCTL_LBM_MAC ? "MAC" :
+-	       "Undefined",
+-	       (reg & RCTL_HSEL) == RCTL_HSEL_MULTICAST ? "Multicast Only" :
+-	       (reg & RCTL_HSEL) == RCTL_HSEL_UNICAST ? "Unicast Only" :
+-	       (reg & RCTL_HSEL) == RCTL_HSEL_BOTH ? "Multicast and Unicast" :
+-	       "Reserved",
+-	       (reg & RCTL_MO) == RCTL_MO_47_36 ? "Bits [47:36]" :
+-	       (reg & RCTL_MO) == RCTL_MO_43_32 ? "Bits [43:32]" :
+-	       (reg & RCTL_MO) == RCTL_MO_39_28 ? "Bits [39:28]" :
+-	       "Bits [35:24]",
++	       "undefined",
++	       (reg & RCTL_HSEL) == RCTL_HSEL_MULTICAST ? "multicast only" :
++	       (reg & RCTL_HSEL) == RCTL_HSEL_UNICAST ? "unicast only" :
++	       (reg & RCTL_HSEL) == RCTL_HSEL_BOTH ? "multicast and unicast" :
++	       "reserved",
++	       (reg & RCTL_MO) == RCTL_MO_47_36 ? "bits [47:36]" :
++	       (reg & RCTL_MO) == RCTL_MO_43_32 ? "bits [43:32]" :
++	       (reg & RCTL_MO) == RCTL_MO_39_28 ? "bits [39:28]" :
++	       "bits [35:24]",
+ 	       bit_to_enable(reg & RCTL_BAM),
+-	       (reg & RCTL_BSIZE) == RCTL_BSIZE_2048 ? "2048 Bytes" :
+-	       (reg & RCTL_BSIZE) == RCTL_BSIZE_1024 ? "1024 Bytes" :
+-	       (reg & RCTL_BSIZE) == RCTL_BSIZE_512 ? "512 Bytes" :
+-	       "256 Bytes",
++	       (reg & RCTL_BSIZE) == RCTL_BSIZE_2048 ? "2048 bytes" :
++	       (reg & RCTL_BSIZE) == RCTL_BSIZE_1024 ? "1024 bytes" :
++	       (reg & RCTL_BSIZE) == RCTL_BSIZE_512 ? "512 bytes" :
++	       "256 bytes",
+ 	       bit_to_enable(reg & RCTL_VFE),
+ 	       bit_to_enable(reg & RCTL_CFIEN),
+-	       reg & RCTL_CFI ? "Discarded" : "Accepted",
++	       reg & RCTL_CFI ? "discarded" : "accepted",
+ 	       bit_to_enable(reg & RCTL_PSP),
+ 	       bit_to_enable(reg & RCTL_DPF),
+ 	       bit_to_enable(reg & RCTL_PMCF),
+@@ -187,7 +187,7 @@ int igc_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs)
+ 		       "    Address Valid:                             %s\n",
+ 		       offset + i, i,
+ 		       reg & RAH_RAH,
+-		       reg & RAH_ASEL ? "Source" : "Destination",
++		       reg & RAH_ASEL ? "source" : "destination",
+ 		       (reg & RAH_QSEL) >> RAH_QSEL_SHIFT,
+ 		       bit_to_boolean(reg & RAH_QSEL_EN),
+ 		       bit_to_boolean(reg & RAH_AV));
+-- 
+2.26.2
+
