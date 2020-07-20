@@ -2,145 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1346225B13
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 11:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F03E1225B30
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 11:18:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728193AbgGTJO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 05:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728182AbgGTJO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 05:14:56 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C5CC0619D2
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 02:14:56 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id a6so17063686wrm.4
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 02:14:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=FCuuqmMApvaU0Jwh7PcOCLNiDVR6v/liq9Ls1s10hKA=;
-        b=d4j8ocWYj51cHVR4q5X/if/LQqG86BYtWS6u2KYiBLNhC7tWZ4RiqwxKHlCao/nwA4
-         by9Xch6API6gFoHz5qYgTOtYPH/GZBzbtQ9Z8aA2oPGnCGfVr4Sw5Z2QokkizcTw+lHB
-         sqlPyoynRsh+y+p7XCJ29LwWW+OKxb3feJMeE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=FCuuqmMApvaU0Jwh7PcOCLNiDVR6v/liq9Ls1s10hKA=;
-        b=Unznr1zi5ppsxC6dyS/pTkHAIJ9rH3LGE5x2rKKRZbM5/KEUqaxXzW8q9DVOCDw2cW
-         1SwtGAj43+1vet5yfr8sr3AtPFon64SjtJmwkSbO0ooSCHukDWs6hsdkf41CUXugIw8J
-         47Kd+iSi8vYFiKnxNiAN2vg+jkTp0sFaFuhK1iBZsNj95WzhseCdRSDuf1xWHLs77hhw
-         R8NUMTlxuBtevyFMLrWdjCNz8u/8t7g+4BFtndXin9i0rg2QD3/2NRM2X8VE9HYDA3c7
-         yZx/ug/qmY4MowTkB0bjYo2fSrR/D+Ea9xPfaoZuabn7lrhgtLHBgBW9n03DIQmSdQDl
-         OzMw==
-X-Gm-Message-State: AOAM532LxlT0XojGSfOv7LO6FeDWejwg+SEkuz7+0dX087+li2yywYBB
-        9gawGHQEX5NcgPM4NEflHJCvwv001XM=
-X-Google-Smtp-Source: ABdhPJylmYdJt+GG+Su47rxKKiz3INJHvP7IRSYpjjruNjFjQ38o16HNzgz4fMgPaD+y3VIvTXnraQ==
-X-Received: by 2002:adf:f248:: with SMTP id b8mr8613305wrp.247.1595236494694;
-        Mon, 20 Jul 2020 02:14:54 -0700 (PDT)
-Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id v12sm19640320wrs.2.2020.07.20.02.14.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 02:14:54 -0700 (PDT)
-References: <e54f2aabf959f298939e5507b09c48f8c2e380be.1595170625.git.lorenzo@kernel.org>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, brouer@redhat.com, daniel@iogearbox.net,
-        lorenzo.bianconi@redhat.com, kuba@kernel.org
-Subject: Re: [PATCH bpf-next] bpf: cpumap: fix possible rcpu kthread hung
-In-reply-to: <e54f2aabf959f298939e5507b09c48f8c2e380be.1595170625.git.lorenzo@kernel.org>
-Date:   Mon, 20 Jul 2020 11:14:53 +0200
-Message-ID: <874kq2y2cy.fsf@cloudflare.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1728207AbgGTJSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 05:18:23 -0400
+Received: from mga14.intel.com ([192.55.52.115]:26941 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727120AbgGTJSX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 05:18:23 -0400
+IronPort-SDR: jO/jEnjaxefp9cduqaPodXBvIyRPHBwbGsMrsXpG3oyGx3MVlAP3IQmjXokdVh1qIErNmxTAbQ
+ eaF7u1eXF/+g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9687"; a="149033511"
+X-IronPort-AV: E=Sophos;i="5.75,374,1589266800"; 
+   d="scan'208";a="149033511"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2020 02:18:21 -0700
+IronPort-SDR: DVGHrgs5oG/13sAvQp7Hq8t2+HuKA6yDwEm44u8AnTqwT48ACSMzkbHEjgYOfdv6zhCq2Od5sK
+ /0qIqUek/2LQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,374,1589266800"; 
+   d="scan'208";a="431549021"
+Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.34.51])
+  by orsmga004.jf.intel.com with ESMTP; 20 Jul 2020 02:18:17 -0700
+From:   Magnus Karlsson <magnus.karlsson@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, maximmi@mellanox.com
+Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
+        maciejromanfijalkowski@gmail.com, cristian.dumitrescu@intel.com
+Subject: [PATCH bpf-next v3 00/14] xsk: support shared umems between devices and queues
+Date:   Mon, 20 Jul 2020 11:18:00 +0200
+Message-Id: <1595236694-12749-1-git-send-email-magnus.karlsson@intel.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 19, 2020 at 05:52 PM CEST, Lorenzo Bianconi wrote:
-> Fix the following cpumap kthread hung. The issue is currently occurring
-> when __cpu_map_load_bpf_program fails (e.g if the bpf prog has not
-> BPF_XDP_CPUMAP as expected_attach_type)
->
-> $./test_progs -n 101
-> 101/1 cpumap_with_progs:OK
-> 101 xdp_cpumap_attach:OK
-> Summary: 1/1 PASSED, 0 SKIPPED, 0 FAILED
-> [  369.996478] INFO: task cpumap/0/map:7:205 blocked for more than 122 seconds.
-> [  369.998463]       Not tainted 5.8.0-rc4-01472-ge57892f50a07 #212
-> [  370.000102] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> [  370.001918] cpumap/0/map:7  D    0   205      2 0x00004000
-> [  370.003228] Call Trace:
-> [  370.003930]  __schedule+0x5c7/0xf50
-> [  370.004901]  ? io_schedule_timeout+0xb0/0xb0
-> [  370.005934]  ? static_obj+0x31/0x80
-> [  370.006788]  ? mark_held_locks+0x24/0x90
-> [  370.007752]  ? cpu_map_bpf_prog_run_xdp+0x6c0/0x6c0
-> [  370.008930]  schedule+0x6f/0x160
-> [  370.009728]  schedule_preempt_disabled+0x14/0x20
-> [  370.010829]  kthread+0x17b/0x240
-> [  370.011433]  ? kthread_create_worker_on_cpu+0xd0/0xd0
-> [  370.011944]  ret_from_fork+0x1f/0x30
-> [  370.012348]
->                Showing all locks held in the system:
-> [  370.013025] 1 lock held by khungtaskd/33:
-> [  370.013432]  #0: ffffffff82b24720 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x28/0x1c3
->
-> [  370.014461] =============================================
->
-> Fixes: 9216477449f3 ("bpf: cpumap: Add the possibility to attach an eBPF program to cpumap")
-> Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  kernel/bpf/cpumap.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
->
-> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-> index 4c95d0615ca2..f1c46529929b 100644
-> --- a/kernel/bpf/cpumap.c
-> +++ b/kernel/bpf/cpumap.c
-> @@ -453,24 +453,27 @@ __cpu_map_entry_alloc(struct bpf_cpumap_val *value, u32 cpu, int map_id)
->  	rcpu->map_id = map_id;
->  	rcpu->value.qsize  = value->qsize;
->
-> +	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, fd))
-> +		goto free_ptr_ring;
-> +
+This patch set adds support to share a umem between AF_XDP sockets
+bound to different queue ids on the same device or even between
+devices. It has already been possible to do this by registering the
+umem multiple times, but this wastes a lot of memory. Just imagine
+having 10 threads each having 10 sockets open sharing a single
+umem. This means that you would have to register the umem 100 times
+consuming large quantities of memory.
 
-I realize it's a code move, but fd == 0 is a valid descriptor number.
-The check is too strict, IMHO.
+Instead, we extend the existing XDP_SHARED_UMEM flag to also work when
+sharing a umem between different queue ids as well as devices. If you
+would like to share umem between two sockets, just create the first
+one as would do normally. For the second socket you would not register
+the same umem using the XDP_UMEM_REG setsockopt. Instead attach one
+new fill ring and one new completion ring to this second socket and
+then use the XDP_SHARED_UMEM bind flag supplying the file descriptor of
+the first socket in the sxdp_shared_umem_fd field to signify that it
+is the umem of the first socket you would like to share.
 
->  	/* Setup kthread */
->  	rcpu->kthread = kthread_create_on_node(cpu_map_kthread_run, rcpu, numa,
->  					       "cpumap/%d/map:%d", cpu, map_id);
->  	if (IS_ERR(rcpu->kthread))
-> -		goto free_ptr_ring;
-> +		goto free_prog;
->
->  	get_cpu_map_entry(rcpu); /* 1-refcnt for being in cmap->cpu_map[] */
->  	get_cpu_map_entry(rcpu); /* 1-refcnt for kthread */
->
-> -	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, fd))
-> -		goto free_ptr_ring;
-> -
->  	/* Make sure kthread runs on a single CPU */
->  	kthread_bind(rcpu->kthread, cpu);
->  	wake_up_process(rcpu->kthread);
->
->  	return rcpu;
->
-> +free_prog:
-> +	if (rcpu->prog)
-> +		bpf_prog_put(rcpu->prog);
->  free_ptr_ring:
->  	ptr_ring_cleanup(rcpu->queue, NULL);
->  free_queue:
+One important thing to note in this example, is that there needs to be
+one fill ring and one completion ring per unique device and queue id
+bound to. This so that the single-producer and single-consumer semantics
+of the rings can be upheld. To recap, if you bind multiple sockets to
+the same device and queue id (already supported without this patch
+set), you only need one pair of fill and completion rings. If you bind
+multiple sockets to multiple different queues or devices, you need one
+fill and completion ring pair per unique device,queue_id tuple.
 
-Hung task splat is gone:
+The implementation is based around extending the buffer pool in the
+core xsk code. This is a structure that exists on a per unique device
+and queue id basis. So, a number of entities that can now be shared
+are moved from the umem to the buffer pool. Information about DMA
+mappings are also moved from the buffer pool, but as these are per
+device independent of the queue id, they are now hanging off the umem
+in list. However, the pool is set up to point directly to the
+dma_addr_t array that it needs. In summary after this patch set, there
+is one xdp_sock struct per socket created. This points to an
+xsk_buff_pool for which there is one per unique device and queue
+id. The buffer pool points to a DMA mapping structure for which there
+is one per device that a umem has been bound to. And finally, the
+buffer pool also points to a xdp_umem struct, for which there is only
+one per umem registration.
 
-Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
+Before:
+
+XSK -> UMEM -> POOL
+
+Now:
+
+XSK -> POOL -> DMA
+            \
+	     > UMEM
+
+Patches 1-8 only rearrange internal structures to support the buffer
+pool carrying this new information, while patch 9 improves performance
+as we now have rearranged the internal structures quite a bit. Finally,
+patches 10-14 introduce the new functionality together with libbpf
+support, samples, and documentation.
+
+Libbpf has also been extended to support sharing of umems between
+sockets bound to different devices and queue ids by introducing a new
+function called xsk_socket__create_shared(). The difference between
+this and the existing xsk_socket__create() is that the former takes a
+reference to a fill ring and a completion ring as these need to be
+created. This new function needs to be used for the second and
+following sockets that binds to the same umem. The first socket can be
+created by either function as it will also have called
+xsk_umem__create().
+
+There is also a new sample xsk_fwd that demonstrates this new
+interface and capability.
+
+Note to Maxim at Mellanox. I do not have a mlx5 card, so I have not
+been able to test the changes to your driver. It compiles, but that is
+all I can say, so it would be great if you could test it. Also, I did
+change the name of many functions and variables from umem to pool as a
+buffer pool is passed down to the driver in this patch set instead of
+the umem. I did not change the name of the files umem.c and
+umem.h. Please go through the changes and change things to your
+liking.
+
+Performance for the non-shared umem case is unchanged for the xdpsock
+sample application with this patch set. For workloads that share a
+umem, this patch set can give rise to added performance benefits due
+to the decrease in memory usage.
+
+v2 -> v3:
+
+* Clean up of fq_tmp and cq_tmp in xsk_release [Maxim]
+* Fixed bug when bind failed that caused pool to be freed twice [Ciara]
+
+v1 -> v2:
+
+* Tx need_wakeup init bug fixed. Missed to set the cached_need_wakeup
+  flag for Tx.
+* Need wakeup turned on for xsk_fwd sample [Cristian]
+* Commit messages cleaned up
+* Moved dma mapping list from netdev to umem [Maxim]
+* Now the buffer pool is only created once. Fill ring and completion
+  ring pointers are stored in the socket during initialization (before
+  bind) and at bind these pointers are moved over to the buffer pool
+  which is used all the time after that. [Maxim]
+
+This patch has been applied against commit e57892f50a07 ("Merge branch 'bpf-socket-lookup'")
+
+Structure of the patch set:
+
+Patch 1: Pass the buffer pool to the driver instead of the umem. This
+         because the driver needs one buffer pool per napi context
+         when we later introduce sharing of the umem between queue ids
+         and devices.
+Patch 2: Rename the xsk driver interface so they have better names
+         after the move to the buffer pool
+Patch 3: There is one buffer pool per device and queue, while there is
+         only one umem per registration. The buffer pool needs to be
+         created and destroyed independently of the umem.
+Patch 4: Move fill and completion rings to the buffer pool as there will
+         be one set of these per device and queue
+Patch 5: Move queue_id, dev and need_wakeup to buffer pool again as these
+         will now be per buffer pool as the umem can be shared between
+         devices and queues
+Patch 6: Move xsk_tx_list and its lock to buffer pool
+Patch 7: Move the creation/deletion of addrs from buffer pool to umem
+Patch 8: Enable sharing of DMA mappings when multiple queues of the
+         same device are bound
+Patch 9: Rearrange internal structs for better performance as these
+         have been substantially scrambled by the previous patches
+Patch 10: Add shared umem support between queue ids
+Patch 11: Add shared umem support between devices
+Patch 12: Add support for this in libbpf
+Patch 13: Add a new sample that demonstrates this new feature by
+          forwarding packets between different netdevs and queues
+Patch 14: Add documentation
+
+Thanks: Magnus
+
+Cristian Dumitrescu (1):
+  samples/bpf: add new sample xsk_fwd.c
+
+Magnus Karlsson (13):
+  xsk: i40e: ice: ixgbe: mlx5: pass buffer pool to driver instead of
+    umem
+  xsk: i40e: ice: ixgbe: mlx5: rename xsk zero-copy driver interfaces
+  xsk: create and free buffer pool independently from umem
+  xsk: move fill and completion rings to buffer pool
+  xsk: move queue_id, dev and need_wakeup to buffer pool
+  xsk: move xsk_tx_list and its lock to buffer pool
+  xsk: move addrs from buffer pool to umem
+  xsk: enable sharing of dma mappings
+  xsk: rearrange internal structs for better performance
+  xsk: add shared umem support between queue ids
+  xsk: add shared umem support between devices
+  libbpf: support shared umems between queues and devices
+  xsk: documentation for XDP_SHARED_UMEM between queues and netdevs
+
+ Documentation/networking/af_xdp.rst                |   68 +-
+ drivers/net/ethernet/intel/i40e/i40e_ethtool.c     |    2 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |   29 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c        |   10 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h        |    2 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         |   79 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.h         |    4 +-
+ drivers/net/ethernet/intel/ice/ice.h               |   18 +-
+ drivers/net/ethernet/intel/ice/ice_base.c          |   16 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c           |    2 +-
+ drivers/net/ethernet/intel/ice/ice_main.c          |   10 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c          |    8 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.h          |    2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c           |  142 +--
+ drivers/net/ethernet/intel/ice/ice_xsk.h           |    7 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h           |    2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |   34 +-
+ .../net/ethernet/intel/ixgbe/ixgbe_txrx_common.h   |    7 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |   61 +-
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   19 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |    5 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/pool.c  |  217 ++++
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/pool.h  |   27 +
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.h    |   10 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |   12 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.h |    2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.c    |   14 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.h    |    6 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/umem.c  |  217 ----
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/umem.h  |   29 -
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |    2 +-
+ .../ethernet/mellanox/mlx5/core/en_fs_ethtool.c    |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   49 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |   16 +-
+ include/linux/netdevice.h                          |   10 +-
+ include/net/xdp_sock.h                             |   30 +-
+ include/net/xdp_sock_drv.h                         |  115 ++-
+ include/net/xsk_buff_pool.h                        |   44 +-
+ net/ethtool/channels.c                             |    2 +-
+ net/ethtool/ioctl.c                                |    2 +-
+ net/xdp/xdp_umem.c                                 |  222 +---
+ net/xdp/xdp_umem.h                                 |    6 -
+ net/xdp/xsk.c                                      |  213 ++--
+ net/xdp/xsk.h                                      |    3 +
+ net/xdp/xsk_buff_pool.c                            |  309 +++++-
+ net/xdp/xsk_diag.c                                 |   14 +-
+ net/xdp/xsk_queue.h                                |   12 +-
+ samples/bpf/Makefile                               |    3 +
+ samples/bpf/xsk_fwd.c                              | 1075 ++++++++++++++++++++
+ tools/lib/bpf/libbpf.map                           |    1 +
+ tools/lib/bpf/xsk.c                                |  376 ++++---
+ tools/lib/bpf/xsk.h                                |    9 +
+ 53 files changed, 2505 insertions(+), 1073 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.h
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.c
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.h
+ create mode 100644 samples/bpf/xsk_fwd.c
+
+--
+2.7.4
