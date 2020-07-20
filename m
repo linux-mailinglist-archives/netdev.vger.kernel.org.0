@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA04B225650
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 05:50:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BBB222564B
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 05:50:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726264AbgGTDuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 23:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41778 "EHLO
+        id S1726650AbgGTDuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 23:50:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726123AbgGTDuB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 23:50:01 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E0BC0619D2;
-        Sun, 19 Jul 2020 20:50:01 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id u185so8391550pfu.1;
-        Sun, 19 Jul 2020 20:50:01 -0700 (PDT)
+        with ESMTP id S1726123AbgGTDuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 23:50:03 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3062C0619D2;
+        Sun, 19 Jul 2020 20:50:03 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id 207so8386007pfu.3;
+        Sun, 19 Jul 2020 20:50:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zpNQ7DCGwSOUMSEK/HU3GfgSbODJuk/1Ak8yOIxI+Lo=;
-        b=PL5iTwbBGXyIVqSqB9VAq4WTd8xfZWF8q75j3na4O4bCRxjSjklJNYvZVGX5coNz4E
-         KHDBEMUFejqwBRaahP+8+HrtEudl0YuIWYcWroqKFc7s6Da5ZWWdOKcvfDxwGntinkTF
-         WHw7YGSJnICohHpFqBxp96oNnEw3+JFMSFWmuyXoJwZm5CIILgKor33Hv/BWiQy7oBNm
-         3A69TWqMWFjCvKLFIPXcwbkHz0CRVPVG6le3bXIHOSxMP99D74XFSJviTYqixvihWQtg
-         npG7q6taxiuGUPVPdX5u8rRmaLHIVZkAL0bg3a+g2uSsz350kIVvLzykt0ec0sBLQ0sP
-         FxUw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YH5Ac89Q4DpBjkm7EXUDOjaAGjnjWFyt277PJmQDNsE=;
+        b=MVvmIcHlT557Sh1XefG+9U5EDY6JttOiXXx+c63j17II7CM6Y+PAzyUO8+IGTFUY5d
+         lo6RtCcJYZ92zo4Ca3q09+CEEkxTsmFy41RtujrjqkWrHLrva/+25xyHgQdpddxkHC7L
+         5N2mtk9/d3F1oEk+GHY3ZRPBhvmpOOoqbkHEmHdBmid6hCafE8TibQVUvwSLf/3q4OOv
+         Nx8h5h1u20IRLobl/y8W+ZRXJxM9Yj/6IVi5IslqDExclYwXuzuyNZ0VwxnF9OLzR/aF
+         HqRJ7GspvgRmh8VKmM34BsnPveTVYePC+vyrUVoLYAnv8p1sDH458fX1x9eNmXefIF94
+         UDYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zpNQ7DCGwSOUMSEK/HU3GfgSbODJuk/1Ak8yOIxI+Lo=;
-        b=PkjL9PsHiN/4vRNwMZDkvnOE6il+pWSg+AVPZhGPt2DOWea4eZA/dbbyrMYs9mbBOd
-         plGJ5GYRelyFVfZwEBKwD4tH9UBD/ycpyyIFlQ5dhTyjWXZDbDDLH7+0e4vx5ugFyihZ
-         DomhfUnwZM+eTJOO2ULQNN4VyrdXdCRtcsqg1HpF0nbiZ5PjdxFTtfTcjxIQ8KGXPy7y
-         UcvESUEm6HtaU8f/OWep2xweTHIDniXiYZ88uci7nfedQ5jP6GaZ3cD5McMcL5/QdzbK
-         m1VPeg97BD/x8voHw7wS+WAnN0wXO19kHtN8y0so+Ysx1nz9eAia9SXMk0YFcta02EOi
-         s//Q==
-X-Gm-Message-State: AOAM531VqKuzGmiuUiFtUFkB2eCOP26dsT1oAaeJqAAz34BRwI+Tqorx
-        LeP76xpq4uBAaZoRFhmBdEGXmRvd
-X-Google-Smtp-Source: ABdhPJyqoti0uhXOTBdcSbHSU2nkj0p0nV2nSMZQ7vPSfhtXeSYwVu7FJEke/oup3/tyyKRNwiclrA==
-X-Received: by 2002:a05:6a00:14ce:: with SMTP id w14mr18393710pfu.121.1595217000500;
-        Sun, 19 Jul 2020 20:50:00 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=YH5Ac89Q4DpBjkm7EXUDOjaAGjnjWFyt277PJmQDNsE=;
+        b=nUGcy4GrXZCs8i82JoZQNYOgWSGEn1PhIELid8kpCBzNXfevyBLxpGMRURe0GFrCXO
+         o3p4QhMyWIEUcJP5CXiirO7XyaUQnbdLX0J1UQgk2VtqUaHQh4r4Gdyef+c3opW4wo9l
+         1lpR7WiCBWRYrzmUKR0fXrCh2l8TEQuz6BdgvS8EfOLvN0jqRVnq4aEB8fDWyYFclvYu
+         NOOGNn90/rCYFtcT4gjVRswmZdhYcWrr1yEqVQX2i/Yng00prfkYX04ZqZRlhuxotkyO
+         vQrpRl7E32cizh1EygBPWZLifg8n4DOhPi9oiEN5f/eYwd7HC1VxE1iewUViQa02CkBu
+         UIYw==
+X-Gm-Message-State: AOAM533r6w1ZW2u+Kw+LkVq7o+TjeIHCi8auJ0R7Z3WS0BUpGboHjPJY
+        t3FswAzDDMK13/TfJtrRY6Ufy5wt
+X-Google-Smtp-Source: ABdhPJztFOPl178CyUsEQCSSbKiiOUseHDDiIXb7XQnCW15wuySTsJafHE8jrhNgkXBoareZuvgsjA==
+X-Received: by 2002:a62:140e:: with SMTP id 14mr17284700pfu.196.1595217002470;
+        Sun, 19 Jul 2020 20:50:02 -0700 (PDT)
 Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id z11sm15183445pfj.104.2020.07.19.20.49.58
+        by smtp.gmail.com with ESMTPSA id z11sm15183445pfj.104.2020.07.19.20.50.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jul 2020 20:49:59 -0700 (PDT)
+        Sun, 19 Jul 2020 20:50:01 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -62,10 +62,12 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Michal Kubecek <mkubecek@suse.cz>,
         linux-kernel@vger.kernel.org (open list), olteanv@gmail.com
-Subject: [PATCH net-next v2 0/4] net: dsa: Setup dsa_netdev_ops
-Date:   Sun, 19 Jul 2020 20:49:50 -0700
-Message-Id: <20200720034954.66895-1-f.fainelli@gmail.com>
+Subject: [PATCH net-next v2 1/4] net: Wrap ndo_do_ioctl() to prepare for DSA stacked ops
+Date:   Sun, 19 Jul 2020 20:49:51 -0700
+Message-Id: <20200720034954.66895-2-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200720034954.66895-1-f.fainelli@gmail.com>
+References: <20200720034954.66895-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -73,43 +75,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, Jakub,
+In preparation for adding another layer of call into a DSA stacked ops
+singleton, wrap the ndo_do_ioctl() call into dev_do_ioctl().
 
-This patch series addresses the overloading of a DSA CPU/management
-interface's netdev_ops for the purpose of providing useful information
-from the switch side.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ net/core/dev_ioctl.c | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
-Up until now we had duplicated the existing netdev_ops structure and
-added specific function pointers to return information of interest. Here
-we have a more controlled way of doing this by involving the specific
-netdev_ops function pointers that we want to be patched, which is easier
-for auditing code in the future. As a byproduct we can now maintain
-netdev_ops pointer comparisons which would be failing before (no known
-in tree problems because of that though).
-
-Let me know if this approach looks reasonable to you and we might do the
-same with our ethtool_ops overloading as well.
-
-Thanks!
-
-Changes in v2:
-
-- use static inline int vs. static int inline (Kbuild robot)
-- fixed typos in patch 4 (Andrew)
-- avoid using macros (Andrew)
-
-Florian Fainelli (4):
-  net: Wrap ndo_do_ioctl() to prepare for DSA stacked ops
-  net: dsa: Add wrappers for overloaded ndo_ops
-  net: Call into DSA netdevice_ops wrappers
-  net: dsa: Setup dsa_netdev_ops
-
- include/net/dsa.h    | 71 +++++++++++++++++++++++++++++++++++++++++++-
- net/core/dev.c       |  5 ++++
- net/core/dev_ioctl.c | 29 +++++++++++++-----
- net/dsa/master.c     | 52 ++++++++------------------------
- 4 files changed, 110 insertions(+), 47 deletions(-)
-
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index 547b587c1950..a213c703c90a 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -225,6 +225,22 @@ static int net_hwtstamp_validate(struct ifreq *ifr)
+ 	return 0;
+ }
+ 
++static int dev_do_ioctl(struct net_device *dev,
++			struct ifreq *ifr, unsigned int cmd)
++{
++	const struct net_device_ops *ops = dev->netdev_ops;
++	int err = -EOPNOTSUPP;
++
++	if (ops->ndo_do_ioctl) {
++		if (netif_device_present(dev))
++			err = ops->ndo_do_ioctl(dev, ifr, cmd);
++		else
++			err = -ENODEV;
++	}
++
++	return err;
++}
++
+ /*
+  *	Perform the SIOCxIFxxx calls, inside rtnl_lock()
+  */
+@@ -323,13 +339,7 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
+ 		    cmd == SIOCSHWTSTAMP ||
+ 		    cmd == SIOCGHWTSTAMP ||
+ 		    cmd == SIOCWANDEV) {
+-			err = -EOPNOTSUPP;
+-			if (ops->ndo_do_ioctl) {
+-				if (netif_device_present(dev))
+-					err = ops->ndo_do_ioctl(dev, ifr, cmd);
+-				else
+-					err = -ENODEV;
+-			}
++			err = dev_do_ioctl(dev, ifr, cmd);
+ 		} else
+ 			err = -EINVAL;
+ 
 -- 
 2.25.1
 
