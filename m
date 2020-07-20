@@ -2,99 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D44CC2254D6
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 02:11:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0938C2254D9
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 02:12:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726648AbgGTAKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 20:10:48 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38096 "EHLO mx2.suse.de"
+        id S1726614AbgGTAMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 20:12:53 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38264 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726553AbgGTAKs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jul 2020 20:10:48 -0400
+        id S1726156AbgGTAMx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jul 2020 20:12:53 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 5F651AF5B;
-        Mon, 20 Jul 2020 00:10:53 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 3432BAF5B;
+        Mon, 20 Jul 2020 00:12:57 +0000 (UTC)
 Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 046B960743; Mon, 20 Jul 2020 02:10:47 +0200 (CEST)
-Date:   Mon, 20 Jul 2020 02:10:46 +0200
+        id 1AD7B60743; Mon, 20 Jul 2020 02:12:51 +0200 (CEST)
+Date:   Mon, 20 Jul 2020 02:12:51 +0200
 From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Andre Guedes <andre.guedes@intel.com>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH ethtool 0/4] Add support for IGC driver
-Message-ID: <20200720001046.g7y3p7wrua5qz6i2@lion.mk-sys.cz>
-References: <20200707234800.39119-1-andre.guedes@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>
+Subject: Re: [PATCH ethtool] Fix segfault with cable test and ./configure
+ --disable-netlink
+Message-ID: <20200720001251.5nwf7nhcivl6b4yk@lion.mk-sys.cz>
+References: <20200716220509.1314265-1-andrew@lunn.ch>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ej7tdyo6eki5dxpl"
+        protocol="application/pgp-signature"; boundary="prr2elq2nx67n5cm"
 Content-Disposition: inline
-In-Reply-To: <20200707234800.39119-1-andre.guedes@intel.com>
+In-Reply-To: <20200716220509.1314265-1-andrew@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---ej7tdyo6eki5dxpl
+--prr2elq2nx67n5cm
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 07, 2020 at 04:47:56PM -0700, Andre Guedes wrote:
-> Hi all,
+On Fri, Jul 17, 2020 at 12:05:09AM +0200, Andrew Lunn wrote:
+> When the netlink interface code is disabled, a stub version of
+> netlink_run_handler() is used. This stub version needs to handle the
+> case when there is no possibility for a command to fall back to the
+> IOCTL call. The two cable tests commands have no such fallback, and if
+> we don't handle this, ethtool tries to jump through a NULL pointer
+> resulting in a segfault.
 >=20
-> This patch series adds support for parsing registers dumped by the IGC dr=
-iver.
-> For now, the following registers are parsed:
->=20
-> 	* Receive Address Low (RAL)
-> 	* Receive Address High (RAH)
-> 	* Receive Control (RCTL)
-> 	* VLAN Priority Queue Filter (VLANPQF)
-> 	* EType Queue Filter (ETQF)
->=20
-> More registers should be parsed as we need/enable them.
->=20
-> Cheers,
-> Andre
+> Reported-by: Chris Healy <cphealy@gmail.com>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-Series merged. But please consider making the output consistent with
-other Intel drivers which use lowercase keywords for values (e.g.
-"enabled") and "yes"/"no" for bool values (rather than "True" / "False").
+Applied, thank you. I'll need to be more thorough with teseting the
+--disable-netlink builds.
 
 Michal
 
+> ---
+>  netlink/extapi.h | 6 ++++++
+>  1 file changed, 6 insertions(+)
 >=20
-> Andre Guedes (4):
->   Add IGC driver support
->   igc: Parse RCTL register fields
->   igc: Parse VLANPQF register fields
->   igc: Parse ETQF registers
->=20
->  Makefile.am |   3 +-
->  ethtool.c   |   1 +
->  igc.c       | 283 ++++++++++++++++++++++++++++++++++++++++++++++++++++
->  internal.h  |   3 +
->  4 files changed, 289 insertions(+), 1 deletion(-)
->  create mode 100644 igc.c
->=20
+> diff --git a/netlink/extapi.h b/netlink/extapi.h
+> index c5bfde9..a35d5f2 100644
+> --- a/netlink/extapi.h
+> +++ b/netlink/extapi.h
+> @@ -46,6 +46,12 @@ void nl_monitor_usage(void);
+>  static inline void netlink_run_handler(struct cmd_context *ctx,
+>  				       nl_func_t nlfunc, bool no_fallback)
+>  {
+> +	if (no_fallback) {
+> +		fprintf(stderr,
+> +			"Command requires kernel netlink support which is not "
+> +			"enabled in this ethtool binary\n");
+> +		exit(1);
+> +	}
+>  }
+> =20
+>  static inline int nl_monitor(struct cmd_context *ctx)
 > --=20
-> 2.26.2
+> 2.27.0
 >=20
 
---ej7tdyo6eki5dxpl
+--prr2elq2nx67n5cm
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8U4PsACgkQ538sG/LR
-dpXm9QgAq72fYscACYbNgLvt5loeQmo308467Y/f74rgitTYOHpomU6d+mK2ipkt
-dO8k6vbPnFJSQET6VhS/HSP/FyYcvvhLe36yoai9CKdPrFxoe5SIDA6N347b5vaD
-CHzOr48YgA+Ja63JQ7GtNQ1XouElw0htGLHrqTp6VFTq7vUx5TgcitoOzO9bZN4m
-v1TiHVqw/rexWVn8EEWMUpNTviVmAyiAsktume3iW81JncrPiZNgyH//gsFLAd0u
-g73Wg3hsP9uhkuXrcXeQWGZp8DZaT47PfYajbtsQYrba43nL3t2Yi5giYAHvZgUC
-oWOaGXiNylF3ZsvYDi0rDIUqsXwNBQ==
-=tfbV
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8U4X0ACgkQ538sG/LR
+dpUw8wf+KXbdFefYJEQ+biIxC/DsjwfBEldWywiF+l4XmIiLAkA5kRpvF0IlOfUj
+rr37tK/7/HF3R0Tc4nJn7qYgYB/PEXPp1gAmFinbuTrfWyD6DsCOvfTWLC7exy/7
+I6OkTCV+RujuH2qoMQsfIvUqxm7Cnd+GE6JRX1/DhuhbXDshDJvU8o4DrdCksTuW
+tY5VZ5zPN1OyjNmhpE7vbUIivjdKmkFhK0tZ3dtn4Q3R72DQ8fL6omZFMDuRRcrT
++mSJ3d8Stn16h6ArJpdssWKMr0laaRB5VrTOY0fJb9JBXa7w18pV3CAUEhsg62z3
+P0Mnt/fgzaoqkxVarY8+TNdalSbYQA==
+=xsmd
 -----END PGP SIGNATURE-----
 
---ej7tdyo6eki5dxpl--
+--prr2elq2nx67n5cm--
