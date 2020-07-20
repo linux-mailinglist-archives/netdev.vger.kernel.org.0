@@ -2,84 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF3722650A
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 17:50:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A082226542
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 17:52:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731117AbgGTPuW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Jul 2020 11:50:22 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:29989 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730669AbgGTPuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 11:50:20 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-258-sz9WrWQfOJC-d4mv7nHeLA-1; Mon, 20 Jul 2020 16:50:16 +0100
-X-MC-Unique: sz9WrWQfOJC-d4mv7nHeLA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 20 Jul 2020 16:50:16 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 20 Jul 2020 16:50:16 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: Misaligned IPv6 addresses is SCTP socket options.
-Thread-Topic: Misaligned IPv6 addresses is SCTP socket options.
-Thread-Index: AdZeq3CoQr6UZTOvRHy9xmmfSyelxA==
-Date:   Mon, 20 Jul 2020 15:50:16 +0000
-Message-ID: <f380b70f54854d98a9c801c7ae6bc370@AcuMS.aculab.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1731331AbgGTPwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 11:52:14 -0400
+Received: from mx4.wp.pl ([212.77.101.11]:35459 "EHLO mx4.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731334AbgGTPwM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 11:52:12 -0400
+Received: (wp-smtpd smtp.wp.pl 31256 invoked from network); 20 Jul 2020 17:52:09 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1595260329; bh=ZrlhkySk6mEIjriz0LOP6iIg6Usur+0iMbg+WnnDg3w=;
+          h=From:To:Cc:Subject;
+          b=qPwg2Wp9j2HBXxpoYBVYI77NOsXOlm8vWdRYN1CUgp1MF2ZFNdB/kb/zY3MlsKPc+
+           vu3cNBWjTvR0psRKRsfW0cwnYvP7Jy6ws/1VJlSpYWcv8Yl/5vj9w06WXnQMzEFXVy
+           xn0lb09n2nSq7/OYBVh/efEFP9mUM5BiiWJmSjNQ=
+Received: from unknown (HELO kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com) (kubakici@wp.pl@[163.114.132.7])
+          (envelope-sender <kubakici@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <jiri@resnulli.us>; 20 Jul 2020 17:52:09 +0200
+Date:   Mon, 20 Jul 2020 08:51:59 -0700
+From:   Jakub Kicinski <kubakici@wp.pl>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        Tom Herbert <tom@herbertland.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+Subject: Re: [RFC PATCH net-next v2 6/6] devlink: add overwrite mode to
+ flash update
+Message-ID: <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200720100953.GB2235@nanopsycho>
+References: <20200717183541.797878-1-jacob.e.keller@intel.com>
+        <20200717183541.797878-7-jacob.e.keller@intel.com>
+        <20200720100953.GB2235@nanopsycho>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-WP-MailID: 3cd3569609cf8f4009c80ad218d394be
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000001 [4fKz]                               
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Several of the structures in linux/uapi/linux/sctp.h are
-marked __attribute__((packed, aligned(4))).
+On Mon, 20 Jul 2020 12:09:53 +0200 Jiri Pirko wrote:
+> This looks odd. You have a single image yet you somehow divide it
+> into "program" and "config" areas. We already have infra in place to
+> take care of this. See DEVLINK_ATTR_FLASH_UPDATE_COMPONENT.
+> You should have 2 components:
+> 1) "program"
+> 2) "config"
+> 
+> Then it is up to the user what he decides to flash.
 
-I believe this was done so that the UAPI structure was the
-same on both 32 and 64bit systems.
-The 'natural' alignment is that of 'u64' - so would differ
-between 32 and 64 bit x86 cpus.
+99.9% of the time users want to flash "all". To achieve "don't flash
+config" with current infra users would have to flash each component 
+one by one and then omit the one(s) which is config (guessing which 
+one that is based on the name).
 
-There are two horrible issues here:
+Wouldn't this be quite inconvenient?
 
-1) I believe the natural alignment of u64 is actually 8
-   bytes on some 32bit architectures.
-   So the change would have broken binary compatibility
-   for 32bit applications compiled before the alignment
-   was added.
-
-2) Inside the kernel the address of the structure member
-   is 'blindly' passed through as if it were an aligned
-   pointer.
-   For instance I'm pretty sure is can get passed to
-   inet_addr_is_any() (in net/core/utils.).
-   Here it gets passed to memcmp().
-   gcc will inline the memcmp() and almost certainly use 64bit
-   accesses.
-   These will fault on architectures (like sparc64).
-
-No amount of casting can make gcc 'forget' the alignment
-of a structure.
-Passing to an external function as 'void *' will - but
-even the LTO could track the alignment through.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+In case of MLX is PSID considered config?
