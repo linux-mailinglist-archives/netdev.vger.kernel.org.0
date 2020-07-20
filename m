@@ -2,101 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD297225783
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 08:21:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7BD722578A
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 08:24:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726803AbgGTGVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 02:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36804 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbgGTGVt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 02:21:49 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1876EC0619D2;
-        Sun, 19 Jul 2020 23:21:49 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id b25so12182573qto.2;
-        Sun, 19 Jul 2020 23:21:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=unEM6mZzBiwmeXXw1zFkZp6UX4pprtiHLNJYCNVdhVo=;
-        b=JJ6FLlYsknqs0cjaFkw+zN+v/a2bj0HXVs9jYEf7a8xNJRyyu1HMg2UJBxOJXZGiZf
-         MSsaukJpXZ2r3u7mLykUCqDKTaXp4YvjIaW8wVUaScuBgrZXT9cT8Uoh6tEbTj742VpB
-         gJ4VyCwNeQ/9MzfKxGzh/ZimeAYvZlK37j7kvljUHBh8kD542Pau3LYWp6lqtQn0rbCY
-         CgwkKXGawPMI0GCpBIF5wLSvHO/IrAHZdV+ZLvPojpbVanr8VA1dEHen6szm+dbbSDRv
-         mufslaPF1GqcUe7TXWIVU0MhRWbHKngdFdgO0/ZqWM/2z8IRhwyUaMvCw/c15I2qooPV
-         FQoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=unEM6mZzBiwmeXXw1zFkZp6UX4pprtiHLNJYCNVdhVo=;
-        b=WqsRHmf2Om/zmRRvWWlWvqHNEIcS3Xr0WMHCIEltMRkHtRrLnTFatwNBHvs7M4uAat
-         GmXqf5/BVZwmn5DWOpfX2mQfqlgr1SKnt2m80BsA2DRwQc1inv3UggBvFry+2iYi1PT1
-         1K3QM84/L3vHhPimp4VplTT8ckHDfB3fdZWnQFLgJfks8PSgyvy1aBIkbGpPDOIVNpLu
-         smB1hUkwQYoUsn+QxsWgS80oE0AhSKAvnhxb/2Ghtpao/zJm67tn5FbJhyAoLSA9Abze
-         mGm5pk9GwgkT+EliBIzTAIcFooxA1xE0KGQSfcAwT2L76g/fXDtf/1EfdF5TtZGcSSgG
-         AFpw==
-X-Gm-Message-State: AOAM533OivI5JQuH14bRLl2485PomSXJ2Y7I3k8uEf95Wkkx7Xd6n7Y5
-        mwSccKtc5YFZYYqI6YHr+bIzJR6oekQhxoAsmB0=
-X-Google-Smtp-Source: ABdhPJxkZjzkAgCjsrHugDN9xC7tc46uOaXmp3/+1zlTL4vOBOHWUVi5xdvxVXOtN9uLT031KzcVHxUxiE97sLUSYmc=
-X-Received: by 2002:ac8:19c4:: with SMTP id s4mr22463589qtk.117.1595226108291;
- Sun, 19 Jul 2020 23:21:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200720061741.1514673-1-irogers@google.com>
-In-Reply-To: <20200720061741.1514673-1-irogers@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 19 Jul 2020 23:21:37 -0700
-Message-ID: <CAEf4BzaEJOV_eUtUEr6Q=E_fzU1d=jiN_ZwFQ-6=bdF9CYOgXg@mail.gmail.com>
-Subject: Re: [PATCH v2] libbpf bpf_helpers: Use __builtin_offsetof for offsetof
-To:     Ian Rogers <irogers@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726893AbgGTGY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 02:24:26 -0400
+Received: from smtp25.cstnet.cn ([159.226.251.25]:44744 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725805AbgGTGY0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 02:24:26 -0400
+Received: from localhost (unknown [159.226.5.99])
+        by APP-05 (Coremail) with SMTP id zQCowACX3g6LOBVf0Ub9AQ--.44249S2;
+        Mon, 20 Jul 2020 14:24:12 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        davem@davemloft.net, kuba@kernel.org, vulab@iscas.ac.cn,
+        kw@linux.com, colin.king@canonical.com, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] net: hns: use eth_broadcast_addr() to assign broadcast address
+Date:   Mon, 20 Jul 2020 06:24:10 +0000
+Message-Id: <20200720062410.7773-1-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: zQCowACX3g6LOBVf0Ub9AQ--.44249S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7XrW5uFyxCr17AF47JryDtrb_yoWfWrb_WF
+        yj9F4rWw4UKryFya1rta9rurySv3Z0qw18uF42yrZ3JasxGr13Xa40vF4UAr1DWa17uF93
+        KrsFqaySya42vjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb4kFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jw0_WrylYx0Ex4A2jsIE14v26r4UJVWxJr1lOx8S6xCaFVCjc4AY6r
+        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
+        GF1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
+        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI
+        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
+        1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8
+        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUe5rcDU
+        UUU
+X-Originating-IP: [159.226.5.99]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCAQDA18J9gK2zwAAsX
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 19, 2020 at 11:18 PM Ian Rogers <irogers@google.com> wrote:
->
-> The non-builtin route for offsetof has a dependency on size_t from
-> stdlib.h/stdint.h that is undeclared and may break targets.
-> The offsetof macro in bpf_helpers may disable the same macro in other
-> headers that have a #ifdef offsetof guard. Rather than add additional
-> dependencies improve the offsetof macro declared here to use the
-> builtin that is available since llvm 3.7 (the first with a BPF backend).
->
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
+This patch is to use eth_broadcast_addr() to assign broadcast address
+insetad of memset().
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+---
+ drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->  tools/lib/bpf/bpf_helpers.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> index a510d8ed716f..bc14db706b88 100644
-> --- a/tools/lib/bpf/bpf_helpers.h
-> +++ b/tools/lib/bpf/bpf_helpers.h
-> @@ -40,7 +40,7 @@
->   * Helper macro to manipulate data structures
->   */
->  #ifndef offsetof
-> -#define offsetof(TYPE, MEMBER)  ((size_t)&((TYPE *)0)->MEMBER)
-> +#define offsetof(TYPE, MEMBER)  __builtin_offsetof(TYPE, MEMBER)
->  #endif
->  #ifndef container_of
->  #define container_of(ptr, type, member)                                \
-> --
-> 2.28.0.rc0.105.gf9edc3c819-goog
->
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
+index 1c5243cc1dc6..acfa86e5296f 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
+@@ -1724,7 +1724,7 @@ static void hns_dsaf_setup_mc_mask(struct dsaf_device *dsaf_dev,
+ 				   u8 port_num, u8 *mask, u8 *addr)
+ {
+ 	if (MAC_IS_BROADCAST(addr))
+-		memset(mask, 0xff, ETH_ALEN);
++		eth_broadcast_addr(mask);
+ 	else
+ 		memcpy(mask, dsaf_dev->mac_cb[port_num]->mc_mask, ETH_ALEN);
+ }
+-- 
+2.17.1
+
