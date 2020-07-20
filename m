@@ -2,114 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E4C022607D
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 15:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FEDB2260A2
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 15:19:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727844AbgGTNLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 09:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725815AbgGTNLp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 09:11:45 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF485C061794;
-        Mon, 20 Jul 2020 06:11:44 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id g13so12841676qtv.8;
-        Mon, 20 Jul 2020 06:11:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3cui7NTSv7/kxnwczpZltAgKV4Z+Rc/nVHOHoo00mt0=;
-        b=uNRe80qDgULTIFXx4OHuYhkc0Mpj53lEAjIFOUYGUnu52k6u5XpbNzpADcrAj0TwhH
-         PtwJgfCjC7RnjsHiFKPUsKfB3wrHmwAYnYsXriN6INNNR8F2yLyKUqJVV0lGR87bQaC5
-         tiRlIvqeO2GfTOc7ZyeEQ3vrX7jI36egwEP8OeWMJuOdLHzYINcGTKvNPXRAoTM7KA03
-         gXwNxtBed+6vnedhvVlPZyWoEKvvCLjJfryO7BO7nSSYOHdsjLWfQOEKc0UMahq3mofn
-         HVRztVJmh+fxfT3g4X3EpUEoiPltJZJOCc2XXsGznYjzE0Fl6IdUwNKc50Hrpsz8HVPe
-         uUYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3cui7NTSv7/kxnwczpZltAgKV4Z+Rc/nVHOHoo00mt0=;
-        b=e2J6IMy+Pl1y7tZFkHpFvHtQ9MffJmi3sD12OAIOI6npMEOCCnB274f8D5M2UCULEH
-         qon6d0/4q7RDJgpylSdBdWN1KievkwXe9hj/36zbhWzddWO0GF6/8BaPf6vwiWwpCsJI
-         y3M/KpQUTOqYJVEuUvhpGWZtsO81I5+pR8/WFJ1krAgampu1H60mXSPux3jIvJWEVxje
-         1L+6XJPkn/utsg3aqgabWnyRVC565uqPJ9oPa2X3OhWJwR+kiyjQa6hXmoVBliib2vs4
-         iNqIJFGeJjf0BT50NvShCY3/qeCPwLRX5v7LGNznW7lKYSHf+dQyaPtMg4/bYglKQwTm
-         MT/Q==
-X-Gm-Message-State: AOAM530iwx4GuVX5EevIYPOySdgH8WiFtkkCTf5HkLA4Jlc4mYZ6XmV5
-        3iCzi04vDw5eXq3kDuhGiDFkwLkt6ms=
-X-Google-Smtp-Source: ABdhPJzkTvyvK2oiUrfiK08SdQcxW/halGCzgjN0K8Lo2vmt1zrrynU7udSjN8SZNGSXjGsqZBRI2w==
-X-Received: by 2002:ac8:5411:: with SMTP id b17mr23502044qtq.238.1595250704133;
-        Mon, 20 Jul 2020 06:11:44 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:97d4:431e:ed87:df3d:c941])
-        by smtp.gmail.com with ESMTPSA id h18sm9409224qkh.61.2020.07.20.06.11.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 06:11:42 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 5B162C50C5; Mon, 20 Jul 2020 10:11:40 -0300 (-03)
-Date:   Mon, 20 Jul 2020 10:11:40 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
-        kuba@kernel.org, corbet@lwn.net, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH for v5.9] sctp: Replace HTTP links with HTTPS ones
-Message-ID: <20200720131140.GC2491@localhost.localdomain>
-References: <20200719202644.61663-1-grandmaster@al2klimov.de>
+        id S1726657AbgGTNTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 09:19:38 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:37746 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725815AbgGTNTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 09:19:38 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06KDJXt2105006;
+        Mon, 20 Jul 2020 08:19:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1595251173;
+        bh=lQkmrXkxmjgvdDGKUkqI+tRS+w+c5jgpkKk07Nq2HRI=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=AbJ0kI+TCQee61e3e6pY9QSWfXUCY9+i+Zc1llG4XnVxSYXZ3RE4u0ONjsNWLqpH5
+         47CDUzDjlYqkh0X+XmoQN3TK7SOUV/abBeLXbuFoxFW/IGvnU0Qd2KFXMuJJAutZcU
+         ye3eVwpy98iH/IdlcDGhr2T4cjgg1hAY2ndgLxEg=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06KDJXHI061226
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 20 Jul 2020 08:19:33 -0500
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 20
+ Jul 2020 08:19:33 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 20 Jul 2020 08:19:33 -0500
+Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06KDJWNR014210;
+        Mon, 20 Jul 2020 08:19:32 -0500
+Subject: Re: [net-next PATCH v3 1/7] hsr: enhance netlink socket interface to
+ support PRP
+To:     David Miller <davem@davemloft.net>
+CC:     <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
+        <nsekhar@ti.com>, <grygorii.strashko@ti.com>,
+        <vinicius.gomes@intel.com>
+References: <20200717151511.329-1-m-karicheri2@ti.com>
+ <20200717151511.329-2-m-karicheri2@ti.com>
+ <20200717.185611.1278374862685166021.davem@davemloft.net>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <fac7f266-98e5-2750-7230-d4e6bc94b4d4@ti.com>
+Date:   Mon, 20 Jul 2020 09:19:32 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200719202644.61663-1-grandmaster@al2klimov.de>
+In-Reply-To: <20200717.185611.1278374862685166021.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 19, 2020 at 10:26:44PM +0200, Alexander A. Klimov wrote:
-> Rationale:
-> Reduces attack surface on kernel devs opening the links for MITM
-> as HTTPS traffic is much harder to manipulate.
-> 
-> Deterministic algorithm:
-> For each file:
->   If not .svg:
->     For each line:
->       If doesn't contain `\bxmlns\b`:
->         For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-> 	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
->             If both the HTTP and HTTPS versions
->             return 200 OK and serve the same content:
->               Replace HTTP with HTTPS.
-> 
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
-> ---
->  Continuing my work started at 93431e0607e5.
->  See also: git log --oneline '--author=Alexander A. Klimov <grandmaster@al2klimov.de>' v5.7..master
->  (Actually letting a shell for loop submit all this stuff for me.)
-> 
->  If there are any URLs to be removed completely
->  or at least not (just) HTTPSified:
->  Just clearly say so and I'll *undo my change*.
->  See also: https://lkml.org/lkml/2020/6/27/64
-> 
->  If there are any valid, but yet not changed URLs:
->  See: https://lkml.org/lkml/2020/6/26/837
-> 
->  If you apply the patch, please let me know.
-> 
->  Sorry again to all maintainers who complained about subject lines.
->  Now I realized that you want an actually perfect prefixes,
->  not just subsystem ones.
->  I tried my best...
->  And yes, *I could* (at least half-)automate it.
->  Impossible is nothing! :)
 
-The subject prefix is right for sctp, but the patch tag should have
-been "PATCH net-next" instead. :-)
 
-Thankfully, they can fix it for us.
+On 7/17/20 9:56 PM, David Miller wrote:
+> From: Murali Karicheri <m-karicheri2@ti.com>
+> Date: Fri, 17 Jul 2020 11:15:05 -0400
+> 
+>> @@ -32,7 +33,9 @@ static int hsr_newlink(struct net *src_net, struct net_device *dev,
+>>   		       struct netlink_ext_ack *extack)
+>>   {
+>>   	struct net_device *link[2];
+>> -	unsigned char multicast_spec, hsr_version;
+>> +	unsigned char multicast_spec;
+>> +	enum hsr_version proto_version;
+>> +	u8 proto = HSR_PROTOCOL_HSR;
+> 
+> Please use reverse christmas tree ordering for local variables.
+> 
+Ok.
+> Thank you.
+> 
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+-- 
+Murali Karicheri
+Texas Instruments
