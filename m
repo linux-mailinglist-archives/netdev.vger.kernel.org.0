@@ -2,97 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BF60225B65
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 11:23:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDEEA225B62
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 11:23:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728182AbgGTJXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 05:23:48 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:42004 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727961AbgGTJXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 05:23:47 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06K963Fj001059;
-        Mon, 20 Jul 2020 02:23:37 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0818;
- bh=9Pdq+syVPGsE7NiIyror1875Q3xdqrQ6j+hVF3yHZjg=;
- b=GpfalX26qtABHMyMnlaBzTPipHdhsk1hzqJXVsyAoggEenmtwV2vXAH1lQza9vbkg5K4
- cTVgEuoovRPHhc0cDG/R+yuClPKQogoGUjK1xd0dxzeakTK44GYxn+CHA+cOwEUmK1gQ
- 4xGQfJoTym1DJAQmZKTzZggp1Mago54Xn9hU46zgKqSkFW89OQzP8oLocbayARihnPRe
- o6ZyFtG2i0mPii2CrzH8+v5Wji+WXtF+YLmVUxH33vSbHdmGZcSr1oQJ7hqj3vVqvToQ
- Oin3Y0pnW42+hE3AhkQI1GlASHz+SK948L8IhZPl3j+CY4g822NrBKjD0E0p0Oar8dVU BA== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 32c0kkda03-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 20 Jul 2020 02:23:37 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Jul
- 2020 02:23:34 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 20 Jul 2020 02:23:34 -0700
-Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
-        by maili.marvell.com (Postfix) with ESMTP id 37CDE3F703F;
-        Mon, 20 Jul 2020 02:23:29 -0700 (PDT)
-From:   Alexander Lobakin <alobakin@marvell.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Alexander Lobakin <alobakin@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        "Ariel Elior" <aelior@marvell.com>,
-        Denis Bolotin <denis.bolotin@marvell.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        <GR-everest-linux-l2@marvell.com>,
-        <QLogic-Storage-Upstream@marvell.com>, <netdev@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 01/14] qed: convert link mode from u32 to bitmap
-Date:   Mon, 20 Jul 2020 12:23:06 +0300
-Message-ID: <20200720092306.355-1-alobakin@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200719212100.GM1383417@lunn.ch>
-References: <20200719212100.GM1383417@lunn.ch>
- <20200719201453.3648-1-alobakin@marvell.com>
- <20200719201453.3648-2-alobakin@marvell.com>
+        id S1728125AbgGTJXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 05:23:35 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:36468 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727961AbgGTJXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 05:23:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1595237015; x=1626773015;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=+7yAVZl6mHmUHzH/+LVL6YAFykoxwPD4jg9C2cO3LOg=;
+  b=Gck+mCm9qzRnNinmRnf/iKM96JnoffpbBhBSNgKYX6nxJU04JNI2CEhT
+   0TzJMLniH+8c3NRAq1oTb0yVReHQo5/jojJadHb6KfMAH9w970P1JYNm4
+   qyFzWbm6Ja2VTOqb52J6RE5Ak88nc8N86L+Cs4X8N08CLv8hX/tgVFFwI
+   4=;
+IronPort-SDR: C8cd0F9M+jjP4jsjmMLL96Y3EX8+slPuwv4bDevIK7M6h+ACb+rK0U7pTSR7KPZ6ZH4KOOylOT
+ kxavO417bAmw==
+X-IronPort-AV: E=Sophos;i="5.75,374,1589241600"; 
+   d="scan'208";a="59807333"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 20 Jul 2020 09:23:33 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com (Postfix) with ESMTPS id C72D2A28E3;
+        Mon, 20 Jul 2020 09:23:31 +0000 (UTC)
+Received: from EX13D28EUC001.ant.amazon.com (10.43.164.4) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 20 Jul 2020 09:23:31 +0000
+Received: from ua97a68a4e7db56.ant.amazon.com.amazon.com (10.43.161.146) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 20 Jul 2020 09:23:25 +0000
+References: <20200720075614.35676-1-wanghai38@huawei.com>
+User-agent: mu4e 1.4.10; emacs 26.3
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Wang Hai <wanghai38@huawei.com>
+CC:     <joe@perches.com>, <gtzalik@amazon.com>, <saeedb@amazon.com>,
+        <zorik@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <sameehj@amazon.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v3] net: ena: Fix using plain integer as NULL pointer in ena_init_napi_in_range
+In-Reply-To: <20200720075614.35676-1-wanghai38@huawei.com>
+Date:   Mon, 20 Jul 2020 12:23:20 +0300
+Message-ID: <pj41zlimeibkvr.fsf@ua97a68a4e7db56.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-20_05:2020-07-17,2020-07-20 signatures=0
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.161.146]
+X-ClientProxiedBy: EX13D20UWC001.ant.amazon.com (10.43.162.244) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Date: Sun, 19 Jul 2020 23:21:00 +0200
-From: Andrew Lunn <andrew@lunn.ch>
 
-> On Sun, Jul 19, 2020 at 11:14:40PM +0300, Alexander Lobakin wrote:
->> Currently qed driver already ran out of 32 bits to store link modes,
->> and this doesn't allow to add and support more speeds.
->> Convert link mode to bitmap that will always have enough space for
->> any number of speeds and modes.
+Wang Hai <wanghai38@huawei.com> writes:
+
+> Fix sparse build warning:
 >
-> Hi Alexander
+> drivers/net/ethernet/amazon/ena/ena_netdev.c:2193:34: warning:
+>  Using plain integer as NULL pointer
+>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+> Suggested-by: Joe Perches <joe@perches.com>
+> Acked-by: Shay Agroskin <shayagr@amazon.com>
+> ---
+> v1->v2:
+>  Improve code readability based on Joe Perches's suggestion 
+> v2->v3:
+>  Simplify code based on Joe Perches's suggestion
+>  drivers/net/ethernet/amazon/ena/ena_netdev.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
+> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> index 91be3ffa1c5c..3eb63b12dd68 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> @@ -2190,14 +2190,13 @@ static void ena_del_napi_in_range(struct 
+> ena_adapter *adapter,
+>  static void ena_init_napi_in_range(struct ena_adapter *adapter,
+>  				   int first_index, int count)
+>  {
+> -	struct ena_napi *napi = {0};
+>  	int i;
+>  
+>  	for (i = first_index; i < first_index + count; i++) {
+> -		napi = &adapter->ena_napi[i];
+> +		struct ena_napi *napi = &adapter->ena_napi[i];
+>  
+>  		netif_napi_add(adapter->netdev,
+> -			       &adapter->ena_napi[i].napi,
+> +			       &napi->napi,
+>  			       ENA_IS_XDP_INDEX(adapter, i) ? 
+>  ena_xdp_io_poll : ena_io_poll,
+>  			       ENA_NAPI_BUDGET);
 
-Hi Andrew!
+Acked-by: Shay Agroskin <shayagr@amazon.com>
 
-> Why not just throw away all these QED_LM_ defines and use the kernel
-> link modes? The fact you are changing the u32 to a bitmap suggests the
-> hardware does not use them.
-
-I've just double-checked, and you're right, management firmware operates
-with NVM_* definitions, while QED_LM_* are used only in QED and QEDE to
-fill Ethtool link settings.
-I didn't notice this while working on the series, but it would be really
-a lot better to just use generic definitions.
-So I'll send v3 soon.
-
->      Andrew
-
-Thanks,
-Al
+Thanks a lot for your work
