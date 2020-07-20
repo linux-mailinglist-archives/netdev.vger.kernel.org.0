@@ -2,85 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FC02225633
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 05:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EF5C22567B
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 06:19:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbgGTDiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 23:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726109AbgGTDiL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 23:38:11 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E74C0619D2;
-        Sun, 19 Jul 2020 20:38:11 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id di5so6781196qvb.11;
-        Sun, 19 Jul 2020 20:38:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=oaIzGEEZveiQMSCkbwAGqZZaFN7FoxKI0NJhSLnSxgo=;
-        b=AJrEQYs+wh33p+xo/eX/nWpGmj0C2AO1VNt6OnCM/lEy6NqjMgXNSeYIFoQtUIxkcL
-         I7ZAEbJFUuWqmYkAEJ+zmaUc57XCpcNr0NXOEXEt3DUAtoor7heG8D1c37yJtHL9yCdQ
-         pm4eMZI7AnFXxYYObu1rfnkl5BQJOjZ9Pd50ZrCgg5p7xXumvkVeI6A+1BIqnht4xw20
-         /nf0fvaeOfF5GDv/46V1fD+mMjrop3O35Ei22YY9AlLfz1zQCu6WK0avCC9QmxP1mwU/
-         abCpuFCcYPLBfl+4mPeh6Ie6xB33Aw9fYJqIVqrHQ6UXBw/nzUzEy4MUhCOeWBQIKZif
-         X/Sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=oaIzGEEZveiQMSCkbwAGqZZaFN7FoxKI0NJhSLnSxgo=;
-        b=YUMTBs8AYVodpk/oBkG7W3lDnpZOxykkdCfXzw7osUEWomPx3mGapd/DcPeq13RrRp
-         SQI/KNOXpf/7mPUqKVRoVE86/9vVxP2gAHPrj2njJYzRVahuh9loy8bd3e1oLrGsv2YO
-         vnu4Vm7yOqAcAFoySj5iVOs7BVtWUqmO5IjaTyO+NSIUPyAmKSyW3vEXQ3CHrPvd1C86
-         r0bjuCe6x5a0WPGyIpHgrJQVStMEl8jqFAtQOAsnEgWJJrWS7ml9jHu0ufO4GoQN5ypB
-         47nZqQWisFEWD0KvIZDUJBtdAFK/vvnMXVQh40em4TEGMM+kNB0kZmQinXIcbAdEVpAb
-         C9IQ==
-X-Gm-Message-State: AOAM5305zA/hyc6eE8h4HclMH6jj3MtyYa0uc9UGqG8gUvqKQxv8GCTg
-        m0QE4lk9YtiaRSEaOcaVMyKoz8GOHsB16AlSsig=
-X-Google-Smtp-Source: ABdhPJxvXBGS0BD/InarfWy7hgLYeN2zRMrqKRpMyOetQ7B1qzkJJhfNXzpPpGn7ndjLOlugNRSPQ6CvDTUN2kAreEI=
-X-Received: by 2002:a0c:f842:: with SMTP id g2mr20183756qvo.181.1595216290583;
- Sun, 19 Jul 2020 20:38:10 -0700 (PDT)
+        id S1726045AbgGTETy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 00:19:54 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:54218 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725774AbgGTETx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 00:19:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1595218792;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=04wRZDzfAbjzY24AOQSUyoqCb/wNOPZL7NBzxLPbzVc=;
+        b=Th5aOFzFuuITP3XQy8b+7s/gwxOp6ibKciGcBdhxuaggEZQQIIZ2LvVSBlyk9mb7L3LwMk
+        +LtKXIAnzx2+UUHUn2LCKtxC/u1OwLylpLp8ZC/YeR4gdxjfCVdGrCk3SM+zZ55M62tzAo
+        5Dd8oSA5qMCTdp7oeLthLSl3r+5WyIs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-84-9KzyVAvVO_aogPSdmTB61Q-1; Mon, 20 Jul 2020 00:19:51 -0400
+X-MC-Unique: 9KzyVAvVO_aogPSdmTB61Q-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6FF53107ACCA;
+        Mon, 20 Jul 2020 04:19:49 +0000 (UTC)
+Received: from [10.72.13.139] (ovpn-13-139.pek2.redhat.com [10.72.13.139])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B12925C1B2;
+        Mon, 20 Jul 2020 04:19:38 +0000 (UTC)
+Subject: Re: [PATCH V2 2/6] kvm: detect assigned device via irqbypass manager
+To:     Alex Williamson <alex.williamson@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     mst@redhat.com, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, wanpengli@tencent.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <1594898629-18790-1-git-send-email-lingshan.zhu@intel.com>
+ <1594898629-18790-3-git-send-email-lingshan.zhu@intel.com>
+ <20200717120821.3c2a56db@x1.home>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <c46dc561-610e-e992-8bb9-e7286a560971@redhat.com>
+Date:   Mon, 20 Jul 2020 12:19:37 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-From:   lebon zhou <lebon.zhou@gmail.com>
-Date:   Mon, 20 Jul 2020 04:34:58 +0000
-Message-ID: <CAEQHRfAC9me4hGA+=+wcOpx+TAzqS723-kr_Y_Ej8dnWHp2fTw@mail.gmail.com>
-Subject: [PATCH] Fix memory overwriting issue when copy an address to user space
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200717120821.3c2a56db@x1.home>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When application provided buffer size less than sockaddr_storage, then
-kernel will overwrite some memory area which may cause memory corruption,
-e.g.: in recvmsg case, let msg_name=malloc(8) and msg_namelen=8, then
-usually application can call recvmsg successful but actually application
-memory get corrupted.
 
-Fix to return EINVAL when application buffer size less than
-sockaddr_storage.
+On 2020/7/18 上午2:08, Alex Williamson wrote:
+> On Thu, 16 Jul 2020 19:23:45 +0800
+> Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>
+>> vDPA devices has dedicated backed hardware like
+>> passthrough-ed devices. Then it is possible to setup irq
+>> offloading to vCPU for vDPA devices. Thus this patch tries to
+>> manipulated assigned device counters via irqbypass manager.
+>>
+>> We will increase/decrease the assigned device counter in kvm/x86.
+>> Both vDPA and VFIO would go through this code path.
+>>
+>> This code path only affect x86 for now.
+>>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> Suggested-by: Jason Wang <jasowang@redhat.com>
+>> ---
+>>   arch/x86/kvm/x86.c | 10 ++++++++--
+>>   1 file changed, 8 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+>> index 00c88c2..20c07d3 100644
+>> --- a/arch/x86/kvm/x86.c
+>> +++ b/arch/x86/kvm/x86.c
+>> @@ -10624,11 +10624,17 @@ int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
+>>   {
+>>   	struct kvm_kernel_irqfd *irqfd =
+>>   		container_of(cons, struct kvm_kernel_irqfd, consumer);
+>> +	int ret;
+>>   
+>>   	irqfd->producer = prod;
+>> +	kvm_arch_start_assignment(irqfd->kvm);
+>> +	ret = kvm_x86_ops.update_pi_irte(irqfd->kvm,
+>> +					 prod->irq, irqfd->gsi, 1);
+>> +
+>> +	if (ret)
+>> +		kvm_arch_end_assignment(irqfd->kvm);
+>>   
+>> -	return kvm_x86_ops.update_pi_irte(irqfd->kvm,
+>> -					   prod->irq, irqfd->gsi, 1);
+>> +	return ret;
+>>   }
+>>   
+>>   void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+>
+> Why isn't there a matching end-assignment in the del_producer path?  It
+> seems this only goes one-way, what happens when a device is
+> hot-unplugged from the VM or the device interrupt configuration changes.
+> This will still break vfio if it's not guaranteed to be symmetric.
+> Thanks,
+>
+> Alex
 
-Signed-off-by: lebon.zhou <lebon.zhou@gmail.com>
----
- net/socket.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/socket.c b/net/socket.c
-index 976426d03f09..dc32b1b899df 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -229,7 +229,7 @@ static int move_addr_to_user(struct
-sockaddr_storage *kaddr, int klen,
-         return err;
-     if (len > klen)
-         len = klen;
--    if (len < 0)
-+    if (len < 0 || len < klen)
-         return -EINVAL;
-     if (len) {
-         if (audit_sockaddr(klen, kaddr))
---
-2.22.0
+Yes, we need add logic in the del_producer path.
+
+Thanks
+
+
