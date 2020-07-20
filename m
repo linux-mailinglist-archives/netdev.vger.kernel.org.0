@@ -2,56 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6661D226E92
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61DD4226E94
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:54:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730706AbgGTSxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 14:53:01 -0400
-Received: from mga02.intel.com ([134.134.136.20]:12948 "EHLO mga02.intel.com"
+        id S1729811AbgGTSyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 14:54:32 -0400
+Received: from mga12.intel.com ([192.55.52.136]:63968 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726506AbgGTSxB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 14:53:01 -0400
-IronPort-SDR: ZxW2PBFkWuve1WYXFdD5NTHW49TbbvsudlbtG1uRrL83k6stMUoSH648aHS/r0/l6fd+TLvRD6
- PHwP2ppoRAXg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9688"; a="138087494"
+        id S1726506AbgGTSyb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 14:54:31 -0400
+IronPort-SDR: UT2O3PE8gQIy7GYxBHetap2zCtHc3wfzMVqT6cTP3vv6TJN1oi9Ul3TccjJ5iozQVKpYf4G79N
+ 5VFnUcFGsZRQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9688"; a="129560750"
 X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; 
-   d="scan'208";a="138087494"
+   d="scan'208";a="129560750"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2020 11:52:59 -0700
-IronPort-SDR: cCTUhMqP00i9hnWU91Bqxzc5NEFWmXBZ1a2mvaZAcfV7VCaTlU0Gen9vHJ8vlfhsLLGhX3neyi
- x0b7YA9H7dtw==
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2020 11:54:31 -0700
+IronPort-SDR: ZISKvJsPG7t4mbCtgmY/ZuV8UN754XJyY5u6HmECqr4PZhQJ4Yc5kPTWsOFgOAGHFGxZ5OwrF0
+ FjIbndAC/pxA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; 
-   d="scan'208";a="309951073"
+   d="scan'208";a="309951390"
 Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.252.137.6]) ([10.252.137.6])
-  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2020 11:52:58 -0700
-Subject: Re: [RFC PATCH net-next v2 6/6] devlink: add overwrite mode to flash
- update
-To:     Jakub Kicinski <kubakici@wp.pl>, Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, Tom Herbert <tom@herbertland.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>
-References: <20200717183541.797878-1-jacob.e.keller@intel.com>
- <20200717183541.797878-7-jacob.e.keller@intel.com>
- <20200720100953.GB2235@nanopsycho>
- <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2020 11:54:31 -0700
+Subject: Re: [PATCH net-next 3/3] docs: networking: timestamping: add a set of
+ frequently asked questions
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        richardcochran@gmail.com, sorganov@gmail.com,
+        linux-doc@vger.kernel.org
+References: <20200717161027.1408240-1-olteanv@gmail.com>
+ <20200717161027.1408240-4-olteanv@gmail.com>
+ <e6b6f240-c2b2-b57c-7334-4762f034aae3@intel.com>
+ <20200718113519.htopj6tgfvimaywn@skbuf>
 From:   Jacob Keller <jacob.e.keller@intel.com>
 Organization: Intel Corporation
-Message-ID: <078815e8-637c-10d0-b4ec-9485b1be5df0@intel.com>
-Date:   Mon, 20 Jul 2020 11:52:58 -0700
+Message-ID: <887fcc0d-4f3d-3cb8-bdea-8144b62c5d85@intel.com>
+Date:   Mon, 20 Jul 2020 11:54:30 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200718113519.htopj6tgfvimaywn@skbuf>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -60,70 +53,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/20/2020 8:51 AM, Jakub Kicinski wrote:
-> On Mon, 20 Jul 2020 12:09:53 +0200 Jiri Pirko wrote:
->> This looks odd. You have a single image yet you somehow divide it
->> into "program" and "config" areas. We already have infra in place to
->> take care of this. See DEVLINK_ATTR_FLASH_UPDATE_COMPONENT.
->> You should have 2 components:
->> 1) "program"
->> 2) "config"
+On 7/18/2020 4:35 AM, Vladimir Oltean wrote:
+> On Fri, Jul 17, 2020 at 04:12:07PM -0700, Jacob Keller wrote:
+>> On 7/17/2020 9:10 AM, Vladimir Oltean wrote:
+>>> +When the interface they represent offers both ``SOF_TIMESTAMPING_TX_HARDWARE``
+>>> +and ``SOF_TIMESTAMPING_TX_SOFTWARE``.
+>>> +Originally, the network stack could deliver either a hardware or a software
+>>> +time stamp, but not both. This flag prevents software timestamp delivery.
+>>> +This restriction was eventually lifted via the ``SOF_TIMESTAMPING_OPT_TX_SWHW``
+>>> +option, but still the original behavior is preserved as the default.
+>>> +
 >>
-
-First off, unfortunately at least for ice, the "main" section of NVM
-contains both the management firmware as well as config settings. I
-don't really have a way to split it up.
-
-This series includes support for updating the main NVM section
-containing the management firmware (and some config) "fw.mgmt", as well
-as "fw.undi" which contains the OptionROM, and "fw.netlist" which
-contains additional configuration TLVs.
-
-The firmware interface allows me to separate the three components, but
-does not let me separate the "fw binary" from the "config settings" that
-are stored within the main NVM bank. (These fields include other data
-like the device MAC address and VPD area of the device too, so using
-"config" is a bit of a misnomer).
-
->> Then it is up to the user what he decides to flash.
+>> So, this implies that we set this only if both are supported? I thought
+>> the intention was to set this flag whenever we start a HW timestamp.
+>>
 > 
-> 99.9% of the time users want to flash "all". To achieve "don't flash
-> config" with current infra users would have to flash each component 
-> one by one and then omit the one(s) which is config (guessing which 
-> one that is based on the name).
-> 
-> Wouldn't this be quite inconvenient?
+> It's only _required_ when SOF_TIMESTAMPING_TX_SOFTWARE is used, it
+> seems. I had also thought of setting 'SKBTX_IN_PROGRESS' as good
+> practice, but there are many situations where it can do more harm than
+> good.
 > 
 
-I also agree here, I'd like to be able to make the "update with the
-complete file" just work in the most straight forward  way (i.e. without
-erasing stuff by accident) be the default.
+I guess I've only ever implemented a driver with software timestamping
+enabled as an option. What sort of issues arise when you have this set?
+I'm guessing that it's some configuration of stacked devices as in the
+other cases? If the issue can't be fixed I'd at least like more
+explanation here, since the prevailing convention is that we set this
+flag, so understanding when and why it's problematic would be useful.
 
-The option I'm proposing here is to enable allowing tools to optionally
-specify handling this type of overwrite. The goal is to support these
-use cases:
-
-a) (default) just update the image, but keep the config and vital data
-the same as before the update.
-
-b) overwrite config fields, but keep vital fields the same. Intended to
-allow returning configuration to "image defaults". This mostly is
-intended in case regular update caused some issues like if somehow the
-config preservation didn't work properly.
-
-c) overwrite all fields. The intention here is to allow programming a
-customized image during initial setup that would contain new IDs etc. It
-is not expected to be used in general, as this does overwrite vital data
-like the MAC addresses and such.
-
-So the problem is that the vital data, config data, and firmware
-binaries are stored in the same section, without a good way to separate
-between them. We program all of these together as one chunk to the
-"secondary NVM bank"  and then ask firmware to update. It reads through
-and based on our "preservation" setting will update the binaries and
-merge the configuration sections.
-
-> In case of MLX is PSID considered config?
-> 
+Thanks,
+Jake
