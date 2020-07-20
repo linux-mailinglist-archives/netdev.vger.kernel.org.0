@@ -2,197 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DAD22268ED
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC2622268D3
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:24:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388712AbgGTQW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 12:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45630 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388434AbgGTQWq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:22:46 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F495C061794;
-        Mon, 20 Jul 2020 09:22:46 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id k27so10517552pgm.2;
-        Mon, 20 Jul 2020 09:22:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nnDDY7IX3v4medtpXGPdXY1iT0mYb0tLN6RrGWdwErQ=;
-        b=A17M+Gb9yAQCkiEsHp1GN5Hgm6to1S70lc+I5sny7onNXnTMXpIGw0rxYa3HyRAFTF
-         EHzuXZiN0PrVqSXi/QmZ03PpuxD3wqo0Ej0MHbfYpufERXznei6xPYaU2pnpr1hEw/P3
-         YXdYohfyeDlnFXpgWw0Gj/3uIueARBVT7JkmuVXfoU+CAYtgBaBBntTcYkNOJtuLAhBS
-         3CeUProdPmHFMcuj8pjLxjbKYjndPF4TKbcwUepCmwBSSHdw/1VqtNpJTqu1n7W73/j/
-         Ohc2uW7Wkl9CfjwBq4+3cw5TTMOAX/vmAuNeTiC4xAHSGmffrUWcOew6eoDXU29nlS7i
-         SgvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nnDDY7IX3v4medtpXGPdXY1iT0mYb0tLN6RrGWdwErQ=;
-        b=kvYiCGY2FEhzCGwU3+PB54ZD2/OR3+xcfk8l9R1MIj0JLLUpp0lh5OM4K2gvjBxZR8
-         ippgZV6QncMMxAlnfWOMRK+QmVs12rFVjOk4kwG7DRFgsLd5owHvZJKoo1Jmz6Qj2scL
-         WFZrjU62OeNYNQJgEsXxL4m4wmbnqonwNnr1wCUAU8YOA44ct+3JdDS964RA+R/khv4v
-         f0PTc++7X4VBlacndXQ8x5e1PnK/Nnb0lYZ4x9Dcxpu2yHHj1q2hrvHKo/IuCeROWXSj
-         yIGHAb4XaJjkTlWoXIFONt5MGvL8WsUOyPS34V+bYSaLI6pYWYmEjNfHol2dP3CtFNET
-         b0lA==
-X-Gm-Message-State: AOAM530vqxAs7BkCtv/ZaPy2NII6vaU1SDcIgVD1sO3GgOJ5rKaxL7VL
-        ToJMSLVTOiknN2GJNOgJ+is=
-X-Google-Smtp-Source: ABdhPJyV19tnS/w6rmKS67FPtr8WvyuBYwXnr0WSfBWxPzcPsoHAVVNX2vFNeLQe7tQxnvt+Ak0Alg==
-X-Received: by 2002:a62:7e51:: with SMTP id z78mr20531383pfc.3.1595262165631;
-        Mon, 20 Jul 2020 09:22:45 -0700 (PDT)
-Received: from varodek.localdomain ([110.225.71.189])
-        by smtp.gmail.com with ESMTPSA id z25sm17314468pfg.140.2020.07.20.09.22.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 09:22:44 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        Chris Lee <christopher.lee@cspi.com>,
+        id S2387481AbgGTQVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 12:21:21 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:44543 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388350AbgGTQVS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:21:18 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jxYXS-0006Tl-9I; Mon, 20 Jul 2020 16:21:14 +0000
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Shuah Khan <skhan@linuxfoundation.org>, netdev@vger.kernel.org
-Subject: [PATCH v1] ethernet: myri10ge: use generic power management
-Date:   Mon, 20 Jul 2020 21:49:31 +0530
-Message-Id: <20200720161930.777974-1-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+From:   Colin Ian King <colin.king@canonical.com>
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ mQINBE6TJCgBEACo6nMNvy06zNKj5tiwDsXXS+LhT+LwtEsy9EnraKYXAf2xwazcICSjX06e
+ fanlyhB0figzQO0n/tP7BcfMVNG7n1+DC71mSyRK1ZERcG1523ajvdZOxbBCTvTitYOy3bjs
+ +LXKqeVMhK3mRvdTjjmVpWnWqJ1LL+Hn12ysDVVfkbtuIm2NoaSEC8Ae8LSSyCMecd22d9Pn
+ LR4UeFgrWEkQsqROq6ZDJT9pBLGe1ZS0pVGhkRyBP9GP65oPev39SmfAx9R92SYJygCy0pPv
+ BMWKvEZS/7bpetPNx6l2xu9UvwoeEbpzUvH26PHO3DDAv0ynJugPCoxlGPVf3zcfGQxy3oty
+ dNTWkP6Wh3Q85m+AlifgKZudjZLrO6c+fAw/jFu1UMjNuyhgShtFU7NvEzL3RqzFf9O1qM2m
+ uj83IeFQ1FZ65QAiCdTa3npz1vHc7N4uEQBUxyXgXfCI+A5yDnjHwzU0Y3RYS52TA3nfa08y
+ LGPLTf5wyAREkFYou20vh5vRvPASoXx6auVf1MuxokDShVhxLpryBnlKCobs4voxN54BUO7m
+ zuERXN8kadsxGFzItAyfKYzEiJrpUB1yhm78AecDyiPlMjl99xXk0zs9lcKriaByVUv/NsyJ
+ FQj/kmdxox3XHi9K29kopFszm1tFiDwCFr/xumbZcMY17Yi2bQARAQABtCVDb2xpbiBLaW5n
+ IDxjb2xpbi5raW5nQGNhbm9uaWNhbC5jb20+iQI2BBMBCAAhBQJOkyQoAhsDBQsJCAcDBRUK
+ CQgLBRYCAwEAAh4BAheAAAoJEGjCh9/GqAImsBcP9i6C/qLewfi7iVcOwqF9avfGzOPf7CVr
+ n8CayQnlWQPchmGKk6W2qgnWI2YLIkADh53TS0VeSQ7Tetj8f1gV75eP0Sr/oT/9ovn38QZ2
+ vN8hpZp0GxOUrzkvvPjpH+zdmKSaUsHGp8idfPpZX7XeBO0yojAs669+3BrnBcU5wW45SjSV
+ nfmVj1ZZj3/yBunb+hgNH1QRcm8ZPICpjvSsGFClTdB4xu2AR28eMiL/TTg9k8Gt72mOvhf0
+ fS0/BUwcP8qp1TdgOFyiYpI8CGyzbfwwuGANPSupGaqtIRVf+/KaOdYUM3dx/wFozZb93Kws
+ gXR4z6tyvYCkEg3x0Xl9BoUUyn9Jp5e6FOph2t7TgUvv9dgQOsZ+V9jFJplMhN1HPhuSnkvP
+ 5/PrX8hNOIYuT/o1AC7K5KXQmr6hkkxasjx16PnCPLpbCF5pFwcXc907eQ4+b/42k+7E3fDA
+ Erm9blEPINtt2yG2UeqEkL+qoebjFJxY9d4r8PFbEUWMT+t3+dmhr/62NfZxrB0nTHxDVIia
+ u8xM+23iDRsymnI1w0R78yaa0Eea3+f79QsoRW27Kvu191cU7QdW1eZm05wO8QUvdFagVVdW
+ Zg2DE63Fiin1AkGpaeZG9Dw8HL3pJAJiDe0KOpuq9lndHoGHs3MSa3iyQqpQKzxM6sBXWGfk
+ EkK5Ag0ETpMkKAEQAMX6HP5zSoXRHnwPCIzwz8+inMW7mJ60GmXSNTOCVoqExkopbuUCvinN
+ 4Tg+AnhnBB3R1KTHreFGoz3rcV7fmJeut6CWnBnGBtsaW5Emmh6gZbO5SlcTpl7QDacgIUuT
+ v1pgewVHCcrKiX0zQDJkcK8FeLUcB2PXuJd6sJg39kgsPlI7R0OJCXnvT/VGnd3XPSXXoO4K
+ cr5fcjsZPxn0HdYCvooJGI/Qau+imPHCSPhnX3WY/9q5/WqlY9cQA8tUC+7mgzt2VMjFft1h
+ rp/CVybW6htm+a1d4MS4cndORsWBEetnC6HnQYwuC4bVCOEg9eXMTv88FCzOHnMbE+PxxHzW
+ 3Gzor/QYZGcis+EIiU6hNTwv4F6fFkXfW6611JwfDUQCAHoCxF3B13xr0BH5d2EcbNB6XyQb
+ IGngwDvnTyKHQv34wE+4KtKxxyPBX36Z+xOzOttmiwiFWkFp4c2tQymHAV70dsZTBB5Lq06v
+ 6nJs601Qd6InlpTc2mjd5mRZUZ48/Y7i+vyuNVDXFkwhYDXzFRotO9VJqtXv8iqMtvS4xPPo
+ 2DtJx6qOyDE7gnfmk84IbyDLzlOZ3k0p7jorXEaw0bbPN9dDpw2Sh9TJAUZVssK119DJZXv5
+ 2BSc6c+GtMqkV8nmWdakunN7Qt/JbTcKlbH3HjIyXBy8gXDaEto5ABEBAAGJAh8EGAEIAAkF
+ Ak6TJCgCGwwACgkQaMKH38aoAiZ4lg/+N2mkx5vsBmcsZVd3ys3sIsG18w6RcJZo5SGMxEBj
+ t1UgyIXWI9lzpKCKIxKx0bskmEyMy4tPEDSRfZno/T7p1mU7hsM4owi/ic0aGBKP025Iok9G
+ LKJcooP/A2c9dUV0FmygecRcbIAUaeJ27gotQkiJKbi0cl2gyTRlolKbC3R23K24LUhYfx4h
+ pWj8CHoXEJrOdHO8Y0XH7059xzv5oxnXl2SD1dqA66INnX+vpW4TD2i+eQNPgfkECzKzGj+r
+ KRfhdDZFBJj8/e131Y0t5cu+3Vok1FzBwgQqBnkA7dhBsQm3V0R8JTtMAqJGmyOcL+JCJAca
+ 3Yi81yLyhmYzcRASLvJmoPTsDp2kZOdGr05Dt8aGPRJL33Jm+igfd8EgcDYtG6+F8MCBOult
+ TTAu+QAijRPZv1KhEJXwUSke9HZvzo1tNTlY3h6plBsBufELu0mnqQvHZmfa5Ay99dF+dL1H
+ WNp62+mTeHsX6v9EACH4S+Cw9Q1qJElFEu9/1vFNBmGY2vDv14gU2xEiS2eIvKiYl/b5Y85Q
+ QLOHWV8up73KK5Qq/6bm4BqVd1rKGI9un8kezUQNGBKre2KKs6wquH8oynDP/baoYxEGMXBg
+ GF/qjOC6OY+U7kNUW3N/A7J3M2VdOTLu3hVTzJMZdlMmmsg74azvZDV75dUigqXcwjE=
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: re: net: phy: continue searching for C45 MMDs even if first returned
+ ffff:ffff
+Message-ID: <4131864f-9e3e-9814-5f4d-16c93648bce2@canonical.com>
+Date:   Mon, 20 Jul 2020 17:21:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers using legacy PM have to manage PCI states and device's PM states
-themselves. They also need to take care of configuration registers.
+Hi,
 
-With improved and powerful support of generic PM, PCI Core takes care of
-above mentioned, device-independent, jobs.
+Static analysis by Coverity has found a potential issue with the
+following commit in /drivers/net/phy/phy_device.c:
 
-This driver makes use of PCI helper functions like
-pci_save/restore_state(), pci_enable/disable_device(),
-pci_set_power_state() and pci_set_master() to do required operations. In
-generic mode, they are no longer needed.
+commit bba238ed037c60242332dd1e4c5778af9eba4d9b
+Author: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date:   Sun Jul 12 19:48:15 2020 +0300
 
-Change function parameter in both .suspend() and .resume() to
-"struct device*" type. Use to_pci_dev() and dev_get_drvdata() to get
-"struct pci_dev*" variable and drv data.
+    net: phy: continue searching for C45 MMDs even if first returned
+ffff:ffff
 
-Compile-tested only.
+The analysis is as follows:
 
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- .../net/ethernet/myricom/myri10ge/myri10ge.c  | 37 ++++---------------
- 1 file changed, 8 insertions(+), 29 deletions(-)
+735         * for 802.3 c45 complied PHYs, so don't probe it at first.
+736         */
 
-diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-index e1e1f4e3639e..4a5beafa0493 100644
---- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-+++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-@@ -3257,13 +3257,12 @@ static void myri10ge_mask_surprise_down(struct pci_dev *pdev)
- 	}
- }
- 
--#ifdef CONFIG_PM
--static int myri10ge_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused myri10ge_suspend(struct device *dev)
- {
- 	struct myri10ge_priv *mgp;
- 	struct net_device *netdev;
- 
--	mgp = pci_get_drvdata(pdev);
-+	mgp = dev_get_drvdata(dev);
- 	if (mgp == NULL)
- 		return -EINVAL;
- 	netdev = mgp->dev;
-@@ -3276,14 +3275,13 @@ static int myri10ge_suspend(struct pci_dev *pdev, pm_message_t state)
- 		rtnl_unlock();
- 	}
- 	myri10ge_dummy_rdma(mgp, 0);
--	pci_save_state(pdev);
--	pci_disable_device(pdev);
- 
--	return pci_set_power_state(pdev, pci_choose_state(pdev, state));
-+	return 0;
- }
- 
--static int myri10ge_resume(struct pci_dev *pdev)
-+static int __maybe_unused myri10ge_resume(struct device *dev)
- {
-+	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct myri10ge_priv *mgp;
- 	struct net_device *netdev;
- 	int status;
-@@ -3293,7 +3291,6 @@ static int myri10ge_resume(struct pci_dev *pdev)
- 	if (mgp == NULL)
- 		return -EINVAL;
- 	netdev = mgp->dev;
--	pci_set_power_state(pdev, PCI_D0);	/* zeros conf space as a side effect */
- 	msleep(5);		/* give card time to respond */
- 	pci_read_config_word(mgp->pdev, PCI_VENDOR_ID, &vendor);
- 	if (vendor == 0xffff) {
-@@ -3301,23 +3298,9 @@ static int myri10ge_resume(struct pci_dev *pdev)
- 		return -EIO;
- 	}
- 
--	pci_restore_state(pdev);
--
--	status = pci_enable_device(pdev);
--	if (status) {
--		dev_err(&pdev->dev, "failed to enable device\n");
--		return status;
--	}
--
--	pci_set_master(pdev);
--
- 	myri10ge_reset(mgp);
- 	myri10ge_dummy_rdma(mgp, 1);
- 
--	/* Save configuration space to be restored if the
--	 * nic resets due to a parity error */
--	pci_save_state(pdev);
--
- 	if (netif_running(netdev)) {
- 		rtnl_lock();
- 		status = myri10ge_open(netdev);
-@@ -3331,11 +3314,8 @@ static int myri10ge_resume(struct pci_dev *pdev)
- 	return 0;
- 
- abort_with_enabled:
--	pci_disable_device(pdev);
- 	return -EIO;
--
- }
--#endif				/* CONFIG_PM */
- 
- static u32 myri10ge_read_reboot(struct myri10ge_priv *mgp)
- {
-@@ -4017,15 +3997,14 @@ static const struct pci_device_id myri10ge_pci_tbl[] = {
- 
- MODULE_DEVICE_TABLE(pci, myri10ge_pci_tbl);
- 
-+static SIMPLE_DEV_PM_OPS(myri10ge_pm_ops, myri10ge_suspend, myri10ge_resume);
-+
- static struct pci_driver myri10ge_driver = {
- 	.name = "myri10ge",
- 	.probe = myri10ge_probe,
- 	.remove = myri10ge_remove,
- 	.id_table = myri10ge_pci_tbl,
--#ifdef CONFIG_PM
--	.suspend = myri10ge_suspend,
--	.resume = myri10ge_resume,
--#endif
-+	.driver.pm = &myri10ge_pm_ops,
- };
- 
- #ifdef CONFIG_MYRI10GE_DCA
--- 
-2.27.0
+dead_error_condition: The condition (devs_in_pkg & 0x1fffffffU) ==
+0x1fffffffU cannot be true.
 
+737        for (i = 1; i < MDIO_MMD_NUM && devs_in_pkg == 0 &&
+
+const: At condition (devs_in_pkg & 0x1fffffffU) == 0x1fffffffU, the
+value of devs_in_pkg must be equal to 0.
+
+738             (devs_in_pkg & 0x1fffffff) == 0x1fffffff; i++) {
+
+Logically dead code (DEADCODE)dead_error_line: Execution cannot reach
+this statement: if (i == 30 || i == 31) {
+
+To summarize, if devs_in_pkg is zero, then (devs_in_pkg & 0x1fffffffU)
+== 0x1fffffffU can never be true, so the loop is never iterated over.
+
+Colin
