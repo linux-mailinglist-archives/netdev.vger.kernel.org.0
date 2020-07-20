@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 970902255AE
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 03:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA4D92255D8
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 04:20:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbgGTB6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 21:58:49 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:43938 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726225AbgGTB6t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jul 2020 21:58:49 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id E4B2874390DD2BBF0128;
-        Mon, 20 Jul 2020 09:58:46 +0800 (CST)
-Received: from [127.0.0.1] (10.174.179.238) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Mon, 20 Jul 2020
- 09:58:40 +0800
-Subject: [PATCH v2] net: neterion: vxge: reduce stack usage in
- VXGE_COMPLETE_VPATH_TX
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-next@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <jdmason@kudzu.us>,
-        <christophe.jaillet@wanadoo.fr>, <john.wanghui@huawei.com>
-References: <20200716173247.78912-1-cuibixuan@huawei.com>
- <20200719100522.220a6f5a@hermes.lan>
-From:   Bixuan Cui <cuibixuan@huawei.com>
-Message-ID: <866b4a34-cd4e-0120-904f-13669257a765@huawei.com>
-Date:   Mon, 20 Jul 2020 09:58:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200719100522.220a6f5a@hermes.lan>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+        id S1726654AbgGTCUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 22:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726225AbgGTCUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 22:20:43 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A001C0619D2
+        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 19:20:43 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0221312864431;
+        Sun, 19 Jul 2020 19:20:41 -0700 (PDT)
+Date:   Sun, 19 Jul 2020 19:20:38 -0700 (PDT)
+Message-Id: <20200719.192038.2300519017333591083.davem@davemloft.net>
+To:     willemdebruijn.kernel@gmail.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        tom@herbertland.com, willemb@google.com
+Subject: Re: [PATCH net-next v2] icmp: support rfc 4884
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200710132902.1957784-1-willemdebruijn.kernel@gmail.com>
+References: <20200710132902.1957784-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.238]
-X-CFilter-Loop: Reflected
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 19 Jul 2020 19:20:42 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the warning: [-Werror=-Wframe-larger-than=]
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date: Fri, 10 Jul 2020 09:29:02 -0400
 
-drivers/net/ethernet/neterion/vxge/vxge-main.c:
-In function'VXGE_COMPLETE_VPATH_TX.isra.37':
-drivers/net/ethernet/neterion/vxge/vxge-main.c:119:1:
-warning: the frame size of 1056 bytes is larger than 1024 bytes
+> From: Willem de Bruijn <willemb@google.com>
+> 
+> Add setsockopt SOL_IP/IP_RECVERR_4884 to return the offset to an
+> extension struct if present.
+> 
+> ICMP messages may include an extension structure after the original
+> datagram. RFC 4884 standardized this behavior. It stores the offset
+> in words to the extension header in u8 icmphdr.un.reserved[1].
+> 
+> The field is valid only for ICMP types destination unreachable, time
+> exceeded and parameter problem, if length is at least 128 bytes and
+> entire packet does not exceed 576 bytes.
+> 
+> Return the offset to the start of the extension struct when reading an
+> ICMP error from the error queue, if it matches the above constraints.
+> 
+> Do not return the raw u8 field. Return the offset from the start of
+> the user buffer, in bytes. The kernel does not return the network and
+> transport headers, so subtract those.
+> 
+> Also validate the headers. Return the offset regardless of validation,
+> as an invalid extension must still not be misinterpreted as part of
+> the original datagram. Note that !invalid does not imply valid. If
+> the extension version does not match, no validation can take place,
+> for instance.
+> 
+> For backward compatibility, make this optional, set by setsockopt
+> SOL_IP/IP_RECVERR_RFC4884. For API example and feature test, see
+> github.com/wdebruij/kerneltools/blob/master/tests/recv_icmp_v2.c
+> 
+> For forward compatibility, reserve only setsockopt value 1, leaving
+> other bits for additional icmp extensions.
+> 
+> Changes
+>   v1->v2:
+>   - convert word offset to byte offset from start of user buffer
+>     - return in ee_data as u8 may be insufficient
+>   - define extension struct and object header structs
+>   - return len only if constraints met
+>   - if returning len, also validate
+> 
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
 
-Dropping the NR_SKB_COMPLETED to 16 is appropriate that won't
-have much impact on performance and functionality.
-
-Signed-off-by: Bixuan Cui <cuibixuan@huawei.com>
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
-v2: Dropping the NR_SKB_COMPLETED to 16.
-
- drivers/net/ethernet/neterion/vxge/vxge-main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-index b0faa737b817..f905d0fe7d54 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-@@ -98,7 +98,7 @@ static inline void VXGE_COMPLETE_VPATH_TX(struct vxge_fifo *fifo)
- {
- 	struct sk_buff **skb_ptr = NULL;
- 	struct sk_buff **temp;
--#define NR_SKB_COMPLETED 128
-+#define NR_SKB_COMPLETED 16
- 	struct sk_buff *completed[NR_SKB_COMPLETED];
- 	int more;
-
---
-2.17.1
-
-
-.
-
-
-
+Applied, thanks Willem.
