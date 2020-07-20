@@ -2,141 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8D32259B1
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 10:11:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 098612259C3
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 10:13:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727045AbgGTILB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 04:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53548 "EHLO
+        id S1727849AbgGTINf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 04:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725815AbgGTILA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 04:11:00 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FECAC061794
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 01:11:00 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id a15so1904513wrh.10
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 01:11:00 -0700 (PDT)
+        with ESMTP id S1725845AbgGTINe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 04:13:34 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBE4C061794
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 01:13:34 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id f18so16908474wrs.0
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 01:13:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WR57WnJyV0K0wq4/9PfaesBjzOPTqBTcVQbQmQ7WcGI=;
-        b=RDzTM6jOvU+TqBAbMGsMaKtIMwIy1H+oq6k6M0YsTibseerOj/UJ38nIc03Tclnbzr
-         LrF5WOKGSOG03cepYTlruY8tTWm1JO07rSAqPfBmXgI2gmDtptK+HTyiQCuamN2pn9JN
-         Ba2yZu1bkhowMtITFtezFn3TZZypfFVmFSkXTA9cZrGHAJYGmO5TP6Ly5ngPzCWCtDPk
-         SZZUJ2QoAZhUkwXAqJOrDJ/q40B2eJVGotFG9LzLo1ST3BFKfRoOBozlA7FQMSpymbyG
-         D2JzPf8ydvhmX1WJ394IOXOuSMfGXUlQCCjWenD6R/dyCBOp2HHjm+Jlw/lgwlXmc45h
-         phMQ==
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=x8P1vPc3cG56c8OALf51cJaB/JeKKZDLAvU5YGW6lTU=;
+        b=UhH69TwMiEgS5M3dopH105B4jH4pQgtQuEQ5FDPzsLu+X35Wnlr2h9aX5DlFdC4cF8
+         jzBVmO3YwU89yBk9dvkVhmL9ufmCIczc+toEE3/ZaDH++CGUL+SwO6kYf69cECTBaQKu
+         NVKkWUweMZ3EwYPe6u3l83OH0rhwrxo1WDhYVepUGLNjIU5JpJ1hcsoMa25tp4uSq+7H
+         3U0GdG9Ti1SHTM4h/bEg80P+DIH5BTgELScpIVPLSlWH2K1j3xNc0MbgvRmq2CxH6Rw4
+         FGL96N36FcRO0h3PMPRnxv7xdJM+JADAV2ugnmy15O2Mmeg+aMtdzZkETtLJzi67FbLI
+         swBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WR57WnJyV0K0wq4/9PfaesBjzOPTqBTcVQbQmQ7WcGI=;
-        b=R1/qYLcLkX9XVKQBHvx05erfkPOzELEfntIV5c9xJhl9UvKCGrDRW6OMLNAiliXfQr
-         FtyWK5DNc1+37BPLbCH2BsHobeJkkYeQkui7JImSmNHojkKHV6mAW+EDiEc8EKOb7x3G
-         ysJFrzT/zLKWbwj6VqDl5VJKyIygDqlCbzkDY3UwPcMFmPj/wK1qo5Z+NVuHDajQcjgH
-         2sTMmNmK/AgV8+9OU5gwaAm3gyTub9TlalbjD/I63RlRXlJ8KANQGFK2kpnm99/G0RU5
-         yUIJ3MWo/f4VpKDmUPHh3Q4TWLOjYwCHLMd2eGN2ijRywn0NW2YSWKeOKf+B9jR8yk4p
-         3erg==
-X-Gm-Message-State: AOAM531dbb3rCHz1VBRiC/w+++c/Xrv2JLfy1yPMr3TkxKZz9KPX5pkr
-        IR+0UNUd9hSqPIlZA5qufaiMdA==
-X-Google-Smtp-Source: ABdhPJzWkg4JH8KUmy6xpWzc0saLikidTIeJ22nxDGCIhl5Vr5vGhpQOzqDHlPMu1OW+XhNucfAMJA==
-X-Received: by 2002:adf:80c2:: with SMTP id 60mr19246396wrl.388.1595232659274;
-        Mon, 20 Jul 2020 01:10:59 -0700 (PDT)
-Received: from localhost (ip-89-103-111-149.net.upcbroadband.cz. [89.103.111.149])
-        by smtp.gmail.com with ESMTPSA id y6sm31498842wrr.74.2020.07.20.01.10.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 01:10:58 -0700 (PDT)
-Date:   Mon, 20 Jul 2020 10:10:58 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, idosch@mellanox.com,
-        mlxsw@mellanox.com
-Subject: Re: [patch net-next] sched: sch_api: add missing rcu read lock to
- silence the warning
-Message-ID: <20200720081058.GA2235@nanopsycho>
-References: <20200720072248.6184-1-jiri@resnulli.us>
- <20200720075000.GA352399@shredder>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=x8P1vPc3cG56c8OALf51cJaB/JeKKZDLAvU5YGW6lTU=;
+        b=Af460IFDWXH8c24fRXRiOxAUIZkYeHi5tCqkI83Uvb+t9T1rJ5qB3i+eJuFGBSzxnt
+         TkTsSuCIz9tVpX3DjHBpWoUcjQXGpxkIb0oMptCtGx3vBS9LEjs925ZHogpdUIOM/21a
+         mf9z1HfcTNfv9XtuOeKhD2babm3seg5arCYJni0TC9pJpkeBRB5ucjIkN75i27yT/b6W
+         YDbhC3T4G/4iPuLyg9N0hAXtEql9YhhZju5JbcZBXHZNVWbsh+uxTNG8dR/9Z5s8L+0V
+         SLwYbv8EO14I8W+g9igYorhR9ZMJofkjEWWlviS5czfqm6m33QMgBFak4m61yBbRp2el
+         CSkg==
+X-Gm-Message-State: AOAM533oTV8YE1XOBWdwcGON8QfGm1pxp7jvzvlIaY50+rZ9JXtNgfcp
+        FabdUK+DsnwnZc4PIJUjaPqqtHg4yr8osw==
+X-Google-Smtp-Source: ABdhPJz2rpSSnItm9VagCsTdy29JV2ZiCPZ4cDeRA7Cz9uKL39WS4+PGhlf/9pV5cm4BF1KfjM0h7w==
+X-Received: by 2002:a5d:5642:: with SMTP id j2mr21012404wrw.19.1595232813251;
+        Mon, 20 Jul 2020 01:13:33 -0700 (PDT)
+Received: from [192.168.1.12] ([194.35.117.103])
+        by smtp.gmail.com with ESMTPSA id v3sm31087315wrq.57.2020.07.20.01.13.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jul 2020 01:13:32 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v3] bpftool: use only nftw for file tree parsing
+To:     Tony Ambardar <tony.ambardar@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20200716052926.10933-1-Tony.Ambardar () gmail ! com>
+ <20200717225543.32126-1-Tony.Ambardar@gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <fdd2d23f-773d-172c-fce1-0f2641763580@isovalent.com>
+Date:   Mon, 20 Jul 2020 09:13:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200720075000.GA352399@shredder>
+In-Reply-To: <20200717225543.32126-1-Tony.Ambardar@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jul 20, 2020 at 09:50:00AM CEST, idosch@idosch.org wrote:
->On Mon, Jul 20, 2020 at 09:22:48AM +0200, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> In case the qdisc_match_from_root function() is called from non-rcu path
->> with rtnl mutex held, a suspiciout rcu usage warning appears:
->> 
->> [  241.504354] =============================
->> [  241.504358] WARNING: suspicious RCU usage
->> [  241.504366] 5.8.0-rc4-custom-01521-g72a7c7d549c3 #32 Not tainted
->> [  241.504370] -----------------------------
->> [  241.504378] net/sched/sch_api.c:270 RCU-list traversed in non-reader section!!
->> [  241.504382]
->>                other info that might help us debug this:
->> [  241.504388]
->>                rcu_scheduler_active = 2, debug_locks = 1
->> [  241.504394] 1 lock held by tc/1391:
->> [  241.504398]  #0: ffffffff85a27850 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x49a/0xbd0
->> [  241.504431]
->>                stack backtrace:
->> [  241.504440] CPU: 0 PID: 1391 Comm: tc Not tainted 5.8.0-rc4-custom-01521-g72a7c7d549c3 #32
->> [  241.504446] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-2.fc32 04/01/2014
->> [  241.504453] Call Trace:
->> [  241.504465]  dump_stack+0x100/0x184
->> [  241.504482]  lockdep_rcu_suspicious+0x153/0x15d
->> [  241.504499]  qdisc_match_from_root+0x293/0x350
->> 
->> Fix this by taking the rcu_lock for qdisc_hash iteration.
->> 
->> Reported-by: Ido Schimmel <idosch@mellanox.com>
->> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->> ---
->>  net/sched/sch_api.c | 2 ++
->>  1 file changed, 2 insertions(+)
->> 
->> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
->> index 11ebba60da3b..c7cfd8dc6a77 100644
->> --- a/net/sched/sch_api.c
->> +++ b/net/sched/sch_api.c
->> @@ -267,10 +267,12 @@ static struct Qdisc *qdisc_match_from_root(struct Qdisc *root, u32 handle)
->>  	    root->handle == handle)
->>  		return root;
->>  
->> +	rcu_read_lock();
->>  	hash_for_each_possible_rcu(qdisc_dev(root)->qdisc_hash, q, hash, handle) {
->>  		if (q->handle == handle)
->>  			return q;
->
->You don't unlock here, but I'm not sure it's the best fix. It's weird to
->return an object from an RCU critical section without taking a
->reference. It can also hide a bug if someone calls
->qdisc_match_from_root() without RTNL or RCU.
->
->hash_for_each_possible_rcu() is basically hlist_for_each_entry_rcu()
->which already accepts:
->
->@cond:       optional lockdep expression if called from non-RCU protection.
->
->So maybe extend hash_for_each_possible_rcu() with 'cond' and pass a
->lockdep expression to see if RTNL is held?
+On 17/07/2020 23:55, Tony Ambardar wrote:
+> The bpftool sources include code to walk file trees, but use multiple
+> frameworks to do so: nftw and fts. While nftw conforms to POSIX/SUSv3 and
+> is widely available, fts is not conformant and less common, especially on
+> non-glibc systems. The inconsistent framework usage hampers maintenance
+> and portability of bpftool, in particular for embedded systems.
+> 
+> Standardize code usage by rewriting one fts-based function to use nftw and
+> clean up some related function warnings by extending use of "const char *"
+> arguments. This change helps in building bpftool against musl for OpenWrt.
+> 
+> Also fix an unsafe call to dirname() by duplicating the string to pass,
+> since some implementations may directly alter it. The same approach is
+> used in libbpf.c.
+> 
+> Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+> ---
+> 
+> V3:
+> * clarify dirname() path copy in commit message
+> * fix whitespace and rearrange comment for clarity
+> * drop unnecessary initializers, rebalance Christmas tree
+> * fixup error message and drop others not previously present
+> * simplify malloc() + memset() -> calloc() and check for mem errors
+> 
+> V2:
+> * use _GNU_SOURCE to pull in getpagesize(), getline(), nftw() definitions
+> * use "const char *" in open_obj_pinned() and open_obj_pinned_any()
+> * make dirname() safely act on a string copy
+> 
+> ---
+>  tools/bpf/bpftool/common.c | 132 +++++++++++++++++++++----------------
+>  tools/bpf/bpftool/main.h   |   4 +-
+>  2 files changed, 78 insertions(+), 58 deletions(-)
+> 
+> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+> index 29f4e7611ae8..2ecfafcd01df 100644
+> --- a/tools/bpf/bpftool/common.c
+> +++ b/tools/bpf/bpftool/common.c
 
-Makes sense. Sent v2. Thanks!
+>  int build_pinned_obj_table(struct pinned_obj_table *tab,
+>  			   enum bpf_obj_type type)
+>  {
 
+[...]
 
->
->>  	}
->> +	rcu_read_unlock();
->>  	return NULL;
->>  }
->>  
->> -- 
->> 2.21.3
->> 
+>  	while ((mntent = getmntent(mntfile))) {
+
+[...]
+
+> -		while ((ftse = fts_read(fts))) {
+
+[...]
+
+> +		if (nftw(path, do_build_table_cb, nopenfd, flags) == -1)
+> +			break;
+
+Sorry I missed that on the previous reviews; but I think a simple break
+out of the loop changes the previous behaviour, we should instead
+"return -1" from build_pinned_obj_table() if nftw() returns -1, as we
+were doing so far.
+
+Looks good otherwise.
+
+>  	}
+>  	fclose(mntfile);
+>  	return 0;
