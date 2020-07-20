@@ -2,182 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9795225CC0
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 12:38:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F01DB225CD5
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 12:44:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728463AbgGTKil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 06:38:41 -0400
-Received: from mail-eopbgr150044.outbound.protection.outlook.com ([40.107.15.44]:52395
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        id S1728360AbgGTKoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 06:44:17 -0400
+Received: from mail-eopbgr50054.outbound.protection.outlook.com ([40.107.5.54]:56198
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728273AbgGTKik (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 06:38:40 -0400
+        id S1728001AbgGTKoQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 06:44:16 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WlDNi9UgeK4JxwWcKWA+uvkVjUpeNfP6fMsVnM7N5DBYLGuWhIAbEigna5Rki5xuvavHW0DWFvpNKDLVEQSYmHwrtxC3j3plQ4weZgoQe71cIrm0J4l3LZCQLVZ60n++xTSsWbWfDh8zpPSE4ILv3BNKZXhYTUy3y0Mlzyz+geWr6ZHSQThMpKhGqtZ6tlcbzygmXYJfxxVjsSghVSR/gorw3AaokBM3e835Nfi3PefQcx9gLfmWab7KMThaJt/JZPM5aMdPKYS/gDPLV7gex21ZuY+vEObzxUItujy8w7i1RD3P4Z6wE2TjSG5nInsW4QUi6odtzV03lSfVjmMV+w==
+ b=Hh4JczHyde96tdy4j9bYOZaUwi9r+A1pv0JZ+Pk+9+dy2DhtK8fBYxWznE2ROSg1rTN8KUiOVl/r042q+pwYLwU+q44v4RaITJfGBqmMDJNkyE1sQTFuZxMkbYz6ezOPQJXJZqi35UefLW0i6JwLNSZwMYPetVwwxWXxL1Xv3LL5gg54oGOgrG+99ViaXQ2WfUcF6FtBTfLzHYw8iZYqEoNJnE9smnVdRSZccOq7iG5FVqtX2vPURPrI/xusOr0WdgfaBXttn8VR4tqlKGCR6ycMC3Tv5Res3uNDYcM9Fgg06V1f3yPSX/y0Nbj9j7kHUYLnTCE/XkiFSEjHyLmFIA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q24WVoc2ZJ7kurQdO+/TODmFq9VAGIpvbuXMnLkYVk0=;
- b=CaikOugZxAWYVQXn5bwZSjDl8O5bFsdXTg6l5xkaWSYWP3e7Wlde93ZaylukfXegwcz/aVwr+4ZwUhYs1xktooZk0Pul69mHDz0AmblTpE1JGkigEzsFJrUXpJv0Rwx/sDAfPPTai+HbfeKb1eR+PS+J0/VXCj9+PA1BJRVyg8QqTAwhl8CNJHb1+3/VMt+KlCK/VFhusr/u6Uwdkmbsg6GDhFxoFwhailBCTAGFWn41a8Y6pKTMbJnZZWQrALZCj/adKNejplyvyMkDP75Y9bigISdnJRvAVqLOuxdEgS7nyr7j65SX0P3zqULFc7iMD8djvWF1HVrgCnS1ul7Gmw==
+ bh=K6vM80tB93XI/SIZxi/ZevK+0YtPRH//+R07M2iiYRE=;
+ b=IL9/KFRtQp4orXvEPa8ADlF1V+egOGAuaEtbUvrCstjI6mzO+ig2weOZ8jIafuoxgkOAHg7ZNTqB9Bd8pKATTfKc+SOt8yTILGtQWkLf0y0ajaOc1DPFlIlYZztGcso2gIYSrJ9VLv/LnmF+9JERwum1L0nw0O5BiQ6bI1QDNKM+15qtU4gLk2KQEQvXoXfb+tZyw0F/0GC0zyIB2HWtB3tOAnrVc3CAW7soTXqUPAozrecL8lcIs9zUkmXzwW4UMHt65PZU0tgPjmWVQP+A1yt0q/gEPH0Mw1MJjEQvJsTfjQHyupCGjdOjBX6ey/K7jTwJt+9Q7KaXqB+zM7CxUQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q24WVoc2ZJ7kurQdO+/TODmFq9VAGIpvbuXMnLkYVk0=;
- b=rIjOLrpGmav2t1BqifjS+x2YstEX4OF6yXDRwnoU22FYEtcn9C9jlhlH9HVEXsAVRbO3juWePFJUcMuzXtJd8J1+2WJRUUVtlr9mX75gPRrpe0G8oEr6ll6jep2N5gJ9SjKLF122hvqWfTaQFVkUYMJpBiiYE9UE2+YmTJBnifY=
-Authentication-Results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5103.eurprd04.prod.outlook.com (2603:10a6:803:51::19)
- by VI1PR04MB5005.eurprd04.prod.outlook.com (2603:10a6:803:57::30) with
- Microsoft SMTP Server (version=TLS1_2,
+ bh=K6vM80tB93XI/SIZxi/ZevK+0YtPRH//+R07M2iiYRE=;
+ b=fCC6PLuUsC9EwLwcTVGpAFUwpSjmE5UZuUSGUj1gY7+LMVyqgZWht38PWGuzqKFwhDNnsCiytlagqYnVCMAjySjicsFkrMpSijzEtUQEfDzG2sz6VuY4qR+VioS8WAqNfJh59QJZAOz3DtgQh924mkwOdpxWKf0VgD6a/cmBt6E=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR0402MB3872.eurprd04.prod.outlook.com
+ (2603:10a6:803:22::28) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.25; Mon, 20 Jul
- 2020 10:38:37 +0000
-Received: from VI1PR04MB5103.eurprd04.prod.outlook.com
- ([fe80::596d:cc81:f48a:daf7]) by VI1PR04MB5103.eurprd04.prod.outlook.com
- ([fe80::596d:cc81:f48a:daf7%2]) with mapi id 15.20.3174.030; Mon, 20 Jul 2020
- 10:38:37 +0000
-From:   hongbo.wang@nxp.com
-To:     xiaoliang.yang_1@nxp.com, allan.nielsen@microchip.com,
-        po.liu@nxp.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
-        leoyang.li@nxp.com, mingkai.hu@nxp.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net, jiri@resnulli.us, idosch@idosch.org,
-        kuba@kernel.org, vinicius.gomes@intel.com,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, linux-devel@linux.nxdi.nxp.com
-Cc:     "hongbo.wang" <hongbo.wang@nxp.com>
-Subject: [PATCH 2/2] net: dsa: Set flag for 802.1AD when deleting vlan for dsa switch and port
-Date:   Mon, 20 Jul 2020 18:41:19 +0800
-Message-Id: <20200720104119.19146-2-hongbo.wang@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200720104119.19146-1-hongbo.wang@nxp.com>
-References: <20200720104119.19146-1-hongbo.wang@nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SGAP274CA0009.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::21)
- To VI1PR04MB5103.eurprd04.prod.outlook.com (2603:10a6:803:51::19)
+ 2020 10:44:11 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::d4df:67d5:c1f7:fba]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::d4df:67d5:c1f7:fba%4]) with mapi id 15.20.3195.025; Mon, 20 Jul 2020
+ 10:44:11 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+CC:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH RFC net-next 08/13] net: phylink: simplify phy case for
+ ksettings_set method
+Thread-Topic: [PATCH RFC net-next 08/13] net: phylink: simplify phy case for
+ ksettings_set method
+Thread-Index: AQHWTurXe7qXBKgqTkWdlw7FB8rfsA==
+Date:   Mon, 20 Jul 2020 10:44:11 +0000
+Message-ID: <VI1PR0402MB387177B532EF211E65341873E07B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+References: <20200630142754.GC1551@shell.armlinux.org.uk>
+ <E1jqHG3-0006PX-UZ@rmk-PC.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.219.134]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: aafa700a-d19d-4954-8960-08d82c99d6ad
+x-ms-traffictypediagnostic: VI1PR0402MB3872:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB387294557A0FEC9D1530092AE07B0@VI1PR0402MB3872.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 7oBJW+KJJIYiXQAsvBIGwh7KrHTtGPSNKYqdp5glpic3BPjbVcKKmj4k/Pt0righw1ISTP7hlFSwHG7zMNeWMBY6RHhQ7AsbBfP7kyWcU++c5yopEzBaVB8r7Wr3qRLvtzkg5keJi3LpgVaGz6NIUixsq9PKFxATgmYXYoOGa8Z+WnAFnFb9D5bj/1YCdcymCTppCWfVgPyXE9Z25sDaa36U1XwBf0RHIDC5FjjMcRWnRiw3WBfysyRK69FeqsWev1+vg35GWND/g0mgW44+KNcKQMpky7M/HwWqB34dlPhhAL+A3FiKJZWuufhdIApOqKQfyfzbaL6+kGhtLBSxxA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(366004)(346002)(396003)(376002)(8936002)(26005)(316002)(86362001)(5660300002)(2906002)(7696005)(9686003)(186003)(71200400001)(44832011)(478600001)(4326008)(110136005)(91956017)(66556008)(66476007)(33656002)(66946007)(64756008)(76116006)(66446008)(55016002)(6506007)(54906003)(83380400001)(53546011)(8676002)(52536014);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: Fu3JJ06Q5HBIloO83hSHKcDelsnufJLKB+3YcnAZFgmmXtcNOt3Ibo6xomYvxlXZBlkhSXv3UtXKdcgfeXtQrmgbk94sP79FyhY4/B61FZ3IQOF2UK3lMR0IxmUEEc3xrJ/DQsXU/kVt3x3DCvPvJlM1UE1Gehxn87otawF0myBVD65uosP6PEDxUkWAy2AsWj6QYJujMwpIUyL6Z7i2V0gMsz/5z1WwggHm9VBNgGalEsQ12AeeNq17RkFEjO/BOI73kxZrHCtFpmSio0Ukm+v/5HXj/WMB2j4AuZ9UUO3BS5jOxyVSPfzH9a3TaspPuw1SvCTR1p/u2jUDP7kjSs8wQaSaI+K61X/G+i+Vkg507PgR09SLUl+qJV7hrP/xHWgdfyJEw+hQ1Psn3Y5FwD2wMZ3FtCDZM2GUdXSSiaGJTAiqFn/QmkM6tEbw3TnsZJLGpOnH/wY5NYzDTcPT+DN08Ijqb4CRQAuDpbdRHicScFHFHtYe945wF5dZLWdY
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from whb-OptiPlex-790.ap.freescale.net (119.31.174.73) by SGAP274CA0009.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17 via Frontend Transport; Mon, 20 Jul 2020 10:38:30 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [119.31.174.73]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 18860973-a711-42e4-430c-08d82c990f4d
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5005:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5005CFFF60465741FD2502F2E17B0@VI1PR04MB5005.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Nbscx/u9+gTMEY3Dxicaqzb3O5z4J/T3pjfMDWCnL8jcw4w/FLLHaeKqMlSS8kOXURDk2Ead/myCFjZz/XelfyG+8bcVfw1urUJyyX0JJNGwejjhkNZ4Uhk3wJnnf6wfxA6vCiM3trizkRXhsSg7qXPjFzIbvKysvoP2hF8RudwjrwSGebQfithoBbow8Ja7xO7dGIW/a2et1IhS4SGn5YyH1ZlxBJaxOTAHcICtP5gQrxfUPYR2PZT/n/ySrNQd4H0tykVPn/ANnK2WHORn7UHmGcceYziDsaUaZkCgk98PPuQag6ipPoWpwpiyZL2jxcUopadkb4NgU7wS9ukGH+niPYG72ijzTsr8fbwLPHuM2/GY3d/3nWFW+IQaE+pk
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5103.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(396003)(39860400002)(366004)(136003)(26005)(2906002)(316002)(36756003)(7416002)(83380400001)(86362001)(186003)(16526019)(52116002)(66946007)(6506007)(66556008)(66476007)(6486002)(2616005)(956004)(6666004)(9686003)(6512007)(8936002)(1076003)(5660300002)(4326008)(478600001)(8676002)(921003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: hImW8UNM58SdswF+zx7hEOi+nlRsaCHe7Dfxi/BsTp7yrrOiMpGuMGvhqPpAgA5Y6RhMs6Ehcm2AaPTG/h6cAFPSQKCdt+MIFVh8tc1ZtgZhg6H9oBCwawHHV/m3y2hi2js5/4+JLRHN/wbYgYiTpMi4qFJTWxyt/l2eW/5ZPOTLvTrDdNhjPcwIKK9vFpo9f7MjTyPQKJFmIg2o0DTK8OI0tm1bptS5Z8/HQOPUEVyVV6qlBdycbyMrDbvUHDjaVipp7aK0Py38CdxJujRL75pz2ftO8ftinnrCciGOkxNUTW7NZoOoXWIRRsOkooLUj3UdUXLzHaQgGhF6lpSpg2UqpaUQ6GPIy8YSxGdN4Ki2bjjc0KX7CSPlHUw2qmdnS2XdUyKJp3V879uDETyYdDEODD+Nkql3+A4i0FfAsfHkYAKRstwBvX7aMUJ3R5MWnUDv0HYvHBu0i7dXo/FikjqUULoTvNnCW/yi60PsZIg=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 18860973-a711-42e4-430c-08d82c990f4d
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5103.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2020 10:38:37.4243
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aafa700a-d19d-4954-8960-08d82c99d6ad
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2020 10:44:11.5021
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DxDuDfVqeyIJeabrqxABrRNZrFB0ezB09b2hb8c+pCFpF06HdpiV7cQpBV6g+YKRhbRPvwVjro+hAowkFv6Www==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5005
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0UL/A7rwsQoLK8uH24p5Sd5UBN3Qp4ZVS+xnrOs4nuNgfX/rmXG402qjA5vI431Fu3GlRYSSaEKxFnfhpHGOyQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3872
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "hongbo.wang" <hongbo.wang@nxp.com>
-
-the following command will be supported:
-Add VLAN:
-    ip link add link swp1 name swp1.100 type vlan protocol 802.1ad id 100
-Delete VLAN:
-    ip link del link swp1 name swp1.100
-
-Signed-off-by: hongbo.wang <hongbo.wang@nxp.com>
----
- net/dsa/dsa_priv.h  | 2 +-
- net/dsa/port.c      | 3 ++-
- net/dsa/slave.c     | 6 +++++-
- net/dsa/tag_8021q.c | 2 +-
- 4 files changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index adecf73bd608..5cd804c1d7e3 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -165,7 +165,7 @@ int dsa_port_vlan_add(struct dsa_port *dp,
- int dsa_port_vlan_del(struct dsa_port *dp,
- 		      const struct switchdev_obj_port_vlan *vlan);
- int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags);
--int dsa_port_vid_del(struct dsa_port *dp, u16 vid);
-+int dsa_port_vid_del(struct dsa_port *dp, u16 vid, u16 flags);
- int dsa_port_link_register_of(struct dsa_port *dp);
- void dsa_port_link_unregister_of(struct dsa_port *dp);
- extern const struct phylink_mac_ops dsa_port_phylink_mac_ops;
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index e23ece229c7e..8a8ecb91a030 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -454,10 +454,11 @@ int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags)
- }
- EXPORT_SYMBOL(dsa_port_vid_add);
- 
--int dsa_port_vid_del(struct dsa_port *dp, u16 vid)
-+int dsa_port_vid_del(struct dsa_port *dp, u16 vid, u16 flags)
- {
- 	struct switchdev_obj_port_vlan vlan = {
- 		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
-+		.flags = flags,
- 		.vid_begin = vid,
- 		.vid_end = vid,
- 	};
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 376d7ac5f1e5..14784a6718a9 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1270,6 +1270,7 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 				      u16 vid)
- {
-+	u16 flags = 0;
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	struct bridge_vlan_info info;
- 	int ret;
-@@ -1290,10 +1291,13 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 			return -EBUSY;
- 	}
- 
-+	if (ntohs(proto) == ETH_P_8021AD)
-+		flags |= BRIDGE_VLAN_INFO_8021AD;
-+
- 	/* Do not deprogram the CPU port as it may be shared with other user
- 	 * ports which can be members of this VLAN as well.
- 	 */
--	return dsa_port_vid_del(dp, vid);
-+	return dsa_port_vid_del(dp, vid, flags);
- }
- 
- struct dsa_hw_port {
-diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index 780b2a15ac9b..87b732c5cccf 100644
---- a/net/dsa/tag_8021q.c
-+++ b/net/dsa/tag_8021q.c
-@@ -154,7 +154,7 @@ static int dsa_8021q_vid_apply(struct dsa_switch *ds, int port, u16 vid,
- 	if (enabled)
- 		return dsa_port_vid_add(dp, vid, flags);
- 
--	return dsa_port_vid_del(dp, vid);
-+	return dsa_port_vid_del(dp, vid, flags);
- }
- 
- /* RX VLAN tagging (left) and TX VLAN tagging (right) setup shown for a single
--- 
-2.17.1
-
+On 6/30/20 5:29 PM, Russell King wrote:=0A=
+> When we have a PHY attached, an ethtool ksettings_set() call only=0A=
+> really needs to call through to the phylib equivalent; phylib will=0A=
+> call back to us when the link changes so we can update our state.=0A=
+> Therefore, we can bypass most of our ksettings_set() call for this=0A=
+> case.=0A=
+> =0A=
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>=0A=
+=0A=
+Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>=0A=
+=0A=
+> ---=0A=
+>   drivers/net/phy/phylink.c | 104 +++++++++++++++++---------------------=
+=0A=
+>   1 file changed, 47 insertions(+), 57 deletions(-)=0A=
+> =0A=
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c=0A=
+> index 103d2a550415..967c068d16c8 100644=0A=
+> --- a/drivers/net/phy/phylink.c=0A=
+> +++ b/drivers/net/phy/phylink.c=0A=
+> @@ -1312,13 +1312,33 @@ int phylink_ethtool_ksettings_set(struct phylink =
+*pl,=0A=
+>   				  const struct ethtool_link_ksettings *kset)=0A=
+>   {=0A=
+>   	__ETHTOOL_DECLARE_LINK_MODE_MASK(support);=0A=
+> -	struct ethtool_link_ksettings our_kset;=0A=
+>   	struct phylink_link_state config;=0A=
+>   	const struct phy_setting *s;=0A=
+> -	int ret;=0A=
+>   =0A=
+>   	ASSERT_RTNL();=0A=
+>   =0A=
+> +	if (pl->phydev) {=0A=
+> +		/* We can rely on phylib for this update; we also do not need=0A=
+> +		 * to update the pl->link_config settings:=0A=
+> +		 * - the configuration returned via ksettings_get() will come=0A=
+> +		 *   from phylib whenever a PHY is present.=0A=
+> +		 * - link_config.interface will be updated by the PHY calling=0A=
+> +		 *   back via phylink_phy_change() and a subsequent resolve.=0A=
+> +		 * - initial link configuration for PHY mode comes from the=0A=
+> +		 *   last phy state updated via phylink_phy_change().=0A=
+> +		 * - other configuration changes (e.g. pause modes) are=0A=
+> +		 *   performed directly via phylib.=0A=
+> +		 * - if in in-band mode with a PHY, the link configuration=0A=
+> +		 *   is passed on the link from the PHY, and all of=0A=
+> +		 *   link_config.{speed,duplex,an_enabled,pause} are not used.=0A=
+> +		 * - the only possible use would be link_config.advertising=0A=
+> +		 *   pause modes when in 1000base-X mode with a PHY, but in=0A=
+> +		 *   the presence of a PHY, this should not be changed as that=0A=
+> +		 *   should be determined from the media side advertisement.=0A=
+> +		 */=0A=
+> +		return phy_ethtool_ksettings_set(pl->phydev, kset);=0A=
+> +	}=0A=
+> +=0A=
+Also tested the PHY use case, no issue encountered with changing the =0A=
+advertisements, autoneg etc=0A=
+=0A=
+>   	linkmode_copy(support, pl->supported);=0A=
+>   	config =3D pl->link_config;=0A=
+>   	config.an_enabled =3D kset->base.autoneg =3D=3D AUTONEG_ENABLE;=0A=
+> @@ -1365,65 +1385,35 @@ int phylink_ethtool_ksettings_set(struct phylink =
+*pl,=0A=
+>   		return -EINVAL;=0A=
+>   	}=0A=
+>   =0A=
+> -	if (pl->phydev) {=0A=
+> -		/* If we have a PHY, we process the kset change via phylib.=0A=
+> -		 * phylib will call our link state function if the PHY=0A=
+> -		 * parameters have changed, which will trigger a resolve=0A=
+> -		 * and update the MAC configuration.=0A=
+> -		 */=0A=
+> -		our_kset =3D *kset;=0A=
+> -		linkmode_copy(our_kset.link_modes.advertising,=0A=
+> -			      config.advertising);=0A=
+> -		our_kset.base.speed =3D config.speed;=0A=
+> -		our_kset.base.duplex =3D config.duplex;=0A=
+> +	/* For a fixed link, this isn't able to change any parameters,=0A=
+> +	 * which just leaves inband mode.=0A=
+> +	 */=0A=
+> +	if (phylink_validate(pl, support, &config))=0A=
+> +		return -EINVAL;=0A=
+>   =0A=
+> -		ret =3D phy_ethtool_ksettings_set(pl->phydev, &our_kset);=0A=
+> -		if (ret)=0A=
+> -			return ret;=0A=
+> +	/* If autonegotiation is enabled, we must have an advertisement */=0A=
+> +	if (config.an_enabled && phylink_is_empty_linkmode(config.advertising))=
+=0A=
+> +		return -EINVAL;=0A=
+>   =0A=
+> -		mutex_lock(&pl->state_mutex);=0A=
+> -		/* Save the new configuration */=0A=
+> -		linkmode_copy(pl->link_config.advertising,=0A=
+> -			      our_kset.link_modes.advertising);=0A=
+> -		pl->link_config.interface =3D config.interface;=0A=
+> -		pl->link_config.speed =3D our_kset.base.speed;=0A=
+> -		pl->link_config.duplex =3D our_kset.base.duplex;=0A=
+> -		pl->link_config.an_enabled =3D our_kset.base.autoneg !=3D=0A=
+> -					     AUTONEG_DISABLE;=0A=
+> -		mutex_unlock(&pl->state_mutex);=0A=
+> -	} else {=0A=
+> -		/* For a fixed link, this isn't able to change any parameters,=0A=
+> -		 * which just leaves inband mode.=0A=
+> +	mutex_lock(&pl->state_mutex);=0A=
+> +	linkmode_copy(pl->link_config.advertising, config.advertising);=0A=
+> +	pl->link_config.interface =3D config.interface;=0A=
+> +	pl->link_config.speed =3D config.speed;=0A=
+> +	pl->link_config.duplex =3D config.duplex;=0A=
+> +	pl->link_config.an_enabled =3D kset->base.autoneg !=3D=0A=
+> +				     AUTONEG_DISABLE;=0A=
+=0A=
+Is there a specific reason why this is not just using config.an_enabled =0A=
+to sync back to pl->link_config?=0A=
+=0A=
+> +=0A=
+> +	if (pl->cur_link_an_mode =3D=3D MLO_AN_INBAND &&=0A=
+> +	    !test_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state)) {=
+=0A=
+> +		/* If in 802.3z mode, this updates the advertisement.=0A=
+> +		 *=0A=
+> +		 * If we are in SGMII mode without a PHY, there is no=0A=
+> +		 * advertisement; the only thing we have is the pause=0A=
+> +		 * modes which can only come from a PHY.=0A=
+>   		 */=0A=
+> -		if (phylink_validate(pl, support, &config))=0A=
+> -			return -EINVAL;=0A=
+> -=0A=
+> -		/* If autonegotiation is enabled, we must have an advertisement */=0A=
+> -		if (config.an_enabled &&=0A=
+> -		    phylink_is_empty_linkmode(config.advertising))=0A=
+> -			return -EINVAL;=0A=
+> -=0A=
+> -		mutex_lock(&pl->state_mutex);=0A=
+> -		linkmode_copy(pl->link_config.advertising, config.advertising);=0A=
+> -		pl->link_config.interface =3D config.interface;=0A=
+> -		pl->link_config.speed =3D config.speed;=0A=
+> -		pl->link_config.duplex =3D config.duplex;=0A=
+> -		pl->link_config.an_enabled =3D kset->base.autoneg !=3D=0A=
+> -					     AUTONEG_DISABLE;=0A=
+> -=0A=
+> -		if (pl->cur_link_an_mode =3D=3D MLO_AN_INBAND &&=0A=
+> -		    !test_bit(PHYLINK_DISABLE_STOPPED,=0A=
+> -			      &pl->phylink_disable_state)) {=0A=
+> -			/* If in 802.3z mode, this updates the advertisement.=0A=
+> -			 *=0A=
+> -			 * If we are in SGMII mode without a PHY, there is no=0A=
+> -			 * advertisement; the only thing we have is the pause=0A=
+> -			 * modes which can only come from a PHY.=0A=
+> -			 */=0A=
+> -			phylink_pcs_config(pl, true, &pl->link_config);=0A=
+> -		}=0A=
+> -		mutex_unlock(&pl->state_mutex);=0A=
+> +		phylink_pcs_config(pl, true, &pl->link_config);=0A=
+>   	}=0A=
+> +	mutex_unlock(&pl->state_mutex);=0A=
+>   =0A=
+>   	return 0;=0A=
+>   }=0A=
+> =0A=
+=0A=
