@@ -2,72 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7BD722578A
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 08:24:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD861225799
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 08:29:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726893AbgGTGY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 02:24:26 -0400
-Received: from smtp25.cstnet.cn ([159.226.251.25]:44744 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725805AbgGTGY0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 02:24:26 -0400
-Received: from localhost (unknown [159.226.5.99])
-        by APP-05 (Coremail) with SMTP id zQCowACX3g6LOBVf0Ub9AQ--.44249S2;
-        Mon, 20 Jul 2020 14:24:12 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        davem@davemloft.net, kuba@kernel.org, vulab@iscas.ac.cn,
-        kw@linux.com, colin.king@canonical.com, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] net: hns: use eth_broadcast_addr() to assign broadcast address
-Date:   Mon, 20 Jul 2020 06:24:10 +0000
-Message-Id: <20200720062410.7773-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: zQCowACX3g6LOBVf0Ub9AQ--.44249S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7XrW5uFyxCr17AF47JryDtrb_yoWfWrb_WF
-        yj9F4rWw4UKryFya1rta9rurySv3Z0qw18uF42yrZ3JasxGr13Xa40vF4UAr1DWa17uF93
-        KrsFqaySya42vjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb4kFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
-        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jw0_WrylYx0Ex4A2jsIE14v26r4UJVWxJr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
-        GF1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
-        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI
-        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
-        1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUe5rcDU
-        UUU
-X-Originating-IP: [159.226.5.99]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCAQDA18J9gK2zwAAsX
+        id S1726084AbgGTG3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 02:29:07 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:41371 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726015AbgGTG3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 02:29:06 -0400
+Received: from localhost (bharat.asicdesigners.com [10.193.177.155] (may be forged))
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 06K6SciR031082;
+        Sun, 19 Jul 2020 23:28:52 -0700
+Date:   Mon, 20 Jul 2020 11:58:37 +0530
+From:   Vishal Kulkarni <vishal@chelsio.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com
+Subject: Re: [PATCH net-next 0/4] cxgb4: add ethtool self_test support
+Message-ID: <20200720062837.GA22415@chelsio.com>
+References: <20200717134759.8268-1-vishal@chelsio.com>
+ <20200717180251.GC1339445@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200717180251.GC1339445@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to use eth_broadcast_addr() to assign broadcast address
-insetad of memset().
+On Friday, July 07/17/20, 2020 at 20:02:51 +0200, Andrew Lunn wrote:
+> On Fri, Jul 17, 2020 at 07:17:55PM +0530, Vishal Kulkarni wrote:
+> > This series of patches add support for below tests.
+> > 1. Adapter status test
+> > 2. Link test
+> > 3. Link speed test
+> > 4. Loopback test
+> 
+> Hi Vishal
+> 
+> The loopback test is pretty usual for an ethtool self test. But the
+> first 3 are rather odd. They don't really seem to be self tests. What
+> reason do you have for adding these? Are you trying to debug a
+> specific problem?
+> 
+> 	 Andrew
+Hi Andrew,
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
----
- drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Our requirement is to add a list of self tests that can summarize if the adapter is functioning
+properly in a single command during system init. The above tests are the most common ones run by
+our on-field diagnostics team. Besides, these tests seem to be the most common among other drivers as well.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
-index 1c5243cc1dc6..acfa86e5296f 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
-@@ -1724,7 +1724,7 @@ static void hns_dsaf_setup_mc_mask(struct dsaf_device *dsaf_dev,
- 				   u8 port_num, u8 *mask, u8 *addr)
- {
- 	if (MAC_IS_BROADCAST(addr))
--		memset(mask, 0xff, ETH_ALEN);
-+		eth_broadcast_addr(mask);
- 	else
- 		memcpy(mask, dsaf_dev->mac_cb[port_num]->mc_mask, ETH_ALEN);
- }
--- 
-2.17.1
+Hence we have added
+1. Adapter status test: Tests whether the adapter is alive or crashed
+2. Link test: Adapter PHY is up or not.
+3. Link speed test: Adapter has negotiated link speed correctly or not.
 
+-Vishal
