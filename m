@@ -2,107 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D37B2226F3E
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 21:49:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97E3C226F63
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 21:58:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731059AbgGTTsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 15:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729345AbgGTTsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 15:48:50 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227CCC061794
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 12:48:50 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id k5so404857pjg.3
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 12:48:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p7rC2iD3wo0oNQ6k3NcAdhyJnspg3W/7FWg9FWMeNCc=;
-        b=DpBxcSV7dp+Uc3878y4A6FTCUnFg7UG7BvM3+wUETqt1tCV6dq6NhTzzVJBusLN0BH
-         oyC54D1n0lopR3swYEIlBOZPl6K6+wqRXjnmyxduQT2fnWsISQotQ5fjEK+1TX/3UN8L
-         uUdwlioR+bOjGPkuiLXs0/D+vWLQvDlKRs06cilMmpKcfaFNY7kBiLF2vm6qSpJuwW+b
-         x1krJjjfdhKj6YX6g6t174Ir9reWw0gL2n3OjatTzgu8HbceH4I6HT2HpfaHBlej0Vnq
-         KKCHXokzyH2xz73HLkeIMq42uADogFdiLXelov1POApIiYqTmoAG0zoF6Mg/hF+S7zMY
-         sFVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p7rC2iD3wo0oNQ6k3NcAdhyJnspg3W/7FWg9FWMeNCc=;
-        b=N+80JJh7ScwsOhYoT1LfKoD3jREmPfX/95OtW//vAkJyyy5PBqUWnphP9Zu/QG+UKV
-         ab8fIMTWWhTa71BEXvDqDf6OY/kJxmUQRVW4QdvHrtd8xKhmdz4JQpyF8As9S/xXTmej
-         uE4fHaLmpUnb0bK/PKmPYIA9ahcwI5SXI35XfdW9al/jPq9txiqyuQOuVru8Ynl5sJTB
-         rJYOHFLnAMgYtDAiwYfWkYYS7ukeq+VeF8G7uDctl4adsqi8zjz3YYxqf6ImTOoZJ7wd
-         QE2Y3QvrMCt62Qn37BTHmooXzvruQrxrfpyLnRGr9I6/zMcO77/Ya9OZnGF5xQ9L1/2g
-         4Cqw==
-X-Gm-Message-State: AOAM532CSLXO0vSV/Ifamy3a/1LVJUIaSfneTe5a5BHXS5ItnH7JU1ic
-        k7I2zcEW2Tp3TYRd5e4yO5PPzLp4RIaD6B/ELE3AIw==
-X-Google-Smtp-Source: ABdhPJwICSn8NvlDtu0svKODEjk5OCN18c6+8Gc45Ed6tmzqHVHxoTL+znXBzO87NHsorhJrLUGH4hcsDS2kKu1JykE=
-X-Received: by 2002:a17:90a:30ea:: with SMTP id h97mr1031428pjb.32.1595274529468;
- Mon, 20 Jul 2020 12:48:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200708230402.1644819-1-ndesaulniers@google.com> <CAKwvOdmXtFo8YoNd7pgBnTQEwTZw0nGx-LypDiFKRR_HzZm9aA@mail.gmail.com>
-In-Reply-To: <CAKwvOdmXtFo8YoNd7pgBnTQEwTZw0nGx-LypDiFKRR_HzZm9aA@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 20 Jul 2020 12:48:38 -0700
-Message-ID: <CAKwvOdkGmgdh6-4VRUGkd1KRC-PgFcGwP5vKJvO9Oj3cB_Qh6Q@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2 net] bitfield.h cleanups
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        id S1731018AbgGTT6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 15:58:47 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:23757 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726619AbgGTT6r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 15:58:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1595275126;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=riRyOF5JX7Ab1X0Yq7qQOguVpy6RN/d461f2fKfzeq8=;
+        b=ft1batyUe+HXRM5VM4Wzif5pi7T7W+P8Bu6l4LZ0YmLzFHZHNMAXjcSYtZpKt/IDPVfA1m
+        krlaYUGUW2ssxAKOQ/vNdiTTZUDS3Pdg8LZav8WYu1De0o77GQx0X3L4T/C4XgmwYuWduv
+        Gn+dcHXOSRq+Ar4H53VaBOdJdSkfWis=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-286-HtXHyZW8NBmXWxj5ivHjzQ-1; Mon, 20 Jul 2020 15:58:44 -0400
+X-MC-Unique: HtXHyZW8NBmXWxj5ivHjzQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3C4C0100AA21;
+        Mon, 20 Jul 2020 19:58:43 +0000 (UTC)
+Received: from krava (unknown [10.40.194.11])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 758CC60F96;
+        Mon, 20 Jul 2020 19:58:41 +0000 (UTC)
+Date:   Mon, 20 Jul 2020 21:58:40 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, oss-drivers@netronome.com,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, Alex Elder <elder@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Olsa <jolsa@kernel.org>, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next v2 3/5] bpf: add BTF_ID_LIST_GLOBAL in btf_ids.h
+Message-ID: <20200720195840.GO760733@krava>
+References: <20200720163358.1392964-1-yhs@fb.com>
+ <20200720163401.1393159-1-yhs@fb.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200720163401.1393159-1-yhs@fb.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 14, 2020 at 11:23 AM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> On Wed, Jul 8, 2020 at 4:04 PM Nick Desaulniers <ndesaulniers@google.com> wrote:
-> >
-> > Two patches, one that removes a BUILD_BUG_ON for a case that is not a
-> > compile time bug (exposed by compiler optimization).
-> >
-> > The second is a general cleanup in the area.
-> >
-> > I decided to leave the BUILD_BUG_ON case first, as I hope it will
-> > simplify being able to backport it to stable, and because I don't think
-> > there's any type promotion+conversion bugs there.
-> >
-> > Though it would be nice to use consistent types widths and signedness,
-> > equality against literal zero is not an issue.
-> >
-> > Jakub Kicinski (1):
-> >   bitfield.h: don't compile-time validate _val in FIELD_FIT
-> >
-> > Nick Desaulniers (1):
-> >   bitfield.h: split up __BF_FIELD_CHECK macro
-> >
-> >  .../netronome/nfp/nfpcore/nfp_nsp_eth.c       | 11 ++++----
-> >  include/linux/bitfield.h                      | 26 +++++++++++++------
-> >  2 files changed, 24 insertions(+), 13 deletions(-)
-> >
-> > --
-> > 2.27.0.383.g050319c2ae-goog
-> >
->
-> Hey David, when you have a chance, could you please consider picking
-> up this series?
-> --
+On Mon, Jul 20, 2020 at 09:34:01AM -0700, Yonghong Song wrote:
+> Existing BTF_ID_LIST used a local static variable
+> to store btf_ids. This patch provided a new macro
+> BTF_ID_LIST_GLOBAL to store btf_ids in a global
+> variable which can be shared among multiple files.
+> 
+> The existing BTF_ID_LIST is still retained.
+> Two reasons. First, BTF_ID_LIST is also used to build
+> btf_ids for helper arguments which typically
+> is an array of 5. Since typically different
+> helpers have different signature, it makes
+> little sense to share them. Second, some
+> current computed btf_ids are indeed local.
+> If later those btf_ids are shared between
+> different files, they can use BTF_ID_LIST_GLOBAL then.
+> 
+> Signed-off-by: Yonghong Song <yhs@fb.com>
 
-Hi David, bumping for review.
--- 
-Thanks,
-~Nick Desaulniers
+Acked-by: Jiri Olsa <jolsa@redhat.com>
+
+jirka
+
