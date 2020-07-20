@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A13A225AA7
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 11:01:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD7E9225ABD
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 11:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbgGTJBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 05:01:11 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:8334 "EHLO huawei.com"
+        id S1728117AbgGTJEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 05:04:09 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7793 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725815AbgGTJBL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 05:01:11 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 33C62D6F8F64A458F9B3;
-        Mon, 20 Jul 2020 17:01:04 +0800 (CST)
+        id S1726030AbgGTJEJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 05:04:09 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id D7CC088D78A4E65EF398;
+        Mon, 20 Jul 2020 17:04:01 +0800 (CST)
 Received: from NRM-11.huawei.com (10.175.101.78) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 20 Jul 2020 17:00:57 +0800
+ DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 20 Jul 2020 17:03:34 +0800
 From:   Wang Yufen <wangyufen@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <brcm80211-dev-list@cypress.com>, <linux-wireless@vger.kernel.org>,
@@ -24,8 +24,8 @@ To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <franky.lin@broadcom.com>, <wright.feng@cypress.com>
 CC:     Wang Yufen <wangyufen@huawei.com>
 Subject: [PATCH net-next] brcm80211: fix possible memleak in brcmf_proto_msgbuf_attach
-Date:   Mon, 20 Jul 2020 17:33:28 +0800
-Message-ID: <1595237608-66045-1-git-send-email-wangyufen@huawei.com>
+Date:   Mon, 20 Jul 2020 17:36:05 +0800
+Message-ID: <1595237765-66238-1-git-send-email-wangyufen@huawei.com>
 X-Mailer: git-send-email 1.8.3
 MIME-Version: 1.0
 Content-Type: text/plain
