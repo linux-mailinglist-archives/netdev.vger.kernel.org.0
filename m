@@ -2,40 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D37C5226A3E
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:36:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83406226A3B
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388861AbgGTQcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 12:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731569AbgGTP4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 11:56:45 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7F9C061794;
-        Mon, 20 Jul 2020 08:56:45 -0700 (PDT)
+        id S1732323AbgGTQcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 12:32:12 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:58898 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731831AbgGTP4v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 11:56:51 -0400
 From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595260604;
+        s=2020; t=1595260608;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4/ywCu1ddv/vjOuhHxWVQ4Une/Z767iKPljoFb/YuCo=;
-        b=1BzcJb5UXd9c4r6mNPmIM30L+gZYQxNQR0/b8PAyf1hjroGleHqyfcIg/GcGhtqzO3JuRw
-        iC6/myoxUzA7UUKI3oSXwesluhzC+hRLlB69BBrpMbPLlVhuY25AzQe1BT9YbsYyulIsgk
-        TMhI215XiZdwxT111e/mfm68LHqWS5XDSd1leoJLXm/PhzZpPn65TrInWZDEfF+VOydiGi
-        +KCmnea6qh1WEL/amO/GMRqBxcZeOqBX73KvYil15o1L0x2KPpLgVDYBOmXZV1YBBzf6tC
-        QblCTyNdPThEpNzzNwgB0SZV6QPPaqh37vMS2eikcEAOz+IIHn3Myu+7+3Uwew==
+        bh=fDImi88zFV81pjdnOgUX9XebIgS39WaOUsCCEI1b+mc=;
+        b=iD4xnpX0iRZgogyjOiHVrZQNGX7nsG9CgZhEFPYHTEdTFe8WWzp+BUtL1SZzNO5LEdU91C
+        MfN7kWQWUa/ZSUut/7hgdhQz0nxS7tHis1FOPupATFdK+Is3TQHURz7RqUXFGfeayWmMZa
+        E7gpnw3gLweWsoXyedn5AU1ITR2cR1wG9zkNnHCk4rejk/9hI+z0Y9q/E0mZ4zHe2/tS5V
+        OGCClXH2nwmhnSIgORzreuKhFhMzQBeZiXuhPgRAOdr8uT7Toc/rnBBpKCi0eh5GtJgSiI
+        nnWVpwdm7ETkC5djyIsNSJZdVK4K6FVvm9ANOth6AVAs1YAZpursJ+XOOFXglQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595260604;
+        s=2020e; t=1595260608;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4/ywCu1ddv/vjOuhHxWVQ4Une/Z767iKPljoFb/YuCo=;
-        b=TZmK83GNtq3Vst9FIUeDTWJH2SozMZJcueFXszjMIJRTjrivYQVEcdDuytGUGcwEWTzQqT
-        LXEKHCzqIguBjgBg==
+        bh=fDImi88zFV81pjdnOgUX9XebIgS39WaOUsCCEI1b+mc=;
+        b=g6j7cwiXCKepe4U21OZ5BfpK36kd8eTsYX4jbS3n9Cu1A5VTcDUF0yLW52NzEAkZ3nlWem
+        2GCVU32cKO8fF8Bg==
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
@@ -44,16 +41,13 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Steven Rostedt <rostedt@goodmis.org>,
         LKML <linux-kernel@vger.kernel.org>,
         "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v4 15/24] netfilter: nft_set_rbtree: Use sequence counter with associated rwlock
-Date:   Mon, 20 Jul 2020 17:55:21 +0200
-Message-Id: <20200720155530.1173732-16-a.darwish@linutronix.de>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH v4 16/24] xfrm: policy: Use sequence counters with associated lock
+Date:   Mon, 20 Jul 2020 17:55:22 +0200
+Message-Id: <20200720155530.1173732-17-a.darwish@linutronix.de>
 In-Reply-To: <20200720155530.1173732-1-a.darwish@linutronix.de>
 References: <20200519214547.352050-1-a.darwish@linutronix.de>
  <20200720155530.1173732-1-a.darwish@linutronix.de>
@@ -65,45 +59,76 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 A sequence counter write side critical section must be protected by some
-form of locking to serialize writers. A plain seqcount_t does not
-contain the information of which lock must be held when entering a write
-side critical section.
+form of locking to serialize writers. If the serialization primitive is
+not disabling preemption implicitly, preemption has to be explicitly
+disabled before entering the sequence counter write side critical
+section.
 
-Use the new seqcount_rwlock_t data type, which allows to associate a
-rwlock with the sequence counter. This enables lockdep to verify that
-the rwlock used for writer serialization is held when the write side
-critical section is entered.
+A plain seqcount_t does not contain the information of which lock must
+be held when entering a write side critical section.
+
+Use the new seqcount_spinlock_t and seqcount_mutex_t data types instead,
+which allow to associate a lock with the sequence counter. This enables
+lockdep to verify that the lock used for writer serialization is held
+when the write side critical section is entered.
 
 If lockdep is disabled this lock association is compiled out and has
 neither storage size nor runtime overhead.
 
 Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
 ---
- net/netfilter/nft_set_rbtree.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/xfrm/xfrm_policy.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/netfilter/nft_set_rbtree.c b/net/netfilter/nft_set_rbtree.c
-index b6aad3fc46c3..4b2834fd17b2 100644
---- a/net/netfilter/nft_set_rbtree.c
-+++ b/net/netfilter/nft_set_rbtree.c
-@@ -18,7 +18,7 @@
- struct nft_rbtree {
- 	struct rb_root		root;
- 	rwlock_t		lock;
--	seqcount_t		count;
-+	seqcount_rwlock_t	count;
- 	struct delayed_work	gc_work;
- };
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 564aa6492e7c..732a940468b0 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -122,7 +122,7 @@ struct xfrm_pol_inexact_bin {
+ 	/* list containing '*:*' policies */
+ 	struct hlist_head hhead;
  
-@@ -523,7 +523,7 @@ static int nft_rbtree_init(const struct nft_set *set,
- 	struct nft_rbtree *priv = nft_set_priv(set);
+-	seqcount_t count;
++	seqcount_spinlock_t count;
+ 	/* tree sorted by daddr/prefix */
+ 	struct rb_root root_d;
  
- 	rwlock_init(&priv->lock);
--	seqcount_init(&priv->count);
-+	seqcount_rwlock_init(&priv->count, &priv->lock);
- 	priv->root = RB_ROOT;
+@@ -155,7 +155,7 @@ static struct xfrm_policy_afinfo const __rcu *xfrm_policy_afinfo[AF_INET6 + 1]
+ 						__read_mostly;
  
- 	INIT_DEFERRABLE_WORK(&priv->gc_work, nft_rbtree_gc);
+ static struct kmem_cache *xfrm_dst_cache __ro_after_init;
+-static __read_mostly seqcount_t xfrm_policy_hash_generation;
++static __read_mostly seqcount_mutex_t xfrm_policy_hash_generation;
+ 
+ static struct rhashtable xfrm_policy_inexact_table;
+ static const struct rhashtable_params xfrm_pol_inexact_params;
+@@ -719,7 +719,7 @@ xfrm_policy_inexact_alloc_bin(const struct xfrm_policy *pol, u8 dir)
+ 	INIT_HLIST_HEAD(&bin->hhead);
+ 	bin->root_d = RB_ROOT;
+ 	bin->root_s = RB_ROOT;
+-	seqcount_init(&bin->count);
++	seqcount_spinlock_init(&bin->count, &net->xfrm.xfrm_policy_lock);
+ 
+ 	prev = rhashtable_lookup_get_insert_key(&xfrm_policy_inexact_table,
+ 						&bin->k, &bin->head,
+@@ -1906,7 +1906,7 @@ static int xfrm_policy_match(const struct xfrm_policy *pol,
+ 
+ static struct xfrm_pol_inexact_node *
+ xfrm_policy_lookup_inexact_addr(const struct rb_root *r,
+-				seqcount_t *count,
++				seqcount_spinlock_t *count,
+ 				const xfrm_address_t *addr, u16 family)
+ {
+ 	const struct rb_node *parent;
+@@ -4153,7 +4153,7 @@ void __init xfrm_init(void)
+ {
+ 	register_pernet_subsys(&xfrm_net_ops);
+ 	xfrm_dev_init();
+-	seqcount_init(&xfrm_policy_hash_generation);
++	seqcount_mutex_init(&xfrm_policy_hash_generation, &hash_resize_mutex);
+ 	xfrm_input_init();
+ 
+ #ifdef CONFIG_INET_ESPINTCP
 -- 
 2.20.1
 
