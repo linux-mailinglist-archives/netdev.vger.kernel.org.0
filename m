@@ -2,229 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1A92256EC
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 07:03:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF58F225701
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 07:22:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725872AbgGTFDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 01:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52888 "EHLO
+        id S1726428AbgGTFWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 01:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725287AbgGTFDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 01:03:01 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6981EC0619D2;
-        Sun, 19 Jul 2020 22:03:01 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id ed14so6845972qvb.2;
-        Sun, 19 Jul 2020 22:03:01 -0700 (PDT)
+        with ESMTP id S1725287AbgGTFWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 01:22:32 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76506C0619D2;
+        Sun, 19 Jul 2020 22:22:32 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id b79so429417qkg.9;
+        Sun, 19 Jul 2020 22:22:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=SKuWOvu4VbdqYcZbOfIacq7j20jr5pNvTCqQn6BBnfw=;
-        b=t45aCkMIz9AQRLTEqr4u9fXvQ1BOQEgmouGBEfe8zqjsBaMPnImsvXT50GpMt/+uSg
-         GWN9ImFF+fcUgpEvoBSqe1uON2IcG7v9wzcKqi7UwDd9kHfuBvgTQ5dQb7YVHB3110lT
-         E5BJxA9rPb3jXp2F78vbUxjNEMaqN08dg5eKksQLuuT76Dy0CTDHXA1dJwdtFLWeXqmj
-         3usHqojCN/48QeasYPoEQ9j7k3XG1yYU3Mt0lQd1p9F4GB1Y8o8/LahsHvzg4FVSEwSA
-         4Ioj6W0e/+jQIlEotdWAbVYk5DB90tBqN0nLjHSmMcVHh8IXcEpEurb85s6d0vKah3OT
-         9eFA==
+         :cc;
+        bh=J9yakJIWVJcO3qOP1hLM5tTSUBs1Jt+mXyEidCcZxjA=;
+        b=L4R0GS9iJsO22staBD0RL/tWoOc+llS1WcszVoPCdFC287SWRXFVQqgLt43M2x/1hz
+         B3zV/JsRDJY0RmkMvxadDiB6oei8AG0lvk0rE4fQnemMtppN9MmJ+y0zKSS/DqWjbQeI
+         rTIPPLHyUgG9zAg1xGkpRw6mie2+fR0zgWUf7ZJOXaccJYoJ3YPFHO4luWFJ0PJIpwSR
+         NJzZbGzB2pe86I77cSzsMtU27vhWbnVv9LAOcOBncp89pMlLOQC9V+Dz35gvAHWVuYrk
+         qxL1kVAl6+6MMWU+oc2ez+N549j/jPNV1EHsbdywQd8KVWXa3PqaMNE9Cki/cuespRig
+         x5yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SKuWOvu4VbdqYcZbOfIacq7j20jr5pNvTCqQn6BBnfw=;
-        b=kuGVRV2bdOy09Iov20y1Dhl8Jvs3XaNByxL0GwTIGDbjhjufB+n12ngokBnSgNLiQM
-         KcjOkNN6hCYIenm9UsMrGkcEOMI6eUntlngGz/CjprNW9KaS4Gj/Rqc+dWoyXNNTylcj
-         lOpK62bQUgtEJyrzF+vsz/WAaMp9dw+Gnxbd+DIFNC1BmKK+DCyxLza6hUeOiDGwCXOL
-         lxhm9JudY2uxcsO8yBPstxXD78m/7oXoT0U8+g451zNIduOfM/XXQMhi5qwWCIc6nzIq
-         c41dtguiLzu2BpV2GSFqryR3aLSBgb4lpDcJW1RHsJqz4F4rL13i6n6dfOoHACprE7sI
-         DFug==
-X-Gm-Message-State: AOAM531Fe08yhCJd/PcE2jwHZRrQBrdrF9OEZkrGI9bPQJ8f6q/+niM8
-        2NgX/cbRE8cb8OQOZdSuJh77sYUq7zF4GWgTsZ0=
-X-Google-Smtp-Source: ABdhPJxVnahQ05XQZ/QlYqh65ItoS4QzgJdgd7CYQzgoqJY7DAzFjKyVhLW0Iu41LlZon03QJySBHMWMNB+JfvJ0F8o=
-X-Received: by 2002:a05:6214:bce:: with SMTP id ff14mr19851180qvb.196.1595221380285;
- Sun, 19 Jul 2020 22:03:00 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=J9yakJIWVJcO3qOP1hLM5tTSUBs1Jt+mXyEidCcZxjA=;
+        b=opwbWUvgmKIK3FPU7+GmcYyV+D0+n41CMRzXs0MhiKkscMkKHVEBbVgzSUnmoM7Lgf
+         jLIFL5ZuOb6k8uDaAb5Q7ImQlrvAel2i9d5vewQBTYy9VVNxZtAqeBuNmhjMLeDqo02T
+         AYX+YgCyi7AbmLx5VcIYAXNyT0dZfU9ELoEq5fUXm6LsSnYlKHD7O9qj7a+zzv0XiGWQ
+         C+8D552y/IJ3U3+f0gzGWGGEZYiTFyyrTtysZvpavMUhVVzroERtmPg1EXGLbvQehmUy
+         zixCyJfz25eoqBPb8hbda/QLblAFcYVLh+thF8jSgE/vaA8fiSQfu21tWiuxRkpEWDrW
+         MtZg==
+X-Gm-Message-State: AOAM530zy0e2ZxBG7veoLSv2HGdVruUspk53QEbGElW8JF/nKy031ySh
+        IZRkC2VLiC9NgUCImVvEzCxlUsx6MuLnflSs0PE=
+X-Google-Smtp-Source: ABdhPJwLF9RC4pjguC8DeRtX9v4tK2sOM0n9fP/pk+TU3p8YY098D89niOWnI/+FVoz07U7mGLAdXNwr5g89KV1KBFs=
+X-Received: by 2002:ae9:f002:: with SMTP id l2mr20890927qkg.437.1595222550340;
+ Sun, 19 Jul 2020 22:22:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <159481853923.454654.12184603524310603480.stgit@toke.dk>
- <159481854255.454654.15065796817034016611.stgit@toke.dk> <20200715204406.vt64vgvzsbr6kolm@ast-mbp.dhcp.thefacebook.com>
- <87mu3zentu.fsf@toke.dk> <20200717020507.jpxxe4dbc2watsfh@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200717020507.jpxxe4dbc2watsfh@ast-mbp.dhcp.thefacebook.com>
+References: <20200715214312.2266839-1-haoluo@google.com> <20200715214312.2266839-2-haoluo@google.com>
+In-Reply-To: <20200715214312.2266839-2-haoluo@google.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 19 Jul 2020 22:02:48 -0700
-Message-ID: <CAEf4BzYd4Xrn4EqzqHCTuJ8TnZiTC1vWWvd=9Np+LNrgbtxOcQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 3/6] bpf: support attaching freplace programs
- to multiple attach points
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+Date:   Sun, 19 Jul 2020 22:22:19 -0700
+Message-ID: <CAEf4BzZ5A+uMPFEmgom+0x+jju3JgTLXuuy=QB_dm2Skf--5Dg@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 1/2] bpf: BTF support for __ksym externs
+To:     Hao Luo <haoluo@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        Stanislav Fomichev <sdf@google.com>,
+        Quentin Monnet <quentin@isovalent.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 16, 2020 at 7:06 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Wed, Jul 15, 2020 at 2:45 PM Hao Luo <haoluo@google.com> wrote:
 >
-> On Thu, Jul 16, 2020 at 12:50:05PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
-> > Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-> >
-> > > On Wed, Jul 15, 2020 at 03:09:02PM +0200, Toke H=C3=83=C6=92=C3=82=C2=
-=B8iland-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
-> > >>
-> > >> +  if (tgt_prog_fd) {
-> > >> +          /* For now we only allow new targets for BPF_PROG_TYPE_EX=
-T */
-> > >> +          if (prog->type !=3D BPF_PROG_TYPE_EXT ||
-> > >> +              !btf_id) {
-> > >> +                  err =3D -EINVAL;
-> > >> +                  goto out_put_prog;
-> > >> +          }
-> > >> +          tgt_prog =3D bpf_prog_get(tgt_prog_fd);
-> > >> +          if (IS_ERR(tgt_prog)) {
-> > >> +                  err =3D PTR_ERR(tgt_prog);
-> > >> +                  tgt_prog =3D NULL;
-> > >> +                  goto out_put_prog;
-> > >> +          }
-> > >> +
-> > >> +  } else if (btf_id) {
-> > >> +          err =3D -EINVAL;
-> > >> +          goto out_put_prog;
-> > >> +  } else {
-> > >> +          btf_id =3D prog->aux->attach_btf_id;
-> > >> +          tgt_prog =3D prog->aux->linked_prog;
-> > >> +          if (tgt_prog)
-> > >> +                  bpf_prog_inc(tgt_prog); /* we call bpf_prog_put()=
- on link release */
-> > >
-> > > so the first prog_load cmd will beholding the first target prog?
-> > > This is complete non starter.
-> > > You didn't mention such decision anywhere.
-> > > The first ext prog will attach to the first dispatcher xdp prog,
-> > > then that ext prog will multi attach to second dispatcher xdp prog an=
-d
-> > > the first dispatcher prog will live in the kernel forever.
-> >
-> > Huh, yeah, you're right that's no good. Missing that was a think-o on m=
-y
-> > part, sorry about that :/
-> >
-> > > That's not what we discussed back in April.
-> >
-> > No, you mentioned turning aux->linked_prog into a list. However once I
-> > started looking at it I figured it was better to actually have all this
-> > (the trampoline and ref) as part of the bpf_link structure, since
-> > logically they're related.
-> >
-> > But as you pointed out, the original reference sticks. So either that
-> > needs to be removed, or I need to go back to the 'aux->linked_progs as =
-a
-> > list' idea. Any preference?
+> Previous commits:
 >
-> Good question. Back then I was thinking about converting linked_prog into=
- link
-> list, since standalone single linked_prog is quite odd, because attaching=
- ext
-> prog to multiple tgt progs should have equivalent properties across all
-> attachments.
-> Back then bpf_link wasn't quite developed.
-> Now I feel moving into bpf_tracing_link is better.
-> I guess a link list of bpf_tracing_link-s from 'struct bpf_prog' might wo=
-rk.
-> At prog load time we can do bpf_link_init() only (without doing bpf_link_=
-prime)
-> and keep this pre-populated bpf_link with target bpf prog and trampoline
-> in a link list accessed from 'struct bpf_prog'.
-> Then bpf_tracing_prog_attach() without extra tgt_prog_fd/btf_id would com=
-plete
-> that bpf_tracing_link by calling bpf_link_prime() and bpf_link_settle()
-> without allocating new one.
-> Something like:
-> struct bpf_tracing_link {
->         struct bpf_link link;  /* ext prog pointer is hidding in there */
->         enum bpf_attach_type attach_type;
->         struct bpf_trampoline *tr;
->         struct bpf_prog *tgt_prog; /* old aux->linked_prog */
-> };
+>  commit 1c0c7074fefd ("libbpf: Add support for extracting kernel symbol addresses")
+>  commit 2e33efe32e01 ("libbpf: Generalize libbpf externs support")
 >
-> ext prog -> aux -> link list of above bpf_tracing_link-s
+> have introduced a new type of extern variable ksyms to access kernel
+> global variables. This patch extends that work by adding btf info
+> for ksyms. In more details, in addition to the existing type btf_types,
+> pahole is going to encode a certain global variables in kernel btf
+> (percpu variables at this moment). With the extended kernel btf, we
+> can associate btf id to the ksyms to improve the performance of
+> accessing those vars by using direct load instructions.
+
+This is a step in the right direction, thanks for working on this. See
+below for a few problems, though.
+
+Also, in the next version, please split kernel part and libbpf part
+into separate patches.
+
 >
-> It's a circular reference, obviously.
-> Need to think through the complications and locking.
+> More specifically, libbpf can scan the kernel btf to find the btf id
+> of a ksym at extern resolution. During relocation, it will replace
+> "ld_imm64 rX, foo" with BPF_PSEUDO_BTF_ID. From the verifier point of
+> view "ld_imm64 rX, foo // pseudo_btf_id" will be similar to ld_imm64
+> with pseudo_map_fd and pseudo_map_value. The verifier will check btf_id
+> and replace that with actual kernel address at program load time. It
+> will also know that exact type of 'rX' from there on.
 >
-> bpf_tracing_prog_attach() with tgt_prog_fd/btf_id will alloc new bpf_trac=
-ing_link
-> and will add it to a link list.
+> Note that since only a subset of kernel symbols are encoded in btf right
+> now, finding btf_id for ksyms is only best effort. If a ksym does not
+> have a btf id, we do not rewrite its ld_imm64 to pseudo_btf_id. In that
+> case, it is treated as loading from a scalar value, which is the current
+> default behavior for ksyms.
+
+I don't think that's the right approach. It can't be the best effort.
+It's actually pretty clear when a user wants a BTF-based variable with
+ability to do direct memory access vs __ksym address that we have
+right now: variable type info. In your patch you are only looking up
+variable by name, but it needs to be more elaborate logic:
+
+1. if variable type is `extern void` -- do what we do today (no BTF required)
+2. if the variable type is anything but `extern void`, then find that
+variable in BTF. If no BTF or variable is not found -- hard error with
+detailed enough message about what we expected to find in kernel BTF.
+3. If such a variable is found in the kernel, then might be a good
+idea to additionally check type compatibility (e.g., struct/union
+should match struct/union, int should match int, typedefs should get
+resolved to underlying type, etc). I don't think deep comparison of
+structs is right, though, due to CO-RE, so just high-level
+compatibility checks to prevent the most obvious mistakes.
+
 >
-> Just a rough idea. I wonder what Andrii thinks.
+> Also note since we need to carry the ksym's address (64bits) as well as
+> its btf_id (32bits), pseudo_btf_id uses ld_imm64's both imm and off
+> fields.
+
+For BTF-enabled ksyms, libbpf doesn't need to provide symbol address,
+kernel will find it and substitute it, so BTF ID is the only
+parameter. Thus it can just go into the imm field (and simplify
+ldimm64 validation logic a bit).
+
+
 >
+> Signed-off-by: Hao Luo <haoluo@google.com>
+> ---
+>  include/uapi/linux/bpf.h       | 37 +++++++++++++++++++------
+>  kernel/bpf/verifier.c          | 26 +++++++++++++++---
+>  tools/include/uapi/linux/bpf.h | 37 +++++++++++++++++++------
+>  tools/lib/bpf/libbpf.c         | 50 +++++++++++++++++++++++++++++++++-
+>  4 files changed, 127 insertions(+), 23 deletions(-)
+>
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 5e386389913a..7490005acdba 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -334,18 +334,37 @@ enum bpf_link_type {
+>  #define BPF_F_TEST_STATE_FREQ  (1U << 3)
+>
+>  /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+> - * two extensions:
+> - *
+> - * insn[0].src_reg:  BPF_PSEUDO_MAP_FD   BPF_PSEUDO_MAP_VALUE
+> - * insn[0].imm:      map fd              map fd
+> - * insn[1].imm:      0                   offset into value
+> - * insn[0].off:      0                   0
+> - * insn[1].off:      0                   0
+> - * ldimm64 rewrite:  address of map      address of map[0]+offset
+> - * verifier type:    CONST_PTR_TO_MAP    PTR_TO_MAP_VALUE
+> + * three extensions:
+> + *
+> + * insn[0].src_reg:  BPF_PSEUDO_MAP_FD
+> + * insn[0].imm:      map fd
+> + * insn[1].imm:      0
+> + * insn[0].off:      0
+> + * insn[1].off:      0
+> + * ldimm64 rewrite:  address of map
+> + * verifier type:    CONST_PTR_TO_MAP
+>   */
+>  #define BPF_PSEUDO_MAP_FD      1
+> +/*
+> + * insn[0].src_reg:  BPF_PSEUDO_MAP_VALUE
+> + * insn[0].imm:      map fd
+> + * insn[1].imm:      offset into value
+> + * insn[0].off:      0
+> + * insn[1].off:      0
+> + * ldimm64 rewrite:  address of map[0]+offset
+> + * verifier type:    PTR_TO_MAP_VALUE
+> + */
+>  #define BPF_PSEUDO_MAP_VALUE   2
+> +/*
+> + * insn[0].src_reg:  BPF_PSEUDO_BTF_ID
+> + * insn[0].imm:      lower 32 bits of address
+> + * insn[1].imm:      higher 32 bits of address
+> + * insn[0].off:      lower 16 bits of btf id
+> + * insn[1].off:      higher 16 bits of btf id
+> + * ldimm64 rewrite:  address of kernel symbol
+> + * verifier type:    PTR_TO_BTF_ID
+> + */
+> +#define BPF_PSEUDO_BTF_ID      3
+>
+>  /* when bpf_call->src_reg == BPF_PSEUDO_CALL, bpf_call->imm == pc-relative
+>   * offset to another bpf function
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 3c1efc9d08fd..3c925957b9b6 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -7131,15 +7131,29 @@ static int check_ld_imm(struct bpf_verifier_env *env, struct bpf_insn *insn)
+>                 verbose(env, "invalid BPF_LD_IMM insn\n");
+>                 return -EINVAL;
+>         }
+> +       err = check_reg_arg(env, insn->dst_reg, DST_OP);
+> +       if (err)
+> +               return err;
+> +
+> +       /*
+> +        * BPF_PSEUDO_BTF_ID insn's off fields carry the ksym's btf_id, so its
+> +        * handling has to come before the reserved field check.
+> +        */
+> +       if (insn->src_reg == BPF_PSEUDO_BTF_ID) {
+> +               u32 id = ((u32)(insn + 1)->off << 16) | (u32)insn->off;
+> +               const struct btf_type *t = btf_type_by_id(btf_vmlinux, id);
+> +
 
-I need to spend more time reading existing and new code to see all the
-details, but I'll throw a slightly different proposal and let you guys
-shoot it down.
-
-So, what if instead of having linked_prog (as bpf_prog *, refcnt'ed),
-at BPF_PROG_LOAD time we just record the target prog's ID. BPF
-verifier, when doing its target prog checks would attempt to get
-bpf_prog * reference; if by that time the target program is gone,
-fail, of course. If not, everything proceeds as is, at the end of
-verification target_prog is put until attach time.
-
-Then at attach time, we either go with pre-recorded (in
-prog->aux->linked_prog_id) target prog's ID or we get a new one from
-RAW_TP_OPEN tgt_prog_fd. Either way, we bump refcnt on that target
-prog and keep it with bpf_tracing_link (so link on detach would put
-target_prog, that way it doesn't go away while EXT prog is attached).
-Then do all the compatibility checks, and if everything works out,
-bpf_tracing_link gets created, we record trampoline there, etc, etc.
-Basically, instead of having an EXT prog holding a reference to the
-target prog, only attachment (bpf_link) does that, which conceptually
-also seems to make more sense to me. For verification we store prog ID
-and don't hold target prog at all.
+This is the kernel, we should be paranoid and assume the hackers want
+to do bad things. So check t for NULL. Check that it's actually a
+BTF_KIND_VAR. Check the name, find ksym addr, etc.
 
 
-Now, there will be a problem once you attach EXT prog to a new XDP
-root program and release a link against the original XDP root program.
-First, I hope I understand the desired sequence right, here's an
-example:
-
-1. load XDP root prog X
-2. load EXT prog with target prog X
-3. attach EXT prog to prog X
-4. load XDP root prog Y
-5. attach EXT prog to prog Y (Y and X should be "compatible")
-6. detach prog X (close bpf_link)
-
-Is that the right sequence?
-
-If yes, then the problem with storing ID of prog X in EXT
-prog->aux->linked_prog_id is that you won't be able to re-attach to
-new prog Z, because there won't be anything to check compatibility
-against (prog X will be long time gone).
-
-So we can do two things here:
-
-1. on attach, replace ext_prog->aux->linked_prog_id with the latest
-attached prog (prog Y ID from above example)
-2. instead of recording target program FD/ID, capture BTF FD and/or
-enough BTF information for checking compatibility.
-
-Approach 2) seems like conceptually the right thing to do (record type
-info we care about, not an **instance** of BPF program, compatible
-with that type info), but technically might be harder.
-
-
-That's my thoughts without digging too deep, so sorry if I'm making
-some stupid assumptions.
-
-
+> +               mark_reg_known_zero(env, regs, insn->dst_reg);
+> +               regs[insn->dst_reg].type = PTR_TO_BTF_ID;
+> +               regs[insn->dst_reg].btf_id = t->type;
+> +               return 0;
+> +       }
+> +
+>         if (insn->off != 0) {
+>                 verbose(env, "BPF_LD_IMM64 uses reserved fields\n");
+>                 return -EINVAL;
+>         }
+>
+> -       err = check_reg_arg(env, insn->dst_reg, DST_OP);
+> -       if (err)
+> -               return err;
+> -
+>         if (insn->src_reg == 0) {
+>                 u64 imm = ((u64)(insn + 1)->imm << 32) | (u32)insn->imm;
+>
 
 [...]
