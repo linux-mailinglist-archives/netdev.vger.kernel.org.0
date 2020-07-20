@@ -2,141 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C739226D10
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:24:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C42D226D16
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729880AbgGTRYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 13:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
+        id S1729802AbgGTR1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 13:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726812AbgGTRYw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 13:24:52 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BD6C061794
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 10:24:52 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id s189so10575622pgc.13
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 10:24:52 -0700 (PDT)
+        with ESMTP id S1728939AbgGTR1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 13:27:06 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE695C061794
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 10:27:05 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id n22so15987498ejy.3
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 10:27:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6tXbJd4oEVmSqiGnziAAflmb4MGrnOQpZX5+lHSdW3g=;
-        b=jNANyFXgAgqogkWNgrJoj6QtdoyB0yR54rUSu+O4nZVCVb/7hJZiOX6O4uSHF5Atso
-         ItdU4dvRixI5slgLsUGF6Z1uawSBBTJnKZgWo11KLDx8JECBDRW8nr4j9+sM0peyA8vo
-         /qfKucK6NlSY6FRrqC4W3rIolIkfF7MNoNV7GmIXgaGQZ+vB1QwC075G84MoosS5n4wS
-         OJQ8ihNqJZJFZcnWopsyZUXi0T9t6mm8xYD799vZpU14tj3GftLFIaG4pJhETMBK4OSb
-         EDenfd10pqs5KddO/+hBoHqqMxC/qyPXviQ/6TDYt7Q8FpxSSQKDQn9LEdgAgWdURRWJ
-         LCeg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rDS5RadgM+88ebV/IjHnQPHJzE3H9IdhwHwO6IZPaFs=;
+        b=o4610EUID5mHvOY/XBTvVmUzq2VVeaTnxHbjQjwbyJepdWsMJMnOBF/3liFacUQG4C
+         YD5qLmLxCV1zsxMbZ0qF2PfcG1c8/i+kFgZvmFjMyauULl3DiRBs87Jy9cIswfulpw2i
+         iSebvTucT/2vZVvOB/RfRgy1whiyBXmLHB9XLqMYKMGYO81cL0NDdIjfbMl+gt5KO+lF
+         /csaT4dfu/aMqCgeM7TPME4dP/AGh9So9Csb/bQYMCMKQQhOBM4RaMyAPlrkFiG1ybhx
+         hdtODZZfQw0EDitqHbMd9QVFonTxsG5hOp9xuf9KLmrYWIFNG1pjv112dtd3y67gZqmb
+         iEqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6tXbJd4oEVmSqiGnziAAflmb4MGrnOQpZX5+lHSdW3g=;
-        b=L3hn1qdsb+tktBn/CM1hv+/49klR9WmfUHL8c/PRDqXN2+Wo3Ity8MXTMw1eETBKsb
-         eZu29JFbW1PnMpx/gR6H57zLp7dDm/7379iJMdtrWNt4a5RdhQJgfKXCfIGDV6/Nv1/h
-         xuM5ud8CniqLSEmFo8yYv+HunsL54FtyeHABW776tFk93myDuChkYlGWzN67hx93r8jN
-         ZkbUvzajs5xlWOWVpnDrRJ9Rf+/pDut5xrhCN83W8JLG/IbSdi9tN0LO+CrEIO4DtA/Z
-         jQQlApJnOmwzmf0/+mdsyKDOssMygrH6Ge72LAtRb6ioGlF7iVO5h7K/tJ35ey4eRC2x
-         K4Cw==
-X-Gm-Message-State: AOAM531Cvp9GrW4NL3V4t9XGNBzZJQPn0mGQM0qaeV3eDwOtR+Q1t2NX
-        2Cxq7nBNYWbzlc9ZrLVCityYlQ==
-X-Google-Smtp-Source: ABdhPJx2Og1skqUry9DiKMzcmFRiYWZ31mk7FqDM7ufVQ3k37RbqfBypuApaoSr5H7ormO+7hIXfVQ==
-X-Received: by 2002:a63:f90f:: with SMTP id h15mr19068452pgi.53.1595265891947;
-        Mon, 20 Jul 2020 10:24:51 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id z11sm17365435pfk.46.2020.07.20.10.24.50
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rDS5RadgM+88ebV/IjHnQPHJzE3H9IdhwHwO6IZPaFs=;
+        b=dwEzA8RQOBUQsX+yQ6nZ/CVQtQMv41Zp9cLtfD3kbDv989XrxY+v/y5o/6yAVivGtI
+         KTdHMRVrKVvqf6Ns2d9cPYK9CKFMe8KEblktv36DT6lWo3XmmyDRTH2UQ30crud33XCz
+         HxnzXLaU2haEKeiI20BmVASWmL+TS2QWrtTJOb8XxRVmFFWAlJ2RQf5LIynGkxC2MOg+
+         A4Jhb9p2umyVnf2u/+Z9zeClD5sZgWw9nvxHlO7lf4Wt12kYOxebNFECbkW9kVhaarnB
+         P+mrcCM1dP/DIf8F5iWU0Qd6Uiw2teZ/gvkIJB8Bk3qP3AhF8cQT73YBcLxyLdGTMSqS
+         Tuwg==
+X-Gm-Message-State: AOAM5328SMjlbShJanwye8XnruXphCcwtTJGHplYr24A3cQq0i/xbN1G
+        1zuUgjYOO/VZjQty9MJXnBI=
+X-Google-Smtp-Source: ABdhPJygRkpdpXvs8sz8i9ZwANoZiL4gI5BB38XTQgmXVB56vK5gwIidzRbKrjQGnoHOx+2CcG4gLg==
+X-Received: by 2002:a17:906:ce3c:: with SMTP id sd28mr20856892ejb.382.1595266024305;
+        Mon, 20 Jul 2020 10:27:04 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id w19sm1813703ejv.92.2020.07.20.10.27.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 10:24:51 -0700 (PDT)
-Date:   Mon, 20 Jul 2020 10:24:43 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Chi Song <chisong@linux.microsoft.com>
-Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] net: hyperv: Add attributes to show TX
- indirection table
-Message-ID: <20200720102443.63d8ddf2@hermes.lan>
-In-Reply-To: <alpine.LRH.2.23.451.2007192357400.30908@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.inter>
-References: <alpine.LRH.2.23.451.2007192357400.30908@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.inter>
+        Mon, 20 Jul 2020 10:27:03 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     linux@armlinux.org.uk, f.fainelli@gmail.com, andrew@lunn.ch,
+        hkallweit1@gmail.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, ioana.ciornei@nxp.com,
+        michael@walle.cc, colin.king@canonical.com
+Subject: [PATCH net-next] net: phy: fix check in get_phy_c45_ids
+Date:   Mon, 20 Jul 2020 20:26:54 +0300
+Message-Id: <20200720172654.1193241-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Jul 2020 00:12:10 -0700 (PDT)
-Chi Song <chisong@linux.microsoft.com> wrote:
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> An imbalanced TX indirection table causes netvsc to have low
-> performance. This table is created and managed during runtime. To help
-> better diagnose performance issues caused by imbalanced tables, add
-> device attributes to show the content of TX indirection tables.
-> 
-> Signed-off-by: Chi Song <chisong@microsoft.com>
-> ---
+After the patch below, the iteration through the available MMDs is
+completely short-circuited, and devs_in_pkg remains set to the initial
+value of zero.
 
+Due to devs_in_pkg being zero, the rest of get_phy_c45_ids() is
+short-circuited too: the following loop never reaches below this point
+either (it executes "continue" for every device in package, failing to
+retrieve PHY ID for any of them):
 
-> v2: remove RX as it's in ethtool already, show single value in each file,
->  and update description.
-> 
-> Thank you for comments. Let me know, if I miss something.
-> 
-> ---
->  drivers/net/hyperv/netvsc_drv.c | 53 +++++++++++++++++++++++++++++++++
->  1 file changed, 53 insertions(+)
-> 
-> diff --git a/drivers/net/hyperv/netvsc_drv.c
-> b/drivers/net/hyperv/netvsc_drv.c
-> index 6267f706e8ee..222c2fad9300 100644
-> --- a/drivers/net/hyperv/netvsc_drv.c
-> +++ b/drivers/net/hyperv/netvsc_drv.c
-> @@ -2370,6 +2370,55 @@ static int netvsc_unregister_vf(struct net_device
-> *vf_netdev)
->  	return NOTIFY_OK;
->  }
-> 
-> +static struct device_attribute
-> dev_attr_netvsc_dev_attrs[VRSS_SEND_TAB_SIZE];
-> +static struct attribute *netvsc_dev_attrs[VRSS_SEND_TAB_SIZE + 1];
-> +
-> +const struct attribute_group netvsc_dev_group = {
-> +	.name = NULL,
-> +	.attrs = netvsc_dev_attrs,
-> +};
-> +
-> +static ssize_t tx_indirection_table_show(struct device *dev,
-> +					 struct device_attribute
-> *dev_attr,
-> +					 char *buf)
-> +{
-> +	struct net_device *ndev = to_net_dev(dev);
-> +	struct net_device_context *ndc = netdev_priv(ndev);
-> +	ssize_t offset = 0;
+	/* Now probe Device Identifiers for each device present. */
+	for (i = 1; i < num_ids; i++) {
+		if (!(devs_in_pkg & (1 << i)))
+			continue;
 
-useless initialization
+So c45_ids->device_ids remains populated with zeroes. This causes an
+Aquantia AQR412 PHY (same as any C45 PHY would, in fact) to be probed by
+the Generic PHY driver.
 
-> +	int index = dev_attr - dev_attr_netvsc_dev_attrs;
-> +
-> +	offset = sprintf(buf, "%u\n", ndc->tx_table[index]);
-> +
-> +	return offset;
-why not just
-	return sprintf(buf, "%u\n", ndc->tx_table[index]);
-> +}
-> +
-> +static void netvsc_attrs_init(void)
-> +{
-> +	int i;
-> +	char buffer[32];
-> +
-> +	for (i = 0; i < VRSS_SEND_TAB_SIZE; i++) {
-> +		sprintf(buffer, "tx_indirection_table_%02u", i);
+The issue seems to be a case of submitting partially committed work (and
+therefore testing something other than was submitted).
 
-Although this has one value per file it leads to a mess.
-Why not put it in a separate directory (/sys/class/net/eth0/tx_indirection/N)?
+The intention of the patch was to delay exiting the loop until one more
+condition is reached (the devs_in_pkg read from hardware is either 0, OR
+mostly f's). So fix the patch to reflect that.
+
+Tested with traffic on a LS1028A-QDS, the PHY is now probed correctly
+using the Aquantia driver. The devs_in_pkg bit field is set to
+0xe000009a, and the MMDs that are present have the following IDs:
+
+[    5.600772] libphy: get_phy_c45_ids: device_ids[1]=0x3a1b662
+[    5.618781] libphy: get_phy_c45_ids: device_ids[3]=0x3a1b662
+[    5.630797] libphy: get_phy_c45_ids: device_ids[4]=0x3a1b662
+[    5.654535] libphy: get_phy_c45_ids: device_ids[7]=0x3a1b662
+[    5.791723] libphy: get_phy_c45_ids: device_ids[29]=0x3a1b662
+[    5.804050] libphy: get_phy_c45_ids: device_ids[30]=0x3a1b662
+[    5.816375] libphy: get_phy_c45_ids: device_ids[31]=0x0
+
+[    7.690237] mscc_felix 0000:00:00.5: PHY [0.5:00] driver [Aquantia AQR412] (irq=POLL)
+[    7.704739] mscc_felix 0000:00:00.5: PHY [0.5:01] driver [Aquantia AQR412] (irq=POLL)
+[    7.718918] mscc_felix 0000:00:00.5: PHY [0.5:02] driver [Aquantia AQR412] (irq=POLL)
+[    7.733044] mscc_felix 0000:00:00.5: PHY [0.5:03] driver [Aquantia AQR412] (irq=POLL)
+
+Fixes: bba238ed037c ("net: phy: continue searching for C45 MMDs even if first returned ffff:ffff")
+Reported-by: Colin King <colin.king@canonical.com>
+Reported-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/phy/phy_device.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 49e98a092b96..1b9523595839 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -734,8 +734,8 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr,
+ 	/* Find first non-zero Devices In package. Device zero is reserved
+ 	 * for 802.3 c45 complied PHYs, so don't probe it at first.
+ 	 */
+-	for (i = 1; i < MDIO_MMD_NUM && devs_in_pkg == 0 &&
+-	     (devs_in_pkg & 0x1fffffff) == 0x1fffffff; i++) {
++	for (i = 1; i < MDIO_MMD_NUM && (devs_in_pkg == 0 ||
++	     (devs_in_pkg & 0x1fffffff) == 0x1fffffff); i++) {
+ 		if (i == MDIO_MMD_VEND1 || i == MDIO_MMD_VEND2) {
+ 			/* Check that there is a device present at this
+ 			 * address before reading the devices-in-package
+-- 
+2.25.1
+
