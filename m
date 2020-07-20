@@ -2,78 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFEBC226CA5
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20FC5226CAA
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:00:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388949AbgGTQ6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 12:58:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729409AbgGTQ6l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:58:41 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199D5C061794
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 09:58:41 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id i3so13622189qtq.13
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 09:58:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yrYU++O/Y0Os6jNsvnF3GJuoTIebv6oJnFmQnwQFi4U=;
-        b=BJE8TJB2NJuX0pCCvsFjeDPGTdg5zNOp8J7MZIb37HFusmbA+Ea6qjk3kT4A5zPL6e
-         gMrdcQxyZ1N51JJTYFmUBCg5pI0mcXd/AfrQgNcrbu6PE6bM7tuhWDxkdssYvYbtMfu8
-         QEP6XYPmcG+hUHkGPPDAPfJJwJTSbc+PmO04StaeclOTUy/KaTezeqCBlJS8yMliK3/F
-         2Eh/SZ9Hp1hWw52vjWFNcJnTabaYhYj2GhRcjMf0s5W3oevqpmQXN6ZBDmCLDTd2KaEt
-         BDTNNiMFm/MCqayXUowV2Am6f/9E63a9r394hvoFQDfXdsDdB0MhN6DGwWoLeBP9Nqfr
-         w47g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yrYU++O/Y0Os6jNsvnF3GJuoTIebv6oJnFmQnwQFi4U=;
-        b=iD0YQLQg74BV3U82QckMz3/DaXhRf4Y12S3tj2UHr6T/vlzRNjchm4BsDmgaCuYhIY
-         wxUErnabjNkX5oIvQjo4lF0ryKA3m4MohGHbfhcUKDY2lbW0RmBFjZA4zw4GHMy+btVX
-         3dNFfj/xw0EeGZsFC8DnXMC8g5yI9th8W3PzCrrQtDFeiV465BJYDc9ofGhW7O1+EML6
-         u2QEICznMvXdbKHvx6BSWJZebdqmez+8rI3Zd4LWTyDxltA9xlnlunPzESSyEbXNiD6P
-         jy6NZLIDjwICMzX5NxqVzq7FnvV2eaL7QoYlS1ALmMRfB7v0fAbc07k0FMhKzlrSELVS
-         y4Hw==
-X-Gm-Message-State: AOAM533fmd1Ds2QzvBnJm4674IJaOX/V+OuDr/1fxK4K9AUqTPXg3hSD
-        D9VeLVPXrla2f5Vwa//YYkU=
-X-Google-Smtp-Source: ABdhPJz5gevbewRib98IdyxtwzZqumPAzG8+N50Th+9aiTnzn10N4jHbbm0CeqqVlBcRGOPtBIaPWw==
-X-Received: by 2002:ac8:1c09:: with SMTP id a9mr25001423qtk.64.1595264320417;
-        Mon, 20 Jul 2020 09:58:40 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:247a:2d5a:19c4:a32f? ([2601:282:803:7700:247a:2d5a:19c4:a32f])
-        by smtp.googlemail.com with ESMTPSA id q189sm116606qkd.57.2020.07.20.09.58.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jul 2020 09:58:39 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 1/3] devlink: Add a possibility to print
- arrays of devlink port handles
-From:   David Ahern <dsahern@gmail.com>
-To:     Moshe Shemesh <moshe@mellanox.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        Vladyslav Tarasiuk <vladyslavt@mellanox.com>
-References: <1595165763-13657-1-git-send-email-moshe@mellanox.com>
- <1595165763-13657-2-git-send-email-moshe@mellanox.com>
- <84c465a4-867e-80de-f38b-9fb7da733e0e@gmail.com>
-Message-ID: <38d403d0-40ba-beca-98c1-02a4cb392fab@gmail.com>
-Date:   Mon, 20 Jul 2020 10:58:38 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.10.0
+        id S2389107AbgGTQ6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 12:58:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40802 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389038AbgGTQ6s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 12:58:48 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5FB65206E9;
+        Mon, 20 Jul 2020 16:58:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595264328;
+        bh=sjPs+BqHqnMDGn+cHCHrVpz+fXP5EVVq8DfSCXFlYw4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pjKzeGim7g+gmMaBQsfJVvZLBtYO9UWbcVWyp54nZijWVGLEm+hnyoGhZNoQZ5Efs
+         iZwIunHHNCaAF614+psXQXIo/5WlU+5EtbH37k7VGacZ+rxih66tyvaWLLwLhyewR+
+         RSV6Js1ttikrgFDhMrveIpH9LOW3LlBinzDv42tA=
+Date:   Mon, 20 Jul 2020 09:58:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Claudiu Manoil <claudiu.manoil@gmail.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 5/6] enetc: Add interrupt coalescing support
+Message-ID: <20200720095846.18a1ea73@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <3852bad5-76ca-170c-0bd5-b2cc2156bfea@gmail.com>
+References: <1595000224-6883-1-git-send-email-claudiu.manoil@nxp.com>
+        <1595000224-6883-6-git-send-email-claudiu.manoil@nxp.com>
+        <20200717123239.1ffb5966@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3852bad5-76ca-170c-0bd5-b2cc2156bfea@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <84c465a4-867e-80de-f38b-9fb7da733e0e@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/20/20 10:44 AM, David Ahern wrote:
-> Why can't the 'if (dl->json_output) {' check be removed and this part be
-> folded in with the context handled automatically by the print functions?
+On Sat, 18 Jul 2020 20:20:10 +0300 Claudiu Manoil wrote:
+> On 17.07.2020 22:32, Jakub Kicinski wrote:
+> > On Fri, 17 Jul 2020 18:37:03 +0300 Claudiu Manoil wrote:  
+> >> +	if (ic->rx_max_coalesced_frames != ENETC_RXIC_PKTTHR)
+> >> +		netif_warn(priv, hw, ndev, "rx-frames fixed to %d\n",
+> >> +			   ENETC_RXIC_PKTTHR);
+> >> +
+> >> +	if (ic->tx_max_coalesced_frames != ENETC_TXIC_PKTTHR)
+> >> +		netif_warn(priv, hw, ndev, "tx-frames fixed to %d\n",
+> >> +			   ENETC_TXIC_PKTTHR);  
+> > 
+> > On second thought - why not return an error here? Since only one value
+> > is supported seems like the right way to communicate to the users that
+> > they can't change this.
+> 
+> Do you mean to return -EOPNOTSUPP without any error message instead?
 
-never mind; I see now.
+Yes.
+
+> If so, I think it's less punishing not to return an error code and 
+> invalidate the rest of the ethtool -C parameters that might have been
+> correct if the user forgets that rx/tx-frames cannot be changed.
+
+IMHO if configuring manually - user can correct the params on the CLI.
+If there's an orchestration system trying to configure those - it's 
+better to return an error and alert the administrator than confuse 
+the orchestration by allowing a write which is then not reflected 
+on read.
+
+> There's also this flag:
+> 	.supported_coalesce_params = .. |
+> 				     ETHTOOL_COALESCE_MAX_FRAMES |
+> 				     ..,
+> needed for printing the preconfigured values for the rx/tx packet 
+> thresholds, and this flag basically says that the 'rx/tx-frames'
+> parameters are supported (just that they cannot be changed... :) ).
+
+Right, unfortunately core can't do the checking here, but I think 
+the driver should.
+
+> But I don't have a strong bias for this, if you prefer the return
+> -EOPNOTSUPP option I'll make this change, just let me know if I got
+> it right.
+> 
+> >> +	if (netif_running(ndev) && changed) {
+> >> +		/* reconfigure the operation mode of h/w interrupts,
+> >> +		 * traffic needs to be paused in the process
+> >> +		 */
+> >> +		enetc_stop(ndev);
+> >> +		enetc_start(ndev);  
+> > 
+> > Is start going to print an error when it fails? Kinda scary if this
+> > could turn into a silent failure.
+> 
+> enetc_start() returns void, just like enetc_stop().  If you look it up
+> it only sets some run-time configurable registers and calls some basic
+> run-time commands that should no fail like napi_enable(), enable_irq(), 
+> phy_start(), all void returning functions. This function doesn't 
+> allocate resources or anything of that sort, and should be kept that 
+> way. And indeed, it should not fail. But regarding error codes there's
+> nothing I can do for this function, as nothing inside it generates any 
+> error code.
+
+Got it!
