@@ -2,210 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47BAD226EC3
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 21:14:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D913226F20
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 21:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729706AbgGTTOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 15:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43808 "EHLO
+        id S1730928AbgGTTh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 15:37:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729237AbgGTTOR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 15:14:17 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1022CC061794;
-        Mon, 20 Jul 2020 12:14:17 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id w9so5094877ejc.8;
-        Mon, 20 Jul 2020 12:14:16 -0700 (PDT)
+        with ESMTP id S1726491AbgGTTh6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 15:37:58 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD306C061794;
+        Mon, 20 Jul 2020 12:37:57 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id i80so10353198lfi.13;
+        Mon, 20 Jul 2020 12:37:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JjyHryxAwSxTQ0ittGP+rXGKdRNTM53Fze7YdhzbkuA=;
-        b=cSV1VzkU9Nkb6qqoBJknZ7LmzOwMz4bYV44z158KTB1lynYP2d1eMjou69dsfdYNKJ
-         HAMCI0/UmycnxC+uLP6rH/JfKfGfnlAGoiWE9Vs+tRekP9PfHWUc8vvQJbBGrTxoFZVr
-         9zfthvQw1KqMBLrFhWO0CaTmcn3Xlr797NVuuIR4zCXsXf9VVKQADK6zvery3k705iVX
-         KUO6l3we7oskzPldLPNwOBBSSQGS7K/U6TmPk9tejbkt2uiLStDzPi8MDgeAwB7GzbT4
-         EAPxXkbtVceOdntNvpeNRdBRcR4FRqTtrMs7KLR2a1hH7o5Qsj6k1NMLZvqjSEGz6tc9
-         l4Wg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sgXLRBaaylaS2C4gN9oP1CacUi+Zgix4Q9h2XdlkjFM=;
+        b=hwmyKa+wbbaz8q4bfXfO3z7rvx/ZhG7p5eG3b3XDUqtluypwYw/9hoRDYN179aPigz
+         zbXMm2BjYvvkeOcxBmxTg2wyVPd9LJSNO98x53xAU4Z0lG48Ajp6+lh4WQKmmJMBNbZG
+         y9l3qh9B5Eva4UN5r7vkDHx/bm7dvAMVRu/BsHrzbsgvCKftYhwI4+XeW78YuhG+fRNn
+         cWuF0d/ouBREyynZj68gZhQpDB5Ya5f/76uLcDEvQ4tcUiVNZ9JrBqqV1lGSixCOXSne
+         OkOLZMiGybwrlS8J0nzWyVofXaJBbMk/W/rz84oGfK+sNOZkFdMQDzB2vclCoaXFQhJk
+         RWqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JjyHryxAwSxTQ0ittGP+rXGKdRNTM53Fze7YdhzbkuA=;
-        b=WLB1Itl1kfkOKfyTcgSnTV3i+QlwWSR19oEC1j0ww0nZceURvyeLDW495VU2WRrO6h
-         UzNaez+TZfXk6SBjsUBNjqEGAh9K/PcbSyw/aYCdam2chQ7aAbJxZ4+7W0WUBvpT0bGo
-         vCvVLmohZWi3yG/bd6an4JCKVdiAvC2pI6NWhGWd/90g0efiVp1XunNBbkkFuHrH/Y5g
-         1AzRN55dXol0gNa6WEva6aB2+ujSd5ci21Ic3Hmq6gV3nAme4OYeoH/6aiXMnrHv3sv+
-         vO5rs5HR4QF9thd0nlNu/6g9/oOhjm1bOXGDWWNQqUBLrl3lRBdW0cb06ZHvcs1BDyuz
-         PTMA==
-X-Gm-Message-State: AOAM531Vsosdqnz9yR82kPfAjRUfEEd6LR29ULuyLygQVH5gtDiGEqDZ
-        zNOJYuzI5+dfPoc4CoLCWAwKvPcV
-X-Google-Smtp-Source: ABdhPJwMjH9Ys/3UaSvWYhIy7bpfQ7RCMAWq3nHCUEJ+/O76pprqlE8t9rTblRD8bjroXJ6mN6r1fg==
-X-Received: by 2002:a17:906:4158:: with SMTP id l24mr19384470ejk.101.1595272455521;
-        Mon, 20 Jul 2020 12:14:15 -0700 (PDT)
-Received: from ?IPv6:2a01:110f:b59:fd00:79a2:4d96:30bb:bcee? ([2a01:110f:b59:fd00:79a2:4d96:30bb:bcee])
-        by smtp.gmail.com with ESMTPSA id c10sm15971215edt.22.2020.07.20.12.14.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jul 2020 12:14:14 -0700 (PDT)
-Subject: Re: [PATCH RFC leds + net-next 1/3] leds: trigger: add support for
- LED-private device triggers
-To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>,
-        linux-leds@vger.kernel.org
-Cc:     Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
-        =?UTF-8?Q?Ond=c5=99ej_Jirman?= <megous@megous.com>,
-        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
-References: <20200716171730.13227-1-marek.behun@nic.cz>
- <20200716171730.13227-2-marek.behun@nic.cz>
-From:   Jacek Anaszewski <jacek.anaszewski@gmail.com>
-Message-ID: <fe339634-bf0a-cbb0-cc46-223195482ea6@gmail.com>
-Date:   Mon, 20 Jul 2020 21:14:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sgXLRBaaylaS2C4gN9oP1CacUi+Zgix4Q9h2XdlkjFM=;
+        b=DgARxFC+5EDmZUnE5XtqnJYY3shlSe0yjwlYSDSHFDYk7FiJIeAwgO3hps9yJd5zID
+         nQOPWJAT1NB4iYvZoIFgyt8IACMNAjDSLZ+9hRtkZWhZqvHmbkS6mer/pM6PhAt8f21+
+         FZ17RDW6ihofiqmt13YPUH1WX7u03IM4ow6lCnoTG/wGqJslgenlviXCO6HZD7vCXJUh
+         4lSOfEQKsnXBN1n466cG6/ZJWr/FHqeZpLcTF0CIqJ9Uiv23o8ktIYj8GVSOwJhaJY/s
+         54zX/Ofpqi8pLjaarOfYxBvPVo3Szz6u5gjTR0AbsxTqZkC/oxfZkYyf7zvQQBTL3ZN9
+         tTyw==
+X-Gm-Message-State: AOAM532BxZz/5+XX/8kGFB9mVLpca3TkYcA2D5Q4iaafXoCy/0BMpuXu
+        h2a60H1s4YXAEaXfXhHDqn/Z/6slx5JHr91rWWc=
+X-Google-Smtp-Source: ABdhPJy1Jig5sDfVDdOSRyjt4VvlHQ9WhRxupA+W8Un21a1t7FbzrPXKASt/E5BtvMdxrDNU8FO+v8/2XARywqL/t1M=
+X-Received: by 2002:a05:6512:3610:: with SMTP id f16mr4307309lfs.8.1595273876184;
+ Mon, 20 Jul 2020 12:37:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200716171730.13227-2-marek.behun@nic.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200720194225.17de9962@canb.auug.org.au> <a97220b2-9864-eb49-6e27-0ec5b7e5b977@infradead.org>
+ <20200721044902.24ebe681@canb.auug.org.au>
+In-Reply-To: <20200721044902.24ebe681@canb.auug.org.au>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 20 Jul 2020 12:37:44 -0700
+Message-ID: <CAADnVQJNU+tm3WT+JuPoY8TTHWXxQ8OJ0sGCLQGq2Avf+Ri7Yw@mail.gmail.com>
+Subject: Re: linux-next: Tree for Jul 20 (kernel/bpf/net_namespace)
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marek,
+On Mon, Jul 20, 2020 at 11:49 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> On Mon, 20 Jul 2020 08:51:54 -0700 Randy Dunlap <rdunlap@infradead.org> wrote:
+> >
+> > on i386 or x86_64:
+> >
+> > # CONFIG_INET is not set
+> > # CONFIG_NET_NS is not set
+> >
+> > ld: kernel/bpf/net_namespace.o: in function `bpf_netns_link_release':
+> > net_namespace.c:(.text+0x32c): undefined reference to `bpf_sk_lookup_enabled'
+> > ld: kernel/bpf/net_namespace.o: in function `netns_bpf_link_create':
+> > net_namespace.c:(.text+0x8b7): undefined reference to `bpf_sk_lookup_enabled'
+> > ld: kernel/bpf/net_namespace.o: in function `netns_bpf_pernet_pre_exit':
+> > net_namespace.c:(.ref.text+0xa3): undefined reference to `bpf_sk_lookup_enabled'
+>
+> Caused by commit
+>
+>   1559b4aa1db4 ("inet: Run SK_LOOKUP BPF program on socket lookup")
+>
+> from the bpf-next tree.
 
-On 7/16/20 7:17 PM, Marek Behún wrote:
-> Some LED controllers may come with an internal HW triggering mechanism
-> for the LED and the ability to switch between SW control and the
-> internal HW control. This includes most PHYs, various ethernet switches,
-> the Turris Omnia LED controller or AXP20X PMIC.
-> 
-> This adds support for registering such triggers.
-> 
-> This code is based on work by Pavel Machek <pavel@ucw.cz> and
-> Ondřej Jirman <megous@megous.com>.
-> 
-> Signed-off-by: Marek Behún <marek.behun@nic.cz>
-> ---
->   drivers/leds/led-triggers.c | 26 ++++++++++++++++++++------
->   include/linux/leds.h        | 10 ++++++++++
->   2 files changed, 30 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/leds/led-triggers.c b/drivers/leds/led-triggers.c
-> index 79e30d2cb7a5..81e758d5a048 100644
-> --- a/drivers/leds/led-triggers.c
-> +++ b/drivers/leds/led-triggers.c
-> @@ -27,6 +27,12 @@ LIST_HEAD(trigger_list);
->   
->    /* Used by LED Class */
->   
-> +static inline bool
-> +trigger_relevant(struct led_classdev *led_cdev, struct led_trigger *trig)
-> +{
-> +	return !trig->trigger_type || trig->trigger_type == led_cdev->trigger_type;
-> +}
-> +
->   ssize_t led_trigger_write(struct file *filp, struct kobject *kobj,
->   			  struct bin_attribute *bin_attr, char *buf,
->   			  loff_t pos, size_t count)
-> @@ -50,7 +56,7 @@ ssize_t led_trigger_write(struct file *filp, struct kobject *kobj,
->   
->   	down_read(&triggers_list_lock);
->   	list_for_each_entry(trig, &trigger_list, next_trig) {
-> -		if (sysfs_streq(buf, trig->name)) {
-> +		if (sysfs_streq(buf, trig->name) && trigger_relevant(led_cdev, trig)) {
->   			down_write(&led_cdev->trigger_lock);
->   			led_trigger_set(led_cdev, trig);
->   			up_write(&led_cdev->trigger_lock);
-> @@ -93,8 +99,12 @@ static int led_trigger_format(char *buf, size_t size,
->   				       led_cdev->trigger ? "none" : "[none]");
->   
->   	list_for_each_entry(trig, &trigger_list, next_trig) {
-> -		bool hit = led_cdev->trigger &&
-> -			!strcmp(led_cdev->trigger->name, trig->name);
-> +		bool hit;
-> +
-> +		if (!trigger_relevant(led_cdev, trig))
-> +			continue;
-> +
-> +		hit = led_cdev->trigger && !strcmp(led_cdev->trigger->name, trig->name);
->   
->   		len += led_trigger_snprintf(buf + len, size - len,
->   					    " %s%s%s", hit ? "[" : "",
-> @@ -243,7 +253,8 @@ void led_trigger_set_default(struct led_classdev *led_cdev)
->   	down_read(&triggers_list_lock);
->   	down_write(&led_cdev->trigger_lock);
->   	list_for_each_entry(trig, &trigger_list, next_trig) {
-> -		if (!strcmp(led_cdev->default_trigger, trig->name)) {
-> +		if (!strcmp(led_cdev->default_trigger, trig->name) &&
-> +		    trigger_relevant(led_cdev, trig)) {
->   			led_cdev->flags |= LED_INIT_DEFAULT_TRIGGER;
->   			led_trigger_set(led_cdev, trig);
->   			break;
-> @@ -280,7 +291,9 @@ int led_trigger_register(struct led_trigger *trig)
->   	down_write(&triggers_list_lock);
->   	/* Make sure the trigger's name isn't already in use */
->   	list_for_each_entry(_trig, &trigger_list, next_trig) {
-> -		if (!strcmp(_trig->name, trig->name)) {
-> +		if (!strcmp(_trig->name, trig->name) &&
-> +		    (trig->trigger_type == _trig->trigger_type ||
-> +		     !trig->trigger_type || !_trig->trigger_type)) {
->   			up_write(&triggers_list_lock);
->   			return -EEXIST;
->   		}
-> @@ -294,7 +307,8 @@ int led_trigger_register(struct led_trigger *trig)
->   	list_for_each_entry(led_cdev, &leds_list, node) {
->   		down_write(&led_cdev->trigger_lock);
->   		if (!led_cdev->trigger && led_cdev->default_trigger &&
-> -			    !strcmp(led_cdev->default_trigger, trig->name)) {
-> +		    !strcmp(led_cdev->default_trigger, trig->name) &&
-> +		    trigger_relevant(led_cdev, trig)) {
->   			led_cdev->flags |= LED_INIT_DEFAULT_TRIGGER;
->   			led_trigger_set(led_cdev, trig);
->   		}
-> diff --git a/include/linux/leds.h b/include/linux/leds.h
-> index 2451962d1ec5..6a8d6409c993 100644
-> --- a/include/linux/leds.h
-> +++ b/include/linux/leds.h
-> @@ -57,6 +57,10 @@ struct led_init_data {
->   	bool devname_mandatory;
->   };
->   
-> +struct led_hw_trigger_type {
-> +	int dummy;
-> +};
-> +
->   struct led_classdev {
->   	const char		*name;
->   	enum led_brightness	 brightness;
-> @@ -141,6 +145,9 @@ struct led_classdev {
->   	void			*trigger_data;
->   	/* true if activated - deactivate routine uses it to do cleanup */
->   	bool			activated;
-> +
-> +	/* LEDs that have private triggers have this set */
-> +	struct led_hw_trigger_type	*trigger_type;
->   #endif
->   
->   #ifdef CONFIG_LEDS_BRIGHTNESS_HW_CHANGED
-> @@ -345,6 +352,9 @@ struct led_trigger {
->   	int		(*activate)(struct led_classdev *led_cdev);
->   	void		(*deactivate)(struct led_classdev *led_cdev);
->   
-> +	/* LED-private triggers have this set */
-> +	struct led_hw_trigger_type *trigger_type;
-> +
->   	/* LEDs under control by this trigger (for simple triggers) */
->   	rwlock_t	  leddev_list_lock;
->   	struct list_head  led_cdevs;
-
-Looks good to me:
-
-Acked-by: Jacek Anaszewski <jacek.anaszewski@gmail.com>
-
--- 
-Best regards,
-Jacek Anaszewski
+Jakub, please take a look.
