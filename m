@@ -2,188 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DDE7225DB7
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 13:46:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CA42225E01
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 13:59:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728669AbgGTLqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 07:46:07 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:59616 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728460AbgGTLqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 07:46:06 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B3E5820052;
-        Mon, 20 Jul 2020 11:46:05 +0000 (UTC)
-Received: from us4-mdac16-35.at1.mdlocal (unknown [10.110.49.219])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B29F16009B;
-        Mon, 20 Jul 2020 11:46:05 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.105])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4E0E3220073;
-        Mon, 20 Jul 2020 11:46:05 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E72589C0076;
-        Mon, 20 Jul 2020 11:46:04 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Jul
- 2020 12:45:58 +0100
-Subject: Re: [PATCH net-next] efx: convert to new udp_tunnel infrastructure
-To:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-net-drivers@solarflare.com>,
-        <mhabets@solarflare.com>, <mslattery@solarflare.com>
-References: <20200717235336.879264-1-kuba@kernel.org>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <a97d3321-3fee-5217-59e4-e56bfbaff7a3@solarflare.com>
-Date:   Mon, 20 Jul 2020 12:45:54 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200717235336.879264-1-kuba@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25552.003
-X-TM-AS-Result: No-16.714500-8.000000-10
-X-TMASE-MatchedRID: cxtZ8fwm3r+2tlYdo0NnhOFgDmzNVVKoQZpQRfyCdHx3PducjiV5hf6R
-        OKSr3u5/21BHKSeoeV6PWx38Q1qIm6ZY4PxfRMWEMIxbvM3AVogisyg/lfGoZ94Pu+dawjd01ZG
-        U7XvKVplW7D3gkS/y0wtC55NTHrlBv2aCOqPEdVrBLypRtAo4yAeCHewokHM/UQ+YXiZ8bivjxO
-        sQ+OAAXRvAApDnn3pemNG//eCbQoUApIQ1X2G0S5qvoi7RQmPSE3EgF0+MVuC/btrChQPzdLH9y
-        3BGSBuXZbj0QOEOG9g4UoCJNJJ1MtQ2aCZEo62uboe6sMfg+k95dnPVq3ls7EdmDSBYfnJRIycc
-        KU/Ugps7RD90+qXrUY6FQBpTJ4z5XvbPG2Z0ApcBUi8HrskMT8wx7VbZgGmK7L2+zGEubN5RkYT
-        SpSslRX4oUbD1TOGvNSPFYRD9+/u1DfGM6db7XwrgwFF/sjumiK5qg1cmsr+KXNybanokT2NJMG
-        UcSEAmB8yoLeoM1C9Gs8uSoUUvQDTuXZRUSTQGEpA219sDMzkGchEhVwJY32ww+4tkH8hHEUx8G
-        SuSpKSV94KkDM4G5F+24nCsUSFNt7DW3B48kkHdB/CxWTRRu25FeHtsUoHuqmubqGyuttTDsiwO
-        byTjuz3FapPVVwfS9XWmQ4PgDerFhXMjdQIJpg==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--16.714500-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25552.003
-X-MDID: 1595245565-g7EsMTcluHEh
+        id S1728683AbgGTL7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 07:59:39 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:23339 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728614AbgGTL7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 07:59:39 -0400
+X-IronPort-AV: E=Sophos;i="5.75,374,1589209200"; 
+   d="scan'208";a="52390977"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 20 Jul 2020 20:59:38 +0900
+Received: from localhost.localdomain (unknown [10.166.252.89])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 2F832427AAC8;
+        Mon, 20 Jul 2020 20:59:38 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     sergei.shtylyov@gmail.com, davem@davemloft.net, kuba@kernel.org
+Cc:     dirk.behme@de.bosch.com, Shashikant.Suguni@in.bosch.com,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH/RFC v2] net: ethernet: ravb: exit if hardware is in-progress in tx timeout
+Date:   Mon, 20 Jul 2020 20:58:18 +0900
+Message-Id: <1595246298-29260-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Subject line prefix should probably be sfc:, that's what we
- usually use for this driver.
+According to the report of [1], this driver is possible to cause
+the following error in ravb_tx_timeout_work().
 
-On 18/07/2020 00:53, Jakub Kicinski wrote:
-> Check MC_CMD_DRV_ATTACH_EXT_OUT_FLAG_TRUSTED, before setting
-> the info, which will hopefully protect us from -EPERM errors
-Sorry, I forgot to pass on the answer I got from the firmware
- team, which was "TRUSTED is the wrong thing and there isn't a
- right thing".  The TRUSTED flag will be set on any function
- that can set UDP ports, but may also be set on some that can't
- (it's not clear what they're Trusted to do but this isn't it).
-So it's OK to check it, but the EPERMs could still happen.
-> the previous code was gracefully ignoring. Shared code reports
-> the port information back to user space, so we really want
-> to know what was added and what failed.
-<snip>
-> -static int efx_ef10_udp_tnl_add_port(struct efx_nic *efx,
-> -				     struct efx_udp_tunnel tnl)
-> -{
-> -	struct efx_ef10_nic_data *nic_data = efx->nic_data;
-> -	struct efx_udp_tunnel *match;
-> -	char typebuf[8];
-> -	size_t i;
-> -	int rc;
-> +	if (ti->type == UDP_TUNNEL_TYPE_VXLAN)
-> +		efx_tunnel_type = TUNNEL_ENCAP_UDP_PORT_ENTRY_VXLAN;
-> +	else
-> +		efx_tunnel_type = TUNNEL_ENCAP_UDP_PORT_ENTRY_GENEVE;
-I think I'd prefer to keep the switch() that explicitlychecks
- for UDP_TUNNEL_TYPE_GENEVE; even though the infrastructure
- makes sure it won't ever not be, I'd still feel more comfortable
- that way.  But it's up to you.
-> @@ -3873,6 +3835,7 @@ static int efx_ef10_udp_tnl_add_port(struct efx_nic *efx,
->  static bool efx_ef10_udp_tnl_has_port(struct efx_nic *efx, __be16 port)
->  {
->  	struct efx_ef10_nic_data *nic_data = efx->nic_data;
-> +	size_t i;
->  
->  	if (!(nic_data->datapath_caps &
->  	      (1 << MC_CMD_GET_CAPABILITIES_OUT_VXLAN_NVGRE_LBN)))
-> @@ -3884,58 +3847,48 @@ static bool efx_ef10_udp_tnl_has_port(struct efx_nic *efx, __be16 port)
->  		 */
->  		return false;
->  
-> -	return __efx_ef10_udp_tnl_lookup_port(efx, port) != NULL;
-> +	for (i = 0; i < ARRAY_SIZE(nic_data->udp_tunnels); ++i)
-> +		if (nic_data->udp_tunnels[i].port == port)
-> +			return true;
-> +
-> +	return false;
->  }
->  
-> -static int efx_ef10_udp_tnl_del_port(struct efx_nic *efx,
-> -				     struct efx_udp_tunnel tnl)
-> +static int efx_ef10_udp_tnl_unset_port(struct net_device *dev,
-> +				       unsigned int table, unsigned int entry,
-> +				       struct udp_tunnel_info *ti)
->  {
-> -	struct efx_ef10_nic_data *nic_data = efx->nic_data;
-> -	struct efx_udp_tunnel *match;
-> -	char typebuf[8];
-> +	struct efx_nic *efx = netdev_priv(dev);
-> +	struct efx_ef10_nic_data *nic_data;
->  	int rc;
->  
-> -	if (!(nic_data->datapath_caps &
-> -	      (1 << MC_CMD_GET_CAPABILITIES_OUT_VXLAN_NVGRE_LBN)))
-> -		return 0;
-> -
-> -	efx_get_udp_tunnel_type_name(tnl.type, typebuf, sizeof(typebuf));
-> -	netif_dbg(efx, drv, efx->net_dev, "Removing UDP tunnel (%s) port %d\n",
-> -		  typebuf, ntohs(tnl.port));
-> +	nic_data = efx->nic_data;
->  
->  	mutex_lock(&nic_data->udp_tunnels_lock);
->  	/* Make sure all TX are stopped while we remove from the table, else we
->  	 * might race against an efx_features_check().
->  	 */
->  	efx_device_detach_sync(efx);
-> -
-> -	match = __efx_ef10_udp_tnl_lookup_port(efx, tnl.port);
-> -	if (match != NULL) {
-> -		if (match->type == tnl.type) {
-> -			if (--match->count) {
-> -				/* Port is still in use, so nothing to do */
-> -				netif_dbg(efx, drv, efx->net_dev,
-> -					  "UDP tunnel port %d remains active\n",
-> -					  ntohs(tnl.port));
-> -				rc = 0;
-> -				goto out_unlock;
-> -			}
-> -			rc = efx_ef10_set_udp_tnl_ports(efx, false);
-> -			goto out_unlock;
-> -		}
-> -		efx_get_udp_tunnel_type_name(match->type,
-> -					     typebuf, sizeof(typebuf));
-> -		netif_warn(efx, drv, efx->net_dev,
-> -			   "UDP port %d is actually in use by %s, not removing\n",
-> -			   ntohs(tnl.port), typebuf);
-> -	}
-> -	rc = -ENOENT;
-> -
-> -out_unlock:
-> +	nic_data->udp_tunnels[entry].port = 0;
-I'm a little concerned that efx_ef10_udp_tnl_has_port(efx, 0);
- willgenerally return true, so in our yet-to-come TX offloads
- patch we'll need to check for !port when handling an skb with
- skb->encapsulation == true before calling has_port.
-(I realise that the kernel almost certainly won't ever give us
- an skb with encap on UDP port 0, but it never hurts to be
- paranoid about things like that).
-Could we not keep a 'valid'/'used' flag in the table, used in
- roughly the same way we were checking count != 0?
+ravb e6800000.ethernet ethernet: failed to switch device to config mode
 
-Apart from that this all looks fine, and the amount of deleted
- codemakes me happy :)
+This error means that the hardware could not change the state
+from "Operation" to "Configuration" while some tx and/or rx queue
+are operating. After that, ravb_config() in ravb_dmac_init() will fail,
+and then any descriptors will be not allocaled anymore so that NULL
+pointer dereference happens after that on ravb_start_xmit().
 
--ed
+To fix the issue, the ravb_tx_timeout_work() should check
+the return value of ravb_stop_dma() whether this hardware can be
+re-initialized or not. If ravb_stop_dma() fails, ravb_tx_timeout_work()
+re-enables TX and RX and just exits.
+
+[1]
+https://lore.kernel.org/linux-renesas-soc/20200518045452.2390-1-dirk.behme@de.bosch.com/
+
+Reported-by: Dirk Behme <dirk.behme@de.bosch.com>
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ Changes from RFC v1:
+ - Check the return value of ravb_stop_dma() and exit if the hardware
+   condition can not be initialized in the tx timeout.
+ - Update the commit subject and description.
+ - Fix some typo.
+ https://patchwork.kernel.org/patch/11570217/
+
+ Unfortunately, I still didn't reproduce the issue yet. So, I still
+ marked RFC on this patch.
+
+ drivers/net/ethernet/renesas/ravb_main.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index a442bcf6..500f5c1 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1458,7 +1458,18 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+ 		ravb_ptp_stop(ndev);
+ 
+ 	/* Wait for DMA stopping */
+-	ravb_stop_dma(ndev);
++	if (ravb_stop_dma(ndev)) {
++		/* If ravb_stop_dma() fails, the hardware is still in-progress
++		 * as "Operation" mode for TX and/or RX. So, this should not
++		 * call the following functions because ravb_dmac_init() is
++		 * possible to fail too. Also, this should not retry
++		 * ravb_stop_dma() again and again here because it's possible
++		 * to wait forever. So, this just re-enables the TX and RX and
++		 * skip the following re-initialization procedure.
++		 */
++		ravb_rcv_snd_enable(ndev);
++		goto out;
++	}
+ 
+ 	ravb_ring_free(ndev, RAVB_BE);
+ 	ravb_ring_free(ndev, RAVB_NC);
+@@ -1467,6 +1478,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+ 	ravb_dmac_init(ndev);
+ 	ravb_emac_init(ndev);
+ 
++out:
+ 	/* Initialise PTP Clock driver */
+ 	if (priv->chip_id == RCAR_GEN2)
+ 		ravb_ptp_init(ndev, priv->pdev);
+-- 
+2.7.4
+
