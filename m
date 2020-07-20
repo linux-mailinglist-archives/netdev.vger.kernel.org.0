@@ -2,99 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41A6C226957
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:30:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67ED02268E6
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:24:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732513AbgGTQBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 12:01:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42358 "EHLO
+        id S2388201AbgGTQWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 12:22:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732504AbgGTQBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:01:16 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBD1C0619D2;
-        Mon, 20 Jul 2020 09:01:16 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id d7so91827plq.13;
-        Mon, 20 Jul 2020 09:01:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=blhYAOxQCphYO3jI+YeVotO7czKJYFL74Ds0qrEVcIc=;
-        b=fWrhvXKAg1kJChsxZ1jYIUSTKtg4gaaEQr5sl+NGPsKkCdDrgp83AO1GIKz4DuZGhE
-         KGH7Q8vahRQI/SxukHnIsj9ps1FiAhvX2ZafHZE3uW7fltcpqOsH2pV+vKQNCVgZFxND
-         cKFkJh9reCXNTEXlUVGy5DlKupLJNCDqefq2S5AF5yN2Cc5XZQpsRFigdijhyMpLltqy
-         y/fKQs4YYznv7ieD7x3qJUwRV0dBkU9EjUaUC45nrnyOjDePQ74zxkCOGIEEVvaI3rHk
-         ndrCU6p1a0DYlMWliEV5CVyVO/N0sSO7qzqMd/SKZbh4YwHiSYLKRU3klEEp4bSr20oG
-         DCRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=blhYAOxQCphYO3jI+YeVotO7czKJYFL74Ds0qrEVcIc=;
-        b=pzo4cY22iygPhhewLaWmPwxsR9tWZMV/2aDf9smxrV0wShSD8uTZs+2VgnpRVHDmJI
-         i73iUhmWrb++QRsOXkJ0LBDxIY3h8Ts+lJgNYJDLk7+08M5+ItunoA4VIQRrA42Rhrnn
-         5ZEya43tCaIxC5foLM+cL3jDm4Y1iP2/nAWmymyE0iaMw7d08KvmOrQfTJxRiyDZeW+L
-         yrX07l38EOlkqGtFqeYfDN6wxPL2cqkYOsGOnEzmqFPWeyaO9TZVLZl0vX8gaVY6Syw1
-         yw12fDWAlYfIonmOUyMFMtxPRTien4OnCEFDl8qM10r05H4JUsvEB+zZ59VgBqLobMJz
-         EMJg==
-X-Gm-Message-State: AOAM533lbQjQkwz9L04q80vrZ1/sMNp6AJpI7n4HW8DD/0iBfA0nv/35
-        HSIZo7bQyuAaXYyxL9xps1tlVr4wOLA=
-X-Google-Smtp-Source: ABdhPJykF07itmKHQRGZ+7zqDGPw/ug1gO4hOMWPJh1NTIHSGdsUBYkFE4J79KpNyZsOyW09xbvz6w==
-X-Received: by 2002:a17:90a:d30e:: with SMTP id p14mr45550pju.173.1595260875400;
-        Mon, 20 Jul 2020 09:01:15 -0700 (PDT)
-Received: from [192.168.219.16] (ip72-219-184-175.oc.oc.cox.net. [72.219.184.175])
-        by smtp.gmail.com with ESMTPSA id x23sm17040539pfn.4.2020.07.20.09.01.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jul 2020 09:01:14 -0700 (PDT)
-Subject: Re: [PATCH net] net: bcmgenet: fix error returns in bcmgenet_probe()
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1595229523-9725-1-git-send-email-zhangchangzhong@huawei.com>
-From:   Doug Berger <opendmb@gmail.com>
-Message-ID: <08bdec5c-b62c-07b3-35c1-9dd15478de81@gmail.com>
-Date:   Mon, 20 Jul 2020 09:04:15 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S1733065AbgGTQGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:06:33 -0400
+Received: from mail1.systemli.org (mail1.systemli.org [IPv6:2c0f:f930:0:5::214])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25D7C061794;
+        Mon, 20 Jul 2020 09:06:32 -0700 (PDT)
+From:   Richard Sailer <richard_siegfried@systemli.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=systemli.org;
+        s=default; t=1595261185;
+        bh=fSmUacZ5Dg91YFOQgxAFUtEfdxmnPPb1AjKxh6rk76U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VJL/qrnycOuj9TZAR0VLmkLaWRbpqX1qip8Mgafa9KKO99pLy0tsHPoJgdBynb5r8
+         QAq2dl86nk2Jwvk1dMr7zT4CZep7sh5NYLMwsd0ouEo6+nm16c6OK4YZRhJyL6TuFZ
+         R5vKK4lkpDatsnAsKYx2LuP7RyGil7Ml5sREs0jSvQttSC320yEiADYtp1jeOCxAlF
+         RtFmZ9YM4WfghTf761/G/uH/1hfPwJxtXUwo2qrCx4wwyF/Fbv7ImSyYzqmjiPwyLL
+         PC7cVT3J89hIDYOH9zwtKLQmMFHQNrZ4+GHMRZpKFytZYCAnplpTjB6+T67QjNv8I7
+         x5hWGcfU2CXyw==
+To:     gerrit@erg.abdn.ac.uk, davem@davemloft.net, dccp@vger.kernel.org
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next v5] net: dccp: Add SIOCOUTQ IOCTL support (send buffer fill)
+Date:   Mon, 20 Jul 2020 18:06:14 +0200
+Message-Id: <20200720160614.117090-1-richard_siegfried@systemli.org>
 MIME-Version: 1.0
-In-Reply-To: <1595229523-9725-1-git-send-email-zhangchangzhong@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/20/2020 12:18 AM, Zhang Changzhong wrote:
-> The driver forgets to call clk_disable_unprepare() in error path after
-> a success calling for clk_prepare_enable().
-> 
-> Fix to goto err_clk_disable if clk_prepare_enable() is successful.
-> 
-> Fixes: 99d55638d4b0 ("net: bcmgenet: enable NETIF_F_HIGHDMA flag")
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> ---
->  drivers/net/ethernet/broadcom/genet/bcmgenet.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index 368e05b..903811e 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -3988,7 +3988,7 @@ static int bcmgenet_probe(struct platform_device *pdev)
->  	if (err)
->  		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
->  	if (err)
-> -		goto err;
-> +		goto err_clk_disable;
->  
->  	/* Mii wait queue */
->  	init_waitqueue_head(&priv->wq);
-> 
-Acked-by: Doug Berger <opendmb@gmail.com>
+This adds support for the SIOCOUTQ IOCTL to get the send buffer fill
+of a DCCP socket, like UDP and TCP sockets already have.
 
-Thanks!
+Regarding the used data field: DCCP uses per packet sequence numbers,
+not per byte, so sequence numbers can't be used like in TCP. sk_wmem_queued
+is not used by DCCP and always 0, even in test on highly congested paths.
+Therefore this uses sk_wmem_alloc like in UDP.
+
+Signed-off-by: Richard Sailer <richard_siegfried@systemli.org>
+---
+v5: More infos into dccp.rst, +empty line after declarations
+---
+ Documentation/networking/dccp.rst | 3 +++
+ net/dccp/proto.c                  | 9 +++++++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/Documentation/networking/dccp.rst b/Documentation/networking/dccp.rst
+index dde16be044562..91e5c33ba3ff5 100644
+--- a/Documentation/networking/dccp.rst
++++ b/Documentation/networking/dccp.rst
+@@ -192,6 +192,9 @@ FIONREAD
+ 	Works as in udp(7): returns in the ``int`` argument pointer the size of
+ 	the next pending datagram in bytes, or 0 when no datagram is pending.
+ 
++SIOCOUTQ
++	Returns the number of unsent data bytes in the socket send queue as ``int``
++	into the buffer specified by the argument pointer.
+ 
+ Other tunables
+ ==============
+diff --git a/net/dccp/proto.c b/net/dccp/proto.c
+index fd92d3fe321f0..9e453611107f1 100644
+--- a/net/dccp/proto.c
++++ b/net/dccp/proto.c
+@@ -375,6 +375,15 @@ int dccp_ioctl(struct sock *sk, int cmd, unsigned long arg)
+ 		goto out;
+ 
+ 	switch (cmd) {
++	case SIOCOUTQ: {
++		int amount = sk_wmem_alloc_get(sk);
++		/* Using sk_wmem_alloc here because sk_wmem_queued is not used by DCCP and
++		 * always 0, comparably to UDP.
++		 */
++
++		rc = put_user(amount, (int __user *)arg);
++	}
++		break;
+ 	case SIOCINQ: {
+ 		struct sk_buff *skb;
+ 		unsigned long amount = 0;
+-- 
+2.27.0
+
