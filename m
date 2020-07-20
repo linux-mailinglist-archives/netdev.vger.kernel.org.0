@@ -2,69 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 448F7226E5C
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:34:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADC3B226E6A
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730266AbgGTSeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 14:34:50 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45570 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726546AbgGTSet (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 14:34:49 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jxacc-0063zF-HV; Mon, 20 Jul 2020 20:34:42 +0200
-Date:   Mon, 20 Jul 2020 20:34:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexander Lobakin <alobakin@marvell.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Denis Bolotin <denis.bolotin@marvell.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        GR-everest-linux-l2@marvell.com,
-        QLogic-Storage-Upstream@marvell.com, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 02/16] qed, qede, qedf: convert link mode
- from u32 to ETHTOOL_LINK_MODE
-Message-ID: <20200720183442.GL1339445@lunn.ch>
-References: <20200720180815.107-1-alobakin@marvell.com>
- <20200720180815.107-3-alobakin@marvell.com>
+        id S1730480AbgGTShk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 14:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726506AbgGTShk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 14:37:40 -0400
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8FEC061794;
+        Mon, 20 Jul 2020 11:37:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=DHipU8PXyOBHTZ8RvxCfXBZ+HdncvH5dlTXWYPNFa+8=; b=SqwVTwWuLFBpDS46jLn6+he0Gy
+        DKLleQlm3Ny7WFFKDDIxaaVz4203CHBxp5TEy513Wl/lHItN8BOZYBbWrmnumTYZ1iQthlBRDMgRO
+        jzmw6rqb5Bxkxe+aK8CUXkClTs+pupk5XZYO/aoWxB8ctwuOAPgRHPU+SyNqYwvq1mfY3Y0v+weqU
+        UTHxMP9tOql7Ek70g4pEc1KZLuW5MFqKtmkPPfM24VPiNlQnrCy5oqo93rLG2j9owDSxtfuKlACqY
+        KCM8YZgewMxg5dVTCObZ298jT31tfJqZlg4JRV5m07bOdKLMNCCF3l6vgo0VejxRJdGl1Ls3nSJ+A
+        W6JWlWDA==;
+Received: from [2601:1c0:6280:3f0::19c2]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jxafN-0001pS-1m; Mon, 20 Jul 2020 18:37:33 +0000
+Subject: Re: [net-next v4 PATCH 1/7] hsr: enhance netlink socket interface to
+ support PRP
+To:     Murali Karicheri <m-karicheri2@ti.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
+        nsekhar@ti.com, grygorii.strashko@ti.com, vinicius.gomes@intel.com
+References: <20200720165803.17793-1-m-karicheri2@ti.com>
+ <20200720165803.17793-2-m-karicheri2@ti.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <f1675af9-f057-0b7b-c245-e15ead602bbc@infradead.org>
+Date:   Mon, 20 Jul 2020 11:37:28 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200720180815.107-3-alobakin@marvell.com>
+In-Reply-To: <20200720165803.17793-2-m-karicheri2@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 09:08:01PM +0300, Alexander Lobakin wrote:
-> Currently qed driver already ran out of 32 bits to store link modes,
-> and this doesn't allow to add and support more speeds.
-> Convert custom link mode to generic Ethtool bitmap and definitions
-> (convenient Phylink shorthands are used for elegance and readability).
-> This allowed us to drop all conversions/mappings between the driver
-> and Ethtool.
-> 
-> This involves changes in qede and qedf as well, as they used definitions
-> from shared "qed_if.h".
-> 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
-> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-> ---
->  drivers/net/ethernet/qlogic/qed/qed_main.c    | 288 ++++++++++--------
->  .../net/ethernet/qlogic/qede/qede_ethtool.c   | 200 ++++--------
->  drivers/scsi/qedf/qedf_main.c                 |  78 +++--
->  include/linux/qed/qed_if.h                    |  47 +--
->  4 files changed, 268 insertions(+), 345 deletions(-)
+On 7/20/20 9:57 AM, Murali Karicheri wrote:
+> diff --git a/net/hsr/Kconfig b/net/hsr/Kconfig
+> index 8095b034e76e..e2e396870230 100644
+> --- a/net/hsr/Kconfig
+> +++ b/net/hsr/Kconfig
+> @@ -4,24 +4,35 @@
+>  #
+>  
+>  config HSR
+> -	tristate "High-availability Seamless Redundancy (HSR)"
+> -	help
+> +	tristate "High-availability Seamless Redundancy (HSR & PRP)"
+> +	---help---
 
-Nice diffstat.
+Just use:
+	help
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+The use of "---help---" has been discontinued.
 
-    Andrew
+> +	  This enables IEC 62439 defined High-availability Seamless
+> +	  Redundancy (HSR) and Parallel Redundancy Protocol (PRP).
+> +
+>  	  If you say Y here, then your Linux box will be able to act as a
+> -	  DANH ("Doubly attached node implementing HSR"). For this to work,
+> -	  your Linux box needs (at least) two physical Ethernet interfaces,
+> -	  and it must be connected as a node in a ring network together with
+> -	  other HSR capable nodes.
+> +	  DANH ("Doubly attached node implementing HSR") or DANP ("Doubly
+> +	  attached node implementing PRP"). For this to work, your Linux box
+> +	  needs (at least) two physical Ethernet interfaces.
+> +
+> +	  For DANH, it must be connected as a node in a ring network together
+> +	  with other HSR capable nodes. All Ethernet frames sent over the hsr
+
+	                                                                  HSR
+
+> +	  device will be sent in both directions on the ring (over both slave
+> +	  ports), giving a redundant, instant fail-over network. Each HSR node
+> +	  in the ring acts like a bridge for HSR frames, but filters frames
+> +	  that have been forwarded earlier.
+>  
+> -	  All Ethernet frames sent over the hsr device will be sent in both
+> -	  directions on the ring (over both slave ports), giving a redundant,
+> -	  instant fail-over network. Each HSR node in the ring acts like a
+> -	  bridge for HSR frames, but filters frames that have been forwarded
+> -	  earlier.
+> +	  For DANP, it must be connected as a node connecting to two
+> +	  separate networks over the two slave interfaces. Like HSR, Ethernet
+> +	  frames sent over the prp device will be sent to both networks giving
+
+	                       PRP
+
+> +	  a redundant, instant fail-over network. Unlike HSR, PRP networks
+> +	  can have Singly Attached Nodes (SAN) such as PC, printer, bridges
+> +	  etc and will be able to communicate with DANP nodes.
+>  
+>  	  This code is a "best effort" to comply with the HSR standard as
+>  	  described in IEC 62439-3:2010 (HSRv0) and IEC 62439-3:2012 (HSRv1),
+> -	  but no compliancy tests have been made. Use iproute2 to select
+> -	  the version you desire.
+> +	  and PRP standard described in IEC 62439-4:2012 (PRP), but no
+> +	  compliancy tests have been made. Use iproute2 to select the protocol
+> +	  you would like to use.
+>  
+>  	  You need to perform any and all necessary tests yourself before
+>  	  relying on this code in a safety critical system!
+
+thanks.
+-- 
+~Randy
+
