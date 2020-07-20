@@ -2,85 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3968122705D
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 23:30:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D49D227060
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 23:32:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726764AbgGTVa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 17:30:26 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41374 "EHLO mx2.suse.de"
+        id S1726803AbgGTVbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 17:31:35 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41752 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726428AbgGTVa0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 17:30:26 -0400
+        id S1726730AbgGTVbe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 17:31:34 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id B6066B6D0;
-        Mon, 20 Jul 2020 21:30:30 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 455A8B6D0;
+        Mon, 20 Jul 2020 21:31:40 +0000 (UTC)
 Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id B594B6032A; Mon, 20 Jul 2020 23:30:22 +0200 (CEST)
-Date:   Mon, 20 Jul 2020 23:30:22 +0200
+        id A0E986032A; Mon, 20 Jul 2020 23:31:33 +0200 (CEST)
+Date:   Mon, 20 Jul 2020 23:31:33 +0200
 From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Govindarajulu Varadarajan <gvaradar@cisco.com>
-Cc:     netdev@vger.kernel.org, edumazet@google.com,
-        linville@tuxdriver.com, govind.varadar@gmail.com, benve@cisco.com
-Subject: Re: [PATCH ethtool v3 1/2] ethtool: add support for get/set
- ethtool_tunable
-Message-ID: <20200720213022.rp42exbfdiqtwle4@lion.mk-sys.cz>
-References: <20200719235928.336953-1-gvaradar@cisco.com>
+To:     Chris Healy <cphealy@gmail.com>
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v2] ethtool: dsa: mv88e6xxx: add pretty dump for 88E6352
+ SERDES
+Message-ID: <20200720213133.rlofhrmieedyzhj6@lion.mk-sys.cz>
+References: <20200720185002.158693-1-cphealy@gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="jg3fvbhvaepq3viu"
+        protocol="application/pgp-signature"; boundary="7chpxhtbgjvbvoxg"
 Content-Disposition: inline
-In-Reply-To: <20200719235928.336953-1-gvaradar@cisco.com>
+In-Reply-To: <20200720185002.158693-1-cphealy@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---jg3fvbhvaepq3viu
+--7chpxhtbgjvbvoxg
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jul 19, 2020 at 04:59:27PM -0700, Govindarajulu Varadarajan wrote:
-> Add support for ETHTOOL_GTUNABLE and ETHTOOL_STUNABLE options.
+On Mon, Jul 20, 2020 at 11:50:02AM -0700, Chris Healy wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
 >=20
-> Tested rx-copybreak on enic driver. Tested ETHTOOL_TUNABLE_STRING
-> options with test/debug changes in kernel.
+> In addition to the port registers, the device can provide the
+> SERDES/PCS registers. Dump these, and for a few of the important
+> SGMII/1000Base-X registers decode the bits.
 >=20
-> Signed-off-by: Govindarajulu Varadarajan <gvaradar@cisco.com>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Chris Healy <cphealy@gmail.com>
 > ---
-> v3:
-> * Remove handling of string type tunables
->=20
 > v2:
-> * Fix alignments and braces.
-> * Move union definition outside struct.
-> * Make seen type int.
-> * Use uniform C90 types in union.
-> * Remove NULL assignment and memset to 0.
-> * Change variable name from tinfo to tunables_info.
-> * Use ethtool_tunable_info_val in print_tunable()
-> * Remove one-letter command line option.
-> * Use PRI* for int type in print_tunable().
+> - Add SERDES_OFFSET define
+> - Improve readability of if statement
+> - Fix inconsistency in dump handler code
 
-Applied both patches, thank you.
+Applied, thank you.
 
 Michal
 
---jg3fvbhvaepq3viu
+--7chpxhtbgjvbvoxg
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8WDOgACgkQ538sG/LR
-dpVN9Af9FmCg0NYelqPcZc4pydbcBNOjzyP7Yq/5UWEatRsfbJECGLtA2MgodkTV
-voFqcyB2FNIbf/GomQAhcVqFJPLo0pmhHM8d6JR+8RzP14ZuKoK6OquHCFKo/cpJ
-UYnhUu8lEYUVy2397SmX8CcSe2G7PpIwXcUOKShx6wHAJBC7m9leUqPwWFQM0fbu
-FN/pDvPfP/ekixVS8VMbHqf1Pra+9KvInHMOxbitfji1mlNqFmAhqDlqSn44vgSs
-iUWRLJViDZjx7rsNU53jAshUvDg583nEBBrV6HB4CPYJqzG5uNYZW1oWWE46QOSk
-WXSU3xhMDH7D9yU1UKRXICXmUNNWoQ==
-=FTZ/
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8WDTAACgkQ538sG/LR
+dpXpOggAhTpO1DCvrTOSO4AxtwmolNJwPO2WusmzfqoImSsyFeMrTOrRgO1Zjzrs
+Ntd+TWjNX10sGTcC8uqQPfNjOSWwGyBOuDsL6n4aWDmbi8KooK79Q52zeevqqW1e
+H+3aoDSwj1aBbXMZv2HIp2XZ5bVyRijoMnoosaPpjv8F7pAvAgvClPo8ULPz02xN
+2JIK+IoUe2m6xuL4VABVoqrk+RJ4u4lVQdL9qjH2/NlPeLEpO4QVxuV+mAwReeLw
+CD2dY6cP26xVGjKX2oeS3iI/iuuUqoSMzj/FfrZlvXTP0i+CHTqPfeD/6unhK1bw
+Tu3MKEVxK3XGOQaSJGXJsVJ4z8F45Q==
+=uHrp
 -----END PGP SIGNATURE-----
 
---jg3fvbhvaepq3viu--
+--7chpxhtbgjvbvoxg--
