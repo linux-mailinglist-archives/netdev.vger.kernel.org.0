@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25428226CBC
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:02:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB76C226CBF
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:02:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731331AbgGTRBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 13:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51654 "EHLO
+        id S1731861AbgGTRCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 13:02:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730389AbgGTRBs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 13:01:48 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3AEC061794;
-        Mon, 20 Jul 2020 10:01:48 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id g10so409812wmc.1;
-        Mon, 20 Jul 2020 10:01:48 -0700 (PDT)
+        with ESMTP id S1729853AbgGTRCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 13:02:11 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B038C061794;
+        Mon, 20 Jul 2020 10:02:11 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id o2so232661wmh.2;
+        Mon, 20 Jul 2020 10:02:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=t669anBqLos6Vcl28w8ODQETuDDsXDBeiiuUTFvLDaA=;
-        b=G/lWA/T7aQJwcV44sxD/ICNXA5wJZt05YOayOkiNRezN9qXSKjrkl48IU2uMcSvln+
-         VyoEyNMi2acHbG0ien3TPGojBiQ++jXxmegcJoJmh+LNMlXgf1FZ9ok3cX3wH3DbTR+k
-         DblhAu+iN+j0o+wRbM+QaE/9L77eOD2Uzd/s/E3J4JmHS+vlWiqhYC2izqqNrLrIkQwY
-         LeyBzJ8rOjdio/UsTlBlClkGBIxX80RsWOkbELuolbPG8vP7zok+x7zBtcceIXDQW65A
-         1Qwnn8E0IuwzYmICJ7pOaSO1D6OwsyC0DK35uAu9TvtlidMnOpqfRLtLMR54g/yxrHML
-         JQFA==
+        bh=c6xD3yNZ/m3e/xSnfz8uemJolvn3EL62R+mf9VNUyeQ=;
+        b=WEX4SpzLwdJ/A/esOUXIVK3movppP7r3Ko/0dr88QH2WFSnX/a9u9i6Aah+Kh1lAZs
+         wZGnqmIaZxOoOqeiQsdgdysnKLz8s+U/lxEsws+OBhYp7+W8GVApI2lUQwYKJYcjVkHW
+         KvNPERlrCHS7XKmwJ/7fd3uB2d6HJBNPZkYvW8CtyfcqcEs/4ZQaypq9pmcZzUPr8gZ5
+         Nq/WvFVPil5ikhdL4/LZrbU8+8EHDv0DEDWnm7U7V9WjghDO+fj0rryjXmunYtVq22Pk
+         JHrJ+mKTMV0Fsx1XODT2/z76Hldw/S0bwPgIBWFLXVRaZB+Lu1FjODNi5sIM7vvtnq2Z
+         gN+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=t669anBqLos6Vcl28w8ODQETuDDsXDBeiiuUTFvLDaA=;
-        b=TYKV109qSYz+nxTBnmTTiX8AjEj987lInIThHt5AAmLH6OXllOwGXwHAF/52qzTUG/
-         vFb+Cj4izjR0t9rYG1ASNHZN7yWLjqDEjIOqmkHCTlDapO3tYv9g2/yjE7g4Yof5c0BM
-         KOlTieA164pADLuNC8UCxsUGjPorKmMw08EkfDjbfv4SblVKFXMGjZsEgxX1RCHwyqU7
-         elWVfD9ipnSgl39sG/RNEGq1h7M1aDJKwZJ5sU2C3R2kXmM5PudF+XdBfAh/fY3nRKOw
-         d2BxkL3LzzaOL0YgzBo6EELJb2jo5WsbWjuqdDNah/GixHMU7TXt4iJyW+Wqrcs/HQE7
-         6zbw==
-X-Gm-Message-State: AOAM532rGZRnO8/SXEIDiLF0Fw3JI3P9FEvMvxCgfH0bP/0f5CXLc0Xe
-        4ytrkdpEKdeBLmswuAINv2A+hU41
-X-Google-Smtp-Source: ABdhPJzY91uaXiv5cK8uZWgBltqZtFsuIhnGhgT7YtCisgdjG18fla0W8v0iWTRQn7yxaRZS5hbPhA==
-X-Received: by 2002:a1c:1f09:: with SMTP id f9mr255246wmf.137.1595264506550;
-        Mon, 20 Jul 2020 10:01:46 -0700 (PDT)
+        bh=c6xD3yNZ/m3e/xSnfz8uemJolvn3EL62R+mf9VNUyeQ=;
+        b=PlPa0QsZdWq6NYrEKPwuTrUua3J4T368qDj2IGGHyZ80nonBJ2vss+tybqMiRbMgjj
+         s6weDIrHPjN9mXVEJl7k2mvBoHweF0ahxK4zRxFjH+CyuJciaH6HW8FGQ+VrqDUvIoMm
+         o1ZSSskKu2wQirkcGWI6UtizKi+/YMQvGbfQs0AqHRnbk4p3TCAWKSUc8ctx0KTLXEdu
+         lZ79lw1S8HIaHMBQP6r+YMA2JqdMRYMAy4bl2PC7cp/vwL75MO/Zu/4LwNFUPMEJ44Gh
+         HkGu/XktclQIqip8PuDG7uSpPeOsM+mbFNk71MH832BDqAcINcn+TkRc2WNLnibTaCIw
+         lfYg==
+X-Gm-Message-State: AOAM533maykgX9gvy+MOjmvx6O8Ng6eI/w3ecK2817DNvPJX9uvMWN23
+        nqD6MwnG5uxgydMvuDiSd41726MQ
+X-Google-Smtp-Source: ABdhPJwIYWdwFRz3e9Loae+teUwR9OrMlarxdjYy+y/gJdQx4kU3Vi19e5BPukoBqSF90KIWxNb1rQ==
+X-Received: by 2002:a1c:2392:: with SMTP id j140mr295204wmj.6.1595264529039;
+        Mon, 20 Jul 2020 10:02:09 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id u1sm42127246wrb.78.2020.07.20.10.01.43
+        by smtp.googlemail.com with ESMTPSA id x7sm34032246wrr.72.2020.07.20.10.02.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jul 2020 10:01:45 -0700 (PDT)
-Subject: Re: [PATCH net] net: bcmgenet: add missed clk_disable_unprepare in
- bcmgenet_probe
+        Mon, 20 Jul 2020 10:02:08 -0700 (PDT)
+Subject: Re: [PATCH net] net: bcmgenet: fix error returns in bcmgenet_probe()
 To:     Zhang Changzhong <zhangchangzhong@huawei.com>, opendmb@gmail.com,
         davem@davemloft.net, kuba@kernel.org
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <1595237794-11530-1-git-send-email-zhangchangzhong@huawei.com>
+References: <1595229523-9725-1-git-send-email-zhangchangzhong@huawei.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -110,12 +109,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <f272bf64-73e2-72ab-3717-cc094b30140c@gmail.com>
-Date:   Mon, 20 Jul 2020 10:01:37 -0700
+Message-ID: <e6f542bf-06f1-ccc5-c6c1-25973ac1e23a@gmail.com>
+Date:   Mon, 20 Jul 2020 10:02:03 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <1595237794-11530-1-git-send-email-zhangchangzhong@huawei.com>
+In-Reply-To: <1595229523-9725-1-git-send-email-zhangchangzhong@huawei.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,15 +123,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/20/20 2:36 AM, Zhang Changzhong wrote:
+On 7/20/20 12:18 AM, Zhang Changzhong wrote:
 > The driver forgets to call clk_disable_unprepare() in error path after
 > a success calling for clk_prepare_enable().
 > 
 > Fix to goto err_clk_disable if clk_prepare_enable() is successful.
 > 
-> Fixes: c80d36ff63a5 ("net: bcmgenet: Use devm_clk_get_optional() to get the clocks")
+> Fixes: 99d55638d4b0 ("net: bcmgenet: enable NETIF_F_HIGHDMA flag")
 > Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Acked-by: Florian fainelli <f.fainelli@gmail.com>
 -- 
 Florian
