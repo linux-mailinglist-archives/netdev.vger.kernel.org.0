@@ -2,200 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D55C226CAB
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:00:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10EAA226CDE
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729831AbgGTQ7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 12:59:14 -0400
-Received: from mail-eopbgr70083.outbound.protection.outlook.com ([40.107.7.83]:56709
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728903AbgGTQ7N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 12:59:13 -0400
+        id S1731299AbgGTRIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 13:08:34 -0400
+Received: from rcdn-iport-7.cisco.com ([173.37.86.78]:18567 "EHLO
+        rcdn-iport-7.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728735AbgGTRIb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 13:08:31 -0400
+X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Mon, 20 Jul 2020 13:08:29 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=2398; q=dns/txt; s=iport;
+  t=1595264909; x=1596474509;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=VX3c/+Mxe9HMyKrf6gzXcvD3vCStJB5sHZuUnRwt/mk=;
+  b=Op/V/+g1IzbX7ZMEo9X8IJbH86i04l8NDIwQsNZPOICnjYirQQr7Om+A
+   y7LPHwYbUoBXxby+TvvAQaWMbZPmOB7/6lXRuGa6giqXpcq60AUSGx1m/
+   zHRUtRIlYcahWtG8hOCv7RS6bvMeYEltvNv0rVX29iAgHz+zVCvUaNHWX
+   w=;
+IronPort-PHdr: =?us-ascii?q?9a23=3A2k0rjhXisYcjptYXSkk1s2gacU3V8LGuZFwc94?=
+ =?us-ascii?q?YnhrRSc6+q45XlOgnF6O5wiEPSBNyHuf1BguvS9avnXD9I7ZWAtSUEd5pBH1?=
+ =?us-ascii?q?8AhN4NlgMtSMiCFQXgLfHsYiB7eaYKVFJs83yhd0QAHsH4ag7dp3Sz6XgZHR?=
+ =?us-ascii?q?CsfQZwL/7+T4jVicn/3uuu+prVNgNPgjf1Yb57IBis6wvLscxDiop5IaF3wR?=
+ =?us-ascii?q?zM8XY=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0CrBQCLzBVf/5FdJa1gHAEBAQEBAQc?=
+ =?us-ascii?q?BARIBAQQEAQFAgUqBUlEHgUcvLAqEKYNGA41LigKOXIJTA1ULAQEBDAEBLQI?=
+ =?us-ascii?q?EAQGETAIXgggCJDgTAgMBAQsBAQUBAQECAQYEbYVcDIVyAQEBAxIREQwBATc?=
+ =?us-ascii?q?BDwIBCBgCAiYCAgIfERUQAgQBDQUbB4MEgkwDLQEBoDcCgTmIYXaBMoMBAQE?=
+ =?us-ascii?q?FhQ0NC4IOCRR6KoJqg1WGM4IagTgcgk0+ghqCI4MWM4ItgUcBjXOCXzyiKE0?=
+ =?us-ascii?q?GBIJdlHOEcAMVCYJ6iT6TEC2RVI0EkXsCBAIEBQIOAQEFgWojgVdwUCoBc4F?=
+ =?us-ascii?q?LUBcCDY4eg3GKVnQ3AgYBBwEBAwl8jgIBgRABAQ?=
+X-IronPort-AV: E=Sophos;i="5.75,375,1589241600"; 
+   d="scan'208";a="790727111"
+Received: from rcdn-core-9.cisco.com ([173.37.93.145])
+  by rcdn-iport-7.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 20 Jul 2020 17:01:13 +0000
+Received: from XCH-ALN-001.cisco.com (xch-aln-001.cisco.com [173.36.7.11])
+        by rcdn-core-9.cisco.com (8.15.2/8.15.2) with ESMTPS id 06KH1DKp004879
+        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=FAIL);
+        Mon, 20 Jul 2020 17:01:13 GMT
+Received: from xhs-rtp-002.cisco.com (64.101.210.229) by XCH-ALN-001.cisco.com
+ (173.36.7.11) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Jul
+ 2020 12:01:13 -0500
+Received: from xhs-aln-003.cisco.com (173.37.135.120) by xhs-rtp-002.cisco.com
+ (64.101.210.229) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Jul
+ 2020 13:01:12 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (173.37.151.57)
+ by xhs-aln-003.cisco.com (173.37.135.120) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Mon, 20 Jul 2020 12:01:12 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K62S6lgu1oKXYQUz58nWaScmFF+G6w//nAENbvtopCzENfwdN/3Y7/prTk6z+156dKQsv/EOjLSIuD7Y4QQKl3k9EJpakqz3H+sdUgtVWWAsLjueCBZvBRFd1GIv9eKPAqnJ3J3NNMYWQ+ncYaz0P9a6DCL5t3LwHQYgsvFxb8fHclNbi1DjdxcPvFjgtYsRI0ZorR4lrBR+t8Vc0e+9waiLJK0sB1hz7eV+Z8KEWdPXOT314duwNJySawdBMBwNb2jC9Ffnv5qbfq4rdgT6JCUz+P0LIOD0kMwuiL9eirEKS7yscbYlTdJFRLavQ3JCwBscrkx4m68Ly6DMA7Yaig==
+ b=jV4dDuK638lYiLJypWbKUOtbraHutmEw+NNQR1teB/OGahbMm+p0zwdSJ8Rcn9V1Emfw1g6jf8oIFywfLiPklnK49tEIFdcyAvERT8D9u7dRgm0NR6Xy7gxNOqMAXU5/r6YiyZzwcOSQU1SQCGqobzO1S5qjvuETFR2EKx/a8JrtD8whH29y0MGlO/PHx7HbiYtPQ+Xt0ExcNtCeMtABaaGbnQqZzfNwVAQ49fRs8bAE5kaApOy7CzmsAai8iKGRgN9Me5MsDgUFn6Ko1MqM+tjkDVpri2k+0eckPlBOHpXr2K3dbIrh0sECEXpaSLDM1IWAsPfEoerVqZUa51qHag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cFGDssD0tny9uPmRqWOSwrIJMTSXUfOMNsrWemYSXgA=;
- b=amNIPCZA8+HNnkqqIYT1A+cicRAsrHll5BBQor/cIECnG8u5otCLeO5PEb8h/fLxxBC0nlYO9QVn7WYx+3b4oxM3NM3X+iiGtBq1VyCxUnlb7bLik71hhm0dp8tbb32lVwrPAK2xHxaitNIVn47W9ZBZ5IMcIkMbc+f+ZG+koc9YknMBngLMRElxj4ddTXuwqVma45nPEG/2CvuehZWfGN3KH8lc4ram3elvTZJhvAS2JDh3Yhdpku2E4bbr3ibI0z97kJufjUACelBHcmDKLXhd/04Glpg89H8NscJbj/DFXnQTloUcD4rARlXzkqwvLeckRkiAkZAv671bj6ErYA==
+ bh=VX3c/+Mxe9HMyKrf6gzXcvD3vCStJB5sHZuUnRwt/mk=;
+ b=Zz/npAafgC8HqSHudTsDOmlErbUnr3q60/MR/UnU5fuGcYCBlPMHyLsO1LbvP+Bv5GrsbP+yvC+L+y0Vwr0upSG+PUS4Vt2l/zWRXHOJq1+ZdLwo+bFBk6jhjFdqYdZQ6Q/aPDDDNx+igiDZlOVLODRrFneFSpc8WVFXzmyqLN7YznbltndKue/7nuu/8AKgt5VCH4Dl4uXV0+KjWVgX2usHAcJaQ3HUWpSXfmkgx7Iwyf88jT81zvnEOCyVB31XR6TY6rv2oLni7SOS4WeURA7vg3RU+xmTjAjyrmqKhvCloLqdxsmD5wfQnniqHb4Ke2ZMEX67C5rS6sVviclV/Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=cisco.com; dmarc=pass action=none header.from=cisco.com;
+ dkim=pass header.d=cisco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cisco.onmicrosoft.com;
+ s=selector2-cisco-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cFGDssD0tny9uPmRqWOSwrIJMTSXUfOMNsrWemYSXgA=;
- b=FzxuuC5O6tO2IKzMK1fCYr/trNIlHLWzBT8H61DuT0aKEL+3EX0tCmwoORqavipWWz27+C/SAoECQb2YnJVnpOJwaMqoTYFyedYBXnOa53YfjbUgk0EuyAPMbjMUMH002Pxh4mAKuE5Fs7ouLANGw8STSXoyPyAlXwSBRW47ccs=
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VI1PR04MB4302.eurprd04.prod.outlook.com
- (2603:10a6:803:3f::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.23; Mon, 20 Jul
- 2020 16:59:09 +0000
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::d4df:67d5:c1f7:fba]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::d4df:67d5:c1f7:fba%4]) with mapi id 15.20.3195.025; Mon, 20 Jul 2020
- 16:59:09 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "michael@walle.cc" <michael@walle.cc>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
+ bh=VX3c/+Mxe9HMyKrf6gzXcvD3vCStJB5sHZuUnRwt/mk=;
+ b=zCG7KMAry1RiEPGBywgtax2xRxEXpbv9A4duziRJ71QVSrn2fvRpwDBWYHWeqjrB/GHKFkgHryKv6H+T1HyvBX/D2qi22h6QozJM7Pa69hY+Le1jhmi/em4bUKButq0G/iBuav/UPsE1KL8kz7LkW+5NrNIrTGv4x75cOoshMO4=
+Received: from CY4PR1101MB2101.namprd11.prod.outlook.com
+ (2603:10b6:910:24::18) by CY4PR11MB1255.namprd11.prod.outlook.com
+ (2603:10b6:903:30::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.18; Mon, 20 Jul
+ 2020 17:01:11 +0000
+Received: from CY4PR1101MB2101.namprd11.prod.outlook.com
+ ([fe80::6c4e:645e:fcf9:f766]) by CY4PR1101MB2101.namprd11.prod.outlook.com
+ ([fe80::6c4e:645e:fcf9:f766%11]) with mapi id 15.20.3195.025; Mon, 20 Jul
+ 2020 17:01:10 +0000
+From:   "Sriram Krishnan (srirakr2)" <srirakr2@cisco.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC net-next 12/13] net: phylink: add struct phylink_pcs
-Thread-Topic: [PATCH RFC net-next 12/13] net: phylink: add struct phylink_pcs
-Thread-Index: AQHWTuri0oj85lgbdkeFoRazHWzWkQ==
-Date:   Mon, 20 Jul 2020 16:59:08 +0000
-Message-ID: <VI1PR0402MB387129A07C77AD9D08871F18E07B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
-References: <20200630142754.GC1551@shell.armlinux.org.uk>
- <E1jqHGO-0006QN-Hw@rmk-PC.armlinux.org.uk>
- <VI1PR0402MB3871010E01CD0C6BADC04520E07B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
- <20200720162600.GW1551@shell.armlinux.org.uk>
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "Malcolm Bumgardner (mbumgard)" <mbumgard@cisco.com>,
+        "Umesha G M (ugm)" <ugm@cisco.com>,
+        "Niranjan M M (nimm)" <nimm@cisco.com>,
+        "Daniel Walker (danielwa)" <danielwa@cisco.com>
+Subject: Re: [PATCH v2] AF_PACKET doesnt strip VLAN information
+Thread-Topic: [PATCH v2] AF_PACKET doesnt strip VLAN information
+Thread-Index: AQHWXRxVWAaissRR4kW2xbRd/pNvc6kP2PgOgACm0ICAAJDsAA==
+Date:   Mon, 20 Jul 2020 17:01:09 +0000
+Message-ID: <EFC5EACE-753A-430E-84D5-E22C3F8C5106@cisco.com>
+References: <20200718091732.8761-1-srirakr2@cisco.com>
+ <CA+FuTSdfvctFD3AVMHzQV9efQERcKVE1TcYVD_T84eSgq9x4OA@mail.gmail.com>
+ <CY4PR1101MB21013DCD55B754E29AF4A838907B0@CY4PR1101MB2101.namprd11.prod.outlook.com>
+ <CAF=yD-+gCkPVkXwcH6KiKYGV77TvpZiDo=3YyXeuGFk=TR2dcw@mail.gmail.com>
+In-Reply-To: <CAF=yD-+gCkPVkXwcH6KiKYGV77TvpZiDo=3YyXeuGFk=TR2dcw@mail.gmail.com>
 Accept-Language: en-US
-Content-Language: en-US
+Content-Language: en-GB
 X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, OOF, AutoReply
 X-MS-TNEF-Correlator: 
-authentication-results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.219.134]
+user-agent: Microsoft-MacOutlook/16.39.20071300
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=cisco.com;
+x-originating-ip: [106.51.23.252]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 306be686-bbf7-45aa-1caf-08d82cce382f
-x-ms-traffictypediagnostic: VI1PR04MB4302:
+x-ms-office365-filtering-correlation-id: f70b15a2-2605-4840-7b81-08d82cce8048
+x-ms-traffictypediagnostic: CY4PR11MB1255:
+x-ld-processed: 5ae1af62-9505-4097-a69a-c1553ef7840e,ExtAddr
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB4302A077276F2AA1DA6BACD3E07B0@VI1PR04MB4302.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-microsoft-antispam-prvs: <CY4PR11MB1255772781983656C6915970907B0@CY4PR11MB1255.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: AzUTig7HuMTZ2M6fYTn9rjTyLl+85CwZ9ARjx1vNPFvVcY/ivMKINZ1zr6qCXeS5+JN8absJiZLRcjdHBqY9LWHCC/ipjCtBQP5KR5bjggOR6Vyf5EuDsxtunNKke3c6sQiIxHLLwXGWItPbldaNA1SMNWGkfM7jcQaoM5b5Bxlo/1fCEtKoqQOQIhODMWcr89ovvZFR+6lH+O3DOEMHWeX7N0JbbkFUXcUbG65dRiLPZMAncg/7uwMDfDhxjK+xmVNve3fS0jF7/njx5sOy14/YxOOrL7ck4f8eHiR1zCtIrmyPF3iiy4g+o7KvqjTetnbP1wOFg+EsHfBnPuhnQ/NDu9xVnwpZhxCYnLyrEFaGdAIflv9630PJxIaqxvz+7sA/oSfuBCZZZyQKhbCERw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(346002)(366004)(396003)(376002)(39860400002)(6506007)(53546011)(186003)(2906002)(66476007)(8936002)(9686003)(316002)(55016002)(33656002)(4326008)(26005)(76116006)(91956017)(54906003)(478600001)(86362001)(5660300002)(44832011)(52536014)(66446008)(64756008)(66556008)(66946007)(83380400001)(6916009)(7696005)(8676002)(71200400001)(966005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: /Mn7d9tRc9HXIEvi9x8QmejLEJ2m4mNdgD7Ywy2SCtaanJzcvRRSudpeErLU7bIf4ROtIbHU5No2GfjwGv7mj3C048rI8uSX30yoGG/tgTWkb30TWYJpLA/lgd4SW6gis9AYqR7QdyWMirnmCadOPhr+bG3rxKsC40iP0Vw7kIQ4tbwZ/6doStybYw9Gc47P7+gZgnp1YcRbY84VAYa5bBuepa4N9bmFoBnDp8802HkovnMOaGoCQ0aYn/3uL+fTyHyH5sr+iIwC09jS/07DxSsGGUUl6VmXCBVcuutZ10Walqnum/XlVVo1I40ftYFmJoiVCufBlAtvVM8Vq8LCr79Fq8GOHZkgz1YJj5NSyU5FOB/AhjILifRcB3TtsV52EEd6h54SUU/Bwqv23p+nqu8VW1XzDybX3/esuznlWOOnNr8XkbESxJJdYFiIDf1RZFqfDJlwZEV6f1aVzX5V+PqRmha7cC+KyxGJ4ier4j8WwP8AwWaNDW6h2Ecj0pMw
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: MOLuYBEuNN5VrRJZld7vUGm91CvzcmSPyZKrwkEQDatT2orkVDba5GVuw0iveJpBfsd0+6kz9wBAivR+UtFOoP3Q6wTh6W8Ik+Nl1uY0VoVLvtOwDB/F0bJb+n2tbqn26Qb17uptYQtb92lNIokwjMVkNXF1yb2Y+N4KeWG2Enn/W3x6b4ZaDinr3sgfHQmfHn167eWdNS9ryBvGGYcg+oDWE/nJZ7ZgOcNjO6QZlbRMuKi7OZp9gOpv6ZJ8yVxuROXzUMPsVlL1fB5qinJ2vZGv6vy2plXVn0uyXw4gFopPADl/wLIuxiP5A/6OV0ETtNixf1Z2kn618z95z3cv+g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR1101MB2101.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(136003)(366004)(396003)(39860400002)(6486002)(4326008)(478600001)(91956017)(83380400001)(6512007)(2906002)(8936002)(54906003)(110136005)(36756003)(8676002)(5660300002)(64756008)(66446008)(66476007)(66556008)(66946007)(316002)(76116006)(107886003)(55236004)(186003)(26005)(33656002)(6506007)(53546011)(86362001)(2616005)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: TE1pElfmz6IaoRSJrEX72PoKPSQddai0YN2xIAD2Uj12ShCicVPdkwGzAc4FGi7Ck0p6SgaupqONZ9sG4c+NFYL2Vx0so0eqJNACgqE6AGJc+OraCXjZ70yG7XaGPiQZLpIEHYTm7QVg3TDosLH+xto8CkFTOQbawHX0uLR61dLzZzn1/hyzlGlz74Au5r3n4w1nrhV5QLpkVzeyMSSsYeK9xJwBL3U8iFH6fjEuZuJRwNHnKZxPzJd72xJPcMtLAo/UIEi88Bsvd5XpLSF+ENN/ii5ZTor2dGznp7yGACUa7FHfQS9DJscNvUA4lvk1zYY9ciooGjrDJDOPgk22FW22QpPrrWWNyLQFUmQ3WBhF7UXyQdFpG37+Y++6Hh3oU1kEG6QdgqkluBU4/NA0jCTcPWzMAR6FEO2xyc3sw3QZBEfR3Hec1RtryKFnbvXKN9VFifitK0ZKXA2qOiavfvfI7WnSNAgmpsIu/CpOqWA=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EF9E762792042549AB7B66B438024889@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 306be686-bbf7-45aa-1caf-08d82cce382f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2020 16:59:08.9262
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR1101MB2101.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f70b15a2-2605-4840-7b81-08d82cce8048
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2020 17:01:09.8255
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-id: 5ae1af62-9505-4097-a69a-c1553ef7840e
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vpk6SHnZVlH5ej/qS71EB9Ld+0DVix91RYPdxi4bxxgPPw5UvcsU5O1VxGS7ujnO2CozwXZfEogBobT0WeCmFw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4302
+X-MS-Exchange-CrossTenant-userprincipalname: f5iLwI1PnTalode6cAsTuKOiMJB47c3WZsadnPql44kpooGHQTef9XBioePdHs5f4EpRMa7ljlGLklDsrwrOcg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1255
+X-OriginatorOrg: cisco.com
+X-Outbound-SMTP-Client: 173.36.7.11, xch-aln-001.cisco.com
+X-Outbound-Node: rcdn-core-9.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/20/20 7:26 PM, Russell King - ARM Linux admin wrote:=0A=
-> On Mon, Jul 20, 2020 at 03:50:57PM +0000, Ioana Ciornei wrote:=0A=
->> On 6/30/20 5:29 PM, Russell King wrote:=0A=
->>> Add a way for MAC PCS to have private data while keeping independence=
-=0A=
->>> from struct phylink_config, which is used for the MAC itself. We need=
-=0A=
->>> this independence as we will have stand-alone code for PCS that is=0A=
->>> independent of the MAC.  Introduce struct phylink_pcs, which is=0A=
->>> designed to be embedded in a driver private data structure.=0A=
->>>=0A=
->>> This structure does not include a mdio_device as there are PCS=0A=
->>> implementations such as the Marvell DSA and network drivers where this=
-=0A=
->>> is not necessary.=0A=
->>>=0A=
->>> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>=0A=
->>=0A=
->> Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>=0A=
->>=0A=
->> I integrated and used the phylink_pcs structure into the Lynx PCS just=
-=0A=
->> to see how everything fits. Pasting below the main parts so that we can=
-=0A=
->> catch early any possible different opinions on how to integrate this:=0A=
->>=0A=
->> The basic Lynx structure looks like below and the main idea is just to=
-=0A=
->> encapsulate the phylink_pcs structure and the mdio device (which in some=
-=0A=
->> other cases might not be needed).=0A=
->>=0A=
->> struct lynx_pcs {=0A=
->>          struct phylink_pcs pcs;=0A=
->>          struct mdio_device *mdio;=0A=
->>          phy_interface_t interface;=0A=
->> };=0A=
->>=0A=
->> The lynx_pcs structure is requested by the MAC driver with:=0A=
->>=0A=
->> struct lynx_pcs *lynx_pcs_create(struct mdio_device *mdio)=0A=
->> {=0A=
->> (...)=0A=
->>          lynx_pcs->mdio =3D mdio;=0A=
->>          lynx_pcs->pcs.ops =3D &lynx_pcs_phylink_ops;=0A=
->>          lynx_pcs->pcs.poll =3D true;=0A=
->>=0A=
->>          return lynx_pcs;=0A=
->> }=0A=
->>=0A=
->> And then passed to phylink with something like:=0A=
->>=0A=
->> phylink_set_pcs(pl, &lynx_pcs->pcs);=0A=
->>=0A=
->>=0A=
->> For DSA it's a bit less straightforward because the .setup() callback=0A=
->> from the dsa_switch_ops is run before any phylink structure has been=0A=
->> created internally. For this, a new DSA helper can be created that just=
-=0A=
->> stores the phylink_pcs structure per port:=0A=
->>=0A=
->> void dsa_port_phylink_set_pcs(struct dsa_switch *ds, int port,=0A=
->>                                struct phylink_pcs *pcs)=0A=
->> {=0A=
->>          struct dsa_port *dp =3D dsa_to_port(ds, port);=0A=
->>=0A=
->>          dp->pcs =3D pcs;                                         but I =
-do=0A=
->> }=0A=
->>=0A=
->> and at the appropriate time, from dsa_slave_setup, it can really install=
-=0A=
->> the phylink_pcs with phylink_set_pcs.=0A=
->> The other option would be to add a new dsa_switch ops that requests the=
-=0A=
->> phylink_pcs for a specific port - something like phylink_get_pcs.=0A=
-> =0A=
-> It is entirely possible to set the PCS in the mac_prepare() or=0A=
-> mac_config() callbacks - but DSA doesn't yet support the mac_prepare()=0A=
-> callback (because it needs to be propagated through the DSA way of=0A=
-> doing things.)=0A=
-> =0A=
-> An example of this can be found at:=0A=
-> =0A=
-> http://git.armlinux.org.uk/cgit/linux-arm.git/commit/?h=3Dmcbin&id=3D593d=
-56ef8c7f7d395626752f6810210471a5f5c1=0A=
-> =0A=
-> where we choose between the XLGMAC and GMAC pcs_ops structures=0A=
-> depending on the interface mode we are configuring for.  Note that=0A=
-> this is one of the devices that the PCS does not appear as a=0A=
-> distinctly separate entity in the register set, at least in the=0A=
-> GMAC side of things.=0A=
-> =0A=
-=0A=
-Thanks for the info, I didn't get that this is possible by reading the =0A=
-previous patch. Maybe this would be useful in the documentation of the =0A=
-callback?=0A=
-=0A=
-Back to the DSA, I don't feel like we gain much by setting up the =0A=
-phylink_pcs from another callback: we somehow force the driver to =0A=
-implement a phylink_mac_prepare dsa_switch_ops just so that it sets up =0A=
-the phylink_pcs, which for me at least would not be intuitive.=0A=
-=0A=
-Ioana=0A=
+SSBoYXZlIG1vdmVkIHRoZSBjb2RlIHRvIHRoZSBkcml2ZXIgYW5kIHB1c2hlZCBhIG5ldyBwYXRj
+aCBkdWUgdG8gdGhlIGJlbG93IGhpZ2hsaWdodGVkIGlzc3Vlcy4NCg0KU3RlcGhlbiBILA0KUGxl
+YXNlIGxldCBtZSBrbm93IGlmIHlvdSBoYXZlIGFueSBjb25jZXJucyBsb2NhbGlzaW5nIHRoZSBj
+aGFuZ2VzIHRvIHRoZSBuZXR2c2MgZHJpdmVyLg0KDQoNClRoYW5rcywNClNyaXJhbQ0KDQrvu79P
+biAyMC8wNy8yMCwgNzoyMyBQTSwgIldpbGxlbSBkZSBCcnVpam4iIDx3aWxsZW1kZWJydWlqbi5r
+ZXJuZWxAZ21haWwuY29tPiB3cm90ZToNCg0KICAgIE9uIE1vbiwgSnVsIDIwLCAyMDIwIGF0IDEy
+OjI3IEFNIFNyaXJhbSBLcmlzaG5hbiAoc3JpcmFrcjIpDQogICAgPHNyaXJha3IyQGNpc2NvLmNv
+bT4gd3JvdGU6DQogICAgPg0KICAgID4gK1N0ZXBoZW4gSGVtbWluZ2VyDQogICAgPg0KICAgID4g
+SGkgV2lsbGVtLA0KICAgID4gVGhhbmtzIGZvciBsb29raW5nIGludG8gdGhlIGNvZGUsIEkgdW5k
+ZXJzdGFuZCB0aGF0IHRoaXMgaXMgbW9yZSBvZiBhIGdlbmVyaWMgcHJvYmxlbSB3aGVyZWluIG1h
+bnkgb2YgdGhlIGZpbHRlcmluZyBmdW5jdGlvbnMgYXNzdW1lIHRoZSB2bGFuIHRhZyB0byBiZSBp
+biB0aGUgc2tiIHJhdGhlciB0aGFuIGluIHRoZSBwYWNrZXQuIEhlbmNlIHdlIG1vdmVkIHRoZSBm
+aXggZnJvbSB0aGUgZHJpdmVyIHRvIHRoZSBjb21tb24gQUYgcGFja2V0IHRoYXQgb3VyIHNvbHV0
+aW9uIHVzZXMuDQogICAgPg0KICAgID4gSSByZWNhbGwgZnJvbSB0aGUgdjEgb2YgdGhlIHBhdGNo
+IHlvdSBoYWQgbWVudGlvbmVkIG90aGVyIGNvbW1vbiBhcmVhcyB3aGVyZSB0aGlzIGZpeCBtaWdo
+dCBiZSByZWxldmFudCAoc3VjaCBhcyB0YXAvdHVuKSwgYnV0IEknbSBhZnJhaWQgSSBjYW50IGNv
+bXByZWhlbnNpdmVseSB0ZXN0IHRob3NlIHBhdGNoZXMgb3V0LiBQbGVhc2UgbGV0IG1lIGtub3cg
+eW91ciB0aG91Z2h0cw0KDQogICAgUGxlYXNlIHVzZSBwbGFpbiB0ZXh0IHRvIHJlc3BvbmQuIEhU
+TUwgcmVwbGllcyBkbyBub3QgcmVhY2ggdGhlIGxpc3QuDQoNCiAgICBDYW4geW91IGJlIG1vcmUg
+cHJlY2lzZSBpbiB3aGljaCBvdGhlciBjb2RlIGJlc2lkZXMgdGhlIGh5cGVyLXYgZHJpdmVyDQog
+ICAgaXMgYWZmZWN0ZWQ/IERvIHlvdSBoYXZlIGFuIGV4YW1wbGU/DQoNCiAgICBUaGlzIGlzIGEg
+cmVzdWJtaXQgb2YgdGhlIG9yaWdpbmFsIHBhdGNoLiBNeSBwcmV2aW91cw0KICAgIHF1ZXN0aW9u
+cy9jb25jZXJucyByZW1haW4gdmFsaWQ6DQoNCiAgICAtIGlmIHRoZSBmdW5jdGlvbiBjYW4gbm93
+IGZhaWwsIGFsbCBjYWxsZXJzIG11c3QgYmUgdXBkYXRlZCB0byBkZXRlY3QNCiAgICBhbmQgaGFu
+ZGxlIHRoYXQNCg0KICAgIC0gYW55IHNvbHV0aW9uIHNob3VsZCBwcm9iYWJseSBhZGRyZXNzIGFs
+bCBpbnB1dHMgaW50byB0aGUgdHggcGF0aDoNCiAgICBwYWNrZXQgc29ja2V0cywgdHVudGFwLCB2
+aXJ0aW8tbmV0DQoNCiAgICAtIHRoaXMgb25seSBhZGRyZXNzZXMgcGFja2V0IHNvY2tldHMgd2l0
+aCBFVEhfUF9BTEwvRVRIX1BfTk9ORS4gTm90DQogICAgc29ja2V0cyB0aGF0IHNldCBFVEhfUF84
+MDIxUQ0KDQogICAgLSB3aGljaCBjb2RlIGluIHRoZSB0cmFuc21pdCBzdGFjayByZXF1aXJlcyB0
+aGUgdGFnIHRvIGJlIGluIHRoZSBza2IsDQogICAgYW5kIGRvZXMgdGhpcyBwcm9ibGVtIGFmdGVy
+IHRoaXMgcGF0Y2ggc3RpbGwgcGVyc2lzdCBmb3IgUS1pbi1RPw0KDQo=
