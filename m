@@ -2,170 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C93225CF0
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 12:53:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DFA3225D15
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 13:05:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728395AbgGTKxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 06:53:01 -0400
-Received: from mail-eopbgr60054.outbound.protection.outlook.com ([40.107.6.54]:60998
+        id S1728519AbgGTLEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 07:04:48 -0400
+Received: from mail-eopbgr60050.outbound.protection.outlook.com ([40.107.6.50]:13795
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728348AbgGTKxB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 06:53:01 -0400
+        id S1728348AbgGTLEr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 07:04:47 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UvEgbpodvKX7DLJHl1oVEZzp7asVwdgyNluaMdNkIXSabrnR97RtPqD2IzsYgM+Uw/7kBBsZ0CxAJHAgj4Hf/FPVt/woEilZre97pL3OdrRhxIGsAsN31ZhrbaGmRPXj18XCOekZTP8/ipbcPsvZv2VcWuUDR+qQuOItXAPJ4SrbGVhcbDZXxYtPnUzqHHFa1zaDDirtuDi2YgQhJx8/m9QF+MDFx7Vck1zMfTcaHh9zkk1jcMHcwPOCoxyKz4FB2nb9RnUm8JVBZ2pvgCTOMkegt92toCdEEVk76SOuZwEIybF2Fi7wSIgh00CFgFKGqu6U2VUA1Na7ra2CvTYVQw==
+ b=f9qnQX2NepmsgN7mHz43ApBDa8dKS5UvMZxNkaEconFnOFgjSwjlAdWi93PbzrBCESo0XB3U58q21D9FY6HPLIYD4szhQXwsCDptcjN9qThp+5Jt01je4HAfhNpfmmYDnb+mZ7Bu8yl4yfNb5+Y2N0POR+6+OqXp49KrdOfbUF+CBGa3g95lfjUm8fjaBi18Q92Vjm6JF7cph/L5+O8TIrXuhjDCKMJb0xR8tVnej/Oa1xF6dtb2PU1hIMroCPjoFds0h7nEffwEfOB34Xgq+IXSs0NZ17P3c/k6rXxkJ4BHPEu6ETy+Ty73E7+abFKje6OswD84DCdt0yrEr7Rgyw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=67WaJ5AUlryqJYMJcYQT6I1+Bg/UCWqUE8SSbiAcqlY=;
- b=I8MIyWd4n73v98wqioyqSu79cgsali/432p2VeKrDQwdkFjqtJ06GkeLui1A6I9tEgBoZbwtxOqnnFz08hNcjx9ZheOjTofnTS9RgaDMheXPOiV6SKtRfX6YbwajNimi10JLH3dIS8uxozpCfzEY3d8Kz5T4w7jTs8joE+qdv69Le5D8uNtYu5VOLGbsHhyse9yBCHeaNRLUOUOLxLMNLJAm9QXItMRIoePVelnFcSUdPyN3yfPvlCObcfPefyQssn0sGK+FAzzJQ5WcUsO6BJ2hls6+5qINTob+khpJLWh/q9jqY41aScZ4ShmfsZ2z36ffdyhONqIZ9taQFsNAYQ==
+ bh=JzkPV9JOyJV3WZ4TU7e6GlD7MOjlnEchY5o1Hh7L+Pk=;
+ b=oSwc0YxNS7FvImWEqz2lDCgz4gKu+nTIrqbRopQ6E7IzZax1ioUThUcQu+oLRihhUpqlQwFZEfMBzRmtb5gbb5sTWbpGBKquRiYd5CT8be76QESLIpKyj9bGcEdaW6czZXtI7YgWwiOta+w5ZVDtXt+PTe9LUKCZGvtDHoq3j31wjSFZFc9L1q3vTEgQtF7sPuS6RCc+vauAvyLyydmaCnx8+J6DOrVDBqcdgk2Xu/5SpsLKs0RhsVInf/pZ0XD+qNBqAVSTZXVAraL913sJAapgbH1Uk8dkMTmXNDGPuEfWayBgxmVwzZ8+0uKOPGNNvfgtGJn3ORqbIqUItQLvkw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=67WaJ5AUlryqJYMJcYQT6I1+Bg/UCWqUE8SSbiAcqlY=;
- b=MViOBM/P2Qd6BvE0SCqR3EwykIxDfeZmEcWek2N7XONMv1FvtUpy/PwvInbJNlOwJ4r3zQbJLZK9tlW4NvNix/jpHq3+F24CqgC7psI2vqrA1XQaTL2Rt/Pdp5F8LYVTOne3VLo5N4izuA/pgP/pXT7Ae3U4WRCiDZxSvXTv8is=
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VI1PR04MB5886.eurprd04.prod.outlook.com
- (2603:10a6:803:ea::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17; Mon, 20 Jul
- 2020 10:52:57 +0000
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::d4df:67d5:c1f7:fba]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::d4df:67d5:c1f7:fba%4]) with mapi id 15.20.3195.025; Mon, 20 Jul 2020
- 10:52:57 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-CC:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+ bh=JzkPV9JOyJV3WZ4TU7e6GlD7MOjlnEchY5o1Hh7L+Pk=;
+ b=kqJAJ1cHJPb11R/0rr895ES1ykZ5O1c1GmycRzXkXShZRemw+02CNzc3M0foYReMSfbLw6Fd8nK8ojjmjrxYP7Zf8f/siWcZBqLBqUuzg4FDVNyg3sV2juqZcfpdGY0lt5xHiD+sablSTAJrvdSq9UeRsKu3wiH157Lbd6Ox6rA=
+Received: from DB8PR04MB5785.eurprd04.prod.outlook.com (2603:10a6:10:b0::22)
+ by DB7PR04MB4107.eurprd04.prod.outlook.com (2603:10a6:5:1e::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.23; Mon, 20 Jul
+ 2020 11:04:43 +0000
+Received: from DB8PR04MB5785.eurprd04.prod.outlook.com
+ ([fe80::346e:3fb3:d929:b227]) by DB8PR04MB5785.eurprd04.prod.outlook.com
+ ([fe80::346e:3fb3:d929:b227%2]) with mapi id 15.20.3195.025; Mon, 20 Jul 2020
+ 11:04:43 +0000
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+CC:     Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Po Liu <po.liu@nxp.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "michael@walle.cc" <michael@walle.cc>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC net-next 09/13] net: phylink: simplify fixed-link case
- for ksettings_set method
-Thread-Topic: [PATCH RFC net-next 09/13] net: phylink: simplify fixed-link
- case for ksettings_set method
-Thread-Index: AQHWTurYmUkrEiwZy0GOnuteczCAmw==
-Date:   Mon, 20 Jul 2020 10:52:56 +0000
-Message-ID: <VI1PR0402MB38719CABD380FD58CA113DC2E07B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
-References: <20200630142754.GC1551@shell.armlinux.org.uk>
- <E1jqHG9-0006Pj-2J@rmk-PC.armlinux.org.uk>
-Accept-Language: en-US
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "linux-devel@linux.nxdi.nxp.com" <linux-devel@linux.nxdi.nxp.com>
+Subject: RE: [EXT] Re: [PATCH v2 net-next 03/10] net: mscc: ocelot: allocated
+ rules to different hardware VCAP TCAMs by chain index
+Thread-Topic: [EXT] Re: [PATCH v2 net-next 03/10] net: mscc: ocelot: allocated
+ rules to different hardware VCAP TCAMs by chain index
+Thread-Index: AQHWOJ4IR5sw1Ew6RUWo30td44MCGqjFAIOAgAGq+gCACByDgIABgUeAgAHscQCAN6b3AIAATnYAgAAVANCAAE4SgIABGeCAgAAaboCAAKgRgIAELWsw
+Date:   Mon, 20 Jul 2020 11:04:42 +0000
+Message-ID: <DB8PR04MB57851720278B98EE6E348E22F07B0@DB8PR04MB5785.eurprd04.prod.outlook.com>
+References: <CA+h21hocBOyuDFvnLq-sBEG5phaJPxbhvZ_P5H8HnTkBDv1x+w@mail.gmail.com>
+ <20200608135633.jznoxwny6qtzxjng@ws.localdomain>
+ <CA+h21hqoZdQeSxTtrEsVEHi6ZP1LrWKQGwZ9zPvjyWZ62TNfbg@mail.gmail.com>
+ <20200610181802.2sqdhsoyrkd4awcg@ws.localdomain>
+ <DB8PR04MB57851605ACFE209B4E54208EF07F0@DB8PR04MB5785.eurprd04.prod.outlook.com>
+ <20200716085044.wzwdca535aa5oiv4@soft-dev16>
+ <DB8PR04MB578594DD3C106D8BDE291B95F07F0@DB8PR04MB5785.eurprd04.prod.outlook.com>
+ <20200716144519.4dftowe74by3syzk@skbuf>
+ <20200717073411.vjjyq6ekhlqqnk2p@soft-dev16>
+ <20200717090847.snxizsgaqebbwyui@skbuf>
+ <20200717191019.tvkmwrw2xwdxzmds@ws.localdomain>
+In-Reply-To: <20200717191019.tvkmwrw2xwdxzmds@ws.localdomain>
+Accept-Language: zh-CN, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.219.134]
+authentication-results: microchip.com; dkim=none (message not signed)
+ header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.73]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: d15d000e-9d77-4d2f-7dae-08d82c9b0fdf
-x-ms-traffictypediagnostic: VI1PR04MB5886:
+x-ms-office365-filtering-correlation-id: 57082c96-cfdd-42f1-e5b3-08d82c9cb4c9
+x-ms-traffictypediagnostic: DB7PR04MB4107:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB5886E2AE8106109A686225AAE07B0@VI1PR04MB5886.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
+x-microsoft-antispam-prvs: <DB7PR04MB410707AB44A63CCCF360562BF07B0@DB7PR04MB4107.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: GLy201V7lm3Fym8so6kES82ZWITb6e2XSdBJ/5RB7MOovbBZXNasQyFZOyy8uskDverct5MWVONI+041uVLJmbhy/MBwRBJjsuiKQedIswYq1wKyOqjh084a27bjbx73JgXDO6psqNI5lnOPZikk6cczIvpgkt388zNA0fPC09g2vvPb6Y50mxCGUcjQz7Xsw+RYxVX38gfLTjiG66CCjObP49iO4/AJUy481wS6mL2pF6WysL7h0afJ8sCFJXhQKNbC/e203xDtIGEmpdLrHQFWPXQs7T5kD3ilF1Zk/x1RA1ZH9jETBeLN5itwULDXeG7UqsXkkvrL1H/t7+wd8g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(39860400002)(396003)(366004)(136003)(8676002)(110136005)(66946007)(478600001)(66446008)(66556008)(71200400001)(64756008)(66476007)(8936002)(53546011)(55016002)(2906002)(4326008)(33656002)(44832011)(54906003)(9686003)(52536014)(6506007)(83380400001)(186003)(5660300002)(26005)(76116006)(7696005)(316002)(91956017)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: onvZ3kYO2pMkHI0t5RR27LwEowQ7egIv/z4OOjdeWQMyKdPFtxaj+7RkA3g5ul6uxPXC6yMPfiRwC0m1+Rvmi6anUsG9M1ly+ADhehEC1P9VByKsBzQT+ccs0Whg55tD75MmQmtYQ7AcyOYYjLR5iaZg4pMQf8HPyaIVVgqRla0OthyyBafSVSD61MIDOcniOBZdiuDYznNRgVxs8ADkZ1nsXRnl0g9Raq726AoKPQpy5uu/U6ouYGSpm4x2bTU3CiZXZse4Fg9dTJsanI0xy4h6YrsKG2PrSCzWu6qEvmroXil91ysVP7NJJhbL/FGCnQ+8gzb6kZacl+PPvrUC5oD6vfZEPgUT7POftIhTILv3dYYi4BLbpJJkDvO7KRN+HVpOMzVhfuczG6VXr/K70STP7qTnB06+9q9/L1KD4fkHFtA1si9Yi62bJPy+npR4TErqggI9DGc+XhKL735u3UD8fZe6VNEyV8AvmSufnIE1lzvcPfX8m850q479liVT
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: DCvBng8/PjY/noWFsjjmIJH4bW8ba0ZllkPq2/FqpTVMowVEz8LBlJ1Z6bfscvjHT688G89WEKrqqB3KcNikZ2CKs3BM85D4Foot7wD/vpqxDhViGfvtmW6XuCUXlhl3OTpcamdbmq0NCLMuFg0Rgx0VyxLSqExfyhjaaKnc8yyklYr4f6rOKhzdwrC3em/fNDwD3psIbIbyGMyjRTEvKU4ie7dUH7H8gL/bUiQa3Gq/ndes3mEUiI/cGU1RrkZSmcNwAK1o5xlO9GPvSAhrOUBCltFkLOJdT2tF0dK8Os7SKz/ns8nVvhwnMcgfRSqVOiyj6rH7JnUorvPrZEpkHg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB5785.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(376002)(366004)(136003)(396003)(346002)(478600001)(86362001)(316002)(33656002)(54906003)(76116006)(5660300002)(8936002)(71200400001)(4326008)(66946007)(66556008)(52536014)(8676002)(7696005)(6506007)(9686003)(186003)(83380400001)(2906002)(55016002)(66446008)(64756008)(110136005)(66476007)(26005)(7416002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 0z0VMHgYZBCds3nJcY2ZmUzusYZl5hyChDRmozWqwvgRhoG+DlcwlY/rQA3ER7ZsODalfl7JHRdB0lL51+OlrXSQEedxI7tY9dGY95dIOSgPNZ0r/jVqT4une7V8n6X6pn67foX1gjZrmkWFCsBVYwFd7+0xxJvj8ZJVRfzO7S8zjREZJQ9h7YurwGVJ8weysj/gjxgoft4NoeFNgVdz4mD5JVNgGxaLLnrAqtnc/Sdc+uOuPnvgt3t88ASQT8O5PpltjuTSj1tx38gPTfp79jAKS3TSuDkBj1/ujBcKneDdm21mDTnaHYe84w3cmmMsOpH/2V0PH7QvUH4O4YpKVA3zLw97V8SwUAzqe2YPGdf54+nIAtYZzVFhYFdhaAhLZkYAJrOR0Hlexxv/mJ+ZXDwhz6ZVikNgfHIQekUXeX87bQFvQdPCaBN4Jv9KtbhdoQowXsdhYX7+wOjVDst84AVT5jQTDMTjMEXYLPo9pTY=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d15d000e-9d77-4d2f-7dae-08d82c9b0fdf
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2020 10:52:56.8824
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB5785.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 57082c96-cfdd-42f1-e5b3-08d82c9cb4c9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2020 11:04:43.0377
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: T7leVi20iyMB0JPJkGODQYh3cnkktMqz09rE2AA8bPePuPBMqKse6al1EDaYRw3K/NqBFdPf4QWksJsWZahoVg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5886
+X-MS-Exchange-CrossTenant-userprincipalname: SXZNql6flyh3LeZ/kbk7icg/gTuiKUj30TtzG1mTgsLuBHKk3Am9qmVIdm9Np8aj2pp5VViHSm6We5dFsqm31xZ7EU1tDjK2JOAMOjTo6KI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4107
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/30/20 5:29 PM, Russell King wrote:=0A=
-> For fixed links, we only allow the current settings, so this should be=0A=
-> a matter of merely rejecting an attempt to change the settings.  If the=
-=0A=
-> settings agree, then there is nothing more we need to do.=0A=
-> =0A=
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>=0A=
-=0A=
-Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>=0A=
-=0A=
-> ---=0A=
->   drivers/net/phy/phylink.c | 31 ++++++++++++++++++++-----------=0A=
->   1 file changed, 20 insertions(+), 11 deletions(-)=0A=
-> =0A=
-> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c=0A=
-> index 967c068d16c8..b91151062cdc 100644=0A=
-> --- a/drivers/net/phy/phylink.c=0A=
-> +++ b/drivers/net/phy/phylink.c=0A=
-> @@ -1360,22 +1360,31 @@ int phylink_ethtool_ksettings_set(struct phylink =
-*pl,=0A=
->   		if (!s)=0A=
->   			return -EINVAL;=0A=
->   =0A=
-> -		/* If we have a fixed link (as specified by firmware), refuse=0A=
-> -		 * to change link parameters.=0A=
-> +		/* If we have a fixed link, refuse to change link parameters.=0A=
-> +		 * If the link parameters match, accept them but do nothing.=0A=
->   		 */=0A=
-> -		if (pl->cur_link_an_mode =3D=3D MLO_AN_FIXED &&=0A=
-> -		    (s->speed !=3D pl->link_config.speed ||=0A=
-> -		     s->duplex !=3D pl->link_config.duplex))=0A=
-> -			return -EINVAL;=0A=
-> +		if (pl->cur_link_an_mode =3D=3D MLO_AN_FIXED) {=0A=
-> +			if (s->speed !=3D pl->link_config.speed ||=0A=
-> +			    s->duplex !=3D pl->link_config.duplex)=0A=
-> +				return -EINVAL;=0A=
-> +			return 0;=0A=
-> +		}=0A=
->   =0A=
->   		config.speed =3D s->speed;=0A=
->   		config.duplex =3D s->duplex;=0A=
->   		break;=0A=
->   =0A=
->   	case AUTONEG_ENABLE:=0A=
-> -		/* If we have a fixed link, refuse to enable autonegotiation */=0A=
-> -		if (pl->cur_link_an_mode =3D=3D MLO_AN_FIXED)=0A=
-> -			return -EINVAL;=0A=
-> +		/* If we have a fixed link, allow autonegotiation (since that=0A=
-> +		 * is our default case) but do not allow the advertisement to=0A=
-> +		 * be changed. If the advertisement matches, simply return.=0A=
-> +		 */=0A=
-> +		if (pl->cur_link_an_mode =3D=3D MLO_AN_FIXED) {=0A=
-> +			if (!linkmode_equal(config.advertising,=0A=
-> +					    pl->link_config.advertising))=0A=
-> +				return -EINVAL;=0A=
-> +			return 0;=0A=
-> +		}=0A=
->   =0A=
->   		config.speed =3D SPEED_UNKNOWN;=0A=
->   		config.duplex =3D DUPLEX_UNKNOWN;=0A=
-> @@ -1385,8 +1394,8 @@ int phylink_ethtool_ksettings_set(struct phylink *p=
-l,=0A=
->   		return -EINVAL;=0A=
->   	}=0A=
->   =0A=
-> -	/* For a fixed link, this isn't able to change any parameters,=0A=
-> -	 * which just leaves inband mode.=0A=
-> +	/* We have ruled out the case with a PHY attached, and the=0A=
-> +	 * fixed-link cases.  All that is left are in-band links.=0A=
->   	 */=0A=
->   	if (phylink_validate(pl, support, &config))=0A=
->   		return -EINVAL;=0A=
-> =0A=
-=0A=
+DQoxOC4wNy4yMDIwIDM6MTAsIEFsbGFuIHdyb3RlOg0KPg0KPiBPa2F5IC0gSSB3aWxsIG5lZWQg
+dG8gbG9vayBkZWVwZXIgaW50byB0byB0aGlzIHRvIHJlYWxseSB1bmRlcnN0YW5kIHRoZSBjb25z
+ZXF1ZW5jZXMgb2YgbWl4aW5nIGRpZmZlcmVudCB0eXBlcyBvZiBmaWx0ZXJzLiBBcyBmYXIgYXMg
+Sm9lcmdlbnMgZXhhbXBsZSBnb2VzLCAibWF0Y2hhbGwiIGlzIHJlYWxseSB0aGUgc2FtZSBhcyBh
+IGZsb3dlciB3aXRob3V0IGFueSBtYXRjaGVzLg0KPg0KPiBMb25nIHN0b3J5IHNob3J0LCB0byBt
+ZSB0aGUgbW9zdCBpbXBvcnRhbnQgc3RlcCBoZXJlIGlzIHRoYXQgd2UgY29tZSB1cCB3aXRoIGEg
+ZGVzaWduIHdoZXJlIHdlIGNhbiBleHBvc2UgdGhlIDMgbG9va3VwcyBpbiBJUzEgYXMgc2VwYXJh
+dGUgY2hhaW5zLCBhbmQgdGhhdCB3ZSBoYXZlIHNvbWV0aGluZyB3aGljaCBiZWhhdmVzIHRoZSBz
+YW1lIGluIEhXIGFuZCBTVy4NCj4NCj4gT25jZSB3ZSBoYXZlIHRoYXQsIHdlIGNhbiBhZGQgdGVt
+cGxhdGVzLCBzaGFyZWQgYmxvY2tzLCBzaGFyZWQgYWN0aW9ucyBldGMuIGluIHRoZSBmdXR1cmUu
+DQo+IA0KPiBJIGtub3cgSSBoYXZlIG5vdCBiZWVuIHZlcnkgYWN0aXZlIG9uIHRoaXMgdGhyZWFk
+IGZvciB0aGUgcGFzdCBjb3VwbGUgb2YgZGF5cywgYnV0IEknbSBjZXJ0YWlubHkgaW50ZXJlc3Rp
+bmcgaW4gY29udGludWUgd29ya2luZy9yZXZpZXdpbmcgdGhpcy4NCj4gSSB3aWxsIGJlIE9PTyBm
+b3IgdGhlIG5leHQgMyB3ZWVrcywgd2l0aCB2ZXJ5IGxpbWl0ZWQgb3B0aW9ucyBmb3IgcmV2aWV3
+aW5nL2NvbW1lbnRpbmcgb24gdGhpcywgYnV0IGFmdGVyIHRoYXQgSSdtIGJhY2sgYWdhaW4uDQo+
+DQo+L0FsbGFuDQo+DQoNClNvIGNoYWluIHRlbXBsYXRlIGlzIHVzZWQgdG8gY29uZmlndXJlIGtl
+eSB0eXBlIG9uIElTMSwgd2UgY2FuIHNldCBvbmUga2V5IHR5cGUgZm9yIGVhY2ggb2YgdGhlIHRo
+cmVlIGxvb2t1cHMuIEluIG9yZGVyIHRvIHN1cHBvcnQgYWxsIGtleSB0eXBlcywgd2UgbmVlZCB0
+byBhZGQgaGFsZiBrZXlzLCBmdWxsIGtleXMgYW5kIHF1YXJkIGtleXMgc3VwcG9ydC4gSWYgdGhl
+cmUgaXMgbm8gdGVtcGxhdGUgc2V0LCB1c2luZyBhIGRlZmF1bHQgIlMxXzdUVVBMRSIga2V5IHR5
+cGUsIHdoaWNoIGNhbiBjb3ZlciBtb3N0IGtleXMuDQoNCkluIGdlbmVyYWwsIHVzaW5nIGEgZGVm
+YXVsdCBrZXkgdHlwZSBmb3IgZWFjaCBvZiB0aGUgdGhyZWUgbG9va3VwcywgYW5kIGxpbWl0ZWQg
+b25lIGFjdGlvbiBvbiBvbmUgbG9va3VwIGNoYWluLCB0aGVzZSBjYW4gc3VwcG9ydCB0aHJlZSBw
+YXJhbGxlbCBsb29rdXAgb24gSVMxLiBBZGQgUEFHIHN1cHBvcnQgYXMgdHdvIGxvb2t1cHMgb24g
+SVMyLCB0aGVuIHRlbXBsYXRlcyBhbmQgc2hhcmVkIGJsb2NrcyBjYW4gYmUgc3VwcG9ydGVkIGFm
+dGVyIHRoYXQuDQoNClRoYW5rcywNClhpYW9saWFuZw0K
