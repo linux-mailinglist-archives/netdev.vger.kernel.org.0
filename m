@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 984012254F6
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 02:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC637225528
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 03:06:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbgGTAbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 20:31:14 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43930 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726159AbgGTAbO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jul 2020 20:31:14 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jxJi3-005wsL-TL; Mon, 20 Jul 2020 02:31:11 +0200
-Date:   Mon, 20 Jul 2020 02:31:11 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>
-Subject: Re: [PATCH ethtool] Fix segfault with cable test and ./configure
- --disable-netlink
-Message-ID: <20200720003111.GN1383417@lunn.ch>
-References: <20200716220509.1314265-1-andrew@lunn.ch>
- <20200720001251.5nwf7nhcivl6b4yk@lion.mk-sys.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200720001251.5nwf7nhcivl6b4yk@lion.mk-sys.cz>
+        id S1726854AbgGTBGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 21:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45088 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726699AbgGTBGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 21:06:12 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF38C0619D2;
+        Sun, 19 Jul 2020 18:06:11 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 99C3A12848046;
+        Sun, 19 Jul 2020 18:06:08 -0700 (PDT)
+Date:   Sun, 19 Jul 2020 18:06:05 -0700 (PDT)
+Message-Id: <20200719.180605.1081706615520028720.davem@davemloft.net>
+To:     michael@walle.cc
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, andrew@lunn.ch, olteanv@gmail.com,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        heiko.thiery@gmail.com, linux@armlinux.org.uk,
+        ioana.ciornei@nxp.com, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v7 0/4] net: enetc: remove bootloader
+ dependency
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200719220336.6919-1-michael@walle.cc>
+References: <20200719220336.6919-1-michael@walle.cc>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 19 Jul 2020 18:06:09 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 02:12:51AM +0200, Michal Kubecek wrote:
-> On Fri, Jul 17, 2020 at 12:05:09AM +0200, Andrew Lunn wrote:
-> > When the netlink interface code is disabled, a stub version of
-> > netlink_run_handler() is used. This stub version needs to handle the
-> > case when there is no possibility for a command to fall back to the
-> > IOCTL call. The two cable tests commands have no such fallback, and if
-> > we don't handle this, ethtool tries to jump through a NULL pointer
-> > resulting in a segfault.
-> > 
-> > Reported-by: Chris Healy <cphealy@gmail.com>
-> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> 
-> Applied, thank you. I'll need to be more thorough with teseting the
-> --disable-netlink builds.
+From: Michael Walle <michael@walle.cc>
+Date: Mon, 20 Jul 2020 00:03:32 +0200
 
-Hi Michal
+> These patches were picked from the following series:
+> https://lore.kernel.org/netdev/1567779344-30965-1-git-send-email-claudiu.manoil@nxp.com/
+> They have never been resent. I've picked them up, addressed Andrews
+> comments, fixed some more bugs and asked Claudiu if I can keep their SOB
+> tags; he agreed. I've tested this on our board which happens to have a
+> bootloader which doesn't do the enetc setup in all cases. Though, only
+> SGMII mode was tested.
+ ...
 
-Yes. We are all focused on retlink, and missed the backwards
-compatibility issues like this.
-
-      Andrew
+Series applied, thank you.
