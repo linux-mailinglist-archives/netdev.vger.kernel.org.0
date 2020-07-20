@@ -2,133 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83406226A3B
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:36:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCC5E226A30
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:35:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732323AbgGTQcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 12:32:12 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:58898 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731831AbgGTP4v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 11:56:51 -0400
-From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595260608;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fDImi88zFV81pjdnOgUX9XebIgS39WaOUsCCEI1b+mc=;
-        b=iD4xnpX0iRZgogyjOiHVrZQNGX7nsG9CgZhEFPYHTEdTFe8WWzp+BUtL1SZzNO5LEdU91C
-        MfN7kWQWUa/ZSUut/7hgdhQz0nxS7tHis1FOPupATFdK+Is3TQHURz7RqUXFGfeayWmMZa
-        E7gpnw3gLweWsoXyedn5AU1ITR2cR1wG9zkNnHCk4rejk/9hI+z0Y9q/E0mZ4zHe2/tS5V
-        OGCClXH2nwmhnSIgORzreuKhFhMzQBeZiXuhPgRAOdr8uT7Toc/rnBBpKCi0eh5GtJgSiI
-        nnWVpwdm7ETkC5djyIsNSJZdVK4K6FVvm9ANOth6AVAs1YAZpursJ+XOOFXglQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595260608;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fDImi88zFV81pjdnOgUX9XebIgS39WaOUsCCEI1b+mc=;
-        b=g6j7cwiXCKepe4U21OZ5BfpK36kd8eTsYX4jbS3n9Cu1A5VTcDUF0yLW52NzEAkZ3nlWem
-        2GCVU32cKO8fF8Bg==
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Sebastian A. Siewior" <bigeasy@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        id S2388836AbgGTQbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 12:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388823AbgGTQb0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:31:26 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6DCC061794;
+        Mon, 20 Jul 2020 09:31:26 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id d16so13216801edz.12;
+        Mon, 20 Jul 2020 09:31:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iuVszLORzUqiZj6M6YeAEQFI1sJEhteSIqt1C5FLYSo=;
+        b=tCiCsdFigGdR6jDfWT2r8Temvk3eYrQ1lb2q9SMowTyEb3Za8wIRp87riivkeMys0i
+         xBXnFNxBnP0Vo67C/S8tkPr6MIxJCcUlrBq/9EXLRMTjINGxy04/VLPz6gL1bXh3YYK+
+         QhR78xqShjNpIKPU612cQlbITCx6Ofn9okGMmrabEMDekda/gLLf4286uPeYb8D/QgFe
+         VqzPwLmPE4rgpzviJ2+wppw47WlXjovZV6wHPe6CteG2fkw+kLLNCEpi4+8FDel1Tmrc
+         Hk/2+53bQOBtIgp/rFy2NVk+bofuIBigHVjhrNeSznHcXjQOEAGuLnIxhdnThLm3E0Je
+         ZPtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iuVszLORzUqiZj6M6YeAEQFI1sJEhteSIqt1C5FLYSo=;
+        b=DYdLPQHGE/T5C3rJrPnizrkLFTSS6WpnSrfb5uBLEm/CEpDZc1+0zoI+todowpepaG
+         o7na5QS5mZrr2pyYzTgJTL1gW0LQueK47Vveq0pTpP4mCsi3oJoR7a0UtjJ+juPDdu1B
+         bI3ILKaXB6ac3Rwxjz9Et6L58cs9gFJs0zyTbwpw5XbociyPiRN72+KTKhbo1Dh9EGpi
+         MIvWKWQMY8o3969Zf4dneS7lwA1GvcGjIN6fqzmVlv2F9xQ3A+OC3Z3yeEYJGetcEXUV
+         eGe1XGUVezsr7UBxvuBvU4nxU4AvyEmTvgbeYjoMj4XG3PnN3kMCRcE0CL9IDZc5vpoP
+         m0gQ==
+X-Gm-Message-State: AOAM532vfiXjoFu5EwGYDl3Ol6JDOzHpntdmBSYNaKMs6pG2T7S39LTt
+        5xDP4TQgrnrz+lj+J0NB0dE=
+X-Google-Smtp-Source: ABdhPJzGO0wAKSG+S1bZNUexBZlC3AoA78Q1akQIDEE3n4fqzgWrb+9EJzVvfeH+uNLscsOwxZMQ5Q==
+X-Received: by 2002:aa7:d297:: with SMTP id w23mr21514702edq.49.1595262684956;
+        Mon, 20 Jul 2020 09:31:24 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id q21sm14941656ejc.112.2020.07.20.09.31.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2020 09:31:24 -0700 (PDT)
+Date:   Mon, 20 Jul 2020 19:31:21 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Colin Ian King <colin.king@canonical.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH v4 16/24] xfrm: policy: Use sequence counters with associated lock
-Date:   Mon, 20 Jul 2020 17:55:22 +0200
-Message-Id: <20200720155530.1173732-17-a.darwish@linutronix.de>
-In-Reply-To: <20200720155530.1173732-1-a.darwish@linutronix.de>
-References: <20200519214547.352050-1-a.darwish@linutronix.de>
- <20200720155530.1173732-1-a.darwish@linutronix.de>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: net: phy: continue searching for C45 MMDs even if first returned
+ ffff:ffff
+Message-ID: <20200720163121.sihkkncthvwnfqd7@skbuf>
+References: <4131864f-9e3e-9814-5f4d-16c93648bce2@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4131864f-9e3e-9814-5f4d-16c93648bce2@canonical.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A sequence counter write side critical section must be protected by some
-form of locking to serialize writers. If the serialization primitive is
-not disabling preemption implicitly, preemption has to be explicitly
-disabled before entering the sequence counter write side critical
-section.
+On Mon, Jul 20, 2020 at 05:21:13PM +0100, Colin Ian King wrote:
+> Hi,
+> 
+> Static analysis by Coverity has found a potential issue with the
+> following commit in /drivers/net/phy/phy_device.c:
+> 
+> commit bba238ed037c60242332dd1e4c5778af9eba4d9b
+> Author: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Date:   Sun Jul 12 19:48:15 2020 +0300
+> 
+>     net: phy: continue searching for C45 MMDs even if first returned
+> ffff:ffff
+> 
+> The analysis is as follows:
+> 
+> 735         * for 802.3 c45 complied PHYs, so don't probe it at first.
+> 736         */
+> 
+> dead_error_condition: The condition (devs_in_pkg & 0x1fffffffU) ==
+> 0x1fffffffU cannot be true.
+> 
+> 737        for (i = 1; i < MDIO_MMD_NUM && devs_in_pkg == 0 &&
+> 
+> const: At condition (devs_in_pkg & 0x1fffffffU) == 0x1fffffffU, the
+> value of devs_in_pkg must be equal to 0.
+> 
+> 738             (devs_in_pkg & 0x1fffffff) == 0x1fffffff; i++) {
+> 
+> Logically dead code (DEADCODE)dead_error_line: Execution cannot reach
+> this statement: if (i == 30 || i == 31) {
+> 
+> To summarize, if devs_in_pkg is zero, then (devs_in_pkg & 0x1fffffffU)
+> == 0x1fffffffU can never be true, so the loop is never iterated over.
+> 
+> Colin
 
-A plain seqcount_t does not contain the information of which lock must
-be held when entering a write side critical section.
+You are absolutely correct. The check should have been || and not &&.
+I have a patch in my tree where I am fixing that. I was giving it some
+more thorough testing to understand why it was working, though, and how
+I could've missed it. One hypothesis I can't rule out is that I tested
+it using || but submitted it using && somehow (although I don't remember
+doing that).
 
-Use the new seqcount_spinlock_t and seqcount_mutex_t data types instead,
-which allow to associate a lock with the sequence counter. This enables
-lockdep to verify that the lock used for writer serialization is held
-when the write side critical section is entered.
-
-If lockdep is disabled this lock association is compiled out and has
-neither storage size nor runtime overhead.
-
-Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
----
- net/xfrm/xfrm_policy.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 564aa6492e7c..732a940468b0 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -122,7 +122,7 @@ struct xfrm_pol_inexact_bin {
- 	/* list containing '*:*' policies */
- 	struct hlist_head hhead;
- 
--	seqcount_t count;
-+	seqcount_spinlock_t count;
- 	/* tree sorted by daddr/prefix */
- 	struct rb_root root_d;
- 
-@@ -155,7 +155,7 @@ static struct xfrm_policy_afinfo const __rcu *xfrm_policy_afinfo[AF_INET6 + 1]
- 						__read_mostly;
- 
- static struct kmem_cache *xfrm_dst_cache __ro_after_init;
--static __read_mostly seqcount_t xfrm_policy_hash_generation;
-+static __read_mostly seqcount_mutex_t xfrm_policy_hash_generation;
- 
- static struct rhashtable xfrm_policy_inexact_table;
- static const struct rhashtable_params xfrm_pol_inexact_params;
-@@ -719,7 +719,7 @@ xfrm_policy_inexact_alloc_bin(const struct xfrm_policy *pol, u8 dir)
- 	INIT_HLIST_HEAD(&bin->hhead);
- 	bin->root_d = RB_ROOT;
- 	bin->root_s = RB_ROOT;
--	seqcount_init(&bin->count);
-+	seqcount_spinlock_init(&bin->count, &net->xfrm.xfrm_policy_lock);
- 
- 	prev = rhashtable_lookup_get_insert_key(&xfrm_policy_inexact_table,
- 						&bin->k, &bin->head,
-@@ -1906,7 +1906,7 @@ static int xfrm_policy_match(const struct xfrm_policy *pol,
- 
- static struct xfrm_pol_inexact_node *
- xfrm_policy_lookup_inexact_addr(const struct rb_root *r,
--				seqcount_t *count,
-+				seqcount_spinlock_t *count,
- 				const xfrm_address_t *addr, u16 family)
- {
- 	const struct rb_node *parent;
-@@ -4153,7 +4153,7 @@ void __init xfrm_init(void)
- {
- 	register_pernet_subsys(&xfrm_net_ops);
- 	xfrm_dev_init();
--	seqcount_init(&xfrm_policy_hash_generation);
-+	seqcount_mutex_init(&xfrm_policy_hash_generation, &hash_resize_mutex);
- 	xfrm_input_init();
- 
- #ifdef CONFIG_INET_ESPINTCP
--- 
-2.20.1
-
+Thanks,
+-Vladimir
