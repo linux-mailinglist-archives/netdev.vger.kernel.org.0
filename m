@@ -2,69 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BCA4227063
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 23:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8611B227066
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 23:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726841AbgGTVcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 17:32:10 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41846 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726730AbgGTVcK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 17:32:10 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id CC198B6D0;
-        Mon, 20 Jul 2020 21:32:15 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 2F14D6032A; Mon, 20 Jul 2020 23:32:09 +0200 (CEST)
-Date:   Mon, 20 Jul 2020 23:32:09 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Andre Guedes <andre.guedes@intel.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool] igc: Fix output values case
-Message-ID: <20200720213209.hjkoihfh4iyxdmtf@lion.mk-sys.cz>
-References: <20200720190038.11193-1-andre.guedes@intel.com>
+        id S1726808AbgGTVeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 17:34:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726535AbgGTVeH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 17:34:07 -0400
+Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268FFC061794;
+        Mon, 20 Jul 2020 14:34:07 -0700 (PDT)
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by smtp.al2klimov.de (Postfix) with ESMTPA id 15524BC17C;
+        Mon, 20 Jul 2020 21:34:00 +0000 (UTC)
+Subject: Re: [PATCH for v5.9] RDS: Replace HTTP links with HTTPS ones
+To:     Leon Romanovsky <leon@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200719155845.59947-1-grandmaster@al2klimov.de>
+ <20200720045626.GF127306@unreal> <20200720075848.26bc3dfe@lwn.net>
+ <20200720140716.GB1080481@unreal> <20200720083635.3e7880ce@lwn.net>
+ <20200720164827.GC1080481@unreal>
+From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Message-ID: <c78d0958-c4ef-9754-c189-ffc507ca1340@al2klimov.de>
+Date:   Mon, 20 Jul 2020 23:34:00 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="hukukmvjfajaxbxo"
-Content-Disposition: inline
-In-Reply-To: <20200720190038.11193-1-andre.guedes@intel.com>
+In-Reply-To: <20200720164827.GC1080481@unreal>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Authentication-Results: smtp.al2klimov.de;
+        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+X-Spamd-Bar: /
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---hukukmvjfajaxbxo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 20, 2020 at 12:00:38PM -0700, Andre Guedes wrote:
-> This patch changes the output values to be lowercase and replaces
-> "True"/"False" by "yes"/"no" so the output from the IGC driver is
-> consistent with other Intel drivers.
->=20
-> Signed-off-by: Andre Guedes <andre.guedes@intel.com>
-> ---
+Am 20.07.20 um 18:48 schrieb Leon Romanovsky:
+> On Mon, Jul 20, 2020 at 08:36:35AM -0600, Jonathan Corbet wrote:
+>> On Mon, 20 Jul 2020 17:07:16 +0300
+>> Leon Romanovsky <leon@kernel.org> wrote:
+>>
+>>>> Do *you* want to review that megapatch?  The number of issues that have
+This question is... interesting.
+And no, I would not.
 
-Applied, thank you.
+>>>> come up make it clear that these patches do, indeed, need review...
+>>>
+>>> Can you point me to the issues?
+>>> What can go wrong with such a simple replacement?
+>>
+>> Some bits of the conversation:
+>>
+>>    https://lore.kernel.org/lkml/20200626110219.7ae21265@lwn.net/
+>>    https://lore.kernel.org/lkml/20200626110706.7b5d4a38@lwn.net/
+>>    https://lore.kernel.org/lkml/20200705142506.1f26a7e0@lwn.net/
+>>    https://lore.kernel.org/lkml/20200713114321.783f0ae6@lwn.net/
+>>    https://lore.kernel.org/lkml/202007081531.085533FC5@keescook/
+>>
+>> etc.
+> 
+> After reading your links and especially this one.
+> https://lore.kernel.org/lkml/20200713114321.783f0ae6@lwn.net/
+> I don't understand why are we still seeing these patches?
+> 
+> I gave to the author comments too, which were ignored.
+> https://patchwork.kernel.org/patch/11644683/#23466547
+I've added SPDXing (the automated way of course ;) ) to my todo list.
 
-Michal
-
---hukukmvjfajaxbxo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8WDVMACgkQ538sG/LR
-dpXB7wf+NIm9zgklFthx9xo+nm3pxusMbbCeyNdIlxz+BGZ77sSYUafnLYzsDkx7
-jM7SEz9foW83VsI5S6Ilo72s8FrhSeDFvoKcSOmzQhPZ6WP0Q8DxPiHGk9zadXTz
-ovJLny4/SEKDxtzsmAlJmGQSJrOg0G7/BRFA0jaS87lJ1epYHsNr00qOP4cfiS/7
-fKEZE1iUxrM0zKDFY9WkZL9yC1NRzumzoNWf8+1WElJUAscA1cSmefsOTWwKMqRg
-fQwBsPk0h1cQuur2C/howK25mymZg6fpzoH4VJa9RPId6QJgdnfx/R8QPnoxA+Sp
-OgOu3NkvIK4cJU5oRYXwtrIsPIvIgg==
-=NDf7
------END PGP SIGNATURE-----
-
---hukukmvjfajaxbxo--
+> 
+> Thanks
+> 
+>>
+>> jon
