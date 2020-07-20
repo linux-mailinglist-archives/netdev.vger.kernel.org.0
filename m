@@ -2,61 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 127B92255E0
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 04:24:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E24462255FA
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 04:54:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbgGTCYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 22:24:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726468AbgGTCYD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jul 2020 22:24:03 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A28C0619D2
-        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 19:24:03 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 88FDE12864453;
-        Sun, 19 Jul 2020 19:24:02 -0700 (PDT)
-Date:   Sun, 19 Jul 2020 19:24:01 -0700 (PDT)
-Message-Id: <20200719.192401.1110272100468125745.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, richardcochran@gmail.com,
-        jacob.e.keller@intel.com, yangbo.lu@nxp.com,
-        xiaoliang.yang_1@nxp.com, po.liu@nxp.com,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v2 net-next 0/3] Fully describe the waveform for PTP
- periodic output
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200716224531.1040140-1-olteanv@gmail.com>
-References: <20200716224531.1040140-1-olteanv@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 19 Jul 2020 19:24:02 -0700 (PDT)
+        id S1726601AbgGTCyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 22:54:41 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:48956 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726225AbgGTCyl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jul 2020 22:54:41 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 81E9F1D4A2635D05AA35;
+        Mon, 20 Jul 2020 10:54:38 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Mon, 20 Jul 2020
+ 10:54:36 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <joe@perches.com>, <gtzalik@amazon.com>, <saeedb@amazon.com>,
+        <zorik@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <sameehj@amazon.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next v2] net: ena: Fix using plain integer as NULL pointer in ena_init_napi_in_range
+Date:   Mon, 20 Jul 2020 10:53:09 +0800
+Message-ID: <20200720025309.18597-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Fri, 17 Jul 2020 01:45:28 +0300
+Fix sparse build warning:
 
-> While using the ancillary pin functionality of PTP hardware clocks to
-> synchronize multiple DSA switches on a board, a need arised to be able
-> to configure the duty cycle of the master of this PPS hierarchy.
-> 
-> Also, the PPS master is not able to emit PPS starting from arbitrary
-> absolute times, so a new flag is introduced to support such hardware
-> without making guesses.
-> 
-> With these patches, struct ptp_perout_request now basically describes a
-> general-purpose square wave.
-> 
-> Changes in v2:
-> Made sure this applies to net-next.
+drivers/net/ethernet/amazon/ena/ena_netdev.c:2193:34: warning:
+ Using plain integer as NULL pointer
 
-Series applied, thank you.
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Suggested-by: Joe Perches <joe@perches.com>
+Acked-by: Shay Agroskin <shayagr@amazon.com>
+---
+v1->v2:
+ Improve code readability based on Joe Perches's suggestion 
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 91be3ffa1c5c..470d8f38b824 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -2190,11 +2190,10 @@ static void ena_del_napi_in_range(struct ena_adapter *adapter,
+ static void ena_init_napi_in_range(struct ena_adapter *adapter,
+ 				   int first_index, int count)
+ {
+-	struct ena_napi *napi = {0};
+ 	int i;
+ 
+ 	for (i = first_index; i < first_index + count; i++) {
+-		napi = &adapter->ena_napi[i];
++		struct ena_napi *napi = &adapter->ena_napi[i];
+ 
+ 		netif_napi_add(adapter->netdev,
+ 			       &adapter->ena_napi[i].napi,
+-- 
+2.17.1
+
