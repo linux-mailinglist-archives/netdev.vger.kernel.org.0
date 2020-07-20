@@ -2,138 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 098612259C3
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 10:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 433972259F6
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 10:25:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727849AbgGTINf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 04:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725845AbgGTINe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 04:13:34 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBE4C061794
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 01:13:34 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id f18so16908474wrs.0
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 01:13:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=x8P1vPc3cG56c8OALf51cJaB/JeKKZDLAvU5YGW6lTU=;
-        b=UhH69TwMiEgS5M3dopH105B4jH4pQgtQuEQ5FDPzsLu+X35Wnlr2h9aX5DlFdC4cF8
-         jzBVmO3YwU89yBk9dvkVhmL9ufmCIczc+toEE3/ZaDH++CGUL+SwO6kYf69cECTBaQKu
-         NVKkWUweMZ3EwYPe6u3l83OH0rhwrxo1WDhYVepUGLNjIU5JpJ1hcsoMa25tp4uSq+7H
-         3U0GdG9Ti1SHTM4h/bEg80P+DIH5BTgELScpIVPLSlWH2K1j3xNc0MbgvRmq2CxH6Rw4
-         FGL96N36FcRO0h3PMPRnxv7xdJM+JADAV2ugnmy15O2Mmeg+aMtdzZkETtLJzi67FbLI
-         swBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=x8P1vPc3cG56c8OALf51cJaB/JeKKZDLAvU5YGW6lTU=;
-        b=Af460IFDWXH8c24fRXRiOxAUIZkYeHi5tCqkI83Uvb+t9T1rJ5qB3i+eJuFGBSzxnt
-         TkTsSuCIz9tVpX3DjHBpWoUcjQXGpxkIb0oMptCtGx3vBS9LEjs925ZHogpdUIOM/21a
-         mf9z1HfcTNfv9XtuOeKhD2babm3seg5arCYJni0TC9pJpkeBRB5ucjIkN75i27yT/b6W
-         YDbhC3T4G/4iPuLyg9N0hAXtEql9YhhZju5JbcZBXHZNVWbsh+uxTNG8dR/9Z5s8L+0V
-         SLwYbv8EO14I8W+g9igYorhR9ZMJofkjEWWlviS5czfqm6m33QMgBFak4m61yBbRp2el
-         CSkg==
-X-Gm-Message-State: AOAM533oTV8YE1XOBWdwcGON8QfGm1pxp7jvzvlIaY50+rZ9JXtNgfcp
-        FabdUK+DsnwnZc4PIJUjaPqqtHg4yr8osw==
-X-Google-Smtp-Source: ABdhPJz2rpSSnItm9VagCsTdy29JV2ZiCPZ4cDeRA7Cz9uKL39WS4+PGhlf/9pV5cm4BF1KfjM0h7w==
-X-Received: by 2002:a5d:5642:: with SMTP id j2mr21012404wrw.19.1595232813251;
-        Mon, 20 Jul 2020 01:13:33 -0700 (PDT)
-Received: from [192.168.1.12] ([194.35.117.103])
-        by smtp.gmail.com with ESMTPSA id v3sm31087315wrq.57.2020.07.20.01.13.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jul 2020 01:13:32 -0700 (PDT)
-Subject: Re: [PATCH bpf-next v3] bpftool: use only nftw for file tree parsing
-To:     Tony Ambardar <tony.ambardar@gmail.com>,
+        id S1727786AbgGTIZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 04:25:25 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:58646 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726862AbgGTIZZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 04:25:25 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-164-bY_3e_EDMPW4iKQxeTBP4A-1; Mon, 20 Jul 2020 09:25:20 +0100
+X-MC-Unique: bY_3e_EDMPW4iKQxeTBP4A-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 20 Jul 2020 09:25:19 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 20 Jul 2020 09:25:19 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Alexei Starovoitov' <alexei.starovoitov@gmail.com>,
+        Christoph Hellwig <hch@lst.de>
+CC:     Stanislav Fomichev <sdf@google.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20200716052926.10933-1-Tony.Ambardar () gmail ! com>
- <20200717225543.32126-1-Tony.Ambardar@gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <fdd2d23f-773d-172c-fce1-0f2641763580@isovalent.com>
-Date:   Mon, 20 Jul 2020 09:13:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.0
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Subject: RE: how is the bpfilter sockopt processing supposed to work
+Thread-Topic: how is the bpfilter sockopt processing supposed to work
+Thread-Index: AQHWXF/F35kHqURKlkeKKxLFQfLuxakQImUw
+Date:   Mon, 20 Jul 2020 08:25:19 +0000
+Message-ID: <2120c0cd6da143619ed54809c768c22e@AcuMS.aculab.com>
+References: <20200717055245.GA9577@lst.de>
+ <CAADnVQ+rD+7fAsLZT4pG7AN4iO7-dQ+3adw0tBhrf8TGbtLjtA@mail.gmail.com>
+ <20200717162526.GA17072@lst.de>
+ <CAADnVQJoMC=vfS4yb7gYZF4fmwrHd+gdOf9zmPm2XyK1jfosHg@mail.gmail.com>
+In-Reply-To: <CAADnVQJoMC=vfS4yb7gYZF4fmwrHd+gdOf9zmPm2XyK1jfosHg@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20200717225543.32126-1-Tony.Ambardar@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/07/2020 23:55, Tony Ambardar wrote:
-> The bpftool sources include code to walk file trees, but use multiple
-> frameworks to do so: nftw and fts. While nftw conforms to POSIX/SUSv3 and
-> is widely available, fts is not conformant and less common, especially on
-> non-glibc systems. The inconsistent framework usage hampers maintenance
-> and portability of bpftool, in particular for embedded systems.
-> 
-> Standardize code usage by rewriting one fts-based function to use nftw and
-> clean up some related function warnings by extending use of "const char *"
-> arguments. This change helps in building bpftool against musl for OpenWrt.
-> 
-> Also fix an unsafe call to dirname() by duplicating the string to pass,
-> since some implementations may directly alter it. The same approach is
-> used in libbpf.c.
-> 
-> Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
-> ---
-> 
-> V3:
-> * clarify dirname() path copy in commit message
-> * fix whitespace and rearrange comment for clarity
-> * drop unnecessary initializers, rebalance Christmas tree
-> * fixup error message and drop others not previously present
-> * simplify malloc() + memset() -> calloc() and check for mem errors
-> 
-> V2:
-> * use _GNU_SOURCE to pull in getpagesize(), getline(), nftw() definitions
-> * use "const char *" in open_obj_pinned() and open_obj_pinned_any()
-> * make dirname() safely act on a string copy
-> 
-> ---
->  tools/bpf/bpftool/common.c | 132 +++++++++++++++++++++----------------
->  tools/bpf/bpftool/main.h   |   4 +-
->  2 files changed, 78 insertions(+), 58 deletions(-)
-> 
-> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
-> index 29f4e7611ae8..2ecfafcd01df 100644
-> --- a/tools/bpf/bpftool/common.c
-> +++ b/tools/bpf/bpftool/common.c
+RnJvbTogQWxleGVpIFN0YXJvdm9pdG92DQo+IFNlbnQ6IDE3IEp1bHkgMjAyMCAxODoyOQ0KPiBP
+biBGcmksIEp1bCAxNywgMjAyMCBhdCA5OjI1IEFNIENocmlzdG9waCBIZWxsd2lnIDxoY2hAbHN0
+LmRlPiB3cm90ZToNCj4gPg0KPiA+IE9uIEZyaSwgSnVsIDE3LCAyMDIwIGF0IDA5OjEzOjA3QU0g
+LTA3MDAsIEFsZXhlaSBTdGFyb3ZvaXRvdiB3cm90ZToNCj4gPiA+IE9uIFRodSwgSnVsIDE2LCAy
+MDIwIGF0IDEwOjUyIFBNIENocmlzdG9waCBIZWxsd2lnIDxoY2hAbHN0LmRlPiB3cm90ZToNCj4g
+PiA+ID4NCj4gPiA+ID4gSGkgQWxleGVpLA0KPiA+ID4gPg0KPiA+ID4gPiBJJ3ZlIGp1c3QgYmVl
+biBhdWRpdGluZyB0aGUgc29ja29wdCBjb2RlLCBhbmQgYnBmaWx0ZXIgbG9va3MgcmVhbGx5DQo+
+ID4gPiA+IG9kZC4gIEJvdGggZ2V0c29ja29wdHMgYW5kIHNldHNvY2tvcHQgZXZlbnR1YWxseSBl
+bmQgdXANCj4gPiA+ID4gaW5fX2JwZmlsdGVyX3Byb2Nlc3Nfc29ja29wdCwgd2hpY2ggdGhlbiBw
+YXNzZXMgcmVjb3JkIHRvIHRoZQ0KPiA+ID4gPiB1c2Vyc3BhY2UgaGVscGVyIGNvbnRhaW5pbmcg
+dGhlIGFkZHJlc3Mgb2YgdGhlIG9wdHZhbCBidWZmZXIuDQo+ID4gPiA+IFdoaWNoIGRlcGVuZGlu
+ZyBvbiBicGYtY2dyb3VwIG1pZ2h0IGJlIGluIHVzZXIgb3Iga2VybmVsIHNwYWNlLg0KPiA+ID4g
+PiBCdXQgZXZlbiBpZiBpdCBpcyBpbiB1c2Vyc3BhY2UgaXQgd291bGQgYmUgaW4gYSBkaWZmZXJl
+bnQgcHJvY2Vzcw0KPiA+ID4gPiB0aGFuIHRoZSBicGZpbGVyIGhlbHBlci4gIFdoYXQgbWFrZXMg
+YWxsIHRoaXMgd29yaz8NCj4gPiA+DQo+ID4gPiBIbW0uIEdvb2QgcG9pbnQuIGJwZmlsdGVyIGFz
+c3VtZXMgdXNlciBhZGRyZXNzZXMuIEl0IHdpbGwgYnJlYWsNCj4gPiA+IGlmIGJwZiBjZ3JvdXAg
+c29ja29wdCBtZXNzZXMgd2l0aCBpdC4NCj4gPiA+IFdlIGhhZCBhIGRpZmZlcmVudCBpc3N1ZSB3
+aXRoIGJwZi1jZ3JvdXAtc29ja29wdCBhbmQgaXB0YWJsZXMgaW4gdGhlIHBhc3QuDQo+ID4gPiBQ
+cm9iYWJseSB0aGUgZWFzaWVzdCB3YXkgZm9yd2FyZCBpcyB0byBzcGVjaWFsIGNhc2UgdGhpcyBw
+YXJ0aWN1bGFyIG9uZS4NCj4gPiA+IFdpdGggeW91ciBuZXcgc2VyaWVzIGlzIHRoZXJlIGEgd2F5
+IHRvIHRlbGwgaW4gYnBmaWx0ZXJfaXBfZ2V0X3NvY2tvcHQoKQ0KPiA+ID4gd2hldGhlciBhZGRy
+IGlzIGtlcm5lbCBvciB1c2VyPyBBbmQgaWYgaXQncyB0aGUga2VybmVsIGp1c3QgcmV0dXJuIHdp
+dGggZXJyb3IuDQo+ID4NCj4gPiBZZXMsIEkgY2FuIHNlbmQgYSBmaXguICBCdXQgaG93IGRvIGV2
+ZW4gdGhlIHVzZXIgc3BhY2UgYWRkcmVzc2VkIHdvcms/DQo+ID4gSWYgc29tZSByYW5kb20gcHJv
+Y2VzcyBjYWxscyBnZXRzb2Nrb3B0IG9yIHNldHNvY2tvcHQsIGhvdyBkb2VzIHRoZQ0KPiA+IGJw
+ZmlsdGVyIHVzZXIgbW9kZSBoZWxwZXIgYXR0YWNoIHRvIGl0cyBhZGRyZXNzIHNwYWNlPw0KPiAN
+Cj4gVGhlIGFjdHVhbCBicGZpbHRlciBwcm9jZXNzaW5nIGlzIGluIHR3byBwYXRjaGVzIHRoYXQg
+d2UgZGlkbid0IGxhbmQ6DQo+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL3BhdGNod29yay9wYXRj
+aC85MDI3ODUvDQo+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL3BhdGNod29yay9wYXRjaC85MDI3
+ODMvDQo+IFVNRCBpcyB1c2luZyBwcm9jZXNzX3ZtX3JlYWR2KCkuDQo+IFRoZSB0YXJnZXQgcHJv
+Y2VzcyBpcyB3YWl0aW5nIGZvciB0aGUgc29ja29wdCBzeXNjYWxsIHRvIHJldHVybiwNCj4gc28g
+ZnJvbSB0aGUgdG9jdG91IHBlcnNwZWN0aXZlIGl0J3MgdGhlIHNhbWUgYXMgdGhlIGtlcm5lbCBk
+b2luZyBjb3B5X2Zyb21fdXNlci4NCg0KWW91IG5lZWQgdG8gYmUgZG9pbmcgdGhlIHVzZXItc3Bh
+Y2VzIGFjY2Vzc2VzIGZyb20gdGhlIHRhcmdldCBwcm9jZXNzJ3MNCmNvbnRleHQuDQpJZiBpdCBp
+cyB3YWl0aW5nIGZvciB0aGUgc3lzY2FsbCB0byByZXR1cm4gdGhlbiB5b3UgYXJlbid0IHJ1bm5p
+bmcNCml0IGl0cyBjb250ZXh0Lg0KDQpUaGVyZSBpcyBhbHNvIGF0IGxlYXN0IG9uZSBzb2Nrb3B0
+IHRoYXQgaGFzIGFuIGVtYmVkZGVkIHBvaW50ZXIuDQpTbyBldmVuIGlmIHlvdSd2ZSBjb3BpZWQg
+dGhlIHNvY2tvcHQgYnVmZmVyIGludG8ga2VybmVsIHNwYWNlDQp5b3UgYXJlIGRvb21lZC4NCklm
+IHRoZSByZXF1ZXN0IGhhcyBjb21lIGZyb20gYSBrZXJuZWwgdGhyZWFkIHdpdGgga2VybmVsIGJ1
+ZmZlcnMNCnRoZW4gdGhlIGVtYmVkZGVkIGJ1ZmZlciB3aWxsIGJlIGtlcm5lbC4NCihUaGlzIGlz
+IHByb2JhYmx5IG1vcmUgY29tbW9uIGZvciBpb2N0bCgpIHJlcXVlc3RzLikNCg0KSSdtIG5vdCBz
+dXJlIHRoZXJlIGlzIGFueSBzYW5lIHdhcyB0byBoYW5kbGUgdGhpcy4NCg0KCURhdmlkDQoNCi0N
+ClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBN
+aWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxl
+cykNCg==
 
->  int build_pinned_obj_table(struct pinned_obj_table *tab,
->  			   enum bpf_obj_type type)
->  {
-
-[...]
-
->  	while ((mntent = getmntent(mntfile))) {
-
-[...]
-
-> -		while ((ftse = fts_read(fts))) {
-
-[...]
-
-> +		if (nftw(path, do_build_table_cb, nopenfd, flags) == -1)
-> +			break;
-
-Sorry I missed that on the previous reviews; but I think a simple break
-out of the loop changes the previous behaviour, we should instead
-"return -1" from build_pinned_obj_table() if nftw() returns -1, as we
-were doing so far.
-
-Looks good otherwise.
-
->  	}
->  	fclose(mntfile);
->  	return 0;
