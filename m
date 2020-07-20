@@ -2,60 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFD39227302
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 01:37:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4079922735D
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 01:58:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728022AbgGTXhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 19:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726383AbgGTXhA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 19:37:00 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A87C061794;
-        Mon, 20 Jul 2020 16:37:00 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A004511E8EC0A;
-        Mon, 20 Jul 2020 16:36:59 -0700 (PDT)
-Date:   Mon, 20 Jul 2020 16:36:58 -0700 (PDT)
-Message-Id: <20200720.163658.560155959996455439.davem@davemloft.net>
-To:     stephen@networkplumber.org
-Cc:     willemdebruijn.kernel@gmail.com, srirakr2@cisco.com,
-        akpm@linux-foundation.org, xe-linux-external@cisco.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sthemmin@microsoft.com,
-        mbumgard@cisco.com
-Subject: Re: [PATCH v2] AF_PACKET doesnt strip VLAN information
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200720135650.1939665b@hermes.lan>
-References: <CY4PR1101MB21013DCD55B754E29AF4A838907B0@CY4PR1101MB2101.namprd11.prod.outlook.com>
-        <CAF=yD-+gCkPVkXwcH6KiKYGV77TvpZiDo=3YyXeuGFk=TR2dcw@mail.gmail.com>
-        <20200720135650.1939665b@hermes.lan>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727118AbgGTX6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 19:58:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42244 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726535AbgGTX6b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 19:58:31 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6681422B4D;
+        Mon, 20 Jul 2020 23:58:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595289511;
+        bh=ofuO8bN6/cRkRgNet/39F7F1IMvB3XkGwPG3fu/QxYU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=00FQ84kHOeaZA3n1/B1opmFfxq4Tfj/kqoVRFeKWaAr6EWe/Aa/gxrIpdmnaOOsaJ
+         SJ8fwKXR/23yoxD1tU7VtfkXVDCmngGc9gif1mAxeJyewo+0kjivgQmHgKNrATN8nJ
+         GLk5li1NnCgZXKSRAGcT32XwA8SN+sBd0Ud3k7Bs=
+Date:   Mon, 20 Jul 2020 16:58:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mark Starovoytov <mstarovoitov@marvell.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Igor Russkikh <irusskikh@marvell.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 net-next 00/13] net: atlantic: various features
+Message-ID: <20200720165829.3b5be70c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200720183244.10029-1-mstarovoitov@marvell.com>
+References: <20200720183244.10029-1-mstarovoitov@marvell.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 Jul 2020 16:37:00 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger <stephen@networkplumber.org>
-Date: Mon, 20 Jul 2020 13:56:50 -0700
-
-> It matters because the problem is generic, not just to the netvsc driver.
-> For example, BPF programs and netfilter rules will see different packets
-> when send is through AF_PACKET than they would see for sends from the
-> kernel stack.
+On Mon, 20 Jul 2020 21:32:31 +0300 Mark Starovoytov wrote:
+> This patchset adds more features for Atlantic NICs:
+>  * media detect;
+>  * additional per-queue stats;
+>  * PTP stats;
+>  * ipv6 support for TCP LSO and UDP GSO;
+>  * 64-bit operations;
+>  * A0 ntuple filters;
+>  * MAC temperature (hwmon).
 > 
-> Presenting uniform data to the lower layers makes sense.
+> This work is a joint effort of Marvell developers.
 
-The issue here is that for hyperv, vlan offloading is not a "may" but
-a "must" and I've never understood it to have that meaning.
+Looks good to me now, thanks
 
-And I still haven't heard what is going to happen in Q-in-Q situations
-even with the ugly hyperv driver hack that is currently under review.
+Acked-by: Jakub Kicinski <kuba@kernel.org>
