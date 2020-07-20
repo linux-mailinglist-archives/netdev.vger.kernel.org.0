@@ -2,121 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A85D225713
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 07:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A706022577D
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 08:18:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726602AbgGTFfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 01:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57830 "EHLO
+        id S1726783AbgGTGRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 02:17:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbgGTFfP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 01:35:15 -0400
-Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945DEC0619D4
-        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 22:35:15 -0700 (PDT)
-Received: by mail-vs1-xe43.google.com with SMTP id e15so7845800vsc.7
-        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 22:35:15 -0700 (PDT)
+        with ESMTP id S1726076AbgGTGRp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 02:17:45 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CCDC0619D5
+        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 23:17:45 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id a19so12834341pjq.9
+        for <netdev@vger.kernel.org>; Sun, 19 Jul 2020 23:17:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=verdurent-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7xTYHfNfEUh5QyUY2sEOu/zQIiIEk+hTgIzqseAVmRw=;
-        b=fFE/iuDQ/w2Jg6B0FP4wHReZcx+GJUKFbPpJWTX6LSw3d8CN0DuO9BmtAbgVqHEJRi
-         Ic8dHrvvxxr0aJZBu8+gVCYW+U0PAPE3no3hgoX1Sw2ed2FHpviFzEpm8qkB0k97z1P1
-         an3Oiq9tw522O3sd1yA7tNnNDB5rJMgAe2W/4EOEAC9qr8LZUV9QKo2bomP69UndH7vL
-         5osXQ8ZpEazbfSUF00e7b/rcYHqm94rI2VecTnpVXOkF8hfJyaZ/YC9MllKQhZKr42yL
-         67K8LDKuLydu+3XWRWEtqZ9TXBNhUX6XRd+3lo16cmwhs9yyrwsoZATbGN5o/xiSaTIa
-         d7MA==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=hrTZ3ILM0xAvfuFOaXWaqEFvmBYS4j5nhBs2MogC2d4=;
+        b=jCza9kObWWd7hRrzAmTOlTIznNK5au/+obW9N2t3FEDENVbFaIuGNwvI+czZfkkjfj
+         yz5Acv84a48iP3jdHNxPq9oYAQ3JsaCd43nn72tDwiAb0KzKjz0D1eRaxZPmSvNI3v5p
+         14yBIbxUS2mz1cy/VgcYLfGAwLfyPgaeo6KCWa24lFD8fcp2A8oN/a5lernNHq87QTsg
+         uJDXeoEKZy1wotyY285VjM6pvyZt7ZdO0ouJqrQBQpT/blmMz44W6ZUa2RD3iVc6yJ3b
+         7Xl+rFZB34WWL6EpieqghLEjm+gNI2iCaVcFn7br2mXNH9ssLJR3SbfkLhib6q4xprWM
+         isOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7xTYHfNfEUh5QyUY2sEOu/zQIiIEk+hTgIzqseAVmRw=;
-        b=fWOzm+UAbEVCE8NoYkCUd0mAx6/R1qb9MbGXt2B8u3wNXXdRLMZ4xmXlfSDO8cyyS5
-         3I8C+te0blrAO0vDIA9tOhCZ9prf2lBx7gmwGa9Xz+FGxOEgg6dl5bhcTiHFGZUDJbek
-         fSIMcFUH8W8XotRU84daXayGmkVcvYaRJQsizDBnu8uwWjGGhICedeb3Pnws0KvbgLFg
-         TBLmPniQjWp3O7JOeafSqHJ1WJ1i2EEgQTVC1W7xbnrLBsGeeuZrMM2OsZ6jaKqqb8/3
-         FqGSwxtmOKzlP0FNbQV4x8eKQBFaFcDcb3iuhUqSc0xi8gwiuW4O+T64JGjyZLRAnF6V
-         Ilzg==
-X-Gm-Message-State: AOAM533xuR96IysQ8WR3FrfvcQYF02tjrta9BePV84ud4CK9IQgPZB7l
-        ApqDb+4xAOk9J/+d2ISF86NCH76OBmk9OEm7VbFf3A==
-X-Google-Smtp-Source: ABdhPJzp9F30GAHjXrnn4V9iyB7ZS2SepAZH+q92hTVOB/KEvvMu4mFLkioreCQvj0CgtVz8RAUvr9LfBhH9M33E304=
-X-Received: by 2002:a67:2285:: with SMTP id i127mr14127135vsi.159.1595223314360;
- Sun, 19 Jul 2020 22:35:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200715074120.8768-1-daniel.lezcano@linaro.org>
-In-Reply-To: <20200715074120.8768-1-daniel.lezcano@linaro.org>
-From:   Amit Kucheria <amit.kucheria@verdurent.com>
-Date:   Mon, 20 Jul 2020 11:05:03 +0530
-Message-ID: <CAHLCerO31g4-5ALMikFx+mA9bGrLLVv2ayncpiHCL5nn44TQhQ@mail.gmail.com>
-Subject: Re: [PATCH] net: genetlink: Move initialization to core_initcall
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=hrTZ3ILM0xAvfuFOaXWaqEFvmBYS4j5nhBs2MogC2d4=;
+        b=kSz7X39cx5hRDF47PKRRnfPo1X9n9P9eZuhRhTfHn+kAcYhNzyxOXs52zfCk9T1IE2
+         UVeSHVJ6n2jksHPUKN765Eq1U4//+bmjqeRQebq0vESdiOpL8zZySZBrznivtdN6Lp+L
+         bBX1h9eq+K9a5Wo3et2q3EhMmbWe+G5isrRfyWHTNG1kNQQOhYDVlycQ22iHrw9thkSc
+         XrIP2xvsVJlP9B6FIqEWpYds8G1N9BCSEP0rSkhoXIMQ1/VpxGjvMwg3RlWwYCa2e4cW
+         mup3iXfW2x0zvR44qLg24Lnz+X+DQWJww9PcnkZh5MneDJcT2wc9HydWW8EtGpASc3g+
+         5VeA==
+X-Gm-Message-State: AOAM531h94n0AeDh6Q3p2Sx/a+DPNSLR9/4uSJrYS3eNw7tXXtyx0su8
+        pTvKLniAOT5qGGQfJY0vglSt3h7YRh+s
+X-Google-Smtp-Source: ABdhPJxZ8KghvpQ17ZJUvd8FHOaqBfl50iarL4t96zD8AY8mjE1sgffczbDNvDrTORIDxuIPH0nKQjc6wtWJ
+X-Received: by 2002:a17:902:b78b:: with SMTP id e11mr16332011pls.204.1595225864907;
+ Sun, 19 Jul 2020 23:17:44 -0700 (PDT)
+Date:   Sun, 19 Jul 2020 23:17:41 -0700
+Message-Id: <20200720061741.1514673-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.rc0.105.gf9edc3c819-goog
+Subject: [PATCH v2] libbpf bpf_helpers: Use __builtin_offsetof for offsetof
+From:   Ian Rogers <irogers@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 15, 2020 at 1:11 PM Daniel Lezcano
-<daniel.lezcano@linaro.org> wrote:
->
-> The generic netlink is initialized far after the netlink protocol
-> itself at subsys_initcall. The devlink is initialized at the same
-> level, but after, as shown by a disassembly of the vmlinux:
->
-> [ ... ]
-> 374 ffff8000115f22c0 <__initcall_devlink_init4>:
-> 375 ffff8000115f22c4 <__initcall_genl_init4>:
-> [ ... ]
->
-> The function devlink_init() calls genl_register_family() before the
-> generic netlink subsystem is initialized.
->
-> As the generic netlink initcall level is set since 2005, it seems that
-> was not a problem, but now we have the thermal framework initialized
-> at the core_initcall level which creates the generic netlink family
-> and sends a notification which leads to a subtle memory corruption
-> only detectable when the CONFIG_INIT_ON_ALLOC_DEFAULT_ON option is set
-> with the earlycon at init time.
->
-> The thermal framework needs to be initialized early in order to begin
-> the mitigation as soon as possible. Moving it to postcore_initcall is
-> acceptable.
->
-> This patch changes the initialization level for the generic netlink
-> family to the core_initcall and comes after the netlink protocol
-> initialization.
->
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+The non-builtin route for offsetof has a dependency on size_t from
+stdlib.h/stdint.h that is undeclared and may break targets.
+The offsetof macro in bpf_helpers may disable the same macro in other
+headers that have a #ifdef offsetof guard. Rather than add additional
+dependencies improve the offsetof macro declared here to use the
+builtin that is available since llvm 3.7 (the first with a BPF backend).
 
-Reviewed-by: Amit Kucheria <amit.kucheria@linaro.org>
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/lib/bpf/bpf_helpers.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+index a510d8ed716f..bc14db706b88 100644
+--- a/tools/lib/bpf/bpf_helpers.h
++++ b/tools/lib/bpf/bpf_helpers.h
+@@ -40,7 +40,7 @@
+  * Helper macro to manipulate data structures
+  */
+ #ifndef offsetof
+-#define offsetof(TYPE, MEMBER)  ((size_t)&((TYPE *)0)->MEMBER)
++#define offsetof(TYPE, MEMBER)  __builtin_offsetof(TYPE, MEMBER)
+ #endif
+ #ifndef container_of
+ #define container_of(ptr, type, member)				\
+-- 
+2.28.0.rc0.105.gf9edc3c819-goog
 
-> ---
->  net/netlink/genetlink.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-> index 55ee680e9db1..36b8a1909826 100644
-> --- a/net/netlink/genetlink.c
-> +++ b/net/netlink/genetlink.c
-> @@ -1263,7 +1263,7 @@ static int __init genl_init(void)
->         panic("GENL: Cannot register controller: %d\n", err);
->  }
->
-> -subsys_initcall(genl_init);
-> +core_initcall(genl_init);
->
->  static int genlmsg_mcast(struct sk_buff *skb, u32 portid, unsigned long group,
->                          gfp_t flags)
-> --
-> 2.17.1
->
