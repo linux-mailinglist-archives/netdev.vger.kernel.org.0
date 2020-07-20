@@ -2,43 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E34FC226DE3
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:10:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F925226DE7
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:10:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389294AbgGTSJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 14:09:41 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:19580 "EHLO
+        id S2389312AbgGTSJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 14:09:46 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:19854 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389280AbgGTSJi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 14:09:38 -0400
+        by vger.kernel.org with ESMTP id S2389299AbgGTSJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 14:09:42 -0400
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06KHtqWO024210;
-        Mon, 20 Jul 2020 11:09:32 -0700
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06KHtqV6024237;
+        Mon, 20 Jul 2020 11:09:36 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0818;
- bh=oV4zNjyW8Ry70yXThNzeqOkksY0mnegb0KcVYTNnl/I=;
- b=VIuoaIZsvwQRepm1DGqejiFIr47+wo1WuriXi75wCiszv1Fccep2V0D50nRLQLFSlGY1
- nud37sC1SomuS7BHw2Vov7gFy4ItRbGz15QbTCJJUPJLRwLVbG2GyQ8GhdhB9NxmrJ31
- 603a+g5gA1u5uikbFbcu8gWsXgkmyi5dVnQWGgSlxptcbJz2jdFimRw6tpOMCJUHHmKt
- hM9sSWLRD2y8z0zl0gpo+toOPcXTNRHFxSE1C54n/CSCnA9QXpoHAADtwxtoSu5TqXQa
- 5BQleiN9XGcnFvLXsxF65baoZaPQTgMeg+Dn6GvBJ7LM5dukS7k3ETwvsBKn6dpdpMbM uA== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0b-0016f401.pphosted.com with ESMTP id 32c0kkf8yb-1
+ bh=ZFs0ZRzUSkY/4L/Y3XJm2FIvqqM84UMIcNeGhbTkLow=;
+ b=Vgxo6j4JrSYLZDzkdLHGNZKWe9d/ZF41LFQIs5PddzQmknLmUC/3nwhZnspu+x/ffdLZ
+ MyxOzvWwH+XpuuFWkIs++1efNCzoKWrGxXpMcZKxDcTXfpRAkBQTWVoT7aqrLEEwUoyt
+ ZqkW9L1uCz6+nuH6S8kiJ86KGQy2Ajhe/dnT9whScni8sRjKgmar/+VJyYFTZ/gRTRpn
+ vwQosnLIiofGo5XstDidpXdjNJAxnM72g2nvtDSG2HkyPZF9j4wbfCBQlxHkKvw74NT9
+ ymFwC/27deUKnXn8eNDkiYuxKKIz0M0gvHrcOCEYOu8/LlM4/Lea3DqMOvMW+9JBpV87 Dw== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 32c0kkf8ym-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 20 Jul 2020 11:09:32 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Jul
- 2020 11:09:31 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Jul
- 2020 11:09:29 -0700
+        Mon, 20 Jul 2020 11:09:36 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Jul
+ 2020 11:09:34 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 20 Jul 2020 11:09:29 -0700
+ Transport; Mon, 20 Jul 2020 11:09:34 -0700
 Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
-        by maili.marvell.com (Postfix) with ESMTP id 5BB253F703F;
-        Mon, 20 Jul 2020 11:09:25 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 0EE563F7040;
+        Mon, 20 Jul 2020 11:09:29 -0700 (PDT)
 From:   Alexander Lobakin <alobakin@marvell.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -53,9 +50,9 @@ CC:     Alexander Lobakin <alobakin@marvell.com>,
         <GR-everest-linux-l2@marvell.com>,
         <QLogic-Storage-Upstream@marvell.com>, <netdev@vger.kernel.org>,
         <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 net-next 09/16] qede: format qede{,_vf}_ethtool_ops
-Date:   Mon, 20 Jul 2020 21:08:08 +0300
-Message-ID: <20200720180815.107-10-alobakin@marvell.com>
+Subject: [PATCH v3 net-next 10/16] qede: introduce support for FEC control
+Date:   Mon, 20 Jul 2020 21:08:09 +0300
+Message-ID: <20200720180815.107-11-alobakin@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200720180815.107-1-alobakin@marvell.com>
 References: <20200720180815.107-1-alobakin@marvell.com>
@@ -69,166 +66,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prior to adding new callbacks, format qede ethtool_ops structs to make
-declarations more fancy and readable.
+Add Ethtool callbacks for querying and setting FEC parameters if it's
+supported by the underlying qed module and MFW version running on the
+device.
 
 Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- .../net/ethernet/qlogic/qede/qede_ethtool.c   | 137 +++++++++---------
- 1 file changed, 68 insertions(+), 69 deletions(-)
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   | 74 +++++++++++++++++++
+ 1 file changed, 74 insertions(+)
 
 diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-index 7a985307cdd5..fdccceb69632 100644
+index fdccceb69632..b9aa6384563b 100644
 --- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
 +++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-@@ -2032,78 +2032,77 @@ static int qede_get_dump_data(struct net_device *dev,
+@@ -1834,6 +1834,78 @@ static int qede_set_eee(struct net_device *dev, struct ethtool_eee *edata)
+ 	return 0;
  }
  
- static const struct ethtool_ops qede_ethtool_ops = {
--	.supported_coalesce_params = ETHTOOL_COALESCE_USECS,
--	.get_link_ksettings = qede_get_link_ksettings,
--	.set_link_ksettings = qede_set_link_ksettings,
--	.get_drvinfo = qede_get_drvinfo,
--	.get_regs_len = qede_get_regs_len,
--	.get_regs = qede_get_regs,
--	.get_wol = qede_get_wol,
--	.set_wol = qede_set_wol,
--	.get_msglevel = qede_get_msglevel,
--	.set_msglevel = qede_set_msglevel,
--	.nway_reset = qede_nway_reset,
--	.get_link = qede_get_link,
--	.get_coalesce = qede_get_coalesce,
--	.set_coalesce = qede_set_coalesce,
--	.get_ringparam = qede_get_ringparam,
--	.set_ringparam = qede_set_ringparam,
--	.get_pauseparam = qede_get_pauseparam,
--	.set_pauseparam = qede_set_pauseparam,
--	.get_strings = qede_get_strings,
--	.set_phys_id = qede_set_phys_id,
--	.get_ethtool_stats = qede_get_ethtool_stats,
--	.get_priv_flags = qede_get_priv_flags,
--	.set_priv_flags = qede_set_priv_flags,
--	.get_sset_count = qede_get_sset_count,
--	.get_rxnfc = qede_get_rxnfc,
--	.set_rxnfc = qede_set_rxnfc,
--	.get_rxfh_indir_size = qede_get_rxfh_indir_size,
--	.get_rxfh_key_size = qede_get_rxfh_key_size,
--	.get_rxfh = qede_get_rxfh,
--	.set_rxfh = qede_set_rxfh,
--	.get_ts_info = qede_get_ts_info,
--	.get_channels = qede_get_channels,
--	.set_channels = qede_set_channels,
--	.self_test = qede_self_test,
--	.get_module_info = qede_get_module_info,
--	.get_module_eeprom = qede_get_module_eeprom,
--	.get_eee = qede_get_eee,
--	.set_eee = qede_set_eee,
--
--	.get_tunable = qede_get_tunable,
--	.set_tunable = qede_set_tunable,
--	.flash_device = qede_flash_device,
--	.get_dump_flag = qede_get_dump_flag,
--	.get_dump_data = qede_get_dump_data,
--	.set_dump = qede_set_dump,
-+	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS,
-+	.get_link_ksettings		= qede_get_link_ksettings,
-+	.set_link_ksettings		= qede_set_link_ksettings,
-+	.get_drvinfo			= qede_get_drvinfo,
-+	.get_regs_len			= qede_get_regs_len,
-+	.get_regs			= qede_get_regs,
-+	.get_wol			= qede_get_wol,
-+	.set_wol			= qede_set_wol,
-+	.get_msglevel			= qede_get_msglevel,
-+	.set_msglevel			= qede_set_msglevel,
-+	.nway_reset			= qede_nway_reset,
-+	.get_link			= qede_get_link,
-+	.get_coalesce			= qede_get_coalesce,
-+	.set_coalesce			= qede_set_coalesce,
-+	.get_ringparam			= qede_get_ringparam,
-+	.set_ringparam			= qede_set_ringparam,
-+	.get_pauseparam			= qede_get_pauseparam,
-+	.set_pauseparam			= qede_set_pauseparam,
-+	.get_strings			= qede_get_strings,
-+	.set_phys_id			= qede_set_phys_id,
-+	.get_ethtool_stats		= qede_get_ethtool_stats,
-+	.get_priv_flags			= qede_get_priv_flags,
-+	.set_priv_flags			= qede_set_priv_flags,
-+	.get_sset_count			= qede_get_sset_count,
-+	.get_rxnfc			= qede_get_rxnfc,
-+	.set_rxnfc			= qede_set_rxnfc,
-+	.get_rxfh_indir_size		= qede_get_rxfh_indir_size,
-+	.get_rxfh_key_size		= qede_get_rxfh_key_size,
-+	.get_rxfh			= qede_get_rxfh,
-+	.set_rxfh			= qede_set_rxfh,
-+	.get_ts_info			= qede_get_ts_info,
-+	.get_channels			= qede_get_channels,
-+	.set_channels			= qede_set_channels,
-+	.self_test			= qede_self_test,
-+	.get_module_info		= qede_get_module_info,
-+	.get_module_eeprom		= qede_get_module_eeprom,
-+	.get_eee			= qede_get_eee,
-+	.set_eee			= qede_set_eee,
-+	.get_tunable			= qede_get_tunable,
-+	.set_tunable			= qede_set_tunable,
-+	.flash_device			= qede_flash_device,
-+	.get_dump_flag			= qede_get_dump_flag,
-+	.get_dump_data			= qede_get_dump_data,
-+	.set_dump			= qede_set_dump,
- };
- 
- static const struct ethtool_ops qede_vf_ethtool_ops = {
--	.supported_coalesce_params = ETHTOOL_COALESCE_USECS,
--	.get_link_ksettings = qede_get_link_ksettings,
--	.get_drvinfo = qede_get_drvinfo,
--	.get_msglevel = qede_get_msglevel,
--	.set_msglevel = qede_set_msglevel,
--	.get_link = qede_get_link,
--	.get_coalesce = qede_get_coalesce,
--	.set_coalesce = qede_set_coalesce,
--	.get_ringparam = qede_get_ringparam,
--	.set_ringparam = qede_set_ringparam,
--	.get_strings = qede_get_strings,
--	.get_ethtool_stats = qede_get_ethtool_stats,
--	.get_priv_flags = qede_get_priv_flags,
--	.get_sset_count = qede_get_sset_count,
--	.get_rxnfc = qede_get_rxnfc,
--	.set_rxnfc = qede_set_rxnfc,
--	.get_rxfh_indir_size = qede_get_rxfh_indir_size,
--	.get_rxfh_key_size = qede_get_rxfh_key_size,
--	.get_rxfh = qede_get_rxfh,
--	.set_rxfh = qede_set_rxfh,
--	.get_channels = qede_get_channels,
--	.set_channels = qede_set_channels,
--	.get_tunable = qede_get_tunable,
--	.set_tunable = qede_set_tunable,
-+	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS,
-+	.get_link_ksettings		= qede_get_link_ksettings,
-+	.get_drvinfo			= qede_get_drvinfo,
-+	.get_msglevel			= qede_get_msglevel,
-+	.set_msglevel			= qede_set_msglevel,
-+	.get_link			= qede_get_link,
-+	.get_coalesce			= qede_get_coalesce,
-+	.set_coalesce			= qede_set_coalesce,
-+	.get_ringparam			= qede_get_ringparam,
-+	.set_ringparam			= qede_set_ringparam,
-+	.get_strings			= qede_get_strings,
-+	.get_ethtool_stats		= qede_get_ethtool_stats,
-+	.get_priv_flags			= qede_get_priv_flags,
-+	.get_sset_count			= qede_get_sset_count,
-+	.get_rxnfc			= qede_get_rxnfc,
-+	.set_rxnfc			= qede_set_rxnfc,
-+	.get_rxfh_indir_size		= qede_get_rxfh_indir_size,
-+	.get_rxfh_key_size		= qede_get_rxfh_key_size,
-+	.get_rxfh			= qede_get_rxfh,
-+	.set_rxfh			= qede_set_rxfh,
-+	.get_channels			= qede_get_channels,
-+	.set_channels			= qede_set_channels,
-+	.get_tunable			= qede_get_tunable,
-+	.set_tunable			= qede_set_tunable,
- };
- 
- void qede_set_ethtool_ops(struct net_device *dev)
++static u32 qede_link_to_ethtool_fec(u32 link_fec)
++{
++	u32 eth_fec = 0;
++
++	if (link_fec & QED_FEC_MODE_NONE)
++		eth_fec |= ETHTOOL_FEC_OFF;
++	if (link_fec & QED_FEC_MODE_FIRECODE)
++		eth_fec |= ETHTOOL_FEC_BASER;
++	if (link_fec & QED_FEC_MODE_RS)
++		eth_fec |= ETHTOOL_FEC_RS;
++	if (link_fec & QED_FEC_MODE_AUTO)
++		eth_fec |= ETHTOOL_FEC_AUTO;
++	if (link_fec & QED_FEC_MODE_UNSUPPORTED)
++		eth_fec |= ETHTOOL_FEC_NONE;
++
++	return eth_fec;
++}
++
++static u32 qede_ethtool_to_link_fec(u32 eth_fec)
++{
++	u32 link_fec = 0;
++
++	if (eth_fec & ETHTOOL_FEC_OFF)
++		link_fec |= QED_FEC_MODE_NONE;
++	if (eth_fec & ETHTOOL_FEC_BASER)
++		link_fec |= QED_FEC_MODE_FIRECODE;
++	if (eth_fec & ETHTOOL_FEC_RS)
++		link_fec |= QED_FEC_MODE_RS;
++	if (eth_fec & ETHTOOL_FEC_AUTO)
++		link_fec |= QED_FEC_MODE_AUTO;
++	if (eth_fec & ETHTOOL_FEC_NONE)
++		link_fec |= QED_FEC_MODE_UNSUPPORTED;
++
++	return link_fec;
++}
++
++static int qede_get_fecparam(struct net_device *dev,
++			     struct ethtool_fecparam *fecparam)
++{
++	struct qede_dev *edev = netdev_priv(dev);
++	struct qed_link_output curr_link;
++
++	memset(&curr_link, 0, sizeof(curr_link));
++	edev->ops->common->get_link(edev->cdev, &curr_link);
++
++	fecparam->active_fec = qede_link_to_ethtool_fec(curr_link.active_fec);
++	fecparam->fec = qede_link_to_ethtool_fec(curr_link.sup_fec);
++
++	return 0;
++}
++
++static int qede_set_fecparam(struct net_device *dev,
++			     struct ethtool_fecparam *fecparam)
++{
++	struct qede_dev *edev = netdev_priv(dev);
++	struct qed_link_params params;
++
++	if (!edev->ops || !edev->ops->common->can_link_change(edev->cdev)) {
++		DP_INFO(edev, "Link settings are not allowed to be changed\n");
++		return -EOPNOTSUPP;
++	}
++
++	memset(&params, 0, sizeof(params));
++	params.override_flags |= QED_LINK_OVERRIDE_FEC_CONFIG;
++	params.fec = qede_ethtool_to_link_fec(fecparam->fec);
++	params.link_up = true;
++
++	edev->ops->common->set_link(edev->cdev, &params);
++
++	return 0;
++}
++
+ static int qede_get_module_info(struct net_device *dev,
+ 				struct ethtool_modinfo *modinfo)
+ {
+@@ -2070,6 +2142,8 @@ static const struct ethtool_ops qede_ethtool_ops = {
+ 	.get_module_eeprom		= qede_get_module_eeprom,
+ 	.get_eee			= qede_get_eee,
+ 	.set_eee			= qede_set_eee,
++	.get_fecparam			= qede_get_fecparam,
++	.set_fecparam			= qede_set_fecparam,
+ 	.get_tunable			= qede_get_tunable,
+ 	.set_tunable			= qede_set_tunable,
+ 	.flash_device			= qede_flash_device,
 -- 
 2.25.1
 
