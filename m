@@ -2,114 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 320AF227015
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 22:57:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1FA9227021
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 23:05:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726658AbgGTU5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 16:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726012AbgGTU47 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 16:56:59 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD6DC061794
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 13:56:59 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id gc9so478602pjb.2
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 13:56:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yJ/tpvydDMz3twTYDJaAWaLUOCGbbQA7F9t0js/9ubo=;
-        b=LMkWN3sMUU3w+Zpa3p4GKsHoJNFENcMaDdvt9aU9XWldoN3wW8WnX1d18uP7IkxXf0
-         8qlyHT8vbm3QGQdwM8TfrYm2M22oH40YkwbbFU0b6Pt/RoLRaPoWrVvVFlo86V5o8lnM
-         B9geSxKFKZ12Yf3/7CadewCiEdVLiGJ7pSvGCY+1QuXpD+Gpt0l+37s0tDGsUE1BTIdJ
-         QejJBGbHYfWXM4f+ewmbGRtT6Z6sYwz5OfTGSfrZvPSc2oL11iiWhynXBbOgdd4Bnnm+
-         AxVMqY54R1kaS6HelhqnNwbfRUZ9d88V/X5h7/LLYjtfcMORcZi/+6kqziOpLF6vLrAB
-         mY9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yJ/tpvydDMz3twTYDJaAWaLUOCGbbQA7F9t0js/9ubo=;
-        b=ojiH74VptfaoWoWBXjyU8OY5+QhEz4BkQIs9c0wOzcQuAP0AnaXpMOXEM3WhjT+hmq
-         6Vf8fJIKUYtCHI4lDIvT4AQzoGY+keTPl4kzEDVZphHzpJ6JBy10oWj9uo6E2jfgUsIY
-         xwZ2uwaZExiMMiBEEHkcoJp35n1zh2bHCrpsfpqvpazwLKFoaDZPPiZRyMqFmgTp/6+g
-         z6T/m5xvZqw55vkVlwZdhz1lNq+zGL/1eXjilPogGsSJpaPQgSkTW3xlhRnLFJeI1I1a
-         bvTO3vcaeeef6UExd2Agjt7yo83RDERnyQdgo5tdjYEi3Bxygo7/AFWoVqzZSisKBo23
-         jdsw==
-X-Gm-Message-State: AOAM5333xO6TTQk0HMe2deMrHM6NlrhofyoLuf5WfwtleJL7RC22hHT7
-        aRKC1x3WPqbZ3ezvUM7hNO9Trw==
-X-Google-Smtp-Source: ABdhPJwT+gAR9vIZr/AMDE2WT/mxAc7CINRzqUbjbWq7crAyMx4DmBGZkdkZ/TvJvmiFIEYFa/OJqg==
-X-Received: by 2002:a17:90a:8d12:: with SMTP id c18mr1155557pjo.222.1595278618823;
-        Mon, 20 Jul 2020 13:56:58 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id a30sm18161011pfr.87.2020.07.20.13.56.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 13:56:58 -0700 (PDT)
-Date:   Mon, 20 Jul 2020 13:56:50 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     "Sriram Krishnan (srirakr2)" <srirakr2@cisco.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
+        id S1726383AbgGTVEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 17:04:54 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45798 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726012AbgGTVEy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 17:04:54 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jxcxt-0064s4-VK; Mon, 20 Jul 2020 23:04:49 +0200
+Date:   Mon, 20 Jul 2020 23:04:49 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Helmut Grohne <helmut.grohne@intenta.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "Malcolm Bumgardner (mbumgard)" <mbumgard@cisco.com>
-Subject: Re: [PATCH v2] AF_PACKET doesnt strip VLAN information
-Message-ID: <20200720135650.1939665b@hermes.lan>
-In-Reply-To: <CAF=yD-+gCkPVkXwcH6KiKYGV77TvpZiDo=3YyXeuGFk=TR2dcw@mail.gmail.com>
-References: <20200718091732.8761-1-srirakr2@cisco.com>
-        <CA+FuTSdfvctFD3AVMHzQV9efQERcKVE1TcYVD_T84eSgq9x4OA@mail.gmail.com>
-        <CY4PR1101MB21013DCD55B754E29AF4A838907B0@CY4PR1101MB2101.namprd11.prod.outlook.com>
-        <CAF=yD-+gCkPVkXwcH6KiKYGV77TvpZiDo=3YyXeuGFk=TR2dcw@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: Re: [PATCH v3] net: dsa: microchip: call phy_remove_link_mode during
+ probe
+Message-ID: <20200720210449.GP1339445@lunn.ch>
+References: <20200717131814.GA1336433@lunn.ch>
+ <20200720090416.GA7307@laureti-dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200720090416.GA7307@laureti-dev>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Jul 2020 09:52:27 -0400
-Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+> The dev->ports[i].phydev is not actually exposed beyond the driver. The
+> driver sets the phydev.speed in a few places and even reads it back in
+> one place. It also sets phydev.duplex, but never reads it back. It
+> queries phydev.link, which is statically 0 due to using devm_kzalloc.
+> 
+> I think the use of this ksz_port.phydev is very misleading, but I'm
+> unsure how to fix this. It is not clear to me whether all those updates
+> should be performed on the connected phydev instead or whether this is
+> just internal state tracking.
 
-> On Mon, Jul 20, 2020 at 12:27 AM Sriram Krishnan (srirakr2)
-> <srirakr2@cisco.com> wrote:
-> >
-> > +Stephen Hemminger
-> >
-> > Hi Willem,
-> > Thanks for looking into the code, I understand that this is more of a generic problem wherein many of the filtering functions assume the vlan tag to be in the skb rather than in the packet. Hence we moved the fix from the driver to the common AF packet that our solution uses.
-> >
-> > I recall from the v1 of the patch you had mentioned other common areas where this fix might be relevant (such as tap/tun), but I'm afraid I cant comprehensively test those patches out. Please let me know your thoughts  
-> 
-> Please use plain text to respond. HTML replies do not reach the list.
-> 
-> Can you be more precise in which other code besides the hyper-v driver
-> is affected? Do you have an example?
-> 
-> This is a resubmit of the original patch. My previous
-> questions/concerns remain valid:
-> 
-> - if the function can now fail, all callers must be updated to detect
-> and handle that
-> 
-> - any solution should probably address all inputs into the tx path:
-> packet sockets, tuntap, virtio-net
-> 
-> - this only addresses packet sockets with ETH_P_ALL/ETH_P_NONE. Not
-> sockets that set ETH_P_8021Q
-> 
-> - which code in the transmit stack requires the tag to be in the skb,
-> and does this problem after this patch still persist for Q-in-Q?
+I took a quick look at the code.
 
-It matters because the problem is generic, not just to the netvsc driver.
-For example, BPF programs and netfilter rules will see different packets
-when send is through AF_PACKET than they would see for sends from the
-kernel stack.
+For PHY addresses < dev->phy_port_cnt it passes all reads/writes
+through to the hardware. So the Linux MDIO/PHY subsystem will be able
+to fully drive these PHYs, and the ksz9477 internal phydev is
+unneeded.
 
-Presenting uniform data to the lower layers makes sense.
+Where it gets interesting is addr >= dev->phy_port_cnt. Reads of the
+PHY registers return hard coded values, or the link speed from the
+local phydev. Writes to these registers are just ignored.
+
+If you compare this to other DSA drivers/DSA switches, reads/write for
+addresses where there are no internal PHY get passed out to an
+external MDIO bus, where an external PHY can be connected. The Linux
+MDIO/PHY subsystem will discover these external PHYs and create phydev
+instance for them. If there is no external PHY, for example the MAC is
+connected to another MAC, no PHY will be detected, and fixed-link is
+used in its place.
+
+Do these switches have an external MDIO bus?
+How are external PHYs usually managed?
+
+At a minimum, the internal phydev can be replaced with just a speed,
+rather than a full phydev, which will reduce confusion. But it would
+be nice to go further and remove all the addr >= dev->phy_port_cnt
+handling. But we need to understand the implications of that.
+
+	Andrew
