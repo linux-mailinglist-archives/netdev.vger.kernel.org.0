@@ -2,54 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E435222617B
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 15:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8048E22613C
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 15:45:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728423AbgGTN6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 09:58:50 -0400
-Received: from ms.lwn.net ([45.79.88.28]:46908 "EHLO ms.lwn.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726095AbgGTN6u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 09:58:50 -0400
-Received: from lwn.net (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 566F42CD;
-        Mon, 20 Jul 2020 13:58:49 +0000 (UTC)
-Date:   Mon, 20 Jul 2020 07:58:48 -0600
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "Alexander A. Klimov" <grandmaster@al2klimov.de>,
-        santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH for v5.9] RDS: Replace HTTP links with HTTPS ones
-Message-ID: <20200720075848.26bc3dfe@lwn.net>
-In-Reply-To: <20200720045626.GF127306@unreal>
-References: <20200719155845.59947-1-grandmaster@al2klimov.de>
-        <20200720045626.GF127306@unreal>
-Organization: LWN.net
+        id S1727118AbgGTNpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 09:45:08 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:35880 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726046AbgGTNpI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 09:45:08 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 42D1135B2B6D4555BAB8;
+        Mon, 20 Jul 2020 21:45:03 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Mon, 20 Jul 2020
+ 21:44:58 +0800
+From:   Liu Jian <liujian56@huawei.com>
+To:     <madalin.bucur@nxp.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <laurentiu.tudor@nxp.com>, <netdev@vger.kernel.org>
+Subject: [PATCH v2 net] dpaa_eth: Fix one possible memleak in dpaa_eth_probe
+Date:   Mon, 20 Jul 2020 22:28:29 +0800
+Message-ID: <20200720142829.40067-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Jul 2020 07:56:26 +0300
-Leon Romanovsky <leon@kernel.org> wrote:
+When dma_coerce_mask_and_coherent() fails, the alloced netdev need to be freed.
 
-> >  Documentation/networking/rds.rst | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)  
-> 
-> Why can't it be done in one mega-patch?
-> It is insane to see patch for every file/link.
-> 
-> We have more than 4k files with http:// in it.
+Fixes: 060ad66f9795 ("dpaa_eth: change DMA device")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+---
 
-Do *you* want to review that megapatch?  The number of issues that have
-come up make it clear that these patches do, indeed, need review...
+v1->v2:
+Change targeting from "net-next" to "net"
 
-jon
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index 2972244e6eb0..43570f4911ea 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -2938,7 +2938,7 @@ static int dpaa_eth_probe(struct platform_device *pdev)
+ 						   DMA_BIT_MASK(40));
+ 	if (err) {
+ 		netdev_err(net_dev, "dma_coerce_mask_and_coherent() failed\n");
+-		return err;
++		goto free_netdev;
+ 	}
+ 
+ 	/* If fsl_fm_max_frm is set to a higher value than the all-common 1500,
+-- 
+2.17.1
+
