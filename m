@@ -2,113 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1A04226BB2
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:44:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58780226BCF
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:44:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731976AbgGTQng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 12:43:36 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:37650 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731575AbgGTQnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:43:32 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06KGhSoS033897;
-        Mon, 20 Jul 2020 11:43:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1595263408;
-        bh=IhQglFTuHMFx3Wmu6u79WQ8Np7iv2tLYaEeJlwjbcSw=;
-        h=From:To:Subject:Date;
-        b=jP93GE6w7hi4lPU+yHZKbBdgM8MqhNdScpSBMPfMdqyka57tIwBKjs/Y7VvxD6nof
-         kTlqvUH6/sc78K7TVOFJdMPII9Rtle7J8DW3x/hLJuMhDLVYGD6G/IkhSR1Q0cHfA1
-         QhqBuwMpwWX6ltqwhhLHHVfrVWW0giKb51N6bjw4=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06KGhSdR113392
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 20 Jul 2020 11:43:28 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 20
- Jul 2020 11:43:27 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 20 Jul 2020 11:43:27 -0500
-Received: from uda0868495.fios-router.home (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06KGhROP013493;
-        Mon, 20 Jul 2020 11:43:27 -0500
-From:   Murali Karicheri <m-karicheri2@ti.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] net: hsr: check for return value of skb_put_padto()
-Date:   Mon, 20 Jul 2020 12:43:27 -0400
-Message-ID: <20200720164327.16977-1-m-karicheri2@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S2389084AbgGTQok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 12:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389062AbgGTQoi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:44:38 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31E4C061794
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 09:44:38 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id s23so470791qtq.12
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 09:44:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NbyVQM7fPeSdvONF5Kg3tQzqW3ZF+2itkrSRzGOxHxc=;
+        b=IHT/tFwiRH1Yb3ucXykys8vdtaM5+5TOM54i9W4qHPmVruOc5NKByOxDx44F5R8mnB
+         jim8BM3gnTHsxzKsW3TvhTCdP+x4AXDSWUSFx17p3utzASNd96EsQ4eTPkYrU9IyGh5V
+         hc1OdF0+X4J+ix+TxnQ7OrsDVtH4Ft3ik8JNV16Dnr0QoiA+ogsMEuDn9tp1Reipz1+q
+         f5XInl88vnkce7ZPM7lC94IUIY1uAomh4yKU3V1+A+Zv6hZOJD4wdbzt1pYGmHWRG/ZM
+         o7RMy3a7jg4WbWPTZK4CJUrQP+r49F6cGvlUb6UIzaExO/nM/BgJ4GVBPlVX4pEfukI3
+         BJ0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NbyVQM7fPeSdvONF5Kg3tQzqW3ZF+2itkrSRzGOxHxc=;
+        b=pjkAxg0NDz1LW/WhHaWE8RCUpUaCXHD/rMDtFjv59rMfAojIZJMlUcefk4nGopRfJ1
+         Qd0leqPndhUlNreQ7MPsB3I+Rsue6tHx83bY6ylSSVkQUu0iVzHyXckX7iXr5Wc8baWt
+         K8vJ3f7XLYJyBs/QrOHpCQi1i57eW803q1F98YM9kAzTL1Kmkmslpvdt5NfgevKXNXPe
+         VOf22b+98j8NfqMYxC5HD8AOyucP9KPGBMtlE59D26gCSuKsAKWEoianVe/LK8EpDMzO
+         XTX8/xyyRQBkcugbejPkRheZGihUn26KtMnZfaK7VTEIb6sgpvogcb8XDeqV7r55S1OY
+         z6XQ==
+X-Gm-Message-State: AOAM530V0UbiYg4xH9EF6/3ysHskY41NKrMt4kAbkHr0sBRU5VGJNj5l
+        bgxaRZ1xBz6WxQS8Cu4S1rEf7ZO0
+X-Google-Smtp-Source: ABdhPJzag9h/SWGSkkSIOuffZI09094oG9D06PA0Yw4ne53VSdjk3+krH4ZQ3j+2gJJlcmR23jo6Gw==
+X-Received: by 2002:ac8:1baf:: with SMTP id z44mr25437292qtj.129.1595263478018;
+        Mon, 20 Jul 2020 09:44:38 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:247a:2d5a:19c4:a32f? ([2601:282:803:7700:247a:2d5a:19c4:a32f])
+        by smtp.googlemail.com with ESMTPSA id h197sm83124qke.51.2020.07.20.09.44.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jul 2020 09:44:37 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next 1/3] devlink: Add a possibility to print
+ arrays of devlink port handles
+To:     Moshe Shemesh <moshe@mellanox.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        Vladyslav Tarasiuk <vladyslavt@mellanox.com>
+References: <1595165763-13657-1-git-send-email-moshe@mellanox.com>
+ <1595165763-13657-2-git-send-email-moshe@mellanox.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <84c465a4-867e-80de-f38b-9fb7da733e0e@gmail.com>
+Date:   Mon, 20 Jul 2020 10:44:35 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <1595165763-13657-2-git-send-email-moshe@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-skb_put_padto() can fail. So check for return type and return NULL
-for skb. Caller checks for skb and acts correctly if it is NULL.
+On 7/19/20 7:36 AM, Moshe Shemesh wrote:
+> From: Vladyslav Tarasiuk <vladyslavt@mellanox.com>
+> 
+> Add a capability of printing port handles for arrays in non-JSON format
+> in devlink-health manner.
+> 
+> Signed-off-by: Vladyslav Tarasiuk <vladyslavt@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> ---
+>  devlink/devlink.c |   14 +++++++++++++-
+>  1 files changed, 13 insertions(+), 1 deletions(-)
+> 
+> diff --git a/devlink/devlink.c b/devlink/devlink.c
+> index 6768149..bb4588e 100644
+> --- a/devlink/devlink.c
+> +++ b/devlink/devlink.c
+> @@ -2112,7 +2112,19 @@ static void __pr_out_port_handle_start(struct dl *dl, const char *bus_name,
+>  			open_json_object(buf);
+>  		}
+>  	} else {
+> -		pr_out("%s:", buf);
+> +		if (array) {
+> +			if (should_arr_last_port_handle_end(dl, bus_name, dev_name, port_index))
+> +				__pr_out_indent_dec();
+> +			if (should_arr_last_port_handle_start(dl, bus_name,
+> +							      dev_name, port_index)) {
+> +				pr_out("%s:", buf);
+> +				__pr_out_newline();
+> +				__pr_out_indent_inc();
+> +				arr_last_port_handle_set(dl, bus_name, dev_name, port_index);
+> +			}
+> +		} else {
+> +			pr_out("%s:", buf);
+> +		}
+>  	}
+>  }
+>  
+> 
 
-Fixes: 6d6148bc78d2 ("net: hsr: fix incorrect lsdu size in the tag of HSR frames for small frames")
-
-Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
----
- net/hsr/hsr_forward.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
-
-diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-index e42fd356f073..1ea17752fffc 100644
---- a/net/hsr/hsr_forward.c
-+++ b/net/hsr/hsr_forward.c
-@@ -120,15 +120,17 @@ static struct sk_buff *frame_get_stripped_skb(struct hsr_frame_info *frame,
- 	return skb_clone(frame->skb_std, GFP_ATOMIC);
- }
- 
--static void hsr_fill_tag(struct sk_buff *skb, struct hsr_frame_info *frame,
--			 struct hsr_port *port, u8 proto_version)
-+static struct sk_buff *hsr_fill_tag(struct sk_buff *skb,
-+				    struct hsr_frame_info *frame,
-+				    struct hsr_port *port, u8 proto_version)
- {
- 	struct hsr_ethhdr *hsr_ethhdr;
- 	int lane_id;
- 	int lsdu_size;
- 
- 	/* pad to minimum packet size which is 60 + 6 (HSR tag) */
--	skb_put_padto(skb, ETH_ZLEN + HSR_HLEN);
-+	if (skb_put_padto(skb, ETH_ZLEN + HSR_HLEN))
-+		return NULL;
- 
- 	if (port->type == HSR_PT_SLAVE_A)
- 		lane_id = 0;
-@@ -147,6 +149,8 @@ static void hsr_fill_tag(struct sk_buff *skb, struct hsr_frame_info *frame,
- 	hsr_ethhdr->hsr_tag.encap_proto = hsr_ethhdr->ethhdr.h_proto;
- 	hsr_ethhdr->ethhdr.h_proto = htons(proto_version ?
- 			ETH_P_HSR : ETH_P_PRP);
-+
-+	return skb;
- }
- 
- static struct sk_buff *create_tagged_skb(struct sk_buff *skb_o,
-@@ -175,9 +179,10 @@ static struct sk_buff *create_tagged_skb(struct sk_buff *skb_o,
- 	memmove(dst, src, movelen);
- 	skb_reset_mac_header(skb);
- 
--	hsr_fill_tag(skb, frame, port, port->hsr->prot_version);
--
--	return skb;
-+	/* skb_put_padto free skb on error and hsr_fill_tag returns NULL in
-+	 * that case
-+	 */
-+	return hsr_fill_tag(skb, frame, port, port->hsr->prot_version);
- }
- 
- /* If the original frame was an HSR tagged frame, just clone it to be sent
--- 
-2.17.1
-
+Why can't the 'if (dl->json_output) {' check be removed and this part be
+folded in with the context handled automatically by the print functions?
