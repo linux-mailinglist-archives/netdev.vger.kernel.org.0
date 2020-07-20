@@ -2,175 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10EAA226CDE
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:09:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25428226CBC
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 19:02:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731299AbgGTRIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 13:08:34 -0400
-Received: from rcdn-iport-7.cisco.com ([173.37.86.78]:18567 "EHLO
-        rcdn-iport-7.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728735AbgGTRIb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 13:08:31 -0400
-X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Mon, 20 Jul 2020 13:08:29 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=2398; q=dns/txt; s=iport;
-  t=1595264909; x=1596474509;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=VX3c/+Mxe9HMyKrf6gzXcvD3vCStJB5sHZuUnRwt/mk=;
-  b=Op/V/+g1IzbX7ZMEo9X8IJbH86i04l8NDIwQsNZPOICnjYirQQr7Om+A
-   y7LPHwYbUoBXxby+TvvAQaWMbZPmOB7/6lXRuGa6giqXpcq60AUSGx1m/
-   zHRUtRIlYcahWtG8hOCv7RS6bvMeYEltvNv0rVX29iAgHz+zVCvUaNHWX
-   w=;
-IronPort-PHdr: =?us-ascii?q?9a23=3A2k0rjhXisYcjptYXSkk1s2gacU3V8LGuZFwc94?=
- =?us-ascii?q?YnhrRSc6+q45XlOgnF6O5wiEPSBNyHuf1BguvS9avnXD9I7ZWAtSUEd5pBH1?=
- =?us-ascii?q?8AhN4NlgMtSMiCFQXgLfHsYiB7eaYKVFJs83yhd0QAHsH4ag7dp3Sz6XgZHR?=
- =?us-ascii?q?CsfQZwL/7+T4jVicn/3uuu+prVNgNPgjf1Yb57IBis6wvLscxDiop5IaF3wR?=
- =?us-ascii?q?zM8XY=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0CrBQCLzBVf/5FdJa1gHAEBAQEBAQc?=
- =?us-ascii?q?BARIBAQQEAQFAgUqBUlEHgUcvLAqEKYNGA41LigKOXIJTA1ULAQEBDAEBLQI?=
- =?us-ascii?q?EAQGETAIXgggCJDgTAgMBAQsBAQUBAQECAQYEbYVcDIVyAQEBAxIREQwBATc?=
- =?us-ascii?q?BDwIBCBgCAiYCAgIfERUQAgQBDQUbB4MEgkwDLQEBoDcCgTmIYXaBMoMBAQE?=
- =?us-ascii?q?FhQ0NC4IOCRR6KoJqg1WGM4IagTgcgk0+ghqCI4MWM4ItgUcBjXOCXzyiKE0?=
- =?us-ascii?q?GBIJdlHOEcAMVCYJ6iT6TEC2RVI0EkXsCBAIEBQIOAQEFgWojgVdwUCoBc4F?=
- =?us-ascii?q?LUBcCDY4eg3GKVnQ3AgYBBwEBAwl8jgIBgRABAQ?=
-X-IronPort-AV: E=Sophos;i="5.75,375,1589241600"; 
-   d="scan'208";a="790727111"
-Received: from rcdn-core-9.cisco.com ([173.37.93.145])
-  by rcdn-iport-7.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 20 Jul 2020 17:01:13 +0000
-Received: from XCH-ALN-001.cisco.com (xch-aln-001.cisco.com [173.36.7.11])
-        by rcdn-core-9.cisco.com (8.15.2/8.15.2) with ESMTPS id 06KH1DKp004879
-        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=FAIL);
-        Mon, 20 Jul 2020 17:01:13 GMT
-Received: from xhs-rtp-002.cisco.com (64.101.210.229) by XCH-ALN-001.cisco.com
- (173.36.7.11) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Jul
- 2020 12:01:13 -0500
-Received: from xhs-aln-003.cisco.com (173.37.135.120) by xhs-rtp-002.cisco.com
- (64.101.210.229) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Jul
- 2020 13:01:12 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (173.37.151.57)
- by xhs-aln-003.cisco.com (173.37.135.120) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Mon, 20 Jul 2020 12:01:12 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jV4dDuK638lYiLJypWbKUOtbraHutmEw+NNQR1teB/OGahbMm+p0zwdSJ8Rcn9V1Emfw1g6jf8oIFywfLiPklnK49tEIFdcyAvERT8D9u7dRgm0NR6Xy7gxNOqMAXU5/r6YiyZzwcOSQU1SQCGqobzO1S5qjvuETFR2EKx/a8JrtD8whH29y0MGlO/PHx7HbiYtPQ+Xt0ExcNtCeMtABaaGbnQqZzfNwVAQ49fRs8bAE5kaApOy7CzmsAai8iKGRgN9Me5MsDgUFn6Ko1MqM+tjkDVpri2k+0eckPlBOHpXr2K3dbIrh0sECEXpaSLDM1IWAsPfEoerVqZUa51qHag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VX3c/+Mxe9HMyKrf6gzXcvD3vCStJB5sHZuUnRwt/mk=;
- b=Zz/npAafgC8HqSHudTsDOmlErbUnr3q60/MR/UnU5fuGcYCBlPMHyLsO1LbvP+Bv5GrsbP+yvC+L+y0Vwr0upSG+PUS4Vt2l/zWRXHOJq1+ZdLwo+bFBk6jhjFdqYdZQ6Q/aPDDDNx+igiDZlOVLODRrFneFSpc8WVFXzmyqLN7YznbltndKue/7nuu/8AKgt5VCH4Dl4uXV0+KjWVgX2usHAcJaQ3HUWpSXfmkgx7Iwyf88jT81zvnEOCyVB31XR6TY6rv2oLni7SOS4WeURA7vg3RU+xmTjAjyrmqKhvCloLqdxsmD5wfQnniqHb4Ke2ZMEX67C5rS6sVviclV/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=cisco.com; dmarc=pass action=none header.from=cisco.com;
- dkim=pass header.d=cisco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cisco.onmicrosoft.com;
- s=selector2-cisco-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VX3c/+Mxe9HMyKrf6gzXcvD3vCStJB5sHZuUnRwt/mk=;
- b=zCG7KMAry1RiEPGBywgtax2xRxEXpbv9A4duziRJ71QVSrn2fvRpwDBWYHWeqjrB/GHKFkgHryKv6H+T1HyvBX/D2qi22h6QozJM7Pa69hY+Le1jhmi/em4bUKButq0G/iBuav/UPsE1KL8kz7LkW+5NrNIrTGv4x75cOoshMO4=
-Received: from CY4PR1101MB2101.namprd11.prod.outlook.com
- (2603:10b6:910:24::18) by CY4PR11MB1255.namprd11.prod.outlook.com
- (2603:10b6:903:30::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.18; Mon, 20 Jul
- 2020 17:01:11 +0000
-Received: from CY4PR1101MB2101.namprd11.prod.outlook.com
- ([fe80::6c4e:645e:fcf9:f766]) by CY4PR1101MB2101.namprd11.prod.outlook.com
- ([fe80::6c4e:645e:fcf9:f766%11]) with mapi id 15.20.3195.025; Mon, 20 Jul
- 2020 17:01:10 +0000
-From:   "Sriram Krishnan (srirakr2)" <srirakr2@cisco.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "Malcolm Bumgardner (mbumgard)" <mbumgard@cisco.com>,
-        "Umesha G M (ugm)" <ugm@cisco.com>,
-        "Niranjan M M (nimm)" <nimm@cisco.com>,
-        "Daniel Walker (danielwa)" <danielwa@cisco.com>
-Subject: Re: [PATCH v2] AF_PACKET doesnt strip VLAN information
-Thread-Topic: [PATCH v2] AF_PACKET doesnt strip VLAN information
-Thread-Index: AQHWXRxVWAaissRR4kW2xbRd/pNvc6kP2PgOgACm0ICAAJDsAA==
-Date:   Mon, 20 Jul 2020 17:01:09 +0000
-Message-ID: <EFC5EACE-753A-430E-84D5-E22C3F8C5106@cisco.com>
-References: <20200718091732.8761-1-srirakr2@cisco.com>
- <CA+FuTSdfvctFD3AVMHzQV9efQERcKVE1TcYVD_T84eSgq9x4OA@mail.gmail.com>
- <CY4PR1101MB21013DCD55B754E29AF4A838907B0@CY4PR1101MB2101.namprd11.prod.outlook.com>
- <CAF=yD-+gCkPVkXwcH6KiKYGV77TvpZiDo=3YyXeuGFk=TR2dcw@mail.gmail.com>
-In-Reply-To: <CAF=yD-+gCkPVkXwcH6KiKYGV77TvpZiDo=3YyXeuGFk=TR2dcw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-user-agent: Microsoft-MacOutlook/16.39.20071300
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=cisco.com;
-x-originating-ip: [106.51.23.252]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f70b15a2-2605-4840-7b81-08d82cce8048
-x-ms-traffictypediagnostic: CY4PR11MB1255:
-x-ld-processed: 5ae1af62-9505-4097-a69a-c1553ef7840e,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CY4PR11MB1255772781983656C6915970907B0@CY4PR11MB1255.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MOLuYBEuNN5VrRJZld7vUGm91CvzcmSPyZKrwkEQDatT2orkVDba5GVuw0iveJpBfsd0+6kz9wBAivR+UtFOoP3Q6wTh6W8Ik+Nl1uY0VoVLvtOwDB/F0bJb+n2tbqn26Qb17uptYQtb92lNIokwjMVkNXF1yb2Y+N4KeWG2Enn/W3x6b4ZaDinr3sgfHQmfHn167eWdNS9ryBvGGYcg+oDWE/nJZ7ZgOcNjO6QZlbRMuKi7OZp9gOpv6ZJ8yVxuROXzUMPsVlL1fB5qinJ2vZGv6vy2plXVn0uyXw4gFopPADl/wLIuxiP5A/6OV0ETtNixf1Z2kn618z95z3cv+g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR1101MB2101.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(136003)(366004)(396003)(39860400002)(6486002)(4326008)(478600001)(91956017)(83380400001)(6512007)(2906002)(8936002)(54906003)(110136005)(36756003)(8676002)(5660300002)(64756008)(66446008)(66476007)(66556008)(66946007)(316002)(76116006)(107886003)(55236004)(186003)(26005)(33656002)(6506007)(53546011)(86362001)(2616005)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: TE1pElfmz6IaoRSJrEX72PoKPSQddai0YN2xIAD2Uj12ShCicVPdkwGzAc4FGi7Ck0p6SgaupqONZ9sG4c+NFYL2Vx0so0eqJNACgqE6AGJc+OraCXjZ70yG7XaGPiQZLpIEHYTm7QVg3TDosLH+xto8CkFTOQbawHX0uLR61dLzZzn1/hyzlGlz74Au5r3n4w1nrhV5QLpkVzeyMSSsYeK9xJwBL3U8iFH6fjEuZuJRwNHnKZxPzJd72xJPcMtLAo/UIEi88Bsvd5XpLSF+ENN/ii5ZTor2dGznp7yGACUa7FHfQS9DJscNvUA4lvk1zYY9ciooGjrDJDOPgk22FW22QpPrrWWNyLQFUmQ3WBhF7UXyQdFpG37+Y++6Hh3oU1kEG6QdgqkluBU4/NA0jCTcPWzMAR6FEO2xyc3sw3QZBEfR3Hec1RtryKFnbvXKN9VFifitK0ZKXA2qOiavfvfI7WnSNAgmpsIu/CpOqWA=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <EF9E762792042549AB7B66B438024889@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1731331AbgGTRBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 13:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730389AbgGTRBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 13:01:48 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3AEC061794;
+        Mon, 20 Jul 2020 10:01:48 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id g10so409812wmc.1;
+        Mon, 20 Jul 2020 10:01:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=t669anBqLos6Vcl28w8ODQETuDDsXDBeiiuUTFvLDaA=;
+        b=G/lWA/T7aQJwcV44sxD/ICNXA5wJZt05YOayOkiNRezN9qXSKjrkl48IU2uMcSvln+
+         VyoEyNMi2acHbG0ien3TPGojBiQ++jXxmegcJoJmh+LNMlXgf1FZ9ok3cX3wH3DbTR+k
+         DblhAu+iN+j0o+wRbM+QaE/9L77eOD2Uzd/s/E3J4JmHS+vlWiqhYC2izqqNrLrIkQwY
+         LeyBzJ8rOjdio/UsTlBlClkGBIxX80RsWOkbELuolbPG8vP7zok+x7zBtcceIXDQW65A
+         1Qwnn8E0IuwzYmICJ7pOaSO1D6OwsyC0DK35uAu9TvtlidMnOpqfRLtLMR54g/yxrHML
+         JQFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=t669anBqLos6Vcl28w8ODQETuDDsXDBeiiuUTFvLDaA=;
+        b=TYKV109qSYz+nxTBnmTTiX8AjEj987lInIThHt5AAmLH6OXllOwGXwHAF/52qzTUG/
+         vFb+Cj4izjR0t9rYG1ASNHZN7yWLjqDEjIOqmkHCTlDapO3tYv9g2/yjE7g4Yof5c0BM
+         KOlTieA164pADLuNC8UCxsUGjPorKmMw08EkfDjbfv4SblVKFXMGjZsEgxX1RCHwyqU7
+         elWVfD9ipnSgl39sG/RNEGq1h7M1aDJKwZJ5sU2C3R2kXmM5PudF+XdBfAh/fY3nRKOw
+         d2BxkL3LzzaOL0YgzBo6EELJb2jo5WsbWjuqdDNah/GixHMU7TXt4iJyW+Wqrcs/HQE7
+         6zbw==
+X-Gm-Message-State: AOAM532rGZRnO8/SXEIDiLF0Fw3JI3P9FEvMvxCgfH0bP/0f5CXLc0Xe
+        4ytrkdpEKdeBLmswuAINv2A+hU41
+X-Google-Smtp-Source: ABdhPJzY91uaXiv5cK8uZWgBltqZtFsuIhnGhgT7YtCisgdjG18fla0W8v0iWTRQn7yxaRZS5hbPhA==
+X-Received: by 2002:a1c:1f09:: with SMTP id f9mr255246wmf.137.1595264506550;
+        Mon, 20 Jul 2020 10:01:46 -0700 (PDT)
+Received: from [10.67.50.75] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id u1sm42127246wrb.78.2020.07.20.10.01.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jul 2020 10:01:45 -0700 (PDT)
+Subject: Re: [PATCH net] net: bcmgenet: add missed clk_disable_unprepare in
+ bcmgenet_probe
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>, opendmb@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1595237794-11530-1-git-send-email-zhangchangzhong@huawei.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <f272bf64-73e2-72ab-3717-cc094b30140c@gmail.com>
+Date:   Mon, 20 Jul 2020 10:01:37 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR1101MB2101.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f70b15a2-2605-4840-7b81-08d82cce8048
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2020 17:01:09.8255
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5ae1af62-9505-4097-a69a-c1553ef7840e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: f5iLwI1PnTalode6cAsTuKOiMJB47c3WZsadnPql44kpooGHQTef9XBioePdHs5f4EpRMa7ljlGLklDsrwrOcg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1255
-X-OriginatorOrg: cisco.com
-X-Outbound-SMTP-Client: 173.36.7.11, xch-aln-001.cisco.com
-X-Outbound-Node: rcdn-core-9.cisco.com
+In-Reply-To: <1595237794-11530-1-git-send-email-zhangchangzhong@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SSBoYXZlIG1vdmVkIHRoZSBjb2RlIHRvIHRoZSBkcml2ZXIgYW5kIHB1c2hlZCBhIG5ldyBwYXRj
-aCBkdWUgdG8gdGhlIGJlbG93IGhpZ2hsaWdodGVkIGlzc3Vlcy4NCg0KU3RlcGhlbiBILA0KUGxl
-YXNlIGxldCBtZSBrbm93IGlmIHlvdSBoYXZlIGFueSBjb25jZXJucyBsb2NhbGlzaW5nIHRoZSBj
-aGFuZ2VzIHRvIHRoZSBuZXR2c2MgZHJpdmVyLg0KDQoNClRoYW5rcywNClNyaXJhbQ0KDQrvu79P
-biAyMC8wNy8yMCwgNzoyMyBQTSwgIldpbGxlbSBkZSBCcnVpam4iIDx3aWxsZW1kZWJydWlqbi5r
-ZXJuZWxAZ21haWwuY29tPiB3cm90ZToNCg0KICAgIE9uIE1vbiwgSnVsIDIwLCAyMDIwIGF0IDEy
-OjI3IEFNIFNyaXJhbSBLcmlzaG5hbiAoc3JpcmFrcjIpDQogICAgPHNyaXJha3IyQGNpc2NvLmNv
-bT4gd3JvdGU6DQogICAgPg0KICAgID4gK1N0ZXBoZW4gSGVtbWluZ2VyDQogICAgPg0KICAgID4g
-SGkgV2lsbGVtLA0KICAgID4gVGhhbmtzIGZvciBsb29raW5nIGludG8gdGhlIGNvZGUsIEkgdW5k
-ZXJzdGFuZCB0aGF0IHRoaXMgaXMgbW9yZSBvZiBhIGdlbmVyaWMgcHJvYmxlbSB3aGVyZWluIG1h
-bnkgb2YgdGhlIGZpbHRlcmluZyBmdW5jdGlvbnMgYXNzdW1lIHRoZSB2bGFuIHRhZyB0byBiZSBp
-biB0aGUgc2tiIHJhdGhlciB0aGFuIGluIHRoZSBwYWNrZXQuIEhlbmNlIHdlIG1vdmVkIHRoZSBm
-aXggZnJvbSB0aGUgZHJpdmVyIHRvIHRoZSBjb21tb24gQUYgcGFja2V0IHRoYXQgb3VyIHNvbHV0
-aW9uIHVzZXMuDQogICAgPg0KICAgID4gSSByZWNhbGwgZnJvbSB0aGUgdjEgb2YgdGhlIHBhdGNo
-IHlvdSBoYWQgbWVudGlvbmVkIG90aGVyIGNvbW1vbiBhcmVhcyB3aGVyZSB0aGlzIGZpeCBtaWdo
-dCBiZSByZWxldmFudCAoc3VjaCBhcyB0YXAvdHVuKSwgYnV0IEknbSBhZnJhaWQgSSBjYW50IGNv
-bXByZWhlbnNpdmVseSB0ZXN0IHRob3NlIHBhdGNoZXMgb3V0LiBQbGVhc2UgbGV0IG1lIGtub3cg
-eW91ciB0aG91Z2h0cw0KDQogICAgUGxlYXNlIHVzZSBwbGFpbiB0ZXh0IHRvIHJlc3BvbmQuIEhU
-TUwgcmVwbGllcyBkbyBub3QgcmVhY2ggdGhlIGxpc3QuDQoNCiAgICBDYW4geW91IGJlIG1vcmUg
-cHJlY2lzZSBpbiB3aGljaCBvdGhlciBjb2RlIGJlc2lkZXMgdGhlIGh5cGVyLXYgZHJpdmVyDQog
-ICAgaXMgYWZmZWN0ZWQ/IERvIHlvdSBoYXZlIGFuIGV4YW1wbGU/DQoNCiAgICBUaGlzIGlzIGEg
-cmVzdWJtaXQgb2YgdGhlIG9yaWdpbmFsIHBhdGNoLiBNeSBwcmV2aW91cw0KICAgIHF1ZXN0aW9u
-cy9jb25jZXJucyByZW1haW4gdmFsaWQ6DQoNCiAgICAtIGlmIHRoZSBmdW5jdGlvbiBjYW4gbm93
-IGZhaWwsIGFsbCBjYWxsZXJzIG11c3QgYmUgdXBkYXRlZCB0byBkZXRlY3QNCiAgICBhbmQgaGFu
-ZGxlIHRoYXQNCg0KICAgIC0gYW55IHNvbHV0aW9uIHNob3VsZCBwcm9iYWJseSBhZGRyZXNzIGFs
-bCBpbnB1dHMgaW50byB0aGUgdHggcGF0aDoNCiAgICBwYWNrZXQgc29ja2V0cywgdHVudGFwLCB2
-aXJ0aW8tbmV0DQoNCiAgICAtIHRoaXMgb25seSBhZGRyZXNzZXMgcGFja2V0IHNvY2tldHMgd2l0
-aCBFVEhfUF9BTEwvRVRIX1BfTk9ORS4gTm90DQogICAgc29ja2V0cyB0aGF0IHNldCBFVEhfUF84
-MDIxUQ0KDQogICAgLSB3aGljaCBjb2RlIGluIHRoZSB0cmFuc21pdCBzdGFjayByZXF1aXJlcyB0
-aGUgdGFnIHRvIGJlIGluIHRoZSBza2IsDQogICAgYW5kIGRvZXMgdGhpcyBwcm9ibGVtIGFmdGVy
-IHRoaXMgcGF0Y2ggc3RpbGwgcGVyc2lzdCBmb3IgUS1pbi1RPw0KDQo=
+On 7/20/20 2:36 AM, Zhang Changzhong wrote:
+> The driver forgets to call clk_disable_unprepare() in error path after
+> a success calling for clk_prepare_enable().
+> 
+> Fix to goto err_clk_disable if clk_prepare_enable() is successful.
+> 
+> Fixes: c80d36ff63a5 ("net: bcmgenet: Use devm_clk_get_optional() to get the clocks")
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
