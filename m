@@ -2,119 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74A0E226E79
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:43:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16B73226E89
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 20:49:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730184AbgGTSnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 14:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728068AbgGTSnL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 14:43:11 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BED2C0619D2
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 11:43:11 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id v8so18714985iox.2
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 11:43:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YPZVBJPETEcKVyPp/u0wCI3wVOTtiMFzFIW5rSd1rmo=;
-        b=ofmi85aS5pDL9++61y1K0TBeiuYzYmt38pDjE31fp5y9ZKJBYp/UkqoaCl+GTIMHOy
-         ROBjIVR/TKBNDoDnWVEMzyGpkSLukFRKTXBKEcIEgXBsDSh6EN0pEjZKVJb2BnxGxJqV
-         I3QDeUhUC0o7ytWANDNGqF8zOO3m6Aa75ypRZU57VLf9B6vZCeJUldXTOJMMXTr4OQGN
-         KIkpX283ItLYqYuOQtX2UmABZ5gQDT0pnHpvfHk6Abk+/N8iV85TuoOcOOuBLYAGD46t
-         QJYIhVUueXptqMaCcr3oJoIpRQSSnFSJOst84l7QajDZT6nDqjp7VBRSMS1FHe5bXWB8
-         GHeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YPZVBJPETEcKVyPp/u0wCI3wVOTtiMFzFIW5rSd1rmo=;
-        b=ArEJ2oKV8nd2tJY5KwASCpSDbjyC6QA8nCa9329WgTXJZGTzOxjsHqjjctOe60fp06
-         1w4JQxX11f6k6YRPV9WI157yuRjMOsCdh4mVl/f53npBwdMDmPF0WWR9jgnpNyJU/LzC
-         +j6jwAZRuZzIF1scIzTI+ESa/YoWEKoKbciDwY94bpIQLZYvYK9giSt+d9zImrWMMvPb
-         84TNFk+FAfp1YB4xdNKLdM6KnhzBORSc5iYZhlawckwGUk3zC0bX2Hg4WkZVVJzHM315
-         yFVIuywXZwOU4RArr0wzQPK/s20WhVaI0qdDSwJZPUIb3qQQ4/xfEqpBcrhJhBIlnSPk
-         P6fg==
-X-Gm-Message-State: AOAM531jjHyErcBYnz9P6EumCGVXjy2g9U1cl2tvtgEX889eBhIIPfhZ
-        fAV9Eh41078cfM/6pKWfzSjSejWk43gdTlsyMbY=
-X-Google-Smtp-Source: ABdhPJzeHL5e9ggDPp6ijAuLOoSaD2p+TG7z4Te3vTYrzXHglC2KZ/IDr3fOvc9B49JA4+6PbsG56DkVP840AJHiSjE=
-X-Received: by 2002:a02:7419:: with SMTP id o25mr27371306jac.4.1595270590581;
- Mon, 20 Jul 2020 11:43:10 -0700 (PDT)
+        id S1729806AbgGTStG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 14:49:06 -0400
+Received: from ozlabs.org ([203.11.71.1]:48509 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726506AbgGTStG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 14:49:06 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4B9W3M0pHVz9sRN;
+        Tue, 21 Jul 2020 04:49:03 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1595270943;
+        bh=zq27nOBYvcnduPT0qa/MnnpZ+wkF+HYh9Y4xkg2KTGg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Q+RRQpkumPavfz8CkH17wXbg65W4nTRiiXA52DSTRMXdsmgBtSWocDsVimYIuwjbc
+         DOPcCKFKcCc1WTaMfNKUGRtZJJ1E1fH9p9tukxg3i05H8NH3pqBVjgBluoLEQ2eldI
+         hteo6gi1egVxa3wgGoDgr+88TvTruWEqBReT6BpArXdXSMLKM1JqXXbdpLl1bjcEIw
+         HByplhMDx+f0/KiP/5Gm0siPXHFa447bVvFxf/Znc33PZlnKZl4fgFXmxA1YVKRsP/
+         jLpeKuLkvbyhDTowByjoxuveFPbUEI/oBT7Y2W5Fk5e0de8pWVa8qGUY4QZ0h3ilN+
+         W0zO1OshhPQBA==
+Date:   Tue, 21 Jul 2020 04:49:02 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: linux-next: Tree for Jul 20 (kernel/bpf/net_namespace)
+Message-ID: <20200721044902.24ebe681@canb.auug.org.au>
+In-Reply-To: <a97220b2-9864-eb49-6e27-0ec5b7e5b977@infradead.org>
+References: <20200720194225.17de9962@canb.auug.org.au>
+        <a97220b2-9864-eb49-6e27-0ec5b7e5b977@infradead.org>
 MIME-Version: 1.0
-References: <20200716175526.14005-1-cphealy@gmail.com> <20200719211654.hwolppixqqwqz3rx@lion.mk-sys.cz>
-In-Reply-To: <20200719211654.hwolppixqqwqz3rx@lion.mk-sys.cz>
-From:   Chris Healy <cphealy@gmail.com>
-Date:   Mon, 20 Jul 2020 11:42:59 -0700
-Message-ID: <CAFXsbZqhHzhaRftx5515N8VTqHxRoDKvZ8-KjzvE0nUF3xBFpQ@mail.gmail.com>
-Subject: Re: [PATCH] ethtool: dsa: mv88e6xxx: add pretty dump for 88E6352 SERDES
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/xmO6y7t9HQPsaBUCZn1yWr5";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 19, 2020 at 2:16 PM Michal Kubecek <mkubecek@suse.cz> wrote:
->
-> On Thu, Jul 16, 2020 at 10:55:26AM -0700, Chris Healy wrote:
-> > From: Andrew Lunn <andrew@lunn.ch>
-> >
-> > In addition to the port registers, the device can provide the
-> > SERDES/PCS registers. Dump these, and for a few of the important
-> > SGMII/1000Base-X registers decode the bits.
-> >
-> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> > Signed-off-by: Chris Healy <cphealy@gmail.com>
-> > ---
-> [...]
-> > +     case 32 + 0:
-> > +             REG(reg - 32, "Fiber Control", val);
->
-> Could you give these "32" (and similar below) a name?
+--Sig_/xmO6y7t9HQPsaBUCZn1yWr5
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Yep, will do in v2.
->
-> [...]
-> > @@ -667,6 +850,17 @@ static int dsa_mv88e6xxx_dump_regs(struct ethtool_regs *regs)
-> >               else
-> >                       REG(i, "", data[i]);
-> >
-> > +     /* Dump the SERDES registers, if provided */
-> > +     if (regs->len > 32 * 2) {
->
-> sizeof(u16) would be easier to read, IMHO
+Hi all,
 
-Agreed, will do in v2.
+On Mon, 20 Jul 2020 08:51:54 -0700 Randy Dunlap <rdunlap@infradead.org> wro=
+te:
 >
-> > +             printf("\n%s Switch Port SERDES Registers\n", sw->name);
-> > +             printf("-------------------------------------\n");
-> > +             for (i = 32; i < regs->len / 2; i++)
-> > +                     if (sw->dump)
-> > +                             sw->dump(i, data[i]);
-> > +                     else
-> > +                             REG(i, "", data[i]);
->
-> In the dump handler above you subtract 32 (offset of SERDES registers,
-> IIUC) from register number but in the generic branch you don't, this
-> seems inconsistent.
+> on i386 or x86_64:
+>=20
+> # CONFIG_INET is not set
+> # CONFIG_NET_NS is not set
+>=20
+> ld: kernel/bpf/net_namespace.o: in function `bpf_netns_link_release':
+> net_namespace.c:(.text+0x32c): undefined reference to `bpf_sk_lookup_enab=
+led'
+> ld: kernel/bpf/net_namespace.o: in function `netns_bpf_link_create':
+> net_namespace.c:(.text+0x8b7): undefined reference to `bpf_sk_lookup_enab=
+led'
+> ld: kernel/bpf/net_namespace.o: in function `netns_bpf_pernet_pre_exit':
+> net_namespace.c:(.ref.text+0xa3): undefined reference to `bpf_sk_lookup_e=
+nabled'
 
-You are correct.  I tested this code path and it was reporting
-incorrectly.  Fix coming in v2.
+Caused by commit
 
->
-> Michal
->
-> > +     }
-> > +
-> >       return 0;
-> >  }
-> >
-> > --
-> > 2.21.3
-> >
+  1559b4aa1db4 ("inet: Run SK_LOOKUP BPF program on socket lookup")
+
+from the bpf-next tree.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/xmO6y7t9HQPsaBUCZn1yWr5
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8V5x4ACgkQAVBC80lX
+0Gw+bggAiG4QOWZgOHvyQPMwPYQT4XXnuO9bHIMt3T4rB7ldivNqz0Q0xIa1cbqE
+T29KxH1MZJMoNIvqwysHBV4yDD92GcZrgwrtsXUdGFvchzECx1MUXmSOynmA2wOr
+IS2HcUwh908AQ1oKhyxbAUKqUjgWlfmBKz8OMSV2NvTaCf0dl91QonqNzN6oYk8n
+YMG3sOH9xmFKFJvuUzoa0OmD/jnCShiL6COIA+BzoHjOE5voZPHSufNaOkzALiA4
+Fe4kLkOSQchdk4pddWIoyzoLQSDtfenYVruI4DRGNhKTZ3epUAsndiP2H5bvL2NR
+G1OK60saE5fCoMYoNBjw8ePh6RlBag==
+=Dcix
+-----END PGP SIGNATURE-----
+
+--Sig_/xmO6y7t9HQPsaBUCZn1yWr5--
