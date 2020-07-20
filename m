@@ -2,128 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE46D2271B3
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 23:45:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6232271F4
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 00:03:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729056AbgGTVpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 17:45:06 -0400
-Received: from mga18.intel.com ([134.134.136.126]:51314 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728402AbgGTVpE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 17:45:04 -0400
-IronPort-SDR: +0CHfCwxQIfqAxi9F1c7bxF+u8pIe00I+L4VnymHYsdjtN2D/yTsnJwq2UW7N2q9x0mbpmStC2
- TtLgk3dT0nkA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9688"; a="137503406"
-X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; 
-   d="scan'208";a="137503406"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2020 14:45:03 -0700
-IronPort-SDR: h/ZYH/Fb38cIrqPhcT2F+f5Ey56kAgbqAz1SwH1qpGtwZ4OiluD0TPxXvt6A9rYRNPVIq/UvcK
- lWMR7WPG9bIw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; 
-   d="scan'208";a="287694209"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.252.137.6]) ([10.252.137.6])
-  by orsmga006.jf.intel.com with ESMTP; 20 Jul 2020 14:45:03 -0700
-Subject: Re: [PATCH net-next 3/3] docs: networking: timestamping: add a set of
- frequently asked questions
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        richardcochran@gmail.com, sorganov@gmail.com,
-        linux-doc@vger.kernel.org
-References: <20200717161027.1408240-1-olteanv@gmail.com>
- <20200717161027.1408240-4-olteanv@gmail.com>
- <e6b6f240-c2b2-b57c-7334-4762f034aae3@intel.com>
- <20200718113519.htopj6tgfvimaywn@skbuf>
- <887fcc0d-4f3d-3cb8-bdea-8144b62c5d85@intel.com>
- <20200720210518.5uddqqbjuci5wxki@skbuf>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <0fb4754b-6545-f8dc-484f-56aee25796f6@intel.com>
-Date:   Mon, 20 Jul 2020 14:45:03 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726845AbgGTWDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 18:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726046AbgGTWDs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 18:03:48 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1664DC061794
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 15:03:48 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id d1so9344148plr.8
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 15:03:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=V0iCeeBn/xMelvFGdtIIBtJ/o5/aaD9RE8EBgqxRkgA=;
+        b=2Rf0bhhlUQW7lcvw2BhGFb24Z0q+GSPEmBcrloaWqV2XKjqi3MNXmxQGC2C8tvnGFi
+         he8Wj3PuX7wH5i/cNJGvzpgDM92WEGdNur1uzLGdkDdqKdr5r6Dn/1I5yBlDWtg/B+da
+         2Bl/oZzTrq+hE0MfDOIW9WTTy+Lc28h7nBLLoKCANLc1uurpH1ERqIKhvIDTma0T3lWs
+         aT1wk3zkmIZeWKWUPmC2aJJM69Dd/JBlj1DDpY1flwXdcKjZzxntUMtjAoaXM5iTJ9Hr
+         DlCRJGdLnxo6FVgGQTRDPqDvn1suDVewyuuW++NTDtBaaHzJhPGrNXsImeAGBJZOLeyG
+         gBZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=V0iCeeBn/xMelvFGdtIIBtJ/o5/aaD9RE8EBgqxRkgA=;
+        b=P3Qj5Rrn8w0I+W5uOouF6vaWs7mZ9WReQahhGwYVIgwAQncTCJxDR7yqH1dYektUor
+         AH/9OQbU6IYhGzpyAgsWiIV/CtSPI9DAkqIfdMEjkLEwatRgHwzHDTjMEfSZDynD4O+z
+         6467S9H5hr/LOrngM4BQt5RGgUIdzozDqvgqleAQbLNudLx1BMgOWYob8i8uHKeNqAUi
+         ZY0pPG8lbLq/wWBtc2EnvjjAHBk7JtArxKebPkq1bISMdLHEMvGKWrgKtxO4HK/WqvZK
+         BoIx8e30YzIy6+VSupAsiLiFUrtMxEflyRW3WpdG+eAJYQfwPbmCxBxVnShJp5KdKn42
+         4veA==
+X-Gm-Message-State: AOAM530mQtZqX4+/5y6OqQdvX8Iu+CZYy4eKZbbVkEVnPFldJjtzDmDO
+        NAYyMDpWOJLC60R/wRE3gVBStw==
+X-Google-Smtp-Source: ABdhPJzewFnKnvI+s+d7y6HpfDRXSifUHEqqaaqW8XuhL1gMTKasYISMCGKsxfeBj/Z0shF+dZ/vdQ==
+X-Received: by 2002:a17:90a:3523:: with SMTP id q32mr1298324pjb.185.1595282627317;
+        Mon, 20 Jul 2020 15:03:47 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id j3sm17309851pfe.102.2020.07.20.15.03.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2020 15:03:47 -0700 (PDT)
+Date:   Mon, 20 Jul 2020 15:03:38 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     "Sriram Krishnan (srirakr2)" <srirakr2@cisco.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "Malcolm Bumgardner (mbumgard)" <mbumgard@cisco.com>
+Subject: Re: [PATCH v2] AF_PACKET doesnt strip VLAN information
+Message-ID: <20200720150338.35e5e70e@hermes.lan>
+In-Reply-To: <CA+FuTScwyB_xo0q+ZfihnQCfyVYy_zibg7Kx-QYEVbnauykKDQ@mail.gmail.com>
+References: <20200718091732.8761-1-srirakr2@cisco.com>
+        <CA+FuTSdfvctFD3AVMHzQV9efQERcKVE1TcYVD_T84eSgq9x4OA@mail.gmail.com>
+        <CY4PR1101MB21013DCD55B754E29AF4A838907B0@CY4PR1101MB2101.namprd11.prod.outlook.com>
+        <CAF=yD-+gCkPVkXwcH6KiKYGV77TvpZiDo=3YyXeuGFk=TR2dcw@mail.gmail.com>
+        <20200720135650.1939665b@hermes.lan>
+        <CA+FuTScwyB_xo0q+ZfihnQCfyVYy_zibg7Kx-QYEVbnauykKDQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200720210518.5uddqqbjuci5wxki@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 20 Jul 2020 17:22:49 -0400
+Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
 
-
-On 7/20/2020 2:05 PM, Vladimir Oltean wrote:
-> On Mon, Jul 20, 2020 at 11:54:30AM -0700, Jacob Keller wrote:
->> On 7/18/2020 4:35 AM, Vladimir Oltean wrote:
->>> On Fri, Jul 17, 2020 at 04:12:07PM -0700, Jacob Keller wrote:
->>>> On 7/17/2020 9:10 AM, Vladimir Oltean wrote:
->>>>> +When the interface they represent offers both ``SOF_TIMESTAMPING_TX_HARDWARE``
->>>>> +and ``SOF_TIMESTAMPING_TX_SOFTWARE``.
->>>>> +Originally, the network stack could deliver either a hardware or a software
->>>>> +time stamp, but not both. This flag prevents software timestamp delivery.
->>>>> +This restriction was eventually lifted via the ``SOF_TIMESTAMPING_OPT_TX_SWHW``
->>>>> +option, but still the original behavior is preserved as the default.
->>>>> +
->>>>
->>>> So, this implies that we set this only if both are supported? I thought
->>>> the intention was to set this flag whenever we start a HW timestamp.
->>>>
->>>
->>> It's only _required_ when SOF_TIMESTAMPING_TX_SOFTWARE is used, it
->>> seems. I had also thought of setting 'SKBTX_IN_PROGRESS' as good
->>> practice, but there are many situations where it can do more harm than
->>> good.
->>>
->>
->> I guess I've only ever implemented a driver with software timestamping
->> enabled as an option. What sort of issues arise when you have this set?
->> I'm guessing that it's some configuration of stacked devices as in the
->> other cases? If the issue can't be fixed I'd at least like more
->> explanation here, since the prevailing convention is that we set this
->> flag, so understanding when and why it's problematic would be useful.
->>
->> Thanks,
->> Jake
+> On Mon, Jul 20, 2020 at 4:57 PM Stephen Hemminger
+> <stephen@networkplumber.org> wrote:
+> >
+> > On Mon, 20 Jul 2020 09:52:27 -0400
+> > Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+> >  
+> > > On Mon, Jul 20, 2020 at 12:27 AM Sriram Krishnan (srirakr2)
+> > > <srirakr2@cisco.com> wrote:  
+> > > >
+> > > > +Stephen Hemminger
+> > > >
+> > > > Hi Willem,
+> > > > Thanks for looking into the code, I understand that this is more of a generic problem wherein many of the filtering functions assume the vlan tag to be in the skb rather than in the packet. Hence we moved the fix from the driver to the common AF packet that our solution uses.
+> > > >
+> > > > I recall from the v1 of the patch you had mentioned other common areas where this fix might be relevant (such as tap/tun), but I'm afraid I cant comprehensively test those patches out. Please let me know your thoughts  
+> > >
+> > > Please use plain text to respond. HTML replies do not reach the list.
+> > >
+> > > Can you be more precise in which other code besides the hyper-v driver
+> > > is affected? Do you have an example?
+> > >
+> > > This is a resubmit of the original patch. My previous
+> > > questions/concerns remain valid:
+> > >
+> > > - if the function can now fail, all callers must be updated to detect
+> > > and handle that
+> > >
+> > > - any solution should probably address all inputs into the tx path:
+> > > packet sockets, tuntap, virtio-net
+> > >
+> > > - this only addresses packet sockets with ETH_P_ALL/ETH_P_NONE. Not
+> > > sockets that set ETH_P_8021Q
+> > >
+> > > - which code in the transmit stack requires the tag to be in the skb,
+> > > and does this problem after this patch still persist for Q-in-Q?  
+> >
+> > It matters because the problem is generic, not just to the netvsc driver.
+> > For example, BPF programs and netfilter rules will see different packets
+> > when send is through AF_PACKET than they would see for sends from the
+> > kernel stack.
+> >
+> > Presenting uniform data to the lower layers makes sense.  
 > 
-> Yes, the problematic cases have to do with stacked PHCs (DSA, PHY). The
-> pattern is that:
-> - DSA sets SKBTX_IN_PROGRESS
-> - calls dev_queue_xmit towards the MAC driver
-> - MAC driver sees SKBTX_IN_PROGRESS, thinks it's the one who set it
-> - MAC driver delivers TX timestamp
-> - DSA ends poll or receives TX interrupt, collects its timestamp, and
->   delivers a second TX timestamp
-> In fact this is explained in a bit more detail in the current
-> timestamping.rst file.
-> Not only are there existing in-tree drivers that do that (and various
-> subtle variations of it), but new code also has this tendency to take
-> shortcuts and interpret any SKBTX_IN_PROGRESS flag set as being set
-> locally. Good thing it's caught during review most of the time these
-> days. It's an error-prone design.
-> On the DSA front, 1 driver sets this flag (sja1105) and 3 don't (felix,
-> mv88e6xxx, hellcreek). The driver who had trouble because of this flag?
-> sja1105.
-> On the PHY front, 2 drivers set this flag (mscc_phy, dp83640) and 1
-> doesn't (ptp_ines). The driver who had trouble? dp83640.
-> So it's very far from obvious that setting this flag is 'the prevailing
-> convention'. For a MAC driver, that might well be, but for DSA/PHY,
-> there seem to be risks associated with doing that, and driver writers
-> should know what they're signing up for.
+> Are all forwarded and locally generated packets guaranteed to always
+> have VLAN information in the tag (so that this is indeed only an issue
+> with input from userspace, through tuntap, virtio and packet sockets)?
 > 
-
-Perhaps the issue is that the MAC driver using SKBTX_IN_PROGRESS as the
-mechanism for telling if it should deliver a timestamp. Shouldn't they
-be relying on SKBTX_HW_TSTAMP for the "please timestamp" notification,
-and then using their own mechanism for forwarding that timestamp once
-it's complete?
-
-I see a handful of drivers do rely on checking this, but I think that's
-the real bug here.
-
-> -Vladimir
+> I guess the first might be assured due to this in __netif_receive_skb_core:
 > 
+>         if (skb->protocol == cpu_to_be16(ETH_P_8021Q) ||
+>             skb->protocol == cpu_to_be16(ETH_P_8021AD)) {
+>                 skb = skb_vlan_untag(skb);
+>                 if (unlikely(!skb))
+>                         goto out;
+>         }
+> 
+> and the second by this in vlan_dev_hard_start_xmit:
+> 
+>         if (veth->h_vlan_proto != vlan->vlan_proto ||
+>             vlan->flags & VLAN_FLAG_REORDER_HDR) {
+>                 u16 vlan_tci;
+>                 vlan_tci = vlan->vlan_id;
+>                 vlan_tci |= vlan_dev_get_egress_qos_mask(dev, skb->priority);
+>                 __vlan_hwaccel_put_tag(skb, vlan->vlan_proto, vlan_tci);
+>         }
+> 
+> But I don't know this code very well, so that is based on a very
+> cursory glance only. Might well be missing other paths. (update: I
+> think pktgen is another example.)
+> 
+> Netfilter and BPF still need to handle tags in the packet for Q-in-Q,
+> right? So does this actually simplify their logic?
+> 
+> If the above holds and Q-in-Q is not a problem, then doing the same on
+> ingress from userspace may make sense. I don't know the kind of BPF
+> or netfilter programs what would be affected, and how.
+> 
+> Then it would be good to all those inputs at once to really plug the hole.
+> See also virtio_net_hdr_to_skb for another example of code that
+> applies to all of tuntap, virtio, pf_packet and uml.
+
+
+Older versions of Linux used to handle outer VLAN differentl
+based on what the driver supported. It was a mess.
+Some drivers and code paths would strip and put in meta-data, some
+would leave it in skb data. But in recent (like 5 yrs), the kernel
+has tried to be more uniform and only have vlan as skb tag.
+It looks like AF_PACKET was overlooked at that time.
