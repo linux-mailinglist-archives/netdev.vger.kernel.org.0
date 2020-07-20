@@ -2,213 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFB81225AC0
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 11:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1346225B13
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 11:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727844AbgGTJEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 05:04:23 -0400
-Received: from mail.intenta.de ([178.249.25.132]:33123 "EHLO mail.intenta.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726030AbgGTJEX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 05:04:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=ycCNQg06vjohcFdPdPMsQrPyMiY2v4ZEa75YpIy6dYo=;
-        b=GjRLiTzT9vAMQm6ZslnY5lMfueOFwykIpWs3eheHjf86Hy1JX/rAi3bB2vujj8U8gczkGEWbPfVkjB3X5+qxtrPUH1SXlnxZqglPvpN0dr5KveDUQ5/3A73te0CEk0nBp7Bxmu+KQsiXOGcpQ2Ej34g3sy+N8k9IJVANK4VAeU/zsDWULKGejnJwTuVvRrJ36HFWthL6UWcr5rDTojLg7lblf4uibyQMfp/pYJVT7AgWQF1KSQB+lTxkyc7CkUP1ONtmBlylTPlYPieqc3K1aICNgLXhYVQ7bwDdr/WzZ0L6vdVsZnYsDs3JZRJdIbzPVxLUCTqQMrQCfdUST1R1KA==;
-Date:   Mon, 20 Jul 2020 11:04:18 +0200
-From:   Helmut Grohne <helmut.grohne@intenta.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>
-Subject: [PATCH v3] net: dsa: microchip: call phy_remove_link_mode during
- probe
-Message-ID: <20200720090416.GA7307@laureti-dev>
-References: <20200717131814.GA1336433@lunn.ch>
+        id S1728193AbgGTJO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 05:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35844 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728182AbgGTJO4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 05:14:56 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C5CC0619D2
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 02:14:56 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id a6so17063686wrm.4
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 02:14:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=FCuuqmMApvaU0Jwh7PcOCLNiDVR6v/liq9Ls1s10hKA=;
+        b=d4j8ocWYj51cHVR4q5X/if/LQqG86BYtWS6u2KYiBLNhC7tWZ4RiqwxKHlCao/nwA4
+         by9Xch6API6gFoHz5qYgTOtYPH/GZBzbtQ9Z8aA2oPGnCGfVr4Sw5Z2QokkizcTw+lHB
+         sqlPyoynRsh+y+p7XCJ29LwWW+OKxb3feJMeE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=FCuuqmMApvaU0Jwh7PcOCLNiDVR6v/liq9Ls1s10hKA=;
+        b=Unznr1zi5ppsxC6dyS/pTkHAIJ9rH3LGE5x2rKKRZbM5/KEUqaxXzW8q9DVOCDw2cW
+         1SwtGAj43+1vet5yfr8sr3AtPFon64SjtJmwkSbO0ooSCHukDWs6hsdkf41CUXugIw8J
+         47Kd+iSi8vYFiKnxNiAN2vg+jkTp0sFaFuhK1iBZsNj95WzhseCdRSDuf1xWHLs77hhw
+         R8NUMTlxuBtevyFMLrWdjCNz8u/8t7g+4BFtndXin9i0rg2QD3/2NRM2X8VE9HYDA3c7
+         yZx/ug/qmY4MowTkB0bjYo2fSrR/D+Ea9xPfaoZuabn7lrhgtLHBgBW9n03DIQmSdQDl
+         OzMw==
+X-Gm-Message-State: AOAM532LxlT0XojGSfOv7LO6FeDWejwg+SEkuz7+0dX087+li2yywYBB
+        9gawGHQEX5NcgPM4NEflHJCvwv001XM=
+X-Google-Smtp-Source: ABdhPJylmYdJt+GG+Su47rxKKiz3INJHvP7IRSYpjjruNjFjQ38o16HNzgz4fMgPaD+y3VIvTXnraQ==
+X-Received: by 2002:adf:f248:: with SMTP id b8mr8613305wrp.247.1595236494694;
+        Mon, 20 Jul 2020 02:14:54 -0700 (PDT)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id v12sm19640320wrs.2.2020.07.20.02.14.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2020 02:14:54 -0700 (PDT)
+References: <e54f2aabf959f298939e5507b09c48f8c2e380be.1595170625.git.lorenzo@kernel.org>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, brouer@redhat.com, daniel@iogearbox.net,
+        lorenzo.bianconi@redhat.com, kuba@kernel.org
+Subject: Re: [PATCH bpf-next] bpf: cpumap: fix possible rcpu kthread hung
+In-reply-to: <e54f2aabf959f298939e5507b09c48f8c2e380be.1595170625.git.lorenzo@kernel.org>
+Date:   Mon, 20 Jul 2020 11:14:53 +0200
+Message-ID: <874kq2y2cy.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200717131814.GA1336433@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
- (10.10.16.48)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When doing "ip link set dev ... up" for a ksz9477 backed link,
-ksz9477_phy_setup is called and it calls phy_remove_link_mode to remove
-1000baseT HDX. During phy_remove_link_mode, phy_advertise_supported is
-called. Doing so reverts any previous change to advertised link modes
-e.g. using a udevd .link file.
+On Sun, Jul 19, 2020 at 05:52 PM CEST, Lorenzo Bianconi wrote:
+> Fix the following cpumap kthread hung. The issue is currently occurring
+> when __cpu_map_load_bpf_program fails (e.g if the bpf prog has not
+> BPF_XDP_CPUMAP as expected_attach_type)
+>
+> $./test_progs -n 101
+> 101/1 cpumap_with_progs:OK
+> 101 xdp_cpumap_attach:OK
+> Summary: 1/1 PASSED, 0 SKIPPED, 0 FAILED
+> [  369.996478] INFO: task cpumap/0/map:7:205 blocked for more than 122 seconds.
+> [  369.998463]       Not tainted 5.8.0-rc4-01472-ge57892f50a07 #212
+> [  370.000102] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [  370.001918] cpumap/0/map:7  D    0   205      2 0x00004000
+> [  370.003228] Call Trace:
+> [  370.003930]  __schedule+0x5c7/0xf50
+> [  370.004901]  ? io_schedule_timeout+0xb0/0xb0
+> [  370.005934]  ? static_obj+0x31/0x80
+> [  370.006788]  ? mark_held_locks+0x24/0x90
+> [  370.007752]  ? cpu_map_bpf_prog_run_xdp+0x6c0/0x6c0
+> [  370.008930]  schedule+0x6f/0x160
+> [  370.009728]  schedule_preempt_disabled+0x14/0x20
+> [  370.010829]  kthread+0x17b/0x240
+> [  370.011433]  ? kthread_create_worker_on_cpu+0xd0/0xd0
+> [  370.011944]  ret_from_fork+0x1f/0x30
+> [  370.012348]
+>                Showing all locks held in the system:
+> [  370.013025] 1 lock held by khungtaskd/33:
+> [  370.013432]  #0: ffffffff82b24720 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x28/0x1c3
+>
+> [  370.014461] =============================================
+>
+> Fixes: 9216477449f3 ("bpf: cpumap: Add the possibility to attach an eBPF program to cpumap")
+> Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  kernel/bpf/cpumap.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+>
+> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+> index 4c95d0615ca2..f1c46529929b 100644
+> --- a/kernel/bpf/cpumap.c
+> +++ b/kernel/bpf/cpumap.c
+> @@ -453,24 +453,27 @@ __cpu_map_entry_alloc(struct bpf_cpumap_val *value, u32 cpu, int map_id)
+>  	rcpu->map_id = map_id;
+>  	rcpu->value.qsize  = value->qsize;
+>
+> +	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, fd))
+> +		goto free_ptr_ring;
+> +
 
-phy_remove_link_mode is not meant to be used while opening a link and
-should be called during phy probe when the link is not yet available to
-userspace.
+I realize it's a code move, but fd == 0 is a valid descriptor number.
+The check is too strict, IMHO.
 
-Therefore move the phy_remove_link_mode calls into
-ksz9477_switch_register. It indirectly calls dsa_register_switch, which
-creates the relevant struct phy_devices and we update the link modes
-right after that. At that time dev->features is already initialized by
-ksz9477_switch_detect.
+>  	/* Setup kthread */
+>  	rcpu->kthread = kthread_create_on_node(cpu_map_kthread_run, rcpu, numa,
+>  					       "cpumap/%d/map:%d", cpu, map_id);
+>  	if (IS_ERR(rcpu->kthread))
+> -		goto free_ptr_ring;
+> +		goto free_prog;
+>
+>  	get_cpu_map_entry(rcpu); /* 1-refcnt for being in cmap->cpu_map[] */
+>  	get_cpu_map_entry(rcpu); /* 1-refcnt for kthread */
+>
+> -	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, fd))
+> -		goto free_ptr_ring;
+> -
+>  	/* Make sure kthread runs on a single CPU */
+>  	kthread_bind(rcpu->kthread, cpu);
+>  	wake_up_process(rcpu->kthread);
+>
+>  	return rcpu;
+>
+> +free_prog:
+> +	if (rcpu->prog)
+> +		bpf_prog_put(rcpu->prog);
+>  free_ptr_ring:
+>  	ptr_ring_cleanup(rcpu->queue, NULL);
+>  free_queue:
 
-Remove phy_setup from ksz_dev_ops as no users remain.
+Hung task splat is gone:
 
-Link: https://lore.kernel.org/netdev/20200715192722.GD1256692@lunn.ch/
-Fixes: 42fc6a4c613019 ("net: dsa: microchip: prepare PHY for proper advertisement")
-Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
----
- drivers/net/dsa/microchip/ksz9477.c    | 39 +++++++++++++-------------
- drivers/net/dsa/microchip/ksz_common.c |  2 --
- drivers/net/dsa/microchip/ksz_common.h |  2 --
- 3 files changed, 20 insertions(+), 23 deletions(-)
-
-On Fri, Jul 17, 2020 at 03:18:14PM +0200, Andrew Lunn wrote:
-> I'm not questioning the ordering. I'm questioning which phydev
-> structure is being manipulated.
-...
-> Is slave_dev->phydev == &dev->ports[i].phydev ?
-
-You are spot on. I mistakenly assumed this to be the case, but it really
-is not. Thank you. Your detailed explanations are much appreciated. This
-slipped my testing, because I only checked whether the 1Gbit HDX mode
-was correctly removed. It seems like something else does that already,
-so I didn't notice that I was operating on the wrong phy_device.
-
-The dev->ports[i].phydev is not actually exposed beyond the driver. The
-driver sets the phydev.speed in a few places and even reads it back in
-one place. It also sets phydev.duplex, but never reads it back. It
-queries phydev.link, which is statically 0 due to using devm_kzalloc.
-
-I think the use of this ksz_port.phydev is very misleading, but I'm
-unsure how to fix this. It is not clear to me whether all those updates
-should be performed on the connected phydev instead or whether this is
-just internal state tracking.
-
-That leaves the question of when to remove the link modes. ksz9477_setup
-is called before dsa_register_switch. At the time it runs, the port's
-slave device is a NULL pointer. The actual phydev is not linked up and
-we cannot access it. The phydev only gets initialized during
-dsa_register_switch when dsa_slave_phy_connect is called. Since there is
-no suitable hook there, we cannot change the link modes before
-phylink_connect_phy is called.
-
-As far as I understand your previous mails, it is not necessary to
-remove the link modes before phylink_connect_phy. So the next place
-after dsa_register_switch seems to be inside ksz9477_switch_register (as
-dsa_register_switch is the final call in ksz_switch_register). I'm
-unsure whether this poses a race condition with user space, but on the
-system under test, the race is reliably won if there is any.
-
-Beyond resolving the phydev mess, I wish that we could agree on the
-order of verbs and nouns in symbols in some way. dsa_register_switch vs.
-ksz_switch_register became confusing at a time. I see where either is
-coming from, but I think that consistency would be better here.
-
-Helmut
-
-changes since v2:
- * Operate on the correct phydev. Thanks to Andrew Lunn.
-changes since v1:
- * Don't change phy_remove_link_mode. Instead, call it at the right
-   time. Thanks to Andrew Lunn for the detailed explanation.
-
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 8d15c3016024..368964b09aae 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -974,23 +974,6 @@ static void ksz9477_port_mirror_del(struct dsa_switch *ds, int port,
- 			     PORT_MIRROR_SNIFFER, false);
- }
- 
--static void ksz9477_phy_setup(struct ksz_device *dev, int port,
--			      struct phy_device *phy)
--{
--	/* Only apply to port with PHY. */
--	if (port >= dev->phy_port_cnt)
--		return;
--
--	/* The MAC actually cannot run in 1000 half-duplex mode. */
--	phy_remove_link_mode(phy,
--			     ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
--
--	/* PHY does not support gigabit. */
--	if (!(dev->features & GBIT_SUPPORT))
--		phy_remove_link_mode(phy,
--				     ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
--}
--
- static bool ksz9477_get_gbit(struct ksz_device *dev, u8 data)
- {
- 	bool gbit;
-@@ -1603,7 +1586,6 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.get_port_addr = ksz9477_get_port_addr,
- 	.cfg_port_member = ksz9477_cfg_port_member,
- 	.flush_dyn_mac_table = ksz9477_flush_dyn_mac_table,
--	.phy_setup = ksz9477_phy_setup,
- 	.port_setup = ksz9477_port_setup,
- 	.r_mib_cnt = ksz9477_r_mib_cnt,
- 	.r_mib_pkt = ksz9477_r_mib_pkt,
-@@ -1617,7 +1599,26 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 
- int ksz9477_switch_register(struct ksz_device *dev)
- {
--	return ksz_switch_register(dev, &ksz9477_dev_ops);
-+	int ret, i;
-+	struct phy_device *phydev;
-+
-+	ret = ksz_switch_register(dev, &ksz9477_dev_ops);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < dev->phy_port_cnt; ++i) {
-+		phydev = dsa_to_port(dev->ds, i)->slave->phydev;
-+
-+		/* The MAC actually cannot run in 1000 half-duplex mode. */
-+		phy_remove_link_mode(phydev,
-+				     ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-+
-+		/* PHY does not support gigabit. */
-+		if (!(dev->features & GBIT_SUPPORT))
-+			phy_remove_link_mode(phydev,
-+					     ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
-+	}
-+	return ret;
- }
- EXPORT_SYMBOL(ksz9477_switch_register);
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index fd1d6676ae4f..7b6c0dce7536 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -358,8 +358,6 @@ int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
- 
- 	/* setup slave port */
- 	dev->dev_ops->port_setup(dev, port, false);
--	if (dev->dev_ops->phy_setup)
--		dev->dev_ops->phy_setup(dev, port, phy);
- 
- 	/* port_stp_state_set() will be called after to enable the port so
- 	 * there is no need to do anything.
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index f2c9bb68fd33..7d11dd32ec0d 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -119,8 +119,6 @@ struct ksz_dev_ops {
- 	u32 (*get_port_addr)(int port, int offset);
- 	void (*cfg_port_member)(struct ksz_device *dev, int port, u8 member);
- 	void (*flush_dyn_mac_table)(struct ksz_device *dev, int port);
--	void (*phy_setup)(struct ksz_device *dev, int port,
--			  struct phy_device *phy);
- 	void (*port_cleanup)(struct ksz_device *dev, int port);
- 	void (*port_setup)(struct ksz_device *dev, int port, bool cpu_port);
- 	void (*r_phy)(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
--- 
-2.20.1
-
+Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
