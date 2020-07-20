@@ -2,82 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89C5D226B12
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1A04226BB2
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 18:44:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389057AbgGTQin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 12:38:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51538 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732718AbgGTQik (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 12:38:40 -0400
-Received: from gmail.com (unknown [104.132.1.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2634122CBB;
-        Mon, 20 Jul 2020 16:38:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595263119;
-        bh=wlqo7kAx+og7PtKyjy/9X5uYlujAIR96QYTi8/c6yXY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KedFP10soudJd9FGCXk2UQ6mwGYV9FfLgr9Jehpfqo3DeBMYh9Cg2T64ka4vLb/9E
-         yZE0kTEtUh1mwFGolpaTN3qJTAigCNeN60HjhesQSQimi39aadhKkQmY9ZpzWdIGAc
-         DM8CICk2pF95QKtAIcFlAv4SRPp0hIAXO+8S+9xE=
-Date:   Mon, 20 Jul 2020 09:38:36 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-sctp@vger.kernel.org, linux-hams@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-can@vger.kernel.org, dccp@vger.kernel.org,
-        linux-decnet-user@lists.sourceforge.net,
-        linux-wpan@vger.kernel.org, linux-s390@vger.kernel.org,
-        mptcp@lists.01.org, lvs-devel@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-afs@lists.infradead.org,
-        tipc-discussion@lists.sourceforge.net, linux-x25@vger.kernel.org
-Subject: Re: get rid of the address_space override in setsockopt
-Message-ID: <20200720163836.GB1292162@gmail.com>
-References: <20200720124737.118617-1-hch@lst.de>
+        id S1731976AbgGTQng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 12:43:36 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:37650 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731575AbgGTQnc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 12:43:32 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06KGhSoS033897;
+        Mon, 20 Jul 2020 11:43:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1595263408;
+        bh=IhQglFTuHMFx3Wmu6u79WQ8Np7iv2tLYaEeJlwjbcSw=;
+        h=From:To:Subject:Date;
+        b=jP93GE6w7hi4lPU+yHZKbBdgM8MqhNdScpSBMPfMdqyka57tIwBKjs/Y7VvxD6nof
+         kTlqvUH6/sc78K7TVOFJdMPII9Rtle7J8DW3x/hLJuMhDLVYGD6G/IkhSR1Q0cHfA1
+         QhqBuwMpwWX6ltqwhhLHHVfrVWW0giKb51N6bjw4=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06KGhSdR113392
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 20 Jul 2020 11:43:28 -0500
+Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 20
+ Jul 2020 11:43:27 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 20 Jul 2020 11:43:27 -0500
+Received: from uda0868495.fios-router.home (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06KGhROP013493;
+        Mon, 20 Jul 2020 11:43:27 -0500
+From:   Murali Karicheri <m-karicheri2@ti.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net: hsr: check for return value of skb_put_padto()
+Date:   Mon, 20 Jul 2020 12:43:27 -0400
+Message-ID: <20200720164327.16977-1-m-karicheri2@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200720124737.118617-1-hch@lst.de>
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 02:47:13PM +0200, Christoph Hellwig wrote:
-> Hi Dave,
-> 
-> setsockopt is the last place in architecture-independ code that still
-> uses set_fs to force the uaccess routines to operate on kernel pointers.
-> 
-> This series adds a new sockptr_t type that can contained either a kernel
-> or user pointer, and which has accessors that do the right thing, and
-> then uses it for setsockopt, starting by refactoring some low-level
-> helpers and moving them over to it before finally doing the main
-> setsockopt method.
-> 
-> Note that I could not get the eBPF selftests to work, so this has been
-> tested with a testing patch that always copies the data first and passes
-> a kernel pointer.  This is something that works for most common sockopts
-> (and is something that the ePBF support relies on), but unfortunately
-> in various corner cases we either don't use the passed in length, or in
-> one case actually copy data back from setsockopt, so we unfortunately
-> can't just always do the copy in the highlevel code, which would have
-> been much nicer.
-> 
+skb_put_padto() can fail. So check for return type and return NULL
+for skb. Caller checks for skb and acts correctly if it is NULL.
 
-Please mention what git tree your patchset applies to.
+Fixes: 6d6148bc78d2 ("net: hsr: fix incorrect lsdu size in the tag of HSR frames for small frames")
 
-- Eric
+Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+---
+ net/hsr/hsr_forward.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
+index e42fd356f073..1ea17752fffc 100644
+--- a/net/hsr/hsr_forward.c
++++ b/net/hsr/hsr_forward.c
+@@ -120,15 +120,17 @@ static struct sk_buff *frame_get_stripped_skb(struct hsr_frame_info *frame,
+ 	return skb_clone(frame->skb_std, GFP_ATOMIC);
+ }
+ 
+-static void hsr_fill_tag(struct sk_buff *skb, struct hsr_frame_info *frame,
+-			 struct hsr_port *port, u8 proto_version)
++static struct sk_buff *hsr_fill_tag(struct sk_buff *skb,
++				    struct hsr_frame_info *frame,
++				    struct hsr_port *port, u8 proto_version)
+ {
+ 	struct hsr_ethhdr *hsr_ethhdr;
+ 	int lane_id;
+ 	int lsdu_size;
+ 
+ 	/* pad to minimum packet size which is 60 + 6 (HSR tag) */
+-	skb_put_padto(skb, ETH_ZLEN + HSR_HLEN);
++	if (skb_put_padto(skb, ETH_ZLEN + HSR_HLEN))
++		return NULL;
+ 
+ 	if (port->type == HSR_PT_SLAVE_A)
+ 		lane_id = 0;
+@@ -147,6 +149,8 @@ static void hsr_fill_tag(struct sk_buff *skb, struct hsr_frame_info *frame,
+ 	hsr_ethhdr->hsr_tag.encap_proto = hsr_ethhdr->ethhdr.h_proto;
+ 	hsr_ethhdr->ethhdr.h_proto = htons(proto_version ?
+ 			ETH_P_HSR : ETH_P_PRP);
++
++	return skb;
+ }
+ 
+ static struct sk_buff *create_tagged_skb(struct sk_buff *skb_o,
+@@ -175,9 +179,10 @@ static struct sk_buff *create_tagged_skb(struct sk_buff *skb_o,
+ 	memmove(dst, src, movelen);
+ 	skb_reset_mac_header(skb);
+ 
+-	hsr_fill_tag(skb, frame, port, port->hsr->prot_version);
+-
+-	return skb;
++	/* skb_put_padto free skb on error and hsr_fill_tag returns NULL in
++	 * that case
++	 */
++	return hsr_fill_tag(skb, frame, port, port->hsr->prot_version);
+ }
+ 
+ /* If the original frame was an HSR tagged frame, just clone it to be sent
+-- 
+2.17.1
+
