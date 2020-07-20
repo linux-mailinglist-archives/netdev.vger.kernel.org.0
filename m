@@ -2,99 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9D68225D27
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 13:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2C2C225D34
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 13:13:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728444AbgGTLMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 07:12:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52084 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727094AbgGTLMN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 07:12:13 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 689E92073A;
-        Mon, 20 Jul 2020 11:12:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595243533;
-        bh=9Yy+1VjcfL5aQqBqsh+BDfHhT28teG125L+0sNy5ehc=;
-        h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-        b=hAnDisAU5CkKAmHpE/TlDXaSa61cF0JA6RYkNQwVsbS2KHEPnHbsA064m/XFR1u/T
-         z//PW9qlfb6Lwl2oAr78zQ6ONpyQ79rnqVCxfhGpQ0WbjKfNRt5Zp9J68zrYhDPdF8
-         wriqqXI+iRwPMIMpW2FBryFhRaNOpStEuiSEMfmY=
-Date:   Mon, 20 Jul 2020 12:12:00 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Niklas <niklas.soderlund@ragnatech.se>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     devicetree@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-i2c@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-spi@vger.kernel.org, Prabhakar <prabhakar.csengg@gmail.com>,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Amit Kucheria <amit.kucheria@verdurent.com>
-In-Reply-To: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH 00/20] Add support for [H]SCIF/TMU/CMT/THS/SDHI/MSIOF/CAN[FD]/I2C/IIC/RWDT on R8A774E1
-Message-Id: <159524352070.8289.9628744508547399473.b4-ty@kernel.org>
+        id S1728518AbgGTLMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 07:12:47 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:40692 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728047AbgGTLMr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 07:12:47 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 4EC88F12689ECCFD9523;
+        Mon, 20 Jul 2020 19:12:42 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Mon, 20 Jul 2020 19:12:40 +0800
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+To:     <pantelis.antoniou@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] net: fs_enet: remove redundant null check
+Date:   Mon, 20 Jul 2020 19:12:33 +0800
+Message-ID: <1595243553-12325-1-git-send-email-zhangchangzhong@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jul 2020 12:08:50 +0100, Lad Prabhakar wrote:
-> This patch series enables support for following on RZ/G2H SoC,
-> * CPU OPP
-> * THS
-> * CMT/TMU
-> * I2C/IIC
-> * MSIOF
-> * RWDT
-> * SDHI
-> * SCIF/HSCIF
-> * CAN/CANFD
-> 
-> [...]
+Because clk_prepare_enable and clk_disable_unprepare already
+checked NULL clock parameter, so the additional checks are
+unnecessary, just remove them.
 
-Applied to
+Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+---
+ drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+diff --git a/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c b/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
+index b0d4b198..bf846b4 100644
+--- a/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
++++ b/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
+@@ -1043,8 +1043,7 @@ static int fs_enet_probe(struct platform_device *ofdev)
+ out_free_dev:
+ 	free_netdev(ndev);
+ out_put:
+-	if (fpi->clk_per)
+-		clk_disable_unprepare(fpi->clk_per);
++	clk_disable_unprepare(fpi->clk_per);
+ out_deregister_fixed_link:
+ 	of_node_put(fpi->phy_node);
+ 	if (of_phy_is_fixed_link(ofdev->dev.of_node))
+@@ -1065,8 +1064,7 @@ static int fs_enet_remove(struct platform_device *ofdev)
+ 	fep->ops->cleanup_data(ndev);
+ 	dev_set_drvdata(fep->dev, NULL);
+ 	of_node_put(fep->fpi->phy_node);
+-	if (fep->fpi->clk_per)
+-		clk_disable_unprepare(fep->fpi->clk_per);
++	clk_disable_unprepare(fep->fpi->clk_per);
+ 	if (of_phy_is_fixed_link(ofdev->dev.of_node))
+ 		of_phy_deregister_fixed_link(ofdev->dev.of_node);
+ 	free_netdev(ndev);
+-- 
+1.8.3.1
 
-Thanks!
-
-[1/1] spi: renesas,sh-msiof: Add r8a774e1 support
-      commit: b4f7f5f5470588e45e5d004f1dc4887af20f18c0
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
