@@ -2,71 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E24462255FA
-	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 04:54:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92A66225623
+	for <lists+netdev@lfdr.de>; Mon, 20 Jul 2020 05:21:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbgGTCyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jul 2020 22:54:41 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:48956 "EHLO huawei.com"
+        id S1726962AbgGTDU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jul 2020 23:20:57 -0400
+Received: from smtp23.cstnet.cn ([159.226.251.23]:41796 "EHLO cstnet.cn"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726225AbgGTCyl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Jul 2020 22:54:41 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 81E9F1D4A2635D05AA35;
-        Mon, 20 Jul 2020 10:54:38 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Mon, 20 Jul 2020
- 10:54:36 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <joe@perches.com>, <gtzalik@amazon.com>, <saeedb@amazon.com>,
-        <zorik@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <sameehj@amazon.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v2] net: ena: Fix using plain integer as NULL pointer in ena_init_napi_in_range
-Date:   Mon, 20 Jul 2020 10:53:09 +0800
-Message-ID: <20200720025309.18597-1-wanghai38@huawei.com>
+        id S1726499AbgGTDU5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Jul 2020 23:20:57 -0400
+Received: from localhost (unknown [159.226.5.99])
+        by APP-03 (Coremail) with SMTP id rQCowAB3fwMICxVf3jTfAQ--.59253S2;
+        Mon, 20 Jul 2020 11:10:00 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     jdmason@kudzu.us, davem@davemloft.net, kuba@kernel.org,
+        snelson@pensando.io, hkallweit1@gmail.com, mhabets@solarflare.com,
+        vulab@iscas.ac.cn, mst@redhat.com, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] net: vxge-main: Remove unnecessary cast in kfree()
+Date:   Mon, 20 Jul 2020 03:09:59 +0000
+Message-Id: <20200720030959.7365-1-vulab@iscas.ac.cn>
 X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-CFilter-Loop: Reflected
+X-CM-TRANSID: rQCowAB3fwMICxVf3jTfAQ--.59253S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7JrWxurW8uryruw4DurWUXFb_yoWkAwbE9F
+        WIqr1rWrs8G3y2kw4UCrn3Zr9I9Fs8X34fuayxKrZxAayDJrZ8Ar18XFsavr95Wr1fGF9x
+        Jwn2yryfW340qjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb3AFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUtVWrXwAv7VC2z280aVAFwI0_Gr1j6F4UJwAm72CE4IkC6x0Yz7
+        v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF
+        7I0E8cxan2IY04v7MxkIecxEwVAFwVW8GwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7x
+        kEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E
+        67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCw
+        CI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E
+        3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCT
+        nIWIevJa73UjIFyTuYvjfUenmRUUUUU
+X-Originating-IP: [159.226.5.99]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiAgIDA1Jhbk1DqQAAs6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix sparse build warning:
+Remove unnecassary casts in the argument to kfree.
 
-drivers/net/ethernet/amazon/ena/ena_netdev.c:2193:34: warning:
- Using plain integer as NULL pointer
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Suggested-by: Joe Perches <joe@perches.com>
-Acked-by: Shay Agroskin <shayagr@amazon.com>
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
 ---
-v1->v2:
- Improve code readability based on Joe Perches's suggestion 
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/neterion/vxge/vxge-main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 91be3ffa1c5c..470d8f38b824 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -2190,11 +2190,10 @@ static void ena_del_napi_in_range(struct ena_adapter *adapter,
- static void ena_init_napi_in_range(struct ena_adapter *adapter,
- 				   int first_index, int count)
- {
--	struct ena_napi *napi = {0};
- 	int i;
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+index 9b63574b6202..3a43ec603a8b 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+@@ -1075,7 +1075,7 @@ static int vxge_mac_list_del(struct vxge_vpath *vpath, struct macInfo *mac)
+ 	list_for_each_safe(entry, next, &vpath->mac_addr_list) {
+ 		if (((struct vxge_mac_addrs *)entry)->macaddr == del_mac) {
+ 			list_del(entry);
+-			kfree((struct vxge_mac_addrs *)entry);
++			kfree(entry);
+ 			vpath->mac_addr_cnt--;
  
- 	for (i = first_index; i < first_index + count; i++) {
--		napi = &adapter->ena_napi[i];
-+		struct ena_napi *napi = &adapter->ena_napi[i];
+ 			if (is_multicast_ether_addr(mac->macaddr))
+@@ -2912,7 +2912,7 @@ static void vxge_free_mac_add_list(struct vxge_vpath *vpath)
  
- 		netif_napi_add(adapter->netdev,
- 			       &adapter->ena_napi[i].napi,
+ 	list_for_each_safe(entry, next, &vpath->mac_addr_list) {
+ 		list_del(entry);
+-		kfree((struct vxge_mac_addrs *)entry);
++		kfree(entry);
+ 	}
+ }
+ 
 -- 
 2.17.1
 
