@@ -2,322 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94B632279F1
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 09:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE1F227A0C
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 10:00:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728682AbgGUHza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 03:55:30 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:57698 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728348AbgGUHz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 03:55:28 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A1797201557;
-        Tue, 21 Jul 2020 09:55:24 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9525F20081B;
-        Tue, 21 Jul 2020 09:55:24 +0200 (CEST)
-Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 67F5B202A9;
-        Tue, 21 Jul 2020 09:55:24 +0200 (CEST)
+        id S1728275AbgGUIAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 04:00:54 -0400
+Received: from mail-eopbgr60073.outbound.protection.outlook.com ([40.107.6.73]:63982
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726607AbgGUIAu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 04:00:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lZyLcihTesOZUL3E1bgTMxMlSRfyDx1Iq+kBHqnnT3gUQVIFElLlDrPZPLsubXVU6trH9h4ej30jUmOPWxU+Shcm0O5gQ/XrTV3T/e2fLnAhr9NKHbFuZyzhWEqOlq+vxPInFIheM4Alqj7wWgInBnBro/Zn9uG0BrY+EQDGmSj7M8W9aqPYP8WIwvnTa1GRd3vsSPv9EL36K7se2AC/jUOgUHGIv0PD2nYlTLLT7vNwUOM62hlAUNZVW5/Ts8HEeVqzqIgbEC6wwxi3+LoW8cJlaDZUFNkG+Sn/prenHVTSqA+La+XtZfUuqGbVf3XE96/oJlp7hTrdA3S3nszZsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fGca07+PNNjluzouHu/S+pTvNdno0x/kDMa20pu8XjQ=;
+ b=F7AmLiklC4iAIfiyFSC/V5urYz431+MyHfuREfHTRk02lc0GziEEWk6yBtbG4emsyzFMKAuJ9asMPSRJpXrE0S1vJE20l00+imITEo3BuFk3CKeHlLzztYKnTaNbSrSHuq9iu83r+22SUjrouDi6XVDCBrdjMy3fvXAV1t9yj41DOuBrMOyHVDncAfbuDys94sZ2TVXM+1vBr7XxpbtGUXc2sppj46OBDYxCmXL2tWJ02slqVMhzCW5YOkyTXXOsjWnGEz7B2XafSywvpyxQXHHn7s3y1BFhF8dFSF2DrUqxOwNo187eRyebYX8MWG4BYPA2RL42HOf1L4isjAesCg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fGca07+PNNjluzouHu/S+pTvNdno0x/kDMa20pu8XjQ=;
+ b=nsfK0IQmvtCTdWA6Gen+hLFrRNSoq8tsbMdhFI5kEZCO/5ogxrdooBoQHGnkWKWTyn89Jak3b/QvV8+6/0lZlO1VyCcBXtUGQYTgkw9Zx9kJlNm9ycaSGrgPymQPKqIJrdNneBhkK2l0u2AIMmeiK8uFtFnSTKjjksLNZJgvcUA=
+Received: from DB8PR04MB6764.eurprd04.prod.outlook.com (2603:10a6:10:10d::31)
+ by DB8PR04MB6539.eurprd04.prod.outlook.com (2603:10a6:10:105::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.23; Tue, 21 Jul
+ 2020 08:00:47 +0000
+Received: from DB8PR04MB6764.eurprd04.prod.outlook.com
+ ([fe80::b05c:ed83:20b9:b2f9]) by DB8PR04MB6764.eurprd04.prod.outlook.com
+ ([fe80::b05c:ed83:20b9:b2f9%6]) with mapi id 15.20.3195.025; Tue, 21 Jul 2020
+ 08:00:46 +0000
 From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 6/6] enetc: Add adaptive interrupt coalescing
-Date:   Tue, 21 Jul 2020 10:55:22 +0300
-Message-Id: <1595318122-18490-7-git-send-email-claudiu.manoil@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1595318122-18490-1-git-send-email-claudiu.manoil@nxp.com>
-References: <1595318122-18490-1-git-send-email-claudiu.manoil@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next v2 5/6] enetc: Add interrupt coalescing support
+Thread-Topic: [PATCH net-next v2 5/6] enetc: Add interrupt coalescing support
+Thread-Index: AQHWXFAl/UpaXYhHeU+sSQSdaFN1PqkMKW+AgAFtUQCAAx6vAIAA+zpQ
+Date:   Tue, 21 Jul 2020 08:00:46 +0000
+Message-ID: <DB8PR04MB67644D35E9D45F757CB4F76396780@DB8PR04MB6764.eurprd04.prod.outlook.com>
+References: <1595000224-6883-1-git-send-email-claudiu.manoil@nxp.com>
+        <1595000224-6883-6-git-send-email-claudiu.manoil@nxp.com>
+        <20200717123239.1ffb5966@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3852bad5-76ca-170c-0bd5-b2cc2156bfea@gmail.com>
+ <20200720095846.18a1ea73@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200720095846.18a1ea73@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.76.66.138]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 48138ce0-8fce-4b07-3dba-08d82d4c2d0d
+x-ms-traffictypediagnostic: DB8PR04MB6539:
+x-microsoft-antispam-prvs: <DB8PR04MB65390119C583A0D9B66B9DDF96780@DB8PR04MB6539.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 44ZsYBuu6cP/VPZ5TT8VGSmaA5c+deQHYlj5YJHUgKmR/kawSkFmbCq6cXQcP+dVK+cAWZNPPs08wEbUNt69muwi8abEWpksSHsqtzDnBMg8uBUI41KD9mae7JHXcZ/rv4AiEHUx6BhGEsnga8ftEN7nd4JY1ROhq6yOZ/AIfG5GznIiWHX7TqnX2+/2bGUVVGoP5i5/cdDx3qk4NZy0Axz6GUlKcNB9Yh6pv2qUTBhTFcvzjeX8DxRzvDP1rfbJI49lBmzpf06yKWfAGdXeZ2WSJrnsjmJI28xcvc7LSIuQhp4gljN6t8KpC4riIowLJOtFcSM6S+pxw0YCktFbyQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6764.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(136003)(346002)(39860400002)(376002)(66946007)(66476007)(66556008)(64756008)(66446008)(2906002)(76116006)(71200400001)(316002)(8936002)(6916009)(9686003)(55016002)(86362001)(52536014)(83380400001)(5660300002)(8676002)(54906003)(26005)(186003)(53546011)(6506007)(7696005)(4326008)(33656002)(44832011)(478600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: g3ung+4THi9c1z8+7EHgCDe5TFGe56wRCML+W3WzikmDZesG5cDoIFVYQdYCDvMwk8mYnQNly/KcQkTjd4mDaLcAycSh+PQgUOKYK/zzJlK3AAdhNkpH1M8jp/ghngJwinY9tq/rzJ0oq1AkEvcmJHAU9679k00kpffGv20hwDqv3PsOxZRARqdz74KZhLBZjS518zCJSIEcvPB9rVBMqzjQJzEDw9GHVHgGv+0/O2PGIUA6UHDbUOcIuE8UjTynvys/tF4JqwX9ZWjzorSe6tpZygluyulFdd/8oy29QC8DtkH6PCcPGsgzMZp2p/HftjrwXubOLEZD7hGXGdtz2CGSr3Vq7zyiIY0VlB6ySAMcPpODGcYZApi9MJA/qIXvTGylJYdY70zVEHsGjNI6ALrPxlbz2mCJW1rdvjLMDGAQksOrKv6aboo6V2PmJH+J9oJrsHlOdnewidn4DmGqS8zWILJafsVARxJMY3aRdak=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6764.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48138ce0-8fce-4b07-3dba-08d82d4c2d0d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2020 08:00:46.8342
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: U/2ue1PSclsQX3XYKPMeZUrVemaAjMYvxiLS1ZYyOn5Itk7L6KAaain7L7M0yk/uQMIj3YlMOVzIcAsPdvvGeQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6539
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the generic dynamic interrupt moderation (dim)
-framework to implement adaptive interrupt coalescing
-on Rx.  With the per-packet interrupt scheme, a high
-interrupt rate has been noted for moderate traffic flows
-leading to high CPU utilization.  The 'dim' scheme
-implemented by the current patch addresses this issue
-improving CPU utilization while using minimal coalescing
-time thresholds in order to preserve a good latency.
-On the Tx side use an optimal time threshold value by
-default.  This value has been optimized for Tx TCP
-streams at a rate of around 85kpps on a 1G link,
-at which rate half of the Tx ring size (128) gets filled
-in 1500 usecs.  Scaling this down to 2.5G links yields
-the current value of 600 usecs, which is conservative
-and gives good enough results for 1G links too (see
-next).
+>-----Original Message-----
+>From: Jakub Kicinski <kuba@kernel.org>
+>Sent: Monday, July 20, 2020 7:59 PM
+[...]
+>Subject: Re: [PATCH net-next v2 5/6] enetc: Add interrupt coalescing suppo=
+rt
+>
+>On Sat, 18 Jul 2020 20:20:10 +0300 Claudiu Manoil wrote:
+>> On 17.07.2020 22:32, Jakub Kicinski wrote:
+>> > On Fri, 17 Jul 2020 18:37:03 +0300 Claudiu Manoil wrote:
+>> >> +	if (ic->rx_max_coalesced_frames !=3D ENETC_RXIC_PKTTHR)
+>> >> +		netif_warn(priv, hw, ndev, "rx-frames fixed to %d\n",
+>> >> +			   ENETC_RXIC_PKTTHR);
+>> >> +
+>> >> +	if (ic->tx_max_coalesced_frames !=3D ENETC_TXIC_PKTTHR)
+>> >> +		netif_warn(priv, hw, ndev, "tx-frames fixed to %d\n",
+>> >> +			   ENETC_TXIC_PKTTHR);
+>> >
+>> > On second thought - why not return an error here? Since only one value
+>> > is supported seems like the right way to communicate to the users that
+>> > they can't change this.
+>>
+>> Do you mean to return -EOPNOTSUPP without any error message instead?
+>
+>Yes.
+>
+>> If so, I think it's less punishing not to return an error code and
+>> invalidate the rest of the ethtool -C parameters that might have been
+>> correct if the user forgets that rx/tx-frames cannot be changed.
+>
+>IMHO if configuring manually - user can correct the params on the CLI.
+>If there's an orchestration system trying to configure those - it's
+>better to return an error and alert the administrator than confuse
+>the orchestration by allowing a write which is then not reflected
+>on read.
+>
 
-Below are some measurement results for before and after
-this patch (and related dependencies) basically, for a
-2 ARM Cortex-A72 @1.3Ghz CPUs system (32 KB L1 data cache),
-using 60secs log netperf TCP stream tests @ 1Gbit link
-(maximum throughput):
-
-1) 1 Rx TCP flow, both Rx and Tx processed by the same NAPI
-thread on the same CPU:
-	CPU utilization		int rate (ints/sec)
-Before:	50%-60% (over 50%)		92k
-After:  13%-22%				3.5k-12k
-Comment:  Major CPU utilization improvement for a single flow
-	  Rx TCP flow (i.e. netperf -t TCP_MAERTS) on a single
-	  CPU. Usually settles under 16% for longer tests.
-
-2) 4 Rx TCP flows + 4 Tx TCP flows (+ pings to check the latency):
-	Total CPU utilization	Total int rate (ints/sec)
-Before:	~80% (spikes to 90%)		~100k
-After:   60% (more steady)		  ~4k
-Comment:  Important improvement for this load test, while the
-	  ping test outcome does not show any notable
-	  difference compared to before.
-
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
----
-v2: Replaced Tx DIM with static optimal value.
-v3: simplified the code by dropping the 'OPTIMAL' flag
-
- drivers/net/ethernet/freescale/enetc/Kconfig  |  2 +
- drivers/net/ethernet/freescale/enetc/enetc.c  | 48 ++++++++++++++++++-
- drivers/net/ethernet/freescale/enetc/enetc.h  | 11 ++++-
- .../ethernet/freescale/enetc/enetc_ethtool.c  | 19 ++++++--
- 4 files changed, 73 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/enetc/Kconfig b/drivers/net/ethernet/freescale/enetc/Kconfig
-index 2b43848e1363..37b804f8bd76 100644
---- a/drivers/net/ethernet/freescale/enetc/Kconfig
-+++ b/drivers/net/ethernet/freescale/enetc/Kconfig
-@@ -4,6 +4,7 @@ config FSL_ENETC
- 	depends on PCI && PCI_MSI
- 	select FSL_ENETC_MDIO
- 	select PHYLIB
-+	select DIMLIB
- 	help
- 	  This driver supports NXP ENETC gigabit ethernet controller PCIe
- 	  physical function (PF) devices, managing ENETC Ports at a privileged
-@@ -15,6 +16,7 @@ config FSL_ENETC_VF
- 	tristate "ENETC VF driver"
- 	depends on PCI && PCI_MSI
- 	select PHYLIB
-+	select DIMLIB
- 	help
- 	  This driver supports NXP ENETC gigabit ethernet controller PCIe
- 	  virtual function (VF) devices enabled by the ENETC PF driver.
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index f4593c044043..f50353cbb4db 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -279,6 +279,34 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget);
- static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
- 			       struct napi_struct *napi, int work_limit);
- 
-+static void enetc_rx_dim_work(struct work_struct *w)
-+{
-+	struct dim *dim = container_of(w, struct dim, work);
-+	struct dim_cq_moder moder =
-+		net_dim_get_rx_moderation(dim->mode, dim->profile_ix);
-+	struct enetc_int_vector	*v =
-+		container_of(dim, struct enetc_int_vector, rx_dim);
-+
-+	v->rx_ictt = enetc_usecs_to_cycles(moder.usec);
-+	dim->state = DIM_START_MEASURE;
-+}
-+
-+static void enetc_rx_net_dim(struct enetc_int_vector *v)
-+{
-+	struct dim_sample dim_sample;
-+
-+	v->comp_cnt++;
-+
-+	if (!v->rx_napi_work)
-+		return;
-+
-+	dim_update_sample(v->comp_cnt,
-+			  v->rx_ring.stats.packets,
-+			  v->rx_ring.stats.bytes,
-+			  &dim_sample);
-+	net_dim(&v->rx_dim, dim_sample);
-+}
-+
- static int enetc_poll(struct napi_struct *napi, int budget)
- {
- 	struct enetc_int_vector
-@@ -294,12 +322,19 @@ static int enetc_poll(struct napi_struct *napi, int budget)
- 	work_done = enetc_clean_rx_ring(&v->rx_ring, napi, budget);
- 	if (work_done == budget)
- 		complete = false;
-+	if (work_done)
-+		v->rx_napi_work = true;
- 
- 	if (!complete)
- 		return budget;
- 
- 	napi_complete_done(napi, work_done);
- 
-+	if (likely(v->rx_dim_en))
-+		enetc_rx_net_dim(v);
-+
-+	v->rx_napi_work = false;
-+
- 	/* enable interrupts */
- 	enetc_wr_reg(v->rbier, ENETC_RBIER_RXTIE);
- 
-@@ -1075,6 +1110,8 @@ void enetc_init_si_rings_params(struct enetc_ndev_priv *priv)
- 	priv->num_rx_rings = min_t(int, cpus, si->num_rx_rings);
- 	priv->num_tx_rings = si->num_tx_rings;
- 	priv->bdr_int_num = cpus;
-+	priv->ic_mode = ENETC_IC_RX_ADAPTIVE | ENETC_IC_TX_MANUAL;
-+	priv->tx_ictt = ENETC_TXIC_TIMETHR;
- 
- 	/* SI specific */
- 	si->cbd_ring.bd_count = ENETC_CBDR_DEFAULT_SIZE;
-@@ -1316,7 +1353,8 @@ static void enetc_setup_interrupts(struct enetc_ndev_priv *priv)
- 	int i;
- 
- 	/* enable Tx & Rx event indication */
--	if (priv->ic_mode & ENETC_IC_RX_MANUAL) {
-+	if (priv->ic_mode &
-+	    (ENETC_IC_RX_MANUAL | ENETC_IC_RX_ADAPTIVE)) {
- 		icpt = ENETC_RBICR0_SET_ICPT(ENETC_RXIC_PKTTHR);
- 		/* init to non-0 minimum, will be adjusted later */
- 		ictt = 0x1;
-@@ -1786,6 +1824,12 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
- 
- 		priv->int_vector[i] = v;
- 
-+		/* init defaults for adaptive IC */
-+		if (priv->ic_mode & ENETC_IC_RX_ADAPTIVE) {
-+			v->rx_ictt = 0x1;
-+			v->rx_dim_en = true;
-+		}
-+		INIT_WORK(&v->rx_dim.work, enetc_rx_dim_work);
- 		netif_napi_add(priv->ndev, &v->napi, enetc_poll,
- 			       NAPI_POLL_WEIGHT);
- 		v->count_tx_rings = v_tx_rings;
-@@ -1821,6 +1865,7 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
- fail:
- 	while (i--) {
- 		netif_napi_del(&priv->int_vector[i]->napi);
-+		cancel_work_sync(&priv->int_vector[i]->rx_dim.work);
- 		kfree(priv->int_vector[i]);
- 	}
- 
-@@ -1837,6 +1882,7 @@ void enetc_free_msix(struct enetc_ndev_priv *priv)
- 		struct enetc_int_vector *v = priv->int_vector[i];
- 
- 		netif_napi_del(&v->napi);
-+		cancel_work_sync(&v->rx_dim.work);
- 	}
- 
- 	for (i = 0; i < priv->num_rx_rings; i++)
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index 4e3af7f07892..d309803cfeb6 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -10,6 +10,7 @@
- #include <linux/ethtool.h>
- #include <linux/if_vlan.h>
- #include <linux/phy.h>
-+#include <linux/dim.h>
- 
- #include "enetc_hw.h"
- 
-@@ -194,12 +195,15 @@ struct enetc_int_vector {
- 	unsigned long tx_rings_map;
- 	int count_tx_rings;
- 	u32 rx_ictt;
--	struct napi_struct napi;
-+	u16 comp_cnt;
-+	bool rx_dim_en, rx_napi_work;
-+	struct napi_struct napi ____cacheline_aligned_in_smp;
-+	struct dim rx_dim ____cacheline_aligned_in_smp;
- 	char name[ENETC_INT_NAME_MAX];
- 
- 	struct enetc_bdr rx_ring;
- 	struct enetc_bdr tx_ring[];
--};
-+} ____cacheline_aligned_in_smp;
- 
- struct enetc_cls_rule {
- 	struct ethtool_rx_flow_spec fs;
-@@ -230,10 +234,13 @@ enum enetc_ic_mode {
- 	/* activated when int coalescing time is set to a non-0 value */
- 	ENETC_IC_RX_MANUAL = BIT(0),
- 	ENETC_IC_TX_MANUAL = BIT(1),
-+	/* use dynamic interrupt moderation */
-+	ENETC_IC_RX_ADAPTIVE = BIT(2),
- };
- 
- #define ENETC_RXIC_PKTTHR	min_t(u32, 256, ENETC_RX_RING_DEFAULT_SIZE / 2)
- #define ENETC_TXIC_PKTTHR	min_t(u32, 128, ENETC_TX_RING_DEFAULT_SIZE / 2)
-+#define ENETC_TXIC_TIMETHR	enetc_usecs_to_cycles(600)
- 
- struct enetc_ndev_priv {
- 	struct net_device *ndev;
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-index 521f3b4cd250..1dab83fbca77 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-@@ -575,6 +575,8 @@ static int enetc_get_coalesce(struct net_device *ndev,
- 	ic->tx_max_coalesced_frames = ENETC_TXIC_PKTTHR;
- 	ic->rx_max_coalesced_frames = ENETC_RXIC_PKTTHR;
- 
-+	ic->use_adaptive_rx_coalesce = priv->ic_mode & ENETC_IC_RX_ADAPTIVE;
-+
- 	return 0;
- }
- 
-@@ -596,11 +598,17 @@ static int enetc_set_coalesce(struct net_device *ndev,
- 		return -EOPNOTSUPP;
- 
- 	ic_mode = ENETC_IC_NONE;
-+	if (ic->use_adaptive_rx_coalesce) {
-+		ic_mode |= ENETC_IC_RX_ADAPTIVE;
-+		rx_ictt = 0x1;
-+	} else {
-+		ic_mode |= rx_ictt ? ENETC_IC_RX_MANUAL : 0;
-+	}
-+
- 	ic_mode |= tx_ictt ? ENETC_IC_TX_MANUAL : 0;
--	ic_mode |= rx_ictt ? ENETC_IC_RX_MANUAL : 0;
- 
- 	/* commit the settings */
--	changed = (ic_mode != priv->ic_mode);
-+	changed = (ic_mode != priv->ic_mode) || (priv->tx_ictt != tx_ictt);
- 
- 	priv->ic_mode = ic_mode;
- 	priv->tx_ictt = tx_ictt;
-@@ -609,6 +617,7 @@ static int enetc_set_coalesce(struct net_device *ndev,
- 		struct enetc_int_vector *v = priv->int_vector[i];
- 
- 		v->rx_ictt = rx_ictt;
-+		v->rx_dim_en = !!(ic_mode & ENETC_IC_RX_ADAPTIVE);
- 	}
- 
- 	if (netif_running(ndev) && changed) {
-@@ -679,7 +688,8 @@ static int enetc_set_wol(struct net_device *dev,
- 
- static const struct ethtool_ops enetc_pf_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
--				     ETHTOOL_COALESCE_MAX_FRAMES,
-+				     ETHTOOL_COALESCE_MAX_FRAMES |
-+				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
- 	.get_regs_len = enetc_get_reglen,
- 	.get_regs = enetc_get_regs,
- 	.get_sset_count = enetc_get_sset_count,
-@@ -704,7 +714,8 @@ static const struct ethtool_ops enetc_pf_ethtool_ops = {
- 
- static const struct ethtool_ops enetc_vf_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
--				     ETHTOOL_COALESCE_MAX_FRAMES,
-+				     ETHTOOL_COALESCE_MAX_FRAMES |
-+				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
- 	.get_regs_len = enetc_get_reglen,
- 	.get_regs = enetc_get_regs,
- 	.get_sset_count = enetc_get_sset_count,
--- 
-2.17.1
-
+Good point, ok.  Updated accordingly in v3.
+Thanks.
