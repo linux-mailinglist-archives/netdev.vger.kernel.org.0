@@ -2,99 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80E5B227FFD
+	by mail.lfdr.de (Postfix) with ESMTP id 142E4227FFC
 	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 14:34:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728996AbgGUMeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 08:34:25 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:14760 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728557AbgGUMeX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 08:34:23 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06LCUkpq005293;
-        Tue, 21 Jul 2020 05:34:19 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=DaZuwUO/TcS9ZuQiy3Nn6fvXyTsD1erOQw5npeidbjU=;
- b=rxoyn12HxRk9CPtkh6xeKvrddDhTgc1OvKs0zyStqdBaVMEzuO0n0R+8p+/BNwmYpKqv
- bYzMJRhEBB97b+VP2Rh+8T5SToSWHxvG3wL/Gu1TrvGdTbuy+DsCk2Sw9FAmuVg3zeGR
- W7iO3a7ZkA64PKshHWtD+P++N/ZLfnaLjEUNI+Kye/zGeveA2Y6YPiuUQop22NwwTDaM
- kytRNoePaV7hIdRo4A1UxsoHIb1ciHJke5fdsGiXKc8K0x/llGUHH+d37GLiHu8H1kVh
- 9F0zwsRvWLkyElLUFUJQxDLMQZ430lwSHj+wtD8DNobtzs/cK7TVV8ekhVcQG0IlGjXJ gQ== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0b-0016f401.pphosted.com with ESMTP id 32c0kkjr1n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jul 2020 05:34:19 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 21 Jul
- 2020 05:34:18 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 21 Jul
- 2020 05:34:17 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 21 Jul 2020 05:34:17 -0700
-Received: from lb-tlvb-ybason.il.qlogic.org (unknown [10.5.221.176])
-        by maili.marvell.com (Postfix) with ESMTP id C966A3F703F;
-        Tue, 21 Jul 2020 05:34:15 -0700 (PDT)
-From:   Yuval Basson <ybason@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, Yuval Basson <ybason@marvell.com>,
-        "Michal Kalderon" <mkalderon@marvell.com>
-Subject: [PATCH net-next] qed: Fix ILT and XRCD bitmap memory leaks
-Date:   Tue, 21 Jul 2020 14:34:26 +0300
-Message-ID: <20200721113426.32260-1-ybason@marvell.com>
-X-Mailer: git-send-email 2.14.5
+        id S1728692AbgGUMeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 08:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726904AbgGUMeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 08:34:21 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37683C061794
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 05:34:21 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id u64so5792741qka.12
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 05:34:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W2qsGEvG5h67BEnGqS26t8X2j1qWAlQERAMmoeMa5CA=;
+        b=fSMw7Xw3CVOMGPD2u88xuZNyvV9k4tct2KkiU41bNvQWZCPIEMG/t46NMZd92LJVAL
+         rChB7ztTzkCRL/Yr2bZIxiZKVDSLoW7C9tZ7/pUrAQJFmP+xGTblVRafo8/Z7P2NjsP+
+         Ye2zExvsmrtt1b2LeXipgs0EvcN6XX/NS5xL65rPWGdU2R+Ar034mqKqwwjI5ZRnDyPw
+         emrCO9AQuMdGz/i+ebEuhi+ZseXJcEmdwIONIJY8AeUWbMPHGnyZMqf9VU/r8Ud5EDed
+         RRAD4fnqPSuY132EJL/hpfGTLlG/VOZG/TdNs9nHd87DrjipXVZSWAttNc4nGP8OD7nx
+         4sKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W2qsGEvG5h67BEnGqS26t8X2j1qWAlQERAMmoeMa5CA=;
+        b=h4IUanR67YER75Rd2oEpE66vAlgrfWn9W/89bwCNJg7BzugEoXP2MaYxeoKEWBkhRy
+         IM6bNClZrwfpn+9jBl+Ua/s0KGuUYm+vHgm7kiP+R1RklktFqCeDzHdtT2fKmdJNEkrM
+         lQ3S2r8xLwKWTVYsVEvv48Aa2JM9ehmIUGr8l41xXugRUEHk6CvIh/UXJLKT+uUWs+PJ
+         6dIEOOj8mtlMG+hKOQ+wXn146Ieyi/NqlNDuzD74nQyItzlANakJGsOxCgKKbsxInwpJ
+         OHITFo3q1dSJGu34p17eHiHWc2YoiQObCEZhm1Jy5BNoT/vQbnBDf63nY8YynPW5RFRE
+         /APQ==
+X-Gm-Message-State: AOAM532ZVWMx9+Pb3MSehVcBL0BNpfqmWovF5K85pmW4w9BG2yvGDCRZ
+        hKQ7iwK3gsK0z7UQzz3QqpH+MQB8
+X-Google-Smtp-Source: ABdhPJwaeA3eH/Myjf/n26Eg6mCk3ZxBP77ZSV787VP5cAacQffNUfL7GCIiRxV3CvRvuvAC5m+wgQ==
+X-Received: by 2002:a37:9147:: with SMTP id t68mr26019561qkd.34.1595334859669;
+        Tue, 21 Jul 2020 05:34:19 -0700 (PDT)
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
+        by smtp.gmail.com with ESMTPSA id c205sm139775qkg.98.2020.07.21.05.34.18
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jul 2020 05:34:18 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id 2so9957080ybr.13
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 05:34:18 -0700 (PDT)
+X-Received: by 2002:a25:4886:: with SMTP id v128mr39329225yba.53.1595334857734;
+ Tue, 21 Jul 2020 05:34:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-21_08:2020-07-21,2020-07-21 signatures=0
+References: <20200721061531.94236-1-kuniyu@amazon.co.jp> <20200721061531.94236-3-kuniyu@amazon.co.jp>
+In-Reply-To: <20200721061531.94236-3-kuniyu@amazon.co.jp>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 21 Jul 2020 08:33:41 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSf9K5EH8Q3nvUE1=dBO2x1TNGPbapZLONmB3dqruuHA7g@mail.gmail.com>
+Message-ID: <CA+FuTSf9K5EH8Q3nvUE1=dBO2x1TNGPbapZLONmB3dqruuHA7g@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] udp: Improve load balancing for SO_REUSEPORT.
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Craig Gallek <kraig@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        osa-contribution-log@amazon.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-- Free ILT lines used for XRC-SRQ's contexts.
-- Free XRCD bitmap
+On Tue, Jul 21, 2020 at 2:17 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+>
+> Currently, SO_REUSEPORT does not work well if connected sockets are in a
+> UDP reuseport group.
+>
+> Then reuseport_has_conns() returns true and the result of
+> reuseport_select_sock() is discarded. Also, unconnected sockets have the
+> same score, hence only does the first unconnected socket in udp_hslot
+> always receive all packets sent to unconnected sockets.
+>
+> So, the result of reuseport_select_sock() should be used for load
+> balancing.
+>
+> The noteworthy point is that the unconnected sockets placed after
+> connected sockets in sock_reuseport.socks will receive more packets than
+> others because of the algorithm in reuseport_select_sock().
+>
+>     index | connected | reciprocal_scale | result
+>     ---------------------------------------------
+>     0     | no        | 20%              | 40%
+>     1     | no        | 20%              | 20%
+>     2     | yes       | 20%              | 0%
+>     3     | no        | 20%              | 40%
+>     4     | yes       | 20%              | 0%
+>
+> If most of the sockets are connected, this can be a problem, but it still
+> works better than now.
+>
+> Fixes: acdcecc61285 ("udp: correct reuseport selection with connected sockets")
+> CC: Willem de Bruijn <willemb@google.com>
+> Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 
-Fixes: b8204ad878ce7 ("qed: changes to ILT to support XRC")
-Fixes: 7bfb399eca460 ("qed: Add XRC to RoCE")
-Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-Signed-off-by: Yuval Basson <ybason@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_cxt.c  | 5 +++++
- drivers/net/ethernet/qlogic/qed/qed_rdma.c | 1 +
- 2 files changed, 6 insertions(+)
-
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_cxt.c b/drivers/net/ethernet/qlogic/qed/qed_cxt.c
-index 5362dc1..6c221e9 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_cxt.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_cxt.c
-@@ -2335,6 +2335,11 @@ int qed_cxt_get_tid_mem_info(struct qed_hwfn *p_hwfn,
- 		elem_size = SRQ_CXT_SIZE;
- 		p_blk = &p_cli->pf_blks[SRQ_BLK];
- 		break;
-+	case QED_ELEM_XRC_SRQ:
-+		p_cli = &p_hwfn->p_cxt_mngr->clients[ILT_CLI_TSDM];
-+		elem_size = XRC_SRQ_CXT_SIZE;
-+		p_blk = &p_cli->pf_blks[SRQ_BLK];
-+		break;
- 	case QED_ELEM_TASK:
- 		p_cli = &p_hwfn->p_cxt_mngr->clients[ILT_CLI_CDUT];
- 		elem_size = TYPE1_TASK_CXT_SIZE(p_hwfn);
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-index e5648ca..a4bcde5 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-@@ -379,6 +379,7 @@ static void qed_rdma_resc_free(struct qed_hwfn *p_hwfn)
- 	qed_rdma_bmap_free(p_hwfn, &p_hwfn->p_rdma_info->srq_map, 1);
- 	qed_rdma_bmap_free(p_hwfn, &p_hwfn->p_rdma_info->real_cid_map, 1);
- 	qed_rdma_bmap_free(p_hwfn, &p_hwfn->p_rdma_info->xrc_srq_map, 1);
-+	qed_rdma_bmap_free(p_hwfn, &p_hwfn->p_rdma_info->xrcd_map, 1);
- 
- 	kfree(p_rdma_info->port);
- 	kfree(p_rdma_info->dev);
--- 
-1.8.3.1
-
+Acked-by: Willem de Bruijn <willemb@google.com>
