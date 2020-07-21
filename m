@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03891227E1F
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 13:07:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41797227E27
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 13:07:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729498AbgGULHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 07:07:05 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7805 "EHLO huawei.com"
+        id S1729414AbgGULHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 07:07:04 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7808 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727002AbgGULHE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726715AbgGULHE (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 21 Jul 2020 07:07:04 -0400
 Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 210774A1D073E0192DD4;
+        by Forcepoint Email with ESMTP id 262E89AF6C99D8120B89;
         Tue, 21 Jul 2020 19:07:02 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
@@ -22,11 +22,11 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net 3/4] net: hns3: fix error handling for desc filling
-Date:   Tue, 21 Jul 2020 19:03:53 +0800
-Message-ID: <1595329434-46766-4-git-send-email-tanhuazhong@huawei.com>
+        Jian Shen <shenjian15@huawei.com>,
+        Huazhong tan <tanhuazhong@huawei.com>
+Subject: [PATCH net 4/4] net: hns3: fix return value error when query MAC link status fail
+Date:   Tue, 21 Jul 2020 19:03:54 +0800
+Message-ID: <1595329434-46766-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1595329434-46766-1-git-send-email-tanhuazhong@huawei.com>
 References: <1595329434-46766-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,73 +39,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin <linyunsheng@huawei.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-The content of the TX desc is automatically cleared by the HW
-when the HW has sent out the packet to the wire. When desc filling
-fails in hns3_nic_net_xmit(), it will call hns3_clear_desc() to do
-the error handling, which miss zeroing of the TX desc and the
-checking if a unmapping is needed.
+Currently, PF queries the MAC link status per second by calling
+function hclge_get_mac_link_status(). It return the error code
+when failed to send cmdq command to firmware. It's incorrect,
+because this return value is used as the MAC link status, which
+0 means link down, and none-zero means link up. So fixes it.
 
-So add the zeroing and checking in hns3_clear_desc() to avoid the
-above problem. Also add DESC_TYPE_UNKNOWN to indicate the info in
-desc_cb is not valid, because hns3_nic_reclaim_desc() may treat
-the desc_cb->type of zero as packet and add to the sent pkt
-statistics accordingly.
-
-Fixes: 76ad4f0ee747 ("net: hns3: Add support of HNS3 Ethernet Driver for hip08 SoC")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Fixes: 46a3df9f9718 ("net: hns3: Add HNS3 Acceleration Engine & Compatibility Layer Support")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Huazhong tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h     | 1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 8 ++++++++
- 2 files changed, 9 insertions(+)
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 49 ++++++++++------------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  3 ++
+ 2 files changed, 25 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index d041cac..088550d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -77,6 +77,7 @@
- 	((ring)->p = ((ring)->p - 1 + (ring)->desc_num) % (ring)->desc_num)
- 
- enum hns_desc_type {
-+	DESC_TYPE_UNKNOWN,
- 	DESC_TYPE_SKB,
- 	DESC_TYPE_FRAGLIST_SKB,
- 	DESC_TYPE_PAGE,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index a814d99..b1bea030 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -1338,6 +1338,10 @@ static void hns3_clear_desc(struct hns3_enet_ring *ring, int next_to_use_orig)
- 	unsigned int i;
- 
- 	for (i = 0; i < ring->desc_num; i++) {
-+		struct hns3_desc *desc = &ring->desc[ring->next_to_use];
-+
-+		memset(desc, 0, sizeof(*desc));
-+
- 		/* check if this is where we started */
- 		if (ring->next_to_use == next_to_use_orig)
- 			break;
-@@ -1345,6 +1349,9 @@ static void hns3_clear_desc(struct hns3_enet_ring *ring, int next_to_use_orig)
- 		/* rollback one */
- 		ring_ptr_move_bw(ring, next_to_use);
- 
-+		if (!ring->desc_cb[ring->next_to_use].dma)
-+			continue;
-+
- 		/* unmap the descriptor dma address */
- 		if (ring->desc_cb[ring->next_to_use].type == DESC_TYPE_SKB ||
- 		    ring->desc_cb[ring->next_to_use].type ==
-@@ -1361,6 +1368,7 @@ static void hns3_clear_desc(struct hns3_enet_ring *ring, int next_to_use_orig)
- 
- 		ring->desc_cb[ring->next_to_use].length = 0;
- 		ring->desc_cb[ring->next_to_use].dma = 0;
-+		ring->desc_cb[ring->next_to_use].type = DESC_TYPE_UNKNOWN;
- 	}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index d6bfdc6..bb4a632 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -2673,11 +2673,10 @@ void hclge_task_schedule(struct hclge_dev *hdev, unsigned long delay_time)
+ 				    delay_time);
  }
  
+-static int hclge_get_mac_link_status(struct hclge_dev *hdev)
++static int hclge_get_mac_link_status(struct hclge_dev *hdev, int *link_status)
+ {
+ 	struct hclge_link_status_cmd *req;
+ 	struct hclge_desc desc;
+-	int link_status;
+ 	int ret;
+ 
+ 	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_QUERY_LINK_STATUS, true);
+@@ -2689,33 +2688,25 @@ static int hclge_get_mac_link_status(struct hclge_dev *hdev)
+ 	}
+ 
+ 	req = (struct hclge_link_status_cmd *)desc.data;
+-	link_status = req->status & HCLGE_LINK_STATUS_UP_M;
++	*link_status = (req->status & HCLGE_LINK_STATUS_UP_M) > 0 ?
++		HCLGE_LINK_STATUS_UP : HCLGE_LINK_STATUS_DOWN;
+ 
+-	return !!link_status;
++	return 0;
+ }
+ 
+-static int hclge_get_mac_phy_link(struct hclge_dev *hdev)
++static int hclge_get_mac_phy_link(struct hclge_dev *hdev, int *link_status)
+ {
+-	unsigned int mac_state;
+-	int link_stat;
++	struct phy_device *phydev = hdev->hw.mac.phydev;
++
++	*link_status = HCLGE_LINK_STATUS_DOWN;
+ 
+ 	if (test_bit(HCLGE_STATE_DOWN, &hdev->state))
+ 		return 0;
+ 
+-	mac_state = hclge_get_mac_link_status(hdev);
+-
+-	if (hdev->hw.mac.phydev) {
+-		if (hdev->hw.mac.phydev->state == PHY_RUNNING)
+-			link_stat = mac_state &
+-				hdev->hw.mac.phydev->link;
+-		else
+-			link_stat = 0;
+-
+-	} else {
+-		link_stat = mac_state;
+-	}
++	if (phydev && (phydev->state != PHY_RUNNING || !phydev->link))
++		return 0;
+ 
+-	return !!link_stat;
++	return hclge_get_mac_link_status(hdev, link_status);
+ }
+ 
+ static void hclge_update_link_status(struct hclge_dev *hdev)
+@@ -2725,6 +2716,7 @@ static void hclge_update_link_status(struct hclge_dev *hdev)
+ 	struct hnae3_handle *rhandle;
+ 	struct hnae3_handle *handle;
+ 	int state;
++	int ret;
+ 	int i;
+ 
+ 	if (!client)
+@@ -2733,7 +2725,12 @@ static void hclge_update_link_status(struct hclge_dev *hdev)
+ 	if (test_and_set_bit(HCLGE_STATE_LINK_UPDATING, &hdev->state))
+ 		return;
+ 
+-	state = hclge_get_mac_phy_link(hdev);
++	ret = hclge_get_mac_phy_link(hdev, &state);
++	if (ret) {
++		clear_bit(HCLGE_STATE_LINK_UPDATING, &hdev->state);
++		return;
++	}
++
+ 	if (state != hdev->hw.mac.link) {
+ 		for (i = 0; i < hdev->num_vmdq_vport + 1; i++) {
+ 			handle = &hdev->vport[i].nic;
+@@ -6524,14 +6521,15 @@ static int hclge_mac_link_status_wait(struct hclge_dev *hdev, int link_ret)
+ {
+ #define HCLGE_MAC_LINK_STATUS_NUM  100
+ 
++	int link_status;
+ 	int i = 0;
+ 	int ret;
+ 
+ 	do {
+-		ret = hclge_get_mac_link_status(hdev);
+-		if (ret < 0)
++		ret = hclge_get_mac_link_status(hdev, &link_status);
++		if (ret)
+ 			return ret;
+-		else if (ret == link_ret)
++		if (link_status == link_ret)
+ 			return 0;
+ 
+ 		msleep(HCLGE_LINK_STATUS_MS);
+@@ -6542,9 +6540,6 @@ static int hclge_mac_link_status_wait(struct hclge_dev *hdev, int link_ret)
+ static int hclge_mac_phy_link_status_wait(struct hclge_dev *hdev, bool en,
+ 					  bool is_phy)
+ {
+-#define HCLGE_LINK_STATUS_DOWN 0
+-#define HCLGE_LINK_STATUS_UP   1
+-
+ 	int link_ret;
+ 
+ 	link_ret = en ? HCLGE_LINK_STATUS_UP : HCLGE_LINK_STATUS_DOWN;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 46e6e0f..9bbdd45 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -317,6 +317,9 @@ enum hclge_link_fail_code {
+ 	HCLGE_LF_XSFP_ABSENT,
+ };
+ 
++#define HCLGE_LINK_STATUS_DOWN 0
++#define HCLGE_LINK_STATUS_UP   1
++
+ #define HCLGE_PG_NUM		4
+ #define HCLGE_SCH_MODE_SP	0
+ #define HCLGE_SCH_MODE_DWRR	1
 -- 
 2.7.4
 
