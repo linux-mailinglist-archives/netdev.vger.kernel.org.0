@@ -2,104 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E08F2280D7
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 15:24:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 979AC2280EA
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 15:29:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726715AbgGUNYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 09:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726192AbgGUNYI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 09:24:08 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516B3C061794
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 06:24:08 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id p1so10264484pls.4
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 06:24:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=android.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wgx4z/DNiLcnwiVMTxlKfTLr89BUcZAmWBACQY4L4M0=;
-        b=IPtVjYH+4Nl8qj0o4aNFzWOBc8gf/CsNkxwtrKnuV97gpBAP4vQDUvLkQhnl/IymTK
-         qyrj6NZsozQP5Wh/LB1GqxnSVUNnrZSRjmS0UNg0wdO+LwaSWuPW/IrZzsUVvFijySMZ
-         AJrAX6iI9Y9L+5VfYYMwZwp54BEJS6i+9oEXI4QN7H5MtWV12OoJ3+Z+X3K8yi17KoAS
-         M1NbO1LfhHiuyYXkMhpV5eaJX6WcjB0wIR9BmSOT9vE+4WxTdBTQQPnK9ACUaw/iQCSz
-         EtkaRQ4W3XJ/ZjhPgeDdmPyNX4RCtriRD4ABulFJj0/ngeXIVCqyb+NoojM9cEuXXZ22
-         38vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wgx4z/DNiLcnwiVMTxlKfTLr89BUcZAmWBACQY4L4M0=;
-        b=cyh+TEUY1tj70p1cB0Ew1kRO97XnhTrAz8NYYetVCtzZwGq6KPA1eBV8Gm/Zx64489
-         1IZyYcd3XcHKWIuoj9yPBso/h+7rHJ25VzPxwNplLQa6jgBIOkJpwYvdpGspUHrRoDB5
-         N1isyqV+DAq8RnzNBDrdIvelzC8FBQR4fQsmPYMmwAW6CTDCx4CQCe26v0ZWj5pkIVAm
-         sg01CRZy+mXSCytnxZEI3So8I/x8uPUkerdttjeVzQERwcuZsHxuP3i3QpyA6g/rRsnV
-         qc5lhARq4dLM5K/yIjF8M/syVlsZh9YSEBErqH63CPoDZFmRZaPIJqQ2Uc+3+Z9+d0oY
-         AH9Q==
-X-Gm-Message-State: AOAM531OkYkxc2fmxE/Xw2JYr94fw9A0j1/lDbCZx1o+uPY8mIRxRYQJ
-        kbiRQKoH24QbXAm4cxe+9Ydpaw==
-X-Google-Smtp-Source: ABdhPJwfgpV2BR8t4aLZkOMHXUhOw8u41DWYuFc0TKpk2ua8/asby494f33+AMKBrt2W09ZFdEDGyA==
-X-Received: by 2002:a17:90a:a78b:: with SMTP id f11mr4608489pjq.42.1595337847865;
-        Tue, 21 Jul 2020 06:24:07 -0700 (PDT)
-Received: from nebulus.mtv.corp.google.com ([2620:15c:211:0:4a0f:cfff:fe35:d61b])
-        by smtp.gmail.com with ESMTPSA id c207sm20291090pfb.159.2020.07.21.06.24.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 06:24:07 -0700 (PDT)
-From:   Mark Salyzyn <salyzyn@android.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     kernel-team@android.com, Mark Salyzyn <salyzyn@android.com>,
-        netdev@vger.kernel.org,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: af_key: pfkey_dump needs parameter validation
-Date:   Tue, 21 Jul 2020 06:23:54 -0700
-Message-Id: <20200721132358.966099-1-salyzyn@android.com>
-X-Mailer: git-send-email 2.28.0.rc0.105.gf9edc3c819-goog
+        id S1728105AbgGUN3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 09:29:41 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:44467 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726014AbgGUN3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 09:29:41 -0400
+X-Originating-IP: 90.65.108.121
+Received: from localhost (lfbn-lyo-1-1676-121.w90-65.abo.wanadoo.fr [90.65.108.121])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id DA736E000C;
+        Tue, 21 Jul 2020 13:29:36 +0000 (UTC)
+Date:   Tue, 21 Jul 2020 15:29:36 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        f.fainelli@gmail.com, robh+dt@kernel.org,
+        ludovic.desroches@microchip.com
+Subject: Re: [PATCH net-next 2/7] macb: bindings doc: use an MDIO node as a
+ container for PHY nodes
+Message-ID: <20200721132936.GQ3428@piout.net>
+References: <20200721100234.1302910-1-codrin.ciubotariu@microchip.com>
+ <20200721100234.1302910-3-codrin.ciubotariu@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200721100234.1302910-3-codrin.ciubotariu@microchip.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In pfkey_dump() dplen and splen can both be specified to access the
-xfrm_address_t structure out of bounds in__xfrm_state_filter_match()
-when it calls addr_match() with the indexes.  Return EINVAL if either
-are out of range.
+Hi,
 
-Signed-off-by: Mark Salyzyn <salyzyn@android.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: kernel-team@android.com
----
-Should be back ported to the stable queues because this is a out of
-bounds access.
+The proper subject prefix is dt-bindings: net: macb:
 
- net/key/af_key.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+On 21/07/2020 13:02:29+0300, Codrin Ciubotariu wrote:
+> The MACB driver embeds an MDIO bus controller and for this reason there
+> was no need for an MDIO sub-node present to contain the PHY nodes. Adding
+> MDIO devies directly under an Ethernet node is deprecated, so an MDIO node
+> is included to contain of the PHY nodes (and other MDIO devices' nodes).
+> 
+> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+> ---
+>  Documentation/devicetree/bindings/net/macb.txt | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
+> index 0b61a90f1592..88d5199c2279 100644
+> --- a/Documentation/devicetree/bindings/net/macb.txt
+> +++ b/Documentation/devicetree/bindings/net/macb.txt
+> @@ -32,6 +32,11 @@ Required properties:
+>  The MAC address will be determined using the optional properties
+>  defined in ethernet.txt.
+>  
+> +Optional subnodes:
+> +- mdio : specifies the MDIO bus in the MACB, used as a container for PHY nodes or other
+> +  nodes of devices present on the MDIO bus. Please see ethernet-phy.yaml in the same
+> +  directory for more details.
+> +
+>  Optional properties for PHY child node:
+>  - reset-gpios : Should specify the gpio for phy reset
+>  - magic-packet : If present, indicates that the hardware supports waking
+> @@ -48,8 +53,12 @@ Examples:
+>  		local-mac-address = [3a 0e 03 04 05 06];
+>  		clock-names = "pclk", "hclk", "tx_clk";
+>  		clocks = <&clkc 30>, <&clkc 30>, <&clkc 13>;
+> -		ethernet-phy@1 {
+> -			reg = <0x1>;
+> -			reset-gpios = <&pioE 6 1>;
+> +		mdio {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			ethernet-phy@1 {
+> +				reg = <0x1>;
+> +				reset-gpios = <&pioE 6 1>;
+> +			};
+>  		};
+>  	};
+> -- 
+> 2.25.1
+> 
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index b67ed3a8486c..dd2a684879de 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1849,6 +1849,13 @@ static int pfkey_dump(struct sock *sk, struct sk_buff *skb, const struct sadb_ms
- 	if (ext_hdrs[SADB_X_EXT_FILTER - 1]) {
- 		struct sadb_x_filter *xfilter = ext_hdrs[SADB_X_EXT_FILTER - 1];
- 
-+		if ((xfilter->sadb_x_filter_splen >=
-+			(sizeof(xfrm_address_t) << 3)) ||
-+		    (xfilter->sadb_x_filter_dplen >=
-+			(sizeof(xfrm_address_t) << 3))) {
-+			mutex_unlock(&pfk->dump_lock);
-+			return -EINVAL;
-+		}
- 		filter = kmalloc(sizeof(*filter), GFP_KERNEL);
- 		if (filter == NULL) {
- 			mutex_unlock(&pfk->dump_lock);
 -- 
-2.28.0.rc0.105.gf9edc3c819-goog
-
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
