@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 556812279F2
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 09:55:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94B632279F1
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 09:55:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728642AbgGUHza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728682AbgGUHza (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 21 Jul 2020 03:55:30 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:51896 "EHLO inva020.nxp.com"
+Received: from inva021.nxp.com ([92.121.34.21]:57698 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727927AbgGUHz1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 03:55:27 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 65C3C1A057C;
+        id S1728348AbgGUHz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 03:55:28 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A1797201557;
         Tue, 21 Jul 2020 09:55:24 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 58E481A0570;
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9525F20081B;
         Tue, 21 Jul 2020 09:55:24 +0200 (CEST)
 Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 2BC97202A9;
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 67F5B202A9;
         Tue, 21 Jul 2020 09:55:24 +0200 (CEST)
 From:   Claudiu Manoil <claudiu.manoil@nxp.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 5/6] enetc: Add interrupt coalescing support
-Date:   Tue, 21 Jul 2020 10:55:21 +0300
-Message-Id: <1595318122-18490-6-git-send-email-claudiu.manoil@nxp.com>
+Subject: [PATCH net-next v3 6/6] enetc: Add adaptive interrupt coalescing
+Date:   Tue, 21 Jul 2020 10:55:22 +0300
+Message-Id: <1595318122-18490-7-git-send-email-claudiu.manoil@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1595318122-18490-1-git-send-email-claudiu.manoil@nxp.com>
 References: <1595318122-18490-1-git-send-email-claudiu.manoil@nxp.com>
@@ -35,327 +35,289 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable programming of the interrupt coalescing registers
-and allow manual configuration of the coalescing time
-thresholds via ethtool.  Packet thresholds have been fixed
-to predetermined values as there's no point in making them
-run-time configurable, also anticipating the dynamic interrupt
-moderation (DIM) algorithm which uses fixed packet thresholds
-as well.  If the interface is up when the operation mode of
-traffic interrupt events is changed by the user (i.e. switching
-from default per-packet interrupts to coalesced interrupts),
-the traffic needs to be paused in the process.
-This patch also prepares the ground for introducing DIM on Rx.
+Use the generic dynamic interrupt moderation (dim)
+framework to implement adaptive interrupt coalescing
+on Rx.  With the per-packet interrupt scheme, a high
+interrupt rate has been noted for moderate traffic flows
+leading to high CPU utilization.  The 'dim' scheme
+implemented by the current patch addresses this issue
+improving CPU utilization while using minimal coalescing
+time thresholds in order to preserve a good latency.
+On the Tx side use an optimal time threshold value by
+default.  This value has been optimized for Tx TCP
+streams at a rate of around 85kpps on a 1G link,
+at which rate half of the Tx ring size (128) gets filled
+in 1500 usecs.  Scaling this down to 2.5G links yields
+the current value of 600 usecs, which is conservative
+and gives good enough results for 1G links too (see
+next).
+
+Below are some measurement results for before and after
+this patch (and related dependencies) basically, for a
+2 ARM Cortex-A72 @1.3Ghz CPUs system (32 KB L1 data cache),
+using 60secs log netperf TCP stream tests @ 1Gbit link
+(maximum throughput):
+
+1) 1 Rx TCP flow, both Rx and Tx processed by the same NAPI
+thread on the same CPU:
+	CPU utilization		int rate (ints/sec)
+Before:	50%-60% (over 50%)		92k
+After:  13%-22%				3.5k-12k
+Comment:  Major CPU utilization improvement for a single flow
+	  Rx TCP flow (i.e. netperf -t TCP_MAERTS) on a single
+	  CPU. Usually settles under 16% for longer tests.
+
+2) 4 Rx TCP flows + 4 Tx TCP flows (+ pings to check the latency):
+	Total CPU utilization	Total int rate (ints/sec)
+Before:	~80% (spikes to 90%)		~100k
+After:   60% (more steady)		  ~4k
+Comment:  Important improvement for this load test, while the
+	  ping test outcome does not show any notable
+	  difference compared to before.
 
 Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
 ---
-v2: removed tx_ictt from the "fast path", as Tx updates
-remain static (dropped Tx DIM idea)
-v3: return -EOPNOTSUPP instead of error message
+v2: Replaced Tx DIM with static optimal value.
+v3: simplified the code by dropping the 'OPTIMAL' flag
 
- drivers/net/ethernet/freescale/enetc/enetc.c  | 32 ++++++--
- drivers/net/ethernet/freescale/enetc/enetc.h  | 18 +++++
- .../ethernet/freescale/enetc/enetc_ethtool.c  | 73 ++++++++++++++++++-
- .../net/ethernet/freescale/enetc/enetc_hw.h   | 19 ++++-
- 4 files changed, 132 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/freescale/enetc/Kconfig  |  2 +
+ drivers/net/ethernet/freescale/enetc/enetc.c  | 48 ++++++++++++++++++-
+ drivers/net/ethernet/freescale/enetc/enetc.h  | 11 ++++-
+ .../ethernet/freescale/enetc/enetc_ethtool.c  | 19 ++++++--
+ 4 files changed, 73 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/ethernet/freescale/enetc/Kconfig b/drivers/net/ethernet/freescale/enetc/Kconfig
+index 2b43848e1363..37b804f8bd76 100644
+--- a/drivers/net/ethernet/freescale/enetc/Kconfig
++++ b/drivers/net/ethernet/freescale/enetc/Kconfig
+@@ -4,6 +4,7 @@ config FSL_ENETC
+ 	depends on PCI && PCI_MSI
+ 	select FSL_ENETC_MDIO
+ 	select PHYLIB
++	select DIMLIB
+ 	help
+ 	  This driver supports NXP ENETC gigabit ethernet controller PCIe
+ 	  physical function (PF) devices, managing ENETC Ports at a privileged
+@@ -15,6 +16,7 @@ config FSL_ENETC_VF
+ 	tristate "ENETC VF driver"
+ 	depends on PCI && PCI_MSI
+ 	select PHYLIB
++	select DIMLIB
+ 	help
+ 	  This driver supports NXP ENETC gigabit ethernet controller PCIe
+ 	  virtual function (VF) devices enabled by the ENETC PF driver.
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index be594c7af538..f4593c044043 100644
+index f4593c044043..f50353cbb4db 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -265,6 +265,7 @@ static irqreturn_t enetc_msix(int irq, void *data)
+@@ -279,6 +279,34 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget);
+ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
+ 			       struct napi_struct *napi, int work_limit);
  
- 	/* disable interrupts */
- 	enetc_wr_reg(v->rbier, 0);
-+	enetc_wr_reg(v->ricr1, v->rx_ictt);
- 
- 	for_each_set_bit(i, &v->tx_rings_map, ENETC_MAX_NUM_TXQS)
- 		enetc_wr_reg(v->tbier_base + ENETC_BDR_OFF(i), 0);
-@@ -1268,6 +1269,7 @@ static int enetc_setup_irqs(struct enetc_ndev_priv *priv)
- 
- 		v->tbier_base = hw->reg + ENETC_BDR(TX, 0, ENETC_TBIER);
- 		v->rbier = hw->reg + ENETC_BDR(RX, i, ENETC_RBIER);
-+		v->ricr1 = hw->reg + ENETC_BDR(RX, i, ENETC_RBICR1);
- 
- 		enetc_wr(hw, ENETC_SIMSIRRV(i), entry);
- 
-@@ -1309,17 +1311,35 @@ static void enetc_free_irqs(struct enetc_ndev_priv *priv)
- 
- static void enetc_setup_interrupts(struct enetc_ndev_priv *priv)
++static void enetc_rx_dim_work(struct work_struct *w)
++{
++	struct dim *dim = container_of(w, struct dim, work);
++	struct dim_cq_moder moder =
++		net_dim_get_rx_moderation(dim->mode, dim->profile_ix);
++	struct enetc_int_vector	*v =
++		container_of(dim, struct enetc_int_vector, rx_dim);
++
++	v->rx_ictt = enetc_usecs_to_cycles(moder.usec);
++	dim->state = DIM_START_MEASURE;
++}
++
++static void enetc_rx_net_dim(struct enetc_int_vector *v)
++{
++	struct dim_sample dim_sample;
++
++	v->comp_cnt++;
++
++	if (!v->rx_napi_work)
++		return;
++
++	dim_update_sample(v->comp_cnt,
++			  v->rx_ring.stats.packets,
++			  v->rx_ring.stats.bytes,
++			  &dim_sample);
++	net_dim(&v->rx_dim, dim_sample);
++}
++
+ static int enetc_poll(struct napi_struct *napi, int budget)
  {
-+	struct enetc_hw *hw = &priv->si->hw;
-+	u32 icpt, ictt;
+ 	struct enetc_int_vector
+@@ -294,12 +322,19 @@ static int enetc_poll(struct napi_struct *napi, int budget)
+ 	work_done = enetc_clean_rx_ring(&v->rx_ring, napi, budget);
+ 	if (work_done == budget)
+ 		complete = false;
++	if (work_done)
++		v->rx_napi_work = true;
+ 
+ 	if (!complete)
+ 		return budget;
+ 
+ 	napi_complete_done(napi, work_done);
+ 
++	if (likely(v->rx_dim_en))
++		enetc_rx_net_dim(v);
++
++	v->rx_napi_work = false;
++
+ 	/* enable interrupts */
+ 	enetc_wr_reg(v->rbier, ENETC_RBIER_RXTIE);
+ 
+@@ -1075,6 +1110,8 @@ void enetc_init_si_rings_params(struct enetc_ndev_priv *priv)
+ 	priv->num_rx_rings = min_t(int, cpus, si->num_rx_rings);
+ 	priv->num_tx_rings = si->num_tx_rings;
+ 	priv->bdr_int_num = cpus;
++	priv->ic_mode = ENETC_IC_RX_ADAPTIVE | ENETC_IC_TX_MANUAL;
++	priv->tx_ictt = ENETC_TXIC_TIMETHR;
+ 
+ 	/* SI specific */
+ 	si->cbd_ring.bd_count = ENETC_CBDR_DEFAULT_SIZE;
+@@ -1316,7 +1353,8 @@ static void enetc_setup_interrupts(struct enetc_ndev_priv *priv)
  	int i;
  
  	/* enable Tx & Rx event indication */
-+	if (priv->ic_mode & ENETC_IC_RX_MANUAL) {
-+		icpt = ENETC_RBICR0_SET_ICPT(ENETC_RXIC_PKTTHR);
-+		/* init to non-0 minimum, will be adjusted later */
-+		ictt = 0x1;
-+	} else {
-+		icpt = 0x1; /* enable Rx ints by setting pkt thr to 1 */
-+		ictt = 0;
-+	}
-+
- 	for (i = 0; i < priv->num_rx_rings; i++) {
--		enetc_rxbdr_wr(&priv->si->hw, i,
--			       ENETC_RBIER, ENETC_RBIER_RXTIE);
-+		enetc_rxbdr_wr(hw, i, ENETC_RBICR1, ictt);
-+		enetc_rxbdr_wr(hw, i, ENETC_RBICR0, ENETC_RBICR0_ICEN | icpt);
-+		enetc_rxbdr_wr(hw, i, ENETC_RBIER, ENETC_RBIER_RXTIE);
+-	if (priv->ic_mode & ENETC_IC_RX_MANUAL) {
++	if (priv->ic_mode &
++	    (ENETC_IC_RX_MANUAL | ENETC_IC_RX_ADAPTIVE)) {
+ 		icpt = ENETC_RBICR0_SET_ICPT(ENETC_RXIC_PKTTHR);
+ 		/* init to non-0 minimum, will be adjusted later */
+ 		ictt = 0x1;
+@@ -1786,6 +1824,12 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
+ 
+ 		priv->int_vector[i] = v;
+ 
++		/* init defaults for adaptive IC */
++		if (priv->ic_mode & ENETC_IC_RX_ADAPTIVE) {
++			v->rx_ictt = 0x1;
++			v->rx_dim_en = true;
++		}
++		INIT_WORK(&v->rx_dim.work, enetc_rx_dim_work);
+ 		netif_napi_add(priv->ndev, &v->napi, enetc_poll,
+ 			       NAPI_POLL_WEIGHT);
+ 		v->count_tx_rings = v_tx_rings;
+@@ -1821,6 +1865,7 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
+ fail:
+ 	while (i--) {
+ 		netif_napi_del(&priv->int_vector[i]->napi);
++		cancel_work_sync(&priv->int_vector[i]->rx_dim.work);
+ 		kfree(priv->int_vector[i]);
  	}
  
-+	if (priv->ic_mode & ENETC_IC_TX_MANUAL)
-+		icpt = ENETC_TBICR0_SET_ICPT(ENETC_TXIC_PKTTHR);
-+	else
-+		icpt = 0x1; /* enable Tx ints by setting pkt thr to 1 */
-+
- 	for (i = 0; i < priv->num_tx_rings; i++) {
--		enetc_txbdr_wr(&priv->si->hw, i,
--			       ENETC_TBIER, ENETC_TBIER_TXTIE);
-+		enetc_txbdr_wr(hw, i, ENETC_TBICR1, priv->tx_ictt);
-+		enetc_txbdr_wr(hw, i, ENETC_TBICR0, ENETC_TBICR0_ICEN | icpt);
-+		enetc_txbdr_wr(hw, i, ENETC_TBIER, ENETC_TBIER_TXTIE);
- 	}
- }
+@@ -1837,6 +1882,7 @@ void enetc_free_msix(struct enetc_ndev_priv *priv)
+ 		struct enetc_int_vector *v = priv->int_vector[i];
  
-@@ -1370,7 +1390,7 @@ static int enetc_phy_connect(struct net_device *ndev)
+ 		netif_napi_del(&v->napi);
++		cancel_work_sync(&v->rx_dim.work);
+ 	}
+ 
+ 	for (i = 0; i < priv->num_rx_rings; i++)
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
+index 4e3af7f07892..d309803cfeb6 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.h
++++ b/drivers/net/ethernet/freescale/enetc/enetc.h
+@@ -10,6 +10,7 @@
+ #include <linux/ethtool.h>
+ #include <linux/if_vlan.h>
+ #include <linux/phy.h>
++#include <linux/dim.h>
+ 
+ #include "enetc_hw.h"
+ 
+@@ -194,12 +195,15 @@ struct enetc_int_vector {
+ 	unsigned long tx_rings_map;
+ 	int count_tx_rings;
+ 	u32 rx_ictt;
+-	struct napi_struct napi;
++	u16 comp_cnt;
++	bool rx_dim_en, rx_napi_work;
++	struct napi_struct napi ____cacheline_aligned_in_smp;
++	struct dim rx_dim ____cacheline_aligned_in_smp;
+ 	char name[ENETC_INT_NAME_MAX];
+ 
+ 	struct enetc_bdr rx_ring;
+ 	struct enetc_bdr tx_ring[];
+-};
++} ____cacheline_aligned_in_smp;
+ 
+ struct enetc_cls_rule {
+ 	struct ethtool_rx_flow_spec fs;
+@@ -230,10 +234,13 @@ enum enetc_ic_mode {
+ 	/* activated when int coalescing time is set to a non-0 value */
+ 	ENETC_IC_RX_MANUAL = BIT(0),
+ 	ENETC_IC_TX_MANUAL = BIT(1),
++	/* use dynamic interrupt moderation */
++	ENETC_IC_RX_ADAPTIVE = BIT(2),
+ };
+ 
+ #define ENETC_RXIC_PKTTHR	min_t(u32, 256, ENETC_RX_RING_DEFAULT_SIZE / 2)
+ #define ENETC_TXIC_PKTTHR	min_t(u32, 128, ENETC_TX_RING_DEFAULT_SIZE / 2)
++#define ENETC_TXIC_TIMETHR	enetc_usecs_to_cycles(600)
+ 
+ struct enetc_ndev_priv {
+ 	struct net_device *ndev;
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+index 521f3b4cd250..1dab83fbca77 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+@@ -575,6 +575,8 @@ static int enetc_get_coalesce(struct net_device *ndev,
+ 	ic->tx_max_coalesced_frames = ENETC_TXIC_PKTTHR;
+ 	ic->rx_max_coalesced_frames = ENETC_RXIC_PKTTHR;
+ 
++	ic->use_adaptive_rx_coalesce = priv->ic_mode & ENETC_IC_RX_ADAPTIVE;
++
  	return 0;
  }
  
--static void enetc_start(struct net_device *ndev)
-+void enetc_start(struct net_device *ndev)
- {
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
- 	int i;
-@@ -1440,7 +1460,7 @@ int enetc_open(struct net_device *ndev)
- 	return err;
- }
+@@ -596,11 +598,17 @@ static int enetc_set_coalesce(struct net_device *ndev,
+ 		return -EOPNOTSUPP;
  
--static void enetc_stop(struct net_device *ndev)
-+void enetc_stop(struct net_device *ndev)
- {
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
- 	int i;
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index 81e9072e10d4..4e3af7f07892 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -190,8 +190,10 @@ static inline bool enetc_si_is_pf(struct enetc_si *si)
- struct enetc_int_vector {
- 	void __iomem *rbier;
- 	void __iomem *tbier_base;
-+	void __iomem *ricr1;
- 	unsigned long tx_rings_map;
- 	int count_tx_rings;
-+	u32 rx_ictt;
- 	struct napi_struct napi;
- 	char name[ENETC_INT_NAME_MAX];
- 
-@@ -221,6 +223,18 @@ enum enetc_active_offloads {
- 	ENETC_F_QCI		= BIT(3),
- };
- 
-+/* interrupt coalescing modes */
-+enum enetc_ic_mode {
-+	/* one interrupt per frame */
-+	ENETC_IC_NONE = 0,
-+	/* activated when int coalescing time is set to a non-0 value */
-+	ENETC_IC_RX_MANUAL = BIT(0),
-+	ENETC_IC_TX_MANUAL = BIT(1),
-+};
+ 	ic_mode = ENETC_IC_NONE;
++	if (ic->use_adaptive_rx_coalesce) {
++		ic_mode |= ENETC_IC_RX_ADAPTIVE;
++		rx_ictt = 0x1;
++	} else {
++		ic_mode |= rx_ictt ? ENETC_IC_RX_MANUAL : 0;
++	}
 +
-+#define ENETC_RXIC_PKTTHR	min_t(u32, 256, ENETC_RX_RING_DEFAULT_SIZE / 2)
-+#define ENETC_TXIC_PKTTHR	min_t(u32, 128, ENETC_TX_RING_DEFAULT_SIZE / 2)
-+
- struct enetc_ndev_priv {
- 	struct net_device *ndev;
- 	struct device *dev; /* dma-mapping device */
-@@ -245,6 +259,8 @@ struct enetc_ndev_priv {
+ 	ic_mode |= tx_ictt ? ENETC_IC_TX_MANUAL : 0;
+-	ic_mode |= rx_ictt ? ENETC_IC_RX_MANUAL : 0;
  
- 	struct device_node *phy_node;
- 	phy_interface_t if_mode;
-+	int ic_mode;
-+	u32 tx_ictt;
- };
+ 	/* commit the settings */
+-	changed = (ic_mode != priv->ic_mode);
++	changed = (ic_mode != priv->ic_mode) || (priv->tx_ictt != tx_ictt);
  
- /* Messaging */
-@@ -274,6 +290,8 @@ void enetc_free_si_resources(struct enetc_ndev_priv *priv);
+ 	priv->ic_mode = ic_mode;
+ 	priv->tx_ictt = tx_ictt;
+@@ -609,6 +617,7 @@ static int enetc_set_coalesce(struct net_device *ndev,
+ 		struct enetc_int_vector *v = priv->int_vector[i];
  
- int enetc_open(struct net_device *ndev);
- int enetc_close(struct net_device *ndev);
-+void enetc_start(struct net_device *ndev);
-+void enetc_stop(struct net_device *ndev);
- netdev_tx_t enetc_xmit(struct sk_buff *skb, struct net_device *ndev);
- struct net_device_stats *enetc_get_stats(struct net_device *ndev);
- int enetc_set_features(struct net_device *ndev,
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-index 8aeaa3de0012..521f3b4cd250 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-@@ -14,12 +14,14 @@ static const u32 enetc_si_regs[] = {
- 
- static const u32 enetc_txbdr_regs[] = {
- 	ENETC_TBMR, ENETC_TBSR, ENETC_TBBAR0, ENETC_TBBAR1,
--	ENETC_TBPIR, ENETC_TBCIR, ENETC_TBLENR, ENETC_TBIER
-+	ENETC_TBPIR, ENETC_TBCIR, ENETC_TBLENR, ENETC_TBIER, ENETC_TBICR0,
-+	ENETC_TBICR1
- };
- 
- static const u32 enetc_rxbdr_regs[] = {
- 	ENETC_RBMR, ENETC_RBSR, ENETC_RBBSR, ENETC_RBCIR, ENETC_RBBAR0,
--	ENETC_RBBAR1, ENETC_RBPIR, ENETC_RBLENR, ENETC_RBICR0, ENETC_RBIER
-+	ENETC_RBBAR1, ENETC_RBPIR, ENETC_RBLENR, ENETC_RBIER, ENETC_RBICR0,
-+	ENETC_RBICR1
- };
- 
- static const u32 enetc_port_regs[] = {
-@@ -561,6 +563,65 @@ static void enetc_get_ringparam(struct net_device *ndev,
+ 		v->rx_ictt = rx_ictt;
++		v->rx_dim_en = !!(ic_mode & ENETC_IC_RX_ADAPTIVE);
  	}
- }
  
-+static int enetc_get_coalesce(struct net_device *ndev,
-+			      struct ethtool_coalesce *ic)
-+{
-+	struct enetc_ndev_priv *priv = netdev_priv(ndev);
-+	struct enetc_int_vector *v = priv->int_vector[0];
-+
-+	ic->tx_coalesce_usecs = enetc_cycles_to_usecs(priv->tx_ictt);
-+	ic->rx_coalesce_usecs = enetc_cycles_to_usecs(v->rx_ictt);
-+
-+	ic->tx_max_coalesced_frames = ENETC_TXIC_PKTTHR;
-+	ic->rx_max_coalesced_frames = ENETC_RXIC_PKTTHR;
-+
-+	return 0;
-+}
-+
-+static int enetc_set_coalesce(struct net_device *ndev,
-+			      struct ethtool_coalesce *ic)
-+{
-+	struct enetc_ndev_priv *priv = netdev_priv(ndev);
-+	u32 rx_ictt, tx_ictt;
-+	int i, ic_mode;
-+	bool changed;
-+
-+	tx_ictt = enetc_usecs_to_cycles(ic->tx_coalesce_usecs);
-+	rx_ictt = enetc_usecs_to_cycles(ic->rx_coalesce_usecs);
-+
-+	if (ic->rx_max_coalesced_frames != ENETC_RXIC_PKTTHR)
-+		return -EOPNOTSUPP;
-+
-+	if (ic->tx_max_coalesced_frames != ENETC_TXIC_PKTTHR)
-+		return -EOPNOTSUPP;
-+
-+	ic_mode = ENETC_IC_NONE;
-+	ic_mode |= tx_ictt ? ENETC_IC_TX_MANUAL : 0;
-+	ic_mode |= rx_ictt ? ENETC_IC_RX_MANUAL : 0;
-+
-+	/* commit the settings */
-+	changed = (ic_mode != priv->ic_mode);
-+
-+	priv->ic_mode = ic_mode;
-+	priv->tx_ictt = tx_ictt;
-+
-+	for (i = 0; i < priv->bdr_int_num; i++) {
-+		struct enetc_int_vector *v = priv->int_vector[i];
-+
-+		v->rx_ictt = rx_ictt;
-+	}
-+
-+	if (netif_running(ndev) && changed) {
-+		/* reconfigure the operation mode of h/w interrupts,
-+		 * traffic needs to be paused in the process
-+		 */
-+		enetc_stop(ndev);
-+		enetc_start(ndev);
-+	}
-+
-+	return 0;
-+}
-+
- static int enetc_get_ts_info(struct net_device *ndev,
- 			     struct ethtool_ts_info *info)
- {
-@@ -617,6 +678,8 @@ static int enetc_set_wol(struct net_device *dev,
- }
+ 	if (netif_running(ndev) && changed) {
+@@ -679,7 +688,8 @@ static int enetc_set_wol(struct net_device *dev,
  
  static const struct ethtool_ops enetc_pf_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
-+				     ETHTOOL_COALESCE_MAX_FRAMES,
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+-				     ETHTOOL_COALESCE_MAX_FRAMES,
++				     ETHTOOL_COALESCE_MAX_FRAMES |
++				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
  	.get_regs_len = enetc_get_reglen,
  	.get_regs = enetc_get_regs,
  	.get_sset_count = enetc_get_sset_count,
-@@ -629,6 +692,8 @@ static const struct ethtool_ops enetc_pf_ethtool_ops = {
- 	.get_rxfh = enetc_get_rxfh,
- 	.set_rxfh = enetc_set_rxfh,
- 	.get_ringparam = enetc_get_ringparam,
-+	.get_coalesce = enetc_get_coalesce,
-+	.set_coalesce = enetc_set_coalesce,
- 	.get_link_ksettings = phy_ethtool_get_link_ksettings,
- 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
- 	.get_link = ethtool_op_get_link,
-@@ -638,6 +703,8 @@ static const struct ethtool_ops enetc_pf_ethtool_ops = {
- };
+@@ -704,7 +714,8 @@ static const struct ethtool_ops enetc_pf_ethtool_ops = {
  
  static const struct ethtool_ops enetc_vf_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
-+				     ETHTOOL_COALESCE_MAX_FRAMES,
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+-				     ETHTOOL_COALESCE_MAX_FRAMES,
++				     ETHTOOL_COALESCE_MAX_FRAMES |
++				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
  	.get_regs_len = enetc_get_reglen,
  	.get_regs = enetc_get_regs,
  	.get_sset_count = enetc_get_sset_count,
-@@ -649,6 +716,8 @@ static const struct ethtool_ops enetc_vf_ethtool_ops = {
- 	.get_rxfh = enetc_get_rxfh,
- 	.set_rxfh = enetc_set_rxfh,
- 	.get_ringparam = enetc_get_ringparam,
-+	.get_coalesce = enetc_get_coalesce,
-+	.set_coalesce = enetc_set_coalesce,
- 	.get_link = ethtool_op_get_link,
- 	.get_ts_info = enetc_get_ts_info,
- };
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-index d70ee3722844..17cf7c94fdb5 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-@@ -122,7 +122,10 @@ enum enetc_bdr_type {TX, RX};
- #define ENETC_RBIER_RXTIE	BIT(0)
- #define ENETC_RBIDR	0xa4
- #define ENETC_RBICR0	0xa8
--#define ENETC_RBICR0_ICEN	BIT(31)
-+#define ENETC_RBICR0_ICEN		BIT(31)
-+#define ENETC_RBICR0_ICPT_MASK		0x1ff
-+#define ENETC_RBICR0_SET_ICPT(n)	((n) & ENETC_RBICR0_ICPT_MASK)
-+#define ENETC_RBICR1	0xac
- 
- /* TX BDR reg offsets */
- #define ENETC_TBMR	0
-@@ -142,7 +145,10 @@ enum enetc_bdr_type {TX, RX};
- #define ENETC_TBIER_TXTIE	BIT(0)
- #define ENETC_TBIDR	0xa4
- #define ENETC_TBICR0	0xa8
--#define ENETC_TBICR0_ICEN	BIT(31)
-+#define ENETC_TBICR0_ICEN		BIT(31)
-+#define ENETC_TBICR0_ICPT_MASK		0xf
-+#define ENETC_TBICR0_SET_ICPT(n) ((ilog2(n) + 1) & ENETC_TBICR0_ICPT_MASK)
-+#define ENETC_TBICR1	0xac
- 
- #define ENETC_RTBLENR_LEN(n)	((n) & ~0x7)
- 
-@@ -787,6 +793,15 @@ struct enetc_cbd {
- };
- 
- #define ENETC_CLK  400000000ULL
-+static inline u32 enetc_cycles_to_usecs(u32 cycles)
-+{
-+	return (u32)div_u64(cycles * 1000000ULL, ENETC_CLK);
-+}
-+
-+static inline u32 enetc_usecs_to_cycles(u32 usecs)
-+{
-+	return (u32)div_u64(usecs * ENETC_CLK, 1000000ULL);
-+}
- 
- /* port time gating control register */
- #define ENETC_QBV_PTGCR_OFFSET		0x11a00
 -- 
 2.17.1
 
