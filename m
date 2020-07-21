@@ -2,240 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94824227976
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 09:27:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5724A227996
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 09:39:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727950AbgGUH1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 03:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725984AbgGUH1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 03:27:32 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1FFC061794;
-        Tue, 21 Jul 2020 00:27:31 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id g10so1555939wmc.1;
-        Tue, 21 Jul 2020 00:27:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=5CSisjE5XuwCBBEWV14v4ZYWaVXYuEAvUu/+89Gh6as=;
-        b=MvmI54RUo0GqPAVCEEMMxwKkpZPD1uC+7UUILIXhxfWRKBU/jAl9Y5W7otl14GaEZz
-         djjfv6gCRRDXNt/AgAFnCO/tsBYS8iusMvwxsOdX0QMpEfWOwCbZ2nAJxKOl+27waSG4
-         cEThUwVnWnQH96KBH11HVZevJtVFo+HSC3DqnNa6HeCVtzNDNItWtScmu0hnXW3iEdnv
-         iAQC5un1IhFozQE/X9ZWJrggjI+/aZ2W3wr1BDFDVOMdz4FzRb8YVvqLb0TjY9vqxOlW
-         o3ZXmdQtYOc20gKrLLcuQ10Maxlx8al/wnXMZA9/wtOLlx29ricoQ6dNsHO88qKTZKhr
-         Hjfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5CSisjE5XuwCBBEWV14v4ZYWaVXYuEAvUu/+89Gh6as=;
-        b=G5yP3FEDf0AzEGfefnFlwevJeCkz4+wsABilmOwegezTH0ZgkVLs6boTuet6E4HnqO
-         5OA5dTCyUeOSouGGb0BHQyjiHjrOIBjcDDZ4uv9DkUSFHeuqoJUBVB7K/E7Kq7pbZqUR
-         4teramRpq75E7M9JkPrufzTfBjktWQnKYgQ6xrF6aVA4iahOnRkCNtHAHNqvL0fT5FAg
-         /mJ8tIVgGiKuQ5wH2IceW7HxAHdakUKcwNaIrbWwlFgtjvp+h6dVZShMke3o5eMZ/DQy
-         nBnQj12I6tkKq+wXQ0kWr7BEn/bDQqOsDbhm6CCkdz44AlZ49z6glGGDynMFXvTFAgny
-         Zk0g==
-X-Gm-Message-State: AOAM532iPgCEcLesmKICgBQheJv8m30wLz7rbZd6TZT3TNe5jWfIt7or
-        +PJwK5SaIE0rMJ718vGOPGEoMQx98VwihstQeCc=
-X-Google-Smtp-Source: ABdhPJzlL8rqjxBphOpYJR7yO3dtS4Zjs+mF5+u0/XLfY3vtf55VmftxsxwdBSn+/H9U4vHasP6wWyijiWQFuE9rois=
-X-Received: by 2002:a7b:c857:: with SMTP id c23mr2928694wml.155.1595316450695;
- Tue, 21 Jul 2020 00:27:30 -0700 (PDT)
+        id S1726614AbgGUHi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 03:38:59 -0400
+Received: from mail.intenta.de ([178.249.25.132]:36101 "EHLO mail.intenta.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726039AbgGUHi7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 03:38:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=8CiWC98Y8EMpovvGd0JVLmDPYgJZOOTOJz1RuJIBbZQ=;
+        b=UPTUx03jbulgumSiPVAelMr40+wPxX8fVHbXigVL9tlSTTERSbfCtgFSvGuXDjF99zEHarBXAcRluXLPpGkvvqFnlzbPA9pklLNneTVsh0Cw5KvIqJAKIXpPf0RGjROCrd+PAyvX1W6hbOPS8svrs38Sti4z/dtGoiYLdFybn/kaPvGP5JOz4hmWOehBXjtsPaA9JXHiPfJ05EVrTGRNDc04XUyHVik3mwhYZDikCBnq5cv4augSPCF6hN6bFyMy5AyIG/QuTfjarl4oxbJemNhZZBH1raGMkH99ZSFKwsUwuifN+GvHMC/5g53DxNY5Mg+r3N8DK7yOKA3r7YJLbw==;
+Date:   Tue, 21 Jul 2020 09:38:53 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: Re: [PATCH v3] net: dsa: microchip: call phy_remove_link_mode during
+ probe
+Message-ID: <20200721073853.GA5495@laureti-dev>
+References: <20200717131814.GA1336433@lunn.ch>
+ <20200720090416.GA7307@laureti-dev>
+ <20200720210449.GP1339445@lunn.ch>
 MIME-Version: 1.0
-References: <20200721025241.8077-1-luke.r.nels@gmail.com>
-In-Reply-To: <20200721025241.8077-1-luke.r.nels@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 21 Jul 2020 09:27:19 +0200
-Message-ID: <CAJ+HfNj151ew9pOuu+tUmo7LjgXw1W0zAAQ9qWosFVkR5Gky2g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 0/3] bpf, riscv: Add compressed instructions
- to rv64 JIT
-To:     Luke Nelson <lukenels@cs.washington.edu>
-Cc:     bpf <bpf@vger.kernel.org>, Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Netdev <netdev@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200720210449.GP1339445@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Jul 2020 at 04:52, Luke Nelson <lukenels@cs.washington.edu> wrot=
-e:
->
-> This patch series enables using compressed riscv (RVC) instructions
-> in the rv64 BPF JIT.
->
-> RVC is a standard riscv extension that adds a set of compressed,
-> 2-byte instructions that can replace some regular 4-byte instructions
-> for improved code density.
->
-> This series first modifies the JIT to support using 2-byte instructions
-> (e.g., in jump offset computations), then adds RVC encoding and
-> helper functions, and finally uses the helper functions to optimize
-> the rv64 JIT.
->
-> I used our formal verification framework, Serval, to verify the
-> correctness of the RVC encodings and their uses in the rv64 JIT.
->
-> The JIT continues to pass all tests in lib/test_bpf.c, and introduces
-> no new failures to test_verifier; both with and without RVC being enabled=
-.
->
-> The following are examples of the JITed code for the verifier selftest
-> "direct packet read test#3 for CGROUP_SKB OK", without and with RVC
-> enabled, respectively. The former uses 178 bytes, and the latter uses 112=
-,
-> for a ~37% reduction in code size for this example.
->
-> Without RVC:
->
->    0: 02000813    addi  a6,zero,32
->    4: fd010113    addi  sp,sp,-48
->    8: 02813423    sd    s0,40(sp)
->    c: 02913023    sd    s1,32(sp)
->   10: 01213c23    sd    s2,24(sp)
->   14: 01313823    sd    s3,16(sp)
->   18: 01413423    sd    s4,8(sp)
->   1c: 03010413    addi  s0,sp,48
->   20: 03056683    lwu   a3,48(a0)
->   24: 02069693    slli  a3,a3,0x20
->   28: 0206d693    srli  a3,a3,0x20
->   2c: 03456703    lwu   a4,52(a0)
->   30: 02071713    slli  a4,a4,0x20
->   34: 02075713    srli  a4,a4,0x20
->   38: 03856483    lwu   s1,56(a0)
->   3c: 02049493    slli  s1,s1,0x20
->   40: 0204d493    srli  s1,s1,0x20
->   44: 03c56903    lwu   s2,60(a0)
->   48: 02091913    slli  s2,s2,0x20
->   4c: 02095913    srli  s2,s2,0x20
->   50: 04056983    lwu   s3,64(a0)
->   54: 02099993    slli  s3,s3,0x20
->   58: 0209d993    srli  s3,s3,0x20
->   5c: 09056a03    lwu   s4,144(a0)
->   60: 020a1a13    slli  s4,s4,0x20
->   64: 020a5a13    srli  s4,s4,0x20
->   68: 00900313    addi  t1,zero,9
->   6c: 006a7463    bgeu  s4,t1,0x74
->   70: 00000a13    addi  s4,zero,0
->   74: 02d52823    sw    a3,48(a0)
->   78: 02e52a23    sw    a4,52(a0)
->   7c: 02952c23    sw    s1,56(a0)
->   80: 03252e23    sw    s2,60(a0)
->   84: 05352023    sw    s3,64(a0)
->   88: 00000793    addi  a5,zero,0
->   8c: 02813403    ld    s0,40(sp)
->   90: 02013483    ld    s1,32(sp)
->   94: 01813903    ld    s2,24(sp)
->   98: 01013983    ld    s3,16(sp)
->   9c: 00813a03    ld    s4,8(sp)
->   a0: 03010113    addi  sp,sp,48
->   a4: 00078513    addi  a0,a5,0
->   a8: 00008067    jalr  zero,0(ra)
->
-> With RVC:
->
->    0:   02000813    addi    a6,zero,32
->    4:   7179        c.addi16sp  sp,-48
->    6:   f422        c.sdsp  s0,40(sp)
->    8:   f026        c.sdsp  s1,32(sp)
->    a:   ec4a        c.sdsp  s2,24(sp)
->    c:   e84e        c.sdsp  s3,16(sp)
->    e:   e452        c.sdsp  s4,8(sp)
->   10:   1800        c.addi4spn  s0,sp,48
->   12:   03056683    lwu     a3,48(a0)
->   16:   1682        c.slli  a3,0x20
->   18:   9281        c.srli  a3,0x20
->   1a:   03456703    lwu     a4,52(a0)
->   1e:   1702        c.slli  a4,0x20
->   20:   9301        c.srli  a4,0x20
->   22:   03856483    lwu     s1,56(a0)
->   26:   1482        c.slli  s1,0x20
->   28:   9081        c.srli  s1,0x20
->   2a:   03c56903    lwu     s2,60(a0)
->   2e:   1902        c.slli  s2,0x20
->   30:   02095913    srli    s2,s2,0x20
->   34:   04056983    lwu     s3,64(a0)
->   38:   1982        c.slli  s3,0x20
->   3a:   0209d993    srli    s3,s3,0x20
->   3e:   09056a03    lwu     s4,144(a0)
->   42:   1a02        c.slli  s4,0x20
->   44:   020a5a13    srli    s4,s4,0x20
->   48:   4325        c.li    t1,9
->   4a:   006a7363    bgeu    s4,t1,0x50
->   4e:   4a01        c.li    s4,0
->   50:   d914        c.sw    a3,48(a0)
->   52:   d958        c.sw    a4,52(a0)
->   54:   dd04        c.sw    s1,56(a0)
->   56:   03252e23    sw      s2,60(a0)
->   5a:   05352023    sw      s3,64(a0)
->   5e:   4781        c.li    a5,0
->   60:   7422        c.ldsp  s0,40(sp)
->   62:   7482        c.ldsp  s1,32(sp)
->   64:   6962        c.ldsp  s2,24(sp)
->   66:   69c2        c.ldsp  s3,16(sp)
->   68:   6a22        c.ldsp  s4,8(sp)
->   6a:   6145        c.addi16sp  sp,48
->   6c:   853e        c.mv    a0,a5
->   6e:   8082        c.jr    ra
->
-> RFC -> v1:
->   - From Bj=C3=B6rn T=C3=B6pel:
->     * Changed RVOFF macro to static inline "ninsns_rvoff".
->     * Changed return type of rvc_ functions from u32 to u16.
->     * Changed sizeof(u16) to sizeof(*ctx->insns).
->   * Factored unsigned immediate checks into helper functions
->     (is_8b_uint, etc.)
->   * Changed to use IS_ENABLED instead of #ifdef to check if RVC is
->     enabled.
->   * Changed type of immediate arguments to rvc_* encoding to u32
->     to avoid issues from promotion of u16 to signed int.
->   * Cleaned up RVC checks in emit_{addi,slli,srli,srai}.
->     + Wrapped lines at 100 instead of 80 columns for increased clarity.
->         + Move !imm checks into each branch instead of checking
->           separately.
->         + Strengthed checks for c.{slli,srli,srai} to check that
->           imm < XLEN. Otherwise, imm could be non-zero but the lower
->           XLEN bits could all be zero, leading to invalid RVC encoding.
->   * Changed emit_imm to sign-extend the 12-bit value in "lower"
->     + The immediate checks for emit_{addiw,li,addi} use signed
->           comparisons, so this enables the RVC variants to be used
->           more often (e.g., if val =3D=3D -1, then lower should be -1
->           as opposed to 4095).
->
+Hi Andrew,
 
-Finally RVC support! Thank you!
+Your persistence on this matter is much appreciated.
 
-For the series:
-Reviewed-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
+On Mon, Jul 20, 2020 at 11:04:49PM +0200, Andrew Lunn wrote:
+> > The dev->ports[i].phydev is not actually exposed beyond the driver. The
+> > driver sets the phydev.speed in a few places and even reads it back in
+> > one place. It also sets phydev.duplex, but never reads it back. It
+> > queries phydev.link, which is statically 0 due to using devm_kzalloc.
+> > 
+> > I think the use of this ksz_port.phydev is very misleading, but I'm
+> > unsure how to fix this. It is not clear to me whether all those updates
+> > should be performed on the connected phydev instead or whether this is
+> > just internal state tracking.
+> 
+> I took a quick look at the code.
+> 
+> For PHY addresses < dev->phy_port_cnt it passes all reads/writes
+> through to the hardware. So the Linux MDIO/PHY subsystem will be able
+> to fully drive these PHYs, and the ksz9477 internal phydev is
+> unneeded.
 
-> Luke Nelson (3):
->   bpf, riscv: Modify JIT ctx to support compressed instructions
->   bpf, riscv: Add encodings for compressed instructions
->   bpf, riscv: Use compressed instructions in the rv64 JIT
->
->  arch/riscv/net/bpf_jit.h        | 483 +++++++++++++++++++++++++++++++-
->  arch/riscv/net/bpf_jit_comp32.c |  14 +-
->  arch/riscv/net/bpf_jit_comp64.c | 293 ++++++++++---------
->  arch/riscv/net/bpf_jit_core.c   |   6 +-
->  4 files changed, 643 insertions(+), 153 deletions(-)
->
-> --
-> 2.25.1
->
+I do not fully concur here yet. For instance, ksz8795_port_setup and
+ksz9477_port_setup branch on the port being a CPU port and evaluate the
+phydev.link for non-CPU ports. Given that phydev.link is never assigned,
+the branch where dev->live_ports is assigned is dead. Following
+live_ports through the code reveals that it is only ever written to, but
+no logic ever depends on its value. I'm not yet sure whether all of that
+should simply be removed with no replacement or whether it was meant to
+be extended some time later.
+
+> Where it gets interesting is addr >= dev->phy_port_cnt. Reads of the
+> PHY registers return hard coded values, or the link speed from the
+> local phydev. Writes to these registers are just ignored.
+
+This makes somewhat sense to me. It may become clearer below.
+
+> If you compare this to other DSA drivers/DSA switches, reads/write for
+> addresses where there are no internal PHY get passed out to an
+> external MDIO bus, where an external PHY can be connected. The Linux
+> MDIO/PHY subsystem will discover these external PHYs and create phydev
+> instance for them. If there is no external PHY, for example the MAC is
+> connected to another MAC, no PHY will be detected, and fixed-link is
+> used in its place.
+
+These switches all have internal PHYs for addresses < phy_port_cnt.
+Beyond this index, the MACs are located. Few devices have multiple MACs
+and only one MAC can be connected to the CPU at a time, because the tail
+tagging scheme can only be enabled on one MAC port at a time. The driver
+requires tail tagging on CPU ports (although this is not required by the
+hardware).
+
+> Do these switches have an external MDIO bus?
+
+One has a choice of how one wishes to communicate with these switches.
+Depending on configuration straps, they can do SPI or I²C or MDIO,
+though the register space on the MDIO bus is too limited to do anything
+useful, so the driver does not support MDIO. You can reach all of the
+internal PHYs through the chosen bus. If you connect an external PHY to
+a MAC, the KSZ is not involved in a management connection such as MDIO.
+
+> How are external PHYs usually managed?
+
+I honestly don't know. I only deal with internal PHYs. The typical use
+case for the MAC ports is to establish fixed-links to other MACs (such
+as the CPU or other switches).
+
+> At a minimum, the internal phydev can be replaced with just a speed,
+> rather than a full phydev, which will reduce confusion. But it would
+> be nice to go further and remove all the addr >= dev->phy_port_cnt
+> handling. But we need to understand the implications of that.
+
+addr >= dev->phy_port_cnt identifies a MAC. While the KSZ may have a
+data connection to the other side, but it does not have a management
+connection (e.g. MDIO). The driver presently assumes that all MAC
+connections are fixed-links, which is the case when you connect it to
+the CPU. A significant fraction of KSZ switches only have one MAC or
+have multiple MACs of which you only use one in a particular product
+(e.g. because one only support SGMII and othe other only supports
+RGMII). So the common case here is that addr >= dev->phy_port_cnt
+uniquely identifies the fixed-link CPU port.
+
+This also means that very likely the addr >= dev->phy_port_cnt handling
+is not going away.
+
+It also kinda routes us back to another thread of mine. In the followup
+to https://lore.kernel.org/netdev/20200714120827.GA7939@laureti-dev/,
+you also identified the assumption that any MAC port is the CPU port of
+this driver and asked me to build on it. It is unclear whether that
+should be lifted. If it isn't, I think it is fairly safe to assume that
+any MAC is connected using a fixed-link and that there is no need for
+any external PHY management.
+
+Helmut
