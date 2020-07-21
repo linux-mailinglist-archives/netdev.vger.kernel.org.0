@@ -2,118 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01FF522750A
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 03:57:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83AE6227511
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 03:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbgGUB5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 21:57:23 -0400
-Received: from mail-db8eur05on2133.outbound.protection.outlook.com ([40.107.20.133]:32481
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725857AbgGUB5W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 21:57:22 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QM+Yb+4zvROpVB6UcGvrI5O9TArzss6y9jokhBG9pxoFY2wz/zabogaz5Rzsux/PKQaHLucCAYxmexeP1W5H/lBtDZF3IB1nWXNdeVKI493aZOrz3R491N1MKbH9QXbQnYMa6kdp3pgIBoksoO1VdtgLr8NpXDyRgXeOM7tYEi5iR4YVa4llAX4UrY2dITSaq/7TYVmwgpUQRWodInptgz/onu+0PGQTZi7fk8NBw7UeSvyCU2PE5Po0TYLuNp1Uh/Y4NSQNfFlke/myxb3+DVn9e9LyYa+dYEaZkl8gKK4A0wJl8rl9zpSbv/dk2GAERilVnDce3ZaDm0wtDHEZ3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yZVkpQYHVOZvI/+mAyqU0oJo5+XPTAIGMu/cKnmqxLo=;
- b=RiKfeSNSvL7CXKr806FObuTpG1woH7GpY82ERX16ugM7oryrrBTQcmQMu+u3ZdiZ8Ug55aCbI1R/fV1YFvYofHld6qfzmGIAQ2PcbXsIK66pDEcn2e/Weg48d3tYuQ98KITqY/OnN4R89bM5eQ/Vymfe/a1pFMDziECkVv5pYp8o4Kr+HdVUDJi7zZmTG2teAcgmB66ACg+eFEyHUDztY8n1Naj2Zy0WeZ7jSu5B1OlhvjKjShhzkk0ebxLz8pxJ5j04+jiiZGutaG7rxlL0dI6kFMRWz5Amt2hTXrPhQEKoHJ7L2L6+sNs+uOgV/7N3NpCB/S+N/Yx/voVHR8J67g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yZVkpQYHVOZvI/+mAyqU0oJo5+XPTAIGMu/cKnmqxLo=;
- b=uqx9OJXKllqZxPl/Ig+e05xmpfNkFWkw2448SUkXM4TppaoV92XuEQH5xUNPRu14F9DuWgeiaKRf4TvxKGZRDi9mJ6zNMOFmxsI02ww8HR/9/snaKyiJfAIKiAjhxG1jimK6mTVZbx8tcAQbeNw+WNvipzC0IZoLNa2L+JgvGnE=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none
- header.from=dektech.com.au;
-Received: from DB7PR05MB4315.eurprd05.prod.outlook.com (2603:10a6:5:1f::18) by
- DBBPR05MB6284.eurprd05.prod.outlook.com (2603:10a6:10:c7::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3195.17; Tue, 21 Jul 2020 01:57:18 +0000
-Received: from DB7PR05MB4315.eurprd05.prod.outlook.com
- ([fe80::89e:5249:aa01:62f6]) by DB7PR05MB4315.eurprd05.prod.outlook.com
- ([fe80::89e:5249:aa01:62f6%6]) with mapi id 15.20.3195.025; Tue, 21 Jul 2020
- 01:57:18 +0000
-From:   Tung Nguyen <tung.q.nguyen@dektech.com.au>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [tipc-discussion] [net v1 1/1] tipc: allow to build NACK message in link timeout function
-Date:   Tue, 21 Jul 2020 08:57:05 +0700
-Message-Id: <20200721015705.2333-1-tung.q.nguyen@dektech.com.au>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SG2P153CA0016.APCP153.PROD.OUTLOOK.COM (2603:1096::26) To
- DB7PR05MB4315.eurprd05.prod.outlook.com (2603:10a6:5:1f::18)
+        id S1727941AbgGUB7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 21:59:34 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:43740 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726962AbgGUB7e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 21:59:34 -0400
+Received: by mail-io1-f65.google.com with SMTP id k23so19710424iom.10;
+        Mon, 20 Jul 2020 18:59:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wnc7YVfPETMY6OwZSSKyjxvpm6CL442HL8Evb64Bao0=;
+        b=ObDkZUCkUiIaGolGkqSsZKx1s5D0ohTz62PZZc+i+3bawVSOMebEEsJahX91MQgjxn
+         Lw7PdCN5bQlUXBYBvAxQpEqMSdZOtTbR5CNhnj1+ZXZbo5l42xj5Od+9zxKd0R3Mmp9y
+         RiJNsY4SzrVFPOOyjmoqIf3AThrrlG9XvsbnD/4EhpaFJ4evjbfd1c9Uo+9YVsBADCyh
+         e5lBAp7dIwqFjm4hcsUMHZdgJR+ImPC7onVQaj1bya0EMg4DkRiBCO2lHj43LfglzXHn
+         /ZBJPlbaYS4KT7LCHnYROP6jzVYYBBvxDXNPzgvdHGcI8jD3wE8ZYvpqNwiUE1LE0XX0
+         yDSA==
+X-Gm-Message-State: AOAM530dz9Th/EoAHozCdFh1sMTM5+exb38Ga6g+Hgb48wDPBZmYNBmd
+        yazyqVDWhxDhgsTp0o0oow==
+X-Google-Smtp-Source: ABdhPJy8KThvkeccvCI926AXDyWSugNKjKyrlGQkm9NW9P/FwLo9C9MOvQMwCMAcBFH6teHRisqXRg==
+X-Received: by 2002:a02:2401:: with SMTP id f1mr29054327jaa.66.1595296772813;
+        Mon, 20 Jul 2020 18:59:32 -0700 (PDT)
+Received: from xps15 ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id p124sm9810465iod.32.2020.07.20.18.59.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2020 18:59:32 -0700 (PDT)
+Received: (nullmailer pid 3370741 invoked by uid 1000);
+        Tue, 21 Jul 2020 01:59:30 -0000
+Date:   Mon, 20 Jul 2020 19:59:30 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Matthew Hagan <mnhagan88@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        John Crispin <john@phrozen.org>,
+        Jonathan McDowell <noodles@earth.li>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 2/2] dt-bindings: net: dsa: qca8k: Add PORT0_PAD_CTRL
+ properties
+Message-ID: <20200721015930.GA3363310@bogus>
+References: <2e1776f997441792a44cd35a16f1e69f848816ce.1594668793.git.mnhagan88@gmail.com>
+ <ea0a35ed686e6dace77e25cb70a8f39fdd1ea8ad.1594668793.git.mnhagan88@gmail.com>
+ <20200716150925.0f3e01b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200716223236.GA1314837@lunn.ch>
+ <c86c4da0-a740-55cc-33dd-7a91e36c7738@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from ubuntu.dekvn.internal (14.161.14.188) by SG2P153CA0016.APCP153.PROD.OUTLOOK.COM (2603:1096::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.0 via Frontend Transport; Tue, 21 Jul 2020 01:57:16 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [14.161.14.188]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 50f50bb5-bfb6-451e-c345-08d82d1965c0
-X-MS-TrafficTypeDiagnostic: DBBPR05MB6284:
-X-Microsoft-Antispam-PRVS: <DBBPR05MB628486F14C25676DAC85D95188780@DBBPR05MB6284.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:569;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QQTk2oFStBF21IR432ZKaxtskYK57Xk6PP5AyOcrAa/Xzug1JS/GLdv7rVCoeWX8S1ub0PLddMmgVAMZ41LGOqslnTEOH9ZHmPrnsZqDySK7Gxgf6bHzDFtxCUQAv6bFP/6uw7aGqrFLgvHakDXFwvzchjib+kwmvPYnif9hkYHLtfpixM9LV/C0W9HEkGUuc8Kjyns1JrROLSD0Bu5jQUD4PlI0XHiqQVZnH28DKmpM3wB7WvdJ/WsHZl4i1A9QBJGnuT3eLoHBi8/ADSnX4N64rjNXzgsgXamXUNtdzAY7HWnGdUnOk/gYDpuEEAs0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR05MB4315.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(366004)(136003)(396003)(39850400004)(6486002)(36756003)(66946007)(52116002)(8936002)(2906002)(66556008)(66476007)(5660300002)(8676002)(26005)(6666004)(6512007)(1076003)(83380400001)(15650500001)(86362001)(2616005)(956004)(6506007)(16526019)(186003)(103116003)(316002)(508600001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: pu1tTR8JJaTMkbrIv2arLv83vPACPRKOf9/WAjWF3wmkJN7BQAxBzmmS19/wtsrBzzLgjBZJKmTY2RqL60UkfORMS1ia1yJGVBmZgbeCph2Dd3S6H3I3Y7pA0osn32lV/x6/UaNGEtIo2Cfb0BGAMLLkfPxxzWFFM+UgVbQeDoLI5B+QEUBnFls05ZfNbE1TQyn8bPAl3Dcm0GsSIBDHpChYBoLozyUol7pwEBzkhTxmjh/zDUOBwRgZRXJ1yLG0MZWhKOthxKu/fbHX882r3JzV+8CPA5A93LM8dJBWQmDJYFtfkOJTAVyD4BMS2dgNS9SynCdrym5OiIShKgPmPXRfvCxIAgHFJLB9JrFpdjs7ELHQyuG6NQuZ1PzCrbTAV3Q4bAv8RmP6zXqLXOxluH13ZmNoqKw+cgAsKkL+oRyxWdO2uGXddVMEEi1i3qWLHsED6PMV4Q7cj0OX5IYgUe8Kg2r4WeohqxLB/XTc1oY=
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: 50f50bb5-bfb6-451e-c345-08d82d1965c0
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR05MB4315.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2020 01:57:18.1117
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YBzZb191r+7FANZM/yCmg7e3zasGIbH3DGT5wVjtIafcM1LIpbZNufL5CF23HrVsK7FUBYrKkXkEur7ATYWpNuYfjCFw3gfj3tZsYZvxqdY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6284
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c86c4da0-a740-55cc-33dd-7a91e36c7738@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 02288248b051 ("tipc: eliminate gap indicator from ACK messages")
-eliminated sending of the 'gap' indicator in regular ACK messages and
-only allowed to build NACK message with enabled probe/probe_reply.
-However, necessary correction for building NACK message was missed
-in tipc_link_timeout() function. This leads to significant delay and
-link reset (due to retransmission failure) in lossy environment.
+On Fri, Jul 17, 2020 at 08:26:02PM +0100, Matthew Hagan wrote:
+> 
+> 
+> On 16/07/2020 23:32, Andrew Lunn wrote:
+> > On Thu, Jul 16, 2020 at 03:09:25PM -0700, Jakub Kicinski wrote:
+> >> On Mon, 13 Jul 2020 21:50:26 +0100 Matthew Hagan wrote:
+> >>> Add names and decriptions of additional PORT0_PAD_CTRL properties.
+> >>>
+> >>> Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
+> >>> ---
+> >>>  Documentation/devicetree/bindings/net/dsa/qca8k.txt | 8 ++++++++
+> >>>  1 file changed, 8 insertions(+)
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> >>> index ccbc6d89325d..3d34c4f2e891 100644
+> >>> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> >>> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> >>> @@ -13,6 +13,14 @@ Optional properties:
+> >>>  
+> >>>  - reset-gpios: GPIO to be used to reset the whole device
+> >>>  
+> >>> +Optional MAC configuration properties:
+> >>> +
+> >>> +- qca,exchange-mac0-mac6:	If present, internally swaps MAC0 and MAC6.
+> >>
+> >> Perhaps we can say a little more here?
+> >>
+> >>> +- qca,sgmii-rxclk-falling-edge:	If present, sets receive clock phase to
+> >>> +				falling edge.
+> >>> +- qca,sgmii-txclk-falling-edge:	If present, sets transmit clock phase to
+> >>> +				falling edge.
+> >>
+> >> These are not something that other vendors may implement and therefore
+> >> something we may want to make generic? Andrew?
+> > 
+> > I've never seen any other vendor implement this. Which to me makes me
+> > think this is a vendor extension, to Ciscos vendor extension of
+> > 1000BaseX.
+> > 
+> > Matthew, do you have a real use cases of these? I don't see a DT patch
+> > making use of them. And if you do, what is the PHY on the other end
+> > which also allows you to invert the clocks?
+> > 
+> The use case I am working on is the Cisco Meraki MX65 which requires bit
+> 18 set (qca,sgmii-txclk-falling-edge). On the other side is a BCM58625
+> SRAB with ports 4 and 5 in SGMII mode. There is no special polarity
+> configuration set on this side though I do have very limited info on
+> what is available. The settings I have replicate the vendor
+> configuration extracted from the device.
+> 
+> The qca,sgmii-rxclk-falling-edge option (bit 19) is commonly used
+> according to the device trees found in the OpenWrt, which is still using
+> the ar8216 driver. With a count through the ar8327-initvals I see bit 19
+> set on 18 of 22 devices using SGMII on MAC0.
 
-This commit fixes it by setting the 'probe' flag to 'true' when
-the receive deferred queue is not empty. As a result, NACK message
-will be built to send back to another peer.
+Can't you identify the device and configure the setting based on that? 
+After all, MDIO devices are discoverable. Or there's no MDIO here?
 
-Fixes: commit 02288248b051 ("tipc: eliminate gap indicator from ACK messages")
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
----
- net/tipc/link.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index 263d950e70e9..d40f8e5b7683 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -827,11 +827,11 @@ int tipc_link_timeout(struct tipc_link *l, struct sk_buff_head *xmitq)
- 		state |= l->bc_rcvlink->rcv_unacked;
- 		state |= l->rcv_unacked;
- 		state |= !skb_queue_empty(&l->transmq);
--		state |= !skb_queue_empty(&l->deferdq);
- 		probe = mstate->probing;
- 		probe |= l->silent_intv_cnt;
- 		if (probe || mstate->monitoring)
- 			l->silent_intv_cnt++;
-+		probe |= !skb_queue_empty(&l->deferdq);
- 		if (l->snd_nxt == l->checkpoint) {
- 			tipc_link_update_cwin(l, 0, 0);
- 			probe = true;
--- 
-2.17.1
-
+Rob
