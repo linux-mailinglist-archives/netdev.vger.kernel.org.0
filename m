@@ -2,141 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5724A227996
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 09:39:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E26CA2279CE
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 09:49:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726614AbgGUHi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 03:38:59 -0400
-Received: from mail.intenta.de ([178.249.25.132]:36101 "EHLO mail.intenta.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726039AbgGUHi7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 03:38:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
-        h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=8CiWC98Y8EMpovvGd0JVLmDPYgJZOOTOJz1RuJIBbZQ=;
-        b=UPTUx03jbulgumSiPVAelMr40+wPxX8fVHbXigVL9tlSTTERSbfCtgFSvGuXDjF99zEHarBXAcRluXLPpGkvvqFnlzbPA9pklLNneTVsh0Cw5KvIqJAKIXpPf0RGjROCrd+PAyvX1W6hbOPS8svrs38Sti4z/dtGoiYLdFybn/kaPvGP5JOz4hmWOehBXjtsPaA9JXHiPfJ05EVrTGRNDc04XUyHVik3mwhYZDikCBnq5cv4augSPCF6hN6bFyMy5AyIG/QuTfjarl4oxbJemNhZZBH1raGMkH99ZSFKwsUwuifN+GvHMC/5g53DxNY5Mg+r3N8DK7yOKA3r7YJLbw==;
-Date:   Tue, 21 Jul 2020 09:38:53 +0200
-From:   Helmut Grohne <helmut.grohne@intenta.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>
-Subject: Re: [PATCH v3] net: dsa: microchip: call phy_remove_link_mode during
- probe
-Message-ID: <20200721073853.GA5495@laureti-dev>
-References: <20200717131814.GA1336433@lunn.ch>
- <20200720090416.GA7307@laureti-dev>
- <20200720210449.GP1339445@lunn.ch>
+        id S1727782AbgGUHtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 03:49:14 -0400
+Received: from mx24.baidu.com ([111.206.215.185]:41266 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725984AbgGUHtO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 03:49:14 -0400
+Received: from BJHW-Mail-Ex13.internal.baidu.com (unknown [10.127.64.36])
+        by Forcepoint Email with ESMTPS id 67670E92BED48DA19C78;
+        Tue, 21 Jul 2020 15:49:06 +0800 (CST)
+Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
+ BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1979.3; Tue, 21 Jul 2020 15:49:06 +0800
+Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
+ BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
+ 15.01.1979.003; Tue, 21 Jul 2020 15:49:00 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+CC:     Network Development <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Subject: =?utf-8?B?562U5aSNOiBbSW50ZWwtd2lyZWQtbGFuXSBbUEFUQ0ggMS8yXSB4ZHA6IGk0?=
+ =?utf-8?B?MGU6IGl4Z2JlOiBpeGdiZXZmOiBub3QgZmxpcCByeCBidWZmZXIgZm9yIGNv?=
+ =?utf-8?Q?py_mode_xdp?=
+Thread-Topic: [Intel-wired-lan] [PATCH 1/2] xdp: i40e: ixgbe: ixgbevf: not
+ flip rx buffer for copy mode xdp
+Thread-Index: AQHWXmZtsIr9AHsudEOLFGU9se5TiKkRPZUQgABrUQA=
+Date:   Tue, 21 Jul 2020 07:49:00 +0000
+Message-ID: <b3ca06b2292742c39b7362030055869f@baidu.com>
+References: <1594967062-20674-1-git-send-email-lirongqing@baidu.com>
+ <1594967062-20674-2-git-send-email-lirongqing@baidu.com>
+ <CAJ8uoz2hdemss9S5vuF=Ttapkfb8U4YJy41oVjpMUVLiCOJTkw@mail.gmail.com> 
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.197.254]
+x-baidu-bdmsfe-datecheck: 1_BJHW-Mail-Ex13_2020-07-21 15:49:06:416
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200720210449.GP1339445@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
- (10.10.16.48)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-Your persistence on this matter is much appreciated.
-
-On Mon, Jul 20, 2020 at 11:04:49PM +0200, Andrew Lunn wrote:
-> > The dev->ports[i].phydev is not actually exposed beyond the driver. The
-> > driver sets the phydev.speed in a few places and even reads it back in
-> > one place. It also sets phydev.duplex, but never reads it back. It
-> > queries phydev.link, which is statically 0 due to using devm_kzalloc.
-> > 
-> > I think the use of this ksz_port.phydev is very misleading, but I'm
-> > unsure how to fix this. It is not clear to me whether all those updates
-> > should be performed on the connected phydev instead or whether this is
-> > just internal state tracking.
-> 
-> I took a quick look at the code.
-> 
-> For PHY addresses < dev->phy_port_cnt it passes all reads/writes
-> through to the hardware. So the Linux MDIO/PHY subsystem will be able
-> to fully drive these PHYs, and the ksz9477 internal phydev is
-> unneeded.
-
-I do not fully concur here yet. For instance, ksz8795_port_setup and
-ksz9477_port_setup branch on the port being a CPU port and evaluate the
-phydev.link for non-CPU ports. Given that phydev.link is never assigned,
-the branch where dev->live_ports is assigned is dead. Following
-live_ports through the code reveals that it is only ever written to, but
-no logic ever depends on its value. I'm not yet sure whether all of that
-should simply be removed with no replacement or whether it was meant to
-be extended some time later.
-
-> Where it gets interesting is addr >= dev->phy_port_cnt. Reads of the
-> PHY registers return hard coded values, or the link speed from the
-> local phydev. Writes to these registers are just ignored.
-
-This makes somewhat sense to me. It may become clearer below.
-
-> If you compare this to other DSA drivers/DSA switches, reads/write for
-> addresses where there are no internal PHY get passed out to an
-> external MDIO bus, where an external PHY can be connected. The Linux
-> MDIO/PHY subsystem will discover these external PHYs and create phydev
-> instance for them. If there is no external PHY, for example the MAC is
-> connected to another MAC, no PHY will be detected, and fixed-link is
-> used in its place.
-
-These switches all have internal PHYs for addresses < phy_port_cnt.
-Beyond this index, the MACs are located. Few devices have multiple MACs
-and only one MAC can be connected to the CPU at a time, because the tail
-tagging scheme can only be enabled on one MAC port at a time. The driver
-requires tail tagging on CPU ports (although this is not required by the
-hardware).
-
-> Do these switches have an external MDIO bus?
-
-One has a choice of how one wishes to communicate with these switches.
-Depending on configuration straps, they can do SPI or I²C or MDIO,
-though the register space on the MDIO bus is too limited to do anything
-useful, so the driver does not support MDIO. You can reach all of the
-internal PHYs through the chosen bus. If you connect an external PHY to
-a MAC, the KSZ is not involved in a management connection such as MDIO.
-
-> How are external PHYs usually managed?
-
-I honestly don't know. I only deal with internal PHYs. The typical use
-case for the MAC ports is to establish fixed-links to other MACs (such
-as the CPU or other switches).
-
-> At a minimum, the internal phydev can be replaced with just a speed,
-> rather than a full phydev, which will reduce confusion. But it would
-> be nice to go further and remove all the addr >= dev->phy_port_cnt
-> handling. But we need to understand the implications of that.
-
-addr >= dev->phy_port_cnt identifies a MAC. While the KSZ may have a
-data connection to the other side, but it does not have a management
-connection (e.g. MDIO). The driver presently assumes that all MAC
-connections are fixed-links, which is the case when you connect it to
-the CPU. A significant fraction of KSZ switches only have one MAC or
-have multiple MACs of which you only use one in a particular product
-(e.g. because one only support SGMII and othe other only supports
-RGMII). So the common case here is that addr >= dev->phy_port_cnt
-uniquely identifies the fixed-link CPU port.
-
-This also means that very likely the addr >= dev->phy_port_cnt handling
-is not going away.
-
-It also kinda routes us back to another thread of mine. In the followup
-to https://lore.kernel.org/netdev/20200714120827.GA7939@laureti-dev/,
-you also identified the assumption that any MAC port is the CPU port of
-this driver and asked me to build on it. It is unclear whether that
-should be lifted. If it isn't, I think it is fairly safe to assume that
-any MAC is connected using a fixed-link and that there is no need for
-any external PHY management.
-
-Helmut
+DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IExpLFJvbmdxaW5nDQo+
+IOWPkemAgeaXtumXtDogMjAyMOW5tDfmnIgyMeaXpSA5OjQzDQo+IOaUtuS7tuS6ujogJ01hZ251
+cyBLYXJsc3NvbicgPG1hZ251cy5rYXJsc3NvbkBnbWFpbC5jb20+DQo+IOaKhOmAgTogTmV0d29y
+ayBEZXZlbG9wbWVudCA8bmV0ZGV2QHZnZXIua2VybmVsLm9yZz47IGludGVsLXdpcmVkLWxhbg0K
+PiA8aW50ZWwtd2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmc+OyBLYXJsc3NvbiwgTWFnbnVzDQo+
+IDxtYWdudXMua2FybHNzb25AaW50ZWwuY29tPjsgQmrDtnJuIFTDtnBlbCA8Ympvcm4udG9wZWxA
+aW50ZWwuY29tPg0KPiDkuLvpopg6IOetlOWkjTogW0ludGVsLXdpcmVkLWxhbl0gW1BBVENIIDEv
+Ml0geGRwOiBpNDBlOiBpeGdiZTogaXhnYmV2Zjogbm90IGZsaXAgcngNCj4gYnVmZmVyIGZvciBj
+b3B5IG1vZGUgeGRwDQo+IA0KPiANCj4gDQo+ID4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiA+
+IOWPkeS7tuS6ujogTWFnbnVzIEthcmxzc29uIFttYWlsdG86bWFnbnVzLmthcmxzc29uQGdtYWls
+LmNvbV0NCj4gPiDlj5HpgIHml7bpl7Q6IDIwMjDlubQ35pyIMjDml6UgMTU6MjENCj4gPiDmlLbk
+u7bkuro6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNvbT4NCj4gPiDmioTpgIE6IE5l
+dHdvcmsgRGV2ZWxvcG1lbnQgPG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+OyBpbnRlbC13aXJlZC1s
+YW4NCj4gPiA8aW50ZWwtd2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmc+OyBLYXJsc3NvbiwgTWFn
+bnVzDQo+ID4gPG1hZ251cy5rYXJsc3NvbkBpbnRlbC5jb20+OyBCasO2cm4gVMO2cGVsIDxiam9y
+bi50b3BlbEBpbnRlbC5jb20+DQo+ID4g5Li76aKYOiBSZTogW0ludGVsLXdpcmVkLWxhbl0gW1BB
+VENIIDEvMl0geGRwOiBpNDBlOiBpeGdiZTogaXhnYmV2Zjogbm90DQo+ID4gZmxpcCByeCBidWZm
+ZXIgZm9yIGNvcHkgbW9kZSB4ZHANCj4gPg0KPiA+IE9uIEZyaSwgSnVsIDE3LCAyMDIwIGF0IDg6
+MjQgQU0gTGkgUm9uZ1FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPiB3cm90ZToNCj4gPiA+DQo+
+ID4gPiBpNDBlL2l4Z2JlL2l4Z2JldmZfcnhfYnVmZmVyX2ZsaXAgaW4gY29weSBtb2RlIHhkcCBj
+YW4gbGVhZCB0byBkYXRhDQo+ID4gPiBjb3JydXB0aW9uLCBsaWtlIHRoZSBmb2xsb3dpbmcgZmxv
+dzoNCj4gPiA+DQo+ID4gPiAgICAxLiBmaXJzdCBza2IgaXMgbm90IGZvciB4c2ssIGFuZCBmb3J3
+YXJkZWQgdG8gYW5vdGhlciBkZXZpY2UNCj4gPiA+ICAgICAgIG9yIHNvY2tldCBxdWV1ZQ0KPiA+
+ID4gICAgMi4gc2Vjb25kcyBza2IgaXMgZm9yIHhzaywgY29weSBkYXRhIHRvIHhzayBtZW1vcnks
+IGFuZCBwYWdlDQo+ID4gPiAgICAgICBvZiBza2ItPmRhdGEgaXMgcmVsZWFzZWQNCj4gPiA+ICAg
+IDMuIHJ4X2J1ZmYgaXMgcmV1c2FibGUgc2luY2Ugb25seSBmaXJzdCBza2IgaXMgaW4gaXQsIGJ1
+dA0KPiA+ID4gICAgICAgKl9yeF9idWZmZXJfZmxpcCB3aWxsIG1ha2UgdGhhdCBwYWdlX29mZnNl
+dCBpcyBzZXQgdG8NCj4gPiA+ICAgICAgIGZpcnN0IHNrYiBkYXRhDQo+ID4gPiAgICA0LiB0aGVu
+IHJldXNlIHJ4IGJ1ZmZlciwgZmlyc3Qgc2tiIHdoaWNoIHN0aWxsIGlzIGxpdmluZw0KPiA+ID4g
+ICAgICAgd2lsbCBiZSBjb3JydXB0ZWQuDQo+IGUsIGJ1dCBrbm93biBzaXplIHR5cGUgKi8NCj4g
+PiA+ICAgICAgICAgdTMyIGlkOw0KPiA+ID4gQEAgLTczLDYgKzc1LDcgQEAgc3RydWN0IHhkcF9i
+dWZmIHsNCj4gPiA+ICAgICAgICAgc3RydWN0IHhkcF9yeHFfaW5mbyAqcnhxOw0KPiA+ID4gICAg
+ICAgICBzdHJ1Y3QgeGRwX3R4cV9pbmZvICp0eHE7DQo+ID4gPiAgICAgICAgIHUzMiBmcmFtZV9z
+ejsgLyogZnJhbWUgc2l6ZSB0byBkZWR1Y2UgZGF0YV9oYXJkX2VuZC9yZXNlcnZlZA0KPiA+ID4g
+dGFpbHJvb20qLw0KPiA+ID4gKyAgICAgICB1MzIgZmxhZ3M7DQo+ID4NCj4gPiBSb25nUWluZywN
+Cj4gPg0KPiA+IFNvcnJ5IHRoYXQgSSB3YXMgbm90IGNsZWFyIGVub3VnaC4gQ291bGQgeW91IHBs
+ZWFzZSBzdWJtaXQgdGhlIHNpbXBsZQ0KPiA+IHBhdGNoIHlvdSBoYWQsIHRoZSBvbmUgdGhhdCBv
+bmx5IHRlc3RzIGZvciB0aGUgbWVtb3J5IHR5cGUuDQo+ID4NCj4gPiBpZiAoeGRwLT5yeHEtPm1l
+bS50eXBlICE9IE1FTV9UWVBFX1hTS19CVUZGX1BPT0wpDQo+ID4gICAgICAgaTQwZV9yeF9idWZm
+ZXJfZmxpcChyeF9yaW5nLCByeF9idWZmZXIsIHNpemUpOw0KPiA+DQo+ID4gSSBkbyBub3QgdGhp
+bmsgdGhhdCBhZGRpbmcgYSBmbGFncyBmaWVsZCBpbiB0aGUgeGRwX21lbV9pbmZvIHRvIGZpeCBh
+bg0KPiA+IEludGVsIGRyaXZlciBwcm9ibGVtIHdpbGwgYmUgaHVnZWx5IHBvcHVsYXIuIFRoZSBz
+dHJ1Y3QgaXMgYWxzbyBtZWFudA0KPiA+IHRvIGNvbnRhaW4gbG9uZyBsaXZlZCBpbmZvcm1hdGlv
+biwgbm90IHRoaW5ncyB0aGF0IHdpbGwgZnJlcXVlbnRseSBjaGFuZ2UuDQo+ID4NCj4gDQo+IA0K
+PiBUaGFuayB5b3UgTWFnbnVzDQo+IA0KPiBNeSBvcmlnaW5hbCBzdWdnZXN0aW9uIGlzIHdyb25n
+ICwgaXQgc2hvdWxkIGJlIGZvbGxvd2luZw0KPiANCj4gaWYgKHhkcC0+cnhxLT5tZW0udHlwZSA9
+PSBNRU1fVFlQRV9YU0tfQlVGRl9QT09MKQ0KPiAgICAgICAgaTQwZV9yeF9idWZmZXJfZmxpcChy
+eF9yaW5nLCByeF9idWZmZXIsIHNpemUpOw0KPiANCj4gDQo+IGJ1dCBJIGZlZWwgaXQgaXMgbm90
+IGVub3VnaCB0byBvbmx5IGNoZWNrIG1lbS50eXBlLCBpdCBtdXN0IGVuc3VyZSB0aGF0DQo+IG1h
+cF90eXBlIGlzIEJQRl9NQVBfVFlQRV9YU0tNQVAgPyBidXQgaXQgaXMgbm90IGV4cG9zZS4NCj4g
+DQo+IG90aGVyIG1hcHR5cGUsIGxpa2UgQlBGX01BUF9UWVBFX0RFVk1BUCwgIGFuZCBpZiBtZW0u
+dHlwZSBpcw0KPiBNRU1fVFlQRV9QQUdFX1NIQVJFRCwgbm90IGZsaXAgdGhlIHJ4IGJ1ZmZlciwg
+d2lsbCBjYXVzZSBkYXRhIGNvcnJ1cHRpb24uDQo+IA0KPiANCj4gLUxpDQo+IA0KPiANCg0KSG93
+IGFib3V0IHRoaXM/DQoNCi0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2k0MGUvaTQw
+ZV90eHJ4LmMNCisrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2k0MGUvaTQwZV90eHJ4
+LmMNCkBAIC0yMzk0LDcgKzIzOTQsMTAgQEAgc3RhdGljIGludCBpNDBlX2NsZWFuX3J4X2lycShz
+dHJ1Y3QgaTQwZV9yaW5nICpyeF9yaW5nLCBpbnQgYnVkZ2V0KQ0KIA0KICAgICAgICAgICAgICAg
+ICAgICAgICAgaWYgKHhkcF9yZXMgJiAoSTQwRV9YRFBfVFggfCBJNDBFX1hEUF9SRURJUikpIHsN
+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgeGRwX3htaXQgfD0geGRwX3JlczsNCi0g
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaTQwZV9yeF9idWZmZXJfZmxpcChyeF9yaW5n
+LCByeF9idWZmZXIsIHNpemUpOw0KKw0KKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBp
+ZiAoeGRwLnJ4cS0+bWVtLnR5cGUgPT0gTUVNX1RZUEVfWFNLX0JVRkZfUE9PTCB8fA0KKyAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgeGRwX2dldF9tYXBfdHlwZSgpICE9IEJQRl9N
+QVBfVFlQRV9YU0tNQVApDQorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+aTQwZV9yeF9idWZmZXJfZmxpcChyeF9yaW5nLCByeF9idWZmZXIsIHNpemUpOw0KICAgICAgICAg
+ICAgICAgICAgICAgICAgfSBlbHNlIHsNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+cnhfYnVmZmVyLT5wYWdlY250X2JpYXMrKzsNCiAgICAgICAgICAgICAgICAgICAgICAgIH0NCmRp
+ZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2ZpbHRlci5oIGIvaW5jbHVkZS9saW51eC9maWx0ZXIu
+aA0KaW5kZXggMjU5Mzc3NzIzNjAzLi45NGY0NDM1YTc3ZjMgMTAwNjQ0DQotLS0gYS9pbmNsdWRl
+L2xpbnV4L2ZpbHRlci5oDQorKysgYi9pbmNsdWRlL2xpbnV4L2ZpbHRlci5oDQpAQCAtOTE5LDYg
+KzkxOSwxNyBAQCBzdGF0aWMgaW5saW5lIHZvaWQgeGRwX2NsZWFyX3JldHVybl9mcmFtZV9ub19k
+aXJlY3Qodm9pZCkNCiAgICAgICAgcmktPmtlcm5fZmxhZ3MgJj0gfkJQRl9SSV9GX1JGX05PX0RJ
+UkVDVDsNCiB9DQogDQorc3RhdGljIGVudW0gYnBmX21hcF90eXBlIHhkcF9nZXRfbWFwX3R5cGUo
+dm9pZCkNCit7DQorICAgICAgIHN0cnVjdCBicGZfcmVkaXJlY3RfaW5mbyAqcmkgPSB0aGlzX2Nw
+dV9wdHIoJmJwZl9yZWRpcmVjdF9pbmZvKTsNCisgICAgICAgc3RydWN0IGJwZl9tYXAgKm1hcCA9
+IFJFQURfT05DRShyaS0+bWFwKTsNCisNCisgICAgICAgaWYgKG1hcCkNCisgICAgICAgICAgICAg
+ICByZXR1cm4gbWFwLT5tYXBfdHlwZTsNCisgICAgICAgZWxzZQ0KKyAgICAgICAgICAgICAgIHJl
+dHVybiBCUEZfTUFQX1RZUEVfVU5TUEVDOw0KK30NCisNCiBzdGF0aWMgaW5saW5lIGludCB4ZHBf
+b2tfZndkX2Rldihjb25zdCBzdHJ1Y3QgbmV0X2RldmljZSAqZndkLA0KICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgdW5zaWduZWQgaW50IHBrdGxlbikNCg0K
