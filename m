@@ -2,91 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40CE52289BD
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 22:21:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7EE02289F5
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 22:34:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730085AbgGUUVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 16:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52790 "EHLO
+        id S1730214AbgGUUeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 16:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726658AbgGUUVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 16:21:12 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BACFC061794;
-        Tue, 21 Jul 2020 13:21:12 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id gc9so2098715pjb.2;
-        Tue, 21 Jul 2020 13:21:12 -0700 (PDT)
+        with ESMTP id S1726506AbgGUUeQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 16:34:16 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0236BC061794
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 13:34:15 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id e8so9516pgc.5
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 13:34:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EDx5ZK+29kRWYJMGWyvrhwCnEqcR3vRhDKLN0w1LGwo=;
-        b=uye3eYU52p0FszeQsbTHkxAmWAynFNUDjKPvs3VdlGUd9Vwb6HbPlR+UFraZGZvJQl
-         rlVBeAL3kcQimdsLgH69eWSUdQFpIab8Sksh/PCBGHf49O94brXhoeAOysbtAdudTYWc
-         mL19MgfRyazsZLEVZsyDs0mtVlYDswAbwFipqy88ZDQ+sTbNqy7XwAImSqOhwwns+s/z
-         CuAhMZjp9AxvJznWpSvK3i+qrJsciBlegkTackt6Ry1vinxnFVX6Lsy6Ty9AMVG2hfTH
-         T4cxg28LuAepp41Q+mpOy3vLT+/YRv563kjV6/qf7tnbRfA8/VW+1forYwB7AhXXesPH
-         nJ0A==
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=4XlIpUxweXzpZDIRn/M+5b7u+saUPS/rw6rrqhrVeyk=;
+        b=dC+S+kqcV6rYBKItLhr+EU6sQOYahTuqN/RKCF9PQiawyOfP1LFsY4MXB8bXxXbVcs
+         Vvmk1aDEdBw0C9Zq62hXGdlvFVFkh7xpdH0d2RqCWkiclY3eBK9TggcWOLDGeP22WmFN
+         cbxrNY/0Xsz59qnl50xxYagvyeP3dsa/AGjXtgRPDwBdRsdWz/e8Ps/KB47ky79Le+p4
+         M4pNTGkm4jIHGrbi8s4uDVZ0FL0lttmSsQW3VERWLAhxJnrFWbArLn/TjMXKRXRx5+Ut
+         74ZhQTke3eaPa6fnCpLgNSV9EQ5Ls8rJxNFDHuPOyg4kTskNSVFhwqxBnsNVbflAhVHZ
+         wBMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EDx5ZK+29kRWYJMGWyvrhwCnEqcR3vRhDKLN0w1LGwo=;
-        b=K7I2JYkwFLUYgHUbPB/YTtGNZQ3ELobgpwXmfWQ0bh46o+/VxyC7XApCukEJghcSEG
-         9503C0MSmEN7gkjfHHiAw9m5JYY3mifrR++647yMiM4oVnClD1+fitKPcRKcHl2ifK+x
-         iNKPAvB9BqJo7N9U/EncxAITsraqwIGBBRX677O6tkPVU8bWXloPmaeNBwJIgNtawJax
-         e/+gUXFfX0UjvSukXafaJuUefmZN5EC1W0VmchkEzgErVZk9m+/1UWId+VbSJ3kd6T5/
-         w9w5pkdEKeEeVQrPHq4wmltfUP6Al+2v6yriH/gN9CvqDR/l1NXuxkrRXAabjx0q/mxW
-         RB+Q==
-X-Gm-Message-State: AOAM531+HNpc50Z6zyMzc55KWl0XWuwa66FAfVbmErQdolrAVxCfrUdm
-        xWervVNMkbzRDodOSnzib5E=
-X-Google-Smtp-Source: ABdhPJxg9thj7QDLcyID8qlO4d9P3h86DB2rePZe/TP0afx/rxQPNJ61NtiwJ4dm5qCi/3nb3MiYcQ==
-X-Received: by 2002:a17:902:7483:: with SMTP id h3mr22709694pll.114.1595362871798;
-        Tue, 21 Jul 2020 13:21:11 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e3b])
-        by smtp.gmail.com with ESMTPSA id b128sm21313668pfg.114.2020.07.21.13.21.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 13:21:11 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 13:21:08 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@kernel.org>, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next v2 0/5] bpf: compute btf_ids at build time for
- btf_iter
-Message-ID: <20200721202108.btao7fx3qf3ndd2b@ast-mbp.dhcp.thefacebook.com>
-References: <20200720163358.1392964-1-yhs@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200720163358.1392964-1-yhs@fb.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4XlIpUxweXzpZDIRn/M+5b7u+saUPS/rw6rrqhrVeyk=;
+        b=J+r4pjwUv3X1/XZrF7eSdAQcQ6dFx6lZsa8xS2MQBgs4shM3Ry6BLOQW9uaTo5snWO
+         +9dekzD0Vdp2MmCRQfWb4+8eWF8jiGEdPgLha70MGurUDjWbtyUXT+iwQgFxQTi9ZyC1
+         AMXSvWQmhJOQZ+XbMlZcE62vctwDFzwQNUEupLxMhgWFN2nxh3mBQm3El3sGrMTv0Bva
+         pgixtUOXD21y/4VJZFoKTM+bHIBPR9mdn0dDu+yOxDJT8Fl/pTAsUROZ7d6jqGIl/ndh
+         f0O6bVLmOuHotGUePQFoJiklkF3gmWQFilRk7+zM6Jw/dqRhygm0qyUl6t+GkjHm1Pgc
+         VlVg==
+X-Gm-Message-State: AOAM532LOfpJmVLGkUH+RliOmNMo3nBC6ocON39k51y9z+bhTAOGPrZI
+        4R05dV0iTwsjOn6QsLRn6Rga2gYqAZU=
+X-Google-Smtp-Source: ABdhPJyMFj4p3JEDajbDW6WHWukdcYwBQjE3MiKymlujiuQ9p5PX3nIuIN7l8OMrp4b8JBzBbYvSEQ==
+X-Received: by 2002:aa7:871a:: with SMTP id b26mr25397110pfo.294.1595363655090;
+        Tue, 21 Jul 2020 13:34:15 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id p11sm4075107pjb.3.2020.07.21.13.34.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 Jul 2020 13:34:14 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net-next 0/6] ionic updates
+Date:   Tue, 21 Jul 2020 13:34:03 -0700
+Message-Id: <20200721203409.3432-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 09:33:58AM -0700, Yonghong Song wrote:
-> Commit 5a2798ab32ba
-> ("bpf: Add BTF_ID_LIST/BTF_ID/BTF_ID_UNUSED macros")
-> implemented a mechanism to compute btf_ids at kernel build
-> time which can simplify kernel implementation and reduce
-> runtime overhead by removing in-kernel btf_id calculation.
-> 
-> This patch set tried to use this mechanism to compute
-> btf_ids for bpf_skc_to_*() helpers and for btf_id_or_null ctx
-> arguments specified during bpf iterator registration.
-> Please see individual patch for details.
-> 
-> Changelogs:
->   v1 -> v2:
->     - v1 ([1]) is only for bpf_skc_to_*() helpers. This version
->       expanded it to cover ctx btf_id_or_null arguments
->     - abandoned the change of "extern u32 name[]" to
->       "static u32 name[]" for BPF_ID_LIST local "name" definition.
->       gcc 9 incurred a compilation error.
-> 
->  [1]: https://lore.kernel.org/bpf/20200717184706.3476992-1-yhs@fb.com/T
+These are a few odd code tweaks to the ionic driver: FW defined MTU
+limits, remove unnecessary code, and other tidiness tweaks.
 
-Applied, Thanks
+Shannon Nelson (6):
+  ionic: get MTU from lif identity
+  ionic: set netdev default name
+  ionic: remove unused ionic_coal_hw_to_usec
+  ionic: update eid test for overflow
+  ionic: rearrange reset and bus-master control
+  ionic: interface file updates
+
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |  9 +-
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  2 -
+ .../net/ethernet/pensando/ionic/ionic_if.h    | 88 ++++++++++++++-----
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 20 ++++-
+ .../net/ethernet/pensando/ionic/ionic_lif.h   | 14 +--
+ 5 files changed, 89 insertions(+), 44 deletions(-)
+
+-- 
+2.17.1
+
