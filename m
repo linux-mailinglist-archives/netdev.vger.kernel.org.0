@@ -2,107 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2BB62275C4
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 04:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2F2B2275D2
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 04:42:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728491AbgGUCkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 22:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbgGUCkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 22:40:20 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA0CC061794;
-        Mon, 20 Jul 2020 19:40:20 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id o18so20085596eje.7;
-        Mon, 20 Jul 2020 19:40:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uGJfiXXxVHM7zniHW3sl0xVltZ7h7OdT0FRQ5H6GgQM=;
-        b=OeoCW/0tbvMmfJG3/GXVxS0sf0NU1F3vv5ek0RwSeUB4oL3xBRF4212opG/Qca2oMt
-         w/LznXXPQ/9latRxVyAN7HoUeXaNxvpuCBnCtE8R4VgfJiFrlJWGUZ3AudCWWBSFASY5
-         rHitPZwk5CzwZGC9yY+cINRMFHfhNoff5Hs0bqMLp86BM3TNE6gCd0fujLU9Jp1gGqkn
-         fbgcZ3ejttQ6DUlGWTOX05MbhnYkq6NEeVjuv6BJvSSMm0lLza1F8vnXHY24yVrWhuUw
-         mE4fVqq6wL70udwjlBJkWv9YZBUUfIIT74p06ZRe0yu4iR7nwWtzJQYm2S7oIsa47DMh
-         Anhg==
+        id S1728500AbgGUCmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 22:42:36 -0400
+Received: from mail-il1-f194.google.com ([209.85.166.194]:41827 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725862AbgGUCmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 22:42:35 -0400
+Received: by mail-il1-f194.google.com with SMTP id q3so15107318ilt.8;
+        Mon, 20 Jul 2020 19:42:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=uGJfiXXxVHM7zniHW3sl0xVltZ7h7OdT0FRQ5H6GgQM=;
-        b=GHjMlunOBJHywoda8QvnUbXzKcpxcToPi5q96IB0nS8SV/0w9n9vzOTdLuLBkJfa66
-         Wx+so/SDt0UFrPX51D8RnHdX40HSdnl6kE/k6vZO4s9ue44FnSEti2xAj4QsHxi1ZuS8
-         n8bgQ5tsoUDpMlL93DF5xblWvbQ3H5eghxR0Mtzi2I4CAj6rrdbmLsCHl38hninxxXoX
-         76ZXWvblM4Uf1Fxl+4ZiPTOjHMLC4IbkIchoKtoGeeZKJjpz15SvX2Oa5LjhyljEa0fI
-         5MhVKEix35nP+fLDc3sQBkgL5fxi5KKKVrhwepSVfiwSc8W9UIKYcgBLIIbj4vBZqYxE
-         R3cw==
-X-Gm-Message-State: AOAM530XQWjOFj5xGhVnLVxnH6MpDNXehwO5Bs0Rwte4hqLm1r0Q6JKr
-        qlYP/tURkjHiGQun4RSN6ds=
-X-Google-Smtp-Source: ABdhPJxwHHfj4AzpvPUUwMsSPbeGFb02Lr8Q1E98GpxaDKbKNy5p2S/jP2546lXFLYroLU3vdKdQBA==
-X-Received: by 2002:a17:906:c41:: with SMTP id t1mr23432470ejf.18.1595299219166;
-        Mon, 20 Jul 2020 19:40:19 -0700 (PDT)
-Received: from ltop.local ([2a02:a03f:a7fb:e200:d978:aa6c:4528:f5b1])
-        by smtp.gmail.com with ESMTPSA id y22sm15676844ejj.67.2020.07.20.19.40.17
+        bh=a37UVIcr3tFTjvos+1XDI3vyeJL0TUxOErOODhturYQ=;
+        b=qKqeAo/ni4hlVbUxXfk5SHB3ryIkx1fCZykCPOINnWAPu3axe0TUUJIM1nc7t6fVwr
+         6v9+564334dnwsALgK1ZfXF4XmCrFbwE+gU1vcEPAGYtsS9x9+V1wfytrRSNA52vGdfm
+         ehbxmnr69hEMRQMept2H+XkGejKf7KwqwWHgDm4V+xIVqx/t5HuTZMsMqYY1RqgJhcvg
+         QZgtbImn5mXDVzGdlbrxgWfWInITPkEB1jGDCmxrRNvdUArdOXUP5K1o7ByWRCeFk6sO
+         +PBY31CumJh4k7A4kNPW53Mu7e0WzvZN5Bi44vyAbmNeOvklRyODyARbh06X0xE616a3
+         TvGQ==
+X-Gm-Message-State: AOAM533AMgH6m44kCxih7gSVk9ZfiGh6d1GZfNrEEozLlyhf4jVU1KPK
+        wjJxkrAdFGjtoRS48z3PPA==
+X-Google-Smtp-Source: ABdhPJwG8kX/q1434RzLt+ZA/7HsPclvXJIOgxPK5H8X536km51g25555NKw2Ltyw6fPW2ta3HlnXg==
+X-Received: by 2002:a92:cd48:: with SMTP id v8mr27621396ilq.114.1595299354086;
+        Mon, 20 Jul 2020 19:42:34 -0700 (PDT)
+Received: from xps15 ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id r124sm9538209iod.40.2020.07.20.19.42.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 19:40:18 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 04:40:16 +0200
-From:   Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-sctp@vger.kernel.org, linux-hams@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-can@vger.kernel.org, dccp@vger.kernel.org,
-        linux-decnet-user@lists.sourceforge.net,
-        linux-wpan@vger.kernel.org, linux-s390@vger.kernel.org,
-        mptcp@lists.01.org, lvs-devel@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-afs@lists.infradead.org,
-        tipc-discussion@lists.sourceforge.net, linux-x25@vger.kernel.org
-Subject: Re: [PATCH 02/24] bpfilter: fix up a sparse annotation
-Message-ID: <20200721024016.2talwdt5hjqvirr6@ltop.local>
-References: <20200720124737.118617-1-hch@lst.de>
- <20200720124737.118617-3-hch@lst.de>
+        Mon, 20 Jul 2020 19:42:33 -0700 (PDT)
+Received: (nullmailer pid 3433663 invoked by uid 1000);
+        Tue, 21 Jul 2020 02:42:31 -0000
+Date:   Mon, 20 Jul 2020 20:42:31 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>, linux-spi@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pm@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>,
+        Niklas <niklas.soderlund@ragnatech.se>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 02/20] dt-bindings: thermal: rcar-gen3-thermal: Add
+ r8a774e1 support
+Message-ID: <20200721024231.GA3433616@bogus>
+References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-3-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200720124737.118617-3-hch@lst.de>
+In-Reply-To: <1594811350-14066-3-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 02:47:15PM +0200, Christoph Hellwig wrote:
-> The __user doesn't make sense when casting to an integer type.
+On Wed, 15 Jul 2020 12:08:52 +0100, Lad Prabhakar wrote:
+> Document RZ/G2H (R8A774E1) SoC bindings.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > ---
->  net/bpfilter/bpfilter_kern.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/net/bpfilter/bpfilter_kern.c b/net/bpfilter/bpfilter_kern.c
-> index 977e9dad72ca4f..713b4b3d02005d 100644
-> --- a/net/bpfilter/bpfilter_kern.c
-> +++ b/net/bpfilter/bpfilter_kern.c
-> @@ -49,7 +49,7 @@ static int __bpfilter_process_sockopt(struct sock *sk, int optname,
->  	req.is_set = is_set;
->  	req.pid = current->pid;
->  	req.cmd = optname;
-> -	req.addr = (long __force __user)optval;
-> +	req.addr = (__force long)optval;
 
-For casts to integers, even '__force' is not needed (since integers
-can't be dereferenced, the concept of address-space is meaningless
-for them, so it's never useful to warn when it's dropped and
-'__force' is thus not needed).
-
--- Luc
+Acked-by: Rob Herring <robh@kernel.org>
