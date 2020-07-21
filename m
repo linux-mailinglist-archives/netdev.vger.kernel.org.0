@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E3C3228A0D
+	by mail.lfdr.de (Postfix) with ESMTP id CA942228A0E
 	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 22:37:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731048AbgGUUhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 16:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55412 "EHLO
+        id S1731054AbgGUUho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 16:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728856AbgGUUhl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 16:37:41 -0400
+        with ESMTP id S1728856AbgGUUhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 16:37:42 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A7B2C061794
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 13:37:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F7DC061794
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 13:37:42 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1jxz19-0003xd-Qx; Tue, 21 Jul 2020 22:37:39 +0200
+        id 1jxz1B-0003xl-5O; Tue, 21 Jul 2020 22:37:41 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     mathew.j.martineau@linux.intel.com, edumazet@google.com,
         mptcp@lists.01.org, matthieu.baerts@tessares.net,
         Florian Westphal <fw@strlen.de>
-Subject: [RFC v2 mptcp-next 11/12] mptcp: enable JOIN requests even if cookies are in use
-Date:   Tue, 21 Jul 2020 22:36:41 +0200
-Message-Id: <20200721203642.32753-12-fw@strlen.de>
+Subject: [RFC v2 mptcp-next 12/12] selftests: mptcp: make 2nd net namespace use tcp syn cookies unconditionally
+Date:   Tue, 21 Jul 2020 22:36:42 +0200
+Message-Id: <20200721203642.32753-13-fw@strlen.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200721203642.32753-1-fw@strlen.de>
 References: <20200721203642.32753-1-fw@strlen.de>
@@ -35,162 +35,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-JOIN requests do not work in syncookie mode -- for HMAC validation, the
-peers nonce is required, but this nonce is only present in the SYN.
-
-So either we need to drop or reject all JOIN requests once a listening
-socket enters syncookie mode, or we need to store enough state to
-validate the ACKs HMAC later on.
-
-This allows the subflow request initialisation function to store the
-request socket even when syncookies are used, i.e. the listener
-socket queue will grow past its upper limit.
-
-Following restrictions apply:
-1. The (32bit) token contained in the MP_JOIN SYN packet returns
-   a valid parent connection.
-2. The parent connection can accept one more subflow.
-
-To ensure 2), all MP_JOIN requests (new incoming and existing)
-are accounted in the mptcp parent socket.
-
-If the token is invalid or the parent cannot accept a new subflow,
-no information is stored and TCP fallback path is used.
-
-The parent socket can't be used without further changes in TCP stack,
-because socket creation after 3whs completion checks that the associated
-socket is in LISTEN state.
+check we can establish connections even in syncookie mode.
+Also check following MIB counters:
+MPTcpExtMPCapableSYNRX (should increase for each MPTCP test)
+MPTcpExtMPCapableACKRX (should increase for each MPTCP test)
+TcpExtSyncookiesSent (should increase for listener in ns2)
+TcpExtSyncookiesRecv (same)
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- To ease review I think it would also be possible to
- defer the JOIN stuff for later and just focus on initial
- MP_CAPABLE request.  OTOH, doing so yields MPTCP-on-wire but with no
- Multipath capability so I'm not sure having MP_CAPABLE without
- MP_JOIN is useful.
+ .../selftests/net/mptcp/mptcp_connect.sh      | 50 +++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
- net/mptcp/pm_netlink.c |  2 +-
- net/mptcp/protocol.h   |  2 ++
- net/mptcp/subflow.c    | 60 +++++++++++++++++++++++++++++++++++++++---
- 3 files changed, 60 insertions(+), 4 deletions(-)
-
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index c8820c4156e6..117f794ecc54 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -41,7 +41,7 @@ struct pm_nl_pernet {
- 	unsigned int		next_id;
- };
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+index c0589e071f20..6260520674d0 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+@@ -196,6 +196,9 @@ ip -net "$ns4" link set ns4eth3 up
+ ip -net "$ns4" route add default via 10.0.3.2
+ ip -net "$ns4" route add default via dead:beef:3::2
  
--#define MPTCP_PM_ADDR_MAX	8
-+#define MPTCP_PM_ADDR_MAX	MPTCP_SUBFLOWS_MAX
++# use TCP syn cookies, even if no flooding was detected.
++ip netns exec "$ns2" sysctl -q net.ipv4.tcp_syncookies=2
++
+ set_ethtool_flags() {
+ 	local ns="$1"
+ 	local dev="$2"
+@@ -407,6 +410,11 @@ do_transfer()
+ 		sleep 1
+ 	fi
  
- static bool addresses_equal(const struct mptcp_addr_info *a,
- 			    struct mptcp_addr_info *b, bool use_port)
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 0ed402cdb9fd..586601e889fc 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -154,6 +154,8 @@ enum mptcp_pm_status {
- 	MPTCP_PM_SUBFLOW_ESTABLISHED,
- };
++	local stat_synrx_last_l=$(ip netns exec ${listener_ns} nstat -z -a MPTcpExtMPCapableSYNRX | while read a count c rest ;do  echo $count;done)
++	local stat_ackrx_last_l=$(ip netns exec ${listener_ns} nstat -z -a MPTcpExtMPCapableACKRX | while read a count c rest ;do  echo $count;done)
++	local stat_cookietx_last=$(ip netns exec ${listener_ns} nstat -z -a TcpExtSyncookiesSent | while read a count c rest ;do  echo $count;done)
++	local stat_cookierx_last=$(ip netns exec ${listener_ns} nstat -z -a TcpExtSyncookiesRecv | while read a count c rest ;do  echo $count;done)
++
+ 	ip netns exec ${listener_ns} ./mptcp_connect -t $timeout -l -p $port -s ${srv_proto} $extra_args $local_addr < "$sin" > "$sout" &
+ 	local spid=$!
  
-+#define MPTCP_SUBFLOWS_MAX	8
-+
- struct mptcp_pm_data {
- 	struct mptcp_addr_info local;
- 	struct mptcp_addr_info remote;
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 0761c35268ce..ab86010483fe 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -126,6 +126,49 @@ static int __subflow_check_options(const struct mptcp_options_received *mp_opt,
- 	return 0;
- }
+@@ -450,6 +458,48 @@ do_transfer()
+ 	check_transfer $cin $sout "file received by server"
+ 	rets=$?
  
-+static bool mptcp_join_store(struct mptcp_subflow_request_sock *req,
-+			     struct sock *sk_listener,
-+			     bool want_cookie)
-+{
-+	struct mptcp_sock *msk = req->msk;
-+	struct inet_connection_sock *icsk;
-+	struct sock *sk;
++	local stat_synrx_now_l=$(ip netns exec ${listener_ns} nstat -z -a MPTcpExtMPCapableSYNRX  | while read a count c rest ;do  echo $count;done)
++	local stat_ackrx_now_l=$(ip netns exec ${listener_ns} nstat -z -a MPTcpExtMPCapableACKRX  | while read a count c rest ;do  echo $count;done)
 +
-+	icsk = &msk->sk;
-+	sk = &icsk->icsk_inet.sk;
++	local stat_cookietx_now=$(ip netns exec ${listener_ns} nstat -z -a TcpExtSyncookiesSent | while read a count c rest ;do  echo $count;done)
++	local stat_cookierx_now=$(ip netns exec ${listener_ns} nstat -z -a TcpExtSyncookiesRecv | while read a count c rest ;do  echo $count;done)
 +
-+	if (inet_csk_reqsk_queue_len(sk) >= MPTCP_SUBFLOWS_MAX ||
-+	    !mptcp_can_accept_new_subflow(msk))
-+		return false;
++	expect_synrx=$((stat_synrx_last_l))
++	expect_ackrx=$((stat_ackrx_last_l))
 +
-+	atomic_inc(&inet_csk(sk)->icsk_accept_queue.qlen);
++	cookies=$(ip netns exec ${listener_ns} sysctl net.ipv4.tcp_syncookies)
++	cookies=${cookies##*=}
 +
-+	if (likely(!want_cookie))
-+		return true;
++	if [ ${cl_proto} = "MPTCP" ] && [ ${srv_proto} = "MPTCP" ]; then
++		expect_synrx=$((stat_synrx_last_l+1))
++		expect_ackrx=$((stat_ackrx_last_l+1))
++		if [ $cookies -eq 2 ];then
++			expect_synrx=$((stat_synrx_last_l+2))
++		fi
++	fi
++	if [ $cookies -eq 2 ];then
++		if [ $stat_cookietx_last -ge $stat_cookietx_now ] ;then
++			echo "${listener_ns} CookieSent: ${cl_proto} -> ${srv_proto}: did not advance"
++		fi
++		if [ $stat_cookierx_last -ge $stat_cookierx_now ] ;then
++			echo "${listener_ns} CookieRecv: ${cl_proto} -> ${srv_proto}: did not advance"
++		fi
++	else
++		if [ $stat_cookietx_last -ne $stat_cookietx_now ] ;then
++			echo "${listener_ns} CookieSent: ${cl_proto} -> ${srv_proto}: changed"
++		fi
++		if [ $stat_cookierx_last -ne $stat_cookierx_now ] ;then
++			echo "${listener_ns} CookieRecv: ${cl_proto} -> ${srv_proto}: changed"
++		fi
++	fi
 +
-+	/* Syncookies are used.
-+	 * We can't do this for JOIN requests because we need to store
-+	 * the initiators nonce for HMAC validation.
-+	 *
-+	 * At this point we know:
-+	 * 1. a valid parent connection that should be joined
-+	 * 2. the parent socket has less than MPTCP_SUBFLOWS_MAX joined
-+	 * connections (includes those in progress).
-+	 *
-+	 * We add the request to the accept queue backlog ourselves
-+	 * in this case.
-+	 */
-+	if (unlikely(!refcount_inc_not_zero(&sk_listener->sk_refcnt))) {
-+		atomic_dec(&inet_csk(sk)->icsk_accept_queue.qlen);
-+		return false;
-+	}
++	if [ $expect_synrx -ne $stat_synrx_now_l ] ;then
++		echo "${listener_ns} SYNRX: ${cl_proto} -> ${srv_proto}: expect ${expect_synrx}, got ${stat_synrx_now_l}"
++	fi
++	if [ $expect_ackrx -ne $stat_ackrx_now_l ] ;then
++		echo "${listener_ns} ACKRX: ${cl_proto} -> ${srv_proto}: expect ${expect_synrx}, got ${stat_synrx_now_l}"
++	fi
 +
-+	req->sk.req.req.rsk_listener = sk_listener;
-+	inet_csk_reqsk_queue_hash_add(sk, &req->sk.req.req,
-+				      tcp_timeout_init((struct sock *)req));
-+	return true;
-+}
-+
- static void subflow_init_req(struct request_sock *req,
- 			     const struct sock *sk_listener,
- 			     struct sk_buff *skb,
-@@ -177,12 +220,18 @@ static void subflow_init_req(struct request_sock *req,
- 
- 	} else if (mp_opt.mp_join && listener->request_mptcp) {
- 		subflow_req->ssn_offset = TCP_SKB_CB(skb)->seq;
--		subflow_req->mp_join = 1;
- 		subflow_req->backup = mp_opt.backup;
- 		subflow_req->remote_id = mp_opt.join_id;
- 		subflow_req->token = mp_opt.token;
- 		subflow_req->remote_nonce = mp_opt.nonce;
- 		subflow_req->msk = subflow_token_join_request(req, skb);
-+		if (!subflow_req->msk)
-+			return;
-+
-+		if (!mptcp_join_store(subflow_req, (void *)sk_listener, want_cookie))
-+			return;
-+
-+		subflow_req->mp_join = 1;
- 		pr_debug("token=%u, remote_nonce=%u msk=%p", subflow_req->token,
- 			 subflow_req->remote_nonce, subflow_req->msk);
- 	}
-@@ -1285,9 +1334,14 @@ static void subflow_ulp_release(struct sock *sk)
- 	if (!ctx)
- 		return;
- 
--	if (ctx->conn)
--		sock_put(ctx->conn);
-+	if (ctx->conn) {
-+		struct sock *msk = ctx->conn;
-+
-+		if (ctx->mp_join)
-+			atomic_add_unless(&inet_csk(msk)->icsk_accept_queue.qlen, -1, 0);
- 
-+		sock_put(msk);
-+	}
- 	kfree_rcu(ctx, rcu);
- }
- 
+ 	if [ $retc -eq 0 ] && [ $rets -eq 0 ];then
+ 		echo "$duration [ OK ]"
+ 		cat "$capout"
 -- 
 2.26.2
 
