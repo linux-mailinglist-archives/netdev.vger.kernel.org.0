@@ -2,85 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0302322748B
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 03:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D04922748D
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 03:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgGUBaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 21:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45140 "EHLO
+        id S1726614AbgGUBbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 21:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbgGUBaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 21:30:11 -0400
+        with ESMTP id S1725862AbgGUBbO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 21:31:14 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 484E7C061794
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 18:30:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B408C061794;
+        Mon, 20 Jul 2020 18:31:14 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E3D5411FFCC34;
-        Mon, 20 Jul 2020 18:13:25 -0700 (PDT)
-Date:   Mon, 20 Jul 2020 18:30:10 -0700 (PDT)
-Message-Id: <20200720.183010.1627184066290103703.davem@davemloft.net>
-To:     briana.oursler@gmail.com
-Cc:     jhs@mojatatu.com, mrv@mojatatu.com, shuah@kernel.org,
-        sbrivio@redhat.com, dcaratti@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] tc-testing: Add tdc to kselftests
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E513011FFCC36;
+        Mon, 20 Jul 2020 18:14:28 -0700 (PDT)
+Date:   Mon, 20 Jul 2020 18:31:13 -0700 (PDT)
+Message-Id: <20200720.183113.2100585349998522874.davem@davemloft.net>
+To:     navid.emamdoost@gmail.com
+Cc:     vishal@chelsio.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, emamd001@umn.edu
+Subject: Re: [PATCH] cxgb4: add missing release on skb in uld_send()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200717215439.51672-1-briana.oursler@gmail.com>
-References: <20200717215439.51672-1-briana.oursler@gmail.com>
+In-Reply-To: <20200718051845.10218-1-navid.emamdoost@gmail.com>
+References: <20200718051845.10218-1-navid.emamdoost@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 Jul 2020 18:13:26 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 Jul 2020 18:14:29 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Briana Oursler <briana.oursler@gmail.com>
-Date: Fri, 17 Jul 2020 14:54:39 -0700
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
+Date: Sat, 18 Jul 2020 00:18:43 -0500
 
-> Add tdc to existing kselftest infrastructure so that it can be run with
-> existing kselftests. TDC now generates objects in objdir/kselftest
-> without cluttering main objdir, leaves source directory clean, and
-> installs correctly in kselftest_install, properly adding itself to
-> run_kselftest.sh script.
-> 
-> Add tc-testing as a target of selftests/Makefile. Create tdc.sh to run
-> tdc.py targets with correct arguments. To support single target from
-> selftest/Makefile, combine tc-testing/bpf/Makefile and
-> tc-testing/Makefile. Move action.c up a directory to tc-testing/.
-> 
-> Tested with:
->  make O=/tmp/{objdir} TARGETS="tc-testing" kselftest
->  cd /tmp/{objdir}
->  cd kselftest
->  cd tc-testing
->  ./tdc.sh
-> 
->  make -C tools/testing/selftests/ TARGETS=tc-testing run_tests
-> 
->  make TARGETS="tc-testing" kselftest
->  cd tools/testing/selftests
->  ./kselftest_install.sh /tmp/exampledir
->  My VM doesn't run all the kselftests so I commented out all except my
->  target and net/pmtu.sh then:
->  cd /tmp/exampledir && ./run_kselftest.sh
-> 
-> Co-developed-by: Davide Caratti <dcaratti@redhat.com>
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> Signed-off-by: Briana Oursler <briana.oursler@gmail.com>
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+> index 32a45dc51ed7..d8c37fd4b808 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+> @@ -2938,6 +2938,7 @@ static inline int uld_send(struct adapter *adap, struct sk_buff *skb,
+>  	txq_info = adap->sge.uld_txq_info[tx_uld_type];
+>  	if (unlikely(!txq_info)) {
+>  		WARN_ON(true);
+> +		consume_skb(skb);
+>  		return NET_XMIT_DROP;
+>  	}
+>  
 
-Applied, but:
-
-> @@ -0,0 +1,6 @@
-> +#!/bin/sh
-> +# SPDX-License-Identifier: GPL-2.0
-> +
-> +./tdc.py -c actions --nobuildebpf
-> +./tdc.py -c qdisc
-> +
-
-I had to remove this trailing newline.
+This is a packet drop so kfree_skb() is more appropriate here.
