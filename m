@@ -2,75 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0BC8228335
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 17:09:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDA94228370
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 17:19:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729480AbgGUPJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 11:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60660 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728306AbgGUPJp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 11:09:45 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C192C061794;
-        Tue, 21 Jul 2020 08:09:45 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id 8so1146173pjj.1;
-        Tue, 21 Jul 2020 08:09:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eoQ/LwxD/ih1GkSzZAuNDCG4MFgTBugN1T3/2DGPiZs=;
-        b=KmcdvitIPM0ZFS7BiZAORytFknRF/NJjqwGhXJbcpyxRU5OsqYeFLMZBj7ZTICExgy
-         QuzRkzTZlNMRcaqFb6yBkA1qKLOjKL3YvNFmeK+GiI2VI+UkKVbQDs+8D4oJSBPeUfio
-         O60k7atldaQEfVM/eKAL52AIZkGkqgIaka6IV6wYrVZJJxxYn6bKNLnPru+gph7D44zT
-         mFqXyyg7VLSctQnF0GY4kjhufYXEc3BmPiJuRbSM6mEfabaDcchfbcIN/W0G6vwyYVBb
-         0cPUwTWccn+x+bDjxlzEyCBodaTCUHGo4KJxMufcROGt9iy/ySVyvWZPurM2Utyxr6rV
-         FAOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eoQ/LwxD/ih1GkSzZAuNDCG4MFgTBugN1T3/2DGPiZs=;
-        b=F71wg+UihHvX0MdMzgQnAlhacghYS+rz1wqllPkPR2LfgI6ada6ZI8gDS/GaTVr/tF
-         X8/Yncp1YwQVmeZrG7QepCIr9aI8Nqsfw+T8R3li4idPemvqPPXp59Fw32hahiK0u1YR
-         6lnAcZF3XOo3+fKXHN4x9weQ65mRbowTWbeCLY1jkLjtuhRVmT3tpDCtLr8a/ULwskYd
-         XREilWmz7r0ETZom7mOu2+/Tdc0zEvUDMPbGxfskjNpxCmvRCUurHLMsID1YNdYKezkf
-         qeX5FS7/RmmRy5wn2oq9TZV4tO/2Ee+XHKRQGvQgQDqGZydLPXhG7JHVdtAuwMMXB2CZ
-         4kKg==
-X-Gm-Message-State: AOAM530CWP487WmM6B17nCXk+IlLRFfi1ATYoHF7lKuyyUtOJH85Zqaw
-        Ri6rJ4BzMiJv6ni0LG6TSgU=
-X-Google-Smtp-Source: ABdhPJz4/0wCZf0XMDAqiQz3adVwsAM+1tFiAJD4fUtW8v8r/Z0JnQYCFnNIOeXwwXGt/iVKX/DjuQ==
-X-Received: by 2002:a17:902:ac88:: with SMTP id h8mr20461966plr.220.1595344184727;
-        Tue, 21 Jul 2020 08:09:44 -0700 (PDT)
-Received: from gmail.com ([103.105.153.67])
-        by smtp.gmail.com with ESMTPSA id 22sm20312399pfh.157.2020.07.21.08.09.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 08:09:43 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 20:38:18 +0530
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, Jouni Malinen <j@w1.fi>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v1] hostap: use generic power management
-Message-ID: <20200721150818.GA371967@gmail.com>
-References: <20200721150547.371763-1-vaibhavgupta40@gmail.com>
+        id S1728657AbgGUPTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 11:19:05 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47460 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726436AbgGUPTF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 11:19:05 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jxu2b-006BeL-Vc; Tue, 21 Jul 2020 17:18:49 +0200
+Date:   Tue, 21 Jul 2020 17:18:49 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Gregory Clement <gregory.clement@bootlin.com>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] phy: armada-38x: fix NETA lockup when repeatedly
+ switching speeds
+Message-ID: <20200721151849.GR1339445@lunn.ch>
+References: <20200721143756.GT1605@shell.armlinux.org.uk>
+ <E1jxtRj-0003Tz-CG@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200721150547.371763-1-vaibhavgupta40@gmail.com>
+In-Reply-To: <E1jxtRj-0003Tz-CG@rmk-PC.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is compile-tested only.
+On Tue, Jul 21, 2020 at 03:40:43PM +0100, Russell King wrote:
+> The mvneta hardware appears to lock up in various random ways when
+> repeatedly switching speeds between 1G and 2.5G, which involves
+> reprogramming the COMPHY.  It is not entirely clear why this happens,
+> but best guess is that reprogramming the COMPHY glitches mvneta clocks
+> causing the hardware to fail.  It seems that rebooting resolves the
+> failure, but not down/up cycling the interface alone.
+> 
+> Various other approaches have been tried, such as trying to cleanly
+> power down the COMPHY and then take it back through the power up
+> initialisation, but this does not seem to help.
+> 
+> It was finally noticed that u-boot's last step when configuring a
+> COMPHY for "SGMII" mode was to poke at a register described as
+> "GBE_CONFIGURATION_REG", which is undocumented in any external
+> documentation.  All that we have is the fact that u-boot sets a bit
+> corresponding to the "SGMII" lane at the end of COMPHY initialisation.
+> 
+> Experimentation shows that if we clear this bit prior to changing the
+> speed, and then set it afterwards, mvneta does not suffer this problem
+> on the SolidRun Clearfog when switching speeds between 1G and 2.5G.
+> 
+> This problem was found while script-testing phylink.
+> 
+> This fix also requires the corresponding change to DT to be effective.
+> See "ARM: dts: armada-38x: fix NETA lockup when repeatedly switching
+> speeds".
+> 
+> Fixes: 14dc100b4411 ("phy: armada38x: add common phy support")
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
---Vaibhav Gupta
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
