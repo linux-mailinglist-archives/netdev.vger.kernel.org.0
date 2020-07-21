@@ -2,101 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE9F9227FE6
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 14:25:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ABB5227FBD
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 14:16:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728109AbgGUMZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 08:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35052 "EHLO
+        id S1729072AbgGUMQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 08:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725984AbgGUMZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 08:25:46 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D363EC061794
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 05:25:45 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id i3so15900473qtq.13
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 05:25:45 -0700 (PDT)
+        with ESMTP id S1728625AbgGUMQA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 08:16:00 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C4BC0619DA
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 05:15:59 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id y3so3625789wrl.4
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 05:15:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=onxal2wVPPs5ELkDZCSBPyXdRelUh9gaurdOykXY8P0=;
-        b=bal7RLq+ZsCCeV2T4hrrR29yMTohjOQmWx9yE8e24h6W+KFNnDN/avF4QwLxfvSAtz
-         RNMg9NbRu5xO3osfnFd/cTY24Hxqz1zIzn8u2y+G3f/VemJG06qilbTYATUcpq0hLpjF
-         Z3XKLzZr1sroGgJPCZcPyYb/xShwYoclVorMEkDycHCoZnJVc4VZQAfJydVziHesaL94
-         BgFEtxPrU8BuUBVKJuxqr42arAfX/RlQ0UJX6cylche8KY6G+5rVjtw92fl83Ik8QXUv
-         IoYp3VI0mgBcACTkeX8t+0knE060mChEJ50GL/NLGkRzdmmFe7lnORGxwI1WznwYzPge
-         5Dkg==
+         :cc:content-transfer-encoding;
+        bh=8KwOuny3MCBr4hHD6lpDBv8zvH3qeS/QRDhm2GX40lg=;
+        b=Ow3P9TLXEs8nFIR5bD6KgqphoGidMIRIGbeR9sZU8vvIYV6Exf2JXoM0iGf98JzAsd
+         +q6afv8iRXdjORLycOHPK+YtJsswsVvUDd9yK78ctAJribqrIK5USkhLdUXlZ/3niUmO
+         WxwEfBG4TgzoXJbvGNy+tE+V+VTmsWLFINRTOHNg61OEAo9KsQGuHt9UbIPWWuzvCFnE
+         PG9uRHgwnrYG59LhqT56hCEpFuaxjXB1HNq4szBSeL/prHFon+ZG1PCWVN6CVCpR4mck
+         aGbD8GlEYTUOgcTIHgbbq4wHnZ55RSt2WCNewxDf1M+dcU4xSWaRD+KvBGFbcqRFySQE
+         W2tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=onxal2wVPPs5ELkDZCSBPyXdRelUh9gaurdOykXY8P0=;
-        b=S8sK2MD3v8l4g1dPhV8kTWKfqYekY1ObXzA8pk96599LA2Ri0tG4oblMqpDjm5TzTZ
-         KrD+X7KXbdum8YAjVyhpOprC8xmq70jbfVx3SNC5X9cSe526TefbZj+lkqBSk5WxAS92
-         8uLsBENg57JUElq22Vh6/G6j3ESkpm7DquC3STv0r3uxHI9cuSXVqbHAXDZZAydWGFoh
-         kGKMof6KStpci3hJ2GVDxQYM81XuuLj2KAiQCa8y8K9oZnBYiZLR3cKjiyv0+jrNzZlT
-         oURhnehw7qnH2r8CCDYpB2CpL/vFza7YAe6Smi1NMRdTcz3De4ia9WW0drocRUdCAGYl
-         VI6g==
-X-Gm-Message-State: AOAM532O1gdgw21Ktq1rGo18LZIPzoIckKKijQjCrHFHkEQwtWznbOFN
-        XGL0VxBhCNTVl6nBkiGJ9e9A1WI8
-X-Google-Smtp-Source: ABdhPJy/ulrvm3XygRPVKRq2xMI1t8gcrkut3aOwIXGSt83dMaWqHpLwHa8WG0CV7PV+SVLVisyczw==
-X-Received: by 2002:ac8:2a3d:: with SMTP id k58mr28347180qtk.265.1595334344292;
-        Tue, 21 Jul 2020 05:25:44 -0700 (PDT)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id l67sm2229541qkd.7.2020.07.21.05.25.42
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jul 2020 05:25:43 -0700 (PDT)
-Received: by mail-yb1-f174.google.com with SMTP id 134so9965537ybd.6
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 05:25:42 -0700 (PDT)
-X-Received: by 2002:a25:81cf:: with SMTP id n15mr42849489ybm.213.1595334341817;
- Tue, 21 Jul 2020 05:25:41 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8KwOuny3MCBr4hHD6lpDBv8zvH3qeS/QRDhm2GX40lg=;
+        b=pidEpN1BezzPRjMZznDgB4Z00kpf6+0kdExafryR/3AZ1ER1DKlJbgP60Gym3oJ/Do
+         sCND+t10QMTidExMavHhT0BTytkcdYwjZgWUerlmXYDKSyMMrHk6cU+hbKq1M1ioHxTj
+         11vhz1BVvd3SLe8Du5vOHvla0R6ylmsazKH+t3Pde8TSWKOy/JSt0GOJG7x3+7OXGSGc
+         zTSqLWpa4ROF6pgzN/LdmV8/1qNPUbakiuYIeDxZeLxwlcED3nVt/M3gBX76gfahQ32G
+         fXYJKXuYiX7L8ilGWQ8mTSdhtLzdXmFSM/qSimyuJizm6UWjt0geHQARx7P/iVGn38cL
+         D1Ew==
+X-Gm-Message-State: AOAM5308zOUDpkKPMlz0vPHAWdSsWxz/uxLABmSUairwTHAcQ+jHq+ia
+        w/Tb923EY46jXUJhtyHUWC3/usscNEo2OBbFJRNLm9Bb
+X-Google-Smtp-Source: ABdhPJzAg/p2odz3zvzjbXVqB/YLIzsG/X2rnw/gsXYDfKtsx9a9xJUJyAvKaAsNG6QlWzo7vDiFE1R2K/epH6wUUMI=
+X-Received: by 2002:a5d:43ca:: with SMTP id v10mr12328440wrr.299.1595333758501;
+ Tue, 21 Jul 2020 05:15:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200721061531.94236-1-kuniyu@amazon.co.jp> <20200721061531.94236-2-kuniyu@amazon.co.jp>
-In-Reply-To: <20200721061531.94236-2-kuniyu@amazon.co.jp>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 21 Jul 2020 08:25:04 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSeWNarNvhPeg4Z-97Xsz_7H1WvW6NshC7VLnVwECxLqfw@mail.gmail.com>
-Message-ID: <CA+FuTSeWNarNvhPeg4Z-97Xsz_7H1WvW6NshC7VLnVwECxLqfw@mail.gmail.com>
-Subject: Re: [PATCH net 1/2] udp: Copy has_conns in reuseport_grow().
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Craig Gallek <kraig@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        osa-contribution-log@amazon.com
+References: <20200603050601.19570-1-tuong.t.lien@dektech.com.au>
+ <CADvbK_cE8boY0Y7CcNS_Vh5gZGf4+Pb2urG993V9wnuS=vQK3g@mail.gmail.com> <AM6PR0502MB3925A9F210B21A39D9F62AE7E2780@AM6PR0502MB3925.eurprd05.prod.outlook.com>
+In-Reply-To: <AM6PR0502MB3925A9F210B21A39D9F62AE7E2780@AM6PR0502MB3925.eurprd05.prod.outlook.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 21 Jul 2020 20:26:42 +0800
+Message-ID: <CADvbK_e9AP-BeOQSygnSUxbVKXp_e_yUFQEaH-tQqeQfuQYCRw@mail.gmail.com>
+Subject: Re: [tipc-discussion] [net-next] tipc: fix NULL pointer dereference
+ in streaming
+To:     Tuong Tong Lien <tuong.t.lien@dektech.com.au>
+Cc:     davem <davem@davemloft.net>,
+        "jmaloy@redhat.com" <jmaloy@redhat.com>,
+        "maloy@donjonn.com" <maloy@donjonn.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        network dev <netdev@vger.kernel.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 21, 2020 at 2:16 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+On Tue, Jul 21, 2020 at 7:26 PM Tuong Tong Lien
+<tuong.t.lien@dektech.com.au> wrote:
 >
-> If an unconnected socket in a UDP reuseport group connect()s, has_conns is
-> set to 1. Then, when a packet is received, udp[46]_lib_lookup2() scans all
-> sockets in udp_hslot looking for the connected socket with the highest
-> score.
 >
-> However, when the number of sockets bound to the port exceeds max_socks,
-> reuseport_grow() resets has_conns to 0. It can cause udp[46]_lib_lookup2()
-> to return without scanning all sockets, resulting in that packets sent to
-> connected sockets may be distributed to unconnected sockets.
 >
-> Therefore, reuseport_grow() should copy has_conns.
+> > -----Original Message-----
+> > From: Xin Long <lucien.xin@gmail.com>
+> > Sent: Tuesday, July 21, 2020 6:23 PM
+> > To: Tuong Tong Lien <tuong.t.lien@dektech.com.au>
+> > Cc: davem <davem@davemloft.net>; jmaloy@redhat.com; maloy@donjonn.com; =
+Ying Xue <ying.xue@windriver.com>; network dev
+> > <netdev@vger.kernel.org>; tipc-discussion@lists.sourceforge.net
+> > Subject: Re: [tipc-discussion] [net-next] tipc: fix NULL pointer derefe=
+rence in streaming
+> >
+> > On Wed, Jun 3, 2020 at 1:06 PM Tuong Lien <tuong.t.lien@dektech.com.au>=
+ wrote:
+> > >
+> > > syzbot found the following crash:
+> > >
+> > > general protection fault, probably for non-canonical address 0xdffffc=
+0000000019: 0000 [#1] PREEMPT SMP KASAN
+> > > KASAN: null-ptr-deref in range [0x00000000000000c8-0x00000000000000cf=
+]
+> > > CPU: 1 PID: 7060 Comm: syz-executor394 Not tainted 5.7.0-rc6-syzkalle=
+r #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BI=
+OS Google 01/01/2011
+> > > RIP: 0010:__tipc_sendstream+0xbde/0x11f0 net/tipc/socket.c:1591
+> > > Code: 00 00 00 00 48 39 5c 24 28 48 0f 44 d8 e8 fa 3e db f9 48 b8 00 =
+00 00 00 00 fc ff df 48 8d bb c8 00 00 00 48 89 fa 48 c1 ea 03 <80> 3c
+> > 02 00 0f 85 e2 04 00 00 48 8b 9b c8 00 00 00 48 b8 00 00 00
+> > > RSP: 0018:ffffc90003ef7818 EFLAGS: 00010202
+> > > RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff8797fd9d
+> > > RDX: 0000000000000019 RSI: ffffffff8797fde6 RDI: 00000000000000c8
+> > > RBP: ffff888099848040 R08: ffff88809a5f6440 R09: fffffbfff1860b4c
+> > > R10: ffffffff8c305a5f R11: fffffbfff1860b4b R12: ffff88809984857e
+> > > R13: 0000000000000000 R14: ffff888086aa4000 R15: 0000000000000000
+> > > FS:  00000000009b4880(0000) GS:ffff8880ae700000(0000) knlGS:000000000=
+0000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 0000000020000140 CR3: 00000000a7fdf000 CR4: 00000000001406e0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >  tipc_sendstream+0x4c/0x70 net/tipc/socket.c:1533
+> > >  sock_sendmsg_nosec net/socket.c:652 [inline]
+> > >  sock_sendmsg+0xcf/0x120 net/socket.c:672
+> > >  ____sys_sendmsg+0x32f/0x810 net/socket.c:2352
+> > >  ___sys_sendmsg+0x100/0x170 net/socket.c:2406
+> > >  __sys_sendmmsg+0x195/0x480 net/socket.c:2496
+> > >  __do_sys_sendmmsg net/socket.c:2525 [inline]
+> > >  __se_sys_sendmmsg net/socket.c:2522 [inline]
+> > >  __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2522
+> > >  do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+> > >  entry_SYSCALL_64_after_hwframe+0x49/0xb3
+> > > RIP: 0033:0x440199
+> > > ...
+> > >
+> > > This bug was bisected to commit 0a3e060f340d ("tipc: add test for Nag=
+le
+> > > algorithm effectiveness"). However, it is not the case, the trouble w=
+as
+> > > from the base in the case of zero data length message sending, we wou=
+ld
+> > > unexpectedly make an empty 'txq' queue after the 'tipc_msg_append()' =
+in
+> > > Nagle mode.
+> > >
+> > > A similar crash can be generated even without the bisected patch but =
+at
+> > > the link layer when it accesses the empty queue.
+> > >
+> > > We solve the issues by building at least one buffer to go with socket=
+'s
+> > > header and an optional data section that may be empty like what we ha=
+d
+> > > with the 'tipc_msg_build()'.
+> > >
+> > > Note: the previous commit 4c21daae3dbc ("tipc: Fix NULL pointer
+> > > dereference in __tipc_sendstream()") is obsoleted by this one since t=
+he
+> > > 'txq' will be never empty and the check of 'skb !=3D NULL' is unneces=
+sary
+> > > but it is safe anyway.
+> > Hi, Tuong
+> >
+> > If commit 4c21daae3dbc is obsoleted by this one, can you please
+> > send a patch to revert it?
+> >
+> > Thanks.
+> Hi Xin,
 >
-> Fixes: acdcecc61285 ("udp: correct reuseport selection with connected sockets")
-> CC: Willem de Bruijn <willemb@google.com>
-> Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> That patch includes a sanity check which is always true and safe, so I do=
+n=E2=80=99t think
+> we need to revert it. Do you agree?
+surely it's safe.
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+People may be confused when reading the code:
+                                if (skb) {
+                                        msg_set_ack_required(buf_msg(skb));
+                                        tsk->expect_ack =3D true;
+                                } else {
+                                        tsk->expect_ack =3D false;  <----- =
+[1]
+                                }
 
-Thanks. Yes, I missed this resize operation when adding the field.
+like why expect_ack needs to be set to false in [1]
+
+>
+> BR/Tuong
+> >
+> > >
+> > > Reported-by: syzbot+8eac6d030e7807c21d32@syzkaller.appspotmail.com
+> > > Fixes: c0bceb97db9e ("tipc: add smart nagle feature")
+> > > Acked-by: Jon Maloy <jmaloy@redhat.com>
+> > > Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+> > > ---
+> > >  net/tipc/msg.c | 4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/net/tipc/msg.c b/net/tipc/msg.c
+> > > index c0afcd627c5e..046e4cb3acea 100644
+> > > --- a/net/tipc/msg.c
+> > > +++ b/net/tipc/msg.c
+> > > @@ -221,7 +221,7 @@ int tipc_msg_append(struct tipc_msg *_hdr, struct=
+ msghdr *m, int dlen,
+> > >         accounted =3D skb ? msg_blocks(buf_msg(skb)) : 0;
+> > >         total =3D accounted;
+> > >
+> > > -       while (rem) {
+> > > +       do {
+> > >                 if (!skb || skb->len >=3D mss) {
+> > >                         skb =3D tipc_buf_acquire(mss, GFP_KERNEL);
+> > >                         if (unlikely(!skb))
+> > > @@ -245,7 +245,7 @@ int tipc_msg_append(struct tipc_msg *_hdr, struct=
+ msghdr *m, int dlen,
+> > >                 skb_put(skb, cpy);
+> > >                 rem -=3D cpy;
+> > >                 total +=3D msg_blocks(hdr) - curr;
+> > > -       }
+> > > +       } while (rem);
+> > >         return total - accounted;
+> > >  }
+> > >
+> > > --
+> > > 2.13.7
+> > >
+> > >
+> > >
+> > > _______________________________________________
+> > > tipc-discussion mailing list
+> > > tipc-discussion@lists.sourceforge.net
+> > > https://lists.sourceforge.net/lists/listinfo/tipc-discussion
