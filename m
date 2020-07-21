@@ -2,88 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B50F2288E4
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 21:09:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A214B2288EA
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 21:12:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730258AbgGUTJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 15:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41624 "EHLO
+        id S1730576AbgGUTKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 15:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726960AbgGUTJF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 15:09:05 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92FF5C061794
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 12:09:05 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1jxxdQ-0003Ru-0i; Tue, 21 Jul 2020 21:09:04 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next] mptcp: move helper to where its used
-Date:   Tue, 21 Jul 2020 21:08:54 +0200
-Message-Id: <20200721190854.28268-1-fw@strlen.de>
-X-Mailer: git-send-email 2.26.2
+        with ESMTP id S1726960AbgGUTKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 15:10:13 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD62C061794;
+        Tue, 21 Jul 2020 12:10:13 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id 72so10669847ple.0;
+        Tue, 21 Jul 2020 12:10:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4VasfkiSgNbg3DexTWANpLNDcXThnixKgOSNULSjEfA=;
+        b=L9R5y5TOMDt5OSaIal5MpxYPE3IRn8eYeUblKvHeUBPtWb6EUIWGKE2VT+eAMkxjGc
+         ynef9fttbPpB+yehrjn+pvfUNSJhbYhuV/bhM0ZQ8KWiCrBUg1Zw9Pwy/3aioG4+tld2
+         oVcw3VtTD8UkhQ46qzxSQ5zYhnQ0PVgUqNOJRjU3yjaf9abOdqvi9FS1bee3nfc4dFxO
+         iclQYqam/wcL4ZGgaIIUZ9T6c4AdhBd2gRTtztcgtbXrrQJ6+LE/ym3vAF/NagaeEy/T
+         6qP/CAO3l5JqEBln2UMnk7SfUuPmBa5pHxVZfQLKm7nhMzePuUoM/aNf6RNcNwzWs6Xl
+         opGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4VasfkiSgNbg3DexTWANpLNDcXThnixKgOSNULSjEfA=;
+        b=a2xbtQiWMxdUKu/OZpB3DSl+B4KceSJ+s5gbu9VuDqtEHa5xyN48Uft+p39m5g5fw7
+         cHtsIeIrU/hLaUzvdzU2zp7idBYuo7+0sEUIWofuNCd215EChtPUx4pb0CxWZciPaMi1
+         SBxvFnXJe9wx0LL44CeEntSqzlH+vfSca8rRlaCcbn0/2YyzLIHlOW2I2c0cRDFnz4Nm
+         Z4+kIERQfBsFSVxRGcSNZgV2cTKgEgfLb3JHx+bqf/UsSZzPhTjCpty1ztNUsAu2ABgQ
+         fhn4JZ4W2Qg/xvuVJmKfjPLSqmasxS/pOg/IsPton0Cf80Kav3pVTzCdnnpHGHCPbJJQ
+         joUQ==
+X-Gm-Message-State: AOAM533i0O+i8mfLTSds4KbpAW/8SHzGQBYxL+ToQGYR/PY06Saqfd8k
+        Osz5b0xWDtY3xWw0iJZDpNY=
+X-Google-Smtp-Source: ABdhPJwsmp2qZSeuy2yPW5EEVFEiG516nTfieiUGxmaw74pJ1ZL26UW/kpW5rXGE7uJCS9W48CMFcw==
+X-Received: by 2002:a17:90a:ec0a:: with SMTP id l10mr5615119pjy.152.1595358612670;
+        Tue, 21 Jul 2020 12:10:12 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e3b])
+        by smtp.gmail.com with ESMTPSA id k189sm21202915pfd.175.2020.07.21.12.10.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jul 2020 12:10:11 -0700 (PDT)
+Date:   Tue, 21 Jul 2020 12:10:09 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kernel-team@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
+        brouer@redhat.com, peterz@infradead.org
+Subject: Re: [PATCH v3 bpf-next 1/2] bpf: separate bpf_get_[stack|stackid]
+ for perf events BPF
+Message-ID: <20200721191009.5khr7blivtuv3qfj@ast-mbp.dhcp.thefacebook.com>
+References: <20200716225933.196342-1-songliubraving@fb.com>
+ <20200716225933.196342-2-songliubraving@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200716225933.196342-2-songliubraving@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only used in token.c.
+On Thu, Jul 16, 2020 at 03:59:32PM -0700, Song Liu wrote:
+> +
+> +BPF_CALL_3(bpf_get_stackid_pe, struct bpf_perf_event_data_kern *, ctx,
+> +	   struct bpf_map *, map, u64, flags)
+> +{
+> +	struct perf_event *event = ctx->event;
+> +	struct perf_callchain_entry *trace;
+> +	bool has_kernel, has_user;
+> +	bool kernel, user;
+> +
+> +	/* perf_sample_data doesn't have callchain, use bpf_get_stackid */
+> +	if (!(event->attr.sample_type & __PERF_SAMPLE_CALLCHAIN_EARLY))
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/mptcp/protocol.h | 11 -----------
- net/mptcp/token.c    | 12 ++++++++++++
- 2 files changed, 12 insertions(+), 11 deletions(-)
+what if event was not created with PERF_SAMPLE_CALLCHAIN ?
+Calling the helper will still cause crashes, no?
 
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index e5baaef5ec89..6e114c09e5b4 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -396,17 +396,6 @@ struct mptcp_sock *mptcp_token_iter_next(const struct net *net, long *s_slot,
- void mptcp_token_destroy(struct mptcp_sock *msk);
- 
- void mptcp_crypto_key_sha(u64 key, u32 *token, u64 *idsn);
--static inline void mptcp_crypto_key_gen_sha(u64 *key, u32 *token, u64 *idsn)
--{
--	/* we might consider a faster version that computes the key as a
--	 * hash of some information available in the MPTCP socket. Use
--	 * random data at the moment, as it's probably the safest option
--	 * in case multiple sockets are opened in different namespaces at
--	 * the same time.
--	 */
--	get_random_bytes(key, sizeof(u64));
--	mptcp_crypto_key_sha(*key, token, idsn);
--}
- 
- void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac);
- 
-diff --git a/net/mptcp/token.c b/net/mptcp/token.c
-index 7d8106026081..b25b390dbbff 100644
---- a/net/mptcp/token.c
-+++ b/net/mptcp/token.c
-@@ -83,6 +83,18 @@ static bool __token_bucket_busy(struct token_bucket *t, u32 token)
- 	       __token_lookup_req(t, token) || __token_lookup_msk(t, token);
- }
- 
-+static void mptcp_crypto_key_gen_sha(u64 *key, u32 *token, u64 *idsn)
-+{
-+	/* we might consider a faster version that computes the key as a
-+	 * hash of some information available in the MPTCP socket. Use
-+	 * random data at the moment, as it's probably the safest option
-+	 * in case multiple sockets are opened in different namespaces at
-+	 * the same time.
-+	 */
-+	get_random_bytes(key, sizeof(u64));
-+	mptcp_crypto_key_sha(*key, token, idsn);
-+}
-+
- /**
-  * mptcp_token_new_request - create new key/idsn/token for subflow_request
-  * @req: the request socket
--- 
-2.26.2
+> +		return bpf_get_stackid((unsigned long)(ctx->regs),
+> +				       (unsigned long) map, flags, 0, 0);
+> +
+> +	if (unlikely(flags & ~(BPF_F_SKIP_FIELD_MASK | BPF_F_USER_STACK |
+> +			       BPF_F_FAST_STACK_CMP | BPF_F_REUSE_STACKID)))
+> +		return -EINVAL;
+> +
+> +	user = flags & BPF_F_USER_STACK;
+> +	kernel = !user;
+> +
+> +	has_kernel = !event->attr.exclude_callchain_kernel;
+> +	has_user = !event->attr.exclude_callchain_user;
+> +
+> +	if ((kernel && !has_kernel) || (user && !has_user))
+> +		return -EINVAL;
 
+this will break existing users in a way that will be very hard for them to debug.
+If they happen to set exclude_callchain_* flags during perf_event_open
+the helpers will be failing at run-time.
+One can argue that when precise_ip=1 the bpf_get_stack is broken, but
+this is a change in behavior.
+It also seems to be broken when PERF_SAMPLE_CALLCHAIN was not set at event
+creation time, but precise_ip=1 was.
+
+> +
+> +	trace = ctx->data->callchain;
+> +	if (unlikely(!trace))
+> +		return -EFAULT;
+> +
+> +	if (has_kernel && has_user) {
+
+shouldn't it be || ?
+
+> +		__u64 nr_kernel = count_kernel_ip(trace);
+> +		int ret;
+> +
+> +		if (kernel) {
+> +			__u64 nr = trace->nr;
+> +
+> +			trace->nr = nr_kernel;
+> +			ret = __bpf_get_stackid(map, trace, flags);
+> +
+> +			/* restore nr */
+> +			trace->nr = nr;
+> +		} else { /* user */
+> +			u64 skip = flags & BPF_F_SKIP_FIELD_MASK;
+> +
+> +			skip += nr_kernel;
+> +			if (skip > BPF_F_SKIP_FIELD_MASK)
+> +				return -EFAULT;
+> +
+> +			flags = (flags & ~BPF_F_SKIP_FIELD_MASK) | skip;
+> +			ret = __bpf_get_stackid(map, trace, flags);
+> +		}
+> +		return ret;
+> +	}
+> +	return __bpf_get_stackid(map, trace, flags);
+...
+> +	if (has_kernel && has_user) {
+> +		__u64 nr_kernel = count_kernel_ip(trace);
+> +		int ret;
+> +
+> +		if (kernel) {
+> +			__u64 nr = trace->nr;
+> +
+> +			trace->nr = nr_kernel;
+> +			ret = __bpf_get_stack(ctx->regs, NULL, trace, buf,
+> +					      size, flags);
+> +
+> +			/* restore nr */
+> +			trace->nr = nr;
+> +		} else { /* user */
+> +			u64 skip = flags & BPF_F_SKIP_FIELD_MASK;
+> +
+> +			skip += nr_kernel;
+> +			if (skip > BPF_F_SKIP_FIELD_MASK)
+> +				goto clear;
+> +
+> +			flags = (flags & ~BPF_F_SKIP_FIELD_MASK) | skip;
+> +			ret = __bpf_get_stack(ctx->regs, NULL, trace, buf,
+> +					      size, flags);
+> +		}
+
+Looks like copy-paste. I think there should be a way to make it
+into common helper.
+
+I think the main isssue is wrong interaction with event attr flags.
+I think the verifier should detect that bpf_get_stack/bpf_get_stackid
+were used and prevent attaching to perf_event with attr.precise_ip=1
+and PERF_SAMPLE_CALLCHAIN is not specified.
+I was thinking whether attaching bpf to event can force setting of
+PERF_SAMPLE_CALLCHAIN, but that would be a surprising behavior,
+so not a good idea.
+So the only thing left is to reject attach when bpf_get_stack is used
+in two cases:
+if attr.precise_ip=1 and PERF_SAMPLE_CALLCHAIN is not set.
+  (since it will lead to crashes)
+if attr.precise_ip=1 and PERF_SAMPLE_CALLCHAIN is set,
+but exclude_callchain_[user|kernel]=1 is set too.
+  (since it will lead to surprising behavior of bpf_get_stack)
+
+Other ideas?
