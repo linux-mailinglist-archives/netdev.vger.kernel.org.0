@@ -2,185 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41797227E27
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 13:07:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB195227E03
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 13:03:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729414AbgGULHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 07:07:04 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7808 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726715AbgGULHE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 07:07:04 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 262E89AF6C99D8120B89;
-        Tue, 21 Jul 2020 19:07:02 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 21 Jul 2020 19:06:55 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <kuba@kernel.org>,
-        Jian Shen <shenjian15@huawei.com>,
-        Huazhong tan <tanhuazhong@huawei.com>
-Subject: [PATCH net 4/4] net: hns3: fix return value error when query MAC link status fail
-Date:   Tue, 21 Jul 2020 19:03:54 +0800
-Message-ID: <1595329434-46766-5-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1595329434-46766-1-git-send-email-tanhuazhong@huawei.com>
-References: <1595329434-46766-1-git-send-email-tanhuazhong@huawei.com>
+        id S1729463AbgGULD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 07:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728994AbgGULD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 07:03:57 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2AAC061794
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 04:03:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=yBUA6pu/TX+4cho+/urLgr6NCeVVLxAjZiF6hmr6CO4=; b=SJuShgsXN+vTzm2zDu0pIaQyg1
+        2SGGWBuF2j6mldsuN7YtU7xYFz9T5OYobs15MunywWLnXeYFUZ5KK8Cyorb8IcrAaujbYuhFakSXG
+        7wr5HiVvJlT2pN7FMeDK7nMVIg8zKOwAR1D9w+OBDtH+x9pIsvFWH4AQPOV+9CWYs8cSxI7vzpj9R
+        6T8xc07i9MDsphQ4oo0p5Oawugd9KSoSmR3WQQ+P2H6ImnxOp0FIsdwi3I/DeaSvwLVCt9sw12RIz
+        2M1wQ5E3oLexw7MwtOIDgZYSD+6NC3KsY2Q32LCyrcCsO5On8mDPgNZm3PDnVA5E1GRtCPbROIue4
+        qs/Mevhw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:41758 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jxq3v-0004EX-Pt; Tue, 21 Jul 2020 12:03:55 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jxq3v-0004RF-It; Tue, 21 Jul 2020 12:03:55 +0100
+In-Reply-To: <20200721110152.GY1551@shell.armlinux.org.uk>
+References: <20200721110152.GY1551@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 03/14] net: phylink: rearrange resolve mac_config()
+ call
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1jxq3v-0004RF-It@rmk-PC.armlinux.org.uk>
+Date:   Tue, 21 Jul 2020 12:03:55 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+Use a boolean to indicate whether mac_config() should be called during
+a resolution. This allows resolution to have a single location where
+mac_config() will be called, which will allow us to make decisions
+about how and what we do.
 
-Currently, PF queries the MAC link status per second by calling
-function hclge_get_mac_link_status(). It return the error code
-when failed to send cmdq command to firmware. It's incorrect,
-because this return value is used as the MAC link status, which
-0 means link down, and none-zero means link up. So fixes it.
-
-Fixes: 46a3df9f9718 ("net: hns3: Add HNS3 Acceleration Engine & Compatibility Layer Support")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Huazhong tan <tanhuazhong@huawei.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 49 ++++++++++------------
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  3 ++
- 2 files changed, 25 insertions(+), 27 deletions(-)
+ drivers/net/phy/phylink.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index d6bfdc6..bb4a632 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -2673,11 +2673,10 @@ void hclge_task_schedule(struct hclge_dev *hdev, unsigned long delay_time)
- 				    delay_time);
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index b36e0315f0b1..8ffe5df5c296 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -421,13 +421,6 @@ static void phylink_mac_config(struct phylink *pl,
+ 	pl->mac_ops->mac_config(pl->config, pl->cur_link_an_mode, state);
  }
  
--static int hclge_get_mac_link_status(struct hclge_dev *hdev)
-+static int hclge_get_mac_link_status(struct hclge_dev *hdev, int *link_status)
+-static void phylink_mac_config_up(struct phylink *pl,
+-				  const struct phylink_link_state *state)
+-{
+-	if (state->link)
+-		phylink_mac_config(pl, state);
+-}
+-
+ static void phylink_mac_pcs_an_restart(struct phylink *pl)
  {
- 	struct hclge_link_status_cmd *req;
- 	struct hclge_desc desc;
--	int link_status;
- 	int ret;
+ 	if (pl->link_config.an_enabled &&
+@@ -578,6 +571,7 @@ static void phylink_resolve(struct work_struct *w)
+ 	struct phylink *pl = container_of(w, struct phylink, resolve);
+ 	struct phylink_link_state link_state;
+ 	struct net_device *ndev = pl->netdev;
++	bool mac_config = false;
+ 	bool cur_link_state;
  
- 	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_QUERY_LINK_STATUS, true);
-@@ -2689,33 +2688,25 @@ static int hclge_get_mac_link_status(struct hclge_dev *hdev)
+ 	mutex_lock(&pl->state_mutex);
+@@ -596,12 +590,12 @@ static void phylink_resolve(struct work_struct *w)
+ 		case MLO_AN_PHY:
+ 			link_state = pl->phy_state;
+ 			phylink_apply_manual_flow(pl, &link_state);
+-			phylink_mac_config_up(pl, &link_state);
++			mac_config = link_state.link;
+ 			break;
+ 
+ 		case MLO_AN_FIXED:
+ 			phylink_get_fixed_state(pl, &link_state);
+-			phylink_mac_config_up(pl, &link_state);
++			mac_config = link_state.link;
+ 			break;
+ 
+ 		case MLO_AN_INBAND:
+@@ -619,15 +613,16 @@ static void phylink_resolve(struct work_struct *w)
+ 				/* If we have a PHY, we need to update with
+ 				 * the PHY flow control bits. */
+ 				link_state.pause = pl->phy_state.pause;
+-				phylink_apply_manual_flow(pl, &link_state);
+-				phylink_mac_config(pl, &link_state);
+-			} else {
+-				phylink_apply_manual_flow(pl, &link_state);
++				mac_config = true;
+ 			}
++			phylink_apply_manual_flow(pl, &link_state);
+ 			break;
+ 		}
  	}
  
- 	req = (struct hclge_link_status_cmd *)desc.data;
--	link_status = req->status & HCLGE_LINK_STATUS_UP_M;
-+	*link_status = (req->status & HCLGE_LINK_STATUS_UP_M) > 0 ?
-+		HCLGE_LINK_STATUS_UP : HCLGE_LINK_STATUS_DOWN;
- 
--	return !!link_status;
-+	return 0;
- }
- 
--static int hclge_get_mac_phy_link(struct hclge_dev *hdev)
-+static int hclge_get_mac_phy_link(struct hclge_dev *hdev, int *link_status)
- {
--	unsigned int mac_state;
--	int link_stat;
-+	struct phy_device *phydev = hdev->hw.mac.phydev;
++	if (mac_config)
++		phylink_mac_config(pl, &link_state);
 +
-+	*link_status = HCLGE_LINK_STATUS_DOWN;
- 
- 	if (test_bit(HCLGE_STATE_DOWN, &hdev->state))
- 		return 0;
- 
--	mac_state = hclge_get_mac_link_status(hdev);
--
--	if (hdev->hw.mac.phydev) {
--		if (hdev->hw.mac.phydev->state == PHY_RUNNING)
--			link_stat = mac_state &
--				hdev->hw.mac.phydev->link;
--		else
--			link_stat = 0;
--
--	} else {
--		link_stat = mac_state;
--	}
-+	if (phydev && (phydev->state != PHY_RUNNING || !phydev->link))
-+		return 0;
- 
--	return !!link_stat;
-+	return hclge_get_mac_link_status(hdev, link_status);
- }
- 
- static void hclge_update_link_status(struct hclge_dev *hdev)
-@@ -2725,6 +2716,7 @@ static void hclge_update_link_status(struct hclge_dev *hdev)
- 	struct hnae3_handle *rhandle;
- 	struct hnae3_handle *handle;
- 	int state;
-+	int ret;
- 	int i;
- 
- 	if (!client)
-@@ -2733,7 +2725,12 @@ static void hclge_update_link_status(struct hclge_dev *hdev)
- 	if (test_and_set_bit(HCLGE_STATE_LINK_UPDATING, &hdev->state))
- 		return;
- 
--	state = hclge_get_mac_phy_link(hdev);
-+	ret = hclge_get_mac_phy_link(hdev, &state);
-+	if (ret) {
-+		clear_bit(HCLGE_STATE_LINK_UPDATING, &hdev->state);
-+		return;
-+	}
-+
- 	if (state != hdev->hw.mac.link) {
- 		for (i = 0; i < hdev->num_vmdq_vport + 1; i++) {
- 			handle = &hdev->vport[i].nic;
-@@ -6524,14 +6521,15 @@ static int hclge_mac_link_status_wait(struct hclge_dev *hdev, int link_ret)
- {
- #define HCLGE_MAC_LINK_STATUS_NUM  100
- 
-+	int link_status;
- 	int i = 0;
- 	int ret;
- 
- 	do {
--		ret = hclge_get_mac_link_status(hdev);
--		if (ret < 0)
-+		ret = hclge_get_mac_link_status(hdev, &link_status);
-+		if (ret)
- 			return ret;
--		else if (ret == link_ret)
-+		if (link_status == link_ret)
- 			return 0;
- 
- 		msleep(HCLGE_LINK_STATUS_MS);
-@@ -6542,9 +6540,6 @@ static int hclge_mac_link_status_wait(struct hclge_dev *hdev, int link_ret)
- static int hclge_mac_phy_link_status_wait(struct hclge_dev *hdev, bool en,
- 					  bool is_phy)
- {
--#define HCLGE_LINK_STATUS_DOWN 0
--#define HCLGE_LINK_STATUS_UP   1
--
- 	int link_ret;
- 
- 	link_ret = en ? HCLGE_LINK_STATUS_UP : HCLGE_LINK_STATUS_DOWN;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 46e6e0f..9bbdd45 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -317,6 +317,9 @@ enum hclge_link_fail_code {
- 	HCLGE_LF_XSFP_ABSENT,
- };
- 
-+#define HCLGE_LINK_STATUS_DOWN 0
-+#define HCLGE_LINK_STATUS_UP   1
-+
- #define HCLGE_PG_NUM		4
- #define HCLGE_SCH_MODE_SP	0
- #define HCLGE_SCH_MODE_DWRR	1
+ 	if (link_state.link != cur_link_state) {
+ 		pl->old_link_state = link_state.link;
+ 		if (!link_state.link)
 -- 
-2.7.4
+2.20.1
 
