@@ -2,126 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA942228A0E
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 22:37:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E06DA228A1F
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 22:45:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731054AbgGUUho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 16:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728856AbgGUUhm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 16:37:42 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F7DC061794
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 13:37:42 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1jxz1B-0003xl-5O; Tue, 21 Jul 2020 22:37:41 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     mathew.j.martineau@linux.intel.com, edumazet@google.com,
-        mptcp@lists.01.org, matthieu.baerts@tessares.net,
-        Florian Westphal <fw@strlen.de>
-Subject: [RFC v2 mptcp-next 12/12] selftests: mptcp: make 2nd net namespace use tcp syn cookies unconditionally
-Date:   Tue, 21 Jul 2020 22:36:42 +0200
-Message-Id: <20200721203642.32753-13-fw@strlen.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200721203642.32753-1-fw@strlen.de>
-References: <20200721203642.32753-1-fw@strlen.de>
+        id S1728878AbgGUUpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 16:45:53 -0400
+Received: from www62.your-server.de ([213.133.104.62]:60430 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727955AbgGUUpw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 16:45:52 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jxz93-0008IV-Bb; Tue, 21 Jul 2020 22:45:49 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jxz93-0005cL-63; Tue, 21 Jul 2020 22:45:49 +0200
+Subject: Re: [PATCH bpf v3] xsk: do not discard packet when QUEUE_STATE_FROZEN
+To:     Magnus Karlsson <magnus.karlsson@intel.com>, bjorn.topel@intel.com,
+        ast@kernel.org, netdev@vger.kernel.org, jonathan.lemon@gmail.com
+Cc:     A.Zema@falconvsystems.com
+References: <1595253183-14935-1-git-send-email-magnus.karlsson@intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <851cef2d-173d-859e-f2d5-5949a4fe2619@iogearbox.net>
+Date:   Tue, 21 Jul 2020 22:45:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1595253183-14935-1-git-send-email-magnus.karlsson@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25880/Tue Jul 21 16:34:58 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-check we can establish connections even in syncookie mode.
-Also check following MIB counters:
-MPTcpExtMPCapableSYNRX (should increase for each MPTCP test)
-MPTcpExtMPCapableACKRX (should increase for each MPTCP test)
-TcpExtSyncookiesSent (should increase for listener in ns2)
-TcpExtSyncookiesRecv (same)
+On 7/20/20 3:53 PM, Magnus Karlsson wrote:
+> In the skb Tx path, transmission of a packet is performed with
+> dev_direct_xmit(). When QUEUE_STATE_FROZEN is set in the transmit
+> routines, it returns NETDEV_TX_BUSY signifying that it was not
+> possible to send the packet now, please try later. Unfortunately, the
+> xsk transmit code discarded the packet and returned EBUSY to the
+> application. Fix this unnecessary packet loss, by not discarding the
+> packet in the Tx ring and return EAGAIN. As EAGAIN is returned to the
+> application, it can then retry the send operation and the packet will
+> finally be sent as we will likely not be in the QUEUE_STATE_FROZEN
+> state anymore. So EAGAIN tells the application that the packet was not
+> discarded from the Tx ring and that it needs to call send()
+> again. EBUSY, on the other hand, signifies that the packet was not
+> sent and discarded from the Tx ring. The application needs to put the
+> packet on the Tx ring again if it wants it to be sent.
+> 
+> Fixes: 35fcde7f8deb ("xsk: support for Tx")
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> Reported-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
+> Suggested-by: Arkadiusz Zema <A.Zema@falconvsystems.com>
+> Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+> v1->v3:
+> * Hinder dev_direct_xmit() from freeing and completing the packet to
+>    user space by manipulating the skb->users count as suggested by
+>    Daniel Borkmann.
+> ---
+>   net/xdp/xsk.c | 15 ++++++++++++++-
+>   1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index 3700266..9e95c85 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -375,10 +375,23 @@ static int xsk_generic_xmit(struct sock *sk)
+>   		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
+>   		skb->destructor = xsk_destruct_skb;
+>   
+> +		/* Hinder dev_direct_xmit from freeing the packet and
+> +		 * therefore completing it in the destructor
+> +		 */
+> +		refcount_inc(&skb->users);
+>   		err = dev_direct_xmit(skb, xs->queue_id);
+> +		if  (err == NETDEV_TX_BUSY) {
+> +			/* QUEUE_STATE_FROZEN, tell app to retry the send */
+> +			skb->destructor = NULL;
+> +			kfree_skb(skb);
+> +			err = -EAGAIN;
+> +			goto out;
+> +		}
+> +
+>   		xskq_cons_release(xs->tx);
+> +		kfree_skb(skb);
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- .../selftests/net/mptcp/mptcp_connect.sh      | 50 +++++++++++++++++++
- 1 file changed, 50 insertions(+)
+What happens if this was properly 'consumed'. If you call kfree_skb() for these pkts,
+then doesn't this confuse perf drop monitor with false positives?
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-index c0589e071f20..6260520674d0 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-@@ -196,6 +196,9 @@ ip -net "$ns4" link set ns4eth3 up
- ip -net "$ns4" route add default via 10.0.3.2
- ip -net "$ns4" route add default via dead:beef:3::2
- 
-+# use TCP syn cookies, even if no flooding was detected.
-+ip netns exec "$ns2" sysctl -q net.ipv4.tcp_syncookies=2
-+
- set_ethtool_flags() {
- 	local ns="$1"
- 	local dev="$2"
-@@ -407,6 +410,11 @@ do_transfer()
- 		sleep 1
- 	fi
- 
-+	local stat_synrx_last_l=$(ip netns exec ${listener_ns} nstat -z -a MPTcpExtMPCapableSYNRX | while read a count c rest ;do  echo $count;done)
-+	local stat_ackrx_last_l=$(ip netns exec ${listener_ns} nstat -z -a MPTcpExtMPCapableACKRX | while read a count c rest ;do  echo $count;done)
-+	local stat_cookietx_last=$(ip netns exec ${listener_ns} nstat -z -a TcpExtSyncookiesSent | while read a count c rest ;do  echo $count;done)
-+	local stat_cookierx_last=$(ip netns exec ${listener_ns} nstat -z -a TcpExtSyncookiesRecv | while read a count c rest ;do  echo $count;done)
-+
- 	ip netns exec ${listener_ns} ./mptcp_connect -t $timeout -l -p $port -s ${srv_proto} $extra_args $local_addr < "$sin" > "$sout" &
- 	local spid=$!
- 
-@@ -450,6 +458,48 @@ do_transfer()
- 	check_transfer $cin $sout "file received by server"
- 	rets=$?
- 
-+	local stat_synrx_now_l=$(ip netns exec ${listener_ns} nstat -z -a MPTcpExtMPCapableSYNRX  | while read a count c rest ;do  echo $count;done)
-+	local stat_ackrx_now_l=$(ip netns exec ${listener_ns} nstat -z -a MPTcpExtMPCapableACKRX  | while read a count c rest ;do  echo $count;done)
-+
-+	local stat_cookietx_now=$(ip netns exec ${listener_ns} nstat -z -a TcpExtSyncookiesSent | while read a count c rest ;do  echo $count;done)
-+	local stat_cookierx_now=$(ip netns exec ${listener_ns} nstat -z -a TcpExtSyncookiesRecv | while read a count c rest ;do  echo $count;done)
-+
-+	expect_synrx=$((stat_synrx_last_l))
-+	expect_ackrx=$((stat_ackrx_last_l))
-+
-+	cookies=$(ip netns exec ${listener_ns} sysctl net.ipv4.tcp_syncookies)
-+	cookies=${cookies##*=}
-+
-+	if [ ${cl_proto} = "MPTCP" ] && [ ${srv_proto} = "MPTCP" ]; then
-+		expect_synrx=$((stat_synrx_last_l+1))
-+		expect_ackrx=$((stat_ackrx_last_l+1))
-+		if [ $cookies -eq 2 ];then
-+			expect_synrx=$((stat_synrx_last_l+2))
-+		fi
-+	fi
-+	if [ $cookies -eq 2 ];then
-+		if [ $stat_cookietx_last -ge $stat_cookietx_now ] ;then
-+			echo "${listener_ns} CookieSent: ${cl_proto} -> ${srv_proto}: did not advance"
-+		fi
-+		if [ $stat_cookierx_last -ge $stat_cookierx_now ] ;then
-+			echo "${listener_ns} CookieRecv: ${cl_proto} -> ${srv_proto}: did not advance"
-+		fi
-+	else
-+		if [ $stat_cookietx_last -ne $stat_cookietx_now ] ;then
-+			echo "${listener_ns} CookieSent: ${cl_proto} -> ${srv_proto}: changed"
-+		fi
-+		if [ $stat_cookierx_last -ne $stat_cookierx_now ] ;then
-+			echo "${listener_ns} CookieRecv: ${cl_proto} -> ${srv_proto}: changed"
-+		fi
-+	fi
-+
-+	if [ $expect_synrx -ne $stat_synrx_now_l ] ;then
-+		echo "${listener_ns} SYNRX: ${cl_proto} -> ${srv_proto}: expect ${expect_synrx}, got ${stat_synrx_now_l}"
-+	fi
-+	if [ $expect_ackrx -ne $stat_ackrx_now_l ] ;then
-+		echo "${listener_ns} ACKRX: ${cl_proto} -> ${srv_proto}: expect ${expect_synrx}, got ${stat_synrx_now_l}"
-+	fi
-+
- 	if [ $retc -eq 0 ] && [ $rets -eq 0 ];then
- 		echo "$duration [ OK ]"
- 		cat "$capout"
--- 
-2.26.2
+>   		/* Ignore NET_XMIT_CN as packet might have been sent */
+> -		if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
+> +		if (err == NET_XMIT_DROP) {
+>   			/* SKB completed but not sent */
+>   			err = -EBUSY;
+>   			goto out;
+> 
 
