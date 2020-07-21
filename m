@@ -2,105 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D73892286C2
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 19:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD3372286CE
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 19:09:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730373AbgGUREV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 13:04:21 -0400
-Received: from mx3.wp.pl ([212.77.101.10]:39522 "EHLO mx3.wp.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728931AbgGUREU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 13:04:20 -0400
-Received: (wp-smtpd smtp.wp.pl 11509 invoked from network); 21 Jul 2020 19:04:16 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1595351056; bh=Yjt3vVyWDwk2jHqIw8Uvx83qk5IOcrjcn4mBpQxBBJs=;
-          h=From:To:Cc:Subject;
-          b=lwx5GDoBjz7d+r31V1SFtMsxhjoVCHFB31cvN468rVme11HCoqekrcXOGUo+5Ef5E
-           EWMWm4XscyZCLyNMoGi4SBgo3lKdDXf4I3txK4BIA3cw0hV4dScTVtU15fAU7ZOgj4
-           JjlvG+c1T24cz6405X3eHkLYWrcSOxuTetajBmyU=
-Received: from unknown (HELO kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com) (kubakici@wp.pl@[163.114.132.7])
-          (envelope-sender <kubakici@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <jiri@resnulli.us>; 21 Jul 2020 19:04:16 +0200
-Date:   Tue, 21 Jul 2020 10:04:06 -0700
-From:   Jakub Kicinski <kubakici@wp.pl>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        Tom Herbert <tom@herbertland.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>
-Subject: Re: [RFC PATCH net-next v2 6/6] devlink: add overwrite mode to
- flash update
-Message-ID: <20200721100406.67c17ce9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200721135356.GB2205@nanopsycho>
-References: <20200717183541.797878-1-jacob.e.keller@intel.com>
-        <20200717183541.797878-7-jacob.e.keller@intel.com>
-        <20200720100953.GB2235@nanopsycho>
-        <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200721135356.GB2205@nanopsycho>
+        id S1729706AbgGURJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 13:09:41 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:46726 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729497AbgGURJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 13:09:40 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 43D70200CA;
+        Tue, 21 Jul 2020 17:09:39 +0000 (UTC)
+Received: from us4-mdac16-29.at1.mdlocal (unknown [10.110.49.213])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 414A3600A1;
+        Tue, 21 Jul 2020 17:09:39 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.103])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CD548220070;
+        Tue, 21 Jul 2020 17:09:38 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8B11498008C;
+        Tue, 21 Jul 2020 17:09:38 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 21 Jul
+ 2020 18:09:17 +0100
+Subject: Re: [PATCH v3 net-next 04/16] sfc_ef100: skeleton EF100 PF driver
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        "kernel test robot" <lkp@intel.com>, <kbuild-all@lists.01.org>,
+        <netdev@vger.kernel.org>
+References: <f1a206ef-23a0-1d3e-9668-0ec33454c2a1@solarflare.com>
+ <202007170155.nhtIpp5L%lkp@intel.com>
+ <aa134db3-a860-534c-9ee2-d68cded37061@solarflare.com>
+ <20200721094535.15df7245@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <699dfdba-558b-7068-8ea7-d10d80369b6b@solarflare.com>
+Date:   Tue, 21 Jul 2020 18:09:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-WP-MailID: d0e90928b5409b4e803e29524f20ca3b
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000003 [IQBl]                               
+In-Reply-To: <20200721094535.15df7245@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25554.003
+X-TM-AS-Result: No-5.111800-8.000000-10
+X-TMASE-MatchedRID: scwq2vQP8OHmLzc6AOD8DfHkpkyUphL9amDMhjMSdnnvxOQTFF5KDfl4
+        wHjhjOcWj6zhwHrR3g0Up3oAL1uc5iisv8eH5y9RR1V06KT3qb9bD9LQcHt6g3tTo0P1ssT+eNr
+        Nec/7iLg2UZkqo1rM+z+K9ujtXo2PW8sQMvPj/Xx9Lo7PocodAF7OZ6hrwwnzIlxOowKJvsWdW2
+        C/Ex2sgyoS4lFW7r3/7yQyt4P8YJnW6cYShI3V/OIfK/Jd5eHmfS0Ip2eEHnzWRN8STJpl3PoLR
+        4+zsDTtiPbfA0kXryHoqOSc4Vjd9DfD7hsb9YmYi87123Y709X8HixsWDYOPlZca9RSYo/b
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.111800-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25554.003
+X-MDID: 1595351379-MyAvoCvfvnuB
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Jul 2020 15:53:56 +0200 Jiri Pirko wrote:
-> Mon, Jul 20, 2020 at 05:51:59PM CEST, kubakici@wp.pl wrote:
-> >On Mon, 20 Jul 2020 12:09:53 +0200 Jiri Pirko wrote:  
-> >> This looks odd. You have a single image yet you somehow divide it
-> >> into "program" and "config" areas. We already have infra in place to
-> >> take care of this. See DEVLINK_ATTR_FLASH_UPDATE_COMPONENT.
-> >> You should have 2 components:
-> >> 1) "program"
-> >> 2) "config"
-> >> 
-> >> Then it is up to the user what he decides to flash.  
-> >
-> >99.9% of the time users want to flash "all". To achieve "don't flash
-> >config" with current infra users would have to flash each component   
-> 
-> Well you can have multiple component what would overlap:
-> 1) "program" + "config" (default)
-> 2) "program"
-> 3) "config"
+On 21/07/2020 17:45, Jakub Kicinski wrote:
+> On Tue, 21 Jul 2020 15:48:00 +0100 Edward Cree wrote:
+>> Aaaaargh; does anyone have any bright ideas?
+> No bright ideas. Why do you want the driver to be modular in the first
+> place?
+Well, 'sfc' already is, and I'm not sure changing that is an option
+ (wouldn't it break users' scripts?).  And I find development is a lot
+ easier if you can just rebuild a module and reload it rather than
+ having to wait for LD to put together a whole new vmlinux.
 
-Say I have FW component and UNDI driver. Now I'll have 4 components?
-fw.prog, fw.config, undi.prog etc? Are those extra ones visible or just
-"implied"? If they are visible what version does the config have?
+> Maybe I'm wrong, but I've never seen a reason to break up vendor drivers
+> for high performance NICs into multiple modules.
+So, what are you suggesting?
+1) both drivers are builtin-only
+2) a single module containing both drivers
+3) something else?
 
-Also (3) - flashing config from one firmware version and program from
-another - makes a very limited amount of sense to me.
+Both (1) and (2) would allow replacing the linker trick with an if()
+ on efx->revision or an efx->type-> function with INDIRECT_CALLABLE.
 
-> >one by one and then omit the one(s) which is config (guessing which 
-> >one that is based on the name).
-> >
-> >Wouldn't this be quite inconvenient?  
-> 
-> I see it as an extra knob that is actually somehow provides degradation
-> of components.
+I don't know for sure but I suspect we made the drivers separate
+ modules simply because we could (or so we thought) and we didn't
+ know for certain no-one would ever want the extra flexibility.
 
-Hm. We have the exact opposite view on the matter. To me components
-currently correspond to separate fw/hw entities, that's a very clear
-meaning. PHY firmware, management FW, UNDI. Now we would add a
-completely orthogonal meaning to the same API. 
+I'll ask around and see if there's any reason we can't do (2).
 
-Why?
-
-In the name of "field reuse"?
-
-> >In case of MLX is PSID considered config?  
-> 
-> Nope.
-
+-ed
