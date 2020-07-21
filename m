@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A58D422879B
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 19:42:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E56392287A0
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 19:42:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbgGURlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 13:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56142 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730540AbgGURlD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 13:41:03 -0400
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6C39C0619DF
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 10:41:02 -0700 (PDT)
+        id S1730787AbgGURmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 13:42:02 -0400
+Received: from mail.katalix.com ([3.9.82.81]:53280 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729286AbgGURlC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 13:41:02 -0400
+X-Greylist: delayed 486 seconds by postgrey-1.27 at vger.kernel.org; Tue, 21 Jul 2020 13:41:01 EDT
 Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
         (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 7188793AD1;
+        by mail.katalix.com (Postfix) with ESMTPSA id BBBC693AE8;
         Tue, 21 Jul 2020 18:32:59 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1595352779; bh=GmQ3t1ZoIQz3ftVyUWAnBVs2lUQWSqcubosSsOp0vFc=;
+        t=1595352779; bh=Y48kF3C7j1p8RApH+0VTcdjRDwtn5kr2SycxJQDALWs=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:From;
         z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
          rnel.org|Cc:=20Tom=20Parkin=20<tparkin@katalix.com>|Subject:=20[PA
-         TCH=2004/29]=20l2tp:=20cleanup=20excessive=20blank=20lines|Date:=2
-         0Tue,=2021=20Jul=202020=2018:31:56=20+0100|Message-Id:=20<20200721
-         173221.4681-5-tparkin@katalix.com>|In-Reply-To:=20<20200721173221.
-         4681-1-tparkin@katalix.com>|References:=20<20200721173221.4681-1-t
-         parkin@katalix.com>;
-        b=QkDhFW7rwyKnJF3Rw4bfFVzN+npwRwU6xYZnV5Y9NdkeUCmhWV3pWY/i6Lm6MN19u
-         +nSu0ywegqAuIE8utDCxyrGPoDwaHNjsK3ELyOjHZ0tp2ay9elTzbcua4f86H+1CYw
-         Q0sYdcfXyYMQvY9FHr3+c0xWzOPhgBr9hNJre5AT6c+SQ3pNTrnyL7fyP7f5OCnGXo
-         bkGJ2kXX9wDIKvm1YZZeo5m8ZiFulfrltJstU9x7HwINrLu05gRueZpClA7YikOyWw
-         GnCKFfxWYQhv+9qAcNLVuq/y8qlcZbad2f691z0XZW1JplSbX7K67QPok3A8hHooAx
-         PwWQtsTGVJ6fA==
+         TCH=2005/29]=20l2tp:=20cleanup=20difficult-to-read=20line=20breaks
+         |Date:=20Tue,=2021=20Jul=202020=2018:31:57=20+0100|Message-Id:=20<
+         20200721173221.4681-6-tparkin@katalix.com>|In-Reply-To:=20<2020072
+         1173221.4681-1-tparkin@katalix.com>|References:=20<20200721173221.
+         4681-1-tparkin@katalix.com>;
+        b=jSTbba/6eO+52PpBag0tKNUyLmPDvzmAsKD+GaXXhqOhFQGHnYSVRAb75Q33IKrTq
+         zIjIXdol2bBhRLqaEdIuQ3Xa3EF8DMSZAgO3M0zG61GTVU+bXcck8ISVzwPN2BkFx3
+         niikbeD60XBCQOJwpUNuII30NB4Tzh8BYclWWTGbpFPjNY8fJ0YK6v8Qm5Yt2uAKaX
+         lJf3V8JGio4PlCHf47cUqlXsD5PUPQctEfN2KuLaEsi5g+VNjKNhaa80hLNZNgFBEs
+         6qeQwLwIz0mhzXNh0LdBXf/7Ai1ud7ceYQoeOpv7dAjPl00rk3SKIEQ9OYISZFaqFg
+         ZNxMUebHOR6UQ==
 From:   Tom Parkin <tparkin@katalix.com>
 To:     netdev@vger.kernel.org
 Cc:     Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH 04/29] l2tp: cleanup excessive blank lines
-Date:   Tue, 21 Jul 2020 18:31:56 +0100
-Message-Id: <20200721173221.4681-5-tparkin@katalix.com>
+Subject: [PATCH 05/29] l2tp: cleanup difficult-to-read line breaks
+Date:   Tue, 21 Jul 2020 18:31:57 +0100
+Message-Id: <20200721173221.4681-6-tparkin@katalix.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200721173221.4681-1-tparkin@katalix.com>
 References: <20200721173221.4681-1-tparkin@katalix.com>
@@ -48,96 +46,171 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-checkpatch doesn't like multiple blank lines, or trailing blank lines at
-the end of functions.  They serve no useful purpose, so remove these from
-the l2tp code.
+Some l2tp code had line breaks which made the code more difficult to
+read.  These were originally motivated by the 80-character line width
+coding guidelines, but were actually a negative from the perspective of
+trying to follow the code.
+
+Remove these linebreaks for clearer code, even if we do exceed 80
+characters in width in some places.
 
 Signed-off-by: Tom Parkin <tparkin@katalix.com>
 ---
- net/l2tp/l2tp_core.c    | 2 --
- net/l2tp/l2tp_debugfs.c | 2 --
- net/l2tp/l2tp_eth.c     | 3 ---
- net/l2tp/l2tp_netlink.c | 1 -
- 4 files changed, 8 deletions(-)
+ net/l2tp/l2tp_netlink.c | 71 +++++++++++++++++------------------------
+ net/l2tp/l2tp_ppp.c     |  6 ++--
+ 2 files changed, 32 insertions(+), 45 deletions(-)
 
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index 3308e84906ef..70891be75f77 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -133,7 +133,6 @@ static inline struct hlist_head *
- l2tp_session_id_hash_2(struct l2tp_net *pn, u32 session_id)
- {
- 	return &pn->l2tp_session_hlist[hash_32(session_id, L2TP_HASH_BITS_2)];
--
- }
- 
- /* Session hash list.
-@@ -1637,7 +1636,6 @@ void l2tp_session_set_header_len(struct l2tp_session *session, int version)
- 		if (session->tunnel->encap == L2TP_ENCAPTYPE_UDP)
- 			session->hdr_len += 4;
- 	}
--
- }
- EXPORT_SYMBOL_GPL(l2tp_session_set_header_len);
- 
-diff --git a/net/l2tp/l2tp_debugfs.c b/net/l2tp/l2tp_debugfs.c
-index 221b86e1ba7c..93181133e155 100644
---- a/net/l2tp/l2tp_debugfs.c
-+++ b/net/l2tp/l2tp_debugfs.c
-@@ -62,7 +62,6 @@ static void l2tp_dfs_next_session(struct l2tp_dfs_seq_data *pd)
- 		pd->session_idx = 0;
- 		l2tp_dfs_next_tunnel(pd);
- 	}
--
- }
- 
- static void *l2tp_dfs_seq_start(struct seq_file *m, loff_t *offs)
-@@ -89,7 +88,6 @@ static void *l2tp_dfs_seq_start(struct seq_file *m, loff_t *offs)
- 	return pd;
- }
- 
--
- static void *l2tp_dfs_seq_next(struct seq_file *m, void *v, loff_t *pos)
- {
- 	(*pos)++;
-diff --git a/net/l2tp/l2tp_eth.c b/net/l2tp/l2tp_eth.c
-index 87e4cebc7f57..7ed2b4eced94 100644
---- a/net/l2tp/l2tp_eth.c
-+++ b/net/l2tp/l2tp_eth.c
-@@ -50,7 +50,6 @@ struct l2tp_eth_sess {
- 	struct net_device __rcu *dev;
- };
- 
--
- static int l2tp_eth_dev_init(struct net_device *dev)
- {
- 	eth_hw_addr_random(dev);
-@@ -346,13 +345,11 @@ static int l2tp_eth_create(struct net *net, struct l2tp_tunnel *tunnel,
- 	return rc;
- }
- 
--
- static const struct l2tp_nl_cmd_ops l2tp_eth_nl_cmd_ops = {
- 	.session_create	= l2tp_eth_create,
- 	.session_delete	= l2tp_session_delete,
- };
- 
--
- static int __init l2tp_eth_init(void)
- {
- 	int err = 0;
 diff --git a/net/l2tp/l2tp_netlink.c b/net/l2tp/l2tp_netlink.c
-index 5b24efc0b04b..3120f8dcc56a 100644
+index 3120f8dcc56a..0325ed2cfe8a 100644
 --- a/net/l2tp/l2tp_netlink.c
 +++ b/net/l2tp/l2tp_netlink.c
-@@ -26,7 +26,6 @@
+@@ -165,71 +165,63 @@ static int l2tp_nl_cmd_tunnel_create(struct sk_buff *skb, struct genl_info *info
+ 	struct l2tp_tunnel_cfg cfg = { 0, };
+ 	struct l2tp_tunnel *tunnel;
+ 	struct net *net = genl_info_net(info);
++	struct nlattr **attrs = info->attrs;
  
- #include "l2tp_core.h"
+-	if (!info->attrs[L2TP_ATTR_CONN_ID]) {
++	if (!attrs[L2TP_ATTR_CONN_ID]) {
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+-	tunnel_id = nla_get_u32(info->attrs[L2TP_ATTR_CONN_ID]);
++	tunnel_id = nla_get_u32(attrs[L2TP_ATTR_CONN_ID]);
  
--
- static struct genl_family l2tp_nl_family;
+-	if (!info->attrs[L2TP_ATTR_PEER_CONN_ID]) {
++	if (!attrs[L2TP_ATTR_PEER_CONN_ID]) {
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+-	peer_tunnel_id = nla_get_u32(info->attrs[L2TP_ATTR_PEER_CONN_ID]);
++	peer_tunnel_id = nla_get_u32(attrs[L2TP_ATTR_PEER_CONN_ID]);
  
- static const struct genl_multicast_group l2tp_multicast_group[] = {
+-	if (!info->attrs[L2TP_ATTR_PROTO_VERSION]) {
++	if (!attrs[L2TP_ATTR_PROTO_VERSION]) {
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+-	proto_version = nla_get_u8(info->attrs[L2TP_ATTR_PROTO_VERSION]);
++	proto_version = nla_get_u8(attrs[L2TP_ATTR_PROTO_VERSION]);
+ 
+-	if (!info->attrs[L2TP_ATTR_ENCAP_TYPE]) {
++	if (!attrs[L2TP_ATTR_ENCAP_TYPE]) {
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+-	cfg.encap = nla_get_u16(info->attrs[L2TP_ATTR_ENCAP_TYPE]);
++	cfg.encap = nla_get_u16(attrs[L2TP_ATTR_ENCAP_TYPE]);
+ 
+ 	fd = -1;
+-	if (info->attrs[L2TP_ATTR_FD]) {
+-		fd = nla_get_u32(info->attrs[L2TP_ATTR_FD]);
++	if (attrs[L2TP_ATTR_FD]) {
++		fd = nla_get_u32(attrs[L2TP_ATTR_FD]);
+ 	} else {
+ #if IS_ENABLED(CONFIG_IPV6)
+-		if (info->attrs[L2TP_ATTR_IP6_SADDR] &&
+-		    info->attrs[L2TP_ATTR_IP6_DADDR]) {
+-			cfg.local_ip6 = nla_data(
+-				info->attrs[L2TP_ATTR_IP6_SADDR]);
+-			cfg.peer_ip6 = nla_data(
+-				info->attrs[L2TP_ATTR_IP6_DADDR]);
+-		} else
++		if (attrs[L2TP_ATTR_IP6_SADDR] && attrs[L2TP_ATTR_IP6_DADDR]) {
++			cfg.local_ip6 = nla_data(attrs[L2TP_ATTR_IP6_SADDR]);
++			cfg.peer_ip6 = nla_data(attrs[L2TP_ATTR_IP6_DADDR]);
++		} else {
+ #endif
+-		if (info->attrs[L2TP_ATTR_IP_SADDR] &&
+-		    info->attrs[L2TP_ATTR_IP_DADDR]) {
+-			cfg.local_ip.s_addr = nla_get_in_addr(
+-				info->attrs[L2TP_ATTR_IP_SADDR]);
+-			cfg.peer_ip.s_addr = nla_get_in_addr(
+-				info->attrs[L2TP_ATTR_IP_DADDR]);
++		if (attrs[L2TP_ATTR_IP_SADDR] && attrs[L2TP_ATTR_IP_DADDR]) {
++			cfg.local_ip.s_addr = nla_get_in_addr(attrs[L2TP_ATTR_IP_SADDR]);
++			cfg.peer_ip.s_addr = nla_get_in_addr(attrs[L2TP_ATTR_IP_DADDR]);
+ 		} else {
+ 			ret = -EINVAL;
+ 			goto out;
+ 		}
+-		if (info->attrs[L2TP_ATTR_UDP_SPORT])
+-			cfg.local_udp_port = nla_get_u16(info->attrs[L2TP_ATTR_UDP_SPORT]);
+-		if (info->attrs[L2TP_ATTR_UDP_DPORT])
+-			cfg.peer_udp_port = nla_get_u16(info->attrs[L2TP_ATTR_UDP_DPORT]);
+-		cfg.use_udp_checksums = nla_get_flag(
+-			info->attrs[L2TP_ATTR_UDP_CSUM]);
++		if (attrs[L2TP_ATTR_UDP_SPORT])
++			cfg.local_udp_port = nla_get_u16(attrs[L2TP_ATTR_UDP_SPORT]);
++		if (attrs[L2TP_ATTR_UDP_DPORT])
++			cfg.peer_udp_port = nla_get_u16(attrs[L2TP_ATTR_UDP_DPORT]);
++		cfg.use_udp_checksums = nla_get_flag(attrs[L2TP_ATTR_UDP_CSUM]);
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+-		cfg.udp6_zero_tx_checksums = nla_get_flag(
+-			info->attrs[L2TP_ATTR_UDP_ZERO_CSUM6_TX]);
+-		cfg.udp6_zero_rx_checksums = nla_get_flag(
+-			info->attrs[L2TP_ATTR_UDP_ZERO_CSUM6_RX]);
++		cfg.udp6_zero_tx_checksums = nla_get_flag(attrs[L2TP_ATTR_UDP_ZERO_CSUM6_TX]);
++		cfg.udp6_zero_rx_checksums = nla_get_flag(attrs[L2TP_ATTR_UDP_ZERO_CSUM6_RX]);
+ #endif
+ 	}
+ 
+-	if (info->attrs[L2TP_ATTR_DEBUG])
+-		cfg.debug = nla_get_u32(info->attrs[L2TP_ATTR_DEBUG]);
++	if (attrs[L2TP_ATTR_DEBUG])
++		cfg.debug = nla_get_u32(attrs[L2TP_ATTR_DEBUG]);
+ 
+ 	ret = -EINVAL;
+ 	switch (cfg.encap) {
+@@ -715,8 +707,7 @@ static int l2tp_nl_session_send(struct sk_buff *skb, u32 portid, u32 seq, int fl
+ 	if (nla_put_u32(skb, L2TP_ATTR_CONN_ID, tunnel->tunnel_id) ||
+ 	    nla_put_u32(skb, L2TP_ATTR_SESSION_ID, session->session_id) ||
+ 	    nla_put_u32(skb, L2TP_ATTR_PEER_CONN_ID, tunnel->peer_tunnel_id) ||
+-	    nla_put_u32(skb, L2TP_ATTR_PEER_SESSION_ID,
+-			session->peer_session_id) ||
++	    nla_put_u32(skb, L2TP_ATTR_PEER_SESSION_ID, session->peer_session_id) ||
+ 	    nla_put_u32(skb, L2TP_ATTR_DEBUG, session->debug) ||
+ 	    nla_put_u16(skb, L2TP_ATTR_PW_TYPE, session->pwtype))
+ 		goto nla_put_failure;
+@@ -724,11 +715,9 @@ static int l2tp_nl_session_send(struct sk_buff *skb, u32 portid, u32 seq, int fl
+ 	if ((session->ifname[0] &&
+ 	     nla_put_string(skb, L2TP_ATTR_IFNAME, session->ifname)) ||
+ 	    (session->cookie_len &&
+-	     nla_put(skb, L2TP_ATTR_COOKIE, session->cookie_len,
+-		     &session->cookie[0])) ||
++	     nla_put(skb, L2TP_ATTR_COOKIE, session->cookie_len, session->cookie)) ||
+ 	    (session->peer_cookie_len &&
+-	     nla_put(skb, L2TP_ATTR_PEER_COOKIE, session->peer_cookie_len,
+-		     &session->peer_cookie[0])) ||
++	     nla_put(skb, L2TP_ATTR_PEER_COOKIE, session->peer_cookie_len, session->peer_cookie)) ||
+ 	    nla_put_u8(skb, L2TP_ATTR_RECV_SEQ, session->recv_seq) ||
+ 	    nla_put_u8(skb, L2TP_ATTR_SEND_SEQ, session->send_seq) ||
+ 	    nla_put_u8(skb, L2TP_ATTR_LNS_MODE, session->lns_mode) ||
+diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
+index 48fbaf5ee82c..3fed922addb5 100644
+--- a/net/l2tp/l2tp_ppp.c
++++ b/net/l2tp/l2tp_ppp.c
+@@ -1566,8 +1566,7 @@ static void pppol2tp_seq_session_show(struct seq_file *m, void *v)
+ 		user_data_ok = 'N';
+ 	}
+ 
+-	seq_printf(m, "  SESSION '%s' %08X/%d %04X/%04X -> "
+-		   "%04X/%04X %d %c\n",
++	seq_printf(m, "  SESSION '%s' %08X/%d %04X/%04X -> %04X/%04X %d %c\n",
+ 		   session->name, ip, port,
+ 		   tunnel->tunnel_id,
+ 		   session->session_id,
+@@ -1606,8 +1605,7 @@ static int pppol2tp_seq_show(struct seq_file *m, void *v)
+ 		seq_puts(m, "PPPoL2TP driver info, " PPPOL2TP_DRV_VERSION "\n");
+ 		seq_puts(m, "TUNNEL name, user-data-ok session-count\n");
+ 		seq_puts(m, " debug tx-pkts/bytes/errs rx-pkts/bytes/errs\n");
+-		seq_puts(m, "  SESSION name, addr/port src-tid/sid "
+-			 "dest-tid/sid state user-data-ok\n");
++		seq_puts(m, "  SESSION name, addr/port src-tid/sid dest-tid/sid state user-data-ok\n");
+ 		seq_puts(m, "   mtu/mru/rcvseq/sendseq/lns debug reorderto\n");
+ 		seq_puts(m, "   nr/ns tx-pkts/bytes/errs rx-pkts/bytes/errs\n");
+ 		goto out;
 -- 
 2.17.1
 
