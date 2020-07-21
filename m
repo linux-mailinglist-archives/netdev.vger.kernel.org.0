@@ -2,311 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5855C227733
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 05:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C48E122773C
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 05:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728392AbgGUDsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 23:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38134 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726016AbgGUDsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 23:48:17 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA2EC061794;
-        Mon, 20 Jul 2020 20:48:17 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id t7so8726789qvl.8;
-        Mon, 20 Jul 2020 20:48:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=hgpEJLmGdB1vk/4Ot80nHSgBm4YLANo8JRsnEVLIrG8=;
-        b=IPgWs7QgQ8VK0/sgSKI4jJ7M7DFvndiTNB/g08dGsgF/OeuM1X61xAhVVZJUh0nszj
-         KoVu9JeDKLOUe96Y/Y4OKq947KCxr6AGDVruweLFOPRrbQnXxmZIfPREFPLbflqHtLag
-         3oN/ZN4bYvlLWZeZ/TwPslgtr2EgoMst3iGUgk7X68SGF2G6asi7v9DepHLrSgf2GhqH
-         61UmUvgoQQeGBaHgeQIgIMWkSDyKPi2eO10V0ZxkuoVszH8rHT/ee4jNeeTLO8aoxwcn
-         HyLXdXCvSWcDYtZhSlALSodqY75pwuRKx2k7Q6zYaTtv+4yLkERSyCAMghJmq6glH3s3
-         e+vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=hgpEJLmGdB1vk/4Ot80nHSgBm4YLANo8JRsnEVLIrG8=;
-        b=rSZx0jjf73CVld7xZEmSQj9smPyw8Tv/7HnNRGj/Vxf35QFtOJvHox+SAgelgwNRpj
-         YdRxV5gUERhkMERQwdsQ/h6yhTObXuocwf33sJAfiILj6j/oxpJFgpwMPG2bZj9n+hvY
-         uPQTE2iJgyH/mOerok6cNddCio0x+9mSfc0MHmf0f1H3ZsyO6VaQfUS6vSFKfQoHeChD
-         EmMp1x5zq1bFKFZ0qsp7QzcwovJRqrtp3lLcosN4VENUfQWjJ0RIu9vBffqyAQ4MoGdj
-         ij0+AEE3oN5MTkBomVF5c4uWmFU6EXFno+eVzeb71hUdH+5viWE1/iiJP4hAH0nlGF7N
-         8zig==
-X-Gm-Message-State: AOAM532gSj5bAfnhVQ4ZbyGwv7+K5il92Kejla5CEzzI2fOSBIOpTulT
-        7GoG30KWNE/sBlv4eVJ1/dqEK46qzjIuxFXi9XQ=
-X-Google-Smtp-Source: ABdhPJwrZwHYDabFsL4dMJkIsYJ444Qw/o03GMXc34eJCGVrEwzrpxXzYYnePdZzq/3nBkux0SJuRVDhrUuXPITjuY8=
-X-Received: by 2002:a05:6214:8f4:: with SMTP id dr20mr23663216qvb.228.1595303295693;
- Mon, 20 Jul 2020 20:48:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <159481853923.454654.12184603524310603480.stgit@toke.dk>
- <159481854255.454654.15065796817034016611.stgit@toke.dk> <20200715204406.vt64vgvzsbr6kolm@ast-mbp.dhcp.thefacebook.com>
- <87mu3zentu.fsf@toke.dk> <20200717020507.jpxxe4dbc2watsfh@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzYd4Xrn4EqzqHCTuJ8TnZiTC1vWWvd=9Np+LNrgbtxOcQ@mail.gmail.com> <20200720233455.6ito7n2eqojlfnvk@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200720233455.6ito7n2eqojlfnvk@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 20 Jul 2020 20:48:04 -0700
-Message-ID: <CAEf4BzYtD9dGUy3hZRRAA56CaVvW7xTR9tp0dXKyVQXym046eQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 3/6] bpf: support attaching freplace programs
- to multiple attach points
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728560AbgGUDuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 23:50:08 -0400
+Received: from mail-eopbgr1320137.outbound.protection.outlook.com ([40.107.132.137]:33056
+        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726389AbgGUDuH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 23:50:07 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JFKhC8cKJgW4SZ40F7jsNj/QprOk3Ffp3csGQk4Pom7t83asqjaxUFPQeHwXrm6olTmcDeC5tVb9sFMFbyiRpzFh+HNNtKWKjbCHv9d4d+tzBU8nDxx4LEgSi/Ry9+85gKRKiS0ngkQnwusgGAbEpEqVCKQYVYLyGZ7LExXR9DlLCva/9YRYCFhiskoV7HAQRrxlXIpmm7qhtPhdV9khiqtj57By6n3Ay5b7bCasa7qZHKQ0iGf3OIPsoud/ZY/JGgICPCI4UfNum+7tX/Ug8tPufijOYThLiZBzP6yoJh4OksTXHhERcIyvYDPec58WcufQkLSGf4dNRmyvGIiEsQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jukI3T1SdY7BD63o/7jL2tkXfaWvYnjmuXJh8IayEhk=;
+ b=Ft+X9ipzlRTzlwsGXSu87RRpD9fwlN2kNRGopzMXIz5NEdA9eW5CXT2VVgMFeRgZ8bhqdKWNhNZaGuI1ogMsfbt7pRjOJBxqDfW60Cmut0HEamGyVM2Ikp8TAewtFBbxqD0Q6hBvxnn54KT5/xvj53AHgKnIDCdYwtWR6cQytWXxJtr6YKsaeeGNkyvekJh9cB+8ns+bx6mUwHRK2i0yfoNBKDAfkfQFh65Lq+zHcVPB7M91TZ0uIQw+Ntd/a9tbkqggQi3dGhzMIA58+Yd8qUpRntqnihFho9VgOvuO/vIKPnH7jqtk5loy1ENQHKj14ClrgPWj9RQdCBi600CyYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jukI3T1SdY7BD63o/7jL2tkXfaWvYnjmuXJh8IayEhk=;
+ b=Zs/uCH9IBy9l1fvqM36yooySs2gpODrjAkii8Fs4K9z6zQXgQuUlUBl4L5uK55nV0mlf8ul9B5QpABLX9ahLJ+xdhbRRkzGHdWx8WGFdf63QJBgaIoXAuk1wFKT+CpMeVbJRpV/1SPtXgk0qBCLilJ0Oy3yHQpf6U3EXcAF/+sc=
+Received: from HK0P153MB0275.APCP153.PROD.OUTLOOK.COM (2603:1096:203:b2::14)
+ by HK0P153MB0148.APCP153.PROD.OUTLOOK.COM (2603:1096:203:1a::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.7; Tue, 21 Jul
+ 2020 03:50:01 +0000
+Received: from HK0P153MB0275.APCP153.PROD.OUTLOOK.COM
+ ([fe80::b5ca:82a1:cb67:52e]) by HK0P153MB0275.APCP153.PROD.OUTLOOK.COM
+ ([fe80::b5ca:82a1:cb67:52e%6]) with mapi id 15.20.3216.020; Tue, 21 Jul 2020
+ 03:50:01 +0000
+From:   Chi Song <Song.Chi@microsoft.com>
+To:     David Miller <davem@davemloft.net>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 net-next] net: hyperv: Add attributes to show TX
+ indirection table
+Thread-Topic: [PATCH v5 net-next] net: hyperv: Add attributes to show TX
+ indirection table
+Thread-Index: AdZfEcPKGd7xulNnRpunpA+7DCPz/w==
+Date:   Tue, 21 Jul 2020 03:50:00 +0000
+Message-ID: <HK0P153MB0275B7FFBA43843CC7B1EABB98780@HK0P153MB0275.APCP153.PROD.OUTLOOK.COM>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-07-21T03:49:59Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=22e5ad65-f8db-4b06-8dee-ceac40c0f86e;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
+authentication-results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none
+ header.from=microsoft.com;
+x-originating-ip: [2404:f801:8050:1:b1ce:4ac6:46d:28d5]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 633fa444-b542-4431-c02a-08d82d29250e
+x-ms-traffictypediagnostic: HK0P153MB0148:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <HK0P153MB0148A4FBA108CF04213DF7C398780@HK0P153MB0148.APCP153.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:1417;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9DTL0mUykFlI/Vj/kzavtYpIQlRWlqr4Lu+oAR3FYC1TG13vhu+2f2dD7zABoeSi874y25GbPOMEDZtNINUG20PW80Bq5PVV/70h2Rgc2Yo78z5nis2oOZFuVOTbHVSMtQOy4u2S6GHpphf+B8cKUiBRcq/PuYMWoXKD76VIKNdDrV0a8x5vCA+32nooy8DEzSzfIqSm6B4R2UTzWiPyn/4BxO9VZQa7Cb4XTb27Z5buW0HP+JiFklUfIGXFP0GXrw/SlDjSCgul8mZJr8t29veOX4nZIMnpFsQ7nmq/WPSSe/waL8dhDI2boFzjdm2iTvRoTu9iXjieiO8wh86SUg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0P153MB0275.APCP153.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(396003)(376002)(136003)(346002)(86362001)(33656002)(76116006)(82960400001)(83380400001)(52536014)(82950400001)(5660300002)(66946007)(66476007)(66556008)(64756008)(66446008)(9686003)(55016002)(10290500003)(7696005)(316002)(4326008)(8676002)(2906002)(186003)(54906003)(8990500004)(110136005)(6506007)(71200400001)(478600001)(8936002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: xmzDA8bWly9Z9V+6mkMh1oOj0FE4BKlJtbUy84UtfN+Emu1l2sX18mjXbEUx696NTwTjhw+t34I0QW8fZmk360xMletuHbbW6kyKyHQHINxL/M18ceg4sK56MO69LQHgwWzt2VpDyomw5APaVVBmKBwZuxAuTzLzmQTwkI7kxDrUy57HCNkGe/sZ9SdF/ZKNELyKNz9q7kjvusLhm/mdIakqQCGxC2hjgCvQ5zvR8Z8Li8NGLSO3Kzpu07pUOZYLPfZpFLScGMAUKXSAq+hrGJfaZDE+Y52KZDyVSHcIPPrR21PXHHqZprWxWEQ29A2xwro3tjh+i+3et8PUfJgjvSVv4JSlya7gWu007TdTgVGwlnn7X87+IBujOfJELaEmohp85GXsopYixoKavS9bn03TAYQ6jVwL4RuLvYJ0cqa7rnKo2FggdPEvwNYRUlouSHQOWRsg4P36H9ZQoV/YRv9jt802GcN6/HjgKuv2yYy9V2fjp1KzWOHfn2XKIsPNONuR18CpV0lpdWnqSNNNXgDrE6nb5Y+Ns1PNHE7NS1M=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: HK0P153MB0275.APCP153.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 633fa444-b542-4431-c02a-08d82d29250e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2020 03:50:00.7160
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GIR9a5lUtX6/jy+hz5/zkDQdjLgjUIJz5WqJmtNgwObOQhWNp8g5nhTKNkSLqaSfv06mhL1MhyuTXI4F35BXXg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0P153MB0148
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 4:35 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Sun, Jul 19, 2020 at 10:02:48PM -0700, Andrii Nakryiko wrote:
-> > On Thu, Jul 16, 2020 at 7:06 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Thu, Jul 16, 2020 at 12:50:05PM +0200, Toke H=C3=B8iland-J=C3=B8rg=
-ensen wrote:
-> > > > Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-> > > >
-> > > > > On Wed, Jul 15, 2020 at 03:09:02PM +0200, Toke H=C3=83=C6=92=C3=
-=82=C2=B8iland-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
-> > > > >>
-> > > > >> +  if (tgt_prog_fd) {
-> > > > >> +          /* For now we only allow new targets for BPF_PROG_TYP=
-E_EXT */
-> > > > >> +          if (prog->type !=3D BPF_PROG_TYPE_EXT ||
-> > > > >> +              !btf_id) {
-> > > > >> +                  err =3D -EINVAL;
-> > > > >> +                  goto out_put_prog;
-> > > > >> +          }
-> > > > >> +          tgt_prog =3D bpf_prog_get(tgt_prog_fd);
-> > > > >> +          if (IS_ERR(tgt_prog)) {
-> > > > >> +                  err =3D PTR_ERR(tgt_prog);
-> > > > >> +                  tgt_prog =3D NULL;
-> > > > >> +                  goto out_put_prog;
-> > > > >> +          }
-> > > > >> +
-> > > > >> +  } else if (btf_id) {
-> > > > >> +          err =3D -EINVAL;
-> > > > >> +          goto out_put_prog;
-> > > > >> +  } else {
-> > > > >> +          btf_id =3D prog->aux->attach_btf_id;
-> > > > >> +          tgt_prog =3D prog->aux->linked_prog;
-> > > > >> +          if (tgt_prog)
-> > > > >> +                  bpf_prog_inc(tgt_prog); /* we call bpf_prog_p=
-ut() on link release */
-> > > > >
-> > > > > so the first prog_load cmd will beholding the first target prog?
-> > > > > This is complete non starter.
-> > > > > You didn't mention such decision anywhere.
-> > > > > The first ext prog will attach to the first dispatcher xdp prog,
-> > > > > then that ext prog will multi attach to second dispatcher xdp pro=
-g and
-> > > > > the first dispatcher prog will live in the kernel forever.
-> > > >
-> > > > Huh, yeah, you're right that's no good. Missing that was a think-o =
-on my
-> > > > part, sorry about that :/
-> > > >
-> > > > > That's not what we discussed back in April.
-> > > >
-> > > > No, you mentioned turning aux->linked_prog into a list. However onc=
-e I
-> > > > started looking at it I figured it was better to actually have all =
-this
-> > > > (the trampoline and ref) as part of the bpf_link structure, since
-> > > > logically they're related.
-> > > >
-> > > > But as you pointed out, the original reference sticks. So either th=
-at
-> > > > needs to be removed, or I need to go back to the 'aux->linked_progs=
- as a
-> > > > list' idea. Any preference?
-> > >
-> > > Good question. Back then I was thinking about converting linked_prog =
-into link
-> > > list, since standalone single linked_prog is quite odd, because attac=
-hing ext
-> > > prog to multiple tgt progs should have equivalent properties across a=
-ll
-> > > attachments.
-> > > Back then bpf_link wasn't quite developed.
-> > > Now I feel moving into bpf_tracing_link is better.
-> > > I guess a link list of bpf_tracing_link-s from 'struct bpf_prog' migh=
-t work.
-> > > At prog load time we can do bpf_link_init() only (without doing bpf_l=
-ink_prime)
-> > > and keep this pre-populated bpf_link with target bpf prog and trampol=
-ine
-> > > in a link list accessed from 'struct bpf_prog'.
-> > > Then bpf_tracing_prog_attach() without extra tgt_prog_fd/btf_id would=
- complete
-> > > that bpf_tracing_link by calling bpf_link_prime() and bpf_link_settle=
-()
-> > > without allocating new one.
-> > > Something like:
-> > > struct bpf_tracing_link {
-> > >         struct bpf_link link;  /* ext prog pointer is hidding in ther=
-e */
-> > >         enum bpf_attach_type attach_type;
-> > >         struct bpf_trampoline *tr;
-> > >         struct bpf_prog *tgt_prog; /* old aux->linked_prog */
-> > > };
-> > >
-> > > ext prog -> aux -> link list of above bpf_tracing_link-s
-> > >
-> > > It's a circular reference, obviously.
-> > > Need to think through the complications and locking.
-> > >
-> > > bpf_tracing_prog_attach() with tgt_prog_fd/btf_id will alloc new bpf_=
-tracing_link
-> > > and will add it to a link list.
-> > >
-> > > Just a rough idea. I wonder what Andrii thinks.
-> > >
-> >
-> > I need to spend more time reading existing and new code to see all the
-> > details, but I'll throw a slightly different proposal and let you guys
-> > shoot it down.
-> >
-> > So, what if instead of having linked_prog (as bpf_prog *, refcnt'ed),
-> > at BPF_PROG_LOAD time we just record the target prog's ID. BPF
-> > verifier, when doing its target prog checks would attempt to get
-> > bpf_prog * reference; if by that time the target program is gone,
-> > fail, of course. If not, everything proceeds as is, at the end of
-> > verification target_prog is put until attach time.
-> >
-> > Then at attach time, we either go with pre-recorded (in
-> > prog->aux->linked_prog_id) target prog's ID or we get a new one from
-> > RAW_TP_OPEN tgt_prog_fd. Either way, we bump refcnt on that target
-> > prog and keep it with bpf_tracing_link (so link on detach would put
-> > target_prog, that way it doesn't go away while EXT prog is attached).
-> > Then do all the compatibility checks, and if everything works out,
-> > bpf_tracing_link gets created, we record trampoline there, etc, etc.
-> > Basically, instead of having an EXT prog holding a reference to the
-> > target prog, only attachment (bpf_link) does that, which conceptually
-> > also seems to make more sense to me. For verification we store prog ID
-> > and don't hold target prog at all.
-> >
-> >
-> > Now, there will be a problem once you attach EXT prog to a new XDP
-> > root program and release a link against the original XDP root program.
-> > First, I hope I understand the desired sequence right, here's an
-> > example:
-> >
-> > 1. load XDP root prog X
-> > 2. load EXT prog with target prog X
-> > 3. attach EXT prog to prog X
-> > 4. load XDP root prog Y
-> > 5. attach EXT prog to prog Y (Y and X should be "compatible")
-> > 6. detach prog X (close bpf_link)
-> >
-> > Is that the right sequence?
-> >
-> > If yes, then the problem with storing ID of prog X in EXT
-> > prog->aux->linked_prog_id is that you won't be able to re-attach to
-> > new prog Z, because there won't be anything to check compatibility
-> > against (prog X will be long time gone).
-> >
-> > So we can do two things here:
-> >
-> > 1. on attach, replace ext_prog->aux->linked_prog_id with the latest
-> > attached prog (prog Y ID from above example)
-> > 2. instead of recording target program FD/ID, capture BTF FD and/or
-> > enough BTF information for checking compatibility.
-> >
-> > Approach 2) seems like conceptually the right thing to do (record type
-> > info we care about, not an **instance** of BPF program, compatible
-> > with that type info), but technically might be harder.
->
-> I've read your proposal couple times and still don't get what you're
-> trying to solve with either ID or BTF info recording.
-> So that target prog doesn't get refcnt-ed? What's a problem with it?
-> Currently it's being refcnt-d in aux->linked_prog.
-> What I'm proposing about is to convert aux->linked_prog into a link list
-> of bpf_tracing_links which will contain linked_prog inside.
-> Conceptually that's what bpf_link is doing. It links two progs.
-> EXT prog is recorded in 'struct bpf_link' and
-> the target prog is recorded in 'struct bpf_tracing_link'.
-> So from bpf_link perspective everything seems clean to me.
-> The link list of bpf_tracing_link-s in EXT_prog->aux is only to preserve
-> existing api of prog_load cmd.
+An imbalanced TX indirection table causes netvsc to have low
+performance. This table is created and managed during runtime. To help
+better diagnose performance issues caused by imbalanced tables, add
+device attributes to show the content of TX indirection tables.
 
-Right, I wanted to avoid taking a refcnt on aux->linked_prog during
-PROG_LOAD. The reason for that was (and still is) that I don't get who
-and when has to bpf_prog_put() original aux->linked_prog to allow the
-prog X to be freed. I.e., after you re-attach to prog Y, how prog X is
-released (assuming no active bpf_link is keeping it from being freed)?
-That's my biggest confusion right now.
+Signed-off-by: Chi Song <chisong@microsoft.com>
+---
+v4: use a separated group to organize tx_indirection better, change=20
+ location of attributes init/exit to netvsc_drv_init/exit
+v5: update variable orders.
 
-I also didn't like the idea of half-creating bpf_tracing_link on
-PROG_LOAD and then turning it into a real link with bpf_link_settle on
-attach. That sounded like a hack to me.
+ drivers/net/hyperv/netvsc_drv.c | 49 +++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-But now I'm also confused why we need to turn aux->linked_prog into a
-list. Seems like we need it only for old-style attach that doesn't
-specify tgt_prog_fd, no? Only in that case we'll use aux->linked_prog.
-Otherwise we know the target prog from tgt_prog_fd. So I'll be honest
-that I don't get the whole idea of maintaining a list of
-bpf_tracing_links. It seems like it should be possible to make
-bpf_tracing_link decoupled from any prog's aux and have their own
-independent lifetime.
-
->
-> As far as step 5: attach EXT prog to prog Y (Y and X should be "compatibl=
-e")
-> The chance of failure there should be minimal. libxdp/libdispatcher will
-> prepare rootlet XDP prog. It should really make sure that Y and X are com=
-patible.
-> This should be invisible to users.
-
-Right, of course, but the kernel needs to validate that anyways, which
-is why I pointed that out. Or are you saying we should just assume
-that they are valid?
-
->
-> In addition we still need bpf_link_update_hook() I was talking about in A=
-pril.
-> The full sequence is:
-> first user process:
->  1. load XDP root prog X
->  1' root_link =3D attach X to eth0
->  2. load EXT prog with target prog X
->  3. app1_link_fd =3D attach EXT prog to prog X
-> second user process:
->  4. load XDP root prog Y
->  4'. find EXT prog of the first user process
->  5. app2_link_fd =3D attach EXT prog to prog Y (Y and X should be "compat=
-ible")
->  6. bpf_link_update(root_link, X, Y); // now packet flows into Y and into=
- EXT
->    // while EXT is attached in two places
->  7. app1_link_fd' =3D FD in second process that points to the same tracin=
-g link
->     as app1_link_fd in the first process.
->    bpf_link_update_hook(app1_link_fd', app2_link_fd)
-> the last operation need to update bpf_tracing_link that is held by app1
-> (which is the first user process) from the second user process. It needs =
-to
-> retarget (update_hook) inside bpf_tracing_link from X to Y.
-> Since the processes are more or less not aware of each other.
-> One firewall holds link_fd that connects EXT to X,
-> but the second firewall (via libxdp) is updaing that tracing link
-> to re-hook EXT into Y.
-
-Yeah, should be doable given that bpf_trampoline is independently refcounte=
-d.
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_dr=
+v.c
+index 6267f706e8ee..a1e009edd37e 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -2370,6 +2370,51 @@ static int netvsc_unregister_vf(struct net_device *v=
+f_netdev)
+ 	return NOTIFY_OK;
+ }
+=20
++static struct device_attribute dev_attr_netvsc_dev_attrs[VRSS_SEND_TAB_SIZ=
+E];
++static struct attribute *netvsc_dev_attrs[VRSS_SEND_TAB_SIZE + 1];
++
++const struct attribute_group netvsc_dev_group =3D {
++	.name =3D "tx_indirection",
++	.attrs =3D netvsc_dev_attrs,
++};
++
++static ssize_t tx_indirection_show(struct device *dev,
++				   struct device_attribute *dev_attr, char *buf)
++{
++	int index =3D dev_attr - dev_attr_netvsc_dev_attrs;
++	struct net_device *ndev =3D to_net_dev(dev);
++	struct net_device_context *ndc =3D netdev_priv(ndev);
++
++	return sprintf(buf, "%u\n", ndc->tx_table[index]);
++}
++
++static void netvsc_attrs_init(void)
++{
++	char buffer[4];
++	int i;
++
++	for (i =3D 0; i < VRSS_SEND_TAB_SIZE; i++) {
++		sprintf(buffer, "%02u", i);
++		dev_attr_netvsc_dev_attrs[i].attr.name =3D
++			kstrdup(buffer, GFP_KERNEL);
++		dev_attr_netvsc_dev_attrs[i].attr.mode =3D 0444;
++		sysfs_attr_init(&dev_attr_netvsc_dev_attrs[i].attr);
++
++		dev_attr_netvsc_dev_attrs[i].show =3D tx_indirection_show;
++		dev_attr_netvsc_dev_attrs[i].store =3D NULL;
++		netvsc_dev_attrs[i] =3D &dev_attr_netvsc_dev_attrs[i].attr;
++	}
++	netvsc_dev_attrs[VRSS_SEND_TAB_SIZE] =3D NULL;
++}
++
++static void netvsc_attrs_exit(void)
++{
++	int i;
++
++	for (i =3D 0; i < VRSS_SEND_TAB_SIZE; i++)
++		kfree(dev_attr_netvsc_dev_attrs[i].attr.name);
++}
++
+ static int netvsc_probe(struct hv_device *dev,
+ 			const struct hv_vmbus_device_id *dev_id)
+ {
+@@ -2410,6 +2455,7 @@ static int netvsc_probe(struct hv_device *dev,
+=20
+ 	net->netdev_ops =3D &device_ops;
+ 	net->ethtool_ops =3D &ethtool_ops;
++	net->sysfs_groups[0] =3D &netvsc_dev_group;
+ 	SET_NETDEV_DEV(net, &dev->device);
+=20
+ 	/* We always need headroom for rndis header */
+@@ -2665,6 +2711,7 @@ static void __exit netvsc_drv_exit(void)
+ {
+ 	unregister_netdevice_notifier(&netvsc_netdev_notifier);
+ 	vmbus_driver_unregister(&netvsc_drv);
++	netvsc_attrs_exit();
+ }
+=20
+ static int __init netvsc_drv_init(void)
+@@ -2678,6 +2725,8 @@ static int __init netvsc_drv_init(void)
+ 	}
+ 	netvsc_ring_bytes =3D ring_size * PAGE_SIZE;
+=20
++	netvsc_attrs_init();
++
+ 	ret =3D vmbus_driver_register(&netvsc_drv);
+ 	if (ret)
+ 		return ret;
+--=20
+2.25.1
