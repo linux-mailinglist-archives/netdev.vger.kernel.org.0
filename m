@@ -2,98 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1896222750D
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 03:58:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B15C8227507
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 03:55:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726483AbgGUB6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 21:58:33 -0400
-Received: from mx21.baidu.com ([220.181.3.85]:55254 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725774AbgGUB6d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Jul 2020 21:58:33 -0400
-X-Greylist: delayed 943 seconds by postgrey-1.27 at vger.kernel.org; Mon, 20 Jul 2020 21:58:31 EDT
-Received: from BC-Mail-Ex30.internal.baidu.com (unknown [172.31.51.24])
-        by Forcepoint Email with ESMTPS id CF3085222703471FC498;
-        Tue, 21 Jul 2020 09:42:39 +0800 (CST)
-Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
- BC-Mail-Ex30.internal.baidu.com (172.31.51.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1979.3; Tue, 21 Jul 2020 09:42:39 +0800
-Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
- BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
- 15.01.1979.003; Tue, 21 Jul 2020 09:42:39 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-CC:     Network Development <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Subject: =?utf-8?B?562U5aSNOiBbSW50ZWwtd2lyZWQtbGFuXSBbUEFUQ0ggMS8yXSB4ZHA6IGk0?=
- =?utf-8?B?MGU6IGl4Z2JlOiBpeGdiZXZmOiBub3QgZmxpcCByeCBidWZmZXIgZm9yIGNv?=
- =?utf-8?Q?py_mode_xdp?=
-Thread-Topic: [Intel-wired-lan] [PATCH 1/2] xdp: i40e: ixgbe: ixgbevf: not
- flip rx buffer for copy mode xdp
-Thread-Index: AQHWXmZtsIr9AHsudEOLFGU9se5TiKkRPZUQ
-Date:   Tue, 21 Jul 2020 01:42:39 +0000
-Message-ID: <7b87919a454c4c7ba3d431783069e686@baidu.com>
-References: <1594967062-20674-1-git-send-email-lirongqing@baidu.com>
- <1594967062-20674-2-git-send-email-lirongqing@baidu.com>
- <CAJ8uoz2hdemss9S5vuF=Ttapkfb8U4YJy41oVjpMUVLiCOJTkw@mail.gmail.com>
-In-Reply-To: <CAJ8uoz2hdemss9S5vuF=Ttapkfb8U4YJy41oVjpMUVLiCOJTkw@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.197.254]
-x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex30_2020-07-21 09:42:39:679
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726463AbgGUBzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 21:55:50 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:39919 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725857AbgGUBzu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Jul 2020 21:55:50 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4B9hWl2mDPz9sRN;
+        Tue, 21 Jul 2020 11:55:47 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1595296547;
+        bh=TI85x241LSmUe5XSIcekXqnHuC4GGWRab8yFSyRxlcA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=rzD/T6BpJhz2r+IQFX9QKORBhyA5HAbA7+b4IQmdYhQ9008KKKBjb1hlf1NWGLkMJ
+         JOXwGUSHbXajBkfZu1PlocMtvP/ZdZ9p8VppMstdnbtzj6cMtuWyKCL1zqGmzs5OM7
+         pTWHcYD6Au+3oPPLDI+M4ql1NY1p6uNwPK6kOPr3Nfa13vTu9QSqslAawD6C+2p8gZ
+         yX8bDrdU2qwZuTtlPHLIkruDRW8r4UA7qdARBJhRH4SYMfk5VRSIg/e7hc0s2gqCL/
+         LXbxafwNdv6upHrRwRRjQ6kQVs98Gs0lbpwAjA2TjLHplbxH0IDByLWaMQv/BQUUI5
+         kvu9garkZNOOQ==
+Date:   Tue, 21 Jul 2020 11:55:44 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Nikita Danilov <ndanilov@marvell.com>,
+        Pavel Belous <pbelous@marvell.com>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20200721115544.338fa4c1@canb.auug.org.au>
 MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/aERApVzZM/gwHEPnOdxV1B7";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IE1hZ251cyBLYXJsc3Nv
-biBbbWFpbHRvOm1hZ251cy5rYXJsc3NvbkBnbWFpbC5jb21dDQo+IOWPkemAgeaXtumXtDogMjAy
-MOW5tDfmnIgyMOaXpSAxNToyMQ0KPiDmlLbku7bkuro6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5n
-QGJhaWR1LmNvbT4NCj4g5oqE6YCBOiBOZXR3b3JrIERldmVsb3BtZW50IDxuZXRkZXZAdmdlci5r
-ZXJuZWwub3JnPjsgaW50ZWwtd2lyZWQtbGFuDQo+IDxpbnRlbC13aXJlZC1sYW5AbGlzdHMub3N1
-b3NsLm9yZz47IEthcmxzc29uLCBNYWdudXMNCj4gPG1hZ251cy5rYXJsc3NvbkBpbnRlbC5jb20+
-OyBCasO2cm4gVMO2cGVsIDxiam9ybi50b3BlbEBpbnRlbC5jb20+DQo+IOS4u+mimDogUmU6IFtJ
-bnRlbC13aXJlZC1sYW5dIFtQQVRDSCAxLzJdIHhkcDogaTQwZTogaXhnYmU6IGl4Z2JldmY6IG5v
-dCBmbGlwIHJ4DQo+IGJ1ZmZlciBmb3IgY29weSBtb2RlIHhkcA0KPiANCj4gT24gRnJpLCBKdWwg
-MTcsIDIwMjAgYXQgODoyNCBBTSBMaSBSb25nUWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+IHdy
-b3RlOg0KPiA+DQo+ID4gaTQwZS9peGdiZS9peGdiZXZmX3J4X2J1ZmZlcl9mbGlwIGluIGNvcHkg
-bW9kZSB4ZHAgY2FuIGxlYWQgdG8gZGF0YQ0KPiA+IGNvcnJ1cHRpb24sIGxpa2UgdGhlIGZvbGxv
-d2luZyBmbG93Og0KPiA+DQo+ID4gICAgMS4gZmlyc3Qgc2tiIGlzIG5vdCBmb3IgeHNrLCBhbmQg
-Zm9yd2FyZGVkIHRvIGFub3RoZXIgZGV2aWNlDQo+ID4gICAgICAgb3Igc29ja2V0IHF1ZXVlDQo+
-ID4gICAgMi4gc2Vjb25kcyBza2IgaXMgZm9yIHhzaywgY29weSBkYXRhIHRvIHhzayBtZW1vcnks
-IGFuZCBwYWdlDQo+ID4gICAgICAgb2Ygc2tiLT5kYXRhIGlzIHJlbGVhc2VkDQo+ID4gICAgMy4g
-cnhfYnVmZiBpcyByZXVzYWJsZSBzaW5jZSBvbmx5IGZpcnN0IHNrYiBpcyBpbiBpdCwgYnV0DQo+
-ID4gICAgICAgKl9yeF9idWZmZXJfZmxpcCB3aWxsIG1ha2UgdGhhdCBwYWdlX29mZnNldCBpcyBz
-ZXQgdG8NCj4gPiAgICAgICBmaXJzdCBza2IgZGF0YQ0KPiA+ICAgIDQuIHRoZW4gcmV1c2Ugcngg
-YnVmZmVyLCBmaXJzdCBza2Igd2hpY2ggc3RpbGwgaXMgbGl2aW5nDQo+ID4gICAgICAgd2lsbCBi
-ZSBjb3JydXB0ZWQuDQplLCBidXQga25vd24gc2l6ZSB0eXBlICovDQo+ID4gICAgICAgICB1MzIg
-aWQ7DQo+ID4gQEAgLTczLDYgKzc1LDcgQEAgc3RydWN0IHhkcF9idWZmIHsNCj4gPiAgICAgICAg
-IHN0cnVjdCB4ZHBfcnhxX2luZm8gKnJ4cTsNCj4gPiAgICAgICAgIHN0cnVjdCB4ZHBfdHhxX2lu
-Zm8gKnR4cTsNCj4gPiAgICAgICAgIHUzMiBmcmFtZV9zejsgLyogZnJhbWUgc2l6ZSB0byBkZWR1
-Y2UgZGF0YV9oYXJkX2VuZC9yZXNlcnZlZA0KPiA+IHRhaWxyb29tKi8NCj4gPiArICAgICAgIHUz
-MiBmbGFnczsNCj4gDQo+IFJvbmdRaW5nLA0KPiANCj4gU29ycnkgdGhhdCBJIHdhcyBub3QgY2xl
-YXIgZW5vdWdoLiBDb3VsZCB5b3UgcGxlYXNlIHN1Ym1pdCB0aGUgc2ltcGxlIHBhdGNoDQo+IHlv
-dSBoYWQsIHRoZSBvbmUgdGhhdCBvbmx5IHRlc3RzIGZvciB0aGUgbWVtb3J5IHR5cGUuDQo+IA0K
-PiBpZiAoeGRwLT5yeHEtPm1lbS50eXBlICE9IE1FTV9UWVBFX1hTS19CVUZGX1BPT0wpDQo+ICAg
-ICAgIGk0MGVfcnhfYnVmZmVyX2ZsaXAocnhfcmluZywgcnhfYnVmZmVyLCBzaXplKTsNCj4gDQo+
-IEkgZG8gbm90IHRoaW5rIHRoYXQgYWRkaW5nIGEgZmxhZ3MgZmllbGQgaW4gdGhlIHhkcF9tZW1f
-aW5mbyB0byBmaXggYW4gSW50ZWwgZHJpdmVyDQo+IHByb2JsZW0gd2lsbCBiZSBodWdlbHkgcG9w
-dWxhci4gVGhlIHN0cnVjdCBpcyBhbHNvIG1lYW50IHRvIGNvbnRhaW4gbG9uZyBsaXZlZA0KPiBp
-bmZvcm1hdGlvbiwgbm90IHRoaW5ncyB0aGF0IHdpbGwgZnJlcXVlbnRseSBjaGFuZ2UuDQo+IA0K
-DQoNClRoYW5rIHlvdSBNYWdudXMNCg0KTXkgb3JpZ2luYWwgc3VnZ2VzdGlvbiBpcyB3cm9uZyAs
-IGl0IHNob3VsZCBiZSBmb2xsb3dpbmcNCg0KaWYgKHhkcC0+cnhxLT5tZW0udHlwZSA9PSBNRU1f
-VFlQRV9YU0tfQlVGRl9QT09MKQ0KICAgICAgIGk0MGVfcnhfYnVmZmVyX2ZsaXAocnhfcmluZywg
-cnhfYnVmZmVyLCBzaXplKTsNCg0KDQpidXQgSSBmZWVsIGl0IGlzIG5vdCBlbm91Z2ggdG8gb25s
-eSBjaGVjayBtZW0udHlwZSwgaXQgbXVzdCBlbnN1cmUgdGhhdCBtYXBfdHlwZSBpcyBCUEZfTUFQ
-X1RZUEVfWFNLTUFQID8gYnV0IGl0IGlzIG5vdCBleHBvc2UuIA0KDQpvdGhlciBtYXB0eXBlLCBs
-aWtlIEJQRl9NQVBfVFlQRV9ERVZNQVAsICBhbmQgaWYgbWVtLnR5cGUgaXMgTUVNX1RZUEVfUEFH
-RV9TSEFSRUQsIG5vdCBmbGlwIHRoZSByeCBidWZmZXIsIHdpbGwgY2F1c2UgZGF0YSBjb3JydXB0
-aW9uLg0KDQoNCi1MaSANCg0KDQoNCg==
+--Sig_/aERApVzZM/gwHEPnOdxV1B7
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+
+Hi all,
+
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  drivers/net/ethernet/aquantia/atlantic/aq_hw.h
+
+between commit:
+
+  23e500e88723 ("net: atlantic: disable PTP on AQC111, AQC112")
+
+from the net tree and commit:
+
+  1e41b3fee795 ("net: atlantic: add support for 64-bit reads/writes")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/aquantia/atlantic/aq_hw.h
+index 992fedbe4ce3,95ee1336ac79..000000000000
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
+@@@ -64,7 -67,7 +67,8 @@@ struct aq_hw_caps_s=20
+  	u8 rx_rings;
+  	bool flow_control;
+  	bool is_64_dma;
++ 	bool op64bit;
+ +	u32 quirks;
+  	u32 priv_data_len;
+  };
+ =20
+
+--Sig_/aERApVzZM/gwHEPnOdxV1B7
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8WSyAACgkQAVBC80lX
+0GywIgf/YcPIa/ZunWj5EEScYBGTVxb1CE/vfw994++hj5Wo3PSTsMIispL4JcOJ
+A8jXjeI7N6GXKNol03QtPy1yK0DNEydvgjrx6f8w12D5N9Zhqx2MNVTU1X/cW+Am
+a7JYcbi4w7mQ0WkgMxDXitulJ0n9azNynIycaofQ3FX8+KZ6ci9Y0XX47VPxo71j
+SP7xf0I6mdHRUWzRLtgLPfunUFyhp3kBHLN4SVLXzEirrBQAm3IzA0jGlEkYEX2j
+3ao8/bAvwyz//Cjz45FpsgAM1Fd+aOL0yEmcm62gD6jibSNhk+Dv2yP9oIznK/ha
+gZ4imhw0EeGWm9u1gLoyacuOftO+ww==
+=6NSN
+-----END PGP SIGNATURE-----
+
+--Sig_/aERApVzZM/gwHEPnOdxV1B7--
