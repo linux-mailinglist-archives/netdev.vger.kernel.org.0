@@ -2,160 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29F7E2284C6
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 18:06:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5977228521
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 18:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730084AbgGUQFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 12:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41098 "EHLO
+        id S1730299AbgGUQOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 12:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728458AbgGUQFk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 12:05:40 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C94C0619DB
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 09:05:38 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id md7so1901999pjb.1
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 09:05:38 -0700 (PDT)
+        with ESMTP id S1729708AbgGUQOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 12:14:39 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDE81C061794;
+        Tue, 21 Jul 2020 09:14:38 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id f5so24691985ljj.10;
+        Tue, 21 Jul 2020 09:14:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=X76qDdvqpY4nYWZrENAHgAtFIsqrQGQH3lKvBOm1pNA=;
-        b=YHbY+bB7w+LIQELxXvSqTfqeyBXTHWIdwQ+MiYbvaC79ApWPrJxf7gOf5o/3VDqfTF
-         PoZuQXdqT6jImKy4+YUXCp/JICHZDi+Z1ediPsb6gxWqA8wI86VzeSoIOTTzDkEzOpKx
-         nyjN7ifWqKUrBOuZW1nvgvWOb57IePorLdIR+b6/Zf1ibMfOBZjGYuPHNNAXiyhbrAg6
-         rHHtWhPIPKy2c3IQxedlshUwT2MCnOR2Gt/FjLTtLYIA8RHifqQ+qNjz0PxcZ9QHu2V4
-         0IXhhYm3MhY5m683IxZJkkrbhwhjl89/MEzEc209B46bsgzKm7AYwWYd/qzlqMXQFQDb
-         uEqw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qnrzo3m/moPC7spmlG7c2sD0aqedvWh7YbC4vhEm7sA=;
+        b=npnlZ761xb5dO2PofCWrkeVpoyos4evXBBlncACEK3Wo5mVKKy1x1V0ZThwPThvtgF
+         9j7hQ0qrg1DoxN6zNZCDvfZYrJyLhuSJz4kSZ5zIqY7iycBHtNKWqHsTB6jTtkIEF1bS
+         5qrLn/C+x5h9JAGQVYs8Rq3bj1npXCRUwqQDIWHXyjMLaMgQru4isJ5HCp0bxgnWRf3L
+         MrsityQZhvQjiphulixgSJ5051yQjVH6GkCa2521oPIcWpYybgL1zU4Wl8X3zGJUZQPT
+         WrzsK4UE9BtlimWHK7LtyNzx9ujtw35qR+MOHZQnQXNG6ghOz/d9zLv3sqqKgH2MQ4Mg
+         bM2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=X76qDdvqpY4nYWZrENAHgAtFIsqrQGQH3lKvBOm1pNA=;
-        b=m+lgiDa0RjaBV3ahq4VVLbIQbgTh+zRlLbYPIecIzdS+g5O3yvV71DlIl96Fd3R5PZ
-         eKMZI5mZwI9weiK94ph5pmzWM4WivZuNiYMpuOFARYQYPu+59uEywKWJVfkg2gPV6+Pf
-         Z1uMiQ3ispZBApert8Pt5en2yhuHhO9DNfcZGrgcUsRdq+iRtQLrjTgmD5Evn1opUMYt
-         IZyY3x6VaMNbOaXRZ34M1DuaKazmY8RwJ+TLjrH2jXwFUGPJjGRn4i9rPljHBs4Q7Isy
-         H6Vx9ulvHSjJ+/MHZpHMsM5WNNb6u2ig5Kd3fuhZcfRa47ItCBjksZrYL2SnYFtDhy7I
-         qY7A==
-X-Gm-Message-State: AOAM532Mrc2YPgVZlhiXgNl+t2nkSYcVp5O1d9zULIXCUD+jaO7Nu+ye
-        y2srtOjXStA4NwaOGR4S22Z9Ew==
-X-Google-Smtp-Source: ABdhPJyG7RWJXLtDMWc9ARapBWFFyLqlOMjao2PUJ3NWA2A72SPkZFVRbDqubQQSDJMwHZi7l/bLrQ==
-X-Received: by 2002:a17:90a:748c:: with SMTP id p12mr5327243pjk.115.1595347538417;
-        Tue, 21 Jul 2020 09:05:38 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id i13sm3620963pjd.33.2020.07.21.09.05.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 09:05:38 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 09:05:28 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Sriram Krishnan <srirakr2@cisco.com>
-Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, mbumgard@cisco.com,
-        ugm@cisco.com, nimm@cisco.com, xe-linux-external@cisco.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] hv_netvsc: add support for vlans in AF_PACKET mode
-Message-ID: <20200721090528.2c9f104d@hermes.lan>
-In-Reply-To: <20200721071404.70230-1-srirakr2@cisco.com>
-References: <20200721071404.70230-1-srirakr2@cisco.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qnrzo3m/moPC7spmlG7c2sD0aqedvWh7YbC4vhEm7sA=;
+        b=nZRFUOljCY9ona2I5y+6U0XLxpwNmvXe7V3yELcPfXWm9TCa8opU8KBps1EQZle4KM
+         iik/++mUqlcM8jpWKiAcVPPqyCZeLwTZiZPjkmvJPEM5mMZTQMa6ow37FkCiLxEL0Z2Q
+         Oz7dR5L/IBX8yZXJ7k/zWAiDzHrTjoxuNYsapik4DzP+g2CXMHldkDAJxFl/M6aqprf6
+         TmN7usNYsIon4DPjKbeCi+h4IGaS3JAwVUrTEBtVQf7S66hftBTD4wP2651DRhbY3sZG
+         koQmt5G1URK3S2c3X731iC7s4fN92Gtt3N9zdkiOQR1+8GSEADg8rnp112S+8Rvifabp
+         Hvig==
+X-Gm-Message-State: AOAM530wFS+ITjFBAb43Pfl7PJzTBGEEh5ybZkJKxtBfd34Wqyu5e1uh
+        nVYyS3nKMwohj4eHlxtmJ8GF7IBlKbYNicneMPs=
+X-Google-Smtp-Source: ABdhPJxyt6MEO8MDzWAApsfZLBM3yeet5/hMDgA3rvElUOHwuyt92SwGTQZlsPDjfjg3KTUusSrUQR4s/hI68wRqCI0=
+X-Received: by 2002:a2e:9a0f:: with SMTP id o15mr13518627lji.450.1595348077362;
+ Tue, 21 Jul 2020 09:14:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200721100716.720477-1-jakub@cloudflare.com> <1140c2d9-f0a4-97da-5f3f-23190e6bc6b9@infradead.org>
+In-Reply-To: <1140c2d9-f0a4-97da-5f3f-23190e6bc6b9@infradead.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 21 Jul 2020 09:14:25 -0700
+Message-ID: <CAADnVQ+F3devpvOg7i6td99Hq3bXOVe0t6_tUKnFzw-=v6Ky9A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf, netns: Fix build without CONFIG_INET
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Jul 2020 12:44:03 +0530
-Sriram Krishnan <srirakr2@cisco.com> wrote:
+On Tue, Jul 21, 2020 at 7:01 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> On 7/21/20 3:07 AM, Jakub Sitnicki wrote:
+> > When CONFIG_NET is set but CONFIG_INET isn't, build fails with:
+> >
+> >   ld: kernel/bpf/net_namespace.o: in function `netns_bpf_attach_type_unneed':
+> >   kernel/bpf/net_namespace.c:32: undefined reference to `bpf_sk_lookup_enabled'
+> >   ld: kernel/bpf/net_namespace.o: in function `netns_bpf_attach_type_need':
+> >   kernel/bpf/net_namespace.c:43: undefined reference to `bpf_sk_lookup_enabled'
+> >
+> > This is because without CONFIG_INET bpf_sk_lookup_enabled symbol is not
+> > available. Wrap references to bpf_sk_lookup_enabled with preprocessor
+> > conditionals.
+> >
+> > Fixes: 1559b4aa1db4 ("inet: Run SK_LOOKUP BPF program on socket lookup")
+> > Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> > Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>
+> Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
 
-> +	/* When using AF_PACKET we need to drop VLAN header from
-> +	 * the frame and update the SKB to allow the HOST OS
-> +	 * to transmit the 802.1Q packet
-> +	 */
-> +	if (skb->protocol == htons(ETH_P_8021Q)) {
-> +		u16 vlan_tci = 0;
-Unnecessary initialization.
-
-> +		skb_reset_mac_header(skb);
-> +		if (eth_type_vlan(eth_hdr(skb)->h_proto)) {
-> +			int pop_err;
-> +			pop_err = __skb_vlan_pop(skb, &vlan_tci);
-> +			if (likely(pop_err == 0)) {
-> +				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan_tci);
-> +				/* Update the NDIS header pkt lengths */
-> +				packet->total_data_buflen -= VLAN_HLEN;
-> +				rndis_msg->msg_len = packet->total_data_buflen;
-> +				rndis_msg->msg.pkt.data_len = packet->total_data_buflen;
-> +			} else {
-> +				netdev_err(net, "Pop vlan err %x\n", pop_err);
-> +				goto drop;
-> +			}
-> +		}
-> +	}
-
-Printing error messages is good for debugging but bad IRL.
-Users ignore it, or it overflows the log buffer.
-
-A better alternative would be to add a counter to netvsc_ethtool_stats.
-Something like:
-
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index abda736e7c7d..2181d4538ab7 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -897,6 +897,7 @@ struct netvsc_ethtool_stats {
- 	unsigned long rx_no_memory;
- 	unsigned long stop_queue;
- 	unsigned long wake_queue;
-+	unsigned long vlan_error;
- };
- 
- struct netvsc_ethtool_pcpu_stats {
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 6267f706e8ee..89568276e653 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -605,6 +605,28 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
- 		*hash_info = hash;
- 	}
- 
-+	/* When using AF_PACKET we need to drop VLAN header from
-+	 * the frame and update the SKB to allow the HOST OS
-+	 * to transmit the 802.1Q packet
-+	 */
-+	if (skb->protocol == htons(ETH_P_8021Q)) {
-+		skb_reset_mac_header(skb);
-+		if (eth_type_vlan(eth_hdr(skb)->h_proto)) {
-+			u16 vlan_tci;
-+
-+			if (unlikely(__skb_vlan_pop(skb, &vlan_tci) != 0)) {
-+				++net_device_ctx->eth_stats.vlan_error;
-+				goto drop;
-+			}
-+
-+			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan_tci);
-+			/* Update the NDIS header pkt lengths */
-+			packet->total_data_buflen -= VLAN_HLEN;
-+			rndis_msg->msg_len = packet->total_data_buflen;
-+			rndis_msg->msg.pkt.data_len = packet->total_data_buflen;
-+		}
-+	}
-+
- 	if (skb_vlan_tag_present(skb)) {
- 		struct ndis_pkt_8021q_info *vlan;
- 
-@@ -1427,6 +1449,7 @@ static const struct {
- 	{ "rx_no_memory", offsetof(struct netvsc_ethtool_stats, rx_no_memory) },
- 	{ "stop_queue", offsetof(struct netvsc_ethtool_stats, stop_queue) },
- 	{ "wake_queue", offsetof(struct netvsc_ethtool_stats, wake_queue) },
-+	{ "vlan_error", offsetof(struct netvsc_ethtool_stats, vlan_error) },
- }, pcpu_stats[] = {
- 	{ "cpu%u_rx_packets",
- 		offsetof(struct netvsc_ethtool_pcpu_stats, rx_packets) },
-
-	
+Applied. Thanks
