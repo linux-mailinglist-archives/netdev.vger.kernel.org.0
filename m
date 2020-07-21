@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D21CD227C88
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 12:07:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5514227C8D
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 12:07:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729119AbgGUKHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 06:07:12 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:5896 "EHLO
+        id S1729189AbgGUKHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 06:07:39 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:5938 "EHLO
         esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726415AbgGUKHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 06:07:11 -0400
+        with ESMTP id S1728006AbgGUKHi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 06:07:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1595326031; x=1626862031;
+  t=1595326058; x=1626862058;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/xQWcdSlHsWygAH/DfFJrDsm8/BKa5avthMl6a1HWjg=;
-  b=h0gfmq+HgCYwi812uCv5TIbRoBMlBeV6APOdwpXmRHiApLNhQaFq5Cbp
-   Z9ZOoSu5OpL2EgoqVKPg4v780gIeUlaB8Km+P/5ONCYm+mthjBrla4Rj/
-   cAvmaNvepUG9Kc6JopbGofK4JOQsSCOkdGACpvQMIrpQ58pX/XY8AXJb7
-   DeRpLID9TP7tAS0raZq4oCaEaUMTakO3yx2bf/tUOeWpc41sb5nPt0FoA
-   Ze3qaL7cTd4pnEHmKBN6aN9Jc6QxPWOblE5aWN5DxRQXCGtUdp3/q3sOa
-   pgbYzOhoMguJCsD/3lRB62q4fYR4Rb0tTjcHQY9/dnfrVJEo8sQ0l0WCB
+  bh=Q+YIkrycvE7mcy6+CcZBaCVfDuosYUTIYGmg/IJOMjg=;
+  b=I1LiMBUt99LODxcE+2imt48hzOQ6zg3RSUn8IrxN3MWZHwlvGaXGBsI8
+   4DG8IRm3d2kZpOuVCCEAsA2vwHqEv4votN9UfuhojB/ynAZ+/Mh/TO+Te
+   k8L+iIMnWBwCIBvrNEO0aZQA1UxRIEaRyyQA9/ffz5tadR7nQg1is6uVR
+   7aNi0UDEVCFXIBJnDg9XyhxlFhHGwIvUXHFwG55wkO1FiDr8yDC4AezQI
+   akKwNZFzo+4qzU/ZD0R4ziTUpU9kzHOSH9pw34lIudSDZnsEAYSmXfmI1
+   ZRjPQ37vAWDMHQPUGsSI7C7dWR+/IXEeWC4L+qkbCCQQxHUaPgBKY7zg/
    Q==;
-IronPort-SDR: ICNgzqqeu9rUrNsgQ8lG0EgtR+5CUIT2rWm3noJC47ST2YO59lg5kd8CSamv9JzekXwZNfI7YN
- CccsGY0wvoTfACjMos9glVJG5bead1RbROewdcyfcYLGhzW7MlZs39BFx94181tsGSK9+h6yUP
- ItNZI1ShkByqqk2t0UaaA+JC5Tma0ZLl4waMV0FvdO0FmLAbC7HZOTXlAJOdD9IXjaUA0O5W7v
- xoOZm6zLoTpCSXqC4ZjXkruXROb99NxMSU70Uw9esi/cYXtK+U62Us5lQxKeOHB0RN569Lz+Z0
- Ge8=
+IronPort-SDR: 85HL3tkoVh4AbHNyzFxxHAv73QwEqsDra0lKxLidJo5i0rztM1sluwyCx1/A36/iYhb5DYgjiF
+ MRx0134elbGoDVP7csbkRUty+sor0PGgay+XaV/UZCvehnDN0di+Pz3F977FcC5Kdt7Zhk2Yt2
+ PwwOS0r0DZfE5nknjc9wPTsBPnsFuXizVy0g+5tWMzettnaD37EatDtyuvI4A4YATuMAW0xnVJ
+ uJNq4Glj3UtTDDVF9ZeO5eSBuBtwYA4Bt/f1DE6NanRIza/MyocMF5elmXTtxj89CqXT7CPOBr
+ jI8=
 X-IronPort-AV: E=Sophos;i="5.75,378,1589266800"; 
-   d="scan'208";a="84749239"
+   d="scan'208";a="84749272"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Jul 2020 03:07:10 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Jul 2020 03:07:37 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 21 Jul 2020 03:07:08 -0700
+ 15.1.1979.3; Tue, 21 Jul 2020 03:06:55 -0700
 Received: from rob-ult-m19940.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Tue, 21 Jul 2020 03:05:56 -0700
+ 15.1.1979.3 via Frontend Transport; Tue, 21 Jul 2020 03:06:33 -0700
 From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
@@ -49,9 +49,9 @@ CC:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
         <f.fainelli@gmail.com>, <robh+dt@kernel.org>,
         <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>,
         "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
-Subject: [PATCH net-next 6/7] ARM: dts: at91: sama5d4: add an mdio sub-node to macb
-Date:   Tue, 21 Jul 2020 13:02:33 +0300
-Message-ID: <20200721100234.1302910-7-codrin.ciubotariu@microchip.com>
+Subject: [PATCH net-next 7/7] ARM: dts: at91: sam9x60: add an mdio sub-node to macb
+Date:   Tue, 21 Jul 2020 13:02:34 +0300
+Message-ID: <20200721100234.1302910-8-codrin.ciubotariu@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200721100234.1302910-1-codrin.ciubotariu@microchip.com>
 References: <20200721100234.1302910-1-codrin.ciubotariu@microchip.com>
@@ -68,31 +68,27 @@ phy nodes.
 
 Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 ---
- arch/arm/boot/dts/at91-sama5d4_xplained.dts | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/at91-sam9x60ek.dts | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-index 924d9491780d..62598d06aead 100644
---- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-+++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-@@ -59,10 +59,14 @@ macb0: ethernet@f8020000 {
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&pinctrl_macb0_rmii &pinctrl_macb0_phy_irq>;
+diff --git a/arch/arm/boot/dts/at91-sam9x60ek.dts b/arch/arm/boot/dts/at91-sam9x60ek.dts
+index a5f5718c711a..ba871ebe10d4 100644
+--- a/arch/arm/boot/dts/at91-sam9x60ek.dts
++++ b/arch/arm/boot/dts/at91-sam9x60ek.dts
+@@ -324,8 +324,12 @@ &macb0 {
+ 	pinctrl-0 = <&pinctrl_macb0_rmii>;
+ 	status = "okay";
  
--				phy0: ethernet-phy@1 {
--					interrupt-parent = <&pioE>;
--					interrupts = <1 IRQ_TYPE_LEVEL_LOW>;
--					reg = <1>;
-+				mdio {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+					phy0: ethernet-phy@1 {
-+						interrupt-parent = <&pioE>;
-+						interrupts = <1 IRQ_TYPE_LEVEL_LOW>;
-+						reg = <1>;
-+					};
- 				};
- 			};
+-	ethernet-phy@0 {
+-		reg = <0x0>;
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		ethernet-phy@0 {
++			reg = <0x0>;
++		};
+ 	};
+ };
  
 -- 
 2.25.1
