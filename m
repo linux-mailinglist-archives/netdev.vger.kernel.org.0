@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 333F32286EB
+	by mail.lfdr.de (Postfix) with ESMTP id A0B3D2286EC
 	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 19:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730392AbgGUROa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 13:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
+        id S1729928AbgGUROc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 13:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729967AbgGURO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 13:14:28 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1958AC061794
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 10:14:28 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id a23so9444044pfk.13
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 10:14:28 -0700 (PDT)
+        with ESMTP id S1729967AbgGUROa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 13:14:30 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5A4C061794
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 10:14:30 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id 8so1311560pjj.1
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 10:14:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=JKn+NFVY7BYS/UiTq3/4UtHvhCNPOFQTVrJMU0d5GoA=;
-        b=DedW9GlVoYux+SfS3NUj8P+5oSovYH0qOIoE1vsclSQVYrccM/810okK5Rd7IpSQWi
-         LI+DjluEYJuD5TsWrQuGj8xAitYOEQvWaEoMOXzDKkfIMQQIPF+edpRAuMw6aninsDS/
-         nBmsacIlca7hAsBa98VWvCp6BWVJDOvz++X5RsMXxG6h7wksgAw3OoaCSBUMnwEIiZiH
-         rUVOU4h6ycCb3zLuxx8IsDjkiNB1mRxx0y0+ZcLCHleKSuxMoFcLVOxaIhpUC+B/Q9Iu
-         TT97WT4T/nn+CiK19u1iB99tG3JFTslXECJUR+4I6jpUQs1u+jnBqKbPUgayY98JW1a5
-         KvHg==
+        bh=pgr//2Gl3ConxyqhV6XXXYy3K5XiDD+Ctk7wmLRZp8c=;
+        b=KrAhm5GnJxR7mepvd9Za6VxWswfW2xIdYsOCa9FRbq6hrhwAv+D0uT719orIVfQt8/
+         IIIiUNPGggs8ydKd4pjJfhs3bsCQ5KoAvRR6g86pIerAvd2sOSFpIOgP6g4laXjT7Art
+         sVnlPbUniyH2WciAq0sp3DU/wCG9mRFTSOd8TDxEm1FsVxU1w6YrXc+1wTqEXSf+Jys+
+         hJhEybVSO6bwKVTj1p/7iBdX+oy+LKUHG0jY1TR7WCWp5bRXEGh2S61/NGkueZKXwuF4
+         VFM7IBPW4SW+NCakROeErtVFtZ4iva1hg5uLo1ZeU5ZyqVOJ7xD0m/TyN0LzhwpbTK2X
+         PbXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=JKn+NFVY7BYS/UiTq3/4UtHvhCNPOFQTVrJMU0d5GoA=;
-        b=seBJPffnVRdpdN9G7g6IVT9xUG3tWzE08ZRBOCAFvyayaTpTQhmxLbnxDYVlxoXayq
-         hRky4T8kTEw1NX0IySMpWYBi3P9hiq0ZTEapPegksExpotGNKpxarQKd0U9mvhsjlg/D
-         xFU3dbWgTlMPLehffOotBN7vJmATdSkys0xFfH1EibjIe/5bRfFhNpOEeP71SELeGaRu
-         XYpa8ggKYqYhLF48lNrU71jJvU+ATy0aDVSqBviOlguss7wkzCWmttVk3vTVLPZXuRMd
-         n5vHs6AjnndQz0IC0J4tzWxp6uyAF94fyn7jMlpv/UW9k/CweyAVQibWDFD5NDAP8M1K
-         tUnw==
-X-Gm-Message-State: AOAM531TQwPvxF1EheQWMqitmHna5RsDmMtdMSnVvM7+QOx40G1QccXj
-        RrxwQn+q/5y2/WcYgVoMxPU=
-X-Google-Smtp-Source: ABdhPJzdFNkmhhitoOJiCLUqMZfEV+18VkuvNrEMgHoDFy47+E0xHLzjbYTGHJjg/rlTrGsMkjb0dA==
-X-Received: by 2002:a63:5a20:: with SMTP id o32mr23726912pgb.15.1595351667644;
-        Tue, 21 Jul 2020 10:14:27 -0700 (PDT)
+        bh=pgr//2Gl3ConxyqhV6XXXYy3K5XiDD+Ctk7wmLRZp8c=;
+        b=ZSOUxWl6XqGMuhpHsiLjSGrBdqAhHwYtjzRv9V7E4ts1iAzg2edDVTqeKE3ix51fSm
+         IO+40fvI+ozcpgDgSsae/1ujfdJ9F5TqAvs9JCVQPQqd3GjuYEynM5nzCB5zaUEN0Ykw
+         LK4XD0A6ISyfzVP6lPkk1j6/442Oty3u+8pN4IH0IdF88Co5Mfobog3kg5AyAV65Z4Yr
+         2SOcRGKMDC/mSqnKUm3EQQnuvJ9M3mEH2dQSCPHTDfkgoYwL+ybyGU3TlivsccGbG21v
+         MxMJ/sCMNHK5ppr9Ff/8ciZyyJfQcGLm69H3oYB+RLPa7ETS2yiVMwDU8T2AC6rBMKyc
+         xyyA==
+X-Gm-Message-State: AOAM533s16sWgtwzLxtpVs7rsztWISNdhrGuyNSvxv8oRcQ1YxYj8VxQ
+        ExpWVbMhUCXofjUKStwwhJ0=
+X-Google-Smtp-Source: ABdhPJwr9wotWrz2UFXhnMo82PX/sYh6axM1o1fqwXEMuZNVETcqzPG57QbmeRRKdO0bYZgcIEyJKw==
+X-Received: by 2002:a17:90a:800b:: with SMTP id b11mr5868874pjn.105.1595351670052;
+        Tue, 21 Jul 2020 10:14:30 -0700 (PDT)
 Received: from hyd1358.caveonetworks.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id z20sm2982305pjr.43.2020.07.21.10.14.25
+        by smtp.googlemail.com with ESMTPSA id z20sm2982305pjr.43.2020.07.21.10.14.27
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 21 Jul 2020 10:14:26 -0700 (PDT)
+        Tue, 21 Jul 2020 10:14:29 -0700 (PDT)
 From:   sundeep.lkml@gmail.com
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     sgoutham@marvell.com, sbhatta@marvell.com
-Subject: [PATCH net 2/3] octeontx2-pf: cancel reset_task work
-Date:   Tue, 21 Jul 2020 22:44:07 +0530
-Message-Id: <1595351648-10794-3-git-send-email-sundeep.lkml@gmail.com>
+Subject: [PATCH net 3/3] octeontx2-pf: Unregister netdev at driver remove
+Date:   Tue, 21 Jul 2020 22:44:08 +0530
+Message-Id: <1595351648-10794-4-git-send-email-sundeep.lkml@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1595351648-10794-1-git-send-email-sundeep.lkml@gmail.com>
 References: <1595351648-10794-1-git-send-email-sundeep.lkml@gmail.com>
@@ -62,8 +62,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-During driver exit cancel the queued
-reset_task work in VF driver.
+unregister_netdev is missing in the VF driver
+remove function. Hence add it.
 
 Fixes: 3184fb5ba96e ("octeontx2-vf: Virtual function driver support")
 Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
@@ -73,14 +73,14 @@ Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index f422751..c1c263d 100644
+index c1c263d..92a3db6 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -617,6 +617,7 @@ static void otx2vf_remove(struct pci_dev *pdev)
- 
+@@ -618,6 +618,7 @@ static void otx2vf_remove(struct pci_dev *pdev)
  	vf = netdev_priv(netdev);
  
-+	cancel_work_sync(&vf->reset_task);
+ 	cancel_work_sync(&vf->reset_task);
++	unregister_netdev(netdev);
  	otx2vf_disable_mbox_intr(vf);
  
  	otx2_detach_resources(&vf->mbox);
