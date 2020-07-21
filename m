@@ -2,86 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2A3227614
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 04:52:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D169022761D
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 04:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728469AbgGUCwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 22:52:00 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:36701 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726943AbgGUCv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 22:51:58 -0400
-Received: by mail-io1-f68.google.com with SMTP id y2so19837955ioy.3;
-        Mon, 20 Jul 2020 19:51:57 -0700 (PDT)
+        id S1728538AbgGUCwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 22:52:38 -0400
+Received: from mail-il1-f196.google.com ([209.85.166.196]:42857 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726089AbgGUCwh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 22:52:37 -0400
+Received: by mail-il1-f196.google.com with SMTP id t27so15106623ill.9;
+        Mon, 20 Jul 2020 19:52:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=NVmgKeTEtQQOUuV3Vd+cEAEoEU2MIUHzuf4rcIbikDg=;
-        b=WvyZzP9w62WZqmN0bpcj2qKeQzdSBRiSZbAK6f/6OmCFHYnpyNrhyvAeE9T0DnwXGU
-         CaxTkip+7qgH2VVs4CXyl2JYpaTRcCC0TncXjLZKU3vKa/N/6ARFKFWP1Hgz9fQZq2S+
-         CbF5G+RkXraoplGQ3XjwnASbdXgx6mj+RLiT+WwaPjzyvfzOlZpnoQICnX4rtOAwzkkk
-         LMzuL7862xj9bpHR0DCi6vttjoL7/cPUmIU5qCukZ5u8aKjs7nP1pcOXQJhxl/IyhwQS
-         2nBuZo1uuwK/BrU1SD/aJtN3KJhftNlFRjVcutGyGZSGdzXpdcNGpnSrnDpqGDqUN6Aw
-         cH/Q==
-X-Gm-Message-State: AOAM532AvP/GrzJGnIyIvCBToaHzSoU+08bcYOvOwHTov0EB1534kPMt
-        92mjNZBfQC8VIIJhThIqTA==
-X-Google-Smtp-Source: ABdhPJzGeOafra3vktGCSEAE4Prf6Bx1+RmEWY5ZEWVedpyAyyU4Ju3PY9aJsKNijHrkvI3CJVyw2A==
-X-Received: by 2002:a02:3c08:: with SMTP id m8mr28967389jaa.107.1595299916723;
-        Mon, 20 Jul 2020 19:51:56 -0700 (PDT)
+        bh=oZcsez3qREEIJpjTZJF7jgs0A2ONjPfmWyrkj+SbpNY=;
+        b=QeYeBpw0U5i/q68yOWLQh3EHgJAF06cwFPVc5p5LVzqSlcSk6t09h4VSV60o8Ao0/m
+         ZE+9rIxiWftkciE7DX47YLSa1oTcZvOtpM9PcHsR4E64O79ci7177m4tcSulwfXvAsTI
+         49TBzIXn27Yq7pyT6J0PrsLXjVWXMPDLAuU+ZX3SM4uKoXUg7p06cb9mOpBFZxcSRTUQ
+         9m5eVnKqt0UntgGzZbirrgg4DYlGjid5yld2+kCjm/Vivn3jwbkXKWwGSMCTm9dVq5Nv
+         4ov7q3non9504n2dAgNCKqo8d9HLMhJNtMO2bCltcmr1ahrexlKd0lLLirkm6TZxktMS
+         lFzw==
+X-Gm-Message-State: AOAM531GtBGtZH0SUzL1mr+ECpfpMADdQU/3D++c1Kb3td5NHL03yQIM
+        CgTB0dIIxIX8tji0x+AjBg==
+X-Google-Smtp-Source: ABdhPJwFPJnw5YtIomUTFweM1LRZXSEMVUyRi7aOALZBN4QBjHMCIc9Dgsaqb9GNy36JPxiWldgroQ==
+X-Received: by 2002:a05:6e02:13e2:: with SMTP id w2mr27006727ilj.9.1595299955841;
+        Mon, 20 Jul 2020 19:52:35 -0700 (PDT)
 Received: from xps15 ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id r23sm936823iob.42.2020.07.20.19.51.54
+        by smtp.gmail.com with ESMTPSA id u9sm10338345iom.14.2020.07.20.19.52.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 19:51:56 -0700 (PDT)
-Received: (nullmailer pid 3446478 invoked by uid 1000);
-        Tue, 21 Jul 2020 02:51:54 -0000
-Date:   Mon, 20 Jul 2020 20:51:54 -0600
+        Mon, 20 Jul 2020 19:52:35 -0700 (PDT)
+Received: (nullmailer pid 3447420 invoked by uid 1000);
+        Tue, 21 Jul 2020 02:52:33 -0000
+Date:   Mon, 20 Jul 2020 20:52:33 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-pm@vger.kernel.org,
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Niklas <niklas.soderlund@ragnatech.se>,
-        linux-kernel@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-renesas-soc@vger.kernel.org,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Mark Brown <broonie@kernel.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        linux-i2c@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        devicetree@vger.kernel.org, Prabhakar <prabhakar.csengg@gmail.com>,
-        linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-spi@vger.kernel.org, Niklas <niklas.soderlund@ragnatech.se>,
         Guenter Roeck <linux@roeck-us.net>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-watchdog@vger.kernel.org,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org
-Subject: Re: [PATCH 14/20] dt-bindings: spi: renesas,sh-msiof: Add r8a774e1
- support
-Message-ID: <20200721025154.GA3446430@bogus>
+        Mark Brown <broonie@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Zhang Rui <rui.zhang@intel.com>, linux-can@vger.kernel.org,
+        linux-pm@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH 16/20] dt-bindings: watchdog: renesas,wdt: Document
+ r8a774e1 support
+Message-ID: <20200721025233.GA3447371@bogus>
 References: <1594811350-14066-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594811350-14066-15-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594811350-14066-17-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1594811350-14066-15-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594811350-14066-17-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jul 2020 12:09:04 +0100, Lad Prabhakar wrote:
-> Document RZ/G2H (R8A774E1) SoC bindings.
+On Wed, 15 Jul 2020 12:09:06 +0100, Lad Prabhakar wrote:
+> RZ/G2H (a.k.a. R8A774E1) watchdog implementation is compatible
+> with R-Car Gen3, therefore add the relevant documentation.
 > 
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 > ---
->  Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml | 1 +
+>  Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml | 1 +
 >  1 file changed, 1 insertion(+)
 > 
 
