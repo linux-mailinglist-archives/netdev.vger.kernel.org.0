@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7FA5227624
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 04:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83EDF22763F
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 04:53:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728595AbgGUCwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 22:52:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        id S1728717AbgGUCxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 22:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728423AbgGUCwq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 22:52:46 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CFDC061794
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 19:52:46 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id p3so11272894pgh.3
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 19:52:46 -0700 (PDT)
+        with ESMTP id S1726089AbgGUCwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 22:52:47 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA867C0619D5
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 19:52:47 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id k4so9592941pld.12
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 19:52:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cs.washington.edu; s=goo201206;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZLQrY/UxqOtjwjwh/fxvAJLrfWIZm1b3xNWosA3saFY=;
-        b=gRsu9i6MV4eWpF19q01vv2BC0F3TlknCkO9P0X8iCUUE48ncCkyH2TORh8i6O2HHgL
-         tR4jT7e84z2ZbKs4m1KV4MsIxSSFHOf3myiJlh2YPg4E9QZsvSLpY4yQNyw6A8oQsH0N
-         lg79Ek8LMaooCc29SJQgT780v3nihRW+3kG4Y=
+        bh=ZLIWvysF1C5d8TSKuMS5aP5i+ZqkWdLF8dd1Gt10AhQ=;
+        b=eoQUnl6niWkeedct+t0u3kAA5svSXQDpADC8734or8i+rJMSN79XLSeZbLXzEI+sVV
+         TcF/lUlXtDoAYSlTLh1lBE4aF9ckCKG4xSl7iee1yefW9g294+Ht4QtazfHecLlxbsnt
+         S4WT79fzacDiCT/d6hSP13p/5197VaYuMOuLk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZLQrY/UxqOtjwjwh/fxvAJLrfWIZm1b3xNWosA3saFY=;
-        b=lH7OkzXrH9pBT1DIH44sd2Wg1uQiQ3Q08HzSjoaDxcdCb3/+kNQWLglcfTeBd5M8s+
-         6dU7CYXaLj+/Lqjbcy2ZiWymqaJ3GvQILEIY7nqzR69UkQ3CdpK1q5Um7xq6ZLXiRWYw
-         WqipG7GairGFIW6Miubxiqf/rl6h1Dwfkjlf3uGS4jMHa8+zG9z3M2eEeEd1g3YhxjTO
-         SfKwHGHdOW+f8u8mJgz0ZLEw/mY6cFefdKitHEq/PIzSyDOx0t2mb7XyV3f25hygossP
-         Iz3ufHUaCIfdtZK8Lirr5W2O3iVqdvKrEM5ar84zNj2nY8WCmYi0lVpwarOaLdFAK3O4
-         2hKA==
-X-Gm-Message-State: AOAM531UIJSUvP8X7Z8A70e6WgOpuuU2vGIYjYkdv1CXIZum+hK3gB9a
-        EFXHJe8KXaRcMlU8qFOuwDtd1w==
-X-Google-Smtp-Source: ABdhPJyE3L+cDNdzoHQhi+HQkOXnzOIkbXcyhyTdH5bf+s90354rPpV94ZUn2mHfYv5TWCEwNPntog==
-X-Received: by 2002:a62:be04:: with SMTP id l4mr22143227pff.323.1595299965619;
-        Mon, 20 Jul 2020 19:52:45 -0700 (PDT)
+        bh=ZLIWvysF1C5d8TSKuMS5aP5i+ZqkWdLF8dd1Gt10AhQ=;
+        b=fyhJ24OKsja1iEG9nPk+FYqYIHb2aae9UqJUJgZukt8CWKmiD7t1+mcwTvPjv4wVPU
+         4mjQVTHTjCnv7EgnjhcPfIr3QLKgt4OjGtDNZJ71CuOh1t/qvDxzer6Gu5IqMLfp+7Pj
+         UbYs1V19IfTDQT9H6Y0/TB0ItZMtbTabpvl/qbgLRHdkQ2Jq0i545gCcEjq9Q12A9OxZ
+         qNIMxIw8/TvFpVlCIFxs4HQT6Df9DAG8N+wzJ/1GkY5lbzFyYGu2O4A2+nY0ucoG7Azn
+         jGvEWVUo4PsokcDp5QP6CgyKuhtn52EX84vEWF2ALMXLOSIUaB4jBraYWLAn8JJJS0si
+         iubA==
+X-Gm-Message-State: AOAM533r/wVxBqJYD5Omnq5qzd4G3SgLH9vLda3S7t2ReFiADaScwWdG
+        fDy43laVAiX1xAuN3tMLYNY10Q==
+X-Google-Smtp-Source: ABdhPJyaDHfJvH0sJQYvn1SrPD3Wsf3L+yPd0liTBdcKHlgXT6NmPwwJ9PejQ1z/1O+Md4Wcaw+x9w==
+X-Received: by 2002:a17:90b:112:: with SMTP id p18mr2499313pjz.92.1595299967064;
+        Mon, 20 Jul 2020 19:52:47 -0700 (PDT)
 Received: from localhost.localdomain (c-73-53-94-119.hsd1.wa.comcast.net. [73.53.94.119])
-        by smtp.gmail.com with ESMTPSA id m16sm18769753pfd.101.2020.07.20.19.52.44
+        by smtp.gmail.com with ESMTPSA id m16sm18769753pfd.101.2020.07.20.19.52.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 19:52:45 -0700 (PDT)
+        Mon, 20 Jul 2020 19:52:46 -0700 (PDT)
 From:   Luke Nelson <lukenels@cs.washington.edu>
 X-Google-Original-From: Luke Nelson <luke.r.nels@gmail.com>
 To:     bpf@vger.kernel.org
@@ -60,9 +60,9 @@ Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v1 1/3] bpf, riscv: Modify JIT ctx to support compressed instructions
-Date:   Mon, 20 Jul 2020 19:52:38 -0700
-Message-Id: <20200721025241.8077-2-luke.r.nels@gmail.com>
+Subject: [PATCH bpf-next v1 2/3] bpf, riscv: Add encodings for compressed instructions
+Date:   Mon, 20 Jul 2020 19:52:39 -0700
+Message-Id: <20200721025241.8077-3-luke.r.nels@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200721025241.8077-1-luke.r.nels@gmail.com>
 References: <20200721025241.8077-1-luke.r.nels@gmail.com>
@@ -73,263 +73,516 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch makes the necessary changes to struct rv_jit_context and to
-bpf_int_jit_compile to support compressed riscv (RVC) instructions in
-the BPF JIT.
+This patch adds functions for encoding and emitting compressed riscv
+(RVC) instructions to the BPF JIT.
 
-It changes the JIT image to be u16 instead of u32, since RVC instructions
-are 2 bytes as opposed to 4.
+Some regular riscv instructions can be compressed into an RVC instruction
+if the instruction fields meet some requirements. For example, "add rd,
+rs1, rs2" can be compressed into "c.add rd, rs2" when rd == rs1.
 
-It also changes ctx->offset and ctx->ninsns to refer to 2-byte
-instructions rather than 4-byte ones. The riscv PC is required to be
-16-bit aligned with or without RVC, so this is sufficient to refer to
-any valid riscv offset.
+To make using RVC encodings simpler, this patch also adds helper
+functions that selectively emit either a regular instruction or a
+compressed instruction if possible.
 
-The code for computing jump offsets in bytes is updated accordingly,
-and factored into a new "ninsns_rvoff" function to simplify the code.
+For example, emit_add will produce a "c.add" if possible and regular
+"add" otherwise.
 
 Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
 ---
- arch/riscv/net/bpf_jit.h        | 31 ++++++++++++++++++++++++++++---
- arch/riscv/net/bpf_jit_comp32.c | 14 +++++++-------
- arch/riscv/net/bpf_jit_comp64.c | 12 ++++++------
- arch/riscv/net/bpf_jit_core.c   |  6 +++---
- 4 files changed, 44 insertions(+), 19 deletions(-)
+ arch/riscv/net/bpf_jit.h | 452 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 452 insertions(+)
 
 diff --git a/arch/riscv/net/bpf_jit.h b/arch/riscv/net/bpf_jit.h
-index 20e235d06f66..e90d336a9e5f 100644
+index e90d336a9e5f..75c1e9996867 100644
 --- a/arch/riscv/net/bpf_jit.h
 +++ b/arch/riscv/net/bpf_jit.h
-@@ -13,6 +13,11 @@
- #include <linux/filter.h>
- #include <asm/cacheflush.h>
- 
-+static inline bool rvc_enabled(void)
-+{
-+	return IS_ENABLED(CONFIG_RISCV_ISA_C);
-+}
-+
- enum {
- 	RV_REG_ZERO =	0,	/* The constant value 0 */
- 	RV_REG_RA =	1,	/* Return address */
-@@ -50,7 +55,7 @@ enum {
- 
- struct rv_jit_context {
- 	struct bpf_prog *prog;
--	u32 *insns;		/* RV insns */
-+	u16 *insns;		/* RV insns */
- 	int ninsns;
- 	int epilogue_offset;
- 	int *offset;		/* BPF to RV */
-@@ -58,6 +63,12 @@ struct rv_jit_context {
- 	int stack_size;
+@@ -53,6 +53,18 @@ enum {
+ 	RV_REG_T6 =	31,
  };
  
-+/* Convert from ninsns to bytes. */
-+static inline int ninsns_rvoff(int ninsns)
++static inline bool is_creg(u8 reg)
 +{
-+	return ninsns << 1;
++	return (1 << reg) & (BIT(RV_REG_FP) |
++			     BIT(RV_REG_S1) |
++			     BIT(RV_REG_A0) |
++			     BIT(RV_REG_A1) |
++			     BIT(RV_REG_A2) |
++			     BIT(RV_REG_A3) |
++			     BIT(RV_REG_A4) |
++			     BIT(RV_REG_A5));
 +}
 +
- struct rv_jit_data {
- 	struct bpf_binary_header *header;
- 	u8 *image;
-@@ -74,8 +85,22 @@ static inline void bpf_flush_icache(void *start, void *end)
- 	flush_icache_range((unsigned long)start, (unsigned long)end);
+ struct rv_jit_context {
+ 	struct bpf_prog *prog;
+ 	u16 *insns;		/* RV insns */
+@@ -142,6 +154,36 @@ static inline int invert_bpf_cond(u8 cond)
+ 	return -1;
  }
  
-+/* Emit a 4-byte riscv instruction. */
- static inline void emit(const u32 insn, struct rv_jit_context *ctx)
- {
-+	if (ctx->insns) {
-+		ctx->insns[ctx->ninsns] = insn;
-+		ctx->insns[ctx->ninsns + 1] = (insn >> 16);
-+	}
-+
-+	ctx->ninsns += 2;
++static inline bool is_6b_int(long val)
++{
++	return -(1L << 5) <= val && val < (1L << 5);
 +}
 +
-+/* Emit a 2-byte riscv compressed instruction. */
-+static inline void emitc(const u16 insn, struct rv_jit_context *ctx)
++static inline bool is_7b_uint(unsigned long val)
 +{
-+	BUILD_BUG_ON(!rvc_enabled());
++	return val < (1UL << 7);
++}
 +
- 	if (ctx->insns)
- 		ctx->insns[ctx->ninsns] = insn;
- 
-@@ -86,7 +111,7 @@ static inline int epilogue_offset(struct rv_jit_context *ctx)
++static inline bool is_8b_uint(unsigned long val)
++{
++	return val < (1UL << 8);
++}
++
++static inline bool is_9b_uint(unsigned long val)
++{
++	return val < (1UL << 9);
++}
++
++static inline bool is_10b_int(long val)
++{
++	return -(1L << 9) <= val && val < (1L << 9);
++}
++
++static inline bool is_10b_uint(unsigned long val)
++{
++	return val < (1UL << 10);
++}
++
+ static inline bool is_12b_int(long val)
  {
- 	int to = ctx->epilogue_offset, from = ctx->ninsns;
- 
--	return (to - from) << 2;
-+	return ninsns_rvoff(to - from);
+ 	return -(1L << 11) <= val && val < (1L << 11);
+@@ -232,6 +274,59 @@ static inline u32 rv_amo_insn(u8 funct5, u8 aq, u8 rl, u8 rs2, u8 rs1,
+ 	return rv_r_insn(funct7, rs2, rs1, funct3, rd, opcode);
  }
  
- /* Return -1 or inverted cond. */
-@@ -149,7 +174,7 @@ static inline int rv_offset(int insn, int off, struct rv_jit_context *ctx)
- 	off++; /* BPF branch is from PC+1, RV is from PC */
- 	from = (insn > 0) ? ctx->offset[insn - 1] : 0;
- 	to = (insn + off > 0) ? ctx->offset[insn + off - 1] : 0;
--	return (to - from) << 2;
-+	return ninsns_rvoff(to - from);
++/* RISC-V compressed instruction formats. */
++
++static inline u16 rv_cr_insn(u8 funct4, u8 rd, u8 rs2, u8 op)
++{
++	return (funct4 << 12) | (rd << 7) | (rs2 << 2) | op;
++}
++
++static inline u16 rv_ci_insn(u8 funct3, u32 imm6, u8 rd, u8 op)
++{
++	u32 imm;
++
++	imm = ((imm6 & 0x20) << 7) | ((imm6 & 0x1f) << 2);
++	return (funct3 << 13) | (rd << 7) | op | imm;
++}
++
++static inline u16 rv_css_insn(u8 funct3, u32 uimm, u8 rs2, u8 op)
++{
++	return (funct3 << 13) | (uimm << 7) | (rs2 << 2) | op;
++}
++
++static inline u16 rv_ciw_insn(u8 funct3, u32 uimm, u8 rd, u8 op)
++{
++	return (funct3 << 13) | (uimm << 5) | ((rd & 0x7) << 2) | op;
++}
++
++static inline u16 rv_cl_insn(u8 funct3, u32 imm_hi, u8 rs1, u32 imm_lo, u8 rd,
++			     u8 op)
++{
++	return (funct3 << 13) | (imm_hi << 10) | ((rs1 & 0x7) << 7) |
++		(imm_lo << 5) | ((rd & 0x7) << 2) | op;
++}
++
++static inline u16 rv_cs_insn(u8 funct3, u32 imm_hi, u8 rs1, u32 imm_lo, u8 rs2,
++			     u8 op)
++{
++	return (funct3 << 13) | (imm_hi << 10) | ((rs1 & 0x7) << 7) |
++		(imm_lo << 5) | ((rs2 & 0x7) << 2) | op;
++}
++
++static inline u16 rv_ca_insn(u8 funct6, u8 rd, u8 funct2, u8 rs2, u8 op)
++{
++	return (funct6 << 10) | ((rd & 0x7) << 7) | (funct2 << 5) |
++		((rs2 & 0x7) << 2) | op;
++}
++
++static inline u16 rv_cb_insn(u8 funct3, u32 imm6, u8 funct2, u8 rd, u8 op)
++{
++	u32 imm;
++
++	imm = ((imm6 & 0x20) << 7) | ((imm6 & 0x1f) << 2);
++	return (funct3 << 13) | (funct2 << 10) | ((rd & 0x7) << 7) | op | imm;
++}
++
+ /* Instructions shared by both RV32 and RV64. */
+ 
+ static inline u32 rv_addi(u8 rd, u8 rs1, u16 imm11_0)
+@@ -439,6 +534,135 @@ static inline u32 rv_amoadd_w(u8 rd, u8 rs2, u8 rs1, u8 aq, u8 rl)
+ 	return rv_amo_insn(0, aq, rl, rs2, rs1, 2, rd, 0x2f);
  }
  
- /* Instruction formats. */
-diff --git a/arch/riscv/net/bpf_jit_comp32.c b/arch/riscv/net/bpf_jit_comp32.c
-index b198eaa74456..bc5f2204693f 100644
---- a/arch/riscv/net/bpf_jit_comp32.c
-+++ b/arch/riscv/net/bpf_jit_comp32.c
-@@ -644,7 +644,7 @@ static int emit_branch_r64(const s8 *src1, const s8 *src2, s32 rvoff,
- 
- 	e = ctx->ninsns;
- 	/* Adjust for extra insns. */
--	rvoff -= (e - s) << 2;
-+	rvoff -= ninsns_rvoff(e - s);
- 	emit_jump_and_link(RV_REG_ZERO, rvoff, true, ctx);
- 	return 0;
++/* RVC instrutions. */
++
++static inline u16 rvc_addi4spn(u8 rd, u32 imm10)
++{
++	u32 imm;
++
++	imm = ((imm10 & 0x30) << 2) | ((imm10 & 0x3c0) >> 4) |
++		((imm10 & 0x4) >> 1) | ((imm10 & 0x8) >> 3);
++	return rv_ciw_insn(0x0, imm, rd, 0x0);
++}
++
++static inline u16 rvc_lw(u8 rd, u32 imm7, u8 rs1)
++{
++	u32 imm_hi, imm_lo;
++
++	imm_hi = (imm7 & 0x38) >> 3;
++	imm_lo = ((imm7 & 0x4) >> 1) | ((imm7 & 0x40) >> 6);
++	return rv_cl_insn(0x2, imm_hi, rs1, imm_lo, rd, 0x0);
++}
++
++static inline u16 rvc_sw(u8 rs1, u32 imm7, u8 rs2)
++{
++	u32 imm_hi, imm_lo;
++
++	imm_hi = (imm7 & 0x38) >> 3;
++	imm_lo = ((imm7 & 0x4) >> 1) | ((imm7 & 0x40) >> 6);
++	return rv_cs_insn(0x6, imm_hi, rs1, imm_lo, rs2, 0x0);
++}
++
++static inline u16 rvc_addi(u8 rd, u32 imm6)
++{
++	return rv_ci_insn(0, imm6, rd, 0x1);
++}
++
++static inline u16 rvc_li(u8 rd, u32 imm6)
++{
++	return rv_ci_insn(0x2, imm6, rd, 0x1);
++}
++
++static inline u16 rvc_addi16sp(u32 imm10)
++{
++	u32 imm;
++
++	imm = ((imm10 & 0x200) >> 4) | (imm10 & 0x10) | ((imm10 & 0x40) >> 3) |
++		((imm10 & 0x180) >> 6) | ((imm10 & 0x20) >> 5);
++	return rv_ci_insn(0x3, imm, RV_REG_SP, 0x1);
++}
++
++static inline u16 rvc_lui(u8 rd, u32 imm6)
++{
++	return rv_ci_insn(0x3, imm6, rd, 0x1);
++}
++
++static inline u16 rvc_srli(u8 rd, u32 imm6)
++{
++	return rv_cb_insn(0x4, imm6, 0, rd, 0x1);
++}
++
++static inline u16 rvc_srai(u8 rd, u32 imm6)
++{
++	return rv_cb_insn(0x4, imm6, 0x1, rd, 0x1);
++}
++
++static inline u16 rvc_andi(u8 rd, u32 imm6)
++{
++	return rv_cb_insn(0x4, imm6, 0x2, rd, 0x1);
++}
++
++static inline u16 rvc_sub(u8 rd, u8 rs)
++{
++	return rv_ca_insn(0x23, rd, 0, rs, 0x1);
++}
++
++static inline u16 rvc_xor(u8 rd, u8 rs)
++{
++	return rv_ca_insn(0x23, rd, 0x1, rs, 0x1);
++}
++
++static inline u16 rvc_or(u8 rd, u8 rs)
++{
++	return rv_ca_insn(0x23, rd, 0x2, rs, 0x1);
++}
++
++static inline u16 rvc_and(u8 rd, u8 rs)
++{
++	return rv_ca_insn(0x23, rd, 0x3, rs, 0x1);
++}
++
++static inline u16 rvc_slli(u8 rd, u32 imm6)
++{
++	return rv_ci_insn(0, imm6, rd, 0x2);
++}
++
++static inline u16 rvc_lwsp(u8 rd, u32 imm8)
++{
++	u32 imm;
++
++	imm = ((imm8 & 0xc0) >> 6) | (imm8 & 0x3c);
++	return rv_ci_insn(0x2, imm, rd, 0x2);
++}
++
++static inline u16 rvc_jr(u8 rs1)
++{
++	return rv_cr_insn(0x8, rs1, RV_REG_ZERO, 0x2);
++}
++
++static inline u16 rvc_mv(u8 rd, u8 rs)
++{
++	return rv_cr_insn(0x8, rd, rs, 0x2);
++}
++
++static inline u16 rvc_jalr(u8 rs1)
++{
++	return rv_cr_insn(0x9, rs1, RV_REG_ZERO, 0x2);
++}
++
++static inline u16 rvc_add(u8 rd, u8 rs)
++{
++	return rv_cr_insn(0x9, rd, rs, 0x2);
++}
++
++static inline u16 rvc_swsp(u32 imm8, u8 rs2)
++{
++	u32 imm;
++
++	imm = (imm8 & 0x3c) | ((imm8 & 0xc0) >> 6);
++	return rv_css_insn(0x6, imm, rs2, 0x2);
++}
++
+ /*
+  * RV64-only instructions.
+  *
+@@ -528,6 +752,234 @@ static inline u32 rv_amoadd_d(u8 rd, u8 rs2, u8 rs1, u8 aq, u8 rl)
+ 	return rv_amo_insn(0, aq, rl, rs2, rs1, 3, rd, 0x2f);
  }
-@@ -713,7 +713,7 @@ static int emit_bcc(u8 op, u8 rd, u8 rs, int rvoff, struct rv_jit_context *ctx)
- 	if (far) {
- 		e = ctx->ninsns;
- 		/* Adjust for extra insns. */
--		rvoff -= (e - s) << 2;
-+		rvoff -= ninsns_rvoff(e - s);
- 		emit_jump_and_link(RV_REG_ZERO, rvoff, true, ctx);
- 	}
- 	return 0;
-@@ -731,7 +731,7 @@ static int emit_branch_r32(const s8 *src1, const s8 *src2, s32 rvoff,
  
- 	e = ctx->ninsns;
- 	/* Adjust for extra insns. */
--	rvoff -= (e - s) << 2;
-+	rvoff -= ninsns_rvoff(e - s);
++/* RV64-only RVC instructions. */
++
++static inline u16 rvc_ld(u8 rd, u32 imm8, u8 rs1)
++{
++	u32 imm_hi, imm_lo;
++
++	imm_hi = (imm8 & 0x38) >> 3;
++	imm_lo = (imm8 & 0xc0) >> 6;
++	return rv_cl_insn(0x3, imm_hi, rs1, imm_lo, rd, 0x0);
++}
++
++static inline u16 rvc_sd(u8 rs1, u32 imm8, u8 rs2)
++{
++	u32 imm_hi, imm_lo;
++
++	imm_hi = (imm8 & 0x38) >> 3;
++	imm_lo = (imm8 & 0xc0) >> 6;
++	return rv_cs_insn(0x7, imm_hi, rs1, imm_lo, rs2, 0x0);
++}
++
++static inline u16 rvc_subw(u8 rd, u8 rs)
++{
++	return rv_ca_insn(0x27, rd, 0, rs, 0x1);
++}
++
++static inline u16 rvc_addiw(u8 rd, u32 imm6)
++{
++	return rv_ci_insn(0x1, imm6, rd, 0x1);
++}
++
++static inline u16 rvc_ldsp(u8 rd, u32 imm9)
++{
++	u32 imm;
++
++	imm = ((imm9 & 0x1c0) >> 6) | (imm9 & 0x38);
++	return rv_ci_insn(0x3, imm, rd, 0x2);
++}
++
++static inline u16 rvc_sdsp(u32 imm9, u8 rs2)
++{
++	u32 imm;
++
++	imm = (imm9 & 0x38) | ((imm9 & 0x1c0) >> 6);
++	return rv_css_insn(0x7, imm, rs2, 0x2);
++}
++
++#endif /* __riscv_xlen == 64 */
++
++/* Helper functions that emit RVC instructions when possible. */
++
++static inline void emit_jalr(u8 rd, u8 rs, s32 imm, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rd == RV_REG_RA && rs && !imm)
++		emitc(rvc_jalr(rs), ctx);
++	else if (rvc_enabled() && !rd && rs && !imm)
++		emitc(rvc_jr(rs), ctx);
++	else
++		emit(rv_jalr(rd, rs, imm), ctx);
++}
++
++static inline void emit_mv(u8 rd, u8 rs, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rd && rs)
++		emitc(rvc_mv(rd, rs), ctx);
++	else
++		emit(rv_addi(rd, rs, 0), ctx);
++}
++
++static inline void emit_add(u8 rd, u8 rs1, u8 rs2, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rd && rd == rs1 && rs2)
++		emitc(rvc_add(rd, rs2), ctx);
++	else
++		emit(rv_add(rd, rs1, rs2), ctx);
++}
++
++static inline void emit_addi(u8 rd, u8 rs, s32 imm, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rd == RV_REG_SP && rd == rs && is_10b_int(imm) && imm && !(imm & 0xf))
++		emitc(rvc_addi16sp(imm), ctx);
++	else if (rvc_enabled() && is_creg(rd) && rs == RV_REG_SP && is_10b_uint(imm) &&
++		 !(imm & 0x3) && imm)
++		emitc(rvc_addi4spn(rd, imm), ctx);
++	else if (rvc_enabled() && rd && rd == rs && imm && is_6b_int(imm))
++		emitc(rvc_addi(rd, imm), ctx);
++	else
++		emit(rv_addi(rd, rs, imm), ctx);
++}
++
++static inline void emit_li(u8 rd, s32 imm, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rd && is_6b_int(imm))
++		emitc(rvc_li(rd, imm), ctx);
++	else
++		emit(rv_addi(rd, RV_REG_ZERO, imm), ctx);
++}
++
++static inline void emit_lui(u8 rd, s32 imm, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rd && rd != RV_REG_SP && is_6b_int(imm) && imm)
++		emitc(rvc_lui(rd, imm), ctx);
++	else
++		emit(rv_lui(rd, imm), ctx);
++}
++
++static inline void emit_slli(u8 rd, u8 rs, s32 imm, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rd && rd == rs && imm && (u32)imm < __riscv_xlen)
++		emitc(rvc_slli(rd, imm), ctx);
++	else
++		emit(rv_slli(rd, rs, imm), ctx);
++}
++
++static inline void emit_andi(u8 rd, u8 rs, s32 imm, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && is_creg(rd) && rd == rs && is_6b_int(imm))
++		emitc(rvc_andi(rd, imm), ctx);
++	else
++		emit(rv_andi(rd, rs, imm), ctx);
++}
++
++static inline void emit_srli(u8 rd, u8 rs, s32 imm, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && is_creg(rd) && rd == rs && imm && (u32)imm < __riscv_xlen)
++		emitc(rvc_srli(rd, imm), ctx);
++	else
++		emit(rv_srli(rd, rs, imm), ctx);
++}
++
++static inline void emit_srai(u8 rd, u8 rs, s32 imm, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && is_creg(rd) && rd == rs && imm && (u32)imm < __riscv_xlen)
++		emitc(rvc_srai(rd, imm), ctx);
++	else
++		emit(rv_srai(rd, rs, imm), ctx);
++}
++
++static inline void emit_sub(u8 rd, u8 rs1, u8 rs2, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && is_creg(rd) && rd == rs1 && is_creg(rs2))
++		emitc(rvc_sub(rd, rs2), ctx);
++	else
++		emit(rv_sub(rd, rs1, rs2), ctx);
++}
++
++static inline void emit_or(u8 rd, u8 rs1, u8 rs2, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && is_creg(rd) && rd == rs1 && is_creg(rs2))
++		emitc(rvc_or(rd, rs2), ctx);
++	else
++		emit(rv_or(rd, rs1, rs2), ctx);
++}
++
++static inline void emit_and(u8 rd, u8 rs1, u8 rs2, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && is_creg(rd) && rd == rs1 && is_creg(rs2))
++		emitc(rvc_and(rd, rs2), ctx);
++	else
++		emit(rv_and(rd, rs1, rs2), ctx);
++}
++
++static inline void emit_xor(u8 rd, u8 rs1, u8 rs2, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && is_creg(rd) && rd == rs1 && is_creg(rs2))
++		emitc(rvc_xor(rd, rs2), ctx);
++	else
++		emit(rv_xor(rd, rs1, rs2), ctx);
++}
++
++static inline void emit_lw(u8 rd, s32 off, u8 rs1, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rs1 == RV_REG_SP && rd && is_8b_uint(off) && !(off & 0x3))
++		emitc(rvc_lwsp(rd, off), ctx);
++	else if (rvc_enabled() && is_creg(rd) && is_creg(rs1) && is_7b_uint(off) && !(off & 0x3))
++		emitc(rvc_lw(rd, off, rs1), ctx);
++	else
++		emit(rv_lw(rd, off, rs1), ctx);
++}
++
++static inline void emit_sw(u8 rs1, s32 off, u8 rs2, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rs1 == RV_REG_SP && is_8b_uint(off) && !(off & 0x3))
++		emitc(rvc_swsp(off, rs2), ctx);
++	else if (rvc_enabled() && is_creg(rs1) && is_creg(rs2) && is_7b_uint(off) && !(off & 0x3))
++		emitc(rvc_sw(rs1, off, rs2), ctx);
++	else
++		emit(rv_sw(rs1, off, rs2), ctx);
++}
++
++/* RV64-only helper functions. */
++#if __riscv_xlen == 64
++
++static inline void emit_addiw(u8 rd, u8 rs, s32 imm, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rd && rd == rs && is_6b_int(imm))
++		emitc(rvc_addiw(rd, imm), ctx);
++	else
++		emit(rv_addiw(rd, rs, imm), ctx);
++}
++
++static inline void emit_ld(u8 rd, s32 off, u8 rs1, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rs1 == RV_REG_SP && rd && is_9b_uint(off) && !(off & 0x7))
++		emitc(rvc_ldsp(rd, off), ctx);
++	else if (rvc_enabled() && is_creg(rd) && is_creg(rs1) && is_8b_uint(off) && !(off & 0x7))
++		emitc(rvc_ld(rd, off, rs1), ctx);
++	else
++		emit(rv_ld(rd, off, rs1), ctx);
++}
++
++static inline void emit_sd(u8 rs1, s32 off, u8 rs2, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && rs1 == RV_REG_SP && is_9b_uint(off) && !(off & 0x7))
++		emitc(rvc_sdsp(off, rs2), ctx);
++	else if (rvc_enabled() && is_creg(rs1) && is_creg(rs2) && is_8b_uint(off) && !(off & 0x7))
++		emitc(rvc_sd(rs1, off, rs2), ctx);
++	else
++		emit(rv_sd(rs1, off, rs2), ctx);
++}
++
++static inline void emit_subw(u8 rd, u8 rs1, u8 rs2, struct rv_jit_context *ctx)
++{
++	if (rvc_enabled() && is_creg(rd) && rd == rs1 && is_creg(rs2))
++		emitc(rvc_subw(rd, rs2), ctx);
++	else
++		emit(rv_subw(rd, rs1, rs2), ctx);
++}
++
+ #endif /* __riscv_xlen == 64 */
  
- 	if (emit_bcc(op, lo(rs1), lo(rs2), rvoff, ctx))
- 		return -1;
-@@ -795,7 +795,7 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
- 	 * if (index >= max_entries)
- 	 *   goto out;
- 	 */
--	off = (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
-+	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
- 	emit_bcc(BPF_JGE, lo(idx_reg), RV_REG_T1, off, ctx);
- 
- 	/*
-@@ -804,7 +804,7 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
- 	 *   goto out;
- 	 */
- 	emit(rv_addi(RV_REG_T1, RV_REG_TCC, -1), ctx);
--	off = (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
-+	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
- 	emit_bcc(BPF_JSLT, RV_REG_TCC, RV_REG_ZERO, off, ctx);
- 
- 	/*
-@@ -818,7 +818,7 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
- 	if (is_12b_check(off, insn))
- 		return -1;
- 	emit(rv_lw(RV_REG_T0, off, RV_REG_T0), ctx);
--	off = (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
-+	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
- 	emit_bcc(BPF_JEQ, RV_REG_T0, RV_REG_ZERO, off, ctx);
- 
- 	/*
-@@ -1214,7 +1214,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- 			emit_imm32(tmp2, imm, ctx);
- 			src = tmp2;
- 			e = ctx->ninsns;
--			rvoff -= (e - s) << 2;
-+			rvoff -= ninsns_rvoff(e - s);
- 		}
- 
- 		if (is64)
-diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
-index 6cfd164cbe88..55861269da2a 100644
---- a/arch/riscv/net/bpf_jit_comp64.c
-+++ b/arch/riscv/net/bpf_jit_comp64.c
-@@ -304,14 +304,14 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
- 	if (is_12b_check(off, insn))
- 		return -1;
- 	emit(rv_lwu(RV_REG_T1, off, RV_REG_A1), ctx);
--	off = (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
-+	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
- 	emit_branch(BPF_JGE, RV_REG_A2, RV_REG_T1, off, ctx);
- 
- 	/* if (TCC-- < 0)
- 	 *     goto out;
- 	 */
- 	emit(rv_addi(RV_REG_T1, tcc, -1), ctx);
--	off = (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
-+	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
- 	emit_branch(BPF_JSLT, tcc, RV_REG_ZERO, off, ctx);
- 
- 	/* prog = array->ptrs[index];
-@@ -324,7 +324,7 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
- 	if (is_12b_check(off, insn))
- 		return -1;
- 	emit(rv_ld(RV_REG_T2, off, RV_REG_T2), ctx);
--	off = (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
-+	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
- 	emit_branch(BPF_JEQ, RV_REG_T2, RV_REG_ZERO, off, ctx);
- 
- 	/* goto *(prog->bpf_func + 4); */
-@@ -757,7 +757,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- 			e = ctx->ninsns;
- 
- 			/* Adjust for extra insns */
--			rvoff -= (e - s) << 2;
-+			rvoff -= ninsns_rvoff(e - s);
- 		}
- 
- 		if (BPF_OP(code) == BPF_JSET) {
-@@ -810,7 +810,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- 		e = ctx->ninsns;
- 
- 		/* Adjust for extra insns */
--		rvoff -= (e - s) << 2;
-+		rvoff -= ninsns_rvoff(e - s);
- 		emit_branch(BPF_OP(code), rd, rs, rvoff, ctx);
- 		break;
- 
-@@ -831,7 +831,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- 		if (!is64 && imm < 0)
- 			emit(rv_addiw(RV_REG_T1, RV_REG_T1, 0), ctx);
- 		e = ctx->ninsns;
--		rvoff -= (e - s) << 2;
-+		rvoff -= ninsns_rvoff(e - s);
- 		emit_branch(BPF_JNE, RV_REG_T1, RV_REG_ZERO, rvoff, ctx);
- 		break;
- 
-diff --git a/arch/riscv/net/bpf_jit_core.c b/arch/riscv/net/bpf_jit_core.c
-index 709b94ece3ed..3630d447352c 100644
---- a/arch/riscv/net/bpf_jit_core.c
-+++ b/arch/riscv/net/bpf_jit_core.c
-@@ -73,7 +73,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 
- 	if (ctx->offset) {
- 		extra_pass = true;
--		image_size = sizeof(u32) * ctx->ninsns;
-+		image_size = sizeof(*ctx->insns) * ctx->ninsns;
- 		goto skip_init_ctx;
- 	}
- 
-@@ -103,7 +103,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 			if (jit_data->header)
- 				break;
- 
--			image_size = sizeof(u32) * ctx->ninsns;
-+			image_size = sizeof(*ctx->insns) * ctx->ninsns;
- 			jit_data->header =
- 				bpf_jit_binary_alloc(image_size,
- 						     &jit_data->image,
-@@ -114,7 +114,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 				goto out_offset;
- 			}
- 
--			ctx->insns = (u32 *)jit_data->image;
-+			ctx->insns = (u16 *)jit_data->image;
- 			/*
- 			 * Now, when the image is allocated, the image can
- 			 * potentially shrink more (auipc/jalr -> jal).
+ void bpf_jit_build_prologue(struct rv_jit_context *ctx);
 -- 
 2.25.1
 
