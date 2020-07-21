@@ -2,101 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A5F62278F7
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 08:43:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B94522791A
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 08:54:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728389AbgGUGnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 02:43:07 -0400
-Received: from smtp.al2klimov.de ([78.46.175.9]:59272 "EHLO smtp.al2klimov.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726053AbgGUGnH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 02:43:07 -0400
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id D8097BC1B7;
-        Tue, 21 Jul 2020 06:43:01 +0000 (UTC)
-Subject: Re: [PATCH for v5.9] RDS: Replace HTTP links with HTTPS ones
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>, santosh.shilimkar@oracle.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200719155845.59947-1-grandmaster@al2klimov.de>
- <20200720045626.GF127306@unreal> <20200720075848.26bc3dfe@lwn.net>
- <20200720140716.GB1080481@unreal> <20200720083635.3e7880ce@lwn.net>
- <20200720164827.GC1080481@unreal>
- <c78d0958-c4ef-9754-c189-ffc507ca1340@al2klimov.de>
- <20200721060529.GF1080481@unreal>
-From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Message-ID: <f1df7901-35ef-af8a-b852-e5e89ababf01@al2klimov.de>
-Date:   Tue, 21 Jul 2020 08:43:00 +0200
+        id S1728473AbgGUGyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 02:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726039AbgGUGyf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 02:54:35 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B27CC061794;
+        Mon, 20 Jul 2020 23:54:35 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4B9q8K5v03z9sQt;
+        Tue, 21 Jul 2020 16:54:25 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1595314472;
+        bh=mJsTszFvnCYvpWubjtgvg98U0MICF1p5OyjYGn6wYAM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Oih2Qp+Nu5cR+e5iFKw29doka1pPdYxf7DOvZzXdqHrkhZyxL5zoZeMWBGkgw5B6Z
+         mo+tXGmeXESAzMQIKZ5ZFNWlIOgWsIdY9ybMcnLmepOyyQtBQyOx7WWDffTMVmkWuh
+         jxT47UkDugIQBNHJY8FVdsH/TUPqfD5GXQNudcpLXwGlASXEz1qY5VrvhkZqT8lGi7
+         jugJZ0b/n3RK3BeQ/0AGyDFkv8r1Zq0TvfmKWsBh2JXIAMrXm4DZIc6BsD5pDaRBhr
+         Ct7HhytX1IKiYnx0wBXtOxyG07YvEuhstEK88LD2Y9TigpYgC+C4niV+uVlkhThl3L
+         5Z7IG3olGOtOg==
+Date:   Tue, 21 Jul 2020 16:54:24 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-next@vger.kernel.org, mhocko@suse.cz,
+        mm-commits@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Miller <davem@davemloft.net>,
+        Xin Long <lucien.xin@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: Re: mmotm 2020-07-20-19-06 uploaded (net/ipv6/ip6_vti.o)
+Message-ID: <20200721165424.4aa21b81@canb.auug.org.au>
+In-Reply-To: <536c2421-7ae2-5657-ff31-fbd80bd71784@infradead.org>
+References: <20200721020722.6C7YAze1t%akpm@linux-foundation.org>
+        <536c2421-7ae2-5657-ff31-fbd80bd71784@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <20200721060529.GF1080481@unreal>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Authentication-Results: smtp.al2klimov.de;
-        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
-X-Spamd-Bar: /
+Content-Type: multipart/signed; boundary="Sig_/9zIg8IHnPNH650=BUHEpwdZ";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/9zIg8IHnPNH650=BUHEpwdZ
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-Am 21.07.20 um 08:05 schrieb Leon Romanovsky:
-> On Mon, Jul 20, 2020 at 11:34:00PM +0200, Alexander A. Klimov wrote:
->>
->>
->> Am 20.07.20 um 18:48 schrieb Leon Romanovsky:
->>> On Mon, Jul 20, 2020 at 08:36:35AM -0600, Jonathan Corbet wrote:
->>>> On Mon, 20 Jul 2020 17:07:16 +0300
->>>> Leon Romanovsky <leon@kernel.org> wrote:
->>>>
->>>>>> Do *you* want to review that megapatch?  The number of issues that have
->> This question is... interesting.
->> And no, I would not.
-> 
-> You are EXPECTED to review your work prior sending to the mailing list.
-I meant I wouldn't review *one big* patch.
-I didn't mean my actually sent smaller ones.
+On Mon, 20 Jul 2020 23:09:34 -0700 Randy Dunlap <rdunlap@infradead.org> wro=
+te:
+>
+> on i386:
+>=20
+> ld: net/ipv6/ip6_vti.o: in function `vti6_rcv_tunnel':
+> ip6_vti.c:(.text+0x2d11): undefined reference to `xfrm6_tunnel_spi_lookup'
 
-> 
->>
->>>>>> come up make it clear that these patches do, indeed, need review...
->>>>>
->>>>> Can you point me to the issues?
->>>>> What can go wrong with such a simple replacement?
->>>>
->>>> Some bits of the conversation:
->>>>
->>>>     https://lore.kernel.org/lkml/20200626110219.7ae21265@lwn.net/
->>>>     https://lore.kernel.org/lkml/20200626110706.7b5d4a38@lwn.net/
->>>>     https://lore.kernel.org/lkml/20200705142506.1f26a7e0@lwn.net/
->>>>     https://lore.kernel.org/lkml/20200713114321.783f0ae6@lwn.net/
->>>>     https://lore.kernel.org/lkml/202007081531.085533FC5@keescook/
->>>>
->>>> etc.
->>>
->>> After reading your links and especially this one.
->>> https://lore.kernel.org/lkml/20200713114321.783f0ae6@lwn.net/
->>> I don't understand why are we still seeing these patches?
->>>
->>> I gave to the author comments too, which were ignored.
->>> https://patchwork.kernel.org/patch/11644683/#23466547
->> I've added SPDXing (the automated way of course ;) ) to my todo list.
-> 
-> OMG, why don't you listen? We don't want your automatic patches.
-Wrong.
-*Some of you* don't want my automatic patches.
-And *some others* already applied them and said thanks.
+Caused by commit
 
-> 
-> Thanks
-> 
->>
->>>
->>> Thanks
->>>
->>>>
->>>> jon
+  08622869ed3f ("ip6_vti: support IP6IP6 tunnel processing with .cb_handler=
+")
+
+from the linux-next ipsec-next tree.
+
+CONFIG_INET6_XFRM_TUNNEL=3Dm
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/9zIg8IHnPNH650=BUHEpwdZ
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8WkSAACgkQAVBC80lX
+0GypDQf+J1VwO4D8LazPteqDAJk+Cjpltx0+scco6H/nuwwMjcnCP0hGiSdGj3+Q
+SQHviHlbpqbO+iSdPq/Zg8ITkqg59NHbDECNq2iHxNV2jXe6OhJwvjko25dTtbKK
+n/OQVrMKhpduCWmUx7XJDvPseEzrNtHW5J9R7KvlnD30d6yXCnU35ETgM1mIjdJk
+LzQxqZLt0OPIMPYu9mk4kH2PoKvgaSYe1fnPfiIPzlXvwNf7tHUY388ZsU56Og/d
+vD/jpWb3QFraRv6do9m/k5+RL3HWdRyBXkfa+VCS8Lb9Ye9UKFRRaOuBZJQD74ml
+7HXQiJQmc+m9k2xK7qZpWtp6u31vQQ==
+=uNPM
+-----END PGP SIGNATURE-----
+
+--Sig_/9zIg8IHnPNH650=BUHEpwdZ--
