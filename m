@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80CF4227E26
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 13:07:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DC56227E24
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 13:07:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729573AbgGULHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 07:07:24 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7807 "EHLO huawei.com"
+        id S1729401AbgGULHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 07:07:10 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7809 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727940AbgGULHF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 07:07:05 -0400
+        id S1727106AbgGULHH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 07:07:07 -0400
 Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 2B62AE29E8F847C15CE8;
+        by Forcepoint Email with ESMTP id 3007F170C34E495B9ABC;
         Tue, 21 Jul 2020 19:07:02 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
@@ -23,10 +23,10 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
         Yunsheng Lin <linyunsheng@huawei.com>,
-        Huzhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net 1/4] net: hns3: fix for not unmapping TX buffer correctly
-Date:   Tue, 21 Jul 2020 19:03:51 +0800
-Message-ID: <1595329434-46766-2-git-send-email-tanhuazhong@huawei.com>
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net 2/4] net: hns3: fix for not calculating TX BD send size correctly
+Date:   Tue, 21 Jul 2020 19:03:52 +0800
+Message-ID: <1595329434-46766-3-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1595329434-46766-1-git-send-email-tanhuazhong@huawei.com>
 References: <1595329434-46766-1-git-send-email-tanhuazhong@huawei.com>
@@ -41,64 +41,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yunsheng Lin <linyunsheng@huawei.com>
 
-When a big TX buffer is sent using multi BD, the driver maps the
-whole TX buffer, and unmaps it using info in desc_cb corresponding
-to each BD, but only the info in the desc_cb of first BD is correct,
-other info in desc_cb is wrong, which causes TX unmapping problem
-when SMMU is on.
+With GRO and fraglist support, the SKB can be aggregated to
+a total size of 65535, and when that SKB is forwarded through
+a bridge, the size of the SKB may be pushed to exceed the size
+of 65535 when br_dev_queue_push_xmit() is called.
 
-Only set the mapping and freeing info in the desc_cb of first BD to
-fix this problem, because the TX buffer only need to be unmapped and
-freed once.
+The max send size of BD supported by the HW is 65535, when a SKB
+with a headlen of over 65535 is sent to the driver, the driver
+needs to use multi BD to send the linear data, and the send size
+of the last BD is calculated incorrectly by the driver who is
+using '&' operation, which causes a TX error.
 
-Fixes: 1e8a7977d09f("net: hns3: add handling for big TX fragment")
+Use '%' operation to fix this problem.
+
+Fixes: 3fe13ed95dd3 ("net: hns3: avoid mult + div op in critical data path")
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-Signed-off-by: Huzhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h | 2 --
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index fe7d57ae..18f7623 100644
+index 18f7623..a814d99 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -1118,12 +1118,12 @@ static int hns3_fill_desc(struct hns3_enet_ring *ring, void *priv,
- 		return -ENOMEM;
+@@ -1135,7 +1135,7 @@ static int hns3_fill_desc(struct hns3_enet_ring *ring, void *priv,
  	}
  
-+	desc_cb->priv = priv;
- 	desc_cb->length = size;
-+	desc_cb->dma = dma;
-+	desc_cb->type = type;
- 
- 	if (likely(size <= HNS3_MAX_BD_SIZE)) {
--		desc_cb->priv = priv;
--		desc_cb->dma = dma;
--		desc_cb->type = type;
- 		desc->addr = cpu_to_le64(dma);
- 		desc->tx.send_size = cpu_to_le16(size);
- 		desc->tx.bdtp_fe_sc_vld_ra_ri =
-@@ -1140,13 +1140,6 @@ static int hns3_fill_desc(struct hns3_enet_ring *ring, void *priv,
+ 	frag_buf_num = hns3_tx_bd_count(size);
+-	sizeoflast = size & HNS3_TX_LAST_SIZE_M;
++	sizeoflast = size % HNS3_MAX_BD_SIZE;
+ 	sizeoflast = sizeoflast ? sizeoflast : HNS3_MAX_BD_SIZE;
  
  	/* When frag size is bigger than hardware limit, split this frag */
- 	for (k = 0; k < frag_buf_num; k++) {
--		/* The txbd's baseinfo of DESC_TYPE_PAGE & DESC_TYPE_SKB */
--		desc_cb->priv = priv;
--		desc_cb->dma = dma + HNS3_MAX_BD_SIZE * k;
--		desc_cb->type = ((type == DESC_TYPE_FRAGLIST_SKB ||
--				  type == DESC_TYPE_SKB) && !k) ?
--				type : DESC_TYPE_PAGE;
--
- 		/* now, fill the descriptor */
- 		desc->addr = cpu_to_le64(dma + HNS3_MAX_BD_SIZE * k);
- 		desc->tx.send_size = cpu_to_le16((k == frag_buf_num - 1) ?
-@@ -1158,7 +1151,6 @@ static int hns3_fill_desc(struct hns3_enet_ring *ring, void *priv,
- 		/* move ring pointer to next */
- 		ring_ptr_move_fw(ring, next_to_use);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+index 9f64077..9922c5f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+@@ -165,8 +165,6 @@ enum hns3_nic_state {
+ #define HNS3_TXD_MSS_S				0
+ #define HNS3_TXD_MSS_M				(0x3fff << HNS3_TXD_MSS_S)
  
--		desc_cb = &ring->desc_cb[ring->next_to_use];
- 		desc = &ring->desc[ring->next_to_use];
- 	}
+-#define HNS3_TX_LAST_SIZE_M			0xffff
+-
+ #define HNS3_VECTOR_TX_IRQ			BIT_ULL(0)
+ #define HNS3_VECTOR_RX_IRQ			BIT_ULL(1)
  
 -- 
 2.7.4
