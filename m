@@ -2,161 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F4082277FE
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 07:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1565D22780E
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 07:23:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728411AbgGUFFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 01:05:25 -0400
-Received: from mga18.intel.com ([134.134.136.126]:25817 "EHLO mga18.intel.com"
+        id S1727015AbgGUFXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 01:23:33 -0400
+Received: from verein.lst.de ([213.95.11.211]:50572 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728214AbgGUFFZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 01:05:25 -0400
-IronPort-SDR: yh98YumKJhAljC+IMJqtcmPyuWS1/hLcP3iAq+oPj+EYKC/zx36rcpTAS0Ml6Ml13MpmL3A8wJ
- DJEX8vruyzfQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9688"; a="137552366"
-X-IronPort-AV: E=Sophos;i="5.75,377,1589266800"; 
-   d="scan'208";a="137552366"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2020 22:05:20 -0700
-IronPort-SDR: qTQQHvoQAkXZu2qo7flQK/y6Nzaz39ECHVf37IIeT5qMYoYpTn0JmNywF4XtNimYaMBU0qcZtG
- HgAekBAjUWfQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,377,1589266800"; 
-   d="scan'208";a="431855762"
-Received: from taktemur-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.33.122])
-  by orsmga004.jf.intel.com with ESMTP; 20 Jul 2020 22:05:15 -0700
-From:   Magnus Karlsson <magnus.karlsson@intel.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, maximmi@mellanox.com
-Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
-        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
-        maciejromanfijalkowski@gmail.com, cristian.dumitrescu@intel.com
-Subject: [PATCH bpf-next v4 14/14] xsk: documentation for XDP_SHARED_UMEM between queues and netdevs
-Date:   Tue, 21 Jul 2020 07:04:08 +0200
-Message-Id: <1595307848-20719-15-git-send-email-magnus.karlsson@intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1595307848-20719-1-git-send-email-magnus.karlsson@intel.com>
-References: <1595307848-20719-1-git-send-email-magnus.karlsson@intel.com>
+        id S1725774AbgGUFXc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 01:23:32 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id B86216736F; Tue, 21 Jul 2020 07:23:26 +0200 (CEST)
+Date:   Tue, 21 Jul 2020 07:23:26 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-sctp@vger.kernel.org, linux-hams@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-can@vger.kernel.org, dccp@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net,
+        linux-wpan@vger.kernel.org, linux-s390@vger.kernel.org,
+        mptcp@lists.01.org, lvs-devel@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-afs@lists.infradead.org,
+        tipc-discussion@lists.sourceforge.net, linux-x25@vger.kernel.org
+Subject: Re: [PATCH 02/24] bpfilter: fix up a sparse annotation
+Message-ID: <20200721052326.GA10071@lst.de>
+References: <20200720124737.118617-1-hch@lst.de> <20200720124737.118617-3-hch@lst.de> <20200721024016.2talwdt5hjqvirr6@ltop.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200721024016.2talwdt5hjqvirr6@ltop.local>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for the XDP_SHARED_UMEM feature when a UMEM is
-shared between different queues and/or netdevs.
+On Tue, Jul 21, 2020 at 04:40:16AM +0200, Luc Van Oostenryck wrote:
+> >  	req.pid = current->pid;
+> >  	req.cmd = optname;
+> > -	req.addr = (long __force __user)optval;
+> > +	req.addr = (__force long)optval;
+> 
+> For casts to integers, even '__force' is not needed (since integers
+> can't be dereferenced, the concept of address-space is meaningless
+> for them, so it's never useful to warn when it's dropped and
+> '__force' is thus not needed).
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- Documentation/networking/af_xdp.rst | 68 +++++++++++++++++++++++++++++++------
- 1 file changed, 58 insertions(+), 10 deletions(-)
+That's what I thought. but if I remove it here I actually do get a
+warning:
 
-diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networking/af_xdp.rst
-index 5bc55a4..2ccc564 100644
---- a/Documentation/networking/af_xdp.rst
-+++ b/Documentation/networking/af_xdp.rst
-@@ -258,14 +258,21 @@ socket into zero-copy mode or fail.
- XDP_SHARED_UMEM bind flag
- -------------------------
- 
--This flag enables you to bind multiple sockets to the same UMEM, but
--only if they share the same queue id. In this mode, each socket has
--their own RX and TX rings, but the UMEM (tied to the fist socket
--created) only has a single FILL ring and a single COMPLETION
--ring. To use this mode, create the first socket and bind it in the normal
--way. Create a second socket and create an RX and a TX ring, or at
--least one of them, but no FILL or COMPLETION rings as the ones from
--the first socket will be used. In the bind call, set he
-+This flag enables you to bind multiple sockets to the same UMEM. It
-+works on the same queue id, between queue ids and between
-+netdevs/devices. In this mode, each socket has their own RX and TX
-+rings as usual, but you are going to have one or more FILL and
-+COMPLETION ring pairs. You have to create one of these pairs per
-+unique netdev and queue id tuple that you bind to.
-+
-+Starting with the case were we would like to share a UMEM between
-+sockets bound to the same netdev and queue id. The UMEM (tied to the
-+fist socket created) will only have a single FILL ring and a single
-+COMPLETION ring as there is only on unique netdev,queue_id tuple that
-+we have bound to. To use this mode, create the first socket and bind
-+it in the normal way. Create a second socket and create an RX and a TX
-+ring, or at least one of them, but no FILL or COMPLETION rings as the
-+ones from the first socket will be used. In the bind call, set he
- XDP_SHARED_UMEM option and provide the initial socket's fd in the
- sxdp_shared_umem_fd field. You can attach an arbitrary number of extra
- sockets this way.
-@@ -305,11 +312,41 @@ concurrently. There are no synchronization primitives in the
- libbpf code that protects multiple users at this point in time.
- 
- Libbpf uses this mode if you create more than one socket tied to the
--same umem. However, note that you need to supply the
-+same UMEM. However, note that you need to supply the
- XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD libbpf_flag with the
- xsk_socket__create calls and load your own XDP program as there is no
- built in one in libbpf that will route the traffic for you.
- 
-+The second case is when you share a UMEM between sockets that are
-+bound to different queue ids and/or netdevs. In this case you have to
-+create one FILL ring and one COMPLETION ring for each unique
-+netdev,queue_id pair. Let us say you want to create two sockets bound
-+to two different queue ids on the same netdev. Create the first socket
-+and bind it in the normal way. Create a second socket and create an RX
-+and a TX ring, or at least one of them, and then one FILL and
-+COMPLETION ring for this socket. Then in the bind call, set he
-+XDP_SHARED_UMEM option and provide the initial socket's fd in the
-+sxdp_shared_umem_fd field as you registered the UMEM on that
-+socket. These two sockets will now share one and the same UMEM.
-+
-+There is no need to supply an XDP program like the one in the previous
-+case where sockets were bound to the same queue id and
-+device. Instead, use the NIC's packet steering capabilities to steer
-+the packets to the right queue. In the previous example, there is only
-+one queue shared among sockets, so the NIC cannot do this steering. It
-+can only steer between queues.
-+
-+In libbpf, you need to use the xsk_socket__create_shared() API as it
-+takes a reference to a FILL ring and a COMPLETION ring that will be
-+created for you and bound to the shared UMEM. You can use this
-+function for all the sockets you create, or you can use it for the
-+second and following ones and use xsk_socket__create() for the first
-+one. Both methods yield the same result.
-+
-+Note that a UMEM can be shared between sockets on the same queue id
-+and device, as well as between queues on the same device and between
-+devices at the same time.
-+
- XDP_USE_NEED_WAKEUP bind flag
- -----------------------------
- 
-@@ -364,7 +401,7 @@ resources by only setting up one of them. Both the FILL ring and the
- COMPLETION ring are mandatory as you need to have a UMEM tied to your
- socket. But if the XDP_SHARED_UMEM flag is used, any socket after the
- first one does not have a UMEM and should in that case not have any
--FILL or COMPLETION rings created as the ones from the shared umem will
-+FILL or COMPLETION rings created as the ones from the shared UMEM will
- be used. Note, that the rings are single-producer single-consumer, so
- do not try to access them from multiple processes at the same
- time. See the XDP_SHARED_UMEM section.
-@@ -567,6 +604,17 @@ A: The short answer is no, that is not supported at the moment. The
-    switch, or other distribution mechanism, in your NIC to direct
-    traffic to the correct queue id and socket.
- 
-+Q: My packets are sometimes corrupted. What is wrong?
-+
-+A: Care has to be taken not to feed the same buffer in the UMEM into
-+   more than one ring at the same time. If you for example feed the
-+   same buffer into the FILL ring and the TX ring at the same time, the
-+   NIC might receive data into the buffer at the same time it is
-+   sending it. This will cause some packets to become corrupted. Same
-+   thing goes for feeding the same buffer into the FILL rings
-+   belonging to different queue ids or netdevs bound with the
-+   XDP_SHARED_UMEM flag.
-+
- Credits
- =======
- 
--- 
-2.7.4
+CHECK   net/bpfilter/bpfilter_kern.c
+net/bpfilter/bpfilter_kern.c:52:21: warning: cast removes address space '__user' of expression
 
+Using this recent sparse build:
+
+hch@brick:~/work/linux$ sparse --version
+v0.6.2-49-g707c5017
