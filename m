@@ -2,94 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58DA0227AD0
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 10:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10477227B2A
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 10:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728707AbgGUIhD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jul 2020 04:37:03 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:34951 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726529AbgGUIhC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 04:37:02 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-210-Hj1lpiGkPReD_62cmwnEEw-1; Tue, 21 Jul 2020 09:36:58 +0100
-X-MC-Unique: Hj1lpiGkPReD_62cmwnEEw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 21 Jul 2020 09:36:57 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 21 Jul 2020 09:36:57 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Christoph Hellwig' <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1728850AbgGUIyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 04:54:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60986 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726521AbgGUIyB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 04:54:01 -0400
+Received: from localhost (unknown [151.48.143.159])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1540D20717;
+        Tue, 21 Jul 2020 08:53:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595321640;
+        bh=QNgLkTCWY3EYQ3ieqDeHtG6YfjtHULYF0/ELxrPsN2E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OM1HOYQHL2BxjFDZYDMXkl7yk3Wp7Tpclxt2ZRxw/eq5vQx+DWyDCp6+uvfKScHh+
+         bi7tIwDy1Ro24OOHoHwXHjVVg8z0DrKionJByYRjP/i/fgt6Qr7IW8bJ4tsl4x8EOp
+         V9PV3kmhcMklyXOImOn6TABHO9dBraoT/qooPy/g=
+Date:   Tue, 21 Jul 2020 10:53:55 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <edumazet@google.com>
-CC:     "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "linux-hams@vger.kernel.org" <linux-hams@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
-        "linux-decnet-user@lists.sourceforge.net" 
-        <linux-decnet-user@lists.sourceforge.net>,
-        "linux-wpan@vger.kernel.org" <linux-wpan@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "mptcp@lists.01.org" <mptcp@lists.01.org>,
-        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>
-Subject: RE: [PATCH 12/24] bpfilter: switch bpfilter_ip_set_sockopt to
- sockptr_t
-Thread-Topic: [PATCH 12/24] bpfilter: switch bpfilter_ip_set_sockopt to
- sockptr_t
-Thread-Index: AQHWXznUwerjSVAdx0W80SUXvcknn6kRtZIA
-Date:   Tue, 21 Jul 2020 08:36:57 +0000
-Message-ID: <f9493b4c514441b4b51bc7e4e75e8c40@AcuMS.aculab.com>
-References: <20200720124737.118617-1-hch@lst.de>
- <20200720124737.118617-13-hch@lst.de>
-In-Reply-To: <20200720124737.118617-13-hch@lst.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Networking <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: linux-next: manual merge of the bpf-next tree with the net-next
+ tree
+Message-ID: <20200721085355.GA2315@lore-desk>
+References: <20200721121630.5c06c492@canb.auug.org.au>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="FCuugMFkClbJLl1L"
+Content-Disposition: inline
+In-Reply-To: <20200721121630.5c06c492@canb.auug.org.au>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christoph Hellwig
-> Sent: 20 July 2020 13:47
-> 
-> This is mostly to prepare for cleaning up the callers, as bpfilter by
-> design can't handle kernel pointers.
-                      ^^^ user ??
 
-	David
+--FCuugMFkClbJLl1L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+[...]
 
+> diff --cc include/net/xdp.h
+> index d3005bef812f,5be0d4d65b94..000000000000
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@@ -104,15 -98,12 +104,21 @@@ struct xdp_frame=20
+>   	struct net_device *dev_rx; /* used by cpumap */
+>   };
+>  =20
+>  +static inline struct skb_shared_info *
+>  +xdp_get_shared_info_from_frame(struct xdp_frame *frame)
+>  +{
+>  +	void *data_hard_start =3D frame->data - frame->headroom - sizeof(*fram=
+e);
+>  +
+>  +	return (struct skb_shared_info *)(data_hard_start + frame->frame_sz -
+>  +				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
+>  +}
+>  +
+> + struct xdp_cpumap_stats {
+> + 	unsigned int redirect;
+> + 	unsigned int pass;
+> + 	unsigned int drop;
+> + };
+
+Hi Stephen,
+
+the fix is correct, thanks and sorry for the noise. I will point out possib=
+le
+conflicts next time.
+
+Regards,
+Lorenzo
+
+> +=20
+>   /* Clear kernel pointers in xdp_frame */
+>   static inline void xdp_scrub_frame(struct xdp_frame *frame)
+>   {
+
+
+
+--FCuugMFkClbJLl1L
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXxatIAAKCRA6cBh0uS2t
+rGbTAQC483shj2VUfaMePo8unA0csxUt7uxG2tovQSubdPYP7AEAmoaZA903SipY
+JvkDxg2Cj8TAyNavq8nq3QFk00Kd7gI=
+=RPkj
+-----END PGP SIGNATURE-----
+
+--FCuugMFkClbJLl1L--
