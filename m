@@ -2,240 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17249228BCA
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 00:06:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0553228BE4
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 00:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729174AbgGUWGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 18:06:19 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:31247 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726686AbgGUWGS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 18:06:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595369175;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1drX5k7wXxd1OloGATtvbnUdSqXmULd42swYuvS87G0=;
-        b=gXIRjvrQ8kd+bEN7VqyQTuj1s2A8uCiP/tMzpkUSTlbJb/8MBNt///HWJoivxUTEMqHWCS
-        nyb0l3MsgElGMtJjLm5DPmIdpUgZoTVLIdpinaTdWuQmyNldooHeAjSmedPCSqpG1q0weD
-        BFMchIJGf7QKpiYO2d80UMqiNN0ezSM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-333-6FgYG1FjNjm6A49AzP2VsA-1; Tue, 21 Jul 2020 18:06:10 -0400
-X-MC-Unique: 6FgYG1FjNjm6A49AzP2VsA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8198E1005510;
-        Tue, 21 Jul 2020 22:06:07 +0000 (UTC)
-Received: from madcap2.tricolour.ca (unknown [10.10.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id A9220872FB;
-        Tue, 21 Jul 2020 22:05:51 +0000 (UTC)
-Date:   Tue, 21 Jul 2020 18:05:48 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, Ondrej Mosnacek <omosnace@redhat.com>,
-        dhowells@redhat.com, simo@redhat.com,
-        Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Subject: Re: [PATCH ghak90 V9 10/13] audit: add support for containerid to
- network namespaces
-Message-ID: <20200721220548.oy5iwquoohevlgbi@madcap2.tricolour.ca>
-References: <cover.1593198710.git.rgb@redhat.com>
- <e9c1216a361c38ebc9cb4089922c259e2cfd5013.1593198710.git.rgb@redhat.com>
- <CAHC9VhSRRN+Qq5dNx6Q5cG_TrXgbBMR0PNUYvf+Haf2na5wCfg@mail.gmail.com>
+        id S1728927AbgGUWSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 18:18:23 -0400
+Received: from mail-dm6nam11on2103.outbound.protection.outlook.com ([40.107.223.103]:64480
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726658AbgGUWSX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 18:18:23 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a/m09SWKXHp64JIzcVIFmOG5OOOj4PO6roC9EkWt4s7w8ZF69eTOn0zLS4MlGrLAsbWSUAjiyDOOMwcAei1TGqNreeI/Lq58dvTU0pxlFWsEKHGBQn37zvXi4Aeze/qBPMTzJGR+a5Z4g5WDO+FuGbV2FVPRWfbxg5kUOgazLKoFr/xgG1b5fHhqZNhgF7IvWur0MvDtQH5z9fY/DUeaQtplk/4a0QP99snP63vHy1MrJ6AOUYVcxkHNVOhLPBpQI458exE3dQOd485vuj4bIj3or7mKWuU4mGdFGcvcEP2cj2NulRIauDvK3fui/MHk+FtQAI2xtmwvG3Pr+pxRHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eM32M47G+qBC1f13+dMokFGo7ZvtwnPEa9dnHu2OiOs=;
+ b=YxL5LAcvUUSDPiSy8aWaPJ4frripzYl7d0195YlI1bCmHn3pR47l6OtyWFtB3Sms/cJzAY3Hmu3T79OvDQrkRs/itd/53QFDJSy+7wAk1SYMdF/5ErIKPlp8hXDswBG37koYRK6rSqFQo3cCPiAsagMlXJEr6T9ov8nQ9WGlgrXXMI3ecnjIl3BuorsxXsLhAO27dxL/BV0ppjR94pVAXy6kt1glnzofNxqsMvhdAOc6VYGwuuOmmIpemKtqzBwKaofrQu5gBm5k8Bow24SWQ26bKuE2Wm3mJFGmnrif0Ydqj5EERF7vqgnt6r7y+KdUAduf0gF0Qvs+X+jWVIA/OA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eM32M47G+qBC1f13+dMokFGo7ZvtwnPEa9dnHu2OiOs=;
+ b=gow/0vlSB3bOzrzXMbkGv0GuvYm/G+dfsPdvZNPHw2je/POWYoCo73qU0Hc93CWfHHsIjBRPN6kT/Q0or8ft2HO/VoQRxdhTkSQULZxPCeMBmP6aHrqRHKK9XO3FVvAQLOqfC7pinTVp2YfmPk4pMqzXJ3aVuPn3g4uyZmfyOXA=
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
+ (2603:10b6:207:30::18) by MN2PR21MB1485.namprd21.prod.outlook.com
+ (2603:10b6:208:205::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.5; Tue, 21 Jul
+ 2020 22:18:19 +0000
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::f5a4:d43f:75c1:1b33]) by BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::f5a4:d43f:75c1:1b33%5]) with mapi id 15.20.3239.007; Tue, 21 Jul 2020
+ 22:18:19 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     "Sriram Krishnan (srirakr2)" <srirakr2@cisco.com>,
+        David Miller <davem@davemloft.net>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "Malcolm Bumgardner (mbumgard)" <mbumgard@cisco.com>,
+        "Umesha G M (ugm)" <ugm@cisco.com>,
+        "Niranjan M M (nimm)" <nimm@cisco.com>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v3] net: hyperv: add support for vlans in netvsc driver
+Thread-Topic: [PATCH v3] net: hyperv: add support for vlans in netvsc driver
+Thread-Index: AQHWXrU+cNEwHb7+0Uu0LFIibsmHIakRHT0AgACBNYCAAPll4A==
+Date:   Tue, 21 Jul 2020 22:18:19 +0000
+Message-ID: <BL0PR2101MB0930B942CE2E4EB875EC38C2CA780@BL0PR2101MB0930.namprd21.prod.outlook.com>
+References: <20200720164551.14153-1-srirakr2@cisco.com>
+ <20200720.162726.1756372964350832473.davem@davemloft.net>
+ <292C3F77-60F5-4D24-8541-BCAE88C836AF@cisco.com>
+In-Reply-To: <292C3F77-60F5-4D24-8541-BCAE88C836AF@cisco.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-07-21T22:18:18Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=fea6b24a-7626-4acb-b693-05a572b613a6;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
+authentication-results: cisco.com; dkim=none (message not signed)
+ header.d=none;cisco.com; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [75.100.88.238]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 133155a5-b836-4e40-afd1-08d82dc3f950
+x-ms-traffictypediagnostic: MN2PR21MB1485:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR21MB1485BA1AE30440EA5F5EBCF7CA780@MN2PR21MB1485.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: d6PDJ2YQAJu+mzH8GLaCfitVtUFCbYLMnOY4wUJ+q+WqGTG+HMfufDDqok64tjdYq6IGraRg8V5ZEjnbvTXJyZ0FhCJPKvtq77OtxA6/mN98U6whb5cbRxLJiMrbI3b6FR5h/6mS5/00tlnIRMQuZQXBC13nf6L1L4cyfr1SGuHuYt7ATwdIUF4zadQMoo4qjoQsN5DSFrE/aU1oTlkYO07HyeKds63MxtC6EROv/yt0liVwp8W8SBVfr6lq+UQlJUsb4cw0vkCQj1KDTiJyBMvGL+Yjr3rUPPQXJmFysxqUIuToSdRSqQqZBpGcm4ZI/oOWcFl9Ew+ClRLQgc/AbQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB0930.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(376002)(346002)(136003)(396003)(366004)(6506007)(9686003)(82950400001)(82960400001)(53546011)(8990500004)(10290500003)(55016002)(54906003)(478600001)(8936002)(71200400001)(7416002)(86362001)(7696005)(2906002)(316002)(4326008)(5660300002)(186003)(66446008)(33656002)(76116006)(66476007)(26005)(66556008)(66946007)(64756008)(52536014)(8676002)(110136005)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: kJhTE2yiDRLoNEI+i0PvUJ4RAOtDNZa64aPZdeueQHY8rZ1ibb0C8h7KHorKXV7JzO/mo7eLxQKZ6MD2SUqIcyorxc4JFfwK5efkPiVw7wS0GusCrMbqHQWfqhjWDfUGt3piCocXEuuGILWpu8vt9zQneew936fK3EyXG92S4LCxhNKizGsz/+YSm40s1WHDCBkaiiBsAY50htRdu9shLaFoAmley+euUY0XRNzPnMUiRvu0Uc1zqKRucgQAWM0ySwzKo0tn+ET0+EKg0zsFvy/kAZKnFU+BbcUmN7rKhqgcoiiGJnMTzCp0zuVnlFskY/0dJgO+DOUPO7JrAOmOOw/NuBF5QeHmPCui2+qH0as7pYCJY/a2gh2NRqMHx7HJLPr+tRrGUzkXyPOwp/RTzL9JkjwU5GAMWu1GlQPXqqA38shx+9CxUT8c5J/bUjWIuiZfWVHBeh4oPsLhIAP/RqvOWcKrRKkNapbfDbQoQRc=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhSRRN+Qq5dNx6Q5cG_TrXgbBMR0PNUYvf+Haf2na5wCfg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB0930.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 133155a5-b836-4e40-afd1-08d82dc3f950
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2020 22:18:19.5933
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GBb+xq1iitf3xqlWGMfKAv4/3yzaX1L3AQKxK5GONiZ7H5Owa62bdx3zQ4nFyXDk4VTWnKBZkkc9IGPPEWB+Eg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1485
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-07-05 11:11, Paul Moore wrote:
-> On Sat, Jun 27, 2020 at 9:23 AM Richard Guy Briggs <rgb@redhat.com> wrote:
-> >
-> > This also adds support to qualify NETFILTER_PKT records.
-> >
-> > Audit events could happen in a network namespace outside of a task
-> > context due to packets received from the net that trigger an auditing
-> > rule prior to being associated with a running task.  The network
-> > namespace could be in use by multiple containers by association to the
-> > tasks in that network namespace.  We still want a way to attribute
-> > these events to any potential containers.  Keep a list per network
-> > namespace to track these audit container identifiiers.
-> >
-> > Add/increment the audit container identifier on:
-> > - initial setting of the audit container identifier via /proc
-> > - clone/fork call that inherits an audit container identifier
-> > - unshare call that inherits an audit container identifier
-> > - setns call that inherits an audit container identifier
-> > Delete/decrement the audit container identifier on:
-> > - an inherited audit container identifier dropped when child set
-> > - process exit
-> > - unshare call that drops a net namespace
-> > - setns call that drops a net namespace
-> >
-> > Add audit container identifier auxiliary record(s) to NETFILTER_PKT
-> > event standalone records.  Iterate through all potential audit container
-> > identifiers associated with a network namespace.
-> >
-> > Please see the github audit kernel issue for contid net support:
-> >   https://github.com/linux-audit/audit-kernel/issues/92
-> > Please see the github audit testsuiite issue for the test case:
-> >   https://github.com/linux-audit/audit-testsuite/issues/64
-> > Please see the github audit wiki for the feature overview:
-> >   https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
-> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > Acked-by: Neil Horman <nhorman@tuxdriver.com>
-> > Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
-> > ---
-> >  include/linux/audit.h    |  20 ++++++
-> >  kernel/audit.c           | 156 ++++++++++++++++++++++++++++++++++++++++++++++-
-> >  kernel/nsproxy.c         |   4 ++
-> >  net/netfilter/nft_log.c  |  11 +++-
-> >  net/netfilter/xt_AUDIT.c |  11 +++-
-> >  5 files changed, 195 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/include/linux/audit.h b/include/linux/audit.h
-> > index c4a755ae0d61..304fbb7c3c5b 100644
-> > --- a/include/linux/audit.h
-> > +++ b/include/linux/audit.h
-> > @@ -128,6 +128,13 @@ struct audit_task_info {
-> >
-> >  extern struct audit_task_info init_struct_audit;
-> >
-> > +struct audit_contobj_netns {
-> > +       struct list_head        list;
-> > +       struct audit_contobj    *obj;
-> > +       int                     count;
-> 
-> This seems like it might be a good candidate for refcount_t, yes?
-
-I considered this before when converting the struct audit_contobj to
-refcount_t, but decided against it since any updates are in the context
-of a list traversal where it could be added to the list and so the
-spinlock is already held anyways.
-
-Is there a more efficent or elegant way of doing the locking around the
-two list traversals below (_add and _del)?
-
-I wonder about converting the count to refcount_t and only holding the
-spinlock for the list_add_rcu() in the _add case.  And for the _del case
-holding the spinlock only for the list_del_rcu().
-
-These are the only two locations items are added or deleted from the
-lists.
-
-Somewhat related to this is does the list order matter?  Items are
-currently added at the end of the list which likely makes locking
-simpler, though the start of the list is a simple change.  However,
-unless we understand the profile of read use of these lists for
-reporting contid use in audit_log_netns_contid_list() I don't think
-order matters significantly.  It could be that reporting of a contid
-goes down in frequency over the lifetime of a contid that inserting them
-at the beginning of the list would be best.  This is not a visible
-implementation detail so later optimization should pose no problem.
-
-> > +       struct rcu_head         rcu;
-> > +};
-> 
-> ...
-> 
-> > diff --git a/kernel/audit.c b/kernel/audit.c
-> > index 997c34178ee8..a862721dfd9b 100644
-> > --- a/kernel/audit.c
-> > +++ b/kernel/audit.c
-> > @@ -437,6 +452,136 @@ static struct sock *audit_get_sk(const struct net *net)
-> >         return aunet->sk;
-> >  }
-> >
-> > +void audit_netns_contid_add(struct net *net, struct audit_contobj *cont)
-> > +{
-> > +       struct audit_net *aunet;
-> > +       struct list_head *contobj_list;
-> > +       struct audit_contobj_netns *contns;
-> > +
-> > +       if (!net)
-> > +               return;
-> > +       if (!cont)
-> > +               return;
-> > +       aunet = net_generic(net, audit_net_id);
-> > +       if (!aunet)
-> > +               return;
-> > +       contobj_list = &aunet->contobj_list;
-> > +       rcu_read_lock();
-> > +       spin_lock(&aunet->contobj_list_lock);
-> > +       list_for_each_entry_rcu(contns, contobj_list, list)
-> > +               if (contns->obj == cont) {
-> > +                       contns->count++;
-> > +                       goto out;
-> > +               }
-> > +       contns = kmalloc(sizeof(*contns), GFP_ATOMIC);
-> > +       if (contns) {
-> > +               INIT_LIST_HEAD(&contns->list);
-> > +               contns->obj = cont;
-> > +               contns->count = 1;
-> > +               list_add_rcu(&contns->list, contobj_list);
-> > +       }
-> > +out:
-> > +       spin_unlock(&aunet->contobj_list_lock);
-> > +       rcu_read_unlock();
-> > +}
-> > +
-> > +void audit_netns_contid_del(struct net *net, struct audit_contobj *cont)
-> > +{
-> > +       struct audit_net *aunet;
-> > +       struct list_head *contobj_list;
-> > +       struct audit_contobj_netns *contns = NULL;
-> > +
-> > +       if (!net)
-> > +               return;
-> > +       if (!cont)
-> > +               return;
-> > +       aunet = net_generic(net, audit_net_id);
-> > +       if (!aunet)
-> > +               return;
-> > +       contobj_list = &aunet->contobj_list;
-> > +       rcu_read_lock();
-> > +       spin_lock(&aunet->contobj_list_lock);
-> > +       list_for_each_entry_rcu(contns, contobj_list, list)
-> > +               if (contns->obj == cont) {
-> > +                       contns->count--;
-> > +                       if (contns->count < 1) {
-> 
-> One could simplify this with "(--countns->count) < 1", although if it
-> is changed to a refcount_t (which seems like a smart thing), the
-> normal decrement/test would be the best choice.
-
-Agreed.
-
-> > +                               list_del_rcu(&contns->list);
-> > +                               kfree_rcu(contns, rcu);
-> > +                       }
-> > +                       break;
-> > +               }
-> > +       spin_unlock(&aunet->contobj_list_lock);
-> > +       rcu_read_unlock();
-> > +}
-> 
-> paul moore
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU3JpcmFtIEtyaXNobmFu
+IChzcmlyYWtyMikgPHNyaXJha3IyQGNpc2NvLmNvbT4NCj4gU2VudDogVHVlc2RheSwgSnVseSAy
+MSwgMjAyMCAzOjEwIEFNDQo+IFRvOiBEYXZpZCBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+
+DQo+IENjOiBLWSBTcmluaXZhc2FuIDxreXNAbWljcm9zb2Z0LmNvbT47IEhhaXlhbmcgWmhhbmcN
+Cj4gPGhhaXlhbmd6QG1pY3Jvc29mdC5jb20+OyBTdGVwaGVuIEhlbW1pbmdlciA8c3RoZW1taW5A
+bWljcm9zb2Z0LmNvbT47DQo+IHdlaS5saXVAa2VybmVsLm9yZzsgTWFsY29sbSBCdW1nYXJkbmVy
+IChtYnVtZ2FyZCkNCj4gPG1idW1nYXJkQGNpc2NvLmNvbT47IFVtZXNoYSBHIE0gKHVnbSkgPHVn
+bUBjaXNjby5jb20+OyBOaXJhbmphbiBNDQo+IE0gKG5pbW0pIDxuaW1tQGNpc2NvLmNvbT47IHhl
+LWxpbnV4LWV4dGVybmFsKG1haWxlciBsaXN0KSA8eGUtbGludXgtDQo+IGV4dGVybmFsQGNpc2Nv
+LmNvbT47IGt1YmFAa2VybmVsLm9yZzsgbGludXgtaHlwZXJ2QHZnZXIua2VybmVsLm9yZzsNCj4g
+bmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZw0KPiBT
+dWJqZWN0OiBSZTogW1BBVENIIHYzXSBuZXQ6IGh5cGVydjogYWRkIHN1cHBvcnQgZm9yIHZsYW5z
+IGluIG5ldHZzYyBkcml2ZXINCj4gDQo+IA0KPiANCj4g77u/T24gMjEvMDcvMjAsIDQ6NTcgQU0s
+ICJEYXZpZCBNaWxsZXIiIDxkYXZlbUBkYXZlbWxvZnQubmV0PiB3cm90ZToNCj4gDQo+ICAgICBG
+cm9tOiBTcmlyYW0gS3Jpc2huYW4gPHNyaXJha3IyQGNpc2NvLmNvbT4NCj4gICAgIERhdGU6IE1v
+biwgMjAgSnVsIDIwMjAgMjI6MTU6NTEgKzA1MzANCj4gDQo+ICAgICA+ICsJaWYgKHNrYi0+cHJv
+dG9jb2wgPT0gaHRvbnMoRVRIX1BfODAyMVEpKSB7DQo+ICAgICA+ICsJCXUxNiB2bGFuX3RjaSA9
+IDA7DQo+ICAgICA+ICsJCXNrYl9yZXNldF9tYWNfaGVhZGVyKHNrYik7DQo+IA0KPiAgICA+IFBs
+ZWFzZSBwbGFjZSBhbiBlbXB0eSBsaW5lIGJldHdlZW4gYmFzaWMgYmxvY2sgbG9jYWwgdmFyaWFi
+bGUgZGVjbGFyYXRpb25zDQo+ICAgID4gYW5kIGFjdHVhbCBjb2RlLg0KPiANCj4gICAgID4gKwkJ
+CQluZXRkZXZfZXJyKG5ldCwiUG9wIHZsYW4gZXJyICV4XG4iLHBvcF9lcnIpOw0KPiANCj4gICAg
+ID4gQSBzcGFjZSBpcyBuZWNlc3NhcnkgYmVmb3JlICJwb3BfZXJyIi4NCj4gDQo+IENvbnNvbGlk
+YXRlZCBsaXN0IG9mIGNvbW1lbnRzIGFkZHJlc3NlZDoNCj4gPiAxLiBCbGFuayBsaW5lIGJldHdl
+ZW4gZGVjbGFyYXRpb24gYW5kIGNvZGUuDQo+IERvbmUNCj4gDQo+ID4gMi4gRXJyb3IgaGFuZGxp
+bmcgaXMgZGlmZmVyZW50IHRoYW4gb3RoZXIgcGFydHMgb2YgdGhpcyBjb2RlLg0KPiA+wqDCoCBw
+cm9iYWJseSBqdXN0IG5lZWQgYSBnb3RvIGRyb3Agb24gZXJyb3IuDQo+IERvbmUNCj4gDQo+ID4g
+SXQgc2VlbXMgbGlrZSB5b3UgYXJlIHB1dHRpbmcgaW50byBtZXNzYWdlLCB0aGVuIGRyaXZlciBp
+cyBwdXR0aW5nIGl0DQo+ID4gaW50byBtZXRhLWRhdGEgaW4gbmV4dCBjb2RlIGJsb2NrLiBNYXli
+ZSBpdCBzaG91bGQgYmUgY29tYmluZWQ/DQo+IE5vdCBkb25lDQo+IFRoaXMgd2FzIG9uIHB1cnBv
+c2UuIE1lcmdpbmcgdGhlIHR3byBjb2RlIGJsb2NrcyBtaWdodCBicmVhayBleGlzdGluZw0KPiBm
+dW5jdGlvbmFsaXR5Lg0KPiBUaGVyZSBjb3VsZCBiZSBvdGhlciBtb2RlcyB3aGVyZSB0aGUgcGFj
+a2V0IGFycml2ZXMgd2l0aCA4MDIuMXEgYWxyZWFkeSBpbg0KPiB0aGUgU2tiIGFuZCB0aGUgc2ti
+LT5wcm90b2NvbCBuZWVkbuKAmXQgYmUgODAyLjFxLg0KPiANCj4gPiBwYWNrZXQtPnRvdGFsX2J5
+dGVzIHNob3VsZCBiZSB1cGRhdGVkIHRvby4NCj4gTm90IGRvbmUuDQo+IFRoZSB0b3RhbF9ieXRl
+cyBuZWVkcyBiZSB0aGUgdG90YWwgbGVuZ3RoIG9mIHBhY2tldCBhZnRlciB0aGUgaG9zdCBPUyBh
+ZGRzIHRoZQ0KPiA4MDIuMXEgaGVhZGVyIGJhY2sgaW4gYmVmb3JlIHR4LiBVcGRhdGluZyB0aGUg
+dG90YWxfYnl0ZXMgdG8gLT0gVkxBTl9IRUFERVINCj4gd2lsbCBsZWFkIHRvIHBhY2tldCBkcm9w
+IGluIHRoZSBIb3N0IE9TIGRyaXZlci4NCg0KSWYgeW91IG1ha2UgdGhpcyBjaGFuZ2UsIGRpZCB5
+b3Ugc2VlIGFueSBkcm9wIGluIGEgbGl2ZSB0ZXN0PyBUaGUNCiJwYWNrZXQtPnRvdGFsX2J5dGVz
+IiBpbiBzdHJ1Y3QgaHZfbmV0dnNjX3BhY2tldCAgaXMgZm9yIGJvb2sga2VlcGluZyANCm9ubHks
+IHdoaWNoIGlzIHVzZWQgZm9yIHN0YXRzIGluZm8sIGFuZCBub3QgdmlzaWJsZSBieSB0aGUgaG9z
+dCBhdCBhbGwuDQoNCkkgbWFkZSB0aGlzIHN1Z2dlc3Rpb24gYmVjYXVzZSB0aGUgInJlZ3VsYXIi
+IHZsYW4gcGFja2V0IGxlbmd0aCB3YXMgDQpjb3VudGVkIGJ5IGJ5dGVzIHdpdGhvdXQgdGhlIFZM
+QU5fSExFTig0KSAtLSB0aGUgdmxhbiB0YWcgaXMgDQppbiB0aGUgc2tiIG1ldGFkYXRhLCBzZXBh
+cmF0ZWx5IGZyb20gdGhlIGV0aGVybmV0IGhlYWRlci4gSSB3YW50IHRoZSANCnN0YXRpc3RpY2Fs
+IGRhdGEgZm9yIEFGX1BBQ0tFVCBtb2RlIGNvbnNpc3RlbnQgd2l0aCB0aGUgcmVndWxhciBjYXNl
+Lg0KDQpzdHJ1Y3QgaHZfbmV0dnNjX3BhY2tldCB7DQogICAgICAgIC8qIEJvb2trZWVwaW5nIHN0
+dWZmICovDQogICAgICAgIHU4IGNwX3BhcnRpYWw7IC8qIHBhcnRpYWwgY29weSBpbnRvIHNlbmQg
+YnVmZmVyICovDQoNCiAgICAgICAgdTggcm1zZ19zaXplOyAvKiBSTkRJUyBoZWFkZXIgYW5kIFBQ
+SSBzaXplICovDQogICAgICAgIHU4IHJtc2dfcGdjbnQ7IC8qIHBhZ2UgY291bnQgb2YgUk5ESVMg
+aGVhZGVyIGFuZCBQUEkgKi8NCiAgICAgICAgdTggcGFnZV9idWZfY250Ow0KDQogICAgICAgIHUx
+NiBxX2lkeDsNCiAgICAgICAgdTE2IHRvdGFsX3BhY2tldHM7DQoNCiAgICAgICAgdTMyIHRvdGFs
+X2J5dGVzOw0KICAgICAgICB1MzIgc2VuZF9idWZfaW5kZXg7DQogICAgICAgIHUzMiB0b3RhbF9k
+YXRhX2J1ZmxlbjsNCn07DQoNClRoYW5rcw0KLSBIYWl5YW5nDQo=
