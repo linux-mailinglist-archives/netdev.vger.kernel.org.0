@@ -2,155 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9013A228169
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 15:56:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D5AC228185
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 16:01:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728356AbgGUN43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 09:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49142 "EHLO
+        id S1728342AbgGUOBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 10:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726359AbgGUN43 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 09:56:29 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0B4C061794
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 06:56:28 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id a15so6359167wrh.10
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 06:56:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=S++uFRP09ZuFrTLUiysiSiwMq+fPcXJJ3gKqMef2s+k=;
-        b=xgOr8N9c+O1aa/Ev6JM0ra97PxUA3eQpFgvriGVG5kU/apH/FjBaC7BlCd/ubb15hC
-         BydmAizwNV3srQB6ePSs3qqp26PW/g5nLaXouD7X5tIaA8OR2VGQj47u5e8J9J/01vEi
-         QB+lNrvmsNQm590S1tj2B2pKYKTK7UL018LVud5+0Hc8FB7F2EfYv1O94mj68wk2B4F9
-         cSbGJl2eNTFjl7nSefPoJUyHtd9lMoD1pxk2w6uRc7kFpgMhSOin6hl+D99uo13JycML
-         xCsiboktK+tsx3uaN8gaaf9RaHOUiEyIxUUfxzaOo95Zd4uuA3yN3JF7KwfqUco59QgS
-         mEgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=S++uFRP09ZuFrTLUiysiSiwMq+fPcXJJ3gKqMef2s+k=;
-        b=R30u1Ibn0TQ1tJ3xWuIB0SyOTOBAkC4ER0E41L6/cEo1bV1cMY58OI9HJ8fCNOvkf/
-         Awol8LfGQ+Qey9EhRdcmUM+WVU5fdbN/H9ZNhLvrbkh3dEeBC+jVTmBh17kKfqBmTPsD
-         0ZP3+OGS05FjD9S5qv/rSilSNFZoe6irIjr62XtKdyTLYPD7HFWDtafuy9fk8IBGDFf4
-         Oe5fHzpsjl6AoMlnurldMBQrE34KVcgDcPQI4Q+mh8TD2iFJhwvFWcsCoh/ZuqqhrLGR
-         IS6IbLPsBz+CoNdEMAykH1FM7xuuai+M37ZsnwC+N9/sgjq7RBThbp355Sfi66tljT23
-         Bc5A==
-X-Gm-Message-State: AOAM532533nVNA/9F2VameDjNRVAmLTV67eRpsmVdQeMVl+bcdoegpvT
-        eQKzC1w/VyG+DULQuc5meWcW6Q==
-X-Google-Smtp-Source: ABdhPJxsrv9bG39f1EAvrY+CtqK1dKSk6do85jJq0jZQ4gjzzLiSAzUjXdY/Mo+YMZ9eNdX+f7plSw==
-X-Received: by 2002:a05:6000:1190:: with SMTP id g16mr25522341wrx.286.1595339787570;
-        Tue, 21 Jul 2020 06:56:27 -0700 (PDT)
-Received: from localhost (ip-89-103-111-149.net.upcbroadband.cz. [89.103.111.149])
-        by smtp.gmail.com with ESMTPSA id d201sm3544598wmd.34.2020.07.21.06.56.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 06:56:27 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 15:56:26 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Jakub Kicinski <kubakici@wp.pl>, netdev@vger.kernel.org,
-        Tom Herbert <tom@herbertland.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>
-Subject: Re: [RFC PATCH net-next v2 6/6] devlink: add overwrite mode to flash
- update
-Message-ID: <20200721135626.GC2205@nanopsycho>
-References: <20200717183541.797878-1-jacob.e.keller@intel.com>
- <20200717183541.797878-7-jacob.e.keller@intel.com>
- <20200720100953.GB2235@nanopsycho>
- <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <078815e8-637c-10d0-b4ec-9485b1be5df0@intel.com>
+        with ESMTP id S1726679AbgGUOBO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 10:01:14 -0400
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12230C061794;
+        Tue, 21 Jul 2020 07:01:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=oTgZRI0XTu+KKf9fJAsHbk4XxWkP+3+hZL933Fd82/8=; b=b0oozE+birNetBzfoYgQHxGVGy
+        ZO/qzInVOC3h4VIIGMH/QOrEBklKfJvle7+UZ5VP7SlvSIAiGtF1T55eeojMweHh5TpGfylkQuRud
+        trTMxJDln34y/fLAl+IqbSSLScmTGt8umCAI0TR7R0i4p82u9Kl2SQwTHndRMvehSAkOkBman/x5T
+        oCQjnXVNv9FdiAw9mZfxR727UsViizJB8mKXOGAU9EMN8b2rmtkOUWN/TF7SphLuUOmT7WeiXwhCX
+        UsVkT0AdUzzY/MJTpC8z+l8Uvv2NhvgPzdltrtJyJU/OC5jOC0TOMJw4Frh86pmbpus6z00Ohpmgq
+        qel0geGw==;
+Received: from [2601:1c0:6280:3f0::19c2]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jxspL-0007ME-IB; Tue, 21 Jul 2020 14:01:03 +0000
+Subject: Re: [PATCH bpf-next] bpf, netns: Fix build without CONFIG_INET
+To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+References: <20200721100716.720477-1-jakub@cloudflare.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <1140c2d9-f0a4-97da-5f3f-23190e6bc6b9@infradead.org>
+Date:   Tue, 21 Jul 2020 07:00:58 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <078815e8-637c-10d0-b4ec-9485b1be5df0@intel.com>
+In-Reply-To: <20200721100716.720477-1-jakub@cloudflare.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jul 20, 2020 at 08:52:58PM CEST, jacob.e.keller@intel.com wrote:
->
->
->On 7/20/2020 8:51 AM, Jakub Kicinski wrote:
->> On Mon, 20 Jul 2020 12:09:53 +0200 Jiri Pirko wrote:
->>> This looks odd. You have a single image yet you somehow divide it
->>> into "program" and "config" areas. We already have infra in place to
->>> take care of this. See DEVLINK_ATTR_FLASH_UPDATE_COMPONENT.
->>> You should have 2 components:
->>> 1) "program"
->>> 2) "config"
->>>
->
->First off, unfortunately at least for ice, the "main" section of NVM
->contains both the management firmware as well as config settings. I
->don't really have a way to split it up.
+On 7/21/20 3:07 AM, Jakub Sitnicki wrote:
+> When CONFIG_NET is set but CONFIG_INET isn't, build fails with:
+> 
+>   ld: kernel/bpf/net_namespace.o: in function `netns_bpf_attach_type_unneed':
+>   kernel/bpf/net_namespace.c:32: undefined reference to `bpf_sk_lookup_enabled'
+>   ld: kernel/bpf/net_namespace.o: in function `netns_bpf_attach_type_need':
+>   kernel/bpf/net_namespace.c:43: undefined reference to `bpf_sk_lookup_enabled'
+> 
+> This is because without CONFIG_INET bpf_sk_lookup_enabled symbol is not
+> available. Wrap references to bpf_sk_lookup_enabled with preprocessor
+> conditionals.
+> 
+> Fixes: 1559b4aa1db4 ("inet: Run SK_LOOKUP BPF program on socket lookup")
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 
-You don't have to split it up. Just for component "x" you push binary
-"A" and flash part of it and for comonent "y" you push the same binary
-"A" and flash different part of it.
+Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
 
-Consider the component as a "mask" in your case.
+Thanks.
+
+> ---
+>  kernel/bpf/net_namespace.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
+> index 4e1bcaa2c3cb..71405edd667c 100644
+> --- a/kernel/bpf/net_namespace.c
+> +++ b/kernel/bpf/net_namespace.c
+> @@ -28,9 +28,11 @@ DEFINE_MUTEX(netns_bpf_mutex);
+>  static void netns_bpf_attach_type_unneed(enum netns_bpf_attach_type type)
+>  {
+>  	switch (type) {
+> +#ifdef CONFIG_INET
+>  	case NETNS_BPF_SK_LOOKUP:
+>  		static_branch_dec(&bpf_sk_lookup_enabled);
+>  		break;
+> +#endif
+>  	default:
+>  		break;
+>  	}
+> @@ -39,9 +41,11 @@ static void netns_bpf_attach_type_unneed(enum netns_bpf_attach_type type)
+>  static void netns_bpf_attach_type_need(enum netns_bpf_attach_type type)
+>  {
+>  	switch (type) {
+> +#ifdef CONFIG_INET
+>  	case NETNS_BPF_SK_LOOKUP:
+>  		static_branch_inc(&bpf_sk_lookup_enabled);
+>  		break;
+> +#endif
+>  	default:
+>  		break;
+>  	}
+> 
 
 
->
->This series includes support for updating the main NVM section
->containing the management firmware (and some config) "fw.mgmt", as well
->as "fw.undi" which contains the OptionROM, and "fw.netlist" which
->contains additional configuration TLVs.
->
->The firmware interface allows me to separate the three components, but
->does not let me separate the "fw binary" from the "config settings" that
->are stored within the main NVM bank. (These fields include other data
->like the device MAC address and VPD area of the device too, so using
->"config" is a bit of a misnomer).
->
->>> Then it is up to the user what he decides to flash.
->> 
->> 99.9% of the time users want to flash "all". To achieve "don't flash
->> config" with current infra users would have to flash each component 
->> one by one and then omit the one(s) which is config (guessing which 
->> one that is based on the name).
->> 
->> Wouldn't this be quite inconvenient?
->> 
->
->I also agree here, I'd like to be able to make the "update with the
->complete file" just work in the most straight forward  way (i.e. without
->erasing stuff by accident) be the default.
->
->The option I'm proposing here is to enable allowing tools to optionally
->specify handling this type of overwrite. The goal is to support these
->use cases:
->
->a) (default) just update the image, but keep the config and vital data
->the same as before the update.
->
->b) overwrite config fields, but keep vital fields the same. Intended to
->allow returning configuration to "image defaults". This mostly is
->intended in case regular update caused some issues like if somehow the
->config preservation didn't work properly.
->
->c) overwrite all fields. The intention here is to allow programming a
->customized image during initial setup that would contain new IDs etc. It
->is not expected to be used in general, as this does overwrite vital data
->like the MAC addresses and such.
->
->So the problem is that the vital data, config data, and firmware
->binaries are stored in the same section, without a good way to separate
->between them. We program all of these together as one chunk to the
->"secondary NVM bank"  and then ask firmware to update. It reads through
->and based on our "preservation" setting will update the binaries and
->merge the configuration sections.
->
->> In case of MLX is PSID considered config?
->> 
+-- 
+~Randy
