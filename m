@@ -2,116 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E3A32275B2
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 04:38:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 893142275B9
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 04:40:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728432AbgGUCiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 22:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55588 "EHLO
+        id S1727038AbgGUCkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 22:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726264AbgGUCh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 22:37:58 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D92C061794;
-        Mon, 20 Jul 2020 19:37:58 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id l6so17894188qkc.6;
-        Mon, 20 Jul 2020 19:37:58 -0700 (PDT)
+        with ESMTP id S1725857AbgGUCkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 22:40:16 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5362DC061794
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 19:40:16 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id x8so9585771plm.10
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 19:40:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NWS6zbF9VWo5oMAvQTBUWggBuwxufh05HWBlDSCFVtY=;
-        b=lvbZO6T4S0JGTmIHngm7LcUDDSa7cYxUCD/N7eSe0bUJv9CdFNjPXhhBoqTZPHDm2G
-         Yod4c9r3tNdUZKWAR0wIjfUxWrKIS4FlBhq1adqROQ9WbF9gMJ3ZqBgFnuyZ6fSkCjG1
-         Uw99uZr155ulZEFn/20xJq4H2IVG5Ib4JPsgnakUPJiPqLvJNda9NHHAb2tNQBAlSe6l
-         p/pbm1/C5XMUmsaI8hqn69uppLen6jZrMKWQZbGqsLL6jfLH2RmnozMAC5fmiVO8uBjG
-         ukBg+OfAgtBvaQZ5IBveUACxNIVSMeDwFkl2z2ZgyQ2dpOpYHqdZb5qoVnRmaQ5acHmE
-         8E8Q==
+        h=from:to:cc:subject:date:message-id;
+        bh=9QazzlKwtoXyJArgNhvH1RvSiHmi85K86y75+aquz48=;
+        b=kinZNmUfTmn1r9LjoAfwG/bXhszUT3ZDdGmoJUR+8va6X6gF14FuT+XxI4+F7JLgzr
+         c9kU7vFTR3ZHhkfHEZhgFw9Y3LNFsLg0y1ABZyfjus9QSpyjNg6kynhgdZ9/Q62l1hoR
+         yRp5C3fFvppgdiRzwrsL7ciuf51UkvYIA8uETVoUYivW6HcYp1LRpRnWWVbHs5sSI6D1
+         /imqruLRUclx+Vf2MzU0EUIUhOD2I/QhvpsMeSsWTjpLhNadHjPf/NmGa8TIRkkg9byv
+         ronGBxNA510M5DPvVt6UweOF2nuf15STnVneW62H4hQuqNiL7t5oCBro1Co2rOiJ7WN7
+         r/6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NWS6zbF9VWo5oMAvQTBUWggBuwxufh05HWBlDSCFVtY=;
-        b=YFLOM1o2K78pLptfRK/ahpRffofGP0UhlWp/BY1gtlhZsOpykc97743XVgu3Arpwih
-         3IL24LPddu3EDeHeW+UbkDsosaOi8LS937XQmbb1Vv6sqQvcM5BmL3jw/8yM7oTx05Ka
-         yfQkQmWXldfTKWyfnienTutv14fK0IOP3EPGeEAhIHBKeoGUWFdbOjD0+tU598mytN9f
-         z+pK+3XJFiiMaHAalxsAE4+oC5pQl00UDX+nMew0N7yamKMgogzzTF9zrz6hsL3c6Wq7
-         I9efb0tfxnphAsGO+MHmc3lQg7OEREYLHM8hPs7F8VF9dZoMZ9CuNxCQl3dMxBhQCc7K
-         CTSw==
-X-Gm-Message-State: AOAM531QiS0eSnLFMG/wnfF8k08dcaQy+yAh2LZZOiD+INkiqeOomtxF
-        8UtZTCfalHSoRwklj3+lgHTUx1i6aG2+BU7OWj0=
-X-Google-Smtp-Source: ABdhPJxKgcEN3NO4mCS8ShSobjtP7cd5qUzLj6nTuBVhG2NvdlUW5ewWYlMxI9s9TVnBnlaVeKdGCU5zYmXf3rChzPk=
-X-Received: by 2002:ae9:f002:: with SMTP id l2mr25752391qkg.437.1595299077929;
- Mon, 20 Jul 2020 19:37:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200715214312.2266839-1-haoluo@google.com> <20200715214312.2266839-3-haoluo@google.com>
- <CAEf4BzYxWk9OmN0QhDrvE943YsYd2Opdkbt7NQTO9-YM6c4aGw@mail.gmail.com> <CA+khW7i9wq0+2P_M46pEv-onGXL_=sW7xE=10CYeP_yjPh-Rpw@mail.gmail.com>
-In-Reply-To: <CA+khW7i9wq0+2P_M46pEv-onGXL_=sW7xE=10CYeP_yjPh-Rpw@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 20 Jul 2020 19:37:47 -0700
-Message-ID: <CAEf4BzY=6PH4YS8sX1SRFOj+6oQnfAk-f0P8+0XWMGMS+RJ0pw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 2/2] selftests/bpf: Test __ksym externs with BTF
-To:     Hao Luo <haoluo@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Quentin Monnet <quentin@isovalent.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=9QazzlKwtoXyJArgNhvH1RvSiHmi85K86y75+aquz48=;
+        b=ioO4B9X9aTZwElF5o0yWJrjQSIbRvNSVhNtMWUszHQRXezHs4BekDanULPcu6VEecc
+         feRpMAxC726QzftrZ3yW0osSGLoDWEA2g9UJohawg2ZBK4A3h9CCia3FvBL+o5uz8C8Y
+         C1qPF3QOZhCrbFTZ0R9909xpvhNhsT18yBHc/EQ7OGI761fGdH+mE7Gq084+T7q159OE
+         loDNxmNFIHkld8g0kzET4DIxDeO1+83AXwIOiwWfGGGrG8xUo8T2F+huPFhJQUCM0Vfk
+         wZMfHt7OFOXfxRotFHrwtjHwhqpIUiW8K5VUFBH0ndRVooZp5+JAEC0mAUPspw4ni0Uv
+         lNuA==
+X-Gm-Message-State: AOAM532KXKbv5lgMEtVGpbp2ei3xcGs4v8p9SfgupcEroAfVfJZETFY8
+        jmSQu6XeEwt/M9u6BDAWHew=
+X-Google-Smtp-Source: ABdhPJwMo4zSOQ1VsO5uLSMFdfoUaadT0SMHohPawKkJCeaZDyJJNAiT1FYVHyIlh2wCTqvSr/sm9w==
+X-Received: by 2002:a17:90a:5607:: with SMTP id r7mr2331069pjf.56.1595299215896;
+        Mon, 20 Jul 2020 19:40:15 -0700 (PDT)
+Received: from hyd1soter3.caveonetworks.com ([115.113.156.2])
+        by smtp.googlemail.com with ESMTPSA id i21sm18499114pfa.18.2020.07.20.19.40.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2020 19:40:15 -0700 (PDT)
+From:   rakeshs.lkm@gmail.com
+To:     sbhatta@marvell.com, sgoutham@marvell.com, jerinj@marvell.com,
+        rsaladi2@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+Cc:     Rakesh Babu <rakeshs.lkm@gmail.com>
+Subject: [PATCH v2 0/2] Interrupt handler support for NPA and NIX in Octeontx2.
+Date:   Tue, 21 Jul 2020 08:08:45 +0530
+Message-Id: <20200721023847.2567-1-rakeshs.lkm@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 20, 2020 at 1:28 PM Hao Luo <haoluo@google.com> wrote:
->
-> >
-> > This should ideally look like a real global variable extern:
-> >
-> > extern const struct rq runqueues __ksym;
-> >
-> >
-> > But that's the case for non-per-cpu variables. You didn't seem to
-> > address per-CPU variables in this patch set. How did you intend to
-> > handle that? We should look at a possible BPF helper to access such
-> > variables as well and how the verifier will prevent direct memory
-> > accesses for such variables.
-> >
-> > We should have some BPF helper that accepts per-CPU PTR_TO_BTF_ID, and
-> > returns PTR_TO_BTF_ID, but adjusted to desired CPU. And verifier
-> > ideally would allow direct memory access on that resulting
-> > PTR_TO_BTF_ID, but not on per-CPU one. Not sure yet how this should
-> > look like, but the verifier probably needs to know that variable
-> > itself is per-cpu, no?
-> >
->
-> Yes, that's what I was unclear about, so I don't have that part in
-> this patchset. But your explanation helped me organize my thoughts. :)
->
-> Actually, the verifier can tell whether a var is percpu from the
-> DATASEC, since we have encoded "percpu" DATASEC in btf. I think the
-> following should work:
->
-> We may introduce a new PTR_TO_BTF_VAR_ID. In ld_imm, libbpf replaces
-> ksyms with btf_id. The btf id points to a KIND_VAR. If the pointed VAR
-> is found in the "percpu" DATASEC, dst_reg is set to PTR_TO_BTF_VAR_ID;
-> otherwise, it will be a PTR_TO_BTF_ID. For PTR_TO_BTF_VAR_ID,
-> reg->btf_id is the id of the VAR. For PTR_TO_BTF_ID, reg->btf_id is
-> the id of the actual kernel type. The verifier would reject direct
-> memory access on PTR_TO_BTF_VAR_ID, but the new BPF helper can convert
-> a PTR_TO_BTF_VAR_ID to PTR_TO_BTF_ID.
+From: Rakesh Babu <rakeshs.lkm@gmail.com>
 
-Sounds good to me as a plan, except that PTR_TO_BTF_VAR_ID is a
-misleading name. It's always a variable. The per-CPU part is crucial,
-though, so maybe something like PTR_TO_PERCPU_BTF_ID?
+Changes from v1.
+1. Assigned void pointers to another type of pointers without type casting.
+2. Removed Switch and If cases in interrupt handlers and printed the hexa
+value of the interrupt
 
->
-> Hao
+Jerin Jacob (2):
+  octeontx2-af: add npa error af interrupt handlers
+  octeontx2-af: add nix error af interrupt handlers
+
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |  12 ++
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   4 +
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 148 +++++++++++++++
+ .../ethernet/marvell/octeontx2/af/rvu_npa.c   | 176 ++++++++++++++++++
+ .../marvell/octeontx2/af/rvu_struct.h         |  20 ++
+ 5 files changed, 360 insertions(+)
+
+--
+2.17.1
