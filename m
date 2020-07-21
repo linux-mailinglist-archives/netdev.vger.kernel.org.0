@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEEB92274C8
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 03:42:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A3802274CF
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 03:42:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728296AbgGUBmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 21:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
+        id S1728391AbgGUBmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 21:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728228AbgGUBmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 21:42:08 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9037C061794;
-        Mon, 20 Jul 2020 18:42:08 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id k18so15002144qtm.10;
-        Mon, 20 Jul 2020 18:42:08 -0700 (PDT)
+        with ESMTP id S1728293AbgGUBmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 21:42:11 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EEEC061794;
+        Mon, 20 Jul 2020 18:42:10 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id d27so15034925qtg.4;
+        Mon, 20 Jul 2020 18:42:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3kzc+irLFgVhQ9n0dTjUMyvUgBauAQI5DCdqyR/t7/A=;
-        b=Ez//KUJcJVRbq+3weK/7MJV2HoNSXJuE8Qoo15LekqLu5Gs0V2iAQqqDORE8TVabCs
-         tC3oyBPyNOBaM8PvPKik9ToC+Z9xDmfWgXFZIwvKY+WvnNq5+iyK7cRdehWha1VzIYc1
-         Uh2ZtUXuWzJj/7+EOXjUbc9wmAOipp2IVJTiH0JhFyPjezjrYbSQjucIzpZcT3hLHpPW
-         Z8L2tug8I/o4F5G3bpkWeuaHaUbz4zFWjC346U/BW1y3RWoAtlvtM0TSAXiMX0gbTjgr
-         qGaC2uyW1gM/i7kphNSX0fpIJmnsekKa5W2ICPokqABxp91uiI47sHb0kkcISchb3qYE
-         OsWA==
+        bh=xkjJqCA8YZaaNIBsGoxFL3NuJEwbh2dJ4VQ8Tg5P7Z4=;
+        b=Zop0mPg0OtPu+HEBKd4RV0b8PD3u6dBBhssMnc4fJQxD76x9xt4+obrL1iQHQQ4tJF
+         oGPcU0bg+dDsHJN7sDMcEguu6vlngmK8LpwiwTLo8bxwIpcstrU8o5iPUXR7lSW4368d
+         F+wOHRgl7R7d7gtpDAmLXRuRfCwS1FJoaUyjp68RNOyb8rd7GzkEbx9hLeBL/SNBJcBN
+         BoUWipSItJngLPABWL41mU4BPdjpYKucx2UhJKKDVeu5cSlntE2Rg2pX+v/bOGvNMBRA
+         KYEQVunS3M6IrGewWIQaKWashpzXXj2EGUGEaQFQ1juvPMkxENF0lV8QcRCg+6ime5jz
+         Byyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3kzc+irLFgVhQ9n0dTjUMyvUgBauAQI5DCdqyR/t7/A=;
-        b=dMLUFfStqJ8TougXY051kNLFJ6ximVIalWyrtZkS0WDXhQS5r8yYCYWEvMvNruOeJy
-         xuW5cisnoOLpE3JbS/IBBzE743+iqbXe78fmTTvh3dIHea8+7hS8poOWvUCsdcQ/U2Gq
-         xxIh92wPUSPfJvxVK2Azagyb2iNvLHkUvdpJCM3XDB0PrEzvWzIgXMJmBzTEAzrT4pOp
-         /iNczfD6r7tGUTLRUdGn2OiXHovN2hC8wogn/xEyQUIzIbAr/AL4XV45fdTKBFGJaSTW
-         I5fEr3y96+c3YGpSXiiSu47dB1So3dNV2mwhDKy9vr8zor21ZjUY6HOgxB+OevMZUXdO
-         q+yw==
-X-Gm-Message-State: AOAM532qyOXufTdkJ2/wtSLA6zuic5o8MaiZcfBimH4vEuQwX4/ZSGFi
-        a98oZF+HEwuPQ0NnO5eTeAc=
-X-Google-Smtp-Source: ABdhPJyGe3BmZBj3Tl8E3RN3ZLtlD2biGimL4+HNYM3VYCR/VMLwhvtqRPxR9MTrubEvorRmOrNgcg==
-X-Received: by 2002:ac8:649:: with SMTP id e9mr26220277qth.314.1595295728056;
-        Mon, 20 Jul 2020 18:42:08 -0700 (PDT)
+        bh=xkjJqCA8YZaaNIBsGoxFL3NuJEwbh2dJ4VQ8Tg5P7Z4=;
+        b=BmgKxh07tI+A+wIE/u1eRF9zDh/n8HfKK57Jg/Hn3GpgzFdj/wp7Kzd2Y3ikDJdwbq
+         v7fZXR0NG2ifoCQKT0oEeVIcg5o7lRNBz4Jel73UcDEfSEVfSUx406hQXyBeW4kDyu2Y
+         dh6cALmeg7GR3glf994pDjk2zve+XqX4lbit4j0FDUUO1xSRwgc2PknFoGJ6ZfVRzP5j
+         T8fHnU68KJGB6sABgw1WnbsSkDoCgbn2rJVVLs61DBmQWrWeykgkcxCbNX30OW9qKEAZ
+         wHoRGOXtsYklptEIGzO+uqm3JslD/B48QVXLayxHignsxa8ovGKZzagVpUdmngsAWhYL
+         Iygw==
+X-Gm-Message-State: AOAM530PABgFdn5e8bwug6fPJKcIXTaMdKzREF0Ri2Ww3fKUtjntB/DB
+        cy5tgWKX5SO5juKkQEcKciw=
+X-Google-Smtp-Source: ABdhPJyVH14I3938Qst+xsZJVFXgCcXexPLIY9zYTYKY2/RK1Q+QgT/7gpuyZkaL58XU8XVJoD2wxg==
+X-Received: by 2002:ac8:154:: with SMTP id f20mr25116256qtg.331.1595295729829;
+        Mon, 20 Jul 2020 18:42:09 -0700 (PDT)
 Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com. [66.111.4.227])
-        by smtp.gmail.com with ESMTPSA id a193sm1092131qkc.102.2020.07.20.18.42.07
+        by smtp.gmail.com with ESMTPSA id s24sm21969705qtb.63.2020.07.20.18.42.08
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 Jul 2020 18:42:07 -0700 (PDT)
+        Mon, 20 Jul 2020 18:42:09 -0700 (PDT)
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailauth.nyi.internal (Postfix) with ESMTP id EAC4F27C0054;
-        Mon, 20 Jul 2020 21:42:06 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 20 Jul 2020 21:42:06 -0400
-X-ME-Sender: <xms:7kcWX1yBqxo2IxaO2W-c7aTLx3QXhVJhq3nmnGWycUPWKZefFYHQWw>
+        by mailauth.nyi.internal (Postfix) with ESMTP id A0C8727C0054;
+        Mon, 20 Jul 2020 21:42:08 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 20 Jul 2020 21:42:08 -0400
+X-ME-Sender: <xms:8EcWX4GEJ_Ej8GgyY0TcapdGhrJjktZ2xnicri9tsn1b6NlUza-onQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrgeehgdegjecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenog
@@ -64,13 +64,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrgeehgdegjecutefuodetggdote
     sghoqhhunhdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqieelvdeghedtie
     egqddujeejkeehheehvddqsghoqhhunhdrfhgvnhhgpeepghhmrghilhdrtghomhesfhhi
     gihmvgdrnhgrmhgv
-X-ME-Proxy: <xmx:7kcWX1TYBMIafZQyLXsAIsJNdjLqclNRKCpF2Xfp5gsQRhETsfEF7g>
-    <xmx:7kcWX_XrOzPs6XVPkH-ChbCkbH7o5_Ltln6K56xOm6y1uDOGNmPYRw>
-    <xmx:7kcWX3gBQedZbb5fRUtxTUHS9Dmk202AfQUyZhlAXwtMRZe-7bIDug>
-    <xmx:7kcWX_YTW5mzISxfWKIIMi7Q286n_yCHY5vjSlR9GUnhq7PN32k3YowZrJQ>
+X-ME-Proxy: <xmx:8EcWXxVtwXvuCAR8kU59rp0Iy4U7HpzQkNX_5FA3J76uhALKnCXUXA>
+    <xmx:8EcWXyKoGDb3JjefZKSl0Ffgji5fmWUqtB3flGpwmqizdp7cyxh_Pg>
+    <xmx:8EcWX6GOye_UaUeG-tKEMWF7BA9nNJwwEWdujgchd-X2CPylAqge_g>
+    <xmx:8EcWX_uxBrswW14bMuhPXyB1smBXQ3piR_wdhWXVRgAJOa8xfDl5USpRA_s>
 Received: from localhost (unknown [52.155.111.71])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 64F8E3280070;
-        Mon, 20 Jul 2020 21:42:06 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3456130600A3;
+        Mon, 20 Jul 2020 21:42:08 -0400 (EDT)
 From:   Boqun Feng <boqun.feng@gmail.com>
 To:     linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
@@ -87,9 +87,9 @@ Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Michael Kelley <mikelley@microsoft.com>,
         Boqun Feng <boqun.feng@gmail.com>
-Subject: [RFC 09/11] HID: hyperv: Make ringbuffer at least take two pages
-Date:   Tue, 21 Jul 2020 09:41:33 +0800
-Message-Id: <20200721014135.84140-10-boqun.feng@gmail.com>
+Subject: [RFC 10/11] Driver: hv: util: Make ringbuffer at least take two pages
+Date:   Tue, 21 Jul 2020 09:41:34 +0800
+Message-Id: <20200721014135.84140-11-boqun.feng@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200721014135.84140-1-boqun.feng@gmail.com>
 References: <20200721014135.84140-1-boqun.feng@gmail.com>
@@ -109,24 +109,50 @@ using vmbus_open() to establish the vmbus connection.
 
 Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
 ---
- drivers/hid/hid-hyperv.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hv/hv_util.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/hid/hid-hyperv.c b/drivers/hid/hid-hyperv.c
-index 0b6ee1dee625..36c5e157c691 100644
---- a/drivers/hid/hid-hyperv.c
-+++ b/drivers/hid/hid-hyperv.c
-@@ -104,8 +104,8 @@ struct synthhid_input_report {
+diff --git a/drivers/hv/hv_util.c b/drivers/hv/hv_util.c
+index 92ee0fe4c919..73a77bead2be 100644
+--- a/drivers/hv/hv_util.c
++++ b/drivers/hv/hv_util.c
+@@ -461,6 +461,14 @@ static void heartbeat_onchannelcallback(void *context)
+ 	}
+ }
  
- #pragma pack(pop)
++/*
++ * The size of each ring should be at least 2 * PAGE_SIZE, because we need one
++ * page for the header and at least another page (because of the alignment
++ * requirement for double mapping) for data part.
++ */
++#define HV_UTIL_RING_SEND_SIZE max(4 * HV_HYP_PAGE_SIZE, 2 * PAGE_SIZE)
++#define HV_UTIL_RING_RECV_SIZE max(4 * HV_HYP_PAGE_SIZE, 2 * PAGE_SIZE)
++
+ static int util_probe(struct hv_device *dev,
+ 			const struct hv_vmbus_device_id *dev_id)
+ {
+@@ -491,8 +499,8 @@ static int util_probe(struct hv_device *dev,
  
--#define INPUTVSC_SEND_RING_BUFFER_SIZE		(40 * 1024)
--#define INPUTVSC_RECV_RING_BUFFER_SIZE		(40 * 1024)
-+#define INPUTVSC_SEND_RING_BUFFER_SIZE		(128 * 1024)
-+#define INPUTVSC_RECV_RING_BUFFER_SIZE		(128 * 1024)
+ 	hv_set_drvdata(dev, srv);
  
+-	ret = vmbus_open(dev->channel, 4 * HV_HYP_PAGE_SIZE,
+-			 4 * HV_HYP_PAGE_SIZE, NULL, 0, srv->util_cb,
++	ret = vmbus_open(dev->channel, HV_UTIL_RING_SEND_SIZE,
++			 HV_UTIL_RING_RECV_SIZE, NULL, 0, srv->util_cb,
+ 			 dev->channel);
+ 	if (ret)
+ 		goto error;
+@@ -551,8 +559,8 @@ static int util_resume(struct hv_device *dev)
+ 			return ret;
+ 	}
  
- enum pipe_prot_msg_type {
+-	ret = vmbus_open(dev->channel, 4 * HV_HYP_PAGE_SIZE,
+-			 4 * HV_HYP_PAGE_SIZE, NULL, 0, srv->util_cb,
++	ret = vmbus_open(dev->channel, HV_UTIL_RING_SEND_SIZE,
++			 HV_UTIL_RING_RECV_SIZE, NULL, 0, srv->util_cb,
+ 			 dev->channel);
+ 	return ret;
+ }
 -- 
 2.27.0
 
