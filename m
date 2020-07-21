@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 770ED2277A1
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 06:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2ADE2277AF
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 06:41:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726310AbgGUEaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 00:30:22 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:49123 "EHLO
+        id S1726554AbgGUElW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 00:41:22 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:55669 "EHLO
         mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725764AbgGUEaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 00:30:20 -0400
-Received: by mail-il1-f199.google.com with SMTP id q9so12628337ilt.15
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 21:30:20 -0700 (PDT)
+        with ESMTP id S1725857AbgGUElW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 00:41:22 -0400
+Received: by mail-il1-f199.google.com with SMTP id b2so12628723ilh.22
+        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 21:41:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=5giXxd1+Vx4lWw5hSAxfF96Mtyl+E+/XgMt+XwF3FYQ=;
-        b=Aac8KGuqk3kOL7ZQYiMtMgQIXF/un25GydEfciJs4atXDFbKAI2E1Fk10eMPSozkpb
-         ePIu4MQCidAIFK8wPnavWPqRs+AzegCpPGHxWjBkqc9TPJZrmOsStNUBS0sBCBTBrAmS
-         Ys5XCNDkVwF+9YQ852Pgtn/K4eIQq7HhXkHGkHlX36uJ3jC1IVPlugNNbCgc4SMijxPs
-         KcR1zcELZepEebWzrbCigZxV8HTlPalICRS6aswt5HtHipeqkD80fC+V3l6VIfUbuo2A
-         jz9Ey8yftoGUv+NEHdfpdu52zrg5ziH5IlZsvQTj0S65NXvb29KzbgIP4LAd1NN5BHbj
-         0wIQ==
-X-Gm-Message-State: AOAM530c3EAGq0LmHMdKoTyTSfNyYh9pxPPdKenLQbfczA0vxoQ6iJaH
-        o9qn7kz0G+82JVEmHlEhNp0wp1HcC5DDW5/nDSV6BMBPceEl
-X-Google-Smtp-Source: ABdhPJxm2lb1fAKc2+P/N/sT6k/Hc9qOK0GkQLm0OfeWqzV8EvH/uGzFX1whN11GDz391QOGS7tZ4F+cs+NcYtk+YsgexgV+OIgr
+        bh=4NDObDvcYVvUxbnT7etgKM0Hz8xx5bu3Bc10MkSF2tQ=;
+        b=BClaZq330xpVd2X6ch6UD5hFXvD4uLKuQAnEUgRw4LOkzdaHIpkupIRDcY8vCqAn/I
+         QbHCEb3aR9KwZFnrWQ5lOATdNbAqFlZuq3XwP9PImln01OAtwXiBqwXX03Td/I3rqGpe
+         l0KLFYB4UcNcbgkMakwC0SFkf3bfEnmjPvWUUkGbVgWUL1Nu/KNoHanIoKBkD58UHY8p
+         zn0CK7prxbov3S3gYgDX/ajhw1ShomwoRrBTrqD3oW6CyoCqA6Wxeg4zRcDLB8kULqrT
+         BuWqmsnYp+ZiQ2nl+ajpPzhBoPSlWQ19G6Dc9aEFah2npBEBqgELazm6KB66/OOQoW0w
+         cfJQ==
+X-Gm-Message-State: AOAM530AUakYNBoNS4aM5ld+CBWkmq1ARUnP3Ze4eYLwsSHFwDdQU9gv
+        GBucwMFbzjedhsMe+aNQ2vIxmdBTquXrQZQpGUWkXAFbS8HE
+X-Google-Smtp-Source: ABdhPJw0z0wKHOCOUiAiruRk2dSuGAkOO64ky9nsRZ3Iyw9UCkXXhKOyTVABvUAeIzY6Gzi5hsxFiq1/gmahTv9MK0DWN15tVwNJ
 MIME-Version: 1.0
-X-Received: by 2002:a02:7419:: with SMTP id o25mr29600295jac.4.1595305819799;
- Mon, 20 Jul 2020 21:30:19 -0700 (PDT)
-Date:   Mon, 20 Jul 2020 21:30:19 -0700
+X-Received: by 2002:a6b:6d07:: with SMTP id a7mr25915421iod.166.1595306480557;
+ Mon, 20 Jul 2020 21:41:20 -0700 (PDT)
+Date:   Mon, 20 Jul 2020 21:41:20 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b2848005aaec14c4@google.com>
-Subject: general protection fault in __xfrm6_tunnel_spi_check
-From:   syzbot <syzbot+cbb5af985601225ceb76@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
-        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, steffen.klassert@secunet.com,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Message-ID: <00000000000014e30705aaec3cc5@google.com>
+Subject: KASAN: use-after-free Read in sock_def_write_space (2)
+From:   syzbot <syzbot+6720d64f31c081c2f708@syzkaller.appspotmail.com>
+To:     christophe.jaillet@wanadoo.fr, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        navid.emamdoost@gmail.com, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -49,81 +49,119 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    4c43049f Add linux-next specific files for 20200716
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=16f786d7100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2c76d72659687242
-dashboard link: https://syzkaller.appspot.com/bug?extid=cbb5af985601225ceb76
+HEAD commit:    5714ee50 copy_xstate_to_kernel: Fix typo which caused GDB ..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13059e7f100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f87a5e4232fdb267
+dashboard link: https://syzkaller.appspot.com/bug?extid=6720d64f31c081c2f708
 compiler:       gcc (GCC) 10.1.0-syz 20200507
-
-Unfortunately, I don't have any reproducer for this issue yet.
+userspace arch: i386
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1732cabb100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=163ace5f100000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cbb5af985601225ceb76@syzkaller.appspotmail.com
+Reported-by: syzbot+6720d64f31c081c2f708@syzkaller.appspotmail.com
 
-general protection fault, probably for non-canonical address 0xe01ffc0000000004: 0000 [#1] PREEMPT SMP KASAN
-KASAN: maybe wild-memory-access in range [0x0100000000000020-0x0100000000000027]
-CPU: 0 PID: 11470 Comm: syz-executor.3 Not tainted 5.8.0-rc5-next-20200716-syzkaller #0
+IPVS: ftp: loaded support on port[0] = 21
+==================================================================
+BUG: KASAN: use-after-free in list_empty include/linux/list.h:282 [inline]
+BUG: KASAN: use-after-free in waitqueue_active include/linux/wait.h:127 [inline]
+BUG: KASAN: use-after-free in wq_has_sleeper include/linux/wait.h:161 [inline]
+BUG: KASAN: use-after-free in skwq_has_sleeper include/net/sock.h:2143 [inline]
+BUG: KASAN: use-after-free in sock_def_write_space+0x609/0x630 net/core/sock.c:2926
+Read of size 8 at addr ffff88808a6d25c0 by task syz-executor863/6817
+
+CPU: 0 PID: 6817 Comm: syz-executor863 Not tainted 5.8.0-rc6-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__xfrm6_tunnel_spi_check+0x1e5/0x330 net/ipv6/xfrm6_tunnel.c:111
-Code: 0f 85 3c 01 00 00 48 8b 5b 10 48 85 db 74 44 e8 31 41 7b fa 48 83 eb 10 74 39 e8 26 41 7b fa 48 8d 7b 30 48 89 f8 48 c1 e8 03 <42> 0f b6 04 28 84 c0 74 08 3c 03 0f 8e fd 00 00 00 8b 6b 30 44 89
-RSP: 0018:ffffc900175df3d0 EFLAGS: 00010202
-RAX: 0020000000000004 RBX: 00fffffffffffff0 RCX: ffffc9000f672000
-RDX: 0000000000040000 RSI: ffffffff86f8eeba RDI: 0100000000000020
-RBP: ffff88805bdfc800 R08: 0000000000000001 R09: ffff888089c1cc10
-R10: fffffbfff1571bb9 R11: 0000000000000000 R12: 0000000098f1a001
-R13: dffffc0000000000 R14: 0000000000000001 R15: 0000000098f19fff
-FS:  00007f1165c1d700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020001600 CR3: 0000000092d1e000 CR4: 00000000001526f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- __xfrm6_tunnel_alloc_spi net/ipv6/xfrm6_tunnel.c:131 [inline]
- xfrm6_tunnel_alloc_spi+0x296/0x8a0 net/ipv6/xfrm6_tunnel.c:174
- ipcomp6_tunnel_create net/ipv6/ipcomp6.c:84 [inline]
- ipcomp6_tunnel_attach net/ipv6/ipcomp6.c:124 [inline]
- ipcomp6_init_state net/ipv6/ipcomp6.c:159 [inline]
- ipcomp6_init_state+0x2af/0x700 net/ipv6/ipcomp6.c:139
- __xfrm_init_state+0x9a6/0x14b0 net/xfrm/xfrm_state.c:2498
- xfrm_state_construct net/xfrm/xfrm_user.c:627 [inline]
- xfrm_add_sa+0x1db9/0x34f0 net/xfrm/xfrm_user.c:684
- xfrm_user_rcv_msg+0x414/0x700 net/xfrm/xfrm_user.c:2684
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- xfrm_netlink_rcv+0x6b/0x90 net/xfrm/xfrm_user.c:2692
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2362
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2416
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2449
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45c1d9
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xae/0x436 mm/kasan/report.c:383
+ __kasan_report mm/kasan/report.c:513 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
+ list_empty include/linux/list.h:282 [inline]
+ waitqueue_active include/linux/wait.h:127 [inline]
+ wq_has_sleeper include/linux/wait.h:161 [inline]
+ skwq_has_sleeper include/net/sock.h:2143 [inline]
+ sock_def_write_space+0x609/0x630 net/core/sock.c:2926
+ sock_wfree+0x1cc/0x240 net/core/sock.c:2060
+ skb_release_head_state+0x9f/0x250 net/core/skbuff.c:651
+ skb_release_all net/core/skbuff.c:662 [inline]
+ __kfree_skb net/core/skbuff.c:678 [inline]
+ kfree_skb.part.0+0x89/0x350 net/core/skbuff.c:696
+ kfree_skb+0x7d/0x100 include/linux/refcount.h:270
+ skb_queue_purge+0x14/0x30 net/core/skbuff.c:3077
+ qrtr_tun_release+0x40/0x60 net/qrtr/tun.c:118
+ __fput+0x33c/0x880 fs/file_table.c:281
+ task_work_run+0xdd/0x190 kernel/task_work.c:135
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_usermode_loop arch/x86/entry/common.c:239 [inline]
+ __prepare_exit_to_usermode+0x1e9/0x1f0 arch/x86/entry/common.c:269
+ __do_fast_syscall_32 arch/x86/entry/common.c:475 [inline]
+ do_fast_syscall_32+0x7f/0x120 arch/x86/entry/common.c:503
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+RIP: 0023:0xf7fc2569
 Code: Bad RIP value.
-RSP: 002b:00007f1165c1cc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000002a500 RCX: 000000000045c1d9
-RDX: 0000000000000000 RSI: 0000000020000180 RDI: 0000000000000003
-RBP: 000000000078bf40 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000078bf0c
-R13: 00007ffc3130211f R14: 00007f1165c1d9c0 R15: 000000000078bf0c
-Modules linked in:
----[ end trace 21b48c86a3c64819 ]---
-RIP: 0010:__xfrm6_tunnel_spi_check+0x1e5/0x330 net/ipv6/xfrm6_tunnel.c:111
-Code: 0f 85 3c 01 00 00 48 8b 5b 10 48 85 db 74 44 e8 31 41 7b fa 48 83 eb 10 74 39 e8 26 41 7b fa 48 8d 7b 30 48 89 f8 48 c1 e8 03 <42> 0f b6 04 28 84 c0 74 08 3c 03 0f 8e fd 00 00 00 8b 6b 30 44 89
-RSP: 0018:ffffc900175df3d0 EFLAGS: 00010202
-RAX: 0020000000000004 RBX: 00fffffffffffff0 RCX: ffffc9000f672000
-RDX: 0000000000040000 RSI: ffffffff86f8eeba RDI: 0100000000000020
-RBP: ffff88805bdfc800 R08: 0000000000000001 R09: ffff888089c1cc10
-R10: fffffbfff1571bb9 R11: 0000000000000000 R12: 0000000098f1a001
-R13: dffffc0000000000 R14: 0000000000000001 R15: 0000000098f19fff
-FS:  00007f1165c1d700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020001600 CR3: 0000000092d1e000 CR4: 00000000001526f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+RSP: 002b:00000000ffd1de7c EFLAGS: 00000246 ORIG_RAX: 0000000000000006
+RAX: 0000000000000000 RBX: 0000000000000006 RCX: 0000000020000180
+RDX: 0000000000000007 RSI: 00000000080bffdb RDI: 000000002000018e
+RBP: 00000000ffd1dee8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task 6817:
+ save_stack+0x1b/0x40 mm/kasan/common.c:48
+ set_track mm/kasan/common.c:56 [inline]
+ __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:494
+ slab_post_alloc_hook mm/slab.h:586 [inline]
+ slab_alloc mm/slab.c:3320 [inline]
+ kmem_cache_alloc+0x12c/0x3b0 mm/slab.c:3484
+ sock_alloc_inode+0x18/0x1c0 net/socket.c:253
+ alloc_inode+0x61/0x230 fs/inode.c:232
+ new_inode_pseudo+0x14/0xe0 fs/inode.c:928
+ sock_alloc+0x3c/0x260 net/socket.c:573
+ __sock_create+0xb9/0x740 net/socket.c:1392
+ sock_create net/socket.c:1479 [inline]
+ __sys_socket+0xef/0x200 net/socket.c:1521
+ __do_sys_socket net/socket.c:1530 [inline]
+ __se_sys_socket net/socket.c:1528 [inline]
+ __ia32_sys_socket+0x6f/0xb0 net/socket.c:1528
+ do_syscall_32_irqs_on+0x3f/0x60 arch/x86/entry/common.c:428
+ __do_fast_syscall_32 arch/x86/entry/common.c:475 [inline]
+ do_fast_syscall_32+0x7f/0x120 arch/x86/entry/common.c:503
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+
+Freed by task 16:
+ save_stack+0x1b/0x40 mm/kasan/common.c:48
+ set_track mm/kasan/common.c:56 [inline]
+ kasan_set_free_info mm/kasan/common.c:316 [inline]
+ __kasan_slab_free+0xf5/0x140 mm/kasan/common.c:455
+ __cache_free mm/slab.c:3426 [inline]
+ kmem_cache_free+0x7f/0x310 mm/slab.c:3694
+ i_callback+0x3f/0x70 fs/inode.c:221
+ rcu_do_batch kernel/rcu/tree.c:2414 [inline]
+ rcu_core+0x5c7/0x1160 kernel/rcu/tree.c:2641
+ __do_softirq+0x34c/0xa60 kernel/softirq.c:292
+
+The buggy address belongs to the object at ffff88808a6d2540
+ which belongs to the cache sock_inode_cache of size 1216
+The buggy address is located 128 bytes inside of
+ 1216-byte region [ffff88808a6d2540, ffff88808a6d2a00)
+The buggy address belongs to the page:
+page:ffffea000229b480 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88808a6d2ffd
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea0002250f88 ffffea000229a608 ffff88821b77f700
+raw: ffff88808a6d2ffd ffff88808a6d2000 0000000100000003 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88808a6d2480: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+ ffff88808a6d2500: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+>ffff88808a6d2580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                           ^
+ ffff88808a6d2600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88808a6d2680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
 ---
@@ -133,3 +171,5 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
