@@ -2,61 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E1E32278BE
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 08:16:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B733C2278D4
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 08:24:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727106AbgGUGQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 02:16:35 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7802 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725294AbgGUGQf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 02:16:35 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 60ACBE0D13EC4424A248;
-        Tue, 21 Jul 2020 14:16:32 +0800 (CST)
-Received: from [127.0.0.1] (10.174.178.16) by DGGEMS405-HUB.china.huawei.com
- (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Tue, 21 Jul 2020
- 14:16:28 +0800
-Subject: Re: [PATCH] net-sysfs: add a newline when printing 'tx_timeout' by
- sysfs
-To:     David Miller <davem@davemloft.net>
-CC:     <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1595243869-57100-1-git-send-email-wangxiongfeng2@huawei.com>
- <20200720.174432.702526374205425580.davem@davemloft.net>
-From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Message-ID: <f9dd7249-3606-8ebe-8913-082953735817@huawei.com>
-Date:   Tue, 21 Jul 2020 14:16:27 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200720.174432.702526374205425580.davem@davemloft.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.16]
-X-CFilter-Loop: Reflected
+        id S1728005AbgGUGYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 02:24:05 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:46216 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726039AbgGUGYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 02:24:05 -0400
+X-IronPort-AV: E=Sophos;i="5.75,377,1589209200"; 
+   d="scan'208";a="52678294"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 21 Jul 2020 15:24:03 +0900
+Received: from localhost.localdomain (unknown [10.166.252.89])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id E133341E1BED;
+        Tue, 21 Jul 2020 15:24:03 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     sergei.shtylyov@gmail.com, davem@davemloft.net, kuba@kernel.org
+Cc:     dirk.behme@de.bosch.com, Shashikant.Suguni@in.bosch.com,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v3] net: ethernet: ravb: exit if re-initialization fails in tx timeout
+Date:   Tue, 21 Jul 2020 15:23:12 +0900
+Message-Id: <1595312592-28666-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+According to the report of [1], this driver is possible to cause
+the following error in ravb_tx_timeout_work().
 
-On 2020/7/21 8:44, David Miller wrote:
-> From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-> Date: Mon, 20 Jul 2020 19:17:49 +0800
-> 
->> -	return sprintf(buf, "%lu", trans_timeout);
->> +	return sprintf(buf, "%lu\n", trans_timeout);
-> 
-> Better to replace it with 'fmt_ulong'.
+ravb e6800000.ethernet ethernet: failed to switch device to config mode
 
-Thanks for your advice. I will change it in the next version.
+This error means that the hardware could not change the state
+from "Operation" to "Configuration" while some tx and/or rx queue
+are operating. After that, ravb_config() in ravb_dmac_init() will fail,
+and then any descriptors will be not allocaled anymore so that NULL
+pointer dereference happens after that on ravb_start_xmit().
 
-Thanks,
-Xiongfeng
+To fix the issue, the ravb_tx_timeout_work() should check
+the return values of ravb_stop_dma() and ravb_dmac_init().
+If ravb_stop_dma() fails, ravb_tx_timeout_work() re-enables TX and RX
+and just exits. If ravb_dmac_init() fails, just exits.
 
-> 
-> .
-> 
+[1]
+https://lore.kernel.org/linux-renesas-soc/20200518045452.2390-1-dirk.behme@de.bosch.com/
+
+Reported-by: Dirk Behme <dirk.behme@de.bosch.com>
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+---
+ Changes from RFC v2:
+ - Check the return value of ravb_init_dmac() too.
+ - Update the subject and description.
+ - Fix the comment in the code.
+ - Add Reviewed-by Sergei.
+ https://patchwork.kernel.org/patch/11673621/
+
+ Changes from RFC v1:
+ - Check the return value of ravb_stop_dma() and exit if the hardware
+   condition can not be initialized in the tx timeout.
+ - Update the commit subject and description.
+ - Fix some typo.
+ https://patchwork.kernel.org/patch/11570217/
+
+ Unfortunately, I still didn't reproduce the issue yet. But,
+ I got review from Sergei in v2. So, I removed RFC on this patch.
+
+ drivers/net/ethernet/renesas/ravb_main.c | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index a442bcf6..99f7aae 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1450,6 +1450,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+ 	struct ravb_private *priv = container_of(work, struct ravb_private,
+ 						 work);
+ 	struct net_device *ndev = priv->ndev;
++	int error;
+ 
+ 	netif_tx_stop_all_queues(ndev);
+ 
+@@ -1458,15 +1459,36 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+ 		ravb_ptp_stop(ndev);
+ 
+ 	/* Wait for DMA stopping */
+-	ravb_stop_dma(ndev);
++	if (ravb_stop_dma(ndev)) {
++		/* If ravb_stop_dma() fails, the hardware is still operating
++		 * for TX and/or RX. So, this should not call the following
++		 * functions because ravb_dmac_init() is possible to fail too.
++		 * Also, this should not retry ravb_stop_dma() again and again
++		 * here because it's possible to wait forever. So, this just
++		 * re-enables the TX and RX and skip the following
++		 * re-initialization procedure.
++		 */
++		ravb_rcv_snd_enable(ndev);
++		goto out;
++	}
+ 
+ 	ravb_ring_free(ndev, RAVB_BE);
+ 	ravb_ring_free(ndev, RAVB_NC);
+ 
+ 	/* Device init */
+-	ravb_dmac_init(ndev);
++	error = ravb_dmac_init(ndev);
++	if (error) {
++		/* If ravb_dmac_init() fails, descriptors are freed. So, this
++		 * should return here to avoid re-enabling the TX and RX in
++		 * ravb_emac_init().
++		 */
++		netdev_err(ndev, "%s: ravb_dmac_init() failed, error %d\n",
++			   __func__, error);
++		return;
++	}
+ 	ravb_emac_init(ndev);
+ 
++out:
+ 	/* Initialise PTP Clock driver */
+ 	if (priv->chip_id == RCAR_GEN2)
+ 		ravb_ptp_init(ndev, priv->pdev);
+-- 
+2.7.4
 
