@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE8E42289B2
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 22:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40CE52289BD
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 22:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730322AbgGUUSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 16:18:11 -0400
-Received: from www62.your-server.de ([213.133.104.62]:35228 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbgGUUSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 16:18:11 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jxyi7-0001a2-3k; Tue, 21 Jul 2020 22:17:59 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jxyi6-000HIz-T8; Tue, 21 Jul 2020 22:17:58 +0200
-Subject: Re: [PATCH bpf-next] bpf: Generate cookie for new non-initial net NS
-To:     Jianlin Lv <Jianlin.Lv@arm.com>, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org, yhs@fb.com,
-        Song.Zhu@arm.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20200720140919.22342-1-Jianlin.Lv@arm.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <840a9007-3dcb-457f-8746-7f8e6fa209c5@iogearbox.net>
-Date:   Tue, 21 Jul 2020 22:17:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730085AbgGUUVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 16:21:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726658AbgGUUVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 16:21:12 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BACFC061794;
+        Tue, 21 Jul 2020 13:21:12 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id gc9so2098715pjb.2;
+        Tue, 21 Jul 2020 13:21:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EDx5ZK+29kRWYJMGWyvrhwCnEqcR3vRhDKLN0w1LGwo=;
+        b=uye3eYU52p0FszeQsbTHkxAmWAynFNUDjKPvs3VdlGUd9Vwb6HbPlR+UFraZGZvJQl
+         rlVBeAL3kcQimdsLgH69eWSUdQFpIab8Sksh/PCBGHf49O94brXhoeAOysbtAdudTYWc
+         mL19MgfRyazsZLEVZsyDs0mtVlYDswAbwFipqy88ZDQ+sTbNqy7XwAImSqOhwwns+s/z
+         CuAhMZjp9AxvJznWpSvK3i+qrJsciBlegkTackt6Ry1vinxnFVX6Lsy6Ty9AMVG2hfTH
+         T4cxg28LuAepp41Q+mpOy3vLT+/YRv563kjV6/qf7tnbRfA8/VW+1forYwB7AhXXesPH
+         nJ0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EDx5ZK+29kRWYJMGWyvrhwCnEqcR3vRhDKLN0w1LGwo=;
+        b=K7I2JYkwFLUYgHUbPB/YTtGNZQ3ELobgpwXmfWQ0bh46o+/VxyC7XApCukEJghcSEG
+         9503C0MSmEN7gkjfHHiAw9m5JYY3mifrR++647yMiM4oVnClD1+fitKPcRKcHl2ifK+x
+         iNKPAvB9BqJo7N9U/EncxAITsraqwIGBBRX677O6tkPVU8bWXloPmaeNBwJIgNtawJax
+         e/+gUXFfX0UjvSukXafaJuUefmZN5EC1W0VmchkEzgErVZk9m+/1UWId+VbSJ3kd6T5/
+         w9w5pkdEKeEeVQrPHq4wmltfUP6Al+2v6yriH/gN9CvqDR/l1NXuxkrRXAabjx0q/mxW
+         RB+Q==
+X-Gm-Message-State: AOAM531+HNpc50Z6zyMzc55KWl0XWuwa66FAfVbmErQdolrAVxCfrUdm
+        xWervVNMkbzRDodOSnzib5E=
+X-Google-Smtp-Source: ABdhPJxg9thj7QDLcyID8qlO4d9P3h86DB2rePZe/TP0afx/rxQPNJ61NtiwJ4dm5qCi/3nb3MiYcQ==
+X-Received: by 2002:a17:902:7483:: with SMTP id h3mr22709694pll.114.1595362871798;
+        Tue, 21 Jul 2020 13:21:11 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e3b])
+        by smtp.gmail.com with ESMTPSA id b128sm21313668pfg.114.2020.07.21.13.21.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jul 2020 13:21:11 -0700 (PDT)
+Date:   Tue, 21 Jul 2020 13:21:08 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@kernel.org>, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next v2 0/5] bpf: compute btf_ids at build time for
+ btf_iter
+Message-ID: <20200721202108.btao7fx3qf3ndd2b@ast-mbp.dhcp.thefacebook.com>
+References: <20200720163358.1392964-1-yhs@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <20200720140919.22342-1-Jianlin.Lv@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25880/Tue Jul 21 16:34:58 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200720163358.1392964-1-yhs@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/20/20 4:09 PM, Jianlin Lv wrote:
-> For non-initial network NS, the net cookie is generated when
-> bpf_get_netns_cookie_sock is called for the first time, but it is more
-> reasonable to complete the cookie generation work when creating a new
-> network NS, just like init_net.
-> net_gen_cookie() be moved into setup_net() that it can serve the initial
-> and non-initial network namespace.
+On Mon, Jul 20, 2020 at 09:33:58AM -0700, Yonghong Song wrote:
+> Commit 5a2798ab32ba
+> ("bpf: Add BTF_ID_LIST/BTF_ID/BTF_ID_UNUSED macros")
+> implemented a mechanism to compute btf_ids at kernel build
+> time which can simplify kernel implementation and reduce
+> runtime overhead by removing in-kernel btf_id calculation.
 > 
-> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
-
-What use-case are you trying to solve? Why should it be different than, say,
-socket cookie generation? I'm currently not seeing much of a point in moving
-this. When it's not used in the system, it would actually create more work.
-
-> ---
->   net/core/net_namespace.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> This patch set tried to use this mechanism to compute
+> btf_ids for bpf_skc_to_*() helpers and for btf_id_or_null ctx
+> arguments specified during bpf iterator registration.
+> Please see individual patch for details.
 > 
-> diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-> index dcd61aca343e..5937bd0df56d 100644
-> --- a/net/core/net_namespace.c
-> +++ b/net/core/net_namespace.c
-> @@ -336,6 +336,7 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
->   	idr_init(&net->netns_ids);
->   	spin_lock_init(&net->nsid_lock);
->   	mutex_init(&net->ipv4.ra_mutex);
-> +	net_gen_cookie(net);
->   
->   	list_for_each_entry(ops, &pernet_list, list) {
->   		error = ops_init(ops, net);
-> @@ -1101,7 +1102,6 @@ static int __init net_ns_init(void)
->   		panic("Could not allocate generic netns");
->   
->   	rcu_assign_pointer(init_net.gen, ng);
-> -	net_gen_cookie(&init_net);
->   
->   	down_write(&pernet_ops_rwsem);
->   	if (setup_net(&init_net, &init_user_ns))
+> Changelogs:
+>   v1 -> v2:
+>     - v1 ([1]) is only for bpf_skc_to_*() helpers. This version
+>       expanded it to cover ctx btf_id_or_null arguments
+>     - abandoned the change of "extern u32 name[]" to
+>       "static u32 name[]" for BPF_ID_LIST local "name" definition.
+>       gcc 9 incurred a compilation error.
 > 
+>  [1]: https://lore.kernel.org/bpf/20200717184706.3476992-1-yhs@fb.com/T
 
+Applied, Thanks
