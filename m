@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 908C7227431
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 02:56:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 224EF22743E
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 02:57:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728092AbgGUA4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 20:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
+        id S1728314AbgGUA5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 20:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbgGUA4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 20:56:13 -0400
+        with ESMTP id S1727048AbgGUA5d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 20:57:33 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB676C061794
-        for <netdev@vger.kernel.org>; Mon, 20 Jul 2020 17:56:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69AD8C061794;
+        Mon, 20 Jul 2020 17:57:33 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A2B9B11E8EC25;
-        Mon, 20 Jul 2020 17:39:28 -0700 (PDT)
-Date:   Mon, 20 Jul 2020 17:56:12 -0700 (PDT)
-Message-Id: <20200720.175612.796997135090632820.davem@davemloft.net>
-To:     liujian56@huawei.com
-Cc:     jiri@mellanox.co, idosch@mellanox.com, kuba@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] mlxsw: destroy workqueue when trap_register in
- mlxsw_emad_init
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1A0C011E8EC3C;
+        Mon, 20 Jul 2020 17:40:48 -0700 (PDT)
+Date:   Mon, 20 Jul 2020 17:57:32 -0700 (PDT)
+Message-Id: <20200720.175732.841920649223347255.davem@davemloft.net>
+To:     gnault@redhat.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        corbet@lwn.net, martin.varghese@nokia.com
+Subject: Re: [PATCH net] Documentation: bareudp: update iproute2 sample
+ commands
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200720143150.40362-1-liujian56@huawei.com>
-References: <20200720143150.40362-1-liujian56@huawei.com>
+In-Reply-To: <57d0fff72970fdc7d49ab969f940438728f10754.1595259799.git.gnault@redhat.com>
+References: <57d0fff72970fdc7d49ab969f940438728f10754.1595259799.git.gnault@redhat.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 Jul 2020 17:39:28 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 Jul 2020 17:40:48 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Liu Jian <liujian56@huawei.com>
-Date: Mon, 20 Jul 2020 22:31:49 +0800
+From: Guillaume Nault <gnault@redhat.com>
+Date: Mon, 20 Jul 2020 17:46:58 +0200
 
-> When mlxsw_core_trap_register fails in mlxsw_emad_init,
-> destroy_workqueue() shouled be called to destroy mlxsw_core->emad_wq.
+> bareudp.rst was written before iproute2 gained support for this new
+> type of tunnel. Therefore, the sample command lines didn't match the
+> final iproute2 implementation.
 > 
-> Fixes: d965465b60ba ("mlxsw: core: Fix possible deadlock")
-> Signed-off-by: Liu Jian <liujian56@huawei.com>
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
 
-Applied and queued up for -stable, thanks.
+Applied, thank you.
