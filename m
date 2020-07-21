@@ -2,96 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD3372286CE
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 19:09:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 073112286EF
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 19:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729706AbgGURJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 13:09:41 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:46726 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729497AbgGURJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 13:09:40 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 43D70200CA;
-        Tue, 21 Jul 2020 17:09:39 +0000 (UTC)
-Received: from us4-mdac16-29.at1.mdlocal (unknown [10.110.49.213])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 414A3600A1;
-        Tue, 21 Jul 2020 17:09:39 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.103])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CD548220070;
-        Tue, 21 Jul 2020 17:09:38 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8B11498008C;
-        Tue, 21 Jul 2020 17:09:38 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 21 Jul
- 2020 18:09:17 +0100
-Subject: Re: [PATCH v3 net-next 04/16] sfc_ef100: skeleton EF100 PF driver
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
-        "kernel test robot" <lkp@intel.com>, <kbuild-all@lists.01.org>,
-        <netdev@vger.kernel.org>
-References: <f1a206ef-23a0-1d3e-9668-0ec33454c2a1@solarflare.com>
- <202007170155.nhtIpp5L%lkp@intel.com>
- <aa134db3-a860-534c-9ee2-d68cded37061@solarflare.com>
- <20200721094535.15df7245@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <699dfdba-558b-7068-8ea7-d10d80369b6b@solarflare.com>
-Date:   Tue, 21 Jul 2020 18:09:13 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1730463AbgGUROm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 13:14:42 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:64752 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729967AbgGUROl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 13:14:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1595351681; x=1626887681;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fkusY/rZnoHUUkkCkx7on0e3uqJv5otXccNgfSdW2xg=;
+  b=ejmxlAvDm8Cz0FzZgb3N9g5RSwE/5t88WGc+dSihwDp88hpO8ucY+Uhf
+   lb4xA/M1BdH+voemaQxWLhvZgwL8mUAPBALgEkAaRWmRey3u47HzgSs8U
+   +mYLtlue1oySuflMVcJA/gHMhCRBGP1UKNU2SOqLwA6owEP3isvaNeQCo
+   LB8q2s4SDADZdS8KxASOUYf1r0ie6iTxkaFkwyncVSURcgjuzG24Z2cO/
+   A0UyMCX73EA+LIgoBjg8nWe1naat5QjdqpAzhNeAoRVQ2ZDFmvrUV/0Vy
+   Za+9yMtfGXowpSB/IWOtiYFFjkMnKaHyZkZbqkDTGdtFsnLcwaZ/z07RO
+   Q==;
+IronPort-SDR: W9KznHSrzhC9ttuaNSxXdfKqAcbuJXO89ByKoBbzXLX4fj4ZWbJ0it0/7IZUuoyvFnnhZBSiP0
+ 5nhlppiN+uFiiwRGxU/wz1k4g39Iq3MqtDiM2hSkSu0HerguObUv3HmRXvQATqry/AGqTdwsR7
+ tD+T8mGt7Ka+R7FRyE4btIZlnh/gUIyueVzfSuogCoSFvdgm1jEa3q12v/eUhhVnp3dWVzx4o3
+ s+GPsc9p4/cFLv1kZhqpS1E63CIGfknbH7iZja6REiYs3URENjFCfTCr/uYBFZsWUOjnvh0wjr
+ e34=
+X-IronPort-AV: E=Sophos;i="5.75,379,1589266800"; 
+   d="scan'208";a="84811168"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Jul 2020 10:14:40 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 21 Jul 2020 10:14:40 -0700
+Received: from rob-ult-m19940.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Tue, 21 Jul 2020 10:13:46 -0700
+From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
+        <f.fainelli@gmail.com>, <robh+dt@kernel.org>,
+        <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>,
+        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
+Subject: [PATCH net-next v2 0/7] Add an MDIO sub-node under MACB
+Date:   Tue, 21 Jul 2020 20:13:09 +0300
+Message-ID: <20200721171316.1427582-1-codrin.ciubotariu@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200721094535.15df7245@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25554.003
-X-TM-AS-Result: No-5.111800-8.000000-10
-X-TMASE-MatchedRID: scwq2vQP8OHmLzc6AOD8DfHkpkyUphL9amDMhjMSdnnvxOQTFF5KDfl4
-        wHjhjOcWj6zhwHrR3g0Up3oAL1uc5iisv8eH5y9RR1V06KT3qb9bD9LQcHt6g3tTo0P1ssT+eNr
-        Nec/7iLg2UZkqo1rM+z+K9ujtXo2PW8sQMvPj/Xx9Lo7PocodAF7OZ6hrwwnzIlxOowKJvsWdW2
-        C/Ex2sgyoS4lFW7r3/7yQyt4P8YJnW6cYShI3V/OIfK/Jd5eHmfS0Ip2eEHnzWRN8STJpl3PoLR
-        4+zsDTtiPbfA0kXryHoqOSc4Vjd9DfD7hsb9YmYi87123Y709X8HixsWDYOPlZca9RSYo/b
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.111800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25554.003
-X-MDID: 1595351379-MyAvoCvfvnuB
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/07/2020 17:45, Jakub Kicinski wrote:
-> On Tue, 21 Jul 2020 15:48:00 +0100 Edward Cree wrote:
->> Aaaaargh; does anyone have any bright ideas?
-> No bright ideas. Why do you want the driver to be modular in the first
-> place?
-Well, 'sfc' already is, and I'm not sure changing that is an option
- (wouldn't it break users' scripts?).  And I find development is a lot
- easier if you can just rebuild a module and reload it rather than
- having to wait for LD to put together a whole new vmlinux.
+Adding the PHY nodes directly under the Ethernet node became deprecated,
+so the aim of this patch series is to make MACB use an MDIO node as
+container for MDIO devices.
+This patch series starts with a small patch to use the device-managed
+devm_mdiobus_alloc(). In the next two patches we update the bindings and
+adapt macb driver to parse the device-tree PHY nodes from under an MDIO
+node. The last patches add the MDIO node in the device-trees of sama5d2,
+sama5d3, samad4 and sam9x60 boards.
 
-> Maybe I'm wrong, but I've never seen a reason to break up vendor drivers
-> for high performance NICs into multiple modules.
-So, what are you suggesting?
-1) both drivers are builtin-only
-2) a single module containing both drivers
-3) something else?
+Changes in v2:
+ - renamed patch 2/7 from "macb: bindings doc: use an MDIO node as a
+   container for PHY nodes" to "dt-bindings: net: macb: use an MDIO
+   node as a container for PHY nodes"
+ - added back a newline removed by mistake in patch 3/7
 
-Both (1) and (2) would allow replacing the linker trick with an if()
- on efx->revision or an efx->type-> function with INDIRECT_CALLABLE.
+Codrin Ciubotariu (7):
+  net: macb: use device-managed devm_mdiobus_alloc()
+  dt-bindings: net: macb: use an MDIO node as a container for PHY nodes
+  net: macb: parse PHY nodes found under an MDIO node
+  ARM: dts: at91: sama5d2: add an mdio sub-node to macb
+  ARM: dts: at91: sama5d3: add an mdio sub-node to macb
+  ARM: dts: at91: sama5d4: add an mdio sub-node to macb
+  ARM: dts: at91: sam9x60: add an mdio sub-node to macb
 
-I don't know for sure but I suspect we made the drivers separate
- modules simply because we could (or so we thought) and we didn't
- know for certain no-one would ever want the extra flexibility.
+ Documentation/devicetree/bindings/net/macb.txt | 15 ++++++++++++---
+ arch/arm/boot/dts/at91-sam9x60ek.dts           |  8 ++++++--
+ arch/arm/boot/dts/at91-sama5d27_som1.dtsi      | 16 ++++++++++------
+ arch/arm/boot/dts/at91-sama5d27_wlsom1.dtsi    | 17 ++++++++++-------
+ arch/arm/boot/dts/at91-sama5d2_ptc_ek.dts      | 13 ++++++++-----
+ arch/arm/boot/dts/at91-sama5d2_xplained.dts    | 12 ++++++++----
+ arch/arm/boot/dts/at91-sama5d3_xplained.dts    | 16 ++++++++++++----
+ arch/arm/boot/dts/at91-sama5d4_xplained.dts    | 12 ++++++++----
+ drivers/net/ethernet/cadence/macb_main.c       | 18 ++++++++++++------
+ 9 files changed, 86 insertions(+), 41 deletions(-)
 
-I'll ask around and see if there's any reason we can't do (2).
+-- 
+2.25.1
 
--ed
