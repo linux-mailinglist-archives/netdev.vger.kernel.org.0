@@ -2,271 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67093227E1C
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 13:06:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EDB1227E2C
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 13:07:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729471AbgGULGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 07:06:15 -0400
-Received: from forwardcorp1p.mail.yandex.net ([77.88.29.217]:53758 "EHLO
-        forwardcorp1p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726715AbgGULGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 07:06:13 -0400
-Received: from sas1-ec30c78b6c5b.qloud-c.yandex.net (sas1-ec30c78b6c5b.qloud-c.yandex.net [IPv6:2a02:6b8:c14:2704:0:640:ec30:c78b])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id 85E292E142A;
-        Tue, 21 Jul 2020 14:06:07 +0300 (MSK)
-Received: from unknown (unknown [::1])
-        by sas1-ec30c78b6c5b.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id ZLt6LDHGOR-66sKtEd8;
-        Tue, 21 Jul 2020 14:06:07 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1595329567; bh=KIOhvNceVFN04lXjN2wQU/mlD5zXmpVPJtvbkQeoqcU=;
-        h=Cc:Subject:Date:References:To:From:Message-Id;
-        b=hQIX4Sq+jEDS+ZASkbM7JwYUffwK2ZvcW3uTt0qNiN9fnATVfhLg+F4dEmH3yXyCr
-         d+EmE/r5rhLXnV06BQ93lgRHfJXq94SoZEOXLRspAe3OUH2TYjMha/Q9TeB2PTP4CJ
-         YjoPDQMp0RRpXsQYQXVHdLoi9sBAZ4+nIw+lEwuM=
-Authentication-Results: sas1-ec30c78b6c5b.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-X-Yandex-Sender-Uid: 1120000000093952
-X-Yandex-Avir: 1
-Received: from iva8-d077482f1536.qloud-c.yandex.net (iva8-d077482f1536.qloud-c.yandex.net [2a02:6b8:c0c:2f26:0:640:d077:482f])
-        by iva8-00026c0e2ab1.qloud-c.yandex.net with LMTP id X2RVR1AVzS-JDh86EA1
-        for <zeil@yandex-team.ru>; Tue, 21 Jul 2020 14:05:56 +0300
-Received: by iva8-edafde7c849c.qloud-c.yandex.net with HTTP;
-        Tue, 21 Jul 2020 14:05:56 +0300
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Cc:     "sdf@google.com" <sdf@google.com>
-References: <20200715195132.4286-1-zeil@yandex-team.ru>
-         <20200715195132.4286-5-zeil@yandex-team.ru> <0308c9ab-04aa-f367-14e9-8289f30e7fcf@iogearbox.net>
-Subject: Re: [PATCH bpf-next v3 4/4] bpf: try to use existing cgroup storage in bpf_prog_test_run_skb
+        id S1729594AbgGULHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 07:07:46 -0400
+Received: from mail.intenta.de ([178.249.25.132]:37091 "EHLO mail.intenta.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727940AbgGULHo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 07:07:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=RXWv3n/+zVoW76R+V1N0dGmKgoJJ7z1wcx1OeZynMxo=;
+        b=A6J0TFZ8MFH4j8Ws6C3Ey1jlKQSn1vOQlQMEpDE6gw0l//2zfVgAX5I5n6iAEN2X8zaiBd3jS9IcCSH974E0jqIbbhsRzUq8k2f8B/8flk5BN5gD2ZimZViu/d1k/dVLttTVxC959gcTAU1yorN5j8W5+eA5DEDJQ9y8dHHMijd04WDUx9O/SYrGquG5ZfgWTufPdjXk6kv15W8v74pTQRBCrioRdXR4gg77/1arwrI2SuFRLMP1jR+t2MJAXUc4q3n4QmNf0fl7VKatf+103gYGCCmWgHrf7gs/d9CXw8RxnW8SOpy+X0ZQDvpJvB4IBy+llu0/5OyH90rqpkJONQ==;
+Date:   Tue, 21 Jul 2020 13:07:39 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: [PATCH v4] net: dsa: microchip: call phy_remove_link_mode during
+ probe
+Message-ID: <20200721110738.GA9008@laureti-dev>
+References: <20200720204353.GO1339445@lunn.ch>
 MIME-Version: 1.0
-X-Mailer: Yamail [ http://yandex.ru ] 5.0
-Date:   Tue, 21 Jul 2020 14:06:06 +0300
-Message-Id: <211321595327924@mail.yandex-team.ru>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200720204353.GO1339445@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When doing "ip link set dev ... up" for a ksz9477 backed link,
+ksz9477_phy_setup is called and it calls phy_remove_link_mode to remove
+1000baseT HDX. During phy_remove_link_mode, phy_advertise_supported is
+called. Doing so reverts any previous change to advertised link modes
+e.g. using a udevd .link file.
 
+phy_remove_link_mode is not meant to be used while opening a link and
+should be called during phy probe when the link is not yet available to
+userspace.
 
-16.07.2020, 23:19, "Daniel Borkmann" <daniel@iogearbox.net>:
-> On 7/15/20 9:51 PM, Dmitry Yakunin wrote:
->>  Now we cannot check results in cgroup storage after running
->>  BPF_PROG_TEST_RUN command because it allocates dummy cgroup storage
->>  during test. This patch implements simple logic for searching already
->>  allocated cgroup storage through iterating effective programs of current
->>  cgroup and finding the first match. If match is not found fallback to
->>  temporary storage is happened.
->>
->>  v2:
->>     - fix build without CONFIG_CGROUP_BPF (kernel test robot <lkp@intel.com>)
->>
->>  Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
->>  ---
->>    net/bpf/test_run.c | 64 +++++++++++++++++-
->>    .../selftests/bpf/prog_tests/cgroup_skb_prog_run.c | 78 ++++++++++++++++++++++
->>    2 files changed, 139 insertions(+), 3 deletions(-)
->>    create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_skb_prog_run.c
->>
->>  diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
->>  index 050390d..7382b22 100644
->>  --- a/net/bpf/test_run.c
->>  +++ b/net/bpf/test_run.c
->>  @@ -15,15 +15,67 @@
->>    #define CREATE_TRACE_POINTS
->>    #include <trace/events/bpf_test_run.h>
->>
->>  +#ifdef CONFIG_CGROUP_BPF
->>  +
->>  +static struct bpf_prog_array_item *bpf_prog_find_active(struct bpf_prog *prog,
->>  + struct bpf_prog_array *effective)
->>  +{
->>  + struct bpf_prog_array_item *item;
->>  + struct bpf_prog_array *array;
->>  + struct bpf_prog *p;
->>  +
->>  + array = rcu_dereference(effective);
->>  + if (!array)
->>  + return NULL;
->>  +
->>  + item = &array->items[0];
->>  + while ((p = READ_ONCE(item->prog))) {
->>  + if (p == prog)
->>  + return item;
->>  + item++;
->>  + }
->>  +
->>  + return NULL;
->>  +}
->>  +
->>  +static struct bpf_cgroup_storage **bpf_prog_find_active_storage(struct bpf_prog *prog)
->>  +{
->>  + struct bpf_prog_array_item *item;
->>  + struct cgroup *cgrp;
->>  +
->>  + if (prog->type != BPF_PROG_TYPE_CGROUP_SKB)
->>  + return NULL;
->>  +
->>  + cgrp = task_dfl_cgroup(current);
->>  +
->>  + item = bpf_prog_find_active(prog,
->>  + cgrp->bpf.effective[BPF_CGROUP_INET_INGRESS]);
->>  + if (!item)
->>  + item = bpf_prog_find_active(prog,
->>  + cgrp->bpf.effective[BPF_CGROUP_INET_EGRESS]);
->>  +
->>  + return item ? item->cgroup_storage : NULL;
->>  +}
->>  +
->>  +#else
->>  +
->>  +static struct bpf_cgroup_storage **bpf_prog_find_active_storage(struct bpf_prog *prog)
->>  +{
->>  + return NULL;
->>  +}
->>  +
->>  +#endif
->>  +
->>    static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
->>                            u32 *retval, u32 *time, bool xdp)
->>    {
->>  - struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = { NULL };
->>  + struct bpf_cgroup_storage *dummy_storage[MAX_BPF_CGROUP_STORAGE_TYPE] = { NULL };
->>  + struct bpf_cgroup_storage **storage = dummy_storage;
->>            u64 time_start, time_spent = 0;
->>            int ret = 0;
->>            u32 i;
->>
->>  - ret = bpf_cgroup_storages_alloc(storage, prog);
->>  + ret = bpf_cgroup_storages_alloc(dummy_storage, prog);
->>            if (ret)
->>                    return ret;
->>
->>  @@ -31,6 +83,9 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
->>                    repeat = 1;
->>
->>            rcu_read_lock();
->>  + storage = bpf_prog_find_active_storage(prog);
->>  + if (!storage)
->>  + storage = dummy_storage;
->>            migrate_disable();
->>            time_start = ktime_get_ns();
->>            for (i = 0; i < repeat; i++) {
->>  @@ -54,6 +109,9 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
->>                            cond_resched();
->>
->>                            rcu_read_lock();
->>  + storage = bpf_prog_find_active_storage(prog);
->>  + if (!storage)
->>  + storage = dummy_storage;
->>                            migrate_disable();
->>                            time_start = ktime_get_ns();
->>                    }
->>  @@ -65,7 +123,7 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
->>            do_div(time_spent, repeat);
->>            *time = time_spent > U32_MAX ? U32_MAX : (u32)time_spent;
->>
->>  - bpf_cgroup_storages_free(storage);
->>  + bpf_cgroup_storages_free(dummy_storage);
->>
->>            return ret;
->>    }
->>  diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_skb_prog_run.c b/tools/testing/selftests/bpf/prog_tests/cgroup_skb_prog_run.c
->>  new file mode 100644
->>  index 0000000..12ca881
->>  --- /dev/null
->>  +++ b/tools/testing/selftests/bpf/prog_tests/cgroup_skb_prog_run.c
->>  @@ -0,0 +1,78 @@
->>  +// SPDX-License-Identifier: GPL-2.0
->>  +
->>  +#include <test_progs.h>
->>  +
->>  +#include "cgroup_helpers.h"
->>  +#include "network_helpers.h"
->>  +
->>  +static char bpf_log_buf[BPF_LOG_BUF_SIZE];
->>  +
->>  +void test_cgroup_skb_prog_run(void)
->>  +{
->>  + struct bpf_insn prog[] = {
->>  + BPF_LD_MAP_FD(BPF_REG_1, 0), /* map fd */
->>  + BPF_MOV64_IMM(BPF_REG_2, 0), /* flags, not used */
->>  + BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_local_storage),
->>  + BPF_MOV64_IMM(BPF_REG_1, 1),
->>  + BPF_RAW_INSN(BPF_STX | BPF_XADD | BPF_W, BPF_REG_0, BPF_REG_1, 0, 0),
->>  +
->>  + BPF_MOV64_IMM(BPF_REG_0, 1), /* r0 = 1 */
->>  + BPF_EXIT_INSN(),
->>  + };
->>  + size_t insns_cnt = sizeof(prog) / sizeof(struct bpf_insn);
->>  + int storage_fd = -1, prog_fd = -1, cg_fd = -1;
->>  + struct bpf_cgroup_storage_key key;
->>  + __u32 duration, retval, size;
->>  + char buf[128];
->>  + __u64 value;
->>  + int err;
->>  +
->>  + storage_fd = bpf_create_map(BPF_MAP_TYPE_CGROUP_STORAGE,
->>  + sizeof(struct bpf_cgroup_storage_key),
->>  + 8, 0, 0);
->>  + if (CHECK(storage_fd < 0, "create_map", "%s\n", strerror(errno)))
->>  + goto out;
->>  +
->>  + prog[0].imm = storage_fd;
->>  +
->>  + prog_fd = bpf_load_program(BPF_PROG_TYPE_CGROUP_SKB,
->>  + prog, insns_cnt, "GPL", 0,
->>  + bpf_log_buf, BPF_LOG_BUF_SIZE);
->>  + if (CHECK(prog_fd < 0, "prog_load",
->>  + "verifier output:\n%s\n-------\n", bpf_log_buf))
->>  + goto out;
->>  +
->>  + if (CHECK_FAIL(setup_cgroup_environment()))
->>  + goto out;
->>  +
->>  + cg_fd = create_and_get_cgroup("/cg");
->>  + if (CHECK_FAIL(cg_fd < 0))
->>  + goto out;
->>  +
->>  + if (CHECK_FAIL(join_cgroup("/cg")))
->>  + goto out;
->>  +
->>  + if (CHECK(bpf_prog_attach(prog_fd, cg_fd, BPF_CGROUP_INET_EGRESS, 0),
->>  + "prog_attach", "%s\n", strerror(errno)))
->>  + goto out;
->>  +
->>  + err = bpf_prog_test_run(prog_fd, NUM_ITER, &pkt_v4, sizeof(pkt_v4),
->>  + buf, &size, &retval, &duration);
->
-> Hm, I think this approach is rather suboptimal, meaning, you need to load & even
-> actively attach the test program also to the cgroup aside from pushing this via
-> BPF prog test infra. So any other potential background traffic egressing from the
-> application will also go through the test program via BPF_CGROUP_INET_EGRESS.
-> Can't we instead extend the test infra to prepopulate and fetch the content from
-> the temp storage instead so this does not have any other side-effects?
+Therefore move the phy_remove_link_mode calls into
+ksz9477_switch_register. It indirectly calls dsa_register_switch, which
+creates the relevant struct phy_devices and we update the link modes
+right after that. At that time dev->features is already initialized by
+ksz9477_switch_detect.
 
-Thanks for you response, Daniel! Yes, I forgot to mention that this change can affect existing storage values if we run PROG_TEST_RUN command on the online program. But I thought that the case of testing bpf programs on production environments is uncommon and such solution is acceptable trade-off. I see potential rework of this patch through extending bpf_attr for PROG_TEST_RUN with user pointer to memory for cgroup storage contents and dumping cgroup storage with lookup_batch callback after test ends. Does this solution sounds good for you?
+Remove phy_setup from ksz_dev_ops as no users remain.
 
->>  + CHECK(err || retval != 1, "prog_test_run",
->>  + "err %d errno %d retval %d\n", err, errno, retval);
->>  +
->>  + /* check that cgroup storage results are available after test run */
->>  +
->>  + err = bpf_map_get_next_key(storage_fd, NULL, &key);
->>  + CHECK(err, "map_get_next_key", "%s\n", strerror(errno));
->>  +
->>  + err = bpf_map_lookup_elem(storage_fd, &key, &value);
->>  + CHECK(err || value != NUM_ITER,
->>  + "map_lookup_elem",
->>  + "err %d errno %d cnt %lld(%d)\n", err, errno, value, NUM_ITER);
->>  +out:
->>  + close(storage_fd);
->>  + close(prog_fd);
->>  + close(cg_fd);
->>  + cleanup_cgroup_environment();
->>  +}
+Link: https://lore.kernel.org/netdev/20200715192722.GD1256692@lunn.ch/
+Fixes: 42fc6a4c613019 ("net: dsa: microchip: prepare PHY for proper advertisement")
+Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
+---
+ drivers/net/dsa/microchip/ksz9477.c    | 42 ++++++++++++++------------
+ drivers/net/dsa/microchip/ksz_common.c |  2 --
+ drivers/net/dsa/microchip/ksz_common.h |  2 --
+ 3 files changed, 23 insertions(+), 23 deletions(-)
+
+As Andrew Lunn indicated, my patch introduces a null pointer dereference
+when PHYs are missing from the device tree. I was able to reproduce the
+failure mode and this version fixes it.
+
+Helmut
+
+changes since v3:
+ * Check dsa_is_user_port. Thanks to Andrew Lunn.
+changes since v2:
+ * Operate on the correct phydev. Thanks to Andrew Lunn.
+changes since v1:
+ * Don't change phy_remove_link_mode. Instead, call it at the right
+   time. Thanks to Andrew Lunn for the detailed explanation.
+
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 8d15c3016024..4a9239b2c2e4 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -974,23 +974,6 @@ static void ksz9477_port_mirror_del(struct dsa_switch *ds, int port,
+ 			     PORT_MIRROR_SNIFFER, false);
+ }
+ 
+-static void ksz9477_phy_setup(struct ksz_device *dev, int port,
+-			      struct phy_device *phy)
+-{
+-	/* Only apply to port with PHY. */
+-	if (port >= dev->phy_port_cnt)
+-		return;
+-
+-	/* The MAC actually cannot run in 1000 half-duplex mode. */
+-	phy_remove_link_mode(phy,
+-			     ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
+-
+-	/* PHY does not support gigabit. */
+-	if (!(dev->features & GBIT_SUPPORT))
+-		phy_remove_link_mode(phy,
+-				     ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
+-}
+-
+ static bool ksz9477_get_gbit(struct ksz_device *dev, u8 data)
+ {
+ 	bool gbit;
+@@ -1603,7 +1586,6 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
+ 	.get_port_addr = ksz9477_get_port_addr,
+ 	.cfg_port_member = ksz9477_cfg_port_member,
+ 	.flush_dyn_mac_table = ksz9477_flush_dyn_mac_table,
+-	.phy_setup = ksz9477_phy_setup,
+ 	.port_setup = ksz9477_port_setup,
+ 	.r_mib_cnt = ksz9477_r_mib_cnt,
+ 	.r_mib_pkt = ksz9477_r_mib_pkt,
+@@ -1617,7 +1599,29 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
+ 
+ int ksz9477_switch_register(struct ksz_device *dev)
+ {
+-	return ksz_switch_register(dev, &ksz9477_dev_ops);
++	int ret, i;
++	struct phy_device *phydev;
++
++	ret = ksz_switch_register(dev, &ksz9477_dev_ops);
++	if (ret)
++		return ret;
++
++	for (i = 0; i < dev->phy_port_cnt; ++i) {
++		if (!dsa_is_user_port(dev->ds, i))
++			continue;
++
++		phydev = dsa_to_port(dev->ds, i)->slave->phydev;
++
++		/* The MAC actually cannot run in 1000 half-duplex mode. */
++		phy_remove_link_mode(phydev,
++				     ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
++
++		/* PHY does not support gigabit. */
++		if (!(dev->features & GBIT_SUPPORT))
++			phy_remove_link_mode(phydev,
++					     ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
++	}
++	return ret;
+ }
+ EXPORT_SYMBOL(ksz9477_switch_register);
+ 
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index fd1d6676ae4f..7b6c0dce7536 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -358,8 +358,6 @@ int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
+ 
+ 	/* setup slave port */
+ 	dev->dev_ops->port_setup(dev, port, false);
+-	if (dev->dev_ops->phy_setup)
+-		dev->dev_ops->phy_setup(dev, port, phy);
+ 
+ 	/* port_stp_state_set() will be called after to enable the port so
+ 	 * there is no need to do anything.
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index f2c9bb68fd33..7d11dd32ec0d 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -119,8 +119,6 @@ struct ksz_dev_ops {
+ 	u32 (*get_port_addr)(int port, int offset);
+ 	void (*cfg_port_member)(struct ksz_device *dev, int port, u8 member);
+ 	void (*flush_dyn_mac_table)(struct ksz_device *dev, int port);
+-	void (*phy_setup)(struct ksz_device *dev, int port,
+-			  struct phy_device *phy);
+ 	void (*port_cleanup)(struct ksz_device *dev, int port);
+ 	void (*port_setup)(struct ksz_device *dev, int port, bool cpu_port);
+ 	void (*r_phy)(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
+-- 
+2.20.1
 
