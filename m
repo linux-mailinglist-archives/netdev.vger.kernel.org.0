@@ -2,78 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0622E227B64
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 11:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27CDF227BEB
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 11:38:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728632AbgGUJJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 05:09:11 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7804 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725984AbgGUJJL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 05:09:11 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id A974C204CD9DEC23A132;
-        Tue, 21 Jul 2020 17:09:07 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Tue, 21 Jul 2020
- 17:08:57 +0800
-From:   linmiaohe <linmiaohe@huawei.com>
-To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>,
-        <wangchen@cn.fujitsu.com>, <herbert@gondor.apana.org.au>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] net: udp: Fix wrong clean up for IS_UDPLITE macro
-Date:   Tue, 21 Jul 2020 17:11:44 +0800
-Message-ID: <1595322704-31548-1-git-send-email-linmiaohe@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1728535AbgGUJic convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jul 2020 05:38:32 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:60048 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728166AbgGUJi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 05:38:29 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-217-o-9Oq5ZpNDO7uw1k_-mRfA-1; Tue, 21 Jul 2020 10:38:24 +0100
+X-MC-Unique: o-9Oq5ZpNDO7uw1k_-mRfA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 21 Jul 2020 10:38:23 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 21 Jul 2020 10:38:23 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christoph Hellwig' <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <edumazet@google.com>
+CC:     "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "linux-hams@vger.kernel.org" <linux-hams@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
+        "linux-decnet-user@lists.sourceforge.net" 
+        <linux-decnet-user@lists.sourceforge.net>,
+        "linux-wpan@vger.kernel.org" <linux-wpan@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "mptcp@lists.01.org" <mptcp@lists.01.org>,
+        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>
+Subject: RE: get rid of the address_space override in setsockopt
+Thread-Topic: get rid of the address_space override in setsockopt
+Thread-Index: AQHWXznU7Ce8ImOXV0WGgKrMes+hhakRxpwA
+Date:   Tue, 21 Jul 2020 09:38:23 +0000
+Message-ID: <60c52e31e9f240718fcda0dd5c2faeca@AcuMS.aculab.com>
+References: <20200720124737.118617-1-hch@lst.de>
+In-Reply-To: <20200720124737.118617-1-hch@lst.de>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-CFilter-Loop: Reflected
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Christoph Hellwig
+> Sent: 20 July 2020 13:47
+>
+> setsockopt is the last place in architecture-independ code that still
+> uses set_fs to force the uaccess routines to operate on kernel pointers.
+> 
+> This series adds a new sockptr_t type that can contained either a kernel
+> or user pointer, and which has accessors that do the right thing, and
+> then uses it for setsockopt, starting by refactoring some low-level
+> helpers and moving them over to it before finally doing the main
+> setsockopt method.
 
-We can't use IS_UDPLITE to replace udp_sk->pcflag when UDPLITE_RECV_CC is
-checked.
+Are you planning to make the equivalent change to getsockopt()?
+Having mismatched interfaces would be very strange.
 
-Fixes: b2bf1e2659b1 ("[UDP]: Clean up for IS_UDPLITE macro")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- net/ipv4/udp.c | 2 +-
- net/ipv6/udp.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+	David
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 1b7ebbcae497..c7d61db1fb38 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2051,7 +2051,7 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
- 	/*
- 	 * 	UDP-Lite specific tests, ignored on UDP sockets
- 	 */
--	if ((is_udplite & UDPLITE_RECV_CC)  &&  UDP_SKB_CB(skb)->partial_cov) {
-+	if ((up->pcflag & UDPLITE_RECV_CC)  &&  UDP_SKB_CB(skb)->partial_cov) {
- 
- 		/*
- 		 * MIB statistics other than incrementing the error count are
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 7d4151747340..1164dfe53bb3 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -643,7 +643,7 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
- 	/*
- 	 * UDP-Lite specific tests, ignored on UDP sockets (see net/ipv4/udp.c).
- 	 */
--	if ((is_udplite & UDPLITE_RECV_CC)  &&  UDP_SKB_CB(skb)->partial_cov) {
-+	if ((up->pcflag & UDPLITE_RECV_CC)  &&  UDP_SKB_CB(skb)->partial_cov) {
- 
- 		if (up->pcrlen == 0) {          /* full coverage was set  */
- 			net_dbg_ratelimited("UDPLITE6: partial coverage %d while full coverage %d requested\n",
--- 
-2.19.1
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
