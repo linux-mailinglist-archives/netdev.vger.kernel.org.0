@@ -2,185 +2,348 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78BC3227EC4
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 13:26:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55602227F7E
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 13:58:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729709AbgGUL0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 07:26:08 -0400
-Received: from mail-db8eur05on2102.outbound.protection.outlook.com ([40.107.20.102]:40001
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728779AbgGUL0H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 07:26:07 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LQqY59oFUx2enLDbTpqewX7Eb+SgGN9nNQlP4JOd8yL3FBd9jAdJVqmRzmm/nrHzh1KWIOqa4LlWHp0IloyzIOPhFhzqtYZ0SJVeJorJoZyX4hrzoSbNsZlyw5Th2wR0wkZvXyX+2B+X7AxHgSQq22NnJfcx+BIlgyTw1Q0pTZOb0E01JOJKKFCF524IdWpOgU6rQLeRdQbDP0nb/A5YEzCo61UYyGYtEMCb2/sEdgHFNtyZCx7U86/aeqaEUyjBBjEs+z57hFW4TcEcgjLKvfelr896pwzGLLFKVrpinc/N28ecmShtrxHU3c0s2kBOx2CwbnRrYxQVdbRkswEc6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IOKS+NZqZdUyvuebs+KPPXIPTBUSsYs0ncW8NMX8nhY=;
- b=oR2pkNaic5wN4rBiqjJ49F0ZwCG8RTIVFAzJ7q3N0Mj3fA854HN7xt3y6Js0YBHlqAc/QRC3FeCPiYas8TWUgmCVRBGuygK25HAmIZ5WFIzlu3go22BvdTiP2rot6OMXXRGPg4cCY419O3mv5BdLW8KIujEEZp56WbDI+Ra5OqGr+XKz+sMNIiofh/0OyNHdOSilRw/PjvDH7Ps2qjeHl50a3s9o01T8jMJvbDKbvfOpzjSMQgKMtuNxHW/9EAAUsTNoW6xyF2ulMHwArMBIsNMhSswwTZUQO1RnY3i/WaWUibmc1jG1b1FPNrYyMKoXRAYQSwFpsZsfZICKcHIH8w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IOKS+NZqZdUyvuebs+KPPXIPTBUSsYs0ncW8NMX8nhY=;
- b=ovcoJWMiPJnTZCPivnDeSytXCsLdGYSDO6H1D5rwnuDfT+tJ8LhNfa7sitYBk9+yENysN3SHiPsSLIOFwndBzWwEeBY4Sy1ZJn5v+sD+8bWEZyqiH4zVmePnSDba9T4H1DJhkV8SBFvOxGt+YyOnfCn4joWM6LLbkkSow7D7s54=
-Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com (2603:10a6:209:5::28)
- by AM5PR0501MB2418.eurprd05.prod.outlook.com (2603:10a6:203:9::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.23; Tue, 21 Jul
- 2020 11:26:01 +0000
-Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com
- ([fe80::9d1c:861f:f91e:7e5d]) by AM6PR0502MB3925.eurprd05.prod.outlook.com
- ([fe80::9d1c:861f:f91e:7e5d%7]) with mapi id 15.20.3195.026; Tue, 21 Jul 2020
- 11:26:01 +0000
-From:   Tuong Tong Lien <tuong.t.lien@dektech.com.au>
-To:     Xin Long <lucien.xin@gmail.com>
-CC:     davem <davem@davemloft.net>,
-        "jmaloy@redhat.com" <jmaloy@redhat.com>,
-        "maloy@donjonn.com" <maloy@donjonn.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        network dev <netdev@vger.kernel.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>
-Subject: RE: [tipc-discussion] [net-next] tipc: fix NULL pointer dereference
- in streaming
-Thread-Topic: [tipc-discussion] [net-next] tipc: fix NULL pointer dereference
- in streaming
-Thread-Index: AQHWOWS0hd2o/b9bbU+flCfe7ulRFqkSL64AgAAAYoA=
-Date:   Tue, 21 Jul 2020 11:26:01 +0000
-Message-ID: <AM6PR0502MB3925A9F210B21A39D9F62AE7E2780@AM6PR0502MB3925.eurprd05.prod.outlook.com>
-References: <20200603050601.19570-1-tuong.t.lien@dektech.com.au>
- <CADvbK_cE8boY0Y7CcNS_Vh5gZGf4+Pb2urG993V9wnuS=vQK3g@mail.gmail.com>
-In-Reply-To: <CADvbK_cE8boY0Y7CcNS_Vh5gZGf4+Pb2urG993V9wnuS=vQK3g@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=dektech.com.au;
-x-originating-ip: [14.161.14.188]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3da5cba3-f2de-42b4-b05f-08d82d68d907
-x-ms-traffictypediagnostic: AM5PR0501MB2418:
-x-microsoft-antispam-prvs: <AM5PR0501MB2418D4A7FDB55D3B2EB2BF56E2780@AM5PR0501MB2418.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5SKAPZLLVtZqOgi/yajxJOxvyIHhk8YNgAeQecxBvZnziL66RIKnTPg9llSksrEAGVepiLyPfvB6FfjcfnpfDHHws2qTAlmytWEBoKQE6mScKfOawbm8nvkxDyjOt/G2a54WaPInt9de1WWSdnatHhCD7gAlJLpI5bJFQFYX+geusmltvOiAw7ToA550jp3i5mbJMRET5URtCOpB6Fbqzl7bIBnrww0D2ZkhfWGeESaeArilLR81a888BmW0gL4/OaNDQ38Etl8GPD5bONwHqbQyZ28ETVyTrUzBpKaqllA5kXMQXEmu+7NfMH+MzZYQg8f9rLIr6UhE/4lj6NWeda7mHsBl1mwKPGXm/NC0/lO4FvAb5px21Lr5wdcEmSdIQ+DiYay/EhBQ1PBawwXRMA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0502MB3925.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(346002)(136003)(366004)(396003)(39850400004)(4326008)(5660300002)(2906002)(8676002)(8936002)(7696005)(6506007)(186003)(33656002)(53546011)(508600001)(71200400001)(54906003)(66946007)(64756008)(66446008)(66556008)(66476007)(26005)(316002)(966005)(55016002)(6916009)(76116006)(52536014)(9686003)(83380400001)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: uak3j5oujEQsg+tPbTOq8kMEQORQVRlRBsJlTToI0QJu9QGxHXMu3eMDvmQnNxuEWZIAR80+uhvp9Is36Nl2Wu67Xu5B5RpmbI05RTTNrQ8nY8jghJdw/zkwv4I1kQb/236fmeDIhgRiW+doebMtEzdZRV1/2XkpPoinlRDnbonz6ChVXuk1OFq5Q7w/rlq88wXDgYU3IqU5EsMVWu248+bvnSc4dm9OMOhIvsnSIkSBALvn/5DiHqK19sTessnCHuO2AaPlpv3VWfDpSAPgFYktsNnC3nt0WiIXPjR//S51oVPM9GM8QzWHyeClevcke/Pj3htzsCa1RSqD2dDZJH5HgoLGKvtkJMrhDz5cp5tgzSwosuxlWCsPnh++ejHnfGMm36FNSLLVKYxaJAownVLXLnIT9npvF4JJIhg2QuiH5ArS9yHjy5d43aBDGncUH/9UJ0Ka/gJRu3HPiSGjTNncPS4O/kRoKM2VLzg3YK0=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1729915AbgGUL6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 07:58:52 -0400
+Received: from mga17.intel.com ([192.55.52.151]:50575 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726715AbgGUL6v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 07:58:51 -0400
+IronPort-SDR: 10k2gLlpjrhusPdYpZOCS3Qmv60+OsaQbmgyEh6O8SfxCrJUfbkcqF+oHfgboyFNQjKvgZltg/
+ LNOgTi+7zUgQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9688"; a="130182749"
+X-IronPort-AV: E=Sophos;i="5.75,378,1589266800"; 
+   d="scan'208";a="130182749"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2020 04:58:35 -0700
+IronPort-SDR: IHD0mJ9frL8z+U/BxiAFExXlcLfHpFbnIkWPcAj97gRwxJj+1LsApuS8kNz+OFLJ/auwzYxmzt
+ raMBpmivPD4g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,378,1589266800"; 
+   d="scan'208";a="431968439"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga004.jf.intel.com with ESMTP; 21 Jul 2020 04:58:33 -0700
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     ast@kernel.org, daniel@iogearbox.net
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH v2 bpf-next 0/6] bpf: tailcalls in BPF subprograms
+Date:   Tue, 21 Jul 2020 13:53:15 +0200
+Message-Id: <20200721115321.3099-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR0502MB3925.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3da5cba3-f2de-42b4-b05f-08d82d68d907
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2020 11:26:01.3493
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Lhi/vkngWGyHhlpSrqxAMSwQI7T7lc1LGNvoMvuHcMTc1+1F6P0TyIQ4gbe/wqn1UTWhWEedJAzMe7mjb0KU3QiIe4IkxCMtkRTw3EIy/Sg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0501MB2418
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWGluIExvbmcgPGx1Y2ll
-bi54aW5AZ21haWwuY29tPg0KPiBTZW50OiBUdWVzZGF5LCBKdWx5IDIxLCAyMDIwIDY6MjMgUE0N
-Cj4gVG86IFR1b25nIFRvbmcgTGllbiA8dHVvbmcudC5saWVuQGRla3RlY2guY29tLmF1Pg0KPiBD
-YzogZGF2ZW0gPGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyBqbWFsb3lAcmVkaGF0LmNvbTsgbWFsb3lA
-ZG9uam9ubi5jb207IFlpbmcgWHVlIDx5aW5nLnh1ZUB3aW5kcml2ZXIuY29tPjsgbmV0d29yayBk
-ZXYNCj4gPG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+OyB0aXBjLWRpc2N1c3Npb25AbGlzdHMuc291
-cmNlZm9yZ2UubmV0DQo+IFN1YmplY3Q6IFJlOiBbdGlwYy1kaXNjdXNzaW9uXSBbbmV0LW5leHRd
-IHRpcGM6IGZpeCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgaW4gc3RyZWFtaW5nDQo+IA0KPiBP
-biBXZWQsIEp1biAzLCAyMDIwIGF0IDE6MDYgUE0gVHVvbmcgTGllbiA8dHVvbmcudC5saWVuQGRl
-a3RlY2guY29tLmF1PiB3cm90ZToNCj4gPg0KPiA+IHN5emJvdCBmb3VuZCB0aGUgZm9sbG93aW5n
-IGNyYXNoOg0KPiA+DQo+ID4gZ2VuZXJhbCBwcm90ZWN0aW9uIGZhdWx0LCBwcm9iYWJseSBmb3Ig
-bm9uLWNhbm9uaWNhbCBhZGRyZXNzIDB4ZGZmZmZjMDAwMDAwMDAxOTogMDAwMCBbIzFdIFBSRUVN
-UFQgU01QIEtBU0FODQo+ID4gS0FTQU46IG51bGwtcHRyLWRlcmVmIGluIHJhbmdlIFsweDAwMDAw
-MDAwMDAwMDAwYzgtMHgwMDAwMDAwMDAwMDAwMGNmXQ0KPiA+IENQVTogMSBQSUQ6IDcwNjAgQ29t
-bTogc3l6LWV4ZWN1dG9yMzk0IE5vdCB0YWludGVkIDUuNy4wLXJjNi1zeXprYWxsZXIgIzANCj4g
-PiBIYXJkd2FyZSBuYW1lOiBHb29nbGUgR29vZ2xlIENvbXB1dGUgRW5naW5lL0dvb2dsZSBDb21w
-dXRlIEVuZ2luZSwgQklPUyBHb29nbGUgMDEvMDEvMjAxMQ0KPiA+IFJJUDogMDAxMDpfX3RpcGNf
-c2VuZHN0cmVhbSsweGJkZS8weDExZjAgbmV0L3RpcGMvc29ja2V0LmM6MTU5MQ0KPiA+IENvZGU6
-IDAwIDAwIDAwIDAwIDQ4IDM5IDVjIDI0IDI4IDQ4IDBmIDQ0IGQ4IGU4IGZhIDNlIGRiIGY5IDQ4
-IGI4IDAwIDAwIDAwIDAwIDAwIGZjIGZmIGRmIDQ4IDhkIGJiIGM4IDAwIDAwIDAwIDQ4IDg5IGZh
-IDQ4IGMxIGVhIDAzIDw4MD4gM2MNCj4gMDIgMDAgMGYgODUgZTIgMDQgMDAgMDAgNDggOGIgOWIg
-YzggMDAgMDAgMDAgNDggYjggMDAgMDAgMDANCj4gPiBSU1A6IDAwMTg6ZmZmZmM5MDAwM2VmNzgx
-OCBFRkxBR1M6IDAwMDEwMjAyDQo+ID4gUkFYOiBkZmZmZmMwMDAwMDAwMDAwIFJCWDogMDAwMDAw
-MDAwMDAwMDAwMCBSQ1g6IGZmZmZmZmZmODc5N2ZkOWQNCj4gPiBSRFg6IDAwMDAwMDAwMDAwMDAw
-MTkgUlNJOiBmZmZmZmZmZjg3OTdmZGU2IFJESTogMDAwMDAwMDAwMDAwMDBjOA0KPiA+IFJCUDog
-ZmZmZjg4ODA5OTg0ODA0MCBSMDg6IGZmZmY4ODgwOWE1ZjY0NDAgUjA5OiBmZmZmZmJmZmYxODYw
-YjRjDQo+ID4gUjEwOiBmZmZmZmZmZjhjMzA1YTVmIFIxMTogZmZmZmZiZmZmMTg2MGI0YiBSMTI6
-IGZmZmY4ODgwOTk4NDg1N2UNCj4gPiBSMTM6IDAwMDAwMDAwMDAwMDAwMDAgUjE0OiBmZmZmODg4
-MDg2YWE0MDAwIFIxNTogMDAwMDAwMDAwMDAwMDAwMA0KPiA+IEZTOiAgMDAwMDAwMDAwMDliNDg4
-MCgwMDAwKSBHUzpmZmZmODg4MGFlNzAwMDAwKDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDAN
-Cj4gPiBDUzogIDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzDQo+
-ID4gQ1IyOiAwMDAwMDAwMDIwMDAwMTQwIENSMzogMDAwMDAwMDBhN2ZkZjAwMCBDUjQ6IDAwMDAw
-MDAwMDAxNDA2ZTANCj4gPiBEUjA6IDAwMDAwMDAwMDAwMDAwMDAgRFIxOiAwMDAwMDAwMDAwMDAw
-MDAwIERSMjogMDAwMDAwMDAwMDAwMDAwMA0KPiA+IERSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6
-IDAwMDAwMDAwZmZmZTBmZjAgRFI3OiAwMDAwMDAwMDAwMDAwNDAwDQo+ID4gQ2FsbCBUcmFjZToN
-Cj4gPiAgdGlwY19zZW5kc3RyZWFtKzB4NGMvMHg3MCBuZXQvdGlwYy9zb2NrZXQuYzoxNTMzDQo+
-ID4gIHNvY2tfc2VuZG1zZ19ub3NlYyBuZXQvc29ja2V0LmM6NjUyIFtpbmxpbmVdDQo+ID4gIHNv
-Y2tfc2VuZG1zZysweGNmLzB4MTIwIG5ldC9zb2NrZXQuYzo2NzINCj4gPiAgX19fX3N5c19zZW5k
-bXNnKzB4MzJmLzB4ODEwIG5ldC9zb2NrZXQuYzoyMzUyDQo+ID4gIF9fX3N5c19zZW5kbXNnKzB4
-MTAwLzB4MTcwIG5ldC9zb2NrZXQuYzoyNDA2DQo+ID4gIF9fc3lzX3NlbmRtbXNnKzB4MTk1LzB4
-NDgwIG5ldC9zb2NrZXQuYzoyNDk2DQo+ID4gIF9fZG9fc3lzX3NlbmRtbXNnIG5ldC9zb2NrZXQu
-YzoyNTI1IFtpbmxpbmVdDQo+ID4gIF9fc2Vfc3lzX3NlbmRtbXNnIG5ldC9zb2NrZXQuYzoyNTIy
-IFtpbmxpbmVdDQo+ID4gIF9feDY0X3N5c19zZW5kbW1zZysweDk5LzB4MTAwIG5ldC9zb2NrZXQu
-YzoyNTIyDQo+ID4gIGRvX3N5c2NhbGxfNjQrMHhmNi8weDdkMCBhcmNoL3g4Ni9lbnRyeS9jb21t
-b24uYzoyOTUNCj4gPiAgZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4NDkvMHhiMw0K
-PiA+IFJJUDogMDAzMzoweDQ0MDE5OQ0KPiA+IC4uLg0KPiA+DQo+ID4gVGhpcyBidWcgd2FzIGJp
-c2VjdGVkIHRvIGNvbW1pdCAwYTNlMDYwZjM0MGQgKCJ0aXBjOiBhZGQgdGVzdCBmb3IgTmFnbGUN
-Cj4gPiBhbGdvcml0aG0gZWZmZWN0aXZlbmVzcyIpLiBIb3dldmVyLCBpdCBpcyBub3QgdGhlIGNh
-c2UsIHRoZSB0cm91YmxlIHdhcw0KPiA+IGZyb20gdGhlIGJhc2UgaW4gdGhlIGNhc2Ugb2YgemVy
-byBkYXRhIGxlbmd0aCBtZXNzYWdlIHNlbmRpbmcsIHdlIHdvdWxkDQo+ID4gdW5leHBlY3RlZGx5
-IG1ha2UgYW4gZW1wdHkgJ3R4cScgcXVldWUgYWZ0ZXIgdGhlICd0aXBjX21zZ19hcHBlbmQoKScg
-aW4NCj4gPiBOYWdsZSBtb2RlLg0KPiA+DQo+ID4gQSBzaW1pbGFyIGNyYXNoIGNhbiBiZSBnZW5l
-cmF0ZWQgZXZlbiB3aXRob3V0IHRoZSBiaXNlY3RlZCBwYXRjaCBidXQgYXQNCj4gPiB0aGUgbGlu
-ayBsYXllciB3aGVuIGl0IGFjY2Vzc2VzIHRoZSBlbXB0eSBxdWV1ZS4NCj4gPg0KPiA+IFdlIHNv
-bHZlIHRoZSBpc3N1ZXMgYnkgYnVpbGRpbmcgYXQgbGVhc3Qgb25lIGJ1ZmZlciB0byBnbyB3aXRo
-IHNvY2tldCdzDQo+ID4gaGVhZGVyIGFuZCBhbiBvcHRpb25hbCBkYXRhIHNlY3Rpb24gdGhhdCBt
-YXkgYmUgZW1wdHkgbGlrZSB3aGF0IHdlIGhhZA0KPiA+IHdpdGggdGhlICd0aXBjX21zZ19idWls
-ZCgpJy4NCj4gPg0KPiA+IE5vdGU6IHRoZSBwcmV2aW91cyBjb21taXQgNGMyMWRhYWUzZGJjICgi
-dGlwYzogRml4IE5VTEwgcG9pbnRlcg0KPiA+IGRlcmVmZXJlbmNlIGluIF9fdGlwY19zZW5kc3Ry
-ZWFtKCkiKSBpcyBvYnNvbGV0ZWQgYnkgdGhpcyBvbmUgc2luY2UgdGhlDQo+ID4gJ3R4cScgd2ls
-bCBiZSBuZXZlciBlbXB0eSBhbmQgdGhlIGNoZWNrIG9mICdza2IgIT0gTlVMTCcgaXMgdW5uZWNl
-c3NhcnkNCj4gPiBidXQgaXQgaXMgc2FmZSBhbnl3YXkuDQo+IEhpLCBUdW9uZw0KPiANCj4gSWYg
-Y29tbWl0IDRjMjFkYWFlM2RiYyBpcyBvYnNvbGV0ZWQgYnkgdGhpcyBvbmUsIGNhbiB5b3UgcGxl
-YXNlDQo+IHNlbmQgYSBwYXRjaCB0byByZXZlcnQgaXQ/DQo+IA0KPiBUaGFua3MuDQpIaSBYaW4s
-DQoNClRoYXQgcGF0Y2ggaW5jbHVkZXMgYSBzYW5pdHkgY2hlY2sgd2hpY2ggaXMgYWx3YXlzIHRy
-dWUgYW5kIHNhZmUsIHNvIEkgZG9u4oCZdCB0aGluaw0Kd2UgbmVlZCB0byByZXZlcnQgaXQuIERv
-IHlvdSBhZ3JlZT8NCg0KQlIvVHVvbmcNCj4gDQo+ID4NCj4gPiBSZXBvcnRlZC1ieTogc3l6Ym90
-KzhlYWM2ZDAzMGU3ODA3YzIxZDMyQHN5emthbGxlci5hcHBzcG90bWFpbC5jb20NCj4gPiBGaXhl
-czogYzBiY2ViOTdkYjllICgidGlwYzogYWRkIHNtYXJ0IG5hZ2xlIGZlYXR1cmUiKQ0KPiA+IEFj
-a2VkLWJ5OiBKb24gTWFsb3kgPGptYWxveUByZWRoYXQuY29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6
-IFR1b25nIExpZW4gPHR1b25nLnQubGllbkBkZWt0ZWNoLmNvbS5hdT4NCj4gPiAtLS0NCj4gPiAg
-bmV0L3RpcGMvbXNnLmMgfCA0ICsrLS0NCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9u
-cygrKSwgMiBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9uZXQvdGlwYy9tc2cu
-YyBiL25ldC90aXBjL21zZy5jDQo+ID4gaW5kZXggYzBhZmNkNjI3YzVlLi4wNDZlNGNiM2FjZWEg
-MTAwNjQ0DQo+ID4gLS0tIGEvbmV0L3RpcGMvbXNnLmMNCj4gPiArKysgYi9uZXQvdGlwYy9tc2cu
-Yw0KPiA+IEBAIC0yMjEsNyArMjIxLDcgQEAgaW50IHRpcGNfbXNnX2FwcGVuZChzdHJ1Y3QgdGlw
-Y19tc2cgKl9oZHIsIHN0cnVjdCBtc2doZHIgKm0sIGludCBkbGVuLA0KPiA+ICAgICAgICAgYWNj
-b3VudGVkID0gc2tiID8gbXNnX2Jsb2NrcyhidWZfbXNnKHNrYikpIDogMDsNCj4gPiAgICAgICAg
-IHRvdGFsID0gYWNjb3VudGVkOw0KPiA+DQo+ID4gLSAgICAgICB3aGlsZSAocmVtKSB7DQo+ID4g
-KyAgICAgICBkbyB7DQo+ID4gICAgICAgICAgICAgICAgIGlmICghc2tiIHx8IHNrYi0+bGVuID49
-IG1zcykgew0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIHNrYiA9IHRpcGNfYnVmX2FjcXVp
-cmUobXNzLCBHRlBfS0VSTkVMKTsNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICBpZiAodW5s
-aWtlbHkoIXNrYikpDQo+ID4gQEAgLTI0NSw3ICsyNDUsNyBAQCBpbnQgdGlwY19tc2dfYXBwZW5k
-KHN0cnVjdCB0aXBjX21zZyAqX2hkciwgc3RydWN0IG1zZ2hkciAqbSwgaW50IGRsZW4sDQo+ID4g
-ICAgICAgICAgICAgICAgIHNrYl9wdXQoc2tiLCBjcHkpOw0KPiA+ICAgICAgICAgICAgICAgICBy
-ZW0gLT0gY3B5Ow0KPiA+ICAgICAgICAgICAgICAgICB0b3RhbCArPSBtc2dfYmxvY2tzKGhkcikg
-LSBjdXJyOw0KPiA+IC0gICAgICAgfQ0KPiA+ICsgICAgICAgfSB3aGlsZSAocmVtKTsNCj4gPiAg
-ICAgICAgIHJldHVybiB0b3RhbCAtIGFjY291bnRlZDsNCj4gPiAgfQ0KPiA+DQo+ID4gLS0NCj4g
-PiAyLjEzLjcNCj4gPg0KPiA+DQo+ID4NCj4gPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXw0KPiA+IHRpcGMtZGlzY3Vzc2lvbiBtYWlsaW5nIGxpc3QNCj4g
-PiB0aXBjLWRpc2N1c3Npb25AbGlzdHMuc291cmNlZm9yZ2UubmV0DQo+ID4gaHR0cHM6Ly9saXN0
-cy5zb3VyY2Vmb3JnZS5uZXQvbGlzdHMvbGlzdGluZm8vdGlwYy1kaXNjdXNzaW9uDQo=
+v1->v2:
+- include the rax->rcx conversion in first patch, target prog needs to be
+  placed in rcx in the tailcall indirect routine (Daniel)
+- add error checks to routines that add poke descriptors to subprograms
+  (Daniel)
+- don't allow this optimization when arch is different than x64 and when JIT is
+  disabled (Daniel)
+- pull out the rename of poke desc members onto a separate patch (Daniel)
+- add a new poke member to store the bypass address so that calculation of it
+  won't be necessary
+- avoid the special casing when old and new is null in map_poke_run (Daniel)
+- do not sync RCU when bypass target was not patched (Daniel)
+- do not introduce nop2 instruction to prologue for cBPF programs (Daniel)
+
+RFC->v1:
+- rename poke->ip/poke->ip_aux pair to
+  poke->tailcall_target/poke->tailcall_bypass (Alexei)
+- get rid of x86-specific code in prog_array_map_poke_run (Alexei)
+- use synchronize_rcu in prog_array_map_poke_run so that other CPUs in
+  the middle of execution will finish running the program and will not
+  stumble upon the incorrect state (Alexei)
+- update performance reports
+- rebase
+
+
+Hello,
+
+today bpf2bpf calls and tailcalls exclude each other. This set makes them
+work together.
+
+To give you an overview how this work started, previously I posted RFC
+that was targetted at getting rid of push/pop instructions for callee
+saved registers in x86-64 JIT that are not used by the BPF program.
+Alexei saw a potential that that work could be lifted a bit and
+tailcalls could work with BPF subprograms. More on that in [1], [2].
+
+For previous discussions on RFC version, see [3].
+For v1, see [4].
+
+In [1], Alexei says:
+
+"The prologue will look like:
+nop5
+xor eax,eax  // two new bytes if bpf_tail_call() is used in this
+function
+push rbp
+mov rbp, rsp
+sub rsp, rounded_stack_depth
+push rax // zero init tail_call counter
+variable number of push rbx,r13,r14,r15
+
+Then bpf_tail_call will pop variable number rbx,..
+and final 'pop rax'
+Then 'add rsp, size_of_current_stack_frame'
+jmp to next function and skip over 'nop5; xor eax,eax; push rpb; mov
+rbp, rsp'
+
+This way new function will set its own stack size and will init tail
+call counter with whatever value the parent had.
+
+If next function doesn't use bpf_tail_call it won't have 'xor eax,eax'.
+Instead it would need to have 'nop2' in there."
+
+So basically I gave a shot at that suggestion. Patch 4 has a description
+of implementation.
+
+Quick overview of patches:
+Patch 1 changes BPF retpoline to use %rcx instead of %rax to store
+address of BPF tailcall target program
+Patch 2 propagates poke descriptors from main program to each subprogram
+Patch 3 renames poke->ip to poke->tailcall_target
+Patch 4 is the main dish in this set. It implements new prologue layout
+that was suggested by Alexei and reworks tailcall handling.
+Patch 5 relaxes verifier's restrictions about tailcalls being used with
+BPF subprograms for x64 JIT
+Patch 6 is the new selftest that proves tailcalls can be used from
+within BPF subprogram.
+
+
+-------------------------------------------------------------------
+prog_array_map_poke_run changes:
+
+Before the tailcall and with the new prologue layout, stack need to be
+unwinded and callee saved registers need to be popped. Instructions
+responsible for that are generated, but they should not be executed if
+target program is not present. To address that, new poke target
+'tailcall_bypass' is introduced to poke descriptor that will be used for
+skipping these instructions. This means there are two poke targets for
+handling direct tailcalls. Simplified flow can be presented as three
+sections:
+
+1. skip call or nop (poke->tailcall_bypass)
+2. stack unwind
+3. call tail or nop (poke->tailcall_target)
+
+It would be possible under specific circumstances that one of CPU might
+be in point 2 and point 3 is not yet updated (nop), which would lead to
+problems mentioned in patch 4 commit message, IOW unwind section should
+not be executed if there is no target program.
+
+We can define the following state matrix for that (courtesy of Bjorn):
+A nop, unwind, nop
+B nop, unwind, tail
+C skip, unwind, nop
+D skip, unwind, tail
+
+A is forbidden (lead to incorrectness). The state transitions between
+tailcall install/update/remove will work as follows:
+
+First install tail call f: C->D->B(f)
+ * poke the tailcall, after that get rid of the skip
+Update tail call f to f': B(f)->B(f')
+ * poke the tailcall (poke->tailcall_target) and do NOT touch the
+   poke->tailcall_bypass
+Remove tail call: B(f')->C(f')
+ * poke->tailcall_bypass is poked back to jump, then we wait the RCU
+   grace period so that other programs will finish its execution and
+   after that we are safe to remove the poke->tailcall_target
+Install new tail call (f''): C(f')->D(f'')->B(f'').
+ * same as first step
+
+This way CPU can never be exposed to "unwind, tail" state.
+
+-------------------------------------------------------------------
+Performance impact:
+
+All of this work, as stated in [2], started as a way to speed up AF-XDP
+by dropping the push/pop of unused callee saved registers in prologue
+and epilogue. Impact is positive, 15% of performance gain.
+
+However, it is obvious that it will have a negative impact on BPF
+programs that utilize tailcalls, but we think its volume is acceptable
+for the feature that this set contains.
+
+Below are te numbers from 'perf stat' for two scenarios.
+First scenario is the output of command:
+
+$ sudo perf stat -ddd -r 1024 ./test_progs -t tailcalls
+
+tailcalls kselftest was modified in a following way:
+- only tailcall1 subtest is enabled
+- each of the bpf_prog_test_run() calls got set 'repeat' argument to
+  1000000
+
+Numbers without this set:
+
+ Performance counter stats for './test_progs -t tailcalls' (1024 runs):
+
+            261.68 msec task-clock                #    0.998 CPUs utilized            ( +-  0.12% )
+                 5      context-switches          #    0.017 K/sec                    ( +-  0.54% )
+                 0      cpu-migrations            #    0.000 K/sec                    ( +- 23.37% )
+               113      page-faults               #    0.433 K/sec                    ( +-  0.03% )
+       877,156,850      cycles                    #    3.352 GHz                      ( +-  0.11% )  (30.31%)
+     1,379,322,515      instructions              #    1.57  insn per cycle           ( +-  0.02% )  (38.17%)
+       218,869,567      branches                  #  836.395 M/sec                    ( +-  0.01% )  (38.46%)
+        11,954,183      branch-misses             #    5.46% of all branches          ( +-  0.01% )  (38.74%)
+       283,350,418      L1-dcache-loads           # 1082.805 M/sec                    ( +-  0.01% )  (39.00%)
+           156,323      L1-dcache-load-misses     #    0.06% of all L1-dcache hits    ( +-  0.74% )  (39.05%)
+            37,309      LLC-loads                 #    0.143 M/sec                    ( +-  1.02% )  (31.08%)
+            15,263      LLC-load-misses           #   40.91% of all LL-cache hits     ( +-  0.90% )  (30.95%)
+   <not supported>      L1-icache-loads
+           130,427      L1-icache-load-misses                                         ( +-  0.45% )  (30.80%)
+       285,369,370      dTLB-loads                # 1090.520 M/sec                    ( +-  0.01% )  (30.64%)
+             1,154      dTLB-load-misses          #    0.00% of all dTLB cache hits   ( +-  1.26% )  (30.46%)
+             2,015      iTLB-loads                #    0.008 M/sec                    ( +-  1.12% )  (30.31%)
+               551      iTLB-load-misses          #   27.34% of all iTLB cache hits   ( +-  1.29% )  (30.20%)
+   <not supported>      L1-dcache-prefetches
+   <not supported>      L1-dcache-prefetch-misses
+
+          0.262276 +- 0.000316 seconds time elapsed  ( +-  0.12% )
+
+With:
+
+ Performance counter stats for './test_progs -t tailcalls' (1024 runs):
+
+            362.37 msec task-clock                #    0.671 CPUs utilized            ( +-  0.11% )
+                28      context-switches          #    0.077 K/sec                    ( +-  0.15% )
+                 0      cpu-migrations            #    0.001 K/sec                    ( +-  4.46% )
+               113      page-faults               #    0.313 K/sec                    ( +-  0.03% )
+       895,804,416      cycles                    #    2.472 GHz                      ( +-  0.08% )  (30.50%)
+     1,339,401,398      instructions              #    1.50  insn per cycle           ( +-  0.04% )  (38.29%)
+       302,718,849      branches                  #  835.385 M/sec                    ( +-  0.04% )  (38.39%)
+        11,962,089      branch-misses             #    3.95% of all branches          ( +-  0.05% )  (38.56%)
+       248,044,443      L1-dcache-loads           #  684.505 M/sec                    ( +-  0.03% )  (38.70%)
+           239,882      L1-dcache-load-misses     #    0.10% of all L1-dcache hits    ( +-  0.49% )  (38.69%)
+            76,904      LLC-loads                 #    0.212 M/sec                    ( +-  0.96% )  (30.88%)
+            23,472      LLC-load-misses           #   30.52% of all LL-cache hits     ( +-  0.98% )  (30.85%)
+   <not supported>      L1-icache-loads
+           193,803      L1-icache-load-misses                                         ( +-  0.53% )  (30.81%)
+       249,775,412      dTLB-loads                #  689.282 M/sec                    ( +-  0.04% )  (30.81%)
+             2,176      dTLB-load-misses          #    0.00% of all dTLB cache hits   ( +-  1.53% )  (30.73%)
+             2,914      iTLB-loads                #    0.008 M/sec                    ( +-  1.23% )  (30.59%)
+               978      iTLB-load-misses          #   33.57% of all iTLB cache hits   ( +-  1.29% )  (30.48%)
+   <not supported>      L1-dcache-prefetches
+   <not supported>      L1-dcache-prefetch-misses
+
+          0.540236 +- 0.000454 seconds time elapsed  ( +-  0.08% )
+
+Second conducted measurement was on BPF kselftest flow_dissector that is
+using the progs/bpf_flow.c with 'repeat' argument on
+bpf_prog_test_run_xattr set also to 1000000.
+
+Without:
+
+Performance counter stats for './test_progs -t flow_dissector' (1024 runs):
+
+          1,355.18 msec task-clock                #    0.989 CPUs utilized            ( +-  0.11% )
+                28      context-switches          #    0.021 K/sec                    ( +-  0.49% )
+                 0      cpu-migrations            #    0.000 K/sec                    ( +-  7.86% )
+               125      page-faults               #    0.093 K/sec                    ( +-  0.03% )
+     4,609,228,676      cycles                    #    3.401 GHz                      ( +-  0.03% )  (30.70%)
+     6,735,946,489      instructions              #    1.46  insn per cycle           ( +-  0.01% )  (38.42%)
+     1,130,187,926      branches                  #  833.979 M/sec                    ( +-  0.01% )  (38.47%)
+        29,150,986      branch-misses             #    2.58% of all branches          ( +-  0.01% )  (38.51%)
+     1,737,548,851      L1-dcache-loads           # 1282.158 M/sec                    ( +-  0.01% )  (38.56%)
+           659,851      L1-dcache-load-misses     #    0.04% of all L1-dcache hits    ( +-  0.78% )  (38.56%)
+            71,196      LLC-loads                 #    0.053 M/sec                    ( +-  0.97% )  (30.81%)
+            22,218      LLC-load-misses           #   31.21% of all LL-cache hits     ( +-  0.83% )  (30.79%)
+   <not supported>      L1-icache-loads
+           770,586      L1-icache-load-misses                                         ( +-  0.67% )  (30.77%)
+     1,742,104,224      dTLB-loads                # 1285.520 M/sec                    ( +-  0.01% )  (30.74%)
+             7,060      dTLB-load-misses          #    0.00% of all dTLB cache hits   ( +-  2.08% )  (30.72%)
+             4,282      iTLB-loads                #    0.003 M/sec                    ( +- 16.98% )  (30.70%)
+             1,261      iTLB-load-misses          #   29.46% of all iTLB cache hits   ( +-  7.14% )  (30.68%)
+   <not supported>      L1-dcache-prefetches
+   <not supported>      L1-dcache-prefetch-misses
+
+           1.37087 +- 0.00145 seconds time elapsed  ( +-  0.11% )
+
+With:
+
+ Performance counter stats for './test_progs -t flow_dissector' (1024 runs):
+
+          1,385.56 msec task-clock                #    0.989 CPUs utilized            ( +-  0.06% )
+                28      context-switches          #    0.020 K/sec                    ( +-  0.48% )
+                 0      cpu-migrations            #    0.000 K/sec                    ( +-  7.20% )
+               125      page-faults               #    0.091 K/sec                    ( +-  0.03% )
+     4,642,599,630      cycles                    #    3.351 GHz                      ( +-  0.03% )  (30.69%)
+     6,901,261,616      instructions              #    1.49  insn per cycle           ( +-  0.01% )  (38.41%)
+     1,130,623,950      branches                  #  816.006 M/sec                    ( +-  0.01% )  (38.45%)
+        29,161,215      branch-misses             #    2.58% of all branches          ( +-  0.01% )  (38.50%)
+     1,796,850,740      L1-dcache-loads           # 1296.842 M/sec                    ( +-  0.01% )  (38.55%)
+           673,908      L1-dcache-load-misses     #    0.04% of all L1-dcache hits    ( +-  0.89% )  (38.56%)
+            70,394      LLC-loads                 #    0.051 M/sec                    ( +-  1.08% )  (30.82%)
+            24,575      LLC-load-misses           #   34.91% of all LL-cache hits     ( +-  0.66% )  (30.80%)
+   <not supported>      L1-icache-loads
+           729,421      L1-icache-load-misses                                         ( +-  0.85% )  (30.77%)
+     1,800,871,042      dTLB-loads                # 1299.743 M/sec                    ( +-  0.01% )  (30.75%)
+             6,133      dTLB-load-misses          #    0.00% of all dTLB cache hits   ( +-  2.55% )  (30.73%)
+             1,998      iTLB-loads                #    0.001 M/sec                    ( +-  9.36% )  (30.70%)
+             1,152      iTLB-load-misses          #   57.66% of all iTLB cache hits   ( +-  3.02% )  (30.68%)
+   <not supported>      L1-dcache-prefetches
+   <not supported>      L1-dcache-prefetch-misses
+
+          1.400577 +- 0.000780 seconds time elapsed  ( +-  0.06% )
+
+
+Interesting fact is that I observed the huge iTLB-load-misses counts on
+clean kernel as well:
+
+flow_dissector test:
+             2,613      iTLB-loads                #    0.002 M/sec ( +- 21.90% )  (30.70%)
+            16,483      iTLB-load-misses          #  630.78% of all iTLB cache hits   ( +- 79.63% )  (30.68%)
+tailcalls test:
+             1,996      iTLB-loads                #    0.008 M/sec ( +-  1.08% )  (30.33%)
+             7,272      iTLB-load-misses          #  364.24% of all iTLB cache hits   ( +- 92.01% )  (30.21%)
+
+So probably Alexei's suspicion about get_random_int() doing strange things
+was right.
+
+-------------------------------------------------------------------
+
+Thank you,
+Maciej
+
+[1]: https://lore.kernel.org/bpf/20200517043227.2gpq22ifoq37ogst@ast-mbp.dhcp.thefacebook.com/
+[2]: https://lore.kernel.org/bpf/20200511143912.34086-1-maciej.fijalkowski@intel.com/
+[3]: https://lore.kernel.org/bpf/20200702134930.4717-1-maciej.fijalkowski@intel.com/
+[4]: https://lore.kernel.org/bpf/20200715233634.3868-1-maciej.fijalkowski@intel.com/
+
+
+Maciej Fijalkowski (6):
+  bpf, x64: use %rcx instead of %rax for tail call retpolines
+  bpf: propagate poke descriptors to subprograms
+  bpf: rename poke descriptor's 'ip' member to 'tailcall_target'
+  bpf, x64: rework pro/epilogue and tailcall handling in JIT
+  bpf: allow for tailcalls in BPF subprograms for x64 JIT
+  selftests: bpf: add dummy prog for bpf2bpf with tailcall
+
+ arch/x86/include/asm/nospec-branch.h          |  16 +-
+ arch/x86/net/bpf_jit_comp.c                   | 250 +++++++++++++-----
+ include/linux/bpf.h                           |   6 +-
+ kernel/bpf/arraymap.c                         |  62 ++++-
+ kernel/bpf/core.c                             |   3 +-
+ kernel/bpf/verifier.c                         |  24 ++
+ .../selftests/bpf/prog_tests/tailcalls.c      |  85 ++++++
+ tools/testing/selftests/bpf/progs/tailcall6.c |  38 +++
+ 8 files changed, 401 insertions(+), 83 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/tailcall6.c
+
+-- 
+2.20.1
+
