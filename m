@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7794E228332
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 17:08:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0BC8228335
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 17:09:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729751AbgGUPIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 11:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        id S1729480AbgGUPJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 11:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728320AbgGUPIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 11:08:38 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C28C061794;
-        Tue, 21 Jul 2020 08:08:38 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id 8so1144639pjj.1;
-        Tue, 21 Jul 2020 08:08:38 -0700 (PDT)
+        with ESMTP id S1728306AbgGUPJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 11:09:45 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C192C061794;
+        Tue, 21 Jul 2020 08:09:45 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id 8so1146173pjj.1;
+        Tue, 21 Jul 2020 08:09:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XxArNrsDxK0jgBrFXe5Xugx6neCsoFxEQFgdlLGJALY=;
-        b=cvKDwOQ5Q1EfaXBnNKGYSan/gUvJ2Wpuz0IEZBdbEzg7l/oeqXx2Aw2AR/oHEtXxxQ
-         JTqdz8qQl1jw0bOSHve9RQyayuss5fTkI4N7E520IR0YTgY8iQN9dt724jK/FNEqAsWb
-         uLL1AbWOs7IRs7gxr3gXxH1nGDlJvl7hOdEH64PuXiEq+Qzzpi7awMJWt4SHrBdaUgI/
-         wsBWSW2qCPjzH1FbatYCcH/wvFDCXRa+H84MRkGHs8mQuQwe0/X2CTqgFvOMAqaoFzli
-         +xeC+8KU1Hh1AAFUeR9Sa2BDb5NUSgKi4GZQcZoHSeWvc3BH75IeRN1Riasw9SH5O+uV
-         IGOw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eoQ/LwxD/ih1GkSzZAuNDCG4MFgTBugN1T3/2DGPiZs=;
+        b=KmcdvitIPM0ZFS7BiZAORytFknRF/NJjqwGhXJbcpyxRU5OsqYeFLMZBj7ZTICExgy
+         QuzRkzTZlNMRcaqFb6yBkA1qKLOjKL3YvNFmeK+GiI2VI+UkKVbQDs+8D4oJSBPeUfio
+         O60k7atldaQEfVM/eKAL52AIZkGkqgIaka6IV6wYrVZJJxxYn6bKNLnPru+gph7D44zT
+         mFqXyyg7VLSctQnF0GY4kjhufYXEc3BmPiJuRbSM6mEfabaDcchfbcIN/W0G6vwyYVBb
+         0cPUwTWccn+x+bDjxlzEyCBodaTCUHGo4KJxMufcROGt9iy/ySVyvWZPurM2Utyxr6rV
+         FAOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XxArNrsDxK0jgBrFXe5Xugx6neCsoFxEQFgdlLGJALY=;
-        b=bhNEO+q+Ndr3BDbf9hOgRsTy1UrLBwaiLk0GngjeG2qnWXBzVaKMV4ik3tWpKmKD9x
-         SWqZkuTj+7XdmliO7L7HTwGtFKYIxaTDLSR45NfK4druUCTgAiWDe0kFe+kdvk6QqDtJ
-         etgZQxNT/p1cJuNE947mq6n6OuN61LcjIBfm/MsiqMEiLm9kWx+fcO0GN7RRUJZ/5QRP
-         3brHZyFQAhkN0+3T6E9mhBIhvn1hmXrz6gwKOaabVPdrl187V0hGH/HqCvRTl9rxMf0x
-         qN4TjIvAADtQjK1cQTcOKs+ZJc6+hW2YCxlxRWywEy3V+J+FyH8jj0p3M0WBJeTSGJho
-         dfQg==
-X-Gm-Message-State: AOAM532SmG1bWwnl9OAc1kHCfgkLPzwFR2ozXgF6DOsNrBxvZgt88TAQ
-        g/hAHQfqX6YAm93XZ5ppWCc=
-X-Google-Smtp-Source: ABdhPJxx6sheP773N2Alf7m5fZ1kBw3d8TYsmk6FDAhB5okg1aq0WfjsN1Rzp3JE1fPsUGQT+7tCaQ==
-X-Received: by 2002:a17:90a:6983:: with SMTP id s3mr5240415pjj.55.1595344117406;
-        Tue, 21 Jul 2020 08:08:37 -0700 (PDT)
-Received: from varodek.iballbatonwifi.com ([103.105.153.67])
-        by smtp.gmail.com with ESMTPSA id j3sm20122735pfe.102.2020.07.21.08.08.32
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eoQ/LwxD/ih1GkSzZAuNDCG4MFgTBugN1T3/2DGPiZs=;
+        b=F71wg+UihHvX0MdMzgQnAlhacghYS+rz1wqllPkPR2LfgI6ada6ZI8gDS/GaTVr/tF
+         X8/Yncp1YwQVmeZrG7QepCIr9aI8Nqsfw+T8R3li4idPemvqPPXp59Fw32hahiK0u1YR
+         6lnAcZF3XOo3+fKXHN4x9weQ65mRbowTWbeCLY1jkLjtuhRVmT3tpDCtLr8a/ULwskYd
+         XREilWmz7r0ETZom7mOu2+/Tdc0zEvUDMPbGxfskjNpxCmvRCUurHLMsID1YNdYKezkf
+         qeX5FS7/RmmRy5wn2oq9TZV4tO/2Ee+XHKRQGvQgQDqGZydLPXhG7JHVdtAuwMMXB2CZ
+         4kKg==
+X-Gm-Message-State: AOAM530CWP487WmM6B17nCXk+IlLRFfi1ATYoHF7lKuyyUtOJH85Zqaw
+        Ri6rJ4BzMiJv6ni0LG6TSgU=
+X-Google-Smtp-Source: ABdhPJz4/0wCZf0XMDAqiQz3adVwsAM+1tFiAJD4fUtW8v8r/Z0JnQYCFnNIOeXwwXGt/iVKX/DjuQ==
+X-Received: by 2002:a17:902:ac88:: with SMTP id h8mr20461966plr.220.1595344184727;
+        Tue, 21 Jul 2020 08:09:44 -0700 (PDT)
+Received: from gmail.com ([103.105.153.67])
+        by smtp.gmail.com with ESMTPSA id 22sm20312399pfh.157.2020.07.21.08.09.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 08:08:36 -0700 (PDT)
+        Tue, 21 Jul 2020 08:09:43 -0700 (PDT)
+Date:   Tue, 21 Jul 2020 20:38:18 +0530
 From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>,
@@ -54,135 +55,22 @@ To:     Bjorn Helgaas <helgaas@kernel.org>,
         Vaibhav Gupta <vaibhav.varodek@gmail.com>,
         "David S. Miller" <davem@davemloft.net>, Jouni Malinen <j@w1.fi>,
         Kalle Valo <kvalo@codeaurora.org>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH v1] hostap: use generic power management
-Date:   Tue, 21 Jul 2020 20:35:48 +0530
-Message-Id: <20200721150547.371763-1-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.27.0
+Subject: Re: [PATCH v1] hostap: use generic power management
+Message-ID: <20200721150818.GA371967@gmail.com>
+References: <20200721150547.371763-1-vaibhavgupta40@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200721150547.371763-1-vaibhavgupta40@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers using legacy power management .suspen()/.resume() callbacks
-have to manage PCI states and device's PM states themselves. They also
-need to take care of standard configuration registers.
+This patch is compile-tested only.
 
-Switch to generic power management framework using a single
-"struct dev_pm_ops" variable to take the unnecessary load from the driver.
-This also avoids the need for the driver to directly call most of the PCI
-helper functions and device power state control functions as through
-the generic framework, PCI Core takes care of the necessary operations,
-and drivers are required to do only device-specific jobs.
-
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- .../net/wireless/intersil/hostap/hostap_hw.c  |  6 ++--
- .../net/wireless/intersil/hostap/hostap_pci.c | 34 ++++++-------------
- 2 files changed, 13 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/net/wireless/intersil/hostap/hostap_hw.c b/drivers/net/wireless/intersil/hostap/hostap_hw.c
-index 2ab34cf74ecc..b6c497ce12e1 100644
---- a/drivers/net/wireless/intersil/hostap/hostap_hw.c
-+++ b/drivers/net/wireless/intersil/hostap/hostap_hw.c
-@@ -3366,8 +3366,8 @@ static void prism2_free_local_data(struct net_device *dev)
- }
- 
- 
--#if (defined(PRISM2_PCI) && defined(CONFIG_PM)) || defined(PRISM2_PCCARD)
--static void prism2_suspend(struct net_device *dev)
-+#if defined(PRISM2_PCI) || defined(PRISM2_PCCARD)
-+static void __maybe_unused prism2_suspend(struct net_device *dev)
- {
- 	struct hostap_interface *iface;
- 	struct local_info *local;
-@@ -3385,7 +3385,7 @@ static void prism2_suspend(struct net_device *dev)
- 	/* Disable hardware and firmware */
- 	prism2_hw_shutdown(dev, 0);
- }
--#endif /* (PRISM2_PCI && CONFIG_PM) || PRISM2_PCCARD */
-+#endif /* PRISM2_PCI || PRISM2_PCCARD */
- 
- 
- /* These might at some point be compiled separately and used as separate
-diff --git a/drivers/net/wireless/intersil/hostap/hostap_pci.c b/drivers/net/wireless/intersil/hostap/hostap_pci.c
-index 0c2aa880e32a..101887e6bd0f 100644
---- a/drivers/net/wireless/intersil/hostap/hostap_pci.c
-+++ b/drivers/net/wireless/intersil/hostap/hostap_pci.c
-@@ -403,36 +403,23 @@ static void prism2_pci_remove(struct pci_dev *pdev)
- 	pci_disable_device(pdev);
- }
- 
--
--#ifdef CONFIG_PM
--static int prism2_pci_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused prism2_pci_suspend(struct device *dev_d)
- {
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 
- 	if (netif_running(dev)) {
- 		netif_stop_queue(dev);
- 		netif_device_detach(dev);
- 	}
- 	prism2_suspend(dev);
--	pci_save_state(pdev);
--	pci_disable_device(pdev);
--	pci_set_power_state(pdev, PCI_D3hot);
- 
- 	return 0;
- }
- 
--static int prism2_pci_resume(struct pci_dev *pdev)
-+static int __maybe_unused prism2_pci_resume(struct device *dev_d)
- {
--	struct net_device *dev = pci_get_drvdata(pdev);
--	int err;
--
--	err = pci_enable_device(pdev);
--	if (err) {
--		printk(KERN_ERR "%s: pci_enable_device failed on resume\n",
--		       dev->name);
--		return err;
--	}
--	pci_restore_state(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
-+
- 	prism2_hw_config(dev, 0);
- 	if (netif_running(dev)) {
- 		netif_device_attach(dev);
-@@ -441,20 +428,19 @@ static int prism2_pci_resume(struct pci_dev *pdev)
- 
- 	return 0;
- }
--#endif /* CONFIG_PM */
--
- 
- MODULE_DEVICE_TABLE(pci, prism2_pci_id_table);
- 
-+static SIMPLE_DEV_PM_OPS(prism2_pci_pm_ops,
-+			 prism2_pci_suspend,
-+			 prism2_pci_resume);
-+
- static struct pci_driver prism2_pci_driver = {
- 	.name		= "hostap_pci",
- 	.id_table	= prism2_pci_id_table,
- 	.probe		= prism2_pci_probe,
- 	.remove		= prism2_pci_remove,
--#ifdef CONFIG_PM
--	.suspend	= prism2_pci_suspend,
--	.resume		= prism2_pci_resume,
--#endif /* CONFIG_PM */
-+	.driver.pm	= &prism2_pci_pm_ops,
- };
- 
- module_pci_driver(prism2_pci_driver);
--- 
-2.27.0
-
+--Vaibhav Gupta
