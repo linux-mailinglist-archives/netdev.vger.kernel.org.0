@@ -2,74 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30825227AC5
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 10:35:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58DA0227AD0
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 10:37:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727048AbgGUIf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 04:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725984AbgGUIf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 04:35:29 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7F0C061794
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 01:35:29 -0700 (PDT)
-Received: from localhost.localdomain (p200300e9d73716cc9f1a64b6f5045be6.dip0.t-ipconnect.de [IPv6:2003:e9:d737:16cc:9f1a:64b6:f504:5be6])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 0122FC0476;
-        Tue, 21 Jul 2020 10:35:26 +0200 (CEST)
-Subject: Re: [PATCH net] ieee802154: fix one possible memleak in
- ca8210_dev_com_init
-To:     Liu Jian <liujian56@huawei.com>, h.morris@cascoda.com,
-        alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        marcel@holtmann.or, netdev@vger.kernel.org
-References: <20200720143315.40523-1-liujian56@huawei.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <23cf1224-5335-7a00-6f9d-d83e5e91df3d@datenfreihafen.org>
-Date:   Tue, 21 Jul 2020 10:35:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-In-Reply-To: <20200720143315.40523-1-liujian56@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1728707AbgGUIhD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jul 2020 04:37:03 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:34951 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726529AbgGUIhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 04:37:02 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-210-Hj1lpiGkPReD_62cmwnEEw-1; Tue, 21 Jul 2020 09:36:58 +0100
+X-MC-Unique: Hj1lpiGkPReD_62cmwnEEw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 21 Jul 2020 09:36:57 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 21 Jul 2020 09:36:57 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christoph Hellwig' <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <edumazet@google.com>
+CC:     "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "linux-hams@vger.kernel.org" <linux-hams@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
+        "linux-decnet-user@lists.sourceforge.net" 
+        <linux-decnet-user@lists.sourceforge.net>,
+        "linux-wpan@vger.kernel.org" <linux-wpan@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "mptcp@lists.01.org" <mptcp@lists.01.org>,
+        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>
+Subject: RE: [PATCH 12/24] bpfilter: switch bpfilter_ip_set_sockopt to
+ sockptr_t
+Thread-Topic: [PATCH 12/24] bpfilter: switch bpfilter_ip_set_sockopt to
+ sockptr_t
+Thread-Index: AQHWXznUwerjSVAdx0W80SUXvcknn6kRtZIA
+Date:   Tue, 21 Jul 2020 08:36:57 +0000
+Message-ID: <f9493b4c514441b4b51bc7e4e75e8c40@AcuMS.aculab.com>
+References: <20200720124737.118617-1-hch@lst.de>
+ <20200720124737.118617-13-hch@lst.de>
+In-Reply-To: <20200720124737.118617-13-hch@lst.de>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-
-On 20.07.20 16:33, Liu Jian wrote:
-> We should call destroy_workqueue to destroy mlme_workqueue in error branch.
+From: Christoph Hellwig
+> Sent: 20 July 2020 13:47
 > 
-> Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
-> Signed-off-by: Liu Jian <liujian56@huawei.com>
-> ---
->   drivers/net/ieee802154/ca8210.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-> index e04c3b60cae7..4eb64709d44c 100644
-> --- a/drivers/net/ieee802154/ca8210.c
-> +++ b/drivers/net/ieee802154/ca8210.c
-> @@ -2925,6 +2925,7 @@ static int ca8210_dev_com_init(struct ca8210_priv *priv)
->   	);
->   	if (!priv->irq_workqueue) {
->   		dev_crit(&priv->spi->dev, "alloc of irq_workqueue failed!\n");
-> +		destroy_workqueue(priv->mlme_workqueue);
->   		return -ENOMEM;
->   	}
+> This is mostly to prepare for cleaning up the callers, as bpfilter by
+> design can't handle kernel pointers.
+                      ^^^ user ??
 
-For ieee802154 patches please keep the linux-wpan list in CC. This 
-allows me to track patches with patchwork. Applied this one manually.
+	David
 
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-regards
-Stefan Schmidt
