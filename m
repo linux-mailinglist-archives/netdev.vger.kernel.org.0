@@ -2,203 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F36442277D1
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 06:59:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85B112277E0
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 07:04:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727027AbgGUE7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 00:59:08 -0400
-Received: from mail-eopbgr1320095.outbound.protection.outlook.com ([40.107.132.95]:25216
-        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725294AbgGUE7H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 00:59:07 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SO17GC/kCnhiMkAYNlptLykW9sAfPNU2khiv2UlwHqkJxNP+xLCSMdKHj+2kDJPgV4Gix50qi8Jo0V++m3J2+1tU01p9b3Is9sCHk4XzilSnkxyqjkJ6qt0IDUM8G54VQd7iGvaz6mAm47aBABGr8uAVcyHScL+tFIrJf+Tur+xhyjP7aW/1g4A2o0BsID9Loer8UQ1SHUiaGOTWM4iDnj/e/t6R6DtlETH8csdZRdqV6vZinKPsL6/AnBtV7asSxw1bonIFelgy7PZc7TxzbzC1NRQ7tWLqurzsc6jiQyPgItn83c/VAyxqh9MTVwVdP0q9CcOj33jAi7s2qTWMZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e805MkGPiwoAj6Bwo7NTbUn0uzIPgySTmE6N3nUmDM4=;
- b=bTZ8O4dTF2gFAEh1qqvPGQ+DSr0KJuk2VJNVC8xLSjOEQO9kKCWhmBcam8PR2lPBMI0dk2Y0HZLF4BtNLFKke4v80kjx5wnT8xpp+0e1gWwdFd/AtT7NJWdJnRo9Dr/GqmJchTfxfWyRNkpVijbV11frI3oaufkyN8sru5xrk3dmaaLOusmeDaLFXS/NO72sQeznQCG1iCm0gkedlUu6eaTWGq1Ee0nWnP05VvlM8JYKKjsNmlEKuuxm3MMiMQIBOCeUlBpurHGkeRzNIGpyQzm7ntIRC4K6RkejGwJLqWtVO52qrbm+z1oEdf6+5s0HHIflNC2XLHOXKqIZ3kFn8w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e805MkGPiwoAj6Bwo7NTbUn0uzIPgySTmE6N3nUmDM4=;
- b=EhdaRibEXRxnyM/2V+9SmxxHM7mf8CxVLwJM3qbyPEhfWEVviOumzR9KU6MKaEWNpcvdSkO2gnTKm8I9JByt8cugFI+1eD0hZ+awDxtDKORIpkchIdoxvaqHbBH9EOtFdUFGPoBeVFHA3Jm5LiQg9OcBpqy77E39Np/8XC9R0m0=
-Received: from PS1P15301MB0282.APCP153.PROD.OUTLOOK.COM (2603:1096:300:7f::17)
- by PU1P153MB0139.APCP153.PROD.OUTLOOK.COM (2603:1096:803:19::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.14; Tue, 21 Jul
- 2020 04:59:00 +0000
-Received: from PS1P15301MB0282.APCP153.PROD.OUTLOOK.COM
- ([fe80::84ff:3f88:836e:39b8]) by PS1P15301MB0282.APCP153.PROD.OUTLOOK.COM
- ([fe80::84ff:3f88:836e:39b8%7]) with mapi id 15.20.3216.021; Tue, 21 Jul 2020
- 04:59:00 +0000
-From:   Chi Song <Song.Chi@microsoft.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Miller <davem@davemloft.net>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH v6 net-next] net: hyperv: Add attributes to show TX
- indirection table
-Thread-Topic: [PATCH v6 net-next] net: hyperv: Add attributes to show TX
- indirection table
-Thread-Index: AdZfG0GKTJv85JzZS3GaPc7Fu5spkQ==
-Date:   Tue, 21 Jul 2020 04:58:59 +0000
-Message-ID: <PS1P15301MB028211A9D09DA5601EBEBEA298780@PS1P15301MB0282.APCP153.PROD.OUTLOOK.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-07-21T04:58:58Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=d3b0d683-b31a-4af6-8e2f-f4e0d3c15ea6;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
-authentication-results: networkplumber.org; dkim=none (message not signed)
- header.d=none;networkplumber.org; dmarc=none action=none
- header.from=microsoft.com;
-x-originating-ip: [2404:f801:8050:3:b1cc:4ac6:46d:28d5]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 40a6cd3a-b2bd-42f2-9bda-08d82d32c807
-x-ms-traffictypediagnostic: PU1P153MB0139:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PU1P153MB0139A6A3744C599A7D4F584698780@PU1P153MB0139.APCP153.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:628;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7qIiElqs2bD6xG0C8v7D8K0EDABZqnm43nCTV3gzcFqgkeedWQ0YdjOYx+UKHDIDsaV3daXapm0hxE8MdnDimNjD8L82j0QC59kP9zwJ2C48KSWnTNH7bIqyexSaLr+5P++iEi8+5MmKsPtlMAcV7K0FMjMbT7s3BpI9VVpQAAgVGMZR4aI1EcdQJe15T93iFoRhdyt+pUC7El2LRlEMVySiqSMUM9ZjDEI2r8LrE8AvWyQ7jxHmj8hjTbqBAkwPfHxRqA1846lfU1SXju9CpmldvnY1nfwk0r96RGDa5yqzgwyob1zuTI3U5PgvGDqB
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PS1P15301MB0282.APCP153.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(396003)(346002)(376002)(366004)(136003)(478600001)(76116006)(66946007)(4326008)(64756008)(66476007)(186003)(8676002)(8990500004)(33656002)(55016002)(71200400001)(66446008)(9686003)(7696005)(5660300002)(86362001)(10290500003)(316002)(66556008)(6506007)(54906003)(8936002)(2906002)(110136005)(52536014)(82950400001)(83380400001)(82960400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: EiGPOhD8X/zoaDFJQq0vs4ovkqIEo22buCoAw3nV17/dse12pep2gdNVDnc+uDY8u8GOZoEnr51xSKUbr+GrfJl41k/Ant3XrtF5BhZCx0hvs93gKhCmsq4sRgujelCYrIEZ1BVSRk6X8086lWaZOTorLTYMO7tfoxG7dtjrSR0e7tqxgbygFH9UJwtTNspZzMKdxvy+o6OwGx1YwoVoErZP1EpvWI1mHRIX9x1MBSqgNVq18sVdwhZagzqUKrobqz3nL9FlQvA45MFGLWjJGW1hV9NweESf/pQoihOTwpo2L5z7Gu5aIWV3HdrqHV+G9h707B9lQXiztbbyf9/qABj+qk/xE/sOxRpCrIQCnAqGHC1FP7DjJe/B9nkmnKP1t/jnYWY+5HB1ZEmVrRCInDuRRb7YlGlPjLSvFEP1d+6LC/vZS0AAkHIerkw+dl0kbGB45Pgs0/mmRS3LsChi2Wg82oEjUuCugZP+4wWZVk9q5YLvkexdRzsVeMbLUjcueC0DzEl/rLDnwndgprRf/Al1J/2tm6s/Qax3HjBTfJo=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PS1P15301MB0282.APCP153.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 40a6cd3a-b2bd-42f2-9bda-08d82d32c807
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2020 04:58:59.6793
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: V/SwrOsH4j5kHzDW9YKXCC/dL7LQrHVki/OVYBx3DG9AqNBVrTuZjm1cmFh4xbhhwDbsA7xPrTXuEjy/DZ78Rg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1P153MB0139
+        id S1726749AbgGUFEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 01:04:16 -0400
+Received: from mga02.intel.com ([134.134.136.20]:3494 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725891AbgGUFEQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 01:04:16 -0400
+IronPort-SDR: LhrIvXaChY9T7kvHzCeAGqVP6jJVsJ0kaWIxV7vC65tln//jgBIk13OC2RqmlhRGSMhaOhNC+w
+ AuyR9EY3G7jQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9688"; a="138161107"
+X-IronPort-AV: E=Sophos;i="5.75,377,1589266800"; 
+   d="scan'208";a="138161107"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2020 22:04:15 -0700
+IronPort-SDR: j+KNTUnNK5M+uiwfqS5dYAoyPUGJ0ylNMuUvp8MjZQpBxSvXTevajtPF7FvFYuTnwYvWCU9c6U
+ ICT+CVJLz2+w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,377,1589266800"; 
+   d="scan'208";a="431855538"
+Received: from taktemur-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.33.122])
+  by orsmga004.jf.intel.com with ESMTP; 20 Jul 2020 22:04:11 -0700
+From:   Magnus Karlsson <magnus.karlsson@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, maximmi@mellanox.com
+Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
+        maciejromanfijalkowski@gmail.com, cristian.dumitrescu@intel.com
+Subject: [PATCH bpf-next v4 00/14] xsk: support shared umems between devices and queues
+Date:   Tue, 21 Jul 2020 07:03:54 +0200
+Message-Id: <1595307848-20719-1-git-send-email-magnus.karlsson@intel.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An imbalanced TX indirection table causes netvsc to have low
-performance. This table is created and managed during runtime. To help
-better diagnose performance issues caused by imbalanced tables, add
-device attributes to show the content of TX indirection tables.
+This patch set adds support to share a umem between AF_XDP sockets
+bound to different queue ids on the same device or even between
+devices. It has already been possible to do this by registering the
+umem multiple times, but this wastes a lot of memory. Just imagine
+having 10 threads each having 10 sockets open sharing a single
+umem. This means that you would have to register the umem 100 times
+consuming large quantities of memory.
 
-Signed-off-by: Chi Song <chisong@microsoft.com>
----
-v4: use a separated group to organize tx_indirection better, change=20
- location of attributes init/exit to netvsc_drv_init/exit
-v5: update variable orders
-v6: update names to be more precise, remove useless assignment
+Instead, we extend the existing XDP_SHARED_UMEM flag to also work when
+sharing a umem between different queue ids as well as devices. If you
+would like to share umem between two sockets, just create the first
+one as would do normally. For the second socket you would not register
+the same umem using the XDP_UMEM_REG setsockopt. Instead attach one
+new fill ring and one new completion ring to this second socket and
+then use the XDP_SHARED_UMEM bind flag supplying the file descriptor of
+the first socket in the sxdp_shared_umem_fd field to signify that it
+is the umem of the first socket you would like to share.
 
-Thank you all for comments, learned a lot.
+One important thing to note in this example, is that there needs to be
+one fill ring and one completion ring per unique device and queue id
+bound to. This so that the single-producer and single-consumer semantics
+of the rings can be upheld. To recap, if you bind multiple sockets to
+the same device and queue id (already supported without this patch
+set), you only need one pair of fill and completion rings. If you bind
+multiple sockets to multiple different queues or devices, you need one
+fill and completion ring pair per unique device,queue_id tuple.
 
- drivers/net/hyperv/netvsc_drv.c | 48 +++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+The implementation is based around extending the buffer pool in the
+core xsk code. This is a structure that exists on a per unique device
+and queue id basis. So, a number of entities that can now be shared
+are moved from the umem to the buffer pool. Information about DMA
+mappings are also moved from the buffer pool, but as these are per
+device independent of the queue id, they are now hanging off the umem
+in list. However, the pool is set up to point directly to the
+dma_addr_t array that it needs. In summary after this patch set, there
+is one xdp_sock struct per socket created. This points to an
+xsk_buff_pool for which there is one per unique device and queue
+id. The buffer pool points to a DMA mapping structure for which there
+is one per device that a umem has been bound to. And finally, the
+buffer pool also points to a xdp_umem struct, for which there is only
+one per umem registration.
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_dr=
-v.c
-index 6267f706e8ee..f6ad13ed320f 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2370,6 +2370,50 @@ static int netvsc_unregister_vf(struct net_device *v=
-f_netdev)
- 	return NOTIFY_OK;
- }
-=20
-+static struct device_attribute dev_attr_tx_indirection_attrs[VRSS_SEND_TAB=
-_SIZE];
-+static struct attribute *tx_indirection_attrs[VRSS_SEND_TAB_SIZE + 1];
-+
-+const struct attribute_group tx_indirection_group =3D {
-+	.name =3D "tx_indirection",
-+	.attrs =3D tx_indirection_attrs,
-+};
-+
-+static ssize_t tx_indirection_show(struct device *dev,
-+				   struct device_attribute *dev_attr, char *buf)
-+{
-+	int index =3D dev_attr - dev_attr_tx_indirection_attrs;
-+	struct net_device *ndev =3D to_net_dev(dev);
-+	struct net_device_context *ndc =3D netdev_priv(ndev);
-+
-+	return sprintf(buf, "%u\n", ndc->tx_table[index]);
-+}
-+
-+static void netvsc_attrs_init(void)
-+{
-+	char buffer[4];
-+	int i;
-+
-+	for (i =3D 0; i < VRSS_SEND_TAB_SIZE; i++) {
-+		sprintf(buffer, "%02u", i);
-+		dev_attr_tx_indirection_attrs[i].attr.name =3D
-+			kstrdup(buffer, GFP_KERNEL);
-+		dev_attr_tx_indirection_attrs[i].attr.mode =3D 0444;
-+		sysfs_attr_init(&dev_attr_tx_indirection_attrs[i].attr);
-+
-+		dev_attr_tx_indirection_attrs[i].show =3D tx_indirection_show;
-+		tx_indirection_attrs[i] =3D
-+			&dev_attr_tx_indirection_attrs[i].attr;
-+	}
-+}
-+
-+static void netvsc_attrs_exit(void)
-+{
-+	int i;
-+
-+	for (i =3D 0; i < VRSS_SEND_TAB_SIZE; i++)
-+		kfree(dev_attr_tx_indirection_attrs[i].attr.name);
-+}
-+
- static int netvsc_probe(struct hv_device *dev,
- 			const struct hv_vmbus_device_id *dev_id)
- {
-@@ -2410,6 +2454,7 @@ static int netvsc_probe(struct hv_device *dev,
-=20
- 	net->netdev_ops =3D &device_ops;
- 	net->ethtool_ops =3D &ethtool_ops;
-+	net->sysfs_groups[0] =3D &tx_indirection_group;
- 	SET_NETDEV_DEV(net, &dev->device);
-=20
- 	/* We always need headroom for rndis header */
-@@ -2665,6 +2710,7 @@ static void __exit netvsc_drv_exit(void)
- {
- 	unregister_netdevice_notifier(&netvsc_netdev_notifier);
- 	vmbus_driver_unregister(&netvsc_drv);
-+	netvsc_attrs_exit();
- }
-=20
- static int __init netvsc_drv_init(void)
-@@ -2678,6 +2724,8 @@ static int __init netvsc_drv_init(void)
- 	}
- 	netvsc_ring_bytes =3D ring_size * PAGE_SIZE;
-=20
-+	netvsc_attrs_init();
-+
- 	ret =3D vmbus_driver_register(&netvsc_drv);
- 	if (ret)
- 		return ret;
---=20
-2.25.1
+Before:
+
+XSK -> UMEM -> POOL
+
+Now:
+
+XSK -> POOL -> DMA
+            \
+	     > UMEM
+
+Patches 1-8 only rearrange internal structures to support the buffer
+pool carrying this new information, while patch 9 improves performance
+as we now have rearranged the internal structures quite a bit. Finally,
+patches 10-14 introduce the new functionality together with libbpf
+support, samples, and documentation.
+
+Libbpf has also been extended to support sharing of umems between
+sockets bound to different devices and queue ids by introducing a new
+function called xsk_socket__create_shared(). The difference between
+this and the existing xsk_socket__create() is that the former takes a
+reference to a fill ring and a completion ring as these need to be
+created. This new function needs to be used for the second and
+following sockets that binds to the same umem. The first socket can be
+created by either function as it will also have called
+xsk_umem__create().
+
+There is also a new sample xsk_fwd that demonstrates this new
+interface and capability.
+
+Performance for the non-shared umem case is unchanged for the xdpsock
+sample application with this patch set. For workloads that share a
+umem, this patch set can give rise to added performance benefits due
+to the decrease in memory usage.
+
+v3 -> v4:
+
+* Fixed compilation error when CONFIG_XDP_SOCKETS_DIAG is set [lkp robot]
+
+v2 -> v3:
+
+* Clean up of fq_tmp and cq_tmp in xsk_release [Maxim]
+* Fixed bug when bind failed that caused pool to be freed twice [Ciara]
+
+v1 -> v2:
+
+* Tx need_wakeup init bug fixed. Missed to set the cached_need_wakeup
+  flag for Tx.
+* Need wakeup turned on for xsk_fwd sample [Cristian]
+* Commit messages cleaned up
+* Moved dma mapping list from netdev to umem [Maxim]
+* Now the buffer pool is only created once. Fill ring and completion
+  ring pointers are stored in the socket during initialization (before
+  bind) and at bind these pointers are moved over to the buffer pool
+  which is used all the time after that. [Maxim]
+
+This patch has been applied against commit e57892f50a07 ("Merge branch 'bpf-socket-lookup'")
+
+Structure of the patch set:
+
+Patch 1: Pass the buffer pool to the driver instead of the umem. This
+         because the driver needs one buffer pool per napi context
+         when we later introduce sharing of the umem between queue ids
+         and devices.
+Patch 2: Rename the xsk driver interface so they have better names
+         after the move to the buffer pool
+Patch 3: There is one buffer pool per device and queue, while there is
+         only one umem per registration. The buffer pool needs to be
+         created and destroyed independently of the umem.
+Patch 4: Move fill and completion rings to the buffer pool as there will
+         be one set of these per device and queue
+Patch 5: Move queue_id, dev and need_wakeup to buffer pool again as these
+         will now be per buffer pool as the umem can be shared between
+         devices and queues
+Patch 6: Move xsk_tx_list and its lock to buffer pool
+Patch 7: Move the creation/deletion of addrs from buffer pool to umem
+Patch 8: Enable sharing of DMA mappings when multiple queues of the
+         same device are bound
+Patch 9: Rearrange internal structs for better performance as these
+         have been substantially scrambled by the previous patches
+Patch 10: Add shared umem support between queue ids
+Patch 11: Add shared umem support between devices
+Patch 12: Add support for this in libbpf
+Patch 13: Add a new sample that demonstrates this new feature by
+          forwarding packets between different netdevs and queues
+Patch 14: Add documentation
+
+Thanks: Magnus
+
+Cristian Dumitrescu (1):
+  samples/bpf: add new sample xsk_fwd.c
+
+Magnus Karlsson (13):
+  xsk: i40e: ice: ixgbe: mlx5: pass buffer pool to driver instead of
+    umem
+  xsk: i40e: ice: ixgbe: mlx5: rename xsk zero-copy driver interfaces
+  xsk: create and free buffer pool independently from umem
+  xsk: move fill and completion rings to buffer pool
+  xsk: move queue_id, dev and need_wakeup to buffer pool
+  xsk: move xsk_tx_list and its lock to buffer pool
+  xsk: move addrs from buffer pool to umem
+  xsk: enable sharing of dma mappings
+  xsk: rearrange internal structs for better performance
+  xsk: add shared umem support between queue ids
+  xsk: add shared umem support between devices
+  libbpf: support shared umems between queues and devices
+  xsk: documentation for XDP_SHARED_UMEM between queues and netdevs
+
+ Documentation/networking/af_xdp.rst                |   68 +-
+ drivers/net/ethernet/intel/i40e/i40e_ethtool.c     |    2 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |   29 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c        |   10 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h        |    2 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         |   79 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.h         |    4 +-
+ drivers/net/ethernet/intel/ice/ice.h               |   18 +-
+ drivers/net/ethernet/intel/ice/ice_base.c          |   16 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c           |    2 +-
+ drivers/net/ethernet/intel/ice/ice_main.c          |   10 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c          |    8 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.h          |    2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c           |  142 +--
+ drivers/net/ethernet/intel/ice/ice_xsk.h           |    7 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h           |    2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |   34 +-
+ .../net/ethernet/intel/ixgbe/ixgbe_txrx_common.h   |    7 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |   61 +-
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   19 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |    5 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/pool.c  |  217 ++++
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/pool.h  |   27 +
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.h    |   10 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |   12 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.h |    2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.c    |   14 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.h    |    6 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/umem.c  |  217 ----
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/umem.h  |   29 -
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |    2 +-
+ .../ethernet/mellanox/mlx5/core/en_fs_ethtool.c    |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   49 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |   16 +-
+ include/linux/netdevice.h                          |   10 +-
+ include/net/xdp_sock.h                             |   30 +-
+ include/net/xdp_sock_drv.h                         |  115 ++-
+ include/net/xsk_buff_pool.h                        |   44 +-
+ net/ethtool/channels.c                             |    2 +-
+ net/ethtool/ioctl.c                                |    2 +-
+ net/xdp/xdp_umem.c                                 |  222 +---
+ net/xdp/xdp_umem.h                                 |    6 -
+ net/xdp/xsk.c                                      |  213 ++--
+ net/xdp/xsk.h                                      |    3 +
+ net/xdp/xsk_buff_pool.c                            |  309 +++++-
+ net/xdp/xsk_diag.c                                 |   16 +-
+ net/xdp/xsk_queue.h                                |   12 +-
+ samples/bpf/Makefile                               |    3 +
+ samples/bpf/xsk_fwd.c                              | 1075 ++++++++++++++++++++
+ tools/lib/bpf/libbpf.map                           |    1 +
+ tools/lib/bpf/xsk.c                                |  376 ++++---
+ tools/lib/bpf/xsk.h                                |    9 +
+ 53 files changed, 2506 insertions(+), 1074 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.h
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.c
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.h
+ create mode 100644 samples/bpf/xsk_fwd.c
+
+--
+2.7.4
