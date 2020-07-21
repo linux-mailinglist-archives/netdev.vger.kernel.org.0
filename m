@@ -2,123 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83AE6227511
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 03:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8ECA227540
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 04:01:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727941AbgGUB7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jul 2020 21:59:34 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:43740 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726962AbgGUB7e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 21:59:34 -0400
-Received: by mail-io1-f65.google.com with SMTP id k23so19710424iom.10;
-        Mon, 20 Jul 2020 18:59:33 -0700 (PDT)
+        id S1728427AbgGUCBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jul 2020 22:01:10 -0400
+Received: from mail-il1-f194.google.com ([209.85.166.194]:42730 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725774AbgGUCBK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jul 2020 22:01:10 -0400
+Received: by mail-il1-f194.google.com with SMTP id t27so15042385ill.9;
+        Mon, 20 Jul 2020 19:01:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=wnc7YVfPETMY6OwZSSKyjxvpm6CL442HL8Evb64Bao0=;
-        b=ObDkZUCkUiIaGolGkqSsZKx1s5D0ohTz62PZZc+i+3bawVSOMebEEsJahX91MQgjxn
-         Lw7PdCN5bQlUXBYBvAxQpEqMSdZOtTbR5CNhnj1+ZXZbo5l42xj5Od+9zxKd0R3Mmp9y
-         RiJNsY4SzrVFPOOyjmoqIf3AThrrlG9XvsbnD/4EhpaFJ4evjbfd1c9Uo+9YVsBADCyh
-         e5lBAp7dIwqFjm4hcsUMHZdgJR+ImPC7onVQaj1bya0EMg4DkRiBCO2lHj43LfglzXHn
-         /ZBJPlbaYS4KT7LCHnYROP6jzVYYBBvxDXNPzgvdHGcI8jD3wE8ZYvpqNwiUE1LE0XX0
-         yDSA==
-X-Gm-Message-State: AOAM530dz9Th/EoAHozCdFh1sMTM5+exb38Ga6g+Hgb48wDPBZmYNBmd
-        yazyqVDWhxDhgsTp0o0oow==
-X-Google-Smtp-Source: ABdhPJy8KThvkeccvCI926AXDyWSugNKjKyrlGQkm9NW9P/FwLo9C9MOvQMwCMAcBFH6teHRisqXRg==
-X-Received: by 2002:a02:2401:: with SMTP id f1mr29054327jaa.66.1595296772813;
-        Mon, 20 Jul 2020 18:59:32 -0700 (PDT)
+        bh=4coWlWluVBZIU2YwRK6iRmx4Qe40biSfC4r+y33fdQQ=;
+        b=CLkDAhJOCF0znkEpWPXe7/XUWrluKnlmyncvPMLhQb5ZgGTgRXsO5fQgDQTlXCY1xY
+         49w/ScSz1KBg01PTzR8OPNIg9BCIY3TUzsU3Z2kbqqE9Q9GuTlJR+DznE1M8h1NsRrF9
+         bIb9zp1diS5O7hr8p5PQTOxzLcHse7QtqZGjyPl4LOjWkV3Rwyh1+Is6+QIQtm/ULk5B
+         2mUVt0DHRrrddDavKWLgK5LHAzllVJQsNsA+AuRtK3S3IbKR6oo0Hvw4gPrrJb0BUagy
+         WApOnKN975p8OECBzrYgRVMWqSDrd6AR2OSh7axxD4dKsK+bPO4GiU+sneNq86V8Vy9v
+         itEA==
+X-Gm-Message-State: AOAM533f1tmCUIrOCS5LB1Wd9M+O/NrepY2eMB3zi/ydTOD1DuFioFxI
+        8LEauKf4NS6N0wDcuYE4/g==
+X-Google-Smtp-Source: ABdhPJw6yirC6GJsGZXSwAWpBSfNz67bs5OsZemqLf1ded7njYlxVrGNsox3/tosI8RW8daPCRfMEg==
+X-Received: by 2002:a92:db44:: with SMTP id w4mr24935691ilq.306.1595296868945;
+        Mon, 20 Jul 2020 19:01:08 -0700 (PDT)
 Received: from xps15 ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id p124sm9810465iod.32.2020.07.20.18.59.31
+        by smtp.gmail.com with ESMTPSA id y2sm10001176iox.22.2020.07.20.19.01.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2020 18:59:32 -0700 (PDT)
-Received: (nullmailer pid 3370741 invoked by uid 1000);
-        Tue, 21 Jul 2020 01:59:30 -0000
-Date:   Mon, 20 Jul 2020 19:59:30 -0600
+        Mon, 20 Jul 2020 19:01:07 -0700 (PDT)
+Received: (nullmailer pid 3373185 invoked by uid 1000);
+        Tue, 21 Jul 2020 02:01:06 -0000
+Date:   Mon, 20 Jul 2020 20:01:06 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Matthew Hagan <mnhagan88@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        John Crispin <john@phrozen.org>,
-        Jonathan McDowell <noodles@earth.li>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/2] dt-bindings: net: dsa: qca8k: Add PORT0_PAD_CTRL
- properties
-Message-ID: <20200721015930.GA3363310@bogus>
-References: <2e1776f997441792a44cd35a16f1e69f848816ce.1594668793.git.mnhagan88@gmail.com>
- <ea0a35ed686e6dace77e25cb70a8f39fdd1ea8ad.1594668793.git.mnhagan88@gmail.com>
- <20200716150925.0f3e01b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200716223236.GA1314837@lunn.ch>
- <c86c4da0-a740-55cc-33dd-7a91e36c7738@gmail.com>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Vinod Koul <vkoul@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, iommu@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Subject: Re: [PATCH 3/9] arm64: dts: renesas: r8a774e1: Add IPMMU device nodes
+Message-ID: <20200721020106.GA3372559@bogus>
+References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594676120-5862-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c86c4da0-a740-55cc-33dd-7a91e36c7738@gmail.com>
+In-Reply-To: <1594676120-5862-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 17, 2020 at 08:26:02PM +0100, Matthew Hagan wrote:
+On Mon, Jul 13, 2020 at 10:35:14PM +0100, Lad Prabhakar wrote:
+> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 > 
+> Add RZ/G2H (R8A774E1) IPMMU nodes.
 > 
-> On 16/07/2020 23:32, Andrew Lunn wrote:
-> > On Thu, Jul 16, 2020 at 03:09:25PM -0700, Jakub Kicinski wrote:
-> >> On Mon, 13 Jul 2020 21:50:26 +0100 Matthew Hagan wrote:
-> >>> Add names and decriptions of additional PORT0_PAD_CTRL properties.
-> >>>
-> >>> Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
-> >>> ---
-> >>>  Documentation/devicetree/bindings/net/dsa/qca8k.txt | 8 ++++++++
-> >>>  1 file changed, 8 insertions(+)
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> >>> index ccbc6d89325d..3d34c4f2e891 100644
-> >>> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> >>> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> >>> @@ -13,6 +13,14 @@ Optional properties:
-> >>>  
-> >>>  - reset-gpios: GPIO to be used to reset the whole device
-> >>>  
-> >>> +Optional MAC configuration properties:
-> >>> +
-> >>> +- qca,exchange-mac0-mac6:	If present, internally swaps MAC0 and MAC6.
-> >>
-> >> Perhaps we can say a little more here?
-> >>
-> >>> +- qca,sgmii-rxclk-falling-edge:	If present, sets receive clock phase to
-> >>> +				falling edge.
-> >>> +- qca,sgmii-txclk-falling-edge:	If present, sets transmit clock phase to
-> >>> +				falling edge.
-> >>
-> >> These are not something that other vendors may implement and therefore
-> >> something we may want to make generic? Andrew?
-> > 
-> > I've never seen any other vendor implement this. Which to me makes me
-> > think this is a vendor extension, to Ciscos vendor extension of
-> > 1000BaseX.
-> > 
-> > Matthew, do you have a real use cases of these? I don't see a DT patch
-> > making use of them. And if you do, what is the PHY on the other end
-> > which also allows you to invert the clocks?
-> > 
-> The use case I am working on is the Cisco Meraki MX65 which requires bit
-> 18 set (qca,sgmii-txclk-falling-edge). On the other side is a BCM58625
-> SRAB with ports 4 and 5 in SGMII mode. There is no special polarity
-> configuration set on this side though I do have very limited info on
-> what is available. The settings I have replicate the vendor
-> configuration extracted from the device.
-> 
-> The qca,sgmii-rxclk-falling-edge option (bit 19) is commonly used
-> according to the device trees found in the OpenWrt, which is still using
-> the ar8216 driver. With a count through the ar8327-initvals I see bit 19
-> set on 18 of 22 devices using SGMII on MAC0.
+> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  arch/arm64/boot/dts/renesas/r8a774e1.dtsi | 121 ++++++++++++++++++++++
+>  1 file changed, 121 insertions(+)
 
-Can't you identify the device and configure the setting based on that? 
-After all, MDIO devices are discoverable. Or there's no MDIO here?
-
-Rob
+Acked-by: Rob Herring <robh@kernel.org>
