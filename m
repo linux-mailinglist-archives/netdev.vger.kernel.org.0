@@ -2,187 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A214B2288EA
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 21:12:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D7702288FF
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 21:18:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730576AbgGUTKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 15:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
+        id S1730324AbgGUTRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 15:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726960AbgGUTKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 15:10:13 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD62C061794;
-        Tue, 21 Jul 2020 12:10:13 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id 72so10669847ple.0;
-        Tue, 21 Jul 2020 12:10:13 -0700 (PDT)
+        with ESMTP id S1726602AbgGUTRu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 15:17:50 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF084C061794;
+        Tue, 21 Jul 2020 12:17:49 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id 140so1900536lfi.5;
+        Tue, 21 Jul 2020 12:17:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4VasfkiSgNbg3DexTWANpLNDcXThnixKgOSNULSjEfA=;
-        b=L9R5y5TOMDt5OSaIal5MpxYPE3IRn8eYeUblKvHeUBPtWb6EUIWGKE2VT+eAMkxjGc
-         ynef9fttbPpB+yehrjn+pvfUNSJhbYhuV/bhM0ZQ8KWiCrBUg1Zw9Pwy/3aioG4+tld2
-         oVcw3VtTD8UkhQ46qzxSQ5zYhnQ0PVgUqNOJRjU3yjaf9abOdqvi9FS1bee3nfc4dFxO
-         iclQYqam/wcL4ZGgaIIUZ9T6c4AdhBd2gRTtztcgtbXrrQJ6+LE/ym3vAF/NagaeEy/T
-         6qP/CAO3l5JqEBln2UMnk7SfUuPmBa5pHxVZfQLKm7nhMzePuUoM/aNf6RNcNwzWs6Xl
-         opGg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZWBDSpvSID9isJQH7VhMl+fYpyhlV/5rIWPv6OTFX7k=;
+        b=bjJmOnjSvHymIbPjtRqJcq5iUmACuMPlpNYY6EiWRnwQ+sFauRHkIDHR5ii1tNFodT
+         ZnGD/2GgQCh8NnD4rf8Ac3y7LP2ZzOXhMhd4+1PTsXLxT1J6FVdqFTZl9/8paiZu46F+
+         11ZygeKCLBq/O9uFsto9he37C6pu1uCRIFRFhS+mH2Fx+r/+W8yMbhqzmFUsWNxY2dVJ
+         oFKNi1baFIPVyTgn3OmUXQr+TVKR8DWDca0+usbBxY573rfj5PrAwdT/AviH+Bnnqzh7
+         rBH51dIX87TxnklidM+nyuPcde5wMeX/OKWTGFOpS9tuuruGLaHLaQjhwVMbJGhs9QN9
+         g+rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4VasfkiSgNbg3DexTWANpLNDcXThnixKgOSNULSjEfA=;
-        b=a2xbtQiWMxdUKu/OZpB3DSl+B4KceSJ+s5gbu9VuDqtEHa5xyN48Uft+p39m5g5fw7
-         cHtsIeIrU/hLaUzvdzU2zp7idBYuo7+0sEUIWofuNCd215EChtPUx4pb0CxWZciPaMi1
-         SBxvFnXJe9wx0LL44CeEntSqzlH+vfSca8rRlaCcbn0/2YyzLIHlOW2I2c0cRDFnz4Nm
-         Z4+kIERQfBsFSVxRGcSNZgV2cTKgEgfLb3JHx+bqf/UsSZzPhTjCpty1ztNUsAu2ABgQ
-         fhn4JZ4W2Qg/xvuVJmKfjPLSqmasxS/pOg/IsPton0Cf80Kav3pVTzCdnnpHGHCPbJJQ
-         joUQ==
-X-Gm-Message-State: AOAM533i0O+i8mfLTSds4KbpAW/8SHzGQBYxL+ToQGYR/PY06Saqfd8k
-        Osz5b0xWDtY3xWw0iJZDpNY=
-X-Google-Smtp-Source: ABdhPJwsmp2qZSeuy2yPW5EEVFEiG516nTfieiUGxmaw74pJ1ZL26UW/kpW5rXGE7uJCS9W48CMFcw==
-X-Received: by 2002:a17:90a:ec0a:: with SMTP id l10mr5615119pjy.152.1595358612670;
-        Tue, 21 Jul 2020 12:10:12 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e3b])
-        by smtp.gmail.com with ESMTPSA id k189sm21202915pfd.175.2020.07.21.12.10.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 12:10:11 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 12:10:09 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        kernel-team@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
-        brouer@redhat.com, peterz@infradead.org
-Subject: Re: [PATCH v3 bpf-next 1/2] bpf: separate bpf_get_[stack|stackid]
- for perf events BPF
-Message-ID: <20200721191009.5khr7blivtuv3qfj@ast-mbp.dhcp.thefacebook.com>
-References: <20200716225933.196342-1-songliubraving@fb.com>
- <20200716225933.196342-2-songliubraving@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZWBDSpvSID9isJQH7VhMl+fYpyhlV/5rIWPv6OTFX7k=;
+        b=AqaVCx4dmf0CXrkFgizjSdrMNXq1tiW3GbiKWWSS6i1b5l25oLIKJEbAu5Z23SAKhv
+         we2eO1gpnmZ1itRuk+79LC7oipIy/366k26PsifiC73+6khysTu9APkjhgk5jy4VPDl6
+         agy1ateTmz1U8pr6Q/HAeMyqEMqecEk3jU1j9d6R8eEGC9KPrHSWaeaJlLEhdGG5XSsn
+         /lh9UbfRNqFl9S+aS6/O/7kSi8C+NKlV4+F6RRyOw67HDxofh6DQikahdz2+/SH4y809
+         xeltIrGOszq7R60Enus0i81EQ/HtMRTXLqQvwwFeQJNF07x0wxXFQQcBJj7UmaU7lHi+
+         B1tA==
+X-Gm-Message-State: AOAM533Cy1GKErFDLZle7T6sZC/JUdZZyn00xY+5lEkpXyKGsAZ8LPUf
+        BHUcm2W2tpuF81Sz4a0PTwaW9tk+7dStOuGj90Q=
+X-Google-Smtp-Source: ABdhPJzrrRmzoMl0l7Jzq9SQZQf3um1JlMaVowRRAM+BxYECxE+izAQMM7qYNVXZ6dnQZDkCxLqs2b1d7HmQF0qklRk=
+X-Received: by 2002:a05:6512:3610:: with SMTP id f16mr6898040lfs.8.1595359068359;
+ Tue, 21 Jul 2020 12:17:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200716225933.196342-2-songliubraving@fb.com>
+References: <20200717020842.GA29747@vm_111_229_centos>
+In-Reply-To: <20200717020842.GA29747@vm_111_229_centos>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 21 Jul 2020 12:17:36 -0700
+Message-ID: <CAADnVQJvW7hto4E740Hi9b22wszYLxVwUCDS5jMdQ_2E3==GRQ@mail.gmail.com>
+Subject: Re: [PATCH] ebpf: fix parameter naming confusing
+To:     YangYuxi <yx.atom1@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 16, 2020 at 03:59:32PM -0700, Song Liu wrote:
-> +
-> +BPF_CALL_3(bpf_get_stackid_pe, struct bpf_perf_event_data_kern *, ctx,
-> +	   struct bpf_map *, map, u64, flags)
-> +{
-> +	struct perf_event *event = ctx->event;
-> +	struct perf_callchain_entry *trace;
-> +	bool has_kernel, has_user;
-> +	bool kernel, user;
-> +
-> +	/* perf_sample_data doesn't have callchain, use bpf_get_stackid */
-> +	if (!(event->attr.sample_type & __PERF_SAMPLE_CALLCHAIN_EARLY))
+On Thu, Jul 16, 2020 at 7:08 PM YangYuxi <yx.atom1@gmail.com> wrote:
+>
+> Signed-off-by: YangYuxi <yx.atom1@gmail.com>
+> ---
+>  kernel/bpf/syscall.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+>
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 0fd80ac81f70..300ae16baffc 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -1881,13 +1881,13 @@ struct bpf_prog *bpf_prog_inc_not_zero(struct bpf_prog *prog)
+>  EXPORT_SYMBOL_GPL(bpf_prog_inc_not_zero);
+>
+>  bool bpf_prog_get_ok(struct bpf_prog *prog,
+> -                           enum bpf_prog_type *attach_type, bool attach_drv)
+> +                           enum bpf_prog_type *prog_type, bool attach_drv)
+>  {
+>         /* not an attachment, just a refcount inc, always allow */
+> -       if (!attach_type)
+> +       if (!prog_type)
+>                 return true;
 
-what if event was not created with PERF_SAMPLE_CALLCHAIN ?
-Calling the helper will still cause crashes, no?
-
-> +		return bpf_get_stackid((unsigned long)(ctx->regs),
-> +				       (unsigned long) map, flags, 0, 0);
-> +
-> +	if (unlikely(flags & ~(BPF_F_SKIP_FIELD_MASK | BPF_F_USER_STACK |
-> +			       BPF_F_FAST_STACK_CMP | BPF_F_REUSE_STACKID)))
-> +		return -EINVAL;
-> +
-> +	user = flags & BPF_F_USER_STACK;
-> +	kernel = !user;
-> +
-> +	has_kernel = !event->attr.exclude_callchain_kernel;
-> +	has_user = !event->attr.exclude_callchain_user;
-> +
-> +	if ((kernel && !has_kernel) || (user && !has_user))
-> +		return -EINVAL;
-
-this will break existing users in a way that will be very hard for them to debug.
-If they happen to set exclude_callchain_* flags during perf_event_open
-the helpers will be failing at run-time.
-One can argue that when precise_ip=1 the bpf_get_stack is broken, but
-this is a change in behavior.
-It also seems to be broken when PERF_SAMPLE_CALLCHAIN was not set at event
-creation time, but precise_ip=1 was.
-
-> +
-> +	trace = ctx->data->callchain;
-> +	if (unlikely(!trace))
-> +		return -EFAULT;
-> +
-> +	if (has_kernel && has_user) {
-
-shouldn't it be || ?
-
-> +		__u64 nr_kernel = count_kernel_ip(trace);
-> +		int ret;
-> +
-> +		if (kernel) {
-> +			__u64 nr = trace->nr;
-> +
-> +			trace->nr = nr_kernel;
-> +			ret = __bpf_get_stackid(map, trace, flags);
-> +
-> +			/* restore nr */
-> +			trace->nr = nr;
-> +		} else { /* user */
-> +			u64 skip = flags & BPF_F_SKIP_FIELD_MASK;
-> +
-> +			skip += nr_kernel;
-> +			if (skip > BPF_F_SKIP_FIELD_MASK)
-> +				return -EFAULT;
-> +
-> +			flags = (flags & ~BPF_F_SKIP_FIELD_MASK) | skip;
-> +			ret = __bpf_get_stackid(map, trace, flags);
-> +		}
-> +		return ret;
-> +	}
-> +	return __bpf_get_stackid(map, trace, flags);
-...
-> +	if (has_kernel && has_user) {
-> +		__u64 nr_kernel = count_kernel_ip(trace);
-> +		int ret;
-> +
-> +		if (kernel) {
-> +			__u64 nr = trace->nr;
-> +
-> +			trace->nr = nr_kernel;
-> +			ret = __bpf_get_stack(ctx->regs, NULL, trace, buf,
-> +					      size, flags);
-> +
-> +			/* restore nr */
-> +			trace->nr = nr;
-> +		} else { /* user */
-> +			u64 skip = flags & BPF_F_SKIP_FIELD_MASK;
-> +
-> +			skip += nr_kernel;
-> +			if (skip > BPF_F_SKIP_FIELD_MASK)
-> +				goto clear;
-> +
-> +			flags = (flags & ~BPF_F_SKIP_FIELD_MASK) | skip;
-> +			ret = __bpf_get_stack(ctx->regs, NULL, trace, buf,
-> +					      size, flags);
-> +		}
-
-Looks like copy-paste. I think there should be a way to make it
-into common helper.
-
-I think the main isssue is wrong interaction with event attr flags.
-I think the verifier should detect that bpf_get_stack/bpf_get_stackid
-were used and prevent attaching to perf_event with attr.precise_ip=1
-and PERF_SAMPLE_CALLCHAIN is not specified.
-I was thinking whether attaching bpf to event can force setting of
-PERF_SAMPLE_CALLCHAIN, but that would be a surprising behavior,
-so not a good idea.
-So the only thing left is to reject attach when bpf_get_stack is used
-in two cases:
-if attr.precise_ip=1 and PERF_SAMPLE_CALLCHAIN is not set.
-  (since it will lead to crashes)
-if attr.precise_ip=1 and PERF_SAMPLE_CALLCHAIN is set,
-but exclude_callchain_[user|kernel]=1 is set too.
-  (since it will lead to surprising behavior of bpf_get_stack)
-
-Other ideas?
+I think it makes it worse.
+Now the comment doesn't match the code.
+And attach_drv name also looks out of place.
+Technically program type is also an attach type to some degree.
+The name could be a bit confusing, but in combination with type:
+'enum bpf_prog_type *attach_type'
+I think it's pretty clear what these functions are doing.
+So I prefer to keep the code as-is.
