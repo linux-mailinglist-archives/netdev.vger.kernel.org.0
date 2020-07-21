@@ -2,98 +2,448 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FC96227C0D
-	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 11:47:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22597227C1F
+	for <lists+netdev@lfdr.de>; Tue, 21 Jul 2020 11:51:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728409AbgGUJrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 05:47:47 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:46813 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726089AbgGUJrq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 05:47:46 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4B9v0H0PkZz9sQt;
-        Tue, 21 Jul 2020 19:47:42 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1595324864;
-        bh=ugY4o/TZYhklh1+/uO59si7dSoFL542+vS5fIOihoSw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=UN6GnqvpHWu0JQIISvWXo7EigZbtVIkhyu/7+pOeJUXG7aRHer5pxEHFbzUi+nRFN
-         Aei4sL4Pg61DpCfLfzAMGp6A+fHRUaN4q86pclDHss4A4betb/uF+wqfhLh9nasV4u
-         ch+oPMhZVnqD4qfHeKv7Gi5VjtcDgR7+HYxcPe1PklrtUTwyZBqJ+wKybkx7pj/gNP
-         nK84I1saGtScToy6+2xqVLji/Fyc3mcPBbXITlCxiNvVBhzB77Z5pSoM5QUy5Iql4u
-         KYHLJOLt+3vQqCEvIpkVkr26K/wqGCuL6yPV3W8XZGTWDUkA+J5hJIsE1NHcsQ1oLT
-         bxoQ3hwSA58rw==
-Date:   Tue, 21 Jul 2020 19:47:39 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: linux-next: manual merge of the akpm-current tree with the net-next
- tree
-Message-ID: <20200721194739.4cac3da4@canb.auug.org.au>
+        id S1727038AbgGUJvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 05:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726147AbgGUJvf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 05:51:35 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6BAC061794
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 02:51:34 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id k17so11335058lfg.3
+        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 02:51:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cpRNWYDj/xYtM9+1JgAWX2CZV7D/UxoehKDogMzlgX0=;
+        b=AvA+rddFni45fq9fhmCffIYou9oLXWX6F6Ah/CcHeqJmPOTrAziaV+Hs/uGIu4VKY9
+         KdA72scJlq19t45o7eWC37Uvqd3wVzm3eK0XyIYLkVZTvYiEE4ucXnYfyo69KgFhqtLu
+         EDG95GUaprU5V5KhX+usD0Up32NjjP1Ws+SYs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cpRNWYDj/xYtM9+1JgAWX2CZV7D/UxoehKDogMzlgX0=;
+        b=qnlZjE+WzBpmim5uZHKHKFk2RbKSGYqy4i2ngYwCjU2jY2mbVYsk1tHwW5CS7WYIvi
+         yu9kxYzhbyeqI0/7FW5b+yb1msEsl0mtDATHXCo+jXOMVsfn9RHCucqpwrXNSQ+XZGBu
+         sWvqGReAe+3FkBd6M23LH/sKzuy8VXy7Sg5xcjyldMruM1FH9XOdWBHMxxKmZuG4k1R6
+         T/xAXQGLWD8z8skbZvfrYwNjRlckvSqre1NIGOrq2JO9n/+FToTtzIfjn+Q1NXosUs7Q
+         fNJ71lMXAOmf1htxOR5qPhEJhKBe5DjcqRuQycUpux7PYaUVKsaj/oLLqvvyGxNhoQp7
+         4b0g==
+X-Gm-Message-State: AOAM531huvETpP+51Ru3eE3BtJAZuLmHXsZvvxwhYdstN23cAvi2OEsi
+        TwcHMJbFfXcAOTYWECpsNpw5TuOrXH0sYRAP1e3h8A==
+X-Google-Smtp-Source: ABdhPJxZBwKm2h+tB7hcbimuH8UMkyIn3SspmNFCTrpAVyQCMjBQylEHNuRDY6CUmtGL+4WNKLzBO00VJBQcTX2dx+Y=
+X-Received: by 2002:a19:203:: with SMTP id 3mr13028697lfc.77.1595325093125;
+ Tue, 21 Jul 2020 02:51:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/RVB4UNz+Uam9DImdewNfFT_";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <1593516846-28189-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <20200630125353.GA2181@nanopsycho> <CAACQVJqxLhmO=UiCMh_pv29WP7Qi4bAZdpU9NDk3Wq8TstM5zA@mail.gmail.com>
+ <20200701055144.GB2181@nanopsycho> <CAACQVJqac3JGY_w2zp=thveG5Hjw9tPGagHPvfr2DM3xL4j_zg@mail.gmail.com>
+ <20200701094738.GD2181@nanopsycho>
+In-Reply-To: <20200701094738.GD2181@nanopsycho>
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Date:   Tue, 21 Jul 2020 15:21:21 +0530
+Message-ID: <CAACQVJqjE-N4M0hLuptdicpfgRxV6ZhdYm0+zxjnzP=tndHUpA@mail.gmail.com>
+Subject: Re: [RFC v2 net-next] devlink: Add reset subcommand.
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Moshe Shemesh <moshe@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/RVB4UNz+Uam9DImdewNfFT_
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Wed, Jul 1, 2020 at 3:17 PM Jiri Pirko <jiri@resnulli.us> wrote:
+>
+> Wed, Jul 01, 2020 at 11:25:50AM CEST, vasundhara-v.volam@broadcom.com wrote:
+> >On Wed, Jul 1, 2020 at 11:21 AM Jiri Pirko <jiri@resnulli.us> wrote:
+> >>
+> >> Tue, Jun 30, 2020 at 05:15:18PM CEST, vasundhara-v.volam@broadcom.com wrote:
+> >> >On Tue, Jun 30, 2020 at 6:23 PM Jiri Pirko <jiri@resnulli.us> wrote:
+> >> >>
+> >> >> Tue, Jun 30, 2020 at 01:34:06PM CEST, vasundhara-v.volam@broadcom.com wrote:
+> >> >> >Advanced NICs support live reset of some of the hardware
+> >> >> >components, that resets the device immediately with all the
+> >> >> >host drivers loaded.
+> >> >> >
+> >> >> >Add devlink reset subcommand to support live and deferred modes
+> >> >> >of reset. It allows to reset the hardware components of the
+> >> >> >entire device and supports the following fields:
+> >> >> >
+> >> >> >component:
+> >> >> >----------
+> >> >> >1. MGMT : Management processor.
+> >> >> >2. DMA : DMA engine.
+> >> >> >3. RAM : RAM shared between multiple components.
+> >> >> >4. AP : Application processor.
+> >> >> >5. ROCE : RoCE management processor.
+> >> >> >6. All : All possible components.
+> >> >> >
+> >> >> >Drivers are allowed to reset only a subset of requested components.
+> >> >>
+> >> >> I don't understand why would user ever want to do this. He does not care
+> >> >> about some magic hw entities. He just expects the hw to work. I don't
+> >> >> undestand the purpose of exposing something like this. Could you please
+> >> >> explain in details? Thanks!
+> >> >>
+> >> >If a user requests multiple components and if the driver is only able
+> >> >to honor a subset, the driver will return the components unset which
+> >> >it is able to reset.  For example, if a user requests MGMT, RAM and
+> >> >ROCE components to be reset and driver resets only MGMT and ROCE.
+> >> >Driver will unset only MGMT and ROCE bits and notifies the user that
+> >> >RAM is not reset.
+> >> >
+> >> >This will be useful for drivers to reset only a subset of components
+> >> >requested instead of returning error or silently doing only a subset
+> >> >of components.
+> >> >
+> >> >Also, this will be helpful as user will not know the components
+> >> >supported by different vendors.
+> >>
+> >> Your reply does not seem to be related to my question :/
+> >I thought that you were referring to: "Drivers are allowed to reset
+> >only a subset of requested components."
+> >
+> >or were you referring to components? If yes, the user can select the
+> >components that he wants to go for reset. This will be useful in the
+> >case where, if the user flashed only a certain component and he wants
+> >to reset that particular component. For example, in the case of SOC
+> >there are 2 components: MGMT and AP. If a user flashes only
+> >application processor, he can choose to reset only application
+> >processor.
+>
+> We already have notion of "a component" in "devlink dev flash". I think
+> that the reset component name should be in-sync with the flash.
+>
+> Thinking about it a bit more, we can extend the flash command by "reset"
+> attribute that would indicate use wants to do flash&reset right away.
+>
+> Also, thinking how this all aligns with "devlink dev reload" which we
+> currently have. The purpose of it is to re-instantiate driver instances,
+> but in case of mlxsw it means friggering FW reset as well.
+>
+> Moshe (cced) is now working on "devlink dev reload" extension that would
+> allow user to ask for a certain level of reload: driver instances only,
+> fw reset too, live fw patching, etc.
+>
+> Not sure how this overlaps with your intentions. I think it would be
+> great to see Moshe's RFC here as well so we can aligh the efforts.
+Are the patches posted yet?
 
-Hi all,
-
-Today's linux-next merge of the akpm-current tree got a conflict in:
-
-  net/sctp/socket.c
-
-between commits:
-
-  89fae01eef8b ("sctp: switch sctp_setsockopt_auth_key to use memzero_expli=
-cit")
-  534d13d07e77 ("sctp: pass a kernel pointer to sctp_setsockopt_auth_key")
-
-from the net-next tree and commit:
-
-  f08cd4915bb1 ("mm, treewide: rename kzfree() to kfree_sensitive()")
-
-from the akpm-current tree.
-
-I fixed it up (I just used the net-next tree version) and can carry the
-fix as necessary. This is now fixed as far as linux-next is concerned,
-but any non trivial conflicts should be mentioned to your upstream
-maintainer when your tree is submitted for merging.  You may also want
-to consider cooperating with the maintainer of the conflicting tree to
-minimise any particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/RVB4UNz+Uam9DImdewNfFT_
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8WubsACgkQAVBC80lX
-0GxwtQf8Cz8gQtOTJ7wQZDKywCfaD5gW6et5FPlqKA36rEZWcXr1FjqiQrbdywfR
-6OfbfvxTaORjclstKwAs3y7jRxdd/q5FoIVnj3xQ88ZU/M3aINZpThpr4AIJyTcB
-zO/8eR27/8nItHqnrpA6pEUSnz8qwZKS/XeYi99BtlPpQlv9lRqujBMRYvmtI7Wy
-6aN4bYho8Xk5DSOHIK1RfrZGWcoJHdFISEgW7imvQlzhrM/YJ8j3jHDbshT+txmA
-7jXYaA/QmPM6TJyYg4U3C+RYoY4bIT8BoqMOetxULPujQVBGCq1Z61Z7lOUgzMqJ
-mvCw9HniybLU1+t11uTew6cr5Vghsg==
-=tydt
------END PGP SIGNATURE-----
-
---Sig_/RVB4UNz+Uam9DImdewNfFT_--
+>
+>
+> >
+> >>
+> >>
+> >> >
+> >> >Thanks,
+> >> >Vasundhara
+> >> >
+> >> >>
+> >> >> >
+> >> >> >width:
+> >> >> >------
+> >> >> >1. single - single host.
+> >> >> >2. multi  - Multi host.
+> >> >> >
+> >> >> >mode:
+> >> >> >-----
+> >> >> >1. deferred - Reset will happen after unloading all the host drivers
+> >> >> >              on the device. This is be default reset type, if user
+> >> >> >              does not specify the type.
+> >> >> >2. live - Reset will happen immediately with all host drivers loaded
+> >> >> >          in real time. If the live reset is not supported, driver
+> >> >> >          will return the error.
+> >> >> >
+> >> >> >This patch is a proposal in continuation to discussion to the
+> >> >> >following thread:
+> >> >> >
+> >> >> >"[PATCH v3 net-next 0/6] bnxt_en: Add 'enable_live_dev_reset' and 'allow_live_dev_reset' generic devlink params."
+> >> >> >
+> >> >> >and here is the URL to the patch series:
+> >> >> >
+> >> >> >https://patchwork.ozlabs.org/project/netdev/list/?series=180426&state=*
+> >> >> >
+> >> >> >If the proposal looks good, I will re-send the whole patchset
+> >> >> >including devlink changes and driver usage.
+> >> >> >
+> >> >> >Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+> >> >> >Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+> >> >> >---
+> >> >> >v2:
+> >> >> >- Switch RAM and AP component definitions.
+> >> >> >- Remove IRQ, FILTER, OFFLOAD, MAC, PHY components as they are port
+> >> >> >specific components.
+> >> >> >- Rename function to host in width parameter.
+> >> >> >---
+> >> >> > Documentation/networking/devlink/devlink-reset.rst | 50 +++++++++++++
+> >> >> > include/net/devlink.h                              |  2 +
+> >> >> > include/uapi/linux/devlink.h                       | 46 ++++++++++++
+> >> >> > net/core/devlink.c                                 | 85 ++++++++++++++++++++++
+> >> >> > 4 files changed, 183 insertions(+)
+> >> >> > create mode 100644 Documentation/networking/devlink/devlink-reset.rst
+> >> >> >
+> >> >> >diff --git a/Documentation/networking/devlink/devlink-reset.rst b/Documentation/networking/devlink/devlink-reset.rst
+> >> >> >new file mode 100644
+> >> >> >index 0000000..652800d
+> >> >> >--- /dev/null
+> >> >> >+++ b/Documentation/networking/devlink/devlink-reset.rst
+> >> >> >@@ -0,0 +1,50 @@
+> >> >> >+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >> >> >+
+> >> >> >+.. _devlink_reset:
+> >> >> >+
+> >> >> >+=============
+> >> >> >+Devlink reset
+> >> >> >+=============
+> >> >> >+
+> >> >> >+The ``devlink-reset`` API allows reset the hardware components of the device. After the reset,
+> >> >> >+device loads the pending updated firmware image.
+> >> >> >+Example use::
+> >> >> >+
+> >> >> >+  $ devlink dev reset pci/0000:05:00.0 components COMPONENTS
+> >> >> >+
+> >> >> >+Note that user can mention multiple components.
+> >> >> >+
+> >> >> >+================
+> >> >> >+Reset components
+> >> >> >+================
+> >> >> >+
+> >> >> >+List of available components::
+> >> >> >+
+> >> >> >+``DEVLINK_RESET_COMP_MGMT`` - Management processor.
+> >> >> >+``DEVLINK_RESET_COMP_DMA`` - DMA engine.
+> >> >> >+``DEVLINK_RESET_COMP_RAM`` - RAM shared between multiple components.
+> >> >> >+``DEVLINK_RESET_COMP_AP``   - Application processor.
+> >> >> >+``DEVLINK_RESET_COMP_ROCE`` - RoCE management processor.
+> >> >> >+``DEVLINK_RESET_COMP_ALL``  - All components.
+> >> >> >+
+> >> >> >+===========
+> >> >> >+Reset width
+> >> >> >+===========
+> >> >> >+
+> >> >> >+List of available widths::
+> >> >> >+
+> >> >> >+``DEVLINK_RESET_WIDTH_SINGLE`` - Device is used by single dedicated host.
+> >> >> >+``DEVLINK_RESET_WIDTH_MULTI``  - Device is shared across multiple hosts.
+> >> >> >+
+> >> >> >+Note that if user specifies DEVLINK_RESET_WIDTH_SINGLE in a multi-host environment, driver returns
+> >> >> >+error if it does not support resetting a single host.
+> >> >> >+
+> >> >> >+===========
+> >> >> >+Reset modes
+> >> >> >+===========
+> >> >> >+
+> >> >> >+List of available reset modes::
+> >> >> >+
+> >> >> >+``DEVLINK_RESET_MODE_DEFERRED``  - Reset happens after all host drivers are unloaded on the device.
+> >> >> >+``DEVLINK_RESET_MODE_LIVE``      - Reset happens immediately, with all loaded host drivers in real
+> >> >> >+                                   time.
+> >> >> >diff --git a/include/net/devlink.h b/include/net/devlink.h
+> >> >> >index 428f55f..a71c8f5 100644
+> >> >> >--- a/include/net/devlink.h
+> >> >> >+++ b/include/net/devlink.h
+> >> >> >@@ -1129,6 +1129,8 @@ struct devlink_ops {
+> >> >> >       int (*port_function_hw_addr_set)(struct devlink *devlink, struct devlink_port *port,
+> >> >> >                                        const u8 *hw_addr, int hw_addr_len,
+> >> >> >                                        struct netlink_ext_ack *extack);
+> >> >> >+      int (*reset)(struct devlink *devlink, u32 *components, u8 width, u8 mode,
+> >> >> >+                   struct netlink_ext_ack *extack);
+> >> >> > };
+> >> >> >
+> >> >> > static inline void *devlink_priv(struct devlink *devlink)
+> >> >> >diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+> >> >> >index 87c83a8..6f32c00 100644
+> >> >> >--- a/include/uapi/linux/devlink.h
+> >> >> >+++ b/include/uapi/linux/devlink.h
+> >> >> >@@ -122,6 +122,9 @@ enum devlink_command {
+> >> >> >       DEVLINK_CMD_TRAP_POLICER_NEW,
+> >> >> >       DEVLINK_CMD_TRAP_POLICER_DEL,
+> >> >> >
+> >> >> >+      DEVLINK_CMD_RESET,
+> >> >> >+      DEVLINK_CMD_RESET_STATUS,       /* notification only */
+> >> >> >+
+> >> >> >       /* add new commands above here */
+> >> >> >       __DEVLINK_CMD_MAX,
+> >> >> >       DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
+> >> >> >@@ -265,6 +268,44 @@ enum devlink_trap_type {
+> >> >> >       DEVLINK_TRAP_TYPE_CONTROL,
+> >> >> > };
+> >> >> >
+> >> >> >+/**
+> >> >> >+ * enum devlink_reset_component - Reset components.
+> >> >> >+ * @DEVLINK_RESET_COMP_MGMT: Management processor.
+> >> >> >+ * @DEVLINK_RESET_COMP_DMA: DMA engine.
+> >> >> >+ * @DEVLINK_RESET_COMP_RAM: RAM shared between multiple components.
+> >> >> >+ * @DEVLINK_RESET_COMP_AP: Application processor.
+> >> >> >+ * @DEVLINK_RESET_COMP_ROCE: RoCE management processor.
+> >> >> >+ * @DEVLINK_RESET_COMP_ALL: All components.
+> >> >> >+ */
+> >> >> >+enum devlink_reset_component {
+> >> >> >+      DEVLINK_RESET_COMP_MGMT         = (1 << 0),
+> >> >> >+      DEVLINK_RESET_COMP_DMA          = (1 << 1),
+> >> >> >+      DEVLINK_RESET_COMP_RAM          = (1 << 2),
+> >> >> >+      DEVLINK_RESET_COMP_AP           = (1 << 3),
+> >> >> >+      DEVLINK_RESET_COMP_ROCE         = (1 << 4),
+> >> >> >+      DEVLINK_RESET_COMP_ALL          = 0xffffffff,
+> >> >> >+};
+> >> >> >+
+> >> >> >+/**
+> >> >> >+ * enum devlink_reset_width - Number of hosts effected by reset.
+> >> >> >+ * @DEVLINK_RESET_WIDTH_SINGLE: Device is used by single dedicated host.
+> >> >> >+ * @DEVLINK_RESET_WIDTH_MULTI: Device is shared across multiple hosts.
+> >> >> >+ */
+> >> >> >+enum devlink_reset_width {
+> >> >> >+      DEVLINK_RESET_WIDTH_SINGLE      = 0,
+> >> >> >+      DEVLINK_RESET_WIDTH_MULTI       = 1,
+> >> >> >+};
+> >> >> >+
+> >> >> >+/**
+> >> >> >+ * enum devlink_reset_mode - Modes of reset.
+> >> >> >+ * @DEVLINK_RESET_MODE_DEFERRED: Reset will happen after host drivers are unloaded.
+> >> >> >+ * @DEVLINK_RESET_MODE_LIVE: All host drivers also will be reset without reloading manually.
+> >> >> >+ */
+> >> >> >+enum devlink_reset_mode {
+> >> >> >+      DEVLINK_RESET_MODE_DEFERRED     = 0,
+> >> >> >+      DEVLINK_RESET_MODE_LIVE         = 1,
+> >> >> >+};
+> >> >> >+
+> >> >> > enum {
+> >> >> >       /* Trap can report input port as metadata */
+> >> >> >       DEVLINK_ATTR_TRAP_METADATA_TYPE_IN_PORT,
+> >> >> >@@ -455,6 +496,11 @@ enum devlink_attr {
+> >> >> >
+> >> >> >       DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER,  /* string */
+> >> >> >
+> >> >> >+      DEVLINK_ATTR_RESET_COMPONENTS,          /* u32 */
+> >> >> >+      DEVLINK_ATTR_RESET_WIDTH,               /* u8 */
+> >> >> >+      DEVLINK_ATTR_RESET_MODE,                /* u8 */
+> >> >> >+      DEVLINK_ATTR_RESET_STATUS_MSG,          /* string */
+> >> >> >+
+> >> >> >       /* add new attributes above here, update the policy in devlink.c */
+> >> >> >
+> >> >> >       __DEVLINK_ATTR_MAX,
+> >> >> >diff --git a/net/core/devlink.c b/net/core/devlink.c
+> >> >> >index 6ae3680..c0eebc5 100644
+> >> >> >--- a/net/core/devlink.c
+> >> >> >+++ b/net/core/devlink.c
+> >> >> >@@ -6797,6 +6797,82 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+> >> >> >       return devlink_trap_policer_set(devlink, policer_item, info);
+> >> >> > }
+> >> >> >
+> >> >> >+static int devlink_nl_reset_fill(struct sk_buff *msg, struct devlink *devlink,
+> >> >> >+                               const char *status_msg, u32 components)
+> >> >> >+{
+> >> >> >+      void *hdr;
+> >> >> >+
+> >> >> >+      hdr = genlmsg_put(msg, 0, 0, &devlink_nl_family, 0, DEVLINK_CMD_RESET_STATUS);
+> >> >> >+      if (!hdr)
+> >> >> >+              return -EMSGSIZE;
+> >> >> >+
+> >> >> >+      if (devlink_nl_put_handle(msg, devlink))
+> >> >> >+              goto nla_put_failure;
+> >> >> >+
+> >> >> >+      if (status_msg && nla_put_string(msg, DEVLINK_ATTR_RESET_STATUS_MSG, status_msg))
+> >> >> >+              goto nla_put_failure;
+> >> >> >+
+> >> >> >+      if (nla_put_u32(msg, DEVLINK_ATTR_RESET_COMPONENTS, components))
+> >> >> >+              goto nla_put_failure;
+> >> >> >+
+> >> >> >+      genlmsg_end(msg, hdr);
+> >> >> >+      return 0;
+> >> >> >+
+> >> >> >+nla_put_failure:
+> >> >> >+      genlmsg_cancel(msg, hdr);
+> >> >> >+      return -EMSGSIZE;
+> >> >> >+}
+> >> >> >+
+> >> >> >+static void __devlink_reset_notify(struct devlink *devlink, const char *status_msg, u32 components)
+> >> >> >+{
+> >> >> >+      struct sk_buff *msg;
+> >> >> >+      int err;
+> >> >> >+
+> >> >> >+      msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+> >> >> >+      if (!msg)
+> >> >> >+              return;
+> >> >> >+
+> >> >> >+      err = devlink_nl_reset_fill(msg, devlink, status_msg, components);
+> >> >> >+      if (err)
+> >> >> >+              goto out;
+> >> >> >+
+> >> >> >+      genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink), msg, 0,
+> >> >> >+                              DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
+> >> >> >+      return;
+> >> >> >+
+> >> >> >+out:
+> >> >> >+      nlmsg_free(msg);
+> >> >> >+}
+> >> >> >+
+> >> >> >+static int devlink_nl_cmd_reset(struct sk_buff *skb, struct genl_info *info)
+> >> >> >+{
+> >> >> >+      struct devlink *devlink = info->user_ptr[0];
+> >> >> >+      u32 components, req_comps;
+> >> >> >+      struct nlattr *nla_type;
+> >> >> >+      u8 width, mode;
+> >> >> >+      int err;
+> >> >> >+
+> >> >> >+      if (!devlink->ops->reset)
+> >> >> >+              return -EOPNOTSUPP;
+> >> >> >+
+> >> >> >+      if (!info->attrs[DEVLINK_ATTR_RESET_COMPONENTS])
+> >> >> >+              return -EINVAL;
+> >> >> >+      components = nla_get_u32(info->attrs[DEVLINK_ATTR_RESET_COMPONENTS]);
+> >> >> >+
+> >> >> >+      nla_type = info->attrs[DEVLINK_ATTR_RESET_WIDTH];
+> >> >> >+      width = nla_type ? nla_get_u8(nla_type) : DEVLINK_RESET_WIDTH_SINGLE;
+> >> >> >+
+> >> >> >+      nla_type = info->attrs[DEVLINK_ATTR_RESET_MODE];
+> >> >> >+      mode = nla_type ? nla_get_u8(nla_type) : DEVLINK_RESET_MODE_DEFERRED;
+> >> >> >+
+> >> >> >+      req_comps = components;
+> >> >> >+      __devlink_reset_notify(devlink, "Reset request", components);
+> >> >> >+      err = devlink->ops->reset(devlink, &components, width, mode, info->extack);
+> >> >> >+      __devlink_reset_notify(devlink, "Components reset", req_comps & ~components);
+> >> >> >+
+> >> >> >+      return err;
+> >> >> >+}
+> >> >> >+
+> >> >> > static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
+> >> >> >       [DEVLINK_ATTR_UNSPEC] = { .strict_start_type =
+> >> >> >               DEVLINK_ATTR_TRAP_POLICER_ID },
+> >> >> >@@ -6842,6 +6918,9 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+> >> >> >       [DEVLINK_ATTR_TRAP_POLICER_RATE] = { .type = NLA_U64 },
+> >> >> >       [DEVLINK_ATTR_TRAP_POLICER_BURST] = { .type = NLA_U64 },
+> >> >> >       [DEVLINK_ATTR_PORT_FUNCTION] = { .type = NLA_NESTED },
+> >> >> >+      [DEVLINK_ATTR_RESET_COMPONENTS] = { .type = NLA_U32 },
+> >> >> >+      [DEVLINK_ATTR_RESET_WIDTH] = { .type = NLA_U8 },
+> >> >> >+      [DEVLINK_ATTR_RESET_MODE] = { .type = NLA_U8 },
+> >> >> > };
+> >> >> >
+> >> >> > static const struct genl_ops devlink_nl_ops[] = {
+> >> >> >@@ -7190,6 +7269,12 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+> >> >> >               .flags = GENL_ADMIN_PERM,
+> >> >> >               .internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
+> >> >> >       },
+> >> >> >+      {
+> >> >> >+              .cmd = DEVLINK_CMD_RESET,
+> >> >> >+              .doit = devlink_nl_cmd_reset,
+> >> >> >+              .flags = GENL_ADMIN_PERM,
+> >> >> >+              .internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
+> >> >> >+      },
+> >> >> > };
+> >> >> >
+> >> >> > static struct genl_family devlink_nl_family __ro_after_init = {
+> >> >> >--
+> >> >> >1.8.3.1
+> >> >> >
