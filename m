@@ -2,158 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5777D229D8B
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4B7B229D89
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:52:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730292AbgGVQww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 12:52:52 -0400
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:9364 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726535AbgGVQww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 12:52:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1595436772; x=1626972772;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=+afWGUuvydBUDJ1rP0W9TgmIG6g6cw2xWDAsyXoAs2U=;
-  b=G9eLG6J1xFVTw/fmzHgZNr/ERHXj5S4Mdujp9wxxtiHuChq3hLeqqZpX
-   wMLZms5cxJtUU60OEoxCIDYMm220KJqyRG5DqKlrFTfNaW9MPkP57/Cy1
-   RxOheDzI1KgZeeggb/hTdHlELPQVT9ONnIlgG07/FZbKkIRb8Sd4vH+qr
-   o=;
-IronPort-SDR: MNiIE06t+3hLlpjOnphfNW0Ltra6jx8w7Ul7nOnOQnchEOMryNqiKm/7WmkP4jzkp3QHZex/xX
- ek+N9H2SMPwQ==
-X-IronPort-AV: E=Sophos;i="5.75,383,1589241600"; 
-   d="scan'208";a="43524156"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 22 Jul 2020 16:52:51 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com (Postfix) with ESMTPS id DFFFBA2955;
-        Wed, 22 Jul 2020 16:52:47 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 22 Jul 2020 16:52:46 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.162.248) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 22 Jul 2020 16:52:36 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-CC:     Willem de Bruijn <willemb@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        <netdev@vger.kernel.org>, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        "Willem de Bruijn" <willemdebruijn.kernel@gmail.com>
-Subject: [PATCH net] udp: Remove an unnecessary variable in udp[46]_lib_lookup2().
-Date:   Thu, 23 Jul 2020 01:52:27 +0900
-Message-ID: <20200722165227.51046-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+        id S1727769AbgGVQwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 12:52:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55664 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726535AbgGVQwb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Jul 2020 12:52:31 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B9C6B206F5;
+        Wed, 22 Jul 2020 16:52:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595436751;
+        bh=gXHnNXNXpfZZurJ7uSqFREuxYKFMmvI8rB9oIAsB0aY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Gl7UAv6HZpl7j6ciDQzY/NMwyYPtXVF7nhroZdd3rQpJuu5q4pvc3FmYFNRcP+CzI
+         Y5JVjcCsVUOVjIh6w0iFEFO1+YjlZUP6mie25cH/ke4W6x8QgFDJXcGyQ3zYuwdp5h
+         rkBsh1Dscq0LKq0B+fALNJi5530ziRITfxv4IMd0=
+Date:   Wed, 22 Jul 2020 09:52:28 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tom Herbert <tom@herbertland.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+Subject: Re: [RFC PATCH net-next v2 6/6] devlink: add overwrite mode to
+ flash update
+Message-ID: <20200722095228.2f2c61b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <02874ECE860811409154E81DA85FBB58C8AF3382@fmsmsx101.amr.corp.intel.com>
+References: <20200717183541.797878-1-jacob.e.keller@intel.com>
+        <20200717183541.797878-7-jacob.e.keller@intel.com>
+        <20200720100953.GB2235@nanopsycho>
+        <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200721135356.GB2205@nanopsycho>
+        <20200721100406.67c17ce9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200722105139.GA3154@nanopsycho>
+        <02874ECE860811409154E81DA85FBB58C8AF3382@fmsmsx101.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.248]
-X-ClientProxiedBy: EX13D41UWC001.ant.amazon.com (10.43.162.107) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch removes an unnecessary variable in udp[46]_lib_lookup2() and
-makes it easier to resolve a merge conflict with bpf-next reported in
-the link below.
+On Wed, 22 Jul 2020 15:30:05 +0000 Keller, Jacob E wrote:
+> > >> >one by one and then omit the one(s) which is config (guessing which
+> > >> >one that is based on the name).
+> > >> >
+> > >> >Wouldn't this be quite inconvenient?  
+> > >>
+> > >> I see it as an extra knob that is actually somehow provides degradation
+> > >> of components.  
+> > >
+> > >Hm. We have the exact opposite view on the matter. To me components
+> > >currently correspond to separate fw/hw entities, that's a very clear
+> > >meaning. PHY firmware, management FW, UNDI. Now we would add a
+> > >completely orthogonal meaning to the same API.  
+> > 
+> > I understand. My concern is, we would have a component with some
+> > "subparts". Now it is some fuzzy vagely defined "config part",
+> > in the future it might be something else. That is what I'm concerned
+> > about. Components have clear api.
+> > 
+> > So perhaps we can introduce something like "component mask", which would
+> > allow to flash only part of the component. That is basically what Jacob
+> > has, I would just like to have it well defined.
+> 
+> So, we could make this selection a series of masked bits instead of a
+> single enumeration value.
 
-Link: https://lore.kernel.org/linux-next/20200722132143.700a5ccc@canb.auug.org.au/
-Fixes: efc6b6f6c311 ("udp: Improve load balancing for SO_REUSEPORT.")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
----
- net/ipv4/udp.c | 15 ++++++++-------
- net/ipv6/udp.c | 15 ++++++++-------
- 2 files changed, 16 insertions(+), 14 deletions(-)
+I'd still argue that components (as defined in devlink info) and config
+are pretty orthogonal. In my experience config is stored in its own
+section of the flash, and some of the knobs are in no obvious way
+associated with components (used by components).
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 4077d589b72e..22fb231e27c3 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -416,7 +416,7 @@ static struct sock *udp4_lib_lookup2(struct net *net,
- 				     struct udp_hslot *hslot2,
- 				     struct sk_buff *skb)
- {
--	struct sock *sk, *result, *reuseport_result;
-+	struct sock *sk, *result;
- 	int score, badness;
- 	u32 hash = 0;
- 
-@@ -426,19 +426,20 @@ static struct sock *udp4_lib_lookup2(struct net *net,
- 		score = compute_score(sk, net, saddr, sport,
- 				      daddr, hnum, dif, sdif);
- 		if (score > badness) {
--			reuseport_result = NULL;
-+			result = NULL;
- 
- 			if (sk->sk_reuseport &&
- 			    sk->sk_state != TCP_ESTABLISHED) {
- 				hash = udp_ehashfn(net, daddr, hnum,
- 						   saddr, sport);
--				reuseport_result = reuseport_select_sock(sk, hash, skb,
--									 sizeof(struct udphdr));
--				if (reuseport_result && !reuseport_has_conns(sk, false))
--					return reuseport_result;
-+				result = reuseport_select_sock(sk, hash, skb,
-+							       sizeof(struct udphdr));
-+				if (result && !reuseport_has_conns(sk, false))
-+					return result;
- 			}
- 
--			result = reuseport_result ? : sk;
-+			if (!result)
-+				result = sk;
- 			badness = score;
- 		}
- 	}
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index a8d74f44056a..29c7bb2609c4 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -148,7 +148,7 @@ static struct sock *udp6_lib_lookup2(struct net *net,
- 		int dif, int sdif, struct udp_hslot *hslot2,
- 		struct sk_buff *skb)
- {
--	struct sock *sk, *result, *reuseport_result;
-+	struct sock *sk, *result;
- 	int score, badness;
- 	u32 hash = 0;
- 
-@@ -158,20 +158,21 @@ static struct sock *udp6_lib_lookup2(struct net *net,
- 		score = compute_score(sk, net, saddr, sport,
- 				      daddr, hnum, dif, sdif);
- 		if (score > badness) {
--			reuseport_result = NULL;
-+			result = NULL;
- 
- 			if (sk->sk_reuseport &&
- 			    sk->sk_state != TCP_ESTABLISHED) {
- 				hash = udp6_ehashfn(net, daddr, hnum,
- 						    saddr, sport);
- 
--				reuseport_result = reuseport_select_sock(sk, hash, skb,
--									 sizeof(struct udphdr));
--				if (reuseport_result && !reuseport_has_conns(sk, false))
--					return reuseport_result;
-+				result = reuseport_select_sock(sk, hash, skb,
-+							       sizeof(struct udphdr));
-+				if (result && !reuseport_has_conns(sk, false))
-+					return result;
- 			}
- 
--			result = reuseport_result ? : sk;
-+			if (!result)
-+				result = sk;
- 			badness = score;
- 		}
- 	}
--- 
-2.17.2 (Apple Git-113)
+That said, if we rename the "component mask" to "update mask" that's
+fine with me.
 
+Then we'd have
+
+bit 0 - don't overwrite config
+bit 1 - don't overwrite identifiers
+
+? 
+
+Let's define a bit for "don't update program" when we actually need it.
