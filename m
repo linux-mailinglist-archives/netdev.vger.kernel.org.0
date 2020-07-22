@@ -2,98 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80A49229A63
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 16:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F38BF229A9E
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 16:52:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732753AbgGVOlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 10:41:10 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49208 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728837AbgGVOlI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jul 2020 10:41:08 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jyFvd-006LX1-7F; Wed, 22 Jul 2020 16:41:05 +0200
-Date:   Wed, 22 Jul 2020 16:41:05 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, ioana.ciornei@nxp.com,
-        michael@walle.cc, colin.king@canonical.com
-Subject: Re: [PATCH net-next] net: phy: fix check in get_phy_c45_ids
-Message-ID: <20200722144105.GB1339445@lunn.ch>
-References: <20200720172654.1193241-1-olteanv@gmail.com>
- <20200722115209.7dpr5wlqxvhwju2y@skbuf>
+        id S1732596AbgGVOw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 10:52:27 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:65359 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730346AbgGVOw1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 10:52:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1595429547; x=1626965547;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=+omhnPDjGYNd4Aearh2KyiqpdHXwk+4wB4wi06Z0vyc=;
+  b=HsfQOyNJwjNhekCIKrBeZBldJ06xUeeLGNEzX/q5jwZ5XRfQVelRlZle
+   tQ23TunSwxuuj6LJrd7gz9jD4fmpnpEVPaXmgZ9olZVXcHYscFCmZ/yC9
+   QNm2hSIJnNSzjom9qFwycbinC8ChThk7/ZE9hWCc4/4Hmo7qv4v2hMuBF
+   I=;
+IronPort-SDR: je7CCMBZRTnBiWsrQdDcOiwQ4IcE7geaSNzeudp/9vT99k5lvGkQPOBXGXhXdJqU9L8uD6l3ot
+ AlU8QQnmv5GA==
+X-IronPort-AV: E=Sophos;i="5.75,383,1589241600"; 
+   d="scan'208";a="53764065"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-f14f4a47.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 22 Jul 2020 14:42:24 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-f14f4a47.us-west-2.amazon.com (Postfix) with ESMTPS id 0F8EEA411A;
+        Wed, 22 Jul 2020 14:42:23 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 22 Jul 2020 14:42:22 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.161.34) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 22 Jul 2020 14:42:17 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <jakub@cloudflare.com>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <davem@davemloft.net>,
+        <kernel-team@cloudflare.com>, <kuniyu@amazon.co.jp>,
+        <linux-kernel@vger.kernel.org>, <linux-next@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <sfr@canb.auug.org.au>,
+        <willemb@google.com>
+Subject: Re: linux-next: manual merge of the bpf-next tree with the net tree
+Date:   Wed, 22 Jul 2020 23:42:12 +0900
+Message-ID: <20200722144212.27106-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <87wo2vwxq6.fsf@cloudflare.com>
+References: <87wo2vwxq6.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200722115209.7dpr5wlqxvhwju2y@skbuf>
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.34]
+X-ClientProxiedBy: EX13D05UWC004.ant.amazon.com (10.43.162.223) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 22, 2020 at 02:52:09PM +0300, Vladimir Oltean wrote:
-> On Mon, Jul 20, 2020 at 08:26:54PM +0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > After the patch below, the iteration through the available MMDs is
-> > completely short-circuited, and devs_in_pkg remains set to the initial
-> > value of zero.
-> > 
-> > Due to devs_in_pkg being zero, the rest of get_phy_c45_ids() is
-> > short-circuited too: the following loop never reaches below this point
-> > either (it executes "continue" for every device in package, failing to
-> > retrieve PHY ID for any of them):
-> > 
-> > 	/* Now probe Device Identifiers for each device present. */
-> > 	for (i = 1; i < num_ids; i++) {
-> > 		if (!(devs_in_pkg & (1 << i)))
-> > 			continue;
-> > 
-> > So c45_ids->device_ids remains populated with zeroes. This causes an
-> > Aquantia AQR412 PHY (same as any C45 PHY would, in fact) to be probed by
-> > the Generic PHY driver.
-> > 
-> > The issue seems to be a case of submitting partially committed work (and
-> > therefore testing something other than was submitted).
-> > 
-> > The intention of the patch was to delay exiting the loop until one more
-> > condition is reached (the devs_in_pkg read from hardware is either 0, OR
-> > mostly f's). So fix the patch to reflect that.
-> > 
-> > Tested with traffic on a LS1028A-QDS, the PHY is now probed correctly
-> > using the Aquantia driver. The devs_in_pkg bit field is set to
-> > 0xe000009a, and the MMDs that are present have the following IDs:
-> > 
-> > [    5.600772] libphy: get_phy_c45_ids: device_ids[1]=0x3a1b662
-> > [    5.618781] libphy: get_phy_c45_ids: device_ids[3]=0x3a1b662
-> > [    5.630797] libphy: get_phy_c45_ids: device_ids[4]=0x3a1b662
-> > [    5.654535] libphy: get_phy_c45_ids: device_ids[7]=0x3a1b662
-> > [    5.791723] libphy: get_phy_c45_ids: device_ids[29]=0x3a1b662
-> > [    5.804050] libphy: get_phy_c45_ids: device_ids[30]=0x3a1b662
-> > [    5.816375] libphy: get_phy_c45_ids: device_ids[31]=0x0
-> > 
-> > [    7.690237] mscc_felix 0000:00:00.5: PHY [0.5:00] driver [Aquantia AQR412] (irq=POLL)
-> > [    7.704739] mscc_felix 0000:00:00.5: PHY [0.5:01] driver [Aquantia AQR412] (irq=POLL)
-> > [    7.718918] mscc_felix 0000:00:00.5: PHY [0.5:02] driver [Aquantia AQR412] (irq=POLL)
-> > [    7.733044] mscc_felix 0000:00:00.5: PHY [0.5:03] driver [Aquantia AQR412] (irq=POLL)
-> > 
-> > Fixes: bba238ed037c ("net: phy: continue searching for C45 MMDs even if first returned ffff:ffff")
-> > Reported-by: Colin King <colin.king@canonical.com>
-> > Reported-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+Date:   Wed, 22 Jul 2020 14:17:05 +0200
+> On Wed, Jul 22, 2020 at 05:21 AM CEST, Stephen Rothwell wrote:
+> > Hi all,
+> >
+> > Today's linux-next merge of the bpf-next tree got conflicts in:
+> >
+> >   net/ipv4/udp.c
+> >   net/ipv6/udp.c
+> >
+> > between commit:
+> >
+> >   efc6b6f6c311 ("udp: Improve load balancing for SO_REUSEPORT.")
+> >
+> > from the net tree and commits:
+> >
+> >   7629c73a1466 ("udp: Extract helper for selecting socket from reuseport group")
+> >   2a08748cd384 ("udp6: Extract helper for selecting socket from reuseport group")
+> >
+> > from the bpf-next tree.
+> >
+> > I fixed it up (I wasn't sure how to proceed, so I used the latter
+> > version) and can carry the fix as necessary. This is now fixed as far
+> > as linux-next is concerned, but any non trivial conflicts should be
+> > mentioned to your upstream maintainer when your tree is submitted for
+> > merging.  You may also want to consider cooperating with the maintainer
+> > of the conflicting tree to minimise any particularly complex conflicts.
 > 
-> This patch is repairing some pretty significant breakage. Could we
-> please get some review before there start appearing user reports?
+> This one is a bit tricky.
 > 
-> [ sorry for the breakage ]
+> Looking at how code in udp[46]_lib_lookup2 evolved, first:
+> 
+>   acdcecc61285 ("udp: correct reuseport selection with connected sockets")
+> 
+> 1) exluded connected UDP sockets from reuseport group during lookup, and
+> 2) limited fast reuseport return to groups with no connected sockets,
+> 
+> The second change had an uninteded side-effect of discarding reuseport
+> socket selection when reuseport group contained connected sockets.
+> 
+> Then, recent
+> 
+>   efc6b6f6c311 ("udp: Improve load balancing for SO_REUSEPORT.")
+> 
+> rectified it by recording reuseport socket selection as lookup result
+> candidate, in case fast reuseport return did not happen because
+> reuseport group had connected sockets.
+> 
+> I belive that changes in commit efc6b6f6c311 can be rewritten as below
+> to the same effect, by realizing that we are always setting the 'result'
+> if 'score > badness'. Either to what reuseport_select_sock() returned or
+> to 'sk' that scored higher than current 'badness' threshold.
 
-I'm surprised it has not been merged, since the fix seems quite
-obvious.
+Good point!
+It looks good to me.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-    Andrew
+> ---8<---
+> static struct sock *udp4_lib_lookup2(struct net *net,
+> 				     __be32 saddr, __be16 sport,
+> 				     __be32 daddr, unsigned int hnum,
+> 				     int dif, int sdif,
+> 				     struct udp_hslot *hslot2,
+> 				     struct sk_buff *skb)
+> {
+> 	struct sock *sk, *result;
+> 	int score, badness;
+> 	u32 hash = 0;
+> 
+> 	result = NULL;
+> 	badness = 0;
+> 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
+> 		score = compute_score(sk, net, saddr, sport,
+> 				      daddr, hnum, dif, sdif);
+> 		if (score > badness) {
+> 			result = NULL;
+> 			if (sk->sk_reuseport &&
+> 			    sk->sk_state != TCP_ESTABLISHED) {
+> 				hash = udp_ehashfn(net, daddr, hnum,
+> 						   saddr, sport);
+> 				result = reuseport_select_sock(sk, hash, skb,
+> 							       sizeof(struct udphdr));
+> 				if (result && !reuseport_has_conns(sk, false))
+> 					return result;
+> 			}
+> 			if (!result)
+> 				result = sk;
+> 			badness = score;
+> 		}
+> 	}
+> 	return result;
+> }
+> ---8<---
+> 
+> From there, it is now easier to resolve the conflict with
+> 
+>   7629c73a1466 ("udp: Extract helper for selecting socket from reuseport group")
+>   2a08748cd384 ("udp6: Extract helper for selecting socket from reuseport group")
+> 
+> which extract the 'if (sk->sk_reuseport && sk->sk_state !=
+> TCP_ESTABLISHED)' block into a helper called lookup_reuseport().
+> 
+> To merge the two, we need to pull the reuseport_has_conns() check up
+> from lookup_reuseport() and back into udp[46]_lib_lookup2(), because now
+> we want to record reuseport socket selection even if reuseport group has
+> connections.
+> 
+> The only other call site of lookup_reuseport() is in
+> udp[46]_lookup_run_bpf(). We don't want to discard the reuseport
+> selected socket if group has connections there either, so no changes are
+> needed. And, now that I think about it, the current behavior in
+> udp[46]_lookup_run_bpf() is not right.
+> 
+> The end result for udp4 will look like:
+> 
+> ---8<---
+> static inline struct sock *lookup_reuseport(struct net *net, struct sock *sk,
+> 					    struct sk_buff *skb,
+> 					    __be32 saddr, __be16 sport,
+> 					    __be32 daddr, unsigned short hnum)
+> {
+> 	struct sock *reuse_sk = NULL;
+> 	u32 hash;
+> 
+> 	if (sk->sk_reuseport && sk->sk_state != TCP_ESTABLISHED) {
+> 		hash = udp_ehashfn(net, daddr, hnum, saddr, sport);
+> 		reuse_sk = reuseport_select_sock(sk, hash, skb,
+> 						 sizeof(struct udphdr));
+> 	}
+> 	return reuse_sk;
+> }
+> 
+> /* called with rcu_read_lock() */
+> static struct sock *udp4_lib_lookup2(struct net *net,
+> 				     __be32 saddr, __be16 sport,
+> 				     __be32 daddr, unsigned int hnum,
+> 				     int dif, int sdif,
+> 				     struct udp_hslot *hslot2,
+> 				     struct sk_buff *skb)
+> {
+> 	struct sock *sk, *result;
+> 	int score, badness;
+> 
+> 	result = NULL;
+> 	badness = 0;
+> 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
+> 		score = compute_score(sk, net, saddr, sport,
+> 				      daddr, hnum, dif, sdif);
+> 		if (score > badness) {
+> 			result = lookup_reuseport(net, sk, skb,
+> 						  saddr, sport, daddr, hnum);
+> 			if (result && !reuseport_has_conns(sk, false))
+> 				return result;
+> 			if (!result)
+> 				result = sk;
+> 			badness = score;
+> 		}
+> 	}
+> 	return result;
+> }
+> ---8<---
+> 
+> I will submit a patch that pulls the reuseport_has_conns() check from
+> lookup_reuseport() to bpf-next. That should bring the two sides of the
+> merge closer. Please let me know if I can help in any other way.
+> 
+> Also, please take a look at the 3-way diff below from my attempt to
+> merge net tree into bpf-next tree taking the described approach.
+> 
+> Thanks,
+> -jkbs
+
+Can I submit a patch to net tree that rewrites udp[46]_lib_lookup2() to
+use only 'result' ?
+
+Best Regards,
+Kuniyuki
