@@ -2,182 +2,357 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12BD82297F9
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 14:13:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA9E1229819
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 14:17:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732212AbgGVMNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 08:13:20 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:52698 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731887AbgGVMNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 08:13:19 -0400
-Received: by mail-io1-f72.google.com with SMTP id k12so1664797iom.19
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 05:13:18 -0700 (PDT)
+        id S1732261AbgGVMRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 08:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59366 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726841AbgGVMRJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 08:17:09 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7E7C0619DC
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 05:17:09 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id j11so2234693ljo.7
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 05:17:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=KDQ7v8Cm4abDVKMKnlWuLlGXPImMSg6jDl7cdiUj9Es=;
+        b=oE8lvE0uOlHhdoKbqZt4B/mSaexsfTZjIGuTTMKkKvn5vup8rXuK4c7zueH8pe3JeR
+         jUYubcAqubDo8qb9ovRyFu3c4O/KkA7eZoY6HMIAL1YkepkMcPW0O3ZSRxVaSXVTTCHF
+         z5EWOQKgREPDKF79pmpPL8jzchj2DL6xnE5kk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=xhTbP+Z7qMRdHUaauewq7xGNB+cI8pI7ea/D+jH87Z8=;
-        b=Vj5tt/TlwwzC45N4Z+pdIqNQzfgy3LVL2OBVK/sgytcly+EFISUw5CDlR4TIJnaMq7
-         UU5HHPrr/GezsRht9H+YlMGhRGUIRwYP9PfN0r4yw5wEh0oA9NHJbU8/tjJcF2oYRLDl
-         R4KyiB4hVckOoY2A5xF373OuVvTw6pIPGNqLKXpGC8GerpwGvINK3e0r4qo0eL9tLtrS
-         i+cEGALPlujzTlxlk6NTOCWFv+UjzccxFu95rxvOReucCAOpz+r+j9xU5Gy6bdkd8u+y
-         rMKUGpmcjOzgdmUNLNzNwi6Lt+FunHYCaDVMI9X1ZEZO/CnciS7kbER8iYPKbxV0BB/Y
-         beOQ==
-X-Gm-Message-State: AOAM530kZavGMx2WGhRF423vQQiWJ2tgmPEg5L6fJ6LslZfErBtioLpG
-        ZnWn+qCbACEFOV8Fazk+ySMSLe835PheY1sDRYIyM6gH7ybV
-X-Google-Smtp-Source: ABdhPJwKLQ696U5+LMoeaGOGpjvaWqBBgd7fFP2d2oJOVQoWujhVhdB3Ptormw4XIDCWWnihhRwH7jbcYeD9yC+pVOMVvJGyDSK4
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=KDQ7v8Cm4abDVKMKnlWuLlGXPImMSg6jDl7cdiUj9Es=;
+        b=ZCGS3KdW9KRyR1uLkCDFgiRTSCj6o5LATtr5tXGUniap7L7XBLDtR+7m487EOxxRd0
+         RFoW+sUdCc13AXZP3fFOQiG0LPEWD0MnkRCj8osl8QLxa9gEvm44PcJp3kotud5K2Vvo
+         rDXCtau0zVWbRCQAW7nA+4Onyp1NN6iqrczsF1o3RRThaGo6RnLe2mSUhEpOh+ROUVxz
+         oIw501Od+jkTh2i/kpq2zsUFEFNbnwcXs3xGrtw17xuIJQeYPDrbM0MhIYJwhNEikYpV
+         UwlwHz+/dQ97BXQ2dRAjmnou4NHf/GeEjwUzt0HDyM6bu5xQ54HtEEN7NRgPHy4djaw1
+         s9DA==
+X-Gm-Message-State: AOAM531FiZXwIOmdG//IGZBYLa4H79k+09p4JwbM/lYU+0puFOZ7qDiQ
+        ZSM9KmTGarpqPx+HI/TKZBnp2USFfCw=
+X-Google-Smtp-Source: ABdhPJxGQlT+m2wmcUpDcQT+EirYFTNer4xuc5FN0GY49qhvhgWmJpcFl1SyCfUKE0RHTxHsIrahbA==
+X-Received: by 2002:a2e:5cc6:: with SMTP id q189mr13982642ljb.251.1595420226553;
+        Wed, 22 Jul 2020 05:17:06 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id y1sm4945185lfb.45.2020.07.22.05.17.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2020 05:17:05 -0700 (PDT)
+References: <20200722132143.700a5ccc@canb.auug.org.au>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        kernel-team@cloudflare.com, Willem de Bruijn <willemb@google.com>
+Subject: Re: linux-next: manual merge of the bpf-next tree with the net tree
+In-reply-to: <20200722132143.700a5ccc@canb.auug.org.au>
+Date:   Wed, 22 Jul 2020 14:17:05 +0200
+Message-ID: <87wo2vwxq6.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:140d:: with SMTP id k13mr3740289jad.37.1595419997893;
- Wed, 22 Jul 2020 05:13:17 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 05:13:17 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003df98d05ab06aac6@google.com>
-Subject: KASAN: use-after-free Read in linkwatch_fire_event
-From:   syzbot <syzbot+987da0fff3a594532ce1@syzkaller.appspotmail.com>
-To:     andrew@lunn.ch, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Jul 22, 2020 at 05:21 AM CEST, Stephen Rothwell wrote:
+> Hi all,
+>
+> Today's linux-next merge of the bpf-next tree got conflicts in:
+>
+>   net/ipv4/udp.c
+>   net/ipv6/udp.c
+>
+> between commit:
+>
+>   efc6b6f6c311 ("udp: Improve load balancing for SO_REUSEPORT.")
+>
+> from the net tree and commits:
+>
+>   7629c73a1466 ("udp: Extract helper for selecting socket from reuseport group")
+>   2a08748cd384 ("udp6: Extract helper for selecting socket from reuseport group")
+>
+> from the bpf-next tree.
+>
+> I fixed it up (I wasn't sure how to proceed, so I used the latter
+> version) and can carry the fix as necessary. This is now fixed as far
+> as linux-next is concerned, but any non trivial conflicts should be
+> mentioned to your upstream maintainer when your tree is submitted for
+> merging.  You may also want to consider cooperating with the maintainer
+> of the conflicting tree to minimise any particularly complex conflicts.
 
-syzbot found the following issue on:
+This one is a bit tricky.
 
-HEAD commit:    2c4dc314 net: ethernet: ti: add NETIF_F_HW_TC hw feature f..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=16a6aa44900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dddbcb5a9f4192db
-dashboard link: https://syzkaller.appspot.com/bug?extid=987da0fff3a594532ce1
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+Looking at how code in udp[46]_lib_lookup2 evolved, first:
 
-Unfortunately, I don't have any reproducer for this issue yet.
+  acdcecc61285 ("udp: correct reuseport selection with connected sockets")
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+987da0fff3a594532ce1@syzkaller.appspotmail.com
+1) exluded connected UDP sockets from reuseport group during lookup, and
+2) limited fast reuseport return to groups with no connected sockets,
 
-==================================================================
-BUG: KASAN: use-after-free in __list_add_valid+0x93/0xa0 lib/list_debug.c:26
-Read of size 8 at addr ffff88806fcd0570 by task syz-executor.4/28919
+The second change had an uninteded side-effect of discarding reuseport
+socket selection when reuseport group contained connected sockets.
 
-CPU: 0 PID: 28919 Comm: syz-executor.4 Not tainted 5.8.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xae/0x436 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
- __list_add_valid+0x93/0xa0 lib/list_debug.c:26
- __list_add include/linux/list.h:67 [inline]
- list_add_tail include/linux/list.h:100 [inline]
- linkwatch_add_event net/core/link_watch.c:111 [inline]
- linkwatch_fire_event+0xea/0x1d0 net/core/link_watch.c:261
- netif_carrier_off net/sched/sch_generic.c:513 [inline]
- netif_carrier_off+0x96/0xb0 net/sched/sch_generic.c:507
- __tun_detach+0xf2b/0x1310 drivers/net/tun.c:687
- tun_detach drivers/net/tun.c:708 [inline]
- tun_chr_close+0xd9/0x180 drivers/net/tun.c:3423
- __fput+0x33c/0x880 fs/file_table.c:281
- task_work_run+0xdd/0x190 kernel/task_work.c:135
- tracehook_notify_resume include/linux/tracehook.h:188 [inline]
- exit_to_usermode_loop arch/x86/entry/common.c:239 [inline]
- __prepare_exit_to_usermode+0x1e9/0x1f0 arch/x86/entry/common.c:269
- do_syscall_64+0x6c/0xe0 arch/x86/entry/common.c:393
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x415d71
-Code: Bad RIP value.
-RSP: 002b:00007ffcc5547550 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000415d71
-RDX: 0000000000000000 RSI: 0000000000001ba5 RDI: 0000000000000003
-RBP: 0000000000000001 R08: 000000009f2ebba5 R09: 000000009f2ebba9
-R10: 00007ffcc5547640 R11: 0000000000000293 R12: 000000000078c900
-R13: 000000000078c900 R14: ffffffffffffffff R15: 000000000078bfac
+Then, recent
 
-Allocated by task 28915:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:494
- kmalloc_node include/linux/slab.h:578 [inline]
- kvmalloc_node+0xb4/0xf0 mm/util.c:574
- kvmalloc include/linux/mm.h:753 [inline]
- kvzalloc include/linux/mm.h:761 [inline]
- alloc_netdev_mqs+0x97/0xdc0 net/core/dev.c:9938
- rtnl_create_link+0x219/0xad0 net/core/rtnetlink.c:3067
- __rtnl_newlink+0xfa0/0x1750 net/core/rtnetlink.c:3329
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3398
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5461
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+  efc6b6f6c311 ("udp: Improve load balancing for SO_REUSEPORT.")
 
-Freed by task 28915:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- kasan_set_free_info mm/kasan/common.c:316 [inline]
- __kasan_slab_free+0xf5/0x140 mm/kasan/common.c:455
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x103/0x2c0 mm/slab.c:3757
- kvfree+0x42/0x50 mm/util.c:603
- device_release+0x71/0x200 drivers/base/core.c:1559
- kobject_cleanup lib/kobject.c:693 [inline]
- kobject_release lib/kobject.c:722 [inline]
- kref_put include/linux/kref.h:65 [inline]
- kobject_put+0x1c0/0x270 lib/kobject.c:739
- put_device+0x1b/0x30 drivers/base/core.c:2779
- free_netdev+0x35d/0x480 net/core/dev.c:10054
- __rtnl_newlink+0x14d8/0x1750 net/core/rtnetlink.c:3354
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3398
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5461
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+rectified it by recording reuseport socket selection as lookup result
+candidate, in case fast reuseport return did not happen because
+reuseport group had connected sockets.
 
-The buggy address belongs to the object at ffff88806fcd0000
- which belongs to the cache kmalloc-8k of size 8192
-The buggy address is located 1392 bytes inside of
- 8192-byte region [ffff88806fcd0000, ffff88806fcd2000)
-The buggy address belongs to the page:
-page:ffffea0001bf3400 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 head:ffffea0001bf3400 order:2 compound_mapcount:0 compound_pincount:0
-flags: 0xfffe0000010200(slab|head)
-raw: 00fffe0000010200 ffffea00018dfd08 ffffea0001a00808 ffff8880aa0021c0
-raw: 0000000000000000 ffff88806fcd0000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
+I belive that changes in commit efc6b6f6c311 can be rewritten as below
+to the same effect, by realizing that we are always setting the 'result'
+if 'score > badness'. Either to what reuseport_select_sock() returned or
+to 'sk' that scored higher than current 'badness' threshold.
 
-Memory state around the buggy address:
- ffff88806fcd0400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88806fcd0480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88806fcd0500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                             ^
- ffff88806fcd0580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88806fcd0600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+---8<---
+static struct sock *udp4_lib_lookup2(struct net *net,
+				     __be32 saddr, __be16 sport,
+				     __be32 daddr, unsigned int hnum,
+				     int dif, int sdif,
+				     struct udp_hslot *hslot2,
+				     struct sk_buff *skb)
+{
+	struct sock *sk, *result;
+	int score, badness;
+	u32 hash = 0;
 
+	result = NULL;
+	badness = 0;
+	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
+		score = compute_score(sk, net, saddr, sport,
+				      daddr, hnum, dif, sdif);
+		if (score > badness) {
+			result = NULL;
+			if (sk->sk_reuseport &&
+			    sk->sk_state != TCP_ESTABLISHED) {
+				hash = udp_ehashfn(net, daddr, hnum,
+						   saddr, sport);
+				result = reuseport_select_sock(sk, hash, skb,
+							       sizeof(struct udphdr));
+				if (result && !reuseport_has_conns(sk, false))
+					return result;
+			}
+			if (!result)
+				result = sk;
+			badness = score;
+		}
+	}
+	return result;
+}
+---8<---
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+From there, it is now easier to resolve the conflict with
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+  7629c73a1466 ("udp: Extract helper for selecting socket from reuseport group")
+  2a08748cd384 ("udp6: Extract helper for selecting socket from reuseport group")
+
+which extract the 'if (sk->sk_reuseport && sk->sk_state !=
+TCP_ESTABLISHED)' block into a helper called lookup_reuseport().
+
+To merge the two, we need to pull the reuseport_has_conns() check up
+from lookup_reuseport() and back into udp[46]_lib_lookup2(), because now
+we want to record reuseport socket selection even if reuseport group has
+connections.
+
+The only other call site of lookup_reuseport() is in
+udp[46]_lookup_run_bpf(). We don't want to discard the reuseport
+selected socket if group has connections there either, so no changes are
+needed. And, now that I think about it, the current behavior in
+udp[46]_lookup_run_bpf() is not right.
+
+The end result for udp4 will look like:
+
+---8<---
+static inline struct sock *lookup_reuseport(struct net *net, struct sock *sk,
+					    struct sk_buff *skb,
+					    __be32 saddr, __be16 sport,
+					    __be32 daddr, unsigned short hnum)
+{
+	struct sock *reuse_sk = NULL;
+	u32 hash;
+
+	if (sk->sk_reuseport && sk->sk_state != TCP_ESTABLISHED) {
+		hash = udp_ehashfn(net, daddr, hnum, saddr, sport);
+		reuse_sk = reuseport_select_sock(sk, hash, skb,
+						 sizeof(struct udphdr));
+	}
+	return reuse_sk;
+}
+
+/* called with rcu_read_lock() */
+static struct sock *udp4_lib_lookup2(struct net *net,
+				     __be32 saddr, __be16 sport,
+				     __be32 daddr, unsigned int hnum,
+				     int dif, int sdif,
+				     struct udp_hslot *hslot2,
+				     struct sk_buff *skb)
+{
+	struct sock *sk, *result;
+	int score, badness;
+
+	result = NULL;
+	badness = 0;
+	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
+		score = compute_score(sk, net, saddr, sport,
+				      daddr, hnum, dif, sdif);
+		if (score > badness) {
+			result = lookup_reuseport(net, sk, skb,
+						  saddr, sport, daddr, hnum);
+			if (result && !reuseport_has_conns(sk, false))
+				return result;
+			if (!result)
+				result = sk;
+			badness = score;
+		}
+	}
+	return result;
+}
+---8<---
+
+I will submit a patch that pulls the reuseport_has_conns() check from
+lookup_reuseport() to bpf-next. That should bring the two sides of the
+merge closer. Please let me know if I can help in any other way.
+
+Also, please take a look at the 3-way diff below from my attempt to
+merge net tree into bpf-next tree taking the described approach.
+
+Thanks,
+-jkbs
+
+--
+diff --cc net/ipv4/udp.c
+index b738c63d7a77,4077d589b72e..f5297ea376de
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@@ -408,25 -408,6 +408,22 @@@ static u32 udp_ehashfn(const struct ne
+  			      udp_ehash_secret + net_hash_mix(net));
+  }
+
+ +static inline struct sock *lookup_reuseport(struct net *net, struct sock *sk,
+ +					    struct sk_buff *skb,
+ +					    __be32 saddr, __be16 sport,
+ +					    __be32 daddr, unsigned short hnum)
+ +{
+ +	struct sock *reuse_sk = NULL;
+ +	u32 hash;
+ +
+ +	if (sk->sk_reuseport && sk->sk_state != TCP_ESTABLISHED) {
+ +		hash = udp_ehashfn(net, daddr, hnum, saddr, sport);
+ +		reuse_sk = reuseport_select_sock(sk, hash, skb,
+ +						 sizeof(struct udphdr));
+- 		/* Fall back to scoring if group has connections */
+- 		if (reuseport_has_conns(sk, false))
+- 			return NULL;
+ +	}
+ +	return reuse_sk;
+ +}
+ +
+  /* called with rcu_read_lock() */
+  static struct sock *udp4_lib_lookup2(struct net *net,
+  				     __be32 saddr, __be16 sport,
+@@@ -444,13 -426,20 +441,13 @@@
+  		score = compute_score(sk, net, saddr, sport,
+  				      daddr, hnum, dif, sdif);
+  		if (score > badness) {
+ -			reuseport_result = NULL;
+ -
+ -			if (sk->sk_reuseport &&
+ -			    sk->sk_state != TCP_ESTABLISHED) {
+ -				hash = udp_ehashfn(net, daddr, hnum,
+ -						   saddr, sport);
+ -				reuseport_result = reuseport_select_sock(sk, hash, skb,
+ -									 sizeof(struct udphdr));
+ -				if (reuseport_result && !reuseport_has_conns(sk, false))
+ -					return reuseport_result;
+ -			}
+ -
+ -			result = reuseport_result ? : sk;
+ +			result = lookup_reuseport(net, sk, skb,
+ +						  saddr, sport, daddr, hnum);
+- 			if (result)
+++			if (result && !reuseport_has_conns(sk, false))
+ +				return result;
+-
+++			if (!result)
+++				result = sk;
+  			badness = score;
+- 			result = sk;
+  		}
+  	}
+  	return result;
+diff --cc net/ipv6/udp.c
+index ff8be202726a,a8d74f44056a..ca50fcdf0776
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@@ -141,27 -141,6 +141,24 @@@ static int compute_score(struct sock *s
+  	return score;
+  }
+
+ +static inline struct sock *lookup_reuseport(struct net *net, struct sock *sk,
+ +					    struct sk_buff *skb,
+ +					    const struct in6_addr *saddr,
+ +					    __be16 sport,
+ +					    const struct in6_addr *daddr,
+ +					    unsigned int hnum)
+ +{
+ +	struct sock *reuse_sk = NULL;
+ +	u32 hash;
+ +
+ +	if (sk->sk_reuseport && sk->sk_state != TCP_ESTABLISHED) {
+ +		hash = udp6_ehashfn(net, daddr, hnum, saddr, sport);
+ +		reuse_sk = reuseport_select_sock(sk, hash, skb,
+ +						 sizeof(struct udphdr));
+- 		/* Fall back to scoring if group has connections */
+- 		if (reuseport_has_conns(sk, false))
+- 			return NULL;
+ +	}
+ +	return reuse_sk;
+ +}
+ +
+  /* called with rcu_read_lock() */
+  static struct sock *udp6_lib_lookup2(struct net *net,
+  		const struct in6_addr *saddr, __be16 sport,
+@@@ -178,12 -158,20 +175,12 @@@
+  		score = compute_score(sk, net, saddr, sport,
+  				      daddr, hnum, dif, sdif);
+  		if (score > badness) {
+ -			reuseport_result = NULL;
+ -
+ -			if (sk->sk_reuseport &&
+ -			    sk->sk_state != TCP_ESTABLISHED) {
+ -				hash = udp6_ehashfn(net, daddr, hnum,
+ -						    saddr, sport);
+ -
+ -				reuseport_result = reuseport_select_sock(sk, hash, skb,
+ -									 sizeof(struct udphdr));
+ -				if (reuseport_result && !reuseport_has_conns(sk, false))
+ -					return reuseport_result;
+ -			}
+ -
+ -			result = reuseport_result ? : sk;
+ +			result = lookup_reuseport(net, sk, skb,
+ +						  saddr, sport, daddr, hnum);
+- 			if (result)
+++			if (result && !reuseport_has_conns(sk, false))
+ +				return result;
+-
+- 			result = sk;
+++			if (!result)
+++				result = sk;
+  			badness = score;
+  		}
+  	}
