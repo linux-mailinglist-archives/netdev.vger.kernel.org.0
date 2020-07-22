@@ -2,185 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5F9022A1CE
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 00:11:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 502ED22A245
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 00:16:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733040AbgGVWLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 18:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726642AbgGVWLU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 18:11:20 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA378C0619DC
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 15:11:19 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id r12so3286226wrj.13
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 15:11:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4FR8yxqlzkgUKt1ko5eGa3wwnzHjGmidFxw0sTOb7is=;
-        b=s0G1JH4IYKsmQdJwgtdYrM7qnTVyV2EPRLnvGpbaF+srgNzugmsA+2YWh5FKZq4Mvw
-         wmAD/Xhj59SSRaXaVmpDvG1WQ1Ypn1H/6FjXbQlWoDiXO11cx5HPk2+McQlMa7zGEWVo
-         WdNwBf66L2MHZF+DhlgpLj5q4W+6BtIFGQftv66p4WrxpwEn8y8hEqSPgHpRQCIKJiYr
-         yKGg5ZzpwiAzsSPRKG9T7wipnqt1hEY51D0x+kGR8cNusDZTV/ejgPL00xhhntcADvEo
-         MhVN5l3Ui0/gNo3qu1aY6kgelYfjwczfTOAkXh4sFC6HWWPR3oGsK0K4P51bZihKy6ro
-         TfSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=4FR8yxqlzkgUKt1ko5eGa3wwnzHjGmidFxw0sTOb7is=;
-        b=g+8O7olEiJeTCQ0l1Ur5tH6et31KVYKp/bEoIKXonnJS3f/JIsqkcCYbivG3ZwJvwm
-         yglVIue+aSx3UVzUB7n4Cbzsv0qqxiZ4/6rqimqT9w26jXoMeyyraldHfbkyK0FlpDAK
-         XNn4QPN2sxOAhwo9+QDquAfcxpI+dz2QRAPdK2HPruPZWsbK/kH72UMeEPTNXCHnm6a9
-         U//vkpHY29jJnstULPfArO38v6I06Iu39S0LBnqt3KvJZWTJOCRhxkXl7Kpn1AOkNiEw
-         15AeUNIElpL0/qUCo75aSyPGtm9HZHAAT/jciz1lbqjRvFIs34JEnqnHnYb/7HqT1TRX
-         r4rA==
-X-Gm-Message-State: AOAM5319/e/5eZ09D3cwsjKd9xVW0PUiKnaWg6NFzRZOzYsFS3nYMFwv
-        Xec7jr0FlPRxUoEr57wY06ewpzWN
-X-Google-Smtp-Source: ABdhPJyvg62uoyg6yh0RM9kIYJnzTTcU0kGlMQh9i7UQphf2/9d0IrDPs0TE9miwZNbZPv8IX5cIOg==
-X-Received: by 2002:a05:6000:c:: with SMTP id h12mr1281048wrx.49.1595455878447;
-        Wed, 22 Jul 2020 15:11:18 -0700 (PDT)
-Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g16sm1293225wrs.88.2020.07.22.15.11.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jul 2020 15:11:17 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: restore DSA behavior of not overriding
- ndo_get_phys_port_name if present
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, jiri@mellanox.com,
-        edumazet@google.com, ap420073@gmail.com, xiyou.wangcong@gmail.com,
-        maximmi@mellanox.com, mkubecek@suse.cz, richardcochran@gmail.com
-References: <20200722205348.2688142-1-olteanv@gmail.com>
- <98325906-b8a5-fb0c-294d-b03c448ba596@gmail.com>
- <20200722220650.dobse2zniylfyhs6@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <6db74106-af90-deac-907d-9f0c971ec698@gmail.com>
-Date:   Wed, 22 Jul 2020 15:11:09 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726452AbgGVWQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 18:16:23 -0400
+Received: from www62.your-server.de ([213.133.104.62]:43870 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728607AbgGVWQX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 18:16:23 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jyN25-0007uB-Qk; Thu, 23 Jul 2020 00:16:13 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jyN25-000O10-Kn; Thu, 23 Jul 2020 00:16:13 +0200
+Subject: Re: [PATCH v2 bpf-next 4/4] bpf: Add kernel module with user mode
+ driver that populates bpffs.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        davem@davemloft.net
+Cc:     torvalds@linux-foundation.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+References: <20200717044031.56412-1-alexei.starovoitov@gmail.com>
+ <20200717044031.56412-5-alexei.starovoitov@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <35b9bedb-a278-beac-0648-04416761acfb@iogearbox.net>
+Date:   Thu, 23 Jul 2020 00:16:13 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200722220650.dobse2zniylfyhs6@skbuf>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200717044031.56412-5-alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25881/Wed Jul 22 16:35:43 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/22/20 3:06 PM, Vladimir Oltean wrote:
-> On Wed, Jul 22, 2020 at 02:53:28PM -0700, Florian Fainelli wrote:
->> On 7/22/20 1:53 PM, Vladimir Oltean wrote:
->>> Prior to the commit below, dsa_master_ndo_setup() used to avoid
->>> overriding .ndo_get_phys_port_name() unless the callback was empty.
->>>
->>> https://elixir.bootlin.com/linux/v5.7.7/source/net/dsa/master.c#L269
->>>
->>> Now, it overrides it unconditionally.
->>>
->>> This matters for boards where DSA switches are hanging off of other DSA
->>> switches, or switchdev interfaces.
->>> Say a user has these udev rules for the top-level switch:
->>>
->>> ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p0", NAME="swp0"
->>> ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p1", NAME="swp1"
->>> ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p2", NAME="swp2"
->>> ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p3", NAME="swp3"
->>> ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p4", NAME="swp4"
->>> ACTION=="add", SUBSYSTEM=="net", KERNELS=="0000:00:00.5", DRIVERS=="mscc_felix", ATTR{phys_port_name}=="p5", NAME="swp5"
->>>
->>> If the DSA switches below start randomly overriding
->>> ndo_get_phys_port_name with their own CPU port, bad things can happen.
->>> Not only may the CPU port number be not unique among different
->>> downstream DSA switches, but one of the upstream switchdev interfaces
->>> may also happen to have a port with the same number. So, we may even end
->>> up in a situation where all interfaces of the top-level switch end up
->>> having a phys_port_name attribute of "p0". Clearly not ok if the purpose
->>> of the udev rules is to assign unique names.
->>>
->>> Fix this by restoring the old behavior, which did not overlay this
->>> operation on top of the DSA master logic, if there was one in place
->>> already.
->>>
->>> Fixes: 3369afba1e46 ("net: Call into DSA netdevice_ops wrappers")
->>> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
->>> ---
->>> This is brain-dead, please consider killing this and retrieving the CPU
->>> port number from "devlink port"...
->>
->> That is fair enough. Do you want to submit such a change while you are
->> at it?
->>
+On 7/17/20 6:40 AM, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
 > 
-> If I'm getting you right, you mean I should be dropping this patch, and
-> send another one that deletes dsa_ndo_get_phys_port_name()?
-> I would expect that to be so - the problem is the fact that we're
-> retrieving the number of the CPU port through an ndo of the master
-> interface, it's not something we can fix by just calling into devlink
-> from kernel side. The user has to call into devlink.
+> Add kernel module with user mode driver that populates bpffs with
+> BPF iterators.
+> 
+> $ mount bpffs /my/bpffs/ -t bpf
+> $ ls -la /my/bpffs/
+> total 4
+> drwxrwxrwt  2 root root    0 Jul  2 00:27 .
+> drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
+> -rw-------  1 root root    0 Jul  2 00:27 maps.debug
+> -rw-------  1 root root    0 Jul  2 00:27 progs.debug
+> 
+> The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
+> maps, load two BPF programs, attach them to BPF iterators, and finally send two
+> bpf_link IDs back to the kernel.
+> The kernel will pin two bpf_links into newly mounted bpffs instance under
+> names "progs.debug" and "maps.debug". These two files become human readable.
+> 
+> $ cat /my/bpffs/progs.debug
+>    id name            pages attached
+>    11 dump_bpf_map        1 bpf_iter_bpf_map
+>    12 dump_bpf_prog       1 bpf_iter_bpf_prog
+>    27 test_pkt_access     1
+>    32 test_main           1 test_pkt_access test_pkt_access
+>    33 test_subprog1       1 test_pkt_access_subprog1 test_pkt_access
+>    34 test_subprog2       1 test_pkt_access_subprog2 test_pkt_access
+>    35 test_subprog3       1 test_pkt_access_subprog3 test_pkt_access
+>    36 new_get_skb_len     1 get_skb_len test_pkt_access
+>    37 new_get_skb_ifi     1 get_skb_ifindex test_pkt_access
+>    38 new_get_constan     1 get_constant test_pkt_access
+> 
+> The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
+> all BPF programs currently loaded in the system. This information is unstable
+> and will change from kernel to kernel as ".debug" suffix conveys.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+[...]
+>   static int bpf_obj_do_pin(const char __user *pathname, void *raw,
+>   			  enum bpf_type type)
+>   {
+> @@ -638,6 +661,61 @@ static int bpf_parse_param(struct fs_context *fc, struct fs_parameter *param)
+>   	return 0;
+>   }
+>   
+> +struct bpf_preload_ops bpf_preload_ops = { .info.driver_name = "bpf_preload" };
+> +EXPORT_SYMBOL_GPL(bpf_preload_ops);
+> +
+> +static int populate_bpffs(struct dentry *parent)
+> +{
+> +	struct bpf_preload_info objs[BPF_PRELOAD_LINKS] = {};
+> +	struct bpf_link *links[BPF_PRELOAD_LINKS] = {};
+> +	int err = 0, i;
+> +
+> +	mutex_lock(&bpf_preload_ops.lock);
+> +	if (!bpf_preload_ops.do_preload) {
+> +		mutex_unlock(&bpf_preload_ops.lock);
+> +		request_module("bpf_preload");
+> +		mutex_lock(&bpf_preload_ops.lock);
+> +
+> +		if (!bpf_preload_ops.do_preload) {
+> +			pr_err("bpf_preload module is missing.\n"
+> +			       "bpffs will not have iterators.\n");
+> +			goto out;
+> +		}
+> +	}
 
-Yes, that is what I meant, that an user should call the appropriate
-devlink command to obtain the port number, this particular change has
-caused more harm than good, and the justification for doing it in the
-first place was weak to begin with.
--- 
-Florian
+Overall set looks good. One thing that appears to be possible from staring at
+the code is that while we load the bpf_preload module here and below invoke the
+modules' preload ops callbacks, there seems to be nothing that prevents the module
+from being forcefully unloaded in parallel (e.g. no ref on the module held).
+
+So it looks like the old bpfilter code was preventing exactly this through holding
+bpfilter_ops.lock mutex during its {load,fini}_umh() modules init/exit functions.
+
+Other than that, maybe it would be nice to have a test_progs selftests extension
+which mounts multiple BPF fs instances, and asserts that if one of them has the
+{progs,maps}.debug files that the other ones must have it as well, plus plain
+reading of both (w/o parsing anything from there) just to make sure the dump
+terminates .. at least to have some basic exercising of the code in there.
+
+Thanks,
+Daniel
+
+> +	if (!bpf_preload_ops.info.tgid) {
+> +		err = bpf_preload_ops.do_preload(objs);
+> +		if (err)
+> +			goto out;
+> +		for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
+> +			links[i] = bpf_link_by_id(objs[i].link_id);
+> +			if (IS_ERR(links[i])) {
+> +				err = PTR_ERR(links[i]);
+> +				goto out;
+> +			}
+> +		}
+> +		for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
+> +			err = bpf_iter_link_pin_kernel(parent,
+> +						       objs[i].link_name, links[i]);
+> +			if (err)
+> +				goto out;
+> +			/* do not unlink successfully pinned links even
+> +			 * if later link fails to pin
+> +			 */
+> +			links[i] = NULL;
+> +		}
+> +		err = bpf_preload_ops.do_finish();
+> +		if (err)
+> +			goto out;
+> +	}
+> +out:
+> +	mutex_unlock(&bpf_preload_ops.lock);
+> +	for (i = 0; i < BPF_PRELOAD_LINKS && err; i++)
+> +		if (!IS_ERR_OR_NULL(links[i]))
+> +			bpf_link_put(links[i]);
+> +	return err;
+> +}
+> +
+>   static int bpf_fill_super(struct super_block *sb, struct fs_context *fc)
+>   {
+>   	static const struct tree_descr bpf_rfiles[] = { { "" } };
+> @@ -654,8 +732,8 @@ static int bpf_fill_super(struct super_block *sb, struct fs_context *fc)
+>   	inode = sb->s_root->d_inode;
+>   	inode->i_op = &bpf_dir_iops;
+>   	inode->i_mode &= ~S_IALLUGO;
+> +	populate_bpffs(sb->s_root);
+>   	inode->i_mode |= S_ISVTX | opts->mode;
+> -
+>   	return 0;
+>   }
+>   
+> @@ -705,6 +783,8 @@ static int __init bpf_init(void)
+[...]
+> diff --git a/kernel/bpf/preload/bpf_preload_kern.c b/kernel/bpf/preload/bpf_preload_kern.c
+> new file mode 100644
+> index 000000000000..cd10f291d6cd
+> --- /dev/null
+> +++ b/kernel/bpf/preload/bpf_preload_kern.c
+> @@ -0,0 +1,85 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +#include <linux/init.h>
+> +#include <linux/module.h>
+> +#include <linux/pid.h>
+> +#include <linux/fs.h>
+> +#include <linux/sched/signal.h>
+> +#include "bpf_preload.h"
+> +
+> +extern char bpf_preload_umd_start;
+> +extern char bpf_preload_umd_end;
+> +
+> +static int do_preload(struct bpf_preload_info *obj)
+> +{
+> +	int magic = BPF_PRELOAD_START;
+> +	struct pid *tgid;
+> +	loff_t pos = 0;
+> +	int i, err;
+> +	ssize_t n;
+> +
+> +	err = fork_usermode_driver(&bpf_preload_ops.info);
+> +	if (err)
+> +		return err;
+> +	tgid = bpf_preload_ops.info.tgid;
+> +
+> +	/* send the start magic to let UMD proceed with loading BPF progs */
+> +	n = kernel_write(bpf_preload_ops.info.pipe_to_umh,
+> +			 &magic, sizeof(magic), &pos);
+> +	if (n != sizeof(magic))
+> +		return -EPIPE;
+> +
+> +	/* receive bpf_link IDs and names from UMD */
+> +	pos = 0;
+> +	for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
+> +		n = kernel_read(bpf_preload_ops.info.pipe_from_umh,
+> +				&obj[i], sizeof(*obj), &pos);
+> +		if (n != sizeof(*obj))
+> +			return -EPIPE;
+> +	}
+> +	return 0;
+> +}
+> +
+> +static int do_finish(void)
+> +{
+> +	int magic = BPF_PRELOAD_END;
+> +	struct pid *tgid;
+> +	loff_t pos = 0;
+> +	ssize_t n;
+> +
+> +	/* send the last magic to UMD. It will do a normal exit. */
+> +	n = kernel_write(bpf_preload_ops.info.pipe_to_umh,
+> +			 &magic, sizeof(magic), &pos);
+> +	if (n != sizeof(magic))
+> +		return -EPIPE;
+> +	tgid = bpf_preload_ops.info.tgid;
+> +	wait_event(tgid->wait_pidfd, thread_group_exited(tgid));
+> +	bpf_preload_ops.info.tgid = NULL;
+> +	return 0;
+> +}
+> +
+> +static int __init load_umd(void)
+> +{
+> +	int err;
+> +
+> +	err = umd_load_blob(&bpf_preload_ops.info, &bpf_preload_umd_start,
+> +			    &bpf_preload_umd_end - &bpf_preload_umd_start);
+> +	if (err)
+> +		return err;
+> +	bpf_preload_ops.do_preload = do_preload;
+> +	bpf_preload_ops.do_finish = do_finish;
+> +	return err;
+> +}
+> +
+> +static void __exit fini_umd(void)
+> +{
+> +	bpf_preload_ops.do_preload = NULL;
+> +	bpf_preload_ops.do_finish = NULL;
+> +	/* kill UMD in case it's still there due to earlier error */
+> +	kill_pid(bpf_preload_ops.info.tgid, SIGKILL, 1);
+> +	bpf_preload_ops.info.tgid = NULL;
+> +	umd_unload_blob(&bpf_preload_ops.info);
+> +}
+[...]
