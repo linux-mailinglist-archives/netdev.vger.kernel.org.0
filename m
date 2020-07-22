@@ -2,203 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FFA4229E7A
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 19:24:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC6B3229E82
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 19:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732366AbgGVRYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 13:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732022AbgGVRYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 13:24:46 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2F3C0619E1;
-        Wed, 22 Jul 2020 10:24:46 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id d18so2245518edv.6;
-        Wed, 22 Jul 2020 10:24:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IwiK0U+Dhjv5R+D7L68/33/y00cq8SjNmUGfjDZfVnI=;
-        b=d0fnGmpqyawQ6ZYxmbsWP6gl4hH8VZ6oUxfyea9jfSgAlL1mLymyW1fokoRJvAxg+H
-         nlvajnhjmIzmBmnwyvX5fIjTcEWEPB4zIn0sYqns8vUqTWhFpX9fkQV21VFg7foAKeJm
-         KLb48FjP3k9d5Q6Bq0GxgeCjC04cq0vnYj/KDJP94v7UEGtsQdSIaLDi3vOQlC5aVhEV
-         qFj9sYBIjqlkHNfabEpR2Yp6ukw/GsWQfMrQHeUwKFlbmgdWiKpyQMmbC2CWDrSEVp+M
-         zMyn/VPPsXBwVsmG+3TBI6HR3KTrdmUNyXEaSut29/0TdDxDrCyqwPa9oGLlBijDxvnA
-         omsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IwiK0U+Dhjv5R+D7L68/33/y00cq8SjNmUGfjDZfVnI=;
-        b=E5mu/xmy1omN0iNebeoETrWOREbhgh7iW7QIvrAHMElxpWM3o/g0SNIXJVRASDaMsP
-         mXHMpgVuvVVOqwQxifRlG5Uu+yzeIrhUtocLsmZZPNJgaD8NZkgWWb8+aeacs/RHeUsq
-         7lcw6fQ4UmNBkW6gWVmH7dDMlsk5gC9OOiOwsYIY2TX0zfdM5sTxDcwgAZUpTQOoA6OM
-         yilwWYfqn41qEj2YQhyXH09k4UCg1fmqxBMZm7F/+Z3g/pQheSWlLGLg/JMRSB7MFTrx
-         JOo8guWORMpbVyU1enZKITCyArVURmsv9vvSINarXekWlE1h6TzaaBXLZWhX2/mys5Pt
-         VC+w==
-X-Gm-Message-State: AOAM5307h4zdTF33Y9aBDiX5Mw0QEcvquW7XltEfmtaxCoKPHaO7gFTk
-        H+pAIW8p0qvg1RJw5KZt79I=
-X-Google-Smtp-Source: ABdhPJwN32en1tjwVds6TL6SW0e/xdD/1wt15akze77kDflk28RHrFyCzGDTRIFEKftNULw8jz/XBQ==
-X-Received: by 2002:a50:d55b:: with SMTP id f27mr514751edj.312.1595438684854;
-        Wed, 22 Jul 2020 10:24:44 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id bt26sm311517edb.17.2020.07.22.10.24.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 10:24:44 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     robh+dt@kernel.org, shawnguo@kernel.org, mpe@ellerman.id.au,
-        devicetree@vger.kernel.org
-Cc:     benh@kernel.crashing.org, paulus@samba.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, madalin.bucur@oss.nxp.com,
-        radu-andrei.bulie@nxp.com, fido_max@inbox.ru
-Subject: [PATCH devicetree 4/4] powerpc: dts: t1040rdb: add ports for Seville Ethernet switch
-Date:   Wed, 22 Jul 2020 20:24:22 +0300
-Message-Id: <20200722172422.2590489-5-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200722172422.2590489-1-olteanv@gmail.com>
-References: <20200722172422.2590489-1-olteanv@gmail.com>
+        id S1728511AbgGVR0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 13:26:48 -0400
+Received: from mail.efficios.com ([167.114.26.124]:44046 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726349AbgGVR0r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 13:26:47 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id A4F712D73F9;
+        Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id DmHD8t4Me0BR; Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 581DD2D75C8;
+        Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 581DD2D75C8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1595438806;
+        bh=ie1s3yfaP5hYh71RbSEDgzXewJydGQnrL4wq2YH/vxs=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=uYOrROJLsUCtksuqZGWZRv7FC2VaA1JCcO/bSko1tPTQy4YCK9yv+ZqLEf/3Ig/p3
+         ba2pmRRRH6Zz4yoeFAvr9GJ3L00viVw7mStmr4Y9OwgjPXH/NgXVAUWUa1xkahWCzk
+         C0PQVuyv8T/4duQYbUkfZo5CzPDStEb4a5E+AghIMPxgpWhZ22Soa7lbfr4lL6B4Uh
+         KtPyXcHpUerUvQkSZu8YxXcqTo23HDVS0PCYsz5RKuqiuLv2iP0GY+0DA1nIMUPqy2
+         rXL9O9aOjRcoENC/ZCrPv484ZptDFLgvbrRy+LV3U19DmQR5J3fDzFqfCkPeCMnkiQ
+         Nzv9jsaO0pFhA==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id jVFannzj4RYG; Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 4BE4B2D7532;
+        Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
+Date:   Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     netdev <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     David Ahern <dsa@cumulusnetworks.com>,
+        "David S. Miller" <davem@davemloft.net>
+Message-ID: <1949069529.26392.1595438806291.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20200720221118.26148-1-mathieu.desnoyers@efficios.com>
+References: <20200720221118.26148-1-mathieu.desnoyers@efficios.com>
+Subject: Re: [RFC PATCH] Fix: ipv4/icmp: icmp error route lookup performed
+ on wrong routing table
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_3955 (ZimbraWebClient - FF78 (Linux)/8.8.15_GA_3953)
+Thread-Topic: ipv4/icmp: icmp error route lookup performed on wrong routing table
+Thread-Index: z8oEnN4BMpZegUplmtxPoLdCmaontg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define the network interface names for the switch ports and hook them up
-to the 2 QSGMII PHYs that are onboard.
+Adding IPv4/IPv6 maintainers in CC, along with David Ahern's k.org email address.
 
-A conscious decision was taken to go along with the numbers that are
-written on the front panel of the board and not with the hardware
-numbers of the switch chip ports. The 2 are shifted by 4.
+----- On Jul 20, 2020, at 6:11 PM, Mathieu Desnoyers mathieu.desnoyers@efficios.com wrote:
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- arch/powerpc/boot/dts/fsl/t1040rdb.dts | 111 +++++++++++++++++++++++++
- 1 file changed, 111 insertions(+)
+> As per RFC792, ICMP errors should be sent to the source host.
+> 
+> However, in configurations with Virtual Forwarding and Routing tables,
+> looking up which routing table to use is currently done by using the
+> destination net_device.
+> 
+> commit 9d1a6c4ea43e ("net: icmp_route_lookup should use rt dev to
+> determine L3 domain") changes the interfaces passed to
+> l3mdev_master_ifindex() and inet_addr_type_dev_table() from skb_in->dev
+> to skb_dst(skb_in)->dev in order to fix a NULL pointer dereference. This
+> changes the interface used for routing table lookup from source to
+> destination. Therefore, if the source and destination interfaces are
+> within separate VFR, or one in the global routing table and the other in
+> a VFR, looking up the source host in the destination interface's routing
+> table is likely to fail.
+> 
+> One observable effect of this issue is that traceroute does not work in
+> the following cases:
+> 
+> - Route leaking between global routing table and VRF
+> - Route leaking between VRFs
+> 
+> [ Note 1: I'm not entirely sure what routing table should be used when
+>  param->replyopts.opt.opt.srr is set ? Is it valid to honor Strict
+>  Source Route when sending an ICMP error ? ]
+> 
+> [ Note 2: I notice that ipv6 icmp6_send() uses skb_dst(skb)->dev as
+>  argument to l3mdev_master_ifindex(). I'm not sure if it is correct ? ]
+> 
+> [ This patch is only compile-tested. ]
+> 
+> Fixes: 9d1a6c4ea43e ("net: icmp_route_lookup should use rt dev to determine L3
+> domain")
+> Link: https://tools.ietf.org/html/rfc792
+> Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> Cc: David Ahern <dsa@cumulusnetworks.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: netdev@vger.kernel.org
+> ---
+> net/ipv4/icmp.c | 12 ++++++++++--
+> 1 file changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+> index e30515f89802..3d1da70c7293 100644
+> --- a/net/ipv4/icmp.c
+> +++ b/net/ipv4/icmp.c
+> @@ -465,6 +465,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
+> 					int type, int code,
+> 					struct icmp_bxm *param)
+> {
+> +	struct net_device *route_lookup_dev;
+> 	struct rtable *rt, *rt2;
+> 	struct flowi4 fl4_dec;
+> 	int err;
+> @@ -479,7 +480,14 @@ static struct rtable *icmp_route_lookup(struct net *net,
+> 	fl4->flowi4_proto = IPPROTO_ICMP;
+> 	fl4->fl4_icmp_type = type;
+> 	fl4->fl4_icmp_code = code;
+> -	fl4->flowi4_oif = l3mdev_master_ifindex(skb_dst(skb_in)->dev);
+> +	/*
+> +	 * The device used for looking up which routing table to use is
+> +	 * preferably the source whenever it is set, which should ensure
+> +	 * the icmp error can be sent to the source host, else fallback
+> +	 * on the destination device.
+> +	 */
+> +	route_lookup_dev = skb_in->dev ? skb_in->dev : skb_dst(skb_in)->dev;
+> +	fl4->flowi4_oif = l3mdev_master_ifindex(route_lookup_dev);
+> 
+> 	security_skb_classify_flow(skb_in, flowi4_to_flowi(fl4));
+> 	rt = ip_route_output_key_hash(net, fl4, skb_in);
+> @@ -503,7 +511,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
+> 	if (err)
+> 		goto relookup_failed;
+> 
+> -	if (inet_addr_type_dev_table(net, skb_dst(skb_in)->dev,
+> +	if (inet_addr_type_dev_table(net, route_lookup_dev,
+> 				     fl4_dec.saddr) == RTN_LOCAL) {
+> 		rt2 = __ip_route_output_key(net, &fl4_dec);
+> 		if (IS_ERR(rt2))
+> --
+> 2.11.0
 
-diff --git a/arch/powerpc/boot/dts/fsl/t1040rdb.dts b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
-index 40d7126dbe90..28ee06a1706d 100644
---- a/arch/powerpc/boot/dts/fsl/t1040rdb.dts
-+++ b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
-@@ -75,4 +75,115 @@ &mdio0 {
- 	phy_sgmii_2: ethernet-phy@3 {
- 		reg = <0x3>;
- 	};
-+
-+	/* VSC8514 QSGMII PHY */
-+	phy_qsgmii_0: ethernet-phy@4 {
-+		reg = <0x4>;
-+	};
-+
-+	phy_qsgmii_1: ethernet-phy@5 {
-+		reg = <0x5>;
-+	};
-+
-+	phy_qsgmii_2: ethernet-phy@6 {
-+		reg = <0x6>;
-+	};
-+
-+	phy_qsgmii_3: ethernet-phy@7 {
-+		reg = <0x7>;
-+	};
-+
-+	/* VSC8514 QSGMII PHY */
-+	phy_qsgmii_4: ethernet-phy@8 {
-+		reg = <0x8>;
-+	};
-+
-+	phy_qsgmii_5: ethernet-phy@9 {
-+		reg = <0x9>;
-+	};
-+
-+	phy_qsgmii_6: ethernet-phy@a {
-+		reg = <0xa>;
-+	};
-+
-+	phy_qsgmii_7: ethernet-phy@b {
-+		reg = <0xb>;
-+	};
-+};
-+
-+&seville_port0 {
-+	managed = "in-band-status";
-+	phy-handle = <&phy_qsgmii_0>;
-+	phy-mode = "qsgmii";
-+	/* ETH4 written on chassis */
-+	label = "swp4";
-+	status = "okay";
-+};
-+
-+&seville_port1 {
-+	managed = "in-band-status";
-+	phy-handle = <&phy_qsgmii_1>;
-+	phy-mode = "qsgmii";
-+	/* ETH5 written on chassis */
-+	label = "swp5";
-+	status = "okay";
-+};
-+
-+&seville_port2 {
-+	managed = "in-band-status";
-+	phy-handle = <&phy_qsgmii_2>;
-+	phy-mode = "qsgmii";
-+	/* ETH6 written on chassis */
-+	label = "swp6";
-+	status = "okay";
-+};
-+
-+&seville_port3 {
-+	managed = "in-band-status";
-+	phy-handle = <&phy_qsgmii_3>;
-+	phy-mode = "qsgmii";
-+	/* ETH7 written on chassis */
-+	label = "swp7";
-+	status = "okay";
-+};
-+
-+&seville_port4 {
-+	managed = "in-band-status";
-+	phy-handle = <&phy_qsgmii_4>;
-+	phy-mode = "qsgmii";
-+	/* ETH8 written on chassis */
-+	label = "swp8";
-+	status = "okay";
-+};
-+
-+&seville_port5 {
-+	managed = "in-band-status";
-+	phy-handle = <&phy_qsgmii_5>;
-+	phy-mode = "qsgmii";
-+	/* ETH9 written on chassis */
-+	label = "swp9";
-+	status = "okay";
-+};
-+
-+&seville_port6 {
-+	managed = "in-band-status";
-+	phy-handle = <&phy_qsgmii_6>;
-+	phy-mode = "qsgmii";
-+	/* ETH10 written on chassis */
-+	label = "swp10";
-+	status = "okay";
-+};
-+
-+&seville_port7 {
-+	managed = "in-band-status";
-+	phy-handle = <&phy_qsgmii_7>;
-+	phy-mode = "qsgmii";
-+	/* ETH11 written on chassis */
-+	label = "swp11";
-+	status = "okay";
-+};
-+
-+&seville_port8 {
-+	ethernet = <&enet0>;
-+	status = "okay";
- };
 -- 
-2.25.1
-
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
