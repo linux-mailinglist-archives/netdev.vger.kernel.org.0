@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 539F0229CF0
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:17:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA6EF229CF1
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:17:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730813AbgGVQR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 12:17:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40466 "EHLO
+        id S1730870AbgGVQRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 12:17:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728299AbgGVQR0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 12:17:26 -0400
+        with ESMTP id S1730617AbgGVQR2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 12:17:28 -0400
 Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124F5C0619DC
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:17:26 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id z24so3100856ljn.8
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:17:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18BAC0619E1
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:17:27 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id f5so3095299ljj.10
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:17:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Z/vrIiZMIRo5/cj1woXZIrQCk0a6lQc+EnEXLrdvZDY=;
-        b=nGO92wwI6A9aKT66SCiThO3sDJZCJxa7fVpdgCzIw9xhQ+B5DLTpyiMD/ZgmjPwUHe
-         nStizFhG99wuFIulTOAiIxJm6wNWqcTMPkVJSJX8XfEEhXOLQt+tXoDf1QmAEGiOKMTj
-         wRdRj1YgACsQBncBSLgf1QkNBpFkmcp8uvMOo=
+        bh=FcwspamFpLMvy8ptVddtyaKP8RbDMpDsWcPFu9YxmcQ=;
+        b=SpoeVVl8tisue+OLBio6OZtxflJQdnksEMEmWldMDhV8185ro33MhaGYUf6O9i8Dgy
+         Fc8eruiR19i4OXmzVQT7VT2NfT2Kb9rV2ybXj0yfvgK32bFqxsfU28N7lL4NkxRTAP1+
+         8WNEMKS3LNyBZ56DrXxBakVyFyMXG8OgS+G/0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Z/vrIiZMIRo5/cj1woXZIrQCk0a6lQc+EnEXLrdvZDY=;
-        b=hoSc354QwSklVZqtrt1d+1XLH2mu7Gz+a239d8k9W3kAWThnckLiV5D7abYbdIpGtj
-         gZGXN9jZ8k79Znf1/vG2+ijGzhs+dJddKPUkYhOcwmTJDQI/p8K83cfIkBPgf7gXBiOs
-         HLiqaFbJJDo11dPBsZlu/j6vfxqUMmbdb0elZXD83dQMauj/IOTTP96eXuWrmzahLhRe
-         i5ZHKtauS0/CswrBANz4DkCL36XFtnIeLAwK5Xg/CyOc9eGMS/S+ZPIX8i2eExYvQwgD
-         RE5YdSG6gBSbI/QBV1akG796Gs6Lhz/U/pK6dUQ/qiuAXkYf4uSJsov3OqpyqNRd/scj
-         gyuQ==
-X-Gm-Message-State: AOAM530eBf8Tvu2Uol/22Xg/qBp31VEc41z/Op3tHBwHcd9X+VHzqkNJ
-        habRCLSd2cs+q8KXGpQmY3t8jg==
-X-Google-Smtp-Source: ABdhPJx+ynMKTKOhOxISF52y6PBHe5A50p4EnDunQPBRVF2AgtvHY9OnRSh0hYVujv35fl9YEksNXQ==
-X-Received: by 2002:a2e:96d6:: with SMTP id d22mr6495ljj.67.1595434644460;
-        Wed, 22 Jul 2020 09:17:24 -0700 (PDT)
+        bh=FcwspamFpLMvy8ptVddtyaKP8RbDMpDsWcPFu9YxmcQ=;
+        b=YouQIbe5p7JTsW1R/rxRgLkhvDHPYmmEXcjPg/q7PwwRNwj7fwHbNMRDc2lqWh9Yvx
+         gBiCGlQxakWt2OymIDO+R80TQhE8Sr90mzxvOG6UFQq48jSvhGcYqBTIKYhvr0nH0cvC
+         NfeiN5yF4HgjxK4G/KtGYp1GOzglKSDzZUcrEfaoFLBDvkJUCZkWfrXKPgXuR4D0Dair
+         pwUG+DcvDhJl+sjQtgVTY0gWhBGiFBqchou8z/hyLDDjTSMW+wEi4ZQh4X/I/b1wMpjC
+         QETqeVes9Z2Dd12dqmmOWO9k6B9y8VWQBipzVmr0Paf2k8+HU3KeS0QuoLTQ8Hpl8qDY
+         UZDA==
+X-Gm-Message-State: AOAM5319VR4vvAyr8RCtLw8pmbiMUSWdKdxK5/ZbE8uzyXoGvJGGWruN
+        gSUYkVcdUre5z3aoavlH0G0DTA==
+X-Google-Smtp-Source: ABdhPJylAT4P0G7sOyxKYsqThqqUZFpzp88U7GZxPz2Qlkk8+uKrzFFRE2JhqQ2Fo+qw7XTVsAHv/A==
+X-Received: by 2002:a2e:8851:: with SMTP id z17mr605ljj.225.1595434646268;
+        Wed, 22 Jul 2020 09:17:26 -0700 (PDT)
 Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id t4sm313045ljg.11.2020.07.22.09.17.23
+        by smtp.gmail.com with ESMTPSA id h26sm285926ljb.78.2020.07.22.09.17.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 09:17:23 -0700 (PDT)
+        Wed, 22 Jul 2020 09:17:25 -0700 (PDT)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
@@ -51,9 +51,9 @@ Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
         Daniel Borkmann <daniel@iogearbox.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH bpf-next 1/2] udp: Don't discard reuseport selection when group has connections
-Date:   Wed, 22 Jul 2020 18:17:19 +0200
-Message-Id: <20200722161720.940831-2-jakub@cloudflare.com>
+Subject: [PATCH bpf-next 2/2] selftests/bpf: Test BPF socket lookup and reuseport with connections
+Date:   Wed, 22 Jul 2020 18:17:20 +0200
+Message-Id: <20200722161720.940831-3-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200722161720.940831-1-jakub@cloudflare.com>
 References: <20200722161720.940831-1-jakub@cloudflare.com>
@@ -64,70 +64,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When BPF socket lookup prog selects a socket that belongs to a reuseport
-group, and the reuseport group has connected sockets in it, the socket
-selected by reuseport will be discarded, and socket returned by BPF socket
-lookup will be used instead.
+Cover the case when BPF socket lookup returns a socket that belongs to a
+reuseport group, and the reuseport group contains connected UDP sockets.
 
-Modify this behavior so that the socket selected by reuseport running after
-BPF socket lookup always gets used. Ignore the fact that the reuseport
-group might have connections because it is only relevant when scoring
-sockets during regular hashtable-based lookup.
+Ensure that the presence of connected UDP sockets in reuseport group does
+not affect the socket lookup result. Socket selected by reuseport should
+always be used as result in such case.
 
-Fixes: 72f7e9440e9b ("udp: Run SK_LOOKUP BPF program on socket lookup")
-Fixes: 6d4201b1386b ("udp6: Run SK_LOOKUP BPF program on socket lookup")
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- net/ipv4/udp.c | 5 +----
- net/ipv6/udp.c | 5 +----
- 2 files changed, 2 insertions(+), 8 deletions(-)
+ .../selftests/bpf/prog_tests/sk_lookup.c      | 54 ++++++++++++++++++-
+ 1 file changed, 53 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index b5231ab350e0..487740d0088c 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -421,9 +421,6 @@ static inline struct sock *lookup_reuseport(struct net *net, struct sock *sk,
- 		hash = udp_ehashfn(net, daddr, hnum, saddr, sport);
- 		reuse_sk = reuseport_select_sock(sk, hash, skb,
- 						 sizeof(struct udphdr));
--		/* Fall back to scoring if group has connections */
--		if (reuseport_has_conns(sk, false))
--			return NULL;
- 	}
- 	return reuse_sk;
- }
-@@ -447,7 +444,7 @@ static struct sock *udp4_lib_lookup2(struct net *net,
- 		if (score > badness) {
- 			result = lookup_reuseport(net, sk, skb,
- 						  saddr, sport, daddr, hnum);
--			if (result)
-+			if (result && !reuseport_has_conns(sk, false))
- 				return result;
+diff --git a/tools/testing/selftests/bpf/prog_tests/sk_lookup.c b/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
+index f1784ae4565a..9bbd2b2b7630 100644
+--- a/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
++++ b/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
+@@ -74,6 +74,7 @@ struct test {
+ 	struct inet_addr connect_to;
+ 	struct inet_addr listen_at;
+ 	enum server accept_on;
++	bool reuseport_has_conns; /* Add a connected socket to reuseport group */
+ };
  
- 			badness = score;
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index ff8be202726a..8fd8eb04994c 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -155,9 +155,6 @@ static inline struct sock *lookup_reuseport(struct net *net, struct sock *sk,
- 		hash = udp6_ehashfn(net, daddr, hnum, saddr, sport);
- 		reuse_sk = reuseport_select_sock(sk, hash, skb,
- 						 sizeof(struct udphdr));
--		/* Fall back to scoring if group has connections */
--		if (reuseport_has_conns(sk, false))
--			return NULL;
- 	}
- 	return reuse_sk;
- }
-@@ -180,7 +177,7 @@ static struct sock *udp6_lib_lookup2(struct net *net,
- 		if (score > badness) {
- 			result = lookup_reuseport(net, sk, skb,
- 						  saddr, sport, daddr, hnum);
--			if (result)
-+			if (result && !reuseport_has_conns(sk, false))
- 				return result;
+ static __u32 duration;		/* for CHECK macro */
+@@ -559,7 +560,8 @@ static void query_lookup_prog(struct test_sk_lookup *skel)
  
- 			result = sk;
+ static void run_lookup_prog(const struct test *t)
+ {
+-	int client_fd, server_fds[MAX_SERVERS] = { -1 };
++	int server_fds[MAX_SERVERS] = { -1 };
++	int client_fd, reuse_conn_fd = -1;
+ 	struct bpf_link *lookup_link;
+ 	int i, err;
+ 
+@@ -583,6 +585,32 @@ static void run_lookup_prog(const struct test *t)
+ 			break;
+ 	}
+ 
++	/* Regular UDP socket lookup with reuseport behaves
++	 * differently when reuseport group contains connected
++	 * sockets. Check that adding a connected UDP socket to the
++	 * reuseport group does not affect how reuseport works with
++	 * BPF socket lookup.
++	 */
++	if (t->reuseport_has_conns) {
++		struct sockaddr_storage addr = {};
++		socklen_t len = sizeof(addr);
++
++		/* Add an extra socket to reuseport group */
++		reuse_conn_fd = make_server(t->sotype, t->listen_at.ip,
++					    t->listen_at.port,
++					    t->reuseport_prog);
++		if (reuse_conn_fd < 0)
++			goto close;
++
++		/* Connect the extra socket to itself */
++		err = getsockname(reuse_conn_fd, (void *)&addr, &len);
++		if (CHECK(err, "getsockname", "errno %d\n", errno))
++			goto close;
++		err = connect(reuse_conn_fd, (void *)&addr, len);
++		if (CHECK(err, "connect", "errno %d\n", errno))
++			goto close;
++	}
++
+ 	client_fd = make_client(t->sotype, t->connect_to.ip, t->connect_to.port);
+ 	if (client_fd < 0)
+ 		goto close;
+@@ -594,6 +622,8 @@ static void run_lookup_prog(const struct test *t)
+ 
+ 	close(client_fd);
+ close:
++	if (reuse_conn_fd != -1)
++		close(reuse_conn_fd);
+ 	for (i = 0; i < ARRAY_SIZE(server_fds); i++) {
+ 		if (server_fds[i] != -1)
+ 			close(server_fds[i]);
+@@ -710,6 +740,17 @@ static void test_redirect_lookup(struct test_sk_lookup *skel)
+ 			.listen_at	= { INT_IP4, INT_PORT },
+ 			.accept_on	= SERVER_B,
+ 		},
++		{
++			.desc		= "UDP IPv4 redir and reuseport with conns",
++			.lookup_prog	= skel->progs.select_sock_a,
++			.reuseport_prog	= skel->progs.select_sock_b,
++			.sock_map	= skel->maps.redir_map,
++			.sotype		= SOCK_DGRAM,
++			.connect_to	= { EXT_IP4, EXT_PORT },
++			.listen_at	= { INT_IP4, INT_PORT },
++			.accept_on	= SERVER_B,
++			.reuseport_has_conns = true,
++		},
+ 		{
+ 			.desc		= "UDP IPv4 redir skip reuseport",
+ 			.lookup_prog	= skel->progs.select_sock_a_no_reuseport,
+@@ -754,6 +795,17 @@ static void test_redirect_lookup(struct test_sk_lookup *skel)
+ 			.listen_at	= { INT_IP6, INT_PORT },
+ 			.accept_on	= SERVER_B,
+ 		},
++		{
++			.desc		= "UDP IPv6 redir and reuseport with conns",
++			.lookup_prog	= skel->progs.select_sock_a,
++			.reuseport_prog	= skel->progs.select_sock_b,
++			.sock_map	= skel->maps.redir_map,
++			.sotype		= SOCK_DGRAM,
++			.connect_to	= { EXT_IP6, EXT_PORT },
++			.listen_at	= { INT_IP6, INT_PORT },
++			.accept_on	= SERVER_B,
++			.reuseport_has_conns = true,
++		},
+ 		{
+ 			.desc		= "UDP IPv6 redir skip reuseport",
+ 			.lookup_prog	= skel->progs.select_sock_a_no_reuseport,
 -- 
 2.25.4
 
