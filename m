@@ -2,94 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BAA1229B64
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:31:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BD58229B96
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:38:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732690AbgGVPbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 11:31:50 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:27017 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727778AbgGVPbt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:31:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595431908;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jLqBc9RYniLFUUTWsxq6fjT8G8kMJYPSdGSPtHg5y+0=;
-        b=XNdKY46h6ypKXfOoxUowGb0sJsgvegqj5mc+lJDxx4TBlKxXoZI+/Bfrg96U3zp4a2CuJF
-        624rkH+jnV4Z3UMIhQE4Zi5trz3CBu1G8E3/QVDJJM6d62qVNZydHbRtQRf0riz1WmRqxx
-        d4stCNGTGEj8iZeyL/n2/Yd1DvQLmoI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-59-jYBIU6wCPjuoM6OOIlqqzA-1; Wed, 22 Jul 2020 11:31:44 -0400
-X-MC-Unique: jYBIU6wCPjuoM6OOIlqqzA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BE2C819057A0;
-        Wed, 22 Jul 2020 15:31:42 +0000 (UTC)
-Received: from [10.36.112.226] (ovpn-112-226.ams2.redhat.com [10.36.112.226])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D09AB8BEC4;
-        Wed, 22 Jul 2020 15:31:38 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dev@openvswitch.org,
-        pabeni@redhat.com, pshelar@ovn.org
-Subject: Re: [PATCH net-next 2/2] net: openvswitch: make masks cache size
- configurable
-Date:   Wed, 22 Jul 2020 17:31:37 +0200
-Message-ID: <967448E7-939A-4E3F-8D59-DC0F780C8D09@redhat.com>
-In-Reply-To: <20200722082128.53cf22e2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <159540642765.619787.5484526399990292188.stgit@ebuild>
- <159540647223.619787.13052866492035799125.stgit@ebuild>
- <20200722082128.53cf22e2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1732809AbgGVPif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 11:38:35 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:42437 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730382AbgGVPie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:38:34 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jyGpC-0004rw-GA; Wed, 22 Jul 2020 15:38:30 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] mac80211: remove the need for variable rates_idx
+Date:   Wed, 22 Jul 2020 16:38:30 +0100
+Message-Id: <20200722153830.959010-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed; markup=markdown
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Colin Ian King <colin.king@canonical.com>
 
+Currently rates_idx is being initialized with the value -1 and this
+value is never read so the initialization is redundant and can be
+removed. The next time the variable is used it is assigned a value
+that is returned a few statements later. Just return i - 1 and
+remove the need for rates_idx.
 
-On 22 Jul 2020, at 17:21, Jakub Kicinski wrote:
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ net/mac80211/status.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-> On Wed, 22 Jul 2020 10:27:52 +0200 Eelco Chaudron wrote:
->> This patch makes the masks cache size configurable, or with
->> a size of 0, disable it.
->>
->> Reviewed-by: Paolo Abeni <pabeni@redhat.com>
->> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->
-> Hi Elco!
->
-> This patch adds a bunch of new sparse warnings:
->
-> net/openvswitch/flow_table.c:376:23: warning: incorrect type in 
-> assignment (different address spaces)
-> net/openvswitch/flow_table.c:376:23:    expected struct 
-> mask_cache_entry *cache
-> net/openvswitch/flow_table.c:376:23:    got void [noderef] __percpu *
-> net/openvswitch/flow_table.c:386:25: warning: incorrect type in 
-> assignment (different address spaces)
-> net/openvswitch/flow_table.c:386:25:    expected struct 
-> mask_cache_entry [noderef] __percpu *mask_cache
-> net/openvswitch/flow_table.c:386:25:    got struct mask_cache_entry 
-> *cache
-> net/openvswitch/flow_table.c:411:27: warning: incorrect type in 
-> assignment (different address spaces)
-> net/openvswitch/flow_table.c:411:27:    expected struct mask_cache 
-> [noderef] __rcu *mask_cache
-> net/openvswitch/flow_table.c:411:27:    got struct mask_cache *
-> net/openvswitch/flow_table.c:440:35: warning: incorrect type in 
-> argument 1 (different address spaces)
-> net/openvswitch/flow_table.c:440:35:    expected struct mask_cache *mc
-> net/openvswitch/flow_table.c:440:35:    got struct mask_cache 
-> [noderef] __rcu *mask_cache
-
-Odd, as I’m sure I ran checkpatch :( Will sent an update fixing those!
+diff --git a/net/mac80211/status.c b/net/mac80211/status.c
+index cbc40b358ba2..adb1d30ce06e 100644
+--- a/net/mac80211/status.c
++++ b/net/mac80211/status.c
+@@ -799,7 +799,6 @@ static int ieee80211_tx_get_rates(struct ieee80211_hw *hw,
+ 				  struct ieee80211_tx_info *info,
+ 				  int *retry_count)
+ {
+-	int rates_idx = -1;
+ 	int count = -1;
+ 	int i;
+ 
+@@ -821,13 +820,12 @@ static int ieee80211_tx_get_rates(struct ieee80211_hw *hw,
+ 
+ 		count += info->status.rates[i].count;
+ 	}
+-	rates_idx = i - 1;
+ 
+ 	if (count < 0)
+ 		count = 0;
+ 
+ 	*retry_count = count;
+-	return rates_idx;
++	return i - 1;
+ }
+ 
+ void ieee80211_tx_monitor(struct ieee80211_local *local, struct sk_buff *skb,
+-- 
+2.27.0
 
