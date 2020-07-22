@@ -2,170 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AB4E22A34D
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 01:49:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ADFA22A367
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 01:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733177AbgGVXtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 19:49:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50194 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728607AbgGVXtS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jul 2020 19:49:18 -0400
-Received: from localhost (c-67-164-102-47.hsd1.ca.comcast.net [67.164.102.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 99E9320825;
-        Wed, 22 Jul 2020 23:49:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595461757;
-        bh=1IS+O/7YryqIBEkm5nkaKs05nC51c/pf8nsRFWQ6LdE=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=FrgmIjvmA70VVMfZFUF0EKllD6JAd0T3wuzJkEXkBHd9mk68R94zOTAVb1VshR80o
-         VoedozueZTQ79QnhYsBQuIWbKhzLCmG3xMwCZYv104TVVJWpntgJlkPZ9kXSd1yIxs
-         xBrz8+QmXgyh1brARc/h9Lq6CDqDU8ZD0/QxaBss=
-Date:   Wed, 22 Jul 2020 16:49:16 -0700 (PDT)
-From:   Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
-To:     Anchal Agarwal <anchalag@amazon.com>
-cc:     Stefano Stabellini <sstabellini@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
-        x86@kernel.org, jgross@suse.com, linux-pm@vger.kernel.org,
-        linux-mm@kvack.org, kamatam@amazon.com, konrad.wilk@oracle.com,
-        roger.pau@citrix.com, axboe@kernel.dk, davem@davemloft.net,
-        rjw@rjwysocki.net, len.brown@intel.com, pavel@ucw.cz,
-        peterz@infradead.org, eduval@amazon.com, sblbir@amazon.com,
-        xen-devel@lists.xenproject.org, vkuznets@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dwmw@amazon.co.uk, benh@kernel.crashing.org
-Subject: Re: [PATCH v2 01/11] xen/manage: keep track of the on-going suspend
- mode
-In-Reply-To: <20200722180229.GA32316@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-Message-ID: <alpine.DEB.2.21.2007221645430.17562@sstabellini-ThinkPad-T480s>
-References: <cover.1593665947.git.anchalag@amazon.com> <20200702182136.GA3511@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com> <50298859-0d0e-6eb0-029b-30df2a4ecd63@oracle.com> <20200715204943.GB17938@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <0ca3c501-e69a-d2c9-a24c-f83afd4bdb8c@oracle.com> <20200717191009.GA3387@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com> <5464f384-d4b4-73f0-d39e-60ba9800d804@oracle.com> <20200721000348.GA19610@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <408d3ce9-2510-2950-d28d-fdfe8ee41a54@oracle.com> <alpine.DEB.2.21.2007211640500.17562@sstabellini-ThinkPad-T480s> <20200722180229.GA32316@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1733285AbgGVX4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 19:56:45 -0400
+Received: from mail-eopbgr690095.outbound.protection.outlook.com ([40.107.69.95]:42049
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1733112AbgGVX4o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Jul 2020 19:56:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=h/hbObLSdfxvgejmp16Y2kvSrCmT4lV+Zj9yvaGOqf8Af8NWZjZRh8ABS3Q0i7GeRICWtNyinZIBHOKZ8RuQc9JfPSlZ25qkNR4xzmcihC9FbaonCZTFKFYJlkq8uhOkHIz0nxUu06LiMw7QtNu+krWFIVU+jVGpG5EqG/Pe3SPIaS+ldQk4J8jhK11/6zgHWlRZG27xse+imRaFGUEEshtTz6OjNS7yMim4h/JLo0oGQifJZ+UgmxkdIfVM8pA+40gnXfuJJmDfwJmIQc/jVO6iZIecBlrzkWj7a8JVZPuZNlrYI1XP+Ftq0lvCLCpRFsdJ2GBv7DBwyJ65x4xhBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rv6XjiWUkY7dUz9YDu1m5U02Txpb/4JzoiZ43uhaR3E=;
+ b=JPBEWwoE1NcWTuSs4LQVI4GoJW37rnRlS0ZCDwJMLuC/4BeKnxO8Tf7nksgce3pjrVNpxa+ziXWSeqBN/Oz8BOfVN2s+3oLsov5H5WhIL82mkE1G6WHvQKm7/HNTqlFsIBu6zow9FG2j6pP/JlSHUKS+pXrddgQ1Z3KyN2ZtOdxEu/50MYEH7ByzuUndXS4rW1Iz+gUKiNlFnmraOLYI6y9d4jbXkfC46Ht3bUQ3N+jtpI1sLxPdq3DkF9TZLnlSM3d56w4yCAUp4osBcmJuJboj01nEhjCWKAIBhFSUVgKPjj4v6j/O3Fya3tWYXM9moNSB7bvy+Tk+VA7114a25A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rv6XjiWUkY7dUz9YDu1m5U02Txpb/4JzoiZ43uhaR3E=;
+ b=PnZThPhWd30bx1BMnuVGuAvrflFhhp2Md7XzAaZzL1kmpCYVxwmYnLs01zPIPjaHOe0CLH0EngkktCBz8/QoRqHDlcPivVKZQJrgZLTU8xP6Nquma+b+pIgRJgptEsmLac9rKiTq99cOOTbSqtWct/JHca3Pb0i37senxYB9uT8=
+Received: from MW2PR2101MB1052.namprd21.prod.outlook.com (2603:10b6:302:a::16)
+ by MWHPR2101MB0731.namprd21.prod.outlook.com (2603:10b6:301:81::37) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.0; Wed, 22 Jul
+ 2020 23:56:41 +0000
+Received: from MW2PR2101MB1052.namprd21.prod.outlook.com
+ ([fe80::fc14:3ca6:8a8:7407]) by MW2PR2101MB1052.namprd21.prod.outlook.com
+ ([fe80::fc14:3ca6:8a8:7407%8]) with mapi id 15.20.3239.005; Wed, 22 Jul 2020
+ 23:56:41 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     Boqun Feng <boqun.feng@gmail.com>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: RE: [RFC 03/11] Drivers: hv: vmbus: Introduce types of GPADL
+Thread-Topic: [RFC 03/11] Drivers: hv: vmbus: Introduce types of GPADL
+Thread-Index: AQHWXwAfq8py9R1cgk6EBitVHLoMRqkUP0WwgAAGfoCAAALYQA==
+Date:   Wed, 22 Jul 2020 23:56:41 +0000
+Message-ID: <MW2PR2101MB10525571DACE6447A8C269B8D7790@MW2PR2101MB1052.namprd21.prod.outlook.com>
+References: <20200721014135.84140-1-boqun.feng@gmail.com>
+ <20200721014135.84140-4-boqun.feng@gmail.com>
+ <MW2PR2101MB1052E3D15D411A5DC62A60F2D7790@MW2PR2101MB1052.namprd21.prod.outlook.com>
+ <20200722234321.GC35358@debian-boqun.qqnc3lrjykvubdpftowmye0fmh.lx.internal.cloudapp.net>
+In-Reply-To: <20200722234321.GC35358@debian-boqun.qqnc3lrjykvubdpftowmye0fmh.lx.internal.cloudapp.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-07-22T23:56:39Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=f7fc97a8-9fc5-470e-b13c-4ecc7021a1e6;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [24.22.167.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0baecf83-fc7a-4b50-5db1-08d82e9ae148
+x-ms-traffictypediagnostic: MWHPR2101MB0731:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR2101MB0731A298183BF5549E3D2041D7790@MWHPR2101MB0731.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xAReN8uuhXI3kbdLMRzVRuQ2oa3cprQXevpKVsoQrw1Al4s2ltOAzdpCoaYGcMBmACvfPlMHTuyU8PIXrvTA8JKF3AcvE712LP3/2nyOVpj6fr/QQpQJm8EJCw+TbMIqLwZ5qMf14l+QCxGRjy9WepZyXgwD03vNtsmDknFRzfKwbsh4HYSkQiw6KafM+FNcpMxxYihfRxlGgJ1jma2cVJesRUShLt8img4lFbPlPFUgL5ay0BPM0g6Z/nnE+TcNk+6xA7YoB6hgm0y402YjxQKKEplu6pMyz4F6yI8PjmlHUmiOKCUZtcUdrCJD4NjC/XDQt372duCBnEh9YkprQw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR2101MB1052.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(366004)(346002)(396003)(376002)(39860400002)(10290500003)(54906003)(71200400001)(7696005)(5660300002)(66446008)(66946007)(83380400001)(7416002)(76116006)(86362001)(478600001)(64756008)(66556008)(66476007)(186003)(26005)(6506007)(8990500004)(82950400001)(82960400001)(4326008)(8936002)(33656002)(316002)(8676002)(52536014)(6916009)(9686003)(55016002)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: Nj9QTs01t8dne7QOC5vJHSz94IWf42gh9SGt1KX3v6OthG5M8MRJ+jjlaroCxTkgmuJCTdTXIfPqYm8v9LBVMxLLszDDi/zCM+rJePCQbdZP0xuwr3bNtY4fAIsav8ou08U3QOlplDKI0F7o5+l51rSviEM1CrSdYJAlrHQzCw87P7HQNbGsLIJ06fwEkqoK8es3DiBS8OMBfcvztjPRtcVsSwZ8UhuKd4iogUxmFNvC8cAcSTi57MZy/Tgv4Wfn9DyfVBng0R9HnMhuucJS1A8HXhpyE3aSbcI4KK5fxdpx8LmBZn/a9g655FMGW4eUMLMpv+hL2iJj+bfo4gmpxcze5e3b2w9mkMu5eBaXCrllsCR4nRI/S6KkVQrvC1jSotbJ6dW3cOYORVKmkCjbyTOTpWDiS3X98v8e9r+I5uGN3uCpKVdmpRt9TvLASaB9dGBqxJJSPWDu1dsbeJdR0+HmgmeEkQjBJEGmCgHAHGzDPkGvTKDwRdoNykQGwlf6fZx3JJDNNHicbBmYl7ATxUtlxAPc/T+NX3y9YassSaxd3aG/+t9XrDLUh5Xwz8lW4qz6oYZYl6+LWG9VI29GYnwdKI3mT7fILTES8aeCd8t1S3Igl+vpoqUYxzyMX7ODQt44uBAZ5UH66svL1BSYpw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1520963972-1595461757=:17562"
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW2PR2101MB1052.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0baecf83-fc7a-4b50-5db1-08d82e9ae148
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jul 2020 23:56:41.0493
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6NUSNLOVWEKBPtuna78x2YmMtAfj9OrN7NzCEt1PZ7nGWZav1OHERJrYrJCkRPAUPJTInmi8qKHI1THifJr2qkOUFFF3RLPtulMwZFfXv68=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2101MB0731
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1520963972-1595461757=:17562
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Wed, 22 Jul 2020, Anchal Agarwal wrote:
-> On Tue, Jul 21, 2020 at 05:18:34PM -0700, Stefano Stabellini wrote:
-> > On Tue, 21 Jul 2020, Boris Ostrovsky wrote:
-> > > >>>>>> +static int xen_setup_pm_notifier(void)
-> > > >>>>>> +{
-> > > >>>>>> +     if (!xen_hvm_domain())
-> > > >>>>>> +             return -ENODEV;
-> > > >>>>>>
-> > > >>>>>> I forgot --- what did we decide about non-x86 (i.e. ARM)?
-> > > >>>>> It would be great to support that however, its  out of
-> > > >>>>> scope for this patch set.
-> > > >>>>> I’ll be happy to discuss it separately.
-> > > >>>>
-> > > >>>> I wasn't implying that this *should* work on ARM but rather whether this
-> > > >>>> will break ARM somehow (because xen_hvm_domain() is true there).
-> > > >>>>
-> > > >>>>
-> > > >>> Ok makes sense. TBH, I haven't tested this part of code on ARM and the series
-> > > >>> was only support x86 guests hibernation.
-> > > >>> Moreover, this notifier is there to distinguish between 2 PM
-> > > >>> events PM SUSPEND and PM hibernation. Now since we only care about PM
-> > > >>> HIBERNATION I may just remove this code and rely on "SHUTDOWN_SUSPEND" state.
-> > > >>> However, I may have to fix other patches in the series where this check may
-> > > >>> appear and cater it only for x86 right?
-> > > >>
-> > > >>
-> > > >> I don't know what would happen if ARM guest tries to handle hibernation
-> > > >> callbacks. The only ones that you are introducing are in block and net
-> > > >> fronts and that's arch-independent.
-> > > >>
-> > > >>
-> > > >> You do add a bunch of x86-specific code though (syscore ops), would
-> > > >> something similar be needed for ARM?
-> > > >>
-> > > >>
-> > > > I don't expect this to work out of the box on ARM. To start with something
-> > > > similar will be needed for ARM too.
-> > > > We may still want to keep the driver code as-is.
-> > > >
-> > > > I understand the concern here wrt ARM, however, currently the support is only
-> > > > proposed for x86 guests here and similar work could be carried out for ARM.
-> > > > Also, if regular hibernation works correctly on arm, then all is needed is to
-> > > > fix Xen side of things.
-> > > >
-> > > > I am not sure what could be done to achieve any assurances on arm side as far as
-> > > > this series is concerned.
-> > 
-> > Just to clarify: new features don't need to work on ARM or cause any
-> > addition efforts to you to make them work on ARM. The patch series only
-> > needs not to break existing code paths (on ARM and any other platforms).
-> > It should also not make it overly difficult to implement the ARM side of
-> > things (if there is one) at some point in the future.
-> > 
-> > FYI drivers/xen/manage.c is compiled and working on ARM today, however
-> > Xen suspend/resume is not supported. I don't know for sure if
-> > guest-initiated hibernation works because I have not tested it.
-> > 
-> > 
-> > 
-> > > If you are not sure what the effects are (or sure that it won't work) on
-> > > ARM then I'd add IS_ENABLED(CONFIG_X86) check, i.e.
+From: Boqun Feng <boqun.feng@gmail.com> Sent: Wednesday, July 22, 2020 4:43=
+ PM
+>=20
+> On Wed, Jul 22, 2020 at 11:25:18PM +0000, Michael Kelley wrote:
+> > From: Boqun Feng <boqun.feng@gmail.com> Sent: Monday, July 20, 2020 6:4=
+1 PM
+> > >
+> > > This patch introduces two types of GPADL: HV_GPADL_{BUFFER, RING}. Th=
+e
+> > > types of GPADL are purely the concept in the guest, IOW the hyperviso=
+r
+> > > treat them as the same.
+> > >
+> > > The reason of introducing the types of GPADL is to support guests who=
+se
+> > > page size is not 4k (the page size of Hyper-V hypervisor). In these
+> > > guests, both the headers and the data parts of the ringbuffers need t=
+o
+> > > be aligned to the PAGE_SIZE, because 1) some of the ringbuffers will =
+be
+> > > mapped into userspace and 2) we use "double mapping" mechanism to
+> > > support fast wrap-around, and "double mapping" relies on ringbuffers
+> > > being page-aligned. However, the Hyper-V hypervisor only uses 4k
+> > > (HV_HYP_PAGE_SIZE) headers. Our solution to this is that we always ma=
+ke
+> > > the headers of ringbuffers take one guest page and when GPADL is
+> > > established between the guest and hypervisor, the only first 4k of
+> > > header is used. To handle this special case, we need the types of GPA=
+DL
+> > > to differ different guest memory usage for GPADL.
+> > >
+> > > Type enum is introduced along with several general interfaces to
+> > > describe the differences between normal buffer GPADL and ringbuffer
+> > > GPADL.
+> > >
+> > > Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> > > ---
+> > >  drivers/hv/channel.c   | 140 +++++++++++++++++++++++++++++++++++----=
+--
+> > >  include/linux/hyperv.h |  44 ++++++++++++-
+> > >  2 files changed, 164 insertions(+), 20 deletions(-)
+> >
+> > [snip]
+> >
 > > >
 > > >
-> > > if (!IS_ENABLED(CONFIG_X86) || !xen_hvm_domain())
-> > >       return -ENODEV;
-> > 
-> > That is a good principle to have and thanks for suggesting it. However,
-> > in this specific case there is nothing in this patch that doesn't work
-> > on ARM. From an ARM perspective I think we should enable it and
-> > &xen_pm_notifier_block should be registered.
-> > 
-> This question is for Boris, I think you we decided to get rid of the notifier
-> in V3 as all we need  to check is SHUTDOWN_SUSPEND state which sounds plausible
-> to me. So this check may go away. It may still be needed for sycore_ops
-> callbacks registration.
-> > Given that all guests are HVM guests on ARM, it should work fine as is.
-> > 
-> > 
-> > I gave a quick look at the rest of the series and everything looks fine
-> > to me from an ARM perspective. I cannot imaging that the new freeze,
-> > thaw, and restore callbacks for net and block are going to cause any
-> > trouble on ARM. The two main x86-specific functions are
-> > xen_syscore_suspend/resume and they look trivial to implement on ARM (in
-> > the sense that they are likely going to look exactly the same.)
-> > 
-> Yes but for now since things are not tested I will put this
-> !IS_ENABLED(CONFIG_X86) on syscore_ops calls registration part just to be safe
-> and not break anything.
-> > 
-> > One question for Anchal: what's going to happen if you trigger a
-> > hibernation, you have the new callbacks, but you are missing
-> > xen_syscore_suspend/resume?
-> > 
-> > Is it any worse than not having the new freeze, thaw and restore
-> > callbacks at all and try to do a hibernation?
-> If callbacks are not there, I don't expect hibernation to work correctly.
-> These callbacks takes care of xen primitives like shared_info_page,
-> grant table, sched clock, runstate time which are important to save the correct
-> state of the guest and bring it back up. Other patches in the series, adds all
-> the logic to these syscore callbacks. Freeze/thaw/restore are just there for at driver
-> level.
+> > > @@ -437,7 +528,17 @@ static int __vmbus_open(struct vmbus_channel *ne=
+wchannel,
+> > >  	open_msg->openid =3D newchannel->offermsg.child_relid;
+> > >  	open_msg->child_relid =3D newchannel->offermsg.child_relid;
+> > >  	open_msg->ringbuffer_gpadlhandle =3D newchannel->ringbuffer_gpadlha=
+ndle;
+> > > -	open_msg->downstream_ringbuffer_pageoffset =3D newchannel-
+> > > >ringbuffer_send_offset;
+> > > +	/*
+> > > +	 * The unit of ->downstream_ringbuffer_pageoffset is HV_HYP_PAGE an=
+d
+> > > +	 * the unit of ->ringbuffer_send_offset is PAGE, so here we first
+> > > +	 * calculate it into bytes and then convert into HV_HYP_PAGE. Also
+> > > +	 * ->ringbuffer_send_offset is the offset in guest, while
+> > > +	 * ->downstream_ringbuffer_pageoffset is the offset in gpadl (i.e. =
+in
+> > > +	 * hypervisor), so a (PAGE_SIZE - HV_HYP_PAGE_SIZE) gap need to be
+> > > +	 * skipped.
+> > > +	 */
+> > > +	open_msg->downstream_ringbuffer_pageoffset =3D
+> > > +		((newchannel->ringbuffer_send_offset << PAGE_SHIFT) - (PAGE_SIZE -
+> > > HV_HYP_PAGE_SIZE)) >> HV_HYP_PAGE_SHIFT;
+> >
+> > I couldn't find that the "downstream_ringbuffer_pageoffset" field
+> > is used anywhere.  Can it just be deleted entirely instead of having
+> > this really messy calculation?
+> >
+>=20
+> This field is part of struct vmbus_channel_open_channel, which means
+> guest-hypervisor communication protocal requires us to set the field,
+> IIUC. So I don't think we can delete it.
 
-I meant the other way around :-)  Let me rephrase the question.
+Indeed, you are right.  I mis-read it as a field in struct vmbus_channel,
+but that's not the case.  Thanks.
 
-Do you think that implementing freeze/thaw/restore at the driver level
-without having xen_syscore_suspend/resume can potentially make things
-worse compared to not having freeze/thaw/restore at the driver level at
-all?
---8323329-1520963972-1595461757=:17562--
+>=20
+> To deal with the messy calculation, I do realize there is a similar
+> calculation in hv_gpadl_hvpfn() too, so in the next version, I will
+> add a new helper to do this "send offset in guest virtual address to
+> send offset in GPADL calculation", and use it here and in
+> hv_gpadl_hvpfn(). Thoughts?
+
+Yes, that helps.
+
+>=20
+> > >  	open_msg->target_vp =3D newchannel->target_vp;
+> > >
+> > >  	if (userdatalen)
+> > > @@ -497,6 +598,7 @@ static int __vmbus_open(struct vmbus_channel *new=
+channel,
+> > >  	return err;
+> > >  }
+> > >
+> > > +
+> >
+> > Spurious add of a blank line?
+> >
+>=20
+> Yeah, I will fix this, thanks!
+>=20
+> Regards,
+> Boqun
+>=20
+> > >  /*
+> > >   * vmbus_connect_ring - Open the channel but reuse ring buffer
+> > >   */
+> > > diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+> > > index 692c89ccf5df..663f0a016237 100644
+> > > --- a/include/linux/hyperv.h
+> > > +++ b/include/linux/hyperv.h
+> > > @@ -29,6 +29,48 @@
+> > >
+> > >  #pragma pack(push, 1)
+> > >
+> > > +/*
+> > > + * Types for GPADL, decides is how GPADL header is created.
+> > > + *
+> > > + * It doesn't make much difference between BUFFER and RING if PAGE_S=
+IZE is the
+> > > + * same as HV_HYP_PAGE_SIZE.
+> > > + *
+> > > + * If PAGE_SIZE is bigger than HV_HYP_PAGE_SIZE, the headers of ring=
+ buffers
+> > > + * will be of PAGE_SIZE, however, only the first HV_HYP_PAGE will be=
+ put
+> > > + * into gpadl, therefore the number for HV_HYP_PAGE and the indexes =
+of each
+> > > + * HV_HYP_PAGE will be different between different types of GPADL, f=
+or example
+> > > + * if PAGE_SIZE is 64K:
+> > > + *
+> > > + * BUFFER:
+> > > + *
+> > > + * gva:    |--       64k      --|--       64k      --| ... |
+> > > + * gpa:    | 4k | 4k | ... | 4k | 4k | 4k | ... | 4k |
+> > > + * index:  0    1    2     15   16   17   18 .. 31   32 ...
+> > > + *         |    |    ...   |    |    |   ...    |   ...
+> > > + *         v    V          V    V    V          V
+> > > + * gpadl:  | 4k | 4k | ... | 4k | 4k | 4k | ... | 4k | ... |
+> > > + * index:  0    1    2 ... 15   16   17   18 .. 31   32 ...
+> > > + *
+> > > + * RING:
+> > > + *
+> > > + *         | header  |           data           | header  |     data=
+      |
+> > > + * gva:    |-- 64k --|--       64k      --| ... |-- 64k --|-- 64k --=
+| ... |
+> > > + * gpa:    | 4k | .. | 4k | 4k | ... | 4k | ... | 4k | .. | 4k | .. =
+| ... |
+> > > + * index:  0    1    16   17   18    31   ...   n   n+1  n+16 ...   =
+      2n
+> > > + *         |         /    /          /          |         /         =
+      /
+> > > + *         |        /    /          /           |        /          =
+     /
+> > > + *         |       /    /   ...    /    ...     |       /      ...  =
+    /
+> > > + *         |      /    /          /             |      /            =
+   /
+> > > + *         |     /    /          /              |     /             =
+  /
+> > > + *         V    V    V          V               V    V              =
+ v
+> > > + * gpadl:  | 4k | 4k |   ...    |    ...        | 4k | 4k |  ...    =
+ |
+> > > + * index:  0    1    2   ...    16   ...       n-15 n-14 n-13  ...  =
+2n-30
+> > > + */
+> > > +enum hv_gpadl_type {
+> > > +	HV_GPADL_BUFFER,
+> > > +	HV_GPADL_RING
+> > > +};
+> > > +
+> > >  /* Single-page buffer */
+> > >  struct hv_page_buffer {
+> > >  	u32 len;
+> > > @@ -111,7 +153,7 @@ struct hv_ring_buffer {
+> > >  	} feature_bits;
+> > >
+> > >  	/* Pad it to PAGE_SIZE so that data starts on page boundary */
+> > > -	u8	reserved2[4028];
+> > > +	u8	reserved2[PAGE_SIZE - 68];
+> > >
+> > >  	/*
+> > >  	 * Ring data starts here + RingDataStartOffset
+> > > --
+> > > 2.27.0
+> >
