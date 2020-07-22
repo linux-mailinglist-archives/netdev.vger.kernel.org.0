@@ -2,99 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB148228E92
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 05:26:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39086228EA0
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 05:29:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731944AbgGVDZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 23:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33754 "EHLO
+        id S1731879AbgGVD3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 23:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731857AbgGVDZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 23:25:56 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432C6C061794;
-        Tue, 21 Jul 2020 20:25:56 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id 1so443210pfn.9;
-        Tue, 21 Jul 2020 20:25:56 -0700 (PDT)
+        with ESMTP id S1731793AbgGVD3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 23:29:36 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01237C061794;
+        Tue, 21 Jul 2020 20:29:35 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id x9so288399plr.2;
+        Tue, 21 Jul 2020 20:29:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=gQbsv3O8chCGDoP1vhf1M08fp1fq+JOY4tf84UgzKIE=;
-        b=ZZLUwzLsvl3w3lFXXYaTfVNXjnoSfxIc6fVXOhPBQkqOT3koZi9LH5uRNaaYcrzuhM
-         ZqyQjJM7sQs19fE/cwgFejjId8TCAiG+4fLkkNvk5N91TmTZwCGxojctQqq062k3VXc5
-         SFdTJmi6xD1qBWzlyXb4my/Z1cH1SXeHyivCxLisDyrXs711CeuNe4ukDBGmPmToclVR
-         ViC/pYuptA9SaP0i7e0Os2IJ5VDqzaOVHwi5azyw6WrQBhmiIwABjjAlQ6Rjao9uY3Tq
-         x4jhjR8V96mSUGhw6hSRcb93LnGMg6ibmJUt7i173rIUomRbNTnsOc4SjdifyQjawErk
-         zk/w==
+        h=from:to:cc:subject:date:message-id;
+        bh=gWIqjRx1ydkKXt2vRC3hk7iQ52o0Y4NnSXWYajSS8to=;
+        b=ByJADRlfWVQggS3lOeBVoTyQX74KfGvQmXfmDxm/h0Ubg18nQ7drdOmUWSySUTRuPa
+         f6OcsPlc9Uqg17Uda6cYs2FQoUxp4b8evipyZzw0iIIX5uZBm+w6GFsiSx/GkaCaryU1
+         M81VLb2HHCPdp1WHq2NyMloJZztst7Fz4PCxBupmh9gBQhrpTUkRMUE/K9IAqqqfWpMN
+         6F6/XDoLZP8/R5OmnSfvXhfB0FigsnEgQsD1HCRQpABlXsO7VmaXTP/WncN+nDU7LQUA
+         7HuiYHUIhWVJDde0Ox0fHoiaxICXYKvsyJMjhiJ4D5tKSbCwvfP2tRXjMJ+e5Ve7EdBN
+         403A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=gQbsv3O8chCGDoP1vhf1M08fp1fq+JOY4tf84UgzKIE=;
-        b=YqXdvI+JCJxSZjGV5qOfO/oQD2F1lAN4XP5BSyqy2TvBRx4yURWCxb3AJSDhhmido7
-         vo5WYhpTQMsAbXMJwGDFbaOszBNOpVa2fZuvqzFF5KFtpCfxhBLElJkb0BYBGLazvrW/
-         0Di8QlPA81OrbUCPCh8TBYvM2AvFrKEZTLPHhY61XNBAM1kJXP3ZFVgP5C64I7uuPWmP
-         t4rLbH8bUFjzZEy1LJI2Tv8UAePolp++HCFJgRNp0Sj2YkcA2q+eVht7f/uZwCPWWBJC
-         pyrPsACGFSv/MZdhyaj3tn9HdNWfVqsdgQmqcP3pSvKOX8XuM0fuFu7/8IdVdo1rx+Ke
-         sg6A==
-X-Gm-Message-State: AOAM533tjzg76GZalC9IXj7xpO7i7OD0S/eMt7juM68zHGpC4tmfrz04
-        nlLA44nDOTvITGTTIt2eNOM=
-X-Google-Smtp-Source: ABdhPJyQ91A1Gpx6Hy/EXbqAdrl6AwIyIhgcRcCVnJVRU+ZA1Fw/WWIA9Feo0wnMV/dhGH0I66EC7w==
-X-Received: by 2002:a62:195:: with SMTP id 143mr26238206pfb.226.1595388355837;
-        Tue, 21 Jul 2020 20:25:55 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id j16sm19271224pgb.33.2020.07.21.20.25.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 20:25:55 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 20:25:53 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org, sorganov@gmail.com,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next 3/3] docs: networking: timestamping: add a set
- of frequently asked questions
-Message-ID: <20200722032553.GB12524@hoboy>
-References: <20200717161027.1408240-1-olteanv@gmail.com>
- <20200717161027.1408240-4-olteanv@gmail.com>
- <e6b6f240-c2b2-b57c-7334-4762f034aae3@intel.com>
- <20200718113519.htopj6tgfvimaywn@skbuf>
- <887fcc0d-4f3d-3cb8-bdea-8144b62c5d85@intel.com>
- <20200720210518.5uddqqbjuci5wxki@skbuf>
- <0fb4754b-6545-f8dc-484f-56aee25796f6@intel.com>
- <20200720221314.xkdbw25nsjsyvgbv@skbuf>
- <20200721002150.GB21585@hoboy>
- <20200721195127.nxuxg6ef2h6cs3wj@skbuf>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200721195127.nxuxg6ef2h6cs3wj@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=gWIqjRx1ydkKXt2vRC3hk7iQ52o0Y4NnSXWYajSS8to=;
+        b=LmmfHR91cSkvzvQzWgZebw8INT41FuDgJNez7G1hZ28+Nck9J+tnj355xIiDiO7xKr
+         1FM5MEIbRAp/DzC36cN3gWUk7IDwtkQErC4S9d+jINwo2JMoo7cgB+afqtUtHKpPvgaN
+         rc4+StUF+WiF3evbbL7xeMZlV0Ur/fAHRuyxz2XUxGThd9ZPYXbLzBvckvr87ygK8EPx
+         uGnWZyjFywxiH5ObGuyg+3z3aFwLssdey4f2ttNP2mgUbsl7oQK2fg24+1O+tuQfnzL9
+         93HemxVUo9vhavsGSxflS0nUU4oSEiLIngAli6UUnAJXMEKt3GV2zH6vvXLMq0XcBKiM
+         EQ9g==
+X-Gm-Message-State: AOAM530lypLYRJ5IJCbzP+0XGhA8wH9WuNokP2sEflnXwKKHtZBPbpJz
+        BhquoQsb50Loh6MGgCkb/Eg=
+X-Google-Smtp-Source: ABdhPJxLfD6w3I/cmImYbXJVfXTDGSLeW7pWnrSuYelMGhE4+P882psWJg0+EGMZBuOBZfqY/77How==
+X-Received: by 2002:a17:90a:e50c:: with SMTP id t12mr7836408pjy.209.1595388575335;
+        Tue, 21 Jul 2020 20:29:35 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([163.114.132.7])
+        by smtp.gmail.com with ESMTPSA id ga7sm4526386pjb.50.2020.07.21.20.29.33
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 Jul 2020 20:29:34 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: pull-request: bpf-next 2020-07-21
+Date:   Tue, 21 Jul 2020 20:29:32 -0700
+Message-Id: <20200722032932.62060-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 21, 2020 at 10:51:27PM +0300, Vladimir Oltean wrote:
-> So I think the position of "just don't have software timestamping code
-> in DSA and you'll be fine" won't be getting us anywhere. Either you can
-> or you can't, and there isn't anything absurd about it, so sooner or
-> later somebody will want to do it. The rules surrounding it, however,
-> are far from being ready, or clear.
-> 
-> Am I missing something?
+Hi David,
 
-I'm just trying to make things easy for you, as the author of DSA
-drivers.  There is no need to set skb flags that have no purpose
-within the stack.
+The following pull-request contains BPF updates for your *net-next* tree.
 
-Nobody is demanding software time stamps from any DSA devices yet, and
-so I don't see the point in solving a problem that doesn't exist.
+We've added 46 non-merge commits during the last 6 day(s) which contain
+a total of 68 files changed, 4929 insertions(+), 526 deletions(-).
 
-I'm sorry if the "rules" are not clear, but if you look around the
-kernel internals, you will be hard pressed to find perfectly
-documented rules anywhere!
+The main changes are:
 
-Thanks,
-Richard
+1) Run BPF program on socket lookup, from Jakub.
+
+2) Introduce cpumap, from Lorenzo.
+
+3) s390 JIT fixes, from Ilya.
+
+4) teach riscv JIT to emit compressed insns, from Luke.
+
+5) use build time computed BTF ids in bpf iter, from Yonghong.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Andrii Nakryiko, Ilya Leoshkevich, Jakub Sitnicki, Jesper Dangaard 
+Brouer, Jiri Olsa, Quentin Monnet, Randy Dunlap, Seth Forshee, Stephen 
+Rothwell
+
+----------------------------------------------------------------
+
+The following changes since commit 9b74ebb2b0f259474da65fa0178c657e5fa5c640:
+
+  cpumap: Use non-locked version __ptr_ring_consume_batched (2020-07-16 17:00:31 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to 9165e1d70fb34ce438e78aad90408cfa86e4c2d0:
+
+  bpftool: Use only nftw for file tree parsing (2020-07-21 23:42:56 +0200)
+
+----------------------------------------------------------------
+Alexei Starovoitov (3):
+      Merge branch 'bpf-socket-lookup'
+      Merge branch 'compressed-JITed-insn'
+      Merge branch 'bpf_iter-BTF_ID-at-build-time'
+
+David Ahern (1):
+      net: Refactor xdp_convert_buff_to_frame
+
+Ian Rogers (1):
+      libbpf bpf_helpers: Use __builtin_offsetof for offsetof
+
+Ilya Leoshkevich (7):
+      selftests: bpf: test_kmod.sh: Fix running out of srctree
+      s390/bpf: Fix sign extension in branch_ku
+      s390/bpf: Use brcl for jumping to exit_ip if necessary
+      s390/bpf: Tolerate not converging code shrinking
+      s390/bpf: Use bpf_skip() in bpf_jit_prologue()
+      selftests/bpf: Fix test_lwt_seg6local.sh hangs
+      samples/bpf, selftests/bpf: Use bpf_probe_read_kernel
+
+Jakub Sitnicki (16):
+      bpf, netns: Handle multiple link attachments
+      bpf: Introduce SK_LOOKUP program type with a dedicated attach point
+      inet: Extract helper for selecting socket from reuseport group
+      inet: Run SK_LOOKUP BPF program on socket lookup
+      inet6: Extract helper for selecting socket from reuseport group
+      inet6: Run SK_LOOKUP BPF program on socket lookup
+      udp: Extract helper for selecting socket from reuseport group
+      udp: Run SK_LOOKUP BPF program on socket lookup
+      udp6: Extract helper for selecting socket from reuseport group
+      udp6: Run SK_LOOKUP BPF program on socket lookup
+      bpf: Sync linux/bpf.h to tools/
+      libbpf: Add support for SK_LOOKUP program type
+      tools/bpftool: Add name mappings for SK_LOOKUP prog and attach type
+      selftests/bpf: Add verifier tests for bpf_sk_lookup context access
+      selftests/bpf: Tests for BPF_SK_LOOKUP attach point
+      bpf, netns: Fix build without CONFIG_INET
+
+Lorenzo Bianconi (8):
+      samples/bpf: xdp_redirect_cpu_user: Do not update bpf maps in option loop
+      cpumap: Formalize map value as a named struct
+      bpf: cpumap: Add the possibility to attach an eBPF program to cpumap
+      bpf: cpumap: Implement XDP_REDIRECT for eBPF programs attached to map entries
+      libbpf: Add SEC name for xdp programs attached to CPUMAP
+      samples/bpf: xdp_redirect_cpu: Load a eBPF program on cpumap
+      selftest: Add tests for XDP programs in CPUMAP entries
+      bpf: cpumap: Fix possible rcpu kthread hung
+
+Luke Nelson (3):
+      bpf, riscv: Modify JIT ctx to support compressed instructions
+      bpf, riscv: Add encodings for compressed instructions
+      bpf, riscv: Use compressed instructions in the rv64 JIT
+
+Randy Dunlap (1):
+      bpf: Drop duplicated words in uapi helper comments
+
+Seth Forshee (1):
+      bpf: revert "test_bpf: Flag tests that cannot be jited on s390"
+
+Stanislav Fomichev (1):
+      selftests/bpf: Fix possible hang in sockopt_inherit
+
+Tony Ambardar (1):
+      bpftool: Use only nftw for file tree parsing
+
+Yonghong Song (5):
+      bpf: Compute bpf_skc_to_*() helper socket btf ids at build time
+      tools/bpf: Sync btf_ids.h to tools
+      bpf: Add BTF_ID_LIST_GLOBAL in btf_ids.h
+      bpf: Make btf_sock_ids global
+      bpf: net: Use precomputed btf_id for bpf iterators
+
+YueHaibing (1):
+      tools/bpftool: Fix error handing in do_skeleton()
+
+ arch/riscv/net/bpf_jit.h                           |  483 +++++++-
+ arch/riscv/net/bpf_jit_comp32.c                    |   14 +-
+ arch/riscv/net/bpf_jit_comp64.c                    |  293 ++---
+ arch/riscv/net/bpf_jit_core.c                      |    6 +-
+ arch/s390/net/bpf_jit_comp.c                       |   63 +-
+ include/linux/bpf-netns.h                          |    3 +
+ include/linux/bpf.h                                |   15 +-
+ include/linux/bpf_types.h                          |    2 +
+ include/linux/btf_ids.h                            |   40 +-
+ include/linux/filter.h                             |  147 +++
+ include/net/xdp.h                                  |   41 +-
+ include/trace/events/xdp.h                         |   16 +-
+ include/uapi/linux/bpf.h                           |   97 +-
+ kernel/bpf/btf.c                                   |    6 +-
+ kernel/bpf/core.c                                  |   55 +
+ kernel/bpf/cpumap.c                                |  167 ++-
+ kernel/bpf/map_iter.c                              |    7 +-
+ kernel/bpf/net_namespace.c                         |  131 +-
+ kernel/bpf/syscall.c                               |    9 +
+ kernel/bpf/task_iter.c                             |   12 +-
+ kernel/bpf/verifier.c                              |   13 +-
+ lib/test_bpf.c                                     |   20 -
+ net/core/dev.c                                     |    9 +
+ net/core/filter.c                                  |  228 +++-
+ net/ipv4/inet_hashtables.c                         |   60 +-
+ net/ipv4/tcp_ipv4.c                                |    4 +-
+ net/ipv4/udp.c                                     |   97 +-
+ net/ipv6/inet6_hashtables.c                        |   66 +-
+ net/ipv6/route.c                                   |    7 +-
+ net/ipv6/udp.c                                     |   97 +-
+ net/netlink/af_netlink.c                           |    7 +-
+ samples/bpf/offwaketime_kern.c                     |    7 +-
+ samples/bpf/test_overhead_kprobe_kern.c            |   12 +-
+ samples/bpf/tracex1_kern.c                         |    9 +-
+ samples/bpf/tracex5_kern.c                         |    4 +-
+ samples/bpf/xdp_redirect_cpu_kern.c                |   25 +-
+ samples/bpf/xdp_redirect_cpu_user.c                |  209 +++-
+ scripts/bpf_helpers_doc.py                         |    9 +-
+ tools/bpf/bpftool/Documentation/bpftool-prog.rst   |    2 +-
+ tools/bpf/bpftool/bash-completion/bpftool          |    2 +-
+ tools/bpf/bpftool/common.c                         |  138 ++-
+ tools/bpf/bpftool/gen.c                            |    5 +-
+ tools/bpf/bpftool/main.h                           |    4 +-
+ tools/bpf/bpftool/prog.c                           |    3 +-
+ tools/bpf/bpftool/skeleton/pid_iter.bpf.c          |    3 +-
+ tools/include/linux/btf_ids.h                      |   51 +-
+ tools/include/uapi/linux/bpf.h                     |   97 +-
+ tools/lib/bpf/bpf_helpers.h                        |    2 +-
+ tools/lib/bpf/libbpf.c                             |    5 +
+ tools/lib/bpf/libbpf.h                             |    2 +
+ tools/lib/bpf/libbpf.map                           |    2 +
+ tools/lib/bpf/libbpf_probes.c                      |    3 +
+ tools/testing/selftests/bpf/network_helpers.c      |   58 +-
+ tools/testing/selftests/bpf/network_helpers.h      |    2 +
+ .../selftests/bpf/prog_tests/resolve_btfids.c      |   34 +-
+ tools/testing/selftests/bpf/prog_tests/sk_lookup.c | 1282 ++++++++++++++++++++
+ .../selftests/bpf/prog_tests/sockopt_inherit.c     |    3 +-
+ .../selftests/bpf/prog_tests/xdp_cpumap_attach.c   |   70 ++
+ .../testing/selftests/bpf/progs/bpf_iter_netlink.c |    6 +-
+ tools/testing/selftests/bpf/progs/bpf_iter_tcp4.c  |    2 +-
+ tools/testing/selftests/bpf/progs/bpf_iter_tcp6.c  |    2 +-
+ tools/testing/selftests/bpf/progs/bpf_iter_udp4.c  |    2 +-
+ tools/testing/selftests/bpf/progs/bpf_iter_udp6.c  |    2 +-
+ tools/testing/selftests/bpf/progs/test_sk_lookup.c |  641 ++++++++++
+ .../bpf/progs/test_xdp_with_cpumap_helpers.c       |   36 +
+ tools/testing/selftests/bpf/test_kmod.sh           |   12 +-
+ tools/testing/selftests/bpf/test_lwt_seg6local.sh  |    2 +-
+ .../testing/selftests/bpf/verifier/ctx_sk_lookup.c |  492 ++++++++
+ 68 files changed, 4929 insertions(+), 526 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/sk_lookup.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sk_lookup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
+ create mode 100644 tools/testing/selftests/bpf/verifier/ctx_sk_lookup.c
