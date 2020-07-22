@@ -2,70 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4480229B15
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:14:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6CA0229B17
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732635AbgGVPM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 11:12:29 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:41683 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726717AbgGVPM2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:12:28 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jyGPt-0001rA-Ha; Wed, 22 Jul 2020 15:12:21 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] lan743x: remove redundant initialization of variable current_head_index
-Date:   Wed, 22 Jul 2020 16:12:21 +0100
-Message-Id: <20200722151221.957972-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.27.0
+        id S1732674AbgGVPMt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Jul 2020 11:12:49 -0400
+Received: from [177.136.47.226] ([177.136.47.226]:37817 "EHLO
+        srv01.masternettelecom.net.br" rhost-flags-FAIL-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726717AbgGVPMt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:12:49 -0400
+Received: from [199.83.57.34] (helo=[38.95.111.232])
+        by srv01.masternettelecom.net.br with esmtpa (Exim 4.92.2)
+        (envelope-from <info@kollegium.ru>)
+        id 1jyGPB-0005Ic-00
+        for netdev@vger.kernel.org; Wed, 22 Jul 2020 12:11:37 -0300
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: FROM AJEEB ZAKARIA
+To:     netdev@vger.kernel.org
+From:   "FedEx Express" <info@kollegium.ru>
+Date:   Wed, 22 Jul 2020 08:12:47 -0700
+Reply-To: ajeebzakariaa@gmail.com
+Message-Id: <E1jyGPB-0005Ic-00@srv01.masternettelecom.net.br>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
-
-The variable current_head_index is being initialized with a value that
-is never read and it is being updated later with a new value.  Replace
-the initialization of -1 with the latter assignment.
-
-Addresses-Coverity: ("Unused value")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/microchip/lan743x_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index f6479384dc4f..de93cc6ebc1a 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -2046,14 +2046,13 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
- {
- 	struct skb_shared_hwtstamps *hwtstamps = NULL;
- 	int result = RX_PROCESS_RESULT_NOTHING_TO_DO;
-+	int current_head_index = *rx->head_cpu_ptr;
- 	struct lan743x_rx_buffer_info *buffer_info;
- 	struct lan743x_rx_descriptor *descriptor;
--	int current_head_index = -1;
- 	int extension_index = -1;
- 	int first_index = -1;
- 	int last_index = -1;
- 
--	current_head_index = *rx->head_cpu_ptr;
- 	if (current_head_index < 0 || current_head_index >= rx->ring_size)
- 		goto done;
- 
 -- 
-2.27.0
+-- 
+Greeting to you,
+
+I know my email might come to you as a surprise couple with the fact
+that we have never met before.
+
+Well, I am Dr. Ajeeb Zakaria, an investment consultant. I wish to inform 
+you that I have a client who has good amount of money place under my 
+management for investment in any good environment that I could recommend. 
+So I will like to partner with you and achieve this
+goal. Upon receipt of your email and your interest to proceed, I shall give you more insight on how we shall proceed towards conclusion.
+
+I look forward to hearing back from you soon.
+
+Best Regards,
+
+Dr. Ajeeb Zakaria
+ajeebzakariaa@gmail.com
+
+
 
