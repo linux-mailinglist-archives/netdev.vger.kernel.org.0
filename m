@@ -2,107 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2387229A5C
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 16:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80A49229A63
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 16:41:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732723AbgGVOku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 10:40:50 -0400
-Received: from www62.your-server.de ([213.133.104.62]:54594 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727825AbgGVOks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 10:40:48 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jyFvH-0000Al-9o; Wed, 22 Jul 2020 16:40:43 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jyFvH-000Rx7-4E; Wed, 22 Jul 2020 16:40:43 +0200
-Subject: Re: [PATCH v2 bpf-next 2/6] bpf: propagate poke descriptors to
- subprograms
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>, ast@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com
-References: <20200721115321.3099-1-maciej.fijalkowski@intel.com>
- <20200721115321.3099-3-maciej.fijalkowski@intel.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <29a3dcfc-9d85-c113-19d2-e33f80ce5430@iogearbox.net>
-Date:   Wed, 22 Jul 2020 16:40:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1732753AbgGVOlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 10:41:10 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49208 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728837AbgGVOlI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Jul 2020 10:41:08 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jyFvd-006LX1-7F; Wed, 22 Jul 2020 16:41:05 +0200
+Date:   Wed, 22 Jul 2020 16:41:05 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, linux@armlinux.org.uk,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, ioana.ciornei@nxp.com,
+        michael@walle.cc, colin.king@canonical.com
+Subject: Re: [PATCH net-next] net: phy: fix check in get_phy_c45_ids
+Message-ID: <20200722144105.GB1339445@lunn.ch>
+References: <20200720172654.1193241-1-olteanv@gmail.com>
+ <20200722115209.7dpr5wlqxvhwju2y@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20200721115321.3099-3-maciej.fijalkowski@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25880/Tue Jul 21 16:34:58 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200722115209.7dpr5wlqxvhwju2y@skbuf>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/21/20 1:53 PM, Maciej Fijalkowski wrote:
-> Previously, there was no need for poke descriptors being present in
-> subprogram's bpf_prog_aux struct since tailcalls were simply not allowed
-> in them. Each subprog is JITed independently so in order to enable
-> JITing such subprograms, simply copy poke descriptors from main program
-> to subprogram's poke tab.
+On Wed, Jul 22, 2020 at 02:52:09PM +0300, Vladimir Oltean wrote:
+> On Mon, Jul 20, 2020 at 08:26:54PM +0300, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > 
+> > After the patch below, the iteration through the available MMDs is
+> > completely short-circuited, and devs_in_pkg remains set to the initial
+> > value of zero.
+> > 
+> > Due to devs_in_pkg being zero, the rest of get_phy_c45_ids() is
+> > short-circuited too: the following loop never reaches below this point
+> > either (it executes "continue" for every device in package, failing to
+> > retrieve PHY ID for any of them):
+> > 
+> > 	/* Now probe Device Identifiers for each device present. */
+> > 	for (i = 1; i < num_ids; i++) {
+> > 		if (!(devs_in_pkg & (1 << i)))
+> > 			continue;
+> > 
+> > So c45_ids->device_ids remains populated with zeroes. This causes an
+> > Aquantia AQR412 PHY (same as any C45 PHY would, in fact) to be probed by
+> > the Generic PHY driver.
+> > 
+> > The issue seems to be a case of submitting partially committed work (and
+> > therefore testing something other than was submitted).
+> > 
+> > The intention of the patch was to delay exiting the loop until one more
+> > condition is reached (the devs_in_pkg read from hardware is either 0, OR
+> > mostly f's). So fix the patch to reflect that.
+> > 
+> > Tested with traffic on a LS1028A-QDS, the PHY is now probed correctly
+> > using the Aquantia driver. The devs_in_pkg bit field is set to
+> > 0xe000009a, and the MMDs that are present have the following IDs:
+> > 
+> > [    5.600772] libphy: get_phy_c45_ids: device_ids[1]=0x3a1b662
+> > [    5.618781] libphy: get_phy_c45_ids: device_ids[3]=0x3a1b662
+> > [    5.630797] libphy: get_phy_c45_ids: device_ids[4]=0x3a1b662
+> > [    5.654535] libphy: get_phy_c45_ids: device_ids[7]=0x3a1b662
+> > [    5.791723] libphy: get_phy_c45_ids: device_ids[29]=0x3a1b662
+> > [    5.804050] libphy: get_phy_c45_ids: device_ids[30]=0x3a1b662
+> > [    5.816375] libphy: get_phy_c45_ids: device_ids[31]=0x0
+> > 
+> > [    7.690237] mscc_felix 0000:00:00.5: PHY [0.5:00] driver [Aquantia AQR412] (irq=POLL)
+> > [    7.704739] mscc_felix 0000:00:00.5: PHY [0.5:01] driver [Aquantia AQR412] (irq=POLL)
+> > [    7.718918] mscc_felix 0000:00:00.5: PHY [0.5:02] driver [Aquantia AQR412] (irq=POLL)
+> > [    7.733044] mscc_felix 0000:00:00.5: PHY [0.5:03] driver [Aquantia AQR412] (irq=POLL)
+> > 
+> > Fixes: bba238ed037c ("net: phy: continue searching for C45 MMDs even if first returned ffff:ffff")
+> > Reported-by: Colin King <colin.king@canonical.com>
+> > Reported-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > ---
 > 
-> Add also subprog's aux struct to the BPF map poke_progs list by calling
-> on it map_poke_track().
+> This patch is repairing some pretty significant breakage. Could we
+> please get some review before there start appearing user reports?
 > 
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> ---
->   kernel/bpf/verifier.c | 20 ++++++++++++++++++++
->   1 file changed, 20 insertions(+)
-> 
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 3c1efc9d08fd..3428edf85220 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -9936,6 +9936,9 @@ static int jit_subprogs(struct bpf_verifier_env *env)
->   		goto out_undo_insn;
->   
->   	for (i = 0; i < env->subprog_cnt; i++) {
-> +		struct bpf_map *map_ptr;
-> +		int j;
-> +
->   		subprog_start = subprog_end;
->   		subprog_end = env->subprog_info[i + 1].start;
->   
-> @@ -9960,6 +9963,23 @@ static int jit_subprogs(struct bpf_verifier_env *env)
->   		func[i]->aux->btf = prog->aux->btf;
->   		func[i]->aux->func_info = prog->aux->func_info;
->   
-> +		for (j = 0; j < prog->aux->size_poke_tab; j++) {
-> +			int ret;
-> +
-> +			ret = bpf_jit_add_poke_descriptor(func[i],
-> +							  &prog->aux->poke_tab[j]);
-> +			if (ret < 0) {
-> +				verbose(env, "adding tail call poke descriptor failed\n");
-> +				goto out_free;
-> +			}
-> +			map_ptr = func[i]->aux->poke_tab[j].tail_call.map;
-> +			ret = map_ptr->ops->map_poke_track(map_ptr, func[i]->aux);
-> +			if (ret < 0) {
-> +				verbose(env, "tracking tail call prog failed\n");
-> +				goto out_free;
-> +			}
+> [ sorry for the breakage ]
 
-Hmm, I don't think this is correct/complete. If some of these have been registered or
-if later on the JIT'ing fails but the subprog is already exposed to the prog array then
-it's /public/ at this point, so a later bpf_jit_free() in out_free will rip them mem
-while doing live patching on prog updates leading to UAF.
+I'm surprised it has not been merged, since the fix seems quite
+obvious.
 
-> +		}
-> +
->   		/* Use bpf_prog_F_tag to indicate functions in stack traces.
->   		 * Long term would need debug info to populate names
->   		 */
-> 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
+    Andrew
