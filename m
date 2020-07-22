@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A1C1229A4D
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 16:41:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECE50229A64
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 16:41:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732676AbgGVOkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 10:40:31 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:37154 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732644AbgGVOk3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 10:40:29 -0400
+        id S1732649AbgGVOk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 10:40:29 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:54746 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728405AbgGVOk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 10:40:28 -0400
 Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06MEeNdk127226;
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06MEeNHD130826;
         Wed, 22 Jul 2020 09:40:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
         s=ti-com-17Q1; t=1595428823;
-        bh=gJrgN3lyZmhT+pdBsxLwYZzltjbBdGF0lJmSM0xl2G4=;
-        h=From:To:Subject:Date;
-        b=mXFZdOvinJ57peKCfDcajxfntNGFZMt0tWxJVBqUBxaO/eCoQA/IXl26Cp1He+ZHs
-         I36a+EmBCtV+CDaSsZ9KPApBmjuhjf13QRiUJrjeJjMXSqz5wI2te6SXwd4HuPDuPT
-         KJq8Q10HpwoSrS7SnhB+xKdL9RvPZu0tM8qCR6nA=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06MEeNbh067180
+        bh=c4ErYz5kaENe550etwxPs+0kPHwuviqEsvqH5AaJ3Gc=;
+        h=From:To:Subject:Date:In-Reply-To:References;
+        b=gwQ7YBxcv6JCBwfo8yZZeUNMsHDAB/nr+fJRQJ3Si2WBSrvBVCz6hLPJyoE2455DZ
+         HqMIUVXwaZ7xHak8vBX3saqMzaZADSufKUrsYd+ZX0HrErl/Q3AP/Vc7e7GM02K2ce
+         JSNrqixW4Hfq4TlW7AagEl/00YcsTDF/o6yzUz9g=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06MEeNC6067198
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
         Wed, 22 Jul 2020 09:40:23 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 22
- Jul 2020 09:40:22 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ Jul 2020 09:40:23 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 22 Jul 2020 09:40:22 -0500
+ Frontend Transport; Wed, 22 Jul 2020 09:40:23 -0500
 Received: from uda0868495.fios-router.home (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06MEeML8043940;
-        Wed, 22 Jul 2020 09:40:22 -0500
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06MEeML9043940;
+        Wed, 22 Jul 2020 09:40:23 -0500
 From:   Murali Karicheri <m-karicheri2@ti.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
         <nsekhar@ti.com>, <grygorii.strashko@ti.com>,
         <vinicius.gomes@intel.com>
-Subject: [net-next v5 PATCH 0/7] Add PRP driver
-Date:   Wed, 22 Jul 2020 10:40:15 -0400
-Message-ID: <20200722144022.15746-1-m-karicheri2@ti.com>
+Subject: [net-next v5 PATCH 1/7] hsr: enhance netlink socket interface to support PRP
+Date:   Wed, 22 Jul 2020 10:40:16 -0400
+Message-ID: <20200722144022.15746-2-m-karicheri2@ti.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200722144022.15746-1-m-karicheri2@ti.com>
+References: <20200722144022.15746-1-m-karicheri2@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
@@ -53,258 +55,423 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Parallel Redundancy Protocol (PRP) is another redundancy protocol
+introduced by IEC 63439 standard. It is similar to HSR in many
+aspects:-
 
-This series is dependent on the following patches sent out to
-netdev list. All (1-3) are already merged to net/master as of
-sending this, but not on the net-next master branch. So need
-to apply them to net-next before applying this series. v3 of
-the iproute2 patches can be merged to work with this series
-as there are no updates since then.
+ - Use a pair of Ethernet interfaces to created the PRP device
+ - Use a 6 byte redundancy protocol part (RCT, Redundancy Check
+   Trailer) similar to HSR Tag.
+ - Has Link Redundancy Entity (LRE) that works with RCT to implement
+   redundancy.
 
-[1] https://marc.info/?l=linux-netdev&m=159526378131542&w=2
-[2] https://marc.info/?l=linux-netdev&m=159499772225350&w=2
-[3] https://marc.info/?l=linux-netdev&m=159499772425352&w=2
+Key difference is that the protocol unit is a trailer instead of a
+prefix as in HSR. That makes it inter-operable with tradition network
+components such as bridges/switches which treat it as pad bytes,
+whereas HSR nodes requires some kind of translators (Called redbox) to
+talk to regular network devices. This features allows regular linux box
+to be converted to a DAN-P box. DAN-P stands for Dual Attached Node - PRP
+similar to DAN-H (Dual Attached Node - HSR).
 
-This series adds support for Parallel Redundancy Protocol (PRP)
-in the Linux HSR driver as defined in IEC-62439-3. PRP Uses a
-Redundancy Control Trailer (RCT) the format of which is
-similar to HSR Tag. This is used for implementing redundancy.
-RCT consists of 6 bytes similar to HSR tag and contain following
-fields:-
+Add a comment at the header/source code to explicitly state that the
+driver files also handles PRP protocol as well.
 
-- 16-bit sequence number (SeqNr);
-- 4-bit LAN identifier (LanId);
-- 12 bit frame size (LSDUsize);
-- 16-bit suffix (PRPsuffix). 
+Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+---
+ include/uapi/linux/hsr_netlink.h |  2 +-
+ include/uapi/linux/if_link.h     | 12 +++++++++-
+ net/hsr/Kconfig                  | 35 +++++++++++++++++++----------
+ net/hsr/hsr_debugfs.c            |  2 +-
+ net/hsr/hsr_device.c             |  7 ++++--
+ net/hsr/hsr_device.h             |  2 ++
+ net/hsr/hsr_forward.c            |  2 ++
+ net/hsr/hsr_forward.h            |  2 ++
+ net/hsr/hsr_framereg.c           |  1 +
+ net/hsr/hsr_framereg.h           |  2 ++
+ net/hsr/hsr_main.c               |  2 ++
+ net/hsr/hsr_main.h               | 11 ++++++++-
+ net/hsr/hsr_netlink.c            | 38 ++++++++++++++++++++++++++------
+ net/hsr/hsr_netlink.h            |  2 ++
+ net/hsr/hsr_slave.c              |  2 ++
+ net/hsr/hsr_slave.h              |  2 ++
+ 16 files changed, 99 insertions(+), 25 deletions(-)
 
-The PRPsuffix identifies PRP frames and distinguishes PRP frames
-from other protocols that also append a trailer to their useful
-data. The LSDUsize field allows the receiver to distinguish PRP
-frames from random, nonredundant frames as an additional check.
-LSDUsize is the size of the Ethernet payload inclusive of the
-RCT. Sequence number along with LanId is used for duplicate
-detection and discard.
-
-PRP node is also known as Dual Attached Node (DAN-P) since it
-is typically attached to two different LAN for redundancy.
-DAN-P duplicates each of L2 frames and send it over the two
-Ethernet links. Each outgoing frame is appended with RCT.
-Unlike HSR, these are added to the end of L2 frame and will be
-treated as pad by bridges and therefore would be work with
-traditional bridges or switches, where as HSR wouldn't as Tag
-is prefixed to the Ethenet frame. At the remote end, these are
-received and the duplicate frame is discarded before the stripped
-frame is send up the networking stack. Like HSR, PRP also sends
-periodic Supervision frames to the network. These frames are
-received and MAC address from the SV frames are populated in a
-database called Node Table. The above functions are grouped into
-a block called Link Redundancy Entity (LRE) in the IEC spec.
-
-As there are many similarities between HSR and PRP protocols,
-this patch re-uses the code from HSR driver to implement PRP
-driver. As per feedback from the RFC series, the implementation
-uses the existing HSR Netlink socket interface to create the
-PRP interface by adding a new proto parameter to the ip link
-command to identify the PRP protocol. iproute2 is enhanced to
-implement this new parameter. The hsr_netlink.c is enhanced
-to handle the new proto parameter. As suggested during the RFC
-review, the driver introduced a proto_ops structure to hold
-protocol specfic functions to handle HSR and PRP specific
-function pointers and use them in the code based on the
-protocol to handle protocol specific part differently in the
-driver.
-
-Please review this and provide me feedback so that I can work to
-incorporate them and spin the next version if needed.
-
-The patch was tested using two TI AM57x IDK boards for PRP which
-are connected back to back over two CPSW Ethernet ports. 
-
-PRP Test setup
----------------
-
---------eth0             eth0 --------
-|AM572x|----------------------|AM572x|
-|      |----------------------|      |
---------eth1             eth1 --------
-
-
-To build, enable CONFIG_HSR=y or m
-make omap2plus_defconfig
-make zImage; make modules; make dtbs 
-Copy the zImage and dtb files to the file system on SD card
-and power on the AM572x boards. 
-This can be tested on any platforms with 2 Ethernet interfaces.
-So will appreciate if you can give it a try and provide your
-Tested-by.
-
-Command to create PRP interface
--------------------------------
-ifconfig eth0 0.0.0.0 down
-ifconfig eth1 0.0.0.0 down
-ifconfig eth0 hw ether 70:FF:76:1C:0E:8C
-ifconfig eth1 hw ether 70:FF:76:1C:0E:8C
-ifconfig eth0 up
-ifconfig eth1 up
-ip link add name prp0 type hsr slave1 eth0 slave2 eth1 supervision 45 proto 1 
-ifconfig prp0 192.168.2.10
-
-ifconfig eth0 0.0.0.0 down
-ifconfig eth1 0.0.0.0 down
-ifconfig eth0 hw ether 70:FF:76:1C:0E:8D
-ifconfig eth1 hw ether 70:FF:76:1C:0E:8D
-ifconfig eth0 up
-ifconfig eth1 up
-ip link add name prp0 type hsr slave1 eth0 slave2 eth1 supervision 45 proto 1
-ifconfig prp0 192.168.2.20
-
-command to show node table
-----------------------------
-Ping the peer board after the prp0 interface is up.
-
-The remote node (DAN-P) will be shown in the node table as below.
-
-root@am57xx-evm:~# cat /sys/kernel/debug/hsr/prp0/node_table                                                
-Node Table entries for (PRP) device                                                                         
-MAC-Address-A,    MAC-Address-B,    time_in[A], time_in[B], Address-B port, SAN-A, SAN-B, DAN-P 
-70:ff:76:1c:0e:8c 00:00:00:00:00:00   ffffe83f,   ffffe83f,              0,     0,     0,     1
-
-Try to capture the raw PRP frames at the eth0 interface as
-tcpdump -i eth0 -xxx
-
-Sample Supervision frames and ARP frames shown below.
-
-==================================================================================
-Successive Supervision frames captured with tcpdump (with RCT at the end):
-
-03:43:29.500999 70:ff:76:1c:0e:8d (oui Unknown) > 01:15:4e:00:01:2d (oui Unknown), ethertype Unknown (0x88f 
-        0x0000:  0115 4e00 012d 70ff 761c 0e8d 88fb 0001                                                    
-        0x0010:  7e0a 1406 70ff 761c 0e8d 0000 0000 0000                                                    
-        0x0020:  0000 0000 0000 0000 0000 0000 0000 0000                                                    
-        0x0030:  0000 0000 0000 0000 0000 0000 fc2b a034                                                    
-        0x0040:  88fb         
-                   
-03:43:31.581025 70:ff:76:1c:0e:8d (oui Unknown) > 01:15:4e:00:01:2d (oui Unknown), ethertype Unknown (0x88f 
-        0x0000:  0115 4e00 012d 70ff 761c 0e8d 88fb 0001                                                    
-        0x0010:  7e0b 1406 70ff 761c 0e8d 0000 0000 0000                                                    
-        0x0020:  0000 0000 0000 0000 0000 0000 0000 0000                                                    
-        0x0030:  0000 0000 0000 0000 0000 0000 fc2c a034                                                    
-        0x0040:  88fb                                                                                       
-
-ICMP Echo request frame with RCT
-03:43:33.805354 IP 192.168.2.20 > 192.168.2.10: ICMP echo request, id 63748, seq 1, length 64               
-        0x0000:  70ff 761c 0e8c 70ff 761c 0e8d 0800 4500                                                    
-        0x0010:  0054 26a4 4000 4001 8e96 c0a8 0214 c0a8                                                    
-        0x0020:  020a 0800 c28e f904 0001 202e 1c3d 0000                                                    
-        0x0030:  0000 0000 0000 0000 0000 0000 0000 0000                                                    
-        0x0040:  0000 0000 0000 0000 0000 0000 0000 0000                                                    
-        0x0050:  0000 0000 0000 0000 0000 0000 0000 0000                                                    
-        0x0060:  0000 fc31 a05a 88fb                                      
-==================================================================================
-The iperf3 traffic test logs can be accessed at the links below.
-DUT-1: https://pastebin.ubuntu.com/p/8SkQzWJMn8/
-DUT-2: https://pastebin.ubuntu.com/p/j2BZvvs7p4/
-
-Other tests done.
- - Connect a SAN (eth0 and eth1 without prp interface) and
-   do ping test from eth0 (192.168.2.40) to prp0 (192.168.2.10)
-   verify the SAN node shows at the correct link A and B as shown
-   in the node table dump
- - Regress HSR interface using 3 nodes connected in a ring topology.
-   create hsr link version 0. Do iperf3 test between all nodes
-   create hsr link version 1. Do iperf3 test between all nodes.
-
-         --------eth0             eth1 --------eth0      eth1-------|
-         |AM572x|----------------------|AM572x|--------------|AM572x|
-         |      |                      |      |        ------|      |
-         --------eth1---|               -------        | eth0 ------- 
-                        |-------------------------------
-
-   command used for HSR interface
-
-   HSR V0
-
-   ifconfig eth0 0.0.0.0 down
-   ifconfig eth1 0.0.0.0 down
-   ifconfig eth0 hw ether 70:FF:76:1C:0E:8C
-   ifconfig eth1 hw ether 70:FF:76:1C:0E:8C
-   ifconfig eth0 up
-   ifconfig eth1 up
-   ip link add name hsr0 type hsr slave1 eth0 slave2 eth1 supervision 45 version 0
-   ifconfig hsr0 192.168.2.10
-
-   HSR V1
-
-   ifconfig eth0 0.0.0.0 down
-   ifconfig eth1 0.0.0.0 down
-   ifconfig eth0 hw ether 70:FF:76:1C:0E:8C
-   ifconfig eth1 hw ether 70:FF:76:1C:0E:8C
-   ifconfig eth0 up
-   ifconfig eth1 up
-   ip link add name hsr0 type hsr slave1 eth0 slave2 eth1 supervision 45 version 1
-   ifconfig hsr0 192.168.2.10
-
-   Logs at
-   DUT-1 : https://pastebin.ubuntu.com/p/6PSJbZwQ6y/
-   DUT-2 : https://pastebin.ubuntu.com/p/T8TqJsPRHc/
-   DUT-3 : https://pastebin.ubuntu.com/p/VNzpv6HzKj/
- - Build tests :-
-   Build with CONFIG_HSR=m
-   allmodconfig build
-   build with CONFIG_HSR=y and rebuild with sparse checker
-   make C=1 zImage; make modules
-
-Version history:
-  v5 : Fixed comments about Kconfig changes on Patch 1/7 against v4
-       Rebased to netnext/master branch.
-
-  v4 : fixed following vs v3
-       reverse xmas tree for local variables
-       check for return type in call to skb_put_padto()
-
-  v3 : Separated bug fixes from this series and send them for immediate merge
-       But for that this is same as v2.
+diff --git a/include/uapi/linux/hsr_netlink.h b/include/uapi/linux/hsr_netlink.h
+index c218ef9c35dd..d540ea9bbef4 100644
+--- a/include/uapi/linux/hsr_netlink.h
++++ b/include/uapi/linux/hsr_netlink.h
+@@ -17,7 +17,7 @@
+ /* Generic Netlink HSR family definition
+  */
  
-  v2 : updated comments on RFC. Following are the main changes:-
-       - Removed the hsr_prp prefix
-       - Added PRP information in header files to indicate 
-         the support for PRP explicitely
-       - Re-use netlink socket interface with an added 
-         parameter proto for identifying PRP.
-       - Use function pointers using a proto_ops struct
-         to do things differently for PRP vs HSR.
-
-   RFC: initial version posted and discussed at 
-       https://www.spinics.net/lists/netdev/msg656229.html
-
-Murali Karicheri (7):
-  hsr: enhance netlink socket interface to support PRP
-  net: hsr: introduce common code for skb initialization
-  net: hsr: introduce protocol specific function pointers
-  net: prp: add supervision frame generation utility function
-  net: hsr: define and use proto_ops ptrs to handle hsr specific frames
-  net: prp: add packet handling support
-  net: prp: enhance debugfs to display PRP info
-
- include/uapi/linux/hsr_netlink.h |   2 +-
- include/uapi/linux/if_link.h     |  12 +-
- net/hsr/Kconfig                  |  35 ++--
- net/hsr/hsr_debugfs.c            |  33 +++-
- net/hsr/hsr_device.c             | 181 ++++++++++++++----
- net/hsr/hsr_device.h             |   2 +
- net/hsr/hsr_forward.c            | 313 ++++++++++++++++++++++++-------
- net/hsr/hsr_forward.h            |  16 +-
- net/hsr/hsr_framereg.c           |  95 ++++++++--
- net/hsr/hsr_framereg.h           |  31 ++-
- net/hsr/hsr_main.c               |   2 +
- net/hsr/hsr_main.h               | 120 +++++++++++-
- net/hsr/hsr_netlink.c            |  38 +++-
- net/hsr/hsr_netlink.h            |   2 +
- net/hsr/hsr_slave.c              |  26 ++-
- net/hsr/hsr_slave.h              |   4 +
- 16 files changed, 743 insertions(+), 169 deletions(-)
-
+-/* attributes */
++/* attributes for HSR or PRP node */
+ enum {
+ 	HSR_A_UNSPEC,
+ 	HSR_A_NODE_ADDR,
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index af8f31987526..63af64646358 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -907,7 +907,14 @@ enum {
+ #define IFLA_IPOIB_MAX (__IFLA_IPOIB_MAX - 1)
+ 
+ 
+-/* HSR section */
++/* HSR/PRP section, both uses same interface */
++
++/* Different redundancy protocols for hsr device */
++enum {
++	HSR_PROTOCOL_HSR,
++	HSR_PROTOCOL_PRP,
++	HSR_PROTOCOL_MAX,
++};
+ 
+ enum {
+ 	IFLA_HSR_UNSPEC,
+@@ -917,6 +924,9 @@ enum {
+ 	IFLA_HSR_SUPERVISION_ADDR,	/* Supervision frame multicast addr */
+ 	IFLA_HSR_SEQ_NR,
+ 	IFLA_HSR_VERSION,		/* HSR version */
++	IFLA_HSR_PROTOCOL,		/* Indicate different protocol than
++					 * HSR. For example PRP.
++					 */
+ 	__IFLA_HSR_MAX,
+ };
+ 
+diff --git a/net/hsr/Kconfig b/net/hsr/Kconfig
+index 8095b034e76e..1b048c17b6c8 100644
+--- a/net/hsr/Kconfig
++++ b/net/hsr/Kconfig
+@@ -4,24 +4,35 @@
+ #
+ 
+ config HSR
+-	tristate "High-availability Seamless Redundancy (HSR)"
++	tristate "High-availability Seamless Redundancy (HSR & PRP)"
+ 	help
++	  This enables IEC 62439 defined High-availability Seamless
++	  Redundancy (HSR) and Parallel Redundancy Protocol (PRP).
++
+ 	  If you say Y here, then your Linux box will be able to act as a
+-	  DANH ("Doubly attached node implementing HSR"). For this to work,
+-	  your Linux box needs (at least) two physical Ethernet interfaces,
+-	  and it must be connected as a node in a ring network together with
+-	  other HSR capable nodes.
++	  DANH ("Doubly attached node implementing HSR") or DANP ("Doubly
++	  attached node implementing PRP"). For this to work, your Linux box
++	  needs (at least) two physical Ethernet interfaces.
++
++	  For DANH, it must be connected as a node in a ring network together
++	  with other HSR capable nodes. All Ethernet frames sent over the HSR
++	  device will be sent in both directions on the ring (over both slave
++	  ports), giving a redundant, instant fail-over network. Each HSR node
++	  in the ring acts like a bridge for HSR frames, but filters frames
++	  that have been forwarded earlier.
+ 
+-	  All Ethernet frames sent over the hsr device will be sent in both
+-	  directions on the ring (over both slave ports), giving a redundant,
+-	  instant fail-over network. Each HSR node in the ring acts like a
+-	  bridge for HSR frames, but filters frames that have been forwarded
+-	  earlier.
++	  For DANP, it must be connected as a node connecting to two
++	  separate networks over the two slave interfaces. Like HSR, Ethernet
++	  frames sent over the PRP device will be sent to both networks giving
++	  a redundant, instant fail-over network. Unlike HSR, PRP networks
++	  can have Singly Attached Nodes (SAN) such as PC, printer, bridges
++	  etc and will be able to communicate with DANP nodes.
+ 
+ 	  This code is a "best effort" to comply with the HSR standard as
+ 	  described in IEC 62439-3:2010 (HSRv0) and IEC 62439-3:2012 (HSRv1),
+-	  but no compliancy tests have been made. Use iproute2 to select
+-	  the version you desire.
++	  and PRP standard described in IEC 62439-4:2012 (PRP), but no
++	  compliancy tests have been made. Use iproute2 to select the protocol
++	  you would like to use.
+ 
+ 	  You need to perform any and all necessary tests yourself before
+ 	  relying on this code in a safety critical system!
+diff --git a/net/hsr/hsr_debugfs.c b/net/hsr/hsr_debugfs.c
+index 9787ef11ca71..c1932c0a15be 100644
+--- a/net/hsr/hsr_debugfs.c
++++ b/net/hsr/hsr_debugfs.c
+@@ -1,5 +1,5 @@
+ /*
+- * hsr_debugfs code
++ * debugfs code for HSR & PRP
+  * Copyright (C) 2019 Texas Instruments Incorporated
+  *
+  * Author(s):
+diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+index 8a927b647829..40ac45123a62 100644
+--- a/net/hsr/hsr_device.c
++++ b/net/hsr/hsr_device.c
+@@ -3,9 +3,8 @@
+  *
+  * Author(s):
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
+- *
+  * This file contains device methods for creating, using and destroying
+- * virtual HSR devices.
++ * virtual HSR or PRP devices.
+  */
+ 
+ #include <linux/netdevice.h>
+@@ -427,6 +426,10 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
+ 
+ 	ether_addr_copy(hsr_dev->dev_addr, slave[0]->dev_addr);
+ 
++	/* currently PRP is not supported */
++	if (protocol_version == PRP_V1)
++		return -EPROTONOSUPPORT;
++
+ 	/* Make sure we recognize frames from ourselves in hsr_rcv() */
+ 	res = hsr_create_self_node(hsr, hsr_dev->dev_addr,
+ 				   slave[1]->dev_addr);
+diff --git a/net/hsr/hsr_device.h b/net/hsr/hsr_device.h
+index b8f9262ed101..868373822ee4 100644
+--- a/net/hsr/hsr_device.h
++++ b/net/hsr/hsr_device.h
+@@ -3,6 +3,8 @@
+  *
+  * Author(s):
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
++ *
++ * include file for HSR and PRP.
+  */
+ 
+ #ifndef __HSR_DEVICE_H
+diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
+index ab8dca0c0b65..55adb4dbd235 100644
+--- a/net/hsr/hsr_forward.c
++++ b/net/hsr/hsr_forward.c
+@@ -3,6 +3,8 @@
+  *
+  * Author(s):
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
++ *
++ * Frame router for HSR and PRP.
+  */
+ 
+ #include "hsr_forward.h"
+diff --git a/net/hsr/hsr_forward.h b/net/hsr/hsr_forward.h
+index 51a69295566c..b2a6fa319d94 100644
+--- a/net/hsr/hsr_forward.h
++++ b/net/hsr/hsr_forward.h
+@@ -3,6 +3,8 @@
+  *
+  * Author(s):
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
++ *
++ * include file for HSR and PRP.
+  */
+ 
+ #ifndef __HSR_FORWARD_H
+diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+index 530de24b1fb5..13b2190e6556 100644
+--- a/net/hsr/hsr_framereg.c
++++ b/net/hsr/hsr_framereg.c
+@@ -8,6 +8,7 @@
+  * interface. A frame is identified by its source MAC address and its HSR
+  * sequence number. This code keeps track of senders and their sequence numbers
+  * to allow filtering of duplicate frames, and to detect HSR ring errors.
++ * Same code handles filtering of duplicates for PRP as well.
+  */
+ 
+ #include <linux/if_ether.h>
+diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
+index 0f0fa12b4329..c06447780d05 100644
+--- a/net/hsr/hsr_framereg.h
++++ b/net/hsr/hsr_framereg.h
+@@ -3,6 +3,8 @@
+  *
+  * Author(s):
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
++ *
++ * include file for HSR and PRP.
+  */
+ 
+ #ifndef __HSR_FRAMEREG_H
+diff --git a/net/hsr/hsr_main.c b/net/hsr/hsr_main.c
+index 144da15f0a81..2fd1976e5b1c 100644
+--- a/net/hsr/hsr_main.c
++++ b/net/hsr/hsr_main.c
+@@ -3,6 +3,8 @@
+  *
+  * Author(s):
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
++ *
++ * Event handling for HSR and PRP devices.
+  */
+ 
+ #include <linux/netdevice.h>
+diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+index f74193465bf5..8cf10d67d5f9 100644
+--- a/net/hsr/hsr_main.h
++++ b/net/hsr/hsr_main.h
+@@ -3,6 +3,8 @@
+  *
+  * Author(s):
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
++ *
++ * include file for HSR and PRP.
+  */
+ 
+ #ifndef __HSR_PRIVATE_H
+@@ -131,6 +133,13 @@ struct hsr_port {
+ 	enum hsr_port_type	type;
+ };
+ 
++/* used by driver internally to differentiate various protocols */
++enum hsr_version {
++	HSR_V0 = 0,
++	HSR_V1,
++	PRP_V1,
++};
++
+ struct hsr_priv {
+ 	struct rcu_head		rcu_head;
+ 	struct list_head	ports;
+@@ -141,7 +150,7 @@ struct hsr_priv {
+ 	int announce_count;
+ 	u16 sequence_nr;
+ 	u16 sup_sequence_nr;	/* For HSRv1 separate seq_nr for supervision */
+-	u8 prot_version;	/* Indicate if HSRv0 or HSRv1. */
++	enum hsr_version prot_version;	/* Indicate if HSRv0, HSRv1 or PRPv1 */
+ 	spinlock_t seqnr_lock;	/* locking for sequence_nr */
+ 	spinlock_t list_lock;	/* locking for node list */
+ 	unsigned char		sup_multicast_addr[ETH_ALEN];
+diff --git a/net/hsr/hsr_netlink.c b/net/hsr/hsr_netlink.c
+index 6e14b7d22639..06c3cd988760 100644
+--- a/net/hsr/hsr_netlink.c
++++ b/net/hsr/hsr_netlink.c
+@@ -4,7 +4,7 @@
+  * Author(s):
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
+  *
+- * Routines for handling Netlink messages for HSR.
++ * Routines for handling Netlink messages for HSR and PRP.
+  */
+ 
+ #include "hsr_netlink.h"
+@@ -22,6 +22,7 @@ static const struct nla_policy hsr_policy[IFLA_HSR_MAX + 1] = {
+ 	[IFLA_HSR_VERSION]	= { .type = NLA_U8 },
+ 	[IFLA_HSR_SUPERVISION_ADDR]	= { .len = ETH_ALEN },
+ 	[IFLA_HSR_SEQ_NR]		= { .type = NLA_U16 },
++	[IFLA_HSR_PROTOCOL]		= { .type = NLA_U8 },
+ };
+ 
+ /* Here, it seems a netdevice has already been allocated for us, and the
+@@ -31,8 +32,10 @@ static int hsr_newlink(struct net *src_net, struct net_device *dev,
+ 		       struct nlattr *tb[], struct nlattr *data[],
+ 		       struct netlink_ext_ack *extack)
+ {
++	enum hsr_version proto_version;
++	unsigned char multicast_spec;
++	u8 proto = HSR_PROTOCOL_HSR;
+ 	struct net_device *link[2];
+-	unsigned char multicast_spec, hsr_version;
+ 
+ 	if (!data) {
+ 		NL_SET_ERR_MSG_MOD(extack, "No slave devices specified");
+@@ -69,18 +72,34 @@ static int hsr_newlink(struct net *src_net, struct net_device *dev,
+ 	else
+ 		multicast_spec = nla_get_u8(data[IFLA_HSR_MULTICAST_SPEC]);
+ 
++	if (data[IFLA_HSR_PROTOCOL])
++		proto = nla_get_u8(data[IFLA_HSR_PROTOCOL]);
++
++	if (proto >= HSR_PROTOCOL_MAX) {
++		NL_SET_ERR_MSG_MOD(extack, "Unsupported protocol\n");
++		return -EINVAL;
++	}
++
+ 	if (!data[IFLA_HSR_VERSION]) {
+-		hsr_version = 0;
++		proto_version = HSR_V0;
+ 	} else {
+-		hsr_version = nla_get_u8(data[IFLA_HSR_VERSION]);
+-		if (hsr_version > 1) {
++		if (proto == HSR_PROTOCOL_PRP) {
++			NL_SET_ERR_MSG_MOD(extack, "PRP version unsupported\n");
++			return -EINVAL;
++		}
++
++		proto_version = nla_get_u8(data[IFLA_HSR_VERSION]);
++		if (proto_version > HSR_V1) {
+ 			NL_SET_ERR_MSG_MOD(extack,
+-					   "Only versions 0..1 are supported");
++					   "Only HSR version 0/1 supported\n");
+ 			return -EINVAL;
+ 		}
+ 	}
+ 
+-	return hsr_dev_finalize(dev, link, multicast_spec, hsr_version, extack);
++	if (proto == HSR_PROTOCOL_PRP)
++		proto_version = PRP_V1;
++
++	return hsr_dev_finalize(dev, link, multicast_spec, proto_version, extack);
+ }
+ 
+ static void hsr_dellink(struct net_device *dev, struct list_head *head)
+@@ -102,6 +121,7 @@ static void hsr_dellink(struct net_device *dev, struct list_head *head)
+ static int hsr_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ {
+ 	struct hsr_priv *hsr = netdev_priv(dev);
++	u8 proto = HSR_PROTOCOL_HSR;
+ 	struct hsr_port *port;
+ 
+ 	port = hsr_port_get_hsr(hsr, HSR_PT_SLAVE_A);
+@@ -120,6 +140,10 @@ static int hsr_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 		    hsr->sup_multicast_addr) ||
+ 	    nla_put_u16(skb, IFLA_HSR_SEQ_NR, hsr->sequence_nr))
+ 		goto nla_put_failure;
++	if (hsr->prot_version == PRP_V1)
++		proto = HSR_PROTOCOL_PRP;
++	if (nla_put_u8(skb, IFLA_HSR_PROTOCOL, proto))
++		goto nla_put_failure;
+ 
+ 	return 0;
+ 
+diff --git a/net/hsr/hsr_netlink.h b/net/hsr/hsr_netlink.h
+index 1121bb192a18..501552d9753b 100644
+--- a/net/hsr/hsr_netlink.h
++++ b/net/hsr/hsr_netlink.h
+@@ -3,6 +3,8 @@
+  *
+  * Author(s):
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
++ *
++ * include file for HSR and PRP.
+  */
+ 
+ #ifndef __HSR_NETLINK_H
+diff --git a/net/hsr/hsr_slave.c b/net/hsr/hsr_slave.c
+index 25b6ffba26cd..b5c0834de338 100644
+--- a/net/hsr/hsr_slave.c
++++ b/net/hsr/hsr_slave.c
+@@ -3,6 +3,8 @@
+  *
+  * Author(s):
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
++ *
++ * Frame handler other utility functions for HSR and PRP.
+  */
+ 
+ #include "hsr_slave.h"
+diff --git a/net/hsr/hsr_slave.h b/net/hsr/hsr_slave.h
+index 8953ea279ce9..9708a4f0ec09 100644
+--- a/net/hsr/hsr_slave.h
++++ b/net/hsr/hsr_slave.h
+@@ -2,6 +2,8 @@
+ /* Copyright 2011-2014 Autronica Fire and Security AS
+  *
+  *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
++ *
++ * include file for HSR and PRP.
+  */
+ 
+ #ifndef __HSR_SLAVE_H
 -- 
 2.17.1
 
