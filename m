@@ -2,297 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A38D2229379
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 10:28:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4B302293AE
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 10:37:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbgGVI2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 04:28:02 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:30928 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726161AbgGVI17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 04:27:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595406478;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1WrNHvhiJn+hfeSD7qtjglunKV+2rYigqlYDxCAoy9M=;
-        b=CWVjs1Svu5KdoKRlunyx+wTsfGpJ/ayZJfqnCbn0/OdNFwaGSAnaxBLNOrMbzQjaKkHhez
-        XXG0LYrmxj7VgViQHXh0mpdnp1Fv9mWpAysEJBYhdjYhqjA+2OFtVwCHk9V1BQcqXpA6mw
-        8C7qNnW0pzLHUlSm09sWAvjLrsMiWvw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-490-NarUtnimMMWkbjSc_4mKDQ-1; Wed, 22 Jul 2020 04:27:57 -0400
-X-MC-Unique: NarUtnimMMWkbjSc_4mKDQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A32B91005510;
-        Wed, 22 Jul 2020 08:27:55 +0000 (UTC)
-Received: from ebuild.redhat.com (ovpn-112-133.ams2.redhat.com [10.36.112.133])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 66689512FE;
-        Wed, 22 Jul 2020 08:27:54 +0000 (UTC)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org,
-        pabeni@redhat.com, pshelar@ovn.org
-Subject: [PATCH net-next 2/2] net: openvswitch: make masks cache size configurable
-Date:   Wed, 22 Jul 2020 10:27:52 +0200
-Message-Id: <159540647223.619787.13052866492035799125.stgit@ebuild>
-In-Reply-To: <159540642765.619787.5484526399990292188.stgit@ebuild>
-References: <159540642765.619787.5484526399990292188.stgit@ebuild>
-User-Agent: StGit/0.21
+        id S1726555AbgGVIhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 04:37:19 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:57474 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726157AbgGVIhS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 04:37:18 -0400
+Received: from mail-ua1-f72.google.com ([209.85.222.72])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <paolo.pisati@canonical.com>)
+        id 1jyAFX-0005xE-SG
+        for netdev@vger.kernel.org; Wed, 22 Jul 2020 08:37:16 +0000
+Received: by mail-ua1-f72.google.com with SMTP id n4so345947uaq.17
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 01:37:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R+bYSyuCUZFAkGtII1RmdIT7fMN+AO1fhPK7l1587qY=;
+        b=dqjni4kPnyf/WOHH93YEj/XvAIq5+8WbzjOFhXganQc/esw+oF9ayy29ucrCRzIwel
+         4N2CZSMMQEJ2zFQE6KanZvQbqv5jGg8Dm3Tehg2kv1pnf9soiCqSnkcLSIbB9wgYQABz
+         80vbXPh/n5cmLGg5APXUHsWri2fqMNtIs9SYLdA1uytGKTAuD9cW1+tFuVWNxGS2wLXT
+         biD5HW2R1gF3eMNygzRjrnGEPut50dXar5S3PbBlOFh87RlTQhClc+fzeXdwZKqc9tGP
+         MEBHJUOvGu0TPo4oi/Z5vEb6D4Eo5f2oKwEOxpGikFP9EEJH1Xfj90tT8f+hWdLjxFpD
+         ZDgQ==
+X-Gm-Message-State: AOAM530EksOgSVzvsuth0TjdK9sqrbib4CvFboOPw+LEIo2D5LOlWCrr
+        QYFRZRQChzgK8n46rhK7tA+a7i/aHNuNo0JI6zChWYJPDeFLbQv4lgyXLUjdCNCFUwSvVZl73WI
+        8sIumTL2z3HqcqWyCjTZI/KHiaRvViLyKij5Ar0YJcvh3pPbY1w==
+X-Received: by 2002:a67:1105:: with SMTP id 5mr24340546vsr.174.1595407034591;
+        Wed, 22 Jul 2020 01:37:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyHhx8M1zvoxC/SgvLXUeJNSlv9KoZs9SK1CB828zfYcRVOHt6JU+7hR5X5KsNVtgCDY7YsQoWp9nuI8gUSZfk=
+X-Received: by 2002:a67:1105:: with SMTP id 5mr24340530vsr.174.1595407034362;
+ Wed, 22 Jul 2020 01:37:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <CA+FuTSeN8SONXySGys8b2EtTqJmHDKw1XVoDte0vzUPg=yuH5g@mail.gmail.com>
+ <20200721161710.80797-1-paolo.pisati@canonical.com> <CA+FuTSe1-ZEC5xEXXbT=cbN6eAK1NXXKJ3f2Gz_v3gQyh2SkjA@mail.gmail.com>
+In-Reply-To: <CA+FuTSe1-ZEC5xEXXbT=cbN6eAK1NXXKJ3f2Gz_v3gQyh2SkjA@mail.gmail.com>
+From:   Paolo Pisati <paolo.pisati@canonical.com>
+Date:   Wed, 22 Jul 2020 10:37:03 +0200
+Message-ID: <CAMsH0TTQnPGrXci3WvjM+8sdJdxOjR9MnwFvv4DS6=crMCAt4A@mail.gmail.com>
+Subject: Re: [PATCH v2] selftest: txtimestamp: fix net ns entry logic
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, Jian Yang <jianyang@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch makes the masks cache size configurable, or with
-a size of 0, disable it.
+On Tue, Jul 21, 2020 at 6:26 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> Fixes: cda261f421ba ("selftests: add txtimestamp kselftest")
+>
+> Acked-by: Willem de Bruijn <willemb@google.com>
 
-Reviewed-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
----
- include/uapi/linux/openvswitch.h |    1 
- net/openvswitch/datapath.c       |   11 +++++
- net/openvswitch/flow_table.c     |   86 ++++++++++++++++++++++++++++++++++----
- net/openvswitch/flow_table.h     |   10 ++++
- 4 files changed, 98 insertions(+), 10 deletions(-)
+Besides, is it just me or this test fails frequently? I've been
+running it on 5.4.x, 5.7.x and 5.8-rcX and it often fails:
 
-diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-index 7cb76e5ca7cf..8300cc29dec8 100644
---- a/include/uapi/linux/openvswitch.h
-+++ b/include/uapi/linux/openvswitch.h
-@@ -86,6 +86,7 @@ enum ovs_datapath_attr {
- 	OVS_DP_ATTR_MEGAFLOW_STATS,	/* struct ovs_dp_megaflow_stats */
- 	OVS_DP_ATTR_USER_FEATURES,	/* OVS_DP_F_*  */
- 	OVS_DP_ATTR_PAD,
-+	OVS_DP_ATTR_MASKS_CACHE_SIZE,
- 	__OVS_DP_ATTR_MAX
- };
- 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index a54df1fe3ec4..f08aa1fb9f4b 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -1535,6 +1535,10 @@ static int ovs_dp_cmd_fill_info(struct datapath *dp, struct sk_buff *skb,
- 	if (nla_put_u32(skb, OVS_DP_ATTR_USER_FEATURES, dp->user_features))
- 		goto nla_put_failure;
- 
-+	if (nla_put_u32(skb, OVS_DP_ATTR_MASKS_CACHE_SIZE,
-+			ovs_flow_tbl_masks_cache_size(&dp->table)))
-+		goto nla_put_failure;
-+
- 	genlmsg_end(skb, ovs_header);
- 	return 0;
- 
-@@ -1599,6 +1603,13 @@ static int ovs_dp_change(struct datapath *dp, struct nlattr *a[])
- #endif
- 	}
- 
-+	if (a[OVS_DP_ATTR_MASKS_CACHE_SIZE]) {
-+		u32 cache_size;
-+
-+		cache_size = nla_get_u32(a[OVS_DP_ATTR_MASKS_CACHE_SIZE]);
-+		ovs_flow_tbl_masks_cache_resize(&dp->table, cache_size);
-+	}
-+
- 	dp->user_features = user_features;
- 
- 	if (dp->user_features & OVS_DP_F_TC_RECIRC_SHARING)
-diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index a5912ea05352..1c3590bcf28b 100644
---- a/net/openvswitch/flow_table.c
-+++ b/net/openvswitch/flow_table.c
-@@ -38,8 +38,8 @@
- #define MASK_ARRAY_SIZE_MIN	16
- #define REHASH_INTERVAL		(10 * 60 * HZ)
- 
-+#define MC_DEFAULT_HASH_ENTRIES	256
- #define MC_HASH_SHIFT		8
--#define MC_HASH_ENTRIES		(1u << MC_HASH_SHIFT)
- #define MC_HASH_SEGS		((sizeof(uint32_t) * 8) / MC_HASH_SHIFT)
- 
- static struct kmem_cache *flow_cache;
-@@ -341,14 +341,74 @@ static void flow_mask_remove(struct flow_table *tbl, struct sw_flow_mask *mask)
- 	}
- }
- 
-+static void __mask_cache_destroy(struct mask_cache *mc)
-+{
-+	if (mc->mask_cache)
-+		free_percpu(mc->mask_cache);
-+	kfree(mc);
-+}
-+
-+static void mask_cache_rcu_cb(struct rcu_head *rcu)
-+{
-+	struct mask_cache *mc = container_of(rcu, struct mask_cache, rcu);
-+
-+	__mask_cache_destroy(mc);
-+}
-+
-+static struct mask_cache *tbl_mask_cache_alloc(u32 size)
-+{
-+	struct mask_cache_entry *cache = NULL;
-+	struct mask_cache *new;
-+
-+	/* Only allow size to be 0, or a power of 2, and does not exceed
-+	 * percpu allocation size.
-+	 */
-+	if ((size & (size - 1)) != 0 ||
-+	    (size * sizeof(struct mask_cache_entry)) > PCPU_MIN_UNIT_SIZE)
-+		return NULL;
-+
-+	new = kzalloc(sizeof(*new), GFP_KERNEL);
-+	if (!new)
-+		return NULL;
-+
-+	new->cache_size = size;
-+	if (new->cache_size > 0) {
-+		cache = __alloc_percpu(sizeof(struct mask_cache_entry) *
-+				       new->cache_size,
-+				       __alignof__(struct mask_cache_entry));
-+
-+		if (!cache) {
-+			kfree(new);
-+			return NULL;
-+		}
-+	}
-+
-+	new->mask_cache = cache;
-+	return new;
-+}
-+
-+void ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32 size)
-+{
-+	struct mask_cache *mc = rcu_dereference(table->mask_cache);
-+	struct mask_cache *new;
-+
-+	if (size == mc->cache_size || (size & (size - 1)) != 0)
-+		return;
-+
-+	new = tbl_mask_cache_alloc(size);
-+	if (!new)
-+		return;
-+
-+	rcu_assign_pointer(table->mask_cache, new);
-+	call_rcu(&mc->rcu, mask_cache_rcu_cb);
-+}
-+
- int ovs_flow_tbl_init(struct flow_table *table)
- {
- 	struct table_instance *ti, *ufid_ti;
- 	struct mask_array *ma;
- 
--	table->mask_cache = __alloc_percpu(sizeof(struct mask_cache_entry) *
--					   MC_HASH_ENTRIES,
--					   __alignof__(struct mask_cache_entry));
-+	table->mask_cache = tbl_mask_cache_alloc(MC_DEFAULT_HASH_ENTRIES);
- 	if (!table->mask_cache)
- 		return -ENOMEM;
- 
-@@ -377,7 +437,7 @@ int ovs_flow_tbl_init(struct flow_table *table)
- free_mask_array:
- 	__mask_array_destroy(ma);
- free_mask_cache:
--	free_percpu(table->mask_cache);
-+	__mask_cache_destroy(table->mask_cache);
- 	return -ENOMEM;
- }
- 
-@@ -454,7 +514,7 @@ void ovs_flow_tbl_destroy(struct flow_table *table)
- 	struct table_instance *ti = rcu_dereference_raw(table->ti);
- 	struct table_instance *ufid_ti = rcu_dereference_raw(table->ufid_ti);
- 
--	free_percpu(table->mask_cache);
-+	call_rcu(&table->mask_cache->rcu, mask_cache_rcu_cb);
- 	call_rcu(&table->mask_array->rcu, mask_array_rcu_cb);
- 	table_instance_destroy(table, ti, ufid_ti, false);
- }
-@@ -724,6 +784,7 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
- 					  u32 *n_mask_hit,
- 					  u32 *n_cache_hit)
- {
-+	struct mask_cache *mc = rcu_dereference(tbl->mask_cache);
- 	struct mask_array *ma = rcu_dereference(tbl->mask_array);
- 	struct table_instance *ti = rcu_dereference(tbl->ti);
- 	struct mask_cache_entry *entries, *ce;
-@@ -733,7 +794,7 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
- 
- 	*n_mask_hit = 0;
- 	*n_cache_hit = 0;
--	if (unlikely(!skb_hash)) {
-+	if (unlikely(!skb_hash || mc->cache_size == 0)) {
- 		u32 mask_index = 0;
- 		u32 cache = 0;
- 
-@@ -749,11 +810,11 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
- 
- 	ce = NULL;
- 	hash = skb_hash;
--	entries = this_cpu_ptr(tbl->mask_cache);
-+	entries = this_cpu_ptr(mc->mask_cache);
- 
- 	/* Find the cache entry 'ce' to operate on. */
- 	for (seg = 0; seg < MC_HASH_SEGS; seg++) {
--		int index = hash & (MC_HASH_ENTRIES - 1);
-+		int index = hash & (mc->cache_size - 1);
- 		struct mask_cache_entry *e;
- 
- 		e = &entries[index];
-@@ -867,6 +928,13 @@ int ovs_flow_tbl_num_masks(const struct flow_table *table)
- 	return READ_ONCE(ma->count);
- }
- 
-+u32 ovs_flow_tbl_masks_cache_size(const struct flow_table *table)
-+{
-+	struct mask_cache *mc = rcu_dereference(table->mask_cache);
-+
-+	return READ_ONCE(mc->cache_size);
-+}
-+
- static struct table_instance *table_instance_expand(struct table_instance *ti,
- 						    bool ufid)
- {
-diff --git a/net/openvswitch/flow_table.h b/net/openvswitch/flow_table.h
-index 325e939371d8..f2dba952db2f 100644
---- a/net/openvswitch/flow_table.h
-+++ b/net/openvswitch/flow_table.h
-@@ -27,6 +27,12 @@ struct mask_cache_entry {
- 	u32 mask_index;
- };
- 
-+struct mask_cache {
-+	struct rcu_head rcu;
-+	u32 cache_size;  /* Must be ^2 value. */
-+	struct mask_cache_entry __percpu *mask_cache;
-+};
-+
- struct mask_count {
- 	int index;
- 	u64 counter;
-@@ -53,7 +59,7 @@ struct table_instance {
- struct flow_table {
- 	struct table_instance __rcu *ti;
- 	struct table_instance __rcu *ufid_ti;
--	struct mask_cache_entry __percpu *mask_cache;
-+	struct mask_cache __rcu *mask_cache;
- 	struct mask_array __rcu *mask_array;
- 	unsigned long last_rehash;
- 	unsigned int count;
-@@ -77,6 +83,8 @@ int ovs_flow_tbl_insert(struct flow_table *table, struct sw_flow *flow,
- 			const struct sw_flow_mask *mask);
- void ovs_flow_tbl_remove(struct flow_table *table, struct sw_flow *flow);
- int  ovs_flow_tbl_num_masks(const struct flow_table *table);
-+u32  ovs_flow_tbl_masks_cache_size(const struct flow_table *table);
-+void ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32 size);
- struct sw_flow *ovs_flow_tbl_dump_next(struct table_instance *table,
- 				       u32 *bucket, u32 *idx);
- struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *,
+...
+    USR: 1595405084 s 947366 us (seq=0, len=0)
+    SND: 1595405084 s 948686 us (seq=9, len=10)  (USR +1319 us)
+ERROR: 6542 us expected between 6000 and 6500
+    ACK: 1595405084 s 953908 us (seq=9, len=10)  (USR +6541 us)
+    USR: 1595405084 s 997979 us (seq=0, len=0)
+    SND: 1595405084 s 999101 us (seq=19, len=10)  (USR +1121 us)
+    ACK: 1595405085 s 4438 us (seq=19, len=10)  (USR +6458 us)
+    USR: 1595405085 s 49317 us (seq=0, len=0)
+    SND: 1595405085 s 50680 us (seq=29, len=10)  (USR +1363 us)
+ERROR: 6661 us expected between 6000 and 6500
+    ACK: 1595405085 s 55978 us (seq=29, len=10)  (USR +6661 us)
+    USR: 1595405085 s 101049 us (seq=0, len=0)
+    SND: 1595405085 s 102342 us (seq=39, len=10)  (USR +1293 us)
+ERROR: 6578 us expected between 6000 and 6500
+    ACK: 1595405085 s 107627 us (seq=39, len=10)  (USR +6577 us)
+    USR-SND: count=4, avg=1274 us, min=1121 us, max=1363 us
+    USR-ACK: count=4, avg=6559 us, min=6458 us, max=6661 us
 
+
+In particular, "run_test_v4v6 ${args}       # tcp" is the most
+susceptible to failures (though i've seen the udp variant fail too).
+-- 
+bye,
+p.
