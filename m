@@ -2,97 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B78229475
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 11:07:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3CE9229499
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 11:13:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728173AbgGVJHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 05:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726153AbgGVJHt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 05:07:49 -0400
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15595C0619DC
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 02:07:49 -0700 (PDT)
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 714A193AEF;
-        Wed, 22 Jul 2020 10:07:48 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1595408868; bh=cxE14xMn/S2fCTuvSXqqjh1VcOtx0tQ9Sq4X+WtQxTc=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Wed,=2022=20Jul=202020=2010:07:48=20+0100|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20David=20Miller=20<davem@daveml
-         oft.net>|Cc:=20netdev@vger.kernel.org|Subject:=20Re:=20[PATCH=20ne
-         t-next=2000/29]=20l2tp:=20cleanup=20checkpatch.pl=20warnings|Messa
-         ge-ID:=20<20200722090748.GB4419@katalix.com>|References:=20<202007
-         21173221.4681-1-tparkin@katalix.com>=0D=0A=20<20200721.161917.1352
-         752521032182959.davem@davemloft.net>|MIME-Version:=201.0|Content-D
-         isposition:=20inline|In-Reply-To:=20<20200721.161917.1352752521032
-         182959.davem@davemloft.net>;
-        b=u/gPFcOpoO61OKjWadYXW475YVYh5UwnwUmUxv8WrZpmM5Y4C0pSZM6tGcSBivHVZ
-         +753TXu7Q5an3UuKIyJK8mQHQu5vUUBwjQOi9+NK+eRJwc2e1aW1CcA7nXo6Dcw0/j
-         qzhB2Q9KxAUao+KOOXcaLeQQLsTdG9bxR8suqgAgyzTnZp6h/yOQU+6ozKArPMHL8h
-         Im64cjojiZ5Qc0sfZbmZ5WR5M7oeZsNK0Cei1Gxw1mtvH78d07lSYfLQiXO9KWD2w0
-         Tgg0SOi8YpVRDp9H0ifdDTHM+S1pKhUutZ2RcmKKzxWKLXpYl7w8Gn/2lZTHOAJlzW
-         zUX1xvIYZe8tQ==
-Date:   Wed, 22 Jul 2020 10:07:48 +0100
-From:   Tom Parkin <tparkin@katalix.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 00/29] l2tp: cleanup checkpatch.pl warnings
-Message-ID: <20200722090748.GB4419@katalix.com>
-References: <20200721173221.4681-1-tparkin@katalix.com>
- <20200721.161917.1352752521032182959.davem@davemloft.net>
+        id S1731422AbgGVJM7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Jul 2020 05:12:59 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:31059 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728911AbgGVJMr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 05:12:47 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-133-iHrS3EymP6-QY3_m0aDbLA-1; Wed, 22 Jul 2020 10:12:43 +0100
+X-MC-Unique: iHrS3EymP6-QY3_m0aDbLA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 22 Jul 2020 10:12:42 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 22 Jul 2020 10:12:42 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Andrew Lunn' <andrew@lunn.ch>,
+        Rakesh Pillai <pillair@codeaurora.org>
+CC:     "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        "evgreen@chromium.org" <evgreen@chromium.org>
+Subject: RE: [RFC 0/7] Add support to process rx packets in thread
+Thread-Topic: [RFC 0/7] Add support to process rx packets in thread
+Thread-Index: AQHWX4Pwi/SIJmxUNEW6qPlR/TNR0KkTSebw
+Date:   Wed, 22 Jul 2020 09:12:42 +0000
+Message-ID: <9fb3d3bd8d944a649cbe828fddca1bc1@AcuMS.aculab.com>
+References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
+ <20200721172514.GT1339445@lunn.ch>
+In-Reply-To: <20200721172514.GT1339445@lunn.ch>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mxv5cy4qt+RJ9ypb"
-Content-Disposition: inline
-In-Reply-To: <20200721.161917.1352752521032182959.davem@davemloft.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Andrew Lunn
+> Sent: 21 July 2020 18:25
+> 
+> On Tue, Jul 21, 2020 at 10:44:19PM +0530, Rakesh Pillai wrote:
+> > NAPI gets scheduled on the CPU core which got the
+> > interrupt. The linux scheduler cannot move it to a
+> > different core, even if the CPU on which NAPI is running
+> > is heavily loaded. This can lead to degraded wifi
+> > performance when running traffic at peak data rates.
+> >
+> > A thread on the other hand can be moved to different
+> > CPU cores, if the one on which its running is heavily
+> > loaded. During high incoming data traffic, this gives
+> > better performance, since the thread can be moved to a
+> > less loaded or sometimes even a more powerful CPU core
+> > to account for the required CPU performance in order
+> > to process the incoming packets.
+> >
+> > This patch series adds the support to use a high priority
+> > thread to process the incoming packets, as opposed to
+> > everything being done in NAPI context.
+> 
+> I don't see why this problem is limited to the ath10k driver. I expect
+> it applies to all drivers using NAPI. So shouldn't you be solving this
+> in the NAPI core? Allow a driver to request the NAPI core uses a
+> thread?
 
---mxv5cy4qt+RJ9ypb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+It's not just NAPI the problem is with the softint processing.
+I suspect a lot of systems would work better if it ran as
+a (highish priority) kernel thread.
 
-On  Tue, Jul 21, 2020 at 16:19:17 -0700, David Miller wrote:
->=20
-> This patch set is way too large to be reasonably reviewed by other
-> developers.
->=20
-> Please either find a way to combine some of the patches, or submit
-> this in stages of about 10 or so patches at a time.
->=20
-> I am not applying this submission as submitted.
->=20
-> Thank you.
+I've had to remove the main locks from a multi-threaded application
+and replace them with atomic counters.
+Consider what happens when the threads remove items from a shared
+work list.
+The code looks like:
+	mutex_enter();
+	remove_item_from_list();
+	mutex_exit().
+The mutex is only held for a few instructions, so while you'd expect
+the cache line to be 'hot' you wouldn't get real contention.
+However the following scenarios happen:
+1) An ethernet interrupt happens while the mutex is held.
+   This stops the other threads until all the softint processing
+   has finished.
+2) An ethernet interrupt (and softint) runs on a thread that is
+   waiting for the mutex.
+   (Or on the cpu that the thread's processor affinity ties it to.)
+   In this case the 'fair' (ticket) mutex code won't let any other
+   thread acquire the mutex.
+   So again everything stops until the softints all complete.
 
-I will respin as requested, probably covering the more trivial
-modifications in one series and the larger changes in a second
-separate series.
+The second one is also a problem when trying to wake up all
+the threads (eg after adding a lot of items to the list).
+The ticket locks force them to wake in order, but
+sometimes the 'thundering herd' would work better.
 
-Thanks for looking at it.
+IIRC this is actually worse for processes running under the RT
+scheduler (without CONFIG_PREEMPT) because the they are almost
+always scheduled on the same cpu they ran on last.
+If it is busy, but cannot be pre-empted, they are not moved
+to an idle cpu.
+   
+To confound things there is a very broken workaround for broken
+hardware in the driver for the e1000 interface on (at least)
+Ivy Bridge cpu that can cause the driver to spin for a very
+long time (IIRC milliseconds) whenever it has to write to a
+MAC register (ie on every transmit setup).
 
---mxv5cy4qt+RJ9ypb
-Content-Type: application/pgp-signature; name="signature.asc"
+	David
 
------BEGIN PGP SIGNATURE-----
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl8YAeMACgkQlIwGZQq6
-i9AJqQf/QKWLR1C7+Ms+0njcn1uOP+vmzzJarRoqkK65T1tn9dLXy/h03WHenFSI
-3D6vb+Lo3Kuq8oUq9IJQUUt3EdRsP9igg55qN7bfRSV1cAr6hifQzlX5TIhrfpps
-xO/bBgURHBWT8hzDAYRjlhypV+IwjgVFu6ZWX7FHSmPfx2HcvH6VuKFiPI0/r0QZ
-EMuuyA9v94n0Py2BoAWGQWwBHO8E9Kw7KcrcZeZZIDOcO17UI+J/ZOZv/jajGkNA
-yxkCdd6wccnmGzndE8E4f0bvL9oyLe8gz6kTJH4JJTgg0PpmNMsfYAe7tIaCqm7c
-R92JON9Ibe2q012U1gZlN+fGjuy2Pg==
-=Xxkq
------END PGP SIGNATURE-----
-
---mxv5cy4qt+RJ9ypb--
