@@ -2,58 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 962AD228DA6
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 03:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D515C228DA8
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 03:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731633AbgGVBbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 21:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44410 "EHLO
+        id S1731664AbgGVBcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 21:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728001AbgGVBbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 21:31:13 -0400
+        with ESMTP id S1728001AbgGVBcI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 21:32:08 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363E9C061794
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 18:31:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8EF2C061794;
+        Tue, 21 Jul 2020 18:32:08 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 046A311DB315F;
-        Tue, 21 Jul 2020 18:14:27 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 18:31:12 -0700 (PDT)
-Message-Id: <20200721.183112.373919081990018897.davem@davemloft.net>
-To:     martinvarghesenokia@gmail.com
-Cc:     netdev@vger.kernel.org, gnault@redhat.com,
-        martin.varghese@nokia.com
-Subject: Re: [PATCH net-next v3] bareudp: Reverted support to enable &
- disable rx metadata collection
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3F67511DB315F;
+        Tue, 21 Jul 2020 18:15:23 -0700 (PDT)
+Date:   Tue, 21 Jul 2020 18:32:07 -0700 (PDT)
+Message-Id: <20200721.183207.2040938284749662736.davem@davemloft.net>
+To:     wanghai38@huawei.com
+Cc:     hayashi.kunihiko@socionext.com, kuba@kernel.org,
+        p.zabel@pengutronix.de, yamada.masahiro@socionext.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ethernet: ave: Fix error returns in ave_init
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1594953312-4580-1-git-send-email-martinvarghesenokia@gmail.com>
-References: <1594953312-4580-1-git-send-email-martinvarghesenokia@gmail.com>
+In-Reply-To: <20200717025049.43027-1-wanghai38@huawei.com>
+References: <20200717025049.43027-1-wanghai38@huawei.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 21 Jul 2020 18:14:28 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 21 Jul 2020 18:15:23 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Varghese <martinvarghesenokia@gmail.com>
-Date: Fri, 17 Jul 2020 08:05:12 +0530
+From: Wang Hai <wanghai38@huawei.com>
+Date: Fri, 17 Jul 2020 10:50:49 +0800
 
-> From: Martin Varghese <martin.varghese@nokia.com>
+> When regmap_update_bits failed in ave_init(), calls of the functions
+> reset_control_assert() and clk_disable_unprepare() were missed.
+> Add goto out_reset_assert to do this.
 > 
-> The commit fe80536acf83 ("bareudp: Added attribute to enable & disable
-> rx metadata collection") breaks the the original(5.7) default behavior of
-> bareudp module to collect RX metadadata at the receive. It was added to
-> avoid the crash at the kernel neighbour subsytem when packet with metadata
-> from bareudp is processed. But it is no more needed as the
-> commit 394de110a733 ("net: Added pointer check for
-> dst->ops->neigh_lookup in dst_neigh_lookup_skb") solves this crash.
-> 
-> Fixes: fe80536acf83 ("bareudp: Added attribute to enable & disable rx metadata collection")
-> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+> Fixes: 57878f2f4697 ("net: ethernet: ave: add support for phy-mode setting of system controller")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
 
 Applied.
