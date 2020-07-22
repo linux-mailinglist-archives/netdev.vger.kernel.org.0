@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6CE322A22E
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 00:14:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B30DE22A229
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 00:14:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387599AbgGVWOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 18:14:02 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:15666 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1733104AbgGVWLb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 18:11:31 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06MM7112027569;
-        Wed, 22 Jul 2020 15:11:14 -0700
+        id S2387577AbgGVWNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 18:13:46 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:3176 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1733145AbgGVWLh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 18:11:37 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06MM6f3D019802;
+        Wed, 22 Jul 2020 15:11:21 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0818;
- bh=FhAggLZ0tLiue9xeV5tnAuoxZeC8O3N9g9v9jT+7MzA=;
- b=Yq9J8og9b0dzo+IWpNfWrK6a58sydhcZzodN706GFEVd5gNYcO7ccdw5BrNdv1VdNev3
- MScu+OIfg50epl7u1uuOqvYnyBwq8P0O3HqffjHQfBrUuW3WxL3/cYzWFCBFxFdLnCBd
- UxZbSz9DZ+9FHyxFLBIaDmyhgOd6nwTCaBzd3PJfmto1R0n377nwBRufiDUsaheEakKM
- vbHo5KkepCG3fPjioq78qTxnOVKtd8ieQs7aCPw+HmPJgRxwpAm6fjB6bofl5cEPy6Za
- /Jz9F0ey9xk9o4MxeO4j/odgedFN2x4AKYxP9+a6FPV0MfhFrwPVu8I3iCorzagJ/9lp oA== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 32bxentx65-1
+ bh=GmEgsOs6h9b3iKtTR1f7ZzvpfMSp6NwSWPeac8kAzwo=;
+ b=c6Y2N2ZLJaqT0j2CraOBXVCGB54OVxNENrQe1pxef7nuy7vMViODmBvNTRXbaMp3sZp3
+ 3AEuvZx++ODlRoSWQLe+q0KSXs3XgtfUUFaMhwYvNr9mgkMJ/e+mSbjR5jpBr0jkZ7Nf
+ UnMNG1OuYMSgPqL+ZMe0JLbzKueUZKHtjYHA4fmIuTnx4I57Z5lFqr3H2D2cGJZfIIJr
+ z/asPlY/0afpipBkcpWjhdNTWx/x6Z/2GFThL7r/UGqmLfll2ltBC1jdeCMUSN/o2Gfy
+ 9JuHCjVu2MP53bTYHB+AdMxSTHgxHDYwE4+dyIx8NnjNIm2UejAEi9mhsEAEIpdCU0Mu 5Q== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 32c0kkt0jr-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jul 2020 15:11:14 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jul
- 2020 15:11:13 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+        Wed, 22 Jul 2020 15:11:21 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jul
+ 2020 15:11:20 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jul
- 2020 15:11:12 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 22 Jul 2020 15:11:12 -0700
+ 2020 15:11:19 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 22 Jul 2020 15:11:19 -0700
 Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
-        by maili.marvell.com (Postfix) with ESMTP id E55AE3F703F;
-        Wed, 22 Jul 2020 15:11:05 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id A61E43F7040;
+        Wed, 22 Jul 2020 15:11:12 -0700 (PDT)
 From:   Alexander Lobakin <alobakin@marvell.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -60,9 +60,9 @@ CC:     Alexander Lobakin <alobakin@marvell.com>,
         <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 net-next 01/15] qed: reformat "qed_chain.h" a bit
-Date:   Thu, 23 Jul 2020 01:10:31 +0300
-Message-ID: <20200722221045.5436-2-alobakin@marvell.com>
+Subject: [PATCH v2 net-next 02/15] qed: reformat Makefile
+Date:   Thu, 23 Jul 2020 01:10:32 +0300
+Message-ID: <20200722221045.5436-3-alobakin@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200722221045.5436-1-alobakin@marvell.com>
 References: <20200722221045.5436-1-alobakin@marvell.com>
@@ -76,225 +76,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reformat structs and macros definitions a bit prior to making functional
-changes.
+List one entry per line and sort them alphabetically to simplify the
+addition of the new ones.
 
 Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 ---
- include/linux/qed/qed_chain.h | 126 ++++++++++++++++++----------------
- 1 file changed, 66 insertions(+), 60 deletions(-)
+ drivers/net/ethernet/qlogic/qed/Makefile | 36 +++++++++++++++++++-----
+ 1 file changed, 29 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/qed/qed_chain.h b/include/linux/qed/qed_chain.h
-index 7071dc92b4e2..087073517c09 100644
---- a/include/linux/qed/qed_chain.h
-+++ b/include/linux/qed/qed_chain.h
-@@ -26,9 +26,9 @@ enum qed_chain_mode {
- };
+diff --git a/drivers/net/ethernet/qlogic/qed/Makefile b/drivers/net/ethernet/qlogic/qed/Makefile
+index 4176bbf2a22b..3c75e4fa9b02 100644
+--- a/drivers/net/ethernet/qlogic/qed/Makefile
++++ b/drivers/net/ethernet/qlogic/qed/Makefile
+@@ -3,12 +3,34 @@
  
- enum qed_chain_use_mode {
--	QED_CHAIN_USE_TO_PRODUCE,		/* Chain starts empty */
--	QED_CHAIN_USE_TO_CONSUME,		/* Chain starts full */
--	QED_CHAIN_USE_TO_CONSUME_PRODUCE,	/* Chain starts empty */
-+	QED_CHAIN_USE_TO_PRODUCE,			/* Chain starts empty */
-+	QED_CHAIN_USE_TO_CONSUME,			/* Chain starts full */
-+	QED_CHAIN_USE_TO_CONSUME_PRODUCE,		/* Chain starts empty */
- };
+ obj-$(CONFIG_QED) := qed.o
  
- enum qed_chain_cnt_type {
-@@ -40,84 +40,86 @@ enum qed_chain_cnt_type {
- };
- 
- struct qed_chain_next {
--	struct regpair	next_phys;
--	void		*next_virt;
-+	struct regpair					next_phys;
-+	void						*next_virt;
- };
- 
- struct qed_chain_pbl_u16 {
--	u16 prod_page_idx;
--	u16 cons_page_idx;
-+	u16						prod_page_idx;
-+	u16						cons_page_idx;
- };
- 
- struct qed_chain_pbl_u32 {
--	u32 prod_page_idx;
--	u32 cons_page_idx;
-+	u32						prod_page_idx;
-+	u32						cons_page_idx;
- };
- 
- struct qed_chain_ext_pbl {
--	dma_addr_t p_pbl_phys;
--	void *p_pbl_virt;
-+	dma_addr_t					p_pbl_phys;
-+	void						*p_pbl_virt;
- };
- 
- struct qed_chain_u16 {
- 	/* Cyclic index of next element to produce/consme */
--	u16 prod_idx;
--	u16 cons_idx;
-+	u16						prod_idx;
-+	u16						cons_idx;
- };
- 
- struct qed_chain_u32 {
- 	/* Cyclic index of next element to produce/consme */
--	u32 prod_idx;
--	u32 cons_idx;
-+	u32						prod_idx;
-+	u32						cons_idx;
- };
- 
- struct addr_tbl_entry {
--	void *virt_addr;
--	dma_addr_t dma_map;
-+	void						*virt_addr;
-+	dma_addr_t					dma_map;
- };
- 
- struct qed_chain {
--	/* fastpath portion of the chain - required for commands such
-+	/* Fastpath portion of the chain - required for commands such
- 	 * as produce / consume.
- 	 */
+-qed-y := qed_cxt.o qed_dev.o qed_hw.o qed_init_fw_funcs.o qed_init_ops.o \
+-	 qed_int.o qed_main.o qed_mcp.o qed_sp_commands.o qed_spq.o qed_l2.o \
+-	 qed_selftest.o qed_dcbx.o qed_debug.o qed_ptp.o qed_mng_tlv.o
+-qed-$(CONFIG_QED_SRIOV) += qed_sriov.o qed_vf.o
+-qed-$(CONFIG_QED_LL2) += qed_ll2.o
+-qed-$(CONFIG_QED_RDMA) += qed_roce.o qed_rdma.o qed_iwarp.o
+-qed-$(CONFIG_QED_ISCSI) += qed_iscsi.o
++qed-y :=			\
++	qed_cxt.o		\
++	qed_dcbx.o		\
++	qed_debug.o		\
++	qed_dev.o		\
++	qed_hw.o		\
++	qed_init_fw_funcs.o	\
++	qed_init_ops.o		\
++	qed_int.o		\
++	qed_l2.o		\
++	qed_main.o		\
++	qed_mcp.o		\
++	qed_mng_tlv.o		\
++	qed_ptp.o		\
++	qed_selftest.o		\
++	qed_sp_commands.o	\
++	qed_spq.o
 +
- 	/* Point to next element to produce/consume */
--	void *p_prod_elem;
--	void *p_cons_elem;
-+	void						*p_prod_elem;
-+	void						*p_cons_elem;
- 
- 	/* Fastpath portions of the PBL [if exists] */
+ qed-$(CONFIG_QED_FCOE) += qed_fcoe.o
++qed-$(CONFIG_QED_ISCSI) += qed_iscsi.o
++qed-$(CONFIG_QED_LL2) += qed_ll2.o
+ qed-$(CONFIG_QED_OOO) += qed_ooo.o
 +
- 	struct {
- 		/* Table for keeping the virtual and physical addresses of the
- 		 * chain pages, respectively to the physical addresses
- 		 * in the pbl table.
- 		 */
--		struct addr_tbl_entry *pp_addr_tbl;
-+		struct addr_tbl_entry			*pp_addr_tbl;
- 
- 		union {
--			struct qed_chain_pbl_u16 u16;
--			struct qed_chain_pbl_u32 u32;
--		} c;
--	} pbl;
-+			struct qed_chain_pbl_u16	u16;
-+			struct qed_chain_pbl_u32	u32;
-+		}					c;
-+	}						pbl;
- 
- 	union {
--		struct qed_chain_u16 chain16;
--		struct qed_chain_u32 chain32;
--	} u;
-+		struct qed_chain_u16			chain16;
-+		struct qed_chain_u32			chain32;
-+	}						u;
- 
- 	/* Capacity counts only usable elements */
--	u32 capacity;
--	u32 page_cnt;
-+	u32						capacity;
-+	u32						page_cnt;
- 
--	enum qed_chain_mode mode;
-+	enum qed_chain_mode				mode;
- 
- 	/* Elements information for fast calculations */
--	u16 elem_per_page;
--	u16 elem_per_page_mask;
--	u16 elem_size;
--	u16 next_page_mask;
--	u16 usable_per_page;
--	u8 elem_unusable;
-+	u16						elem_per_page;
-+	u16						elem_per_page_mask;
-+	u16						elem_size;
-+	u16						next_page_mask;
-+	u16						usable_per_page;
-+	u8						elem_unusable;
- 
--	u8 cnt_type;
-+	u8						cnt_type;
- 
- 	/* Slowpath of the chain - required for initialization and destruction,
- 	 * but isn't involved in regular functionality.
-@@ -125,43 +127,47 @@ struct qed_chain {
- 
- 	/* Base address of a pre-allocated buffer for pbl */
- 	struct {
--		dma_addr_t p_phys_table;
--		void *p_virt_table;
--	} pbl_sp;
-+		dma_addr_t				p_phys_table;
-+		void					*p_virt_table;
-+	}						pbl_sp;
- 
- 	/* Address of first page of the chain - the address is required
- 	 * for fastpath operation [consume/produce] but only for the SINGLE
- 	 * flavour which isn't considered fastpath [== SPQ].
- 	 */
--	void *p_virt_addr;
--	dma_addr_t p_phys_addr;
-+	void						*p_virt_addr;
-+	dma_addr_t					p_phys_addr;
- 
- 	/* Total number of elements [for entire chain] */
--	u32 size;
-+	u32						size;
- 
--	u8 intended_use;
-+	u8						intended_use;
- 
--	bool b_external_pbl;
-+	bool						b_external_pbl;
- };
- 
--#define QED_CHAIN_PBL_ENTRY_SIZE        (8)
--#define QED_CHAIN_PAGE_SIZE             (0x1000)
--#define ELEMS_PER_PAGE(elem_size)       (QED_CHAIN_PAGE_SIZE / (elem_size))
-+#define QED_CHAIN_PBL_ENTRY_SIZE			8
-+#define QED_CHAIN_PAGE_SIZE				0x1000
++qed-$(CONFIG_QED_RDMA) +=	\
++	qed_iwarp.o		\
++	qed_rdma.o		\
++	qed_roce.o
 +
-+#define ELEMS_PER_PAGE(elem_size)					     \
-+	(QED_CHAIN_PAGE_SIZE / (elem_size))
- 
--#define UNUSABLE_ELEMS_PER_PAGE(elem_size, mode)	 \
--	(((mode) == QED_CHAIN_MODE_NEXT_PTR) ?		 \
--	 (u8)(1 + ((sizeof(struct qed_chain_next) - 1) / \
--		   (elem_size))) : 0)
-+#define UNUSABLE_ELEMS_PER_PAGE(elem_size, mode)			     \
-+	(((mode) == QED_CHAIN_MODE_NEXT_PTR) ?				     \
-+	 (u8)(1 + ((sizeof(struct qed_chain_next) - 1) / (elem_size))) :     \
-+	 0)
- 
--#define USABLE_ELEMS_PER_PAGE(elem_size, mode) \
--	((u32)(ELEMS_PER_PAGE(elem_size) -     \
--	       UNUSABLE_ELEMS_PER_PAGE(elem_size, mode)))
-+#define USABLE_ELEMS_PER_PAGE(elem_size, mode)				     \
-+	((u32)(ELEMS_PER_PAGE(elem_size) -				     \
-+	       UNUSABLE_ELEMS_PER_PAGE((elem_size), (mode))))
- 
--#define QED_CHAIN_PAGE_CNT(elem_cnt, elem_size, mode) \
--	DIV_ROUND_UP(elem_cnt, USABLE_ELEMS_PER_PAGE(elem_size, mode))
-+#define QED_CHAIN_PAGE_CNT(elem_cnt, elem_size, mode)			     \
-+	DIV_ROUND_UP((elem_cnt), USABLE_ELEMS_PER_PAGE((elem_size), (mode)))
- 
--#define is_chain_u16(p) ((p)->cnt_type == QED_CHAIN_CNT_TYPE_U16)
--#define is_chain_u32(p) ((p)->cnt_type == QED_CHAIN_CNT_TYPE_U32)
-+#define is_chain_u16(p)							     \
-+	((p)->cnt_type == QED_CHAIN_CNT_TYPE_U16)
-+#define is_chain_u32(p)							     \
-+	((p)->cnt_type == QED_CHAIN_CNT_TYPE_U32)
- 
- /* Accessors */
- static inline u16 qed_chain_get_prod_idx(struct qed_chain *p_chain)
++qed-$(CONFIG_QED_SRIOV) +=	\
++	qed_sriov.o		\
++	qed_vf.o
 -- 
 2.25.1
 
