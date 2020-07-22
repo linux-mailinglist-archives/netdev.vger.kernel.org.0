@@ -2,85 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74B71229CDA
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:14:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA95B229CED
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:17:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbgGVQOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 12:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40066 "EHLO
+        id S1726649AbgGVQRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 12:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbgGVQOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 12:14:53 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D79C0619DC
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:14:53 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id z3so1519135pfn.12
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:14:53 -0700 (PDT)
+        with ESMTP id S1727840AbgGVQRY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 12:17:24 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DF3C0619DC
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:17:24 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id h19so3075817ljg.13
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:17:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=SMCwoHMyepT1PSSn6MxfQ4RUWpwLcdAu833ifsBS4lI=;
-        b=KSMWxS4jlcRpVrWgICCOpKZayg177Xx3wA+1jQLk77VbTbHNcI/Ru8I6A3oQKLnd/3
-         pwWXOLWv3clDKGHmh8FFJZ/JBckrw6NBhMagLp43bYBG5DsKY8lguaEgkzEaTcWbOt/R
-         tFEgfdyB3bXnz+5BPZQ1YWz9shBRI4ktjB1YVQ0/m+vS5vSrmiNlt9psrO9mSybbELSM
-         rrRgXxI6Q1S5OGxxkPFHJcgoV7hE7owgTYEaOzr7Qy9z8VPKklgpjUiwOLVPmisoVufM
-         hYuB6zIciycwxo2YZPDX8UwRXpDryMG4ZrwuKIVDj9nIje/Zu/P7ok4nEn7KgRUnEOf6
-         Kjig==
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YcCci5oZDTRx2X/8yjdaRKhoWryBvlmTtX6fXcGwwbI=;
+        b=opywprfQ8qPOuJPzpjMUMV3i9P66ak+X5KShiDQDZM80sbm61ffQg2OPB/9Drv/LfP
+         MKN0uIarAUBAApexD3HZ49vIM4Yzv8+7Jvfc/XI2xe86gmGMrZyaOZWJcotGqTaD7FFX
+         C3yXE4AAu4OXUQj11gaLQ+EPjcJ+HFCV0Wk0Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=SMCwoHMyepT1PSSn6MxfQ4RUWpwLcdAu833ifsBS4lI=;
-        b=GrorZf/T3oCbJ3GZcKle4khWE5ixuO03ikASO7+Qry7PLArVaqP71923h+euwdu1dh
-         RYDi7leC8HyUtpSIG3J3Zi13QRtNTFE9nashWfhD7lkOHXO7sknLM5noVIFhPXDBl3yR
-         WdRxIxu8nNWjG1WL43WFo65Q7uGE5s1du6GATNd1HGLK+oPMTxoWTICl4GCruZJhwCr+
-         gRqCWa9LV7qCBvCqEQ8sgiZ7oqDNFpQNqrEL/g3tDTsle494qcR6KTajTgyWH8yysGDY
-         tmRCiQOFV3VcHenOcdPbwOx9rSvWkdfLi4vayzZe7s/0ssx/MMdKIGpr6RZeCYNjCfun
-         eUpQ==
-X-Gm-Message-State: AOAM531hr2QF0Yp5XetbeT7w+mZ3DnLvwGoaDntdkloeXwK/d+70q9ao
-        f2ALp6OG4760Rb/vN/44ptP9whHk
-X-Google-Smtp-Source: ABdhPJwAVRGUDSGwC14kxsO+rONbGjEDX1l3z5/fLZ0WCp0ebAZKbBz+0otSWJ7KE+vMuZDOwhkXyQ==
-X-Received: by 2002:a63:f806:: with SMTP id n6mr515293pgh.346.1595434492568;
-        Wed, 22 Jul 2020 09:14:52 -0700 (PDT)
-Received: from martin-VirtualBox.vpn.alcatel-lucent.com ([42.109.146.221])
-        by smtp.gmail.com with ESMTPSA id g6sm44657pfr.129.2020.07.22.09.14.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Jul 2020 09:14:52 -0700 (PDT)
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     Martin Varghese <martin.varghese@nokia.com>
-Subject: [PATCH net-next] net: Enabled MPLS support for devices of type ARPHRD_NONE.
-Date:   Wed, 22 Jul 2020 21:43:21 +0530
-Message-Id: <1595434401-6345-1-git-send-email-martinvarghesenokia@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YcCci5oZDTRx2X/8yjdaRKhoWryBvlmTtX6fXcGwwbI=;
+        b=J7qxLR62aqfoao1Z2RB39/ifdZkz3OZj38Q4/o47Guek2qYNKxLIMji/SdDLGduX1I
+         3FcMiuiHWrRwF7KQuYAcVfDXdLmFRLNTqOCc9VuGw3sjV5gJV02PBGQhWiWUcN3a0CZl
+         OxUho1hNOeL5ChGoiF7ufTfO58lkGVNJlmfZSyxdDG4OxdAwDk8h01IZDmgJ4IkASgSn
+         eUWmVS9duRSjGvOP/zk9np2tezTPd4k+mOvKcjN1UnNjVCipbgKUiuZi4W4PiT5RyVKS
+         IBCOYsaQ+jMHANZfqyOX0+G8hdk/alUElDh62S5EP47iMWjl7fwJiKyf2RdR45RVj++a
+         XNow==
+X-Gm-Message-State: AOAM5326wGkxeVMHXCGDn9OIBwfgZ+kl1KqE0akiJtXNC3TGRFqnI+zT
+        sn2h8gBFuBlvm72nbQ/YZVPFqA==
+X-Google-Smtp-Source: ABdhPJz/hRyKjb7squ+7NeEyEMA5gDos75a8lA62+aO0eJTFadEqqoQEjH04sn7IScc1oQoKNK5T3Q==
+X-Received: by 2002:a2e:81ce:: with SMTP id s14mr7079ljg.57.1595434642560;
+        Wed, 22 Jul 2020 09:17:22 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id y2sm119806lfh.1.2020.07.22.09.17.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2020 09:17:21 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: [PATCH bpf-next 0/2] Fix BPF socket lookup with reuseport groups with connections
+Date:   Wed, 22 Jul 2020 18:17:18 +0200
+Message-Id: <20200722161720.940831-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.25.4
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Varghese <martin.varghese@nokia.com>
+This mini series contains a fix for a bug noticed when analyzing a reported
+merge conflict between bpf-next and net tree [0].
 
-This change enables forwarding of MPLS packets from bareudp tunnel
-device which is of type ARPHRD_NONE.
+Apart from fixing a corner-case that affects use of BPF sk_lookup in tandem
+with UDP reuseport groups with connected sockets, it should make the
+conflict resolution with net tree easier.
 
-Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
----
- net/mpls/af_mpls.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+These changes don't replicate the improved UDP socket lookup behavior from
+net tree, where commit efc6b6f6c311 ("udp: Improve load balancing for
+SO_REUSEPORT.") is present.
 
-diff --git a/net/mpls/af_mpls.c b/net/mpls/af_mpls.c
-index fd30ea61336e..37b6731a4576 100644
---- a/net/mpls/af_mpls.c
-+++ b/net/mpls/af_mpls.c
-@@ -1594,7 +1594,8 @@ static int mpls_dev_notify(struct notifier_block *this, unsigned long event,
- 		    dev->type == ARPHRD_IP6GRE ||
- 		    dev->type == ARPHRD_SIT ||
- 		    dev->type == ARPHRD_TUNNEL ||
--		    dev->type == ARPHRD_TUNNEL6) {
-+		    dev->type == ARPHRD_TUNNEL6 ||
-+		    dev->type == ARPHRD_NONE) {
- 			mdev = mpls_add_dev(dev);
- 			if (IS_ERR(mdev))
- 				return notifier_from_errno(PTR_ERR(mdev));
+Happy to do it as a follow up. For the moment I didn't want to make things
+more confusing when it comes to what got fixed where and why.
+
+Thanks,
+-jkbs
+
+Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+
+[0] https://lore.kernel.org/linux-next/20200722132143.700a5ccc@canb.auug.org.au/
+
+Jakub Sitnicki (2):
+  udp: Don't discard reuseport selection when group has connections
+  selftests/bpf: Test BPF socket lookup and reuseport with connections
+
+ net/ipv4/udp.c                                |  5 +-
+ net/ipv6/udp.c                                |  5 +-
+ .../selftests/bpf/prog_tests/sk_lookup.c      | 54 ++++++++++++++++++-
+ 3 files changed, 55 insertions(+), 9 deletions(-)
+
 -- 
-2.18.4
+2.25.4
 
