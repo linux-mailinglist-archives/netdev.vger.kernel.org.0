@@ -2,91 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 343E7229AF4
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:05:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4480229B15
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:14:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728812AbgGVPFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 11:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727985AbgGVPFq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:05:46 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83C8C0619DE
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 08:05:46 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id u64so2224632qka.12
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 08:05:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RGlEkhcsZo3yhQXvjN0G+bmOOv4WJUp5U029tMuuyYg=;
-        b=TaHrNGo0vX9p8V/a8lm0ySt7CsVnoSD6VsPJ+ZHw5/3XzTaHXum+uEEJNhhxBUw7xz
-         mmpy3MgxQTOlnS7qSticTtoJFnxrKcB0v4bgF67rRG8ALv6V3prPwY4UQ61ULQEPiW7d
-         fGVddSAaLcvTOnFIVytrgfb2Lt2Q5rc7KLuHKsci8sv6h/Uty2++ObGjwpo9CXCnQXkj
-         6/jeCkZRq0KSMWZSxST07kWW6fGXdrKm2suORrbRZ7mtSduUSplay6gSECXy8YghAUPV
-         ZrHwJZB2skAayNjFeyvDGFRe8MG6NryWipDSceAbDEIogR/7GtyW02yZsFGfUXhvRJtk
-         77mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RGlEkhcsZo3yhQXvjN0G+bmOOv4WJUp5U029tMuuyYg=;
-        b=dl73vi2pUA1LjbPWHIXPbN90KD03oejB7Qc/wbYCSBaDpo3pEraLT4eu9AuQTQpu1D
-         vDBe6or1jzZhh0DTRDBIVx9LUfgUWOlmYq9fG/4QzAF+k+Zyk5J/p1s3Cd0bY2UuiUIh
-         WXG8kYcst3XNAP0Ha3aeIyNCKJTxokRVWjP0UGh6bPo4rHiGUWWWHPk3A6VUbzQjdJZr
-         rGiaX6LftxgNEagGxZeGOVmL3LaOcISCxzLp2xn/hSeJzmTEudQpoL2KrfJAre7Hq8NM
-         rVpQmV8AWkdj6BYV8ERo+JXyt2e4NwtG87GEd0YG3+Mks/7xeV8S9Nnw5YM4cz2Siji+
-         aBow==
-X-Gm-Message-State: AOAM532rxmkt5zatJMYCLTjj7UwRtIDAbFW7eJkZKoNmoad0FNcOS11V
-        fTJLzIdcO7sM4yA+XGlG9SjJzOhq
-X-Google-Smtp-Source: ABdhPJx3YEdHGVIIXp5eD1iEMxAadHYMvlxBtVv/1oWKSqd1XmdiQUkLG1g+ZSalmRivkuTrWp4q9Q==
-X-Received: by 2002:a37:468a:: with SMTP id t132mr322612qka.467.1595430344819;
-        Wed, 22 Jul 2020 08:05:44 -0700 (PDT)
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
-        by smtp.gmail.com with ESMTPSA id y12sm23229016qto.87.2020.07.22.08.05.43
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jul 2020 08:05:43 -0700 (PDT)
-Received: by mail-yb1-f178.google.com with SMTP id f5so1186289ybq.2
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 08:05:43 -0700 (PDT)
-X-Received: by 2002:a25:df81:: with SMTP id w123mr51454810ybg.428.1595430342800;
- Wed, 22 Jul 2020 08:05:42 -0700 (PDT)
+        id S1732635AbgGVPM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 11:12:29 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:41683 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726717AbgGVPM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:12:28 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jyGPt-0001rA-Ha; Wed, 22 Jul 2020 15:12:21 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] lan743x: remove redundant initialization of variable current_head_index
+Date:   Wed, 22 Jul 2020 16:12:21 +0100
+Message-Id: <20200722151221.957972-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <87wo2vwxq6.fsf@cloudflare.com> <20200722144212.27106-1-kuniyu@amazon.co.jp>
- <87v9ifwq2p.fsf@cloudflare.com>
-In-Reply-To: <87v9ifwq2p.fsf@cloudflare.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 22 Jul 2020 11:05:06 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScto+Z_qgFxJBzhPUNEruAvKLSTL7-0AnyP-M6Gon_e5Q@mail.gmail.com>
-Message-ID: <CA+FuTScto+Z_qgFxJBzhPUNEruAvKLSTL7-0AnyP-M6Gon_e5Q@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the bpf-next tree with the net tree
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        kernel-team <kernel-team@cloudflare.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 22, 2020 at 11:02 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->
-> On Wed, Jul 22, 2020 at 04:42 PM CEST, Kuniyuki Iwashima wrote:
-> > Can I submit a patch to net tree that rewrites udp[46]_lib_lookup2() to
-> > use only 'result' ?
->
-> Feel free. That should make the conflict resolution even easier later
-> on.
+From: Colin Ian King <colin.king@canonical.com>
 
-Thanks for the detailed analysis, Jakub.
+The variable current_head_index is being initialized with a value that
+is never read and it is being updated later with a new value.  Replace
+the initialization of -1 with the latter assignment.
 
-Would it be easier to fix this wholly in bpf-next, by introducing
-reuseport_result there?
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/microchip/lan743x_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index f6479384dc4f..de93cc6ebc1a 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -2046,14 +2046,13 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+ {
+ 	struct skb_shared_hwtstamps *hwtstamps = NULL;
+ 	int result = RX_PROCESS_RESULT_NOTHING_TO_DO;
++	int current_head_index = *rx->head_cpu_ptr;
+ 	struct lan743x_rx_buffer_info *buffer_info;
+ 	struct lan743x_rx_descriptor *descriptor;
+-	int current_head_index = -1;
+ 	int extension_index = -1;
+ 	int first_index = -1;
+ 	int last_index = -1;
+ 
+-	current_head_index = *rx->head_cpu_ptr;
+ 	if (current_head_index < 0 || current_head_index >= rx->ring_size)
+ 		goto done;
+ 
+-- 
+2.27.0
+
