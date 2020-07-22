@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C0A9229E81
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 19:25:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A61C9229E7E
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 19:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730896AbgGVRYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 13:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51034 "EHLO
+        id S1731843AbgGVRYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 13:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726980AbgGVRYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 13:24:41 -0400
+        with ESMTP id S1726980AbgGVRYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 13:24:42 -0400
 Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4032EC0619DC;
-        Wed, 22 Jul 2020 10:24:41 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id n2so2251499edr.5;
-        Wed, 22 Jul 2020 10:24:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843D5C0619DC;
+        Wed, 22 Jul 2020 10:24:42 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id g20so2260138edm.4;
+        Wed, 22 Jul 2020 10:24:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gPP0o2IshuB1LsGL+RlWYagGQFRTxZqJkVHgsKuPywk=;
-        b=eXn7IUD/qqGZ665TjtY/1XQa6zE3hdJTIfxcjm9PHJSTXYZx8C6sRqi8KjavPYnP4j
-         glhyUS6oA94YrOTN/C75FuWP7eHJF06P90j6gT4U8tHksMu8dYeOaUv4kEQJ2ZjGNrx4
-         zmtxNETChqqAejiSizVPikMweJuWEBb8tqO2cjekgH6LP6r/CPW2gDyC8hTXDmPWPcf0
-         3mUGe7ytgBVKEaljkhd3OWBCCQu5vlt0/oKnLKxRrJWaxWJTePwFYAKVzC86eHxajaEt
-         5mwxIjbKDswO3P2a3H4oGhKR+L6iqHEoYdKEd4WHo2iE7wyXLbNoy9Sjv/NfQN+aa/Jb
-         XSLA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=vHgiL55jxDrujS/wtQnL77G2JrcZ1DngkTtPEjQmevw=;
+        b=DaGkdRNfS8eXOBKB5sp0VfYsh5wlQq7pP2Y+QI84Pxei90Prd/XesQk8y64weQCjFE
+         L86OcBmZoUSZgIa2YE2s+OKBewK5rBIob8PYrvByLTE9XNqc8RLuImeOh84tsK91hpi3
+         i8CV2XUi0ZabD2QljLDMLQVJ3A0pnt+qRjIzv53RRgFbfDOWO4fQpAJ1veUbAA/PttcU
+         DcRUDiUaOESxMwRpXL8NgIwbGJudZJ328hRyy4/awcGF/wyHSPiJ9nSjf068Upy+b8oD
+         YMOHGhrd1G6VRmJHAMmAMZc42+x3O6Kqku58mnjIqCAQvoiUqDX3+yhM4Dyiutqv/OjC
+         8GVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gPP0o2IshuB1LsGL+RlWYagGQFRTxZqJkVHgsKuPywk=;
-        b=P+N2NS8gY7DOHMJ0S6X8dTADZD32WLiy3A1B6BXHNxwMoqZQhHmQxp7wFalNjJWIeJ
-         2IpIiOsGMAfga5mPmeVshjSRoFHFz8zVIfCCFXvV4dG4wQdI2CcLN/jDtxbKRBf9SVnR
-         xI5VdK1KxsoBCM2aNhR7PF38InoaCImGO1654F7Hwn6jne1VTL6DI2I8kblcNdER8DdW
-         SGTnqHE0SGkQHRaMbetuj+3g6Prmg7L7JIR1dREWQU3Ty0YZNEU+6q2R1VExORgEZyCk
-         ScPCTgB5DVpngsXco5gPdstXj03O43FHv3b6e+T3HmdwCkvyOLXrlI+GWBFZvX4ekvx0
-         BkHw==
-X-Gm-Message-State: AOAM533S+4Awmp12a3YK+g9inD6+LG76dIfd8q/hqlGyQM0dc+AAuIeW
-        /vRM9wd3dvEtqQMfzAr0z/A=
-X-Google-Smtp-Source: ABdhPJw6qCvxHjC43/yrpWhDOe/AsWnZXiBnfMRI2ghCPn3hOLpRGBpWv3Dxsjl6tQ8CgvCHhpH0Mw==
-X-Received: by 2002:a05:6402:3064:: with SMTP id bs4mr517588edb.350.1595438679957;
-        Wed, 22 Jul 2020 10:24:39 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=vHgiL55jxDrujS/wtQnL77G2JrcZ1DngkTtPEjQmevw=;
+        b=AbNbo+SaYzwnrPLIJjmzcXXK7cFmYbvjcACDulPFvCH1aCw/nLqc2XhjZSGID+oqVO
+         rxBUYNeYvt8ChHwVNvp0pe9ysc7wfPQk6YQY0JewwzewVyP3eT4pX8Sz8VXXvfMIvJ2P
+         nOtFhHGKVOlpbxnKE9wbs8sdzOt4Mz9RA6fZ0YW8OIuyQeZYyPLxTEV9t6o7qaZDDOVO
+         GbxiXknpF7K36x8cPKga5OTkTx1qY73DcD1SJ31R/weMlV+vT0MfIVqJudc1QXGOJWrw
+         UDhFwrkuv0JdcYa6JFPsycyA7X2h/+vVnI19FM8LZxeCW+wkd4iLWoNuGhlrjAvHwClV
+         z3KQ==
+X-Gm-Message-State: AOAM532MhVF30PLVB9l66ycu1ojSLAhv70Sf0YZ4D9ff5tvcPMDRA+Kz
+        LIPKNus6LIl3mPtG+z2n3ag=
+X-Google-Smtp-Source: ABdhPJyXxT+y27dnP3zqkhp3Z0x2wLeOmgRRK6nopGhYGs2ugqJ+s1/IyCgvhCQI1tHV163CaotnFQ==
+X-Received: by 2002:a50:fe0c:: with SMTP id f12mr496188edt.360.1595438681135;
+        Wed, 22 Jul 2020 10:24:41 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.219.134])
-        by smtp.gmail.com with ESMTPSA id bt26sm311517edb.17.2020.07.22.10.24.38
+        by smtp.gmail.com with ESMTPSA id bt26sm311517edb.17.2020.07.22.10.24.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 10:24:39 -0700 (PDT)
+        Wed, 22 Jul 2020 10:24:40 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     robh+dt@kernel.org, shawnguo@kernel.org, mpe@ellerman.id.au,
         devicetree@vger.kernel.org
@@ -54,10 +54,12 @@ Cc:     benh@kernel.crashing.org, paulus@samba.org,
         linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, madalin.bucur@oss.nxp.com,
         radu-andrei.bulie@nxp.com, fido_max@inbox.ru
-Subject: [PATCH devicetree 0/4] Add Seville Ethernet switch to T1040RDB
-Date:   Wed, 22 Jul 2020 20:24:18 +0300
-Message-Id: <20200722172422.2590489-1-olteanv@gmail.com>
+Subject: [PATCH devicetree 1/4] powerpc: dts: t1040: add bindings for Seville Ethernet switch
+Date:   Wed, 22 Jul 2020 20:24:19 +0300
+Message-Id: <20200722172422.2590489-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200722172422.2590489-1-olteanv@gmail.com>
+References: <20200722172422.2590489-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -65,24 +67,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Seville is a DSA switch that is embedded inside the T1040 SoC, and
-supported by the mscc_seville DSA driver. The driver has been accepted
-this release cycle and is currently available in net-next (and
-therefore, in linux-next).
+Add the description of the embedded L2 switch inside the SoC dtsi file
+for NXP T1040.
 
-This series adds this switch to the SoC's dtsi files and to the T1040RDB
-board file.
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ arch/powerpc/boot/dts/fsl/t1040si-post.dtsi | 75 +++++++++++++++++++++
+ 1 file changed, 75 insertions(+)
 
-Vladimir Oltean (4):
-  powerpc: dts: t1040: add bindings for Seville Ethernet switch
-  powerpc: dts: t1040: label the 2 MDIO controllers
-  powerpc: dts: t1040rdb: put SGMII PHY under &mdio0 label
-  powerpc: dts: t1040rdb: add ports for Seville Ethernet switch
-
- arch/powerpc/boot/dts/fsl/t1040rdb.dts      | 123 +++++++++++++++++++-
- arch/powerpc/boot/dts/fsl/t1040si-post.dtsi |  79 ++++++++++++-
- 2 files changed, 194 insertions(+), 8 deletions(-)
-
+diff --git a/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi b/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi
+index 315d0557eefc..4af856dcc6a3 100644
+--- a/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi
++++ b/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi
+@@ -628,6 +628,81 @@ mdio@fd000 {
+ 			status = "disabled";
+ 		};
+ 	};
++
++	seville_switch: ethernet-switch@800000 {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "mscc,vsc9953-switch";
++		little-endian;
++		reg = <0x800000 0x290000>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			seville_port0: port@0 {
++				reg = <0>;
++				status = "disabled";
++			};
++
++			seville_port1: port@1 {
++				reg = <1>;
++				status = "disabled";
++			};
++
++			seville_port2: port@2 {
++				reg = <2>;
++				status = "disabled";
++			};
++
++			seville_port3: port@3 {
++				reg = <3>;
++				status = "disabled";
++			};
++
++			seville_port4: port@4 {
++				reg = <4>;
++				status = "disabled";
++			};
++
++			seville_port5: port@5 {
++				reg = <5>;
++				status = "disabled";
++			};
++
++			seville_port6: port@6 {
++				reg = <6>;
++				status = "disabled";
++			};
++
++			seville_port7: port@7 {
++				reg = <7>;
++				status = "disabled";
++			};
++
++			seville_port8: port@8 {
++				reg = <8>;
++				phy-mode = "internal";
++				status = "disabled";
++
++				fixed-link {
++					speed = <2500>;
++					full-duplex;
++				};
++			};
++
++			seville_port9: port@9 {
++				reg = <9>;
++				phy-mode = "internal";
++				status = "disabled";
++
++				fixed-link {
++					speed = <2500>;
++					full-duplex;
++				};
++			};
++		};
++	};
+ };
+ 
+ &qe {
 -- 
 2.25.1
 
