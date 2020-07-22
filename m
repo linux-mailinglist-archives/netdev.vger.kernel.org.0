@@ -2,65 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0180B22A27B
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 00:39:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0660422A28F
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 00:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733065AbgGVWjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 18:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
+        id S1729565AbgGVWpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 18:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733039AbgGVWjJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 18:39:09 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE95C0619E2;
-        Wed, 22 Jul 2020 15:39:08 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id u185so2035419pfu.1;
-        Wed, 22 Jul 2020 15:39:08 -0700 (PDT)
+        with ESMTP id S1726525AbgGVWpE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 18:45:04 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCF5C0619DC
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 15:45:04 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id d18so3019652edv.6
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 15:45:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BHshCalt4OMpzpgm5pG7X6ddzCe31OEWzs6OlsIqweY=;
-        b=blOFuuB0vyXTXcahUZFXq+AHeuCa2sHVekIr8WIgRPbskhj4qJIeNgStJ8JtPYCaQN
-         nVCkfuEQeeikZmfPGI0flpgTGCbxxUEUEBRm44BsWGIK/TuVO4MwfYi2TpNQtQ2OU17d
-         Vp9a1+kGtA+JhPTLiUAXaVm6LpGPrQGb74GJPn/uDpNinKwRT9D8lcDv3QdnYpYEJVg1
-         ROOh63u2lP3usRIpC6GbKjAMZ6GcpjOIfshYrvn82mWIbsTg2n2bYXE/s2X2ffTiafBA
-         flVj1YuVchC9WNt6WMRLEIyuwBlkZ4clgyY5YZr7Zl8yS/Q/SnvzYHzH0JfwrbZhZiEK
-         LgNQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3NgAR8ZC4EZlq0hNwLDSrYImwVCuOkHFnWxdi0KNK+c=;
+        b=GFVPSWMVYF+6qiO9ahJN2eFJ/chWJ6HRyJVl0gAI42i9nprklsympml2Cjg+cdEmw2
+         mxpY+NLVhNaZEZHEKMledId1Zg8Q3absmTiuAMKftIdWFr3XhjPBFAV9E5gj9iq5d+G2
+         +aKVCYBd0bqhL6GG97CRWD5CQkrOCBQZPHxv4vdEXfyJOmZj16TsSszhgOIK4m7nZr0Y
+         /IwZ+qXqnj4Y/09WRa+1i1K++Oyub05bIzxx3ja5A7KXvOf1sK3ep2kWgTpxYLLeMD3j
+         xK0JzyZdUBqWU2lQUxx1idvHNVvBSp/aRJD6PmfGLFlnRfS9CpMR88yncKbaTOdySsm7
+         5wPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BHshCalt4OMpzpgm5pG7X6ddzCe31OEWzs6OlsIqweY=;
-        b=fZhm3eGrI7Ecp6N+TRv1Ojll1gFtIM//tIHAGPxUI16nmFSjzcOrn13HMDQZjdW9o2
-         tZIk2EaWLfdvbcLm/gyxLHAB1FUVyFwjCP8fXGfHFWWCtKwfvP7eSvjmp7272Fo/V7mZ
-         g7TbTrKSjEzEw8eovCC35qlBDyBOzE6yZEVMz9voSGuUGTqzciYEuEY8D5y+T1Y5r0hG
-         rGxaLqbFfe8ftdV2GNTTNA6YVgE5MF31Nm9eODXZEJDxlzsTnLLZlPg64CSBiU9E3mL0
-         qjxa/0LISIBOc7BzwkU0RHR5CIbn50DWx8FWr1dojU6xwPFaqZA4e0aFTqW5NnHQPFp/
-         Rd/Q==
-X-Gm-Message-State: AOAM5304SYbHoRzt1x58Jb0oprYADMNcds9RLTia4TYgcvalYkgNHjkh
-        o916OCi4Nx8Fv3Y6IDrgG+Q=
-X-Google-Smtp-Source: ABdhPJz9xiY9s9hzN2tpzoHKXa/YbwtEP3UMfMGhuGDkTSEdVrA00qvMmWE2bCl7UgYnehJwbrUENQ==
-X-Received: by 2002:a62:e712:: with SMTP id s18mr1603605pfh.224.1595457548420;
-        Wed, 22 Jul 2020 15:39:08 -0700 (PDT)
-Received: from localhost.localdomain ([131.107.159.194])
-        by smtp.gmail.com with ESMTPSA id r70sm625760pfc.109.2020.07.22.15.39.07
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3NgAR8ZC4EZlq0hNwLDSrYImwVCuOkHFnWxdi0KNK+c=;
+        b=h4Vyv4kEjVm8ERmys/Xu8NJmKiyhKUvkNzlOHrET4waNy+n21aDYMuj7DazVYHf4Q4
+         rUrOXY03cTzeB2JeNK4xP76rb7+qbuqfr2PmNwhRiCNO5joD1xGwjCaOvbiiHFiwnSsF
+         upB+7JaumR6sDcrApxqe2ysYjXQZ/8ASxz9Xh1/qo6eUPfk3SsdI2ZelFG7plYneG564
+         YjGGSyqCdGlczEJ+G5TdxaE+ctEFHMvdYWR6gOcZNvDTg38oG3WHGkJ6TCkncH89kq/b
+         7srlRSMQc2q0IT+vG7bLSPMVLzRcaqjrGqd8iRDHTv6+TAei8Mqjplu1ct9jVpXlJDmL
+         8zzw==
+X-Gm-Message-State: AOAM531SdYWLxcLDbbR+wfUrIO8iuNYS/UdC3gjsxfxFNu1PT0pFQ9pH
+        SJHBIynuBRE1pNg3YC6f7Qk=
+X-Google-Smtp-Source: ABdhPJyoy9E0g0p8PcMUnfwJkFsAHoaPM9v3S+ZkkRZy39QeJwr/Cx1UxoVvQjFT7iUeSP+DEa2VNA==
+X-Received: by 2002:a50:c044:: with SMTP id u4mr1645298edd.366.1595457902969;
+        Wed, 22 Jul 2020 15:45:02 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id cz2sm738049edb.82.2020.07.22.15.45.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 15:39:08 -0700 (PDT)
-From:   Andres Beltran <lkmlabelt@gmail.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org
-Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mikelley@microsoft.com, parri.andrea@gmail.com,
-        Andres Beltran <lkmlabelt@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH v6 3/3] hv_netvsc: Use vmbus_requestor to generate transaction IDs for VMBus hardening
-Date:   Wed, 22 Jul 2020 18:39:04 -0400
-Message-Id: <20200722223904.2801-4-lkmlabelt@gmail.com>
+        Wed, 22 Jul 2020 15:45:02 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        jiri@mellanox.com, edumazet@google.com, ap420073@gmail.com,
+        xiyou.wangcong@gmail.com, maximmi@mellanox.com, mkubecek@suse.cz,
+        richardcochran@gmail.com
+Subject: [PATCH net-next] net: dsa: stop overriding master's ndo_get_phys_port_name
+Date:   Thu, 23 Jul 2020 01:43:12 +0300
+Message-Id: <20200722224312.2719813-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200722223904.2801-1-lkmlabelt@gmail.com>
-References: <20200722223904.2801-1-lkmlabelt@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -68,312 +64,171 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, pointers to guest memory are passed to Hyper-V as
-transaction IDs in netvsc. In the face of errors or malicious
-behavior in Hyper-V, netvsc should not expose or trust the transaction
-IDs returned by Hyper-V to be valid guest memory addresses. Instead,
-use small integers generated by vmbus_requestor as requests
-(transaction) IDs.
+The purpose of this override is to give the user an indication of what
+the number of the CPU port is (in DSA, the CPU port is a hardware
+implementation detail and not a network interface capable of traffic).
 
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Tested-by: Andrea Parri <parri.andrea@gmail.com>
-Link: https://lore.kernel.org/r/20200701001221.2540-4-lkmlabelt@gmail.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+However, it has always failed (by design) at providing this information
+to the user in a reliable fashion.
+
+Prior to commit 3369afba1e46 ("net: Call into DSA netdevice_ops
+wrappers"), the behavior was to only override this callback if it was
+not provided by the DSA master.
+
+That was its first failure: if the DSA master itself was a DSA port or a
+switchdev, then the user would not see the number of the CPU port in
+/sys/class/net/eth0/phys_port_name, but the number of the DSA master
+port within its respective physical switch.
+
+But that was actually ok in a way. The commit mentioned above changed
+that behavior, and now overrides the master's ndo_get_phys_port_name
+unconditionally. That comes with problems of its own, which are worse in
+a way.
+
+The idea is that it's typical for switchdev users to have udev rules for
+consistent interface naming. These are based, among other things, on
+the phys_port_name attribute. If we let the DSA switch at the bottom
+to start randomly overriding ndo_get_phys_port_name with its own CPU
+port, we basically lose any predictability in interface naming, or even
+uniqueness, for that matter.
+
+So, there are reasons to let DSA override the master's callback (to
+provide a consistent interface, a number which has a clear meaning and
+must not be interpreted according to context), and there are reasons to
+not let DSA override it (it breaks udev matching for the DSA master).
+
+But, there is an alternative method for users to retrieve the number of
+the CPU port of each DSA switch in the system:
+
+  $ devlink port
+  pci/0000:00:00.5/0: type eth netdev swp0 flavour physical port 0
+  pci/0000:00:00.5/2: type eth netdev swp2 flavour physical port 2
+  pci/0000:00:00.5/4: type notset flavour cpu port 4
+  spi/spi2.0/0: type eth netdev sw0p0 flavour physical port 0
+  spi/spi2.0/1: type eth netdev sw0p1 flavour physical port 1
+  spi/spi2.0/2: type eth netdev sw0p2 flavour physical port 2
+  spi/spi2.0/4: type notset flavour cpu port 4
+  spi/spi2.1/0: type eth netdev sw1p0 flavour physical port 0
+  spi/spi2.1/1: type eth netdev sw1p1 flavour physical port 1
+  spi/spi2.1/2: type eth netdev sw1p2 flavour physical port 2
+  spi/spi2.1/3: type eth netdev sw1p3 flavour physical port 3
+  spi/spi2.1/4: type notset flavour cpu port 4
+
+So remove this duplicated, unreliable and troublesome method. From this
+patch on, the phys_port_name attribute of the DSA master will only
+contain information about itself (if at all). If the users need reliable
+information about the CPU port they're probably using devlink anyway.
+
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
-Changes in v2:
-        - Add casts to unsigned long to fix warnings on 32bit.
-        - Use an inline function to get the requestor size.
+This is the moral v2 of
+https://patchwork.ozlabs.org/project/netdev/patch/20200722205348.2688142-1-olteanv@gmail.com/
 
- drivers/net/hyperv/hyperv_net.h   | 13 +++++
- drivers/net/hyperv/netvsc.c       | 79 +++++++++++++++++++++++++------
- drivers/net/hyperv/rndis_filter.c |  1 +
- include/linux/hyperv.h            |  1 +
- 4 files changed, 80 insertions(+), 14 deletions(-)
+ include/net/dsa.h | 23 -----------------------
+ net/core/dev.c    |  5 -----
+ net/dsa/master.c  | 12 ------------
+ 3 files changed, 40 deletions(-)
 
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index abda736e7c7d..f43b614f2345 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -847,6 +847,19 @@ struct nvsp_message {
- 
- #define NETVSC_XDP_HDRM 256
- 
-+#define NETVSC_MIN_OUT_MSG_SIZE (sizeof(struct vmpacket_descriptor) + \
-+				 sizeof(struct nvsp_message))
-+#define NETVSC_MIN_IN_MSG_SIZE sizeof(struct vmpacket_descriptor)
-+
-+/* Estimated requestor size:
-+ * out_ring_size/min_out_msg_size + in_ring_size/min_in_msg_size
-+ */
-+static inline u32 netvsc_rqstor_size(unsigned long ringbytes)
-+{
-+	return ringbytes / NETVSC_MIN_OUT_MSG_SIZE +
-+	       ringbytes / NETVSC_MIN_IN_MSG_SIZE;
-+}
-+
- struct multi_send_data {
- 	struct sk_buff *skb; /* skb containing the pkt */
- 	struct hv_netvsc_packet *pkt; /* netvsc pkt pending */
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index 41f5cf0bb997..79b907a29433 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -50,7 +50,7 @@ void netvsc_switch_datapath(struct net_device *ndev, bool vf)
- 
- 	vmbus_sendpacket(dev->channel, init_pkt,
- 			       sizeof(struct nvsp_message),
--			       (unsigned long)init_pkt,
-+			       VMBUS_RQST_ID_NO_RESPONSE,
- 			       VM_PKT_DATA_INBAND, 0);
- }
- 
-@@ -163,7 +163,7 @@ static void netvsc_revoke_recv_buf(struct hv_device *device,
- 		ret = vmbus_sendpacket(device->channel,
- 				       revoke_packet,
- 				       sizeof(struct nvsp_message),
--				       (unsigned long)revoke_packet,
-+				       VMBUS_RQST_ID_NO_RESPONSE,
- 				       VM_PKT_DATA_INBAND, 0);
- 		/* If the failure is because the channel is rescinded;
- 		 * ignore the failure since we cannot send on a rescinded
-@@ -213,7 +213,7 @@ static void netvsc_revoke_send_buf(struct hv_device *device,
- 		ret = vmbus_sendpacket(device->channel,
- 				       revoke_packet,
- 				       sizeof(struct nvsp_message),
--				       (unsigned long)revoke_packet,
-+				       VMBUS_RQST_ID_NO_RESPONSE,
- 				       VM_PKT_DATA_INBAND, 0);
- 
- 		/* If the failure is because the channel is rescinded;
-@@ -304,6 +304,7 @@ static int netvsc_init_buf(struct hv_device *device,
- 	unsigned int buf_size;
- 	size_t map_words;
- 	int ret = 0;
-+	u64 rqst_id;
- 
- 	/* Get receive buffer area. */
- 	buf_size = device_info->recv_sections * device_info->recv_section_size;
-@@ -350,13 +351,22 @@ static int netvsc_init_buf(struct hv_device *device,
- 
- 	trace_nvsp_send(ndev, init_packet);
- 
-+	rqst_id = vmbus_next_request_id(&device->channel->requestor,
-+					(unsigned long)init_packet);
-+	if (rqst_id == VMBUS_RQST_ERROR) {
-+		netdev_err(ndev, "No request id available\n");
-+		goto cleanup;
-+	}
-+
- 	/* Send the gpadl notification request */
- 	ret = vmbus_sendpacket(device->channel, init_packet,
- 			       sizeof(struct nvsp_message),
--			       (unsigned long)init_packet,
-+			       rqst_id,
- 			       VM_PKT_DATA_INBAND,
- 			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
- 	if (ret != 0) {
-+		/* Reclaim request ID to avoid leak of IDs */
-+		vmbus_request_addr(&device->channel->requestor, rqst_id);
- 		netdev_err(ndev,
- 			"unable to send receive buffer's gpadl to netvsp\n");
- 		goto cleanup;
-@@ -432,13 +442,22 @@ static int netvsc_init_buf(struct hv_device *device,
- 
- 	trace_nvsp_send(ndev, init_packet);
- 
-+	rqst_id = vmbus_next_request_id(&device->channel->requestor,
-+					(unsigned long)init_packet);
-+	if (rqst_id == VMBUS_RQST_ERROR) {
-+		netdev_err(ndev, "No request id available\n");
-+		goto cleanup;
-+	}
-+
- 	/* Send the gpadl notification request */
- 	ret = vmbus_sendpacket(device->channel, init_packet,
- 			       sizeof(struct nvsp_message),
--			       (unsigned long)init_packet,
-+			       rqst_id,
- 			       VM_PKT_DATA_INBAND,
- 			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
- 	if (ret != 0) {
-+		/* Reclaim request ID to avoid leak of IDs */
-+		vmbus_request_addr(&device->channel->requestor, rqst_id);
- 		netdev_err(ndev,
- 			   "unable to send send buffer's gpadl to netvsp\n");
- 		goto cleanup;
-@@ -496,6 +515,7 @@ static int negotiate_nvsp_ver(struct hv_device *device,
- {
- 	struct net_device *ndev = hv_get_drvdata(device);
- 	int ret;
-+	u64 rqst_id;
- 
- 	memset(init_packet, 0, sizeof(struct nvsp_message));
- 	init_packet->hdr.msg_type = NVSP_MSG_TYPE_INIT;
-@@ -503,15 +523,25 @@ static int negotiate_nvsp_ver(struct hv_device *device,
- 	init_packet->msg.init_msg.init.max_protocol_ver = nvsp_ver;
- 	trace_nvsp_send(ndev, init_packet);
- 
-+	rqst_id = vmbus_next_request_id(&device->channel->requestor,
-+					(unsigned long)init_packet);
-+	if (rqst_id == VMBUS_RQST_ERROR) {
-+		netdev_err(ndev, "No request id available\n");
-+		return -EAGAIN;
-+	}
-+
- 	/* Send the init request */
- 	ret = vmbus_sendpacket(device->channel, init_packet,
- 			       sizeof(struct nvsp_message),
--			       (unsigned long)init_packet,
-+			       rqst_id,
- 			       VM_PKT_DATA_INBAND,
- 			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
- 
--	if (ret != 0)
-+	if (ret != 0) {
-+		/* Reclaim request ID to avoid leak of IDs */
-+		vmbus_request_addr(&device->channel->requestor, rqst_id);
- 		return ret;
-+	}
- 
- 	wait_for_completion(&net_device->channel_init_wait);
- 
-@@ -542,7 +572,7 @@ static int negotiate_nvsp_ver(struct hv_device *device,
- 
- 	ret = vmbus_sendpacket(device->channel, init_packet,
- 				sizeof(struct nvsp_message),
--				(unsigned long)init_packet,
-+				VMBUS_RQST_ID_NO_RESPONSE,
- 				VM_PKT_DATA_INBAND, 0);
- 
- 	return ret;
-@@ -599,7 +629,7 @@ static int netvsc_connect_vsp(struct hv_device *device,
- 	/* Send the init request */
- 	ret = vmbus_sendpacket(device->channel, init_packet,
- 				sizeof(struct nvsp_message),
--				(unsigned long)init_packet,
-+				VMBUS_RQST_ID_NO_RESPONSE,
- 				VM_PKT_DATA_INBAND, 0);
- 	if (ret != 0)
- 		goto cleanup;
-@@ -680,10 +710,19 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
- 				    const struct vmpacket_descriptor *desc,
- 				    int budget)
- {
--	struct sk_buff *skb = (struct sk_buff *)(unsigned long)desc->trans_id;
-+	struct sk_buff *skb;
- 	struct net_device_context *ndev_ctx = netdev_priv(ndev);
- 	u16 q_idx = 0;
- 	int queue_sends;
-+	u64 cmd_rqst;
-+
-+	cmd_rqst = vmbus_request_addr(&channel->requestor, (u64)desc->trans_id);
-+	if (cmd_rqst == VMBUS_RQST_ERROR) {
-+		netdev_err(ndev, "Incorrect transaction id\n");
-+		return;
-+	}
-+
-+	skb = (struct sk_buff *)(unsigned long)cmd_rqst;
- 
- 	/* Notify the layer above us */
- 	if (likely(skb)) {
-@@ -822,7 +861,7 @@ static inline int netvsc_send_pkt(
- 	struct net_device *ndev = hv_get_drvdata(device);
- 	struct net_device_context *ndev_ctx = netdev_priv(ndev);
- 	struct netdev_queue *txq = netdev_get_tx_queue(ndev, packet->q_idx);
--	u64 req_id;
-+	u64 rqst_id;
- 	int ret;
- 	u32 ring_avail = hv_get_avail_to_write_percent(&out_channel->outbound);
- 
-@@ -838,13 +877,19 @@ static inline int netvsc_send_pkt(
- 	else
- 		rpkt->send_buf_section_size = packet->total_data_buflen;
- 
--	req_id = (ulong)skb;
- 
- 	if (out_channel->rescind)
- 		return -ENODEV;
- 
- 	trace_nvsp_send_pkt(ndev, out_channel, rpkt);
- 
-+	rqst_id = vmbus_next_request_id(&out_channel->requestor,
-+					(unsigned long)skb);
-+	if (rqst_id == VMBUS_RQST_ERROR) {
-+		ret = -EAGAIN;
-+		goto ret_check;
-+	}
-+
- 	if (packet->page_buf_cnt) {
- 		if (packet->cp_partial)
- 			pb += packet->rmsg_pgcnt;
-@@ -852,14 +897,15 @@ static inline int netvsc_send_pkt(
- 		ret = vmbus_sendpacket_pagebuffer(out_channel,
- 						  pb, packet->page_buf_cnt,
- 						  &nvmsg, sizeof(nvmsg),
--						  req_id);
-+						  rqst_id);
- 	} else {
- 		ret = vmbus_sendpacket(out_channel,
- 				       &nvmsg, sizeof(nvmsg),
--				       req_id, VM_PKT_DATA_INBAND,
-+				       rqst_id, VM_PKT_DATA_INBAND,
- 				       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
- 	}
- 
-+ret_check:
- 	if (ret == 0) {
- 		atomic_inc_return(&nvchan->queue_sends);
- 
-@@ -868,9 +914,13 @@ static inline int netvsc_send_pkt(
- 			ndev_ctx->eth_stats.stop_queue++;
- 		}
- 	} else if (ret == -EAGAIN) {
-+		/* Reclaim request ID to avoid leak of IDs */
-+		vmbus_request_addr(&out_channel->requestor, rqst_id);
- 		netif_tx_stop_queue(txq);
- 		ndev_ctx->eth_stats.stop_queue++;
- 	} else {
-+		/* Reclaim request ID to avoid leak of IDs */
-+		vmbus_request_addr(&out_channel->requestor, rqst_id);
- 		netdev_err(ndev,
- 			   "Unable to send packet pages %u len %u, ret %d\n",
- 			   packet->page_buf_cnt, packet->total_data_buflen,
-@@ -1422,6 +1472,7 @@ struct netvsc_device *netvsc_device_add(struct hv_device *device,
- 		       netvsc_poll, NAPI_POLL_WEIGHT);
- 
- 	/* Open the channel */
-+	device->channel->rqstor_size = netvsc_rqstor_size(netvsc_ring_bytes);
- 	ret = vmbus_open(device->channel, netvsc_ring_bytes,
- 			 netvsc_ring_bytes,  NULL, 0,
- 			 netvsc_channel_cb, net_device->chan_table);
-diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-index b81ceba38218..10489ba44a09 100644
---- a/drivers/net/hyperv/rndis_filter.c
-+++ b/drivers/net/hyperv/rndis_filter.c
-@@ -1114,6 +1114,7 @@ static void netvsc_sc_open(struct vmbus_channel *new_sc)
- 	/* Set the channel before opening.*/
- 	nvchan->channel = new_sc;
- 
-+	new_sc->rqstor_size = netvsc_rqstor_size(netvsc_ring_bytes);
- 	ret = vmbus_open(new_sc, netvsc_ring_bytes,
- 			 netvsc_ring_bytes, NULL, 0,
- 			 netvsc_channel_cb, nvchan);
-diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-index c509d20ab7db..d8194924983d 100644
---- a/include/linux/hyperv.h
-+++ b/include/linux/hyperv.h
-@@ -730,6 +730,7 @@ struct vmbus_requestor {
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 8b4a0f6a017c..42592b250778 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -94,8 +94,6 @@ struct dsa_device_ops {
+ struct dsa_netdevice_ops {
+ 	int (*ndo_do_ioctl)(struct net_device *dev, struct ifreq *ifr,
+ 			    int cmd);
+-	int (*ndo_get_phys_port_name)(struct net_device *dev, char *name,
+-				      size_t len);
  };
  
- #define VMBUS_RQST_ERROR U64_MAX
-+#define VMBUS_RQST_ID_NO_RESPONSE (U64_MAX - 1)
+ #define DSA_TAG_DRIVER_ALIAS "dsa_tag-"
+@@ -740,33 +738,12 @@ static inline int dsa_ndo_do_ioctl(struct net_device *dev, struct ifreq *ifr,
  
- struct vmbus_device {
- 	u16  dev_type;
+ 	return ops->ndo_do_ioctl(dev, ifr, cmd);
+ }
+-
+-static inline int dsa_ndo_get_phys_port_name(struct net_device *dev,
+-					     char *name, size_t len)
+-{
+-	const struct dsa_netdevice_ops *ops;
+-	int err;
+-
+-	err = __dsa_netdevice_ops_check(dev);
+-	if (err)
+-		return err;
+-
+-	ops = dev->dsa_ptr->netdev_ops;
+-
+-	return ops->ndo_get_phys_port_name(dev, name, len);
+-}
+ #else
+ static inline int dsa_ndo_do_ioctl(struct net_device *dev, struct ifreq *ifr,
+ 				   int cmd)
+ {
+ 	return -EOPNOTSUPP;
+ }
+-
+-static inline int dsa_ndo_get_phys_port_name(struct net_device *dev,
+-					     char *name, size_t len)
+-{
+-	return -EOPNOTSUPP;
+-}
+ #endif
+ 
+ void dsa_unregister_switch(struct dsa_switch *ds);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 19f1abc26fcd..062a00fdca9b 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -98,7 +98,6 @@
+ #include <net/busy_poll.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/stat.h>
+-#include <net/dsa.h>
+ #include <net/dst.h>
+ #include <net/dst_metadata.h>
+ #include <net/pkt_sched.h>
+@@ -8603,10 +8602,6 @@ int dev_get_phys_port_name(struct net_device *dev,
+ 	const struct net_device_ops *ops = dev->netdev_ops;
+ 	int err;
+ 
+-	err  = dsa_ndo_get_phys_port_name(dev, name, len);
+-	if (err == 0 || err != -EOPNOTSUPP)
+-		return err;
+-
+ 	if (ops->ndo_get_phys_port_name) {
+ 		err = ops->ndo_get_phys_port_name(dev, name, len);
+ 		if (err != -EOPNOTSUPP)
+diff --git a/net/dsa/master.c b/net/dsa/master.c
+index 0c980b2c48c9..6189c4dca6bc 100644
+--- a/net/dsa/master.c
++++ b/net/dsa/master.c
+@@ -186,17 +186,6 @@ static void dsa_master_get_strings(struct net_device *dev, uint32_t stringset,
+ 	}
+ }
+ 
+-static int dsa_master_get_phys_port_name(struct net_device *dev,
+-					 char *name, size_t len)
+-{
+-	struct dsa_port *cpu_dp = dev->dsa_ptr;
+-
+-	if (snprintf(name, len, "p%d", cpu_dp->index) >= len)
+-		return -EINVAL;
+-
+-	return 0;
+-}
+-
+ static int dsa_master_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ {
+ 	struct dsa_port *cpu_dp = dev->dsa_ptr;
+@@ -228,7 +217,6 @@ static int dsa_master_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 
+ static const struct dsa_netdevice_ops dsa_netdev_ops = {
+ 	.ndo_do_ioctl = dsa_master_ioctl,
+-	.ndo_get_phys_port_name = dsa_master_get_phys_port_name,
+ };
+ 
+ static int dsa_master_ethtool_setup(struct net_device *dev)
 -- 
 2.25.1
 
