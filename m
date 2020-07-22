@@ -2,98 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02DB7229CC4
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:07:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74B71229CDA
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:14:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727834AbgGVQHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 12:07:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38880 "EHLO
+        id S1726685AbgGVQOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 12:14:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726406AbgGVQHX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 12:07:23 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3208C0619DC;
-        Wed, 22 Jul 2020 09:07:23 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id x69so2508101qkb.1;
-        Wed, 22 Jul 2020 09:07:23 -0700 (PDT)
+        with ESMTP id S1726390AbgGVQOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 12:14:53 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D79C0619DC
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:14:53 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id z3so1519135pfn.12
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:14:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=inXRPYgND6+0WE39IDvE6wldzJTBYfDxX/wQ/vOfPn0=;
-        b=a8k1mfHuBtctSv/v34AEQtJKDDMJsmzgQiLNEMGt4v2xwXaP9+GEfP4S+dVZi9N5cm
-         StZ5VmZHe2C9KFpm5eofHmXUSvhi240cLFMIKR7UoqZ+KwFyYOXEZdIAbWrh7WAmVu4o
-         7OcBxIEmwji96oE6vzBnqIvyyolTXj+IlHB/WVPIq0FWjRTz4zKz9GVi7/uWcYDDWFeu
-         OqcdP+yyS4UEjao+xsT+J2XbAySKFfuFsUPmlbi8SM84zy/p3CExBuMfJQ6sk2CPMnnJ
-         cKxPqrDOJnOgIQyJ2xBQ9c6B2wlAss8VNk//84EIuIgbdRYnnERBUNuz5E6J9LoAwTOu
-         bSAg==
+        h=from:to:cc:subject:date:message-id;
+        bh=SMCwoHMyepT1PSSn6MxfQ4RUWpwLcdAu833ifsBS4lI=;
+        b=KSMWxS4jlcRpVrWgICCOpKZayg177Xx3wA+1jQLk77VbTbHNcI/Ru8I6A3oQKLnd/3
+         pwWXOLWv3clDKGHmh8FFJZ/JBckrw6NBhMagLp43bYBG5DsKY8lguaEgkzEaTcWbOt/R
+         tFEgfdyB3bXnz+5BPZQ1YWz9shBRI4ktjB1YVQ0/m+vS5vSrmiNlt9psrO9mSybbELSM
+         rrRgXxI6Q1S5OGxxkPFHJcgoV7hE7owgTYEaOzr7Qy9z8VPKklgpjUiwOLVPmisoVufM
+         hYuB6zIciycwxo2YZPDX8UwRXpDryMG4ZrwuKIVDj9nIje/Zu/P7ok4nEn7KgRUnEOf6
+         Kjig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=inXRPYgND6+0WE39IDvE6wldzJTBYfDxX/wQ/vOfPn0=;
-        b=UK412WiPGhcjb9w0Hfdi6XiKbWrQF7dfnC30EAAxmN7PZIQ3M9oSNB3r4hRDq3s4/L
-         QTSDxHX3RWLEAc0a/eOwjYDn7iCdRLo0LEv65lCKWJXno0jX7aVH/439IxNuuD0pfrFq
-         polnLqLlIBaX86JawcnxE6p2KRAnROYlWEPXeWKQJHP/FTEOkIu3lHxxhInbTw6+rJW2
-         0PCesmYsax1uXdIfyGsqHl9+joMLzRFYVDaxKthsKkqYA3+GQhvZp+HG6cO8dRvZB5Fp
-         9g33QFqGEB0aYWasLBcJGoVgS6kUuRkgne0fpnStWuMTTT2e2he7R8EZuybxGJDFS4NG
-         xUGw==
-X-Gm-Message-State: AOAM5326rxDnpKxnVUpmQ2zlX5zyPI3bJ/j17/5R4ufBNuJz+P2XjAHF
-        gtQYpEzlixq4gpvldTDQDuAXowU3nw==
-X-Google-Smtp-Source: ABdhPJx8zadp5hybrNbT1YGP6AF/F1kHC13kJf+YtmdUCtFIfFdTeqlM39WpgDmRgaDFzLlCZ3LU0A==
-X-Received: by 2002:a37:8302:: with SMTP id f2mr644452qkd.271.1595434041414;
-        Wed, 22 Jul 2020 09:07:21 -0700 (PDT)
-Received: from localhost.localdomain (c-76-119-149-155.hsd1.ma.comcast.net. [76.119.149.155])
-        by smtp.gmail.com with ESMTPSA id f54sm76376qte.76.2020.07.22.09.07.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 09:07:20 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Joerg Reuter <jreuter@yaina.de>, Ralf Baechle <ralf@linux-mips.org>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        syzkaller-bugs@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [Linux-kernel-mentees] [PATCH net] AX.25: Prevent out-of-bounds read in ax25_sendmsg()
-Date:   Wed, 22 Jul 2020 12:05:12 -0400
-Message-Id: <20200722160512.370802-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=SMCwoHMyepT1PSSn6MxfQ4RUWpwLcdAu833ifsBS4lI=;
+        b=GrorZf/T3oCbJ3GZcKle4khWE5ixuO03ikASO7+Qry7PLArVaqP71923h+euwdu1dh
+         RYDi7leC8HyUtpSIG3J3Zi13QRtNTFE9nashWfhD7lkOHXO7sknLM5noVIFhPXDBl3yR
+         WdRxIxu8nNWjG1WL43WFo65Q7uGE5s1du6GATNd1HGLK+oPMTxoWTICl4GCruZJhwCr+
+         gRqCWa9LV7qCBvCqEQ8sgiZ7oqDNFpQNqrEL/g3tDTsle494qcR6KTajTgyWH8yysGDY
+         tmRCiQOFV3VcHenOcdPbwOx9rSvWkdfLi4vayzZe7s/0ssx/MMdKIGpr6RZeCYNjCfun
+         eUpQ==
+X-Gm-Message-State: AOAM531hr2QF0Yp5XetbeT7w+mZ3DnLvwGoaDntdkloeXwK/d+70q9ao
+        f2ALp6OG4760Rb/vN/44ptP9whHk
+X-Google-Smtp-Source: ABdhPJwAVRGUDSGwC14kxsO+rONbGjEDX1l3z5/fLZ0WCp0ebAZKbBz+0otSWJ7KE+vMuZDOwhkXyQ==
+X-Received: by 2002:a63:f806:: with SMTP id n6mr515293pgh.346.1595434492568;
+        Wed, 22 Jul 2020 09:14:52 -0700 (PDT)
+Received: from martin-VirtualBox.vpn.alcatel-lucent.com ([42.109.146.221])
+        by smtp.gmail.com with ESMTPSA id g6sm44657pfr.129.2020.07.22.09.14.49
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 Jul 2020 09:14:52 -0700 (PDT)
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     Martin Varghese <martin.varghese@nokia.com>
+Subject: [PATCH net-next] net: Enabled MPLS support for devices of type ARPHRD_NONE.
+Date:   Wed, 22 Jul 2020 21:43:21 +0530
+Message-Id: <1595434401-6345-1-git-send-email-martinvarghesenokia@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Checks on `addr_len` and `usax->sax25_ndigis` are insufficient.
-ax25_sendmsg() can go out of bounds when `usax->sax25_ndigis` equals to 7
-or 8. Fix it.
+From: Martin Varghese <martin.varghese@nokia.com>
 
-It is safe to remove `usax->sax25_ndigis > AX25_MAX_DIGIS`, since
-`addr_len` is guaranteed to be less than or equal to
-`sizeof(struct full_sockaddr_ax25)`
+This change enables forwarding of MPLS packets from bareudp tunnel
+device which is of type ARPHRD_NONE.
 
-Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
 ---
- net/ax25/af_ax25.c | 3 ++-
+ net/mpls/af_mpls.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index ef5bf116157a..0862fe49d434 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -1509,7 +1509,8 @@ static int ax25_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 			struct full_sockaddr_ax25 *fsa = (struct full_sockaddr_ax25 *)usax;
- 
- 			/* Valid number of digipeaters ? */
--			if (usax->sax25_ndigis < 1 || usax->sax25_ndigis > AX25_MAX_DIGIS) {
-+			if (usax->sax25_ndigis < 1 || addr_len < sizeof(struct sockaddr_ax25) +
-+			    sizeof(ax25_address) * usax->sax25_ndigis) {
- 				err = -EINVAL;
- 				goto out;
- 			}
+diff --git a/net/mpls/af_mpls.c b/net/mpls/af_mpls.c
+index fd30ea61336e..37b6731a4576 100644
+--- a/net/mpls/af_mpls.c
++++ b/net/mpls/af_mpls.c
+@@ -1594,7 +1594,8 @@ static int mpls_dev_notify(struct notifier_block *this, unsigned long event,
+ 		    dev->type == ARPHRD_IP6GRE ||
+ 		    dev->type == ARPHRD_SIT ||
+ 		    dev->type == ARPHRD_TUNNEL ||
+-		    dev->type == ARPHRD_TUNNEL6) {
++		    dev->type == ARPHRD_TUNNEL6 ||
++		    dev->type == ARPHRD_NONE) {
+ 			mdev = mpls_add_dev(dev);
+ 			if (IS_ERR(mdev))
+ 				return notifier_from_errno(PTR_ERR(mdev));
 -- 
-2.25.1
+2.18.4
 
