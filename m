@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 352E6229D23
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:32:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA7AA229D26
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:32:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730522AbgGVQch (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1730802AbgGVQcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 12:32:41 -0400
+Received: from mail.katalix.com ([3.9.82.81]:35454 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730108AbgGVQch (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 22 Jul 2020 12:32:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730111AbgGVQcg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 12:32:36 -0400
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7373C0619DC
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 09:32:35 -0700 (PDT)
 Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
         (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 169B093AEB;
+        by mail.katalix.com (Postfix) with ESMTPSA id 363BB93AC0;
         Wed, 22 Jul 2020 17:32:35 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1595435555; bh=TZzaY7Jc9wmk12usqCKLt3hqYF6Q/JfYTNqDZEUT5Ec=;
+        t=1595435555; bh=M5ASBge1m68uelOnHcFoTs9KxX0wzaFQnAgcTlDu2v0=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:From;
         z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
          rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
-         in@katalix.com>|Subject:=20[PATCH=2005/10]=20l2tp:=20cleanup=20sus
-         pect=20code=20indent|Date:=20Wed,=2022=20Jul=202020=2017:32:09=20+
-         0100|Message-Id:=20<20200722163214.7920-6-tparkin@katalix.com>|In-
-         Reply-To:=20<20200722163214.7920-1-tparkin@katalix.com>|References
-         :=20<20200722163214.7920-1-tparkin@katalix.com>;
-        b=oyonsdlmhaJ7czP/I47svlTF5v/qZeoA+j4qjNtHxaZmQ61+V01+IF0Ci7N6h56cw
-         XTDnFZ5NxzclGdFRD/uwxDAoMnz2tl3RL1B+h43bVGSQIlFjLc3GgNsUMaxzLVfZtO
-         7bEWKRYLxrNehUvXXHL2MYSRmsVlsZKqxgLUJc22/3K/lzVdhhiTymfTGhnEsEtKeM
-         iNOZ9/hKZUCZ88EwPUqtbQlte3a29b9uocvdsQ0hiXwiDIUxT4oyo83uTBBcXrfNjJ
-         JGjYnzH5/0stZlSwH2Kw8E3LYGhKlwTdk5xiIVIGof/aM/E1s/CQU7nSvhO2cVsks9
-         8UPq167M/MyVg==
+         in@katalix.com>|Subject:=20[PATCH=2006/10]=20l2tp:=20add=20identif
+         ier=20name=20in=20function=20pointer=20prototype|Date:=20Wed,=2022
+         =20Jul=202020=2017:32:10=20+0100|Message-Id:=20<20200722163214.792
+         0-7-tparkin@katalix.com>|In-Reply-To:=20<20200722163214.7920-1-tpa
+         rkin@katalix.com>|References:=20<20200722163214.7920-1-tparkin@kat
+         alix.com>;
+        b=ZN7H7CBpnJx+0/6Iyz8hCEztB6Veskx/JI8wRrOF34wxQBqhfEsbrX4P+tKHtTJEq
+         dmH65CLXDkymvanSFiBfQ5sI6WRoNzb7Lpv7bqWUsdLkjhlAKe0c/58awjewyVRUAe
+         KD1llnwsIv2Jtqb2rNIk9mULZneefmrnVBQXPkCOqJroWWYuCX+pcOPTVypf0Mh1ka
+         CTkBiVvkWBvGwwCWCxhH8kxSR+ltwcL0YKy6GstqY/e3ZrRaXx2jb0pdPHsTI7wdMr
+         iRjAH0czXmeB1rshwTcSwbRJzoo5Dl1yszF3Xtu9dg9Vig6avbKBOXVhaL+xtymLNS
+         1WY8zU3976rFg==
 From:   Tom Parkin <tparkin@katalix.com>
 To:     netdev@vger.kernel.org
 Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH 05/10] l2tp: cleanup suspect code indent
-Date:   Wed, 22 Jul 2020 17:32:09 +0100
-Message-Id: <20200722163214.7920-6-tparkin@katalix.com>
+Subject: [PATCH 06/10] l2tp: add identifier name in function pointer prototype
+Date:   Wed, 22 Jul 2020 17:32:10 +0100
+Message-Id: <20200722163214.7920-7-tparkin@katalix.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200722163214.7920-1-tparkin@katalix.com>
 References: <20200722163214.7920-1-tparkin@katalix.com>
@@ -48,32 +46,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-l2tp_core has conditionally compiled code in l2tp_xmit_skb for IPv6
-support.  The structure of this code triggered a checkpatch warning
-due to incorrect indentation.
+Reported by checkpatch:
 
-Fix up the indentation to address the checkpatch warning.
+        "WARNING: function definition argument 'struct sock *'
+         should also have an identifier name"
+
+Add an identifier name to help document the prototype.
 
 Signed-off-by: Tom Parkin <tparkin@katalix.com>
 ---
- net/l2tp/l2tp_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/l2tp/l2tp_core.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index 3162e395cd4a..64d3a1d3ff3c 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -1122,8 +1122,8 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb, int hdr_len
- 				      &sk->sk_v6_daddr, udp_len);
- 		else
- #endif
--		udp_set_csum(sk->sk_no_check_tx, skb, inet->inet_saddr,
--			     inet->inet_daddr, udp_len);
-+			udp_set_csum(sk->sk_no_check_tx, skb, inet->inet_saddr,
-+				     inet->inet_daddr, udp_len);
- 		break;
+diff --git a/net/l2tp/l2tp_core.h b/net/l2tp/l2tp_core.h
+index 3ebb701eebbf..f23b3ff7ffff 100644
+--- a/net/l2tp/l2tp_core.h
++++ b/net/l2tp/l2tp_core.h
+@@ -154,7 +154,7 @@ struct l2tp_tunnel {
+ 	struct net		*l2tp_net;	/* the net we belong to */
  
- 	case L2TP_ENCAPTYPE_IP:
+ 	refcount_t		ref_count;
+-	void (*old_sk_destruct)(struct sock *);
++	void (*old_sk_destruct)(struct sock *sk);
+ 	struct sock		*sock;		/* parent socket */
+ 	int			fd;		/* parent fd, if tunnel socket was created
+ 						 * by userspace
 -- 
 2.17.1
 
