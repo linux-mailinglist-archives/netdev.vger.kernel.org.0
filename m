@@ -2,92 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC7AF229B4D
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:25:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34AD8229B5C
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:29:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732805AbgGVPZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 11:25:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60466 "EHLO
+        id S1732870AbgGVP1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 11:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732746AbgGVPZH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:25:07 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B176C0619DF
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 08:25:07 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id b30so1523030lfj.12
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 08:25:07 -0700 (PDT)
+        with ESMTP id S1732648AbgGVP1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:27:51 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF30C0619DE
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 08:27:50 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id t6so1460750pgq.1
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 08:27:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=ZZVwlxeqmX6G0EA/Mr693geGtRjCRxDovI8UeX3tF/E=;
-        b=C5QgKmMNi+duOmChNMdNcV7BGLjrPc3dfMM+ZXrRADwRwk9gQmIk9fyldZ8raTbfsY
-         +OoZL6gEZ+O+mW/cguLPp4m+bFPF2MyxCw8213plzO16nE+FM2d/mwgx1v89BPTVDE0A
-         onNVGJZK10OLklPw6MDZurhbTKsl32XQFTgDk=
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BU5kao+UrN6qaCFLRvgX1CCWwHi4WqVglmjspXYq5Sk=;
+        b=EovH3VlzCQtsuc+av4WNCxJUcxJwP7B12FigkxGwdbpkWBJSa3nFzmdyDHewZBUgf9
+         n9XAAbimkyD6gzI4ZP5yddnLgDay1H3s8JWoHuKzSxSnwrCDbkxcwIVY/juKY/c9O6eu
+         /OJSCysVhxcaeiqedSqEFceKVfg/12GZLPjr8pz1XHtNHTXpeFGbtjZFu3+roMJb796i
+         BBnMW3Am+YU+1yDNm3kWRfcRFBtPlDgDBFvjGBggj1IU6U2AeUKKCFIvvGVB0VJDmGAM
+         OReaUOEwz/0BPPxzQZFG4OMdZ6z6W9/XcwI4LsFf0nnHHUL9iPyaLIxuLhiXMi9xOuXE
+         S9fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=ZZVwlxeqmX6G0EA/Mr693geGtRjCRxDovI8UeX3tF/E=;
-        b=Y3oO3bGMhXRZkGpzkEOsCjYpOj/afunF/Zu7FY5gjlAEAzBKVYwIc+CZzJjZomgipE
-         WILeKtd9ZCJkkAbxAlZTmYLnb65C3BcJ2AQT2xNLwLTGM09JGCOnuZYyZuuI9Wzf+sZ6
-         Dffpk4J3AE6LA3urBGHusB06ehfT29uqCZwwINDSbCjPECEoXcFfMpVfh8BjtnaGDbks
-         rciDDK/oapkbnaNu2+PvEmnUH5YfNaQ6KPkOIR42dTLYRp0pwDs8akMeJIkw6z9rwHdz
-         FzjICSVdPYMJxukSits9gQA071AwivjE3y1GtXckSpzi9TNxKbUg91CDScQ0XHjb185a
-         KVDw==
-X-Gm-Message-State: AOAM531CqXnfR5w8VEHVDOn4gSLb7eAYsDnMQwniFCAhqlXDLP6uBSqU
-        vByvVBtu2P5VfOU5PoNTRpHFcpubZz8=
-X-Google-Smtp-Source: ABdhPJytm/cO+POWytM1rrXYfKAEreT3hfBCxb11O1PqsNQPR1Eago6islkfmq8GEVq+PzNlx90VdA==
-X-Received: by 2002:ac2:4158:: with SMTP id c24mr16372289lfi.109.1595431505679;
-        Wed, 22 Jul 2020 08:25:05 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id h21sm194610ljk.31.2020.07.22.08.25.04
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BU5kao+UrN6qaCFLRvgX1CCWwHi4WqVglmjspXYq5Sk=;
+        b=BrHctE2z6Dl8SdceyoDeMa9RC/zDdX84N9hn6ZtOWPaIXEs0rMjgyJpdQU7iUFUFhU
+         zgo5+8S7MQGiV7xn13uUin6x7tv5TtaWb9JLUBGjA7U3O4jwv+MymU7TfPxNUQhnTkeZ
+         bHXY3wgULauaX++9eUzxnNJZXUSFCh02NAs5ergwQg+eQedE10seJEvyh7njndKUQN28
+         tG3LHJ06/0dvS8PqpyRofXayjjanVRPUHeIk+zR0vb/J0QPwGXa9mlWelbZf2juk6OOj
+         18J2I3ElXFYsVG5QyLtqNxzhG1bWlTv/96DwX/sJzTNZgkB158x3qAirvBHHfpyxyg1h
+         0MAw==
+X-Gm-Message-State: AOAM5326W+h+JilkR1LP4DaxzoIqGiPkUZ/OBTyAXHb9b0k0XJH6aSC/
+        HOu2f01EokkuNDS2lhwg+CafWQ==
+X-Google-Smtp-Source: ABdhPJz7gxZddqXP9qDdhZYE/mLuRzLNI5tYgqcLfKtMO+PIAiD+BS9SLWN/x3TbHpXr660AUHbyWg==
+X-Received: by 2002:a63:8c4f:: with SMTP id q15mr317114pgn.373.1595431670305;
+        Wed, 22 Jul 2020 08:27:50 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id h23sm173554pfo.166.2020.07.22.08.27.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 08:25:05 -0700 (PDT)
-References: <87wo2vwxq6.fsf@cloudflare.com> <20200722144212.27106-1-kuniyu@amazon.co.jp> <87v9ifwq2p.fsf@cloudflare.com> <CA+FuTScto+Z_qgFxJBzhPUNEruAvKLSTL7-0AnyP-M6Gon_e5Q@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        kernel-team <kernel-team@cloudflare.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: linux-next: manual merge of the bpf-next tree with the net tree
-In-reply-to: <CA+FuTScto+Z_qgFxJBzhPUNEruAvKLSTL7-0AnyP-M6Gon_e5Q@mail.gmail.com>
-Date:   Wed, 22 Jul 2020 17:25:04 +0200
-Message-ID: <87tuxzwp0v.fsf@cloudflare.com>
+        Wed, 22 Jul 2020 08:27:49 -0700 (PDT)
+Date:   Wed, 22 Jul 2020 08:27:41 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     wangxiongfeng2@huawei.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net-sysfs: add a newline when printing 'tx_timeout'
+ by sysfs
+Message-ID: <20200722082741.1675d611@hermes.lan>
+In-Reply-To: <20200721.153632.1416164807029507588.davem@davemloft.net>
+References: <1595314977-57991-1-git-send-email-wangxiongfeng2@huawei.com>
+        <20200721.153632.1416164807029507588.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 22, 2020 at 05:05 PM CEST, Willem de Bruijn wrote:
-> On Wed, Jul 22, 2020 at 11:02 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->>
->> On Wed, Jul 22, 2020 at 04:42 PM CEST, Kuniyuki Iwashima wrote:
->> > Can I submit a patch to net tree that rewrites udp[46]_lib_lookup2() to
->> > use only 'result' ?
->>
->> Feel free. That should make the conflict resolution even easier later
->> on.
->
-> Thanks for the detailed analysis, Jakub.
->
-> Would it be easier to fix this wholly in bpf-next, by introducing
-> reuseport_result there?
+On Tue, 21 Jul 2020 15:36:32 -0700 (PDT)
+David Miller <davem@davemloft.net> wrote:
 
-Did you mean replicating the Kuniyuki fix in bpf-next, or just
-introducing the intermediate 'reuseport_result' var?
+> From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+> Date: Tue, 21 Jul 2020 15:02:57 +0800
+> 
+> > When I cat 'tx_timeout' by sysfs, it displays as follows. It's better to
+> > add a newline for easy reading.
+> > 
+> > root@syzkaller:~# cat /sys/devices/virtual/net/lo/queues/tx-0/tx_timeout
+> > 0root@syzkaller:~#
+> > 
+> > Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>  
+> 
+> Applied, thank you.
 
-I'm assuming the former, so that the conflict resolving later on will
-reduce to selecting everything from bpf-next side.
+Could you add
 
-TBH, I don't what is the preferred way to handle it. Perhaps DaveM or
-Alexei/Daniel can say what would make their life easiest?
+
+Fixes: ccf5ff69fbbd ("net: new counter for tx_timeout errors in sysfs")
+Cc: david.decotigny@google.com
