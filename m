@@ -2,115 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1548229BD8
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B88C229BFB
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:56:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732860AbgGVPwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 11:52:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36524 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726427AbgGVPwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:52:39 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D0DC0619DC;
-        Wed, 22 Jul 2020 08:52:39 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id md7so1603463pjb.1;
-        Wed, 22 Jul 2020 08:52:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=m/cYP1eQph22ytwTJ/NPXtyFmzXiUNEDby7xn4T3haM=;
-        b=HDRA28TZ8B6C+ViEANmpG5Q0l3Kz7/o5tcy955Sr/5HLZbHuJGvc67GxURLEMmselX
-         waBHDf+Mo3bK+GoWqpkcp28RK9oOybNRlKyle95h6SXwv+Kgt10lU5StgRSmDZuaS4tO
-         jYITCJk1Fbqiq2VIxo3LgJ20crFO7Ku9xmDx083IbeLjX8Rkhv34KozYeFm+6+P29CJB
-         66ToNWFB7ut//lC0RCzmE2UE8aFhwPV0hn2AJKVmNywRzBmETcCG6TSBeEFCwFETVeOT
-         BHXRTgfe4OBKBhy3yRpSSdE6thJdzM9TdtGKNbRFdi0CH6ku9qyVQiN8lCQ+gKFoZvtF
-         WjPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=m/cYP1eQph22ytwTJ/NPXtyFmzXiUNEDby7xn4T3haM=;
-        b=c79EF8LZKo+PuuGc30hID78yPyPkddtJpSZj6N15LBhlDXl00gQgOPy5qSl76lwpgP
-         8E0LkVfGes6MjR1C9f31Xak1kTvXB67BxaqpDIxeno8sOZ136XlSbK/PgQZwr+OSEwsc
-         8i4HN6PWFyQJkx8GWj7Sp1NhkT0PocBpWp2iJkX0h6Cp9c5UPKdF4GSz+dTjrI+mI5Jo
-         dPKXfRSIK4oS3I63aGhLJkeR41uqeGXgI/+2jjh28Hthb3Bu/FGzKG+F2jxP1Iff6xo+
-         efU1Xx2AEEC1jKnPoTwQXLfD1PE9jAOTces8JbkcJ5EbrMT/ttLqNgvm9BgUef6pnbWY
-         SNPQ==
-X-Gm-Message-State: AOAM533KRtb1DcfgzPl4Jv6D2jnspzgFkphATqOj+n0+x618naUfT1P6
-        rAPkQrNjeRA+kVr20ypdskF03Gp7
-X-Google-Smtp-Source: ABdhPJwp14HUNRLo2ppsqUgB6ltqgrvBasryk8qhuhdMu7aPMnGFJPu4TqI/WK0+lvswF0ZsIpgr3Q==
-X-Received: by 2002:a17:90a:7103:: with SMTP id h3mr99556pjk.34.1595433158741;
-        Wed, 22 Jul 2020 08:52:38 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id z62sm14290pfb.47.2020.07.22.08.52.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Jul 2020 08:52:38 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: [PATCH net 2/2] sctp: shrink stream outq when fails to do addstream reconf
-Date:   Wed, 22 Jul 2020 23:52:12 +0800
-Message-Id: <b4172cd23a6369c12a483e58f14619640aaf24ae.1595433039.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <ceb8b4f32a9235e0a846e4f8e0537fcb362edf04.1595433039.git.lucien.xin@gmail.com>
-References: <cover.1595433039.git.lucien.xin@gmail.com>
- <ceb8b4f32a9235e0a846e4f8e0537fcb362edf04.1595433039.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1595433039.git.lucien.xin@gmail.com>
-References: <cover.1595433039.git.lucien.xin@gmail.com>
+        id S1731580AbgGVPyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 11:54:52 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:53252 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726098AbgGVPyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:54:52 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06MFsX1v008864;
+        Wed, 22 Jul 2020 08:54:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0818; bh=SijvNI5NIKaZFrGNhM0xy21xWbTHmh+au1JzoqBjn4I=;
+ b=PuN63TYvvtG4lJVYarWDtOCU9Nx5LJDT3nIKTHsCBeV07PW4gxiK2Jv/pdVjVxf/KT45
+ 1I439JXRwLeSNJVYR9aHnfESDgUPNwqRIp0UijdqBKifq/ZslMAaBXFjBPgm39HfFXJX
+ 7FNlY0tlcvMO6KmHmshT7h9wAgx6MmmtSNIJfq/QoSMUfiIyh3jre8ATsHUdB/wf3Shs
+ Te6VBp6eH78R27Cp2uiZFshXSQ55ntde9YVfpG+njFCPu2b8AdHmd3QRGpMz4GU3d2xV
+ jRlnSjPnfSUwy5B2xmhrHDwtiXS6xsfmzsbNIZ4RW/Obe/AO1//08luedLa14RxGbqgu gQ== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 32c0kkrkk6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 22 Jul 2020 08:54:33 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jul
+ 2020 08:54:30 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 22 Jul 2020 08:54:30 -0700
+Received: from NN-LT0049.marvell.com (unknown [10.193.54.6])
+        by maili.marvell.com (Postfix) with ESMTP id C09873F703F;
+        Wed, 22 Jul 2020 08:54:24 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Alexander Lobakin <alobakin@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        "Ariel Elior" <aelior@marvell.com>,
+        Denis Bolotin <denis.bolotin@marvell.com>,
+        "Doug Ledford" <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Jesper Dangaard Brouer" <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next 00/15] qed/qede: improve chain API and add XDP_REDIRECT support
+Date:   Wed, 22 Jul 2020 18:53:34 +0300
+Message-ID: <20200722155349.747-1-alobakin@marvell.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-22_09:2020-07-22,2020-07-22 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When adding a stream with stream reconf, the new stream firstly is in
-CLOSED state but new out chunks can still be enqueued. Then once gets
-the confirmation from the peer, the state will change to OPEN.
+This series adds missing XDP_REDIRECT case handling in QLogic Everest
+Ethernet driver with all necessary prerequisites and ops.
+QEDE Tx relies heavily on chain API, so make sure it is in its best
+at first.
 
-However, if the peer denies, it needs to roll back the stream. But when
-doing that, it only sets the stream outcnt back, and the chunks already
-in the new stream don't get purged. It caused these chunks can still be
-dequeued in sctp_outq_dequeue_data().
+Alexander Lobakin (15):
+  qed: reformat "qed_chain.h" a bit
+  qed: reformat Makefile
+  qed: move chain methods to a separate file
+  qed: prevent possible double-frees of the chains
+  qed: sanitize PBL chains allocation
+  qed: move chain initialization inlines next to allocation functions
+  qed: simplify initialization of the chains with an external PBL
+  qed: simplify chain allocation with init params struct
+  qed: add support for different page sizes for chains
+  qed: optimize common chain accessors
+  qed: introduce qed_chain_get_elem_used{,u32}()
+  qede: reformat several structures in "qede.h"
+  qede: reformat net_device_ops declarations
+  qede: refactor XDP Tx processing
+  qede: add .ndo_xdp_xmit() and XDP_REDIRECT support
 
-As its stream is still in CLOSE, the chunk will be enqueued to the head
-again by sctp_outq_head_data(). This chunk will never be sent out, and
-the chunks after it can never be dequeued. The assoc will be 'hung' in
-a dead loop of sending this chunk.
+ drivers/infiniband/hw/qedr/main.c             |  20 +-
+ drivers/infiniband/hw/qedr/verbs.c            |  97 ++---
+ drivers/net/ethernet/qlogic/qed/Makefile      |  37 +-
+ drivers/net/ethernet/qlogic/qed/qed_chain.c   | 367 ++++++++++++++++++
+ drivers/net/ethernet/qlogic/qed/qed_dev.c     | 273 -------------
+ drivers/net/ethernet/qlogic/qed/qed_dev_api.h |  32 +-
+ drivers/net/ethernet/qlogic/qed/qed_iscsi.c   |  39 +-
+ drivers/net/ethernet/qlogic/qed/qed_ll2.c     |  44 ++-
+ .../net/ethernet/qlogic/qed/qed_sp_commands.c |   4 +-
+ drivers/net/ethernet/qlogic/qed/qed_spq.c     |  90 +++--
+ drivers/net/ethernet/qlogic/qede/qede.h       | 175 +++++----
+ drivers/net/ethernet/qlogic/qede/qede_fp.c    | 174 ++++++---
+ drivers/net/ethernet/qlogic/qede/qede_main.c  | 185 +++++----
+ include/linux/qed/qed_chain.h                 | 328 ++++++----------
+ include/linux/qed/qed_if.h                    |   9 +-
+ 15 files changed, 1016 insertions(+), 858 deletions(-)
+ create mode 100644 drivers/net/ethernet/qlogic/qed/qed_chain.c
 
-To fix it, this patch is to purge these chunks already in the new
-stream by calling sctp_stream_shrink_out() when failing to do the
-addstream reconf.
+--
 
-Fixes: 11ae76e67a17 ("sctp: implement receiver-side procedures for the Reconf Response Parameter")
-Reported-by: Ying Xu <yinxu@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/sctp/stream.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Netdev folks, could you please take the entire series through your tree
+after the necessary acks and reviews? Patches 8-9 also touch qedr driver
+under rdma tree, but these changes can't be separated as it would break
+incremental buildability and bisecting.
 
-diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-index 4f87693..bda2536 100644
---- a/net/sctp/stream.c
-+++ b/net/sctp/stream.c
-@@ -1044,11 +1044,13 @@ struct sctp_chunk *sctp_process_strreset_resp(
- 		nums = ntohs(addstrm->number_of_streams);
- 		number = stream->outcnt - nums;
- 
--		if (result == SCTP_STRRESET_PERFORMED)
-+		if (result == SCTP_STRRESET_PERFORMED) {
- 			for (i = number; i < stream->outcnt; i++)
- 				SCTP_SO(stream, i)->state = SCTP_STREAM_OPEN;
--		else
-+		} else {
-+			sctp_stream_shrink_out(stream, number);
- 			stream->outcnt = number;
-+		}
- 
- 		*evp = sctp_ulpevent_make_stream_change_event(asoc, flags,
- 			0, nums, GFP_ATOMIC);
 -- 
-2.1.0
+2.25.1
 
