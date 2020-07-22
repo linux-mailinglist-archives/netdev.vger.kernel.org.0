@@ -2,170 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F67222A0DA
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 22:42:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BCAF22A0DC
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 22:42:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbgGVUm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 16:42:27 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:53667 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726452AbgGVUm1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 16:42:27 -0400
-Received: by mail-io1-f70.google.com with SMTP id g11so2591377ioc.20
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 13:42:26 -0700 (PDT)
+        id S1732858AbgGVUmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 16:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726447AbgGVUmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 16:42:36 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FA6C0619DC;
+        Wed, 22 Jul 2020 13:42:36 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id o2so1648269qvk.6;
+        Wed, 22 Jul 2020 13:42:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7nZNWjLqJ0D5sOjFQbHfG87wkEolo85RPk9Z6kp/ytc=;
+        b=khTCCzW3E6Dk5KskWoX50Mju/0CtFCcalJxJWF9H1r60i0v8EtvUN5HsHgwez0hBaz
+         yCFH9uglcgYgZ0wWnc5I6xk+uJj1JHQ5U7Zg8kT6wjVAf4pD/oTh7a2Gv3TfknsUsDjM
+         Bczvt71B/uSq3yxvGlRjf1JoaZz6BjymEyjOJAPqk+6T+jEiOvZMJywJglwug9AWTxgE
+         LG2y2P9FkHZ6flyxYQvqlRrmZGJTwODE8NPlYxKXvhu6YVwBKRj7rivlR5azwBNFFMVo
+         fhMRNOA43jnKUGzMCj8PJuTpdU++IRzuMgm23vPs7PifTVmSBrfL+vCioHsL9SDRbTKA
+         ybYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=XD+SXlq3/2gU9EkMcZLGPTp8jmHGm8EtipgOib0Vg24=;
-        b=AKN/HVrpiSQ5Wig+urgTxQa02OPO4gvhLJPSwl7x4UMDr9mQUeDN9Z+2BkGP5E7d/G
-         Vm6k+yMM2fQxmq6hej1tSgso8fdE00Vz0JxKsZMuBBNryHogHlDhMt/zIQrQ+vVvLNP7
-         UENKAyLNNQQLvA8pXBAn61dqcSyjTHRm8asqCzJ78WxivNY/b/o7UV4IoFtucQ3jVa5U
-         N4QJ4myahC0MuCPrRnGY5NeJTiVtMEPR5Wn8ZDKn+Y/Fe0HF8ItwyHlaQGhYREKrtVup
-         ZU8duNKEQDv7BU1rFH36jqXiDeCjAnHXfFDM+29gD/63oAtGwhfRB/tZO5zN/TQZr4AZ
-         qQ9A==
-X-Gm-Message-State: AOAM533JQ1U9+z1SKX0bdNEli039W0a+Wnx0lSiXSRHPrXQEL6PQJT4c
-        icBhGQGUFafD+1s8i9i7EKdh7toJ828UjD78addlLzEqyLQu
-X-Google-Smtp-Source: ABdhPJyIVUe7TBkJ7v52/44AYMjF3LCCv5SR/P+tek0q5wlkLyDtLnVA2NDEqhHFTroTNwGVWSsmkU3mgJUXaYcveNhBWM5NExnA
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7nZNWjLqJ0D5sOjFQbHfG87wkEolo85RPk9Z6kp/ytc=;
+        b=j14iyEI7S4Hl/IQDOc08UvFCLtSMt7xp29fxFth9wdcN8XHLfDXymRWq0J6WjM2Aos
+         E1W28Awz23kztIbqzDsZkYXhmcd1l5xo1/IbgCpsVRwsQqisOjT2s5H1OFONpfOjZIGJ
+         F7QmPbbqg65HkXvid6plsJ6b3mb4XTRR7PpNfq2pOTQ4nqiJ9s99tIUvSoXloFB6Jdtp
+         s8P8siLlt+0Hp2v94ukUk6kQPUvYeD/1LtEKQLzNRCWgHZ9l8y2u+cIJ6tIjDcnSnxLF
+         weKwiuipgbd04A7z63t+PZd1nGTqperQRxuttJDSyrOVRjTJfaMiEwFH03XYkG/+gSep
+         ZFhA==
+X-Gm-Message-State: AOAM530icOQJPCUzUlhl1MpylMRRvVDVtGSBtK9JOMXA76XjS2sK/iEo
+        sUOZtIncLUmhA5mTKhsmVQBv2vBK
+X-Google-Smtp-Source: ABdhPJzq2amLTw+BDxUKKCEVqbE2WSYz5u5t4BdzTKsMsXoW8MI/Qg2BDubtp40nFT4gcfbbpN5Pug==
+X-Received: by 2002:ad4:4b6d:: with SMTP id m13mr1830201qvx.33.1595450555197;
+        Wed, 22 Jul 2020 13:42:35 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f016:a4f2:f184:dd41:1f10:d998])
+        by smtp.gmail.com with ESMTPSA id s190sm783587qkh.116.2020.07.22.13.42.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2020 13:42:34 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id F1909C18B3; Wed, 22 Jul 2020 17:42:31 -0300 (-03)
+Date:   Wed, 22 Jul 2020 17:42:31 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        Christoph Hellwig <hch@lst.de>, linux-sctp@vger.kernel.org
+Subject: Re: [PATCH net-next] sctp: fix slab-out-of-bounds in
+ SCTP_DELAYED_SACK processing
+Message-ID: <20200722204231.GA3398@localhost.localdomain>
+References: <5955bc857c93d4bb64731ef7a9e90cb0094a8989.1595450200.git.marcelo.leitner@gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:5b83:: with SMTP id g125mr1081660jab.91.1595450546168;
- Wed, 22 Jul 2020 13:42:26 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 13:42:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000fa7b205ab0dc778@google.com>
-Subject: KASAN: use-after-free Write in __linkwatch_run_queue
-From:   syzbot <syzbot+bbc3a11c4da63c1b74d6@syzkaller.appspotmail.com>
-To:     andrew@lunn.ch, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5955bc857c93d4bb64731ef7a9e90cb0094a8989.1595450200.git.marcelo.leitner@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Cc'ing linux-sctp@vger.kernel.org.
 
-syzbot found the following issue on:
-
-HEAD commit:    544f287b bonding: check error value of register_netdevice(..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=14385887100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dddbcb5a9f4192db
-dashboard link: https://syzkaller.appspot.com/bug?extid=bbc3a11c4da63c1b74d6
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11b11780900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1080f887100000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+bbc3a11c4da63c1b74d6@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: use-after-free in __list_splice include/linux/list.h:422 [inline]
-BUG: KASAN: use-after-free in list_splice_init include/linux/list.h:464 [inline]
-BUG: KASAN: use-after-free in __linkwatch_run_queue+0x58a/0x630 net/core/link_watch.c:200
-Write of size 8 at addr ffff888094ccc578 by task kworker/0:1/12
-
-CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.8.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events linkwatch_event
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xae/0x436 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
- __list_splice include/linux/list.h:422 [inline]
- list_splice_init include/linux/list.h:464 [inline]
- __linkwatch_run_queue+0x58a/0x630 net/core/link_watch.c:200
- linkwatch_event+0x4a/0x60 net/core/link_watch.c:251
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:291
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
-
-Allocated by task 6822:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:494
- kmalloc_node include/linux/slab.h:578 [inline]
- kvmalloc_node+0xb4/0xf0 mm/util.c:574
- kvmalloc include/linux/mm.h:753 [inline]
- kvzalloc include/linux/mm.h:761 [inline]
- alloc_netdev_mqs+0x97/0xdc0 net/core/dev.c:9938
- rtnl_create_link+0x219/0xad0 net/core/rtnetlink.c:3067
- __rtnl_newlink+0xfa0/0x1750 net/core/rtnetlink.c:3329
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3398
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5461
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 6822:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- kasan_set_free_info mm/kasan/common.c:316 [inline]
- __kasan_slab_free+0xf5/0x140 mm/kasan/common.c:455
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x103/0x2c0 mm/slab.c:3757
- kvfree+0x42/0x50 mm/util.c:603
- device_release+0x71/0x200 drivers/base/core.c:1559
- kobject_cleanup lib/kobject.c:693 [inline]
- kobject_release lib/kobject.c:722 [inline]
- kref_put include/linux/kref.h:65 [inline]
- kobject_put+0x1c0/0x270 lib/kobject.c:739
- put_device+0x1b/0x30 drivers/base/core.c:2779
- free_netdev+0x35d/0x480 net/core/dev.c:10054
- __rtnl_newlink+0x14d8/0x1750 net/core/rtnetlink.c:3354
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3398
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5461
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The buggy address belongs to the object at ffff888094ccc000
- which belongs to the cache kmalloc-8k of size 8192
-The buggy address is located 1400 bytes inside of
- 8192-byte region [ffff888094ccc000, ffff888094cce000)
-The buggy address belongs to the page:
-page:ffffea0002533300 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 head:ffffea0002533300 order:2 compound_mapcount:0 compound_pincount:0
-flags: 0xfffe0000010200(slab|head)
-raw: 00fffe0000010200 ffffea0002519408 ffffea0002623008 ffff8880aa0021c0
-raw: 0000000000000000 ffff888094ccc000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff888094ccc400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff888094ccc480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff888094ccc500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                                ^
- ffff888094ccc580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff888094ccc600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+On Wed, Jul 22, 2020 at 05:38:58PM -0300, Marcelo Ricardo Leitner wrote:
+> This sockopt accepts two kinds of parameters, using struct
+> sctp_sack_info and struct sctp_assoc_value. The mentioned commit didn't
+> notice an implicit cast from the smaller (latter) struct to the bigger
+> one (former) when copying the data from the user space, which now leads
+> to an attempt to write beyond the buffer (because it assumes the storing
+> buffer is bigger than the parameter itself).
+> 
+> Fix it by giving it a special buffer if the smaller struct is used by
+> the application.
+> 
+> Fixes: ebb25defdc17 ("sctp: pass a kernel pointer to sctp_setsockopt_delayed_ack")
+> Reported-by: syzbot+0e4699d000d8b874d8dc@syzkaller.appspotmail.com
+> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> ---
+>  net/sctp/socket.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index 9a767f35971865f46b39131fc8d96d8c3c2aa1a8..b71c36af7687247b4fc9e160219b76f5c41b2fe2 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -2756,6 +2756,7 @@ static int sctp_setsockopt_delayed_ack(struct sock *sk,
+>  {
+>  	struct sctp_sock *sp = sctp_sk(sk);
+>  	struct sctp_association *asoc;
+> +	struct sctp_sack_info _params;
+>  
+>  	if (optlen == sizeof(struct sctp_sack_info)) {
+>  		if (params->sack_delay == 0 && params->sack_freq == 0)
+> @@ -2767,7 +2768,9 @@ static int sctp_setsockopt_delayed_ack(struct sock *sk,
+>  				    "Use struct sctp_sack_info instead\n",
+>  				    current->comm, task_pid_nr(current));
+>  
+> -		if (params->sack_delay == 0)
+> +		memcpy(&_params, params, sizeof(struct sctp_assoc_value));
+> +		params = &_params;
+> +		if (((struct sctp_assoc_value *)params)->assoc_value == 0)
+>  			params->sack_freq = 1;
+>  		else
+>  			params->sack_freq = 0;
+> -- 
+> 2.25.4
+> 
