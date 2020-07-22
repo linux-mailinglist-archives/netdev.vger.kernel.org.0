@@ -2,171 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC8F5229581
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 11:55:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9533E229591
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 11:59:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731680AbgGVJxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 05:53:21 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:54139 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731569AbgGVJxT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 05:53:19 -0400
-Received: by mail-il1-f197.google.com with SMTP id r4so670039ilq.20
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 02:53:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Xge0LaNlZ4Oxls37Yc88ECtpWAmvdd2FSVpRvVk/alw=;
-        b=aPHQTeafPniWreHNdkgqm2O/sJex2esU7fomaSOK1yl5e7PeL8Qk1hxdOfYA5BVq45
-         osan1cJvfGuWZQ8gfA1mbF17jzAZo05EezeaxcRkIjtVaMBHWNzxMbYhJBr/rjA8czjf
-         DcEG+NhQJAqgbwduVGbL42jJkbSmKBgIiI2t6tCWoyqSI81xDry/o9lwWIm4kOvWAsEd
-         OgV6vwxHcrNzsXCqCKAeESC9rB7x/kkHCz6QRNuk6cBS04B1RXF8PnkXyoCHG5Iu3JBJ
-         huA5EkZXOJoY3x6sLHS03TmgENMLW2Pe4Z/eDl0WK8BycLISHT0L4nI9BQWK/pJhL6s3
-         VCTw==
-X-Gm-Message-State: AOAM532NeL0YRymPSXfhcghogUz7oJuz1Ft7YJUjSOrdmK5B+BWD+OmH
-        XpqQ44lBfcRqUTDd36MJoxl+q0AKGIGjQ8OwglaNPEsFMWPf
-X-Google-Smtp-Source: ABdhPJwmg4qg4gZ/CbZIOIM+FcXY3zGxIe6yJNGsMnC+PbxZ6a2CdOCpdwyqj7NzXeGqlrZ8rA6vY5jLXMUCrzjd+IOg6ckYlq/o
+        id S1731710AbgGVJ7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 05:59:22 -0400
+Received: from mga14.intel.com ([192.55.52.115]:65456 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726153AbgGVJ7W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Jul 2020 05:59:22 -0400
+IronPort-SDR: RjBwZHcmq1lXoFCqt5+UwOk/XvsNNTnk7qPwHQdqGhrqlPg/qQDJlGwHzgYV2oWDBLtBa0dqg0
+ JhR1snNf3lNQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9689"; a="149466409"
+X-IronPort-AV: E=Sophos;i="5.75,381,1589266800"; 
+   d="scan'208";a="149466409"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2020 02:59:21 -0700
+IronPort-SDR: 4rgd7NWyIMYTIJ0nyTRxlzoRvzwtY+iWeNWktN/88xwFE7GWLTBMPsX7B8dSA26XUBf1IBZpKa
+ 82qyqPEBdwcw==
+X-IronPort-AV: E=Sophos;i="5.75,381,1589266800"; 
+   d="scan'208";a="462401351"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.255.30.77]) ([10.255.30.77])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2020 02:59:17 -0700
+Subject: Re: [PATCH V3 1/6] vhost: introduce vhost_vring_call
+To:     Zhu Lingshan <lingshan.zhu@live.com>, jasowang@redhat.com,
+        alex.williamson@redhat.com, mst@redhat.com, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, wanpengli@tencent.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>,
+        lszhu <lszhu@localhost.localdomain>
+References: <20200722094910.218014-1-lingshan.zhu@live.com>
+ <20200722094910.218014-2-lingshan.zhu@live.com>
+From:   Zhu Lingshan <lingshan.zhu@linux.intel.com>
+Message-ID: <c6f9a273-fe0d-30b5-7c18-0152d4919e8f@linux.intel.com>
+Date:   Wed, 22 Jul 2020 17:59:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2113:: with SMTP id n19mr29509321jaj.73.1595411598569;
- Wed, 22 Jul 2020 02:53:18 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 02:53:18 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009a764805ab04b5e1@google.com>
-Subject: KMSAN: uninit-value in __skb_flow_dissect (3)
-From:   syzbot <syzbot+051a531e8f1f59cf6dc9@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, glider@google.com,
-        jakub@cloudflare.com, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@chromium.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, mcroce@redhat.com,
-        netdev@vger.kernel.org, ppenkov@google.com, sdf@google.com,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200722094910.218014-2-lingshan.zhu@live.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Please ignore this patchset incorrect metadata, will resend soon. Thanks!
 
-syzbot found the following issue on:
-
-HEAD commit:    14525656 compiler.h: reinstate missing KMSAN_INIT
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=154bb20f100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c534a9fad6323722
-dashboard link: https://syzkaller.appspot.com/bug?extid=051a531e8f1f59cf6dc9
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13946658900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17adcb6f100000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+051a531e8f1f59cf6dc9@syzkaller.appspotmail.com
-
-batman_adv: batadv0: Interface activated: batadv_slave_1
-=====================================================
-BUG: KMSAN: uninit-value in __skb_flow_dissect+0x30f0/0x8440 net/core/flow_dissector.c:1163
-CPU: 0 PID: 8524 Comm: syz-executor152 Not tainted 5.8.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1df/0x240 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- __skb_flow_dissect+0x30f0/0x8440 net/core/flow_dissector.c:1163
- skb_flow_dissect_flow_keys include/linux/skbuff.h:1310 [inline]
- ___skb_get_hash net/core/flow_dissector.c:1520 [inline]
- __skb_get_hash+0x131/0x480 net/core/flow_dissector.c:1586
- skb_get_hash include/linux/skbuff.h:1348 [inline]
- udp_flow_src_port+0xa5/0x690 include/net/udp.h:220
- geneve_xmit_skb drivers/net/geneve.c:895 [inline]
- geneve_xmit+0xdf1/0x2bf0 drivers/net/geneve.c:1005
- __netdev_start_xmit include/linux/netdevice.h:4611 [inline]
- netdev_start_xmit include/linux/netdevice.h:4625 [inline]
- xmit_one net/core/dev.c:3556 [inline]
- dev_hard_start_xmit+0x50e/0xa70 net/core/dev.c:3572
- __dev_queue_xmit+0x2f8d/0x3b20 net/core/dev.c:4131
- dev_queue_xmit+0x4b/0x60 net/core/dev.c:4164
- pppoe_sendmsg+0xb43/0xb90 drivers/net/ppp/pppoe.c:900
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- kernel_sendmsg+0x433/0x440 net/socket.c:692
- sock_no_sendpage+0x235/0x300 net/core/sock.c:2853
- kernel_sendpage net/socket.c:3644 [inline]
- sock_sendpage+0x25b/0x2c0 net/socket.c:945
- pipe_to_sendpage+0x38c/0x4c0 fs/splice.c:448
- splice_from_pipe_feed fs/splice.c:502 [inline]
- __splice_from_pipe+0x565/0xf00 fs/splice.c:626
- splice_from_pipe fs/splice.c:661 [inline]
- generic_splice_sendpage+0x1d5/0x2d0 fs/splice.c:834
- do_splice_from fs/splice.c:846 [inline]
- direct_splice_actor+0x1fd/0x580 fs/splice.c:1016
- splice_direct_to_actor+0x6b2/0xf50 fs/splice.c:971
- do_splice_direct+0x342/0x580 fs/splice.c:1059
- do_sendfile+0x101b/0x1d40 fs/read_write.c:1540
- __do_compat_sys_sendfile fs/read_write.c:1622 [inline]
- __se_compat_sys_sendfile+0x301/0x3c0 fs/read_write.c:1605
- __ia32_compat_sys_sendfile+0x56/0x70 fs/read_write.c:1605
- do_syscall_32_irqs_on arch/x86/entry/common.c:430 [inline]
- __do_fast_syscall_32+0x2aa/0x400 arch/x86/entry/common.c:477
- do_fast_syscall_32+0x6b/0xd0 arch/x86/entry/common.c:505
- do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:554
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-RIP: 0023:0xf7f13549
-Code: Bad RIP value.
-RSP: 002b:00000000ffd520cc EFLAGS: 00000217 ORIG_RAX: 00000000000000bb
-RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 0000000000000005
-RDX: 0000000000000000 RSI: 000000007fffffff RDI: 0000000000000006
-RBP: 0000000020000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
- kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
- kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
- kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
- __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
- pppoe_sendmsg+0xaed/0xb90 drivers/net/ppp/pppoe.c:896
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- kernel_sendmsg+0x433/0x440 net/socket.c:692
- sock_no_sendpage+0x235/0x300 net/core/sock.c:2853
- kernel_sendpage net/socket.c:3644 [inline]
- sock_sendpage+0x25b/0x2c0 net/socket.c:945
- pipe_to_sendpage+0x38c/0x4c0 fs/splice.c:448
- splice_from_pipe_feed fs/splice.c:502 [inline]
- __splice_from_pipe+0x565/0xf00 fs/splice.c:626
- splice_from_pipe fs/splice.c:661 [inline]
- generic_splice_sendpage+0x1d5/0x2d0 fs/splice.c:834
- do_splice_from fs/splice.c:846 [inline]
- direct_splice_actor+0x1fd/0x580 fs/splice.c:1016
- splice_direct_to_actor+0x6b2/0xf50 fs/splice.c:971
- do_splice_direct+0x342/0x580 fs/splice.c:1059
- do_sendfile+0x101b/0x1d40 fs/read_write.c:1540
- __do_compat_sys_sendfile fs/read_write.c:1622 [inline]
- __se_compat_sys_sendfile+0x301/0x3c0 fs/read_write.c:1605
- __ia32_compat_sys_sendfile+0x56/0x70 fs/read_write.c:1605
- do_syscall_32_irqs_on arch/x86/entry/common.c:430 [inline]
- __do_fast_syscall_32+0x2aa/0x400 arch/x86/entry/common.c:477
- do_fast_syscall_32+0x6b/0xd0 arch/x86/entry/common.c:505
- do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:554
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-
-Local variable ----hdr@pppoe_sendmsg created at:
- pppoe_sendmsg+0xa6/0xb90 drivers/net/ppp/pppoe.c:843
- pppoe_sendmsg+0xa6/0xb90 drivers/net/ppp/pppoe.c:843
-=====================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+On 7/22/2020 5:49 PM, Zhu Lingshan wrote:
+> From: Zhu Lingshan <lingshan.zhu@intel.com>
+>
+> This commit introduces struct vhost_vring_call which replaced
+> raw struct eventfd_ctx *call_ctx in struct vhost_virtqueue.
+> Besides eventfd_ctx, it contains a spin lock and an
+> irq_bypass_producer in its structure.
+>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> Signed-off-by: lszhu <lszhu@localhost.localdomain>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@live.com>
+> ---
+>   drivers/vhost/vdpa.c  |  4 ++--
+>   drivers/vhost/vhost.c | 22 ++++++++++++++++------
+>   drivers/vhost/vhost.h |  9 ++++++++-
+>   3 files changed, 26 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index a54b60d6623f..df3cf386b0cd 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -96,7 +96,7 @@ static void handle_vq_kick(struct vhost_work *work)
+>   static irqreturn_t vhost_vdpa_virtqueue_cb(void *private)
+>   {
+>   	struct vhost_virtqueue *vq = private;
+> -	struct eventfd_ctx *call_ctx = vq->call_ctx;
+> +	struct eventfd_ctx *call_ctx = vq->call_ctx.ctx;
+>   
+>   	if (call_ctx)
+>   		eventfd_signal(call_ctx, 1);
+> @@ -382,7 +382,7 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+>   		break;
+>   
+>   	case VHOST_SET_VRING_CALL:
+> -		if (vq->call_ctx) {
+> +		if (vq->call_ctx.ctx) {
+>   			cb.callback = vhost_vdpa_virtqueue_cb;
+>   			cb.private = vq;
+>   		} else {
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index d7b8df3edffc..9f1a845a9302 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -298,6 +298,13 @@ static void vhost_vq_meta_reset(struct vhost_dev *d)
+>   		__vhost_vq_meta_reset(d->vqs[i]);
+>   }
+>   
+> +static void vhost_vring_call_reset(struct vhost_vring_call *call_ctx)
+> +{
+> +	call_ctx->ctx = NULL;
+> +	memset(&call_ctx->producer, 0x0, sizeof(struct irq_bypass_producer));
+> +	spin_lock_init(&call_ctx->ctx_lock);
+> +}
+> +
+>   static void vhost_vq_reset(struct vhost_dev *dev,
+>   			   struct vhost_virtqueue *vq)
+>   {
+> @@ -319,13 +326,13 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+>   	vq->log_base = NULL;
+>   	vq->error_ctx = NULL;
+>   	vq->kick = NULL;
+> -	vq->call_ctx = NULL;
+>   	vq->log_ctx = NULL;
+>   	vhost_reset_is_le(vq);
+>   	vhost_disable_cross_endian(vq);
+>   	vq->busyloop_timeout = 0;
+>   	vq->umem = NULL;
+>   	vq->iotlb = NULL;
+> +	vhost_vring_call_reset(&vq->call_ctx);
+>   	__vhost_vq_meta_reset(vq);
+>   }
+>   
+> @@ -685,8 +692,8 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+>   			eventfd_ctx_put(dev->vqs[i]->error_ctx);
+>   		if (dev->vqs[i]->kick)
+>   			fput(dev->vqs[i]->kick);
+> -		if (dev->vqs[i]->call_ctx)
+> -			eventfd_ctx_put(dev->vqs[i]->call_ctx);
+> +		if (dev->vqs[i]->call_ctx.ctx)
+> +			eventfd_ctx_put(dev->vqs[i]->call_ctx.ctx);
+>   		vhost_vq_reset(dev, dev->vqs[i]);
+>   	}
+>   	vhost_dev_free_iovecs(dev);
+> @@ -1629,7 +1636,10 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
+>   			r = PTR_ERR(ctx);
+>   			break;
+>   		}
+> -		swap(ctx, vq->call_ctx);
+> +
+> +		spin_lock(&vq->call_ctx.ctx_lock);
+> +		swap(ctx, vq->call_ctx.ctx);
+> +		spin_unlock(&vq->call_ctx.ctx_lock);
+>   		break;
+>   	case VHOST_SET_VRING_ERR:
+>   		if (copy_from_user(&f, argp, sizeof f)) {
+> @@ -2440,8 +2450,8 @@ static bool vhost_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
+>   void vhost_signal(struct vhost_dev *dev, struct vhost_virtqueue *vq)
+>   {
+>   	/* Signal the Guest tell them we used something up. */
+> -	if (vq->call_ctx && vhost_notify(dev, vq))
+> -		eventfd_signal(vq->call_ctx, 1);
+> +	if (vq->call_ctx.ctx && vhost_notify(dev, vq))
+> +		eventfd_signal(vq->call_ctx.ctx, 1);
+>   }
+>   EXPORT_SYMBOL_GPL(vhost_signal);
+>   
+> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> index c8e96a095d3b..38eb1aa3b68d 100644
+> --- a/drivers/vhost/vhost.h
+> +++ b/drivers/vhost/vhost.h
+> @@ -13,6 +13,7 @@
+>   #include <linux/virtio_ring.h>
+>   #include <linux/atomic.h>
+>   #include <linux/vhost_iotlb.h>
+> +#include <linux/irqbypass.h>
+>   
+>   struct vhost_work;
+>   typedef void (*vhost_work_fn_t)(struct vhost_work *work);
+> @@ -60,6 +61,12 @@ enum vhost_uaddr_type {
+>   	VHOST_NUM_ADDRS = 3,
+>   };
+>   
+> +struct vhost_vring_call {
+> +	struct eventfd_ctx *ctx;
+> +	struct irq_bypass_producer producer;
+> +	spinlock_t ctx_lock;
+> +};
+> +
+>   /* The virtqueue structure describes a queue attached to a device. */
+>   struct vhost_virtqueue {
+>   	struct vhost_dev *dev;
+> @@ -72,7 +79,7 @@ struct vhost_virtqueue {
+>   	vring_used_t __user *used;
+>   	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
+>   	struct file *kick;
+> -	struct eventfd_ctx *call_ctx;
+> +	struct vhost_vring_call call_ctx;
+>   	struct eventfd_ctx *error_ctx;
+>   	struct eventfd_ctx *log_ctx;
+>   
