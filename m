@@ -2,152 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D221229B9B
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:38:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CC3C229BA6
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732862AbgGVPiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 11:38:50 -0400
-Received: from bgl-iport-4.cisco.com ([72.163.197.28]:8140 "EHLO
-        bgl-iport-4.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730382AbgGVPit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:38:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=4010; q=dns/txt; s=iport;
-  t=1595432328; x=1596641928;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=6DfteAaujTchJ8f7UV3A2nHShelTlhrd0C5fTK5+Cx4=;
-  b=ZFgle/OBoMPRxfrMNmuxFAltm2lzxAbyvD2r+UZN4L2W321S+zeLQyaF
-   GK54Jje7B3Lym/Qs6zZWMIbOXA3bi1Xpoadfwf5bSLciHDp8sVGQYezZe
-   YfDA3QoClwo1iP9lFyBgWAhRYTiqZXKARoYOpqGwmVBb8HEoo//kSo44Z
-   U=;
-X-IronPort-AV: E=Sophos;i="5.75,383,1589241600"; 
-   d="scan'208";a="160197659"
-Received: from vla196-nat.cisco.com (HELO bgl-core-2.cisco.com) ([72.163.197.24])
-  by bgl-iport-4.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 22 Jul 2020 15:38:45 +0000
-Received: from SRIRAKR2-M-R0A8.cisco.com ([10.65.42.168])
-        by bgl-core-2.cisco.com (8.15.2/8.15.2) with ESMTP id 06MFcjDV021687;
-        Wed, 22 Jul 2020 15:38:45 GMT
-From:   Sriram Krishnan <srirakr2@cisco.com>
-To:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>
-Cc:     mbumgard@cisco.com, ugm@cisco.com, nimm@cisco.com,
-        xe-linux-external@cisco.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v6] hv_netvsc: add support for vlans in AF_PACKET mode
-Date:   Wed, 22 Jul 2020 21:08:44 +0530
-Message-Id: <20200722153845.79946-1-srirakr2@cisco.com>
-X-Mailer: git-send-email 2.24.0
+        id S1732954AbgGVPk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 11:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726717AbgGVPk0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:40:26 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31814C0619DC;
+        Wed, 22 Jul 2020 08:40:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=1NB2+AhHLJs3Y6RrSGLM2VUfmDEsnlWaadqEJFqCmek=; b=PIO6tPMkCQpCFV1t+UxH/t2j0J
+        /TIpdOmrO/kDa57vsBhsV21iH5//KTymOVKB8o6PvWY9W6vl9fjOtk8G9OhjF+qd4XIVCktspyFLn
+        vMLOaPogdUnxQK+aGcof+PYHUywD0W9KhcU3Cf6+ejC3T7VPwBmDrOD/pKdAHOL8RBYf8Eap8j/V7
+        H5/6fnGCWABgPfpVi9//3vl5Yai285IUmj4/2sbThctcV29XXj6ejxecMaCU4d5kVj+Y7J/pHUSl0
+        F8Wps3GKwiE1B6xZvmdHAkYN9Bx7FuqXmydd4g6vrkIT9Rep6sYB5yGu4LgDdXl4I2AMbl7DYwPzK
+        tDDMTxBQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jyGqo-0001QV-Sa; Wed, 22 Jul 2020 15:40:11 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 50B9F304E03;
+        Wed, 22 Jul 2020 17:40:10 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3CA1B200D417A; Wed, 22 Jul 2020 17:40:10 +0200 (CEST)
+Date:   Wed, 22 Jul 2020 17:40:10 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@chromium.org" <kpsingh@chromium.org>,
+        "brouer@redhat.com" <brouer@redhat.com>
+Subject: Re: [PATCH v3 bpf-next 1/2] bpf: separate bpf_get_[stack|stackid]
+ for perf events BPF
+Message-ID: <20200722154010.GO10769@hirez.programming.kicks-ass.net>
+References: <20200716225933.196342-1-songliubraving@fb.com>
+ <20200716225933.196342-2-songliubraving@fb.com>
+ <20200721191009.5khr7blivtuv3qfj@ast-mbp.dhcp.thefacebook.com>
+ <42DEE452-F411-4098-917B-11B23AC99F5F@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-Outbound-SMTP-Client: 10.65.42.168, [10.65.42.168]
-X-Outbound-Node: bgl-core-2.cisco.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <42DEE452-F411-4098-917B-11B23AC99F5F@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vlan tagged packets are getting dropped when used with DPDK that uses
-the AF_PACKET interface on a hyperV guest.
+On Tue, Jul 21, 2020 at 10:40:19PM +0000, Song Liu wrote:
 
-The packet layer uses the tpacket interface to communicate the vlans
-information to the upper layers. On Rx path, these drivers can read the
-vlan info from the tpacket header but on the Tx path, this information
-is still within the packet frame and requires the paravirtual drivers to
-push this back into the NDIS header which is then used by the host OS to
-form the packet.
+> We only need to block precise_ip >= 2. precise_ip == 1 is OK. 
 
-This transition from the packet frame to NDIS header is currently missing
-hence causing the host OS to drop the all vlan tagged packets sent by
-the drivers that use AF_PACKET (ETH_P_ALL) such as DPDK.
+Uuuh, how? Anything PEBS would have the same problem. Sure, precise_ip
+== 1 will not correct the IP, but the stack will not match regardless.
 
-Here is an overview of the changes in the vlan header in the packet path:
-
-The RX path (userspace handles everything):
-  1. RX VLAN packet is stripped by HOST OS and placed in NDIS header
-  2. Guest Kernel RX hv_netvsc packets and moves VLAN info from NDIS
-     header into kernel SKB
-  3. Kernel shares packets with user space application with PACKET_MMAP.
-     The SKB VLAN info is copied to tpacket layer and indication set
-     TP_STATUS_VLAN_VALID.
-  4. The user space application will re-insert the VLAN info into the frame
-
-The TX path:
-  1. The user space application has the VLAN info in the frame.
-  2. Guest kernel gets packets from the application with PACKET_MMAP.
-  3. The kernel later sends the frame to the hv_netvsc driver. The only way
-     to send VLANs is when the SKB is setup & the VLAN is stripped from the
-     frame.
-  4. TX VLAN is re-inserted by HOST OS based on the NDIS header. If it sees
-     a VLAN in the frame the packet is dropped.
-
-Cc: xe-linux-external@cisco.com
-Cc: Sriram Krishnan <srirakr2@cisco.com>
-Signed-off-by: Sriram Krishnan <srirakr2@cisco.com>
----
- drivers/net/hyperv/hyperv_net.h |  1 +
- drivers/net/hyperv/netvsc_drv.c | 24 ++++++++++++++++++++++++
- 2 files changed, 25 insertions(+)
-
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index abda736e7c7d..2181d4538ab7 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -897,6 +897,7 @@ struct netvsc_ethtool_stats {
- 	unsigned long rx_no_memory;
- 	unsigned long stop_queue;
- 	unsigned long wake_queue;
-+	unsigned long vlan_error;
- };
- 
- struct netvsc_ethtool_pcpu_stats {
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 6267f706e8ee..e0327b88732c 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -605,6 +605,29 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
- 		*hash_info = hash;
- 	}
- 
-+	/* When using AF_PACKET we need to drop VLAN header from
-+	 * the frame and update the SKB to allow the HOST OS
-+	 * to transmit the 802.1Q packet
-+	 */
-+	if (skb->protocol == htons(ETH_P_8021Q)) {
-+		u16 vlan_tci;
-+
-+		skb_reset_mac_header(skb);
-+		if (eth_type_vlan(eth_hdr(skb)->h_proto)) {
-+			if (unlikely(__skb_vlan_pop(skb, &vlan_tci) != 0)) {
-+				++net_device_ctx->eth_stats.vlan_error;
-+				goto drop;
-+			}
-+
-+			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan_tci);
-+			/* Update the NDIS header pkt lengths */
-+			packet->total_data_buflen -= VLAN_HLEN;
-+			packet->total_bytes -= VLAN_HLEN;
-+			rndis_msg->msg_len = packet->total_data_buflen;
-+			rndis_msg->msg.pkt.data_len = packet->total_data_buflen;
-+		}
-+	}
-+
- 	if (skb_vlan_tag_present(skb)) {
- 		struct ndis_pkt_8021q_info *vlan;
- 
-@@ -1427,6 +1450,7 @@ static const struct {
- 	{ "rx_no_memory", offsetof(struct netvsc_ethtool_stats, rx_no_memory) },
- 	{ "stop_queue", offsetof(struct netvsc_ethtool_stats, stop_queue) },
- 	{ "wake_queue", offsetof(struct netvsc_ethtool_stats, wake_queue) },
-+	{ "vlan_error", offsetof(struct netvsc_ethtool_stats, vlan_error) },
- }, pcpu_stats[] = {
- 	{ "cpu%u_rx_packets",
- 		offsetof(struct netvsc_ethtool_pcpu_stats, rx_packets) },
--- 
-2.24.0
+You need IP,SP(,BP) to be a consistent set _AND_ have it match the
+current stack, PEBS simply cannot do that, because the regs get recorded
+(much) earlier than the PMI and the stack can have changed in the
+meantime.
 
