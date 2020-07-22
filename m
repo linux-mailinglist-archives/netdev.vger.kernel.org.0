@@ -2,72 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86A30229BD0
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:52:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A3C6229BD5
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:53:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732910AbgGVPwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 11:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36480 "EHLO
+        id S1732918AbgGVPwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 11:52:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727778AbgGVPwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:52:22 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46642C0619DC;
-        Wed, 22 Jul 2020 08:52:22 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id 1so1497105pfn.9;
-        Wed, 22 Jul 2020 08:52:22 -0700 (PDT)
+        with ESMTP id S1726427AbgGVPwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:52:31 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29F6C0619DC;
+        Wed, 22 Jul 2020 08:52:30 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id q17so1191693pls.9;
+        Wed, 22 Jul 2020 08:52:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=b9pEP+t14gaVl+SxUPRV7rIzQh2/jV47Fd73cy9kCf8=;
-        b=fFZGWCsAWrlhtSgmydklRV2+KSEHh1Ii1xlfwITdn5tWyPutjJQP22WDZzd5yD78I7
-         6sd2lH9SYtHkxBqikw8ljaA7j0dyo2Mjnjuxr0SRzJYFGZAdZ2Jfw9DDKF0lBArTzUJv
-         ENJdTj84myYVw664UsibjTSrNk/qxpOCw/uO+pmP2st4olRaVS1RZzeF+hr93em1nhEx
-         SBvhcy3e4LJKyqNQpBC8pCoo8wI2MXHDu92k+8IWTdzyhzBSpQEJRWOTnAKWLhWfB8bl
-         vehUBsLyUTR43NsAoS8YDA3c9xxfcfVutrOVXZ1t81TPxfsOKmlgyAG+xL9NA7yrRokY
-         tHQg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :in-reply-to:references;
+        bh=n46Ldv3YCoVjAqAm1P4xCezKoJ2R94OtYBCuyRUdESA=;
+        b=XM7xfwn1KSunWPGqai0kPae8nB+Mj16nlGlRRJKtiovPAhFqg0x6eC+i7cxrmRdLZ+
+         Bvu2iCeKeIt2dpj++l/fnLowFlRfZmKbIoGot7UreiWbszRQRrusPPTCwziNHf+gSThO
+         T0juoY8qPJk7JkdFGzo2Q/wztF9okeh/kKyMO6TbBnbChWK/GAPPAHobGGP0Y6NdN6un
+         +WmENx/OA3uAOJGWlJAmCtKGhf/71opXVqgNVbRqA/bq7EcUa1AkSclAZdVQAtD/2ST5
+         Z6jfakrNyMXg3upSRV25209+udJKYAIRrUc50j+CBywbFzKmGNMTZecvoaK55SW0FaKi
+         IdWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=b9pEP+t14gaVl+SxUPRV7rIzQh2/jV47Fd73cy9kCf8=;
-        b=sEQK0TGc21wP49dvEBqSUVusvvihgKIvNh0cRO65ngjDLgVn6K/813ErFnA9WANlLf
-         9uM+9561I4iBhMQoRUX2Azqm1B/IG7OmQXXtOP0Km9nkqHP8ms3zpEzMVEHpA3T0kaSK
-         CGuYU+rua4LkGiNUnZFRdykQXE6RP5a3YVFaHRXQRaNALo4K1CvH4fz8AjleLnOVBTxn
-         bac21YdgfDakDPkKVd4wMuQoPaP6K3p3JDHQe0PZPlMw8NltOMIdfdHVj2N94i6grfsK
-         LQqSk3jng4yUdzpgNNbGTFC8YmhskJCLCCf6sPZzbLc5Pi/VutNhWMXJYpFQ3GK9XKVK
-         Nb6g==
-X-Gm-Message-State: AOAM530Gus4pKdeczuO29EUpdJjLU2+efy51QLSEUhigL2CUQRN66btj
-        R9gZkTrJJF+8N8WsjD3aLlNJ6WCT
-X-Google-Smtp-Source: ABdhPJx65HEuTVbsGcuOfM0uHth7EwWGqgE7uO4tWqFSifmGhcp/yHCyA8IYQIkMoYuTgkWIjSQrfw==
-X-Received: by 2002:a63:4c48:: with SMTP id m8mr444835pgl.290.1595433141462;
-        Wed, 22 Jul 2020 08:52:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:in-reply-to:references;
+        bh=n46Ldv3YCoVjAqAm1P4xCezKoJ2R94OtYBCuyRUdESA=;
+        b=EPcl0YwUHkUuKssLMyYVnhyBc/oy3wqci8sj3t2u7eUxcNNQEj9obQvSz3KsetGgro
+         7n1MhWEOcvJDlcy2vmBBiA+YXROuHxWYNd2WOtOeLaXKrrD2awD0aInsVwUc1FD/nCoy
+         pwgrYkT5qJOZxngnEtRnNPIBNBD8ftV7PhymZyiFJVBquMjxvmo273RjO4PsbtxF94g0
+         +7NRI0mONVi8G1hjJiP/Fh8Oia/Iqgg+ezm7CGTI7m8OZ1PvNg0P/qzoKKyNS2L9ZsL8
+         MFGc4p6JDOjwV8bPx+EQwMOsmwkXNrv5GJUBIp/GvFN70zyffyB7L/BXTMnNPVPlN42K
+         2ZWg==
+X-Gm-Message-State: AOAM532ceALHbHwldh24d9ExV6vieArJLHNHvzwNRsHg1y4vUNkon0EA
+        99NSzlrl3ouoFbu8DibzFOCfFgO5
+X-Google-Smtp-Source: ABdhPJw2C3ivdYeEWczPSk9txPuBDemikzHBWS+5odPXAI+ypXUxuttceKy0t3LPDITV2VFPX7+kxQ==
+X-Received: by 2002:a17:90a:8e:: with SMTP id a14mr65913pja.206.1595433150278;
+        Wed, 22 Jul 2020 08:52:30 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id q17sm26916pfk.0.2020.07.22.08.52.20
+        by smtp.gmail.com with ESMTPSA id io3sm101701pjb.22.2020.07.22.08.52.28
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Jul 2020 08:52:20 -0700 (PDT)
+        Wed, 22 Jul 2020 08:52:29 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     davem@davemloft.net,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>
-Subject: [PATCH net 0/2] sctp: shrink stream outq in the right place
-Date:   Wed, 22 Jul 2020 23:52:10 +0800
-Message-Id: <cover.1595433039.git.lucien.xin@gmail.com>
+Subject: [PATCH net 1/2] sctp: shrink stream outq only when new outcnt < old outcnt
+Date:   Wed, 22 Jul 2020 23:52:11 +0800
+Message-Id: <ceb8b4f32a9235e0a846e4f8e0537fcb362edf04.1595433039.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
+In-Reply-To: <cover.1595433039.git.lucien.xin@gmail.com>
+References: <cover.1595433039.git.lucien.xin@gmail.com>
+In-Reply-To: <cover.1595433039.git.lucien.xin@gmail.com>
+References: <cover.1595433039.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Patch 1 is an improvement, and Patch 2 is a bug fix.
+It's not necessary to go list_for_each for outq->out_chunk_list
+when new outcnt >= old outcnt, as no chunk with higher sid than
+new (outcnt - 1) exists in the outqueue.
 
-Xin Long (2):
-  sctp: shrink stream outq only when new outcnt < old outcnt
-  sctp: shrink stream outq when fails to do addstream reconf
+While at it, also move the list_for_each code in a new function
+sctp_stream_shrink_out(), which will be used in the next patch.
 
- net/sctp/stream.c | 27 ++++++++++++++++++---------
- 1 file changed, 18 insertions(+), 9 deletions(-)
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/sctp/stream.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
+diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+index 67f7e71..4f87693 100644
+--- a/net/sctp/stream.c
++++ b/net/sctp/stream.c
+@@ -22,17 +22,11 @@
+ #include <net/sctp/sm.h>
+ #include <net/sctp/stream_sched.h>
+ 
+-/* Migrates chunks from stream queues to new stream queues if needed,
+- * but not across associations. Also, removes those chunks to streams
+- * higher than the new max.
+- */
+-static void sctp_stream_outq_migrate(struct sctp_stream *stream,
+-				     struct sctp_stream *new, __u16 outcnt)
++static void sctp_stream_shrink_out(struct sctp_stream *stream, __u16 outcnt)
+ {
+ 	struct sctp_association *asoc;
+ 	struct sctp_chunk *ch, *temp;
+ 	struct sctp_outq *outq;
+-	int i;
+ 
+ 	asoc = container_of(stream, struct sctp_association, stream);
+ 	outq = &asoc->outqueue;
+@@ -56,6 +50,19 @@ static void sctp_stream_outq_migrate(struct sctp_stream *stream,
+ 
+ 		sctp_chunk_free(ch);
+ 	}
++}
++
++/* Migrates chunks from stream queues to new stream queues if needed,
++ * but not across associations. Also, removes those chunks to streams
++ * higher than the new max.
++ */
++static void sctp_stream_outq_migrate(struct sctp_stream *stream,
++				     struct sctp_stream *new, __u16 outcnt)
++{
++	int i;
++
++	if (stream->outcnt > outcnt)
++		sctp_stream_shrink_out(stream, outcnt);
+ 
+ 	if (new) {
+ 		/* Here we actually move the old ext stuff into the new
 -- 
 2.1.0
 
