@@ -2,46 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CEA4228DAD
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 03:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60305228DE5
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 04:12:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731590AbgGVBgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 21:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727795AbgGVBgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 21:36:52 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED4CC061794
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 18:36:52 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 573B011D69C3E;
-        Tue, 21 Jul 2020 18:20:07 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 18:36:51 -0700 (PDT)
-Message-Id: <20200721.183651.161331443143182363.davem@davemloft.net>
-To:     snelson@pensando.io
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/6] ionic updates
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200721203409.3432-1-snelson@pensando.io>
-References: <20200721203409.3432-1-snelson@pensando.io>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 21 Jul 2020 18:20:07 -0700 (PDT)
+        id S1731804AbgGVCMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 22:12:01 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:50846 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731621AbgGVCMA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 22:12:00 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id EA8AC2BF1FBB69F44CA1;
+        Wed, 22 Jul 2020 10:11:58 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Wed, 22 Jul 2020
+ 10:11:56 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <aelior@marvell.com>, <GR-everest-linux-l2@marvell.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] net: qed: Remove unneeded cast from memory allocation
+Date:   Wed, 22 Jul 2020 10:10:27 +0800
+Message-ID: <20200722021027.12797-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shannon Nelson <snelson@pensando.io>
-Date: Tue, 21 Jul 2020 13:34:03 -0700
+Remove casting the values returned by memory allocation function.
 
-> These are a few odd code tweaks to the ionic driver: FW defined MTU
-> limits, remove unnecessary code, and other tidiness tweaks.
+Coccinelle emits WARNING: casting value returned by memory allocation
+unction to (struct roce_destroy_qp_req_output_params *) is useless.
 
-Series applied, thanks Shannon.
+This issue was detected by using the Coccinelle software.
+
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_roce.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+index a1423ec0edf7..f16a157bb95a 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+@@ -757,8 +757,7 @@ static int qed_roce_sp_destroy_qp_requester(struct qed_hwfn *p_hwfn,
+ 	if (!qp->req_offloaded)
+ 		return 0;
+ 
+-	p_ramrod_res = (struct roce_destroy_qp_req_output_params *)
+-		       dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
++	p_ramrod_res = dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
+ 					  sizeof(*p_ramrod_res),
+ 					  &ramrod_res_phys, GFP_KERNEL);
+ 	if (!p_ramrod_res) {
+-- 
+2.17.1
+
