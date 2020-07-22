@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96A232292FA
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 10:07:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC32622930F
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 10:07:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729026AbgGVIGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 04:06:55 -0400
-Received: from verein.lst.de ([213.95.11.211]:55384 "EHLO verein.lst.de"
+        id S1729700AbgGVIHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 04:07:31 -0400
+Received: from verein.lst.de ([213.95.11.211]:55401 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727034AbgGVIGy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jul 2020 04:06:54 -0400
+        id S1726945AbgGVIHa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Jul 2020 04:07:30 -0400
 Received: by verein.lst.de (Postfix, from userid 2407)
-        id 2A1836736F; Wed, 22 Jul 2020 10:06:47 +0200 (CEST)
-Date:   Wed, 22 Jul 2020 10:06:46 +0200
+        id 2537A6736F; Wed, 22 Jul 2020 10:07:25 +0200 (CEST)
+Date:   Wed, 22 Jul 2020 10:07:24 +0200
 From:   'Christoph Hellwig' <hch@lst.de>
 To:     David Laight <David.Laight@ACULAB.COM>
 Cc:     'Christoph Hellwig' <hch@lst.de>,
@@ -49,22 +49,22 @@ Cc:     'Christoph Hellwig' <hch@lst.de>,
         <tipc-discussion@lists.sourceforge.net>,
         "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>
 Subject: Re: get rid of the address_space override in setsockopt
-Message-ID: <20200722080646.GA26864@lst.de>
-References: <20200720124737.118617-1-hch@lst.de> <60c52e31e9f240718fcda0dd5c2faeca@AcuMS.aculab.com>
+Message-ID: <20200722080724.GB26864@lst.de>
+References: <20200720124737.118617-1-hch@lst.de> <ae6a743aaea3406596dbc89e332b6b3e@AcuMS.aculab.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <60c52e31e9f240718fcda0dd5c2faeca@AcuMS.aculab.com>
+In-Reply-To: <ae6a743aaea3406596dbc89e332b6b3e@AcuMS.aculab.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 21, 2020 at 09:38:23AM +0000, David Laight wrote:
+On Tue, Jul 21, 2020 at 10:26:58AM +0000, David Laight wrote:
 > From: Christoph Hellwig
 > > Sent: 20 July 2020 13:47
-> >
+> > 
 > > setsockopt is the last place in architecture-independ code that still
 > > uses set_fs to force the uaccess routines to operate on kernel pointers.
 > > 
@@ -74,8 +74,12 @@ On Tue, Jul 21, 2020 at 09:38:23AM +0000, David Laight wrote:
 > > helpers and moving them over to it before finally doing the main
 > > setsockopt method.
 > 
-> Are you planning to make the equivalent change to getsockopt()?
+> Another 'gotcha' ...
+> 
+> On an least some architectures (possibly only m68k) IIRC all structures
+> are actually passed by reference.
+> (This used to be true for sparc - but it may have changed in the
+> last 30 years.)
 
-No.  Only setsockopt can be fed kernel addresses from bpf-cgroup.
-There is no point in complicating the read side interface when it
-doesn't have that problem.
+Tough luck for ABIs wit suboptimal calling conventions.  At least we can
+do the right thing for those that do not have the problem.
