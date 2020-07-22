@@ -2,201 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2938022914F
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 08:52:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C4E5229171
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 08:58:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729676AbgGVGwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 02:52:17 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:54884 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726736AbgGVGwQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 02:52:16 -0400
-Received: from mail-wr1-f69.google.com ([209.85.221.69])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <andrea.righi@canonical.com>)
-        id 1jy8bu-0005xY-1t
-        for netdev@vger.kernel.org; Wed, 22 Jul 2020 06:52:14 +0000
-Received: by mail-wr1-f69.google.com with SMTP id h4so242551wrh.10
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 23:52:14 -0700 (PDT)
+        id S1730325AbgGVG6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 02:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727882AbgGVG6A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 02:58:00 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2653FC061794;
+        Tue, 21 Jul 2020 23:58:00 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id u64so990183qka.12;
+        Tue, 21 Jul 2020 23:58:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zjl8jyI4JNnQLeTVzyCzHh3c+nXxWye5Cj6ubPO13J0=;
+        b=GEF78V2k9OiWRf81LyakVnVCsY+WdOadZDPh8XZnSjoWpqyVyHSBqYesBwcUVU6qn+
+         A2GOiIMI7D4+BCo2X43tWNGsBUTQEV15+iF25xICpC6R75QeFwAJf9f7IL+FtnY2Ynco
+         guWA3aOcbK99jE7qNpAW14da2xrh4F+sNJ+p9hT2QIbZMXkJ4Z6vapPJLeseMS20z5ki
+         hH/T6IJ5Prf/pBvgnXtu03h5EckJP4dmb0vjt5PknVgmm/fm7KZtKVn5sTFZ/Ya5Ntf8
+         37VXErV/NMpuNfETve3WI/+hiyztBgVpQioouREp/80KkRHIHv8x2KumKGBgXnqeSxCo
+         Nzyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=uhBXqoms6Y2BJ+DRWgv1UXrLfuoV1AP2/YI2uOM0BIc=;
-        b=qAcrVhbFoDhTTd8DJvX2xfYhD+TWdafWyUKi/7Ezpn6/NPO/d3JegkEpjkrjFW9OnL
-         q76LzfmWNAKrejL++LoGSvdKVRB8Y3IKRGbcE39ZzAlcdSw9WYAVmpWXCnPjN9KpIx0Y
-         9vxE+WQg6u4as/zggwsmwmGJ+BFOB/QwTKSMZYHscL8rBUVc7e2P+Lcwj18wEIxTpi5o
-         ES11z29oJCXm1GPubHfrkgth8TV7Mlb8MhgphbSwqJ5/FNm7q36ao973e0sooCOeJOzr
-         dkRNjsN+BIHzYbdJv7xy1ADPhFM9o8ky79eAvixxk3xzy+5gZk2Du9nLPbFMKMOkbWSk
-         BuRw==
-X-Gm-Message-State: AOAM530U1sHU+rd1Jsylvm5NWyXuljCSOxBGjjTke1jkHqRQdRK/fd5H
-        Dj3L2gXh9YaPEK/EO74ZT9vEvRiI4xoOK9FshK0+0yAaO/rvfmUYa/2xrabhVZgFZj0bxDbv8TY
-        N68OqN7AoRHl3wOCrgL6DXOFJ1EshAAuBmw==
-X-Received: by 2002:a7b:c05a:: with SMTP id u26mr1897726wmc.73.1595400733684;
-        Tue, 21 Jul 2020 23:52:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyhC1gnk9TlQyUIEJ3tOszObyW4FaQs/e6/6fGBY61IX5lMt1lAPzd6jSpjxL2aHTCAHJKvaQ==
-X-Received: by 2002:a7b:c05a:: with SMTP id u26mr1897700wmc.73.1595400733297;
-        Tue, 21 Jul 2020 23:52:13 -0700 (PDT)
-Received: from localhost (host-87-11-131-192.retail.telecomitalia.it. [87.11.131.192])
-        by smtp.gmail.com with ESMTPSA id g70sm2426599wmg.24.2020.07.21.23.52.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 23:52:12 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 08:52:11 +0200
-From:   Andrea Righi <andrea.righi@canonical.com>
-To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] xen-netfront: fix potential deadlock in xennet_remove()
-Message-ID: <20200722065211.GA841369@xps-13>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zjl8jyI4JNnQLeTVzyCzHh3c+nXxWye5Cj6ubPO13J0=;
+        b=tWEXuWAdpbLMBpQzOm77gH8+wH6UhYMoYG5ti2dPAaFQeSJ92FUpSJKODboaFVxleZ
+         uBMZeihMIEjvz81ovYPaQuZwusMsxvNTmMfV/6o3hP0tyLPrZqUhIAWP1SXo923xY69d
+         29Wa3WCb4IC6HZmrTE8rQ+iXnQ+UDhWyqwUfAoDiS5Rosl1SOkAqQ2BnCaHNc2HVUFp+
+         QBmoi9JepLVpIF1djjXiMWVUtyRR695g7yubl3/sqAMKkPqrTc9OlVNS48U3F6VKevks
+         DARVF3f4YnS/xdp4Tj6EAA/0ccTJmvIM7ezNU5gg0R1+lnkBTWtaC8kfLpJmzoqpiB0T
+         ti7A==
+X-Gm-Message-State: AOAM5302ZnjhlvJAlgGB0G1ChHkUrox5OyUbMfp3aOyjGcGD8d0mMC5t
+        umNiVZ9idx/Ml8rlFglA4ELyFhWGFFMu2UZjd10=
+X-Google-Smtp-Source: ABdhPJyURO1mFslPp3J0AAImaBN2tPe38/iVgkWkY18Z1Rf8Lb/feerQVzkkSUH/emANzphylSQxhxBjLXImoOgFhNc=
+X-Received: by 2002:a37:a655:: with SMTP id p82mr14245845qke.92.1595401079241;
+ Tue, 21 Jul 2020 23:57:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20200722054314.2103880-1-irogers@google.com>
+In-Reply-To: <20200722054314.2103880-1-irogers@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 21 Jul 2020 23:57:48 -0700
+Message-ID: <CAEf4BzaBYaFJ3eUinS9nHeykJ0xEbZpwLts33ZDp1PT=bkyjww@mail.gmail.com>
+Subject: Re: [RFC PATCH] bpftool btf: Add prefix option to dump C
+To:     Ian Rogers <irogers@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's a potential race in xennet_remove(); this is what the driver is
-doing upon unregistering a network device:
+On Tue, Jul 21, 2020 at 10:44 PM Ian Rogers <irogers@google.com> wrote:
+>
+> When bpftool dumps types and enum members into a header file for
+> inclusion the names match those in the original source. If the same
+> header file needs to be included in the original source and the bpf
+> program, the names of structs, unions, typedefs and enum members will
+> have naming collisions.
 
-  1. state = read bus state
-  2. if state is not "Closed":
-  3.    request to set state to "Closing"
-  4.    wait for state to be set to "Closing"
-  5.    request to set state to "Closed"
-  6.    wait for state to be set to "Closed"
+vmlinux.h is not really intended to be used from user-space, because
+it's incompatible with pretty much any other header that declares any
+type. Ideally we should make this better, but that might require some
+compiler support. We've been discussing with Yonghong extending Clang
+with a compile-time check for whether some type is defined or not,
+which would allow to guard every type and only declare it
+conditionally, if it's missing. But that's just an idea at this point.
 
-If the state changes to "Closed" immediately after step 1 we are stuck
-forever in step 4, because the state will never go back from "Closed" to
-"Closing".
+Regardless, vmlinux.h is also very much Clang-specific, and shouldn't
+work well with GCC. Could you elaborate on the specifics of the use
+case you have in mind? That could help me see what might be the right
+solution. Thanks!
 
-Make sure to check also for state == "Closed" in step 4 to prevent the
-deadlock.
+>
+> To avoid these collisions an approach is to redeclare the header file
+> types and enum members, which leads to duplication and possible
+> inconsistencies. Another approach is to use preprocessor macros
+> to rename conflicting names, but this can be cumbersome if there are
+> many conflicts.
+>
+> This patch adds a prefix option for the dumped names. Use of this option
+> can avoid name conflicts and compile time errors.
+>
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  .../bpf/bpftool/Documentation/bpftool-btf.rst |  7 ++++++-
+>  tools/bpf/bpftool/btf.c                       | 18 ++++++++++++++---
+>  tools/lib/bpf/btf.h                           |  1 +
+>  tools/lib/bpf/btf_dump.c                      | 20 +++++++++++++------
+>  4 files changed, 36 insertions(+), 10 deletions(-)
+>
 
-Also add a 5 sec timeout any time we wait for the bus state to change,
-to avoid getting stuck forever in wait_event() and add a debug message
-to help tracking down potential similar issues.
+[...]
 
-Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
----
- drivers/net/xen-netfront.c | 79 +++++++++++++++++++++++++++-----------
- 1 file changed, 57 insertions(+), 22 deletions(-)
+> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
+> index 491c7b41ffdc..fea4baab00bd 100644
+> --- a/tools/lib/bpf/btf.h
+> +++ b/tools/lib/bpf/btf.h
+> @@ -117,6 +117,7 @@ struct btf_dump;
+>
+>  struct btf_dump_opts {
+>         void *ctx;
+> +       const char *name_prefix;
+>  };
 
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 482c6c8b0fb7..e09caba93dd9 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -63,6 +63,8 @@ module_param_named(max_queues, xennet_max_queues, uint, 0644);
- MODULE_PARM_DESC(max_queues,
- 		 "Maximum number of queues per virtual interface");
- 
-+#define XENNET_TIMEOUT  (5 * HZ)
-+
- static const struct ethtool_ops xennet_ethtool_ops;
- 
- struct netfront_cb {
-@@ -1334,12 +1336,20 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
- 
- 	netif_carrier_off(netdev);
- 
--	xenbus_switch_state(dev, XenbusStateInitialising);
--	wait_event(module_wq,
--		   xenbus_read_driver_state(dev->otherend) !=
--		   XenbusStateClosed &&
--		   xenbus_read_driver_state(dev->otherend) !=
--		   XenbusStateUnknown);
-+	do {
-+		dev_dbg(&dev->dev,
-+			"%s: switching to XenbusStateInitialising\n",
-+			dev->nodename);
-+		xenbus_switch_state(dev, XenbusStateInitialising);
-+		err = wait_event_timeout(module_wq,
-+				 xenbus_read_driver_state(dev->otherend) !=
-+				 XenbusStateClosed &&
-+				 xenbus_read_driver_state(dev->otherend) !=
-+				 XenbusStateUnknown, XENNET_TIMEOUT);
-+		dev_dbg(&dev->dev, "%s: state = %d\n", dev->nodename,
-+			xenbus_read_driver_state(dev->otherend));
-+	} while (!err);
-+
- 	return netdev;
- 
-  exit:
-@@ -2139,28 +2149,53 @@ static const struct attribute_group xennet_dev_group = {
- };
- #endif /* CONFIG_SYSFS */
- 
--static int xennet_remove(struct xenbus_device *dev)
-+static void xennet_bus_close(struct xenbus_device *dev)
- {
--	struct netfront_info *info = dev_get_drvdata(&dev->dev);
--
--	dev_dbg(&dev->dev, "%s\n", dev->nodename);
-+	int ret;
- 
--	if (xenbus_read_driver_state(dev->otherend) != XenbusStateClosed) {
-+	if (xenbus_read_driver_state(dev->otherend) == XenbusStateClosed)
-+		return;
-+	do {
-+		dev_dbg(&dev->dev, "%s: switching to XenbusStateClosing\n",
-+			dev->nodename);
- 		xenbus_switch_state(dev, XenbusStateClosing);
--		wait_event(module_wq,
--			   xenbus_read_driver_state(dev->otherend) ==
--			   XenbusStateClosing ||
--			   xenbus_read_driver_state(dev->otherend) ==
--			   XenbusStateUnknown);
-+		ret = wait_event_timeout(module_wq,
-+				   xenbus_read_driver_state(dev->otherend) ==
-+				   XenbusStateClosing ||
-+				   xenbus_read_driver_state(dev->otherend) ==
-+				   XenbusStateClosed ||
-+				   xenbus_read_driver_state(dev->otherend) ==
-+				   XenbusStateUnknown,
-+				   XENNET_TIMEOUT);
-+		dev_dbg(&dev->dev, "%s: state = %d\n", dev->nodename,
-+			xenbus_read_driver_state(dev->otherend));
-+	} while (!ret);
-+
-+	if (xenbus_read_driver_state(dev->otherend) == XenbusStateClosed)
-+		return;
- 
-+	do {
-+		dev_dbg(&dev->dev, "%s: switching to XenbusStateClosed\n",
-+			dev->nodename);
- 		xenbus_switch_state(dev, XenbusStateClosed);
--		wait_event(module_wq,
--			   xenbus_read_driver_state(dev->otherend) ==
--			   XenbusStateClosed ||
--			   xenbus_read_driver_state(dev->otherend) ==
--			   XenbusStateUnknown);
--	}
-+		ret = wait_event_timeout(module_wq,
-+				   xenbus_read_driver_state(dev->otherend) ==
-+				   XenbusStateClosed ||
-+				   xenbus_read_driver_state(dev->otherend) ==
-+				   XenbusStateUnknown,
-+				   XENNET_TIMEOUT);
-+		dev_dbg(&dev->dev, "%s: state = %d\n", dev->nodename,
-+			xenbus_read_driver_state(dev->otherend));
-+	} while (!ret);
-+}
-+
-+static int xennet_remove(struct xenbus_device *dev)
-+{
-+	struct netfront_info *info = dev_get_drvdata(&dev->dev);
-+
-+	dev_dbg(&dev->dev, "%s\n", dev->nodename);
- 
-+	xennet_bus_close(dev);
- 	xennet_disconnect_backend(info);
- 
- 	if (info->netdev->reg_state == NETREG_REGISTERED)
--- 
-2.25.1
+BTW, we can't do that, this breaks ABI. btf_dump_opts were added
+before we understood the problem of backward/forward  compatibility of
+libbpf APIs, unfortunately.
 
+>
+>  typedef void (*btf_dump_printf_fn_t)(void *ctx, const char *fmt, va_list args);
+> diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+> index e1c344504cae..baf2b4d82e1e 100644
+> --- a/tools/lib/bpf/btf_dump.c
+> +++ b/tools/lib/bpf/btf_dump.c
+
+[...]
