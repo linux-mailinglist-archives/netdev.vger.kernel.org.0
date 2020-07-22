@@ -2,112 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8EE1229F67
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 20:42:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60EB2229F5F
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 20:41:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732066AbgGVSmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 14:42:49 -0400
-Received: from mga11.intel.com ([192.55.52.93]:45234 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726539AbgGVSmt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jul 2020 14:42:49 -0400
-IronPort-SDR: +ZXtsriim91GOb4Ts/3GcZfmw9iKpAOu2F/vv7mbApBXG0wzgC0T/gai6ZS98KCAzSC2clQmug
- 0FGGDfgaCEzw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9690"; a="148349929"
-X-IronPort-AV: E=Sophos;i="5.75,383,1589266800"; 
-   d="scan'208";a="148349929"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2020 11:42:48 -0700
-IronPort-SDR: 7QZpM5HXBtVjIU2NpMlIANIw2vJK9LhotX8Cr4jumreACtwCbILgu6DHaYQHuAlh3+zvJrLwr7
- R6j9AbQsZMoA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,383,1589266800"; 
-   d="scan'208";a="302043853"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga002.jf.intel.com with ESMTP; 22 Jul 2020 11:42:46 -0700
-Date:   Wed, 22 Jul 2020 20:37:49 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     ast@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com
-Subject: Re: [PATCH v2 bpf-next 2/6] bpf: propagate poke descriptors to
- subprograms
-Message-ID: <20200722183749.GB8874@ranger.igk.intel.com>
-References: <20200721115321.3099-1-maciej.fijalkowski@intel.com>
- <20200721115321.3099-3-maciej.fijalkowski@intel.com>
- <29a3dcfc-9d85-c113-19d2-e33f80ce5430@iogearbox.net>
+        id S1732426AbgGVSlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 14:41:44 -0400
+Received: from mout.kundenserver.de ([217.72.192.74]:50021 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726535AbgGVSln (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 14:41:43 -0400
+Received: from mail-qk1-f170.google.com ([209.85.222.170]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1N1gac-1kvfav3ssK-011y0L; Wed, 22 Jul 2020 20:41:42 +0200
+Received: by mail-qk1-f170.google.com with SMTP id 11so3029978qkn.2;
+        Wed, 22 Jul 2020 11:41:41 -0700 (PDT)
+X-Gm-Message-State: AOAM53327j9/gEy4SKdk466X3SK7KCj5RQnRWjScNWaky9ImPFBAE/0A
+        xAwfqJJhrKF5y64x4VLVanAevGhBhYk6HEhKbfQ=
+X-Google-Smtp-Source: ABdhPJyhbrD6tzQxx6tX0jvgDW3CuNZbeFESKXN/P3EjNbM4QSRZdQvTqZXS1d+oo+E+xij7I8GhcpR7DQeIgnPVjL0=
+X-Received: by 2002:a05:620a:2444:: with SMTP id h4mr1481373qkn.352.1595443300710;
+ Wed, 22 Jul 2020 11:41:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <29a3dcfc-9d85-c113-19d2-e33f80ce5430@iogearbox.net>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20200722172329.16727-1-madhuparnabhowmik10@gmail.com>
+In-Reply-To: <20200722172329.16727-1-madhuparnabhowmik10@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 22 Jul 2020 20:41:23 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a23zUHGnVBsBX=GqBzbRxwkqmOA_7heMze4EsyQvVfg3g@mail.gmail.com>
+Message-ID: <CAK8P3a23zUHGnVBsBX=GqBzbRxwkqmOA_7heMze4EsyQvVfg3g@mail.gmail.com>
+Subject: Re: [PATCH] drivers: isdn: capi: Fix data-race bug
+To:     madhuparnabhowmik10@gmail.com
+Cc:     Karsten Keil <isdn@linux-pingi.de>,
+        David Miller <davem@davemloft.net>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        andrianov@ispras.ru, ldv-project@linuxtesting.org
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:aNK/nvkB9ZCM6woMY5T9CGO9BENrHy5uQvQkanc1Pbed9KqX9tJ
+ +wl76T0zrTQAvqp5NWj9g66YBoeEO7CUPufpzgwlLvKO5Hhos1cDtsE8iMP0L7oZyunRE3O
+ iHLcO4Gz8xbieUn9OCCsUi+0J+alWL93SvuUF7a3LS/ba9c4+3AYJ/bAP4L+Qy4wfHP7k8v
+ 1u/XB48SzF4xGL1e7IuHg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:4cJMUcNIDuo=:HoIR/x3awrbj3u6LAh5nU6
+ 30nvKnT+5L9dppHCuzlEVHcNQ4jXzmtw2LA054tTAz/2rYO8zYFXAnC5Ay818ISN7byLb+NYJ
+ oQ2DOA/4vEhy+DkIJp/bOxcy9aNZoAeeZ2OYDwOLb1YhhnRQQXKnCb/WqYpjKZ8b0Y7/+Rdsf
+ GPgsfloPJ6obgQjoXdcEOz0k+kZ0TWBAJBB14yimVco49RWEgVVtfJlBnMR08VAaYJ4x3sVlz
+ K7HMH5zGvJrGL+MqBj7Atv8bxqj7F0nHb1UoY0ven9fTagxDPINLS3SX5ah5TgAaLYw5x42aq
+ VHCe2+pz6DSGwWZkiVd5eCFsO5TQfXJSKG42hcYIHKgDYPaOiD/WJwpnRTsLCYB7XXCe0nEYU
+ jn3FKVCq5NW372kzUpAn236drbHpo+DUXmTZ0vXL/TE1AaW7cFHba/2C5yTi6byp07R7lyNCx
+ 5qvuU5H9hFcYmXxj9B38Vfzj/AVNweMzpcXidv8Pbd50lxmbv1oSmthbvvjzK3dt7gAMByHu0
+ uqopQncEaWsxdXNo0S2NTZoulTpkZM3S9SDvsRRbxE0ZGMCQTmEzaUmUskbmQO/AAMhV0Pb+j
+ VXjk2i6kNR5Iqb+DKWFQQBerEAolWHQ+utixt6VssVSwbzAZdG69Rw9QVoUw0uM0ZX18BtKUk
+ xiR4CFM+mraf07lVsB6ioxFdntcr1wdcjS0U1yEX72xp+CpuKMhLGenllnBZ3j0ais1+PYiCv
+ hIcqcndLGgE7qor7OGJaAsXUqjxUI2hdI1IeGUJfPmXgcflO1rTum8mgO3705Hi2otEo8eUtJ
+ qfJQHy4oR3Of8IIpDrX1ZPK3fUL0dlga7re+b2jleVH9IPC4QGmOTf90c7c2JEm77kHIoBb9d
+ J89m3IjLH1Sl89HRoIThhaF64o81ejTpIgFHSwrMiEnQWsTHqcVsPfT3odEjvrOjg747gzyaV
+ 8VD3g2OyeIKQ71oWrDqEUO8dE9eUo/qksWSSHONzzTUU9WshlrWTC
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 22, 2020 at 04:40:42PM +0200, Daniel Borkmann wrote:
-> On 7/21/20 1:53 PM, Maciej Fijalkowski wrote:
-> > Previously, there was no need for poke descriptors being present in
-> > subprogram's bpf_prog_aux struct since tailcalls were simply not allowed
-> > in them. Each subprog is JITed independently so in order to enable
-> > JITing such subprograms, simply copy poke descriptors from main program
-> > to subprogram's poke tab.
-> > 
-> > Add also subprog's aux struct to the BPF map poke_progs list by calling
-> > on it map_poke_track().
-> > 
-> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > ---
-> >   kernel/bpf/verifier.c | 20 ++++++++++++++++++++
-> >   1 file changed, 20 insertions(+)
-> > 
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index 3c1efc9d08fd..3428edf85220 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -9936,6 +9936,9 @@ static int jit_subprogs(struct bpf_verifier_env *env)
-> >   		goto out_undo_insn;
-> >   	for (i = 0; i < env->subprog_cnt; i++) {
-> > +		struct bpf_map *map_ptr;
-> > +		int j;
-> > +
-> >   		subprog_start = subprog_end;
-> >   		subprog_end = env->subprog_info[i + 1].start;
-> > @@ -9960,6 +9963,23 @@ static int jit_subprogs(struct bpf_verifier_env *env)
-> >   		func[i]->aux->btf = prog->aux->btf;
-> >   		func[i]->aux->func_info = prog->aux->func_info;
-> > +		for (j = 0; j < prog->aux->size_poke_tab; j++) {
-> > +			int ret;
-> > +
-> > +			ret = bpf_jit_add_poke_descriptor(func[i],
-> > +							  &prog->aux->poke_tab[j]);
-> > +			if (ret < 0) {
-> > +				verbose(env, "adding tail call poke descriptor failed\n");
-> > +				goto out_free;
-> > +			}
-> > +			map_ptr = func[i]->aux->poke_tab[j].tail_call.map;
-> > +			ret = map_ptr->ops->map_poke_track(map_ptr, func[i]->aux);
-> > +			if (ret < 0) {
-> > +				verbose(env, "tracking tail call prog failed\n");
-> > +				goto out_free;
-> > +			}
-> 
-> Hmm, I don't think this is correct/complete. If some of these have been registered or
-> if later on the JIT'ing fails but the subprog is already exposed to the prog array then
-> it's /public/ at this point, so a later bpf_jit_free() in out_free will rip them mem
-> while doing live patching on prog updates leading to UAF.
+On Wed, Jul 22, 2020 at 7:23 PM <madhuparnabhowmik10@gmail.com> wrote:
+>
+> From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+>
+> In capi_init(), after register_chrdev() the file operation callbacks
+> can be called. However capinc_tty_init() is called later.
+> Since capiminors and capinc_tty_driver are initialized in
+> capinc_tty_init(), their initialization can race with their usage
+> in various callbacks like in capi_release().
+>
+> Therefore, call capinc_tty_init() before register_chrdev to avoid
+> such race conditions.
+>
+> Found by Linux Driver Verification project (linuxtesting.org).
+>
+> Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-Ugh. So if we would precede the out_free label with map_poke_untrack() on error
-path - would that be sufficient?
+I don't think there are any users of this driver, but I had a look anyway.
 
-> 
-> > +		}
-> > +
-> >   		/* Use bpf_prog_F_tag to indicate functions in stack traces.
-> >   		 * Long term would need debug info to populate names
-> >   		 */
-> > 
-> 
+The patch looks reasonable at first, but I'm not sure if you just
+replace one race with another, since now the tty device can be
+opened before the rest of the subsystem is initialized.
+
+It's probably fine.
+
+         Arnd
