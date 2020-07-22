@@ -2,184 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CD53229F2D
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 20:22:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C00D9229F76
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 20:45:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732081AbgGVSWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 14:22:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731944AbgGVSWo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 14:22:44 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4CDC0619DC;
-        Wed, 22 Jul 2020 11:22:44 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id a14so1730265pfi.2;
-        Wed, 22 Jul 2020 11:22:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=7oX+Ui6Om/fIjYvfDxV2/4AZHvhi7NBOu1a0cZDb96s=;
-        b=UR1CnosOGT0n6sc0mNa5OXUU9mC4UZo9f3JTepr3rk4R1d+ACyr95dQbS5pJF13kpm
-         fue0Th0pbW4NW3D5buzPmmOQbxXoxiEUHanOnEivqnGNxV/sH94ylMb3QwPCKH4ShLqu
-         AsjSoWG9fQ5CjYemIBFh6EZO6SnwviC4ipvG0Z6lTL8Gd8Oso/FORba0BlbDpLGiNKb7
-         hZwZpIhC4MxUcKxkXgfZUbGZPpCYbHaa3KXBS4CT37nW0HIAOY288Vq2qY0a38ukoDCD
-         7TfNxDpeDLRt9YHzJb4FU1gAQsPbmHMKeWEnCooJpXdImW1DKu/SJsmtK0PXjrXt1dlc
-         Tnfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7oX+Ui6Om/fIjYvfDxV2/4AZHvhi7NBOu1a0cZDb96s=;
-        b=YLu1A+w9DfB3XvhyXEzFV1uB9A8dFSAm4EnN/1PU2ELKRJ3lZ6m/mPpeijZURVvHpt
-         lrKxlZCHVtwkjboxU459zHqWN6T+uA9SpdHWgWb2Lq+FaE+tJjuK7DjDAzBBy4BnQZCJ
-         2cd6FOEnFmmxk5PcgMn0Z/QmbHwFRfIdyH3mi92V1Yhs1MTDzKF1Y07stNXHw1c4NnX3
-         fQgbFZ6RXJxlThrrT+i2gzmZw9GHkrpCJemZQ5OnmYRjn2fS5/08Enj+8dFBnf3ZPDf+
-         mzh0zt6jC4sm8ETl2qvIUWPnRySMA5yCYGng3jtcY7XaIAK4Gma6I8zKnrWaAWKRENaG
-         4ErQ==
-X-Gm-Message-State: AOAM530vzg2QgiOybzPmlualR2StKSr1awRcASg5+xO2jhlAZgtuahXm
-        fZ2F0BXz9P65300+kq5gsxjO7pby
-X-Google-Smtp-Source: ABdhPJw3fR8L+Q2k1yAFoLNVKKtbcm1jpJf3BKHBN9Vi0OSPQK43x3ovEVLKmRw+L02lZhprAJJWNA==
-X-Received: by 2002:a62:1801:: with SMTP id 1mr845788pfy.242.1595442163507;
-        Wed, 22 Jul 2020 11:22:43 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id gn5sm369103pjb.23.2020.07.22.11.22.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jul 2020 11:22:42 -0700 (PDT)
-Subject: Re: INFO: rcu detected stall in seq_read (2)
-To:     syzbot <syzbot+c28b5fee66fd3b7f766e@syzkaller.appspotmail.com>,
-        a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org, corbet@lwn.net,
-        davem@davemloft.net, fweisbec@gmail.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        mingo@kernel.org, netdev@vger.kernel.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vasundhara-v.volam@broadcom.com
-References: <000000000000b217d105ab0b8ae4@google.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <435c3097-9174-f45b-b9bb-42bc377e43e2@gmail.com>
-Date:   Wed, 22 Jul 2020 11:22:41 -0700
+        id S1731049AbgGVSpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 14:45:13 -0400
+Received: from gateway36.websitewelcome.com ([192.185.199.121]:12000 "EHLO
+        gateway36.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726888AbgGVSpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 14:45:12 -0400
+X-Greylist: delayed 1365 seconds by postgrey-1.27 at vger.kernel.org; Wed, 22 Jul 2020 14:45:12 EDT
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway36.websitewelcome.com (Postfix) with ESMTP id 7EC1C413B94A5
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 12:45:06 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id yJNRjydEKQyTQyJNRjhHvg; Wed, 22 Jul 2020 13:22:04 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=M+MTFjItVYn5UUzFiz+lCPyYWBp1BfGnxiJ0Tf+VoJo=; b=m2jMMNXauRO4tOZfMdfUX5gkNr
+        e4kPwVmHXgmkQqLqYhQ+CzOCbGJdRNUPBdK8SMuHYAxV/3RqZLxUcExEl8JElVtZUL7vb1/ffkAzQ
+        mkKzhMS+eCM6m2KBQenQ7X6P5jO32zMudmkcJdgCLYMFLXKR3rO0AHNp3jy0zUJ3JXOzbMKyXVHxh
+        Z2oQMzKxsltt06mvZQvgpjcJvB+THVYPqvzXv8YWQ2Cdia5dSnHovl2tgmO4qp6XSqT21fI2uwN+3
+        DlHT52Rz7bkb9Fi1HMeZ0WO9l7TzwPToSQt+5QQ3MVgRXnH/g/NCc9OtkW2Nyw0qdt9JwSbpSb2Yx
+        uTVTBLMA==;
+Received: from [201.162.161.253] (port=39420 helo=[192.168.43.132])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1jyJNQ-000X1c-I9; Wed, 22 Jul 2020 13:22:00 -0500
+Subject: Re: [PATCH][next] wil6210: Avoid the use of one-element array
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Maya Erez <merez@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200715215755.GA21716@embeddedor>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ xsFNBFssHAwBEADIy3ZoPq3z5UpsUknd2v+IQud4TMJnJLTeXgTf4biSDSrXn73JQgsISBwG
+ 2Pm4wnOyEgYUyJd5tRWcIbsURAgei918mck3tugT7AQiTUN3/5aAzqe/4ApDUC+uWNkpNnSV
+ tjOx1hBpla0ifywy4bvFobwSh5/I3qohxDx+c1obd8Bp/B/iaOtnq0inli/8rlvKO9hp6Z4e
+ DXL3PlD0QsLSc27AkwzLEc/D3ZaqBq7ItvT9Pyg0z3Q+2dtLF00f9+663HVC2EUgP25J3xDd
+ 496SIeYDTkEgbJ7WYR0HYm9uirSET3lDqOVh1xPqoy+U9zTtuA9NQHVGk+hPcoazSqEtLGBk
+ YE2mm2wzX5q2uoyptseSNceJ+HE9L+z1KlWW63HhddgtRGhbP8pj42bKaUSrrfDUsicfeJf6
+ m1iJRu0SXYVlMruGUB1PvZQ3O7TsVfAGCv85pFipdgk8KQnlRFkYhUjLft0u7CL1rDGZWDDr
+ NaNj54q2CX9zuSxBn9XDXvGKyzKEZ4NY1Jfw+TAMPCp4buawuOsjONi2X0DfivFY+ZsjAIcx
+ qQMglPtKk/wBs7q2lvJ+pHpgvLhLZyGqzAvKM1sVtRJ5j+ARKA0w4pYs5a5ufqcfT7dN6TBk
+ LXZeD9xlVic93Ju08JSUx2ozlcfxq+BVNyA+dtv7elXUZ2DrYwARAQABzStHdXN0YXZvIEEu
+ IFIuIFNpbHZhIDxndXN0YXZvYXJzQGtlcm5lbC5vcmc+wsGrBBMBCAA+FiEEkmRahXBSurMI
+ g1YvRwW0y0cG2zEFAl6zFvQCGyMFCQlmAYAFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AAIQkQ
+ RwW0y0cG2zEWIQSSZFqFcFK6swiDVi9HBbTLRwbbMZsEEACWjJyXLjtTAF21Vuf1VDoGzitP
+ oE69rq9UhXIGR+e0KACyIFoB9ibG/1j/ESMa0RPSwLpJDLgfvi/I18H/9cKtdo2uz0XNbDT8
+ i3llIu0b43nzGIDzRudINBXC8Coeob+hrp/MMZueyzt0CUoAnY4XqpHQbQsTfTrpFeHT02Qz
+ ITw6kTSmK7dNbJj2naH2vSrU11qGdU7aFzI7jnVvGgv4NVQLPxm/t4jTG1o+P1Xk4N6vKafP
+ zqzkxj99JrUAPt+LyPS2VpNvmbSNq85PkQ9gpeTHpkio/D9SKsMW62njITPgy6M8TFAmx8JF
+ ZAI6k8l1eU29F274WnlQ6ZokkJoNctwHa+88euWKHWUDolCmQpegJJ8932www83GLn1mdUZn
+ NsymjFSdMWE+y8apWaV9QsDOKWf7pY2uBuE6GMPRhX7e7h5oQwa1lYeO2L9LTDeXkEOJe+hE
+ qQdEEvkC/nok0eoRlBlZh433DQlv4+IvSsfN/uWld2TuQFyjDCLIm1CPRfe7z0TwiCM27F+O
+ lHnUspCFSgpnrxqNH6CM4aj1EF4fEX+ZyknTSrKL9BGZ/qRz7Xe9ikU2/7M1ov6rOXCI4NR9
+ THsNax6etxCBMzZs2bdMHMcajP5XdRsOIARuN08ytRjDolR2r8SkTN2YMwxodxNWWDC3V8X2
+ RHZ4UwQw487BTQRbLBwMARAAsHCE31Ffrm6uig1BQplxMV8WnRBiZqbbsVJBH1AAh8tq2ULl
+ 7udfQo1bsPLGGQboJSVN9rckQQNahvHAIK8ZGfU4Qj8+CER+fYPp/MDZj+t0DbnWSOrG7z9H
+ IZo6PR9z4JZza3Hn/35jFggaqBtuydHwwBANZ7A6DVY+W0COEU4of7CAahQo5NwYiwS0lGis
+ LTqks5R0Vh+QpvDVfuaF6I8LUgQR/cSgLkR//V1uCEQYzhsoiJ3zc1HSRyOPotJTApqGBq80
+ X0aCVj1LOiOF4rrdvQnj6iIlXQssdb+WhSYHeuJj1wD0ZlC7ds5zovXh+FfFl5qH5RFY/qVn
+ 3mNIVxeO987WSF0jh+T5ZlvUNdhedGndRmwFTxq2Li6GNMaolgnpO/CPcFpDjKxY/HBUSmaE
+ 9rNdAa1fCd4RsKLlhXda+IWpJZMHlmIKY8dlUybP+2qDzP2lY7kdFgPZRU+ezS/pzC/YTzAv
+ CWM3tDgwoSl17vnZCr8wn2/1rKkcLvTDgiJLPCevqpTb6KFtZosQ02EGMuHQI6Zk91jbx96n
+ rdsSdBLGH3hbvLvjZm3C+fNlVb9uvWbdznObqcJxSH3SGOZ7kCHuVmXUcqozol6ioMHMb+In
+ rHPP16aVDTBTPEGwgxXI38f7SUEn+NpbizWdLNz2hc907DvoPm6HEGCanpcAEQEAAcLBZQQY
+ AQgADwUCWywcDAIbDAUJCWYBgAAKCRBHBbTLRwbbMdsZEACUjmsJx2CAY+QSUMebQRFjKavw
+ XB/xE7fTt2ahuhHT8qQ/lWuRQedg4baInw9nhoPE+VenOzhGeGlsJ0Ys52sdXvUjUocKgUQq
+ 6ekOHbcw919nO5L9J2ejMf/VC/quN3r3xijgRtmuuwZjmmi8ct24TpGeoBK4WrZGh/1hAYw4
+ ieARvKvgjXRstcEqM5thUNkOOIheud/VpY+48QcccPKbngy//zNJWKbRbeVnimua0OpqRXhC
+ rEVm/xomeOvl1WK1BVO7z8DjSdEBGzbV76sPDJb/fw+y+VWrkEiddD/9CSfgfBNOb1p1jVnT
+ 2mFgGneIWbU0zdDGhleI9UoQTr0e0b/7TU+Jo6TqwosP9nbk5hXw6uR5k5PF8ieyHVq3qatJ
+ 9K1jPkBr8YWtI5uNwJJjTKIA1jHlj8McROroxMdI6qZ/wZ1ImuylpJuJwCDCORYf5kW61fcr
+ HEDlIvGc371OOvw6ejF8ksX5+L2zwh43l/pKkSVGFpxtMV6d6J3eqwTafL86YJWH93PN+ZUh
+ 6i6Rd2U/i8jH5WvzR57UeWxE4P8bQc0hNGrUsHQH6bpHV2lbuhDdqo+cM9ehGZEO3+gCDFmK
+ rjspZjkJbB5Gadzvts5fcWGOXEvuT8uQSvl+vEL0g6vczsyPBtqoBLa9SNrSVtSixD1uOgyt
+ AP7RWS474w==
+Message-ID: <80fe7b75-a324-9af1-38a9-ee259b886d7e@embeddedor.com>
+Date:   Wed, 22 Jul 2020 13:27:40 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <000000000000b217d105ab0b8ae4@google.com>
+In-Reply-To: <20200715215755.GA21716@embeddedor>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.162.161.253
+X-Source-L: No
+X-Exim-ID: 1jyJNQ-000X1c-I9
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.43.132]) [201.162.161.253]:39420
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 17
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi all,
 
+Friendly ping: who can take this? :)
 
-On 7/22/20 11:02 AM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    4fa640dc Merge tag 'vfio-v5.8-rc7' of git://github.com/awi..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=145cac30900000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=f87a5e4232fdb267
-> dashboard link: https://syzkaller.appspot.com/bug?extid=c28b5fee66fd3b7f766e
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17e23ac8900000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1198c440900000
-> 
-> The issue was bisected to:
-> 
-> commit 53e233ea2fa9fa7e2405e95070981f327d90e519
-> Author: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> Date:   Thu Oct 4 05:43:52 2018 +0000
-> 
->     devlink: Add Documentation/networking/devlink-params-bnxt.txt
+Thanks
+--
+Gustavo
 
-Probably bogus bisection.
-
-This rather looks like a bug in taprio packet scheduler.
-
-
-
+On 7/15/20 16:57, Gustavo A. R. Silva wrote:
+> One-element arrays are being deprecated[1]. Replace the one-element
+> array with a simple value type 'u8 reserved'[2], once this is just
+> a placeholder for alignment.
 > 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15e22b94900000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=17e22b94900000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=13e22b94900000
+> [1] https://github.com/KSPP/linux/issues/79
+> [2] https://github.com/KSPP/linux/issues/86
 > 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+c28b5fee66fd3b7f766e@syzkaller.appspotmail.com
-> Fixes: 53e233ea2fa9 ("devlink: Add Documentation/networking/devlink-params-bnxt.txt")
-> 
-> hrtimer: interrupt took 6305559 ns
-> rcu: INFO: rcu_preempt self-detected stall on CPU
-> rcu: 	1-...!: (1 GPs behind) idle=91e/1/0x4000000000000000 softirq=10105/10107 fqs=1 
-> 	(t=18319 jiffies g=8905 q=457)
-> NMI backtrace for cpu 1
-> CPU: 1 PID: 4008 Comm: systemd-journal Not tainted 5.8.0-rc6-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  <IRQ>
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x18f/0x20d lib/dump_stack.c:118
->  nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
->  nmi_trigger_cpumask_backtrace+0x1b3/0x223 lib/nmi_backtrace.c:62
->  trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
->  rcu_dump_cpu_stacks+0x194/0x1cf kernel/rcu/tree_stall.h:320
->  print_cpu_stall kernel/rcu/tree_stall.h:553 [inline]
->  check_cpu_stall kernel/rcu/tree_stall.h:627 [inline]
->  rcu_pending kernel/rcu/tree.c:3489 [inline]
->  rcu_sched_clock_irq.cold+0x5b3/0xccc kernel/rcu/tree.c:2504
->  update_process_times+0x25/0x60 kernel/time/timer.c:1737
->  tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:176
->  tick_sched_timer+0x108/0x290 kernel/time/tick-sched.c:1320
->  __run_hrtimer kernel/time/hrtimer.c:1520 [inline]
->  __hrtimer_run_queues+0x1d5/0xfc0 kernel/time/hrtimer.c:1584
->  hrtimer_interrupt+0x32a/0x930 kernel/time/hrtimer.c:1646
->  local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1080 [inline]
->  __sysvec_apic_timer_interrupt+0x142/0x5e0 arch/x86/kernel/apic/apic.c:1097
->  asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
->  </IRQ>
->  __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
->  run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
->  sysvec_apic_timer_interrupt+0xe0/0x120 arch/x86/kernel/apic/apic.c:1091
->  asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:585
-> RIP: 0010:format_decode+0x0/0xad0 lib/vsprintf.c:2329
-> Code: c7 c7 10 05 af 8a be 10 00 00 00 e8 5a c3 46 00 48 c7 c7 20 78 0d 8a e9 6e f2 e2 fd 0f 1f 40 00 66 2e 0f 1f 84 00 00 00 00 00 <41> 57 41 56 41 55 41 54 55 48 89 f5 53 48 bb 00 00 00 00 00 fc ff
-> RSP: 0018:ffffc90001077a10 EFLAGS: 00000293
-> RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffffffff83b0a497
-> RDX: ffff888093224040 RSI: ffffc90001077a80 RDI: ffffffff884e6293
-> RBP: ffffffff884e6293 R08: 0000000000000001 R09: ffff8880952a63d1
-> R10: 0000000000000000 R11: 0000000000000000 R12: ffff8880952a63d2
-> R13: ffffffff884e6293 R14: 0000000000000025 R15: ffffc90001077b30
->  vsnprintf+0x155/0x14f0 lib/vsprintf.c:2572
->  seq_vprintf fs/seq_file.c:379 [inline]
->  seq_printf+0x195/0x240 fs/seq_file.c:394
->  proc_pid_status+0x1c6d/0x24b0 fs/proc/array.c:424
->  proc_single_show+0x116/0x1e0 fs/proc/base.c:766
->  seq_read+0x432/0x1070 fs/seq_file.c:208
->  vfs_read+0x1df/0x520 fs/read_write.c:479
->  ksys_read+0x12d/0x250 fs/read_write.c:607
->  do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x7f0fc43d9910
-> Code: Bad RIP value.
-> RSP: 002b:00007ffdcb193978 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-> RAX: ffffffffffffffda RBX: 000055b1476b96f0 RCX: 00007f0fc43d9910
-> RDX: 0000000000000800 RSI: 000055b1476b8b00 RDI: 0000000000000013
-> RBP: 00007f0fc4694440 R08: 00007f0fc4697fc8 R09: 0000000000000410
-> R10: 000055b1476b96f0 R11: 0000000000000246 R12: 0000000000000800
-> R13: 0000000000000d68 R14: 000055b1476b8b00 R15: 00007f0fc4693900
-> 
-> 
+> Tested-by: kernel test robot <lkp@intel.com>
+> Link: https://github.com/GustavoARSilva/linux-hardening/blob/master/cii/0-day/wil6210-20200715.md
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 > ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>  drivers/net/wireless/ath/wil6210/wmi.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
+> diff --git a/drivers/net/wireless/ath/wil6210/wmi.h b/drivers/net/wireless/ath/wil6210/wmi.h
+> index 9affa4525609..beb53cac329b 100644
+> --- a/drivers/net/wireless/ath/wil6210/wmi.h
+> +++ b/drivers/net/wireless/ath/wil6210/wmi.h
+> @@ -3086,7 +3086,7 @@ struct wmi_scheduling_scheme_event {
+>  	/* wmi_sched_scheme_failure_type */
+>  	u8 failure_type;
+>  	/* alignment to 32b */
+> -	u8 reserved[1];
+> +	u8 reserved;
+>  } __packed;
+>  
+>  /* WMI_RS_CFG_CMDID - deprecated */
 > 
