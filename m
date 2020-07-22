@@ -2,80 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4F0022A16B
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 23:32:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2B322A19C
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 23:53:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733040AbgGVVcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 17:32:12 -0400
-Received: from mga18.intel.com ([134.134.136.126]:4542 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733016AbgGVVcD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jul 2020 17:32:03 -0400
-IronPort-SDR: uQK1ppAGB/U9gD6yNgo64OYHB0fBPIS/Dq5sZEkLL3zpq/YT8bBI5YIQnDA3FIia+Q9+Akdmwh
- 9lcOBeIXumvg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9690"; a="137926761"
-X-IronPort-AV: E=Sophos;i="5.75,383,1589266800"; 
-   d="scan'208";a="137926761"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2020 14:32:00 -0700
-IronPort-SDR: KwNMu6wfUdtqQ7lfAWzFcfoGNeOOQZl+sNaseVwj5j8fMGGifDBDKQXBNghbyA3RhV4Xsr5A5f
- mSv/e80yqkIg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,383,1589266800"; 
-   d="scan'208";a="284361367"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by orsmga003.jf.intel.com with ESMTP; 22 Jul 2020 14:32:00 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Aaron Brown <aaron.f.brown@intel.com>
-Subject: [net-next 8/8] igc: Fix static checker warning
-Date:   Wed, 22 Jul 2020 14:31:50 -0700
-Message-Id: <20200722213150.383393-9-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200722213150.383393-1-anthony.l.nguyen@intel.com>
-References: <20200722213150.383393-1-anthony.l.nguyen@intel.com>
+        id S1732971AbgGVVxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 17:53:32 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:31984 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726841AbgGVVxb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 17:53:31 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06MLehx2011129;
+        Wed, 22 Jul 2020 14:53:13 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0818;
+ bh=nXGQFz13UrR6JaFA6YbqUKvaj2VtE34elxufvD8zFyE=;
+ b=AJVOmtly8oVT/BsCaUzoNex/ICnt+lz5mLuf4hLhPpFKkkatlgRc4G9CqKiiQ0KY0FcQ
+ VhuEr59v79Ql12zCHvIPSYr5UDyeYxNAjkpnRlKGYLCCNtrierwcLZ/YV70prkWp3CFZ
+ FhrcI+yj49Ewnxqh4wTyihHoY3LkrVfKrcsQYbxSjWF7YexaKUWLZkzq5ixDzurlWPqh
+ evPQQg4tOs0+Cy0VeYsXIt2OQrLz9OzpP4neNWLRihde0nRj1nlsi4zXVz9nfwTHi7Ld
+ Gpy448sqDmoXH/OyzoiltTpSxhu+QwOAghvhzD3m/i03dl+wTgYw+h+cVmyVZU6dgxBv sw== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 32c0kksxd4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 22 Jul 2020 14:53:13 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jul
+ 2020 14:53:12 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 22 Jul 2020 14:53:11 -0700
+Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
+        by maili.marvell.com (Postfix) with ESMTP id 69E673F703F;
+        Wed, 22 Jul 2020 14:53:05 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Alexander Lobakin <alobakin@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        "Ariel Elior" <aelior@marvell.com>,
+        Denis Bolotin <denis.bolotin@marvell.com>,
+        "Doug Ledford" <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Jesper Dangaard Brouer" <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 03/15] qed: move chain methods to a separate file
+Date:   Thu, 23 Jul 2020 00:52:49 +0300
+Message-ID: <20200722215249.2695-1-alobakin@marvell.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200722155349.747-4-alobakin@marvell.com>
+References: <20200722155349.747-4-alobakin@marvell.com>,
+ <20200722155349.747-1-alobakin@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-22_16:2020-07-22,2020-07-22 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+Kbuild test robot triggered a build error on Alpha, sorry. Will send
+v2 soon.
 
-drivers/net/ethernet/intel/igc/igc_mac.c:424 igc_check_for_copper_link()
-error: uninitialized symbol 'link'.
-This patch come to fix this warning and initialize the 'link' symbol.
-
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: 707abf069548 ("igc: Add initial LTR support")
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/igc/igc_mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc_mac.c b/drivers/net/ethernet/intel/igc/igc_mac.c
-index 674b8ad21fea..09cd0ec7ee87 100644
---- a/drivers/net/ethernet/intel/igc/igc_mac.c
-+++ b/drivers/net/ethernet/intel/igc/igc_mac.c
-@@ -355,8 +355,8 @@ void igc_rar_set(struct igc_hw *hw, u8 *addr, u32 index)
- s32 igc_check_for_copper_link(struct igc_hw *hw)
- {
- 	struct igc_mac_info *mac = &hw->mac;
-+	bool link = false;
- 	s32 ret_val;
--	bool link;
- 
- 	/* We only want to go out to the PHY registers to see if Auto-Neg
- 	 * has completed and/or if our link status has changed.  The
--- 
-2.26.2
-
+Al
