@@ -2,92 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59719229E42
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 19:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F77C229E6D
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 19:23:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732244AbgGVRPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 13:15:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49546 "EHLO
+        id S1728511AbgGVRXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 13:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730381AbgGVRPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 13:15:02 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC91C0619DC;
-        Wed, 22 Jul 2020 10:15:01 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id q4so3337969lji.2;
-        Wed, 22 Jul 2020 10:15:01 -0700 (PDT)
+        with ESMTP id S1726685AbgGVRXp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 13:23:45 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AD3C0619DC;
+        Wed, 22 Jul 2020 10:23:45 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id o1so1341514plk.1;
+        Wed, 22 Jul 2020 10:23:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cVcoEfFppL+7K43qaXbza9Qghk86OOJSk60UN9FStZU=;
-        b=SQkF3b3jIXyEuSdG2/DVhNXbqJD1L6aLcInHXLchBVGeLN8o0aT/XdXCvj7AjKNyzS
-         8U3YXYriHgkBXL16qQRpnh+p/6vsBMKKas5Gl+DYvDILmaQYgwb3rz0lp/MIxceLeOp3
-         frjBpDxFFFldSvoJvejNtE3rtuPCRuG7izSQRYdb2JxsdfHWStwOyp5ake3WgRQBD+c7
-         Ojfzdlbc/RaoMtzEE3O7kmfF1vyi//9bTi+fsuHy8Bek+MYr7ROjWZ/DxK6xm42Rf440
-         0kZmy6snDSzMgfl7ScjTx+7sDJRB1hjeNKMn+RPPR3vd2E9ajtqSxz8dASyhPkyggsK4
-         jH7w==
+        h=from:to:cc:subject:date:message-id;
+        bh=waZLpv1oY9JdxGCqz+hGEo0vyh0IdaCvW7suryCs2O4=;
+        b=UGKz/h4VX3Fs9zNxByZNcOHlX2WV4UskJvDTWBLqRIwV0gDQBpQMb9+KOtli5YhmV0
+         2OVFWOF6YewsefBrJXmusr7/Tj+nnx7rI9uHh5B3+In79uwNsCn9/CqzFqqp6Te8p0ut
+         yUF91epQqT9NOlC51H9gpIDtF+Nxuu0m6uLtphiK0xRtwNnTCNnWaJxoV3RkawM3ZfF+
+         vaLsrPjC+bcyG6pXB2jvyDqVe9ur/E6T9EknTEqcTSp/U4Kml/Piy5TFam1y4xNW3Nb5
+         fCcJfw6W4jTXStKbmv7+40ZjOcJ4c9ZU8IAYM9zI0dcaufFQrghfLo9IjsIoZBeQtVx2
+         rlVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cVcoEfFppL+7K43qaXbza9Qghk86OOJSk60UN9FStZU=;
-        b=GWf2efrPz9hMRtqzMEONzffTPbMhINfrjhFlUeGHj/cBBbX2BTGw6GIXg6F7Uugmy6
-         nWVVvrE5SCWXgHU/5ujTIUOx2hZmHO2q3QXz7S4ExbcJo7bQrtT4pudnF4HQRdQOICqa
-         LZyEC1V41CT9YVRh3Pe8SSRFR0LJi55xGFB6n6HJpcuHcGEV30bGFm5tq5D+NSxV8ZjS
-         e5uWi8FaORX2uxYe1UYmye5NXujkm9ggPX7DtgEwZTFZrPJnhE8I1PzIBkxTPjjLjieH
-         QcTF+6netriyUinYXAUCy8rvsO/15yC4aJvzLKnNidf6NVTUco3N7WF3Ak6fTaVmUX3Q
-         mLYQ==
-X-Gm-Message-State: AOAM532CHm6AlHBKBCb4/E1cuSW6AY4EdTHDvDvbSj90LhhBGZtBt+v/
-        WZCoRK6CqvoPnBfcLea8yvC0l0mko4jMiRoCJmE=
-X-Google-Smtp-Source: ABdhPJzM/e9tpN7Q9g2GlOjSqpxZZ/hREMDgbpsRDa+VhB57mZA5pvxtSis1AJ9LRNd/53/Kzzht5w79IT6tjpzb/9s=
-X-Received: by 2002:a2e:8ec8:: with SMTP id e8mr97196ljl.51.1595438100443;
- Wed, 22 Jul 2020 10:15:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <87wo2vwxq6.fsf@cloudflare.com> <20200722144212.27106-1-kuniyu@amazon.co.jp>
- <87v9ifwq2p.fsf@cloudflare.com> <CA+FuTScto+Z_qgFxJBzhPUNEruAvKLSTL7-0AnyP-M6Gon_e5Q@mail.gmail.com>
- <87tuxzwp0v.fsf@cloudflare.com> <CA+FuTSdQWKFam0KwCg_REZdhNB6+BOwAHL00eRgrJ2FwPDRjcA@mail.gmail.com>
-In-Reply-To: <CA+FuTSdQWKFam0KwCg_REZdhNB6+BOwAHL00eRgrJ2FwPDRjcA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 22 Jul 2020 10:14:49 -0700
-Message-ID: <CAADnVQKmOLkd1oJHCxfqQnSbJFfp0NRd1C9i9mZy_3rNRc4a1A@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the bpf-next tree with the net tree
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        kernel-team <kernel-team@cloudflare.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=waZLpv1oY9JdxGCqz+hGEo0vyh0IdaCvW7suryCs2O4=;
+        b=SU2vzPDGu7C1Gcm/AijOGoVYC9x9JU5QF8eWK3cPAGtOZ7FsZuTVpyc2+YK2Ca2gH6
+         j5f9tSPTmCNYO63ForpCcIkikTucZiK1gSMWOEMuZ6mFe/URKYiFUoN8wikpGfRS/GdU
+         e3N5JSXqPRiuML3RfAoupK7u6MBwhxzx8tPmr4NL9m5tFS/YhcsslqAVLRvse7nEkI6Z
+         747BQTTSKwE5mfaBD8GRKqxREAJrL82e10aLaC4yPPPiXvG2jHFmXjOdYi5zQrKJ6MWD
+         UejR2nVTnoK2QuNIc29c60iBHUNeVVs4JM7jcfwvx7E9jOnMALIZJ1G4hjCjzLY6I1yQ
+         8s3w==
+X-Gm-Message-State: AOAM530TvmSyvKoDzOFU3oQIm7+hBcrfyu9KbboA//M1zWgmpgQrWPgE
+        jwPfe0dfL16HXTZuBwQ1og==
+X-Google-Smtp-Source: ABdhPJy6aYd0ygn6rYVmUTmeka9L5VF55m1dib1vjw01B8MXvNkLDfPybsTJrjoTlV7N8pWvDHnqeQ==
+X-Received: by 2002:a17:90a:368c:: with SMTP id t12mr455311pjb.90.1595438624469;
+        Wed, 22 Jul 2020 10:23:44 -0700 (PDT)
+Received: from localhost.localdomain ([2402:3a80:cdb:f8f:507e:560d:bcc3:7e82])
+        by smtp.gmail.com with ESMTPSA id x10sm197567pfp.80.2020.07.22.10.23.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2020 10:23:43 -0700 (PDT)
+From:   madhuparnabhowmik10@gmail.com
+To:     isdn@linux-pingi.de, davem@davemloft.net, arnd@arndb.de,
+        gregkh@linuxfoundation.org, edumazet@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andrianov@ispras.ru, ldv-project@linuxtesting.org,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Subject: [PATCH] drivers: isdn: capi: Fix data-race bug
+Date:   Wed, 22 Jul 2020 22:53:29 +0530
+Message-Id: <20200722172329.16727-1-madhuparnabhowmik10@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 22, 2020 at 8:50 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> > TBH, I don't what is the preferred way to handle it. Perhaps DaveM or
-> > Alexei/Daniel can say what would make their life easiest?
->
-> Good point.
->
-> With the above, there still remains a merge conflict, of course. But
-> then we can take bpf-next as is, so I think it would save a separate
-> patch to net. But not sure whether that helps anything. It does add an
-> unnecessary variable.
+From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-whichever way is easier to deal with merge conflict....
-currently bpf-next PR is pending.
-but we can drop it and merge one more patch into bpf-next?
-But reading through the read it doesn't sound that it will help the
-merge conflict..
-An alternative could be to drop PR and rebase the whole bpf-next to net-next
-and deal with conflicts there...
-Or I can rebase bpf-next and drop Jakub's series and he can resubmit them
-without conflicts? I guess that's the easiest for me and for Dave.
+In capi_init(), after register_chrdev() the file operation callbacks
+can be called. However capinc_tty_init() is called later.
+Since capiminors and capinc_tty_driver are initialized in
+capinc_tty_init(), their initialization can race with their usage
+in various callbacks like in capi_release().
+
+Therefore, call capinc_tty_init() before register_chrdev to avoid
+such race conditions.
+
+Found by Linux Driver Verification project (linuxtesting.org).
+
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+---
+ drivers/isdn/capi/capi.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/isdn/capi/capi.c b/drivers/isdn/capi/capi.c
+index 85767f52fe3c..7e8ab48a15af 100644
+--- a/drivers/isdn/capi/capi.c
++++ b/drivers/isdn/capi/capi.c
+@@ -1332,7 +1332,7 @@ static int __init capinc_tty_init(void)
+ 	return 0;
+ }
+ 
+-static void __exit capinc_tty_exit(void)
++static void capinc_tty_exit(void)
+ {
+ 	tty_unregister_driver(capinc_tty_driver);
+ 	put_tty_driver(capinc_tty_driver);
+@@ -1420,29 +1420,28 @@ static int __init capi_init(void)
+ 	if (ret)
+ 		return ret;
+ 
++	if (capinc_tty_init() < 0) {
++		kcapi_exit();
++		return -ENOMEM;
++	}
++
+ 	major_ret = register_chrdev(capi_major, "capi20", &capi_fops);
+ 	if (major_ret < 0) {
+ 		printk(KERN_ERR "capi20: unable to get major %d\n", capi_major);
++		capinc_tty_exit();
+ 		kcapi_exit();
+ 		return major_ret;
+ 	}
+ 	capi_class = class_create(THIS_MODULE, "capi");
+ 	if (IS_ERR(capi_class)) {
+ 		unregister_chrdev(capi_major, "capi20");
++		capinc_tty_exit();
+ 		kcapi_exit();
+ 		return PTR_ERR(capi_class);
+ 	}
+ 
+ 	device_create(capi_class, NULL, MKDEV(capi_major, 0), NULL, "capi20");
+ 
+-	if (capinc_tty_init() < 0) {
+-		device_destroy(capi_class, MKDEV(capi_major, 0));
+-		class_destroy(capi_class);
+-		unregister_chrdev(capi_major, "capi20");
+-		kcapi_exit();
+-		return -ENOMEM;
+-	}
+-
+ 	proc_init();
+ 
+ #ifdef CONFIG_ISDN_CAPI_MIDDLEWARE
+-- 
+2.17.1
+
