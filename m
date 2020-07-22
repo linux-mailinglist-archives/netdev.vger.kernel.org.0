@@ -2,115 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C8A122A132
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 23:14:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FC7E22A141
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 23:18:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732945AbgGVVOc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Jul 2020 17:14:32 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:35390 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732677AbgGVVOa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 17:14:30 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-177-xxnTTcBcPmKaw3P-S9ln1g-1; Wed, 22 Jul 2020 17:13:18 -0400
-X-MC-Unique: xxnTTcBcPmKaw3P-S9ln1g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ED8E4100CCC1;
-        Wed, 22 Jul 2020 21:13:15 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.194.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E57B019C4F;
-        Wed, 22 Jul 2020 21:13:12 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH v8 bpf-next 13/13] selftests/bpf: Add set test to resolve_btfids
-Date:   Wed, 22 Jul 2020 23:12:23 +0200
-Message-Id: <20200722211223.1055107-14-jolsa@kernel.org>
-In-Reply-To: <20200722211223.1055107-1-jolsa@kernel.org>
-References: <20200722211223.1055107-1-jolsa@kernel.org>
+        id S1726841AbgGVVSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 17:18:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726447AbgGVVSt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 17:18:49 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F758C0619DC
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 14:18:49 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id b9so1603205plx.6
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 14:18:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=/NCA8bXI3zfZYAohLjznoM/f/0f70sPbB/+ypwTdYwc=;
+        b=SHf1JmGTnB3dAO02ZCUI+6CakGm0Ef6Boq9u7eNpki+17Ha09xS2ZLBYWpY3VMzFT3
+         u+7lxgl5oNVZvC0wFhSwysOqeqyKoI7jJIip6qgnkiWglcOa6GlBXxdWE+BMgA/PMGTq
+         wx4TzANPIFUFMO5iOGVq9/MJNTNzyYw/GTftAaKhd0iydIvRpoEwwhWXlf8cLPHp30TB
+         sbaXemgDpu1SkwiwBU1Hl2v003Sf6nVysUcoJnIFqYlKFi8qkRvHDdhsNFJMAW93yETa
+         5yNBOnrao3i9q6rZ63DqUtfWqx/DFAtRhx0/1ifYorhLdjAcBsfiLIraRTpmbF2fQj8y
+         1kQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=/NCA8bXI3zfZYAohLjznoM/f/0f70sPbB/+ypwTdYwc=;
+        b=EoICNj665RferoKv+/rlTs7NSf12t76kp2HOAr0bAV8HqCLUMtfzKQSS/6wPwTRHfI
+         fyq+4Oa+Aw/52/QQFG6qYcpFhKxZQa61nuoHvp810r8AtM05phy9lttMRo3UwsOxuUG3
+         PThnYZ9rSJCOM6TNrLvK+0qUnCN3BE7vSpcz70sB/lZxU6KrfPi82qpD5OeyAiOHC5Sn
+         ZYpg+7EJdGosnzu+GpOnMEVcXWOndDElYC2kizgeASaNZAVL3woB90IxgWeKEFusUzD9
+         45aAytz2LIc1yk2TeKceqCKci/6+kymLesF/qAEFKKUsmemdDBZv4eGuRgQAgQyQ7YH0
+         WmmQ==
+X-Gm-Message-State: AOAM530NGxDXWcXnc5jU40s8i5T3FSA4mta/7l77eVPNAomrgNQX/A17
+        u0RgczZCy84QqwEj3U+W5sQZFg==
+X-Google-Smtp-Source: ABdhPJzosbYETKUk0ThWbWyDitsjMwfz7haDDCSEljXg5g94MYNfHgTQ89Bodw/QHDKiLlW78A78Gw==
+X-Received: by 2002:a17:90a:c592:: with SMTP id l18mr1236663pjt.119.1595452728690;
+        Wed, 22 Jul 2020 14:18:48 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id 207sm566591pfa.100.2020.07.22.14.18.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jul 2020 14:18:47 -0700 (PDT)
+Subject: Re: [PATCH][next] ionic: fix memory leak of object 'lid'
+To:     Colin King <colin.king@canonical.com>,
+        Pensando Drivers <drivers@pensando.io>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200722174003.962374-1-colin.king@canonical.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <e0e428cf-3bef-9b57-2a7f-5a2381587085@pensando.io>
+Date:   Wed, 22 Jul 2020 14:18:46 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.10.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200722174003.962374-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding test to for sets resolve_btfids. We're checking that
-testing set gets properly resolved and sorted.
+On 7/22/20 10:40 AM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+>
+> Currently when netdev fails to allocate the error return path
+> fails to free the allocated object 'lid'.  Fix this by setting
+> err to the return error code and jumping to a new label that
+> performs the kfree of lid before returning.
+>
+> Addresses-Coverity: ("Resource leak")
+> Fixes: 4b03b27349c0 ("ionic: get MTU from lif identity")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>   drivers/net/ethernet/pensando/ionic/ionic_lif.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> index 7ad338a4653c..728dd6429d80 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> @@ -2034,7 +2034,8 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+>   				    ionic->ntxqs_per_lif, ionic->ntxqs_per_lif);
+>   	if (!netdev) {
+>   		dev_err(dev, "Cannot allocate netdev, aborting\n");
+> -		return ERR_PTR(-ENOMEM);
+> +		err = -ENOMEM;
+> +		goto err_out_free_lid;
+>   	}
+>   
+>   	SET_NETDEV_DEV(netdev, dev);
+> @@ -2120,6 +2121,7 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+>   err_out_free_netdev:
+>   	free_netdev(lif->netdev);
+>   	lif = NULL;
+> +err_out_free_lid:
+>   	kfree(lid);
+>   
+>   	return ERR_PTR(err);
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- .../selftests/bpf/prog_tests/resolve_btfids.c | 33 +++++++++++++++++++
- 1 file changed, 33 insertions(+)
+Thanks!
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-index 101785b49f7e..cc90aa244285 100644
---- a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-+++ b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-@@ -48,6 +48,15 @@ BTF_ID(struct,  S)
- BTF_ID(union,   U)
- BTF_ID(func,    func)
- 
-+BTF_SET_START(test_set)
-+BTF_ID(typedef, S)
-+BTF_ID(typedef, T)
-+BTF_ID(typedef, U)
-+BTF_ID(struct,  S)
-+BTF_ID(union,   U)
-+BTF_ID(func,    func)
-+BTF_SET_END(test_set)
-+
- static int
- __resolve_symbol(struct btf *btf, int type_id)
- {
-@@ -126,5 +135,29 @@ int test_resolve_btfids(void)
- 		}
- 	}
- 
-+	/* Check BTF_SET_START(test_set) IDs */
-+	for (i = 0; i < test_set.cnt && !ret; i++) {
-+		bool found = false;
-+
-+		for (j = 0; j < ARRAY_SIZE(test_symbols); j++) {
-+			if (test_symbols[j].id != test_set.ids[i])
-+				continue;
-+			found = true;
-+			break;
-+		}
-+
-+		ret = CHECK(!found, "id_check",
-+			    "ID %d for %s not found in test_symbols\n",
-+			    test_symbols[j].id, test_symbols[j].name);
-+		if (ret)
-+			break;
-+
-+		if (i > 0) {
-+			ret = CHECK(test_set.ids[i - 1] > test_set.ids[i],
-+				    "sort_check",
-+				    "test_set is not sorted\n");
-+		}
-+	}
-+
- 	return ret;
- }
--- 
-2.25.4
+Acked-by: Shannon Nelson <snelson@pensando.io>
+
 
