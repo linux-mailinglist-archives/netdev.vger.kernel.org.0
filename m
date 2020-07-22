@@ -2,91 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E690229FB6
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 20:57:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5538229FB0
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 20:53:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731113AbgGVS5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 14:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37164 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726685AbgGVS5c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 14:57:32 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40ACC0619DC;
-        Wed, 22 Jul 2020 11:57:31 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id k23so3633403iom.10;
-        Wed, 22 Jul 2020 11:57:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=cyYqWjxKnaJnkrSinErf/w6JPEbLN4zqCCxlbnmFQcU=;
-        b=AC+kH/cBHN2vxvPbFT/Fgh402oNBuH353UPFNnCxHWEKrs/jGKQ60beooblVSxtdeZ
-         YkDqtRUWvzeHgv8OpqaSOb4kZJSxLzgT+u/luWaHIAXgvr/dOypo1t6OygyOfKEsCNJ2
-         7bzgXavlIboo6/4aTKak+orDkA3RHv2Y+AgaPDBLPBv2USv3p7XVRxR6nfztiR/p0mIL
-         3L5m40vDAnr/Et3RRG53e+vVAQCqbs8wx94As5GNARAhIoc8YqXEd2yr8DptSp+4O20j
-         0S9R+NPQ4bSueZ0gyIWGp82KADBwMJ6bdhxLp65/KBfEzFOhGUqdw1eI8g9yBmq5fEha
-         WIyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=cyYqWjxKnaJnkrSinErf/w6JPEbLN4zqCCxlbnmFQcU=;
-        b=NRcLkJ32SCrFvUZ0/w6UwIoFdC2Z87CBkCZKaPbU8HzWU80PlmpHnKKhjSlwBrQSh1
-         VjgulnjhtLBmDvX++zmIehYRhHP14iKZj/co0jAwyKRRJZpxXw7yf0M85LocJZThyE9+
-         IUI2Ib/vM+i63jQPG3Lv/OXEMv36Vel6Fap6kwZVd6QCCTYV+OIjt6Idk8RJxB2m2s0s
-         bobjObBipX2FhnhgqbY3poD19ymx1EwiHE11EXXEn5Ey4MJd/LpOUSqNMZVZpT7W03vC
-         05nIgnXE69pOxhYh5wxtmkT1jn19WS8FU8IsDVKc5wVpaawga9OyjcLbSR6CMb5BgFjh
-         8JMQ==
-X-Gm-Message-State: AOAM532u8ImBa31mNRh36QnF1f+SHRnasdNqFNabyqPKHPjvrGcICYXI
-        xNWJ0Pc5rV+JZMgWymZZphI=
-X-Google-Smtp-Source: ABdhPJypONaIA/NiGC5LcYqRsCE4RKA/YxWVwdlOmJalO2tHjKIEyDOyWaxWvPS2dea9RO9jlWjROw==
-X-Received: by 2002:a02:a408:: with SMTP id c8mr684723jal.59.1595444251225;
-        Wed, 22 Jul 2020 11:57:31 -0700 (PDT)
-Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [160.94.145.20])
-        by smtp.googlemail.com with ESMTPSA id a5sm186256iol.39.2020.07.22.11.57.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 11:57:30 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-To:     Vishal Kulkarni <vishal@chelsio.com>,
+        id S1732537AbgGVSxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 14:53:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47810 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726841AbgGVSxP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Jul 2020 14:53:15 -0400
+Received: from embeddedor (unknown [200.39.29.139])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0018A207E8;
+        Wed, 22 Jul 2020 18:53:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595443995;
+        bh=f8L1/mWk1WxKSeB8IoWJ9p9hZ6uj4JQNstTzmlRy1F4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ZMJLGObp80o7pPgKnfWFkKyW2KzENFNfm63e0wL9cCU+MqXE9pt1OlKZd4bRytXMo
+         tWWNWe5I09MuQ1dOuk2JhzjFPfi9D06qKS9h6gHkIX8HBii2rva3Cedi5STQbaFl4V
+         y2/uHqeOd3AYbq0eZu755l3gXsWf1S+INmZfbcHc=
+Date:   Wed, 22 Jul 2020 13:58:52 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Ariel Elior <aelior@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     emamd001@umn.edu, Navid Emamdoost <navid.emamdoost@gmail.com>
-Subject: [PATCH v2] cxgb4: add missing release on skb in uld_send()
-Date:   Wed, 22 Jul 2020 13:57:21 -0500
-Message-Id: <20200722185722.3580-1-navid.emamdoost@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200720.183113.2100585349998522874.davem@davemloft.net>
-References: <20200720.183113.2100585349998522874.davem@davemloft.net>
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     GR-everest-linux-l2@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH][next] net: qed_hsi.h: Avoid the use of one-element array
+Message-ID: <20200722185852.GA16220@embeddedor>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the implementation of uld_send(), the skb is consumed on all
-execution paths except one. Release skb when returning NET_XMIT_DROP.
+One-element arrays are being deprecated[1]. Replace the one-element
+array with a simple value type '__le32 reserved1'[2], once it seems
+this is just a placeholder for alignment.
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+[1] https://github.com/KSPP/linux/issues/79
+[2] https://github.com/KSPP/linux/issues/86
+
+Tested-by: kernel test robot <lkp@intel.com>
+Link: https://github.com/GustavoARSilva/linux-hardening/blob/master/cii/0-day/qed_hsi-20200718.md
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
-changes in v2:
-	- using kfree_skb() based on David Miller suggestion.
----
- drivers/net/ethernet/chelsio/cxgb4/sge.c | 2 +-
+ drivers/net/ethernet/qlogic/qed/qed_hsi.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index d8c37fd4b808..92eee66cbc84 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -2938,7 +2938,7 @@ static inline int uld_send(struct adapter *adap, struct sk_buff *skb,
- 	txq_info = adap->sge.uld_txq_info[tx_uld_type];
- 	if (unlikely(!txq_info)) {
- 		WARN_ON(true);
--		consume_skb(skb);
-+		kfree_skb(skb);
- 		return NET_XMIT_DROP;
- 	}
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_hsi.h b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
+index 1af3f65ab862..559df9f4d656 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_hsi.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
+@@ -361,7 +361,7 @@ struct core_tx_update_ramrod_data {
+ 	u8 update_qm_pq_id_flg;
+ 	u8 reserved0;
+ 	__le16 qm_pq_id;
+-	__le32 reserved1[1];
++	__le32 reserved1;
+ };
  
+ /* Enum flag for what type of dcb data to update */
 -- 
-2.17.1
+2.27.0
 
