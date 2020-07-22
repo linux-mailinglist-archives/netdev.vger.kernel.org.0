@@ -2,84 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC6A32296A9
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 12:53:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2AF92296C2
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 12:59:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727825AbgGVKxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 06:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725847AbgGVKxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 06:53:54 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDA2C0619DC
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 03:53:53 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id o11so1440205wrv.9
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 03:53:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rTkSQC5SS9U/ecRovnotG8OexmDCR0ZPdBBWJzXyV7U=;
-        b=lijpLiMFQ8/4bvw4oRFg7dEVm6KcYeEXeEpWTChaXBTyuZHwkTQTHvpOu+48SW7Dmi
-         Xu+lx1JSdjqsG0/n1aL4RDcTBXGVMlt1ijEvlmGRKtlPVcPTt8geE21+ZqRjn64gQYmD
-         q+RAc16525Q4adTDMuVtOvwsxHbQ7Qi7tSrMhREffIz7LvwoDioLylaszAC6EhXULbUG
-         kZnsgPxS2ElmzBQ0mf92ylmvdZBMdP7OhGdG+okAjhnPRdf49Rp/SuQgYY8y7SpqiG0T
-         Phl0qcwAe9uYcqdTtfgzmk1QnFoMXY706coBiC1H8gPjXGojKqPYO1dzHiUdv6Xyqfat
-         EXEw==
+        id S1728171AbgGVK7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 06:59:08 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:41764 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726153AbgGVK7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 06:59:08 -0400
+Received: by mail-il1-f199.google.com with SMTP id k6so788431ilg.8
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 03:59:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rTkSQC5SS9U/ecRovnotG8OexmDCR0ZPdBBWJzXyV7U=;
-        b=ZJGfBw3D1kBN9bHqhlHx2X3bCZs7d18topV294EJwtsz0p86P72IfzTILpQVVwnI/8
-         VuYPuK+eCk41pjNoHW/hKws4U1JZd6GUzliKXS1Pp5oLEVlLH1rINuxTTZpTIG/X33zl
-         4Ij1rnZVTgF8i14z6xTrtd5n3UQU5hAzVm3amuEIN8pzEHbZnhKKi836B8WNoHRDpPxC
-         tFQsXUJkJjQ3sHU1j6kBt5H/XDEXtVlrY/Z9+e/KknarVrdlTcvQwGT4i/Q1CG+6LoZV
-         HXKoKm3Wh0ojwac8sckaslzVfXLpzlKRb1AfhJU1t2aJVI0/NBTMGjPTsOSltsxJfGl9
-         bfqg==
-X-Gm-Message-State: AOAM53125iKYYKnUnyWA8h27vIgRiuMJfM9G6Nkky8mO8GOLMik2/LT7
-        3cnpoxaVNkPlv/43bFjf2PVpTg==
-X-Google-Smtp-Source: ABdhPJyyJrlkx6WRl2+Dkh5PyIVO3B9h9o/QJSAehU0CS9d6v2f24yqnRICGc85gP7GRCW3y1ek8Ug==
-X-Received: by 2002:adf:9051:: with SMTP id h75mr32820339wrh.152.1595415232552;
-        Wed, 22 Jul 2020 03:53:52 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id x204sm4019891wmg.2.2020.07.22.03.53.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 03:53:52 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 12:53:51 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Ido Schimmel <idosch@mellanox.com>, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2] sched: sch_api: add missing rcu read lock to
- silence the warning
-Message-ID: <20200722105351.GB3154@nanopsycho>
-References: <20200720081041.8711-1-jiri@resnulli.us>
- <CAM_iQpVZLGiDR_foe7HdaW0-f5kO+5+Mm6p1e59tb2_VASFpHA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=+MTYhbpSCITOUxjmPnhjda3q0hd+gL2rgezFk7qJWaU=;
+        b=gGSg0hrQ/1loMt2lOnYAWFyjEPsMN4ubNk5BgKAUpcenn582HVk8v1zrDZs/Agcett
+         +Pk35U04mu0VlbqDc2OExSI2emKTgA/IMT2X4xMBuVylJz9wC7tGgPbM3f7fQNI2WlB6
+         0ZGdRJcN/CxmtIsV2JUL+7T6vkagrpRha3mHIB8mZgTA172l9iguyPzmHEdlqQyNNlNp
+         WuBzrubomoQfw5/yRZ+escEGK2pA9rTmDy+0ANL3LOM/OFpfvr8SINVhbQ+GUHf+36/i
+         VQwONdoDgc73NRfB4/KIN0rY323tVJY2OpMZ3+wzvN23mKL2Kfs7+0Pfhza13PRdYnFK
+         5h1g==
+X-Gm-Message-State: AOAM530X/8uh/auQMaf2ykPzlMT2no/44F8yp0kMi/fnGcBmkWLySZBt
+        OUQN7cZEKhuuEAn5GH2ulpd98ZGFmhInOKRIazIRsPRRltP1
+X-Google-Smtp-Source: ABdhPJyKtjS5xuKw6MuALvst1m+b7QzvnWngYNvV6LqBHReEEtIkwFNADfCr8JbKjNbF2Bke/lig7Wv1Cfl+GLPkBzoFx6WWGl4H
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpVZLGiDR_foe7HdaW0-f5kO+5+Mm6p1e59tb2_VASFpHA@mail.gmail.com>
+X-Received: by 2002:a92:d652:: with SMTP id x18mr31350270ilp.248.1595415547083;
+ Wed, 22 Jul 2020 03:59:07 -0700 (PDT)
+Date:   Wed, 22 Jul 2020 03:59:07 -0700
+In-Reply-To: <000000000000cbef4a05a8ffc4ef@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f4040e05ab05a0dc@google.com>
+Subject: Re: BUG: using smp_processor_id() in preemptible code in tipc_crypto_xmit
+From:   syzbot <syzbot+263f8c0d007dc09b2dda@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jmaloy@redhat.com, jon.maloy@ericsson.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, tuong.t.lien@dektech.com.au,
+        ying.xue@windreiver.com, ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jul 21, 2020 at 08:57:45PM CEST, xiyou.wangcong@gmail.com wrote:
->On Mon, Jul 20, 2020 at 1:10 AM Jiri Pirko <jiri@resnulli.us> wrote:
->> diff --git a/include/linux/hashtable.h b/include/linux/hashtable.h
->> index 78b6ea5fa8ba..f6c666730b8c 100644
->> --- a/include/linux/hashtable.h
->> +++ b/include/linux/hashtable.h
->> @@ -173,9 +173,9 @@ static inline void hash_del_rcu(struct hlist_node *node)
->>   * @member: the name of the hlist_node within the struct
->>   * @key: the key of the objects to iterate over
->>   */
->
->I think you need to update the doc here too, that is adding @cond.
+syzbot has bisected this issue to:
 
-Ah, sure, will send v3. Thanks!
+commit e1f32190cf7ddd55778b460e7d44af3f76529698
+Author: Tuong Lien <tuong.t.lien@dektech.com.au>
+Date:   Fri Nov 8 05:05:12 2019 +0000
+
+    tipc: add support for AEAD key setting via netlink
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11b738a0900000
+start commit:   11ba4688 Linux 5.8-rc5
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13b738a0900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15b738a0900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e944500a36bc4d55
+dashboard link: https://syzkaller.appspot.com/bug?extid=263f8c0d007dc09b2dda
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14000957100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12d30d67100000
+
+Reported-by: syzbot+263f8c0d007dc09b2dda@syzkaller.appspotmail.com
+Fixes: e1f32190cf7d ("tipc: add support for AEAD key setting via netlink")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
