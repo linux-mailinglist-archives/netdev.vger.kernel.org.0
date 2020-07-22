@@ -2,100 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B7B229D89
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3EF5229DA0
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 18:59:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727769AbgGVQwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 12:52:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55664 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726535AbgGVQwb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jul 2020 12:52:31 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B9C6B206F5;
-        Wed, 22 Jul 2020 16:52:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595436751;
-        bh=gXHnNXNXpfZZurJ7uSqFREuxYKFMmvI8rB9oIAsB0aY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Gl7UAv6HZpl7j6ciDQzY/NMwyYPtXVF7nhroZdd3rQpJuu5q4pvc3FmYFNRcP+CzI
-         Y5JVjcCsVUOVjIh6w0iFEFO1+YjlZUP6mie25cH/ke4W6x8QgFDJXcGyQ3zYuwdp5h
-         rkBsh1Dscq0LKq0B+fALNJi5530ziRITfxv4IMd0=
-Date:   Wed, 22 Jul 2020 09:52:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tom Herbert <tom@herbertland.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>
-Subject: Re: [RFC PATCH net-next v2 6/6] devlink: add overwrite mode to
- flash update
-Message-ID: <20200722095228.2f2c61b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <02874ECE860811409154E81DA85FBB58C8AF3382@fmsmsx101.amr.corp.intel.com>
-References: <20200717183541.797878-1-jacob.e.keller@intel.com>
-        <20200717183541.797878-7-jacob.e.keller@intel.com>
-        <20200720100953.GB2235@nanopsycho>
-        <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200721135356.GB2205@nanopsycho>
-        <20200721100406.67c17ce9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200722105139.GA3154@nanopsycho>
-        <02874ECE860811409154E81DA85FBB58C8AF3382@fmsmsx101.amr.corp.intel.com>
+        id S1727060AbgGVQ7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 12:59:16 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:10243 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726157AbgGVQ7P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 12:59:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1595437155; x=1626973155;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=Ii8cjk4IQHFJom5jUg5CvG8Dn7N/tuaozH9/Wd8E8Ms=;
+  b=WunqPlLw04jpQc1pggInB6PWBxgBlynUDIdUK1z91SFMAZA33t879LrR
+   3/K+BZLO/7zJQKC6bwjnOirOc3S3dZSQtvxkSyQqliXLxg0RhBDH5foY3
+   2gX28xETsOSBDJneC3nDKPLr6hWClRjV/CGFmn/214+RDctcappF6DvjJ
+   k=;
+IronPort-SDR: 2UuOvxPhSwqD4fmJIs9O7v8NMnr1Vmn/JUdkghZZ5O8vgJiqAk27gribZwPEps5Owllie1cIOY
+ ltYCHY+JH5qw==
+X-IronPort-AV: E=Sophos;i="5.75,383,1589241600"; 
+   d="scan'208";a="43524652"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-f273de60.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 22 Jul 2020 16:59:14 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1d-f273de60.us-east-1.amazon.com (Postfix) with ESMTPS id 6D803A2336;
+        Wed, 22 Jul 2020 16:59:11 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 22 Jul 2020 16:59:10 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.161.214) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 22 Jul 2020 16:59:06 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <jakub@cloudflare.com>
+CC:     <ast@kernel.org>, <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <kernel-team@cloudflare.com>,
+        <kuba@kernel.org>, <kuniyu@amazon.co.jp>, <netdev@vger.kernel.org>,
+        <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCH bpf-next 0/2] Fix BPF socket lookup with reuseport groups with connections
+Date:   Thu, 23 Jul 2020 01:59:02 +0900
+Message-ID: <20200722165902.51857-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20200722161720.940831-1-jakub@cloudflare.com>
+References: <20200722161720.940831-1-jakub@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.214]
+X-ClientProxiedBy: EX13D13UWB002.ant.amazon.com (10.43.161.21) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Jul 2020 15:30:05 +0000 Keller, Jacob E wrote:
-> > >> >one by one and then omit the one(s) which is config (guessing which
-> > >> >one that is based on the name).
-> > >> >
-> > >> >Wouldn't this be quite inconvenient?  
-> > >>
-> > >> I see it as an extra knob that is actually somehow provides degradation
-> > >> of components.  
-> > >
-> > >Hm. We have the exact opposite view on the matter. To me components
-> > >currently correspond to separate fw/hw entities, that's a very clear
-> > >meaning. PHY firmware, management FW, UNDI. Now we would add a
-> > >completely orthogonal meaning to the same API.  
-> > 
-> > I understand. My concern is, we would have a component with some
-> > "subparts". Now it is some fuzzy vagely defined "config part",
-> > in the future it might be something else. That is what I'm concerned
-> > about. Components have clear api.
-> > 
-> > So perhaps we can introduce something like "component mask", which would
-> > allow to flash only part of the component. That is basically what Jacob
-> > has, I would just like to have it well defined.
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+Date:   Wed, 22 Jul 2020 18:17:18 +0200
+> This mini series contains a fix for a bug noticed when analyzing a reported
+> merge conflict between bpf-next and net tree [0].
 > 
-> So, we could make this selection a series of masked bits instead of a
-> single enumeration value.
+> Apart from fixing a corner-case that affects use of BPF sk_lookup in tandem
+> with UDP reuseport groups with connected sockets, it should make the
+> conflict resolution with net tree easier.
+> 
+> These changes don't replicate the improved UDP socket lookup behavior from
+> net tree, where commit efc6b6f6c311 ("udp: Improve load balancing for
+> SO_REUSEPORT.") is present.
+> 
+> Happy to do it as a follow up. For the moment I didn't want to make things
+> more confusing when it comes to what got fixed where and why.
+> 
+> Thanks,
+> -jkbs
 
-I'd still argue that components (as defined in devlink info) and config
-are pretty orthogonal. In my experience config is stored in its own
-section of the flash, and some of the knobs are in no obvious way
-associated with components (used by components).
+Acked-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 
-That said, if we rename the "component mask" to "update mask" that's
-fine with me.
-
-Then we'd have
-
-bit 0 - don't overwrite config
-bit 1 - don't overwrite identifiers
-
-? 
-
-Let's define a bit for "don't update program" when we actually need it.
+Thank you.
