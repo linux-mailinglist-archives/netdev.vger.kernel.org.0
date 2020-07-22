@@ -2,75 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E18E2294FC
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 11:33:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62C85229577
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 11:53:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731472AbgGVJdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 05:33:23 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:37948 "EHLO a.mx.secunet.com"
+        id S1731436AbgGVJxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 05:53:06 -0400
+Received: from mga18.intel.com ([134.134.136.126]:63311 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727819AbgGVJdX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jul 2020 05:33:23 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id DDBD22006F;
-        Wed, 22 Jul 2020 11:33:20 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id oM9Uz6WjvfQF; Wed, 22 Jul 2020 11:33:19 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id A39BB20068;
-        Wed, 22 Jul 2020 11:33:19 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 22 Jul 2020 11:33:19 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Wed, 22 Jul
- 2020 11:33:19 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 09C0C318471A; Wed, 22 Jul 2020 11:33:19 +0200 (CEST)
-Date:   Wed, 22 Jul 2020 11:33:18 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Mark Salyzyn <salyzyn@android.com>
-CC:     <linux-kernel@vger.kernel.org>, <kernel-team@android.com>,
-        <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: af_key: pfkey_dump needs parameter validation
-Message-ID: <20200722093318.GO20687@gauss3.secunet.de>
-References: <20200721132358.966099-1-salyzyn@android.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200721132358.966099-1-salyzyn@android.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+        id S1726147AbgGVJxG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Jul 2020 05:53:06 -0400
+IronPort-SDR: ZDEEjv6F7/YUYAKCvnGdZiu66YBAuNsNT0wjyaW3Bqp14+1xprVCbIW8i0gZ9ERxZO7Ax2fwr1
+ Cl9WuqwMbT1Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9689"; a="137804228"
+X-IronPort-AV: E=Sophos;i="5.75,381,1589266800"; 
+   d="scan'208";a="137804228"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2020 02:53:05 -0700
+IronPort-SDR: 7KJ6UsqeyYgkOsvhtp/wSxLkEzP18miCfz/0UJI3ez1eKMFvPQl61uRoMNNqaev27ltyVyXZ2L
+ zltqv2RWcwoA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,381,1589266800"; 
+   d="scan'208";a="487936068"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.131])
+  by fmsmga006.fm.intel.com with ESMTP; 22 Jul 2020 02:53:02 -0700
+From:   Zhu Lingshan <lingshan.zhu@live.com>
+To:     jasowang@redhat.com, alex.williamson@redhat.com, mst@redhat.com,
+        pbonzini@redhat.com, sean.j.christopherson@intel.com,
+        wanpengli@tencent.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, Zhu Lingshan <lingshan.zhu@live.com>
+Subject: [PATCH V3 0/6] IRQ offloading for vDPA
+Date:   Wed, 22 Jul 2020 17:49:04 +0800
+Message-Id: <20200722094910.218014-1-lingshan.zhu@live.com>
+X-Mailer: git-send-email 2.18.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 21, 2020 at 06:23:54AM -0700, Mark Salyzyn wrote:
-> In pfkey_dump() dplen and splen can both be specified to access the
-> xfrm_address_t structure out of bounds in__xfrm_state_filter_match()
-> when it calls addr_match() with the indexes.  Return EINVAL if either
-> are out of range.
-> 
-> Signed-off-by: Mark Salyzyn <salyzyn@android.com>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: kernel-team@android.com
-> ---
-> Should be back ported to the stable queues because this is a out of
-> bounds access.
 
-Please do a v2 and add a proper 'Fixes' tag if this is a fix that
-needs to be backported.
+This series intends to implement IRQ offloading for
+vhost_vdpa.
 
-Thanks!
+By the feat of irq forwarding facilities like posted
+interrupt on X86, irq bypass can  help deliver
+interrupts to vCPU directly.
+
+vDPA devices have dedicated hardware backends like VFIO
+pass-throughed devices. So it would be possible to setup
+irq offloading(irq bypass) for vDPA devices and gain
+performance improvements.
+
+In my testing, with this feature, we can save 0.1ms
+in a ping between two VFs on average.
+
+changes from V2:
+(1)rename struct vhost_call_ctx to vhost_vring_call
+(2)add kvm_arch_end_assignment() in del_producer()
+code path
+(3)rename vDPA helpers to vdpa_devm_request_irq()
+and vdpa_devm_free_irq(). Add better comments
+for them.
+(4)better comments for setup_vq_irq() and
+unsetup_vq_irq()
+(5)In vDPA VHOST_SET_VRING_CALL, will call vhost_vdpa_update_vq_irq()
+without checking producer.irq, move this check into
+vhost_vdpa_update_vq_irq(), so that get advantage of the spinlock.
+(6)Add a function vhost_vdpa_clean_irq(), this function will unregister
+the producer of vqs when vhost_vdpa_release(). This is safe
+for control vq.
+(7) minor improvements
+
+changes from V1:
+(1)dropped vfio changes.
+(3)removed KVM_HVAE_IRQ_BYPASS checks
+(4)locking fixes
+(5)simplified vhost_vdpa_update_vq_irq()
+(6)minor improvements
+
+Zhu Lingshan (6):
+  vhost: introduce vhost_vring_call
+  kvm: detect assigned device via irqbypass manager
+  vDPA: implement vq IRQ allocate/free helpers in vDPA core
+  vhost_vdpa: implement IRQ offloading in vhost_vdpa
+  ifcvf: replace irq_request/free with vDPA helpers
+  irqbypass: do not start cons/prod when failed connect
+
+ arch/x86/kvm/x86.c              | 11 +++++-
+ drivers/vdpa/ifcvf/ifcvf_main.c | 14 ++++---
+ drivers/vdpa/vdpa.c             | 49 +++++++++++++++++++++++
+ drivers/vhost/Kconfig           |  1 +
+ drivers/vhost/vdpa.c            | 70 +++++++++++++++++++++++++++++++--
+ drivers/vhost/vhost.c           | 22 ++++++++---
+ drivers/vhost/vhost.h           |  9 ++++-
+ include/linux/vdpa.h            | 13 ++++++
+ virt/lib/irqbypass.c            | 16 +++++---
+ 9 files changed, 182 insertions(+), 23 deletions(-)
+
+-- 
+2.18.4
+
