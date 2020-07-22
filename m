@@ -2,74 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB5DD22A0E2
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 22:46:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C16C22A0E4
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 22:46:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732855AbgGVUqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 16:46:36 -0400
-Received: from smtprelay0032.hostedemail.com ([216.40.44.32]:55562 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726452AbgGVUqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 16:46:36 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 2D8AB1D6A0374;
-        Wed, 22 Jul 2020 20:46:35 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1461:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3872:3873:3874:4321:5007:7576:7901:7903:9036:10004:10400:10848:10967:11232:11658:11914:12043:12297:12740:12760:12895:13069:13311:13357:13439:14181:14659:14721:21080:21451:21611:21627:21740:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: vase54_4e01a1326f39
-X-Filterd-Recvd-Size: 1999
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf16.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 22 Jul 2020 20:46:33 +0000 (UTC)
-Message-ID: <8721f64a3150e1e5c4813738f470443297ef1cdd.camel@perches.com>
-Subject: Re: [PATCH v2] net-sysfs: add a newline when printing 'tx_timeout'
- by sysfs
-From:   Joe Perches <joe@perches.com>
-To:     David Miller <davem@davemloft.net>, stephen@networkplumber.org
-Cc:     wangxiongfeng2@huawei.com, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 22 Jul 2020 13:46:32 -0700
-In-Reply-To: <20200722.132311.31388808811810422.davem@davemloft.net>
-References: <1595314977-57991-1-git-send-email-wangxiongfeng2@huawei.com>
-         <20200721.153632.1416164807029507588.davem@davemloft.net>
-         <20200722082741.1675d611@hermes.lan>
-         <20200722.132311.31388808811810422.davem@davemloft.net>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1732949AbgGVUqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 16:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732945AbgGVUqv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 16:46:51 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38AA3C0619DC;
+        Wed, 22 Jul 2020 13:46:51 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id s23so2861277qtq.12;
+        Wed, 22 Jul 2020 13:46:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6g/oY2rXZp/ah/KvdD1F4yFw3y8W5VmdfHR2Fxxsxj0=;
+        b=a7SDEOy4r0WOF5T1EZ3ZNB4eg26yja5DMv+IRgjx3atVZrq/mKEZpI6FMDcbfLleTX
+         8Br4XJbxHfvl9dzf7awm0TylRoJnSq/4WipKsc3wVJnaVAKKekOnT/mQr9STfb3x0N6g
+         xBKlAlf3SNSCEQhJjKdXd/we1NCYkiNps66MOHCuLVJZIJfmeltJx0P8FlnEoOYWcCxY
+         8AHXhpR/oyxsPhWKzLazDhdHOSNIE2IfFbzpIuHNnPIvpz6ShPTGksBZKvrAlyh/0ntG
+         aY9eN0RCqjH2NYkF/8ChFicYFPAoWIDp2gJ//53Oq5Mayh5wOiNiajNeoq8mUgVV+tcC
+         yrfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6g/oY2rXZp/ah/KvdD1F4yFw3y8W5VmdfHR2Fxxsxj0=;
+        b=QaQeUs8BX3QL/DL/hXrLEyCWy8IzWNOhAwsW5GAqS8q53MRusaFUnugJL0to96JkI+
+         /lQF83RjM2t/Z0Ke+TSqR48UZzxq/N5zXeK5noOd2X+MhEq1N8VFHGmV367OQEwoPrTc
+         j2mrFBMrYhmDl21OBB9LOQmFSlxwEY50GQlK8VmPQY3nM6NVOwx33wFmB00+V8jlD5eN
+         RYfQ+sZSckrvkfQf5NYR4G5VIuw4A1hYyfLk6qS0VRgJO96FaAj8QJxz2skAHFmEvCqT
+         hgArAX1DFkyM5hGCVEDkMB/YIagQPlHMTmS++oYdm1LINue6UppOrNIOHYP+oOfuAj71
+         /r7A==
+X-Gm-Message-State: AOAM533iN3UOwzN8B9TuRhnsHqo2/5JaPDt2Y8XrmELaSRY98CkHmgHD
+        DQ/NYRZUz4hRVzTnc9ZXD833DXK1
+X-Google-Smtp-Source: ABdhPJwrmyDnSnD14JyiZD2+eh8JmsRMXY5ogFdkw4IlaA3qRD08kxU3cgLsBi3VWnp8b6DzCFVpGQ==
+X-Received: by 2002:ac8:5542:: with SMTP id o2mr1207455qtr.47.1595450810450;
+        Wed, 22 Jul 2020 13:46:50 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f016:a4f2:f184:dd41:1f10:d998])
+        by smtp.gmail.com with ESMTPSA id i19sm749001qkk.68.2020.07.22.13.46.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2020 13:46:49 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 51F42C18B3; Wed, 22 Jul 2020 17:46:47 -0300 (-03)
+Date:   Wed, 22 Jul 2020 17:46:47 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, Neil Horman <nhorman@tuxdriver.com>
+Subject: Re: [PATCH net 0/2] sctp: shrink stream outq in the right place
+Message-ID: <20200722204647.GB3399@localhost.localdomain>
+References: <cover.1595433039.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1595433039.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-07-22 at 13:23 -0700, David Miller wrote:
-> From: Stephen Hemminger <stephen@networkplumber.org>
-> Date: Wed, 22 Jul 2020 08:27:41 -0700
+On Wed, Jul 22, 2020 at 11:52:10PM +0800, Xin Long wrote:
+> Patch 1 is an improvement, and Patch 2 is a bug fix.
 > 
-> > On Tue, 21 Jul 2020 15:36:32 -0700 (PDT)
-> > David Miller <davem@davemloft.net> wrote:
-> > 
-> >> From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-> >> Date: Tue, 21 Jul 2020 15:02:57 +0800
-> >> 
-> >> > When I cat 'tx_timeout' by sysfs, it displays as follows. It's better to
-> >> > add a newline for easy reading.
-> >> > 
-> >> > root@syzkaller:~# cat /sys/devices/virtual/net/lo/queues/tx-0/tx_timeout
-> >> > 0root@syzkaller:~#
-> >> > 
-> >> > Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>  
-> >> 
-> >> Applied, thank you.
-> > 
-> > Could you add
-> 
-> Stephen, of all people you should know by now that all of my commits
-> are %100 immutable.  So commit log changes cannot be made after I've
-> applied the patch, ever.
+> Xin Long (2):
+>   sctp: shrink stream outq only when new outcnt < old outcnt
+>   sctp: shrink stream outq when fails to do addstream reconf
 
-Maybe it's time to use git notes?
+Nice changelogs, thanks.
 
-
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
