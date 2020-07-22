@@ -2,68 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17EBE228E6F
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 05:10:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74D9C228E8B
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 05:22:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731943AbgGVDKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 23:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731846AbgGVDKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 23:10:17 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C306C061794;
-        Tue, 21 Jul 2020 20:10:17 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id o22so426163pjw.2;
-        Tue, 21 Jul 2020 20:10:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2gBvT+YIZWph6R5sz1Mzm8EtE/EDwKEAunOqRTotXyo=;
-        b=q9RN/uqnI7m54W20WphAIPLxv7ob4CoSESjI6zwgl1jN1JoSJoH6jay7n6BGHS/UVs
-         lyQibjJ0DoG1nI57ZndSvSpC3HQ190VTua9p7vZKR2uwzzq60lhrGegRyWv8Stpri2e/
-         xLJesIQYH/A1bok2VBt0m2U7rn0/eDsDV36bg/arKrAEBXj7cc3xAtpXmSGtZnyOTZ3H
-         Rt+XSKPXmUv30IU9KqagydgRTz8IRM4fLWvGVtUYFePc30GuvvrbKYSvQjLJOe7shlP4
-         qIWcF9QHSo+w4jDOS3rIATUbqEigYlM/0XgQ4C2rljFpPb1Qv/J/yy7W/h0pqhgI9meS
-         4vpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2gBvT+YIZWph6R5sz1Mzm8EtE/EDwKEAunOqRTotXyo=;
-        b=TaaAFouU3z8wLJYnYwgE2ZV8VujebS75lvS6mRSZIjKzFlTFZu1U8LTOl+1olR4Ovt
-         igKHpqhfVObYTLjO+l1BvmPJa02x+M6NMSk7YO1FZdmcFWqDOGIb5Vo8++Pag9JUuYCQ
-         AEz0kryLIosNMAE8eK9PJm7bYWNlKU4Lqad/8oZjXTGKz7k2P/Aac7OmqSO7k0QgWNsb
-         gpAQ4k451Ev3ypCP73zZofP3o3IdWCsHdQ092i7eqleA+xIwpxwE6TWfTvUme9Kz5Qgy
-         U6AhelxMrrlcUPR52Hc60BXZ0D0AmJ8IRE4ulQjH3Ds05DxqDvob2Lt1ijayZdYKFVtw
-         cIeg==
-X-Gm-Message-State: AOAM531jxUnuTCImPk2ev2mStBatVkAInrcgjATMwsLTq06vTvp92mTb
-        hZzNULxLwOokW+ETilzDoyGdvYqUV2+zK0cWTZe07A==
-X-Google-Smtp-Source: ABdhPJyv2GHk8TN/MZSFEiPFxK0gKt1FYX4Jq8haDv8r/hp4UrmdePuIrNMYy/LdEBZgWIs/FlAKNbdCmV1xeuCwCyM=
-X-Received: by 2002:a17:90a:e48:: with SMTP id p8mr7807430pja.210.1595387416843;
- Tue, 21 Jul 2020 20:10:16 -0700 (PDT)
+        id S1731922AbgGVDVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 23:21:49 -0400
+Received: from ozlabs.org ([203.11.71.1]:57315 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731781AbgGVDVs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Jul 2020 23:21:48 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BBLNT1JL4z9sR4;
+        Wed, 22 Jul 2020 13:21:44 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1595388106;
+        bh=3HgY+CC86GTCRa19jhzQ4AK/8XRnemvEEJxm4cO6zVw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=VUk00Yb4MHAp87ARMBZvs5vI5Vlq2UcH17ACTPqxb31FTcB/ydb9/fSkV9pPgOlll
+         N+yFteQkWjg3LKc4WiiwyaChAZATam9Ar4rpC6AAfki3f5OZTWsPflcAOsyr56c4J4
+         MyRVDPD5+q2dZWMq2XYify4L+QMjcBgRCDvSpLVL9Qrl2kkB5LW+nGMSX5wu5yTMvx
+         wlRLrUmyW8oPUPGXlhMQjlnaTopbvjnLCQa+MfuFRqI0M/dWspz4vmFTfNIWrL7xV4
+         efWFSA1YqdBYLS3jjCBhcvYVA2JK91qUCm3Vjt5TtZ0EKOVMrXfAyr3BH1KxXqLUiy
+         dyku0KuCl2q7Q==
+Date:   Wed, 22 Jul 2020 13:21:43 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Subject: linux-next: manual merge of the bpf-next tree with the net tree
+Message-ID: <20200722132143.700a5ccc@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20200716234433.6490-1-xie.he.0141@gmail.com> <20200721.183022.1464053417235565089.davem@davemloft.net>
-In-Reply-To: <20200721.183022.1464053417235565089.davem@davemloft.net>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Tue, 21 Jul 2020 20:10:05 -0700
-Message-ID: <CAJht_EN8NNrCbN9B+_Axn=cPk7hXtE8nL8_h=UnRvqjJWNf0Bw@mail.gmail.com>
-Subject: Re: [PATCH v2] drivers/net/wan/x25_asy: Fix to make it work
-To:     David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Martin Schiller <ms@dev.tdt.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Linux X25 <linux-x25@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/c_FeKRWTIj38lYfkiotFdSP";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 21, 2020 at 6:30 PM -0700
-David Miller <davem@davemloft.net> wrote:
->
-> Applied, thank you.
+--Sig_/c_FeKRWTIj38lYfkiotFdSP
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thank you so much, David!
+Hi all,
+
+Today's linux-next merge of the bpf-next tree got conflicts in:
+
+  net/ipv4/udp.c
+  net/ipv6/udp.c
+
+between commit:
+
+  efc6b6f6c311 ("udp: Improve load balancing for SO_REUSEPORT.")
+
+from the net tree and commits:
+
+  7629c73a1466 ("udp: Extract helper for selecting socket from reuseport gr=
+oup")
+  2a08748cd384 ("udp6: Extract helper for selecting socket from reuseport g=
+roup")
+
+from the bpf-next tree.
+
+I fixed it up (I wasn't sure how to proceed, so I used the latter
+version) and can carry the fix as necessary. This is now fixed as far
+as linux-next is concerned, but any non trivial conflicts should be
+mentioned to your upstream maintainer when your tree is submitted for
+merging.  You may also want to consider cooperating with the maintainer
+of the conflicting tree to minimise any particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/c_FeKRWTIj38lYfkiotFdSP
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8XsMcACgkQAVBC80lX
+0GwE+Qf/a1w9/8mTXdOgf7C2LCQmVqsW+ZMzEldYYnotELRdB+IIV9q0egilu73h
+SGg9if0oa/20sPA3Dy3YTMGB07swC4Moc7yxgKTuKjvA43ppf7SY1XZJrvBxEFgT
+QhMlzjb2kmvUTG9hhMDVneGBK6znTlFmmtb8jxwQ/eD7/aLnoNZnRysf2j6PWWgI
+jpXMcDdSyTL+rB4L54aOP2z1Hts2chWU3uNO136O9T8Z8tA5bgs+KPdW+uLUBFmz
+Ol5SEI5S/w5hCbjzqmgOX+kFN6yBkiJWlMvGnKb1tK6ukpDpH8duo8aPrCpLe6/k
+uhTUOegwz8z3CgV/BygFXNQ0Rrxt+w==
+=Znn8
+-----END PGP SIGNATURE-----
+
+--Sig_/c_FeKRWTIj38lYfkiotFdSP--
