@@ -2,182 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D15CF22A029
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 21:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CA8422A02C
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 21:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbgGVTcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 15:32:46 -0400
-Received: from mail-am6eur05on2088.outbound.protection.outlook.com ([40.107.22.88]:41952
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726322AbgGVTcq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jul 2020 15:32:46 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CtKB7J91GbWON/vzL+ZKDclb/ThdTtvNLEMRiewKkFrFSlKVosEGVq02Yw/y7CqNrmQ8EJzq1x0ccIZsXLlQDV8F/ie7283FgKeyDYAeu82uXJ5SKe9EK+GE0wCs/WQ3bMeOHC1Ez2KhfumnyhCfshzaCH4piFDa2UghKB3MAGeJs+ykEmLW2OpHpvBVqj43u1pKVlifXnDPp6CfQLQKCHNfbp8PgvRpUhjwAmasveIf1omX2QK7rtzl63hnhk7pcDn5q0CYOCqC0DHC/sWjCyvUEauFIVK/taTS2F0tZ5spLIby/5ua74fHiw/G7fi7Fd4EQTblA83/EDZ0PM6osQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D7YQYqLY0KIf33/+rnFoLlAfsCNkGPL7PxoJM3ABH8U=;
- b=e45DEs3r6CO6DQ6/cigX2yibYWSB8ztV462R/ut9EEpiVhw4gYZcQR0TbscQV8Rq4E32ZUQFro3BEJ2JlPenJEp1iePl+1GKMGDDCp8j0q0Pu+OX+6/r2yQZ0KN5FmqfvvzPc15StG5TqESFWxxo8uX7WnqWBJ6J9ciP8CrnxMQ0SQiAVTfxoR2sM3PzawXdUvi8UYjlLz3k4rulLbgUFg/wpe60PWNZABJzAooAms8RTSvimZWN/X4jSpjI3VJQSZkdYaoY50aonVY4tZoIJ78O2HiRcaTxRzdp+SN42x3PNmyEqFuZJU0nf4OmB08w0O07AerKU2bstSyKfdLVhA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D7YQYqLY0KIf33/+rnFoLlAfsCNkGPL7PxoJM3ABH8U=;
- b=tmmbUj+h7vYtb8MMBAZRGjurnqqSkQTQkuURRsLJUzvQVNbHAsUD9aZhI9l2nQTuLAWaggYwf3QIJGt7BW0V/O8nWhO395JZ1zwejdy+POvGPQvlNru6PT3oWG3kbvOlvmynCVxjsz/Qm+jAXlYO8wr0rw1FTt6myZX5T99Wsk4=
-Authentication-Results: suse.cz; dkim=none (message not signed)
- header.d=none;suse.cz; dmarc=none action=none header.from=mellanox.com;
-Received: from AM0PR05MB4290.eurprd05.prod.outlook.com (2603:10a6:208:63::16)
- by AM0PR05MB5986.eurprd05.prod.outlook.com (2603:10a6:208:125::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.22; Wed, 22 Jul
- 2020 19:32:41 +0000
-Received: from AM0PR05MB4290.eurprd05.prod.outlook.com
- ([fe80::21b3:2006:95aa:7a1f]) by AM0PR05MB4290.eurprd05.prod.outlook.com
- ([fe80::21b3:2006:95aa:7a1f%3]) with mapi id 15.20.3195.026; Wed, 22 Jul 2020
- 19:32:41 +0000
-Subject: Re: [RFC v2 net-next] devlink: Add reset subcommand.
-To:     Jiri Pirko <jiri@resnulli.us>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>,
+        id S1730802AbgGVTdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 15:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726322AbgGVTdq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 15:33:46 -0400
+Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21096C0619DC;
+        Wed, 22 Jul 2020 12:33:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
+         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
+        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=ISoKoytpq3L1gpPEtulltusvnGO1W6LIHiEoj4uXF2c=; b=f0sNwiQ+UX4pzQhlVBmTh3xG7o
+        4YSfhWgYpJgenOFBT0vtJ8o6MODCszo3t6NdExdyAuXrm+sevejdOidD+vmMlXXDdVITO3+IOMI9A
+        YoXjCoQN+0i6xkGzEcrBDvRMVsHlCVd2M+XoBJKquRu3DnqaQencBaS6io55kUAfEXz3kbgw6On+y
+        EB8J9Qz30oDVOcf9oMFDHH3ZHYxYO9jkBUgFOSXbwnKbO2LF9ystwal8dfX2BKCLOit3xLo4ptius
+        n7Y9qqCbG2bS7Q30e3tU1VywpdoNqGnZRLItX0HNH8pYF1lmNF9XuO0z4sprzo/QAXdO/4b+NYmHI
+        eTH6pcpQ==;
+Received: from noodles by the.earth.li with local (Exim 4.92)
+        (envelope-from <noodles@earth.li>)
+        id 1jyKUi-00036F-Ox; Wed, 22 Jul 2020 20:33:36 +0100
+Date:   Wed, 22 Jul 2020 20:33:36 +0100
+From:   Jonathan McDowell <noodles@earth.li>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Michal Kubecek <mkubecek@suse.cz>
-References: <1593516846-28189-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <20200630125353.GA2181@nanopsycho>
- <CAACQVJqxLhmO=UiCMh_pv29WP7Qi4bAZdpU9NDk3Wq8TstM5zA@mail.gmail.com>
- <20200701055144.GB2181@nanopsycho>
- <CAACQVJqac3JGY_w2zp=thveG5Hjw9tPGagHPvfr2DM3xL4j_zg@mail.gmail.com>
- <20200701094738.GD2181@nanopsycho>
- <CAACQVJqjE-N4M0hLuptdicpfgRxV6ZhdYm0+zxjnzP=tndHUpA@mail.gmail.com>
- <20200721121943.GA2205@nanopsycho>
-From:   Moshe Shemesh <moshe@mellanox.com>
-Message-ID: <40b71e67-d83e-9c3f-be8a-1c75b8c860cc@mellanox.com>
-Date:   Wed, 22 Jul 2020 22:32:36 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20200721121943.GA2205@nanopsycho>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: AM0P190CA0003.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:208:190::13) To AM0PR05MB4290.eurprd05.prod.outlook.com
- (2603:10a6:208:63::16)
+        Matthew Hagan <mnhagan88@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] net: dsa: qca8k: Add 802.1q VLAN support
+Message-ID: <20200722193336.GL23489@earth.li>
+References: <20200721171624.GK23489@earth.li>
+ <20200721204818.GB1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.0.105] (5.102.195.53) by AM0P190CA0003.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:190::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20 via Frontend Transport; Wed, 22 Jul 2020 19:32:38 +0000
-X-Originating-IP: [5.102.195.53]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 94e53631-f107-4f09-d2f2-08d82e75feb2
-X-MS-TrafficTypeDiagnostic: AM0PR05MB5986:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB5986A8F4D2D38AAC45BE7E18D9790@AM0PR05MB5986.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rkKisK+n3GA7SC6KjqgJxoTkWiVfK4xwvWnYUYYzVS2VkEbXID+/3zaXU8Niyuue3LrJxL990vdNB3FWoTCsRVZpQT1z4aUiO4LR32g/M8GQZ6WwufSbJbdRQhcZ76eRJkTzLW4TsJAYnq3b7UGmthsOZEr0kzUZgKfEKLJ54Bx+5+RuOrlgpfl4GoRdOp6IDNgoH1uNIHOUeE9XJPMfOQR2IL/dPIGuvoEJQHiZV3sLJ68fNtvMuc+n1clR79D4BKPDdEuWlP0GAtUo3j0iTp6j1dUqe9xMxOezIbH8dusmnG6txYhpmE+aaz0YKr8AiKE1qsr9IBe2DgGdwjwNQFeprdC5W0g25nrurJJ89/WafLjOGvWLHVbEAi+IoqcD
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4290.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(136003)(39860400002)(396003)(346002)(366004)(36756003)(6486002)(8936002)(54906003)(110136005)(31686004)(478600001)(86362001)(31696002)(16576012)(52116002)(8676002)(53546011)(4326008)(5660300002)(186003)(83380400001)(2906002)(16526019)(26005)(66946007)(66476007)(66556008)(2616005)(956004)(316002)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: CvAxH6aCUjunxbmNduQ91UGoG7srbi8w6RmvXLhVhfeknw30A60M8sSR++w21TvRkpPEyK7VuoyGHHl0Q6L3OcvDGwrnenoTlp+TvjTGGVKsYEMBggpUtVMdbFrv1XjQe09rHtSxNKEG8UWOmfN388W0qT+Qr6urHobyPyYjgXfGaxciV06rjco/AyH5wlhaiVkzzBnsvOOk+EQJ8w5Z2QHxjYiM1FxGSq710zbEdwOCyzksUMN+NXqyHjAxdMXF0HsoIzRHGPHaDGQN2ot1ujFbxpfQp/MF/AKUWx8dUkWmzQbAkE/qJr1BBplSlLp51o79lH2DGEKUClHr7/GkdzZijl/KL/bE8IFaZF0rlu7j+LrLNP2WHPiTKc7o+YA9Rh4i5CovmK4F3My3QPsDTsh18TGgqI7JQ5N/hTAHl8mvUM1g0l3vel3e+jcjDlIeR9Lp8F9fJ2E473ekqdZBt6QAfhomePx3eRmQweJ0td8=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 94e53631-f107-4f09-d2f2-08d82e75feb2
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4290.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2020 19:32:40.7559
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5mxPIqSB5Ue74fUn042j61il+akKlGynAUaZoodlMxAKpNLvDU4KHknhNhmXIhb1uhGV/BgqgLyfgCzcklwQbw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5986
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200721204818.GB1551@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jul 21, 2020 at 09:48:18PM +0100, Russell King - ARM Linux admin wrote:
+> On Tue, Jul 21, 2020 at 06:16:24PM +0100, Jonathan McDowell wrote:
+> > This adds full 802.1q VLAN support to the qca8k, allowing the use of
+> > vlan_filtering and more complicated bridging setups than allowed by
+> > basic port VLAN support.
+> > 
+> > Tested with a number of untagged ports with separate VLANs and then a
+> > trunk port with all the VLANs tagged on it.
+> > 
+> > Signed-off-by: Jonathan McDowell <noodles@earth.li>
+> > 
+> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> > index a5566de82853..cce05493075f 100644
+> > --- a/drivers/net/dsa/qca8k.c
+> > +++ b/drivers/net/dsa/qca8k.c
+> > @@ -408,6 +408,104 @@ qca8k_fdb_flush(struct qca8k_priv *priv)
+> >  	mutex_unlock(&priv->reg_mutex);
+> >  }
+> >  
+> > +static int
+> > +qca8k_vlan_access(struct qca8k_priv *priv, enum qca8k_vlan_cmd cmd, u16 vid)
+> > +{
+> > +	u32 reg;
+> > +
+> > +	/* Set the command and VLAN index */
+> > +	reg = QCA8K_VTU_FUNC1_BUSY;
+> > +	reg |= cmd;
+> > +	reg |= vid << QCA8K_VTU_FUNC1_VID_S;
+> > +
+> > +	/* Write the function register triggering the table access */
+> > +	qca8k_write(priv, QCA8K_REG_VTU_FUNC1, reg);
+> > +
+> > +	/* wait for completion */
+> > +	if (qca8k_busy_wait(priv, QCA8K_REG_VTU_FUNC1, QCA8K_VTU_FUNC1_BUSY))
+> > +		return -1;
+> 
+> You return -1 here.  Personally, I don't like this in the kernel, as
+> convention is for functions returning "int" to return negative errno
+> values, and this risks returning -1 (-EPERM) being returned to userspace
+> if someone decides to propagate the "error code".
 
-On 7/21/2020 3:19 PM, Jiri Pirko wrote:
-> Tue, Jul 21, 2020 at 11:51:21AM CEST, vasundhara-v.volam@broadcom.com wrote:
->> On Wed, Jul 1, 2020 at 3:17 PM Jiri Pirko <jiri@resnulli.us> wrote:
->>> Wed, Jul 01, 2020 at 11:25:50AM CEST, vasundhara-v.volam@broadcom.com wrote:
->>>> On Wed, Jul 1, 2020 at 11:21 AM Jiri Pirko <jiri@resnulli.us> wrote:
->>>>> Tue, Jun 30, 2020 at 05:15:18PM CEST, vasundhara-v.volam@broadcom.com wrote:
->>>>>> On Tue, Jun 30, 2020 at 6:23 PM Jiri Pirko <jiri@resnulli.us> wrote:
->>>>>>> Tue, Jun 30, 2020 at 01:34:06PM CEST, vasundhara-v.volam@broadcom.com wrote:
->>>>>>>> Advanced NICs support live reset of some of the hardware
->>>>>>>> components, that resets the device immediately with all the
->>>>>>>> host drivers loaded.
->>>>>>>>
->>>>>>>> Add devlink reset subcommand to support live and deferred modes
->>>>>>>> of reset. It allows to reset the hardware components of the
->>>>>>>> entire device and supports the following fields:
->>>>>>>>
->>>>>>>> component:
->>>>>>>> ----------
->>>>>>>> 1. MGMT : Management processor.
->>>>>>>> 2. DMA : DMA engine.
->>>>>>>> 3. RAM : RAM shared between multiple components.
->>>>>>>> 4. AP : Application processor.
->>>>>>>> 5. ROCE : RoCE management processor.
->>>>>>>> 6. All : All possible components.
->>>>>>>>
->>>>>>>> Drivers are allowed to reset only a subset of requested components.
->>>>>>> I don't understand why would user ever want to do this. He does not care
->>>>>>> about some magic hw entities. He just expects the hw to work. I don't
->>>>>>> undestand the purpose of exposing something like this. Could you please
->>>>>>> explain in details? Thanks!
->>>>>>>
->>>>>> If a user requests multiple components and if the driver is only able
->>>>>> to honor a subset, the driver will return the components unset which
->>>>>> it is able to reset.  For example, if a user requests MGMT, RAM and
->>>>>> ROCE components to be reset and driver resets only MGMT and ROCE.
->>>>>> Driver will unset only MGMT and ROCE bits and notifies the user that
->>>>>> RAM is not reset.
->>>>>>
->>>>>> This will be useful for drivers to reset only a subset of components
->>>>>> requested instead of returning error or silently doing only a subset
->>>>>> of components.
->>>>>>
->>>>>> Also, this will be helpful as user will not know the components
->>>>>> supported by different vendors.
->>>>> Your reply does not seem to be related to my question :/
->>>> I thought that you were referring to: "Drivers are allowed to reset
->>>> only a subset of requested components."
->>>>
->>>> or were you referring to components? If yes, the user can select the
->>>> components that he wants to go for reset. This will be useful in the
->>>> case where, if the user flashed only a certain component and he wants
->>>> to reset that particular component. For example, in the case of SOC
->>>> there are 2 components: MGMT and AP. If a user flashes only
->>>> application processor, he can choose to reset only application
->>>> processor.
->>> We already have notion of "a component" in "devlink dev flash". I think
->>> that the reset component name should be in-sync with the flash.
->>>
->>> Thinking about it a bit more, we can extend the flash command by "reset"
->>> attribute that would indicate use wants to do flash&reset right away.
->>>
->>> Also, thinking how this all aligns with "devlink dev reload" which we
->>> currently have. The purpose of it is to re-instantiate driver instances,
->>> but in case of mlxsw it means friggering FW reset as well.
->>>
->>> Moshe (cced) is now working on "devlink dev reload" extension that would
->>> allow user to ask for a certain level of reload: driver instances only,
->>> fw reset too, live fw patching, etc.
->>>
->>> Not sure how this overlaps with your intentions. I think it would be
->>> great to see Moshe's RFC here as well so we can aligh the efforts.
->> Are the patches posted yet?
-> I don't think so.
->
-> Moshe?
+Reasonable. I based this code off the qca8k_fdb_access code, but I'll
+switch over to more sensible returns (and clean the fdb stuff up in a
+separate patch).
 
+> > +
+> > +	/* Check for table full violation when adding an entry */
+> > +	if (cmd == QCA8K_VLAN_LOAD) {
+> > +		reg = qca8k_read(priv, QCA8K_REG_VTU_FUNC1);
+> > +		if (reg & QCA8K_VTU_FUNC1_FULL)
+> > +			return -1;
+> 
+> ... and here.
+> 
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int
+> > +qca8k_vlan_add(struct qca8k_priv *priv, u8 port, u16 vid, bool tagged)
+> > +{
+> > +	u32 reg;
+> > +	int ret;
+> > +
+> > +	if (!vid)
+> > +		return -EOPNOTSUPP;
+> 
+> Have you checked whether this can be called with vid=0 ?
 
-Not yet, still in internal review.
+It's called at startup with VID 0 (part of setting up the HW filter
+according to the log message?) and the hardware isn't happy with that.
 
-If won't pass by EOW I will send part of it as RFC.
+...
+> > +
+> > +static int
+> > +qca8k_port_vlan_prepare(struct dsa_switch *ds, int port,
+> > +			const struct switchdev_obj_port_vlan *vlan)
+> > +{
+> > +	if (!vlan->vid_begin)
+> > +		return -EOPNOTSUPP;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static void
+> > +qca8k_port_vlan_add(struct dsa_switch *ds, int port,
+> > +		    const struct switchdev_obj_port_vlan *vlan)
+> > +{
+> > +	struct qca8k_priv *priv = ds->priv;
+> > +	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+> > +	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+> > +	u16 vid;
+> > +
+> > +	for (vid = vlan->vid_begin; vid <= vlan->vid_end; ++vid)
+> > +		qca8k_vlan_add(priv, port, vid, !untagged);
+> 
+> The and ignored here, so is there any point qca8k_vlan_add() returning
+> an error?  If it fails, we'll never know... there even seems to be no
+> diagnostic gets logged in the kernel message log.
+> 
+> If you decide to add some logging, be careful how you do it - userspace
+> could ask for vids 1..4095 to be added, and we wouldn't want the
+> possibility of 4094 error messages.
+> 
+> Another issue may be the time taken to process 4094 VIDs if
+> qca8k_busy_wait() has to wait for every one.
 
+I'll add a break out on error (and a dev_err) for this and the del case
+in v2.
+
+J.
+
+-- 
+       Hell is other people.       |  .''`.  Debian GNU/Linux Developer
+                                   | : :' :  Happy to accept PGP signed
+                                   | `. `'   or encrypted mail - RSA
+                                   |   `-    key on the keyservers.
