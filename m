@@ -2,64 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60305228DE5
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 04:12:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17EBE228E6F
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 05:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731804AbgGVCMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jul 2020 22:12:01 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:50846 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731621AbgGVCMA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Jul 2020 22:12:00 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id EA8AC2BF1FBB69F44CA1;
-        Wed, 22 Jul 2020 10:11:58 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Wed, 22 Jul 2020
- 10:11:56 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <aelior@marvell.com>, <GR-everest-linux-l2@marvell.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net: qed: Remove unneeded cast from memory allocation
-Date:   Wed, 22 Jul 2020 10:10:27 +0800
-Message-ID: <20200722021027.12797-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1731943AbgGVDKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jul 2020 23:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731846AbgGVDKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jul 2020 23:10:17 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C306C061794;
+        Tue, 21 Jul 2020 20:10:17 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id o22so426163pjw.2;
+        Tue, 21 Jul 2020 20:10:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2gBvT+YIZWph6R5sz1Mzm8EtE/EDwKEAunOqRTotXyo=;
+        b=q9RN/uqnI7m54W20WphAIPLxv7ob4CoSESjI6zwgl1jN1JoSJoH6jay7n6BGHS/UVs
+         lyQibjJ0DoG1nI57ZndSvSpC3HQ190VTua9p7vZKR2uwzzq60lhrGegRyWv8Stpri2e/
+         xLJesIQYH/A1bok2VBt0m2U7rn0/eDsDV36bg/arKrAEBXj7cc3xAtpXmSGtZnyOTZ3H
+         Rt+XSKPXmUv30IU9KqagydgRTz8IRM4fLWvGVtUYFePc30GuvvrbKYSvQjLJOe7shlP4
+         qIWcF9QHSo+w4jDOS3rIATUbqEigYlM/0XgQ4C2rljFpPb1Qv/J/yy7W/h0pqhgI9meS
+         4vpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2gBvT+YIZWph6R5sz1Mzm8EtE/EDwKEAunOqRTotXyo=;
+        b=TaaAFouU3z8wLJYnYwgE2ZV8VujebS75lvS6mRSZIjKzFlTFZu1U8LTOl+1olR4Ovt
+         igKHpqhfVObYTLjO+l1BvmPJa02x+M6NMSk7YO1FZdmcFWqDOGIb5Vo8++Pag9JUuYCQ
+         AEz0kryLIosNMAE8eK9PJm7bYWNlKU4Lqad/8oZjXTGKz7k2P/Aac7OmqSO7k0QgWNsb
+         gpAQ4k451Ev3ypCP73zZofP3o3IdWCsHdQ092i7eqleA+xIwpxwE6TWfTvUme9Kz5Qgy
+         U6AhelxMrrlcUPR52Hc60BXZ0D0AmJ8IRE4ulQjH3Ds05DxqDvob2Lt1ijayZdYKFVtw
+         cIeg==
+X-Gm-Message-State: AOAM531jxUnuTCImPk2ev2mStBatVkAInrcgjATMwsLTq06vTvp92mTb
+        hZzNULxLwOokW+ETilzDoyGdvYqUV2+zK0cWTZe07A==
+X-Google-Smtp-Source: ABdhPJyv2GHk8TN/MZSFEiPFxK0gKt1FYX4Jq8haDv8r/hp4UrmdePuIrNMYy/LdEBZgWIs/FlAKNbdCmV1xeuCwCyM=
+X-Received: by 2002:a17:90a:e48:: with SMTP id p8mr7807430pja.210.1595387416843;
+ Tue, 21 Jul 2020 20:10:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-CFilter-Loop: Reflected
+References: <20200716234433.6490-1-xie.he.0141@gmail.com> <20200721.183022.1464053417235565089.davem@davemloft.net>
+In-Reply-To: <20200721.183022.1464053417235565089.davem@davemloft.net>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Tue, 21 Jul 2020 20:10:05 -0700
+Message-ID: <CAJht_EN8NNrCbN9B+_Axn=cPk7hXtE8nL8_h=UnRvqjJWNf0Bw@mail.gmail.com>
+Subject: Re: [PATCH v2] drivers/net/wan/x25_asy: Fix to make it work
+To:     David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Martin Schiller <ms@dev.tdt.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Linux X25 <linux-x25@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove casting the values returned by memory allocation function.
+On Tue, Jul 21, 2020 at 6:30 PM -0700
+David Miller <davem@davemloft.net> wrote:
+>
+> Applied, thank you.
 
-Coccinelle emits WARNING: casting value returned by memory allocation
-unction to (struct roce_destroy_qp_req_output_params *) is useless.
-
-This issue was detected by using the Coccinelle software.
-
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- drivers/net/ethernet/qlogic/qed/qed_roce.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-index a1423ec0edf7..f16a157bb95a 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-@@ -757,8 +757,7 @@ static int qed_roce_sp_destroy_qp_requester(struct qed_hwfn *p_hwfn,
- 	if (!qp->req_offloaded)
- 		return 0;
- 
--	p_ramrod_res = (struct roce_destroy_qp_req_output_params *)
--		       dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
-+	p_ramrod_res = dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
- 					  sizeof(*p_ramrod_res),
- 					  &ramrod_res_phys, GFP_KERNEL);
- 	if (!p_ramrod_res) {
--- 
-2.17.1
-
+Thank you so much, David!
