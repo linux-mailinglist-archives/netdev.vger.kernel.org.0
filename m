@@ -2,67 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9DCF22A0B4
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 22:24:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE51922A0B8
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 22:29:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732809AbgGVUXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 16:23:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50568 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726447AbgGVUXM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 16:23:12 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693A1C0619DC;
-        Wed, 22 Jul 2020 13:23:12 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 11FAB1210C0BE;
-        Wed, 22 Jul 2020 13:06:27 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 13:23:11 -0700 (PDT)
-Message-Id: <20200722.132311.31388808811810422.davem@davemloft.net>
-To:     stephen@networkplumber.org
-Cc:     wangxiongfeng2@huawei.com, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net-sysfs: add a newline when printing 'tx_timeout'
- by sysfs
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200722082741.1675d611@hermes.lan>
-References: <1595314977-57991-1-git-send-email-wangxiongfeng2@huawei.com>
-        <20200721.153632.1416164807029507588.davem@davemloft.net>
-        <20200722082741.1675d611@hermes.lan>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 22 Jul 2020 13:06:27 -0700 (PDT)
+        id S1726907AbgGVU3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 16:29:05 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:41124 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726642AbgGVU3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 16:29:05 -0400
+Received: by mail-io1-f72.google.com with SMTP id n3so2584252iob.8
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 13:29:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=J+35V1GhRYpImLMMK2GI/sO17Jyt3p/2anYHKeEsSGE=;
+        b=HcAn+W6jUBB1kxyxsgxi5iHOogzsSDN7FoBrVGqI963gLwPAbPNWFi/EyiUXoi1R9e
+         KTixmbXbSgroTrHwvDrSOJCo0uYijDSI40FxB27kvFILqcG1cb+bXNReLsyWPj+8NGD/
+         7we6zc21l/OGBHmnSDvpIPr6K5YQOdjTSoI9ECzzmtOUk20DNFsKCdXuPOYBdYyQI0Rk
+         PRdCbkNF215jm6KKczl07jFs3ybm/DlqWNAXjc0yq5tjM5LH/g3/Xf9Axqh6d4l5PchU
+         tCpWo6+ShmlNhZeoBkqFafxUnuEK1wD2DRx1+TzWmqxEZwRJioNhTK+f0Gudy++mHD0B
+         JFKw==
+X-Gm-Message-State: AOAM531Auf4iJM25KTxEQQ3nUzPUihu7fQk3K2OGJuTjhrtr62oUgBm3
+        auPqLs4J668NsqpRlCTI8eQvdzhHQUKBO8yVoOMZevoMV6ng
+X-Google-Smtp-Source: ABdhPJxHK6WbX/I4a7/yMyShEPLIR0Q9QECWtZRgxeRHjQAiPmIUBL9QFevmt3eA7WbXHH2iZgv3Tq89tpWot0N8y5MnqAgDQh6w
+MIME-Version: 1.0
+X-Received: by 2002:a92:8b45:: with SMTP id i66mr1708429ild.19.1595449744109;
+ Wed, 22 Jul 2020 13:29:04 -0700 (PDT)
+Date:   Wed, 22 Jul 2020 13:29:04 -0700
+In-Reply-To: <0000000000005b9fca05aa0af1b9@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000041388e05ab0d97aa@google.com>
+Subject: Re: KASAN: use-after-free Read in netdevice_event_work_handler
+From:   syzbot <syzbot+20b90969babe05609947@syzkaller.appspotmail.com>
+To:     andrew@lunn.ch, davem@davemloft.net, dledford@redhat.com,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, jgg@ziepe.ca,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, rkovhaev@gmail.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger <stephen@networkplumber.org>
-Date: Wed, 22 Jul 2020 08:27:41 -0700
+syzbot has bisected this issue to:
 
-> On Tue, 21 Jul 2020 15:36:32 -0700 (PDT)
-> David Miller <davem@davemloft.net> wrote:
-> 
->> From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
->> Date: Tue, 21 Jul 2020 15:02:57 +0800
->> 
->> > When I cat 'tx_timeout' by sysfs, it displays as follows. It's better to
->> > add a newline for easy reading.
->> > 
->> > root@syzkaller:~# cat /sys/devices/virtual/net/lo/queues/tx-0/tx_timeout
->> > 0root@syzkaller:~#
->> > 
->> > Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>  
->> 
->> Applied, thank you.
-> 
-> Could you add
+commit d70c47c8dc6902db19555b7ff7e6eeb264d4ac06
+Author: Heiner Kallweit <hkallweit1@gmail.com>
+Date:   Thu Apr 23 19:34:33 2020 +0000
 
-Stephen, of all people you should know by now that all of my commits
-are %100 immutable.  So commit log changes cannot be made after I've
-applied the patch, ever.
+    net: phy: make phy_suspend a no-op if PHY is suspended already
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16b2aad8900000
+start commit:   0bddd227 Documentation: update for gcc 4.9 requirement
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=15b2aad8900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11b2aad8900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=66ad203c2bb6d8b
+dashboard link: https://syzkaller.appspot.com/bug?extid=20b90969babe05609947
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12a8edff100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=167d3bb7100000
+
+Reported-by: syzbot+20b90969babe05609947@syzkaller.appspotmail.com
+Fixes: d70c47c8dc69 ("net: phy: make phy_suspend a no-op if PHY is suspended already")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
