@@ -2,136 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C4E5229171
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 08:58:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCC472291B4
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 09:08:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730325AbgGVG6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 02:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727882AbgGVG6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 02:58:00 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2653FC061794;
-        Tue, 21 Jul 2020 23:58:00 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id u64so990183qka.12;
-        Tue, 21 Jul 2020 23:58:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zjl8jyI4JNnQLeTVzyCzHh3c+nXxWye5Cj6ubPO13J0=;
-        b=GEF78V2k9OiWRf81LyakVnVCsY+WdOadZDPh8XZnSjoWpqyVyHSBqYesBwcUVU6qn+
-         A2GOiIMI7D4+BCo2X43tWNGsBUTQEV15+iF25xICpC6R75QeFwAJf9f7IL+FtnY2Ynco
-         guWA3aOcbK99jE7qNpAW14da2xrh4F+sNJ+p9hT2QIbZMXkJ4Z6vapPJLeseMS20z5ki
-         hH/T6IJ5Prf/pBvgnXtu03h5EckJP4dmb0vjt5PknVgmm/fm7KZtKVn5sTFZ/Ya5Ntf8
-         37VXErV/NMpuNfETve3WI/+hiyztBgVpQioouREp/80KkRHIHv8x2KumKGBgXnqeSxCo
-         Nzyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zjl8jyI4JNnQLeTVzyCzHh3c+nXxWye5Cj6ubPO13J0=;
-        b=tWEXuWAdpbLMBpQzOm77gH8+wH6UhYMoYG5ti2dPAaFQeSJ92FUpSJKODboaFVxleZ
-         uBMZeihMIEjvz81ovYPaQuZwusMsxvNTmMfV/6o3hP0tyLPrZqUhIAWP1SXo923xY69d
-         29Wa3WCb4IC6HZmrTE8rQ+iXnQ+UDhWyqwUfAoDiS5Rosl1SOkAqQ2BnCaHNc2HVUFp+
-         QBmoi9JepLVpIF1djjXiMWVUtyRR695g7yubl3/sqAMKkPqrTc9OlVNS48U3F6VKevks
-         DARVF3f4YnS/xdp4Tj6EAA/0ccTJmvIM7ezNU5gg0R1+lnkBTWtaC8kfLpJmzoqpiB0T
-         ti7A==
-X-Gm-Message-State: AOAM5302ZnjhlvJAlgGB0G1ChHkUrox5OyUbMfp3aOyjGcGD8d0mMC5t
-        umNiVZ9idx/Ml8rlFglA4ELyFhWGFFMu2UZjd10=
-X-Google-Smtp-Source: ABdhPJyURO1mFslPp3J0AAImaBN2tPe38/iVgkWkY18Z1Rf8Lb/feerQVzkkSUH/emANzphylSQxhxBjLXImoOgFhNc=
-X-Received: by 2002:a37:a655:: with SMTP id p82mr14245845qke.92.1595401079241;
- Tue, 21 Jul 2020 23:57:59 -0700 (PDT)
+        id S1731685AbgGVHIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 03:08:14 -0400
+Received: from bgl-iport-2.cisco.com ([72.163.197.26]:5624 "EHLO
+        bgl-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727096AbgGVHIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 03:08:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=4015; q=dns/txt; s=iport;
+  t=1595401692; x=1596611292;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Smiy237MIFJj+6OWALRzgIJFYKqit4eKK+OJhzqDNq0=;
+  b=gKMmofTDCZJfyu0HD2R8cbT+/3MaBFXmG2mwsVKVthnjpuXDeG/IoVBv
+   0wDuKO2qcoL6UVe3ouLF/0PqrkOIGTcQ9qwfJw5Mgyoln8DhvRFx2xmqK
+   TJpjKuaTTYoxC6uC7xB6i249SRJ0zc+5tFzMX2ygW174aLD4AaaVYr1xg
+   w=;
+X-IronPort-AV: E=Sophos;i="5.75,381,1589241600"; 
+   d="scan'208";a="156253655"
+Received: from vla196-nat.cisco.com (HELO bgl-core-2.cisco.com) ([72.163.197.24])
+  by bgl-iport-2.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 22 Jul 2020 07:08:10 +0000
+Received: from SRIRAKR2-M-R0A8.cisco.com ([10.65.42.168])
+        by bgl-core-2.cisco.com (8.15.2/8.15.2) with ESMTP id 06M789Ie006529;
+        Wed, 22 Jul 2020 07:08:09 GMT
+From:   Sriram Krishnan <srirakr2@cisco.com>
+To:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>
+Cc:     mbumgard@cisco.com, ugm@cisco.com, nimm@cisco.com,
+        xe-linux-external@cisco.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5] hv_netvsc: add support for vlans in AF_PACKET mode
+Date:   Wed, 22 Jul 2020 12:38:07 +0530
+Message-Id: <20200722070809.70876-1-srirakr2@cisco.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-References: <20200722054314.2103880-1-irogers@google.com>
-In-Reply-To: <20200722054314.2103880-1-irogers@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 21 Jul 2020 23:57:48 -0700
-Message-ID: <CAEf4BzaBYaFJ3eUinS9nHeykJ0xEbZpwLts33ZDp1PT=bkyjww@mail.gmail.com>
-Subject: Re: [RFC PATCH] bpftool btf: Add prefix option to dump C
-To:     Ian Rogers <irogers@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-Outbound-SMTP-Client: 10.65.42.168, [10.65.42.168]
+X-Outbound-Node: bgl-core-2.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 21, 2020 at 10:44 PM Ian Rogers <irogers@google.com> wrote:
->
-> When bpftool dumps types and enum members into a header file for
-> inclusion the names match those in the original source. If the same
-> header file needs to be included in the original source and the bpf
-> program, the names of structs, unions, typedefs and enum members will
-> have naming collisions.
+Vlan tagged packets are getting dropped when used with DPDK that uses
+the AF_PACKET interface on a hyperV guest.
 
-vmlinux.h is not really intended to be used from user-space, because
-it's incompatible with pretty much any other header that declares any
-type. Ideally we should make this better, but that might require some
-compiler support. We've been discussing with Yonghong extending Clang
-with a compile-time check for whether some type is defined or not,
-which would allow to guard every type and only declare it
-conditionally, if it's missing. But that's just an idea at this point.
+The packet layer uses the tpacket interface to communicate the vlans
+information to the upper layers. On Rx path, these drivers can read the
+vlan info from the tpacket header but on the Tx path, this information
+is still within the packet frame and requires the paravirtual drivers to
+push this back into the NDIS header which is then used by the host OS to
+form the packet.
 
-Regardless, vmlinux.h is also very much Clang-specific, and shouldn't
-work well with GCC. Could you elaborate on the specifics of the use
-case you have in mind? That could help me see what might be the right
-solution. Thanks!
+This transition from the packet frame to NDIS header is currently missing
+hence causing the host OS to drop the all vlan tagged packets sent by
+the drivers that use AF_PACKET (ETH_P_ALL) such as DPDK.
 
->
-> To avoid these collisions an approach is to redeclare the header file
-> types and enum members, which leads to duplication and possible
-> inconsistencies. Another approach is to use preprocessor macros
-> to rename conflicting names, but this can be cumbersome if there are
-> many conflicts.
->
-> This patch adds a prefix option for the dumped names. Use of this option
-> can avoid name conflicts and compile time errors.
->
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  .../bpf/bpftool/Documentation/bpftool-btf.rst |  7 ++++++-
->  tools/bpf/bpftool/btf.c                       | 18 ++++++++++++++---
->  tools/lib/bpf/btf.h                           |  1 +
->  tools/lib/bpf/btf_dump.c                      | 20 +++++++++++++------
->  4 files changed, 36 insertions(+), 10 deletions(-)
->
+Here is an overview of the changes in the vlan header in the packet path:
 
-[...]
+The RX path (userspace handles everything):
+  1. RX VLAN packet is stripped by HOST OS and placed in NDIS header
+  2. Guest Kernel RX hv_netvsc packets and moves VLAN info from NDIS
+     header into kernel SKB
+  3. Kernel shares packets with user space application with PACKET_MMAP.
+     The SKB VLAN info is copied to tpacket layer and indication set
+     TP_STATUS_VLAN_VALID.
+  4. The user space application will re-insert the VLAN info into the frame.
 
-> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> index 491c7b41ffdc..fea4baab00bd 100644
-> --- a/tools/lib/bpf/btf.h
-> +++ b/tools/lib/bpf/btf.h
-> @@ -117,6 +117,7 @@ struct btf_dump;
->
->  struct btf_dump_opts {
->         void *ctx;
-> +       const char *name_prefix;
->  };
+The TX path:
+  1. The user space application has the VLAN info in the frame.
+  2. Guest kernel gets packets from the application with PACKET_MMAP.
+  3. The kernel later sends the frame to the hv_netvsc driver. The only way
+     to send VLANs is when the SKB is setup & the VLAN is is stripped from the
+     frame.
+  4. TX VLAN is re-inserted by HOST OS based on the NDIS header. If it sees
+     a VLAN in the frame the packet is dropped.
 
-BTW, we can't do that, this breaks ABI. btf_dump_opts were added
-before we understood the problem of backward/forward  compatibility of
-libbpf APIs, unfortunately.
+Cc: xe-linux-external@cisco.com
+Cc: Sriram Krishnan <srirakr2@cisco.com>
+Signed-off-by: Sriram Krishnan <srirakr2@cisco.com>
+---
+ drivers/net/hyperv/hyperv_net.h |  1 +
+ drivers/net/hyperv/netvsc_drv.c | 23 +++++++++++++++++++++++
+ 2 files changed, 24 insertions(+)
 
->
->  typedef void (*btf_dump_printf_fn_t)(void *ctx, const char *fmt, va_list args);
-> diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-> index e1c344504cae..baf2b4d82e1e 100644
-> --- a/tools/lib/bpf/btf_dump.c
-> +++ b/tools/lib/bpf/btf_dump.c
+diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+index abda736e7c7d..2181d4538ab7 100644
+--- a/drivers/net/hyperv/hyperv_net.h
++++ b/drivers/net/hyperv/hyperv_net.h
+@@ -897,6 +897,7 @@ struct netvsc_ethtool_stats {
+ 	unsigned long rx_no_memory;
+ 	unsigned long stop_queue;
+ 	unsigned long wake_queue;
++	unsigned long vlan_error;
+ };
+ 
+ struct netvsc_ethtool_pcpu_stats {
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 6267f706e8ee..3e9bd93f54ed 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -605,6 +605,28 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
+ 		*hash_info = hash;
+ 	}
+ 
++	/* When using AF_PACKET we need to drop VLAN header from
++	 * the frame and update the SKB to allow the HOST OS
++	 * to transmit the 802.1Q packet
++	 */
++	if (skb->protocol == htons(ETH_P_8021Q)) {
++		u16 vlan_tci = 0;
++		skb_reset_mac_header(skb);
++		if (eth_type_vlan(eth_hdr(skb)->h_proto)) {
++			if (unlikely(__skb_vlan_pop(skb, &vlan_tci) != 0)) {
++				++net_device_ctx->eth_stats.vlan_error;
++				goto drop;
++ 			}
++
++			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan_tci);
++			/* Update the NDIS header pkt lengths */
++			packet->total_data_buflen -= VLAN_HLEN;
++			packet->total_bytes -= VLAN_HLEN;
++			rndis_msg->msg_len = packet->total_data_buflen;
++			rndis_msg->msg.pkt.data_len = packet->total_data_buflen;
++		}
++	}
++
+ 	if (skb_vlan_tag_present(skb)) {
+ 		struct ndis_pkt_8021q_info *vlan;
+ 
+@@ -1427,6 +1449,7 @@ static const struct {
+ 	{ "rx_no_memory", offsetof(struct netvsc_ethtool_stats, rx_no_memory) },
+ 	{ "stop_queue", offsetof(struct netvsc_ethtool_stats, stop_queue) },
+ 	{ "wake_queue", offsetof(struct netvsc_ethtool_stats, wake_queue) },
++	{ "vlan_error", offsetof(struct netvsc_ethtool_stats, vlan_error) },
+ }, pcpu_stats[] = {
+ 	{ "cpu%u_rx_packets",
+ 		offsetof(struct netvsc_ethtool_pcpu_stats, rx_packets) },
+-- 
+2.24.0
 
-[...]
