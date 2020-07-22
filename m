@@ -2,76 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72F4F229348
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 10:20:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75017229353
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 10:21:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727819AbgGVIUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 04:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726147AbgGVIUb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 04:20:31 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1ACDC0619DC
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 01:20:30 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id p14so706870wmg.1
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 01:20:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AGO5oXC2NaEBZms9Zzvd2Ka4lOiXeYYL68h7WdCW7xI=;
-        b=LJpl2hBN0SFsjG67XqGtJQn+tNX8kctXVNJojoT3N44DachISj7x/UMugDRxiISuzp
-         vANMfx2UD27Wiq1sgbz4bja+0TMOWCz9yJgNW4SCHs0iljWvcRzlBSPaeqQDAI8acMsH
-         xPD6ZWu/WyCOD/ozN5tdXgw1R7Bw/EFhULNaqyQAnOtfSbeOUL3ks4RAYVRV2wRaU9WV
-         SLJRnT+Xmwsb2+OThTn9FUhZzLMIyg0njVzTw84s9xlPTNUxEPT2DGIe93mTAxFlmGwS
-         MXP/MkYDZYrEZYyJdzVYuZbefn6KtYPGYCs56z0vGnzN0SrobbmPdTN9mAFaV2GsRM9n
-         U7FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AGO5oXC2NaEBZms9Zzvd2Ka4lOiXeYYL68h7WdCW7xI=;
-        b=Ev6ILaldwO4ofELEJenhuXtcmzs6Ns23/910JB+oBqS43Ku7b3Tt/sx0BWfRwWlaBB
-         jDarRkk5mOHv1KMOXstfLHR5IofFOOQ1A8iUZHLD7SUsVJWReuEPkCJNPPBHslfr2wLA
-         IXCjDDujS8X72vBi87x+mXo9gz74aF/9TQvl6WI9VIIjHFzPo50LYSrHvHEg0cCFBQoz
-         AM4l88FSjMLO6Q4T4k8r3Hj5hHeRT+k7ppwAM2mXjHmJkQ3ElyTRV4gT5E8l//TIi3v+
-         8k8gpOyNrsZB9Dthj2Ehjykf9OyyjDdc4qEhxkdKN/Nl5xfi15B/3Z7F7LsVu0vuW2Er
-         BVnw==
-X-Gm-Message-State: AOAM532laPDLZEngPL8L5j98q6fnR4km2gwut/9uCaup1wNoeGrRjsyE
-        gNBLefAroGP9OxLE9yZBeVQ51A==
-X-Google-Smtp-Source: ABdhPJwN9ffmcHmPB/OEIHDKByAPhM6CmSNwyL87+MyHHwPRmMtflIzDC4T04pj3pv4tWym0BbTCZg==
-X-Received: by 2002:a7b:c5d8:: with SMTP id n24mr912005wmk.153.1595406029191;
-        Wed, 22 Jul 2020 01:20:29 -0700 (PDT)
-Received: from [192.168.1.12] ([194.35.117.140])
-        by smtp.gmail.com with ESMTPSA id n5sm6509733wmi.34.2020.07.22.01.20.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jul 2020 01:20:28 -0700 (PDT)
-Subject: Re: [PATCH bpf-next] tools/bpftool: strip BPF .o files before
- skeleton generation
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
-References: <20200722043804.2373298-1-andriin@fb.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <bae8109d-3f01-eafb-eff8-4df425771b2b@isovalent.com>
-Date:   Wed, 22 Jul 2020 09:20:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.0
+        id S1729218AbgGVIV1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Jul 2020 04:21:27 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:40028 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729195AbgGVIV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 04:21:26 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-223-GOCHn8gEMPq2t1xF6Q8jCw-1; Wed, 22 Jul 2020 09:21:22 +0100
+X-MC-Unique: GOCHn8gEMPq2t1xF6Q8jCw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 22 Jul 2020 09:21:21 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 22 Jul 2020 09:21:21 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christoph Hellwig' <hch@lst.de>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "linux-hams@vger.kernel.org" <linux-hams@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
+        "linux-decnet-user@lists.sourceforge.net" 
+        <linux-decnet-user@lists.sourceforge.net>,
+        "linux-wpan@vger.kernel.org" <linux-wpan@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "mptcp@lists.01.org" <mptcp@lists.01.org>,
+        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>
+Subject: RE: get rid of the address_space override in setsockopt
+Thread-Topic: get rid of the address_space override in setsockopt
+Thread-Index: AQHWXznU7Ce8ImOXV0WGgKrMes+hhakRxpwAgAFoQgCAABQIEA==
+Date:   Wed, 22 Jul 2020 08:21:21 +0000
+Message-ID: <eafa16fad33a4255a97b55a56e58ae1a@AcuMS.aculab.com>
+References: <20200720124737.118617-1-hch@lst.de>
+ <60c52e31e9f240718fcda0dd5c2faeca@AcuMS.aculab.com>
+ <20200722080646.GA26864@lst.de>
+In-Reply-To: <20200722080646.GA26864@lst.de>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20200722043804.2373298-1-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/07/2020 05:38, Andrii Nakryiko wrote:
-> Strip away DWARF info from .bpf.o files, before generating BPF skeletons.
-> This reduces bpftool binary size from 3.43MB to 2.58MB.
+From: 'Christoph Hellwig'
+> Sent: 22 July 2020 09:07
+> On Tue, Jul 21, 2020 at 09:38:23AM +0000, David Laight wrote:
+> > From: Christoph Hellwig
+> > > Sent: 20 July 2020 13:47
+> > >
+> > > setsockopt is the last place in architecture-independ code that still
+> > > uses set_fs to force the uaccess routines to operate on kernel pointers.
+> > >
+> > > This series adds a new sockptr_t type that can contained either a kernel
+> > > or user pointer, and which has accessors that do the right thing, and
+> > > then uses it for setsockopt, starting by refactoring some low-level
+> > > helpers and moving them over to it before finally doing the main
+> > > setsockopt method.
+> >
+> > Are you planning to make the equivalent change to getsockopt()?
 > 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Quentin Monnet <quentin@isovalent.com>
+> No.  Only setsockopt can be fed kernel addresses from bpf-cgroup.
+> There is no point in complicating the read side interface when it
+> doesn't have that problem.
+
+You realise that one of the SCTP getsockopt() is actually a command!
+It is one of the requests that changes state and should probably
+have been a separate system call.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
