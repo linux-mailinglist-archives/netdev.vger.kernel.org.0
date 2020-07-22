@@ -2,148 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8993229EDD
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 20:02:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B30CC229EE1
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 20:03:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729226AbgGVSC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 14:02:26 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:36152 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726349AbgGVSCY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 14:02:24 -0400
-Received: by mail-il1-f197.google.com with SMTP id t19so1649113ili.3
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 11:02:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=2T5Kb68mks66WlbHOKiIVPF5/NI+LFYplKLylfQLPMg=;
-        b=A4Km3Ryjb56uvt5gGUZiwL8Mcnx5I0iCORopK+sstlWMcM/K/eF4/hpBoDShlsDsdo
-         FdIm95w4wKZLK6dRiToDSC1O80Zak05eGcq/OM7anD0ycuALaKIIy+N3LRO2EFB/E0BV
-         BXPd3YqEBLycv0tAsqla5jWa3j3I6qaKyV9DCA/AYAwcvr7WMSn7Td4jsCVTairh9xTV
-         kxzCSf7bPdPATZ/T8DU6FMbPmxQlk0Pq7w6lTQBHW7refzmyjjoSmpQvkgALZ3TencIm
-         qn6j3AKLHN70aPOHJc3mHqC6lX0sHYg1HkYNMRtLHpluWQdi+l2AIs1Sb6rNx90+H7H+
-         zAOg==
-X-Gm-Message-State: AOAM532pS/Qznm767CvDfV06Mv8Sy8Bp2lJdZuk6TiG5KNQsfPmhZZiQ
-        RSHwlVltrHI4lqYZ5/dW3ffWGsvpEcXau5+ZZziXfZV6fBNV
-X-Google-Smtp-Source: ABdhPJxBpQkG+vJCJ7627aQSU3pC+nNz5XSZHtWNWQHjaysn3Ccg/u8PLQpKeRvINe5LYicdb9S4dYRlUKJ5VJkNepM8IQrCHDyA
+        id S1731113AbgGVSCw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 14:02:52 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:65397 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726390AbgGVSCw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 14:02:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1595440971; x=1626976971;
+  h=date:from:to:cc:message-id:references:mime-version:
+   content-transfer-encoding:in-reply-to:subject;
+  bh=7S9G0j6WNk2lHQ1bZXQAcCjIdbziJxspgdHUPMMA6gA=;
+  b=n3fKOZmRaWlxBxz8OeIFS/hlDM2E87OppNvfThGepfcaJqkjR7iQT9Dj
+   dRT2IAFeAXGhT3jKEnn5cRRKjiWMcWmnPjGGG2AJ8a/nBplCMM1EvxDzO
+   D/VBmBlpV94ZQ0ycDkUre0pLYhLg6dXIYwH3uZUaKisYOKOQ4IGRTHJKo
+   I=;
+IronPort-SDR: gddspTBzn+Y+TFjJTeY9TdNlPFZ60AB2yNuYk5xuO/V+CC+LP+ZLXGVyt1ka9QWY+Qo+37Am9i
+ sF1re8O1G5oQ==
+X-IronPort-AV: E=Sophos;i="5.75,383,1589241600"; 
+   d="scan'208";a="60802713"
+Subject: Re: [PATCH v2 01/11] xen/manage: keep track of the on-going suspend mode
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 22 Jul 2020 18:02:46 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id 51994240ABB;
+        Wed, 22 Jul 2020 18:02:40 +0000 (UTC)
+Received: from EX13D08UEB004.ant.amazon.com (10.43.60.142) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 22 Jul 2020 18:02:30 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ EX13D08UEB004.ant.amazon.com (10.43.60.142) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 22 Jul 2020 18:02:29 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Wed, 22 Jul 2020 18:02:29 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id 8E7C44CA97; Wed, 22 Jul 2020 18:02:29 +0000 (UTC)
+Date:   Wed, 22 Jul 2020 18:02:29 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     Stefano Stabellini <sstabellini@kernel.org>
+CC:     Boris Ostrovsky <boris.ostrovsky@oracle.com>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <bp@alien8.de>, <hpa@zytor.com>,
+        <x86@kernel.org>, <jgross@suse.com>, <linux-pm@vger.kernel.org>,
+        <linux-mm@kvack.org>, <kamatam@amazon.com>,
+        <konrad.wilk@oracle.com>, <roger.pau@citrix.com>,
+        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
+        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
+        <eduval@amazon.com>, <sblbir@amazon.com>,
+        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dwmw@amazon.co.uk>, <benh@kernel.crashing.org>
+Message-ID: <20200722180229.GA32316@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <cover.1593665947.git.anchalag@amazon.com>
+ <20200702182136.GA3511@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <50298859-0d0e-6eb0-029b-30df2a4ecd63@oracle.com>
+ <20200715204943.GB17938@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <0ca3c501-e69a-d2c9-a24c-f83afd4bdb8c@oracle.com>
+ <20200717191009.GA3387@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <5464f384-d4b4-73f0-d39e-60ba9800d804@oracle.com>
+ <20200721000348.GA19610@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <408d3ce9-2510-2950-d28d-fdfe8ee41a54@oracle.com>
+ <alpine.DEB.2.21.2007211640500.17562@sstabellini-ThinkPad-T480s>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:f911:: with SMTP id j17mr930937iog.96.1595440943469;
- Wed, 22 Jul 2020 11:02:23 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 11:02:23 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b217d105ab0b8ae4@google.com>
-Subject: INFO: rcu detected stall in seq_read (2)
-From:   syzbot <syzbot+c28b5fee66fd3b7f766e@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org, corbet@lwn.net,
-        davem@davemloft.net, fweisbec@gmail.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        mingo@kernel.org, netdev@vger.kernel.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vasundhara-v.volam@broadcom.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <alpine.DEB.2.21.2007211640500.17562@sstabellini-ThinkPad-T480s>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Jul 21, 2020 at 05:18:34PM -0700, Stefano Stabellini wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> 
+> 
+> 
+> On Tue, 21 Jul 2020, Boris Ostrovsky wrote:
+> > >>>>>> +static int xen_setup_pm_notifier(void)
+> > >>>>>> +{
+> > >>>>>> +     if (!xen_hvm_domain())
+> > >>>>>> +             return -ENODEV;
+> > >>>>>>
+> > >>>>>> I forgot --- what did we decide about non-x86 (i.e. ARM)?
+> > >>>>> It would be great to support that however, its  out of
+> > >>>>> scope for this patch set.
+> > >>>>> I’ll be happy to discuss it separately.
+> > >>>>
+> > >>>> I wasn't implying that this *should* work on ARM but rather whether this
+> > >>>> will break ARM somehow (because xen_hvm_domain() is true there).
+> > >>>>
+> > >>>>
+> > >>> Ok makes sense. TBH, I haven't tested this part of code on ARM and the series
+> > >>> was only support x86 guests hibernation.
+> > >>> Moreover, this notifier is there to distinguish between 2 PM
+> > >>> events PM SUSPEND and PM hibernation. Now since we only care about PM
+> > >>> HIBERNATION I may just remove this code and rely on "SHUTDOWN_SUSPEND" state.
+> > >>> However, I may have to fix other patches in the series where this check may
+> > >>> appear and cater it only for x86 right?
+> > >>
+> > >>
+> > >> I don't know what would happen if ARM guest tries to handle hibernation
+> > >> callbacks. The only ones that you are introducing are in block and net
+> > >> fronts and that's arch-independent.
+> > >>
+> > >>
+> > >> You do add a bunch of x86-specific code though (syscore ops), would
+> > >> something similar be needed for ARM?
+> > >>
+> > >>
+> > > I don't expect this to work out of the box on ARM. To start with something
+> > > similar will be needed for ARM too.
+> > > We may still want to keep the driver code as-is.
+> > >
+> > > I understand the concern here wrt ARM, however, currently the support is only
+> > > proposed for x86 guests here and similar work could be carried out for ARM.
+> > > Also, if regular hibernation works correctly on arm, then all is needed is to
+> > > fix Xen side of things.
+> > >
+> > > I am not sure what could be done to achieve any assurances on arm side as far as
+> > > this series is concerned.
+> 
+> Just to clarify: new features don't need to work on ARM or cause any
+> addition efforts to you to make them work on ARM. The patch series only
+> needs not to break existing code paths (on ARM and any other platforms).
+> It should also not make it overly difficult to implement the ARM side of
+> things (if there is one) at some point in the future.
+> 
+> FYI drivers/xen/manage.c is compiled and working on ARM today, however
+> Xen suspend/resume is not supported. I don't know for sure if
+> guest-initiated hibernation works because I have not tested it.
+> 
+> 
+> 
+> > If you are not sure what the effects are (or sure that it won't work) on
+> > ARM then I'd add IS_ENABLED(CONFIG_X86) check, i.e.
+> >
+> >
+> > if (!IS_ENABLED(CONFIG_X86) || !xen_hvm_domain())
+> >       return -ENODEV;
+> 
+> That is a good principle to have and thanks for suggesting it. However,
+> in this specific case there is nothing in this patch that doesn't work
+> on ARM. From an ARM perspective I think we should enable it and
+> &xen_pm_notifier_block should be registered.
+> 
+This question is for Boris, I think you we decided to get rid of the notifier
+in V3 as all we need  to check is SHUTDOWN_SUSPEND state which sounds plausible
+to me. So this check may go away. It may still be needed for sycore_ops
+callbacks registration.
+> Given that all guests are HVM guests on ARM, it should work fine as is.
+> 
+> 
+> I gave a quick look at the rest of the series and everything looks fine
+> to me from an ARM perspective. I cannot imaging that the new freeze,
+> thaw, and restore callbacks for net and block are going to cause any
+> trouble on ARM. The two main x86-specific functions are
+> xen_syscore_suspend/resume and they look trivial to implement on ARM (in
+> the sense that they are likely going to look exactly the same.)
+> 
+Yes but for now since things are not tested I will put this
+!IS_ENABLED(CONFIG_X86) on syscore_ops calls registration part just to be safe
+and not break anything.
+> 
+> One question for Anchal: what's going to happen if you trigger a
+> hibernation, you have the new callbacks, but you are missing
+> xen_syscore_suspend/resume?
+> 
+> Is it any worse than not having the new freeze, thaw and restore
+> callbacks at all and try to do a hibernation?
+If callbacks are not there, I don't expect hibernation to work correctly.
+These callbacks takes care of xen primitives like shared_info_page,
+grant table, sched clock, runstate time which are important to save the correct
+state of the guest and bring it back up. Other patches in the series, adds all
+the logic to these syscore callbacks. Freeze/thaw/restore are just there for at driver
+level.
 
-syzbot found the following issue on:
-
-HEAD commit:    4fa640dc Merge tag 'vfio-v5.8-rc7' of git://github.com/awi..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=145cac30900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f87a5e4232fdb267
-dashboard link: https://syzkaller.appspot.com/bug?extid=c28b5fee66fd3b7f766e
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17e23ac8900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1198c440900000
-
-The issue was bisected to:
-
-commit 53e233ea2fa9fa7e2405e95070981f327d90e519
-Author: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Date:   Thu Oct 4 05:43:52 2018 +0000
-
-    devlink: Add Documentation/networking/devlink-params-bnxt.txt
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15e22b94900000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=17e22b94900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13e22b94900000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+c28b5fee66fd3b7f766e@syzkaller.appspotmail.com
-Fixes: 53e233ea2fa9 ("devlink: Add Documentation/networking/devlink-params-bnxt.txt")
-
-hrtimer: interrupt took 6305559 ns
-rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 	1-...!: (1 GPs behind) idle=91e/1/0x4000000000000000 softirq=10105/10107 fqs=1 
-	(t=18319 jiffies g=8905 q=457)
-NMI backtrace for cpu 1
-CPU: 1 PID: 4008 Comm: systemd-journal Not tainted 5.8.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
- nmi_trigger_cpumask_backtrace+0x1b3/0x223 lib/nmi_backtrace.c:62
- trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
- rcu_dump_cpu_stacks+0x194/0x1cf kernel/rcu/tree_stall.h:320
- print_cpu_stall kernel/rcu/tree_stall.h:553 [inline]
- check_cpu_stall kernel/rcu/tree_stall.h:627 [inline]
- rcu_pending kernel/rcu/tree.c:3489 [inline]
- rcu_sched_clock_irq.cold+0x5b3/0xccc kernel/rcu/tree.c:2504
- update_process_times+0x25/0x60 kernel/time/timer.c:1737
- tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:176
- tick_sched_timer+0x108/0x290 kernel/time/tick-sched.c:1320
- __run_hrtimer kernel/time/hrtimer.c:1520 [inline]
- __hrtimer_run_queues+0x1d5/0xfc0 kernel/time/hrtimer.c:1584
- hrtimer_interrupt+0x32a/0x930 kernel/time/hrtimer.c:1646
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1080 [inline]
- __sysvec_apic_timer_interrupt+0x142/0x5e0 arch/x86/kernel/apic/apic.c:1097
- asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
- sysvec_apic_timer_interrupt+0xe0/0x120 arch/x86/kernel/apic/apic.c:1091
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:585
-RIP: 0010:format_decode+0x0/0xad0 lib/vsprintf.c:2329
-Code: c7 c7 10 05 af 8a be 10 00 00 00 e8 5a c3 46 00 48 c7 c7 20 78 0d 8a e9 6e f2 e2 fd 0f 1f 40 00 66 2e 0f 1f 84 00 00 00 00 00 <41> 57 41 56 41 55 41 54 55 48 89 f5 53 48 bb 00 00 00 00 00 fc ff
-RSP: 0018:ffffc90001077a10 EFLAGS: 00000293
-RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffffffff83b0a497
-RDX: ffff888093224040 RSI: ffffc90001077a80 RDI: ffffffff884e6293
-RBP: ffffffff884e6293 R08: 0000000000000001 R09: ffff8880952a63d1
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff8880952a63d2
-R13: ffffffff884e6293 R14: 0000000000000025 R15: ffffc90001077b30
- vsnprintf+0x155/0x14f0 lib/vsprintf.c:2572
- seq_vprintf fs/seq_file.c:379 [inline]
- seq_printf+0x195/0x240 fs/seq_file.c:394
- proc_pid_status+0x1c6d/0x24b0 fs/proc/array.c:424
- proc_single_show+0x116/0x1e0 fs/proc/base.c:766
- seq_read+0x432/0x1070 fs/seq_file.c:208
- vfs_read+0x1df/0x520 fs/read_write.c:479
- ksys_read+0x12d/0x250 fs/read_write.c:607
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x7f0fc43d9910
-Code: Bad RIP value.
-RSP: 002b:00007ffdcb193978 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-RAX: ffffffffffffffda RBX: 000055b1476b96f0 RCX: 00007f0fc43d9910
-RDX: 0000000000000800 RSI: 000055b1476b8b00 RDI: 0000000000000013
-RBP: 00007f0fc4694440 R08: 00007f0fc4697fc8 R09: 0000000000000410
-R10: 000055b1476b96f0 R11: 0000000000000246 R12: 0000000000000800
-R13: 0000000000000d68 R14: 000055b1476b8b00 R15: 00007f0fc4693900
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Thanks,
+Anchal
