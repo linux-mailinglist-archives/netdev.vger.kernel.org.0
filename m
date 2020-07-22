@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5A31228D9A
+	by mail.lfdr.de (Postfix) with ESMTP id 595C3228D99
 	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 03:27:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731693AbgGVB1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1731702AbgGVB1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 21 Jul 2020 21:27:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40006 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:39988 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727953AbgGVB10 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1731612AbgGVB10 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 21 Jul 2020 21:27:26 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A531B2176B;
-        Wed, 22 Jul 2020 01:27:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0FF2C22BF3;
+        Wed, 22 Jul 2020 01:27:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595381245;
-        bh=pfT3Uwxwup+O8qz1d6u2fAriFKUGsdVOTDO2CTgcVj4=;
+        s=default; t=1595381246;
+        bh=WfsoFrZ+V5UZA8nlIRdK2cSy6MvbX1XIdsI5Qab2zUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JPfX8CK5UGGNMNYJ2XZSsAHW3p3daG9sPIplEEi/E/Oguy5AZ8H0RMHRM49ZJ9EsB
-         RNguECqtjkgBJkdb3CgCy0QEbeJ1vdBDHaU5hiTf99kTAYw4DSoWKQaYUPoojDHx//
-         J2Jy6Nsmj/yLrgM33dWlE28/M05X8gyJQ8rmdukE=
+        b=ey9QXFEZtcINNEMGmXEnaLSx+GsZ3J/OrdpEmx6nsUDMNMawgjiQXIIyd+WwVBQqA
+         ylHIACxpLqafl+PEyjLtiAM/yWxHJegOhlg4W45g4+p8FvgNmQaLPdMKqDGFYauvWX
+         BL7nf37pk0HM7j5ikj67rwxQg9PJ56MW1k1MZsR4=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v1 3/7] netdevsim: shared UDP tunnel port table support
-Date:   Tue, 21 Jul 2020 18:27:12 -0700
-Message-Id: <20200722012716.2814777-4-kuba@kernel.org>
+Subject: [PATCH net-next v1 4/7] selftests: net: add a test for shared UDP tunnel info tables
+Date:   Tue, 21 Jul 2020 18:27:13 -0700
+Message-Id: <20200722012716.2814777-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200722012716.2814777-1-kuba@kernel.org>
 References: <20200722012716.2814777-1-kuba@kernel.org>
@@ -41,102 +41,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the ability to simulate a device with a shared UDP tunnel port
-table.
-
-Try to reject the configurations and actions which are not supported
-by the core, so we don't get syzcaller etc. warning reports.
+Add a test run of checks validating the shared UDP tunnel port
+tables function as we expect.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/netdevsim/netdevsim.h   |  7 ++++++-
- drivers/net/netdevsim/udp_tunnels.c | 17 ++++++++++++++++-
- 2 files changed, 22 insertions(+), 2 deletions(-)
+ .../drivers/net/netdevsim/udp_tunnel_nic.sh   | 109 ++++++++++++++++++
+ 1 file changed, 109 insertions(+)
 
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index d164052e0393..4335ab4e5ce0 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -20,6 +20,7 @@
- #include <linux/netdevice.h>
- #include <linux/u64_stats_sync.h>
- #include <net/devlink.h>
-+#include <net/udp_tunnel.h>
- #include <net/xdp.h>
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh b/tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
+index ba1d53b9f815..9225133784af 100644
+--- a/tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/udp_tunnel_nic.sh
+@@ -775,6 +775,115 @@ for port in 0 1; do
+     exp1=( 0 0 0 0 )
+ done
  
- #define DRV_NAME	"netdevsim"
-@@ -77,7 +78,8 @@ struct netdevsim {
- 	struct {
- 		u32 inject_error;
- 		u32 sleep;
--		u32 ports[2][NSIM_UDP_TUNNEL_N_PORTS];
-+		u32 __ports[2][NSIM_UDP_TUNNEL_N_PORTS];
-+		u32 (*ports)[NSIM_UDP_TUNNEL_N_PORTS];
- 		struct debugfs_u32_array dfs_ports[2];
- 	} udp_ports;
- };
-@@ -197,9 +199,12 @@ struct nsim_dev {
- 	bool fail_trap_policer_set;
- 	bool fail_trap_policer_counter_get;
- 	struct {
-+		struct udp_tunnel_nic_shared utn_shared;
-+		u32 __ports[2][NSIM_UDP_TUNNEL_N_PORTS];
- 		bool sync_all;
- 		bool open_only;
- 		bool ipv4_only;
-+		bool shared;
- 		u32 sleep;
- 	} udp_ports;
- };
-diff --git a/drivers/net/netdevsim/udp_tunnels.c b/drivers/net/netdevsim/udp_tunnels.c
-index ad65b860bd7b..6b98e6d1188f 100644
---- a/drivers/net/netdevsim/udp_tunnels.c
-+++ b/drivers/net/netdevsim/udp_tunnels.c
-@@ -112,7 +112,7 @@ nsim_udp_tunnels_info_reset_write(struct file *file, const char __user *data,
- 	struct net_device *dev = file->private_data;
- 	struct netdevsim *ns = netdev_priv(dev);
- 
--	memset(&ns->udp_ports.ports, 0, sizeof(ns->udp_ports.ports));
-+	memset(ns->udp_ports.ports, 0, sizeof(ns->udp_ports.__ports));
- 	rtnl_lock();
- 	udp_tunnel_nic_reset_ntf(dev);
- 	rtnl_unlock();
-@@ -132,6 +132,17 @@ int nsim_udp_tunnels_info_create(struct nsim_dev *nsim_dev,
- 	struct netdevsim *ns = netdev_priv(dev);
- 	struct udp_tunnel_nic_info *info;
- 
-+	if (nsim_dev->udp_ports.shared && nsim_dev->udp_ports.open_only) {
-+		dev_err(&nsim_dev->nsim_bus_dev->dev,
-+			"shared can't be used in conjunction with open_only\n");
-+		return -EINVAL;
-+	}
++cleanup_nsim
 +
-+	if (!nsim_dev->udp_ports.shared)
-+		ns->udp_ports.ports = ns->udp_ports.__ports;
-+	else
-+		ns->udp_ports.ports = nsim_dev->udp_ports.__ports;
++# shared port tables
++pfx="table sharing"
 +
- 	debugfs_create_u32("udp_ports_inject_error", 0600,
- 			   ns->nsim_dev_port->ddir,
- 			   &ns->udp_ports.inject_error);
-@@ -173,6 +184,8 @@ int nsim_udp_tunnels_info_create(struct nsim_dev *nsim_dev,
- 		info->flags |= UDP_TUNNEL_NIC_INFO_OPEN_ONLY;
- 	if (nsim_dev->udp_ports.ipv4_only)
- 		info->flags |= UDP_TUNNEL_NIC_INFO_IPV4_ONLY;
-+	if (nsim_dev->udp_ports.shared)
-+		info->shared = &nsim_dev->udp_ports.utn_shared;
++echo $NSIM_ID > /sys/bus/netdevsim/new_device
++echo 0 > $NSIM_DEV_SYS/del_port
++
++echo 0 > $NSIM_DEV_DFS/udp_ports_open_only
++echo 1 > $NSIM_DEV_DFS/udp_ports_sleep
++echo 1 > $NSIM_DEV_DFS/udp_ports_shared
++
++old_netdevs=$(ls /sys/class/net)
++echo 1 > $NSIM_DEV_SYS/new_port
++NSIM_NETDEV=`get_netdev_name old_netdevs`
++old_netdevs=$(ls /sys/class/net)
++echo 2 > $NSIM_DEV_SYS/new_port
++NSIM_NETDEV2=`get_netdev_name old_netdevs`
++
++msg="VxLAN v4 devices"
++exp0=( `mke 4789 1` 0 0 0 )
++exp1=( 0 0 0 0 )
++new_vxlan vxlan0 4789 $NSIM_NETDEV
++new_vxlan vxlan1 4789 $NSIM_NETDEV2
++
++msg="VxLAN v4 devices go down"
++exp0=( 0 0 0 0 )
++ifconfig vxlan1 down
++ifconfig vxlan0 down
++check_tables
++
++for ifc in vxlan0 vxlan1; do
++    ifconfig $ifc up
++done
++
++msg="VxLAN v6 device"
++exp0=( `mke 4789 1` `mke 4790 1` 0 0 )
++new_vxlan vxlanC 4790 $NSIM_NETDEV 6
++
++msg="Geneve device"
++exp1=( `mke 6081 2` 0 0 0 )
++new_geneve gnv0 6081
++
++msg="NIC device goes down"
++ifconfig $NSIM_NETDEV down
++check_tables
++
++msg="NIC device goes up again"
++ifconfig $NSIM_NETDEV up
++check_tables
++
++for i in `seq 2`; do
++    msg="turn feature off - 1, rep $i"
++    ethtool -K $NSIM_NETDEV rx-udp_tunnel-port-offload off
++    check_tables
++
++    msg="turn feature off - 2, rep $i"
++    exp0=( 0 0 0 0 )
++    exp1=( 0 0 0 0 )
++    ethtool -K $NSIM_NETDEV2 rx-udp_tunnel-port-offload off
++    check_tables
++
++    msg="turn feature on - 1, rep $i"
++    exp0=( `mke 4789 1` `mke 4790 1` 0 0 )
++    exp1=( `mke 6081 2` 0 0 0 )
++    ethtool -K $NSIM_NETDEV rx-udp_tunnel-port-offload on
++    check_tables
++
++    msg="turn feature on - 2, rep $i"
++    ethtool -K $NSIM_NETDEV2 rx-udp_tunnel-port-offload on
++    check_tables
++done
++
++msg="tunnels destroyed 1"
++cleanup_tuns
++exp0=( 0 0 0 0 )
++exp1=( 0 0 0 0 )
++check_tables
++
++overflow_table0 "overflow NIC table"
++
++msg="re-add a port"
++
++echo 2 > $NSIM_DEV_SYS/del_port
++echo 2 > $NSIM_DEV_SYS/new_port
++check_tables
++
++msg="replace VxLAN in overflow table"
++exp0=( `mke 10000 1` `mke 10004 1` `mke 10002 1` `mke 10003 1` )
++del_dev vxlan1
++
++msg="vacate VxLAN in overflow table"
++exp0=( `mke 10000 1` `mke 10004 1` 0 `mke 10003 1` )
++del_dev vxlan2
++
++echo 1 > $NSIM_DEV_DFS/ports/$port/udp_ports_reset
++check_tables
++
++msg="tunnels destroyed 2"
++cleanup_tuns
++exp0=( 0 0 0 0 )
++exp1=( 0 0 0 0 )
++check_tables
++
++echo 1 > $NSIM_DEV_SYS/del_port
++echo 2 > $NSIM_DEV_SYS/del_port
++
++cleanup_nsim
++
+ modprobe -r netdevsim
  
- 	dev->udp_tunnel_nic_info = info;
- 	return 0;
-@@ -192,6 +205,8 @@ void nsim_udp_tunnels_debugfs_create(struct nsim_dev *nsim_dev)
- 			    &nsim_dev->udp_ports.open_only);
- 	debugfs_create_bool("udp_ports_ipv4_only", 0600, nsim_dev->ddir,
- 			    &nsim_dev->udp_ports.ipv4_only);
-+	debugfs_create_bool("udp_ports_shared", 0600, nsim_dev->ddir,
-+			    &nsim_dev->udp_ports.shared);
- 	debugfs_create_u32("udp_ports_sleep", 0600, nsim_dev->ddir,
- 			   &nsim_dev->udp_ports.sleep);
- }
+ if [ $num_errors -eq 0 ]; then
 -- 
 2.26.2
 
