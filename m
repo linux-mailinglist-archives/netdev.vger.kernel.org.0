@@ -2,154 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6B3229E82
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 19:26:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E33229EA7
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 19:41:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728511AbgGVR0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 13:26:48 -0400
-Received: from mail.efficios.com ([167.114.26.124]:44046 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726349AbgGVR0r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 13:26:47 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id A4F712D73F9;
-        Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id DmHD8t4Me0BR; Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 581DD2D75C8;
-        Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 581DD2D75C8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1595438806;
-        bh=ie1s3yfaP5hYh71RbSEDgzXewJydGQnrL4wq2YH/vxs=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=uYOrROJLsUCtksuqZGWZRv7FC2VaA1JCcO/bSko1tPTQy4YCK9yv+ZqLEf/3Ig/p3
-         ba2pmRRRH6Zz4yoeFAvr9GJ3L00viVw7mStmr4Y9OwgjPXH/NgXVAUWUa1xkahWCzk
-         C0PQVuyv8T/4duQYbUkfZo5CzPDStEb4a5E+AghIMPxgpWhZ22Soa7lbfr4lL6B4Uh
-         KtPyXcHpUerUvQkSZu8YxXcqTo23HDVS0PCYsz5RKuqiuLv2iP0GY+0DA1nIMUPqy2
-         rXL9O9aOjRcoENC/ZCrPv484ZptDFLgvbrRy+LV3U19DmQR5J3fDzFqfCkPeCMnkiQ
-         Nzv9jsaO0pFhA==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id jVFannzj4RYG; Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 4BE4B2D7532;
-        Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
-Date:   Wed, 22 Jul 2020 13:26:46 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     netdev <netdev@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>
-Cc:     David Ahern <dsa@cumulusnetworks.com>,
-        "David S. Miller" <davem@davemloft.net>
-Message-ID: <1949069529.26392.1595438806291.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20200720221118.26148-1-mathieu.desnoyers@efficios.com>
-References: <20200720221118.26148-1-mathieu.desnoyers@efficios.com>
-Subject: Re: [RFC PATCH] Fix: ipv4/icmp: icmp error route lookup performed
- on wrong routing table
+        id S1728936AbgGVRkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 13:40:08 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:45963 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726157AbgGVRkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 13:40:07 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jyIip-000752-QJ; Wed, 22 Jul 2020 17:40:03 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] ionic: fix memory leak of object 'lid'
+Date:   Wed, 22 Jul 2020 18:40:03 +0100
+Message-Id: <20200722174003.962374-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_3955 (ZimbraWebClient - FF78 (Linux)/8.8.15_GA_3953)
-Thread-Topic: ipv4/icmp: icmp error route lookup performed on wrong routing table
-Thread-Index: z8oEnN4BMpZegUplmtxPoLdCmaontg==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding IPv4/IPv6 maintainers in CC, along with David Ahern's k.org email address.
+From: Colin Ian King <colin.king@canonical.com>
 
------ On Jul 20, 2020, at 6:11 PM, Mathieu Desnoyers mathieu.desnoyers@efficios.com wrote:
+Currently when netdev fails to allocate the error return path
+fails to free the allocated object 'lid'.  Fix this by setting
+err to the return error code and jumping to a new label that
+performs the kfree of lid before returning.
 
-> As per RFC792, ICMP errors should be sent to the source host.
-> 
-> However, in configurations with Virtual Forwarding and Routing tables,
-> looking up which routing table to use is currently done by using the
-> destination net_device.
-> 
-> commit 9d1a6c4ea43e ("net: icmp_route_lookup should use rt dev to
-> determine L3 domain") changes the interfaces passed to
-> l3mdev_master_ifindex() and inet_addr_type_dev_table() from skb_in->dev
-> to skb_dst(skb_in)->dev in order to fix a NULL pointer dereference. This
-> changes the interface used for routing table lookup from source to
-> destination. Therefore, if the source and destination interfaces are
-> within separate VFR, or one in the global routing table and the other in
-> a VFR, looking up the source host in the destination interface's routing
-> table is likely to fail.
-> 
-> One observable effect of this issue is that traceroute does not work in
-> the following cases:
-> 
-> - Route leaking between global routing table and VRF
-> - Route leaking between VRFs
-> 
-> [ Note 1: I'm not entirely sure what routing table should be used when
->  param->replyopts.opt.opt.srr is set ? Is it valid to honor Strict
->  Source Route when sending an ICMP error ? ]
-> 
-> [ Note 2: I notice that ipv6 icmp6_send() uses skb_dst(skb)->dev as
->  argument to l3mdev_master_ifindex(). I'm not sure if it is correct ? ]
-> 
-> [ This patch is only compile-tested. ]
-> 
-> Fixes: 9d1a6c4ea43e ("net: icmp_route_lookup should use rt dev to determine L3
-> domain")
-> Link: https://tools.ietf.org/html/rfc792
-> Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: David Ahern <dsa@cumulusnetworks.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: netdev@vger.kernel.org
-> ---
-> net/ipv4/icmp.c | 12 ++++++++++--
-> 1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-> index e30515f89802..3d1da70c7293 100644
-> --- a/net/ipv4/icmp.c
-> +++ b/net/ipv4/icmp.c
-> @@ -465,6 +465,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
-> 					int type, int code,
-> 					struct icmp_bxm *param)
-> {
-> +	struct net_device *route_lookup_dev;
-> 	struct rtable *rt, *rt2;
-> 	struct flowi4 fl4_dec;
-> 	int err;
-> @@ -479,7 +480,14 @@ static struct rtable *icmp_route_lookup(struct net *net,
-> 	fl4->flowi4_proto = IPPROTO_ICMP;
-> 	fl4->fl4_icmp_type = type;
-> 	fl4->fl4_icmp_code = code;
-> -	fl4->flowi4_oif = l3mdev_master_ifindex(skb_dst(skb_in)->dev);
-> +	/*
-> +	 * The device used for looking up which routing table to use is
-> +	 * preferably the source whenever it is set, which should ensure
-> +	 * the icmp error can be sent to the source host, else fallback
-> +	 * on the destination device.
-> +	 */
-> +	route_lookup_dev = skb_in->dev ? skb_in->dev : skb_dst(skb_in)->dev;
-> +	fl4->flowi4_oif = l3mdev_master_ifindex(route_lookup_dev);
-> 
-> 	security_skb_classify_flow(skb_in, flowi4_to_flowi(fl4));
-> 	rt = ip_route_output_key_hash(net, fl4, skb_in);
-> @@ -503,7 +511,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
-> 	if (err)
-> 		goto relookup_failed;
-> 
-> -	if (inet_addr_type_dev_table(net, skb_dst(skb_in)->dev,
-> +	if (inet_addr_type_dev_table(net, route_lookup_dev,
-> 				     fl4_dec.saddr) == RTN_LOCAL) {
-> 		rt2 = __ip_route_output_key(net, &fl4_dec);
-> 		if (IS_ERR(rt2))
-> --
-> 2.11.0
+Addresses-Coverity: ("Resource leak")
+Fixes: 4b03b27349c0 ("ionic: get MTU from lif identity")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 7ad338a4653c..728dd6429d80 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -2034,7 +2034,8 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ 				    ionic->ntxqs_per_lif, ionic->ntxqs_per_lif);
+ 	if (!netdev) {
+ 		dev_err(dev, "Cannot allocate netdev, aborting\n");
+-		return ERR_PTR(-ENOMEM);
++		err = -ENOMEM;
++		goto err_out_free_lid;
+ 	}
+ 
+ 	SET_NETDEV_DEV(netdev, dev);
+@@ -2120,6 +2121,7 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ err_out_free_netdev:
+ 	free_netdev(lif->netdev);
+ 	lif = NULL;
++err_out_free_lid:
+ 	kfree(lid);
+ 
+ 	return ERR_PTR(err);
 -- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+2.27.0
+
