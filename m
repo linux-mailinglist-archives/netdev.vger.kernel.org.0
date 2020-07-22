@@ -2,121 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF80322988A
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 14:50:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C2312298B0
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 14:54:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732390AbgGVMu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 08:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36218 "EHLO
+        id S1732392AbgGVMyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 08:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732250AbgGVMu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 08:50:28 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F6BC0619DE
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 05:50:28 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id s16so1674587qtn.7
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 05:50:28 -0700 (PDT)
+        with ESMTP id S1732466AbgGVMx5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 08:53:57 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CB2C0619DC;
+        Wed, 22 Jul 2020 05:53:57 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id lx13so2090061ejb.4;
+        Wed, 22 Jul 2020 05:53:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V+el/4IjxY5c/A2Xkjehcvj/Zw3lDkjmnm4fPzj7FEY=;
-        b=K5CLDhMO8VOhCWsQmJTWzgBr8pNoz9/g9XoMr2GBxhc4faqvibRjSC7ijhfd0rj4Or
-         EAh4KUB+a8SDhfvg2DstycRIHsTbwwOUwrLyIwBC77KG0mWVNaca++DEe3Do+NQS9tAK
-         rJh4ulyrFi3MypW6toTUSRapLAxXFRZVnfbivL42DORirSSCTkq8ztYBSa9mwppHubMx
-         uasntbPhG1oeuxsz4lYhUVcTP3gvoH1kWTz4h6ozQDe6asb7eC//LcxUvXVwRSZtxfoA
-         BkEWy3oWL114hJC06FQLhFbRuMtBkc1lBfEiihWT1tMOAdE+6JtzE6qLS49NkhBjmJ4t
-         oh/Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=C2Q65rLgQCFAZPTaAiFAGL3WNsz9Y3J5CP3LiOy1w0o=;
+        b=OJIJEUqBwTFeyRSqOZVb72Rna/IWZsW8TFLwQV3bmc82vaRGz46wl7RWCR6vIS2rZg
+         l7wClxuAtFnJvW9mO2AEPkXMtsGr/GgVOmWQwhJjtuD0r7EC/S3440Wn7ghtjNL7/0ft
+         6nw/4SMIycpzxFWMjEHKGo0D+Lk/C4sC4GF5PyfVx6Hbcd9nuDaJROtdtbYy51ml3Qn+
+         12TNuZhuxVFTWBl1y9KVTQawSk3sW6HhvjcmDdD4HIgoR0vDAnmzeMl4cFdTwgd91NPQ
+         b1UPs0De16EuTnmTlTprOswBL1r3NYuDRHWij7ufuYOXi4JTsOrirEI23oYhHw9QN10G
+         BuAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V+el/4IjxY5c/A2Xkjehcvj/Zw3lDkjmnm4fPzj7FEY=;
-        b=eKu/T9QRRtQlX/o0FwY+87O/uqueaWiQ8ayGNpdP0KaPlmzl6ZCRALxDl+U1/Wy10R
-         FjTliak0XuQunEtbufa65cQw7xTFXnRtoZRbUFhHwRm1FW2GuMD04AUSZ/ZC37+PJtXk
-         JeK6mSW1qgGDLPS4HGUh/+/aOvdCMyHR0ko11hLhXSLKF0JQEjqxh5BmYU3ETcNf0HWm
-         TdG6v3q4MijA3mDn19ZNTsuzDqGu4pCRZCe0fT6VJ9xX/XmdaQSBUafph42xC2Jf8aK8
-         5lOcWgEQD85nCtw5hK0z6ZapBX5G+iayStWx4oJAIl9wi4DV6OMmYDCFOe7s9yjJUFAu
-         t8Dg==
-X-Gm-Message-State: AOAM530eDsZAZV0FZTgfYKchwvkip3WSDg8/HbRE5+cUkik7MMxLid+x
-        J1ksclAovlkCWpdp505BLgOLU8bn
-X-Google-Smtp-Source: ABdhPJz1AHiaHOu5BNj0eGGi7sQDgEscJYlGBDmmtAZptdgjXltBTilQAllEOaBe5AxqcI89/vcnNw==
-X-Received: by 2002:ac8:197b:: with SMTP id g56mr33699398qtk.105.1595422226314;
-        Wed, 22 Jul 2020 05:50:26 -0700 (PDT)
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
-        by smtp.gmail.com with ESMTPSA id x3sm5360250qkd.62.2020.07.22.05.50.24
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jul 2020 05:50:25 -0700 (PDT)
-Received: by mail-yb1-f170.google.com with SMTP id x9so960862ybd.4
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 05:50:24 -0700 (PDT)
-X-Received: by 2002:a25:cc4e:: with SMTP id l75mr50937615ybf.165.1595422224171;
- Wed, 22 Jul 2020 05:50:24 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=C2Q65rLgQCFAZPTaAiFAGL3WNsz9Y3J5CP3LiOy1w0o=;
+        b=eUritCU4IIdB90+3RVYWM9cJnUuidpikaEiM5zDPzt2jz9dZE4DOVGjToA+ZTgVNG3
+         M3oTuivJJREGHL0bzNjBT5fCNUqqtT2N7KqeawihLgCRB9O04u3vEMMn6sleLiaqP3mm
+         tHnLFmhXTscAaxdlbVAptoaADW92DWxTD7dH56ipMI7s55g6DZJ0AwtZpmOHE0b1D/Q5
+         XAHMWiKU6a6Ykgt/K8AkIJQfFrdaldreASh6yM3CmnN9JsGVO7HgA0pfGJdo6Li1bppb
+         32uRiqCaPoSXmm1uyjoi5ygKdP8OpSkCNy2mC6V6mIJ1Wh+9DA1CLoE9ZNBGMiFa8waR
+         XeSw==
+X-Gm-Message-State: AOAM5325IQE5XY9VthvqqymO7tnh14TYVc2+xFXBqvDW/QtHLdRLXZKz
+        /am3EV8q6ZnaJ73VsfYBtuw=
+X-Google-Smtp-Source: ABdhPJwh9BONiVoCz78jT2F7EaVSzGpQkLcAmD/JVtYBBr3R+okVe7dY80RHaw6MmTnOQAbhRfuyFQ==
+X-Received: by 2002:a17:906:86d4:: with SMTP id j20mr32083745ejy.68.1595422435644;
+        Wed, 22 Jul 2020 05:53:55 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id x10sm19088247ejc.46.2020.07.22.05.53.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2020 05:53:55 -0700 (PDT)
+Date:   Wed, 22 Jul 2020 15:53:52 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     hongbo.wang@nxp.com
+Cc:     xiaoliang.yang_1@nxp.com, allan.nielsen@microchip.com,
+        po.liu@nxp.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
+        leoyang.li@nxp.com, mingkai.hu@nxp.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net, jiri@resnulli.us, idosch@idosch.org,
+        kuba@kernel.org, vinicius.gomes@intel.com,
+        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, ivecera@redhat.com
+Subject: Re: [PATCH v3 2/2] net: dsa: ocelot: Add support for QinQ Operation
+Message-ID: <20200722125352.qbllow6pm6za5pq4@skbuf>
+References: <20200722103200.15395-1-hongbo.wang@nxp.com>
+ <20200722103200.15395-3-hongbo.wang@nxp.com>
 MIME-Version: 1.0
-References: <CA+FuTSeN8SONXySGys8b2EtTqJmHDKw1XVoDte0vzUPg=yuH5g@mail.gmail.com>
- <20200721161710.80797-1-paolo.pisati@canonical.com> <CA+FuTSe1-ZEC5xEXXbT=cbN6eAK1NXXKJ3f2Gz_v3gQyh2SkjA@mail.gmail.com>
- <CAMsH0TTQnPGrXci3WvjM+8sdJdxOjR9MnwFvv4DS6=crMCAt4A@mail.gmail.com>
-In-Reply-To: <CAMsH0TTQnPGrXci3WvjM+8sdJdxOjR9MnwFvv4DS6=crMCAt4A@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 22 Jul 2020 08:49:47 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSc0V4TGMF6KhZVkLfv1=OXXdV+J3ufKuXd0GhrHb2hjbw@mail.gmail.com>
-Message-ID: <CA+FuTSc0V4TGMF6KhZVkLfv1=OXXdV+J3ufKuXd0GhrHb2hjbw@mail.gmail.com>
-Subject: Re: [PATCH v2] selftest: txtimestamp: fix net ns entry logic
-To:     Paolo Pisati <paolo.pisati@canonical.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, Jian Yang <jianyang@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200722103200.15395-3-hongbo.wang@nxp.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 22, 2020 at 4:37 AM Paolo Pisati <paolo.pisati@canonical.com> wrote:
->
-> On Tue, Jul 21, 2020 at 6:26 PM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > Fixes: cda261f421ba ("selftests: add txtimestamp kselftest")
-> >
-> > Acked-by: Willem de Bruijn <willemb@google.com>
->
-> Besides, is it just me or this test fails frequently? I've been
-> running it on 5.4.x, 5.7.x and 5.8-rcX and it often fails:
->
-> ...
->     USR: 1595405084 s 947366 us (seq=0, len=0)
->     SND: 1595405084 s 948686 us (seq=9, len=10)  (USR +1319 us)
-> ERROR: 6542 us expected between 6000 and 6500
->     ACK: 1595405084 s 953908 us (seq=9, len=10)  (USR +6541 us)
->     USR: 1595405084 s 997979 us (seq=0, len=0)
->     SND: 1595405084 s 999101 us (seq=19, len=10)  (USR +1121 us)
->     ACK: 1595405085 s 4438 us (seq=19, len=10)  (USR +6458 us)
->     USR: 1595405085 s 49317 us (seq=0, len=0)
->     SND: 1595405085 s 50680 us (seq=29, len=10)  (USR +1363 us)
-> ERROR: 6661 us expected between 6000 and 6500
->     ACK: 1595405085 s 55978 us (seq=29, len=10)  (USR +6661 us)
->     USR: 1595405085 s 101049 us (seq=0, len=0)
->     SND: 1595405085 s 102342 us (seq=39, len=10)  (USR +1293 us)
-> ERROR: 6578 us expected between 6000 and 6500
->     ACK: 1595405085 s 107627 us (seq=39, len=10)  (USR +6577 us)
->     USR-SND: count=4, avg=1274 us, min=1121 us, max=1363 us
->     USR-ACK: count=4, avg=6559 us, min=6458 us, max=6661 us
->
->
-> In particular, "run_test_v4v6 ${args}       # tcp" is the most
-> susceptible to failures (though i've seen the udp variant fail too).
+On Wed, Jul 22, 2020 at 06:32:00PM +0800, hongbo.wang@nxp.com wrote:
+> From: "hongbo.wang" <hongbo.wang@nxp.com>
+> 
+> This featue can be test using network test tools
+>     TX-tool -----> swp0  -----> swp1 -----> RX-tool
+> 
+> TX-tool simulates Customer that will send and receive packets with single
+> VLAN tag(CTAG), RX-tool simulates Service-Provider that will send and
+> receive packets with double VLAN tag(STAG and CTAG). This refers to
+> "4.3.3 Provider Bridges and Q-in-Q Operation" in VSC99599_1_00_TS.pdf.
+> 
+> The related test commands:
+> 1.
+> ip link add dev br0 type bridge
+> ip link set dev swp0 master br0
+> ip link set dev swp1 master br0
+> 2.
+> ip link add link swp0 name swp0.111 type vlan id 111
+> ip link add link swp1 name swp1.111 type vlan protocol 802.1ad id 111
+> 3.
+> bridge vlan add dev swp0 vid 100 pvid
+> bridge vlan add dev swp1 vid 100
+> bridge vlan del dev swp1 vid 1 pvid
+> bridge vlan add dev swp1 vid 200 pvid untagged
+> Result:
+> Customer(tpid:8100 vid:111) -> swp0 -> swp1 -> Service-Provider(STAG \
+>                     tpid:88A8 vid:100, CTAG tpid:8100 vid:111)
+> 
+> Signed-off-by: hongbo.wang <hongbo.wang@nxp.com>
+> ---
 
-Not for me. The interval bounds have been set as is based on previous
-experience.
+Instead of writing a long email, let me just say this.
+I ran your commands on 2 random network cards (not ocelot/felix ports).
+They don't produce the same results as you. In fact, no frame with VLAN
+111 C-TAG is forwarded (or received) at all by the bridge, not to
+mention that no VLAN 1000 S-TAG is pushed on egress.
 
-Are you running it inside a VM? Especially qemu without kvm
-acceleration could increase jitter.
 
-The reports are not far outside the bounds. They can be extended a bit
-if that considerably reduces flakiness.
+Have you tried playing with these commands?
+
+ip link add dev br0 type bridge vlan_filtering 1 vlan_protocol 802.1ad
+ip link set eth0 master br0
+ip link set eth1 master br0
+bridge vlan add dev eth0 vid 100 pvid
+bridge vlan add dev eth1 vid 100
+
+They produce the same output as yours, but have the benefit of using
+the network stack's abstractions and not glue between the 802.1q and the
+bridge module, hidden in the network driver.
+
+I am sending the following packet towards eth0:
+
+00:04:9f:05:f4:ad > 00:01:02:03:04:05, ethertype 802.1Q (0x8100), length 102: \
+	vlan 111, p 0, ethertype IPv4, 10.0.111.1 > 10.0.111.3: \
+	ICMP echo request, id 63493, seq 991, length 64
+
+and collecting it on the partner of eth1 as follows:
+
+00:04:9f:05:f4:ad > 00:01:02:03:04:05, ethertype 802.1Q-QinQ (0x88a8), length 106: \
+	vlan 100, p 0, ethertype 802.1Q, vlan 111, p 0, ethertype IPv4, \
+	10.0.111.1 > 10.0.111.3: ICMP echo request, id 63493, seq 991, length 64
+
+Thanks,
+-Vladimir
