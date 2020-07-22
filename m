@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB9CE22977A
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 13:33:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2445822977B
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 13:33:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728261AbgGVLdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 07:33:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52528 "EHLO
+        id S1731072AbgGVLdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 07:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726161AbgGVLdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 07:33:11 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9928C0619DC
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 04:33:10 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id q17so835496pls.9
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 04:33:10 -0700 (PDT)
+        with ESMTP id S1726161AbgGVLdY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 07:33:24 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A2EC0619DC
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 04:33:24 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id x9so849715plr.2
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 04:33:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=puresoftware-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=LlPPi4IBljo6vwCgdkHQwIPFvt3uPdmjNJzd8ENh9oU=;
-        b=H3KydOfyLlynUqdxG7jLE0wrYfHIZ/FBuh9OV6B7rVwwD1hppuyvbYGF39V0y9XvEp
-         bgoU+tLAAY81TJgzygr6tu/6L7DorB+uOZ0l2Adbr8SqcCZ+pnkvris5Ko+tAi40y6DO
-         fg7cYnMnMTFCkV8yVcTaQo4uP2ogcg6vXY/G+TzYV5ug3edWG+DUymJ8Ges9X/Flo9pd
-         44QIE3su0iaV3KquaXjORkmWIPGyocrA16D5epZ4ywjr68ro/aPdz+tVPLA0qGf5Q7PI
-         Xju18Hlcd6/WbHAmb0wLsfYhHd821KFVJBqzA59A8/0AgbOufBV8DdAja5lvx8p8NtSl
-         uxcA==
+        bh=LmZ2i95h00F6l5aQsli2APIkRkMWwbBsR4XeBnqAsMg=;
+        b=hsLp5z9Bl9hLF6NMb9mf+5jLoIBDhaoHHj49s4auc60Vp3S9bR92+0VAKVfZ9ll39D
+         wcIkrtzTqoB+xDy6q+LVQwQU1Qs0AN43Emorn3Qhn8MWGXbj54UbiB/4qC1btHR/bHpk
+         PmoxN3UCF6crRydBVvBaNJWmPleoAlSrr3u+URadtjFqIaoRba8s18YX0nzxCnuhPeP3
+         BocqNU3k8BI/2EkcJFVboDwupHiQ5J7uZXYUDpRJRqmeaco/F1ZLL4PMFRUjzeA2pVL5
+         IJ8asFlUyM1i9xG4J4xovPXuyqi+dMmzEFvbCeOHLKINV+fJA6EXCX3eyO4TI7OUv+ek
+         AsIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :in-reply-to:references;
-        bh=LlPPi4IBljo6vwCgdkHQwIPFvt3uPdmjNJzd8ENh9oU=;
-        b=Y5czDx6lbNYAEPH+ibHtk6JeQcmDy2hqTCf3JMRggsEcwKuX4oyXfDYjepkoC/R/vN
-         VaZbYIzATCyjKRo6uOqLYIMU3NaexUrwDHeGO4Y+H9Xya96gyq+C89YqrTY4rTZar+9S
-         pRf+66k670gR+7TvLBd1b3A2pdFQXi8qCHI8Zdzj7bp+cvV8NcozSYErMMeQbAxmEXao
-         QlW9PkaoIjeAJ4EKY1DtdxcmKHBzBgz1x9bPHCNgO8s3XWQ3MkVI/a5YTWl7B59eFtdm
-         JApr9a7xJXly3s/fEXoF2s1N87+VVMJ9HtD+5NPEkrHsErow11QrEYhladxITeeuY5BX
-         q5RQ==
+        bh=LmZ2i95h00F6l5aQsli2APIkRkMWwbBsR4XeBnqAsMg=;
+        b=diTZKwnpto7Dce3EWGmRRQ/xZAyKBH0p809Y0II79a+tFk+8JFOrl9uuf/Cbvd/UDJ
+         6zETd9c7hDZAuHl7dQUAm0NoK8omtYGoN/9xU1Ip62z/CUeGXV1iuJLYiki9qyRS42QJ
+         TOERoF7mT01XsCqx4E8hVoL9M+jq6wJ70MunA311R88Z8u4encEjFsYfiFI6XhkziNVP
+         2BTLMXPXrxj7wWs8aC8I5dbk87v+G85vTHA5cVc36E/llTS6vMKHBMrVDYUpAleAdnYI
+         NGMgS62AXzzbLoQ5l7VtNA6+o+y1nSM2OuJ511TFv3pTw5TYNYfq9n10gVcFPfIrSUD7
+         HiSA==
 MIME-Version: 1.0
-X-Gm-Message-State: AOAM530NaVS129F3qbhpmH0tMZo/5YI5quV3DOrWxW95mIGRhmHH5aUo
-        2GkZ/bTXKGszyvWvKoFhlKORzErvTvuj4rMbg5u8jrrMnDNUZdXcSxTIjyIaIUZxSr6nBbtawDy
-        pjnBxccSh8w==
-X-Google-Smtp-Source: ABdhPJxuKeRy9Zv2i1Bv42vK+3ufmuTnmVKwAA4j3V0/geTvwkC9qpyfzZeHw6NqKiQTwDw2jzBlOA==
-X-Received: by 2002:a17:90a:f30c:: with SMTP id ca12mr8034776pjb.143.1595417590507;
-        Wed, 22 Jul 2020 04:33:10 -0700 (PDT)
+X-Gm-Message-State: AOAM532vNHOYPgEoQxaHbWqL2OQ4CiZo+cBYHZz9omUnzNNa+0iyp/W0
+        3uuMvwizOQkaTB8oDXr0uZA37B271u1TGSJuap/mwF+cg4qhqxFy1euTV43slGfbZJI96nxKD3r
+        DZZbG7SkgiDoQSXUsqA==
+X-Google-Smtp-Source: ABdhPJxShALqK6ZvYC72YrpWkT8cfHDOmYu/JbCeoqZwmQvX1ptkwmjdYjvYNpKF0TUmBvGhWKHYbQ==
+X-Received: by 2002:a17:90a:2d7:: with SMTP id d23mr9679879pjd.57.1595417603963;
+        Wed, 22 Jul 2020 04:33:23 -0700 (PDT)
 Received: from embedded-PC.puresoft.int ([125.63.92.170])
-        by smtp.gmail.com with ESMTPSA id 66sm24783715pfa.92.2020.07.22.04.33.07
+        by smtp.gmail.com with ESMTPSA id 66sm24783715pfa.92.2020.07.22.04.33.20
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Jul 2020 04:33:10 -0700 (PDT)
+        Wed, 22 Jul 2020 04:33:23 -0700 (PDT)
 From:   Vikas Singh <vikas.singh@puresoftware.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         linux@armlinux.org.uk, netdev@vger.kernel.org
 Cc:     calvin.johnson@oss.nxp.com, kuldip.dwivedi@puresoftware.com,
         madalin.bucur@oss.nxp.com, vikas.singh@nxp.com,
         Vikas Singh <vikas.singh@puresoftware.com>
-Subject: [PATCH 1/2] net: phy: Add fwnode helper functions
-Date:   Wed, 22 Jul 2020 17:02:26 +0530
-Message-Id: <1595417547-18957-2-git-send-email-vikas.singh@puresoftware.com>
+Subject: [PATCH 2/2] net: phy: Associate device node with fixed PHY
+Date:   Wed, 22 Jul 2020 17:02:27 +0530
+Message-Id: <1595417547-18957-3-git-send-email-vikas.singh@puresoftware.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1595417547-18957-1-git-send-email-vikas.singh@puresoftware.com>
 References: <1595417547-18957-1-git-send-email-vikas.singh@puresoftware.com>
@@ -67,108 +67,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support of fwnode helper functions to MDIO bus driver.
-1. fwnode_phy_find_device() to find phy_device associated to a fwnod
-2. fwnode_phy_connect() to attach the mac to the phy
+This patch will extend "struct fixed_phy_status" by adding new
+"struct device *dev" member entry in it.
+This change will help to handle the fixed phy registration in
+ACPI probe case for fwnodes.
 
 Signed-off-by: Vikas Singh <vikas.singh@puresoftware.com>
 ---
- drivers/net/phy/mdio_bus.c | 66 ++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/mdio.h       |  4 +++
- 2 files changed, 70 insertions(+)
+ drivers/net/phy/fixed_phy.c | 2 ++
+ include/linux/phy_fixed.h   | 2 ++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 7275eff..9457ff5 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -40,6 +40,72 @@
+diff --git a/drivers/net/phy/fixed_phy.c b/drivers/net/phy/fixed_phy.c
+index c4641b1..011c033 100644
+--- a/drivers/net/phy/fixed_phy.c
++++ b/drivers/net/phy/fixed_phy.c
+@@ -267,6 +267,8 @@ static struct phy_device *__fixed_phy_register(unsigned int irq,
+ 		phy->duplex = status->duplex;
+ 		phy->pause = status->pause;
+ 		phy->asym_pause = status->asym_pause;
++		if (!np)
++			phy->mdio.dev.fwnode = status->dev->fwnode;
+ 	}
  
- #include "mdio-boardinfo.h"
+ 	of_node_get(np);
+diff --git a/include/linux/phy_fixed.h b/include/linux/phy_fixed.h
+index 52bc8e4..155fea6 100644
+--- a/include/linux/phy_fixed.h
++++ b/include/linux/phy_fixed.h
+@@ -8,6 +8,8 @@ struct fixed_phy_status {
+ 	int duplex;
+ 	int pause;
+ 	int asym_pause;
++	/* Associated device node */
++	struct device *dev;
+ };
  
-+/* Helper function for fwnode_phy_find_device */
-+static int fwnode_phy_match(struct device *dev, const void *phy_fwnode)
-+{
-+	return dev->fwnode == phy_fwnode;
-+}
-+
-+/**
-+ * fwnode_phy_find_device - find the phy_device associated to fwnode
-+ * @phy_fwnode: Pointer to the PHY's fwnode
-+ *
-+ * If successful, returns a pointer to the phy_device with the
-+ * embedded struct device refcount incremented by one, NULL on
-+ * failure.
-+ */
-+struct phy_device *fwnode_phy_find_device(struct fwnode_handle *phy_fwnode)
-+{
-+	struct device *d;
-+	struct mdio_device *mdiodev;
-+
-+	if (!phy_fwnode)
-+		return NULL;
-+
-+	d = bus_find_device(&mdio_bus_type, NULL, phy_fwnode, fwnode_phy_match);
-+	if (d) {
-+		mdiodev = to_mdio_device(d);
-+		if (mdiodev->flags & MDIO_DEVICE_FLAG_PHY)
-+			return to_phy_device(d);
-+		put_device(d);
-+	}
-+
-+	return NULL;
-+}
-+EXPORT_SYMBOL(fwnode_phy_find_device);
-+
-+/**
-+ * fwnode_phy_connect - Connect to the phy described in the device tree
-+ * @dev: pointer to net_device claiming the phy
-+ * @phy_fwnode: Pointer to fwnode for the PHY
-+ * @hndlr: Link state callback for the network device
-+ * @flags: flags to pass to the PHY
-+ * @iface: PHY data interface type
-+ *
-+ * If successful, returns a pointer to the phy_device with the embedded
-+ * struct device refcount incremented by one, or NULL on failure. The
-+ * refcount must be dropped by calling phy_disconnect() or phy_detach().
-+ */
-+struct phy_device *fwnode_phy_connect(
-+		struct net_device *dev, struct fwnode_handle *phy_fwnode,
-+		void (*hndlr)(struct net_device *), u32 flags, u32 iface)
-+{
-+	struct phy_device *phy_dev;
-+
-+	phy_dev = fwnode_phy_find_device(phy_fwnode);
-+	if (!phy_dev)
-+		return NULL;
-+
-+	phy_dev->dev_flags = flags;
-+
-+	/* If in case we fail to attach to PHY,then phy_dev must be NULL */
-+	if (phy_connect_direct(dev, phy_dev, hndlr, iface))
-+		return NULL;
-+
-+	return phy_dev;
-+}
-+EXPORT_SYMBOL(fwnode_phy_connect);
-+
- static int mdiobus_register_gpiod(struct mdio_device *mdiodev)
- {
- 	/* Deassert the optional reset signal */
-diff --git a/include/linux/mdio.h b/include/linux/mdio.h
-index 898cbf0..501da6a 100644
---- a/include/linux/mdio.h
-+++ b/include/linux/mdio.h
-@@ -362,6 +362,10 @@ int mdiobus_register_device(struct mdio_device *mdiodev);
- int mdiobus_unregister_device(struct mdio_device *mdiodev);
- bool mdiobus_is_registered_device(struct mii_bus *bus, int addr);
- struct phy_device *mdiobus_get_phy(struct mii_bus *bus, int addr);
-+struct phy_device *fwnode_phy_find_device(struct fwnode_handle *phy_fwnode);
-+struct phy_device *fwnode_phy_connect(
-+		struct net_device *dev, struct fwnode_handle *phy_fwnode,
-+		void (*hndlr)(struct net_device *), u32 flags, u32 iface);
- 
- /**
-  * mdio_module_driver() - Helper macro for registering mdio drivers
+ struct device_node;
 -- 
 2.7.4
 
