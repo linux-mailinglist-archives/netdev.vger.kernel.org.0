@@ -2,376 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 274E422968D
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 12:45:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F4C6229696
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 12:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728437AbgGVKpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 06:45:46 -0400
-Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:44485 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728264AbgGVKpl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 06:45:41 -0400
-Received: from localhost.localdomain ([93.23.199.134])
-        by mwinf5d52 with ME
-        id 6Alb2300F2uUVcV03Alca2; Wed, 22 Jul 2020 12:45:37 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Wed, 22 Jul 2020 12:45:37 +0200
-X-ME-IP: 93.23.199.134
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     mcgrof@kernel.org, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] prism54: switch from 'pci_' to 'dma_' API
-Date:   Wed, 22 Jul 2020 12:45:34 +0200
-Message-Id: <20200722104534.30760-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1728217AbgGVKrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 06:47:42 -0400
+Received: from alln-iport-1.cisco.com ([173.37.142.88]:24635 "EHLO
+        alln-iport-1.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725847AbgGVKrl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 06:47:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=498; q=dns/txt; s=iport;
+  t=1595414859; x=1596624459;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=WCSqf5Uls9spb4IbsGkk45DnUFBgOspOkCfNX6kdcEs=;
+  b=ebtnT0iB7Hxa1TcUM6nwGlSTfcHZ9pskl6pyZ21UwsS4tZZEOmwHaSrP
+   Y475HvhOIE+cIUQ7bWFlc7Q0EJBEEjlx22F4XetCc4Df2Rr6qipvyWYzf
+   slHwvV0qcxs/RGMuDBIRMl2FwD/nWgppLUO6L0vOJUzs7WRSALK04KhKa
+   g=;
+IronPort-PHdr: =?us-ascii?q?9a23=3A8tKbcxQkrjZwiq4txkTMVRz9Ndpsv++ubAcI9p?=
+ =?us-ascii?q?oqja5Pea2//pPkeVbS/uhpkESQBtmJ7f9YlO3MsLjkRGkK7IzHt2oNI9RAVB?=
+ =?us-ascii?q?4A3MMRmQFoQMuIElbyI/OiaSsmVN9DW1lo8zDeUwBVFc/yakeUrii06jgfSR?=
+ =?us-ascii?q?PyKRVyPOftHpPXhcmtkeeo9M6bbwBBnjHoZ7R0IV2/phnQsc9Dh4xkJ8NTgh?=
+ =?us-ascii?q?vEq3dFYaJY32RtcFmShB37oMy3+c1u?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0CfCAAGGRhf/49dJa1gHgEBCxIMQIE?=
+ =?us-ascii?q?/C4FSUQeBRy8sCoQpg0YDjUiYXoJTA1ULAQEBDAEBLQIEAQGETAIXgXUCJDc?=
+ =?us-ascii?q?GDgIDAQELAQEFAQEBAgEGBG2FXAyFcgEBAwESEREMAQE3AQ8CAQgaAiYCAgI?=
+ =?us-ascii?q?wFRACBA4FIoMEgkwDDh8BAaF6AoE5iGF2gTKDAQEBBYUVGIIOCRR6KoJqg1W?=
+ =?us-ascii?q?GM4IagTgcgk0+hD2DFjOCLYFHAZBVPKJ2BgSCXZlmAx6CaQGcZy2wXAIEAgQ?=
+ =?us-ascii?q?FAg4BAQWBaSSBV3B6AXOBS1AXAg2OHoNxilZ0NwIGAQcBAQMJfI5DAYEQAQE?=
+X-IronPort-AV: E=Sophos;i="5.75,381,1589241600"; 
+   d="scan'208";a="515450508"
+Received: from rcdn-core-7.cisco.com ([173.37.93.143])
+  by alln-iport-1.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 22 Jul 2020 10:47:36 +0000
+Received: from XCH-RCD-005.cisco.com (xch-rcd-005.cisco.com [173.37.102.15])
+        by rcdn-core-7.cisco.com (8.15.2/8.15.2) with ESMTPS id 06MAla4i019006
+        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=FAIL);
+        Wed, 22 Jul 2020 10:47:36 GMT
+Received: from xhs-rtp-001.cisco.com (64.101.210.228) by XCH-RCD-005.cisco.com
+ (173.37.102.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jul
+ 2020 05:47:35 -0500
+Received: from xhs-rcd-002.cisco.com (173.37.227.247) by xhs-rtp-001.cisco.com
+ (64.101.210.228) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 22 Jul
+ 2020 06:47:34 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (72.163.14.9) by
+ xhs-rcd-002.cisco.com (173.37.227.247) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Wed, 22 Jul 2020 05:47:34 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f5OBsJ2pHeyF+t9e+StXGN9iRM3fV6p72xlQvxnsnoMK1T98itlUDz4iP2U+JcJpu2uPpTIFY/pplAWFmChneYWyTDN2xMmwz2RFhuDemaj3RceHLRjViXcGoAC2MiCIMQ0fgEAE24geuXTv45eZ7gtDvYUIsY5NbY4G4tZfQGoOiD/WJA3OOwmYDmaf4NNRm+l429N8lhtnavoZTZaoZRgypqBmzTFsh1loj/V4blli4pY8z5XLXTeMGP9E6fcFa2B9skvDsq87jDXUuuDtN3199KEZX+r64fCyv+12R7gVFjj7UHdzzq3IFOy4aEQmqiYjleVXBKbAd2dl2ZSahw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WCSqf5Uls9spb4IbsGkk45DnUFBgOspOkCfNX6kdcEs=;
+ b=ZENzwdR+/tmxkx6NrFIPfyhO6BRWnDObGY9KQoitPnMqhr/Qmh990ngzhvlcT1HgAqVTfIy1x/NyWnvTEC4vr9rP/f453Q0fMmDrpbKHZuag0aUxPI0TInft4y3zADQKlaWhqb3ktDUF9kt22tvcCqv54sgBFVHpwelMEG1F1RVq1vKdix2Sejgk7lWJ9qEGuxpzngPY+gGcxqYnF9dOz4KrmaXkTSLSN7SavDyFI4OpmaSyhSfuiYdOHcvM1ACA2Xga88TikyrRdj+qhfM9FEztAHo72zEVV8BLv2yHQMJZCCJbE+Buu/QwwIu8gieJ8/Nq/xsbpywNmeovcLd3XQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=cisco.com; dmarc=pass action=none header.from=cisco.com;
+ dkim=pass header.d=cisco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cisco.onmicrosoft.com;
+ s=selector2-cisco-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WCSqf5Uls9spb4IbsGkk45DnUFBgOspOkCfNX6kdcEs=;
+ b=e7iv3DfFJ/kmkARjBJeDBxovP+0dsKcbLd3+/Y1X+VhxrvUdixxv41cnX+AnDiPXyfgS7ECA0k9Tre3aHEbdujcoB7X/FGvJBtNzpKd7G7CmEdYpPMulW3iPX1fBn2NFo240dnqTuIgjXhWMl+eNGdQZlLqrRNmKXko+bMgGPbE=
+Received: from CY4PR1101MB2101.namprd11.prod.outlook.com
+ (2603:10b6:910:24::18) by CY4PR1101MB2150.namprd11.prod.outlook.com
+ (2603:10b6:910:18::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.22; Wed, 22 Jul
+ 2020 10:47:33 +0000
+Received: from CY4PR1101MB2101.namprd11.prod.outlook.com
+ ([fe80::6c4e:645e:fcf9:f766]) by CY4PR1101MB2101.namprd11.prod.outlook.com
+ ([fe80::6c4e:645e:fcf9:f766%11]) with mapi id 15.20.3195.025; Wed, 22 Jul
+ 2020 10:47:33 +0000
+From:   "Sriram Krishnan (srirakr2)" <srirakr2@cisco.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "Malcolm Bumgardner (mbumgard)" <mbumgard@cisco.com>,
+        "Umesha G M (ugm)" <ugm@cisco.com>,
+        "Niranjan M M (nimm)" <nimm@cisco.com>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4] hv_netvsc: add support for vlans in AF_PACKET mode
+Thread-Topic: [PATCH v4] hv_netvsc: add support for vlans in AF_PACKET mode
+Thread-Index: AQHWX3jViMyDafIl90i5mFDwKnwkz6kTyEAA
+Date:   Wed, 22 Jul 2020 10:47:32 +0000
+Message-ID: <9D7619F5-821F-4F06-B0EC-BBBAB8450690@cisco.com>
+References: <20200721071404.70230-1-srirakr2@cisco.com>
+ <20200721090528.2c9f104d@hermes.lan>
+In-Reply-To: <20200721090528.2c9f104d@hermes.lan>
+Accept-Language: en-US
+Content-Language: en-GB
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+user-agent: Microsoft-MacOutlook/16.39.20071300
+authentication-results: networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=none action=none
+ header.from=cisco.com;
+x-originating-ip: [106.51.23.252]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f3f0e3a4-6d13-4765-f989-08d82e2ca38e
+x-ms-traffictypediagnostic: CY4PR1101MB2150:
+x-ld-processed: 5ae1af62-9505-4097-a69a-c1553ef7840e,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CY4PR1101MB215011E156E55CF00D78AFF490790@CY4PR1101MB2150.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: jBTzT4SqGEyd6LGdZTC7og3B1402HyvHq7ESHCjZ+Yyh+bFBuluIrjRUh1EeIOWyGgmoD4MYKcwQOzHQ70WLbqDWVfwVjaRSMjYoCPhqF517zWGbfn+c7wm9zTNas+kRjaGAEFd3Zpn9d7rbYEoBm1Dz7Vl1D8tzO0kqXMoX99vJy6hA9y2JmEHQbA8SyM1O9awgF93Y1sCQtxtus4+BVYxLu5Tip/lFms1e1Cgf/c+mJPXZh8PHH6Yc/n6PGXn8leqfeAH5ydAoyaEhq2jkJYltBdl9Ghy/FVeQEdXEuj0crw+kIjfy6mtnTBWNoz+p
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR1101MB2101.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(346002)(376002)(396003)(136003)(54906003)(33656002)(86362001)(71200400001)(478600001)(5660300002)(55236004)(6916009)(8676002)(316002)(6486002)(2906002)(4326008)(8936002)(6506007)(83380400001)(36756003)(6512007)(66946007)(66446008)(66476007)(64756008)(66556008)(2616005)(26005)(7416002)(186003)(91956017)(76116006)(558084003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: UwCM5fA6mNPyK/iDDuGOS2AqUX2AbEbHbeOki9EmlB16O3ZEwyPSUc10kO8UTzFLMRZekFW4mhJR2guCv4Jk+og+TBTsQ1kDWVJfjs848cAVpUKOdy+l7RsFhPmtRQzUpdUWae5cKv4kx+sUWAD7MNdXktSY3r0zH6uTS6jXj3Rjjtbii2m8z+uyMIGfDXjlWK3jGutrhqsMelmScGhM4ROp97ibzSW6iMNgM2asJM9KYBx06EP0TUmsg0bRNe9f2ralVBWpxwyzgXBke5R5WV1IastOBYqWXoKcXCOTzXeQZ7m2fQ4xdwRJCGGSX8Lok7aORJlOLwIAcPNektv9JWuDBC7C44Z+/2DuM4z+lU9vob8QKCffVqZXatyH4VZHkwk/cV2SMafw2dd6gmXoEHA1fmum1C+QqNnyIIdy2RxThITNrVM9/ezslScFlandODTm4nZx8Y39jMY0quI4T5r2jY+MITyg3bQ3vx5713k=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A625900AF370C142A4996C48097F3C64@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR1101MB2101.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3f0e3a4-6d13-4765-f989-08d82e2ca38e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jul 2020 10:47:32.8610
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5ae1af62-9505-4097-a69a-c1553ef7840e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ajp0X7UNXnr7qCN/0gAqSChRfwb1pifZeIaaoIPyxFHwa+DoY8NquLvbMdEBBdIUm5VAcSqfL0C2QhWVauNtIg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1101MB2150
+X-OriginatorOrg: cisco.com
+X-Outbound-SMTP-Client: 173.37.102.15, xch-rcd-005.cisco.com
+X-Outbound-Node: rcdn-core-7.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
-
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
-
-When memory is allocated in 'islpci_alloc_memory()' (islpci_dev.c),
-GFP_KERNEL can be used because it is only called from a probe function
-and no spin_lock is taken in the between.
-
-The call chain is:
-   prism54_probe                   (probe function, in 'islpci_hotplug.c')
-      --> islpci_setup             (in 'islpci_dev.c')
-         --> islpci_alloc_memory   (in 'islpci_dev.c')
-
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
-
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- .../wireless/intersil/prism54/islpci_dev.c    | 30 +++++++++----------
- .../wireless/intersil/prism54/islpci_eth.c    | 24 +++++++--------
- .../intersil/prism54/islpci_hotplug.c         |  2 +-
- .../wireless/intersil/prism54/islpci_mgt.c    | 21 ++++++-------
- 4 files changed, 36 insertions(+), 41 deletions(-)
-
-diff --git a/drivers/net/wireless/intersil/prism54/islpci_dev.c b/drivers/net/wireless/intersil/prism54/islpci_dev.c
-index a9bae69222dc..efd64e555bb5 100644
---- a/drivers/net/wireless/intersil/prism54/islpci_dev.c
-+++ b/drivers/net/wireless/intersil/prism54/islpci_dev.c
-@@ -636,10 +636,10 @@ islpci_alloc_memory(islpci_private *priv)
- 	 */
- 
- 	/* perform the allocation */
--	priv->driver_mem_address = pci_alloc_consistent(priv->pdev,
--							HOST_MEM_BLOCK,
--							&priv->
--							device_host_address);
-+	priv->driver_mem_address = dma_alloc_coherent(&priv->pdev->dev,
-+						      HOST_MEM_BLOCK,
-+						      &priv->device_host_address,
-+						      GFP_KERNEL);
- 
- 	if (!priv->driver_mem_address) {
- 		/* error allocating the block of PCI memory */
-@@ -692,11 +692,9 @@ islpci_alloc_memory(islpci_private *priv)
- 
- 		/* map the allocated skb data area to pci */
- 		priv->pci_map_rx_address[counter] =
--		    pci_map_single(priv->pdev, (void *) skb->data,
--				   MAX_FRAGMENT_SIZE_RX + 2,
--				   PCI_DMA_FROMDEVICE);
--		if (pci_dma_mapping_error(priv->pdev,
--					  priv->pci_map_rx_address[counter])) {
-+		    dma_map_single(&priv->pdev->dev, (void *)skb->data,
-+				   MAX_FRAGMENT_SIZE_RX + 2, DMA_FROM_DEVICE);
-+		if (dma_mapping_error(&priv->pdev->dev, priv->pci_map_rx_address[counter])) {
- 			priv->pci_map_rx_address[counter] = 0;
- 			/* error mapping the buffer to device
- 			   accessible memory address */
-@@ -727,9 +725,9 @@ islpci_free_memory(islpci_private *priv)
- 
- 	/* free consistent DMA area... */
- 	if (priv->driver_mem_address)
--		pci_free_consistent(priv->pdev, HOST_MEM_BLOCK,
--				    priv->driver_mem_address,
--				    priv->device_host_address);
-+		dma_free_coherent(&priv->pdev->dev, HOST_MEM_BLOCK,
-+				  priv->driver_mem_address,
-+				  priv->device_host_address);
- 
- 	/* clear some dangling pointers */
- 	priv->driver_mem_address = NULL;
-@@ -741,8 +739,8 @@ islpci_free_memory(islpci_private *priv)
-         for (counter = 0; counter < ISL38XX_CB_MGMT_QSIZE; counter++) {
- 		struct islpci_membuf *buf = &priv->mgmt_rx[counter];
- 		if (buf->pci_addr)
--			pci_unmap_single(priv->pdev, buf->pci_addr,
--					 buf->size, PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&priv->pdev->dev, buf->pci_addr,
-+					 buf->size, DMA_FROM_DEVICE);
- 		buf->pci_addr = 0;
- 		kfree(buf->mem);
- 		buf->size = 0;
-@@ -752,10 +750,10 @@ islpci_free_memory(islpci_private *priv)
- 	/* clean up data rx buffers */
- 	for (counter = 0; counter < ISL38XX_CB_RX_QSIZE; counter++) {
- 		if (priv->pci_map_rx_address[counter])
--			pci_unmap_single(priv->pdev,
-+			dma_unmap_single(&priv->pdev->dev,
- 					 priv->pci_map_rx_address[counter],
- 					 MAX_FRAGMENT_SIZE_RX + 2,
--					 PCI_DMA_FROMDEVICE);
-+					 DMA_FROM_DEVICE);
- 		priv->pci_map_rx_address[counter] = 0;
- 
- 		if (priv->data_low_rx[counter])
-diff --git a/drivers/net/wireless/intersil/prism54/islpci_eth.c b/drivers/net/wireless/intersil/prism54/islpci_eth.c
-index 8d680250a281..74dd65716afd 100644
---- a/drivers/net/wireless/intersil/prism54/islpci_eth.c
-+++ b/drivers/net/wireless/intersil/prism54/islpci_eth.c
-@@ -50,9 +50,9 @@ islpci_eth_cleanup_transmit(islpci_private *priv,
- 			      skb, skb->data, skb->len, skb->truesize);
- #endif
- 
--			pci_unmap_single(priv->pdev,
-+			dma_unmap_single(&priv->pdev->dev,
- 					 priv->pci_map_tx_address[index],
--					 skb->len, PCI_DMA_TODEVICE);
-+					 skb->len, DMA_TO_DEVICE);
- 			dev_kfree_skb_irq(skb);
- 			skb = NULL;
- 		}
-@@ -176,10 +176,9 @@ islpci_eth_transmit(struct sk_buff *skb, struct net_device *ndev)
- #endif
- 
- 	/* map the skb buffer to pci memory for DMA operation */
--	pci_map_address = pci_map_single(priv->pdev,
--					 (void *) skb->data, skb->len,
--					 PCI_DMA_TODEVICE);
--	if (pci_dma_mapping_error(priv->pdev, pci_map_address)) {
-+	pci_map_address = dma_map_single(&priv->pdev->dev, (void *)skb->data,
-+					 skb->len, DMA_TO_DEVICE);
-+	if (dma_mapping_error(&priv->pdev->dev, pci_map_address)) {
- 		printk(KERN_WARNING "%s: cannot map buffer to PCI\n",
- 		       ndev->name);
- 		goto drop_free;
-@@ -323,9 +322,8 @@ islpci_eth_receive(islpci_private *priv)
- #endif
- 
- 	/* delete the streaming DMA mapping before processing the skb */
--	pci_unmap_single(priv->pdev,
--			 priv->pci_map_rx_address[index],
--			 MAX_FRAGMENT_SIZE_RX + 2, PCI_DMA_FROMDEVICE);
-+	dma_unmap_single(&priv->pdev->dev, priv->pci_map_rx_address[index],
-+			 MAX_FRAGMENT_SIZE_RX + 2, DMA_FROM_DEVICE);
- 
- 	/* update the skb structure and align the buffer */
- 	skb_put(skb, size);
-@@ -431,11 +429,9 @@ islpci_eth_receive(islpci_private *priv)
- 
- 		/* set the streaming DMA mapping for proper PCI bus operation */
- 		priv->pci_map_rx_address[index] =
--		    pci_map_single(priv->pdev, (void *) skb->data,
--				   MAX_FRAGMENT_SIZE_RX + 2,
--				   PCI_DMA_FROMDEVICE);
--		if (pci_dma_mapping_error(priv->pdev,
--					  priv->pci_map_rx_address[index])) {
-+		    dma_map_single(&priv->pdev->dev, (void *)skb->data,
-+				   MAX_FRAGMENT_SIZE_RX + 2, DMA_FROM_DEVICE);
-+		if (dma_mapping_error(&priv->pdev->dev, priv->pci_map_rx_address[index])) {
- 			/* error mapping the buffer to device accessible memory address */
- 			DEBUG(SHOW_ERROR_MESSAGES,
- 			      "Error mapping DMA address\n");
-diff --git a/drivers/net/wireless/intersil/prism54/islpci_hotplug.c b/drivers/net/wireless/intersil/prism54/islpci_hotplug.c
-index 20291c0d962d..a8835c4507d9 100644
---- a/drivers/net/wireless/intersil/prism54/islpci_hotplug.c
-+++ b/drivers/net/wireless/intersil/prism54/islpci_hotplug.c
-@@ -106,7 +106,7 @@ prism54_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	}
- 
- 	/* enable PCI DMA */
--	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
-+	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
- 		printk(KERN_ERR "%s: 32-bit PCI DMA not supported", DRV_NAME);
- 		goto do_pci_disable_device;
-         }
-diff --git a/drivers/net/wireless/intersil/prism54/islpci_mgt.c b/drivers/net/wireless/intersil/prism54/islpci_mgt.c
-index e336eb106429..0c7fb76c7d1c 100644
---- a/drivers/net/wireless/intersil/prism54/islpci_mgt.c
-+++ b/drivers/net/wireless/intersil/prism54/islpci_mgt.c
-@@ -115,10 +115,11 @@ islpci_mgmt_rx_fill(struct net_device *ndev)
- 			buf->size = MGMT_FRAME_SIZE;
- 		}
- 		if (buf->pci_addr == 0) {
--			buf->pci_addr = pci_map_single(priv->pdev, buf->mem,
-+			buf->pci_addr = dma_map_single(&priv->pdev->dev,
-+						       buf->mem,
- 						       MGMT_FRAME_SIZE,
--						       PCI_DMA_FROMDEVICE);
--			if (pci_dma_mapping_error(priv->pdev, buf->pci_addr)) {
-+						       DMA_FROM_DEVICE);
-+			if (dma_mapping_error(&priv->pdev->dev, buf->pci_addr)) {
- 				printk(KERN_WARNING
- 				       "Failed to make memory DMA'able.\n");
- 				return -ENOMEM;
-@@ -203,9 +204,9 @@ islpci_mgt_transmit(struct net_device *ndev, int operation, unsigned long oid,
- #endif
- 
- 	err = -ENOMEM;
--	buf.pci_addr = pci_map_single(priv->pdev, buf.mem, frag_len,
--				      PCI_DMA_TODEVICE);
--	if (pci_dma_mapping_error(priv->pdev, buf.pci_addr)) {
-+	buf.pci_addr = dma_map_single(&priv->pdev->dev, buf.mem, frag_len,
-+				      DMA_TO_DEVICE);
-+	if (dma_mapping_error(&priv->pdev->dev, buf.pci_addr)) {
- 		printk(KERN_WARNING "%s: cannot map PCI memory for mgmt\n",
- 		       ndev->name);
- 		goto error_free;
-@@ -302,8 +303,8 @@ islpci_mgt_receive(struct net_device *ndev)
- 		}
- 
- 		/* Ensure the results of device DMA are visible to the CPU. */
--		pci_dma_sync_single_for_cpu(priv->pdev, buf->pci_addr,
--					    buf->size, PCI_DMA_FROMDEVICE);
-+		dma_sync_single_for_cpu(&priv->pdev->dev, buf->pci_addr,
-+					buf->size, DMA_FROM_DEVICE);
- 
- 		/* Perform endianess conversion for PIMFOR header in-place. */
- 		header = pimfor_decode_header(buf->mem, frag_len);
-@@ -414,8 +415,8 @@ islpci_mgt_cleanup_transmit(struct net_device *ndev)
- 	for (; priv->index_mgmt_tx < curr_frag; priv->index_mgmt_tx++) {
- 		int index = priv->index_mgmt_tx % ISL38XX_CB_MGMT_QSIZE;
- 		struct islpci_membuf *buf = &priv->mgmt_tx[index];
--		pci_unmap_single(priv->pdev, buf->pci_addr, buf->size,
--				 PCI_DMA_TODEVICE);
-+		dma_unmap_single(&priv->pdev->dev, buf->pci_addr, buf->size,
-+				 DMA_TO_DEVICE);
- 		buf->pci_addr = 0;
- 		kfree(buf->mem);
- 		buf->mem = NULL;
--- 
-2.25.1
-
+DQoNCu+7v09uIDIxLzA3LzIwLCA5OjM2IFBNLCANClN0ZXBoZW4gSGVtbWluZ2VyIDxzdGVwaGVu
+QG5ldHdvcmtwbHVtYmVyLm9yZz4gd3JvdGU6DQoNCiAgICA+IFByaW50aW5nIGVycm9yIG1lc3Nh
+Z2VzIGlzIGdvb2QgZm9yIGRlYnVnZ2luZyBidXQgYmFkIElSTC4NCiAgICA+IFVzZXJzIGlnbm9y
+ZSBpdCwgb3IgaXQgb3ZlcmZsb3dzIHRoZSBsb2cgYnVmZmVyLg0KDQogICAgPiBBIGJldHRlciBh
+bHRlcm5hdGl2ZSB3b3VsZCBiZSB0byBhZGQgYSBjb3VudGVyIHRvIG5ldHZzY19ldGh0b29sX3N0
+YXRzLg0KDQogICAgVGhhbmtzLCB0aGUgcmVjb21tZW5kZWQgY2hhbmdlIGNhbiBiZSBmb3VuZCBp
+biBwYXRjaCB2NQ0KICAgIA0KDQo=
