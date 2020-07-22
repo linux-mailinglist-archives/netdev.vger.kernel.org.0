@@ -2,90 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C34EA22A24B
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 00:19:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F03C722A250
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 00:24:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729565AbgGVWTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 18:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726447AbgGVWTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 18:19:46 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC751C0619DC;
-        Wed, 22 Jul 2020 15:19:45 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id u64so3575038qka.12;
-        Wed, 22 Jul 2020 15:19:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XrjykOZMjEbhEG4xYzx5TkMq0JyZVdIE71GzGgj+ZAw=;
-        b=oJvZq4zw920vtMakxOmhTZnFBQN2QldafEhIEKKnkn/XAOGY11njc1951eCgO6f4bV
-         z4cGbIKqik2Gd+h9vZhGV9waHFi5xqOXsZH4ASEiBcuM8fe29vlHHiELI6S/1fXtWLUy
-         ARKWNBRzYAOqoYmQMkV8FbAZ+VH2QxYLXUH6lHsi3dQB3KtWgl9YLkLjQDKVm3RLtamy
-         fC7kQYIM1ncSGPZ/FgLL0x8gbQnk/UiqwSdIdCt7aTFWyvBkUJ9WJWlRh701xUZk/bno
-         danH0cSZJ6tXCbsjp9TYbwWa5AZRdSYyXcnsyIrdoqMUogmA0SMgeHtwtGDT8B/9TQ1c
-         bxGQ==
+        id S1726462AbgGVWYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 18:24:08 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:35570 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726447AbgGVWYI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 18:24:08 -0400
+Received: by mail-il1-f198.google.com with SMTP id v12so2140435ilg.2
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 15:24:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XrjykOZMjEbhEG4xYzx5TkMq0JyZVdIE71GzGgj+ZAw=;
-        b=IgOzcWimWNS6+UECl1hekp/dIPded6PPWe4nlrwcdtKI1wcvJkTVqqB5+34G1BJqNE
-         zdDKJWjvc3N+CIwqe0IS6KkAAsMStFEAeZWkCkMDRhzdtCmSexrVvIkih97R4bal18jT
-         0Y4J0any5A2Qco06DFkUcDgz4TVKtpyBzO7T6O9OfYxT5G6zBImkO1Fldfm0hDOexQrJ
-         263UCjCp+F/EMwhKjFGAzzsj79Uhv6Ghz8N6sZ8TjOVmwS5+iY8w+P5aDnTYVqcraAv4
-         b7IvHWXvHAwf3aUhrAZDAxMZHox+p8NzR/O+E0tVpDfaJz6Z4Z09CHx5MVw5kiQ7w+g3
-         haCg==
-X-Gm-Message-State: AOAM531Hw5ESh31ILO6suWFu6gyylEcxgCnChk1NjVs8TMmnrH6Fu8yK
-        kgxj9HL+RPwKGjRyyXYr02o=
-X-Google-Smtp-Source: ABdhPJzo4PZ4wOpwK4EPfptH0lcP6RkPlh6aS2taiOlx30gGCDmG92nQZzwYQf8t1jtnWjXdKTZgCQ==
-X-Received: by 2002:a37:d83:: with SMTP id 125mr2292115qkn.430.1595456385011;
-        Wed, 22 Jul 2020 15:19:45 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:5c10:aafb:1d38:5735? ([2601:282:803:7700:5c10:aafb:1d38:5735])
-        by smtp.googlemail.com with ESMTPSA id n127sm1079195qke.29.2020.07.22.15.19.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jul 2020 15:19:44 -0700 (PDT)
-Subject: Re: linux-next: Tree for Jul 22 (drivers/net/vrf)
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
-        David Miller <davem@davemloft.net>
-References: <20200722231640.3dae04cd@canb.auug.org.au>
- <e1fc4765-db64-2876-2f3c-857c45d4fb45@infradead.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <76e94256-ccd6-2ba5-fa85-24e643dddb84@gmail.com>
-Date:   Wed, 22 Jul 2020 16:19:42 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=wyels00yuO2hXMVYbZQVnCTESUbWVpmiNO+l3fFwAEg=;
+        b=Q5SW0qCtHn9kDU94lNa8StSSxuLR+tNcq6myD2NAmDaIvwO1m5wkW/BxbK+ta404Jw
+         17VB95Mj186MSDOeARFU1BUNh4oQ3a4M9aokARqEL/1G0Yamb1ZE6VTMGFDPmPjvOeEl
+         bGeDQuSTwy0tTXLNkK6MkUgy1NJ8LyOhlQhhkFQv48RmRtPCFKe/YGe9Fa6kLlvHzadv
+         MAazlU7JTo2fw3CvyOaSMv9ZIdUQb8eB8Ufsn6Qc+r7BCawNr6sn9Xune9zTbanrjT0U
+         cv6RrF2ynnTwayfWMSH5g04/XJKRWvYOo7i11064jVnbPoPNhLUOkbdPoxH7CF3yTYJ4
+         Q5GA==
+X-Gm-Message-State: AOAM531Q3Hpj/tZalN8xepdCjxCLr+TPBzuWrr1YGFP5mh/ggoT00OAV
+        up6qL4b5vZNdSqIi2EqeyGYrJTWsejsJLL2l0hsvmOCWmSls
+X-Google-Smtp-Source: ABdhPJxjCcHozifK7eLXi30QKZ6a69Z/FmqquTzaVoaFK0E57gWv+ZSUlpHJnnPfhdRwhMZOJa28BI3Nn7D0lDWwXXKE1mAUB+OI
 MIME-Version: 1.0
-In-Reply-To: <e1fc4765-db64-2876-2f3c-857c45d4fb45@infradead.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6638:13ce:: with SMTP id i14mr1515751jaj.62.1595456647624;
+ Wed, 22 Jul 2020 15:24:07 -0700 (PDT)
+Date:   Wed, 22 Jul 2020 15:24:07 -0700
+In-Reply-To: <CAM_iQpXKJ2SA=pRFEjwAwLkR_bw-y7ZqnSoe3zPqJc-CKv09Xw@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000bc7a5905ab0f32b9@google.com>
+Subject: Re: KASAN: use-after-free Write in __linkwatch_run_queue
+From:   syzbot <syzbot+bbc3a11c4da63c1b74d6@syzkaller.appspotmail.com>
+To:     andrew@lunn.ch, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/22/20 10:35 AM, Randy Dunlap wrote:
-> On 7/22/20 6:16 AM, Stephen Rothwell wrote:
->> Hi all,
->>
->> Changes since 20200721:
->>
-> 
-> on i386:
-> when CONFIG_SYSCTL is not set/enabled:
-> 
-> ERROR: modpost: "sysctl_vals" [drivers/net/vrf.ko] undefined!
-> 
-> 
+Hello,
 
-thanks for the report; I'll send a patch when I get a few minutes.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+
+Reported-and-tested-by: syzbot+bbc3a11c4da63c1b74d6@syzkaller.appspotmail.com
+
+Tested on:
+
+commit:         0c473089 bonding: fix register_netdevice() in bond_newlink()
+git tree:       https://github.com/congwang/linux.git net
+kernel config:  https://syzkaller.appspot.com/x/.config?x=dddbcb5a9f4192db
+dashboard link: https://syzkaller.appspot.com/bug?extid=bbc3a11c4da63c1b74d6
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+Note: testing is done by a robot and is best-effort only.
