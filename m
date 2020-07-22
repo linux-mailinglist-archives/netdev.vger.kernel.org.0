@@ -2,164 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A783622901E
-	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 07:54:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3F82229046
+	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 08:02:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728413AbgGVFxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 01:53:22 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:53916 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728299AbgGVFxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 01:53:21 -0400
-Received: by mail-il1-f199.google.com with SMTP id r4so289888ilq.20
-        for <netdev@vger.kernel.org>; Tue, 21 Jul 2020 22:53:20 -0700 (PDT)
+        id S1727891AbgGVGCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 02:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727084AbgGVGCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 02:02:17 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E79C061794;
+        Tue, 21 Jul 2020 23:02:17 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id e12so1018014qtr.9;
+        Tue, 21 Jul 2020 23:02:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/KfXQuF2JJOoXjIPymwUQpwHoPclxEKAmVNRUCUP4pY=;
+        b=D11QqbSSY4WpRR6QBKOdOMBPO64k+WOEuocbUi55fYbF+Ol0OZlpzHnQ8JI5RXMu1v
+         dHznOGllAg9WwE3bZA0FujJRHsHdzQ90l0ihxNxG0ZYWoQUCi7VZCjF/T01tZR5Kq0yc
+         MBek2X3cYm2dYkXQaZiv4/OOhJia6uAwyR2XydLR/EJCCwj5zttEHN0VmE8x76CneR+x
+         EvaafIJLosdCtdUB+9/WWHOOEfMBLJwt0wIIIkdkEq4HfsUXK2lK4Ip6ZKY8JZcuhqYe
+         vuMzc0YetJp/MPXj5kcfCBslaCxwWWEbOKhDWDS8MDKGDQMdNTpEs7Rfxzzp3wleAl8b
+         UqFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=MG4gD8Y6EKPwaXxhfc/Tzx5ur3udi30LP4Rb4Skua+c=;
-        b=E1aN56v+f7+3To9TBRomVL7V1VuUH3K+mJzKGxJ+7yv/wySGlRtxOPMdV8hyQinZ9D
-         aWIYHSCykCcfsBoFO24VXyK3a3d1I0b1Z+m75SeOZ0GvYwLvohP1k6SoQFUvG8AZ1fOZ
-         17eySv5ACrkKLcitZnk6F2GIgIbz13ONwYcSYvB9zZDIpmb7OwMWWyBPdlJGuB0lRTdp
-         pkfaVQbjzrMMPAihJylhPvsraVjTD12CzgnAwsjrbY6tnB7jcHWQ2wJVvxaNn8cRKXwi
-         DT2QdL3J1u3SDw3hajRbL0gkzyGRfGlkwZREAwCiPGtFCO/cREkLRQYxWzy8AHutPmz0
-         dq6w==
-X-Gm-Message-State: AOAM5333ruPB/lylX4biAQehzDPZrOP0t4LraobUY84HcnOWKLgjN2Ks
-        tTUbimSD3v7Hf2YHyKwgdwU4GKPGb8U0MySkeyuiQme8BHev
-X-Google-Smtp-Source: ABdhPJywRgyXy7XvGSdoG2J9/4L3+oXZtjXCDrmCUPqsfljw2ls2WWIjkpniLzemiFCW2plFQNQpjJiuIrTbbcxhWj6mQIqrBiyE
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/KfXQuF2JJOoXjIPymwUQpwHoPclxEKAmVNRUCUP4pY=;
+        b=aV2Z3MXQWan+ySa4XCR3KOLtxKJO2K1HW2bEiEDxZGGyaqCohy5qTj4wlMf7sehqzX
+         pVN5Hc/2NXUyT790cbUfCj+SgguX75NWM8XyW223/2rc9oGUdsCxsClbQAob8mDqyh8b
+         ZhR+EQ4mfpUN9nBALhVhYmeBhl9KGduL8GonD0SV8pZkXIDq8ZH+7mSaC+OgZ18mbN4m
+         SmnM5iJFIy9gmcvOs8e2ol9XKwU06xRYehgx/WKACSoidm7zlOdK/GnIQ1HXF9Ai/OE9
+         iWr6q4/K5S0KdmKZhXkigOw48D+vdHXy4xguL9X61rIdVU/yrZdnW0mdmZC7AlRCFaE8
+         Hylw==
+X-Gm-Message-State: AOAM531OxGeGiVwEF/UO8cKZEsS9wcjgzme1HBGGh4kQLJUpNvPg6W+1
+        gtMcBGEm8A/1HJr/FR5ZDFcp0FEo874/yDn3h20=
+X-Google-Smtp-Source: ABdhPJx4O1FdwrbWNMhZlEht3VPXFw3HgyDpWAk7KvRNNnGYr9ftRtTK9jhF+hLO8PprnTFry3fRN+H3nMPg0wlwi7M=
+X-Received: by 2002:ac8:18d4:: with SMTP id o20mr32200438qtk.141.1595397736298;
+ Tue, 21 Jul 2020 23:02:16 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a02:6381:: with SMTP id j123mr34646359jac.103.1595397199881;
- Tue, 21 Jul 2020 22:53:19 -0700 (PDT)
-Date:   Tue, 21 Jul 2020 22:53:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005fecaf05ab015b7a@google.com>
-Subject: KMSAN: uninit-value in geneve_xmit
-From:   syzbot <syzbot+7ebc2e088af5e4c0c9fa@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+References: <159481853923.454654.12184603524310603480.stgit@toke.dk>
+ <159481854255.454654.15065796817034016611.stgit@toke.dk> <20200715204406.vt64vgvzsbr6kolm@ast-mbp.dhcp.thefacebook.com>
+ <87mu3zentu.fsf@toke.dk> <20200717020507.jpxxe4dbc2watsfh@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzYd4Xrn4EqzqHCTuJ8TnZiTC1vWWvd=9Np+LNrgbtxOcQ@mail.gmail.com>
+ <20200720233455.6ito7n2eqojlfnvk@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzYtD9dGUy3hZRRAA56CaVvW7xTR9tp0dXKyVQXym046eQ@mail.gmail.com> <20200722002918.574pruibvlxfblyq@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200722002918.574pruibvlxfblyq@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 21 Jul 2020 23:02:04 -0700
+Message-ID: <CAEf4BzbdE441MgpEAv+nLBYUXZRz_tzGvmf87rw68hOvT0bwfw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 3/6] bpf: support attaching freplace programs
+ to multiple attach points
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Jul 21, 2020 at 5:29 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Mon, Jul 20, 2020 at 08:48:04PM -0700, Andrii Nakryiko wrote:
+> >
+> > Right, I wanted to avoid taking a refcnt on aux->linked_prog during
+> > PROG_LOAD. The reason for that was (and still is) that I don't get who
+> > and when has to bpf_prog_put() original aux->linked_prog to allow the
+> > prog X to be freed. I.e., after you re-attach to prog Y, how prog X is
+> > released (assuming no active bpf_link is keeping it from being freed)?
+> > That's my biggest confusion right now.
+> >
+> > I also didn't like the idea of half-creating bpf_tracing_link on
+> > PROG_LOAD and then turning it into a real link with bpf_link_settle on
+> > attach. That sounded like a hack to me.
+>
+> The link is kinda already created during prog_load of EXT type.
+> Typically prog_load needs expected_attach_type that points to something
+> that is not going to disappear. In case of EXT progs the situation is different,
+> since the target can be unloaded. So the prog load cmd not only validates the
+> program extension but links target and ext prog together at the same time.
+> The target prog will be held until EXT prog is unloaded.
+> I think it's important to preserve this semantics to the users that the target prog
+> is frozen at load time and no races are going to happen later.
+> Otherwise it leads to double validation at attach time and races.
 
-syzbot found the following issue on:
+Yes, I was confused because of the step you describe below (removal of
+linked_prog from aux->linked_prog and moving it into BPF link on
+attach). With that move, it makes sense to have that bpf_prog refcnt
+bump on load, makes everything simpler.
 
-HEAD commit:    14525656 compiler.h: reinstate missing KMSAN_INIT
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=13396087100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c534a9fad6323722
-dashboard link: https://syzkaller.appspot.com/bug?extid=7ebc2e088af5e4c0c9fa
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11056017100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=102dbc10900000
+>
+> What raw_tp_open is doing right now is a hack. It allocates bpf_tracing_link,
+> registers it into link_idr and activates trampoline, but in reality that link is already there.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7ebc2e088af5e4c0c9fa@syzkaller.appspotmail.com
+That's an interesting way to look at this. For me it always felt
+normal, because real linking is happening inside
+bpf_trampoline_link_prog(). But it's a minor technicality, it's not
+important enough to discuss.
 
-=====================================================
-BUG: KMSAN: uninit-value in geneve_xmit_skb drivers/net/geneve.c:909 [inline]
-BUG: KMSAN: uninit-value in geneve_xmit+0x2a59/0x2bf0 drivers/net/geneve.c:1005
-CPU: 1 PID: 2303 Comm: kworker/1:2 Not tainted 5.8.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events iterate_cleanup_work
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1df/0x240 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- geneve_xmit_skb drivers/net/geneve.c:909 [inline]
- geneve_xmit+0x2a59/0x2bf0 drivers/net/geneve.c:1005
- __netdev_start_xmit include/linux/netdevice.h:4611 [inline]
- netdev_start_xmit include/linux/netdevice.h:4625 [inline]
- xmit_one net/core/dev.c:3556 [inline]
- dev_hard_start_xmit+0x50e/0xa70 net/core/dev.c:3572
- __dev_queue_xmit+0x2f8d/0x3b20 net/core/dev.c:4131
- dev_queue_xmit+0x4b/0x60 net/core/dev.c:4164
- neigh_hh_output include/net/neighbour.h:498 [inline]
- neigh_output include/net/neighbour.h:507 [inline]
- ip6_finish_output2+0x2057/0x2620 net/ipv6/ip6_output.c:117
- __ip6_finish_output+0x824/0x8e0 net/ipv6/ip6_output.c:143
- ip6_finish_output+0x166/0x410 net/ipv6/ip6_output.c:153
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip6_output+0x60a/0x770 net/ipv6/ip6_output.c:176
- dst_output include/net/dst.h:443 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- mld_sendpack+0xeba/0x13d0 net/ipv6/mcast.c:1679
- mld_send_cr net/ipv6/mcast.c:1975 [inline]
- mld_ifc_timer_expire+0x1158/0x1750 net/ipv6/mcast.c:2474
- call_timer_fn+0x218/0x510 kernel/time/timer.c:1404
- expire_timers kernel/time/timer.c:1449 [inline]
- __run_timers+0xd20/0x11c0 kernel/time/timer.c:1773
- run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
- __do_softirq+0x311/0x83d kernel/softirq.c:293
- asm_call_on_stack+0x12/0x20 arch/x86/entry/entry_64.S:711
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:23 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:50 [inline]
- do_softirq_own_stack+0x7c/0xa0 arch/x86/kernel/irq_64.c:77
- invoke_softirq kernel/softirq.c:390 [inline]
- __irq_exit_rcu+0x226/0x270 kernel/softirq.c:420
- irq_exit_rcu+0xe/0x10 kernel/softirq.c:432
- sysvec_apic_timer_interrupt+0x107/0x130 arch/x86/kernel/apic/apic.c:1091
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:593
-RIP: 0010:rcu_all_qs+0x1/0x240 kernel/rcu/tree_plugin.h:808
-Code: 00 4c 89 ff e8 20 d2 ff ff 5b 41 5e 41 5f 5d c3 41 8b be 88 0c 00 00 e8 4d 9e 8d 00 eb c9 90 66 2e 0f 1f 84 00 00 00 00 00 55 <48> 89 e5 41 57 41 56 41 55 41 54 53 48 83 ec 20 65 48 8b 04 25 28
-RSP: 0018:ffffb5cc8513bac0 EFLAGS: 00000286
-RAX: 0000000080000000 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000016d0c
-RBP: ffffb5cc8513bae0 R08: fffff1870000000f R09: ffff9ba6afffb000
-R10: 0000000000000004 R11: ffffffffacbc7b70 R12: ffffffffb0221158
-R13: 0000000000000000 R14: ffff9ba6a7bc46d8 R15: 0000000000000e06
- get_next_corpse net/netfilter/nf_conntrack_core.c:2239 [inline]
- nf_ct_iterate_cleanup+0x5c6/0x710 net/netfilter/nf_conntrack_core.c:2261
- nf_ct_iterate_cleanup_net+0x182/0x230 net/netfilter/nf_conntrack_core.c:2346
- iterate_cleanup_work+0x97/0x1c0 net/netfilter/nf_nat_masquerade.c:216
- process_one_work+0x1540/0x1f30 kernel/workqueue.c:2269
- worker_thread+0xed2/0x23f0 kernel/workqueue.c:2415
- kthread+0x515/0x550 kernel/kthread.c:292
- ret_from_fork+0x22/0x30 arch/x86/entry/entry_64.S:293
+> I think we can clean it up by creating bpf_tracing_link at prog load time.
+> Whether to register it at that time into link_idr is up to discussion.
+> (I think probably not).
 
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
- kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
- __msan_chain_origin+0x50/0x90 mm/kmsan/kmsan_instr.c:165
- geneve_changelink+0xcbb/0xee0 drivers/net/geneve.c:1652
- __rtnl_newlink net/core/rtnetlink.c:3255 [inline]
- rtnl_newlink+0x3032/0x3900 net/core/rtnetlink.c:3397
- rtnetlink_rcv_msg+0x1184/0x15c0 net/core/rtnetlink.c:5460
- netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2469
- rtnetlink_rcv+0x50/0x60 net/core/rtnetlink.c:5478
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x1370/0x1400 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x623/0x750 net/socket.c:2439
- __do_sys_sendmsg net/socket.c:2448 [inline]
- __se_sys_sendmsg+0x97/0xb0 net/socket.c:2446
- __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2446
- do_syscall_64+0xb0/0x150 arch/x86/entry/common.c:386
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Local variable ----df@geneve_changelink created at:
- geneve_changelink+0xfb/0xee0 drivers/net/geneve.c:1622
- geneve_changelink+0xfb/0xee0 drivers/net/geneve.c:1622
-=====================================================
+yeah, I agree, let's not
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> Then raw_tp_open will activate that allocated bpf_tracing_link via trampoline,
+> _remove_ it from aux->linked_tracing_link (old linked_prog) and
+> return FD to the user.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Ok, so this move from aux->linked_prog into BPF link itself is what
+was missing, I wasn't sure whether you proposed doing that. With that
+it makes more sense, even if it's a bit "asymmetrical" in that you can
+attach only once using old-style EXT attach, but can attach and
+re-attach many times if you specify tgt_prog_fd. But I think it's also
+fine, I just wish we always required tgt_prog_fd...
+
+> So this partially created link at load_time will become complete link and
+> close of the link will detach EXT from the target and the target can be unloaded.
+> (Currently the target cannot be unloaded until EXT is loaded which is not great).
+> The EXT_prog->aux->linked_tracing_link (old linked_prog) will exist only during
+> the time between prog_load and raw_tp_open without args.
+> I think that would be a good clean up.
+
+yep, I agree
+
+> Then multi attach of EXT progs is clean too.
+> New raw_tp_open with tgt_prog_fd/tgt_btf_id will validate EXT against the new target,
+> link them via new bpf_tracing_link, activate it via trampoline and return FD.
+> No link list anywhere.
+> Note that this second validation of EXT against new target is light weight comparing
+> to the load. The first load goes through all EXT instructions with verifier ctx of
+> the target prog. The second validation needs to compare BTF proto tgr_prog_fd+tgt_btf_id
+> with EXT's btf_id only (and check tgt_prog_fd->type/expected_attach_type).
+> Since EXT was loaded earlier it has valid insns.
+
+Right, this matches what I understood about this re-attach logic, great.
+
+> So if you're thinking "cannot we validate insns at load time, but then remember
+> tgt stuff instead of creating a partial link, and double validate BTF at raw_tp_open
+> when it's called without tgt_prog_fd?"
+> The answer is "yes, we can", but double validation of BTF I think is just a waste of cycles,
+> when tgt prog could have been held a bit between load and attach.
+> And it's race free. Whereas if we remember target prog_id at load then raw_tp_open is
+> shooting in the dark. Unlikely, but that prog_id could have been reused.
+
+Sure, I agree that there is no need to complicate everything with ID
+(now that I understand the proposal better). My confusion came from
+two things:
+
+1. Current API usage would allow PROG_LOAD of EXT program, would take
+refcnt on target program. RAW_TP_OPEN + close link to detach. Then, if
+necessary again RAW_TP_OPEN, and the second (and subsequent times)
+would succeed. But it seems like we are changing that to only allow
+one RAW_TP_OPEN if one doesn't provide tgt_prog_fd. I think it's
+acceptable, but it wasn't clear to me.
+
+2. You were talking about turning aux->linked_prog into a linked list
+of bpf_tracing_links, but I couldn't see the point. In your latest
+version you didn't talk about this list of links, so it seems like
+that's not necessary after all, right? I like that.
+
+
+So I think we are in agreement overall.
+
+Just one technical moment, let me double-check my understanding again.
+You seem to be favoring pre-creating bpf_tracing_link because there is
+both tgt_prog (that we refcnt on EXT prog load) and we also lookup and
+initialize trampoline in check_attach_btf_id(). Of course there is
+also expected_attach_type, but that's a trivial known enum, so I'm
+ignoring it. So because we have those two entities which on attach are
+supposed to be owned by bpf_tracing_link, you just want to pre-create
+a "shell" of bpf_tracing_link, and then on attach complete its
+initialization, is that right? That certainly simplifies attach logic
+a bit and I think it's fine.
+
+But also it seems like we'll be creating and initializing a
+**different** trampoline on re-attach to prog Y. Now attach will do
+different things depending on whether tgt_prog_fd is provided or not.
+So I wonder why not just unify this trampoline initialization and do
+it at attach time? For all valid EXT use cases today the result is the
+same: everything still works the same. For cases where we for some
+reason can't initialize bpf_trampoline, that failure will happen at
+attach time, not on a load time. But that seems fine, because that's
+going to be the case for re-attach (with tgt_prog_fd) anyways. Looking
+through the verifier code, it doesn't seem like it does anything much
+with prog->aux->trampoline, unless I missed something, so it must be
+ok to do it after load? It also seems to avoid this double BTF
+validation concern you have, no? Thoughts?
+
+Regardless, thanks for elaborating, I think I get it end-to-end now.
