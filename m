@@ -2,75 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01C70229B39
+	by mail.lfdr.de (Postfix) with ESMTP id D9727229B38
 	for <lists+netdev@lfdr.de>; Wed, 22 Jul 2020 17:21:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732754AbgGVPVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 11:21:43 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:29591 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727778AbgGVPVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 11:21:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595431301;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=jaQ/a7y/4CoGyZ9LRUkS6Ipuosl5t3mlz1Dz/3miviA=;
-        b=FKGD1sJGlxk2uoIyWwGV+BtQEQd4LpeDOQjo/kO/mR3vc9Xd4tiTq14ejBz0tJZLVnb3Zd
-        ThMu4FKKhcwQcpaPjaPgp9WCrutXnvt2yjf8cXUU0rG4xGj3YLq71OXSTY0BeiSHYZkUjK
-        Mm3SJ6cY0UKEpVFA9EzIecMjy2Rei9M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-3-6ZI6jYd1NUyaZJfRAIFmtg-1; Wed, 22 Jul 2020 11:21:39 -0400
-X-MC-Unique: 6ZI6jYd1NUyaZJfRAIFmtg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1732742AbgGVPVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 11:21:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46882 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727778AbgGVPVb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Jul 2020 11:21:31 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1A9A280BCC9;
-        Wed, 22 Jul 2020 15:21:31 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-112-19.ams2.redhat.com [10.36.112.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0C0192B6DB;
-        Wed, 22 Jul 2020 15:21:29 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     mptcp@lists.01.org, "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next] mptcp: zero token hash at creation time.
-Date:   Wed, 22 Jul 2020 17:20:50 +0200
-Message-Id: <9c1619337f0fa54112c0fe6f0e0100ded392ac3e.1595431172.git.pabeni@redhat.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id C04772071A;
+        Wed, 22 Jul 2020 15:21:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595431291;
+        bh=HRQPDogTtGevza2j2bcSJiFbQ4He1k12bta9i1FPxTc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oPZg7rY+1BZNv5oUf0Qk2L4LciqWk4AD+PYMmygQ7YgxJMoBOro7pKc+oa58w2CGr
+         QLtQxYWiRj1QlrDx2KCT0kjSih/zUvWAZ/iEeJUXtj935gE7my1GugIOEWMcWUXAVv
+         3LntQlemz6ZOxMkI5/tqynVapjG1JUisMvD1hQsg=
+Date:   Wed, 22 Jul 2020 08:21:28 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eelco Chaudron <echaudro@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dev@openvswitch.org,
+        pabeni@redhat.com, pshelar@ovn.org
+Subject: Re: [PATCH net-next 2/2] net: openvswitch: make masks cache size
+ configurable
+Message-ID: <20200722082128.53cf22e2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <159540647223.619787.13052866492035799125.stgit@ebuild>
+References: <159540642765.619787.5484526399990292188.stgit@ebuild>
+        <159540647223.619787.13052866492035799125.stgit@ebuild>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Otherwise the 'chain_len' filed will carry random values,
-some token creation calls will fail due to excessive chain
-length, causing unexpected fallback to TCP.
+On Wed, 22 Jul 2020 10:27:52 +0200 Eelco Chaudron wrote:
+> This patch makes the masks cache size configurable, or with
+> a size of 0, disable it.
+> 
+> Reviewed-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 
-Fixes: 2c5ebd001d4f ("mptcp: refactor token container")
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Tested-by: Christoph Paasch <cpaasch@apple.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/token.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Elco!
 
-diff --git a/net/mptcp/token.c b/net/mptcp/token.c
-index b25b390dbbff..97cfc45bcc4f 100644
---- a/net/mptcp/token.c
-+++ b/net/mptcp/token.c
-@@ -368,7 +368,7 @@ void __init mptcp_token_init(void)
- 					     sizeof(struct token_bucket),
- 					     0,
- 					     20,/* one slot per 1MB of memory */
--					     0,
-+					     HASH_ZERO,
- 					     NULL,
- 					     &token_mask,
- 					     0,
--- 
-2.26.2
+This patch adds a bunch of new sparse warnings:
 
+net/openvswitch/flow_table.c:376:23: warning: incorrect type in assignment (different address spaces)
+net/openvswitch/flow_table.c:376:23:    expected struct mask_cache_entry *cache
+net/openvswitch/flow_table.c:376:23:    got void [noderef] __percpu *
+net/openvswitch/flow_table.c:386:25: warning: incorrect type in assignment (different address spaces)
+net/openvswitch/flow_table.c:386:25:    expected struct mask_cache_entry [noderef] __percpu *mask_cache
+net/openvswitch/flow_table.c:386:25:    got struct mask_cache_entry *cache
+net/openvswitch/flow_table.c:411:27: warning: incorrect type in assignment (different address spaces)
+net/openvswitch/flow_table.c:411:27:    expected struct mask_cache [noderef] __rcu *mask_cache
+net/openvswitch/flow_table.c:411:27:    got struct mask_cache *
+net/openvswitch/flow_table.c:440:35: warning: incorrect type in argument 1 (different address spaces)
+net/openvswitch/flow_table.c:440:35:    expected struct mask_cache *mc
+net/openvswitch/flow_table.c:440:35:    got struct mask_cache [noderef] __rcu *mask_cache
