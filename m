@@ -2,175 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77D1922A8D3
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 08:21:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 297A622A8F3
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 08:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbgGWGUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 02:20:54 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35200 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725984AbgGWGUx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 02:20:53 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06N6AlNh006540;
-        Wed, 22 Jul 2020 23:20:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=UhwR0T2vMUNqABzRoeZrzbAvRhkDEuRcZILTsvvlwLQ=;
- b=la6rYz1rpkVcSmo6EnPBlDyuQM2ak/LTaSZPW3Zu3Bp0hR6PIBVX8g8gyyxQLdWrmCUq
- 9hUxSdJnO/asIAgMlbZ3nDFgAyv1MGMsQRcFXHyiYza/L/KjqEE7j/ygVQcRtH17c/24
- PnbxkZFzC1pcVx11zo2t7MnuGqS6lZzQp1A= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32etmwajhd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 22 Jul 2020 23:20:33 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 22 Jul 2020 23:20:31 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TOaIimL2vUNvgfz7C/6id2c8GU7yyc+v17W4IFuW11UE17MP1S3AQa9o7/d5pza3QauV1AFvzjOwTgJqmmu7DizPj6Lb6ZsePj28dWVb7sRsqnQxmre2ELkQFiqFVU/enXMVOxhk2xYZycBF+mX6jAbuTyyM2KYMooz0OTyOup2ZWsGIZnfSkbxie8MOqPQLkPTZaXP4Gh2kvEnIG6gmCcrC/A5ekZldPbddOTJKVTslzszxTbJSrBDkG+SO8pbh//MpN0V0DprRKFyrQfd2cfo5dMpgfBkilea7k37MbppM3K4aNtVPbELYv2Kh8dQdgnxkL37iwjqousrScvttQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UhwR0T2vMUNqABzRoeZrzbAvRhkDEuRcZILTsvvlwLQ=;
- b=a1fg9LyZ4fcIDKpAgwy6uDOLRK4CttEF0pG1eGq62WbZ83M7VE4BFvdBD6hITmFezSpnvEQSjDWWjyeSmJlkkUTPEjsjPzCeEQv6TfY+Nnd6gHdgztX/g61hjpQ07qJmH4+3FsmZ2mxBuqqFY065vQQD4vt/bIEZr3bErhA0gSfJr+x78fGQIGSCFzOK6MlN/sIV0WzkzU+J+SrH9JjE3uBlE0rSA21ZHSAREIpqfVrJFBCzhhhAoGsnmzXpPqMUhNKDcCpeirxSh3UCxilutyKUfO8jWOaewqjRZ5BGVAI7vV/5ReUctloL79LFdJCr0BboKsUp6CC0dWBkPRTXaw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UhwR0T2vMUNqABzRoeZrzbAvRhkDEuRcZILTsvvlwLQ=;
- b=FdfHArwFStdsgsHFvCURQ5jfki2o5DZWZqOuySos+AALmRuzGmjhObxAxegvLZS4N5C3fqI/JlRA1dhscMuDjeo8lNG+Em6dUTvTMAtUjbtnOb/cfir4cMrIDfawy+qXL2oAvJjfzZ1v7gADeDpKUhVex1AKuFjuEpLzS79uiTQ=
-Received: from BN8PR15MB2995.namprd15.prod.outlook.com (2603:10b6:408:8a::16)
- by BN7PR15MB2483.namprd15.prod.outlook.com (2603:10b6:406:87::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.23; Thu, 23 Jul
- 2020 06:20:29 +0000
-Received: from BN8PR15MB2995.namprd15.prod.outlook.com
- ([fe80::a89e:b0f9:d0b9:51a2]) by BN8PR15MB2995.namprd15.prod.outlook.com
- ([fe80::a89e:b0f9:d0b9:51a2%5]) with mapi id 15.20.3195.028; Thu, 23 Jul 2020
- 06:20:29 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>
-Subject: Re: [PATCH v4 bpf-next 2/4] bpf: fail PERF_EVENT_IOC_SET_BPF when
- bpf_get_[stack|stackid] cannot work
-Thread-Topic: [PATCH v4 bpf-next 2/4] bpf: fail PERF_EVENT_IOC_SET_BPF when
- bpf_get_[stack|stackid] cannot work
-Thread-Index: AQHWYFg8vuUCJ74xFUm7fXSqHe+MGakUqv8AgAAHCAA=
-Date:   Thu, 23 Jul 2020 06:20:29 +0000
-Message-ID: <684DA506-6780-4CB5-B99C-24D939CDE6DF@fb.com>
-References: <20200722184210.4078256-1-songliubraving@fb.com>
- <20200722184210.4078256-3-songliubraving@fb.com>
- <20200723055518.onydx7uhmzomt7ud@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200723055518.onydx7uhmzomt7ud@ast-mbp.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.80.23.2.2)
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:b2a1]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 473dd7a5-9ff3-497c-e88e-08d82ed07f1f
-x-ms-traffictypediagnostic: BN7PR15MB2483:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN7PR15MB248366052172F7D06FBC90E8B3760@BN7PR15MB2483.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: p+tvIytnJycn7Bg/I4y9nevEPQtgss/9fDneOk+zQ72OEzwImLDvzy28k/0Mb5O9bTnxzSO8S7k5ApDq3+7PmMt6+qSvSe1Z3XLu8lxacyD7yr6X9YCSxsAKk5M0UzO3eJ0AL63vZ+yh0yXBeN+xwoCXHEBX9awvaTgoaCbpWzVy3vueomObZAhTCzRL3N0Bb6rGGyPhNxWJ+bK3F2xZ/ZjfK1RUc21w5gcYkGGdz79kIa+6fsiTHE0GDqEwneO4MIaY08jvWaXBNeC8W/b+X3pYmiaE5FCaTDesU3DpRsOn/0fgtTDQFVEABixnquFSC3GSYQIkEnPGGm9Qcs9Esw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR15MB2995.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(39860400002)(136003)(396003)(346002)(366004)(8936002)(33656002)(316002)(2906002)(86362001)(6486002)(8676002)(71200400001)(186003)(83380400001)(66446008)(66946007)(66556008)(66476007)(7416002)(478600001)(4326008)(5660300002)(6506007)(6916009)(54906003)(53546011)(91956017)(6512007)(76116006)(64756008)(2616005)(36756003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: AwP9K7xihoJAdFhvQ5FCbiudCXXCDISZzzCfrMeTlGNB8e55fvqx3ybdwhRGWK0SlTVlc4zv60BI5mksYxhSSowd6/7L7Cj/RD7LV0EU9lG4HXFkHXcIAyhI6S+N9BiRJyBLOCapKJltQA8SMx5t4c5QdVrKQtOnopa+rVbbB8mkPmLJw7NHJWpsBELTKSD4dkCM6QV+HLtl2R7c2+5686DMsVQCFf/v+GFV6I9AmzYEaKfU0mdtX7Wy5f7ba7fiVEsUdT8gyAICqf+/CdCRf1Smrz2KUqdOPmIO8S6ZCYnldTJWL6MYgC1/yx+ur9Ewb9gQGTbjdi+AHlV31JqP1Me3xfrWGFRaGGKJgo0Cqejum3oVavdgstTnQaCQPS2R0RuxmT2zR3GteTDuRvkA4jhecKL+y2Cf2HFeWMZ1m0yNExYY2YPQw38+knFlen93MM8nK2pnnUJJJEjlB+4uxxHOyyIWfle5wG27d3FsP5ThwNgWCYUQ3Cxr3Lrv1pyb4DELFoovg+saI1ph22agXg==
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <4C7094C581011D4E9F3722B2F188D225@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726938AbgGWG1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 02:27:22 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:41451 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726330AbgGWG1V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 02:27:21 -0400
+Received: by mail-il1-f197.google.com with SMTP id k6so2798055ilg.8
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 23:27:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=qsxan2GHbh5Yt6TauSl3DTt9Ex/YOf+2LUY4AkusbFA=;
+        b=WB+yCTBzRmvG1km6FsvOQ4kf7qVvPedSFkqq/mWTsNs8DU61/XRB/ujYqRkRxDk5d/
+         9tzHpPageNP7qjyfBnSU2eBuDCSKszwGnyucGysz0BYuHDYRRXv0uIKrq+Dsdk/LdEhg
+         Ldp2wYoAbyWtKpWA06vEY52mxpl1qzWHSD9G+DdUxRIJSZ/kY/+mACIpM/G6Q69PSfQH
+         oySCdfx0KMdp5A+7jKndg/Epl8oo8Mmrmxdh5UG5p2CKlAHsGc72qhyqRamkyK/RC9O6
+         qgQbYqOwHbrNGyb2w0v7X0UtT3zzFFu99hGxCwv4M1oQlE3CGCYRR8QZ2v2GFjq61zR6
+         4tqA==
+X-Gm-Message-State: AOAM532ik1YWYc8eBz0sKOcb7dit1Fqnt+agusMvyN1n9pjlzM/Q1hOY
+        vvWCS1ch/A7bskdoYYFMtVENKoOn48Ay2pltXp4HVFH/Ed0p
+X-Google-Smtp-Source: ABdhPJzZaTVmHoa345chVU84noFvR8WhAV9DV1Xl1RV8bl81eic6mqvPhU+o4QB7LKL78uyk15PsVbBjxsSVftOC6g81Zp04/1jM
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR15MB2995.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 473dd7a5-9ff3-497c-e88e-08d82ed07f1f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2020 06:20:29.2638
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vAU2WF8NegWfn6WGcbfOaf7helyzLdqdctl7Nieuml9VmelVWgbj9K51oAuUC9I8RcJQf32yLwalpuY/13HbYA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR15MB2483
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-23_02:2020-07-22,2020-07-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- suspectscore=0 bulkscore=0 spamscore=0 clxscore=1015 phishscore=0
- mlxscore=0 malwarescore=0 mlxlogscore=999 priorityscore=1501
- impostorscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2007230050
-X-FB-Internal: deliver
+X-Received: by 2002:a05:6e02:dc4:: with SMTP id l4mr3710287ilj.134.1595485639187;
+ Wed, 22 Jul 2020 23:27:19 -0700 (PDT)
+Date:   Wed, 22 Jul 2020 23:27:19 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c4a77205ab15f238@google.com>
+Subject: INFO: task hung in ovs_exit_net
+From:   syzbot <syzbot+2c4ff3614695f75ce26c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pshelar@ovn.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    a6c0d093 net: explicitly include <linux/compat.h> in net/c..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=179ee640900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2b7b67c0c1819c87
+dashboard link: https://syzkaller.appspot.com/bug?extid=2c4ff3614695f75ce26c
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+2c4ff3614695f75ce26c@syzkaller.appspotmail.com
+
+INFO: task kworker/u4:3:235 blocked for more than 143 seconds.
+      Not tainted 5.8.0-rc4-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+kworker/u4:3    D24856   235      2 0x00004000
+Workqueue: netns cleanup_net
+Call Trace:
+ context_switch kernel/sched/core.c:3453 [inline]
+ __schedule+0x8e1/0x1eb0 kernel/sched/core.c:4178
+ schedule+0xd0/0x2a0 kernel/sched/core.c:4253
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:4312
+ __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
+ __mutex_lock+0x3e2/0x10d0 kernel/locking/mutex.c:1103
+ ovs_lock net/openvswitch/datapath.c:105 [inline]
+ ovs_exit_net+0x1de/0xba0 net/openvswitch/datapath.c:2491
+ ops_exit_list+0xb0/0x160 net/core/net_namespace.c:186
+ cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:603
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+INFO: task kworker/0:5:9052 blocked for more than 143 seconds.
+      Not tainted 5.8.0-rc4-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+kworker/0:5     D27408  9052      2 0x00004000
+Workqueue: events ovs_dp_masks_rebalance
+Call Trace:
+ context_switch kernel/sched/core.c:3453 [inline]
+ __schedule+0x8e1/0x1eb0 kernel/sched/core.c:4178
+ schedule+0xd0/0x2a0 kernel/sched/core.c:4253
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:4312
+ __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
+ __mutex_lock+0x3e2/0x10d0 kernel/locking/mutex.c:1103
+ ovs_lock net/openvswitch/datapath.c:105 [inline]
+ ovs_dp_masks_rebalance+0x18/0x80 net/openvswitch/datapath.c:2355
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+INFO: task syz-executor.3:21286 blocked for more than 143 seconds.
+      Not tainted 5.8.0-rc4-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+syz-executor.3  D26160 21286   7072 0x00004004
+Call Trace:
+ context_switch kernel/sched/core.c:3453 [inline]
+ __schedule+0x8e1/0x1eb0 kernel/sched/core.c:4178
+ schedule+0xd0/0x2a0 kernel/sched/core.c:4253
+ schedule_timeout+0x1d8/0x250 kernel/time/timer.c:1873
+ do_wait_for_common kernel/sched/completion.c:85 [inline]
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion+0x163/0x260 kernel/sched/completion.c:138
+ __flush_work+0x51f/0xab0 kernel/workqueue.c:3046
+ __cancel_work_timer+0x5de/0x700 kernel/workqueue.c:3133
+ ovs_dp_cmd_del+0x18c/0x270 net/openvswitch/datapath.c:1790
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
+ genl_rcv_msg+0x61d/0x980 net/netlink/genetlink.c:731
+ netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:742
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2363
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2417
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2450
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45c1f9
+Code: Bad RIP value.
+RSP: 002b:00007f75a409cc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000002b3c0 RCX: 000000000045c1f9
+RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000004
+RBP: 000000000078bf40 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000078bf0c
+R13: 00007ffed0e2724f R14: 00007f75a409d9c0 R15: 000000000078bf0c
+INFO: task syz-executor.3:21355 blocked for more than 144 seconds.
+      Not tainted 5.8.0-rc4-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+syz-executor.3  D27400 21355   7072 0x00004004
+Call Trace:
+ context_switch kernel/sched/core.c:3453 [inline]
+ __schedule+0x8e1/0x1eb0 kernel/sched/core.c:4178
+ schedule+0xd0/0x2a0 kernel/sched/core.c:4253
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:4312
+ __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
+ __mutex_lock+0x3e2/0x10d0 kernel/locking/mutex.c:1103
+ ovs_lock net/openvswitch/datapath.c:105 [inline]
+ ovs_dp_cmd_del+0x4a/0x270 net/openvswitch/datapath.c:1780
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
+ genl_rcv_msg+0x61d/0x980 net/netlink/genetlink.c:731
+ netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:742
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2363
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2417
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2450
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45c1f9
+Code: Bad RIP value.
+RSP: 002b:00007f75a405ac78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000002b3c0 RCX: 000000000045c1f9
+RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000004
+RBP: 000000000078c080 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000078c04c
+R13: 00007ffed0e2724f R14: 00007f75a405b9c0 R15: 000000000078c04c
+
+Showing all locks held in the system:
+4 locks held by kworker/u4:3/235:
+ #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
+ #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x82b/0x1670 kernel/workqueue.c:2240
+ #1: ffffc90001847da8 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x85f/0x1670 kernel/workqueue.c:2244
+ #2: ffffffff8a7ad4b0 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xa00 net/core/net_namespace.c:565
+ #3: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_lock net/openvswitch/datapath.c:105 [inline]
+ #3: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_exit_net+0x1de/0xba0 net/openvswitch/datapath.c:2491
+1 lock held by khungtaskd/1150:
+ #0: ffffffff89bc0ec0 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:5779
+1 lock held by in:imklog/6505:
+3 locks held by kworker/0:5/9052:
+ #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
+ #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x82b/0x1670 kernel/workqueue.c:2240
+ #1: ffffc90001b17da8 ((work_completion)(&(&dp->masks_rebalance)->work)){+.+.}-{0:0}, at: process_one_work+0x85f/0x1670 kernel/workqueue.c:2244
+ #2: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_lock net/openvswitch/datapath.c:105 [inline]
+ #2: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_dp_masks_rebalance+0x18/0x80 net/openvswitch/datapath.c:2355
+2 locks held by syz-executor.3/21286:
+ #0: ffffffff8a817cf0 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:741
+ #1: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_lock net/openvswitch/datapath.c:105 [inline]
+ #1: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_dp_cmd_del+0x4a/0x270 net/openvswitch/datapath.c:1780
+2 locks held by syz-executor.3/21355:
+ #0: ffffffff8a817cf0 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:741
+ #1: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_lock net/openvswitch/datapath.c:105 [inline]
+ #1: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_dp_cmd_del+0x4a/0x270 net/openvswitch/datapath.c:1780
+
+=============================================
+
+NMI backtrace for cpu 1
+CPU: 1 PID: 1150 Comm: khungtaskd Not tainted 5.8.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
+ nmi_trigger_cpumask_backtrace+0x1b3/0x223 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:209 [inline]
+ watchdog+0xd7d/0x1000 kernel/hung_task.c:295
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0 skipped: idling at native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:60
 
 
-> On Jul 22, 2020, at 10:55 PM, Alexei Starovoitov <alexei.starovoitov@gmai=
-l.com> wrote:
->=20
-> On Wed, Jul 22, 2020 at 11:42:08AM -0700, Song Liu wrote:
->> diff --git a/kernel/events/core.c b/kernel/events/core.c
->> index 856d98c36f562..f77d009fcce95 100644
->> --- a/kernel/events/core.c
->> +++ b/kernel/events/core.c
->> @@ -9544,6 +9544,24 @@ static int perf_event_set_bpf_handler(struct perf=
-_event *event, u32 prog_fd)
->> 	if (IS_ERR(prog))
->> 		return PTR_ERR(prog);
->>=20
->> +	if (event->attr.precise_ip &&
->> +	    prog->call_get_stack &&
->> +	    (!(event->attr.sample_type & __PERF_SAMPLE_CALLCHAIN_EARLY) ||
->> +	     event->attr.exclude_callchain_kernel ||
->> +	     event->attr.exclude_callchain_user)) {
->> +		/*
->> +		 * On perf_event with precise_ip, calling bpf_get_stack()
->> +		 * may trigger unwinder warnings and occasional crashes.
->> +		 * bpf_get_[stack|stackid] works around this issue by using
->> +		 * callchain attached to perf_sample_data. If the
->> +		 * perf_event does not full (kernel and user) callchain
->> +		 * attached to perf_sample_data, do not allow attaching BPF
->> +		 * program that calls bpf_get_[stack|stackid].
->> +		 */
->> +		bpf_prog_put(prog);
->> +		return -EINVAL;
->=20
-> I suspect this will be a common error. bpftrace and others will be hittin=
-g
-> this issue and would need to fix how they do perf_event_open.
-> But EINVAL is too ambiguous and sys_perf_event_open has no ability to
-> return a string.
-> So how about we pick some different errno here to make future debugging
-> a bit less painful?
-> May be EBADFD or EPROTO or EPROTOTYPE ?
-> I think anything would be better than EINVAL.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-I like EPROTO most. I will change it to EPROTO if we don't have better idea=
-s.
-
-Btw, this is not the error code on sys_perf_event_open(). It is the ioctl()
-on the perf_event fd. So debugging this error will be less painful than=20
-debugging sys_perf_event_open() errors.=20
-
-Thanks,
-Song=
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
