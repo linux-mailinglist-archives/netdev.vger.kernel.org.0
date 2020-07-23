@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E3E422BA57
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 01:47:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC7BE22BA5D
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 01:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728279AbgGWXrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 19:47:36 -0400
-Received: from mga12.intel.com ([192.55.52.136]:33987 "EHLO mga12.intel.com"
+        id S1728297AbgGWXrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 19:47:41 -0400
+Received: from mga05.intel.com ([192.55.52.43]:43317 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728065AbgGWXra (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Jul 2020 19:47:30 -0400
-IronPort-SDR: mk1+LW175XgYliq9f5yE7gmz2VgcW97BhsuCkYId/J58HDyY9shKBZpE8GC0XOAXxNquZRUTcG
- p4B198twBLvg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9691"; a="130200243"
+        id S1728173AbgGWXrd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jul 2020 19:47:33 -0400
+IronPort-SDR: TqsRPRRETIo/MgfFBEc/wCs8kKdlVGina6dS2yqcPNKo+zAZ0iZUKZ5aebi3u6iNXc01X90G0u
+ rIx27RnaXk7Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9691"; a="235515438"
 X-IronPort-AV: E=Sophos;i="5.75,388,1589266800"; 
-   d="scan'208";a="130200243"
+   d="scan'208";a="235515438"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2020 16:47:26 -0700
-IronPort-SDR: 4k3OVLiiCfiIlajl6eqn6/OleXOU8NZli/c1u453CyVUUTocpfp78jhNZW48Fy1IlEXsOTO2me
- hBJKEQOVOQvQ==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2020 16:47:26 -0700
+IronPort-SDR: uzlvgwvYa0gVj7P2BEH6+CaF6F9QNBsfpcYf/oPxHIuXRe+JJUhXf5NZx9cijyli/8eQ6lkPeT
+ YGw0BO9qjRIQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,388,1589266800"; 
-   d="scan'208";a="328742300"
+   d="scan'208";a="328742304"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga007.jf.intel.com with ESMTP; 23 Jul 2020 16:47:25 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -32,12 +32,11 @@ To:     davem@davemloft.net
 Cc:     Paul Greenwalt <paul.greenwalt@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
-        Chinh T Cao <chinh.t.cao@intel.com>,
-        Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
+        Evan Swanson <evan.swanson@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>
-Subject: [net-next 07/15] ice: restore PHY settings on media insertion
-Date:   Thu, 23 Jul 2020 16:47:12 -0700
-Message-Id: <20200723234720.1547308-8-anthony.l.nguyen@intel.com>
+Subject: [net-next 08/15] ice: add link lenient and default override support
+Date:   Thu, 23 Jul 2020 16:47:13 -0700
+Message-Id: <20200723234720.1547308-9-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200723234720.1547308-1-anthony.l.nguyen@intel.com>
 References: <20200723234720.1547308-1-anthony.l.nguyen@intel.com>
@@ -50,979 +49,1220 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paul Greenwalt <paul.greenwalt@intel.com>
 
-After the transition from no media to media FW will clear the
-set-phy-cfg data set by the user. Save initial PHY settings and any
-settings later requested by the user and use that data to restore PHY
-settings on media insertion. Since PHY configuration is now being stored,
-replace calls that were calling FW to get the configuration with the saved
-copy.
+Adds functions to check for link override firmware support and get
+the override settings for a port. The previously supported/default link
+mode was strict mode.
+
+In strict mode link is configured based on get PHY capabilities PHY types
+with media.
+
+Lenient mode is now the default link mode. In lenient mode the link is
+configured based on get PHY capabilities PHY types without media. This
+allows the user to configure link that the media does not report. Limit the
+minimum supported link mode to 25G for devices that support 100G, and 1G
+for devices that support less than 100G.
+
+Default override is only supported in lenient mode. If default override
+is supported and enabled, then default override values are used for
+configuring speed and FEC. Default override provide persistent link
+settings in the NVM.
 
 Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
-Signed-off-by: Chinh T Cao <chinh.t.cao@intel.com>
-Signed-off-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+Signed-off-by: Evan Swanson <evan.swanson@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h          |   4 +
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   1 +
- drivers/net/ethernet/intel/ice/ice_common.c   | 145 ++++++++-
- drivers/net/ethernet/intel/ice/ice_common.h   |  14 +-
- drivers/net/ethernet/intel/ice/ice_ethtool.c  | 120 +++----
- drivers/net/ethernet/intel/ice/ice_main.c     | 308 ++++++++++++++++--
- drivers/net/ethernet/intel/ice/ice_type.h     |  21 ++
- 7 files changed, 518 insertions(+), 95 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h          |   3 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   5 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   | 170 +++++-
+ drivers/net/ethernet/intel/ice/ice_common.h   |   8 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  | 519 +++++++++++-------
+ drivers/net/ethernet/intel/ice/ice_main.c     |  99 +++-
+ drivers/net/ethernet/intel/ice/ice_nvm.c      |   2 +-
+ drivers/net/ethernet/intel/ice/ice_nvm.h      |   3 +
+ drivers/net/ethernet/intel/ice/ice_type.h     |  35 ++
+ 9 files changed, 628 insertions(+), 216 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 2a0a69fe8b2b..132abfd068df 100644
+index 132abfd068df..e67f4290fa92 100644
 --- a/drivers/net/ethernet/intel/ice/ice.h
 +++ b/drivers/net/ethernet/intel/ice/ice.h
 @@ -222,6 +222,7 @@ enum ice_state {
  	__ICE_OICR_INTR_DIS,		/* Global OICR interrupt disabled */
  	__ICE_MDD_VF_PRINT_PENDING,	/* set when MDD event handle */
  	__ICE_VF_RESETS_DISABLED,	/* disable resets during ice_remove */
-+	__ICE_PHY_INIT_COMPLETE,
++	__ICE_LINK_DEFAULT_OVERRIDE_PENDING,
+ 	__ICE_PHY_INIT_COMPLETE,
  	__ICE_STATE_NBITS		/* must be last */
  };
+@@ -364,6 +365,7 @@ enum ice_pf_flags {
+ 	ICE_FLAG_LEGACY_RX,
+ 	ICE_FLAG_VF_TRUE_PROMISC_ENA,
+ 	ICE_FLAG_MDD_AUTO_RESET_VF,
++	ICE_FLAG_LINK_LENIENT_MODE_ENA,
+ 	ICE_PF_FLAGS_NBITS		/* must be last */
+ };
  
-@@ -437,6 +438,9 @@ struct ice_pf {
- 	u32 tx_timeout_recovery_level;
- 	char int_name[ICE_INT_NAME_STR_LEN];
- 	u32 sw_int_count;
-+
-+	__le64 nvm_phy_type_lo; /* NVM PHY type low */
-+	__le64 nvm_phy_type_hi; /* NVM PHY type high */
+@@ -441,6 +443,7 @@ struct ice_pf {
+ 
+ 	__le64 nvm_phy_type_lo; /* NVM PHY type low */
+ 	__le64 nvm_phy_type_hi; /* NVM PHY type high */
++	struct ice_link_default_override_tlv link_dflt_override;
  };
  
  struct ice_netdev_priv {
 diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 99c39249613a..352f3b278698 100644
+index 352f3b278698..02a8d46540dc 100644
 --- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
 +++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1147,6 +1147,7 @@ struct ice_aqc_get_link_status_data {
- #define ICE_AQ_LINK_PWR_QSFP_CLASS_3	2
- #define ICE_AQ_LINK_PWR_QSFP_CLASS_4	3
- 	__le16 link_speed;
-+#define ICE_AQ_LINK_SPEED_M		0x7FF
- #define ICE_AQ_LINK_SPEED_10MB		BIT(0)
- #define ICE_AQ_LINK_SPEED_100MB		BIT(1)
- #define ICE_AQ_LINK_SPEED_1000MB	BIT(2)
+@@ -983,7 +983,8 @@ struct ice_aqc_get_phy_caps_data {
+ #define ICE_AQC_PHY_FEC_25G_RS_CLAUSE91_EN		BIT(6)
+ #define ICE_AQC_PHY_FEC_25G_KR_CLAUSE74_EN		BIT(7)
+ #define ICE_AQC_PHY_FEC_MASK				ICE_M(0xdf, 0)
+-	u8 rsvd1;	/* Byte 35 reserved */
++	u8 module_compliance_enforcement;
++#define ICE_AQC_MOD_ENFORCE_STRICT_MODE			BIT(0)
+ 	u8 extended_compliance_code;
+ #define ICE_MODULE_TYPE_TOTAL_BYTE			3
+ 	u8 module_type[ICE_MODULE_TYPE_TOTAL_BYTE];
+@@ -1036,7 +1037,7 @@ struct ice_aqc_set_phy_cfg_data {
+ 	__le16 eee_cap; /* Value from ice_aqc_get_phy_caps */
+ 	__le16 eeer_value;
+ 	u8 link_fec_opt; /* Use defines from ice_aqc_get_phy_caps */
+-	u8 rsvd1;
++	u8 module_compliance_enforcement;
+ };
+ 
+ /* Set MAC Config command data structure (direct 0x0603) */
 diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 59890eeb8339..803b894472ee 100644
+index 803b894472ee..606e69086cb8 100644
 --- a/drivers/net/ethernet/intel/ice/ice_common.c
 +++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -2424,7 +2424,7 @@ ice_update_phy_type(u64 *phy_type_low, u64 *phy_type_high,
- /**
-  * ice_aq_set_phy_cfg
-  * @hw: pointer to the HW struct
-- * @lport: logical port number
-+ * @pi: port info structure of the interested logical port
-  * @cfg: structure with PHY configuration data to be set
-  * @cd: pointer to command details structure or NULL
-  *
-@@ -2434,7 +2434,7 @@ ice_update_phy_type(u64 *phy_type_low, u64 *phy_type_high,
-  * parameters. This status will be indicated by the command response (0x0601).
-  */
- enum ice_status
--ice_aq_set_phy_cfg(struct ice_hw *hw, u8 lport,
-+ice_aq_set_phy_cfg(struct ice_hw *hw, struct ice_port_info *pi,
- 		   struct ice_aqc_set_phy_cfg_data *cfg, struct ice_sq_cd *cd)
- {
- 	struct ice_aq_desc desc;
-@@ -2453,7 +2453,7 @@ ice_aq_set_phy_cfg(struct ice_hw *hw, u8 lport,
- 	}
+@@ -20,7 +20,40 @@ static enum ice_status ice_set_mac_type(struct ice_hw *hw)
+ 	if (hw->vendor_id != PCI_VENDOR_ID_INTEL)
+ 		return ICE_ERR_DEVICE_NOT_SUPPORTED;
  
- 	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_phy_cfg);
--	desc.params.set_phy.lport_num = lport;
-+	desc.params.set_phy.lport_num = pi->lport;
- 	desc.flags |= cpu_to_le16(ICE_AQ_FLAG_RD);
- 
- 	ice_debug(hw, ICE_DBG_LINK, "phy_type_low = 0x%llx\n",
-@@ -2471,6 +2471,9 @@ ice_aq_set_phy_cfg(struct ice_hw *hw, u8 lport,
- 	if (hw->adminq.sq_last_status == ICE_AQ_RC_EMODE)
- 		status = 0;
- 
-+	if (!status)
-+		pi->phy.curr_user_phy_cfg = *cfg;
-+
- 	return status;
- }
- 
-@@ -2514,17 +2517,99 @@ enum ice_status ice_update_link_info(struct ice_port_info *pi)
- 	return status;
- }
- 
-+/**
-+ * ice_cache_phy_user_req
-+ * @pi: port information structure
-+ * @cache_data: PHY logging data
-+ * @cache_mode: PHY logging mode
-+ *
-+ * Log the user request on (FC, FEC, SPEED) for later use.
-+ */
-+static void
-+ice_cache_phy_user_req(struct ice_port_info *pi,
-+		       struct ice_phy_cache_mode_data cache_data,
-+		       enum ice_phy_cache_mode cache_mode)
-+{
-+	if (!pi)
-+		return;
-+
-+	switch (cache_mode) {
-+	case ICE_FC_MODE:
-+		pi->phy.curr_user_fc_req = cache_data.data.curr_user_fc_req;
+-	hw->mac_type = ICE_MAC_GENERIC;
++	switch (hw->device_id) {
++	case ICE_DEV_ID_E810C_BACKPLANE:
++	case ICE_DEV_ID_E810C_QSFP:
++	case ICE_DEV_ID_E810C_SFP:
++	case ICE_DEV_ID_E810_XXV_SFP:
++		hw->mac_type = ICE_MAC_E810;
 +		break;
-+	case ICE_SPEED_MODE:
-+		pi->phy.curr_user_speed_req =
-+			cache_data.data.curr_user_speed_req;
-+		break;
-+	case ICE_FEC_MODE:
-+		pi->phy.curr_user_fec_req = cache_data.data.curr_user_fec_req;
++	case ICE_DEV_ID_E823C_10G_BASE_T:
++	case ICE_DEV_ID_E823C_BACKPLANE:
++	case ICE_DEV_ID_E823C_QSFP:
++	case ICE_DEV_ID_E823C_SFP:
++	case ICE_DEV_ID_E823C_SGMII:
++	case ICE_DEV_ID_E822C_10G_BASE_T:
++	case ICE_DEV_ID_E822C_BACKPLANE:
++	case ICE_DEV_ID_E822C_QSFP:
++	case ICE_DEV_ID_E822C_SFP:
++	case ICE_DEV_ID_E822C_SGMII:
++	case ICE_DEV_ID_E822L_10G_BASE_T:
++	case ICE_DEV_ID_E822L_BACKPLANE:
++	case ICE_DEV_ID_E822L_SFP:
++	case ICE_DEV_ID_E822L_SGMII:
++	case ICE_DEV_ID_E823L_10G_BASE_T:
++	case ICE_DEV_ID_E823L_1GBE:
++	case ICE_DEV_ID_E823L_BACKPLANE:
++	case ICE_DEV_ID_E823L_QSFP:
++	case ICE_DEV_ID_E823L_SFP:
++		hw->mac_type = ICE_MAC_GENERIC;
 +		break;
 +	default:
++		hw->mac_type = ICE_MAC_UNKNOWN;
 +		break;
 +	}
-+}
 +
-+/**
-+ * ice_caps_to_fc_mode
-+ * @caps: PHY capabilities
-+ *
-+ * Convert PHY FC capabilities to ice FC mode
-+ */
-+enum ice_fc_mode ice_caps_to_fc_mode(u8 caps)
-+{
-+	if (caps & ICE_AQC_PHY_EN_TX_LINK_PAUSE &&
-+	    caps & ICE_AQC_PHY_EN_RX_LINK_PAUSE)
-+		return ICE_FC_FULL;
-+
-+	if (caps & ICE_AQC_PHY_EN_TX_LINK_PAUSE)
-+		return ICE_FC_TX_PAUSE;
-+
-+	if (caps & ICE_AQC_PHY_EN_RX_LINK_PAUSE)
-+		return ICE_FC_RX_PAUSE;
-+
-+	return ICE_FC_NONE;
-+}
-+
-+/**
-+ * ice_caps_to_fec_mode
-+ * @caps: PHY capabilities
-+ * @fec_options: Link FEC options
-+ *
-+ * Convert PHY FEC capabilities to ice FEC mode
-+ */
-+enum ice_fec_mode ice_caps_to_fec_mode(u8 caps, u8 fec_options)
-+{
-+	if (caps & ICE_AQC_PHY_EN_AUTO_FEC)
-+		return ICE_FEC_AUTO;
-+
-+	if (fec_options & (ICE_AQC_PHY_FEC_10G_KR_40G_KR4_EN |
-+			   ICE_AQC_PHY_FEC_10G_KR_40G_KR4_REQ |
-+			   ICE_AQC_PHY_FEC_25G_KR_CLAUSE74_EN |
-+			   ICE_AQC_PHY_FEC_25G_KR_REQ))
-+		return ICE_FEC_BASER;
-+
-+	if (fec_options & (ICE_AQC_PHY_FEC_25G_RS_528_REQ |
-+			   ICE_AQC_PHY_FEC_25G_RS_544_REQ |
-+			   ICE_AQC_PHY_FEC_25G_RS_CLAUSE91_EN))
-+		return ICE_FEC_RS;
-+
-+	return ICE_FEC_NONE;
-+}
-+
- /**
-  * ice_cfg_phy_fc - Configure PHY FC data based on FC mode
-+ * @pi: port information structure
-  * @cfg: PHY configuration data to set FC mode
-  * @req_mode: FC mode to configure
-  */
--static enum ice_status
--ice_cfg_phy_fc(struct ice_aqc_set_phy_cfg_data *cfg, enum ice_fc_mode req_mode)
-+enum ice_status
-+ice_cfg_phy_fc(struct ice_port_info *pi, struct ice_aqc_set_phy_cfg_data *cfg,
-+	       enum ice_fc_mode req_mode)
- {
-+	struct ice_phy_cache_mode_data cache_data;
- 	u8 pause_mask = 0x0;
- 
--	if (!cfg)
-+	if (!pi || !cfg)
- 		return ICE_ERR_BAD_PTR;
- 
- 	switch (req_mode) {
-@@ -2549,6 +2634,10 @@ ice_cfg_phy_fc(struct ice_aqc_set_phy_cfg_data *cfg, enum ice_fc_mode req_mode)
- 	/* set the new capabilities */
- 	cfg->caps |= pause_mask;
- 
-+	/* Cache user FC request */
-+	cache_data.data.curr_user_fc_req = req_mode;
-+	ice_cache_phy_user_req(pi, cache_data, ICE_FC_MODE);
-+
++	ice_debug(hw, ICE_DBG_INIT, "mac_type: %d\n", hw->mac_type);
  	return 0;
  }
  
-@@ -2563,12 +2652,12 @@ ice_cfg_phy_fc(struct ice_aqc_set_phy_cfg_data *cfg, enum ice_fc_mode req_mode)
- enum ice_status
- ice_set_fc(struct ice_port_info *pi, u8 *aq_failures, bool ena_auto_link_update)
- {
--	struct ice_aqc_set_phy_cfg_data  cfg = { 0 };
-+	struct ice_aqc_set_phy_cfg_data cfg = { 0 };
- 	struct ice_aqc_get_phy_caps_data *pcaps;
- 	enum ice_status status;
- 	struct ice_hw *hw;
+@@ -2675,7 +2708,7 @@ ice_set_fc(struct ice_port_info *pi, u8 *aq_failures, bool ena_auto_link_update)
+ 		goto out;
+ 	}
  
--	if (!pi)
-+	if (!pi || !aq_failures)
- 		return ICE_ERR_BAD_PTR;
- 
- 	*aq_failures = 0;
-@@ -2589,7 +2678,7 @@ ice_set_fc(struct ice_port_info *pi, u8 *aq_failures, bool ena_auto_link_update)
- 	ice_copy_phy_caps_to_cfg(pcaps, &cfg);
+-	ice_copy_phy_caps_to_cfg(pcaps, &cfg);
++	ice_copy_phy_caps_to_cfg(pi, pcaps, &cfg);
  
  	/* Configure the set PHY data */
--	status = ice_cfg_phy_fc(&cfg, pi->fc.req_mode);
-+	status = ice_cfg_phy_fc(pi, &cfg, pi->fc.req_mode);
- 	if (status)
- 		goto out;
+ 	status = ice_cfg_phy_fc(pi, &cfg, pi->fc.req_mode);
+@@ -2757,6 +2790,7 @@ ice_phy_caps_equals_cfg(struct ice_aqc_get_phy_caps_data *phy_caps,
  
-@@ -2601,7 +2690,7 @@ ice_set_fc(struct ice_port_info *pi, u8 *aq_failures, bool ena_auto_link_update)
- 		if (ena_auto_link_update)
- 			cfg.caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
- 
--		status = ice_aq_set_phy_cfg(hw, pi->lport, &cfg, NULL);
-+		status = ice_aq_set_phy_cfg(hw, pi, &cfg, NULL);
- 		if (status) {
- 			*aq_failures = ICE_SET_FC_AQ_FAIL_SET;
- 			goto out;
-@@ -2630,6 +2719,42 @@ ice_set_fc(struct ice_port_info *pi, u8 *aq_failures, bool ena_auto_link_update)
- 	return status;
- }
- 
-+/**
-+ * ice_phy_caps_equals_cfg
-+ * @phy_caps: PHY capabilities
-+ * @phy_cfg: PHY configuration
-+ *
-+ * Helper function to determine if PHY capabilities matches PHY
-+ * configuration
-+ */
-+bool
-+ice_phy_caps_equals_cfg(struct ice_aqc_get_phy_caps_data *phy_caps,
-+			struct ice_aqc_set_phy_cfg_data *phy_cfg)
-+{
-+	u8 caps_mask, cfg_mask;
-+
-+	if (!phy_caps || !phy_cfg)
-+		return false;
-+
-+	/* These bits are not common between capabilities and configuration.
-+	 * Do not use them to determine equality.
-+	 */
-+	caps_mask = ICE_AQC_PHY_CAPS_MASK & ~(ICE_AQC_PHY_AN_MODE |
-+					      ICE_AQC_GET_PHY_EN_MOD_QUAL);
-+	cfg_mask = ICE_AQ_PHY_ENA_VALID_MASK & ~ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
-+
-+	if (phy_caps->phy_type_low != phy_cfg->phy_type_low ||
-+	    phy_caps->phy_type_high != phy_cfg->phy_type_high ||
-+	    ((phy_caps->caps & caps_mask) != (phy_cfg->caps & cfg_mask)) ||
-+	    phy_caps->low_power_ctrl != phy_cfg->low_power_ctrl ||
-+	    phy_caps->eee_cap != phy_cfg->eee_cap ||
-+	    phy_caps->eeer_value != phy_cfg->eeer_value ||
-+	    phy_caps->link_fec_options != phy_cfg->link_fec_opt)
-+		return false;
-+
-+	return true;
-+}
-+
  /**
   * ice_copy_phy_caps_to_cfg - Copy PHY ability data to configuration data
++ * @pi: port information structure
   * @caps: PHY ability structure to copy date from
+  * @cfg: PHY configuration structure to copy data to
+  *
+@@ -2764,10 +2798,11 @@ ice_phy_caps_equals_cfg(struct ice_aqc_get_phy_caps_data *phy_caps,
+  * data structure
+  */
+ void
+-ice_copy_phy_caps_to_cfg(struct ice_aqc_get_phy_caps_data *caps,
++ice_copy_phy_caps_to_cfg(struct ice_port_info *pi,
++			 struct ice_aqc_get_phy_caps_data *caps,
+ 			 struct ice_aqc_set_phy_cfg_data *cfg)
+ {
+-	if (!caps || !cfg)
++	if (!pi || !caps || !cfg)
+ 		return;
+ 
+ 	memset(cfg, 0, sizeof(*cfg));
+@@ -2778,6 +2813,19 @@ ice_copy_phy_caps_to_cfg(struct ice_aqc_get_phy_caps_data *caps,
+ 	cfg->eee_cap = caps->eee_cap;
+ 	cfg->eeer_value = caps->eeer_value;
+ 	cfg->link_fec_opt = caps->link_fec_options;
++	cfg->module_compliance_enforcement =
++		caps->module_compliance_enforcement;
++
++	if (ice_fw_supports_link_override(pi->hw)) {
++		struct ice_link_default_override_tlv tlv;
++
++		if (ice_get_link_default_override(&tlv, pi))
++			return;
++
++		if (tlv.options & ICE_LINK_OVERRIDE_STRICT_MODE)
++			cfg->module_compliance_enforcement |=
++				ICE_LINK_OVERRIDE_STRICT_MODE;
++	}
+ }
+ 
+ /**
+@@ -2840,6 +2888,17 @@ ice_cfg_phy_fec(struct ice_port_info *pi, struct ice_aqc_set_phy_cfg_data *cfg,
+ 		break;
+ 	}
+ 
++	if (fec == ICE_FEC_AUTO && ice_fw_supports_link_override(pi->hw)) {
++		struct ice_link_default_override_tlv tlv;
++
++		if (ice_get_link_default_override(&tlv, pi))
++			goto out;
++
++		if (!(tlv.options & ICE_LINK_OVERRIDE_STRICT_MODE) &&
++		    (tlv.options & ICE_LINK_OVERRIDE_EN))
++			cfg->link_fec_opt = tlv.fec_options;
++	}
++
+ out:
+ 	kfree(pcaps);
+ 
+@@ -4043,3 +4102,106 @@ ice_sched_query_elem(struct ice_hw *hw, u32 node_teid,
+ 		ice_debug(hw, ICE_DBG_SCHED, "query element failed\n");
+ 	return status;
+ }
++
++/**
++ * ice_fw_supports_link_override
++ * @hw: pointer to the hardware structure
++ *
++ * Checks if the firmware supports link override
++ */
++bool ice_fw_supports_link_override(struct ice_hw *hw)
++{
++	/* Currently, only supported for E810 devices */
++	if (hw->mac_type != ICE_MAC_E810)
++		return false;
++
++	if (hw->api_maj_ver == ICE_FW_API_LINK_OVERRIDE_MAJ) {
++		if (hw->api_min_ver > ICE_FW_API_LINK_OVERRIDE_MIN)
++			return true;
++		if (hw->api_min_ver == ICE_FW_API_LINK_OVERRIDE_MIN &&
++		    hw->api_patch >= ICE_FW_API_LINK_OVERRIDE_PATCH)
++			return true;
++	} else if (hw->api_maj_ver > ICE_FW_API_LINK_OVERRIDE_MAJ) {
++		return true;
++	}
++
++	return false;
++}
++
++/**
++ * ice_get_link_default_override
++ * @ldo: pointer to the link default override struct
++ * @pi: pointer to the port info struct
++ *
++ * Gets the link default override for a port
++ */
++enum ice_status
++ice_get_link_default_override(struct ice_link_default_override_tlv *ldo,
++			      struct ice_port_info *pi)
++{
++	u16 i, tlv, tlv_len, tlv_start, buf, offset;
++	struct ice_hw *hw = pi->hw;
++	enum ice_status status;
++
++	status = ice_get_pfa_module_tlv(hw, &tlv, &tlv_len,
++					ICE_SR_LINK_DEFAULT_OVERRIDE_PTR);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT,
++			  "Failed to read link override TLV.\n");
++		return status;
++	}
++
++	/* Each port has its own config; calculate for our port */
++	tlv_start = tlv + pi->lport * ICE_SR_PFA_LINK_OVERRIDE_WORDS +
++		ICE_SR_PFA_LINK_OVERRIDE_OFFSET;
++
++	/* link options first */
++	status = ice_read_sr_word(hw, tlv_start, &buf);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT,
++			  "Failed to read override link options.\n");
++		return status;
++	}
++	ldo->options = buf & ICE_LINK_OVERRIDE_OPT_M;
++	ldo->phy_config = (buf & ICE_LINK_OVERRIDE_PHY_CFG_M) >>
++		ICE_LINK_OVERRIDE_PHY_CFG_S;
++
++	/* link PHY config */
++	offset = tlv_start + ICE_SR_PFA_LINK_OVERRIDE_FEC_OFFSET;
++	status = ice_read_sr_word(hw, offset, &buf);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT,
++			  "Failed to read override phy config.\n");
++		return status;
++	}
++	ldo->fec_options = buf & ICE_LINK_OVERRIDE_FEC_OPT_M;
++
++	/* PHY types low */
++	offset = tlv_start + ICE_SR_PFA_LINK_OVERRIDE_PHY_OFFSET;
++	for (i = 0; i < ICE_SR_PFA_LINK_OVERRIDE_PHY_WORDS; i++) {
++		status = ice_read_sr_word(hw, (offset + i), &buf);
++		if (status) {
++			ice_debug(hw, ICE_DBG_INIT,
++				  "Failed to read override link options.\n");
++			return status;
++		}
++		/* shift 16 bits at a time to fill 64 bits */
++		ldo->phy_type_low |= ((u64)buf << (i * 16));
++	}
++
++	/* PHY types high */
++	offset = tlv_start + ICE_SR_PFA_LINK_OVERRIDE_PHY_OFFSET +
++		ICE_SR_PFA_LINK_OVERRIDE_PHY_WORDS;
++	for (i = 0; i < ICE_SR_PFA_LINK_OVERRIDE_PHY_WORDS; i++) {
++		status = ice_read_sr_word(hw, (offset + i), &buf);
++		if (status) {
++			ice_debug(hw, ICE_DBG_INIT,
++				  "Failed to read override link options.\n");
++			return status;
++		}
++		/* shift 16 bits at a time to fill 64 bits */
++		ldo->phy_type_high |= ((u64)buf << (i * 16));
++	}
++
++	return status;
++}
 diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index 2f912c671e6b..5246f6138506 100644
+index 5246f6138506..1b8b02bb4399 100644
 --- a/drivers/net/ethernet/intel/ice/ice_common.h
 +++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -98,18 +98,26 @@ ice_aq_manage_mac_write(struct ice_hw *hw, const u8 *mac_addr, u8 flags,
- 			struct ice_sq_cd *cd);
- enum ice_status ice_clear_pf_cfg(struct ice_hw *hw);
+@@ -100,6 +100,11 @@ enum ice_status ice_clear_pf_cfg(struct ice_hw *hw);
  enum ice_status
--ice_aq_set_phy_cfg(struct ice_hw *hw, u8 lport,
-+ice_aq_set_phy_cfg(struct ice_hw *hw, struct ice_port_info *pi,
+ ice_aq_set_phy_cfg(struct ice_hw *hw, struct ice_port_info *pi,
  		   struct ice_aqc_set_phy_cfg_data *cfg, struct ice_sq_cd *cd);
-+enum ice_fc_mode ice_caps_to_fc_mode(u8 caps);
-+enum ice_fec_mode ice_caps_to_fec_mode(u8 caps, u8 fec_options);
++bool ice_fw_supports_link_override(struct ice_hw *hw);
++enum ice_status
++ice_get_link_default_override(struct ice_link_default_override_tlv *ldo,
++			      struct ice_port_info *pi);
++
+ enum ice_fc_mode ice_caps_to_fc_mode(u8 caps);
+ enum ice_fec_mode ice_caps_to_fec_mode(u8 caps, u8 fec_options);
  enum ice_status
- ice_set_fc(struct ice_port_info *pi, u8 *aq_failures,
- 	   bool ena_auto_link_update);
- enum ice_status
--ice_cfg_phy_fec(struct ice_port_info *pi, struct ice_aqc_set_phy_cfg_data *cfg,
--		enum ice_fec_mode fec);
-+ice_cfg_phy_fc(struct ice_port_info *pi, struct ice_aqc_set_phy_cfg_data *cfg,
-+	       enum ice_fc_mode fc);
-+bool
-+ice_phy_caps_equals_cfg(struct ice_aqc_get_phy_caps_data *caps,
-+			struct ice_aqc_set_phy_cfg_data *cfg);
+@@ -112,7 +117,8 @@ bool
+ ice_phy_caps_equals_cfg(struct ice_aqc_get_phy_caps_data *caps,
+ 			struct ice_aqc_set_phy_cfg_data *cfg);
  void
- ice_copy_phy_caps_to_cfg(struct ice_aqc_get_phy_caps_data *caps,
+-ice_copy_phy_caps_to_cfg(struct ice_aqc_get_phy_caps_data *caps,
++ice_copy_phy_caps_to_cfg(struct ice_port_info *pi,
++			 struct ice_aqc_get_phy_caps_data *caps,
  			 struct ice_aqc_set_phy_cfg_data *cfg);
  enum ice_status
-+ice_cfg_phy_fec(struct ice_port_info *pi, struct ice_aqc_set_phy_cfg_data *cfg,
-+		enum ice_fec_mode fec);
-+enum ice_status
- ice_aq_set_link_restart_an(struct ice_port_info *pi, bool ena_link,
- 			   struct ice_sq_cd *cd);
- enum ice_status
+ ice_cfg_phy_fec(struct ice_port_info *pi, struct ice_aqc_set_phy_cfg_data *cfg,
 diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 4567b0175712..a20474208b7d 100644
+index a20474208b7d..f382faaf64e3 100644
 --- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
 +++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -966,11 +966,8 @@ static int ice_set_fec_cfg(struct net_device *netdev, enum ice_fec_mode req_fec)
- {
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
- 	struct ice_aqc_set_phy_cfg_data config = { 0 };
--	struct ice_aqc_get_phy_caps_data *caps;
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_port_info *pi;
--	enum ice_status status;
--	int err = 0;
- 
- 	pi = vsi->port_info;
- 	if (!pi)
-@@ -982,30 +979,26 @@ static int ice_set_fec_cfg(struct net_device *netdev, enum ice_fec_mode req_fec)
- 		return -EOPNOTSUPP;
+@@ -1387,6 +1387,77 @@ ice_get_ethtool_stats(struct net_device *netdev,
  	}
- 
--	/* Get last SW configuration */
--	caps = kzalloc(sizeof(*caps), GFP_KERNEL);
--	if (!caps)
--		return -ENOMEM;
--
--	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_SW_CFG,
--				     caps, NULL);
--	if (status) {
--		err = -EAGAIN;
--		goto done;
--	}
-+	/* Proceed only if requesting different FEC mode */
-+	if (pi->phy.curr_user_fec_req == req_fec)
-+		return 0;
- 
--	/* Copy SW configuration returned from PHY caps to PHY config */
--	ice_copy_phy_caps_to_cfg(caps, &config);
-+	/* Copy the current user PHY configuration. The current user PHY
-+	 * configuration is initialized during probe from PHY capabilities
-+	 * software mode, and updated on set PHY configuration.
-+	 */
-+	memcpy(&config, &pi->phy.curr_user_phy_cfg, sizeof(config));
- 
- 	ice_cfg_phy_fec(pi, &config, req_fec);
- 	config.caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
- 
--	if (ice_aq_set_phy_cfg(pi->hw, pi->lport, &config, NULL))
--		err = -EAGAIN;
-+	if (ice_aq_set_phy_cfg(pi->hw, pi, &config, NULL))
-+		return -EAGAIN;
- 
--done:
--	kfree(caps);
--	return err;
-+	/* Save requested FEC config */
-+	pi->phy.curr_user_fec_req = req_fec;
-+
-+	return 0;
  }
  
- /**
-@@ -2102,10 +2095,10 @@ static int
- ice_set_link_ksettings(struct net_device *netdev,
- 		       const struct ethtool_link_ksettings *ks)
- {
--	u8 autoneg, timeout = TEST_SET_BITS_TIMEOUT, lport = 0;
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
- 	struct ethtool_link_ksettings safe_ks, copy_ks;
- 	struct ice_aqc_get_phy_caps_data *abilities;
-+	u8 autoneg, timeout = TEST_SET_BITS_TIMEOUT;
- 	u16 adv_link_speed, curr_link_speed, idx;
- 	struct ice_aqc_set_phy_cfg_data config;
- 	struct ice_pf *pf = np->vsi->back;
-@@ -2137,6 +2130,18 @@ ice_set_link_ksettings(struct net_device *netdev,
- 	    p->phy.link_info.link_info & ICE_AQ_LINK_UP)
- 		return -EOPNOTSUPP;
- 
-+	abilities = kzalloc(sizeof(*abilities), GFP_KERNEL);
-+	if (!abilities)
-+		return -ENOMEM;
++#define ICE_PHY_TYPE_LOW_MASK_MIN_1G	(ICE_PHY_TYPE_LOW_100BASE_TX | \
++					 ICE_PHY_TYPE_LOW_100M_SGMII)
 +
-+	/* Get the PHY capabilities based on media */
-+	status = ice_aq_get_phy_caps(p, false, ICE_AQC_REPORT_TOPO_CAP,
-+				     abilities, NULL);
-+	if (status) {
-+		err = -EAGAIN;
-+		goto done;
++#define ICE_PHY_TYPE_LOW_MASK_MIN_25G	(ICE_PHY_TYPE_LOW_MASK_MIN_1G | \
++					 ICE_PHY_TYPE_LOW_1000BASE_T | \
++					 ICE_PHY_TYPE_LOW_1000BASE_SX | \
++					 ICE_PHY_TYPE_LOW_1000BASE_LX | \
++					 ICE_PHY_TYPE_LOW_1000BASE_KX | \
++					 ICE_PHY_TYPE_LOW_1G_SGMII | \
++					 ICE_PHY_TYPE_LOW_2500BASE_T | \
++					 ICE_PHY_TYPE_LOW_2500BASE_X | \
++					 ICE_PHY_TYPE_LOW_2500BASE_KX | \
++					 ICE_PHY_TYPE_LOW_5GBASE_T | \
++					 ICE_PHY_TYPE_LOW_5GBASE_KR | \
++					 ICE_PHY_TYPE_LOW_10GBASE_T | \
++					 ICE_PHY_TYPE_LOW_10G_SFI_DA | \
++					 ICE_PHY_TYPE_LOW_10GBASE_SR | \
++					 ICE_PHY_TYPE_LOW_10GBASE_LR | \
++					 ICE_PHY_TYPE_LOW_10GBASE_KR_CR1 | \
++					 ICE_PHY_TYPE_LOW_10G_SFI_AOC_ACC | \
++					 ICE_PHY_TYPE_LOW_10G_SFI_C2C)
++
++#define ICE_PHY_TYPE_LOW_MASK_100G	(ICE_PHY_TYPE_LOW_100GBASE_CR4 | \
++					 ICE_PHY_TYPE_LOW_100GBASE_SR4 | \
++					 ICE_PHY_TYPE_LOW_100GBASE_LR4 | \
++					 ICE_PHY_TYPE_LOW_100GBASE_KR4 | \
++					 ICE_PHY_TYPE_LOW_100G_CAUI4_AOC_ACC | \
++					 ICE_PHY_TYPE_LOW_100G_CAUI4 | \
++					 ICE_PHY_TYPE_LOW_100G_AUI4_AOC_ACC | \
++					 ICE_PHY_TYPE_LOW_100G_AUI4 | \
++					 ICE_PHY_TYPE_LOW_100GBASE_CR_PAM4 | \
++					 ICE_PHY_TYPE_LOW_100GBASE_KR_PAM4 | \
++					 ICE_PHY_TYPE_LOW_100GBASE_CP2 | \
++					 ICE_PHY_TYPE_LOW_100GBASE_SR2 | \
++					 ICE_PHY_TYPE_LOW_100GBASE_DR)
++
++#define ICE_PHY_TYPE_HIGH_MASK_100G	(ICE_PHY_TYPE_HIGH_100GBASE_KR2_PAM4 | \
++					 ICE_PHY_TYPE_HIGH_100G_CAUI2_AOC_ACC |\
++					 ICE_PHY_TYPE_HIGH_100G_CAUI2 | \
++					 ICE_PHY_TYPE_HIGH_100G_AUI2_AOC_ACC | \
++					 ICE_PHY_TYPE_HIGH_100G_AUI2)
++
++/**
++ * ice_mask_min_supported_speeds
++ * @phy_types_high: PHY type high
++ * @phy_types_low: PHY type low to apply minimum supported speeds mask
++ *
++ * Apply minimum supported speeds mask to PHY type low. These are the speeds
++ * for ethtool supported link mode.
++ */
++static
++void ice_mask_min_supported_speeds(u64 phy_types_high, u64 *phy_types_low)
++{
++	/* if QSFP connection with 100G speed, minimum supported speed is 25G */
++	if (*phy_types_low & ICE_PHY_TYPE_LOW_MASK_100G ||
++	    phy_types_high & ICE_PHY_TYPE_HIGH_MASK_100G)
++		*phy_types_low &= ~ICE_PHY_TYPE_LOW_MASK_MIN_25G;
++	else
++		*phy_types_low &= ~ICE_PHY_TYPE_LOW_MASK_MIN_1G;
++}
++
++#define ice_ethtool_advertise_link_mode(aq_link_speed, ethtool_link_mode)    \
++	do {								     \
++		if (req_speeds & (aq_link_speed) ||			     \
++		    (!req_speeds &&					     \
++		     (adv_phy_type_lo & phy_type_mask_lo ||		     \
++		      adv_phy_type_hi & phy_type_mask_hi)))		     \
++			ethtool_link_ksettings_add_link_mode(ks, advertising,\
++							ethtool_link_mode);  \
++	} while (0)
++
+ /**
+  * ice_phy_type_to_ethtool - convert the phy_types to ethtool link modes
+  * @netdev: network interface device structure
+@@ -1397,277 +1468,312 @@ ice_phy_type_to_ethtool(struct net_device *netdev,
+ 			struct ethtool_link_ksettings *ks)
+ {
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+-	struct ice_link_status *hw_link_info;
+-	bool need_add_adv_mode = false;
+ 	struct ice_vsi *vsi = np->vsi;
+-	u64 phy_types_high;
+-	u64 phy_types_low;
++	struct ice_pf *pf = vsi->back;
++	u64 phy_type_mask_lo = 0;
++	u64 phy_type_mask_hi = 0;
++	u64 adv_phy_type_lo = 0;
++	u64 adv_phy_type_hi = 0;
++	u64 phy_types_high = 0;
++	u64 phy_types_low = 0;
++	u16 req_speeds;
++
++	req_speeds = vsi->port_info->phy.link_info.req_speeds;
++
++	/* Check if lenient mode is supported and enabled, or in strict mode.
++	 *
++	 * In lenient mode the Supported link modes are the PHY types without
++	 * media. The Advertising link mode is either 1. the user requested
++	 * speed, 2. the override PHY mask, or 3. the PHY types with media.
++	 *
++	 * In strict mode Supported link mode are the PHY type with media,
++	 * and Advertising link modes are the media PHY type or the speed
++	 * requested by user.
++	 */
++	if (test_bit(ICE_FLAG_LINK_LENIENT_MODE_ENA, pf->flags)) {
++		struct ice_link_default_override_tlv *ldo;
+ 
+-	hw_link_info = &vsi->port_info->phy.link_info;
+-	phy_types_low = vsi->port_info->phy.phy_type_low;
+-	phy_types_high = vsi->port_info->phy.phy_type_high;
++		ldo = &pf->link_dflt_override;
++		phy_types_low = le64_to_cpu(pf->nvm_phy_type_lo);
++		phy_types_high = le64_to_cpu(pf->nvm_phy_type_hi);
++
++		ice_mask_min_supported_speeds(phy_types_high, &phy_types_low);
++
++		/* If override enabled and PHY mask set, then
++		 * Advertising link mode is the intersection of the PHY
++		 * types without media and the override PHY mask.
++		 */
++		if (ldo->options & ICE_LINK_OVERRIDE_EN &&
++		    (ldo->phy_type_low || ldo->phy_type_high)) {
++			adv_phy_type_lo =
++				le64_to_cpu(pf->nvm_phy_type_lo) &
++				ldo->phy_type_low;
++			adv_phy_type_hi =
++				le64_to_cpu(pf->nvm_phy_type_hi) &
++				ldo->phy_type_high;
++		}
++	} else {
++		phy_types_low = vsi->port_info->phy.phy_type_low;
++		phy_types_high = vsi->port_info->phy.phy_type_high;
 +	}
 +
- 	/* copy the ksettings to copy_ks to avoid modifying the original */
- 	memcpy(&copy_ks, ks, sizeof(copy_ks));
++	/* If Advertising link mode PHY type is not using override PHY type,
++	 * then use PHY type with media.
++	 */
++	if (!adv_phy_type_lo && !adv_phy_type_hi) {
++		adv_phy_type_lo = vsi->port_info->phy.phy_type_low;
++		adv_phy_type_hi = vsi->port_info->phy.phy_type_high;
++	}
  
-@@ -2153,8 +2158,10 @@ ice_set_link_ksettings(struct net_device *netdev,
- 	 */
+ 	ethtool_link_ksettings_zero_link_mode(ks, supported);
+ 	ethtool_link_ksettings_zero_link_mode(ks, advertising);
+ 
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_100BASE_TX ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_100M_SGMII) {
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_100BASE_TX |
++			   ICE_PHY_TYPE_LOW_100M_SGMII;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     100baseT_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_100MB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     100baseT_Full);
++
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_100MB,
++						100baseT_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_1000BASE_T ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_1G_SGMII) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_1000BASE_T |
++			   ICE_PHY_TYPE_LOW_1G_SGMII;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     1000baseT_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_1000MB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     1000baseT_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_1000MB,
++						1000baseT_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_1000BASE_KX) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_1000BASE_KX;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     1000baseKX_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_1000MB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     1000baseKX_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_1000MB,
++						1000baseKX_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_1000BASE_SX ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_1000BASE_LX) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_1000BASE_SX |
++			   ICE_PHY_TYPE_LOW_1000BASE_LX;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     1000baseX_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_1000MB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     1000baseX_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_1000MB,
++						1000baseX_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_2500BASE_T) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_2500BASE_T;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     2500baseT_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_2500MB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     2500baseT_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_2500MB,
++						2500baseT_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_2500BASE_X ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_2500BASE_KX) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_2500BASE_X |
++			   ICE_PHY_TYPE_LOW_2500BASE_KX;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     2500baseX_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_2500MB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     2500baseX_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_2500MB,
++						2500baseX_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_5GBASE_T ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_5GBASE_KR) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_5GBASE_T |
++			   ICE_PHY_TYPE_LOW_5GBASE_KR;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     5000baseT_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_5GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     5000baseT_Full);
+-	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_10GBASE_T ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_10G_SFI_DA ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_10G_SFI_AOC_ACC ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_10G_SFI_C2C) {
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_5GB,
++						5000baseT_Full);
++	}
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_10GBASE_T |
++			   ICE_PHY_TYPE_LOW_10G_SFI_DA |
++			   ICE_PHY_TYPE_LOW_10G_SFI_AOC_ACC |
++			   ICE_PHY_TYPE_LOW_10G_SFI_C2C;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     10000baseT_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_10GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     10000baseT_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_10GB,
++						10000baseT_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_10GBASE_KR_CR1) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_10GBASE_KR_CR1;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     10000baseKR_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_10GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     10000baseKR_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_10GB,
++						10000baseKR_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_10GBASE_SR) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_10GBASE_SR;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     10000baseSR_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_10GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     10000baseSR_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_10GB,
++						10000baseSR_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_10GBASE_LR) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_10GBASE_LR;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     10000baseLR_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_10GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     10000baseLR_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_10GB,
++						10000baseLR_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_25GBASE_T ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_25GBASE_CR ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_25GBASE_CR_S ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_25GBASE_CR1 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_25G_AUI_AOC_ACC ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_25G_AUI_C2C) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_25GBASE_T |
++			   ICE_PHY_TYPE_LOW_25GBASE_CR |
++			   ICE_PHY_TYPE_LOW_25GBASE_CR_S |
++			   ICE_PHY_TYPE_LOW_25GBASE_CR1 |
++			   ICE_PHY_TYPE_LOW_25G_AUI_AOC_ACC |
++			   ICE_PHY_TYPE_LOW_25G_AUI_C2C;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     25000baseCR_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_25GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     25000baseCR_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_25GB,
++						25000baseCR_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_25GBASE_SR ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_25GBASE_LR) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_25GBASE_SR |
++			   ICE_PHY_TYPE_LOW_25GBASE_LR;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     25000baseSR_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_25GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     25000baseSR_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_25GB,
++						25000baseSR_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_25GBASE_KR ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_25GBASE_KR_S ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_25GBASE_KR1) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_25GBASE_KR |
++			   ICE_PHY_TYPE_LOW_25GBASE_KR_S |
++			   ICE_PHY_TYPE_LOW_25GBASE_KR1;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     25000baseKR_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_25GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     25000baseKR_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_25GB,
++						25000baseKR_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_40GBASE_KR4) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_40GBASE_KR4;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     40000baseKR4_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_40GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     40000baseKR4_Full);
+-	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_40GBASE_CR4 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_40G_XLAUI_AOC_ACC ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_40G_XLAUI) {
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_40GB,
++						40000baseKR4_Full);
++	}
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_40GBASE_CR4 |
++			   ICE_PHY_TYPE_LOW_40G_XLAUI_AOC_ACC |
++			   ICE_PHY_TYPE_LOW_40G_XLAUI;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     40000baseCR4_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_40GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     40000baseCR4_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_40GB,
++						40000baseCR4_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_40GBASE_SR4) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_40GBASE_SR4;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     40000baseSR4_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_40GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     40000baseSR4_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_40GB,
++						40000baseSR4_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_40GBASE_LR4) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_40GBASE_LR4;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     40000baseLR4_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_40GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     40000baseLR4_Full);
+-	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_50GBASE_CR2 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50G_LAUI2_AOC_ACC ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50G_LAUI2 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50G_AUI2_AOC_ACC ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50G_AUI2 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50GBASE_CP ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50GBASE_SR ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50G_AUI1_AOC_ACC ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50G_AUI1) {
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_40GB,
++						40000baseLR4_Full);
++	}
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_50GBASE_CR2 |
++			   ICE_PHY_TYPE_LOW_50G_LAUI2_AOC_ACC |
++			   ICE_PHY_TYPE_LOW_50G_LAUI2 |
++			   ICE_PHY_TYPE_LOW_50G_AUI2_AOC_ACC |
++			   ICE_PHY_TYPE_LOW_50G_AUI2 |
++			   ICE_PHY_TYPE_LOW_50GBASE_CP |
++			   ICE_PHY_TYPE_LOW_50GBASE_SR |
++			   ICE_PHY_TYPE_LOW_50G_AUI1_AOC_ACC |
++			   ICE_PHY_TYPE_LOW_50G_AUI1;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     50000baseCR2_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_50GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     50000baseCR2_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_50GB,
++						50000baseCR2_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_50GBASE_KR2 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50GBASE_KR_PAM4) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_50GBASE_KR2 |
++			   ICE_PHY_TYPE_LOW_50GBASE_KR_PAM4;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     50000baseKR2_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_50GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     50000baseKR2_Full);
+-	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_50GBASE_SR2 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50GBASE_LR2 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50GBASE_FR ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_50GBASE_LR) {
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_50GB,
++						50000baseKR2_Full);
++	}
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_50GBASE_SR2 |
++			   ICE_PHY_TYPE_LOW_50GBASE_LR2 |
++			   ICE_PHY_TYPE_LOW_50GBASE_FR |
++			   ICE_PHY_TYPE_LOW_50GBASE_LR;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     50000baseSR2_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_50GB)
+-			ethtool_link_ksettings_add_link_mode(ks, advertising,
+-							     50000baseSR2_Full);
+-	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_CR4 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_100G_CAUI4_AOC_ACC ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_100G_CAUI4 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_100G_AUI4_AOC_ACC ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_100G_AUI4 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_CR_PAM4 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_CP2  ||
+-	    phy_types_high & ICE_PHY_TYPE_HIGH_100G_CAUI2_AOC_ACC ||
+-	    phy_types_high & ICE_PHY_TYPE_HIGH_100G_CAUI2 ||
+-	    phy_types_high & ICE_PHY_TYPE_HIGH_100G_AUI2_AOC_ACC ||
+-	    phy_types_high & ICE_PHY_TYPE_HIGH_100G_AUI2) {
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_50GB,
++						50000baseSR2_Full);
++	}
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_100GBASE_CR4 |
++			   ICE_PHY_TYPE_LOW_100G_CAUI4_AOC_ACC |
++			   ICE_PHY_TYPE_LOW_100G_CAUI4 |
++			   ICE_PHY_TYPE_LOW_100G_AUI4_AOC_ACC |
++			   ICE_PHY_TYPE_LOW_100G_AUI4 |
++			   ICE_PHY_TYPE_LOW_100GBASE_CR_PAM4 |
++			   ICE_PHY_TYPE_LOW_100GBASE_CP2;
++	phy_type_mask_hi = ICE_PHY_TYPE_HIGH_100G_CAUI2_AOC_ACC |
++			   ICE_PHY_TYPE_HIGH_100G_CAUI2 |
++			   ICE_PHY_TYPE_HIGH_100G_AUI2_AOC_ACC |
++			   ICE_PHY_TYPE_HIGH_100G_AUI2;
++	if (phy_types_low & phy_type_mask_lo ||
++	    phy_types_high & phy_type_mask_hi) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     100000baseCR4_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_100GB)
+-			need_add_adv_mode = true;
+-	}
+-	if (need_add_adv_mode) {
+-		need_add_adv_mode = false;
+-		ethtool_link_ksettings_add_link_mode(ks, advertising,
+-						     100000baseCR4_Full);
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_100GB,
++						100000baseCR4_Full);
+ 	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_SR4 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_SR2) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_100GBASE_SR4 |
++			   ICE_PHY_TYPE_LOW_100GBASE_SR2;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     100000baseSR4_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_100GB)
+-			need_add_adv_mode = true;
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_100GB,
++						100000baseSR4_Full);
+ 	}
+-	if (need_add_adv_mode) {
+-		need_add_adv_mode = false;
+-		ethtool_link_ksettings_add_link_mode(ks, advertising,
+-						     100000baseSR4_Full);
+-	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_LR4 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_DR) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_100GBASE_LR4 |
++			   ICE_PHY_TYPE_LOW_100GBASE_DR;
++	if (phy_types_low & phy_type_mask_lo) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     100000baseLR4_ER4_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_100GB)
+-			need_add_adv_mode = true;
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_100GB,
++						100000baseLR4_ER4_Full);
+ 	}
+-	if (need_add_adv_mode) {
+-		need_add_adv_mode = false;
+-		ethtool_link_ksettings_add_link_mode(ks, advertising,
+-						     100000baseLR4_ER4_Full);
+-	}
+-	if (phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_KR4 ||
+-	    phy_types_low & ICE_PHY_TYPE_LOW_100GBASE_KR_PAM4 ||
+-	    phy_types_high & ICE_PHY_TYPE_HIGH_100GBASE_KR2_PAM4) {
++
++	phy_type_mask_lo = ICE_PHY_TYPE_LOW_100GBASE_KR4 |
++			   ICE_PHY_TYPE_LOW_100GBASE_KR_PAM4;
++	phy_type_mask_hi = ICE_PHY_TYPE_HIGH_100GBASE_KR2_PAM4;
++	if (phy_types_low & phy_type_mask_lo ||
++	    phy_types_high & phy_type_mask_hi) {
+ 		ethtool_link_ksettings_add_link_mode(ks, supported,
+ 						     100000baseKR4_Full);
+-		if (!hw_link_info->req_speeds ||
+-		    hw_link_info->req_speeds & ICE_AQ_LINK_SPEED_100GB)
+-			need_add_adv_mode = true;
++		ice_ethtool_advertise_link_mode(ICE_AQ_LINK_SPEED_100GB,
++						100000baseKR4_Full);
+ 	}
+-	if (need_add_adv_mode)
+-		ethtool_link_ksettings_add_link_mode(ks, advertising,
+-						     100000baseKR4_Full);
+ 
+ 	/* Autoneg PHY types */
+ 	if (phy_types_low & ICE_PHY_TYPE_LOW_100BASE_TX ||
+@@ -2105,8 +2211,8 @@ ice_set_link_ksettings(struct net_device *netdev,
+ 	struct ice_port_info *p;
+ 	u8 autoneg_changed = 0;
+ 	enum ice_status status;
+-	u64 phy_type_high;
+-	u64 phy_type_low;
++	u64 phy_type_high = 0;
++	u64 phy_type_low = 0;
+ 	int err = 0;
+ 	bool linkup;
+ 
+@@ -2159,6 +2265,8 @@ ice_set_link_ksettings(struct net_device *netdev,
  	if (!bitmap_subset(copy_ks.link_modes.advertising,
  			   safe_ks.link_modes.supported,
--			   __ETHTOOL_LINK_MODE_MASK_NBITS))
--		return -EINVAL;
-+			   __ETHTOOL_LINK_MODE_MASK_NBITS)) {
-+		err = -EINVAL;
-+		goto done;
-+	}
- 
- 	/* get our own copy of the bits to check against */
- 	memset(&safe_ks, 0, sizeof(safe_ks));
-@@ -2171,33 +2178,27 @@ ice_set_link_ksettings(struct net_device *netdev,
- 	/* If copy_ks.base and safe_ks.base are not the same now, then they are
- 	 * trying to set something that we do not support.
- 	 */
--	if (memcmp(&copy_ks.base, &safe_ks.base, sizeof(copy_ks.base)))
--		return -EOPNOTSUPP;
-+	if (memcmp(&copy_ks.base, &safe_ks.base, sizeof(copy_ks.base))) {
-+		err = -EOPNOTSUPP;
-+		goto done;
-+	}
- 
- 	while (test_and_set_bit(__ICE_CFG_BUSY, pf->state)) {
- 		timeout--;
--		if (!timeout)
--			return -EBUSY;
-+		if (!timeout) {
-+			err = -EBUSY;
-+			goto done;
-+		}
- 		usleep_range(TEST_SET_BITS_SLEEP_MIN, TEST_SET_BITS_SLEEP_MAX);
+ 			   __ETHTOOL_LINK_MODE_MASK_NBITS)) {
++		if (!test_bit(ICE_FLAG_LINK_LENIENT_MODE_ENA, pf->flags))
++			netdev_info(netdev, "The selected speed is not supported by the current media. Please select a link speed that is supported by the current media.\n");
+ 		err = -EINVAL;
+ 		goto done;
  	}
+@@ -2255,9 +2363,20 @@ ice_set_link_ksettings(struct net_device *netdev,
+ 			abilities->phy_type_low;
  
--	abilities = kzalloc(sizeof(*abilities), GFP_KERNEL);
--	if (!abilities)
--		return -ENOMEM;
--
--	/* Get the current PHY config */
--	status = ice_aq_get_phy_caps(p, false, ICE_AQC_REPORT_SW_CFG, abilities,
--				     NULL);
--	if (status) {
+ 	if (!(config.phy_type_high || config.phy_type_low)) {
+-		netdev_info(netdev, "The selected speed is not supported by the current media. Please select a link speed that is supported by the current media.\n");
 -		err = -EAGAIN;
 -		goto done;
--	}
-+	/* Copy the current user PHY configuration. The current user PHY
-+	 * configuration is initialized during probe from PHY capabilities
-+	 * software mode, and updated on set PHY configuration.
-+	 */
-+	memcpy(&config, &p->phy.curr_user_phy_cfg, sizeof(config));
- 
--	/* Copy abilities to config in case autoneg is not set below */
--	memset(&config, 0, sizeof(config));
--	config.caps = abilities->caps & ~ICE_AQC_PHY_AN_MODE;
--	if (abilities->caps & ICE_AQC_PHY_AN_MODE)
--		config.caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
-+	config.caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
- 
- 	/* Check autoneg */
- 	err = ice_setup_autoneg(p, &safe_ks, &config, autoneg, &autoneg_changed,
-@@ -2232,26 +2233,30 @@ ice_set_link_ksettings(struct net_device *netdev,
- 		goto done;
++		/* If there is no intersection and lenient mode is enabled, then
++		 * intersect the requested advertised speed with NVM media type
++		 * PHY types.
++		 */
++		if (test_bit(ICE_FLAG_LINK_LENIENT_MODE_ENA, pf->flags)) {
++			config.phy_type_high = cpu_to_le64(phy_type_high) &
++					       pf->nvm_phy_type_hi;
++			config.phy_type_low = cpu_to_le64(phy_type_low) &
++					      pf->nvm_phy_type_lo;
++		} else {
++			netdev_info(netdev, "The selected speed is not supported by the current media. Please select a link speed that is supported by the current media.\n");
++			err = -EAGAIN;
++			goto done;
++		}
  	}
  
--	/* copy over the rest of the abilities */
--	config.low_power_ctrl = abilities->low_power_ctrl;
--	config.eee_cap = abilities->eee_cap;
--	config.eeer_value = abilities->eeer_value;
--	config.link_fec_opt = abilities->link_fec_options;
--
- 	/* save the requested speeds */
- 	p->phy.link_info.req_speeds = adv_link_speed;
- 
- 	/* set link and auto negotiation so changes take effect */
- 	config.caps |= ICE_AQ_PHY_ENA_LINK;
- 
--	if (phy_type_low || phy_type_high) {
--		config.phy_type_high = cpu_to_le64(phy_type_high) &
-+	/* check if there is a PHY type for the requested advertised speed */
-+	if (!(phy_type_low || phy_type_high)) {
-+		netdev_info(netdev, "The selected speed is not supported by the current media. Please select a link speed that is supported by the current media.\n");
-+		err = -EAGAIN;
-+		goto done;
-+	}
-+
-+	/* intersect requested advertised speed PHY types with media PHY types
-+	 * for set PHY configuration
-+	 */
-+	config.phy_type_high = cpu_to_le64(phy_type_high) &
- 			abilities->phy_type_high;
--		config.phy_type_low = cpu_to_le64(phy_type_low) &
-+	config.phy_type_low = cpu_to_le64(phy_type_low) &
- 			abilities->phy_type_low;
--	} else {
-+
-+	if (!(config.phy_type_high || config.phy_type_low)) {
-+		netdev_info(netdev, "The selected speed is not supported by the current media. Please select a link speed that is supported by the current media.\n");
- 		err = -EAGAIN;
--		netdev_info(netdev, "Nothing changed. No PHY_TYPE is corresponded to advertised link speed.\n");
- 		goto done;
- 	}
- 
-@@ -2266,12 +2271,15 @@ ice_set_link_ksettings(struct net_device *netdev,
- 	}
- 
- 	/* make the aq call */
--	status = ice_aq_set_phy_cfg(&pf->hw, lport, &config, NULL);
-+	status = ice_aq_set_phy_cfg(&pf->hw, p, &config, NULL);
- 	if (status) {
- 		netdev_info(netdev, "Set phy config failed,\n");
- 		err = -EAGAIN;
-+		goto done;
- 	}
- 
-+	/* Save speed request */
-+	p->phy.curr_user_speed_req = adv_link_speed;
- done:
- 	kfree(abilities);
- 	clear_bit(__ICE_CFG_BUSY, pf->state);
+ 	/* If link is up put link down */
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 794ec145d9cf..4c515bdf0c2c 100644
+index 4c515bdf0c2c..9580c6096e56 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -796,10 +796,6 @@ ice_link_event(struct ice_pf *pf, struct ice_port_info *pi, bool link_up,
- 		dev_dbg(dev, "Failed to update link status and re-enable link events for port %d\n",
- 			pi->lport);
- 
--	/* if the old link up/down and speed is the same as the new */
--	if (link_up == old_link && link_speed == old_link_speed)
--		return result;
--
- 	vsi = ice_get_main_vsi(pf);
- 	if (!vsi || !vsi->port_info)
- 		return -EINVAL;
-@@ -817,6 +813,10 @@ ice_link_event(struct ice_pf *pf, struct ice_port_info *pi, bool link_up,
- 		}
- 	}
- 
-+	/* if the old link up/down and speed is the same as the new */
-+	if (link_up == old_link && link_speed == old_link_speed)
-+		return result;
-+
- 	ice_dcb_rebuild(pf);
- 	ice_vsi_link_event(vsi, link_up);
- 	ice_print_link_msg(vsi, link_up);
-@@ -1380,25 +1380,23 @@ static int ice_force_phys_link_state(struct ice_vsi *vsi, bool link_up)
- 	    link_up == !!(pi->phy.link_info.link_info & ICE_AQ_LINK_UP))
- 		goto out;
- 
--	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
-+	/* Use the current user PHY configuration. The current user PHY
-+	 * configuration is initialized during probe from PHY capabilities
-+	 * software mode, and updated on set PHY configuration.
-+	 */
-+	cfg = kmemdup(&pi->phy.curr_user_phy_cfg, sizeof(*cfg), GFP_KERNEL);
- 	if (!cfg) {
- 		retcode = -ENOMEM;
- 		goto out;
- 	}
- 
--	cfg->phy_type_low = pcaps->phy_type_low;
--	cfg->phy_type_high = pcaps->phy_type_high;
--	cfg->caps = pcaps->caps | ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
--	cfg->low_power_ctrl = pcaps->low_power_ctrl;
--	cfg->eee_cap = pcaps->eee_cap;
--	cfg->eeer_value = pcaps->eeer_value;
--	cfg->link_fec_opt = pcaps->link_fec_options;
-+	cfg->caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
- 	if (link_up)
- 		cfg->caps |= ICE_AQ_PHY_ENA_LINK;
- 	else
- 		cfg->caps &= ~ICE_AQ_PHY_ENA_LINK;
- 
--	retcode = ice_aq_set_phy_cfg(&vsi->back->hw, pi->lport, cfg, NULL);
-+	retcode = ice_aq_set_phy_cfg(&vsi->back->hw, pi, cfg, NULL);
- 	if (retcode) {
- 		dev_err(dev, "Failed to set phy config, VSI %d error %d\n",
- 			vsi->vsi_num, retcode);
-@@ -1412,8 +1410,219 @@ static int ice_force_phys_link_state(struct ice_vsi *vsi, bool link_up)
+@@ -1413,7 +1413,7 @@ static int ice_force_phys_link_state(struct ice_vsi *vsi, bool link_up)
+  * ice_init_nvm_phy_type - Initialize the NVM PHY type
+  * @pi: port info structure
+  *
+- * Initialize nvm_phy_type_[low|high]
++ * Initialize nvm_phy_type_[low|high] for link lenient mode support
+  */
+ static int ice_init_nvm_phy_type(struct ice_port_info *pi)
+ {
+@@ -1443,6 +1443,59 @@ static int ice_init_nvm_phy_type(struct ice_port_info *pi)
+ 	return err;
  }
  
- /**
-- * ice_check_media_subtask - Check for media; bring link up if detected.
-+ * ice_init_nvm_phy_type - Initialize the NVM PHY type
++/**
++ * ice_init_link_dflt_override - Initialize link default override
 + * @pi: port info structure
-+ *
-+ * Initialize nvm_phy_type_[low|high]
 + */
-+static int ice_init_nvm_phy_type(struct ice_port_info *pi)
++static void ice_init_link_dflt_override(struct ice_port_info *pi)
 +{
-+	struct ice_aqc_get_phy_caps_data *pcaps;
++	struct ice_link_default_override_tlv *ldo;
 +	struct ice_pf *pf = pi->hw->back;
-+	enum ice_status status;
-+	int err = 0;
 +
-+	pcaps = kzalloc(sizeof(*pcaps), GFP_KERNEL);
-+	if (!pcaps)
-+		return -ENOMEM;
-+
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_NVM_CAP, pcaps,
-+				     NULL);
-+
-+	if (status) {
-+		dev_err(ice_pf_to_dev(pf), "Get PHY capability failed.\n");
-+		err = -EIO;
-+		goto out;
-+	}
-+
-+	pf->nvm_phy_type_hi = pcaps->phy_type_high;
-+	pf->nvm_phy_type_lo = pcaps->phy_type_low;
-+
-+out:
-+	kfree(pcaps);
-+	return err;
++	ldo = &pf->link_dflt_override;
++	ice_get_link_default_override(ldo, pi);
 +}
 +
 +/**
-+ * ice_init_phy_user_cfg - Initialize the PHY user configuration
++ * ice_init_phy_cfg_dflt_override - Initialize PHY cfg default override settings
 + * @pi: port info structure
 + *
-+ * Initialize the current user PHY configuration, speed, FEC, and FC requested
-+ * mode to default. The PHY defaults are from get PHY capabilities topology
-+ * with media so call when media is first available. An error is returned if
-+ * called when media is not available. The PHY initialization completed state is
-+ * set here.
++ * If default override is enabled, initialized the user PHY cfg speed and FEC
++ * settings using the default override mask from the NVM.
 + *
-+ * These configurations are used when setting PHY
-+ * configuration. The user PHY configuration is updated on set PHY
-+ * configuration. Returns 0 on success, negative on failure
++ * The PHY should only be configured with the default override settings the
++ * first time media is available. The __ICE_LINK_DEFAULT_OVERRIDE_PENDING state
++ * is used to indicate that the user PHY cfg default override is initialized
++ * and the PHY has not been configured with the default override settings. The
++ * state is set here, and cleared in ice_configure_phy the first time the PHY is
++ * configured.
 + */
-+static int ice_init_phy_user_cfg(struct ice_port_info *pi)
++static void ice_init_phy_cfg_dflt_override(struct ice_port_info *pi)
 +{
-+	struct ice_aqc_get_phy_caps_data *pcaps;
++	struct ice_link_default_override_tlv *ldo;
++	struct ice_aqc_set_phy_cfg_data *cfg;
 +	struct ice_phy_info *phy = &pi->phy;
 +	struct ice_pf *pf = pi->hw->back;
-+	enum ice_status status;
-+	struct ice_vsi *vsi;
-+	int err = 0;
 +
-+	if (!(phy->link_info.link_info & ICE_AQ_MEDIA_AVAILABLE))
-+		return -EIO;
++	ldo = &pf->link_dflt_override;
 +
-+	vsi = ice_get_main_vsi(pf);
-+	if (!vsi)
-+		return -EINVAL;
++	/* If link default override is enabled, use to mask NVM PHY capabilities
++	 * for speed and FEC default configuration.
++	 */
++	cfg = &phy->curr_user_phy_cfg;
 +
-+	pcaps = kzalloc(sizeof(*pcaps), GFP_KERNEL);
-+	if (!pcaps)
-+		return -ENOMEM;
-+
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP, pcaps,
-+				     NULL);
-+	if (status) {
-+		dev_err(ice_pf_to_dev(pf), "Get PHY capability failed.\n");
-+		err = -EIO;
-+		goto err_out;
++	if (ldo->phy_type_low || ldo->phy_type_high) {
++		cfg->phy_type_low = pf->nvm_phy_type_lo &
++				    cpu_to_le64(ldo->phy_type_low);
++		cfg->phy_type_high = pf->nvm_phy_type_hi &
++				     cpu_to_le64(ldo->phy_type_high);
 +	}
++	cfg->link_fec_opt = ldo->fec_options;
++	phy->curr_user_fec_req = ICE_FEC_AUTO;
 +
-+	ice_copy_phy_caps_to_cfg(pcaps, &pi->phy.curr_user_phy_cfg);
-+	/* initialize PHY using topology with media */
-+	phy->curr_user_fec_req = ice_caps_to_fec_mode(pcaps->caps,
-+						      pcaps->link_fec_options);
-+	phy->curr_user_fc_req = ice_caps_to_fc_mode(pcaps->caps);
-+
-+	phy->curr_user_speed_req = ICE_AQ_LINK_SPEED_M;
-+	set_bit(__ICE_PHY_INIT_COMPLETE, pf->state);
-+err_out:
-+	kfree(pcaps);
-+	return err;
++	set_bit(__ICE_LINK_DEFAULT_OVERRIDE_PENDING, pf->state);
 +}
 +
-+/**
-+ * ice_configure_phy - configure PHY
-+ * @vsi: VSI of PHY
-+ *
-+ * Set the PHY configuration. If the current PHY configuration is the same as
-+ * the curr_user_phy_cfg, then do nothing to avoid link flap. Otherwise
-+ * configure the based get PHY capabilities for topology with media.
-+ */
-+static int ice_configure_phy(struct ice_vsi *vsi)
-+{
-+	struct device *dev = ice_pf_to_dev(vsi->back);
-+	struct ice_aqc_get_phy_caps_data *pcaps;
-+	struct ice_aqc_set_phy_cfg_data *cfg;
-+	u64 phy_low = 0, phy_high = 0;
-+	struct ice_port_info *pi;
-+	enum ice_status status;
-+	int err = 0;
-+
-+	pi = vsi->port_info;
-+	if (!pi)
-+		return -EINVAL;
-+
-+	/* Ensure we have media as we cannot configure a medialess port */
-+	if (!(pi->phy.link_info.link_info & ICE_AQ_MEDIA_AVAILABLE))
-+		return -EPERM;
-+
-+	ice_print_topo_conflict(vsi);
-+
-+	if (vsi->port_info->phy.link_info.topo_media_conflict ==
-+	    ICE_AQ_LINK_TOPO_UNSUPP_MEDIA)
-+		return -EPERM;
-+
-+	if (test_bit(ICE_FLAG_LINK_DOWN_ON_CLOSE_ENA, vsi->back->flags))
-+		return ice_force_phys_link_state(vsi, true);
-+
-+	pcaps = kzalloc(sizeof(*pcaps), GFP_KERNEL);
-+	if (!pcaps)
-+		return -ENOMEM;
-+
-+	/* Get current PHY config */
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_SW_CFG, pcaps,
-+				     NULL);
-+	if (status) {
-+		dev_err(dev, "Failed to get PHY configuration, VSI %d error %s\n",
-+			vsi->vsi_num, ice_stat_str(status));
-+		err = -EIO;
-+		goto done;
-+	}
-+
-+	/* If PHY enable link is configured and configuration has not changed,
-+	 * there's nothing to do
-+	 */
-+	if (pcaps->caps & ICE_AQC_PHY_EN_LINK &&
-+	    ice_phy_caps_equals_cfg(pcaps, &pi->phy.curr_user_phy_cfg))
-+		goto done;
-+
-+	/* Use PHY topology as baseline for configuration */
-+	memset(pcaps, 0, sizeof(*pcaps));
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP, pcaps,
-+				     NULL);
-+	if (status) {
-+		dev_err(dev, "Failed to get PHY topology, VSI %d error %s\n",
-+			vsi->vsi_num, ice_stat_str(status));
-+		err = -EIO;
-+		goto done;
-+	}
-+
-+	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
-+	if (!cfg) {
-+		err = -ENOMEM;
-+		goto done;
-+	}
-+
-+	ice_copy_phy_caps_to_cfg(pcaps, cfg);
-+
-+	/* Speed - If default override pending, use curr_user_phy_cfg set in
-+	 * ice_init_phy_user_cfg_ldo.
-+	 */
-+	ice_update_phy_type(&phy_low, &phy_high, pi->phy.curr_user_speed_req);
-+	cfg->phy_type_low = pcaps->phy_type_low & cpu_to_le64(phy_low);
-+	cfg->phy_type_high = pcaps->phy_type_high & cpu_to_le64(phy_high);
-+
-+	/* Can't provide what was requested; use PHY capabilities */
-+	if (!cfg->phy_type_low && !cfg->phy_type_high) {
-+		cfg->phy_type_low = pcaps->phy_type_low;
-+		cfg->phy_type_high = pcaps->phy_type_high;
-+	}
-+
-+	/* FEC */
-+	ice_cfg_phy_fec(pi, cfg, pi->phy.curr_user_fec_req);
-+
-+	/* Can't provide what was requested; use PHY capabilities */
-+	if (cfg->link_fec_opt !=
-+	    (cfg->link_fec_opt & pcaps->link_fec_options)) {
-+		cfg->caps |= pcaps->caps & ICE_AQC_PHY_EN_AUTO_FEC;
-+		cfg->link_fec_opt = pcaps->link_fec_options;
-+	}
-+
-+	/* Flow Control - always supported; no need to check against
-+	 * capabilities
-+	 */
-+	ice_cfg_phy_fc(pi, cfg, pi->phy.curr_user_fc_req);
-+
-+	/* Enable link and link update */
-+	cfg->caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT | ICE_AQ_PHY_ENA_LINK;
-+
-+	status = ice_aq_set_phy_cfg(&vsi->back->hw, pi, cfg, NULL);
-+	if (status) {
-+		dev_err(dev, "Failed to set phy config, VSI %d error %s\n",
-+			vsi->vsi_num, ice_stat_str(status));
-+		err = -EIO;
-+	}
-+
-+	kfree(cfg);
-+done:
-+	kfree(pcaps);
-+	return err;
-+}
-+
-+/**
-+ * ice_check_media_subtask - Check for media
-  * @pf: pointer to PF struct
-+ *
-+ * If media is available, then initialize PHY user configuration if it is not
-+ * been, and configure the PHY if the interface is up.
-  */
- static void ice_check_media_subtask(struct ice_pf *pf)
- {
-@@ -1421,15 +1630,12 @@ static void ice_check_media_subtask(struct ice_pf *pf)
- 	struct ice_vsi *vsi;
- 	int err;
+ /**
+  * ice_init_phy_user_cfg - Initialize the PHY user configuration
+  * @pi: port info structure
+@@ -1485,12 +1538,31 @@ static int ice_init_phy_user_cfg(struct ice_port_info *pi)
+ 		goto err_out;
+ 	}
  
--	vsi = ice_get_main_vsi(pf);
--	if (!vsi)
-+	/* No need to check for media if it's already present */
-+	if (!test_bit(ICE_FLAG_NO_MEDIA, pf->flags))
- 		return;
- 
--	/* No need to check for media if it's already present or the interface
--	 * is down
--	 */
--	if (!test_bit(ICE_FLAG_NO_MEDIA, pf->flags) ||
--	    test_bit(__ICE_DOWN, vsi->state))
-+	vsi = ice_get_main_vsi(pf);
-+	if (!vsi)
- 		return;
- 
- 	/* Refresh link info and check if media is present */
-@@ -1439,10 +1645,19 @@ static void ice_check_media_subtask(struct ice_pf *pf)
- 		return;
- 
- 	if (pi->phy.link_info.link_info & ICE_AQ_MEDIA_AVAILABLE) {
--		err = ice_force_phys_link_state(vsi, true);
--		if (err)
-+		if (!test_bit(__ICE_PHY_INIT_COMPLETE, pf->state))
-+			ice_init_phy_user_cfg(pi);
+-	ice_copy_phy_caps_to_cfg(pcaps, &pi->phy.curr_user_phy_cfg);
+-	/* initialize PHY using topology with media */
++	ice_copy_phy_caps_to_cfg(pi, pcaps, &pi->phy.curr_user_phy_cfg);
 +
-+		/* PHY settings are reset on media insertion, reconfigure
-+		 * PHY to preserve settings.
++	/* check if lenient mode is supported and enabled */
++	if (ice_fw_supports_link_override(&vsi->back->hw) &&
++	    !(pcaps->module_compliance_enforcement &
++	      ICE_AQC_MOD_ENFORCE_STRICT_MODE)) {
++		set_bit(ICE_FLAG_LINK_LENIENT_MODE_ENA, pf->flags);
++
++		/* if link default override is enabled, initialize user PHY
++		 * configuration with link default override values
 +		 */
-+		if (test_bit(__ICE_DOWN, vsi->state) &&
-+		    test_bit(ICE_FLAG_LINK_DOWN_ON_CLOSE_ENA, vsi->back->flags))
- 			return;
--		clear_bit(ICE_FLAG_NO_MEDIA, pf->flags);
++		if (pf->link_dflt_override.options & ICE_LINK_OVERRIDE_EN) {
++			ice_init_phy_cfg_dflt_override(pi);
++			goto out;
++		}
++	}
 +
-+		err = ice_configure_phy(vsi);
-+		if (!err)
-+			clear_bit(ICE_FLAG_NO_MEDIA, pf->flags);
++	/* if link default override is not enabled, initialize PHY using
++	 * topology with media
++	 */
+ 	phy->curr_user_fec_req = ice_caps_to_fec_mode(pcaps->caps,
+ 						      pcaps->link_fec_options);
+ 	phy->curr_user_fc_req = ice_caps_to_fc_mode(pcaps->caps);
  
- 		/* A Link Status Event will be generated; the event handler
- 		 * will complete bringing the interface up
-@@ -3522,6 +3737,37 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
++out:
+ 	phy->curr_user_speed_req = ICE_AQ_LINK_SPEED_M;
+ 	set_bit(__ICE_PHY_INIT_COMPLETE, pf->state);
+ err_out:
+@@ -1511,7 +1583,6 @@ static int ice_configure_phy(struct ice_vsi *vsi)
+ 	struct device *dev = ice_pf_to_dev(vsi->back);
+ 	struct ice_aqc_get_phy_caps_data *pcaps;
+ 	struct ice_aqc_set_phy_cfg_data *cfg;
+-	u64 phy_low = 0, phy_high = 0;
+ 	struct ice_port_info *pi;
+ 	enum ice_status status;
+ 	int err = 0;
+@@ -1571,14 +1642,24 @@ static int ice_configure_phy(struct ice_vsi *vsi)
+ 		goto done;
+ 	}
+ 
+-	ice_copy_phy_caps_to_cfg(pcaps, cfg);
++	ice_copy_phy_caps_to_cfg(pi, pcaps, cfg);
+ 
+ 	/* Speed - If default override pending, use curr_user_phy_cfg set in
+ 	 * ice_init_phy_user_cfg_ldo.
+ 	 */
+-	ice_update_phy_type(&phy_low, &phy_high, pi->phy.curr_user_speed_req);
+-	cfg->phy_type_low = pcaps->phy_type_low & cpu_to_le64(phy_low);
+-	cfg->phy_type_high = pcaps->phy_type_high & cpu_to_le64(phy_high);
++	if (test_and_clear_bit(__ICE_LINK_DEFAULT_OVERRIDE_PENDING,
++			       vsi->back->state)) {
++		cfg->phy_type_low = pi->phy.curr_user_phy_cfg.phy_type_low;
++		cfg->phy_type_high = pi->phy.curr_user_phy_cfg.phy_type_high;
++	} else {
++		u64 phy_low = 0, phy_high = 0;
++
++		ice_update_phy_type(&phy_low, &phy_high,
++				    pi->phy.curr_user_speed_req);
++		cfg->phy_type_low = pcaps->phy_type_low & cpu_to_le64(phy_low);
++		cfg->phy_type_high = pcaps->phy_type_high &
++				     cpu_to_le64(phy_high);
++	}
+ 
+ 	/* Can't provide what was requested; use PHY capabilities */
+ 	if (!cfg->phy_type_low && !cfg->phy_type_high) {
+@@ -3749,6 +3830,8 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
  		goto err_alloc_sw_unroll;
  	}
  
-+	err = ice_init_nvm_phy_type(pf->hw.port_info);
-+	if (err) {
-+		dev_err(dev, "ice_init_nvm_phy_type failed: %d\n", err);
-+		goto err_alloc_sw_unroll;
-+	}
++	ice_init_link_dflt_override(pf->hw.port_info);
 +
-+	err = ice_update_link_info(pf->hw.port_info);
-+	if (err) {
-+		dev_err(dev, "ice_update_link_info failed: %d\n", err);
-+		goto err_alloc_sw_unroll;
-+	}
-+
-+	/* if media available, initialize PHY settings */
-+	if (pf->hw.port_info->phy.link_info.link_info &
-+	    ICE_AQ_MEDIA_AVAILABLE) {
-+		err = ice_init_phy_user_cfg(pf->hw.port_info);
-+		if (err) {
-+			dev_err(dev, "ice_init_phy_user_cfg failed: %d\n", err);
-+			goto err_alloc_sw_unroll;
-+		}
-+
-+		if (!test_bit(ICE_FLAG_LINK_DOWN_ON_CLOSE_ENA, pf->flags)) {
-+			struct ice_vsi *vsi = ice_get_main_vsi(pf);
-+
-+			if (vsi)
-+				ice_configure_phy(vsi);
-+		}
-+	} else {
-+		set_bit(ICE_FLAG_NO_MEDIA, pf->flags);
-+	}
-+
- 	ice_verify_cacheline_size(pf);
- 
- 	/* Save wakeup reason register for later use */
-@@ -6018,20 +6264,30 @@ int ice_open(struct net_device *netdev)
- 
- 	/* Set PHY if there is media, otherwise, turn off PHY */
- 	if (pi->phy.link_info.link_info & ICE_AQ_MEDIA_AVAILABLE) {
--		err = ice_force_phys_link_state(vsi, true);
-+		clear_bit(ICE_FLAG_NO_MEDIA, pf->flags);
-+		if (!test_bit(__ICE_PHY_INIT_COMPLETE, pf->state)) {
-+			err = ice_init_phy_user_cfg(pi);
-+			if (err) {
-+				netdev_err(netdev, "Failed to initialize PHY settings, error %d\n",
-+					   err);
-+				return err;
-+			}
-+		}
-+
-+		err = ice_configure_phy(vsi);
- 		if (err) {
- 			netdev_err(netdev, "Failed to set physical link up, error %d\n",
- 				   err);
- 			return err;
- 		}
- 	} else {
-+		set_bit(ICE_FLAG_NO_MEDIA, pf->flags);
- 		err = ice_aq_set_link_restart_an(pi, false, NULL);
- 		if (err) {
- 			netdev_err(netdev, "Failed to set PHY state, VSI %d error %d\n",
- 				   vsi->vsi_num, err);
- 			return err;
- 		}
--		set_bit(ICE_FLAG_NO_MEDIA, vsi->back->flags);
- 	}
- 
- 	err = ice_vsi_open(vsi);
+ 	/* if media available, initialize PHY settings */
+ 	if (pf->hw.port_info->phy.link_info.link_info &
+ 	    ICE_AQ_MEDIA_AVAILABLE) {
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
+index b1172a67573b..7c2a06892bbb 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.c
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
+@@ -196,7 +196,7 @@ enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data)
+  * Area (PFA) and returns the TLV pointer and length. The caller can
+  * use these to read the variable length TLV value.
+  */
+-static enum ice_status
++enum ice_status
+ ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
+ 		       u16 module_type)
+ {
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.h b/drivers/net/ethernet/intel/ice/ice_nvm.h
+index e3993c04c97a..999f273ba6ad 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.h
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.h
+@@ -11,6 +11,9 @@ enum ice_status
+ ice_read_flat_nvm(struct ice_hw *hw, u32 offset, u32 *length, u8 *data,
+ 		  bool read_shadow_ram);
+ enum ice_status
++ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
++		       u16 module_type);
++enum ice_status
+ ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size);
+ enum ice_status ice_init_nvm(struct ice_hw *hw);
+ enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data);
 diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index 21fe9221a6f3..f08913611ed9 100644
+index f08913611ed9..08c616d9fffd 100644
 --- a/drivers/net/ethernet/intel/ice/ice_type.h
 +++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -87,6 +87,12 @@ enum ice_fc_mode {
- 	ICE_FC_DFLT
+@@ -118,6 +118,7 @@ enum ice_set_fc_aq_failures {
+ /* Various MAC types */
+ enum ice_mac_type {
+ 	ICE_MAC_UNKNOWN = 0,
++	ICE_MAC_E810,
+ 	ICE_MAC_GENERIC,
  };
  
-+enum ice_phy_cache_mode {
-+	ICE_FC_MODE = 0,
-+	ICE_SPEED_MODE,
-+	ICE_FEC_MODE
+@@ -314,6 +315,28 @@ struct ice_nvm_info {
+ 	u8 blank_nvm_mode;        /* is NVM empty (no FW present) */
+ };
+ 
++struct ice_link_default_override_tlv {
++	u8 options;
++#define ICE_LINK_OVERRIDE_OPT_M		0x3F
++#define ICE_LINK_OVERRIDE_STRICT_MODE	BIT(0)
++#define ICE_LINK_OVERRIDE_EPCT_DIS	BIT(1)
++#define ICE_LINK_OVERRIDE_PORT_DIS	BIT(2)
++#define ICE_LINK_OVERRIDE_EN		BIT(3)
++#define ICE_LINK_OVERRIDE_AUTO_LINK_DIS	BIT(4)
++#define ICE_LINK_OVERRIDE_EEE_EN	BIT(5)
++	u8 phy_config;
++#define ICE_LINK_OVERRIDE_PHY_CFG_S	8
++#define ICE_LINK_OVERRIDE_PHY_CFG_M	(0xC3 << ICE_LINK_OVERRIDE_PHY_CFG_S)
++#define ICE_LINK_OVERRIDE_PAUSE_M	0x3
++#define ICE_LINK_OVERRIDE_LESM_EN	BIT(6)
++#define ICE_LINK_OVERRIDE_AUTO_FEC_EN	BIT(7)
++	u8 fec_options;
++#define ICE_LINK_OVERRIDE_FEC_OPT_M	0xFF
++	u8 rsvd1;
++	u64 phy_type_low;
++	u64 phy_type_high;
 +};
 +
- enum ice_fec_mode {
- 	ICE_FEC_NONE = 0,
- 	ICE_FEC_RS,
-@@ -94,6 +100,14 @@ enum ice_fec_mode {
- 	ICE_FEC_AUTO
- };
+ #define ICE_NVM_VER_LEN	32
  
-+struct ice_phy_cache_mode_data {
-+	union {
-+		enum ice_fec_mode curr_user_fec_req;
-+		enum ice_fc_mode curr_user_fc_req;
-+		u16 curr_user_speed_req;
-+	} data;
-+};
+ /* netlist version information */
+@@ -465,6 +488,7 @@ struct ice_dcb_app_priority_table {
+ #define ICE_APP_SEL_ETHTYPE	0x1
+ #define ICE_APP_SEL_TCPIP	0x2
+ #define ICE_CEE_APP_SEL_ETHTYPE	0x0
++#define ICE_SR_LINK_DEFAULT_OVERRIDE_PTR	0x134
+ #define ICE_CEE_APP_SEL_TCPIP	0x1
+ 
+ struct ice_dcbx_cfg {
+@@ -748,6 +772,17 @@ struct ice_hw_port_stats {
+ #define ICE_OROM_VER_MASK		(0xff << ICE_OROM_VER_SHIFT)
+ #define ICE_SR_PFA_PTR			0x40
+ #define ICE_SR_SECTOR_SIZE_IN_WORDS	0x800
 +
- enum ice_set_fc_aq_failures {
- 	ICE_SET_FC_AQ_FAIL_NONE = 0,
- 	ICE_SET_FC_AQ_FAIL_GET,
-@@ -160,6 +174,13 @@ struct ice_phy_info {
- 	u64 phy_type_high;
- 	enum ice_media_type media_type;
- 	u8 get_link_info;
-+	/* Please refer to struct ice_aqc_get_link_status_data to get
-+	 * detail of enable bit in curr_user_speed_req
-+	 */
-+	u16 curr_user_speed_req;
-+	enum ice_fec_mode curr_user_fec_req;
-+	enum ice_fc_mode curr_user_fc_req;
-+	struct ice_aqc_set_phy_cfg_data curr_user_phy_cfg;
- };
++/* Link override related */
++#define ICE_SR_PFA_LINK_OVERRIDE_WORDS		10
++#define ICE_SR_PFA_LINK_OVERRIDE_PHY_WORDS	4
++#define ICE_SR_PFA_LINK_OVERRIDE_OFFSET		2
++#define ICE_SR_PFA_LINK_OVERRIDE_FEC_OFFSET	1
++#define ICE_SR_PFA_LINK_OVERRIDE_PHY_OFFSET	2
++#define ICE_FW_API_LINK_OVERRIDE_MAJ		1
++#define ICE_FW_API_LINK_OVERRIDE_MIN		5
++#define ICE_FW_API_LINK_OVERRIDE_PATCH		2
++
+ #define ICE_SR_WORDS_IN_1KB		512
  
- /* protocol enumeration for filters */
+ /* Hash redirection LUT for VSI - maximum array size */
 -- 
 2.26.2
 
