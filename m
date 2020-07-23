@@ -2,167 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B9A622B924
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 00:05:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 012EA22B92E
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 00:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbgGWWFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 18:05:49 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:23770 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726173AbgGWWFs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 18:05:48 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06NM5VoG004325;
-        Thu, 23 Jul 2020 15:05:34 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=lBx5kqifPPbpxvMJV6tSRUO64qQGsJG5IpKYpHoIEDU=;
- b=iK7ahKJQ8cUyHE97UB/0ExdmUAFNLl1ZQRNc7LzQ3jRwPgSo36ipMwPdK5wW3tXxjd+B
- KZhmJx50s65kes5NhryMslisndt/SWj7qV1NGZ1pXdd+iaiUuXUQE2d51YvdsOboCuG3
- lwWRvK/lAVoRYLeYPdEVwiJo2HOgPVs8Coo= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32esyuxpts-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 23 Jul 2020 15:05:34 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+        id S1726638AbgGWWI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 18:08:57 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:62594 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726173AbgGWWI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 18:08:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1595542137; x=1627078137;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=yXHnu6gTvmNIXIQWtB7t+9sAxDzQ1uzE9BKVE+FJ4oA=;
+  b=TtJSkL5YkqxFjh10IsUI+mTGWfZarDIi4GYwhnXgiztT0qYLo7Sn/sPn
+   akgKCYfNKyBjG9E4+so+VktX5UM8NupOHh1EeLAhEB8HYlQJexk4rPdSJ
+   TppI5rNoLRZEczizraKjR9g5h5UPzZtvgkGh4re/azEG/d4umihAA+cNh
+   qGVOmHAARu7+k6pM0LlRBBEx3qyhHG2QRz9Ig/DJGwkp92sdWLLakmA+c
+   /GND4X554kzNxi8HuJologhhfcOgJIcNky9d8W7yjqHftQ+Eav7TDUUv1
+   pQAanCM0539pTJnU/Hbm2fsr+WoA6jhVYF/+4U3r5jAmCuYMbqIDrMcnL
+   Q==;
+IronPort-SDR: TOEGqNsJG8QJfzDzTQ0eMEkmcSZV6paiP8HFO2rS80Q2dfbF/IxxAQ0BtvPUtTCqdEIiMepI1U
+ +MoBF46e/evXsKEDnKd8Erw6/roZexfCG8GWaGDikpeei05v7j18epT917vzeErFG30RpkSEaQ
+ fSLWfH94Fj7VUV7Va7gS59PlKweIcZqfEgUNLppHbgCWCoRuTP920hgJzVv/mpXg1XCkItynwh
+ 89RbJcbrEZXENQ31Zuf0BUsHqohL3kKk6FPfcz1rbJde4w0GD2JhsNFLQcdnW/+jzJXWSmOdUl
+ 7kQ=
+X-IronPort-AV: E=Sophos;i="5.75,388,1589266800"; 
+   d="scan'208";a="84409853"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jul 2020 15:08:56 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 23 Jul 2020 15:05:22 -0700
+ 15.1.1979.3; Thu, 23 Jul 2020 15:08:15 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3 via Frontend
+ Transport; Thu, 23 Jul 2020 15:08:15 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cG8OeeZEDPs1UK0sEqh3iLtWpGN/N0xGTfjce29KmQzl2aTBXybnfwUjc+sdwh8l1qt2T7YI/v6FTHFDqFHA4HmjtnNWvrlIP2BM20lyaEsBtx+IcFlEHFSFd/SevzTrKsahBofrHrLPAfiBBNQnv7S5HUgoVaUW4i6zFwobZE5pfef1GOUNZtgKRX8cP0y9LgzUPxChbD1tJeqSBUssle4PNkfQUuoUd/39kXowShKgwDnDMkGJTw/wdnNGNmfk91UBtYGgfSoXw95Sx0KSRnKur7xrNi/YbUyNQdK/EoZrOEoTmcIkXo6TYOWiX3z2LCqOpC5JoJrBeSJJGAc25g==
+ b=iA2Fn7GVQO6JWns+uerQl28AH8mElhGh9VMGqslS/eZ0SzK+zABVppZNc7xbt+3AsoQVoyaGpoyaaz81tpO0DzO4jTdB5uaOHnDWL7pOWIPOR9pE1uS2aabGwC86cX9+v0ujbnT/pRTzqhZ/z7RnDCQtNSHpKqEYybuOlAmExaz+JNy2Z7Aq2nEoLp/23P+ogBRwqe+WCKH8dDEKDHiOrAGsbWWpO9t2NvHqRrTgDXnaHfcR/7A/20MuyHQ7ugN6QdB1aRUVBCJ1WtH4zoVIg/LrlnvIxghCuVMkZZ2YTc+JOLakLBX3TL+88GbRDoKWRsGJ+HlI3ar2Y+uCUaWIPA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lBx5kqifPPbpxvMJV6tSRUO64qQGsJG5IpKYpHoIEDU=;
- b=IGaNcTBkit4TLL45twC1CpLLIU8Q5KC/lA558OYK+sWP7WbbZm03NDXEgcQH2uLvJGinorgCn0p1bjEOGPRjTTCmMHFG77i8N+BFKySvZAZN4KCDN8E5lgWxS8t27xpvNnGH71hN64TLTMiTF8C64o3Y3eO9/ulicsq58owAfq4oKkHGtbu0XPERbFZEr0XGtLklToV4Bi40cGsdJinVHTfduRtmsmUhKp5MyHx2BXFRvKw4ATWVcm6aDeIL2DsBKxVteT6t5gr8WSEKCqjmeo8Oc+c+w5NntrG6UWi1Wt25E1n/0YhDRC2laTksgdrjYipfjPo7VB54+FQO2ZSzsQ==
+ bh=yXHnu6gTvmNIXIQWtB7t+9sAxDzQ1uzE9BKVE+FJ4oA=;
+ b=VH4R08WQcGpawzZ9bcff8wlQVKTpBK48UK9kY9l6I9yXU5Jwwz6fw0Sqct044TjnJijnCgfmLP9gUJk34cnsOWuYOmK6StDOtXGn9m5wbbt+96mrsNDp0XWUl69x+Aamd3DkJ1gxpj8Rc/bmNQt6QzPHBXxn69SiVgvqiDV14qexy95GZlTcfIKzM1EzGmj28LepAtHY2WwShiEXerurQBzzXPWckiHB1VnbpuwPbGqa4pROYmaa5hSkB9uI+VQtjyBxdMSNmZpQ5xmnkaP7YN9GM7VRMDQDoRtW/HxycXouP4wQYco0E3Ytc6by//im4z/LYdyNDVP/GTzPWUN9yw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lBx5kqifPPbpxvMJV6tSRUO64qQGsJG5IpKYpHoIEDU=;
- b=bilCQYxM0h825PC49ryk0mQvaXHjFROgQC1POeZJjUyL3X8IsLMK5DEEM1xTQjQAJpVyMDRt9h+Og0ImBK5uT7W+fNti31e8GVJKaDxNVQmuhjgWLbxYuoQ39Z8dLbesjbURCRXSymqv+KOQ/c9gjrWn6kLp+2iHxJikGDiIKaI=
-Authentication-Results: iogearbox.net; dkim=none (message not signed)
- header.d=none;iogearbox.net; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2773.namprd15.prod.outlook.com (2603:10b6:a03:150::10) with
+ bh=yXHnu6gTvmNIXIQWtB7t+9sAxDzQ1uzE9BKVE+FJ4oA=;
+ b=Bj8cadf6yLB5WJwMzgkY7ttgucgslx4Tj7rey7Zxqfue5m23f/tDDXLzJK1SYXIZ68REHtUbBlM3OgJKGjJ7QLe+IzTkwPKOW0AE9mou9ZS7aQX0SirQRjh0wOM5mO7xycYIDKxJLgsPqoxzhUKebiHVrCEFsaNnAMN7w28py9A=
+Received: from SN6PR11MB3504.namprd11.prod.outlook.com (2603:10b6:805:d0::17)
+ by SA0PR11MB4672.namprd11.prod.outlook.com (2603:10b6:806:96::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Thu, 23 Jul
- 2020 22:05:21 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3216.021; Thu, 23 Jul 2020
- 22:05:21 +0000
-Subject: Re: [PATCH bpf v2 2/2] selftests/bpf: Add test for narrow loads from
- context at an offset
-To:     Jakub Sitnicki <jakub@cloudflare.com>, <bpf@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, <kernel-team@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-References: <20200723095953.1003302-1-jakub@cloudflare.com>
- <20200723095953.1003302-3-jakub@cloudflare.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <7ae94398-2581-3cfb-da7e-702852d712a4@fb.com>
-Date:   Thu, 23 Jul 2020 15:05:19 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.10.0
-In-Reply-To: <20200723095953.1003302-3-jakub@cloudflare.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ 2020 22:08:51 +0000
+Received: from SN6PR11MB3504.namprd11.prod.outlook.com
+ ([fe80::851c:67fc:a034:9ea0]) by SN6PR11MB3504.namprd11.prod.outlook.com
+ ([fe80::851c:67fc:a034:9ea0%4]) with mapi id 15.20.3216.022; Thu, 23 Jul 2020
+ 22:08:51 +0000
+From:   <Codrin.Ciubotariu@microchip.com>
+To:     <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <Nicolas.Ferre@microchip.com>, <Claudiu.Beznea@microchip.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
+        <robh+dt@kernel.org>, <alexandre.belloni@bootlin.com>,
+        <Ludovic.Desroches@microchip.com>
+Subject: Re: [PATCH net-next v2 3/7] net: macb: parse PHY nodes found under an
+ MDIO node
+Thread-Topic: [PATCH net-next v2 3/7] net: macb: parse PHY nodes found under
+ an MDIO node
+Thread-Index: AQHWX4MOpDLDucI5kUq6RMoIO+hGv6kVh78AgAA06wA=
+Date:   Thu, 23 Jul 2020 22:08:51 +0000
+Message-ID: <1ba55a2a-487a-dbd5-29e6-5d4231e80167@microchip.com>
+References: <20200721171316.1427582-1-codrin.ciubotariu@microchip.com>
+ <20200721171316.1427582-4-codrin.ciubotariu@microchip.com>
+ <460e5f3d-f3a0-154e-d617-d1536c96e390@gmail.com>
+In-Reply-To: <460e5f3d-f3a0-154e-d617-d1536c96e390@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR16CA0033.namprd16.prod.outlook.com
- (2603:10b6:a03:1a0::46) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=microchip.com;
+x-originating-ip: [84.232.220.208]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 383a2c63-637f-49a9-6ec3-08d82f54fba0
+x-ms-traffictypediagnostic: SA0PR11MB4672:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SA0PR11MB4672E8A39E817C8715CAF6ACE7760@SA0PR11MB4672.namprd11.prod.outlook.com>
+x-bypassexternaltag: True
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: nKQC3NAyH55CYFgmmplwcJLJGlhXtfybd/7+iCoA2imcxoJnWZcRlF2XM+cegwbV486lIGdaGkxer8QQ3+3gevAlZnxRxNZmuKgojHafSQE0UhZRAOW9Fzs22oqT/w0q9ROOlpa5Bofu6T4v9B766J3yngrIqVSwdPBTBr7/36iq0SB07YQ6YbopazmLUPV3iTEnm7y9Evi+DxfdWF2AVkY+Jyp8dEmeDDC9evu9V0dJ+TyEgdix7REdtiIzrUNLSjLeBlKPfNKP8BZ41RG3W/BHJvH64JfitF7G4w3nXZS3yKiCYJmFdbzO8FsWwoekMMRdHhn//uBB+i6d03SP9nyAJ+xPF+JNDzvjrEeYmzDV1/yIYs33c9wo20xEt55E
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3504.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39860400002)(136003)(376002)(346002)(396003)(366004)(6486002)(186003)(107886003)(26005)(8676002)(8936002)(86362001)(36756003)(64756008)(7416002)(2906002)(66446008)(316002)(478600001)(66476007)(66556008)(110136005)(66946007)(31696002)(6512007)(76116006)(91956017)(31686004)(6506007)(53546011)(2616005)(54906003)(5660300002)(4326008)(71200400001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 3IL7XJ4XujXgIVk7J7hYIR9uJNb9tn/eQnaJ9uMVb8Q2tD41vuTpL41QllSlHVmQhZwzN6Fy+afmnAQuVAh4xZjVzwRGb4L0LNSIoi5JnU4w9JUswAGYS1DqkReWsccfJ9JjOospwDwzNcFRJbt3S6vYJQgKHW2rdmgPQu3eqj4ixfEiFs7gbmfSQ89V1s4/5RnGmnPuuJYVcIsEn2C1TJDlEb74Sh1TucbmQf115OmuEscr9Gk0G3MqJeIam1bRETBAH50limoRCXzNcn8h8cL7f1Gu9zHP77j8jpj38eHCqNvxXarzd6CtPiEj0DDL7L7yaY4ZATROGKi+Q7k6uRvlw5Ih1DVSbuKSGBP1MyDDwqYTqPXaIaMD94rTrEKC9C224aTB4trC22SFNa9RJiOdxwSLN8H+ZmMWVcxUeHvA8+Glcs9osfYwlWgb1KSl4Clgojt92G8+t9SyotVMU6IlpIeC3yeQArHk6W84V7fBLmXTg6UlD3GAC5ugoyDa
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <11926891E0FCFA4D80A77C57D1AFF233@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21c1::1888] (2620:10d:c090:400::5:e13e) by BY5PR16CA0033.namprd16.prod.outlook.com (2603:10b6:a03:1a0::46) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.22 via Frontend Transport; Thu, 23 Jul 2020 22:05:21 +0000
-X-Originating-IP: [2620:10d:c090:400::5:e13e]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 69370afb-e93a-4d0c-084c-08d82f547e15
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2773:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2773C2CAE20322017BE1935DD3760@BYAPR15MB2773.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: beCftHvHjPKteDJ6oDVMesFstKYS+r5122IMDVoujIsJJ4vmfvRTQ4TosTQ/h9o3dZioGBkJovC2IqcHUP9bbNjx9S9kg6F02Dl1Mp9tw2J/wI6DyyueqQDMSSDGJZE9IVv8M2ewUGVknYiz7m24gCtXW9F4mKExIIn17K5f7kTPQUDfO0rH3Ee7jZzJcrL7BL2AJumZTGkPqsWD+YW7SqkTBFo53bGVavtvgh3vFemNX+8QDiOKKRZNKiarrKNl797CToWiFvAL9UBzCh18BaoVzEWTReQVEWnQBWivOjXSdjrdDlfzWvrN9G+7+8K5qXpv+QvoRMDgyzgCfHhW8Nk9ATusSaqgdsryCLzuYoXYlFMy/Nj5SFpIJlvTk4i4
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(366004)(376002)(346002)(39860400002)(136003)(8936002)(316002)(186003)(2616005)(478600001)(8676002)(16526019)(31696002)(66556008)(66476007)(66946007)(54906003)(4326008)(86362001)(2906002)(31686004)(52116002)(36756003)(53546011)(6486002)(5660300002)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: 72zsLEBhtSuzBvTSoJDqQJf87lusoSg60ZaYZZ91CPgERF3ai4v+3B+Q+125GExThS9+6TrXhTpi5MC/x1jCiNutW+nnGN51JPC/DRO3I0i63VI7Vzv/9+M/8h+xSomPGIOE6A9UySx+hbFX/+VrdgfGwM5e1NVZLpeQSv2r05p97FfnLB0WLqLHnsSI/oq758X5KX7/fcSpVYsyPsKOdArT66vPoTEBKnRSBnUl0mmvi0yGyipnVU7N41MZO8qZP241zJ7Dd3NiW4v7bdhPm9mhjEygVsI+7gz+ns7+U5K4VWiC1vmbs08Jyu7FYgX6x2tKpbj3YGLsSi26/4FJNbOOhIR2p/LPdtYJXaoyACDtDPSoNBZsGmAqpzFPziYzwUdIlEWNcH2mRiT+KSeRM70xBIxU6QtRZzv0vRzbLLkNvqEM+b3Q34Dk1ZKUAkldwjPiSxRrwab1JsJN5FTtIuejPs/LInY7rb3cT40yMxB9JkPBtWRIcSwPYjIEOK2drWD04/tWUhDv3t+m9YC9Lw==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69370afb-e93a-4d0c-084c-08d82f547e15
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2020 22:05:21.3250
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3504.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 383a2c63-637f-49a9-6ec3-08d82f54fba0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2020 22:08:51.7239
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ML53XrtyvUcWocEDSiHVrx4KMV80FiuSpMWU3HvxJJHFt/0Rt645BFLQKkgWFHFS
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2773
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-23_09:2020-07-23,2020-07-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
- suspectscore=0 impostorscore=0 mlxlogscore=999 phishscore=0 spamscore=0
- malwarescore=0 bulkscore=0 lowpriorityscore=0 clxscore=1015
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007230154
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MA6d7Wg9R2Rh73oNuoGrSdPd5VVr9PHVCcD968hjk4Z8vlB3dyh3fxgo0VcKvNXNo+mZbWZX3ilzGiFbIb85/PY3yimibkYyGrSCdvSqakQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4672
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/23/20 2:59 AM, Jakub Sitnicki wrote:
-> Check that narrow loads at various offsets from a context field backed by a
-> target field that is smaller in size work as expected. That is target field
-> value is loaded only when the offset is less than the target field size.
-> While for offsets beyond the target field, the loaded value is zero.
-> 
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-
-Ack with minor nit below.
-Acked-by: Yonghong Song <yhs@fb.com>
-
-> ---
->   .../selftests/bpf/prog_tests/narrow_load.c    | 84 +++++++++++++++++++
->   .../selftests/bpf/progs/test_narrow_load.c    | 43 ++++++++++
->   2 files changed, 127 insertions(+)
->   create mode 100644 tools/testing/selftests/bpf/prog_tests/narrow_load.c
->   create mode 100644 tools/testing/selftests/bpf/progs/test_narrow_load.c
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/narrow_load.c b/tools/testing/selftests/bpf/prog_tests/narrow_load.c
-> new file mode 100644
-> index 000000000000..6d79d722a66d
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/narrow_load.c
-> @@ -0,0 +1,84 @@
-> +// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-> +// Copyright (c) 2020 Cloudflare
-> +
-> +#include "test_progs.h"
-> +#include "test_narrow_load.skel.h"
-> +
-> +static int duration;
-> +
-> +void run_sk_reuseport_prog(struct bpf_program *reuseport_prog)
-
-static function?
-
-> +{
-> +	static const struct timeval timeo = { .tv_sec = 3 };
-> +	struct sockaddr_in addr = {
-> +		.sin_family = AF_INET,
-> +		.sin_port = 0,
-> +		.sin_addr.s_addr = htonl(INADDR_LOOPBACK),
-> +	};
-> +	socklen_t len = sizeof(addr);
-> +	int err, fd, prog_fd;
-> +	const int one = 1;
-> +	char buf = 42;
-> +	ssize_t n;
-> +
-[...]
+T24gMjMuMDcuMjAyMCAyMTo1OSwgRmxvcmlhbiBGYWluZWxsaSB3cm90ZToNCj4gRVhURVJOQUwg
+RU1BSUw6IERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3Ug
+a25vdyB0aGUgY29udGVudCBpcyBzYWZlDQo+IA0KPiBPbiA3LzIxLzIwIDEwOjEzIEFNLCBDb2Ry
+aW4gQ2l1Ym90YXJpdSB3cm90ZToNCj4+IFRoZSBNQUNCIGVtYmVkcyBhbiBNRElPIGJ1cyBjb250
+cm9sbGVyLiBGb3IgdGhpcyByZWFzb24sIHRoZSBQSFkgbm9kZXMNCj4+IHdlcmUgcmVwcmVzZW50
+ZWQgYXMgc3ViLW5vZGVzIGluIHRoZSBNQUNCIG5vZGUuIEdlbmVyYWxseSwgdGhlDQo+PiBFdGhl
+cm5ldCBjb250cm9sbGVyIGlzIGRpZmZlcmVudCB0aGFuIHRoZSBNRElPIGNvbnRyb2xsZXIsIHNv
+IHRoZSBQSFlzDQo+PiBhcmUgcHJvYmVkIGJ5IGEgc2VwYXJhdGUgTURJTyBkcml2ZXIuIFNpbmNl
+IGFkZGluZyB0aGUgUEhZIG5vZGVzIGRpcmVjdGx5DQo+PiB1bmRlciB0aGUgRVRIIG5vZGUgYmVj
+YW1lIGRlcHJlY2F0ZWQsIHdlIGFkanVzdCB0aGUgTUFDQiBkcml2ZXIgdG8gbG9vaw0KPj4gZm9y
+IGFuIE1ESU8gbm9kZSBhbmQgcmVnaXN0ZXIgdGhlIHN1Ym5vZGUgTURJTyBkZXZpY2VzLg0KPj4N
+Cj4+IFNpZ25lZC1vZmYtYnk6IENvZHJpbiBDaXVib3Rhcml1IDxjb2RyaW4uY2l1Ym90YXJpdUBt
+aWNyb2NoaXAuY29tPg0KPj4gLS0tDQo+Pg0KPj4gQ2hhbmdlcyBpbiB2MjoNCj4+ICAgLSByZWFk
+ZGVkIG5ld2xpbmUgcmVtb3ZlZCBieSBtaXN0YWtlOw0KPj4NCj4+ICAgZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvY2FkZW5jZS9tYWNiX21haW4uYyB8IDEwICsrKysrKysrKysNCj4+ICAgMSBmaWxlIGNo
+YW5nZWQsIDEwIGluc2VydGlvbnMoKykNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvY2FkZW5jZS9tYWNiX21haW4uYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVu
+Y2UvbWFjYl9tYWluLmMNCj4+IGluZGV4IDg5ZmU3YWY1ZTQwOC4uYjI1YzY0YjQ1MTQ4IDEwMDY0
+NA0KPj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2FkZW5jZS9tYWNiX21haW4uYw0KPj4g
+KysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2FkZW5jZS9tYWNiX21haW4uYw0KPj4gQEAgLTc0
+MCwxMCArNzQwLDIwIEBAIHN0YXRpYyBpbnQgbWFjYl9taWlfcHJvYmUoc3RydWN0IG5ldF9kZXZp
+Y2UgKmRldikNCj4+ICAgc3RhdGljIGludCBtYWNiX21kaW9idXNfcmVnaXN0ZXIoc3RydWN0IG1h
+Y2IgKmJwKQ0KPj4gICB7DQo+PiAgICAgICAgc3RydWN0IGRldmljZV9ub2RlICpjaGlsZCwgKm5w
+ID0gYnAtPnBkZXYtPmRldi5vZl9ub2RlOw0KPj4gKyAgICAgc3RydWN0IGRldmljZV9ub2RlICpt
+ZGlvX25vZGU7DQo+PiArICAgICBpbnQgcmV0Ow0KPj4NCj4+ICAgICAgICBpZiAob2ZfcGh5X2lz
+X2ZpeGVkX2xpbmsobnApKQ0KPj4gICAgICAgICAgICAgICAgcmV0dXJuIG1kaW9idXNfcmVnaXN0
+ZXIoYnAtPm1paV9idXMpOw0KPiANCj4gRG9lcyBub3QgdGhpcyBuZWVkIGNoYW5naW5nIGFzIHdl
+bGw/IENvbnNpZGVyIHRoZSB1c2UgY2FzZSBvZiBoYXZpbmcNCj4geW91ciBNQUNCIEV0aGVybmV0
+IG5vZGUgaGF2ZSBhIGZpeGVkLWxpbmsgcHJvcGVydHkgdG8gZGVzY3JpYmUgaG93IGl0DQo+IGNv
+bm5lY3RzIHRvIGEgc3dpdGNoLCBhbmQgeW91ciBNQUNCIE1ESU8gY29udHJvbGxlciwgZXhwcmVz
+c2VkIGFzIGENCj4gc3ViLW5vZGUsIGRlc2NyaWJpbmcgdGhlIE1ESU8gYXR0YWNoZWQgc3dpdGNo
+IGl0IGNvbm5lY3RzIHRvLg0KDQpSaWdodCwgdGhpcyBpcyB3aGF0IEkgd2FzIGRpc2N1c3Npbmcg
+d2l0aCBDbGF1ZGl1IG9uIHRoZSBvdGhlciB0aHJlYWQuIEkgDQphbSB0aGlua2luZyB0byBqdXN0
+IG1vdmUgdGhlIGxvb2sgZm9yIG1kaW8gYmVmb3JlIGNoZWNraW5nIGZvciANCmZpeGVkLWxpbmsu
+IFRoaXMgd2lsbCBwcm9iZSB0aGUgTURJTyBkZXZpY2VzIGFuZCBzaW1wbGUgbWRpb2J1c19yZWdp
+c3RlciANCndpbGwgYmUgY2FsbGVkIG9ubHkgaWYgdGhlIG1kaW8gbm9kZSBpcyBtaXNzaW5nLg0K
+DQpUaGFuayB5b3UgZm9yIHlvdXIgcmV2aWV3KHMpIQ0KDQpCZXN0IHJlZ2FyZHMsDQpDb2RyaW4N
+Cg0KPiANCj4+DQo+PiArICAgICAvKiBpZiBhbiBNRElPIG5vZGUgaXMgcHJlc2VudCwgaXQgc2hv
+dWxkIGNvbnRhaW4gdGhlIFBIWSBub2RlcyAqLw0KPj4gKyAgICAgbWRpb19ub2RlID0gb2ZfZ2V0
+X2NoaWxkX2J5X25hbWUobnAsICJtZGlvIik7DQo+PiArICAgICBpZiAobWRpb19ub2RlKSB7DQo+
+PiArICAgICAgICAgICAgIHJldCA9IG9mX21kaW9idXNfcmVnaXN0ZXIoYnAtPm1paV9idXMsIG1k
+aW9fbm9kZSk7DQo+PiArICAgICAgICAgICAgIG9mX25vZGVfcHV0KG1kaW9fbm9kZSk7DQo+PiAr
+ICAgICAgICAgICAgIHJldHVybiByZXQ7DQo+PiArICAgICB9DQo+PiArDQo+PiAgICAgICAgLyog
+T25seSBjcmVhdGUgdGhlIFBIWSBmcm9tIHRoZSBkZXZpY2UgdHJlZSBpZiBhdCBsZWFzdCBvbmUg
+UEhZIGlzDQo+PiAgICAgICAgICogZGVzY3JpYmVkLiBPdGhlcndpc2Ugc2NhbiB0aGUgZW50aXJl
+IE1ESU8gYnVzLiBXZSBkbyB0aGlzIHRvIHN1cHBvcnQNCj4+ICAgICAgICAgKiBvbGQgZGV2aWNl
+IHRyZWUgdGhhdCBkaWQgbm90IGZvbGxvdyB0aGUgYmVzdCBwcmFjdGljZXMgYW5kIGRpZCBub3QN
+Cj4+DQo+IA0KPiANCj4gLS0NCj4gRmxvcmlhbg0KPiANCg0K
