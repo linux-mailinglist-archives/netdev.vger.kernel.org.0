@@ -2,114 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4941622B1D1
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 16:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B429722B1DA
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 16:53:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728134AbgGWOu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 10:50:26 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:35396 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726761AbgGWOu0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 10:50:26 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06NElNDp100901;
-        Thu, 23 Jul 2020 14:50:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type : in-reply-to;
- s=corp-2020-01-29; bh=jykVeaaj1de3HdC9bQbpFC12yVlqXQBg90kokCdh8VM=;
- b=OFlBu+ZyA5PUaIeiOHa/OCO2esXfYFSgbTbN/iF6x97HEwumrDf9+IkqKtNqXm/GYFv5
- e8ugZFFlFLyXTwGS+s2/86DvWT+5baDMN0wmlm0U5VUKOUjH+oCXl5hLdJfOvIkPTWcf
- TSB1DboGbimlTcmNuiJNxfR+nuNVh35WU4yYWGfg+MYkHsz/O75pjf548HXsDnmaZhYr
- 5m1QJa+aP7FOOaGmDIuisacRMNHHOfKAwxxMFVwAezt+53XE13aUNLg71ouzVwJriKJf
- xyAmSX7cj8uSsyrSO9/ZEtOViSQTmaYVay+M9qtnWjcSVdvwFEbepHt9sp0dmdfzC4xK ew== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 32d6ksx1vg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 23 Jul 2020 14:50:07 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06NEgOuI144883;
-        Thu, 23 Jul 2020 14:50:06 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 32fc4qhqep-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 23 Jul 2020 14:50:06 +0000
-Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 06NEo5ko012251;
-        Thu, 23 Jul 2020 14:50:05 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 23 Jul 2020 14:50:05 +0000
-Date:   Thu, 23 Jul 2020 17:49:57 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Joerg Reuter <jreuter@yaina.de>, Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org, gregkh@linuxfoundation.org,
-        syzkaller-bugs@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [PATCH net] AX.25: Prevent integer overflows in connect and sendmsg
-Message-ID: <20200723144957.GA293102@mwanda>
+        id S1728752AbgGWOxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 10:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726761AbgGWOxV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 10:53:21 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0537C0619DC;
+        Thu, 23 Jul 2020 07:53:21 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1595516000;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xReGl6rTwlABQqLHz4nZq26+2OiWDgg160LyB2p5G1Y=;
+        b=h+R7c7Oqa+NtfxuxU6ErUL3QgyKMiY86p1+Kw7jgFvrPWdf1Q0qClfz317j9HUmF2fwC/1
+        5acMlB6QLMHuQ5C80LW1aEUjGMzQKOLyRA1SAmDUiUIFBgINPfAmbPmW258xRB4SST2MAd
+        GsIWTwBzzKWejXNRLcn0/kylOrHmYzxeC+YBi5HEro2PJgagKpxzZ/H2OjSnTCbjwhoJ22
+        xkmLAuyyoc25iqroV83OtXKN3Ts+LbJSF0t5tzsVbkxhIuuNqUCPkFbZGSqZEgmsXrkCIr
+        pnMbd2XwB2NTi505+WXCf8zIwWxOv0AIhY/IC+XmYNJ03E2iS3sY9MAhMmqOEQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1595516000;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xReGl6rTwlABQqLHz4nZq26+2OiWDgg160LyB2p5G1Y=;
+        b=ZWPvwgt7LIfOjZ/LyDvsBRAenC3Lmc63twFT/Q12fb4/k/DMfWqwI6MbrS7HjD3pi6hH84
+        QAlVEytmbw2nKuAQ==
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alex Belits <abelits@marvell.com>,
+        "frederic\@kernel.org" <frederic@kernel.org>,
+        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
+        Prasun Kapoor <pkapoor@marvell.com>,
+        "mingo\@kernel.org" <mingo@kernel.org>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-arch\@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "catalin.marinas\@arm.com" <catalin.marinas@arm.com>,
+        "will\@kernel.org" <will@kernel.org>,
+        "linux-arm-kernel\@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v4 00/13] "Task_isolation" mode
+In-Reply-To: <20200723142623.GS5523@worktop.programming.kicks-ass.net>
+References: <04be044c1bcd76b7438b7563edc35383417f12c8.camel@marvell.com> <87imeextf3.fsf@nanos.tec.linutronix.de> <20200723142623.GS5523@worktop.programming.kicks-ass.net>
+Date:   Thu, 23 Jul 2020 16:53:19 +0200
+Message-ID: <87y2nawae8.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200722.175714.1713497446730685740.davem@davemloft.net>
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9690 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 malwarescore=0
- suspectscore=0 mlxlogscore=999 adultscore=0 spamscore=0 bulkscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007230110
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9690 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
- bulkscore=0 mlxscore=0 mlxlogscore=999 impostorscore=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 spamscore=0 adultscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007230110
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We recently added some bounds checking in ax25_connect() and
-ax25_sendmsg() and we so we removed the AX25_MAX_DIGIS checks because
-they were no longer required.
+Peter Zijlstra <peterz@infradead.org> writes:
+> On Thu, Jul 23, 2020 at 03:17:04PM +0200, Thomas Gleixner wrote:
+>
+>>   2) Instruction synchronization
+>> 
+>>      Trying to do instruction synchronization delayed is a clear recipe
+>>      for hard to diagnose failures. Just because it blew not up in your
+>>      face does not make it correct in any way. It's broken by design and
+>>      violates _all_ rules of safe instruction patching and introduces a
+>>      complete trainwreck in x86 NMI processing.
+>> 
+>>      If you really think that this is correct, then please have at least
+>>      the courtesy to come up with a detailed and precise argumentation
+>>      why this is a valid approach.
+>> 
+>>      While writing that up you surely will find out why it is not.
+>
+> So delaying the sync_core() IPIs for kernel text patching _might_ be
+> possible, but it very much wants to be a separate patchset and not
+> something hidden inside a 'gem' like this.
 
-Unfortunately, I believe they are required to prevent integer overflows
-so I have added them back.
+I'm not saying it's impossible, but the proposed hack is definitely
+beyond broken and you really don't want to be the one who has to mop up
+the pieces later.
 
-Fixes: 8885bb0621f0 ("AX.25: Prevent out-of-bounds read in ax25_sendmsg()")
-Fixes: 2f2a7ffad5c6 ("AX.25: Fix out-of-bounds read in ax25_connect()")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
-From code review.  Not tested.  It should be harmless though.
+Thanks,
 
- net/ax25/af_ax25.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 0862fe49d434..dec3f35467c9 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -1188,6 +1188,7 @@ static int __must_check ax25_connect(struct socket *sock,
- 	    fsa->fsa_ax25.sax25_ndigis != 0) {
- 		/* Valid number of digipeaters ? */
- 		if (fsa->fsa_ax25.sax25_ndigis < 1 ||
-+		    fsa->fsa_ax25.sax25_ndigis > AX25_MAX_DIGIS ||
- 		    addr_len < sizeof(struct sockaddr_ax25) +
- 		    sizeof(ax25_address) * fsa->fsa_ax25.sax25_ndigis) {
- 			err = -EINVAL;
-@@ -1509,7 +1510,9 @@ static int ax25_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 			struct full_sockaddr_ax25 *fsa = (struct full_sockaddr_ax25 *)usax;
- 
- 			/* Valid number of digipeaters ? */
--			if (usax->sax25_ndigis < 1 || addr_len < sizeof(struct sockaddr_ax25) +
-+			if (usax->sax25_ndigis < 1 ||
-+			    usax->sax25_ndigis > AX25_MAX_DIGIS ||
-+			    addr_len < sizeof(struct sockaddr_ax25) +
- 			    sizeof(ax25_address) * usax->sax25_ndigis) {
- 				err = -EINVAL;
- 				goto out;
--- 
-2.27.0
-
+        tglx
